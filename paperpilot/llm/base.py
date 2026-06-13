@@ -138,7 +138,7 @@ _CLASSIFY_ABSTRACT_TRIM = 600
 #      RelationClassification.from_dict to catch LLM template echoes
 #      (#131 second-line defence). Built from this dict's values.
 #   3. CLASSIFY_SYSTEM_PROMPT MUST NOT block (first-line defence) —
-#      currently lists 4 of these as forbidden outputs in plain text.
+#      currently lists 3 of these as forbidden outputs in plain text.
 #      The test test_classify_prompt_forbids_template_phrasings pins
 #      that fragments of the listed templates appear in the prompt.
 #
@@ -207,27 +207,41 @@ class RelationClassification:
 # (b) explicitly forbids the template phrasings as outputs, (c) shows
 # one good example anchoring paper-specific style.
 #
-# Token budget note: kept under ~250 tokens because Groq's free tier
-# caps at 6,000 TPM. A larger prompt × 25 RPM (rate limiter default)
-# would burn through the TPM budget and 429-throttle the back half of
-# each burst, which was the regression observed in the #131 first-cut
-# rewrite (PR #132's first deploy got timed out at 8 min).
+# Token budget note: kept under ~330 tokens (1,191 chars) because Groq's
+# free tier caps at ~12,000 TPM. A larger prompt × 25 RPM (rate limiter
+# default) would burn through the TPM budget and 429-throttle the back
+# half of each burst, which was the regression observed in the #131
+# first-cut rewrite (PR #132's first deploy got timed out at 8 min).
+# Per-relation definitions (verbatim from docs/design/08-lineage-roadmap.md
+# §関係種別ラベルの定義) + supersedes/ablation few-shot examples were added
+# per #285: audit #286 showed supersedes=0 / ablation=0 across 452 calls
+# because the prompt listed only the enum NAMES with no definitions, so the
+# LLM could not distinguish the relations. The 1,200-char cap (test pin
+# test_classify_prompt_within_groq_tpm_budget) still holds.
 CLASSIFY_SYSTEM_PROMPT = """\
 Compare two AI/ML papers (A older, B newer). Output ONLY JSON:
 {"relation":"<one>","confidence":<0.0-1.0>,"rationale":"<one Japanese sentence>"}
 
-relation values: supersedes / successor / extends / ablation / baseline_only / contrasts / unrelated
+relation values (pick one): supersedes / successor / extends / ablation / baseline_only / contrasts / unrelated
+- supersedes: 同じアプローチで明確に性能を凌駕、基準論文を置き換える
+- successor: 研究ラインの自然な発展、漸進的な改良
+- extends: 同じ手法を別ドメイン・別タスク・別規模に応用
+- ablation: 構成要素の寄与を分解測定する解析論文
+- baseline_only: 比較対象として引用するだけで、知的な継承はない
+- contrasts: 同じ問題に対する根本的に異なるアプローチ
 
-rationale rules — read carefully, this is what gets wrong most often:
+rationale rules — read carefully, most errors are here:
 - 30-200 chars, one Japanese sentence
-- MUST mention a concrete concept from B's title or abstract (a method name, dataset, metric, or architectural choice). The reader should know which two papers are compared from the rationale alone.
+- MUST mention a concrete concept from B's title or abstract (a method name, dataset, metric, or architectural choice), so the reader knows which two papers are compared.
 - NEVER output these heuristic templates (emitting them wastes an LLM call):
   - "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している"
   - "論文 B は論文 A の研究ラインを継承し自然に発展させている"
   - "論文 B は論文 A をベースライン比較にのみ用いている"
-  - "論文 B は論文 A と根本的に異なるアプローチを提案している"
 
-Good example: "B のグラフ畳み込み層は、A のスペクトル法を空間領域に再定式化し計算量を O(E) に落としている。"
+Examples (each names a concrete concept):
+- extends: "B のグラフ畳み込み層は、A のスペクトル法を空間領域に再定式化し計算量を O(E) に落としている。"
+- supersedes: "B (FlashAttention-2) は A と同じ exact attention のまま work partitioning を改良し2倍高速化、A を置き換える。"
+- ablation: "B は A の各構成要素を取り除いて精度への寄与を分解測定している。"
 """
 
 _CLASSIFY_USER_TEMPLATE = """\
