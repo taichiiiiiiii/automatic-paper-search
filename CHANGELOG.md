@@ -6,6 +6,22 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Changed
+
+- **#285 prompt rewrite: per-relation definitions + supersedes/ablation
+  examples.** `CLASSIFY_SYSTEM_PROMPT` (`paperpilot/llm/base.py`) previously
+  listed only the relation enum NAMES with no definitions, so the LLM could
+  not tell `supersedes`/`successor`/`extends`/`ablation`/`baseline_only`/
+  `contrasts` apart — audit #286 showed `supersedes`=0 / `ablation`=0 across
+  452 calls. Added a terse per-relation definition (verbatim from
+  docs/design/08-lineage-roadmap.md §関係種別ラベルの定義) plus two few-shot
+  examples (the canonical FlashAttention-2 supersedes case + an ablation
+  case). Prompt grew 855 → 1,191 chars, still under the 1,200-char Groq TPM
+  budget cap. Caveat: the primary measurable target is `supersedes` (7 gold
+  records); cross-paper `ablation` is near-absent in real lineages (1 gold
+  record) because ablations live within single papers, so its definition +
+  example are kept terse rather than over-engineered.
+
 ### Added — Lineage edge provenance field + audit migration (#285 prep, 2 PRs)
 
 Two PRs land the schema work that the upcoming LLM relation prompt
