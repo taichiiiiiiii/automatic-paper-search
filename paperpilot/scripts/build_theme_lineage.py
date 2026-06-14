@@ -1915,33 +1915,40 @@ def _normalize_dedup_doi(paper: dict[str, Any]) -> str | None:
     return doi or None
 
 
+_DEDUP_YEAR_WINDOW = 2  # collapse same-title papers within N years (preprint↔published)
+
+
 def _dedup_by_title_year(
     papers: list[dict[str, Any]],
 ) -> tuple[list[dict[str, Any]], dict[str, str]]:
-    """Collapse true duplicates by ``(normalised-title, year)`` primary key
-    and normalised DOI secondary key, keeping the higher-``citationCount``
-    record on each collision (#298).
+    """Collapse true duplicates by ``(normalised-title, year)`` primary key,
+    a same-title-within-``_DEDUP_YEAR_WINDOW`` key, and normalised DOI,
+    keeping the higher-``citationCount`` record on each collision (#298).
 
     Returns ``(deduped_papers, remap)`` where ``remap`` maps every dropped
     ``paperId`` onto the surviving ``paperId`` so the caller can rewrite
     edge endpoints. Insertion order of survivors is preserved.
 
-    Over-prune guard: a paper with no usable title AND no DOI has no stable
-    key, so it is passed through untouched (never collapsed against another
-    keyless paper). Distinct papers — different title, different year, or
-    different DOI — are never merged.
+    Year-window match (#298 followup): OpenAlex frequently keeps the arXiv
+    preprint and the published/journal version as DISTINCT Works with
+    DISTINCT DOIs and years one apart ("An Image is Worth 16x16 Words"
+    2020 vs 2021; "Squeeze-and-Excitation Networks" 2018 vs 2019). The
+    exact ``(title, year)`` key misses these, so a same-normalised-title
+    match within ±``_DEDUP_YEAR_WINDOW`` years also collapses — distinctive
+    titles a year or two apart are the same paper. Same title but years FAR
+    apart (> window) are left separate (conservatively assumed distinct).
 
-    Cross-key tie-break: if a paper's title+year key matches survivor X and
-    its DOI key matches a *different* survivor Y (ambiguous overlapping
-    evidence), the first key in scan order wins (title+year before DOI) and
-    the paper collapses into X — Y is left as an independent cluster rather
-    than performing a risky 3-way merge. This conservative choice can never
-    merge two genuinely-distinct papers.
+    Over-prune guard: a paper with no usable title AND no DOI has no stable
+    key, so it is passed through untouched. Distinct papers — different
+    title, far-apart years, or different DOI with different titles — are
+    never merged.
     """
     if not papers:
         return [], {}
     # key -> surviving paperId (first-seen, then upgraded to higher cite)
     key_to_survivor: dict[tuple[str, str], str] = {}
+    # normalised-title -> surviving paperId, for the year-window match.
+    title_to_survivor: dict[str, str] = {}
     survivors: dict[str, dict[str, Any]] = {}
     order: list[str] = []
     remap: dict[str, str] = {}
@@ -1951,6 +1958,12 @@ def _dedup_by_title_year(
         # the serialised node shape ("citation_count") so this dedup works
         # on seeds AND on the final node set.
         return int(p.get("citationCount") or p.get("citation_count") or 0)
+
+    def _register(pid: str, norm_title: str, keys: list[tuple[str, str]]) -> None:
+        for k in keys:
+            key_to_survivor[k] = pid
+        if norm_title:
+            title_to_survivor[norm_title] = pid
 
     for paper in papers:
         pid = paper.get("paperId") or paper.get("id")
@@ -1972,18 +1985,24 @@ def _dedup_by_title_year(
                 survivors[pid] = paper
                 order.append(pid)
             continue
-        # Find an existing survivor under any of this paper's keys.
+        # Find an existing survivor under any of this paper's exact keys.
         existing_pid: str | None = None
         for k in keys:
             if k in key_to_survivor:
                 existing_pid = key_to_survivor[k]
                 break
+        # Year-window fallback: same normalised title, year within window.
+        if existing_pid is None and norm_title and isinstance(year, int):
+            cand = title_to_survivor.get(norm_title)
+            if cand is not None and cand in survivors:
+                cand_year = survivors[cand].get("year")
+                if isinstance(cand_year, int) and abs(year - cand_year) <= _DEDUP_YEAR_WINDOW:
+                    existing_pid = cand
         if existing_pid is None:
             # New record; register it under all its keys.
             survivors[pid] = paper
             order.append(pid)
-            for k in keys:
-                key_to_survivor[k] = pid
+            _register(pid, norm_title, keys)
             continue
         # Collision: keep the higher-citation record.
         existing = survivors[existing_pid]
@@ -2000,9 +2019,11 @@ def _dedup_by_title_year(
             for k in list(key_to_survivor.keys()):
                 if key_to_survivor[k] == existing_pid:
                     key_to_survivor[k] = pid
-            # Register the new survivor under all keys (incl. its DOI).
-            for k in keys:
-                key_to_survivor[k] = pid
+            for t in list(title_to_survivor.keys()):
+                if title_to_survivor[t] == existing_pid:
+                    title_to_survivor[t] = pid
+            # Register the new survivor under all its keys + title.
+            _register(pid, norm_title, keys)
         else:
             # Existing wins — drop the incoming record.
             remap[pid] = existing_pid
@@ -2010,6 +2031,8 @@ def _dedup_by_title_year(
             # later duplicate under that key also collapses correctly.
             for k in keys:
                 key_to_survivor.setdefault(k, existing_pid)
+            if norm_title:
+                title_to_survivor.setdefault(norm_title, existing_pid)
     deduped = [survivors[pid] for pid in order]
     return deduped, remap
 
