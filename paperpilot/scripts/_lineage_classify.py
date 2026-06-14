@@ -51,16 +51,17 @@ logger = get_logger(__name__)
 
 # ===== Constants =====
 
-# Issue #53: heuristic templates that mirror build_deep_lineage's lenient
-# fallback rationales. derive_relation() picks one based on S2's intent
-# array so we get a non-empty rationale for free (the stage-4 'drop empty
-# rationale' filter would otherwise silently kill every derived edge).
-# Rationale strings are sourced from base.TEMPLATE_RATIONALES so the
-# heuristic-emitted text matches the reject set used by
-# RelationClassification.from_dict (#131 / #145 followup) — the two
-# CANNOT drift.
+# Issue #53 / #300: the third tuple element is the LEGACY template
+# rationale. Post-#300 the heuristic NO LONGER emits it — it builds a
+# slot-filled, paper-specific rationale via `_slot_fill_rationale()`
+# instead, so a signal-bearing edge survives `_apply_llm_classification`'s
+# template-reject step when the LLM is None (the "relation collapse" root
+# cause). The template strings are RETAINED here only to (a) keep the
+# single-source-of-truth link to base.TEMPLATE_RATIONALES for the #131
+# LLM-echo reject set (the two CANNOT drift), and (b) document which
+# template each intent used to emit.
 _INTENT_RELATION_MAP: list[tuple[str, str, str]] = [
-    # (intent name, relation enum, rationale template) — order matters:
+    # (intent name, relation enum, legacy rationale template) — order matters:
     # methodology > result when an entry has multiple intents, since
     # methodology implies the citing paper actually built on top of the
     # referenced work.
@@ -76,6 +77,19 @@ _INTENT_RELATION_MAP: list[tuple[str, str, str]] = [
     ("result", "successor", TEMPLATE_RATIONALES["successor_result"]),
 ]
 _DERIVED_CONFIDENCE = 0.7  # constant — heuristic, not LLM probability
+
+# #300: max chars of a paper title embedded in a slot-filled rationale.
+# Keeps the rationale within _MAX_RATIONALE_LEN (280) even when both
+# titles + boilerplate are present, while staying long enough to identify
+# the paper.
+_SLOT_FILL_TITLE_TRIM = 60
+
+# #300: placeholders for a missing title in a slot-filled rationale.
+# Mirror _foundational_ancestor_edge's "the cited work" fallback so the
+# degraded sentence is still paper-shaped and never empty. These must NOT
+# collide with any TEMPLATE_RATIONALES value (they don't — they are bare
+# noun phrases, not full template sentences).
+_MISSING_TITLE_JA = "引用元の論文"
 
 # Minimum LLM confidence to keep an edge (#209). Below this, the LLM
 # itself is signalling that the relation is weak; emitting it as a
@@ -508,6 +522,102 @@ def derive_relation(
     return _apply_llm_classification(heuristic, llm_result)
 
 
+def _slot_fill_title(paper: dict | None) -> str:
+    """Extract + truncate a paper title for embedding in a slot-filled
+    rationale. Falls back to ``_MISSING_TITLE_JA`` when the title is
+    absent (mirrors ``_foundational_ancestor_edge``'s "the cited work"
+    degrade), so the result is never empty and never a template member.
+    """
+    title = ""
+    if isinstance(paper, dict):
+        raw = paper.get("title")
+        if isinstance(raw, str):
+            # Strip the 「」 brackets used as the rationale's own delimiters
+            # so an odd title can't produce confusing nested quoting (#300
+            # review LOW). Plain string in JSON — no XSS, just cosmetics.
+            title = raw.strip().replace("「", "").replace("」", "")
+    if not title:
+        return _MISSING_TITLE_JA
+    if len(title) > _SLOT_FILL_TITLE_TRIM:
+        return title[: _SLOT_FILL_TITLE_TRIM - 1] + "…"
+    return title
+
+
+def _slot_fill_year(paper: dict | None) -> str:
+    """Render a paper's year for a rationale; '?' when missing/non-int."""
+    if isinstance(paper, dict):
+        year = paper.get("year")
+        if isinstance(year, int):
+            return str(year)
+    return "?"
+
+
+def _slot_fill_rationale(
+    relation: str,
+    parent: dict | None,
+    child: dict | None,
+    *,
+    intent: str | None = None,
+) -> str:
+    """Build a paper-specific, Japanese rationale embedding the actual
+    parent/child titles (truncated) + years + the signal (#300).
+
+    This generalises the slot-fill pattern already used by
+    ``_foundational_ancestor_edge``: by embedding the concrete titles the
+    rationale can NEVER be a member of ``_TEMPLATE_RATIONALES_SET``, so a
+    signal-bearing heuristic edge survives ``_apply_llm_classification``'s
+    template-reject step even when the LLM is unavailable (the root cause
+    of the "relation collapse" in the family tree).
+
+    ``parent`` is the OLDER / cited paper (paper A), ``child`` is the
+    NEWER / citing paper (paper B) — same A→B convention as
+    ``build_classify_prompt``.
+
+    Degrades gracefully: a missing title becomes ``引用元の論文`` (mirroring
+    the English "the cited work" fallback) so the sentence stays
+    paper-shaped. Even the fully-degraded output (both titles + years
+    missing) is ~38 chars — well above the 10-char minimum required by
+    ``RelationClassification.from_dict`` (``_MIN_RATIONALE_LEN`` in
+    ``paperpilot.llm.base``).
+    """
+    pt = _slot_fill_title(parent)
+    ct = _slot_fill_title(child)
+    py = _slot_fill_year(parent)
+    cy = _slot_fill_year(child)
+
+    # intent_map path: the S2 intent label is the signal — name it.
+    if intent is not None:
+        if relation == "extends":
+            return (
+                f"「{ct}」({cy}) は「{pt}」({py}) の手法を"
+                f"{intent}文脈で拡張している。"
+            )
+        # Generic intent fallback for any other relation the intent map
+        # might pick (currently only result→successor, but kept open).
+        return (
+            f"「{ct}」({cy}) は「{pt}」({py}) を"
+            f"{intent}として参照している。"
+        )
+
+    if relation == "successor":
+        return (
+            f"「{ct}」({cy}) は「{pt}」({py}) を引用する後発研究"
+            f"（年代差と引用関係から後継と推定）。"
+        )
+    if relation == "contrasts":
+        return (
+            f"「{ct}」({cy}) は「{pt}」({py}) と近い年代の対照的研究"
+            f"（年代・引用規模から推定）。"
+        )
+
+    # Defensive default for any future relation routed through the
+    # year/cite branch without an explicit sentence above. Still embeds
+    # both titles so it is never a template member.
+    return (
+        f"「{ct}」({cy}) は「{pt}」({py}) と引用関係にある（{relation}）。"
+    )
+
+
 def _derive_relation_heuristic(
     intent_record: dict,
     *,
@@ -530,8 +640,17 @@ def _derive_relation_heuristic(
     """
     intents = intent_record.get("_intents") or []
     intents_set = {str(i).lower() for i in intents if isinstance(i, str)}
-    for keyword, relation, rationale in _INTENT_RELATION_MAP:
+    for keyword, relation, _template in _INTENT_RELATION_MAP:
         if keyword in intents_set:
+            # #300: emit a paper-specific slot-filled rationale instead of
+            # the generic _template. The relation enum still comes from
+            # _INTENT_RELATION_MAP; only the rationale TEXT changes so the
+            # edge survives _apply_llm_classification when the LLM is dark.
+            # Degrades gracefully when parent/child are absent (many call
+            # sites pass only the intent record).
+            rationale = _slot_fill_rationale(
+                relation, parent, child, intent=keyword
+            )
             return _make_derived(relation, rationale, "intent_map")
 
     # No matching intent — try year + citation contrast.
@@ -543,6 +662,19 @@ def _derive_relation_heuristic(
     # ablation across 99 published edges. The LLM is now the only path
     # to a supersedes or ablation edge — heuristic returns None for those
     # shapes and `derive_relation` falls through to the LLM-only branch.
+    #
+    # #300 TRADEOFF (ADR): the contrasts/successor edges below now emit a
+    # SLOT-FILLED rationale, so — unlike pre-#300 — they SURVIVE the
+    # template-reject when the LLM is None (the steady state). This is a
+    # deliberate trade of edge scarcity for tree COMPLETENESS under LLM
+    # outage: a collapsed (empty) tree is useless; a denser tree with
+    # honest, hedged, filterable rationales is not. The successor rule
+    # (delta 1-5, no citation floor) is liberal, so the published tree
+    # gains year-gap-inferred edges; their rationale is hedged ("…と推定")
+    # to state the inference basis, and the audit's template_rationale_ratio
+    # now drops toward 0 (the old collapse signal). If production density
+    # becomes a problem, tighten the delta/citation thresholds here or add
+    # a weak-signal-successor audit metric in audit_lineage_quality.py.
     if parent is not None and child is not None:
         py = parent.get("year")
         cy = child.get("year")
@@ -551,15 +683,21 @@ def _derive_relation_heuristic(
         if isinstance(py, int) and isinstance(cy, int):
             delta = cy - py
             if delta <= 1 and pc > 100 and 0.5 <= cc / max(pc, 1) <= 2.0:
+                # #300: slot-filled rationale (was TEMPLATE_RATIONALES
+                # ["contrasts_year_cite"]) so the edge carries the actual
+                # paper titles + years and survives the template-reject
+                # step when the LLM is None.
                 return _make_derived(
                     "contrasts",
-                    TEMPLATE_RATIONALES["contrasts_year_cite"],
+                    _slot_fill_rationale("contrasts", parent, child),
                     "year_cite",
                 )
             if 1 <= delta <= 5:
+                # #300: slot-filled rationale (was TEMPLATE_RATIONALES
+                # ["successor_result"]).
                 return _make_derived(
                     "successor",
-                    TEMPLATE_RATIONALES["successor_result"],
+                    _slot_fill_rationale("successor", parent, child),
                     "year_cite",
                 )
     return None
