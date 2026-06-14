@@ -116,6 +116,30 @@ def test_edge_metrics_missing_years_skipped():
     assert edge_metrics(data)["year_reversals"] == 0
 
 
+def test_edge_metrics_counts_short_rationales():
+    """#297: a non-empty but sub-floor rationale ("A") is degenerate."""
+    data = {
+        "nodes": [_mk_node("a"), _mk_node("b"), _mk_node("c")],
+        "edges": [
+            _mk_edge("a", "b", rationale="A"),
+            _mk_edge("a", "c", rationale="specific paper reason"),
+        ],
+    }
+    m = edge_metrics(data)
+    assert m["short_rationale_count"] == 1
+    assert m["short_rationale_ratio"] == 0.5
+
+
+def test_edge_metrics_empty_rationale_not_counted_as_short():
+    """Empty rationales are dropped upstream; the short metric counts only
+    the 0 < len < floor band so it doesn't double-count empties."""
+    data = {
+        "nodes": [_mk_node("a"), _mk_node("b")],
+        "edges": [_mk_edge("a", "b", rationale="")],
+    }
+    assert edge_metrics(data)["short_rationale_count"] == 0
+
+
 # ---- _audit_edges (warn vs fail) ------------------------------------------
 
 
@@ -134,6 +158,31 @@ def test_audit_edges_high_template_ratio_is_hard_fail():
     _, failures = _audit_edges({"nodes": nodes, "edges": edges})
     assert failures, "100% template should be a hard fail"
     assert any("template_rationale_ratio" in f for f in failures)
+
+
+def test_audit_edges_high_short_rationale_ratio_warns_not_fails():
+    """#297: short_rationale is WARN-only for now — hard-fail is deferred
+    until the legacy ~71%-degenerate iclr-2026 data is regenerated (it
+    can't be cleaned without an LLM). Even 80% degenerate only warns, so
+    the data-audit job isn't red on un-regenerated legacy data."""
+    nodes = [_mk_node("p"), _mk_node("c")]
+    edges = [_mk_edge("p", "c", rationale="A") for _ in range(4)] + [
+        _mk_edge("p", "c", rationale="specific paper reason")
+    ]
+    warnings, failures = _audit_edges({"nodes": nodes, "edges": edges})
+    assert any("short_rationale_ratio" in w for w in warnings), warnings
+    assert not any("short_rationale" in f for f in failures), failures
+
+
+def test_audit_edges_moderate_short_rationale_is_warn_only():
+    """20-50% degenerate is a warning, not a hard fail."""
+    nodes = [_mk_node("p"), _mk_node("c")]
+    edges = [_mk_edge("p", "c", rationale="A")] + [
+        _mk_edge("p", "c", rationale="specific paper reason") for _ in range(3)
+    ]
+    warnings, failures = _audit_edges({"nodes": nodes, "edges": edges})
+    assert not any("short_rationale" in f for f in failures), failures
+    assert any("short_rationale_ratio" in w for w in warnings), warnings
 
 
 def test_audit_edges_moderate_template_ratio_is_warn_only():

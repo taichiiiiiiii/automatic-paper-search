@@ -85,13 +85,16 @@ def test_build_prompt_fallback_profile_when_empty():
 
 
 def test_relation_classification_from_dict_ok():
+    # Rationale must clear the #297 min-length floor (>=10 chars); use a
+    # realistic paper-specific sentence per the prompt's "30-200 chars" rule.
+    rationale = "論文 B は論文 A と同じ課題をより少ない計算量で改良している。"
     rc = RelationClassification.from_dict(
-        {"relation": "supersedes", "confidence": 0.82, "rationale": "同じ課題を改良"}
+        {"relation": "supersedes", "confidence": 0.82, "rationale": rationale}
     )
     assert rc is not None
     assert rc.relation == "supersedes"
     assert rc.confidence == 0.82
-    assert rc.rationale == "同じ課題を改良"
+    assert rc.rationale == rationale
 
 
 def test_relation_classification_rejects_invalid_relation():
@@ -109,14 +112,75 @@ def test_relation_classification_requires_rationale():
     ) is None
 
 
+# ---- Degenerate short-rationale gate (#297) ----
+# Production lineage.json had 40/63 edges with 1-3 char "rationale" values
+# ("A" ×many, "QD", "VLLM", "Qwen2-VL", "CMA-ES") shown to users as
+# meaningless edge tooltips. The LLM occasionally returns a truncated
+# {"rationale":"A",...} and nothing rejected it. ``from_dict`` now applies
+# a minimum-length floor so the caller's ``_apply_llm_classification`` falls
+# back to the heuristic (a full Japanese sentence — strictly better than "A").
+
+
+def test_min_rationale_len_constant_is_pinned():
+    """Pin the floor value so a careless edit can't silently widen/narrow
+    the gate. A real rationale is a Japanese sentence >=30 chars per the
+    prompt; 10 is a conservative "clearly degenerate" floor."""
+    from paperpilot.llm.base import _MIN_RATIONALE_LEN
+
+    assert _MIN_RATIONALE_LEN == 10
+
+
+def test_relation_classification_rejects_degenerate_short_rationales():
+    """The exact degenerate values seen in production (#297) must be
+    rejected so they never reach the viewer as tooltips."""
+    for bad in ["A", "QD", "VLLM", "Qwen2-VL", "CMA-ES", "VLM", "P-GenRM"]:
+        payload = {"relation": "extends", "confidence": 0.85, "rationale": bad}
+        assert RelationClassification.from_dict(payload) is None, (
+            f"degenerate short rationale not rejected: {bad!r}"
+        )
+
+
+def test_relation_classification_rejects_at_min_length_boundary():
+    """A 9-char rationale (just below the 10-char floor) is rejected; a
+    10-char one passes the length gate."""
+    nine = "あいうえおかきくけ"  # 9 chars
+    assert len(nine) == 9
+    assert RelationClassification.from_dict(
+        {"relation": "extends", "confidence": 0.7, "rationale": nine}
+    ) is None
+    ten = nine + "こ"  # 10 chars
+    assert len(ten) == 10
+    assert RelationClassification.from_dict(
+        {"relation": "extends", "confidence": 0.7, "rationale": ten}
+    ) is not None
+
+
+def test_relation_classification_accepts_normal_japanese_rationale():
+    """A normal >=30-char paper-specific Japanese rationale must parse —
+    the length gate must not over-reject legitimate output."""
+    payload = {
+        "relation": "supersedes",
+        "confidence": 0.8,
+        "rationale": (
+            "論文 B は FlashAttention-2 として、論文 A と同じ exact attention のまま"
+            " work partitioning を改良し二倍高速化している。"
+        ),
+    }
+    rc = RelationClassification.from_dict(payload)
+    assert rc is not None
+    assert len(rc.rationale) >= 30
+
+
 def test_relation_classification_clamps_confidence():
+    # Rationale clears the #297 min-length floor (>=10 chars).
+    rationale = "論文 B は論文 A と根本的に異なる定式化を採用している。"
     rc = RelationClassification.from_dict(
-        {"relation": "contrasts", "confidence": 1.7, "rationale": "異なる手法"}
+        {"relation": "contrasts", "confidence": 1.7, "rationale": rationale}
     )
     assert rc is not None
     assert rc.confidence == 1.0
     rc2 = RelationClassification.from_dict(
-        {"relation": "contrasts", "confidence": -0.3, "rationale": "異なる手法"}
+        {"relation": "contrasts", "confidence": -0.3, "rationale": rationale}
     )
     assert rc2 is not None
     assert rc2.confidence == 0.0
