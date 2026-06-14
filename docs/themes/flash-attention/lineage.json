@@ -342,68 +342,28 @@
       "provenance": "llm"
     },
     {
+      "src": "openalex:W4415797154",
+      "dst": "openalex:W4416146831",
+      "rel": "successor",
+      "conf": 0.8,
+      "rationale": "LiquidGEMM は、FlashAttention-3 が利用する低精度演算の基盤となる W4A8 GEMM カーネルをハードウェア効率的に最適化することで、LLM サービス全体の性能向上に貢献する。",
+      "provenance": "llm"
+    },
+    {
       "src": "openalex:W4281758439",
       "dst": "openalex:W4402667891",
       "rel": "extends",
       "conf": 0.65,
       "rationale": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
       "provenance": "foundational_allowlist"
-    },
-    {
-      "src": "openalex:W4384648639",
-      "dst": "openalex:W4402667891",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「Point Transformer V3: Simpler, Faster, Stronger」(2024) は「FlashAttention-2: Faster Attention with Better Parallelism …」(2023) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
     },
     {
       "src": "openalex:W4415797154",
       "dst": "openalex:W4416203937",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「MXBLAS: Accelerating 8-bit Deep Learning with a Unified Mic…」(2025) は「FlashAttention-3: Fast and Accurate Attention with Asynchro…」(2024) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W4384648639",
-      "dst": "openalex:W4411886797",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「RiNALMo: general-purpose RNA language models can generalize…」(2025) は「FlashAttention-2: Faster Attention with Better Parallelism …」(2023) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W4415797154",
-      "dst": "openalex:W4416004314",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「Porting a Fortran plasma simulation to Exascale on AMD GPUs…」(2025) は「FlashAttention-3: Fast and Accurate Attention with Asynchro…」(2024) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W4281758439",
-      "dst": "openalex:W4402716294",
       "rel": "extends",
-      "conf": 0.65,
-      "rationale": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
-      "provenance": "foundational_allowlist"
-    },
-    {
-      "src": "openalex:W4376226279",
-      "dst": "openalex:W4402716294",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「Modeling Dense Multimodal Interactions Between Biological P…」(2024) は「Multimodal Learning With Transformers: A Survey」(2023) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W4384648639",
-      "dst": "openalex:W4402716294",
-      "rel": "contrasts",
-      "conf": 0.7,
-      "rationale": "「Modeling Dense Multimodal Interactions Between Biological P…」(2024) は「FlashAttention-2: Faster Attention with Better Parallelism …」(2023) と近い年代の対照的研究（年代・引用規模から推定）。",
-      "provenance": "year_cite"
+      "conf": 0.8,
+      "rationale": "MXBLAS の統一されたマイクロスケール GEMM ライブラリは、FlashAttention-3 の低精度計算を加速するための基盤を提供する。",
+      "provenance": "llm"
     },
     {
       "src": "openalex:W4281758439",
@@ -414,20 +374,12 @@
       "provenance": "foundational_allowlist"
     },
     {
-      "src": "openalex:W4384648639",
-      "dst": "openalex:W4402727033",
-      "rel": "contrasts",
-      "conf": 0.7,
-      "rationale": "「Efficient Deformable ConvNets: Rethinking Dynamic and Spars…」(2024) は「FlashAttention-2: Faster Attention with Better Parallelism …」(2023) と近い年代の対照的研究（年代・引用規模から推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W4415797154",
-      "dst": "openalex:W4416146831",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「LiquidGEMM: Hardware-Efficient W4A8 GEMM Kernel for High-Pe…」(2025) は「FlashAttention-3: Fast and Accurate Attention with Asynchro…」(2024) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
+      "src": "openalex:W4281758439",
+      "dst": "openalex:W4402716294",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "provenance": "foundational_allowlist"
     }
   ],
   "meta": {
@@ -444,11 +396,10 @@
     ],
     "depth": 1,
     "since_year": 2018,
-    "generated_at": "2026-06-14T07:25:41.062215+00:00",
+    "generated_at": "2026-06-14T08:21:52.372848+00:00",
     "provenance_breakdown": {
       "foundational_allowlist": 7,
-      "llm": 1,
-      "year_cite": 8
+      "llm": 3
     }
   }
 }

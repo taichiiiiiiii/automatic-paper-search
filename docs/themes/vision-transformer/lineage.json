@@ -462,7 +462,7 @@
         "Xiaohua Zhai"
       ],
       "kinds": [],
-      "citation_count": 21585,
+      "citation_count": 21587,
       "github_stars": 12583,
       "tldr": "While the Transformer architecture has become the de-facto standard for natural language processing tasks, its applications to computer…",
       "short_abstract": "While the Transformer architecture has become the de-facto standard for natural language processing tasks, its applications to computer vision remain limited. In vision, attention is either applied in conjunction with convolutional networks, or used to replace certain components of convolutional networks while keeping their overall structure in place. We show that this reliance on CNNs is not necessary and a pure transformer applied directly to sequences of image patches can perform very well on image classification tasks. When pre-trained on large amounts of data and transferred to multiple mid-sized or small image recognition benchmarks (ImageNet, CIFAR-100, VTAB, etc.), Vision Transformer (ViT) attains excellent results compared to state-of-the-art convolutional networks while requiring substantially fewer computational resources to train.",
@@ -566,7 +566,7 @@
         "Yixuan Wei"
       ],
       "kinds": [],
-      "citation_count": 29920,
+      "citation_count": 29928,
       "github_stars": 0,
       "tldr": "This paper presents a new vision Transformer, called Swin Transformer, that capably serves as a general-purpose backbone for computer…",
       "short_abstract": "This paper presents a new vision Transformer, called Swin Transformer, that capably serves as a general-purpose backbone for computer vision. Challenges in adapting Transformer from language to vision arise from differences between the two domains, such as large variations in the scale of visual entities and the high resolution of pixels in images compared to words in text. To address these differences, we propose a hierarchical Transformer whose representation is computed with Shifted windows. The shifted windowing scheme brings greater efficiency by limiting self-attention computation to non-overlapping local windows while also allowing for cross-window connection. This hierarchical architecture has the flexibility to model at various scales and has linear computational complexity with respect to image size. These qualities of Swin Transformer make it compatible with a broad range of vision tasks, including image classification (87.3 top-1 accuracy on ImageNet-1K) and dense…",
@@ -609,7 +609,7 @@
         "Julien Mairal"
       ],
       "kinds": [],
-      "citation_count": 4980,
+      "citation_count": 4982,
       "github_stars": 10,
       "tldr": "In this paper, we question if self-supervised learning provides new properties to Vision Transformer (ViT) [16] that stand out compared to…",
       "short_abstract": "In this paper, we question if self-supervised learning provides new properties to Vision Transformer (ViT) [16] that stand out compared to convolutional networks (convnets). Beyond the fact that adapting self-supervised methods to this architecture works particularly well, we make the following observations: first, self-supervised ViT features contain explicit information about the semantic segmentation of an image, which does not emerge as clearly with supervised ViTs, nor with convnets. Second, these features are also excellent k-NN classifiers, reaching 78.3% top-1 on ImageNet with a small ViT. Our study also underlines the importance of momentum encoder [26], multi-crop training [9], and the use of small patches with ViTs. We implement our findings into a simple self-supervised method, called DINO, which we interpret as a form of self-distillation with no labels. We show the synergy between DINO and ViTs by achieving 80.1% top-1 on ImageNet in linear evaluation with ViT-Base.",
@@ -691,7 +691,7 @@
         "Trevor Darrell"
       ],
       "kinds": [],
-      "citation_count": 7010,
+      "citation_count": 7013,
       "github_stars": 0,
       "tldr": "The “Roaring 20s” of visual recognition began with the introduction of Vision Transformers (ViTs), which quickly superseded ConvNets as…",
       "short_abstract": "The “Roaring 20s” of visual recognition began with the introduction of Vision Transformers (ViTs), which quickly superseded ConvNets as the state-of-the-art image classification model. A vanilla ViT, on the other hand, faces difficulties when applied to general computer vision tasks such as object detection and semantic segmentation. It is the hierarchical Transformers (e.g., Swin Transformers) that reintroduced several ConvNet priors, making Transformers practically viable as a generic vision backbone and demonstrating remarkable performance on a wide variety of vision tasks. However, the effectiveness of such hybrid approaches is still largely credited to the intrinsic superiority of Transformers, rather than the inherent inductive biases of convolutions. In this work, we reexamine the design spaces and test the limits of what a pure ConvNet can achieve. We gradually “modernize” a standard ResNet toward the design of a vision Transformer, and discover several key components that…",
@@ -995,20 +995,12 @@
       "provenance": "llm"
     },
     {
-      "src": "openalex:W2896457183",
-      "dst": "openalex:W4312443924",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「A ConvNet for the 2020s」(2022) は「AI-Assisted Pipeline for Dynamic Generation of Trustworthy …」(2018) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
       "src": "openalex:W2963446712",
       "dst": "openalex:W4312443924",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「A ConvNet for the 2020s」(2022) は「Densely Connected Convolutional Networks」(2017) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
+      "rel": "contrasts",
+      "conf": 0.9,
+      "rationale": "論文 B は、Vision Transformers の時代において、ConvNet の設計原則を再評価し、新しい ConvNet のアーキテクチャを提案することで、従来の ConvNet とは異なる方向性を示している。",
+      "provenance": "llm"
     },
     {
       "src": "openalex:W2102605133",
@@ -1053,18 +1045,18 @@
     {
       "src": "openalex:W3035524453",
       "dst": "openalex:W3159481202",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「Emerging Properties in Self-Supervised Vision Transformers」(2021) は「Momentum Contrast for Unsupervised Visual Representation Le…」(2020) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
+      "rel": "extends",
+      "conf": 0.9,
+      "rationale": "論文 B は、自己教師あり学習を Vision Transformer (ViT) に適用し、その特徴がセマンティックセグメンテーション情報を持つといった新たな特性を明らかにしている。",
+      "provenance": "llm"
     },
     {
       "src": "openalex:W3005680577",
       "dst": "openalex:W3159481202",
-      "rel": "contrasts",
-      "conf": 0.7,
-      "rationale": "「Emerging Properties in Self-Supervised Vision Transformers」(2021) は「A Simple Framework for Contrastive Learning of Visual Repre…」(2020) と近い年代の対照的研究（年代・引用規模から推定）。",
-      "provenance": "year_cite"
+      "rel": "extends",
+      "conf": 0.9,
+      "rationale": "論文 B は自己教師あり学習を Vision Transformer (ViT) に適用し、その特徴からセマンティックセグメンテーション情報が明示的に現れることを示している。",
+      "provenance": "llm"
     },
     {
       "src": "openalex:W2798991696",
@@ -1077,10 +1069,10 @@
     {
       "src": "openalex:W3035060554",
       "dst": "openalex:W3159481202",
-      "rel": "contrasts",
-      "conf": 0.7,
-      "rationale": "「Emerging Properties in Self-Supervised Vision Transformers」(2021) は「Bootstrap your own latent: A new approach to self-supervise…」(2020) と近い年代の対照的研究（年代・引用規模から推定）。",
-      "provenance": "year_cite"
+      "rel": "extends",
+      "conf": 0.9,
+      "rationale": "論文 B は、自己教師あり学習を Vision Transformer (ViT) に適用し、その特徴がセマンティックセグメンテーション情報を含むという新たな特性を明らかにしている。",
+      "provenance": "llm"
     },
     {
       "src": "openalex:W2097117768",
@@ -1219,67 +1211,27 @@
       "provenance": "llm"
     },
     {
-      "src": "openalex:W2097117768",
-      "dst": "openalex:W2963446712",
-      "rel": "extends",
-      "conf": 0.65,
-      "rationale": "Going deeper with convolutions is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
-      "provenance": "foundational_allowlist"
-    },
-    {
-      "src": "openalex:W2183341477",
-      "dst": "openalex:W2963446712",
-      "rel": "contrasts",
-      "conf": 0.7,
-      "rationale": "「Densely Connected Convolutional Networks」(2017) は「Rethinking the Inception Architecture for Computer Vision」(2016) と近い年代の対照的研究（年代・引用規模から推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W2964350391",
-      "dst": "openalex:W2963150697",
-      "rel": "extends",
-      "conf": 0.65,
-      "rationale": "Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
-      "provenance": "foundational_allowlist"
-    },
-    {
-      "src": "openalex:W639708223",
-      "dst": "openalex:W2963150697",
-      "rel": "contrasts",
-      "conf": 0.7,
-      "rationale": "「Mask R-CNN」(2017) は「Faster R-CNN: Towards Real-Time Object Detection with Regio…」(2016) と近い年代の対照的研究（年代・引用規模から推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W2102605133",
-      "dst": "openalex:W2963150697",
+      "src": "openalex:W3138516171",
+      "dst": "openalex:W4327808545",
       "rel": "successor",
       "conf": 0.7,
-      "rationale": "「Mask R-CNN」(2017) は「Rich Feature Hierarchies for Accurate Object Detection and …」(2014) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "rationale": "「Vision Transformers for Single Image Dehazing」(2023) は「Swin Transformer: Hierarchical Vision Transformer using Shi…」(2021) を引用する後発研究（年代差と引用関係から後継と推定）。",
       "provenance": "year_cite"
     },
     {
-      "src": "openalex:W2565639579",
-      "dst": "openalex:W2963150697",
-      "rel": "contrasts",
-      "conf": 0.7,
-      "rationale": "「Mask R-CNN」(2017) は「Feature Pyramid Networks for Object Detection」(2017) と近い年代の対照的研究（年代・引用規模から推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W1821462560",
-      "dst": "openalex:W2798991696",
-      "rel": "extends",
-      "conf": 0.65,
-      "rationale": "Distilling the Knowledge in a Neural Network is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
-      "provenance": "foundational_allowlist"
-    },
-    {
-      "src": "openalex:W639708223",
-      "dst": "openalex:W2798991696",
+      "src": "openalex:W3131500599",
+      "dst": "openalex:W4327808545",
       "rel": "successor",
       "conf": 0.7,
-      "rationale": "「Unsupervised Feature Learning via Non-parametric Instance D…」(2018) は「Faster R-CNN: Towards Real-Time Object Detection with Regio…」(2016) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "rationale": "「Vision Transformers for Single Image Dehazing」(2023) は「Pyramid Vision Transformer: A Versatile Backbone for Dense …」(2021) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W3207918547",
+      "dst": "openalex:W4327808545",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「Vision Transformers for Single Image Dehazing」(2023) は「SwinIR: Image Restoration Using Swin Transformer」(2021) を引用する後発研究（年代差と引用関係から後継と推定）。",
       "provenance": "year_cite"
     },
     {
@@ -1325,9 +1277,137 @@
     {
       "src": "openalex:W2963446712",
       "dst": "openalex:W2752782242",
+      "rel": "extends",
+      "conf": 0.9,
+      "rationale": "論文 B の Squeeze-and-Excitation ブロックは、論文 A のような既存の畳み込みネットワークにチャネル間の依存関係をモデル化する機能を追加し、性能を向上させる。",
+      "provenance": "llm"
+    },
+    {
+      "src": "openalex:W2097117768",
+      "dst": "openalex:W4386076325",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Going deeper with convolutions is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "provenance": "foundational_allowlist"
+    },
+    {
+      "src": "openalex:W3138516171",
+      "dst": "openalex:W4386076325",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「YOLOv7: Trainable Bag-of-Freebies Sets New State-of-the-Art…」(2023) は「Swin Transformer: Hierarchical Vision Transformer using Shi…」(2021) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W4226334005",
+      "dst": "openalex:W4386076325",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「YOLOv7: Trainable Bag-of-Freebies Sets New State-of-the-Art…」(2023) は「Scaling Up Your Kernels to 31×31: Revisiting Large Kernel D…」(2022) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W1821462560",
+      "dst": "openalex:W3030163527",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Distilling the Knowledge in a Neural Network is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "provenance": "foundational_allowlist"
+    },
+    {
+      "src": "openalex:W2097117768",
+      "dst": "openalex:W4386076493",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Going deeper with convolutions is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "provenance": "foundational_allowlist"
+    },
+    {
+      "src": "openalex:W2752782242",
+      "dst": "openalex:W4386076493",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Squeeze-and-Excitation Networks is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "provenance": "foundational_allowlist"
+    },
+    {
+      "src": "openalex:W3138516171",
+      "dst": "openalex:W4386076493",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「ConvNeXt V2: Co-designing and Scaling ConvNets with Masked …」(2023) は「Swin Transformer: Hierarchical Vision Transformer using Shi…」(2021) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W639708223",
+      "dst": "openalex:W3035524453",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「Momentum Contrast for Unsupervised Visual Representation Le…」(2020) は「Faster R-CNN: Towards Real-Time Object Detection with Regio…」(2016) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W2896457183",
+      "dst": "openalex:W3035524453",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「Momentum Contrast for Unsupervised Visual Representation Le…」(2020) は「AI-Assisted Pipeline for Dynamic Generation of Trustworthy …」(2018) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W2565639579",
+      "dst": "openalex:W3035524453",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「Momentum Contrast for Unsupervised Visual Representation Le…」(2020) は「Feature Pyramid Networks for Object Detection」(2017) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W2549139847",
+      "dst": "openalex:W3035524453",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「Momentum Contrast for Unsupervised Visual Representation Le…」(2020) は「Aggregated Residual Transformations for Deep Neural Networks」(2017) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W2798991696",
+      "dst": "openalex:W3035524453",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「Momentum Contrast for Unsupervised Visual Representation Le…」(2020) は「Unsupervised Feature Learning via Non-parametric Instance D…」(2018) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W2963150697",
+      "dst": "openalex:W3035524453",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「Momentum Contrast for Unsupervised Visual Representation Le…」(2020) は「Mask R-CNN」(2017) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W3005680577",
+      "dst": "openalex:W3035524453",
       "rel": "contrasts",
       "conf": 0.7,
-      "rationale": "「Squeeze-and-Excitation Networks」(2018) は「Densely Connected Convolutional Networks」(2017) と近い年代の対照的研究（年代・引用規模から推定）。",
+      "rationale": "「Momentum Contrast for Unsupervised Visual Representation Le…」(2020) は「A Simple Framework for Contrastive Learning of Visual Repre…」(2020) と近い年代の対照的研究（年代・引用規模から推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W2097117768",
+      "dst": "openalex:W2949650786",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Going deeper with convolutions is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "provenance": "foundational_allowlist"
+    },
+    {
+      "src": "openalex:W2102605133",
+      "dst": "openalex:W2949650786",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「Deep Residual Learning for Image Recognition」(2015) は「Rich Feature Hierarchies for Accurate Object Detection and …」(2014) を引用する後発研究（年代差と引用関係から後継と推定）。",
       "provenance": "year_cite"
     },
     {
@@ -1336,6 +1416,70 @@
       "rel": "successor",
       "conf": 0.7,
       "rationale": "「Squeeze-and-Excitation Networks」(2019) は「Densely Connected Convolutional Networks」(2017) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W3094502228",
+      "dst": "openalex:W4212875960",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "provenance": "foundational_allowlist"
+    },
+    {
+      "src": "openalex:W2896457183",
+      "dst": "openalex:W4212875960",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「UNETR: Transformers for 3D Medical Image Segmentation」(2022) は「AI-Assisted Pipeline for Dynamic Generation of Trustworthy …」(2018) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W3138516171",
+      "dst": "openalex:W4212875960",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「UNETR: Transformers for 3D Medical Image Segmentation」(2022) は「Swin Transformer: Hierarchical Vision Transformer using Shi…」(2021) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W2963091558",
+      "dst": "openalex:W4212875960",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「UNETR: Transformers for 3D Medical Image Segmentation」(2022) は「Non-local Neural Networks」(2018) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W3159481202",
+      "dst": "openalex:W4212875960",
+      "rel": "contrasts",
+      "conf": 0.7,
+      "rationale": "「UNETR: Transformers for 3D Medical Image Segmentation」(2022) は「Emerging Properties in Self-Supervised Vision Transformers」(2021) と近い年代の対照的研究（年代・引用規模から推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W2752782242",
+      "dst": "openalex:W2981689412",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Squeeze-and-Excitation Networks is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "provenance": "foundational_allowlist"
+    },
+    {
+      "src": "openalex:W2963150697",
+      "dst": "openalex:W2981689412",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「CCNet: Criss-Cross Attention for Semantic Segmentation」(2019) は「Mask R-CNN」(2017) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W2963091558",
+      "dst": "openalex:W2981689412",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「CCNet: Criss-Cross Attention for Semantic Segmentation」(2019) は「Non-local Neural Networks」(2018) を引用する後発研究（年代差と引用関係から後継と推定）。",
       "provenance": "year_cite"
     },
     {
@@ -1360,30 +1504,6 @@
       "rel": "successor",
       "conf": 0.7,
       "rationale": "「Inception-v4, Inception-ResNet and the Impact of Residual C…」(2017) は「Rethinking the Inception Architecture for Computer Vision」(2016) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W2097117768",
-      "dst": "openalex:W4386076325",
-      "rel": "extends",
-      "conf": 0.65,
-      "rationale": "Going deeper with convolutions is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
-      "provenance": "foundational_allowlist"
-    },
-    {
-      "src": "openalex:W3138516171",
-      "dst": "openalex:W4386076325",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「YOLOv7: Trainable Bag-of-Freebies Sets New State-of-the-Art…」(2023) は「Swin Transformer: Hierarchical Vision Transformer using Shi…」(2021) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W4226334005",
-      "dst": "openalex:W4386076325",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「YOLOv7: Trainable Bag-of-Freebies Sets New State-of-the-Art…」(2023) は「Scaling Up Your Kernels to 31×31: Revisiting Large Kernel D…」(2022) を引用する後発研究（年代差と引用関係から後継と推定）。",
       "provenance": "year_cite"
     },
     {
@@ -1435,27 +1555,219 @@
       "provenance": "year_cite"
     },
     {
+      "src": "openalex:W2183341477",
+      "dst": "openalex:W3035060554",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「Bootstrap your own latent: A new approach to self-supervise…」(2020) は「Rethinking the Inception Architecture for Computer Vision」(2016) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W2798991696",
+      "dst": "openalex:W3035060554",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「Bootstrap your own latent: A new approach to self-supervise…」(2020) は「Unsupervised Feature Learning via Non-parametric Instance D…」(2018) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W2896457183",
+      "dst": "openalex:W4312443924",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「A ConvNet for the 2020s」(2022) は「AI-Assisted Pipeline for Dynamic Generation of Trustworthy …」(2018) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W2963150697",
+      "dst": "openalex:W4312443924",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「A ConvNet for the 2020s」(2022) は「Mask R-CNN」(2017) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W2549139847",
+      "dst": "openalex:W4312443924",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「A ConvNet for the 2020s」(2022) は「Aggregated Residual Transformations for Deep Neural Networks」(2017) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W2963091558",
+      "dst": "openalex:W4312443924",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「A ConvNet for the 2020s」(2022) は「Non-local Neural Networks」(2018) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W2963446712",
+      "dst": "openalex:W3138516171",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「Swin Transformer: Hierarchical Vision Transformer using Shi…」(2021) は「Densely Connected Convolutional Networks」(2017) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W2963150697",
+      "dst": "openalex:W3138516171",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「Swin Transformer: Hierarchical Vision Transformer using Shi…」(2021) は「Mask R-CNN」(2017) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W2549139847",
+      "dst": "openalex:W3138516171",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「Swin Transformer: Hierarchical Vision Transformer using Shi…」(2021) は「Aggregated Residual Transformations for Deep Neural Networks」(2017) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W2097117768",
+      "dst": "openalex:W2949718784",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Going deeper with convolutions is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "provenance": "foundational_allowlist"
+    },
+    {
       "src": "openalex:W2752782242",
-      "dst": "openalex:W2981689412",
+      "dst": "openalex:W2949718784",
       "rel": "extends",
       "conf": 0.65,
       "rationale": "Squeeze-and-Excitation Networks is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
       "provenance": "foundational_allowlist"
     },
     {
-      "src": "openalex:W2963150697",
-      "dst": "openalex:W2981689412",
+      "src": "openalex:W2183341477",
+      "dst": "openalex:W2949718784",
       "rel": "successor",
       "conf": 0.7,
-      "rationale": "「CCNet: Criss-Cross Attention for Semantic Segmentation」(2019) は「Mask R-CNN」(2017) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "rationale": "「Stand-Alone Self-Attention in Vision Models」(2019) は「Rethinking the Inception Architecture for Computer Vision」(2016) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W2963150697",
+      "dst": "openalex:W2949718784",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「Stand-Alone Self-Attention in Vision Models」(2019) は「Mask R-CNN」(2017) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W2565639579",
+      "dst": "openalex:W2949718784",
+      "rel": "contrasts",
+      "conf": 0.9,
+      "rationale": "論文 B は、FPN が強化する畳み込みベースのモデルとは異なる、スタンドアロン自己注意機構による特徴抽出を提案している。",
+      "provenance": "llm"
+    },
+    {
+      "src": "openalex:W2549139847",
+      "dst": "openalex:W2949718784",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「Stand-Alone Self-Attention in Vision Models」(2019) は「Aggregated Residual Transformations for Deep Neural Networks」(2017) を引用する後発研究（年代差と引用関係から後継と推定）。",
       "provenance": "year_cite"
     },
     {
       "src": "openalex:W2963091558",
-      "dst": "openalex:W2981689412",
+      "dst": "openalex:W2949718784",
       "rel": "successor",
       "conf": 0.7,
-      "rationale": "「CCNet: Criss-Cross Attention for Semantic Segmentation」(2019) は「Non-local Neural Networks」(2018) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "rationale": "「Stand-Alone Self-Attention in Vision Models」(2019) は「Non-local Neural Networks」(2018) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W3159481202",
+      "dst": "openalex:W4386072096",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「DreamBooth: Fine Tuning Text-to-Image Diffusion Models for …」(2023) は「Emerging Properties in Self-Supervised Vision Transformers」(2021) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W1821462560",
+      "dst": "openalex:W2798991696",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Distilling the Knowledge in a Neural Network is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "provenance": "foundational_allowlist"
+    },
+    {
+      "src": "openalex:W639708223",
+      "dst": "openalex:W2798991696",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「Unsupervised Feature Learning via Non-parametric Instance D…」(2018) は「Faster R-CNN: Towards Real-Time Object Detection with Regio…」(2016) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W639708223",
+      "dst": "openalex:W2565639579",
+      "rel": "contrasts",
+      "conf": 0.7,
+      "rationale": "「Feature Pyramid Networks for Object Detection」(2017) は「Faster R-CNN: Towards Real-Time Object Detection with Regio…」(2016) と近い年代の対照的研究（年代・引用規模から推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W2102605133",
+      "dst": "openalex:W2565639579",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「Feature Pyramid Networks for Object Detection」(2017) は「Rich Feature Hierarchies for Accurate Object Detection and …」(2014) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W2963150697",
+      "dst": "openalex:W2565639579",
+      "rel": "contrasts",
+      "conf": 0.7,
+      "rationale": "「Feature Pyramid Networks for Object Detection」(2017) は「Mask R-CNN」(2017) と近い年代の対照的研究（年代・引用規模から推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W3035524453",
+      "dst": "openalex:W3094502228",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「An Image is Worth 16x16 Words: Transformers for Image Recog…」(2021) は「Momentum Contrast for Unsupervised Visual Representation Le…」(2020) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W2963091558",
+      "dst": "openalex:W3094502228",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「An Image is Worth 16x16 Words: Transformers for Image Recog…」(2021) は「Non-local Neural Networks」(2018) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W2981689412",
+      "dst": "openalex:W3094502228",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「An Image is Worth 16x16 Words: Transformers for Image Recog…」(2021) は「CCNet: Criss-Cross Attention for Semantic Segmentation」(2019) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W2962843773",
+      "dst": "openalex:W3094502228",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「An Image is Worth 16x16 Words: Transformers for Image Recog…」(2021) は「Revisiting Unreasonable Effectiveness of Data in Deep Learn…」(2017) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W3030163527",
+      "dst": "openalex:W3094502228",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「An Image is Worth 16x16 Words: Transformers for Image Recog…」(2021) は「Language Models are Few-Shot Learners」(2020) を引用する後発研究（年代差と引用関係から後継と推定）。",
       "provenance": "year_cite"
     },
     {
@@ -1515,83 +1827,83 @@
       "provenance": "year_cite"
     },
     {
-      "src": "openalex:W639708223",
-      "dst": "openalex:W2565639579",
-      "rel": "contrasts",
-      "conf": 0.7,
-      "rationale": "「Feature Pyramid Networks for Object Detection」(2017) は「Faster R-CNN: Towards Real-Time Object Detection with Regio…」(2016) と近い年代の対照的研究（年代・引用規模から推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W2102605133",
-      "dst": "openalex:W2565639579",
+      "src": "openalex:W2896457183",
+      "dst": "openalex:W3159481202",
       "rel": "successor",
       "conf": 0.7,
-      "rationale": "「Feature Pyramid Networks for Object Detection」(2017) は「Rich Feature Hierarchies for Accurate Object Detection and …」(2014) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W2963150697",
-      "dst": "openalex:W2565639579",
-      "rel": "contrasts",
-      "conf": 0.7,
-      "rationale": "「Feature Pyramid Networks for Object Detection」(2017) は「Mask R-CNN」(2017) と近い年代の対照的研究（年代・引用規模から推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W2183341477",
-      "dst": "openalex:W3035060554",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「Bootstrap your own latent: A new approach to self-supervise…」(2020) は「Rethinking the Inception Architecture for Computer Vision」(2016) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W2798991696",
-      "dst": "openalex:W3035060554",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「Bootstrap your own latent: A new approach to self-supervise…」(2020) は「Unsupervised Feature Learning via Non-parametric Instance D…」(2018) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W2963150697",
-      "dst": "openalex:W4312443924",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「A ConvNet for the 2020s」(2022) は「Mask R-CNN」(2017) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W2549139847",
-      "dst": "openalex:W4312443924",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「A ConvNet for the 2020s」(2022) は「Aggregated Residual Transformations for Deep Neural Networks」(2017) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W2963091558",
-      "dst": "openalex:W4312443924",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「A ConvNet for the 2020s」(2022) は「Non-local Neural Networks」(2018) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "rationale": "「Emerging Properties in Self-Supervised Vision Transformers」(2021) は「AI-Assisted Pipeline for Dynamic Generation of Trustworthy …」(2018) を引用する後発研究（年代差と引用関係から後継と推定）。",
       "provenance": "year_cite"
     },
     {
       "src": "openalex:W2097117768",
-      "dst": "openalex:W2183341477",
+      "dst": "openalex:W3212386989",
       "rel": "extends",
       "conf": 0.65,
       "rationale": "Going deeper with convolutions is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
       "provenance": "foundational_allowlist"
     },
     {
-      "src": "openalex:W2102605133",
-      "dst": "openalex:W2183341477",
+      "src": "openalex:W2626778328",
+      "dst": "openalex:W3212386989",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Attention Is All You Need is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "provenance": "foundational_allowlist"
+    },
+    {
+      "src": "openalex:W2949650786",
+      "dst": "openalex:W3212386989",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Deep Residual Learning for Image Recognition is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "provenance": "foundational_allowlist"
+    },
+    {
+      "src": "openalex:W2949718784",
+      "dst": "openalex:W3212386989",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Stand-Alone Self-Attention in Vision Models is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "provenance": "foundational_allowlist"
+    },
+    {
+      "src": "openalex:W2752782242",
+      "dst": "openalex:W3212386989",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Squeeze-and-Excitation Networks is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "provenance": "foundational_allowlist"
+    },
+    {
+      "src": "openalex:W3094502228",
+      "dst": "openalex:W3212386989",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "provenance": "foundational_allowlist"
+    },
+    {
+      "src": "openalex:W2549139847",
+      "dst": "openalex:W3212386989",
       "rel": "successor",
       "conf": 0.7,
-      "rationale": "「Rethinking the Inception Architecture for Computer Vision」(2016) は「Rich Feature Hierarchies for Accurate Object Detection and …」(2014) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "rationale": "「Attention mechanisms in computer vision: A survey」(2022) は「Aggregated Residual Transformations for Deep Neural Networks」(2017) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W2963091558",
+      "dst": "openalex:W3212386989",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「Attention mechanisms in computer vision: A survey」(2022) は「Non-local Neural Networks」(2018) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W2962843773",
+      "dst": "openalex:W3212386989",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「Attention mechanisms in computer vision: A survey」(2022) は「Revisiting Unreasonable Effectiveness of Data in Deep Learn…」(2017) を引用する後発研究（年代差と引用関係から後継と推定）。",
       "provenance": "year_cite"
     },
     {
@@ -1675,48 +1987,48 @@
       "provenance": "year_cite"
     },
     {
-      "src": "openalex:W2097117768",
-      "dst": "openalex:W2962843773",
+      "src": "openalex:W3094502228",
+      "dst": "openalex:W4386047745",
       "rel": "extends",
       "conf": 0.65,
-      "rationale": "Going deeper with convolutions is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
-      "provenance": "foundational_allowlist"
-    },
-    {
-      "src": "openalex:W2964350391",
-      "dst": "openalex:W2962843773",
-      "rel": "extends",
-      "conf": 0.65,
-      "rationale": "Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "rationale": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
       "provenance": "foundational_allowlist"
     },
     {
       "src": "openalex:W1821462560",
-      "dst": "openalex:W2962843773",
+      "dst": "openalex:W4386047745",
       "rel": "extends",
       "conf": 0.65,
       "rationale": "Distilling the Knowledge in a Neural Network is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
       "provenance": "foundational_allowlist"
     },
     {
-      "src": "openalex:W639708223",
-      "dst": "openalex:W2962843773",
+      "src": "openalex:W3138516171",
+      "dst": "openalex:W4386047745",
       "rel": "successor",
       "conf": 0.7,
-      "rationale": "「Revisiting Unreasonable Effectiveness of Data in Deep Learn…」(2017) は「Faster R-CNN: Towards Real-Time Object Detection with Regio…」(2016) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "rationale": "「Run, Don't Walk: Chasing Higher FLOPS for Faster Neural Net…」(2023) は「Swin Transformer: Hierarchical Vision Transformer using Shi…」(2021) を引用する後発研究（年代差と引用関係から後継と推定）。",
       "provenance": "year_cite"
     },
     {
-      "src": "openalex:W2102605133",
-      "dst": "openalex:W2962843773",
+      "src": "openalex:W3131500599",
+      "dst": "openalex:W4386047745",
       "rel": "successor",
       "conf": 0.7,
-      "rationale": "「Revisiting Unreasonable Effectiveness of Data in Deep Learn…」(2017) は「Rich Feature Hierarchies for Accurate Object Detection and …」(2014) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "rationale": "「Run, Don't Walk: Chasing Higher FLOPS for Faster Neural Net…」(2023) は「Pyramid Vision Transformer: A Versatile Backbone for Dense …」(2021) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W4312443924",
+      "dst": "openalex:W4386047745",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「Run, Don't Walk: Chasing Higher FLOPS for Faster Neural Net…」(2023) は「A ConvNet for the 2020s」(2022) を引用する後発研究（年代差と引用関係から後継と推定）。",
       "provenance": "year_cite"
     },
     {
       "src": "openalex:W2097117768",
-      "dst": "openalex:W2949650786",
+      "dst": "openalex:W2183341477",
       "rel": "extends",
       "conf": 0.65,
       "rationale": "Going deeper with convolutions is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
@@ -1724,11 +2036,19 @@
     },
     {
       "src": "openalex:W2102605133",
-      "dst": "openalex:W2949650786",
+      "dst": "openalex:W2183341477",
       "rel": "successor",
       "conf": 0.7,
-      "rationale": "「Deep Residual Learning for Image Recognition」(2015) は「Rich Feature Hierarchies for Accurate Object Detection and …」(2014) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "rationale": "「Rethinking the Inception Architecture for Computer Vision」(2016) は「Rich Feature Hierarchies for Accurate Object Detection and …」(2014) を引用する後発研究（年代差と引用関係から後継と推定）。",
       "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W3094502228",
+      "dst": "openalex:W3207918547",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "provenance": "foundational_allowlist"
     },
     {
       "src": "openalex:W2097117768",
@@ -1747,171 +2067,35 @@
       "provenance": "year_cite"
     },
     {
-      "src": "openalex:W639708223",
-      "dst": "openalex:W3035524453",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「Momentum Contrast for Unsupervised Visual Representation Le…」(2020) は「Faster R-CNN: Towards Real-Time Object Detection with Regio…」(2016) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W2896457183",
-      "dst": "openalex:W3035524453",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「Momentum Contrast for Unsupervised Visual Representation Le…」(2020) は「AI-Assisted Pipeline for Dynamic Generation of Trustworthy …」(2018) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W2565639579",
-      "dst": "openalex:W3035524453",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「Momentum Contrast for Unsupervised Visual Representation Le…」(2020) は「Feature Pyramid Networks for Object Detection」(2017) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W2549139847",
-      "dst": "openalex:W3035524453",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「Momentum Contrast for Unsupervised Visual Representation Le…」(2020) は「Aggregated Residual Transformations for Deep Neural Networks」(2017) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
+      "src": "openalex:W2097117768",
+      "dst": "openalex:W3005680577",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Going deeper with convolutions is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "provenance": "foundational_allowlist"
     },
     {
       "src": "openalex:W2798991696",
-      "dst": "openalex:W3035524453",
+      "dst": "openalex:W3005680577",
       "rel": "successor",
       "conf": 0.7,
-      "rationale": "「Momentum Contrast for Unsupervised Visual Representation Le…」(2020) は「Unsupervised Feature Learning via Non-parametric Instance D…」(2018) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "rationale": "「A Simple Framework for Contrastive Learning of Visual Repre…」(2020) は「Unsupervised Feature Learning via Non-parametric Instance D…」(2018) を引用する後発研究（年代差と引用関係から後継と推定）。",
       "provenance": "year_cite"
     },
     {
-      "src": "openalex:W2963150697",
-      "dst": "openalex:W3035524453",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「Momentum Contrast for Unsupervised Visual Representation Le…」(2020) は「Mask R-CNN」(2017) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W3005680577",
-      "dst": "openalex:W3035524453",
-      "rel": "contrasts",
-      "conf": 0.7,
-      "rationale": "「Momentum Contrast for Unsupervised Visual Representation Le…」(2020) は「A Simple Framework for Contrastive Learning of Visual Repre…」(2020) と近い年代の対照的研究（年代・引用規模から推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W3035524453",
-      "dst": "openalex:W3094502228",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「An Image is Worth 16x16 Words: Transformers for Image Recog…」(2021) は「Momentum Contrast for Unsupervised Visual Representation Le…」(2020) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W2963091558",
-      "dst": "openalex:W3094502228",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「An Image is Worth 16x16 Words: Transformers for Image Recog…」(2021) は「Non-local Neural Networks」(2018) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W2981689412",
-      "dst": "openalex:W3094502228",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「An Image is Worth 16x16 Words: Transformers for Image Recog…」(2021) は「CCNet: Criss-Cross Attention for Semantic Segmentation」(2019) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W2962843773",
-      "dst": "openalex:W3094502228",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「An Image is Worth 16x16 Words: Transformers for Image Recog…」(2021) は「Revisiting Unreasonable Effectiveness of Data in Deep Learn…」(2017) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W3030163527",
-      "dst": "openalex:W3094502228",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「An Image is Worth 16x16 Words: Transformers for Image Recog…」(2021) は「Language Models are Few-Shot Learners」(2020) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W1821462560",
-      "dst": "openalex:W3030163527",
+      "src": "openalex:W2097117768",
+      "dst": "openalex:W2963446712",
       "rel": "extends",
       "conf": 0.65,
-      "rationale": "Distilling the Knowledge in a Neural Network is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "rationale": "Going deeper with convolutions is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
       "provenance": "foundational_allowlist"
     },
     {
-      "src": "openalex:W3094502228",
-      "dst": "openalex:W3207918547",
-      "rel": "extends",
-      "conf": 0.65,
-      "rationale": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
-      "provenance": "foundational_allowlist"
-    },
-    {
-      "src": "openalex:W3094502228",
-      "dst": "openalex:W4225672218",
-      "rel": "extends",
-      "conf": 0.65,
-      "rationale": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
-      "provenance": "foundational_allowlist"
-    },
-    {
-      "src": "openalex:W2963091558",
-      "dst": "openalex:W4225672218",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「Restormer: Efficient Transformer for High-Resolution Image …」(2022) は「Non-local Neural Networks」(2018) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W3207918547",
-      "dst": "openalex:W4225672218",
+      "src": "openalex:W2183341477",
+      "dst": "openalex:W2963446712",
       "rel": "contrasts",
       "conf": 0.7,
-      "rationale": "「Restormer: Efficient Transformer for High-Resolution Image …」(2022) は「SwinIR: Image Restoration Using Swin Transformer」(2021) と近い年代の対照的研究（年代・引用規模から推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W639708223",
-      "dst": "openalex:W2963091558",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「Non-local Neural Networks」(2018) は「Faster R-CNN: Towards Real-Time Object Detection with Regio…」(2016) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W2565639579",
-      "dst": "openalex:W2963091558",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「Non-local Neural Networks」(2018) は「Feature Pyramid Networks for Object Detection」(2017) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W2549139847",
-      "dst": "openalex:W2963091558",
-      "rel": "contrasts",
-      "conf": 0.7,
-      "rationale": "「Non-local Neural Networks」(2018) は「Aggregated Residual Transformations for Deep Neural Networks」(2017) と近い年代の対照的研究（年代・引用規模から推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W2963150697",
-      "dst": "openalex:W2963091558",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「Non-local Neural Networks」(2018) は「Mask R-CNN」(2017) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "rationale": "「Densely Connected Convolutional Networks」(2017) は「Rethinking the Inception Architecture for Computer Vision」(2016) と近い年代の対照的研究（年代・引用規模から推定）。",
       "provenance": "year_cite"
     },
     {
@@ -1971,315 +2155,131 @@
       "provenance": "year_cite"
     },
     {
+      "src": "openalex:W2964350391",
+      "dst": "openalex:W2963150697",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "provenance": "foundational_allowlist"
+    },
+    {
+      "src": "openalex:W639708223",
+      "dst": "openalex:W2963150697",
+      "rel": "contrasts",
+      "conf": 0.7,
+      "rationale": "「Mask R-CNN」(2017) は「Faster R-CNN: Towards Real-Time Object Detection with Regio…」(2016) と近い年代の対照的研究（年代・引用規模から推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W2102605133",
+      "dst": "openalex:W2963150697",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「Mask R-CNN」(2017) は「Rich Feature Hierarchies for Accurate Object Detection and …」(2014) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W2565639579",
+      "dst": "openalex:W2963150697",
+      "rel": "contrasts",
+      "conf": 0.7,
+      "rationale": "「Mask R-CNN」(2017) は「Feature Pyramid Networks for Object Detection」(2017) と近い年代の対照的研究（年代・引用規模から推定）。",
+      "provenance": "year_cite"
+    },
+    {
       "src": "openalex:W3094502228",
-      "dst": "openalex:W4212875960",
+      "dst": "openalex:W4225672218",
       "rel": "extends",
       "conf": 0.65,
       "rationale": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
       "provenance": "foundational_allowlist"
     },
     {
-      "src": "openalex:W2896457183",
-      "dst": "openalex:W4212875960",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「UNETR: Transformers for 3D Medical Image Segmentation」(2022) は「AI-Assisted Pipeline for Dynamic Generation of Trustworthy …」(2018) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W3138516171",
-      "dst": "openalex:W4212875960",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「UNETR: Transformers for 3D Medical Image Segmentation」(2022) は「Swin Transformer: Hierarchical Vision Transformer using Shi…」(2021) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
       "src": "openalex:W2963091558",
-      "dst": "openalex:W4212875960",
+      "dst": "openalex:W4225672218",
       "rel": "successor",
       "conf": 0.7,
-      "rationale": "「UNETR: Transformers for 3D Medical Image Segmentation」(2022) は「Non-local Neural Networks」(2018) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "rationale": "「Restormer: Efficient Transformer for High-Resolution Image …」(2022) は「Non-local Neural Networks」(2018) を引用する後発研究（年代差と引用関係から後継と推定）。",
       "provenance": "year_cite"
     },
     {
-      "src": "openalex:W3159481202",
-      "dst": "openalex:W4212875960",
+      "src": "openalex:W3207918547",
+      "dst": "openalex:W4225672218",
       "rel": "contrasts",
       "conf": 0.7,
-      "rationale": "「UNETR: Transformers for 3D Medical Image Segmentation」(2022) は「Emerging Properties in Self-Supervised Vision Transformers」(2021) と近い年代の対照的研究（年代・引用規模から推定）。",
+      "rationale": "「Restormer: Efficient Transformer for High-Resolution Image …」(2022) は「SwinIR: Image Restoration Using Swin Transformer」(2021) と近い年代の対照的研究（年代・引用規模から推定）。",
       "provenance": "year_cite"
     },
     {
-      "src": "openalex:W3094502228",
-      "dst": "openalex:W4386047745",
+      "src": "openalex:W639708223",
+      "dst": "openalex:W2963091558",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「Non-local Neural Networks」(2018) は「Faster R-CNN: Towards Real-Time Object Detection with Regio…」(2016) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W2565639579",
+      "dst": "openalex:W2963091558",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「Non-local Neural Networks」(2018) は「Feature Pyramid Networks for Object Detection」(2017) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W2549139847",
+      "dst": "openalex:W2963091558",
+      "rel": "contrasts",
+      "conf": 0.7,
+      "rationale": "「Non-local Neural Networks」(2018) は「Aggregated Residual Transformations for Deep Neural Networks」(2017) と近い年代の対照的研究（年代・引用規模から推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W2963150697",
+      "dst": "openalex:W2963091558",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「Non-local Neural Networks」(2018) は「Mask R-CNN」(2017) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W2097117768",
+      "dst": "openalex:W2962843773",
       "rel": "extends",
       "conf": 0.65,
-      "rationale": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "rationale": "Going deeper with convolutions is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "provenance": "foundational_allowlist"
+    },
+    {
+      "src": "openalex:W2964350391",
+      "dst": "openalex:W2962843773",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
       "provenance": "foundational_allowlist"
     },
     {
       "src": "openalex:W1821462560",
-      "dst": "openalex:W4386047745",
+      "dst": "openalex:W2962843773",
       "rel": "extends",
       "conf": 0.65,
       "rationale": "Distilling the Knowledge in a Neural Network is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
       "provenance": "foundational_allowlist"
     },
     {
-      "src": "openalex:W3138516171",
-      "dst": "openalex:W4386047745",
+      "src": "openalex:W639708223",
+      "dst": "openalex:W2962843773",
       "rel": "successor",
       "conf": 0.7,
-      "rationale": "「Run, Don't Walk: Chasing Higher FLOPS for Faster Neural Net…」(2023) は「Swin Transformer: Hierarchical Vision Transformer using Shi…」(2021) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "rationale": "「Revisiting Unreasonable Effectiveness of Data in Deep Learn…」(2017) は「Faster R-CNN: Towards Real-Time Object Detection with Regio…」(2016) を引用する後発研究（年代差と引用関係から後継と推定）。",
       "provenance": "year_cite"
     },
     {
-      "src": "openalex:W3131500599",
-      "dst": "openalex:W4386047745",
+      "src": "openalex:W2102605133",
+      "dst": "openalex:W2962843773",
       "rel": "successor",
       "conf": 0.7,
-      "rationale": "「Run, Don't Walk: Chasing Higher FLOPS for Faster Neural Net…」(2023) は「Pyramid Vision Transformer: A Versatile Backbone for Dense …」(2021) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W4312443924",
-      "dst": "openalex:W4386047745",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「Run, Don't Walk: Chasing Higher FLOPS for Faster Neural Net…」(2023) は「A ConvNet for the 2020s」(2022) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W2097117768",
-      "dst": "openalex:W3212386989",
-      "rel": "extends",
-      "conf": 0.65,
-      "rationale": "Going deeper with convolutions is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
-      "provenance": "foundational_allowlist"
-    },
-    {
-      "src": "openalex:W2626778328",
-      "dst": "openalex:W3212386989",
-      "rel": "extends",
-      "conf": 0.65,
-      "rationale": "Attention Is All You Need is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
-      "provenance": "foundational_allowlist"
-    },
-    {
-      "src": "openalex:W2949650786",
-      "dst": "openalex:W3212386989",
-      "rel": "extends",
-      "conf": 0.65,
-      "rationale": "Deep Residual Learning for Image Recognition is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
-      "provenance": "foundational_allowlist"
-    },
-    {
-      "src": "openalex:W2949718784",
-      "dst": "openalex:W3212386989",
-      "rel": "extends",
-      "conf": 0.65,
-      "rationale": "Stand-Alone Self-Attention in Vision Models is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
-      "provenance": "foundational_allowlist"
-    },
-    {
-      "src": "openalex:W2752782242",
-      "dst": "openalex:W3212386989",
-      "rel": "extends",
-      "conf": 0.65,
-      "rationale": "Squeeze-and-Excitation Networks is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
-      "provenance": "foundational_allowlist"
-    },
-    {
-      "src": "openalex:W3094502228",
-      "dst": "openalex:W3212386989",
-      "rel": "extends",
-      "conf": 0.65,
-      "rationale": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
-      "provenance": "foundational_allowlist"
-    },
-    {
-      "src": "openalex:W2549139847",
-      "dst": "openalex:W3212386989",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「Attention mechanisms in computer vision: A survey」(2022) は「Aggregated Residual Transformations for Deep Neural Networks」(2017) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W2963091558",
-      "dst": "openalex:W3212386989",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「Attention mechanisms in computer vision: A survey」(2022) は「Non-local Neural Networks」(2018) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W2962843773",
-      "dst": "openalex:W3212386989",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「Attention mechanisms in computer vision: A survey」(2022) は「Revisiting Unreasonable Effectiveness of Data in Deep Learn…」(2017) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W2097117768",
-      "dst": "openalex:W2949718784",
-      "rel": "extends",
-      "conf": 0.65,
-      "rationale": "Going deeper with convolutions is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
-      "provenance": "foundational_allowlist"
-    },
-    {
-      "src": "openalex:W2752782242",
-      "dst": "openalex:W2949718784",
-      "rel": "extends",
-      "conf": 0.65,
-      "rationale": "Squeeze-and-Excitation Networks is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
-      "provenance": "foundational_allowlist"
-    },
-    {
-      "src": "openalex:W2183341477",
-      "dst": "openalex:W2949718784",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「Stand-Alone Self-Attention in Vision Models」(2019) は「Rethinking the Inception Architecture for Computer Vision」(2016) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W2963150697",
-      "dst": "openalex:W2949718784",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「Stand-Alone Self-Attention in Vision Models」(2019) は「Mask R-CNN」(2017) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W2565639579",
-      "dst": "openalex:W2949718784",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「Stand-Alone Self-Attention in Vision Models」(2019) は「Feature Pyramid Networks for Object Detection」(2017) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W2549139847",
-      "dst": "openalex:W2949718784",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「Stand-Alone Self-Attention in Vision Models」(2019) は「Aggregated Residual Transformations for Deep Neural Networks」(2017) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W2963091558",
-      "dst": "openalex:W2949718784",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「Stand-Alone Self-Attention in Vision Models」(2019) は「Non-local Neural Networks」(2018) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W2097117768",
-      "dst": "openalex:W4386076493",
-      "rel": "extends",
-      "conf": 0.65,
-      "rationale": "Going deeper with convolutions is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
-      "provenance": "foundational_allowlist"
-    },
-    {
-      "src": "openalex:W2752782242",
-      "dst": "openalex:W4386076493",
-      "rel": "extends",
-      "conf": 0.65,
-      "rationale": "Squeeze-and-Excitation Networks is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
-      "provenance": "foundational_allowlist"
-    },
-    {
-      "src": "openalex:W3138516171",
-      "dst": "openalex:W4386076493",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「ConvNeXt V2: Co-designing and Scaling ConvNets with Masked …」(2023) は「Swin Transformer: Hierarchical Vision Transformer using Shi…」(2021) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W2896457183",
-      "dst": "openalex:W3159481202",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「Emerging Properties in Self-Supervised Vision Transformers」(2021) は「AI-Assisted Pipeline for Dynamic Generation of Trustworthy …」(2018) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W2963446712",
-      "dst": "openalex:W3138516171",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「Swin Transformer: Hierarchical Vision Transformer using Shi…」(2021) は「Densely Connected Convolutional Networks」(2017) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W2963150697",
-      "dst": "openalex:W3138516171",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「Swin Transformer: Hierarchical Vision Transformer using Shi…」(2021) は「Mask R-CNN」(2017) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W2549139847",
-      "dst": "openalex:W3138516171",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「Swin Transformer: Hierarchical Vision Transformer using Shi…」(2021) は「Aggregated Residual Transformations for Deep Neural Networks」(2017) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W3138516171",
-      "dst": "openalex:W4327808545",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「Vision Transformers for Single Image Dehazing」(2023) は「Swin Transformer: Hierarchical Vision Transformer using Shi…」(2021) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W3131500599",
-      "dst": "openalex:W4327808545",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「Vision Transformers for Single Image Dehazing」(2023) は「Pyramid Vision Transformer: A Versatile Backbone for Dense …」(2021) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W3207918547",
-      "dst": "openalex:W4327808545",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「Vision Transformers for Single Image Dehazing」(2023) は「SwinIR: Image Restoration Using Swin Transformer」(2021) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W2097117768",
-      "dst": "openalex:W3005680577",
-      "rel": "extends",
-      "conf": 0.65,
-      "rationale": "Going deeper with convolutions is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
-      "provenance": "foundational_allowlist"
-    },
-    {
-      "src": "openalex:W2798991696",
-      "dst": "openalex:W3005680577",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「A Simple Framework for Contrastive Learning of Visual Repre…」(2020) は「Unsupervised Feature Learning via Non-parametric Instance D…」(2018) を引用する後発研究（年代差と引用関係から後継と推定）。",
-      "provenance": "year_cite"
-    },
-    {
-      "src": "openalex:W3159481202",
-      "dst": "openalex:W4386072096",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "「DreamBooth: Fine Tuning Text-to-Image Diffusion Models for …」(2023) は「Emerging Properties in Self-Supervised Vision Transformers」(2021) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "rationale": "「Revisiting Unreasonable Effectiveness of Data in Deep Learn…」(2017) は「Rich Feature Hierarchies for Accurate Object Detection and …」(2014) を引用する後発研究（年代差と引用関係から後継と推定）。",
       "provenance": "year_cite"
     }
   ],
@@ -2299,11 +2299,11 @@
     ],
     "depth": 1,
     "since_year": 2018,
-    "generated_at": "2026-06-14T07:25:52.604296+00:00",
+    "generated_at": "2026-06-14T09:22:20.841715+00:00",
     "provenance_breakdown": {
       "foundational_allowlist": 52,
-      "llm": 22,
-      "year_cite": 101
+      "llm": 28,
+      "year_cite": 95
     }
   }
 }
