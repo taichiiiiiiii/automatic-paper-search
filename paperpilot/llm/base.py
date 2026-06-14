@@ -297,6 +297,24 @@ def build_classify_prompt(a: dict, b: dict) -> tuple[str, str]:
     return CLASSIFY_SYSTEM_PROMPT, user
 
 
+def provider_model_tag(provider: AbstractLLMProvider) -> str:
+    """Stable 'name:model' tag for the LLM that produced a cached
+    classification (#310), e.g. 'gemini:gemini-2.5-flash'. Cache metadata
+    so mixed-provider caches stay auditable. Falls back to the provider
+    name when .model is absent (base class / providers without a model).
+
+    Concrete providers (GroqProvider / GeminiProvider) set ``self.model``
+    plus a class-level ``name``; the abstract base has no ``.model``, so
+    both reads go through ``getattr`` to stay total. The tag is NOT part
+    of the cache key — it is recorded alongside the relation/confidence/
+    rationale so a mixed-provider cache (post Groq→Gemini regen) can be
+    attributed per producer.
+    """
+    name = getattr(provider, "name", "unknown")
+    model = getattr(provider, "model", None)
+    return f"{name}:{model}" if model else str(name)
+
+
 class AbstractLLMProvider(ABC):
     """Contract every LLM backend must fulfil."""
 

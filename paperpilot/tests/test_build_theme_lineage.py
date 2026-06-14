@@ -4490,6 +4490,56 @@ def test_cached_classify_provider_calls_inner_on_miss(tmp_path):
     assert persisted[key]["relation"] == "extends"
 
 
+def test_cached_classify_provider_writes_model_tag_on_miss(tmp_path):
+    """#310: on a cache miss, the persisted entry must record which LLM
+    produced it via the ``model`` field — and it must be the tag of the
+    INNER provider, not the "+cache" wrapper. Here the inner fake carries
+    a ``.model`` attr, so the tag is the full "name:model" form."""
+    cache_path = tmp_path / "classifications.json"
+    inner = _FakeProvider(
+        classification=RelationClassification(
+            relation="extends",
+            confidence=0.9,
+            rationale="B は A の sparse attention を audio 信号に拡張している",
+        )
+    )
+    # Give the inner provider a model attr so provider_model_tag emits
+    # the full "name:model" form (mirrors GroqProvider / GeminiProvider).
+    inner.model = "llama-3.3-70b-versatile"  # type: ignore[attr-defined]
+    cache: dict = {}
+    cached = build_theme_lineage._CachedClassifyProvider(
+        inner, cache, cache_path=cache_path
+    )
+    cached.classify_relation(
+        {"paperId": "src_m", "title": "A"}, {"paperId": "dst_m", "title": "B"}
+    )
+    entry = cache["src_m->dst_m"]
+    # The wrapper's own name is "fake+cache"; the recorded tag must be the
+    # INNER provider's tag, NOT the wrapper's.
+    assert entry["model"] == "fake:llama-3.3-70b-versatile"
+    assert "+cache" not in entry["model"]
+    # Persisted to disk too.
+    persisted = json.loads(cache_path.read_text())
+    assert persisted["src_m->dst_m"]["model"] == "fake:llama-3.3-70b-versatile"
+
+
+def test_cached_classify_provider_model_tag_name_only_without_model(tmp_path):
+    """#310: when the inner provider lacks a ``.model`` attr (the base-class
+    shape), the recorded tag falls back to the bare provider name."""
+    inner = _FakeProvider(
+        classification=RelationClassification(
+            relation="extends", confidence=0.9, rationale="paper-specific 説明文章"
+        )
+    )
+    assert not hasattr(inner, "model")
+    cache: dict = {}
+    cached = build_theme_lineage._CachedClassifyProvider(
+        inner, cache, cache_path=None
+    )
+    cached.classify_relation({"paperId": "x"}, {"paperId": "y"})
+    assert cache["x->y"]["model"] == "fake"
+
+
 def test_cached_classify_provider_skips_persist_when_inner_returns_none(tmp_path):
     """If the LLM call fails (Groq 429 → returns None), don't poison the
     cache with a null entry. The next call should retry the LLM."""

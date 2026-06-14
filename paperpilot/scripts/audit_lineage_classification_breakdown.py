@@ -187,10 +187,17 @@ def _audit_classifications_cache() -> dict:
     wellformed_rel: Counter[str] = Counter()
     short_rel: Counter[str] = Counter()
     unrelated = 0
+    # #310: tally entries per producing LLM ("name:model") so a mixed-
+    # provider cache (post Groq->Gemini regen) is attributable. Entries
+    # written before the field existed lack a ``model`` key and fall into
+    # the "(legacy/none)" bucket — useful to see how much of the cache
+    # predates the provenance work.
+    by_model: Counter[str] = Counter()
 
     for value in cache.values():
         if not isinstance(value, dict):
             continue
+        by_model[value.get("model") or "(legacy/none)"] += 1
         relation = value.get("relation")
         rationale = (value.get("rationale") or "").strip()
         if relation == "unrelated":
@@ -209,6 +216,7 @@ def _audit_classifications_cache() -> dict:
         "unrelated_dropped": unrelated,
         "wellformed_rel": dict(wellformed_rel),
         "short_rationale_rel": dict(short_rel),
+        "by_model": dict(by_model),
     }
 
 
@@ -249,6 +257,12 @@ def _print_human(published: dict, cache: dict) -> None:
             print(f"\n[short < {_MIN_WELLFORMED_RATIONALE_CHARS} chars (stale?)] n={sum(sh.values())}")
             for rel, descr in _percent_table(sh).items():
                 print(f"  {rel}: {descr}")
+        # #310: per-producer tally so a mixed-provider cache stays auditable.
+        bm = cache.get("by_model", {})
+        if bm:
+            print(f"\n[by model (#310)] n={sum(bm.values())}")
+            for model, descr in _percent_table(bm).items():
+                print(f"  {model}: {descr}")
     else:
         print("\n(classifications cache not present)")
 

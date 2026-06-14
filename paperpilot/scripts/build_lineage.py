@@ -58,7 +58,7 @@ from paperpilot.llm import (  # noqa: E402
     GroqProvider,
     RelationClassification,
 )
-from paperpilot.llm.base import _MIN_RATIONALE_LEN  # noqa: E402
+from paperpilot.llm.base import _MIN_RATIONALE_LEN, provider_model_tag  # noqa: E402
 from paperpilot.scripts._common import slug_to_venue_label  # noqa: E402
 from paperpilot.utils.http import request_with_retry  # noqa: E402
 from paperpilot.utils.logger import get_logger, setup_logging  # noqa: E402
@@ -543,6 +543,12 @@ def _classify_cached(
             "relation": rc.relation,
             "confidence": rc.confidence,
             "rationale": rc.rationale,
+            # #310: record which LLM produced this entry so a mixed-provider
+            # cache (post Groq→Gemini regen) stays auditable. NOT part of the
+            # cache key (key stays "{src}->{dst}") — fully backward-compatible:
+            # RelationClassification.from_dict ignores this extra field, and
+            # legacy entries without it still load + serve fine.
+            "model": provider_model_tag(provider),
         }
         classifications[cache_key] = entry
         persist_classifications(classifications, cache_path)
