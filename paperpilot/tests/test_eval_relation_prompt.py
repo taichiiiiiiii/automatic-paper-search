@@ -11,6 +11,8 @@ Also covers the --provider flag introduced in PR-A of issue #285 step 4-5:
 
 from __future__ import annotations
 
+import json
+
 import pytest
 
 from paperpilot.scripts.eval_relation_prompt import (
@@ -244,3 +246,296 @@ def test_cli_rejects_claude_until_pr_b():
     with pytest.raises(SystemExit) as exc_info:
         parser.parse_args(["--predictor=live", "--provider=claude"])
     assert exc_info.value.code == 2
+
+
+# ---------------------------------------------------------------------------
+# Issue #285 hardening: None-aware metrics (excl-none contamination-free read)
+# ---------------------------------------------------------------------------
+
+def test_macro_f1_reports_none_count_and_n_scored():
+    """None predictions are counted separately so 429-storms are visible."""
+    gold = ["extends", "contrasts", "successor"]
+    pred = ["extends", "contrasts", None]
+    m = _macro_f1(gold, pred)
+    assert m["n"] == 3
+    assert m["none_count"] == 1
+    assert m["n_scored"] == 2
+
+
+def test_macro_f1_no_none_has_zero_none_count():
+    """When no prediction is None, none_count=0 and n_scored=n."""
+    gold = ["extends", "contrasts"]
+    pred = ["extends", "contrasts"]
+    m = _macro_f1(gold, pred)
+    assert m["none_count"] == 0
+    assert m["n_scored"] == 2
+
+
+def test_macro_f1_excl_none_ignores_none_records():
+    """excl-none metrics are computed over ONLY the non-None subset.
+
+    2 correct + 1 None → excl-none should reflect a perfect score on the
+    2 scored records (the None record is dropped entirely, not scored as
+    wrong), while the primary macro_f1 (None=wrong) stays conservative.
+    """
+    gold = ["extends", "contrasts", "successor"]
+    pred = ["extends", "contrasts", None]
+    m = _macro_f1(gold, pred)
+
+    # Primary number penalises the None as a miss for "successor".
+    assert m["macro_f1"] < 1.0
+    # Contamination-free read: only the 2 correct records count → perfect.
+    assert m["macro_f1_excl_none"] == 1.0
+    assert m["accuracy_excl_none"] == 1.0
+    # Accuracy (None=wrong) is 2/3, rounded to 3 places by _macro_f1.
+    assert m["accuracy"] == pytest.approx(2 / 3, abs=1e-3)
+
+
+def test_macro_f1_excl_none_class_set_uses_non_none_subset():
+    """excl-none recomputes per-class tp/fp/fn on the non-None subset.
+
+    One correct + one wrong (non-None) + one None. The excl-none macro-F1
+    must be strictly higher than the None=wrong macro_f1 because the None
+    record no longer drags a gold class to zero recall.
+    """
+    gold = ["extends", "extends", "successor"]
+    pred = ["extends", "contrasts", None]
+    m = _macro_f1(gold, pred)
+    assert m["none_count"] == 1
+    assert m["n_scored"] == 2
+    assert m["macro_f1_excl_none"] > m["macro_f1"]
+
+
+def test_macro_f1_all_none_excl_none_is_zero():
+    """All-None run → n_scored=0, excl-none metrics default to 0.0."""
+    gold = ["extends", "contrasts"]
+    pred = [None, None]
+    m = _macro_f1(gold, pred)
+    assert m["none_count"] == 2
+    assert m["n_scored"] == 0
+    assert m["macro_f1_excl_none"] == 0.0
+    assert m["accuracy_excl_none"] == 0.0
+
+
+def test_macro_f1_keeps_existing_keys():
+    """Backward-compat: all original keys remain present and unchanged."""
+    gold = ["extends", "contrasts"]
+    pred = ["extends", "contrasts"]
+    m = _macro_f1(gold, pred)
+    for key in ("n", "accuracy", "macro_f1", "per_class"):
+        assert key in m
+    assert m["macro_f1"] == 1.0
+    assert m["accuracy"] == 1.0
+
+
+# ---------------------------------------------------------------------------
+# Issue #285 hardening: --dump-predictions
+# ---------------------------------------------------------------------------
+
+def test_dump_predictions_writes_jsonl(tmp_path, monkeypatch, capsys):
+    """--dump-predictions writes one JSONL line per gold record."""
+    from paperpilot.scripts import eval_relation_prompt as mod
+
+    records = [
+        {"id": "r1", "theme": "t1", "gold_rel": "extends", "current_rel": "extends"},
+        {"id": "r2", "theme": "t2", "gold_rel": "successor", "current_rel": None},
+    ]
+    monkeypatch.setattr(mod, "_load_records", lambda: list(records))
+
+    # Nested path exercises the parent-dir auto-create (no FileNotFoundError).
+    out = tmp_path / "nested" / "dump.jsonl"
+    monkeypatch.setattr(
+        "sys.argv",
+        ["eval", "--predictor=current", f"--dump-predictions={out}"],
+    )
+    rc = mod.main()
+    assert rc == 0
+
+    lines = [
+        json.loads(line)
+        for line in out.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+    assert len(lines) == 2
+    assert lines[0] == {
+        "id": "r1",
+        "theme": "t1",
+        "gold_rel": "extends",
+        "pred": "extends",
+    }
+    # current_rel=None must serialise as JSON null.
+    assert lines[1]["id"] == "r2"
+    assert lines[1]["gold_rel"] == "successor"
+    assert lines[1]["pred"] is None
+
+
+def test_dump_predictions_default_off(tmp_path, monkeypatch):
+    """Without --dump-predictions, no file is written (backward-compat)."""
+    from paperpilot.scripts import eval_relation_prompt as mod
+
+    records = [
+        {"id": "r1", "theme": "t1", "gold_rel": "extends", "current_rel": "extends"},
+    ]
+    monkeypatch.setattr(mod, "_load_records", lambda: list(records))
+    monkeypatch.setattr("sys.argv", ["eval", "--predictor=current"])
+
+    rc = mod.main()
+    assert rc == 0
+    # No stray dump file in tmp_path.
+    assert list(tmp_path.glob("*.jsonl")) == []
+
+
+# ---------------------------------------------------------------------------
+# Issue #285 hardening: --gold-rel filter
+# ---------------------------------------------------------------------------
+
+def test_gold_rel_filter_restricts_records(monkeypatch, capsys):
+    """--gold-rel supersedes restricts the eval to supersedes gold records."""
+    from paperpilot.scripts import eval_relation_prompt as mod
+
+    records = [
+        {"id": "s1", "theme": "t", "gold_rel": "supersedes", "current_rel": "supersedes"},
+        {"id": "e1", "theme": "t", "gold_rel": "extends", "current_rel": "extends"},
+        {"id": "s2", "theme": "t", "gold_rel": "supersedes", "current_rel": None},
+    ]
+    monkeypatch.setattr(mod, "_load_records", lambda: list(records))
+    monkeypatch.setattr(
+        "sys.argv",
+        ["eval", "--predictor=current", "--gold-rel=supersedes", "--json"],
+    )
+    rc = mod.main()
+    assert rc == 0
+    out = capsys.readouterr().out
+    metrics = json.loads(out)
+    # Only the 2 supersedes records survive the filter.
+    assert metrics["n"] == 2
+    assert metrics["none_count"] == 1
+
+
+def test_gold_rel_filter_comma_separated(monkeypatch, capsys):
+    """--gold-rel accepts comma-separated values."""
+    from paperpilot.scripts import eval_relation_prompt as mod
+
+    records = [
+        {"id": "s1", "theme": "t", "gold_rel": "supersedes", "current_rel": "supersedes"},
+        {"id": "e1", "theme": "t", "gold_rel": "extends", "current_rel": "extends"},
+        {"id": "u1", "theme": "t", "gold_rel": "unrelated", "current_rel": "unrelated"},
+    ]
+    monkeypatch.setattr(mod, "_load_records", lambda: list(records))
+    monkeypatch.setattr(
+        "sys.argv",
+        ["eval", "--predictor=current", "--gold-rel=supersedes,extends", "--json"],
+    )
+    rc = mod.main()
+    assert rc == 0
+    metrics = json.loads(capsys.readouterr().out)
+    assert metrics["n"] == 2
+
+
+def test_gold_rel_filter_repeatable(monkeypatch, capsys):
+    """--gold-rel can be passed multiple times (repeatable)."""
+    from paperpilot.scripts import eval_relation_prompt as mod
+
+    records = [
+        {"id": "s1", "theme": "t", "gold_rel": "supersedes", "current_rel": "supersedes"},
+        {"id": "e1", "theme": "t", "gold_rel": "extends", "current_rel": "extends"},
+        {"id": "u1", "theme": "t", "gold_rel": "unrelated", "current_rel": "unrelated"},
+    ]
+    monkeypatch.setattr(mod, "_load_records", lambda: list(records))
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "eval",
+            "--predictor=current",
+            "--gold-rel=supersedes",
+            "--gold-rel=unrelated",
+            "--json",
+        ],
+    )
+    rc = mod.main()
+    assert rc == 0
+    metrics = json.loads(capsys.readouterr().out)
+    assert metrics["n"] == 2
+
+
+def test_gold_rel_filter_no_match_exits_zero(monkeypatch, capsys):
+    """--gold-rel with no matching records prints a message and exits 0."""
+    from paperpilot.scripts import eval_relation_prompt as mod
+
+    records = [
+        {"id": "e1", "theme": "t", "gold_rel": "extends", "current_rel": "extends"},
+    ]
+    monkeypatch.setattr(mod, "_load_records", lambda: list(records))
+    monkeypatch.setattr(
+        "sys.argv",
+        ["eval", "--predictor=current", "--gold-rel=ablation"],
+    )
+    rc = mod.main()
+    assert rc == 0
+    err = capsys.readouterr().err
+    assert "gold-rel" in err.lower() or "no records" in err.lower()
+
+
+def test_cli_accepts_dump_and_gold_rel_flags():
+    """Argparse accepts --dump-predictions and --gold-rel."""
+    from paperpilot.scripts.eval_relation_prompt import _build_arg_parser
+
+    parser = _build_arg_parser()
+    args = parser.parse_args(
+        [
+            "--predictor=current",
+            "--dump-predictions=/tmp/x.jsonl",
+            "--gold-rel=supersedes",
+            "--gold-rel=extends",
+        ]
+    )
+    assert args.dump_predictions == "/tmp/x.jsonl"
+    assert args.gold_rel == ["supersedes", "extends"]
+
+
+# ---------------------------------------------------------------------------
+# Issue #285 hardening: --json includes new keys + --gate gates on primary
+# ---------------------------------------------------------------------------
+
+def test_json_output_includes_new_metric_keys(monkeypatch, capsys):
+    """--json output carries none_count / n_scored / excl-none keys."""
+    from paperpilot.scripts import eval_relation_prompt as mod
+
+    records = [
+        {"id": "r1", "theme": "t", "gold_rel": "extends", "current_rel": "extends"},
+        {"id": "r2", "theme": "t", "gold_rel": "successor", "current_rel": None},
+    ]
+    monkeypatch.setattr(mod, "_load_records", lambda: list(records))
+    monkeypatch.setattr("sys.argv", ["eval", "--predictor=current", "--json"])
+    rc = mod.main()
+    assert rc == 0
+    metrics = json.loads(capsys.readouterr().out)
+    for key in ("none_count", "n_scored", "macro_f1_excl_none", "accuracy_excl_none"):
+        assert key in metrics
+    assert metrics["none_count"] == 1
+    assert metrics["n_scored"] == 1
+
+
+def test_gate_uses_primary_macro_f1_not_excl_none(monkeypatch, capsys):
+    """--gate-macro-f1 gates on the conservative None=wrong macro_f1.
+
+    A run where excl-none would clear the gate but None=wrong would not
+    must still FAIL (return 1) — the gate must not silently switch reads.
+    """
+    from paperpilot.scripts import eval_relation_prompt as mod
+
+    # 1 correct + 1 None → None=wrong macro_f1 is dragged down, but
+    # excl-none macro_f1 is 1.0. Gate at 0.9 must fail on the primary.
+    records = [
+        {"id": "r1", "theme": "t", "gold_rel": "extends", "current_rel": "extends"},
+        {"id": "r2", "theme": "t", "gold_rel": "successor", "current_rel": None},
+    ]
+    monkeypatch.setattr(mod, "_load_records", lambda: list(records))
+    monkeypatch.setattr(
+        "sys.argv",
+        ["eval", "--predictor=current", "--gate-macro-f1=0.9"],
+    )
+    rc = mod.main()
+    assert rc == 1
+    err = capsys.readouterr().err
+    assert "GATE FAILED" in err
