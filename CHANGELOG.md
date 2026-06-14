@@ -8,6 +8,29 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ### Changed
 
+- **#300 slot-fill heuristic rationale — relation collapse fix.**
+  `_derive_relation_heuristic` (`paperpilot/scripts/_lineage_classify.py`)
+  previously emitted generic `TEMPLATE_RATIONALES[...]` strings on both
+  the intent_map and year_cite branches. When the LLM was unavailable
+  (Groq quota exhausted → `None`), `_apply_llm_classification` dropped
+  every such edge because the rationale was a member of
+  `_TEMPLATE_RATIONALES_SET` — wiping all signal-bearing heuristic edges
+  and producing the empty-tree "relation collapse" reported on the family
+  tree viewer. The fix generalises the slot-fill pattern already used by
+  `_foundational_ancestor_edge`: a new `_slot_fill_rationale(relation,
+  parent, child, intent=None)` helper builds a Japanese, paper-specific
+  rationale embedding the actual parent/child titles (60-char trimmed)
+  plus years plus the signal (S2 intent label or year-cite delta). The
+  output is by construction never a `TEMPLATE_RATIONALES` value, so the
+  edge survives the LLM-None drop. Invariants preserved: (a) #209
+  no-fabrication boundary — no-signal pairs still `return None`, no new
+  edges created; (b) #131 template-echo reject set + prompt MUST-NOT
+  block stay intact as the LLM-echo backstop. Successor / contrasts
+  sentences are hedged ("…と推定") to state the inference basis since
+  these are heuristic, not LLM, judgements. Audit's
+  `template_rationale_ratio` drops toward zero — the old collapse signal.
+  Adds 14 new tests + updates 3 existing tests (902 total pass).
+
 - **#285 prompt rewrite: per-relation definitions + supersedes/ablation
   examples.** `CLASSIFY_SYSTEM_PROMPT` (`paperpilot/llm/base.py`) previously
   listed only the relation enum NAMES with no definitions, so the LLM could
