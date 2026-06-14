@@ -121,15 +121,26 @@ def test_year_cite_does_not_emit_ablation():
 def test_year_cite_still_emits_contrasts():
     """contrasts_year_cite is the only year/cite heuristic emit with
     measurable production output (16/99 published edges). Removing it
-    would be out of scope for #283 — keep it alive."""
+    would be out of scope for #283 — keep it alive.
+
+    #300: the rationale is now a paper-specific SLOT-FILLED string
+    (embedding titles + years) rather than the generic
+    TEMPLATE_RATIONALES["contrasts_year_cite"]. The relation enum +
+    provenance are unchanged; only the rationale TEXT differs so the edge
+    survives _apply_llm_classification when the LLM is None."""
+    from paperpilot.scripts._lineage_classify import _TEMPLATE_RATIONALES_SET
+
     intent_record: dict = {"_intents": []}
-    parent = {"year": 2020, "citationCount": 500}
-    child = {"year": 2020, "citationCount": 600}  # delta=0, cc/pc=1.2
+    parent = {"title": "ParentNet", "year": 2020, "citationCount": 500}
+    child = {"title": "ChildNet", "year": 2020, "citationCount": 600}  # delta=0, cc/pc=1.2
     rel = _derive_relation_heuristic(intent_record, parent=parent, child=child)
     assert rel is not None and rel["relation"] == "contrasts", (
         "contrasts_year_cite path should still fire — see #283 scope"
     )
-    assert rel["rationale"] == TEMPLATE_RATIONALES["contrasts_year_cite"]
+    # #300: slot-filled, NOT the template.
+    assert rel["rationale"] not in _TEMPLATE_RATIONALES_SET
+    assert "ParentNet" in rel["rationale"]
+    assert "ChildNet" in rel["rationale"]
 
 
 def test_year_cite_still_emits_successor():

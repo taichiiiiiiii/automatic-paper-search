@@ -267,35 +267,43 @@ def test_ambiguous_drops_edge_when_llm_unrelated():
     assert out is None
 
 
-def test_ambiguous_drops_edge_when_llm_returns_none_and_heuristic_is_template():
-    """2026-06-05 followup: when the heuristic produced a
-    TEMPLATE_RATIONALES rationale (year-delta 1-5 successor catchall:
-    parent=2018, child=2022, delta=4) AND the LLM call failed, drop
-    the edge instead of keeping the template. A template rationale
-    tells the viewer nothing specific about A → B, and the old
-    'keep heuristic' branch turned out to be the dominant lineage-
-    quality leak on Groq Free quota exhaustion (14 / 21 themes at >=
-    95 % template).
+def test_ambiguous_keeps_slotfilled_heuristic_when_llm_returns_none():
+    """#300: the heuristic no longer emits TEMPLATE_RATIONALES. The
+    year-delta 1-5 successor catch-all (parent=2018, child=2022, delta=4)
+    now produces a paper-specific SLOT-FILLED rationale embedding both
+    titles + years. When the LLM call fails (None), the edge is therefore
+    KEPT — not dropped — because its rationale is no longer a member of
+    _TEMPLATE_RATIONALES_SET. This is the collapse fix: signal-bearing
+    heuristic edges survive Groq quota exhaustion.
+
+    (Was test_ambiguous_drops_edge_when_llm_returns_none_and_heuristic_is_template,
+    which asserted the pre-#300 behaviour where template edges were dropped.
+    The literal-template drop backstop is still pinned by
+    test_apply_llm_classification_drops_heuristic_with_template_when_llm_fails.)
     """
-    from paperpilot.llm.base import TEMPLATE_RATIONALES
+    from paperpilot.scripts._lineage_classify import _TEMPLATE_RATIONALES_SET
+
+    baseline = btl.derive_relation(_INFLUENTIAL_NO_INTENTS, parent=_PARENT, child=_CHILD)
+    # The baseline heuristic is now a slot-filled (non-template) rationale.
+    assert baseline is not None
+    assert baseline["relation"] == "successor"
+    assert baseline["rationale"] not in _TEMPLATE_RATIONALES_SET
+    # Fixture titles "A" / "B" + years are embedded.
+    assert "A" in baseline["rationale"] and "B" in baseline["rationale"]
+    assert "2018" in baseline["rationale"] and "2022" in baseline["rationale"]
 
     p = _FakeProvider(queued=[None])
-    baseline = btl.derive_relation(_INFLUENTIAL_NO_INTENTS, parent=_PARENT, child=_CHILD)
-    # Sanity-check the fixture: the baseline heuristic still uses a
-    # template rationale (otherwise this test would mean the wrong
-    # thing — the fixture's year delta drives the template-fallback
-    # path).
-    assert baseline is not None
-    assert baseline["rationale"] in TEMPLATE_RATIONALES.values()
-
     out = btl.derive_relation(
         _INFLUENTIAL_NO_INTENTS,
         parent=_PARENT, child=_CHILD,
         provider=p, strict_mode="ambiguous",
     )
-    assert out is None, (
-        f"expected template-rationale + LLM-None to drop, got: {out!r}"
+    assert out is not None, (
+        f"expected slot-filled heuristic + LLM-None to be KEPT (#300), got: {out!r}"
     )
+    assert out["relation"] == "successor"
+    assert out["rationale"] == baseline["rationale"]
+    assert len(p.calls) == 1, "LLM should still be attempted in ambiguous mode"
 
 
 # ---------- derive_relation: strict_mode = "all" ----------

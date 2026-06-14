@@ -278,6 +278,13 @@ def build_classify_prompt(a: dict, b: dict) -> tuple[str, str]:
 
     `a` / `b` are plain dicts (not `Paper`) so callers can pass S2 responses
     directly without adapting into the full pipeline schema.
+
+    SECURITY (#300 review note): only `title`, `year`, and `abstract` are
+    interpolated into the prompt — NEVER a prior `rationale` string. If a
+    future change adds `rationale` (or any other free-text field a heuristic
+    has written) to the prompt, attacker-controlled paper titles embedded
+    in a slot-filled rationale (via `_slot_fill_rationale`) would become a
+    prompt-injection vector. Add explicit sanitisation if extending.
     """
     user = _CLASSIFY_USER_TEMPLATE.format(
         a_title=a.get("title", ""),
