@@ -127,6 +127,15 @@ _VALID_RELATIONS = frozenset(
 )
 
 _MAX_RATIONALE_LEN = 280
+# Minimum rationale length (#297). A real rationale is a Japanese sentence
+# of >=30 chars per CLASSIFY_SYSTEM_PROMPT's "30-200 chars" rule; 10 is a
+# conservative "clearly degenerate" floor that catches the truncated LLM
+# outputs seen in production ("A" / "QD" / "VLM" / "VLLM" / "CMA-ES" /
+# "Qwen2-VL" / "P-GenRM") without over-rejecting borderline-valid short
+# outputs. Rejecting here makes the caller's _apply_llm_classification fall
+# back to the heuristic, which yields a full sentence — strictly better
+# than a 1-char tooltip.
+_MIN_RATIONALE_LEN = 10
 _CLASSIFY_ABSTRACT_TRIM = 600
 
 # Single source of truth for heuristic template rationales (#145 followup).
@@ -184,6 +193,11 @@ class RelationClassification:
         if not rationale:
             # An empty rationale would render an empty tooltip in the viewer.
             # Reject rather than emit a silent edge.
+            return None
+        if len(rationale) < _MIN_RATIONALE_LEN:
+            # #297: a truncated LLM output like {"rationale":"A"} renders a
+            # meaningless 1-char tooltip. Reject so the caller falls back to
+            # the heuristic, which produces a full sentence.
             return None
         if rationale in _GENERIC_TEMPLATE_RATIONALES:
             # LLM regurgitated the heuristic template (see #131). Treat as

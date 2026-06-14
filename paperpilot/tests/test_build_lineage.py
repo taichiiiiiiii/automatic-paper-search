@@ -123,7 +123,9 @@ class _FakeProvider(AbstractLLMProvider):
 def test_classify_cached_writes_cache_and_skips_on_hit(tmp_path: Path):
     cache_path = tmp_path / "cls.json"
     classifications: dict[str, dict] = {}
-    rc = RelationClassification(relation="extends", confidence=0.9, rationale="理由")
+    # Rationale must clear the #297 min-length floor so it's served on hit.
+    reason = "論文 B は論文 A の手法を別タスクへ拡張している。"
+    rc = RelationClassification(relation="extends", confidence=0.9, rationale=reason)
     provider = _FakeProvider(return_value=rc)
 
     out = build_lineage._classify_cached(
@@ -134,7 +136,7 @@ def test_classify_cached_writes_cache_and_skips_on_hit(tmp_path: Path):
         cache_path=cache_path,
         rate_delay=0,
     )
-    assert out == {"relation": "extends", "confidence": 0.9, "rationale": "理由"}
+    assert out == {"relation": "extends", "confidence": 0.9, "rationale": reason}
     # Cache persisted
     assert json.loads(cache_path.read_text())["A->B"]["relation"] == "extends"
 
@@ -249,6 +251,92 @@ def test_classify_cached_returns_none_on_failure(tmp_path: Path):
     assert classifications == {}
     # Cache file not written when there's nothing to persist
     assert not cache_path.exists()
+
+
+# ---- #297: degenerate-rationale cache-hit guard ----
+
+
+def test_classify_cached_treats_degenerate_cache_entry_as_miss(tmp_path: Path):
+    """Defense in depth (#297): a cached entry whose rationale is below the
+    `_MIN_RATIONALE_LEN` floor (e.g. the production "A" / "VLLM" entries)
+    must NOT be served from cache. The cache hit returns the raw dict
+    without going through `from_dict`, so this path bypasses the Part 1
+    fix — the guard here treats the degenerate entry as a cache MISS and
+    re-derives via the provider, which yields a full rationale."""
+    cache_path = tmp_path / "cls.json"
+    # Pre-seed the cache with a degenerate entry (mirrors a poisoned cache
+    # written before the #297 fix landed).
+    classifications: dict[str, dict] = {
+        "A->B": {"relation": "extends", "confidence": 0.9, "rationale": "A"}
+    }
+    rc = RelationClassification(
+        relation="extends",
+        confidence=0.8,
+        rationale="論文 B は論文 A のスペクトル法を空間領域へ再定式化している。",
+    )
+    provider = _FakeProvider(return_value=rc)
+
+    out = build_lineage._classify_cached(
+        provider,
+        {"title": "A"}, {"title": "B"},
+        cache_key="A->B",
+        classifications=classifications,
+        cache_path=cache_path,
+        rate_delay=0,
+    )
+    # Re-derived (cache treated as miss) — provider WAS called.
+    assert provider.calls, "degenerate cache entry must trigger re-derivation"
+    assert out is not None
+    assert len(out["rationale"]) >= 10
+    # Cache overwritten with the full rationale.
+    assert classifications["A->B"]["rationale"] == rc.rationale
+
+
+def test_classify_cached_still_serves_wellformed_cache_entry(tmp_path: Path):
+    """Counter-test: a well-formed cached entry (>= floor) is still served
+    from cache without calling the provider — the #297 guard only catches
+    degenerate entries."""
+    cache_path = tmp_path / "cls.json"
+    good = "論文 B は論文 A の注意機構を線形時間に近似している。"
+    classifications: dict[str, dict] = {
+        "A->B": {"relation": "extends", "confidence": 0.9, "rationale": good}
+    }
+    provider = _FakeProvider(return_value=None)  # would fail if invoked
+
+    out = build_lineage._classify_cached(
+        provider,
+        {"title": "A"}, {"title": "B"},
+        cache_key="A->B",
+        classifications=classifications,
+        cache_path=cache_path,
+        rate_delay=0,
+    )
+    assert provider.calls == [], "well-formed cache entry must be a hit"
+    assert out is not None
+    assert out["rationale"] == good
+
+
+def test_build_final_filter_drops_short_rationale_edges():
+    """The final edge filter must drop edges whose rationale is below the
+    `_MIN_RATIONALE_LEN` floor (#297), not just empty ones. This is the
+    belt-and-braces filter that catches degenerate edges that slipped past
+    earlier guards (e.g. directly-constructed edges in legacy cache data)."""
+    from paperpilot.llm.base import _MIN_RATIONALE_LEN
+
+    edges = [
+        {"src": "a", "dst": "b", "rel": "extends", "conf": 0.7, "rationale": "A"},
+        {"src": "a", "dst": "c", "rel": "extends", "conf": 0.7, "rationale": "   "},
+        {
+            "src": "a", "dst": "d", "rel": "extends", "conf": 0.7,
+            "rationale": "論文 B は論文 A の手法を別ドメインに拡張している。",
+        },
+    ]
+    kept = build_lineage._filter_edges_by_rationale(edges)
+    assert len(kept) == 1
+    assert kept[0]["dst"] == "d"
+    assert all(
+        len((e.get("rationale") or "").strip()) >= _MIN_RATIONALE_LEN for e in kept
+    )
 
 
 # ---- build() end-to-end ----
@@ -420,17 +508,22 @@ def test_build_drops_unrelated_edges_and_uses_provider(tmp_path: Path, monkeypat
     # Provider returns different relations by (a, b) pair so we can assert
     # the "unrelated" edge is dropped.
     def fake_classify(a: dict, b: dict):
+        # Rationales must clear the #297 min-length floor (>=10 chars) so the
+        # final filter keeps the kept edges; this test asserts unrelated-drop.
         if b is focus:  # parent -> focus
             return RelationClassification(
-                relation="successor", confidence=0.8, rationale="継承"
+                relation="successor", confidence=0.8,
+                rationale="論文 B は論文 A の研究を継承している。",
             )
         if b is child_related:  # focus -> child_related
             return RelationClassification(
-                relation="extends", confidence=0.7, rationale="拡張"
+                relation="extends", confidence=0.7,
+                rationale="論文 B は論文 A の手法を拡張している。",
             )
         # focus -> child_unrelated
         return RelationClassification(
-            relation="unrelated", confidence=0.3, rationale="無関係"
+            relation="unrelated", confidence=0.3,
+            rationale="論文 B は論文 A と無関係である。",
         )
 
     provider = _FakeProvider(return_value=None)

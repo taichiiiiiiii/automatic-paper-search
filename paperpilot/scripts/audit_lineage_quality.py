@@ -20,6 +20,12 @@ lineage.json` and checks:
   fail threshold is generous on purpose (80 %) so the data-audit
   CI doesn't block PRs on themes that haven't been regenerated yet.
   Warn-only above 60 %.
+- **short_rationale_ratio** (#297): fraction of edges whose rationale is
+  non-empty but below `_MIN_RATIONALE_LEN` (the floor `from_dict` now
+  rejects) — truncated LLM output like "A" / "QD" / "VLLM" shown as a
+  meaningless 1-char tooltip. Warn-only above 20 % for now (legacy
+  iclr-2026 is ~71 % degenerate and needs an LLM regen to clean);
+  promote to a hard fail above 50 % once the data is regenerated.
 - **popularity_sink_count**: nodes with `incoming ≥ 8` — a single
   paper accumulating 8+ "extends" arrows means the lineage is
   collapsing into a star around a survey / landmark paper, which
@@ -45,7 +51,7 @@ from collections import Counter
 from datetime import datetime
 from pathlib import Path
 
-from paperpilot.llm.base import TEMPLATE_RATIONALES
+from paperpilot.llm.base import _MIN_RATIONALE_LEN, TEMPLATE_RATIONALES
 
 ROOT = Path(__file__).resolve().parents[2]
 DOCS_DIR = ROOT / "docs"
@@ -60,6 +66,18 @@ _TEMPLATE_RATIO_WARN = 0.60  # 60-80% is warned, not failed
 _POPULARITY_SINK_INCOMING = 8  # node with ≥N incoming edges
 _POPULARITY_SINK_FAIL_COUNT = 5  # > N sinks per lineage is a hard fail
 _YEAR_REVERSAL_FAIL_COUNT = 10  # > N edges with parent.year > child.year+1
+# Short / degenerate rationale (#297). Counts edges whose rationale is below
+# `_MIN_RATIONALE_LEN` — the floor RelationClassification.from_dict now
+# rejects (truncated LLM output like "A" / "QD" / "VLLM"). A spike means
+# degenerate edges are reaching the viewer as meaningless 1-char tooltips.
+# WARN-only for now: the already-published iclr-2026 lineage is ~71%
+# degenerate and can only be cleaned by regenerating with a live LLM
+# (blocked on the Groq key rotate, same as #285). Hard-failing today would
+# red the data-audit job on un-regenerated legacy data with no free fix.
+# Promote `_SHORT_RATIONALE_RATIO_PROMOTE_FAIL` to an actual hard fail once
+# the lineage data is regenerated clean (tracked in #297).
+_SHORT_RATIONALE_RATIO_WARN = 0.20  # > 20% degenerate rationales is warned
+_SHORT_RATIONALE_RATIO_PROMOTE_FAIL = 0.50  # future hard-fail bar (#297, post-regen)
 
 _TEMPLATE_RATIONALES_SET = frozenset(
     t.strip() for t in TEMPLATE_RATIONALES.values()
@@ -133,7 +151,8 @@ def edge_metrics(data: dict) -> dict[str, int | float]:
     """Compute the four edge-level metrics for a lineage (#209).
 
     Returns a dict with keys: ``edge_count``, ``template_count``,
-    ``template_ratio``, ``popularity_sinks``, ``year_reversals``.
+    ``template_ratio``, ``short_rationale_count``, ``short_rationale_ratio``,
+    ``popularity_sinks``, ``year_reversals``.
     Empty / missing edges yields all-zeros so callers don't need to
     guard. Designed to also be importable by ad-hoc analysis scripts.
     """
@@ -143,6 +162,8 @@ def edge_metrics(data: dict) -> dict[str, int | float]:
             "edge_count": 0,
             "template_count": 0,
             "template_ratio": 0.0,
+            "short_rationale_count": 0,
+            "short_rationale_ratio": 0.0,
             "popularity_sinks": 0,
             "year_reversals": 0,
         }
@@ -154,6 +175,7 @@ def edge_metrics(data: dict) -> dict[str, int | float]:
                 nodes_by_id[nid] = n
 
     template_count = 0
+    short_rationale_count = 0
     incoming: Counter[str] = Counter()
     year_reversals = 0
 
@@ -163,6 +185,12 @@ def edge_metrics(data: dict) -> dict[str, int | float]:
         rationale = e.get("rationale")
         if isinstance(rationale, str) and rationale.strip() in _TEMPLATE_RATIONALES_SET:
             template_count += 1
+        # #297: a non-empty but sub-floor rationale (e.g. "A") is a
+        # degenerate tooltip. Empty rationales are dropped upstream, so
+        # count only the 0 < len < floor band here.
+        stripped = rationale.strip() if isinstance(rationale, str) else ""
+        if 0 < len(stripped) < _MIN_RATIONALE_LEN:
+            short_rationale_count += 1
         dst = e.get("dst")
         if isinstance(dst, str):
             incoming[dst] += 1
@@ -181,6 +209,8 @@ def edge_metrics(data: dict) -> dict[str, int | float]:
         "edge_count": len(edges),
         "template_count": template_count,
         "template_ratio": template_count / len(edges) if edges else 0.0,
+        "short_rationale_count": short_rationale_count,
+        "short_rationale_ratio": short_rationale_count / len(edges) if edges else 0.0,
         "popularity_sinks": popularity_sinks,
         "year_reversals": year_reversals,
     }
@@ -205,6 +235,19 @@ def _audit_edges(data: dict) -> tuple[list[str], list[str]]:
             f"template_rationale_ratio={ratio:.0%} "
             f"({m['template_count']}/{m['edge_count']}); "
             f"warn above {_TEMPLATE_RATIO_WARN:.0%}"
+        )
+    short_ratio = float(m["short_rationale_ratio"])
+    # WARN-only (#297): hard-fail would red the data-audit job on the
+    # already-published ~71%-degenerate iclr-2026 lineage, which can't be
+    # cleaned without an LLM regen (Groq key rotate). Promote to a failure
+    # (>_SHORT_RATIONALE_RATIO_PROMOTE_FAIL) once the data is regenerated.
+    if short_ratio > _SHORT_RATIONALE_RATIO_WARN:
+        warnings.append(
+            f"short_rationale_ratio={short_ratio:.0%} "
+            f"({m['short_rationale_count']}/{m['edge_count']} edges with "
+            f"<{_MIN_RATIONALE_LEN}-char rationale, e.g. \"A\"); "
+            f"warn above {_SHORT_RATIONALE_RATIO_WARN:.0%} (#297 — regenerate "
+            f"the lineage to re-derive rationales)"
         )
     if int(m["popularity_sinks"]) > _POPULARITY_SINK_FAIL_COUNT:
         failures.append(

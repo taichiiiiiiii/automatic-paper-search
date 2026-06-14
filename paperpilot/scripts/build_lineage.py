@@ -58,6 +58,7 @@ from paperpilot.llm import (  # noqa: E402
     GroqProvider,
     RelationClassification,
 )
+from paperpilot.llm.base import _MIN_RATIONALE_LEN  # noqa: E402
 from paperpilot.scripts._common import slug_to_venue_label  # noqa: E402
 from paperpilot.utils.http import request_with_retry  # noqa: E402
 from paperpilot.utils.logger import get_logger, setup_logging  # noqa: E402
@@ -456,6 +457,26 @@ def persist_classifications(
     os.replace(tmp, cache_path)
 
 
+def _is_degenerate_rationale(rationale: object) -> bool:
+    """True iff ``rationale`` is empty or below the `_MIN_RATIONALE_LEN`
+    floor (#297). Centralises the "is this a meaningless tooltip" test so
+    the cache-hit guard and the final edge filter stay in sync."""
+    if not isinstance(rationale, str):
+        return True
+    return len(rationale.strip()) < _MIN_RATIONALE_LEN
+
+
+def _filter_edges_by_rationale(edges: list[dict]) -> list[dict]:
+    """Drop edges whose rationale is empty or below the min-length floor.
+
+    A silent empty tooltip is worse than no edge; so is a 1-char "A" tooltip
+    (#297). ``RelationClassification.from_dict`` already rejects both, and
+    the cache-hit guard catches degenerate cached entries, but this is the
+    belt-and-braces final filter that also catches edges built outside those
+    paths (e.g. legacy cache dicts merged in at runtime)."""
+    return [e for e in edges if not _is_degenerate_rationale(e.get("rationale"))]
+
+
 def _classify_cached(
     provider: AbstractLLMProvider,
     a: dict,
@@ -473,7 +494,16 @@ def _classify_cached(
     variant in ``build_deep_lineage`` when weak edges should survive.
     """
     if cache_key in classifications:
-        return classifications[cache_key]
+        cached = classifications[cache_key]
+        # #297 defense in depth: a cache hit returns the raw dict WITHOUT
+        # going through `RelationClassification.from_dict`, so a degenerate
+        # cached entry ({"rationale":"A"}, written before the #297 fix)
+        # would otherwise be served verbatim. Treat a sub-floor rationale as
+        # a cache MISS so we fall through and re-derive a full rationale.
+        if isinstance(cached, dict) and not _is_degenerate_rationale(
+            cached.get("rationale")
+        ):
+            return cached
     rc: RelationClassification | None = provider.classify_relation(a, b)
     if rc is not None:
         entry = {
@@ -615,12 +645,13 @@ def build(
         if focus_ids else (next(iter(nodes)) if nodes else None)
     )
 
-    # Drop edges without a rationale — a silent empty tooltip is worse than no edge.
+    # Drop edges with empty or degenerate (#297) rationales — a silent empty
+    # tooltip is worse than no edge, and so is a 1-char "A" tooltip.
     # (RelationClassification.from_dict already rejects these, but belt-and-braces.)
-    cleaned_edges = [e for e in edges if (e.get("rationale") or "").strip()]
+    cleaned_edges = _filter_edges_by_rationale(edges)
     dropped = len(edges) - len(cleaned_edges)
     if dropped:
-        logger.warning("dropped %d edges with empty rationale", dropped)
+        logger.warning("dropped %d edges with empty/degenerate rationale", dropped)
 
     clusters = build_clusters(list(nodes.values()))
 
