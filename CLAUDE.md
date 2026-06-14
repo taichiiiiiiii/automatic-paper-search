@@ -821,6 +821,7 @@ Skill / Agent を追加・変更した時は、この表と `.claude/agents/agen
 | Template echo reject (#132) | ✅ `RelationClassification.from_dict` が `_GENERIC_TEMPLATE_RATIONALES` の文字列を拒否 |
 | 不変条件 pin (#134, #146) | ✅ prompt size / `--llm-strict` flag / template dedup の regression test 完備 |
 | Edge fabrication 廃止 (#209 / #210) | ✅ `_DEFAULT_DERIVED` 削除、信号なし edge は drop (template extends 量産を停止) |
+| **Heuristic slot-fill rationale (#300)** | ✅ `_derive_relation_heuristic` の intent_map + year_cite 分岐が parent/child タイトル+年を埋め込む paper-specific rationale を emit、`_TEMPLATE_RATIONALES_SET` 非該当となり LLM=None 時の template-reject drop (relation collapse) を回避。#209 / #131 不変条件は維持 (新エッジ作らず、template echo reject 集合は LLM 用に残置) |
 | Seed gate v2 (#209 / #211) | ✅ 2-word phrase + title fallback、hyphen normalization、`_filter_denylisted_seeds` を seed phase に適用 |
 | Edge-level audit (#209 / #212) | ✅ `audit_lineage_quality` に `template_rationale_ratio` / `popularity_sinks` / `year_reversals`、themes opt-in (`--include-themes`) |
 | Tier 1 非 LLM seed quality (#209 / #214) | ✅ citation velocity ranking、survey title regex penalty (0.30×)、`paperpilot/data/theme_blacklist.json` per-theme veto |
