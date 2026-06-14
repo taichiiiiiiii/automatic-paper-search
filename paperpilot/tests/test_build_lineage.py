@@ -48,9 +48,10 @@ def _patch_env(monkeypatch, **values):
     monkeypatch.setattr(
         "paperpilot.utils.config_loader.load_env", lambda *a, **kw: base
     )
-    # Belt and braces: clear the unprefixed fallbacks that build_provider
-    # also reads from os.environ.
-    for v in ("GROQ_API_KEY", "GEMINI_API_KEY"):
+    # Belt and braces: clear the unprefixed fallbacks + the provider
+    # override that build_provider also reads from os.environ, so an
+    # ambient PAPERPILOT_LLM_PROVIDER can't make these tests non-hermetic.
+    for v in ("GROQ_API_KEY", "GEMINI_API_KEY", "PAPERPILOT_LLM_PROVIDER"):
         monkeypatch.delenv(v, raising=False)
 
 
@@ -84,6 +85,47 @@ def test_build_provider_uses_model_override_from_env(monkeypatch):
     # `.model` is concrete-provider state (GroqProvider / GeminiProvider),
     # not part of the AbstractLLMProvider base API — mypy needs the cast.
     assert getattr(provider, "model", None) == "llama-4-800b"
+
+
+def test_build_provider_override_forces_gemini_over_default_groq(monkeypatch):
+    """PAPERPILOT_LLM_PROVIDER=gemini beats the default Groq-first precedence
+    (used to run the higher-quality / still-free Gemini when the Groq key is
+    dead — #293)."""
+    _patch_env(monkeypatch, groq_api_key="gsk_x", gemini_api_key="gemini_y")
+    monkeypatch.setenv("PAPERPILOT_LLM_PROVIDER", "gemini")
+    provider, delay = build_lineage.build_provider()
+    assert provider.name == "gemini"
+    assert delay == build_lineage.LLM_RATE_DELAY["gemini"]
+
+
+def test_build_provider_override_groq_is_explicit(monkeypatch):
+    _patch_env(monkeypatch, groq_api_key="gsk_x", gemini_api_key="gemini_y")
+    monkeypatch.setenv("PAPERPILOT_LLM_PROVIDER", "groq")
+    provider, _ = build_lineage.build_provider()
+    assert provider.name == "groq"
+
+
+def test_build_provider_override_without_matching_key_raises(monkeypatch):
+    _patch_env(monkeypatch, groq_api_key="gsk_x")  # no gemini key
+    monkeypatch.setenv("PAPERPILOT_LLM_PROVIDER", "gemini")
+    with pytest.raises(RuntimeError, match="GEMINI_API_KEY"):
+        build_lineage.build_provider()
+
+
+def test_build_provider_override_unknown_value_raises(monkeypatch):
+    _patch_env(monkeypatch, groq_api_key="gsk_x")
+    monkeypatch.setenv("PAPERPILOT_LLM_PROVIDER", "bogus")
+    with pytest.raises(RuntimeError, match="not recognised"):
+        build_lineage.build_provider()
+
+
+def test_build_provider_override_auto_uses_default_precedence(monkeypatch):
+    """'auto' is an explicit no-op: it must fall through to the default
+    Groq-first precedence, not raise like an unknown value."""
+    _patch_env(monkeypatch, groq_api_key="gsk_x", gemini_api_key="gemini_y")
+    monkeypatch.setenv("PAPERPILOT_LLM_PROVIDER", "auto")
+    provider, _ = build_lineage.build_provider()
+    assert provider.name == "groq"
 
 
 def test_build_provider_accepts_unprefixed_fallback(monkeypatch):
