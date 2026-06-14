@@ -153,6 +153,45 @@ def test_audit_published_themes_five_buckets_present_even_when_empty(tmp_path):
 
 
 # ---------------------------------------------------------------------------
+# #310: per-model cache tally
+# ---------------------------------------------------------------------------
+
+
+def test_audit_cache_by_model_tally(tmp_path):
+    """_audit_classifications_cache tallies entries per producing LLM via the
+    `model` field (#310); entries without it bucket as "(legacy/none)"."""
+    from paperpilot.scripts.audit_lineage_classification_breakdown import (
+        _audit_classifications_cache,
+    )
+
+    good = "論文 B は論文 A の注意機構を線形時間に近似している実装である。"
+    cache = {
+        "a->b": {"relation": "extends", "confidence": 0.8, "rationale": good,
+                 "model": "gemini:gemini-2.5-flash"},
+        "c->d": {"relation": "successor", "confidence": 0.7, "rationale": good,
+                 "model": "groq:llama-3.3-70b-versatile"},
+        # Legacy entry (pre-#310): no model field.
+        "e->f": {"relation": "extends", "confidence": 0.7, "rationale": good},
+    }
+    cache_path = tmp_path / "classifications.json"
+    cache_path.write_text(json.dumps(cache), encoding="utf-8")
+
+    import paperpilot.scripts.audit_lineage_classification_breakdown as mod
+    original = mod.CLASSIFICATIONS_CACHE
+    mod.CLASSIFICATIONS_CACHE = cache_path
+    try:
+        result = _audit_classifications_cache()
+    finally:
+        mod.CLASSIFICATIONS_CACHE = original
+
+    assert result["available"] is True
+    by_model = result["by_model"]
+    assert by_model["gemini:gemini-2.5-flash"] == 1
+    assert by_model["groq:llama-3.3-70b-versatile"] == 1
+    assert by_model["(legacy/none)"] == 1
+
+
+# ---------------------------------------------------------------------------
 # Drift assertion test
 # ---------------------------------------------------------------------------
 
