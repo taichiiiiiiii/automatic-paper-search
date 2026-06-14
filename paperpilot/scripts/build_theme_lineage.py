@@ -87,6 +87,7 @@ from paperpilot.scripts._lineage_classify import (  # noqa: E402
 )
 from paperpilot.scripts.build_lineage import (  # noqa: E402
     CACHE_DIR,
+    _filter_edges_by_rationale,
     build_provider,
     fetch_related,
     persist_classifications,
@@ -2468,8 +2469,10 @@ def build_theme_lineage(
             "github stars: enriched %d nodes (cache + fresh)", github_added
         )
 
-    # Stage 4: drop edges with empty rationale (matches build_lineage policy).
-    cleaned_edges = [e for e in edges if (e.get("rationale") or "").strip()]
+    # Stage 4: drop edges with empty OR degenerate (#297) rationale —
+    # shares build_lineage's `_MIN_RATIONALE_LEN` floor so a 1-char "A"
+    # tooltip can't reach the theme viewer either (3-layer defense).
+    cleaned_edges = _filter_edges_by_rationale(edges)
     dropped = len(edges) - len(cleaned_edges)
     if dropped:
         logger.warning("dropped %d edges with empty rationale", dropped)
