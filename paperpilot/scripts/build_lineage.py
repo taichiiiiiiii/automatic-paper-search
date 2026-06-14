@@ -160,24 +160,57 @@ def build_provider() -> tuple[AbstractLLMProvider, float]:
     groq_key = env.get("groq_api_key") or os.environ.get("GROQ_API_KEY")
     gemini_key = env.get("gemini_api_key") or os.environ.get("GEMINI_API_KEY")
 
-    # Annotate explicitly as the base class so mypy accepts either concrete
-    # subclass on the way back out of the tuple.
-    provider: AbstractLLMProvider
-    if groq_key:
+    # Each builder annotates its local provider as the base class so mypy
+    # accepts either concrete subclass on the way back out of the tuple.
+    def _groq() -> tuple[AbstractLLMProvider, float]:
         model = env.get("groq_model") or "llama-3.3-70b-versatile"
-        provider = GroqProvider(
+        p: AbstractLLMProvider = GroqProvider(
             {"enabled": True, "model": model, "temperature": 0.1, "timeout_seconds": 30},
             api_key=groq_key,
         )
-        return provider, LLM_RATE_DELAY["groq"]
+        return p, LLM_RATE_DELAY["groq"]
 
-    if gemini_key:
+    def _gemini() -> tuple[AbstractLLMProvider, float]:
         model = env.get("gemini_model") or "gemini-2.5-flash"
-        provider = GeminiProvider(
+        p: AbstractLLMProvider = GeminiProvider(
             {"enabled": True, "model": model, "temperature": 0.1, "timeout_seconds": 30},
             api_key=gemini_key,
         )
-        return provider, LLM_RATE_DELAY["gemini"]
+        return p, LLM_RATE_DELAY["gemini"]
+
+    # PAPERPILOT_LLM_PROVIDER overrides the default key-presence precedence:
+    # set to "gemini" / "groq" to force that backend (e.g. when the Groq
+    # free-tier key is dead and Gemini — also free, and higher relation
+    # macro-F1 per #293 — should run instead). Unset / "auto" keeps the
+    # historical Groq-first default. Read from the ambient env (runtime
+    # selector, not a .env secret) with a .env fallback for convenience.
+    preference = (
+        os.environ.get("PAPERPILOT_LLM_PROVIDER")
+        or env.get("llm_provider")
+        or ""
+    ).strip().lower()
+    if preference in ("gemini", "groq"):
+        key = gemini_key if preference == "gemini" else groq_key
+        if not key:
+            up = preference.upper()
+            raise RuntimeError(
+                f"PAPERPILOT_LLM_PROVIDER={preference} requested but no key "
+                f"found (set PAPERPILOT_{up}_API_KEY in paperpilot/.env, "
+                f"or {up}_API_KEY in the environment)."
+            )
+        return _gemini() if preference == "gemini" else _groq()
+    if preference not in ("", "auto"):
+        raise RuntimeError(
+            f"PAPERPILOT_LLM_PROVIDER={preference!r} is not recognised "
+            "(expected 'groq', 'gemini', or 'auto')."
+        )
+
+    # Default precedence: Groq first (most generous free tier for the
+    # hundreds-of-calls classification workload), then Gemini.
+    if groq_key:
+        return _groq()
+    if gemini_key:
+        return _gemini()
 
     # RuntimeError (not sys.exit) so this function is safe to import from a
     # Modal Function — sys.exit would tear down the ASGI worker. The CLI
