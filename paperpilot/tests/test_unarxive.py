@@ -70,6 +70,59 @@ def test_normalise_arxiv_id_rejects_old_style_and_garbage():
     assert unarxive._normalise_arxiv_id(None) is None  # type: ignore[arg-type]
 
 
+# --- #301: extract bare arXiv id from OpenAlex URL / DataCite DOI forms ---
+# OpenAlex sets `ids.arxiv_id` to None for ~all CS works; the arXiv id only
+# survives in the landing_page_url (https://arxiv.org/abs/<ID>) or the
+# DataCite DOI (10.48550/arXiv.<ID>). Without parsing these the unarXive
+# citation-context grounding never fires (0 context_pattern edges).
+
+
+def test_normalise_arxiv_id_accepts_arxiv_abs_url():
+    """OpenAlex landing_page_url form: https://arxiv.org/abs/<ID>."""
+    assert (
+        unarxive._normalise_arxiv_id("https://arxiv.org/abs/2010.11929")
+        == "2010.11929"
+    )
+
+
+def test_normalise_arxiv_id_accepts_arxiv_pdf_url_with_version():
+    """pdf_url form with a version suffix → bare id (version stripped)."""
+    assert (
+        unarxive._normalise_arxiv_id("http://arxiv.org/pdf/2205.14135v2")
+        == "2205.14135"
+    )
+
+
+def test_normalise_arxiv_id_accepts_arxiv_url_case_insensitive():
+    """Host casing varies between OpenAlex records; match is case-insensitive."""
+    assert (
+        unarxive._normalise_arxiv_id("HTTPS://ArXiv.org/ABS/2010.11929")
+        == "2010.11929"
+    )
+
+
+def test_normalise_arxiv_id_accepts_datacite_arxiv_doi():
+    """DataCite arXiv DOI form, including inside a doi.org URL."""
+    assert (
+        unarxive._normalise_arxiv_id(
+            "https://doi.org/10.48550/arXiv.2010.11929"
+        )
+        == "2010.11929"
+    )
+    # Bare DataCite DOI (no doi.org host) also parses.
+    assert (
+        unarxive._normalise_arxiv_id("10.48550/arXiv.2103.14030")
+        == "2103.14030"
+    )
+
+
+def test_normalise_arxiv_id_rejects_non_arxiv_doi():
+    """A non-arXiv DOI (random journal) must stay None — we only want
+    the DataCite arXiv 10.48550 prefix, never arbitrary DOIs."""
+    assert unarxive._normalise_arxiv_id("https://doi.org/10.1234/foo") is None
+    assert unarxive._normalise_arxiv_id("10.18653/v1/N18-1202") is None
+
+
 def test_fetch_contexts_empty_inputs_short_circuit():
     """Missing ids → empty list, never raises, never opens the DB."""
     assert unarxive.fetch_contexts(
