@@ -100,14 +100,48 @@ def _normalise_openalex_short(value: str | None) -> str | None:
 # (year.serial) form. unarXive stores the bare modern form when present.
 _ARXIV_BARE_RE = re.compile(r"^\d{4}\.\d{4,5}(v\d+)?$")
 
+# OpenAlex sets ``ids.arxiv_id`` to None for ~all CS works; the arXiv id
+# only survives in a location URL (the landing_page_url / pdf_url) or in
+# the DataCite arXiv DOI. ``re.search`` (not ``match``) so we catch the id
+# inside a larger URL string — OpenAlex location URLs for non-arXiv works
+# are publisher hosts (nature.com, dl.acm.org, ...) that never embed
+# ``arxiv.org/abs/`` as a path substring, so the looser ``search`` is safe
+# in practice. Both are case-insensitive because OpenAlex records vary the
+# host casing (``arxiv.org`` vs ``ArXiv.org``) and the DOI casing
+# (``10.48550/arXiv.x`` vs ``10.48550/arxiv.x``).
+_ARXIV_URL_RE = re.compile(
+    r"arxiv\.org/(?:abs|pdf)/(\d{4}\.\d{4,5})", re.IGNORECASE
+)
+_ARXIV_DATACITE_DOI_RE = re.compile(
+    r"10\.48550/arxiv\.(\d{4}\.\d{4,5})", re.IGNORECASE
+)
+
 
 def _normalise_arxiv_id(value: str | None) -> str | None:
-    """Strip any version suffix (``v2``) from an arXiv ID and validate
-    the bare year.serial shape. Old-style IDs are dropped — they would
-    require a separate lookup table and our corpus is post-2017."""
+    """Return the bare ``year.serial`` arXiv id from any of the forms
+    PaperPilot encounters, stripping any version suffix (``v2``):
+
+      * bare modern id: ``2010.11929`` (with optional ``v3``)
+      * ``arXiv:2010.11929`` prefix some callers attach
+      * arXiv URL: ``https://arxiv.org/abs/<id>`` or ``.../pdf/<id>``
+        (OpenAlex landing_page_url / pdf_url)
+      * DataCite arXiv DOI: ``10.48550/arXiv.<id>`` (also inside a
+        ``https://doi.org/...`` URL)
+
+    Returns ``None`` for genuinely non-arXiv input (random DOIs,
+    pre-2007 ``cs.LG/0512345`` ids, garbage) — old-style ids would need
+    a separate lookup table and our corpus is post-2017."""
     if not isinstance(value, str) or not value:
         return None
     bare = value.strip()
+    # URL form first: matches the id inside an arxiv.org/abs|pdf URL.
+    url_match = _ARXIV_URL_RE.search(bare)
+    if url_match:
+        return url_match.group(1)
+    # DataCite arXiv DOI next (also matches inside a doi.org URL).
+    doi_match = _ARXIV_DATACITE_DOI_RE.search(bare)
+    if doi_match:
+        return doi_match.group(1)
     # Tolerate "arXiv:2010.11929" prefix some callers attach.
     if bare.lower().startswith("arxiv:"):
         bare = bare[len("arxiv:"):]
