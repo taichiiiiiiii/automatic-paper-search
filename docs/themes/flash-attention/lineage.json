@@ -2,160 +2,23 @@
   "root": "openalex:W4281758439",
   "nodes": [
     {
-      "id": "openalex:W2046030755",
-      "title": "Variability in visual cortex size reflects tradeoff between local orientation sensitivity and global orientation modulation",
-      "year": 2013,
-      "venue": "Nature Communications",
-      "venue_tier": "preprint",
-      "authors": [
-        "Chen Song",
-        "D. Samuel Schwarzkopf",
-        "Geraint Rees"
-      ],
-      "kinds": [],
-      "citation_count": 79,
-      "github_stars": 0,
-      "tldr": "The surface area of early visual cortices varies several fold across healthy adult humans and is genetically heritable. But the functional…",
-      "short_abstract": "The surface area of early visual cortices varies several fold across healthy adult humans and is genetically heritable. But the functional consequences of this anatomical variability are still largely unexplored. Here we show that interindividual variability in human visual cortical surface area reflects a tradeoff between sensitivity to visual details and susceptibility to visual context. Specifically, individuals with larger primary visual cortices can discriminate finer orientation differences, whereas individuals with smaller primary visual cortices experience stronger perceptual modulation by global orientation contexts. This anatomically correlated tradeoff between discrimination sensitivity and contextual modulation of orientation perception, however, does not generalize to contrast perception or luminance perception. Neural field simulations based on a scaling of intracortical circuits reproduce our empirical observations. Together our findings reveal a feature-specific shift…",
-      "doi": "10.1038/ncomms3201"
-    },
-    {
-      "id": "openalex:W3035626590",
-      "title": "Learning Individual Speaking Styles for Accurate Lip to Speech Synthesis",
-      "year": 2020,
-      "venue": "arXiv",
-      "venue_tier": "preprint",
-      "authors": [
-        "K R Prajwal",
-        "Rudrabha Mukhopadhyay",
-        "Vinay P. Namboodiri",
-        "C. V. Jawahar"
-      ],
-      "kinds": [],
-      "citation_count": 109,
-      "github_stars": 0,
-      "tldr": "Humans involuntarily tend to infer parts of the conversation from lip movements when the speech is absent or corrupted by external noise.…",
-      "short_abstract": "Humans involuntarily tend to infer parts of the conversation from lip movements when the speech is absent or corrupted by external noise. In this work, we explore the task of lip to speech synthesis, i.e., learning to generate natural speech given only the lip movements of a speaker. Acknowledging the importance of contextual and speaker-specific cues for accurate lip-reading, we take a different path from existing works. We focus on learning accurate lip sequences to speech mappings for individual speakers in unconstrained, large vocabulary settings. To this end, we collect and release a large-scale benchmark dataset, the first of its kind, specifically to train and evaluate the single-speaker lip to speech task in natural settings. We propose a novel approach with key design choices to achieve accurate, natural lip to speech synthesis in such unconstrained scenarios for the first time. Extensive evaluation using quantitative, qualitative metrics and human evaluation shows that our…",
-      "doi": "10.1109/cvpr42600.2020.01381"
-    },
-    {
-      "id": "openalex:W3088985939",
-      "title": "Animated virtual characters to explore audio-visual speech in controlled and naturalistic environments",
-      "year": 2020,
-      "venue": "Scientific Reports",
-      "venue_tier": "preprint",
-      "authors": [
-        "Raphaël Thézé",
-        "Mehdi Ali Gadiri",
-        "Louis Albert",
-        "Antoine Provost",
-        "Anne‐Lise Giraud"
-      ],
-      "kinds": [],
-      "citation_count": 21,
-      "github_stars": 0,
-      "tldr": "Natural speech is processed in the brain as a mixture of auditory and visual features. An example of the importance of visual speech is…",
-      "short_abstract": "Natural speech is processed in the brain as a mixture of auditory and visual features. An example of the importance of visual speech is the McGurk effect and related perceptual illusions that result from mismatching auditory and visual syllables. Although the McGurk effect has widely been applied to the exploration of audio-visual speech processing, it relies on isolated syllables, which severely limits the conclusions that can be drawn from the paradigm. In addition, the extreme variability and the quality of the stimuli usually employed prevents comparability across studies. To overcome these limitations, we present an innovative methodology using 3D virtual characters with realistic lip movements synchronized on computer-synthesized speech. We used commercially accessible and affordable tools to facilitate reproducibility and comparability, and the set-up was validated on 24 participants performing a perception task. Within complete and meaningful French sentences, we paired a…",
-      "doi": "10.1038/s41598-020-72375-y"
-    },
-    {
       "id": "openalex:W4281758439",
       "title": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness",
       "year": 2022,
       "venue": "arXiv (Cornell University)",
       "venue_tier": "preprint",
       "authors": [
-        "Tri Dao",
-        "Daniel Y. Fu",
-        "Stefano Ermon",
-        "Atri Rudra",
-        "Christopher Ré"
+        "Tri Dao"
       ],
       "kinds": [],
-      "citation_count": 458,
-      "github_stars": 0,
-      "tldr": "Transformers are slow and memory-hungry on long sequences, since the time and memory complexity of self-attention are quadratic in…",
-      "short_abstract": "Transformers are slow and memory-hungry on long sequences, since the time and memory complexity of self-attention are quadratic in sequence length. Approximate attention methods have attempted to address this problem by trading off model quality to reduce the compute complexity, but often do not achieve wall-clock speedup. We argue that a missing principle is making attention algorithms IO-aware -- accounting for reads and writes between levels of GPU memory. We propose FlashAttention, an IO-aware exact attention algorithm that uses tiling to reduce the number of memory reads/writes between GPU high bandwidth memory (HBM) and GPU on-chip SRAM. We analyze the IO complexity of FlashAttention, showing that it requires fewer HBM accesses than standard attention, and is optimal for a range of SRAM sizes. We also extend FlashAttention to block-sparse attention, yielding an approximate attention algorithm that is faster than any existing approximate attention method. FlashAttention trains…",
+      "citation_count": 459,
+      "github_stars": 4,
+      "tldr": "The explosive growth of machine learning has produced an equally explosive proliferation of accelerator architectures, yet no systematic…",
+      "short_abstract": "The explosive growth of machine learning has produced an equally explosive proliferation of accelerator architectures, yet no systematic framework maps the computational character of a workload to the hardware that serves it best. This paper builds that framework and uses it to motivate a concrete design. We decompose modern ML workloads — transformers, CNNs, GNNs, diffusion and state-space models — into their core compute primitives, characterize each by arithmetic intensity, memory-access pattern, and parallelism, and evaluate how GPUs, TPUs, systolic arrays, dataflow processors, wafer-scale engines, and neuromorphic chips serve them. The recurring finding is that the binding constraint has shifted from peak FLOPS to memory bandwidth and data-movement energy — a shift that low-precision quantization only sharpens. Using hierarchical roofline and utilization modelling, we quantify it and consolidate eight persistent, unsolved problems in current designs. Those problems motivate the…",
+      "arxiv_id": "2205.14135",
       "doi": "10.48550/arxiv.2205.14135",
-      "is_focus": true
-    },
-    {
-      "id": "openalex:W4220822444",
-      "title": "Decoding lip language using triboelectric sensors with deep learning",
-      "year": 2022,
-      "venue": "Nature Communications",
-      "venue_tier": "preprint",
-      "authors": [
-        "Yijia Lu",
-        "Tian Han",
-        "Jia Cheng",
-        "Fei Zhu",
-        "Bin Liu"
-      ],
-      "kinds": [],
-      "citation_count": 239,
-      "github_stars": 0,
-      "tldr": "Lip language is an effective method of voice-off communication in daily life for people with vocal cord lesions and laryngeal and lingual…",
-      "short_abstract": "Lip language is an effective method of voice-off communication in daily life for people with vocal cord lesions and laryngeal and lingual injuries without occupying the hands. Collection and interpretation of lip language is challenging. Here, we propose the concept of a novel lip-language decoding system with self-powered, low-cost, contact and flexible triboelectric sensors and a well-trained dilated recurrent neural network model based on prototype learning. The structural principle and electrical properties of the flexible sensors are measured and analysed. Lip motions for selected vowels, words, phrases, silent speech and voice speech are collected and compared. The prototype learning model reaches a test accuracy of 94.5% in training 20 classes with 100 samples each. The applications, such as identity recognition to unlock a gate, directional control of a toy car and lip-motion to speech conversion, work well and demonstrate great feasibility and potential. Our work presents a…",
-      "doi": "10.1038/s41467-022-29083-0"
-    },
-    {
-      "id": "openalex:W7133227460",
-      "title": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness",
-      "year": 2022,
-      "venue": "arXiv",
-      "venue_tier": "preprint",
-      "authors": [
-        "Tri Dao",
-        "Stefano Ermon",
-        "Dan Fu",
-        "Christopher Ré",
-        "Atri Rudra"
-      ],
-      "kinds": [],
-      "citation_count": 187,
-      "github_stars": 0,
-      "tldr": "",
-      "doi": "10.52202/068431-1189",
-      "is_focus": true
-    },
-    {
-      "id": "openalex:W4308356480",
-      "title": "A Swin Transformer-based model for mosquito species identification",
-      "year": 2022,
-      "venue": "Scientific Reports",
-      "venue_tier": "preprint",
-      "authors": [
-        "Zhao De-zhong",
-        "Xin-kai Wang",
-        "Teng Zhao",
-        "Hu Li",
-        "Dan Xing"
-      ],
-      "kinds": [],
-      "citation_count": 35,
-      "github_stars": 0,
-      "tldr": "Mosquito transmit numbers of parasites and pathogens resulting in fatal diseases. Species identification is a prerequisite for effective…",
-      "short_abstract": "Mosquito transmit numbers of parasites and pathogens resulting in fatal diseases. Species identification is a prerequisite for effective mosquito control. Existing morphological and molecular classification methods have evitable disadvantages. Here we introduced Deep learning techniques for mosquito species identification. A balanced, high-definition mosquito dataset with 9900 original images covering 17 species was constructed. After three rounds of screening and adjustment-testing (first round among 3 convolutional neural networks and 3 Transformer models, second round among 3 Swin Transformer variants, and third round between 2 images sizes), we proposed the first Swin Transformer-based mosquito species identification model (Swin MSI) with 99.04% accuracy and 99.16% F1-score. By visualizing the identification process, the morphological keys used in Swin MSI were similar but not the same as those used by humans. Swin MSI realized 100% subspecies-level identification in Culex…",
-      "doi": "10.1038/s41598-022-21017-6"
-    },
-    {
-      "id": "openalex:W3211862173",
-      "title": "Lip to Speech Synthesis with Visual Context Attentional GAN",
-      "year": 2022,
-      "venue": "arXiv (Cornell University)",
-      "venue_tier": "preprint",
-      "authors": [
-        "Minsu Kim",
-        "Joanna Hong",
-        "Yong Man Ro"
-      ],
-      "kinds": [],
-      "citation_count": 24,
-      "github_stars": 0,
-      "tldr": "In this paper, we propose a novel lip-to-speech generative adversarial network, Visual Context Attentional GAN (VCA-GAN), which can…",
-      "short_abstract": "In this paper, we propose a novel lip-to-speech generative adversarial network, Visual Context Attentional GAN (VCA-GAN), which can jointly model local and global lip movements during speech synthesis. Specifically, the proposed VCA-GAN synthesizes the speech from local lip visual features by finding a mapping function of viseme-to-phoneme, while global visual context is embedded into the intermediate layers of the generator to clarify the ambiguity in the mapping induced by homophene. To achieve this, a visual context attention module is proposed where it encodes global representations from the local visual features, and provides the desired global visual context corresponding to the given coarse speech representation to the generator through audio-visual attention. In addition to the explicit modelling of local and global visual representations, synchronization learning is introduced as a form of contrastive learning that guides the generator to synthesize a speech in sync with the…",
-      "doi": "10.48550/arxiv.2204.01726"
+      "is_focus": true,
+      "github_url": "https://github.com/xrsrke/flashattention"
     },
     {
       "id": "openalex:W4376226279",
@@ -169,7 +32,7 @@
         "David A. Clifton"
       ],
       "kinds": [],
-      "citation_count": 840,
+      "citation_count": 848,
       "github_stars": 0,
       "tldr": "Transformer is a promising neural network learner, and has achieved great success in various machine learning tasks. Thanks to the recent…",
       "short_abstract": "Transformer is a promising neural network learner, and has achieved great success in various machine learning tasks. Thanks to the recent prevalence of multimodal applications and Big Data, Transformer-based multimodal learning has become a hot topic in AI research. This paper presents a comprehensive survey of Transformer techniques oriented at multimodal data. The main contents of this survey include: (1) a background of multimodal learning, Transformer ecosystem, and the multimodal Big Data era, (2) a systematic review of Vanilla Transformer, Vision Transformer, and multimodal Transformers, from a geometrically topological perspective, (3) a review of multimodal Transformer applications, via two important paradigms, i.e., for multimodal pretraining and for specific multimodal tasks, (4) a summary of the common challenges and designs shared by the multimodal Transformer models and applications, and (5) a discussion of open problems and potential research directions for the community.",
@@ -190,7 +53,7 @@
         "Han Hu"
       ],
       "kinds": [],
-      "citation_count": 727,
+      "citation_count": 729,
       "github_stars": 0,
       "tldr": "Vision transformers have shown great success due to their high model capabilities. However, their remarkable performance is accompanied by…",
       "short_abstract": "Vision transformers have shown great success due to their high model capabilities. However, their remarkable performance is accompanied by heavy computation costs, which makes them unsuitable for real-time applications. In this paper, we propose a family of high-speed vision transformers named Efficient ViT. We find that the speed of existing transformer models is commonly bounded by memory inefficient operations, especially the tensor reshaping and element-wise functions in MHSA. Therefore, we design a new building block with a sandwich layout, i.e., using a single memory-bound MHSA between efficient FFN layers, which improves memory efficiency while enhancing channel communication. Moreover, we discover that the attention maps share high similarities across heads, leading to computational redundancy. To address this, we present a cascaded group attention module feeding attention heads with different splits of the full feature, which not only saves computation cost but also improves…",
@@ -211,43 +74,9 @@
       "github_stars": 0,
       "tldr": "Scaling Transformers to longer sequence lengths has been a major problem in the last several years, promising to improve performance in…",
       "short_abstract": "Scaling Transformers to longer sequence lengths has been a major problem in the last several years, promising to improve performance in language modeling and high-resolution image understanding, as well as to unlock new applications in code, audio, and video generation. The attention layer is the main bottleneck in scaling to longer sequences, as its runtime and memory increase quadratically in the sequence length. FlashAttention exploits the asymmetric GPU memory hierarchy to bring significant memory saving (linear instead of quadratic) and runtime speedup (2-4$\\times$ compared to optimized baselines), with no approximation. However, FlashAttention is still not nearly as fast as optimized matrix-multiply (GEMM) operations, reaching only 25-40\\% of the theoretical maximum FLOPs/s. We observe that the inefficiency is due to suboptimal work partitioning between different thread blocks and warps on the GPU, causing either low-occupancy or unnecessary shared memory reads/writes. We…",
+      "arxiv_id": "2307.08691",
       "doi": "10.48550/arxiv.2307.08691",
       "is_focus": true
-    },
-    {
-      "id": "openalex:W4385240187",
-      "title": "Speech emotion classification using attention based network and regularized feature selection",
-      "year": 2023,
-      "venue": "Scientific Reports",
-      "venue_tier": "preprint",
-      "authors": [
-        "Samson Akinpelu",
-        "Serestina Viriri"
-      ],
-      "kinds": [],
-      "citation_count": 33,
-      "github_stars": 0,
-      "tldr": "Speech emotion classification (SEC) has gained the utmost height and occupied a conspicuous position within the research community in…",
-      "short_abstract": "Speech emotion classification (SEC) has gained the utmost height and occupied a conspicuous position within the research community in recent times. Its vital role in Human-Computer Interaction (HCI) and affective computing cannot be overemphasized. Many primitive algorithmic solutions and deep neural network (DNN) models have been proposed for efficient recognition of emotion from speech however, the suitability of these methods to accurately classify emotion from speech with multi-lingual background and other factors that impede efficient classification of emotion is still demanding critical consideration. This study proposed an attention-based network with a pre-trained convolutional neural network and regularized neighbourhood component analysis (RNCA) feature selection techniques for improved classification of speech emotion. The attention model has proven to be successful in many sequence-based and time-series tasks. An extensive experiment was carried out using three major…",
-      "doi": "10.1038/s41598-023-38868-2"
-    },
-    {
-      "id": "openalex:W4375869161",
-      "title": "CN-CVS: A Mandarin Audio-Visual Dataset for Large Vocabulary Continuous Visual to Speech Synthesis",
-      "year": 2023,
-      "venue": "arXiv",
-      "venue_tier": "preprint",
-      "authors": [
-        "Chen Chen",
-        "Dong Wang",
-        "Thomas Fang Zheng"
-      ],
-      "kinds": [],
-      "citation_count": 22,
-      "github_stars": 0,
-      "tldr": "Research on Video to Speech Synthesis (VTS) surges recently and the focus is gradually shifting from small-vocabulary short-phrase VTS to…",
-      "short_abstract": "Research on Video to Speech Synthesis (VTS) surges recently and the focus is gradually shifting from small-vocabulary short-phrase VTS to large-vocabulary continuous VTS (LVC-VTS). A large-scale dataset with sufficient speakers and utterances is a prerequisite for such research, and the database is certainly language dependent.In this paper, we introduce CN-CVS, a large-scale Mandarin continuous visual-speech dataset, to support LVC-VTS research. The dataset contains about 200k utterances from more than 2500 individuals, amounting to more than 300 hours of visual-speech data. We built a state-of-the-art VTS model with the new dataset and conducted preliminary studies. Our results show that models that achieve good performance on small vocabulary tasks may perform very poor on CN-CVS, indicating that continuous VTS is indeed a challenging task, and the main challenge comes from the unconstrained vocabulary. The dataset and baseline code can be downloaded for free from…",
-      "doi": "10.1109/icassp49357.2023.10095796"
     },
     {
       "id": "openalex:W4391876619",
@@ -263,7 +92,7 @@
         "Michele Bevilacqua"
       ],
       "kinds": [],
-      "citation_count": 876,
+      "citation_count": 887,
       "github_stars": 0,
       "tldr": "Abstract While recent language models have the ability to take long contexts as input, relatively little is known about how well they use…",
       "short_abstract": "Abstract While recent language models have the ability to take long contexts as input, relatively little is known about how well they use longer context. We analyze the performance of language models on two tasks that require identifying relevant information in their input contexts: multi-document question answering and key-value retrieval. We find that performance can degrade significantly when changing the position of relevant information, indicating that current language models do not robustly make use of information in long input contexts. In particular, we observe that performance is often highest when relevant information occurs at the beginning or end of the input context, and significantly degrades when models must access relevant information in the middle of long contexts, even for explicitly long-context models. Our analysis provides a better understanding of how language models use their input context and provides new evaluation protocols for future long-context language…",
@@ -284,7 +113,7 @@
         "Xihui Liu"
       ],
       "kinds": [],
-      "citation_count": 410,
+      "citation_count": 415,
       "github_stars": 0,
       "tldr": "This paper is not motivated to seek innovation within the attention mechanism. Instead, it focuses on overcoming the existing trade-offs…",
       "short_abstract": "This paper is not motivated to seek innovation within the attention mechanism. Instead, it focuses on overcoming the existing trade-offs between accuracy and efficiency within the context of point cloud processing, leveraging the power of scale. Drawing inspiration from recent advances in 3D large-scale representation learning, we recognize that model performance is more influenced by scale than by intricate design. Therefore, we present Point Transformer V3 (PTv3), which prioritizes simplicity and efficiency over the accuracy of certain mechanisms that are minor to the over-all performance after scaling, such as replacing the precise neighbor search by KNN with an efficient serialized neighbor mapping of point clouds organized with specific patterns. This principle enables significant scaling, expanding the receptive field from 16 to 1024 points while remaining efficient (a 3 x increase in processing speed and a 10 x improvement in memory efficiency compared with its pre-decessor,…",
@@ -345,50 +174,11 @@
         "Vijay Thakkar"
       ],
       "kinds": [],
-      "citation_count": 26,
+      "citation_count": 27,
       "github_stars": 0,
       "tldr": "",
       "doi": "10.52202/079017-2193",
       "is_focus": true
-    },
-    {
-      "id": "openalex:W4392136979",
-      "title": "Integrated visual transformer and flash attention for lip-to-speech generation GAN",
-      "year": 2024,
-      "venue": "Scientific Reports",
-      "venue_tier": "preprint",
-      "authors": [
-        "Qiong Yang",
-        "Yuxuan Bai",
-        "Feng Liu",
-        "Wei Zhang"
-      ],
-      "kinds": [],
-      "citation_count": 18,
-      "github_stars": 0,
-      "tldr": "Lip-to-Speech (LTS) generation is an emerging technology that is highly visible, widely supported, and rapidly evolving. LTS has a wide…",
-      "short_abstract": "Lip-to-Speech (LTS) generation is an emerging technology that is highly visible, widely supported, and rapidly evolving. LTS has a wide range of promising applications, including assisting speech impairment and improving speech interaction in virtual assistants and robots. However, the technique faces the following challenges: (1) Chinese lip-to-speech generation is poorly recognized. (2) The wide range of variation in lip-speaking is poorly aligned with lip movements. Addressing these challenges will contribute to advancing Lip-to-Speech (LTS) technology, enhancing the communication abilities, and improving the quality of life for individuals with disabilities. Currently, lip-to-speech generation techniques usually employ the GAN architecture but suffer from the following problems: The primary issue lies in the insufficient joint modeling of local and global lip movements, resulting in visual ambiguities and inadequate image representations. To solve these problems, we design Flash…",
-      "doi": "10.1038/s41598-024-55248-6",
-      "is_focus": true
-    },
-    {
-      "id": "openalex:W4399306104",
-      "title": "Script Generation for Silent Speech in E-Learning",
-      "year": 2024,
-      "venue": "Advances in educational technologies and instructional design book series",
-      "venue_tier": "preprint",
-      "authors": [
-        "S. M. Emdad Hossain",
-        "Sallam O. F. Khairy",
-        "Arockiasamy Soosaimanickm",
-        "Rabie Α. Ramadan"
-      ],
-      "kinds": [],
-      "citation_count": 0,
-      "github_stars": 0,
-      "tldr": "This chapter is all about an advanced system by which the speech without sound will be recognized, and the equivalent script will be…",
-      "short_abstract": "This chapter is all about an advanced system by which the speech without sound will be recognized, and the equivalent script will be generated automatically. All the relevant stakeholders, i.e. students, instructors, then collect script and study insight. To develop the proposed system, it is planned to use one of the most prominent and popular datasets called synthetic-speech-commands-dataset-SSCD, which is freely available. The outcome of this research will provide an opportunity to develop community/reason-based database which will be a potential contribution in the field of conventional education, AI based education and bioinformatics for the research community.",
-      "doi": "10.4018/979-8-3693-2440-0.ch020"
     },
     {
       "id": "openalex:W4411403346",
@@ -404,7 +194,7 @@
         "Saeed Anwar"
       ],
       "kinds": [],
-      "citation_count": 469,
+      "citation_count": 481,
       "github_stars": 0,
       "tldr": "Large Language Models (LLMs) have recently demonstrated remarkable capabilities in natural language processing tasks and beyond. This…",
       "short_abstract": "Large Language Models (LLMs) have recently demonstrated remarkable capabilities in natural language processing tasks and beyond. This success of LLMs has led to a large influx of research contributions in this direction. These works encompass diverse topics such as architectural innovations, better training strategies, context length improvements, fine-tuning, multimodal LLMs, robotics, datasets, benchmarking, efficiency, and more. With the rapid development of techniques and regular breakthroughs in LLM research, it has become considerably challenging to perceive the bigger picture of the advances in this direction. Considering the rapidly emerging plethora of literature on LLMs, it is imperative that the research community is able to benefit from a concise yet comprehensive overview of the recent developments in this field. This article provides an overview of the literature on a broad range of LLM-related concepts. Our self-contained comprehensive overview of LLMs discusses…",
@@ -425,108 +215,11 @@
         "Mile Šikić"
       ],
       "kinds": [],
-      "citation_count": 68,
+      "citation_count": 69,
       "github_stars": 0,
       "tldr": "While RNA has recently been recognized as an interesting small-molecule drug target, many challenges remain to be addressed before we take…",
       "short_abstract": "While RNA has recently been recognized as an interesting small-molecule drug target, many challenges remain to be addressed before we take full advantage of it. This emphasizes the necessity to improve our understanding of its structures and functions. Over the years, sequencing technologies have produced an enormous amount of unlabeled RNA data, which hides a huge potential. Motivated by the successes of protein language models, we introduce RiboNucleic Acid Language Model (RiNALMo) to unveil the hidden code of RNA. RiNALMo is the largest RNA language model to date, with 650M parameters pre-trained on 36M non-coding RNA sequences from several databases. It can extract hidden knowledge and capture the underlying structure information implicitly embedded within the RNA sequences. RiNALMo achieves state-of-the-art results on several downstream tasks. Notably, we show that its generalization capabilities overcome the inability of other deep learning methods for secondary structure…",
       "doi": "10.1038/s41467-025-60872-5"
-    },
-    {
-      "id": "openalex:W4408032682",
-      "title": "Enhanced Mamba model with multi-head attention mechanism and learnable scaling parameters for remaining useful life prediction",
-      "year": 2025,
-      "venue": "Scientific Reports",
-      "venue_tier": "preprint",
-      "authors": [
-        "Fugang Liu",
-        "Shenyang Liu",
-        "Yuan Chai",
-        "Yongtao Zhu"
-      ],
-      "kinds": [],
-      "citation_count": 9,
-      "github_stars": 0,
-      "tldr": "Prognostics and health management (PHM) technology aims to analyze and diagnose the state of equipment using a large amount of data,…",
-      "short_abstract": "Prognostics and health management (PHM) technology aims to analyze and diagnose the state of equipment using a large amount of data, predict potential failures, and adopt corresponding maintenance and repair strategies to enhance equipment reliability, reduce repair costs, and prevent production interruptions. In this paper, we propose a remaining useful life (RUL) prediction model based on Mamba, which incorporates learnable parameters and a multi-head attention mechanism; to address the issues faced by traditional algorithms, which struggle to efficiently capture dependencies in long sequences and parallelize the processing of these sequences. Firstly, min-max scaling and exponential smoothing techniques are used to preprocess the feature data in order to prevent gradient explosion while speeding up the convergence of the model. Secondly, a learnable scaling parameter is introduced into the Residual block to adjust the output, and a multi-head attention mechanism is innovatively…",
-      "doi": "10.1038/s41598-025-91815-1"
-    },
-    {
-      "id": "openalex:W4416257191",
-      "title": "Survey on Efficient Large Language Models: Principles, Algorithms, Applications, and Open Issues",
-      "year": 2025,
-      "venue": "IEEE Transactions on Neural Networks and Learning Systems",
-      "venue_tier": "preprint",
-      "authors": [
-        "Jian Cheng",
-        "Haidong Kang",
-        "Yongbo Shao",
-        "Nan Li",
-        "Pengjun Chen"
-      ],
-      "kinds": [],
-      "citation_count": 5,
-      "github_stars": 0,
-      "tldr": "With the rapid advancement of large language models (LLMs) in both academia and industry, their growing size and complexity have…",
-      "short_abstract": "With the rapid advancement of large language models (LLMs) in both academia and industry, their growing size and complexity have introduced significant challenges in terms of computational cost and deployment efficiency. To address these issues, a wide range of inference optimization techniques-including but not limited to model compression-have been proposed to accelerate LLM inference while preserving model performance. This survey provides a comprehensive overview of LLM inference acceleration strategies, analyzing them from multiple perspectives, including foundational principles, algorithmic techniques, real-world applications, and open research challenges. We begin by introducing core concepts underlying inference optimization and propose a new taxonomy that categorizes existing approaches, including quantization, pruning, distillation, efficient architectures, compilation, and hardware-aware methods. Following the lifecycle of LLM development and deployment, we examine how…",
-      "doi": "10.1109/tnnls.2025.3628671"
-    },
-    {
-      "id": "openalex:W4412773699",
-      "title": "A novel flexible identity-net with diffusion models for painting-style generation",
-      "year": 2025,
-      "venue": "Scientific Reports",
-      "venue_tier": "preprint",
-      "authors": [
-        "Yifei Zhao",
-        "Ziqi Liang",
-        "Yingrui Qiu",
-        "Xiaona Wang"
-      ],
-      "kinds": [],
-      "citation_count": 5,
-      "github_stars": 0,
-      "tldr": "Art's unique style and creativity are essential in defining a work's identity, conveying emotions, and shaping audience perception. Recent…",
-      "short_abstract": "Art's unique style and creativity are essential in defining a work's identity, conveying emotions, and shaping audience perception. Recent advancements in diffusion models have revolutionized art design, animation, and gaming, particularly in generating original artwork and visual identities. However, traditional creative processes face challenges such as slow innovation, high costs, and limited scalability. Consequently, deep learning has emerged as a promising solution for enhancing painting-style creative design. In this paper, we present the Painting-Style Design Assistant Network (PDANet), a groundbreaking network architecture designed for advanced style transformation. Our work is supported by the Painting-42 dataset, a meticulously curated collection of 4055 artworks from 42 illustrious Chinese painters, capturing the aesthetic nuances of Chinese painting and offering invaluable design references. Additionally, we introduce a lightweight Identity-Net, designed to enhance…",
-      "doi": "10.1038/s41598-025-12434-4"
-    },
-    {
-      "id": "openalex:W4413050957",
-      "title": "MLAgg-UNet: Advancing Medical Image Segmentation With Efficient Transformer and Mamba-Inspired Multi-Scale Sequence",
-      "year": 2025,
-      "venue": "IEEE Journal of Biomedical and Health Informatics",
-      "venue_tier": "preprint",
-      "authors": [
-        "Jiaxu Jiang",
-        "Sen Lei",
-        "Heng–Chao Li",
-        "Yongjian Sun"
-      ],
-      "kinds": [],
-      "citation_count": 3,
-      "github_stars": 0,
-      "tldr": "Transformers and state space sequence models (SSMs) have attracted interest in biomedical image segmentation for their ability to capture…",
-      "short_abstract": "Transformers and state space sequence models (SSMs) have attracted interest in biomedical image segmentation for their ability to capture longrange dependency. However, traditional visual state space (VSS) methods suffer from the incompatibility of image tokens with autoregressive assumption. Although Transformer attention does not require this assumption, its high computational cost limits effective channelwise information utilization. To overcome these limitations, we propose the Mamba-Like Aggregated UNet (MLAgg-UNet), which introduces Mamba-inspired mechanism to enrich Transformer channel representation and exploit implicit autoregressive characteristic within U-shaped architecture. For establishing dependencies among image tokens in single scale, the Mamba-Like Aggregated Attention (MLAgg) block is designed to balance representational ability and computational efficiency. Inspired by the human foveal vision system, Mamba macro-structure, and differential attention, MLAgg block…",
-      "doi": "10.1109/jbhi.2025.3596648"
-    },
-    {
-      "id": "openalex:W7104905766",
-      "title": "A Comprehensive Review of Transformer-Based Language Models for Protein Sequence Analysis and Design",
-      "year": 2025,
-      "venue": "IEEE Transactions on Artificial Intelligence",
-      "venue_tier": "preprint",
-      "authors": [
-        "Nimisha Ghosh",
-        "Daniele Santoni",
-        "Debaleena Nawn",
-        "Eleonora Ottaviani",
-        "Giovanni Felici"
-      ],
-      "kinds": [],
-      "citation_count": 2,
-      "github_stars": 0,
-      "tldr": "The impact of Transformer-based language models has been unprecedented in Natural Language Processing (NLP). The success of such models…",
-      "short_abstract": "The impact of Transformer-based language models has been unprecedented in Natural Language Processing (NLP). The success of such models has also led to their adoption in other fields including bioinformatics. Taking this into account, this paper discusses recent advances in Transformer-based models for protein sequence analysis and design. In this review, we have discussed and analysed a significant number of works pertaining to such applications. These applications encompass gene ontology, functional and structural protein identification, generation of <italic xmlns:mml=\"http://www.w3.org/1998/Math/MathML\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">de novo</i> proteins and binding of proteins. We attempt to shed light on the strength and weaknesses of the discussed works to provide a comprehensive insight to readers. Finally, we highlight shortcomings in existing research and explore potential avenues for future developments. We believe that this review will help researchers working…",
-      "doi": "10.1109/tai.2025.3631454"
     },
     {
       "id": "openalex:W4416203937",
@@ -605,174 +298,136 @@
       "tldr": "Transformers have achieved great success in natural language processing and computer vision. The core and basic technique of transformers…",
       "short_abstract": "Transformers have achieved great success in natural language processing and computer vision. The core and basic technique of transformers is the self-attention mechanism. The vanilla self-attention mechanism has quadratic complexity, which limits its applications to vision tasks. Most of the existing linear self-attention mechanisms will sacrifice performance to some extent to reduce complexity. In this paper, we propose a novel linear approximation of the vanilla self-attention mechanism named CURSA to achieve both high performance and low complexity at the same time. CURSA is based on the CUR decomposition to decompose the multiplication of large matrices into the multiplication of several small matrices to achieve almost linear complexity. Experiment results of CURSA in image classification tasks, semantic segmentation tasks, object detection tasks, and long-range arena show that it outperforms state-of-the-art self-attention mechanisms with better data efficiency, faster speed,…",
       "doi": "10.1109/tpami.2025.3646452"
-    },
-    {
-      "id": "openalex:W4411552099",
-      "title": "Where Streams of Knowledge Converge: Constructing and Optimizing a Hierarchical Intelligent Question-Answering System for Agriculture",
-      "year": 2025,
-      "venue": "arXiv",
-      "venue_tier": "preprint",
-      "authors": [
-        "Maoyang Wang",
-        "Jun Ling",
-        "Pengsheng Qiao",
-        "Yansu Wang",
-        "Qiu Xiang"
-      ],
-      "kinds": [],
-      "citation_count": 0,
-      "github_stars": 0,
-      "tldr": "TheWith the enhanced use artificial intelligence innovation in farming, it is progressively important to create an intelligent Q&A system…",
-      "short_abstract": "TheWith the enhanced use artificial intelligence innovation in farming, it is progressively important to create an intelligent Q&A system with the ability of addressing complicated farming problems. In this paper, we present an intelligent Q&A system for agriculture that incorporates knowledge graph and hierarchical reinforcement learning strategies, in order to boost efficiency through much deeper semantic understanding and even more accurate decision support. The system combines farming data in a detailed knowledge graph, then makes use of hierarchical reinforcement learning to maximize answer generation processes that fulfill transforming farming Q&A requirements. Experimental outcomes demonstrate that this system performs very well in question answering for numerous farming fields, not just enhancing accuracy and importance of solutions yet also efficiently mitigating illusionary impacts usual to large-scale language models consequently substantially increasing user satisfaction",
-      "doi": "10.1109/ainit65432.2025.11035993"
-    },
-    {
-      "id": "openalex:W7140752993",
-      "title": "High-performance training and inference for deep equivariant interatomic potentials",
-      "year": 2026,
-      "venue": "Digital Discovery",
-      "venue_tier": "preprint",
-      "authors": [
-        "Chuin Wei Tan",
-        "Marc Descoteaux",
-        "Mit Kotak",
-        "Gabriel de Miranda Nascimento",
-        "Seán R. Kavanagh"
-      ],
-      "kinds": [],
-      "citation_count": 5,
-      "github_stars": 0,
-      "tldr": "The NequIP framework is redesigned for scalable distributed training and PyTorch 2.0 compilation. AOT Inductor inference and optimized…",
-      "short_abstract": "The NequIP framework is redesigned for scalable distributed training and PyTorch 2.0 compilation. AOT Inductor inference and optimized Allegro kernels accelerate molecular dynamics by factors of 5–18 on practical system sizes.",
-      "doi": "10.1039/d5dd00423c"
     }
   ],
   "edges": [
-    {
-      "src": "openalex:W4220822444",
-      "dst": "openalex:W4392136979",
-      "rel": "contrasts",
-      "conf": 0.8,
-      "rationale": "B の視覚トランスフォーマーは、A のリップ言語解読システムとは異なり、リップ動作から音声生成に重点を置いている。"
-    },
-    {
-      "src": "openalex:W3035626590",
-      "dst": "openalex:W4392136979",
-      "rel": "contrasts",
-      "conf": 0.8,
-      "rationale": "B の Flash Attention は、A の従来の lip シーケンス学習に代わる新しいアプローチを提供している。"
-    },
-    {
-      "src": "openalex:W3211862173",
-      "dst": "openalex:W4392136979",
-      "rel": "extends",
-      "conf": 0.8,
-      "rationale": "B の Flash Attention は、A の Visual Context Attention を拡張し、視覚トランスフォーマーと統合してより効果的なリップ・スピーチ生成を実現している。"
-    },
-    {
-      "src": "openalex:W4375869161",
-      "dst": "openalex:W4392136979",
-      "rel": "extends",
-      "conf": 0.8,
-      "rationale": "B の Lip-to-Speech 生成は、A の CN-CVS データセットを利用して中国語の口唇動作を認識するタスクに拡張されている。"
-    },
-    {
-      "src": "openalex:W3088985939",
-      "dst": "openalex:W4392136979",
-      "rel": "extends",
-      "conf": 0.8,
-      "rationale": "B の Lip-to-Speech 生成は、A の音声視覚スピーチの研究領域を拡張し、視覚的な口唇動作から音声生成する Flash Attention を導入している。"
-    },
     {
       "src": "openalex:W4281758439",
       "dst": "openalex:W4391876619",
       "rel": "extends",
       "conf": 0.65,
-      "rationale": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
+      "rationale": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "provenance": "foundational_allowlist"
     },
     {
       "src": "openalex:W4281758439",
       "dst": "openalex:W4376226279",
       "rel": "extends",
       "conf": 0.65,
-      "rationale": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
+      "rationale": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "provenance": "foundational_allowlist"
     },
     {
       "src": "openalex:W4281758439",
       "dst": "openalex:W4386076539",
       "rel": "extends",
       "conf": 0.65,
-      "rationale": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
+      "rationale": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "provenance": "foundational_allowlist"
     },
     {
       "src": "openalex:W4281758439",
       "dst": "openalex:W4411403346",
       "rel": "extends",
       "conf": 0.65,
-      "rationale": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
-    },
-    {
-      "src": "openalex:W7133227460",
-      "dst": "openalex:W7140752993",
-      "rel": "extends",
-      "conf": 0.65,
-      "rationale": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
-    },
-    {
-      "src": "openalex:W7133227460",
-      "dst": "openalex:W4416257191",
-      "rel": "extends",
-      "conf": 0.65,
-      "rationale": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
-    },
-    {
-      "src": "openalex:W7133227460",
-      "dst": "openalex:W4413050957",
-      "rel": "extends",
-      "conf": 0.65,
-      "rationale": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
-    },
-    {
-      "src": "openalex:W7133227460",
-      "dst": "openalex:W7104905766",
-      "rel": "extends",
-      "conf": 0.65,
-      "rationale": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
+      "rationale": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "provenance": "foundational_allowlist"
     },
     {
       "src": "openalex:W4415797154",
       "dst": "openalex:W4417508702",
       "rel": "contrasts",
       "conf": 0.8,
-      "rationale": "B の CURSA は、A の FlashAttention の低精度アプローチとは異なり、CU 分解に基づく線形近似を採用している。"
-    },
-    {
-      "src": "openalex:W7133227460",
-      "dst": "openalex:W4417508702",
-      "rel": "extends",
-      "conf": 0.65,
-      "rationale": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
-    },
-    {
-      "src": "openalex:W4281758439",
-      "dst": "openalex:W4402727033",
-      "rel": "extends",
-      "conf": 0.65,
-      "rationale": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
-    },
-    {
-      "src": "openalex:W4281758439",
-      "dst": "openalex:W4402716294",
-      "rel": "extends",
-      "conf": 0.65,
-      "rationale": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
+      "rationale": "B の CURSA は、A の FlashAttention の低精度アプローチとは異なり、CU 分解に基づく線形近似を採用している。",
+      "provenance": "llm"
     },
     {
       "src": "openalex:W4281758439",
       "dst": "openalex:W4402667891",
       "rel": "extends",
       "conf": 0.65,
-      "rationale": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
+      "rationale": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "provenance": "foundational_allowlist"
+    },
+    {
+      "src": "openalex:W4384648639",
+      "dst": "openalex:W4402667891",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「Point Transformer V3: Simpler, Faster, Stronger」(2024) は「FlashAttention-2: Faster Attention with Better Parallelism …」(2023) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W4415797154",
+      "dst": "openalex:W4416203937",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「MXBLAS: Accelerating 8-bit Deep Learning with a Unified Mic…」(2025) は「FlashAttention-3: Fast and Accurate Attention with Asynchro…」(2024) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W4384648639",
+      "dst": "openalex:W4411886797",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「RiNALMo: general-purpose RNA language models can generalize…」(2025) は「FlashAttention-2: Faster Attention with Better Parallelism …」(2023) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W4415797154",
+      "dst": "openalex:W4416004314",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「Porting a Fortran plasma simulation to Exascale on AMD GPUs…」(2025) は「FlashAttention-3: Fast and Accurate Attention with Asynchro…」(2024) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W4281758439",
+      "dst": "openalex:W4402716294",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "provenance": "foundational_allowlist"
+    },
+    {
+      "src": "openalex:W4376226279",
+      "dst": "openalex:W4402716294",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「Modeling Dense Multimodal Interactions Between Biological P…」(2024) は「Multimodal Learning With Transformers: A Survey」(2023) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W4384648639",
+      "dst": "openalex:W4402716294",
+      "rel": "contrasts",
+      "conf": 0.7,
+      "rationale": "「Modeling Dense Multimodal Interactions Between Biological P…」(2024) は「FlashAttention-2: Faster Attention with Better Parallelism …」(2023) と近い年代の対照的研究（年代・引用規模から推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W4281758439",
+      "dst": "openalex:W4402727033",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "provenance": "foundational_allowlist"
+    },
+    {
+      "src": "openalex:W4384648639",
+      "dst": "openalex:W4402727033",
+      "rel": "contrasts",
+      "conf": 0.7,
+      "rationale": "「Efficient Deformable ConvNets: Rethinking Dynamic and Spars…」(2024) は「FlashAttention-2: Faster Attention with Better Parallelism …」(2023) と近い年代の対照的研究（年代・引用規模から推定）。",
+      "provenance": "year_cite"
+    },
+    {
+      "src": "openalex:W4415797154",
+      "dst": "openalex:W4416146831",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "「LiquidGEMM: Hardware-Efficient W4A8 GEMM Kernel for High-Pe…」(2025) は「FlashAttention-3: Fast and Accurate Attention with Asynchro…」(2024) を引用する後発研究（年代差と引用関係から後継と推定）。",
+      "provenance": "year_cite"
     }
   ],
   "meta": {
@@ -784,13 +439,16 @@
     ],
     "seeds": [
       "openalex:W4281758439",
-      "openalex:W7133227460",
       "openalex:W4384648639",
-      "openalex:W4415797154",
-      "openalex:W4392136979"
+      "openalex:W4415797154"
     ],
     "depth": 1,
     "since_year": 2018,
-    "generated_at": "2026-06-09T05:19:08.178514+00:00"
+    "generated_at": "2026-06-14T07:25:41.062215+00:00",
+    "provenance_breakdown": {
+      "foundational_allowlist": 7,
+      "llm": 1,
+      "year_cite": 8
+    }
   }
 }
