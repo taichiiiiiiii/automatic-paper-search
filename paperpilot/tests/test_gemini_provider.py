@@ -146,7 +146,15 @@ def test_evaluate_batch_missing_results_padded_with_none():
 
 def test_classify_relation_returns_parsed_object():
     body = _gemini_body(
-        json.dumps({"relation": "successor", "confidence": 0.7, "rationale": "後続研究"})
+        json.dumps(
+            {
+                "relation": "successor",
+                "confidence": 0.7,
+                # >= _MIN_RATIONALE_LEN (#297): a realistic full-sentence
+                # rationale; a 1-4 char stub is now rejected by from_dict.
+                "rationale": "論文Bは論文Aの後続研究として手法を継承し発展させている。",
+            }
+        )
     )
     provider = GeminiProvider({"enabled": True}, api_key="k")
     with patch(
