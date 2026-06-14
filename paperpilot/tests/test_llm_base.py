@@ -97,6 +97,44 @@ def test_relation_classification_from_dict_ok():
     assert rc.rationale == rationale
 
 
+def test_relation_classification_from_dict_ignores_extra_model_key():
+    """#310: cache entries now carry an extra ``model`` field (e.g.
+    "gemini:gemini-2.5-flash"). ``from_dict`` reads only relation /
+    confidence / rationale via ``.get()`` so the extra key must be
+    silently IGNORED — the resulting RelationClassification is identical
+    to one built from an entry WITHOUT the model field. This pins the
+    backward-compatibility contract: the model field never leaks into the
+    parsed object and never changes parsing behaviour."""
+    rationale = "論文 B は論文 A と同じ課題をより少ない計算量で改良している。"
+    base_entry = {"relation": "extends", "confidence": 0.7, "rationale": rationale}
+    with_model = {**base_entry, "model": "gemini:gemini-2.5-flash"}
+
+    rc_plain = RelationClassification.from_dict(base_entry)
+    rc_model = RelationClassification.from_dict(with_model)
+
+    assert rc_plain is not None
+    assert rc_model is not None
+    # Extra `model` key ignored — both parse to the same value.
+    assert rc_model == rc_plain
+    assert rc_model.relation == "extends"
+    assert rc_model.confidence == 0.7
+    assert rc_model.rationale == rationale
+    # The model tag must NOT have leaked onto the dataclass.
+    assert not hasattr(rc_model, "model")
+
+
+def test_relation_classification_from_dict_legacy_entry_without_model():
+    """#310: a legacy cache entry written BEFORE the model field existed
+    (no ``model`` key) must still load + serve fine — ``from_dict`` reads
+    the field via ``.get()`` so its absence is a no-op."""
+    rationale = "論文 B は論文 A の注意機構を線形時間に近似している。"
+    legacy_entry = {"relation": "successor", "confidence": 0.6, "rationale": rationale}
+    rc = RelationClassification.from_dict(legacy_entry)
+    assert rc is not None
+    assert rc.relation == "successor"
+    assert rc.rationale == rationale
+
+
 def test_relation_classification_rejects_invalid_relation():
     assert RelationClassification.from_dict(
         {"relation": "bogus", "confidence": 0.5, "rationale": "x"}
@@ -519,3 +557,55 @@ def test_template_rationales_used_by_build_theme_lineage():
         "_DEFAULT_DERIVED reintroduced — #209 removed the fabricated-extends "
         "fallback because it accounted for 93.7% of edges and was pure noise."
     )
+
+
+# ---- provider_model_tag (#310) ----
+# Records which LLM produced a cached classification so a mixed-provider
+# cache (post Groq->Gemini regen) stays auditable. The tag is "name:model"
+# for concrete providers, name-only when `.model` is absent.
+
+
+def test_provider_model_tag_gemini():
+    """GeminiProvider configured with gemini-2.5-flash yields the canonical
+    "gemini:gemini-2.5-flash" tag used in production cache entries."""
+    from paperpilot.llm import GeminiProvider
+    from paperpilot.llm.base import provider_model_tag
+
+    p = GeminiProvider({"model": "gemini-2.5-flash"}, api_key="dummy-key")
+    assert provider_model_tag(p) == "gemini:gemini-2.5-flash"
+
+
+def test_provider_model_tag_groq():
+    """GroqProvider yields "groq:<model>" using its configured model."""
+    from paperpilot.llm import GroqProvider
+    from paperpilot.llm.base import provider_model_tag
+
+    p = GroqProvider({"model": "llama-3.3-70b-versatile"}, api_key="dummy-key")
+    assert provider_model_tag(p) == "groq:llama-3.3-70b-versatile"
+
+
+def test_provider_model_tag_falls_back_to_name_without_model():
+    """A provider/object without a `.model` attribute falls back to the
+    bare name (the AbstractLLMProvider base has no `.model`)."""
+    from paperpilot.llm.base import provider_model_tag
+
+    class _NoModelProvider(AbstractLLMProvider):
+        name = "nomodel"
+
+        def evaluate_batch(self, papers, profile):
+            return [None] * len(papers)
+
+    p = _NoModelProvider({"enabled": True})
+    assert not hasattr(p, "model")
+    assert provider_model_tag(p) == "nomodel"
+
+
+def test_provider_model_tag_unknown_name_when_absent():
+    """Defensive: an object with neither `name` nor `model` degrades to
+    the "unknown" sentinel rather than raising."""
+    from paperpilot.llm.base import provider_model_tag
+
+    class _Bare:
+        pass
+
+    assert provider_model_tag(_Bare()) == "unknown"  # type: ignore[arg-type]

@@ -178,7 +178,15 @@ def test_classify_cached_writes_cache_and_skips_on_hit(tmp_path: Path):
         cache_path=cache_path,
         rate_delay=0,
     )
-    assert out == {"relation": "extends", "confidence": 0.9, "rationale": reason}
+    # #310: the persisted entry now also records the producing LLM tag.
+    # `_FakeProvider` has class-level `name = "fake"` and no `.model`, so
+    # `provider_model_tag` falls back to the bare name.
+    assert out == {
+        "relation": "extends",
+        "confidence": 0.9,
+        "rationale": reason,
+        "model": "fake",
+    }
     # Cache persisted
     assert json.loads(cache_path.read_text())["A->B"]["relation"] == "extends"
 
@@ -273,7 +281,16 @@ def test_classify_cached_tolerates_corrupt_disk_cache(tmp_path: Path):
         rate_delay=0,
     )
     on_disk = json.loads(cache_path.read_text())
-    assert on_disk == {"A->B": {"relation": "extends", "confidence": 0.8, "rationale": "x"}}
+    # #310: the persisted entry includes the producing LLM tag ("fake" —
+    # _FakeProvider has no `.model`, so provider_model_tag returns the name).
+    assert on_disk == {
+        "A->B": {
+            "relation": "extends",
+            "confidence": 0.8,
+            "rationale": "x",
+            "model": "fake",
+        }
+    }
 
 
 def test_classify_cached_returns_none_on_failure(tmp_path: Path):
