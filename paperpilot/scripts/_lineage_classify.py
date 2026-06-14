@@ -43,6 +43,7 @@ from paperpilot.llm.base import (
     TEMPLATE_RATIONALES,
     AbstractLLMProvider,
     RelationClassification,
+    provider_model_tag,
 )
 from paperpilot.utils.logger import get_logger
 
@@ -347,6 +348,10 @@ class _CachedClassifyProvider(AbstractLLMProvider):
                 "relation": rc.relation,
                 "confidence": rc.confidence,
                 "rationale": rc.rationale,
+                # #310: record the producing LLM (the INNER provider, not the
+                # +cache wrapper) so a mixed-provider cache stays auditable.
+                # NOT part of the key — backward-compatible extra field.
+                "model": provider_model_tag(self._inner),
             }
             # Persist only when the parent directory exists. Tests that
             # don't care about on-disk state point the path at a stub
