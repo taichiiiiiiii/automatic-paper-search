@@ -102,6 +102,9 @@ from paperpilot.utils.github import (  # noqa: E402
 )
 from paperpilot.utils.http import request_with_retry  # noqa: E402
 from paperpilot.utils.logger import get_logger, setup_logging  # noqa: E402
+from paperpilot.utils.unarxive import (  # noqa: E402
+    _normalise_arxiv_id,
+)
 
 logger = get_logger(__name__)
 
@@ -466,6 +469,62 @@ def _openalex_short_id(work_url_or_id: str) -> str | None:
 _OPENALEX_PAPER_ID_PREFIX = "openalex:"
 
 
+def _arxiv_id_from_work(work: Any) -> str | None:
+    """Recover the citing/cited paper's bare arXiv id from an OpenAlex
+    Work, returning the first candidate that ``_normalise_arxiv_id``
+    accepts (or None).
+
+    Why (#301): OpenAlex sets ``ids.arxiv_id`` to None for ~all CS works,
+    so reading it alone leaves the unarXive citation-context grounding
+    (``_classify_from_contexts``) starved — 0 ``context_pattern`` edges.
+    The arXiv id survives elsewhere: in a location's
+    ``landing_page_url`` / ``pdf_url`` (``https://arxiv.org/abs/<id>``)
+    or in the DataCite arXiv DOI (``10.48550/arXiv.<id>``).
+    ``_normalise_arxiv_id`` (#301 extension) parses all three forms.
+
+    Candidate order (cheapest / most authoritative first):
+      1. ``ids.arxiv_id`` — keeps existing behaviour for the rare works
+         that do carry it.
+      2. ``primary_location.landing_page_url`` / ``pdf_url``
+      3. every ``locations[i].landing_page_url`` / ``pdf_url``
+      4. ``ids.doi`` and top-level ``doi`` (DataCite arXiv DOI form)
+
+    Defensive: ``work`` may not be a dict and any field may be missing,
+    None, or the wrong type. Never raises.
+    """
+    if not isinstance(work, dict):
+        return None
+
+    def _candidates() -> Iterable[Any]:
+        ids = work.get("ids")
+        ids = ids if isinstance(ids, dict) else {}
+        # 1. The historical primary source.
+        yield ids.get("arxiv_id")
+        # 2. The focal/primary location URLs.
+        primary = work.get("primary_location")
+        if isinstance(primary, dict):
+            yield primary.get("landing_page_url")
+            yield primary.get("pdf_url")
+        # 3. Every secondary location.
+        locations = work.get("locations")
+        if isinstance(locations, list):
+            for loc in locations:
+                if isinstance(loc, dict):
+                    yield loc.get("landing_page_url")
+                    yield loc.get("pdf_url")
+        # 4. DataCite arXiv DOI (ids.doi and top-level doi).
+        yield ids.get("doi")
+        yield work.get("doi")
+
+    for candidate in _candidates():
+        if not isinstance(candidate, str):
+            continue
+        arxiv_id = _normalise_arxiv_id(candidate)
+        if arxiv_id:
+            return arxiv_id
+    return None
+
+
 def _work_to_paper_dict(work: dict) -> dict[str, Any] | None:
     """Convert an OpenAlex ``/works`` payload to an S2-shape paper dict.
 
@@ -499,11 +558,17 @@ def _work_to_paper_dict(work: dict) -> dict[str, Any] | None:
     if doi:
         external_ids["DOI"] = doi
     # Pull out arxiv / mag / pmid if present so downstream code that
-    # checks externalIds.ArXiv (e.g. arXiv-category gate work) keeps
-    # working unchanged.
+    # checks externalIds.ArXiv (e.g. arXiv-category gate work, and the
+    # unarXive citation-context lookup via _enrich_child_with_unarxive)
+    # keeps working. ArXiv comes from _arxiv_id_from_work (#301) which
+    # also recovers it from location URLs / DataCite DOI when OpenAlex
+    # leaves ids.arxiv_id None (the common CS case). mag / pmid stay on
+    # the direct ids block.
     ids_block = work.get("ids") or {}
+    arxiv_id = _arxiv_id_from_work(work)
+    if arxiv_id:
+        external_ids["ArXiv"] = arxiv_id
     for k_oa, k_out in [
-        ("arxiv_id", "ArXiv"),
         ("mag", "MAG"),
         ("pmid", "PMID"),
     ]:
@@ -902,12 +967,14 @@ def fetch_related_via_openalex(
         return []
     page_size = min(max(1, limit), _OPENALEX_PER_PAGE_MAX)
     if kind == "references":
-        # `ids` is included so we can extract the focal's arXiv ID
-        # for the unarXive context lookup on the citing side (#209
-        # Phase J). It's a small payload addition (~30 bytes) and
-        # avoids a second OpenAlex round-trip.
+        # `ids`, `primary_location`, `locations`, and `doi` are included
+        # so _arxiv_id_from_work can recover the focal's arXiv ID for the
+        # unarXive context lookup on the citing side (#209 Phase J / #301).
+        # OpenAlex leaves ids.arxiv_id None for ~all CS works, so the id
+        # has to come from a location URL or the DataCite DOI. It's a
+        # small payload addition and avoids a second OpenAlex round-trip.
         params: dict[str, Any] = {
-            "select": "id,referenced_works,ids",
+            "select": "id,referenced_works,ids,primary_location,locations,doi",
         }
         if email:
             params["mailto"] = email
@@ -935,10 +1002,12 @@ def fetch_related_via_openalex(
             )
             if sid
         ]
-        # Extract focal's arXiv id for the unarXive lookup. Missing
-        # arxiv_id is fine — _enrich_parent_with_unarxive returns []
-        # and the edge falls through to year/cite heuristic later.
-        focal_arxiv = ((payload or {}).get("ids") or {}).get("arxiv_id")
+        # Extract focal's arXiv id for the unarXive lookup. #301:
+        # _arxiv_id_from_work also reads the location URLs / DataCite DOI
+        # because OpenAlex leaves ids.arxiv_id None for ~all CS works.
+        # Missing arxiv_id is fine — _enrich_parent_with_unarxive returns
+        # [] and the edge falls through to year/cite heuristic later.
+        focal_arxiv = _arxiv_id_from_work(payload)
         # #277 followup: fetch a wider window (up to OpenAlex per-page
         # cap) and let the foundational-allowlist filter keep canonical
         # ancestors regardless of where they sit in the
