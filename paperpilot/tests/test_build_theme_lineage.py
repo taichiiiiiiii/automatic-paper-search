@@ -4704,3 +4704,260 @@ def test_build_theme_lineage_edge_serializes_provenance(tmp_path, monkeypatch):
     assert all(
         "provenance" in e for e in edges
     ), f"some edges are missing 'provenance': {edges}"
+
+
+# ---- #298: _is_topic_relevant predicate (shared by seed gate + audit) ----
+
+
+def test_is_topic_relevant_drops_audio_visual_node_for_flash_attention():
+    """#298: a drifted audio-visual / visual-cortex node whose title+abstract
+    carry NEITHER 'flash attention' as a phrase NOR both words in the title
+    must be judged NOT topic-relevant for the Flash Attention theme. This is
+    the class of node the warn-only contamination audit (Part 4) counts as
+    off-topic (lip-to-speech neighbourhood)."""
+    paper = _mk_s2_paper(
+        "audio_visual",
+        title="Lip-to-speech synthesis with audio-visual cortex modelling",
+        abstract=(
+            "We synthesise speech from silent lip videos using a visual "
+            "cortex encoder for the lip region."
+        ),
+    )
+    assert (
+        build_theme_lineage._is_topic_relevant(paper, theme="Flash Attention")
+        is False
+    )
+
+
+def test_is_topic_relevant_cannot_filter_the_un_separable_seed():
+    """#298 diagnosis point 3: the drifted SEED is the only paper literally
+    containing the phrase 'flash attention' (real FA papers spell it
+    'FlashAttention' as one token), so the lexical predicate CANNOT veto it
+    — it returns True. The per-theme blacklist (Part 3) is the load-bearing
+    veto for this one; this test pins WHY the lexical gate alone isn't
+    enough, so a future refactor doesn't accidentally remove the blacklist."""
+    drifted_seed = _mk_s2_paper(
+        "contaminant",
+        title="Integrated visual transformer and flash attention for lip-to-speech",
+        abstract="We synthesise speech from silent lip videos.",
+    )
+    # The phrase 'flash attention' appears verbatim → lexical gate keeps it.
+    assert (
+        build_theme_lineage._is_topic_relevant(drifted_seed, theme="Flash Attention")
+        is True
+    )
+
+
+def test_is_topic_relevant_keeps_flashattention2():
+    """#298: the real FlashAttention-2 paper IS topic-relevant — its title
+    carries both theme words adjacent (one-token 'FlashAttention' contains
+    'flash'+'attention' after hyphen/space normalisation is not needed here;
+    the title also spells the phrase out)."""
+    paper = _mk_s2_paper(
+        "fa2",
+        title="FlashAttention-2: Faster Attention with Better Parallelism",
+        abstract=(
+            "We present FlashAttention-2, an exact attention algorithm with "
+            "improved work partitioning for memory-efficient flash attention."
+        ),
+    )
+    assert (
+        build_theme_lineage._is_topic_relevant(paper, theme="Flash Attention")
+        is True
+    )
+
+
+def test_is_topic_relevant_matches_filter_seeds_behaviour():
+    """#298 invariant: _is_topic_relevant is the predicate that
+    _filter_topic_relevant_seeds is built from, so for any seed the two
+    must agree (the function still works on seeds unchanged)."""
+    theme = "Graph Neural Network"
+    seeds = [
+        _mk_s2_paper("relevant", title="A Graph Neural Network for X",
+                     abstract="we propose a GNN to ..."),
+        _mk_s2_paper("irrelevant",
+                     title="Data Structures for Statistical Computing",
+                     abstract="Practical issues of working with data sets..."),
+    ]
+    kept = build_theme_lineage._filter_topic_relevant_seeds(seeds, theme=theme)
+    kept_ids = {s["paperId"] for s in kept}
+    for s in seeds:
+        predicate = build_theme_lineage._is_topic_relevant(s, theme=theme)
+        assert predicate == (s["paperId"] in kept_ids)
+
+
+def test_is_topic_relevant_short_theme_always_true():
+    """Short / single-word themes skip the lexical gate (same escape hatch
+    as the seed filter), so the shared predicate returns True for any paper
+    under a 1-word theme like RAG / MoE."""
+    paper = _mk_s2_paper("p", title="Anything at all", abstract="whatever")
+    assert build_theme_lineage._is_topic_relevant(paper, theme="RAG") is True
+
+
+# ---- #298: title+year dedup ----
+
+
+def test_dedup_by_title_year_collapses_distinct_ids_same_title():
+    """#298 SECONDARY: the two duplicate FlashAttention nodes have DISTINCT
+    OpenAlex W-ids AND distinct DOIs but the same normalised title+year.
+    They must collapse to ONE record, keeping the higher citationCount."""
+    papers = [
+        {
+            **_mk_s2_paper(
+                "openalex:W4281758439",
+                title="FlashAttention: Fast and Memory-Efficient Exact Attention",
+                year=2022, cites=4_000,
+            ),
+            "externalIds": {"DOI": "10.48550/arxiv.2205.14135"},
+        },
+        {
+            **_mk_s2_paper(
+                "openalex:W7133227460",
+                title="FlashAttention:  Fast and Memory-Efficient  Exact Attention!",
+                year=2022, cites=9_500,
+            ),
+            "externalIds": {"DOI": "10.52202/068431-1189"},
+        },
+    ]
+    deduped, remap = build_theme_lineage._dedup_by_title_year(papers)
+    assert len(deduped) == 1
+    survivor = deduped[0]
+    # Higher-citation record wins.
+    assert survivor["paperId"] == "openalex:W7133227460"
+    # The dropped id remaps onto the survivor.
+    assert remap["openalex:W4281758439"] == "openalex:W7133227460"
+
+
+def test_dedup_by_title_year_keeps_distinct_papers():
+    """#298 invariant: papers with different title OR different year must NOT
+    be collapsed — dedup only removes true duplicates."""
+    papers = [
+        _mk_s2_paper("a", title="Attention Is All You Need", year=2017, cites=80_000),
+        _mk_s2_paper("b", title="FlashAttention", year=2022, cites=5_000),
+        # same title as a but different year → distinct
+        _mk_s2_paper("c", title="Attention Is All You Need", year=2023, cites=10),
+    ]
+    deduped, remap = build_theme_lineage._dedup_by_title_year(papers)
+    assert {p["paperId"] for p in deduped} == {"a", "b", "c"}
+    assert remap == {}
+
+
+def test_dedup_by_title_year_doi_secondary_key():
+    """#298: a normalised-DOI collision (arxiv. casing folded) collapses
+    even when the titles differ slightly — DOI is the secondary key."""
+    papers = [
+        {
+            **_mk_s2_paper("dup_lo", title="Some Paper", year=2021, cites=10),
+            "externalIds": {"DOI": "10.48550/ARXIV.2106.12345"},
+        },
+        {
+            **_mk_s2_paper("dup_hi", title="Some Paper (v2)", year=2021, cites=99),
+            "externalIds": {"DOI": "10.48550/arxiv.2106.12345"},
+        },
+    ]
+    deduped, remap = build_theme_lineage._dedup_by_title_year(papers)
+    assert len(deduped) == 1
+    assert deduped[0]["paperId"] == "dup_hi"
+    assert remap["dup_lo"] == "dup_hi"
+
+
+def test_dedup_by_title_year_keyless_paper_passthrough():
+    """#298 over-prune guard: a paper with neither a usable title nor a DOI
+    has no stable key and must pass through untouched — never collapsed
+    against another keyless paper."""
+    papers = [
+        {"paperId": "k1", "title": "", "year": None},
+        {"paperId": "k2", "title": "", "year": None},
+    ]
+    deduped, remap = build_theme_lineage._dedup_by_title_year(papers)
+    assert {p["paperId"] for p in deduped} == {"k1", "k2"}
+    assert remap == {}
+
+
+def test_dedup_by_title_year_remap_edges_drops_self_loops():
+    """#298: after collapsing a duplicate, an edge between the two collapsed
+    ids becomes a self-loop and must be dropped; an edge that pointed at the
+    dropped id is rewritten onto the survivor."""
+    remap = {"dup_lo": "dup_hi"}
+    edges = [
+        {"src": "dup_lo", "dst": "dup_hi", "rel": "extends"},   # → self loop, drop
+        {"src": "other", "dst": "dup_lo", "rel": "extends"},    # → remap dst
+        {"src": "other", "dst": "dup_hi", "rel": "extends"},    # duplicate of above after remap
+    ]
+    out = build_theme_lineage._remap_edge_endpoints(edges, remap)
+    # self-loop dropped; the two now-identical (other→dup_hi) edges collapse to one.
+    assert out == [{"src": "other", "dst": "dup_hi", "rel": "extends"}]
+
+
+def test_build_dedups_duplicate_seed_nodes_and_remaps_edges(
+    tmp_path: Path, monkeypatch
+):
+    """#298 end-to-end: when the two FlashAttention duplicates both enter as
+    seeds, the final node set must contain only one, and any edge that
+    pointed at the dropped id must be remapped onto the survivor."""
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+    _stub_external_calls(monkeypatch, tmp_path=tmp_path)
+
+    dup_lo = {
+        **_mk_s2_paper(
+            "openalex:W_lo",
+            title="FlashAttention: Fast and Memory-Efficient Exact Attention",
+            abstract="exact flash attention with IO awareness",
+            year=2022, cites=1_000,
+        ),
+        "externalIds": {"DOI": "10.48550/arxiv.2205.14135"},
+    }
+    dup_hi = {
+        **_mk_s2_paper(
+            "openalex:W_hi",
+            title="FlashAttention: Fast and Memory-Efficient Exact Attention",
+            abstract="exact flash attention with IO awareness",
+            year=2022, cites=9_000,
+        ),
+        "externalIds": {"DOI": "10.52202/068431-1189"},
+    }
+
+    with (
+        patch.object(
+            build_theme_lineage, "request_with_retry",
+            return_value=_mk_s2_search_response([dup_lo, dup_hi]),
+        ),
+        patch.object(build_theme_lineage, "fetch_related", return_value=[]),
+    ):
+        out_path = build_theme_lineage.build_theme_lineage(
+            theme="Flash Attention", depth=1, seeds_count=4, width=4,
+            since_year=None, llm_strict="off",
+        )
+    payload = json.loads(out_path.read_text())
+    node_ids = [n["id"] for n in payload["nodes"]]
+    # Exactly one FlashAttention node remains, and it's the higher-citation one.
+    fa_nodes = [nid for nid in node_ids if nid in ("openalex:W_lo", "openalex:W_hi")]
+    assert fa_nodes == ["openalex:W_hi"]
+
+
+# ---- #298: theme_blacklist veto for the un-separable seed ----
+
+
+def test_theme_blacklist_vetoes_lip_to_speech_for_flash_attention():
+    """#298 PART 3: the drifted seed is the only seed literally containing
+    'flash attention' (the real papers spell it 'FlashAttention'), so it
+    survives the lexical gate. The per-theme blacklist substrings veto it
+    for flash-attention with zero risk to other themes / the real papers."""
+    drifted = _mk_s2_paper(
+        "contaminant",
+        title="Integrated visual transformer and flash attention for lip-to-speech",
+        abstract="speech synthesis from silent lip video",
+    )
+    real_fa = _mk_s2_paper(
+        "fa2",
+        title="FlashAttention-2: Faster Attention with Better Parallelism",
+        abstract="exact flash attention memory efficient",
+    )
+    kept = build_theme_lineage._filter_theme_blacklist(
+        [drifted, real_fa], theme="Flash Attention"
+    )
+    kept_ids = {p["paperId"] for p in kept}
+    assert "contaminant" not in kept_ids
+    assert "fa2" in kept_ids

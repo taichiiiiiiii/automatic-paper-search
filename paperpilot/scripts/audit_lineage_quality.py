@@ -34,6 +34,19 @@ lineage.json` and checks:
   (1-year window absorbs preprint↔conference overlap). A handful
   is expected; bulk reversals indicate the BFS direction is wrong.
 
+### Theme contamination (#298: DETECTION, warn-only)
+- **offtopic_nonfocus_ratio**: fraction of BFS-discovered (non-focus)
+  nodes that are NOT topic-relevant to the theme, using the exact
+  generation-time predicate (`_is_topic_relevant`) and exempting
+  foundational-allowlist anchors. A high ratio flags a drifted seed that
+  dragged an off-topic neighbourhood into the tree (the flash-attention
+  lip-to-speech contamination). WARN-ONLY above 50 %: lineage ancestors
+  normally DON'T share the theme's surface terms (vision-transformer's
+  legit "Going deeper with convolutions" ancestor scores off-topic too),
+  so this can also be high on a healthy deep tree. It surfaces a signal
+  for an operator to inspect / blacklist / regenerate — it never prunes
+  and never hard-fails.
+
 Run:
     uv run python -m paperpilot.scripts.audit_lineage_quality
 
@@ -52,6 +65,17 @@ from datetime import datetime
 from pathlib import Path
 
 from paperpilot.llm.base import _MIN_RATIONALE_LEN, TEMPLATE_RATIONALES
+
+# #298 Part 4: reuse the EXACT topic-relevance predicate the seed gate uses
+# (and the foundational-allowlist check) so the off-topic-non-focus audit
+# below can never drift from generation-time logic. Cross-importing the
+# private symbols is the established convention here (this file already
+# imports `_MIN_RATIONALE_LEN` from paperpilot.llm.base). These two are the
+# only build_theme_lineage symbols the audit needs.
+from paperpilot.scripts.build_theme_lineage import (
+    _is_foundational_ancestor,
+    _is_topic_relevant,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 DOCS_DIR = ROOT / "docs"
@@ -78,6 +102,23 @@ _YEAR_REVERSAL_FAIL_COUNT = 10  # > N edges with parent.year > child.year+1
 # the lineage data is regenerated clean (tracked in #297).
 _SHORT_RATIONALE_RATIO_WARN = 0.20  # > 20% degenerate rationales is warned
 _SHORT_RATIONALE_RATIO_PROMOTE_FAIL = 0.50  # future hard-fail bar (#297, post-regen)
+
+# Off-topic non-focus ratio (#298 Part 4 — DETECTION, never pruning). The
+# fraction of BFS-discovered (non-focus) nodes that are NOT topic-relevant
+# to the theme, excluding foundational-allowlist anchors (which are
+# legitimately off-surface-topic — "Attention Is All You Need" has no
+# 'flash' but belongs in the Flash Attention lineage). A high ratio means a
+# drifted seed dragged an off-topic neighbourhood into the tree (the
+# flash-attention lip-to-speech contamination). WARN-ONLY on purpose: the
+# normal nature of lineage is that ancestors DON'T share the theme's surface
+# terms (e.g. vision-transformer's legit ancestors "Going deeper with
+# convolutions", "Distilling the Knowledge in a Neural Network"), so a deep
+# legitimate tree can also score high here. Hard-failing would red the
+# data-audit job on legitimate deep-ancestry themes; instead this surfaces a
+# signal so an operator can inspect and decide whether to blacklist a drifted
+# seed / regenerate. Mirrors the warn-only pattern of `short_rationale_ratio`.
+_OFFTOPIC_NONFOCUS_RATIO_WARN = 0.50  # > 50% off-topic non-focus nodes is warned
+_OFFTOPIC_EXAMPLE_LIMIT = 5  # show at most N example off-topic titles in the message
 
 _TEMPLATE_RATIONALES_SET = frozenset(
     t.strip() for t in TEMPLATE_RATIONALES.values()
@@ -216,6 +257,139 @@ def edge_metrics(data: dict) -> dict[str, int | float]:
     }
 
 
+def _node_to_relevance_paper(node: dict) -> dict:
+    """Adapt a persisted lineage.json node into the paper shape
+    ``_is_topic_relevant`` expects (#298 Part 4).
+
+    The generation-time predicate reads ``title`` + ``abstract``, but
+    lineage.json never persists the full abstract (only a 1000-char
+    ``short_abstract`` excerpt, with ``tldr`` as the legacy fallback).
+    Map the longest available excerpt onto ``abstract`` so the audit's
+    decision matches production as closely as the persisted data allows.
+    This is strictly weaker than production (which sees the full
+    abstract), which is the safe direction: a node the audit calls
+    off-topic might be on-topic via abstract text past the excerpt, so
+    the audit can only over-count — never under-count — off-topic nodes,
+    and it is warn-only regardless.
+    """
+    return {
+        "title": node.get("title") or "",
+        "abstract": node.get("short_abstract") or node.get("tldr") or "",
+    }
+
+
+def offtopic_nonfocus_metric(data: dict) -> dict[str, object]:
+    """Compute the off-topic-non-focus ratio for a theme lineage (#298 Part 4).
+
+    DETECTION ONLY — this never removes a node; it surfaces the fraction of
+    BFS-discovered (non-``is_focus``) nodes that are NOT topic-relevant to
+    the theme, so an operator can decide whether a drifted seed contaminated
+    the tree (and should be blacklisted / regenerated).
+
+    Foundational-allowlist anchors are EXEMPT from the off-topic count: they
+    are legitimately off-surface-topic (e.g. "Attention Is All You Need"
+    carries no 'flash' but belongs in the Flash Attention lineage), so
+    counting them would inflate the ratio on healthy deep trees.
+
+    The theme comes from ``meta.theme`` (falling back to ``meta.slug``).
+    Returns a dict with keys:
+      * ``theme``            — the theme string used (``""`` if none)
+      * ``nonfocus_count``   — non-focus nodes considered (after the
+                               foundational exemption)
+      * ``offtopic_count``   — of those, how many are NOT topic-relevant
+      * ``offtopic_ratio``   — offtopic_count / nonfocus_count (0.0 if none)
+      * ``offtopic_titles``  — up to ``_OFFTOPIC_EXAMPLE_LIMIT`` example
+                               off-topic titles (for the warning message)
+      * ``foundational_exempt`` — count of non-focus nodes skipped because
+                               they are foundational anchors
+
+    Non-theme lineages (no ``meta.theme`` / ``meta.slug``) and themes whose
+    name is too short for the lexical gate (1 eligible word — predicate
+    always returns ``True``) yield ``offtopic_ratio == 0.0`` so the caller
+    never warns on them.
+    """
+    meta = data.get("meta") or {}
+    theme = ""
+    if isinstance(meta, dict):
+        theme = str(meta.get("theme") or meta.get("slug") or "")
+    nodes = data.get("nodes") or []
+    empty = {
+        "theme": theme,
+        "nonfocus_count": 0,
+        "offtopic_count": 0,
+        "offtopic_ratio": 0.0,
+        "offtopic_titles": [],
+        "foundational_exempt": 0,
+    }
+    if not theme or not isinstance(nodes, list):
+        return empty
+    nonfocus = [
+        n for n in nodes if isinstance(n, dict) and not n.get("is_focus")
+    ]
+    considered = 0
+    offtopic_count = 0
+    foundational_exempt = 0
+    offtopic_titles: list[str] = []
+    for n in nonfocus:
+        # Foundational anchors are legitimately off-surface-topic — exempt.
+        if _is_foundational_ancestor(n):
+            foundational_exempt += 1
+            continue
+        considered += 1
+        paper = _node_to_relevance_paper(n)
+        if not _is_topic_relevant(paper, theme=theme):
+            offtopic_count += 1
+            title = (n.get("title") or n.get("id") or "").strip()
+            if title and len(offtopic_titles) < _OFFTOPIC_EXAMPLE_LIMIT:
+                offtopic_titles.append(title)
+    ratio = offtopic_count / considered if considered else 0.0
+    return {
+        "theme": theme,
+        "nonfocus_count": considered,
+        "offtopic_count": offtopic_count,
+        "offtopic_ratio": ratio,
+        "offtopic_titles": offtopic_titles,
+        "foundational_exempt": foundational_exempt,
+    }
+
+
+def _audit_offtopic_nonfocus(data: dict) -> list[str]:
+    """Return WARN-only messages for the off-topic-non-focus metric (#298).
+
+    Never returns a hard failure: a high ratio can mean either real
+    contamination (flash-attention's lip-to-speech drift) OR a legitimately
+    deep tree whose ancestors don't share the theme's surface terms
+    (vision-transformer's "Going deeper with convolutions"). Only an
+    operator can tell the two apart, so this just raises a flag — it does
+    not block CI. Mirrors the warn-only treatment of ``short_rationale_ratio``.
+    """
+    m = offtopic_nonfocus_metric(data)
+    # The metric dict is dict[str, object] (mixes counts/ratio with the
+    # titles list), so guard the numeric reads for mypy + defensiveness.
+    nonfocus_raw = m["nonfocus_count"]
+    ratio_raw = m["offtopic_ratio"]
+    nonfocus = int(nonfocus_raw) if isinstance(nonfocus_raw, (int, float)) else 0
+    ratio = float(ratio_raw) if isinstance(ratio_raw, (int, float)) else 0.0
+    if nonfocus == 0 or ratio <= _OFFTOPIC_NONFOCUS_RATIO_WARN:
+        return []
+    titles = m["offtopic_titles"]
+    examples = ""
+    if isinstance(titles, list) and titles:
+        shown = "; ".join(t[:60] for t in titles)
+        examples = f" e.g. {shown}"
+    return [
+        f"offtopic_nonfocus_ratio={ratio:.0%} "
+        f"({m['offtopic_count']}/{nonfocus} BFS-discovered nodes are NOT "
+        f"topic-relevant to theme {m['theme']!r}, foundational anchors "
+        f"exempt);{examples}; warn above "
+        f"{_OFFTOPIC_NONFOCUS_RATIO_WARN:.0%} (#298 — a drifted seed may have "
+        f"dragged in an off-topic neighbourhood; inspect and blacklist/"
+        f"regenerate. NOTE: deep legitimate lineages whose ancestors don't "
+        f"share the theme's surface terms also score high here, so this is "
+        f"DETECTION not a hard fail)"
+    ]
+
+
 def _audit_edges(data: dict) -> tuple[list[str], list[str]]:
     """Return (warnings, hard_failures) from the edge metrics."""
     m = edge_metrics(data)
@@ -277,7 +451,9 @@ def _audit_lineage(path: Path, min_year: int) -> tuple[list[str], list[str]]:
     Structural problems are always failures (broken focus papers /
     denylist hits can't be partial). Edge metrics have separate
     warn / fail thresholds so a regenerable theme that's still 70 %
-    template doesn't block PRs.
+    template doesn't block PRs. The off-topic-non-focus metric (#298) is
+    warn-only — it detects theme contamination without blocking, since a
+    high ratio can also describe a legitimately deep lineage.
     """
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
@@ -285,7 +461,8 @@ def _audit_lineage(path: Path, min_year: int) -> tuple[list[str], list[str]]:
         return [], [f"unreadable: {e}"]
     structural = _audit_structural(path, data, min_year)
     edge_warn, edge_fail = _audit_edges(data)
-    return edge_warn, structural + edge_fail
+    offtopic_warn = _audit_offtopic_nonfocus(data)
+    return edge_warn + offtopic_warn, structural + edge_fail
 
 
 def _collect_targets() -> list[Path]:
