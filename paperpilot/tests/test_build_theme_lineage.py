@@ -526,21 +526,30 @@ def test_build_drops_edges_for_non_influential_parents(tmp_path: Path, monkeypat
     assert payload["edges"] == []
 
 
-def test_build_emits_templated_rationale(tmp_path: Path, monkeypatch):
-    """Issue #53: derive_relation always emits a non-empty templated
+def test_build_emits_slotfilled_rationale(tmp_path: Path, monkeypatch):
+    """Issue #53 / #300: derive_relation always emits a non-empty
     rationale (the stage-4 'drop empty rationale' filter would otherwise
-    silently kill every derived edge). #80 added year/citation
-    heuristics so a 2-year delta now classifies as ``successor``; the
-    important property is still that *some* templated rationale fires."""
+    silently kill every derived edge). #80 added year/citation heuristics
+    so a 2-year delta classifies as ``successor``; #300 changed the
+    rationale from a generic TEMPLATE_RATIONALES line to a paper-specific
+    SLOT-FILLED sentence embedding the actual titles + years. The
+    important property is still that *some* meaningful rationale fires —
+    and that it is NOT a generic template (so it survives the LLM-None
+    reject step)."""
+    from paperpilot.scripts._lineage_classify import _TEMPLATE_RATIONALES_SET
+
     _patch_env(monkeypatch)
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
     monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
 
     _stub_external_calls(monkeypatch)
 
-    seed = _mk_s2_paper("seed", year=2020)
+    seed = _mk_s2_paper("seed", title="Child Paper Title", year=2020)
     # No _intents → derive_relation falls back to year/cite heuristic.
-    parent = {**_mk_s2_paper("parent", year=2018), "_is_influential": True}
+    parent = {
+        **_mk_s2_paper("parent", title="Parent Paper Title", year=2018),
+        "_is_influential": True,
+    }
     with (
         patch.object(
             build_theme_lineage,
@@ -561,14 +570,15 @@ def test_build_emits_templated_rationale(tmp_path: Path, monkeypatch):
         None,
     )
     assert bfs_edge is not None
-    # #80: rel can be any of the heuristic-derived enums; just assert
-    # the relation is real and the rationale is a non-empty Japanese
-    # template line (the original empty-rationale guard).
+    # #80: rel can be any of the heuristic-derived enums.
     assert bfs_edge["rel"] in {
         "extends", "successor", "supersedes", "contrasts", "ablation", "baseline_only",
     }
-    assert bfs_edge["rationale"], "templated rationale must not be empty"
-    assert "論文" in bfs_edge["rationale"]
+    assert bfs_edge["rationale"], "rationale must not be empty"
+    # #300: slot-filled — embeds the real titles + years, NOT a template.
+    assert bfs_edge["rationale"] not in _TEMPLATE_RATIONALES_SET
+    assert "Child Paper Title" in bfs_edge["rationale"]
+    assert "Parent Paper Title" in bfs_edge["rationale"]
 
 
 def test_build_emits_required_meta_fields(tmp_path: Path, monkeypatch):
