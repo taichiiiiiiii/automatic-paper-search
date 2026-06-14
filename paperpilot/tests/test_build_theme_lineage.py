@@ -3745,6 +3745,118 @@ def test_work_to_paper_dict_handles_arxiv_id():
     assert paper["externalIds"]["ArXiv"] == "2103.14030"
 
 
+# --- #301: recover arXiv id from location URL / DOI when ids.arxiv_id is None ---
+# OpenAlex returns ids.arxiv_id=None for ~all CS works, so the unarXive
+# citation-context grounding never fired in production. _arxiv_id_from_work
+# collects arXiv id candidates from every location PaperPilot can see.
+
+
+def test_arxiv_id_from_work_prefers_ids_arxiv_id():
+    """When ids.arxiv_id is present it wins (cheapest, most direct)."""
+    work = {"ids": {"arxiv_id": "2010.11929"}}
+    assert build_theme_lineage._arxiv_id_from_work(work) == "2010.11929"
+
+
+def test_arxiv_id_from_work_extracts_from_primary_location_landing_url():
+    """The common production case: ids.arxiv_id is None but the
+    primary_location.landing_page_url is an arxiv.org/abs URL."""
+    work = {
+        "ids": {"arxiv_id": None},
+        "primary_location": {
+            "landing_page_url": "https://arxiv.org/abs/2010.11929",
+        },
+    }
+    assert build_theme_lineage._arxiv_id_from_work(work) == "2010.11929"
+
+
+def test_arxiv_id_from_work_extracts_from_primary_location_pdf_url():
+    work = {
+        "primary_location": {
+            "pdf_url": "https://arxiv.org/pdf/2205.14135v2",
+        },
+    }
+    assert build_theme_lineage._arxiv_id_from_work(work) == "2205.14135"
+
+
+def test_arxiv_id_from_work_extracts_from_locations_array():
+    """No primary_location, but a secondary locations[] entry carries
+    the arXiv landing URL."""
+    work = {
+        "locations": [
+            {"landing_page_url": "https://example.com/not-arxiv"},
+            {"landing_page_url": "https://arxiv.org/abs/2103.14030"},
+        ],
+    }
+    assert build_theme_lineage._arxiv_id_from_work(work) == "2103.14030"
+
+
+def test_arxiv_id_from_work_extracts_from_datacite_doi():
+    """Only the DataCite arXiv DOI is present (10.48550/arXiv.<ID>)."""
+    work = {
+        "doi": "https://doi.org/10.48550/arXiv.2010.11929",
+    }
+    assert build_theme_lineage._arxiv_id_from_work(work) == "2010.11929"
+    # Also via ids.doi.
+    work2 = {"ids": {"doi": "https://doi.org/10.48550/arXiv.2103.14030"}}
+    assert build_theme_lineage._arxiv_id_from_work(work2) == "2103.14030"
+
+
+def test_arxiv_id_from_work_returns_none_for_non_arxiv_work():
+    """A genuinely non-arXiv work (journal DOI, non-arxiv landing page)
+    yields None so the unarXive lookup is skipped."""
+    work = {
+        "ids": {"arxiv_id": None, "doi": "https://doi.org/10.1234/foo"},
+        "primary_location": {"landing_page_url": "https://example.com/x"},
+        "locations": [{"landing_page_url": "https://nature.com/y"}],
+        "doi": "https://doi.org/10.1234/foo",
+    }
+    assert build_theme_lineage._arxiv_id_from_work(work) is None
+
+
+def test_arxiv_id_from_work_defensive_against_bad_input():
+    """Non-dict work / missing or non-dict fields never raise."""
+    assert build_theme_lineage._arxiv_id_from_work(None) is None  # type: ignore[arg-type]
+    assert build_theme_lineage._arxiv_id_from_work("not a dict") is None  # type: ignore[arg-type]
+    assert build_theme_lineage._arxiv_id_from_work({}) is None
+    # locations not a list, primary_location not a dict.
+    assert (
+        build_theme_lineage._arxiv_id_from_work(
+            {"primary_location": "x", "locations": "y", "ids": "z"}
+        )
+        is None
+    )
+
+
+def test_work_to_paper_dict_extracts_arxiv_from_landing_url():
+    """#301 core fix: a work with NO ids.arxiv_id but an arXiv
+    landing_page_url now sets externalIds.ArXiv, which feeds the
+    citations-direction unarXive lookup (_enrich_child_with_unarxive)."""
+    work = _mk_oa_work_v2("W123", title="Some paper")
+    work["ids"] = {"arxiv_id": None}
+    work["primary_location"] = {
+        "source": {"display_name": "NeurIPS"},
+        "landing_page_url": "https://arxiv.org/abs/2010.11929",
+    }
+    paper = build_theme_lineage._work_to_paper_dict(work)
+    assert paper is not None
+    assert paper["externalIds"]["ArXiv"] == "2010.11929"
+
+
+def test_work_to_paper_dict_arxiv_landing_url_does_not_break_venue():
+    """Adding landing_page_url to primary_location must not disturb the
+    venue extraction (source.display_name)."""
+    work = _mk_oa_work_v2("W124", title="P", venue="ICML")
+    work["ids"] = {"arxiv_id": None}
+    work["primary_location"] = {
+        "source": {"display_name": "ICML"},
+        "landing_page_url": "https://arxiv.org/abs/2103.14030",
+    }
+    paper = build_theme_lineage._work_to_paper_dict(work)
+    assert paper is not None
+    assert paper["venue"] == "ICML"
+    assert paper["externalIds"]["ArXiv"] == "2103.14030"
+
+
 # --- #273 publication_year corruption guard ---
 
 def test_work_to_paper_dict_year_normal_case():
@@ -3995,6 +4107,70 @@ def test_fetch_related_via_openalex_citations(tmp_path, monkeypatch):
     assert len(children) == 1
     assert children[0]["paperId"] == f"openalex:{child_short}"
     assert children[0]["_intents"] is None
+
+
+def test_fetch_related_via_openalex_references_focal_arxiv_from_locations(
+    tmp_path, monkeypatch
+):
+    """#301: references dir must recover the focal's arXiv id from the
+    payload's primary_location (not just ids.arxiv_id, which OpenAlex
+    leaves None for CS works) and feed it to the unarXive lookup.
+
+    Pins (1) the focal-payload select now requests
+    primary_location/locations/doi, and (2) _enrich_parent_with_unarxive
+    is called with the recovered citing arXiv id."""
+    parent_short = "W999"
+    captured_select: dict[str, Any] = {}
+
+    def _fake_request(method, url, **kwargs):
+        params = kwargs.get("params") or {}
+        if url.endswith("/works/W123"):
+            captured_select["select"] = params.get("select")
+            resp = MagicMock()
+            resp.status_code = 200
+            resp.json = lambda: {
+                "id": "https://openalex.org/W123",
+                "ids": {"arxiv_id": None},  # OpenAlex CS reality
+                "primary_location": {
+                    "landing_page_url": "https://arxiv.org/abs/2010.11929",
+                },
+                "referenced_works": [
+                    f"https://openalex.org/{parent_short}",
+                ],
+            }
+            return resp
+        if "filter" in params and params["filter"].startswith("openalex:"):
+            work = _mk_oa_work_v2(parent_short, title="Foundational", year=2015)
+            resp = MagicMock()
+            resp.status_code = 200
+            resp.json = lambda: {"results": [work]}
+            return resp
+        return None
+
+    seen_citing: list[str] = []
+
+    def _fake_enrich(parent, *, citing_arxiv_id):
+        seen_citing.append(citing_arxiv_id)
+        parent.setdefault("_contexts", [])
+        return parent
+
+    monkeypatch.setattr(
+        build_theme_lineage, "_enrich_parent_with_unarxive", _fake_enrich
+    )
+    with patch.object(
+        build_theme_lineage, "request_with_retry", side_effect=_fake_request
+    ):
+        parents = build_theme_lineage.fetch_related_via_openalex(
+            "W123", "references", limit=10
+        )
+    assert len(parents) == 1
+    # The focal select must now carry the location/DOI fields.
+    select = captured_select["select"] or ""
+    assert "primary_location" in select
+    assert "locations" in select
+    assert "doi" in select
+    # The recovered focal arXiv id reached the unarXive enrichment.
+    assert seen_citing == ["2010.11929"]
 
 
 def test_fetch_related_via_openalex_invalid_id_returns_empty():
