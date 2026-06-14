@@ -586,6 +586,15 @@ def _slot_fill_rationale(
     cy = _slot_fill_year(child)
 
     # intent_map path: the S2 intent label is the signal — name it.
+    # NOTE: when `intent is not None` the function returns from this
+    # block, so the year-cite `relation == "successor"` branch below is
+    # intentionally unreachable for the intent_map path.
+    # `_INTENT_RELATION_MAP` currently maps `result → successor`, so a
+    # result-intent edge takes the generic `〜として参照している` sentence
+    # here, not the year-cite "後発研究" phrasing below — deliberate: the
+    # rationale names the SIGNAL source (S2 intent), which differs from
+    # the year-delta source even when both arrive at the same enum.
+    # Pinned by test_slot_fill_intent_generic_relation_still_names_intent.
     if intent is not None:
         if relation == "extends":
             return (
