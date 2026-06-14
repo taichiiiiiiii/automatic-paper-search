@@ -14,8 +14,10 @@ from paperpilot.llm.base import TEMPLATE_RATIONALES
 from paperpilot.scripts.audit_lineage_quality import (
     _audit_edges,
     _audit_lineage,
+    _audit_offtopic_nonfocus,
     _audit_structural,
     edge_metrics,
+    offtopic_nonfocus_metric,
 )
 
 
@@ -316,3 +318,78 @@ def test_audit_lineage_clean_lineage_no_warn_or_fail(tmp_path):
     warnings, failures = _audit_lineage(path, min_year=2020)
     assert warnings == []
     assert failures == []
+
+
+# ---- offtopic_nonfocus_metric (#298 Part 4: warn-only drift detection) -----
+
+
+def _nf(title: str) -> dict:
+    """A non-focus (BFS-discovered) node with the given title."""
+    return {"id": title, "title": title, "is_focus": False}
+
+
+def test_offtopic_nonfocus_metric_flags_contaminated_theme():
+    """A drifted theme (off-topic non-focus nodes) gets a high ratio."""
+    data = {
+        "meta": {"theme": "Vision Transformer"},
+        "nodes": [
+            {"id": "s", "title": "Vision Transformer", "is_focus": True},
+            _nf("Lip to Speech Synthesis"),
+            _nf("Decoding Lip Language with Sensors"),
+            _nf("Vision Transformer for Segmentation"),  # on-topic
+        ],
+        "edges": [],
+    }
+    m = offtopic_nonfocus_metric(data)
+    assert m["nonfocus_count"] == 3  # the focus node is excluded
+    assert m["offtopic_count"] == 2  # the two lip-* nodes
+    assert m["offtopic_ratio"] > 0.5
+
+
+def test_offtopic_nonfocus_metric_clean_theme_is_zero():
+    data = {
+        "meta": {"theme": "Vision Transformer"},
+        "nodes": [
+            _nf("Vision Transformer at Scale"),
+            _nf("Hierarchical Vision Transformer"),
+        ],
+        "edges": [],
+    }
+    assert offtopic_nonfocus_metric(data)["offtopic_ratio"] == 0.0
+
+
+def test_offtopic_nonfocus_metric_exempts_foundational_ancestor():
+    """Foundational anchors are off-surface-topic but legitimate — exempt,
+    not counted as off-topic (would otherwise inflate every deep tree)."""
+    data = {
+        "meta": {"theme": "Vision Transformer"},
+        "nodes": [_nf("Attention Is All You Need")],
+        "edges": [],
+    }
+    m = offtopic_nonfocus_metric(data)
+    assert m["foundational_exempt"] == 1
+    assert m["nonfocus_count"] == 0  # exempted before the off-topic count
+    assert m["offtopic_ratio"] == 0.0
+
+
+def test_offtopic_nonfocus_metric_no_theme_is_zero():
+    """A non-theme lineage (no meta.theme/slug) never warns."""
+    data = {"meta": {}, "nodes": [_nf("Anything At All")], "edges": []}
+    assert offtopic_nonfocus_metric(data)["offtopic_ratio"] == 0.0
+
+
+def test_audit_offtopic_nonfocus_warns_not_fails():
+    """Detection is WARN-only — it surfaces a warning, never a failure
+    (a legit deep tree also scores high, so only an operator can adjudicate)."""
+    data = {
+        "meta": {"theme": "Vision Transformer"},
+        "nodes": [
+            _nf("Lip to Speech Synthesis"),
+            _nf("Audio-Visual Speech Recognition"),
+            _nf("Triboelectric Lip Reading System"),
+        ],
+        "edges": [],
+    }
+    warnings = _audit_offtopic_nonfocus(data)
+    assert warnings
+    assert any("offtopic_nonfocus_ratio" in w for w in warnings)
