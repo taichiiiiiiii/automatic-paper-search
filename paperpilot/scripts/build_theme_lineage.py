@@ -1589,6 +1589,65 @@ def _min_token_distance(text: str, word_a: str, word_b: str) -> int | None:
     return min(abs(a - b) for a in positions_a for b in positions_b)
 
 
+def _is_topic_relevant(paper: dict[str, Any], *, theme: str) -> bool:
+    """Single-paper topic-relevance predicate (#127 / #298).
+
+    Returns ``True`` when ``paper``'s title+abstract carry enough of the
+    theme to be considered on-topic, applying the exact same rules the
+    seed gate uses. Extracted from ``_filter_topic_relevant_seeds`` so
+    the BFS-node gate (#298) can reuse the identical decision without
+    duplicating its tokenisation — the two must never drift.
+
+    The rule set, by count of eligible (≥3 char) theme words:
+
+    - 0 or 1 eligible word — short queries like "RAG" / "DPO" where the
+      token rarely appears literally. Skip the gate entirely → always
+      ``True`` (let S2 / OpenAlex ranking do the work; the BFS gate
+      mirrors this escape hatch so it never prunes for short themes).
+    - 2 eligible words — verbatim phrase in title+abstract OR both
+      words *in the title* within ``_TWO_WORD_FALLBACK_MAX_DISTANCE``
+      tokens of each other (#209). Title-only is much higher signal
+      (LPIPS had both words in its abstract but neither in its title);
+      the distance bound rejects compound-term false matches.
+    - 3+ eligible words — verbatim phrase OR ``ceil(N / 2)`` distinct
+      words anywhere in title+abstract.
+
+    All comparisons run on hyphen-normalised lowercase text so
+    "self-supervised learning" and "self supervised learning" match
+    interchangeably.
+    """
+    words = [
+        w.lower()
+        for w in theme.split()
+        if len(w) >= _TOPIC_RELEVANCE_MIN_WORD_LEN
+    ]
+    if len(words) < 2:
+        # Short / single-word theme — gate disabled (escape hatch).
+        return True
+    phrase = _normalize_relevance_text(theme)
+    normalised_words = [_normalize_relevance_text(w) for w in words]
+    title_only = _normalize_relevance_text(paper.get("title") or "")
+    haystack = _normalize_relevance_text(
+        f"{paper.get('title') or ''} {paper.get('abstract') or ''}"
+    )
+    if phrase and phrase in haystack:
+        return True
+    if len(words) == 2:
+        # Fallback: both words must appear *in the title* AND be within
+        # _TWO_WORD_FALLBACK_MAX_DISTANCE token positions of each other.
+        if not all(w and w in title_only for w in normalised_words):
+            return False
+        distance = _min_token_distance(
+            title_only, normalised_words[0], normalised_words[1]
+        )
+        return distance is not None and distance <= _TWO_WORD_FALLBACK_MAX_DISTANCE
+    threshold = max(
+        2, math.ceil(len(words) * _TOPIC_RELEVANCE_THRESHOLD_RATIO)
+    )
+    hits = sum(1 for w in normalised_words if w and w in haystack)
+    return hits >= threshold
+
+
 def _filter_topic_relevant_seeds(
     seeds: list[dict[str, Any]],
     *,
@@ -1596,84 +1655,17 @@ def _filter_topic_relevant_seeds(
 ) -> list[dict[str, Any]]:
     """Drop seeds whose title+abstract don't include the theme as a
     phrase (2-word themes) or enough of the theme's words (3+ word
-    themes). All comparisons run on hyphen-normalised lowercase text
-    so "self-supervised learning" and "self supervised learning"
-    match interchangeably.
+    themes).
 
-    Threshold scaling, by count of eligible (≥3 char) words after the
-    stopword-ish drop:
-
-    - 0 or 1 word eligible — short queries like "RAG" or "DPO" where
-      the abbreviation rarely appears literally. Skip the gate and
-      let S2 ranking do the work.
-    - 2 words eligible — **phrase in title+abstract OR both words in
-      title (#209).** The previous "both words anywhere in
-      title+abstract" rule passed LPIPS as a Self-Supervised Learning
-      seed because its abstract reviewed multiple paradigms
-      ("supervised, self-supervised, and even unsupervised") and
-      separately mentioned "deep learning" — neither was the theme.
-      The phrase check (after hyphen normalisation) drops LPIPS; the
-      title-only fallback keeps papers like "Denoising Diffusion
-      Probabilistic Models" against the "Diffusion Models" theme,
-      where the title carries both words but the phrase order
-      differs.
-    - 3+ words eligible — phrase OR ``ceil(N / 2)`` distinct words
-      anywhere in title+abstract. The 50 % rule survives here because
-      longer themes like "Direct Preference Optimization" routinely
-      surface relevant papers titled "Preference Optimization without
-      DPO" that drop one of the theme's tokens.
+    Thin wrapper over the shared ``_is_topic_relevant`` predicate (#298)
+    — behaviour for seeds is unchanged; the per-paper decision logic now
+    lives in one place so the BFS-node gate can apply the identical rule.
+    Short / single-word themes still short-circuit to keeping every seed
+    (``_is_topic_relevant`` returns ``True`` for them).
     """
     if not seeds:
         return []
-    words = [
-        w.lower()
-        for w in theme.split()
-        if len(w) >= _TOPIC_RELEVANCE_MIN_WORD_LEN
-    ]
-    if len(words) < 2:
-        return seeds
-    phrase = _normalize_relevance_text(theme)
-    normalised_words = [_normalize_relevance_text(w) for w in words]
-    kept: list[dict[str, Any]] = []
-    if len(words) == 2:
-        for p in seeds:
-            title_only = _normalize_relevance_text(p.get("title") or "")
-            haystack = _normalize_relevance_text(
-                f"{p.get('title') or ''} {p.get('abstract') or ''}"
-            )
-            if phrase and phrase in haystack:
-                kept.append(p)
-                continue
-            # Fallback: both words must appear *in the title* AND be
-            # within _TWO_WORD_FALLBACK_MAX_DISTANCE token positions
-            # of each other. Title-only is much higher signal than
-            # title+abstract (LPIPS had both words in its abstract but
-            # neither in its title), and the distance bound catches
-            # compound-term false matches like World Model accepting
-            # "Real-World-Weight ... Modeling" (world at pos 1,
-            # modeling at pos 7).
-            if not all(w and w in title_only for w in normalised_words):
-                continue
-            distance = _min_token_distance(
-                title_only, normalised_words[0], normalised_words[1]
-            )
-            if distance is not None and distance <= _TWO_WORD_FALLBACK_MAX_DISTANCE:
-                kept.append(p)
-        return kept
-    threshold = max(
-        2, math.ceil(len(words) * _TOPIC_RELEVANCE_THRESHOLD_RATIO)
-    )
-    for p in seeds:
-        haystack = _normalize_relevance_text(
-            f"{p.get('title') or ''} {p.get('abstract') or ''}"
-        )
-        if phrase and phrase in haystack:
-            kept.append(p)
-            continue
-        hits = sum(1 for w in normalised_words if w and w in haystack)
-        if hits >= threshold:
-            kept.append(p)
-    return kept
+    return [p for p in seeds if _is_topic_relevant(p, theme=theme)]
 
 
 def _filter_denylisted_seeds(
@@ -1875,6 +1867,176 @@ def _filter_off_topic_refs(
         if "methodology" in intents:
             kept.append(p)
     return kept
+
+
+# ---- #298: title+year duplicate collapse ----
+# The two "FlashAttention: Fast and Memory-Efficient ..." nodes have
+# DISTINCT OpenAlex W-ids (W4281758439, W7133227460) AND distinct DOIs
+# (10.48550/arxiv.2205.14135 vs 10.52202/068431-1189), so every existing
+# dedup pass (which keys on paperId only) lets the duplicate through.
+# title+year is the load-bearing key here — a DOI-only dedup would miss
+# this case entirely because the two records carry unrelated DOIs.
+_TITLE_PUNCT_RE = re.compile(r"[^\w\s]", re.UNICODE)
+
+
+def _normalize_dedup_title(title: str | None) -> str:
+    """Lowercase, strip punctuation, collapse whitespace — the primary
+    dedup key component. ``"FlashAttention: Fast,  Memory-Efficient!"`` and
+    ``"flashattention fast memory efficient"`` normalise to the same string.
+    """
+    if not title:
+        return ""
+    lowered = _TITLE_PUNCT_RE.sub(" ", title.lower())
+    return re.sub(r"\s+", " ", lowered).strip()
+
+
+def _normalize_dedup_doi(paper: dict[str, Any]) -> str | None:
+    """Secondary dedup key: the paper's DOI lowercased (folds the
+    ``arxiv.`` / ``arXiv.`` casing variance OpenAlex emits) with the URL
+    host stripped. Returns ``None`` when the paper carries no DOI.
+    """
+    external = paper.get("externalIds") or {}
+    doi = (
+        external.get("DOI")
+        or external.get("doi")
+        or paper.get("doi")
+    )
+    if not isinstance(doi, str) or not doi.strip():
+        return None
+    doi = doi.strip().lower()
+    # Collapse any URL-form DOI host to the bare "10.x/y" form so
+    # https://doi.org/10.x and 10.x compare equal.
+    for host in _DOI_HOSTS:
+        marker = f"{host}/"
+        idx = doi.find(marker)
+        if idx != -1:
+            doi = doi[idx + len(marker) :]
+            break
+    return doi or None
+
+
+def _dedup_by_title_year(
+    papers: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], dict[str, str]]:
+    """Collapse true duplicates by ``(normalised-title, year)`` primary key
+    and normalised DOI secondary key, keeping the higher-``citationCount``
+    record on each collision (#298).
+
+    Returns ``(deduped_papers, remap)`` where ``remap`` maps every dropped
+    ``paperId`` onto the surviving ``paperId`` so the caller can rewrite
+    edge endpoints. Insertion order of survivors is preserved.
+
+    Over-prune guard: a paper with no usable title AND no DOI has no stable
+    key, so it is passed through untouched (never collapsed against another
+    keyless paper). Distinct papers — different title, different year, or
+    different DOI — are never merged.
+
+    Cross-key tie-break: if a paper's title+year key matches survivor X and
+    its DOI key matches a *different* survivor Y (ambiguous overlapping
+    evidence), the first key in scan order wins (title+year before DOI) and
+    the paper collapses into X — Y is left as an independent cluster rather
+    than performing a risky 3-way merge. This conservative choice can never
+    merge two genuinely-distinct papers.
+    """
+    if not papers:
+        return [], {}
+    # key -> surviving paperId (first-seen, then upgraded to higher cite)
+    key_to_survivor: dict[tuple[str, str], str] = {}
+    survivors: dict[str, dict[str, Any]] = {}
+    order: list[str] = []
+    remap: dict[str, str] = {}
+
+    def _cites(p: dict[str, Any]) -> int:
+        # Handle both the raw S2/OpenAlex paper shape ("citationCount") and
+        # the serialised node shape ("citation_count") so this dedup works
+        # on seeds AND on the final node set.
+        return int(p.get("citationCount") or p.get("citation_count") or 0)
+
+    for paper in papers:
+        pid = paper.get("paperId") or paper.get("id")
+        if not isinstance(pid, str) or not pid:
+            continue
+        norm_title = _normalize_dedup_title(paper.get("title"))
+        year = paper.get("year")
+        year_key = str(year) if year is not None else ""
+        doi = _normalize_dedup_doi(paper)
+        # Build the candidate keys: title+year (primary) and DOI (secondary).
+        keys: list[tuple[str, str]] = []
+        if norm_title:
+            keys.append(("ty", f"{norm_title}|{year_key}"))
+        if doi:
+            keys.append(("doi", doi))
+        if not keys:
+            # Keyless paper — cannot dedup safely; keep as its own record.
+            if pid not in survivors:
+                survivors[pid] = paper
+                order.append(pid)
+            continue
+        # Find an existing survivor under any of this paper's keys.
+        existing_pid: str | None = None
+        for k in keys:
+            if k in key_to_survivor:
+                existing_pid = key_to_survivor[k]
+                break
+        if existing_pid is None:
+            # New record; register it under all its keys.
+            survivors[pid] = paper
+            order.append(pid)
+            for k in keys:
+                key_to_survivor[k] = pid
+            continue
+        # Collision: keep the higher-citation record.
+        existing = survivors[existing_pid]
+        if _cites(paper) > _cites(existing):
+            # Incoming wins — replace the survivor in place (preserve order).
+            order[order.index(existing_pid)] = pid
+            del survivors[existing_pid]
+            survivors[pid] = paper
+            remap[existing_pid] = pid
+            # Re-point any earlier drop that mapped to the old survivor.
+            for dropped, target in list(remap.items()):
+                if target == existing_pid:
+                    remap[dropped] = pid
+            for k in list(key_to_survivor.keys()):
+                if key_to_survivor[k] == existing_pid:
+                    key_to_survivor[k] = pid
+            # Register the new survivor under all keys (incl. its DOI).
+            for k in keys:
+                key_to_survivor[k] = pid
+        else:
+            # Existing wins — drop the incoming record.
+            remap[pid] = existing_pid
+            # Register any new key the incoming paper introduced so a
+            # later duplicate under that key also collapses correctly.
+            for k in keys:
+                key_to_survivor.setdefault(k, existing_pid)
+    deduped = [survivors[pid] for pid in order]
+    return deduped, remap
+
+
+def _remap_edge_endpoints(
+    edges: list[dict[str, Any]], remap: dict[str, str]
+) -> list[dict[str, Any]]:
+    """Rewrite edge ``src`` / ``dst`` endpoints through ``remap`` (#298),
+    dropping any self-loop the remap may create and de-duplicating edges
+    that collapse onto the same (src, rel, dst) after remapping. Pure /
+    immutable — returns a new list, leaves the input untouched.
+    """
+    if not remap:
+        return edges
+    seen: set[tuple[str, str, str]] = set()
+    out: list[dict[str, Any]] = []
+    for e in edges:
+        src = remap.get(e["src"], e["src"])
+        dst = remap.get(e["dst"], e["dst"])
+        if src == dst:
+            continue
+        signature = (src, e.get("rel", ""), dst)
+        if signature in seen:
+            continue
+        seen.add(signature)
+        out.append({**e, "src": src, "dst": dst})
+    return out
 
 
 # ---------- GitHub stars enrichment ----------
@@ -2473,6 +2635,20 @@ def build_theme_lineage(
             reverse=True,
         )
         seeds = ranked[:seeds_count]
+
+    # #298: collapse title+year duplicate seeds before BFS. The two
+    # "FlashAttention: Fast and Memory-Efficient ..." records have
+    # distinct OpenAlex W-ids AND distinct DOIs, so the paperId-keyed
+    # alias merge above let the duplicate survive. title+year is the
+    # load-bearing key here. Keeps the higher-citation record. Seeds carry
+    # no edges yet so there is nothing to remap at this stage.
+    seeds, seed_remap = _dedup_by_title_year(seeds)
+    if seed_remap:
+        logger.info(
+            "seed title+year dedup collapsed %d duplicate seed(s)",
+            len(seed_remap),
+        )
+
     logger.info(
         "discovered %d seeds: %s",
         len(seeds),
@@ -2536,6 +2712,29 @@ def build_theme_lineage(
     if github_added:
         logger.info(
             "github stars: enriched %d nodes (cache + fresh)", github_added
+        )
+
+    # #298: final title+year dedup over the full node set. The seed-phase
+    # dedup above can't catch a duplicate that enters the graph as a BFS
+    # parent/child of two different seeds (distinct ids, distinct DOIs,
+    # same paper). Collapse to the higher-citation record and remap every
+    # edge endpoint from the dropped id onto the survivor so no edge dangles.
+    # IMPORTANT: this MUST run after both the BFS pass and the cross-node
+    # pass (_add_cross_node_edges above), so `edges` already contains every
+    # edge that could reference a dropped id — _remap_edge_endpoints then
+    # rewrites all of them in one pass. Do not reorder these stages.
+    deduped_nodes, node_remap = _dedup_by_title_year(list(nodes.values()))
+    if node_remap:
+        nodes = {n["id"]: n for n in deduped_nodes}
+        edges = _remap_edge_endpoints(edges, node_remap)
+        # Remap seed ids onto survivors; dict.fromkeys de-dups while
+        # preserving first-seen order so meta.seeds stays clean.
+        seed_ids = list(
+            dict.fromkeys(node_remap.get(sid, sid) for sid in seed_ids)
+        )
+        logger.info(
+            "node title+year dedup collapsed %d duplicate node(s)",
+            len(node_remap),
         )
 
     # Stage 4: drop edges with empty OR degenerate (#297) rationale —
