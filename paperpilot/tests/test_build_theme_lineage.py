@@ -4842,6 +4842,26 @@ def test_dedup_by_title_year_keeps_distinct_papers():
     assert remap == {}
 
 
+def test_dedup_by_title_year_collapses_same_title_within_year_window():
+    """#298 followup: OpenAlex keeps the arXiv preprint and the published
+    version as distinct Works with distinct DOIs and years one apart
+    ("An Image is Worth 16x16 Words" 2020 vs 2021). A same-normalised-title
+    match within +/- _DEDUP_YEAR_WINDOW collapses to the higher-citation
+    record; the same title many years apart stays distinct."""
+    papers = [
+        _mk_s2_paper("vit2020", title="An Image is Worth 16x16 Words", year=2020, cites=21585),
+        _mk_s2_paper("vit2021", title="An Image is Worth 16x16 Words", year=2021, cites=557),
+        # same title 17 years earlier → outside the window → distinct
+        _mk_s2_paper("old", title="An Image is Worth 16x16 Words", year=2003, cites=3),
+    ]
+    deduped, remap = build_theme_lineage._dedup_by_title_year(papers)
+    ids = {p["paperId"] for p in deduped}
+    assert "vit2020" in ids  # higher-cite survivor
+    assert "vit2021" not in ids  # collapsed (year diff 1, within window)
+    assert "old" in ids  # 17 years apart → kept distinct
+    assert remap.get("vit2021") == "vit2020"
+
+
 def test_dedup_by_title_year_doi_secondary_key():
     """#298: a normalised-DOI collision (arxiv. casing folded) collapses
     even when the titles differ slightly — DOI is the secondary key."""
