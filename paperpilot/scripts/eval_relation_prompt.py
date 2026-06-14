@@ -196,25 +196,49 @@ def _predict_live(
     return predictions
 
 
-def _macro_f1(
-    gold: Iterable[str],
-    pred: Iterable[str | None],
-) -> dict:
-    """Compute per-class precision / recall / F1 plus macro averages.
+def _score_subset(
+    gold_list: list[str],
+    pred_list: list[str | None],
+    *,
+    none_is_wrong: bool,
+) -> tuple[float, float, dict[str, dict[str, float | int]]]:
+    """Compute macro-F1, accuracy and the per-class table for one read.
 
-    Records where ``pred`` is None (LLM call failed) count as a wrong
-    answer for the gold class (precision/recall computed against gold).
+    Args:
+        gold_list: Gold labels.
+        pred_list: Predicted labels (may contain None for failed calls).
+        none_is_wrong: When True (the conservative primary read), a None
+            prediction counts as a miss (FN) for its gold class. When
+            False (the contamination-free read), None records are dropped
+            entirely before scoring — class set, tp/fp/fn, accuracy and
+            macro-F1 are all computed over the non-None subset only.
+
+    Returns:
+        ``(macro_f1, accuracy, per_class)``. When *none_is_wrong* is False
+        and there are no non-None predictions, returns ``(0.0, 0.0, {})``.
     """
-    gold_list = list(gold)
-    pred_list = list(pred)
-    assert len(gold_list) == len(pred_list)
+    if none_is_wrong:
+        pairs: list[tuple[str, str | None]] = list(
+            zip(gold_list, pred_list, strict=True)
+        )
+    else:
+        pairs = [
+            (g, p)
+            for g, p in zip(gold_list, pred_list, strict=True)
+            if p is not None
+        ]
 
-    classes = sorted(set(gold_list) | {p for p in pred_list if p is not None})
+    if not pairs:
+        return 0.0, 0.0, {}
+
+    classes = sorted(
+        {g for g, _ in pairs} | {p for _, p in pairs if p is not None}
+    )
     tp: dict[str, int] = defaultdict(int)
     fp: dict[str, int] = defaultdict(int)
     fn: dict[str, int] = defaultdict(int)
 
-    for g, p in zip(gold_list, pred_list, strict=True):
+    for g, p in pairs:
         if p is None:
             fn[g] += 1
             continue
@@ -246,12 +270,53 @@ def _macro_f1(
         }
         f1_sum += f1
 
-    accuracy = sum(1 for g, p in zip(gold_list, pred_list, strict=True) if g == p) / len(gold_list)
+    accuracy = sum(1 for g, p in pairs if g == p) / len(pairs)
     macro_f1 = f1_sum / len(classes) if classes else 0.0
+    return macro_f1, accuracy, per_class
+
+
+def _macro_f1(
+    gold: Iterable[str],
+    pred: Iterable[str | None],
+) -> dict:
+    """Compute per-class precision / recall / F1 plus macro averages.
+
+    Two reads are reported (issue #285 hardening):
+
+    * The primary, conservative read (``macro_f1`` / ``accuracy``) counts a
+      None prediction (LLM call failed, e.g. a 429) as a wrong answer for
+      its gold class. This is the number CI gates on.
+    * The contamination-free read (``macro_f1_excl_none`` /
+      ``accuracy_excl_none``) is computed over ONLY the records where the
+      prediction is not None — recomputing per-class tp/fp/fn on that
+      subset. Use this when a run is 429-heavy so infrastructure noise
+      doesn't dominate the classification signal.
+
+    ``none_count`` / ``n_scored`` expose how many predictions were None so
+    the contamination level of a run is auditable.
+    """
+    gold_list = list(gold)
+    pred_list = list(pred)
+    assert len(gold_list) == len(pred_list)
+
+    none_count = sum(1 for p in pred_list if p is None)
+    n_scored = len(pred_list) - none_count
+
+    macro_f1, accuracy, per_class = _score_subset(
+        gold_list, pred_list, none_is_wrong=True
+    )
+    macro_f1_excl, accuracy_excl, _ = _score_subset(
+        gold_list, pred_list, none_is_wrong=False
+    )
+
     return {
         "n": len(gold_list),
+        "none_count": none_count,
+        "n_scored": n_scored,
         "accuracy": round(accuracy, 3),
+        "accuracy_excl_none": round(accuracy_excl, 3),
         "macro_f1": round(macro_f1, 3),
+        "macro_f1_excl_none": round(macro_f1_excl, 3),
         "per_class": per_class,
     }
 
@@ -259,7 +324,15 @@ def _macro_f1(
 def _print_report(metrics: dict, predictor: str, confidence: str) -> None:
     print("=== relation prompt eval ===")
     print(f"predictor: {predictor}    confidence-filter: {confidence}")
-    print(f"n: {metrics['n']}    accuracy: {metrics['accuracy']:.3f}    macro-F1: {metrics['macro_f1']:.3f}")
+    print(
+        f"n: {metrics['n']}    "
+        f"n_scored: {metrics['n_scored']}    "
+        f"none_count: {metrics['none_count']}"
+    )
+    print(f"accuracy (None=wrong): {metrics['accuracy']:.3f}    "
+          f"accuracy (excl None): {metrics['accuracy_excl_none']:.3f}")
+    print(f"macro-F1 (None=wrong): {metrics['macro_f1']:.3f}    "
+          f"macro-F1 (excl None): {metrics['macro_f1_excl_none']:.3f}")
     print()
     print(f"{'class':<14} {'tp':>3} {'fp':>3} {'fn':>3}  {'prec':>5}  {'rec':>5}  {'f1':>5}")
     for cls, m in sorted(metrics["per_class"].items()):
@@ -309,7 +382,80 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Emit JSON metrics instead of the human report.",
     )
+    parser.add_argument(
+        "--dump-predictions",
+        default=None,
+        metavar="PATH",
+        help=(
+            "Write a JSONL file (one line per gold record: "
+            '{"id", "theme", "gold_rel", "pred"}) so supersedes '
+            "recall/precision can be computed offline without re-running."
+        ),
+    )
+    parser.add_argument(
+        "--gold-rel",
+        action="append",
+        default=None,
+        metavar="REL",
+        help=(
+            "Restrict the eval to gold records whose gold_rel is in this "
+            "set. Repeatable and/or comma-separated "
+            "(e.g. --gold-rel supersedes or --gold-rel supersedes,extends). "
+            "Use for a low-quota targeted run."
+        ),
+    )
     return parser
+
+
+def _parse_gold_rel_filter(raw: list[str] | None) -> set[str] | None:
+    """Flatten repeated and/or comma-separated --gold-rel values.
+
+    Returns None when no filter was requested, else the set of gold
+    relation labels to keep.
+    """
+    if not raw:
+        return None
+    wanted: set[str] = set()
+    for chunk in raw:
+        for part in chunk.split(","):
+            part = part.strip()
+            if part:
+                wanted.add(part)
+    return wanted or None
+
+
+def _filter_by_gold_rel(
+    records: list[dict],
+    wanted: set[str] | None,
+) -> list[dict]:
+    """Restrict records to those whose gold_rel is in *wanted*."""
+    if wanted is None:
+        return records
+    return [r for r in records if r.get("gold_rel") in wanted]
+
+
+def _dump_predictions(
+    path: str,
+    records: list[dict],
+    predictions: list[str | None],
+) -> None:
+    """Write one JSONL line per gold record for offline metric analysis."""
+    out_path = Path(path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    with out_path.open("w", encoding="utf-8") as fh:
+        for record, pred in zip(records, predictions, strict=True):
+            fh.write(
+                json.dumps(
+                    {
+                        "id": record.get("id"),
+                        "theme": record.get("theme"),
+                        "gold_rel": record.get("gold_rel"),
+                        "pred": pred,
+                    },
+                    ensure_ascii=False,
+                )
+                + "\n"
+            )
 
 
 def main() -> int:
@@ -320,10 +466,24 @@ def main() -> int:
         print("(no records after confidence filter)", file=sys.stderr)
         return 0
 
+    gold_rel_filter = _parse_gold_rel_filter(args.gold_rel)
+    if gold_rel_filter is not None:
+        records = _filter_by_gold_rel(records, gold_rel_filter)
+        if not records:
+            print(
+                "(no records match --gold-rel="
+                f"{','.join(sorted(gold_rel_filter))})",
+                file=sys.stderr,
+            )
+            return 0
+
     if args.predictor == "current":
         predictions = _predict_static(records)
     else:
         predictions = _predict_live(records, provider_choice=args.provider)
+
+    if args.dump_predictions:
+        _dump_predictions(args.dump_predictions, records, predictions)
 
     metrics = _macro_f1((r["gold_rel"] for r in records), predictions)
 
