@@ -51,7 +51,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=optional" rel="stylesheet" />
 
-  <link rel="stylesheet" href="../assets/style.css?v=75" />
+  <link rel="stylesheet" href="../assets/style.css?v=76" />
 </head>
 <body>
   <noscript>
@@ -391,7 +391,11 @@
        row to surface the most important interactive feature, since
        it's easy to miss without exploration. Dismissed automatically
        when the user switches a mode, or via the explicit close button. -->
-  <div class="onboarding" id="onboarding-hint" hidden role="dialog" aria-modal="true" aria-labelledby="onboarding-title">
+  <!-- Non-modal coach-mark: it points AT page content and is non-blocking
+       (pointer-events:none on the container), so it must NOT be aria-modal
+       — that would trap the AT virtual cursor and hide the very content it
+       annotates. role="dialog" without aria-modal = a non-modal dialog. -->
+  <div class="onboarding" id="onboarding-hint" hidden role="dialog" aria-labelledby="onboarding-title">
     <div class="onboarding__arrow" aria-hidden="true"></div>
     <strong class="onboarding__title" id="onboarding-title">📐 横軸を切り替えてみよう</strong>
     <p class="onboarding__body">
@@ -452,7 +456,7 @@
     <span id="x-axis-hint">Y 軸: 年（rank-based 等間隔） · X 軸: 引用ランク · ホバー → 分類理由</span>
   </footer>
 
-  <script src="../assets/utils.js?v=75" defer></script>
-  <script src="../assets/theme.js?v=75" defer></script>
+  <script src="../assets/utils.js?v=76" defer></script>
+  <script src="../assets/theme.js?v=76" defer></script>
 </body>
 </html>
