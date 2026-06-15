@@ -138,9 +138,9 @@ function renderPaper(p, idx) {
     <li class="paper" data-idx="${idx}">
       <span class="paper__type ${typeClass}">${escapeHtml(p.type)}</span>
       <div class="paper__body">
-        <h3 class="paper__title">
+        <h2 class="paper__title">
           <a href="${escapeHtml(p.arxiv_url || p.pdf_url || '#')}" target="_blank" rel="noopener">${escapeHtml(p.title)}</a>
-        </h3>
+        </h2>
         <p class="paper__authors">${escapeHtml(authorPreview || "—")}</p>
         ${tagsHtml ? `<div class="paper__tags">${tagsHtml}</div>` : ""}
         <div class="paper__meta">${linksHtml}${hasAbstract ? '<button class="paper__expand-btn" type="button">Abstract</button>' : ""}</div>

@@ -5,14 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#fbf9f5" />
   <title>Deep Lineage — ICLR 2026 — PaperPilot</title>
-  <meta name="description" content="1 本の論文を中心に、先行研究・後継研究を深掘りした家系図。" />
+  <meta name="description" content="ICLR 2026 の論文 1 本を中心に、先行研究（祖先）と後継研究（子孫）を複数 hop まで辿る深掘り家系図。関係種別ごとに色分けして表示。" />
 
   <!-- CSP defence-in-depth. See docs/index.html for the policy
        rationale; this page only fetches same-origin deep-*.json. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'" />
 
+  <link rel="canonical" href="https://taichiiiiiiii.github.io/automatic-paper-search/iclr-2026/deep.html" />
+
   <!-- Open Graph / Twitter Card — see docs/index.html for the og:image
-       follow-up rationale. og:url is intentionally omitted. -->
+       rationale. og:url = the canonical share URL. -->
+  <meta property="og:url" content="https://taichiiiiiiii.github.io/automatic-paper-search/iclr-2026/deep.html" />
   <meta property="og:title" content="Deep Lineage — ICLR 2026 — PaperPilot" />
   <meta property="og:description" content="1 本の論文を中心に、先行研究（祖先）と後継研究（子孫）を複数 hop まで辿った家系図。" />
   <meta property="og:type" content="website" />
@@ -35,7 +38,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=optional" rel="stylesheet" />
 
-  <link rel="stylesheet" href="../assets/style.css?v=41" />
+  <link rel="stylesheet" href="../assets/style.css?v=75" />
 </head>
 <body>
   <noscript>
@@ -73,7 +76,7 @@
       <select id="paper-picker" class="deep-picker__select" aria-label="Select focus paper"></select>
     </label>
     <div class="lineage-search">
-      <input type="search" id="search-input" placeholder="🔍 論文検索... (タイトル/著者)" autocomplete="off" spellcheck="false" />
+      <input type="search" id="search-input" aria-label="論文検索（タイトル / 著者）" placeholder="🔍 論文検索... (タイトル/著者)" autocomplete="off" spellcheck="false" />
       <div class="lineage-search__results" id="search-results" role="listbox" aria-label="Search results"></div>
     </div>
     <div class="lineage-toolbar__group" id="relation-filter" role="group" aria-label="Relation filter"></div>
@@ -114,7 +117,7 @@
     <span>エッジにホバー → LLM による分類理由 · カードクリック → 中心を切替</span>
   </footer>
 
-  <script src="../assets/utils.js?v=41" defer></script>
-  <script src="../assets/deep.js?v=41" defer></script>
+  <script src="../assets/utils.js?v=75" defer></script>
+  <script src="../assets/deep.js?v=75" defer></script>
 </body>
 </html>

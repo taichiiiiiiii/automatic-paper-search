@@ -15,10 +15,13 @@
        Worker hop is `/themes/` only. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'" />
 
-  <!-- Open Graph / Twitter Card. og:url is omitted intentionally so
-       scrapers fall back to the actual requested URL. The card now leads
-       with the lineage/family-tree experience (the product), not the
-       "catalog" framing, to match the redesigned hero headline. -->
+  <link rel="canonical" href="https://taichiiiiiiii.github.io/automatic-paper-search/" />
+
+  <!-- Open Graph / Twitter Card. og:url is the canonical share URL so
+       social platforms dedup shares against one URL. The card leads with
+       the lineage/family-tree experience (the product), not the "catalog"
+       framing, to match the redesigned hero headline. -->
+  <meta property="og:url" content="https://taichiiiiiiii.github.io/automatic-paper-search/" />
   <meta property="og:title" content="PaperPilot — AI 研究の家系図" />
   <meta property="og:description" content="AI/ML 論文の引用を世代をまたぐ家系図として可視化。テーマを入力すれば数分で新しい系譜が生成されます。" />
   <meta property="og:type" content="website" />
@@ -43,11 +46,26 @@
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png" />
 
+  <!-- WebSite schema. CSP-safe: a type="application/ld+json" block is a
+       data island, not executable script, so script-src 'self' doesn't
+       block it (verified). No SearchAction — the viewer takes known slugs,
+       not free-text queries, so advertising one would be misleading. -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "PaperPilot",
+    "url": "https://taichiiiiiiii.github.io/automatic-paper-search/",
+    "description": "AI/ML 論文の引用関係を世代をまたぐ家系図として可視化するツール",
+    "inLanguage": "ja"
+  }
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=optional" rel="stylesheet" />
 
-  <link rel="stylesheet" href="assets/style.css" />
+  <link rel="stylesheet" href="assets/style.css?v=75" />
   <style>
     /* ============================================================
        Landing-page-only styles. Shared design tokens + the .hero
@@ -500,6 +518,6 @@
     <span>Auto-updated weekly · MIT License</span>
   </footer>
 
-  <script src="assets/conferences-index.js"></script>
+  <script src="assets/conferences-index.js?v=75"></script>
 </body>
 </html>
