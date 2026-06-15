@@ -64,7 +64,7 @@ def test_slot_fill_intent_extends_names_the_intent():
     out = _slot_fill_rationale("extends", _PARENT, _CHILD, intent="methodology")
     assert "Deep Residual Learning" in out
     assert "An Image is Worth 16x16 Words" in out
-    assert "methodology" in out
+    assert "手法" in out  # #306: methodology rendered as 手法
     assert out not in _TEMPLATE_RATIONALES_SET
 
 
@@ -74,7 +74,15 @@ def test_slot_fill_intent_generic_relation_still_names_intent():
     out = _slot_fill_rationale("successor", _PARENT, _CHILD, intent="result")
     assert "Deep Residual Learning" in out
     assert "An Image is Worth 16x16 Words" in out
-    assert "result" in out
+    assert "結果" in out  # #306: result rendered as 結果
+    assert out not in _TEMPLATE_RATIONALES_SET
+
+
+def test_slot_fill_intent_unknown_keyword_passes_through_verbatim():
+    """#306: an intent keyword not in _INTENT_JA_LABEL falls through
+    verbatim via .get(intent, intent) — no crash, no template member."""
+    out = _slot_fill_rationale("successor", _PARENT, _CHILD, intent="some_future_keyword")
+    assert "some_future_keyword" in out
     assert out not in _TEMPLATE_RATIONALES_SET
 
 
@@ -166,7 +174,7 @@ def test_heuristic_intent_map_match_embeds_titles_and_names_intent():
     assert rel["provenance"] == "intent_map"
     assert "Word2Vec" in rel["rationale"]
     assert "GloVe" in rel["rationale"]
-    assert "methodology" in rel["rationale"]
+    assert "手法" in rel["rationale"]  # #306: methodology rendered as 手法
     assert rel["rationale"] not in _TEMPLATE_RATIONALES_SET
 
 

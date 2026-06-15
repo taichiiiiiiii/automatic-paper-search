@@ -21,7 +21,6 @@ scope for #283 even though current data shows 0 successor edges).
 
 from __future__ import annotations
 
-from paperpilot.llm.base import TEMPLATE_RATIONALES
 from paperpilot.scripts._lineage_classify import (
     _INTENT_RELATION_MAP,
     _derive_relation_heuristic,
@@ -155,19 +154,28 @@ def test_year_cite_still_emits_successor():
     assert rel is not None and rel["relation"] == "successor"
 
 
-# ---- build_deep_lineage._FALLBACK_RATIONALE single-source-of-truth -------
+# ---- build_deep_lineage lenient fallback: slot-filled, not a template ----
 
 
-def test_build_deep_lineage_fallback_rationale_derived_from_template_rationales():
-    """build_deep_lineage previously duplicated TEMPLATE_RATIONALES
-    values byte-for-byte in its own _FALLBACK_RATIONALE dict (SSoT
-    violation flagged by parallel reviewers on #283). After dedup, every
-    fallback string must be a value in TEMPLATE_RATIONALES."""
-    from paperpilot.scripts.build_deep_lineage import _FALLBACK_RATIONALE
+def test_build_deep_lineage_lenient_fallback_is_slot_filled_not_template():
+    """#304: the deep-tree lenient classifier's empty-rationale fallback now
+    uses `_slot_fill_rationale` (embeds the actual titles), NOT a
+    TEMPLATE_RATIONALES member — consistent with the #300 generalisation so
+    deep-tree edges carry paper-specific rationales and never collapse on a
+    template-reject."""
+    from paperpilot.scripts._lineage_classify import (
+        _TEMPLATE_RATIONALES_SET,
+        _slot_fill_rationale,
+    )
 
-    canonical = set(TEMPLATE_RATIONALES.values())
-    for relation, rationale in _FALLBACK_RATIONALE.items():
-        assert rationale in canonical, (
-            f"_FALLBACK_RATIONALE[{relation!r}] is not a TEMPLATE_RATIONALES "
-            f"value — would drift over time. Source from base.py instead."
-        )
+    parent = {"title": "Deep Residual Learning", "year": 2015}
+    child = {"title": "Identity Mappings in Deep Residual Networks", "year": 2016}
+    # _FALLBACK_RATIONALE is gone; the lenient path calls this directly.
+    for rel in ("supersedes", "successor", "extends", "ablation", "baseline_only", "contrasts"):
+        out = _slot_fill_rationale(rel, parent, child)
+        assert out not in _TEMPLATE_RATIONALES_SET, f"{rel} fallback is a template"
+        assert "Deep Residual Learning" in out  # embeds the real parent title
+    # The old template map must be gone (SSoT obsolete after #304).
+    import paperpilot.scripts.build_deep_lineage as bdl
+
+    assert not hasattr(bdl, "_FALLBACK_RATIONALE")

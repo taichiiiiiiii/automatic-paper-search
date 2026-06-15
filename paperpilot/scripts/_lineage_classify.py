@@ -558,6 +558,17 @@ def _slot_fill_year(paper: dict | None) -> str:
     return "?"
 
 
+# #306: Japanese labels for S2 intent keywords embedded in slot-fill
+# rationales. "methodology" reads acceptably as a loanword but 「結果」/
+# 「背景」 are clearer than result/background in a JP sentence. Unknown
+# keywords fall through verbatim via .get(intent, intent).
+_INTENT_JA_LABEL: dict[str, str] = {
+    "methodology": "手法",
+    "result": "結果",
+    "background": "背景",
+}
+
+
 def _slot_fill_rationale(
     relation: str,
     parent: dict | None,
@@ -602,16 +613,21 @@ def _slot_fill_rationale(
     # the year-delta source even when both arrive at the same enum.
     # Pinned by test_slot_fill_intent_generic_relation_still_names_intent.
     if intent is not None:
+        # #306: render the S2 intent keyword in Japanese for natural reading
+        # ("result" → 「結果」); unknown keywords pass through verbatim.
+        intent_ja = _INTENT_JA_LABEL.get(intent, intent)
         if relation == "extends":
+            # methodology→extends is the only intent_map extends wiring, so
+            # intent_ja is 「手法」 here; phrase it once (the old wording
+            # said "手法を{intent}文脈で" which doubled to "手法を手法文脈で").
             return (
-                f"「{ct}」({cy}) は「{pt}」({py}) の手法を"
-                f"{intent}文脈で拡張している。"
+                f"「{ct}」({cy}) は「{pt}」({py}) の{intent_ja}を拡張している。"
             )
         # Generic intent fallback for any other relation the intent map
         # might pick (currently only result→successor, but kept open).
         return (
             f"「{ct}」({cy}) は「{pt}」({py}) を"
-            f"{intent}として参照している。"
+            f"{intent_ja}として参照している。"
         )
 
     if relation == "successor":

@@ -61,12 +61,16 @@ CLASSIFICATIONS_CACHE = (
 # demands "30-200 chars" so anything below 30 is suspect.
 _MIN_WELLFORMED_RATIONALE_CHARS = 30
 
-# Ordered stable 5-enum closed set for provenance buckets (post PR #290).
-# Used to initialize all Counters up-front and to iterate in fixed order.
+# Ordered stable closed set for provenance buckets — MUST mirror
+# `_lineage_classify._VALID_PROVENANCES` (a drift-guard test pins the two in
+# sync). Used to initialize all Counters up-front and to iterate in fixed
+# order. #305/#321: `title_version` added when the title-version supersedes
+# rule landed; without it those edges hit the unknown-provenance warning.
 _NEW_ENUMS: tuple[str, ...] = (
     "context_pattern",
     "intent_map",
     "year_cite",
+    "title_version",
     "foundational_allowlist",
     "llm",
 )
