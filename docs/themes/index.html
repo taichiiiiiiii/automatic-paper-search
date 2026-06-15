@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#fbf9f5" />
-  <title>Theme Lineage — PaperPilot</title>
+  <title>テーマ家系図 — Theme Lineage | PaperPilot</title>
   <meta name="description" content="任意の研究テーマから生成した時系列付きの論文家系図。Y 軸は年（rank-based 等間隔）、横軸は 6 つの意味（引用ランク / log 引用数 / 系譜近接 / 中心性 / 会議格 / 新規性）から切替可能。" />
 
   <!-- Base URL of the CF Worker that owns `POST /api/themes`. The
@@ -23,10 +23,14 @@
        `textContent`-only rationale rendering carries over unchanged. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.workers.dev; img-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'" />
 
+  <link rel="canonical" href="https://taichiiiiiiii.github.io/automatic-paper-search/themes/" />
+
   <!-- Open Graph / Twitter Card — see docs/index.html for the og:image
-       follow-up rationale. og:url is intentionally omitted. -->
-  <meta property="og:title" content="Theme Lineage — PaperPilot" />
-  <meta property="og:description" content="任意の研究テーマから生成する時系列付きの論文家系図ビューア。19+ テーマ収録、新規テーマも数分でオンデマンド生成可能。" />
+       rationale. og:url = the canonical themes URL so the ?theme= share
+       variants dedup against one URL. -->
+  <meta property="og:url" content="https://taichiiiiiiii.github.io/automatic-paper-search/themes/" />
+  <meta property="og:title" content="テーマ家系図 — Theme Lineage" />
+  <meta property="og:description" content="任意の研究テーマから生成する時系列付きの論文家系図ビューア。新規テーマも数分でオンデマンド生成可能。" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="PaperPilot" />
   <meta property="og:locale" content="ja_JP" />
@@ -37,7 +41,7 @@
   <meta property="og:image:alt" content="PaperPilot — AI/ML 論文の系譜（家系図）を可視化" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:image" content="https://taichiiiiiiii.github.io/automatic-paper-search/assets/og-image.png" />
-  <meta name="twitter:title" content="Theme Lineage — PaperPilot" />
+  <meta name="twitter:title" content="テーマ家系図 — Theme Lineage" />
   <meta name="twitter:description" content="任意の研究テーマから生成する時系列付きの論文家系図ビューア。" />
 
   <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
@@ -47,7 +51,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=optional" rel="stylesheet" />
 
-  <link rel="stylesheet" href="../assets/style.css?v=74" />
+  <link rel="stylesheet" href="../assets/style.css?v=75" />
 </head>
 <body>
   <noscript>
@@ -387,7 +391,7 @@
        row to surface the most important interactive feature, since
        it's easy to miss without exploration. Dismissed automatically
        when the user switches a mode, or via the explicit close button. -->
-  <div class="onboarding" id="onboarding-hint" hidden role="dialog" aria-labelledby="onboarding-title">
+  <div class="onboarding" id="onboarding-hint" hidden role="dialog" aria-modal="true" aria-labelledby="onboarding-title">
     <div class="onboarding__arrow" aria-hidden="true"></div>
     <strong class="onboarding__title" id="onboarding-title">📐 横軸を切り替えてみよう</strong>
     <p class="onboarding__body">
@@ -448,7 +452,7 @@
     <span id="x-axis-hint">Y 軸: 年（rank-based 等間隔） · X 軸: 引用ランク · ホバー → 分類理由</span>
   </footer>
 
-  <script src="../assets/utils.js?v=74" defer></script>
-  <script src="../assets/theme.js?v=74" defer></script>
+  <script src="../assets/utils.js?v=75" defer></script>
+  <script src="../assets/theme.js?v=75" defer></script>
 </body>
 </html>
