@@ -38,6 +38,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from paperpilot.llm.base import RelationClassification, build_classify_prompt  # noqa: E402
+from paperpilot.scripts._lineage_classify import _slot_fill_rationale  # noqa: E402
 from paperpilot.scripts.build_lineage import (  # noqa: E402
     CACHE_DIR,
     build_provider,
@@ -54,32 +55,16 @@ logger = get_logger(__name__)
 
 # Llama 3.3 70B on Groq has a habit of returning `"rationale": ""` for weak
 # (depth-2+) edges — those get rejected by RelationClassification.from_dict
-# and the edge disappears entirely, defeating the purpose of deep BFS. This
-# table provides a templated fallback rationale keyed on the relation type
-# so a thin-but-real edge survives instead of silently vanishing.
+# and the edge disappears entirely, defeating the purpose of deep BFS. We
+# synthesize a fallback rationale so a thin-but-real edge survives.
 #
-# #283: derive from paperpilot.llm.base.TEMPLATE_RATIONALES to close a
-# byte-for-byte duplication flagged by the SSoT review. The mapping below
-# is the relation-name ↔ heuristic-key bridge; an import-time KeyError
-# guarantees we can't drift out of sync.
-from paperpilot.llm.base import TEMPLATE_RATIONALES as _BASE_TEMPLATE_RATIONALES  # noqa: E402
-
-_RELATION_TO_HEURISTIC_KEY: dict[str, str] = {
-    "supersedes":    "supersedes_year_cite",
-    "successor":     "successor_result",
-    "extends":       "extends_methodology",
-    # ablation + baseline_only: heuristic no longer emits these post-#283.
-    # The fallback rationale is still needed because depth 2+ LLM calls
-    # can still return these relations from the LLM itself — only the
-    # heuristic emit was removed, not the relation enum.
-    "ablation":      "ablation_year_cite",
-    "baseline_only": "baseline_only_background",
-    "contrasts":     "contrasts_year_cite",
-}
-_FALLBACK_RATIONALE: dict[str, str] = {
-    relation: _BASE_TEMPLATE_RATIONALES[heuristic_key]
-    for relation, heuristic_key in _RELATION_TO_HEURISTIC_KEY.items()
-}
+# #304: the fallback is now `_slot_fill_rationale` (embeds the actual
+# parent/child titles + years), matching the #300 generalisation in
+# _derive_relation_heuristic. This replaced a per-relation TEMPLATE_RATIONALES
+# table — slot-filled output is paper-specific and is NEVER a
+# `_TEMPLATE_RATIONALES_SET` member, so it stays consistent with the rest of
+# the lineage pipeline (and won't be template-rejected if it ever flows
+# through `_apply_llm_classification`).
 
 
 def _classify_cached_lenient(
@@ -123,7 +108,8 @@ def _classify_cached_lenient(
         return None
     rationale = (parsed.get("rationale") or "").strip() if isinstance(parsed, dict) else ""
     if not rationale and rel != "unrelated":
-        rationale = _FALLBACK_RATIONALE.get(rel, "論文 A と B の引用関係に意味的な連続性がある。")
+        # #304: paper-specific slot-fill instead of a template fallback.
+        rationale = _slot_fill_rationale(rel, a, b)
     try:
         conf = float(parsed.get("confidence", 0.6))
     except (TypeError, ValueError):

@@ -83,13 +83,40 @@ def test_classify_field_wins_over_rationale_conflict():
     "context_pattern",
     "intent_map",
     "year_cite",
+    "title_version",
     "foundational_allowlist",
     "llm",
 ])
-def test_classify_all_five_new_enums_passthrough(enum_val):
-    """Each of the 5 known enum values passes through as-is when in the field."""
+def test_classify_all_new_enums_passthrough(enum_val):
+    """Each known enum value passes through as-is when in the field —
+    incl. title_version (#305/#321), which previously hit the unknown-
+    provenance warning path."""
     edge = {"provenance": enum_val, "rationale": "irrelevant"}
     assert _classify_edge_provenance(edge) == enum_val
+
+
+def test_new_enums_mirror_valid_provenances():
+    """Drift-guard (#305): the breakdown audit's bucket set MUST equal the
+    canonical `_VALID_PROVENANCES` closed set, so a new provenance (e.g. the
+    #321 title_version) can never silently fall into the unknown-warning
+    path. This is the test that would have caught the missing title_version."""
+    from paperpilot.scripts._lineage_classify import _VALID_PROVENANCES
+
+    assert set(_NEW_ENUMS) == _VALID_PROVENANCES, (
+        f"_NEW_ENUMS {set(_NEW_ENUMS)} != _VALID_PROVENANCES "
+        f"{set(_VALID_PROVENANCES)} — sync the breakdown audit's buckets"
+    )
+
+
+def test_classify_slot_filled_rationale_with_provenance_not_unknown():
+    """#305: a #300 slot-fill rationale (embeds titles, NOT a template) must
+    bucket by its provenance field, never falling to a wrong/unknown bucket.
+    Field-first makes this work; pinned here per the issue's concern."""
+    from paperpilot.scripts._lineage_classify import _slot_fill_rationale
+
+    rationale = _slot_fill_rationale("successor", {"title": "A", "year": 2018}, {"title": "B", "year": 2020})
+    edge = {"provenance": "year_cite", "rationale": rationale}
+    assert _classify_edge_provenance(edge) == "year_cite"
 
 
 def test_classify_legacy_foundational_normalized_to_allowlist():
