@@ -78,6 +78,14 @@ def test_slot_fill_intent_generic_relation_still_names_intent():
     assert out not in _TEMPLATE_RATIONALES_SET
 
 
+def test_slot_fill_intent_unknown_keyword_passes_through_verbatim():
+    """#306: an intent keyword not in _INTENT_JA_LABEL falls through
+    verbatim via .get(intent, intent) — no crash, no template member."""
+    out = _slot_fill_rationale("successor", _PARENT, _CHILD, intent="some_future_keyword")
+    assert "some_future_keyword" in out
+    assert out not in _TEMPLATE_RATIONALES_SET
+
+
 def test_slot_fill_truncates_long_titles():
     long_parent = {"title": "X" * 200, "year": 2019}
     long_child = {"title": "Y" * 200, "year": 2021}
