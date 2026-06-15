@@ -46,6 +46,22 @@ def test_version_increment_improving_prefix():
     )
 
 
+def test_version_increment_enhanced_prefix():
+    assert _is_version_increment(
+        _p("Super-Resolution Network", 2017),
+        _p("Enhanced Super-Resolution Network", 2018),
+    )
+
+
+def test_version_increment_improved_prefix_with_colon_subtitle():
+    # Parent has a colon subtitle; comparison is on the pre-colon short name,
+    # so "Improved <short>" still matches.
+    assert _is_version_increment(
+        _p("DDPM: Denoising Diffusion Probabilistic Models", 2020),
+        _p("Improved DDPM: even better sampling", 2021),
+    )
+
+
 # ---- _is_version_increment: negatives (precision is the priority) ----------
 def test_no_version_increment_unrelated_titles():
     assert not _is_version_increment(_p("BERT", 2018), _p("GPT-3", 2020))

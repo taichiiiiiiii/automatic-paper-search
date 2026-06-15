@@ -205,6 +205,46 @@ def test_classify_cached_writes_cache_and_skips_on_hit(tmp_path: Path):
     assert provider_fail.calls == []  # cache hit; provider never invoked
 
 
+def test_classify_cached_falls_back_to_heuristic_when_llm_dark(tmp_path: Path):
+    """LLM None + intent_record supplied → deterministic heuristic edge
+    (graceful degradation, matching build_theme_lineage) instead of a drop.
+    Heuristic edges are NOT cached so a later live-LLM run re-derives."""
+    cache_path = tmp_path / "cls.json"
+    classifications: dict[str, dict] = {}
+    provider = _FakeProvider(return_value=None)  # LLM dark
+    a = {"title": "FlashAttention", "year": 2022, "paperId": "p1"}
+    b = {"title": "FlashAttention-2", "year": 2023, "paperId": "p2"}
+    out = build_lineage._classify_cached(
+        provider, a, b,
+        cache_key="p1->p2",
+        classifications=classifications,
+        cache_path=cache_path,
+        rate_delay=0,
+        intent_record=b,  # citing paper; no _intents → title-version fires
+    )
+    assert out is not None
+    assert out["relation"] == "supersedes"
+    assert out["provenance"] == "title_version"
+    assert "FlashAttention" in out["rationale"]
+    # NOT cached — a future run with a live LLM should re-derive a richer edge.
+    assert "p1->p2" not in classifications
+
+
+def test_classify_cached_drops_when_llm_dark_and_no_intent_record(tmp_path: Path):
+    """Backward-compat: without intent_record, LLM None still drops the edge."""
+    cache_path = tmp_path / "cls.json"
+    classifications: dict[str, dict] = {}
+    provider = _FakeProvider(return_value=None)
+    out = build_lineage._classify_cached(
+        provider, {"title": "A"}, {"title": "B"},
+        cache_key="A->B",
+        classifications=classifications,
+        cache_path=cache_path,
+        rate_delay=0,
+    )
+    assert out is None
+
+
 def test_classify_cached_merges_concurrent_writes(tmp_path: Path):
     """Two pipelines sharing classifications.json must not lose each other's
     additions. Simulate the race: we hold a stale in-memory snapshot while a
