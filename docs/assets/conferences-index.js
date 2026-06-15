@@ -8,7 +8,7 @@ fetch("conferences.json")
   .then((conferences) => {
     const list = document.getElementById("conf-list");
     if (!conferences.length) {
-      list.innerHTML = `<li class="conf-empty">No conferences yet.</li>`;
+      list.innerHTML = `<li class="conf-empty">まだ学会データがありません。<a href="themes/">テーマ家系図</a>から始められます。</li>`;
       return;
     }
     list.innerHTML = conferences.map((c) => {
@@ -19,7 +19,7 @@ fetch("conferences.json")
       return `
         <li class="conf">
           <div>
-            <h2 class="conf__name"><a href="${c.name}/">${c.name.toUpperCase().replace("-", " ")}</a></h2>
+            <h3 class="conf__name"><a href="${c.name}/">${c.name.toUpperCase().replace("-", " ")}</a></h3>
             <p class="conf__meta">${c.papers} papers · ${oral} oral · ${c.top_tags.length} top tags</p>
             <div class="conf__tags">${tags}</div>
           </div>
@@ -31,5 +31,5 @@ fetch("conferences.json")
     }).join("");
   })
   .catch(() => {
-    document.getElementById("conf-list").innerHTML = `<li class="conf-empty">Failed to load conferences.json</li>`;
+    document.getElementById("conf-list").innerHTML = `<li class="conf-empty">学会一覧を読み込めませんでした。<a href="themes/">テーマ家系図</a>から始めることもできます。</li>`;
   });

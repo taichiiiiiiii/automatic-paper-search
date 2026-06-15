@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PaperPilot — Conference Paper Catalog</title>
-  <meta name="description" content="AI/ML 学会論文の自動収集 + フィルタブルカタログ。" />
+  <title>PaperPilot — AI/ML 論文の家系図ビューア</title>
+  <meta name="description" content="AI/ML 論文の引用関係を、世代をまたぐ家系図（系譜）として可視化。テーマを入力すれば数分で新しい系譜を生成。学会採択論文の自動収集カタログも収録。" />
 
   <!-- CSP defence-in-depth. GH Pages strips `_headers`, so we declare
        the policy via meta. Pages outside /themes/ only fetch same-origin
@@ -13,10 +13,11 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'" />
 
   <!-- Open Graph / Twitter Card. og:url is omitted intentionally so
-       scrapers fall back to the actual requested URL. og:image will
-       land in a follow-up once we have a 1200x630 hero asset. -->
-  <meta property="og:title" content="PaperPilot — Conference Paper Catalog" />
-  <meta property="og:description" content="AI/ML 学会論文の自動収集 + フィルタブルカタログ。系譜（家系図）として可視化。" />
+       scrapers fall back to the actual requested URL. The card now leads
+       with the lineage/family-tree experience (the product), not the
+       "catalog" framing, to match the redesigned hero headline. -->
+  <meta property="og:title" content="PaperPilot — AI 研究の家系図" />
+  <meta property="og:description" content="AI/ML 論文の引用を世代をまたぐ家系図として可視化。テーマを入力すれば数分で新しい系譜が生成されます。" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="PaperPilot" />
   <meta property="og:locale" content="ja_JP" />
@@ -27,11 +28,11 @@
   <meta property="og:image" content="/assets/og-image.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="PaperPilot — visualize the lineage of AI/ML papers" />
+  <meta property="og:image:alt" content="PaperPilot — AI/ML 論文の系譜（家系図）を可視化" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:image" content="/assets/og-image.png" />
-  <meta name="twitter:title" content="PaperPilot — Conference Paper Catalog" />
-  <meta name="twitter:description" content="AI/ML 学会論文の自動収集 + フィルタブルカタログ。" />
+  <meta name="twitter:title" content="PaperPilot — AI 研究の家系図" />
+  <meta name="twitter:description" content="AI/ML 論文の引用を世代をまたぐ家系図として可視化。テーマを入力すれば数分で新しい系譜が生成されます。" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -39,10 +40,253 @@
 
   <link rel="stylesheet" href="assets/style.css" />
   <style>
+    /* ============================================================
+       Landing-page-only styles. Shared design tokens + the .hero
+       base (gradient + paper-grain ::before + § ::after) live in
+       style.css; everything here is the root page's own composition.
+       No raw color literals — every value routes through a --token.
+       ============================================================ */
+
+    /* The lineage tree IS the masthead: an asymmetric two-zone hero
+       where the copy column carries the headline + the primary CTA into
+       /themes/, and the family-tree SVG occupies the second column as
+       the product's own data structure rendered at editorial scale. */
+    .hero--landing {
+      padding-bottom: calc(var(--space-section) * 0.55);
+    }
+    .hero__grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: clamp(1.75rem, 1rem + 4vw, 3.5rem);
+      align-items: center;
+      margin-top: 0.5rem;
+    }
+    /* >= 880px: copy left, tree right. The tree is the heavier column
+       (1.15fr) and bleeds slightly into the gutter for asymmetry. */
+    @media (min-width: 880px) {
+      .hero__grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); }
+    }
+
+    .hero__copy { min-width: 0; }
+
+    /* Primary action — the front door finally opens onto the flagship
+       lineage viewer. Ink-filled for dominance; coral on hover so the
+       accent reads as "this is the action". 44px min touch target. */
+    .hero__cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem 1.4rem;
+      margin-top: 1.7rem;
+    }
+    .hero__cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      min-height: 44px;
+      padding: 0.7rem 1.45rem;
+      background: var(--color-ink);
+      color: var(--color-surface);
+      border: 1px solid var(--color-ink);
+      border-radius: 7px;
+      font-family: var(--font-mono);
+      font-size: var(--text-meta);
+      letter-spacing: 0.01em;
+      text-decoration: none;
+      transition:
+        background-color var(--duration-fast) var(--ease),
+        border-color var(--duration-fast) var(--ease),
+        transform var(--duration-fast) var(--ease);
+    }
+    .hero__cta:hover {
+      /* --color-accent-strong (deeper coral) keeps the brand signal while
+         clearing WCAG AA for the surface-on-fill text (~6.8:1); plain
+         --color-accent lands at 4.41:1, just under the 4.5:1 floor. */
+      background: var(--color-accent-strong);
+      border-color: var(--color-accent-strong);
+      color: var(--color-surface);
+      text-decoration: none;
+      transform: translateY(-1px);
+    }
+    .hero__cta:focus-visible {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 3px;
+      border-radius: 7px;
+    }
+    .hero__cta-arrow { transition: transform var(--duration-fast) var(--ease); }
+    .hero__cta:hover .hero__cta-arrow { transform: translateX(3px); }
+
+    /* Secondary — a LIVE link to a real generated theme (Vision
+       Transformer, 44 papers) so a researcher sees what a lineage looks
+       like before committing to generate one. The product screenshot,
+       but clickable. */
+    .hero__cta-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      min-height: 44px;
+      font-family: var(--font-mono);
+      font-size: var(--text-meta);
+      color: var(--color-ink-muted);
+      text-decoration: none;
+    }
+    .hero__cta-secondary:hover { color: var(--color-accent); text-decoration: none; }
+    .hero__cta-secondary:focus-visible {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 3px;
+      border-radius: 3px;
+    }
+
+    /* Reference docs demoted from primary pills to quiet mono links —
+       they are builder-facing material, not the product entry point. */
+    .hero__reflinks {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem 1.1rem;
+      margin: 1.15rem 0 0;
+      font-family: var(--font-mono);
+      font-size: var(--text-tag);
+      letter-spacing: 0.03em;
+      color: var(--color-ink-subtle);
+    }
+    .hero__reflinks a { color: var(--color-ink-subtle); }
+    .hero__reflinks a:hover { color: var(--color-ink-muted); }
+    .hero__reflinks .hero__reflinks-sep { opacity: 0.5; }
+
+    /* The hero visual. aspect-ratio reserves the box before fonts/paint
+       so the tree never causes layout shift (CLS budget < 0.1). One
+       SVG that scales fluidly — no JS, no extra request, CSP-safe. */
+    .hero__visual {
+      width: 100%;
+      max-width: 540px;
+      margin-inline: auto;
+    }
+    .hero__visual svg {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 36 / 23;
+      display: block;
+      overflow: visible;
+    }
+    .hero__visual-cap {
+      margin: 0.7rem 0 0;
+      font-family: var(--font-mono);
+      font-size: var(--text-caption);
+      letter-spacing: 0.03em;
+      color: var(--color-ink-subtle);
+      text-align: center;
+    }
+
+    /* Tree nodes + edges — colored ONLY via tokens. Node shapes mirror
+       the mini family-tree glyph in themes/index.html; edge colors
+       reuse the shipped relation palette (--rel-*) so the hero teaches
+       the legend (supersedes / successor / extends) before any click. */
+    .tree-node {
+      fill: var(--color-surface-elevated);
+      stroke: var(--color-rule-strong);
+      stroke-width: 1.5;
+    }
+    .tree-node--root {
+      fill: var(--color-oral-bg);
+      stroke: var(--color-oral);
+      stroke-width: 1.75;
+    }
+    .tree-node--current { stroke: var(--color-accent); stroke-width: 2; }
+    .tree-name {
+      fill: var(--color-ink);
+      font-family: var(--font-serif);
+      font-size: 12px;
+      font-weight: 500;
+      text-anchor: middle;
+    }
+    .tree-name--root { font-size: 13px; }
+    .tree-year {
+      fill: var(--color-ink-subtle);
+      font-family: var(--font-mono);
+      font-size: 8px;
+      letter-spacing: 0.04em;
+      text-anchor: middle;
+    }
+    .tree-edge { fill: none; stroke-linecap: round; }
+    .tree-edge--supersedes { stroke: var(--rel-supersedes); stroke-width: 2.6; }
+    .tree-edge--successor  { stroke: var(--rel-successor);  stroke-width: 2.2; }
+    .tree-edge--extends    { stroke: var(--rel-extends); stroke-width: 1.8; stroke-dasharray: 7 4; }
+    .tree-pulse { fill: none; stroke: var(--color-accent); stroke-width: 1.5; opacity: 0; }
+
+    /* "The lineage assembles itself" — one directed load sequence,
+       generation by generation, top→bottom (old papers up, new down,
+       mirroring the viewer's Y-axis). Compositor-friendly opacity +
+       transform only. Gated behind no-preference so reduced-motion and
+       any non-supporting context get the fully-drawn static tree. */
+    @media (prefers-reduced-motion: no-preference) {
+      .hero__visual .tree-gen,
+      .hero__visual .tree-edge { opacity: 0; }
+      .hero__visual .tree-gen {
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: tree-pop var(--duration-normal) var(--ease) both;
+      }
+      .hero__visual .tree-edge { animation: tree-fade var(--duration-normal) var(--ease) both; }
+
+      .gen-0 { animation-delay: 140ms; }
+      .edge-1 { animation-delay: 300ms; }
+      .gen-1 { animation-delay: 360ms; }
+      .edge-2 { animation-delay: 500ms; }
+      .gen-2 { animation-delay: 560ms; }
+
+      .tree-pulse {
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: ring-pulse 1.3s var(--ease) 940ms 1 both;
+      }
+      /* NOTE: the primary CTA is deliberately NOT animated. Critical
+         navigation must be present the instant the page paints — never
+         gated behind an animation's initial (opacity:0) frame. The
+         staged reveal is reserved for the decorative tree only. */
+    }
+    @keyframes tree-pop {
+      from { opacity: 0; transform: scale(0.9); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    @keyframes tree-fade { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes ring-pulse {
+      from { opacity: 0.55; transform: scale(0.78); }
+      to   { opacity: 0; transform: scale(1.45); }
+    }
+
+    /* ---- Conference catalog (below the masthead) ---- */
+    .section-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.5rem 1rem;
+      padding: var(--space-section) var(--space-edge) 0;
+      border-top: 1px solid var(--color-rule);
+    }
+    .section-head__title {
+      font-family: var(--font-mono);
+      font-size: var(--text-tag);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--color-ink-muted);
+      margin: 0;
+      font-weight: 600;
+    }
+    .section-head__note {
+      font-family: var(--font-mono);
+      font-size: var(--text-tag);
+      color: var(--color-ink-subtle);
+      margin: 0;
+    }
+
     .conf-list {
       list-style: none;
       margin: 0;
-      padding: 0 var(--space-edge) var(--space-section);
+      padding: 0.5rem var(--space-edge) 0;
+      /* CLS reserve: hold ~one row of vertical space so the footer
+         doesn't jump up while conferences.json is in flight. Overridden
+         by natural content height once conferences-index.js paints. */
+      min-height: 9rem;
     }
     .conf {
       display: grid;
@@ -107,6 +351,30 @@
       padding: 2rem var(--space-edge);
       color: var(--color-ink-subtle);
     }
+    .conf-empty a { color: var(--color-accent); }
+
+    /* Second path into /themes/, after the list — so the flagship is
+       reachable whether the visitor scans the hero or the catalog. */
+    .conf-more {
+      margin: 0;
+      padding: 1.5rem var(--space-edge) 0;
+      font-family: var(--font-mono);
+      font-size: var(--text-meta);
+    }
+    .conf-more a { color: var(--color-ink-muted); }
+    .conf-more a:hover { color: var(--color-accent); }
+
+    /* Mobile: stack copy (with the CTA) above the tree so the action is
+       reachable without scrolling past a tall visual; tighten the hero. */
+    @media (max-width: 879px) {
+      .hero__visual { max-width: 460px; margin-top: 0.5rem; }
+    }
+    @media (max-width: 480px) {
+      .hero--landing { padding-bottom: calc(var(--space-section) * 0.4); }
+      .hero__visual { max-width: 340px; }
+      .conf__name { font-size: 1.35rem; }
+      .conf__count { font-size: 2rem; }
+    }
   </style>
 </head>
 <body>
@@ -118,21 +386,104 @@
     </div>
   </noscript>
   <a class="skip-link" href="#main-content">本文へスキップ</a>
-  <header class="hero">
-    <nav class="hero__breadcrumb" aria-label="breadcrumb">PaperPilot</nav>
-    <h1 class="hero__title">Conference <em>paper catalog</em></h1>
-    <p class="hero__lede">
-      AI/ML 主要学会の採択論文を自動収集し、検索・フィルタ可能な形で公開しています。
-      毎週土曜に arXiv からの新着を取り込みます。
-    </p>
-    <p class="hero__actions">
-      <a class="hero__action" href="https://github.com/taichiiiiiiii/automatic-paper-search/tree/develop/docs/design">📐 基本設計書</a>
-      <a class="hero__action" href="https://github.com/taichiiiiiiii/automatic-paper-search/tree/develop/docs/research">📊 市場調査レポート</a>
-    </p>
+
+  <header class="hero hero--landing">
+    <!-- Root page has no breadcrumb trail, so this is a brand wordmark,
+         not a nav landmark — a <nav aria-label="breadcrumb"> with no
+         links misleads assistive tech. The /themes/ pages keep their
+         real (linked) breadcrumb. -->
+    <p class="hero__breadcrumb">PaperPilot</p>
+
+    <div class="hero__grid">
+      <div class="hero__copy">
+        <!-- <wbr> after the comma gives a single break opportunity so the
+             title stays on one line on wide screens but wraps to
+             "AI 研究の、" / "家系図。" on narrow ones — without it the
+             keep-all CJK run is unbreakable and overflows at 320px. -->
+        <h1 class="hero__title">AI 研究の、<wbr><em>家系図</em>。</h1>
+        <p class="hero__lede">
+          論文の引用を、世代をまたぐ家系図として描く。気になるテーマを入力すれば、
+          数分で新しい系譜が生成されます。
+        </p>
+        <div class="hero__cta-row">
+          <a class="hero__cta" href="themes/">
+            系譜ビューアを開く <span class="hero__cta-arrow" aria-hidden="true">→</span>
+          </a>
+          <a class="hero__cta-secondary" href="themes/?theme=vision-transformer">
+            例: Vision Transformer の家系図 <span aria-hidden="true">→</span>
+          </a>
+        </div>
+        <p class="hero__reflinks">
+          <a href="https://github.com/taichiiiiiiii/automatic-paper-search/tree/develop/docs/design"><span aria-hidden="true">📐</span> 基本設計書</a>
+          <span class="hero__reflinks-sep" aria-hidden="true">·</span>
+          <a href="https://github.com/taichiiiiiiii/automatic-paper-search/tree/develop/docs/research"><span aria-hidden="true">📊</span> 市場調査レポート</a>
+        </p>
+      </div>
+
+      <!-- Hero visual: a canonical attention-lineage rendered as the
+           product's own family-tree. Its two newest leaves (Vision
+           Transformer 2020, Flash Attention 2022) are the two themes
+           that actually exist in the viewer, so the masthead art is a
+           real preview, not decoration. Inline SVG = no request, no
+           CLS, CSP-safe. Colors come entirely from --rel-* / --color-*
+           via the classes above. Old papers up, new papers down. -->
+      <div class="hero__visual">
+        <svg viewBox="0 0 360 230" role="img"
+             aria-label="論文家系図の例: Attention (2017) から BERT と GPT (2018) が生まれ、さらに Vision Transformer (2020) と Flash Attention (2022) へと枝分かれする系譜。線の色は引用関係の種類（置換・後継・拡張）を表す。">
+          <!-- edges (drawn first, behind nodes) -->
+          <path class="tree-edge tree-edge--successor edge-1"  d="M180 42 C 180 72, 86 62, 86 92" />
+          <path class="tree-edge tree-edge--supersedes edge-1" d="M180 42 C 180 72, 274 62, 274 92" />
+          <path class="tree-edge tree-edge--extends edge-2"    d="M86 126 L 86 176" />
+          <path class="tree-edge tree-edge--extends edge-2"    d="M274 126 L 274 176" />
+
+          <!-- generation 0: root -->
+          <g class="tree-gen gen-0">
+            <rect class="tree-node tree-node--root" x="134" y="8" width="92" height="34" rx="5" />
+            <text class="tree-name tree-name--root" x="180" y="25">Attention</text>
+            <text class="tree-year" x="180" y="36">2017</text>
+          </g>
+
+          <!-- generation 1: children -->
+          <g class="tree-gen gen-1">
+            <rect class="tree-node" x="40" y="92" width="92" height="34" rx="5" />
+            <text class="tree-name" x="86" y="109">BERT</text>
+            <text class="tree-year" x="86" y="120">2018</text>
+          </g>
+          <g class="tree-gen gen-1">
+            <rect class="tree-node" x="228" y="92" width="92" height="34" rx="5" />
+            <text class="tree-name" x="274" y="109">GPT</text>
+            <text class="tree-year" x="274" y="120">2018</text>
+          </g>
+
+          <!-- generation 2: leaves = the two live themes -->
+          <g class="tree-gen gen-2">
+            <rect class="tree-node" x="40" y="176" width="92" height="34" rx="5" />
+            <text class="tree-name" x="86" y="193">ViT</text>
+            <text class="tree-year" x="86" y="204">2020</text>
+          </g>
+          <g class="tree-gen gen-2">
+            <rect class="tree-node tree-node--current" x="228" y="176" width="92" height="34" rx="5" />
+            <text class="tree-name" x="274" y="193">Flash Attn</text>
+            <text class="tree-year" x="274" y="204">2022</text>
+          </g>
+
+          <!-- one-shot attention pulse on the newest leaf -->
+          <rect class="tree-pulse" x="223" y="171" width="102" height="44" rx="7" />
+        </svg>
+        <p class="hero__visual-cap">線の色 = 関係の種類 — 置換 / 後継 / 拡張</p>
+      </div>
+    </div>
   </header>
 
   <main id="main-content">
+    <div class="section-head">
+      <h2 class="section-head__title">学会カタログ</h2>
+      <p class="section-head__note">ICLR 2026 から収録中 — 採択論文を品質シグナルで絞り込み、系譜として可視化します。</p>
+    </div>
     <ul class="conf-list" id="conf-list"></ul>
+    <p class="conf-more">
+      <a href="themes/">テーマから家系図を探す →</a>
+    </p>
   </main>
 
   <footer class="footer">
