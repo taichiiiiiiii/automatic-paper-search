@@ -4,6 +4,12 @@
  */
 
 :root {
+  /* The palette is a deliberately light, warm-paper system. Declaring the
+     scheme stops browsers/extensions from force-darkening it (which mangles
+     the OKLCH hues) and themes UA surfaces (form controls, scrollbars) to
+     match. */
+  color-scheme: light;
+
   --color-surface: oklch(98% 0.006 80);
   --color-surface-2: oklch(96% 0.008 80);
   --color-surface-elevated: oklch(99.5% 0.004 80);
