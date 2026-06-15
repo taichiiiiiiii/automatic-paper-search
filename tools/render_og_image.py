@@ -20,7 +20,9 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-from playwright.sync_api import sync_playwright
+# NOTE: playwright is imported lazily inside main() so the module can be
+# imported (e.g. to extract HTML for an alternate renderer) without the
+# heavy/optional playwright dependency installed.
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 OUTPUT_PNG = REPO_ROOT / "docs" / "assets" / "og-image.png"
@@ -36,6 +38,15 @@ COLOR_INK_SUBTLE = "#87858f"
 COLOR_ACCENT = "#d3502d"
 COLOR_RULE = "#d8d3cb"
 COLOR_RULE_STRONG = "#b8b0a3"
+# Relation-edge palette — kept as oklch() to match docs/assets/style.css
+# --rel-* tokens exactly (Chromium renders oklch in SVG fine; the output
+# is a PNG so no downstream SVG tooling needs hex). The card hero on
+# docs/index.html draws this same lineage with these same colors.
+COLOR_REL_SUPERSEDES = "oklch(55% 0.14 75)"   # deep gold
+COLOR_REL_SUCCESSOR = "oklch(72% 0.13 80)"    # light gold
+COLOR_REL_EXTENDS = "oklch(62% 0.14 145)"     # green
+COLOR_ORAL = "oklch(72% 0.16 75)"             # scholarly gold (root stroke)
+COLOR_ORAL_BG = "oklch(95% 0.07 80)"          # gold tint (root fill)
 
 HTML = f"""<!DOCTYPE html>
 <html lang="ja">
@@ -170,11 +181,11 @@ HTML = f"""<!DOCTYPE html>
   <div class="grid">
     <div class="brand">
       <span class="brand__wordmark">PaperPilot</span>
-      <span class="brand__tagline">CONFERENCE PAPER CATALOG &middot; LINEAGE VIEW</span>
+      <span class="brand__tagline">AI/ML PAPER LINEAGE &middot; 論文の家系図</span>
 
       <div class="headline">
-        <div class="headline__main">Visualize the lineage<br>of <em>AI/ML papers</em>.</div>
-        <div class="headline__sub">AI/ML 論文の系譜を 6 種の意味関係で可視化。</div>
+        <div class="headline__main">The family tree<br>of <em>AI research</em>.</div>
+        <div class="headline__sub">AI/ML 論文の引用を、世代をまたぐ家系図として可視化。</div>
       </div>
 
       <div class="sources">
@@ -185,71 +196,56 @@ HTML = f"""<!DOCTYPE html>
 
     <div>
       <div class="tree">
-        <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+        <!-- The same canonical lineage the page hero draws (Attention →
+             BERT/GPT → ViT/Flash Attn). Edge colors are the real --rel-*
+             relation tokens so the share card and the live page tell one
+             story; the two newest leaves (ViT, Flash Attn) are the two
+             themes that actually exist in the viewer. Old papers up,
+             new papers down. -->
+        <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <filter id="cs" x="-20%" y="-20%" width="140%" height="140%">
               <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="{COLOR_INK}" flood-opacity="0.08"/>
             </filter>
           </defs>
 
-          <!-- edges (coral primary, muted secondary) -->
-          <path d="M 200 36 C 200 80, 80 80, 80 110" stroke="{COLOR_ACCENT}" stroke-width="2.5" fill="none"/>
-          <path d="M 200 36 C 200 80, 320 80, 320 110" stroke="{COLOR_ACCENT}" stroke-width="2.5" fill="none"/>
-          <path d="M 80 146 C 80 185, 20 185, 20 220" stroke="{COLOR_RULE_STRONG}" stroke-width="2" fill="none"/>
-          <path d="M 80 146 C 80 185, 140 185, 140 220" stroke="{COLOR_RULE_STRONG}" stroke-width="2" fill="none"/>
-          <path d="M 320 146 C 320 185, 240 185, 240 220" stroke="{COLOR_RULE_STRONG}" stroke-width="2" fill="none"/>
-          <path d="M 320 146 C 320 185, 380 185, 380 220" stroke="{COLOR_RULE_STRONG}" stroke-width="2" fill="none"/>
+          <!-- edges: successor (light gold) + supersedes (deep gold) from
+               root, extends (green dashed) into the two leaves -->
+          <path d="M 200 40 C 200 84, 75 80, 75 120" stroke="{COLOR_REL_SUCCESSOR}" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+          <path d="M 200 40 C 200 84, 325 80, 325 120" stroke="{COLOR_REL_SUPERSEDES}" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+          <path d="M 75 160 L 75 240" stroke="{COLOR_REL_EXTENDS}" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-dasharray="7 4"/>
+          <path d="M 325 160 L 325 240" stroke="{COLOR_REL_EXTENDS}" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-dasharray="7 4"/>
 
-          <!-- root card (highlighted) -->
+          <!-- root: Attention (2017), gold "oral-tier" ancestor -->
           <g filter="url(#cs)">
-            <rect x="140" y="0" width="120" height="36" rx="4" fill="#ffffff" stroke="{COLOR_ACCENT}" stroke-width="2"/>
-            <rect x="143" y="3" width="34" height="10" rx="2" fill="#fbe4dc"/>
-            <text x="147" y="11.2" font-family="Inter" font-size="7" font-weight="600" fill="{COLOR_ACCENT}">NeurIPS</text>
-            <rect x="143" y="17" width="80" height="3" rx="1.5" fill="{COLOR_INK}"/>
-            <rect x="143" y="23" width="60" height="3" rx="1.5" fill="{COLOR_INK}"/>
-            <rect x="143" y="29" width="40" height="2" rx="1" fill="{COLOR_RULE_STRONG}"/>
+            <rect x="140" y="0" width="120" height="40" rx="6" fill="{COLOR_ORAL_BG}" stroke="{COLOR_ORAL}" stroke-width="2"/>
+            <text x="200" y="20" text-anchor="middle" font-family="Newsreader, serif" font-size="16" font-weight="500" fill="{COLOR_INK}">Attention</text>
+            <text x="200" y="33" text-anchor="middle" font-family="Inter" font-size="9" font-weight="500" fill="{COLOR_INK_SUBTLE}">2017</text>
           </g>
 
-          <!-- mid cards -->
+          <!-- generation 1: BERT / GPT (2018) -->
           <g filter="url(#cs)">
-            <rect x="20" y="110" width="120" height="36" rx="4" fill="#ffffff" stroke="{COLOR_RULE}" stroke-width="1.5"/>
-            <rect x="23" y="113" width="28" height="10" rx="2" fill="#eee9df"/>
-            <text x="27" y="121.2" font-family="Inter" font-size="7" font-weight="600" fill="{COLOR_INK_MUTED}">ICLR</text>
-            <rect x="23" y="127" width="75" height="3" rx="1.5" fill="{COLOR_INK_MUTED}"/>
-            <rect x="23" y="133" width="55" height="3" rx="1.5" fill="{COLOR_INK_MUTED}"/>
+            <rect x="15" y="120" width="120" height="40" rx="6" fill="#ffffff" stroke="{COLOR_RULE_STRONG}" stroke-width="1.5"/>
+            <text x="75" y="140" text-anchor="middle" font-family="Newsreader, serif" font-size="16" font-weight="500" fill="{COLOR_INK}">BERT</text>
+            <text x="75" y="153" text-anchor="middle" font-family="Inter" font-size="9" font-weight="500" fill="{COLOR_INK_SUBTLE}">2018</text>
           </g>
           <g filter="url(#cs)">
-            <rect x="260" y="110" width="120" height="36" rx="4" fill="#ffffff" stroke="{COLOR_RULE}" stroke-width="1.5"/>
-            <rect x="263" y="113" width="32" height="10" rx="2" fill="#eee9df"/>
-            <text x="267" y="121.2" font-family="Inter" font-size="7" font-weight="600" fill="{COLOR_INK_MUTED}">arXiv</text>
-            <rect x="263" y="127" width="70" height="3" rx="1.5" fill="{COLOR_INK_MUTED}"/>
-            <rect x="263" y="133" width="60" height="3" rx="1.5" fill="{COLOR_INK_MUTED}"/>
+            <rect x="265" y="120" width="120" height="40" rx="6" fill="#ffffff" stroke="{COLOR_RULE_STRONG}" stroke-width="1.5"/>
+            <text x="325" y="140" text-anchor="middle" font-family="Newsreader, serif" font-size="16" font-weight="500" fill="{COLOR_INK}">GPT</text>
+            <text x="325" y="153" text-anchor="middle" font-family="Inter" font-size="9" font-weight="500" fill="{COLOR_INK_SUBTLE}">2018</text>
           </g>
 
-          <!-- leaf cards -->
+          <!-- generation 2 (the two live themes): ViT (2020) / Flash Attn
+               (2022, newest → coral "current" ring) -->
           <g filter="url(#cs)">
-            <rect x="-40" y="220" width="120" height="36" rx="4" fill="#ffffff" stroke="{COLOR_RULE}" stroke-width="1.5"/>
-            <rect x="-37" y="223" width="34" height="10" rx="2" fill="#eee9df"/>
-            <text x="-33" y="231.2" font-family="Inter" font-size="7" font-weight="600" fill="{COLOR_INK_MUTED}">CVPR</text>
-            <rect x="-37" y="237" width="65" height="3" rx="1.5" fill="{COLOR_INK_MUTED}"/>
+            <rect x="15" y="240" width="120" height="40" rx="6" fill="#ffffff" stroke="{COLOR_RULE_STRONG}" stroke-width="1.5"/>
+            <text x="75" y="260" text-anchor="middle" font-family="Newsreader, serif" font-size="16" font-weight="500" fill="{COLOR_INK}">ViT</text>
+            <text x="75" y="273" text-anchor="middle" font-family="Inter" font-size="9" font-weight="500" fill="{COLOR_INK_SUBTLE}">2020</text>
           </g>
           <g filter="url(#cs)">
-            <rect x="80" y="220" width="120" height="36" rx="4" fill="#ffffff" stroke="{COLOR_RULE}" stroke-width="1.5"/>
-            <rect x="83" y="223" width="28" height="10" rx="2" fill="#eee9df"/>
-            <text x="87" y="231.2" font-family="Inter" font-size="7" font-weight="600" fill="{COLOR_INK_MUTED}">ACL</text>
-            <rect x="83" y="237" width="70" height="3" rx="1.5" fill="{COLOR_INK_MUTED}"/>
-          </g>
-          <g filter="url(#cs)">
-            <rect x="180" y="220" width="120" height="36" rx="4" fill="#ffffff" stroke="{COLOR_RULE}" stroke-width="1.5"/>
-            <rect x="183" y="223" width="32" height="10" rx="2" fill="#eee9df"/>
-            <text x="187" y="231.2" font-family="Inter" font-size="7" font-weight="600" fill="{COLOR_INK_MUTED}">EMNLP</text>
-            <rect x="183" y="237" width="60" height="3" rx="1.5" fill="{COLOR_INK_MUTED}"/>
-          </g>
-          <g filter="url(#cs)">
-            <rect x="320" y="220" width="120" height="36" rx="4" fill="#ffffff" stroke="{COLOR_RULE}" stroke-width="1.5"/>
-            <rect x="323" y="223" width="32" height="10" rx="2" fill="#eee9df"/>
-            <text x="327" y="231.2" font-family="Inter" font-size="7" font-weight="600" fill="{COLOR_INK_MUTED}">ICML</text>
-            <rect x="323" y="237" width="65" height="3" rx="1.5" fill="{COLOR_INK_MUTED}"/>
+            <rect x="265" y="240" width="120" height="40" rx="6" fill="#ffffff" stroke="{COLOR_ACCENT}" stroke-width="2"/>
+            <text x="325" y="260" text-anchor="middle" font-family="Newsreader, serif" font-size="16" font-weight="500" fill="{COLOR_INK}">Flash Attn</text>
+            <text x="325" y="273" text-anchor="middle" font-family="Inter" font-size="9" font-weight="500" fill="{COLOR_INK_SUBTLE}">2022</text>
           </g>
         </svg>
         <div class="tree__caption">supersedes &middot; successor &middot; extends &middot; ablation &middot; baseline &middot; contrasts</div>
@@ -265,6 +261,8 @@ HTML = f"""<!DOCTYPE html>
 
 def main() -> int:
     """Render the card. Returns the standard 0/1 unix exit code."""
+    from playwright.sync_api import sync_playwright
+
     with sync_playwright() as p:
         browser = p.chromium.launch()
         try:
