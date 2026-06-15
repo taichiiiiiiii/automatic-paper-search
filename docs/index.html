@@ -21,16 +21,19 @@
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="PaperPilot" />
   <meta property="og:locale" content="ja_JP" />
-  <!-- og:image / twitter:image use path-absolute URLs so the same HTML
-       resolves to the right asset regardless of the deploy origin
-       (apex domain vs. *.github.io). summary_large_image gives the
-       card a hero width on Twitter / X. -->
-  <meta property="og:image" content="/assets/og-image.png" />
+  <!-- og:image / twitter:image use a FULLY-QUALIFIED URL. A path-absolute
+       "/assets/og-image.png" 404s on this project page — it resolves to
+       github.io/assets/... and drops the /automatic-paper-search/ repo
+       prefix, so every social card lost its image. OGP also prefers
+       absolute URLs. If the site ever moves to a custom apex domain,
+       update this origin. summary_large_image gives the card a hero width
+       on Twitter / X. -->
+  <meta property="og:image" content="https://taichiiiiiiii.github.io/automatic-paper-search/assets/og-image.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta property="og:image:alt" content="PaperPilot — AI/ML 論文の系譜（家系図）を可視化" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:image" content="/assets/og-image.png" />
+  <meta name="twitter:image" content="https://taichiiiiiiii.github.io/automatic-paper-search/assets/og-image.png" />
   <meta name="twitter:title" content="PaperPilot — AI 研究の家系図" />
   <meta name="twitter:description" content="AI/ML 論文の引用を世代をまたぐ家系図として可視化。テーマを入力すれば数分で新しい系譜が生成されます。" />
 
