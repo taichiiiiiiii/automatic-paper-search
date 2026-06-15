@@ -6,15 +6,6 @@
   <title>404 — このページは見つかりません · PaperPilot</title>
   <meta name="description" content="お探しのページは、どの系譜にも繋がっていないようです。" />
 
-  <!-- GitHub Pages project sites serve this 404.html for any unknown
-       path under /automatic-paper-search/, but the URL bar keeps the
-       requested (often deep) path — so relative asset/link URLs would
-       resolve against that wrong path. <base> pins every relative URL to
-       the repo root so the stylesheet, fonts, and the home/viewer links
-       all resolve regardless of how deep the broken URL was. base-uri
-       'self' in the CSP permits this same-origin base. -->
-  <base href="/automatic-paper-search/" />
-
   <!-- CSP defence-in-depth. See docs/index.html for the policy
        rationale; the 404 fetches nothing cross-origin. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'" />
@@ -25,7 +16,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=optional" rel="stylesheet" />
 
-  <link rel="stylesheet" href="assets/style.css" />
+  <!-- Absolute, repo-prefixed paths (NOT relative, NOT <base>): GitHub
+       Pages serves this file for any unknown deep path but keeps that
+       path in the URL bar. Relative URLs would resolve against the wrong
+       depth; <base> would do so too but then breaks the in-page
+       #main-content skip-link (it would resolve against the base, not the
+       current document). Absolute repo-root paths sidestep both problems
+       and leave the skip-link fragment working. -->
+  <link rel="stylesheet" href="/automatic-paper-search/assets/style.css" />
   <style>
     /* 404-only styles. The base .hero / .hero__title / .hero__lede /
        .footer system is shared in style.css; this adds the CTA buttons
@@ -102,7 +100,7 @@
       color: var(--color-ink-muted);
       text-decoration: none;
     }
-    .hero__cta-secondary:hover { color: var(--color-accent); text-decoration: none; }
+    .hero__cta-secondary:hover { color: var(--color-accent-strong); text-decoration: none; }
     .hero__cta-secondary:focus-visible {
       outline: 2px solid var(--color-accent);
       outline-offset: 3px;
@@ -150,10 +148,14 @@
 <body>
   <a class="skip-link" href="#main-content">本文へスキップ</a>
 
-  <header class="hero hero--404">
-    <p class="hero__breadcrumb"><a href="./">PaperPilot</a> &nbsp;/&nbsp; 404</p>
+  <!-- The whole visual block is the <main> landmark so landmark
+       navigation works and the skip-link target is a focusable region
+       (tabindex=-1). The .hero classes only supply the gradient / grain /
+       § visual treatment. -->
+  <main class="hero hero--404" id="main-content" tabindex="-1">
+    <p class="hero__breadcrumb"><a href="/automatic-paper-search/">PaperPilot</a> &nbsp;/&nbsp; 404</p>
 
-    <div class="nf" id="main-content">
+    <div class="nf">
       <div class="nf__copy">
         <p class="nf__code">Error 404 — Not Found</p>
         <h1 class="hero__title">この枝は、<wbr><em>見つかりません</em>。</h1>
@@ -162,10 +164,10 @@
           リンクが古いか、ページが移動した可能性があります。
         </p>
         <div class="hero__cta-row">
-          <a class="hero__cta" href="./">
+          <a class="hero__cta" href="/automatic-paper-search/">
             ホームへ戻る <span class="hero__cta-arrow" aria-hidden="true">→</span>
           </a>
-          <a class="hero__cta-secondary" href="themes/">
+          <a class="hero__cta-secondary" href="/automatic-paper-search/themes/">
             系譜ビューアを開く <span aria-hidden="true">→</span>
           </a>
         </div>
@@ -211,7 +213,7 @@
         </svg>
       </div>
     </div>
-  </header>
+  </main>
 
   <footer class="footer">
     <span>Built by <a href="https://github.com/taichiiiiiiii/automatic-paper-search">PaperPilot</a></span>
