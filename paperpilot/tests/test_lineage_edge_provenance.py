@@ -183,12 +183,19 @@ def test_derive_relation_end_to_end_persists_provenance():
 
 
 def test_provenance_enum_is_closed_set():
-    """All 5 emit paths produce a provenance that is a member of _VALID_PROVENANCES.
+    """All 6 emit paths produce a provenance that is a member of _VALID_PROVENANCES.
 
     Iterate each path; collect provenance values; assert all ⊆ the closed enum.
     """
     expected = frozenset(
-        {"context_pattern", "intent_map", "year_cite", "foundational_allowlist", "llm"}
+        {
+            "context_pattern",
+            "intent_map",
+            "year_cite",
+            "title_version",
+            "foundational_allowlist",
+            "llm",
+        }
     )
     assert expected == _VALID_PROVENANCES, (
         f"_VALID_PROVENANCES mismatch: got {_VALID_PROVENANCES}"
@@ -223,6 +230,15 @@ def test_provenance_enum_is_closed_set():
     llm_edge = _build_edge_from_llm(_rc(relation="extends", confidence=0.85))
     assert llm_edge is not None
     collected.add(llm_edge["provenance"])
+
+    # Path 6: title_version (child title is a version-increment of parent)
+    tv_edge = _derive_relation_heuristic(
+        {"_intents": []},
+        parent={"title": "FlashAttention", "year": 2022},
+        child={"title": "FlashAttention-2", "year": 2023},
+    )
+    assert tv_edge is not None
+    collected.add(tv_edge["provenance"])
 
     assert collected == expected, (
         f"Some paths did not emit expected provenances. Got: {collected}"

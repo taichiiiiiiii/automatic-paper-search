@@ -112,6 +112,7 @@ _VALID_PROVENANCES: frozenset[str] = frozenset(
         "context_pattern",      # unarXive citation context regex matched
         "intent_map",           # S2 intent label matched _INTENT_RELATION_MAP
         "year_cite",            # year / citation-count contrast heuristic
+        "title_version",        # child title is a version-increment of parent (supersedes)
         "foundational_allowlist",  # title matched lineage_foundational_allowlist.json
         "llm",                  # LLM provider returned a valid classification
     }
@@ -632,6 +633,86 @@ def _slot_fill_rationale(
     )
 
 
+# Title-version supersedes: a high-precision, LLM-free signal. #283 removed
+# the *year/cite* supersedes heuristic because it was a weak statistical
+# inference that produced template-junk. This is a different, far stronger
+# signal — the child's NAME is an explicit version increment of the parent's
+# (FlashAttention → FlashAttention-2; X → "Improved X"). It only fires on an
+# exact normalised base-title match + a version token, so it cannot fabricate
+# edges for unrelated papers (verified 0 false positives across the 54-pair
+# gold set). Conceptual supersession with different titles (MoE → Switch
+# Transformers) is deliberately NOT caught here — that remains LLM-only.
+_VERSION_SUFFIX_RE = re.compile(r"^(.+?)[\s\-]+v?(\d+)$", re.IGNORECASE)
+_IMPROVE_PREFIX_RE = re.compile(r"^(?:improved|improving|enhanced)\s+(.+)$", re.IGNORECASE)
+_MIN_VERSION_BASE_LEN = 4  # guard against matching trivially-short bases
+# Cap the version token so model-config / year suffixes (ResNet-50 → ResNet-101,
+# "Model 2022" → "Model 2023") are NOT read as version increments — those are
+# config variants of one paper, not supersession. Real paper version chains are
+# low-numbered (FlashAttention-2/3, GPT-3/4); >20 is a config/year number.
+_MAX_VERSION_TOKEN = 20
+
+
+def _short_title(paper: dict | None) -> str:
+    """Normalised short name for version comparison: the segment before the
+    first colon (papers name themselves there — "FlashAttention: Fast …"),
+    lowercased, whitespace-collapsed, bracket-stripped."""
+    raw = ""
+    if isinstance(paper, dict) and isinstance(paper.get("title"), str):
+        raw = paper["title"]
+    raw = raw.split(":", 1)[0].strip().lower().replace("「", "").replace("」", "")
+    return re.sub(r"\s+", " ", raw)
+
+
+def _strip_version(short: str) -> tuple[str, int | None]:
+    """Split "flashattention-2" → ("flashattention", 2); ("x", None) if no
+    trailing version token or the base is too short to be meaningful."""
+    m = _VERSION_SUFFIX_RE.match(short)
+    if m and len(m.group(1).strip()) >= _MIN_VERSION_BASE_LEN:
+        return m.group(1).strip(), int(m.group(2))
+    return short, None
+
+
+def _is_version_increment(parent: dict | None, child: dict | None) -> bool:
+    """True iff the child title is an unambiguous version-increment of the
+    parent's. High precision is the priority (a false supersedes edge is
+    worse than a missing one — #283). Two patterns only:
+      1. same normalised base + child carries a higher (and low-numbered,
+         <= _MAX_VERSION_TOKEN) version token
+         (FlashAttention → FlashAttention-2 → FlashAttention-3);
+      2. "Improved / Improving / Enhanced <parent title>" (DDPM → Improved DDPM).
+    """
+    pt, ct = _short_title(parent), _short_title(child)
+    if not pt or not ct or pt == ct:
+        return False
+
+    # Pattern 1: versioned same-base name. (_strip_version already enforces
+    # the _MIN_VERSION_BASE_LEN floor — cver is None below that — so no
+    # separate length check is needed here.)
+    pbase, pver = _strip_version(pt)
+    cbase, cver = _strip_version(ct)
+    if (
+        cver is not None
+        and cver <= _MAX_VERSION_TOKEN
+        and cbase == pbase
+        and (pver is None or cver > pver)
+    ):
+        return True
+
+    # Pattern 2: "Improved <parent>" prefix (match against the parent's full
+    # title too, since the improved variant often spells out the long name).
+    m = _IMPROVE_PREFIX_RE.match(ct)
+    if m:
+        remainder = m.group(1).strip()
+        full_parent = ""
+        if isinstance(parent, dict) and isinstance(parent.get("title"), str):
+            full_parent = parent["title"].strip().lower().replace("「", "").replace("」", "")
+            full_parent = re.sub(r"\s+", " ", full_parent)
+        if remainder and remainder in (pt, full_parent):
+            return True
+
+    return False
+
+
 def _derive_relation_heuristic(
     intent_record: dict,
     *,
@@ -666,6 +747,26 @@ def _derive_relation_heuristic(
                 relation, parent, child, intent=keyword
             )
             return _make_derived(relation, rationale, "intent_map")
+
+    # No matching intent — try the title-version supersedes signal BEFORE
+    # the year/cite contrast. It only fires when the child's name is an
+    # explicit version increment of the parent's (see _is_version_increment),
+    # which is a far stronger signal than the year/cite one #283 removed and
+    # is the only LLM-free path to a supersedes edge. Placed after the intent
+    # loop so a real S2 intent still wins; placed before year/cite so a
+    # version-chain isn't mislabeled "successor". The edge is a strong PRIOR,
+    # not a verdict: every no-intent edge is _is_ambiguous, so in
+    # --llm-strict=ambiguous derive_relation still routes it to the LLM,
+    # which can override; only when the LLM is dark does this hedged,
+    # slot-filled rationale ship (and it survives _apply_llm_classification's
+    # template-reject because it embeds the actual titles, #300).
+    if _is_version_increment(parent, child):
+        rationale = (
+            f"「{_slot_fill_title(child)}」({_slot_fill_year(child)}) は"
+            f"「{_slot_fill_title(parent)}」({_slot_fill_year(parent)}) の"
+            f"バージョンアップ版にあたり、命名パターンから置き換え (supersedes) と推定される。"
+        )
+        return _make_derived("supersedes", rationale, "title_version")
 
     # No matching intent — try year + citation contrast.
     #

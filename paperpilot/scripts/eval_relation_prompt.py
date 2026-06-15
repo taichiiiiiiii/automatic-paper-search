@@ -85,6 +85,35 @@ def _predict_static(records: list[dict]) -> list[str | None]:
     return [r["current_rel"] for r in records]
 
 
+def _predict_heuristic(records: list[dict]) -> list[str | None]:
+    """Run the deterministic LLM-free heuristic (``_derive_relation_heuristic``)
+    on each pair — the path that classifies production edges whenever the LLM
+    is dark (the steady state under free-tier quota).
+
+    SCOPE CAVEAT: the gold records carry only ``{title, year, abstract}`` — no
+    S2 ``_intents`` and no ``citationCount``. So this exercises the
+    title-version supersedes + year-gap successor branches only; the
+    intent-map and contrasts branches need fields the fixture lacks.
+
+    Consequently the ``successor`` predictions here are INFLATED noise: with
+    no citationCount the contrasts branch (``pc > 100``) is dead, so every
+    pair with a 1–5 year gap defaults to ``successor`` regardless of its true
+    label. Only the ``supersedes`` precision/recall from this mode is
+    meaningful (the title-version rule needs no extra fields). Read the macro
+    number as a *floor*, not a production-fidelity figure. No external calls —
+    safe to run offline.
+    """
+    from paperpilot.scripts._lineage_classify import _derive_relation_heuristic
+
+    preds: list[str | None] = []
+    for r in records:
+        edge = _derive_relation_heuristic(
+            {"_intents": []}, parent=r["parent"], child=r["child"]
+        )
+        preds.append(edge["relation"] if edge else None)
+    return preds
+
+
 def _load_env_for_provider() -> dict:
     """Load .env secrets for provider construction.
 
@@ -351,9 +380,13 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--predictor",
-        choices=("current", "live"),
+        choices=("current", "heuristic", "live"),
         default="current",
-        help="current = static current_rel snapshot; live = call classify_relation now",
+        help=(
+            "current = static current_rel snapshot; "
+            "heuristic = run the LLM-free derive_relation heuristic offline "
+            "(the production fallback); live = call classify_relation now"
+        ),
     )
     parser.add_argument(
         "--provider",
@@ -479,6 +512,8 @@ def main() -> int:
 
     if args.predictor == "current":
         predictions = _predict_static(records)
+    elif args.predictor == "heuristic":
+        predictions = _predict_heuristic(records)
     else:
         predictions = _predict_live(records, provider_choice=args.provider)
 
