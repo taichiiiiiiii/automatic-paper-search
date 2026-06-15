@@ -60,6 +60,7 @@ from paperpilot.llm import (  # noqa: E402
 )
 from paperpilot.llm.base import _MIN_RATIONALE_LEN, provider_model_tag  # noqa: E402
 from paperpilot.scripts._common import slug_to_venue_label  # noqa: E402
+from paperpilot.scripts._lineage_classify import derive_relation  # noqa: E402
 from paperpilot.utils.http import request_with_retry  # noqa: E402
 from paperpilot.utils.logger import get_logger, setup_logging  # noqa: E402
 
@@ -519,12 +520,23 @@ def _classify_cached(
     classifications: dict[str, dict],
     cache_path: Path,
     rate_delay: float,
+    intent_record: dict | None = None,
 ) -> dict | None:
     """Classify via provider with persistent cache keyed by (src, dst).
 
     Strict variant: empty rationales are dropped by ``RelationClassification.
     from_dict`` (better no edge than a silent empty tooltip). Use the lenient
     variant in ``build_deep_lineage`` when weak edges should survive.
+
+    Graceful degradation (matches build_theme_lineage): when the LLM returns
+    None — the steady state under free-tier quota — and ``intent_record`` is
+    supplied, fall back to the deterministic heuristic via
+    ``derive_relation(strict_mode="off")`` (S2 intents + title-version
+    supersedes + year/cite + foundational, NO LLM call). Without this the
+    conference tree goes empty whenever the LLM is dark. Heuristic edges are
+    deliberately NOT written to the cache, so a later run with a live LLM
+    re-derives a richer paper-specific rationale. ``intent_record`` defaults
+    to None (callers that don't pass it keep the old drop-on-None behavior).
     """
     if cache_key in classifications:
         cached = classifications[cache_key]
@@ -553,7 +565,14 @@ def _classify_cached(
         classifications[cache_key] = entry
         persist_classifications(classifications, cache_path)
     time.sleep(rate_delay)
-    return classifications.get(cache_key)
+    if rc is not None:
+        return classifications.get(cache_key)
+    # LLM dark: degrade to the deterministic heuristic instead of dropping
+    # the edge. Reuses derive_relation's full heuristic composition with no
+    # LLM (strict_mode="off"); not cached.
+    if intent_record is not None:
+        return derive_relation(intent_record, parent=a, child=b, strict_mode="off")
+    return None
 
 
 def build(
@@ -643,6 +662,9 @@ def build(
                 classifications=classifications,
                 cache_path=classification_cache_path,
                 rate_delay=rate_delay,
+                # references: parent = intent_record (cited), child = focus
+                # (citing) — see derive_relation's direction convention.
+                intent_record=parent,
             )
             if cls and cls["relation"] != "unrelated":
                 edges.append({
@@ -650,6 +672,7 @@ def build(
                     "rel": cls["relation"],
                     "conf": cls["confidence"],
                     "rationale": cls["rationale"],
+                    "provenance": cls.get("provenance", "llm"),
                 })
 
         for child in children:
@@ -664,6 +687,9 @@ def build(
                 classifications=classifications,
                 cache_path=classification_cache_path,
                 rate_delay=rate_delay,
+                # citations: child = intent_record (citing), parent = focus
+                # (cited) — see derive_relation's direction convention.
+                intent_record=child,
             )
             if cls and cls["relation"] != "unrelated":
                 edges.append({
@@ -671,6 +697,7 @@ def build(
                     "rel": cls["relation"],
                     "conf": cls["confidence"],
                     "rationale": cls["rationale"],
+                    "provenance": cls.get("provenance", "llm"),
                 })
 
     # Root = focus paper with the most relationships (best default landing focus)

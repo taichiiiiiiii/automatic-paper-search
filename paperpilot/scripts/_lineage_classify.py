@@ -698,19 +698,12 @@ def _is_version_increment(parent: dict | None, child: dict | None) -> bool:
     ):
         return True
 
-    # Pattern 2: "Improved <parent>" prefix (match against the parent's full
-    # title too, since the improved variant often spells out the long name).
+    # Pattern 2: "Improved / Improving / Enhanced <parent short title>".
+    # Both titles are compared on their pre-colon short form (`_short_title`),
+    # so matching the remainder against `pt` covers the colon and no-colon
+    # cases alike.
     m = _IMPROVE_PREFIX_RE.match(ct)
-    if m:
-        remainder = m.group(1).strip()
-        full_parent = ""
-        if isinstance(parent, dict) and isinstance(parent.get("title"), str):
-            full_parent = parent["title"].strip().lower().replace("「", "").replace("」", "")
-            full_parent = re.sub(r"\s+", " ", full_parent)
-        if remainder and remainder in (pt, full_parent):
-            return True
-
-    return False
+    return bool(m and m.group(1).strip() == pt)
 
 
 def _derive_relation_heuristic(
