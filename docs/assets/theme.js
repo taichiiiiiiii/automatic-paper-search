@@ -1322,13 +1322,33 @@ function isEditableTarget(el) {
   return false;
 }
 
+// Keyboard-help dialog focus management. It's aria-modal="true", which
+// promises AT that focus is contained — so move focus in on open, trap Tab
+// while open (see bindKeyboardShortcuts), and restore focus on close.
+const _DIALOG_FOCUSABLE = 'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])';
+let _kbdReturnFocus = null;
+
+function openKbdHelp() {
+  if (!els.kbdHelp) return;
+  _kbdReturnFocus = document.activeElement;
+  els.kbdHelp.hidden = false;
+  els.kbdHelpClose?.focus();
+}
+
+function closeKbdHelp() {
+  if (!els.kbdHelp) return;
+  els.kbdHelp.hidden = true;
+  if (_kbdReturnFocus && typeof _kbdReturnFocus.focus === "function") _kbdReturnFocus.focus();
+  _kbdReturnFocus = null;
+}
+
 // Escape handlers — fire even when an editable element is focused.
 // Each entry returns true if it consumed the event (we then stop the
 // chain + preventDefault). Order matters: kbd help dismisses before
 // onboarding so layered overlays close one at a time.
 const ESCAPE_HANDLERS = [
   () => {
-    if (els.kbdHelp && !els.kbdHelp.hidden) { els.kbdHelp.hidden = true; return true; }
+    if (els.kbdHelp && !els.kbdHelp.hidden) { closeKbdHelp(); return true; }
     return false;
   },
   () => {
@@ -1377,7 +1397,7 @@ const KEYBOARD_SHORTCUTS = [
     match: (key) => key === "?",
     run: () => {
       if (!els.kbdHelp) return false;
-      els.kbdHelp.hidden = false;
+      openKbdHelp();
       return true;
     },
   },
@@ -1403,14 +1423,24 @@ function bindKeyboardShortcuts() {
   });
 
   if (els.kbdHelpClose) {
-    els.kbdHelpClose.addEventListener("click", () => {
-      els.kbdHelp.hidden = true;
-    });
+    els.kbdHelpClose.addEventListener("click", closeKbdHelp);
   }
   // Click outside the panel to close.
   if (els.kbdHelp) {
     els.kbdHelp.addEventListener("click", (e) => {
-      if (e.target === els.kbdHelp) els.kbdHelp.hidden = true;
+      if (e.target === els.kbdHelp) closeKbdHelp();
+    });
+    // Trap Tab within the dialog while open (honors aria-modal="true").
+    // With only the close button focusable, both Tab and Shift+Tab wrap
+    // back to it; generalised here in case the panel gains controls.
+    els.kbdHelp.addEventListener("keydown", (e) => {
+      if (e.key !== "Tab") return;
+      const f = [...els.kbdHelp.querySelectorAll(_DIALOG_FOCUSABLE)]
+        .filter((el) => el.offsetParent !== null);
+      if (!f.length) return;
+      const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
     });
   }
 }
