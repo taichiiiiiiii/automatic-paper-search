@@ -5,14 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#fbf9f5" />
   <title>Lineage — ICLR 2026 — PaperPilot</title>
-  <meta name="description" content="論文の系譜を関係種別ごとに可視化する家系図ビュー。" />
+  <meta name="description" content="ICLR 2026 Oral 採択論文の先行研究・後継研究の引用関係を、置換／後継／拡張などの関係種別ごとに可視化する家系図ビュー。Groq Llama 3.3 70B で分類。" />
 
   <!-- CSP defence-in-depth. See docs/index.html for the policy
        rationale; this page only fetches same-origin lineage.json. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'" />
 
+  <link rel="canonical" href="https://taichiiiiiiii.github.io/automatic-paper-search/iclr-2026/lineage.html" />
+
   <!-- Open Graph / Twitter Card — see docs/index.html for the og:image
-       follow-up rationale. og:url is intentionally omitted. -->
+       rationale. og:url = the canonical share URL. -->
+  <meta property="og:url" content="https://taichiiiiiiii.github.io/automatic-paper-search/iclr-2026/lineage.html" />
   <meta property="og:title" content="Lineage — ICLR 2026 — PaperPilot" />
   <meta property="og:description" content="ICLR 2026 Oral 論文の系譜（先行研究・後継研究の引用関係）を関係種別ごとに可視化する家系図。" />
   <meta property="og:type" content="website" />
@@ -35,7 +38,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=optional" rel="stylesheet" />
 
-  <link rel="stylesheet" href="../assets/style.css?v=41" />
+  <link rel="stylesheet" href="../assets/style.css?v=75" />
 </head>
 <body>
   <noscript>
@@ -75,7 +78,7 @@
     </div>
     <button class="layout-btn" id="btn-root" type="button" title="ルート論文にフォーカスを戻す">🏠 ルート</button>
     <div class="lineage-search">
-      <input type="search" id="search-input" placeholder="🔍 論文検索... (タイトル/著者)" autocomplete="off" spellcheck="false" />
+      <input type="search" id="search-input" aria-label="論文検索（タイトル / 著者）" placeholder="🔍 論文検索... (タイトル/著者)" autocomplete="off" spellcheck="false" />
       <div class="lineage-search__results" id="search-results" role="listbox" aria-label="Search results"></div>
     </div>
     <div class="lineage-toolbar__group" id="relation-filter" role="group" aria-label="Relation filter"></div>
@@ -123,7 +126,7 @@
     <span id="footer-hint" aria-live="polite"></span>
   </footer>
 
-  <script src="../assets/utils.js?v=41" defer></script>
-  <script src="../assets/lineage.js?v=41" defer></script>
+  <script src="../assets/utils.js?v=75" defer></script>
+  <script src="../assets/lineage.js?v=75" defer></script>
 </body>
 </html>

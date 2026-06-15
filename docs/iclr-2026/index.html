@@ -11,8 +11,11 @@
        rationale; this page only fetches same-origin papers.json. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'" />
 
+  <link rel="canonical" href="https://taichiiiiiiii.github.io/automatic-paper-search/iclr-2026/" />
+
   <!-- Open Graph / Twitter Card — see docs/index.html for the og:image
-       follow-up rationale. og:url is intentionally omitted. -->
+       rationale. og:url = the canonical share URL. -->
+  <meta property="og:url" content="https://taichiiiiiiii.github.io/automatic-paper-search/iclr-2026/" />
   <meta property="og:title" content="ICLR 2026 — PaperPilot" />
   <meta property="og:description" content="ICLR 2026 採択論文のフィルタブル一覧。Oral / Poster / トピック別に検索できます。" />
   <meta property="og:type" content="website" />
@@ -35,7 +38,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=optional" rel="stylesheet" />
 
-  <link rel="stylesheet" href="../assets/style.css" />
+  <link rel="stylesheet" href="../assets/style.css?v=75" />
 </head>
 <body>
   <noscript>
@@ -90,6 +93,7 @@
           id="search"
           class="search__input"
           type="search"
+          aria-label="論文をタイトル・著者・要旨で検索"
           placeholder="Search title, author, abstract…"
           autocomplete="off"
           spellcheck="false"
@@ -102,9 +106,8 @@
     </div>
   </div>
 
-  <p class="results-meta" id="results-meta">Loading…</p>
-
   <main id="main-content">
+    <p class="results-meta" id="results-meta">Loading…</p>
     <ul class="paper-list" id="paper-list">
       <!-- Skeleton row visible until app.js renderList() replaces the
            list. Without this the page reads as "empty under the
@@ -120,7 +123,7 @@
     <span>Source: arXiv · Auto-tagged · MIT License</span>
   </footer>
 
-  <script src="../assets/utils.js" defer></script>
-  <script src="../assets/app.js" defer></script>
+  <script src="../assets/utils.js?v=75" defer></script>
+  <script src="../assets/app.js?v=75" defer></script>
 </body>
 </html>
