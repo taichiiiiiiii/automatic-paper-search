@@ -3073,12 +3073,12 @@ g.node-wrap.node-wrap--no-tx {
   overflow-wrap: break-word;
   /* #67: citation-heat (--card-heat: 0..1) drives a soft halo so high-
      impact papers (ResNet, Attention) read brighter than niche refs
-     without any explicit ranking UI. Border WIDTH is held at 1px: a
-     heat-driven width fought the border-COLOR signals (tier / hub gold /
-     focus coral), so a high-heat hub showed thick+gold+halo all at once
-     — three competing "importance" cues on one edge. Heat now lives in
-     the halo only; the border stays a clean colour channel. */
-  border-width: 1px;
+     without any explicit ranking UI. Border WIDTH is intentionally NOT
+     set here (was a heat-driven calc): that fought the border-COLOR
+     signals (tier / hub gold / focus coral) AND silently overrode the
+     focus card's 2.5px border. The base .node-card 1px + the
+     .node-card--focus 2.5px now apply unshadowed; heat lives only in the
+     halo, keeping the border a clean colour channel. */
   box-shadow:
     0 1px 2px oklch(0% 0 0 / 0.04),
     0 calc(2px + var(--card-heat, 0) * 4px)
@@ -3128,8 +3128,13 @@ g.node-wrap.node-wrap--no-tx {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  /* 26px clears the WCAG 2.2 AA target-size minimum (SC 2.5.8, 24px).
+     The glyph stays ~14px (font-size below), so the chip just gains a
+     little breathing room. A real box (not a pseudo-element overlay)
+     keeps the whole hit-zone owned by the <a>, so data-stop-card-click
+     can never be bypassed by a sibling capturing the click. */
+  width: 26px;
+  height: 26px;
   border-radius: 6px;
   background: oklch(96% 0.018 270);
   border: 1px solid var(--color-rule);
@@ -3137,15 +3142,6 @@ g.node-wrap.node-wrap--no-tx {
   text-decoration: none;
   font-size: 0.85rem;
   transition: all 0.15s ease;
-  /* WCAG 2.5.5: the visual chip stays 22px but the clickable area is
-     expanded to ~44px via an absolutely-positioned ::after overlay, so
-     the hit-zone grows without reflowing the flex meta row. */
-  position: relative;
-}
-.node-card__deep::after {
-  content: "";
-  position: absolute;
-  inset: -11px;
 }
 .node-card__deep:hover {
   background: var(--color-ink);

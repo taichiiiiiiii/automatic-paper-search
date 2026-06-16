@@ -3027,9 +3027,9 @@ function buildCardElement(p, matchSet) {
   const authors = (p.authors || []).slice(0, 3).join(", ")
     + ((p.authors || []).length > 3 ? ` +${p.authors.length - 3}` : "");
   const cits = typeof p.citation_count === "number" && p.citation_count > 0
-    ? `<span class="node-card__cit" aria-label="引用数 ${p.citation_count.toLocaleString()}">📖 ${p.citation_count.toLocaleString()}</span>` : "";
+    ? `<span class="node-card__cit" role="img" aria-label="引用数 ${p.citation_count.toLocaleString()}">📖 ${p.citation_count.toLocaleString()}</span>` : "";
   const stars = formatStars(p.github_stars);
-  const starsHtml = stars ? `<span class="node-card__stars" aria-label="GitHub スター ${stars}">⭐${stars}</span>` : "";
+  const starsHtml = stars ? `<span class="node-card__stars" role="img" aria-label="GitHub スター ${stars}">⭐${stars}</span>` : "";
 
   const link = resolvePaperLink(p);
 
