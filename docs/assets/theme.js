@@ -2836,6 +2836,9 @@ function drawYearAxis(svg, yearLabels, totalW) {
 
 function drawEdges(svg, positioned, edges, matchSet) {
   const posById = new Map(positioned.map((p) => [p.id, p]));
+  // Fan-out: spread each parent's edge origins across its card bottom so
+  // children don't all radiate from one point (shared PP.fanOffsets).
+  const fanOff = PP.fanOffsets(edges, posById, NODE_W);
   // Edges (drawn before nodes so cards sit on top).
   const eg = document.createElementNS(SVG_NS, "g");
   eg.setAttribute("id", "edges");
@@ -2847,7 +2850,7 @@ function drawEdges(svg, positioned, edges, matchSet) {
     // stay full-opacity so the user can see how a hit relates to its
     // neighbours.
     const edgeMatches = !matchSet || matchSet.has(e.src) || matchSet.has(e.dst);
-    const ax = a._x + NODE_W / 2;
+    const ax = a._x + NODE_W / 2 + (fanOff.get(e) || 0);
     const ay = a._y + NODE_H;
     const bx = b._x + NODE_W / 2;
     const by = b._y;

@@ -565,10 +565,13 @@ async function drawSvg(positioned, edges) {
   // group so edges render below cards in z-order.
   const eg = document.createElementNS(SVG_NS, "g");
   eg.setAttribute("id", "edges");
+  // Fan-out: spread each parent's edge origins across its card bottom
+  // (shared PP.fanOffsets) so children don't all radiate from one point.
+  const fanOff = PP.fanOffsets(edges, posById, NODE_W);
   for (const e of edges) {
     const a = posById.get(e.src), b = posById.get(e.dst);
     if (!a || !b) continue;
-    const ax = a._x + NODE_W / 2;
+    const ax = a._x + NODE_W / 2 + (fanOff.get(e) || 0);
     const ay = a._y + (a._actualH ?? NODE_H);
     const bx = b._x + NODE_W / 2;
     const by = b._y;
