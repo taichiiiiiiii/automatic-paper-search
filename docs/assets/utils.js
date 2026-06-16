@@ -105,5 +105,35 @@
     return null;
   };
 
+  // Edge visual hierarchy, shared by all family-tree viewers (theme /
+  // conference / deep). Scales the confidence→{opacity,width} mapping per
+  // relation so the descent backbone (successor/supersedes) reads as the
+  // trunk and branches (extends/ablation/baseline) recede into a quiet
+  // field instead of flooding the graph. Hue stays in the CSS --rel-*
+  // tokens (the legend + 仕組み page describe those colours); this only
+  // sets weight/opacity. `mc` is the CSS-class relation — callers map
+  // baseline_only → baseline first. Returns null when conf isn't numeric,
+  // so the caller keeps the CSS fallback width + full opacity.
+  // EDGE_MIN_WIDTH floors a low-conf branch so it never collapses to a
+  // sub-pixel hairline (marker-end scales with strokeWidth).
+  const REL_EDGE_WEIGHT = {
+    supersedes: { w: 1.0,  op: 1.0  },
+    successor:  { w: 1.0,  op: 1.0  },
+    contrasts:  { w: 0.9,  op: 0.95 },
+    ablation:   { w: 0.7,  op: 0.84 },
+    baseline:   { w: 0.7,  op: 0.82 },
+    extends:    { w: 0.62, op: 0.76 },
+  };
+  const EDGE_MIN_WIDTH = 0.9;
+  PP.edgeStyle = function edgeStyle(mc, conf) {
+    if (typeof conf !== "number") return null;
+    if (mc === "baseline_only") mc = "baseline";  // accept raw rel too
+    const k = REL_EDGE_WEIGHT[mc] || { w: 0.85, op: 0.92 };
+    return {
+      opacity: ((0.5 + conf * 0.5) * k.op).toFixed(3),
+      width: Math.max((1 + conf * 1.5) * k.w, EDGE_MIN_WIDTH).toFixed(2),
+    };
+  };
+
   root.PP = PP;
 })(window);
