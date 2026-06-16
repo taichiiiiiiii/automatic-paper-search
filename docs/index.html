@@ -203,6 +203,10 @@
       color: var(--color-ink-subtle);
       text-align: center;
     }
+    /* The caption is the natural "what do these colors mean?" entry point
+       into the 仕組み page (relation taxonomy). */
+    .hero__visual-cap a { color: inherit; text-decoration: none; }
+    .hero__visual-cap a:hover { color: var(--color-accent); }
 
     /* Tree nodes + edges — colored ONLY via tokens. Node shapes mirror
        the mini family-tree glyph in themes/index.html; edge colors
@@ -497,7 +501,7 @@
           <!-- one-shot attention pulse on the newest leaf -->
           <rect class="tree-pulse" x="223" y="171" width="102" height="44" rx="7" />
         </svg>
-        <p class="hero__visual-cap">線の色 = 関係の種類 — 置換 / 後継 / 拡張</p>
+        <p class="hero__visual-cap"><a href="how-it-works/">線の色 = 関係の種類 — 置換 / 後継 / 拡張 →</a></p>
       </div>
     </div>
   </header>

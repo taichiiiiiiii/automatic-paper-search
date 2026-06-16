@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#fbf9f5" />
+  <title>仕組み — 線の色が示す《関係》 | PaperPilot</title>
+  <meta name="description" content="PaperPilot の家系図で、色のついた線は論文どうしの「関係」を表します。置換・後継・拡張・成分分析・比較・対立の6種を、実際のエッジ色と意味で解説。" />
+
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'" />
+
+  <link rel="canonical" href="https://taichiiiiiiii.github.io/automatic-paper-search/how-it-works/" />
+  <meta property="og:url" content="https://taichiiiiiiii.github.io/automatic-paper-search/how-it-works/" />
+  <meta property="og:title" content="仕組み — 線の色が示す《関係》 | PaperPilot" />
+  <meta property="og:description" content="家系図の色のついた線は論文どうしの関係。置換／後継／拡張／成分分析／比較／対立の6種を解説。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="PaperPilot" />
+  <meta property="og:locale" content="ja_JP" />
+  <meta property="og:image" content="https://taichiiiiiiii.github.io/automatic-paper-search/assets/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="PaperPilot — AI/ML 論文の系譜（家系図）を可視化" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://taichiiiiiiii.github.io/automatic-paper-search/assets/og-image.png" />
+  <meta name="twitter:title" content="仕組み — 線の色が示す《関係》 | PaperPilot" />
+  <meta name="twitter:description" content="家系図の色のついた線は論文どうしの関係。6種を解説。" />
+
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="../assets/favicon-32.png" sizes="32x32" type="image/png" />
+
+  <!-- TechArticle JSON-LD — CSP-safe data island (type=ld+json is not
+       executable, so script-src 'self' permits it). -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "PaperPilot の家系図における論文の関係種別",
+    "inLanguage": "ja",
+    "about": "AI/ML 論文の引用関係（supersedes / successor / extends / ablation / baseline / contrasts）の意味",
+    "isPartOf": { "@type": "WebSite", "name": "PaperPilot", "url": "https://taichiiiiiiii.github.io/automatic-paper-search/" }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=optional" rel="stylesheet" />
+
+  <link rel="stylesheet" href="../assets/style.css?v=75" />
+  <style>
+    /* Page-scoped styles for the "仕組み" explainer. Shared .hero /
+       .hero__title / .hero__lede / .section-head / .footer / .skip-link
+       come from style.css; everything here is this page's composition.
+       Colors route through tokens only (incl. the shipped --rel-* edge
+       palette, so the relation samples ARE the viewer's real colors). */
+    .hero--guide { padding-bottom: calc(var(--space-section) * 0.5); }
+    .guide__lede-strong { color: var(--color-ink-muted); font-weight: 500; }
+
+    main { padding-bottom: var(--space-section); }
+
+    /* ---- Relation taxonomy: an editorial "specimen list", NOT a card grid.
+       Six rows separated by hairlines; each row carries the relation's REAL
+       edge colour + stroke style (mirroring the viewer's .edge--* recipes),
+       so colour is never the sole signal — stroke shape + EN key + JP label
+       + plain-JP meaning all co-encode it. */
+    .rel-list { list-style: none; margin: 1.5rem 0 0; padding: 0; }
+    .rel-row {
+      display: grid;
+      grid-template-columns: 64px minmax(0, 1fr);
+      gap: 0.4rem 1.1rem;
+      align-items: baseline;
+      padding: 1.2rem 0;
+      border-top: 1px solid var(--color-rule);
+      border-left: 3px solid var(--rel, var(--color-rule-strong));
+      padding-left: 1rem;
+    }
+    .rel-row:last-child { border-bottom: 1px solid var(--color-rule); }
+    /* Inheritance-strength grading so the six rows don't read as uniform:
+       the gold "descent" family is heaviest; baseline is the weakest signal
+       (same de-emphasis the viewer gives .rel-group--baseline_only). */
+    .rel-row--supersedes, .rel-row--successor { border-left-width: 4px; }
+    .rel-row--baseline { opacity: 0.78; }
+    .rel-row--supersedes { --rel: var(--rel-supersedes); }
+    .rel-row--successor  { --rel: var(--rel-successor); }
+    .rel-row--extends    { --rel: var(--rel-extends); }
+    .rel-row--ablation   { --rel: var(--rel-ablation); }
+    .rel-row--baseline   { --rel: var(--rel-baseline); }
+    .rel-row--contrasts  { --rel: var(--rel-contrasts); }
+
+    .rel-row__edge { grid-row: span 2; align-self: center; width: 56px; height: 16px; display: block; }
+    .rel-row__edge line { stroke-linecap: round; }
+
+    .rel-row__head { display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap; }
+    .rel-row__ja {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: var(--text-title);
+      font-weight: 500;
+      color: var(--color-ink);
+      letter-spacing: -0.01em;
+    }
+    .rel-row--supersedes .rel-row__ja, .rel-row--successor .rel-row__ja { font-weight: 600; }
+    .rel-row__key {
+      font-family: var(--font-mono);
+      font-size: var(--text-tag);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--color-ink-subtle);
+    }
+    .rel-row__meaning {
+      grid-column: 2;
+      font-size: var(--text-body);
+      line-height: 1.6;
+      color: var(--color-ink-muted);
+      margin: 0.25rem 0 0;
+    }
+    .rel-row__eg {
+      grid-column: 2;
+      margin: 0.45rem 0 0;
+      font-family: var(--font-mono);
+      font-size: var(--text-caption);
+      color: var(--color-ink-subtle);
+      letter-spacing: 0.02em;
+    }
+    .rel-row__eg b { color: var(--color-ink-muted); font-weight: 500; }
+
+    /* ---- "どう判定しているか": honest, short, NO stale weight numbers. ---- */
+    .how {
+      padding: var(--space-section) var(--space-edge) 0;
+      border-top: 1px solid var(--color-rule);
+    }
+    .how__body {
+      max-width: 64ch;
+      font-size: var(--text-body);
+      line-height: 1.75;
+      color: var(--color-ink-muted);
+    }
+    .how__body strong { color: var(--color-ink); font-weight: 500; }
+    .how__steps {
+      list-style: none;
+      margin: 1.4rem 0 0;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 0.4rem;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: var(--text-meta);
+      color: var(--color-ink-muted);
+    }
+    .how__steps li {
+      padding: 0.3rem 0.7rem;
+      background: var(--color-surface-elevated);
+      border: 1px solid var(--color-rule);
+      border-radius: 999px;
+    }
+    .how__steps .how__arrow { border: 0; background: none; padding: 0; color: var(--color-ink-subtle); }
+
+    .seealso { padding: var(--space-section) var(--space-edge) 0; }
+    .seealso__links {
+      display: flex; flex-wrap: wrap; gap: 0.4rem 1.4rem; margin: 0.8rem 0 0;
+      font-family: var(--font-mono); font-size: var(--text-meta);
+    }
+    .seealso__links a { color: var(--color-ink-muted); }
+    .seealso__links a:hover { color: var(--color-accent); }
+    .seealso__note { font-family: var(--font-mono); font-size: var(--text-tag); color: var(--color-ink-subtle); margin: 0 0 0; }
+
+    .guide-cta {
+      display: inline-flex; align-items: center; gap: 0.55rem; min-height: 44px;
+      margin-top: 1.6rem; padding: 0.7rem 1.45rem;
+      background: var(--color-ink); color: var(--color-surface);
+      border: 1px solid var(--color-ink); border-radius: 7px;
+      font-family: var(--font-mono); font-size: var(--text-meta); text-decoration: none;
+      transition: background-color var(--duration-fast) var(--ease), transform var(--duration-fast) var(--ease);
+    }
+    .guide-cta:hover { background: var(--color-accent-strong); border-color: var(--color-accent-strong); color: var(--color-surface); text-decoration: none; transform: translateY(-1px); }
+    .guide-cta:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; border-radius: 7px; }
+
+    @media (max-width: 480px) {
+      .rel-row { grid-template-columns: 1fr; }
+      .rel-row__edge { grid-row: auto; margin-bottom: 0.2rem; }
+      .rel-row__meaning, .rel-row__eg { grid-column: 1; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">本文へスキップ</a>
+
+  <header class="hero hero--guide hero--compact">
+    <nav class="hero__breadcrumb" aria-label="breadcrumb">
+      <a href="../">PaperPilot</a> &nbsp;/&nbsp; 仕組み
+    </nav>
+    <h1 class="hero__title">色のついた線は、<wbr><em>関係</em>です。</h1>
+    <p class="hero__lede">
+      家系図のエッジは飾りではありません。<span class="guide__lede-strong">引用関係を分析して判定した、論文どうしの「関係の種類」</span>を、
+      色と線種で表しています。全6種の意味を、ビューアで実際に出る線そのもので解説します。
+    </p>
+  </header>
+
+  <main id="main-content" tabindex="-1">
+    <section aria-labelledby="rel-heading">
+      <div class="section-head">
+        <h2 class="section-head__title" id="rel-heading">6つの関係</h2>
+        <p class="section-head__note">親 → 子（古い論文 → 新しい論文）の向きで読みます</p>
+      </div>
+
+      <ul class="rel-list">
+        <li class="rel-row rel-row--supersedes">
+          <svg class="rel-row__edge" viewBox="0 0 56 16" role="img" aria-label="深い金色の実線"><line x1="3" y1="8" x2="53" y2="8" stroke="var(--rel-supersedes)" stroke-width="2.6"/></svg>
+          <p class="rel-row__head"><span class="rel-row__ja">置換</span> <span class="rel-row__key">supersedes</span></p>
+          <p class="rel-row__meaning">旧手法を置き換える「決定版」。同じ土俵で明確に上回り、以後はこちらが本流になる。</p>
+          <p class="rel-row__eg">例: <b>FlashAttention</b> → <b>FlashAttention-2</b></p>
+        </li>
+
+        <li class="rel-row rel-row--successor">
+          <svg class="rel-row__edge" viewBox="0 0 56 16" role="img" aria-label="淡い金色の実線"><line x1="3" y1="8" x2="53" y2="8" stroke="var(--rel-successor)" stroke-width="2.2"/></svg>
+          <p class="rel-row__head"><span class="rel-row__ja">後継</span> <span class="rel-row__key">successor</span></p>
+          <p class="rel-row__meaning">同じ系統を素直に受け継ぐ、次の世代。置換ほど決定的ではないが直系の続き。</p>
+          <p class="rel-row__eg">例: <b>A ConvNet for the 2020s</b> → <b>ConvNeXt V2</b></p>
+        </li>
+
+        <li class="rel-row rel-row--extends">
+          <svg class="rel-row__edge" viewBox="0 0 56 16" role="img" aria-label="緑色の破線"><line x1="3" y1="8" x2="53" y2="8" stroke="var(--rel-extends)" stroke-width="1.8" stroke-dasharray="7 4"/></svg>
+          <p class="rel-row__head"><span class="rel-row__ja">拡張</span> <span class="rel-row__key">extends</span></p>
+          <p class="rel-row__meaning">土台はそのままに、新しい能力や適用範囲を足す。手法を別ドメインへ広げる場合など。</p>
+          <p class="rel-row__eg">例: <b>Transformer</b> → <b>Vision Transformer (ViT)</b></p>
+        </li>
+
+        <li class="rel-row rel-row--ablation">
+          <svg class="rel-row__edge" viewBox="0 0 56 16" role="img" aria-label="青色の破線"><line x1="3" y1="8" x2="53" y2="8" stroke="var(--rel-ablation)" stroke-width="1.6" stroke-dasharray="5 4"/></svg>
+          <p class="rel-row__head"><span class="rel-row__ja">成分分析</span> <span class="rel-row__key">ablation</span></p>
+          <p class="rel-row__meaning">構成要素を抜き差しして、どこが効いているかを測る検証的な関係。多くは論文内で行われるため、論文間のエッジとしては稀。</p>
+        </li>
+
+        <li class="rel-row rel-row--baseline">
+          <svg class="rel-row__edge" viewBox="0 0 56 16" role="img" aria-label="灰色の点線"><line x1="3" y1="8" x2="53" y2="8" stroke="var(--rel-baseline)" stroke-width="1.6" stroke-dasharray="2 4"/></svg>
+          <p class="rel-row__head"><span class="rel-row__ja">比較</span> <span class="rel-row__key">baseline</span></p>
+          <p class="rel-row__meaning">性能比較の「物差し」として引かれる対照。新手法が旧手法をベースラインとして引用するケース。最も弱い結びつき。</p>
+        </li>
+
+        <li class="rel-row rel-row--contrasts">
+          <svg class="rel-row__edge" viewBox="0 0 56 16" role="img" aria-label="赤色の一点鎖線"><line x1="3" y1="8" x2="53" y2="8" stroke="var(--rel-contrasts)" stroke-width="1.6" stroke-dasharray="4 2 1 2"/></svg>
+          <p class="rel-row__head"><span class="rel-row__ja">対立</span> <span class="rel-row__key">contrasts</span></p>
+          <p class="rel-row__meaning">設計思想が真っ向から異なる、対抗する系統。同時代の別アプローチ（例: CNN と Transformer）どうしなど。</p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="how" aria-labelledby="how-heading">
+      <div class="section-head" style="padding:0 0 0;border-top:0;">
+        <h2 class="section-head__title" id="how-heading">どう判定しているか</h2>
+      </div>
+      <p class="how__body">
+        論文を <strong>arXiv・Semantic Scholar・OpenAlex</strong> から収集し、品質シグナルで絞り込んだうえで、
+        引用グラフ（どの論文がどれを引いているか）をたどります。各エッジの関係種別は、
+        <strong>引用文脈や引用の意図、年代・引用数の関係を手がかりに自動判定</strong>し、
+        曖昧なものは <strong>LLM</strong> が補助します（LLM が使えないときは決定的なヒューリスティックにフォールバック）。
+        詳しい段階構成・スコアリングの正式な定義は、下記の設計ドキュメントを参照してください。
+      </p>
+      <ul class="how__steps" aria-label="処理の流れ">
+        <li>収集</li><li class="how__arrow" aria-hidden="true">→</li>
+        <li>絞り込み</li><li class="how__arrow" aria-hidden="true">→</li>
+        <li>スコア</li><li class="how__arrow" aria-hidden="true">→</li>
+        <li>関係分類</li><li class="how__arrow" aria-hidden="true">→</li>
+        <li>家系図</li>
+      </ul>
+    </section>
+
+    <section class="seealso" aria-labelledby="seealso-heading">
+      <div class="section-head" style="padding:0 0 0;border-top:0;">
+        <h2 class="section-head__title" id="seealso-heading">さらに詳しく</h2>
+        <p class="seealso__note">実装の詳細は GitHub のドキュメントへ（正式な仕様の出典）</p>
+      </div>
+      <p class="seealso__links">
+        <a href="https://github.com/taichiiiiiiii/automatic-paper-search/tree/develop/docs/design"><span aria-hidden="true">📐</span> 基本設計書（パイプライン・スコアリング）</a>
+        <a href="https://github.com/taichiiiiiiii/automatic-paper-search/tree/develop/docs/research"><span aria-hidden="true">📊</span> 市場調査レポート</a>
+      </p>
+      <p>
+        <a class="guide-cta" href="../themes/">系譜ビューアで実際に見る <span aria-hidden="true">→</span></a>
+      </p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>Built by <a href="https://github.com/taichiiiiiiii/automatic-paper-search">PaperPilot</a></span>
+    <span>関係種別は引用分析 + LLM 補助で判定 · MIT License</span>
+  </footer>
+</body>
+</html>
