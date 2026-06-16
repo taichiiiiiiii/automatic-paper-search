@@ -135,5 +135,32 @@
     };
   };
 
+  // Fan-out: spread each parent's outgoing edges across the bottom edge of
+  // its card (ordered left→right by child x) so multiple children don't all
+  // radiate from one point — a tree's branches leave the trunk at different
+  // places, which de-tangles the dense graphs. Returns Map(edge → x-offset
+  // to add to the parent's centre). Only the ORIGIN moves; callers keep the
+  // curve landing on the child's top-centre, so marker-end orientation is
+  // unchanged. `nodeW` is the viewer's card width (theme 260 / lineage 220 /
+  // deep 240). Shared by all three family-tree viewers.
+  const EDGE_FAN_STEP = 18;       // px between adjacent origins
+  const EDGE_FAN_MAX_FRAC = 0.55; // origins span at most 55% of the card width
+  PP.fanOffsets = function fanOffsets(edges, posById, nodeW) {
+    const bySrc = new Map();
+    for (const e of edges) {
+      if (!posById.has(e.src) || !posById.has(e.dst)) continue;
+      if (!bySrc.has(e.src)) bySrc.set(e.src, []);
+      bySrc.get(e.src).push(e);
+    }
+    const out = new Map();
+    for (const group of bySrc.values()) {
+      group.sort((p, q) => posById.get(p.dst)._x - posById.get(q.dst)._x);
+      const n = group.length;
+      const span = Math.min(nodeW * EDGE_FAN_MAX_FRAC, (n - 1) * EDGE_FAN_STEP);
+      group.forEach((e, i) => out.set(e, n > 1 ? (i / (n - 1) - 0.5) * span : 0));
+    }
+    return out;
+  };
+
   root.PP = PP;
 })(window);
