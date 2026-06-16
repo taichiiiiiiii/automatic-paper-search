@@ -579,7 +579,13 @@ async function drawSvg(positioned, edges) {
     path.setAttribute("d", d);
     path.setAttribute("class", `edge edge--${mc}`);
     path.setAttribute("marker-end", `url(#arrow-${mc})`);
-    if (typeof e.conf === "number") path.style.strokeOpacity = String(0.5 + e.conf * 0.5);
+    // Shared backbone/branch hierarchy (PP.edgeStyle) — opacity + width
+    // per relation, matching the theme + conference viewers.
+    const est = PP.edgeStyle(mc, e.conf);
+    if (est) {
+      path.style.strokeOpacity = est.opacity;
+      path.style.strokeWidth = est.width;
+    }
     path.dataset.rel = e.rel;
     path.dataset.rationale = e.rationale || "";
     path.dataset.conf = e.conf ?? "";
