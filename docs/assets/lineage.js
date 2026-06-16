@@ -843,8 +843,13 @@ async function drawSvg(positioned, edges) {
     path.setAttribute("d", d);
     path.setAttribute("class", `edge edge--${markerClass(e.rel)}`);
     path.setAttribute("marker-end", `url(#arrow-${markerClass(e.rel)})`);
-    if (typeof e.conf === "number") {
-      path.style.strokeOpacity = String(0.5 + e.conf * 0.5);
+    // Shared backbone/branch hierarchy (PP.edgeStyle) — sets both opacity
+    // and width per relation, so the conference tree matches the theme
+    // viewer's descent-trunk reading instead of opacity alone.
+    const est = PP.edgeStyle(markerClass(e.rel), e.conf);
+    if (est) {
+      path.style.strokeOpacity = est.opacity;
+      path.style.strokeWidth = est.width;
     }
     path.dataset.rel = e.rel;
     path.dataset.rationale = e.rationale || "";
