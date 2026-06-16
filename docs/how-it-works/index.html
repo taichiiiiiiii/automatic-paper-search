@@ -48,11 +48,41 @@
   <link rel="stylesheet" href="../assets/style.css?v=75" />
   <style>
     /* Page-scoped styles for the "仕組み" explainer. Shared .hero /
-       .hero__title / .hero__lede / .section-head / .footer / .skip-link
-       come from style.css; everything here is this page's composition.
-       Colors route through tokens only (incl. the shipped --rel-* edge
-       palette, so the relation samples ARE the viewer's real colors). */
+       .hero__title / .hero__lede / .footer / .skip-link + every design
+       token come from style.css; everything here is this page's
+       composition. .section-head is defined locally below, matching the
+       landing's convention (it keeps that structural class in its own
+       page <style>, not in the shared sheet). Colors route through tokens
+       only (incl. the shipped --rel-* edge palette, so the relation
+       samples ARE the viewer's real colors). */
     .hero--guide { padding-bottom: calc(var(--space-section) * 0.5); }
+
+    /* Section eyebrow — mono uppercase label + note, with a hairline
+       separator above. Mirrors the landing's .section-head verbatim so
+       the two pages read as one system. */
+    .section-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.5rem 1rem;
+      padding: var(--space-section) var(--space-edge) 0;
+      border-top: 1px solid var(--color-rule);
+    }
+    .section-head__title {
+      font-family: var(--font-mono);
+      font-size: var(--text-tag);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--color-ink-muted);
+      margin: 0;
+      font-weight: 600;
+    }
+    .section-head__note {
+      font-family: var(--font-mono);
+      font-size: var(--text-tag);
+      color: var(--color-ink-subtle);
+      margin: 0;
+    }
     .guide__lede-strong { color: var(--color-ink-muted); font-weight: 500; }
 
     main { padding-bottom: var(--space-section); }
@@ -62,7 +92,9 @@
        edge colour + stroke style (mirroring the viewer's .edge--* recipes),
        so colour is never the sole signal — stroke shape + EN key + JP label
        + plain-JP meaning all co-encode it. */
-    .rel-list { list-style: none; margin: 1.5rem 0 0; padding: 0; }
+    /* The parent <section> carries no padding, so the list owns its own
+       horizontal edge inset (matches the landing's .conf-list pattern). */
+    .rel-list { list-style: none; margin: 1.5rem 0 0; padding: 0 var(--space-edge); }
     .rel-row {
       display: grid;
       grid-template-columns: 64px minmax(0, 1fr);
@@ -76,9 +108,12 @@
     .rel-row:last-child { border-bottom: 1px solid var(--color-rule); }
     /* Inheritance-strength grading so the six rows don't read as uniform:
        the gold "descent" family is heaviest; baseline is the weakest signal
-       (same de-emphasis the viewer gives .rel-group--baseline_only). */
+       (same de-emphasis the viewer gives .rel-group--baseline_only). The
+       weak read is carried by the neutral-gray --rel-baseline rail + the
+       dotted edge sample + a lighter title — NOT by row-level opacity, which
+       would blend the body text below the WCAG AA 4.5:1 floor. */
     .rel-row--supersedes, .rel-row--successor { border-left-width: 4px; }
-    .rel-row--baseline { opacity: 0.78; }
+    .rel-row--baseline .rel-row__ja { color: var(--color-ink-muted); font-weight: 400; }
     .rel-row--supersedes { --rel: var(--rel-supersedes); }
     .rel-row--successor  { --rel: var(--rel-successor); }
     .rel-row--extends    { --rel: var(--rel-extends); }
@@ -157,11 +192,12 @@
 
     .seealso { padding: var(--space-section) var(--space-edge) 0; }
     .seealso__links {
+      list-style: none; padding: 0;
       display: flex; flex-wrap: wrap; gap: 0.4rem 1.4rem; margin: 0.8rem 0 0;
       font-family: var(--font-mono); font-size: var(--text-meta);
     }
     .seealso__links a { color: var(--color-ink-muted); }
-    .seealso__links a:hover { color: var(--color-accent); }
+    .seealso__links a:hover { color: var(--color-accent-strong); }
     .seealso__note { font-family: var(--font-mono); font-size: var(--text-tag); color: var(--color-ink-subtle); margin: 0 0 0; }
 
     .guide-cta {
@@ -206,40 +242,40 @@
       <ul class="rel-list">
         <li class="rel-row rel-row--supersedes">
           <svg class="rel-row__edge" viewBox="0 0 56 16" role="img" aria-label="深い金色の実線"><line x1="3" y1="8" x2="53" y2="8" stroke="var(--rel-supersedes)" stroke-width="2.6"/></svg>
-          <p class="rel-row__head"><span class="rel-row__ja">置換</span> <span class="rel-row__key">supersedes</span></p>
+          <div class="rel-row__head"><span class="rel-row__ja">置換</span> <span class="rel-row__key">supersedes</span></div>
           <p class="rel-row__meaning">旧手法を置き換える「決定版」。同じ土俵で明確に上回り、以後はこちらが本流になる。</p>
           <p class="rel-row__eg">例: <b>FlashAttention</b> → <b>FlashAttention-2</b></p>
         </li>
 
         <li class="rel-row rel-row--successor">
           <svg class="rel-row__edge" viewBox="0 0 56 16" role="img" aria-label="淡い金色の実線"><line x1="3" y1="8" x2="53" y2="8" stroke="var(--rel-successor)" stroke-width="2.2"/></svg>
-          <p class="rel-row__head"><span class="rel-row__ja">後継</span> <span class="rel-row__key">successor</span></p>
+          <div class="rel-row__head"><span class="rel-row__ja">後継</span> <span class="rel-row__key">successor</span></div>
           <p class="rel-row__meaning">同じ系統を素直に受け継ぐ、次の世代。置換ほど決定的ではないが直系の続き。</p>
           <p class="rel-row__eg">例: <b>A ConvNet for the 2020s</b> → <b>ConvNeXt V2</b></p>
         </li>
 
         <li class="rel-row rel-row--extends">
           <svg class="rel-row__edge" viewBox="0 0 56 16" role="img" aria-label="緑色の破線"><line x1="3" y1="8" x2="53" y2="8" stroke="var(--rel-extends)" stroke-width="1.8" stroke-dasharray="7 4"/></svg>
-          <p class="rel-row__head"><span class="rel-row__ja">拡張</span> <span class="rel-row__key">extends</span></p>
+          <div class="rel-row__head"><span class="rel-row__ja">拡張</span> <span class="rel-row__key">extends</span></div>
           <p class="rel-row__meaning">土台はそのままに、新しい能力や適用範囲を足す。手法を別ドメインへ広げる場合など。</p>
           <p class="rel-row__eg">例: <b>Transformer</b> → <b>Vision Transformer (ViT)</b></p>
         </li>
 
         <li class="rel-row rel-row--ablation">
           <svg class="rel-row__edge" viewBox="0 0 56 16" role="img" aria-label="青色の破線"><line x1="3" y1="8" x2="53" y2="8" stroke="var(--rel-ablation)" stroke-width="1.6" stroke-dasharray="5 4"/></svg>
-          <p class="rel-row__head"><span class="rel-row__ja">成分分析</span> <span class="rel-row__key">ablation</span></p>
+          <div class="rel-row__head"><span class="rel-row__ja">成分分析</span> <span class="rel-row__key">ablation</span></div>
           <p class="rel-row__meaning">構成要素を抜き差しして、どこが効いているかを測る検証的な関係。多くは論文内で行われるため、論文間のエッジとしては稀。</p>
         </li>
 
         <li class="rel-row rel-row--baseline">
           <svg class="rel-row__edge" viewBox="0 0 56 16" role="img" aria-label="灰色の点線"><line x1="3" y1="8" x2="53" y2="8" stroke="var(--rel-baseline)" stroke-width="1.6" stroke-dasharray="2 4"/></svg>
-          <p class="rel-row__head"><span class="rel-row__ja">比較</span> <span class="rel-row__key">baseline</span></p>
+          <div class="rel-row__head"><span class="rel-row__ja">比較</span> <span class="rel-row__key">baseline</span></div>
           <p class="rel-row__meaning">性能比較の「物差し」として引かれる対照。新手法が旧手法をベースラインとして引用するケース。最も弱い結びつき。</p>
         </li>
 
         <li class="rel-row rel-row--contrasts">
           <svg class="rel-row__edge" viewBox="0 0 56 16" role="img" aria-label="赤色の一点鎖線"><line x1="3" y1="8" x2="53" y2="8" stroke="var(--rel-contrasts)" stroke-width="1.6" stroke-dasharray="4 2 1 2"/></svg>
-          <p class="rel-row__head"><span class="rel-row__ja">対立</span> <span class="rel-row__key">contrasts</span></p>
+          <div class="rel-row__head"><span class="rel-row__ja">対立</span> <span class="rel-row__key">contrasts</span></div>
           <p class="rel-row__meaning">設計思想が真っ向から異なる、対抗する系統。同時代の別アプローチ（例: CNN と Transformer）どうしなど。</p>
         </li>
       </ul>
@@ -270,10 +306,10 @@
         <h2 class="section-head__title" id="seealso-heading">さらに詳しく</h2>
         <p class="seealso__note">実装の詳細は GitHub のドキュメントへ（正式な仕様の出典）</p>
       </div>
-      <p class="seealso__links">
-        <a href="https://github.com/taichiiiiiiii/automatic-paper-search/tree/develop/docs/design"><span aria-hidden="true">📐</span> 基本設計書（パイプライン・スコアリング）</a>
-        <a href="https://github.com/taichiiiiiiii/automatic-paper-search/tree/develop/docs/research"><span aria-hidden="true">📊</span> 市場調査レポート</a>
-      </p>
+      <ul class="seealso__links">
+        <li><a href="https://github.com/taichiiiiiiii/automatic-paper-search/tree/develop/docs/design" rel="noopener"><span aria-hidden="true">📐</span> 基本設計書（パイプライン・スコアリング）</a></li>
+        <li><a href="https://github.com/taichiiiiiiii/automatic-paper-search/tree/develop/docs/research" rel="noopener"><span aria-hidden="true">📊</span> 市場調査レポート</a></li>
+      </ul>
       <p>
         <a class="guide-cta" href="../themes/">系譜ビューアで実際に見る <span aria-hidden="true">→</span></a>
       </p>

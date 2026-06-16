@@ -205,8 +205,18 @@
     }
     /* The caption is the natural "what do these colors mean?" entry point
        into the 仕組み page (relation taxonomy). */
-    .hero__visual-cap a { color: inherit; text-decoration: none; }
-    .hero__visual-cap a:hover { color: var(--color-accent); }
+    .hero__visual-cap a {
+      color: inherit;
+      text-decoration: none;
+      /* Expand the tap target toward the 44px WCAG 2.5.5 minimum without
+         growing the visual caption: vertical padding clawed back by an
+         equal negative margin, so the hit-zone grows but the layout
+         doesn't. */
+      display: inline-block;
+      padding-block: 0.6rem;
+      margin-block: -0.6rem;
+    }
+    .hero__visual-cap a:hover { color: var(--color-accent-strong); }
 
     /* Tree nodes + edges — colored ONLY via tokens. Node shapes mirror
        the mini family-tree glyph in themes/index.html; edge colors
