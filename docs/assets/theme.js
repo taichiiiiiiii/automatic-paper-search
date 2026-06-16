@@ -63,10 +63,17 @@ const REL_EDGE_WEIGHT = {
   supersedes: { w: 1.0,  op: 1.0  },
   successor:  { w: 1.0,  op: 1.0  },
   contrasts:  { w: 0.9,  op: 0.95 },
-  ablation:   { w: 0.7,  op: 0.82 },
-  baseline:   { w: 0.7,  op: 0.78 },
-  extends:    { w: 0.62, op: 0.70 },
+  ablation:   { w: 0.7,  op: 0.84 },
+  baseline:   { w: 0.7,  op: 0.82 },
+  extends:    { w: 0.62, op: 0.76 },
 };
+// Floors so a low-confidence branch never collapses to an invisible
+// sub-pixel hairline. Real data sits at conf>=0.65 (so these don't bite
+// today), but the base .edge opacity:0.7 multiplies the per-edge value,
+// and marker-end scales with strokeWidth — a 0.62px stroke would yield a
+// ~4px arrowhead. Clamp keeps every edge legible without lifting the
+// backbone/branch hierarchy.
+const EDGE_MIN_WIDTH = 0.9;
 
 // X-axis modes. theme.js is the source of truth — the toolbar pill group
 // is rendered from this list so labels / icons / order can never drift
@@ -2884,7 +2891,7 @@ function drawEdges(svg, positioned, edges, matchSet) {
       // descent trunk reads through the majority-`extends` field.
       const k = REL_EDGE_WEIGHT[mc] || { w: 0.85, op: 0.92 };
       path.style.strokeOpacity = ((0.5 + e.conf * 0.5) * k.op).toFixed(3);
-      path.style.strokeWidth = ((1 + e.conf * 1.5) * k.w).toFixed(2);
+      path.style.strokeWidth = Math.max((1 + e.conf * 1.5) * k.w, EDGE_MIN_WIDTH).toFixed(2);
     }
     path.dataset.rel = e.rel;
     path.dataset.rationale = e.rationale || "";
