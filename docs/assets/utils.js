@@ -127,6 +127,7 @@
   const EDGE_MIN_WIDTH = 0.9;
   PP.edgeStyle = function edgeStyle(mc, conf) {
     if (typeof conf !== "number") return null;
+    if (mc === "baseline_only") mc = "baseline";  // accept raw rel too
     const k = REL_EDGE_WEIGHT[mc] || { w: 0.85, op: 0.92 };
     return {
       opacity: ((0.5 + conf * 0.5) * k.op).toFixed(3),

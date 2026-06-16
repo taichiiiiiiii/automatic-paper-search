@@ -51,7 +51,6 @@ const RELATION_LABEL_JA = {
   ablation: "分析", baseline_only: "比較", contrasts: "対立",
 };
 
-
 // X-axis modes. theme.js is the source of truth — the toolbar pill group
 // is rendered from this list so labels / icons / order can never drift
 // from the layout logic.
