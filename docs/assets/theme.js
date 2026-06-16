@@ -51,6 +51,30 @@ const RELATION_LABEL_JA = {
   ablation: "分析", baseline_only: "比較", contrasts: "対立",
 };
 
+// Edge visual hierarchy. The production data is dominated by `extends`
+// (branches) + `successor` (the descent backbone). To stop the majority
+// `extends` edges from flooding the graph into a uniform spray, the
+// confidence→{width,opacity} mapping is scaled per relation: the descent
+// backbone (successor/supersedes) keeps full weight and reads as the
+// trunk; branches (extends/ablation/baseline) recede. Keyed by `mc` (the
+// CSS-class relation, so baseline_only → baseline). Colour/hue is NOT
+// touched here — only weight — so the legend + the 仕組み page stay accurate.
+const REL_EDGE_WEIGHT = {
+  supersedes: { w: 1.0,  op: 1.0  },
+  successor:  { w: 1.0,  op: 1.0  },
+  contrasts:  { w: 0.9,  op: 0.95 },
+  ablation:   { w: 0.7,  op: 0.84 },
+  baseline:   { w: 0.7,  op: 0.82 },
+  extends:    { w: 0.62, op: 0.76 },
+};
+// Floors so a low-confidence branch never collapses to an invisible
+// sub-pixel hairline. Real data sits at conf>=0.65 (so these don't bite
+// today), but the base .edge opacity:0.7 multiplies the per-edge value,
+// and marker-end scales with strokeWidth — a 0.62px stroke would yield a
+// ~4px arrowhead. Clamp keeps every edge legible without lifting the
+// backbone/branch hierarchy.
+const EDGE_MIN_WIDTH = 0.9;
+
 // X-axis modes. theme.js is the source of truth — the toolbar pill group
 // is rendered from this list so labels / icons / order can never drift
 // from the layout logic.
@@ -2862,9 +2886,12 @@ function drawEdges(svg, positioned, edges, matchSet) {
       // Map confidence (0..1) to BOTH opacity (0.5..1.0) and stroke
       // width (1.0..2.5px). Width gives the visual a clear "this edge
       // is more strongly classified" cue at a glance — opacity alone
-      // was hard to compare across edges (review #113).
-      path.style.strokeOpacity = String(0.5 + e.conf * 0.5);
-      path.style.strokeWidth = String((1 + e.conf * 1.5).toFixed(2));
+      // was hard to compare across edges (review #113). The base curve
+      // is then scaled by the relation's backbone/branch weight so the
+      // descent trunk reads through the majority-`extends` field.
+      const k = REL_EDGE_WEIGHT[mc] || { w: 0.85, op: 0.92 };
+      path.style.strokeOpacity = ((0.5 + e.conf * 0.5) * k.op).toFixed(3);
+      path.style.strokeWidth = Math.max((1 + e.conf * 1.5) * k.w, EDGE_MIN_WIDTH).toFixed(2);
     }
     path.dataset.rel = e.rel;
     path.dataset.rationale = e.rationale || "";
