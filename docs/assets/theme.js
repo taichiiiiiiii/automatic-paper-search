@@ -3027,9 +3027,9 @@ function buildCardElement(p, matchSet) {
   const authors = (p.authors || []).slice(0, 3).join(", ")
     + ((p.authors || []).length > 3 ? ` +${p.authors.length - 3}` : "");
   const cits = typeof p.citation_count === "number" && p.citation_count > 0
-    ? `<span class="node-card__cit">📖 ${p.citation_count.toLocaleString()}</span>` : "";
+    ? `<span class="node-card__cit" role="img" aria-label="引用数 ${p.citation_count.toLocaleString()}">📖 ${p.citation_count.toLocaleString()}</span>` : "";
   const stars = formatStars(p.github_stars);
-  const starsHtml = stars ? `<span class="node-card__stars">⭐${stars}</span>` : "";
+  const starsHtml = stars ? `<span class="node-card__stars" role="img" aria-label="GitHub スター ${stars}">⭐${stars}</span>` : "";
 
   const link = resolvePaperLink(p);
 
@@ -3037,13 +3037,13 @@ function buildCardElement(p, matchSet) {
   const tldrHtml = p.tldr ? `<div class="node-card__tldr">${escapeHtml(p.tldr)}</div>` : "";
   // #68: trending badge — citation velocity.
   const trendingHtml = p.is_trending
-    ? `<span class="node-card__trending" title="citation velocity: trending">📈</span>`
+    ? `<span class="node-card__trending" role="img" aria-label="注目: 引用が伸びている" title="citation velocity: trending">📈</span>`
     : "";
   // #83: hub — degree above 90th percentile across the theme.
   const isHub = state.hubSet?.has(p.id);
   if (isHub) card.classList.add("node-card--hub");
   const hubHtml = isHub
-    ? `<span class="node-card__hub" title="hub paper: high connectivity">👑</span>`
+    ? `<span class="node-card__hub" role="img" aria-label="ハブ論文: 接続数が多い" title="hub paper: high connectivity">👑</span>`
     : "";
   // Orphan: no edge incident — LLM judged all candidate relations `unrelated`.
   // When state.hideOrphans is true, render() drops orphans upstream so this
@@ -3051,14 +3051,18 @@ function buildCardElement(p, matchSet) {
   const isOrphan = state.orphanSet?.has(p.id);
   if (isOrphan) card.classList.add("node-card--orphan");
   const orphanHtml = isOrphan
-    ? `<span class="node-card__orphan" title="他の論文との分類関係がないため、この家系図では孤立しています">🔗</span>`
+    ? `<span class="node-card__orphan" role="img" aria-label="孤立: この家系図では他論文との関係がありません" title="他の論文との分類関係がないため、この家系図では孤立しています">🔗</span>`
     : "";
   // B2: deep-view CTA — opens per-paper deep family-tree viewer focused on
   // this id. Param name MUST be ?arxiv=... (deep.js's arxivIdFromLocation
   // looks for that key). data-stop-card-click prevents the card's window.open
   // handler from shadowing the anchor navigation.
+  // 🌳 (not 📖): the meta row's citation count also uses 📖, so the deep-
+  // view CTA needs a distinct glyph — a tree reads as "open the family
+  // tree for this paper". aria-label because the icon-only link has no
+  // text, and title isn't announced by screen readers.
   const deepHtml = p.arxiv_id && ARXIV_RE.test(p.arxiv_id)
-    ? `<a class="node-card__deep" href="../iclr-2026/deep.html?arxiv=${encodeURIComponent(p.arxiv_id)}" target="_blank" rel="noopener" title="この論文を中心に深掘り (deep view)" data-stop-card-click="true">📖</a>`
+    ? `<a class="node-card__deep" href="../iclr-2026/deep.html?arxiv=${encodeURIComponent(p.arxiv_id)}" target="_blank" rel="noopener" title="この論文を中心に深掘り (deep view)" aria-label="この論文を中心にした深掘り家系図を開く" data-stop-card-click="true">🌳</a>`
     : "";
 
   card.innerHTML = `
