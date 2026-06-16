@@ -57,6 +57,7 @@
   --text-card-title: 1rem;       /* gallery + base node-card title */
   --text-card-title-theme: 0.9rem; /* compact theme-variant card title */
   --text-edge-label: 0.66rem;    /* SVG <text> on lineage edges */
+  --text-micro: 0.58rem;         /* status flag tags (HUB/TREND/孤立), trending pill */
 
   /* Gallery layout primitives (#264). Two surfaces share these values
      by physical necessity: `.theme-gallery__card`'s
@@ -2514,6 +2515,16 @@ g.node-wrap.node-wrap--no-tx {
   padding: 0 0.3rem;
   border-radius: 2px;
 }
+/* Theme cards put HUB/TREND/孤立 flags (flex:none) in the same
+   space-between venue row, so a long venue name must ellipsis-clip rather
+   than wrap to a second line and grow the card. min-width:0 lets the flex
+   child shrink below its content width. */
+.node-card--theme .node-card__venue-tier {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
 .node-card__venue-tier--aplus { background: oklch(90% 0.08 75); color: oklch(40% 0.12 75); }
 .node-card__venue-tier--a { background: oklch(92% 0.04 90); color: oklch(45% 0.08 90); }
 .node-card__venue-tier--preprint { background: oklch(94% 0.01 270); color: oklch(48% 0.02 270); box-shadow: inset 0 0 0 1px oklch(82% 0.01 270); }
@@ -2571,7 +2582,7 @@ g.node-wrap.node-wrap--no-tx {
   padding: 0.06rem 0.28rem;
   margin-left: 0.25rem;
   font-family: var(--font-mono);
-  font-size: 0.58rem;
+  font-size: var(--text-micro);
   font-weight: 500;
   color: oklch(98% 0 0);
   background: oklch(62% 0.19 25);
@@ -3125,42 +3136,40 @@ g.node-wrap.node-wrap--no-tx {
 /* #83: hub badge — 👑 marks papers in the 90th percentile of total
    degree (in + out). Sits next to the venue badge so the eye still
    scans the existing top-row layout, but with a gold accent. */
-.node-card--theme .node-card__hub {
+/* Status flags — HUB (#83) / TREND (#68) / 孤立 (orphan). Editorial mono
+   micro-tags, replacing the 👑/📈/🔗 emoji that fought the Newsreader /
+   Inter / JetBrains-Mono type system. Colour + word are dual-encoded so
+   colour is never the sole signal; gold/coral/gray mirror the rest of
+   the system. The chip shape echoes the mono venue-tier chip beside it.
+   Card-level emphasis (hub gold ring below, orphan dashed border) is
+   unchanged — these tags are the inline label, not the whole signal. */
+.node-card--theme .node-card__hub,
+.node-card--theme .node-card__trending,
+.node-card--theme .node-card__orphan {
   display: inline-block;
-  margin-left: 0.4rem;
-  font-size: var(--text-body-sm);
-  background: oklch(94% 0.10 90 / 0.95);
-  border-radius: 999px;
-  padding: 0 0.4rem;
+  flex: none;            /* never shrink/wrap inside the space-between venue row */
+  margin-left: 0.34rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  line-height: 1.45;
+  padding: 0.06rem 0.34rem;
+  border-radius: 3px;
   vertical-align: middle;
+  white-space: nowrap;   /* keep HUB / TREND / 孤立 on one line */
 }
+.node-card--theme .node-card__hub { background: oklch(92% 0.09 90); color: oklch(42% 0.12 90); }
+/* #68 trending: coral. The pulse animation is dropped — a constantly
+   pulsing badge is decorative motion (and a reduced-motion liability);
+   the coral colour + TREND label already mark it without the loop. */
+.node-card--theme .node-card__trending { background: oklch(93% 0.06 30); color: oklch(45% 0.18 30); }
+
 .node-card--theme.node-card--hub {
   border-color: oklch(70% 0.13 90);
   box-shadow:
     0 0 0 1px oklch(70% 0.13 90 / 0.5),
     0 1px 4px oklch(70% 0.13 90 / 0.18);
-}
-
-/* #68: trending badge — small 📈 inline next to the venue. Pulses
-   gently to draw the eye on a busy graph. */
-.node-card--theme .node-card__trending {
-  display: inline-block;
-  margin-left: 0.4rem;
-  font-size: var(--text-body-sm);
-  background: oklch(94% 0.06 30 / 0.95);
-  border-radius: 999px;
-  padding: 0 0.4rem;
-  vertical-align: middle;
-  animation: card-trending-pulse 2.4s ease-in-out infinite;
-}
-@keyframes card-trending-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 oklch(58% 0.18 30 / 0.30); }
-  50%      { box-shadow: 0 0 0 4px oklch(58% 0.18 30 / 0.05); }
-}
-/* WCAG 2.3.3: an infinitely pulsing badge (one per trending paper) has
-   no off-switch, so honour reduced-motion and hold it static. */
-@media (prefers-reduced-motion: reduce) {
-  .node-card--theme .node-card__trending { animation: none; }
 }
 
 /* #63: TLDR — 2-line clamp under the title. Keeps the card height
@@ -3237,11 +3246,12 @@ g.node-wrap.node-wrap--no-tx {
   border-style: dashed !important;
   opacity: 0.78;
 }
+/* Orphan flag colour (gray); shape/typography come from the shared
+   .node-card--theme .node-card__* rule above. Orphan badges only render
+   on theme cards, so the scoped base always applies. */
 .node-card__orphan {
-  display: inline-block;
-  margin-left: 0.4rem;
-  font-size: 0.7rem;
-  color: var(--color-ink-muted);
+  background: oklch(94% 0.012 270);
+  color: oklch(45% 0.02 270);
   cursor: help;
 }
 /* Note: the previous `:has(.node-card--orphan-hidden)` rule is gone

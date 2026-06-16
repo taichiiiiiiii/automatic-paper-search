@@ -2636,7 +2636,7 @@ function computeModeData(nodes, edges, mode) {
 }
 
 // #83: rank nodes by total degree (in + out) and tag the top decile
-// as "hubs" so the viewer can mark them with a 👑 badge + thick border.
+// as "hubs" so the viewer can mark them with a HUB tag + thick border.
 // Returns a Set of node ids whose degree clears the 90th percentile.
 function computeHubSet(nodes, edges) {
   const degree = new Map();
@@ -3035,15 +3035,16 @@ function buildCardElement(p, matchSet) {
 
   // #63: TLDR is the abstract head ≤ 140 chars — 2-line-clamped under title.
   const tldrHtml = p.tldr ? `<div class="node-card__tldr">${escapeHtml(p.tldr)}</div>` : "";
-  // #68: trending badge — citation velocity.
+  // #68: trending flag — citation velocity. Mono micro-tag (was 📈); the
+  // coral colour + word carry it without an emoji that fights the type.
   const trendingHtml = p.is_trending
-    ? `<span class="node-card__trending" role="img" aria-label="注目: 引用が伸びている" title="citation velocity: trending">📈</span>`
+    ? `<span class="node-card__trending" role="img" aria-label="注目: 引用が伸びている" title="citation velocity: trending">TREND</span>`
     : "";
   // #83: hub — degree above 90th percentile across the theme.
   const isHub = state.hubSet?.has(p.id);
   if (isHub) card.classList.add("node-card--hub");
   const hubHtml = isHub
-    ? `<span class="node-card__hub" role="img" aria-label="ハブ論文: 接続数が多い" title="hub paper: high connectivity">👑</span>`
+    ? `<span class="node-card__hub" role="img" aria-label="ハブ論文: 接続数が多い" title="hub paper: high connectivity">HUB</span>`
     : "";
   // Orphan: no edge incident — LLM judged all candidate relations `unrelated`.
   // When state.hideOrphans is true, render() drops orphans upstream so this
@@ -3051,7 +3052,7 @@ function buildCardElement(p, matchSet) {
   const isOrphan = state.orphanSet?.has(p.id);
   if (isOrphan) card.classList.add("node-card--orphan");
   const orphanHtml = isOrphan
-    ? `<span class="node-card__orphan" role="img" aria-label="孤立: この家系図では他論文との関係がありません" title="他の論文との分類関係がないため、この家系図では孤立しています">🔗</span>`
+    ? `<span class="node-card__orphan" role="img" aria-label="孤立: この家系図では他論文との関係がありません" title="他の論文との分類関係がないため、この家系図では孤立しています">孤立</span>`
     : "";
   // (Deep-view CTA removed.) It linked to the conference deep explorer
   // (deep.html), which only ships pre-built trees for the 14 conference
