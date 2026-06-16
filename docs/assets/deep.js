@@ -144,9 +144,26 @@ async function init() {
   state.manifest = await loadManifest();
   const requested = arxivIdFromLocation();
   const known = new Set(state.manifest.map((e) => e.arxiv_id));
-  // If URL param is valid AND present in manifest, honor it. Else pick
-  // the manifest's first entry. If manifest is empty, fall back to the
-  // legacy docs/<conf>/deep.json path for backward compatibility.
+  // A specific paper was requested but it has no pre-built deep tree —
+  // e.g. a theme card links here with a non-conference arxiv id (themes
+  // viewer papers are virtually never in the conference deep manifest).
+  // Previously this SILENTLY fell back to manifest[0], so the page showed
+  // a DIFFERENT paper's lineage under the requested id (the user clicked
+  // "深掘り: X" and got paper Y). Surface it honestly instead of swapping.
+  if (requested && state.manifest.length > 0 && !known.has(requested)) {
+    const canvasLoading = document.getElementById("canvas-loading");
+    if (canvasLoading) canvasLoading.hidden = true;
+    renderPicker();
+    showErrorHtml(`
+      <p>この論文（<code>${escapeHtml(requested)}</code>）の深掘り家系図はまだ用意されていません。</p>
+      <p>下の一覧から、用意済みの論文を選べます。</p>
+    `);
+    return;
+  }
+  // If URL param is valid AND present in manifest, honor it. With NO id,
+  // default to the manifest's first entry (the explorer's landing view).
+  // If the manifest is empty, fall back to the legacy docs/<conf>/deep.json
+  // path for backward compatibility.
   let targetId = requested && known.has(requested) ? requested : state.manifest[0]?.arxiv_id ?? null;
   state.currentArxivId = targetId;
 
