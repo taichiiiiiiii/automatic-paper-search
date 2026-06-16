@@ -2440,7 +2440,11 @@ g.node-wrap.node-wrap--no-tx {
      separate on the focused card. */
   padding-top: 1rem;
 }
-.node-card--focus::before {
+/* FOCUS badge on ::after, NOT ::before. The base .node-card::before is
+   the slide-in hover accent line; reusing ::before here would replace it
+   on the (most important) focus card, silently dropping its hover line.
+   ::after keeps both: the badge plus the accent line. */
+.node-card--focus::after {
   content: "★ FOCUS";
   position: absolute;
   top: -10px;
@@ -2512,7 +2516,7 @@ g.node-wrap.node-wrap--no-tx {
 }
 .node-card__venue-tier--aplus { background: oklch(90% 0.08 75); color: oklch(40% 0.12 75); }
 .node-card__venue-tier--a { background: oklch(92% 0.04 90); color: oklch(45% 0.08 90); }
-.node-card__venue-tier--preprint { background: oklch(94% 0.01 270); color: oklch(50% 0.02 270); }
+.node-card__venue-tier--preprint { background: oklch(94% 0.01 270); color: oklch(48% 0.02 270); box-shadow: inset 0 0 0 1px oklch(82% 0.01 270); }
 
 .node-card__title {
   font-family: var(--font-serif);
@@ -3067,10 +3071,14 @@ g.node-wrap.node-wrap--no-tx {
   padding: 0.6rem 0.75rem;
   word-break: break-word;
   overflow-wrap: break-word;
-  /* #67: citation-heat (--card-heat: 0..1) drives border thickness and
-     a soft halo. High-impact papers (ResNet, Attention) read brighter
-     than niche refs without any explicit ranking UI. */
-  border-width: calc(1px + var(--card-heat, 0) * 1.5px);
+  /* #67: citation-heat (--card-heat: 0..1) drives a soft halo so high-
+     impact papers (ResNet, Attention) read brighter than niche refs
+     without any explicit ranking UI. Border WIDTH is held at 1px: a
+     heat-driven width fought the border-COLOR signals (tier / hub gold /
+     focus coral), so a high-heat hub showed thick+gold+halo all at once
+     — three competing "importance" cues on one edge. Heat now lives in
+     the halo only; the border stays a clean colour channel. */
+  border-width: 1px;
   box-shadow:
     0 1px 2px oklch(0% 0 0 / 0.04),
     0 calc(2px + var(--card-heat, 0) * 4px)
@@ -3129,6 +3137,15 @@ g.node-wrap.node-wrap--no-tx {
   text-decoration: none;
   font-size: 0.85rem;
   transition: all 0.15s ease;
+  /* WCAG 2.5.5: the visual chip stays 22px but the clickable area is
+     expanded to ~44px via an absolutely-positioned ::after overlay, so
+     the hit-zone grows without reflowing the flex meta row. */
+  position: relative;
+}
+.node-card__deep::after {
+  content: "";
+  position: absolute;
+  inset: -11px;
 }
 .node-card__deep:hover {
   background: var(--color-ink);
@@ -3171,6 +3188,11 @@ g.node-wrap.node-wrap--no-tx {
 @keyframes card-trending-pulse {
   0%, 100% { box-shadow: 0 0 0 0 oklch(58% 0.18 30 / 0.30); }
   50%      { box-shadow: 0 0 0 4px oklch(58% 0.18 30 / 0.05); }
+}
+/* WCAG 2.3.3: an infinitely pulsing badge (one per trending paper) has
+   no off-switch, so honour reduced-motion and hold it static. */
+@media (prefers-reduced-motion: reduce) {
+  .node-card--theme .node-card__trending { animation: none; }
 }
 
 /* #63: TLDR — 2-line clamp under the title. Keeps the card height
