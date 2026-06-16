@@ -3053,17 +3053,13 @@ function buildCardElement(p, matchSet) {
   const orphanHtml = isOrphan
     ? `<span class="node-card__orphan" role="img" aria-label="孤立: この家系図では他論文との関係がありません" title="他の論文との分類関係がないため、この家系図では孤立しています">🔗</span>`
     : "";
-  // B2: deep-view CTA — opens per-paper deep family-tree viewer focused on
-  // this id. Param name MUST be ?arxiv=... (deep.js's arxivIdFromLocation
-  // looks for that key). data-stop-card-click prevents the card's window.open
-  // handler from shadowing the anchor navigation.
-  // 🌳 (not 📖): the meta row's citation count also uses 📖, so the deep-
-  // view CTA needs a distinct glyph — a tree reads as "open the family
-  // tree for this paper". aria-label because the icon-only link has no
-  // text, and title isn't announced by screen readers.
-  const deepHtml = p.arxiv_id && ARXIV_RE.test(p.arxiv_id)
-    ? `<a class="node-card__deep" href="../iclr-2026/deep.html?arxiv=${encodeURIComponent(p.arxiv_id)}" target="_blank" rel="noopener" title="この論文を中心に深掘り (deep view)" aria-label="この論文を中心にした深掘り家系図を開く" data-stop-card-click="true">🌳</a>`
-    : "";
+  // (Deep-view CTA removed.) It linked to the conference deep explorer
+  // (deep.html), which only ships pre-built trees for the 14 conference
+  // Oral papers. A theme paper is virtually never in that set, so the
+  // button was a "not available" dead-end (and, pre deep.js fix, silently
+  // showed the WRONG paper). The theme viewer IS this paper's family tree,
+  // so a per-paper deep view has no valid target here — dropping it leaves
+  // a cleaner citations + stars meta row.
 
   card.innerHTML = `
     <span class="node-card__open">→ ${escapeHtml(link.label)} で開く</span>
@@ -3076,7 +3072,7 @@ function buildCardElement(p, matchSet) {
     <h3 class="node-card__title">${escapeHtml(p.title || "")}</h3>
     ${tldrHtml}
     <div class="node-card__authors">${escapeHtml(authors)}</div>
-    <div class="node-card__meta">${cits}${starsHtml}${deepHtml}</div>
+    <div class="node-card__meta">${cits}${starsHtml}</div>
   `;
 
   return { card, paperUrl: link.url, tooltipBase: link.label };
