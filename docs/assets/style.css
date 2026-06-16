@@ -57,6 +57,7 @@
   --text-card-title: 1rem;       /* gallery + base node-card title */
   --text-card-title-theme: 0.9rem; /* compact theme-variant card title */
   --text-edge-label: 0.66rem;    /* SVG <text> on lineage edges */
+  --text-micro: 0.58rem;         /* status flag tags (HUB/TREND/孤立), trending pill */
 
   /* Gallery layout primitives (#264). Two surfaces share these values
      by physical necessity: `.theme-gallery__card`'s
@@ -2514,6 +2515,16 @@ g.node-wrap.node-wrap--no-tx {
   padding: 0 0.3rem;
   border-radius: 2px;
 }
+/* Theme cards put HUB/TREND/孤立 flags (flex:none) in the same
+   space-between venue row, so a long venue name must ellipsis-clip rather
+   than wrap to a second line and grow the card. min-width:0 lets the flex
+   child shrink below its content width. */
+.node-card--theme .node-card__venue-tier {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
 .node-card__venue-tier--aplus { background: oklch(90% 0.08 75); color: oklch(40% 0.12 75); }
 .node-card__venue-tier--a { background: oklch(92% 0.04 90); color: oklch(45% 0.08 90); }
 .node-card__venue-tier--preprint { background: oklch(94% 0.01 270); color: oklch(48% 0.02 270); box-shadow: inset 0 0 0 1px oklch(82% 0.01 270); }
@@ -2571,7 +2582,7 @@ g.node-wrap.node-wrap--no-tx {
   padding: 0.06rem 0.28rem;
   margin-left: 0.25rem;
   font-family: var(--font-mono);
-  font-size: 0.58rem;
+  font-size: var(--text-micro);
   font-weight: 500;
   color: oklch(98% 0 0);
   background: oklch(62% 0.19 25);
@@ -3139,7 +3150,7 @@ g.node-wrap.node-wrap--no-tx {
   flex: none;            /* never shrink/wrap inside the space-between venue row */
   margin-left: 0.34rem;
   font-family: var(--font-mono);
-  font-size: 0.58rem;
+  font-size: var(--text-micro);
   font-weight: 600;
   letter-spacing: 0.06em;
   line-height: 1.45;
