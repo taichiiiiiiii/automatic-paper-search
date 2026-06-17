@@ -134,16 +134,30 @@
 - **magnitude はノイズ帯**: 0.354↔0.372 の振れは主に free-tier 429 の None=wrong 汚染が原因 (`_macro_f1` は `pred is None` を gold class の fn に計上、`eval_relation_prompt.py:218`)。n=29・単一ラベラーの noise (±~0.05) と合わせ、現状の数字で magnitude を確定してはいけない。
 - **🔴 free-tier Gemini の 429-storm は本番ブロッカー (実証)**: わずか 29 call の eval で 28% が 429 失敗。本番 regen は ~90 LLM call/run なので free-tier では大量の無言 heuristic fallback で崩壊する。`GeminiProvider` には Groq 相当の quota circuit breaker (#191) が無いため劣化が無言。**本番で Gemini を使うなら paid tier が前提**。
 
+### 2026-06-17 実測 (Gemini, targeted supersedes — #296 を検証)
+
+gold set は **54 行に拡張済み** (全7クラス網羅、supersedes 7件・ablation 1件、PR #295)。`PAPERPILOT_LLM_PROVIDER=gemini` override (#311) で **NEW(#296 develop) vs OLD(#296 親) prompt × `--gold-rel supersedes`** をクォータ節約のため targeted 実行:
+
+| prompt | supersedes recall | precision | f1 |
+|---|---|---|---|
+| **NEW (#296)** | **4/7 = 0.571** | **1.00** | 0.727 |
+| OLD (#296 前) | 0/7 = 0.00 | — | 0.00 |
+
+(各 none=1 = Gemini 取りこぼし、`macro_f1_excl_none` で除外処理)
+
+→ **#296 のプロンプト書き換えは supersedes 判定を 0→4/7 (精度1.00) に改善することを実証**。OLD は 7件中6件を `successor` と誤判定。改訂成功基準 (NEW recall≥3/7・precision≥0.5・OLD≈0) を満たす。Caveat: n=7・単一ラベラー。
+
 ### 残作業
 
-- **(measurement)** clean 再測定: 429 を retry し None≠wrong にしてから macro-F1 を確定。free-tier では 429-storm で不可なので **paid Gemini key** または十分な間隔を空けた batching が要る
-- **(measurement)** gold set scaling (29 → 50+) — `ablation` / `supersedes` の gold record 追加 (現状 0 件で測定不能) + second labeler validation (Cohen's κ)
-- gate 案: live macro-F1 ≥ **0.40** (#288 PR description で提案、未確定)。**Gemini は既に 0.354–0.372 で gate 寸前**
-- ~~`PAPERPILOT_GROQ_API_KEY` rotate~~ — Gemini key で live 測定可能になったため blocker から降格 (Groq の live 数字が要るときのみ)
-- **(decision, user 判断項目)** 本番 provider を Groq→Gemini に切替えるか。切替えるなら裸 flip は不可で、以下のガードレールが必須:
-  - cache key (`f"{a}->{b}"`、`paperpilot/data/lineage-cache/classifications.json`) は **model-blind**。889 entry 全 Groq 産なので、naive flip では cache-hit ペアが全部 Groq のまま残り、lineage が Groq/Gemini 混在で監査不能になる。cache key を model+prompt_version aware にするか、cache value に `model` field を追加する
-  - provenance schema (#290) は機構 (`llm`) のみ記録し model を記録しないため、混在を検出できない
-  - `PAPERPILOT_LLM_PROVIDER` override は未実装 (`build_provider()` は key 有無の優先順で Groq 固定勝ち)。override 追加 + `theme-on-demand.yml`/`regen-themes.yml` への `PAPERPILOT_GEMINI_API_KEY` 配線 + Gemini circuit breaker が要る
+- **(任意, measurement)** フル 54 行 macro-F1 (NEW vs OLD × Gemini 全クラス precision/recall) + #285 へ結果コメント。free-tier の日次クォータが空いている間に実行。
+- ~~gold set scaling (29 → 50+)~~ — **完了** (PR #295 で 54 行、全7クラス網羅)
+- second labeler validation (Cohen's κ) — 未実施 (任意)
+- gate 案: live macro-F1 ≥ **0.40** (#288 PR description で提案、未確定)
+- ~~`PAPERPILOT_GROQ_API_KEY` rotate~~ — Gemini key で live 測定可能なため降格。**さらに実測で Groq は無料枠の使用上限 (429) が本番ブロッカーと判明 — 有効鍵でも 1 テーマ生成中に枯渇し heuristic フォールバックするため rotate の効果は限定的、現状維持が妥当**
+- **(decision, user 判断項目)** 本番 provider を Groq→Gemini に切替えるか。ガードレールは**実装済み**になった:
+  - cache value の `model` field — **完了** (#313)。混在を `by_model` で監査可能
+  - `PAPERPILOT_LLM_PROVIDER` override — **完了** (#311)。`build_provider()` で provider を明示選択でき、上記 Gemini 実測もこれ経由
+  - 残: `theme-on-demand.yml`/`regen-themes.yml` への `PAPERPILOT_GEMINI_API_KEY` 配線 + Gemini circuit breaker (free-tier 429 を無言フォールバックさせない) は未実施。free-tier Gemini は本番 ~90 call/run で 429 枯渇するため paid 前提
 
 ### 過去の傾向 (Phase 1 実測、refs only)
 
