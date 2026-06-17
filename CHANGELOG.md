@@ -6,7 +6,52 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Added
+
+- **Family-tree viewer "仕組み" explainer page (#324).**
+  `docs/how-it-works/` — an editorial page that explains what the coloured
+  lineage edges mean (the six relation types: supersedes / successor /
+  extends / ablation / baseline / contrasts) as a specimen list using the
+  viewer's actual `--rel-*` edge colours, plus an honest short "how it's
+  classified" section. Linked from the landing hero caption.
+
 ### Changed
+
+- **Family-tree viewer frontend redesign (#325, #328–#332).** Editorial pass
+  over the theme/conference/deep lineage viewers. Paper cards: polish +
+  a11y (citation-heat no longer fights tier/hub/focus border colour, FOCUS
+  badge moved to `::after` so it keeps the hover accent line, deep-view
+  touch target, trending-pulse reduced-motion guard, emoji `aria-label`s),
+  removed the broken deep-view CTA from theme cards (it pointed at the
+  conference deep explorer which has no tree for theme papers, #328), and
+  replaced the 👑/📈/🔗 status emoji with editorial mono tags HUB / TREND /
+  孤立 (#329). Relationship lines: a backbone/branch hierarchy
+  (successor/supersedes solid + full weight, extends/etc. thinner + fainter
+  + finer dashes) so the descent trunk reads through dense graphs, shared
+  across all three viewers via `PP.edgeStyle` in `utils.js` (#330, #331),
+  and a fan-out of edge origins across each card's bottom edge via
+  `PP.fanOffsets` so children don't all radiate from one point (#332). Hue
+  is unchanged (the legend + 仕組み page describe the colours); only
+  weight/dash/opacity/geometry move. Cache-bust to v=82.
+
+- **#285 relation-classifier measurement (Gemini).** Measured the #296
+  prompt rewrite via the `PAPERPILOT_LLM_PROVIDER=gemini` override (#311),
+  NEW(#296) vs OLD prompt on the `supersedes` gold rows (gold set already
+  expanded to 54 rows, #295): NEW recall **4/7, precision 1.00** vs OLD
+  **0/7** — the rewrite demonstrably moves `supersedes` from 0 to 4 of 7
+  (OLD mislabels 6/7 as `successor`). Confirms #296's value. Groq stays the
+  production default (a valid key still hits the free-tier 429 cap during a
+  full theme run → heuristic fallback, so rotating it has limited effect).
+  Full 55-row macro-F1 + an #285 comment remain optional follow-ups. See
+  `docs/design/08-lineage-roadmap.md` §判定品質の改善計画.
+
+### Fixed
+
+- **deep viewer no longer silently shows the wrong paper (#327).**
+  `deep.html?arxiv=<id>` for an id not in the deep manifest (e.g. a theme
+  card's paper) previously fell back to `manifest[0]`, rendering a
+  different paper's lineage under the requested id. Now it shows an honest
+  "not available" notice + the picker instead of swapping papers.
 
 - **#300 slot-fill heuristic rationale — relation collapse fix.**
   `_derive_relation_heuristic` (`paperpilot/scripts/_lineage_classify.py`)
