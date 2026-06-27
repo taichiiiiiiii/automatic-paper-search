@@ -582,17 +582,138 @@ input[type="range"]:focus-visible {
 }
 
 /* ---------- PAPER LIST ---------- */
-.results-meta {
+/* Results toolbar: count on the left, sort + clear on the right. Owns the
+   horizontal padding the bare .results-meta used to carry. */
+.results-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem 1.5rem;
   padding: 1.25rem var(--space-edge) 0;
+}
+.results-bar__tools {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem 0.9rem;
+}
+.results-meta {
+  margin: 0;
   font-family: var(--font-mono);
   font-size: var(--text-meta);
   color: var(--color-ink-subtle);
-  /* CLS fix: "Loading…" → "Showing 226 / 226 papers" has different
-     width. Reserve a min-height so the line itself doesn't move
-     vertically — width difference is acceptable inline. */
+  /* CLS fix: "Loading…" → "30 / 218 件" differ in width. Reserve the
+     line height so it doesn't move vertically — width change is fine. */
   min-height: 1.5em;
   letter-spacing: 0.02em;
 }
+
+/* Clear-all — shown (via [hidden] toggle) only while a filter is active.
+   Quiet pill that warms to coral on intent, matching the chip vocabulary. */
+.results-clear {
+  font-family: var(--font-mono);
+  font-size: var(--text-tag);
+  letter-spacing: 0.04em;
+  padding: 0.35rem 0.8rem;
+  background: transparent;
+  border: 1px solid var(--color-rule);
+  border-radius: 999px;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease),
+              color var(--duration-fast) var(--ease);
+}
+.results-clear:hover { border-color: var(--color-accent-strong); color: var(--color-accent-strong); }
+.results-clear:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.results-clear:active { opacity: 0.75; }
+.results-clear[hidden] { display: none; }
+
+/* Sort control — a native <select> restyled into the mono/editorial
+   system, with a CSS chevron (appearance:none removes the UA arrow). */
+.sortbar { display: inline-flex; align-items: center; gap: 0.5rem; }
+.sortbar__label {
+  font-family: var(--font-mono);
+  font-size: var(--text-tag);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-ink-subtle);
+}
+.sortbar__select-wrap { position: relative; display: inline-flex; align-items: center; }
+.sortbar__select {
+  appearance: none;
+  -webkit-appearance: none;
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  color: var(--color-ink);
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-rule);
+  border-radius: 6px;
+  padding: 0.4rem 1.9rem 0.4rem 0.75rem;
+  cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease);
+}
+.sortbar__select:hover { border-color: var(--color-ink-muted); }
+.sortbar__select:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.sortbar__select-wrap::after {
+  content: "";
+  position: absolute;
+  right: 0.8rem;
+  top: 50%;
+  width: 0.46rem;
+  height: 0.46rem;
+  border-right: 1.5px solid var(--color-ink-subtle);
+  border-bottom: 1.5px solid var(--color-ink-subtle);
+  transform: translateY(-70%) rotate(45deg);
+  pointer-events: none;
+}
+
+/* "Show more" — the progressive-reveal control, a non-paper <li> at the
+   tail of the list, sitting inside the list's existing bottom padding. */
+.list-more {
+  display: flex;
+  justify-content: center;
+  padding: 1.9rem 0 0.5rem;
+}
+.list-more__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  color: var(--color-ink);
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-rule);
+  border-radius: 7px;
+  padding: 0.7rem 1.6rem;
+  cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease),
+              transform var(--duration-fast) var(--ease);
+}
+.list-more__btn:hover { border-color: var(--color-ink-muted); transform: translateY(-1px); }
+.list-more__btn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
+.list-more__btn:active { transform: translateY(0) scale(0.98); }
+.list-more__count { color: var(--color-ink-subtle); }
+
+/* Empty-state inline "clear filters" affordance. */
+.empty-state__clear {
+  display: inline-block;
+  margin-left: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-tag);
+  color: var(--color-accent-strong);
+  background: none;
+  border: none;
+  /* Real text underline (not a border-bottom) so the larger tap padding
+     below doesn't push the rule away from the text. */
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  padding: 0.35rem 0.4rem;
+  min-height: 2rem;
+  cursor: pointer;
+}
+.empty-state__clear:hover { color: var(--color-accent); }
+.empty-state__clear:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
 
 .paper-list {
   list-style: none;
@@ -610,9 +731,22 @@ input[type="range"]:focus-visible {
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 1.25rem 1.75rem;
-  padding: 1.6rem 0;
+  /* Modest horizontal padding + equal negative margin gives the hover
+     tint breathing room around the content without going full-bleed; the
+     content's left edge stays put, so the row's text alignment is
+     unchanged from the no-hover baseline. */
+  padding: 1.6rem 0.9rem;
+  margin: 0 -0.9rem;
   border-bottom: 1px solid var(--color-rule);
+  transition: background-color var(--duration-fast) var(--ease);
 }
+.paper:hover { background: var(--color-surface-2); }
+/* On the surface-2 hover tint the small ink-subtle meta text dips to
+   ~4.36:1 — under the AA 4.5:1 floor. Darken it to ink-muted on hover so
+   it clears AA without weakening the hover affordance itself. */
+.paper:hover .paper__meta,
+.paper:hover .paper__meta a,
+.paper:hover .paper__expand-btn { color: var(--color-ink-muted); }
 
 .paper__type {
   font-family: var(--font-mono);
@@ -811,6 +945,17 @@ input[type="range"]:focus-visible {
   .lineage-search input {
     font-size: var(--text-body);
     padding: 0.7rem 0.85rem;
+  }
+  /* Catalog sort/clear controls: ≥40px touch target, and 16px font on
+     the <select> so iOS Safari doesn't auto-zoom the page when it opens. */
+  .sortbar__select {
+    min-height: 40px;
+    font-size: var(--text-body);
+  }
+  .results-clear {
+    min-height: 40px;
+    padding-top: 0.55rem;
+    padding-bottom: 0.55rem;
   }
 }
 

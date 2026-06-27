@@ -1,11 +1,20 @@
 // PaperPilot catalog viewer. Requires utils.js loaded first.
 const PAPERS_URL = "papers.json";
 
+// Progressive reveal: render the first PAGE_SIZE rows, then grow by
+// PAGE_SIZE per "show more" click. A 218-row catalog rendered in one
+// shot is a ~40,000px scroll wall — capping the initial paint keeps the
+// page fast to scan and cheap to lay out. Reset to PAGE_SIZE whenever
+// the result set changes (filter / search / sort).
+const PAGE_SIZE = 30;
+
 const state = {
   papers: [],
   search: "",
   type: "all",
   activeTags: new Set(),
+  sort: "default",
+  visibleCount: PAGE_SIZE,
   lineage: null,
   relationsByPaperId: new Map(),
 };
@@ -18,6 +27,8 @@ const els = {
   typeChips: document.getElementById("type-chips"),
   tagChips: document.getElementById("tag-chips"),
   resultsMeta: document.getElementById("results-meta"),
+  resultsClear: document.getElementById("results-clear"),
+  sort: document.getElementById("sort"),
   statTotal: document.getElementById("stat-total"),
   statOral: document.getElementById("stat-oral"),
   statTags: document.getElementById("stat-tags"),
@@ -163,14 +174,89 @@ function getFiltered() {
   });
 }
 
+// Sort the filtered set. citation_count / venue_tier / github_stars are
+// ~0 for fresh-from-arXiv ICLR papers, so sorting on them would be
+// misleading; the meaningful axes are recency (arXiv id), Oral-first, and
+// title. Array.sort is stable, so "oral" preserves the collection order
+// within each group.
+function getSorted(list) {
+  const arr = [...list];
+  switch (state.sort) {
+    case "newest":
+      return arr.sort((a, b) =>
+        (b.arxiv_id || "").localeCompare(a.arxiv_id || "", undefined, { numeric: true }));
+    case "oral":
+      return arr.sort((a, b) => (a.type === "Oral" ? 0 : 1) - (b.type === "Oral" ? 0 : 1));
+    case "title":
+      return arr.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+    default:
+      return arr;
+  }
+}
+
+function hasActiveFilters() {
+  return state.search.trim() !== "" || state.type !== "all" || state.activeTags.size > 0;
+}
+
+function updateClearButton() {
+  if (els.resultsClear) els.resultsClear.hidden = !hasActiveFilters();
+}
+
+// The "show more" sentinel — a non-paper <li> at the tail of the list.
+// Shared by the full render and the incremental append so the markup
+// stays in one place.
+function moreSentinelHtml(remaining) {
+  return `<li class="list-more">
+      <button class="list-more__btn" type="button" id="list-more-btn">
+        さらに表示 <span class="list-more__count">残り ${remaining} 件</span>
+      </button>
+    </li>`;
+}
+
+function setResultsMeta(shown, filteredLen, total) {
+  els.resultsMeta.textContent =
+    shown < filteredLen
+      ? `${shown} / ${filteredLen} 件を表示${filteredLen < total ? `（全 ${total} 件）` : ""}`
+      : `${filteredLen} / ${total} 件`;
+}
+
 function renderList() {
-  const filtered = getFiltered();
-  els.resultsMeta.textContent = `${filtered.length} of ${state.papers.length} papers`;
-  if (filtered.length === 0) {
-    els.list.innerHTML = `<li class="empty-state">No papers match the current filters.</li>`;
+  const sorted = getSorted(getFiltered());
+  const total = state.papers.length;
+  updateClearButton();
+
+  if (sorted.length === 0) {
+    els.resultsMeta.textContent = `0 / ${total} 件`;
+    els.list.innerHTML = `<li class="empty-state">条件に一致する論文がありません。${hasActiveFilters() ? ' <button class="empty-state__clear" type="button" id="empty-clear">フィルタを解除</button>' : ""}</li>`;
     return;
   }
-  els.list.innerHTML = filtered.map((p, i) => renderPaper(p, i)).join("");
+
+  const shown = Math.min(state.visibleCount, sorted.length);
+  setResultsMeta(shown, sorted.length, total);
+
+  // slice from 0, so the map index IS the absolute index into `sorted`.
+  let html = sorted.slice(0, shown).map((p, i) => renderPaper(p, i)).join("");
+  if (shown < sorted.length) html += moreSentinelHtml(sorted.length - shown);
+  els.list.innerHTML = html;
+}
+
+// Any change to the result SET (filter / search / sort) restarts the
+// progressive reveal from the top; growing the window does not.
+function resetAndRender() {
+  state.visibleCount = PAGE_SIZE;
+  renderList();
+}
+
+function clearAllFilters() {
+  state.search = "";
+  state.type = "all";
+  state.activeTags.clear();
+  if (els.search) els.search.value = "";
+  [...els.typeChips.querySelectorAll(".chip")].forEach((c) =>
+    c.setAttribute("aria-pressed", String(c.dataset.type === "all")));
+  [...els.tagChips.querySelectorAll(".chip")].forEach((c) =>
+    c.setAttribute("aria-pressed", "false"));
+  resetAndRender();
 }
 
 function buildTagChips() {
@@ -200,8 +286,19 @@ function buildTypeChips() {
 function bindEvents() {
   els.search.addEventListener("input", (e) => {
     state.search = e.target.value;
-    renderList();
+    resetAndRender();
   });
+
+  if (els.sort) {
+    els.sort.addEventListener("change", (e) => {
+      state.sort = e.target.value;
+      resetAndRender();
+    });
+  }
+
+  if (els.resultsClear) {
+    els.resultsClear.addEventListener("click", clearAllFilters);
+  }
 
   els.typeChips.addEventListener("click", (e) => {
     const btn = e.target.closest("button[data-type]");
@@ -210,7 +307,7 @@ function bindEvents() {
     [...els.typeChips.querySelectorAll(".chip")].forEach((c) =>
       c.setAttribute("aria-pressed", c.dataset.type === state.type)
     );
-    renderList();
+    resetAndRender();
   });
 
   els.tagChips.addEventListener("click", (e) => {
@@ -220,17 +317,57 @@ function bindEvents() {
     if (state.activeTags.has(tag)) state.activeTags.delete(tag);
     else state.activeTags.add(tag);
     btn.setAttribute("aria-pressed", state.activeTags.has(tag));
-    renderList();
+    resetAndRender();
   });
 
   els.list.addEventListener("click", (e) => {
+    // Grow the progressive-reveal window by APPENDING only the newly
+    // revealed rows. Re-rendering the whole list would discard the state
+    // of rows already on screen (open abstracts / relations) and drop
+    // keyboard focus to <body>; appending preserves both and keeps the
+    // viewport steady.
+    if (e.target.closest("#list-more-btn")) {
+      const sorted = getSorted(getFiltered());
+      const prevShown = Math.min(state.visibleCount, sorted.length);
+      state.visibleCount += PAGE_SIZE;
+      const shown = Math.min(state.visibleCount, sorted.length);
+
+      const sentinel = els.list.querySelector(".list-more");
+      if (sentinel) sentinel.remove();
+
+      const rows = document.createElement("template");
+      rows.innerHTML = sorted
+        .slice(prevShown, shown)
+        .map((p, i) => renderPaper(p, prevShown + i))
+        .join("");
+      els.list.append(rows.content);
+
+      if (shown < sorted.length) {
+        const more = document.createElement("template");
+        more.innerHTML = moreSentinelHtml(sorted.length - shown);
+        els.list.append(more.content);
+        // Keep focus on the (new) button so repeated keyboard activation works.
+        els.list.querySelector("#list-more-btn")?.focus({ preventScroll: true });
+      } else {
+        // Fully expanded: land focus on the first newly revealed paper.
+        els.list.querySelectorAll(".paper")[prevShown]
+          ?.querySelector(".paper__title a")
+          ?.focus({ preventScroll: true });
+      }
+      setResultsMeta(shown, sorted.length, state.papers.length);
+      return;
+    }
+    if (e.target.closest("#empty-clear")) {
+      clearAllFilters();
+      return;
+    }
     const tagBtn = e.target.closest(".paper__tag");
     if (tagBtn) {
       const tag = tagBtn.dataset.tag;
       state.activeTags.add(tag);
       const chip = els.tagChips.querySelector(`.chip[data-tag="${CSS.escape(tag)}"]`);
       if (chip) chip.setAttribute("aria-pressed", "true");
-      renderList();
+      resetAndRender();
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
