@@ -188,6 +188,13 @@
       max-width: 540px;
       margin-inline: auto;
     }
+    /* >= 880px the tree is the masthead's heavier element: it grows to
+       editorial scale and bleeds toward the right gutter (margin-inline:
+       auto 0 pushes it right), delivering the asymmetry the 1fr / 1.15fr
+       grid sets up. aspect-ratio still reserves the box, so CLS holds. */
+    @media (min-width: 880px) {
+      .hero__visual { max-width: 620px; margin-inline: auto 0; }
+    }
     .hero__visual svg {
       width: 100%;
       height: auto;
@@ -405,6 +412,91 @@
     .conf-more a { color: var(--color-ink-muted); }
     .conf-more a:hover { color: var(--color-accent); }
 
+    /* ---- Departments strip (the "middle act") ----
+       Three real entry points — generate / catalog / legend — as a
+       numbered, ruled triptych on a faintly darker stratum so the page
+       gains a middle band between the masthead and the (currently single
+       conference) catalog. Deliberately NOT boxed cards: columns are
+       divided by hairline rules, the way a journal's contents strip is,
+       which keeps it inside the editorial system instead of reading as a
+       generic SaaS feature grid. */
+    .paths {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      border-top: 1px solid var(--color-rule);
+      background: var(--color-surface-2);
+    }
+    @media (min-width: 720px) {
+      .paths { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    .path {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.85rem;
+      padding: clamp(1.4rem, 1rem + 1.8vw, 2.3rem) var(--space-edge);
+      text-decoration: none;
+      color: var(--color-ink);
+      border-bottom: 1px solid var(--color-rule);
+      transition: background-color var(--duration-fast) var(--ease);
+    }
+    /* On the 3-up grid the inter-column hairlines replace the stacked
+       bottom borders, so columns read as adjacent journal departments. */
+    @media (min-width: 720px) {
+      .path { border-bottom: none; }
+      .path + .path { border-left: 1px solid var(--color-rule); }
+    }
+    .path:hover { background: var(--color-surface-elevated); text-decoration: none; }
+    /* Full-bleed block link: an INSET ring (sits in the generous padding,
+       clear of the text, and never clips at the page's outer edges where
+       a positive offset would run off-screen) in the deeper coral so the
+       indicator itself clears the 3:1 focus-contrast floor (1.4.11). */
+    .path:focus-visible { outline: 2px solid var(--color-accent-strong); outline-offset: -3px; }
+    /* On the mobile stack the trailing hairline would double up against
+       <main>'s section-head border-top into a 2px seam — drop it so a
+       single rule divides the band from the catalog. No-op on the ≥720
+       grid (which already clears every bottom border). */
+    .path:last-child { border-bottom: none; }
+    .path__index {
+      flex: none;
+      font-family: var(--font-mono);
+      font-size: var(--text-meta);
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      /* Deeper coral: the numerals are 0.82rem/500 (not "large text"), so
+         the AA 4.5:1 floor applies. --color-accent (~2.85:1 on surface-2)
+         fails; --color-accent-strong clears it (~5.8:1) — the same token
+         the CTA hover already uses for AA-safe fills. */
+      color: var(--color-accent-strong);
+      padding-top: 0.2rem;
+    }
+    .path__body { display: flex; flex-direction: column; gap: 0.3rem; min-width: 0; }
+    .path__title {
+      font-family: var(--font-serif);
+      font-size: 1.35rem;
+      font-weight: 500;
+      letter-spacing: -0.012em;
+      line-height: 1.15;
+    }
+    .path__desc {
+      font-family: var(--font-sans);
+      font-size: var(--text-body-sm);
+      /* 1.7 (not 1.5) — Japanese body copy needs looser leading; matches
+         the page's CJK reading rhythm when these wrap at ~320px. */
+      line-height: 1.7;
+      color: var(--color-ink-muted);
+    }
+    .path__arrow {
+      flex: none;
+      margin-left: auto;
+      align-self: center;
+      font-family: var(--font-mono);
+      color: var(--color-ink-subtle);
+      transition:
+        transform var(--duration-fast) var(--ease),
+        color var(--duration-fast) var(--ease);
+    }
+    .path:hover .path__arrow { color: var(--color-accent); transform: translateX(3px); }
+
     /* Mobile: stack copy (with the CTA) above the tree so the action is
        reachable without scrolling past a tall visual; tighten the hero. */
     @media (max-width: 879px) {
@@ -515,6 +607,37 @@
       </div>
     </div>
   </header>
+
+  <!-- Departments strip: the three real entry points as a ruled,
+       numbered triptych. A <nav> of in-product wayfinding links; the
+       conference catalog in <main> below is the detailed index that the
+       「カタログ」 column points into. -->
+  <nav class="paths" aria-label="主な導線">
+    <a class="path" href="themes/">
+      <span class="path__index" aria-hidden="true">01</span>
+      <span class="path__body">
+        <span class="path__title">つくる</span>
+        <span class="path__desc">テーマを入力すると、数分で新しい系譜が生成されます。</span>
+      </span>
+      <span class="path__arrow" aria-hidden="true">→</span>
+    </a>
+    <a class="path" href="iclr-2026/">
+      <span class="path__index" aria-hidden="true">02</span>
+      <span class="path__body">
+        <span class="path__title">カタログ</span>
+        <span class="path__desc">学会採択論文を品質シグナルで絞り込み、一覧から辿る。</span>
+      </span>
+      <span class="path__arrow" aria-hidden="true">→</span>
+    </a>
+    <a class="path" href="how-it-works/">
+      <span class="path__index" aria-hidden="true">03</span>
+      <span class="path__body">
+        <span class="path__title">仕組み</span>
+        <span class="path__desc">線の色が示す関係 — 置換 / 後継 / 拡張 を読み解く。</span>
+      </span>
+      <span class="path__arrow" aria-hidden="true">→</span>
+    </a>
+  </nav>
 
   <main id="main-content">
     <div class="section-head">
