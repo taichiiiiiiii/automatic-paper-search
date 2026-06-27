@@ -217,3 +217,35 @@ def test_write_index_aggregates_stats(tmp_path: Path, monkeypatch):
     index = json.loads((docs_root / "conferences.json").read_text(encoding="utf-8"))
     assert [c["name"] for c in index] == ["iclr-2026", "neurips-2025"]
     assert index[0]["papers"] == 218
+
+
+# ---- main() discovery ----
+
+
+def test_main_skips_daily_pseudo_conference(tmp_path: Path, monkeypatch):
+    """`daily` carries a summary.csv but is the daily-watch output, not a
+    conference. Auto-discovery (no --conference) must exclude it so it never
+    lands in conferences.json (which would render a broken catalog card)."""
+    import sys
+
+    project = tmp_path / "paperpilot"
+    docs_root = tmp_path / "docs"
+    monkeypatch.setattr(build_pages, "PROJECT", project)
+    monkeypatch.setattr(build_pages, "DOCS_ROOT", docs_root)
+
+    row = {
+        "title": "A", "type": "Poster", "tags": "Vision", "venue": "CVPR",
+        "authors": "X", "arxiv_url": "u", "pdf_url": "p", "abstract": "a",
+    }
+    _write_summary(project / "output" / "cvpr-2026" / "summary.csv", [row])
+    _write_summary(project / "output" / "daily" / "summary.csv", [row])
+
+    monkeypatch.setattr(sys, "argv", ["build_pages"])
+    build_pages.main()
+
+    index = json.loads((docs_root / "conferences.json").read_text(encoding="utf-8"))
+    names = {c["name"] for c in index}
+    assert "cvpr-2026" in names
+    assert "daily" not in names
+    # ...and no docs/daily/ catalog page is generated.
+    assert not (docs_root / "daily" / "papers.json").exists()
