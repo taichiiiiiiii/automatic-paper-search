@@ -23,6 +23,12 @@ ROOT = Path(__file__).resolve().parents[2]
 PROJECT = Path(__file__).resolve().parents[1]
 DOCS_ROOT = ROOT / "docs"
 
+# Output dirs that have a summary.csv but are NOT conferences and must not
+# appear in the conference index / catalog. "daily" is the daily-watch
+# collection output (config.daily-watch.yaml); rendering it as a conference
+# card would link to docs/daily/ which has no catalog page.
+_NON_CONFERENCE = {"daily"}
+
 
 def _maybe_int(value: str | None) -> int | None:
     """Parse a numeric field from the CSV. Empty / missing / unparseable -> None."""
@@ -105,7 +111,11 @@ def main() -> None:
     if args.conference:
         conf_dirs = [args.conference]
     else:
-        conf_dirs = sorted(d.name for d in output_dir.iterdir() if d.is_dir() and (d / "summary.csv").exists())
+        conf_dirs = sorted(
+            d.name
+            for d in output_dir.iterdir()
+            if d.is_dir() and d.name not in _NON_CONFERENCE and (d / "summary.csv").exists()
+        )
 
     if not conf_dirs:
         print(f"No conferences with summary.csv found under {output_dir}")
