@@ -107,7 +107,25 @@
   </div>
 
   <main id="main-content">
-    <p class="results-meta" id="results-meta">Loading…</p>
+    <div class="results-bar">
+      <p class="results-meta" id="results-meta">Loading…</p>
+      <div class="results-bar__tools">
+        <button class="results-clear" id="results-clear" type="button" hidden>
+          フィルタ解除 <span aria-hidden="true">×</span>
+        </button>
+        <div class="sortbar">
+          <label class="sortbar__label" for="sort">並び替え</label>
+          <div class="sortbar__select-wrap">
+            <select class="sortbar__select" id="sort">
+              <option value="default">収録順</option>
+              <option value="newest">新着順</option>
+              <option value="oral">Oral 優先</option>
+              <option value="title">タイトル A→Z</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
     <ul class="paper-list" id="paper-list">
       <!-- Skeleton row visible until app.js renderList() replaces the
            list. Without this the page reads as "empty under the
