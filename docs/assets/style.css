@@ -1000,6 +1000,12 @@ input[type="range"]:focus-visible {
   }
   .chips--start::-webkit-scrollbar { display: none; }
   .chips--start .chip { flex: 0 0 auto; }  /* don't shrink chips into a row */
+  /* iOS Safari auto-zooms the page when a focused input has font-size < 16px.
+     Force the 16px floor on every form control so tapping the catalog search
+     or the theme-submission form doesn't trigger that jarring zoom on phones.
+     !important is deliberate: this cross-cutting mobile-zoom guard must beat
+     the component-specific font-sizes (.search__input etc.). */
+  input, textarea, select { font-size: 16px !important; }
   .paper { grid-template-columns: 1fr; gap: 0.75rem; }
   .paper__type { margin-top: 0; }
   .stat-row { gap: 1.5rem; }
