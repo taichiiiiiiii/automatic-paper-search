@@ -240,10 +240,56 @@ function renderList() {
   els.list.innerHTML = html;
 }
 
+// URL state: filters / search / sort live in the query string so a
+// filtered view is shareable, survives reload, and the back button
+// restores it. Read once at init; written via replaceState on every
+// mutation (NOT pushState — filter twiddles must not pile up in history).
+// Params are omitted when they equal defaults so the common URL stays clean:
+//   q=<search>   type=Oral|Poster   tags=a,b,c   sort=newest|oral|title
+let _urlSyncSuppressed = false;
+const _SORTS = ["default", "newest", "oral", "title"];
+
+function readUrlState() {
+  _urlSyncSuppressed = true;
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get("q");
+    if (typeof q === "string") state.search = q;
+    const type = params.get("type");
+    if (type === "Oral" || type === "Poster" || type === "all") state.type = type;
+    const sort = params.get("sort");
+    if (sort && _SORTS.includes(sort)) state.sort = sort;
+    const tags = params.get("tags");
+    if (tags) state.activeTags = new Set(tags.split(",").map((t) => t.trim()).filter(Boolean));
+  } catch (e) {
+    console.warn("[url-state] read failed:", e);
+  } finally {
+    _urlSyncSuppressed = false;
+  }
+}
+
+function syncUrlState() {
+  if (_urlSyncSuppressed) return;
+  try {
+    const url = new URL(window.location.href);
+    const p = url.searchParams;
+    const q = state.search.trim();
+    if (q) p.set("q", q); else p.delete("q");
+    if (state.type !== "all") p.set("type", state.type); else p.delete("type");
+    if (state.activeTags.size > 0) p.set("tags", [...state.activeTags].join(",")); else p.delete("tags");
+    if (state.sort !== "default") p.set("sort", state.sort); else p.delete("sort");
+    history.replaceState(null, "", url.toString());
+  } catch (e) {
+    console.warn("[url-state] sync failed:", e);
+  }
+}
+
 // Any change to the result SET (filter / search / sort) restarts the
-// progressive reveal from the top; growing the window does not.
+// progressive reveal from the top; growing the window does not. The URL is
+// rewritten here so every mutation path stays in sync in one place.
 function resetAndRender() {
   state.visibleCount = PAGE_SIZE;
+  syncUrlState();
   renderList();
 }
 
@@ -266,7 +312,7 @@ function buildTagChips() {
   }
   const sorted = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 18);
   els.tagChips.innerHTML = sorted.map(([tag, n]) =>
-    `<button class="chip" data-tag="${escapeHtml(tag)}" type="button" aria-pressed="false">${escapeHtml(tag)}<span class="chip__count">${n}</span></button>`
+    `<button class="chip" data-tag="${escapeHtml(tag)}" type="button" aria-pressed="${state.activeTags.has(tag)}">${escapeHtml(tag)}<span class="chip__count">${n}</span></button>`
   ).join("");
 }
 
@@ -418,6 +464,11 @@ async function init() {
   if (els.statTags) els.statTags.textContent = allTags.size.toLocaleString();
   if (els.statUpdated) els.statUpdated.textContent = new Date().toISOString().slice(0, 10);
 
+  // Hydrate filter state from the URL, then reflect it into the static
+  // controls (the chips read state during their build below).
+  readUrlState();
+  if (els.search) els.search.value = state.search;
+  if (els.sort) els.sort.value = state.sort;
   buildTypeChips();
   buildTagChips();
   bindEvents();
