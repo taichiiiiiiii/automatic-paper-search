@@ -127,7 +127,8 @@ automatic-paper-search/
     │   ├── scaffold_conference_page.py  # cvpr-2026 テンプレ → docs/<conf>/index.html (+ 空 lineage.json)
     │   ├── build_summary_csv.py         # full CSV → summary.csv (8 列 + 自動タグ)
     │   ├── build_pages.py               # summary.csv → docs/<conf>/papers.json
-    │   ├── build_lineage.py             # papers.json + S2 + LLM → lineage.json
+    │   ├── build_lineage.py             # papers.json + S2 + LLM → lineage.json (arxiv_id 必須・S2 律速)
+    │   ├── build_conference_lineage.py  # Oral の title→OpenAlex 解決→参照/被引用で家系図 (S2/LLM 不要の free-tier fallback、edge は引用方向の successor ヒューリスティック) → docs/<conf>/lineage.json
     │   ├── build_deep_lineage.py        # 1 論文 × N hop BFS → docs/<conf>/deep.json
     │   ├── build_theme_lineage.py       # テーマ文字列 + S2 + LLM → docs/themes/<slug>/lineage.json
     │   ├── generate_deep_manifest.py    # docs/<conf>/deep-*.json → deep-manifest.json

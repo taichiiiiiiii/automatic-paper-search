@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#fbf9f5" />
+  <title>Lineage — ECCV 2024 — PaperPilot</title>
+  <meta name="description" content="ECCV 2024 Oral 採択論文の先行研究・後継研究の引用関係を、引用関係（後継など）を可視化する家系図ビュー。OpenAlex の引用グラフからヒューリスティックに構築。" />
+
+  <!-- CSP defence-in-depth. See docs/index.html for the policy
+       rationale; this page only fetches same-origin lineage.json. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'" />
+
+  <link rel="canonical" href="https://taichiiiiiiii.github.io/automatic-paper-search/eccv-2024/lineage.html" />
+
+  <!-- Open Graph / Twitter Card — see docs/index.html for the og:image
+       rationale. og:url = the canonical share URL. -->
+  <meta property="og:url" content="https://taichiiiiiiii.github.io/automatic-paper-search/eccv-2024/lineage.html" />
+  <meta property="og:title" content="Lineage — ECCV 2024 — PaperPilot" />
+  <meta property="og:description" content="ECCV 2024 Oral 論文の系譜（先行研究・後継研究の引用関係）を可視化する家系図。" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="PaperPilot" />
+  <meta property="og:locale" content="ja_JP" />
+  <!-- See docs/index.html: fully-qualified og:image URL + summary_large_image. -->
+  <meta property="og:image" content="https://taichiiiiiiii.github.io/automatic-paper-search/assets/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="PaperPilot — AI/ML 論文の系譜（家系図）を可視化" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://taichiiiiiiii.github.io/automatic-paper-search/assets/og-image.png" />
+  <meta name="twitter:title" content="Lineage — ECCV 2024 — PaperPilot" />
+  <meta name="twitter:description" content="ECCV 2024 Oral 論文の系譜を関係種別ごとに可視化。" />
+
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="../assets/favicon-32.png" sizes="32x32" type="image/png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=optional" rel="stylesheet" />
+
+  <link rel="stylesheet" href="../assets/style.css?v=77" />
+</head>
+<body>
+  <noscript>
+    <div class="noscript-banner" role="alert">
+      <strong>JavaScript が必要です。</strong>
+      家系図ビューは JavaScript で動的に描画されます。
+      ブラウザの JavaScript を有効にして再読込してください。
+    </div>
+  </noscript>
+  <a class="skip-link" href="#main-content">本文へスキップ</a>
+  <header class="hero">
+    <nav class="hero__breadcrumb" aria-label="breadcrumb">
+      <a href="../">PaperPilot</a> &nbsp;/&nbsp;
+      <a href="./">ECCV 2024</a> &nbsp;/&nbsp;
+      Lineage
+    </nav>
+    <h1 class="hero__title"><em>Lineage</em> — ECCV 2024 Oral</h1>
+    <p class="hero__lede">
+      ECCV 2024 Oral 採択論文の <strong>系譜</strong>（先行研究・後継研究の引用関係）を可視化します。
+    </p>
+    <ol class="hero__modes" aria-label="3 つの表示モード">
+      <li><span class="hero__mode-icon" aria-hidden="true">🗂️</span><strong>トピック</strong>：分野別に俯瞰</li>
+      <li><span class="hero__mode-icon" aria-hidden="true">🌳</span><strong>家系図</strong>：1 本を選んで上＝先行、下＝後継を深掘り</li>
+      <li><span class="hero__mode-icon" aria-hidden="true">📅</span><strong>時系列</strong>：時代順に並べて変遷を確認</li>
+    </ol>
+    <p class="hero__note">
+      データは <strong>OpenAlex</strong> の引用グラフから構築。各 Oral 論文の先行研究（参照）と後継研究（被引用）を辿り、引用方向から <strong>successor</strong>（後継）としてヒューリスティックに関係付けています（LLM 分類は未適用）。
+    </p>
+  </header>
+
+  <main id="main-content">
+  <div class="lineage-toolbar">
+    <div class="lineage-toolbar__group" role="group" aria-label="Layout">
+      <button class="layout-btn" data-layout="topics" aria-pressed="false">🗂️ トピック</button>
+      <button class="layout-btn" data-layout="tree" aria-pressed="true">🌳 家系図</button>
+      <button class="layout-btn" data-layout="timeline" aria-pressed="false">📅 時系列</button>
+    </div>
+    <button class="layout-btn" id="btn-root" type="button" title="ルート論文にフォーカスを戻す">🏠 ルート</button>
+    <div class="lineage-search">
+      <input type="search" id="search-input" aria-label="論文検索（タイトル / 著者）" placeholder="🔍 論文検索... (タイトル/著者)" autocomplete="off" spellcheck="false" />
+      <div class="lineage-search__results" id="search-results" role="listbox" aria-label="Search results"></div>
+    </div>
+    <div class="lineage-toolbar__group" id="relation-filter" role="group" aria-label="Relation filter"></div>
+  </div>
+
+  <nav class="lineage-crumb" id="lineage-crumb" aria-label="Current cluster" hidden></nav>
+
+  <!-- The relation type legend used to live as a flat strip here, but
+       the toolbar's #relation-filter chips already carry the same color
+       swatch on each pill, so duplicating the swatches in a separate
+       row was pure noise. Collapsed into a <details> so users who
+       genuinely need the full label/translation reference can still
+       reach it. -->
+  <details class="legend-collapsible">
+    <summary>関係種別の凡例（6 種）</summary>
+    <div class="legend" aria-label="Relation type legend">
+      <span class="legend__item"><span class="legend__swatch legend__swatch--supersedes"></span> Supersedes（置換）</span>
+      <span class="legend__item"><span class="legend__swatch legend__swatch--successor"></span> Successor（後継）</span>
+      <span class="legend__item"><span class="legend__swatch legend__swatch--extends"></span> Extends（拡張）</span>
+      <span class="legend__item"><span class="legend__swatch legend__swatch--ablation"></span> Ablation（成分分析）</span>
+      <span class="legend__item"><span class="legend__swatch legend__swatch--baseline"></span> Baseline（比較）</span>
+      <span class="legend__item"><span class="legend__swatch legend__swatch--contrasts"></span> Contrasts（対立）</span>
+    </div>
+  </details>
+
+  <div class="lineage-canvas" id="canvas">
+    <!-- Initial loading state, same pattern as docs/themes/index.html.
+         lineage.js hides this once the first draw lands. -->
+    <div class="canvas-loading" id="canvas-loading" role="status" aria-live="polite">
+      <div class="canvas-loading__spinner" aria-hidden="true"></div>
+      <span>家系図を描画中…</span>
+    </div>
+    <svg id="lineage-svg" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Paper lineage graph showing relationships between research papers"></svg>
+  </div>
+
+  <div class="edge-tooltip" id="tooltip" role="tooltip" aria-hidden="true">
+    <div class="edge-tooltip__rel" id="tt-rel"></div>
+    <div id="tt-rationale"></div>
+    <div class="edge-tooltip__conf" id="tt-conf"></div>
+  </div>
+  </main>
+
+  <footer class="footer">
+    <span>Generated by <a href="https://github.com/taichiiiiiiii/automatic-paper-search">PaperPilot</a></span>
+    <span id="footer-hint" aria-live="polite"></span>
+  </footer>
+
+  <script src="../assets/utils.js?v=82" defer></script>
+  <script src="../assets/lineage.js?v=82" defer></script>
+</body>
+</html>
