@@ -249,3 +249,43 @@ def test_main_skips_daily_pseudo_conference(tmp_path: Path, monkeypatch):
     assert "daily" not in names
     # ...and no docs/daily/ catalog page is generated.
     assert not (docs_root / "daily" / "papers.json").exists()
+
+
+# ---- data date stamping ----
+
+
+def _row() -> dict[str, str]:
+    return {
+        "title": "A", "type": "Poster", "tags": "Vision", "venue": "CVPR",
+        "authors": "X", "arxiv_url": "u", "pdf_url": "p", "abstract": "a",
+    }
+
+
+def test_build_conference_stamps_latest_data_date(tmp_path: Path, monkeypatch):
+    """`generated` = the newest papers_YYYY-MM-DD.csv date (the real data
+    date), so the viewer's 'last updated' reflects the data, not page load."""
+    project = tmp_path / "paperpilot"
+    monkeypatch.setattr(build_pages, "PROJECT", project)
+    monkeypatch.setattr(build_pages, "DOCS_ROOT", tmp_path / "docs")
+
+    conf_dir = project / "output" / "cvpr-2026"
+    _write_summary(conf_dir / "summary.csv", [_row()])
+    (conf_dir / "papers_2026-05-01.csv").write_text("title\nA\n", encoding="utf-8")
+    (conf_dir / "papers_2026-06-27.csv").write_text("title\nA\n", encoding="utf-8")
+
+    res = build_pages.build_conference("cvpr-2026")
+    assert res is not None
+    assert res["generated"] == "2026-06-27"  # newest wins
+
+
+def test_build_conference_generated_none_without_dated_csv(tmp_path: Path, monkeypatch):
+    project = tmp_path / "paperpilot"
+    monkeypatch.setattr(build_pages, "PROJECT", project)
+    monkeypatch.setattr(build_pages, "DOCS_ROOT", tmp_path / "docs")
+
+    conf_dir = project / "output" / "legacy-conf"
+    _write_summary(conf_dir / "summary.csv", [_row()])  # no papers_*.csv
+
+    res = build_pages.build_conference("legacy-conf")
+    assert res is not None
+    assert res["generated"] is None
