@@ -154,8 +154,8 @@ function renderPaper(p, idx) {
         </h2>
         <p class="paper__authors">${escapeHtml(authorPreview || "—")}</p>
         ${tagsHtml ? `<div class="paper__tags">${tagsHtml}</div>` : ""}
-        <div class="paper__meta">${linksHtml}${hasAbstract ? '<button class="paper__expand-btn" type="button">Abstract</button>' : ""}</div>
-        ${hasAbstract ? `<div class="paper__abstract">${escapeHtml(p.abstract)}</div>` : ""}
+        <div class="paper__meta">${linksHtml}${hasAbstract ? `<button class="paper__expand-btn" type="button" aria-expanded="false" aria-controls="abstract-${idx}">Abstract</button>` : ""}</div>
+        ${hasAbstract ? `<div class="paper__abstract" id="abstract-${idx}">${escapeHtml(p.abstract)}</div>` : ""}
         ${relationsHtml}
       </div>
     </li>`;
@@ -330,9 +330,15 @@ function buildTypeChips() {
 }
 
 function bindEvents() {
+  // Debounce the search: a full filter + innerHTML re-render on every
+  // keystroke janks on the larger catalogs (ICLR ~1,700, CVPR 4,068 papers)
+  // and punishes fast typists. 180ms keeps it responsive without re-rendering
+  // mid-word.
+  let searchDebounce;
   els.search.addEventListener("input", (e) => {
     state.search = e.target.value;
-    resetAndRender();
+    clearTimeout(searchDebounce);
+    searchDebounce = setTimeout(resetAndRender, 180);
   });
 
   if (els.sort) {
@@ -420,8 +426,9 @@ function bindEvents() {
     const expandBtn = e.target.closest(".paper__expand-btn");
     if (expandBtn) {
       const paper = expandBtn.closest(".paper");
-      paper.classList.toggle("is-expanded");
-      expandBtn.textContent = paper.classList.contains("is-expanded") ? "Hide abstract" : "Abstract";
+      const expanded = paper.classList.toggle("is-expanded");
+      expandBtn.setAttribute("aria-expanded", String(expanded));
+      expandBtn.textContent = expanded ? "Hide abstract" : "Abstract";
       return;
     }
     const relToggle = e.target.closest(".paper__relations-toggle");
@@ -493,7 +500,41 @@ async function init() {
   buildTypeChips();
   buildTagChips();
   bindEvents();
+  setupBackToTop();
   renderList();
+}
+
+// A back-to-top button for the long catalogs: after progressive reveal the
+// sticky filter bar scrolls off, leaving no quick way back to search/filters.
+// Injected here so it works on all 10 catalog pages without editing each HTML.
+function setupBackToTop() {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "back-to-top";
+  btn.id = "back-to-top";
+  btn.setAttribute("aria-label", "ページ上部（検索・絞り込み）へ戻る");
+  btn.hidden = true;
+  btn.innerHTML = '<span aria-hidden="true">↑</span> Top';
+  document.body.appendChild(btn);
+  const SHOW_AFTER = 600;
+  let ticking = false;
+  window.addEventListener(
+    "scroll",
+    () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        btn.hidden = window.scrollY < SHOW_AFTER;
+        ticking = false;
+      });
+    },
+    { passive: true },
+  );
+  btn.addEventListener("click", () => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+    if (els.search) els.search.focus();
+  });
 }
 
 init();
