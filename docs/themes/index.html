@@ -51,7 +51,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=optional" rel="stylesheet" />
 
-  <link rel="stylesheet" href="../assets/style.css?v=81" />
+  <link rel="stylesheet" href="../assets/style.css?v=82" />
 </head>
 <body>
   <noscript>
@@ -218,7 +218,11 @@
   <div class="slug-fallback" id="slug-fallback" hidden role="status">
     <span class="slug-fallback__icon" aria-hidden="true">⚠️</span>
     <span class="slug-fallback__msg" id="slug-fallback-msg"></span>
-    <a class="slug-fallback__cta" id="slug-fallback-generate" target="_blank" rel="noopener">
+    <!-- Fallback href so the link is valid + keyboard-focusable even before
+         theme.js rewrites it with the pre-filled title/body (line ~1257). -->
+    <a class="slug-fallback__cta" id="slug-fallback-generate"
+       href="https://github.com/taichiiiiiiii/automatic-paper-search/issues/new?labels=theme-request"
+       target="_blank" rel="noopener">
       ✨ Issue でリクエスト
     </a>
     <button type="button" class="slug-fallback__close" id="slug-fallback-close" aria-label="閉じる">
@@ -244,7 +248,7 @@
        generated theme + its key stats so users can pick visually
        instead of digging through the picker dropdown. Cards are
        populated by theme.js renderThemeGallery() from the manifest. -->
-  <nav class="theme-gallery" id="theme-gallery" aria-label="Theme gallery"></nav>
+  <section class="theme-gallery" id="theme-gallery" aria-label="テーマ一覧"></section>
 
   <!-- Simplified toolbar: only the X-axis pills + the "詳細フィルタ"
        toggle live above the fold. Theme picking is the gallery's job
