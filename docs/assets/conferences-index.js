@@ -47,8 +47,13 @@ function renderConferenceList(conferences) {
     return;
   }
   const sep = `<span class="conf__meta-sep" aria-hidden="true">·</span>`;
+  // Surface the richest catalogs first — with ~10 conferences, paper count
+  // descending is the most useful default order (and the big numerals then
+  // read top-to-bottom). .filter() already returns a fresh array, so the
+  // in-place sort doesn't mutate the caller's data.
   list.innerHTML = conferences
     .filter((c) => SLUG_RE.test(c.name))
+    .sort((a, b) => (b.papers || 0) - (a.papers || 0))
     .map((c) => {
       const oral = c.types.Oral || 0;
       const fresh = safeDate(c.generated);

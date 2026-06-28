@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#fbf9f5" />
+  <title>ECCV 2024 — PaperPilot</title>
+  <meta name="description" content="ECCV 2024 採択論文のフィルタブル一覧。タイトル・著者・要旨での検索、トピックタグ、採択形式（Oral / Poster）、並び替えで絞り込めます。" />
+
+  <!-- CSP defence-in-depth. See docs/index.html for the policy
+       rationale; this page only fetches same-origin papers.json. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'" />
+
+  <link rel="canonical" href="https://taichiiiiiiii.github.io/automatic-paper-search/eccv-2024/" />
+
+  <!-- Open Graph / Twitter Card — see docs/index.html for the og:image
+       rationale. og:url = the canonical share URL. -->
+  <meta property="og:url" content="https://taichiiiiiiii.github.io/automatic-paper-search/eccv-2024/" />
+  <meta property="og:title" content="ECCV 2024 — PaperPilot" />
+  <meta property="og:description" content="ECCV 2024 採択論文のフィルタブル一覧。タイトル・著者・要旨で検索、トピック別に絞り込めます。" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="PaperPilot" />
+  <meta property="og:locale" content="ja_JP" />
+  <!-- See docs/index.html: fully-qualified og:image URL + summary_large_image. -->
+  <meta property="og:image" content="https://taichiiiiiiii.github.io/automatic-paper-search/assets/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="PaperPilot — ECCV 2024 採択論文のフィルタブルカタログ" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://taichiiiiiiii.github.io/automatic-paper-search/assets/og-image.png" />
+  <meta name="twitter:title" content="ECCV 2024 — PaperPilot" />
+  <meta name="twitter:description" content="ECCV 2024 採択論文のフィルタブル一覧。" />
+
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="../assets/favicon-32.png" sizes="32x32" type="image/png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=optional" rel="stylesheet" />
+
+  <link rel="stylesheet" href="../assets/style.css?v=78" />
+</head>
+<body>
+  <noscript>
+    <div class="noscript-banner" role="alert">
+      <strong>JavaScript が必要です。</strong>
+      論文一覧の検索 / フィルタは JavaScript で動作します。
+      ブラウザの JavaScript を有効にして再読込してください。
+    </div>
+  </noscript>
+  <a class="skip-link" href="#main-content">本文へスキップ</a>
+  <header class="hero">
+    <nav class="hero__breadcrumb" aria-label="breadcrumb">
+      <a href="../">PaperPilot</a> &nbsp;/&nbsp; ECCV 2024
+    </nav>
+    <h1 class="hero__title">ECCV 2024 <em>採択論文</em></h1>
+    <p class="hero__lede">
+      European Conference on Computer Vision。arXiv 上で ECCV 2024 採択と明記された投稿を自動収集した一覧です。キーワード検索・トピックタグ・並び替えで気になる論文をすぐに見つけられます。
+    </p>
+    <div class="stat-row">
+      <div class="stat">
+        <span class="stat__num" id="stat-total">—</span>
+        <span class="stat__label">論文</span>
+      </div>
+      <div class="stat stat--featured">
+        <span class="stat__num stat__num--oral" id="stat-oral">—</span>
+        <span class="stat__label">Oral / Highlight</span>
+      </div>
+      <div class="stat">
+        <span class="stat__num" id="stat-tags">—</span>
+        <span class="stat__label">トピックタグ</span>
+      </div>
+      <div class="stat">
+        <span class="stat__num" id="stat-updated">—</span>
+        <span class="stat__label">最終更新</span>
+      </div>
+    </div>
+    <p class="hero__actions">
+      <a class="hero__action" href="../how-it-works/">PaperPilot について →</a>
+    </p>
+  </header>
+
+  <!-- First-timer guide: a plain-language "what is this & how to use it"
+       strip, always visible but subtle, so a first-time visitor knows
+       exactly what the three controls below do before touching them. -->
+  <section class="usage" aria-label="このページの使い方">
+    <p class="usage__lead"><strong>はじめての方へ</strong> — 下の操作で論文を絞り込めます。組み合わせも自由です。</p>
+    <ul class="usage__steps">
+      <li class="usage__step">
+        <span class="usage__icon" aria-hidden="true">🔍</span>
+        <span><b>検索</b><br />タイトル・著者・要旨にキーワードを入力</span>
+      </li>
+      <li class="usage__step">
+        <span class="usage__icon" aria-hidden="true">🏷️</span>
+        <span><b>タグで絞り込み</b><br />Vision / LLM などをクリック（複数選択可）</span>
+      </li>
+      <li class="usage__step">
+        <span class="usage__icon" aria-hidden="true">↕️</span>
+        <span><b>並び替え</b><br />新着順・Oral 優先・タイトル順</span>
+      </li>
+    </ul>
+  </section>
+
+  <div class="filter-bar">
+    <section class="filters" aria-label="絞り込み">
+      <div class="search">
+        <svg class="search__icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6">
+          <circle cx="7" cy="7" r="5" />
+          <path d="m11 11 4 4" stroke-linecap="round" />
+        </svg>
+        <input
+          id="search"
+          class="search__input"
+          type="search"
+          aria-label="論文をタイトル・著者・要旨で検索"
+          placeholder="論文を検索（タイトル・著者・要旨）…"
+          autocomplete="off"
+          spellcheck="false"
+        />
+      </div>
+      <div class="chips" id="type-chips" role="group" aria-label="採択形式で絞り込み"></div>
+    </section>
+    <div class="filters filters--tags" aria-label="トピックタグで絞り込み">
+      <div class="chips chips--start" id="tag-chips" role="group" aria-label="トピックタグ"></div>
+    </div>
+  </div>
+
+  <main id="main-content">
+    <div class="results-bar">
+      <p class="results-meta" id="results-meta">読み込み中…</p>
+      <div class="results-bar__tools">
+        <button class="results-clear" id="results-clear" type="button" hidden>
+          フィルタ解除 <span aria-hidden="true">×</span>
+        </button>
+        <div class="sortbar">
+          <label class="sortbar__label" for="sort">並び替え</label>
+          <div class="sortbar__select-wrap">
+            <select class="sortbar__select" id="sort">
+              <option value="default">収録順</option>
+              <option value="newest">新着順</option>
+              <option value="oral">Oral 優先</option>
+              <option value="title">タイトル A→Z</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <ul class="paper-list" id="paper-list">
+      <!-- Skeleton row visible until app.js renderList() replaces the
+           list, so the page doesn't read as empty during the papers.json
+           fetch on fresh visits. -->
+      <li class="empty-state" id="paper-list-loading">論文一覧を読み込み中…</li>
+    </ul>
+  </main>
+
+  <footer class="footer">
+    <span>Generated by <a href="https://github.com/taichiiiiiiii/automatic-paper-search">PaperPilot</a></span>
+    <span>Source: arXiv · Auto-tagged · MIT License</span>
+  </footer>
+
+  <script src="../assets/utils.js?v=75" defer></script>
+  <script src="../assets/app.js?v=80" defer></script>
+</body>
+</html>
