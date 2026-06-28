@@ -120,7 +120,8 @@ automatic-paper-search/
     │   ├── groq_provider.py             # Groq Llama 3.3 (lineage 分類の無料第一候補)
     │   └── claude_provider.py           # Anthropic Claude（設計書の第一推奨）
     ├── scripts/                         # ビューア生成スクリプト（補助ツール群）
-    │   ├── collect_conference.py        # arXiv co:"<conf>" → VenueSignal 採択抽出 → output/<conf>/papers_*.csv (新学会カタログの収集)
+    │   ├── collect_conference.py        # arXiv co:"<conf>" → VenueSignal 採択抽出 → output/<conf>/papers_*.csv (arXiv自己申告のみ=部分収録)
+    │   ├── collect_openreview.py        # OpenReview api2 venueid → 全採択論文 + Oral/Spotlight/Poster 区分 → output/<conf>/papers_*.csv (ICLR/NeurIPS/ICML の権威的全件収録、write_outputs を collect_conference と共有)
     │   ├── scaffold_conference_page.py  # cvpr-2026 テンプレ → docs/<conf>/index.html (+ 空 lineage.json)
     │   ├── build_summary_csv.py         # full CSV → summary.csv (8 列 + 自動タグ)
     │   ├── build_pages.py               # summary.csv → docs/<conf>/papers.json
@@ -551,7 +552,7 @@ generate_themes_manifest.py → docs/themes/themes-manifest.json
 - `collect-daily-watch.yml` — 毎日 07:00 JST に follow 著者の新作を確認 → 通知のみ
 - `regen-themes.yml` — 手動 `workflow_dispatch` 専用 (PR #261 で週次 cron 廃止)。LLM 契約変更や lineage 形式バンプ後にバルク再生成する break-glass
 - `theme-on-demand.yml` — フォーム送信または手動 dispatch で 1 テーマだけ生成
-- `conference-on-demand.yml` — 手動 `workflow_dispatch` で**新しい学会カタログ**を end-to-end 生成 (collect_conference → build_summary_csv → build_pages → scaffold_conference_page → commit → Pages)。入力: `conference`(slug) / `venue`(VenueSignal token) / `query`(arXiv `co:"…"`) / `display` / `lede` / `max`。LLM/unarXive 不要 (カタログは arXiv メタ + VenueSignal のみで構築)
+- `conference-on-demand.yml` — 手動 `workflow_dispatch` で**新しい学会カタログ**を end-to-end 生成 (collect_conference → build_summary_csv → build_pages → scaffold_conference_page → commit → Pages)。入力: `conference`(slug) / `venue`(VenueSignal token) / `query`(arXiv `co:"…"`) / `display` / `lede` / `max`。LLM/unarXive 不要 (カタログは arXiv メタ + VenueSignal のみで構築)。**arXiv 自己申告ベースなので部分収録(採択集合の ~30-40%)**。**ICLR/NeurIPS/ICML は `collect_openreview.py`(OpenReview api2 venueid → 全採択 + Oral/Spotlight/Poster 区分)で権威的に全件収録するのが正**(当面は手動: collect_openreview → build_summary_csv → build_pages → 既存ページなら lede/footer を OpenReview 表記に手修正。専用 workflow `openreview-on-demand.yml` は未実装=follow-up)
 - `data-audit.yml` — `docs/themes/*/lineage.json` 等が変わった PR/push で seed/lineage 監査
 - `lighthouse.yml` — frontend 変更 PR + 月曜定例で Core Web Vitals 計測
 - `pages.yml` — `docs/**` 変更で GitHub Pages へデプロイ

@@ -40,6 +40,46 @@ def _write_summary(path: Path, rows: list[dict[str, str]]) -> None:
             writer.writerow({k: r.get(k, "") for k in fields})
 
 
+# ---- abstract preview ----
+
+
+def test_abstract_preview_keeps_short_text_verbatim():
+    assert build_pages._abstract_preview("a short abstract") == "a short abstract"
+    assert build_pages._abstract_preview("") == ""
+    assert build_pages._abstract_preview(None) == ""
+
+
+def test_abstract_preview_trims_long_text_on_word_boundary():
+    long = "word " * 200  # 1000 chars
+    out = build_pages._abstract_preview(long)
+    assert out.endswith("…")  # single codepoint U+2026
+    assert len(out) <= build_pages._ABSTRACT_PREVIEW_CHARS + 1  # +1 for the ellipsis char
+    assert "word word" in out  # whole words retained
+    assert not out[:-1].endswith(" ")  # no trailing space before the ellipsis
+
+
+def test_abstract_preview_hard_cuts_single_long_token():
+    # No space to break on -> hard cut at the limit, then the ellipsis.
+    out = build_pages._abstract_preview("a" * 500)
+    assert out.endswith("…")
+    assert len(out) == build_pages._ABSTRACT_PREVIEW_CHARS + 1
+
+
+def test_abstract_preview_in_papers_json(tmp_path: Path, monkeypatch):
+    project = tmp_path / "paperpilot"
+    monkeypatch.setattr(build_pages, "PROJECT", project)
+    monkeypatch.setattr(build_pages, "DOCS_ROOT", tmp_path / "docs")
+    long_abstract = "lorem ipsum " * 60  # ~720 chars
+    _write_summary(
+        project / "output" / "iclr-2026" / "summary.csv",
+        [{"title": "T", "type": "Poster", "tags": "", "authors": "", "abstract": long_abstract}],
+    )
+    build_pages.build_conference("iclr-2026")
+    data = json.loads((tmp_path / "docs" / "iclr-2026" / "papers.json").read_text(encoding="utf-8"))
+    assert data[0]["abstract"].endswith("…")
+    assert len(data[0]["abstract"]) <= build_pages._ABSTRACT_PREVIEW_CHARS + 1
+
+
 # ---- load_summary ----
 
 
