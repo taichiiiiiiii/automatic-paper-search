@@ -29,25 +29,83 @@ PROJECT = Path(__file__).resolve().parents[1]
 _PAPERS_NAME_RE = re.compile(r"^papers_\d{4}-\d{2}-\d{2}\.csv$")
 
 
+# Fine-grained topic taxonomy. A paper gets EVERY tag whose pattern matches
+# its title+abstract, so categories overlap freely. Patterns are deliberately
+# SPECIFIC — the old coarse "Vision" caught ~80% of CV papers (useless as a
+# filter), so it is split into concrete tasks, and greedy words ("evaluation",
+# bare "efficient"/"bias") are dropped in favour of discriminative phrases.
+# The viewer surfaces only each conference's top-18 tags, so a large taxonomy
+# self-adapts per venue (CV venues show CV tasks, NLP venues show NLP tasks).
 TOPIC_RULES: dict[str, list[str]] = {
-    "LLM": [r"\bllm\b", r"large language model", r"language model"],
-    "VLM": [r"\bvlm\b", r"vision[- ]language", r"multimodal"],
-    "Vision": [r"\bvision\b", r"image", r"video", r"3d", r"rendering", r"gaussian splatting"],
-    "Diffusion": [r"diffusion", r"score[- ]based", r"flow matching"],
-    "RL": [r"reinforcement learning", r"\brl\b", r"policy gradient", r"q[- ]learning"],
-    "Theory": [r"theorem", r"convergence", r"theoretical", r"information[- ]theoretic", r"pac[- ]"],
-    "Transformer": [r"transformer", r"attention", r"self[- ]attention"],
+    # ---- Model families / architectures ----
+    "LLM": [r"\bllms?\b", r"large language model", r"language model"],
+    "VLM": [r"\bvlms?\b", r"\bmllms?\b", r"vision[- ]language", r"multimodal"],
+    "Diffusion": [r"diffusion model", r"\bdiffusion\b", r"score[- ]based", r"flow matching", r"\bddpm\b"],
+    "Transformer": [r"\btransformers?\b", r"self[- ]attention", r"attention mechanism"],
     "MoE": [r"mixture[- ]of[- ]experts", r"\bmoe\b"],
-    "Graph": [r"graph neural", r"\bgnn\b", r"message passing"],
-    "TimeSeries": [r"time series", r"forecast", r"temporal"],
-    "Medical": [r"medical", r"clinical", r"ehr", r"protein", r"drug", r"biology"],
-    "Robotics": [r"robot", r"manipulation", r"locomotion"],
+    "GAN": [r"\bgans?\b", r"generative adversarial"],
+    "SSM": [r"state[- ]space model", r"\bmamba\b", r"\bssms?\b"],
+    "GNN": [r"graph neural", r"\bgnns?\b", r"message passing"],
+    # ---- Computer-vision tasks (the old "Vision" bucket, split) ----
+    "Detection": [r"object detection", r"\bdetection\b", r"\bdetector"],
+    "Segmentation": [r"segmentation", r"\bsegment\b"],
+    "3D": [r"\b3d\b", r"\bnerf\b", r"gaussian splat", r"point cloud", r"\bmesh\b", r"depth estimation", r"\bslam\b", r"novel view"],
+    "ImageGen": [r"image generation", r"image synthesis", r"text[- ]to[- ]image", r"\bt2i\b"],
+    "VideoGen": [r"video generation", r"text[- ]to[- ]video", r"\bt2v\b"],
+    "Pose": [r"pose estimation", r"keypoint", r"human pose", r"6[- ]?dof"],
+    "Tracking": [r"object tracking", r"\bmot\b", r"re[- ]identification", r"\bre[- ]id\b"],
+    "Restoration": [r"super[- ]resolution", r"denois", r"deblur", r"inpaint", r"image restoration", r"dehaz"],
+    "Face": [r"\bface\b", r"\bfaces\b", r"facial"],
+    "OCR": [r"\bocr\b", r"text recognition", r"document understanding", r"scene text"],
+    "VideoUnderstanding": [r"action recognition", r"video understanding", r"temporal action", r"video question"],
+    "Rendering": [r"rendering", r"radiance field", r"neural render"],
+    # ---- NLP tasks ----
+    "QA": [r"question answering", r"\bvqa\b", r"\bqa\b"],
+    "Summarization": [r"summari[sz]"],
+    "Translation": [r"machine translation", r"\bnmt\b", r"multilingual"],
+    "Dialogue": [r"\bdialog", r"conversational", r"chatbot"],
+    "IE": [r"named entity", r"\bner\b", r"information extraction", r"relation extraction"],
+    "Reasoning": [r"reasoning", r"chain[- ]of[- ]thought", r"\bcot\b"],
+    "Code": [r"code generation", r"program synthesis", r"code model", r"\bcoding\b"],
     "RAG": [r"\brag\b", r"retrieval[- ]augmented"],
-    "Agent": [r"\bagent\b", r"tool use"],
+    "Agent": [r"\bagents?\b", r"tool use", r"tool[- ]calling"],
+    # ---- Learning paradigms / techniques ----
+    "RL": [r"reinforcement learning", r"\brl\b", r"policy gradient", r"\brlhf\b"],
+    "SSL": [r"self[- ]supervised", r"contrastive learning"],
+    "FewShot": [r"few[- ]shot", r"zero[- ]shot", r"in[- ]context learning"],
+    "Meta": [r"meta[- ]learning"],
+    "Continual": [r"continual", r"lifelong learning", r"catastrophic forgetting", r"incremental learning"],
+    "Transfer": [r"transfer learning", r"domain adaptation", r"domain generalization"],
+    "Distillation": [r"knowledge distillation", r"\bdistillation\b"],
+    "Quantization": [r"quantiz", r"low[- ]bit", r"\bint8\b", r"\bint4\b"],
+    "Pruning": [r"\bpruning\b", r"sparsit"],
+    "NAS": [r"neural architecture search", r"\bnas\b"],
+    "Federated": [r"federated"],
+    # ---- Trustworthy / safety ----
+    "Robustness": [r"\brobustness\b", r"out[- ]of[- ]distribution", r"\bood\b", r"distribution shift"],
+    "Adversarial": [r"adversarial (attack|example|robust|perturbation|training)"],
+    "Fairness": [r"\bfairness\b", r"debias"],
+    "Privacy": [r"\bprivacy\b", r"differential privacy"],
+    "Interpretability": [r"interpretab", r"explainab", r"\bxai\b"],
+    "Safety": [r"\bsafety\b", r"jailbreak", r"hallucinat", r"harmful", r"\btoxic", r"guardrail", r"preference align", r"value align"],
+    "Uncertainty": [r"uncertainty", r"calibrat", r"\bbayesian\b"],
+    # ---- Domains ----
+    "Medical": [r"medical", r"clinical", r"\behr\b", r"radiolog", r"patholog", r"diagnosis"],
+    "Bio": [r"\bprotein", r"molecul", r"drug discovery", r"genomic"],
+    "Audio": [r"\baudio\b", r"\bspeech\b", r"\basr\b", r"\btts\b", r"\bmusic\b"],
+    "Robotics": [r"\brobot", r"manipulation", r"locomotion", r"navigation"],
+    "Autonomous": [r"autonomous driving", r"self[- ]driving"],
+    "Recommendation": [r"recommend", r"collaborative filtering"],
+    "TimeSeries": [r"time series", r"forecast"],
+    "Graph": [r"graph representation", r"graph learning"],
+    # ---- Theory / optimization / data ----
+    "Theory": [r"theorem", r"convergence", r"theoretical", r"\bpac[- ]", r"generalization bound"],
+    "Optim": [r"\boptimizer\b", r"\badam\b", r"\bsgd\b", r"optimization algorithm"],
     "Causal": [r"causal", r"counterfactual"],
-    "SSL": [r"self[- ]supervised", r"contrastive"],
-    "Optim": [r"optimization", r"optimizer", r"adam", r"sgd"],
-    "Eval": [r"benchmark", r"evaluation", r"\bevals?\b"],
+    # benchmark/dataset only when the paper INTRODUCES one (not the ubiquitous
+    # "we benchmark …" verb or "on the X dataset" mention).
+    "Benchmark": [r"new benchmark", r"\bbenchmark (dataset|suite|for)", r"comprehensive benchmark", r"\bbenchmarking\b", r"leaderboard"],
+    "Dataset": [r"new dataset", r"large[- ]scale dataset", r"(introduce|present|construct|collect|curat)\w*\s+(a\s+)?(new\s+)?dataset", r"data curation"],
 }
 
 
