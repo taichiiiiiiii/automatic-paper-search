@@ -30,6 +30,26 @@ DOCS_ROOT = ROOT / "docs"
 _NON_CONFERENCE = {"daily"}
 
 
+# papers.json ships in full to every catalog visitor, so storing complete
+# 1,400-char abstracts for a multi-thousand-paper proceedings (e.g. ICLR's
+# 5k+ accepted set) would be a ~10 MB download per page. The list view only
+# needs a teaser; the full paper is one click away via the card's OpenReview /
+# arXiv link. Previewing here keeps every catalog page light.
+_ABSTRACT_PREVIEW_CHARS = 320
+
+
+def _abstract_preview(text: str | None) -> str:
+    """Trim an abstract to a short, word-boundary preview with an ellipsis."""
+    text = (text or "").strip()
+    if len(text) <= _ABSTRACT_PREVIEW_CHARS:
+        return text
+    head = text[:_ABSTRACT_PREVIEW_CHARS]
+    # Cut back to the last word boundary so we don't slice a word in half;
+    # fall back to the hard cut if there's no space (one very long token).
+    cut = head.rsplit(" ", 1)[0].rstrip() or head.rstrip()
+    return f"{cut}…"
+
+
 def _maybe_int(value: str | None) -> int | None:
     """Parse a numeric field from the CSV. Empty / missing / unparseable -> None."""
     if value is None:
@@ -55,7 +75,7 @@ def load_summary(summary_csv: Path) -> list[dict[str, Any]]:
                 "authors": [a.strip() for a in re.split(r"[;,]", row["authors"]) if a.strip()],
                 "arxiv_url": row["arxiv_url"],
                 "pdf_url": row["pdf_url"],
-                "abstract": row["abstract"],
+                "abstract": _abstract_preview(row["abstract"]),
                 # Stage 2 signal outputs carried forward from summary.csv.
                 # Strings stay as strings (empty="" for missing); numerics
                 # become ints so the viewer skips coercion.
