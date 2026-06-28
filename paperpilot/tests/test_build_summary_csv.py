@@ -246,4 +246,43 @@ def test_build_tolerates_missing_oral_md(tmp_path: Path):
     with (conf / "summary.csv").open(encoding="utf-8", newline="") as f:
         rows = list(csv.DictReader(f))
     assert rows[0]["type"] == "Poster"
-    assert "Graph" in rows[0]["tags"]
+    # "graph neural network" now maps to the more specific GNN tag
+    assert "GNN" in rows[0]["tags"]
+
+
+# ---- classify_tags: fine-grained taxonomy ----
+
+
+def test_classify_tags_specific_cv_tasks():
+    assert "3D" in bsc.classify_tags("3D Object Detection via NeRF", "point cloud")
+    assert "Detection" in bsc.classify_tags("3D Object Detection via NeRF", "")
+    assert "Segmentation" in bsc.classify_tags("Panoptic Segmentation", "")
+    assert "Restoration" in bsc.classify_tags("Image Super-Resolution", "")
+    # the old coarse "Vision" mega-tag no longer exists
+    assert "Vision" not in bsc.TOPIC_RULES
+
+
+def test_classify_tags_specific_nlp_tasks():
+    assert "QA" in bsc.classify_tags("Visual Question Answering", "")
+    assert "Translation" in bsc.classify_tags("Neural Machine Translation", "")
+    assert "Summarization" in bsc.classify_tags("Abstractive Summarization", "")
+    assert "Reasoning" in bsc.classify_tags("Chain-of-Thought Reasoning", "")
+
+
+def test_classify_tags_greedy_patterns_tightened():
+    # "we benchmark our method" (verb) must NOT tag Benchmark
+    assert "Benchmark" not in bsc.classify_tags("A Fast Detector", "We benchmark our method on COCO.")
+    # but a benchmark-introducing paper does
+    assert "Benchmark" in bsc.classify_tags("MMBench: A New Benchmark for VLMs", "")
+    # "on the X dataset" (mention) must NOT tag Dataset
+    assert "Dataset" not in bsc.classify_tags("A Method", "Evaluated on the ImageNet dataset.")
+    assert "Dataset" in bsc.classify_tags("We introduce a new dataset for driving", "")
+    # CV "feature alignment" must NOT tag Safety (AI-safety sense only)
+    assert "Safety" not in bsc.classify_tags("Cross-Modal Feature Alignment", "")
+    assert "Safety" in bsc.classify_tags("Jailbreak Attacks on LLMs", "")
+
+
+def test_classify_tags_multiple_and_empty():
+    tags = bsc.classify_tags("Efficient Diffusion Models for Text-to-Image Generation", "")
+    assert "Diffusion" in tags and "ImageGen" in tags
+    assert bsc.classify_tags("A purely abstract note", "with no topical keywords") == []
