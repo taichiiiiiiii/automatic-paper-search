@@ -28,6 +28,8 @@
   --color-accent-strong: oklch(45% 0.20 30);   /* deeper coral — AA-safe on dark/ink fills (e.g. filled CTA hover) */
   --color-oral: oklch(72% 0.16 75);             /* scholarly gold */
   --color-oral-bg: oklch(95% 0.07 80);
+  --color-oral-ink: oklch(45% 0.13 75);         /* AA-safe gold ink on --color-oral-bg (Oral badges/chips) */
+  --color-oral-border: oklch(72% 0.13 75);      /* gold hairline for Oral badges/chips */
   --color-tag-bg: oklch(94% 0.018 240);
   --color-tag-ink: oklch(35% 0.08 250);
 
@@ -812,9 +814,11 @@ input[type="range"]:focus-visible {
   border: 1px solid currentColor;
 }
 .paper__type--oral {
-  color: oklch(45% 0.13 75);
+  /* tokenised (#landing-polish) — bit-identical to the prior literals,
+     now shared with the landing page's .conf__oral chip */
+  color: var(--color-oral-ink);
   background: var(--color-oral-bg);
-  border-color: oklch(72% 0.13 75);
+  border-color: var(--color-oral-border);
 }
 .paper__type--poster {
   color: var(--color-ink-subtle);
@@ -936,10 +940,44 @@ input[type="range"]:focus-visible {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 1rem 2rem;
+  align-items: baseline;
 }
 .footer a { color: var(--color-ink-muted); }
 .footer a:hover { color: var(--color-ink); }
+/* Colophon: brand block stacks the wordmark over the licence line; the
+   reference docs sit as a quiet inline nav on the trailing edge. */
+.footer__brand { display: flex; flex-direction: column; gap: 0.35rem; }
+.footer__meta { color: var(--color-ink-subtle); }
+.footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.3rem;
+}
+/* Hairline separators between the doc links — a print colophon's
+   centre-dot list, drawn with a pseudo-element so the markup stays a
+   clean <nav> of <a>s. */
+.footer__links a + a {
+  position: relative;
+  padding-left: 1.3rem;
+}
+.footer__links a + a::before {
+  content: "·";
+  position: absolute;
+  left: 0.55rem;
+  color: var(--color-ink-subtle);
+  opacity: 0.6;
+}
+@media (max-width: 480px) {
+  /* On the narrowest screens let the brand block and the links stack
+     full-width rather than splitting the row awkwardly. The centre-dot
+     separators are dropped here: once the links wrap across lines a
+     pseudo-dot orphans at a line edge, so narrow widths rely on the gap
+     alone (dots stay on the wide, single-row layout). */
+  .footer { flex-direction: column; }
+  .footer__links a + a { padding-left: 0; }
+  .footer__links a + a::before { content: none; }
+}
 
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 720px) {

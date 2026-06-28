@@ -65,7 +65,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=optional" rel="stylesheet" />
 
-  <link rel="stylesheet" href="assets/style.css?v=77" />
+  <link rel="stylesheet" href="assets/style.css?v=78" />
   <style>
     /* ============================================================
        Landing-page-only styles. Shared design tokens + the .hero
@@ -164,21 +164,46 @@
       border-radius: 3px;
     }
 
-    /* Reference docs demoted from primary pills to quiet mono links —
-       they are builder-facing material, not the product entry point. */
-    .hero__reflinks {
+    /* Issue dateline — the hero's "what's inside" line, set like a
+       magazine masthead's dateline. Mono labels carry serif numerals
+       (the page's data voice, shared with the catalog count numerals)
+       so the hero is substantiated by real scale without competing with
+       the CTA above it. min-height holds exactly one line so the JS swap
+       from the fallback string to the live counts never shifts the
+       departments strip below (CLS budget < 0.1). */
+    .hero__dateline {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.3rem 1.1rem;
-      margin: 1.15rem 0 0;
+      align-items: baseline;
+      gap: 0.3rem 0.85rem;
+      margin: 1.3rem 0 0;
+      /* Reserve the POPULATED single-line height (the serif numerals make
+         it ~1.85em, taller than the mono fallback's ~1.5em) so the JS swap
+         from fallback → live counts grows the box by 0px. Both states are
+         one line down to 320px (measured), so this fully zeroes the swap's
+         CLS contribution. */
+      min-height: 2em;
       font-family: var(--font-mono);
       font-size: var(--text-tag);
       letter-spacing: 0.03em;
       color: var(--color-ink-subtle);
     }
-    .hero__reflinks a { color: var(--color-ink-subtle); }
-    .hero__reflinks a:hover { color: var(--color-ink-muted); }
-    .hero__reflinks .hero__reflinks-sep { opacity: 0.5; }
+    .hero__stat { color: var(--color-ink-muted); }
+    .hero__stat b {
+      font-family: var(--font-serif);
+      font-weight: 500;
+      font-size: 1.18em;
+      color: var(--color-ink);
+      font-variation-settings: "opsz" 18;
+      letter-spacing: 0;
+      margin-right: 0.12em;
+    }
+    .hero__stat--muted { color: var(--color-ink-subtle); }
+    .hero__dateline-sep { opacity: 0.45; }
+    .hero__dateline-fallback { color: var(--color-ink-subtle); }
+    /* Keep the date token "最終更新 YYYY-MM-DD" from breaking mid-string
+       when the dateline wraps on a narrow viewport. */
+    .hero__nowrap { white-space: nowrap; }
 
     /* The hero visual. aspect-ratio reserves the box before fonts/paint
        so the tree never causes layout shift (CLS budget < 0.1). One
@@ -357,11 +382,33 @@
       text-decoration: none;
     }
     .conf__meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.45rem 0.7rem;
       font-family: var(--font-mono);
       font-size: var(--text-tag);
       color: var(--color-ink-subtle);
       letter-spacing: 0.05em;
     }
+    /* Oral count as a scholarly-gold chip — the same gold vocabulary the
+       catalog pages use for Oral papers, so the accent carries one
+       consistent meaning across the site. AA-safe gold ink on the gold
+       wash via the shared --color-oral-* tokens. */
+    .conf__oral {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.16rem 0.5rem;
+      background: var(--color-oral-bg);
+      color: var(--color-oral-ink);
+      border: 1px solid var(--color-oral-border);
+      border-radius: 3px;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+    .conf__meta-sep { opacity: 0.45; }
+    .conf__fresh { white-space: nowrap; }
     .conf__tags {
       display: flex;
       flex-wrap: wrap;
@@ -430,14 +477,36 @@
       .paths { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     }
     .path {
+      position: relative; /* anchors the ::after top-rule */
       display: flex;
       align-items: flex-start;
-      gap: 0.85rem;
+      gap: 0.95rem;
       padding: clamp(1.4rem, 1rem + 1.8vw, 2.3rem) var(--space-edge);
       text-decoration: none;
       color: var(--color-ink);
       border-bottom: 1px solid var(--color-rule);
       transition: background-color var(--duration-fast) var(--ease);
+    }
+    /* Coral top-rule that wipes in from the left on hover/focus — a
+       "department tab activates" cue. transform-only (scaleX) so it stays
+       off the layout and on the compositor; sits on the column's own top
+       edge, inside the band, never clipping at the page's outer rule. */
+    .path::after {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 2px;
+      background: var(--color-accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform var(--duration-normal) var(--ease);
+    }
+    .path:hover::after,
+    .path:focus-visible::after { transform: scaleX(1); }
+    @media (prefers-reduced-motion: reduce) {
+      /* Keep the cue, drop the wipe: appears instantly for motion-sensitive
+         users instead of sliding. */
+      .path::after { transition: none; }
     }
     /* On the 3-up grid the inter-column hairlines replace the stacked
        bottom borders, so columns read as adjacent journal departments. */
@@ -459,16 +528,22 @@
     .path__index {
       flex: none;
       font-family: var(--font-mono);
-      font-size: var(--text-meta);
+      font-size: 1.05rem;
       font-weight: 500;
-      letter-spacing: 0.04em;
-      /* Deeper coral: the numerals are 0.82rem/500 (not "large text"), so
-         the AA 4.5:1 floor applies. --color-accent (~2.85:1 on surface-2)
-         fails; --color-accent-strong clears it (~5.8:1) — the same token
-         the CTA hover already uses for AA-safe fills. */
+      letter-spacing: 0.02em;
+      line-height: 1;
+      /* Deeper coral: even at 1.05rem/500 this is "normal" text (< 18.66px
+         bold / < 24px regular), so the AA 4.5:1 floor still applies.
+         --color-accent (~2.85:1 on surface-2) fails; --color-accent-strong
+         clears it (~5.8:1) — the same token the CTA hover uses for AA-safe
+         fills. */
       color: var(--color-accent-strong);
-      padding-top: 0.2rem;
+      padding-top: 0.28rem;
+      transition: color var(--duration-fast) var(--ease);
     }
+    /* Tabular figures so 01 / 02 / 03 align to a common width across the
+       three columns. */
+    .path__index { font-variant-numeric: tabular-nums; }
     .path__body { display: flex; flex-direction: column; gap: 0.3rem; min-width: 0; }
     .path__title {
       font-family: var(--font-serif);
@@ -507,6 +582,9 @@
       .hero__visual { max-width: 340px; }
       .conf__name { font-size: 1.35rem; }
       .conf__count { font-size: 2rem; }
+      /* Drop the meta centre-dot once the chip + freshness wrap to two
+         lines (it would orphan at a line edge); the gap keeps them apart. */
+      .conf__meta-sep { display: none; }
     }
   </style>
 </head>
@@ -546,10 +624,16 @@
             例: Vision Transformer の家系図 <span aria-hidden="true">→</span>
           </a>
         </div>
-        <p class="hero__reflinks">
-          <a href="https://github.com/taichiiiiiiii/automatic-paper-search/tree/develop/docs/design"><span aria-hidden="true">📐</span> 基本設計書</a>
-          <span class="hero__reflinks-sep" aria-hidden="true">·</span>
-          <a href="https://github.com/taichiiiiiiii/automatic-paper-search/tree/develop/docs/research"><span aria-hidden="true">📊</span> 市場調査レポート</a>
+        <!-- Issue dateline: a magazine masthead's "what's inside" line.
+             Sits BELOW the CTA (never above — the primary action must paint
+             instantly, see the no-animate note on .hero__cta). Populated by
+             conferences-index.js from conferences.json so the scale shown is
+             always honest and self-updating; the fallback below is the
+             no-JS / pre-fetch state and is true regardless of counts. The
+             serif numerals echo the catalog's big count numerals, tying the
+             hero to the data voice used further down the page. -->
+        <p class="hero__dateline" id="hero-dateline">
+          <span class="hero__dateline-fallback">学会カタログ・テーマ家系図を収録</span>
         </p>
       </div>
 
@@ -650,11 +734,22 @@
     </p>
   </main>
 
+  <!-- Colophon: brand line on the left, the builder-facing reference docs
+       (design book / market research / source) collected on the right where
+       "about / built-by" material belongs — keeping them out of the hero so
+       the masthead stays focused on the product action. -->
   <footer class="footer">
-    <span>Built by <a href="https://github.com/taichiiiiiiii/automatic-paper-search">PaperPilot</a></span>
-    <span>Auto-updated weekly · MIT License</span>
+    <div class="footer__brand">
+      <span>Built by <a href="https://github.com/taichiiiiiiii/automatic-paper-search">PaperPilot</a></span>
+      <span class="footer__meta">Auto-updated weekly · MIT License</span>
+    </div>
+    <nav class="footer__links" aria-label="関連ドキュメント">
+      <a href="https://github.com/taichiiiiiiii/automatic-paper-search/tree/develop/docs/design">基本設計書</a>
+      <a href="https://github.com/taichiiiiiiii/automatic-paper-search/tree/develop/docs/research">市場調査レポート</a>
+      <a href="https://github.com/taichiiiiiiii/automatic-paper-search">GitHub</a>
+    </nav>
   </footer>
 
-  <script src="assets/conferences-index.js?v=75"></script>
+  <script src="assets/conferences-index.js?v=76"></script>
 </body>
 </html>
