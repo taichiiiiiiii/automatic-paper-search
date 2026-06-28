@@ -133,13 +133,20 @@ def write_outputs(
         writer.writeheader()
         writer.writerows(rows)
 
+    # The oral file must reflect THIS collection. When the new run has no
+    # orals (e.g. a CVF / ACL re-collection of a venue first gathered from
+    # arXiv), clear any stale file so build_summary_csv doesn't keep marking
+    # the old titles Oral.
+    oral_md = out_dir / "oral_summaries_ja.md"
     if oral_titles:
         md = [
             f"# {conference} Oral / Highlight\n",
-            "*arXiv comment に Oral / Highlight と明記された採択論文*\n",
+            "*Oral / Highlight と判定された採択論文*\n",
         ]
         md += [f"## {i}. {t}" for i, t in enumerate(oral_titles, 1)]
-        (out_dir / "oral_summaries_ja.md").write_text("\n".join(md) + "\n", encoding="utf-8")
+        oral_md.write_text("\n".join(md) + "\n", encoding="utf-8")
+    elif oral_md.exists():
+        oral_md.unlink()
 
     return csv_path
 
