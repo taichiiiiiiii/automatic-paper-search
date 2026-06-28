@@ -94,3 +94,23 @@ def test_write_outputs_no_oral_md_when_empty(tmp_path: Path):
     )
     cc.write_outputs("cvpr-2026", rows, orals, output_root=tmp_path, date="2026-06-28")
     assert not (tmp_path / "cvpr-2026" / "oral_summaries_ja.md").exists()
+
+
+def test_write_outputs_clears_stale_oral_md_on_empty_recollection(tmp_path: Path):
+    """A re-collection with no orals (CVF/ACL) must remove a prior oral file
+    so build_summary_csv stops marking the old titles Oral."""
+    conf_dir = tmp_path / "cvpr-2025"
+    conf_dir.mkdir(parents=True)
+    stale = conf_dir / "oral_summaries_ja.md"
+    stale.write_text("# old\n## 1. Some Old Oral Title\n", encoding="utf-8")
+
+    cc.write_outputs(
+        "cvpr-2025",
+        [{"title": "P", "authors": "", "venue": "CVPR", "venue_tier": 2,
+          "citation_count": 0, "github_stars": 0, "arxiv_id": "", "abstract": "",
+          "url": "", "pdf_url": "", "comment": ""}],
+        [],  # no orals this run
+        output_root=tmp_path,
+        date="2026-06-28",
+    )
+    assert not stale.exists()
