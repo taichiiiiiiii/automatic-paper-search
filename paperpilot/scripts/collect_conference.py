@@ -70,6 +70,21 @@ def fetch_results(query: str, max_results: int, *, page_size: int = 100) -> list
     return list(client.results(search))
 
 
+def oral_titles_from_arxiv(query: str, venue: str, *, max_results: int = 1600) -> list[str]:
+    """Oral / Highlight titles for a venue, harvested from arXiv comments.
+
+    CVF Open Access and the ACL Anthology don't expose the oral/highlight
+    designation, so collectors built on them mark every paper Poster. The
+    subset of accepted papers whose authors self-tagged "Oral"/"Highlight" in
+    their arXiv comment is the best free signal, and overlaying those titles
+    restores the Oral filter on those catalogs. Reuses the same fetch +
+    VenueSignal classifier as the full arXiv collector. Network — mocked in tests.
+    """
+    results = fetch_results(query, max_results)
+    _rows, oral_titles = build_rows(results, venue)
+    return oral_titles
+
+
 def build_rows(results: Iterable[Any], target_venue: str) -> tuple[list[dict[str, Any]], list[str]]:
     """Filter arXiv results to genuine acceptances of ``target_venue``.
 

@@ -122,8 +122,8 @@ automatic-paper-search/
     ├── scripts/                         # ビューア生成スクリプト（補助ツール群）
     │   ├── collect_conference.py        # arXiv co:"<conf>" → VenueSignal 採択抽出 → output/<conf>/papers_*.csv (arXiv自己申告のみ=部分収録)
     │   ├── collect_openreview.py        # OpenReview api2 venueid → 全採択論文 + Oral/Spotlight/Poster 区分 → output/<conf>/papers_*.csv (ICLR/NeurIPS/ICML の権威的全件収録、write_outputs を collect_conference と共有)
-    │   ├── collect_cvf.py               # CVF Open Access (openaccess.thecvf.com) listing → 各論文 detail を並列 fetch (citation_* meta + abstract) → 全採択収録 (CVPR/ICCV、ECCV は ECVA で別) write_outputs 共有
-    │   ├── collect_acl_anthology.py     # ACL Anthology XML dump (github acl-org/acl-anthology) → 本会議 long/short/main 全採択 + abstract → 収録 (ACL/EMNLP/NAACL) write_outputs 共有
+    │   ├── collect_cvf.py               # CVF Open Access (openaccess.thecvf.com) listing → 各論文 detail を並列 fetch (citation_* meta + abstract) → 全採択収録 (CVPR/ICCV、ECCV は ECVA で別) write_outputs 共有。CVF は oral 区分を持たないので `--oral-arxiv-query 'co:"CVPR 2025"'` で arXiv 申告 oral を overlay (oral_titles_from_arxiv)
+    │   ├── collect_acl_anthology.py     # ACL Anthology XML dump (github acl-org/acl-anthology) → 本会議 long/short/main 全採択 + abstract → 収録 (ACL/EMNLP/NAACL) write_outputs 共有。同様に `--oral-arxiv-query` で oral overlay 可
     │   ├── scaffold_conference_page.py  # cvpr-2026 テンプレ → docs/<conf>/index.html (+ 空 lineage.json)
     │   ├── build_summary_csv.py         # full CSV → summary.csv (8 列 + 自動タグ)
     │   ├── build_pages.py               # summary.csv → docs/<conf>/papers.json
