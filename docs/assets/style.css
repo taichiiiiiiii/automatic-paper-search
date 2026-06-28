@@ -983,6 +983,23 @@ input[type="range"]:focus-visible {
 @media (max-width: 720px) {
   .filters { grid-template-columns: 1fr; }
   .chips { justify-content: flex-start; }
+  /* Topic tag chips: a single swipeable row instead of a tall wrapped block.
+     With the fine-grained taxonomy the top-18 chips wrapped to ~9 rows
+     (~500 px) on a phone, pushing the paper list a full screen down. Keeping
+     them on one horizontally-scrollable line restores quick access to the
+     list; a partial chip at the right edge hints there's more to swipe. */
+  .chips--start {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    /* room for the momentum-scroll + a soft right-edge fade as a scroll cue */
+    padding-right: 1.25rem;
+    -webkit-mask-image: linear-gradient(to right, #000 88%, transparent);
+    mask-image: linear-gradient(to right, #000 88%, transparent);
+  }
+  .chips--start::-webkit-scrollbar { display: none; }
+  .chips--start .chip { flex: 0 0 auto; }  /* don't shrink chips into a row */
   .paper { grid-template-columns: 1fr; gap: 0.75rem; }
   .paper__type { margin-top: 0; }
   .stat-row { gap: 1.5rem; }
