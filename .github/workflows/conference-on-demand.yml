@@ -1,0 +1,150 @@
+name: conference-on-demand
+run-name: "conference-on-demand: ${{ inputs.conference || 'manual' }}"
+# Operator-triggered creation of a NEW conference catalog (e.g. neurips-2026),
+# end-to-end:
+#   collect_conference.py  -> paperpilot/output/<slug>/papers_*.csv (+ oral md)
+#   build_summary_csv.py   -> summary.csv (auto-tags + Oral matching)
+#   build_pages.py         -> docs/<slug>/papers.json (+ conferences.json)
+#   scaffold_conference_page.py -> docs/<slug>/index.html (+ empty lineage.json)
+#   commit-and-push.sh     -> develop
+#   pages.yml dispatch     -> publish
+#
+# Unlike theme-on-demand.yml this is NOT wired to the in-browser form — adding
+# a conference is a curated operator action, so it's a plain workflow_dispatch
+# with no CF Worker / rate-limit layer. It also needs no LLM / unarXive: the
+# catalog (list) is built purely from arXiv metadata + the VenueSignal classifier.
+
+on:
+  workflow_dispatch:
+    inputs:
+      conference:
+        description: 'Slug, lowercase + hyphens (e.g. neurips-2026)'
+        required: true
+        type: string
+      venue:
+        description: 'VenueSignal token to keep (e.g. NEURIPS / CVPR / ICLR)'
+        required: true
+        type: string
+      query:
+        description: 'arXiv query (e.g. co:"NeurIPS 2026")'
+        required: true
+        type: string
+      display:
+        description: 'Display name (e.g. "NeurIPS 2026")'
+        required: true
+        type: string
+      lede:
+        description: 'Hero lede sentence(s); may contain inline HTML'
+        required: true
+        type: string
+      max:
+        description: 'Max arXiv results to scan'
+        required: false
+        default: '800'
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      # actions: write lets the final step dispatch pages.yml — see
+      # theme-on-demand.yml for why GITHUB_TOKEN commits can't auto-fire it.
+      actions: write
+    timeout-minutes: 20
+    steps:
+      - name: Validate inputs early
+        # Defence-in-depth at the YAML layer: the slug / venue / max are
+        # constrained before any Python runs. The free-text query / display /
+        # lede reach Python ONLY via env vars (never spliced into a shell
+        # command line), so shell-injection probes can't execute here.
+        env:
+          CONF: ${{ inputs.conference }}
+          VENUE: ${{ inputs.venue }}
+          MAXN: ${{ inputs.max }}
+        run: |
+          set -euo pipefail
+          if ! printf '%s' "$CONF" | grep -Eq '^[a-z0-9]([a-z0-9-]{0,38}[a-z0-9])$'; then
+            echo "::error::conference slug must be 2-40 chars, lowercase letters/digits/hyphens"; exit 1
+          fi
+          if [ "$CONF" = "daily" ]; then
+            echo "::error::'daily' is reserved (daily-watch output, not a conference)"; exit 1
+          fi
+          if ! printf '%s' "$VENUE" | grep -Eq '^[A-Za-z]{2,20}$'; then
+            echo "::error::venue must be alphabetic (e.g. NEURIPS)"; exit 1
+          fi
+          if ! printf '%s' "$MAXN" | grep -Eq '^[0-9]{1,5}$'; then
+            echo "::error::max must be a number"; exit 1
+          fi
+
+      - uses: actions/checkout@v4
+        with:
+          ref: develop
+          token: ${{ secrets.GH_PAT || github.token }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.7.x'
+
+      - name: uv sync
+        run: uv sync
+
+      - name: Collect conference papers from arXiv
+        env:
+          CONF: ${{ inputs.conference }}
+          VENUE: ${{ inputs.venue }}
+          QUERY: ${{ inputs.query }}
+          MAXN: ${{ inputs.max }}
+        run: |
+          set -euo pipefail
+          uv run python -m paperpilot.scripts.collect_conference \
+            --conference "$CONF" --venue "$VENUE" --query "$QUERY" --max "$MAXN"
+
+      - name: Build summary + pages
+        env:
+          CONF: ${{ inputs.conference }}
+        run: |
+          set -euo pipefail
+          uv run python paperpilot/scripts/build_summary_csv.py --conference "$CONF"
+          # No --conference: rebuild every conference so conferences.json
+          # aggregates all of them (a per-conference run would overwrite the
+          # index with just this one).
+          uv run python paperpilot/scripts/build_pages.py
+
+      - name: Scaffold catalog page
+        env:
+          CONF: ${{ inputs.conference }}
+          DISPLAY: ${{ inputs.display }}
+          LEDE: ${{ inputs.lede }}
+        run: |
+          set -euo pipefail
+          uv run python -m paperpilot.scripts.scaffold_conference_page \
+            --conference "$CONF" --display "$DISPLAY" --lede "$LEDE"
+
+      - name: Commit + push
+        env:
+          CONF: ${{ inputs.conference }}
+          DISPLAY: ${{ inputs.display }}
+        run: |
+          set -euo pipefail
+          git config user.email "actions@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          # Commit message uses literal env values (never interpolated into
+          # the command line) so an injection-style display string lands as
+          # plain text. Retry/rebase loop lives in commit-and-push.sh.
+          msg=$(printf 'data(conf): add %s catalog (on-demand)' "$DISPLAY")
+          bash .github/scripts/commit-and-push.sh "$msg" \
+            "docs/$CONF" docs/conferences.json "paperpilot/output/$CONF"
+
+      - name: Trigger Pages deploy
+        # GITHUB_TOKEN commits don't fire pages.yml's paths: trigger
+        # (anti-recursion). Dispatch it explicitly — see theme-on-demand.yml.
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run pages.yml --ref develop --repo "${{ github.repository }}"
