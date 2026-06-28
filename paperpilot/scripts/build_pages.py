@@ -68,6 +68,24 @@ def load_summary(summary_csv: Path) -> list[dict[str, Any]]:
         ]
 
 
+_DATA_DATE_RE = re.compile(r"^papers_(\d{4}-\d{2}-\d{2})\.csv$")
+
+
+def _latest_data_date(conf_dir: Path) -> str | None:
+    """The newest papers_YYYY-MM-DD.csv date — the real data collection date.
+
+    This is the honest "last updated" value for the catalog (the viewer used
+    to show the page-load date, which drifts every visit). Returns None if no
+    dated papers file exists (legacy conferences built before this convention).
+    """
+    dates = sorted(
+        m.group(1)
+        for f in conf_dir.glob("papers_*.csv")
+        if (m := _DATA_DATE_RE.match(f.name))
+    )
+    return dates[-1] if dates else None
+
+
 def build_conference(name: str) -> dict[str, Any] | None:
     summary_csv = PROJECT / "output" / name / "summary.csv"
     if not summary_csv.exists():
@@ -93,6 +111,9 @@ def build_conference(name: str) -> dict[str, Any] | None:
         "papers": len(papers),
         "types": type_counts,
         "top_tags": sorted(tag_counts.items(), key=lambda x: -x[1])[:6],
+        # Real collection date (newest papers_*.csv) so the viewer's
+        # "last updated" stat reflects the data, not the page-load time.
+        "generated": _latest_data_date(summary_csv.parent),
     }
 
 

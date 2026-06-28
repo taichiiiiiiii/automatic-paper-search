@@ -434,6 +434,24 @@ function bindEvents() {
   });
 }
 
+// Set the "last updated" stat to the conference's real data date, read from
+// the shared conferences.json (build_pages stamps `generated` = the newest
+// papers_*.csv date). Slug is derived from the URL path. Best-effort: on any
+// failure the "—" placeholder stays, which is more honest than a wrong date.
+async function setLastUpdated() {
+  if (!els.statUpdated) return;
+  try {
+    const slug = window.location.pathname.split("/").filter(Boolean).pop() || "";
+    const res = await fetch("../conferences.json");
+    if (!res.ok) return;
+    const confs = await res.json();
+    const entry = Array.isArray(confs) ? confs.find((c) => c.name === slug) : null;
+    if (entry && entry.generated) els.statUpdated.textContent = entry.generated;
+  } catch (_) {
+    /* leave the placeholder */
+  }
+}
+
 async function init() {
   try {
     const [papersRes, lineage] = await Promise.all([
@@ -462,7 +480,10 @@ async function init() {
   if (els.statTotal) els.statTotal.textContent = state.papers.length.toLocaleString();
   if (els.statOral) els.statOral.textContent = oralCount.toLocaleString();
   if (els.statTags) els.statTags.textContent = allTags.size.toLocaleString();
-  if (els.statUpdated) els.statUpdated.textContent = new Date().toISOString().slice(0, 10);
+  // "Last updated" = the real data collection date (from conferences.json),
+  // not the page-load date. Best-effort: leave the "—" placeholder if the
+  // index can't be read, since a wrong date is worse than none.
+  setLastUpdated();
 
   // Hydrate filter state from the URL, then reflect it into the static
   // controls (the chips read state during their build below).
