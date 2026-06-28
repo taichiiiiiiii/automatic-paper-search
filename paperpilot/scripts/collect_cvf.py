@@ -32,7 +32,7 @@ from typing import Any
 from ..signals.venue_signal import TIER_1, TIER_2, TIER_3
 from ..utils.http import request_with_retry
 from ..utils.logger import get_logger
-from .collect_conference import write_outputs
+from .collect_conference import oral_titles_from_arxiv, write_outputs
 
 logger = get_logger(__name__)
 
@@ -144,6 +144,12 @@ def main() -> int:
     ap.add_argument("--venue", required=True, help="VenueSignal token, e.g. CVPR / ICCV")
     ap.add_argument("--cvf-id", required=True, help='CVF listing id, e.g. "CVPR2025"')
     ap.add_argument("--max-workers", type=int, default=8, help="concurrent detail fetches")
+    ap.add_argument(
+        "--oral-arxiv-query",
+        default=None,
+        help='restore Oral/Highlight marks from arXiv comments (CVF has none), e.g. '
+        "co:\"CVPR 2025\"",
+    )
     args = ap.parse_args()
 
     rows = collect(args.cvf_id, args.venue, max_workers=args.max_workers)
@@ -152,8 +158,9 @@ def main() -> int:
         print("⚠️  0 papers — check --cvf-id (e.g. 'CVPR2025'). Nothing written.")
         return 1
 
-    csv_path = write_outputs(args.conference, rows, [])
-    print(f"✅ {len(rows)} accepted {args.venue.upper()} papers -> {csv_path}")
+    orals = oral_titles_from_arxiv(args.oral_arxiv_query, args.venue) if args.oral_arxiv_query else []
+    csv_path = write_outputs(args.conference, rows, orals)
+    print(f"✅ {len(rows)} accepted {args.venue.upper()} papers ({len(orals)} oral via arXiv) -> {csv_path}")
     return 0
 
 

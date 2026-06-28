@@ -47,6 +47,22 @@ def test_build_rows_keeps_genuine_acceptance_only():
     assert orals == ["Highlight paper"]
 
 
+def test_oral_titles_from_arxiv_overlay():
+    """The overlay helper returns only the venue's arXiv oral/highlight titles."""
+    from unittest.mock import patch
+
+    results = [
+        _result("Oral one", "Accepted to CVPR 2025 (Oral)", "2501.00001"),
+        _result("Highlight two", "Accepted to CVPR 2025 Highlight", "2501.00002"),
+        _result("Plain poster", "Accepted to CVPR 2025", "2501.00003"),
+        _result("Other venue oral", "Accepted to ICLR 2025 (Oral)", "2501.00004"),
+    ]
+    with patch.object(cc, "fetch_results", return_value=results) as fr:
+        titles = cc.oral_titles_from_arxiv('co:"CVPR 2025"', "CVPR")
+    fr.assert_called_once()
+    assert titles == ["Oral one", "Highlight two"]  # CVPR orals only; poster + other venue excluded
+
+
 def test_build_rows_is_case_insensitive_on_venue_arg():
     results = [_result("P", "Accepted to CVPR 2026", "2604.00010")]
     rows, _ = cc.build_rows(results, "cvpr")  # lowercase arg

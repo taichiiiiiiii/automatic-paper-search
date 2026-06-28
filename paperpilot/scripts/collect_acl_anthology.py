@@ -34,7 +34,7 @@ from typing import Any
 
 from ..signals.venue_signal import TIER_1, TIER_2, TIER_3
 from ..utils.http import request_with_retry
-from .collect_conference import write_outputs
+from .collect_conference import oral_titles_from_arxiv, write_outputs
 
 _XML_BASE = "https://raw.githubusercontent.com/acl-org/acl-anthology/master/data/xml"
 _ANTHOLOGY_URL = "https://aclanthology.org/"
@@ -127,6 +127,12 @@ def main() -> int:
     ap.add_argument("--conference", required=True, help="output slug, e.g. acl-2025")
     ap.add_argument("--venue", required=True, help="VenueSignal token, e.g. ACL / EMNLP / NAACL")
     ap.add_argument("--xml-id", required=True, help='Anthology collection id, e.g. "2025.acl"')
+    ap.add_argument(
+        "--oral-arxiv-query",
+        default=None,
+        help='restore Oral marks from arXiv comments (the Anthology marks none), e.g. '
+        "co:\"ACL 2025\"",
+    )
     args = ap.parse_args()
 
     xml_bytes = fetch_xml(args.xml_id)
@@ -139,9 +145,10 @@ def main() -> int:
         print("⚠️  0 papers — check --xml-id (e.g. '2025.acl'). Nothing written.")
         return 1
 
-    # No oral markers from the Anthology -> empty highlighted list.
-    csv_path = write_outputs(args.conference, rows, [])
-    print(f"✅ {len(rows)} accepted {args.venue.upper()} papers -> {csv_path}")
+    # The Anthology marks no oral/spotlight; optionally overlay arXiv-tagged orals.
+    orals = oral_titles_from_arxiv(args.oral_arxiv_query, args.venue) if args.oral_arxiv_query else []
+    csv_path = write_outputs(args.conference, rows, orals)
+    print(f"✅ {len(rows)} accepted {args.venue.upper()} papers ({len(orals)} oral via arXiv) -> {csv_path}")
     return 0
 
 
