@@ -120,6 +120,8 @@ automatic-paper-search/
     │   ├── groq_provider.py             # Groq Llama 3.3 (lineage 分類の無料第一候補)
     │   └── claude_provider.py           # Anthropic Claude（設計書の第一推奨）
     ├── scripts/                         # ビューア生成スクリプト（補助ツール群）
+    │   ├── collect_conference.py        # arXiv co:"<conf>" → VenueSignal 採択抽出 → output/<conf>/papers_*.csv (新学会カタログの収集)
+    │   ├── scaffold_conference_page.py  # cvpr-2026 テンプレ → docs/<conf>/index.html (+ 空 lineage.json)
     │   ├── build_summary_csv.py         # full CSV → summary.csv (8 列 + 自動タグ)
     │   ├── build_pages.py               # summary.csv → docs/<conf>/papers.json
     │   ├── build_lineage.py             # papers.json + S2 + LLM → lineage.json
@@ -549,6 +551,7 @@ generate_themes_manifest.py → docs/themes/themes-manifest.json
 - `collect-daily-watch.yml` — 毎日 07:00 JST に follow 著者の新作を確認 → 通知のみ
 - `regen-themes.yml` — 手動 `workflow_dispatch` 専用 (PR #261 で週次 cron 廃止)。LLM 契約変更や lineage 形式バンプ後にバルク再生成する break-glass
 - `theme-on-demand.yml` — フォーム送信または手動 dispatch で 1 テーマだけ生成
+- `conference-on-demand.yml` — 手動 `workflow_dispatch` で**新しい学会カタログ**を end-to-end 生成 (collect_conference → build_summary_csv → build_pages → scaffold_conference_page → commit → Pages)。入力: `conference`(slug) / `venue`(VenueSignal token) / `query`(arXiv `co:"…"`) / `display` / `lede` / `max`。LLM/unarXive 不要 (カタログは arXiv メタ + VenueSignal のみで構築)
 - `data-audit.yml` — `docs/themes/*/lineage.json` 等が変わった PR/push で seed/lineage 監査
 - `lighthouse.yml` — frontend 変更 PR + 月曜定例で Core Web Vitals 計測
 - `pages.yml` — `docs/**` 変更で GitHub Pages へデプロイ
