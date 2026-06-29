@@ -28,14 +28,17 @@ Python：3.10 以上（開発・CIは 3.12）
 
 ### 開発ツール
 
+**実環境では `uv run` 経由で呼ぶ**（bare の `ruff`/`mypy`/`pytest` は解決しないことがある）:
+
 ```bash
-pip install -e '.[dev]'       # runtime + pytest + ruff + mypy
-ruff check paperpilot/         # lint
-ruff format paperpilot/        # format
-mypy paperpilot/                # type check
-pytest paperpilot/tests/ --cov=paperpilot   # test
-pre-commit install             # git hook
+uv run ruff check paperpilot/                 # lint（push 前必須。pytest は I001 import-sort を拾わない）
+uv run mypy paperpilot/                        # type check
+uv run pytest paperpilot/tests/                # 全テスト（~22s, 1000+ 件）
+uv run pytest paperpilot/tests/test_venue_signal.py::test_x -q   # 単一テスト
+uv run pytest paperpilot/tests/ --cov=paperpilot --cov-config=/dev/null   # カバレッジ
 ```
+
+既知の pre-existing failure: `tests/viewer/test_theme_viewer_smoke.py::test_theme_typography_tokens`（node ベースの環境依存、本作業と無関係）。`pip install -e '.[dev]'` 互換も維持。
 
 ### 依存ライブラリ
 
@@ -497,6 +500,62 @@ generate_themes_manifest.py → docs/themes/themes-manifest.json
 4. `__init__.py` の `__all__` に追加
 5. `pipeline/runner.py` の `_build_sources()` / `_build_signals()` / `_build_exporters()` / `_build_llm_provider()` に登録
 6. `config.yaml` / `.env.example` に設定を追加
+
+---
+
+## フロントエンド（`docs/`）アーキテクチャと検証
+
+設計書/パイプライン記述は Python 側に厚いが、実際のユーザー体験（学会カタログ・家系図・ランディング）は `docs/` の静的サイトが担う。ここが薄かったので明記する。
+
+### 構成
+- `docs/` = GitHub Pages 配信の静的サイト。`pages.yml` が `docs/**` を含む push で自動デプロイ（`develop` ブランチ）。本番 = `https://taichiiiiiiii.github.io/automatic-paper-search/`。
+- **共有アセット `docs/assets/`**（全ページ同じファイルを共有）:
+  - `style.css` — デザイントークン（`:root` の CSS custom properties）＋全コンポーネント。editorial 方向（Newsreader serif + Inter + JetBrains Mono、warm-cream OKLCH パレット）。**生の色リテラル禁止＝必ず `--color-*` / `--text-*` / `--space-*` / `--duration-*` / `--ease` / `--rel-*` トークン経由**。
+  - `app.js` — 学会カタログのビューア（検索・トピックタグ/採択形式チップ・ソート・progressive reveal 30件/回・URL 状態同期・back-to-top）。`<conf>/papers.json` を fetch。
+  - `conferences-index.js` — ランディングの学会一覧＋hero dateline（`conferences.json` から集約表示、論文数降順）。
+  - `lineage.js` — 家系図ビューア（Topics / Tree / Timeline モード、SVG グラフ）。`<conf>/lineage.json` を fetch。
+  - `theme.js` — テーマ生成フォーム＋テーマ家系図（`/themes/`）。
+- **ページ**: `docs/index.html`（ランディング、ページ固有 CSS はインライン `<style>`）/ `docs/<conf>/index.html`（学会カタログ）/ `docs/<conf>/lineage.html`（家系図）/ `docs/themes/index.html` / `docs/how-it-works/`。
+- **データの流れ**: `summary.csv` → `build_pages.py` → `docs/<conf>/papers.json`（**要旨は320字プレビュー**でページ <1MB gzip）＋ `docs/conferences.json`（集約 index）。
+
+### 重要な規約
+- **アセットの cache-bust バージョンは全ページで統一**: `style.css?v=N` / `app.js?v=N` を変えたら参照する全 HTML を同じ N に揃える（過去に themes だけ別バージョンでズレた既往）。一括: `grep -rlE 'style\.css\?v=[0-9]+' docs/ | while read f; do sed -i ...; done`。
+- **トピックタグ分類** = `build_summary_csv.py` の `TOPIC_RULES`（~60 カテゴリの regex、title+abstract マッチ、複数タグ可）。viewer は各会議の**上位18タグ**だけチップ表示するので大規模タクソノミでも自動適応（CV 会議は CV タスク、NLP 会議は NLP タスクが出る）。greedy な語（"evaluation"/"benchmark" 動詞/"alignment"）は避け、リソース導入表現で絞る。
+- **モバイル**: タグチップは ≤720px で横スワイプ1行、フォーム入力は 16px（iOS の focus ズーム防止、`!important` で component CSS を上書き）。全ページ 320/375px で横はみ出しゼロを維持。
+- **a11y**: 開閉ボタンは `aria-expanded`＋`aria-controls`、件数表示は `aria-live`、focus ring は `--color-accent` で統一。
+
+### 検証（スクリーンショット）
+- **MCP playwright は使えない**（X server 不在: "Missing X server or $DISPLAY"）。node + playwright-core を headless で直叩く:
+  - `executablePath: /root/.cache/ms-playwright/chromium_headless_shell-1223/chrome-headless-shell-linux64/chrome-headless-shell`、`args:['--no-sandbox']`
+  - CJS: `import pkg from '/root/.npm/_npx/9833c18b2d85bc59/node_modules/playwright-core/index.js'; const {chromium}=pkg`
+  - ローカル配信: `cd docs && python3 -m http.server 8137`
+  - **ディレクトリ URL で開く**（`/cvpr-2026/`）。`/index.html` 直叩きは `setLastUpdated` の slug 導出が "index.html" になり最終更新が出ない
+  - **node 実行後は cwd が `/root` にリセット** → `gh` は `-R taichiiiiiiii/automatic-paper-search` を明示（`gh api` は `-R` 非対応）
+- frontend に Python テストは無い。ゲートは**ローカル目視＋headless スクショ＋`ui-reviewer` エージェント**。CI は `lighthouse.yml` が docs/ PR で Core Web Vitals を **warn-only** 測定（ブロックしない）。
+
+### カタログを追加 / 更新するフロー
+収集ソースは venue で使い分ける（[CI / GitHub Actions] の `conference-on-demand.yml` 解説も参照）:
+
+```bash
+# 1) 収集（どれか）
+#   arXiv 自己申告（部分収録 ~30-40%、どの venue でも可）
+uv run python -m paperpilot.scripts.collect_conference --conference <slug> --venue <TOKEN> --query 'co:"<Conf Year>"' --max 1600
+#   権威的全件: OpenReview = ICLR/NeurIPS/ICML（Oral/Spotlight 公式ラベル付き）
+uv run python -m paperpilot.scripts.collect_openreview --conference iclr-2026 --venue ICLR --venueid "ICLR.cc/2026/Conference"
+#   権威的全件: CVF Open Access = CVPR/ICCV（ECCV は ECVA で別）。oral 区分が無いので --oral-arxiv-query で arXiv 申告 oral を overlay
+uv run python -m paperpilot.scripts.collect_cvf --conference cvpr-2025 --venue CVPR --cvf-id CVPR2025 --oral-arxiv-query 'co:"CVPR 2025"'
+#   権威的全件: ACL Anthology = ACL/EMNLP/NAACL（XML に要旨あり）
+uv run python -m paperpilot.scripts.collect_acl_anthology --conference acl-2025 --venue ACL --xml-id 2025.acl --oral-arxiv-query 'co:"ACL 2025"'
+
+# 2) summary 化 → ページ生成 → （新規なら）ページ scaffold
+uv run python -m paperpilot.scripts.build_summary_csv --conference <slug>
+uv run python -m paperpilot.scripts.build_pages            # --conference 無しで conferences.json も再集約（必須）
+uv run python -m paperpilot.scripts.scaffold_conference_page --conference <slug> --display "<Display>" --lede "<lede>"
+```
+
+- **`build_pages --conference X` は `conferences.json` を X だけに上書きする** → 集約は必ず `--conference` 無しで再実行。
+- **再収集で oral が消える罠**: CVF/ACL は oral 区分を持たないので、arXiv で先に収集した venue を再収集すると `write_outputs` が古い oral md を消し Oral=0 になる（`--oral-arxiv-query` で overlay すれば保持）。
+- **無料家系図**: S2 は 429・`build_lineage.py` は arxiv_id 必須なので、OpenReview/CVF/ACL 由来（arxiv_id 無し）には `build_conference_lineage.py`（OpenAlex title 解決→参照/被引用、LLM 不要のヒューリスティック）を使う。
 
 ---
 
