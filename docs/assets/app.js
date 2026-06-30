@@ -132,17 +132,87 @@ function renderRelationsSection(paper) {
     </div>`;
 }
 
+// --- Relevance scanning ----------------------------------------------------
+// With tens of thousands of papers, the reader's real question while
+// scrolling is "is this in my field?" — and answering it should NOT require
+// opening each paper. Two signals do that work: (1) an always-visible
+// abstract dek so every card states its own topic, and (2) when searching,
+// the query is highlighted and the dek is re-anchored to the first match so
+// the matched context is in view without expanding.
+
+const SNIPPET_LEAD = 70; // chars of context kept before the first match
+const CLAMP_MIN = 140; // abstracts shorter than this need no "more" toggle
+
+function escapeRegExp(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+// Only ever emit http(s) links; anything else (e.g. a javascript: URI that
+// slipped into the source data) collapses to "#". papers.json is generated
+// from arXiv/OpenAlex, so this is defense-in-depth, not a known vector.
+function safeHref(url) {
+  return url && /^https?:\/\//i.test(url) ? url : "#";
+}
+
+// Wrap every case-insensitive occurrence of `escQuery` inside the
+// already-HTML-escaped `escText` with <mark>. Matching on escaped text on
+// both sides keeps it consistent (e.g. "&" -> "&amp;" on each side) and the
+// markup safe — the only tags ever injected are our own <mark>.
+function highlightTerms(escText, escQuery) {
+  if (!escQuery) return escText;
+  return escText.replace(new RegExp(escapeRegExp(escQuery), "gi"), (m) => `<mark class="hl">${m}</mark>`);
+}
+
+// Build the abstract dek. When the query hits the abstract, slice a window
+// that begins a little before the first match (snapped to a word boundary)
+// so the highlighted term lands inside the 2-line clamp; otherwise show from
+// the top. `rawQuery` is the already-lowercased/trimmed search string.
+function buildAbstractView(abstract, rawQuery) {
+  const escQuery = rawQuery ? escapeHtml(rawQuery) : "";
+  if (rawQuery) {
+    const i = abstract.toLowerCase().indexOf(rawQuery);
+    if (i > SNIPPET_LEAD) {
+      let start = i - SNIPPET_LEAD;
+      const sp = abstract.lastIndexOf(" ", start);
+      if (sp > 0) start = sp + 1;
+      const sliced = abstract.slice(start);
+      const lead = '<span aria-hidden="true">… </span>';
+      return { html: lead + highlightTerms(escapeHtml(sliced), escQuery), len: sliced.length };
+    }
+  }
+  return { html: highlightTerms(escapeHtml(abstract), escQuery), len: abstract.length };
+}
+
 function renderPaper(p, idx) {
   const typeClass = p.type === "Oral" ? "paper__type--oral" : "paper__type--poster";
-  const tagsHtml = p.tags.map((t) =>
-    `<button class="paper__tag" data-tag="${escapeHtml(t)}" type="button">${escapeHtml(t)}</button>`
-  ).join("");
+  const q = state.search.toLowerCase().trim();
+  const escQuery = q ? escapeHtml(q) : "";
+
+  const tagsHtml = p.tags.map((t) => {
+    const active = state.activeTags.has(t) ? " is-active" : "";
+    return `<button class="paper__tag${active}" data-tag="${escapeHtml(t)}" type="button">${escapeHtml(t)}</button>`;
+  }).join("");
   const authorPreview = p.authors.slice(0, 4).join(", ") + (p.authors.length > 4 ? `, +${p.authors.length - 4}` : "");
+  const titleHtml = highlightTerms(escapeHtml(p.title), escQuery);
   const linksHtml = [
-    p.arxiv_url ? `<a href="${escapeHtml(p.arxiv_url)}" target="_blank" rel="noopener">arXiv</a>` : "",
-    p.pdf_url ? `<a href="${escapeHtml(p.pdf_url)}" target="_blank" rel="noopener">PDF</a>` : "",
+    p.arxiv_url ? `<a href="${escapeHtml(safeHref(p.arxiv_url))}" target="_blank" rel="noopener">arXiv</a>` : "",
+    p.pdf_url ? `<a href="${escapeHtml(safeHref(p.pdf_url))}" target="_blank" rel="noopener">PDF</a>` : "",
   ].filter(Boolean).join("");
+
   const hasAbstract = p.abstract && p.abstract.length > 0;
+  let abstractHtml = "";
+  let expandBtn = "";
+  if (hasAbstract) {
+    const view = buildAbstractView(p.abstract, q);
+    const needsToggle = view.len > CLAMP_MIN;
+    abstractHtml = `<p class="paper__abstract${needsToggle ? " is-clamped" : ""}" id="abstract-${idx}">${view.html}</p>`;
+    if (needsToggle) {
+      expandBtn = `<button class="paper__expand-btn" type="button" aria-expanded="false" aria-controls="abstract-${idx}">続きを読む</button>`;
+    }
+  }
+  // No separate "matched in body" badge: the dek is windowed to the first
+  // match, so the highlighted term is always already on screen — that IS the
+  // relevance signal, and a per-card badge would be noise on body-wide queries.
   const relationsHtml = renderRelationsSection(p);
 
   return `
@@ -150,12 +220,13 @@ function renderPaper(p, idx) {
       <span class="paper__type ${typeClass}">${escapeHtml(p.type)}</span>
       <div class="paper__body">
         <h2 class="paper__title">
-          <a href="${escapeHtml(p.arxiv_url || p.pdf_url || '#')}" target="_blank" rel="noopener">${escapeHtml(p.title)}</a>
+          <a href="${escapeHtml(safeHref(p.arxiv_url || p.pdf_url))}" target="_blank" rel="noopener">${titleHtml}</a>
         </h2>
         <p class="paper__authors">${escapeHtml(authorPreview || "—")}</p>
+        ${abstractHtml}
+        ${expandBtn}
         ${tagsHtml ? `<div class="paper__tags">${tagsHtml}</div>` : ""}
-        <div class="paper__meta">${linksHtml}${hasAbstract ? `<button class="paper__expand-btn" type="button" aria-expanded="false" aria-controls="abstract-${idx}">Abstract</button>` : ""}</div>
-        ${hasAbstract ? `<div class="paper__abstract" id="abstract-${idx}">${escapeHtml(p.abstract)}</div>` : ""}
+        ${linksHtml ? `<div class="paper__meta">${linksHtml}</div>` : ""}
         ${relationsHtml}
       </div>
     </li>`;
@@ -425,10 +496,13 @@ function bindEvents() {
     }
     const expandBtn = e.target.closest(".paper__expand-btn");
     if (expandBtn) {
-      const paper = expandBtn.closest(".paper");
-      const expanded = paper.classList.toggle("is-expanded");
-      expandBtn.setAttribute("aria-expanded", String(expanded));
-      expandBtn.textContent = expanded ? "Hide abstract" : "Abstract";
+      const abs = expandBtn.closest(".paper").querySelector(".paper__abstract");
+      if (abs) {
+        const open = abs.classList.toggle("is-open");
+        abs.classList.toggle("is-clamped", !open);
+        expandBtn.setAttribute("aria-expanded", String(open));
+        expandBtn.textContent = open ? "閉じる" : "続きを読む";
+      }
       return;
     }
     const relToggle = e.target.closest(".paper__relations-toggle");
