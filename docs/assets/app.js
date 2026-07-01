@@ -183,8 +183,16 @@ function buildAbstractView(abstract, rawQuery) {
   return { html: highlightTerms(escapeHtml(abstract), escQuery), len: abstract.length };
 }
 
-function renderPaper(p, idx) {
+// `revealIndex` opts a row into the staggered entrance: null = no animation
+// (the default for filter/search re-renders, which must not re-animate on
+// every keystroke), or a small integer used as the stagger step. Only the
+// first paint and "show more" appends pass it.
+function renderPaper(p, idx, revealIndex = null) {
   const typeClass = p.type === "Oral" ? "paper__type--oral" : "paper__type--poster";
+  const isOral = p.type === "Oral";
+  const reveal = revealIndex !== null;
+  const paperCls = `paper${isOral ? " paper--oral" : ""}${reveal ? " paper--reveal" : ""}`;
+  const revealStyle = reveal ? ` style="--i:${Math.min(revealIndex, 8)}"` : "";
   const q = state.search.toLowerCase().trim();
   const escQuery = q ? escapeHtml(q) : "";
 
@@ -216,7 +224,7 @@ function renderPaper(p, idx) {
   const relationsHtml = renderRelationsSection(p);
 
   return `
-    <li class="paper" data-idx="${idx}">
+    <li class="${paperCls}" data-idx="${idx}"${revealStyle}>
       <span class="paper__type ${typeClass}">${escapeHtml(p.type)}</span>
       <div class="paper__body">
         <h2 class="paper__title">
@@ -284,20 +292,34 @@ function moreSentinelHtml(remaining) {
     </li>`;
 }
 
+// The results line doubles as the search's "response": when a query is
+// active it echoes the term in an editorial serif-italic so the filter reads
+// as a deliberate answer, not just a counter. The query is escaped — it is
+// user input rendered via innerHTML.
 function setResultsMeta(shown, filteredLen, total) {
-  els.resultsMeta.textContent =
+  const count =
     shown < filteredLen
       ? `${shown} / ${filteredLen} 件を表示${filteredLen < total ? `（全 ${total} 件）` : ""}`
       : `${filteredLen} / ${total} 件`;
+  const q = state.search.trim();
+  // The echo is aria-hidden: results-meta is an aria-live region, and the
+  // user just typed the query — re-announcing the partial term on every
+  // debounced keystroke is noise. Screen readers hear only the count.
+  els.resultsMeta.innerHTML = q
+    ? `<span class="results-meta__q" aria-hidden="true">«${escapeHtml(q)}»</span>${count}`
+    : count;
 }
 
-function renderList() {
+// `animate` triggers the staggered entrance on the first paint only; filter /
+// search / sort re-renders pass false so the list doesn't re-animate on every
+// debounced keystroke.
+function renderList(animate = false) {
   const sorted = getSorted(getFiltered());
   const total = state.papers.length;
   updateClearButton();
 
   if (sorted.length === 0) {
-    els.resultsMeta.textContent = `0 / ${total} 件`;
+    setResultsMeta(0, 0, total);
     els.list.innerHTML = `<li class="empty-state">条件に一致する論文がありません。${hasActiveFilters() ? ' <button class="empty-state__clear" type="button" id="empty-clear">フィルタを解除</button>' : ""}</li>`;
     return;
   }
@@ -306,7 +328,7 @@ function renderList() {
   setResultsMeta(shown, sorted.length, total);
 
   // slice from 0, so the map index IS the absolute index into `sorted`.
-  let html = sorted.slice(0, shown).map((p, i) => renderPaper(p, i)).join("");
+  let html = sorted.slice(0, shown).map((p, i) => renderPaper(p, i, animate ? i : null)).join("");
   if (shown < sorted.length) html += moreSentinelHtml(sorted.length - shown);
   els.list.innerHTML = html;
 }
@@ -461,7 +483,7 @@ function bindEvents() {
       const rows = document.createElement("template");
       rows.innerHTML = sorted
         .slice(prevShown, shown)
-        .map((p, i) => renderPaper(p, prevShown + i))
+        .map((p, i) => renderPaper(p, prevShown + i, i))
         .join("");
       els.list.append(rows.content);
 
@@ -575,7 +597,7 @@ async function init() {
   buildTagChips();
   bindEvents();
   setupBackToTop();
-  renderList();
+  renderList(true);
 }
 
 // A back-to-top button for the long catalogs: after progressive reveal the
