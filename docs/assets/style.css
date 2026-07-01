@@ -664,6 +664,18 @@ input[type="range"]:focus-visible {
   min-height: 1.5em;
   letter-spacing: 0.02em;
 }
+/* The active query, echoed back in the results line as an editorial cue —
+   serif italic in coral so the search reads as a deliberate answer. */
+.results-meta__q {
+  font-family: var(--font-serif);
+  font-style: italic;
+  /* inherit the results-line scale — colour + italic carry the accent, a
+     size jump would make the echo read as a heading dropped into the line. */
+  font-size: inherit;
+  color: var(--color-accent-strong);
+  letter-spacing: 0;
+  margin-right: 0.4rem;
+}
 
 /* Clear-all — shown (via [hidden] toggle) only while a filter is active.
    Quiet pill that warms to coral on intent, matching the chip vocabulary. */
@@ -804,6 +816,35 @@ input[type="range"]:focus-visible {
 .paper:hover .paper__meta a,
 .paper:hover .paper__expand-btn { color: var(--color-ink-muted); }
 
+/* Oral papers are the curated ~1-2%: a gold rail + a whisper of warm tint
+   give the list real hierarchy. In a mixed/sorted list an Oral row stands
+   out among posters; in the default Oral-first view the tint reads as "this
+   whole section is curated" rather than a border on every card.
+   The padding shed (-2px) keeps the content's left edge aligned with poster
+   rows — it depends on the base .paper `margin: 0 -0.9rem`; if that bleed
+   margin changes, revisit this compensation. */
+.paper--oral {
+  border-left: 2px solid var(--color-oral-border);
+  padding-left: calc(0.9rem - 2px);
+  background-color: oklch(95% 0.07 80 / 0.3);
+}
+.paper--oral:hover { background-color: oklch(94% 0.06 80 / 0.75); }
+
+/* One restrained entrance — a short staggered fade-up on first paint and on
+   "show more" appends only (never on filter/search re-renders). `both` holds
+   the row hidden until its delay starts, so nothing flashes then fades. */
+@keyframes paper-reveal {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+.paper--reveal {
+  animation: paper-reveal 360ms var(--ease) both;
+  animation-delay: calc(var(--i, 0) * 30ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  .paper--reveal { animation: none; }
+}
+
 .paper__type {
   font-family: var(--font-mono);
   font-size: var(--text-tag);
@@ -837,7 +878,9 @@ input[type="range"]:focus-visible {
   font-weight: 500;
   line-height: 1.25;
   letter-spacing: -0.012em;
-  margin: 0 0 0.5rem;
+  /* tight to the byline: title + byline read as one unit, then the dek gets
+     its own air below (via .paper__authors margin-bottom). */
+  margin: 0 0 0.25rem;
   font-variation-settings: "opsz" 18;
 }
 .paper__title a {
@@ -855,9 +898,9 @@ input[type="range"]:focus-visible {
 }
 
 .paper__authors {
-  font-size: var(--text-meta);
+  font-size: var(--text-body-sm);
   color: var(--color-ink-muted);
-  margin: 0 0 0.65rem;
+  margin: 0 0 0.5rem;
   font-style: italic;
   font-family: var(--font-serif);
   font-variation-settings: "opsz" 16;
