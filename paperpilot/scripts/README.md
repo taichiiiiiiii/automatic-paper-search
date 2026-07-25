@@ -48,7 +48,7 @@ pip install -e '.[sheets]'
 
 ```bash
 export GOOGLE_APPLICATION_CREDENTIALS=~/secrets/paperpilot-sa.json
-export PAPERPILOT_SHEET_SHARE_EMAIL=your-email@gmail.com  # 自分のアカウントへ共有
+export PAPERPILOT_SHEET_SHARE_EMAIL=you@example.com  # 自分のアカウントへ共有
 
 python paperpilot/scripts/sync_to_sheets.py
 # -> OK Synced 218 rows -> https://docs.google.com/spreadsheets/d/xxxxx
