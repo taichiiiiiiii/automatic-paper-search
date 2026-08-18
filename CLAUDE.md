@@ -146,7 +146,7 @@ automatic-paper-search/
     │   ├── github.py                    # 共有 GitHub 解決器（curated map + GitHub Search + Stars）
     │   ├── json_parser.py               # LLM 3段階フォールバック
     │   └── logger.py                    # 日次ローテ (7日保持)
-    ├── tests/                           # pytest テスト（カバレッジ 91%、644 件）
+    ├── tests/                           # pytest テスト（1,046 件 pass、2026-08-18 実測）
     │   ├── conftest.py
     │   ├── test_*.py                    # 各モジュールのユニット/統合テスト
     │   └── test_venue_stress.py         # 60 パターンで検出率 95% 以上
@@ -841,79 +841,21 @@ Skill / Agent を追加・変更した時は、この表と `.claude/agents/agen
 
 ---
 
-## 実装ステータス（2026-06-03 時点）
+## 実装ステータス
 
-### パイプライン
-| 仕様 | 状態 |
-|------|------|
-| Stage 0 (async 並列収集) | ✅ arXiv / S2 / OpenAlex |
-| Stage 1 (rule filter) | ✅ カテゴリ / 日付 / 除外 / seen_ids |
-| Stage 2 (metric scoring) | ✅ venue / citation / author / github / keyword / follow |
-| Stage 3 (embedding) | ✅ MiniLM / backend=minilm（SPECTER2/BGE は将来拡張） |
-| Stage 4 (LLM rerank) | ✅ Ollama / Gemini / Claude / Groq |
-| Exporters | ✅ CSV / JSON / Slack / Email |
-| 差分更新 (seen_ids) | ✅ `{id: timestamp}` 日次パージ |
+詳細な実装状況表・過去の改善履歴・既知のオープン項目は
+[`docs/design/09-implementation-status.md`](docs/design/09-implementation-status.md) に移設した
+（2026-06-03 時点の記録を原文のまま保持し、冒頭に 2026-08-18 実測の現況を追記）。
 
-### CI / ワークフロー
-| 仕様 | 状態 |
-|------|------|
-| 週次深掘り (`collect-weekly.yml`) | ✅ uv sync 移行 (#136)、合計 3 件の startup_failure + numpy missing + empty-dir guard 修正 (#135-137)、develop push (#141) |
-| 毎日 follow-watch (`collect-daily-watch.yml`) | ✅ uv sync 移行 (#142)、develop push (#141) |
-| オンデマンド theme (`theme-on-demand.yml`) | ✅ `--llm-strict=ambiguous` + `--primary-source openalex` + **unarXive DuckDB DL (post #222 Phase J)**、timeout 15min |
-| 手動バルク theme regen (`regen-themes.yml`) | ✅ `--llm-strict=ambiguous` + `--primary-source openalex` + **unarXive DuckDB DL (post #222)**、timeout 120min。週次 cron は PR #261 で廃止 (gallery は site-request 由来のみに) |
-| Push race retry (`commit-and-push.sh`) | ✅ 5 回 retry + jittered sleep + multi-path 対応 (#122 / #140)、12 unit tests |
-| Workflow YAML 不変条件 | ✅ `test_workflow_yaml_quality.py` (secrets-in-step-if 防止 #135) |
-| Lighthouse CI (`lighthouse.yml`) | ✅ PR + 週次月曜で `treosh/lighthouse-ci-action@v12` 実行、staticDistDir で docs/ をローカル serve → 4 ページ × 3 run。`LHCI_GITHUB_APP_TOKEN` (任意) があれば PR コメント、無ければ temporary-public-storage アップロード。assert は warn-only (LCP 2.5s / CLS 0.1 / TBT 200ms / FCP 1.5s 上限) |
-| Data audit (`data-audit.yml`) | ✅ PR/push 時に `docs/themes/**` / `docs/iclr-*/**` / build / audit script 変更で fire。`audit_theme_seeds` (#192) + `audit_lineage_quality` (#197) を順次実行 (両者 exit 1 で job fail)。Job Summary に各監査結果を個別 Markdown 表示 (#199) |
+現況の要点（2026-08-18 実測。数値は実データを集計して確認したもの）:
 
-### ビューア
-| 仕様 | 状態 |
-|------|------|
-| 論文一覧 (`papers.json`) | ✅ `index.html` + `build_pages.py` で生成 |
-| Conference 家系図 (`lineage.json`) | ✅ `build_lineage.py` が `AbstractLLMProvider.classify_relation` 経由で生成。週次 CI 統合済 |
-| Conference deep tree (`deep-*.json`) | ✅ `build_deep_lineage.py`、14 件生成済 |
-| **テーマ家系図 (`themes/<slug>/`)** | ✅ `/themes/` のサイトフォーム → CF Worker (`worker/index.ts`) → `theme-on-demand.yml` を自動 dispatch (PR #233 で CF Worker 復活)。**2 themes 公開** (flash-attention / vision-transformer; #260 で site-request-only 化、seed themes 全消し) |
-| **家系図ビューアの frontend (#324-#332)** | ✅ editorial 刷新。仕組みページ (#324) / 論文カード polish+a11y+declutter+editorial-flags (#325/#328/#329) / 関係線の幹(successor)・枝(extends)階層 + 3ビューア共有 (`PP.edgeStyle`) + fan-out 発生点 (`PP.fanOffsets`) (#330-#332)。全 merged + 本番 live |
-
-### Theme 家系図の品質改善 (本セッションの主軸)
-| 仕様 | 状態 |
-|------|------|
-| Foundational ref フィルタ (#127) | ✅ `_filter_off_topic_refs`、`citationCount > 2 × max(seed cites)` で除外 |
-| Topic relevance seed フィルタ (#127) | ✅ `_filter_topic_relevant_seeds`、多単語テーマでタイトル/アブストラクト一致要求 |
-| Implementation denylist (#128) | ✅ `paperpilot/data/lineage_denylist.json` (10 paperIds + 15 title pattern) |
-| LLM strict mode (`--llm-strict`) | ✅ off / ambiguous / all、production default = ambiguous |
-| Classification cache 共有 (#138/#139) | ✅ `_CachedClassifyProvider` + `paperpilot/data/lineage-cache/classifications.json` を build_lineage と共有、git 永続化 (.gitignore 個別 un-ignore) |
-| Groq rate limiter (#130) | ✅ default 25 RPM、`config.yaml` の `llm.rate_limit_rpm` で paid plan 拡張可 |
-| LLM prompt 品質 (#131-#133) | ✅ ~250 tokens に圧縮、MUST/MUST NOT block、`TEMPLATE_RATIONALES` 単一 source (#146) |
-| Template echo reject (#132) | ✅ `RelationClassification.from_dict` が `_GENERIC_TEMPLATE_RATIONALES` の文字列を拒否 |
-| 不変条件 pin (#134, #146) | ✅ prompt size / `--llm-strict` flag / template dedup の regression test 完備 |
-| Edge fabrication 廃止 (#209 / #210) | ✅ `_DEFAULT_DERIVED` 削除、信号なし edge は drop (template extends 量産を停止) |
-| **Heuristic slot-fill rationale (#300)** | ✅ `_derive_relation_heuristic` の intent_map + year_cite 分岐が parent/child タイトル+年を埋め込む paper-specific rationale を emit、`_TEMPLATE_RATIONALES_SET` 非該当となり LLM=None 時の template-reject drop (relation collapse) を回避。#209 / #131 不変条件は維持 (新エッジ作らず、template echo reject 集合は LLM 用に残置) |
-| Seed gate v2 (#209 / #211) | ✅ 2-word phrase + title fallback、hyphen normalization、`_filter_denylisted_seeds` を seed phase に適用 |
-| Edge-level audit (#209 / #212) | ✅ `audit_lineage_quality` に `template_rationale_ratio` / `popularity_sinks` / `year_reversals`、themes opt-in (`--include-themes`) |
-| Tier 1 非 LLM seed quality (#209 / #214) | ✅ citation velocity ranking、survey title regex penalty (0.30×)、`paperpilot/data/theme_blacklist.json` per-theme veto |
-| S2 citation contexts → rationale (#209 / #216) | 🟡 S2 API key 必須、PR #216 で close 済 (post #222 Phase J で OpenAlex/unarXive 経路に置換) |
-| **OpenAlex-primary architecture (#209 / #217)** | ✅ `--primary-source openalex` を workflows default 化、S2 API 完全不要で seed + BFS 動作。`_work_to_paper_dict` + `fetch_related_via_openalex` + paperId prefix routing |
-| **OpenAlex search relevance / field gate (#219 / #220)** | ✅ `sort=cited_by_count:desc` 削除 (relevance 順)、`primary_topic.field.id:fields/17` で Planck/AlphaFold 排除 |
-| **unarXive 2022 citation contexts (#222 Phase J)** | ✅ S2-free で paper-specific rationale 取得。HF `saier/unarXive_citrec` → DuckDB → `_classify_from_contexts` で regex 分類。LLM 不要、月 ¥0 |
-
-### コード品質
-| 仕様 | 状態 |
-|------|------|
-| ruff (lint) | ✅ 105 files clean |
-| mypy (type check) | ✅ 105 files clean |
-| pytest テスト数 | ✅ **779 tests pass** |
-| venue 正規表現検出率 | ✅ 100% (60 パターン / 目標 95%) |
-| `build_theme_lineage()` 行数 | ✅ Stage 別 helper 抽出後 238 行 (#148) |
-
-### 既知のオープン項目
-- ~~**Bulk regen 19 themes の timeout 問題**~~ — **解消** (PR #260 で site-request-only に移行、21 seed themes 全消し + `regen-themes.yml` 週次 cron 廃止により前提消滅)
-- ~~**data-audit の false positives** (lineage.json に short abstract を persist)~~ — **解消** (`lineage.json` に `short_abstract` (1000-char) 全 nodes で persist 済、`audit_theme_seeds.py:158-178` でも `short_abstract` を優先読み。直近 audit すべて clean)
-- **LLM rationale 累積**: classifications.json は git 永続化済、theme-on-demand で漸進的に蓄積 (weekly cron は #260 で廃止)。
-- **CF Worker 運用**: CF Access を **OFF** にしておく必要あり (PR #233 / 復活時メモ参照)。`one.dash.cloudflare.com` or `dash.cloudflare.com → Workers Settings` のいずれかで管理可能。
-- **Foundational ancestor allowlist** (PR #278-#281): `paperpilot/data/lineage_foundational_allowlist.json` の ~30 entries は ML/CV/NLP の canonical 古典のみ。新規 entry は PR description で justification 必須。
-- **LLM relation 判定品質 (#285)**: 当初「prompt が真の bottleneck」と判定したが、**#293 で model も同等以上の bottleneck と判明し結論を改訂**。`eval_relation_prompt --provider` の live 測定で **prompt 無変更**のまま Gemini 2.5-flash が macro-F1 0.372 (再測定 0.354) を出し、Groq llama-3.3-70b baseline 0.237 を上回った (Groq が 452 call で 0 emit だった `successor`/`unrelated` を Gemini は emit)。ただし magnitude は信用するな: n=29・単一ラベラー・**free-tier Gemini の 429-storm (再測定で 8/29=28% が None=wrong 汚染)** で ±0.05 はノイズ。**🔴free-tier Gemini は 29 call で 28% 失敗 → 本番 ~90 call/run では崩壊、paid tier 前提**。`ablation`/`supersedes` は gold 0 件で測定不能。**Provenance schema** (#290) + **audit field-read** (#291) 完了済だが provenance は機構 (`llm`) のみで **model を記録しない**。本番 provider 切替 (Groq→Gemini) は user 判断項目。**2026-06-17 実測 (Gemini, `PAPERPILOT_LLM_PROVIDER=gemini` override 経由)**: gold set を 54 行に拡張済み、NEW(#296) vs OLD prompt × supersedes gold(7件) で **NEW recall 4/7・precision 1.00 vs OLD 0/7** — #296 のプロンプト書き換えが supersedes 判定を 0→4 に改善することを実証。フル 55 行 macro-F1 と #285 への結果コメントは未実施 (任意)。**ガードレールは実装済み**: `PAPERPILOT_LLM_PROVIDER` override (#311) + cache entry の `model` field (#313)。**Groq は無料枠の使用上限 (429) が本番ブロッカーで、有効鍵でも 1 テーマ生成中に枯渇→heuristic フォールバック**するため現状維持が妥当 (鍵 rotate は効果限定的)。詳細は `docs/design/08-lineage-roadmap.md` §判定品質の改善計画。
+- **カタログ = 10 会議 / 28,300 本**（`docs/conferences.json`、生成 2026-06-28）
+- **会議家系図の実データは 2 会議のみ**（`iclr-2026` / `eccv-2024`）。残り 8 会議の `lineage.json` は ~290B の空スタブ
+- **テーマ家系図は 3 本公開**（flash-attention / mixture-of-experts / vision-transformer）
+- **deep tree 14 本はビューアへの導線が無く orphan**
+- **`utils.js` の `?v=` が v=75(10 ページ) と v=82(4 ページ) で不統一** ＝「アセットの cache-bust 版数は全ページで統一」規約に違反中
+- テストは **1,046 passed / 1 failed**（既知の pre-existing `test_theme_typography_tokens` のみ）、lint（ruff）/ 型（mypy）は clean
 
 ---
 
-*最終更新：2026年6月17日（① 家系図ビューアの frontend 刷新を出荷 — 仕組みページ新規 (#324) + 論文カード polish/declutter/editorial-flags (#325/#328/#329) + 関係線の幹/枝階層を3ビューア統一 + fan-out ジオメトリ (#330/#331/#332)、共有 `PP.edgeStyle`/`PP.fanOffsets`。② #285 を Gemini で実測 — NEW(#296) vs OLD prompt × supersedes gold で NEW recall 4/7・precision 1.0 vs OLD 0/7、#296 の効果を実証 (Groq は無料枠上限のため現状維持、`PAPERPILOT_LLM_PROVIDER=gemini` override で測定)。詳細は CHANGELOG.md ## [Unreleased] / docs/design/08-lineage-roadmap.md 参照）*
+*最終更新：2026年8月18日（① CHANGELOG の完了済み履歴 20 本を `CHANGELOG-archive.md` へ無損失退避、② 本ファイルの実装ステータス章を `docs/design/09-implementation-status.md` へ無損失移設し現況を実測で更新、③ 直近出荷 #347〜#353 を CHANGELOG に反映。詳細は CHANGELOG.md ## [Unreleased] 参照）*
