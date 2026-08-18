@@ -130,6 +130,7 @@ automatic-paper-search/
     │   ├── scaffold_conference_page.py  # cvpr-2026 テンプレ → docs/<conf>/index.html (+ 空 lineage.json)
     │   ├── build_summary_csv.py         # full CSV → summary.csv (8 列 + 自動タグ)
     │   ├── build_pages.py               # summary.csv → docs/<conf>/papers.json
+    │   ├── build_search_index.py       # 全 docs/<conf>/papers.json → docs/search-index.json（学会横断の検索インデックス。papers.json は 95.5% が arxiv_id 空なので id は arxiv_url から導出）
     │   ├── build_lineage.py             # papers.json + S2 + LLM → lineage.json (arxiv_id 必須・S2 律速)
     │   ├── build_conference_lineage.py  # Oral の title→OpenAlex 解決→参照/被引用で家系図 (S2/LLM 不要の free-tier fallback、edge は引用方向の successor ヒューリスティック) → docs/<conf>/lineage.json
     │   ├── build_deep_lineage.py        # 1 論文 × N hop BFS → docs/<conf>/deep.json
@@ -453,6 +454,8 @@ output/<conf>/papers_YYYY-MM-DD.csv
   ├─ build_summary_csv.py   → summary.csv（8 列 + 自動タグ）
   │
   └─ build_pages.py         → docs/<conf>/papers.json（一覧ビュー用）
+       │
+       ├─ build_search_index.py   → docs/search-index.json（10 学会 28,300 本の横断検索用・gzip 1.11MB）
        │
        ├─ build_lineage.py        → docs/<conf>/lineage.json
        │     │                      - Oral 全 N 本 × depth 1 の浅い家系図集
