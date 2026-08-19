@@ -1,15 +1,15 @@
 """Build docs/search-index.json — one cross-conference search payload.
 
 The catalog is split one papers.json per conference (24 MB in total), so a
-visitor who wants "every diffusion paper across all ten venues" currently has
-no way to ask: each catalog page only knows its own proceedings. This script
-folds all of them into a single small index the landing page can search.
+visitor who wants "every diffusion paper across all ten venues" has no way
+to ask: each catalog page only knows its own proceedings. This script folds
+all of them into a single small index the landing page can search.
 
-papers.json has no usable per-paper key of its own -- 27,042 of 28,300 rows
-(95.5%) ship an empty `arxiv_id`, because only the arXiv-sourced venues
-(aaai-2026, eccv-2024) populate it. The stable id is therefore derived from
-`arxiv_url`, which is present on 100% of rows and encodes a durable id in
-every one of the four venue URL families we collect from.
+An entry is just [title, conference]. That is enough to navigate, because
+each catalog page already reads `?q=` from the URL and filters on
+title+authors+abstract (app.js readUrlState / getFiltered). Linking a hit to
+`<conference>/?q=<title>` therefore lands on exactly that paper with the
+existing, tested machinery and no per-paper id to mint or keep stable.
 
 Run:
     python paperpilot/scripts/build_search_index.py
@@ -20,9 +20,7 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 from pathlib import Path
-from urllib.parse import parse_qs, urlparse
 
 from paperpilot.scripts import build_pages
 
@@ -31,56 +29,19 @@ DOCS_ROOT = ROOT / "docs"
 
 INDEX_FILENAME = "search-index.json"
 
-# Entries are positional triples rather than objects: [title, conference, id].
-# At 28,300 papers, repeating three JSON keys per row would add ~1.1 MB raw
-# for no information. The reader in docs/assets/ destructures by position.
-_TITLE, _CONF, _PID = 0, 1, 2
-
-# arXiv abs URLs carry a revision suffix (/abs/2403.06764v3). Two revisions of
-# one preprint must collapse to a single permalink, so the suffix is stripped.
-_ARXIV_ABS_RE = re.compile(r"/abs/(?P<id>.+?)(?:v\d+)?/?$")
-
-# CVF open access paper pages are /content/<VENUE>/html/<stem>.html, where the
-# stem (e.g. Held_3D_Convex_Splatting_CVPR_2025_paper) is the canonical id.
-_CVF_HTML_RE = re.compile(r"/html/(?P<id>.+?)\.html$")
-
-
-def paper_id(url: str | None) -> str | None:
-    """Derive a stable per-paper id from its venue URL.
-
-    Returns None when the URL is empty or from a host we have no extractor
-    for -- the caller skips those rows rather than inventing an id, since a
-    wrong id would produce a permalink that silently resolves to nothing.
-    """
-    if not url or not url.strip():
-        return None
-    parsed = urlparse(url.strip())
-
-    if parsed.netloc == "openreview.net":
-        ids = parse_qs(parsed.query).get("id")
-        return ids[0] if ids else None
-
-    if parsed.netloc.endswith("arxiv.org"):
-        m = _ARXIV_ABS_RE.search(parsed.path)
-        return m.group("id") if m else None
-
-    if parsed.netloc == "aclanthology.org":
-        # https://aclanthology.org/2025.acl-long.153/ -> 2025.acl-long.153
-        return parsed.path.strip("/") or None
-
-    if parsed.netloc == "openaccess.thecvf.com":
-        m = _CVF_HTML_RE.search(parsed.path)
-        return m.group("id") if m else None
-
-    return None
+# Entries are positional pairs rather than objects: [title, conference].
+# At 28,300 papers, repeating two JSON keys per row would add ~0.7 MB raw
+# for no information. The reader in docs/assets/search.js destructures by
+# position.
+TITLE, CONFERENCE = 0, 1
 
 
 def build_index(docs_root: Path) -> tuple[list[list[str]], int]:
     """Fold every conference papers.json into a flat entry list.
 
-    Returns (entries, skipped) where skipped counts rows whose URL yielded no
-    id. Conferences are walked in sorted order so a rebuild with unchanged
-    inputs produces a byte-identical file.
+    Returns (entries, skipped) where skipped counts rows with no title —
+    those cannot be searched for or linked to. Conferences are walked in
+    sorted order so a rebuild with unchanged inputs is byte-identical.
     """
     entries: list[list[str]] = []
     skipped = 0
@@ -95,11 +56,11 @@ def build_index(docs_root: Path) -> tuple[list[list[str]], int]:
             continue
 
         for row in json.loads(papers_json.read_text(encoding="utf-8")):
-            pid = paper_id(row.get("arxiv_url"))
-            if pid is None:
+            title = (row.get("title") or "").strip()
+            if not title:
                 skipped += 1
                 continue
-            entries.append([row["title"], conf_dir.name, pid])
+            entries.append([title, conf_dir.name])
 
     return entries, skipped
 
@@ -127,10 +88,9 @@ def main() -> None:
     entries, skipped = build_index(args.docs_root)
     out = write_index(args.docs_root, entries)
 
-    size_kb = out.stat().st_size / 1024
-    print(f"Wrote {len(entries):,} entries -> {out} ({size_kb:,.0f} KB raw)")
+    print(f"Wrote {len(entries):,} entries -> {out} ({out.stat().st_size / 1024:,.0f} KB raw)")
     if skipped:
-        print(f"  skipped {skipped:,} row(s) with no extractable id")
+        print(f"  skipped {skipped:,} row(s) with no title")
 
 
 if __name__ == "__main__":

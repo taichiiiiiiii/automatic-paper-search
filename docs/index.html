@@ -65,7 +65,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=optional" rel="stylesheet" />
 
-  <link rel="stylesheet" href="assets/style.css?v=88" />
+  <link rel="stylesheet" href="assets/style.css?v=90" />
   <style>
     /* ============================================================
        Landing-page-only styles. Shared design tokens + the .hero
@@ -624,6 +624,27 @@
           論文の引用を、世代をまたぐ家系図として描く。気になるテーマを入力すれば、
           数分で新しい系譜が生成されます。
         </p>
+        <!-- The one place on the site that can ask a question of all ten
+             proceedings at once. It sits above the CTA row because
+             "find a paper" is the primary job; the lineage CTAs stay as
+             the secondary path. search.js fetches the index on first
+             interaction, never on load. -->
+        <form class="site-search" role="search" data-search autocomplete="off">
+          <label class="site-search__label" for="site-search-input">10 学会 28,300 本を横断して探す</label>
+          <input
+            id="site-search-input"
+            class="site-search__input"
+            type="search"
+            name="q"
+            placeholder="論文タイトルで検索（例: diffusion, attention）"
+            aria-describedby="site-search-status"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <p class="site-search__status" id="site-search-status" role="status" aria-live="polite"></p>
+          <ul class="site-search__results" role="listbox" aria-label="検索結果" hidden></ul>
+        </form>
+
         <div class="hero__cta-row">
           <a class="hero__cta" href="themes/">
             系譜ビューアを開く <span class="hero__cta-arrow" aria-hidden="true">→</span>
@@ -758,6 +779,8 @@
     </nav>
   </footer>
 
+  <script src="assets/utils.js?v=82" defer></script>
+  <script src="assets/search.js?v=1" defer></script>
   <script src="assets/conferences-index.js?v=77"></script>
 </body>
 </html>
