@@ -392,6 +392,13 @@ input[type="range"]:focus-visible {
   outline: none;
 }
 .site-search__results a:focus-visible { box-shadow: inset 3px 0 0 var(--color-accent); }
+/* Keyboard focus stays in the input (combobox pattern), so the active
+   option is pointed at with aria-activedescendant and must be shown here
+   instead — otherwise arrowing through the list is invisible. */
+.site-search__results [aria-selected="true"] > a {
+  background: var(--color-surface-2);
+  box-shadow: inset 3px 0 0 var(--color-accent);
+}
 .site-search__title { flex: 1 1 16rem; min-width: 0; font-size: var(--text-body-sm); }
 .site-search__venue {
   font-family: var(--font-mono);

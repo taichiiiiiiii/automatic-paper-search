@@ -93,6 +93,27 @@ def find_divergent(docs_root: Path) -> dict[str, list[int]]:
     }
 
 
+# A reference to a versioned asset that carries no ?v= at all. The rewriter
+# only sees `assets/<file>?v=<digits>`, so such a reference is neither
+# "divergent" nor "stale" — it is invisible, and the page silently serves
+# whatever the browser cached. `(?!\?v=)` is what makes this the blind-spot
+# check rather than a duplicate of the divergence check.
+_UNVERSIONED_RE = re.compile(rf"({ASSETS_DIRNAME}/[\w.-]+\.(?:css|js))(?!\?v=)")
+
+
+def find_unversioned(docs_root: Path) -> list[tuple[Path, str]]:
+    """Asset references with no ?v= — what the rewriter cannot see or fix."""
+    known = {a.name for a in _versioned_assets(docs_root)}
+    found: list[tuple[Path, str]] = []
+    for html in _html_files(docs_root):
+        text = html.read_text(encoding="utf-8")
+        for match in _UNVERSIONED_RE.finditer(text):
+            ref = match.group(1)
+            if ref.split("/", 1)[1] in known:
+                found.append((html, ref))
+    return found
+
+
 def _load_state(docs_root: Path) -> dict[str, dict[str, Any]]:
     path = docs_root / ASSETS_DIRNAME / VERSIONS_FILENAME
     if not path.exists():
@@ -176,13 +197,16 @@ def main() -> None:
 
     if args.check:
         divergent = find_divergent(args.docs_root)
+        unversioned = find_unversioned(args.docs_root)
         stale, _ = sync(args.docs_root, write=False)
         if divergent:
             for name, versions in divergent.items():
                 print(f"  DIVERGENT {name}: {versions}")
+        for path, ref in unversioned:
+            print(f"  UNVERSIONED {path.relative_to(args.docs_root)}: {ref} (no ?v=)")
         for path in stale:
             print(f"  STALE {path.relative_to(args.docs_root)}")
-        if divergent or stale:
+        if divergent or unversioned or stale:
             sys.exit(1)
         print("Asset versions are consistent.")
         return

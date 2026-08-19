@@ -184,3 +184,41 @@ def test_repo_docs_have_no_divergent_asset_versions() -> None:
     """
     divergent = sav.find_divergent(REPO_DOCS)
     assert divergent == {}, f"assets referenced at multiple versions: {divergent}"
+
+
+# ---- references that carry no ?v= at all ----
+
+
+def test_find_unversioned_flags_reference_without_version(tmp_path: Path) -> None:
+    """A reference with no ?v= is invisible to the rewriter.
+
+    The regex only matches `assets/<file>?v=<digits>`, so a page that ships
+    `href="assets/style.css"` is neither divergent nor stale — --check would
+    call the site consistent while that page serves whatever the browser
+    cached. This is the blind spot, not a style preference.
+    """
+    _mk(tmp_path, {"style.css": "body{}"}, {"index.html": '<link href="assets/style.css">'})
+    assert sav.find_unversioned(tmp_path) == [(tmp_path / "index.html", "assets/style.css")]
+
+
+def test_find_unversioned_ignores_properly_versioned_references(tmp_path: Path) -> None:
+    _mk(tmp_path, {"style.css": "body{}"}, {"index.html": '<link href="assets/style.css?v=9">'})
+    assert sav.find_unversioned(tmp_path) == []
+
+
+def test_find_unversioned_ignores_assets_we_do_not_version(tmp_path: Path) -> None:
+    # Images and fonts are not cache-busted by this tool.
+    _mk(tmp_path, {"style.css": "body{}"}, {"index.html": '<img src="assets/logo.svg">'})
+    assert sav.find_unversioned(tmp_path) == []
+
+
+def test_check_mode_reports_unversioned(tmp_path: Path) -> None:
+    _mk(tmp_path, {"style.css": "body{}"}, {"index.html": '<link href="assets/style.css">'})
+    sav.sync(tmp_path)  # establish state so nothing is "stale"
+    assert sav.find_unversioned(tmp_path), "adopting the tool must not hide the blind spot"
+
+
+def test_repo_docs_have_no_unversioned_asset_references() -> None:
+    """Guard the real site: every shared asset reference must carry ?v=."""
+    missing = sav.find_unversioned(REPO_DOCS)
+    assert missing == [], f"asset references with no ?v=: {missing}"
