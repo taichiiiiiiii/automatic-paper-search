@@ -28,7 +28,9 @@
 | テーマ家系図 | **3 本公開**（flash-attention / mixture-of-experts / vision-transformer） | `docs/themes/themes-manifest.json`。※旧記載の「2 themes 公開」は誤り |
 | deep tree | 14 本生成済だが **ビューアへの導線が無く orphan** | `docs/iclr-2026/deep-manifest.json` |
 | アセット版数 | **`sync_asset_versions.py` が一元管理**（2026-08-19 是正）。内容ハッシュが変わったアセットだけ繰り上がり、`docs/assets/versions.json` から全 HTML に書き戻す。旧状態は `utils.js` が v=75(10) と v=82(4) に分裂＝規約違反だった | `uv run python paperpilot/scripts/sync_asset_versions.py --check` |
-| テスト | **1,074 passed / 1 failed**（24.9s、2026-08-19 実測）。失敗は既知の pre-existing `test_theme_typography_tokens` のみ | `uv run pytest paperpilot/tests/ -q` |
+| 学会横断検索 | **`docs/search-index.json` = 2,723,015 B / gzip 759,264 B / 28,300 件**。中身は `[タイトル, 会議スラッグ]` の2要素配列（`build_search_index.py` の `TITLE, CONFERENCE = 0, 1`）。**論文 ID は持たない** — `arxiv_id` が 95.5% 空だったため永続リンクに使えず、遷移は既存の `?q=` を再利用する設計にした | `stat -c%s docs/search-index.json`、`gzip -c docs/search-index.json \| wc -c` |
+| グローバルナビ | **`<nav class="site-nav">` が 17 / 17 ページに挿入済**。リンクは **3 本のみ**（探す / テーマ系譜 / 仕組み）＋ワードマーク。自ページを指すリンクにだけ `aria-current="page"` が付く | `grep -rl 'class="site-nav"' docs --include='*.html' \| wc -l` |
+| テスト | **1,074 passed / 1 failed**（26.84s、2026-08-20 実測）。唯一の失敗は `tests/viewer/test_theme_viewer_smoke.py::test_theme_typography_tokens` で、**node 環境依存ではない**（node は動いておりスクリプト自身が `55 passed, 2 failed` を出す）。失敗 2 件の中身は `.node-card--theme .node-card__hub` と `.node-card--theme .node-card__trending` が `var(--text-body-sm)` を使っていない = Issue #257 のトークン移行が未完了の残り 2 セレクタ | `uv run pytest paperpilot/tests -q` |
 
 直近の出荷（2026-08、いずれも develop へ merge 済）:
 
@@ -41,6 +43,7 @@
 | #351 | CLAUDE.md にフロントエンド（`docs/`）アーキテクチャと検証手順の章を追加 |
 | #352 | カタログカードに常時表示の要旨 dek + 検索語ハイライト + マッチ位置アンカー |
 | #353 | 結果リストの editorial polish（Oral 金レール、クエリエコー、段階フェード） |
+| #355 | サイト再設計フェーズ1 — 学会横断検索 + グローバルナビ 17 ページ + `?v=` 自動同期（`sync_asset_versions.py`）。2026-08-19 develop マージ・本番公開済。マージコミット b01705b |
 
 ---
 
@@ -75,7 +78,7 @@
 | 論文一覧 (`papers.json`) | ✅ `index.html` + `build_pages.py` で生成 |
 | Conference 家系図 (`lineage.json`) | ✅ `build_lineage.py` が `AbstractLLMProvider.classify_relation` 経由で生成。週次 CI 統合済 |
 | Conference deep tree (`deep-*.json`) | ✅ `build_deep_lineage.py`、14 件生成済 |
-| **テーマ家系図 (`themes/<slug>/`)** | ✅ `/themes/` のサイトフォーム → CF Worker (`worker/index.ts`) → `theme-on-demand.yml` を自動 dispatch (PR #233 で CF Worker 復活)。**2 themes 公開** (flash-attention / vision-transformer; #260 で site-request-only 化、seed themes 全消し) |
+| **テーマ家系図 (`themes/<slug>/`)** | ✅ `/themes/` のサイトフォーム → CF Worker (`worker/index.ts`) → `theme-on-demand.yml` を自動 dispatch (PR #233 で CF Worker 復活)。**2 themes 公開** (flash-attention / vision-transformer; #260 で site-request-only 化、seed themes 全消し) ※ **現在は 3 本公開（flash-attention / mixture-of-experts / vision-transformer）。上の「現況（2026-08-18 実測）」表を参照 — ここは 2026-06-03 時点の履歴なので原文保持** |
 | **家系図ビューアの frontend (#324-#332)** | ✅ editorial 刷新。仕組みページ (#324) / 論文カード polish+a11y+declutter+editorial-flags (#325/#328/#329) / 関係線の幹(successor)・枝(extends)階層 + 3ビューア共有 (`PP.edgeStyle`) + fan-out 発生点 (`PP.fanOffsets`) (#330-#332)。全 merged + 本番 live |
 
 ### Theme 家系図の品質改善 (本セッションの主軸)
@@ -103,9 +106,9 @@
 ### コード品質
 | 仕様 | 状態 |
 |------|------|
-| ruff (lint) | ✅ 105 files clean |
-| mypy (type check) | ✅ 105 files clean |
-| pytest テスト数 | ✅ **779 tests pass** |
+| ruff (lint) | ✅ **145 files clean**（`paperpilot/` 配下、2026-08-20 実測。`uv run ruff check paperpilot/` → All checks passed!） |
+| mypy (type check) | ⚠️ **未検証** — mypy 1.20.1 が typeshed の `builtins.pyi:251` で INTERNAL ERROR を出し起動しない（単一ファイル指定でも再現）。本リポジトリ由来ではなく環境側の問題（`CLAUDE.md` の「既知の環境問題」にも同記録あり）。緑チェックは外した |
+| pytest テスト数 | ✅ **1,074 passed / 1 failed**（collect-only 1,075 件、26.84s、2026-08-20 実測）。唯一の失敗 `tests/viewer/test_theme_viewer_smoke.py::test_theme_typography_tokens` は node 環境依存ではなく、スクリプト側が出す `55 passed, 2 failed` のうち `.node-card--theme .node-card__hub` と `.node-card__trending` が `var(--text-body-sm)` を使っていない = Issue #257 トークン移行の残り 2 セレクタ |
 | venue 正規表現検出率 | ✅ 100% (60 パターン / 目標 95%) |
 | `build_theme_lineage()` 行数 | ✅ Stage 別 helper 抽出後 238 行 (#148) |
 

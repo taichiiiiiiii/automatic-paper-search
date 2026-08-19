@@ -32,13 +32,13 @@ Python：3.10 以上（開発・CIは 3.12）
 
 ```bash
 uv run ruff check paperpilot/                 # lint（push 前必須。pytest は I001 import-sort を拾わない）
-uv run mypy paperpilot/                        # type check
-uv run pytest paperpilot/tests/                # 全テスト（~22s, 1000+ 件）
+uv run mypy paperpilot/                        # type check ⚠️現環境では INTERNAL ERROR で走らない（後述「既知の環境問題」）
+uv run pytest paperpilot/tests/                # 全テスト（~27s、1,074 passed / 1 failed）
 uv run pytest paperpilot/tests/test_venue_signal.py::test_x -q   # 単一テスト
 uv run pytest paperpilot/tests/ --cov=paperpilot --cov-config=/dev/null   # カバレッジ
 ```
 
-既知の pre-existing failure: `tests/viewer/test_theme_viewer_smoke.py::test_theme_typography_tokens`（node ベースの環境依存、本作業と無関係）。`pip install -e '.[dev]'` 互換も維持。
+既知の pre-existing failure: `tests/viewer/test_theme_viewer_smoke.py::test_theme_typography_tokens`。**原因は環境ではない**（node は動作し、スクリプト自身が `55 passed, 2 failed` を出す）。実体は Issue #257 のトークン移行の積み残しで、`.node-card--theme .node-card__hub` と `.node-card--theme .node-card__trending` が `var(--text-body-sm)` を使っていない **2 セレクタだけ**（2026-08-20 実測。直すなら `docs/assets/style.css` の当該2箇所）。`pip install -e '.[dev]'` 互換も維持。
 
 ### 依存ライブラリ
 
@@ -334,7 +334,9 @@ git push
 
 ### フェーズ 8: PR 作成・CI・merge
 
-`develop` へ PR → CI（test / ruff / mypy）→ merge。merge 後は bug 発生時のみ再レビュー。
+`develop` へ PR → merge。merge 後は bug 発生時のみ再レビュー。
+
+🔴 **テスト/lint を走らせる CI は存在しない**（2026-08-20 実測: `.github/workflows/` 9 本のうち `pytest`/`ruff`/`mypy` を実行するものは 0 本。push で自動起動するのは `data-audit` と `pages`、PR で動くのは `lighthouse` のみ）。∴ **merge 前のローカル `uv run pytest` と `uv run ruff check` が唯一のゲート**。しかも `develop` への merge は `pages.yml` 経由でそのまま本番公開になる。
 
 ### 全体タイミング図
 
@@ -365,17 +367,17 @@ git push
 ### テスト実行
 
 ```bash
-# 全テスト（約 6 秒）
-python3 -m pytest paperpilot/tests/
+# 全テスト（~27s、2026-08-20 実測）
+uv run pytest paperpilot/tests/
 
 # 特定モジュールのみ
-python3 -m pytest paperpilot/tests/test_venue_signal.py -v
+uv run pytest paperpilot/tests/test_venue_signal.py -v
 
 # カバレッジ付き
-python3 -m pytest paperpilot/tests/ --cov=paperpilot --cov-report=term --cov-config=/dev/null
+uv run pytest paperpilot/tests/ --cov=paperpilot --cov-report=term --cov-config=/dev/null
 
 # Venue 正規表現ストレステスト（検出率 95% 以上を維持する境界テスト）
-python3 -m pytest paperpilot/tests/test_venue_stress.py
+uv run pytest paperpilot/tests/test_venue_stress.py
 ```
 
 ### 外部 API のテスト方針
@@ -866,4 +868,4 @@ Skill / Agent を追加・変更した時は、この表と `.claude/agents/agen
 
 ---
 
-*最終更新：2026年8月18日（① CHANGELOG の完了済み履歴 20 本を `CHANGELOG-archive.md` へ無損失退避、② 本ファイルの実装ステータス章を `docs/design/09-implementation-status.md` へ無損失移設し現況を実測で更新、③ 直近出荷 #347〜#353 を CHANGELOG に反映。詳細は CHANGELOG.md ## [Unreleased] 参照）*
+*最終更新：2026年8月20日（定期整理: ① テスト/lint に関する記述を実測に一致（`~22s`→`~27s`、bare `python3 -m pytest`→`uv run`）、② 既知 failure の原因を「node 環境依存」から実体（Issue #257 のトークン移行の残り 2 セレクタ）へ訂正、③ **存在しない CI（test/ruff/mypy）の記述を削除しローカル実行が唯一のゲートである旨を明記**、④ mypy が現環境で INTERNAL ERROR で走らないことを実行例に併記。2026-08-18 の変更＝CHANGELOG 履歴 20 本の無損失退避・実装ステータス章の `docs/design/09-implementation-status.md` への移設・#347〜#353 の反映。詳細は CHANGELOG.md ## [Unreleased] 参照）*
