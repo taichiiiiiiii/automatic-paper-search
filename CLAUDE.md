@@ -858,8 +858,11 @@ Skill / Agent を追加・変更した時は、この表と `.claude/agents/agen
 - **会議家系図の実データは 2 会議のみ**（`iclr-2026` / `eccv-2024`）。残り 8 会議の `lineage.json` は ~290B の空スタブ
 - **テーマ家系図は 3 本公開**（flash-attention / mixture-of-experts / vision-transformer）
 - **deep tree 14 本はビューアへの導線が無く orphan**
-- **`utils.js` の `?v=` が v=75(10 ページ) と v=82(4 ページ) で不統一** ＝「アセットの cache-bust 版数は全ページで統一」規約に違反中
-- テストは **1,046 passed / 1 failed**（既知の pre-existing `test_theme_typography_tokens` のみ）、lint（ruff）/ 型（mypy）は clean
+- **アセット版数は `sync_asset_versions.py` が統一管理**（2026-08-19 に是正）。かつて `utils.js` が
+  v=75(10 ページ) と v=82(4 ページ) に分裂していたが、`--check` が乖離と `?v=` 無し参照を検出して
+  非ゼロ終了するようになり、`test_sync_asset_versions.py` が実サイトを検査している
+- テストは **1,074 passed / 1 failed**（既知の pre-existing `test_theme_typography_tokens` のみ）、lint（ruff）は clean。
+  mypy は環境側で INTERNAL ERROR（既存の `build_pages.py` でも再現するため本リポジトリ由来ではない）
 
 ---
 
