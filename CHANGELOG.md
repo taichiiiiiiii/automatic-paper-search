@@ -8,6 +8,21 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ### Added
 
+- **Site redesign phase 1 — cross-conference search, global nav, automatic
+  asset versioning (#355).** The landing page gained a single search box that
+  spans all 10 conferences: `paperpilot/scripts/build_search_index.py` folds
+  every `docs/<conf>/papers.json` into `docs/search-index.json` (2,723,015 B
+  raw / 759,264 B gzip / 28,300 entries). Entries are `[title, conference]`
+  pairs and deliberately carry **no paper id** — `arxiv_id` is empty for
+  95.5% of rows, so a `?focus=<id>` permalink would have been broken for the
+  large majority; the existing `?q=` parameter is reused instead. A shared
+  `<nav class="site-nav">` (探す / テーマ系譜 / 仕組み) now appears on all 17
+  pages, and `paperpilot/scripts/sync_asset_versions.py` derives every `?v=`
+  from the asset's content hash, with `docs/assets/versions.json` as the
+  single source of truth and `--check` failing on divergence or on an
+  unversioned reference. No pipeline or data-contract change: `papers.json`
+  and `conferences.json` are untouched. Merged as `b01705b` and live.
+
 - **Free-tier conference lineage — ECCV 2024 family tree (#347).**
   `paperpilot/scripts/build_conference_lineage.py` (260 lines, 117 lines of
   tests) resolves Oral titles through OpenAlex and walks
@@ -104,6 +119,21 @@ follows [Semantic Versioning](https://semver.org/) and the
   `docs/design/08-lineage-roadmap.md` §判定品質の改善計画.
 
 ### Fixed
+
+- **The repository's only standing test failure is gone (#357).**
+  `test_theme_typography_tokens` had failed for a long time and was waved
+  through as "pre-existing" — first blamed on a node environment
+  dependency, then on leftover work from the #257 token migration. Both
+  diagnoses were wrong and the CSS was correct. The real cause was in the
+  test's own helper: `extractSelectorBlock()` required `<selector> {` and so
+  could not see a selector sitting mid-group behind a comma, silently
+  falling through to a later standalone rule that sets only colours — it was
+  checking a font-size contract against a block with no font-size. The
+  helper now returns every rule whose selector list contains the selector,
+  and the contract reads "some rule sets font-size from the token, no rule
+  reintroduces the raw literal". `--text-micro: 0.58rem` (introduced by #329
+  for the HUB / TREND / 孤立 badges) is now pinned too. Verified with four
+  mutations, each of which the test catches. Suite: 1,075 passed / 0 failed.
 
 - **Oral / Highlight marks restored on CVF and ACL venues (#348).** CVF and
   ACL Anthology carry no oral/poster distinction, so re-collecting a venue
