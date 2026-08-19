@@ -130,6 +130,8 @@ automatic-paper-search/
     │   ├── scaffold_conference_page.py  # cvpr-2026 テンプレ → docs/<conf>/index.html (+ 空 lineage.json)
     │   ├── build_summary_csv.py         # full CSV → summary.csv (8 列 + 自動タグ)
     │   ├── build_pages.py               # summary.csv → docs/<conf>/papers.json
+    │   ├── build_search_index.py       # 全 docs/<conf>/papers.json → docs/search-index.json（学会横断検索。[title, 学会] の位置指定ペア、gzip 0.72MB）
+    │   ├── sync_asset_versions.py      # docs/assets/*.{css,js} の内容ハッシュ → 全 HTML の ?v= を統一（--check で乖離検査）
     │   ├── build_lineage.py             # papers.json + S2 + LLM → lineage.json (arxiv_id 必須・S2 律速)
     │   ├── build_conference_lineage.py  # Oral の title→OpenAlex 解決→参照/被引用で家系図 (S2/LLM 不要の free-tier fallback、edge は引用方向の successor ヒューリスティック) → docs/<conf>/lineage.json
     │   ├── build_deep_lineage.py        # 1 論文 × N hop BFS → docs/<conf>/deep.json
@@ -454,6 +456,8 @@ output/<conf>/papers_YYYY-MM-DD.csv
   │
   └─ build_pages.py         → docs/<conf>/papers.json（一覧ビュー用）
        │
+       ├─ build_search_index.py   → docs/search-index.json（10 学会 28,300 本の横断検索用・gzip 0.72MB）
+       │
        ├─ build_lineage.py        → docs/<conf>/lineage.json
        │     │                      - Oral 全 N 本 × depth 1 の浅い家系図集
        │     │                      - S2 から references/citations 取得
@@ -519,7 +523,8 @@ generate_themes_manifest.py → docs/themes/themes-manifest.json
 - **データの流れ**: `summary.csv` → `build_pages.py` → `docs/<conf>/papers.json`（**要旨は320字プレビュー**でページ <1MB gzip）＋ `docs/conferences.json`（集約 index）。
 
 ### 重要な規約
-- **アセットの cache-bust バージョンは全ページで統一**: `style.css?v=N` / `app.js?v=N` を変えたら参照する全 HTML を同じ N に揃える（過去に themes だけ別バージョンでズレた既往）。一括: `grep -rlE 'style\.css\?v=[0-9]+' docs/ | while read f; do sed -i ...; done`。
+- **アセットの cache-bust バージョンは `sync_asset_versions.py` が管理する（手で揃えない）**: アセットを編集したら `uv run python paperpilot/scripts/sync_asset_versions.py` を実行する。版はアセットの内容ハッシュが変わったときだけ繰り上がり、参照は 1 箇所（`docs/assets/versions.json`）から全 HTML に書き戻されるのでページ間でズレない。`--check` は書き込まずに乖離を報告して非ゼロ終了する。
+  - **手動の `grep | sed` 一括置換はもう使わない**。それが飛ばされて 2 度ズレた（themes だけ別版になった既往／`utils.js` が v=75 の 10 ページと v=82 の 4 ページに分裂）。`test_sync_asset_versions.py::test_repo_docs_have_no_divergent_asset_versions` が実サイトを検査して再発を落とす。
 - **トピックタグ分類** = `build_summary_csv.py` の `TOPIC_RULES`（~60 カテゴリの regex、title+abstract マッチ、複数タグ可）。viewer は各会議の**上位18タグ**だけチップ表示するので大規模タクソノミでも自動適応（CV 会議は CV タスク、NLP 会議は NLP タスクが出る）。greedy な語（"evaluation"/"benchmark" 動詞/"alignment"）は避け、リソース導入表現で絞る。
 - **モバイル**: タグチップは ≤720px で横スワイプ1行、フォーム入力は 16px（iOS の focus ズーム防止、`!important` で component CSS を上書き）。全ページ 320/375px で横はみ出しゼロを維持。
 - **a11y**: 開閉ボタンは `aria-expanded`＋`aria-controls`、件数表示は `aria-live`、focus ring は `--color-accent` で統一。
