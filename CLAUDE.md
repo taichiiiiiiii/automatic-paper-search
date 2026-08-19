@@ -148,7 +148,7 @@ automatic-paper-search/
     │   ├── github.py                    # 共有 GitHub 解決器（curated map + GitHub Search + Stars）
     │   ├── json_parser.py               # LLM 3段階フォールバック
     │   └── logger.py                    # 日次ローテ (7日保持)
-    ├── tests/                           # pytest テスト（1,046 件 pass、2026-08-18 実測）
+    ├── tests/                           # pytest テスト（1,074 件 pass、2026-08-19 実測）
     │   ├── conftest.py
     │   ├── test_*.py                    # 各モジュールのユニット/統合テスト
     │   └── test_venue_stress.py         # 60 パターンで検出率 95% 以上
