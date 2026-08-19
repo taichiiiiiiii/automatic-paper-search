@@ -25,6 +25,7 @@ PaperPilot — AI/ML 論文自動収集・品質フィルタリングシステ�
 - [シーケンス設計](06-sequences.md)
 - [運用（NFR・テスト・CI）](07-operations.md)
 - [リネージ機能ロードマップ](08-lineage-roadmap.md)
+- [サイト再設計 — 方式の決定](10-site-redesign.md)（#355・2026-08-19）
 
 ---
 
