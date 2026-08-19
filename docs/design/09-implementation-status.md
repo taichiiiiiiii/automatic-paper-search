@@ -27,8 +27,8 @@
 | 会議家系図 | **実データは 2 会議のみ**（`iclr-2026` 108KB / `eccv-2024` 38KB）。残り 8 会議の `lineage.json` は **~290B の空スタブ** | `stat -c%s docs/*/lineage.json` |
 | テーマ家系図 | **3 本公開**（flash-attention / mixture-of-experts / vision-transformer） | `docs/themes/themes-manifest.json`。※旧記載の「2 themes 公開」は誤り |
 | deep tree | 14 本生成済だが **ビューアへの導線が無く orphan** | `docs/iclr-2026/deep-manifest.json` |
-| アセット版数 | `style.css?v=85`(17) / `app.js?v=84`(10) / `lineage.js?v=82`(2) / `theme.js?v=82`(1) / `conferences-index.js?v=77`(1)、**`utils.js` は v=75(10) と v=82(4) が混在＝規約違反、要統一** | `grep -rhoE '…\?v=[0-9]+' docs/` |
-| テスト | **1,046 passed / 1 failed**（26.9s）。失敗は既知の pre-existing `test_theme_typography_tokens` のみ | `uv run pytest paperpilot/tests/ -q` |
+| アセット版数 | **`sync_asset_versions.py` が一元管理**（2026-08-19 是正）。内容ハッシュが変わったアセットだけ繰り上がり、`docs/assets/versions.json` から全 HTML に書き戻す。旧状態は `utils.js` が v=75(10) と v=82(4) に分裂＝規約違反だった | `uv run python paperpilot/scripts/sync_asset_versions.py --check` |
+| テスト | **1,074 passed / 1 failed**（24.9s、2026-08-19 実測）。失敗は既知の pre-existing `test_theme_typography_tokens` のみ | `uv run pytest paperpilot/tests/ -q` |
 
 直近の出荷（2026-08、いずれも develop へ merge 済）:
 
