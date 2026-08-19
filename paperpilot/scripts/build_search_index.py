@@ -49,7 +49,7 @@ def build_index(docs_root: Path) -> tuple[list[list[str]], int]:
     for conf_dir in sorted(p for p in docs_root.iterdir() if p.is_dir()):
         # `daily` is the daily-watch collection output, not a conference; it
         # has no catalog page, so a search hit there would lead nowhere.
-        if conf_dir.name in build_pages._NON_CONFERENCE:
+        if conf_dir.name in build_pages.NON_CONFERENCE:
             continue
         papers_json = conf_dir / "papers.json"
         if not papers_json.exists():
