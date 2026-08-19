@@ -65,7 +65,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=optional" rel="stylesheet" />
 
-  <link rel="stylesheet" href="assets/style.css?v=85" />
+  <link rel="stylesheet" href="assets/style.css?v=91" />
   <style>
     /* ============================================================
        Landing-page-only styles. Shared design tokens + the .hero
@@ -597,6 +597,14 @@
     </div>
   </noscript>
   <a class="skip-link" href="#main-content">本文へスキップ</a>
+  <nav class="site-nav" aria-label="グローバル">
+    <a class="site-nav__brand" href="./">PaperPilot</a>
+    <ul class="site-nav__links">
+      <li><a href="./" aria-current="page">探す</a></li>
+      <li><a href="themes/">テーマ系譜</a></li>
+      <li><a href="how-it-works/">仕組み</a></li>
+    </ul>
+  </nav>
 
   <header class="hero hero--landing">
     <!-- Root page has no breadcrumb trail, so this is a brand wordmark,
@@ -616,6 +624,38 @@
           論文の引用を、世代をまたぐ家系図として描く。気になるテーマを入力すれば、
           数分で新しい系譜が生成されます。
         </p>
+        <!-- The one place on the site that can ask a question of all ten
+             proceedings at once. It sits above the CTA row because
+             "find a paper" is the primary job; the lineage CTAs stay as
+             the secondary path. search.js fetches the index on first
+             interaction, never on load. -->
+        <form class="site-search" role="search" data-search autocomplete="off">
+          <label class="site-search__label" for="site-search-input">10 学会 28,300 本を横断して探す</label>
+          <input
+            id="site-search-input"
+            class="site-search__input"
+            type="search"
+            name="q"
+            placeholder="論文タイトルで検索（例: diffusion, attention）"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-controls="site-search-listbox"
+            aria-expanded="false"
+            aria-describedby="site-search-status"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <!-- role="status" already implies aria-live="polite" (ARIA 1.2
+               §6.6); declaring both is redundant. -->
+          <p class="site-search__status" id="site-search-status" role="status"></p>
+          <!-- tabindex="-1": the list scrolls (overflow-y:auto), which makes
+               Chrome treat it as a focusable scroll region and put it in the
+               tab order. Tab then walked into the widget instead of out of
+               it, so the list never closed. Arrow keys on the input already
+               scroll the active option into view. -->
+          <ul class="site-search__results" id="site-search-listbox" role="listbox" aria-label="検索結果" tabindex="-1" hidden></ul>
+        </form>
+
         <div class="hero__cta-row">
           <a class="hero__cta" href="themes/">
             系譜ビューアを開く <span class="hero__cta-arrow" aria-hidden="true">→</span>
@@ -750,6 +790,7 @@
     </nav>
   </footer>
 
+  <script src="assets/search.js?v=3" defer></script>
   <script src="assets/conferences-index.js?v=77"></script>
 </body>
 </html>

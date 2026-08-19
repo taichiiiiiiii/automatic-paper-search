@@ -27,7 +27,9 @@ DOCS_ROOT = ROOT / "docs"
 # appear in the conference index / catalog. "daily" is the daily-watch
 # collection output (config.daily-watch.yaml); rendering it as a conference
 # card would link to docs/daily/ which has no catalog page.
-_NON_CONFERENCE = {"daily"}
+# Public, not _private: build_search_index.py has to exclude the same set,
+# and a second copy of it would drift.
+NON_CONFERENCE = {"daily"}
 
 
 # papers.json ships in full to every catalog visitor, so storing complete
@@ -155,7 +157,7 @@ def main() -> None:
         conf_dirs = sorted(
             d.name
             for d in output_dir.iterdir()
-            if d.is_dir() and d.name not in _NON_CONFERENCE and (d / "summary.csv").exists()
+            if d.is_dir() and d.name not in NON_CONFERENCE and (d / "summary.csv").exists()
         )
 
     if not conf_dirs:
