@@ -11,11 +11,21 @@
 //   --text-card-title    1rem      gallery + base node-card title
 //   --text-edge-label    0.66rem   SVG <text> on lineage edges
 //
+// #329 later added a fifth step for the status-flag badges, which had
+// briefly shared --text-body-sm with the card body text:
+//
+//   --text-micro         0.58rem   HUB / TREND / 孤立 tags, trending pill
+//
 // This test pins:
 //   - the four tokens exist in :root with the declared values
 //   - the 14 callsites enumerated in the issue use `var(--text-...)`
 //     and no longer carry a raw rem literal for these properties
 //   - tokens declared in :root resolve to a sensible rem-based scale
+//
+// Note: `.node-card--theme .node-card__{hub,trending}` are pinned to
+// --text-micro, NOT --text-body-sm. See Issue #357 — this test pinned
+// the pre-#329 expectation for a long time and was the repository's
+// only standing test failure as a result.
 //
 // Out of scope (tracked in the post-merge follow-up issue):
 //   - `.node-card--theme .node-card__title` (0.9rem) — needs its own
@@ -68,36 +78,45 @@ function tokenValue(rootBody, tokenName) {
   return m ? m[1].trim() : null;
 }
 
-function extractSelectorBlock(src, selector) {
-  // Match `<selector> { ... }` where <selector> begins a CSS rule —
-  // i.e. it is preceded by `}` or `,` (group separator) or the start
-  // of the file, not by another selector token. This prevents
-  // `.theme-gallery__age` from matching inside the grouped selector
-  // `.theme-gallery__card--active .theme-gallery__age { ... }`.
-  const escaped = selector.replace(/[.[\]()+*?^$|]/g, (c) => `\\${c}`);
-  const re = new RegExp(`(?:^|[}\\n,])\\s*${escaped}\\s*\\{`, "g");
-  let m;
-  while ((m = re.exec(src)) !== null) {
-    // Walk back from the matched position to confirm the chars
-    // between the boundary char and the selector are whitespace
-    // only — i.e. this is genuinely the rule head and not a
-    // descendant combinator like `.foo .bar { … }`.
-    const selStart = m.index + m[0].indexOf(selector);
-    let j = selStart - 1;
-    while (j >= 0 && /[ \t]/.test(src[j])) j--;
-    const boundary = src[j];
-    if (boundary !== undefined && !/[}\n,]/.test(boundary)) continue;
-    // Found a clean rule start. Walk forward to the matching `}`.
+function extractSelectorBlocks(src, selector) {
+  // Every rule whose selector LIST contains `selector` as a complete
+  // member, returned as block bodies (declarations only).
+  //
+  // The previous implementation matched `<selector> {` literally, so it
+  // could not see a selector that sits in the middle of a group:
+  //
+  //   .node-card--theme .node-card__hub,        <- comma, not `{`
+  //   .node-card--theme .node-card__trending,
+  //   .node-card--theme .node-card__orphan { font-size: var(--text-micro); }
+  //
+  // It silently fell through to a later standalone rule that only sets
+  // colours, so the font-size contract was checked against the wrong
+  // block. That is what made this test fail for `__hub` / `__trending`
+  // even though style.css was correct (Issue #357).
+  const blocks = [];
+  for (let i = 0; i < src.length; i++) {
+    if (src[i] !== "{") continue;
+    // Selector list = text back to the previous `}` / `{` / start.
+    let k = i - 1;
+    while (k >= 0 && src[k] !== "}" && src[k] !== "{") k--;
+    const head = src.slice(k + 1, i);
+    const members = head.split(",").map((t) => t.trim().replace(/\s+/g, " "));
+    // Walk forward to the matching `}` regardless of match, so nested
+    // at-rules don't desync the scan.
     let depth = 0;
-    for (let i = m.index + m[0].length - 1; i < src.length; i++) {
-      if (src[i] === "{") depth++;
-      else if (src[i] === "}") {
+    let end = -1;
+    for (let q = i; q < src.length; q++) {
+      if (src[q] === "{") depth++;
+      else if (src[q] === "}") {
         depth--;
-        if (depth === 0) return src.slice(selStart, i + 1);
+        if (depth === 0) { end = q; break; }
       }
     }
+    if (end === -1) break;
+    if (members.includes(selector)) blocks.push(src.slice(i + 1, end));
+    // Do not skip past `end`: nested rules inside @media must also be seen.
   }
-  return null;
+  return blocks;
 }
 
 // ---- mini assertion harness ----
@@ -124,6 +143,7 @@ const EXPECTED_TOKENS = {
   "--text-card-title":       "1rem",
   "--text-card-title-theme": "0.9rem",  // added in #266
   "--text-edge-label":       "0.66rem",
+  "--text-micro":            "0.58rem",  // added in #329 (status flag tags)
 };
 for (const [name, expected] of Object.entries(EXPECTED_TOKENS)) {
   const got = tokenValue(rootBody, name);
@@ -154,8 +174,12 @@ const CALLSITES = [
   // node card theme variant overrides
   [".node-card--theme .node-card__tldr",       "--text-body-sm",    "0.78rem"],
   [".node-card--theme .node-card__authors",    "--text-body-sm",    "0.78rem"],
-  [".node-card--theme .node-card__hub",        "--text-body-sm",    "0.78rem"],
-  [".node-card--theme .node-card__trending",   "--text-body-sm",    "0.78rem"],
+  // #329 でここは --text-body-sm(0.78rem) から --text-micro(0.58rem) へ
+  // 再割当された（絵文字 → editorial mono タグ）。0.78rem に戻すと
+  // バッジが 34% 巨大化し、`white-space: nowrap` + `flex: none` の
+  // venue 行（space-between）が壊れる。詳細は Issue #357。
+  [".node-card--theme .node-card__hub",        "--text-micro",      "0.78rem"],
+  [".node-card--theme .node-card__trending",   "--text-micro",      "0.78rem"],
   [".node-card--theme .node-card__meta",       "--text-caption",    "0.68rem"],
   // SVG edge labels
   [".edge-label",                              "--text-edge-label", "0.66rem"],
@@ -163,30 +187,32 @@ const CALLSITES = [
 
 console.log(`\nCallsites (${CALLSITES.length} selectors) use tokens, not literals`);
 for (const [selector, token, oldLiteral] of CALLSITES) {
-  const block = extractSelectorBlock(css, selector);
-  ok(block !== null, `${selector}: block found`);
-  if (!block) continue;
-  // 1) The block must reference the expected token for font-size.
+  const blocks = extractSelectorBlocks(css, selector);
+  ok(blocks.length > 0, `${selector}: block found`);
+  if (!blocks.length) continue;
+  // 1) SOME rule for this selector must set font-size from the token.
+  //    (Grouped rules put the font-size on the group, while a later
+  //    standalone rule may tune only colour — both are legitimate.)
   const tokenRe = new RegExp(
     `font-size\\s*:\\s*var\\(\\s*${token.replace(/[-]/g, "\\-")}\\s*\\)\\s*;`,
   );
-  ok(tokenRe.test(block), `${selector}: uses var(${token})`);
-  // 2) The old literal must not appear as a font-size value here.
+  ok(blocks.some((b) => tokenRe.test(b)), `${selector}: uses var(${token})`);
+  // 2) NO rule for this selector may re-introduce the raw literal.
   //    (We strip comments above so a "/* was 0.78rem */"-style note
   //    in the comment block doesn't trip this.)
   const literalRe = new RegExp(
     `font-size\\s*:\\s*${oldLiteral.replace(/\./g, "\\.")}\\s*;`,
   );
-  ok(!literalRe.test(block), `${selector}: no font-size: ${oldLiteral} literal`);
+  ok(!blocks.some((b) => literalRe.test(b)), `${selector}: no font-size: ${oldLiteral} literal`);
 }
 
 // ---- #266: theme-variant card title now tokenised ----
 console.log("\n#266 theme variant card title");
-const themeTitle = extractSelectorBlock(
+const themeTitle = extractSelectorBlocks(
   css,
   ".node-card--theme .node-card__title",
-);
-ok(themeTitle !== null, ".node-card--theme .node-card__title block exists");
+).join("\n");
+ok(themeTitle !== "", ".node-card--theme .node-card__title block exists");
 if (themeTitle) {
   ok(/font-size\s*:\s*var\(--text-card-title-theme\)/.test(themeTitle),
      ".node-card--theme .node-card__title uses var(--text-card-title-theme)");
