@@ -314,6 +314,65 @@ input[type="range"]:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   .hero__details { animation: none; }
 }
+/* ---- Global site navigation ----------------------------------------
+   Every page previously offered only a breadcrumb back to the landing
+   page plus, on eight of the ten conference pages, a redundant
+   "PaperPilot について" link. There was no way to reach a sibling
+   section (themes, how-it-works) without going home first. This bar is
+   the one shared way across the site; the breadcrumb keeps the trail.
+   Mono/uppercase matches the breadcrumb so the two read as one system. */
+.site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.75rem 1.5rem;
+  padding: 0.85rem var(--space-edge);
+  border-bottom: 1px solid var(--color-rule);
+  font-family: var(--font-mono);
+  font-size: var(--text-tag);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.site-nav__brand {
+  font-weight: 500;
+  color: var(--color-ink);
+  text-decoration: none;
+  margin-right: auto;
+}
+.site-nav__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.site-nav__links a {
+  color: var(--color-ink-subtle);
+  text-decoration: none;
+  padding-bottom: 2px;
+  border-bottom: 1px solid transparent;
+  transition: color var(--duration-fast) var(--ease),
+              border-color var(--duration-fast) var(--ease);
+}
+.site-nav__links a:hover {
+  color: var(--color-ink);
+  border-bottom-color: var(--color-rule-strong);
+}
+/* Keyboard focus was undefined across the whole site; make it explicit
+   and visible against both the bar and the page background. */
+.site-nav a:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+/* The current section is named by aria-current and marked with weight +
+   a rule, so the state never relies on hue alone. */
+.site-nav__links a[aria-current="page"] {
+  color: var(--color-ink);
+  border-bottom-color: var(--color-ink);
+}
+
 .hero__breadcrumb {
   font-family: var(--font-mono);
   font-size: var(--text-tag);
@@ -1279,6 +1338,10 @@ input[type="range"]:focus-visible {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+  /* Without this the label grows to its <select>'s intrinsic width (the
+     longest paper title) and drags the whole page into a horizontal
+     scroll: measured 891px inside a 768px viewport. */
+  max-width: 100%;
   font-family: var(--font-mono);
   font-size: 0.75rem;
   color: var(--color-ink-muted);
@@ -1291,7 +1354,14 @@ input[type="range"]:focus-visible {
   border-radius: 3px;
   background: var(--color-bg);
   color: var(--color-ink);
-  max-width: 28rem;
+  /* A <select> sizes to its widest <option>, so long paper titles pushed
+     deep.html into a horizontal scroll at 320/375px (measured scrollWidth
+     495 vs innerWidth 375). Two things are needed: cap the width against
+     the container as well as at 28rem, and — the actual root cause —
+     clear the flex default min-width:auto, which otherwise forbids
+     shrinking below the intrinsic content width no matter the max-width. */
+  max-width: min(28rem, 100%);
+  min-width: 0;
   cursor: pointer;
 }
 .deep-picker__select:focus-visible {
