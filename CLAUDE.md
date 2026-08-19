@@ -33,12 +33,12 @@ Python：3.10 以上（開発・CIは 3.12）
 ```bash
 uv run ruff check paperpilot/                 # lint（push 前必須。pytest は I001 import-sort を拾わない）
 uv run mypy paperpilot/                        # type check ⚠️現環境では INTERNAL ERROR で走らない（後述「既知の環境問題」）
-uv run pytest paperpilot/tests/                # 全テスト（~27s、1,074 passed / 1 failed）
+uv run pytest paperpilot/tests/                # 全テスト（~27s、1,075 passed / 0 failed）
 uv run pytest paperpilot/tests/test_venue_signal.py::test_x -q   # 単一テスト
 uv run pytest paperpilot/tests/ --cov=paperpilot --cov-config=/dev/null   # カバレッジ
 ```
 
-既知の pre-existing failure: `tests/viewer/test_theme_viewer_smoke.py::test_theme_typography_tokens`。**原因は環境ではない**（node は動作し、スクリプト自身が `55 passed, 2 failed` を出す）。実体は Issue #257 のトークン移行の積み残しで、`.node-card--theme .node-card__hub` と `.node-card--theme .node-card__trending` が `var(--text-body-sm)` を使っていない **2 セレクタだけ**（2026-08-20 実測。直すなら `docs/assets/style.css` の当該2箇所）。`pip install -e '.[dev]'` 互換も維持。
+**既知の pre-existing failure は解消済み**（2026-08-20、Issue #357）。長年「node 環境依存」→のち「#257 の移行残り」と説明されてきたが、**どちらも誤り**だった。真因は `test_theme_typography_tokens.mjs` の `extractSelectorBlock()` が**グループ化セレクタを読めない**こと。`.node-card--theme .node-card__hub,` はカンマ終端なので `<selector>{` に一致せず、色だけ指定する後続の単独規則を検査していた。CSS は #329 の意図どおり `var(--text-micro)`(0.58rem) で正しい。⚠️**CSS を `--text-body-sm`(0.78rem) に「直す」な** — バッジが 34% 巨大化し `white-space: nowrap` の venue 行が壊れる。`pip install -e '.[dev]'` 互換も維持。
 
 ### 依存ライブラリ
 
@@ -863,9 +863,9 @@ Skill / Agent を追加・変更した時は、この表と `.claude/agents/agen
 - **アセット版数は `sync_asset_versions.py` が統一管理**（2026-08-19 に是正）。かつて `utils.js` が
   v=75(10 ページ) と v=82(4 ページ) に分裂していたが、`--check` が乖離と `?v=` 無し参照を検出して
   非ゼロ終了するようになり、`test_sync_asset_versions.py` が実サイトを検査している
-- テストは **1,074 passed / 1 failed**（既知の pre-existing `test_theme_typography_tokens` のみ）、lint（ruff）は clean。
+- テストは **1,075 passed / 0 failed**（2026-08-20 に #357 で唯一の恒常 failure を解消）、lint（ruff）は clean。
   mypy は環境側で INTERNAL ERROR（既存の `build_pages.py` でも再現するため本リポジトリ由来ではない）
 
 ---
 
-*最終更新：2026年8月20日（定期整理: ① テスト/lint に関する記述を実測に一致（`~22s`→`~27s`、bare `python3 -m pytest`→`uv run`）、② 既知 failure の原因を「node 環境依存」から実体（Issue #257 のトークン移行の残り 2 セレクタ）へ訂正、③ **存在しない CI（test/ruff/mypy）の記述を削除しローカル実行が唯一のゲートである旨を明記**、④ mypy が現環境で INTERNAL ERROR で走らないことを実行例に併記。2026-08-18 の変更＝CHANGELOG 履歴 20 本の無損失退避・実装ステータス章の `docs/design/09-implementation-status.md` への移設・#347〜#353 の反映。詳細は CHANGELOG.md ## [Unreleased] 参照）*
+*最終更新：2026年8月20日（定期整理: ① テスト/lint に関する記述を実測に一致（`~22s`→`~27s`、bare `python3 -m pytest`→`uv run`）、② 唯一の恒常 failure を #357 で解消（原因はテスト補助関数がグループ化セレクタを読めなかったこと。「node 環境依存」も「#257 の移行残り」も誤診だった）、③ **存在しない CI（test/ruff/mypy）の記述を削除しローカル実行が唯一のゲートである旨を明記**、④ mypy が現環境で INTERNAL ERROR で走らないことを実行例に併記。2026-08-18 の変更＝CHANGELOG 履歴 20 本の無損失退避・実装ステータス章の `docs/design/09-implementation-status.md` への移設・#347〜#353 の反映。詳細は CHANGELOG.md ## [Unreleased] 参照）*

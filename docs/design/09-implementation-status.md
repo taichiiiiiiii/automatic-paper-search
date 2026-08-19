@@ -30,7 +30,7 @@
 | アセット版数 | **`sync_asset_versions.py` が一元管理**（2026-08-19 是正）。内容ハッシュが変わったアセットだけ繰り上がり、`docs/assets/versions.json` から全 HTML に書き戻す。旧状態は `utils.js` が v=75(10) と v=82(4) に分裂＝規約違反だった | `uv run python paperpilot/scripts/sync_asset_versions.py --check` |
 | 学会横断検索 | **`docs/search-index.json` = 2,723,015 B / gzip 759,264 B / 28,300 件**。中身は `[タイトル, 会議スラッグ]` の2要素配列（`build_search_index.py` の `TITLE, CONFERENCE = 0, 1`）。**論文 ID は持たない** — `arxiv_id` が 95.5% 空だったため永続リンクに使えず、遷移は既存の `?q=` を再利用する設計にした | `stat -c%s docs/search-index.json`、`gzip -c docs/search-index.json \| wc -c` |
 | グローバルナビ | **`<nav class="site-nav">` が 17 / 17 ページに挿入済**。リンクは **3 本のみ**（探す / テーマ系譜 / 仕組み）＋ワードマーク。自ページを指すリンクにだけ `aria-current="page"` が付く | `grep -rl 'class="site-nav"' docs --include='*.html' \| wc -l` |
-| テスト | **1,074 passed / 1 failed**（26.84s、2026-08-20 実測）。唯一の失敗は `tests/viewer/test_theme_viewer_smoke.py::test_theme_typography_tokens` で、**node 環境依存ではない**（node は動いておりスクリプト自身が `55 passed, 2 failed` を出す）。失敗 2 件の中身は `.node-card--theme .node-card__hub` と `.node-card--theme .node-card__trending` が `var(--text-body-sm)` を使っていない = Issue #257 のトークン移行が未完了の残り 2 セレクタ | `uv run pytest paperpilot/tests -q` |
+| テスト | **1,075 passed / 0 failed**（26.53s、2026-08-20 実測）。長年唯一の恒常 failure だった `test_theme_typography_tokens` は #357 で解消。真因はテスト補助関数がグループ化セレクタを読めず、色だけ指定する別規則を検査していたこと（CSS は #329 の意図どおり `--text-micro` で正しかった） | `uv run pytest paperpilot/tests -q` |
 
 直近の出荷（2026-08、いずれも develop へ merge 済）:
 
@@ -108,7 +108,7 @@
 |------|------|
 | ruff (lint) | ✅ **145 files clean**（`paperpilot/` 配下、2026-08-20 実測。`uv run ruff check paperpilot/` → All checks passed!） |
 | mypy (type check) | ⚠️ **未検証** — mypy 1.20.1 が typeshed の `builtins.pyi:251` で INTERNAL ERROR を出し起動しない（単一ファイル指定でも再現）。本リポジトリ由来ではなく環境側の問題（`CLAUDE.md` の「既知の環境問題」にも同記録あり）。緑チェックは外した |
-| pytest テスト数 | ✅ **1,074 passed / 1 failed**（collect-only 1,075 件、26.84s、2026-08-20 実測）。唯一の失敗 `tests/viewer/test_theme_viewer_smoke.py::test_theme_typography_tokens` は node 環境依存ではなく、スクリプト側が出す `55 passed, 2 failed` のうち `.node-card--theme .node-card__hub` と `.node-card__trending` が `var(--text-body-sm)` を使っていない = Issue #257 トークン移行の残り 2 セレクタ |
+| pytest テスト数 | ✅ **1,075 passed / 0 failed**（26.53s、2026-08-20 実測）。#357 で唯一の恒常 failure を解消 |
 | venue 正規表現検出率 | ✅ 100% (60 パターン / 目標 95%) |
 | `build_theme_lineage()` 行数 | ✅ Stage 別 helper 抽出後 238 行 (#148) |
 
