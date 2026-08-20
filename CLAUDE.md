@@ -336,7 +336,7 @@ git push
 
 `develop` へ PR → merge。merge 後は bug 発生時のみ再レビュー。
 
-🔴 **テスト/lint を走らせる CI は存在しない**（2026-08-20 実測: `.github/workflows/` 9 本のうち `pytest`/`ruff`/`mypy` を実行するものは 0 本。push で自動起動するのは `data-audit` と `pages`、PR で動くのは `lighthouse` のみ）。∴ **merge 前のローカル `uv run pytest` と `uv run ruff check` が唯一のゲート**。しかも `develop` への merge は `pages.yml` 経由でそのまま本番公開になる。
+🔴 **テスト/lint を走らせる CI は存在しない**（2026-08-20 実測: `.github/workflows/` 9 本のうち `pytest`/`ruff`/`mypy` を実行するものは 0 本。自動発火は push=`data-audit`/`pages`、PR=`data-audit`/`lighthouse`、release=`publish`、schedule=`lighthouse` のみ。下表参照）。∴ **merge 前のローカル `uv run pytest` と `uv run ruff check` が唯一のゲート**。しかも `develop` への merge は `pages.yml` 経由でそのまま本番公開になる。
 
 ### 全体タイミング図
 
@@ -616,17 +616,31 @@ uv run python -m paperpilot.scripts.scaffold_conference_page --conference <slug>
 
 ## CI / GitHub Actions
 
-定期実行のワークフロー (`.github/workflows/`):
+ワークフロー一覧 (`.github/workflows/`・全 9 本):
 - `collect-weekly.yml` — 主要会議の論文を深掘り収集 → `paperpilot/output/` に commit。**手動 `workflow_dispatch` 専用**（#245 で週次 cron 廃止）
 - `collect-daily-watch.yml` — follow 著者の新作を確認 → 通知のみ。**手動 `workflow_dispatch` 専用**（#245 で日次 cron 廃止）
 
-🔴 **定期実行されている workflow は `lighthouse.yml`（毎週月曜 02:00 UTC）ただ 1 本**（2026-08-20 実測）。`collect-weekly` / `collect-daily-watch` は #245、`regen-themes` は #261 で cron を外している。∴ **カタログのデータは自動では更新されない**（`conferences.json` は `generated: 2026-06-28` で凍結）。更新したい時は `workflow_dispatch` で明示的に回すこと。
+🔴 **トリガ実測表（2026-08-20、`on:` 節を全 9 本直読）** — 名前から推測しないこと。
+
+| workflow | push | PR | schedule | release | dispatch |
+|---|:--:|:--:|:--:|:--:|:--:|
+| `data-audit` | ✅ | ✅ | | | ✅ |
+| `pages` | ✅ | | | | ✅ |
+| `lighthouse` | | ✅ | ✅ `0 2 * * 1` | | ✅ |
+| `publish` | | | | ✅ `published` | ✅ |
+| `collect-weekly` / `collect-daily-watch` / `regen-themes` / `theme-on-demand` / `conference-on-demand` | | | | | ✅ のみ |
+
+- **`schedule` を持つのは `lighthouse` ただ 1 本**（`collect-*` は #245、`regen-themes` は #261 で cron 廃止）。
+  ∴ **カタログは自動更新されない**（`conferences.json` は `generated: 2026-06-28` で凍結）。更新は `workflow_dispatch` で明示的に回す。
+- ⚠️ `data-audit` は**トリガはあるが 2026-06-15 以降一度も発火していない**（paths が `docs/iclr-*/lineage.json` 限定・#358）。
+- ⚠️ `pytest`/`ruff`/`mypy` を走らせる workflow は**この 9 本に 1 つも無い**。
 - `regen-themes.yml` — 手動 `workflow_dispatch` 専用 (PR #261 で週次 cron 廃止)。LLM 契約変更や lineage 形式バンプ後にバルク再生成する break-glass
 - `theme-on-demand.yml` — フォーム送信または手動 dispatch で 1 テーマだけ生成
 - `conference-on-demand.yml` — 手動 `workflow_dispatch` で**新しい学会カタログ**を end-to-end 生成 (collect_conference → build_summary_csv → build_pages → scaffold_conference_page → commit → Pages)。入力: `conference`(slug) / `venue`(VenueSignal token) / `query`(arXiv `co:"…"`) / `display` / `lede` / `max`。LLM/unarXive 不要 (カタログは arXiv メタ + VenueSignal のみで構築)。**arXiv 自己申告ベースなので部分収録(採択集合の ~30-40%)**。**ICLR/NeurIPS/ICML は `collect_openreview.py`(OpenReview api2 venueid → 全採択 + Oral/Spotlight/Poster 区分)で権威的に全件収録するのが正**(当面は手動: collect_openreview → build_summary_csv → build_pages → 既存ページなら lede/footer を OpenReview 表記に手修正。専用 workflow `openreview-on-demand.yml` は未実装=follow-up)
 - `data-audit.yml` — `docs/themes/*/lineage.json` 等が変わった PR/push で seed/lineage 監査
 - `lighthouse.yml` — frontend 変更 PR + 月曜定例で Core Web Vitals 計測
 - `pages.yml` — `docs/**` 変更で GitHub Pages へデプロイ
+- `publish.yml` — GitHub Release 公開で PyPI に trusted-publisher 発行。**実行歴は 2026-05-30 の 1 回だけで、それも failure**（2026-08-20 実測）
 
 ### 必要な GitHub Secrets
 
