@@ -1,5 +1,20 @@
 # 4. 各Stage詳細設計
 
+
+> ## ⚠️ この文書は陳腐化しています（2026-08-20 実測・#360）
+>
+> **v2.1（2026-04-05）時点の設計のままで、実装から約 4.5 か月ぶん乖離しています。**
+> 実測監査で **33 件の食い違い**（高 16 / 中 13 / 低 4）が確認されており、
+> **存在しないファイル・CI・モデルを記載している箇所があります。**
+>
+> - 現況の単一の真実源は **[09-implementation-status.md](09-implementation-status.md)**
+> - 手順やフィールド名を使う前に、**必ず実コード・実設定で裏を取ってください**
+> - 代表例: `.github/workflows/collect.yml` は存在しない / embedding は SPECTER2 ではなく MiniLM /
+>   LLM は Claude 必須ではなく ollama 既定の 4 プロバイダ / `social` シグナルは存在せず実際は `follow`
+> - 🔴 embedding は **MiniLM**（`sentence-transformers/all-MiniLM-L6-v2`）。SPECTER2 は設定上 "future" 扱いです。
+> - 🔴 重みに `social` は存在せず、実際は **`follow: 3.5`（最高重み）**。理論最大値の計算も成り立ちません。
+
+
 ## 4.1 Stage 0: データ収集
 **【v2.0修正】 **並列化方式をasyncio + aiohttpに確定。各Sourceはafetch()をオーバーライドし、asyncio.gather()で並列実行する。
 
