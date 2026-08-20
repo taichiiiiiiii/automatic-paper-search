@@ -684,7 +684,7 @@ artifact 上げる → workflow が DL する** 構造。
 
 ```bash
 # 1. 依存追加 (一時的、メイン pyproject.toml には入れない)
-uv pip install duckdb huggingface_hub
+uv pip install 'paperpilot[unarxive]'   # = duckdb + huggingface_hub（#362 で extra 化）
 
 # 2. unarXive DuckDB を build (~5 min、HF cache hit なら ~30 s)
 #    DuckDB native read_json_auto + 3-col 化 + 600ch trim で

@@ -44,6 +44,16 @@ dev = [
 embedding = [
     "sentence-transformers>=2.7.0",   # Stage 3 Embedding (MiniLM ~80MB)
 ]
+unarxive = [
+    # Citation contexts without S2. `utils/unarxive.py` imports duckdb lazily
+    # and disables the feature when it is absent — its fallback message points
+    # users here, so this extra has to exist (#362). `build_unarxive_index.py`
+    # additionally pulls the corpus from the Hub.
+    # Floors are conservative; neither package is installed in the dev box, so
+    # they are declared, not verified against a working unarXive run.
+    "duckdb>=1.0",
+    "huggingface_hub>=0.23",
+]
 sheets = [
     "gspread>=6.0",                   # Google Sheets API
     "google-auth>=2.29",              # Service account auth
