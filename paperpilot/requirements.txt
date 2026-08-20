@@ -3,6 +3,10 @@ requests>=2.31.0
 aiohttp>=3.9.0
 pyyaml>=6.0
 python-dotenv>=1.0.0
+# core, not optional: pipeline/runner.py imports stage_embedding at module
+# scope and that imports numpy, so the CLI cannot even be imported without
+# it — regardless of embedding.enabled (#361).
+numpy>=1.26.0
 
 # dev/test (not required for production runs)
 # pytest>=8.0
