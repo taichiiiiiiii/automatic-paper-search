@@ -70,13 +70,13 @@
 | Push race retry (`commit-and-push.sh`) | ✅ 5 回 retry + jittered sleep + multi-path 対応 (#122 / #140)、12 unit tests |
 | Workflow YAML 不変条件 | ✅ `test_workflow_yaml_quality.py` (secrets-in-step-if 防止 #135) |
 | Lighthouse CI (`lighthouse.yml`) | ✅ PR + 週次月曜で `treosh/lighthouse-ci-action@v12` 実行、staticDistDir で docs/ をローカル serve → 4 ページ × 3 run。`LHCI_GITHUB_APP_TOKEN` (任意) があれば PR コメント、無ければ temporary-public-storage アップロード。assert は warn-only (LCP 2.5s / CLS 0.1 / TBT 200ms / FCP 1.5s 上限) |
-| Data audit (`data-audit.yml`) | ✅ PR/push 時に `docs/themes/**` / `docs/iclr-*/**` / build / audit script 変更で fire。`audit_theme_seeds` (#192) + `audit_lineage_quality` (#197) を順次実行 (両者 exit 1 で job fail)。Job Summary に各監査結果を個別 Markdown 表示 (#199) |
+| Data audit (`data-audit.yml`) | ✅ PR/push 時に `docs/themes/**` / `docs/iclr-*/**` / build / audit script 変更で fire。`audit_theme_seeds` (#192) + `audit_lineage_quality` (#197) を順次実行 (両者 exit 1 で job fail)。Job Summary に各監査結果を個別 Markdown 表示 (#199) ※ **実際には 2026-06-15 を最後に一度も起動していない**（トリガが `docs/iclr-*/lineage.json` 限定で他 9 会議の lineage 追加を拾わない）。#358 参照 |
 
 ### ビューア
 | 仕様 | 状態 |
 |------|------|
 | 論文一覧 (`papers.json`) | ✅ `index.html` + `build_pages.py` で生成 |
-| Conference 家系図 (`lineage.json`) | ✅ `build_lineage.py` が `AbstractLLMProvider.classify_relation` 経由で生成。週次 CI 統合済 |
+| Conference 家系図 (`lineage.json`) | ✅ `build_lineage.py` が `AbstractLLMProvider.classify_relation` 経由で生成。週次 CI 統合済 ※ **その「週次 CI」は #245（2026-06-04）で cron を外して手動専用になった**。2026-08-20 現在、定期実行される workflow は `lighthouse.yml` だけ |
 | Conference deep tree (`deep-*.json`) | ✅ `build_deep_lineage.py`、14 件生成済 |
 | **テーマ家系図 (`themes/<slug>/`)** | ✅ `/themes/` のサイトフォーム → CF Worker (`worker/index.ts`) → `theme-on-demand.yml` を自動 dispatch (PR #233 で CF Worker 復活)。**2 themes 公開** (flash-attention / vision-transformer; #260 で site-request-only 化、seed themes 全消し) ※ **現在は 3 本公開（flash-attention / mixture-of-experts / vision-transformer）。上の「現況（2026-08-18 実測）」表を参照 — ここは 2026-06-03 時点の履歴なので原文保持** |
 | **家系図ビューアの frontend (#324-#332)** | ✅ editorial 刷新。仕組みページ (#324) / 論文カード polish+a11y+declutter+editorial-flags (#325/#328/#329) / 関係線の幹(successor)・枝(extends)階層 + 3ビューア共有 (`PP.edgeStyle`) + fan-out 発生点 (`PP.fanOffsets`) (#330-#332)。全 merged + 本番 live |

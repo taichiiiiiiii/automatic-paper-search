@@ -75,8 +75,8 @@ automatic-paper-search/
 ├── archive/                             # 原本 .docx の保管先（編集禁止）
 ├── .github/
 │   └── workflows/
-│       ├── collect-weekly.yml           # 毎週土曜 07:00 JST 深掘り（PAT に workflow scope 必要）
-│       ├── collect-daily-watch.yml      # 毎日 07:00 JST フォロー著者ウォッチ
+│       ├── collect-weekly.yml           # 手動 workflow_dispatch のみ（#245 で週次 cron 廃止。PAT に workflow scope 必要）
+│       ├── collect-daily-watch.yml      # 手動 workflow_dispatch のみ（#245 で日次 cron 廃止）
 │       ├── regen-themes.yml             # 手動 workflow_dispatch のみ (PR #261 で週次 cron 廃止)
 │       ├── theme-on-demand.yml          # ★ オンデマンド単一テーマ生成（運用者が gh workflow run で手動 dispatch）
 │       ├── lighthouse.yml               # PR ごと + 週次の Lighthouse / Core Web Vitals 測定
@@ -617,8 +617,10 @@ uv run python -m paperpilot.scripts.scaffold_conference_page --conference <slug>
 ## CI / GitHub Actions
 
 定期実行のワークフロー (`.github/workflows/`):
-- `collect-weekly.yml` — 土曜 07:00 JST に主要会議の論文を深掘り収集 → `paperpilot/output/` に commit
-- `collect-daily-watch.yml` — 毎日 07:00 JST に follow 著者の新作を確認 → 通知のみ
+- `collect-weekly.yml` — 主要会議の論文を深掘り収集 → `paperpilot/output/` に commit。**手動 `workflow_dispatch` 専用**（#245 で週次 cron 廃止）
+- `collect-daily-watch.yml` — follow 著者の新作を確認 → 通知のみ。**手動 `workflow_dispatch` 専用**（#245 で日次 cron 廃止）
+
+🔴 **定期実行されている workflow は `lighthouse.yml`（毎週月曜 02:00 UTC）ただ 1 本**（2026-08-20 実測）。`collect-weekly` / `collect-daily-watch` は #245、`regen-themes` は #261 で cron を外している。∴ **カタログのデータは自動では更新されない**（`conferences.json` は `generated: 2026-06-28` で凍結）。更新したい時は `workflow_dispatch` で明示的に回すこと。
 - `regen-themes.yml` — 手動 `workflow_dispatch` 専用 (PR #261 で週次 cron 廃止)。LLM 契約変更や lineage 形式バンプ後にバルク再生成する break-glass
 - `theme-on-demand.yml` — フォーム送信または手動 dispatch で 1 テーマだけ生成
 - `conference-on-demand.yml` — 手動 `workflow_dispatch` で**新しい学会カタログ**を end-to-end 生成 (collect_conference → build_summary_csv → build_pages → scaffold_conference_page → commit → Pages)。入力: `conference`(slug) / `venue`(VenueSignal token) / `query`(arXiv `co:"…"`) / `display` / `lede` / `max`。LLM/unarXive 不要 (カタログは arXiv メタ + VenueSignal のみで構築)。**arXiv 自己申告ベースなので部分収録(採択集合の ~30-40%)**。**ICLR/NeurIPS/ICML は `collect_openreview.py`(OpenReview api2 venueid → 全採択 + Oral/Spotlight/Poster 区分)で権威的に全件収録するのが正**(当面は手動: collect_openreview → build_summary_csv → build_pages → 既存ページなら lede/footer を OpenReview 表記に手修正。専用 workflow `openreview-on-demand.yml` は未実装=follow-up)
