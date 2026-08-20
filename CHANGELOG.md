@@ -52,6 +52,44 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ### Changed
 
+- **Periodic-maintenance audit: four documented safety nets that do not exist
+  (#358, #360).** A sweep of README, CLAUDE.md and `docs/design/**` against the
+  actual code and workflow files found several claims of automation with no
+  implementation behind them. CLAUDE.md described a `develop` PR gate of
+  "CI (test / ruff / mypy)" — **no workflow runs any of the three**, so a local
+  `uv run pytest` / `ruff check` before merge is the only gate, and a merge to
+  `develop` publishes straight to production through `pages.yml`.
+  `data-audit.yml` last ran on 2026-06-15 and has not fired since: its path
+  filter watches only `docs/iclr-*/lineage.json`, so the ECCV-2024 lineage
+  added by #347 has never been audited (#358). `collect-weekly.yml` and
+  `collect-daily-watch.yml` were documented as running every Saturday and
+  every morning, but #245 removed their `schedule:` keys on 2026-06-04 — the
+  catalog is frozen at `generated: 2026-06-28` and `lighthouse.yml` is now the
+  only scheduled workflow. `docs/design/07-operations.md` §11 still prints a
+  full `.github/workflows/collect.yml` with a daily cron for a file that does
+  not exist. All four corrected in the docs.
+
+- **Design book 01–07 flagged as stale (#360).** Those seven files are still
+  the v2.1 (2026-04-05) text while the implementation moved on ~4.5 months; a
+  measured audit found 33 divergences (16 high). Embedding is MiniLM, not
+  SPECTER2; the LLM layer is a four-provider setup defaulting to ollama, not a
+  required Claude API; there is no `social` signal (the real one is `follow`,
+  at the highest weight 3.5); `stage2_top_n` is 30, not 80; `requirements.txt`
+  holds five packages, not the numpy/torch/transformers/anthropic set the doc
+  lists. `01-overview.md` is not an overview at all (it is a fragment of §5.6,
+  and the real §1/§2 do not exist in the repo) and `04-data.md` is truncated
+  mid-section. Content was left untouched — each file gained a staleness
+  banner pointing at `09-implementation-status.md` as the single source of
+  truth, pending a decision in #360 on whether to freeze, rewrite, or fold the
+  design book into the status doc.
+
+- **Paper-count discrepancy retracted.** The long-standing note that
+  `conferences.json` (28,300) and `papers.json` (28,310) disagreed by ten was
+  wrong: all ten conferences match exactly, and the difference was
+  `docs/daily/papers.json`, a non-conference file that
+  `build_pages.NON_CONFERENCE` already excludes. The `LLM`-tag figure in
+  `10-site-redesign.md` was corrected the same way (28,300 / 10,099).
+
 - **Docs compaction — CLAUDE.md / CHANGELOG.md split into archives
   (2026-08-18).** `CLAUDE.md` had grown to 920 lines / 72KB and is read by
   every agent session; `CHANGELOG.md`'s `[Unreleased]` had accumulated 20
@@ -119,6 +157,18 @@ follows [Semantic Versioning](https://semver.org/) and the
   `docs/design/08-lineage-roadmap.md` §判定品質の改善計画.
 
 ### Fixed
+
+- **Degenerate rationales are still shipping for ICLR 2026 (#359).** The #297
+  guard is in `develop` (`_is_degenerate_rationale` in `build_lineage.py`), but
+  it only rejects bad rationales at build time — the already-published
+  `docs/iclr-2026/lineage.json` was never regenerated and still carries 45 of
+  63 edges (71.4%) with rationales like `"A"`, `"QD"`, `"CMA-ES"`, visible to
+  readers as edge tooltips. Every lineage generated after the guard measures
+  0.0%, which confirms the diagnosis. Recorded, not fixed: regeneration needs
+  an LLM key and `docs/<conf>/lineage.json` may only be written by its build
+  script (absolute rules §13/§14). `audit_lineage_quality.py` had been warning
+  about this the whole time — nobody saw it because `data-audit.yml` was
+  dormant (#358).
 
 - **The repository's only standing test failure is gone (#357).**
   `test_theme_typography_tokens` had failed for a long time and was waved
