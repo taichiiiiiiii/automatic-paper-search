@@ -208,11 +208,19 @@ llm:
 
 Stage 4 (LLM) を有効化すると、さらに `llm_relevance (1..5)` で最終ランキングされます。
 
-## GitHub Actions（2 系統運用）
+## GitHub Actions
+
+> ⚠️ **定期実行されているのは `lighthouse.yml`（毎週月曜 02:00 UTC）だけです**（2026-08-20 実測）。
+> 下の 2 つの収集ワークフローは **#245（2026-06-04）で cron を外し、手動実行専用**になりました。
+> テーマ家系図へスコープを絞った際に「会議カタログ収集と著者ウォッチはテーマ生成に寄与しない」と
+> 判断されたためで、ワークフロー自体は残してあるので `workflow_dispatch` でいつでも回せます。
+> 実測の最終実行は collect-weekly が 2026-05-29、collect-daily-watch が 2026-06-02。
+> ∴ `docs/` のカタログは **`generated: 2026-06-28` で凍結**しています。
 
 ### 1. 週次深掘り — `.github/workflows/collect-weekly.yml`
 
-毎週土曜 07:00 JST（Fri 22:00 UTC）実行。フル機能で CSV/JSON 生成 + commit。
+**手動実行のみ**（`workflow_dispatch`。旧: 毎週土曜 07:00 JST ＝ Fri 22:00 UTC、#245 で廃止）。
+フル機能で CSV/JSON 生成 + commit。
 
 - `paperpilot/config.yaml` を参照
 - Stage 0〜4 フル稼働（LLM 有効時は Ollama/Gemini/Claude で日本語要約）
@@ -220,7 +228,8 @@ Stage 4 (LLM) を有効化すると、さらに `llm_relevance (1..5)` で最終
 
 ### 2. 毎日の著者ウォッチ — `.github/workflows/collect-daily-watch.yml`
 
-毎朝 07:00 JST（22:00 UTC）実行。`follow_authors` / `follow_orgs` にヒットした論文だけ Slack 通知。
+**手動実行のみ**（`workflow_dispatch`。旧: 毎朝 07:00 JST ＝ 22:00 UTC、#245 で廃止）。
+`follow_authors` / `follow_orgs` にヒットした論文だけ Slack 通知。
 
 - `paperpilot/config.daily-watch.yaml` を参照
 - LLM / citation 無効（day-1 では意味なし）
