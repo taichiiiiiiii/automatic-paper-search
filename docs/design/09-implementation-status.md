@@ -24,7 +24,7 @@
 |---|---|---|
 | 学会カタログ | **10 会議 / 28,300 本**（生成 2026-06-28） | `docs/conferences.json` を集計 |
 | 内訳 | iclr-2026:5351 / neurips-2025:5286 / cvpr-2026:4068 / icml-2025:3257 / cvpr-2025:2871 / iccv-2025:2701 / emnlp-2025:1809 / acl-2025:1699 / aaai-2026:762 / eccv-2024:496 | 同上 |
-| 会議家系図 | **実データは 2 会議のみ**（`iclr-2026` 108KB / `eccv-2024` 38KB）。残り 8 会議の `lineage.json` は **~290B の空スタブ** | `stat -c%s docs/*/lineage.json` |
+| 会議家系図 | **実データは 2 会議のみ**（`iclr-2026` 108KB / `eccv-2024` 38KB）。残り 8 会議の `lineage.json` は **~290B の空スタブ**。🔴 **`iclr-2026` は 63 エッジ中 45（71.4%）が退化 rationale**（`"A"` `"QD"` `"CMA-ES"` 等）＝ tooltip に直接出る。#297 のガードは develop に入っているが**出荷済みデータが再生成されていない**ため症状が残る（#359）。ガード導入後に生成された `eccv-2024` とテーマ 3 本は **0.0%** で clean | `stat -c%s docs/*/lineage.json` |
 | テーマ家系図 | **3 本公開**（flash-attention / mixture-of-experts / vision-transformer） | `docs/themes/themes-manifest.json`。※旧記載の「2 themes 公開」は誤り |
 | deep tree | 14 本生成済だが **ビューアへの導線が無く orphan** | `docs/iclr-2026/deep-manifest.json` |
 | アセット版数 | **`sync_asset_versions.py` が一元管理**（2026-08-19 是正）。内容ハッシュが変わったアセットだけ繰り上がり、`docs/assets/versions.json` から全 HTML に書き戻す。旧状態は `utils.js` が v=75(10) と v=82(4) に分裂＝規約違反だった | `uv run python paperpilot/scripts/sync_asset_versions.py --check` |
