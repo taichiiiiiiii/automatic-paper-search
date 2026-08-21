@@ -27,6 +27,7 @@ XAXIS_SCRIPT = VIEWER_DIR / "test_theme_xaxis_layout.mjs"
 INIT_CALLEES_SCRIPT = VIEWER_DIR / "test_theme_init_callees.mjs"
 CLS_RESERVATION_SCRIPT = VIEWER_DIR / "test_theme_gallery_cls_reservation.mjs"
 TYPOGRAPHY_TOKENS_SCRIPT = VIEWER_DIR / "test_theme_typography_tokens.mjs"
+REQUEST_PROGRESS_SCRIPT = VIEWER_DIR / "test_theme_request_progress.mjs"
 
 
 def _run_node(script: Path, *, min_ok_lines: int) -> None:
@@ -84,3 +85,13 @@ def test_theme_typography_tokens() -> None:
     # .node-card__title at 0.9rem) are explicitly left untouched —
     # the follow-up issue extends adoption.
     _run_node(TYPOGRAPHY_TOKENS_SCRIPT, min_ok_lines=50)
+
+
+def test_theme_request_progress() -> None:
+    # Issue #365: this suite shipped with 31 assertions but nothing ran
+    # it — the same gap #364 fixed for worker/*.test.mjs, still open in
+    # this directory. It pins how the theme-request UI maps a workflow
+    # run's status/conclusion onto the progress display, including the
+    # "unknown conclusion → null" case that stops fake failures being
+    # surfaced to the user.
+    _run_node(REQUEST_PROGRESS_SCRIPT, min_ok_lines=31)
