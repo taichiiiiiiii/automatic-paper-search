@@ -1,6 +1,6 @@
 # PaperPilot Scripts
 
-`paperpilot/scripts/` には 27 本の Python スクリプトがあります。
+`paperpilot/scripts/` には 28 本の Python スクリプトがあります。
 この README は全スクリプトを目的別に整理した索引です。
 
 実行形式は `uv run python -m paperpilot.scripts.<name>` がリポジトリの慣習です
@@ -196,6 +196,7 @@ uv pip install 'paperpilot[unarxive]'   # = duckdb + huggingface_hub
 | スクリプト | 動作 |
 |---|---|
 | `sync_asset_versions.py` | `docs/assets/*.css` / `*.js` の内容ハッシュ（sha256 の先頭 12 桁）を `docs/assets/versions.json` に唯一の真実源として保持し、全 HTML の `?v=<N>` を一括書き戻し。バイトが変わった時のみ版が上がる。`--check` は書き込まずに乖離を報告して非ゼロ終了（CI 用） |
+| `build_sitemap.py` | `docs/**/*.html` の実在ページから `docs/sitemap.xml` を生成（`index.html` はディレクトリ形に畳み、`404.html` は除外）。`--check` は書き込まずに乖離で非ゼロ終了。手作業だった頃に 6 URL のまま放置され会議カタログ 8 件が漏れていた（#367）ので、以後は手編集しない |
 
 ```bash
 uv run python -m paperpilot.scripts.sync_asset_versions        # 書き込み

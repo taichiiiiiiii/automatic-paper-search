@@ -274,7 +274,7 @@ automatic-paper-search/
     ├── signals/            # venue / citation / author / github / keyword / follow
     ├── exporters/          # CSV / JSON / Slack / Email
     ├── llm/                # Ollama / Gemini / Claude / Groq
-    ├── scripts/            # ビューア・索引生成（全 27 本。主要: build_summary_csv /
+    ├── scripts/            # ビューア・索引生成（全 28 本。主要: build_summary_csv /
     │                       # build_pages / build_lineage / build_deep_lineage /
     │                       # build_theme_lineage / build_search_index / sync_asset_versions /
     │                       # generate_{deep,themes}_manifest。詳細は paperpilot/scripts/README.md）

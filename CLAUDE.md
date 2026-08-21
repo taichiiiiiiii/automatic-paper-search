@@ -132,6 +132,7 @@ automatic-paper-search/
     │   ├── build_pages.py               # summary.csv → docs/<conf>/papers.json
     │   ├── build_search_index.py       # 全 docs/<conf>/papers.json → docs/search-index.json（学会横断検索。[title, 学会] の位置指定ペア、gzip 0.72MB）
     │   ├── sync_asset_versions.py      # docs/assets/*.{css,js} の内容ハッシュ → 全 HTML の ?v= を統一（--check で乖離検査）
+    │   ├── build_sitemap.py            # docs/**/*.html → docs/sitemap.xml を生成（--check で乖離検査。手編集禁止）
     │   ├── build_lineage.py             # papers.json + S2 + LLM → lineage.json (arxiv_id 必須・S2 律速)
     │   ├── build_conference_lineage.py  # Oral の title→OpenAlex 解決→参照/被引用で家系図 (S2/LLM 不要の free-tier fallback、edge は引用方向の successor ヒューリスティック) → docs/<conf>/lineage.json
     │   ├── build_deep_lineage.py        # 1 論文 × N hop BFS → docs/<conf>/deep.json
@@ -527,6 +528,7 @@ generate_themes_manifest.py → docs/themes/themes-manifest.json
 ### 重要な規約
 - **アセットの cache-bust バージョンは `sync_asset_versions.py` が管理する（手で揃えない）**: アセットを編集したら `uv run python paperpilot/scripts/sync_asset_versions.py` を実行する。版はアセットの内容ハッシュが変わったときだけ繰り上がり、参照は 1 箇所（`docs/assets/versions.json`）から全 HTML に書き戻されるのでページ間でズレない。`--check` は書き込まずに乖離を報告して非ゼロ終了する。
   - **手動の `grep | sed` 一括置換はもう使わない**。それが飛ばされて 2 度ズレた（themes だけ別版になった既往／`utils.js` が v=75 の 10 ページと v=82 の 4 ページに分裂）。`test_sync_asset_versions.py::test_repo_docs_have_no_divergent_asset_versions` が実サイトを検査して再発を落とす。
+- **`docs/sitemap.xml` は `build_sitemap.py` が生成する（手編集禁止）**: ページを足したら `uv run python -m paperpilot.scripts.build_sitemap` を実行する。手作業だった頃に 6 URL のまま放置され、**会議カタログ 8 件（約 23,000 本）と `eccv-2024/lineage.html` が未掲載**だった（#367）。`test_build_sitemap.py` が実サイトとの一致を検査する。
 - **トピックタグ分類** = `build_summary_csv.py` の `TOPIC_RULES`（~60 カテゴリの regex、title+abstract マッチ、複数タグ可）。viewer は各会議の**上位18タグ**だけチップ表示するので大規模タクソノミでも自動適応（CV 会議は CV タスク、NLP 会議は NLP タスクが出る）。greedy な語（"evaluation"/"benchmark" 動詞/"alignment"）は避け、リソース導入表現で絞る。
 - **モバイル**: タグチップは ≤720px で横スワイプ1行、フォーム入力は 16px（iOS の focus ズーム防止、`!important` で component CSS を上書き）。全ページ 320/375px で横はみ出しゼロを維持。
 - **a11y**: 開閉ボタンは `aria-expanded`＋`aria-controls`、件数表示は `aria-live`、focus ring は `--color-accent` で統一。
