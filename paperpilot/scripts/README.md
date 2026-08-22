@@ -128,7 +128,7 @@ uv run python -m paperpilot.scripts.build_lineage --conference neurips-2025 \
 | スクリプト | 入力 → 出力 | 備考 |
 |---|---|---|
 | `generate_deep_manifest.py` | `docs/<conf>/deep-*.json` → `docs/<conf>/deep-manifest.json` | `deep.html` の論文セレクタ用。各エントリ `{arxiv_id, title, filename}`。`build_deep_lineage.py` 自体は書かない（並列実行との競合を避けるため） |
-| `generate_themes_manifest.py` | `docs/themes/<slug>/lineage.json` → `docs/themes-manifest.json` | `docs/themes/index.html` のテーマピッカー用。各エントリ `{slug, theme, generated_at, paper_count, year_range}` |
+| `generate_themes_manifest.py` | `docs/themes/<slug>/lineage.json` → `docs/themes/themes-manifest.json` | `docs/themes/index.html` のテーマピッカー用。各エントリ `{slug, theme, generated_at, paper_count, year_range}` |
 
 ```bash
 uv run python -m paperpilot.scripts.generate_deep_manifest \
