@@ -38,7 +38,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=optional" rel="stylesheet" />
 
-  <link rel="stylesheet" href="../assets/style.css?v=91" />
+  <link rel="stylesheet" href="../assets/style.css?v=94" />
 </head>
 <body>
   <noscript>
@@ -57,54 +57,28 @@
       <li><a href="../how-it-works/">仕組み</a></li>
     </ul>
   </nav>
-  <header class="hero">
+  <header class="hero hero--compact">
     <nav class="hero__breadcrumb" aria-label="breadcrumb">
       <a href="../">PaperPilot</a> &nbsp;/&nbsp; ACL 2025
+      <button type="button" class="hero__toggle" id="hero-toggle"
+        aria-expanded="false" aria-controls="hero-details"
+        aria-label="この学会の説明を開閉" title="学会の説明を開閉">詳細</button>
     </nav>
     <h1 class="hero__title">ACL 2025 <em>採択論文</em></h1>
-    <p class="hero__lede">
-      Annual Meeting of the Association for Computational Linguistics。ACL Anthology の本会議採択論文を全件収録した一覧です。キーワード検索・トピックタグ・並び替えで気になる論文をすぐに見つけられます。
+    <p class="hero__meta">
+      <span class="hero__meta-num" id="stat-total">—</span> 論文
+      <span class="hero__meta-sep" aria-hidden="true">·</span>
+      <span class="hero__meta-num hero__meta-num--oral" id="stat-oral">—</span> Oral
+      <span class="hero__meta-sep" aria-hidden="true">·</span>
+      <span class="hero__meta-num" id="stat-tags">—</span> タグ
+      <span class="hero__meta-sep" aria-hidden="true">·</span>
+      更新 <span class="hero__meta-num" id="stat-updated">—</span>
     </p>
-    <div class="stat-row">
-      <div class="stat">
-        <span class="stat__num" id="stat-total">—</span>
-        <span class="stat__label">論文</span>
-      </div>
-      <div class="stat stat--featured">
-        <span class="stat__num stat__num--oral" id="stat-oral">—</span>
-        <span class="stat__label">Oral / Highlight</span>
-      </div>
-      <div class="stat">
-        <span class="stat__num" id="stat-tags">—</span>
-        <span class="stat__label">トピックタグ</span>
-      </div>
-      <div class="stat">
-        <span class="stat__num" id="stat-updated">—</span>
-        <span class="stat__label">最終更新</span>
-      </div>
+    <p class="hero__tagline">Annual Meeting of the Association for Computational Linguistics。</p>
+    <div class="hero__details" id="hero-details" hidden>
+      <p class="hero__lede">ACL Anthology の本会議採択論文を全件収録した一覧です。キーワード検索・トピックタグ・並び替えで気になる論文をすぐに見つけられます。</p>
     </div>
   </header>
-
-  <!-- First-timer guide: a plain-language "what is this & how to use it"
-       strip, always visible but subtle, so a first-time visitor knows
-       exactly what the three controls below do before touching them. -->
-  <section class="usage" aria-label="このページの使い方">
-    <p class="usage__lead"><strong>はじめての方へ</strong> — 下の操作で論文を絞り込めます。組み合わせも自由です。</p>
-    <ul class="usage__steps">
-      <li class="usage__step">
-        <span class="usage__icon" aria-hidden="true">🔍</span>
-        <span><b>検索</b><br />タイトル・著者・要旨にキーワードを入力</span>
-      </li>
-      <li class="usage__step">
-        <span class="usage__icon" aria-hidden="true">🏷️</span>
-        <span><b>タグで絞り込み</b><br />Vision / LLM などをクリック（複数選択可）</span>
-      </li>
-      <li class="usage__step">
-        <span class="usage__icon" aria-hidden="true">↕️</span>
-        <span><b>並び替え</b><br />新着順・Oral 優先・タイトル順</span>
-      </li>
-    </ul>
-  </section>
 
   <div class="filter-bar">
     <section class="filters" aria-label="絞り込み">
@@ -164,6 +138,6 @@
   </footer>
 
   <script src="../assets/utils.js?v=82" defer></script>
-  <script src="../assets/app.js?v=84" defer></script>
+  <script src="../assets/app.js?v=86" defer></script>
 </body>
 </html>
