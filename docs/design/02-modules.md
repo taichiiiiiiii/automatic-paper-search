@@ -1,5 +1,21 @@
 # 3. モジュール設計
 
+
+> ## ⚠️ この文書は陳腐化しています（2026-08-20 実測・#360）
+>
+> **v2.1（2026-04-05）時点の設計のままで、実装から約 4.5 か月ぶん乖離しています。**
+> 実測監査で **33 件の食い違い**（高 16 / 中 13 / 低 4）が確認されており、
+> **存在しないファイル・CI・モデルを記載している箇所があります。**
+>
+> - 現況の単一の真実源は **[09-implementation-status.md](09-implementation-status.md)**
+> - 手順やフィールド名を使う前に、**必ず実コード・実設定で裏を取ってください**
+> - 代表例: `.github/workflows/collect.yml` は存在しない / embedding は SPECTER2 ではなく MiniLM /
+>   LLM は Claude 必須ではなく ollama 既定の 4 プロバイダ / `social` シグナルは存在せず実際は `follow`
+> - 🔴 ツリーの `.github/workflows/collect.yml` は**存在しません**。
+> - 🔴 `requirements.txt` の実体は arxiv / requests / aiohttp / pyyaml / python-dotenv の **5 件のみ**。
+>   本文が挙げる numpy / transformers / torch / anthropic は入っておらず、そのままでは Stage 3/4 は動きません。
+
+
 ## 3.1 ディレクトリ構成
 
 ```

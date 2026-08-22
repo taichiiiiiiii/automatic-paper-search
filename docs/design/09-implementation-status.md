@@ -24,11 +24,14 @@
 |---|---|---|
 | 学会カタログ | **10 会議 / 28,300 本**（生成 2026-06-28） | `docs/conferences.json` を集計 |
 | 内訳 | iclr-2026:5351 / neurips-2025:5286 / cvpr-2026:4068 / icml-2025:3257 / cvpr-2025:2871 / iccv-2025:2701 / emnlp-2025:1809 / acl-2025:1699 / aaai-2026:762 / eccv-2024:496 | 同上 |
-| 会議家系図 | **実データは 2 会議のみ**（`iclr-2026` 108KB / `eccv-2024` 38KB）。残り 8 会議の `lineage.json` は **~290B の空スタブ** | `stat -c%s docs/*/lineage.json` |
+| 会議家系図 | **実データは 2 会議のみ**（`iclr-2026` 108KB / `eccv-2024` 38KB）。残り 8 会議の `lineage.json` は **~290B の空スタブ**。🔴 **`iclr-2026` は 63 エッジ中 45（71.4%）が退化 rationale**（`"A"` `"QD"` `"CMA-ES"` 等）＝ tooltip に直接出る。#297 のガードは develop に入っているが**出荷済みデータが再生成されていない**ため症状が残る（#359）。ガード導入後に生成された `eccv-2024` とテーマ 3 本は **0.0%** で clean | `stat -c%s docs/*/lineage.json` |
 | テーマ家系図 | **3 本公開**（flash-attention / mixture-of-experts / vision-transformer） | `docs/themes/themes-manifest.json`。※旧記載の「2 themes 公開」は誤り |
 | deep tree | 14 本生成済だが **ビューアへの導線が無く orphan** | `docs/iclr-2026/deep-manifest.json` |
+| CSP | 🔴 **`frame-ancestors 'none'` は全 17 ページで無効**（仕様上 `<meta>` 経由では無視され、GitHub Pages はレスポンスヘッダを出せないので現ホスティングでは実装不可能）。他 8 指令は正常。`docs/themes/` は `connect-src` で workers.dev を正しく許可済み。#363 | headless でコンソールを確認（`The Content Security Policy directive 'frame-ancestors' is ignored…`） |
 | アセット版数 | **`sync_asset_versions.py` が一元管理**（2026-08-19 是正）。内容ハッシュが変わったアセットだけ繰り上がり、`docs/assets/versions.json` から全 HTML に書き戻す。旧状態は `utils.js` が v=75(10) と v=82(4) に分裂＝規約違反だった | `uv run python paperpilot/scripts/sync_asset_versions.py --check` |
-| テスト | **1,074 passed / 1 failed**（24.9s、2026-08-19 実測）。失敗は既知の pre-existing `test_theme_typography_tokens` のみ | `uv run pytest paperpilot/tests/ -q` |
+| 学会横断検索 | **`docs/search-index.json` = 2,723,015 B / gzip 759,264 B / 28,300 件**。中身は `[タイトル, 会議スラッグ]` の2要素配列（`build_search_index.py` の `TITLE, CONFERENCE = 0, 1`）。**論文 ID は持たない** — `arxiv_id` が 95.5% 空だったため永続リンクに使えず、遷移は既存の `?q=` を再利用する設計にした | `stat -c%s docs/search-index.json`、`gzip -c docs/search-index.json \| wc -c` |
+| グローバルナビ | **`<nav class="site-nav">` が 17 / 17 ページに挿入済**。リンクは **3 本のみ**（探す / テーマ系譜 / 仕組み）＋ワードマーク。自ページを指すリンクにだけ `aria-current="page"` が付く | `grep -rl 'class="site-nav"' docs --include='*.html' \| wc -l` |
+| テスト | **1,104 passed / 0 failed**（28.1s、2026-08-23 実測）。長年唯一の恒常 failure だった `test_theme_typography_tokens` は #357 で解消。真因はテスト補助関数がグループ化セレクタを読めず、色だけ指定する別規則を検査していたこと（CSS は #329 の意図どおり `--text-micro` で正しかった） | `uv run pytest paperpilot/tests -q` |
 
 直近の出荷（2026-08、いずれも develop へ merge 済）:
 
@@ -41,6 +44,7 @@
 | #351 | CLAUDE.md にフロントエンド（`docs/`）アーキテクチャと検証手順の章を追加 |
 | #352 | カタログカードに常時表示の要旨 dek + 検索語ハイライト + マッチ位置アンカー |
 | #353 | 結果リストの editorial polish（Oral 金レール、クエリエコー、段階フェード） |
+| #355 | サイト再設計フェーズ1 — 学会横断検索 + グローバルナビ 17 ページ + `?v=` 自動同期（`sync_asset_versions.py`）。2026-08-19 develop マージ・本番公開済。マージコミット b01705b |
 
 ---
 
@@ -67,15 +71,15 @@
 | Push race retry (`commit-and-push.sh`) | ✅ 5 回 retry + jittered sleep + multi-path 対応 (#122 / #140)、12 unit tests |
 | Workflow YAML 不変条件 | ✅ `test_workflow_yaml_quality.py` (secrets-in-step-if 防止 #135) |
 | Lighthouse CI (`lighthouse.yml`) | ✅ PR + 週次月曜で `treosh/lighthouse-ci-action@v12` 実行、staticDistDir で docs/ をローカル serve → 4 ページ × 3 run。`LHCI_GITHUB_APP_TOKEN` (任意) があれば PR コメント、無ければ temporary-public-storage アップロード。assert は warn-only (LCP 2.5s / CLS 0.1 / TBT 200ms / FCP 1.5s 上限) |
-| Data audit (`data-audit.yml`) | ✅ PR/push 時に `docs/themes/**` / `docs/iclr-*/**` / build / audit script 変更で fire。`audit_theme_seeds` (#192) + `audit_lineage_quality` (#197) を順次実行 (両者 exit 1 で job fail)。Job Summary に各監査結果を個別 Markdown 表示 (#199) |
+| Data audit (`data-audit.yml`) | ✅ PR/push 時に `docs/themes/**` / `docs/iclr-*/**` / build / audit script 変更で fire。`audit_theme_seeds` (#192) + `audit_lineage_quality` (#197) を順次実行 (両者 exit 1 で job fail)。Job Summary に各監査結果を個別 Markdown 表示 (#199) ※ **実際には 2026-06-15 を最後に一度も起動していない**（トリガが `docs/iclr-*/lineage.json` 限定で他 9 会議の lineage 追加を拾わない）。#358 参照 |
 
 ### ビューア
 | 仕様 | 状態 |
 |------|------|
 | 論文一覧 (`papers.json`) | ✅ `index.html` + `build_pages.py` で生成 |
-| Conference 家系図 (`lineage.json`) | ✅ `build_lineage.py` が `AbstractLLMProvider.classify_relation` 経由で生成。週次 CI 統合済 |
+| Conference 家系図 (`lineage.json`) | ✅ `build_lineage.py` が `AbstractLLMProvider.classify_relation` 経由で生成。週次 CI 統合済 ※ **その「週次 CI」は #245（2026-06-04）で cron を外して手動専用になった**。2026-08-20 現在、定期実行される workflow は `lighthouse.yml` だけ |
 | Conference deep tree (`deep-*.json`) | ✅ `build_deep_lineage.py`、14 件生成済 |
-| **テーマ家系図 (`themes/<slug>/`)** | ✅ `/themes/` のサイトフォーム → CF Worker (`worker/index.ts`) → `theme-on-demand.yml` を自動 dispatch (PR #233 で CF Worker 復活)。**2 themes 公開** (flash-attention / vision-transformer; #260 で site-request-only 化、seed themes 全消し) |
+| **テーマ家系図 (`themes/<slug>/`)** | ✅ `/themes/` のサイトフォーム → CF Worker (`worker/index.ts`) → `theme-on-demand.yml` を自動 dispatch (PR #233 で CF Worker 復活)。**2 themes 公開** (flash-attention / vision-transformer; #260 で site-request-only 化、seed themes 全消し) ※ **現在は 3 本公開（flash-attention / mixture-of-experts / vision-transformer）。上の「現況（2026-08-18 実測）」表を参照 — ここは 2026-06-03 時点の履歴なので原文保持** |
 | **家系図ビューアの frontend (#324-#332)** | ✅ editorial 刷新。仕組みページ (#324) / 論文カード polish+a11y+declutter+editorial-flags (#325/#328/#329) / 関係線の幹(successor)・枝(extends)階層 + 3ビューア共有 (`PP.edgeStyle`) + fan-out 発生点 (`PP.fanOffsets`) (#330-#332)。全 merged + 本番 live |
 
 ### Theme 家系図の品質改善 (本セッションの主軸)
@@ -103,9 +107,9 @@
 ### コード品質
 | 仕様 | 状態 |
 |------|------|
-| ruff (lint) | ✅ 105 files clean |
-| mypy (type check) | ✅ 105 files clean |
-| pytest テスト数 | ✅ **779 tests pass** |
+| ruff (lint) | ✅ **145 files clean**（`paperpilot/` 配下、2026-08-20 実測。`uv run ruff check paperpilot/` → All checks passed!） |
+| mypy (type check) | ⚠️ **未検証** — mypy 1.20.1 が typeshed の `builtins.pyi:251` で INTERNAL ERROR を出し起動しない（単一ファイル指定でも再現）。本リポジトリ由来ではなく環境側の問題（`CLAUDE.md` の「既知の環境問題」にも同記録あり）。緑チェックは外した |
+| pytest テスト数 | ✅ **1,104 passed / 0 failed**（28.1s、2026-08-20 実測）。#357 で唯一の恒常 failure を解消 |
 | venue 正規表現検出率 | ✅ 100% (60 パターン / 目標 95%) |
 | `build_theme_lineage()` 行数 | ✅ Stage 別 helper 抽出後 238 行 (#148) |
 

@@ -14,7 +14,7 @@ latency < 5 ms per lookup.
 
 ::
 
-    uv pip install duckdb huggingface_hub
+    uv pip install 'paperpilot[unarxive]'   # = duckdb + huggingface_hub
     uv run python -m paperpilot.scripts.build_unarxive_index \
         --out paperpilot/data/unarxive/unarxive.duckdb
 

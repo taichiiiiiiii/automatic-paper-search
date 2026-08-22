@@ -112,7 +112,7 @@ def build_evaluation_prompt(papers: list[Paper], profile: str) -> tuple[str, str
     return SYSTEM_PROMPT, user
 
 
-# ---- Lineage relation classification (used by scripts/build_lineage.py) ----
+# ---- Lineage relation classification (used by paperpilot/scripts/build_lineage.py) ----
 
 _VALID_RELATIONS = frozenset(
     {

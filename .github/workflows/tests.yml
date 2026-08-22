@@ -1,0 +1,75 @@
+name: tests
+
+# The only automated gate this repository has for code correctness.
+#
+# Until #358 there was none: CLAUDE.md documented a "develop へ PR → CI
+# (test / ruff / mypy) → merge" flow, but no workflow ran pytest, ruff or
+# mypy. A merge to develop publishes docs/ straight to production through
+# pages.yml, so the sole thing standing between a broken change and the
+# live site was somebody remembering to run the suite locally.
+#
+# mypy is deliberately absent: it crashes with INTERNAL ERROR on this
+# Python/typeshed combination (fails on typeshed's builtins.pyi even for a
+# single file), so it cannot gate anything today. See CLAUDE.md.
+#
+# Node is installed because part of the suite shells out to it: the viewer
+# and Cloudflare Worker suites are .mjs files run through subprocess
+# (#364/#365). Without node those tests skip silently, which would make
+# this workflow look green while covering 85 fewer assertions.
+
+on:
+  pull_request:
+  push:
+    branches: [develop, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: Assert node is present
+        # A silent skip would hide the .mjs suites. Fail loudly instead.
+        run: node --version
+
+      - name: Lint
+        # --extra dev is required: ruff and pytest live in
+        # [project.optional-dependencies].dev, so a bare `uv run` cannot find
+        # them on a clean checkout. This passed locally only because uv fell
+        # back to /usr/local/bin/ruff, a system binary CI does not have.
+        run: uv run --extra dev ruff check paperpilot/
+
+      - name: Tests
+        run: uv run --extra dev pytest paperpilot/tests -q
+
+      - name: No skipped tests
+        # Skips are how this suite hides missing tooling. If something
+        # starts skipping in CI we want to see it, not average it away.
+        run: |
+          set -o pipefail
+          uv run --extra dev pytest paperpilot/tests -q -rs 2>&1 | tee result.txt
+          if grep -qE "^[0-9]+ .*skipped" result.txt; then
+            echo "::warning::some tests skipped in CI — check the -rs output above"
+          fi

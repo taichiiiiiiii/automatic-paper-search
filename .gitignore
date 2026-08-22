@@ -6,6 +6,10 @@ htmlcov/
 # Editable-install build artifact (pip install -e .) — never commit
 *.egg-info/
 __pycache__/
+# setuptools/hatchling staging dir. `uv run --extra dev` builds the project,
+# which creates this; it appeared untracked during the 2026-08-23 merge prep.
+build/
+dist/
 
 
 # wrangler files
