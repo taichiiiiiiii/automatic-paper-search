@@ -55,7 +55,26 @@ TOPIC_RULES: dict[str, list[str]] = {
     "Pose": [r"pose estimation", r"keypoint", r"human pose", r"6[- ]?dof"],
     "Tracking": [r"object tracking", r"\bmot\b", r"re[- ]identification", r"\bre[- ]id\b"],
     "Restoration": [r"super[- ]resolution", r"denois", r"deblur", r"inpaint", r"image restoration", r"dehaz"],
-    "Face": [r"\bface\b", r"\bfaces\b", r"facial"],
+    # #356: bare \bface\b matched the English verb ("methods face the
+    # challenge of ...") — 60.6% of 1,322 hits were certain verb-only false
+    # positives. Require face-domain context instead. Bare "deepfake" is NOT a
+    # face signal (audio deepfakes exist), so it stays out.
+    "Face": [
+        # R2 review additions: word boundaries (\bfacial\b not "maxillofacial",
+        # \bface not "surface/interface"), and the face-domain categories the
+        # first replacement missed (talking head, head avatar, face forgery,
+        # face clustering, portrait animation).
+        r"\bfacial\b",
+        r"\bface (?:recognition|verification|identification|detection|generation"
+        r"|synthesis|swap(?:ping)?|reenactment|editing|restoration"
+        r"|anti-spoofing|alignment|parsing|attributes?|landmarks?"
+        r"|forgery|clustering|images?|videos?)",
+        r"(?:human|3d|talking) faces?\b",
+        r"\bfaces? (?:datasets?|benchmarks?)",
+        r"talking[ -]head",
+        r"head[ -]avatars?\b",
+        r"portrait (?:animation|generation)",
+    ],
     "OCR": [r"\bocr\b", r"text recognition", r"document understanding", r"scene text"],
     "VideoUnderstanding": [r"action recognition", r"video understanding", r"temporal action", r"video question"],
     "Rendering": [r"rendering", r"radiance field", r"neural render"],
@@ -95,7 +114,10 @@ TOPIC_RULES: dict[str, list[str]] = {
     "Audio": [r"\baudio\b", r"\bspeech\b", r"\basr\b", r"\btts\b", r"\bmusic\b"],
     "Robotics": [r"\brobot", r"manipulation", r"locomotion", r"navigation"],
     "Autonomous": [r"autonomous driving", r"self[- ]driving"],
-    "Recommendation": [r"recommend", r"collaborative filtering"],
+    # #356: bare "recommend" matched the prose verb ("we recommend careful
+    # evaluation"). Noun forms cover every recommender-systems paper in the
+    # corpus (168 -> 163 measured 2026-08-23 via classify_tags itself; the 5 lost hits are verb usage or marginal).
+    "Recommendation": [r"recommendation", r"recommender", r"collaborative filtering"],
     "TimeSeries": [r"time series", r"forecast"],
     "Graph": [r"graph representation", r"graph learning"],
     # ---- Theory / optimization / data ----

@@ -8,6 +8,18 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ### Added
 
+- **Above-the-fold density for catalog and lineage pages (#370).** All ten
+  conference pages move to the established compact-hero idiom (breadcrumb +
+  title + a one-line mono stat strip + a "詳細" disclosure); the redundant
+  first-timer guide is gone, and the first sentence of each lede stays
+  visible as a tagline. On a 375×812 viewport the first paper card is now on
+  screen (previously zero). Relation icons in the card Relations panel are
+  now colour dots carrying the same `--rel-*` tokens as the lineage canvas —
+  the first step of the visual-language unification, with hues untouched.
+  Tag chips collapse to the top 8 plus a "+N タグ" expander that hands
+  keyboard focus to the first revealed chip. Emoji chrome (🌳🗂️📅🏠🔍 and
+  the relation icons) is replaced by text and tokens site-wide.
+
 - **Site redesign phase 1 — cross-conference search, global nav, automatic
   asset versioning (#355).** The landing page gained a single search box that
   spans all 10 conferences: `paperpilot/scripts/build_search_index.py` folds
@@ -157,6 +169,22 @@ follows [Semantic Versioning](https://semver.org/) and the
   `docs/design/08-lineage-roadmap.md` §判定品質の改善計画.
 
 ### Fixed
+
+- **`Face` tag no longer fires on the English verb (#356).** Measured on the
+  shipped 28,300-paper catalogue, the old rule tagged 1,322 papers of which
+  60.6% were certain verb-only false positives ("methods face the challenge
+  of…"). The replacement demands face-domain context: 371 papers remain,
+  verb-only rate 1.3%, zero face-domain papers lost. `Recommendation` was
+  tightened the same way (165 → 163). All ten conferences were re-tagged
+  through the regular pipeline; the only field that changed anywhere is
+  `tags` (1,560 papers, proven by full-record comparison).
+
+- **`data-audit` can finally run green (#358).** The auditor now derives each
+  conference's minimum focus-paper year from its directory name instead of
+  the wall clock (`eccv-2024` no longer fails for containing 2024 papers),
+  empty stub lineages report as SKIP instead of FAIL, and the workflow's
+  path filter watches `docs/*/lineage.json` — the audit had not fired since
+  2026-06-15 because it only watched `docs/iclr-*`.
 
 - **Degenerate rationales are still shipping for ICLR 2026 (#359).** The #297
   guard is in `develop` (`_is_degenerate_rationale` in `build_lineage.py`), but
