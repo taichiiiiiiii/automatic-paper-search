@@ -8,6 +8,7 @@ the new edge metrics and the warn / fail threshold split.
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
 from paperpilot.llm.base import TEMPLATE_RATIONALES
@@ -393,3 +394,231 @@ def test_audit_offtopic_nonfocus_warns_not_fails():
     warnings = _audit_offtopic_nonfocus(data)
     assert warnings
     assert any("offtopic_nonfocus_ratio" in w for w in warnings)
+
+
+# ---- #358: per-conference min_year + empty-stub skip -----------------------
+#
+# The data-audit workflow had been silent since 2026-06-15 because its paths
+# filter matched only `docs/iclr-*/lineage.json`. Opening it up to every
+# conference surfaced two false positives that would red develop on every
+# PR touching any conference data:
+#
+#   1. `eccv-2024` has 13 focus papers all from 2024, but the default
+#      `--min-year` was `datetime.now().year - 1` (wall-clock, 2025 at the
+#      time of writing) — so every focus paper tripped "focus paper too old".
+#      The fix: derive min_year from the directory name `<venue>-<year>`
+#      (→ year - 1) so each conference is judged against its own year.
+#
+#   2. 8 conferences have ~290B stub `lineage.json` files (nodes=[], edges=[])
+#      because the catalog works without a lineage and the file exists only
+#      to keep the viewer's probe at 200 rather than 404. Those tripped
+#      "no focus papers". The fix: treat nodes+edges empty as "not generated"
+#      and SKIP — consistent with the site's honest "not generated yet"
+#      stance. WARN would also be acceptable; FAIL is not.
+
+
+def test_conference_year_from_path_extracts_year():
+    """`docs/eccv-2024/lineage.json` → 2024, `docs/iclr-2026/lineage.json` → 2026."""
+    from paperpilot.scripts.audit_lineage_quality import _conference_year_from_path
+
+    assert _conference_year_from_path(Path("docs/eccv-2024/lineage.json")) == 2024
+    assert _conference_year_from_path(Path("docs/iclr-2026/lineage.json")) == 2026
+    assert _conference_year_from_path(Path("docs/cvpr-2025/lineage.json")) == 2025
+
+
+def test_conference_year_from_path_returns_none_for_themes():
+    """Theme paths never participate in the per-conference derivation."""
+    from paperpilot.scripts.audit_lineage_quality import _conference_year_from_path
+
+    assert (
+        _conference_year_from_path(Path("docs/themes/diffusion-models/lineage.json"))
+        is None
+    )
+
+
+def test_conference_year_from_path_returns_none_for_unparseable():
+    """A directory that isn't `<venue>-<year>` falls back to the legacy
+    wall-clock default (caller's responsibility)."""
+    from paperpilot.scripts.audit_lineage_quality import _conference_year_from_path
+
+    assert _conference_year_from_path(Path("docs/unknown/lineage.json")) is None
+    assert _conference_year_from_path(Path("docs/not-a-year/lineage.json")) is None
+    assert _conference_year_from_path(Path("docs/abc-12345/lineage.json")) is None
+
+
+def test_is_empty_stub_true_for_empty_data():
+    """Empty stub = both nodes and edges empty/missing. Matches the ~290B
+    scaffold files under docs/<conf>/lineage.json for the 8 conferences
+    whose lineage hasn't been generated yet."""
+    from paperpilot.scripts.audit_lineage_quality import _is_empty_stub
+
+    assert _is_empty_stub({"nodes": [], "edges": []}) is True
+    assert _is_empty_stub({"nodes": [], "edges": [], "meta": {"source": "none"}}) is True
+    assert _is_empty_stub({}) is True
+    assert _is_empty_stub({"meta": {"note": "missing nodes/edges keys"}}) is True
+
+
+def test_is_empty_stub_false_when_either_side_has_content():
+    """A lineage with any node or any edge is NOT a stub — even if it has
+    no focus papers, that's a real structural problem worth reporting."""
+    from paperpilot.scripts.audit_lineage_quality import _is_empty_stub
+
+    assert _is_empty_stub({"nodes": [{"id": "a"}], "edges": []}) is False
+    assert _is_empty_stub({"nodes": [], "edges": [{"src": "a", "dst": "b"}]}) is False
+
+
+def test_effective_min_year_derived_from_conference_dir():
+    """eccv-2024 without --min-year → 2024 - 1 = 2023. That lets the 13
+    2024 focus papers pass (2024 ≥ 2023)."""
+    from paperpilot.scripts.audit_lineage_quality import _effective_min_year
+
+    assert (
+        _effective_min_year(Path("docs/eccv-2024/lineage.json"), None, 2025) == 2023
+    )
+    assert (
+        _effective_min_year(Path("docs/iclr-2026/lineage.json"), None, 2025) == 2025
+    )
+
+
+def test_effective_min_year_explicit_overrides_dir():
+    """--min-year wins over the directory-derived value — the explicit
+    knob must still work for ad-hoc audits."""
+    from paperpilot.scripts.audit_lineage_quality import _effective_min_year
+
+    assert (
+        _effective_min_year(Path("docs/eccv-2024/lineage.json"), 2020, 2025) == 2020
+    )
+
+
+def test_effective_min_year_falls_back_for_unknown_dir():
+    """A directory without `<venue>-<year>` uses the caller-supplied
+    fallback (wall-clock - 1 in main)."""
+    from paperpilot.scripts.audit_lineage_quality import _effective_min_year
+
+    assert (
+        _effective_min_year(Path("docs/unknown/lineage.json"), None, 2025) == 2025
+    )
+
+
+def test_effective_min_year_falls_back_for_themes():
+    """Theme paths always go through the fallback (the focus-year check
+    is bypassed for themes anyway, but the helper still returns a value)."""
+    from paperpilot.scripts.audit_lineage_quality import _effective_min_year
+
+    assert (
+        _effective_min_year(
+            Path("docs/themes/diffusion-models/lineage.json"), None, 2025
+        )
+        == 2025
+    )
+
+
+def test_main_empty_stub_is_skip_not_fail(tmp_path, monkeypatch, capsys):
+    """A conference with nodes=[] + edges=[] is SKIP, not FAIL. exit 0."""
+    from paperpilot.scripts import audit_lineage_quality as mod
+
+    conf_dir = tmp_path / "myconf-2024"
+    conf_dir.mkdir()
+    (conf_dir / "lineage.json").write_text(
+        json.dumps(
+            {
+                "root": None,
+                "nodes": [],
+                "edges": [],
+                "meta": {"source": "none", "conference": "myconf-2024"},
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(mod, "DOCS_DIR", tmp_path)
+    monkeypatch.setattr(sys, "argv", ["audit"])
+    rc = mod.main()
+    assert rc == 0, "empty stub must not fail the audit"
+    out = capsys.readouterr().out
+    assert "SKIP" in out
+    assert "FAIL" not in out
+
+
+def test_main_conference_year_lets_same_year_focus_pass(
+    tmp_path, monkeypatch, capsys
+):
+    """eccv-2024 with focus papers from 2024 should NOT fail when --min-year
+    isn't set (derived min_year = 2023, 2024 ≥ 2023)."""
+    from paperpilot.scripts import audit_lineage_quality as mod
+
+    conf_dir = tmp_path / "eccv-2024"
+    conf_dir.mkdir()
+    data = {
+        "nodes": [
+            {"id": "p", "is_focus": True, "year": 2024, "title": "Focus from conf year"},
+            {"id": "c", "year": 2023, "title": "Citing paper"},
+        ],
+        "edges": [
+            {
+                "src": "c",
+                "dst": "p",
+                "rel": "extends",
+                "conf": 0.7,
+                "rationale": "specific paper reason",
+            }
+        ],
+    }
+    (conf_dir / "lineage.json").write_text(json.dumps(data), encoding="utf-8")
+    monkeypatch.setattr(mod, "DOCS_DIR", tmp_path)
+    monkeypatch.setattr(sys, "argv", ["audit"])
+    rc = mod.main()
+    assert rc == 0, "focus papers from the conference year must pass"
+    out = capsys.readouterr().out
+    assert "FAIL" not in out
+    assert "too old" not in out
+
+
+def test_main_explicit_min_year_overrides_dir_derived(
+    tmp_path, monkeypatch
+):
+    """--min-year 2022 makes eccv-2024's focus year=2020 fail, even though
+    the dir-derived default would be 2023 (which the 2020 paper would pass)."""
+    from paperpilot.scripts import audit_lineage_quality as mod
+
+    conf_dir = tmp_path / "eccv-2024"
+    conf_dir.mkdir()
+    data = {
+        "nodes": [
+            {"id": "p", "is_focus": True, "year": 2020, "title": "Old focus"},
+        ],
+        "edges": [],
+    }
+    (conf_dir / "lineage.json").write_text(json.dumps(data), encoding="utf-8")
+    monkeypatch.setattr(mod, "DOCS_DIR", tmp_path)
+    monkeypatch.setattr(sys, "argv", ["audit", "--min-year=2022"])
+    rc = mod.main()
+    assert rc == 1, "explicit --min-year must override dir-derived default"
+
+
+def test_main_unknown_dir_uses_wall_clock_fallback(
+    tmp_path, monkeypatch
+):
+    """A directory without `<venue>-<year>` falls back to wall-clock - 1,
+    so a paper from wall-clock - 2 is 'too old'."""
+    import datetime as _dt
+
+    from paperpilot.scripts import audit_lineage_quality as mod
+
+    conf_dir = tmp_path / "unknown"
+    conf_dir.mkdir()
+    data = {
+        "nodes": [
+            {
+                "id": "p",
+                "is_focus": True,
+                "year": _dt.datetime.now().year - 2,
+                "title": "Old",
+            },
+        ],
+        "edges": [],
+    }
+    (conf_dir / "lineage.json").write_text(json.dumps(data), encoding="utf-8")
+    monkeypatch.setattr(mod, "DOCS_DIR", tmp_path)
+    monkeypatch.setattr(sys, "argv", ["audit"])
+    rc = mod.main()
+    assert rc == 1, "unknown dir → wall-clock fallback → old paper fails"

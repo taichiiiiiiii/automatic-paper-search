@@ -5,8 +5,14 @@ relevance). Walks every `docs/*/lineage.json` and `docs/themes/*/
 lineage.json` and checks:
 
 ### Structural (focus papers — conferences only)
-- focus papers must be from the conference year window (default
-  current year ± 1, override with --min-year)
+- focus papers must be from the conference year window. The default
+  floor is derived per conference from the directory name
+  ``<venue>-<year>`` (floor = year - 1) so e.g. ``eccv-2024`` is
+  judged against 2024, not against the wall-clock year. ``--min-year``
+  on the CLI overrides the derivation for every conference.
+- empty scaffold files (``nodes=[]`` AND ``edges=[]``) are reported as
+  SKIP, not FAIL — they're the honest "not generated yet" stance the
+  site takes so the viewer probe resolves 200 rather than 404.
 - no implementation-foundation library paper (NumPy / PyTorch /
   SciPy / pandas / …) appears as a focus paper
 - cluster assignments resolve to real cluster entries
@@ -51,7 +57,8 @@ Run:
     uv run python -m paperpilot.scripts.audit_lineage_quality
 
 Exit codes:
-- 0 : every audited lineage passes (or there are none)
+- 0 : every audited lineage passes, is skipped as an empty stub,
+      or has only warnings (there are none)
 - 1 : at least one lineage has a hard-fail problem
 """
 
@@ -59,6 +66,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from collections import Counter
 from datetime import datetime
@@ -123,6 +131,73 @@ _OFFTOPIC_EXAMPLE_LIMIT = 5  # show at most N example off-topic titles in the me
 _TEMPLATE_RATIONALES_SET = frozenset(
     t.strip() for t in TEMPLATE_RATIONALES.values()
 )
+
+# #358: pattern for extracting the conference year from a directory name
+# like `eccv-2024` / `iclr-2026`. Must be a 4-digit year at the end after
+# a hyphen; anything else (themes, unknown slugs, malformed names) falls
+# through to the legacy wall-clock default.
+_CONF_DIR_YEAR_RE = re.compile(r"^(?P<venue>.+)-(?P<year>\d{4})$")
+
+
+def _conference_year_from_path(path: Path) -> int | None:
+    """Return the conference year encoded in the directory name, or
+    ``None`` when the path isn't a ``<venue>-<year>`` conference dir.
+
+    Examples (the part after ``docs/`` is what matters):
+      - ``…/eccv-2024/lineage.json``    → 2024
+      - ``…/themes/<slug>/lineage.json`` → None (themes bypass)
+      - ``…/<no-year-slug>/lineage.json`` → None
+      - ``…/<slug>-<5+digits>/lineage.json`` → None (not a 4-digit year)
+
+    Used by ``main`` to derive the per-conference focus-paper floor so
+    eccv-2024's 2024 focus papers aren't incorrectly flagged "too old"
+    by a wall-clock default that has moved past the conference year.
+    """
+    if "themes" in path.parts:
+        return None
+    name = path.parent.name
+    m = _CONF_DIR_YEAR_RE.match(name)
+    if not m:
+        return None
+    return int(m.group("year"))
+
+
+def _is_empty_stub(data: dict) -> bool:
+    """True when the lineage has neither nodes nor edges — the ~290B
+    scaffold files that ``scaffold_conference_page.py`` drops under
+    ``docs/<conf>/lineage.json`` so the viewer's optional probe resolves
+    200 instead of 404. These aren't broken lineages, they're "not
+    generated yet" — audit should SKIP them, not FAIL them.
+    """
+    nodes = data.get("nodes") or []
+    edges = data.get("edges") or []
+    if not isinstance(nodes, list) or not isinstance(edges, list):
+        # Non-list shapes are caught by structural checks — don't
+        # silently SKIP them here.
+        return False
+    return len(nodes) == 0 and len(edges) == 0
+
+
+def _effective_min_year(path: Path, explicit: int | None, fallback: int) -> int:
+    """Compute the focus-paper floor for one lineage path.
+
+    Resolution order:
+      1. ``explicit`` (``--min-year`` on the CLI) — always wins so the
+         operator knob stays authoritative for ad-hoc audits.
+      2. Conference year derived from the directory name minus one
+         (e.g. ``eccv-2024`` → 2023) so a 2024 conference's focus
+         papers from 2024 pass the recency check.
+      3. ``fallback`` — the legacy ``datetime.now().year - 1`` default,
+         used when the dir name isn't parseable (themes, unknown slugs).
+         The focus-year check is bypassed for themes inside
+         ``_audit_structural`` anyway; this just picks a sane value.
+    """
+    if explicit is not None:
+        return explicit
+    conf_year = _conference_year_from_path(path)
+    if conf_year is not None:
+        return conf_year - 1
+    return fallback
 
 
 def _load_denylist_paper_ids() -> set[str]:
@@ -477,13 +552,24 @@ def _collect_targets() -> list[Path]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    # #358: default is now ``None`` so ``main`` can derive a per-conference
+    # floor from the directory name (`<venue>-<year>` → year - 1). When
+    # the operator passes ``--min-year`` explicitly it overrides everything
+    # (ad-hoc audits, cross-conference sweeps). When neither the flag nor
+    # the dir name yields a year, fall back to the legacy wall-clock
+    # default — themes bypass the focus-year check inside
+    # ``_audit_structural`` so the fallback only affects unparseable
+    # conference dir names.
+    wall_clock_fallback = datetime.now().year - 1
     parser.add_argument(
         "--min-year",
         type=int,
-        default=datetime.now().year - 1,
+        default=None,
         help=(
             "Focus papers older than this trigger a structural error. "
-            "Default: last year (covers e.g. ICLR 2026 papers preprinted in 2025)."
+            "Default: derived per conference from the directory name "
+            "(<venue>-<year> → year - 1) so e.g. eccv-2024's 2024 focus "
+            "papers pass. Pass explicitly to override every conference."
         ),
     )
     parser.add_argument(
@@ -520,7 +606,25 @@ def main() -> int:
             if "themes" in path.parts
             else path.parent.name
         )
-        warnings, failures = _audit_lineage(path, args.min_year)
+        # #358: empty stubs (nodes=[], edges=[]) are "not generated yet"
+        # scaffold files — SKIP them so the 8 conferences without a real
+        # lineage don't red the data-audit job on every push. The site's
+        # own stance is to keep the empty file so the viewer probe
+        # returns 200 rather than 404; the audit should echo that.
+        try:
+            raw = path.read_text(encoding="utf-8")
+            data = json.loads(raw)
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            # Unreadable is a real failure — don't SKIP it.
+            print(f"\nFAIL  {slug}:")
+            print(f"  - unreadable: {e}")
+            any_failed = True
+            continue
+        if _is_empty_stub(data):
+            print(f"SKIP  {slug} (no lineage generated yet)")
+            continue
+        effective = _effective_min_year(path, args.min_year, wall_clock_fallback)
+        warnings, failures = _audit_lineage(path, effective)
         if not warnings and not failures:
             print(f"OK    {slug}")
             continue
