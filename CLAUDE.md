@@ -33,7 +33,7 @@ Python：3.10 以上（開発・CIは 3.12）
 ```bash
 uv run ruff check paperpilot/                 # lint（push 前必須。pytest は I001 import-sort を拾わない）
 uv run mypy paperpilot/                        # type check ⚠️現環境では INTERNAL ERROR で走らない（後述「既知の環境問題」）
-uv run pytest paperpilot/tests/                # 全テスト（~28s、1,104 passed / 0 failed）
+uv run --extra dev pytest paperpilot/tests/    # 全テスト（~28s、1,103 passed / 1 skipped）
 uv run pytest paperpilot/tests/test_venue_signal.py::test_x -q   # 単一テスト
 uv run pytest paperpilot/tests/ --cov=paperpilot --cov-config=/dev/null   # カバレッジ
 ```
@@ -149,7 +149,7 @@ automatic-paper-search/
     │   ├── github.py                    # 共有 GitHub 解決器（curated map + GitHub Search + Stars）
     │   ├── json_parser.py               # LLM 3段階フォールバック
     │   └── logger.py                    # 日次ローテ (7日保持)
-    ├── tests/                           # pytest テスト（1,104 件 pass、2026-08-23 実測）
+    ├── tests/                           # pytest テスト（1,103 passed / 1 skipped、2026-08-23 実測）
     │   ├── conftest.py
     │   ├── test_*.py                    # 各モジュールのユニット/統合テスト
     │   └── test_venue_stress.py         # 60 パターンで検出率 95% 以上
@@ -883,7 +883,7 @@ Skill / Agent を追加・変更した時は、この表と `.claude/agents/agen
 - **アセット版数は `sync_asset_versions.py` が統一管理**（2026-08-19 に是正）。かつて `utils.js` が
   v=75(10 ページ) と v=82(4 ページ) に分裂していたが、`--check` が乖離と `?v=` 無し参照を検出して
   非ゼロ終了するようになり、`test_sync_asset_versions.py` が実サイトを検査している
-- テストは **1,104 passed / 0 failed**（2026-08-23 実測。#357 で唯一の恒常 failure を解消済み）、lint（ruff）は clean。
+- テストは **1,103 passed / 1 skipped**（2026-08-23 実測）（skip は operator 専用 unarXive の 1 件＝`duckdb` 未導入時の設計どおり。実行は必ず `uv run --extra dev` — 素の `uv run` は PATH のシステム pytest に落ち、そこには duckdb が入っているため件数が 16 件ずれる）、lint（ruff）は clean。
   mypy は環境側で INTERNAL ERROR（既存の `build_pages.py` でも再現するため本リポジトリ由来ではない）
 
 ---
