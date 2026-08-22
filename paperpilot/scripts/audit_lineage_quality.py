@@ -520,7 +520,9 @@ def _audit_edges(data: dict) -> tuple[list[str], list[str]]:
     return warnings, failures
 
 
-def _audit_lineage(path: Path, min_year: int) -> tuple[list[str], list[str]]:
+def _audit_lineage(
+    path: Path, min_year: int, data: dict | None = None
+) -> tuple[list[str], list[str]]:
     """Return (warnings, hard_failures) for one lineage.json path.
 
     Structural problems are always failures (broken focus papers /
@@ -530,10 +532,14 @@ def _audit_lineage(path: Path, min_year: int) -> tuple[list[str], list[str]]:
     warn-only — it detects theme contamination without blocking, since a
     high ratio can also describe a legitimately deep lineage.
     """
-    try:
-        data = json.loads(path.read_text(encoding="utf-8"))
-    except (FileNotFoundError, json.JSONDecodeError) as e:
-        return [], [f"unreadable: {e}"]
+    if data is None:
+        # Standalone callers (tests, ad-hoc use) can still pass just a path;
+        # main() hands over its already-parsed dict so each lineage.json is
+        # read exactly once (R2 review of #358).
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            return [], [f"unreadable: {e}"]
     structural = _audit_structural(path, data, min_year)
     edge_warn, edge_fail = _audit_edges(data)
     offtopic_warn = _audit_offtopic_nonfocus(data)
@@ -624,7 +630,7 @@ def main() -> int:
             print(f"SKIP  {slug} (no lineage generated yet)")
             continue
         effective = _effective_min_year(path, args.min_year, wall_clock_fallback)
-        warnings, failures = _audit_lineage(path, effective)
+        warnings, failures = _audit_lineage(path, effective, data)
         if not warnings and not failures:
             print(f"OK    {slug}")
             continue
