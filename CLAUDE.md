@@ -32,13 +32,13 @@ Python：3.10 以上（開発・CIは 3.12）
 
 ```bash
 uv run ruff check paperpilot/                 # lint（push 前必須。pytest は I001 import-sort を拾わない）
-uv run mypy paperpilot/                        # type check
-uv run pytest paperpilot/tests/                # 全テスト（~22s, 1000+ 件）
+uv run mypy paperpilot/                        # type check ⚠️現環境では INTERNAL ERROR で走らない（後述「既知の環境問題」）
+uv run pytest paperpilot/tests/                # 全テスト（~28s、1,104 passed / 0 failed）
 uv run pytest paperpilot/tests/test_venue_signal.py::test_x -q   # 単一テスト
 uv run pytest paperpilot/tests/ --cov=paperpilot --cov-config=/dev/null   # カバレッジ
 ```
 
-既知の pre-existing failure: `tests/viewer/test_theme_viewer_smoke.py::test_theme_typography_tokens`（node ベースの環境依存、本作業と無関係）。`pip install -e '.[dev]'` 互換も維持。
+**既知の pre-existing failure は解消済み**（2026-08-20、Issue #357）。長年「node 環境依存」→のち「#257 の移行残り」と説明されてきたが、**どちらも誤り**だった。真因は `test_theme_typography_tokens.mjs` の `extractSelectorBlock()` が**グループ化セレクタを読めない**こと。`.node-card--theme .node-card__hub,` はカンマ終端なので `<selector>{` に一致せず、色だけ指定する後続の単独規則を検査していた。CSS は #329 の意図どおり `var(--text-micro)`(0.58rem) で正しい。⚠️**CSS を `--text-body-sm`(0.78rem) に「直す」な** — バッジが 34% 巨大化し `white-space: nowrap` の venue 行が壊れる。`pip install -e '.[dev]'` 互換も維持。
 
 ### 依存ライブラリ
 
@@ -75,8 +75,8 @@ automatic-paper-search/
 ├── archive/                             # 原本 .docx の保管先（編集禁止）
 ├── .github/
 │   └── workflows/
-│       ├── collect-weekly.yml           # 毎週土曜 07:00 JST 深掘り（PAT に workflow scope 必要）
-│       ├── collect-daily-watch.yml      # 毎日 07:00 JST フォロー著者ウォッチ
+│       ├── collect-weekly.yml           # 手動 workflow_dispatch のみ（#245 で週次 cron 廃止。PAT に workflow scope 必要）
+│       ├── collect-daily-watch.yml      # 手動 workflow_dispatch のみ（#245 で日次 cron 廃止）
 │       ├── regen-themes.yml             # 手動 workflow_dispatch のみ (PR #261 で週次 cron 廃止)
 │       ├── theme-on-demand.yml          # ★ オンデマンド単一テーマ生成（運用者が gh workflow run で手動 dispatch）
 │       ├── lighthouse.yml               # PR ごと + 週次の Lighthouse / Core Web Vitals 測定
@@ -132,6 +132,7 @@ automatic-paper-search/
     │   ├── build_pages.py               # summary.csv → docs/<conf>/papers.json
     │   ├── build_search_index.py       # 全 docs/<conf>/papers.json → docs/search-index.json（学会横断検索。[title, 学会] の位置指定ペア、gzip 0.72MB）
     │   ├── sync_asset_versions.py      # docs/assets/*.{css,js} の内容ハッシュ → 全 HTML の ?v= を統一（--check で乖離検査）
+    │   ├── build_sitemap.py            # docs/**/*.html → docs/sitemap.xml を生成（--check で乖離検査。手編集禁止）
     │   ├── build_lineage.py             # papers.json + S2 + LLM → lineage.json (arxiv_id 必須・S2 律速)
     │   ├── build_conference_lineage.py  # Oral の title→OpenAlex 解決→参照/被引用で家系図 (S2/LLM 不要の free-tier fallback、edge は引用方向の successor ヒューリスティック) → docs/<conf>/lineage.json
     │   ├── build_deep_lineage.py        # 1 論文 × N hop BFS → docs/<conf>/deep.json
@@ -148,7 +149,7 @@ automatic-paper-search/
     │   ├── github.py                    # 共有 GitHub 解決器（curated map + GitHub Search + Stars）
     │   ├── json_parser.py               # LLM 3段階フォールバック
     │   └── logger.py                    # 日次ローテ (7日保持)
-    ├── tests/                           # pytest テスト（1,074 件 pass、2026-08-19 実測）
+    ├── tests/                           # pytest テスト（1,104 件 pass、2026-08-23 実測）
     │   ├── conftest.py
     │   ├── test_*.py                    # 各モジュールのユニット/統合テスト
     │   └── test_venue_stress.py         # 60 パターンで検出率 95% 以上
@@ -334,7 +335,9 @@ git push
 
 ### フェーズ 8: PR 作成・CI・merge
 
-`develop` へ PR → CI（test / ruff / mypy）→ merge。merge 後は bug 発生時のみ再レビュー。
+`develop` へ PR → merge。merge 後は bug 発生時のみ再レビュー。
+
+🔴 **`develop` への merge は `pages.yml` 経由でそのまま本番公開になる。** 2026-08-23 に `tests.yml` を追加するまで **テスト/lint を走らせる CI は 1 本も存在せず**（#358）、merge 前のローカル実行だけが唯一のゲートだった。現在は `tests.yml` が PR と `develop`/`main` への push で `ruff` + `pytest` を走らせる。⚠️ ただし **mypy はこの環境で INTERNAL ERROR で起動しない**ため CI に入れていない＝型検査は依然として未実施。
 
 ### 全体タイミング図
 
@@ -365,17 +368,17 @@ git push
 ### テスト実行
 
 ```bash
-# 全テスト（約 6 秒）
-python3 -m pytest paperpilot/tests/
+# 全テスト（~27s、2026-08-20 実測）
+uv run pytest paperpilot/tests/
 
 # 特定モジュールのみ
-python3 -m pytest paperpilot/tests/test_venue_signal.py -v
+uv run pytest paperpilot/tests/test_venue_signal.py -v
 
 # カバレッジ付き
-python3 -m pytest paperpilot/tests/ --cov=paperpilot --cov-report=term --cov-config=/dev/null
+uv run pytest paperpilot/tests/ --cov=paperpilot --cov-report=term --cov-config=/dev/null
 
 # Venue 正規表現ストレステスト（検出率 95% 以上を維持する境界テスト）
-python3 -m pytest paperpilot/tests/test_venue_stress.py
+uv run pytest paperpilot/tests/test_venue_stress.py
 ```
 
 ### 外部 API のテスト方針
@@ -525,6 +528,7 @@ generate_themes_manifest.py → docs/themes/themes-manifest.json
 ### 重要な規約
 - **アセットの cache-bust バージョンは `sync_asset_versions.py` が管理する（手で揃えない）**: アセットを編集したら `uv run python paperpilot/scripts/sync_asset_versions.py` を実行する。版はアセットの内容ハッシュが変わったときだけ繰り上がり、参照は 1 箇所（`docs/assets/versions.json`）から全 HTML に書き戻されるのでページ間でズレない。`--check` は書き込まずに乖離を報告して非ゼロ終了する。
   - **手動の `grep | sed` 一括置換はもう使わない**。それが飛ばされて 2 度ズレた（themes だけ別版になった既往／`utils.js` が v=75 の 10 ページと v=82 の 4 ページに分裂）。`test_sync_asset_versions.py::test_repo_docs_have_no_divergent_asset_versions` が実サイトを検査して再発を落とす。
+- **`docs/sitemap.xml` は `build_sitemap.py` が生成する（手編集禁止）**: ページを足したら `uv run python -m paperpilot.scripts.build_sitemap` を実行する。手作業だった頃に 6 URL のまま放置され、**会議カタログ 8 件（約 23,000 本）と `eccv-2024/lineage.html` が未掲載**だった（#367）。`test_build_sitemap.py` が実サイトとの一致を検査する。
 - **トピックタグ分類** = `build_summary_csv.py` の `TOPIC_RULES`（~60 カテゴリの regex、title+abstract マッチ、複数タグ可）。viewer は各会議の**上位18タグ**だけチップ表示するので大規模タクソノミでも自動適応（CV 会議は CV タスク、NLP 会議は NLP タスクが出る）。greedy な語（"evaluation"/"benchmark" 動詞/"alignment"）は避け、リソース導入表現で絞る。
 - **モバイル**: タグチップは ≤720px で横スワイプ1行、フォーム入力は 16px（iOS の focus ズーム防止、`!important` で component CSS を上書き）。全ページ 320/375px で横はみ出しゼロを維持。
 - **a11y**: 開閉ボタンは `aria-expanded`＋`aria-controls`、件数表示は `aria-live`、focus ring は `--color-accent` で統一。
@@ -600,7 +604,7 @@ uv run python -m paperpilot.scripts.scaffold_conference_page --conference <slug>
         4. **Foundational ref フィルタ (`_filter_off_topic_refs`)**: BFS で取得した parent/child 候補のうち、`citationCount > 2 × max(seed citations)` かつ S2 intent に "methodology" を含まないものを除外。"methodology" 意図がある場合はそのまま採用（その citing paper の手法を本当に支えている foundational ref のため）。閾値は初期 3x から #127 followup で 2x に絞り込み。
         5. **Implementation denylist (`_is_implementation_foundation`)**: `paperpilot/data/lineage_denylist.json` に列挙された paperId / title pattern にマッチする論文（Adam optimizer / TensorFlow / PyTorch / Scikit-learn / NumPy / SciPy / Batch Normalization / Dropout / Keras / pandas 等）は methodology intent があっても**無条件で除外**。これらは「実装の foundational」であって「研究線譜の foundational」ではないため。PyTorch Geometric のような topic-specific lib は title pattern が catch しないので残る。新しい canonical lib paper を見つけたら denylist JSON に追記する。
     - **Theme alias フォールバック (#195)**: canonical テーマ名で seed=0 になる場合、`paperpilot/data/theme_aliases.json` の代替キーワードを順次試行。例: "Speculative Decoding" → "Speculative Sampling" (S2 が後者の名義で index している)。lowercase + trim でキーマッチ、最初の成功で打ち切り。
-    - **Seed quality audit (#187)**: `uv run python -m paperpilot.scripts.audit_theme_seeds` で `docs/themes/*/lineage.json` を巡回、off-topic seed を検出。CI で `.github/workflows/theme-audit.yml` (#192) が `docs/themes/**` 変更 PR で自動実行 (exit 1 で job 失敗)。Viewer 側は #194 で同等 audit を走らせ stale-banner 表示。
+    - **Seed quality audit (#187)**: `uv run python -m paperpilot.scripts.audit_theme_seeds` で `docs/themes/*/lineage.json` を巡回、off-topic seed を検出。CI では `.github/workflows/data-audit.yml` (#192) がこの監査を持つ（`theme-audit.yml` という名の workflow は存在しない）。⚠️ ただし **2026-06-15 を最後に一度も起動していない**（paths が `docs/iclr-*/lineage.json` 限定・#358）ので、**「PR で自動実行される」と当てにしないこと**。Viewer 側は #194 で同等 audit を走らせ stale-banner 表示。
     - **LLM rationale (`--llm-strict=ambiguous` がデフォルト)**: `theme-on-demand.yml` は **`--llm-strict=ambiguous`** を有効化。S2 intent が `_INTENT_RELATION_MAP` のキー (methodology / result / background) に一致しない edge のみ Groq (Llama 3.3 70B) で paper-specific 分類。`--llm-strict=all` は Groq free tier の **TPM 12,000 / RPD 1,000 / TPD 100,000** 制約 (2026-06-06 確認) で破綻する (~500 tokens × 25 RPM = 12,500 TPM → 429 throttle 連鎖で 15 min timeout 到達、daily 限度も同時に削り落ちる)。Paid plan で `config.yaml` の `llm.rate_limit_rpm` を 1000+ に上げてから `--llm-strict=all` を使う。`GroqProvider` 内蔵 rate limiter (default 25 RPM) は RPM 制約だけカバー、TPM は prompt サイズで間接的に制御する。**Daily 上限 (RPD/TPD) は内蔵リミッタで追跡しない**ため、複数 theme を連投すると突発的に枯渇する — empirical で free tier は 1 rolling 24h 窓に ~2-3 large theme 実行が限度。
     - **Groq 429 circuit breaker (#191)**: `GroqProvider` が連続 3 回失敗 (request_with_retry が None / 非 200 を返す) で `_quota_exhausted=True` に latch、以降の `_chat` は API call 前に None を即返却。caller (`_CachedClassifyProvider`) は S2 intent heuristic にフォールバック。これで Groq daily quota 切れでも 15 min workflow timeout-minutes で cancel されず、heuristic で完走する。成功 200 で counter リセット (transient blip で latch しない)。
     - **LLM prompt 品質保証 (#131)**: `CLASSIFY_SYSTEM_PROMPT` (`paperpilot/llm/base.py`) は LLM が heuristic template を翻訳しないように設計されている。enum 定義を短く抽象化、MUST/MUST NOT 指示で template phrasing を明示禁止、Good 例で paper-specific rationale を few-shot 提示。Token budget は ~250 tokens に抑制 (Groq TPM 制約のため)。第二防衛線として `RelationClassification.from_dict` が `_GENERIC_TEMPLATE_RATIONALES` の文字列を返した場合 None を返して heuristic フォールバックさせる。template 追加時は両方 (prompt の MUST NOT リスト + `_GENERIC_TEMPLATE_RATIONALES`) を同期更新する。
@@ -614,15 +618,33 @@ uv run python -m paperpilot.scripts.scaffold_conference_page --conference <slug>
 
 ## CI / GitHub Actions
 
-定期実行のワークフロー (`.github/workflows/`):
-- `collect-weekly.yml` — 土曜 07:00 JST に主要会議の論文を深掘り収集 → `paperpilot/output/` に commit
-- `collect-daily-watch.yml` — 毎日 07:00 JST に follow 著者の新作を確認 → 通知のみ
+ワークフロー一覧 (`.github/workflows/`・全 10 本):
+- `collect-weekly.yml` — 主要会議の論文を深掘り収集 → `paperpilot/output/` に commit。**手動 `workflow_dispatch` 専用**（#245 で週次 cron 廃止）
+- `collect-daily-watch.yml` — follow 著者の新作を確認 → 通知のみ。**手動 `workflow_dispatch` 専用**（#245 で日次 cron 廃止）
+
+🔴 **トリガ実測表（2026-08-23、`on:` 節を全 10 本直読）** — 名前から推測しないこと。
+
+| workflow | push | PR | schedule | release | dispatch |
+|---|:--:|:--:|:--:|:--:|:--:|
+| `tests` | ✅ `develop`/`main` | ✅ | | | ✅ |
+| `data-audit` | ✅ | ✅ | | | ✅ |
+| `pages` | ✅ | | | | ✅ |
+| `lighthouse` | | ✅ | ✅ `0 2 * * 1` | | ✅ |
+| `publish` | | | | ✅ `published` | ✅ |
+| `collect-weekly` / `collect-daily-watch` / `regen-themes` / `theme-on-demand` / `conference-on-demand` | | | | | ✅ のみ |
+
+- **`schedule` を持つのは `lighthouse` ただ 1 本**（`collect-*` は #245、`regen-themes` は #261 で cron 廃止）。
+  ∴ **カタログは自動更新されない**（`conferences.json` は `generated: 2026-06-28` で凍結）。更新は `workflow_dispatch` で明示的に回す。
+- ⚠️ `data-audit` は**トリガはあるが 2026-06-15 以降一度も発火していない**（paths が `docs/iclr-*/lineage.json` 限定・#358）。
+- `tests.yml` が `ruff` + `pytest` を走らせる（2026-08-23 追加）。**mypy は含まない**（環境の INTERNAL ERROR で起動しないため）。
+  🔴 **実行は `uv run --extra dev …` でなければならない**。`pytest` / `ruff` は `[project.optional-dependencies].dev` にあるので、素の `uv run` はクリーンなチェックアウトで `Failed to spawn` になる。ローカルで通っていたのは `/usr/local/bin` のシステム版に落ちていたからで、CI にそれは無い。
 - `regen-themes.yml` — 手動 `workflow_dispatch` 専用 (PR #261 で週次 cron 廃止)。LLM 契約変更や lineage 形式バンプ後にバルク再生成する break-glass
 - `theme-on-demand.yml` — フォーム送信または手動 dispatch で 1 テーマだけ生成
 - `conference-on-demand.yml` — 手動 `workflow_dispatch` で**新しい学会カタログ**を end-to-end 生成 (collect_conference → build_summary_csv → build_pages → scaffold_conference_page → commit → Pages)。入力: `conference`(slug) / `venue`(VenueSignal token) / `query`(arXiv `co:"…"`) / `display` / `lede` / `max`。LLM/unarXive 不要 (カタログは arXiv メタ + VenueSignal のみで構築)。**arXiv 自己申告ベースなので部分収録(採択集合の ~30-40%)**。**ICLR/NeurIPS/ICML は `collect_openreview.py`(OpenReview api2 venueid → 全採択 + Oral/Spotlight/Poster 区分)で権威的に全件収録するのが正**(当面は手動: collect_openreview → build_summary_csv → build_pages → 既存ページなら lede/footer を OpenReview 表記に手修正。専用 workflow `openreview-on-demand.yml` は未実装=follow-up)
 - `data-audit.yml` — `docs/themes/*/lineage.json` 等が変わった PR/push で seed/lineage 監査
 - `lighthouse.yml` — frontend 変更 PR + 月曜定例で Core Web Vitals 計測
 - `pages.yml` — `docs/**` 変更で GitHub Pages へデプロイ
+- `publish.yml` — GitHub Release 公開で PyPI に trusted-publisher 発行。**実行歴は 2026-05-30 の 1 回だけで、それも failure**（2026-08-20 実測）
 
 ### 必要な GitHub Secrets
 
@@ -666,7 +688,7 @@ artifact 上げる → workflow が DL する** 構造。
 
 ```bash
 # 1. 依存追加 (一時的、メイン pyproject.toml には入れない)
-uv pip install duckdb huggingface_hub
+uv pip install 'paperpilot[unarxive]'   # = duckdb + huggingface_hub（#362 で extra 化）
 
 # 2. unarXive DuckDB を build (~5 min、HF cache hit なら ~30 s)
 #    DuckDB native read_json_auto + 3-col 化 + 600ch trim で
@@ -861,9 +883,9 @@ Skill / Agent を追加・変更した時は、この表と `.claude/agents/agen
 - **アセット版数は `sync_asset_versions.py` が統一管理**（2026-08-19 に是正）。かつて `utils.js` が
   v=75(10 ページ) と v=82(4 ページ) に分裂していたが、`--check` が乖離と `?v=` 無し参照を検出して
   非ゼロ終了するようになり、`test_sync_asset_versions.py` が実サイトを検査している
-- テストは **1,074 passed / 1 failed**（既知の pre-existing `test_theme_typography_tokens` のみ）、lint（ruff）は clean。
+- テストは **1,104 passed / 0 failed**（2026-08-23 実測。#357 で唯一の恒常 failure を解消済み）、lint（ruff）は clean。
   mypy は環境側で INTERNAL ERROR（既存の `build_pages.py` でも再現するため本リポジトリ由来ではない）
 
 ---
 
-*最終更新：2026年8月18日（① CHANGELOG の完了済み履歴 20 本を `CHANGELOG-archive.md` へ無損失退避、② 本ファイルの実装ステータス章を `docs/design/09-implementation-status.md` へ無損失移設し現況を実測で更新、③ 直近出荷 #347〜#353 を CHANGELOG に反映。詳細は CHANGELOG.md ## [Unreleased] 参照）*
+*最終更新：2026年8月20日（定期整理: ① テスト/lint に関する記述を実測に一致（`~22s`→`~27s`、bare `python3 -m pytest`→`uv run`）、② 唯一の恒常 failure を #357 で解消（原因はテスト補助関数がグループ化セレクタを読めなかったこと。「node 環境依存」も「#257 の移行残り」も誤診だった）、③ **存在しない CI（test/ruff/mypy）の記述を削除しローカル実行が唯一のゲートである旨を明記**、④ mypy が現環境で INTERNAL ERROR で走らないことを実行例に併記。2026-08-18 の変更＝CHANGELOG 履歴 20 本の無損失退避・実装ステータス章の `docs/design/09-implementation-status.md` への移設・#347〜#353 の反映。詳細は CHANGELOG.md ## [Unreleased] 参照）*

@@ -26,6 +26,9 @@ LLM が論文間の引用関係を 7 種類 (`supersedes` / `successor` / `exten
 - **秘匿分離** — API キー類は `.env` のみ（`config.yaml` に書かない）
 - **冪等性** — 既出論文は seen_ids で除外。同じ config で2回実行しても重複しない
 - **Fail-Safe** — 外部API障害時は該当ソース/シグナルをスキップして継続
+- **学会横断検索** — トップページ（`docs/index.html`）の検索ボックスから 10 学会 28,300 本を横断検索。索引は `docs/search-index.json`（gzip 約 0.72 MB、`paperpilot/scripts/build_search_index.py` が生成）で、検索結果から各学会カタログの該当論文へ遷移する
+- **グローバルナビ** — `docs/` 配下の全 17 ページが `<nav class="site-nav">`（探す / テーマ系譜 / 仕組み）を共有
+- **アセット版数の自動同期** — `paperpilot/scripts/sync_asset_versions.py` が CSS/JS の内容ハッシュから `?v=` を付け替え、`docs/assets/versions.json` を唯一の真実源として全 HTML に書き戻す。手で `?v=` を書き換えない
 
 ## 必要環境
 
@@ -205,11 +208,19 @@ llm:
 
 Stage 4 (LLM) を有効化すると、さらに `llm_relevance (1..5)` で最終ランキングされます。
 
-## GitHub Actions（2 系統運用）
+## GitHub Actions
+
+> ⚠️ **定期実行されているのは `lighthouse.yml`（毎週月曜 02:00 UTC）だけです**（2026-08-20 実測）。
+> 下の 2 つの収集ワークフローは **#245（2026-06-04）で cron を外し、手動実行専用**になりました。
+> テーマ家系図へスコープを絞った際に「会議カタログ収集と著者ウォッチはテーマ生成に寄与しない」と
+> 判断されたためで、ワークフロー自体は残してあるので `workflow_dispatch` でいつでも回せます。
+> 実測の最終実行は collect-weekly が 2026-05-29、collect-daily-watch が 2026-06-02。
+> ∴ `docs/` のカタログは **`generated: 2026-06-28` で凍結**しています。
 
 ### 1. 週次深掘り — `.github/workflows/collect-weekly.yml`
 
-毎週土曜 07:00 JST（Fri 22:00 UTC）実行。フル機能で CSV/JSON 生成 + commit。
+**手動実行のみ**（`workflow_dispatch`。旧: 毎週土曜 07:00 JST ＝ Fri 22:00 UTC、#245 で廃止）。
+フル機能で CSV/JSON 生成 + commit。
 
 - `paperpilot/config.yaml` を参照
 - Stage 0〜4 フル稼働（LLM 有効時は Ollama/Gemini/Claude で日本語要約）
@@ -217,7 +228,8 @@ Stage 4 (LLM) を有効化すると、さらに `llm_relevance (1..5)` で最終
 
 ### 2. 毎日の著者ウォッチ — `.github/workflows/collect-daily-watch.yml`
 
-毎朝 07:00 JST（22:00 UTC）実行。`follow_authors` / `follow_orgs` にヒットした論文だけ Slack 通知。
+**手動実行のみ**（`workflow_dispatch`。旧: 毎朝 07:00 JST ＝ 22:00 UTC、#245 で廃止）。
+`follow_authors` / `follow_orgs` にヒットした論文だけ Slack 通知。
 
 - `paperpilot/config.daily-watch.yaml` を参照
 - LLM / citation 無効（day-1 では意味なし）
@@ -240,11 +252,19 @@ Stage 4 (LLM) を有効化すると、さらに `llm_relevance (1..5)` で最終
 ```
 automatic-paper-search/
 ├── docs/
-│   ├── iclr-2026/          # GitHub Pages 家系図ビュー（本命出力）
-│   │   ├── index.html      # 論文一覧（papers.json）
-│   │   ├── lineage.html    # 家系図（lineage.json）
-│   │   └── {papers,lineage}.json
-│   └── assets/             # 共通 CSS/JS
+│   ├── index.html          # ランディング（学会一覧 + サイト横断検索）
+│   ├── 404.html            # GH Pages の SPA フォールバック
+│   ├── conferences.json    # 全学会の集約インデックス
+│   ├── search-index.json   # 横断検索インデックス（28,300 件・gzip 約 0.72 MB）
+│   ├── sitemap.xml         # サイトマップ
+│   ├── <10 学会>/          # iclr-2026/ cvpr-2025/ cvpr-2026/ neurips-2025/ icml-2025/ ...
+│   │   └── index.html, lineage.html, {papers,lineage}.json
+│   ├── themes/             # テーマ家系図（3 本公開 + 投稿フォーム）
+│   ├── how-it-works/       # サイトの仕組み
+│   ├── research/           # 市場調査レポート
+│   ├── design/             # 基本設計書
+│   ├── daily/              # papers.json のみ。⚠️ どの HTML/JS からも参照が無い死データ（2026-08-20 実測）
+│   └── assets/             # CSS / JS / 画像 / versions.json
 └── paperpilot/
     ├── collector.py        # CLI エントリ
     ├── config.yaml         # 検索設定（秘匿情報なし）
@@ -254,8 +274,10 @@ automatic-paper-search/
     ├── signals/            # venue / citation / author / github / keyword / follow
     ├── exporters/          # CSV / JSON / Slack / Email
     ├── llm/                # Ollama / Gemini / Claude / Groq
-    ├── scripts/            # build_summary_csv / build_pages / build_lineage{,_deep,_theme} /
-    │                       # generate_{deep,themes}_manifest / sync_to_sheets
+    ├── scripts/            # ビューア・索引生成（全 28 本。主要: build_summary_csv /
+    │                       # build_pages / build_lineage / build_deep_lineage /
+    │                       # build_theme_lineage / build_search_index / sync_asset_versions /
+    │                       # generate_{deep,themes}_manifest。詳細は paperpilot/scripts/README.md）
     ├── models/paper.py     # 論文データモデル
     ├── utils/              # config_loader, dedup, http, rate_limiter, logger
     ├── data/               # seen_ids.json, run_history.jsonl, lineage-cache/
