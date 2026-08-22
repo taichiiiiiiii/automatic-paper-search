@@ -33,23 +33,25 @@ const els = {
   statOral: document.getElementById("stat-oral"),
   statTags: document.getElementById("stat-tags"),
   statUpdated: document.getElementById("stat-updated"),
+  heroToggle: document.getElementById("hero-toggle"),
+  heroDetails: document.getElementById("hero-details"),
 };
 
 const REL_LABEL = {
   supersedes: { icon: "🔄", label: "Supersedes", direction: "down" },
-  successor:  { icon: "🟡", label: "Successor", direction: "down" },
-  extends:    { icon: "🌱", label: "Extended by", direction: "down" },
-  ablation:   { icon: "🔬", label: "Ablation by", direction: "down" },
-  baseline_only: { icon: "📏", label: "Used as baseline by", direction: "down" },
-  contrasts:  { icon: "⚔️", label: "Contrasts with", direction: "down" },
+  successor:  { label: "Successor", direction: "down" },
+  extends:    { label: "Extended by", direction: "down" },
+  ablation:   { label: "Ablation by", direction: "down" },
+  baseline_only: { label: "Used as baseline by", direction: "down" },
+  contrasts:  { label: "Contrasts with", direction: "down" },
 };
 const REL_LABEL_REVERSE = {
-  supersedes: { icon: "⬆️", label: "Supersedes", direction: "up" },
-  successor:  { icon: "⬆️", label: "Continues from", direction: "up" },
-  extends:    { icon: "⬆️", label: "Extends", direction: "up" },
-  ablation:   { icon: "🔬", label: "Ablates", direction: "up" },
-  baseline_only: { icon: "📏", label: "Uses as baseline", direction: "up" },
-  contrasts:  { icon: "⚔️", label: "Contrasted with", direction: "up" },
+  supersedes: { label: "Supersedes", direction: "up" },
+  successor:  { label: "Continues from", direction: "up" },
+  extends:    { label: "Extends", direction: "up" },
+  ablation:   { label: "Ablates", direction: "up" },
+  baseline_only: { label: "Uses as baseline", direction: "up" },
+  contrasts:  { label: "Contrasted with", direction: "up" },
 };
 
 function buildRelationsIndex() {
@@ -113,8 +115,9 @@ function renderRelationsSection(paper) {
         ${why}
       </li>`;
     }).join("");
-    return `<div class="rel-group rel-group--${k.split(":")[1]}">
-      <div class="rel-group__head">${meta.icon} ${meta.label} <span class="rel-group__count">(${items.length})</span></div>
+    const relKind = k.split(":")[1];
+    return `<div class="rel-group rel-group--${relKind}">
+      <div class="rel-group__head"><span class="rel-dot rel-dot--${relKind}" aria-hidden="true"></span>${meta.label} <span class="rel-group__count">(${items.length})</span></div>
       <ul class="rel-group__items">${itemsHtml}</ul>
     </div>`;
   }).join("");
@@ -123,7 +126,7 @@ function renderRelationsSection(paper) {
   return `
     <div class="paper__relations">
       <button class="paper__relations-toggle" type="button" aria-expanded="false">
-        🌳 Relations <span class="paper__relations-count">(${total})</span>
+        Relations <span class="paper__relations-count">(${total})</span>
       </button>
       <div class="paper__relations-body">
         ${groupHtml}
@@ -404,9 +407,27 @@ function buildTagChips() {
     for (const t of p.tags) counts.set(t, (counts.get(t) || 0) + 1);
   }
   const sorted = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 18);
-  els.tagChips.innerHTML = sorted.map(([tag, n]) =>
-    `<button class="chip" data-tag="${escapeHtml(tag)}" type="button" aria-pressed="${state.activeTags.has(tag)}">${escapeHtml(tag)}<span class="chip__count">${n}</span></button>`
-  ).join("");
+  // Hierarchy instead of 18 flat chips: top 8 visible, the tail behind a
+  // "+N" expander. An active tag in the tail forces the expanded state so
+  // a filter restored from the URL is never invisibly on.
+  const HEAD_COUNT = 8;
+  const head = sorted.slice(0, HEAD_COUNT);
+  const tail = sorted.slice(HEAD_COUNT);
+  const tailActive = tail.some(([tag]) => state.activeTags.has(tag));
+  const chip = ([tag, n]) =>
+    `<button class="chip" data-tag="${escapeHtml(tag)}" type="button" aria-pressed="${state.activeTags.has(tag)}">${escapeHtml(tag)}<span class="chip__count">${n}</span></button>`;
+  const tailHtml = tail.length
+    ? `<span class="chips__tail"${tailActive ? "" : " hidden"}>${tail.map(chip).join("")}</span>` +
+      (tailActive ? "" : `<button class="chip chip--more" type="button" aria-expanded="false">+${tail.length} タグ</button>`)
+    : "";
+  els.tagChips.innerHTML = head.map(chip).join("") + tailHtml;
+  const more = els.tagChips.querySelector(".chip--more");
+  if (more) {
+    more.addEventListener("click", () => {
+      els.tagChips.querySelector(".chips__tail").hidden = false;
+      more.remove();
+    });
+  }
 }
 
 function buildTypeChips() {
@@ -423,6 +444,15 @@ function buildTypeChips() {
 }
 
 function bindEvents() {
+  // Collapsible hero details — same idiom as theme.js's hero-toggle.
+  if (els.heroToggle && els.heroDetails) {
+    els.heroToggle.addEventListener("click", () => {
+      const open = els.heroDetails.hidden;
+      els.heroDetails.hidden = !open;
+      els.heroToggle.setAttribute("aria-expanded", String(open));
+    });
+  }
+
   // Debounce the search: a full filter + innerHTML re-render on every
   // keystroke janks on the larger catalogs (ICLR ~1,700, CVPR 4,068 papers)
   // and punishes fast typists. 180ms keeps it responsive without re-rendering
