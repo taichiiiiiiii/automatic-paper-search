@@ -319,6 +319,21 @@ FACE_DOMAIN = [
     # Audio deepfakes are NOT face papers — the rule must not use bare
     # "deepfake" as a face signal.
     ("detect all-type deepfake audio with wavelet prompt tuning", False),
+    # R2 review: the first replacement lacked word boundaries, so
+    # "Surface Detection" matched "face detection" and "maxillofacial"
+    # matched "facial". Both shipped as false positives.
+    ("neural surface detection for unsigned distance fields", False),
+    ("maxillofacial bone segmentation benchmark", False),
+    ("interface generation for embedded systems", False),
+    # R2 review: face-domain categories the first replacement missed —
+    # papers that legitimately lost their tag. My own "0 papers lost"
+    # verifier shared the same blind spot as the rule (its face-domain
+    # regex also lacked these), which is how the claim survived.
+    ("dualtalk: 3d talking head conversations", True),
+    ("gaussian head avatar from monocular video", True),
+    ("face forgery detection in the wild", True),
+    ("deep face clustering at scale", True),
+    ("portrait animation with audio-driven motion", True),
 ]
 
 
