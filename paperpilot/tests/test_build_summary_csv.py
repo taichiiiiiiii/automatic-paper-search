@@ -286,3 +286,79 @@ def test_classify_tags_multiple_and_empty():
     tags = bsc.classify_tags("Efficient Diffusion Models for Text-to-Image Generation", "")
     assert "Diffusion" in tags and "ImageGen" in tags
     assert bsc.classify_tags("A purely abstract note", "with no topical keywords") == []
+
+
+# --------------------------------------------------------------------------- #
+# Issue #356 — TOPIC_RULES must not fire on ordinary English prose            #
+# --------------------------------------------------------------------------- #
+#
+# The `Face` rule used to be [r"\bface\b", r"\bfaces\b", r"facial"], which
+# tagged every abstract saying "these methods face the challenge of ..." as a
+# face-recognition paper. Measured on the shipped catalogue (28,300 papers)
+# that was 1,322 hits of which 60.6% were certain verb-only false positives.
+# The replacement demands face-domain context and measures 0 verb-only hits,
+# 0 lost face-domain papers.
+
+VERB_PROSE = [
+    # Real openers from mis-tagged abstracts (verbatim patterns, not invented).
+    "however, these methods face the challenge of scalability.",
+    "existing approaches face significant limitations in practice.",
+    "large language models face increasing complexity at inference time.",
+    "policies trained purely offline face a dilemma.",
+    "we face several obstacles when deploying such systems.",
+    "the community faces numerous issues with reproducibility.",
+]
+
+FACE_DOMAIN = [
+    ("face recognition under occlusion", True),
+    ("facial landmark detection", True),
+    ("talking face generation from audio", True),
+    ("3d face reconstruction", True),
+    ("a new large-scale faces dataset", True),
+    ("face swapping with diffusion models", True),
+    # Audio deepfakes are NOT face papers — the rule must not use bare
+    # "deepfake" as a face signal.
+    ("detect all-type deepfake audio with wavelet prompt tuning", False),
+    # R2 review: the first replacement lacked word boundaries, so
+    # "Surface Detection" matched "face detection" and "maxillofacial"
+    # matched "facial". Both shipped as false positives.
+    ("neural surface detection for unsigned distance fields", False),
+    ("maxillofacial bone segmentation benchmark", False),
+    ("interface generation for embedded systems", False),
+    # R2 review: face-domain categories the first replacement missed —
+    # papers that legitimately lost their tag. My own "0 papers lost"
+    # verifier shared the same blind spot as the rule (its face-domain
+    # regex also lacked these), which is how the claim survived.
+    ("dualtalk: 3d talking head conversations", True),
+    ("gaussian head avatar from monocular video", True),
+    ("face forgery detection in the wild", True),
+    ("deep face clustering at scale", True),
+    ("portrait animation with audio-driven motion", True),
+]
+
+
+def test_face_rule_ignores_verb_usage() -> None:
+    for prose in VERB_PROSE:
+        tags = bsc.classify_tags(prose, "")
+        assert "Face" not in tags, f"Face fired on ordinary prose: {prose!r}"
+
+
+def test_face_rule_still_catches_face_domain() -> None:
+    for text, expect in FACE_DOMAIN:
+        tags = bsc.classify_tags(text, "")
+        assert ("Face" in tags) is expect, (text, tags)
+
+
+def test_no_rule_fires_on_generic_prose() -> None:
+    """The generalised #356 guard: an abstract of ordinary academic filler
+    must produce no tags at all. Every word here is common English that a
+    keyword rule could plausibly over-match.
+    """
+    generic = (
+        "in this paper we present a novel approach. we recommend careful "
+        "evaluation. our method addresses the problem and we face the "
+        "challenge of scale. results demonstrate the effectiveness of the "
+        "proposed approach on standard settings."
+    )
+    tags = bsc.classify_tags("", generic)
+    assert tags == [], f"rules fired on generic prose: {tags}"
