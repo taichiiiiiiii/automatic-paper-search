@@ -2745,113 +2745,113 @@
       "src": "7c6409ec154ba64f5eb63d8c6e9f419ce1472289",
       "dst": "6f407b6db6ac695b032f284ea576666561b6c46a",
       "rel": "extends",
-      "conf": 0.8,
-      "rationale": "CMA-ES"
+      "conf": 0.9,
+      "rationale": "論文 B は、論文 A の CMA-ES を基盤とする CMA-MAE アルゴリズムの、高次元測度空間における品質多様性最適化での停滞を克服する Discount Model Search を提案している。"
     },
     {
       "src": "45373921f06a6efebefa6189d2dd80362ab0836e",
       "dst": "6f407b6db6ac695b032f284ea576666561b6c46a",
       "rel": "successor",
-      "conf": 0.8,
-      "rationale": "QD"
+      "conf": 0.9,
+      "rationale": "論文 B は、論文 A が提唱するQuality Diversity Optimizationにおいて、高次元測度空間での課題をDiscount Model Searchで解決しようとしている。"
     },
     {
       "src": "268d347e8a55b5eb82fb5e7d2f800e33c75ab18a",
       "dst": "017bde5eb3aa3d3ffe50dfcc97bd648220884f97",
       "rel": "extends",
-      "conf": 0.8,
-      "rationale": "A"
+      "conf": 0.9,
+      "rationale": "論文 B は、論文 A の画像パッチの概念をビデオに拡張し、FlashVID の訓練不要なツリーベース時空間トークン統合により VLLM の計算効率を改善している。"
     },
     {
       "src": "a22b23b65cdbc0335b872ed7c7a7206c710f8997",
       "dst": "017bde5eb3aa3d3ffe50dfcc97bd648220884f97",
       "rel": "extends",
-      "conf": 0.8,
-      "rationale": "Qwen2-VL"
+      "conf": 0.9,
+      "rationale": "論文 B は、論文 A の効率的な視覚表現の課題を、動画領域におけるTraining-free Tree-based Spatiotemporal Token MergingによるVLLMの計算効率化へと拡張している。"
     },
     {
       "src": "017bde5eb3aa3d3ffe50dfcc97bd648220884f97",
       "dst": "1557da6a88102f5909c54fb631000722381e433d",
-      "rel": "successor",
-      "conf": 0.8,
-      "rationale": "VLLM"
+      "rel": "contrasts",
+      "conf": 1.0,
+      "rationale": "論文 B は、論文 A のようなトークンマージング手法が引き起こす可能性のある時空間座標のずれを、Video Curvature-Aware Spatio-Temporal Pruning によって解決しようとしている。"
     },
     {
       "src": "90abbc2cf38462b954ae1b772fac9532e2ccd8b0",
       "dst": "3008be7598614b60f81742bc80a47d63d1c604b7",
-      "rel": "successor",
-      "conf": 0.8,
-      "rationale": "A"
+      "rel": "contrasts",
+      "conf": 0.9,
+      "rationale": "論文 B の Test-Time Training は、A の静的なモデルによる few-shot 学習とは異なり、推論時にモデルの重みを動的に適応させるアプローチである。"
     },
     {
       "src": "57e849d0de13ed5f91d086936296721d4ff75a75",
       "dst": "3008be7598614b60f81742bc80a47d63d1c604b7",
-      "rel": "baseline_only",
+      "rel": "successor",
       "conf": 0.8,
-      "rationale": "A"
+      "rationale": "論文 B は、In-Place Test-Time Training を導入することで、A のような基盤言語モデルの動的な適応という、LLM研究の新たな発展方向を示している。"
     },
     {
       "src": "40e8af970329135ec95057d73e239dab805ad128",
       "dst": "3008be7598614b60f81742bc80a47d63d1c604b7",
-      "rel": "baseline_only",
-      "conf": 0.8,
-      "rationale": "A"
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "論文 B は、論文 A のような大規模言語モデルの静的な運用に対し、In-Place Test-Time Training を用いて動的に重みを適応させる新しいパラダイムを提案している。"
     },
     {
       "src": "6f870f7f02a8c59c3e23f407f3ef00dd1dcf8fc4",
       "dst": "070d63acacae617283a9c6d7814b9abeb6b16c47",
       "rel": "successor",
-      "conf": 0.8,
-      "rationale": "A"
+      "conf": 0.9,
+      "rationale": "論文 B は、論文 A で用いられているコントラスト学習の主要な損失関数である InfoNCE が表現にガウス構造を誘導することを示している。"
     },
     {
       "src": "7af72a461ed7cda180e7eab878efd5f35d79bbf4",
       "dst": "070d63acacae617283a9c6d7814b9abeb6b16c47",
       "rel": "successor",
-      "conf": 0.8,
-      "rationale": "A"
+      "conf": 0.9,
+      "rationale": "論文 B は、論文 A のような対照学習で用いられる InfoNCE 目的関数が表現にガウス構造を誘導することを示している。"
     },
     {
       "src": "b227f3e4c0dc96e5ac5426b85485a70f2175a205",
       "dst": "070d63acacae617283a9c6d7814b9abeb6b16c47",
       "rel": "successor",
-      "conf": 0.8,
-      "rationale": "A"
+      "conf": 0.9,
+      "rationale": "論文 B は、論文 A のコントラスト予測符号化で用いられる InfoNCE 損失が表現にガウス構造を誘導することを理論的に解明している。"
     },
     {
       "src": "fa5853fdef7d2f6bb68203d187ddacbbddc63a8b",
       "dst": "070d63acacae617283a9c6d7814b9abeb6b16c47",
-      "rel": "extends",
-      "conf": 0.8,
-      "rationale": "A"
+      "rel": "unrelated",
+      "conf": 0.9,
+      "rationale": "論文 A は高次元確率論の入門書であり、論文 B は InfoNCE が表現にガウス分布を誘導することを示すコントラスト学習の特定の研究であるため、直接的な関連性はない。"
     },
     {
       "src": "9a56ab8b1aba50dc2fea3cf4b531d30891a88ba9",
       "dst": "070d63acacae617283a9c6d7814b9abeb6b16c47",
       "rel": "successor",
-      "conf": 0.8,
-      "rationale": "A"
+      "conf": 0.9,
+      "rationale": "論文 B は、論文 A が特定したアライメントと均一性の概念を前提としつつ、InfoNCE が表現にガウス構造を誘導することを示している。"
     },
     {
       "src": "403227333329b36183004f04db72362b604adef3",
       "dst": "070d63acacae617283a9c6d7814b9abeb6b16c47",
       "rel": "successor",
-      "conf": 0.8,
-      "rationale": "A"
+      "conf": 0.9,
+      "rationale": "論文 B は、論文 A が理論分析した対照学習において、InfoNCE損失が表現にガウス構造を誘導することを示している。"
     },
     {
       "src": "070d63acacae617283a9c6d7814b9abeb6b16c47",
       "dst": "f8b0c93addc66f3f847ee991c52b679e1cba1c58",
       "rel": "successor",
-      "conf": 0.8,
-      "rationale": "A"
+      "conf": 0.9,
+      "rationale": "論文Bは、論文Aが示したInfoNCEによる表現のガウス分布誘導を、生成モデルとエンコーダに共通する「Universal Normal Embedding」というより普遍的な概念に発展させている。"
     },
     {
       "src": "b44bb1762640ed72091fd5f5fdc20719a6dc24af",
       "dst": "2d214cbd13cbecfe242096d075c93df9474d698e",
       "rel": "extends",
-      "conf": 0.8,
-      "rationale": "A"
+      "conf": 0.9,
+      "rationale": "B の Latent Particle World Model は、A の離散世界モデルを自己教師ありの物体中心表現と確率的粒子ダイナミクスで実世界の複数物体データセットに拡張している。"
     },
     {
       "src": "5156381d63bb3e873533b08f203cb56c2d79b6c9",
@@ -2864,15 +2864,15 @@
       "src": "f2d952a183dfb0a1e031b8a3f535d9f8423d7a6e",
       "dst": "2d214cbd13cbecfe242096d075c93df9474d698e",
       "rel": "extends",
-      "conf": 0.8,
-      "rationale": "A"
+      "conf": 0.9,
+      "rationale": "B は A の世界モデル研究を、キーポイントやオブジェクトマスクを自律的に発見する自己教師ありオブジェクト中心型世界モデルである Latent Particle World Model (LPWM) へと拡張している。"
     },
     {
       "src": "a0a79dad89857a96f8f71b14238e5237cbfc4787",
       "dst": "206248385b625ba5bf6719f9e90fbd012709c236",
-      "rel": "successor",
-      "conf": 0.8,
-      "rationale": "A"
+      "rel": "unrelated",
+      "conf": 0.9,
+      "rationale": "論文 B は、論文 A の LLM 評価とは異なり、P-GenRM を用いて LLM の個別ユーザーへのパーソナライズされたアライメントに焦点を当てている。"
     },
     {
       "src": "0286b2736a114198b25fb5553c671c33aed5d477",
@@ -2885,8 +2885,8 @@
       "src": "e24424283c02fbe7f641e5b3490d7bb059f8355a",
       "dst": "206248385b625ba5bf6719f9e90fbd012709c236",
       "rel": "extends",
-      "conf": 0.8,
-      "rationale": "A"
+      "conf": 0.9,
+      "rationale": "B の P-GenRM は、A が概説する LLM-as-a-Judge の概念を、パーソナライズされた報酬モデルの生成という特定のタスクに拡張している。"
     },
     {
       "src": "3dc7dc1bea9a4f70c02b6759a0bda7aca0005a9e",
@@ -2906,15 +2906,15 @@
       "src": "3707939a856655fcabf0acd5cba1a1009987b439",
       "dst": "206248385b625ba5bf6719f9e90fbd012709c236",
       "rel": "extends",
-      "conf": 0.8,
-      "rationale": "P-GenRM"
+      "conf": 0.9,
+      "rationale": "論文 B は、論文 A の生成型報酬モデルの概念を、P-GenRMという手法でユーザーの好みに合わせたパーソナライズされたアライメントに拡張している。"
     },
     {
       "src": "17170575aa8b4fa4e3eef5d366ada706a94dd836",
       "dst": "206248385b625ba5bf6719f9e90fbd012709c236",
       "rel": "successor",
-      "conf": 0.8,
-      "rationale": "A"
+      "conf": 0.9,
+      "rationale": "論文 B は、論文 A が重要性を強調するパーソナライズされたLLMにおいて、P-GenRMという新しい生成型報酬モデルを提案し、ユーザー固有の報酬信号獲得の課題に取り組んでいる。"
     },
     {
       "src": "9bf00afb0efb02a263fa3ddea1e768677498536c",
