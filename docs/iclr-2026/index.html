@@ -38,7 +38,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=optional" rel="stylesheet" />
 
-  <link rel="stylesheet" href="../assets/style.css?v=91" />
+  <link rel="stylesheet" href="../assets/style.css?v=93" />
 </head>
 <body>
   <noscript>
@@ -57,57 +57,33 @@
       <li><a href="../how-it-works/">仕組み</a></li>
     </ul>
   </nav>
-  <header class="hero">
+  <header class="hero hero--compact">
     <nav class="hero__breadcrumb" aria-label="breadcrumb">
       <a href="../">PaperPilot</a> &nbsp;/&nbsp; ICLR 2026
+      <button type="button" class="hero__toggle" id="hero-toggle"
+        aria-expanded="false" aria-controls="hero-details"
+        title="学会の説明を開閉">詳細</button>
     </nav>
     <h1 class="hero__title">ICLR 2026 <em>採択論文</em></h1>
+    <p class="hero__meta">
+      <span class="hero__meta-num" id="stat-total">—</span> 論文
+      <span class="hero__meta-sep" aria-hidden="true">·</span>
+      <span class="hero__meta-num hero__meta-num--oral" id="stat-oral">—</span> Oral
+      <span class="hero__meta-sep" aria-hidden="true">·</span>
+      <span class="hero__meta-num" id="stat-tags">—</span> タグ
+      <span class="hero__meta-sep" aria-hidden="true">·</span>
+      更新 <span class="hero__meta-num" id="stat-updated">—</span>
+      <span class="hero__meta-sep" aria-hidden="true">·</span>
+      <a class="hero__meta-link" href="lineage.html">家系図ビュー →</a>
+    </p>
+    <div class="hero__details" id="hero-details" hidden>
     <p class="hero__lede">
       The 14th International Conference on Learning Representations (Rio de Janeiro, April 23–27, 2026).
       <code>OpenReview</code> の採択論文を全件収録し、Oral / Poster の採択区分つきで掲載しています。
       タグ・採択形式・自由検索で絞り込めます。
     </p>
-    <div class="stat-row">
-      <div class="stat">
-        <span class="stat__num" id="stat-total">—</span>
-        <span class="stat__label">論文</span>
-      </div>
-      <div class="stat stat--featured">
-        <span class="stat__num stat__num--oral" id="stat-oral">—</span>
-        <span class="stat__label">Oral</span>
-      </div>
-      <div class="stat">
-        <span class="stat__num" id="stat-tags">—</span>
-        <span class="stat__label">トピックタグ</span>
-      </div>
-      <div class="stat">
-        <span class="stat__num" id="stat-updated">—</span>
-        <span class="stat__label">最終更新</span>
-      </div>
     </div>
-    <p class="hero__actions">
-      <a class="hero__action" href="lineage.html">🌳 家系図ビュー →</a>
-    </p>
   </header>
-
-  <!-- First-timer guide: plain-language "what is this & how to use it". -->
-  <section class="usage" aria-label="このページの使い方">
-    <p class="usage__lead"><strong>はじめての方へ</strong> — 下の操作で論文を絞り込めます。組み合わせも自由です。</p>
-    <ul class="usage__steps">
-      <li class="usage__step">
-        <span class="usage__icon" aria-hidden="true">🔍</span>
-        <span><b>検索</b><br />タイトル・著者・要旨にキーワードを入力</span>
-      </li>
-      <li class="usage__step">
-        <span class="usage__icon" aria-hidden="true">🏷️</span>
-        <span><b>タグで絞り込み</b><br />LLM / Vision などをクリック（複数選択可）</span>
-      </li>
-      <li class="usage__step">
-        <span class="usage__icon" aria-hidden="true">↕️</span>
-        <span><b>並び替え</b><br />新着順・Oral 優先・タイトル順</span>
-      </li>
-    </ul>
-  </section>
 
   <div class="filter-bar">
     <section class="filters" aria-label="絞り込み">
@@ -169,6 +145,6 @@
   </footer>
 
   <script src="../assets/utils.js?v=82" defer></script>
-  <script src="../assets/app.js?v=84" defer></script>
+  <script src="../assets/app.js?v=85" defer></script>
 </body>
 </html>

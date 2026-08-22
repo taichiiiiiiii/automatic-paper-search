@@ -106,6 +106,17 @@ function clusterForFocus(id) {
 }
 
 async function init() {
+  // Collapsible hero details ("使い方") — same idiom as theme.js/app.js (#370).
+  const heroToggle = document.getElementById("hero-toggle");
+  const heroDetails = document.getElementById("hero-details");
+  if (heroToggle && heroDetails) {
+    heroToggle.addEventListener("click", () => {
+      const open = heroDetails.hidden;
+      heroDetails.hidden = !open;
+      heroToggle.setAttribute("aria-expanded", String(open));
+    });
+  }
+
   // Bind sync controls immediately so aria-pressed + click handlers reflect
   // the restored state.layout before the data-load await — otherwise the
   // hardcoded HTML `aria-pressed` flashes wrong when prefs = "topics".
@@ -396,7 +407,7 @@ function renderCrumb() {
     : "";
   els.crumb.hidden = false;
   els.crumb.innerHTML = `
-    <button type="button" class="lineage-crumb__link" data-action="topics">🗂️ トピック</button>
+    <button type="button" class="lineage-crumb__link" data-action="topics">トピック</button>
     <span class="lineage-crumb__sep">/</span>
     <button type="button" class="lineage-crumb__link" data-action="cluster" data-cluster="${escapeHtml(cluster.id)}">${escapeHtml(cluster.label)}</button>
     ${titleFragment}

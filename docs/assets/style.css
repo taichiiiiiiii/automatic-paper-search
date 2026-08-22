@@ -595,6 +595,21 @@ input[type="range"]:focus-visible {
 }
 .hero__mode-icon { font-size: var(--text-body); line-height: 1; }
 
+/* One-line stat strip for compact catalog heroes (#370). Replaces the
+   four-box .stat-row on conference pages; ids stay on the spans so app.js
+   keeps hydrating the numbers. */
+.hero__meta {
+  margin: 0.55rem 0 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  color: var(--color-ink-muted);
+  letter-spacing: 0.01em;
+}
+.hero__meta-num { color: var(--color-ink); font-weight: 600; }
+.hero__meta-num--oral { color: var(--color-oral); }
+.hero__meta-sep { margin: 0 0.35rem; color: var(--color-ink-subtle); }
+.hero__meta-link { white-space: nowrap; }
+
 .stat-row {
   display: flex;
   flex-wrap: wrap;
@@ -772,6 +787,17 @@ input[type="range"]:focus-visible {
   transition: all var(--duration-fast) var(--ease);
   user-select: none;
 }
+/* Tag-chip hierarchy (#370): the tail of the 18 chips hides behind a
+   "+N タグ" expander so the filter row reads as one visual tier. */
+.chips__tail:not([hidden]) { display: contents; }
+/* display: contents would beat the UA's [hidden] { display: none } —
+   restate it so the collapsed tail actually collapses. */
+.chips__tail[hidden] { display: none; }
+.chip--more {
+  color: var(--color-ink-muted);
+  border-style: dashed;
+}
+
 .chip:hover {
   border-color: var(--color-ink-muted);
   color: var(--color-ink);
@@ -3235,6 +3261,26 @@ g.node-wrap.node-wrap--no-tx {
 .rel-group:last-of-type {
   margin-bottom: 0.5rem;
 }
+/* Relation colour dot (#370): carries the same --rel-* tokens the lineage
+   canvas uses, replacing the emoji icons. Hue is contract-fixed (the
+   how-it-works aria-labels name these colours) — do not restyle per-relation
+   here beyond the shared token. */
+.rel-dot {
+  display: inline-block;
+  width: 0.62em;
+  height: 0.62em;
+  border-radius: 50%;
+  margin-right: 0.45em;
+  vertical-align: baseline;
+  background: var(--color-ink-subtle);
+}
+.rel-dot--supersedes { background: var(--rel-supersedes); }
+.rel-dot--successor { background: var(--rel-successor); }
+.rel-dot--extends { background: var(--rel-extends); }
+.rel-dot--ablation { background: var(--rel-ablation); }
+.rel-dot--baseline_only { background: var(--rel-baseline); }
+.rel-dot--contrasts { background: var(--rel-contrasts); }
+
 .rel-group__head {
   font-family: var(--font-mono);
   font-size: 0.7rem;
