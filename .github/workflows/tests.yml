@@ -55,17 +55,21 @@ jobs:
         run: node --version
 
       - name: Lint
-        run: uv run ruff check paperpilot/
+        # --extra dev is required: ruff and pytest live in
+        # [project.optional-dependencies].dev, so a bare `uv run` cannot find
+        # them on a clean checkout. This passed locally only because uv fell
+        # back to /usr/local/bin/ruff, a system binary CI does not have.
+        run: uv run --extra dev ruff check paperpilot/
 
       - name: Tests
-        run: uv run pytest paperpilot/tests -q
+        run: uv run --extra dev pytest paperpilot/tests -q
 
       - name: No skipped tests
         # Skips are how this suite hides missing tooling. If something
         # starts skipping in CI we want to see it, not average it away.
         run: |
           set -o pipefail
-          uv run pytest paperpilot/tests -q -rs 2>&1 | tee result.txt
+          uv run --extra dev pytest paperpilot/tests -q -rs 2>&1 | tee result.txt
           if grep -qE "^[0-9]+ .*skipped" result.txt; then
             echo "::warning::some tests skipped in CI — check the -rs output above"
           fi
