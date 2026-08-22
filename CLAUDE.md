@@ -33,7 +33,7 @@ Python：3.10 以上（開発・CIは 3.12）
 ```bash
 uv run ruff check paperpilot/                 # lint（push 前必須。pytest は I001 import-sort を拾わない）
 uv run mypy paperpilot/                        # type check ⚠️現環境では INTERNAL ERROR で走らない（後述「既知の環境問題」）
-uv run pytest paperpilot/tests/                # 全テスト（~27s、1,075 passed / 0 failed）
+uv run pytest paperpilot/tests/                # 全テスト（~28s、1,104 passed / 0 failed）
 uv run pytest paperpilot/tests/test_venue_signal.py::test_x -q   # 単一テスト
 uv run pytest paperpilot/tests/ --cov=paperpilot --cov-config=/dev/null   # カバレッジ
 ```
@@ -149,7 +149,7 @@ automatic-paper-search/
     │   ├── github.py                    # 共有 GitHub 解決器（curated map + GitHub Search + Stars）
     │   ├── json_parser.py               # LLM 3段階フォールバック
     │   └── logger.py                    # 日次ローテ (7日保持)
-    ├── tests/                           # pytest テスト（1,074 件 pass、2026-08-19 実測）
+    ├── tests/                           # pytest テスト（1,104 件 pass、2026-08-23 実測）
     │   ├── conftest.py
     │   ├── test_*.py                    # 各モジュールのユニット/統合テスト
     │   └── test_venue_stress.py         # 60 パターンで検出率 95% 以上
@@ -337,7 +337,7 @@ git push
 
 `develop` へ PR → merge。merge 後は bug 発生時のみ再レビュー。
 
-🔴 **テスト/lint を走らせる CI は存在しない**（2026-08-20 実測: `.github/workflows/` 9 本のうち `pytest`/`ruff`/`mypy` を実行するものは 0 本。自動発火は push=`data-audit`/`pages`、PR=`data-audit`/`lighthouse`、release=`publish`、schedule=`lighthouse` のみ。下表参照）。∴ **merge 前のローカル `uv run pytest` と `uv run ruff check` が唯一のゲート**。しかも `develop` への merge は `pages.yml` 経由でそのまま本番公開になる。
+🔴 **`develop` への merge は `pages.yml` 経由でそのまま本番公開になる。** 2026-08-23 に `tests.yml` を追加するまで **テスト/lint を走らせる CI は 1 本も存在せず**（#358）、merge 前のローカル実行だけが唯一のゲートだった。現在は `tests.yml` が PR と `develop`/`main` への push で `ruff` + `pytest` を走らせる。⚠️ ただし **mypy はこの環境で INTERNAL ERROR で起動しない**ため CI に入れていない＝型検査は依然として未実施。
 
 ### 全体タイミング図
 
@@ -618,14 +618,15 @@ uv run python -m paperpilot.scripts.scaffold_conference_page --conference <slug>
 
 ## CI / GitHub Actions
 
-ワークフロー一覧 (`.github/workflows/`・全 9 本):
+ワークフロー一覧 (`.github/workflows/`・全 10 本):
 - `collect-weekly.yml` — 主要会議の論文を深掘り収集 → `paperpilot/output/` に commit。**手動 `workflow_dispatch` 専用**（#245 で週次 cron 廃止）
 - `collect-daily-watch.yml` — follow 著者の新作を確認 → 通知のみ。**手動 `workflow_dispatch` 専用**（#245 で日次 cron 廃止）
 
-🔴 **トリガ実測表（2026-08-20、`on:` 節を全 9 本直読）** — 名前から推測しないこと。
+🔴 **トリガ実測表（2026-08-23、`on:` 節を全 10 本直読）** — 名前から推測しないこと。
 
 | workflow | push | PR | schedule | release | dispatch |
 |---|:--:|:--:|:--:|:--:|:--:|
+| `tests` | ✅ `develop`/`main` | ✅ | | | ✅ |
 | `data-audit` | ✅ | ✅ | | | ✅ |
 | `pages` | ✅ | | | | ✅ |
 | `lighthouse` | | ✅ | ✅ `0 2 * * 1` | | ✅ |
@@ -635,7 +636,8 @@ uv run python -m paperpilot.scripts.scaffold_conference_page --conference <slug>
 - **`schedule` を持つのは `lighthouse` ただ 1 本**（`collect-*` は #245、`regen-themes` は #261 で cron 廃止）。
   ∴ **カタログは自動更新されない**（`conferences.json` は `generated: 2026-06-28` で凍結）。更新は `workflow_dispatch` で明示的に回す。
 - ⚠️ `data-audit` は**トリガはあるが 2026-06-15 以降一度も発火していない**（paths が `docs/iclr-*/lineage.json` 限定・#358）。
-- ⚠️ `pytest`/`ruff`/`mypy` を走らせる workflow は**この 9 本に 1 つも無い**。
+- `tests.yml` が `ruff` + `pytest` を走らせる（2026-08-23 追加）。**mypy は含まない**（環境の INTERNAL ERROR で起動しないため）。
+  🔴 **実行は `uv run --extra dev …` でなければならない**。`pytest` / `ruff` は `[project.optional-dependencies].dev` にあるので、素の `uv run` はクリーンなチェックアウトで `Failed to spawn` になる。ローカルで通っていたのは `/usr/local/bin` のシステム版に落ちていたからで、CI にそれは無い。
 - `regen-themes.yml` — 手動 `workflow_dispatch` 専用 (PR #261 で週次 cron 廃止)。LLM 契約変更や lineage 形式バンプ後にバルク再生成する break-glass
 - `theme-on-demand.yml` — フォーム送信または手動 dispatch で 1 テーマだけ生成
 - `conference-on-demand.yml` — 手動 `workflow_dispatch` で**新しい学会カタログ**を end-to-end 生成 (collect_conference → build_summary_csv → build_pages → scaffold_conference_page → commit → Pages)。入力: `conference`(slug) / `venue`(VenueSignal token) / `query`(arXiv `co:"…"`) / `display` / `lede` / `max`。LLM/unarXive 不要 (カタログは arXiv メタ + VenueSignal のみで構築)。**arXiv 自己申告ベースなので部分収録(採択集合の ~30-40%)**。**ICLR/NeurIPS/ICML は `collect_openreview.py`(OpenReview api2 venueid → 全採択 + Oral/Spotlight/Poster 区分)で権威的に全件収録するのが正**(当面は手動: collect_openreview → build_summary_csv → build_pages → 既存ページなら lede/footer を OpenReview 表記に手修正。専用 workflow `openreview-on-demand.yml` は未実装=follow-up)
@@ -881,7 +883,7 @@ Skill / Agent を追加・変更した時は、この表と `.claude/agents/agen
 - **アセット版数は `sync_asset_versions.py` が統一管理**（2026-08-19 に是正）。かつて `utils.js` が
   v=75(10 ページ) と v=82(4 ページ) に分裂していたが、`--check` が乖離と `?v=` 無し参照を検出して
   非ゼロ終了するようになり、`test_sync_asset_versions.py` が実サイトを検査している
-- テストは **1,075 passed / 0 failed**（2026-08-20 に #357 で唯一の恒常 failure を解消）、lint（ruff）は clean。
+- テストは **1,104 passed / 0 failed**（2026-08-23 実測。#357 で唯一の恒常 failure を解消済み）、lint（ruff）は clean。
   mypy は環境側で INTERNAL ERROR（既存の `build_pages.py` でも再現するため本リポジトリ由来ではない）
 
 ---

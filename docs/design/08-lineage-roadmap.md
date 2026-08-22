@@ -21,7 +21,7 @@
 |---|---|
 | 入力 | 任意の研究テーマ文字列 (frontend form) |
 | パイプライン | GitHub Issue (`theme-request` テンプレ) → 運用者が `gh workflow run theme-on-demand.yml` → `build_theme_lineage.py` → develop commit → GH Pages 自動デプロイ |
-| 公開済 themes | 19 (Diffusion / DPO / MoE / RAG / RLHF / Vision Transformer / GNN / Speculative Decoding / 他) |
+| 公開済 themes | 19 (Diffusion / DPO / MoE / RAG / RLHF / Vision Transformer / GNN / Speculative Decoding / 他) ※ **2026-08 現在は 3 本**（flash-attention / mixture-of-experts / vision-transformer）。#260 で site-request-only 化した際に seed themes を全消ししたため。ここは 2026-05-25 時点の記録 |
 | デフォルト LLM mode | `--llm-strict=ambiguous`（free-tier Groq の TPM 6,000/min 制約に整合） |
 | 品質フィルタ | (1) Topic relevance seeds (2) Foundational ref 除外 (2× max seed cites) (3) Implementation denylist (Adam/PyTorch/NumPy 等) |
 | LLM rationale 品質 | `CLASSIFY_SYSTEM_PROMPT` ~250 tokens、MUST/MUST NOT block、template echo reject (`_GENERIC_TEMPLATE_RATIONALES`) |
