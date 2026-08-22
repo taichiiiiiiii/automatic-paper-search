@@ -38,7 +38,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=optional" rel="stylesheet" />
 
-  <link rel="stylesheet" href="../assets/style.css?v=93" />
+  <link rel="stylesheet" href="../assets/style.css?v=94" />
 </head>
 <body>
   <noscript>
@@ -64,7 +64,7 @@
       Lineage
       <button type="button" class="hero__toggle" id="hero-toggle"
         aria-expanded="false" aria-controls="hero-details"
-        title="使い方と生成方法の説明を開閉">使い方</button>
+        aria-label="このページの使い方と生成方法の説明を開閉" title="使い方と生成方法の説明を開閉">使い方</button>
     </nav>
     <h1 class="hero__title"><em>Lineage</em> — ECCV 2024 Oral</h1>
     <p class="hero__lede">
@@ -76,10 +76,11 @@
       <li><strong>家系図</strong>：1 本を選んで上＝先行、下＝後継を深掘り</li>
       <li><strong>時系列</strong>：時代順に並べて変遷を確認</li>
     </ol>
+    </div>
+
     <p class="hero__note">
       データは <strong>OpenAlex</strong> の引用グラフから構築。各 Oral 論文の先行研究（参照）と後継研究（被引用）を辿り、引用方向から <strong>successor</strong>（後継）としてヒューリスティックに関係付けています（LLM 分類は未適用）。
     </p>
-    </div>
   </header>
 
   <main id="main-content">

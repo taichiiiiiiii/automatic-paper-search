@@ -38,7 +38,7 @@ const els = {
 };
 
 const REL_LABEL = {
-  supersedes: { icon: "🔄", label: "Supersedes", direction: "down" },
+  supersedes: { label: "Supersedes", direction: "down" },
   successor:  { label: "Successor", direction: "down" },
   extends:    { label: "Extended by", direction: "down" },
   ablation:   { label: "Ablation by", direction: "down" },
@@ -86,13 +86,13 @@ function renderRelationsSection(paper) {
 
   const groups = new Map();
   for (const e of rel.incoming) {
-    const meta = REL_LABEL_REVERSE[e.rel] || { icon: "•", label: e.rel };
+    const meta = REL_LABEL_REVERSE[e.rel] || { label: e.rel };
     const key = `up:${e.rel}`;
     if (!groups.has(key)) groups.set(key, { meta, items: [] });
     groups.get(key).items.push(e);
   }
   for (const e of rel.outgoing) {
-    const meta = REL_LABEL[e.rel] || { icon: "•", label: e.rel };
+    const meta = REL_LABEL[e.rel] || { label: e.rel };
     const key = `down:${e.rel}`;
     if (!groups.has(key)) groups.set(key, { meta, items: [] });
     groups.get(key).items.push(e);
@@ -424,7 +424,12 @@ function buildTagChips() {
   const more = els.tagChips.querySelector(".chip--more");
   if (more) {
     more.addEventListener("click", () => {
-      els.tagChips.querySelector(".chips__tail").hidden = false;
+      const tail = els.tagChips.querySelector(".chips__tail");
+      tail.hidden = false;
+      // Removing the focused button would strand keyboard focus on <body>
+      // (WCAG 2.4.3) — hand it to the first revealed chip before removal.
+      const first = tail.querySelector(".chip");
+      if (first) first.focus();
       more.remove();
     });
   }
