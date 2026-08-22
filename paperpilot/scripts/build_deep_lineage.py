@@ -11,10 +11,15 @@ Each (parent, child) pair is classified via AbstractLLMProvider, same as
 build_lineage.py, and the edge kept iff the relation is not `unrelated`.
 
 Usage:
-    python paperpilot/scripts/build_deep_lineage.py \\
+    uv run python -m paperpilot.scripts.build_deep_lineage \\
         --arxiv-id 2602.18473 \\
         --depth 2 \\
-        --output docs/iclr-2026/deep.json
+        --output docs/iclr-2026/deep-2602.18473.json
+
+The output filename must be ``deep-<arxiv_id>.json``: generate_deep_manifest.py
+globs ``deep-*.json`` and recovers the id with ``^deep-(?P<id>[^/\\]+)\\.json$``,
+so a file named ``deep.json`` is written successfully and then never appears in
+the viewer (#369).
 
 Reuses the cache directory at paperpilot/data/lineage-cache/ so re-runs
 after interruption resume from where they left off.
