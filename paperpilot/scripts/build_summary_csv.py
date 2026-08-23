@@ -173,6 +173,16 @@ def load_oral_titles(oral_md: Path) -> set[str]:
     return {normalize(t) for t in titles}
 
 
+# Invisible zero-width characters (ZWSP/ZWNJ/ZWJ/BOM) leak in from arXiv
+# metadata and otherwise survive verbatim into papers.json and
+# search-index.json (#371: a U+200C led a real neurips-2025 title).
+_ZERO_WIDTH_RE = re.compile("[\u200b\u200c\u200d\ufeff]")
+
+
+def strip_zero_width(s: str) -> str:
+    return _ZERO_WIDTH_RE.sub("", s)
+
+
 def normalize(s: str) -> str:
     return re.sub(r"\s+", " ", s.strip().lower())
 
@@ -201,11 +211,12 @@ def build(
     with src_csv.open(encoding="utf-8-sig", newline="") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            title = (row.get("title") or "").strip()
+            title = strip_zero_width(row.get("title") or "").strip()
             if not title:
                 continue
+            abstract = strip_zero_width(row.get("abstract") or "")
             paper_type = "Oral" if normalize(title) in oral_titles else "Poster"
-            tags = classify_tags(title, row.get("abstract", ""))
+            tags = classify_tags(title, abstract)
             rows_out.append(
                 {
                     "title": title,
@@ -215,7 +226,7 @@ def build(
                     "authors": row.get("authors", ""),
                     "arxiv_url": row.get("url", ""),
                     "pdf_url": row.get("pdf_url", ""),
-                    "abstract": (row.get("abstract") or "").replace("\n", " ").strip(),
+                    "abstract": abstract.replace("\n", " ").strip(),
                     # Stage 2 signal outputs — empty string when the upstream
                     # pipeline ran without them (legacy CSVs).
                     "arxiv_id": row.get("arxiv_id", ""),

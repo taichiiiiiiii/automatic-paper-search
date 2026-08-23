@@ -140,6 +140,20 @@ body {
    surfaces, then activating it jumps past the hero / breadcrumb to the
    primary content. Mouse / touch users never see it. Matches the
    `accent` palette so it reads as the same UI language as buttons. */
+/* Screen-reader-only text: keeps document semantics (e.g. heading
+   hierarchy) intact without any visual footprint. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
 .skip-link {
   position: absolute;
   top: 0.5rem;
