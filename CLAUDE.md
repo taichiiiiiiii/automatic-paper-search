@@ -519,10 +519,11 @@ generate_themes_manifest.py → docs/themes/themes-manifest.json
 - **共有アセット `docs/assets/`**（全ページ同じファイルを共有）:
   - `style.css` — デザイントークン（`:root` の CSS custom properties）＋全コンポーネント。editorial 方向（Newsreader serif + Inter + JetBrains Mono、warm-cream OKLCH パレット）。**生の色リテラル禁止＝必ず `--color-*` / `--text-*` / `--space-*` / `--duration-*` / `--ease` / `--rel-*` トークン経由**。
   - `app.js` — 学会カタログのビューア（検索・トピックタグ/採択形式チップ・ソート・progressive reveal 30件/回・URL 状態同期・back-to-top）。`<conf>/papers.json` を fetch。
-  - `conferences-index.js` — ランディングの学会一覧＋hero dateline（`conferences.json` から集約表示、論文数降順）。
+  - `landing.js` — S0 検索トップの挙動（学会数/論文数の動的注入・学会リストの開閉・例示チップ→検索・`?q=` パーマリンク同期・fine-pointer 限定の初期フォーカス）。`conferences.json` を fetch。CSP が `script-src 'self'` のため**インライン script は全ページ禁止**（外部 assets/*.js のみ。`test_landing_s0.py` が pin）。
+  - `search.js` — 学会横断検索（`search-index.json` を fetch、上位20件 listbox、hit は `<conf>/?q=<title>` でカタログへ受け渡し）。
   - `lineage.js` — 家系図ビューア（Topics / Tree / Timeline モード、SVG グラフ）。`<conf>/lineage.json` を fetch。
   - `theme.js` — テーマ生成フォーム＋テーマ家系図（`/themes/`）。
-- **ページ**: `docs/index.html`（ランディング、ページ固有 CSS はインライン `<style>`）/ `docs/<conf>/index.html`（学会カタログ）/ `docs/<conf>/lineage.html`（家系図）/ `docs/themes/index.html` / `docs/how-it-works/`。
+- **ページ**: `docs/index.html`（検索ファーストの S0 トップ = 検索窓1本+例示チップ+折りたたみ学会リスト（#372 P1）、ページ固有 CSS はインライン `<style>`）/ `docs/<conf>/index.html`（学会カタログ）/ `docs/<conf>/lineage.html`（家系図）/ `docs/themes/index.html` / `docs/how-it-works/`。
 - **データの流れ**: `summary.csv` → `build_pages.py` → `docs/<conf>/papers.json`（**要旨は320字プレビュー**でページ <1MB gzip）＋ `docs/conferences.json`（集約 index）。
 
 ### 重要な規約

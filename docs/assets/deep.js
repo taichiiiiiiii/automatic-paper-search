@@ -431,8 +431,8 @@ async function drawSvg(positioned, edges) {
   // Arrow markers (reuses lineage.css classes)
   const defs = document.createElementNS(SVG_NS, "defs");
   for (const [key, color, kind] of [
-    ["supersedes", "oklch(55% 0.14 75)", "filled"],
-    ["successor",  "oklch(72% 0.13 80)", "filled"],
+    ["supersedes", "oklch(50% 0.14 75)", "filled"],
+    ["successor",  "oklch(64% 0.13 80)", "filled"],
     ["extends",    "oklch(62% 0.14 145)", "filled"],
     ["ablation",   "oklch(60% 0.13 240)", "hollow"],
     ["baseline",   "oklch(60% 0.02 270)", "dot"],

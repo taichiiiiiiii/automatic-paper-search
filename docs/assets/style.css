@@ -39,6 +39,7 @@
   --font-serif: "Newsreader", "Source Serif Pro", Georgia, serif;
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
+  --font-ja: "Hiragino Sans", "Yu Gothic UI", "Noto Sans CJK JP", sans-serif;
 
   --text-tag: 0.72rem;
   --text-meta: 0.82rem;
@@ -1316,8 +1317,8 @@ input[type="range"]:focus-visible {
 .hero__note strong { color: var(--color-ink-muted); font-weight: 500; }
 
 :root {
-  --rel-supersedes: oklch(55% 0.14 75);   /* deep gold — dominant inheritance */
-  --rel-successor: oklch(72% 0.13 80);    /* light gold — natural succession */
+  --rel-supersedes: oklch(50% 0.14 75);   /* deep gold — dominant inheritance */
+  --rel-successor: oklch(64% 0.13 80);    /* light gold — natural succession */
   --rel-extends: oklch(62% 0.14 145);     /* green — branching */
   --rel-ablation: oklch(60% 0.13 240);    /* blue — analytical */
   --rel-baseline: oklch(60% 0.02 270);    /* neutral gray */
@@ -2640,7 +2641,7 @@ g.node-wrap.node-wrap--no-tx {
   border-radius: 2px;
 }
 .relation-legend__swatch--supersedes { background: var(--rel-supersedes); height: 3.5px; }
-.relation-legend__swatch--successor  { background: var(--rel-successor); }
+.relation-legend__swatch--successor  { background: var(--rel-successor); height: 2.2px; }
 .relation-legend__swatch--extends    {
   background: repeating-linear-gradient(to right, var(--rel-extends) 0 3px, transparent 3px 7px);
 }
@@ -2838,7 +2839,7 @@ g.node-wrap.node-wrap--no-tx {
    is additionally scaled in JS (REL_EDGE_WEIGHT); these widths are the
    no-confidence fallback. */
 .edge--supersedes { stroke: var(--rel-supersedes); stroke-width: 2.5; stroke-linecap: round; }
-.edge--successor  { stroke: var(--rel-successor); stroke-width: 2.2; stroke-linecap: round; }
+.edge--successor  { stroke: var(--rel-successor); stroke-width: 1.8; stroke-linecap: round; }
 .edge--extends    { stroke: var(--rel-extends); stroke-width: 1.3; stroke-dasharray: 3 4; stroke-linecap: round; }
 .edge--ablation   { stroke: var(--rel-ablation); stroke-width: 1.4; stroke-dasharray: 4 4; stroke-linecap: round; }
 .edge--baseline   { stroke: var(--rel-baseline); stroke-width: 1.4; stroke-dasharray: 2 4; stroke-linecap: round; }
