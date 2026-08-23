@@ -3,61 +3,45 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- Warm surface (#fbf9f5 = --color-surface) so the mobile browser
-       address bar blends into the page instead of a default grey. -->
   <meta name="theme-color" content="#fbf9f5" />
-  <title>PaperPilot — AI/ML 論文の家系図ビューア</title>
-  <meta name="description" content="AI/ML 論文の引用関係を、世代をまたぐ家系図（系譜）として可視化。テーマを入力すれば数分で新しい系譜を生成。学会採択論文の自動収集カタログも収録。" />
+  <title>PaperPilot — AI 論文を横断検索。トップ会議 10 学会・28,000 本から系譜を辿る</title>
+  <meta name="description" content="AI/ML トップ会議 10 学会・28,000 本以上の採択論文を横断検索。気になるテーマで系譜を生成し、引用の世代を超えたつながりを辿れます。" />
 
-  <!-- CSP defence-in-depth. GH Pages strips `_headers`, so we declare
-       the policy via meta. Pages outside /themes/ only fetch same-origin
-       JSON, so `connect-src 'self'` stays strict; the cross-origin
-       Worker hop is `/themes/` only. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'" />
 
   <link rel="canonical" href="https://taichiiiiiiii.github.io/automatic-paper-search/" />
 
-  <!-- Open Graph / Twitter Card. og:url is the canonical share URL so
-       social platforms dedup shares against one URL. The card leads with
-       the lineage/family-tree experience (the product), not the "catalog"
-       framing, to match the redesigned hero headline. -->
   <meta property="og:url" content="https://taichiiiiiiii.github.io/automatic-paper-search/" />
-  <meta property="og:title" content="PaperPilot — AI 研究の家系図" />
-  <meta property="og:description" content="AI/ML 論文の引用を世代をまたぐ家系図として可視化。テーマを入力すれば数分で新しい系譜が生成されます。" />
+  <meta property="og:title" content="PaperPilot — AI 論文を横断検索" />
+  <meta property="og:description" content="AI/ML トップ会議 10 学会・28,000 本以上の採択論文から、気になるテーマで系譜を生成。引用の世代を超えたつながりを辿れます。" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="PaperPilot" />
   <meta property="og:locale" content="ja_JP" />
-  <!-- og:image / twitter:image use a FULLY-QUALIFIED URL. A path-absolute
-       "/assets/og-image.png" 404s on this project page — it resolves to
-       github.io/assets/... and drops the /automatic-paper-search/ repo
-       prefix, so every social card lost its image. OGP also prefers
-       absolute URLs. If the site ever moves to a custom apex domain,
-       update this origin. summary_large_image gives the card a hero width
-       on Twitter / X. -->
   <meta property="og:image" content="https://taichiiiiiiii.github.io/automatic-paper-search/assets/og-image.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="PaperPilot — AI/ML 論文の系譜（家系図）を可視化" />
+  <meta property="og:image:alt" content="PaperPilot — AI 論文の横断検索と系譜ビューア" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:image" content="https://taichiiiiiiii.github.io/automatic-paper-search/assets/og-image.png" />
-  <meta name="twitter:title" content="PaperPilot — AI 研究の家系図" />
-  <meta name="twitter:description" content="AI/ML 論文の引用を世代をまたぐ家系図として可視化。テーマを入力すれば数分で新しい系譜が生成されます。" />
+  <meta name="twitter:title" content="PaperPilot — AI 論文を横断検索" />
+  <meta name="twitter:description" content="AI/ML トップ会議 10 学会・28,000 本以上の採択論文から、気になるテーマで系譜を生成。引用の世代を超えたつながりを辿れます。" />
 
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png" />
 
-  <!-- WebSite schema. CSP-safe: a type="application/ld+json" block is a
-       data island, not executable script, so script-src 'self' doesn't
-       block it (verified). No SearchAction — the viewer takes known slugs,
-       not free-text queries, so advertising one would be misleading. -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "PaperPilot",
     "url": "https://taichiiiiiiii.github.io/automatic-paper-search/",
-    "description": "AI/ML 論文の引用関係を世代をまたぐ家系図として可視化するツール",
-    "inLanguage": "ja"
+    "description": "AI/ML トップ会議の採択論文を横断検索し、系譜（引用関係の家系図）を辿れるツール",
+    "inLanguage": "ja",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://taichiiiiiiii.github.io/automatic-paper-search/?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
   }
   </script>
 
@@ -65,732 +49,322 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=optional" rel="stylesheet" />
 
-  <link rel="stylesheet" href="assets/style.css?v=95" />
+  <link rel="stylesheet" href="assets/style.css?v=97" />
   <style>
     /* ============================================================
-       Landing-page-only styles. Shared design tokens + the .hero
-       base (gradient + paper-grain ::before + § ::after) live in
-       style.css; everything here is the root page's own composition.
-       No raw color literals — every value routes through a --token.
+       S0 landing — search-first composition.
+       Five elements on first paint: shell / 1-sentence intro /
+       search box / example chips / collapsible conference list.
+       All colors route through --color-* / --rel-* tokens.
+       Japanese prose uses --font-ja; numerals / mono labels stay
+       in --font-mono so the scholarly voice is consistent.
        ============================================================ */
 
-    /* The lineage tree IS the masthead: an asymmetric two-zone hero
-       where the copy column carries the headline + the primary CTA into
-       /themes/, and the family-tree SVG occupies the second column as
-       the product's own data structure rendered at editorial scale. */
-    .hero--landing {
-      padding-bottom: calc(var(--space-section) * 0.55);
-    }
-    .hero__grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr);
-      gap: clamp(1.75rem, 1rem + 4vw, 3.5rem);
-      align-items: center;
-      margin-top: 0.5rem;
-    }
-    /* >= 880px: copy left, tree right. The tree is the heavier column
-       (1.15fr) and bleeds slightly into the gutter for asymmetry. */
-    @media (min-width: 880px) {
-      .hero__grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); }
+    .s0 {
+      padding: clamp(2rem, 1rem + 5vw, 5rem) var(--space-edge) 0;
+      max-width: 62rem;
+      margin: 0 auto;
     }
 
-    .hero__copy { min-width: 0; }
+    /* One-sentence intro — the only statement above the search.
+       Serif for the product word, CJK body in --font-ja. N/M numerals
+       are injected by inline script and kept in serif so they read
+       as the "data voice" used elsewhere (catalog counts). */
+    .s0__lede {
+      max-width: 34rem;
+      margin: 0;
+      font-family: var(--font-ja);
+      font-size: clamp(1.05rem, 0.95rem + 0.4vw, 1.35rem);
+      line-height: 1.65;
+      color: var(--color-ink);
+      letter-spacing: 0.01em;
+    }
+    .s0__lede em {
+      font-family: var(--font-serif);
+      font-style: normal;
+      font-weight: 500;
+      font-variation-settings: "opsz" 28;
+    }
+    .s0__lede .s0__n {
+      font-family: var(--font-serif);
+      font-weight: 500;
+      font-variation-settings: "opsz" 28;
+      font-feature-settings: "tnum";
+    }
 
-    /* Primary action — the front door finally opens onto the flagship
-       lineage viewer. Ink-filled for dominance; coral on hover so the
-       accent reads as "this is the action". 44px min touch target. */
-    .hero__cta-row {
+    /* Search form — reuses the .site-search tokens from style.css;
+       the landing only widens the max-width so the box owns the
+       column on wide viewports. autofocus ring inherits focus-visible. */
+    .s0 .site-search {
+      max-width: 100%;
+      margin-top: clamp(1.4rem, 0.8rem + 2vw, 2.2rem);
+    }
+
+    /* Example query chips — a single row of tappable mono tokens.
+       Click fills the search input and fires the search. Uses the
+       same warm tag palette as catalog chips so the visual grammar
+       matches downstream. */
+    .s0__examples {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 0.75rem 1.4rem;
-      margin-top: 1.7rem;
-    }
-    .hero__cta {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.55rem;
-      min-height: 44px;
-      padding: 0.7rem 1.45rem;
-      background: var(--color-ink);
-      color: var(--color-surface);
-      border: 1px solid var(--color-ink);
-      border-radius: 7px;
+      gap: 0.45rem;
+      margin-top: 0.95rem;
       font-family: var(--font-mono);
       font-size: var(--text-meta);
-      letter-spacing: 0.01em;
+      color: var(--color-ink-subtle);
+    }
+    .s0__examples-label {
+      margin: 0;
+      letter-spacing: 0.04em;
+    }
+    .s0__chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 1.85rem;
+      padding: 0.18rem 0.7rem;
+      background: var(--color-tag-bg);
+      color: var(--color-tag-ink);
+      border: 1px solid var(--color-rule);
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      font-size: var(--text-meta);
+      letter-spacing: 0.02em;
       text-decoration: none;
+      cursor: pointer;
       transition:
         background-color var(--duration-fast) var(--ease),
         border-color var(--duration-fast) var(--ease),
-        transform var(--duration-fast) var(--ease);
-    }
-    .hero__cta:hover {
-      /* --color-accent-strong (deeper coral) keeps the brand signal while
-         clearing WCAG AA for the surface-on-fill text (~6.8:1); plain
-         --color-accent lands at 4.41:1, just under the 4.5:1 floor. */
-      background: var(--color-accent-strong);
-      border-color: var(--color-accent-strong);
-      color: var(--color-surface);
-      text-decoration: none;
-      transform: translateY(-1px);
-    }
-    .hero__cta:focus-visible {
-      outline: 2px solid var(--color-accent);
-      outline-offset: 3px;
-      border-radius: 7px;
-    }
-    .hero__cta-arrow { transition: transform var(--duration-fast) var(--ease); }
-    .hero__cta:hover .hero__cta-arrow { transform: translateX(3px); }
-
-    /* Secondary — a LIVE link to a real generated theme (Vision
-       Transformer, 44 papers) so a researcher sees what a lineage looks
-       like before committing to generate one. The product screenshot,
-       but clickable. */
-    .hero__cta-secondary {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      min-height: 44px;
-      font-family: var(--font-mono);
-      font-size: var(--text-meta);
-      color: var(--color-ink-muted);
-      text-decoration: none;
-    }
-    .hero__cta-secondary:hover { color: var(--color-accent-strong); text-decoration: none; }
-    .hero__cta-secondary:focus-visible {
-      outline: 2px solid var(--color-accent);
-      outline-offset: 3px;
-      border-radius: 3px;
-    }
-
-    /* Issue dateline — the hero's "what's inside" line, set like a
-       magazine masthead's dateline. Mono labels carry serif numerals
-       (the page's data voice, shared with the catalog count numerals)
-       so the hero is substantiated by real scale without competing with
-       the CTA above it. min-height holds exactly one line so the JS swap
-       from the fallback string to the live counts never shifts the
-       departments strip below (CLS budget < 0.1). */
-    .hero__dateline {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: baseline;
-      gap: 0.3rem 0.85rem;
-      margin: 1.3rem 0 0;
-      /* Reserve the POPULATED single-line height (the serif numerals make
-         it ~1.85em, taller than the mono fallback's ~1.5em) so the JS swap
-         from fallback → live counts grows the box by 0px. Both states are
-         one line down to 320px (measured), so this fully zeroes the swap's
-         CLS contribution. */
-      min-height: 2em;
-      font-family: var(--font-mono);
-      font-size: var(--text-tag);
-      letter-spacing: 0.03em;
-      color: var(--color-ink-subtle);
-    }
-    .hero__stat { color: var(--color-ink-muted); }
-    .hero__stat b {
-      font-family: var(--font-serif);
-      font-weight: 500;
-      font-size: 1.18em;
-      color: var(--color-ink);
-      font-variation-settings: "opsz" 18;
-      letter-spacing: 0;
-      margin-right: 0.12em;
-    }
-    .hero__stat--muted { color: var(--color-ink-subtle); }
-    .hero__dateline-sep { opacity: 0.45; }
-    .hero__dateline-fallback { color: var(--color-ink-subtle); }
-    /* Keep the date token "最終更新 YYYY-MM-DD" from breaking mid-string
-       when the dateline wraps on a narrow viewport. */
-    .hero__nowrap { white-space: nowrap; }
-
-    /* The hero visual. aspect-ratio reserves the box before fonts/paint
-       so the tree never causes layout shift (CLS budget < 0.1). One
-       SVG that scales fluidly — no JS, no extra request, CSP-safe. */
-    .hero__visual {
-      width: 100%;
-      max-width: 540px;
-      margin-inline: auto;
-    }
-    /* >= 880px the tree is the masthead's heavier element: it grows to
-       editorial scale and bleeds toward the right gutter (margin-inline:
-       auto 0 pushes it right), delivering the asymmetry the 1fr / 1.15fr
-       grid sets up. aspect-ratio still reserves the box, so CLS holds. */
-    @media (min-width: 880px) {
-      .hero__visual { max-width: 620px; margin-inline: auto 0; }
-    }
-    .hero__visual svg {
-      width: 100%;
-      height: auto;
-      aspect-ratio: 36 / 23;
-      display: block;
-      overflow: visible;
-    }
-    .hero__visual-cap {
-      margin: 0.7rem 0 0;
-      font-family: var(--font-mono);
-      font-size: var(--text-caption);
-      letter-spacing: 0.03em;
-      color: var(--color-ink-subtle);
-      text-align: center;
-    }
-    /* The caption is the natural "what do these colors mean?" entry point
-       into the 仕組み page (relation taxonomy). */
-    .hero__visual-cap a {
-      color: inherit;
-      text-decoration: none;
-      /* Expand the tap target toward the 44px WCAG 2.5.5 minimum without
-         growing the visual caption: vertical padding clawed back by an
-         equal negative margin, so the hit-zone grows but the layout
-         doesn't. */
-      display: inline-block;
-      padding-block: 0.6rem;
-      margin-block: -0.6rem;
-    }
-    .hero__visual-cap a:hover { color: var(--color-accent-strong); }
-
-    /* Tree nodes + edges — colored ONLY via tokens. Node shapes mirror
-       the mini family-tree glyph in themes/index.html; edge colors
-       reuse the shipped relation palette (--rel-*) so the hero teaches
-       the legend (supersedes / successor / extends) before any click. */
-    .tree-node {
-      fill: var(--color-surface-elevated);
-      stroke: var(--color-rule-strong);
-      stroke-width: 1.5;
-    }
-    .tree-node--root {
-      fill: var(--color-oral-bg);
-      stroke: var(--color-oral);
-      stroke-width: 1.75;
-    }
-    .tree-node--current { stroke: var(--color-accent); stroke-width: 2; }
-    .tree-name {
-      fill: var(--color-ink);
-      font-family: var(--font-serif);
-      font-size: 12px;
-      font-weight: 500;
-      text-anchor: middle;
-    }
-    .tree-name--root { font-size: 13px; }
-    .tree-year {
-      fill: var(--color-ink-subtle);
-      font-family: var(--font-mono);
-      font-size: 8px;
-      letter-spacing: 0.04em;
-      text-anchor: middle;
-    }
-    .tree-edge { fill: none; stroke-linecap: round; }
-    .tree-edge--supersedes { stroke: var(--rel-supersedes); stroke-width: 2.6; }
-    .tree-edge--successor  { stroke: var(--rel-successor);  stroke-width: 2.2; }
-    .tree-edge--extends    { stroke: var(--rel-extends); stroke-width: 1.8; stroke-dasharray: 7 4; }
-    .tree-pulse { fill: none; stroke: var(--color-accent); stroke-width: 1.5; opacity: 0; }
-
-    /* "The lineage assembles itself" — one directed load sequence,
-       generation by generation, top→bottom (old papers up, new down,
-       mirroring the viewer's Y-axis). Compositor-friendly opacity +
-       transform only. Gated behind no-preference so reduced-motion and
-       any non-supporting context get the fully-drawn static tree. */
-    @media (prefers-reduced-motion: no-preference) {
-      .hero__visual .tree-gen,
-      .hero__visual .tree-edge { opacity: 0; }
-      .hero__visual .tree-gen {
-        transform-box: fill-box;
-        transform-origin: center;
-        animation: tree-pop var(--duration-normal) var(--ease) both;
-      }
-      .hero__visual .tree-edge { animation: tree-fade var(--duration-normal) var(--ease) both; }
-
-      .gen-0 { animation-delay: 140ms; }
-      .edge-1 { animation-delay: 300ms; }
-      .gen-1 { animation-delay: 360ms; }
-      .edge-2 { animation-delay: 500ms; }
-      .gen-2 { animation-delay: 560ms; }
-
-      .tree-pulse {
-        transform-box: fill-box;
-        transform-origin: center;
-        animation: ring-pulse 1.3s var(--ease) 940ms 1 both;
-      }
-      /* NOTE: the primary CTA is deliberately NOT animated. Critical
-         navigation must be present the instant the page paints — never
-         gated behind an animation's initial (opacity:0) frame. The
-         staged reveal is reserved for the decorative tree only. */
-    }
-    @keyframes tree-pop {
-      from { opacity: 0; transform: scale(0.9); }
-      to   { opacity: 1; transform: scale(1); }
-    }
-    @keyframes tree-fade { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes ring-pulse {
-      from { opacity: 0.55; transform: scale(0.78); }
-      to   { opacity: 0; transform: scale(1.45); }
-    }
-
-    /* ---- Conference catalog (below the masthead) ---- */
-    .section-head {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: baseline;
-      gap: 0.5rem 1rem;
-      padding: var(--space-section) var(--space-edge) 0;
-      border-top: 1px solid var(--color-rule);
-    }
-    .section-head__title {
-      font-family: var(--font-mono);
-      font-size: var(--text-tag);
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--color-ink-muted);
-      margin: 0;
-      font-weight: 600;
-    }
-    .section-head__note {
-      font-family: var(--font-mono);
-      font-size: var(--text-tag);
-      color: var(--color-ink-subtle);
-      margin: 0;
-    }
-
-    .conf-list {
-      list-style: none;
-      margin: 0;
-      padding: 0.5rem var(--space-edge) 0;
-      /* CLS reserve: hold ~one row of vertical space so the footer
-         doesn't jump up while conferences.json is in flight. Overridden
-         by natural content height once conferences-index.js paints. */
-      min-height: 9rem;
-    }
-    .conf {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 2rem;
-      padding: 2rem 0;
-      border-bottom: 1px solid var(--color-rule);
-      align-items: start;
-    }
-    .conf__name {
-      font-family: var(--font-serif);
-      font-size: 1.6rem;
-      font-weight: 500;
-      margin: 0 0 0.4rem;
-      letter-spacing: -0.012em;
-    }
-    .conf__name a { color: var(--color-ink); }
-    .conf__name a:hover {
-      color: var(--color-accent);
-      text-decoration: none;
-    }
-    .conf__meta {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 0.45rem 0.7rem;
-      font-family: var(--font-mono);
-      font-size: var(--text-tag);
-      color: var(--color-ink-subtle);
-      letter-spacing: 0.05em;
-    }
-    /* Oral count as a scholarly-gold chip — the same gold vocabulary the
-       catalog pages use for Oral papers, so the accent carries one
-       consistent meaning across the site. AA-safe gold ink on the gold
-       wash via the shared --color-oral-* tokens. */
-    .conf__oral {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
-      padding: 0.16rem 0.5rem;
-      background: var(--color-oral-bg);
-      color: var(--color-oral-ink);
-      border: 1px solid var(--color-oral-border);
-      border-radius: 3px;
-      letter-spacing: 0.04em;
-      white-space: nowrap;
-    }
-    .conf__meta-sep { opacity: 0.45; }
-    .conf__fresh { white-space: nowrap; }
-    .conf__tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.35rem;
-      margin-top: 0.7rem;
-    }
-    .conf__tag {
-      font-family: var(--font-mono);
-      font-size: 0.68rem;
-      padding: 0.18rem 0.5rem;
-      background: var(--color-tag-bg);
-      color: var(--color-tag-ink);
-      border-radius: 3px;
-    }
-    .conf__count {
-      font-family: var(--font-serif);
-      font-size: 2.4rem;
-      font-weight: 500;
-      color: var(--color-ink);
-      text-align: right;
-      line-height: 1;
-      font-variation-settings: "opsz" 24;
-    }
-    .conf__count-label {
-      display: block;
-      font-family: var(--font-mono);
-      font-size: var(--text-tag);
-      letter-spacing: 0.08em;
-      color: var(--color-ink-subtle);
-      text-align: right;
-      margin-top: 0.35rem;
-    }
-    .conf__tag-count { opacity: 0.6; }
-    .conf-empty {
-      padding: 2rem var(--space-edge);
-      color: var(--color-ink-subtle);
-    }
-    .conf-empty a { color: var(--color-accent); }
-
-    /* Second path into /themes/, after the list — so the flagship is
-       reachable whether the visitor scans the hero or the catalog. */
-    .conf-more {
-      margin: 0;
-      padding: 1.5rem var(--space-edge) 0;
-      font-family: var(--font-mono);
-      font-size: var(--text-meta);
-    }
-    .conf-more a { color: var(--color-ink-muted); }
-    .conf-more a:hover { color: var(--color-accent); }
-
-    /* ---- Departments strip (the "middle act") ----
-       Three real entry points — generate / catalog / legend — as a
-       numbered, ruled triptych on a faintly darker stratum so the page
-       gains a middle band between the masthead and the (currently single
-       conference) catalog. Deliberately NOT boxed cards: columns are
-       divided by hairline rules, the way a journal's contents strip is,
-       which keeps it inside the editorial system instead of reading as a
-       generic SaaS feature grid. */
-    .paths {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr);
-      border-top: 1px solid var(--color-rule);
-      background: var(--color-surface-2);
-    }
-    @media (min-width: 720px) {
-      .paths { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    }
-    .path {
-      position: relative; /* anchors the ::after top-rule */
-      display: flex;
-      align-items: flex-start;
-      gap: 0.95rem;
-      padding: clamp(1.4rem, 1rem + 1.8vw, 2.3rem) var(--space-edge);
-      text-decoration: none;
-      color: var(--color-ink);
-      border-bottom: 1px solid var(--color-rule);
-      transition: background-color var(--duration-fast) var(--ease);
-    }
-    /* Coral top-rule that wipes in from the left on hover/focus — a
-       "department tab activates" cue. transform-only (scaleX) so it stays
-       off the layout and on the compositor; sits on the column's own top
-       edge, inside the band, never clipping at the page's outer rule. */
-    .path::after {
-      content: "";
-      position: absolute;
-      inset: 0 0 auto 0;
-      height: 2px;
-      background: var(--color-accent);
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform var(--duration-normal) var(--ease);
-    }
-    .path:hover::after,
-    .path:focus-visible::after { transform: scaleX(1); }
-    @media (prefers-reduced-motion: reduce) {
-      /* Keep the cue, drop the wipe: appears instantly for motion-sensitive
-         users instead of sliding. */
-      .path::after { transition: none; }
-    }
-    /* On the 3-up grid the inter-column hairlines replace the stacked
-       bottom borders, so columns read as adjacent journal departments. */
-    @media (min-width: 720px) {
-      .path { border-bottom: none; }
-      .path + .path { border-left: 1px solid var(--color-rule); }
-    }
-    .path:hover { background: var(--color-surface-elevated); text-decoration: none; }
-    /* Full-bleed block link: an INSET ring (sits in the generous padding,
-       clear of the text, and never clips at the page's outer edges where
-       a positive offset would run off-screen) in the deeper coral so the
-       indicator itself clears the 3:1 focus-contrast floor (1.4.11). */
-    .path:focus-visible { outline: 2px solid var(--color-accent-strong); outline-offset: -3px; }
-    /* On the mobile stack the trailing hairline would double up against
-       <main>'s section-head border-top into a 2px seam — drop it so a
-       single rule divides the band from the catalog. No-op on the ≥720
-       grid (which already clears every bottom border). */
-    .path:last-child { border-bottom: none; }
-    .path__index {
-      flex: none;
-      font-family: var(--font-mono);
-      font-size: 1.05rem;
-      font-weight: 500;
-      letter-spacing: 0.02em;
-      line-height: 1;
-      /* Deeper coral: even at 1.05rem/500 this is "normal" text (< 18.66px
-         bold / < 24px regular), so the AA 4.5:1 floor still applies.
-         --color-accent (~2.85:1 on surface-2) fails; --color-accent-strong
-         clears it (~5.8:1) — the same token the CTA hover uses for AA-safe
-         fills. */
-      color: var(--color-accent-strong);
-      padding-top: 0.28rem;
-      transition: color var(--duration-fast) var(--ease);
-    }
-    /* Tabular figures so 01 / 02 / 03 align to a common width across the
-       three columns. */
-    .path__index { font-variant-numeric: tabular-nums; }
-    .path__body { display: flex; flex-direction: column; gap: 0.3rem; min-width: 0; }
-    .path__title {
-      font-family: var(--font-serif);
-      font-size: 1.35rem;
-      font-weight: 500;
-      letter-spacing: -0.012em;
-      line-height: 1.15;
-    }
-    .path__desc {
-      font-family: var(--font-sans);
-      font-size: var(--text-body-sm);
-      /* 1.7 (not 1.5) — Japanese body copy needs looser leading; matches
-         the page's CJK reading rhythm when these wrap at ~320px. */
-      line-height: 1.7;
-      color: var(--color-ink-muted);
-    }
-    .path__arrow {
-      flex: none;
-      margin-left: auto;
-      align-self: center;
-      font-family: var(--font-mono);
-      color: var(--color-ink-subtle);
-      transition:
-        transform var(--duration-fast) var(--ease),
         color var(--duration-fast) var(--ease);
     }
-    .path:hover .path__arrow { color: var(--color-accent); transform: translateX(3px); }
-
-    /* Mobile: stack copy (with the CTA) above the tree so the action is
-       reachable without scrolling past a tall visual; tighten the hero. */
-    @media (max-width: 879px) {
-      .hero__visual { max-width: 460px; margin-top: 0.5rem; }
+    .s0__chip:hover {
+      background: var(--color-surface-elevated);
+      border-color: var(--color-accent);
+      color: var(--color-accent-strong);
     }
+    .s0__chip:focus-visible {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 2px;
+    }
+
+    /* Collapsible conference list. The <button> carries aria-expanded;
+       the list is a plain <ul> with aria-labelledby. 既定で閉。 */
+    .s0__confs {
+      margin-top: clamp(2.5rem, 1.5rem + 3vw, 4rem);
+      border-top: 1px solid var(--color-rule);
+      padding-top: 1.4rem;
+    }
+    .s0__confs-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      width: 100%;
+      padding: 0.5rem 0;
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: var(--text-tag);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--color-ink-muted);
+      text-align: left;
+    }
+    .s0__confs-toggle:hover { color: var(--color-accent-strong); }
+    .s0__confs-toggle:focus-visible {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 3px;
+      border-radius: 3px;
+    }
+    .s0__confs-caret {
+      display: inline-block;
+      transition: transform var(--duration-fast) var(--ease);
+      font-size: 0.85em;
+      color: var(--color-ink-subtle);
+    }
+    .s0__confs-toggle[aria-expanded="true"] .s0__confs-caret {
+      transform: rotate(90deg);
+    }
+    .s0__confs-list {
+      list-style: none;
+      margin: 0.8rem 0 0;
+      padding: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+    }
+    @media (min-width: 640px) {
+      .s0__confs-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (min-width: 1024px) {
+      .s0__confs-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    .s0__conf {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.65rem 0;
+      border-bottom: 1px solid var(--color-rule);
+    }
+    .s0__conf-link {
+      font-family: var(--font-serif);
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--color-ink);
+      text-decoration: none;
+      letter-spacing: -0.005em;
+    }
+    .s0__conf-link:hover {
+      color: var(--color-accent-strong);
+      text-decoration: none;
+    }
+    .s0__conf-link:focus-visible {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 2px;
+      border-radius: 2px;
+    }
+    .s0__conf-count {
+      font-family: var(--font-serif);
+      font-size: 0.95rem;
+      font-variant-numeric: tabular-nums;
+      color: var(--color-ink-muted);
+      font-variation-settings: "opsz" 18;
+    }
+
+    /* Footer — simplified. One row on wide, stacked on narrow. */
+    .s0-footer {
+      margin-top: clamp(3rem, 2rem + 4vw, 5rem);
+      padding: 1.5rem var(--space-edge);
+      border-top: 1px solid var(--color-rule);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem 1.4rem;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: var(--text-tag);
+      color: var(--color-ink-subtle);
+      letter-spacing: 0.04em;
+    }
+    .s0-footer a {
+      color: var(--color-ink-muted);
+      text-decoration: none;
+    }
+    .s0-footer a:hover { color: var(--color-accent-strong); }
+    .s0-footer a:focus-visible {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 2px;
+      border-radius: 2px;
+    }
+    .s0-footer__links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem 1.2rem;
+    }
+
+    /* While search results are visible the collapsible retreats —
+       the page becomes single-purpose (search). Toggled by inline
+       script based on .site-search__results[hidden]. */
+    .s0__confs.is-hidden-by-search { display: none; }
+
+    /* Narrow viewports: tighten spacing, drop the serif display
+       proportion so the lede fits without wrapping awkwardly. */
     @media (max-width: 480px) {
-      .hero--landing { padding-bottom: calc(var(--space-section) * 0.4); }
-      .hero__visual { max-width: 340px; }
-      .conf__name { font-size: 1.35rem; }
-      .conf__count { font-size: 2rem; }
-      /* Drop the meta centre-dot once the chip + freshness wrap to two
-         lines (it would orphan at a line edge); the gap keeps them apart. */
-      .conf__meta-sep { display: none; }
+      .s0 { padding-top: clamp(1.4rem, 1rem + 2vw, 2rem); }
+      .s0__lede { font-size: 1rem; }
+      .s0__conf-link { font-size: 0.92rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .s0__confs-caret { transition: none; }
+      .s0__chip { transition: none; }
     }
   </style>
 </head>
 <body>
-  <noscript>
-    <div class="noscript-banner" role="alert">
-      <strong>JavaScript が必要です。</strong>
-      カンファレンス一覧は JavaScript で取得します。
-      ブラウザの JavaScript を有効にして再読込してください。
-    </div>
-  </noscript>
-  <a class="skip-link" href="#main-content">本文へスキップ</a>
+  <a class="skip-link" href="#main-content">メインコンテンツへ</a>
   <nav class="site-nav" aria-label="グローバル">
     <a class="site-nav__brand" href="./">PaperPilot</a>
     <ul class="site-nav__links">
       <li><a href="./" aria-current="page">探す</a></li>
-      <li><a href="themes/">テーマ系譜</a></li>
+      <li><a href="themes/">系譜</a></li>
       <li><a href="how-it-works/">仕組み</a></li>
     </ul>
   </nav>
 
-  <header class="hero hero--landing">
-    <!-- Root page has no breadcrumb trail, so this is a brand wordmark,
-         not a nav landmark — a <nav aria-label="breadcrumb"> with no
-         links misleads assistive tech. The /themes/ pages keep their
-         real (linked) breadcrumb. -->
-    <p class="hero__breadcrumb">PaperPilot</p>
-
-    <div class="hero__grid">
-      <div class="hero__copy">
-        <!-- <wbr> after the comma gives a single break opportunity so the
-             title stays on one line on wide screens but wraps to
-             "AI 研究の、" / "家系図。" on narrow ones — without it the
-             keep-all CJK run is unbreakable and overflows at 320px. -->
-        <h1 class="hero__title">AI 研究の、<wbr><em>家系図</em>。</h1>
-        <p class="hero__lede">
-          論文の引用を、世代をまたぐ家系図として描く。気になるテーマを入力すれば、
-          数分で新しい系譜が生成されます。
-        </p>
-        <!-- The one place on the site that can ask a question of all ten
-             proceedings at once. It sits above the CTA row because
-             "find a paper" is the primary job; the lineage CTAs stay as
-             the secondary path. search.js fetches the index on first
-             interaction, never on load. -->
-        <form class="site-search" role="search" data-search autocomplete="off">
-          <label class="site-search__label" for="site-search-input">10 学会 28,300 本を横断して探す</label>
-          <input
-            id="site-search-input"
-            class="site-search__input"
-            type="search"
-            name="q"
-            placeholder="論文タイトルで検索（例: diffusion, attention）"
-            role="combobox"
-            aria-autocomplete="list"
-            aria-controls="site-search-listbox"
-            aria-expanded="false"
-            aria-describedby="site-search-status"
-            autocomplete="off"
-            spellcheck="false"
-          />
-          <!-- role="status" already implies aria-live="polite" (ARIA 1.2
-               §6.6); declaring both is redundant. -->
-          <p class="site-search__status" id="site-search-status" role="status"></p>
-          <!-- tabindex="-1": the list scrolls (overflow-y:auto), which makes
-               Chrome treat it as a focusable scroll region and put it in the
-               tab order. Tab then walked into the widget instead of out of
-               it, so the list never closed. Arrow keys on the input already
-               scroll the active option into view. -->
-          <ul class="site-search__results" id="site-search-listbox" role="listbox" aria-label="検索結果" tabindex="-1" hidden></ul>
-        </form>
-
-        <div class="hero__cta-row">
-          <a class="hero__cta" href="themes/">
-            系譜ビューアを開く <span class="hero__cta-arrow" aria-hidden="true">→</span>
-          </a>
-          <a class="hero__cta-secondary" href="themes/?theme=vision-transformer">
-            例: Vision Transformer の家系図 <span aria-hidden="true">→</span>
-          </a>
-        </div>
-        <!-- Issue dateline: a magazine masthead's "what's inside" line.
-             Sits BELOW the CTA (never above — the primary action must paint
-             instantly, see the no-animate note on .hero__cta). Populated by
-             conferences-index.js from conferences.json so the scale shown is
-             always honest and self-updating; the fallback below is the
-             no-JS / pre-fetch state and is true regardless of counts. The
-             serif numerals echo the catalog's big count numerals, tying the
-             hero to the data voice used further down the page. -->
-        <p class="hero__dateline" id="hero-dateline">
-          <span class="hero__dateline-fallback">学会カタログ・テーマ家系図を収録</span>
-        </p>
-      </div>
-
-      <!-- Hero visual: a canonical attention-lineage rendered as the
-           product's own family-tree. Its two newest leaves (Vision
-           Transformer 2020, Flash Attention 2022) are the two themes
-           that actually exist in the viewer, so the masthead art is a
-           real preview, not decoration. Inline SVG = no request, no
-           CLS, CSP-safe. Colors come entirely from --rel-* / --color-*
-           via the classes above. Old papers up, new papers down. -->
-      <div class="hero__visual">
-        <svg viewBox="0 0 360 230" role="img"
-             aria-label="論文家系図の例: Attention (2017) から BERT と GPT (2018) が生まれ、さらに Vision Transformer (2020) と Flash Attention (2022) へと枝分かれする系譜。線の色は引用関係の種類（置換・後継・拡張）を表す。">
-          <!-- edges (drawn first, behind nodes) -->
-          <path class="tree-edge tree-edge--successor edge-1"  d="M180 42 C 180 72, 86 62, 86 92" />
-          <path class="tree-edge tree-edge--supersedes edge-1" d="M180 42 C 180 72, 274 62, 274 92" />
-          <path class="tree-edge tree-edge--extends edge-2"    d="M86 126 L 86 176" />
-          <path class="tree-edge tree-edge--extends edge-2"    d="M274 126 L 274 176" />
-
-          <!-- generation 0: root -->
-          <g class="tree-gen gen-0">
-            <rect class="tree-node tree-node--root" x="134" y="8" width="92" height="34" rx="5" />
-            <text class="tree-name tree-name--root" x="180" y="25">Attention</text>
-            <text class="tree-year" x="180" y="36">2017</text>
-          </g>
-
-          <!-- generation 1: children -->
-          <g class="tree-gen gen-1">
-            <rect class="tree-node" x="40" y="92" width="92" height="34" rx="5" />
-            <text class="tree-name" x="86" y="109">BERT</text>
-            <text class="tree-year" x="86" y="120">2018</text>
-          </g>
-          <g class="tree-gen gen-1">
-            <rect class="tree-node" x="228" y="92" width="92" height="34" rx="5" />
-            <text class="tree-name" x="274" y="109">GPT</text>
-            <text class="tree-year" x="274" y="120">2018</text>
-          </g>
-
-          <!-- generation 2: leaves = the two live themes -->
-          <g class="tree-gen gen-2">
-            <rect class="tree-node" x="40" y="176" width="92" height="34" rx="5" />
-            <text class="tree-name" x="86" y="193">ViT</text>
-            <text class="tree-year" x="86" y="204">2020</text>
-          </g>
-          <g class="tree-gen gen-2">
-            <rect class="tree-node tree-node--current" x="228" y="176" width="92" height="34" rx="5" />
-            <text class="tree-name" x="274" y="193">Flash Attn</text>
-            <text class="tree-year" x="274" y="204">2022</text>
-          </g>
-
-          <!-- one-shot attention pulse on the newest leaf -->
-          <rect class="tree-pulse" x="223" y="171" width="102" height="44" rx="7" />
-        </svg>
-        <p class="hero__visual-cap"><a href="how-it-works/">線の色 = 関係の種類 — 置換 / 後継 / 拡張 →</a></p>
-      </div>
-    </div>
-  </header>
-
-  <!-- Departments strip: the three real entry points as a ruled,
-       numbered triptych. A <nav> of in-product wayfinding links; the
-       conference catalog in <main> below is the detailed index that the
-       「カタログ」 column points into. -->
-  <nav class="paths" aria-label="主な導線">
-    <a class="path" href="themes/">
-      <span class="path__index" aria-hidden="true">01</span>
-      <span class="path__body">
-        <span class="path__title">つくる</span>
-        <span class="path__desc">テーマを入力すると、数分で新しい系譜が生成されます。</span>
-      </span>
-      <span class="path__arrow" aria-hidden="true">→</span>
-    </a>
-    <a class="path" href="iclr-2026/">
-      <span class="path__index" aria-hidden="true">02</span>
-      <span class="path__body">
-        <span class="path__title">カタログ</span>
-        <span class="path__desc">学会採択論文を品質シグナルで絞り込み、一覧から辿る。</span>
-      </span>
-      <span class="path__arrow" aria-hidden="true">→</span>
-    </a>
-    <a class="path" href="how-it-works/">
-      <span class="path__index" aria-hidden="true">03</span>
-      <span class="path__body">
-        <span class="path__title">仕組み</span>
-        <span class="path__desc">線の色が示す関係 — 置換 / 後継 / 拡張 を読み解く。</span>
-      </span>
-      <span class="path__arrow" aria-hidden="true">→</span>
-    </a>
-  </nav>
-
-  <main id="main-content">
-    <div class="section-head">
-      <h2 class="section-head__title">学会カタログ</h2>
-      <p class="section-head__note">ICLR 2026 から収録中 — 採択論文を品質シグナルで絞り込み、系譜として可視化します。</p>
-    </div>
-    <ul class="conf-list" id="conf-list"></ul>
-    <p class="conf-more">
-      <a href="themes/">テーマから家系図を探す →</a>
+  <main id="main-content" class="s0">
+    <!-- 1-sentence intro. The two numerals (N conferences / M papers)
+         are filled by the external landing script from conferences.json; the
+         <noscript> fallback is the same sentence without numerals so
+         a JS-disabled visitor still gets a truthful statement. -->
+    <p class="s0__lede" id="s0-lede">
+      <em>AI トップ会議</em> <span class="s0__n" id="s0-n">10</span> 学会・<span class="s0__n" id="s0-m">28,000</span> 本から探して、研究の系譜を辿る。
     </p>
+
+    <!-- Search form. search.js owns the combobox behaviour; the
+         landing only provides the markup + the autofocus. Autofocus
+         is gated behind a coarse-pointer / hover heuristic so mobile
+         visitors don't get their keyboard yanked open on load. -->
+    <form class="site-search" role="search" data-search autocomplete="off">
+      <label class="site-search__label" for="s0-search-input">論文タイトルで横断検索</label>
+      <input
+        id="s0-search-input"
+        class="site-search__input"
+        type="search"
+        name="q"
+        placeholder="例: diffusion, 3d gaussian, reasoning"
+        role="combobox"
+        aria-autocomplete="list"
+        aria-controls="s0-search-listbox"
+        aria-expanded="false"
+        aria-describedby="s0-search-status"
+        autocomplete="off"
+        spellcheck="false"
+        autofocus
+      />
+      <p class="site-search__status" id="s0-search-status" role="status"></p>
+      <ul class="site-search__results" id="s0-search-listbox" role="listbox" aria-label="検索結果" tabindex="-1" hidden></ul>
+    </form>
+
+    <!-- Example queries. The three chips are real hits in
+         search-index.json (verified: diffusion 2,038 / 3d gaussian 227 /
+         reasoning 1,594). Clicking fills the input and fires the input
+         event so search.js runs the query immediately. -->
+    <div class="s0__examples" role="group" aria-label="検索の例">
+      <span class="s0__examples-label">例:</span>
+      <button type="button" class="s0__chip" data-query="diffusion">diffusion</button>
+      <button type="button" class="s0__chip" data-query="3d gaussian">3d gaussian</button>
+      <button type="button" class="s0__chip" data-query="reasoning">reasoning</button>
+    </div>
+
+    <!-- Collapsible conference list. 既定で閉 (aria-expanded=false);
+         opened by click. Hidden by inline script while the search
+         has results, restored when the query is cleared or Esc is
+         pressed. Populated from conferences.json by the same inline
+         script, sorted by paper count descending. -->
+    <section class="s0__confs" id="s0-confs">
+      <button type="button" class="s0__confs-toggle" id="s0-confs-toggle"
+              aria-expanded="false" aria-controls="s0-confs-list">
+        <span class="s0__confs-caret" aria-hidden="true">▸</span>
+        <span id="s0-confs-label">学会から探す</span>
+      </button>
+      <ul class="s0__confs-list" id="s0-confs-list" aria-labelledby="s0-confs-label" hidden>
+        <!-- populated by inline script -->
+      </ul>
+    </section>
   </main>
 
-  <!-- Colophon: brand line on the left, the builder-facing reference docs
-       (design book / market research / source) collected on the right where
-       "about / built-by" material belongs — keeping them out of the hero so
-       the masthead stays focused on the product action. -->
-  <footer class="footer">
-    <div class="footer__brand">
-      <span>Built by <a href="https://github.com/taichiiiiiiii/automatic-paper-search">PaperPilot</a></span>
-      <span class="footer__meta">Auto-updated weekly · MIT License</span>
-    </div>
-    <nav class="footer__links" aria-label="関連ドキュメント">
-      <a href="https://github.com/taichiiiiiiii/automatic-paper-search/tree/develop/docs/design">基本設計書</a>
-      <a href="https://github.com/taichiiiiiiii/automatic-paper-search/tree/develop/docs/research">市場調査レポート</a>
+  <footer class="s0-footer">
+    <div>Built by <a href="https://github.com/taichiiiiiiii/automatic-paper-search">PaperPilot</a></div>
+    <nav class="s0-footer__links" aria-label="関連ドキュメント">
+      <a href="how-it-works/">仕組み</a>
       <a href="https://github.com/taichiiiiiiii/automatic-paper-search">GitHub</a>
+      <span>データ: arXiv / Semantic Scholar / OpenAlex</span>
     </nav>
   </footer>
 
   <script src="assets/search.js?v=3" defer></script>
-  <script src="assets/conferences-index.js?v=77"></script>
+  <script src="assets/landing.js?v=2" defer></script>
 </body>
 </html>
