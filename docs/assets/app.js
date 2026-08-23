@@ -125,10 +125,11 @@ function renderRelationsSection(paper) {
   const total = rel.incoming.length + rel.outgoing.length;
   return `
     <div class="paper__relations">
-      <button class="paper__relations-toggle" type="button" aria-expanded="false">
+      <button class="paper__relations-toggle" type="button" aria-expanded="false"
+        aria-controls="relations-${escapeHtml(lineageId)}">
         Relations <span class="paper__relations-count">(${total})</span>
       </button>
-      <div class="paper__relations-body">
+      <div class="paper__relations-body" id="relations-${escapeHtml(lineageId)}">
         ${groupHtml}
         <a class="paper__relations-link" href="lineage.html?focus=${encodeURIComponent(lineageId)}">View full lineage →</a>
       </div>
@@ -417,8 +418,8 @@ function buildTagChips() {
   const chip = ([tag, n]) =>
     `<button class="chip" data-tag="${escapeHtml(tag)}" type="button" aria-pressed="${state.activeTags.has(tag)}">${escapeHtml(tag)}<span class="chip__count">${n}</span></button>`;
   const tailHtml = tail.length
-    ? `<span class="chips__tail"${tailActive ? "" : " hidden"}>${tail.map(chip).join("")}</span>` +
-      (tailActive ? "" : `<button class="chip chip--more" type="button" aria-expanded="false">+${tail.length} タグ</button>`)
+    ? `<span class="chips__tail" id="chips-tail"${tailActive ? "" : " hidden"}>${tail.map(chip).join("")}</span>` +
+      (tailActive ? "" : `<button class="chip chip--more" type="button" aria-expanded="false" aria-controls="chips-tail">+${tail.length} タグ</button>`)
     : "";
   els.tagChips.innerHTML = head.map(chip).join("") + tailHtml;
   const more = els.tagChips.querySelector(".chip--more");
@@ -579,7 +580,11 @@ function bindEvents() {
 async function setLastUpdated() {
   if (!els.statUpdated) return;
   try {
-    const slug = window.location.pathname.split("/").filter(Boolean).pop() || "";
+    const slug =
+      window.location.pathname
+        .split("/")
+        .filter((p) => p && !p.endsWith(".html"))
+        .pop() || "";
     const res = await fetch("../conferences.json");
     if (!res.ok) return;
     const confs = await res.json();

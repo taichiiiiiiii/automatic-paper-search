@@ -38,7 +38,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=optional" rel="stylesheet" />
 
-  <link rel="stylesheet" href="../assets/style.css?v=94" />
+  <link rel="stylesheet" href="../assets/style.css?v=95" />
 </head>
 <body>
   <noscript>
@@ -77,6 +77,9 @@
   </header>
 
   <main id="main-content">
+  <!-- #371: card titles below render as <h3>; without this the outline
+       skips h1 -> h3. Visually hidden on purpose. -->
+  <h2 class="visually-hidden">系譜ツリー</h2>
   <div class="lineage-toolbar">
     <a class="layout-btn" href="lineage.html" title="複数論文のビューへ">← 全体ビュー</a>
     <label class="deep-picker" for="paper-picker">
@@ -125,7 +128,7 @@
     <span>エッジにホバー → LLM による分類理由 · カードクリック → 中心を切替</span>
   </footer>
 
-  <script src="../assets/utils.js?v=82" defer></script>
-  <script src="../assets/deep.js?v=82" defer></script>
+  <script src="../assets/utils.js?v=84" defer></script>
+  <script src="../assets/deep.js?v=83" defer></script>
 </body>
 </html>

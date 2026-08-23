@@ -235,7 +235,7 @@ function focusPaper(id, { push = true, smooth = true } = {}) {
 
 function updateTitle() {
   const node = state.data?.nodes.find((n) => n.id === state.focusId);
-  if (node) document.title = `${node.title.slice(0, 60)} — Lineage — PaperPilot`;
+  if (node) document.title = `${PP.truncateTitle(node.title)} — Lineage — PaperPilot`;
 }
 
 function bindSearch() {
