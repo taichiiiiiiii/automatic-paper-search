@@ -200,7 +200,7 @@ async function init() {
 
 function updateTitle() {
   const n = state.data?.nodes.find((x) => x.id === state.focusId);
-  if (n) document.title = `${n.title.slice(0, 60)} — Deep Lineage — PaperPilot`;
+  if (n) document.title = `${PP.truncateTitle(n.title)} — Deep Lineage — PaperPilot`;
 }
 
 function renderFilterChips() {

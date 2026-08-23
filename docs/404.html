@@ -5,13 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#fbf9f5" />
   <title>404 — このページは見つかりません · PaperPilot</title>
-  <meta name="description" content="お探しのページは、どの系譜にも繋がっていないようです。" />
+  <meta name="description" content="お探しのページは、どの系譜にも繋がっていないようです。PaperPilot は AI/ML 論文の引用関係を家系図として可視化するサイトです。トップページから学会カタログやテーマ系譜を辿れます。" />
 
   <!-- CSP defence-in-depth. See docs/index.html for the policy
        rationale; the 404 fetches nothing cross-origin. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'" />
 
   <meta name="robots" content="noindex" />
+
+  <!-- #371: SNS crawlers ignore noindex, so a shared 404 URL still gets a
+       preview card. og:image must be fully qualified (see docs/index.html). -->
+  <meta property="og:title" content="404 — このページは見つかりません · PaperPilot" />
+  <meta property="og:description" content="お探しのページは、どの系譜にも繋がっていないようです。トップページから学会カタログやテーマ系譜を辿れます。" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://taichiiiiiiii.github.io/automatic-paper-search/assets/og-image.png" />
 
   <link rel="icon" href="/automatic-paper-search/assets/favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="/automatic-paper-search/assets/favicon-32.png" sizes="32x32" type="image/png" />
@@ -27,7 +34,7 @@
        #main-content skip-link (it would resolve against the base, not the
        current document). Absolute repo-root paths sidestep both problems
        and leave the skip-link fragment working. -->
-  <link rel="stylesheet" href="/automatic-paper-search/assets/style.css?v=94" />
+  <link rel="stylesheet" href="/automatic-paper-search/assets/style.css?v=95" />
   <style>
     /* 404-only styles. The base .hero / .hero__title / .hero__lede /
        .footer system is shared in style.css; this adds the CTA buttons

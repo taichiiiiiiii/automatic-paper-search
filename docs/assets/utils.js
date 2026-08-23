@@ -16,6 +16,21 @@
     }[c]));
   };
 
+  // Truncate a paper title for <title> use without cutting mid-word:
+  // cut at the last space inside the budget when one exists past the
+  // halfway point, else hard-cut (CJK titles have no spaces). Adds an
+  // ellipsis so the cut is visibly deliberate.
+  PP.truncateTitle = function truncateTitle(s, max = 60) {
+    const str = String(s || "");
+    // Count code points, not UTF-16 units, so an astral char (emoji etc.)
+    // sitting on the boundary is never split into an unpaired surrogate.
+    const chars = Array.from(str);
+    if (chars.length <= max) return str;
+    const cut = chars.slice(0, max).join("");
+    const sp = cut.lastIndexOf(" ");
+    return (sp > max / 2 ? cut.slice(0, sp) : cut) + "…";
+  };
+
   PP.formatStars = function formatStars(n) {
     if (typeof n !== "number" || n <= 0) return "";
     if (n >= 1000) return (n / 1000).toFixed(n >= 10000 ? 0 : 1) + "k";

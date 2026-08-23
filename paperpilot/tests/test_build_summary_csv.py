@@ -221,6 +221,36 @@ def test_build_handles_pipeline_csv_without_ids(tmp_path: Path):
     assert rows[0]["citation_count"] == ""
 
 
+def test_build_strips_zero_width_characters(tmp_path: Path):
+    """U+200B/200C/200D/FEFF は title・abstract から除去して出力する。
+
+    実データ由来: neurips-2025 の1論文 title 先頭に U+200C が混入し、
+    papers.json と search-index.json まで伝播していた (#371)。
+    """
+    conf = tmp_path / "neurips-2025"
+    _write_papers_csv(
+        conf / "papers_2026-06-28.csv",
+        [
+            {
+                "title": "\u200cNavigating the Trade-Off",
+                "authors": "Dave",
+                "abstract": "Flexible\u200d pooling with\ufeff attention.\u200b",
+                "url": "http://arxiv.org/abs/2404.00003",
+                "pdf_url": "http://arxiv.org/pdf/2404.00003",
+                "venue": "NeurIPS 2025",
+            },
+        ],
+    )
+
+    result = bsc.build(conference_dir=conf)
+    assert result.rows_written == 1
+
+    with (conf / "summary.csv").open(encoding="utf-8", newline="") as f:
+        rows = list(csv.DictReader(f))
+    assert rows[0]["title"] == "Navigating the Trade-Off"
+    assert rows[0]["abstract"] == "Flexible pooling with attention."
+
+
 def test_build_tolerates_missing_oral_md(tmp_path: Path):
     # When oral_summaries_ja.md is missing, every paper should be "Poster"
     # rather than crashing — the pipeline-layer CSV is the source of truth.
