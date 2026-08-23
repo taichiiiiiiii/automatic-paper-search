@@ -9,7 +9,7 @@
 ## プロジェクト概要
 
 - **目的：** AI/ML 論文を arXiv / Semantic Scholar / OpenAlex から自動収集し、品質シグナルで絞り込んだ上で **系譜（家系図）として可視化** するパイプライン
-- **主要な出力：** GitHub Pages 上のインタラクティブ家系図ビュー（`docs/<conference>/lineage.html`、`.github/workflows/pages.yml` でデプロイ）。サイト上のフォームから新規テーマ投稿可能（CF Worker `worker/index.ts` → `theme-on-demand.yml` 直接 workflow_dispatch → `build_theme_lineage.py` → develop へ commit → Pages 再デプロイ）。補助出力として CSV / JSON / Slack / Email も維持
+- **主要な出力：** GitHub Pages 上の**統一系譜ビューア `/lineage/`**（`?conf=` / `?theme=` / `?deep=` で全系譜データを1画面。#372 P2。旧 `lineage.html` / `themes/` / `deep.html` はリダイレクトスタブ。`.github/workflows/pages.yml` でデプロイ）。ビューアのフォームから新規テーマ投稿可能（CF Worker `worker/index.ts` → `theme-on-demand.yml` 直接 workflow_dispatch → `build_theme_lineage.py` → develop へ commit → Pages 再デプロイ）。補助出力として CSV / JSON / Slack / Email も維持
 - **対象ユーザー：** AI/ML 研究者、R&D エンジニア、独立リサーチャー
 - **運用コスト目標：** ¥0〜¥1,500/月（Stage 4 LLM / 系譜分類 LLM のみ有料オプション）
 - **差別化：** OSS・ローカル実行可能・YAML 設定駆動・日本語対応・品質シグナル統合スコア・**LLM による引用関係の意味分類**（`supersedes` / `successor` / `extends` / `ablation` / `baseline_only` / `contrasts` / `unrelated`）
@@ -68,10 +68,10 @@ automatic-paper-search/
 │   ├── research/                        # 市場調査レポート v2.0（markdown 正本）
 │   ├── iclr-2026/                       # GitHub Pages 論文ビューア（家系図ビュー本命）
 │   │   ├── index.html                   # 採択論文一覧（papers.json を表示）
-│   │   ├── lineage.html                 # 家系図ビュー（lineage.json を表示）
+│   │   ├── lineage.html                 # → /lineage/?conf= へのリダイレクトスタブ（#372 P2）
 │   │   ├── papers.json                  # build_pages.py が生成
 │   │   └── lineage.json                 # build_lineage.py が生成
-│   └── assets/                          # 共通 CSS/JS（app.js / lineage.js / style.css）
+│   └── assets/                          # 共通 CSS/JS（app.js / lineage-shell.js / lineage-tree.js / theme.js / style.css 等）
 ├── archive/                             # 原本 .docx の保管先（編集禁止）
 ├── .github/
 │   └── workflows/
@@ -467,14 +467,16 @@ output/<conf>/papers_YYYY-MM-DD.csv
        │     │                      - AbstractLLMProvider で関係分類
        │     │                      - lineage-cache/ にキャッシュして再開可能
        │     ▼
-       │   docs/<conf>/lineage.html   （Topics/家系図/時系列の 3 モード切替）
+       │   /lineage/?conf=<conf>   （統一ビューア: トピック/ツリーの2ビュー。
+       │                             旧 lineage.html はリダイレクトスタブ）
        │
        └─ build_deep_lineage.py   → docs/<conf>/deep.json
              │                      - 1 本 × depth N の BFS（祖先・子孫）
              │                      - lenient classifier（rationale 空のときは
              │                        テンプレで補完、弱いエッジも残す）
              ▼
-           docs/<conf>/deep.html   （tree-only の 1 本集中ビュー）
+           /lineage/?deep=<arxiv_id>   （統一ビューアのツリー。旧 deep.html はスタブ、
+                                        旧 ?arxiv= はスタブが ?deep= に改名して転送）
 
 [テーマ文字列] → build_theme_lineage.py → docs/themes/<slug>/lineage.json
                   - **--primary-source openalex (post #217 default in workflows)**:
@@ -491,8 +493,9 @@ output/<conf>/papers_YYYY-MM-DD.csv
                     なので derive_relation は year/cite or LLM に fall through
 generate_themes_manifest.py → docs/themes/themes-manifest.json
                   ▼
-           docs/themes/index.html   （テーマピッカー + 年軸 chronological tree、
-                                     Y 軸 rank-based 等間隔）
+           /lineage/?theme=<slug>   （統一ビューアの年表モード = theme.js。旧 themes/ は
+                                     スタブ。投稿フォームは /lineage/ セレクタ下部に移設）
+build_lineage_manifest.py → docs/lineage-manifest.json （セレクタの会議可用性。生成スクリプトのみが書く）
 ```
 
 関係種別（LLM 分類出力）: `supersedes` / `successor` / `extends` / `ablation` / `baseline_only` / `contrasts` / `unrelated` （`unrelated` はエッジから除外）。
@@ -521,9 +524,11 @@ generate_themes_manifest.py → docs/themes/themes-manifest.json
   - `app.js` — 学会カタログのビューア（検索・トピックタグ/採択形式チップ・ソート・progressive reveal 30件/回・URL 状態同期・back-to-top）。`<conf>/papers.json` を fetch。
   - `landing.js` — S0 検索トップの挙動（学会数/論文数の動的注入・学会リストの開閉・例示チップ→検索・`?q=` パーマリンク同期・fine-pointer 限定の初期フォーカス）。`conferences.json` を fetch。CSP が `script-src 'self'` のため**インライン script は全ページ禁止**（外部 assets/*.js のみ。`test_landing_s0.py` が pin）。
   - `search.js` — 学会横断検索（`search-index.json` を fetch、上位20件 listbox、hit は `<conf>/?q=<title>` でカタログへ受け渡し）。
-  - `lineage.js` — 家系図ビューア（Topics / Tree / Timeline モード、SVG グラフ）。`<conf>/lineage.json` を fetch。
-  - `theme.js` — テーマ生成フォーム＋テーマ家系図（`/themes/`）。
-- **ページ**: `docs/index.html`（検索ファーストの S0 トップ = 検索窓1本+例示チップ+折りたたみ学会リスト（#372 P1）、ページ固有 CSS はインライン `<style>`）/ `docs/<conf>/index.html`（学会カタログ）/ `docs/<conf>/lineage.html`（家系図）/ `docs/themes/index.html` / `docs/how-it-works/`。
+  - `lineage-shell.js` — 統一ビューア `/lineage/` の URL ルータ + セレクタ + データロード（3パターン: conf 単発 / theme 単発 / deep 2段 fetch。空スタブは meta.source=="none"→nodes==[] の2段判定で「未生成」表示）。会議カードは **docs/lineage-manifest.json 駆動**（ハードコード一覧禁止 — 幻覚スラッグ事故 2026-08-24）。
+  - `lineage-tree.js` — conf/deep 統合ツリーコントローラ（旧 lineage.js + deep.js を統合・両者は削除済み）。fetch を持たない純レンダラ。
+  - `theme.js` — テーマ年表ビューア（/lineage/?theme= から起動。fetch は PP.dataRoot() prefix）。
+  - `theme-request.js` — テーマ投稿・進捗 UI（theme.js から分離）。
+- **ページ**: `docs/index.html`（検索ファーストの S0 トップ = 検索窓1本+例示チップ+折りたたみ学会リスト（#372 P1）、ページ固有 CSS はインライン `<style>`）/ `docs/<conf>/index.html`（学会カタログ）/ `docs/lineage/index.html`（統一系譜ビューア）/ `docs/how-it-works/`。旧 `docs/<conf>/lineage.html` / `docs/themes/index.html` / `docs/iclr-2026/deep.html` は**リダイレクトスタブ**（`docs/assets/redirects.json` が写像の単一真実源、`test_redirect_stubs.py` が検証）。
 - **データの流れ**: `summary.csv` → `build_pages.py` → `docs/<conf>/papers.json`（**要旨は320字プレビュー**でページ <1MB gzip）＋ `docs/conferences.json`（集約 index）。
 
 ### 重要な規約

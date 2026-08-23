@@ -150,6 +150,61 @@
     };
   };
 
+  // Resolve the data-root prefix for fetch paths. Read once from the
+  // host page's <meta name="data-root" content="../">. Returns ""
+  // when the meta is missing (legacy pages like /themes/index.html
+  // that predate the unified viewer shipped their fetch paths as
+  // page-relative). Trailing "/" is guaranteed so callers can concat
+  // freely: PP.dataRoot() + "themes/..." etc.
+  let _dataRoot = null;
+  PP.dataRoot = function dataRoot() {
+    if (_dataRoot !== null) return _dataRoot;
+    if (typeof document === "undefined" || typeof document.querySelector !== "function") {
+      _dataRoot = "";
+      return _dataRoot;
+    }
+    const meta = document.querySelector('meta[name="data-root"]');
+    const raw = meta ? meta.getAttribute("content") || "" : "";
+    if (!raw) {
+      _dataRoot = "";
+    } else {
+      _dataRoot = raw.endsWith("/") ? raw : raw + "/";
+    }
+    return _dataRoot;
+  };
+
+  // Render the 6-relation legend into `container` using textContent-only
+  // DOM construction (no innerHTML — safe to call with any container).
+  // Reuses the .relation-legend__* CSS classes already defined in
+  // style.css so theme / conf / deep viewers + the unified viewer share
+  // one visual vocabulary. Kept here (not in each viewer) because the
+  // legend is identical across all 3 engines — single source of truth
+  // prevents swatch/class drift between pages.
+  const RELATION_LEGEND_ITEMS = [
+    { rel: "supersedes", label: "置換" },
+    { rel: "successor",  label: "後継" },
+    { rel: "extends",    label: "拡張" },
+    { rel: "ablation",   label: "成分分析" },
+    { rel: "baseline",   label: "比較" },
+    { rel: "contrasts",  label: "対立" },
+  ];
+  PP.renderRelationLegend = function renderRelationLegend(container) {
+    if (!container || typeof container.appendChild !== "function") return;
+    // Clear any prior content (so re-renders are idempotent).
+    while (container.firstChild) container.removeChild(container.firstChild);
+    container.setAttribute("aria-label", "エッジの色とエッジ種別の対応");
+    container.className = "relation-legend";
+    for (const item of RELATION_LEGEND_ITEMS) {
+      const spanItem = document.createElement("span");
+      spanItem.className = "relation-legend__item";
+      const swatch = document.createElement("span");
+      swatch.className = `relation-legend__swatch relation-legend__swatch--${item.rel}`;
+      spanItem.appendChild(swatch);
+      spanItem.appendChild(document.createTextNode(item.label));
+      container.appendChild(spanItem);
+    }
+  };
+
   // Fan-out: spread each parent's outgoing edges across the bottom edge of
   // its card (ordered left→right by child x) so multiple children don't all
   // radiate from one point — a tree's branches leave the trunk at different
