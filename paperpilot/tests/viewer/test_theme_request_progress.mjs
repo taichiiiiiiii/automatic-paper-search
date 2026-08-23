@@ -25,8 +25,12 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const THEME_JS = resolve(__dirname, "../../../docs/assets/theme.js");
-const INDEX_HTML = resolve(__dirname, "../../../docs/themes/index.html");
+const THEME_JS = resolve(__dirname, "../../../docs/assets/theme-request.js");
+// Issue #372 P2: the theme-request form moved from /themes/ to /lineage/
+// when the two pages were unified into the single lineage viewer. The
+// HTML data-step attributes this test cross-checks against PROGRESS_STEPS
+// now live in docs/lineage/index.html.
+const INDEX_HTML = resolve(__dirname, "../../../docs/lineage/index.html");
 
 const themeSrc = readFileSync(THEME_JS, "utf8");
 const indexSrc = readFileSync(INDEX_HTML, "utf8");
