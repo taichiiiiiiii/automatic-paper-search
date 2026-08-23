@@ -538,7 +538,7 @@ generate_themes_manifest.py → docs/themes/themes-manifest.json
   - `executablePath: /root/.cache/ms-playwright/chromium_headless_shell-1223/chrome-headless-shell-linux64/chrome-headless-shell`、`args:['--no-sandbox']`
   - CJS: `import pkg from '/root/.npm/_npx/9833c18b2d85bc59/node_modules/playwright-core/index.js'; const {chromium}=pkg`
   - ローカル配信: `cd docs && python3 -m http.server 8137`
-  - **ディレクトリ URL で開く**（`/cvpr-2026/`）。`/index.html` 直叩きは `setLastUpdated` の slug 導出が "index.html" になり最終更新が出ない
+  - ディレクトリ URL（`/cvpr-2026/`）と `/index.html` 直叩きのどちらでも可（#371 で `setLastUpdated` の slug 導出が `.html` セグメントを除外するようになった）
   - **node 実行後は cwd が `/root` にリセット** → `gh` は `-R taichiiiiiiii/automatic-paper-search` を明示（`gh api` は `-R` 非対応）
 - frontend に Python テストは無い。ゲートは**ローカル目視＋headless スクショ＋`ui-reviewer` エージェント**。CI は `lighthouse.yml` が docs/ PR で Core Web Vitals を **warn-only** 測定（ブロックしない）。
 
