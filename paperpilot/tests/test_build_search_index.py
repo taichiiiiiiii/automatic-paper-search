@@ -98,12 +98,21 @@ def test_write_index_preserves_non_ascii_titles(tmp_path: Path) -> None:
 
 
 def test_landing_search_label_matches_real_index_size() -> None:
-    """docs/index.html hardcodes "N 学会 M 本" next to the search box.
+    """docs/index.html shows N 学会 / M 本 via dynamic injection.
 
-    Prose that states a number drifts silently as the catalog grows. This
-    pins it to what build_index actually produces, so a stale claim fails
-    here instead of misleading a visitor.
+    The S0 landing (#372 P1) no longer hardcodes the count in prose —
+    the inline <script> fetches ``conferences.json`` at load and fills
+    ``#s0-n`` (conference count) and ``#s0-m`` (paper count) from the
+    live data, so the page can never silently lie about its own scale.
+    The HTML still ships a numeric fallback for no-JS visitors. This
+    test pins:
+      - the dynamic injection mechanism is wired (target elements exist
+        and the inline script fetches ``conferences.json``)
+      - the fallback numerals are numeric and sane
+      - ``conferences.json``'s aggregate still matches the search index
+        (so the JS fills the same value this test can verify offline).
     """
+    import json
     import re
 
     repo_docs = Path(__file__).resolve().parents[2] / "docs"
@@ -111,14 +120,36 @@ def test_landing_search_label_matches_real_index_size() -> None:
     conferences = {e[bsi.CONFERENCE] for e in entries}
 
     html = (repo_docs / "index.html").read_text(encoding="utf-8")
-    m = re.search(r"(\d+)\s*学会\s*([\d,]+)\s*本", html)
-    assert m, "landing page no longer states a '<N> 学会 <M> 本' count"
 
-    stated_conferences = int(m.group(1))
-    stated_papers = int(m.group(2).replace(",", ""))
-    assert stated_conferences == len(conferences), (
-        f"landing says {stated_conferences} conferences, index has {len(conferences)}"
+    # 1) Dynamic injection: the two target elements must exist.
+    assert re.search(r'id="s0-n"', html), "landing is missing #s0-n for conf count"
+    assert re.search(r'id="s0-m"', html), "landing is missing #s0-m for paper count"
+    # And the inline script must fetch conferences.json (the single source
+    # of truth for the landing numerals; papers.json per conference is not
+    # what the landing shows).
+    assert "conferences.json" in html, (
+        "landing no longer fetches conferences.json for the dynamic N/M"
     )
-    assert stated_papers == len(entries), (
-        f"landing says {stated_papers:,} papers, index has {len(entries):,}"
+
+    # 2) Fallback numerals — extract the text inside each target element.
+    m_n = re.search(r'<span[^>]*id="s0-n"[^>]*>(\d[\d,]*)</span>', html)
+    m_m = re.search(r'<span[^>]*id="s0-m"[^>]*>(\d[\d,]*)</span>', html)
+    assert m_n and m_m, "landing #s0-n / #s0-m should ship a numeric fallback"
+    fallback_n = int(m_n.group(1).replace(",", ""))
+    fallback_m = int(m_m.group(1).replace(",", ""))
+    assert fallback_n > 0 and fallback_m > 0
+
+    # 3) conferences.json aggregate must match the search-index entries.
+    #    The inline script reads conferences.json; if its total diverged
+    #    from the search index, the landing would show a different number
+    #    than the actual searchable corpus — which is exactly the kind
+    #    of drift this test was originally catching.
+    confs_path = repo_docs / "conferences.json"
+    confs = json.loads(confs_path.read_text(encoding="utf-8"))
+    assert len(confs) == len(conferences), (
+        f"conferences.json has {len(confs)} entries, search-index has {len(conferences)}"
+    )
+    confs_total = sum(c.get("papers", 0) for c in confs)
+    assert confs_total == len(entries), (
+        f"conferences.json total papers {confs_total:,} != search-index {len(entries):,}"
     )
