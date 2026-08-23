@@ -46,16 +46,19 @@ def test_landing_search_form_has_required_children(index_text: str) -> None:
 
 
 # ---------------------------------------------------------------------------
-# (b) autofocus — search box is the primary action on the landing
+# (b) focus — search box is the primary action; focus is pointer-gated
 # ---------------------------------------------------------------------------
 
 
-def test_landing_search_input_has_autofocus(index_text: str) -> None:
-    # Autofocus lives on the .site-search__input, so a visitor lands and
-    # can start typing without a second click.
-    m = re.search(r'<input[^>]*class="site-search__input"[^>]*>', index_text)
-    assert m is not None, "site-search__input <input> not found"
-    assert "autofocus" in m.group(0), "site-search__input is missing autofocus"
+def test_landing_search_input_focus_is_pointer_gated(index_text: str) -> None:
+    """No bare `autofocus` (it opens the mobile keyboard on load);
+    landing.js focuses the input only for fine-pointer devices.
+    """
+    assert "autofocus" not in index_text.split("<body")[1], (
+        "bare autofocus attribute found — focus must stay pointer-gated"
+    )
+    js = (REPO_ROOT / "docs" / "assets" / "landing.js").read_text(encoding="utf-8")
+    assert '(pointer: fine)' in js and "input.focus()" in js
 
 
 # ---------------------------------------------------------------------------

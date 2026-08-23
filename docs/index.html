@@ -142,6 +142,15 @@
       border-color: var(--color-accent);
       color: var(--color-accent-strong);
     }
+    /* Focus ring: the shared .site-search__input:focus-visible paints
+       border + outline in accent — a double coral ring that reads as a
+       validation error on an empty field. S0 keeps the single outline
+       ring and leaves the border alone. */
+    .s0 .site-search__input:focus-visible,
+    main .site-search__input:focus-visible {
+      border-color: var(--color-rule);
+    }
+
     .s0__chip:focus-visible {
       outline: 2px solid var(--color-accent);
       outline-offset: 2px;
@@ -302,10 +311,9 @@
       <em>AI トップ会議</em> <span class="s0__n" id="s0-n">10</span> 学会・<span class="s0__n" id="s0-m">28,000</span> 本から探して、研究の系譜を辿る。
     </p>
 
-    <!-- Search form. search.js owns the combobox behaviour; the
-         landing only provides the markup + the autofocus. Autofocus
-         is gated behind a coarse-pointer / hover heuristic so mobile
-         visitors don't get their keyboard yanked open on load. -->
+    <!-- Search form. search.js owns the combobox behaviour. Focus on
+         load is applied by landing.js only for fine-pointer devices,
+         so mobile visitors don't get their keyboard yanked open. -->
     <form class="site-search" role="search" data-search autocomplete="off">
       <label class="site-search__label" for="s0-search-input">論文タイトルで横断検索</label>
       <input
@@ -321,7 +329,6 @@
         aria-describedby="s0-search-status"
         autocomplete="off"
         spellcheck="false"
-        autofocus
       />
       <p class="site-search__status" id="s0-search-status" role="status"></p>
       <ul class="site-search__results" id="s0-search-listbox" role="listbox" aria-label="検索結果" tabindex="-1" hidden></ul>
@@ -356,15 +363,15 @@
   </main>
 
   <footer class="s0-footer">
-    <div>Built by <a href="https://github.com/taichiiiiiiii/automatic-paper-search">PaperPilot</a></div>
+    <div>Built by <a href="https://github.com/taichiiiiiiii/automatic-paper-search" rel="noopener">PaperPilot</a></div>
     <nav class="s0-footer__links" aria-label="関連ドキュメント">
       <a href="how-it-works/">仕組み</a>
-      <a href="https://github.com/taichiiiiiiii/automatic-paper-search">GitHub</a>
+      <a href="https://github.com/taichiiiiiiii/automatic-paper-search" rel="noopener">GitHub</a>
       <span>データ: arXiv / Semantic Scholar / OpenAlex</span>
     </nav>
   </footer>
 
   <script src="assets/search.js?v=3" defer></script>
-  <script src="assets/landing.js?v=2" defer></script>
+  <script src="assets/landing.js?v=3" defer></script>
 </body>
 </html>

@@ -47,7 +47,7 @@
         frag.appendChild(li);
       });
       list.appendChild(frag);
-      if (label) label.textContent = "学会から探す ▾ (" + items.length + ")";
+      if (label) label.textContent = "学会から探す (" + items.length + ")";
     })
     .catch(function (err) {
       // Fetch failure: leave the intro numerals at their HTML
@@ -80,6 +80,14 @@
         input.focus();
       });
     });
+  }
+
+  // --- Focus on load, fine-pointer only -------------------------
+  // A bare `autofocus` attribute yanks the software keyboard open on
+  // touch devices; gate it so only mouse/trackpad visitors get the
+  // instant caret.
+  if (input && window.matchMedia && window.matchMedia("(pointer: fine)").matches) {
+    input.focus();
   }
 
   // --- ?q= permalink: read on load, keep in sync while typing ---
