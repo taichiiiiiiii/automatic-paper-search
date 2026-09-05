@@ -16,6 +16,7 @@ import pytest
 
 VIEWER_DIR = Path(__file__).parent
 UNTRUSTED_TEXT_SCRIPT = VIEWER_DIR / "test_search_untrusted_text.mjs"
+SEARCH_V2_SCRIPT = VIEWER_DIR / "test_search_v2.mjs"
 
 
 @pytest.mark.skipif(shutil.which("node") is None, reason="node not installed")
@@ -29,6 +30,17 @@ def test_search_never_builds_html_from_untrusted_text() -> None:
     # stop producing HTML strings at all; this guard keeps it that way.
     result = subprocess.run(
         ["node", str(UNTRUSTED_TEXT_SCRIPT)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node not installed")
+def test_search_v2_core_contract() -> None:
+    result = subprocess.run(
+        ["node", str(SEARCH_V2_SCRIPT)],
         capture_output=True,
         text=True,
         check=False,

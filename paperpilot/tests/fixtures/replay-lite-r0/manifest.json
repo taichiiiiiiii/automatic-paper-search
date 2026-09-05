@@ -1,0 +1,105 @@
+{
+  "schema_version": "run-manifest-v1",
+  "run_id": "r0-fixture-20260830",
+  "pipeline": "identity-lite",
+  "status": "succeeded",
+  "as_of": "2026-08-30T00:00:00Z",
+  "code": {
+    "repository": "taichiiiiiiii/automatic-paper-search",
+    "commit_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "dirty": false
+  },
+  "invocation": {
+    "projector": "identity-lite-v1",
+    "config_input_id": "config",
+    "parameters": {}
+  },
+  "dependencies": {
+    "manager": "uv",
+    "lock_path": "uv.lock",
+    "lock_sha256": "99d3ad10ed11571f572831aa039827cfc15a83e88d820fea5fdd981fe4b92305",
+    "python": "3.12",
+    "environment_sha256": null
+  },
+  "inputs": [
+    {
+      "id": "config",
+      "role": "config",
+      "storage": "repository",
+      "path": "config.json",
+      "media_type": "application/json",
+      "compression": "none",
+      "stored_size_bytes": 46,
+      "content_size_bytes": 46,
+      "sha256": "895fb42ea3dc856005bff38ba1b6fb584c64c6e8c2c9466a25d368d52fbb086f",
+      "expires_at": null
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "catalog",
+      "role": "normalized_snapshot",
+      "storage": "bundle",
+      "path": "catalog.json",
+      "media_type": "application/json",
+      "compression": "none",
+      "stored_size_bytes": 75,
+      "content_size_bytes": 75,
+      "sha256": "b7cca6d7a9c89a3f68bcf58b282df888dee91fa5cc597911b629d7edf65b886c",
+      "expires_at": "2099-01-01T00:00:00Z"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "catalog-output",
+      "role": "identity_catalog",
+      "storage": "replay-output",
+      "path": "fixture-conf/papers.json",
+      "media_type": "application/json",
+      "compression": "none",
+      "stored_size_bytes": 171,
+      "content_size_bytes": 171,
+      "sha256": "e8cb9f48523551bee4f436145871eef20758ecc5a87d5338b41872f75c3663f4",
+      "expires_at": null
+    },
+    {
+      "id": "aliases-output",
+      "role": "identity_aliases",
+      "storage": "replay-output",
+      "path": "identity-aliases-v1.json",
+      "media_type": "application/json",
+      "compression": "none",
+      "stored_size_bytes": 68,
+      "content_size_bytes": 68,
+      "sha256": "83d7b6c138233eea7937fa1a6fbefc2833559fb4d0af2ae3b50256ceaba78c74",
+      "expires_at": null
+    },
+    {
+      "id": "coverage-output",
+      "role": "identity_coverage",
+      "storage": "replay-output",
+      "path": "identity-coverage-v1.json",
+      "media_type": "application/json",
+      "compression": "none",
+      "stored_size_bytes": 309,
+      "content_size_bytes": 309,
+      "sha256": "9731fa5f934babf4cf3fd9b629309a64267fc07c504867b9dc4871232747590b",
+      "expires_at": null
+    }
+  ],
+  "producers": [
+    {
+      "name": "identity-projector",
+      "version": "1",
+      "provider": null,
+      "model": null,
+      "prompt_version": null,
+      "schema_version": "identity-lite-v1"
+    }
+  ],
+  "counts": {
+    "input_count": 1,
+    "output_count": 3
+  },
+  "failures": []
+}

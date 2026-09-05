@@ -144,24 +144,54 @@ def _has_skip_link(html: str) -> bool:
 # Tests
 # ---------------------------------------------------------------------------
 
+
+def _is_content_addressed_slide_deck(path: Path) -> bool:
+    relative = path.relative_to(DOCS_DIR).as_posix()
+    return relative.startswith("paper-slides-v1/decks/") and relative.endswith(".html")
+
+
 ALL_HTML = _discover_html_files()
-
-# Sanity: we expect 17 pages at the time of writing
-assert len(ALL_HTML) == 17, (
-    f"Expected 17 HTML pages in docs/, got {len(ALL_HTML)}: "
-    f"{[str(p.relative_to(DOCS_DIR)) for p in ALL_HTML]}"
-)
+SLIDE_DECK_HTML = [path for path in ALL_HTML if _is_content_addressed_slide_deck(path)]
+SITE_SHELL_HTML = [path for path in ALL_HTML if not _is_content_addressed_slide_deck(path)]
 
 
-@pytest.mark.parametrize("html_path", ALL_HTML, ids=lambda p: str(p.relative_to(DOCS_DIR)))
+def test_catalog_fallback_pages_are_discovered_dynamically() -> None:
+    catalogs = sorted(
+        path.parent
+        for path in DOCS_DIR.glob("*/papers.json")
+        if (path.parent / "index.html").is_file()
+    )
+    assert catalogs
+    missing = [path.name for path in catalogs if not (path / "paper-links.html").is_file()]
+    assert missing == [], f"catalogs missing no-JS fallback pages: {missing}"
+
+    catalog_set = set(catalogs)
+    orphans = sorted(
+        path.parent.name
+        for path in DOCS_DIR.glob("*/paper-links.html")
+        if path.parent not in catalog_set
+    )
+    assert orphans == [], f"orphan no-JS fallback pages: {orphans}"
+
+
+def test_content_addressed_slide_decks_are_reserved_for_deck_contract_tests() -> None:
+    future_deck = (
+        DOCS_DIR / "paper-slides-v1" / "decks" / f"sd1-{'a' * 64}" / f"{'b' * 64}-{'c' * 64}.html"
+    )
+    assert _is_content_addressed_slide_deck(future_deck)
+    assert not set(SLIDE_DECK_HTML) & set(SITE_SHELL_HTML)
+    assert set(SLIDE_DECK_HTML) | set(SITE_SHELL_HTML) == set(ALL_HTML)
+
+
+@pytest.mark.parametrize("html_path", SITE_SHELL_HTML, ids=lambda p: str(p.relative_to(DOCS_DIR)))
 def test_site_nav_present(html_path: Path) -> None:
     """Every non-stub HTML page has a ``<nav class="site-nav">``."""
     html = html_path.read_text(encoding="utf-8")
     nav = _extract_nav_block(html)
-    assert nav is not None, f"{html_path.name}: missing <nav class=\"site-nav\">"
+    assert nav is not None, f'{html_path.name}: missing <nav class="site-nav">'
 
 
-@pytest.mark.parametrize("html_path", ALL_HTML, ids=lambda p: str(p.relative_to(DOCS_DIR)))
+@pytest.mark.parametrize("html_path", SITE_SHELL_HTML, ids=lambda p: str(p.relative_to(DOCS_DIR)))
 def test_nav_links_identical(html_path: Path) -> None:
     """Each page's nav has brand + 3 links: 探す / 系譜 / 仕組み."""
     html = html_path.read_text(encoding="utf-8")
@@ -182,7 +212,7 @@ def test_nav_links_identical(html_path: Path) -> None:
     )
 
 
-@pytest.mark.parametrize("html_path", ALL_HTML, ids=lambda p: str(p.relative_to(DOCS_DIR)))
+@pytest.mark.parametrize("html_path", SITE_SHELL_HTML, ids=lambda p: str(p.relative_to(DOCS_DIR)))
 def test_aria_current_page(html_path: Path) -> None:
     """Each page has aria-current='page' on exactly the correct nav link."""
     html = html_path.read_text(encoding="utf-8")
@@ -197,9 +227,7 @@ def test_aria_current_page(html_path: Path) -> None:
 
     if expected_label is None:
         # 404 and similar pages should have no aria-current
-        assert len(aria_links) == 0, (
-            f"{rel}: expected no aria-current, but found on {aria_links}"
-        )
+        assert len(aria_links) == 0, f"{rel}: expected no aria-current, but found on {aria_links}"
     else:
         assert len(aria_links) == 1, (
             f"{rel}: expected exactly 1 aria-current, got {len(aria_links)}: {aria_links}"
@@ -210,7 +238,7 @@ def test_aria_current_page(html_path: Path) -> None:
         )
 
 
-@pytest.mark.parametrize("html_path", ALL_HTML, ids=lambda p: str(p.relative_to(DOCS_DIR)))
+@pytest.mark.parametrize("html_path", SITE_SHELL_HTML, ids=lambda p: str(p.relative_to(DOCS_DIR)))
 def test_skip_link_present(html_path: Path) -> None:
     """Every page has a skip-link."""
     html = html_path.read_text(encoding="utf-8")

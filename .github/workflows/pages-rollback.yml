@@ -1,0 +1,92 @@
+name: Roll back GitHub Pages to a known-good SHA
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: Known-good 40-character develop ancestor
+        required: true
+        type: string
+      confirm:
+        description: Type ROLLBACK to confirm a Pages-only rollback
+        required: true
+        type: string
+
+permissions: {}
+
+jobs:
+  validate_target:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      deployments: read
+    outputs:
+      target_sha: ${{ steps.validate.outputs.target_sha }}
+    steps:
+      - name: Checkout current protected workflow code
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: develop
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Validate ancestor and successful deployment record
+        id: validate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TARGET_SHA: ${{ inputs.target_sha }}
+          CONFIRM: ${{ inputs.confirm }}
+        run: |
+          set -euo pipefail
+          [[ "$CONFIRM" == "ROLLBACK" ]] || {
+            echo "::error::confirm must be exactly ROLLBACK"
+            exit 1
+          }
+          [[ "$TARGET_SHA" =~ ^[0-9a-f]{40}$ ]] || {
+            echo "::error::target_sha must be 40 lowercase hex"
+            exit 1
+          }
+          git cat-file -e "$TARGET_SHA^{commit}"
+          git merge-base --is-ancestor "$TARGET_SHA" origin/develop || {
+            echo "::error::target SHA is not an ancestor of develop"
+            exit 1
+          }
+
+          deployment_ids="$(
+            gh api \
+              -H 'Accept: application/vnd.github+json' \
+              "/repos/$GITHUB_REPOSITORY/deployments?environment=github-pages&ref=$TARGET_SHA&per_page=100" \
+              --jq '.[].id'
+          )"
+          known_good=false
+          while IFS= read -r deployment_id; do
+            [[ -n "$deployment_id" ]] || continue
+            state="$(
+              gh api \
+                -H 'Accept: application/vnd.github+json' \
+                "/repos/$GITHUB_REPOSITORY/deployments/$deployment_id/statuses?per_page=1" \
+                --jq '.[0].state // ""'
+            )"
+            if [[ "$state" == "success" ]]; then
+              known_good=true
+              break
+            fi
+          done <<< "$deployment_ids"
+          [[ "$known_good" == "true" ]] || {
+            echo "::error::target SHA has no successful github-pages deployment"
+            exit 1
+          }
+          echo "target_sha=$TARGET_SHA" >> "$GITHUB_OUTPUT"
+
+  release:
+    needs: validate_target
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/pages-release.yml
+    with:
+      source_sha: ${{ inputs.target_sha }}
+      release_kind: rollback
+      request_id: rollback-${{ github.run_id }}-${{ github.run_attempt }}

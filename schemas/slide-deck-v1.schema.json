@@ -1,0 +1,600 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paperpilot.local/schemas/slide-deck-v1.schema.json",
+  "title": "PaperPilot Slide Deck v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "deck_id",
+    "paper_id",
+    "language",
+    "deck_profile",
+    "coverage",
+    "source",
+    "generator",
+    "slides",
+    "citations",
+    "limitations",
+    "review",
+    "generated_at",
+    "input_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "slide-deck-v1"},
+    "deck_id": {"type": "string", "pattern": "^sd1-[0-9a-f]{64}$"},
+    "paper_id": {"$ref": "#/$defs/paperId"},
+    "language": {"enum": ["ja", "en"]},
+    "deck_profile": {"const": "research-brief-v1"},
+    "coverage": {
+      "oneOf": [
+        {"$ref": "#/$defs/fullTextCoverage"},
+        {"$ref": "#/$defs/abstractOnlyCoverage"}
+      ]
+    },
+    "source": {"$ref": "#/$defs/source"},
+    "generator": {"$ref": "#/$defs/generator"},
+    "slides": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 12,
+      "items": {"$ref": "#/$defs/slide"}
+    },
+    "citations": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 99,
+      "items": {
+        "oneOf": [
+          {"$ref": "#/$defs/pdfPageCitation"},
+          {"$ref": "#/$defs/abstractCitation"},
+          {"$ref": "#/$defs/lineageAssertionCitation"}
+        ]
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/generatedText1000"}
+    },
+    "review": {
+      "oneOf": [
+        {"$ref": "#/$defs/provisionalReview"},
+        {"$ref": "#/$defs/reviewedReview"}
+      ]
+    },
+    "generated_at": {"$ref": "#/$defs/utcTimestamp"},
+    "input_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "coverage": {
+            "properties": {"kind": {"const": "full_text"}},
+            "required": ["kind"]
+          }
+        },
+        "required": ["coverage"]
+      },
+      "then": {
+        "properties": {
+          "source": {
+            "properties": {
+              "pdf_sha256": {"$ref": "#/$defs/sha256"},
+              "access": {"const": "open_access"},
+              "fetched_at": {"$ref": "#/$defs/utcTimestamp"}
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "language": {"const": "ja"}
+        },
+        "required": ["language"]
+      },
+      "then": {
+        "properties": {
+          "limitations": {
+            "contains": {"const": "機械生成された要約であり、原論文の確認が必要です。"}
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"language": {"const": "en"}},
+        "required": ["language"]
+      },
+      "then": {
+        "properties": {
+          "limitations": {
+            "contains": {"const": "Machine-generated summary; verify against the original paper."}
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "language": {"const": "ja"},
+          "coverage": {
+            "properties": {"kind": {"const": "full_text"}},
+            "required": ["kind"]
+          }
+        },
+        "required": ["language", "coverage"]
+      },
+      "then": {
+        "properties": {
+          "coverage": {"properties": {"label": {"const": "公開PDF本文から生成"}}}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "language": {"const": "en"},
+          "coverage": {
+            "properties": {"kind": {"const": "full_text"}},
+            "required": ["kind"]
+          }
+        },
+        "required": ["language", "coverage"]
+      },
+      "then": {
+        "properties": {
+          "coverage": {
+            "properties": {"label": {"const": "Generated from the public PDF full text"}}
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "language": {"const": "ja"},
+          "coverage": {
+            "properties": {"kind": {"const": "abstract_only"}},
+            "required": ["kind"]
+          }
+        },
+        "required": ["language", "coverage"]
+      },
+      "then": {
+        "properties": {
+          "coverage": {
+            "properties": {"label": {"const": "要旨のみから生成。論文全文の要約ではありません"}}
+          },
+          "limitations": {
+            "contains": {"const": "要旨のみから生成。論文全文の要約ではありません"}
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "language": {"const": "en"},
+          "coverage": {
+            "properties": {"kind": {"const": "abstract_only"}},
+            "required": ["kind"]
+          }
+        },
+        "required": ["language", "coverage"]
+      },
+      "then": {
+        "properties": {
+          "coverage": {
+            "properties": {
+              "label": {
+                "const": "Generated from the abstract only. This is not a summary of the full paper."
+              }
+            }
+          },
+          "limitations": {
+            "contains": {
+              "const": "Generated from the abstract only. This is not a summary of the full paper."
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "paperId": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "utcTimestamp": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+    },
+    "httpsUrl": {
+      "type": "string",
+      "minLength": 9,
+      "maxLength": 2048,
+      "pattern": "^(?![\\s\\S]*%)https://(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\\.)+(?:[A-Za-z](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?|xn--[A-Za-z0-9-]{1,59})(?::443)?(?:/[^\\s\\\"'`<>\\\\]*)?$"
+    },
+    "sameOriginJsonPath": {
+      "type": "string",
+      "minLength": 7,
+      "maxLength": 1024,
+      "pattern": "^(?![\\s\\S]*[\\s\\\"'`<>\\\\])(?![\\s\\S]*%(?:0[0-9A-Fa-f]|1[0-9A-Fa-f]|7[fF]|25))(?![^?#]*%)/(?:(?!\\.{1,2}(?:/|$))[A-Za-z0-9._~-]+/)*(?!\\.{1,2}(?:/|$))[A-Za-z0-9._~-]+\\.json$"
+    },
+    "sameOriginAnchor": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 2048,
+      "pattern": "^(?![\\s\\S]*//)(?![\\s\\S]*[\\s\\\"'`<>\\\\])(?![\\s\\S]*%(?:0[0-9A-Fa-f]|1[0-9A-Fa-f]|7[fF]|25))(?![^?#]*%)/(?:(?!\\.{1,2}(?:/|$))[A-Za-z0-9._~-]+/)*(?:(?!\\.{1,2}(?:/|$))[A-Za-z0-9._~-]+/?)?(?:\\?[A-Za-z0-9._~!$&'()*+,;=:@%/?-]*)?(?:#[A-Za-z0-9._~!$&'()*+,;=:@%/?-]*)?$"
+    },
+    "nonemptyText128": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "\\S"
+    },
+    "nonemptyText256": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "\\S"
+    },
+    "nonemptyText300": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300,
+      "pattern": "\\S"
+    },
+    "nonemptyText800": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 800,
+      "pattern": "\\S"
+    },
+    "nonemptyText1000": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000,
+      "pattern": "\\S"
+    },
+    "nonemptyText2000": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000,
+      "pattern": "\\S"
+    },
+    "nonemptyText4000": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000,
+      "pattern": "\\S"
+    },
+    "secretFreeText": {
+      "type": "string",
+      "pattern": "^(?![\\s\\S]*(?:^|[^A-Za-z0-9])(?:[A-Za-z0-9]+[\\s_-]+)*(?:[Aa][Ww][Ss][\\s_-]*[Ss][Ee][Cc][Rr][Ee][Tt][\\s_-]*[Aa][Cc][Cc][Ee][Ss][Ss][\\s_-]*[Kk][Ee][Yy]|[Aa][Pp][Ii][\\s_-]*[Kk][Ee][Yy]|[Aa][Cc][Cc][Ee][Ss][Ss][\\s_-]*[Tt][Oo][Kk][Ee][Nn]|[Rr][Ee][Ff][Rr][Ee][Ss][Hh][\\s_-]*[Tt][Oo][Kk][Ee][Nn]|[Cc][Ll][Ii][Ee][Nn][Tt][\\s_-]*[Ss][Ee][Cc][Rr][Ee][Tt]|[Pp][Rr][Ii][Vv][Aa][Tt][Ee][\\s_-]*[Kk][Ee][Yy]|[Pp][Aa][Ss][Ss][Ww][Oo][Rr][Dd]|[Aa][Uu][Tt][Hh][Oo][Rr][Ii][Zz][Aa][Tt][Ii][Oo][Nn])\\b\\s*[\\\"'`]?\\s*[:=]\\s*[\\\"'`]?[^\\s\\\"'`]{4,})[\\s\\S]*$"
+    },
+    "generatedText300": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300,
+      "pattern": "^(?![\\s\\S]*(?:<\\s*/?\\s*[A-Za-z][^>]*>|[Hh][Tt][Tt][Pp][Ss]?:|[Jj][Aa][Vv][Aa][Ss][Cc][Rr][Ii][Pp][Tt]:|[Dd][Aa][Tt][Aa]:))[\\s\\S]*\\S[\\s\\S]*$",
+      "allOf": [{"$ref": "#/$defs/secretFreeText"}]
+    },
+    "generatedText128": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^(?![\\s\\S]*(?:<\\s*/?\\s*[A-Za-z][^>]*>|[Hh][Tt][Tt][Pp][Ss]?:|[Jj][Aa][Vv][Aa][Ss][Cc][Rr][Ii][Pp][Tt]:|[Dd][Aa][Tt][Aa]:))[\\s\\S]*\\S[\\s\\S]*$",
+      "allOf": [{"$ref": "#/$defs/secretFreeText"}]
+    },
+    "generatedText256": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^(?![\\s\\S]*(?:<\\s*/?\\s*[A-Za-z][^>]*>|[Hh][Tt][Tt][Pp][Ss]?:|[Jj][Aa][Vv][Aa][Ss][Cc][Rr][Ii][Pp][Tt]:|[Dd][Aa][Tt][Aa]:))[\\s\\S]*\\S[\\s\\S]*$",
+      "allOf": [{"$ref": "#/$defs/secretFreeText"}]
+    },
+    "generatedText800": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 800,
+      "pattern": "^(?![\\s\\S]*(?:<\\s*/?\\s*[A-Za-z][^>]*>|[Hh][Tt][Tt][Pp][Ss]?:|[Jj][Aa][Vv][Aa][Ss][Cc][Rr][Ii][Pp][Tt]:|[Dd][Aa][Tt][Aa]:))[\\s\\S]*\\S[\\s\\S]*$",
+      "allOf": [{"$ref": "#/$defs/secretFreeText"}]
+    },
+    "generatedText1000": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000,
+      "pattern": "^(?![\\s\\S]*(?:<\\s*/?\\s*[A-Za-z][^>]*>|[Hh][Tt][Tt][Pp][Ss]?:|[Jj][Aa][Vv][Aa][Ss][Cc][Rr][Ii][Pp][Tt]:|[Dd][Aa][Tt][Aa]:))[\\s\\S]*\\S[\\s\\S]*$",
+      "allOf": [{"$ref": "#/$defs/secretFreeText"}]
+    },
+    "generatedText2000": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000,
+      "pattern": "^(?![\\s\\S]*(?:<\\s*/?\\s*[A-Za-z][^>]*>|[Hh][Tt][Tt][Pp][Ss]?:|[Jj][Aa][Vv][Aa][Ss][Cc][Rr][Ii][Pp][Tt]:|[Dd][Aa][Tt][Aa]:))[\\s\\S]*\\S[\\s\\S]*$",
+      "allOf": [{"$ref": "#/$defs/secretFreeText"}]
+    },
+    "generatedText4000": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000,
+      "pattern": "^(?![\\s\\S]*(?:<\\s*/?\\s*[A-Za-z][^>]*>|[Hh][Tt][Tt][Pp][Ss]?:|[Jj][Aa][Vv][Aa][Ss][Cc][Rr][Ii][Pp][Tt]:|[Dd][Aa][Tt][Aa]:))[\\s\\S]*\\S[\\s\\S]*$",
+      "allOf": [{"$ref": "#/$defs/secretFreeText"}]
+    },
+    "fullTextCoverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "label", "page_count", "extracted_page_count"],
+      "properties": {
+        "kind": {"const": "full_text"},
+        "label": {
+          "enum": ["公開PDF本文から生成", "Generated from the public PDF full text"]
+        },
+        "page_count": {"type": "integer", "minimum": 1, "maximum": 128},
+        "extracted_page_count": {"type": "integer", "minimum": 1, "maximum": 128}
+      }
+    },
+    "abstractOnlyCoverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "label", "page_count", "extracted_page_count"],
+      "properties": {
+        "kind": {"const": "abstract_only"},
+        "label": {
+          "enum": [
+            "要旨のみから生成。論文全文の要約ではありません",
+            "Generated from the abstract only. This is not a summary of the full paper."
+          ]
+        },
+        "page_count": {"type": "null"},
+        "extracted_page_count": {"type": "null"}
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "authors",
+        "landing_url",
+        "pdf_sha256",
+        "access",
+        "license",
+        "license_evidence_url",
+        "fetched_at"
+      ],
+      "properties": {
+        "title": {"$ref": "#/$defs/generatedText1000"},
+        "authors": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 100,
+          "items": {"$ref": "#/$defs/generatedText300"}
+        },
+        "landing_url": {"$ref": "#/$defs/httpsUrl"},
+        "pdf_sha256": {
+          "anyOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]
+        },
+        "access": {"enum": ["open_access", "unknown"]},
+        "license": {"$ref": "#/$defs/generatedText256"},
+        "license_evidence_url": {
+          "anyOf": [{"type": "null"}, {"$ref": "#/$defs/httpsUrl"}]
+        },
+        "fetched_at": {
+          "anyOf": [{"type": "null"}, {"$ref": "#/$defs/utcTimestamp"}]
+        }
+      }
+    },
+    "generator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "producer",
+        "version",
+        "extractor",
+        "provider",
+        "model",
+        "prompt_version",
+        "schema_version"
+      ],
+      "properties": {
+        "producer": {"const": "paperpilot.paper_slides"},
+        "version": {"$ref": "#/$defs/generatedText128"},
+        "extractor": {"$ref": "#/$defs/generatedText256"},
+        "provider": {"$ref": "#/$defs/generatedText128"},
+        "model": {"$ref": "#/$defs/generatedText256"},
+        "prompt_version": {"const": "paper-slide-v1"},
+        "schema_version": {"const": "slide-deck-v1"}
+      }
+    },
+    "slide": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["slide_id", "kind", "title", "bullets", "visual", "speaker_notes"],
+      "properties": {
+        "slide_id": {"type": "string", "pattern": "^s(?:0[1-9]|1[0-2])$"},
+        "kind": {
+          "enum": ["title", "problem", "method", "evidence", "limitations", "conclusion", "context"]
+        },
+        "title": {"$ref": "#/$defs/generatedText300"},
+        "bullets": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {"$ref": "#/$defs/bullet"}
+        },
+        "visual": {
+          "oneOf": [
+            {"$ref": "#/$defs/noVisual"},
+            {"$ref": "#/$defs/generatedDiagram"}
+          ]
+        },
+        "speaker_notes": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {"$ref": "#/$defs/speakerNote"}
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "enum": ["problem", "method", "evidence", "limitations", "conclusion", "context"]
+              }
+            },
+            "required": ["kind"]
+          },
+          "then": {
+            "properties": {
+              "bullets": {
+                "minItems": 1,
+                "contains": {
+                  "type": "object",
+                  "required": ["citation_ids"],
+                  "properties": {"citation_ids": {"minItems": 1}}
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "citationIdList": {
+      "type": "array",
+      "maxItems": 16,
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^c(?:0[1-9]|[1-9][0-9])$"}
+    },
+    "bullet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text", "citation_ids", "content_origin"],
+      "properties": {
+        "text": {"$ref": "#/$defs/generatedText800"},
+        "citation_ids": {"$ref": "#/$defs/citationIdList"},
+        "content_origin": {"enum": ["paper", "lineage"]}
+      }
+    },
+    "speakerNote": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text", "citation_ids"],
+      "properties": {
+        "text": {"$ref": "#/$defs/generatedText2000"},
+        "citation_ids": {
+          "allOf": [{"$ref": "#/$defs/citationIdList"}, {"minItems": 1}]
+        }
+      }
+    },
+    "noVisual": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "alt", "spec"],
+      "properties": {
+        "kind": {"const": "none"},
+        "alt": {"type": "null"},
+        "spec": {"type": "null"}
+      }
+    },
+    "generatedDiagram": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "alt", "spec"],
+      "properties": {
+        "kind": {"const": "generated_diagram"},
+        "alt": {"$ref": "#/$defs/generatedText800"},
+        "spec": {"$ref": "#/$defs/generatedText4000"}
+      }
+    },
+    "pdfPageCitation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "citation_id",
+        "source_kind",
+        "page",
+        "chunk_id",
+        "chunk_sha256",
+        "source_anchor"
+      ],
+      "properties": {
+        "citation_id": {"type": "string", "pattern": "^c(?:0[1-9]|[1-9][0-9])$"},
+        "source_kind": {"const": "pdf_page"},
+        "page": {"type": "integer", "minimum": 1, "maximum": 128},
+        "chunk_id": {"type": "string", "pattern": "^p(?:00[1-9]|0[1-9][0-9]|1[01][0-9]|12[0-8])-c(?:0[1-9]|[1-9][0-9])$"},
+        "chunk_sha256": {"$ref": "#/$defs/sha256"},
+        "source_anchor": {"$ref": "#/$defs/httpsUrl"}
+      }
+    },
+    "abstractCitation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "citation_id",
+        "source_kind",
+        "page",
+        "chunk_id",
+        "chunk_sha256",
+        "source_anchor"
+      ],
+      "properties": {
+        "citation_id": {"type": "string", "pattern": "^c(?:0[1-9]|[1-9][0-9])$"},
+        "source_kind": {"const": "abstract"},
+        "page": {"type": "null"},
+        "chunk_id": {"const": "abstract"},
+        "chunk_sha256": {"$ref": "#/$defs/sha256"},
+        "source_anchor": {"$ref": "#/$defs/httpsUrl"}
+      }
+    },
+    "lineageAssertionCitation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "citation_id",
+        "source_kind",
+        "page",
+        "artifact_path",
+        "claim_id",
+        "artifact_sha256",
+        "quality_path",
+        "quality_sha256",
+        "source_anchor"
+      ],
+      "properties": {
+        "citation_id": {"type": "string", "pattern": "^c(?:0[1-9]|[1-9][0-9])$"},
+        "source_kind": {"const": "lineage_assertion"},
+        "page": {"type": "null"},
+        "artifact_path": {"$ref": "#/$defs/sameOriginJsonPath"},
+        "claim_id": {"type": "string", "pattern": "^claim:[0-9a-f]{64}$"},
+        "artifact_sha256": {"$ref": "#/$defs/sha256"},
+        "quality_path": {"$ref": "#/$defs/sameOriginJsonPath"},
+        "quality_sha256": {"$ref": "#/$defs/sha256"},
+        "source_anchor": {"$ref": "#/$defs/sameOriginAnchor"}
+      }
+    },
+    "provisionalReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "review_record"],
+      "properties": {
+        "status": {"const": "provisional"},
+        "review_record": {"type": "null"}
+      }
+    },
+    "reviewedReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "review_record"],
+      "properties": {
+        "status": {"const": "reviewed"},
+        "review_record": {"$ref": "#/$defs/sameOriginJsonPath"}
+      }
+    }
+  }
+}

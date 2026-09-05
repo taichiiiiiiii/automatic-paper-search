@@ -63,16 +63,24 @@ function extractConst(src, name) {
 
 const code = [
   extractConst(themeSrc, "PROGRESS_STEPS"),
+  extractConst(themeSrc, "REQUEST_ID_RE"),
   extractFunction(themeSrc, "failureFromRun"),
   extractFunction(themeSrc, "progressPercentFor"),
+  extractFunction(themeSrc, "statusUrlForRequest"),
   // Return the helpers as a record so the caller picks them up cleanly
   // — avoids the TDZ surprises that bite eval-into-let scoping in ESM.
-  "return { PROGRESS_STEPS, failureFromRun, progressPercentFor };",
+  "return { PROGRESS_STEPS, REQUEST_ID_RE, failureFromRun, progressPercentFor, statusUrlForRequest };",
 ].join("\n");
 
 // new Function gives us a fresh function scope with no TDZ traps.
 const helpers = new Function(code)();
-const { PROGRESS_STEPS, failureFromRun, progressPercentFor } = helpers;
+const {
+  PROGRESS_STEPS,
+  REQUEST_ID_RE,
+  failureFromRun,
+  progressPercentFor,
+  statusUrlForRequest,
+} = helpers;
 
 // ---- mini assertion harness ----
 let passed = 0;
@@ -121,6 +129,19 @@ for (let i = 1; i < PROGRESS_STEPS.length; i++) {
 }
 ok(progressPercentFor("unknown-step") === 0,
    "unknown step falls back to 0% (defensive)");
+
+console.log("\nrequest ID polling");
+const requestId = "theme-123e4567-e89b-42d3-a456-426614174000";
+ok(REQUEST_ID_RE.test(requestId), "generated request ID format is accepted");
+ok(statusUrlForRequest("https://worker.example/", requestId) ===
+   `https://worker.example/api/themes/status?request_id=${requestId}`,
+   "status polling uses request_id and normalises trailing slash");
+ok(statusUrlForRequest("https://worker.example", "bad") === null,
+   "malformed request ID cannot trigger status polling");
+ok(statusUrlForRequest("https://worker.example", `${requestId}\n`) === null,
+   "line-terminated request ID cannot trigger status polling");
+ok(statusUrlForRequest("", requestId) === null,
+   "missing API base disables status polling");
 
 console.log("\nfailureFromRun");
 ok(failureFromRun(null) === null, "null run → null");

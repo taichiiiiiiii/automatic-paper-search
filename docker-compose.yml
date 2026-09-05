@@ -1,12 +1,128 @@
+x-python-build-args: &python-build-args
+  PYTHON_BASE: ${PAPERPILOT_PYTHON_BASE:?Set an approved docker.io/library/python@sha256 reference}
+  UV_BASE: ${PAPERPILOT_UV_BASE:?Set an approved ghcr.io/astral-sh/uv@sha256 reference}
+
+x-node-build-args: &node-build-args
+  NODE_BASE: ${PAPERPILOT_NODE_BASE:?Set an approved docker.io/library/node@sha256 reference}
+
+x-runtime-security: &runtime-security
+  read_only: true
+  cap_drop:
+    - ALL
+  security_opt:
+    - no-new-privileges:true
+  pids_limit: 128
+  mem_limit: 1g
+  cpus: 1.0
+  tmpfs:
+    - /tmp:rw,noexec,nosuid,nodev,size=64m,mode=1777
+  ulimits:
+    core: 0
+    nofile:
+      soft: 1024
+      hard: 1024
+
 services:
-  paperpilot:
-    build: .
-    image: paperpilot:latest
-    env_file:
-      - paperpilot/.env
+  collector:
+    <<: *runtime-security
+    platform: ${PAPERPILOT_PLATFORM:?Set linux/amd64 or linux/arm64/v8}
+    build:
+      context: .
+      target: collector
+      args: *python-build-args
+    image: paperpilot-collector:${PAPERPILOT_IMAGE_TAG:-local}
+    pull_policy: never
+    user: "65532:65532"
+    restart: "no"
+    init: true
+    environment:
+      HOME: /tmp
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONHASHSEED: "0"
+      PYTHONUNBUFFERED: "1"
     volumes:
-      - ./paperpilot/output:/app/paperpilot/output
-      - ./paperpilot/data:/app/paperpilot/data
-      - ./paperpilot/logs:/app/paperpilot/logs
-      - ./paperpilot/config.yaml:/app/paperpilot/config.yaml:ro
-    command: ["--config", "paperpilot/config.yaml"]
+      - paperpilot-output:/workspace/paperpilot/output
+      - paperpilot-data:/workspace/paperpilot/data
+      - paperpilot-logs:/workspace/paperpilot/logs
+      - ./paperpilot/config.yaml:/etc/paperpilot/config.yaml:ro
+
+  ops:
+    <<: *runtime-security
+    profiles:
+      - ops
+    platform: ${PAPERPILOT_PLATFORM:?Set linux/amd64 or linux/arm64/v8}
+    build:
+      context: .
+      target: ops
+      args: *python-build-args
+    image: paperpilot-ops:${PAPERPILOT_IMAGE_TAG:-local}
+    pull_policy: never
+    user: "65532:65532"
+    restart: "no"
+    init: true
+    network_mode: none
+    volumes:
+      - ./docs:/workspace/docs
+      - ./paperpilot/data:/workspace/paperpilot/data
+      - paperpilot-output:/workspace/paperpilot/output:rw
+
+  test:
+    <<: *runtime-security
+    profiles:
+      - test
+    platform: ${PAPERPILOT_PLATFORM:?Set linux/amd64 or linux/arm64/v8}
+    build:
+      context: .
+      target: test
+      args: *python-build-args
+    image: paperpilot-test:${PAPERPILOT_IMAGE_TAG:-local}
+    pull_policy: never
+    user: "65532:65532"
+    restart: "no"
+    init: true
+    network_mode: none
+    # Git-hook and fake-runtime fixtures must be executable. This is the only
+    # target whose bounded /tmp deliberately does not use noexec.
+    tmpfs:
+      - /tmp:rw,exec,nosuid,nodev,size=128m,mode=1777
+
+  node-test:
+    <<: *runtime-security
+    profiles:
+      - test
+    platform: ${PAPERPILOT_PLATFORM:?Set linux/amd64 or linux/arm64/v8}
+    build:
+      context: .
+      dockerfile: docker/node-test.Dockerfile
+      target: node-test
+      args: *node-build-args
+    image: paperpilot-node-test:${PAPERPILOT_IMAGE_TAG:-local}
+    pull_policy: never
+    user: "65532:65532"
+    restart: "no"
+    init: true
+    network_mode: none
+
+  site-preview:
+    <<: *runtime-security
+    profiles:
+      - preview
+    platform: ${PAPERPILOT_PLATFORM:?Set linux/amd64 or linux/arm64/v8}
+    build:
+      context: .
+      target: site-preview
+      args: *python-build-args
+    image: paperpilot-site-preview:${PAPERPILOT_IMAGE_TAG:-local}
+    pull_policy: never
+    user: "65532:65532"
+    restart: "no"
+    init: true
+    volumes:
+      - ./docs:/site/automatic-paper-search:ro
+    ports:
+      - 127.0.0.1:${PAPERPILOT_PREVIEW_PORT:-8137}:8000
+
+volumes:
+  paperpilot-output:
+  paperpilot-data:
+  paperpilot-logs:

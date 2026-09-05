@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#fbf9f5" />
-  <title>PaperPilot — AI 論文を横断検索。トップ会議 10 学会・28,000 本から系譜を辿る</title>
-  <meta name="description" content="AI/ML トップ会議 10 学会・28,000 本以上の採択論文を横断検索。気になるテーマで系譜を生成し、引用の世代を超えたつながりを辿れます。" />
+  <title>PaperPilot — AI 論文を横断検索。トップ会議 10 学会・28,000 本から探す</title>
+  <meta name="description" content="AI/ML トップ会議 10 学会・28,000 本以上の採択論文を、タイトル・著者・タグから横断検索できます。" />
 
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'" />
 
@@ -13,18 +13,18 @@
 
   <meta property="og:url" content="https://taichiiiiiiii.github.io/automatic-paper-search/" />
   <meta property="og:title" content="PaperPilot — AI 論文を横断検索" />
-  <meta property="og:description" content="AI/ML トップ会議 10 学会・28,000 本以上の採択論文から、気になるテーマで系譜を生成。引用の世代を超えたつながりを辿れます。" />
+  <meta property="og:description" content="AI/ML トップ会議 10 学会・28,000 本以上の採択論文を、タイトル・著者・タグから横断検索できます。" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="PaperPilot" />
   <meta property="og:locale" content="ja_JP" />
   <meta property="og:image" content="https://taichiiiiiiii.github.io/automatic-paper-search/assets/og-image.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="PaperPilot — AI 論文の横断検索と系譜ビューア" />
+  <meta property="og:image:alt" content="PaperPilot — AI 論文の横断検索" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:image" content="https://taichiiiiiiii.github.io/automatic-paper-search/assets/og-image.png" />
   <meta name="twitter:title" content="PaperPilot — AI 論文を横断検索" />
-  <meta name="twitter:description" content="AI/ML トップ会議 10 学会・28,000 本以上の採択論文から、気になるテーマで系譜を生成。引用の世代を超えたつながりを辿れます。" />
+  <meta name="twitter:description" content="AI/ML トップ会議 10 学会・28,000 本以上の採択論文を、タイトル・著者・タグから横断検索できます。" />
 
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png" />
@@ -35,7 +35,7 @@
     "@type": "WebSite",
     "name": "PaperPilot",
     "url": "https://taichiiiiiiii.github.io/automatic-paper-search/",
-    "description": "AI/ML トップ会議の採択論文を横断検索し、系譜（引用関係の家系図）を辿れるツール",
+    "description": "AI/ML トップ会議の採択論文をタイトル・著者・タグから横断検索できるツール",
     "inLanguage": "ja",
     "potentialAction": {
       "@type": "SearchAction",
@@ -49,7 +49,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=optional" rel="stylesheet" />
 
-  <link rel="stylesheet" href="assets/style.css?v=97" />
+  <link rel="stylesheet" href="assets/style.css?v=105" />
   <style>
     /* ============================================================
        S0 landing — search-first composition.
@@ -156,6 +156,101 @@
       outline-offset: 2px;
     }
 
+    /* Full search results use normal document flow and remain reachable
+       beyond the 20-item combobox preview. */
+    .s0-results {
+      margin-top: clamp(2rem, 1.2rem + 3vw, 3.5rem);
+      border-top: 1px solid var(--color-rule);
+      padding-top: 1.4rem;
+    }
+    .s0-results[hidden] { display: none; }
+    .s0-results__heading,
+    .s0__lineages-heading {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-size: clamp(1.35rem, 1.1rem + 1vw, 1.8rem);
+      font-weight: 500;
+      font-variation-settings: "opsz" 28;
+    }
+    .s0-results__summary {
+      margin: 0.3rem 0 1rem;
+      color: var(--color-ink-subtle);
+      font-family: var(--font-mono);
+      font-size: var(--text-caption);
+    }
+    .s0-results__list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      border-top: 1px solid var(--color-rule);
+    }
+    .s0-results__item { border-bottom: 1px solid var(--color-rule); }
+    .s0-results__link {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 0.2rem 1rem;
+      padding: 0.9rem 0.35rem;
+      color: var(--color-ink);
+      text-decoration: none;
+    }
+    .s0-results__link:hover { background: var(--color-surface-2); text-decoration: none; }
+    .s0-results__pagination {
+      min-height: 44px;
+      margin-top: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      font-family: var(--font-mono);
+      font-size: var(--text-meta);
+    }
+    .s0-results__pager-link {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+      padding: 0.45rem 0.7rem;
+    }
+    .s0-results__page-position { color: var(--color-ink-subtle); }
+
+    /* Only audit-passed lineages are linked from this normal shelf. */
+    .s0__lineages {
+      margin-top: clamp(2.5rem, 1.5rem + 3vw, 4rem);
+      border-top: 1px solid var(--color-rule);
+      padding-top: 1.4rem;
+    }
+    .s0__lineages-list {
+      list-style: none;
+      margin: 0.9rem 0 0;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+      gap: 0.75rem;
+    }
+    .s0__lineage {
+      display: grid;
+      gap: 0.2rem;
+      padding: 0.85rem;
+      background: var(--color-surface-elevated);
+      border: 1px solid var(--color-rule);
+      border-radius: 3px;
+    }
+    .s0__lineage-link {
+      font-family: var(--font-serif);
+      font-size: var(--text-card-title);
+      color: var(--color-ink);
+    }
+    .s0__lineage-meta,
+    .s0__lineage-stale {
+      font-family: var(--font-mono);
+      font-size: var(--text-caption);
+      color: var(--color-ink-subtle);
+    }
+    .s0__lineage-stale { color: var(--color-oral-ink); }
+    .s0__lineage-empty {
+      padding: 0.9rem 0;
+      color: var(--color-ink-muted);
+    }
+
     /* Collapsible conference list. The <button> carries aria-expanded;
        the list is a plain <ul> with aria-labelledby. 既定で閉。 */
     .s0__confs {
@@ -200,7 +295,8 @@
       padding: 0;
       display: grid;
       grid-template-columns: minmax(0, 1fr);
-      gap: 0;
+      column-gap: clamp(1.25rem, 3vw, 2.5rem);
+      row-gap: 0;
     }
     @media (min-width: 640px) {
       .s0__confs-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -272,17 +368,13 @@
       gap: 0.4rem 1.2rem;
     }
 
-    /* While search results are visible the collapsible retreats —
-       the page becomes single-purpose (search). Toggled by inline
-       script based on .site-search__results[hidden]. */
-    .s0__confs.is-hidden-by-search { display: none; }
-
     /* Narrow viewports: tighten spacing, drop the serif display
        proportion so the lede fits without wrapping awkwardly. */
     @media (max-width: 480px) {
       .s0 { padding-top: clamp(1.4rem, 1rem + 2vw, 2rem); }
       .s0__lede { font-size: 1rem; }
       .s0__conf-link { font-size: 0.92rem; }
+      .s0-results__link { grid-template-columns: minmax(0, 1fr); }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -303,19 +395,20 @@
   </nav>
 
   <main id="main-content" class="s0">
+    <h1 class="visually-hidden">PaperPilot AI 論文検索</h1>
     <!-- 1-sentence intro. The two numerals (N conferences / M papers)
          are filled by the external landing script from conferences.json; the
          <noscript> fallback is the same sentence without numerals so
          a JS-disabled visitor still gets a truthful statement. -->
     <p class="s0__lede" id="s0-lede">
-      <em>AI トップ会議</em> <span class="s0__n" id="s0-n">10</span> 学会・<span class="s0__n" id="s0-m">28,000</span> 本から探して、研究の系譜を辿る。
+      <em>AI トップ会議</em> <span class="s0__n" id="s0-n">10</span> 学会・<span class="s0__n" id="s0-m">28,000</span> 本から探す。<span id="s0-lineage-note">系譜データは現在公開準備中です。</span>
     </p>
 
     <!-- Search form. search.js owns the combobox behaviour. Focus on
          load is applied by landing.js only for fine-pointer devices,
          so mobile visitors don't get their keyboard yanked open. -->
     <form class="site-search" role="search" data-search autocomplete="off">
-      <label class="site-search__label" for="s0-search-input">論文タイトルで横断検索</label>
+      <label class="site-search__label" for="s0-search-input">タイトル・著者・タグで横断検索</label>
       <input
         id="s0-search-input"
         class="site-search__input"
@@ -331,7 +424,9 @@
         spellcheck="false"
       />
       <p class="site-search__status" id="s0-search-status" role="status"></p>
+      <button type="button" class="site-search__retry" id="s0-search-retry" hidden>再試行</button>
       <ul class="site-search__results" id="s0-search-listbox" role="listbox" aria-label="検索結果" tabindex="-1" hidden></ul>
+      <a class="site-search__more" id="s0-search-more" href="?q=&amp;page=1" hidden>すべての結果を見る</a>
     </form>
 
     <!-- Example queries. The three chips are real hits in
@@ -345,11 +440,23 @@
       <button type="button" class="s0__chip" data-query="reasoning">reasoning</button>
     </div>
 
-    <!-- Collapsible conference list. 既定で閉 (aria-expanded=false);
-         opened by click. Hidden by inline script while the search
-         has results, restored when the query is cleared or Esc is
-         pressed. Populated from conferences.json by the same inline
-         script, sorted by paper count descending. -->
+    <section class="s0-results" id="s0-results" aria-labelledby="s0-results-heading" aria-busy="false" hidden>
+      <h2 class="s0-results__heading" id="s0-results-heading" tabindex="-1">検索結果</h2>
+      <p class="s0-results__summary" id="s0-results-summary"></p>
+      <ol class="s0-results__list" id="s0-results-list"></ol>
+      <nav class="s0-results__pagination" id="s0-results-pagination" aria-label="検索結果ページ"></nav>
+    </section>
+
+    <section class="s0__lineages" id="s0-lineages" aria-labelledby="s0-lineages-heading">
+      <h2 class="s0__lineages-heading" id="s0-lineages-heading">系譜の公開状況</h2>
+      <p class="visually-hidden" id="s0-lineages-status" role="status">公開条件を満たす系譜は現在ありません。</p>
+      <ul class="s0__lineages-list" id="s0-lineages-list">
+        <li class="s0__lineage-empty">監査済みの系譜は準備中です。学会カタログは通常どおり利用できます。</li>
+      </ul>
+    </section>
+
+    <!-- Collapsible conference list. 既定で閉 (aria-expanded=false),
+         populated from conferences.json and sorted by paper count. -->
     <section class="s0__confs" id="s0-confs">
       <button type="button" class="s0__confs-toggle" id="s0-confs-toggle"
               aria-expanded="false" aria-controls="s0-confs-list">
@@ -371,7 +478,8 @@
     </nav>
   </footer>
 
-  <script src="assets/search.js?v=3" defer></script>
-  <script src="assets/landing.js?v=3" defer></script>
+  <script src="assets/search.js?v=4" defer></script>
+  <script src="assets/lineage-core.js?v=4" defer></script>
+  <script src="assets/landing.js?v=6" defer></script>
 </body>
 </html>

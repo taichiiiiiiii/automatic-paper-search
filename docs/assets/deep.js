@@ -1,16 +1,13 @@
 // Deep lineage viewer — single-paper family tree with multi-hop BFS data.
-// Loads docs/<conf>/deep.json (produced by build_deep_lineage.py).
+// Loads only the filename selected by a validated deep-manifest-v1 entry.
 //
 // Differences vs. lineage.js:
 //   - Only tree layout (no topics/timeline)
 //   - No MAX_DEPTH cap on render — show everything in the data
 //   - Larger node cards with more metadata, height measured at render
 //   - No clustering
-const { escapeHtml, formatStars, loadLineage } = window.PP;
-
-// arXiv id format with optional version suffix. Enforced so user-supplied
-// ?arxiv= values can't be spliced into a fetch URL as path traversal.
-const ARXIV_RE = /^\d{4}\.\d{4,5}(v\d+)?$/;
+const { escapeHtml, formatStars } = window.PP;
+const LineageCore = window.PaperPilotLineageCore;
 
 const NODE_W = 240;
 // Card content varies (193–277 px observed): venues, multi-line titles,
@@ -47,19 +44,34 @@ function loadPrefs() {
 function savePrefs() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      view: state.view,
       visibleRelations: [...state.visibleRelations],
     }));
   } catch { /* disabled */ }
 }
 
 const prefs = loadPrefs();
+const initialParams = new URLSearchParams(window.location.search);
+const urlRelations = (initialParams.get("relations") || "")
+  .split(",")
+  .filter((relation) => ALL_RELATIONS.includes(relation));
 const state = {
   data: null,
   focusId: null,
-  manifest: [],
+  manifest: null,
+  quality: null,
+  manifestSha256: null,
+  currentPaperId: null,
   currentArxivId: null,
+  view: LineageCore.resolveView({
+    urlView: initialParams.get("view"),
+    savedView: prefs?.view,
+    matchMedia: window.matchMedia?.bind(window),
+  }),
   visibleRelations: new Set(
-    Array.isArray(prefs?.visibleRelations) && prefs.visibleRelations.length > 0
+    urlRelations.length > 0
+      ? urlRelations
+      : Array.isArray(prefs?.visibleRelations) && prefs.visibleRelations.length > 0
       ? prefs.visibleRelations.filter((r) => ALL_RELATIONS.includes(r))
       : DEFAULT_RELATIONS
   ),
@@ -74,40 +86,39 @@ const els = {
   ttConf: document.getElementById("tt-conf"),
   filterBar: document.getElementById("relation-filter"),
   picker: document.getElementById("paper-picker"),
+  relationList: document.getElementById("relation-list"),
 };
 
 async function loadManifest() {
-  try {
-    // Default cache — deep-manifest.json only changes when the weekly
-    // collect job adds a new deep view, so the _headers max-age=300
-    // window is more than fast enough.
-    const res = await fetch("deep-manifest.json");
-    if (!res.ok) return [];
-    const data = await res.json();
-    if (!Array.isArray(data)) return [];
-    return data.filter((e) => ARXIV_RE.test(e?.arxiv_id));
-  } catch {
-    return [];
-  }
+  const loaded = await LineageCore.fetchJsonWithSha256("deep-manifest.json");
+  if (!loaded) return null;
+  const manifest = LineageCore.parseDeepManifest(loaded.data);
+  return manifest ? { manifest, sha256: loaded.sha256 } : null;
 }
 
-function arxivIdFromLocation() {
-  const raw = new URLSearchParams(window.location.search).get("arxiv");
-  return raw && ARXIV_RE.test(raw) ? raw : null;
+async function loadQualityManifest() {
+  try {
+    const response = await fetch("../lineage-quality-v1.json", { cache: "no-cache" });
+    if (!response.ok) return null;
+    return LineageCore.parseQualityManifest(await response.json());
+  } catch {
+    return null;
+  }
 }
 
 function renderPicker() {
   if (!els.picker) return;
-  if (state.manifest.length === 0) {
+  const entries = state.manifest?.entries || [];
+  if (entries.length === 0) {
     els.picker.hidden = true;
     return;
   }
   els.picker.hidden = false;
-  els.picker.innerHTML = state.manifest
+  els.picker.innerHTML = entries
     .map((e) => {
       const label = `${e.arxiv_id} — ${e.title || "(untitled)"}`;
-      const selected = e.arxiv_id === state.currentArxivId ? " selected" : "";
-      return `<option value="${escapeHtml(e.arxiv_id)}"${selected}>${escapeHtml(label)}</option>`;
+      const selected = e.paper_id === state.currentPaperId ? " selected" : "";
+      return `<option value="${escapeHtml(e.paper_id)}"${selected}>${escapeHtml(label)}</option>`;
     })
     .join("");
 }
@@ -118,9 +129,11 @@ function bindPicker() {
   if (!els.picker) return;
   els.picker.addEventListener("change", () => {
     const id = els.picker.value;
-    if (!ARXIV_RE.test(id)) return;
+    const entry = LineageCore.resolveManifestEntry(state.manifest, { paper: id });
+    if (!entry) return;
     const url = new URL(window.location.href);
-    url.searchParams.set("arxiv", id);
+    url.searchParams.set("paper", entry.paper_id);
+    url.searchParams.delete("arxiv");
     window.location.href = url.toString();
   });
 }
@@ -141,53 +154,95 @@ async function init() {
   // Same pattern as theme.js / lineage.js: the HTML now ships a
   // `.canvas-loading` element with a spinner; we just hide it once
   // the data resolves.
-  state.manifest = await loadManifest();
-  const requested = arxivIdFromLocation();
-  const known = new Set(state.manifest.map((e) => e.arxiv_id));
+  const [loadedManifest, quality] = await Promise.all([
+    loadManifest(),
+    loadQualityManifest(),
+  ]);
+  state.quality = quality;
+  state.manifestSha256 = loadedManifest?.sha256 || null;
+  if (loadedManifest && quality) {
+    const conference = loadedManifest.manifest.conference;
+    const entries = loadedManifest.manifest.entries.filter((candidate) => {
+      const path = `${conference}/${candidate.filename}`;
+      const row = LineageCore.resolveQualityCollection(quality, {
+        kind: "deep", conference, paperId: candidate.paper_id, path,
+      });
+      return LineageCore.qualityRowIsEligible(row, {
+        manifestSha256: loadedManifest.sha256,
+      });
+    });
+    state.manifest = { ...loadedManifest.manifest, entries };
+  }
+  const params = new URLSearchParams(window.location.search);
+  const requestedPaper = params.get("paper");
+  const requestedArxiv = requestedPaper ? null : params.get("arxiv");
+  const entry = LineageCore.resolveManifestEntry(state.manifest, {
+    paper: requestedPaper,
+    arxiv: requestedArxiv,
+  });
   // A specific paper was requested but it has no pre-built deep tree —
   // e.g. a theme card links here with a non-conference arxiv id (themes
   // viewer papers are virtually never in the conference deep manifest).
   // Previously this SILENTLY fell back to manifest[0], so the page showed
   // a DIFFERENT paper's lineage under the requested id (the user clicked
   // "深掘り: X" and got paper Y). Surface it honestly instead of swapping.
-  if (requested && state.manifest.length > 0 && !known.has(requested)) {
+  if ((requestedPaper || requestedArxiv) && !entry) {
     const canvasLoading = document.getElementById("canvas-loading");
     if (canvasLoading) canvasLoading.hidden = true;
-    renderPicker();
-    showErrorHtml(`
-      <p>この論文（<code>${escapeHtml(requested)}</code>）の深掘り家系図はまだ用意されていません。</p>
-      <p>下の一覧から、用意済みの論文を選べます。</p>
-    `);
     return;
   }
-  // If URL param is valid AND present in manifest, honor it. With NO id,
-  // default to the manifest's first entry (the explorer's landing view).
-  // If the manifest is empty, fall back to the legacy docs/<conf>/deep.json
-  // path for backward compatibility.
-  let targetId = requested && known.has(requested) ? requested : state.manifest[0]?.arxiv_id ?? null;
-  state.currentArxivId = targetId;
+  // With no explicit ID, the first already-validated manifest entry is the
+  // landing view. Raw URL values never become filenames.
+  if (!entry) {
+    const canvasLoading = document.getElementById("canvas-loading");
+    if (canvasLoading) canvasLoading.hidden = true;
+    return;
+  }
+  state.currentPaperId = entry.paper_id;
+  state.currentArxivId = entry.arxiv_id;
 
-  const jsonName = targetId ? `deep-${targetId}.json` : "deep.json";
-  state.data = await loadLineage(jsonName);
+  const jsonName = entry.filename;
+  const artifactPath = `${state.manifest.conference}/${jsonName}`;
+  const qualityRow = LineageCore.resolveQualityCollection(state.quality, {
+    kind: "deep",
+    conference: state.manifest.conference,
+    paperId: entry.paper_id,
+    path: artifactPath,
+  });
+  const loadedArtifact = await LineageCore.fetchJsonWithSha256(jsonName);
+  if (loadedArtifact && LineageCore.qualityRowIsPublishable(qualityRow, {
+    artifactSha256: loadedArtifact.sha256,
+    manifestSha256: state.manifestSha256,
+  })) {
+    state.data = LineageCore.parseArtifact(loadedArtifact.data, { kind: "deep" });
+  }
   const canvasLoading = document.getElementById("canvas-loading");
   if (canvasLoading) canvasLoading.hidden = true;
 
   if (!state.data) {
-    renderPicker();
-    showErrorHtml(`
-      <p><code>${escapeHtml(jsonName)}</code> の読み込みに失敗しました。</p>
-      <p><code>python paperpilot/scripts/build_deep_lineage.py --arxiv-id &lt;id&gt;</code>
-      を実行してから <code>python paperpilot/scripts/generate_deep_manifest.py --docs-dir docs/iclr-2026</code> を実行してください。</p>
-    `);
     return;
   }
 
-  // Focus = the data root (what build_deep_lineage.py marked).
-  state.focusId = state.data.root || state.data.nodes[0]?.id;
-  if (!state.focusId) {
-    showErrorHtml(`<p>表示可能なノードがありません</p>`);
+  const rootFocus = LineageCore.resolveFocus(state.data, entry.paper_id);
+  if (!rootFocus || rootFocus.id !== state.data.root
+      || state.data.meta.seed_paper_id !== entry.paper_id) {
+    showErrorHtml(`<p>manifest と deep lineage の起点IDが一致しません。</p>`);
     return;
   }
+  state.focusId = rootFocus.id;
+  const auditStatus = document.getElementById("lineage-audit-status");
+  const readyUi = document.getElementById("lineage-ready-ui");
+  if (auditStatus) auditStatus.hidden = true;
+  if (readyUi) readyUi.hidden = false;
+  const heroTitle = document.getElementById("lineage-page-title");
+  const heroLede = document.getElementById("lineage-page-lede");
+  const heroNote = document.getElementById("lineage-page-note");
+  const footerHint = document.getElementById("deep-footer-hint");
+  if (heroTitle) heroTitle.textContent = "Deep Lineage — 1 本を深掘り（監査済み）";
+  if (heroLede) heroLede.textContent = "品質監査に合格した論文の深掘り系譜を表示しています。";
+  if (heroNote) heroNote.textContent = "表示中のデータは構造・識別子・関係根拠と入力ハッシュを検証済みです。";
+  if (footerHint) footerHint.textContent = "エッジにホバー → 分類理由 · カードクリック → 中心を切替";
+  bindViewButtons();
 
   renderPicker();
   bindPicker();
@@ -224,8 +279,35 @@ function renderFilterChips() {
     else state.visibleRelations.add(rel);
     btn.setAttribute("aria-pressed", state.visibleRelations.has(rel));
     savePrefs();
+    syncDisplayUrl();
     render();
   });
+}
+
+function bindViewButtons() {
+  for (const button of document.querySelectorAll(".view-btn[data-view]")) {
+    button.addEventListener("click", () => setView(button.dataset.view));
+    button.setAttribute("aria-pressed", String(button.dataset.view === state.view));
+  }
+}
+
+function setView(view) {
+  if (!["list", "graph"].includes(view) || state.view === view) return;
+  state.view = view;
+  for (const button of document.querySelectorAll(".view-btn[data-view]")) {
+    button.setAttribute("aria-pressed", String(button.dataset.view === view));
+  }
+  savePrefs();
+  syncDisplayUrl();
+  render();
+  if (view === "list") els.relationList?.focus({ preventScroll: true });
+}
+
+function syncDisplayUrl() {
+  const url = new URL(window.location.href);
+  url.searchParams.set("view", state.view);
+  url.searchParams.set("relations", [...state.visibleRelations].sort().join(","));
+  window.history.replaceState({}, "", url);
 }
 
 function focusPaper(id) {
@@ -308,16 +390,56 @@ function scrollToFocus(smooth) {
 
 function render() {
   const { nodes, edges } = state.data;
-  const visibleEdges = edges.filter((e) => state.visibleRelations.has(e.rel));
   const positioned = layoutTree(nodes, edges, state.focusId);
+  const activeEdges = LineageCore.selectActiveEdges(
+    edges,
+    state.visibleRelations,
+    new Set(positioned.map((node) => node.id)),
+  );
+  const isList = state.view === "list";
+  els.canvas.hidden = isList;
+  if (els.relationList) els.relationList.hidden = !isList;
+  if (isList) {
+    renderRelationList(activeEdges);
+    return;
+  }
   // drawSvg returns a promise once fonts/layout settle so card heights
   // and edge endpoints align after web fonts finish loading. Surface
   // any unexpected rejection in the console instead of silently
   // dropping it via `void` — a blank graph with no signal is worse
   // than a visible error during development.
-  drawSvg(positioned, visibleEdges).catch((err) => {
+  drawSvg(positioned, activeEdges).catch((err) => {
     console.error("[deep] drawSvg failed:", err);
   });
+}
+
+function renderRelationList(edges) {
+  if (!els.relationList) return;
+  const nodes = new Map(state.data.nodes.map((node) => [node.id, node]));
+  if (edges.length === 0) {
+    els.relationList.innerHTML = `<p class="empty-state">現在の条件で表示できる関係はありません。</p>`;
+    return;
+  }
+  els.relationList.innerHTML = `<ol class="relation-list__items">${edges.map((edge) => {
+    const source = nodes.get(edge.src);
+    const target = nodes.get(edge.dst);
+    const provenance = edge.provenance;
+    const classification = provenance.classification;
+    return `<li class="relation-row">
+      <div class="relation-row__path">
+        <span>${escapeHtml(source?.title || edge.src)}</span>
+        <strong>${escapeHtml(RELATION_LABEL_JA[edge.relation] || edge.relation)}</strong>
+        <span>${escapeHtml(target?.title || edge.dst)}</span>
+      </div>
+      <p class="relation-row__rationale">${escapeHtml(edge.rationale)}</p>
+      <dl class="relation-row__meta">
+        <div><dt>確信度</dt><dd>${Math.round(edge.confidence * 100)}%</dd></div>
+        <div><dt>根拠</dt><dd>${escapeHtml(`${provenance.evidence.source}/${provenance.evidence.kind}`)}</dd></div>
+        <div><dt>生成</dt><dd>${escapeHtml(`${provenance.producer.name}@${provenance.producer.version}`)}</dd></div>
+        <div><dt>分類</dt><dd>${escapeHtml(`${classification.method} · ${classification.model || "非LLM"} · ${classification.schema_version}`)}</dd></div>
+      </dl>
+    </li>`;
+  }).join("")}</ol>`;
 }
 
 // ---------- Tree layout (unbounded depth) ----------
@@ -327,9 +449,10 @@ function layoutTree(nodes, edges, focusId) {
   const children = new Map();
   for (const n of nodes) { parents.set(n.id, []); children.set(n.id, []); }
   for (const e of edges) {
-    if (!GENEALOGY.has(e.rel) && e.rel !== "contrasts" && e.rel !== "baseline_only") continue;
-    parents.get(e.dst)?.push({ id: e.src, rel: e.rel });
-    children.get(e.src)?.push({ id: e.dst, rel: e.rel });
+    if (!GENEALOGY.has(e.relation) && e.relation !== "contrasts"
+        && e.relation !== "baseline_only") continue;
+    parents.get(e.dst)?.push({ id: e.src, rel: e.relation });
+    children.get(e.src)?.push({ id: e.dst, rel: e.relation });
   }
 
   const level = new Map();
@@ -577,26 +700,26 @@ async function drawSvg(positioned, edges) {
     const by = b._y;
     const midY = (ay + by) / 2;
     const d = `M ${ax} ${ay} C ${ax} ${midY}, ${bx} ${midY}, ${bx} ${by}`;
-    const mc = e.rel === "baseline_only" ? "baseline" : e.rel;
+    const mc = e.relation === "baseline_only" ? "baseline" : e.relation;
     const path = document.createElementNS(SVG_NS, "path");
     path.setAttribute("d", d);
     path.setAttribute("class", `edge edge--${mc}`);
     path.setAttribute("marker-end", `url(#arrow-${mc})`);
     // Shared backbone/branch hierarchy (PP.edgeStyle) — opacity + width
     // per relation, matching the theme + conference viewers.
-    const est = PP.edgeStyle(mc, e.conf);
+    const est = PP.edgeStyle(mc, e.confidence);
     if (est) {
       path.style.strokeOpacity = est.opacity;
       path.style.strokeWidth = est.width;
     }
-    path.dataset.rel = e.rel;
+    path.dataset.rel = e.relation;
     path.dataset.rationale = e.rationale || "";
-    path.dataset.conf = e.conf ?? "";
+    path.dataset.conf = e.confidence ?? "";
     path.addEventListener("mouseenter", onEdgeHover);
     path.addEventListener("mousemove", onEdgeMove);
     path.addEventListener("mouseleave", onEdgeLeave);
     eg.appendChild(path);
-    const label = RELATION_LABEL_JA[e.rel];
+    const label = RELATION_LABEL_JA[e.relation];
     if (label) {
       const lx = (ax + bx) / 2, ly = midY;
       const bg = document.createElementNS(SVG_NS, "rect");

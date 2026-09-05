@@ -88,9 +88,13 @@ def test_collect_end_to_end_mocked():
 
 
 def test_rows_write_via_shared_writer(tmp_path: Path):
-    row = cvf.parse_detail(_DETAIL, "https://openaccess.thecvf.com/content/CVPR2025/html/x.html", "CVPR")
+    row = cvf.parse_detail(
+        _DETAIL, "https://openaccess.thecvf.com/content/CVPR2025/html/x.html", "CVPR"
+    )
     csv_path = cc.write_outputs("cvpr-2025", [row], [], output_root=tmp_path, date="2026-06-28")
     with csv_path.open(encoding="utf-8-sig") as f:
         read = list(_csv.DictReader(f))
     assert list(read[0].keys()) == cc._CSV_COLUMNS
     assert read[0]["venue"] == "CVPR"
+    assert read[0]["source"] == "cvf"
+    assert read[0]["source_id"] == "x"

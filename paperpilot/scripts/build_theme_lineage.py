@@ -3,16 +3,14 @@
 Pipeline:
   1. Sanitise the theme (strip control chars, cap length).
   2. Expand the theme into related keywords via AbstractLLMProvider.
-  3. For each keyword, GET S2 ``/paper/search`` → dedupe by paperId →
-     filter by ``--since-year`` → sort by citationCount desc → take
-     ``--seeds`` papers as the focus set.
+  3. For each keyword, discover candidates, then resolve focus identity from
+     exact strong aliases (sidecar first, deterministic native ID otherwise).
   4. BFS ancestors for each seed up to ``--depth`` hops via
      ``build_lineage.fetch_related``.
-  5. Classify each ``(parent, child)`` edge through
-     ``provider.classify_relation``; drop ``unrelated`` and edges with
-     empty rationale (silent tooltips are worse than no edge).
-  6. Sort nodes by year ascending so the chronological viewer's
-     rank-based Y axis renders deterministically.
+  5. Classify each ``(parent, child)`` edge, attach endpoint-bound structured
+     provenance, and use cache v2 for exact LLM replays only.
+  6. Serialize lineage-artifact-v1 in graph-ID/wire-key order, validate, then
+     atomically replace the output.
   7. Write to ``docs/themes/<slug>/lineage.json`` (run
      ``generate_themes_manifest.py`` afterwards to refresh the picker).
 
@@ -31,6 +29,7 @@ import argparse
 import hashlib
 import json
 import math
+import os
 import re
 import sys
 import unicodedata
@@ -47,8 +46,12 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from paperpilot.identity import IdentityError, make_paper_id, normalize_alias  # noqa: E402
 from paperpilot.llm.base import (  # noqa: E402
     AbstractLLMProvider,
+    RelationClassification,
+    build_classify_prompt,
+    provider_model_tag,
 )
 from paperpilot.scripts._common import theme_slug  # noqa: E402
 
@@ -77,13 +80,13 @@ from paperpilot.scripts._lineage_classify import (  # noqa: E402, F401
     _make_derived,
     derive_relation,
 )
-
-# Aliased so the local thin wrapper `_wrap_provider_with_cache` below
-# can bind in the module-level `_CLASSIFICATION_CACHE_PATH` + the
-# `persist_classifications` callable from build_lineage — that's the
-# whole reason this symbol is not in the F401 block above.
-from paperpilot.scripts._lineage_classify import (  # noqa: E402
-    _wrap_provider_with_cache as _wrap_provider_with_cache_impl,
+from paperpilot.scripts._lineage_contract import (  # noqa: E402
+    CLASSIFICATION_METHODS,
+    LINEAGE_ARTIFACT_VERSION,
+    canonical_json_sha256,
+    is_paper_id,
+    make_provenance,
+    validate_lineage_artifact,
 )
 from paperpilot.scripts.build_lineage import (  # noqa: E402
     CACHE_DIR,
@@ -115,6 +118,7 @@ DOCS_ROOT = ROOT / "docs"
 # .gitignore allow this single file to be committed while the rest of
 # paperpilot/data/lineage-cache/ stays untracked.
 _CLASSIFICATION_CACHE_PATH = ROOT / "paperpilot" / "data" / "lineage-cache" / "classifications.json"
+_IDENTITY_ALIASES_PATH = DOCS_ROOT / "identity-aliases-v1.json"
 # Curated denylist of implementation-foundation papers (Adam, PyTorch,
 # Scikit-learn, NumPy, ...) that S2's methodology intent would otherwise
 # drag into every topic. See _is_implementation_foundation.
@@ -123,14 +127,10 @@ _DENYLIST_PATH = ROOT / "paperpilot" / "data" / "lineage_denylist.json"
 # Optional alternate-keyword map used when the primary theme returns 0
 # seeds. Lives in a JSON file so operators can tweak the alias list
 # without editing the script. Loaded once per process.
-_THEME_ALIASES_PATH = (
-    Path(__file__).resolve().parents[1] / "data" / "theme_aliases.json"
-)
+_THEME_ALIASES_PATH = Path(__file__).resolve().parents[1] / "data" / "theme_aliases.json"
 
 # ---- S2 endpoints ----
-_S2_FIELDS_SEARCH = (
-    "paperId,title,year,venue,citationCount,authors,abstract,externalIds"
-)
+_S2_FIELDS_SEARCH = "paperId,title,year,venue,citationCount,authors,abstract,externalIds"
 _S2_SEARCH_URL = "https://api.semanticscholar.org/graph/v1/paper/search"
 _S2_SEARCH_LIMIT = 50
 # Limit search to AI/CS-adjacent fields so the topic-relevance filter
@@ -140,9 +140,7 @@ _S2_SEARCH_LIMIT = 50
 # management, etc — verified on 2026-05-26 post-regen audit). S2
 # documents valid values at /api-docs/graph#tag/Paper-Data — we ship
 # the umbrella ML / AI / DS triplet plus Linguistics for NLP themes.
-_S2_FIELDS_OF_STUDY = (
-    "Computer Science,Mathematics,Linguistics"
-)
+_S2_FIELDS_OF_STUDY = "Computer Science,Mathematics,Linguistics"
 _S2_BATCH_URL = "https://api.semanticscholar.org/graph/v1/paper/batch"
 # /paper/batch caps at 500 ids per call (https://api.semanticscholar.org
 # /api-docs/graph#tag/Paper-Data/operation/post_graph_get_papers); cap our
@@ -237,9 +235,7 @@ _SURVEY_VELOCITY_PENALTY = 0.30
 # long tail of cross-domain leakage where S2's `fieldsOfStudy=Math`
 # accepts microbiome / clinical / homology modelling papers that
 # share generic ML vocabulary. Curated from the 2026-05-27 audit.
-_THEME_BLACKLIST_PATH = (
-    Path(__file__).resolve().parents[1] / "data" / "theme_blacklist.json"
-)
+_THEME_BLACKLIST_PATH = Path(__file__).resolve().parents[1] / "data" / "theme_blacklist.json"
 
 # ---- GitHub stars enrichment ----
 _GITHUB_CACHE_FILE = "github_stars.json"
@@ -248,6 +244,336 @@ _GITHUB_CACHE_TTL_DAYS = 7
 # more than a couple of dozen repos per theme, and the GitHub Search
 # API's unauthenticated quota is 30 req/min.
 _GITHUB_DEFAULT_BUDGET = 80
+
+# P2T wire/cache identity.  These values are intentionally local to the
+# producer: changing any of them invalidates old cache entries rather than
+# silently replaying a classification made under a different contract.
+_PRODUCER_NAME = "paperpilot.scripts.build_theme_lineage"
+_PRODUCER_VERSION = "p2t-v1"
+_PROMPT_VERSION = "relation-prompt-v1"
+_CLASSIFICATION_SCHEMA_VERSION = "relation-classification-v1"
+_CACHE_VERSION = "lineage-classification-cache-v2"
+_CACHE_TTL = timedelta(days=30)
+_CANONICAL_ALIAS_NAMESPACES = frozenset({"arxiv", "openreview", "acl_anthology", "cvf"})
+
+
+def _utc_now() -> datetime:
+    return datetime.now(timezone.utc)
+
+
+def _iso_z(value: datetime) -> str:
+    return value.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+
+
+def _load_identity_aliases(path: Path | None = None) -> dict[tuple[str, str], set[str]]:
+    """Load exact aliases as a multi-map so ambiguous sidecars fail closed."""
+
+    alias_path = path or _IDENTITY_ALIASES_PATH
+    if not alias_path.exists():
+        return {}
+    try:
+        rows = json.loads(alias_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ValueError(f"identity aliases are unreadable: {alias_path}") from exc
+    if not isinstance(rows, list):
+        raise ValueError("identity-aliases-v1.json must be an array")
+
+    aliases: dict[tuple[str, str], set[str]] = {}
+    for index, row in enumerate(rows):
+        if not (
+            isinstance(row, list) and len(row) == 3 and all(isinstance(value, str) for value in row)
+        ):
+            raise ValueError(f"identity alias row {index} must be [namespace,id,paper_id]")
+        namespace, source_id, paper_id = row
+        try:
+            key = normalize_alias(namespace, source_id)
+        except IdentityError as exc:
+            raise ValueError(f"identity alias row {index} is invalid") from exc
+        if not is_paper_id(paper_id):
+            raise ValueError(f"identity alias row {index} has invalid paper_id")
+        aliases.setdefault(key, set()).add(paper_id)
+    return aliases
+
+
+def _declared_alias_values(paper: dict[str, Any]) -> list[tuple[str, str]]:
+    """Return every exact normalized identity alias declared by a source row.
+
+    Semantic Scholar and OpenAlex graph IDs are deliberately ignored.  A
+    malformed value in a recognized alias field is an identity error rather
+    than permission to fall back to title/year.
+    """
+
+    raw: list[tuple[str, object]] = []
+    external = paper.get("externalIds")
+    if external is not None and not isinstance(external, dict):
+        raise ValueError("externalIds must be an object when present")
+    external = external or {}
+    external_keys = {
+        "ArXiv": "arxiv",
+        "arxiv": "arxiv",
+        "OpenReview": "openreview",
+        "openreview": "openreview",
+        "ACL": "acl_anthology",
+        "ACLAnthology": "acl_anthology",
+        "acl_anthology": "acl_anthology",
+        "CVF": "cvf",
+        "cvf": "cvf",
+        "DOI": "doi",
+        "doi": "doi",
+    }
+    for key, namespace in external_keys.items():
+        if key in external and external[key] not in (None, ""):
+            raw.append((namespace, external[key]))
+    direct_keys = {
+        "arxiv_id": "arxiv",
+        "openreview_id": "openreview",
+        "acl_anthology_id": "acl_anthology",
+        "cvf_id": "cvf",
+        "doi": "doi",
+    }
+    for key, namespace in direct_keys.items():
+        if key in paper and paper[key] not in (None, ""):
+            raw.append((namespace, paper[key]))
+    declared_aliases = paper.get("aliases")
+    if declared_aliases is not None:
+        if not isinstance(declared_aliases, list):
+            raise ValueError("aliases must be an array when present")
+        for alias in declared_aliases:
+            if not (
+                isinstance(alias, (list, tuple))
+                and len(alias) == 2
+                and all(isinstance(value, str) for value in alias)
+            ):
+                raise ValueError("each alias must be [namespace, source_id]")
+            namespace, source_id = alias
+            if namespace.strip().lower() in _CANONICAL_ALIAS_NAMESPACES | {"doi"}:
+                raw.append((namespace, source_id))
+    if paper.get("source") is not None or paper.get("source_id") is not None:
+        source, source_id = paper.get("source"), paper.get("source_id")
+        if not isinstance(source, str) or not isinstance(source_id, str):
+            raise ValueError("source/source_id must both be strings")
+        if source.strip().lower() in _CANONICAL_ALIAS_NAMESPACES:
+            raw.append((source, source_id))
+
+    normalized: set[tuple[str, str]] = set()
+    for namespace, value in raw:
+        if not isinstance(value, str):
+            raise ValueError(f"{namespace} alias must be a string")
+        try:
+            normalized.add(normalize_alias(namespace, value))
+        except IdentityError as exc:
+            raise ValueError(f"invalid {namespace} alias: {value!r}") from exc
+    return sorted(normalized)
+
+
+def _to_theme_node(
+    paper: dict[str, Any],
+    *,
+    focus: bool = False,
+    trending: bool = False,
+) -> dict[str, Any]:
+    """Serialize a graph node while preserving its normalized strong aliases."""
+
+    node = to_node(paper, focus=focus, trending=trending)
+    aliases = _declared_alias_values(paper)
+    if aliases:
+        node["aliases"] = [list(alias) for alias in aliases]
+    return node
+
+
+def _resolve_seed_paper_id(
+    paper: dict[str, Any],
+    alias_index: dict[tuple[str, str], set[str]],
+) -> tuple[str | None, tuple[tuple[str, str], ...]]:
+    """Resolve one focus candidate without using title/year or graph IDs."""
+
+    aliases = tuple(_declared_alias_values(paper))
+    canonical_aliases = [alias for alias in aliases if alias[0] in _CANONICAL_ALIAS_NAMESPACES]
+    resolved: set[str] = set()
+    for alias in aliases:
+        matches = alias_index.get(alias, set())
+        if len(matches) > 1:
+            raise ValueError(f"ambiguous identity alias {alias[0]}:{alias[1]}")
+        if matches:
+            resolved.update(matches)
+        elif alias[0] in _CANONICAL_ALIAS_NAMESPACES:
+            resolved.add(make_paper_id(*alias))
+        # DOI may join through the sidecar, but never creates a new ID.
+    if len(resolved) > 1:
+        pid = paper.get("paperId")
+        raise ValueError(f"conflicting canonical seed IDs for {pid!r}")
+    seed_paper_id = next(iter(resolved), None)
+    declared_seed = paper.get("seed_paper_id")
+    if declared_seed is not None and (
+        not is_paper_id(declared_seed) or declared_seed != seed_paper_id
+    ):
+        raise ValueError("declared seed_paper_id does not match exact aliases")
+    if not canonical_aliases and seed_paper_id is None:
+        return None, aliases
+    return seed_paper_id, aliases
+
+
+def _candidate_rank(paper: dict[str, Any]) -> tuple[int, str]:
+    graph_id = paper.get("paperId") or paper.get("id") or ""
+    citations = paper.get("citationCount")
+    if citations is None:
+        citations = paper.get("citation_count")
+    try:
+        count = int(citations or 0)
+    except (TypeError, ValueError):
+        count = 0
+    return (-count, str(graph_id))
+
+
+def _resolve_and_dedup_seeds(
+    seeds: list[dict[str, Any]],
+    alias_index: dict[tuple[str, str], set[str]],
+) -> tuple[list[dict[str, Any]], dict[str, str]]:
+    """Keep resolvable focus candidates and dedup only exact identities."""
+
+    resolved_rows: list[tuple[dict[str, Any], str, tuple[tuple[str, str], ...]]] = []
+    for paper in seeds:
+        graph_id = paper.get("paperId")
+        if not isinstance(graph_id, str) or not graph_id:
+            continue
+        seed_paper_id, aliases = _resolve_seed_paper_id(paper, alias_index)
+        if seed_paper_id is not None:
+            resolved_rows.append((paper, seed_paper_id, aliases))
+
+    survivors: list[dict[str, Any]] = []
+    seed_by_graph_id: dict[str, str] = {}
+    occupied: dict[tuple[str, str], tuple[str, str]] = {}
+    for paper, seed_paper_id, aliases in sorted(
+        resolved_rows, key=lambda row: _candidate_rank(row[0])
+    ):
+        graph_id = str(paper["paperId"])
+        keys = {("graph", graph_id), ("seed", seed_paper_id), *aliases}
+        collisions = {occupied[key] for key in keys if key in occupied}
+        if collisions:
+            survivor_ids = {item[0] for item in collisions}
+            survivor_seeds = {item[1] for item in collisions}
+            if len(survivor_ids) != 1 or survivor_seeds != {seed_paper_id}:
+                raise ValueError(f"conflicting seed identity for {graph_id!r}")
+            continue
+        survivors.append(paper)
+        seed_by_graph_id[graph_id] = seed_paper_id
+        for key in keys:
+            occupied[key] = (graph_id, seed_paper_id)
+    return survivors, seed_by_graph_id
+
+
+def _heuristic_evidence_input(
+    *,
+    src_id: str,
+    dst_id: str,
+    parent: dict[str, Any],
+    child: dict[str, Any],
+    intent_record: dict[str, Any],
+) -> dict[str, Any]:
+    def fields(paper: dict[str, Any]) -> dict[str, Any]:
+        return {
+            "title": paper.get("title"),
+            "year": paper.get("year"),
+            "citations": paper.get("citationCount", paper.get("citation_count")),
+        }
+
+    return {
+        "src": src_id,
+        "dst": dst_id,
+        "parent": fields(parent),
+        "child": fields(child),
+        "intent_record": {
+            **fields(intent_record),
+            "intents": intent_record.get("_intents"),
+            "contexts": intent_record.get("_contexts"),
+            "is_influential": intent_record.get("_is_influential"),
+        },
+    }
+
+
+def _classification_provenance(
+    classification: dict[str, Any],
+    *,
+    src_id: str,
+    dst_id: str,
+    parent: dict[str, Any],
+    child: dict[str, Any],
+    intent_record: dict[str, Any],
+    provider: AbstractLLMProvider | None,
+) -> dict[str, Any]:
+    method = str(classification.get("provenance") or "")
+    if method == "llm":
+        system, user = build_classify_prompt(parent, child)
+        evidence_sha256 = canonical_json_sha256(
+            {"src": src_id, "dst": dst_id, "system": system, "user": user}
+        )
+        return make_provenance(
+            producer_name=_PRODUCER_NAME,
+            producer_version=_PRODUCER_VERSION,
+            evidence_source="semantic_scholar",
+            evidence_kind="relation-input",
+            evidence_sha256=evidence_sha256,
+            method="llm",
+            provider=str(getattr(provider, "name", "unknown")),
+            model=provider_model_tag(provider),
+            prompt_version=_PROMPT_VERSION,
+            classification_schema_version=_CLASSIFICATION_SCHEMA_VERSION,
+        )
+    if method not in CLASSIFICATION_METHODS:
+        raise ValueError(f"unsupported heuristic provenance method: {method!r}")
+    evidence_sha256 = canonical_json_sha256(
+        _heuristic_evidence_input(
+            src_id=src_id,
+            dst_id=dst_id,
+            parent=parent,
+            child=child,
+            intent_record=intent_record,
+        )
+    )
+    return make_provenance(
+        producer_name=_PRODUCER_NAME,
+        producer_version=_PRODUCER_VERSION,
+        evidence_source="unarxive" if method == "context_pattern" else "semantic_scholar",
+        evidence_kind="citation-context" if method == "context_pattern" else "citation-metadata",
+        evidence_sha256=evidence_sha256,
+        method=method,
+        provider=None,
+        model=None,
+        prompt_version=None,
+        classification_schema_version=_CLASSIFICATION_SCHEMA_VERSION,
+    )
+
+
+def _make_edge(
+    classification: dict[str, Any],
+    *,
+    src_id: str,
+    dst_id: str,
+    parent: dict[str, Any],
+    child: dict[str, Any],
+    intent_record: dict[str, Any],
+    provider: AbstractLLMProvider | None,
+) -> dict[str, Any]:
+    relation = classification["relation"]
+    confidence = classification["confidence"]
+    return {
+        "src": src_id,
+        "dst": dst_id,
+        "rel": relation,
+        "relation": relation,
+        "conf": confidence,
+        "confidence": confidence,
+        "rationale": classification["rationale"],
+        "provenance": _classification_provenance(
+            classification,
+            src_id=src_id,
+            dst_id=dst_id,
+            parent=parent,
+            child=child,
+            intent_record=intent_record,
+            provider=provider,
+        ),
+    }
 
 
 def _is_trending(paper: dict, current_year: int) -> bool:
@@ -266,8 +592,6 @@ def _is_trending(paper: dict, current_year: int) -> bool:
     # 0.5y floor guards against same-year div; widen to float deliberately.
     age_years: float = max(float(age), 0.5)
     return (cit / age_years) >= _TRENDING_VELOCITY_THRESHOLD
-
-
 
 
 def _add_cross_node_edges(
@@ -334,40 +658,150 @@ def _add_cross_node_edges(
                 continue
             citing_node = nodes.get(citing_id)
             cls = derive_relation(
-                ref, parent=ref, child=citing_node,
-                provider=provider, strict_mode=strict_mode,
+                ref,
+                parent=ref,
+                child=citing_node,
+                provider=provider,
+                strict_mode=strict_mode,
             )
             if cls is None:
                 continue
-            edges.append({
-                "src": ref_id,
-                "dst": citing_id,
-                "rel": cls["relation"],
-                "conf": cls["confidence"],
-                "rationale": cls["rationale"],
-                "provenance": cls.get("provenance"),
-            })
+            edges.append(
+                _make_edge(
+                    cls,
+                    src_id=ref_id,
+                    dst_id=citing_id,
+                    parent=ref,
+                    child=citing_node,
+                    intent_record=ref,
+                    provider=provider,
+                )
+            )
             existing.add(edge_key)
             added += 1
     return added
 
 
+class _ThemeCachedClassifyProvider(AbstractLLMProvider):
+    """Theme-only cache-v2 adapter with exact evidence/provider identity."""
+
+    def __init__(
+        self,
+        inner: AbstractLLMProvider,
+        cache: dict[str, dict],
+        *,
+        cache_path: Path | None,
+    ) -> None:
+        self._inner = inner
+        self._cache = cache
+        self._cache_path = cache_path
+        self.name = str(getattr(inner, "name", "unknown"))
+        self.enabled = bool(getattr(inner, "enabled", True))
+        if getattr(inner, "model", None):
+            self.model = inner.model  # type: ignore[attr-defined]
+
+    def evaluate_batch(self, papers: list, profile: str) -> list:  # pragma: no cover
+        return self._inner.evaluate_batch(papers, profile)
+
+    @staticmethod
+    def _fresh(entry: object, *, now: datetime) -> bool:
+        if not isinstance(entry, dict) or entry.get("status") != "success":
+            return False
+        expires_at = entry.get("expires_at")
+        if not isinstance(expires_at, str):
+            return False
+        try:
+            expires = datetime.fromisoformat(expires_at.replace("Z", "+00:00"))
+        except ValueError:
+            return False
+        return expires.tzinfo is not None and expires > now
+
+    def _identity(self, a: dict[str, Any], b: dict[str, Any]) -> tuple[str, dict, dict] | None:
+        src_id, dst_id = a.get("paperId"), b.get("paperId")
+        if not (isinstance(src_id, str) and src_id and isinstance(dst_id, str) and dst_id):
+            return None
+        system, user = build_classify_prompt(a, b)
+        evidence_sha256 = canonical_json_sha256(
+            {"src": src_id, "dst": dst_id, "system": system, "user": user}
+        )
+        identity = {
+            "version": _CACHE_VERSION,
+            "src": src_id,
+            "dst": dst_id,
+            "evidence_sha256": evidence_sha256,
+            "producer": {"name": _PRODUCER_NAME, "version": _PRODUCER_VERSION},
+            "provider": self.name,
+            "model": provider_model_tag(self),
+            "prompt_version": _PROMPT_VERSION,
+            "schema_version": _CLASSIFICATION_SCHEMA_VERSION,
+        }
+        provenance = make_provenance(
+            producer_name=_PRODUCER_NAME,
+            producer_version=_PRODUCER_VERSION,
+            evidence_source="semantic_scholar",
+            evidence_kind="relation-input",
+            evidence_sha256=evidence_sha256,
+            method="llm",
+            provider=self.name,
+            model=provider_model_tag(self),
+            prompt_version=_PROMPT_VERSION,
+            classification_schema_version=_CLASSIFICATION_SCHEMA_VERSION,
+        )
+        return f"v2:{canonical_json_sha256(identity)}", identity, provenance
+
+    def classify_relation(self, a: dict, b: dict) -> RelationClassification | None:
+        resolved = self._identity(a, b)
+        if resolved is None:
+            return self._inner.classify_relation(a, b)
+        key, identity, provenance = resolved
+        cached = self._cache.get(key)
+        cached_classification = (
+            RelationClassification.from_dict(cached.get("classification"))
+            if isinstance(cached, dict)
+            else None
+        )
+        if (
+            self._fresh(cached, now=_utc_now())
+            and cached_classification is not None
+            and cached.get("cache_identity") == identity
+            and cached.get("provenance") == provenance
+        ):
+            return cached_classification
+
+        result = self._inner.classify_relation(a, b)
+        if result is None:
+            return None
+        now = _utc_now()
+        classification = {
+            "relation": result.relation,
+            "confidence": result.confidence,
+            "rationale": result.rationale,
+        }
+        self._cache[key] = {
+            "status": "success",
+            "expires_at": _iso_z(now + _CACHE_TTL),
+            "cache_identity": identity,
+            "classification": classification,
+            "provenance": provenance,
+        }
+        if self._cache_path is not None and self._cache_path.parent.exists():
+            persist_classifications(self._cache, self._cache_path)
+        return result
+
+
 def _wrap_provider_with_cache(
     inner: AbstractLLMProvider,
-) -> tuple[_CachedClassifyProvider, dict[str, dict]]:
-    """Module-local thin wrapper around the impl in _lineage_classify.
+) -> tuple[_ThemeCachedClassifyProvider, dict[str, dict]]:
+    """Bind the theme producer to cache v2; legacy endpoint keys never hit."""
 
-    Binds in the module-level ``_CLASSIFICATION_CACHE_PATH`` constant
-    (so tests can ``monkeypatch.setattr(btl, '_CLASSIFICATION_CACHE_PATH', ...)``
-    without reaching into ``_lineage_classify``) and the
-    ``persist_classifications`` callable from ``build_lineage`` (kept as
-    an injection point so ``_lineage_classify`` stays free of the
-    ``build_lineage`` import).
-    """
-    return _wrap_provider_with_cache_impl(
-        inner,
-        cache_path=_CLASSIFICATION_CACHE_PATH,
-        persist_fn=persist_classifications,
+    cache = _load_classification_cache(_CLASSIFICATION_CACHE_PATH)
+    return (
+        _ThemeCachedClassifyProvider(
+            inner,
+            cache,
+            cache_path=_CLASSIFICATION_CACHE_PATH,
+        ),
+        cache,
     )
 
 
@@ -394,9 +828,7 @@ def sanitize_theme(theme: str) -> str:
     if not cleaned:
         raise ValueError("theme is empty after stripping control chars / whitespace")
     if len(cleaned) > _THEME_MAX_LEN:
-        raise ValueError(
-            f"theme exceeds {_THEME_MAX_LEN} chars (got {len(cleaned)})"
-        )
+        raise ValueError(f"theme exceeds {_THEME_MAX_LEN} chars (got {len(cleaned)})")
     return cleaned
 
 
@@ -469,7 +901,11 @@ def _openalex_short_id(work_url_or_id: str) -> str | None:
 _OPENALEX_PAPER_ID_PREFIX = "openalex:"
 
 
-def _arxiv_id_from_work(work: Any) -> str | None:
+def _arxiv_id_from_work(
+    work: Any,
+    *,
+    allow_datacite_doi: bool = True,
+) -> str | None:
     """Recover the citing/cited paper's bare arXiv id from an OpenAlex
     Work, returning the first candidate that ``_normalise_arxiv_id``
     accepts (or None).
@@ -487,7 +923,8 @@ def _arxiv_id_from_work(work: Any) -> str | None:
          that do carry it.
       2. ``primary_location.landing_page_url`` / ``pdf_url``
       3. every ``locations[i].landing_page_url`` / ``pdf_url``
-      4. ``ids.doi`` and top-level ``doi`` (DataCite arXiv DOI form)
+      4. when ``allow_datacite_doi`` is true, ``ids.doi`` and top-level
+         ``doi`` (DataCite arXiv DOI form)
 
     Defensive: ``work`` may not be a dict and any field may be missing,
     None, or the wrong type. Never raises.
@@ -512,9 +949,13 @@ def _arxiv_id_from_work(work: Any) -> str | None:
                 if isinstance(loc, dict):
                     yield loc.get("landing_page_url")
                     yield loc.get("pdf_url")
-        # 4. DataCite arXiv DOI (ids.doi and top-level doi).
-        yield ids.get("doi")
-        yield work.get("doi")
+        # 4. DataCite arXiv DOI (ids.doi and top-level doi).  This fallback is
+        # useful for unarXive citation-context lookup, but it is not a strong
+        # identity declaration.  Identity-producing callers disable it so a
+        # DOI-only Work cannot mint a canonical arXiv PaperPilot ID.
+        if allow_datacite_doi:
+            yield ids.get("doi")
+            yield work.get("doi")
 
     for candidate in _candidates():
         if not isinstance(candidate, str):
@@ -560,12 +1001,13 @@ def _work_to_paper_dict(work: dict) -> dict[str, Any] | None:
     # Pull out arxiv / mag / pmid if present so downstream code that
     # checks externalIds.ArXiv (e.g. arXiv-category gate work, and the
     # unarXive citation-context lookup via _enrich_child_with_unarxive)
-    # keeps working. ArXiv comes from _arxiv_id_from_work (#301) which
-    # also recovers it from location URLs / DataCite DOI when OpenAlex
-    # leaves ids.arxiv_id None (the common CS case). mag / pmid stay on
-    # the direct ids block.
+    # keeps working.  Identity projection accepts explicit ids and arXiv
+    # location URLs, but deliberately excludes the DataCite DOI fallback:
+    # DOI-only recovery remains available to citation-context callers and
+    # cannot be promoted into an identity alias here. mag / pmid stay on the
+    # direct ids block.
     ids_block = work.get("ids") or {}
-    arxiv_id = _arxiv_id_from_work(work)
+    arxiv_id = _arxiv_id_from_work(work, allow_datacite_doi=False)
     if arxiv_id:
         external_ids["ArXiv"] = arxiv_id
     for k_oa, k_out in [
@@ -576,9 +1018,7 @@ def _work_to_paper_dict(work: dict) -> dict[str, Any] | None:
         if isinstance(v, str) and v.strip():
             external_ids[k_out] = v.strip()
 
-    abstract = _decode_abstract_inverted_index(
-        work.get("abstract_inverted_index")
-    )
+    abstract = _decode_abstract_inverted_index(work.get("abstract_inverted_index"))
     primary_location = work.get("primary_location") or {}
     source = primary_location.get("source") or {}
     venue = source.get("display_name") or ""
@@ -673,11 +1113,7 @@ def _extract_doi(work: dict) -> str | None:
     # When the input is a doi.org URL (any scheme/case variant), pull the
     # path. Bare DOI ("10.x/y") or non-doi.org URLs pass through — S2
     # rejects truly malformed values downstream.
-    bare = (
-        parsed.path.lstrip("/")
-        if parsed.scheme and parsed.netloc.lower() in _DOI_HOSTS
-        else raw
-    )
+    bare = parsed.path.lstrip("/") if parsed.scheme and parsed.netloc.lower() in _DOI_HOSTS else raw
     bare = bare.strip()
     return bare or None
 
@@ -753,9 +1189,7 @@ def discover_seeds_via_openalex(
     # lineage; revisit if a Math-heavy theme regresses.
     concept_filter = "primary_topic.field.id:fields/17"
     if since_year is not None:
-        params["filter"] = (
-            f"from_publication_date:{since_year}-01-01,{concept_filter}"
-        )
+        params["filter"] = f"from_publication_date:{since_year}-01-01,{concept_filter}"
     else:
         params["filter"] = concept_filter
     if email:
@@ -796,10 +1230,7 @@ def _fetch_openalex_works_by_ids(
     contribute zero (graceful degrade). Order is not preserved — the
     BFS layer already de-duplicates and re-ranks.
     """
-    cleaned: list[str] = [
-        sid for sid in short_ids
-        if isinstance(sid, str) and sid.startswith("W")
-    ]
+    cleaned: list[str] = [sid for sid in short_ids if isinstance(sid, str) and sid.startswith("W")]
     if not cleaned:
         return []
     results: list[dict[str, Any]] = []
@@ -822,7 +1253,8 @@ def _fetch_openalex_works_by_ids(
         if resp is None or resp.status_code != 200:
             logger.warning(
                 "openalex batch fetch failed (status=%s, chunk=%d ids)",
-                getattr(resp, "status_code", None), len(chunk),
+                getattr(resp, "status_code", None),
+                len(chunk),
             )
             continue
         try:
@@ -841,9 +1273,7 @@ def _fetch_openalex_works_by_ids(
     return results
 
 
-def _enrich_parent_with_unarxive(
-    parent: dict[str, Any], *, citing_arxiv_id: str
-) -> dict[str, Any]:
+def _enrich_parent_with_unarxive(parent: dict[str, Any], *, citing_arxiv_id: str) -> dict[str, Any]:
     """Attach citing-side citation contexts for the ``references``
     BFS direction: focal cites ``parent``, so the unarXive lookup is
     ``(citing=focal.arxiv_id, cited=parent.openalex_id)``.
@@ -870,9 +1300,7 @@ def _enrich_parent_with_unarxive(
     return parent
 
 
-def _enrich_child_with_unarxive(
-    child: dict[str, Any], *, cited_openalex_id: str
-) -> dict[str, Any]:
+def _enrich_child_with_unarxive(child: dict[str, Any], *, cited_openalex_id: str) -> dict[str, Any]:
     """Attach citing-side citation contexts for the ``citations`` BFS
     direction: ``child`` cites focal, so the unarXive lookup is
     ``(citing=child.arxiv_id, cited=focal.openalex_id)``.
@@ -988,7 +1416,8 @@ def fetch_related_via_openalex(
         if resp is None or resp.status_code != 200:
             logger.warning(
                 "openalex work fetch failed (id=%s, status=%s)",
-                openalex_short_id, getattr(resp, "status_code", None),
+                openalex_short_id,
+                getattr(resp, "status_code", None),
             )
             return []
         try:
@@ -997,10 +1426,7 @@ def fetch_related_via_openalex(
             return []
         ref_urls = (payload or {}).get("referenced_works") or []
         ref_ids = [
-            sid for sid in (
-                _openalex_short_id(u) for u in ref_urls if isinstance(u, str)
-            )
-            if sid
+            sid for sid in (_openalex_short_id(u) for u in ref_urls if isinstance(u, str)) if sid
         ]
         # Extract focal's arXiv id for the unarXive lookup. #301:
         # _arxiv_id_from_work also reads the location URLs / DataCite DOI
@@ -1019,18 +1445,18 @@ def fetch_related_via_openalex(
         # keeps the per-seed budget the caller asked for.
         wide_cap = min(len(ref_ids), _OPENALEX_PER_PAGE_MAX)
         wide_parents = _fetch_openalex_works_by_ids(
-            ref_ids[:wide_cap], email=email,
+            ref_ids[:wide_cap],
+            email=email,
         )
         parents = _split_by_foundational_priority(
-            wide_parents, budget=page_size,
+            wide_parents,
+            budget=page_size,
         )
         enriched = [_attach_empty_intent_fields(p) for p in parents]
         if focal_arxiv:
             # focal cites each parent → citing=focal.arxiv, cited=parent
             for p in enriched:
-                _enrich_parent_with_unarxive(
-                    p, citing_arxiv_id=focal_arxiv
-                )
+                _enrich_parent_with_unarxive(p, citing_arxiv_id=focal_arxiv)
         return enriched
     if kind == "citations":
         params = {
@@ -1050,7 +1476,8 @@ def fetch_related_via_openalex(
         if resp is None or resp.status_code != 200:
             logger.warning(
                 "openalex cites query failed (id=%s, status=%s)",
-                openalex_short_id, getattr(resp, "status_code", None),
+                openalex_short_id,
+                getattr(resp, "status_code", None),
             )
             return []
         try:
@@ -1070,9 +1497,7 @@ def fetch_related_via_openalex(
                 continue
             paper = _attach_empty_intent_fields(paper)
             # child cites focal → citing=child.arxiv, cited=focal.openalex
-            _enrich_child_with_unarxive(
-                paper, cited_openalex_id=focal_paper_id
-            )
+            _enrich_child_with_unarxive(paper, cited_openalex_id=focal_paper_id)
             children.append(paper)
         return children
     return []
@@ -1242,9 +1667,7 @@ def _discover_seeds_openalex_primary(
         if paper is None:
             continue
         by_id.setdefault(paper["paperId"], paper)
-    return _apply_seed_filters(
-        by_id, theme=theme, top_n=top_n, since_year=since_year
-    )
+    return _apply_seed_filters(by_id, theme=theme, top_n=top_n, since_year=since_year)
 
 
 def _search_one_keyword_via_s2(
@@ -1276,10 +1699,7 @@ def _search_one_keyword_via_s2(
             return []
         if not isinstance(cached, list):
             return []
-        return [
-            p for p in cached
-            if isinstance(p, dict) and p.get("paperId")
-        ]
+        return [p for p in cached if isinstance(p, dict) and p.get("paperId")]
     params = {
         "query": keyword,
         "fields": _S2_FIELDS_SEARCH,
@@ -1308,7 +1728,8 @@ def _search_one_keyword_via_s2(
     except ValueError:
         payload = {}
     items: list[dict[str, Any]] = [
-        p for p in (payload.get("data") or [])
+        p
+        for p in (payload.get("data") or [])
         if isinstance(p, dict) and p.get("paperId") and p.get("title")
     ]
     cache.write_text(json.dumps(items, ensure_ascii=False, indent=2))
@@ -1346,7 +1767,9 @@ def _top_up_via_openalex(
         return by_id
     logger.info(
         "S2 yielded %d seeds (target=%d); trying OpenAlex fallback (keywords=%r)",
-        len(by_id), top_n, [k for k in keywords if k and k.strip()],
+        len(by_id),
+        top_n,
+        [k for k in keywords if k and k.strip()],
     )
     works = _openalex_search_per_keyword(
         keywords,
@@ -1425,15 +1848,11 @@ def discover_seeds(
     # Step 1: gather S2 hits across all keywords.
     by_id: dict[str, dict[str, Any]] = {}
     for kw in keywords:
-        for paper in _search_one_keyword_via_s2(
-            keyword=kw, since_year=since_year
-        ):
+        for paper in _search_one_keyword_via_s2(keyword=kw, since_year=since_year):
             by_id.setdefault(paper["paperId"], paper)
 
     # Step 2: primary filter + rank.
-    primary = _apply_seed_filters(
-        by_id, theme=theme, top_n=top_n, since_year=since_year
-    )
+    primary = _apply_seed_filters(by_id, theme=theme, top_n=top_n, since_year=since_year)
     if not use_openalex_fallback or len(primary) >= top_n:
         return primary
 
@@ -1453,12 +1872,11 @@ def discover_seeds(
     )
     if len(augmented) == len(by_id):
         return primary
-    merged = _apply_seed_filters(
-        augmented, theme=theme, top_n=top_n, since_year=since_year
-    )
+    merged = _apply_seed_filters(augmented, theme=theme, top_n=top_n, since_year=since_year)
     logger.info(
         "OpenAlex fallback added %d new seeds (final=%d)",
-        len(merged) - len(primary), len(merged),
+        len(merged) - len(primary),
+        len(merged),
     )
     return merged
 
@@ -1535,8 +1953,7 @@ def _rank_and_truncate(
     candidates = list(papers)
     if since_year is not None:
         candidates = [
-            p for p in candidates
-            if isinstance(p.get("year"), int) and p["year"] >= since_year
+            p for p in candidates if isinstance(p.get("year"), int) and p["year"] >= since_year
         ]
     current_year = datetime.now().year
     candidates.sort(
@@ -1616,11 +2033,7 @@ def _is_topic_relevant(paper: dict[str, Any], *, theme: str) -> bool:
     "self-supervised learning" and "self supervised learning" match
     interchangeably.
     """
-    words = [
-        w.lower()
-        for w in theme.split()
-        if len(w) >= _TOPIC_RELEVANCE_MIN_WORD_LEN
-    ]
+    words = [w.lower() for w in theme.split() if len(w) >= _TOPIC_RELEVANCE_MIN_WORD_LEN]
     if len(words) < 2:
         # Short / single-word theme — gate disabled (escape hatch).
         return True
@@ -1637,13 +2050,9 @@ def _is_topic_relevant(paper: dict[str, Any], *, theme: str) -> bool:
         # _TWO_WORD_FALLBACK_MAX_DISTANCE token positions of each other.
         if not all(w and w in title_only for w in normalised_words):
             return False
-        distance = _min_token_distance(
-            title_only, normalised_words[0], normalised_words[1]
-        )
+        distance = _min_token_distance(title_only, normalised_words[0], normalised_words[1])
         return distance is not None and distance <= _TWO_WORD_FALLBACK_MAX_DISTANCE
-    threshold = max(
-        2, math.ceil(len(words) * _TOPIC_RELEVANCE_THRESHOLD_RATIO)
-    )
+    threshold = max(2, math.ceil(len(words) * _TOPIC_RELEVANCE_THRESHOLD_RATIO))
     hits = sum(1 for w in normalised_words if w and w in haystack)
     return hits >= threshold
 
@@ -1743,24 +2152,18 @@ def _load_theme_blacklist() -> dict[str, tuple[str, ...]]:
         return {}
     if not isinstance(raw, dict):
         return {}
-    themes: dict[str, Any] = (
-        raw["themes"] if isinstance(raw.get("themes"), dict) else raw
-    )
+    themes: dict[str, Any] = raw["themes"] if isinstance(raw.get("themes"), dict) else raw
     out: dict[str, tuple[str, ...]] = {}
     for slug, kws in themes.items():
         if not isinstance(slug, str) or slug.startswith("_") or not isinstance(kws, list):
             continue
-        cleaned = tuple(
-            kw.strip().lower() for kw in kws if isinstance(kw, str) and kw.strip()
-        )
+        cleaned = tuple(kw.strip().lower() for kw in kws if isinstance(kw, str) and kw.strip())
         if cleaned:
             out[slug] = cleaned
     return out
 
 
-def _filter_theme_blacklist(
-    seeds: list[dict[str, Any]], *, theme: str
-) -> list[dict[str, Any]]:
+def _filter_theme_blacklist(seeds: list[dict[str, Any]], *, theme: str) -> list[dict[str, Any]]:
     """Drop seeds whose title or abstract contains any of the theme's
     blacklisted substrings (#209 Tier 1).
 
@@ -1799,13 +2202,9 @@ def _load_denylist() -> tuple[frozenset[str], tuple[re.Pattern[str], ...]]:
             _DENYLIST_PATH,
         )
         return frozenset(), ()
-    paper_ids = frozenset(
-        pid for pid in raw.get("paper_ids", []) if isinstance(pid, str)
-    )
+    paper_ids = frozenset(pid for pid in raw.get("paper_ids", []) if isinstance(pid, str))
     patterns = tuple(
-        re.compile(p, re.IGNORECASE)
-        for p in raw.get("title_patterns", [])
-        if isinstance(p, str)
+        re.compile(p, re.IGNORECASE) for p in raw.get("title_patterns", []) if isinstance(p, str)
     )
     return paper_ids, patterns
 
@@ -1859,11 +2258,7 @@ def _filter_off_topic_refs(
         if ceiling is None or cites <= ceiling:
             kept.append(p)
             continue
-        intents = {
-            str(i).lower()
-            for i in (p.get("_intents") or [])
-            if isinstance(i, str)
-        }
+        intents = {str(i).lower() for i in (p.get("_intents") or []) if isinstance(i, str)}
         if "methodology" in intents:
             kept.append(p)
     return kept
@@ -1896,11 +2291,7 @@ def _normalize_dedup_doi(paper: dict[str, Any]) -> str | None:
     host stripped. Returns ``None`` when the paper carries no DOI.
     """
     external = paper.get("externalIds") or {}
-    doi = (
-        external.get("DOI")
-        or external.get("doi")
-        or paper.get("doi")
-    )
+    doi = external.get("DOI") or external.get("doi") or paper.get("doi")
     if not isinstance(doi, str) or not doi.strip():
         return None
     doi = doi.strip().lower()
@@ -2040,26 +2431,105 @@ def _dedup_by_title_year(
 def _remap_edge_endpoints(
     edges: list[dict[str, Any]], remap: dict[str, str]
 ) -> list[dict[str, Any]]:
-    """Rewrite edge ``src`` / ``dst`` endpoints through ``remap`` (#298),
-    dropping any self-loop the remap may create and de-duplicating edges
-    that collapse onto the same (src, rel, dst) after remapping. Pure /
-    immutable — returns a new list, leaves the input untouched.
+    """Reject endpoint rewrites whose endpoint-bound evidence cannot be rebuilt.
+
+    P2T provenance hashes include the serialized edge endpoints.  This stage no
+    longer has the original classifier input, so changing ``src`` or ``dst``
+    while retaining provenance would publish a false evidence binding.  An
+    identity collapse is still safe when the removed node is isolated; in that
+    case no edge endpoint changes and the edges pass through unchanged.
+
+    Duplicate edge selection is deliberately left to the later canonical
+    ``edge_groups`` pass, which chooses by sorted JSON rather than input order.
     """
     if not remap:
         return edges
-    seen: set[tuple[str, str, str]] = set()
-    out: list[dict[str, Any]] = []
     for e in edges:
         src = remap.get(e["src"], e["src"])
         dst = remap.get(e["dst"], e["dst"])
-        if src == dst:
-            continue
-        signature = (src, e.get("rel", ""), dst)
-        if signature in seen:
-            continue
-        seen.add(signature)
-        out.append({**e, "src": src, "dst": dst})
-    return out
+        if src != e["src"] or dst != e["dst"]:
+            raise ValueError("cannot remap endpoint-bound provenance after strong-alias dedup")
+    return edges
+
+
+def _dedup_nodes_by_strong_alias(
+    nodes: dict[str, dict[str, Any]],
+    seed_by_graph_id: dict[str, str],
+    alias_index: dict[tuple[str, str], set[str]] | None = None,
+) -> tuple[dict[str, dict[str, Any]], dict[str, str], dict[str, str]]:
+    """Dedup graph nodes by exact normalized alias, never title/year.
+
+    The deterministic survivor is citation-desc then graph-ID-asc.  Focus
+    status and canonical seed identity are propagated to the survivor. Every
+    alias in every component is resolved, so conflicting canonical identities
+    fail the whole artifact even when only one member was originally a focus.
+    """
+
+    alias_index = alias_index or {}
+    aliases_by_id = {
+        graph_id: tuple(_declared_alias_values(node)) for graph_id, node in nodes.items()
+    }
+    parent = {graph_id: graph_id for graph_id in nodes}
+
+    def find(graph_id: str) -> str:
+        while parent[graph_id] != graph_id:
+            parent[graph_id] = parent[parent[graph_id]]
+            graph_id = parent[graph_id]
+        return graph_id
+
+    def union(left: str, right: str) -> None:
+        left_root, right_root = find(left), find(right)
+        if left_root != right_root:
+            parent[max(left_root, right_root)] = min(left_root, right_root)
+
+    alias_owner: dict[tuple[str, str], str] = {}
+    for graph_id in sorted(nodes):
+        for alias in aliases_by_id[graph_id]:
+            owner = alias_owner.setdefault(alias, graph_id)
+            union(graph_id, owner)
+
+    components: dict[str, list[str]] = {}
+    for graph_id in sorted(nodes):
+        components.setdefault(find(graph_id), []).append(graph_id)
+
+    survivors: dict[str, dict[str, Any]] = {}
+    remap: dict[str, str] = {}
+    survivor_seed: dict[str, str] = {}
+    for members in components.values():
+        survivor_id = min(members, key=lambda graph_id: _candidate_rank(nodes[graph_id]))
+        resolved_ids = {
+            seed_by_graph_id[graph_id] for graph_id in members if graph_id in seed_by_graph_id
+        }
+        for graph_id in members:
+            for alias in aliases_by_id[graph_id]:
+                matches = alias_index.get(alias, set())
+                if len(matches) > 1:
+                    raise ValueError(f"ambiguous identity alias {alias[0]}:{alias[1]}")
+                if matches:
+                    resolved_ids.update(matches)
+                elif alias[0] in _CANONICAL_ALIAS_NAMESPACES:
+                    resolved_ids.add(make_paper_id(*alias))
+                # An unregistered DOI can dedup exact records, but it cannot
+                # create a canonical identity or reconcile conflicting strong
+                # aliases inside the resulting component.
+        if len(resolved_ids) > 1:
+            raise ValueError(f"conflicting seed IDs on exact alias for {survivor_id!r}")
+        survivor = nodes[survivor_id]
+        merged_aliases = sorted(
+            {alias for graph_id in members for alias in aliases_by_id[graph_id]}
+        )
+        if merged_aliases:
+            survivor["aliases"] = [list(alias) for alias in merged_aliases]
+        survivors[survivor_id] = survivor
+        member_seeds = {
+            seed_by_graph_id[graph_id] for graph_id in members if graph_id in seed_by_graph_id
+        }
+        if member_seeds:
+            survivor_seed[survivor_id] = next(iter(member_seeds))
+        for graph_id in members:
+            if graph_id != survivor_id:
+                remap[graph_id] = survivor_id
+    return survivors, remap, survivor_seed
 
 
 # ---------- GitHub stars enrichment ----------
@@ -2155,9 +2625,7 @@ def _enrich_github_stars(
     fetch = fetch_stars or fetch_repo_stars
     search = search_repo or search_repo_by_title
 
-    fresh_cutoff = (
-        datetime.now(timezone.utc) - timedelta(days=_GITHUB_CACHE_TTL_DAYS)
-    ).isoformat()
+    fresh_cutoff = (datetime.now(timezone.utc) - timedelta(days=_GITHUB_CACHE_TTL_DAYS)).isoformat()
 
     enriched = 0
     targets: list[tuple[dict, str]] = []  # (node, arxiv_id)
@@ -2251,8 +2719,7 @@ def _enrich_github_stars(
 
     if curated_hits or search_hits:
         logger.info(
-            "github stars resolution: curated=%d, search=%d, stars>0=%d "
-            "(of %d looked up)",
+            "github stars resolution: curated=%d, search=%d, stars>0=%d (of %d looked up)",
             curated_hits,
             search_hits,
             stars_positive,
@@ -2273,6 +2740,7 @@ class _BFSResult(NamedTuple):
     object instead of juggling five locals. Each field is mutable
     (``nodes``, ``edges``) or trivially copyable (counters), so passing
     by reference is fine for the rest of the pipeline."""
+
     nodes: dict[str, dict]
     edges: list[dict]
     seed_ids: list[str]
@@ -2311,9 +2779,7 @@ def _run_bfs_and_descendants(
     frontier: list[tuple[dict, int]] = []
     for seed in seeds:
         sid = seed["paperId"]
-        nodes[sid] = to_node(
-            seed, focus=True, trending=_is_trending(seed, current_year)
-        )
+        nodes[sid] = _to_theme_node(seed, focus=True, trending=_is_trending(seed, current_year))
         seed_ids.append(sid)
         frontier.append((seed, 0))
 
@@ -2340,9 +2806,7 @@ def _run_bfs_and_descendants(
         # truly load-bearing foundationals (ones the citing paper explicitly
         # uses as its method) survive — only the ResNet-in-a-GNN-tree class
         # of accidental ancestors gets removed.
-        all_parents = _filter_off_topic_refs(
-            all_parents, max_seed_cite=max_seed_cite
-        )
+        all_parents = _filter_off_topic_refs(all_parents, max_seed_cite=max_seed_cite)
 
         # Issue #50 (followup): the previous order — sort all by citationCount
         # then filter by isInfluential — let foundational papers (ResNet,
@@ -2350,12 +2814,8 @@ def _run_bfs_and_descendants(
         # influential niche refs. Partition first so the LLM budget hits the
         # specific refs the citing paper built upon, then top-up with high-
         # citation candidates if there's room left.
-        influential = [
-            p for p in all_parents if p.get("_is_influential") is not False
-        ]
-        non_influential = [
-            p for p in all_parents if p.get("_is_influential") is False
-        ]
+        influential = [p for p in all_parents if p.get("_is_influential") is not False]
+        non_influential = [p for p in all_parents if p.get("_is_influential") is False]
         influential.sort(key=lambda x: x.get("citationCount") or 0, reverse=True)
         non_influential.sort(key=lambda x: x.get("citationCount") or 0, reverse=True)
         # #277 followup: protect foundational allowlist hits from the
@@ -2376,9 +2836,7 @@ def _run_bfs_and_descendants(
             if not pid:
                 continue
             if pid not in nodes:
-                nodes[pid] = to_node(
-                    parent, trending=_is_trending(parent, current_year)
-                )
+                nodes[pid] = _to_theme_node(parent, trending=_is_trending(parent, current_year))
             # Issue #53: derive the relation from S2 intents instead of
             # firing an LLM classify call. derive_relation() returns None
             # when S2 says the parent is non-influential (we drop the
@@ -2388,20 +2846,24 @@ def _run_bfs_and_descendants(
             # BFS: parent (cited) carries intents; current is the citing
             # child being processed (parent → current edge).
             cls = derive_relation(
-                parent, parent=parent, child=current,
-                provider=provider, strict_mode=llm_strict,
+                parent,
+                parent=parent,
+                child=current,
+                provider=provider,
+                strict_mode=llm_strict,
             )
             if cls is not None:
                 classify_succeeded += 1
                 edges.append(
-                    {
-                        "src": pid,
-                        "dst": current["paperId"],
-                        "rel": cls["relation"],
-                        "conf": cls["confidence"],
-                        "rationale": cls["rationale"],
-                        "provenance": cls.get("provenance"),
-                    }
+                    _make_edge(
+                        cls,
+                        src_id=pid,
+                        dst_id=current["paperId"],
+                        parent=parent,
+                        child=current,
+                        intent_record=parent,
+                        provider=provider,
+                    )
                 )
             if pid not in visited:
                 visited.add(pid)
@@ -2430,9 +2892,7 @@ def _run_bfs_and_descendants(
         # while also being cited by every modern ML paper) would similarly
         # pollute the tree. The methodology-intent override keeps real
         # extensions in place.
-        all_children = _filter_off_topic_refs(
-            all_children, max_seed_cite=max_seed_cite
-        )
+        all_children = _filter_off_topic_refs(all_children, max_seed_cite=max_seed_cite)
         influential = [c for c in all_children if c.get("_is_influential") is not False]
         non_influential = [c for c in all_children if c.get("_is_influential") is False]
         influential.sort(key=lambda x: x.get("citationCount") or 0, reverse=True)
@@ -2444,28 +2904,32 @@ def _run_bfs_and_descendants(
             if not cid or cid == sid:
                 continue
             if cid not in nodes:
-                nodes[cid] = to_node(
-                    child, trending=_is_trending(child, current_year)
-                )
+                nodes[cid] = _to_theme_node(child, trending=_is_trending(child, current_year))
             # Descendants direction: seed → child edge. The CHILD carries
             # intents (S2 citations endpoint annotates the citing paper).
             # parent=seed (older), child=child (newer) for year/cite logic.
             cls = derive_relation(
-                child, parent=seed, child=child,
-                provider=provider, strict_mode=llm_strict,
+                child,
+                parent=seed,
+                child=child,
+                provider=provider,
+                strict_mode=llm_strict,
             )
             if cls is None:
                 continue
             if any(e["src"] == sid and e["dst"] == cid for e in edges):
                 continue
-            edges.append({
-                "src": sid,
-                "dst": cid,
-                "rel": cls["relation"],
-                "conf": cls["confidence"],
-                "rationale": cls["rationale"],
-                "provenance": cls.get("provenance"),
-            })
+            edges.append(
+                _make_edge(
+                    cls,
+                    src_id=sid,
+                    dst_id=cid,
+                    parent=seed,
+                    child=child,
+                    intent_record=child,
+                    provider=provider,
+                )
+            )
             desc_added += 1
     if desc_added:
         logger.info(
@@ -2530,17 +2994,14 @@ def _pick_root_seed(
     seed_ids: list[str],
     cleaned_edges: list[dict],
 ) -> str | None:
-    """Pick the focus seed with the most relations (in OR out edges) as
-    the lineage root. Returns ``None`` for an edgeless / seedless graph
-    so the JSON encoder writes ``null`` instead of an empty string.
-    """
+    """Pick degree-desc / graph-ID-asc; never use input-order fallback."""
     if not seed_ids:
         return None
     edge_count: dict[str, int] = {}
     for e in cleaned_edges:
         edge_count[e["src"]] = edge_count.get(e["src"], 0) + 1
         edge_count[e["dst"]] = edge_count.get(e["dst"], 0) + 1
-    return max(seed_ids, key=lambda nid: edge_count.get(nid, 0))
+    return min(set(seed_ids), key=lambda nid: (-edge_count.get(nid, 0), nid))
 
 
 def build_theme_lineage(
@@ -2588,7 +3049,10 @@ def build_theme_lineage(
     provider, cache = _wrap_provider_with_cache(inner_provider)
     logger.info(
         "theme=%r slug=%r provider=%s (cache=%d entries)",
-        sanitised, slug, provider.name, len(cache),
+        sanitised,
+        slug,
+        provider.name,
+        len(cache),
     )
 
     # Stage 1: keyword expansion is skipped — the LLM call here was the
@@ -2634,7 +3098,8 @@ def build_theme_lineage(
         for alt_kw in aliases:
             logger.info(
                 "merging alias %r into seeds for theme %r",
-                alt_kw, sanitised,
+                alt_kw,
+                sanitised,
             )
             alt_seeds = discover_seeds(
                 keywords=[alt_kw],
@@ -2659,17 +3124,17 @@ def build_theme_lineage(
         )
         seeds = ranked[:seeds_count]
 
-    # #298: collapse title+year duplicate seeds before BFS. The two
-    # "FlashAttention: Fast and Memory-Efficient ..." records have
-    # distinct OpenAlex W-ids AND distinct DOIs, so the paperId-keyed
-    # alias merge above let the duplicate survive. title+year is the
-    # load-bearing key here. Keeps the higher-citation record. Seeds carry
-    # no edges yet so there is nothing to remap at this stage.
-    seeds, seed_remap = _dedup_by_title_year(seeds)
-    if seed_remap:
+    # P2T identity gate: only a canonical source alias can create a focus
+    # seed.  DOI may join through the sidecar but cannot mint a PaperPilot
+    # ID, and graph-provider IDs/title/year never participate in identity.
+    alias_index = _load_identity_aliases()
+    discovered_count = len(seeds)
+    seeds, seed_by_graph_id = _resolve_and_dedup_seeds(seeds, alias_index)
+    if len(seeds) != discovered_count:
         logger.info(
-            "seed title+year dedup collapsed %d duplicate seed(s)",
-            len(seed_remap),
+            "strong-alias identity gate retained %d/%d focus candidates",
+            len(seeds),
+            discovered_count,
         )
 
     logger.info(
@@ -2716,7 +3181,10 @@ def build_theme_lineage(
     # full pass; volume is acceptable given the seeded influence filter
     # already culls non-influential refs upstream.
     cross_added = _add_cross_node_edges(
-        nodes, edges, provider=provider, strict_mode=llm_strict,
+        nodes,
+        edges,
+        provider=provider,
+        strict_mode=llm_strict,
     )
     if cross_added:
         logger.info(
@@ -2733,30 +3201,20 @@ def build_theme_lineage(
     github_token = (env or {}).get("github_token")
     github_added = _enrich_github_stars(nodes, github_token=github_token)
     if github_added:
-        logger.info(
-            "github stars: enriched %d nodes (cache + fresh)", github_added
-        )
+        logger.info("github stars: enriched %d nodes (cache + fresh)", github_added)
 
-    # #298: final title+year dedup over the full node set. The seed-phase
-    # dedup above can't catch a duplicate that enters the graph as a BFS
-    # parent/child of two different seeds (distinct ids, distinct DOIs,
-    # same paper). Collapse to the higher-citation record and remap every
-    # edge endpoint from the dropped id onto the survivor so no edge dangles.
-    # IMPORTANT: this MUST run after both the BFS pass and the cross-node
-    # pass (_add_cross_node_edges above), so `edges` already contains every
-    # edge that could reference a dropped id — _remap_edge_endpoints then
-    # rewrites all of them in one pass. Do not reorder these stages.
-    deduped_nodes, node_remap = _dedup_by_title_year(list(nodes.values()))
+    # Final exact-alias dedup catches the same paper discovered through two
+    # graph-provider IDs.  Title/year is intentionally absent from this path.
+    nodes, node_remap, seed_by_graph_id = _dedup_nodes_by_strong_alias(
+        nodes,
+        seed_by_graph_id,
+        alias_index,
+    )
     if node_remap:
-        nodes = {n["id"]: n for n in deduped_nodes}
         edges = _remap_edge_endpoints(edges, node_remap)
-        # Remap seed ids onto survivors; dict.fromkeys de-dups while
-        # preserving first-seen order so meta.seeds stays clean.
-        seed_ids = list(
-            dict.fromkeys(node_remap.get(sid, sid) for sid in seed_ids)
-        )
+        seed_ids = sorted(set(node_remap.get(sid, sid) for sid in seed_ids))
         logger.info(
-            "node title+year dedup collapsed %d duplicate node(s)",
+            "exact strong-alias dedup collapsed %d duplicate node(s)",
             len(node_remap),
         )
 
@@ -2777,17 +3235,43 @@ def build_theme_lineage(
         has_edges=bool(cleaned_edges),
     )
 
-    # Stage 5: pick root = focus seed with most relations.
-    root_id = _pick_root_seed(seed_ids, cleaned_edges)
+    # Wire aliases + deterministic duplicate elimination/order.
+    edge_groups: dict[tuple[str, str, str], list[dict[str, Any]]] = {}
+    for edge in cleaned_edges:
+        if not (
+            isinstance(edge, dict)
+            and isinstance(edge.get("relation"), str)
+            and isinstance(edge.get("confidence"), (int, float))
+            and not isinstance(edge.get("confidence"), bool)
+            and isinstance(edge.get("provenance"), dict)
+        ):
+            raise ValueError("legacy or incomplete theme edge cannot be serialized")
+        key = (edge["src"], edge["dst"], edge["relation"])
+        edge_groups.setdefault(key, []).append(edge)
+    ordered_edges = [
+        min(
+            edge_groups[key],
+            key=lambda edge: json.dumps(
+                edge, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+            ),
+        )
+        for key in sorted(edge_groups)
+    ]
 
-    # Stage 6: sort nodes by year ascending (None years sink to the bottom).
-    sorted_nodes = sorted(
-        nodes.values(),
-        key=lambda n: (
-            n.get("year") if isinstance(n.get("year"), int) else 9999,
-            -(n.get("citation_count") or 0),
-        ),
-    )
+    focus_ids = set(seed_ids)
+    for node in nodes.values():
+        node["is_focus"] = node["id"] in focus_ids
+        node.pop("seed_paper_id", None)
+        if node["is_focus"]:
+            seed_paper_id = seed_by_graph_id.get(node["id"])
+            if not is_paper_id(seed_paper_id):
+                raise ValueError(f"theme focus node {node['id']!r} lacks canonical seed")
+            node["seed_paper_id"] = seed_paper_id
+    ordered_nodes = sorted(nodes.values(), key=lambda node: node["id"])
+
+    # Stage 5: root = focus degree desc, then graph-local ID asc.  An
+    # edgeless nonempty graph still has a declared focus root.
+    root_id = _pick_root_seed(sorted(focus_ids), ordered_edges)
 
     # Code-reviewer #285 PR1 LOW: edges without provenance are silently
     # dropped from the breakdown rather than surfaced as an "unknown"
@@ -2797,17 +3281,17 @@ def build_theme_lineage(
     # in audit_lineage_classification_breakdown via fallback to
     # rationale string match).
     provenance_breakdown = dict(
-        Counter(
-            e["provenance"]
-            for e in cleaned_edges
-            if e.get("provenance") is not None
-        )
+        Counter(e["provenance"]["classification"]["method"] for e in ordered_edges)
     )
     payload = {
+        "schema_version": LINEAGE_ARTIFACT_VERSION,
         "root": root_id,
-        "nodes": sorted_nodes,
-        "edges": cleaned_edges,
+        "nodes": ordered_nodes,
+        "edges": ordered_edges,
+        "clusters": [],
         "meta": {
+            "kind": "theme",
+            "generator": _PRODUCER_NAME,
             "source": "build_theme_lineage.py",
             "theme": sanitised,
             "slug": slug,
@@ -2815,21 +3299,39 @@ def build_theme_lineage(
             "seeds": seed_ids,
             "depth": depth,
             "since_year": since_year,
-            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "generated_at": _iso_z(_utc_now()),
             "provenance_breakdown": provenance_breakdown,
         },
     }
 
-    out_path = output if output is not None else (
-        DOCS_ROOT / "themes" / slug / "lineage.json"
-    )
+    # The shared validator is being migrated in parallel and may not yet
+    # require theme focus seeds, so the producer enforces that invariant
+    # independently before delegating to the shared contract.
+    for node in ordered_nodes:
+        if node.get("is_focus") is True and not is_paper_id(node.get("seed_paper_id")):
+            raise ValueError(f"theme focus node {node.get('id')!r} lacks canonical seed")
+    issues = validate_lineage_artifact(payload, kind="theme")
+    if issues:
+        detail = "; ".join(f"{issue.code}:{issue.path}" for issue in issues[:8])
+        raise ValueError(f"generated theme violates {LINEAGE_ARTIFACT_VERSION}: {detail}")
+
+    out_path = output if output is not None else (DOCS_ROOT / "themes" / slug / "lineage.json")
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2))
+    tmp_path = out_path.with_name(f".{out_path.name}.tmp.{os.getpid()}")
+    try:
+        tmp_path.write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        os.replace(tmp_path, out_path)
+    finally:
+        if tmp_path.exists():
+            tmp_path.unlink()
     logger.info(
         "wrote %s (nodes=%d edges=%d root=%s)",
         out_path,
-        len(sorted_nodes),
-        len(cleaned_edges),
+        len(ordered_nodes),
+        len(ordered_edges),
         root_id,
     )
     return out_path
@@ -2845,30 +3347,42 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     """
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument(
-        "--theme", required=True,
+        "--theme",
+        required=True,
         help="Free-text research theme (e.g. 'Mixture of Experts').",
     )
     ap.add_argument(
-        "--depth", type=int, default=2,
+        "--depth",
+        type=int,
+        default=2,
         help="BFS depth from each seed (default 2).",
     )
     ap.add_argument(
-        "--seeds", type=int, default=8, dest="seeds_count",
+        "--seeds",
+        type=int,
+        default=8,
+        dest="seeds_count",
         help="Number of seed papers from the theme search (default 8).",
     )
     ap.add_argument(
-        "--width", type=int, default=8,
+        "--width",
+        type=int,
+        default=8,
         help="Max parents fetched per BFS hop (default 8).",
     )
     ap.add_argument(
-        "--since-year", type=int, default=None, dest="since_year",
+        "--since-year",
+        type=int,
+        default=None,
+        dest="since_year",
         help="Only consider papers with year >= this value.",
     )
     ap.add_argument(
-        "--output", default=None,
+        "--output",
+        default=None,
         help="Override output path (default docs/themes/<slug>/lineage.json). "
-             "Intended for CI / tests — bypasses the theme_slug() gate, so do "
-             "not use with untrusted input.",
+        "Intended for CI / tests — bypasses the theme_slug() gate, so do "
+        "not use with untrusted input.",
     )
     ap.add_argument(
         "--no-openalex-fallback",
@@ -2876,8 +3390,8 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         action="store_false",
         default=True,
         help="Disable the OpenAlex fallback used when S2 /paper/search "
-             "returns < seeds_count results (e.g. on throttled CI IPs). "
-             "By default the fallback runs whenever S2 alone is short.",
+        "returns < seeds_count results (e.g. on throttled CI IPs). "
+        "By default the fallback runs whenever S2 alone is short.",
     )
     ap.add_argument(
         "--llm-strict",
@@ -2885,11 +3399,11 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         choices=["off", "ambiguous", "all"],
         default="off",
         help="Optional LLM refinement of the heuristic relation classifier. "
-             "off (default): heuristic only, no LLM calls. "
-             "ambiguous: LLM only on edges whose S2 intents do not map to a "
-             "known relation key (most edges, but cheap to bulk-skip). "
-             "all: LLM on every influential edge (high cost — bounded by "
-             "Groq per-minute rate limits in practice).",
+        "off (default): heuristic only, no LLM calls. "
+        "ambiguous: LLM only on edges whose S2 intents do not map to a "
+        "known relation key (most edges, but cheap to bulk-skip). "
+        "all: LLM on every influential edge (high cost — bounded by "
+        "Groq per-minute rate limits in practice).",
     )
     ap.add_argument(
         "--primary-source",
@@ -2897,10 +3411,10 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         choices=["s2", "openalex"],
         default="s2",
         help="Data source for seed discovery + BFS (#209 S2-free Phase 1). "
-             "s2 (default): legacy path with S2 search + OpenAlex top-up. "
-             "openalex: OpenAlex /works for seed + referenced_works / "
-             "cites: filter for BFS — no S2 calls anywhere, survives "
-             "without PAPERPILOT_S2_API_KEY and shared-IP throttle.",
+        "s2 (default): legacy path with S2 search + OpenAlex top-up. "
+        "openalex: OpenAlex /works for seed + referenced_works / "
+        "cites: filter for BFS — no S2 calls anywhere, survives "
+        "without PAPERPILOT_S2_API_KEY and shared-IP throttle.",
     )
     ap.add_argument(
         "--auto-expand",
@@ -2908,15 +3422,15 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         action="store_true",
         default=False,
         help="Retry with larger BFS parameters when the first pass "
-             "produces a sparse lineage (< SPARSE_NODES nodes or < "
-             "SPARSE_EDGES edges). New themes whose citation graph "
-             "hasn't built up yet (e.g. 2024-2025 ideas like Mixture "
-             "of Depths) routinely undershoot at the workflow defaults "
-             "of --depth 1 --seeds 5 --width 8; retrying with depth+1, "
-             "seeds*2, width+4 typically densifies them. The retry uses "
-             "the same classifications.json cache so the LLM cost is "
-             "near-zero on the second pass. Off by default so bulk "
-             "regen-themes runs aren't doubled on every theme.",
+        "produces a sparse lineage (< SPARSE_NODES nodes or < "
+        "SPARSE_EDGES edges). New themes whose citation graph "
+        "hasn't built up yet (e.g. 2024-2025 ideas like Mixture "
+        "of Depths) routinely undershoot at the workflow defaults "
+        "of --depth 1 --seeds 5 --width 8; retrying with depth+1, "
+        "seeds*2, width+4 typically densifies them. The retry uses "
+        "the same classifications.json cache so the LLM cost is "
+        "near-zero on the second pass. Off by default so bulk "
+        "regen-themes runs aren't doubled on every theme.",
     )
     return ap
 

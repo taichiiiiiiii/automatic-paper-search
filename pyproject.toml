@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=68", "wheel"]
+requires = ["setuptools>=77", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -8,13 +8,12 @@ version = "0.1.0"
 description = "AI/ML paper auto-collection & quality filtering pipeline (arXiv/S2/OpenAlex + LLM rerank)"
 readme = "README.md"
 requires-python = ">=3.10"
-license = { text = "MIT" }
+license = "MIT"
 authors = [{ name = "taichiiiiiiii" }]
 keywords = ["arxiv", "research", "ai", "ml", "papers", "llm", "semantic-scholar", "openalex"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
@@ -36,6 +35,10 @@ dependencies = [
 dev = [
     "pytest>=8.0",
     "pytest-cov>=4.1",
+    "jsonschema>=4.23",
+    # The slide parser remains optional at runtime, but the dev suite executes
+    # real in-memory PDF visibility and isolation parity fixtures.
+    "pypdf>=6,<7",
     "ruff>=0.5",
     "mypy>=1.10",
     "types-requests",
@@ -54,6 +57,19 @@ unarxive = [
     "duckdb>=1.0",
     "huggingface_hub>=0.23",
 ]
+release = [
+    "build>=1.2,<2",
+    # PEP 517 build isolation is disabled in CI so these build-system tools
+    # must be present in, and pinned by, uv.lock.
+    "setuptools>=77",
+    "twine>=6,<7",
+    "wheel>=0.45,<1",
+]
+slides = [
+    # SD1 page-aware extraction. Kept optional so search/catalog installs do
+    # not pull a PDF parser unless slide generation is enabled.
+    "pypdf>=6,<7",
+]
 sheets = [
     "gspread>=6.0",                   # Google Sheets API
     "google-auth>=2.29",              # Service account auth
@@ -67,8 +83,28 @@ Issues = "https://github.com/taichiiiiiiii/automatic-paper-search/issues"
 [project.scripts]
 paperpilot = "paperpilot.collector:main"
 
+[tool.setuptools]
+# Package discovery is namespace-aware so `paperpilot/scripts` remains
+# importable without an `__init__.py`. Disable implicit package-data pickup:
+# otherwise sdist SOURCES can reintroduce excluded `paperpilot/tests/*.py` into
+# the wheel as data files.
+include-package-data = false
+
+[tool.setuptools.package-data]
+paperpilot = [
+    "config.yaml",
+    "data/lineage-audit-fixtures-v1.json",
+    "data/lineage-quality-policy-v1.json",
+    "data/lineage_denylist.json",
+    "data/lineage_foundational_allowlist.json",
+    "data/paper_repos.json",
+    "data/theme_aliases.json",
+    "data/theme_blacklist.json",
+]
+
 [tool.setuptools.packages.find]
 include = ["paperpilot*"]
+exclude = ["paperpilot.tests*"]
 
 # ===== Ruff =====
 [tool.ruff]

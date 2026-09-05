@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#fbf9f5" />
-  <title>Deep Lineage — ICLR 2026 — PaperPilot</title>
-  <meta name="description" content="ICLR 2026 の論文 1 本を中心に、先行研究（祖先）と後継研究（子孫）を複数 hop まで辿る深掘り家系図。関係種別ごとに色分けして表示。" />
+  <title>Deep Lineage 監査待ち — ICLR 2026 — PaperPilot</title>
+  <meta name="description" content="ICLR 2026 の深掘り系譜は品質監査中です。監査に合格するまでデータや操作は公開しません。" />
 
   <!-- CSP defence-in-depth. See docs/index.html for the policy
        rationale; this page only fetches same-origin deep-*.json. -->
@@ -16,8 +16,8 @@
   <!-- Open Graph / Twitter Card — see docs/index.html for the og:image
        rationale. og:url = the canonical share URL. -->
   <meta property="og:url" content="https://taichiiiiiiii.github.io/automatic-paper-search/iclr-2026/deep.html" />
-  <meta property="og:title" content="Deep Lineage — ICLR 2026 — PaperPilot" />
-  <meta property="og:description" content="1 本の論文を中心に、先行研究（祖先）と後継研究（子孫）を複数 hop まで辿った家系図。" />
+  <meta property="og:title" content="Deep Lineage 監査待ち — ICLR 2026 — PaperPilot" />
+  <meta property="og:description" content="ICLR 2026 の深掘り系譜は品質監査中です。" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="PaperPilot" />
   <meta property="og:locale" content="ja_JP" />
@@ -28,8 +28,8 @@
   <meta property="og:image:alt" content="PaperPilot — AI/ML 論文の系譜（家系図）を可視化" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:image" content="https://taichiiiiiiii.github.io/automatic-paper-search/assets/og-image.png" />
-  <meta name="twitter:title" content="Deep Lineage — ICLR 2026 — PaperPilot" />
-  <meta name="twitter:description" content="1 本の論文を中心に複数 hop で深掘りした家系図。" />
+  <meta name="twitter:title" content="Deep Lineage 監査待ち — ICLR 2026 — PaperPilot" />
+  <meta name="twitter:description" content="ICLR 2026 の深掘り系譜は品質監査中です。" />
 
   <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="../assets/favicon-32.png" sizes="32x32" type="image/png" />
@@ -38,14 +38,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=optional" rel="stylesheet" />
 
-  <link rel="stylesheet" href="../assets/style.css?v=97" />
+  <link rel="stylesheet" href="../assets/style.css?v=105" />
 </head>
 <body>
   <noscript>
     <div class="noscript-banner" role="alert">
-      <strong>JavaScript が必要です。</strong>
-      深掘り家系図は JavaScript で動的に描画されます。
-      ブラウザの JavaScript を有効にして再読込してください。
+      <strong>品質監査中です。</strong>
+      JavaScript が無効な状態では公開可否を確認できないため、深掘りデータは表示しません。
     </div>
   </noscript>
   <a class="skip-link" href="#main-content">本文へスキップ</a>
@@ -63,25 +62,31 @@
       <a href="./">ICLR 2026</a> &nbsp;/&nbsp;
       Deep Lineage
     </nav>
-    <h1 class="hero__title"><em>Deep Lineage</em> — 1 本を深掘り</h1>
-    <p class="hero__lede">
-      <strong>1 本の論文</strong>を起点に、先行研究（祖先）と後継研究（子孫）を
-      <strong>複数 hop</strong> まで辿った家系図です。矢印の種類と色で
-      <em>supersedes / successor / extends / ablation / baseline / contrasts</em> を区別します。
+    <h1 class="hero__title" id="lineage-page-title"><em>Deep Lineage</em> — 監査待ち</h1>
+    <p class="hero__lede" id="lineage-page-lede">
+      ICLR 2026 の深掘り系譜データは品質監査中です。合格するまで内容は公開しません。
     </p>
-    <p class="hero__note">
-      祖先（上）→ 焦点論文（中央）→ 後継（下）の縦方向に時間が流れます。
-      データは Semantic Scholar の引用関係を Groq Llama 3.3 70B で関係種別に分類して生成。
-      エッジをホバーすると分類理由が表示されます。
+    <p class="hero__note" id="lineage-page-note">
+      構造・識別子・関係根拠と入力ハッシュの検証が完了するまで、未監査データは読み込みません。
     </p>
   </header>
 
   <main id="main-content">
+  <section class="empty-state" id="lineage-audit-status" role="status" aria-live="polite">
+    <h2>公開監査を待っています</h2>
+    <p>構造・識別子・関係根拠の検査が完了するまで、論文選択・検索・表示切替・グラフを利用できません。</p>
+    <p><a href="./">ICLR 2026 の論文カタログへ戻る</a></p>
+  </section>
+  <div id="lineage-ready-ui" hidden>
   <!-- #371: card titles below render as <h3>; without this the outline
        skips h1 -> h3. Visually hidden on purpose. -->
   <h2 class="visually-hidden">系譜ツリー</h2>
   <div class="lineage-toolbar">
     <a class="layout-btn" href="lineage.html" title="複数論文のビューへ">← 全体ビュー</a>
+    <div class="lineage-toolbar__group" role="group" aria-label="表示形式">
+      <button class="layout-btn view-btn" data-view="list" aria-pressed="false">関係リスト</button>
+      <button class="layout-btn view-btn" data-view="graph" aria-pressed="true">グラフ</button>
+    </div>
     <label class="deep-picker" for="paper-picker">
       <span class="deep-picker__label">焦点論文:</span>
       <select id="paper-picker" class="deep-picker__select" aria-label="Select focus paper"></select>
@@ -92,6 +97,9 @@
     </div>
     <div class="lineage-toolbar__group" id="relation-filter" role="group" aria-label="Relation filter"></div>
   </div>
+  <section class="relation-list" id="relation-list" aria-labelledby="relation-list-heading" tabindex="-1" hidden>
+    <h2 id="relation-list-heading">論文間の関係</h2>
+  </section>
 
   <!-- Same rationale as lineage.html: the toolbar's #relation-filter
        chips already show the color swatches, so the flat legend strip
@@ -121,14 +129,16 @@
     <div id="tt-rationale"></div>
     <div class="edge-tooltip__conf" id="tt-conf"></div>
   </div>
+  </div>
   </main>
 
   <footer class="footer">
     <span>Generated by <a href="https://github.com/taichiiiiiiii/automatic-paper-search">PaperPilot</a></span>
-    <span>エッジにホバー → LLM による分類理由 · カードクリック → 中心を切替</span>
+    <span id="deep-footer-hint">品質監査に合格した深掘り系譜のみ公開します</span>
   </footer>
 
   <script src="../assets/utils.js?v=84" defer></script>
-  <script src="../assets/deep.js?v=86" defer></script>
+  <script src="../assets/lineage-core.js?v=4" defer></script>
+  <script src="../assets/deep.js?v=90" defer></script>
 </body>
 </html>

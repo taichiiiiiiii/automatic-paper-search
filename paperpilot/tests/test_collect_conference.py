@@ -80,8 +80,12 @@ def test_build_rows_dedups_by_arxiv_id():
 
 def test_build_rows_skips_unparseable_id():
     bad = SimpleNamespace(
-        title="No id", summary="x", comment="Accepted to CVPR 2026",
-        entry_id="not-a-real-url", pdf_url="", authors=[],
+        title="No id",
+        summary="x",
+        comment="Accepted to CVPR 2026",
+        entry_id="not-a-real-url",
+        pdf_url="",
+        authors=[],
     )
     rows, _ = cc.build_rows([bad], "CVPR")
     assert rows == []
@@ -99,15 +103,15 @@ def test_write_outputs_schema_and_oral_md(tmp_path: Path):
     assert list(read[0].keys()) == cc._CSV_COLUMNS
     assert read[0]["arxiv_id"] == "2604.00009"
     assert read[0]["venue"] == "CVPR"
+    assert read[0]["source"] == "arxiv"
+    assert read[0]["source_id"] == "2604.00009"
 
     oral_md = (tmp_path / "cvpr-2026" / "oral_summaries_ja.md").read_text(encoding="utf-8")
     assert "## 1. Paper One" in oral_md
 
 
 def test_write_outputs_no_oral_md_when_empty(tmp_path: Path):
-    rows, orals = cc.build_rows(
-        [_result("Poster", "Accepted to CVPR 2026", "2604.00011")], "CVPR"
-    )
+    rows, orals = cc.build_rows([_result("Poster", "Accepted to CVPR 2026", "2604.00011")], "CVPR")
     cc.write_outputs("cvpr-2026", rows, orals, output_root=tmp_path, date="2026-06-28")
     assert not (tmp_path / "cvpr-2026" / "oral_summaries_ja.md").exists()
 
@@ -122,9 +126,21 @@ def test_write_outputs_clears_stale_oral_md_on_empty_recollection(tmp_path: Path
 
     cc.write_outputs(
         "cvpr-2025",
-        [{"title": "P", "authors": "", "venue": "CVPR", "venue_tier": 2,
-          "citation_count": 0, "github_stars": 0, "arxiv_id": "", "abstract": "",
-          "url": "", "pdf_url": "", "comment": ""}],
+        [
+            {
+                "title": "P",
+                "authors": "",
+                "venue": "CVPR",
+                "venue_tier": 2,
+                "citation_count": 0,
+                "github_stars": 0,
+                "arxiv_id": "",
+                "abstract": "",
+                "url": "https://arxiv.org/abs/2404.00007",
+                "pdf_url": "",
+                "comment": "",
+            }
+        ],
         [],  # no orals this run
         output_root=tmp_path,
         date="2026-06-28",

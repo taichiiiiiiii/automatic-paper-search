@@ -98,7 +98,7 @@ if [ "${HTTP}" = "204" ]; then
   echo "      -H 'content-type: application/json' \\"
   echo "      --data '{\"theme\":\"Speculative Decoding\"}'"
   echo
-  echo "    # → 200 {\"ok\":true,\"status\":\"queued\",\"slug\":\"speculative-decoding\"}"
+  echo "    # → 200 {\"ok\":true,\"status\":\"queued\",\"slug\":\"speculative-decoding\",\"request_id\":\"theme-…\"}"
 else
   echo "⚠ unexpected HTTP code (expected 204). Check the Worker tail:"
   echo

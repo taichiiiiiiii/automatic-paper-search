@@ -1,15 +1,13 @@
 name: theme-on-demand
-# Run name surfaces the theme input in /actions/workflows/.../runs so
-# the CF Worker (worker/index.ts) can match a polling client to its
-# run via the GET /api/themes/status endpoint — matched on the
-# substring after the colon, case-preserved. Falls back to the
-# workflow name if `inputs.theme` is somehow missing (manually re-run
-# jobs etc).
-run-name: "theme-on-demand: ${{ inputs.theme || 'manual' }}"
+# Run name preserves the server-generated request ID for audit correlation.
+# GET /api/themes/status is deliberately dormant and always returns 503;
+# browsers determine completion by polling the public themes-manifest.json.
+# The fallback labels manually dispatched or re-run jobs whose inputs are absent.
+run-name: "theme-on-demand: ${{ inputs.theme || 'manual' }} / ${{ inputs.request_id || 'manual' }}"
 # On-demand single-theme generation. Triggered by the CF Worker via
 # the GitHub Actions REST API `POST /repos/.../workflows/.../dispatches`
 # when the in-browser form on /themes/ is submitted. Generates one
-# theme, refreshes the manifest, commits to develop.
+# theme, promotes its exact lineage path, and releases the promoted SHA.
 #
 # Differences from regen-themes.yml:
 #   - takes a single `theme` input instead of iterating every existing
@@ -28,28 +26,32 @@ on:
         description: 'Free-text theme to generate (max 80 chars, e.g. "Vision Transformer")'
         required: true
         type: string
+      request_id:
+        description: 'Opaque request identifier used for exact run matching'
+        required: false
+        default: ''
+        type: string
+
+permissions: {}
 
 # No concurrency group: GitHub Actions only keeps ONE pending job per
 # group, so a `cancel-in-progress: false` group would silently drop the
 # 2nd-through-Nth queued dispatch when a user submits 3+ themes back to
-# back (the worker rate-limit allows 5/h). We instead rely solely on the
-# rebase+retry loop in .github/scripts/commit-and-push.sh, which a
-# 5-worker stress test (test_five_parallel_runs_all_publish) verifies is
-# strong enough to land every commit when 5 runs race on the same ref.
+# back (the worker rate-limit allows 5/h). The promoter instead uses a
+# bounded fresh-tip compare-and-swap retry and rebuilds shared projections
+# whenever concurrent requests race.
 # See #125 for the failure mode this avoids and the original #121 fix.
 
 jobs:
   generate:
     runs-on: ubuntu-latest
+    outputs:
+      as_of: ${{ steps.candidate.outputs.as_of }}
+      base_sha: ${{ steps.candidate.outputs.base_sha }}
+      candidate_name: ${{ steps.candidate.outputs.candidate_name }}
+      primary_path: ${{ steps.candidate.outputs.primary_path }}
     permissions:
-      contents: write
-      # actions: write lets the final "Trigger Pages deploy" step
-      # dispatch pages.yml. Without it, the commit-and-push step writes
-      # a develop commit using GITHUB_TOKEN, and GitHub's "no recursive
-      # workflow triggers" policy stops pages.yml from firing on that
-      # push event — the new theme would be in develop but invisible
-      # on the GH Pages site until an operator manually re-ran pages.yml.
-      actions: write
+      contents: read
     # 15 min (was 8) so Groq rate-limiting + S2 retries can't push us past
     # the workflow timeout. With Groq's 25-RPM throttle + ~90 LLM calls
     # worst case, the LLM phase alone is ~4 min; S2/OpenAlex throttling
@@ -65,6 +67,7 @@ jobs:
         # substitution probes) is denied here.
         env:
           THEME_INPUT: ${{ github.event.inputs.theme }}
+          REQUEST_ID: ${{ github.event.inputs.request_id }}
         run: |
           set -u
           len=${#THEME_INPUT}
@@ -78,23 +81,27 @@ jobs:
             echo "::error::theme contains characters outside [A-Za-z0-9 _-]"
             exit 1
           fi
+          if [ -n "${REQUEST_ID:-}" ] && ! printf '%s' "$REQUEST_ID" | grep -Eq '^[A-Za-z0-9._:-]{1,128}$'; then
+            echo "::error::request_id has an invalid format"
+            exit 1
+          fi
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: develop
-          token: ${{ secrets.GH_PAT || github.token }}
+          persist-credentials: false
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: '3.12'
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
         with:
-          version: '0.7.x'
+          version: '0.12.7'
 
       - name: uv sync
-        run: uv sync
+        run: uv sync --frozen --extra dev --extra unarxive
 
       # #209 Phase J / PR #222: download the prebuilt unarXive DuckDB
       # so `paperpilot.utils.unarxive.fetch_contexts()` can return real
@@ -143,16 +150,6 @@ jobs:
           fi
         continue-on-error: true
 
-      - name: Install DuckDB (unarXive runtime dep, optional)
-        # Optional dep — only needed if the DuckDB asset above downloaded.
-        # Adding to uv sync would slow every build; install on-demand so
-        # workflows that don't need unarXive aren't penalised.
-        run: |
-          if [ -f paperpilot/data/unarxive/unarxive.duckdb ]; then
-            uv pip install duckdb
-          fi
-        continue-on-error: true
-
       - name: Generate theme lineage
         # User input goes through env var only (never spliced into the
         # shell command line) so command-substitution-style attacks are
@@ -184,61 +181,106 @@ jobs:
           # width=12. The classifications.json cache is shared between
           # the two passes so the LLM cost of the retry is just the
           # *new* parent/child pairs the wider BFS surfaces.
-          uv run python -m paperpilot.scripts.build_theme_lineage \
+          uv run --frozen python -m paperpilot.scripts.build_theme_lineage \
             --theme "$THEME_INPUT" \
             --depth 1 --seeds 5 --width 8 --since-year 2018 \
             --llm-strict ambiguous \
             --primary-source openalex \
             --auto-expand
 
-      - name: Refresh manifest
-        run: |
-          uv run python -m paperpilot.scripts.generate_themes_manifest \
-            --themes-dir docs/themes
-
-      - name: Refresh quality rollup
-        # Walks docs/themes/*/lineage.json and writes docs/themes/_quality.json
-        # with template_ratio + off-topic seed counts per theme. Viewer reads
-        # this to decorate theme cards with a quality badge. Cheap (~1s, no
-        # network) so it runs every on-demand build.
-        run: |
-          uv run python -m paperpilot.scripts.compute_theme_quality
-
-      - name: Commit + push if changed
+      - name: Freeze candidate metadata
+        id: candidate
         env:
           THEME_INPUT: ${{ github.event.inputs.theme }}
         run: |
           set -euo pipefail
-          git config user.email "actions@users.noreply.github.com"
-          git config user.name "github-actions[bot]"
-          # Pre-stage the shared classification cache so this run's new
-          # LLM rationales persist across CI invocations. The cache file
-          # is un-ignored in .gitignore (the rest of lineage-cache/ stays
-          # ignored). Without this, every run starts from the committed
-          # state and free-tier Groq's per-build TPM ceiling caps quality
-          # forever. `|| true` because the file may not exist on a clean
-          # fresh-build (no cache yet) — that's fine, commit-and-push.sh's
-          # docs/themes/ stage covers the lineage JSON in any case.
-          git add paperpilot/data/lineage-cache/classifications.json || true
-          # Commit message uses a literal $THEME_INPUT via env, not via
-          # interpolation, so a theme like "$(rm -rf ~)" would show up
-          # as a literal string in the commit. The push retry/rebase
-          # logic lives in .github/scripts/commit-and-push.sh — see #121
-          # for why this needs to be more than a single `git push`.
-          msg=$(printf 'data(themes): on-demand generation of "%s"' "$THEME_INPUT")
-          bash .github/scripts/commit-and-push.sh "$msg" docs/themes/
+          slug="$(uv run --frozen python -c \
+            'import os; from paperpilot.scripts._common import theme_slug; print(theme_slug(os.environ["THEME_INPUT"]))')"
+          primary_path="docs/themes/$slug"
+          [[ "$primary_path" =~ ^docs/themes/[a-z0-9-]{1,64}$ ]] || {
+            echo "::error::generated theme path is invalid"
+            exit 1
+          }
+          test -f "$primary_path/lineage.json"
+          echo "as_of=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
+          echo "base_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "candidate_name=theme-candidate-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_OUTPUT"
+          echo "primary_path=$primary_path" >> "$GITHUB_OUTPUT"
 
-      - name: Trigger Pages deploy
-        # commit-and-push.sh writes the new lineage commit using
-        # GITHUB_TOKEN. GitHub's "commits from GITHUB_TOKEN don't fire
-        # workflows" rule (anti-infinite-loop) means pages.yml's
-        # `paths: docs/**` trigger does NOT match — the new theme lands
-        # on develop but never reaches GH Pages until something else
-        # forces a deploy. Workaround: dispatch pages.yml here via the
-        # Actions REST API, which `gh workflow run` wraps. Cheap (~30s
-        # extra Pages run) and idempotent if commit-and-push was a
-        # no-op (manifest unchanged → Pages republishes the same files).
+      - name: Package exact theme candidate
         env:
-          GH_TOKEN: ${{ github.token }}
+          CANDIDATE_DIR: ${{ runner.temp }}/candidate
+          PRIMARY_PATH: ${{ steps.candidate.outputs.primary_path }}
+          PAPERPILOT_PACKAGE_INCLUDE_UNCHANGED: "1"
         run: |
-          gh workflow run pages.yml --ref develop --repo "${{ github.repository }}"
+          set -euo pipefail
+          bash .github/scripts/package-generated-candidate.sh \
+            "$CANDIDATE_DIR" "$PRIMARY_PATH"
+
+      - name: Upload generated candidate
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ${{ steps.candidate.outputs.candidate_name }}
+          path: ${{ runner.temp }}/candidate
+          if-no-files-found: error
+          retention-days: 14
+
+  promote:
+    needs: generate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    outputs:
+      source_sha: ${{ steps.promote.outputs.source_sha }}
+      changed: ${{ steps.promote.outputs.changed }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: develop
+          fetch-depth: 0
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.12"
+
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          version: "0.12.7"
+
+      - run: uv sync --frozen --extra dev --extra unarxive
+
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: ${{ needs.generate.outputs.candidate_name }}
+          path: ${{ runner.temp }}/candidate
+
+      - name: Validate and promote from the latest develop tip
+        id: promote
+        env:
+          PROMOTE_AS_OF: ${{ needs.generate.outputs.as_of }}
+          PROMOTE_BASE_SHA: ${{ needs.generate.outputs.base_sha }}
+          THEME_INPUT: ${{ inputs.theme }}
+          PRIMARY_PATH: ${{ needs.generate.outputs.primary_path }}
+        run: |
+          set -euo pipefail
+          [[ "$PRIMARY_PATH" =~ ^docs/themes/[a-z0-9-]{1,64}$ ]] || {
+            echo "::error::candidate theme path is invalid"
+            exit 1
+          }
+          msg=$(printf 'data(themes): on-demand generation of "%s"' "$THEME_INPUT")
+          bash .github/scripts/promote-generated.sh themes \
+            "$RUNNER_TEMP/candidate" "$msg" "$PRIMARY_PATH"
+
+  release:
+    needs: promote
+    if: needs.promote.outputs.changed == 'true'
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/pages-release.yml
+    with:
+      source_sha: ${{ needs.promote.outputs.source_sha }}
+      release_kind: normal
+      request_id: ${{ inputs.request_id }}

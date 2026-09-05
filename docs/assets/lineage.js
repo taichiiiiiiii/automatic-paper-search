@@ -1,5 +1,6 @@
 // Lineage viewer — pure SVG family tree / timeline. Requires utils.js loaded first.
-const { escapeHtml, formatStars, loadLineage } = window.PP;
+const { escapeHtml, formatStars } = window.PP;
+const LineageCore = window.PaperPilotLineageCore;
 const NODE_W = 220;
 const NODE_H = 150;
 const LEVEL_GAP = 80;
@@ -36,22 +37,36 @@ function savePrefs() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       layout: state.layout,
+      view: state.view,
       visibleRelations: [...state.visibleRelations],
     }));
   } catch { /* localStorage may be disabled */ }
 }
 
 const prefs = loadPrefs();
+const initialParams = new URLSearchParams(window.location.search);
+const urlRelations = (initialParams.get("relations") || "")
+  .split(",")
+  .filter((relation) => ALL_RELATIONS.includes(relation));
 const state = {
   data: null,
   // Default to Topics on first visit — it gives immediate bird's-eye context
   // (which subfields dominate Oral?) before asking the user to pick a paper
   // to center the tree on.
-  layout: VALID_LAYOUTS.has(prefs?.layout) ? prefs.layout : "topics",
+  layout: VALID_LAYOUTS.has(initialParams.get("layout"))
+    ? initialParams.get("layout")
+    : VALID_LAYOUTS.has(prefs?.layout) ? prefs.layout : "topics",
+  view: LineageCore.resolveView({
+    urlView: initialParams.get("view"),
+    savedView: prefs?.view,
+    matchMedia: window.matchMedia?.bind(window),
+  }),
   focusId: null,
   currentCluster: null,
   visibleRelations: new Set(
-    Array.isArray(prefs?.visibleRelations) && prefs.visibleRelations.length > 0
+    urlRelations.length > 0
+      ? urlRelations
+      : Array.isArray(prefs?.visibleRelations) && prefs.visibleRelations.length > 0
       ? prefs.visibleRelations.filter((r) => ALL_RELATIONS.includes(r))
       : DEFAULT_RELATIONS
   ),
@@ -68,6 +83,7 @@ const els = {
   crumb: document.getElementById("lineage-crumb"),
   legend: document.querySelector(".legend"),
   footerHint: document.getElementById("footer-hint"),
+  relationList: document.getElementById("relation-list"),
 };
 
 // Copy surfaced in the footer per-mode — tells the user what clicking does.
@@ -105,10 +121,69 @@ function clusterForFocus(id) {
   return null;
 }
 
+function currentConferenceSlug() {
+  return window.location.pathname
+    .split("/")
+    .filter((part) => part && !part.endsWith(".html"))
+    .pop() || "";
+}
+
+async function loadQualityManifest() {
+  try {
+    const response = await fetch("../lineage-quality-v1.json", { cache: "no-cache" });
+    if (!response.ok) return null;
+    return LineageCore.parseQualityManifest(await response.json());
+  } catch {
+    return null;
+  }
+}
+
 async function init() {
-  // Collapsible hero details ("使い方") — same idiom as theme.js/app.js (#370).
+  // #ui: the HTML ships a `.canvas-loading` element with a spinner;
+  // just hide it once the data resolves. Replaces the previous
+  // dynamically-injected `<p class="empty-state">…` paragraph.
+  const slug = currentConferenceSlug();
+  const quality = await loadQualityManifest();
+  const relativePath = `${slug}/lineage.json`;
+  const qualityRow = LineageCore.resolveQualityCollection(quality, {
+    kind: "conference", slug, path: relativePath,
+  });
+  // Never request an artifact merely because a row exists.  A failed or
+  // unknown audit is not an authorization to fetch unpublished graph data.
+  const loaded = LineageCore.qualityRowIsEligible(qualityRow)
+    ? await LineageCore.fetchJsonWithSha256("lineage.json")
+    : null;
+  if (LineageCore.qualityRowIsPublishable(qualityRow, {
+    artifactSha256: loaded?.sha256,
+  })) {
+    state.data = LineageCore.parseArtifact(loaded.data, { kind: "conference" });
+  }
+  const canvasLoading = document.getElementById("canvas-loading");
+  if (canvasLoading) canvasLoading.hidden = true;
+  if (!state.data) {
+    return;
+  }
+  if (!state.data.root) {
+    els.canvas.insertAdjacentHTML("beforeend", `<p class="empty-state">lineage に表示可能なノードがありません</p>`);
+    return;
+  }
+
+  const auditStatus = document.getElementById("lineage-audit-status");
+  const readyUi = document.getElementById("lineage-ready-ui");
+  if (auditStatus) auditStatus.hidden = true;
+  if (readyUi) readyUi.hidden = false;
+
+  // Bind controls only after quality, hash and strict artifact checks pass.
+  // Until then the HTML keeps the entire interactive region hidden.
   const heroToggle = document.getElementById("hero-toggle");
   const heroDetails = document.getElementById("hero-details");
+  const heroTitle = document.getElementById("lineage-page-title");
+  const heroLede = document.getElementById("lineage-page-lede");
+  const heroNote = document.getElementById("lineage-page-note");
+  if (heroToggle) heroToggle.hidden = false;
+  if (heroTitle) heroTitle.textContent = `Lineage — ${slug.toUpperCase()}（監査済み）`;
+  if (heroLede) heroLede.textContent = "品質監査に合格した論文間の関係を表示しています。";
+  if (heroNote) heroNote.textContent = "表示中のデータは構造・識別子・関係根拠と入力ハッシュを検証済みです。";
   if (heroToggle && heroDetails) {
     heroToggle.addEventListener("click", () => {
       const open = heroDetails.hidden;
@@ -116,39 +191,21 @@ async function init() {
       heroToggle.setAttribute("aria-expanded", String(open));
     });
   }
-
-  // Bind sync controls immediately so aria-pressed + click handlers reflect
-  // the restored state.layout before the data-load await — otherwise the
-  // hardcoded HTML `aria-pressed` flashes wrong when prefs = "topics".
   bindLayoutButtons();
+  bindViewButtons();
   bindCrumb();
-
-  // #ui: the HTML ships a `.canvas-loading` element with a spinner;
-  // just hide it once the data resolves. Replaces the previous
-  // dynamically-injected `<p class="empty-state">…` paragraph.
-  state.data = await loadLineage();
-  const canvasLoading = document.getElementById("canvas-loading");
-  if (canvasLoading) canvasLoading.hidden = true;
-  if (!state.data) {
-    els.canvas.insertAdjacentHTML("beforeend", `
-      <div class="empty-state">
-        <p>lineage データの読み込みに失敗しました</p>
-        <button class="layout-btn" onclick="location.reload()">🔄 再試行</button>
-      </div>`);
-    return;
-  }
-  if (!state.data.root || !state.data.nodes.some((n) => n.id === state.data.root)) {
-    state.data.root = state.data.nodes[0]?.id;
-  }
-  if (!state.data.root) {
-    els.canvas.insertAdjacentHTML("beforeend", `<p class="empty-state">lineage に表示可能なノードがありません</p>`);
-    return;
-  }
 
   const params = new URLSearchParams(window.location.search);
   const requested = params.get("focus");
-  const known = new Set(state.data.nodes.map((n) => n.id));
-  state.focusId = requested && known.has(requested) ? requested : state.data.root;
+  const focusNode = LineageCore.resolveFocus(state.data, requested);
+  if (requested && !focusNode) {
+    els.canvas.insertAdjacentHTML(
+      "beforeend",
+      `<p class="empty-state">指定された論文IDはこの監査済み系譜にありません。</p>`,
+    );
+    return;
+  }
+  state.focusId = focusNode?.id || state.data.root;
 
   bindRootButton();
   bindSearch();
@@ -160,8 +217,8 @@ async function init() {
   window.addEventListener("popstate", () => {
     const p = new URLSearchParams(window.location.search);
     const r = p.get("focus");
-    const next = r && known.has(r) ? r : state.data.root;
-    if (state.focusId !== next) focusPaper(next, { push: false });
+    const next = LineageCore.resolveFocus(state.data, r);
+    if (next && state.focusId !== next.id) focusPaper(next.id, { push: false });
   });
 }
 
@@ -180,6 +237,13 @@ function bindLayoutButtons() {
   for (const btn of document.querySelectorAll(".layout-btn[data-layout]")) {
     btn.addEventListener("click", () => setLayout(btn.dataset.layout));
     btn.setAttribute("aria-pressed", btn.dataset.layout === state.layout ? "true" : "false");
+  }
+}
+
+function bindViewButtons() {
+  for (const btn of document.querySelectorAll(".view-btn[data-view]")) {
+    btn.addEventListener("click", () => setView(btn.dataset.view));
+    btn.setAttribute("aria-pressed", String(btn.dataset.view === state.view));
   }
 }
 
@@ -204,6 +268,7 @@ function renderFilterChips() {
     else state.visibleRelations.add(rel);
     btn.setAttribute("aria-pressed", state.visibleRelations.has(rel));
     savePrefs();
+    syncDisplayUrl();
     render();
   });
 }
@@ -215,8 +280,9 @@ function focusPaper(id, { push = true, smooth = true } = {}) {
   // re-render instead of dropping back to <body>.
   const cameFromKeyboard = document.activeElement?.classList?.contains("node-card");
   state.focusId = id;
+  const selected = state.data.nodes.find((node) => node.id === id);
   const url = new URL(window.location.href);
-  url.searchParams.set("focus", id);
+  url.searchParams.set("focus", selected?.seed_paper_id || id);
   if (push) window.history.pushState({}, "", url);
   else window.history.replaceState({}, "", url);
   render();
@@ -256,7 +322,7 @@ function bindSearch() {
     } else {
       results.innerHTML = matches.map((n) => {
         const sub = PP.formatVenue(n.venue, n.year);
-        return `<button class="lineage-search__item" data-id="${n.id}" type="button">
+        return `<button class="lineage-search__item" data-id="${escapeHtml(n.id)}" type="button">
           <span class="lineage-search__title">${escapeHtml(n.title)}</span>
           <span class="lineage-search__sub">${escapeHtml(sub)}</span>
         </button>`;
@@ -325,6 +391,17 @@ function scrollToFocus(smooth) {
 function render() {
   applyModeUI();
   renderCrumb();
+  if (state.view === "list") {
+    const { nodes, edges } = state.data;
+    const positioned = layoutTree(nodes, edges, state.focusId);
+    const activeEdges = LineageCore.selectActiveEdges(
+      edges,
+      state.visibleRelations,
+      new Set(positioned.map((node) => node.id)),
+    );
+    renderRelationList(activeEdges);
+    return;
+  }
   if (state.layout === "topics") {
     renderTopicsGallery();
     return;
@@ -332,16 +409,19 @@ function render() {
   // SVG layouts (tree / timeline) share the canvas; topics view replaces it.
   restoreCanvasForSvg();
   const { nodes, edges } = state.data;
-  const visibleEdges = edges.filter((e) => state.visibleRelations.has(e.rel));
-
   const positioned = state.layout === "tree"
     ? layoutTree(nodes, edges, state.focusId)
     : layoutTimeline(nodes);
+  const activeEdges = LineageCore.selectActiveEdges(
+    edges,
+    state.visibleRelations,
+    new Set(positioned.map((node) => node.id)),
+  );
 
   // Surface unexpected rejections instead of silently dropping via
   // `void` — a blank graph with no signal is worse than a console
   // error during development.
-  drawSvg(positioned, visibleEdges).then(() => {
+  drawSvg(positioned, activeEdges).then(() => {
     // Timeline mode lays out papers by year (oldest left, newest right).
     // The recent year often has a deep paper stack (e.g., ICLR 2026 Oral
     // = 13 papers) while older years carry just one ancestor each. With
@@ -362,10 +442,48 @@ function render() {
 // Show/hide chrome that only makes sense for specific layouts. Keeps the
 // screen quieter in topics mode where edges + relation filters don't apply.
 function applyModeUI() {
-  const isGraph = state.layout === "tree" || state.layout === "timeline";
+  const isList = state.view === "list";
+  const isGraph = !isList && (state.layout === "tree" || state.layout === "timeline");
   if (els.legend) els.legend.hidden = !isGraph;
-  if (els.filterBar) els.filterBar.hidden = !isGraph;
-  if (els.footerHint) els.footerHint.textContent = FOOTER_HINT[state.layout] || "";
+  if (els.filterBar) els.filterBar.hidden = state.layout === "topics" && !isList;
+  if (els.canvas) els.canvas.hidden = isList;
+  if (els.relationList) els.relationList.hidden = !isList;
+  if (els.footerHint) {
+    els.footerHint.textContent = isList
+      ? "関係、確信度、根拠、生成 provenance を読み上げ可能な一覧で表示"
+      : FOOTER_HINT[state.layout] || "";
+  }
+}
+
+function renderRelationList(edges) {
+  if (!els.relationList) return;
+  const nodes = new Map(state.data.nodes.map((node) => [node.id, node]));
+  if (edges.length === 0) {
+    els.relationList.innerHTML = `<p class="empty-state">現在の条件で表示できる関係はありません。</p>`;
+    return;
+  }
+  els.relationList.innerHTML = `<ol class="relation-list__items">${edges.map((edge) => {
+    const source = nodes.get(edge.src);
+    const target = nodes.get(edge.dst);
+    const provenance = edge.provenance;
+    const classification = provenance.classification;
+    const confidence = `${Math.round(edge.confidence * 100)}%`;
+    const model = classification.model || "非LLM";
+    return `<li class="relation-row">
+      <div class="relation-row__path">
+        <span>${escapeHtml(source?.title || edge.src)}</span>
+        <strong>${escapeHtml(RELATION_LABEL_JA[edge.relation] || edge.relation)}</strong>
+        <span>${escapeHtml(target?.title || edge.dst)}</span>
+      </div>
+      <p class="relation-row__rationale">${escapeHtml(edge.rationale)}</p>
+      <dl class="relation-row__meta">
+        <div><dt>確信度</dt><dd>${confidence}</dd></div>
+        <div><dt>根拠</dt><dd>${escapeHtml(`${provenance.evidence.source}/${provenance.evidence.kind}`)}</dd></div>
+        <div><dt>生成</dt><dd>${escapeHtml(`${provenance.producer.name}@${provenance.producer.version}`)}</dd></div>
+        <div><dt>分類</dt><dd>${escapeHtml(`${classification.method} · ${model} · ${classification.schema_version}`)}</dd></div>
+      </dl>
+    </li>`;
+  }).join("")}</ol>`;
 }
 
 function restoreCanvasForSvg() {
@@ -438,7 +556,32 @@ function setLayout(layout) {
     b.setAttribute("aria-pressed", b.dataset.layout === layout ? "true" : "false");
   }
   savePrefs();
+  syncDisplayUrl();
   render();
+}
+
+function setView(view) {
+  if (!["list", "graph"].includes(view) || state.view === view) return;
+  state.view = view;
+  if (view === "list" && state.layout === "topics") state.layout = "tree";
+  for (const button of document.querySelectorAll(".view-btn[data-view]")) {
+    button.setAttribute("aria-pressed", String(button.dataset.view === view));
+  }
+  for (const button of document.querySelectorAll(".layout-btn[data-layout]")) {
+    button.setAttribute("aria-pressed", String(button.dataset.layout === state.layout));
+  }
+  savePrefs();
+  syncDisplayUrl();
+  render();
+  if (view === "list") els.relationList?.focus({ preventScroll: true });
+}
+
+function syncDisplayUrl() {
+  const url = new URL(window.location.href);
+  url.searchParams.set("view", state.view);
+  url.searchParams.set("layout", state.layout);
+  url.searchParams.set("relations", [...state.visibleRelations].sort().join(","));
+  window.history.replaceState({}, "", url);
 }
 
 // ---------------- Topics layout (cluster gallery) ----------------
@@ -532,9 +675,9 @@ function layoutTree(nodes, edges, focusId) {
   const children = new Map();
   for (const n of nodes) { parents.set(n.id, []); children.set(n.id, []); }
   for (const e of edges) {
-    if (!GENEALOGY.has(e.rel)) continue;
-    parents.get(e.dst)?.push({ id: e.src, rel: e.rel });
-    children.get(e.src)?.push({ id: e.dst, rel: e.rel });
+    if (!GENEALOGY.has(e.relation)) continue;
+    parents.get(e.dst)?.push({ id: e.src, rel: e.relation });
+    children.get(e.src)?.push({ id: e.dst, rel: e.relation });
   }
 
   // BFS bounded by MAX_DEPTH in each direction
@@ -855,19 +998,19 @@ async function drawSvg(positioned, edges) {
 
     const path = document.createElementNS(SVG_NS, "path");
     path.setAttribute("d", d);
-    path.setAttribute("class", `edge edge--${markerClass(e.rel)}`);
-    path.setAttribute("marker-end", `url(#arrow-${markerClass(e.rel)})`);
+    path.setAttribute("class", `edge edge--${markerClass(e.relation)}`);
+    path.setAttribute("marker-end", `url(#arrow-${markerClass(e.relation)})`);
     // Shared backbone/branch hierarchy (PP.edgeStyle) — sets both opacity
     // and width per relation, so the conference tree matches the theme
     // viewer's descent-trunk reading instead of opacity alone.
-    const est = PP.edgeStyle(markerClass(e.rel), e.conf);
+    const est = PP.edgeStyle(markerClass(e.relation), e.confidence);
     if (est) {
       path.style.strokeOpacity = est.opacity;
       path.style.strokeWidth = est.width;
     }
-    path.dataset.rel = e.rel;
+    path.dataset.rel = e.relation;
     path.dataset.rationale = e.rationale || "";
-    path.dataset.conf = e.conf ?? "";
+    path.dataset.conf = e.confidence ?? "";
     path.dataset.src = e.src;
     path.dataset.dst = e.dst;
     path.addEventListener("mouseenter", onEdgeHover);
@@ -875,12 +1018,12 @@ async function drawSvg(positioned, edges) {
     path.addEventListener("mouseleave", onEdgeLeave);
     edgeGroup.appendChild(path);
 
-    const label = RELATION_LABEL_JA[e.rel];
+    const label = RELATION_LABEL_JA[e.relation];
     if (label) {
       const labelMidX = (ax + bx) / 2;
       const labelMidY = midY;
       const bg = document.createElementNS(SVG_NS, "rect");
-      bg.setAttribute("class", `edge-label-bg edge-label-bg--${markerClass(e.rel)}`);
+      bg.setAttribute("class", `edge-label-bg edge-label-bg--${markerClass(e.relation)}`);
       bg.setAttribute("x", labelMidX - 14);
       bg.setAttribute("y", labelMidY - 8);
       bg.setAttribute("width", 28);
@@ -888,7 +1031,7 @@ async function drawSvg(positioned, edges) {
       bg.setAttribute("rx", 3);
       edgeGroup.appendChild(bg);
       const text = document.createElementNS(SVG_NS, "text");
-      text.setAttribute("class", `edge-label edge-label--${markerClass(e.rel)}`);
+      text.setAttribute("class", `edge-label edge-label--${markerClass(e.relation)}`);
       text.setAttribute("x", labelMidX);
       text.setAttribute("y", labelMidY + 4);
       text.setAttribute("text-anchor", "middle");

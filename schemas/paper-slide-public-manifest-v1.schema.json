@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paperpilot.local/schemas/paper-slide-public-manifest-v1.schema.json",
+  "title": "PaperPilot paper-slide public shard manifest v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "manifest_path", "shards"],
+  "properties": {
+    "schema_version": {"const": "paper-slide-public-manifest-v1"},
+    "manifest_path": {
+      "const": "/automatic-paper-search/paper-slides-v1/manifest.json"
+    },
+    "shards": {
+      "type": "array",
+      "minItems": 256,
+      "maxItems": 256,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["prefix", "path", "sha256", "entry_count"],
+        "properties": {
+          "prefix": {"type": "string", "pattern": "^[0-9a-f]{2}$"},
+          "path": {
+            "type": "string",
+            "pattern": "^/automatic-paper-search/paper-slides-v1/index/[0-9a-f]{2}\\.json$"
+          },
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "entry_count": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          }
+        }
+      }
+    }
+  }
+}

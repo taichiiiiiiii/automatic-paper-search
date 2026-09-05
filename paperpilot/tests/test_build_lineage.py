@@ -9,12 +9,14 @@ Key invariants enforced:
       NOT urllib direct.
     - classifications cache round-trips to JSON.
     - Edges with `unrelated` relation are dropped.
-    - Edges are keyed by "src->dst" so the cache is re-usable across runs.
+    - The legacy cache helper retains ``src->dst`` compatibility.
+    - The public build path uses lineage cache v2 identity and artifact v1.
 """
 
 from __future__ import annotations
 
 import json
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -22,6 +24,8 @@ import pytest
 
 from paperpilot.llm.base import AbstractLLMProvider, RelationClassification
 from paperpilot.scripts import build_lineage
+
+_SEED_ID = "a" * 40
 
 # ---- provider selection ----
 
@@ -39,15 +43,19 @@ def _patch_env(monkeypatch, **values):
     # `dict[str, dict[Never, Never]]` from the empty smtp sub-dict and
     # base.update(values) becomes a type error.
     base: dict[str, object] = {
-        "github_token": None, "s2_api_key": None, "openalex_email": None,
-        "slack_webhook_url": None, "gemini_api_key": None, "claude_api_key": None,
-        "groq_api_key": None, "groq_model": None, "gemini_model": None,
+        "github_token": None,
+        "s2_api_key": None,
+        "openalex_email": None,
+        "slack_webhook_url": None,
+        "gemini_api_key": None,
+        "claude_api_key": None,
+        "groq_api_key": None,
+        "groq_model": None,
+        "gemini_model": None,
         "smtp": {},
     }
     base.update(values)
-    monkeypatch.setattr(
-        "paperpilot.utils.config_loader.load_env", lambda *a, **kw: base
-    )
+    monkeypatch.setattr("paperpilot.utils.config_loader.load_env", lambda *a, **kw: base)
     # Belt and braces: clear the unprefixed fallbacks + the provider
     # override that build_provider also reads from os.environ, so an
     # ambient PAPERPILOT_LLM_PROVIDER can't make these tests non-hermetic.
@@ -172,7 +180,8 @@ def test_classify_cached_writes_cache_and_skips_on_hit(tmp_path: Path):
 
     out = build_lineage._classify_cached(
         provider,
-        {"title": "A"}, {"title": "B"},
+        {"title": "A"},
+        {"title": "B"},
         cache_key="A->B",
         classifications=classifications,
         cache_path=cache_path,
@@ -195,7 +204,8 @@ def test_classify_cached_writes_cache_and_skips_on_hit(tmp_path: Path):
     provider_fail = _FakeProvider(return_value=None)
     out2 = build_lineage._classify_cached(
         provider_fail,
-        {"title": "A"}, {"title": "B"},
+        {"title": "A"},
+        {"title": "B"},
         cache_key="A->B",
         classifications=classifications,
         cache_path=cache_path,
@@ -215,7 +225,9 @@ def test_classify_cached_falls_back_to_heuristic_when_llm_dark(tmp_path: Path):
     a = {"title": "FlashAttention", "year": 2022, "paperId": "p1"}
     b = {"title": "FlashAttention-2", "year": 2023, "paperId": "p2"}
     out = build_lineage._classify_cached(
-        provider, a, b,
+        provider,
+        a,
+        b,
         cache_key="p1->p2",
         classifications=classifications,
         cache_path=cache_path,
@@ -236,7 +248,9 @@ def test_classify_cached_drops_when_llm_dark_and_no_intent_record(tmp_path: Path
     classifications: dict[str, dict] = {}
     provider = _FakeProvider(return_value=None)
     out = build_lineage._classify_cached(
-        provider, {"title": "A"}, {"title": "B"},
+        provider,
+        {"title": "A"},
+        {"title": "B"},
         cache_key="A->B",
         classifications=classifications,
         cache_path=cache_path,
@@ -274,7 +288,8 @@ def test_classify_cached_merges_concurrent_writes(tmp_path: Path):
     provider = _FakeProvider(return_value=rc)
     build_lineage._classify_cached(
         provider,
-        {"title": "X"}, {"title": "Y"},
+        {"title": "X"},
+        {"title": "Y"},
         cache_key="X->Y",
         classifications=classifications,
         cache_path=cache_path,
@@ -294,7 +309,8 @@ def test_classify_cached_atomic_write_no_temp_leftover(tmp_path: Path):
     provider = _FakeProvider(return_value=rc)
     build_lineage._classify_cached(
         provider,
-        {"title": "A"}, {"title": "B"},
+        {"title": "A"},
+        {"title": "B"},
         cache_key="A->B",
         classifications=classifications,
         cache_path=cache_path,
@@ -314,7 +330,8 @@ def test_classify_cached_tolerates_corrupt_disk_cache(tmp_path: Path):
     provider = _FakeProvider(return_value=rc)
     build_lineage._classify_cached(
         provider,
-        {"title": "A"}, {"title": "B"},
+        {"title": "A"},
+        {"title": "B"},
         cache_key="A->B",
         classifications=classifications,
         cache_path=cache_path,
@@ -340,7 +357,8 @@ def test_classify_cached_returns_none_on_failure(tmp_path: Path):
 
     out = build_lineage._classify_cached(
         provider,
-        {"title": "A"}, {"title": "B"},
+        {"title": "A"},
+        {"title": "B"},
         cache_key="A->B",
         classifications=classifications,
         cache_path=cache_path,
@@ -377,7 +395,8 @@ def test_classify_cached_treats_degenerate_cache_entry_as_miss(tmp_path: Path):
 
     out = build_lineage._classify_cached(
         provider,
-        {"title": "A"}, {"title": "B"},
+        {"title": "A"},
+        {"title": "B"},
         cache_key="A->B",
         classifications=classifications,
         cache_path=cache_path,
@@ -404,7 +423,8 @@ def test_classify_cached_still_serves_wellformed_cache_entry(tmp_path: Path):
 
     out = build_lineage._classify_cached(
         provider,
-        {"title": "A"}, {"title": "B"},
+        {"title": "A"},
+        {"title": "B"},
         cache_key="A->B",
         classifications=classifications,
         cache_path=cache_path,
@@ -413,6 +433,166 @@ def test_classify_cached_still_serves_wellformed_cache_entry(tmp_path: Path):
     assert provider.calls == [], "well-formed cache entry must be a hit"
     assert out is not None
     assert out["rationale"] == good
+
+
+def test_classify_cached_v2_ignores_legacy_and_pins_identity(tmp_path: Path, monkeypatch):
+    now = datetime(2026, 8, 30, tzinfo=timezone.utc)
+    monkeypatch.setattr(build_lineage, "_utc_now", lambda: now)
+    cache_path = tmp_path / "cls.json"
+    classifications = {
+        "a->b": {
+            "relation": "contrasts",
+            "confidence": 0.9,
+            "rationale": "legacy cache entry must never become a v2 hit",
+        }
+    }
+    reason = "Paper B extends Paper A with an exact-attention implementation."
+    provider = _FakeProvider(
+        RelationClassification(relation="extends", confidence=0.8, rationale=reason)
+    )
+
+    out = build_lineage._classify_cached_v2(
+        provider,
+        {"paperId": "a", "title": "A", "abstract": "alpha"},
+        {"paperId": "b", "title": "B", "abstract": "beta"},
+        src_id="a",
+        dst_id="b",
+        classifications=classifications,
+        cache_path=cache_path,
+        rate_delay=0,
+    )
+
+    assert provider.calls, "legacy src->dst entry must be a v2 miss"
+    assert out is not None
+    v2_keys = [key for key in classifications if key.startswith("v2:")]
+    assert len(v2_keys) == 1
+    entry = classifications[v2_keys[0]]
+    assert entry["status"] == "success"
+    assert entry["cache_identity"]["provider"] == "fake"
+    assert entry["cache_identity"]["model"] == "fake"
+    assert entry["cache_identity"]["src"] == "a"
+    assert entry["cache_identity"]["dst"] == "b"
+    assert entry["provenance"]["classification"] == {
+        "method": "llm",
+        "provider": "fake",
+        "model": "fake",
+        "prompt_version": "relation-prompt-v1",
+        "schema_version": "relation-classification-v1",
+    }
+
+    provider_fail = _FakeProvider(None)
+    hit = build_lineage._classify_cached_v2(
+        provider_fail,
+        {"paperId": "a", "title": "A", "abstract": "alpha"},
+        {"paperId": "b", "title": "B", "abstract": "beta"},
+        src_id="a",
+        dst_id="b",
+        classifications=classifications,
+        cache_path=cache_path,
+        rate_delay=0,
+    )
+    assert hit == entry
+    assert provider_fail.calls == []
+
+
+def test_classify_cached_v2_rejects_expired_and_provider_mismatch(tmp_path: Path, monkeypatch):
+    initial = datetime(2026, 8, 30, tzinfo=timezone.utc)
+    monkeypatch.setattr(build_lineage, "_utc_now", lambda: initial)
+    cache_path = tmp_path / "cls.json"
+    classifications: dict[str, dict] = {}
+    args = (
+        {"paperId": "a", "title": "A"},
+        {"paperId": "b", "title": "B"},
+    )
+    build_lineage._classify_cached_v2(
+        _FakeProvider(
+            RelationClassification(
+                relation="extends", confidence=0.8, rationale="a durable rationale"
+            )
+        ),
+        *args,
+        src_id="a",
+        dst_id="b",
+        classifications=classifications,
+        cache_path=cache_path,
+        rate_delay=0,
+    )
+
+    monkeypatch.setattr(build_lineage, "_utc_now", lambda: initial + timedelta(days=31))
+    expired_provider = _FakeProvider(None)
+    assert (
+        build_lineage._classify_cached_v2(
+            expired_provider,
+            *args,
+            src_id="a",
+            dst_id="b",
+            classifications=classifications,
+            cache_path=cache_path,
+            rate_delay=0,
+        )
+        is None
+    )
+    assert expired_provider.calls
+
+    monkeypatch.setattr(build_lineage, "_utc_now", lambda: initial)
+    other_provider = _FakeProvider(None)
+    other_provider.name = "other"
+    assert (
+        build_lineage._classify_cached_v2(
+            other_provider,
+            *args,
+            src_id="a",
+            dst_id="b",
+            classifications=classifications,
+            cache_path=cache_path,
+            rate_delay=0,
+        )
+        is None
+    )
+    assert other_provider.calls
+
+
+def test_classify_cached_v2_wraps_heuristic_provenance_without_caching(tmp_path: Path):
+    cache_path = tmp_path / "cls.json"
+    classifications: dict[str, dict] = {}
+    parent = {
+        "paperId": "p1",
+        "title": "FlashAttention",
+        "year": 2022,
+        "citationCount": 1000,
+    }
+    child = {
+        "paperId": "p2",
+        "title": "FlashAttention-2",
+        "year": 2023,
+        "citationCount": 800,
+    }
+
+    out = build_lineage._classify_cached_v2(
+        _FakeProvider(None),
+        parent,
+        child,
+        src_id="p1",
+        dst_id="p2",
+        classifications=classifications,
+        cache_path=cache_path,
+        rate_delay=0,
+        intent_record=child,
+    )
+
+    assert out is not None
+    assert out["relation"] == "supersedes"
+    assert out["provenance"]["classification"] == {
+        "method": "title_version",
+        "provider": None,
+        "model": None,
+        "prompt_version": None,
+        "schema_version": "relation-classification-v1",
+    }
+    assert out["provenance"]["evidence"]["source"] == "semantic_scholar"
+    assert len(out["provenance"]["evidence"]["sha256"]) == 64
+    assert classifications == {}, "heuristic fallback is intentionally not cached"
+    assert not cache_path.exists()
 
 
 def test_build_final_filter_drops_short_rationale_edges():
@@ -426,23 +606,24 @@ def test_build_final_filter_drops_short_rationale_edges():
         {"src": "a", "dst": "b", "rel": "extends", "conf": 0.7, "rationale": "A"},
         {"src": "a", "dst": "c", "rel": "extends", "conf": 0.7, "rationale": "   "},
         {
-            "src": "a", "dst": "d", "rel": "extends", "conf": 0.7,
+            "src": "a",
+            "dst": "d",
+            "rel": "extends",
+            "conf": 0.7,
             "rationale": "論文 B は論文 A の手法を別ドメインに拡張している。",
         },
     ]
     kept = build_lineage._filter_edges_by_rationale(edges)
     assert len(kept) == 1
     assert kept[0]["dst"] == "d"
-    assert all(
-        len((e.get("rationale") or "").strip()) >= _MIN_RATIONALE_LEN for e in kept
-    )
+    assert all(len((e.get("rationale") or "").strip()) >= _MIN_RATIONALE_LEN for e in kept)
 
 
 # ---- build() end-to-end ----
 
 
-def _focus_s2(paper_id: str, title: str) -> dict:
-    return {
+def _focus_s2(paper_id: str, title: str, arxiv_id: str | None = None) -> dict:
+    paper = {
         "paperId": paper_id,
         "title": title,
         "year": 2024,
@@ -451,6 +632,333 @@ def _focus_s2(paper_id: str, title: str) -> dict:
         "abstract": "abstract body",
         "citationCount": 42,
     }
+    if arxiv_id is not None:
+        paper["externalIds"] = {"ArXiv": arxiv_id}
+    return paper
+
+
+def test_build_rejects_invalid_seed_before_provider_or_source_lookup(tmp_path: Path, monkeypatch):
+    papers_path = tmp_path / "papers.json"
+    papers_path.write_text(
+        json.dumps(
+            [
+                {
+                    "paper_id": "not-canonical",
+                    "title": "Bad identity",
+                    "type": "Oral",
+                    "arxiv_id": "2401.00001",
+                }
+            ]
+        )
+    )
+    monkeypatch.setattr(
+        build_lineage,
+        "resolve_paths",
+        lambda conference: (papers_path, tmp_path / "lineage.json"),
+    )
+    build_provider = MagicMock()
+    fetch = MagicMock()
+    monkeypatch.setattr(build_lineage, "build_provider", build_provider)
+    monkeypatch.setattr(build_lineage, "fetch_paper_by_arxiv", fetch)
+
+    with pytest.raises(ValueError, match="lowercase 40-hex"):
+        build_lineage.build()
+    build_provider.assert_not_called()
+    fetch.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "identity_fields",
+    [
+        {"arxiv_id": "not-an-arxiv-id"},
+        {
+            "arxiv_id": "2401.00001",
+            "arxiv_url": "https://arxiv.org/abs/2401.00002",
+        },
+    ],
+)
+def test_build_rejects_invalid_arxiv_before_provider_or_source_lookup(
+    tmp_path: Path, monkeypatch, identity_fields: dict
+):
+    papers_path = tmp_path / "papers.json"
+    papers_path.write_text(
+        json.dumps(
+            [
+                {
+                    "paper_id": _SEED_ID,
+                    "title": "Bad arXiv identity",
+                    "type": "Oral",
+                    **identity_fields,
+                }
+            ]
+        )
+    )
+    monkeypatch.setattr(
+        build_lineage,
+        "resolve_paths",
+        lambda conference: (papers_path, tmp_path / "lineage.json"),
+    )
+    build_provider = MagicMock()
+    fetch = MagicMock()
+    monkeypatch.setattr(build_lineage, "build_provider", build_provider)
+    monkeypatch.setattr(build_lineage, "fetch_paper_by_arxiv", fetch)
+
+    with pytest.raises(ValueError, match=r"arXiv identity|identities do not match"):
+        build_lineage.build()
+    build_provider.assert_not_called()
+    fetch.assert_not_called()
+
+
+def test_build_rejects_duplicate_normalized_arxiv_before_provider_or_source_lookup(
+    tmp_path: Path, monkeypatch
+):
+    papers_path = tmp_path / "papers.json"
+    papers_path.write_text(
+        json.dumps(
+            [
+                {
+                    "paper_id": "b" * 40,
+                    "title": "Versioned alias",
+                    "type": "Oral",
+                    "arxiv_id": "2401.00001v2",
+                },
+                {
+                    "paper_id": "c" * 40,
+                    "title": "Base alias",
+                    "type": "Oral",
+                    "arxiv_id": "2401.00001",
+                },
+            ]
+        )
+    )
+    monkeypatch.setattr(
+        build_lineage,
+        "resolve_paths",
+        lambda conference: (papers_path, tmp_path / "lineage.json"),
+    )
+    build_provider = MagicMock()
+    fetch = MagicMock()
+    monkeypatch.setattr(build_lineage, "build_provider", build_provider)
+    monkeypatch.setattr(build_lineage, "fetch_paper_by_arxiv", fetch)
+
+    with pytest.raises(ValueError, match="duplicate normalized arXiv identity"):
+        build_lineage.build()
+    build_provider.assert_not_called()
+    fetch.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    ("paper_id", "external_ids"),
+    [
+        ("focus-id", {}),
+        ("focus-id", {"ArXiv": "2401.99999"}),
+        ("focus-id", {"ArXiv": "invalid"}),
+        ("", {"ArXiv": "2401.00001"}),
+    ],
+)
+def test_build_rejects_bad_s2_focus_alias_before_related_or_classify(
+    tmp_path: Path, monkeypatch, paper_id: str, external_ids: dict
+):
+    papers_path = tmp_path / "papers.json"
+    papers_path.write_text(
+        json.dumps(
+            [
+                {
+                    "paper_id": _SEED_ID,
+                    "title": "Focus",
+                    "type": "Oral",
+                    "arxiv_id": "2401.00001",
+                }
+            ]
+        )
+    )
+    monkeypatch.setattr(
+        build_lineage,
+        "resolve_paths",
+        lambda conference: (papers_path, tmp_path / "lineage.json"),
+    )
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    provider = _FakeProvider(None)
+    monkeypatch.setattr(build_lineage, "build_provider", lambda: (provider, 0))
+    monkeypatch.setattr(
+        build_lineage,
+        "fetch_paper_by_arxiv",
+        lambda arxiv_id: {
+            "paperId": paper_id,
+            "title": "Focus",
+            "externalIds": external_ids,
+        },
+    )
+    fetch_related = MagicMock()
+    monkeypatch.setattr(build_lineage, "fetch_related", fetch_related)
+
+    with pytest.raises(ValueError, match="Semantic Scholar"):
+        build_lineage.build()
+    fetch_related.assert_not_called()
+    assert provider.calls == []
+
+
+def test_build_preflights_all_focus_aliases_before_any_related_fetch(tmp_path: Path, monkeypatch):
+    papers_path = tmp_path / "papers.json"
+    papers_path.write_text(
+        json.dumps(
+            [
+                {
+                    "paper_id": "b" * 40,
+                    "title": "Valid first focus",
+                    "type": "Oral",
+                    "arxiv_id": "2401.00001",
+                },
+                {
+                    "paper_id": "c" * 40,
+                    "title": "Mismatched second focus",
+                    "type": "Oral",
+                    "arxiv_id": "2401.00002",
+                },
+            ]
+        )
+    )
+    monkeypatch.setattr(
+        build_lineage,
+        "resolve_paths",
+        lambda conference: (papers_path, tmp_path / "lineage.json"),
+    )
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    provider = _FakeProvider(None)
+    monkeypatch.setattr(build_lineage, "build_provider", lambda: (provider, 0))
+    responses = {
+        "2401.00001": _focus_s2("first-id", "First", "2401.00001"),
+        "2401.00002": _focus_s2("second-id", "Second", "2401.99999"),
+    }
+    fetch_focus = MagicMock(side_effect=lambda arxiv_id: responses[arxiv_id])
+    fetch_related = MagicMock()
+    monkeypatch.setattr(build_lineage, "fetch_paper_by_arxiv", fetch_focus)
+    monkeypatch.setattr(build_lineage, "fetch_related", fetch_related)
+
+    with pytest.raises(ValueError, match="does not match"):
+        build_lineage.build()
+    assert [call.args[0] for call in fetch_focus.call_args_list] == [
+        "2401.00001",
+        "2401.00002",
+    ]
+    fetch_related.assert_not_called()
+    assert provider.calls == []
+
+
+def test_build_normalizes_versioned_arxiv_before_fetch(tmp_path: Path, monkeypatch):
+    papers_path = tmp_path / "papers.json"
+    papers_path.write_text(
+        json.dumps(
+            [
+                {
+                    "paper_id": _SEED_ID,
+                    "title": "Versioned focus",
+                    "type": "Oral",
+                    "arxiv_id": "2401.00001v3",
+                }
+            ]
+        )
+    )
+    monkeypatch.setattr(
+        build_lineage,
+        "resolve_paths",
+        lambda conference: (papers_path, tmp_path / "lineage.json"),
+    )
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    monkeypatch.setattr(build_lineage, "build_provider", lambda: (_FakeProvider(None), 0))
+    fetched: list[str] = []
+
+    def fetch_focus(arxiv_id: str) -> dict:
+        fetched.append(arxiv_id)
+        return _focus_s2("focus-id", "Versioned focus", "2401.00001v7")
+
+    monkeypatch.setattr(build_lineage, "fetch_paper_by_arxiv", fetch_focus)
+    monkeypatch.setattr(build_lineage, "fetch_related", lambda *args, **kwargs: [])
+
+    result = build_lineage.build(generated_at="2026-08-30T00:00:00Z")
+    assert fetched == ["2401.00001"]
+    assert result["nodes"][0]["aliases"][0] == ["arxiv", "2401.00001"]
+
+
+def test_build_root_and_order_are_deterministic_on_degree_tie(tmp_path: Path, monkeypatch):
+    papers_path = tmp_path / "papers.json"
+    papers_path.write_text(
+        json.dumps(
+            [
+                {
+                    "paper_id": "b" * 40,
+                    "title": "Zed",
+                    "type": "Oral",
+                    "arxiv_id": "2401.00001",
+                },
+                {
+                    "paper_id": "c" * 40,
+                    "title": "Alpha",
+                    "type": "Oral",
+                    "arxiv_id": "2401.00002",
+                },
+            ]
+        )
+    )
+    monkeypatch.setattr(
+        build_lineage,
+        "resolve_paths",
+        lambda conference: (papers_path, tmp_path / "lineage.json"),
+    )
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    monkeypatch.setattr(build_lineage, "build_provider", lambda: (_FakeProvider(None), 0))
+    monkeypatch.setattr(build_lineage, "fetch_related", lambda *args, **kwargs: [])
+    by_arxiv = {
+        "2401.00001": _focus_s2("z-graph-id", "Zed", "2401.00001"),
+        "2401.00002": _focus_s2("a-graph-id", "Alpha", "2401.00002"),
+    }
+    monkeypatch.setattr(build_lineage, "fetch_paper_by_arxiv", lambda arxiv_id: by_arxiv[arxiv_id])
+
+    result = build_lineage.build(generated_at="2026-08-30T00:00:00Z")
+    assert result["root"] == "a-graph-id"
+    assert [node["id"] for node in result["nodes"]] == ["a-graph-id", "z-graph-id"]
+    assert [node["seed_paper_id"] for node in result["nodes"]] == [
+        "c" * 40,
+        "b" * 40,
+    ]
+
+
+def test_build_rejects_ambiguous_focus_resolution(tmp_path: Path, monkeypatch):
+    papers_path = tmp_path / "papers.json"
+    papers_path.write_text(
+        json.dumps(
+            [
+                {
+                    "paper_id": "b" * 40,
+                    "title": "One",
+                    "type": "Oral",
+                    "arxiv_id": "2401.00001",
+                },
+                {
+                    "paper_id": "c" * 40,
+                    "title": "Two",
+                    "type": "Oral",
+                    "arxiv_id": "2401.00002",
+                },
+            ]
+        )
+    )
+    monkeypatch.setattr(
+        build_lineage,
+        "resolve_paths",
+        lambda conference: (papers_path, tmp_path / "lineage.json"),
+    )
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    monkeypatch.setattr(build_lineage, "build_provider", lambda: (_FakeProvider(None), 0))
+    monkeypatch.setattr(build_lineage, "fetch_related", lambda *args, **kwargs: [])
+    monkeypatch.setattr(
+        build_lineage,
+        "fetch_paper_by_arxiv",
+        lambda arxiv_id: _focus_s2("same-graph-id", arxiv_id, arxiv_id),
+    )
+
+    with pytest.raises(ValueError, match="same Semantic Scholar paper"):
+        build_lineage.build()
 
 
 def test_focus_node_carries_catalog_citation_and_stars(tmp_path: Path, monkeypatch):
@@ -463,6 +971,7 @@ def test_focus_node_carries_catalog_citation_and_stars(tmp_path: Path, monkeypat
         json.dumps(
             [
                 {
+                    "paper_id": _SEED_ID,
                     "title": "Catalog Paper",
                     "type": "Oral",
                     "tags": ["LLM"],
@@ -478,21 +987,25 @@ def test_focus_node_carries_catalog_citation_and_stars(tmp_path: Path, monkeypat
     cache_dir.mkdir()
     monkeypatch.setattr(build_lineage, "CACHE_DIR", cache_dir)
     monkeypatch.setattr(
-        build_lineage, "resolve_paths",
+        build_lineage,
+        "resolve_paths",
         lambda conf: (papers_path, papers_dir / "lineage.json"),
     )
     focus = {
-        "paperId": "focus-id", "title": "Catalog Paper", "year": 2024,
-        "venue": "arXiv", "authors": [], "abstract": "x",
+        "paperId": "focus-id",
+        "title": "Catalog Paper",
+        "year": 2024,
+        "venue": "arXiv",
+        "authors": [],
+        "abstract": "x",
         "citationCount": 50,  # S2's (lower / staler) count
+        "externalIds": {"ArXiv": "2404.00001"},
     }
     monkeypatch.setattr(build_lineage, "fetch_paper_by_arxiv", lambda _: focus)
     monkeypatch.setattr(build_lineage, "fetch_related", lambda *a, **kw: [])
 
     provider = _FakeProvider(return_value=None)
-    monkeypatch.setattr(
-        build_lineage, "build_provider", lambda: (provider, 0)
-    )
+    monkeypatch.setattr(build_lineage, "build_provider", lambda: (provider, 0))
 
     result = build_lineage.build(conference="iclr-2026")
     focus_node = next(n for n in result["nodes"] if n.get("is_focus"))
@@ -511,6 +1024,7 @@ def test_related_node_uses_s2_citation_count(tmp_path: Path, monkeypatch):
         json.dumps(
             [
                 {
+                    "paper_id": _SEED_ID,
                     "title": "Focus",
                     "type": "Oral",
                     "tags": [],
@@ -524,33 +1038,41 @@ def test_related_node_uses_s2_citation_count(tmp_path: Path, monkeypatch):
     cache_dir.mkdir()
     monkeypatch.setattr(build_lineage, "CACHE_DIR", cache_dir)
     monkeypatch.setattr(
-        build_lineage, "resolve_paths",
+        build_lineage,
+        "resolve_paths",
         lambda conf: (papers_path, papers_dir / "lineage.json"),
     )
 
     focus = {
-        "paperId": "focus-id", "title": "Focus", "year": 2024,
-        "venue": "arXiv", "authors": [], "abstract": "x", "citationCount": 0,
+        "paperId": "focus-id",
+        "title": "Focus",
+        "year": 2024,
+        "venue": "arXiv",
+        "authors": [],
+        "abstract": "x",
+        "citationCount": 0,
+        "externalIds": {"ArXiv": "2404.00001"},
     }
     parent = {
-        "paperId": "parent-id", "title": "Parent", "year": 2020,
-        "venue": "NeurIPS", "authors": [], "abstract": "p",
+        "paperId": "parent-id",
+        "title": "Parent",
+        "year": 2020,
+        "venue": "NeurIPS",
+        "authors": [],
+        "abstract": "p",
         "citationCount": 317,
     }
     monkeypatch.setattr(build_lineage, "fetch_paper_by_arxiv", lambda _: focus)
     monkeypatch.setattr(
-        build_lineage, "fetch_related",
+        build_lineage,
+        "fetch_related",
         lambda sid, kind, limit: [parent] if kind == "references" else [],
     )
 
     provider = _FakeProvider(
-        return_value=RelationClassification(
-            relation="successor", confidence=0.8, rationale="xx"
-        )
+        return_value=RelationClassification(relation="successor", confidence=0.8, rationale="xx")
     )
-    monkeypatch.setattr(
-        build_lineage, "build_provider", lambda: (provider, 0)
-    )
+    monkeypatch.setattr(build_lineage, "build_provider", lambda: (provider, 0))
 
     result = build_lineage.build(conference="iclr-2026")
     parent_node = next(n for n in result["nodes"] if n["id"] == "parent-id")
@@ -568,7 +1090,8 @@ def test_build_drops_unrelated_edges_and_uses_provider(tmp_path: Path, monkeypat
     output_path = tmp_path / "lineage.json"
     monkeypatch.setattr(build_lineage, "CACHE_DIR", cache_dir)
     monkeypatch.setattr(
-        build_lineage, "resolve_paths",
+        build_lineage,
+        "resolve_paths",
         lambda conf: (papers_path, output_path),
     )
 
@@ -576,6 +1099,7 @@ def test_build_drops_unrelated_edges_and_uses_provider(tmp_path: Path, monkeypat
         json.dumps(
             [
                 {
+                    "paper_id": _SEED_ID,
                     "title": "Focus Paper",
                     "type": "Oral",
                     "tags": ["LLM"],
@@ -585,7 +1109,7 @@ def test_build_drops_unrelated_edges_and_uses_provider(tmp_path: Path, monkeypat
         )
     )
 
-    focus = _focus_s2("focus-id", "Focus Paper")
+    focus = _focus_s2("focus-id", "Focus Paper", "2401.00001")
     parent = _focus_s2("parent-id", "Parent Paper")
     child_related = _focus_s2("child-related-id", "Child Related")
     child_unrelated = _focus_s2("child-unrelated-id", "Child Unrelated")
@@ -611,26 +1135,27 @@ def test_build_drops_unrelated_edges_and_uses_provider(tmp_path: Path, monkeypat
         # final filter keeps the kept edges; this test asserts unrelated-drop.
         if b is focus:  # parent -> focus
             return RelationClassification(
-                relation="successor", confidence=0.8,
+                relation="successor",
+                confidence=0.8,
                 rationale="論文 B は論文 A の研究を継承している。",
             )
         if b is child_related:  # focus -> child_related
             return RelationClassification(
-                relation="extends", confidence=0.7,
+                relation="extends",
+                confidence=0.7,
                 rationale="論文 B は論文 A の手法を拡張している。",
             )
         # focus -> child_unrelated
         return RelationClassification(
-            relation="unrelated", confidence=0.3,
+            relation="unrelated",
+            confidence=0.3,
             rationale="論文 B は論文 A と無関係である。",
         )
 
     provider = _FakeProvider(return_value=None)
     provider.classify_relation = fake_classify  # type: ignore[method-assign]
 
-    monkeypatch.setattr(
-        build_lineage, "build_provider", lambda: (provider, 0)
-    )
+    monkeypatch.setattr(build_lineage, "build_provider", lambda: (provider, 0))
 
     result = build_lineage.build(limit=None)
 
@@ -644,10 +1169,26 @@ def test_build_drops_unrelated_edges_and_uses_provider(tmp_path: Path, monkeypat
     # Focus paper has 2 edges total (one in, one out) → it becomes root
     assert result["root"] == "focus-id"
 
-    # Cache was persisted
+    # Cache was persisted under exact v2 identities, never legacy src->dst.
     cache = json.loads((cache_dir / "classifications.json").read_text())
-    assert "parent-id->focus-id" in cache
-    assert "focus-id->child-related-id" in cache
+    assert cache
+    assert all(key.startswith("v2:") for key in cache)
+    assert {(entry["src"], entry["dst"]) for entry in cache.values()} == {
+        ("parent-id", "focus-id"),
+        ("focus-id", "child-related-id"),
+        ("focus-id", "child-unrelated-id"),
+    }
+    assert result["schema_version"] == "lineage-artifact-v1"
+    assert all(node["is_focus"] in (True, False) for node in result["nodes"])
+    focus_node = next(node for node in result["nodes"] if node["is_focus"])
+    assert focus_node["seed_paper_id"] == _SEED_ID
+    assert focus_node["aliases"] == [
+        ["arxiv", "2401.00001"],
+        ["semantic_scholar", "focus-id"],
+    ]
+    assert all(edge["rel"] == edge["relation"] for edge in result["edges"])
+    assert all(edge["conf"] == edge["confidence"] for edge in result["edges"])
+    assert all(isinstance(edge["provenance"], dict) for edge in result["edges"])
 
 
 def test_build_skips_papers_without_arxiv_id(tmp_path: Path, monkeypatch):
@@ -656,7 +1197,8 @@ def test_build_skips_papers_without_arxiv_id(tmp_path: Path, monkeypatch):
     papers_path = tmp_path / "papers.json"
     monkeypatch.setattr(build_lineage, "CACHE_DIR", cache_dir)
     monkeypatch.setattr(
-        build_lineage, "resolve_paths",
+        build_lineage,
+        "resolve_paths",
         lambda conf: (papers_path, tmp_path / "lineage.json"),
     )
 
@@ -664,6 +1206,7 @@ def test_build_skips_papers_without_arxiv_id(tmp_path: Path, monkeypatch):
         json.dumps(
             [
                 {
+                    "paper_id": _SEED_ID,
                     "title": "Workshop paper",
                     "type": "Oral",
                     "tags": [],
@@ -674,12 +1217,21 @@ def test_build_skips_papers_without_arxiv_id(tmp_path: Path, monkeypatch):
     )
 
     provider = _FakeProvider(return_value=None)
-    monkeypatch.setattr(
-        build_lineage, "build_provider", lambda: (provider, 0)
-    )
+    monkeypatch.setattr(build_lineage, "build_provider", lambda: (provider, 0))
 
-    result = build_lineage.build(limit=None)
-    assert result == {"root": None, "nodes": [], "edges": [], "clusters": []}
+    result = build_lineage.build(limit=None, generated_at="2026-08-30T00:00:00Z")
+    assert result == {
+        "schema_version": "lineage-artifact-v1",
+        "root": None,
+        "nodes": [],
+        "edges": [],
+        "clusters": [],
+        "meta": {
+            "kind": "conference",
+            "generator": "paperpilot.scripts.build_lineage",
+            "generated_at": "2026-08-30T00:00:00Z",
+        },
+    }
     assert provider.calls == []
 
 
@@ -809,9 +1361,7 @@ def test_fetch_related_requests_intents_field(tmp_path, monkeypatch):
 
     with patch.object(build_lineage, "_s2_get", side_effect=_capture):
         build_lineage.fetch_related("paperX", "references", 5)
-    assert "intents" in captured["url"], (
-        f"fields query missing intents: {captured['url']}"
-    )
+    assert "intents" in captured["url"], f"fields query missing intents: {captured['url']}"
 
 
 def test_fetch_related_propagates_intents(tmp_path, monkeypatch):
@@ -878,6 +1428,7 @@ def test_build_prefers_arxiv_id_from_papers_json(tmp_path: Path, monkeypatch):
         json.dumps(
             [
                 {
+                    "paper_id": _SEED_ID,
                     "title": "Direct ID Paper",
                     "type": "Oral",
                     "tags": [],
@@ -891,7 +1442,8 @@ def test_build_prefers_arxiv_id_from_papers_json(tmp_path: Path, monkeypatch):
     cache_dir.mkdir()
     monkeypatch.setattr(build_lineage, "CACHE_DIR", cache_dir)
     monkeypatch.setattr(
-        build_lineage, "resolve_paths",
+        build_lineage,
+        "resolve_paths",
         lambda conf: (papers_path, papers_dir / "lineage.json"),
     )
 
@@ -900,17 +1452,21 @@ def test_build_prefers_arxiv_id_from_papers_json(tmp_path: Path, monkeypatch):
     def fake_fetch_paper(arxiv_id: str):
         called_with.append(arxiv_id)
         return {
-            "paperId": "p1", "title": "Direct ID Paper", "year": 2024,
-            "venue": "arXiv", "authors": [], "abstract": "x", "citationCount": 0,
+            "paperId": "p1",
+            "title": "Direct ID Paper",
+            "year": 2024,
+            "venue": "arXiv",
+            "authors": [],
+            "abstract": "x",
+            "citationCount": 0,
+            "externalIds": {"ArXiv": "2404.00001"},
         }
 
     monkeypatch.setattr(build_lineage, "fetch_paper_by_arxiv", fake_fetch_paper)
     monkeypatch.setattr(build_lineage, "fetch_related", lambda *a, **kw: [])
 
     provider = _FakeProvider(return_value=None)
-    monkeypatch.setattr(
-        build_lineage, "build_provider", lambda: (provider, 0)
-    )
+    monkeypatch.setattr(build_lineage, "build_provider", lambda: (provider, 0))
 
     result = build_lineage.build(conference="iclr-2026")
     assert called_with == ["2404.00001"]
@@ -927,6 +1483,7 @@ def test_build_accepts_conference_argument(tmp_path: Path, monkeypatch):
         json.dumps(
             [
                 {
+                    "paper_id": _SEED_ID,
                     "title": "NeurIPS Paper",
                     "type": "Oral",
                     "tags": ["RL"],
@@ -939,21 +1496,26 @@ def test_build_accepts_conference_argument(tmp_path: Path, monkeypatch):
     cache_dir.mkdir()
     monkeypatch.setattr(build_lineage, "CACHE_DIR", cache_dir)
     monkeypatch.setattr(
-        build_lineage, "resolve_paths",
+        build_lineage,
+        "resolve_paths",
         lambda conf: (papers_path, papers_dir / "lineage.json"),
     )
 
     focus = {
-        "paperId": "focus-id", "title": "NeurIPS Paper", "year": 2025,
-        "venue": "arXiv", "authors": [], "abstract": "abs", "citationCount": 5,
+        "paperId": "focus-id",
+        "title": "NeurIPS Paper",
+        "year": 2025,
+        "venue": "arXiv",
+        "authors": [],
+        "abstract": "abs",
+        "citationCount": 5,
+        "externalIds": {"ArXiv": "2501.00001"},
     }
     monkeypatch.setattr(build_lineage, "fetch_paper_by_arxiv", lambda _: focus)
     monkeypatch.setattr(build_lineage, "fetch_related", lambda *a, **kw: [])
 
     provider = _FakeProvider(return_value=None)
-    monkeypatch.setattr(
-        build_lineage, "build_provider", lambda: (provider, 0)
-    )
+    monkeypatch.setattr(build_lineage, "build_provider", lambda: (provider, 0))
 
     result = build_lineage.build(conference="neurips-2025")
     # Focus node should have the conference-derived venue override, not

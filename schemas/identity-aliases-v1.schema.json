@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paperpilot.local/schemas/identity-aliases-v1.schema.json",
+  "title": "PaperPilot Identity Aliases v1",
+  "type": "array",
+  "items": {
+    "type": "array",
+    "prefixItems": [
+      {
+        "enum": ["arxiv", "openreview", "acl_anthology", "cvf", "doi"]
+      },
+      {
+        "type": "string",
+        "minLength": 1
+      },
+      {
+        "type": "string",
+        "pattern": "^[0-9a-f]{40}$"
+      }
+    ],
+    "items": false,
+    "minItems": 3,
+    "maxItems": 3
+  },
+  "uniqueItems": true
+}

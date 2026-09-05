@@ -37,6 +37,7 @@ import os
 import re
 import sys
 import time
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, TypedDict
 
@@ -46,21 +47,35 @@ class ClusterEntry(TypedDict):
     label: str
     focus_ids: list[str]
 
+
 # Make `paperpilot.llm` importable when run as `python paperpilot/scripts/...`
 # without editable-install-on-path.
 ROOT = Path(__file__).resolve().parent.parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from paperpilot.identity.source_ids import IdentityError, normalize_alias  # noqa: E402
 from paperpilot.llm import (  # noqa: E402
     AbstractLLMProvider,
     GeminiProvider,
     GroqProvider,
     RelationClassification,
 )
-from paperpilot.llm.base import _MIN_RATIONALE_LEN, provider_model_tag  # noqa: E402
+from paperpilot.llm.base import (  # noqa: E402
+    _MIN_RATIONALE_LEN,
+    build_classify_prompt,
+    provider_model_tag,
+)
 from paperpilot.scripts._common import slug_to_venue_label  # noqa: E402
 from paperpilot.scripts._lineage_classify import derive_relation  # noqa: E402
+from paperpilot.scripts._lineage_contract import (  # noqa: E402
+    CLASSIFICATION_METHODS,
+    LINEAGE_ARTIFACT_VERSION,
+    canonical_json_sha256,
+    make_provenance,
+    require_paper_id,
+    validate_lineage_artifact,
+)
 from paperpilot.utils.http import request_with_retry  # noqa: E402
 from paperpilot.utils.logger import get_logger, setup_logging  # noqa: E402
 
@@ -90,23 +105,31 @@ derive_venue_label = slug_to_venue_label
 # Knobs
 TOP_PARENTS = 15
 TOP_CHILDREN = 15
-S2_RATE_DELAY = 3.5   # unauth quota is harsh; stay well under
+S2_RATE_DELAY = 3.5  # unauth quota is harsh; stay well under
 
 # Cluster (topics view) constants. Focus papers missing any kind tag are
 # bucketed into "uncategorized" so the gallery never hides them.
 _UNCATEGORIZED_ID = "uncategorized"
 _UNCATEGORIZED_LABEL = "その他"
 
+_PRODUCER_NAME = "paperpilot.scripts.build_lineage"
+_PRODUCER_VERSION = "p2-v1"
+_PROMPT_VERSION = "relation-prompt-v1"
+_CLASSIFICATION_SCHEMA_VERSION = "relation-classification-v1"
+_CACHE_VERSION = "lineage-classification-cache-v2"
+_CACHE_TTL = timedelta(days=30)
+
 
 def _cluster_slug(label: str) -> str:
     slug = re.sub(r"[^a-z0-9]+", "-", label.lower()).strip("-")
     return slug or _UNCATEGORIZED_ID
 
+
 # Per-provider cadence between classify calls. The provider itself already
 # handles 429 backoff via request_with_retry; this is a baseline RPM limiter
 # so we don't trigger retries in the first place.
 LLM_RATE_DELAY = {
-    "groq": 2.2,    # ~27 RPM (Groq free tier: 30 RPM)
+    "groq": 2.2,  # ~27 RPM (Groq free tier: 30 RPM)
     "gemini": 7.0,  # ~8 RPM (Gemini 2.5-flash free tier: 10 RPM)
 }
 
@@ -122,9 +145,14 @@ VENUE_TIER_MAP = [
     ("annual meeting of the association for computational linguistics", "A+"),
     ("empirical methods in natural language processing", "A+"),
     # Abbreviated aliases (for rare papers where S2 uses short form)
-    ("neurips", "A+"), ("icml", "A+"), ("iclr", "A+"),
-    ("cvpr", "A+"), ("eccv", "A+"), ("iccv", "A+"),
-    ("acl", "A+"), ("emnlp", "A+"),
+    ("neurips", "A+"),
+    ("icml", "A+"),
+    ("iclr", "A+"),
+    ("cvpr", "A+"),
+    ("eccv", "A+"),
+    ("iccv", "A+"),
+    ("acl", "A+"),
+    ("emnlp", "A+"),
     # Tier A
     ("north american chapter of the association for computational linguistics", "A"),
     ("aaai conference on artificial intelligence", "A"),
@@ -133,9 +161,14 @@ VENUE_TIER_MAP = [
     ("knowledge discovery and data mining", "A"),
     ("trans. mach. learn. res.", "A"),
     ("journal of machine learning research", "A"),
-    ("naacl", "A"), ("aaai", "A"), ("kdd", "A"),
-    ("tmlr", "A"), ("corl", "A"), ("sigir", "A"),
-    ("www", "A"), ("ijcai", "A"),
+    ("naacl", "A"),
+    ("aaai", "A"),
+    ("kdd", "A"),
+    ("tmlr", "A"),
+    ("corl", "A"),
+    ("sigir", "A"),
+    ("www", "A"),
+    ("ijcai", "A"),
 ]
 
 
@@ -186,10 +219,8 @@ def build_provider() -> tuple[AbstractLLMProvider, float]:
     # historical Groq-first default. Read from the ambient env (runtime
     # selector, not a .env secret) with a .env fallback for convenience.
     preference = (
-        os.environ.get("PAPERPILOT_LLM_PROVIDER")
-        or env.get("llm_provider")
-        or ""
-    ).strip().lower()
+        (os.environ.get("PAPERPILOT_LLM_PROVIDER") or env.get("llm_provider") or "").strip().lower()
+    )
     if preference in ("gemini", "groq"):
         key = gemini_key if preference == "gemini" else groq_key
         if not key:
@@ -217,8 +248,7 @@ def build_provider() -> tuple[AbstractLLMProvider, float]:
     # Modal Function — sys.exit would tear down the ASGI worker. The CLI
     # main() converts this back to exit code 3 to preserve script contract.
     raise RuntimeError(
-        "No LLM key found. Set PAPERPILOT_GROQ_API_KEY (preferred) "
-        "or PAPERPILOT_GEMINI_API_KEY."
+        "No LLM key found. Set PAPERPILOT_GROQ_API_KEY (preferred) or PAPERPILOT_GEMINI_API_KEY."
     )
 
 
@@ -276,7 +306,9 @@ def fetch_paper_by_arxiv(arxiv_id: str) -> dict[str, Any] | None:
     if cache.exists():
         cached = json.loads(cache.read_text())
         return cached if isinstance(cached, dict) else None
-    url = f"https://api.semanticscholar.org/graph/v1/paper/arXiv:{arxiv_id}?fields={_S2_FIELDS_PAPER}"
+    url = (
+        f"https://api.semanticscholar.org/graph/v1/paper/arXiv:{arxiv_id}?fields={_S2_FIELDS_PAPER}"
+    )
     data = _s2_get(url)
     if data:
         cache.write_text(json.dumps(data, ensure_ascii=False, indent=2))
@@ -312,7 +344,8 @@ def fetch_related(s2_id: str, kind: str, limit: int) -> list[dict[str, Any]]:
         from paperpilot.scripts.build_theme_lineage import (
             fetch_related_via_openalex,
         )
-        short_id = s2_id[len("openalex:"):]
+
+        short_id = s2_id[len("openalex:") :]
         items = fetch_related_via_openalex(short_id, kind, limit)
         cache.parent.mkdir(parents=True, exist_ok=True)
         cache.write_text(json.dumps(items, ensure_ascii=False, indent=2))
@@ -347,8 +380,7 @@ def fetch_related(s2_id: str, kind: str, limit: int) -> list[dict[str, Any]]:
             # can fall back to the existing classify path when desired.
             raw_intents = entry.get("intents")
             enriched["_intents"] = (
-                [str(i) for i in raw_intents]
-                if isinstance(raw_intents, list) else None
+                [str(i) for i in raw_intents] if isinstance(raw_intents, list) else None
             )
             items.append(enriched)
     cache.write_text(json.dumps(items, ensure_ascii=False, indent=2))
@@ -376,6 +408,7 @@ def select_top(items: list[dict], n: int) -> list[dict]:
 
 
 # ---------- Build pipeline ----------
+
 
 def venue_tier_for(venue: str) -> str:
     if not venue:
@@ -425,9 +458,7 @@ def to_node(
     # Catalog (Stage 2) values win when provided; otherwise use S2's response
     # so related nodes still have citation counts for the viewer to size on.
     citation_count = (
-        catalog_citations
-        if catalog_citations is not None
-        else (paper.get("citationCount") or 0)
+        catalog_citations if catalog_citations is not None else (paper.get("citationCount") or 0)
     )
     github_stars = catalog_stars if catalog_stars is not None else 0
     # Pull arxiv / DOI out of S2's externalIds dict so the viewer can
@@ -463,9 +494,53 @@ def extract_arxiv_id(arxiv_url: str) -> str | None:
     return m.group(1) if m else None
 
 
-def persist_classifications(
-    classifications: dict[str, dict], cache_path: Path
-) -> None:
+def _normalize_oral_arxiv_id(paper: dict) -> str | None:
+    """Return one canonical explicit arXiv alias, or None when absent."""
+
+    declared = paper.get("arxiv_id")
+    arxiv_url = paper.get("arxiv_url")
+    if arxiv_url is not None and arxiv_url != "" and not isinstance(arxiv_url, str):
+        raise ValueError("oral arxiv_url must be a string")
+    url_alias = extract_arxiv_id(arxiv_url or "")
+    if declared is not None and declared != "":
+        raw = declared
+    else:
+        raw = url_alias
+        if raw is None:
+            return None
+    if not isinstance(raw, str):
+        raise ValueError("oral arxiv_id must be a string")
+    try:
+        _, normalized = normalize_alias("arxiv", raw)
+    except IdentityError as exc:
+        raise ValueError(f"oral has invalid arXiv identity: {raw!r}") from exc
+    if declared is not None and declared != "" and url_alias is not None:
+        _, normalized_url_alias = normalize_alias("arxiv", url_alias)
+        if normalized_url_alias != normalized:
+            raise ValueError("oral arxiv_id and arxiv_url identities do not match")
+    return normalized
+
+
+def _require_s2_focus_identity(focus: object, requested_arxiv_id: str) -> str:
+    """Return the graph-local S2 ID only for an exact normalized alias match."""
+
+    if not isinstance(focus, dict):
+        raise ValueError("Semantic Scholar focus response must be an object")
+    paper_id = focus.get("paperId")
+    external_ids = focus.get("externalIds")
+    raw_arxiv_id = external_ids.get("ArXiv") if isinstance(external_ids, dict) else None
+    if not isinstance(paper_id, str) or not paper_id.strip() or not isinstance(raw_arxiv_id, str):
+        raise ValueError("Semantic Scholar focus is missing paperId or externalIds.ArXiv")
+    try:
+        _, resolved_arxiv_id = normalize_alias("arxiv", raw_arxiv_id)
+    except IdentityError as exc:
+        raise ValueError("Semantic Scholar returned an invalid arXiv identity") from exc
+    if resolved_arxiv_id != requested_arxiv_id:
+        raise ValueError("Semantic Scholar arXiv identity does not match the requested paper")
+    return paper_id
+
+
+def persist_classifications(classifications: dict[str, dict], cache_path: Path) -> None:
     """Merge any concurrent writer's entries into our snapshot, then atomically
     overwrite the cache file.
 
@@ -545,9 +620,7 @@ def _classify_cached(
         # cached entry ({"rationale":"A"}, written before the #297 fix)
         # would otherwise be served verbatim. Treat a sub-floor rationale as
         # a cache MISS so we fall through and re-derive a full rationale.
-        if isinstance(cached, dict) and not _is_degenerate_rationale(
-            cached.get("rationale")
-        ):
+        if isinstance(cached, dict) and not _is_degenerate_rationale(cached.get("rationale")):
             return cached
     rc: RelationClassification | None = provider.classify_relation(a, b)
     if rc is not None:
@@ -575,15 +648,188 @@ def _classify_cached(
     return None
 
 
+def _utc_now() -> datetime:
+    return datetime.now(timezone.utc)
+
+
+def _iso_z(value: datetime) -> str:
+    return value.astimezone(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
+
+def _cache_entry_is_fresh(entry: object, *, now: datetime) -> bool:
+    if not isinstance(entry, dict) or entry.get("status") != "success":
+        return False
+    expires_at = entry.get("expires_at")
+    if not isinstance(expires_at, str):
+        return False
+    try:
+        parsed = datetime.fromisoformat(expires_at.replace("Z", "+00:00"))
+    except ValueError:
+        return False
+    if parsed.tzinfo is None:
+        return False
+    return parsed > now
+
+
+def _heuristic_evidence_input(
+    *, src_id: str, dst_id: str, parent: dict, child: dict, intent_record: dict
+) -> dict[str, Any]:
+    """Return the closed input actually read by ``derive_relation``.
+
+    Keeping this projection explicit prevents unrelated S2 response fields from
+    invalidating the evidence hash while ensuring every heuristic signal is
+    attributable (contexts, intents, title/version, year/citation contrast and
+    the foundational-title allowlist).
+    """
+
+    def paper_fields(paper: dict) -> dict[str, Any]:
+        return {
+            "title": paper.get("title"),
+            "year": paper.get("year"),
+            "citationCount": paper.get("citationCount"),
+            "citation_count": paper.get("citation_count"),
+        }
+
+    return {
+        "src": src_id,
+        "dst": dst_id,
+        "parent": paper_fields(parent),
+        "child": paper_fields(child),
+        "intent_record": {
+            **paper_fields(intent_record),
+            "_is_influential": intent_record.get("_is_influential"),
+            "_intents": intent_record.get("_intents"),
+            "_contexts": intent_record.get("_contexts"),
+        },
+    }
+
+
+def _classify_cached_v2(
+    provider: AbstractLLMProvider,
+    a: dict,
+    b: dict,
+    *,
+    src_id: str,
+    dst_id: str,
+    classifications: dict[str, dict],
+    cache_path: Path,
+    rate_delay: float,
+    intent_record: dict | None = None,
+) -> dict | None:
+    """P2 build-path classifier with exact provider/evidence cache identity.
+
+    The legacy ``_classify_cached`` remains available to existing callers and
+    tests.  This path deliberately never treats ``src->dst`` entries as hits.
+    """
+
+    system, user = build_classify_prompt(a, b)
+    evidence_sha256 = canonical_json_sha256(
+        {"src": src_id, "dst": dst_id, "system": system, "user": user}
+    )
+    provider_name = str(getattr(provider, "name", "unknown"))
+    model = provider_model_tag(provider)
+    provenance = make_provenance(
+        producer_name=_PRODUCER_NAME,
+        producer_version=_PRODUCER_VERSION,
+        evidence_source="semantic_scholar",
+        evidence_kind="relation-input",
+        evidence_sha256=evidence_sha256,
+        method="llm",
+        provider=provider_name,
+        model=model,
+        prompt_version=_PROMPT_VERSION,
+        classification_schema_version=_CLASSIFICATION_SCHEMA_VERSION,
+    )
+    cache_identity = {
+        "version": _CACHE_VERSION,
+        "src": src_id,
+        "dst": dst_id,
+        "producer": {"name": _PRODUCER_NAME, "version": _PRODUCER_VERSION},
+        "evidence_sha256": evidence_sha256,
+        "provider": provider_name,
+        "model": model,
+        "prompt_version": _PROMPT_VERSION,
+        "schema_version": _CLASSIFICATION_SCHEMA_VERSION,
+    }
+    cache_key = f"v2:{canonical_json_sha256(cache_identity)}"
+    cached = classifications.get(cache_key)
+    now = _utc_now()
+    cached_classification = (
+        RelationClassification.from_dict(cached) if isinstance(cached, dict) else None
+    )
+    if (
+        _cache_entry_is_fresh(cached, now=now)
+        and cached_classification is not None
+        and cached.get("cache_identity") == cache_identity
+        and cached.get("provenance") == provenance
+    ):
+        return cached
+
+    rc: RelationClassification | None = provider.classify_relation(a, b)
+    time.sleep(rate_delay)
+    if rc is not None:
+        entry = {
+            "cache_identity": cache_identity,
+            "status": "success",
+            "expires_at": _iso_z(now + _CACHE_TTL),
+            "src": src_id,
+            "dst": dst_id,
+            "relation": rc.relation,
+            "confidence": rc.confidence,
+            "rationale": rc.rationale,
+            "model": model,
+            "provenance": provenance,
+        }
+        classifications[cache_key] = entry
+        persist_classifications(classifications, cache_path)
+        return entry
+
+    if intent_record is None:
+        return None
+    heuristic = derive_relation(intent_record, parent=a, child=b, strict_mode="off")
+    if heuristic is None:
+        return None
+    method = str(heuristic.get("provenance", ""))
+    if method not in CLASSIFICATION_METHODS or method == "llm":
+        raise ValueError(f"unsupported heuristic provenance method: {method!r}")
+    heuristic_sha256 = canonical_json_sha256(
+        _heuristic_evidence_input(
+            src_id=src_id,
+            dst_id=dst_id,
+            parent=a,
+            child=b,
+            intent_record=intent_record,
+        )
+    )
+    source = "unarxive" if method == "context_pattern" else "semantic_scholar"
+    return {
+        **heuristic,
+        "src": src_id,
+        "dst": dst_id,
+        "provenance": make_provenance(
+            producer_name=_PRODUCER_NAME,
+            producer_version=_PRODUCER_VERSION,
+            evidence_source=source,
+            evidence_kind="citation-context"
+            if method == "context_pattern"
+            else "citation-metadata",
+            evidence_sha256=heuristic_sha256,
+            method=method,
+            provider=None,
+            model=None,
+            prompt_version=None,
+            classification_schema_version=_CLASSIFICATION_SCHEMA_VERSION,
+        ),
+    }
+
+
 def build(
     *,
     limit: int | None = None,
     conference: str = "iclr-2026",
     venue_override: str | None = None,
+    generated_at: str | None = None,
 ) -> dict:
-    provider, rate_delay = build_provider()
-    logger.info("LLM provider: %s", provider.name)
-
     papers_path, _ = resolve_paths(conference)
     venue_label = venue_override or derive_venue_label(conference)
 
@@ -591,11 +837,32 @@ def build(
     orals = [p for p in papers if p.get("type") == "Oral"]
     if limit:
         orals = orals[:limit]
+    seeds = [require_paper_id(paper.get("paper_id"), field="oral.paper_id") for paper in orals]
+    if len(set(seeds)) != len(seeds):
+        raise ValueError("duplicate canonical paper_id among Oral catalog rows")
+
+    oral_identities: list[tuple[dict, str, str | None]] = []
+    seed_by_arxiv_id: dict[str, str] = {}
+    for paper, seed_paper_id in zip(orals, seeds, strict=True):
+        arxiv_id = _normalize_oral_arxiv_id(paper)
+        if arxiv_id is not None:
+            previous_seed = seed_by_arxiv_id.get(arxiv_id)
+            if previous_seed is not None:
+                raise ValueError(
+                    f"duplicate normalized arXiv identity among Oral catalog rows: {arxiv_id}"
+                )
+            seed_by_arxiv_id[arxiv_id] = seed_paper_id
+        oral_identities.append((paper, seed_paper_id, arxiv_id))
+
+    # Identity is validated before provider construction or any source lookup.
+    provider, rate_delay = build_provider()
+    logger.info("LLM provider: %s", provider.name)
 
     logger.info("Building lineage for %d Oral papers (%s)", len(orals), conference)
 
     nodes: dict[str, dict] = {}
     edges: list[dict] = []
+    focus_seed_by_graph_id: dict[str, str] = {}
     classification_cache_path = CACHE_DIR / "classifications.json"
     classifications: dict[str, dict] = (
         json.loads(classification_cache_path.read_text())
@@ -603,29 +870,42 @@ def build(
         else {}
     )
 
-    for idx, paper in enumerate(orals, 1):
-        # Trust papers.json's structured arxiv_id (carried forward from
-        # Stage 2 in C4) before falling back to regex-extracting it from
-        # the URL — this keeps us resilient to URL format variations
-        # ("/pdf/2404.00001v3") and is cheaper.
-        arxiv_id = paper.get("arxiv_id") or extract_arxiv_id(paper.get("arxiv_url", ""))
-        if not arxiv_id:
+    # Resolve and verify every focus identity before fetching a single related
+    # paper or classifying an edge.  A mismatch in any Oral therefore aborts
+    # the whole artifact rather than publishing a partially misattributed graph.
+    resolved_orals: list[tuple[dict, str, str, dict, str]] = []
+    for idx, (paper, seed_paper_id, arxiv_id) in enumerate(oral_identities, 1):
+        if arxiv_id is None:
             logger.warning(
                 "[%d/%d] SKIP (no arxiv_id): %s",
-                idx, len(orals), paper["title"][:60],
+                idx,
+                len(orals),
+                paper["title"][:60],
             )
             continue
 
         logger.info(
             "[%d/%d] %s: %s",
-            idx, len(orals), arxiv_id, paper["title"][:60],
+            idx,
+            len(orals),
+            arxiv_id,
+            paper["title"][:60],
         )
         focus_paper = fetch_paper_by_arxiv(arxiv_id)
         if not focus_paper:
             logger.warning("  S2 lookup failed for %s", arxiv_id)
             continue
 
-        focus_id = focus_paper["paperId"]
+        focus_id = _require_s2_focus_identity(focus_paper, arxiv_id)
+        previous_seed = focus_seed_by_graph_id.get(focus_id)
+        if previous_seed is not None and previous_seed != seed_paper_id:
+            raise ValueError(
+                f"distinct catalog papers resolve to the same Semantic Scholar paper: {focus_id}"
+            )
+        focus_seed_by_graph_id[focus_id] = seed_paper_id
+        resolved_orals.append((paper, seed_paper_id, arxiv_id, focus_paper, focus_id))
+
+    for paper, seed_paper_id, arxiv_id, focus_paper, focus_id in resolved_orals:
         # Catalog says these are ICLR 2026 Oral — S2 only knows them as arXiv
         # preprints, so override for the focus nodes.
         catalog_kinds = paper.get("tags", [])[:3] or ["empirical"]
@@ -633,7 +913,7 @@ def build(
         # is often zero / stale for recently-accepted papers.
         catalog_citations = paper.get("citation_count")
         catalog_stars = paper.get("github_stars")
-        nodes[focus_id] = to_node(
+        focus_node = to_node(
             focus_paper,
             focus=True,
             kinds=catalog_kinds,
@@ -642,6 +922,12 @@ def build(
             catalog_citations=catalog_citations if isinstance(catalog_citations, int) else None,
             catalog_stars=catalog_stars if isinstance(catalog_stars, int) else None,
         )
+        focus_node["seed_paper_id"] = seed_paper_id
+        focus_node["aliases"] = [
+            ["arxiv", arxiv_id],
+            ["semantic_scholar", focus_id],
+        ]
+        nodes[focus_id] = focus_node
 
         parents = select_top(fetch_related(focus_id, "references", TOP_PARENTS * 4), TOP_PARENTS)
         children = select_top(fetch_related(focus_id, "citations", TOP_CHILDREN * 4), TOP_CHILDREN)
@@ -656,9 +942,12 @@ def build(
             # path so existing caches don't regress.
             if parent.get("_is_influential") is False:
                 continue
-            cls = _classify_cached(
-                provider, parent, focus_paper,
-                cache_key=f"{pid}->{focus_id}",
+            cls = _classify_cached_v2(
+                provider,
+                parent,
+                focus_paper,
+                src_id=pid,
+                dst_id=focus_id,
                 classifications=classifications,
                 cache_path=classification_cache_path,
                 rate_delay=rate_delay,
@@ -667,13 +956,18 @@ def build(
                 intent_record=parent,
             )
             if cls and cls["relation"] != "unrelated":
-                edges.append({
-                    "src": pid, "dst": focus_id,
-                    "rel": cls["relation"],
-                    "conf": cls["confidence"],
-                    "rationale": cls["rationale"],
-                    "provenance": cls.get("provenance", "llm"),
-                })
+                edges.append(
+                    {
+                        "src": pid,
+                        "dst": focus_id,
+                        "rel": cls["relation"],
+                        "relation": cls["relation"],
+                        "conf": cls["confidence"],
+                        "confidence": cls["confidence"],
+                        "rationale": cls["rationale"],
+                        "provenance": cls["provenance"],
+                    }
+                )
 
         for child in children:
             cid = child["paperId"]
@@ -681,9 +975,12 @@ def build(
                 nodes[cid] = to_node(child)
             if child.get("_is_influential") is False:
                 continue
-            cls = _classify_cached(
-                provider, focus_paper, child,
-                cache_key=f"{focus_id}->{cid}",
+            cls = _classify_cached_v2(
+                provider,
+                focus_paper,
+                child,
+                src_id=focus_id,
+                dst_id=cid,
                 classifications=classifications,
                 cache_path=classification_cache_path,
                 rate_delay=rate_delay,
@@ -692,24 +989,18 @@ def build(
                 intent_record=child,
             )
             if cls and cls["relation"] != "unrelated":
-                edges.append({
-                    "src": focus_id, "dst": cid,
-                    "rel": cls["relation"],
-                    "conf": cls["confidence"],
-                    "rationale": cls["rationale"],
-                    "provenance": cls.get("provenance", "llm"),
-                })
-
-    # Root = focus paper with the most relationships (best default landing focus)
-    edge_count: dict[str, int] = {}
-    for e in edges:
-        edge_count[e["src"]] = edge_count.get(e["src"], 0) + 1
-        edge_count[e["dst"]] = edge_count.get(e["dst"], 0) + 1
-    focus_ids = [nid for nid, n in nodes.items() if n.get("is_focus")]
-    root_id = (
-        max(focus_ids, key=lambda nid: edge_count.get(nid, 0))
-        if focus_ids else (next(iter(nodes)) if nodes else None)
-    )
+                edges.append(
+                    {
+                        "src": focus_id,
+                        "dst": cid,
+                        "rel": cls["relation"],
+                        "relation": cls["relation"],
+                        "conf": cls["confidence"],
+                        "confidence": cls["confidence"],
+                        "rationale": cls["rationale"],
+                        "provenance": cls["provenance"],
+                    }
+                )
 
     # Drop edges with empty or degenerate (#297) rationales — a silent empty
     # tooltip is worse than no edge, and so is a 1-char "A" tooltip.
@@ -719,14 +1010,48 @@ def build(
     if dropped:
         logger.warning("dropped %d edges with empty/degenerate rationale", dropped)
 
-    clusters = build_clusters(list(nodes.values()))
+    # Deduplicate, then sort by wire identity.  Multiple Oral expansions can
+    # discover the same shared citation edge.
+    edge_by_key: dict[tuple[str, str, str], dict] = {}
+    for edge in cleaned_edges:
+        key = (edge["src"], edge["dst"], edge["relation"])
+        edge_by_key.setdefault(key, edge)
+    ordered_edges = [edge_by_key[key] for key in sorted(edge_by_key)]
 
-    return {
+    for node in nodes.values():
+        node.setdefault("is_focus", False)
+    ordered_nodes = sorted(nodes.values(), key=lambda node: node["id"])
+
+    # Root = focus paper with the most relationships; graph-local ID is the
+    # explicit deterministic tie-breaker.  There is no first-node fallback.
+    edge_count: dict[str, int] = {}
+    for edge in ordered_edges:
+        edge_count[edge["src"]] = edge_count.get(edge["src"], 0) + 1
+        edge_count[edge["dst"]] = edge_count.get(edge["dst"], 0) + 1
+    focus_ids = sorted(node["id"] for node in ordered_nodes if node.get("is_focus") is True)
+    root_id = (
+        min(focus_ids, key=lambda node_id: (-edge_count.get(node_id, 0), node_id))
+        if focus_ids
+        else None
+    )
+
+    result = {
+        "schema_version": LINEAGE_ARTIFACT_VERSION,
         "root": root_id,
-        "nodes": list(nodes.values()),
-        "edges": cleaned_edges,
-        "clusters": clusters,
+        "nodes": ordered_nodes,
+        "edges": ordered_edges,
+        "clusters": build_clusters(ordered_nodes),
+        "meta": {
+            "kind": "conference",
+            "generator": _PRODUCER_NAME,
+            "generated_at": generated_at or _iso_z(_utc_now()),
+        },
     }
+    issues = validate_lineage_artifact(result, kind="conference", catalog_ids=set(seeds))
+    if issues:
+        detail = "; ".join(f"{issue.code}:{issue.path}" for issue in issues[:8])
+        raise ValueError(f"generated lineage violates {LINEAGE_ARTIFACT_VERSION}: {detail}")
+    return result
 
 
 # Why: the viewer groups focus papers by primary subfield so readers can drill
@@ -776,13 +1101,16 @@ def build_clusters(nodes: list[dict]) -> list[ClusterEntry]:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--limit", type=int, default=None,
-                        help="Process only first N Oral papers (smoke test)")
-    parser.add_argument("--conference", default="iclr-2026",
-                        help="Conference slug under docs/ (default: iclr-2026)")
-    parser.add_argument("--venue-override",
-                        help="Pretty venue label for focus nodes "
-                             "(default: upper-case slug, e.g. 'ICLR 2026')")
+    parser.add_argument(
+        "--limit", type=int, default=None, help="Process only first N Oral papers (smoke test)"
+    )
+    parser.add_argument(
+        "--conference", default="iclr-2026", help="Conference slug under docs/ (default: iclr-2026)"
+    )
+    parser.add_argument(
+        "--venue-override",
+        help="Pretty venue label for focus nodes (default: upper-case slug, e.g. 'ICLR 2026')",
+    )
     args = parser.parse_args()
 
     setup_logging()  # CLI mode: surface logger.info to stderr.

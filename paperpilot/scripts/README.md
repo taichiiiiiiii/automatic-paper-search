@@ -1,6 +1,6 @@
 # PaperPilot Scripts
 
-`paperpilot/scripts/` には 28 本の Python スクリプトがあります。
+`paperpilot/scripts/` には 32 本の Python スクリプトがあります。
 この README は全スクリプトを目的別に整理した索引です。
 
 実行形式は `uv run python -m paperpilot.scripts.<name>` がリポジトリの慣習です
@@ -10,13 +10,14 @@
 
 ## 内部モジュール（直接実行しない）
 
-アンダースコア始まりの 2 本は `if __name__ == "__main__"` を持たず、
+アンダースコア始まりの 3 本は `if __name__ == "__main__"` を持たず、
 他のスクリプトから import して使う内部ユーティリティです。
 
 | モジュール | 役割 |
 |---|---|
 | `_common.py` | `slug_to_venue_label()` / `theme_slug()` など、複数スクリプトで共有する軽量のヘルパ。重い依存（gspread / torch 等）を引かない |
 | `_lineage_classify.py` | テーマ家系図のエッジ関係分類（unarXive citation context → S2 intent → year/cite の 3 段フォールバック）+ LLM キャッシュプロバイダ `_CachedClassifyProvider` |
+| `_lineage_contract.py` | `lineage-artifact-v1` / `deep-manifest-v1` の共有 validator、canonical JSON hash、canonical `paper_id`・structured provenance の構築 |
 
 ---
 
@@ -75,8 +76,8 @@ LLM でエッジの関係（`supersedes` / `successor` / `extends` / `ablation` 
 | スクリプト | 入力 → 出力 | 外部依存 |
 |---|---|---|
 | `build_lineage.py` | `docs/<conf>/papers.json` → `docs/<conf>/lineage.json`（Oral 1 件あたり最大 `TOP_PARENTS=15` + `TOP_CHILDREN=15` の BFS 深 1） | **S2 無料 API** + **LLM**（`PAPERPILOT_GROQ_API_KEY` 優先、なければ `PAPERPILOT_GEMINI_API_KEY`）。`paperpilot/data/lineage-cache/` に中間結果を永続化するため中断→再開が可能 |
-| `build_conference_lineage.py` | `docs/<conf>/papers.json` → `docs/<conf>/lineage.json`（OpenAlex 限定、ヒューリスティック `successor` のみ） | **OpenAlex 無料 API のみ**（LLM 不要）。S2 無料枠を消費したくない場合の structural demo / フォールバック |
-| `build_deep_lineage.py` | 単一の arXiv ID → `docs/<conf>/deep-<arxiv_id>.json`（`--depth` 段の BFS） | **S2 + LLM**。`build_lineage` と同じキャッシュディレクトリを共有 |
+| `build_conference_lineage.py` | `docs/<conf>/papers.json` → `docs/<conf>/lineage.json`（OpenAlex 限定、ヒューリスティック `successor` のみ） | **OpenAlex 無料 API のみ**（LLM 不要）。catalog の canonical `paper_id` を focus/root の `seed_paper_id` に保持し、`lineage-artifact-v1` と structured provenance を検証してから出力 |
+| `build_deep_lineage.py` | 単一の arXiv ID + catalog の canonical `paper_id` → `docs/<conf>/deep-<arxiv_id>.json`（`--depth` 段の BFS） | **S2 + LLM**。`--seed-paper-id` は必須。分類 cache v2 は evidence hash、producer/provider/model/prompt/schema version を identity に含め、legacy key を hit として扱わない |
 | `build_theme_lineage.py` | フリーテキストのテーマ（`--theme "Mixture of Experts"`）→ `docs/themes/<slug>/lineage.json`。生成後は `generate_themes_manifest.py` でピッカーを更新 | **S2 + LLM**。LLM でテーマをキーワード展開 → S2 検索 → BFS → 各エッジを LLM 分類 |
 
 ### `build_lineage.py` の実行例とパラメータ
@@ -111,6 +112,24 @@ uv run python -m paperpilot.scripts.build_lineage --conference neurips-2025 \
 - `references_<s2_id>.json` / `citations_<s2_id>.json` — 引用リスト
 - `classifications.json` — LLM の関係判定結果
 
+### `build_deep_lineage.py` の canonical seed
+
+`--seed-paper-id` には対象 conference の `papers.json` にある小文字 40 hex の
+canonical `paper_id` を渡します。arXiv ID、title、先頭 node からの推測は行いません。
+
+```bash
+uv run python -m paperpilot.scripts.build_deep_lineage \
+    --arxiv-id 2602.18473 \
+    --seed-paper-id 0123456789abcdef0123456789abcdef01234567 \
+    --output docs/iclr-2026/deep-2602.18473.json
+```
+
+conference / deep の新規出力は `lineage-artifact-v1` です。root は canonical seed を持つ
+focus node にだけ解決され、edge は `relation` / `confidence` / `rationale` と structured
+provenance を持ちます。旧 artifact は title-only join や first-node fallback で変換せず、
+quality gate では `unknown` / `failed` として通常導線から外します。詳細は
+[`docs/design/14-lineage-contract-v1.md`](../../docs/design/14-lineage-contract-v1.md) を参照してください。
+
 ### コスト目安（Phase 1: Oral 13 件）
 
 - S2 呼び出し: ~30 回（無料）
@@ -127,7 +146,7 @@ uv run python -m paperpilot.scripts.build_lineage --conference neurips-2025 \
 
 | スクリプト | 入力 → 出力 | 備考 |
 |---|---|---|
-| `generate_deep_manifest.py` | `docs/<conf>/deep-*.json` → `docs/<conf>/deep-manifest.json` | `deep.html` の論文セレクタ用。各エントリ `{arxiv_id, title, filename}`。`build_deep_lineage.py` 自体は書かない（並列実行との競合を避けるため） |
+| `generate_deep_manifest.py` | `docs/<conf>/papers.json` + `docs/<conf>/deep-*.json` → `docs/<conf>/deep-manifest.json` | strict `deep-manifest-v1` wrapper。各 entry は `{paper_id, aliases, arxiv_id, title, filename}`。catalog・artifact・filename が exact 一致する監査済み entry だけを決定的順序で出力し、duplicate/ambiguous mapping は manifest 全体を失敗させる。`build_deep_lineage.py` 自体は書かない（並列実行との競合を避けるため） |
 | `generate_themes_manifest.py` | `docs/themes/<slug>/lineage.json` → `docs/themes/themes-manifest.json` | `docs/themes/index.html` のテーマピッカー用。各エントリ `{slug, theme, generated_at, paper_count, year_range}` |
 
 ```bash
@@ -136,6 +155,27 @@ uv run python -m paperpilot.scripts.generate_deep_manifest \
 uv run python -m paperpilot.scripts.generate_themes_manifest \
     --themes-dir docs/themes
 ```
+
+### Replay Lite R0
+
+`replay_run.py` は `run-manifest-v1` と retention 内の凍結入力を事前検証し、コード内 registry の
+`identity-lite-v1` projector だけを network-free で再実行します。fixture replay の例:
+
+```bash
+replay_output="$(mktemp -d)/output"
+uv run python -m paperpilot.scripts.replay_run \
+    --manifest paperpilot/tests/fixtures/replay-lite-r0/manifest.json \
+    --repo-root paperpilot/tests/fixtures/replay-lite-r0/repository \
+    --artifact-root paperpilot/tests/fixtures/replay-lite-r0/bundle \
+    --output-dir "$replay_output" \
+    --now 2026-08-30T00:00:00Z
+```
+
+出力先は存在しないか空にします。lock / expiry / size / SHA-256 と全 output byte が一致した時だけ
+atomic publish し、失敗時は `REPLAY_*` code で非ゼロ終了します。collector、外部 API、LLM、任意
+module / command は実行しません。これは過去 pipeline 全体や retention 外の replay を保証する機能
+ではありません。詳細は
+[`docs/design/15-replay-lite-contract.md`](../../docs/design/15-replay-lite-contract.md) を参照してください。
 
 ---
 

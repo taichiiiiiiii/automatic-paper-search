@@ -2,12 +2,12 @@
 
 AI/ML 論文を arXiv / Semantic Scholar / OpenAlex から自動収集し、品質シグナルで絞り込んだ上で **系譜（家系図）として可視化** するパイプライン。補助出力として CSV / JSON / Slack / Email にも配信できます。
 
-**主要な出力:** GitHub Pages 上のインタラクティブ家系図ビュー（`docs/<conference>/lineage.html`、`.github/workflows/pages.yml` でデプロイ）。サイト上のフォームから新規テーマ投稿 → CF Worker (`worker/index.ts`) が validate + dedup + rate-limit してから `theme-on-demand.yml` を直接 dispatch して生成。
-LLM が論文間の引用関係を 7 種類 (`supersedes` / `successor` / `extends` / `ablation` / `baseline_only` / `contrasts` / `unrelated`) に分類し、先行研究と後継研究を一枚の SVG で俯瞰できます。
+**主要な出力:** GitHub Pages 上の10学会・28,300件の横断検索と学会別カタログ。サイト上のフォームから新規テーマ投稿 → CF Worker (`worker/index.ts`) が validate + dedup + rate-limit してから `theme-on-demand.yml` を直接 dispatch して生成します。
+論文系譜は引用・分類結果をそのまま公開せず、品質監査、artifact hash、strict schemaの全条件を満たしたcollectionだけを表示します。現在のsnapshotには公開条件を満たす系譜がないため、系譜UIは準備中としてfail closedです。
 
-**3 つの自動実行モード + 1 つの手動メンテナンス**（GitHub Actions）：
-- **週次深掘り**（Sat 7:00 JST、`collect-weekly.yml`）— 収集 → スコアリング → summary.csv → papers.json → lineage.json の全工程を回す
-- **毎日の著者ウォッチ**（07:00 JST 毎日、`collect-daily-watch.yml`）— フォロー中の研究者の新作を公開 0 秒後に通知（lean、LLM 不使用）
+**3 つの運用モード + 1 つの手動メンテナンス**（GitHub Actions）：
+- **週次深掘り**（現在は手動起動のみ、`collect-weekly.yml`）— 収集 → スコアリング → summary.csv → papers.json → lineage.json の全工程を回す（旧 Sat 7:00 JST の schedule は停止中）
+- **毎日の著者ウォッチ**（現在は手動起動のみ、`collect-daily-watch.yml`）— フォロー中の研究者の新作を通知する lean 経路（LLM 不使用、旧 07:00 JST の schedule は停止中）
 - **オンデマンドテーマ生成**（フォーム経由、`theme-on-demand.yml`）— サイト上のフォームから新テーマを 1 件だけ生成、CF Worker `worker/index.ts` 経由で直接 `theme-on-demand.yml` を dispatch。`/themes/` ギャラリーは **このフォーム経由で生成されたテーマだけ** を表示する
 - **手動バルク再生成**（`regen-themes.yml` の `workflow_dispatch` のみ）— LLM 契約変更や lineage 形式バンプ等のメンテナンス用ブレークグラス。通常は使わない（PR #261 で週次 cron を廃止）
 
@@ -26,49 +26,104 @@ LLM が論文間の引用関係を 7 種類 (`supersedes` / `successor` / `exten
 - **秘匿分離** — API キー類は `.env` のみ（`config.yaml` に書かない）
 - **冪等性** — 既出論文は seen_ids で除外。同じ config で2回実行しても重複しない
 - **Fail-Safe** — 外部API障害時は該当ソース/シグナルをスキップして継続
-- **学会横断検索** — トップページ（`docs/index.html`）の検索ボックスから 10 学会 28,300 本を横断検索。索引は `docs/search-index.json`（gzip 約 0.72 MB、`paperpilot/scripts/build_search_index.py` が生成）で、検索結果から各学会カタログの該当論文へ遷移する
-- **グローバルナビ** — `docs/` 配下の全 17 ページが `<nav class="site-nav">`（探す / テーマ系譜 / 仕組み）を共有
+- **学会横断検索** — トップページ（`docs/index.html`）の検索ボックスから 10 学会 28,300 本を横断検索。現行索引は `docs/search-index-v2.json`（`paperpilot/scripts/build_search_index.py` が生成）で、canonical paper IDから各学会カタログのselected cardへ遷移する。`search-index.json`は互換artifactとして残る
+- **グローバルナビ** — `docs/` 配下の全 27 HTML が `<nav class="site-nav">`（探す / テーマ系譜 / 仕組み）を共有
 - **アセット版数の自動同期** — `paperpilot/scripts/sync_asset_versions.py` が CSS/JS の内容ハッシュから `?v=` を付け替え、`docs/assets/versions.json` を唯一の真実源として全 HTML に書き戻す。手で `?v=` を書き換えない
 
 ## 必要環境
 
-- Python 3.10+（開発・CI は 3.12）
+- Docker Engine / Docker Desktop と Docker Compose
+- wrapper起動用のホストPython 3.10+（依存packageは不要）
+- 承認済みの digest 固定 base image（Python 3.12 / uv 0.12.7 / Node 20）
 - 任意で GitHub Personal Access Token（API レート制限を 60 → 5,000 req/h に拡大）
+
+ホストPythonは安全なDocker wrapperのpreflightに使います。ホスト`uv`はlock更新や短い補助checkだけに使い、
+production実行と統合testの正規経路はDockerへ移行します。現時点のGitHub Actionsはまだ`uv`経路で、
+approved imageによるruntime/CI shadow gate後に移行します。完全な境界は [`docker/README.md`](docker/README.md) を参照してください。
 
 ## セットアップ
 
 ```bash
-# runtime のみ
-pip install -r paperpilot/requirements.txt
+# placeholderをローカル用ファイルへコピー
+cp docker/docker-env.example .env.docker
 
-# 開発用（pytest + ruff + mypy を含む）
-pip install -e '.[dev]'
+# 各placeholderを、別途承認して明示取得したrepository@sha256へ置換してからexport
+set -a
+. ./.env.docker
+set +a
 
-cp paperpilot/.env.example paperpilot/.env   # 必要に応じて値を記入
+# canonical wrapperは暗黙pullを行わない
+docker/paperpilot-compose build collector
 ```
+
+`.env.docker`はbase image digestなどの非秘密入力専用です。API keyはそこへ書かず、必要な名前だけを
+`docker/paperpilot-compose run --env NAME ...`で渡します。現在のchecked-in exampleは意図的に無効であり、
+承認済みdigest setと実image buildはまだ完了していません。
 
 ## 実行
 
 ```bash
 # デフォルト設定で実行
-python -m paperpilot.collector
+docker/paperpilot-compose run --rm --no-deps collector
 
 # 過去3日間のみ
-python -m paperpilot.collector --days 3
+docker/paperpilot-compose run --rm --no-deps collector \
+  --config /etc/paperpilot/config.yaml --days 3
 
 # キーワードを追加
-python -m paperpilot.collector --keyword "diffusion model"
+docker/paperpilot-compose run --rm --no-deps collector \
+  --config /etc/paperpilot/config.yaml --keyword "diffusion model"
 
 # seen_ids を無視して再出力
-python -m paperpilot.collector --full
+docker/paperpilot-compose run --rm --no-deps collector \
+  --config /etc/paperpilot/config.yaml --full
 
 # LLM 評価（Stage 4）を一時的にスキップ
-python -m paperpilot.collector --skip-llm
+docker/paperpilot-compose run --rm --no-deps collector \
+  --config /etc/paperpilot/config.yaml --skip-llm
+
+# approved images取得後に実行するDocker統合test（現時点では未実施）
+docker/paperpilot-compose build test node-test
+docker/paperpilot-compose run --rm --no-deps test
+docker/paperpilot-compose run --rm --no-deps node-test
+
+# GitHub Pagesと同じproject baseでローカルpreview
+docker/paperpilot-compose build site-preview
+docker/paperpilot-compose --profile preview up --no-build site-preview
+# http://127.0.0.1:8137/automatic-paper-search/
 ```
+
+ホスト上の`uv run`は、Docker imageを作る前の高速な補助checkには使えますが、Docker gateの代替にはしません。
+
+### Replay Lite（Identity Lite のオフライン再検証）
+
+Replay Lite R0 は、retention 内の凍結入力と `run-manifest-v1` を検証し、登録済みの
+`identity-lite-v1` projector が同じ出力 byte を生成することをネットワークなしで確認します。
+リポジトリ内の fixture は次のコマンドで再生できます。
+
+```bash
+docker/paperpilot-compose run --rm --no-deps test \
+  /opt/paperpilot/bin/python -I -m paperpilot.scripts.replay_run \
+  --manifest paperpilot/tests/fixtures/replay-lite-r0/manifest.json \
+  --repo-root paperpilot/tests/fixtures/replay-lite-r0/repository \
+  --artifact-root paperpilot/tests/fixtures/replay-lite-r0/bundle \
+  --output-dir /tmp/replay-output \
+  --now 2026-08-30T00:00:00Z
+```
+
+`--output-dir` は存在しないか空である必要があります。CLI は manifest、lock hash、artifact の
+期限・size・SHA-256、生成後の全 output hash を検証し、全件一致した場合だけ出力ディレクトリを
+atomic publish します。collector、外部 API、LLM、manifest に書かれた任意 command は実行せず、
+retention 外や未登録 projector の replay は保証しません。失敗時は stable な `REPLAY_*` code を
+標準エラーへ出して非ゼロ終了します。完全な契約は
+[`docs/design/15-replay-lite-contract.md`](docs/design/15-replay-lite-contract.md) を参照してください。
 
 ## Stage 4 (LLM rerank) — Ollama セットアップ（任意）
 
-Stage 4 を使うと LLM が各論文に `relevance (1-5) / 日本語要約 / 読むべき理由 / タグ` を付与し、関連度順にリランクします。完全ローカルで無料動作する **Ollama** を推奨します。
+Stage 4 を使うと LLM が各論文に `relevance (1-5) / 日本語要約 / 読むべき理由 / タグ` を付与し、関連度順にリランクします。完全ローカルで無料動作する **Ollama** を推奨します。これはPaperPilot製品runtimeの任意設定であり、リポジトリの実装・レビューagentは [`PAPERPILOT_PROFILE.md`](PAPERPILOT_PROFILE.md) のGPT-5.6 Sol経路を使います。
+
+> 以下はホスト補助経路です。Docker-first phase 1ではcollectorからhost上の`localhost:11434`へ接続する
+> 経路をまだ認可していないため、Ollamaをproduction Docker経路としては未検証です。
 
 ```bash
 # 1. Ollama インストール  (https://ollama.com)
@@ -114,16 +169,17 @@ output/<conf>/papers_YYYY-MM-DD.csv
 
 ```bash
 # 論文一覧ビューだけ（LLM 不要）
-python paperpilot/scripts/build_summary_csv.py --conference iclr-2026
-python paperpilot/scripts/build_pages.py --conference iclr-2026
-
-# 家系図（Groq API キーが必要）
-export PAPERPILOT_GROQ_API_KEY=gsk_...   # https://console.groq.com/keys (無料、30 RPM)
-python paperpilot/scripts/build_lineage.py --conference iclr-2026 --limit 1  # スモーク
-python paperpilot/scripts/build_lineage.py --conference iclr-2026            # 全 Oral
+docker/paperpilot-compose run --rm --no-deps ops \
+  -m paperpilot.scripts.build_summary_csv --conference iclr-2026
+docker/paperpilot-compose run --rm --no-deps ops \
+  -m paperpilot.scripts.build_pages --conference iclr-2026
 ```
 
-`docs/` 以下は GitHub Pages が自動デプロイします（`develop` への push を `.github/workflows/pages.yml` がフック、`docs/**` 変更時のみ起動）。ブラウザから `index.html` / `lineage.html` にアクセスできます。テーマ追加のリクエストは GitHub Issue (`theme-request` テンプレ) で受け付け、運用者が `gh workflow run theme-on-demand.yml --ref develop -f theme="..."` を手動で叩いて生成 → 自動コミット → GH Pages 再デプロイ、の流れです。
+外部API/LLMを使う`build_lineage`は、credentialを持たない`ops`（network none）の責務外です。Docker-first phase 1には
+networked operator targetがまだないため、これをcanonicalなローカル実行としては案内しません。workflow移行と同じ
+明示承認gateで専用targetを追加します。
+
+`docs/` 以下は GitHub Pages が自動デプロイします（`develop` への push を `.github/workflows/pages.yml` がフックし、公開対象変更時だけexact-SHA検証・releaseを実行）。ブラウザからカタログを利用でき、テーマ追加は `/themes/` のフォームからCF Worker経由で依頼できます。完了確認は公開 `themes-manifest.json` をpollingします。PAT付きGitHub runs APIを読むstatus endpointは、原子的quota/cacheを実装するまで休眠中です。
 
 ### LLM プロバイダの優先順位
 
@@ -133,17 +189,12 @@ python paperpilot/scripts/build_lineage.py --conference iclr-2026            # �
 
 学会単位ではなく **任意の研究テーマ**（例: `Mixture of Experts`, `RAG`, `Direct Preference Optimization`）から、時系列を Y 軸にした家系図を生成できます。出力は `docs/themes/<slug>/lineage.json` に置かれ、`docs/themes/index.html` のピッカーから切り替えられます。
 
+テーマ探索本体は外部API/LLMを使うため、Docker-first phase 1のcredential-free `ops`では実行しません。既存artifactから
+ピッカー用manifestだけを決定的に再生成する場合は次を使います。
+
 ```bash
-# 1. テーマから家系図 JSON を生成（CLI 事前生成、再実行は cache 経由で高速）
-uv run python -m paperpilot.scripts.build_theme_lineage \
-    --theme "Mixture of Experts" --depth 2 --seeds 8
-
-uv run python -m paperpilot.scripts.build_theme_lineage \
-    --theme "Direct Preference Optimization" --depth 2 --seeds 8
-
-# 2. ピッカー用マニフェストを再生成
-uv run python -m paperpilot.scripts.generate_themes_manifest \
-    --themes-dir docs/themes
+docker/paperpilot-compose run --rm --no-deps ops \
+  -m paperpilot.scripts.generate_themes_manifest --themes-dir docs/themes
 ```
 
 主なフラグ:
@@ -220,7 +271,7 @@ Stage 4 (LLM) を有効化すると、さらに `llm_relevance (1..5)` で最終
 ### 1. 週次深掘り — `.github/workflows/collect-weekly.yml`
 
 **手動実行のみ**（`workflow_dispatch`。旧: 毎週土曜 07:00 JST ＝ Fri 22:00 UTC、#245 で廃止）。
-フル機能で CSV/JSON 生成 + commit。
+フル機能で生成し、credential-free candidateを作成してからlatest `develop`へCAS promotionし、promoted exact SHAをreleaseします。
 
 - `paperpilot/config.yaml` を参照
 - Stage 0〜4 フル稼働（LLM 有効時は Ollama/Gemini/Claude で日本語要約）
@@ -255,11 +306,11 @@ automatic-paper-search/
 │   ├── index.html          # ランディング（学会一覧 + サイト横断検索）
 │   ├── 404.html            # GH Pages の SPA フォールバック
 │   ├── conferences.json    # 全学会の集約インデックス
-│   ├── search-index.json   # 横断検索インデックス（28,300 件・gzip 約 0.72 MB）
+│   ├── search-index-v2.json # 現行の横断検索インデックス（28,300 件）
 │   ├── sitemap.xml         # サイトマップ
 │   ├── <10 学会>/          # iclr-2026/ cvpr-2025/ cvpr-2026/ neurips-2025/ icml-2025/ ...
 │   │   └── index.html, lineage.html, {papers,lineage}.json
-│   ├── themes/             # テーマ家系図（3 本公開 + 投稿フォーム）
+│   ├── themes/             # テーマartifact 3本 + 投稿フォーム（表示eligibleは現在0件）
 │   ├── how-it-works/       # サイトの仕組み
 │   ├── research/           # 市場調査レポート
 │   ├── design/             # 基本設計書
@@ -274,7 +325,7 @@ automatic-paper-search/
     ├── signals/            # venue / citation / author / github / keyword / follow
     ├── exporters/          # CSV / JSON / Slack / Email
     ├── llm/                # Ollama / Gemini / Claude / Groq
-    ├── scripts/            # ビューア・索引生成（全 28 本。主要: build_summary_csv /
+    ├── scripts/            # ビューア・索引生成（全 33 Python scripts。主要: build_summary_csv /
     │                       # build_pages / build_lineage / build_deep_lineage /
     │                       # build_theme_lineage / build_search_index / sync_asset_versions /
     │                       # generate_{deep,themes}_manifest。詳細は paperpilot/scripts/README.md）

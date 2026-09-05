@@ -176,9 +176,9 @@ const NODES = [
   { id: "P4", title: "Orphan",   year: 2024, citation_count: 500,  venue_tier: "preprint" },
 ];
 const EDGES = [
-  { src: "P0", dst: "P1", rel: "extends", conf: 0.9 },
-  { src: "P0", dst: "P2", rel: "extends", conf: 0.9 },
-  { src: "P1", dst: "P3", rel: "supersedes", conf: 0.9 },
+  { src: "P0", dst: "P1", relation: "extends", confidence: 0.9 },
+  { src: "P0", dst: "P2", relation: "extends", confidence: 0.9 },
+  { src: "P1", dst: "P3", relation: "supersedes", confidence: 0.9 },
 ];
 
 // ---- Tests ------------------------------------------------------------------
@@ -319,8 +319,8 @@ test("computePagerank ignores edges that reference nodes outside the graph", () 
   // adding a stray edge must not change ranks for the rest of the graph.
   const stray = [
     ...EDGES,
-    { src: "MISSING_PARENT", dst: "P1", rel: "extends", conf: 0.5 },
-    { src: "P3", dst: "MISSING_CHILD", rel: "extends", conf: 0.5 },
+    { src: "MISSING_PARENT", dst: "P1", relation: "extends", confidence: 0.5 },
+    { src: "P3", dst: "MISSING_CHILD", relation: "extends", confidence: 0.5 },
   ];
   const baseline = T.computePagerank(NODES, EDGES);
   const polluted = T.computePagerank(NODES, stray);
@@ -459,7 +459,7 @@ test("computeOrphanSet returns empty for empty edges", () => {
 
 test("computeOrphanSet handles missing edge fields defensively", () => {
   // Edges missing src/dst should not crash, just not contribute.
-  const malformed = [{ rel: "extends" }, { src: "P0" }, { dst: "P1" }];
+  const malformed = [{ relation: "extends" }, { src: "P0" }, { dst: "P1" }];
   const orphans = T.computeOrphanSet(NODES, malformed);
   // Only P0 and P1 marked incident; everyone else orphan (3).
   eq(orphans.size, NODES.length - 2);

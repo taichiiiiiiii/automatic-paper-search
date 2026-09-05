@@ -19,9 +19,10 @@ PaperPilot — AI/ML 論文自動収集・品質フィルタリングシステ�
 >
 > **v2.1（2026-04-05）時点の設計のままで、実装から約 4.5 か月ぶん乖離しています。**
 > 実測監査で **33 件の食い違い**（高 16 / 中 13 / 低 4）を確認しました。
-> **現況の単一の真実源は [09-implementation-status.md](09-implementation-status.md)** です。
+> 2026-08-20 時点の実装基準線は [09-implementation-status.md](09-implementation-status.md)、
+> 2026-08-30 以降の実行状況と次キューは [13-agent-workboard.md](13-agent-workboard.md) です。
 > 01〜07 を読むときは各ファイル冒頭の警告も確認してください。
-> 08〜10 は比較的新しく、10 は 2026-08-19 の出荷実績まで反映済みです。
+> 08〜27 は後続文書です。09 は基準線、10 はフェーズ 1 の判断履歴、11〜27 は目標設計・実装契約・現在地です。
 
 ## 目次
 
@@ -33,8 +34,43 @@ PaperPilot — AI/ML 論文自動収集・品質フィルタリングシステ�
 - [シーケンス設計](06-sequences.md)
 - [運用（NFR・テスト・CI）](07-operations.md)
 - [リネージ機能ロードマップ](08-lineage-roadmap.md)
+- [実装ステータス](09-implementation-status.md) — 2026-08-20 時点の実装基準線
 - [サイト再設計 — 方式の決定](10-site-redesign.md)（#355・2026-08-19）
   — §8 にフェーズ 1 の出荷実績（2026-08-19 本番公開・決定からの乖離 2 件）、§9 にフェーズ 2 の入力と制約
+- [目標アーキテクチャ](11-target-architecture.md)（2026-08-30）
+  — 1 サイト、検索優先の文脈ビュー、Identity / Replay Lite、最小公開ゲート、価値順の実装ロードマップを決定
+- [実装計画 — Unified Paper Discovery](12-implementation-plan.md)（2026-08-30）
+  — 変更ファイル、公開 schema、失敗条件、RED→GREEN の受入テストまで固定した実装用の正本
+- [Agent Workboard](13-agent-workboard.md)（2026-08-30）
+  — subagent / model の担当境界、エフォート配分、現在地、次の並列キュー
+- [Lineage Artifact v1 Contract](14-lineage-contract-v1.md)（2026-08-30）
+  — P2 producer / quality / viewer が共有する seed、provenance、deep manifest の wire contract
+- [Replay Lite R0 Contract](15-replay-lite-contract.md)（2026-08-30）
+  — canonical byte、run manifest、短期 artifact 検証、network-free fixture replay の実装契約
+- [Theme Lineage P2T Migration](16-theme-lineage-migration.md)（2026-08-30）
+  — theme identity/provenance、quality hash gate、legacy artifact の fail-closed 移行契約
+- [Paper Slide Deck v1 実装契約](17-paper-slide-deck-contract.md)（2026-08-30）
+  — 選択論文から trusted OA PDF、ページ引用付き構造化 deck、レビュー、exact-SHA 静的公開までの実装境界
+- [Lineage Trust と Focus View 契約](18-lineage-trust-and-focus-view.md)（2026-08-30）
+  — 引用事実と系譜判断を分離する v2、監査・較正 gate、2-hop / 15-node の段階表示を決定
+- [Top Conference Release Watch 契約](19-conference-release-watch-contract.md)（2026-08-30）
+  — 上位学会の公開検知、安定性確認、候補生成、exact-SHA 公開までの自動更新境界
+- [Paper Slide SD1 実装記録](20-slide-sd1-implementation.md)（2026-08-31）
+  — canonical PDF resolver、SSRF-safe bounded fetch、Linux isolated extraction、SD0 integrity bindingの実装境界と検証結果
+- [Paper Slide SD2 ローカル実装記録](21-slide-sd2-implementation.md)（2026-09-01）
+  — citation-preserving階層要約、closed provider出力、prompt injection境界、budget/cache key。offline backend実装済み
+- [Paper Slide visible-text verifier 実装設計](22-slide-visible-text-verifier.md)（2026-09-01）
+  — VT0 contract実装済み。最終描画pixelからのOCRを行うVT1〜VT4とfull-text再有効化gateは未完了
+- [Paper Slide SD3 deterministic projection](23-slide-sd3-projection.md)（2026-09-01）
+  — 検証済みdeck JSONから作る決定論的・アクセシブルなWebスライドrenderer/public indexをローカル実装済み
+- [Paper Slide SD2 adversarial repair](24-slide-sd2-adversarial-repair.md)（2026-08-31）
+  — SD2独立監査で再現したprovenance、cache、grounding、mutable provider境界の修正brief
+- [Paper Slide search/action integration](25-slide-search-action-contract.md)（2026-09-01）
+  — public index、`?paper=`選択card、capability付きrequest/status consumer、no-JS原論文fallbackをローカル実装済み
+- [Docker-first execution contract](26-docker-first-execution.md)（2026-09-01）
+  — Dockerをcollector/test/site previewの正本、uvをlock/build補助に限定。static contract 28 passed、実image runtimeは未実施
+- [Paper Slide request plane production boundary](27-paper-slide-request-plane-production.md)（2026-09-04）
+  — approved catalog、Durable Object、dispatch曖昧性、atomic workflow claim、休眠runtimeとproduction activation gate
 
 ---
 

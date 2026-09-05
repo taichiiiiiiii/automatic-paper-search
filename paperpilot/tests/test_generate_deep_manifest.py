@@ -1,70 +1,112 @@
-"""Tests for paperpilot/scripts/generate_deep_manifest.py.
-
-The manifest generator globs ``deep-<arxiv_id>.json`` files in a
-conference directory and produces ``deep-manifest.json`` listing each
-as ``{arxiv_id, title, filename}``. Keeping the manifest derived from
-filesystem state (rather than written side-effect-style by
-``build_deep_lineage.py``) avoids lost-update races when multiple
-builds run in parallel.
-"""
+"""Strict deep-manifest-v1 generation tests."""
 
 from __future__ import annotations
 
 import json
 from pathlib import Path
 
+import pytest
+
 from paperpilot.scripts import generate_deep_manifest as gm
 
-# --------------------- Fixtures ----------------------------------------
+PAPER_ID_A = "1" * 40
+PAPER_ID_B = "2" * 40
+
+
+@pytest.fixture
+def docs_dir(tmp_path: Path) -> Path:
+    path = tmp_path / "iclr-2026"
+    path.mkdir()
+    return path
+
+
+def _provenance() -> dict:
+    return {
+        "producer": {"name": "fixture", "version": "1"},
+        "evidence": {"source": "fixture", "kind": "citation", "sha256": "a" * 64},
+        "classification": {
+            "method": "citation_heuristic",
+            "provider": None,
+            "model": None,
+            "prompt_version": None,
+            "schema_version": "fixture-v1",
+        },
+    }
+
+
+def _add_catalog_paper(
+    directory: Path,
+    paper_id: str,
+    arxiv_id: str | None = None,
+) -> None:
+    path = directory / "papers.json"
+    rows = json.loads(path.read_text()) if path.exists() else []
+    if paper_id not in {row["paper_id"] for row in rows}:
+        row = {"paper_id": paper_id}
+        if arxiv_id is not None:
+            row.update({"source": "arxiv", "source_id": arxiv_id, "arxiv_id": arxiv_id})
+        rows.append(row)
+    path.write_text(json.dumps(rows))
 
 
 def _write_deep_json(
-    dir_: Path, arxiv_id: str, title: str, *, root_id: str = "s2abc"
+    directory: Path,
+    arxiv_id: str,
+    title: str,
+    *,
+    paper_id: str = PAPER_ID_A,
+    root_id: str = "S2-root",
 ) -> Path:
-    """Write a minimal but realistic deep-<arxiv_id>.json file."""
+    directory.mkdir(parents=True, exist_ok=True)
+    _add_catalog_paper(directory, paper_id, arxiv_id)
+    aliases = [["arxiv", arxiv_id], ["semantic_scholar", root_id]]
     payload = {
+        "schema_version": "lineage-artifact-v1",
         "root": root_id,
         "nodes": [
             {
                 "id": root_id,
                 "title": title,
-                "year": 2026,
-                "venue": "ICLR 2026",
-                "venue_tier": "A+",
-                "authors": ["Author One"],
-                "kinds": ["focus"],
-                "citation_count": 0,
-                "github_stars": 0,
-                "tldr": "",
                 "is_focus": True,
+                "seed_paper_id": paper_id,
+                "aliases": aliases,
             }
         ],
         "edges": [],
+        "clusters": [],
         "meta": {
-            "source": "build_deep_lineage.py",
+            "kind": "deep",
+            "generator": "fixture",
             "arxiv_id": arxiv_id,
-            "depth": 2,
-            "generated_at": "2026-04-23T00:00:00Z",
+            "seed_paper_id": paper_id,
+            "aliases": aliases,
+            "generated_at": "2026-08-30T00:00:00Z",
         },
     }
-    path = dir_ / f"deep-{arxiv_id}.json"
+    path = directory / f"deep-{arxiv_id}.json"
     path.write_text(json.dumps(payload, ensure_ascii=False))
     return path
 
 
-# --------------------- generate_manifest -------------------------------
+def test_empty_dir_returns_wrapper_not_legacy_array(docs_dir: Path) -> None:
+    manifest = gm.generate_manifest(docs_dir)
+    assert manifest == {
+        "schema_version": "deep-manifest-v1",
+        "conference": "iclr-2026",
+        "generated_at": "1970-01-01T00:00:00Z",
+        "entries": [],
+    }
 
 
-def test_generate_manifest_empty_dir_returns_empty_list(tmp_path: Path) -> None:
-    entries = gm.generate_manifest(tmp_path)
-    assert entries == []
-
-
-def test_generate_manifest_single_file(tmp_path: Path) -> None:
-    _write_deep_json(tmp_path, "1706.03762", "Attention Is All You Need")
-    entries = gm.generate_manifest(tmp_path)
-    assert entries == [
+def test_generate_manifest_emits_exact_identity_entry(docs_dir: Path) -> None:
+    _write_deep_json(docs_dir, "1706.03762", "Attention Is All You Need")
+    manifest = gm.generate_manifest(docs_dir)
+    assert manifest["schema_version"] == "deep-manifest-v1"
+    assert manifest["generated_at"] == "2026-08-30T00:00:00Z"
+    assert manifest["entries"] == [
         {
+            "paper_id": PAPER_ID_A,
+            "aliases": [["arxiv", "1706.03762"], ["semantic_scholar", "S2-root"]],
             "arxiv_id": "1706.03762",
             "title": "Attention Is All You Need",
             "filename": "deep-1706.03762.json",
@@ -72,141 +114,83 @@ def test_generate_manifest_single_file(tmp_path: Path) -> None:
     ]
 
 
-def test_generate_manifest_multiple_files_sorted_by_arxiv_id(tmp_path: Path) -> None:
-    _write_deep_json(tmp_path, "2602.18473", "Paper B")
-    _write_deep_json(tmp_path, "1706.03762", "Paper A")
-    _write_deep_json(tmp_path, "2512.23447", "Paper C")
-    entries = gm.generate_manifest(tmp_path)
-    assert [e["arxiv_id"] for e in entries] == [
-        "1706.03762",
-        "2512.23447",
-        "2602.18473",
+def test_entries_sort_by_canonical_paper_id(docs_dir: Path) -> None:
+    _write_deep_json(docs_dir, "2602.18473", "B", paper_id=PAPER_ID_B, root_id="S2-B")
+    _write_deep_json(docs_dir, "1706.03762", "A", paper_id=PAPER_ID_A, root_id="S2-A")
+    manifest = gm.generate_manifest(docs_dir)
+    assert [entry["paper_id"] for entry in manifest["entries"]] == [
+        PAPER_ID_A,
+        PAPER_ID_B,
     ]
 
 
-def test_generate_manifest_ignores_unrelated_files(tmp_path: Path) -> None:
-    _write_deep_json(tmp_path, "1706.03762", "Deep A")
-    (tmp_path / "lineage.json").write_text("{}")
-    (tmp_path / "papers.json").write_text("[]")
-    (tmp_path / "deep-manifest.json").write_text("[]")
-    entries = gm.generate_manifest(tmp_path)
-    assert len(entries) == 1
-    assert entries[0]["arxiv_id"] == "1706.03762"
-
-
-def test_generate_manifest_skips_file_with_unparseable_name_and_no_meta(
-    tmp_path: Path,
+def test_legacy_artifact_is_skipped_without_filename_or_first_node_fallback(
+    docs_dir: Path,
 ) -> None:
-    """If the filename isn't a valid arxiv pattern and meta is missing,
-    there's no way to recover the id — skip rather than emit a broken
-    entry that the JS viewer can't fetch."""
-    broken = tmp_path / "deep-broken.json"
-    broken.write_text(json.dumps({"nodes": [], "edges": []}))  # no meta, bad name
-    _write_deep_json(tmp_path, "1706.03762", "OK")
-    entries = gm.generate_manifest(tmp_path)
-    assert [e["arxiv_id"] for e in entries] == ["1706.03762"]
-
-
-def test_generate_manifest_skips_file_with_non_arxiv_meta(tmp_path: Path) -> None:
-    """meta.arxiv_id must match the arXiv id format to be usable as a URL
-    parameter — otherwise the JS viewer can't construct a safe fetch URL."""
-    path = tmp_path / "deep-1234.56789.json"
-    path.write_text(
+    _add_catalog_paper(docs_dir, PAPER_ID_A, "2602.18473")
+    (docs_dir / "deep-2602.18473.json").write_text(
         json.dumps(
             {
-                "root": "r",
-                "nodes": [{"id": "r", "title": "x", "is_focus": True}],
+                "root": "missing",
+                "nodes": [{"id": "first", "title": "Legacy", "is_focus": True}],
                 "edges": [],
-                "meta": {"arxiv_id": "../../etc/passwd"},
+                "meta": {},
             }
         )
     )
-    _write_deep_json(tmp_path, "1706.03762", "OK")
-    entries = gm.generate_manifest(tmp_path)
-    # meta.arxiv_id is rejected, filename fallback gives "1234.56789" — valid.
-    assert sorted(e["arxiv_id"] for e in entries) == ["1234.56789", "1706.03762"]
+    assert gm.generate_manifest(docs_dir)["entries"] == []
 
 
-def test_generate_manifest_falls_back_to_filename_arxiv_id(tmp_path: Path) -> None:
-    """If meta.arxiv_id is missing but filename is deep-<id>.json, we still
-    recover the id from the filename — belt and braces."""
-    path = tmp_path / "deep-2602.18473.json"
-    path.write_text(
-        json.dumps(
-            {
-                "root": "r1",
-                "nodes": [
-                    {
-                        "id": "r1",
-                        "title": "Filename Fallback",
-                        "is_focus": True,
-                    }
-                ],
-                "edges": [],
-                "meta": {"source": "test"},  # no arxiv_id
-            }
-        )
-    )
-    entries = gm.generate_manifest(tmp_path)
-    assert entries == [
-        {
-            "arxiv_id": "2602.18473",
-            "title": "Filename Fallback",
-            "filename": "deep-2602.18473.json",
-        }
-    ]
+def test_meta_filename_arxiv_mismatch_is_skipped(docs_dir: Path) -> None:
+    path = _write_deep_json(docs_dir, "2602.18473", "Mismatch")
+    payload = json.loads(path.read_text())
+    payload["meta"]["arxiv_id"] = "1706.03762"
+    path.write_text(json.dumps(payload))
+    assert gm.generate_manifest(docs_dir)["entries"] == []
 
 
-def test_generate_manifest_skips_file_with_unreadable_json(tmp_path: Path) -> None:
-    (tmp_path / "deep-bad.json").write_text("not json at all")
-    _write_deep_json(tmp_path, "1706.03762", "OK")
-    entries = gm.generate_manifest(tmp_path)
-    assert [e["arxiv_id"] for e in entries] == ["1706.03762"]
+def test_catalog_paper_id_and_arxiv_must_come_from_the_same_row(docs_dir: Path) -> None:
+    path = _write_deep_json(docs_dir, "2602.18473", "Wrong canonical join")
+    catalog = json.loads((docs_dir / "papers.json").read_text())
+    catalog[0]["source_id"] = "2401.00001"
+    catalog[0]["arxiv_id"] = "2401.00001"
+    (docs_dir / "papers.json").write_text(json.dumps(catalog))
+
+    assert gm.generate_manifest(docs_dir)["entries"] == []
+    assert path.exists()
 
 
-# --------------------- write_manifest ----------------------------------
+def test_root_must_be_the_unique_focus(docs_dir: Path) -> None:
+    path = _write_deep_json(docs_dir, "2602.18473", "No fallback")
+    payload = json.loads(path.read_text())
+    payload["root"] = "unknown"
+    path.write_text(json.dumps(payload))
+    assert gm.generate_manifest(docs_dir)["entries"] == []
 
 
-def test_write_manifest_creates_file(tmp_path: Path) -> None:
-    _write_deep_json(tmp_path, "1706.03762", "Attention")
-    out = gm.write_manifest(tmp_path)
-    assert out == tmp_path / "deep-manifest.json"
+def test_seed_and_aliases_must_match_root_and_meta(docs_dir: Path) -> None:
+    path = _write_deep_json(docs_dir, "2602.18473", "Alias mismatch")
+    payload = json.loads(path.read_text())
+    payload["nodes"][0]["aliases"][1][1] = "different-root"
+    path.write_text(json.dumps(payload))
+    assert gm.generate_manifest(docs_dir)["entries"] == []
+
+
+def test_duplicate_exact_alias_fails_entire_manifest(docs_dir: Path) -> None:
+    _write_deep_json(docs_dir, "1706.03762", "A", paper_id=PAPER_ID_A, root_id="shared-root")
+    _write_deep_json(docs_dir, "2602.18473", "B", paper_id=PAPER_ID_B, root_id="shared-root")
+    with pytest.raises(ValueError, match="ambiguous"):
+        gm.generate_manifest(docs_dir)
+
+
+def test_write_manifest_is_wrapper_and_overwrites_existing(docs_dir: Path) -> None:
+    (docs_dir / "deep-manifest.json").write_text("[]")
+    _write_deep_json(docs_dir, "1706.03762", "Attention")
+    out = gm.write_manifest(docs_dir)
     data = json.loads(out.read_text())
-    assert data == [
-        {
-            "arxiv_id": "1706.03762",
-            "title": "Attention",
-            "filename": "deep-1706.03762.json",
-        }
-    ]
-
-
-def test_write_manifest_overwrites_existing(tmp_path: Path) -> None:
-    (tmp_path / "deep-manifest.json").write_text('[{"stale": true}]')
-    _write_deep_json(tmp_path, "1706.03762", "Attention")
-    gm.write_manifest(tmp_path)
-    data = json.loads((tmp_path / "deep-manifest.json").read_text())
-    assert len(data) == 1
-    assert data[0]["arxiv_id"] == "1706.03762"
-
-
-def test_write_manifest_empty_produces_empty_array(tmp_path: Path) -> None:
-    gm.write_manifest(tmp_path)
-    data = json.loads((tmp_path / "deep-manifest.json").read_text())
-    assert data == []
-
-
-# --------------------- CLI entry point ---------------------------------
-
-
-def test_main_accepts_docs_dir_argument(tmp_path: Path) -> None:
-    _write_deep_json(tmp_path, "1706.03762", "Attention")
-    rc = gm.main(["--docs-dir", str(tmp_path)])
-    assert rc == 0
-    assert (tmp_path / "deep-manifest.json").exists()
+    assert data["schema_version"] == "deep-manifest-v1"
+    assert len(data["entries"]) == 1
 
 
 def test_main_returns_nonzero_when_dir_does_not_exist(tmp_path: Path) -> None:
-    missing = tmp_path / "does-not-exist"
-    rc = gm.main(["--docs-dir", str(missing)])
-    assert rc != 0
+    assert gm.main(["--docs-dir", str(tmp_path / "missing")]) != 0

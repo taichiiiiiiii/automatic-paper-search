@@ -25,7 +25,7 @@
   <meta property="og:image" content="https://taichiiiiiiii.github.io/automatic-paper-search/assets/og-image.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="PaperPilot — AI/ML 論文の系譜（家系図）を可視化" />
+  <meta property="og:image:alt" content="PaperPilot — AI/ML 論文カタログの横断検索" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:image" content="https://taichiiiiiiii.github.io/automatic-paper-search/assets/og-image.png" />
   <meta name="twitter:title" content="ICLR 2026 — PaperPilot" />
@@ -38,14 +38,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=optional" rel="stylesheet" />
 
-  <link rel="stylesheet" href="../assets/style.css?v=97" />
+  <link rel="stylesheet" href="../assets/style.css?v=105" />
 </head>
 <body>
   <noscript>
     <div class="noscript-banner" role="alert">
       <strong>JavaScript が必要です。</strong>
       論文一覧の検索 / フィルタは JavaScript で動作します。
-      ブラウザの JavaScript を有効にして再読込してください。
+      <a href="paper-links.html">JavaScript なしの論文リンク一覧</a>も利用できます。
     </div>
   </noscript>
   <a class="skip-link" href="#main-content">本文へスキップ</a>
@@ -74,7 +74,9 @@
       <span class="hero__meta-sep" aria-hidden="true">·</span>
       更新 <span class="hero__meta-num" id="stat-updated">—</span>
       <span class="hero__meta-sep" aria-hidden="true">·</span>
-      <a class="hero__meta-link" href="lineage.html">家系図ビュー →</a>
+      <span class="hero__meta-lineage" data-lineage-entry data-lineage-state="unavailable" role="status">
+        <span class="hero__meta-link hero__meta-link--disabled" aria-disabled="true">家系図ビュー（公開準備中）</span>
+      </span>
     </p>
     <p class="hero__tagline">The 14th International Conference on Learning Representations (Rio de Janeiro, April 23–27, 2026).</p>
     <div class="hero__details" id="hero-details" hidden>
@@ -142,6 +144,9 @@
   </footer>
 
   <script src="../assets/utils.js?v=84" defer></script>
-  <script src="../assets/app.js?v=87" defer></script>
+  <script src="../assets/paper-slides-public-root.js?v=1" defer></script>
+  <script src="../assets/catalog-core.js?v=9" defer></script>
+  <script src="../assets/lineage-core.js?v=4" defer></script>
+  <script src="../assets/app.js?v=98" defer></script>
 </body>
 </html>
