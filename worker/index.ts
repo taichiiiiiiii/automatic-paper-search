@@ -1,8 +1,8 @@
 // Cloudflare Worker that backs the public theme-submission form on
 // /themes/. Receives POST { theme: string } from the page, validates,
 // dedupes against the existing themes-manifest.json, rate-limits per
-// IP via KV, then triggers the on-demand GitHub Actions workflow that
-// regenerates the lineage and pushes to develop.
+// IP via KV, then triggers the on-demand GitHub Actions workflow. A
+// server-generated request ID correlates one browser with one workflow run.
 //
 // Why a Worker (and not the static Pages handler):
 //   - we need server-side secrets (the GH dispatch PAT) which can't
@@ -31,17 +31,20 @@ interface Env {
 // JS module shared by the Worker, the test runner, and (in spirit) the
 // Python theme_slug() function. The pin test in
 // paperpilot/tests/test_worker_slug_parity.py compares all three.
-import { themeSlug, THEME_INPUT_PATTERN } from "./slug.js";
+import { themeSlug } from "./slug.js";
 import {
   json,
   isRateLimited,
   isGloballyRateLimited,
   RATE_LIMIT_PER_HOUR,
   RATE_LIMIT_GLOBAL_PER_DAY,
+  themeStatusUnavailable,
 } from "./response.js";
-import { pickMatchingRun } from "./run-match.js";
+import { createRequestId, dispatchInputs } from "./request-id.js";
 import { validatePostInput } from "./validate-input.js";
+import { createPaperPilotWorker } from "./entrypoint.js";
 export { themeSlug };
+export { createPaperPilotWorker } from "./entrypoint.js";
 
 async function alreadyGenerated(slug: string, env: Env): Promise<boolean> {
   // The viewer ships from GitHub Pages, so we read the manifest from
@@ -71,7 +74,7 @@ async function alreadyGenerated(slug: string, env: Env): Promise<boolean> {
   }
 }
 
-async function dispatchWorkflow(theme: string, env: Env): Promise<{ ok: boolean; status: number; body: string }> {
+async function dispatchWorkflow(theme: string, requestId: string, env: Env): Promise<{ ok: boolean; status: number; body: string }> {
   const url = `https://api.github.com/repos/${env.GH_OWNER}/${env.GH_REPO}/actions/workflows/${env.GH_WORKFLOW_FILE}/dispatches`;
   const resp = await fetch(url, {
     method: "POST",
@@ -82,74 +85,18 @@ async function dispatchWorkflow(theme: string, env: Env): Promise<{ ok: boolean;
       "user-agent": "paperpilot-theme-dispatcher",
       "content-type": "application/json",
     },
-    body: JSON.stringify({ ref: env.GH_REF, inputs: { theme } }),
+    body: JSON.stringify({ ref: env.GH_REF, inputs: dispatchInputs(theme, requestId) }),
   });
   // GitHub returns 204 on success.
   return { ok: resp.ok, status: resp.status, body: resp.ok ? "" : await resp.text() };
 }
 
-// Subset of fields we surface to the client. Mirrors the JSON shape of
-// /actions/workflows/{file}/runs items; intentionally narrow so we
-// don't leak GitHub-internal fields (head_sha, run_attempt etc).
-interface RunSummary {
-  status: string;       // "queued" | "in_progress" | "completed"
-  conclusion: string | null; // "success" | "failure" | "cancelled" | "timed_out" | null while running
-  html_url: string;     // direct link to the run for the failure-UI CTA
-  created_at: string;
-  run_started_at: string | null;
-  display_title: string;
-}
-
-// Find the most recent workflow run whose display_title matches the
-// `theme` input. Run names are set by the `run-name:` block at the top
-// of theme-on-demand.yml ("theme-on-demand: <theme>"), so a substring
-// match on the theme — verbatim, case-preserved — is unambiguous.
-//
-// Returns null when GitHub doesn't list a matching run yet (typical for
-// the first ~5-10 s after a dispatch lands but before Actions indexes
-// the run).
-async function findRecentRun(theme: string, env: Env): Promise<RunSummary | null> {
-  const url = `https://api.github.com/repos/${env.GH_OWNER}/${env.GH_REPO}/actions/workflows/${env.GH_WORKFLOW_FILE}/runs?event=workflow_dispatch&per_page=30`;
-  const resp = await fetch(url, {
-    headers: {
-      "authorization": `Bearer ${env.GH_DISPATCH_PAT}`,
-      "accept": "application/vnd.github+json",
-      "x-github-api-version": "2022-11-28",
-      "user-agent": "paperpilot-theme-dispatcher",
-    },
-  });
-  if (!resp.ok) {
-    console.warn(`workflow runs query failed: ${resp.status}`);
-    return null;
-  }
-  const data = await resp.json() as { workflow_runs?: RunSummary[] };
-  // Matching logic lives in run-match.js so it can be unit-tested
-  // without an HTTP mock — see worker/run-match.test.mjs.
-  return (pickMatchingRun(data?.workflow_runs as unknown[] | undefined, theme) as RunSummary | null);
-}
-
-async function handleStatusGet(request: Request, env: Env): Promise<Response> {
-  const url = new URL(request.url);
-  const theme = url.searchParams.get("theme") ?? "";
-  // Same validator as the POST endpoint — keep the surface area uniform
-  // so a malformed query string can't probe the GH API on our behalf.
-  if (!THEME_INPUT_PATTERN.test(theme.trim())) {
-    return json({
-      ok: false,
-      status: "invalid",
-      message: "theme query param must be 2-80 chars matching /^[A-Za-z0-9 _-]+$/",
-    }, { status: 400 });
-  }
-  let run: RunSummary | null = null;
-  try {
-    run = await findRecentRun(theme.trim(), env);
-  } catch (e) {
-    // Treat upstream errors as "no info yet" rather than a hard failure;
-    // the manifest poll is still the primary source of truth.
-    console.warn(`findRecentRun threw: ${(e as Error).message}`);
-    return json({ ok: true, run: null });
-  }
-  return json({ ok: true, run });
+async function handleStatusGet(_request: Request, _env: Env): Promise<Response> {
+  // Deliberately dormant. Cloudflare KV counters are not an atomic quota, so
+  // this public route must not proxy PAT-authenticated GitHub run queries.
+  // The browser already treats this response as non-fatal and keeps polling
+  // the public themes manifest, which remains the completion source of truth.
+  return themeStatusUnavailable();
 }
 
 async function handlePost(request: Request, env: Env): Promise<Response> {
@@ -210,7 +157,19 @@ async function handlePost(request: Request, env: Env): Promise<Response> {
     }, { status: 429 });
   }
 
-  const dispatch = await dispatchWorkflow(raw, env);
+  let requestId: string;
+  try {
+    requestId = createRequestId();
+  } catch (error) {
+    console.error(`request ID generation failed: ${(error as Error).message}`);
+    return json({
+      ok: false,
+      status: "error",
+      message: "could not start the generation job; please retry shortly",
+    }, { status: 500 });
+  }
+
+  const dispatch = await dispatchWorkflow(raw, requestId, env);
   if (!dispatch.ok) {
     // Don't leak the GitHub error body — it can include rate-limit
     // headers / token hashes. Log full detail to the Worker tail; user
@@ -223,40 +182,14 @@ async function handlePost(request: Request, env: Env): Promise<Response> {
     }, { status: 502 });
   }
 
-  return json({ ok: true, status: "queued", slug });
+  return json({ ok: true, status: "queued", slug, request_id: requestId });
 }
 
-const handler: ExportedHandler<Env> = {
-  async fetch(request, env): Promise<Response> {
-    const url = new URL(request.url);
-    if (url.pathname === "/api/themes" && request.method === "POST") {
-      return handlePost(request, env);
-    }
-    if (url.pathname === "/api/themes/status" && request.method === "GET") {
-      return handleStatusGet(request, env);
-    }
-    if (request.method === "OPTIONS" && url.pathname.startsWith("/api/")) {
-      // Cross-origin preflight from the GH-Pages viewer. POST with a
-      // JSON body and content-type: application/json triggers a CORS
-      // preflight, so we must echo the allowed origin/method/headers
-      // before the browser will send the actual request. The wildcard
-      // ACAO matches the json() helper; tighten both together if you
-      // lock the API down to a single origin later.
-      return new Response(null, {
-        status: 204,
-        headers: {
-          "access-control-allow-origin": "*",
-          "access-control-allow-methods": "GET, POST, OPTIONS",
-          "access-control-allow-headers": "content-type",
-          "access-control-max-age": "86400",
-        },
-      });
-    }
-    // Worker only owns /api/*. Everything else is the GH Pages
-    // viewer's domain, which the browser hits directly — nothing here
-    // should serve a non-/api/ path.
-    return new Response("Not Found", { status: 404 });
-  },
-};
+// Paper Slide stays dormant in production: no API adapter is constructed or
+// injected here. Tests can opt into the exact routes through the factory.
+const handler: ExportedHandler<Env> = createPaperPilotWorker({
+  handleThemePost: handlePost,
+  handleThemeStatusGet: handleStatusGet,
+});
 
 export default handler;

@@ -1,0 +1,140 @@
+name: paper-slides-on-demand
+
+# Dormant request-plane scaffold. It validates the six fields emitted by the
+# Worker dispatch adapter, but cannot call a provider: the code-owned callback
+# origin/provider config/adapter registry gates are closed and this workflow
+# contains no provider step. A repository variable alone cannot receive a token.
+# PAPER_SLIDE_WORKFLOW_CLAIMANT_KEY is a separate canonical 43-character
+# base64url encoding of 32 random bytes; its derived token is never an output.
+on:
+  workflow_dispatch:
+    inputs:
+      paper_id:
+        description: "Canonical 40-hex paper identifier"
+        required: true
+        type: string
+      job_id:
+        description: "Opaque coordinator job identifier"
+        required: true
+        type: string
+      language:
+        description: "Closed output language (ja or en)"
+        required: true
+        type: string
+      coverage_preference:
+        description: "Closed coverage preference (auto)"
+        required: true
+        type: string
+      snapshot_version:
+        description: "Approved catalog snapshot version"
+        required: true
+        type: string
+      job_key:
+        description: "Canonical 64-hex generation cache key"
+        required: true
+        type: string
+
+permissions: {}
+
+# This only coalesces duplicate deliveries for the same opaque underlying job.
+# The coordinator's authenticated atomic claim remains the correctness boundary.
+concurrency:
+  group: paper-slide-${{ inputs.job_id }}
+  cancel-in-progress: false
+
+jobs:
+  guarded-request:
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout immutable workflow code
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Validate inputs and provider approval gate
+        id: provider_gate
+        env:
+          PAPER_SLIDE_PAPER_ID: ${{ inputs.paper_id }}
+          PAPER_SLIDE_JOB_ID: ${{ inputs.job_id }}
+          PAPER_SLIDE_LANGUAGE: ${{ inputs.language }}
+          PAPER_SLIDE_COVERAGE_PREFERENCE: ${{ inputs.coverage_preference }}
+          PAPER_SLIDE_SNAPSHOT_VERSION: ${{ inputs.snapshot_version }}
+          PAPER_SLIDE_JOB_KEY: ${{ inputs.job_key }}
+        run: python3 .github/scripts/paper_slide_workflow.py preflight
+
+      - name: Refuse generation while provider gate is closed
+        if: steps.provider_gate.outputs.authorized != 'true'
+        run: |
+          echo "::error::Paper Slide provider adapter and pricing gate are not approved"
+          exit 1
+
+      - name: Claim the underlying job before any provider execution
+        id: claim
+        if: steps.provider_gate.outputs.authorized == 'true'
+        env:
+          PAPER_SLIDE_PAPER_ID: ${{ inputs.paper_id }}
+          PAPER_SLIDE_JOB_ID: ${{ inputs.job_id }}
+          PAPER_SLIDE_LANGUAGE: ${{ inputs.language }}
+          PAPER_SLIDE_COVERAGE_PREFERENCE: ${{ inputs.coverage_preference }}
+          PAPER_SLIDE_SNAPSHOT_VERSION: ${{ inputs.snapshot_version }}
+          PAPER_SLIDE_JOB_KEY: ${{ inputs.job_key }}
+          PAPER_SLIDE_WORKFLOW_CALLBACK_ORIGIN: ${{ vars.PAPER_SLIDE_WORKFLOW_CALLBACK_ORIGIN }}
+          PAPER_SLIDE_WORKFLOW_CALLBACK_TOKEN: ${{ secrets.PAPER_SLIDE_WORKFLOW_CALLBACK_TOKEN }}
+          PAPER_SLIDE_WORKFLOW_CLAIMANT_KEY: ${{ secrets.PAPER_SLIDE_WORKFLOW_CLAIMANT_KEY }}
+        run: python3 .github/scripts/paper_slide_workflow.py claim
+
+      - name: Stop duplicate or late delivery without generation
+        if: steps.claim.outputs.claimed == 'false'
+        run: echo "Paper Slide job was not claimable; provider execution skipped."
+
+      # No automatic reclaim is attempted. A different run may reclaim only
+      # through the separate, explicit grace-period reconciliation procedure.
+      - name: Commit atomic provider fence without provider execution
+        if: >-
+          steps.claim.outputs.claimed == 'true' &&
+          (steps.claim.outputs.lease_generation == '1' ||
+          steps.claim.outputs.lease_generation == '2')
+        env:
+          PAPER_SLIDE_PAPER_ID: ${{ inputs.paper_id }}
+          PAPER_SLIDE_JOB_ID: ${{ inputs.job_id }}
+          PAPER_SLIDE_LANGUAGE: ${{ inputs.language }}
+          PAPER_SLIDE_COVERAGE_PREFERENCE: ${{ inputs.coverage_preference }}
+          PAPER_SLIDE_SNAPSHOT_VERSION: ${{ inputs.snapshot_version }}
+          PAPER_SLIDE_JOB_KEY: ${{ inputs.job_key }}
+          PAPER_SLIDE_LEASE_GENERATION: ${{ steps.claim.outputs.lease_generation }}
+          PAPER_SLIDE_WORKFLOW_CALLBACK_ORIGIN: ${{ vars.PAPER_SLIDE_WORKFLOW_CALLBACK_ORIGIN }}
+          PAPER_SLIDE_WORKFLOW_CALLBACK_TOKEN: ${{ secrets.PAPER_SLIDE_WORKFLOW_CALLBACK_TOKEN }}
+          PAPER_SLIDE_WORKFLOW_CLAIMANT_KEY: ${{ secrets.PAPER_SLIDE_WORKFLOW_CLAIMANT_KEY }}
+        run: python3 .github/scripts/paper_slide_workflow.py fence-provider
+
+      # Even after future approval pins, this scaffold remains unable to
+      # generate. A separately reviewed change must place a bounded adapter
+      # only after the fence and replace this closure behavior.
+      - name: Close claimed scaffold without generation
+        if: >-
+          always() && steps.claim.outputs.claimed == 'true' &&
+          (steps.claim.outputs.lease_generation == '1' ||
+          steps.claim.outputs.lease_generation == '2')
+        env:
+          PAPER_SLIDE_PAPER_ID: ${{ inputs.paper_id }}
+          PAPER_SLIDE_JOB_ID: ${{ inputs.job_id }}
+          PAPER_SLIDE_LANGUAGE: ${{ inputs.language }}
+          PAPER_SLIDE_COVERAGE_PREFERENCE: ${{ inputs.coverage_preference }}
+          PAPER_SLIDE_SNAPSHOT_VERSION: ${{ inputs.snapshot_version }}
+          PAPER_SLIDE_JOB_KEY: ${{ inputs.job_key }}
+          PAPER_SLIDE_LEASE_GENERATION: ${{ steps.claim.outputs.lease_generation }}
+          PAPER_SLIDE_WORKFLOW_CALLBACK_ORIGIN: ${{ vars.PAPER_SLIDE_WORKFLOW_CALLBACK_ORIGIN }}
+          PAPER_SLIDE_WORKFLOW_CALLBACK_TOKEN: ${{ secrets.PAPER_SLIDE_WORKFLOW_CALLBACK_TOKEN }}
+          PAPER_SLIDE_WORKFLOW_CLAIMANT_KEY: ${{ secrets.PAPER_SLIDE_WORKFLOW_CLAIMANT_KEY }}
+        run: python3 .github/scripts/paper_slide_workflow.py close-scaffold
+
+      - name: Fail claimed scaffold after safe closure
+        if: always() && steps.claim.outputs.claimed == 'true'
+        run: |
+          echo "::error::Paper Slide provider execution is not implemented"
+          exit 1

@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paperpilot.local/schemas/lineage-audit-fixtures-v1.schema.json",
+  "title": "PaperPilot Lineage Audit Fixtures v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "collections"],
+  "properties": {
+    "schema_version": {"const": "lineage-audit-fixtures-v1"},
+    "collections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "collection_id",
+          "input_sha256",
+          "reviewer",
+          "reviewed_at",
+          "focus_labels",
+          "sample_labels"
+        ],
+        "properties": {
+          "collection_id": {"type": "string"},
+          "input_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "reviewer": {"type": "string", "minLength": 1},
+          "reviewed_at": {"type": "string", "format": "date-time"},
+          "focus_labels": {"$ref": "#/$defs/labels"},
+          "sample_labels": {"$ref": "#/$defs/labels", "maxItems": 20}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "labels": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["node_id", "on_topic"],
+        "properties": {
+          "node_id": {"type": "string", "minLength": 1},
+          "on_topic": {"type": "boolean"}
+        }
+      }
+    }
+  }
+}

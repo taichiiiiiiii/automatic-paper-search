@@ -330,10 +330,9 @@ input[type="range"]:focus-visible {
   .hero__details { animation: none; }
 }
 /* ---- Cross-conference search (landing) -----------------------------
-   The catalog is one papers.json per conference, so until now there was
-   no way to ask a question of all ten venues at once. This is the one
-   place that does; a hit hands off to the conference catalog through
-   ?q=, which app.js already understands. */
+   The v2 index ranks title / author / tag matches. Canonical IDs are
+   resolved before links are painted, so navigation never depends on a
+   title-equality join. */
 .site-search { position: relative; margin-top: 1.7rem; max-width: 34rem; }
 .site-search__label {
   display: block;
@@ -374,6 +373,19 @@ input[type="range"]:focus-visible {
   font-size: var(--text-caption);
   color: var(--color-ink-subtle);
 }
+.site-search__retry {
+  min-height: 44px;
+  margin: 0.15rem 0 0.4rem;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid var(--color-accent);
+  border-radius: 3px;
+  background: var(--color-surface-elevated);
+  color: var(--color-accent-strong);
+  font: 500 var(--text-meta) var(--font-mono);
+  cursor: pointer;
+}
+.site-search__retry[hidden],
+.site-search__more[hidden] { display: none; }
 .site-search__results {
   position: absolute;
   z-index: 20;
@@ -391,10 +403,9 @@ input[type="range"]:focus-visible {
 }
 .site-search__results[hidden] { display: none; }
 .site-search__results a {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.3rem 0.8rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.2rem 0.8rem;
   padding: 0.6rem 0.9rem;
   color: var(--color-ink);
   text-decoration: none;
@@ -414,13 +425,44 @@ input[type="range"]:focus-visible {
   background: var(--color-surface-2);
   box-shadow: inset 3px 0 0 var(--color-accent);
 }
-.site-search__title { flex: 1 1 16rem; min-width: 0; font-size: var(--text-body-sm); }
-.site-search__venue {
+.site-search__title { min-width: 0; font-size: var(--text-body-sm); }
+.site-search__meta {
   font-family: var(--font-mono);
   font-size: var(--text-caption);
   letter-spacing: 0.05em;
   color: var(--color-ink-subtle);
+  text-align: right;
+}
+.site-search__authors {
+  grid-column: 1 / -1;
+  overflow: hidden;
+  color: var(--color-ink-muted);
+  font-size: var(--text-caption);
+  text-overflow: ellipsis;
   white-space: nowrap;
+}
+.site-search__more {
+  display: block;
+  min-height: 44px;
+  margin-top: 0.25rem;
+  padding: 0.65rem 0.9rem;
+  border: 1px solid var(--color-rule);
+  border-radius: 3px;
+  background: var(--color-surface-elevated);
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  text-align: center;
+}
+@media (max-width: 720px) {
+  .site-search__results {
+    position: static;
+    max-height: none;
+    box-shadow: none;
+  }
+  .site-search__results a {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .site-search__meta { text-align: left; }
 }
 
 /* ---- Global site navigation ----------------------------------------
@@ -624,6 +666,10 @@ input[type="range"]:focus-visible {
 .hero__meta-num--oral { color: var(--color-oral); }
 .hero__meta-sep { margin: 0 0.35rem; color: var(--color-ink-subtle); }
 .hero__meta-link { white-space: nowrap; }
+.hero__meta-link--disabled {
+  color: var(--color-ink-subtle);
+  cursor: not-allowed;
+}
 
 /* Always-visible one-line orientation under the meta strip (#370 review):
    the first sentence of the old lede. The rest stays in hero__details. */
@@ -781,6 +827,12 @@ input[type="range"]:focus-visible {
   letter-spacing: 0;
   margin-right: 0.4rem;
 }
+.results-meta__notice {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--color-accent-strong);
+  letter-spacing: 0;
+}
 
 /* Clear-all — shown (via [hidden] toggle) only while a filter is active.
    Quiet pill that warms to coral on intent, matching the chip vocabulary. */
@@ -934,6 +986,11 @@ input[type="range"]:focus-visible {
   background-color: oklch(95% 0.07 80 / 0.3);
 }
 .paper--oral:hover { background-color: oklch(94% 0.06 80 / 0.75); }
+.paper--selected,
+.paper--selected:hover {
+  background: var(--color-surface-elevated);
+  box-shadow: inset 3px 0 0 var(--color-accent);
+}
 
 /* One restrained entrance — a short staggered fade-up on first paint and on
    "show more" appends only (never on filter/search re-renders). `both` holds
@@ -1011,6 +1068,47 @@ input[type="range"]:focus-visible {
   font-variation-settings: "opsz" 16;
 }
 
+.paper__selection-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.8rem;
+  margin: 0.15rem 0 0.35rem;
+}
+.paper__select,
+.paper__close {
+  min-height: 44px;
+  padding: 0.42rem 0.7rem;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+.paper__select {
+  margin: 0.1rem 0 0.25rem;
+  border: 1px solid var(--color-rule-strong);
+  background: var(--color-surface-elevated);
+  color: var(--color-ink-muted);
+}
+.paper__select:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent-strong);
+}
+.paper__close {
+  border: 1px solid var(--color-rule);
+  background: transparent;
+  color: var(--color-accent-strong);
+}
+.paper__close:hover { background: var(--color-surface-2); }
+.paper__selected-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  color: var(--color-accent-strong);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
 .paper__tags {
   display: flex;
   flex-wrap: wrap;
@@ -1073,6 +1171,136 @@ input[type="range"]:focus-visible {
   background: var(--color-surface-2);
   border-left: 2px solid var(--color-rule-strong);
   line-height: 1.65;
+}
+.paper__abstract.is-full {
+  margin-top: 0.9rem;
+  padding: 1rem 1.2rem;
+  background: var(--color-surface-2);
+  border-left: 2px solid var(--color-accent);
+  line-height: 1.7;
+  white-space: pre-line;
+}
+.paper__detail-status {
+  margin: 0.55rem 0 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  color: var(--color-ink-subtle);
+}
+.paper__detail-status--error { color: var(--color-accent-strong); }
+
+.paper__slides {
+  margin-top: 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--color-rule);
+  border-left: 3px solid var(--color-accent);
+  background: var(--color-surface-2);
+}
+.paper__slides-heading {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-tag);
+  letter-spacing: 0.06em;
+  color: var(--color-ink);
+}
+.paper__slides-heading:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+.paper__slides-status {
+  margin: 0.45rem 0 0;
+  font-size: var(--text-meta);
+  color: var(--color-ink-muted);
+  line-height: 1.55;
+}
+.paper__slides-status--error { color: var(--color-accent-strong); }
+.paper__slides-link {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  margin-top: 0.6rem;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--color-accent);
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: var(--text-tag);
+  color: var(--color-accent-strong);
+  text-decoration: none;
+}
+.paper__slides-link:hover,
+.paper__slides-link:focus-visible {
+  background: var(--color-surface-elevated);
+  border-color: var(--color-accent-strong);
+}
+.paper__slides-request {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.7rem;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--color-accent-strong);
+  border-radius: 3px;
+  background: var(--color-accent-strong);
+  color: var(--color-surface-elevated);
+  font: 500 var(--text-tag) var(--font-mono);
+  cursor: pointer;
+}
+.paper__slides-request:hover { filter: brightness(0.94); }
+.paper__slides-request:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 3px;
+}
+@media (max-width: 360px) {
+  .paper__slides { padding-inline: 0.75rem; }
+  .paper__slides-request,
+  .paper__slides-link { width: 100%; }
+}
+.paper-slide-dialog {
+  width: min(34rem, calc(100vw - 2rem));
+  max-height: calc(100vh - 2rem);
+  padding: 1.25rem;
+  overflow: auto;
+  border: 1px solid var(--color-rule-strong);
+  border-radius: 4px;
+  background: var(--color-surface-elevated);
+  color: var(--color-ink);
+  box-shadow: 0 18px 60px rgb(18 20 24 / 24%);
+}
+.paper-slide-dialog::backdrop { background: rgb(18 20 24 / 48%); }
+.paper-slide-dialog h2 {
+  margin: 0 0 0.85rem;
+  font-family: var(--font-serif);
+  font-size: var(--text-title);
+}
+.paper-slide-dialog p { margin: 0.45rem 0; line-height: 1.6; }
+.paper-slide-dialog__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.65rem;
+  margin-top: 1.2rem;
+}
+.paper-slide-dialog__actions button {
+  min-height: 44px;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--color-rule-strong);
+  border-radius: 3px;
+  background: var(--color-surface-elevated);
+  color: var(--color-ink);
+  font: 500 var(--text-tag) var(--font-mono);
+  cursor: pointer;
+}
+.paper-slide-dialog__actions .paper-slide-dialog__confirm {
+  border-color: var(--color-accent-strong);
+  background: var(--color-accent-strong);
+  color: var(--color-surface-elevated);
+}
+.paper-slide-dialog__actions button:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 3px;
+}
+@media (max-width: 360px) {
+  .paper-slide-dialog__actions button { width: 100%; }
 }
 /* Search-term highlight: makes "why did this match?" legible at a glance,
    so a body-only hit is visible without opening the paper. */
@@ -1270,11 +1498,11 @@ input[type="range"]:focus-visible {
   .lineage-toolbar > #relation-filter > .chip {
     flex: 0 0 auto;
   }
-  /* WCAG-friendly touch targets: ≥40px tall on the most-tapped
+  /* WCAG-friendly touch targets: 44px tall on the most-tapped
      controls. The desktop 0.4rem 0.9rem padding falls well short. */
   .layout-btn,
   .chip {
-    min-height: 40px;
+    min-height: 44px;
     padding-top: 0.55rem;
     padding-bottom: 0.55rem;
   }
@@ -1285,11 +1513,11 @@ input[type="range"]:focus-visible {
   /* Catalog sort/clear controls: ≥40px touch target, and 16px font on
      the <select> so iOS Safari doesn't auto-zoom the page when it opens. */
   .sortbar__select {
-    min-height: 40px;
+    min-height: 44px;
     font-size: var(--text-body);
   }
   .results-clear {
-    min-height: 40px;
+    min-height: 44px;
     padding-top: 0.55rem;
     padding-bottom: 0.55rem;
   }
@@ -2679,6 +2907,92 @@ g.node-wrap.node-wrap--no-tx {
   min-height: 30vh;
   position: relative;
 }
+.lineage-canvas[hidden],
+.relation-list[hidden] {
+  display: none !important;
+}
+
+.relation-list {
+  max-width: 1080px;
+  margin: 1rem auto 2.5rem;
+  padding: 0 var(--space-edge);
+  outline: none;
+}
+.relation-list > h2 {
+  margin: 0 0 0.9rem;
+  font-family: var(--font-serif);
+  font-size: clamp(1.25rem, 2vw, 1.75rem);
+}
+.relation-list__items {
+  list-style: none;
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+}
+.relation-row {
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid var(--color-rule);
+  border-left: 3px solid var(--color-accent);
+  border-radius: 7px;
+  background: var(--color-surface-elevated);
+}
+.relation-row__path {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.7rem;
+  font-family: var(--font-serif);
+  line-height: 1.35;
+}
+.relation-row__path span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.relation-row__path strong {
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  color: var(--color-accent-strong);
+  white-space: nowrap;
+}
+.relation-row__rationale {
+  margin: 0.7rem 0;
+  color: var(--color-ink-muted);
+  line-height: 1.6;
+}
+.relation-row__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  color: var(--color-ink-subtle);
+}
+.relation-row__meta div {
+  display: flex;
+  min-width: 0;
+  gap: 0.3rem;
+}
+.relation-row__meta dt { font-weight: 700; }
+.relation-row__meta dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 720px) {
+  .relation-list {
+    width: 100%;
+    margin-top: 0.75rem;
+  }
+  .relation-row__path {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+  }
+  .relation-row__path strong::after { content: " →"; }
+  .relation-row__meta { display: grid; }
+}
 .lineage-canvas::before,
 .lineage-canvas::after {
   content: "";
@@ -3251,6 +3565,14 @@ g.node-wrap.node-wrap--no-tx {
   color: var(--color-ink-muted);
   font-style: italic;
   line-height: 1.4;
+}
+.rel-provenance {
+  grid-column: 1 / -1;
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  color: var(--color-ink-subtle);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
 }
 
 .paper__relations-link {

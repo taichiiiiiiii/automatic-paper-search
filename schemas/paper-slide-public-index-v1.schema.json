@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paperpilot.local/schemas/paper-slide-public-index-v1.schema.json",
+  "title": "PaperPilot reviewed paper-slide public index shard v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "entries"],
+  "properties": {
+    "schema_version": {"const": "paper-slide-public-index-v1"},
+    "entries": {
+      "type": "array",
+      "maxItems": 10000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "paper_id",
+          "language",
+          "deck_id",
+          "deck_path",
+          "deck_json_path",
+          "deck_sha256",
+          "html_sha256",
+          "coverage",
+          "reviewed_at"
+        ],
+        "properties": {
+          "paper_id": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+          "language": {"enum": ["ja", "en"]},
+          "deck_id": {"type": "string", "pattern": "^sd1-[0-9a-f]{64}$"},
+          "deck_path": {
+            "type": "string",
+            "pattern": "^/automatic-paper-search/paper-slides-v1/decks/sd1-[0-9a-f]{64}/[0-9a-f]{64}-[0-9a-f]{64}\\.html$"
+          },
+          "deck_json_path": {
+            "type": "string",
+            "pattern": "^/automatic-paper-search/paper-slides-v1/decks/sd1-[0-9a-f]{64}/[0-9a-f]{64}-[0-9a-f]{64}\\.deck\\.json$"
+          },
+          "deck_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "html_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "coverage": {"enum": ["full_text", "abstract_only"]},
+          "reviewed_at": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"
+          }
+        }
+      }
+    }
+  }
+}

@@ -40,6 +40,7 @@ from typing import Any
 
 import arxiv
 
+from ..identity import IdentityError, identity_from_url, normalize_alias
 from ..signals.venue_signal import VenueSignal
 
 PROJECT = Path(__file__).resolve().parents[1]
@@ -47,8 +48,19 @@ _ARXIV_ID_RE = re.compile(r"abs/([0-9]+\.[0-9]+)")
 _ORAL_RE = re.compile(r"\b(oral|highlight)\b", re.IGNORECASE)
 
 _CSV_COLUMNS = [
-    "title", "authors", "venue", "venue_tier", "citation_count",
-    "github_stars", "arxiv_id", "abstract", "url", "pdf_url", "comment",
+    "title",
+    "authors",
+    "venue",
+    "venue_tier",
+    "citation_count",
+    "github_stars",
+    "arxiv_id",
+    "abstract",
+    "url",
+    "pdf_url",
+    "comment",
+    "source",
+    "source_id",
 ]
 
 
@@ -106,9 +118,7 @@ def build_rows(results: Iterable[Any], target_venue: str) -> tuple[list[dict[str
         if not aid or aid in papers:
             continue
         title = " ".join((getattr(r, "title", "") or "").split())
-        authors = "; ".join(
-            getattr(a, "name", "") for a in (getattr(r, "authors", None) or [])
-        )
+        authors = "; ".join(getattr(a, "name", "") for a in (getattr(r, "authors", None) or []))
         papers[aid] = {
             "title": title,
             "authors": authors,
@@ -142,11 +152,26 @@ def write_outputs(
     out_dir.mkdir(parents=True, exist_ok=True)
     day = date or datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
+    projected_rows: list[dict[str, Any]] = []
+    for row in rows:
+        identity = identity_from_url(str(row.get("url") or ""))
+        declared_source = str(row.get("source") or "").strip()
+        declared_source_id = str(row.get("source_id") or "").strip()
+        if bool(declared_source) != bool(declared_source_id):
+            raise IdentityError("source and source_id must be present together")
+        if declared_source:
+            normalized = normalize_alias(declared_source, declared_source_id)
+            if normalized != (identity.source, identity.source_id):
+                raise IdentityError(
+                    "declared source/source_id does not match the native source URL"
+                )
+        projected_rows.append({**row, "source": identity.source, "source_id": identity.source_id})
+
     csv_path = out_dir / f"papers_{day}.csv"
     with csv_path.open("w", encoding="utf-8-sig", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=_CSV_COLUMNS)
         writer.writeheader()
-        writer.writerows(rows)
+        writer.writerows(projected_rows)
 
     # The oral file must reflect THIS collection. When the new run has no
     # orals (e.g. a CVF / ACL re-collection of a venue first gathered from
@@ -179,11 +204,15 @@ def main() -> int:
     csv_path = write_outputs(args.conference, rows, oral_titles)
 
     print(f"scanned {len(results)} arXiv results for query: {args.query}")
-    print(f"✅ {len(rows)} genuine {args.venue.upper()} papers "
-          f"({len(oral_titles)} oral/highlight) -> {csv_path}")
+    print(
+        f"✅ {len(rows)} genuine {args.venue.upper()} papers "
+        f"({len(oral_titles)} oral/highlight) -> {csv_path}"
+    )
     if not rows:
-        print("⚠️  0 papers matched — VenueSignal needs an 'accepted to <venue>' "
-              "style comment; check --venue / --query.")
+        print(
+            "⚠️  0 papers matched — VenueSignal needs an 'accepted to <venue>' "
+            "style comment; check --venue / --query."
+        )
         return 1
     return 0
 

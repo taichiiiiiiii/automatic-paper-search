@@ -13,9 +13,16 @@ Two scripts are exercised here:
    PR #229 / PR #243 class of bug, where ``init()`` calls a function that
    was deleted elsewhere in the file. The bug shipped to production for
    ~5 days because the layout test never invokes init().
+
+The P2T migration (docs/design/16-theme-lineage-migration.md) adds the
+``test_theme_lineage_contract.mjs`` Node suite plus pure-Python static
+checks for the same fail-closed contract, so the guard survives even on
+machines without node.
 """
+
 from __future__ import annotations
 
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -28,6 +35,10 @@ INIT_CALLEES_SCRIPT = VIEWER_DIR / "test_theme_init_callees.mjs"
 CLS_RESERVATION_SCRIPT = VIEWER_DIR / "test_theme_gallery_cls_reservation.mjs"
 TYPOGRAPHY_TOKENS_SCRIPT = VIEWER_DIR / "test_theme_typography_tokens.mjs"
 REQUEST_PROGRESS_SCRIPT = VIEWER_DIR / "test_theme_request_progress.mjs"
+THEME_LINEAGE_CONTRACT_SCRIPT = VIEWER_DIR / "test_theme_lineage_contract.mjs"
+REPO_ROOT = VIEWER_DIR.parents[2]
+THEME_JS = REPO_ROOT / "docs" / "assets" / "theme.js"
+THEMES_INDEX_HTML = REPO_ROOT / "docs" / "themes" / "index.html"
 
 
 def _run_node(script: Path, *, min_ok_lines: int) -> None:
@@ -42,9 +53,7 @@ def _run_node(script: Path, *, min_ok_lines: int) -> None:
         timeout=30,
     )
     output = result.stdout + "\n" + result.stderr
-    assert result.returncode == 0, (
-        f"{script.name} failed (exit={result.returncode}):\n{output}"
-    )
+    assert result.returncode == 0, f"{script.name} failed (exit={result.returncode}):\n{output}"
     # Sanity check: each `ok ...` line corresponds to one passing test.
     # We require a non-trivial number so an empty / silently-bypassed
     # script can't appear to pass.
@@ -85,6 +94,47 @@ def test_theme_typography_tokens() -> None:
     # .node-card__title at 0.9rem) are explicitly left untouched —
     # the follow-up issue extends adoption.
     _run_node(TYPOGRAPHY_TOKENS_SCRIPT, min_ok_lines=50)
+
+
+def test_theme_lineage_contract_js_passes() -> None:
+    # P2T consumer contract: quality-gated fetch/render with strict
+    # lineage-artifact-v1 parsing, canonical relation/confidence fields,
+    # and no first-focus fallback (see test_theme_lineage_contract.mjs).
+    _run_node(THEME_LINEAGE_CONTRACT_SCRIPT, min_ok_lines=20)
+
+
+def test_theme_index_loads_lineage_core_before_theme_js() -> None:
+    # theme.js reads window.PaperPilotLineageCore at module load, so the
+    # shared reader must be wired first in themes/index.html.
+    html = THEMES_INDEX_HTML.read_text(encoding="utf-8")
+    core = html.find("assets/lineage-core.js")
+    theme = html.find("assets/theme.js")
+    assert core >= 0 and theme >= 0 and core < theme, (
+        "themes/index.html must load lineage-core.js before theme.js"
+    )
+
+
+def test_theme_js_quality_gate_static_contract() -> None:
+    # Node-free mirror of the static section in
+    # test_theme_lineage_contract.mjs: the consumer must go through the
+    # shared strict reader and must not reintroduce legacy edge-field
+    # consumers or the first-focus fallback.
+    source = THEME_JS.read_text(encoding="utf-8")
+    assert 'fetchJsonWithSha256(\n      "../lineage-quality-v1.json"' in source
+    assert "LineageCore.parseQualityManifest" in source
+    assert "LineageCore.resolveQualityCollection" in source
+    assert re.search(r'kind:\s*"theme"', source)
+    assert "LineageCore.qualityRowIsEligible" in source
+    assert "LineageCore.qualityRowIsPublishable" in source
+    assert "lineageCoreIsAvailable()" in source
+    assert "expectedSha256: qualityRow.input_sha256" in source
+    assert 'LineageCore.parseArtifact(loaded.data, { kind: "theme" })' in source
+    assert "LineageCore.resolveFocus(state.data, requestedNode)" in source
+    assert not re.search(r"(\be|edge)\.rel\b|(\be|edge)\.conf\b", source), (
+        "legacy .rel/.conf artifact consumers must stay removed"
+    )
+    assert not re.search(r"\.find\??\.\(\(?[a-z]\)?\s*=>\s*[a-z]\.is_focus\)", source)
+    assert "focusNodeFromLocation" not in source
 
 
 def test_theme_request_progress() -> None:

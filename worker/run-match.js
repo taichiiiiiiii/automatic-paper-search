@@ -1,5 +1,5 @@
 // Pure logic for picking the most recent workflow run that matches a
-// user-supplied theme. Extracted from `findRecentRun` in `index.ts` so
+// server-generated request ID. Extracted from `findRecentRun` in `index.ts` so
 // the matching rules can be exercised in a Node test runner without
 // also having to stub fetch / GitHub API state.
 //
@@ -7,10 +7,11 @@
 // what they're touching):
 //   1. GitHub returns `workflow_runs` sorted by `created_at` desc.
 //   2. We walk that list and pick the first item whose `display_title`
-//      ends with ": <theme>" — the literal marker the workflow's
+//      ends with " / <request_id>" — the literal marker the workflow's
 //      `run-name:` line writes on every dispatch.
-//   3. No fallback to substring-anywhere matching: a theme called
-//      "Optim" must not match a "Hyperparam Optim" run.
+//   3. No theme/title fallback: two identical-theme requests remain distinct.
+
+import { isRequestId } from "./request-id.js";
 
 /**
  * @typedef {object} RunFromApi
@@ -24,21 +25,29 @@
 
 /**
  * Find the most recent workflow run whose display_title ends with
- * ": <theme>". Returns null when no match — the caller surfaces this
+ * " / <request_id>". Returns null when no match — the caller surfaces this
  * to the frontend as "no run yet, keep polling".
  *
  * @param {RunFromApi[]} runs   - workflow_runs array from GitHub API
- * @param {string} theme        - verbatim user-typed theme
+ * @param {string} requestId    - server-generated correlation ID
  * @returns {RunFromApi|null}
  */
-export function pickMatchingRun(runs, theme) {
-  if (!Array.isArray(runs) || typeof theme !== "string") return null;
-  const trimmed = theme.trim();
-  if (!trimmed) return null;
-  const themeMarker = `: ${trimmed}`;
+export function pickMatchingRun(runs, requestId) {
+  if (!Array.isArray(runs) || !isRequestId(requestId)) return null;
+  const requestMarker = ` / ${requestId}`;
   for (const r of runs) {
-    if (r && typeof r.display_title === "string" && r.display_title.endsWith(themeMarker)) {
-      return r;
+    if (r && typeof r.display_title === "string" && r.display_title.endsWith(requestMarker)) {
+      // Project an explicit public shape. TypeScript casts do not remove the
+      // many additional fields returned by GitHub (head SHA, actor, repo,
+      // check-suite metadata), so returning the raw object would leak them.
+      return {
+        status: typeof r.status === "string" ? r.status : "",
+        conclusion: typeof r.conclusion === "string" ? r.conclusion : null,
+        html_url: typeof r.html_url === "string" ? r.html_url : "",
+        created_at: typeof r.created_at === "string" ? r.created_at : "",
+        run_started_at: typeof r.run_started_at === "string" ? r.run_started_at : null,
+        display_title: r.display_title,
+      };
     }
   }
   return null;

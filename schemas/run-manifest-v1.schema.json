@@ -1,0 +1,282 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paperpilot.local/schemas/run-manifest-v1.schema.json",
+  "title": "PaperPilot Replay Lite Run Manifest v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "run_id",
+    "pipeline",
+    "status",
+    "as_of",
+    "code",
+    "invocation",
+    "dependencies",
+    "inputs",
+    "artifacts",
+    "outputs",
+    "producers",
+    "counts",
+    "failures"
+  ],
+  "properties": {
+    "schema_version": {"const": "run-manifest-v1"},
+    "run_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,127}$"},
+    "pipeline": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,63}$"},
+    "status": {"enum": ["succeeded", "partial", "failed"]},
+    "as_of": {"$ref": "#/$defs/timestamp"},
+    "code": {"$ref": "#/$defs/code"},
+    "invocation": {"$ref": "#/$defs/invocation"},
+    "dependencies": {"$ref": "#/$defs/dependencies"},
+    "inputs": {
+      "type": "array",
+      "maxItems": 128,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/inputReference"}
+    },
+    "artifacts": {
+      "type": "array",
+      "maxItems": 128,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/artifactReference"}
+    },
+    "outputs": {
+      "type": "array",
+      "maxItems": 128,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/outputReference"}
+    },
+    "producers": {
+      "type": "array",
+      "maxItems": 128,
+      "items": {"$ref": "#/$defs/producer"}
+    },
+    "counts": {
+      "type": "object",
+      "maxProperties": 256,
+      "propertyNames": {"pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$"},
+      "additionalProperties": {"type": "integer", "minimum": 0}
+    },
+    "failures": {
+      "type": "array",
+      "maxItems": 128,
+      "items": {"$ref": "#/$defs/failure"}
+    }
+  },
+  "$defs": {
+    "timestamp": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$",
+      "format": "date-time"
+    },
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "name": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,127}$"},
+    "role": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:[_-][a-z0-9]+)*$"
+    },
+    "nonemptyString": {"type": "string", "minLength": 1},
+    "nullableNonemptyString": {
+      "anyOf": [
+        {"type": "string", "minLength": 1},
+        {"type": "null"}
+      ]
+    },
+    "safePath": {
+      "type": "string",
+      "pattern": "^(?!/)(?![A-Za-z]:)(?!.*\\\\)(?!.*[\\u0000-\\u001F\\u007F])(?!.*(?:^|/)(?:\\.|\\.\\.|\\.[gG][iI][tT])(?:/|$))(?!.*//)[^/]+(?:/[^/]+)*$"
+    },
+    "jsonValue": {
+      "anyOf": [
+        {"type": "null"},
+        {"type": "boolean"},
+        {"type": "number"},
+        {"type": "string"},
+        {
+          "type": "array",
+          "items": {"$ref": "#/$defs/jsonValue"}
+        },
+        {
+          "type": "object",
+          "propertyNames": {
+            "not": {
+              "pattern": "(?:[aA][rR][gG][vV]|[cC][aA][lL][lL][aA][bB][lL][eE]|[cC][mM][dD]|[cC][oO][mM][mM][aA][nN][dD]|[eE][xX][eE][cC][uU][tT][aA][bB][lL][eE]|[mM][oO][dD][uU][lL][eE]|[pP][yY][tT][hH][oO][nN](?:[-_])?[pP][aA][tT][hH])$"
+            }
+          },
+          "additionalProperties": {"$ref": "#/$defs/jsonValue"}
+        }
+      ]
+    },
+    "code": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "commit_sha", "dirty"],
+      "properties": {
+        "repository": {
+          "type": "string",
+          "pattern": "^[^./][^/]*/[^/]+$"
+        },
+        "commit_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "dirty": {"type": "boolean"}
+      }
+    },
+    "invocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["projector", "config_input_id", "parameters"],
+      "properties": {
+        "projector": {"$ref": "#/$defs/name"},
+        "config_input_id": {"$ref": "#/$defs/name"},
+        "parameters": {
+          "type": "object",
+          "propertyNames": {
+            "not": {
+              "pattern": "(?:[aA][rR][gG][vV]|[cC][aA][lL][lL][aA][bB][lL][eE]|[cC][mM][dD]|[cC][oO][mM][mM][aA][nN][dD]|[eE][xX][eE][cC][uU][tT][aA][bB][lL][eE]|[mM][oO][dD][uU][lL][eE]|[pP][yY][tT][hH][oO][nN](?:[-_])?[pP][aA][tT][hH])$"
+            }
+          },
+          "additionalProperties": {"$ref": "#/$defs/jsonValue"}
+        }
+      }
+    },
+    "dependencies": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manager",
+        "lock_path",
+        "lock_sha256",
+        "python",
+        "environment_sha256"
+      ],
+      "properties": {
+        "manager": {"const": "uv"},
+        "lock_path": {"$ref": "#/$defs/safePath"},
+        "lock_sha256": {"$ref": "#/$defs/sha256"},
+        "python": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+$"},
+        "environment_sha256": {
+          "anyOf": [
+            {"$ref": "#/$defs/sha256"},
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "fileReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "role",
+        "storage",
+        "path",
+        "media_type",
+        "compression",
+        "stored_size_bytes",
+        "content_size_bytes",
+        "sha256",
+        "expires_at"
+      ],
+      "properties": {
+        "id": {"$ref": "#/$defs/name"},
+        "role": {"$ref": "#/$defs/role"},
+        "storage": {"enum": ["repository", "bundle", "replay-output"]},
+        "path": {"$ref": "#/$defs/safePath"},
+        "media_type": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9!#$&^_.+-]*/[a-z0-9][a-z0-9!#$&^_.+-]*$"
+        },
+        "compression": {"enum": ["none", "gzip"]},
+        "stored_size_bytes": {"type": "integer", "minimum": 0, "maximum": 67108864},
+        "content_size_bytes": {"type": "integer", "minimum": 0, "maximum": 268435456},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "expires_at": {
+          "anyOf": [
+            {"$ref": "#/$defs/timestamp"},
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "inputReference": {
+      "allOf": [
+        {"$ref": "#/$defs/fileReference"},
+        {"properties": {"storage": {"enum": ["repository", "bundle"]}}}
+      ]
+    },
+    "artifactReference": {
+      "allOf": [
+        {"$ref": "#/$defs/fileReference"},
+        {
+          "properties": {
+            "storage": {"const": "bundle"},
+            "expires_at": {"$ref": "#/$defs/timestamp"}
+          }
+        }
+      ]
+    },
+    "outputReference": {
+      "allOf": [
+        {"$ref": "#/$defs/fileReference"},
+        {
+          "properties": {
+            "storage": {"const": "replay-output"},
+            "expires_at": {"type": "null"}
+          }
+        }
+      ]
+    },
+    "producer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "version",
+        "provider",
+        "model",
+        "prompt_version",
+        "schema_version"
+      ],
+      "properties": {
+        "name": {"$ref": "#/$defs/nonemptyString"},
+        "version": {"$ref": "#/$defs/nonemptyString"},
+        "provider": {"$ref": "#/$defs/nullableNonemptyString"},
+        "model": {"$ref": "#/$defs/nullableNonemptyString"},
+        "prompt_version": {"$ref": "#/$defs/nullableNonemptyString"},
+        "schema_version": {"$ref": "#/$defs/nonemptyString"}
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "provider": {"type": "null"},
+            "model": {"type": "null"},
+            "prompt_version": {"type": "null"}
+          }
+        },
+        {
+          "properties": {
+            "provider": {"type": "string", "minLength": 1},
+            "model": {"type": "string", "minLength": 1},
+            "prompt_version": {"type": "string", "minLength": 1}
+          }
+        }
+      ]
+    },
+    "failure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "stage", "count", "detail"],
+      "properties": {
+        "code": {"$ref": "#/$defs/role"},
+        "stage": {"$ref": "#/$defs/role"},
+        "count": {"type": "integer", "minimum": 0},
+        "detail": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512,
+          "pattern": "^[a-z0-9][a-z0-9 ._-]{0,511}$"
+        }
+      }
+    }
+  }
+}

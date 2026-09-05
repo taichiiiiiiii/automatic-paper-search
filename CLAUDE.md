@@ -9,7 +9,7 @@
 ## プロジェクト概要
 
 - **目的：** AI/ML 論文を arXiv / Semantic Scholar / OpenAlex から自動収集し、品質シグナルで絞り込んだ上で **系譜（家系図）として可視化** するパイプライン
-- **主要な出力：** GitHub Pages 上のインタラクティブ家系図ビュー（`docs/<conference>/lineage.html`、`.github/workflows/pages.yml` でデプロイ）。サイト上のフォームから新規テーマ投稿可能（CF Worker `worker/index.ts` → `theme-on-demand.yml` 直接 workflow_dispatch → `build_theme_lineage.py` → develop へ commit → Pages 再デプロイ）。補助出力として CSV / JSON / Slack / Email も維持
+- **主要な出力：** GitHub Pages 上の10学会・28,300件の横断検索と学会別カタログ。lineageは品質manifestでfail closedし、現在の表示eligibleは0件。サイト上のフォームから新規テーマ投稿可能（CF Worker `worker/index.ts` → `theme-on-demand.yml` dispatch → credential-free candidate → latest `develop`へのCAS promotion → promoted exact-SHA Pages release）。補助出力として CSV / JSON / Slack / Email も維持
 - **対象ユーザー：** AI/ML 研究者、R&D エンジニア、独立リサーチャー
 - **運用コスト目標：** ¥0〜¥1,500/月（Stage 4 LLM / 系譜分類 LLM のみ有料オプション）
 - **差別化：** OSS・ローカル実行可能・YAML 設定駆動・日本語対応・品質シグナル統合スコア・**LLM による引用関係の意味分類**（`supersedes` / `successor` / `extends` / `ablation` / `baseline_only` / `contrasts` / `unrelated`）
@@ -20,20 +20,19 @@
 ## 環境情報
 
 ```
-OS：Linux / macOS / Windows
-Python：3.10 以上（開発・CIは 3.12）
-パッケージ管理：pyproject.toml（pip install -e '.[dev]'）/ 互換用に requirements.txt も維持
-実行方法：python -m paperpilot.collector
+正規実行：Docker（production / integration test）
+ホスト要件：Docker Engine / Docker Desktop、Compose、wrapper用Python 3.10+
+CI移行中：現行GitHub Actionsはhost uv。approved-image runtime / CI-shadow gate後にDockerへ移行
 ```
 
 ### 開発ツール
 
-**実環境では `uv run` 経由で呼ぶ**（bare の `ruff`/`mypy`/`pytest` は解決しないことがある）:
+正規のproduction / integration-test経路は `docker/paperpilot-compose` です。checked-in digestは意図的に無効で、approved imageのbuild/runtime検証は未実施です。以下のhost `uv` はlock保守と短い補助check専用で、Docker gateの代替ではありません（bare の `ruff`/`mypy`/`pytest` は解決しないことがある）:
 
 ```bash
 uv run ruff check paperpilot/                 # lint（push 前必須。pytest は I001 import-sort を拾わない）
 uv run mypy paperpilot/                        # type check ⚠️現環境では INTERNAL ERROR で走らない（後述「既知の環境問題」）
-uv run --extra dev pytest paperpilot/tests/    # 全テスト（~28s、1,103 passed / 1 skipped）
+uv run --extra dev pytest paperpilot/tests/    # host補助の全テスト（件数は実行ごとに記録）
 uv run pytest paperpilot/tests/test_venue_signal.py::test_x -q   # 単一テスト
 uv run pytest paperpilot/tests/ --cov=paperpilot --cov-config=/dev/null   # カバレッジ
 ```
@@ -78,10 +77,11 @@ automatic-paper-search/
 │       ├── collect-weekly.yml           # 手動 workflow_dispatch のみ（#245 で週次 cron 廃止。PAT に workflow scope 必要）
 │       ├── collect-daily-watch.yml      # 手動 workflow_dispatch のみ（#245 で日次 cron 廃止）
 │       ├── regen-themes.yml             # 手動 workflow_dispatch のみ (PR #261 で週次 cron 廃止)
-│       ├── theme-on-demand.yml          # ★ オンデマンド単一テーマ生成（運用者が gh workflow run で手動 dispatch）
+│       ├── theme-on-demand.yml          # オンデマンド単一テーマのcandidate生成・CAS promotion・exact-SHA release
 │       ├── lighthouse.yml               # PR ごと + 週次の Lighthouse / Core Web Vitals 測定
 │       ├── data-audit.yml               # ★ PR/push 時に audit_theme_seeds + audit_lineage_quality 自動実行 → off-topic seed / 構造異常 regression を block
-│       └── publish.yml                  # PyPI trusted-publisher（release 発火）
+│       ├── paper-slides-on-demand.yml   # Paper Slide provider未接続の休眠scaffold
+│       └── publish.yml                  # build-only package検証（PyPI upload/OIDCなし）
 └── paperpilot/
     ├── collector.py                     # CLI エントリーポイント
     ├── config.yaml                      # 週次深掘り設定（秘匿情報なし）
@@ -130,7 +130,7 @@ automatic-paper-search/
     │   ├── scaffold_conference_page.py  # cvpr-2026 テンプレ → docs/<conf>/index.html (+ 空 lineage.json)
     │   ├── build_summary_csv.py         # full CSV → summary.csv (8 列 + 自動タグ)
     │   ├── build_pages.py               # summary.csv → docs/<conf>/papers.json
-    │   ├── build_search_index.py       # 全 docs/<conf>/papers.json → docs/search-index.json（学会横断検索。[title, 学会] の位置指定ペア、gzip 0.72MB）
+    │   ├── build_search_index.py       # 全 docs/<conf>/papers.json → docs/search-index-v2.json（canonical paper ID付き横断検索）
     │   ├── sync_asset_versions.py      # docs/assets/*.{css,js} の内容ハッシュ → 全 HTML の ?v= を統一（--check で乖離検査）
     │   ├── build_sitemap.py            # docs/**/*.html → docs/sitemap.xml を生成（--check で乖離検査。手編集禁止）
     │   ├── build_lineage.py             # papers.json + S2 + LLM → lineage.json (arxiv_id 必須・S2 律速)
@@ -149,7 +149,7 @@ automatic-paper-search/
     │   ├── github.py                    # 共有 GitHub 解決器（curated map + GitHub Search + Stars）
     │   ├── json_parser.py               # LLM 3段階フォールバック
     │   └── logger.py                    # 日次ローテ (7日保持)
-    ├── tests/                           # pytest テスト（1,103 passed / 1 skipped、2026-08-23 実測）
+    ├── tests/                           # pytest + Node wrapperテスト（件数は実行時に記録）
     │   ├── conftest.py
     │   ├── test_*.py                    # 各モジュールのユニット/統合テスト
     │   └── test_venue_stress.py         # 60 パターンで検出率 95% 以上
@@ -174,9 +174,10 @@ automatic-paper-search/
 
 ### エージェント動作の基本方針
 
-- 独立した操作は**常に並列でツール呼び出し**する
-- 重要な進捗・変更ファイルはサマリーとして保存し、コンテキスト圧縮後も継続可能にする
-- コンテキスト上限が近づいても作業を中断しない
+- 実装・レビューは [`PAPERPILOT_PROFILE.md`](PAPERPILOT_PROFILE.md) のGPT-5.6 Sol routeを使う。bounded implementationはmedium、security / provenance / schema / migration / publication-riskはhigh、ultraは使わない
+- 製品runtimeのOllama/Qwen等のLLM provider設定と、リポジトリ作業agentのmodel routingを混同しない。agentをthird-party providerへfallbackしない
+- workflow dispatch、通知、Pages / Worker / PyPI公開、secret/settings変更、`develop`へのpush/mergeはユーザーの明示承認後だけ行う
+- 独立した操作は並列化できるが、共有生成物・manifest・asset version・lockfileの更新はownerが直列化する
 
 ### 基本方針（設計原則）
 
@@ -292,31 +293,30 @@ PAPERPILOT_SMTP_*            # Email 通知
 3. **REFACTOR** — 設計原則に沿って整える
 4. **カバレッジ確認** — `pytest --cov=paperpilot` で **80% 以上**（現状 91%）
 
-独立した複数モジュールは専門エージェント（`source-agent` / `signal-agent` / `exporter-agent`）を並列起動。
+独立した複数モジュールは`PAPERPILOT_PROFILE.md`の担当roleへ分割できる。共有生成物・manifest・asset version・lockfileはownerが直列化する。
 
 ### フェーズ 3: コードレビュー（commit 前）
 
-commit する前に複数レビューアを **並列で** 起動:
+commit前のreviewは`PAPERPILOT_PROFILE.md`の担当roleを使う:
 
 ```
-code-reviewer        (一般品質・パターン)
-python-reviewer      (PEP 8 / mypy / pythonic)
-typescript-reviewer  (JS / TS、フロントエンド変更時)
-security-reviewer    (OWASP Top 10 / secrets)
+paperpilot_backend_implementer   (Python/API/pipeline)
+paperpilot_frontend_implementer  (JS/Pages UI)
+paperpilot_security_reviewer     (security/publication-risk)
 ```
 
 対応方針:
 - **CRITICAL / HIGH** → commit 前に必ず修正
-- **MEDIUM** → できる範囲で修正、残りはフェーズ 7 で issue 化
-- **LOW** → 基本 issue 化（即時修正しない）
+- **MEDIUM** → できる範囲で修正、残りはフェーズ 7 で報告
+- **LOW** → 残リスクとして報告
 
 ### フェーズ 4: イテレーティブ修正
 
 CRITICAL / HIGH がゼロに収束するまで再レビュー → 修正を繰り返す。実績: 2〜6 イテレーションで収束。
 
-### フェーズ 5: commit & push
+### フェーズ 5: 検証結果の報告、承認後のcommit & push
 
-Conventional Commits 形式で `closes #N` を含める:
+差分・検証・skip・残リスクを先に報告する。ユーザーがcommit/pushを明示承認した場合だけ、Conventional Commits形式を使う:
 
 ```bash
 git commit -m "<type>(<scope>): <subject> (closes #N)"
@@ -327,42 +327,42 @@ git push
 
 ### フェーズ 6: PR 前最終チェック
 
-`paperpilot-reviewer` で 10 項目判定（**全変更で MUST BE USED**）。
+変更範囲に応じてownerと`paperpilot_security_reviewer`が最終確認する。publication-riskを含む変更はhigh effortで独立レビューする。
 
-### フェーズ 7: 残項目を issue 化
+### フェーズ 7: 残項目を報告
 
-フェーズ 3 / 6 で「ブロッキングではないが望ましい」と判定された項目を **バッチ投入**。[Issue 作成ワークフロー](#issue-作成ワークフロー) に従う。
+フェーズ 3 / 6 で残った項目を報告する。issue作成は外部副作用なので、ユーザーの明示承認なしに行わない。
 
 ### フェーズ 8: PR 作成・CI・merge
 
-`develop` へ PR → merge。merge 後は bug 発生時のみ再レビュー。
+ローカル検証とpublication/security reviewの結果を提示し、ユーザー承認後だけPR作成・`develop`へのmergeを行う。
 
-🔴 **`develop` への merge は `pages.yml` 経由でそのまま本番公開になる。** 2026-08-23 に `tests.yml` を追加するまで **テスト/lint を走らせる CI は 1 本も存在せず**（#358）、merge 前のローカル実行だけが唯一のゲートだった。現在は `tests.yml` が PR と `develop`/`main` への push で `ruff` + `pytest` を走らせる。⚠️ ただし **mypy はこの環境で INTERNAL ERROR で起動しない**ため CI に入れていない＝型検査は依然として未実施。
+🔴 **`develop` の公開対象変更は `pages.yml` が検証し、reusable releaseへexact SHAを渡して本番公開する。** 2026-08-23 に `tests.yml` を追加するまで **テスト/lint を走らせる CI は 1 本も存在せず**（#358）、merge 前のローカル実行だけが唯一のゲートだった。現在は `tests.yml` が PR と `develop`/`main` への push で `ruff` + `pytest` を走らせる。⚠️ ただし **mypy はこの環境で INTERNAL ERROR で起動しない**ため CI に入れていない＝型検査は依然として未実施。
 
 ### 全体タイミング図
 
 ```
 [Research]
     ↓
-[Plan]                     agent: planner
+[Plan]                     role: paperpilot_system_investigator
     ↓
-[★ プランレビュー ★]       agents: architect / code-architect /
-    ↓        ↑                     code-explorer / security-reviewer
+[★ プランレビュー ★]       role: paperpilot_security_reviewer（risk時）
+    ↓        ↑
     ├────────┘ findings > 0 なら再プラン
     ↓
 [TDD: RED → GREEN → IMPROVE]
     ↓
-[コードレビュー] ──────→   agents: code / python / ts / security
+[コードレビュー] ──────→   roles: paperpilot_*_implementer / security_reviewer
     ↓        ↑
     ├────────┘ ゼロ収束まで
     ↓
-[commit (closes #N)]
+[ローカル結果と残リスクを報告]
     ↓
-[paperpilot-reviewer 最終] 10 項目判定
+[publication/security 最終確認]
     ↓
-[残項目を issue 化]        バッチで gh issue create
+[残項目を報告]             issue作成は明示承認後のみ
     ↓
-[PR → CI → merge]
+[ユーザー承認 → PR / CI / merge]
 ```
 
 ### テスト実行
@@ -459,7 +459,7 @@ output/<conf>/papers_YYYY-MM-DD.csv
   │
   └─ build_pages.py         → docs/<conf>/papers.json（一覧ビュー用）
        │
-       ├─ build_search_index.py   → docs/search-index.json（10 学会 28,300 本の横断検索用・gzip 0.72MB）
+       ├─ build_search_index.py   → docs/search-index-v2.json（10 学会 28,300 本、canonical paper ID付き横断検索）
        │
        ├─ build_lineage.py        → docs/<conf>/lineage.json
        │     │                      - Oral 全 N 本 × depth 1 の浅い家系図集
@@ -520,7 +520,7 @@ generate_themes_manifest.py → docs/themes/themes-manifest.json
   - `style.css` — デザイントークン（`:root` の CSS custom properties）＋全コンポーネント。editorial 方向（Newsreader serif + Inter + JetBrains Mono、warm-cream OKLCH パレット）。**生の色リテラル禁止＝必ず `--color-*` / `--text-*` / `--space-*` / `--duration-*` / `--ease` / `--rel-*` トークン経由**。
   - `app.js` — 学会カタログのビューア（検索・トピックタグ/採択形式チップ・ソート・progressive reveal 30件/回・URL 状態同期・back-to-top）。`<conf>/papers.json` を fetch。
   - `landing.js` — S0 検索トップの挙動（学会数/論文数の動的注入・学会リストの開閉・例示チップ→検索・`?q=` パーマリンク同期・fine-pointer 限定の初期フォーカス）。`conferences.json` を fetch。CSP が `script-src 'self'` のため**インライン script は全ページ禁止**（外部 assets/*.js のみ。`test_landing_s0.py` が pin）。
-  - `search.js` — 学会横断検索（`search-index.json` を fetch、上位20件 listbox、hit は `<conf>/?q=<title>` でカタログへ受け渡し）。
+  - `search.js` — 学会横断検索（現行は`search-index-v2.json`をfetchし、paper IDでselected cardへ遷移。v1 indexは互換artifactとして残る）。
   - `lineage.js` — 家系図ビューア（Topics / Tree / Timeline モード、SVG グラフ）。`<conf>/lineage.json` を fetch。
   - `theme.js` — テーマ生成フォーム＋テーマ家系図（`/themes/`）。
 - **ページ**: `docs/index.html`（検索ファーストの S0 トップ = 検索窓1本+例示チップ+折りたたみ学会リスト（#372 P1）、ページ固有 CSS はインライン `<style>`）/ `docs/<conf>/index.html`（学会カタログ）/ `docs/<conf>/lineage.html`（家系図）/ `docs/themes/index.html` / `docs/how-it-works/`。
@@ -541,7 +541,7 @@ generate_themes_manifest.py → docs/themes/themes-manifest.json
   - ローカル配信: `cd docs && python3 -m http.server 8137`
   - ディレクトリ URL（`/cvpr-2026/`）と `/index.html` 直叩きのどちらでも可（#371 で `setLastUpdated` の slug 導出が `.html` セグメントを除外するようになった）
   - **node 実行後は cwd が `/root` にリセット** → `gh` は `-R taichiiiiiiii/automatic-paper-search` を明示（`gh api` は `-R` 非対応）
-- frontend に Python テストは無い。ゲートは**ローカル目視＋headless スクショ＋`ui-reviewer` エージェント**。CI は `lighthouse.yml` が docs/ PR で Core Web Vitals を **warn-only** 測定（ブロックしない）。
+- frontendは`paperpilot/tests/viewer/*.py`とNode `.mjs` contract testsで自動検証し、必要に応じてローカル目視・headless screenshotを追加する。CIの`lighthouse.yml`は対象docs PRでCore Web Vitalsを **warn-only** 測定する（ブロックしない）。
 
 ### カタログを追加 / 更新するフロー
 収集ソースは venue で使い分ける（[CI / GitHub Actions] の `conference-on-demand.yml` 解説も参照）:
@@ -586,7 +586,7 @@ uv run python -m paperpilot.scripts.scaffold_conference_page --conference <slug>
     - **例外（家系図構築）:** `build_lineage.py` / `build_deep_lineage.py` が引用グラフ（S2 `references` / `citations`）を取得することは必要不可欠なので許可する。ただし焦点論文の `venue` / `venue_tier` / `citation_count` / `github_stars` は `papers.json`（Stage 2 成果物）の値を優先し、S2 からは引用関係のメタデータ（paperId, 引用 paperId のタイトル等）のみを取る。
 13. **家系図ビューの `docs/<conf>/lineage.json` は `build_lineage.py` が唯一の生成元。手編集禁止**
 14. **テーマ家系図 (`docs/themes/<slug>/lineage.json`) は `build_theme_lineage.py` が唯一の生成元。手編集禁止**
-    - **オンデマンド生成パス (post 2026-06-03 CF Worker 復活)**: ユーザーが `/themes/` のフォームに入力 → CF Worker `worker/index.ts` `POST /api/themes` → input validate + manifest dedup (raw.githubusercontent.com) + per-IP rate limit (KV、5/h) + global daily cap (KV、100/day) → GitHub Actions REST API `POST /repos/.../workflows/theme-on-demand.yml/dispatches` → `build_theme_lineage.py` → `develop` へ commit → GH Pages 自動デプロイ (`.github/workflows/pages.yml`)。フロントは Worker URL を `docs/themes/index.html` の `<meta name="paperpilot-api-base">` から読む。空なら `window.open(GitHub Issue URL)` の degraded mode にフォールバック (Worker 不通時の保険)。
+    - **オンデマンド生成パス (post 2026-06-03 CF Worker 復活)**: ユーザーが `/themes/` のフォームに入力 → CF Worker `worker/index.ts` `POST /api/themes` → input validate + manifest dedup (raw.githubusercontent.com) + per-IP rate limit (KV、5/h) + global daily cap (KV、100/day) → GitHub Actions REST API `POST /repos/.../workflows/theme-on-demand.yml/dispatches` → `build_theme_lineage.py` → credential-free candidate → latest `develop`へのCAS promotion → promoted exact-SHA Pages release。フロントは Worker URL を `docs/themes/index.html` の `<meta name="paperpilot-api-base">` から読む。空なら `window.open(GitHub Issue URL)` の degraded mode にフォールバック (Worker 不通時の保険)。`GET /api/themes/status`は固定503の休眠endpointで、完了正本は公開`themes-manifest.json`のpolling。
     - **PAT スコープ**: Worker は `GH_DISPATCH_PAT` (fine-grained PAT, `actions:write`, repo scope) を CF Workers Secrets に保持。CF Access を解除した workers.dev URL 経由でのみアクセス可能なので、ブラウザに露出しない。
     - **degraded mode**: `paperpilot-api-base` の meta が空、または Worker が非到達 (fetch エラー) の場合、フォームは `window.open(github issue URL)` で代替し、操作不能にならない。
     - **slug 派生は 3 か所で同期**: Python `theme_slug()` (`paperpilot/scripts/_common.py`)、フロント `SLUG_RE` (`docs/assets/theme.js`)、CF Worker `themeSlug()` + `THEME_INPUT_PATTERN` (`worker/slug.js`)。`paperpilot/tests/test_worker_slug_parity.py` が **Python ↔ Worker の 3-way parity** を pin する。テーマ regex / 正規化規則を変えるときは 3 ファイル + parity テスト同時更新。
@@ -605,47 +605,51 @@ uv run python -m paperpilot.scripts.scaffold_conference_page --conference <slug>
         4. **Foundational ref フィルタ (`_filter_off_topic_refs`)**: BFS で取得した parent/child 候補のうち、`citationCount > 2 × max(seed citations)` かつ S2 intent に "methodology" を含まないものを除外。"methodology" 意図がある場合はそのまま採用（その citing paper の手法を本当に支えている foundational ref のため）。閾値は初期 3x から #127 followup で 2x に絞り込み。
         5. **Implementation denylist (`_is_implementation_foundation`)**: `paperpilot/data/lineage_denylist.json` に列挙された paperId / title pattern にマッチする論文（Adam optimizer / TensorFlow / PyTorch / Scikit-learn / NumPy / SciPy / Batch Normalization / Dropout / Keras / pandas 等）は methodology intent があっても**無条件で除外**。これらは「実装の foundational」であって「研究線譜の foundational」ではないため。PyTorch Geometric のような topic-specific lib は title pattern が catch しないので残る。新しい canonical lib paper を見つけたら denylist JSON に追記する。
     - **Theme alias フォールバック (#195)**: canonical テーマ名で seed=0 になる場合、`paperpilot/data/theme_aliases.json` の代替キーワードを順次試行。例: "Speculative Decoding" → "Speculative Sampling" (S2 が後者の名義で index している)。lowercase + trim でキーマッチ、最初の成功で打ち切り。
-    - **Seed quality audit (#187)**: `uv run python -m paperpilot.scripts.audit_theme_seeds` で `docs/themes/*/lineage.json` を巡回、off-topic seed を検出。CI では `.github/workflows/data-audit.yml` (#192) がこの監査を持つ（`theme-audit.yml` という名の workflow は存在しない）。⚠️ ただし **2026-06-15 を最後に一度も起動していない**（paths が `docs/iclr-*/lineage.json` 限定・#358）ので、**「PR で自動実行される」と当てにしないこと**。Viewer 側は #194 で同等 audit を走らせ stale-banner 表示。
+    - **Seed quality audit (#187)**: `uv run python -m paperpilot.scripts.audit_theme_seeds` で `docs/themes/*/lineage.json` を巡回、off-topic seed を検出。CIでは`.github/workflows/data-audit.yml`がtheme/conference lineage JSON、manifest、関連builder/auditor、workflow自身の変更をpaths対象としてpush/PRで監査し、手動dispatchも受ける。実際の最終run時刻は外部状態なので、ローカル文書の固定値として扱わない。
     - **LLM rationale (`--llm-strict=ambiguous` がデフォルト)**: `theme-on-demand.yml` は **`--llm-strict=ambiguous`** を有効化。S2 intent が `_INTENT_RELATION_MAP` のキー (methodology / result / background) に一致しない edge のみ Groq (Llama 3.3 70B) で paper-specific 分類。`--llm-strict=all` は Groq free tier の **TPM 12,000 / RPD 1,000 / TPD 100,000** 制約 (2026-06-06 確認) で破綻する (~500 tokens × 25 RPM = 12,500 TPM → 429 throttle 連鎖で 15 min timeout 到達、daily 限度も同時に削り落ちる)。Paid plan で `config.yaml` の `llm.rate_limit_rpm` を 1000+ に上げてから `--llm-strict=all` を使う。`GroqProvider` 内蔵 rate limiter (default 25 RPM) は RPM 制約だけカバー、TPM は prompt サイズで間接的に制御する。**Daily 上限 (RPD/TPD) は内蔵リミッタで追跡しない**ため、複数 theme を連投すると突発的に枯渇する — empirical で free tier は 1 rolling 24h 窓に ~2-3 large theme 実行が限度。
     - **Groq 429 circuit breaker (#191)**: `GroqProvider` が連続 3 回失敗 (request_with_retry が None / 非 200 を返す) で `_quota_exhausted=True` に latch、以降の `_chat` は API call 前に None を即返却。caller (`_CachedClassifyProvider`) は S2 intent heuristic にフォールバック。これで Groq daily quota 切れでも 15 min workflow timeout-minutes で cancel されず、heuristic で完走する。成功 200 で counter リセット (transient blip で latch しない)。
     - **LLM prompt 品質保証 (#131)**: `CLASSIFY_SYSTEM_PROMPT` (`paperpilot/llm/base.py`) は LLM が heuristic template を翻訳しないように設計されている。enum 定義を短く抽象化、MUST/MUST NOT 指示で template phrasing を明示禁止、Good 例で paper-specific rationale を few-shot 提示。Token budget は ~250 tokens に抑制 (Groq TPM 制約のため)。第二防衛線として `RelationClassification.from_dict` が `_GENERIC_TEMPLATE_RATIONALES` の文字列を返した場合 None を返して heuristic フォールバックさせる。template 追加時は両方 (prompt の MUST NOT リスト + `_GENERIC_TEMPLATE_RATIONALES`) を同期更新する。
     - **classification cache 共有 (theme 品質改善の本命)**: `build_theme_lineage` は `paperpilot/data/lineage-cache/classifications.json` を build_lineage と共有。`_CachedClassifyProvider` が AbstractLLMProvider をラップし、key `f"{a.paperId}->{b.paperId}"` で hit すれば LLM call を skip。free-tier Groq の TPM 制約はあくまで「1 run あたり」の問題で、cache が複数 run に渡って蓄積するため、テーマ再生成 / 複数テーマ間で同じ (parent, child) ペアが出てくれば LLM cost ゼロで paper-specific rationale が再利用される。template entry は from_dict の rejection (#131 第二防衛線) でヒット時も拒否され heuristic フォールバック → 次回 LLM 機会あれば再分類されて cache 更新。`persist_classifications` で atomic write (build_lineage と同じ pattern)。
     - **並列 dispatch の push 競合対策**（#121 / #125）: Worker は per-IP 5/h + global 100/day で並列 dispatch を許す設計のため、複数の `theme-on-demand` run が同時刻に `develop` へ push すると 1 本以外が `! [rejected] develop -> develop (fetch first)` で discard されていた。
-        - **対策**: push step を `.github/scripts/commit-and-push.sh` 経由にして 5 回 retry（`git fetch + git rebase --autostash + git push`、各失敗で `git rebase --abort` リカバリ、3-7s ジッタ付き sleep）。`COMMIT_PUSH_NO_SLEEP=1` で sleep 無効化、`COMMIT_PUSH_MAX_ATTEMPTS=N` で回数上書き、`COMMIT_PUSH_BRANCH=name` で push 先 branch 上書き。複数 stage path 受け取り対応（#123 followup）— `bash commit-and-push.sh "$msg" path1 path2 path3` 形式で `collect-weekly` / `collect-daily-watch` (push 先は `main`) も同じ retry を使う。
-        - **concurrency group は採用しない**（#125 で実測検証済）。GitHub Actions の concurrency は同一 group 内で **pending を 1 件しか保持しない**（3 件目以降の dispatch が来ると古い pending を cancel する）ため、`cancel-in-progress: false` でも 5 件同時 submit では 2/5 しか実行されない。retry のみで 5 並列を実証 (`paperpilot/tests/test_commit_and_push_sh.py::test_five_parallel_runs_all_publish` が 5 ワーカー同時 push race で全件公開を pin)。
-        - shell ロジックは `paperpilot/tests/test_commit_and_push_sh.py` が subprocess 経由でカバー（5 並列 race + injection 安全 + max-retry exhaustion + path 不在 / diff なし noop）。
+        - **現行対策**: generate jobはwrite credentialを持たずcandidate artifactを作り、別promote jobがlatest `develop`に対して許可pathとbase SHAを検証してCAS promotionする。成功時はpromoted exact SHAだけをreleaseへ渡す。旧`commit-and-push.sh` retryは現行publication経路ではない。
+        - **concurrency group は採用しない**。GitHub Actionsの同一groupはpendingを1件しか保持しないため、複数依頼を落とし得る。現行の競合境界はpromoterのfresh-tip検証、許可path限定、bounded CAS retryである。
 
 ---
 
 ## CI / GitHub Actions
 
-ワークフロー一覧 (`.github/workflows/`・全 10 本):
-- `collect-weekly.yml` — 主要会議の論文を深掘り収集 → `paperpilot/output/` に commit。**手動 `workflow_dispatch` 専用**（#245 で週次 cron 廃止）
+ワークフロー一覧 (`.github/workflows/`・全 13 本):
+- `collect-weekly.yml` — 主要会議の論文を深掘り収集 → candidate生成 → CAS promotion → exact-SHA release。**手動 `workflow_dispatch` 専用**（#245 で週次 cron 廃止）
 - `collect-daily-watch.yml` — follow 著者の新作を確認 → 通知のみ。**手動 `workflow_dispatch` 専用**（#245 で日次 cron 廃止）
 
-🔴 **トリガ実測表（2026-08-23、`on:` 節を全 10 本直読）** — 名前から推測しないこと。
+🔴 **現行13 workflowのトリガ表** — 名前から推測せず`on:`節を確認すること。
 
 | workflow | push | PR | schedule | release | dispatch |
 |---|:--:|:--:|:--:|:--:|:--:|
 | `tests` | ✅ `develop`/`main` | ✅ | | | ✅ |
 | `data-audit` | ✅ | ✅ | | | ✅ |
-| `pages` | ✅ | | | | ✅ |
+| `pages` | ✅ `develop` | | | | |
+| `pages-release` | | | | | reusable (`workflow_call`) |
+| `pages-rollback` | | | | | ✅ |
 | `lighthouse` | | ✅ | ✅ `0 2 * * 1` | | ✅ |
-| `publish` | | | | ✅ `published` | ✅ |
+| `publish` | | ✅ | | | ✅ |
+| `paper-slides-on-demand` | | | | | ✅（休眠 scaffold） |
 | `collect-weekly` / `collect-daily-watch` / `regen-themes` / `theme-on-demand` / `conference-on-demand` | | | | | ✅ のみ |
 
 - **`schedule` を持つのは `lighthouse` ただ 1 本**（`collect-*` は #245、`regen-themes` は #261 で cron 廃止）。
   ∴ **カタログは自動更新されない**（`conferences.json` は `generated: 2026-06-28` で凍結）。更新は `workflow_dispatch` で明示的に回す。
-- ⚠️ `data-audit` は**トリガはあるが 2026-06-15 以降一度も発火していない**（paths が `docs/iclr-*/lineage.json` 限定・#358）。
+- `data-audit` はtheme/conference lineage JSON、theme manifest、関連builder/auditor、workflow自身をpaths対象としてpush/PRで走り、手動dispatchも受ける。最終run時刻は外部状態として都度確認する。
 - `tests.yml` が `ruff` + `pytest` を走らせる（2026-08-23 追加）。**mypy は含まない**（環境の INTERNAL ERROR で起動しないため）。
   🔴 **実行は `uv run --extra dev …` でなければならない**。`pytest` / `ruff` は `[project.optional-dependencies].dev` にあるので、素の `uv run` はクリーンなチェックアウトで `Failed to spawn` になる。ローカルで通っていたのは `/usr/local/bin` のシステム版に落ちていたからで、CI にそれは無い。
 - `regen-themes.yml` — 手動 `workflow_dispatch` 専用 (PR #261 で週次 cron 廃止)。LLM 契約変更や lineage 形式バンプ後にバルク再生成する break-glass
-- `theme-on-demand.yml` — フォーム送信または手動 dispatch で 1 テーマだけ生成
-- `conference-on-demand.yml` — 手動 `workflow_dispatch` で**新しい学会カタログ**を end-to-end 生成 (collect_conference → build_summary_csv → build_pages → scaffold_conference_page → commit → Pages)。入力: `conference`(slug) / `venue`(VenueSignal token) / `query`(arXiv `co:"…"`) / `display` / `lede` / `max`。LLM/unarXive 不要 (カタログは arXiv メタ + VenueSignal のみで構築)。**arXiv 自己申告ベースなので部分収録(採択集合の ~30-40%)**。**ICLR/NeurIPS/ICML は `collect_openreview.py`(OpenReview api2 venueid → 全採択 + Oral/Spotlight/Poster 区分)で権威的に全件収録するのが正**(当面は手動: collect_openreview → build_summary_csv → build_pages → 既存ページなら lede/footer を OpenReview 表記に手修正。専用 workflow `openreview-on-demand.yml` は未実装=follow-up)
+- `theme-on-demand.yml` — フォーム送信または手動dispatchで1テーマのcandidateを生成し、latest `develop`へCAS promotionしてpromoted exact SHAをrelease
+- `conference-on-demand.yml` — 手動 `workflow_dispatch` で**新しい学会カタログ**を generate → validate → latest `develop` へCAS promotion → exact-SHA Pages releaseする。入力: `conference`(slug) / `venue`(VenueSignal token) / `query`(arXiv `co:"…"`) / `display` / `lede`（plain text）/ `max`。LLM/unarXive 不要 (カタログは arXiv メタ + VenueSignal のみで構築)。**arXiv 自己申告ベースなので部分収録(採択集合の ~30-40%)**。**ICLR/NeurIPS/ICML は `collect_openreview.py`(OpenReview api2 venueid → 全採択 + Oral/Spotlight/Poster 区分)で権威的に全件収録するのが正**(当面は手動: collect_openreview → build_summary_csv → build_pages → 既存ページなら lede/footer を OpenReview 表記に手修正。専用 workflow `openreview-on-demand.yml` は未実装=follow-up)
 - `data-audit.yml` — `docs/themes/*/lineage.json` 等が変わった PR/push で seed/lineage 監査
 - `lighthouse.yml` — frontend 変更 PR + 月曜定例で Core Web Vitals 計測
-- `pages.yml` — `docs/**` 変更で GitHub Pages へデプロイ
-- `publish.yml` — GitHub Release 公開で PyPI に trusted-publisher 発行。**実行歴は 2026-05-30 の 1 回だけで、それも failure**（2026-08-20 実測）
+- `pages.yml` — `develop` の公開対象変更から、検証済みexact SHAだけを reusable `pages-release.yml` でGitHub Pagesへデプロイ
+- `pages-rollback.yml` — 明示確認付きの手動rollback。branch/dataは巻き戻さず、既知のancestor SHAのPages artifactだけを再公開
+- `publish.yml` — PRまたは手動起動のbuild-only検証。PyPI upload/OIDC権限は持たない
+- `paper-slides-on-demand.yml` — request/callback seamはローカル実装済みだが、production adapter/binding/catalog pin/provider未接続の休眠scaffold。claim/fence後も安全にfailedへ閉じ、生成・公開しない
 
 ### 必要な GitHub Secrets
 
@@ -672,8 +676,8 @@ uv run python -m paperpilot.scripts.scaffold_conference_page --conference <slug>
 4. `git push` → CF Workers Builds が build + deploy
 
 エンドポイント:
-- `POST /api/themes` — フォーム送信。`{ theme: string }` を受け、validate + dedup + rate-limit してから theme-on-demand.yml を dispatch。レスポンスは `{ ok: true, status: "queued" | "exists", slug }` または `{ ok: false, status: "invalid" | "rate_limited" | "error", message }`
-- `GET /api/themes/status?theme=<raw>` — クライアント polling 用。直近の theme-on-demand.yml run を `run-name: "theme-on-demand: <theme>"` の substring match で照合し、`{ ok: true, run: { status, conclusion, html_url } | null }` を返す
+- `POST /api/themes` — フォーム送信。`{ theme: string }` を受け、validate + dedup + rate-limit してから theme-on-demand.yml を dispatch。新規依頼のレスポンスは `{ ok: true, status: "queued", slug, request_id }`、既存テーマは `{ ok: true, status: "exists", slug }`、失敗時は `{ ok: false, status: "invalid" | "rate_limited" | "error", message }`
+- `GET /api/themes/status` — 現在は常に `503` の固定JSONを返す休眠endpoint。KVではPAT付きGitHub APIを守る原子的quotaを作れないため、GitHub runs APIは呼ばない。ブラウザは公開 `themes-manifest.json` のpollingを継続する
 - `OPTIONS /api/*` — CORS preflight。GH Pages origin (任意) を `*` で許可
 
 `vars` (非 secret): `GH_OWNER`, `GH_REPO`, `GH_WORKFLOW_FILE`, `GH_REF` は `wrangler.jsonc` に直書き。変更が要るときは `wrangler.jsonc` を編集して push。
@@ -731,7 +735,7 @@ PAT 更新手順: <https://github.com/settings/tokens> → 既存 PAT を編集 
 
 ## Issue 作成ワークフロー
 
-レビュー（プランレビュー / コードレビュー / paperpilot-reviewer）で検出された「ブロッキングではないが望ましい」項目を issue 化する標準手順。過去実績: 13 件を 23 分でバッチ投入 (#20〜#32)。
+レビューで検出された「ブロッキングではないが望ましい」項目を、ユーザーがissue作成を明示承認した場合に使う手順。承認前は候補を報告するだけに留める。過去実績: 13 件を 23 分でバッチ投入 (#20〜#32)。
 
 ### Step 1. 1 issue = 1 問題 に分解
 
@@ -832,40 +836,11 @@ refactor(scripts): dedupe slug->venue label into _common.py (closes #30)
 
 ---
 
-## プロジェクト固有 Skills / Sub-agents
+## プロジェクト固有Agent profile
 
-`.claude/` 配下にこのプロジェクト専用の Skill とサブエージェントを配置しています。該当タスクの時に自動で参照されます。
+現行role、model、effort、accessの正本は[`PAPERPILOT_PROFILE.md`](PAPERPILOT_PROFILE.md)、実行ルールは[`AGENTS.md`](AGENTS.md)と[`docs/design/13-agent-workboard.md`](docs/design/13-agent-workboard.md)です。実装は`paperpilot_backend_implementer`または`paperpilot_frontend_implementer`のGPT-5.6 Sol / mediumを基本とし、security・provenance・schema・migration・publication-riskだけhighで独立レビューします。製品runtimeのLLM provider設定はこのagent routingを変更しません。
 
-### Skills（必要時のみロード）
-
-| 名前 | 配置 | トリガー |
-|------|------|---------|
-| `add-plugin` | `.claude/skills/add-plugin/SKILL.md` | 「新しい Source/Signal/Exporter/LLMProvider を追加して」 |
-| `run-verification` | `.claude/skills/run-verification/SKILL.md` | 「テスト流して」「PR 前チェック」 |
-
-### Sub-agents（専門サブエージェント）
-
-| 名前 | 担当 | モデル | 自動起動トリガー |
-|------|------|------|-------------|
-| `source-agent` | `paperpilot/sources/` | sonnet | 新 Source 追加・arxiv/s2/openalex 改修 |
-| `signal-agent` | `paperpilot/signals/` | sonnet | 新 Signal 追加・スコア正規化変更 |
-| `exporter-agent` | `paperpilot/exporters/` | sonnet | 新 Exporter 追加・CSV 列拡張 |
-| `test-agent` | `paperpilot/tests/` | sonnet | カバレッジ低下・新モジュール追加後 |
-| `paperpilot-reviewer` | PR 前レビュー（10項目判定） | sonnet | **全ての変更で MUST BE USED** |
-
-エージェントの実行順序・並列化ルールは `.claude/agents/agent-orchestration.md` を参照。
-
-### 基本の呼び出しフロー
-
-```
-新機能実装
-  ↓ 専門 *-agent で TDD 実装（複数なら並列起動）
-  ↓ test-agent でカバレッジ補完
-  ↓ paperpilot-reviewer で最終チェック
-  ↓ develop へ commit & push
-```
-
-Skill / Agent を追加・変更した時は、この表と `.claude/agents/agent-orchestration.md` の分担表も更新してください。
+変更後はownerが差分とfocused/full gateを確認して結果・skip・残リスクを報告します。workflow dispatch、issue/PR作成、commit/push/merge、公開、通知、secret/settings変更は自動工程にせず、ユーザーの明示承認を得ます。
 
 ---
 

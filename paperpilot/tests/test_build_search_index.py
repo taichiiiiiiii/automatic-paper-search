@@ -13,6 +13,7 @@ from the URL and filter on title+authors+abstract, so a hit links to
 
 from __future__ import annotations
 
+import gzip
 import json
 from pathlib import Path
 
@@ -92,6 +93,95 @@ def test_write_index_emits_compact_json(tmp_path: Path) -> None:
 def test_write_index_preserves_non_ascii_titles(tmp_path: Path) -> None:
     out = bsi.write_index(tmp_path, [["日本語タイトル", "iclr-2026"]])
     assert json.loads(out.read_text(encoding="utf-8"))[0][0] == "日本語タイトル"
+
+
+# ---- v2 identity-rich index ----
+
+
+def test_build_index_v2_emits_fixed_typed_row(tmp_path: Path) -> None:
+    _write_papers(
+        tmp_path,
+        "iclr-2026",
+        [
+            {
+                "title": "Attention",
+                "authors": ["Alice", "Bob"],
+                "tags": ["LLM"],
+                "type": "Oral",
+                "arxiv_url": "https://openreview.net/forum?id=AbC_123",
+            }
+        ],
+    )
+    entries, paper_ids = bsi.build_index_v2(tmp_path)
+    assert entries == [
+        [
+            "Attention",
+            "iclr-2026",
+            0,
+            ["Alice", "Bob"],
+            ["LLM"],
+            2026,
+            "Oral",
+        ]
+    ]
+    assert paper_ids == ["b871855522b0b31384df3e40fca6800540085f1f"]
+
+
+def test_build_index_v2_rejects_mismatched_embedded_identity(tmp_path: Path) -> None:
+    _write_papers(
+        tmp_path,
+        "acl-2025",
+        [
+            {
+                "title": "Mismatch",
+                "authors": [],
+                "tags": [],
+                "type": "Poster",
+                "arxiv_url": "https://aclanthology.org/2025.acl-long.153/",
+                "paper_id": "0" * 40,
+            }
+        ],
+    )
+    import pytest
+
+    with pytest.raises(ValueError, match="paper_id"):
+        bsi.build_index_v2(tmp_path)
+
+
+def test_write_index_v2_is_compact_and_deterministic(tmp_path: Path) -> None:
+    entries = [["T", "c-2025", 0, [], [], 2025, "Poster"]]
+    first = bsi.write_index_v2(tmp_path, entries).read_bytes()
+    second = bsi.write_index_v2(tmp_path, entries).read_bytes()
+    assert first == second
+    assert b", " not in first
+    assert json.loads(first) == entries
+
+
+def test_write_paper_id_blocks_uses_global_ordinal(tmp_path: Path) -> None:
+    paper_ids = [f"{value:040x}" for value in range(300)]
+    outputs = bsi.write_paper_id_blocks(tmp_path, paper_ids)
+    assert len(outputs) == 2
+    first = json.loads(outputs[0].read_text())
+    second = json.loads(outputs[1].read_text())
+    assert first["start"] == 0
+    assert len(first["paper_ids"]) == 256
+    assert second["start"] == 256
+    assert second["paper_ids"][0] == paper_ids[256]
+
+
+def test_real_v2_projection_meets_budget_and_resolves_every_ref() -> None:
+    repo_docs = Path(__file__).resolve().parents[2] / "docs"
+    payload = (repo_docs / bsi.INDEX_V2_FILENAME).read_bytes()
+    assert len(payload) <= int(8.5 * 1024 * 1024)
+    assert len(gzip.compress(payload, mtime=0)) <= int(2.5 * 1024 * 1024)
+
+    entries = json.loads(payload)
+    resolved: list[str] = []
+    for path in sorted((repo_docs / "search-paper-ids-v1").glob("*.json")):
+        resolved.extend(json.loads(path.read_text(encoding="utf-8"))["paper_ids"])
+    assert len(entries) == len(resolved) == 28_300
+    assert all(row[bsi.PAPER_REF] == ordinal for ordinal, row in enumerate(entries))
+    assert all(len(paper_id) == 40 for paper_id in resolved)
 
 
 # ---- guard: the landing page states a paper count in prose ----

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paperpilot.local/schemas/identity-coverage-v1.schema.json",
+  "title": "PaperPilot Identity Coverage v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "as_of",
+    "valid",
+    "input_rows",
+    "resolved_rows",
+    "coverage",
+    "unique_paper_ids",
+    "duplicate_paper_ids",
+    "hash_collisions",
+    "alias_conflicts",
+    "field_loss_rows",
+    "source_counts",
+    "failures",
+    "alias_conflict_details"
+  ],
+  "properties": {
+    "schema_version": {"const": "identity-coverage-v1"},
+    "as_of": {"type": "string", "format": "date-time"},
+    "valid": {"type": "boolean"},
+    "input_rows": {"type": "integer", "minimum": 0},
+    "resolved_rows": {"type": "integer", "minimum": 0},
+    "coverage": {"type": "number", "minimum": 0, "maximum": 1},
+    "unique_paper_ids": {"type": "integer", "minimum": 0},
+    "duplicate_paper_ids": {"type": "integer", "minimum": 0},
+    "hash_collisions": {"type": "integer", "minimum": 0},
+    "alias_conflicts": {"type": "integer", "minimum": 0},
+    "field_loss_rows": {"type": "integer", "minimum": 0},
+    "source_counts": {
+      "type": "object",
+      "additionalProperties": {"type": "integer", "minimum": 0}
+    },
+    "failures": {"type": "array", "items": {"type": "object"}},
+    "alias_conflict_details": {"type": "array", "items": {"type": "object"}}
+  }
+}

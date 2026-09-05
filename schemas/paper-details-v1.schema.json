@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paperpilot.local/schemas/paper-details-v1.schema.json",
+  "title": "PaperPilot Full Abstract Shard v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "prefix", "papers"],
+  "properties": {
+    "schema_version": {"const": "paper-details-v1"},
+    "prefix": {"type": "string", "pattern": "^[0-9a-f]{2}$"},
+    "papers": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "prefixItems": [
+          {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+          {"type": "string"}
+        ],
+        "items": false,
+        "minItems": 2,
+        "maxItems": 2
+      }
+    }
+  }
+}

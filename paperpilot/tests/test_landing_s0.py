@@ -30,10 +30,8 @@ def index_text() -> str:
 
 
 def test_landing_has_one_data_search_form(index_text: str) -> None:
-    matches = re.findall(r'<form[^>]*\bdata-search\b[^>]*>', index_text)
-    assert len(matches) == 1, (
-        f"expected exactly one <form data-search>, found {len(matches)}"
-    )
+    matches = re.findall(r"<form[^>]*\bdata-search\b[^>]*>", index_text)
+    assert len(matches) == 1, f"expected exactly one <form data-search>, found {len(matches)}"
 
 
 def test_landing_search_form_has_required_children(index_text: str) -> None:
@@ -58,7 +56,7 @@ def test_landing_search_input_focus_is_pointer_gated(index_text: str) -> None:
         "bare autofocus attribute found — focus must stay pointer-gated"
     )
     js = (REPO_ROOT / "docs" / "assets" / "landing.js").read_text(encoding="utf-8")
-    assert '(pointer: fine)' in js and "input.focus()" in js
+    assert "(pointer: fine)" in js and "input.focus()" in js
 
 
 # ---------------------------------------------------------------------------
@@ -126,7 +124,7 @@ def test_landing_example_chips_are_real_search_hits() -> None:
     # into the empty state.
     import json
 
-    index_path = REPO_ROOT / "docs" / "search-index.json"
+    index_path = REPO_ROOT / "docs" / "search-index-v2.json"
     if not index_path.exists():
         pytest.skip("search-index.json not present in this checkout")
     data = json.loads(index_path.read_text(encoding="utf-8"))
@@ -157,7 +155,7 @@ def test_landing_nav_has_aria_current_on_search(index_text: str) -> None:
     # Root page: the 「探す」 link carries aria-current="page" so the
     # shared shell test and this landing test agree on the contract.
     m = re.search(r'<li>\s*<a[^>]*aria-current="page"[^>]*>探す</a>\s*</li>', index_text)
-    assert m is not None, "「探す」 link is missing aria-current=\"page\""
+    assert m is not None, '「探す」 link is missing aria-current="page"'
 
 
 def test_landing_title_and_description_are_search_framed(index_text: str) -> None:
@@ -165,14 +163,23 @@ def test_landing_title_and_description_are_search_framed(index_text: str) -> Non
     title_m = re.search(r"<title>([^<]+)</title>", index_text)
     assert title_m is not None
     title = title_m.group(1)
-    assert "家系図" not in title, (
-        "title still leads with the retired 家系図 framing"
-    )
+    assert "家系図" not in title, "title still leads with the retired 家系図 framing"
     # The description should mention search + conference scope.
     desc_m = re.search(r'<meta[^>]*name="description"[^>]*content="([^"]+)"', index_text)
     assert desc_m is not None
     desc = desc_m.group(1)
     assert "検索" in desc or "探す" in desc
+    assert "生成" not in desc and "辿れます" not in desc
+
+
+def test_landing_lineage_defaults_to_truthful_closed_state(index_text: str) -> None:
+    """No-JS and failed quality loads must not advertise unpublished lineage."""
+    assert "系譜データは現在公開準備中です。" in index_text
+    assert "監査済みの系譜は準備中です。" in index_text
+    assert "系譜を辿る" not in index_text
+    core = index_text.index('src="assets/lineage-core.js?v=')
+    landing = index_text.index('src="assets/landing.js?v=')
+    assert core < landing
 
 
 def test_no_executable_inline_scripts() -> None:
@@ -187,17 +194,14 @@ def test_no_executable_inline_scripts() -> None:
     html = INDEX_HTML.read_text(encoding="utf-8")
     # Strip HTML comments first — prose may mention "<script>" verbatim.
     html_no_comments = re.sub(r"<!--.*?-->", "", html, flags=re.S)
-    for m in re.finditer(
-        r"<script([^>]*)>(.*?)</script>", html_no_comments, flags=re.S
-    ):
+    for m in re.finditer(r"<script([^>]*)>(.*?)</script>", html_no_comments, flags=re.S):
         attrs, body = m.group(1), m.group(2)
         if "src=" in attrs:
             assert not body.strip(), "script[src] must have an empty body"
             continue
         assert 'type="application/ld+json"' in attrs, (
             "executable inline <script> found — CSP script-src 'self' "
-            "silently blocks it; move the code to docs/assets/*.js: "
-            + body.strip()[:120]
+            "silently blocks it; move the code to docs/assets/*.js: " + body.strip()[:120]
         )
 
 
@@ -207,14 +211,13 @@ def test_landing_js_referenced() -> None:
     assert 'src="assets/landing.js?v=' in html
 
 
-def test_landing_js_q_permalink_sync() -> None:
-    """/?q=<query> must replay the inline search on load, and typing must
-    keep the URL shareable (replaceState). Pinned statically — behavior is
-    verified headless (frontend has no browser in CI).
-    """
-    js = (REPO_ROOT / "docs" / "assets" / "landing.js").read_text(encoding="utf-8")
-    assert 'URLSearchParams(window.location.search).get("q")' in js
-    assert "replaceState" in js
+def test_search_js_owns_q_permalink_sync() -> None:
+    """The component that owns query/paging state must also own its URL."""
+    search = (REPO_ROOT / "docs" / "assets" / "search.js").read_text(encoding="utf-8")
+    landing = (REPO_ROOT / "docs" / "assets" / "landing.js").read_text(encoding="utf-8")
+    assert "URLSearchParams(window.location.search)" in search
+    assert "replaceState" in search and "popstate" in search
+    assert "URLSearchParams(window.location.search)" not in landing
 
 
 def test_landing_js_builds_dom_safely() -> None:

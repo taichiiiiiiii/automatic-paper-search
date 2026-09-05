@@ -1,61 +1,29 @@
-name: Deploy docs/ to GitHub Pages
-
-# Static viewer publish for the `docs/` bundle.
-#
-# Trigger: any commit on `develop` that touches the viewer surface
-# (docs/, the JS/CSS assets, the theme manifest). Manual dispatch is
-# allowed for the rare case where Pages drifts out of sync.
-#
-# Why `paths:` instead of "every push": Python/pipeline-only commits
-# don't change anything Pages serves, so skipping them saves an
-# Actions minute per push and keeps the deployment history readable.
-#
-# Form-submit dynamic path: the in-browser theme form posts to the
-# CF Worker (worker/index.ts), which validates / dedupes and dispatches
-# theme-on-demand.yml directly via the GitHub Actions REST API. That
-# workflow commits to develop and re-fires this Pages deploy via the
-# `docs/**` path filter.
+name: Release docs/ from protected develop
 
 on:
   push:
     branches: [develop]
     paths:
-      - 'docs/**'
-      - '.github/workflows/pages.yml'
-  workflow_dispatch:
+      - "docs/**"
+      - "schemas/**"
+      - "paperpilot/scripts/build_pages.py"
+      - "paperpilot/scripts/build_search_index.py"
+      - "paperpilot/scripts/build_identity_lite.py"
+      - "paperpilot/scripts/build_lineage_quality.py"
+      - ".github/scripts/validate-pages-release.sh"
+      - ".github/workflows/pages.yml"
+      - ".github/workflows/pages-release.yml"
 
-# GitHub Pages requires these specific permissions; without them the
-# deploy step fails with an opaque "permission denied" message.
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-# Prevent two simultaneous Pages deploys from racing. `cancel-in-progress: true`
-# means a fast follow-up push wins — the older queued build is dropped.
-concurrency:
-  group: pages
-  cancel-in-progress: true
+permissions: {}
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload docs/ as Pages artifact
-        # Only the static viewer ships to Pages; everything else
-        # (paperpilot/, worker/, scripts) stays in the repo.
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: docs
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+  release:
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/pages-release.yml
+    with:
+      source_sha: ${{ github.sha }}
+      release_kind: normal
+      request_id: push-${{ github.run_id }}-${{ github.run_attempt }}

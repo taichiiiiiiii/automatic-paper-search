@@ -29,6 +29,8 @@ def _write_papers_csv(path: Path, rows: list[dict[str, str]]) -> None:
         "citation_count",
         "venue_tier",
         "github_stars",
+        "source",
+        "source_id",
     ]
     with path.open("w", encoding="utf-8-sig", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fields)
@@ -110,9 +112,7 @@ def test_build_generates_summary_with_auto_discovery(tmp_path: Path):
             },
         ],
     )
-    _write_oral_md(
-        conf / "oral_summaries_ja.md", ["Scaling Language Models"]
-    )
+    _write_oral_md(conf / "oral_summaries_ja.md", ["Scaling Language Models"])
 
     result = bsc.build(conference_dir=conf)
     assert result.rows_written == 2
@@ -140,7 +140,7 @@ def test_build_with_explicit_input_csv(tmp_path: Path):
                 "title": "Explicit Input Paper",
                 "authors": "A",
                 "abstract": "x",
-                "url": "u",
+                "url": "https://arxiv.org/abs/2404.00004",
                 "pdf_url": "p",
                 "venue": "",
             }
@@ -149,9 +149,7 @@ def test_build_with_explicit_input_csv(tmp_path: Path):
     _write_oral_md(conf / "oral_summaries_ja.md", [])
 
     # Caller can point at any CSV path, bypassing auto-discovery
-    result = bsc.build(
-        conference_dir=conf, input_csv=conf / "papers_2025-12-01.csv"
-    )
+    result = bsc.build(conference_dir=conf, input_csv=conf / "papers_2025-12-01.csv")
     assert result.rows_written == 1
     assert result.oral_count == 0
 
@@ -207,7 +205,7 @@ def test_build_handles_pipeline_csv_without_ids(tmp_path: Path):
                 "title": "Legacy Paper",
                 "authors": "Z",
                 "abstract": "abs",
-                "url": "u",
+                "url": "https://arxiv.org/abs/2404.00005",
                 "pdf_url": "p",
                 "venue": "",
             }
@@ -219,6 +217,8 @@ def test_build_handles_pipeline_csv_without_ids(tmp_path: Path):
     assert rows[0]["title"] == "Legacy Paper"
     assert rows[0]["arxiv_id"] == ""
     assert rows[0]["citation_count"] == ""
+    assert rows[0]["source"] == "arxiv"
+    assert rows[0]["source_id"] == "2404.00005"
 
 
 def test_build_strips_zero_width_characters(tmp_path: Path):
@@ -262,7 +262,7 @@ def test_build_tolerates_missing_oral_md(tmp_path: Path):
                 "title": "Solo Paper",
                 "authors": "X",
                 "abstract": "graph neural network",
-                "url": "u",
+                "url": "https://arxiv.org/abs/2404.00006",
                 "pdf_url": "p",
                 "venue": "",
             }
@@ -301,7 +301,9 @@ def test_classify_tags_specific_nlp_tasks():
 
 def test_classify_tags_greedy_patterns_tightened():
     # "we benchmark our method" (verb) must NOT tag Benchmark
-    assert "Benchmark" not in bsc.classify_tags("A Fast Detector", "We benchmark our method on COCO.")
+    assert "Benchmark" not in bsc.classify_tags(
+        "A Fast Detector", "We benchmark our method on COCO."
+    )
     # but a benchmark-introducing paper does
     assert "Benchmark" in bsc.classify_tags("MMBench: A New Benchmark for VLMs", "")
     # "on the X dataset" (mention) must NOT tag Dataset

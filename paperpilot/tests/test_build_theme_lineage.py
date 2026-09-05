@@ -16,6 +16,7 @@ Key invariants:
 
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 from pathlib import Path
@@ -49,9 +50,7 @@ def _patch_env(monkeypatch, **values):
         "smtp": {},
     }
     base.update(values)
-    monkeypatch.setattr(
-        "paperpilot.utils.config_loader.load_env", lambda *a, **kw: base
-    )
+    monkeypatch.setattr("paperpilot.utils.config_loader.load_env", lambda *a, **kw: base)
     for v in ("GROQ_API_KEY", "GEMINI_API_KEY"):
         monkeypatch.delenv(v, raising=False)
 
@@ -109,6 +108,7 @@ def _mk_s2_paper(
     authors: list[str] | None = None,
     abstract: str = "Lorem ipsum dolor sit amet — a stub abstract for tests.",
 ) -> dict:
+    arxiv_suffix = int(hashlib.sha1(pid.encode()).hexdigest()[:8], 16) % 100_000
     return {
         "paperId": pid,
         "title": title,
@@ -117,7 +117,7 @@ def _mk_s2_paper(
         "citationCount": cites,
         "abstract": abstract,
         "authors": [{"name": a} for a in (authors or ["A. Author"])],
-        "externalIds": {},
+        "externalIds": {"ArXiv": f"2401.{arxiv_suffix:05d}"},
     }
 
 
@@ -125,10 +125,7 @@ def _mk_s2_paper(
 
 
 def test_sanitize_theme_strips_control_chars():
-    assert (
-        build_theme_lineage.sanitize_theme("Mixture\x00 of\nExperts\t")
-        == "Mixture ofExperts"
-    )
+    assert build_theme_lineage.sanitize_theme("Mixture\x00 of\nExperts\t") == "Mixture ofExperts"
 
 
 def test_sanitize_theme_rejects_empty():
@@ -221,9 +218,7 @@ def test_discover_seeds_dedupes_papers(tmp_path: Path, monkeypatch):
         "request_with_retry",
         return_value=_mk_s2_search_response([p1, p1, p1]),
     ):
-        seeds = build_theme_lineage.discover_seeds(
-            keywords=["x"], top_n=10, since_year=None
-        )
+        seeds = build_theme_lineage.discover_seeds(keywords=["x"], top_n=10, since_year=None)
     assert len(seeds) == 1
 
 
@@ -237,9 +232,7 @@ def test_discover_seeds_filters_by_since_year(tmp_path: Path, monkeypatch):
         "request_with_retry",
         return_value=_mk_s2_search_response([p_old, p_new]),
     ):
-        seeds = build_theme_lineage.discover_seeds(
-            keywords=["x"], top_n=10, since_year=2010
-        )
+        seeds = build_theme_lineage.discover_seeds(keywords=["x"], top_n=10, since_year=2010)
     assert {s["paperId"] for s in seeds} == {"p_new"}
 
 
@@ -254,9 +247,7 @@ def test_discover_seeds_sorts_by_citation_count_desc(tmp_path: Path, monkeypatch
         "request_with_retry",
         return_value=_mk_s2_search_response([low, high, mid]),
     ):
-        seeds = build_theme_lineage.discover_seeds(
-            keywords=["x"], top_n=10, since_year=None
-        )
+        seeds = build_theme_lineage.discover_seeds(keywords=["x"], top_n=10, since_year=None)
     assert [s["paperId"] for s in seeds] == ["high", "mid", "low"]
 
 
@@ -269,9 +260,7 @@ def test_discover_seeds_respects_top_n(tmp_path: Path, monkeypatch):
         "request_with_retry",
         return_value=_mk_s2_search_response(papers),
     ):
-        seeds = build_theme_lineage.discover_seeds(
-            keywords=["x"], top_n=3, since_year=None
-        )
+        seeds = build_theme_lineage.discover_seeds(keywords=["x"], top_n=3, since_year=None)
     assert len(seeds) == 3
     assert [s["paperId"] for s in seeds] == ["p0", "p1", "p2"]
 
@@ -295,10 +284,14 @@ def test_discover_seeds_handles_none_response(tmp_path: Path, monkeypatch):
     must be tolerated — we cache an empty list and continue with other keywords."""
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
     with patch.object(
-        build_theme_lineage, "request_with_retry", return_value=None,
+        build_theme_lineage,
+        "request_with_retry",
+        return_value=None,
     ):
         seeds = build_theme_lineage.discover_seeds(
-            keywords=["x"], top_n=10, since_year=None,
+            keywords=["x"],
+            top_n=10,
+            since_year=None,
         )
     assert seeds == []
     # Empty-list cache is still written so a re-run doesn't hit the network again.
@@ -319,7 +312,9 @@ def test_discover_seeds_handles_corrupt_cache(tmp_path: Path, monkeypatch):
     cache_path.parent.mkdir(parents=True, exist_ok=True)
     cache_path.write_text("{this is not valid json")
     seeds = build_theme_lineage.discover_seeds(
-        keywords=["x"], top_n=10, since_year=None,
+        keywords=["x"],
+        top_n=10,
+        since_year=None,
         use_openalex_fallback=False,
     )
     assert seeds == []
@@ -340,11 +335,15 @@ def test_discover_seeds_caches_per_keyword(tmp_path: Path, monkeypatch):
         return_value=_mk_s2_search_response([p]),
     ) as mock_rwr:
         build_theme_lineage.discover_seeds(
-            keywords=["k"], top_n=5, since_year=None,
+            keywords=["k"],
+            top_n=5,
+            since_year=None,
             use_openalex_fallback=False,
         )
         build_theme_lineage.discover_seeds(
-            keywords=["k"], top_n=5, since_year=None,
+            keywords=["k"],
+            top_n=5,
+            since_year=None,
             use_openalex_fallback=False,
         )
     # Two pipeline runs, but only one network call thanks to disk cache.
@@ -379,10 +378,7 @@ def _stub_external_calls(monkeypatch, *, classifier=None, chat_text=None, tmp_pa
     if chat_text is None:
         # Default: respond like a real provider — JSON object with relation
         # + rationale that the lenient classifier accepts.
-        chat_text = (
-            '{"relation": "extends", "confidence": 0.9, '
-            '"rationale": "既存手法の改善版"}'
-        )
+        chat_text = '{"relation": "extends", "confidence": 0.9, "rationale": "既存手法の改善版"}'
     provider = _FakeProvider(
         classification=rc,
         keyword_response=chat_text,
@@ -400,9 +396,7 @@ def _stub_external_calls(monkeypatch, *, classifier=None, chat_text=None, tmp_pa
     else:
         # Use a path that definitely won't exist so load returns {}.
         cache_path = Path("/nonexistent/classifications.json")
-    monkeypatch.setattr(
-        build_theme_lineage, "_CLASSIFICATION_CACHE_PATH", cache_path
-    )
+    monkeypatch.setattr(build_theme_lineage, "_CLASSIFICATION_CACHE_PATH", cache_path)
     return provider
 
 
@@ -572,7 +566,12 @@ def test_build_emits_slotfilled_rationale(tmp_path: Path, monkeypatch):
     assert bfs_edge is not None
     # #80: rel can be any of the heuristic-derived enums.
     assert bfs_edge["rel"] in {
-        "extends", "successor", "supersedes", "contrasts", "ablation", "baseline_only",
+        "extends",
+        "successor",
+        "supersedes",
+        "contrasts",
+        "ablation",
+        "baseline_only",
     }
     assert bfs_edge["rationale"], "rationale must not be empty"
     # #300: slot-filled — embeds the real titles + years, NOT a template.
@@ -895,19 +894,24 @@ def test_main_returns_3_when_zero_edges(tmp_path: Path, monkeypatch):
         ),
         patch.object(build_theme_lineage, "fetch_related", return_value=[parent]),
     ):
-        rc = build_theme_lineage.main([
-            "--theme", "X",
-            "--depth", "1",
-            "--seeds", "1",
-            "--width", "4",
-            "--output", str(tmp_path / "out.json"),
-        ])
+        rc = build_theme_lineage.main(
+            [
+                "--theme",
+                "X",
+                "--depth",
+                "1",
+                "--seeds",
+                "1",
+                "--width",
+                "4",
+                "--output",
+                str(tmp_path / "out.json"),
+            ]
+        )
     assert rc == 3, f"expected exit 3 on 0 edges, got {rc}"
 
 
-def test_build_prioritises_influential_parents_over_citation_count(
-    tmp_path: Path, monkeypatch
-):
+def test_build_prioritises_influential_parents_over_citation_count(tmp_path: Path, monkeypatch):
     """Issue #50 followup: the previous logic sorted by citationCount then
     filtered, so foundational papers (ResNet etc.) flagged isInfluential=
     false dominated the top-N and pushed real influential refs out of the
@@ -968,37 +972,29 @@ def test_is_trending_threshold():
     papers is the badge cut-off. Older classics (high lifetime cites,
     high lifetime velocity) are excluded so the badge means "hot now"."""
     # 2024 paper with 600 cites by 2026 = 300 cites/year → trending
-    assert build_theme_lineage._is_trending(
-        {"citationCount": 600, "year": 2024}, 2026
-    )
+    assert build_theme_lineage._is_trending({"citationCount": 600, "year": 2024}, 2026)
     # 2024 paper with 100 cites by 2026 = 50 cites/year → not trending
-    assert not build_theme_lineage._is_trending(
-        {"citationCount": 100, "year": 2024}, 2026
-    )
+    assert not build_theme_lineage._is_trending({"citationCount": 100, "year": 2024}, 2026)
     # Same-year preprint (uses the 0.5y floor) — 200 cites is fast.
     assert build_theme_lineage._is_trending(
-        {"citationCount": 200, "year": 2026}, 2026  # 200 / 0.5 = 400 → trending
+        {"citationCount": 200, "year": 2026},
+        2026,  # 200 / 0.5 = 400 → trending
     )
     # Established classic (ResNet 2015, 226k cites) — high velocity but
     # NOT trending because it's > 3 years old.
-    assert not build_theme_lineage._is_trending(
-        {"citationCount": 226_000, "year": 2015}, 2026
-    )
+    assert not build_theme_lineage._is_trending({"citationCount": 226_000, "year": 2015}, 2026)
     # Boundary: exactly 3 years old still counts.
     assert build_theme_lineage._is_trending(
-        {"citationCount": 700, "year": 2023}, 2026  # 700/3 = 233 → trending
+        {"citationCount": 700, "year": 2023},
+        2026,  # 700/3 = 233 → trending
     )
     # Missing year → never trending
     assert not build_theme_lineage._is_trending({"citationCount": 9999}, 2026)
     # Future year (S2 metadata oddity) → never trending
-    assert not build_theme_lineage._is_trending(
-        {"citationCount": 9999, "year": 2030}, 2026
-    )
+    assert not build_theme_lineage._is_trending({"citationCount": 9999, "year": 2030}, 2026)
 
 
-def test_build_skips_classify_for_non_influential_parents(
-    tmp_path: Path, monkeypatch
-):
+def test_build_skips_classify_for_non_influential_parents(tmp_path: Path, monkeypatch):
     """Issue #50: parents flagged isInfluential=false by S2 must skip the
     LLM classify call entirely — those are 'background only' refs that we
     don't want to spend Groq TPM on."""
@@ -1047,12 +1043,8 @@ def test_build_skips_classify_for_non_influential_parents(
     # Issue #53: derive_relation skips non-influential parents → no edge
     # for "p_no", but emits edges for the True / None branches.
     edge_srcs = {e["src"] for e in payload["edges"]}
-    assert "p_no" not in edge_srcs, (
-        "non-influential parent must NOT produce an edge"
-    )
-    assert "p_yes" in edge_srcs, (
-        "influential parent should produce an edge"
-    )
+    assert "p_no" not in edge_srcs, "non-influential parent must NOT produce an edge"
+    assert "p_yes" in edge_srcs, "influential parent should produce an edge"
     assert "p_unk" in edge_srcs, (
         "missing flag (older cache) must NOT be treated as a hard reject — "
         "fall back to extends so we don't regress on existing themes"
@@ -1076,13 +1068,20 @@ def test_main_returns_0_on_normal_build(tmp_path: Path, monkeypatch):
         ),
         patch.object(build_theme_lineage, "fetch_related", return_value=[parent]),
     ):
-        rc = build_theme_lineage.main([
-            "--theme", "X",
-            "--depth", "1",
-            "--seeds", "1",
-            "--width", "4",
-            "--output", str(tmp_path / "out.json"),
-        ])
+        rc = build_theme_lineage.main(
+            [
+                "--theme",
+                "X",
+                "--depth",
+                "1",
+                "--seeds",
+                "1",
+                "--width",
+                "4",
+                "--output",
+                str(tmp_path / "out.json"),
+            ]
+        )
     assert rc == 0, f"expected exit 0 on healthy build, got {rc}"
 
 
@@ -1118,22 +1117,33 @@ def test_auto_expand_retries_when_sparse(tmp_path: Path, monkeypatch):
         node_count = 5 if len(call_log) == 1 else 25
         edge_count = 2 if len(call_log) == 1 else 30
         out = tmp_path / "out.json"
-        out.write_text(json.dumps({
-            "nodes": [{"id": f"n{i}"} for i in range(node_count)],
-            "edges": [{"src": f"n{i}", "dst": f"n{i+1}"} for i in range(edge_count)],
-        }))
+        out.write_text(
+            json.dumps(
+                {
+                    "nodes": [{"id": f"n{i}"} for i in range(node_count)],
+                    "edges": [{"src": f"n{i}", "dst": f"n{i + 1}"} for i in range(edge_count)],
+                }
+            )
+        )
         return out
 
     monkeypatch.setattr(build_theme_lineage, "build_theme_lineage", fake_build)
 
-    rc = build_theme_lineage.main([
-        "--theme", "Mixture of Depths",
-        "--depth", "1",
-        "--seeds", "5",
-        "--width", "8",
-        "--auto-expand",
-        "--output", str(tmp_path / "out.json"),
-    ])
+    rc = build_theme_lineage.main(
+        [
+            "--theme",
+            "Mixture of Depths",
+            "--depth",
+            "1",
+            "--seeds",
+            "5",
+            "--width",
+            "8",
+            "--auto-expand",
+            "--output",
+            str(tmp_path / "out.json"),
+        ]
+    )
     assert rc == 0
     assert len(call_log) == 2, f"expected 2 builds, got {len(call_log)}: {call_log}"
     # First call: workflow defaults.
@@ -1155,20 +1165,33 @@ def test_auto_expand_skips_retry_when_dense_enough(tmp_path: Path, monkeypatch):
     def fake_build(*, theme, depth, seeds_count, width, **kwargs):
         call_count[0] += 1
         out = tmp_path / "out.json"
-        out.write_text(json.dumps({
-            "nodes": [{"id": f"n{i}"} for i in range(40)],
-            "edges": [{"src": f"n{i}", "dst": f"n{i+1}"} for i in range(50)],
-        }))
+        out.write_text(
+            json.dumps(
+                {
+                    "nodes": [{"id": f"n{i}"} for i in range(40)],
+                    "edges": [{"src": f"n{i}", "dst": f"n{i + 1}"} for i in range(50)],
+                }
+            )
+        )
         return out
 
     monkeypatch.setattr(build_theme_lineage, "build_theme_lineage", fake_build)
 
-    rc = build_theme_lineage.main([
-        "--theme", "Mamba",
-        "--depth", "1", "--seeds", "5", "--width", "8",
-        "--auto-expand",
-        "--output", str(tmp_path / "out.json"),
-    ])
+    rc = build_theme_lineage.main(
+        [
+            "--theme",
+            "Mamba",
+            "--depth",
+            "1",
+            "--seeds",
+            "5",
+            "--width",
+            "8",
+            "--auto-expand",
+            "--output",
+            str(tmp_path / "out.json"),
+        ]
+    )
     assert rc == 0
     assert call_count[0] == 1
 
@@ -1192,11 +1215,20 @@ def test_auto_expand_off_by_default(tmp_path: Path, monkeypatch):
 
     monkeypatch.setattr(build_theme_lineage, "build_theme_lineage", fake_build)
 
-    rc = build_theme_lineage.main([
-        "--theme", "Some Sparse Topic",
-        "--depth", "1", "--seeds", "5", "--width", "8",
-        "--output", str(tmp_path / "out.json"),
-    ])
+    rc = build_theme_lineage.main(
+        [
+            "--theme",
+            "Some Sparse Topic",
+            "--depth",
+            "1",
+            "--seeds",
+            "5",
+            "--width",
+            "8",
+            "--output",
+            str(tmp_path / "out.json"),
+        ]
+    )
     # No --auto-expand → original behaviour: exit 3, no retry.
     assert call_count[0] == 1
     assert rc == 3
@@ -1216,9 +1248,14 @@ def test_auto_expand_handles_retry_failure(tmp_path: Path, monkeypatch, capsys):
         call_count[0] += 1
         if call_count[0] == 1:
             out = tmp_path / "out.json"
-            out.write_text(json.dumps({
-                "nodes": [{"id": "n0"}], "edges": [{"src": "n0", "dst": "n1"}],
-            }))
+            out.write_text(
+                json.dumps(
+                    {
+                        "nodes": [{"id": "n0"}],
+                        "edges": [{"src": "n0", "dst": "n1"}],
+                    }
+                )
+            )
             return out
         # Second invocation (the retry) raises — simulate Groq quota
         # blow-up mid-bulk.
@@ -1226,12 +1263,21 @@ def test_auto_expand_handles_retry_failure(tmp_path: Path, monkeypatch, capsys):
 
     monkeypatch.setattr(build_theme_lineage, "build_theme_lineage", fake_build)
 
-    rc = build_theme_lineage.main([
-        "--theme", "Theme",
-        "--depth", "1", "--seeds", "5", "--width", "8",
-        "--auto-expand",
-        "--output", str(tmp_path / "out.json"),
-    ])
+    rc = build_theme_lineage.main(
+        [
+            "--theme",
+            "Theme",
+            "--depth",
+            "1",
+            "--seeds",
+            "5",
+            "--width",
+            "8",
+            "--auto-expand",
+            "--output",
+            str(tmp_path / "out.json"),
+        ]
+    )
     # The first pass had 1 edge → exit 0; the retry failure is logged,
     # not propagated as a crash.
     assert call_count[0] == 2
@@ -1354,7 +1400,8 @@ def test_derive_relation_intents_take_precedence_over_heuristic():
     parent = {
         "_is_influential": True,
         "_intents": ["methodology"],
-        "year": 2020, "citationCount": 1000,
+        "year": 2020,
+        "citationCount": 1000,
     }
     child = {"year": 2024, "citationCount": 5000}  # would normally → supersedes
     rel = build_theme_lineage.derive_relation(parent, parent=parent, child=child)
@@ -1415,9 +1462,7 @@ def test_derive_relation_no_signal_drops_in_off_mode_without_llm():
     provider = _StubProvider(
         RelationClassification(relation="extends", confidence=0.9, rationale="x")
     )
-    rel = build_theme_lineage.derive_relation(
-        parent, provider=provider, strict_mode="off"
-    )
+    rel = build_theme_lineage.derive_relation(parent, provider=provider, strict_mode="off")
     assert rel is None
     assert provider.classify_calls == [], (
         "LLM must NOT be called in strict_mode='off' — that's the whole point"
@@ -1469,9 +1514,7 @@ def test_derive_relation_no_signal_drops_when_llm_returns_none():
 def test_derive_relation_no_signal_drops_when_llm_says_unrelated():
     """LLM positively rejects the relation → drop the edge."""
     parent = {"_is_influential": True, "_intents": None}
-    llm = RelationClassification(
-        relation="unrelated", confidence=0.95, rationale="無関係"
-    )
+    llm = RelationClassification(relation="unrelated", confidence=0.95, rationale="無関係")
     provider = _StubProvider(llm)
     rel = build_theme_lineage.derive_relation(
         parent,
@@ -1489,9 +1532,7 @@ def test_derive_relation_no_signal_drops_low_confidence_llm():
     "I read the abstracts and the connection is weak"; emitting the
     edge with a confident-looking style would mislead the reader."""
     parent = {"_is_influential": True, "_intents": None}
-    llm = RelationClassification(
-        relation="extends", confidence=0.3, rationale="弱い関連"
-    )
+    llm = RelationClassification(relation="extends", confidence=0.3, rationale="弱い関連")
     provider = _StubProvider(llm)
     rel = build_theme_lineage.derive_relation(
         parent,
@@ -1536,9 +1577,9 @@ def test_classify_from_contexts_returns_none_on_empty():
 
 def test_classify_from_contexts_detects_supersedes_via_outperform():
     """Priority 1 pattern: 'outperforms [X]' → supersedes."""
-    result = build_theme_lineage._classify_from_contexts([
-        "Our system outperforms [42] by 5 points on COCO."
-    ])
+    result = build_theme_lineage._classify_from_contexts(
+        ["Our system outperforms [42] by 5 points on COCO."]
+    )
     assert result is not None
     assert result["relation"] == "supersedes"
     assert result["confidence"] == 0.88
@@ -1547,9 +1588,9 @@ def test_classify_from_contexts_detects_supersedes_via_outperform():
 
 def test_classify_from_contexts_detects_contrasts_via_unlike():
     """Priority 2 pattern: 'unlike [X]' → contrasts."""
-    result = build_theme_lineage._classify_from_contexts([
-        "Unlike [Smith 2020], we use a hierarchical attention."
-    ])
+    result = build_theme_lineage._classify_from_contexts(
+        ["Unlike [Smith 2020], we use a hierarchical attention."]
+    )
     assert result is not None
     assert result["relation"] == "contrasts"
 
@@ -1586,9 +1627,7 @@ def test_classify_from_contexts_based_on_requires_self_reference():
         # baseline_only from 'evaluated'); the assertion only pins the
         # absence of false-positive extends.
         if result is not None:
-            assert result["relation"] != "extends", (
-                f"false-positive extends on: {non_extending!r}"
-            )
+            assert result["relation"] != "extends", f"false-positive extends on: {non_extending!r}"
 
 
 def test_enrich_parent_with_unarxive_routes_citing_arxiv(monkeypatch):
@@ -1606,9 +1645,7 @@ def test_enrich_parent_with_unarxive_routes_citing_arxiv(monkeypatch):
 
     monkeypatch.setattr(unarxive_mod, "fetch_contexts", fake_fetch)
     parent = {"paperId": "openalex:W42", "externalIds": {"ArXiv": "unused"}}
-    result = build_theme_lineage._enrich_parent_with_unarxive(
-        parent, citing_arxiv_id="2010.11929"
-    )
+    result = build_theme_lineage._enrich_parent_with_unarxive(parent, citing_arxiv_id="2010.11929")
     assert captured["child_arxiv_id"] == "2010.11929"
     assert captured["parent_openalex_id"] == "openalex:W42"
     assert result["_contexts"] == ["sample paragraph"]
@@ -1664,9 +1701,9 @@ def test_classify_from_contexts_priority_supersedes_over_extends():
     """Sentence matching multiple patterns: supersedes (priority 1)
     wins over extends (priority 3). Pin so a future refactor can't
     accidentally reorder."""
-    result = build_theme_lineage._classify_from_contexts([
-        "We extend [42] and outperform their reported result."
-    ])
+    result = build_theme_lineage._classify_from_contexts(
+        ["We extend [42] and outperform their reported result."]
+    )
     assert result is not None
     assert result["relation"] == "supersedes"
 
@@ -1691,21 +1728,20 @@ def test_classify_from_contexts_truncates_long_paragraphs():
     long_text = "we build on [42]. " + "filler " * 100
     result = build_theme_lineage._classify_from_contexts([long_text])
     assert result is not None
-    assert (
-        len(result["rationale"])
-        <= build_theme_lineage._MAX_CONTEXT_RATIONALE_LEN
-    )
+    assert len(result["rationale"]) <= build_theme_lineage._MAX_CONTEXT_RATIONALE_LEN
     assert result["rationale"].endswith("…")
 
 
 def test_classify_from_contexts_skips_non_string_entries():
     """Defensive: contexts list may contain None / dicts from
     malformed cache; the classifier ignores them and continues."""
-    result = build_theme_lineage._classify_from_contexts([
-        None,  # type: ignore[list-item]
-        {"oops": "bad shape"},  # type: ignore[list-item]
-        "outperforms [12]",
-    ])
+    result = build_theme_lineage._classify_from_contexts(
+        [
+            None,  # type: ignore[list-item]
+            {"oops": "bad shape"},  # type: ignore[list-item]
+            "outperforms [12]",
+        ]
+    )
     assert result is not None
     assert result["relation"] == "supersedes"
 
@@ -1718,15 +1754,11 @@ def test_derive_relation_uses_context_when_available():
     record = {
         "_is_influential": True,
         "_intents": None,  # OpenAlex source has no intent
-        "_contexts": [
-            "We build on the spectral approach of [Defferrard 2016]."
-        ],
+        "_contexts": ["We build on the spectral approach of [Defferrard 2016]."],
     }
     # Even with a provider that would return template, contexts win.
     provider = _StubProvider(
-        RelationClassification(
-            relation="extends", confidence=0.95, rationale="LLM template"
-        )
+        RelationClassification(relation="extends", confidence=0.95, rationale="LLM template")
     )
     edge = build_theme_lineage.derive_relation(
         record,
@@ -1792,9 +1824,7 @@ def test_apply_llm_classification_drops_low_confidence_llm():
         "confidence": 0.7,
         "rationale": "heuristic",
     }
-    llm = RelationClassification(
-        relation="extends", confidence=0.25, rationale="weak"
-    )
+    llm = RelationClassification(relation="extends", confidence=0.25, rationale="weak")
     assert build_theme_lineage._apply_llm_classification(heuristic, llm) is None
 
 
@@ -1979,14 +2009,10 @@ def test_build_adds_cross_node_edges(tmp_path: Path, monkeypatch):
     # BFS edge: p_s2 → seed2 (parent of seed2)
     assert ("p_s2", "seed2") in edge_pairs
     # Cross-node edge: seed2 → seed1 (because seed1 cites seed2)
-    assert ("seed2", "seed1") in edge_pairs, (
-        f"cross-node should add seed2→seed1, got: {edge_pairs}"
-    )
+    assert ("seed2", "seed1") in edge_pairs, f"cross-node should add seed2→seed1, got: {edge_pairs}"
 
 
-def test_build_cross_node_does_not_duplicate_existing_edges(
-    tmp_path: Path, monkeypatch
-):
+def test_build_cross_node_does_not_duplicate_existing_edges(tmp_path: Path, monkeypatch):
     """If BFS already produced (parent → seed), the cross-node pass must
     NOT add a duplicate when the same parent shows up in references."""
     _patch_env(monkeypatch)
@@ -2034,9 +2060,7 @@ def test_build_cross_node_does_not_duplicate_existing_edges(
     )
 
 
-def test_build_cross_node_skips_non_influential_in_graph_refs(
-    tmp_path: Path, monkeypatch
-):
+def test_build_cross_node_skips_non_influential_in_graph_refs(tmp_path: Path, monkeypatch):
     """isInfluential=False refs in the cross-node pass must be dropped
     just like in BFS — derive_relation returns None for them."""
     _patch_env(monkeypatch)
@@ -2132,7 +2156,10 @@ def test_enrich_github_stars_skips_nodes_without_arxiv_id(tmp_path, monkeypatch)
     search = MagicMock(return_value=None)
     fetch = MagicMock(return_value=None)
     enriched = build_theme_lineage._enrich_github_stars(
-        nodes, curated={}, search_repo=search, fetch_stars=fetch,
+        nodes,
+        curated={},
+        search_repo=search,
+        fetch_stars=fetch,
     )
     assert enriched == 0
     search.assert_not_called()
@@ -2144,7 +2171,8 @@ def test_enrich_github_stars_uses_curated_map_first(tmp_path, monkeypatch):
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
     nodes = {
         "p1": {
-            "id": "p1", "github_stars": 0,
+            "id": "p1",
+            "github_stars": 0,
             "arxiv_id": "2304.02643",
             "title": "Segment Anything",
         },
@@ -2155,13 +2183,14 @@ def test_enrich_github_stars_uses_curated_map_first(tmp_path, monkeypatch):
     )
     search_mock = MagicMock(side_effect=search)
     enriched = build_theme_lineage._enrich_github_stars(
-        nodes, curated=curated, search_repo=search_mock, fetch_stars=fetch,
+        nodes,
+        curated=curated,
+        search_repo=search_mock,
+        fetch_stars=fetch,
     )
     assert enriched == 1
     assert nodes["p1"]["github_stars"] == 46000
-    assert nodes["p1"]["github_url"] == (
-        "https://github.com/facebookresearch/segment-anything"
-    )
+    assert nodes["p1"]["github_url"] == ("https://github.com/facebookresearch/segment-anything")
     # Curated hit short-circuits the search call.
     search_mock.assert_not_called()
 
@@ -2171,7 +2200,8 @@ def test_enrich_github_stars_falls_back_to_search(tmp_path, monkeypatch):
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
     nodes = {
         "p1": {
-            "id": "p1", "github_stars": 0,
+            "id": "p1",
+            "github_stars": 0,
             "arxiv_id": "9999.99999",
             "title": "Some Niche Paper",
         },
@@ -2182,7 +2212,10 @@ def test_enrich_github_stars_falls_back_to_search(tmp_path, monkeypatch):
         stars_by_repo={"owner/some-niche-paper": 12},
     )
     enriched = build_theme_lineage._enrich_github_stars(
-        nodes, curated=curated, search_repo=search, fetch_stars=fetch,
+        nodes,
+        curated=curated,
+        search_repo=search,
+        fetch_stars=fetch,
     )
     assert enriched == 1
     assert nodes["p1"]["github_stars"] == 12
@@ -2198,7 +2231,10 @@ def test_enrich_github_stars_caches_results_to_disk(tmp_path, monkeypatch):
         stars_by_repo={"x/y": 42},
     )
     build_theme_lineage._enrich_github_stars(
-        nodes, curated=curated, search_repo=search, fetch_stars=fetch,
+        nodes,
+        curated=curated,
+        search_repo=search,
+        fetch_stars=fetch,
     )
     cache = json.loads((tmp_path / "github_stars.json").read_text())
     assert "1610.04256" in cache
@@ -2208,25 +2244,31 @@ def test_enrich_github_stars_caches_results_to_disk(tmp_path, monkeypatch):
     assert entry["fetched_at"]  # ISO timestamp
 
 
-def test_enrich_github_stars_uses_fresh_cache_without_resolving(
-    tmp_path, monkeypatch
-):
+def test_enrich_github_stars_uses_fresh_cache_without_resolving(tmp_path, monkeypatch):
     """A within-TTL cache hit must short-circuit both curated and search."""
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
     from datetime import datetime, timezone
+
     fresh_ts = datetime.now(timezone.utc).isoformat()
-    (tmp_path / "github_stars.json").write_text(json.dumps({
-        "2103.00020": {
-            "stars": 999,
-            "url": "https://github.com/cached/repo",
-            "fetched_at": fresh_ts,
-        }
-    }))
+    (tmp_path / "github_stars.json").write_text(
+        json.dumps(
+            {
+                "2103.00020": {
+                    "stars": 999,
+                    "url": "https://github.com/cached/repo",
+                    "fetched_at": fresh_ts,
+                }
+            }
+        )
+    )
     nodes = {"p1": {"id": "p1", "arxiv_id": "2103.00020", "github_stars": 0}}
     search = MagicMock()
     fetch = MagicMock()
     enriched = build_theme_lineage._enrich_github_stars(
-        nodes, curated={}, search_repo=search, fetch_stars=fetch,
+        nodes,
+        curated={},
+        search_repo=search,
+        fetch_stars=fetch,
     )
     assert enriched == 1
     assert nodes["p1"]["github_stars"] == 999
@@ -2242,29 +2284,37 @@ def test_enrich_github_stars_drops_poisoned_cache_url(tmp_path, monkeypatch):
     before being assigned to the node."""
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
     from datetime import datetime, timezone
+
     fresh_ts = datetime.now(timezone.utc).isoformat()
-    (tmp_path / "github_stars.json").write_text(json.dumps({
-        # Stars value is real but the URL has been swapped for a
-        # ``javascript:`` payload — the kind of thing a poisoned cache
-        # could contain.
-        "1234.5678": {
-            "stars": 42,
-            "url": "javascript:alert('xss')",
-            "fetched_at": fresh_ts,
-        },
-        # A separately poisoned entry pointing at a non-github host.
-        "9999.99": {
-            "stars": 99,
-            "url": "https://evil.example.com/owner/repo",
-            "fetched_at": fresh_ts,
-        },
-    }))
+    (tmp_path / "github_stars.json").write_text(
+        json.dumps(
+            {
+                # Stars value is real but the URL has been swapped for a
+                # ``javascript:`` payload — the kind of thing a poisoned cache
+                # could contain.
+                "1234.5678": {
+                    "stars": 42,
+                    "url": "javascript:alert('xss')",
+                    "fetched_at": fresh_ts,
+                },
+                # A separately poisoned entry pointing at a non-github host.
+                "9999.99": {
+                    "stars": 99,
+                    "url": "https://evil.example.com/owner/repo",
+                    "fetched_at": fresh_ts,
+                },
+            }
+        )
+    )
     nodes = {
         "a": {"id": "a", "arxiv_id": "1234.5678", "github_stars": 0},
         "b": {"id": "b", "arxiv_id": "9999.99", "github_stars": 0},
     }
     enriched = build_theme_lineage._enrich_github_stars(
-        nodes, curated={}, search_repo=MagicMock(), fetch_stars=MagicMock(),
+        nodes,
+        curated={},
+        search_repo=MagicMock(),
+        fetch_stars=MagicMock(),
     )
     # Stars survive (cache value is still useful) but the malformed
     # URLs are dropped so they cannot reach the rendered viewer.
@@ -2279,37 +2329,46 @@ def test_enrich_github_stars_refreshes_stale_cache(tmp_path, monkeypatch):
     """Cache entries older than the TTL must be refetched, not used."""
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
     from datetime import datetime, timedelta, timezone
+
     stale_ts = (datetime.now(timezone.utc) - timedelta(days=30)).isoformat()
-    (tmp_path / "github_stars.json").write_text(json.dumps({
-        "1706.03762": {
-            "stars": 100,
-            "url": "https://github.com/old/repo",
-            "fetched_at": stale_ts,
-        }
-    }))
+    (tmp_path / "github_stars.json").write_text(
+        json.dumps(
+            {
+                "1706.03762": {
+                    "stars": 100,
+                    "url": "https://github.com/old/repo",
+                    "fetched_at": stale_ts,
+                }
+            }
+        )
+    )
     nodes = {"p1": {"id": "p1", "arxiv_id": "1706.03762", "github_stars": 0}}
     curated, search, fetch = _make_fake_resolvers(
         repos_by_ax={"1706.03762": "new/repo"},
         stars_by_repo={"new/repo": 5000},
     )
     enriched = build_theme_lineage._enrich_github_stars(
-        nodes, curated=curated, search_repo=search, fetch_stars=fetch,
+        nodes,
+        curated=curated,
+        search_repo=search,
+        fetch_stars=fetch,
     )
     assert enriched == 1
     assert nodes["p1"]["github_stars"] == 5000  # fresh, not stale 100
     assert nodes["p1"]["github_url"] == "https://github.com/new/repo"
 
 
-def test_enrich_github_stars_caches_zero_when_no_repo_found(
-    tmp_path, monkeypatch
-):
+def test_enrich_github_stars_caches_zero_when_no_repo_found(tmp_path, monkeypatch):
     """Papers neither in the curated map nor matched by search must be
     cached as stars=0 so we don't re-query them every week."""
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
     nodes = {"p1": {"id": "p1", "arxiv_id": "1234.5678", "github_stars": 0}}
     curated, search, fetch = _make_fake_resolvers()  # all empty
     enriched = build_theme_lineage._enrich_github_stars(
-        nodes, curated=curated, search_repo=search, fetch_stars=fetch,
+        nodes,
+        curated=curated,
+        search_repo=search,
+        fetch_stars=fetch,
     )
     assert enriched == 0
     cache = json.loads((tmp_path / "github_stars.json").read_text())
@@ -2324,7 +2383,10 @@ def test_enrich_github_stars_no_op_when_no_arxiv_nodes(tmp_path, monkeypatch):
     search = MagicMock()
     fetch = MagicMock()
     enriched = build_theme_lineage._enrich_github_stars(
-        nodes, curated={}, search_repo=search, fetch_stars=fetch,
+        nodes,
+        curated={},
+        search_repo=search,
+        fetch_stars=fetch,
     )
     assert enriched == 0
     search.assert_not_called()
@@ -2375,16 +2437,15 @@ def test_enrich_github_stars_invoked_by_pipeline(tmp_path, monkeypatch):
     monkeypatch.setattr(build_theme_lineage, "_enrich_github_stars", fake_enrich)
 
     with (
-        patch.object(
-            build_theme_lineage, "request_with_retry", side_effect=fake_rwr
-        ),
-        patch.object(
-            build_theme_lineage, "fetch_related", return_value=[parent]
-        ),
+        patch.object(build_theme_lineage, "request_with_retry", side_effect=fake_rwr),
+        patch.object(build_theme_lineage, "fetch_related", return_value=[parent]),
     ):
         out_path = build_theme_lineage.build_theme_lineage(
             theme="Mixture of Experts",
-            depth=1, seeds_count=1, width=2, since_year=None,
+            depth=1,
+            seeds_count=1,
+            width=2,
+            since_year=None,
         )
 
     assert captured.get("called") is True
@@ -2407,15 +2468,16 @@ def test_enrich_github_stars_handles_corrupt_cache_file(tmp_path, monkeypatch):
         stars_by_repo={"a/b": 7},
     )
     enriched = build_theme_lineage._enrich_github_stars(
-        nodes, curated=curated, search_repo=search, fetch_stars=fetch,
+        nodes,
+        curated=curated,
+        search_repo=search,
+        fetch_stars=fetch,
     )
     assert enriched == 1
     assert nodes["p1"]["github_stars"] == 7
 
 
-def test_enrich_github_stars_does_not_cache_papers_past_budget(
-    tmp_path, monkeypatch
-):
+def test_enrich_github_stars_does_not_cache_papers_past_budget(tmp_path, monkeypatch):
     """Papers past max_lookups must NOT be stamped 0 in the cache.
 
     Otherwise the entry would be suppressed for the full TTL window
@@ -2437,8 +2499,11 @@ def test_enrich_github_stars_does_not_cache_papers_past_budget(
     )
     fetch_mock = MagicMock(side_effect=fetch)
     build_theme_lineage._enrich_github_stars(
-        nodes, max_lookups=1, curated=curated,
-        search_repo=search, fetch_stars=fetch_mock,
+        nodes,
+        max_lookups=1,
+        curated=curated,
+        search_repo=search,
+        fetch_stars=fetch_mock,
     )
     assert fetch_mock.call_count == 1  # only the first paper resolved
     cache = json.loads((tmp_path / "github_stars.json").read_text())
@@ -2455,9 +2520,7 @@ def test_enrich_github_stars_does_not_cache_papers_past_budget(
 # stay here because they are theme-pipeline specific.
 
 
-def test_enrich_github_stars_counts_curated_and_search_separately(
-    tmp_path, monkeypatch, caplog
-):
+def test_enrich_github_stars_counts_curated_and_search_separately(tmp_path, monkeypatch, caplog):
     """Resolution-path counters must reflect WHERE the repo came from,
     not whether the eventual fetch returned > 0 stars. A curated repo
     that returned 0 stars must still count as a curated hit so the log
@@ -2475,7 +2538,10 @@ def test_enrich_github_stars_counts_curated_and_search_separately(
     )
     with caplog.at_level(logging.INFO, logger="paperpilot.scripts.build_theme_lineage"):
         build_theme_lineage._enrich_github_stars(
-            nodes, curated=curated, search_repo=search, fetch_stars=fetch,
+            nodes,
+            curated=curated,
+            search_repo=search,
+            fetch_stars=fetch,
         )
     log = " ".join(r.message for r in caplog.records)
     # Curated hit counts even when stars=0 — this is the regression guard.
@@ -2608,7 +2674,9 @@ def test_openalex_fallback_skipped_when_s2_meets_quota(tmp_path, monkeypatch):
 
     with patch.object(build_theme_lineage, "request_with_retry", side_effect=fake_rwr):
         seeds = build_theme_lineage.discover_seeds(
-            keywords=["x"], top_n=5, since_year=None,
+            keywords=["x"],
+            top_n=5,
+            since_year=None,
         )
 
     assert len(seeds) == 5
@@ -2635,7 +2703,9 @@ def test_openalex_fallback_invoked_when_s2_returns_partial(tmp_path, monkeypatch
 
     with patch.object(build_theme_lineage, "request_with_retry", side_effect=fake_rwr):
         seeds = build_theme_lineage.discover_seeds(
-            keywords=["x"], top_n=5, since_year=None,
+            keywords=["x"],
+            top_n=5,
+            since_year=None,
         )
 
     assert {s["paperId"] for s in seeds} == {"p_s2", "p_oa_resolved"}
@@ -2658,7 +2728,9 @@ def test_openalex_search_includes_polite_pool_email(tmp_path, monkeypatch):
 
     with patch.object(build_theme_lineage, "request_with_retry", side_effect=fake_rwr):
         build_theme_lineage.discover_seeds(
-            keywords=["x"], top_n=5, since_year=None,
+            keywords=["x"],
+            top_n=5,
+            since_year=None,
             openalex_email="research@example.com",
         )
 
@@ -2681,7 +2753,9 @@ def test_openalex_search_filters_by_since_year(tmp_path, monkeypatch):
 
     with patch.object(build_theme_lineage, "request_with_retry", side_effect=fake_rwr):
         build_theme_lineage.discover_seeds(
-            keywords=["x"], top_n=5, since_year=2020,
+            keywords=["x"],
+            top_n=5,
+            since_year=2020,
         )
 
     flt = captured.get("filter") or ""
@@ -2708,7 +2782,9 @@ def test_openalex_handles_empty_results(tmp_path, monkeypatch):
 
     with patch.object(build_theme_lineage, "request_with_retry", side_effect=fake_rwr):
         seeds = build_theme_lineage.discover_seeds(
-            keywords=["x"], top_n=5, since_year=None,
+            keywords=["x"],
+            top_n=5,
+            since_year=None,
         )
 
     assert seeds == []
@@ -2733,7 +2809,9 @@ def test_openalex_handles_failure_gracefully(tmp_path, monkeypatch):
 
     with patch.object(build_theme_lineage, "request_with_retry", side_effect=fake_rwr):
         seeds = build_theme_lineage.discover_seeds(
-            keywords=["x"], top_n=5, since_year=None,
+            keywords=["x"],
+            top_n=5,
+            since_year=None,
         )
 
     assert seeds == []
@@ -2759,14 +2837,14 @@ def test_resolve_to_s2_batch_uses_doi_prefix(tmp_path, monkeypatch):
             return _mk_openalex_response(oa_works)
         if "/paper/batch" in url:
             captured_body.update(kw.get("json_body") or {})
-            return _mk_s2_batch_response(
-                [_mk_s2_paper("p1"), _mk_s2_paper("p2")]
-            )
+            return _mk_s2_batch_response([_mk_s2_paper("p1"), _mk_s2_paper("p2")])
         return MagicMock(status_code=404, json=lambda: {})
 
     with patch.object(build_theme_lineage, "request_with_retry", side_effect=fake_rwr):
         build_theme_lineage.discover_seeds(
-            keywords=["x"], top_n=5, since_year=None,
+            keywords=["x"],
+            top_n=5,
+            since_year=None,
         )
 
     ids = captured_body.get("ids") or []
@@ -2793,7 +2871,9 @@ def test_resolve_to_s2_batch_handles_429(tmp_path, monkeypatch):
 
     with patch.object(build_theme_lineage, "request_with_retry", side_effect=fake_rwr):
         seeds = build_theme_lineage.discover_seeds(
-            keywords=["x"], top_n=5, since_year=None,
+            keywords=["x"],
+            top_n=5,
+            since_year=None,
         )
 
     assert seeds == []
@@ -2814,7 +2894,9 @@ def test_no_openalex_fallback_flag_disables_fallback(tmp_path, monkeypatch):
 
     with patch.object(build_theme_lineage, "request_with_retry", side_effect=fake_rwr):
         seeds = build_theme_lineage.discover_seeds(
-            keywords=["x"], top_n=5, since_year=None,
+            keywords=["x"],
+            top_n=5,
+            since_year=None,
             use_openalex_fallback=False,
         )
 
@@ -2843,7 +2925,9 @@ def test_openalex_fallback_skips_works_without_doi(tmp_path, monkeypatch):
 
     with patch.object(build_theme_lineage, "request_with_retry", side_effect=fake_rwr):
         build_theme_lineage.discover_seeds(
-            keywords=["x"], top_n=5, since_year=None,
+            keywords=["x"],
+            top_n=5,
+            since_year=None,
         )
 
     ids = captured_body.get("ids") or []
@@ -2882,7 +2966,9 @@ def test_openalex_fallback_dedups_against_s2_seeds(tmp_path, monkeypatch):
 
     with patch.object(build_theme_lineage, "request_with_retry", side_effect=fake_rwr):
         seeds = build_theme_lineage.discover_seeds(
-            keywords=["x"], top_n=5, since_year=None,
+            keywords=["x"],
+            top_n=5,
+            since_year=None,
         )
 
     paper_ids = [s["paperId"] for s in seeds]
@@ -2920,7 +3006,11 @@ def test_build_pipeline_passes_openalex_email_from_env(tmp_path, monkeypatch):
         patch.object(build_theme_lineage, "fetch_related", return_value=[]),
     ):
         build_theme_lineage.build_theme_lineage(
-            theme="Test", depth=1, seeds_count=1, width=4, since_year=None,
+            theme="Test",
+            depth=1,
+            seeds_count=1,
+            width=4,
+            since_year=None,
         )
 
     assert captured.get("openalex_email") == "researcher@example.com"
@@ -2988,16 +3078,17 @@ def test_filter_topic_relevant_seeds_multi_word_theme():
     whose title+abstract mention none of the (3+ char) theme words."""
     seeds = [
         # 3/3 words match the title → keep
-        _mk_s2_paper("relevant", title="A Graph Neural Network for X",
-                     abstract="we propose a GNN to ..."),
+        _mk_s2_paper(
+            "relevant", title="A Graph Neural Network for X", abstract="we propose a GNN to ..."
+        ),
         # 0/3 words match anywhere → drop (the Pandas paper bug)
-        _mk_s2_paper("irrelevant",
-                     title="Data Structures for Statistical Computing",
-                     abstract="Practical issues of working with data sets..."),
+        _mk_s2_paper(
+            "irrelevant",
+            title="Data Structures for Statistical Computing",
+            abstract="Practical issues of working with data sets...",
+        ),
     ]
-    kept = build_theme_lineage._filter_topic_relevant_seeds(
-        seeds, theme="Graph Neural Network"
-    )
+    kept = build_theme_lineage._filter_topic_relevant_seeds(seeds, theme="Graph Neural Network")
     ids = [s["paperId"] for s in kept]
     assert "relevant" in ids
     assert "irrelevant" not in ids
@@ -3024,8 +3115,11 @@ def test_filter_topic_relevant_seeds_partial_word_match():
     if the word 'Direct' doesn't appear."""
     seeds = [
         # 2/3 words ("preference", "optimization") match → keep at 50% threshold
-        _mk_s2_paper("partial", title="Preference Optimization without DPO",
-                     abstract="we revisit preference optimization without ..."),
+        _mk_s2_paper(
+            "partial",
+            title="Preference Optimization without DPO",
+            abstract="we revisit preference optimization without ...",
+        ),
     ]
     kept = build_theme_lineage._filter_topic_relevant_seeds(
         seeds, theme="Direct Preference Optimization"
@@ -3067,12 +3161,8 @@ def test_is_survey_detects_prefix_form():
 
 def test_is_survey_detects_colon_form():
     """`Foo: A Survey` colon-suffix form."""
-    assert build_theme_lineage._is_survey(
-        {"title": "Graph Neural Networks: A Survey"}
-    )
-    assert build_theme_lineage._is_survey(
-        {"title": "Mixture of Experts: A Review"}
-    )
+    assert build_theme_lineage._is_survey({"title": "Graph Neural Networks: A Survey"})
+    assert build_theme_lineage._is_survey({"title": "Mixture of Experts: A Review"})
 
 
 def test_is_survey_does_not_false_positive_on_seminal_works():
@@ -3146,18 +3236,27 @@ def test_rank_and_truncate_promotes_seminal_over_survey():
     "A Survey of GNN" (2021, 6k) despite the survey being highly
     cited. Pre-#209 raw-cites would have had the survey winning."""
     seeds = [
-        _mk_s2_paper("survey", title="A Comprehensive Survey of Graph Neural Networks",
-                     year=2021, cites=6_000),
-        _mk_s2_paper("gcn", title="Semi-Supervised Classification with Graph Convolutional Networks",
-                     year=2017, cites=30_000),
-        _mk_s2_paper("gat", title="Graph Attention Networks",
-                     year=2017, cites=15_000),
-        _mk_s2_paper("graphsage", title="Inductive Representation Learning on Large Graphs",
-                     year=2017, cites=12_000),
+        _mk_s2_paper(
+            "survey",
+            title="A Comprehensive Survey of Graph Neural Networks",
+            year=2021,
+            cites=6_000,
+        ),
+        _mk_s2_paper(
+            "gcn",
+            title="Semi-Supervised Classification with Graph Convolutional Networks",
+            year=2017,
+            cites=30_000,
+        ),
+        _mk_s2_paper("gat", title="Graph Attention Networks", year=2017, cites=15_000),
+        _mk_s2_paper(
+            "graphsage",
+            title="Inductive Representation Learning on Large Graphs",
+            year=2017,
+            cites=12_000,
+        ),
     ]
-    ranked = build_theme_lineage._rank_and_truncate(
-        seeds, top_n=4, since_year=2015
-    )
+    ranked = build_theme_lineage._rank_and_truncate(seeds, top_n=4, since_year=2015)
     # Survey must not be #1.
     assert ranked[0]["paperId"] != "survey"
     # GCN should still be #1 even after age penalty (30k / 9y ~= 3333 >>
@@ -3183,9 +3282,7 @@ def test_filter_theme_blacklist_drops_listed_substrings():
             abstract="state space models for long sequences",
         ),
     ]
-    kept = build_theme_lineage._filter_theme_blacklist(
-        seeds, theme="State Space Model"
-    )
+    kept = build_theme_lineage._filter_theme_blacklist(seeds, theme="State Space Model")
     assert [s["paperId"] for s in kept] == ["mamba"]
 
 
@@ -3199,9 +3296,7 @@ def test_filter_theme_blacklist_case_insensitive_match():
             abstract="we adopt the LPIPS metric",
         ),
     ]
-    kept = build_theme_lineage._filter_theme_blacklist(
-        seeds, theme="Self-Supervised Learning"
-    )
+    kept = build_theme_lineage._filter_theme_blacklist(seeds, theme="Self-Supervised Learning")
     assert kept == []
 
 
@@ -3209,17 +3304,13 @@ def test_filter_theme_blacklist_unknown_theme_is_noop():
     """Themes with no entry in theme_blacklist.json pass through
     untouched (additive, not allowlist)."""
     seeds = [_mk_s2_paper("p1"), _mk_s2_paper("p2")]
-    kept = build_theme_lineage._filter_theme_blacklist(
-        seeds, theme="Totally Unknown Theme"
-    )
+    kept = build_theme_lineage._filter_theme_blacklist(seeds, theme="Totally Unknown Theme")
     assert {s["paperId"] for s in kept} == {"p1", "p2"}
 
 
 def test_filter_theme_blacklist_empty_input_returns_empty():
     """Defensive empty-list contract."""
-    assert build_theme_lineage._filter_theme_blacklist(
-        [], theme="Flash Attention"
-    ) == []
+    assert build_theme_lineage._filter_theme_blacklist([], theme="Flash Attention") == []
 
 
 def test_load_theme_blacklist_returns_dict_of_tuples():
@@ -3276,8 +3367,9 @@ def test_aliases_for_unknown_theme_returns_empty():
 def test_aliases_for_case_insensitive():
     """Lookup must be case- and whitespace-insensitive so
     "SPECULATIVE  DECODING" still matches."""
-    assert build_theme_lineage._aliases_for("  speculative decoding ") == \
-        build_theme_lineage._aliases_for("Speculative Decoding")
+    assert build_theme_lineage._aliases_for(
+        "  speculative decoding "
+    ) == build_theme_lineage._aliases_for("Speculative Decoding")
 
 
 def test_filter_topic_relevant_seeds_two_word_requires_both():
@@ -3306,9 +3398,7 @@ def test_filter_topic_relevant_seeds_two_word_requires_both():
             abstract="We thought the model would converge ...",
         ),
     ]
-    kept = build_theme_lineage._filter_topic_relevant_seeds(
-        seeds, theme="Chain of Thought"
-    )
+    kept = build_theme_lineage._filter_topic_relevant_seeds(seeds, theme="Chain of Thought")
     ids = [s["paperId"] for s in kept]
     assert ids == ["relevant"]
 
@@ -3325,9 +3415,7 @@ def test_filter_topic_relevant_seeds_phrase_escape_hatch():
             abstract="this paper studies CoT prompting ...",
         ),
     ]
-    kept = build_theme_lineage._filter_topic_relevant_seeds(
-        seeds, theme="Chain of Thought"
-    )
+    kept = build_theme_lineage._filter_topic_relevant_seeds(seeds, theme="Chain of Thought")
     assert [s["paperId"] for s in kept] == ["phrase"]
 
 
@@ -3359,9 +3447,7 @@ def test_filter_topic_relevant_seeds_lpips_dropped_from_self_supervised():
             ),
         ),
     ]
-    kept = build_theme_lineage._filter_topic_relevant_seeds(
-        seeds, theme="Self-Supervised Learning"
-    )
+    kept = build_theme_lineage._filter_topic_relevant_seeds(seeds, theme="Self-Supervised Learning")
     assert [s["paperId"] for s in kept] == ["simclr"]
 
 
@@ -3383,9 +3469,7 @@ def test_filter_topic_relevant_seeds_hyphen_normalisation_two_word():
             abstract="self supervised learning has matured ...",
         ),
     ]
-    kept = build_theme_lineage._filter_topic_relevant_seeds(
-        seeds, theme="Self-Supervised Learning"
-    )
+    kept = build_theme_lineage._filter_topic_relevant_seeds(seeds, theme="Self-Supervised Learning")
     assert {s["paperId"] for s in kept} == {"hyphen", "space"}
 
 
@@ -3408,9 +3492,7 @@ def test_filter_topic_relevant_seeds_two_word_drops_when_words_only_in_abstract(
             ),
         ),
     ]
-    kept = build_theme_lineage._filter_topic_relevant_seeds(
-        seeds, theme="Self-Supervised Learning"
-    )
+    kept = build_theme_lineage._filter_topic_relevant_seeds(seeds, theme="Self-Supervised Learning")
     assert kept == []
 
 
@@ -3427,9 +3509,7 @@ def test_filter_topic_relevant_seeds_two_word_keeps_when_both_words_in_title():
             abstract="diffusion probabilistic models for image synthesis",
         ),
     ]
-    kept = build_theme_lineage._filter_topic_relevant_seeds(
-        seeds, theme="Diffusion Models"
-    )
+    kept = build_theme_lineage._filter_topic_relevant_seeds(seeds, theme="Diffusion Models")
     assert [s["paperId"] for s in kept] == ["ddpm"]
 
 
@@ -3455,9 +3535,7 @@ def test_filter_topic_relevant_seeds_drops_compound_term_false_match():
             abstract="we present a cross-entropy loss generalisation",
         ),
     ]
-    kept = build_theme_lineage._filter_topic_relevant_seeds(
-        seeds, theme="World Model"
-    )
+    kept = build_theme_lineage._filter_topic_relevant_seeds(seeds, theme="World Model")
     assert kept == [], (
         "Real-World-Weight + Modeling should be rejected: "
         "the words are 6 tokens apart in two unrelated compound terms"
@@ -3482,13 +3560,9 @@ def test_filter_topic_relevant_seeds_keeps_seeds_with_adjacent_match():
             abstract="..",
         ),
     ]
-    kept = build_theme_lineage._filter_topic_relevant_seeds(
-        seeds, theme="Diffusion Models"
-    )
+    kept = build_theme_lineage._filter_topic_relevant_seeds(seeds, theme="Diffusion Models")
     assert "ddpm" in [s["paperId"] for s in kept]
-    kept2 = build_theme_lineage._filter_topic_relevant_seeds(
-        seeds, theme="Semantic Segmentation"
-    )
+    kept2 = build_theme_lineage._filter_topic_relevant_seeds(seeds, theme="Semantic Segmentation")
     assert "encdec" in [s["paperId"] for s in kept2]
 
 
@@ -3498,22 +3572,28 @@ def test_min_token_distance_matches_substring_per_token():
     min over Cartesian positions handles repeated words correctly."""
     fn = build_theme_lineage._min_token_distance
     # 'modeling' starts at token 7; 'world' at token 1 — distance 6.
-    assert fn(
-        "the real world weight cross entropy loss function modeling the costs",
-        "world",
-        "model",
-    ) == 6
+    assert (
+        fn(
+            "the real world weight cross entropy loss function modeling the costs",
+            "world",
+            "model",
+        )
+        == 6
+    )
     # Adjacent: 'world models' — distance 1.
     assert fn("through world models", "world", "model") == 1
     # Missing word → None
     assert fn("only world here", "world", "model") is None
     # Repeated word: pick the closest pair (here both 'model' positions
     # are far from 'world'; closer one wins).
-    assert fn(
-        "world ofX modeling and another modeling",
-        "world",
-        "model",
-    ) == 2
+    assert (
+        fn(
+            "world ofX modeling and another modeling",
+            "world",
+            "model",
+        )
+        == 2
+    )
 
 
 def test_filter_denylisted_seeds_drops_known_lib_papers():
@@ -3593,12 +3673,14 @@ def test_discover_seeds_filters_irrelevant_seeds(tmp_path: Path, monkeypatch):
     search doesn't end up as a top-N seed."""
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
     relevant = _mk_s2_paper(
-        "gnn", title="Graph Neural Networks Survey",
+        "gnn",
+        title="Graph Neural Networks Survey",
         abstract="A comprehensive review of graph neural network methods.",
         cites=200,
     )
     irrelevant = _mk_s2_paper(
-        "pandas", title="Data Structures for Statistical Computing in Python",
+        "pandas",
+        title="Data Structures for Statistical Computing in Python",
         abstract="practical issues of working with data sets in pandas.",
         cites=10_000,  # higher cites: would rank higher without the filter
     )
@@ -3681,9 +3763,7 @@ def test_decode_abstract_inverted_index_handles_malformed():
     assert build_theme_lineage._decode_abstract_inverted_index({}) == ""
     # Negative positions skipped; valid one still rendered.
     assert (
-        build_theme_lineage._decode_abstract_inverted_index(
-            {"hello": [-1], "world": [0]}
-        )
+        build_theme_lineage._decode_abstract_inverted_index({"hello": [-1], "world": [0]})
         == "world"
     )
 
@@ -3691,10 +3771,7 @@ def test_decode_abstract_inverted_index_handles_malformed():
 def test_openalex_short_id_extracts_from_url_and_short():
     """Full URL → short. Already-short → unchanged. Garbage → None."""
     assert (
-        build_theme_lineage._openalex_short_id(
-            "https://openalex.org/W2962917714"
-        )
-        == "W2962917714"
+        build_theme_lineage._openalex_short_id("https://openalex.org/W2962917714") == "W2962917714"
     )
     assert build_theme_lineage._openalex_short_id("W123") == "W123"
     assert build_theme_lineage._openalex_short_id("") is None
@@ -3728,10 +3805,7 @@ def test_work_to_paper_dict_returns_s2_shape():
 def test_work_to_paper_dict_returns_none_for_missing_id_or_title():
     """Malformed Works skipped (caller filters)."""
     assert build_theme_lineage._work_to_paper_dict({"title": "T"}) is None
-    assert (
-        build_theme_lineage._work_to_paper_dict({"id": "https://openalex.org/X1"})
-        is None
-    )
+    assert build_theme_lineage._work_to_paper_dict({"id": "https://openalex.org/X1"}) is None
     assert build_theme_lineage._work_to_paper_dict({}) is None
 
 
@@ -3859,6 +3933,7 @@ def test_work_to_paper_dict_arxiv_landing_url_does_not_break_venue():
 
 # --- #273 publication_year corruption guard ---
 
+
 def test_work_to_paper_dict_year_normal_case():
     """When publication_year and created_date agree within 2 years
     (normal preprint→proceedings lag) `_trustworthy_year` returns the
@@ -3923,9 +3998,7 @@ def test_work_to_paper_dict_year_recent_re_mirror_keeps_publication_year():
     assert build_theme_lineage._work_to_paper_dict(work)["year"] == 2022
 
 
-def test_discover_seeds_openalex_primary_uses_openalex_not_s2(
-    tmp_path: Path, monkeypatch
-):
+def test_discover_seeds_openalex_primary_uses_openalex_not_s2(tmp_path: Path, monkeypatch):
     """primary_source='openalex' must hit OpenAlex, not S2 /paper/search."""
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
     work = _mk_oa_work_v2(
@@ -3941,14 +4014,10 @@ def test_discover_seeds_openalex_primary_uses_openalex_not_s2(
     def _fake_request(method, url, **kwargs):
         # Test invariant: S2 must NOT be called on the openalex-primary
         # path. If it is, the assertion fails with a clear message.
-        assert "semanticscholar" not in url, (
-            f"S2 endpoint hit on openalex-primary path: {url}"
-        )
+        assert "semanticscholar" not in url, f"S2 endpoint hit on openalex-primary path: {url}"
         return openalex_payload
 
-    with patch.object(
-        build_theme_lineage, "request_with_retry", side_effect=_fake_request
-    ):
+    with patch.object(build_theme_lineage, "request_with_retry", side_effect=_fake_request):
         seeds = build_theme_lineage.discover_seeds(
             keywords=["Graph Neural Network"],
             top_n=5,
@@ -3961,9 +4030,7 @@ def test_discover_seeds_openalex_primary_uses_openalex_not_s2(
     assert seeds[0]["paperId"] == "openalex:W123"
 
 
-def test_discover_seeds_via_openalex_uses_relevance_sort_default(
-    tmp_path: Path, monkeypatch
-):
+def test_discover_seeds_via_openalex_uses_relevance_sort_default(tmp_path: Path, monkeypatch):
     """#209 Phase 1.5: OpenAlex query must NOT override sort to
     cited_by_count:desc. The pre-2026-05-28 override was a bug —
     for ambiguous theme names ("Chain of Thought", "World Model")
@@ -3984,9 +4051,7 @@ def test_discover_seeds_via_openalex_uses_relevance_sort_default(
         resp.json = lambda: {"results": []}
         return resp
 
-    with patch.object(
-        build_theme_lineage, "request_with_retry", side_effect=_capture
-    ):
+    with patch.object(build_theme_lineage, "request_with_retry", side_effect=_capture):
         build_theme_lineage.discover_seeds_via_openalex(
             query="Chain of Thought",
             top_n=5,
@@ -4068,12 +4133,8 @@ def test_fetch_related_via_openalex_references(tmp_path, monkeypatch):
             return resp
         return None
 
-    with patch.object(
-        build_theme_lineage, "request_with_retry", side_effect=_fake_request
-    ):
-        parents = build_theme_lineage.fetch_related_via_openalex(
-            "W123", "references", limit=10
-        )
+    with patch.object(build_theme_lineage, "request_with_retry", side_effect=_fake_request):
+        parents = build_theme_lineage.fetch_related_via_openalex("W123", "references", limit=10)
     assert len(parents) == 1
     assert parents[0]["paperId"] == f"openalex:{parent_short}"
     # OpenAlex doesn't provide intents → None is set so downstream
@@ -4089,29 +4150,21 @@ def test_fetch_related_via_openalex_citations(tmp_path, monkeypatch):
     def _fake_request(method, url, **kwargs):
         params = kwargs.get("params") or {}
         if "filter" in params and params["filter"] == "cites:W123":
-            work = _mk_oa_work_v2(
-                child_short, title="Later citing paper", year=2024
-            )
+            work = _mk_oa_work_v2(child_short, title="Later citing paper", year=2024)
             resp = MagicMock()
             resp.status_code = 200
             resp.json = lambda: {"results": [work]}
             return resp
         return None
 
-    with patch.object(
-        build_theme_lineage, "request_with_retry", side_effect=_fake_request
-    ):
-        children = build_theme_lineage.fetch_related_via_openalex(
-            "W123", "citations", limit=10
-        )
+    with patch.object(build_theme_lineage, "request_with_retry", side_effect=_fake_request):
+        children = build_theme_lineage.fetch_related_via_openalex("W123", "citations", limit=10)
     assert len(children) == 1
     assert children[0]["paperId"] == f"openalex:{child_short}"
     assert children[0]["_intents"] is None
 
 
-def test_fetch_related_via_openalex_references_focal_arxiv_from_locations(
-    tmp_path, monkeypatch
-):
+def test_fetch_related_via_openalex_references_focal_arxiv_from_locations(tmp_path, monkeypatch):
     """#301: references dir must recover the focal's arXiv id from the
     payload's primary_location (not just ids.arxiv_id, which OpenAlex
     leaves None for CS works) and feed it to the unarXive lookup.
@@ -4154,15 +4207,9 @@ def test_fetch_related_via_openalex_references_focal_arxiv_from_locations(
         parent.setdefault("_contexts", [])
         return parent
 
-    monkeypatch.setattr(
-        build_theme_lineage, "_enrich_parent_with_unarxive", _fake_enrich
-    )
-    with patch.object(
-        build_theme_lineage, "request_with_retry", side_effect=_fake_request
-    ):
-        parents = build_theme_lineage.fetch_related_via_openalex(
-            "W123", "references", limit=10
-        )
+    monkeypatch.setattr(build_theme_lineage, "_enrich_parent_with_unarxive", _fake_enrich)
+    with patch.object(build_theme_lineage, "request_with_retry", side_effect=_fake_request):
+        parents = build_theme_lineage.fetch_related_via_openalex("W123", "references", limit=10)
     assert len(parents) == 1
     # The focal select must now carry the location/DOI fields.
     select = captured_select["select"] or ""
@@ -4175,16 +4222,15 @@ def test_fetch_related_via_openalex_references_focal_arxiv_from_locations(
 
 def test_fetch_related_via_openalex_invalid_id_returns_empty():
     """Defensive: non-W-prefixed id → empty list, no API call."""
-    assert build_theme_lineage.fetch_related_via_openalex(
-        "not-an-openalex-id", "references", limit=10
-    ) == []
+    assert (
+        build_theme_lineage.fetch_related_via_openalex("not-an-openalex-id", "references", limit=10)
+        == []
+    )
 
 
 def test_fetch_related_via_openalex_unknown_kind_returns_empty():
     """Defensive: unknown kind → empty list."""
-    assert build_theme_lineage.fetch_related_via_openalex(
-        "W123", "siblings", limit=10
-    ) == []
+    assert build_theme_lineage.fetch_related_via_openalex("W123", "siblings", limit=10) == []
 
 
 def test_build_drops_foundational_parents_in_bfs(tmp_path: Path, monkeypatch):
@@ -4198,13 +4244,14 @@ def test_build_drops_foundational_parents_in_bfs(tmp_path: Path, monkeypatch):
     _stub_external_calls(monkeypatch)
 
     seed = _mk_s2_paper(
-        "seed", title="Graph Attention Network",
+        "seed",
+        title="Graph Attention Network",
         abstract="we propose a graph neural network with attention.",
-        year=2018, cites=8_000,
+        year=2018,
+        cites=8_000,
     )
     foundational = {
-        **_mk_s2_paper("resnet", title="Deep Residual Learning",
-                       year=2015, cites=800_000),
+        **_mk_s2_paper("resnet", title="Deep Residual Learning", year=2015, cites=800_000),
         "_is_influential": True,
         # NO methodology intent.
         "_intents": ["background"],
@@ -4215,19 +4262,19 @@ def test_build_drops_foundational_parents_in_bfs(tmp_path: Path, monkeypatch):
             "request_with_retry",
             return_value=_mk_s2_search_response([seed]),
         ),
-        patch.object(
-            build_theme_lineage, "fetch_related", return_value=[foundational]
-        ),
+        patch.object(build_theme_lineage, "fetch_related", return_value=[foundational]),
     ):
         out_path = build_theme_lineage.build_theme_lineage(
             theme="Graph Neural Network",
-            depth=1, seeds_count=1, width=4, since_year=None,
+            depth=1,
+            seeds_count=1,
+            width=4,
+            since_year=None,
         )
     payload = json.loads(out_path.read_text())
     # Foundational parent must not appear as a node OR an edge endpoint.
     assert "resnet" not in {n["id"] for n in payload["nodes"]}
-    assert all(e["src"] != "resnet" and e["dst"] != "resnet"
-               for e in payload["edges"])
+    assert all(e["src"] != "resnet" and e["dst"] != "resnet" for e in payload["edges"])
 
 
 def test_implementation_foundation_denylist_by_paper_id():
@@ -4237,9 +4284,11 @@ def test_implementation_foundation_denylist_by_paper_id():
     overrides that."""
     refs = [
         {
-            **_mk_s2_paper("a6cb366736791bcccc5c8639de5a8f9636bf87e8",
-                           title="Adam: A Method for Stochastic Optimization",
-                           cites=166_000),
+            **_mk_s2_paper(
+                "a6cb366736791bcccc5c8639de5a8f9636bf87e8",
+                title="Adam: A Method for Stochastic Optimization",
+                cites=166_000,
+            ),
             "_is_influential": True,
             "_intents": ["methodology"],
         },
@@ -4256,9 +4305,9 @@ def test_implementation_foundation_denylist_by_title_pattern():
     must still be caught via the title-pattern fallback."""
     refs = [
         {
-            **_mk_s2_paper("NEW_TF_PID_UNSEEN",
-                           title="TensorFlow: a future tutorial paper",
-                           cites=200_000),
+            **_mk_s2_paper(
+                "NEW_TF_PID_UNSEEN", title="TensorFlow: a future tutorial paper", cites=200_000
+            ),
             "_is_influential": True,
             "_intents": ["methodology"],
         },
@@ -4274,9 +4323,11 @@ def test_implementation_foundation_denylist_keeps_topic_libraries():
     denylist, not derivative geometric/audio/vision sub-libraries."""
     refs = [
         {
-            **_mk_s2_paper("63a513832f56addb67be81a2fa399b233f3030fc",
-                           title="Fast Graph Representation Learning with PyTorch Geometric",
-                           cites=8_000),
+            **_mk_s2_paper(
+                "63a513832f56addb67be81a2fa399b233f3030fc",
+                title="Fast Graph Representation Learning with PyTorch Geometric",
+                cites=8_000,
+            ),
             "_is_influential": True,
             "_intents": ["methodology"],
         },
@@ -4291,9 +4342,11 @@ def test_implementation_foundation_denylist_under_threshold_still_dropped():
     must still be dropped — the denylist is unconditional, not a tiebreaker."""
     refs = [
         {
-            **_mk_s2_paper("ad4fd2c149f220a62441576af92a8a669fe81246",
-                           title="Scikit-learn: Machine Learning in Python",
-                           cites=100),  # tiny cite count, way under ceiling
+            **_mk_s2_paper(
+                "ad4fd2c149f220a62441576af92a8a669fe81246",
+                title="Scikit-learn: Machine Learning in Python",
+                cites=100,
+            ),  # tiny cite count, way under ceiling
             "_is_influential": True,
         },
     ]
@@ -4311,8 +4364,7 @@ def test_off_topic_filter_uses_tighter_2x_multiplier():
     tightening)."""
     refs = [
         {
-            **_mk_s2_paper("p_above_2x",
-                           title="A Generic Foundational Paper", cites=62_500),
+            **_mk_s2_paper("p_above_2x", title="A Generic Foundational Paper", cites=62_500),
             "_is_influential": True,
             # No methodology intent → cite-only check applies.
             "_intents": ["background"],
@@ -4350,7 +4402,8 @@ def test_build_llm_strict_all_propagates_rationale_to_output(tmp_path: Path, mon
         "seed",
         title="Graph Attention Network",
         abstract="we propose a graph neural network with attention.",
-        year=2018, cites=10_000,
+        year=2018,
+        cites=10_000,
     )
     parent = {
         **_mk_s2_paper("p_parent", year=2014, cites=5_000),
@@ -4368,7 +4421,10 @@ def test_build_llm_strict_all_propagates_rationale_to_output(tmp_path: Path, mon
     ):
         out_path = build_theme_lineage.build_theme_lineage(
             theme="Graph Neural Network",
-            depth=1, seeds_count=1, width=4, since_year=None,
+            depth=1,
+            seeds_count=1,
+            width=4,
+            since_year=None,
             llm_strict="all",  # the crux of this test
         )
 
@@ -4378,9 +4434,7 @@ def test_build_llm_strict_all_propagates_rationale_to_output(tmp_path: Path, mon
     assert len(provider.classify_calls) >= 1, "LLM was never invoked"
     # The LLM rationale must appear in the output, NOT the template.
     rationales = [e["rationale"] for e in payload["edges"]]
-    assert custom_rationale in rationales, (
-        f"LLM rationale missing from output. Saw: {rationales}"
-    )
+    assert custom_rationale in rationales, f"LLM rationale missing from output. Saw: {rationales}"
 
 
 def test_build_keeps_foundational_parent_with_methodology(tmp_path: Path, monkeypatch):
@@ -4393,13 +4447,15 @@ def test_build_keeps_foundational_parent_with_methodology(tmp_path: Path, monkey
 
     _stub_external_calls(monkeypatch)
 
-    seed = _mk_s2_paper("seed",
-                        title="Graph Attention Network",
-                        abstract="graph neural network with attention",
-                        year=2018, cites=8_000)
+    seed = _mk_s2_paper(
+        "seed",
+        title="Graph Attention Network",
+        abstract="graph neural network with attention",
+        year=2018,
+        cites=8_000,
+    )
     foundational = {
-        **_mk_s2_paper("resnet", title="Deep Residual Learning",
-                       year=2015, cites=800_000),
+        **_mk_s2_paper("resnet", title="Deep Residual Learning", year=2015, cites=800_000),
         "_is_influential": True,
         "_intents": ["methodology"],
     }
@@ -4409,13 +4465,14 @@ def test_build_keeps_foundational_parent_with_methodology(tmp_path: Path, monkey
             "request_with_retry",
             return_value=_mk_s2_search_response([seed]),
         ),
-        patch.object(
-            build_theme_lineage, "fetch_related", return_value=[foundational]
-        ),
+        patch.object(build_theme_lineage, "fetch_related", return_value=[foundational]),
     ):
         out_path = build_theme_lineage.build_theme_lineage(
             theme="Graph Neural Network",
-            depth=1, seeds_count=1, width=4, since_year=None,
+            depth=1,
+            seeds_count=1,
+            width=4,
+            since_year=None,
         )
     payload = json.loads(out_path.read_text())
     # methodology intent → kept.
@@ -4448,12 +4505,8 @@ def test_cached_classify_provider_returns_cached_entry_on_hit():
             "rationale": "B が A の RoBERTa 事前学習を低リソース言語に転用している",
         }
     }
-    cached = build_theme_lineage._CachedClassifyProvider(
-        inner, cache, cache_path=None
-    )
-    rc = cached.classify_relation(
-        {"paperId": "src1"}, {"paperId": "dst1"}
-    )
+    cached = build_theme_lineage._CachedClassifyProvider(inner, cache, cache_path=None)
+    rc = cached.classify_relation({"paperId": "src1"}, {"paperId": "dst1"})
     assert rc is not None
     assert rc.relation == "successor"
     assert rc.rationale.startswith("B が A の RoBERTa")
@@ -4472,9 +4525,7 @@ def test_cached_classify_provider_calls_inner_on_miss(tmp_path):
             rationale="B は A の sparse attention を audio 信号に拡張している",
         )
     )
-    cached = build_theme_lineage._CachedClassifyProvider(
-        inner, {}, cache_path=cache_path
-    )
+    cached = build_theme_lineage._CachedClassifyProvider(inner, {}, cache_path=cache_path)
     a = {"paperId": "src_miss", "title": "A"}
     b = {"paperId": "dst_miss", "title": "B"}
     rc = cached.classify_relation(a, b)
@@ -4507,12 +4558,8 @@ def test_cached_classify_provider_writes_model_tag_on_miss(tmp_path):
     # the full "name:model" form (mirrors GroqProvider / GeminiProvider).
     inner.model = "llama-3.3-70b-versatile"  # type: ignore[attr-defined]
     cache: dict = {}
-    cached = build_theme_lineage._CachedClassifyProvider(
-        inner, cache, cache_path=cache_path
-    )
-    cached.classify_relation(
-        {"paperId": "src_m", "title": "A"}, {"paperId": "dst_m", "title": "B"}
-    )
+    cached = build_theme_lineage._CachedClassifyProvider(inner, cache, cache_path=cache_path)
+    cached.classify_relation({"paperId": "src_m", "title": "A"}, {"paperId": "dst_m", "title": "B"})
     entry = cache["src_m->dst_m"]
     # The wrapper's own name is "fake+cache"; the recorded tag must be the
     # INNER provider's tag, NOT the wrapper's.
@@ -4533,9 +4580,7 @@ def test_cached_classify_provider_model_tag_name_only_without_model(tmp_path):
     )
     assert not hasattr(inner, "model")
     cache: dict = {}
-    cached = build_theme_lineage._CachedClassifyProvider(
-        inner, cache, cache_path=None
-    )
+    cached = build_theme_lineage._CachedClassifyProvider(inner, cache, cache_path=None)
     cached.classify_relation({"paperId": "x"}, {"paperId": "y"})
     assert cache["x->y"]["model"] == "fake"
 
@@ -4546,12 +4591,8 @@ def test_cached_classify_provider_skips_persist_when_inner_returns_none(tmp_path
     cache_path = tmp_path / "classifications.json"
     inner = _FakeProvider(classification=None)  # provider returns None
     cache: dict = {}
-    cached = build_theme_lineage._CachedClassifyProvider(
-        inner, cache, cache_path=cache_path
-    )
-    rc = cached.classify_relation(
-        {"paperId": "src_none"}, {"paperId": "dst_none"}
-    )
+    cached = build_theme_lineage._CachedClassifyProvider(inner, cache, cache_path=cache_path)
+    rc = cached.classify_relation({"paperId": "src_none"}, {"paperId": "dst_none"})
     assert rc is None
     assert cache == {}, "must not store None as a cache entry"
     # cache_path may or may not exist (the persist step is skipped); the
@@ -4569,12 +4610,8 @@ def test_cached_classify_provider_no_persist_when_cache_path_none(tmp_path):
         )
     )
     cache: dict = {}
-    cached = build_theme_lineage._CachedClassifyProvider(
-        inner, cache, cache_path=None
-    )
-    rc = cached.classify_relation(
-        {"paperId": "x"}, {"paperId": "y"}
-    )
+    cached = build_theme_lineage._CachedClassifyProvider(inner, cache, cache_path=None)
+    rc = cached.classify_relation({"paperId": "x"}, {"paperId": "y"})
     assert rc is not None
     # In-memory cache populated.
     assert "x->y" in cache
@@ -4593,19 +4630,14 @@ def test_cached_classify_provider_missing_paper_ids_skip_cache(tmp_path):
         )
     )
     cache: dict = {}
-    cached = build_theme_lineage._CachedClassifyProvider(
-        inner, cache, cache_path=cache_path
-    )
+    cached = build_theme_lineage._CachedClassifyProvider(inner, cache, cache_path=cache_path)
     rc = cached.classify_relation({}, {"paperId": "dst"})
     assert rc is not None
     assert cache == {}, "must skip cache when paperId is missing"
 
 
-def test_build_theme_lineage_shares_classification_cache(tmp_path, monkeypatch):
-    """Integration: build_theme_lineage with --llm-strict=ambiguous and
-    a pre-populated classification cache must reuse the cached entry
-    without firing the LLM. This is the #131-followup payoff: theme
-    rebuilds become free LLM-cost-wise."""
+def test_build_theme_lineage_ignores_legacy_endpoint_cache(tmp_path, monkeypatch):
+    """A legacy ``src->dst`` entry is never a P2T cache hit."""
     _patch_env(monkeypatch)
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "fetch-cache")
     monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
@@ -4619,39 +4651,36 @@ def test_build_theme_lineage_shares_classification_cache(tmp_path, monkeypatch):
 
     # Pre-seed the cache with an entry that maps the (parent → seed) edge
     # we're about to build, with a paper-specific rationale.
-    cached_rationale = (
-        "B は A のグラフアテンション機構を不均一グラフのメタパスへ拡張した"
-    )
+    cached_rationale = "B は A のグラフアテンション機構を不均一グラフのメタパスへ拡張した"
     (tmp_path / "classifications.json").write_text(
-        json.dumps({
-            "p_parent->seed": {
-                "relation": "extends",
-                "confidence": 0.9,
-                "rationale": cached_rationale,
-            }
-        }, ensure_ascii=False),
+        json.dumps(
+            {
+                "p_parent->seed": {
+                    "relation": "extends",
+                    "confidence": 0.9,
+                    "rationale": cached_rationale,
+                }
+            },
+            ensure_ascii=False,
+        ),
         encoding="utf-8",
     )
 
-    # Provider stub that BLOWS UP if called — we want to prove the cache
-    # short-circuited it.
-    class _BoomProvider(AbstractLLMProvider):
-        name = "boom"
-        def evaluate_batch(self, papers, profile):  # pragma: no cover
-            return [None] * len(papers)
-        def classify_relation(self, a, b):
-            raise AssertionError(
-                "cache miss — _CachedClassifyProvider failed to hit the cache"
-            )
-    monkeypatch.setattr(
-        build_theme_lineage, "build_provider", lambda: (_BoomProvider({}), 0.0)
+    provider = _FakeProvider(
+        classification=RelationClassification(
+            relation="extends",
+            confidence=0.91,
+            rationale="B は A のグラフ注意機構を異種グラフへ拡張している",
+        )
     )
+    monkeypatch.setattr(build_theme_lineage, "build_provider", lambda: (provider, 0.0))
 
     seed = _mk_s2_paper(
         "seed",
         title="Graph Attention Network",
         abstract="we propose a graph neural network with attention",
-        year=2018, cites=10_000,
+        year=2018,
+        cites=10_000,
     )
     # No _intents → _is_ambiguous returns True → with strict_mode=ambiguous,
     # the cached classify_relation IS exercised (it'd raise without cache).
@@ -4659,6 +4688,7 @@ def test_build_theme_lineage_shares_classification_cache(tmp_path, monkeypatch):
         **_mk_s2_paper("p_parent", year=2014, cites=2_000),
         "_is_influential": True,
     }
+
     # fetch_related is asked for both "references" (BFS parents) and
     # "citations" (descendants). We only want to exercise the parent
     # path here, so return [parent] for references and [] for
@@ -4682,14 +4712,17 @@ def test_build_theme_lineage_shares_classification_cache(tmp_path, monkeypatch):
     ):
         out_path = build_theme_lineage.build_theme_lineage(
             theme="Graph Neural Network",
-            depth=1, seeds_count=1, width=4, since_year=None,
+            depth=1,
+            seeds_count=1,
+            width=4,
+            since_year=None,
             llm_strict="ambiguous",
         )
     payload = json.loads(out_path.read_text())
-    # The cached LLM rationale must have flowed through.
-    assert any(
-        e["rationale"] == cached_rationale for e in payload["edges"]
-    ), f"cached rationale did not appear in output edges: {payload['edges']}"
+    assert len(provider.classify_calls) == 1
+    assert all(e["rationale"] != cached_rationale for e in payload["edges"])
+    persisted = json.loads((tmp_path / "classifications.json").read_text())
+    assert any(key.startswith("v2:") for key in persisted)
 
 
 # ---- Test 10: provenance field is serialised into lineage.json edges ----
@@ -4712,7 +4745,8 @@ def test_build_theme_lineage_edge_serializes_provenance(tmp_path, monkeypatch):
         tmp_path / "classifications.json",
     )
     monkeypatch.setattr(
-        build_theme_lineage, "build_provider",
+        build_theme_lineage,
+        "build_provider",
         lambda: (_FakeProvider(classification=None), 0.0),
     )
 
@@ -4720,7 +4754,8 @@ def test_build_theme_lineage_edge_serializes_provenance(tmp_path, monkeypatch):
         "seed_prov",
         title="Attention Mechanism",
         abstract="self-attention for sequences",
-        year=2020, cites=5_000,
+        year=2020,
+        cites=5_000,
     )
     parent = {
         **_mk_s2_paper("parent_prov", year=2018, cites=1_000),
@@ -4745,15 +4780,16 @@ def test_build_theme_lineage_edge_serializes_provenance(tmp_path, monkeypatch):
     ):
         out_path = build_theme_lineage.build_theme_lineage(
             theme="Attention Mechanism",
-            depth=1, seeds_count=1, width=4, since_year=None,
+            depth=1,
+            seeds_count=1,
+            width=4,
+            since_year=None,
             llm_strict="off",
         )
     payload = json.loads(out_path.read_text())
     edges = payload.get("edges", [])
     assert edges, "expected at least one edge in output (methodology-intent path)"
-    assert all(
-        "provenance" in e for e in edges
-    ), f"some edges are missing 'provenance': {edges}"
+    assert all("provenance" in e for e in edges), f"some edges are missing 'provenance': {edges}"
 
 
 # ---- #298: _is_topic_relevant predicate (shared by seed gate + audit) ----
@@ -4773,10 +4809,7 @@ def test_is_topic_relevant_drops_audio_visual_node_for_flash_attention():
             "cortex encoder for the lip region."
         ),
     )
-    assert (
-        build_theme_lineage._is_topic_relevant(paper, theme="Flash Attention")
-        is False
-    )
+    assert build_theme_lineage._is_topic_relevant(paper, theme="Flash Attention") is False
 
 
 def test_is_topic_relevant_cannot_filter_the_un_separable_seed():
@@ -4792,10 +4825,7 @@ def test_is_topic_relevant_cannot_filter_the_un_separable_seed():
         abstract="We synthesise speech from silent lip videos.",
     )
     # The phrase 'flash attention' appears verbatim → lexical gate keeps it.
-    assert (
-        build_theme_lineage._is_topic_relevant(drifted_seed, theme="Flash Attention")
-        is True
-    )
+    assert build_theme_lineage._is_topic_relevant(drifted_seed, theme="Flash Attention") is True
 
 
 def test_is_topic_relevant_keeps_flashattention2():
@@ -4811,10 +4841,7 @@ def test_is_topic_relevant_keeps_flashattention2():
             "improved work partitioning for memory-efficient flash attention."
         ),
     )
-    assert (
-        build_theme_lineage._is_topic_relevant(paper, theme="Flash Attention")
-        is True
-    )
+    assert build_theme_lineage._is_topic_relevant(paper, theme="Flash Attention") is True
 
 
 def test_is_topic_relevant_matches_filter_seeds_behaviour():
@@ -4823,11 +4850,14 @@ def test_is_topic_relevant_matches_filter_seeds_behaviour():
     must agree (the function still works on seeds unchanged)."""
     theme = "Graph Neural Network"
     seeds = [
-        _mk_s2_paper("relevant", title="A Graph Neural Network for X",
-                     abstract="we propose a GNN to ..."),
-        _mk_s2_paper("irrelevant",
-                     title="Data Structures for Statistical Computing",
-                     abstract="Practical issues of working with data sets..."),
+        _mk_s2_paper(
+            "relevant", title="A Graph Neural Network for X", abstract="we propose a GNN to ..."
+        ),
+        _mk_s2_paper(
+            "irrelevant",
+            title="Data Structures for Statistical Computing",
+            abstract="Practical issues of working with data sets...",
+        ),
     ]
     kept = build_theme_lineage._filter_topic_relevant_seeds(seeds, theme=theme)
     kept_ids = {s["paperId"] for s in kept}
@@ -4856,7 +4886,8 @@ def test_dedup_by_title_year_collapses_distinct_ids_same_title():
             **_mk_s2_paper(
                 "openalex:W4281758439",
                 title="FlashAttention: Fast and Memory-Efficient Exact Attention",
-                year=2022, cites=4_000,
+                year=2022,
+                cites=4_000,
             ),
             "externalIds": {"DOI": "10.48550/arxiv.2205.14135"},
         },
@@ -4864,7 +4895,8 @@ def test_dedup_by_title_year_collapses_distinct_ids_same_title():
             **_mk_s2_paper(
                 "openalex:W7133227460",
                 title="FlashAttention:  Fast and Memory-Efficient  Exact Attention!",
-                year=2022, cites=9_500,
+                year=2022,
+                cites=9_500,
             ),
             "externalIds": {"DOI": "10.52202/068431-1189"},
         },
@@ -4944,27 +4976,25 @@ def test_dedup_by_title_year_keyless_paper_passthrough():
     assert remap == {}
 
 
-def test_dedup_by_title_year_remap_edges_drops_self_loops():
-    """#298: after collapsing a duplicate, an edge between the two collapsed
-    ids becomes a self-loop and must be dropped; an edge that pointed at the
-    dropped id is rewritten onto the survivor."""
+def test_endpoint_remap_rejects_stale_provenance_binding():
+    """P2T: changing an endpoint after classification must fail closed.
+
+    The legacy helper used to drop self-loops and keep the first collapsed
+    edge, but that retained an evidence hash bound to the pre-remap endpoint
+    and made duplicate selection input-order dependent.
+    """
     remap = {"dup_lo": "dup_hi"}
     edges = [
-        {"src": "dup_lo", "dst": "dup_hi", "rel": "extends"},   # → self loop, drop
-        {"src": "other", "dst": "dup_lo", "rel": "extends"},    # → remap dst
-        {"src": "other", "dst": "dup_hi", "rel": "extends"},    # duplicate of above after remap
+        {"src": "dup_lo", "dst": "dup_hi", "rel": "extends"},  # → self loop, drop
+        {"src": "other", "dst": "dup_lo", "rel": "extends"},  # → remap dst
+        {"src": "other", "dst": "dup_hi", "rel": "extends"},  # duplicate of above after remap
     ]
-    out = build_theme_lineage._remap_edge_endpoints(edges, remap)
-    # self-loop dropped; the two now-identical (other→dup_hi) edges collapse to one.
-    assert out == [{"src": "other", "dst": "dup_hi", "rel": "extends"}]
+    with pytest.raises(ValueError, match="endpoint-bound provenance"):
+        build_theme_lineage._remap_edge_endpoints(edges, remap)
 
 
-def test_build_dedups_duplicate_seed_nodes_and_remaps_edges(
-    tmp_path: Path, monkeypatch
-):
-    """#298 end-to-end: when the two FlashAttention duplicates both enter as
-    seeds, the final node set must contain only one, and any edge that
-    pointed at the dropped id must be remapped onto the survivor."""
+def test_build_keeps_same_title_year_with_distinct_strong_aliases(tmp_path: Path, monkeypatch):
+    """P2T identity: title/year equality never merges distinct aliases."""
     _patch_env(monkeypatch)
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
     monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
@@ -4975,36 +5005,49 @@ def test_build_dedups_duplicate_seed_nodes_and_remaps_edges(
             "openalex:W_lo",
             title="FlashAttention: Fast and Memory-Efficient Exact Attention",
             abstract="exact flash attention with IO awareness",
-            year=2022, cites=1_000,
+            year=2022,
+            cites=1_000,
         ),
-        "externalIds": {"DOI": "10.48550/arxiv.2205.14135"},
+        "externalIds": {
+            "ArXiv": "2205.14135",
+            "DOI": "10.48550/arxiv.2205.14135",
+        },
     }
     dup_hi = {
         **_mk_s2_paper(
             "openalex:W_hi",
             title="FlashAttention: Fast and Memory-Efficient Exact Attention",
             abstract="exact flash attention with IO awareness",
-            year=2022, cites=9_000,
+            year=2022,
+            cites=9_000,
         ),
-        "externalIds": {"DOI": "10.52202/068431-1189"},
+        "externalIds": {
+            "ArXiv": "2307.08691",
+            "DOI": "10.52202/068431-1189",
+        },
     }
 
     with (
         patch.object(
-            build_theme_lineage, "request_with_retry",
+            build_theme_lineage,
+            "request_with_retry",
             return_value=_mk_s2_search_response([dup_lo, dup_hi]),
         ),
         patch.object(build_theme_lineage, "fetch_related", return_value=[]),
     ):
         out_path = build_theme_lineage.build_theme_lineage(
-            theme="Flash Attention", depth=1, seeds_count=4, width=4,
-            since_year=None, llm_strict="off",
+            theme="Flash Attention",
+            depth=1,
+            seeds_count=4,
+            width=4,
+            since_year=None,
+            llm_strict="off",
         )
     payload = json.loads(out_path.read_text())
     node_ids = [n["id"] for n in payload["nodes"]]
-    # Exactly one FlashAttention node remains, and it's the higher-citation one.
+    # Both survive: neither title nor year participates in identity/dedup.
     fa_nodes = [nid for nid in node_ids if nid in ("openalex:W_lo", "openalex:W_hi")]
-    assert fa_nodes == ["openalex:W_hi"]
+    assert fa_nodes == ["openalex:W_hi", "openalex:W_lo"]
 
 
 # ---- #298: theme_blacklist veto for the un-separable seed ----
@@ -5025,9 +5068,7 @@ def test_theme_blacklist_vetoes_lip_to_speech_for_flash_attention():
         title="FlashAttention-2: Faster Attention with Better Parallelism",
         abstract="exact flash attention memory efficient",
     )
-    kept = build_theme_lineage._filter_theme_blacklist(
-        [drifted, real_fa], theme="Flash Attention"
-    )
+    kept = build_theme_lineage._filter_theme_blacklist([drifted, real_fa], theme="Flash Attention")
     kept_ids = {p["paperId"] for p in kept}
     assert "contaminant" not in kept_ids
     assert "fa2" in kept_ids

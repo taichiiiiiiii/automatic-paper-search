@@ -12,7 +12,10 @@ from __future__ import annotations
 
 import csv
 import json
+import os
 from pathlib import Path
+
+import pytest
 
 from paperpilot.scripts import build_pages
 
@@ -32,6 +35,8 @@ def _write_summary(path: Path, rows: list[dict[str, str]]) -> None:
         "citation_count",
         "venue_tier",
         "github_stars",
+        "source",
+        "source_id",
     ]
     with path.open("w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fields)
@@ -72,7 +77,16 @@ def test_abstract_preview_in_papers_json(tmp_path: Path, monkeypatch):
     long_abstract = "lorem ipsum " * 60  # ~720 chars
     _write_summary(
         project / "output" / "iclr-2026" / "summary.csv",
-        [{"title": "T", "type": "Poster", "tags": "", "authors": "", "abstract": long_abstract}],
+        [
+            {
+                "title": "T",
+                "type": "Poster",
+                "tags": "",
+                "authors": "",
+                "abstract": long_abstract,
+                "arxiv_url": "https://arxiv.org/abs/2404.00005",
+            }
+        ],
     )
     build_pages.build_conference("iclr-2026")
     data = json.loads((tmp_path / "docs" / "iclr-2026" / "papers.json").read_text(encoding="utf-8"))
@@ -94,8 +108,8 @@ def test_load_summary_splits_tags_and_authors(tmp_path: Path):
                 "tags": "LLM Transformer",
                 "venue": "ICLR",
                 "authors": "Alice; Bob, Carol",  # mixed separators
-                "arxiv_url": "http://arxiv.org/abs/1",
-                "pdf_url": "http://arxiv.org/pdf/1",
+                "arxiv_url": "http://arxiv.org/abs/2404.00001",
+                "pdf_url": "http://arxiv.org/pdf/2404.00001",
                 "abstract": "abstract one",
             }
         ],
@@ -111,11 +125,57 @@ def test_load_summary_empty_tags_becomes_empty_list(tmp_path: Path):
     summary = tmp_path / "summary.csv"
     _write_summary(
         summary,
-        [{"title": "T", "type": "Poster", "tags": "", "authors": ""}],
+        [
+            {
+                "title": "T",
+                "type": "Poster",
+                "tags": "",
+                "authors": "",
+                "arxiv_url": "https://arxiv.org/abs/2404.00006",
+            }
+        ],
     )
     rows = build_pages.load_summary(summary)
     assert rows[0]["tags"] == []
     assert rows[0]["authors"] == []
+
+
+def test_load_summary_adds_deterministic_native_identity(tmp_path: Path):
+    summary = tmp_path / "summary.csv"
+    _write_summary(
+        summary,
+        [
+            {
+                "title": "Identity",
+                "type": "Poster",
+                "tags": "",
+                "authors": "",
+                "arxiv_url": "https://openreview.net/forum?id=AbC_123",
+            }
+        ],
+    )
+    rows = build_pages.load_summary(summary)
+    assert rows[0]["source"] == "openreview"
+    assert rows[0]["source_id"] == "AbC_123"
+    assert len(rows[0]["paper_id"]) == 40
+
+
+def test_write_detail_shards_is_compact_and_prefix_partitioned(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setattr(build_pages, "DOCS_ROOT", tmp_path)
+    details = {
+        "00" + "a" * 38: "full zero",
+        "ff" + "b" * 38: "full ff",
+    }
+    outputs = build_pages.write_detail_shards(details)
+    assert len(outputs) == 256
+    zero = json.loads((tmp_path / "paper-details-v1" / "00.json").read_text())
+    middle = json.loads((tmp_path / "paper-details-v1" / "7a.json").read_text())
+    assert zero == {
+        "schema_version": "paper-details-v1",
+        "prefix": "00",
+        "papers": [["00" + "a" * 38, "full zero"]],
+    }
+    assert middle["papers"] == []
 
 
 # ---- build_conference ----
@@ -137,7 +197,7 @@ def test_build_conference_writes_papers_json(tmp_path: Path, monkeypatch):
                 "tags": "LLM Theory",
                 "venue": "ICLR",
                 "authors": "X",
-                "arxiv_url": "u",
+                "arxiv_url": "https://arxiv.org/abs/2404.00001",
                 "pdf_url": "p",
                 "abstract": "a",
             },
@@ -147,7 +207,7 @@ def test_build_conference_writes_papers_json(tmp_path: Path, monkeypatch):
                 "tags": "LLM",
                 "venue": "ICLR",
                 "authors": "Y",
-                "arxiv_url": "u",
+                "arxiv_url": "https://arxiv.org/abs/2404.00002",
                 "pdf_url": "p",
                 "abstract": "b",
             },
@@ -166,10 +226,13 @@ def test_build_conference_writes_papers_json(tmp_path: Path, monkeypatch):
     # papers.json is written next to the viewer's HTML
     papers_json = docs_root / "iclr-2026" / "papers.json"
     assert papers_json.exists()
+    assert (docs_root / "iclr-2026" / "paper-links.html").exists()
     data = json.loads(papers_json.read_text(encoding="utf-8"))
     assert {p["title"] for p in data} == {"A", "B"}
     # tags column must round-trip as a list
     assert all(isinstance(p["tags"], list) for p in data)
+    assert all(len(p["paper_id"]) == 40 for p in data)
+    assert {p["source"] for p in data} == {"arxiv"}
 
 
 def test_load_summary_carries_structured_ids(tmp_path: Path):
@@ -220,6 +283,7 @@ def test_load_summary_numeric_fields_missing_become_none(tmp_path: Path):
                 "citation_count": "",
                 "venue_tier": "",
                 "github_stars": "",
+                "arxiv_url": "https://arxiv.org/abs/2404.00002",
             }
         ],
     )
@@ -239,6 +303,68 @@ def test_build_conference_returns_none_when_summary_missing(tmp_path: Path, monk
     assert build_pages.build_conference("empty-conf") is None
 
 
+@pytest.mark.parametrize(
+    "conference",
+    (
+        "/tmp/absolute",
+        "../escape",
+        "dot.segment",
+        "Upper-2026",
+        "daily",
+        "a",
+        "a" * 41,
+    ),
+)
+def test_conference_slug_is_rejected_before_filesystem_access(
+    conference: str, tmp_path: Path, monkeypatch
+) -> None:
+    monkeypatch.setattr(build_pages, "PROJECT", tmp_path / "project")
+    monkeypatch.setattr(build_pages, "DOCS_ROOT", tmp_path / "docs")
+    with pytest.raises(ValueError, match="conference"):
+        build_pages.build_conference(conference)
+    with pytest.raises(ValueError, match="conference"):
+        build_pages.render_paper_links_page(conference, [])
+
+
+def test_containment_rejects_symlink_escape(tmp_path: Path) -> None:
+    root = tmp_path / "root"
+    outside = tmp_path / "outside"
+    root.mkdir()
+    outside.mkdir()
+    (root / "safe-conf").symlink_to(outside, target_is_directory=True)
+
+    with pytest.raises(ValueError, match="escapes configured root"):
+        build_pages._contained_path(root, "safe-conf", "paper-links.html")
+
+
+def test_fallback_write_uses_same_directory_atomic_replace(tmp_path: Path, monkeypatch) -> None:
+    docs_root = tmp_path / "docs"
+    monkeypatch.setattr(build_pages, "DOCS_ROOT", docs_root)
+    real_replace = os.replace
+    replacements: list[tuple[Path, Path]] = []
+
+    def replace(source: str | os.PathLike[str], destination: str | os.PathLike[str]) -> None:
+        replacements.append((Path(source), Path(destination)))
+        real_replace(source, destination)
+
+    monkeypatch.setattr(build_pages.os, "replace", replace)
+    paper = {
+        "paper_id": "a" * 40,
+        "title": "Atomic paper",
+        "arxiv_url": "https://arxiv.org/abs/2404.00001",
+        "pdf_url": "",
+    }
+
+    output = build_pages.write_paper_links_page("safe-conf", [paper])
+
+    assert output.is_file()
+    assert len(replacements) == 1
+    assert replacements[0][1] == output
+    assert replacements[0][0].parent == output.parent
+    assert not replacements[0][0].exists()
+    assert output.stat().st_mode & 0o777 == 0o644
+
+
 # ---- write_index ----
 
 
@@ -250,7 +376,12 @@ def test_write_index_aggregates_stats(tmp_path: Path, monkeypatch):
     build_pages.write_index(
         [
             {"name": "iclr-2026", "papers": 218, "types": {"Oral": 13}, "top_tags": [("LLM", 90)]},
-            {"name": "neurips-2025", "papers": 100, "types": {"Oral": 5}, "top_tags": [("Vision", 40)]},
+            {
+                "name": "neurips-2025",
+                "papers": 100,
+                "types": {"Oral": 5},
+                "top_tags": [("Vision", 40)],
+            },
         ]
     )
 
@@ -274,8 +405,14 @@ def test_main_skips_daily_pseudo_conference(tmp_path: Path, monkeypatch):
     monkeypatch.setattr(build_pages, "DOCS_ROOT", docs_root)
 
     row = {
-        "title": "A", "type": "Poster", "tags": "Vision", "venue": "CVPR",
-        "authors": "X", "arxiv_url": "u", "pdf_url": "p", "abstract": "a",
+        "title": "A",
+        "type": "Poster",
+        "tags": "Vision",
+        "venue": "CVPR",
+        "authors": "X",
+        "arxiv_url": "https://arxiv.org/abs/2404.00003",
+        "pdf_url": "p",
+        "abstract": "a",
     }
     _write_summary(project / "output" / "cvpr-2026" / "summary.csv", [row])
     _write_summary(project / "output" / "daily" / "summary.csv", [row])
@@ -291,13 +428,42 @@ def test_main_skips_daily_pseudo_conference(tmp_path: Path, monkeypatch):
     assert not (docs_root / "daily" / "papers.json").exists()
 
 
+def test_single_conference_build_does_not_overwrite_global_index(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """A scoped catalog rebuild must not replace the ten-conference index."""
+    import sys
+
+    project = tmp_path / "paperpilot"
+    docs_root = tmp_path / "docs"
+    docs_root.mkdir()
+    monkeypatch.setattr(build_pages, "PROJECT", project)
+    monkeypatch.setattr(build_pages, "DOCS_ROOT", docs_root)
+    _write_summary(project / "output" / "cvpr-2026" / "summary.csv", [_row()])
+    original = '[{"name":"existing-2025","papers":10}]\n'
+    (docs_root / "conferences.json").write_text(original, encoding="utf-8")
+
+    monkeypatch.setattr(sys, "argv", ["build_pages", "--conference", "cvpr-2026"])
+    build_pages.main()
+
+    assert (docs_root / "cvpr-2026" / "papers.json").is_file()
+    assert (docs_root / "conferences.json").read_text(encoding="utf-8") == original
+    assert not (docs_root / "paper-details-v1").exists()
+
+
 # ---- data date stamping ----
 
 
 def _row() -> dict[str, str]:
     return {
-        "title": "A", "type": "Poster", "tags": "Vision", "venue": "CVPR",
-        "authors": "X", "arxiv_url": "u", "pdf_url": "p", "abstract": "a",
+        "title": "A",
+        "type": "Poster",
+        "tags": "Vision",
+        "venue": "CVPR",
+        "authors": "X",
+        "arxiv_url": "https://arxiv.org/abs/2404.00004",
+        "pdf_url": "p",
+        "abstract": "a",
     }
 
 

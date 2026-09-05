@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#fbf9f5" />
-  <title>Lineage — ICLR 2026 — PaperPilot</title>
-  <meta name="description" content="ICLR 2026 Oral 採択論文の先行研究・後継研究の引用関係を、置換／後継／拡張などの関係種別ごとに可視化する家系図ビュー。Groq Llama 3.3 70B で分類。" />
+  <title>Lineage 監査待ち — ICLR 2026 — PaperPilot</title>
+  <meta name="description" content="ICLR 2026 の論文系譜は品質監査中です。監査に合格するまでデータや操作は公開しません。" />
 
   <!-- CSP defence-in-depth. See docs/index.html for the policy
        rationale; this page only fetches same-origin lineage.json. -->
@@ -16,8 +16,8 @@
   <!-- Open Graph / Twitter Card — see docs/index.html for the og:image
        rationale. og:url = the canonical share URL. -->
   <meta property="og:url" content="https://taichiiiiiiii.github.io/automatic-paper-search/iclr-2026/lineage.html" />
-  <meta property="og:title" content="Lineage — ICLR 2026 — PaperPilot" />
-  <meta property="og:description" content="ICLR 2026 Oral 論文の系譜（先行研究・後継研究の引用関係）を関係種別ごとに可視化する家系図。" />
+  <meta property="og:title" content="Lineage 監査待ち — ICLR 2026 — PaperPilot" />
+  <meta property="og:description" content="ICLR 2026 の論文系譜は品質監査中です。" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="PaperPilot" />
   <meta property="og:locale" content="ja_JP" />
@@ -28,8 +28,8 @@
   <meta property="og:image:alt" content="PaperPilot — AI/ML 論文の系譜（家系図）を可視化" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:image" content="https://taichiiiiiiii.github.io/automatic-paper-search/assets/og-image.png" />
-  <meta name="twitter:title" content="Lineage — ICLR 2026 — PaperPilot" />
-  <meta name="twitter:description" content="ICLR 2026 Oral 論文の系譜を関係種別ごとに可視化。" />
+  <meta name="twitter:title" content="Lineage 監査待ち — ICLR 2026 — PaperPilot" />
+  <meta name="twitter:description" content="ICLR 2026 の論文系譜は品質監査中です。" />
 
   <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="../assets/favicon-32.png" sizes="32x32" type="image/png" />
@@ -38,14 +38,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=optional" rel="stylesheet" />
 
-  <link rel="stylesheet" href="../assets/style.css?v=97" />
+  <link rel="stylesheet" href="../assets/style.css?v=105" />
 </head>
 <body>
   <noscript>
     <div class="noscript-banner" role="alert">
-      <strong>JavaScript が必要です。</strong>
-      家系図ビューは JavaScript で動的に描画されます。
-      ブラウザの JavaScript を有効にして再読込してください。
+      <strong>品質監査中です。</strong>
+      JavaScript が無効な状態では公開可否を確認できないため、系譜データは表示しません。
     </div>
   </noscript>
   <a class="skip-link" href="#main-content">本文へスキップ</a>
@@ -62,13 +61,13 @@
       <a href="../">PaperPilot</a> &nbsp;/&nbsp;
       <a href="./">ICLR 2026</a> &nbsp;/&nbsp;
       Lineage
-      <button type="button" class="hero__toggle" id="hero-toggle"
+      <button type="button" class="hero__toggle" id="hero-toggle" hidden
         aria-expanded="false" aria-controls="hero-details"
         aria-label="このページの使い方と生成方法の説明を開閉" title="使い方と生成方法の説明を開閉">使い方</button>
     </nav>
-    <h1 class="hero__title"><em>Lineage</em> — ICLR 2026 Oral</h1>
-    <p class="hero__lede">
-      ICLR 2026 Oral 採択論文の <strong>系譜</strong>（先行研究・後継研究の引用関係）を可視化します。
+    <h1 class="hero__title" id="lineage-page-title"><em>Lineage</em> — ICLR 2026 監査待ち</h1>
+    <p class="hero__lede" id="lineage-page-lede">
+      ICLR 2026 の系譜データは品質監査中です。合格するまで内容は公開しません。
     </p>
     <div class="hero__details" id="hero-details" hidden>
     <ol class="hero__modes" aria-label="3 つの表示モード">
@@ -78,17 +77,27 @@
     </ol>
     </div>
 
-    <p class="hero__note">
-      データは Semantic Scholar の引用関係を Groq Llama 3.3 70B で関係種別（<strong>supersedes</strong>=置換、<strong>successor</strong>=後継、<strong>extends</strong>=拡張、<strong>ablation</strong>=分析、<strong>baseline</strong>=比較、<strong>contrasts</strong>=対立）に分類して生成。
+    <p class="hero__note" id="lineage-page-note">
+      構造・識別子・関係根拠と入力ハッシュの検証が完了するまで、未監査データは読み込みません。
     </p>
   </header>
 
   <main id="main-content">
+  <section class="empty-state" id="lineage-audit-status" role="status" aria-live="polite">
+    <h2>公開監査を待っています</h2>
+    <p>構造・識別子・関係根拠の検査が完了するまで、検索・表示切替・グラフを利用できません。</p>
+    <p><a href="./">ICLR 2026 の論文カタログへ戻る</a></p>
+  </section>
+  <div id="lineage-ready-ui" hidden>
   <div class="lineage-toolbar">
     <div class="lineage-toolbar__group" role="group" aria-label="Layout">
       <button class="layout-btn" data-layout="topics" aria-pressed="false">トピック</button>
       <button class="layout-btn" data-layout="tree" aria-pressed="true">家系図</button>
       <button class="layout-btn" data-layout="timeline" aria-pressed="false">時系列</button>
+    </div>
+    <div class="lineage-toolbar__group" role="group" aria-label="表示形式">
+      <button class="layout-btn view-btn" data-view="list" aria-pressed="false">関係リスト</button>
+      <button class="layout-btn view-btn" data-view="graph" aria-pressed="true">グラフ</button>
     </div>
     <button class="layout-btn" id="btn-root" type="button" title="ルート論文にフォーカスを戻す">ルート</button>
     <div class="lineage-search">
@@ -97,6 +106,9 @@
     </div>
     <div class="lineage-toolbar__group" id="relation-filter" role="group" aria-label="Relation filter"></div>
   </div>
+  <section class="relation-list" id="relation-list" aria-labelledby="relation-list-heading" tabindex="-1" hidden>
+    <h2 id="relation-list-heading">論文間の関係</h2>
+  </section>
 
   <nav class="lineage-crumb" id="lineage-crumb" aria-label="Current cluster" hidden></nav>
 
@@ -133,6 +145,7 @@
     <div id="tt-rationale"></div>
     <div class="edge-tooltip__conf" id="tt-conf"></div>
   </div>
+  </div>
   </main>
 
   <footer class="footer">
@@ -141,6 +154,7 @@
   </footer>
 
   <script src="../assets/utils.js?v=84" defer></script>
-  <script src="../assets/lineage.js?v=85" defer></script>
+  <script src="../assets/lineage-core.js?v=4" defer></script>
+  <script src="../assets/lineage.js?v=88" defer></script>
 </body>
 </html>

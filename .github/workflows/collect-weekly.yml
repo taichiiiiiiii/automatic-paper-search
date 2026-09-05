@@ -1,134 +1,245 @@
 name: PaperPilot Weekly Deep Survey
-
-# Conference-catalog collector. Kept around for manual dispatch but the
-# weekly cron is **disabled** (2026-06-04): the project's active focus
-# is the テーマ家系図 (`theme-on-demand.yml` + `regen-themes.yml`), not
-# the conference catalog this workflow maintains. The schedule key was
-# removed instead of the workflow itself so the docs/iclr-2026/ pages
-# stay live and the build can be triggered on demand from the Actions
-# tab when fresh data is genuinely wanted.
+# Manual full-catalog refresh. The collector and lineage builders create a
+# changed-file candidate without repository write credentials. A later job
+# validates it against the latest develop tip, promotes it, and releases the
+# exact resulting SHA in the same run.
 
 on:
   workflow_dispatch:
 
-permissions:
-  contents: write
+permissions: {}
 
 jobs:
-  collect:
+  generate:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
-    env:
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    timeout-minutes: 120
+    permissions:
+      contents: read
+    outputs:
+      as_of: ${{ steps.candidate.outputs.as_of }}
+      base_sha: ${{ steps.candidate.outputs.base_sha }}
+      candidate_name: ${{ steps.candidate.outputs.candidate_name }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: develop
+          persist-credentials: false
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: '3.12'
 
-      # Switched from `pip install -r paperpilot/requirements.txt` to
-      # `uv sync` to match regen-themes.yml and theme-on-demand.yml.
-      # requirements.txt was missing numpy (used by stage_embedding),
-      # python-dotenv (used by config_loader) and would silently drift
-      # from pyproject.toml — the immediate cause of the post-#124
-      # ModuleNotFoundError. uv reads pyproject.toml directly so there's
-      # one source of truth for deps.
-      - name: Install uv
-        uses: astral-sh/setup-uv@v6
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
         with:
-          version: '0.7.x'
+          version: '0.12.7'
 
-      - name: uv sync
-        run: uv sync
+      - name: Install locked dependencies
+        run: uv sync --frozen --extra dev
 
-      - name: Run PaperPilot (weekly)
+      - name: Freeze generation identity
+        id: candidate
+        run: |
+          set -euo pipefail
+          echo "as_of=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
+          echo "base_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "candidate_name=weekly-candidate-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_OUTPUT"
+
+      - name: Run PaperPilot collector
         env:
-          PAPERPILOT_GITHUB_TOKEN: ${{ secrets.GH_PAT || github.token }}
+          PAPERPILOT_GITHUB_TOKEN: ${{ github.token }}
           PAPERPILOT_S2_API_KEY: ${{ secrets.S2_API_KEY }}
           PAPERPILOT_OPENALEX_EMAIL: ${{ secrets.OPENALEX_EMAIL }}
           PAPERPILOT_GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           PAPERPILOT_CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
           PAPERPILOT_GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-          PAPERPILOT_SLACK_WEBHOOK_URL: ${{ env.SLACK_WEBHOOK_URL }}
-        run: uv run python -m paperpilot.collector --config paperpilot/config.yaml
+        run: uv run --frozen python -m paperpilot.collector --config paperpilot/config.yaml
 
-      # Visualization layer: regenerate summary.csv + papers.json for every
-      # conference subdir that has pipeline output. Oral curation is
-      # optional (missing oral_summaries_ja.md -> everything becomes
-      # Poster). Skips silently when no conferences are set up.
-      - name: Regenerate summary + papers.json for each conference
+      - name: Rebuild conference-local projections
         run: |
           set -euo pipefail
           shopt -s nullglob
-          for conf in paperpilot/output/*/; do
-            name=$(basename "$conf")
-            # `ls "$conf"/papers_*.csv` under nullglob expands the glob
-            # to nothing and `ls` (no args) succeeds against the current
-            # working directory — so the previous `if ls ... >/dev/null`
-            # test passed for empty conference dirs and the script then
-            # crashed with FileNotFoundError. Check the glob match
-            # explicitly via an array length instead.
-            matches=( "$conf"/papers_*.csv )
-            if [ "${#matches[@]}" -eq 0 ]; then
-              continue
-            fi
-            echo "--- $name ---"
-            uv run python paperpilot/scripts/build_summary_csv.py --conference "$name"
-            uv run python paperpilot/scripts/build_pages.py --conference "$name"
+          rebuilt=0
+          for conf_dir in paperpilot/output/*/; do
+            conf="$(basename "$conf_dir")"
+            [ "$conf" != daily ] || continue
+            matches=("$conf_dir"/papers_*.csv)
+            [ "${#matches[@]}" -gt 0 ] || continue
+            uv run --frozen python paperpilot/scripts/build_summary_csv.py \
+              --conference "$conf"
+            uv run --frozen python paperpilot/scripts/build_pages.py \
+              --conference "$conf"
+            rebuilt=$((rebuilt + 1))
           done
+          echo "rebuilt $rebuilt conference-local projection(s)"
 
-      # Lineage regeneration is expensive (hundreds of LLM calls per run)
-      # and only useful for conferences where the Oral curation is done.
-      # The "is the key configured" gate USED to live in a step-level
-      # `if: ${{ secrets.GROQ_API_KEY != '' }}` — but that's a #124
-      # startup_failure: GitHub Actions disallows the `secrets` context
-      # in step-level `if:` expressions and rejects the whole workflow
-      # at parse time. The check now lives inside the run script,
-      # which is allowed and produces the same skip-when-unset behaviour.
-      - name: Regenerate lineage.json (if Groq key available)
+      - name: Regenerate eligible conference lineages
         env:
           PAPERPILOT_GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           PAPERPILOT_GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        continue-on-error: true   # viewer falls back to last good lineage.json
         run: |
           set -euo pipefail
-          if [ -z "${PAPERPILOT_GROQ_API_KEY:-}" ]; then
-            echo "PAPERPILOT_GROQ_API_KEY not configured — skipping lineage regen"
+          attempted=0
+          updated=0
+          retained=0
+          skipped=0
+          {
+            echo "### Conference lineage regeneration"
+            echo "| Conference | Result | Published candidate |"
+            echo "|---|---|---|"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ -z "${PAPERPILOT_GROQ_API_KEY:-}" ] && [ -z "${PAPERPILOT_GEMINI_API_KEY:-}" ]; then
+            echo "| all | no LLM key | previous lineages retained |" >> "$GITHUB_STEP_SUMMARY"
+            echo "::notice::no lineage LLM key configured; retaining published lineages"
             exit 0
           fi
+
           shopt -s nullglob
           for papers in docs/*/papers.json; do
-            name=$(basename "$(dirname "$papers")")
-            echo "--- lineage: $name ---"
-            uv run python paperpilot/scripts/build_lineage.py --conference "$name"
+            conf="$(basename "$(dirname "$papers")")"
+            lineage="docs/$conf/lineage.json"
+            oral_count="$(jq '[.[] | select(.type == "Oral")] | length' "$papers")"
+            if [ "$oral_count" -eq 0 ]; then
+              skipped=$((skipped + 1))
+              echo "| $conf | no Oral papers | unchanged |" >> "$GITHUB_STEP_SUMMARY"
+              continue
+            fi
+
+            attempted=$((attempted + 1))
+            backup="$(mktemp "$RUNNER_TEMP/$conf-lineage.XXXXXX")"
+            if [ -f "$lineage" ]; then
+              cp -p "$lineage" "$backup"
+            else
+              : > "$backup"
+            fi
+
+            if uv run --frozen python paperpilot/scripts/build_lineage.py \
+                 --conference "$conf" && \
+               LINEAGE_PATH="$lineage" python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          payload = json.loads(Path(os.environ["LINEAGE_PATH"]).read_text(encoding="utf-8"))
+          if not isinstance(payload.get("nodes"), list) or not payload["nodes"]:
+              raise SystemExit("generated lineage has no nodes")
+          if not isinstance(payload.get("edges"), list) or not payload["edges"]:
+              raise SystemExit("generated lineage has no edges")
+          PY
+            then
+              updated=$((updated + 1))
+              echo "| $conf | generated | updated |" >> "$GITHUB_STEP_SUMMARY"
+            else
+              retained=$((retained + 1))
+              if [ -s "$backup" ]; then
+                cp -p "$backup" "$lineage"
+              else
+                rm -f "$lineage"
+              fi
+              echo "::warning::lineage failed for $conf; previous artifact retained"
+              echo "| $conf | failed | previous retained |" >> "$GITHUB_STEP_SUMMARY"
+            fi
+            rm -f "$backup"
           done
 
-      - name: Commit results
-        # Push to develop (the script default). The original workflow
-        # pushed to `main` from the GitHub-Pages era, but main has been
-        # essentially abandoned since Cloudflare Pages took over and
-        # auto-deploys develop. Forcing this run to push to main caused
-        # a real README.md merge conflict on the first dispatch after
-        # PR #140 — there's no point rebasing develop's actual work
-        # onto a stale main. The retry+rebase logic in
-        # commit-and-push.sh still applies (concurrent themes /
-        # daily-watch pushes), it just operates on the right branch now.
+          {
+            echo
+            echo "Attempted: $attempted; updated: $updated; retained: $retained; skipped: $skipped"
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$attempted" -gt 0 ] && [ "$updated" -eq 0 ]; then
+            echo "::error::all attempted lineage regenerations failed"
+            exit 1
+          fi
+
+      - name: Package changed generated files
+        env:
+          CANDIDATE_DIR: ${{ runner.temp }}/candidate
         run: |
           set -euo pipefail
-          git config user.name "PaperPilot Bot"
-          git config user.email "bot@paperpilot.dev"
-          # docs/ carries the viewer data (papers.json / lineage.json)
-          # that Cloudflare Pages serves, so it must be committed
-          # alongside the CSVs (Cloudflare hooks the push and auto-
-          # deploys).
-          msg="📚 Weekly survey $(date -u +%Y-%m-%d)"
-          bash .github/scripts/commit-and-push.sh "$msg" \
-            paperpilot/output paperpilot/data docs
+          includes=(
+            paperpilot/output
+            paperpilot/data/seen_ids.json
+            paperpilot/data/run_history.jsonl
+            paperpilot/data/lineage-cache/classifications.json
+          )
+          shopt -s nullglob
+          for lineage in docs/*/lineage.json; do
+            includes+=("$lineage")
+          done
+          bash .github/scripts/package-generated-candidate.sh \
+            "$CANDIDATE_DIR" "${includes[@]}"
 
-      - name: Notify on failure
-        if: failure() && env.SLACK_WEBHOOK_URL != ''
+      - name: Upload generated candidate
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ${{ steps.candidate.outputs.candidate_name }}
+          path: ${{ runner.temp }}/candidate
+          if-no-files-found: error
+          retention-days: 14
+
+  promote:
+    needs: generate
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    outputs:
+      source_sha: ${{ steps.promote.outputs.source_sha }}
+      changed: ${{ steps.promote.outputs.changed }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: develop
+          fetch-depth: 0
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          version: '0.12.7'
+
+      - run: uv sync --frozen --extra dev --extra unarxive
+
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: ${{ needs.generate.outputs.candidate_name }}
+          path: ${{ runner.temp }}/candidate
+
+      - name: Validate and promote from the latest develop tip
+        id: promote
+        env:
+          PROMOTE_AS_OF: ${{ needs.generate.outputs.as_of }}
+          PROMOTE_BASE_SHA: ${{ needs.generate.outputs.base_sha }}
+          CANDIDATE_DIR: ${{ runner.temp }}/candidate
         run: |
-          curl -X POST "$SLACK_WEBHOOK_URL" \
-            -H 'Content-type: application/json' \
-            -d "{\"text\": \"⚠️ PaperPilot WEEKLY run failed: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}"
+          set -euo pipefail
+          allowed=(
+            paperpilot/output
+            paperpilot/data/seen_ids.json
+            paperpilot/data/run_history.jsonl
+            paperpilot/data/lineage-cache/classifications.json
+          )
+          if [ -d "$CANDIDATE_DIR/docs" ]; then
+            while IFS= read -r -d '' lineage; do
+              allowed+=("${lineage#"$CANDIDATE_DIR/"}")
+            done < <(find "$CANDIDATE_DIR/docs" -mindepth 2 -maxdepth 2 \
+              -name lineage.json -type f -print0)
+          fi
+          msg="data(weekly): refresh generated survey"
+          bash .github/scripts/promote-generated.sh conference \
+            "$CANDIDATE_DIR" "$msg" "${allowed[@]}"
+
+  release:
+    needs: promote
+    if: needs.promote.outputs.changed == 'true'
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/pages-release.yml
+    with:
+      source_sha: ${{ needs.promote.outputs.source_sha }}
+      release_kind: normal
+      request_id: weekly-${{ github.run_id }}-${{ github.run_attempt }}

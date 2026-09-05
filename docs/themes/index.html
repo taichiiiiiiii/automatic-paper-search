@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#fbf9f5" />
-  <title>テーマ家系図 — Theme Lineage | PaperPilot</title>
-  <meta name="description" content="任意の研究テーマから生成した時系列付きの論文家系図。Y 軸は年（rank-based 等間隔）、横軸は 6 つの意味（引用ランク / log 引用数 / 系譜近接 / 中心性 / 会議格 / 新規性）から切替可能。" />
+  <title>系譜の公開準備状況 | PaperPilot</title>
+  <meta name="description" content="PaperPilot の論文系譜について、品質監査を通過した公開対象の準備状況を案内します。未合格のデータは表示しません。" />
 
   <!-- Base URL of the CF Worker that owns `POST /api/themes`. The
        viewer ships from GitHub Pages and the API runs on workers.dev
@@ -29,8 +29,8 @@
        rationale. og:url = the canonical themes URL so the ?theme= share
        variants dedup against one URL. -->
   <meta property="og:url" content="https://taichiiiiiiii.github.io/automatic-paper-search/themes/" />
-  <meta property="og:title" content="テーマ家系図 — Theme Lineage" />
-  <meta property="og:description" content="任意の研究テーマから生成する時系列付きの論文家系図ビューア。新規テーマも数分でオンデマンド生成可能。" />
+  <meta property="og:title" content="系譜の公開準備状況 — PaperPilot" />
+  <meta property="og:description" content="品質監査を通過した論文系譜だけを公開するための準備状況ページです。" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="PaperPilot" />
   <meta property="og:locale" content="ja_JP" />
@@ -41,8 +41,8 @@
   <meta property="og:image:alt" content="PaperPilot — AI/ML 論文の系譜（家系図）を可視化" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:image" content="https://taichiiiiiiii.github.io/automatic-paper-search/assets/og-image.png" />
-  <meta name="twitter:title" content="テーマ家系図 — Theme Lineage" />
-  <meta name="twitter:description" content="任意の研究テーマから生成する時系列付きの論文家系図ビューア。" />
+  <meta name="twitter:title" content="系譜の公開準備状況 — PaperPilot" />
+  <meta name="twitter:description" content="品質監査を通過した論文系譜だけを公開します。" />
 
   <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="../assets/favicon-32.png" sizes="32x32" type="image/png" />
@@ -51,14 +51,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=optional" rel="stylesheet" />
 
-  <link rel="stylesheet" href="../assets/style.css?v=97" />
+  <link rel="stylesheet" href="../assets/style.css?v=105" />
 </head>
 <body>
   <noscript>
     <div class="noscript-banner" role="alert">
-      <strong>JavaScript が必要です。</strong>
-      家系図ビューア (テーマ選択 + SVG 描画 + フィルタ) は JavaScript で動作します。
-      ブラウザの JavaScript を有効にして再読込してください。
+      <strong>系譜は現在、品質監査中です。</strong>
+      JavaScript が無効な状態では公開可否を確認できないため、未監査データは表示しません。
     </div>
   </noscript>
   <a class="skip-link" href="#main-content">本文へスキップ</a>
@@ -78,6 +77,7 @@
         type="button"
         class="hero__toggle"
         id="hero-toggle"
+        hidden
         aria-expanded="false"
         aria-controls="hero-details"
         title="ヘッダ説明と新規テーマ生成フォームを開閉"
@@ -88,6 +88,7 @@
         type="button"
         class="hero__toggle hero__toggle--accent"
         id="hero-new-theme"
+        hidden
         aria-expanded="false"
         aria-controls="hero-details"
         title="新しいテーマを生成"
@@ -95,7 +96,7 @@
         ✨ 新規テーマ
       </button>
     </nav>
-    <h1 class="hero__title">
+    <h1 class="hero__title" id="lineage-page-title">
       <!-- Mini family-tree glyph: 1 root → 2 children → 1 grandchild,
            same edge colors as the actual lineage so the icon previews
            what the page renders. -->
@@ -112,7 +113,7 @@
           <rect x="14" y="46" width="12" height="8" rx="2" fill="oklch(96% 0.02 80)" stroke="oklch(60% 0.04 85)"/>
         </g>
       </svg>
-      <em>Theme Lineage</em> — テーマで時系列家系図
+      <em>Lineage</em> — 公開準備状況
     </h1>
 
     <!-- Collapsible details: was always-visible 3-paragraph block + form
@@ -120,12 +121,10 @@
          "ⓘ について" or "✨ 新規テーマ" buttons in the breadcrumb. -->
     <div class="hero__details" id="hero-details" hidden>
       <p class="hero__lede">
-        研究テーマ（例: <em>Mixture of Experts</em> / <em>Direct Preference Optimization</em>）を選ぶと、
-        <strong>Y 軸＝年</strong>（出現年が等間隔で並ぶ rank-based スケール）の家系図が描画されます。
+        系譜データは、構造・識別子・関係根拠を検査する品質監査を通過したものだけ公開します。
       </p>
       <p class="hero__note">
-        古い論文ほど上、新しい論文ほど下。エッジは親 → 子で <em>supersedes / successor / extends / ablation / baseline / contrasts</em> を区別します。
-        ホバーで LLM による分類理由が表示されます。データは Semantic Scholar の引用関係を Groq Llama 3.3 70B で分類して生成。
+        現在の監査に合格したコレクションがない場合、テーマ名・件数・フィルタ・ダウンロード操作は表示されません。
       </p>
 
       <!-- In-browser submission: POST to the CF Worker (worker/index.ts)
@@ -136,7 +135,7 @@
            When the api-base meta is empty (e.g. Access is being
            toggled), the form degrades to a link that opens the GitHub
            Issue page directly. -->
-      <form class="theme-request" id="theme-request" autocomplete="off" novalidate>
+      <form class="theme-request" id="theme-request" autocomplete="off" novalidate hidden>
         <label class="theme-request__label" for="theme-request-input">
           <span aria-hidden="true">✨</span>
           テーマを自分で生成:
@@ -216,6 +215,12 @@
   </header>
 
   <main id="main-content">
+  <section class="empty-state" id="lineage-audit-status" role="status" aria-live="polite">
+    <h2>系譜は品質監査中です</h2>
+    <p>公開基準を満たしたコレクションはまだありません。監査に合格するまでテーマ名・件数・グラフ・操作は公開しません。</p>
+    <p><a href="../">論文カタログへ戻る</a></p>
+  </section>
+  <div id="lineage-ready-ui" hidden>
   <!-- Slug-fallback notification: shown when ?theme=<unknown> made the
        viewer fall back to the manifest's first entry. Toggled by
        theme.js init(). Sits above the gallery so the user notices
@@ -461,14 +466,16 @@
     <div class="card-popover__authors" id="cp-authors"></div>
     <div class="card-popover__meta" id="cp-meta"></div>
   </div>
+  </div>
   </main>
 
   <footer class="footer">
     <span>Generated by <a href="https://github.com/taichiiiiiiii/automatic-paper-search">PaperPilot</a></span>
-    <span id="x-axis-hint">Y 軸: 年（rank-based 等間隔） · X 軸: 引用ランク · ホバー → 分類理由</span>
+    <span id="x-axis-hint">品質監査に合格した系譜のみ公開します</span>
   </footer>
 
   <script src="../assets/utils.js?v=84" defer></script>
-  <script src="../assets/theme.js?v=82" defer></script>
+  <script src="../assets/lineage-core.js?v=4" defer></script>
+  <script src="../assets/theme.js?v=88" defer></script>
 </body>
 </html>

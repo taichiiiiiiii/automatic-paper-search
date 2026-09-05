@@ -13,6 +13,7 @@ build_lineage.py, and the edge kept iff the relation is not `unrelated`.
 Usage:
     uv run python -m paperpilot.scripts.build_deep_lineage \\
         --arxiv-id 2602.18473 \\
+        --seed-paper-id 0123456789abcdef0123456789abcdef01234567 \\
         --depth 2 \\
         --output docs/iclr-2026/deep-2602.18473.json
 
@@ -36,14 +37,28 @@ import argparse
 import json
 import sys
 import time
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from paperpilot.llm.base import RelationClassification, build_classify_prompt  # noqa: E402
+from paperpilot.identity.source_ids import IdentityError, normalize_alias  # noqa: E402
+from paperpilot.llm.base import (  # noqa: E402
+    RelationClassification,
+    build_classify_prompt,
+    provider_model_tag,
+)
 from paperpilot.scripts._lineage_classify import _slot_fill_rationale  # noqa: E402
+from paperpilot.scripts._lineage_contract import (  # noqa: E402
+    ARXIV_ID_RE,
+    LINEAGE_ARTIFACT_VERSION,
+    canonical_json_sha256,
+    make_provenance,
+    require_paper_id,
+    validate_lineage_artifact,
+)
 from paperpilot.scripts.build_lineage import (  # noqa: E402
     CACHE_DIR,
     build_provider,
@@ -57,6 +72,13 @@ from paperpilot.utils.json_parser import parse_llm_response  # noqa: E402
 from paperpilot.utils.logger import get_logger, setup_logging  # noqa: E402
 
 logger = get_logger(__name__)
+
+_PRODUCER_NAME = "paperpilot.scripts.build_deep_lineage"
+_PRODUCER_VERSION = "p2-v1"
+_PROMPT_VERSION = "relation-prompt-v1"
+_CLASSIFICATION_SCHEMA_VERSION = "relation-classification-v1"
+_CACHE_VERSION = "lineage-classification-cache-v2"
+_CACHE_TTL = timedelta(days=30)
 
 # Llama 3.3 70B on Groq has a habit of returning `"rationale": ""` for weak
 # (depth-2+) edges — those get rejected by RelationClassification.from_dict
@@ -72,9 +94,34 @@ logger = get_logger(__name__)
 # through `_apply_llm_classification`).
 
 
+def _utc_now() -> datetime:
+    return datetime.now(timezone.utc)
+
+
+def _iso_z(value: datetime) -> str:
+    return value.astimezone(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
+
+def _cache_entry_is_fresh(entry: object, *, now: datetime) -> bool:
+    if not isinstance(entry, dict) or entry.get("status") != "success":
+        return False
+    expires_at = entry.get("expires_at")
+    if not isinstance(expires_at, str):
+        return False
+    try:
+        parsed = datetime.fromisoformat(expires_at.replace("Z", "+00:00"))
+    except ValueError:
+        return False
+    return parsed.tzinfo is not None and parsed > now
+
+
 def _classify_cached_lenient(
-    provider, a: dict, b: dict, *,
-    cache_key: str,
+    provider,
+    a: dict,
+    b: dict,
+    *,
+    src_id: str,
+    dst_id: str,
     classifications: dict[str, dict],
     cache_path: Path,
     rate_delay: float,
@@ -86,13 +133,49 @@ def _classify_cached_lenient(
     ("empty rationale → drop edge"): at depth 2+ we'd rather show a weak
     edge with a templated tooltip than lose the entire deeper tree.
     """
-    cached = classifications.get(cache_key)
-    if cached is not None:
-        return cached
-
     # Call LLM directly so we can inspect the raw relation before
     # `from_dict` kills it for an empty rationale.
     system, user = build_classify_prompt(a, b)
+    evidence_sha256 = canonical_json_sha256(
+        {"src": src_id, "dst": dst_id, "system": system, "user": user}
+    )
+    provider_name = str(getattr(provider, "name", "unknown"))
+    model = provider_model_tag(provider)
+    provenance = make_provenance(
+        producer_name=_PRODUCER_NAME,
+        producer_version=_PRODUCER_VERSION,
+        evidence_source="semantic_scholar",
+        evidence_kind="relation-input",
+        evidence_sha256=evidence_sha256,
+        method="llm",
+        provider=provider_name,
+        model=model,
+        prompt_version=_PROMPT_VERSION,
+        classification_schema_version=_CLASSIFICATION_SCHEMA_VERSION,
+    )
+    cache_identity = {
+        "version": _CACHE_VERSION,
+        "src": src_id,
+        "dst": dst_id,
+        "producer": {"name": _PRODUCER_NAME, "version": _PRODUCER_VERSION},
+        "evidence_sha256": evidence_sha256,
+        "provider": provider_name,
+        "model": model,
+        "prompt_version": _PROMPT_VERSION,
+        "schema_version": _CLASSIFICATION_SCHEMA_VERSION,
+    }
+    cache_key = f"v2:{canonical_json_sha256(cache_identity)}"
+    cached = classifications.get(cache_key)
+    now = _utc_now()
+    if (
+        _cache_entry_is_fresh(cached, now=now)
+        and cached.get("cache_identity") == cache_identity
+        and cached.get("provenance") == provenance
+    ):
+        cached_classification = RelationClassification.from_dict(cached)
+        if cached_classification is not None:
+            return cached
+
     text = provider._chat(system, user, json_mode=True)
     time.sleep(rate_delay)
     if text is None:
@@ -115,13 +198,22 @@ def _classify_cached_lenient(
     if not rationale and rel != "unrelated":
         # #304: paper-specific slot-fill instead of a template fallback.
         rationale = _slot_fill_rationale(rel, a, b)
-    try:
-        conf = float(parsed.get("confidence", 0.6))
-    except (TypeError, ValueError):
-        conf = 0.6
-    conf = max(0.0, min(1.0, conf))
-
-    entry = {"relation": rel, "confidence": conf, "rationale": rationale}
+    parsed["rationale"] = rationale
+    classification = RelationClassification.from_dict(parsed)
+    if classification is None:
+        return None
+    entry = {
+        "cache_identity": cache_identity,
+        "status": "success",
+        "expires_at": _iso_z(now + _CACHE_TTL),
+        "src": src_id,
+        "dst": dst_id,
+        "relation": classification.relation,
+        "confidence": classification.confidence,
+        "rationale": classification.rationale,
+        "model": model,
+        "provenance": provenance,
+    }
     classifications[cache_key] = entry
     # Use the same race-safe persist helper that build_lineage uses; without
     # it, parallel deep + theme runs can lose each other's contributions.
@@ -139,9 +231,29 @@ def fetch_related_by_id(s2_id: str, kind: str, top_n: int) -> list[dict]:
     return select_top(items, top_n)
 
 
+def _require_s2_focus_identity(focus: object, requested_arxiv_id: str) -> str:
+    """Return the S2 paper ID only when its explicit arXiv alias matches."""
+
+    if not isinstance(focus, dict):
+        raise ValueError("Semantic Scholar focus response must be an object")
+    paper_id = focus.get("paperId")
+    external_ids = focus.get("externalIds")
+    raw_arxiv_id = external_ids.get("ArXiv") if isinstance(external_ids, dict) else None
+    if not isinstance(paper_id, str) or not paper_id.strip() or not isinstance(raw_arxiv_id, str):
+        raise ValueError("Semantic Scholar focus is missing paperId or externalIds.ArXiv")
+    try:
+        _, resolved_arxiv_id = normalize_alias("arxiv", raw_arxiv_id)
+    except IdentityError as exc:
+        raise ValueError("Semantic Scholar returned an invalid arXiv identity") from exc
+    if resolved_arxiv_id != requested_arxiv_id:
+        raise ValueError("Semantic Scholar arXiv identity does not match the requested paper")
+    return paper_id
+
+
 def build_deep(
     arxiv_id: str,
     *,
+    seed_paper_id: str,
     depth: int = 2,
     top_parents: int = 20,
     top_children: int = 20,
@@ -149,15 +261,18 @@ def build_deep(
     tier_override: str | None = None,
 ) -> dict:
     """BFS from focus paper up to `depth` hops in each direction."""
-    provider, rate_delay = build_provider()
-    logger.info(
-        "LLM provider: %s; focus arxiv=%s depth=%d", provider.name, arxiv_id, depth
-    )
+    seed_paper_id = require_paper_id(seed_paper_id, field="seed_paper_id")
+    _, arxiv_id = normalize_alias("arxiv", arxiv_id)
+    if ARXIV_ID_RE.fullmatch(arxiv_id) is None:
+        raise ValueError("deep lineage requires a modern arXiv ID")
 
     focus = fetch_paper_by_arxiv(arxiv_id)
     if focus is None:
         sys.exit(f"S2 lookup failed for arXiv:{arxiv_id}")
-    focus_id = focus["paperId"]
+    focus_id = _require_s2_focus_identity(focus, arxiv_id)
+    provider, rate_delay = build_provider()
+    logger.info("LLM provider: %s; focus arxiv=%s depth=%d", provider.name, arxiv_id, depth)
+    aliases = [["arxiv", arxiv_id], ["semantic_scholar", focus_id]]
     logger.info("Focus resolved: %s — %s", focus_id, focus.get("title", "")[:80])
 
     nodes: dict[str, dict] = {}
@@ -169,11 +284,12 @@ def build_deep(
         override_venue=venue_override,
         override_tier=tier_override,
     )
+    nodes[focus_id]["seed_paper_id"] = seed_paper_id
+    nodes[focus_id]["aliases"] = aliases
 
     classifications_path = CACHE_DIR / "classifications.json"
     classifications: dict[str, dict] = (
-        json.loads(classifications_path.read_text())
-        if classifications_path.exists() else {}
+        json.loads(classifications_path.read_text()) if classifications_path.exists() else {}
     )
 
     def expand(src_paper: dict, direction: str, top_n: int) -> list[tuple[dict, dict]]:
@@ -183,7 +299,10 @@ def build_deep(
         related = fetch_related_by_id(s2_id, kind, top_n)
         logger.info(
             "  %-60s %s → %d %s",
-            src_paper.get("title", "")[:60], direction, len(related), kind,
+            src_paper.get("title", "")[:60],
+            direction,
+            len(related),
+            kind,
         )
         out: list[tuple[dict, dict]] = []
         for rel in related:
@@ -194,15 +313,17 @@ def build_deep(
             if rel.get("_is_influential") is False:
                 continue
             if direction == "up":
-                a, b = rel, src_paper       # parent → child
+                a, b = rel, src_paper  # parent → child
                 edge_src, edge_dst = rel_id, s2_id
             else:
-                a, b = src_paper, rel       # focus/self → child
+                a, b = src_paper, rel  # focus/self → child
                 edge_src, edge_dst = s2_id, rel_id
-            cache_key = f"{edge_src}->{edge_dst}"
             cls = _classify_cached(
-                provider, a, b,
-                cache_key=cache_key,
+                provider,
+                a,
+                b,
+                src_id=edge_src,
+                dst_id=edge_dst,
                 classifications=classifications,
                 cache_path=classifications_path,
                 rate_delay=rate_delay,
@@ -210,10 +331,14 @@ def build_deep(
             if cls is None or cls["relation"] == "unrelated":
                 continue
             edge = {
-                "src": edge_src, "dst": edge_dst,
+                "src": edge_src,
+                "dst": edge_dst,
                 "rel": cls["relation"],
+                "relation": cls["relation"],
                 "conf": cls["confidence"],
+                "confidence": cls["confidence"],
                 "rationale": cls["rationale"],
+                "provenance": cls["provenance"],
             }
             out.append((rel, edge))
         return out
@@ -255,41 +380,78 @@ def build_deep(
     # Drop zero-rationale edges (belt + braces vs. build_lineage.py).
     edges = [e for e in edges if (e.get("rationale") or "").strip()]
 
-    return {
+    for node in nodes.values():
+        node.setdefault("is_focus", False)
+    ordered_nodes = sorted(nodes.values(), key=lambda node: node["id"])
+    ordered_edges = sorted(edges, key=lambda edge: (edge["src"], edge["dst"], edge["relation"]))
+    result = {
+        "schema_version": LINEAGE_ARTIFACT_VERSION,
         "root": focus_id,
-        "nodes": list(nodes.values()),
-        "edges": edges,
+        "nodes": ordered_nodes,
+        "edges": ordered_edges,
+        "clusters": [],
         "meta": {
             "source": "build_deep_lineage.py",
+            "kind": "deep",
+            "generator": _PRODUCER_NAME,
             "arxiv_id": arxiv_id,
+            "seed_paper_id": seed_paper_id,
+            "aliases": aliases,
             "depth": depth,
             "generated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         },
     }
+    issues = validate_lineage_artifact(
+        result,
+        kind="deep",
+        catalog_ids={seed_paper_id},
+        expected_seed_paper_id=seed_paper_id,
+    )
+    if issues:
+        detail = "; ".join(f"{issue.code}:{issue.path}" for issue in issues[:8])
+        raise ValueError(f"generated lineage violates {LINEAGE_ARTIFACT_VERSION}: {detail}")
+    return result
 
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--arxiv-id", required=True,
-                    help="arXiv id of the focus paper (e.g. 2602.18473)")
-    ap.add_argument("--depth", type=int, default=2,
-                    help="BFS depth in each direction (default: 2)")
-    ap.add_argument("--top-parents", type=int, default=20,
-                    help="Max references per seed at depth 1 (halved at deeper levels)")
-    ap.add_argument("--top-children", type=int, default=20,
-                    help="Max citations per seed at depth 1 (halved at deeper levels)")
-    ap.add_argument("--venue-override", default="ICLR 2026",
-                    help="Pretty venue label for the focus node")
-    ap.add_argument("--tier-override", default="A+",
-                    help="Venue tier override for the focus node")
-    ap.add_argument("--output", default=None,
-                    help="Output JSON path (default: docs/iclr-2026/deep-<arxiv_id>.json)")
+    ap.add_argument(
+        "--arxiv-id", required=True, help="arXiv id of the focus paper (e.g. 2602.18473)"
+    )
+    ap.add_argument(
+        "--seed-paper-id",
+        required=True,
+        help="Canonical 40-hex paper_id from the conference catalog",
+    )
+    ap.add_argument("--depth", type=int, default=2, help="BFS depth in each direction (default: 2)")
+    ap.add_argument(
+        "--top-parents",
+        type=int,
+        default=20,
+        help="Max references per seed at depth 1 (halved at deeper levels)",
+    )
+    ap.add_argument(
+        "--top-children",
+        type=int,
+        default=20,
+        help="Max citations per seed at depth 1 (halved at deeper levels)",
+    )
+    ap.add_argument(
+        "--venue-override", default="ICLR 2026", help="Pretty venue label for the focus node"
+    )
+    ap.add_argument("--tier-override", default="A+", help="Venue tier override for the focus node")
+    ap.add_argument(
+        "--output",
+        default=None,
+        help="Output JSON path (default: docs/iclr-2026/deep-<arxiv_id>.json)",
+    )
     args = ap.parse_args()
 
     setup_logging()  # CLI mode: surface logger.info to stderr.
 
     result = build_deep(
         args.arxiv_id,
+        seed_paper_id=args.seed_paper_id,
         depth=args.depth,
         top_parents=args.top_parents,
         top_children=args.top_children,
@@ -297,7 +459,7 @@ def main() -> int:
         tier_override=args.tier_override,
     )
 
-    output = args.output or f"docs/iclr-2026/deep-{args.arxiv_id}.json"
+    output = args.output or f"docs/iclr-2026/deep-{result['meta']['arxiv_id']}.json"
     out = ROOT / output
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(result, ensure_ascii=False, indent=2))

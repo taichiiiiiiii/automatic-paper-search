@@ -1,0 +1,214 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paperpilot.local/schemas/lineage-quality-v1.schema.json",
+  "title": "PaperPilot Lineage Quality v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "as_of", "audit_version", "collections"],
+  "properties": {
+    "schema_version": {"const": "lineage-quality-v1"},
+    "as_of": {"type": "string", "format": "date-time"},
+    "audit_version": {"const": "audit-v1"},
+    "collections": {"type": "array", "items": {"$ref": "#/$defs/collection"}}
+  },
+  "$defs": {
+    "sha256OrNull": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "collection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "collection_id", "kind", "slug", "label", "path", "availability",
+        "audit_status", "freshness", "generated_at", "snapshot_date", "node_count",
+        "edge_count", "artifact_schema_version", "input_sha256", "audit"
+      ],
+      "properties": {
+        "collection_id": {"type": "string", "minLength": 1},
+        "kind": {"enum": ["conference", "theme", "deep"]},
+        "slug": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+        "label": {"type": "string", "minLength": 1},
+        "path": {"type": "string", "minLength": 1},
+        "availability": {"enum": ["unavailable", "sparse", "ready", "failed"]},
+        "audit_status": {"enum": ["unknown", "passed", "failed"]},
+        "freshness": {"enum": ["fresh", "stale"]},
+        "generated_at": {
+          "anyOf": [{"type": "null"}, {"type": "string", "format": "date-time"}]
+        },
+        "snapshot_date": {
+          "anyOf": [{"type": "null"}, {"type": "string", "format": "date"}]
+        },
+        "node_count": {"type": "integer", "minimum": 0},
+        "edge_count": {"type": "integer", "minimum": 0},
+        "artifact_schema_version": {"type": ["string", "null"]},
+        "input_sha256": {"$ref": "#/$defs/sha256OrNull"},
+        "conference": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+        "paper_id": {"type": ["string", "null"], "pattern": "^[0-9a-f]{40}$"},
+        "arxiv_id": {
+          "type": ["string", "null"],
+          "pattern": "^\\d{4}\\.\\d{4,5}(v\\d+)?$"
+        },
+        "manifest_path": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*/deep-manifest\\.json$"
+        },
+        "manifest_input_sha256": {"$ref": "#/$defs/sha256OrNull"},
+        "audit": {"$ref": "#/$defs/audit"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"kind": {"const": "deep"}}, "required": ["kind"]},
+          "then": {
+            "required": [
+              "conference", "paper_id", "arxiv_id", "manifest_path",
+              "manifest_input_sha256"
+            ],
+            "properties": {
+              "collection_id": {"pattern": "^deep:"},
+              "path": {
+                "pattern": "^[a-z0-9][a-z0-9-]*/deep-[A-Za-z0-9._-]+\\.json$"
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "availability": {"const": "ready"},
+                    "audit_status": {"const": "passed"}
+                  },
+                  "required": ["availability", "audit_status"]
+                },
+                "then": {
+                  "properties": {
+                    "paper_id": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+                    "arxiv_id": {
+                      "type": "string",
+                      "pattern": "^\\d{4}\\.\\d{4,5}(v\\d+)?$"
+                    },
+                    "input_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+                    "manifest_input_sha256": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{64}$"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "else": {
+            "not": {
+              "anyOf": [
+                {"required": ["conference"]}, {"required": ["paper_id"]},
+                {"required": ["arxiv_id"]}, {"required": ["manifest_path"]},
+                {"required": ["manifest_input_sha256"]}
+              ]
+            }
+          }
+        },
+        {
+          "if": {"properties": {"kind": {"const": "conference"}}, "required": ["kind"]},
+          "then": {
+            "properties": {
+              "collection_id": {"pattern": "^conference:"},
+              "path": {"pattern": "^[a-z0-9][a-z0-9-]*/lineage\\.json$"}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"kind": {"const": "theme"}}, "required": ["kind"]},
+          "then": {
+            "properties": {
+              "collection_id": {"pattern": "^theme:"},
+              "path": {"pattern": "^themes/[a-z0-9][a-z0-9-]*/lineage\\.json$"}
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "availability": {"const": "ready"},
+              "audit_status": {"const": "passed"}
+            },
+            "required": ["availability", "audit_status"]
+          },
+          "then": {
+            "properties": {
+              "artifact_schema_version": {"const": "lineage-artifact-v1"},
+              "input_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+              "audit": {
+                "properties": {
+                  "fixture_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+                  "checks": {
+                    "minItems": 1,
+                    "items": {"properties": {"status": {"const": "passed"}}},
+                    "allOf": [
+                      {
+                        "contains": {
+                          "properties": {"name": {"const": "artifact_contract_v1"}},
+                          "required": ["name"]
+                        }
+                      },
+                      {
+                        "contains": {
+                          "properties": {"name": {"const": "golden_fixture"}},
+                          "required": ["name"]
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {"audit_status": {"const": "failed"}},
+            "required": ["audit_status"]
+          },
+          "then": {
+            "properties": {
+              "audit": {
+                "properties": {
+                  "checks": {
+                    "contains": {
+                      "properties": {"status": {"const": "failed"}},
+                      "required": ["status"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "audit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fixture_sha256", "evaluated_at", "actor", "checks"],
+      "properties": {
+        "fixture_sha256": {"$ref": "#/$defs/sha256OrNull"},
+        "evaluated_at": {"type": "string", "format": "date-time"},
+        "actor": {"const": "ci:audit-v1"},
+        "checks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "status", "observed", "expected", "evidence"],
+            "properties": {
+              "name": {"type": "string", "minLength": 1},
+              "status": {"enum": ["unknown", "passed", "failed"]},
+              "observed": {}, "expected": {},
+              "evidence": {
+                "type": "array", "maxItems": 20, "items": {"type": "string"}
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

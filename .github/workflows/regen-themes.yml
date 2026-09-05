@@ -1,87 +1,52 @@
 name: regen-themes
-# Bulk regeneration of theme family-tree JSONs.
-#
-# Originally wired on a Sunday 09:00 JST cron (issue #84). The schedule
-# was retired (PR #261) when the gallery became site-request-driven: the
-# manifest now reflects only themes a visitor explicitly submits via the
-# in-browser form (theme-on-demand.yml). Auto-refreshing every Sunday
-# would either re-seed dead themes or silently mutate user-requested
-# ones behind their back.
-#
-# `workflow_dispatch` is kept as a break-glass: operators can still bulk
-# regenerate after an LLM contract change, a `lineage.json` schema bump,
-# or a data-quality incident — just point it at the slugs in question.
-# Default (empty input) iterates every dir under `docs/themes/`, which
-# is normally empty on a fresh install.
+# Operator-only bulk regeneration of existing theme family trees. Generation is
+# read-only with respect to the repository; a separate promotion job validates
+# the candidate on the latest develop tip and hands the exact promoted SHA to
+# the reusable Pages release in this same workflow run.
 
 on:
   workflow_dispatch:
     inputs:
       themes:
-        description: 'Comma-separated themes to regen (default: every dir under docs/themes/)'
+        description: 'Comma-separated themes to regen (default: every existing theme)'
         required: false
         default: ''
 
-# No concurrency group — see theme-on-demand.yml for rationale (#125).
-# A manual dispatch racing an on-demand submission is handled by the
-# rebase+retry loop in .github/scripts/commit-and-push.sh, same as the
-# theme-on-demand → theme-on-demand case.
+permissions: {}
 
 jobs:
-  regen:
+  generate:
     runs-on: ubuntu-latest
-    # 19 themes × (BFS ~30s + S2 throttle retries 1-3 min + LLM
-    # ambiguous 30-60s + 60s inter-theme cool-off) lands at 60-100 min
-    # in practice — the first ambiguous-mode bulk regen (run
-    # 26377566033) hit the 60-min ceiling at theme 6/19. 120 min
-    # gives 2× headroom while still surfacing stuck runs instead of
-    # billing indefinitely. Future optimisation: matrix-parallelise
-    # themes (each job has its own IP → no shared S2 rate limit) to
-    # cut wall-clock to single-theme time.
     timeout-minutes: 120
     permissions:
-      contents: write
-      # actions: write lets the final "Trigger Pages deploy" step
-      # dispatch pages.yml. See theme-on-demand.yml's identical block
-      # for why this is needed.
-      actions: write
+      contents: read
+    outputs:
+      as_of: ${{ steps.candidate.outputs.as_of }}
+      base_sha: ${{ steps.candidate.outputs.base_sha }}
+      candidate_name: ${{ steps.candidate.outputs.candidate_name }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: develop
-          # PAT with "Contents: RW" so the auto-commit pushes back to
-          # develop and triggers Cloudflare's git-watch deploy. Falls back
-          # to GITHUB_TOKEN when GH_PAT isn't configured.
-          token: ${{ secrets.GH_PAT || github.token }}
+          persist-credentials: false
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: '3.12'
 
-      # Pinned action — vetted release, no curl-pipe-sh supply-chain risk
-      # (review #87 finding).
-      - name: Install uv
-        uses: astral-sh/setup-uv@v6
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
         with:
-          version: '0.7.x'
+          version: '0.12.7'
 
-      - name: uv sync
-        run: uv sync
+      - name: Install locked dependencies
+        run: uv sync --frozen --extra dev --extra unarxive
 
-      # See theme-on-demand.yml for the rationale + install path.
-      # Same graceful-degrade contract: missing asset → no contexts,
-      # not a build failure.
-      - name: Download unarXive DuckDB (citation contexts, optional)
+      - name: Download unarXive DuckDB (optional)
         env:
-          # See theme-on-demand.yml: the anonymous public asset URL 404s
-          # on private repos, so we resolve the asset through the REST
-          # API using the workflow's contents:read permission.
           GH_TOKEN: ${{ github.token }}
         run: |
           set -u
           mkdir -p paperpilot/data/unarxive
-          # Release asset is gzipped to fit the 2 GB cap; runner gunzips
-          # before the pipeline opens it.
           gz=paperpilot/data/unarxive/unarxive.duckdb.gz
           out=paperpilot/data/unarxive/unarxive.duckdb
           if gh release download unarxive-v1 \
@@ -89,120 +54,147 @@ jobs:
                --pattern unarxive.duckdb.gz \
                --output "$gz" \
                --clobber && gunzip -f "$gz"; then
-            echo "unarXive DuckDB ready: $(du -h "$out" | cut -f1)"
+            echo "unarXive DuckDB ready"
           else
-            echo "::notice::unarXive DuckDB unavailable on Release unarxive-v1; citation contexts disabled (pipeline degrades to heuristics)"
+            echo "::notice::unarXive DuckDB unavailable; citation contexts disabled"
             rm -f "$gz" "$out"
           fi
         continue-on-error: true
 
-      - name: Install DuckDB (unarXive runtime dep, optional)
-        run: |
-          if [ -f paperpilot/data/unarxive/unarxive.duckdb ]; then
-            uv pip install duckdb
-          fi
-        continue-on-error: true
-
-      - name: Regenerate themes
-        # Inputs are interpolated into env vars FIRST, never directly into
-        # shell strings — protects against command injection via
-        # workflow_dispatch theme list (review #87 CRITICAL finding).
+      - name: Regenerate requested themes
         env:
           PAPERPILOT_GROQ_API_KEY: ${{ secrets.PAPERPILOT_GROQ_API_KEY }}
           PAPERPILOT_S2_API_KEY: ${{ secrets.PAPERPILOT_S2_API_KEY }}
-          THEMES_INPUT: ${{ github.event.inputs.themes }}
+          THEMES_INPUT: ${{ inputs.themes }}
         run: |
-          set -u
-          # Theme list defaults to whatever directories already live under
-          # docs/themes/ — keeps the workflow in sync with the manifest
-          # without a separate hard-coded list to drift.
-          if [ -n "${THEMES_INPUT:-}" ]; then
+          set -euo pipefail
+          if [ -n "$THEMES_INPUT" ]; then
             IFS=',' read -ra THEMES <<< "$THEMES_INPUT"
           else
-            mapfile -t THEMES < <(
-              for d in docs/themes/*/; do
-                slug=$(basename "$d")
-                if [ -f "$d/lineage.json" ]; then
-                  jq -r '.meta.theme' "$d/lineage.json"
-                else
-                  echo "$slug"
-                fi
-              done
-            )
+            shopt -s nullglob
+            THEMES=()
+            for lineage in docs/themes/*/lineage.json; do
+              THEMES+=("$(jq -r '.meta.theme // empty' "$lineage")")
+            done
           fi
           if [ "${#THEMES[@]}" -eq 0 ]; then
             echo "::error::no themes discovered"
             exit 1
           fi
-          # Track partial failure: warn on individual theme errors, but
-          # fail the whole job if EVERY theme regen failed (review #87
-          # HIGH — silent total-failure was the original concern).
+
           failed=0
           attempted=0
-          for theme in "${THEMES[@]}"; do
+          for raw_theme in "${THEMES[@]}"; do
+            theme="$(printf '%s' "$raw_theme" | sed -E 's/^[[:space:]]+|[[:space:]]+$//g')"
+            if [ -z "$theme" ] || [ "${#theme}" -gt 80 ]; then
+              echo "::warning::invalid theme entry skipped"
+              failed=$((failed + 1))
+              attempted=$((attempted + 1))
+              continue
+            fi
             attempted=$((attempted + 1))
             echo "::group::regen $theme"
-            if uv run python -m paperpilot.scripts.build_theme_lineage \
+            if uv run --frozen python -m paperpilot.scripts.build_theme_lineage \
                 --theme "$theme" \
                 --depth 1 --seeds 5 --width 8 --since-year 2018 \
                 --llm-strict ambiguous \
                 --primary-source openalex; then
-              :
+              echo "regenerated: $theme"
             else
               failed=$((failed + 1))
-              echo "::warning::regen failed for $theme — keeping previous build"
+              echo "::warning::regen failed for $theme; previous build retained"
             fi
-            # 60s cool-off matches the S2 free-tier rate window so the
-            # next theme starts with a fresh per-IP budget. Fixed sleep
-            # is fine for free tier (~100 req/5min); switch to dynamic
-            # backoff if we ever hit the paid plan.
-            sleep 60
             echo "::endgroup::"
           done
-          echo "regen result: $((attempted - failed))/$attempted ok, $failed failed"
-          if [ "$failed" -gt 0 ] && [ "$failed" -eq "$attempted" ]; then
-            echo "::error::all $attempted themes failed — likely an S2/Groq outage or expired secret"
+
+          succeeded=$((attempted - failed))
+          {
+            echo "### Theme regeneration"
+            echo "- Attempted: $attempted"
+            echo "- Succeeded: $succeeded"
+            echo "- Failed: $failed"
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$succeeded" -eq 0 ]; then
+            echo "::error::all theme regenerations failed"
             exit 1
           fi
 
-      - name: Refresh manifest
-        run: |
-          uv run python -m paperpilot.scripts.generate_themes_manifest \
-            --themes-dir docs/themes
-
-      - name: Refresh quality rollup
-        # See theme-on-demand.yml for the rationale. Cheap step so the
-        # quality rollup tracks the latest data after each bulk regen.
-        run: |
-          uv run python -m paperpilot.scripts.compute_theme_quality
-
-      - name: Commit + push if changed
+      - name: Refresh candidate projections
         run: |
           set -euo pipefail
-          git config user.email "actions@users.noreply.github.com"
-          git config user.name "github-actions[bot]"
-          # Stage only the published JSONs — the local lineage-cache
-          # holds large per-paper S2 fetches whose growth would inflate
-          # the repo on every dispatch (review #87 HIGH finding). Push
-          # retry + rebase live in .github/scripts/commit-and-push.sh;
-          # see #121.
-          #
-          # EXCEPTION: classifications.json (the LLM rationale cache) IS
-          # committed across runs so quality accumulates instead of
-          # resetting on every dispatch. The rest of lineage-cache/ is
-          # still gitignored. `|| true` because the file may not exist
-          # on a cold checkout.
-          git add paperpilot/data/lineage-cache/classifications.json || true
-          msg="data(themes): manual bulk regen ($(date -u +%Y-%m-%d))"
-          bash .github/scripts/commit-and-push.sh "$msg" docs/themes/
+          uv run --frozen python -m paperpilot.scripts.generate_themes_manifest \
+            --themes-dir docs/themes
+          uv run --frozen python -m paperpilot.scripts.compute_theme_quality
 
-      - name: Trigger Pages deploy
-        # commit-and-push.sh writes the regen commit using GITHUB_TOKEN,
-        # which GitHub's anti-loop policy excludes from triggering other
-        # workflows. Dispatch pages.yml explicitly here so the bulk
-        # regen output ships to GH Pages without operator intervention.
-        # Cheap + idempotent if commit-and-push was a no-op.
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Freeze candidate metadata
+        id: candidate
         run: |
-          gh workflow run pages.yml --ref develop --repo "${{ github.repository }}"
+          set -euo pipefail
+          echo "as_of=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
+          echo "base_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "candidate_name=themes-candidate-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload generated candidate
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ${{ steps.candidate.outputs.candidate_name }}
+          path: |
+            docs/themes
+            paperpilot/data/lineage-cache/classifications.json
+          if-no-files-found: error
+          retention-days: 14
+
+  promote:
+    needs: generate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    outputs:
+      source_sha: ${{ steps.promote.outputs.source_sha }}
+      changed: ${{ steps.promote.outputs.changed }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: develop
+          fetch-depth: 0
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          version: '0.12.7'
+
+      - run: uv sync --frozen --extra dev --extra unarxive
+
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: ${{ needs.generate.outputs.candidate_name }}
+          path: ${{ runner.temp }}/candidate
+
+      - name: Validate and promote from the latest develop tip
+        id: promote
+        env:
+          PROMOTE_AS_OF: ${{ needs.generate.outputs.as_of }}
+          PROMOTE_BASE_SHA: ${{ needs.generate.outputs.base_sha }}
+        run: |
+          set -euo pipefail
+          msg="data(themes): manual bulk regeneration"
+          bash .github/scripts/promote-generated.sh themes \
+            "$RUNNER_TEMP/candidate" "$msg" \
+            docs/themes paperpilot/data/lineage-cache/classifications.json
+
+  release:
+    needs: promote
+    if: needs.promote.outputs.changed == 'true'
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/pages-release.yml
+    with:
+      source_sha: ${{ needs.promote.outputs.source_sha }}
+      release_kind: normal
+      request_id: themes-${{ github.run_id }}-${{ github.run_attempt }}

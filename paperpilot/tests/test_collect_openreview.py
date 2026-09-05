@@ -118,7 +118,9 @@ def test_build_rows_maps_fields_and_highlights_oral_spotlight():
 
 
 def test_build_rows_authors_joined_with_semicolons():
-    rows, _ = co.build_rows([_note("P", "Poster", "x", authors=("A", "B", "C"))], "ICLR", "ICLR.cc/2025/Conference")
+    rows, _ = co.build_rows(
+        [_note("P", "Poster", "x", authors=("A", "B", "C"))], "ICLR", "ICLR.cc/2025/Conference"
+    )
     assert rows[0]["authors"] == "A; B; C"
 
 
@@ -191,6 +193,7 @@ def test_fetch_notes_returns_partial_on_mid_run_error():
 
 def test_fetch_notes_failsafe_on_non_json_body():
     """200 with a non-JSON body must not raise (Fail-Safe)."""
+
     def raise_json():
         raise ValueError("no json")
 
@@ -227,11 +230,14 @@ def test_fetch_notes_stops_at_max_pages():
 def test_rows_write_via_shared_writer(tmp_path: Path):
     notes = [_note("Oral one", "Oral", "z1"), _note("Poster two", "Poster", "z2")]
     rows, highlighted = co.build_rows(notes, "ICLR", "ICLR.cc/2025/Conference")
-    csv_path = cc.write_outputs("iclr-2025", rows, highlighted, output_root=tmp_path, date="2026-06-28")
+    csv_path = cc.write_outputs(
+        "iclr-2025", rows, highlighted, output_root=tmp_path, date="2026-06-28"
+    )
 
     with csv_path.open(encoding="utf-8-sig") as f:
         read = list(_csv.DictReader(f))
     assert list(read[0].keys()) == cc._CSV_COLUMNS  # schema parity
+    assert {row["source"] for row in read} == {"openreview"}
     oral_md = (tmp_path / "iclr-2025" / "oral_summaries_ja.md").read_text(encoding="utf-8")
     assert "## 1. Oral one" in oral_md
     assert "Poster two" not in oral_md

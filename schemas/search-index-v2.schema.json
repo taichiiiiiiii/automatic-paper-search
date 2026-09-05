@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paperpilot.local/schemas/search-index-v2.schema.json",
+  "title": "PaperPilot Search Index v2",
+  "type": "array",
+  "items": {
+    "type": "array",
+    "prefixItems": [
+      {"type": "string", "minLength": 1},
+      {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+      {"type": "integer", "minimum": 0},
+      {"type": "array", "items": {"type": "string"}},
+      {"type": "array", "items": {"type": "string"}},
+      {"type": ["integer", "null"], "minimum": 1900, "maximum": 2200},
+      {"enum": ["Oral", "Poster"]}
+    ],
+    "items": false,
+    "minItems": 7,
+    "maxItems": 7
+  }
+}

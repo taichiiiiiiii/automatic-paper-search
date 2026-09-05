@@ -25,6 +25,7 @@ export const RATE_LIMIT_GLOBAL_PER_DAY = 100;
  * @property {boolean} ok
  * @property {"exists" | "queued" | "rate_limited" | "invalid" | "error"} status
  * @property {string=} slug
+ * @property {string=} request_id
  * @property {string=} message
  */
 
@@ -51,6 +52,17 @@ export function json(body, init = {}) {
     },
     ...init,
   });
+}
+
+export function themeStatusUnavailable() {
+  return json(
+    {
+      ok: false,
+      status: "error",
+      message: "workflow status is temporarily unavailable; completion continues through the public manifest",
+    },
+    { status: 503 },
+  );
 }
 
 // Today's UTC date as YYYY-MM-DD. Worker time is UTC by default.

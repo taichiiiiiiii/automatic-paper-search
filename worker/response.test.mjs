@@ -16,6 +16,7 @@ import {
   isGloballyRateLimited,
   RATE_LIMIT_PER_HOUR,
   RATE_LIMIT_GLOBAL_PER_DAY,
+  themeStatusUnavailable,
 } from "./response.js";
 
 let passed = 0, failed = 0;
@@ -97,6 +98,47 @@ tests.push(test("json() propagates init.status code", async () => {
 tests.push(test("json() defaults to 200 when init omits status", async () => {
   const r = json({ ok: true, status: "queued" });
   eq(r.status, 200);
+}));
+
+tests.push(test("dormant theme status returns 503", async () => {
+  const r = themeStatusUnavailable();
+  eq(r.status, 503);
+}));
+
+tests.push(test("dormant theme status uses the closed JSON envelope", async () => {
+  const r = themeStatusUnavailable();
+  eq(await r.text(), JSON.stringify({
+    ok: false,
+    status: "error",
+    message: "workflow status is temporarily unavailable; completion continues through the public manifest",
+  }));
+}));
+
+tests.push(test("dormant theme status is non-cacheable JSON", async () => {
+  const r = themeStatusUnavailable();
+  eq(r.headers.get("content-type"), "application/json; charset=utf-8");
+  eq(r.headers.get("cache-control"), "no-store");
+}));
+
+tests.push(test("dormant theme status remains available cross-origin", async () => {
+  const r = themeStatusUnavailable();
+  eq(r.headers.get("access-control-allow-origin"), "*");
+}));
+
+tests.push(test("dormant theme status performs zero upstream fetches", async () => {
+  let calls = 0;
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => {
+    calls++;
+    throw new Error("upstream fetch must stay unreachable");
+  };
+  try {
+    const r = themeStatusUnavailable();
+    eq(r.status, 503);
+    eq(calls, 0);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 }));
 
 // ---- isRateLimited() ----

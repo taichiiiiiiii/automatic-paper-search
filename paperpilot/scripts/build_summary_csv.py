@@ -1,10 +1,10 @@
 """Build a lightweight, human-friendly summary CSV from PaperPilot output.
 
 Input : paperpilot/output/<conference>/papers_YYYY-MM-DD.csv  (pipeline output)
-Output: paperpilot/output/<conference>/summary.csv            (12 columns, sortable)
+Output: paperpilot/output/<conference>/summary.csv            (14 columns, sortable)
 
 Columns: title, type, tags, venue, authors, arxiv_url, pdf_url, abstract,
-         arxiv_id, citation_count, venue_tier, github_stars
+         arxiv_id, citation_count, venue_tier, github_stars, source, source_id
 - type: Oral / Poster (matched by title against oral_summaries_ja.md if present)
 - tags: auto-classified topic labels (LLM/CV/RL/...) joined with " "
 - arxiv_id / citation_count / venue_tier / github_stars carry forward
@@ -25,6 +25,8 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
+from paperpilot.identity import IdentityError, identity_from_url, normalize_alias
+
 PROJECT = Path(__file__).resolve().parents[1]
 _PAPERS_NAME_RE = re.compile(r"^papers_\d{4}-\d{2}-\d{2}\.csv$")
 
@@ -40,7 +42,13 @@ TOPIC_RULES: dict[str, list[str]] = {
     # ---- Model families / architectures ----
     "LLM": [r"\bllms?\b", r"large language model", r"language model"],
     "VLM": [r"\bvlms?\b", r"\bmllms?\b", r"vision[- ]language", r"multimodal"],
-    "Diffusion": [r"diffusion model", r"\bdiffusion\b", r"score[- ]based", r"flow matching", r"\bddpm\b"],
+    "Diffusion": [
+        r"diffusion model",
+        r"\bdiffusion\b",
+        r"score[- ]based",
+        r"flow matching",
+        r"\bddpm\b",
+    ],
     "Transformer": [r"\btransformers?\b", r"self[- ]attention", r"attention mechanism"],
     "MoE": [r"mixture[- ]of[- ]experts", r"\bmoe\b"],
     "GAN": [r"\bgans?\b", r"generative adversarial"],
@@ -49,12 +57,28 @@ TOPIC_RULES: dict[str, list[str]] = {
     # ---- Computer-vision tasks (the old "Vision" bucket, split) ----
     "Detection": [r"object detection", r"\bdetection\b", r"\bdetector"],
     "Segmentation": [r"segmentation", r"\bsegment\b"],
-    "3D": [r"\b3d\b", r"\bnerf\b", r"gaussian splat", r"point cloud", r"\bmesh\b", r"depth estimation", r"\bslam\b", r"novel view"],
+    "3D": [
+        r"\b3d\b",
+        r"\bnerf\b",
+        r"gaussian splat",
+        r"point cloud",
+        r"\bmesh\b",
+        r"depth estimation",
+        r"\bslam\b",
+        r"novel view",
+    ],
     "ImageGen": [r"image generation", r"image synthesis", r"text[- ]to[- ]image", r"\bt2i\b"],
     "VideoGen": [r"video generation", r"text[- ]to[- ]video", r"\bt2v\b"],
     "Pose": [r"pose estimation", r"keypoint", r"human pose", r"6[- ]?dof"],
     "Tracking": [r"object tracking", r"\bmot\b", r"re[- ]identification", r"\bre[- ]id\b"],
-    "Restoration": [r"super[- ]resolution", r"denois", r"deblur", r"inpaint", r"image restoration", r"dehaz"],
+    "Restoration": [
+        r"super[- ]resolution",
+        r"denois",
+        r"deblur",
+        r"inpaint",
+        r"image restoration",
+        r"dehaz",
+    ],
     # #356: bare \bface\b matched the English verb ("methods face the
     # challenge of ...") — 60.6% of 1,322 hits were certain verb-only false
     # positives. Require face-domain context instead. Bare "deepfake" is NOT a
@@ -76,7 +100,12 @@ TOPIC_RULES: dict[str, list[str]] = {
         r"portrait (?:animation|generation)",
     ],
     "OCR": [r"\bocr\b", r"text recognition", r"document understanding", r"scene text"],
-    "VideoUnderstanding": [r"action recognition", r"video understanding", r"temporal action", r"video question"],
+    "VideoUnderstanding": [
+        r"action recognition",
+        r"video understanding",
+        r"temporal action",
+        r"video question",
+    ],
     "Rendering": [r"rendering", r"radiance field", r"neural render"],
     # ---- NLP tasks ----
     "QA": [r"question answering", r"\bvqa\b", r"\bqa\b"],
@@ -93,7 +122,12 @@ TOPIC_RULES: dict[str, list[str]] = {
     "SSL": [r"self[- ]supervised", r"contrastive learning"],
     "FewShot": [r"few[- ]shot", r"zero[- ]shot", r"in[- ]context learning"],
     "Meta": [r"meta[- ]learning"],
-    "Continual": [r"continual", r"lifelong learning", r"catastrophic forgetting", r"incremental learning"],
+    "Continual": [
+        r"continual",
+        r"lifelong learning",
+        r"catastrophic forgetting",
+        r"incremental learning",
+    ],
     "Transfer": [r"transfer learning", r"domain adaptation", r"domain generalization"],
     "Distillation": [r"knowledge distillation", r"\bdistillation\b"],
     "Quantization": [r"quantiz", r"low[- ]bit", r"\bint8\b", r"\bint4\b"],
@@ -101,12 +135,26 @@ TOPIC_RULES: dict[str, list[str]] = {
     "NAS": [r"neural architecture search", r"\bnas\b"],
     "Federated": [r"federated"],
     # ---- Trustworthy / safety ----
-    "Robustness": [r"\brobustness\b", r"out[- ]of[- ]distribution", r"\bood\b", r"distribution shift"],
+    "Robustness": [
+        r"\brobustness\b",
+        r"out[- ]of[- ]distribution",
+        r"\bood\b",
+        r"distribution shift",
+    ],
     "Adversarial": [r"adversarial (attack|example|robust|perturbation|training)"],
     "Fairness": [r"\bfairness\b", r"debias"],
     "Privacy": [r"\bprivacy\b", r"differential privacy"],
     "Interpretability": [r"interpretab", r"explainab", r"\bxai\b"],
-    "Safety": [r"\bsafety\b", r"jailbreak", r"hallucinat", r"harmful", r"\btoxic", r"guardrail", r"preference align", r"value align"],
+    "Safety": [
+        r"\bsafety\b",
+        r"jailbreak",
+        r"hallucinat",
+        r"harmful",
+        r"\btoxic",
+        r"guardrail",
+        r"preference align",
+        r"value align",
+    ],
     "Uncertainty": [r"uncertainty", r"calibrat", r"\bbayesian\b"],
     # ---- Domains ----
     "Medical": [r"medical", r"clinical", r"\behr\b", r"radiolog", r"patholog", r"diagnosis"],
@@ -126,8 +174,19 @@ TOPIC_RULES: dict[str, list[str]] = {
     "Causal": [r"causal", r"counterfactual"],
     # benchmark/dataset only when the paper INTRODUCES one (not the ubiquitous
     # "we benchmark …" verb or "on the X dataset" mention).
-    "Benchmark": [r"new benchmark", r"\bbenchmark (dataset|suite|for)", r"comprehensive benchmark", r"\bbenchmarking\b", r"leaderboard"],
-    "Dataset": [r"new dataset", r"large[- ]scale dataset", r"(introduce|present|construct|collect|curat)\w*\s+(a\s+)?(new\s+)?dataset", r"data curation"],
+    "Benchmark": [
+        r"new benchmark",
+        r"\bbenchmark (dataset|suite|for)",
+        r"comprehensive benchmark",
+        r"\bbenchmarking\b",
+        r"leaderboard",
+    ],
+    "Dataset": [
+        r"new dataset",
+        r"large[- ]scale dataset",
+        r"(introduce|present|construct|collect|curat)\w*\s+(a\s+)?(new\s+)?dataset",
+        r"data curation",
+    ],
 }
 
 
@@ -154,9 +213,7 @@ def find_latest_csv(conference_dir: Path) -> Path:
         key=lambda p: p.name,  # YYYY-MM-DD is lexicographically sortable
     )
     if not candidates:
-        raise FileNotFoundError(
-            f"No papers_YYYY-MM-DD.csv found under {conference_dir}"
-        )
+        raise FileNotFoundError(f"No papers_YYYY-MM-DD.csv found under {conference_dir}")
     return candidates[-1]
 
 
@@ -189,7 +246,9 @@ def normalize(s: str) -> str:
 
 def classify_tags(title: str, abstract: str) -> list[str]:
     text = f"{title} {abstract}".lower()
-    return [tag for tag, patterns in TOPIC_RULES.items() if any(re.search(p, text) for p in patterns)]
+    return [
+        tag for tag, patterns in TOPIC_RULES.items() if any(re.search(p, text) for p in patterns)
+    ]
 
 
 # ---- main entry point ----
@@ -215,6 +274,17 @@ def build(
             if not title:
                 continue
             abstract = strip_zero_width(row.get("abstract") or "")
+            identity = identity_from_url(row.get("url") or "")
+            declared_source = (row.get("source") or "").strip()
+            declared_source_id = (row.get("source_id") or "").strip()
+            if bool(declared_source) != bool(declared_source_id):
+                raise IdentityError("source and source_id must be present together")
+            if declared_source:
+                normalized = normalize_alias(declared_source, declared_source_id)
+                if normalized != (identity.source, identity.source_id):
+                    raise IdentityError(
+                        "declared source/source_id does not match the native source URL"
+                    )
             paper_type = "Oral" if normalize(title) in oral_titles else "Poster"
             tags = classify_tags(title, abstract)
             rows_out.append(
@@ -233,6 +303,8 @@ def build(
                     "citation_count": row.get("citation_count", ""),
                     "venue_tier": row.get("venue_tier", ""),
                     "github_stars": row.get("github_stars", ""),
+                    "source": identity.source,
+                    "source_id": identity.source_id,
                 }
             )
 
@@ -243,9 +315,20 @@ def build(
         writer = csv.DictWriter(
             f,
             fieldnames=[
-                "title", "type", "tags", "venue", "authors",
-                "arxiv_url", "pdf_url", "abstract",
-                "arxiv_id", "citation_count", "venue_tier", "github_stars",
+                "title",
+                "type",
+                "tags",
+                "venue",
+                "authors",
+                "arxiv_url",
+                "pdf_url",
+                "abstract",
+                "arxiv_id",
+                "citation_count",
+                "venue_tier",
+                "github_stars",
+                "source",
+                "source_id",
             ],
         )
         writer.writeheader()

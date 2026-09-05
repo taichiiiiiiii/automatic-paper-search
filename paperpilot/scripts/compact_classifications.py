@@ -32,6 +32,18 @@ DOCS_DIR = ROOT / "docs"
 CACHE_PATH = ROOT / "paperpilot" / "data" / "lineage-cache" / "classifications.json"
 
 
+def _cache_endpoints(key: str, value: object) -> tuple[str, str] | None:
+    """Read endpoints from an opaque v2 value or a legacy ``src->dst`` key."""
+
+    if key.startswith("v2:"):
+        if not isinstance(value, dict):
+            return None
+        src, dst = value.get("src"), value.get("dst")
+        return (src, dst) if isinstance(src, str) and isinstance(dst, str) else None
+    src, separator, dst = key.partition("->")
+    return (src, dst) if separator and src and dst else None
+
+
 def _collect_live_paper_ids() -> set[str]:
     """Walk every shipped lineage.json + deep-*.json under docs/ and
     collect every node.id string. This is the union of "papers the
@@ -81,8 +93,8 @@ def compact(dry_run: bool = False) -> int:
     kept: dict[str, dict] = {}
     dropped = 0
     for key, value in cache.items():
-        a, _, b = key.partition("->")
-        if a in live and b in live:
+        endpoints = _cache_endpoints(key, value)
+        if endpoints is not None and endpoints[0] in live and endpoints[1] in live:
             kept[key] = value
         else:
             dropped += 1
