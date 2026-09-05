@@ -129,9 +129,10 @@ live workflow statusはatomic quota/cache境界を実装・検証するまで有
 
 ### 2026-09-05 publication review gate
 
-- 現行treeのhost補助regression: Python **2,471 passed / 1 skipped**。skipはmacOS上で強制できない
+- 現行treeのhost補助regression: Python **2,472 passed / 1 skipped**。skipはmacOS上で強制できない
   Linux専用`RLIMIT_AS` isolation parityであり、Linux CIでは実行対象になる。Nodeはviewer / Workerの
   **35 test files**が全てpassした。
+- Pagesのexact-SHA remote smokeは、成功時とSHA不一致時の双方で一時領域を回収する回帰テストを追加した。
 - repository-wide Ruff lint、変更・新規Python **110 files**のformat check、`git diff --check`:
   pass。workflow YAMLと公開/Schema/data JSONのparse、変更shellの`bash -n`、frontend / Worker JSの
   `node --check`もpassした。
