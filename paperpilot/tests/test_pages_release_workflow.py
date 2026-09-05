@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import os
 import re
+import subprocess
 from pathlib import Path
 from typing import Any
 
@@ -165,6 +167,86 @@ def test_release_validation_script_is_bounded_and_read_only() -> None:
     assert "urllib.request" not in text
     assert 'fetch "$url"' in text
     assert not re.search(r"\b(?:git push|gh workflow run|rm -rf)\b", text)
+
+
+def test_release_smoke_success_cleans_its_scoped_temp_directory(tmp_path: Path) -> None:
+    """The EXIT trap must not reference a function-local variable after return."""
+
+    fake_bin = tmp_path / "bin"
+    fake_bin.mkdir()
+    fake_curl = fake_bin / "curl"
+    fake_curl.write_text(
+        """#!/usr/bin/env python3
+import json
+import os
+import sys
+from pathlib import Path
+
+args = sys.argv[1:]
+output = Path(args[args.index("--output") + 1])
+url = args[-1]
+sha = os.environ.get("FAKE_DEPLOYMENT_SHA", "a" * 40)
+if url.endswith("/_paperpilot-deployment.json"):
+    payload = json.dumps({"source_sha": sha})
+elif url.endswith("/conferences.json"):
+    payload = json.dumps([{"name": "iclr-2026"}])
+elif url.endswith("/search-index-v2.json"):
+    payload = json.dumps([{"paper_id": "b" * 40}])
+elif url.endswith("/lineage-quality-v1.json"):
+    payload = json.dumps({"collections": []})
+else:
+    payload = "<!doctype html><title>fixture</title>"
+output.write_text(payload, encoding="utf-8")
+""",
+        encoding="utf-8",
+    )
+    fake_curl.chmod(0o755)
+    temp_root = tmp_path / "tmp"
+    temp_root.mkdir()
+    env = {
+        **os.environ,
+        "PATH": f"{fake_bin}{os.pathsep}{os.environ['PATH']}",
+        "TMPDIR": str(temp_root),
+    }
+
+    completed = subprocess.run(
+        [
+            "bash",
+            str(SCRIPTS / "validate-pages-release.sh"),
+            "smoke",
+            "https://example.invalid/paperpilot/",
+            "a" * 40,
+        ],
+        cwd=REPO_ROOT,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=30,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    assert list(temp_root.glob("paperpilot-pages-smoke.*")) == []
+
+    mismatched = subprocess.run(
+        [
+            "bash",
+            str(SCRIPTS / "validate-pages-release.sh"),
+            "smoke",
+            "https://example.invalid/paperpilot/",
+            "a" * 40,
+        ],
+        cwd=REPO_ROOT,
+        env={**env, "FAKE_DEPLOYMENT_SHA": "b" * 40},
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=30,
+    )
+
+    assert mismatched.returncode != 0
+    assert "deployed marker does not match requested source SHA" in mismatched.stderr
+    assert list(temp_root.glob("paperpilot-pages-smoke.*")) == []
 
 
 def test_bot_workflows_promote_then_call_same_run_release() -> None:

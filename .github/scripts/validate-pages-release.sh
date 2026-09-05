@@ -96,7 +96,12 @@ smoke_remote() {
 
   local smoke_dir
   smoke_dir="$(mktemp -d "${TMPDIR:-/tmp}/paperpilot-pages-smoke.XXXXXX")"
-  trap 'rm -r "$smoke_dir"' EXIT
+  # EXIT runs after this function's local scope has ended on the success path.
+  # Freeze the exact mktemp path into the trap so `set -u` cannot turn cleanup
+  # itself into a failed smoke check.
+  local cleanup_command
+  printf -v cleanup_command 'rm -r -- %q' "$smoke_dir"
+  trap "$cleanup_command" EXIT
 
   fetch "$base_url/" "$smoke_dir/index.html"
   fetch "$base_url/_paperpilot-deployment.json" "$smoke_dir/deployment.json"
