@@ -54,9 +54,13 @@ not authorize starting implementation, paper processing, or publication. Do not 
 
 Use `qwen3.8-max` only for evaluation of major paper conclusions, analysis methods,
 statistics/reproducibility, external-publication candidates, cross-module changes, or another
-materially stable candidate revision covered by these risks. Normally one MAX evaluation per
-such candidate revision; a materially changed later candidate may be evaluated again. Target
-10–20% or less of implementation tasks, not a quota requiring extra reviews. MAX unavailability
+materially stable candidate revision covered by these risks. MAX has no numeric, percentage,
+Goal-wide or per-revision evaluation cap. The parent may invoke it whenever a fresh read-only
+evaluation materially reduces adoption risk or resolves a concrete uncertainty, and records the
+trigger, new evidence or changed risk plus the final decision. A materially changed candidate is
+eligible again; an unchanged candidate may be re-evaluated only when acceptance criteria,
+evidence or unresolved risk materially changes. Never repeat an identical packet without a stated
+new reason, pad review activity or let MAX replace the parent decision. MAX unavailability
 holds high-risk adoption but does not stop lower-risk investigation or the whole Goal. Send only acceptance criteria,
 diff, changed files, relevant test/analysis results and minimal surrounding code—never
 the whole repository, long conversation history or bulk logs. MAX must not reimplement:

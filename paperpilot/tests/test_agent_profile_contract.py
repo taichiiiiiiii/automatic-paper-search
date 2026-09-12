@@ -110,7 +110,8 @@ def test_support_roles_and_fixed_cloud_implementation_are_enabled() -> None:
     assert "Qwen task routing" in policy
     assert "exact `qwen3.8-flash`" in policy
     assert "qwen3.8-max" in policy
-    assert "10–20%" in policy
+    assert "no numeric, percentage" in policy
+    assert "per-revision evaluation cap" in policy
     assert "no fixed" in policy and "Flash-attempt cap" in policy
     assert "do not block the whole Goal" in policy
     assert "MAX must not reimplement" in policy
