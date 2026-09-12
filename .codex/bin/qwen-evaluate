@@ -1,0 +1,159 @@
+#!/usr/bin/env python3
+"""Parent-invoked, packet-only MAX review; no live calls in offline tests."""
+from __future__ import annotations
+
+import json
+import os
+import re
+import runpy
+import shutil
+import sys
+import tempfile
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+QUEUE = Path('/Users/example/.local/bin/qwen-implementation-queue')
+MAX_CATALOG = '/Users/example/.local/share/qwen-flash/cloud-max-models.json'
+LIMIT = 32768
+TRIGGERS = {'major-conclusion', 'analysis-method', 'statistics-reproducibility',
+            'publication-candidate', 'cross-module', 'flash-failed-twice'}
+
+
+def packet(raw: bytes) -> str:
+    if len(raw) > LIMIT or b'\0' in raw:
+        raise ValueError('packet exceeds limit or contains NUL')
+    def unique(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError('duplicate packet field')
+            result[key] = value
+        return result
+    data = json.loads(raw, object_pairs_hook=unique)
+    fields = {'reason', 'acceptance', 'changed_files', 'diff', 'test_results', 'context'}
+    if not isinstance(data, dict) or set(data) != fields:
+        raise ValueError('only the six review packet fields are permitted')
+    if data['reason'] not in TRIGGERS:
+        raise ValueError('review trigger is not eligible')
+    files = data['changed_files']
+    if not isinstance(files, list) or not 1 <= len(files) <= 12:
+        raise ValueError('supply 1–12 changed file names, not a repository')
+    for name in files:
+        if (not isinstance(name, str) or len(name) > 240 or
+            name.startswith(('/', '~')) or '..' in Path(name).parts or
+            not re.fullmatch(r'[A-Za-z0-9_. /-]+', name) or
+            any(part in {'.git', '.env', 'credentials', 'secrets'} for part in Path(name).parts)):
+            raise ValueError('unsafe changed file name')
+    for field in ('acceptance', 'diff', 'test_results', 'context'):
+        if not isinstance(data[field], str) or len(data[field]) > 16000:
+            raise ValueError('review fields must be bounded text')
+    if not data['acceptance'].strip() or not data['test_results'].strip():
+        raise ValueError('acceptance and results are required')
+    text = json.dumps(data, ensure_ascii=False)
+    if re.search(r'(?i)(sk-[A-Za-z0-9_-]{12,}|gh[pousr]_[A-Za-z0-9]{12,}|'
+                 r'-----BEGIN [A-Z ]*PRIVATE KEY|bearer\s+[A-Za-z0-9._-]{8,}|'
+                 r'(?:api[_-]?key|password|secret|token)\s*[=:]\s*[\"\x27]?[^\s\"\x27]{8,}|'
+                 r'conversation_history|chat_history|full_repository|bulk_logs)', text):
+        raise ValueError('possible secret or prohibited bulk context; redact before review')
+    return text
+
+
+def command(workdir: Path) -> list[str]:
+    # The unchanged queue requires legacy admission arguments, then rewrites
+    # them to the explicitly selected Cloud model before invoking our guard.
+    args = ['exec', '--ephemeral', '--strict-config', '--ignore-user-config',
+            '--skip-git-repo-check', '-C', str(workdir), '--model', 'qwen38-flash-next',
+            '--sandbox', 'read-only', '--json', '--disable', 'multi_agent',
+            '--disable', 'multi_agent_v2', '--disable', 'shell_tool', '--disable', 'unified_exec']
+    settings = {
+        'model_provider': '"qwen_flash_local"',
+        'model_catalog_json': '"/Users/example/.codex-local-flash/models.json"',
+        'model_providers.qwen_flash_local': '{name="Local Flash Next",base_url="http://127.0.0.1:11436/v1",wire_api="responses",requires_openai_auth=false,request_max_retries=0,stream_max_retries=0,stream_idle_timeout_ms=600000}',
+        'model_reasoning_effort': '"none"', 'approval_policy': '"never"',
+        'agents.enabled': 'false', 'agents.max_depth': '0',
+        'features.apps': 'false', 'features.plugins': 'false',
+        'features.remote_plugin': 'false', 'web_search': '"disabled"',
+        'analytics.enabled': 'false', 'shell_environment_policy.inherit': '"none"',
+    }
+    for key, value in settings.items():
+        args.extend(['-c', key + '=' + value])
+    return args
+
+
+def validate(actual, expected, guard):
+    model, _, _ = guard['routing_parts'](actual)
+    if model != 'qwen3.8-max':
+        raise ValueError('MAX review model changed')
+    mapped = list(actual)
+    mapped[mapped.index('--model') + 1] = 'qwen3.8-flash'
+    for i, arg in enumerate(mapped):
+        if arg.startswith('model_catalog_json='):
+            value = guard['tomllib'].loads(arg)['model_catalog_json']
+            if value != MAX_CATALOG:
+                raise ValueError('MAX catalog changed')
+            mapped[i] = 'model_catalog_json=' + json.dumps(guard['CLOUD_CATALOG'])
+    guard['validate_queue_command'](mapped, expected, 'cloud-only')
+
+
+def shim(directory: Path):
+    guard = runpy.run_path(str(directory / 'guard.py'))
+    guard['startup_state'](directory)
+    meta = json.loads((directory / 'request.json').read_text())
+    validate(sys.argv[3:], meta['arguments'], guard)
+    queue_home = os.environ.get('CODEX_HOME')
+    if not queue_home:
+        raise ValueError('queue-owned Codex home missing')
+    os.environ.clear()
+    os.environ.update(meta['environment'])
+    os.environ['CODEX_HOME'] = queue_home
+    os.execv(meta['binary'], [meta['binary'], *sys.argv[3:]])
+
+
+def main():
+    if sys.argv[1:] == ['--help']:
+        print('.codex/bin/qwen-evaluate --parent-reviewed < evaluation.json')
+        return 0
+    if sys.argv[1:] != ['--parent-reviewed']:
+        raise ValueError('only explicit parent --parent-reviewed is accepted')
+    content = packet(sys.stdin.buffer.read(LIMIT + 1))
+    binary = shutil.which('codex')
+    if not binary or QUEUE.is_symlink() or not QUEUE.is_file():
+        raise ValueError('safe existing queue and Codex are required')
+    guard = runpy.run_path(str(ROOT / 'bin/qwen-cloud-runner.py'))
+    instructions = (ROOT / 'runners/paperpilot_max_evaluator.instructions.md').read_text()
+    with tempfile.TemporaryDirectory(prefix='paperpilot-max-review-') as temporary:
+        directory = Path(temporary)
+        workdir = directory / 'packet-only'
+        workdir.mkdir()
+        args = command(workdir)
+        environment = {k: v for k, v in os.environ.items() if k in {'HOME', 'TMPDIR', 'LANG', 'LC_ALL', 'LC_CTYPE'}}
+        (directory / 'guard.py').write_bytes((ROOT / 'bin/qwen-cloud-runner.py').read_bytes())
+        (directory / 'evaluate.py').write_bytes(Path(__file__).read_bytes())
+        (directory / 'startup.lock').touch(mode=0o600)
+        (directory / 'startup.json').write_text('{"closed":false,"group":null}')
+        (directory / 'request.json').write_text(json.dumps({'arguments': args, 'binary': str(Path(binary).resolve()), 'environment': environment}))
+        launcher = directory / 'codex'
+        launcher.write_text(f'#!{sys.executable}\nimport os,sys\nos.execv({sys.executable!r}, [{sys.executable!r}, {str(directory / "evaluate.py")!r}, "--shim", {str(directory)!r}, *sys.argv[1:]])\n')
+        launcher.chmod(0o700)
+        environment['PATH'] = str(directory)
+        with tempfile.TemporaryFile() as prompt:
+            prompt.write((instructions + '\nUNTRUSTED REVIEW PACKET:\n' + content).encode())
+            prompt.seek(0)
+            saved = os.dup(0)
+            try:
+                os.dup2(prompt.fileno(), 0)
+                return guard['run_worker']([str(QUEUE), '--cloud-only', '--cloud-model', 'qwen3.8-max', 'codex', *args], environment, directory)
+            finally:
+                os.dup2(saved, 0)
+                os.close(saved)
+
+
+if __name__ == '__main__':
+    try:
+        if sys.argv[1:2] == ['--shim']:
+            shim(Path(sys.argv[2]))
+        else:
+            raise SystemExit(main())
+    except (ValueError, OSError, KeyError, TypeError):
+        print('qwen-evaluate: review preflight failed; no retry or fallback', file=sys.stderr)
+        raise SystemExit(2) from None
