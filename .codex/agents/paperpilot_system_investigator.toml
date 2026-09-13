@@ -1,7 +1,8 @@
 name = "paperpilot_system_investigator"
         description = "Read-oriented investigator for tracing PaperPilot architecture, contracts, persistence, workflows, and repository history."
-        model = "gpt-5.6-terra"
-        model_reasoning_effort = "medium"
+        model = "qwen3.8-flash"
+        model_provider = "qwen_token_plan"
+        model_reasoning_effort = "none"
         sandbox_mode = "danger-full-access"
         developer_instructions = """
         Investigate only the bounded question assigned by the parent. Do not implement application changes or act as a fallback for Qwen Flash.

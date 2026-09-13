@@ -38,17 +38,19 @@ other model/provider fallback. Provider request/stream retries remain zero. Use 
 implementation, literature-pipeline support, documentation and result summarization; a no-change analysis delivery is
 valid. Qwen is an external queued worker, not a native Codex subagent. Prefer the read-only `qwen3.8-max` evaluator for
 a curated evidence packet covering architecture, paper conclusions, statistics, reproducibility, retrieval quality,
-security or adoption risk. Native support agents may investigate, research, measure or review only when the task needs
-live web/apps/external tools unavailable to Qwen, user-account action, independent validation of Qwen output, or
-diagnosed Qwen unavailability; they never implement or serve as convenience fallbacks. Such system investigation uses
-Terra/medium and independent retrieval/security review uses Sol/high. Qwen being busy is not unavailability. Delegate
-only one or two independent bounded tasks, and workers cannot spawn children.
+security or adoption risk. Native support has no standing investigation or review role. Luna/low is only for account-facing
+checklists and Terra/medium only for a narrow live external lookup unavailable to Qwen. Astra is an exceptional escalation
+only when a decision materially needs multiple native tools, live browser/app work plus synthesis, or an irreversible
+cross-project decision that curated Qwen evidence cannot resolve. Use Astra/low for bounded tool synthesis and Astra/medium
+only for genuinely complex cross-tool or irreversible decisions; never Astra none, high, xhigh or max as routine delegation.
+Record why Flash/MAX evidence was insufficient before escalating. Qwen being busy or one Qwen hypothesis failing is not
+unavailability. Native support never implements, and workers cannot spawn children.
 For cause investigation, start with `qwen3.8-flash`/none: reproduce the failure, trace only
 relevant logs/tests/code, state bounded falsifiable hypotheses, make the smallest authorized
 repair, and rerun directly affected checks. Use read-only `qwen3.8-max`/none when the cause
 crosses modules or affects paper conclusions, statistics, retrieval validity, reproducibility,
 security or publication adoption. Terra/medium is only for live external specifications/tools
-unavailable to Qwen; Sol/high is only for independent high-stakes validation of Qwen findings.
+unavailable to Qwen.
 If the same failure repeats twice without new causal evidence, reject that hypothesis and test
 a distinct one rather than retrying blindly. Escalate Qwen runner/bootstrap failures to the
 parent; never bypass the runner boundary or substitute native implementation.
