@@ -26,6 +26,19 @@ Only the parent agent may commit or push, and only after explicit user authoriza
 
 ## Workflow
 
+### PaperPilot 専用の役割選択
+
+- 収集、正規化、重複排除、ランキング、LLM enrichment、静的 JSON/HTML、Worker/Pages の
+  経路調査は `paperpilot_system_investigator`（Flash）。実装と直接テストは親が
+  Flash 実装ランナーへ渡す。
+- 固定コーパス上の検索品質、重複・系譜誤り、欠損、待ち時間、API コストの計測は
+  `paperpilot_evaluator`（Flash）。未監査データを公開品質と見なさない。
+- 論文識別子、引用方向、版・撤回、取得元の契約を含む根拠調査は
+  `paperpilot_retrieval_researcher`（MAX）、公開・Worker・秘密情報・不正入力の
+  リスク査読は `paperpilot_security_reviewer`（MAX）。
+- 上記の整理済み証拠で解けない、公開や外部 workflow に関わる横断かつ不可逆な判断だけ
+  `paperpilot_astra_escalator` を使う。論文本文の収集・公開・認証操作はしない。
+
 ### Qwen task routing (current user instruction)
 
 Implementation, application-level analysis changes, literature-processing code and directly needed unit/functional tests use

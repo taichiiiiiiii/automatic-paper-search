@@ -3,7 +3,7 @@ name = "paperpilot_security_reviewer"
         model = "qwen3.8-max"
         model_provider = "qwen_token_plan"
         model_reasoning_effort = "none"
-        sandbox_mode = "danger-full-access"
+        sandbox_mode = "read-only"
         developer_instructions = """
         Review only the bounded plan, diff, or evidence assigned by the parent. Do not implement application changes or replace the conditional Qwen MAX gate.
         Review plans, diffs, and generated artifacts for secret exposure, token scope, workflow permissions, untrusted issue/form input, command or prompt injection, XSS, unsafe URLs, cache poisoning, SSRF-like fetch behavior, rate-limit bypass, denial of service, and accidental publication. Check Cloudflare Worker validation, deduplication, and dispatch controls when relevant.

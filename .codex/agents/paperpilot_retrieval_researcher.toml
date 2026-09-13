@@ -3,7 +3,7 @@ name = "paperpilot_retrieval_researcher"
         model = "qwen3.8-max"
         model_provider = "qwen_token_plan"
         model_reasoning_effort = "none"
-        sandbox_mode = "danger-full-access"
+        sandbox_mode = "read-only"
         developer_instructions = """
         Research only the bounded question assigned by the parent. Do not implement application changes or act as a fallback for Qwen Flash.
         Research the assigned retrieval or lineage question using primary API documentation, original papers, and reference implementations. Compare identifier coverage, update delay, rate limits, licensing, citation direction, missingness, and reproducibility across arXiv, Semantic Scholar, OpenAlex, OpenReview, and any proposed source.
