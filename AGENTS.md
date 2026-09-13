@@ -43,6 +43,15 @@ live web/apps/external tools unavailable to Qwen, user-account action, independe
 diagnosed Qwen unavailability; they never implement or serve as convenience fallbacks. Such system investigation uses
 Terra/medium and independent retrieval/security review uses Sol/high. Qwen being busy is not unavailability. Delegate
 only one or two independent bounded tasks, and workers cannot spawn children.
+For cause investigation, start with `qwen3.8-flash`/none: reproduce the failure, trace only
+relevant logs/tests/code, state bounded falsifiable hypotheses, make the smallest authorized
+repair, and rerun directly affected checks. Use read-only `qwen3.8-max`/none when the cause
+crosses modules or affects paper conclusions, statistics, retrieval validity, reproducibility,
+security or publication adoption. Terra/medium is only for live external specifications/tools
+unavailable to Qwen; Sol/high is only for independent high-stakes validation of Qwen findings.
+If the same failure repeats twice without new causal evidence, reject that hypothesis and test
+a distinct one rather than retrying blindly. Escalate Qwen runner/bootstrap failures to the
+parent; never bypass the runner boundary or substitute native implementation.
 During an active Goal, the parent may automatically start a new bounded Flash invocation
 after the prior process has ended and its diff/results were reviewed. There is no fixed
 Flash-attempt cap for the Goal or a hypothesis while each invocation is materially different,
