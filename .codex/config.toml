@@ -3,8 +3,8 @@ sandbox_mode = "danger-full-access"
 [agents]
 enabled = true
 # Implementation must use .codex/bin/qwen-implement (qwen3.8-flash,
-# qwen_token_plan, Cloud-only). Native defaults below are not implementation routes.
+# qwen_token_plan, Cloud-only). Qwen is the default delegated worker; Astra is explicit escalation only.
 max_concurrent_threads_per_session = 4
-default_subagent_model = "gpt-5.6-terra"
-default_subagent_reasoning_effort = "medium"
+default_subagent_model = "qwen3.8-flash"
+default_subagent_reasoning_effort = "none"
 interrupt_message = true

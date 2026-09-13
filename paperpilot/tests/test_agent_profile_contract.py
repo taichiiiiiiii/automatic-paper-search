@@ -81,10 +81,11 @@ def test_repository_agent_profiles_never_select_ultra() -> None:
     paths = sorted(AGENT_ROOT.glob("*.toml"))
     assert paths
     expected = {
-        "paperpilot_evaluator": ("gpt-5.6-terra", "medium"),
-        "paperpilot_system_investigator": ("gpt-5.6-terra", "medium"),
-        "paperpilot_retrieval_researcher": ("gpt-5.6-sol", "high"),
-        "paperpilot_security_reviewer": ("gpt-5.6-sol", "high"),
+        "paperpilot_evaluator": ("qwen3.8-flash", "none"),
+        "paperpilot_system_investigator": ("qwen3.8-flash", "none"),
+        "paperpilot_retrieval_researcher": ("qwen3.8-max", "none"),
+        "paperpilot_security_reviewer": ("qwen3.8-max", "none"),
+        "paperpilot_astra_escalator": ("gpt-6-astra", "low"),
     }
     for path in paths:
         profile = _toml(path)
@@ -95,8 +96,8 @@ def test_repository_agent_profiles_never_select_ultra() -> None:
     config = _toml(ROOT / ".codex" / "config.toml")
     agents = config.get("agents")
     assert isinstance(agents, dict)
-    assert agents.get("default_subagent_reasoning_effort") == "medium"
-    assert agents.get("default_subagent_model") == "gpt-5.6-terra"
+    assert agents.get("default_subagent_reasoning_effort") == "none"
+    assert agents.get("default_subagent_model") == "qwen3.8-flash"
 
 
 def test_support_roles_and_fixed_cloud_implementation_are_enabled() -> None:
