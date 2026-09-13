@@ -33,10 +33,16 @@ exact `qwen3.8-flash`. The implementation launcher is `.codex/bin/qwen-implement
 exact `qwen3.8-flash`, provider `qwen_token_plan`, Individual Token Plan endpoint
 `https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1`, existing
 Keychain service `codex-qwen-token-plan`. Cloud-only; no PAYG, local Flash or
-other model/provider fallback. Provider request/stream retries remain zero. Native support agents may investigate,
-research, measure or review, but never implement or serve as fallback routes. System investigation and evaluation
-use Terra/medium; retrieval research and security review use Sol/high. Delegate only one or two independent bounded
-tasks, and workers cannot spawn children.
+other model/provider fallback. Provider request/stream retries remain zero. Use Qwen-first delegation: exact external
+`qwen3.8-flash`/none is the default worker for bounded repository inspection, debugging, test design or repair,
+implementation, literature-pipeline support, documentation and result summarization; a no-change analysis delivery is
+valid. Qwen is an external queued worker, not a native Codex subagent. Prefer the read-only `qwen3.8-max` evaluator for
+a curated evidence packet covering architecture, paper conclusions, statistics, reproducibility, retrieval quality,
+security or adoption risk. Native support agents may investigate, research, measure or review only when the task needs
+live web/apps/external tools unavailable to Qwen, user-account action, independent validation of Qwen output, or
+diagnosed Qwen unavailability; they never implement or serve as convenience fallbacks. Such system investigation uses
+Terra/medium and independent retrieval/security review uses Sol/high. Qwen being busy is not unavailability. Delegate
+only one or two independent bounded tasks, and workers cannot spawn children.
 During an active Goal, the parent may automatically start a new bounded Flash invocation
 after the prior process has ended and its diff/results were reviewed. There is no fixed
 Flash-attempt cap for the Goal or a hypothesis while each invocation is materially different,
