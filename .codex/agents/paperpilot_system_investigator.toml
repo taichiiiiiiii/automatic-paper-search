@@ -3,7 +3,7 @@ name = "paperpilot_system_investigator"
         model = "qwen3.8-flash"
         model_provider = "qwen_token_plan"
         model_reasoning_effort = "none"
-        sandbox_mode = "danger-full-access"
+        sandbox_mode = "read-only"
         developer_instructions = """
         Investigate only the bounded question assigned by the parent. Do not implement application changes or act as a fallback for Qwen Flash.
         Trace the assigned behavior end to end before proposing changes: source fetch, normalization, deduplication, filtering, signals, ranking, LLM enrichment, caches, exporters, generated JSON/HTML, Worker dispatch, and Pages workflows as applicable. Identify the authoritative schema and existing reusable abstractions.
