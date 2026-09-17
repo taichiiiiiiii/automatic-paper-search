@@ -22,9 +22,11 @@ PaperPilot — AI/ML 論文自動収集・品質フィルタリングシステ�
 > 2026-08-20 時点の実装基準線は [09-implementation-status.md](09-implementation-status.md)、
 > 2026-08-30 以降の実行状況と次キューは [13-agent-workboard.md](13-agent-workboard.md) です。
 > 01〜07 を読むときは各ファイル冒頭の警告も確認してください。
-> 08〜27 は後続文書です。09 は基準線、10 はフェーズ 1 の判断履歴、11〜27 は目標設計・実装契約・現在地です。
+> 08〜35 は後続文書です。09 は基準線、10 はフェーズ 1 の判断履歴、11〜27 は目標設計・実装契約・現在地です。28〜34 は次期開発計画、一論文スライド・家系図、非公開レビューと学会更新候補の接続計画・契約、35はUI/UX改善と検証記録です。実装済みと計画段階の区別は各文書の状態欄と13を確認してください。
 
 ## 目次
+
+- [検索・Focus ViewのUI/UX改善と検証状況](35-ui-ux-navigation-polish.md) — 初期7論文/1-hop、検索詳細ダイアログ、未完了の実画面確認
 
 - [~~システム概要とアーキテクチャ~~](01-overview.md) 🔴 **中身は overview ではありません**（§5.6 run_history / venue_cache の断片。本来の §1/§2 はリポジトリに存在しない・#360）
 - [モジュール設計](02-modules.md)
@@ -71,6 +73,20 @@ PaperPilot — AI/ML 論文自動収集・品質フィルタリングシステ�
   — Dockerをcollector/test/site previewの正本、uvをlock/build補助に限定。static contract 28 passed、実image runtimeは未実施
 - [Paper Slide request plane production boundary](27-paper-slide-request-plane-production.md)（2026-09-04）
   — approved catalog、Durable Object、dispatch曖昧性、atomic workflow claim、休眠runtimeとproduction activation gate
+- [次期開発計画 — 実際に使える検索・家系図・スライド](28-next-delivery-plan.md)（2026-09-05）
+  — 公開済み基準線、根拠付き家系図の小規模pilot、一論文スライド生成、1学会の自動更新、Docker実稼働の順序と受入条件
+- [一論文スライドのSol API接続](29-slide-sol-local-execution.md)（2026-09-05）
+  — 固定model・価格・予算、通信/生成/service/previewの境界、ローカルpilotの受入条件
+- [一論文の家系図 — v2 reader と Focus View](30-lineage-pilot-viewer-delivery.md)（2026-09-05）
+  — 監査済みpilot index、厳密なv2読取、少数関係の表示、選択カード導線、ローカルbundleの実装境界
+- [非公開の家系図レビュー準備と学会更新候補](31-private-review-and-conference-candidates.md)（2026-09-05）
+  — 未監査候補のA/B確認資料、ローカル保存CLI、安定snapshotからの公開前catalog候補
+- [学会更新の差分確認と家系図回答の取込](32-local-update-and-review-intake.md)（2026-09-06更新）
+  — 差分/未適用計画・原本に束縛したprivate回答取込をローカル検証済み。保存CLIは33で採用、実source・公開接続は後続
+- [家系図レビュー回答の非公開取込CLI](33-private-review-intake-cli.md)（2026-09-07更新）
+  — Qwen実装の原本/回答reader・全byte照合・非公開保存API/CLIをローカル検証・独立レビュー済み。実人手監査・公開は別gate
+- [学会の前年度baseline / ratioローカル評価](34-conference-baseline-assessment.md)（2026-09-07更新）
+  — snapshot共有検査をQwen実装・独立レビュー済み。前年度state/catalog結合・assessment本体・trusted state・公開認可は未完了
 
 ---
 
