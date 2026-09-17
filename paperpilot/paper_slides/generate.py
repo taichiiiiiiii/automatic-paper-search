@@ -210,7 +210,9 @@ class StructuredSlideProvider(Protocol):
     @property
     def identity(self) -> ProviderIdentity: ...
 
-    def count_tokens(self, request: SlidePromptRequest, *, remaining_wall_ms: int) -> int: ...
+    def count_tokens(self, request: SlidePromptRequest, *, remaining_wall_ms: int) -> int:
+        """Return a conservative reservation ceiling for the complete wire request."""
+        ...
 
     def generate_json(
         self,
@@ -590,7 +592,9 @@ def _detached_provider_request(request: SlidePromptRequest) -> SlidePromptReques
     return detached
 
 
-def _request_sha256(request: SlidePromptRequest) -> str:
+def provider_request_sha256(request: SlidePromptRequest) -> str:
+    """Return the validated, prose-free identity of one adapter request."""
+
     data = canonical_prompt_data_bytes(request)
     digest = canonical_json_sha256(
         {
@@ -604,6 +608,12 @@ def _request_sha256(request: SlidePromptRequest) -> str:
     if type(digest) is not str or _SHA256_RE.fullmatch(digest) is None:
         _fail(PAPER_SLIDE_PROVIDER_FAILED, "provider_request_hash_failed")
     return digest
+
+
+# Internal alias retained so existing coordinator tests and call sites keep the
+# same deliberately narrow surface while concrete adapters can use the public
+# helper without duplicating the request-identity contract.
+_request_sha256 = provider_request_sha256
 
 
 def _elapsed_ms(start_ns: int) -> int:
@@ -799,7 +809,7 @@ def _provider_call(
         or not response.payload
         or len(response.payload) > MAX_PROVIDER_PAYLOAD_BYTES
         or type(response.input_tokens) is not int
-        or response.input_tokens != input_tokens
+        or response.input_tokens < 0
         or type(response.output_tokens) is not int
         or response.output_tokens < 0
         or (
@@ -1432,4 +1442,5 @@ __all__ = [
     "StructuredSlideProvider",
     "generate_slide_deck",
     "generate_slide_deck_from_prepared",
+    "provider_request_sha256",
 ]

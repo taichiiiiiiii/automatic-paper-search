@@ -1,0 +1,27 @@
+schema_version: conference-sources-v1
+apply_enabled: false
+defaults:
+  probe_interval_hours: 6
+  stable_min_separation_hours: 6
+  stable_max_separation_hours: 48
+  max_future_years: 1
+venues:
+  # Fixture-only rollout profile. The official ICLR 2026 OpenReview group
+  # confirms the source-id shape; live count/window review remains a later gate.
+  - venue_key: iclr
+    enabled: false
+    curated_class: top
+    display_template: "ICLR {year}"
+    slug_template: "iclr-{year}"
+    adapter: openreview-v2
+    source_id_template: "ICLR.cc/{year}/Conference"
+    first_year: 2026
+    active_months_utc: [1, 2, 3, 4, 5]
+    count_gate:
+      minimum_absolute: 1000
+      previous_edition_min_ratio: 0.70
+      previous_edition_max_ratio: 1.50
+    tracks:
+      accepted_only: true
+      accepted_decision_labels: [oral, spotlight, poster]
+      highlighted_labels: [oral, spotlight]

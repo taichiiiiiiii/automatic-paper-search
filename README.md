@@ -19,15 +19,15 @@ AI/ML 論文を arXiv / Semantic Scholar / OpenAlex から自動収集し、品�
   - Stage 2: 品質シグナル（venue / citation / author / GitHub Stars / keyword / **follow**）でスコアリング
   - Stage 3: Embedding 類似度（MiniLM、オプション）
   - Stage 4: **LLM によるリランク + 日本語要約**（Ollama / Gemini / Claude / Groq）
-- **家系図ビューア** — S2 の引用グラフを LLM で関係分類し、`docs/<conference>/lineage.html` にインタラクティブ表示
+- **家系図ビューア** — 監査合格した関係だけを表示。既存学会ビューに加え、一論文の`lineage/?paper=<paper_id>` Focus Viewをローカル実装。初期7論文・18関係・1-hop、上限変更・枝の追加、関係の解釈・根拠・人手レビュー詳細に対応。公開pilot indexは空であり、実論文の系譜はまだ利用できない
 - **FollowSignal** — 特定研究者 / 組織の新作を day-1 で最上位に（他シグナルが熟成前でも）
 - **プラグイン構造** — Source / Signal / Exporter / LLMProvider は基底クラスを継承するだけで追加可能
 - **設定駆動** — `config.yaml` でキーワード・カテゴリ・重み・LLMモデル・フォロー研究者を変更
 - **秘匿分離** — API キー類は `.env` のみ（`config.yaml` に書かない）
 - **冪等性** — 既出論文は seen_ids で除外。同じ config で2回実行しても重複しない
 - **Fail-Safe** — 外部API障害時は該当ソース/シグナルをスキップして継続
-- **学会横断検索** — トップページ（`docs/index.html`）の検索ボックスから 10 学会 28,300 本を横断検索。現行索引は `docs/search-index-v2.json`（`paperpilot/scripts/build_search_index.py` が生成）で、canonical paper IDから各学会カタログのselected cardへ遷移する。`search-index.json`は互換artifactとして残る
-- **グローバルナビ** — `docs/` 配下の全 27 HTML が `<nav class="site-nav">`（探す / テーマ系譜 / 仕組み）を共有
+- **学会横断検索** — トップページ（`docs/index.html`）でタイトル・著者・タグを2文字以上入力し、学会・年・発表種別で絞り込む。条件付きURLの共有、20件ずつのページ送り、ブラウザの「戻る」に対応。要旨全文・日本語の概念検索は未対応。現行索引は `docs/search-index-v2.json`（`paperpilot/scripts/build_search_index.py` が生成）で、canonical paper IDから各学会カタログのselected cardへ遷移する。`search-index.json`は互換artifactとして残る
+- **グローバルナビ** — サイト画面は `<nav class="site-nav">`（探す / 系譜 / 仕組み）を共有
 - **アセット版数の自動同期** — `paperpilot/scripts/sync_asset_versions.py` が CSS/JS の内容ハッシュから `?v=` を付け替え、`docs/assets/versions.json` を唯一の真実源として全 HTML に書き戻す。手で `?v=` を書き換えない
 
 ## 必要環境
@@ -118,9 +118,52 @@ retention 外や未登録 projector の replay は保証しません。失敗時
 標準エラーへ出して非ゼロ終了します。完全な契約は
 [`docs/design/15-replay-lite-contract.md`](docs/design/15-replay-lite-contract.md) を参照してください。
 
+### 試験用の一論文スライド
+
+要旨から未レビューのWebスライドを作るSol接続・共通処理・CLIを実装しています。初期profileは
+CVPR 2025の「Transformers without Normalization」1論文・日本語に固定し、要旨の内容hash、
+2回までの生成、時間・費用上限を検証します。出力はHTML/JSON/CSS/JSを含むローカルpreview一式です。
+
+現在は通信を模したテストと表示確認までで、実APIによる生成、公開サイトからの依頼、本文版、一般公開は未完了です。
+API keyは環境変数だけで受け取り、設定ファイルやCLI引数に書きません。
+実行入口・対象ID・期限付きprofile・Dockerの残る条件は
+[`29-slide-sol-local-execution.md`](docs/design/29-slide-sol-local-execution.md)を参照してください。
+
+## 検索結果から詳細を確認する（ローカルUI）
+
+Focus Viewの「表示中の論文」は中心・先行研究・発展研究・比較対象・その他の関連論文に分けて表示します。区分は信頼段階ではなく、信頼段階は各関係の詳細で確認できます。
+表示中の検証済み関係に基づく区分であり、年やタイトルから継承を推測するものではありません。
+グラフも先行・中心・発展の区分で並べ、比較対象とその他は下側に分離します。
+関係線はカードを避けて描画し、重なるラベルは省略します。省略した関係名も線の監査詳細と「関係一覧」で確認できます。
+比較を有効にすると、中心論文に直接つながる比較対象も論文数の上限内で追加します。比較先を連鎖的には広げません。
+
+ローカルUIでは、横断検索の「すべての結果を見る」で表示する一覧から、検索条件を残したまま論文詳細を
+ダイアログで開けます。「閉じて検索に戻る」で元の位置へ戻り、「通常ページで開く」で従来の学会ページへ移動します。
+Ctrl/Cmdクリック等の通常リンク操作も維持します。スライド状態表示は依頼受付を有効化するものではありません。
+
+## 学会の前年度比チェック（ローカルAPI）
+
+`paperpilot.conference_watch.assess_previous_edition_ratio`は、registry・現年度snapshot・直前年のPUBLISHED state・
+catalog bytesの整合性を検査し、`passed` / `below_minimum` / `above_maximum`とJSONレポートを返します。
+
+```python
+from paperpilot.conference_watch import assess_previous_edition_ratio
+
+assessment = assess_previous_edition_ratio(
+    registry, edition, snapshot, previous_state,
+    previous_catalog_bytes=previous_catalog_bytes,
+)
+report_bytes = assessment.report_bytes
+```
+
+入力は呼出側で用意したdomain modelとbytesです。API自身はファイル・ネットワークへアクセスせず、公開状態も変更しません。
+`passed`は入力間の整合性と件数範囲だけを意味し、自動更新・公開の許可ではありません。
+不正入力は固定コードの`PreviousEditionRatioAssessmentError`で拒否します。
+詳細は[前年度比の契約](docs/design/34-conference-baseline-assessment.md)を参照してください。
+
 ## Stage 4 (LLM rerank) — Ollama セットアップ（任意）
 
-Stage 4 を使うと LLM が各論文に `relevance (1-5) / 日本語要約 / 読むべき理由 / タグ` を付与し、関連度順にリランクします。完全ローカルで無料動作する **Ollama** を推奨します。これはPaperPilot製品runtimeの任意設定であり、リポジトリの実装・レビューagentは [`PAPERPILOT_PROFILE.md`](PAPERPILOT_PROFILE.md) のGPT-5.6 Sol経路を使います。
+Stage 4 を使うと LLM が各論文に `relevance (1-5) / 日本語要約 / 読むべき理由 / タグ` を付与し、関連度順にリランクします。完全ローカルで無料動作する **Ollama** を推奨します。これはPaperPilot製品runtimeの任意設定です。開発実装はFlashを基本とし、親が監督する対話中の依頼だけ混雑時にqwen3.7-plusを使います。設計・レビューはGPT-5.6 Solのままで、最新の起動条件は[実装担当の運用手順](docs/QWEN_IMPLEMENTER.md)を参照してください。
 
 > 以下はホスト補助経路です。Docker-first phase 1ではcollectorからhost上の`localhost:11434`へ接続する
 > 経路をまだ認可していないため、Ollamaをproduction Docker経路としては未検証です。
@@ -152,7 +195,35 @@ llm:
 
 出力は `paperpilot/output/papers_YYYY-MM-DD.{csv,json}` に保存されます。
 
+CSVは既存36列の末尾に`uid`・`doi`を追加し、入力にある識別子をそのまま保持します。
+`uid`は既存`Paper.uid`（arXiv ID → DOI → URLの優先順）で、サイトのcanonical `paper_id`とは別物です。
+DOIが未取得なら空欄のままです。識別子の転記は原典照合済みという意味ではありません。
+列数を固定してCSVを読む外部ツールでは、追加2列への対応が必要です。
+
 ## 家系図ビューア
+
+新しい一論文ビューは、検索結果→学会カタログの選択カード→監査済み家系図の導線を持ちます。
+`lineage-pilot-index-v1.json`に合格した論文が登録されるまでカードにリンクを出さず、直接URLを開いても
+未監査データを表示しません。`paperpilot.lineage_pilot`のローカルAPIは既存のartifact・review fixture・qualityを
+実catalogと照合し、新規のローカル出力先へ組み立てるだけです。論文収集・人手承認・公開は行いません。
+入力契約と公開前gateは[一論文家系図の接続契約](docs/design/30-lineage-pilot-viewer-delivery.md)を参照してください。
+
+未監査の候補から、二人分の独立した確認資料をローカルで作る入口もあります。
+`python -m paperpilot.scripts.prepare_lineage_review --help`で引数を確認できます。
+この処理は凍結した候補と原典snapshotを入力に取り、機械の判断を伏せた`reviewer-a.json` / `reviewer-b.json`と、
+担当者専用の`coordinator.json`を作ります。保存先はGitリポジトリ外にある所有者専用ディレクトリ内の新規フォルダーに
+限定し、回答欄は未入力のままです。論文の収集、回答の取込、人手承認、家系図の公開は行いません。
+入力・保存条件と配布上の注意は[非公開レビュー準備](docs/design/31-private-review-and-conference-candidates.md)を参照してください。
+
+Python APIの`paperpilot.lineage_pilot.review_io.write_private_review_intake`は、同一プロセスで準備したbundleと
+回答bytesを検証し、取込結果だけを新規の非公開フォルダーへ`intake.json`として保存します。
+回答ファイルから取り込む入口は`python -m paperpilot.scripts.ingest_lineage_review --help`で確認できます。
+準備時と同じ元入力・識別子・作成日時に加え、配布した3原本の`--original-review-dir`、少なくとも一方の
+`--reviewer-a-answer` / `--reviewer-b-answer`、`--incorporated-at`、新規`--output`を指定します。
+原本との全byte一致を確認し、回答不足は`pending`、不一致は`disagreement`として保存します。
+原本と回答はGit外の所有者専用0700フォルダー・0600通常ファイルが必要で、原本配下への出力や既存出力の上書きは拒否します。
+`complete`でも監査済み・公開可能にはしません。利用条件と残作業は
+[非公開回答の取込・保存](docs/design/33-private-review-intake-cli.md)を参照してください。
 
 パイプラインの成果物を `docs/<conference>/` 配下の静的サイトに変換する補助パイプラインが `paperpilot/scripts/` にあります。
 

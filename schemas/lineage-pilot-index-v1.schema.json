@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paperpilot.local/schemas/lineage-pilot-index-v1.schema.json",
+  "title": "PaperPilot Lineage Pilot Index v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "entries"],
+  "properties": {
+    "schema_version": {"const": "lineage-pilot-index-v1"},
+    "entries": {
+      "type": "array",
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/entry"}
+    }
+  },
+  "$defs": {
+    "paperId": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "conference": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "artifactReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^lineage-pilots/[a-z0-9][a-z0-9-]*/[0-9a-f]{40}/artifacts/[0-9a-f]{64}\\.json$"
+        },
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "fixtureReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^lineage-pilots/[a-z0-9][a-z0-9-]*/[0-9a-f]{40}/fixtures/[0-9a-f]{64}\\.json$"
+        },
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "qualityReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^lineage-pilots/[a-z0-9][a-z0-9-]*/[0-9a-f]{40}/quality/[0-9a-f]{64}\\.json$"
+        },
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "paper_id", "conference", "collection_id", "release_id", "release_profile",
+        "artifact", "fixture", "quality"
+      ],
+      "properties": {
+        "paper_id": {"$ref": "#/$defs/paperId"},
+        "conference": {"$ref": "#/$defs/conference"},
+        "collection_id": {
+          "type": "string",
+          "pattern": "^deep:[a-z0-9][a-z0-9-]*:paper:[0-9a-f]{40}$"
+        },
+        "release_id": {"type": "string", "minLength": 1, "pattern": "\\S"},
+        "release_profile": {"const": "claim-verified-pilot-v1"},
+        "artifact": {"$ref": "#/$defs/artifactReference"},
+        "fixture": {"$ref": "#/$defs/fixtureReference"},
+        "quality": {"$ref": "#/$defs/qualityReference"}
+      }
+    }
+  }
+}

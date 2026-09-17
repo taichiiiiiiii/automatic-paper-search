@@ -1,5 +1,9 @@
 # CLAUDE.md — PaperPilot 実装ガイド
 
+現行ルーティングはAGENTS.mdを正本とする。実装・解析・文献処理・必要テストはFlash、条件付き評価のみMAX、最終採否は親Codex。以下のSingle-agent modeや旧role表は履歴であり、現行方針を上書きしない。設定変更だけではworker起動・外部操作を許可しない。
+
+> 本文は必要なタスクでのみ参照する。現行の運用・委譲・安全境界はAGENTS.mdを優先し、実人手監査・科学的根拠・公開承認のgateは省略しない。
+
 このファイルは Claude Code が本プロジェクトを実装する際に参照する指示書です。
 設計書（[`docs/design/`](docs/design/)）および市場調査レポート（[`docs/research/`](docs/research/)）と合わせて読むこと。
 原本 `.docx` は [`archive/`](archive/) に保管されていますが、**編集は markdown 側で行う**ことが正。
@@ -233,6 +237,8 @@ PAPERPILOT_CLAUDE_API_KEY    # Claude プロバイダ
 PAPERPILOT_SLACK_WEBHOOK_URL # Slack 通知
 PAPERPILOT_SMTP_*            # Email 通知
 ```
+
+**例外（paper-slides Sol local pilot）：** `PAPERPILOT_OPENAI_API_KEY` / `OPENAI_API_KEY` は `paperpilot/paper_slides/sol_local.py` が `config_loader.py` を経由せず直接 `os.environ` から読む。config.yaml / CLI 引数 / 生成物のどこにもキーを触れさせないための意図的な例外（[`docs/design/29-slide-sol-local-execution.md`](docs/design/29-slide-sol-local-execution.md)）。`.env.example` にコメント付きで記載する。
 
 ---
 
@@ -582,6 +588,7 @@ uv run python -m paperpilot.scripts.scaffold_conference_page --conference <slug>
 9. **run_history.jsonl には `finished_at` / `sources_status` / `errors` を含める**
 10. **Slack / Email 通知は webhook・SMTP 未設定時に no-op（pipeline を失敗させない）**
 11. **`paperpilot/scripts/` の LLM 呼び出しは `AbstractLLMProvider` を経由する。`urllib` / `requests` で Groq・Gemini・Claude を直叩きしない（二重実装を避ける）**
+    - **例外（paper-slides Sol local pilot）:** `paperpilot/scripts/generate_paper_slides.py` が呼ぶ `paperpilot/paper_slides/sol_provider.py`（OpenAI 直叩き、stdlib `http.client`）は `AbstractLLMProvider` を経由しない。本番 Stage/pipeline に registry 登録されない単一論文・非公開のローカル実験canaryであり、監査性のため意図的にスコープを絞った独立実装（[`docs/design/29-slide-sol-local-execution.md`](docs/design/29-slide-sol-local-execution.md)）。他の LLM 呼び出しをこの例外で正当化しない。
 12. **`paperpilot/scripts/` はパイプライン出力（`output/<conf>/papers_YYYY-MM-DD.csv`）のみを入力源とする。スクリプト側で arXiv / S2 を再クロールして venue / citation / authors を再取得しない（Stage 2 の成果物を信頼する）**
     - **例外（家系図構築）:** `build_lineage.py` / `build_deep_lineage.py` が引用グラフ（S2 `references` / `citations`）を取得することは必要不可欠なので許可する。ただし焦点論文の `venue` / `venue_tier` / `citation_count` / `github_stars` は `papers.json`（Stage 2 成果物）の値を優先し、S2 からは引用関係のメタデータ（paperId, 引用 paperId のタイトル等）のみを取る。
 13. **家系図ビューの `docs/<conf>/lineage.json` は `build_lineage.py` が唯一の生成元。手編集禁止**

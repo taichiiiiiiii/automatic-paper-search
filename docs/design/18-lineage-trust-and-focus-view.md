@@ -1,6 +1,6 @@
 # 18. Lineage Trust と Focus View 契約
 
-- **状態:** 設計確定・実装前
+- **状態:** L0/L1に加え、一論文向けL3 reader・L4 Focus Viewとローカルbundleを検証済み（初回範囲は[30](30-lineage-pilot-viewer-delivery.md)）。実source収集・人手監査・実論文公開、既存conference/theme/deepの全面移行は未完了
 - **決定日:** 2026-08-30
 - **対象:** conference / theme / deep lineage の妥当性表示、段階表示、URL 状態、評価・公開 gate
 - **上位契約:** [`11-target-architecture.md`](11-target-architecture.md)、
@@ -26,8 +26,8 @@ Focus View は、監査に合格した v2 artifact のうち `decision=accepted`
    `verified | corroborated | tentative` の trust tier を付ける。
 3. 証拠が足りない候補は `unknown` または `abstained`、反証・不採用は `rejected` として ledger に残し、
    6 種の relation へ強制分類しない。
-4. 通常表示は focus を中心にした 2-hop の部分グラフとし、初期上限を
-   **15 nodes / 18 claims / 各 node 2 branches** とする。
+4. 通常表示は focus を中心にした 1-hop の部分グラフとし、初期上限を
+   **7 nodes / 18 claims / 各 node 2 branches** とする（2026-09-08 UI改善）。利用者が2/3-hopや論文上限を明示的に増やせる。
 5. focus から祖先・後継へ一本ずつ伸びる **focus spine** を先に確保し、残りの枝を決定的順位で加える。
 6. raw / LLM 自己申告 score は品質の代用品にしない。初期表示は tier を gate とし、`min_conf=0.70` は
    versioned calibration を持つ machine claim にだけ適用する。
@@ -150,6 +150,16 @@ v1 reader が unknown key を無視して部分的に v2 を読む migration は
 - 正規化入力全体の `input_sha256`、`retrieved_at`、immutable `snapshot_ref`。
 - source response と endpoint を結ぶ canonical identity。title-only join は禁止する。
 
+初回L1 wireでは`cited_work_id` / `citing_work_id`をartifact内のgraph-local canonical node IDとして解決する。
+元sourceでのwork IDは`source_work_id`に保持し、L2のproducerがstrong ID/aliasでnodeへ結び付ける。
+`link`の証拠は`citing=src / cited=dst`、`accepted claim`の証拠は
+`cited=src（older-or-compared） / citing=dst（newer-or-comparing）`を満たし、空の証拠集合では承認しない。
+その他のdecisionでも、参照する証拠の両端は候補の両端と一致しなければならない。
+不明なworkをtitleの近さで解決したり、別の論文対の証拠をhashだけ付け替えて承認したりしない。
+同じsource workを複数adapterから取得しても独立証拠とは数えず、`corroborated`ではsource/kindと
+source workの双方で独立性を要求する。実slice較正が未実装の初回quality producerは、
+この条件だけで`automated-calibrated-v1`の出荷を許可しない。
+
 LLM prompt の場合も system/user の immutable snapshot と hash を evidence record から参照できるようにする。
 UI に秘密、未公開全文、ライセンス上公開できない payload は出さず、公開可能な locator と短い excerpt だけを
 redacted projection に含める。
@@ -259,7 +269,11 @@ reviews: [{reviewer_id, citation_valid, gold_family, gold_relation, evidence_sup
 adjudication: {adjudicator_id, citation_valid, gold_family, gold_relation, evidence_support, reviewed_at}
 ```
 
-- reviewer A/B は互いの回答と model prediction を見ずに blind label する。不一致は第三者が adjudicate する。
+- reviewer A/B は互いの回答と model prediction を見ずに blind label する。v2 は全 edge に reviewer A/B と
+  異なる第三者の final review を必須とし、A/B 一致時は同じ4判断項目を確認し、不一致時は第三者が裁定する。
+  一致時の4判断項目と第三者 final review の一致をPython validator・ブラウザreaderの両方で検査する。
+  この内部整合検査でも本人性や原典照合を認証せず、intake の `complete` を fixture・quality・公開の自動認可に用いない。
+- `focus_labels` は edge review や model 出力から導出せず、別の明示入力として与える。
 - Cohen's kappa または Krippendorff's alpha を relation / support について報告し、`>= 0.70` を要求する。
 - calibration/train と frozen test は paper pair ではなく paper / topic 単位で分離し、同じ論文の近縁 pair が
   両側へ漏れないようにする。
@@ -302,6 +316,32 @@ calibration table は0.1幅で各 bin の件数・平均予測値・正解率を
 評価 report は assertion 数だけでなく `unknown_rate`、`abstained_rate`、`rejected_rate`、coverage、selective risk curve、
 relation 別混同行列、evidence coverage、source / method / provider / model / prompt / calibration version別の成績を残す。
 
+### 4.4 Release profile（L0で固定）
+
+v2 quality row は次のどちらか一つを `release_profile` に明記する。profile の省略、未知値、両profileの要件を
+都合よく混ぜた状態は fail closed とする。
+
+| profile | 対象 | `ready + passed` の追加条件 | calibration の表現 |
+|---|---|---|---|
+| `claim-verified-pilot-v1` | 凍結した小規模pilot | 候補ledger 100%、通常表示する全accepted claimを独立した二人がmodel予測と互いの回答を見ずに確認し、全edgeを別の第三者がfinal reviewする。一致時は同じ4判断項目を確認し、不一致時は裁定する。relation/supportそれぞれのCohen's kappa >= 0.70。exact-version relationも例外にしない | `not_applicable` とし、小標本pilotのためcollection精度を主張しない理由を必須にする |
+| `automated-calibrated-v1` | 機械分類を通常棚へ出すcollection | 本節の既存gateをすべて維持する。全体300件、active method×relation slice 30件を目標とし、標本不足sliceは`tentative`またはclaim-specific `verified`だけにする | Wilson下限、macro precision、ECE、Brier、coverage、unknown/abstained recallを実測し、閾値未達や欠損を合格にしない |
+
+`quality.review.agreement` はrelation/supportのCohen's kappaの小さい方とし、全候補の独立reviewから再計算する。
+単純な一致率で置換しない。片方でも単一カテゴリ等でkappaが未定義ならreadyを認めず、1.0を補わない。
+初回pilotは全候補で同じ二人のreviewer IDを使い、IDで固定順に揃えて計算する。
+reviewの配列順や候補ごとの人の入替えでkappaを変えない。第三者の final review は双方のreview以降とし、
+artifact生成前またはqualityの`as_of`より未来のreviewを使った公開判定は拒否する。
+
+pilot profileは自動profileの代替合格経路ではない。AI agent二体を人手reviewer二人として記録してはならず、
+synthetic fixtureのreviewer IDはテスト専用であることを明記する。実論文の人手承認をfixture生成コードやAI出力で
+捏造しない。pilot通常表示は`accepted + verified`だけで、`corroborated`やmachine-only claimを含めない。
+identity、root、evidence、review hash binding、DAG、時系列の構造gateは両profileで共通かつ必須とする。
+
+review開始前に `snapshot_ref`、`input_sha256`、producer name/version、selection method、`candidate_count` を固定する。
+`candidate_count = accepted + unknown + abstained + rejected` と、fixture `edge_labels` の同数を要求する。合格した候補だけを
+後から母集団にしてcoverageを水増ししてはならない。quality readerはartifactの実byte hash、fixture hash、release ID、
+宣言件数を照合し、欠損・不一致では表示データを返さない。
+
 ---
 
 ## 5. Focus View の決定的 projection
@@ -323,8 +363,8 @@ projection の入力は strict parse 済み v2 artifact、解決済み focus ID�
 
 | 設定 | 既定 |
 |---|---:|
-| hop depth | 上下 2-hop |
-| node 上限 | 15 |
+| hop depth | 上下 1-hop |
+| node 上限 | 7 |
 | claim 上限 | 18 |
 | spine | 各 hop で祖先 1、後継 1 |
 | branch 上限 | 各表示 node 合計 2 |
@@ -349,10 +389,11 @@ responsive default より保存済み設定を優先し、優先順位は既存�
 2. focus を必須 node とする。
 3. focus から親方向・子方向へ、genealogy claimだけを各 hop で1本ずつ辿り focus spine を作る。
 4. spine node を BFS 順に処理し、未選択の隣接 genealogy claim を各 node 合計2 branchesまで加える。
-5. 2-hop、15 nodes、18 claims のいずれかへ達したら初期選択を止める。
+5. 1-hop、7 nodes、18 claims のいずれかへ達したら初期選択を止める。
 6. selected nodes 間の genealogy cross claim は traversal claim の後、同じ順で上限まで追加する。
-7. comparison toggle が有効な場合だけ、selected nodes 間の comparison claim を最大6件、かつ全体18件の
-   claim上限まで追加する。genealogy spineとbranch quotaは消費しない。
+7. comparison toggle が有効な場合だけ、selected nodes 間または中心論文に直接接続する comparison claim を最大6件、かつ全体18件の
+    claim上限まで追加する。新規比較対象はnode上限内で追加し、比較関係を再帰的に辿らない。
+    genealogyを先に選び、そのspineとbranch quotaは消費しない。
 
 claim の比較順は次の tuple とし、入力配列順に依存させない。
 
@@ -417,7 +458,7 @@ gate failure とする。v2 quality row は少なくとも `link_count`、`claim
 ### Deep
 
 - manifest の `paper` / legacy `arxiv` 解決と hash binding を維持する。
-- unbounded BFS を既定にせず 2-hop から開始する。3-hop、個別 expand、関係リスト全件へ進める。
+- unbounded BFS を既定にせず 1-hop から開始する。2/3-hop、個別 expand、関係リスト全件へ進める。
 - card click による graph-local focus 変更は identity を変更せず、表示中心だけを変える。
 
 ### Theme
@@ -437,8 +478,8 @@ gate failure とする。v2 quality row は少なくとも `link_count`、`claim
 | parameter | 値 | 動作 |
 |---|---|---|
 | `view` | `list | graph` | URL が responsive / 保存値に優先 |
-| `hops` | `1 | 2 | 3` | 既定 2。不正値は 2 |
-| `limit` | `5..50` | graph node 上限。既定 15 |
+| `hops` | `1 | 2 | 3` | 既定 1。不正値は 1（設計35の初期表示縮小） |
+| `limit` | `5..50` | graph node 上限。既定 7（明示URL・保存値は維持） |
 | `min_conf` | `0.5 | 0.7 | 0.9` | 既定0.7。calibrated probabilityにだけ適用 |
 | `trust` | `verified,corroborated,tentative` の CSV | 既定は前2つ。`tentative` は明示時のみ |
 | `families` | `genealogy,comparison` の CSV | 既定 `genealogy` |

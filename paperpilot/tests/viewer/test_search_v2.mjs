@@ -35,6 +35,27 @@ assert.deepEqual(
 );
 assert.deepEqual(ranked.map((hit) => hit.row[2]), [0, 1, 2, 3]);
 
+const faceted = [
+  ["alpha older oral", "eccv-2024", 0, [], ["Vision"], 2024, "Oral"],
+  ["alpha current poster", "iclr-2026", 1, [], ["Vision"], 2026, "Poster"],
+  ["alpha current oral", "iclr-2026", 2, [], ["Vision"], 2026, "Oral"],
+];
+assert.deepEqual(
+  core.rankResults(faceted, "alpha", {
+    conference: "iclr-2026",
+    year: 2026,
+    type: "Oral",
+  }).map((hit) => hit.row[2]),
+  [2],
+  "conference/year/type are predicates applied before unchanged ranking"
+);
+assert.deepEqual(
+  core.rankResults(faceted, "alpha", { conference: "", year: null, type: "" })
+    .map((hit) => hit.row[2]),
+  [1, 2, 0],
+  "empty facets preserve the original ranking and tie order"
+);
+
 const ties = core.rankResults([
   row("alpha old", 0, { year: 2023 }),
   row("alpha newest first", 1, { year: 2026 }),

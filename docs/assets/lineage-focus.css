@@ -1,0 +1,522 @@
+.lineage-focus-page {
+  --lf-ink: #20201d;
+  --lf-muted: #686760;
+  --lf-rule: #d9d4ca;
+  --lf-paper: #fbf9f5;
+  --lf-panel: #fffdf9;
+  --lf-accent: #315f55;
+  --lf-compare: #9b5a3c;
+  background: var(--lf-paper);
+  color: var(--lf-ink);
+}
+
+.lineage-focus {
+  width: min(1180px, calc(100% - 32px));
+  min-height: 42vh;
+  margin: 0 auto;
+  padding: 42px 0 72px;
+}
+
+.lineage-focus__audit {
+  max-width: 660px;
+  padding: 28px 0;
+  border-block: 1px solid var(--lf-rule);
+}
+
+.lineage-focus :focus-visible {
+  outline: 3px solid var(--lf-accent);
+  outline-offset: 3px;
+}
+
+.lineage-focus__header > div {
+  min-width: 0;
+}
+
+.lineage-focus__header h1,
+.lineage-focus__node-card h3,
+.lineage-focus__claim h3,
+.lineage-focus__evidence {
+  overflow-wrap: anywhere;
+  line-height: 1.45;
+}
+
+.lineage-focus__graph-help {
+  max-width: 70ch;
+  color: var(--lf-muted);
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+.lineage-focus__audit h1,
+.lineage-focus__header h1 {
+  margin: 5px 0 9px;
+  font-family: "Newsreader", Georgia, serif;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.lineage-focus__audit.is-closed {
+  border-top-color: #a5483f;
+}
+
+.lineage-focus__eyebrow {
+  margin: 0;
+  color: var(--lf-muted);
+  font: 500 0.72rem/1.3 "JetBrains Mono", monospace;
+  letter-spacing: 0.12em;
+}
+
+.lineage-focus__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--lf-rule);
+}
+
+.lineage-focus__meta,
+.lineage-focus__summary p {
+  color: var(--lf-muted);
+}
+
+.lineage-focus__back,
+.lineage-focus__controls button,
+.lineage-focus__controls select,
+.lineage-focus__controls input[type="number"],
+.lineage-focus__node-card button,
+.lineage-focus__claim button,
+.lineage-focus__pagination button,
+.lineage-focus__dialog button {
+  min-height: 44px;
+}
+
+.lineage-focus__back {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.lineage-focus__notice {
+  margin: 20px 0;
+  padding: 12px 15px;
+  border-left: 3px solid var(--lf-accent);
+  background: #eef3ef;
+  font-size: 0.9rem;
+}
+
+.lineage-focus__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px 18px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--lf-rule);
+}
+
+.lineage-focus__controls fieldset {
+  display: flex;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.lineage-focus__controls legend,
+.lineage-focus__controls > label,
+.lineage-focus__relation-filter summary {
+  color: var(--lf-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.lineage-focus__controls small {
+  max-width: 220px;
+  font-size: 0.68rem;
+  font-weight: 400;
+  line-height: 1.35;
+}
+
+.lineage-focus__controls button,
+.lineage-focus__controls select,
+.lineage-focus__controls input[type="number"],
+.lineage-focus__pagination button,
+.lineage-focus__dialog button,
+.lineage-focus__node-card button,
+.lineage-focus__claim button {
+  border: 1px solid var(--lf-rule);
+  border-radius: 3px;
+  background: var(--lf-panel);
+  color: var(--lf-ink);
+  font: inherit;
+}
+
+.lineage-focus__controls button[aria-pressed="true"] {
+  border-color: var(--lf-accent);
+  background: var(--lf-accent);
+  color: white;
+}
+
+.lineage-focus__controls label {
+  display: grid;
+  gap: 5px;
+}
+
+.lineage-focus__controls fieldset label {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+.lineage-focus__relation-filter {
+  position: relative;
+}
+
+.lineage-focus__relation-filter summary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.lineage-focus__relation-filter > div {
+  display: grid;
+  gap: 4px;
+  min-width: 220px;
+  padding: 10px;
+  border: 1px solid var(--lf-rule);
+  background: var(--lf-panel);
+}
+
+.lineage-focus__advanced {
+  flex-basis: 100%;
+}
+
+.lineage-focus__advanced > summary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  width: fit-content;
+  color: var(--lf-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.lineage-focus__advanced-body {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
+  gap: 16px 22px;
+  padding: 14px;
+  border: 1px solid var(--lf-rule);
+  background: var(--lf-panel);
+}
+
+.lineage-focus__controls .lineage-focus__option-group {
+  display: block;
+}
+
+.lineage-focus__option-group > div {
+  display: grid;
+  gap: 2px;
+}
+
+.lineage-focus__summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 12px 0;
+  font: 0.78rem/1.5 "JetBrains Mono", monospace;
+}
+
+.lineage-focus__warning {
+  margin: 12px 0;
+  padding: 14px;
+  border: 1px solid #c89550;
+  background: #fff6e5;
+}
+
+.lineage-focus__graph {
+  overflow: auto;
+  min-height: 360px;
+  border: 1px solid var(--lf-rule);
+  background-color: var(--lf-panel);
+  background-image: linear-gradient(#ece8df 1px, transparent 1px), linear-gradient(90deg, #ece8df 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+.lineage-focus__graph svg {
+  display: block;
+  min-width: 760px;
+}
+
+.lineage-focus__edge {
+  stroke: var(--lf-accent);
+  stroke-width: 2;
+}
+
+.lineage-focus__edge + marker path,
+#lineage-arrow path {
+  fill: context-stroke;
+  stroke: context-stroke;
+}
+
+.lineage-focus__edge--comparison {
+  stroke: var(--lf-compare);
+  stroke-dasharray: 5 4;
+}
+
+.lineage-focus__edge--tentative {
+  stroke: #b06432;
+  stroke-dasharray: 8 6;
+}
+
+.lineage-focus__edge-label {
+  fill: var(--lf-accent);
+  paint-order: stroke;
+  stroke: var(--lf-panel);
+  stroke-width: 5px;
+  stroke-linejoin: round;
+  font: 600 11px/1.2 "Inter", sans-serif;
+  pointer-events: none;
+}
+
+.lineage-focus__edge-label--tentative {
+  fill: #9b4c24;
+}
+
+.lineage-focus__edge-hit {
+  stroke: transparent;
+  stroke-width: 44;
+  cursor: pointer;
+}
+
+.lineage-focus__node rect {
+  fill: var(--lf-panel);
+  stroke: var(--lf-rule);
+  stroke-width: 1.5;
+}
+
+.lineage-focus__node--focus rect {
+  stroke: var(--lf-accent);
+  stroke-width: 3;
+}
+
+.lineage-focus__node text {
+  fill: var(--lf-ink);
+  font: 500 12px/1.2 "Inter", sans-serif;
+  pointer-events: none;
+}
+
+.lineage-focus__node-cards {
+  display: grid;
+  gap: 20px;
+  margin-top: 12px;
+}
+
+.lineage-focus__lane-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  gap: 10px;
+}
+
+.lineage-focus__lane-heading {
+  margin: 0 0 10px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--lf-rule);
+  font-weight: 600;
+}
+
+.lineage-focus__lane {
+  min-width: 0;
+}
+
+.lineage-focus__node-card,
+.lineage-focus__claim {
+  padding: 14px;
+  border: 1px solid var(--lf-rule);
+  background: var(--lf-panel);
+}
+
+.lineage-focus__node-card h3,
+.lineage-focus__claim h3 {
+  margin: 0 0 7px;
+  font-family: "Newsreader", Georgia, serif;
+}
+
+.lineage-focus__node-card p,
+.lineage-focus__claim p {
+  margin: 5px 0;
+  color: var(--lf-muted);
+  font-size: 0.83rem;
+}
+
+.lineage-focus__node-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.lineage-focus__list-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.lineage-focus__claim-list {
+  display: grid;
+  gap: 10px;
+}
+
+.lineage-focus__claim-meta {
+  font: 0.75rem/1.45 "JetBrains Mono", monospace;
+}
+
+.lineage-focus__pagination {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.lineage-focus__dialog {
+  width: min(760px, calc(100% - 28px));
+  max-height: min(84vh, 820px);
+  padding: 0;
+  overflow: auto;
+  border: 1px solid var(--lf-rule);
+  background: var(--lf-panel);
+  color: var(--lf-ink);
+}
+
+.lineage-focus__dialog::backdrop {
+  background: rgb(20 24 22 / 58%);
+}
+
+.lineage-focus__dialog-head {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--lf-rule);
+  background: var(--lf-panel);
+}
+
+.lineage-focus__dialog-head h2 {
+  margin: 0;
+}
+
+#lineage-inspector-body {
+  padding: 18px;
+}
+
+.lineage-focus__facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 18px;
+}
+
+.lineage-focus__facts dt {
+  color: var(--lf-muted);
+  font-size: 0.75rem;
+}
+
+.lineage-focus__facts dd {
+  margin: 2px 0 8px;
+  overflow-wrap: anywhere;
+}
+
+.lineage-focus__evidence {
+  padding-left: 20px;
+}
+
+.lineage-focus__evidence li {
+  margin: 12px 0;
+}
+
+.lineage-focus__hash {
+  overflow-wrap: anywhere;
+  font: 0.72rem/1.45 "JetBrains Mono", monospace;
+}
+
+.paper__pilot-lineage {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #d9d4ca;
+}
+
+.paper__pilot-lineage p {
+  margin: 0;
+  color: #686760;
+  font-size: 0.82rem;
+}
+
+.paper__pilot-lineage a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 600;
+}
+
+@media (max-width: 720px) {
+  .lineage-focus {
+    width: min(100% - 22px, 680px);
+    padding-top: 24px;
+  }
+
+  .lineage-focus__header,
+  .lineage-focus__summary,
+  .lineage-focus__facts {
+    display: block;
+  }
+
+  .lineage-focus__controls {
+    align-items: stretch;
+  }
+
+  .lineage-focus__controls > label,
+  .lineage-focus__controls fieldset,
+  .lineage-focus__relation-filter,
+  .lineage-focus__advanced {
+    width: 100%;
+  }
+
+  .lineage-focus__controls fieldset {
+    flex-wrap: wrap;
+  }
+
+  .lineage-focus__controls button,
+  .lineage-focus__controls select {
+    flex: 1;
+  }
+
+  .lineage-focus__graph {
+    min-height: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lineage-focus-page *,
+  .lineage-focus-page *::before,
+  .lineage-focus-page *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+.lineage-focus__graph-lane-label {
+  paint-order: stroke fill;
+  stroke: var(--lf-paper);
+  stroke-width: 6px;
+  stroke-linejoin: round;
+  pointer-events: none;
+  fill: currentColor;
+  font-size: 14px;
+  font-weight: 700;
+}

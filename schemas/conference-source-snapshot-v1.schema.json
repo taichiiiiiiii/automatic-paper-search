@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paperpilot.local/schemas/conference-source-snapshot-v1.schema.json",
+  "title": "PaperPilot Conference Source Snapshot v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "edition_id", "adapter", "adapter_version", "source_id", "rows",
+    "source_fingerprint", "unknown_decisions", "duplicate_title_count", "request_count",
+    "page_count", "response_bytes"
+  ],
+  "properties": {
+    "schema_version": {"const": "conference-source-snapshot-v1"},
+    "edition_id": {"type": "string", "pattern": "^[a-z0-9](?:[a-z0-9-]{0,38}[a-z0-9])?$"},
+    "adapter": {"const": "openreview-v2"},
+    "adapter_version": {"const": "1"},
+    "source_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "rows": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 25000,
+      "items": {"$ref": "#/$defs/paper"}
+    },
+    "source_fingerprint": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "unknown_decisions": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "prefixItems": [
+          {"type": "string", "minLength": 1, "maxLength": 1000},
+          {"type": "integer", "minimum": 1, "maximum": 25000}
+        ],
+        "items": false,
+        "minItems": 2,
+        "maxItems": 2
+      }
+    },
+    "duplicate_title_count": {"type": "integer", "minimum": 0, "maximum": 24999},
+    "request_count": {"type": "integer", "minimum": 1, "maximum": 100},
+    "page_count": {"type": "integer", "minimum": 1, "maximum": 25},
+    "response_bytes": {"type": "integer", "minimum": 0, "maximum": 134217728}
+  },
+  "$defs": {
+    "paper": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source", "source_id", "paper_id", "title", "authors", "abstract",
+        "landing_url", "pdf_url", "decision_label"
+      ],
+      "properties": {
+        "source": {"const": "openreview"},
+        "source_id": {"type": "string", "pattern": "^[A-Za-z0-9_-]{1,256}$"},
+        "paper_id": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "title": {"type": "string", "minLength": 1, "maxLength": 10000},
+        "authors": {
+          "type": "array", "minItems": 1,
+          "items": {"type": "string", "minLength": 1, "maxLength": 1000}
+        },
+        "abstract": {"type": "string", "maxLength": 100000},
+        "landing_url": {"type": "string", "pattern": "^https://openreview\\.net/forum\\?id=[A-Za-z0-9_-]+$"},
+        "pdf_url": {"type": "string", "pattern": "^https://openreview\\.net/pdf\\?id=[A-Za-z0-9_-]+$"},
+        "decision_label": {"type": "string", "minLength": 1, "maxLength": 1000}
+      }
+    }
+  }
+}

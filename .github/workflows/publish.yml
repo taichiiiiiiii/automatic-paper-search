@@ -58,11 +58,25 @@ jobs:
               "paperpilot/replay/artifacts.py",
               "paperpilot/replay/canonical.py",
               "paperpilot/replay/manifest.py",
+              "paperpilot/lineage_pilot/__init__.py",
+              "paperpilot/lineage_pilot/bundle.py",
+              "paperpilot/lineage_pilot/review_prep.py",
+              "paperpilot/lineage_pilot/review_io.py",
+              "paperpilot/lineage_pilot/review_intake.py",
+              "paperpilot/conference_watch/candidate.py",
+              "paperpilot/conference_watch/dry_run.py",
+              "paperpilot/scripts/prepare_lineage_review.py",
+              "paperpilot/scripts/ingest_lineage_review.py",
+              "paperpilot/paper_slides/sol_provider.py",
+              "paperpilot/paper_slides/sol_local.py",
+              "paperpilot/paper_slides/service.py",
               "paperpilot/scripts/_lineage_contract.py",
+              "paperpilot/scripts/_lineage_contract_v2.py",
               "paperpilot/scripts/build_pages.py",
               "paperpilot/scripts/build_lineage_quality.py",
               "paperpilot/scripts/generate_deep_manifest.py",
               "paperpilot/scripts/replay_run.py",
+              "paperpilot/scripts/generate_paper_slides.py",
           }
           missing_code = sorted(required_code - set(names))
           if missing_code:
@@ -71,6 +85,7 @@ jobs:
               "paperpilot/data/lineage-quality-policy-v1.json",
               "paperpilot/data/lineage_foundational_allowlist.json",
               "paperpilot/data/paper_repos.json",
+              "paperpilot/data/sol-abstract-local-v1.json",
               "paperpilot/data/theme_aliases.json",
               "paperpilot/data/theme_blacklist.json",
           }
@@ -98,6 +113,9 @@ jobs:
             'from pathlib import Path; import paperpilot; assert Path(paperpilot.__file__).with_name("config.yaml").is_file()'
           "$RUNNER_TEMP/paperpilot-wheel-smoke/bin/paperpilot" --help
           "$RUNNER_TEMP/paperpilot-wheel-smoke/bin/python" -m paperpilot.scripts.replay_run --help
+          "$RUNNER_TEMP/paperpilot-wheel-smoke/bin/python" -m paperpilot.scripts.generate_paper_slides --help
+          "$RUNNER_TEMP/paperpilot-wheel-smoke/bin/python" -m paperpilot.scripts.prepare_lineage_review --help
+          "$RUNNER_TEMP/paperpilot-wheel-smoke/bin/python" -m paperpilot.scripts.ingest_lineage_review --help
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

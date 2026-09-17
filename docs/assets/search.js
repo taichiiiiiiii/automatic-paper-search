@@ -77,11 +77,23 @@
     return data;
   }
 
-  function rankResults(rows, query) {
+  function rowMatchesFacets(row, filters) {
+    const selected = filters || {};
+    return (
+      (!selected.conference || row[CONFERENCE] === selected.conference) &&
+      (!selected.year || row[YEAR] === selected.year) &&
+      (!selected.type || row[PAPER_TYPE] === selected.type)
+    );
+  }
+
+  function rankResults(rows, query, filters) {
     const needle = normalizeText(query);
     if (!needle) return [];
     const hits = [];
     rows.forEach((row, ordinal) => {
+      // Facets are a corpus predicate, not a ranking signal. Apply them before
+      // any match classification so the existing ranking remains unchanged.
+      if (!rowMatchesFacets(row, filters)) return;
       const title = normalizeText(row[TITLE]);
       let rank = -1;
       let matchKind = "";
@@ -156,7 +168,14 @@
     return data;
   }
 
-  const core = Object.freeze({ validateIndex, rankResults, paginate, blockFile, validateIdBlock });
+  const core = Object.freeze({
+    validateIndex,
+    rowMatchesFacets,
+    rankResults,
+    paginate,
+    blockFile,
+    validateIdBlock,
+  });
   root.PaperPilotSearchCore = core;
 
   if (typeof document === "undefined") return;
@@ -173,9 +192,15 @@
   const fullSummary = document.getElementById("s0-results-summary");
   const fullList = document.getElementById("s0-results-list");
   const pagination = document.getElementById("s0-results-pagination");
+  const filtersGroup = document.getElementById("s0-search-filters");
+  const conferenceFilter = document.getElementById("s0-filter-conference");
+  const yearFilter = document.getElementById("s0-filter-year");
+  const typeFilter = document.getElementById("s0-filter-type");
+  const filterReset = document.getElementById("s0-filter-reset");
   if (
     !input || !list || !status || !retry || !more || !fullSection ||
-    !fullHeading || !fullSummary || !fullList || !pagination
+    !fullHeading || !fullSummary || !fullList || !pagination || !filtersGroup ||
+    !conferenceFilter || !yearFilter || !typeFilter || !filterReset
   ) return;
 
   let index = null;
@@ -185,6 +210,7 @@
   let announceTimer = null;
   let active = -1;
   let runSerial = 0;
+  let facetsPopulated = false;
 
   function setBusy(busy) {
     form.setAttribute("aria-busy", busy ? "true" : "false");
@@ -210,12 +236,87 @@
     return `${encodeURIComponent(hit.row[CONFERENCE])}/?paper=${encodeURIComponent(paperId)}`;
   }
 
-  function searchUrl(query, page) {
+  function searchUrl(query, page, filters) {
     const url = new URL(window.location.href);
-    url.searchParams.set("q", query);
+    if (query) url.searchParams.set("q", query);
+    else url.searchParams.delete("q");
+    const selected = filters || currentFiltersFromControls();
+    for (const name of ["conference", "year", "type"]) {
+      url.searchParams.delete(name);
+      if (selected[name]) url.searchParams.set(name, String(selected[name]));
+    }
     if (page === null) url.searchParams.delete("page");
     else url.searchParams.set("page", String(page));
     return `${url.pathname}${url.search}${url.hash}`;
+  }
+
+  function appendOption(select, value, label) {
+    const option = document.createElement("option");
+    option.value = String(value);
+    option.textContent = label;
+    select.append(option);
+  }
+
+  function populateFacets(rows) {
+    if (facetsPopulated) return;
+    const conferences = [...new Set(rows.map((row) => row[CONFERENCE]))]
+      .sort((a, b) => confLabel(a).localeCompare(confLabel(b), "ja"));
+    const years = [...new Set(rows.map((row) => row[YEAR]).filter((year) => year !== null))]
+      .sort((a, b) => b - a);
+    const types = [...new Set(rows.map((row) => row[PAPER_TYPE]))];
+    conferences.forEach((value) => appendOption(conferenceFilter, value, confLabel(value)));
+    years.forEach((value) => appendOption(yearFilter, value, String(value)));
+    types.forEach((value) => {
+      appendOption(typeFilter, value, value === "Oral" ? "口頭発表 (Oral)" : "ポスター (Poster)");
+    });
+    facetsPopulated = true;
+  }
+
+  function uniqueParam(params, name) {
+    const values = params.getAll(name);
+    return values.length <= 1 ? { value: values[0] || "", invalid: false } : { value: "", invalid: true };
+  }
+
+  function filtersFromUrl(rows) {
+    const params = new URLSearchParams(window.location.search);
+    const conference = uniqueParam(params, "conference");
+    const year = uniqueParam(params, "year");
+    const type = uniqueParam(params, "type");
+    const conferenceValues = new Set(rows.map((row) => row[CONFERENCE]));
+    const yearValues = new Set(rows.map((row) => row[YEAR]).filter((value) => value !== null));
+    const typeValues = new Set(rows.map((row) => row[PAPER_TYPE]));
+    const parsedYear = /^\d{4}$/.test(year.value) ? Number(year.value) : null;
+    const invalid = (
+      conference.invalid || year.invalid || type.invalid ||
+      Boolean(conference.value && !conferenceValues.has(conference.value)) ||
+      Boolean(year.value && (parsedYear === null || !yearValues.has(parsedYear))) ||
+      Boolean(type.value && !typeValues.has(type.value))
+    );
+    return {
+      conference: conferenceValues.has(conference.value) ? conference.value : "",
+      year: yearValues.has(parsedYear) ? parsedYear : null,
+      type: typeValues.has(type.value) ? type.value : "",
+      invalid,
+    };
+  }
+
+  function currentFiltersFromControls() {
+    return {
+      conference: conferenceFilter.value,
+      year: yearFilter.value ? Number(yearFilter.value) : null,
+      type: typeFilter.value,
+      invalid: false,
+    };
+  }
+
+  function syncFacetControls(filters) {
+    conferenceFilter.value = filters.conference || "";
+    yearFilter.value = filters.year === null ? "" : String(filters.year);
+    typeFilter.value = filters.type || "";
+    filtersGroup.hidden = false;
+    filterReset.disabled = !(
+      filters.invalid || filters.conference || filters.year !== null || filters.type
+    );
   }
 
   function clearSuggestions() {
@@ -231,6 +332,17 @@
     fullSection.hidden = true;
     fullList.replaceChildren();
     pagination.replaceChildren();
+  }
+
+  function renderEmptyResults(query, invalid) {
+    fullHeading.textContent = `「${query}」の検索結果`;
+    fullSummary.textContent = invalid
+      ? "指定された絞り込み条件が無効です。絞り込みをクリアしてください。"
+      : "0 件。短いキーワードに変えるか、絞り込みをクリアしてください。タイトル・著者・タグから検索できます。";
+    fullList.replaceChildren();
+    pagination.replaceChildren();
+    fullSection.hidden = false;
+    announce(invalid ? "無効な絞り込み条件のため検索結果は0件です。" : "検索結果は0件です。");
   }
 
   function showError(error) {
@@ -345,17 +457,17 @@
     announce(`${total.toLocaleString("ja-JP")} 件中、上位 ${hits.length} 件を表示中。`);
   }
 
-  function pagerLink(label, query, page, rel) {
+  function pagerLink(label, query, page, rel, filters) {
     const anchor = document.createElement("a");
     anchor.className = "s0-results__pager-link";
-    anchor.href = searchUrl(query, page);
+    anchor.href = searchUrl(query, page, filters);
     anchor.dataset.searchPage = String(page);
     if (rel) anchor.rel = rel;
     anchor.textContent = label;
     return anchor;
   }
 
-  function renderFullResults(resolved, allHits, query, pageInfo, focusHeading) {
+  function renderFullResults(resolved, allHits, query, pageInfo, focusHeading, filters) {
     fullHeading.textContent = `「${query}」の検索結果`;
     const start = (pageInfo.page - 1) * PAGE_SIZE + 1;
     const end = start + resolved.length - 1;
@@ -363,13 +475,15 @@
     fullList.replaceChildren(...resolved.map(fullResultNode));
 
     const children = [];
-    if (pageInfo.page > 1) children.push(pagerLink("← 前へ", query, pageInfo.page - 1, "prev"));
+    if (pageInfo.page > 1) {
+      children.push(pagerLink("← 前へ", query, pageInfo.page - 1, "prev", filters));
+    }
     const position = document.createElement("span");
     position.className = "s0-results__page-position";
     position.textContent = `${pageInfo.page} / ${pageInfo.totalPages} ページ`;
     children.push(position);
     if (pageInfo.page < pageInfo.totalPages) {
-      children.push(pagerLink("次へ →", query, pageInfo.page + 1, "next"));
+      children.push(pagerLink("次へ →", query, pageInfo.page + 1, "next", filters));
     }
     pagination.replaceChildren(...children);
     fullSection.hidden = false;
@@ -385,6 +499,7 @@
       setBusy(false);
       clearSuggestions();
       hideFullResults();
+      filtersGroup.hidden = true;
       say(normalized ? `${MIN_QUERY} 文字以上で検索します。` : "");
       return;
     }
@@ -393,23 +508,29 @@
     try {
       const rows = await ensureIndex();
       if (serial !== runSerial) return;
-      const allHits = rankResults(rows, normalized);
+      populateFacets(rows);
+      const filters = filtersFromUrl(rows);
+      filters.invalid = filters.invalid || Boolean(options && options.invalidUrl);
+      syncFacetControls(filters);
+      const allHits = filters.invalid ? [] : rankResults(rows, normalized, filters);
       if (!allHits.length) {
         clearSuggestions();
-        hideFullResults();
-        announce(`「${query}」に一致する論文は見つかりませんでした。`);
+        renderEmptyResults(query, filters.invalid);
         return;
       }
 
-      if (requestedPage !== null) {
+      const hasFilters = Boolean(filters.conference || filters.year !== null || filters.type);
+      if (requestedPage !== null || hasFilters) {
         clearSuggestions();
-        const pageInfo = paginate(allHits, requestedPage, PAGE_SIZE);
+        const pageInfo = paginate(allHits, requestedPage === null ? 1 : requestedPage, PAGE_SIZE);
         if (pageInfo.page !== requestedPage) {
-          window.history.replaceState(null, "", searchUrl(query, pageInfo.page));
+          window.history.replaceState(null, "", searchUrl(query, pageInfo.page, filters));
         }
         const resolved = await resolvePaperIds(pageInfo.items);
         if (serial !== runSerial) return;
-        renderFullResults(resolved, allHits, query, pageInfo, Boolean(options && options.focus));
+        renderFullResults(
+          resolved, allHits, query, pageInfo, Boolean(options && options.focus), filters
+        );
       } else {
         hideFullResults();
         const resolved = await resolvePaperIds(allHits.slice(0, PAGE_SIZE));
@@ -432,11 +553,26 @@
     return Number.isSafeInteger(page) && page > 0 ? page : 1;
   }
 
+  function urlHasDuplicateSearchState() {
+    const params = new URLSearchParams(window.location.search);
+    const duplicate = ["q", "page", "conference", "year", "type"]
+      .some((name) => params.getAll(name).length > 1);
+    const rawPage = params.get("page");
+    const parsedPage = Number(rawPage);
+    const invalidPage = rawPage !== null && (
+      !/^\d+$/.test(rawPage) || !Number.isSafeInteger(parsedPage) || parsedPage < 1
+    );
+    return duplicate || invalidPage;
+  }
+
   function restoreFromUrl(options) {
     const params = new URLSearchParams(window.location.search);
     const query = params.get("q") || "";
     input.value = query;
-    return runQuery(query, pageFromUrl(), options);
+    return runQuery(query, pageFromUrl(), {
+      ...(options || {}),
+      invalidUrl: urlHasDuplicateSearchState(),
+    });
   }
 
   function updateQueryUrl(query) {
@@ -445,6 +581,14 @@
     else url.searchParams.delete("q");
     url.searchParams.delete("page");
     window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
+  }
+
+  function applyFilters(filters) {
+    const query = input.value.trim();
+    window.history.pushState(null, "", searchUrl(query, 1, filters));
+    // Keep keyboard focus in the native control; the live region announces
+    // the new count. Heading focus is reserved for explicit paging actions.
+    runQuery(query, 1);
   }
 
   function move(delta) {
@@ -501,8 +645,16 @@
     event.preventDefault();
     const page = Number(anchor.dataset.searchPage);
     const query = input.value.trim();
-    window.history.pushState(null, "", searchUrl(query, page));
+    window.history.pushState(null, "", searchUrl(query, page, currentFiltersFromControls()));
     runQuery(query, page, { focus: true });
+  });
+
+  [conferenceFilter, yearFilter, typeFilter].forEach((select) => {
+    select.addEventListener("change", () => { applyFilters(currentFiltersFromControls()); });
+  });
+
+  filterReset.addEventListener("click", () => {
+    applyFilters({ conference: "", year: null, type: "", invalid: false });
   });
 
   retry.addEventListener("click", () => {
