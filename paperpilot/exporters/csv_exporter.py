@@ -49,6 +49,10 @@ COLUMNS = [
     "arxiv_id",
     "source",
     "abstract",
+    # Additive identity columns, appended last so the existing column order stays a
+    # stable prefix. `uid` is the legacy Paper.uid alias (NOT the canonical paper_id).
+    "uid",
+    "doi",
 ]
 
 
@@ -110,6 +114,8 @@ class CSVExporter(AbstractExporter):
                     "arxiv_id": p.arxiv_id or "",
                     "source": p.source,
                     "abstract": p.abstract,
+                    "uid": p.uid,
+                    "doi": p.doi or "",
                 }
                 writer.writerow(row)
         logger.info("csv: wrote %d rows to %s", len(papers), path)
