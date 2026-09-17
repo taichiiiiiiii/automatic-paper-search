@@ -37,32 +37,59 @@ def _declared() -> set[str]:
     }
 
 
-def _env_reads_in(tree: ast.AST) -> set[str]:
-    """Names passed to os.getenv / os.environ.get / os.environ[...]."""
+def _environ_param_names(tree: ast.AST) -> set[str]:
+    """Parameter names whose default is `os.environ` (dependency-injected reads).
+
+    E.g. `def f(..., environ: Mapping[str, str] = os.environ): environ.get("X")`
+    reads env var X just as surely as `os.environ.get("X")` does, but the
+    read happens through the parameter name, not through `os.environ`
+    directly.
+    """
     names: set[str] = set()
+    for node in ast.walk(tree):
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        args = node.args
+        positional = [*args.posonlyargs, *args.args]
+        for arg, default in zip(positional[len(positional) - len(args.defaults) :], args.defaults):
+            if isinstance(default, ast.Attribute) and default.attr == "environ":
+                names.add(arg.arg)
+        for arg, default in zip(args.kwonlyargs, args.kw_defaults):
+            if isinstance(default, ast.Attribute) and default.attr == "environ":
+                names.add(arg.arg)
+    return names
+
+
+def _env_reads_in(tree: ast.AST) -> set[str]:
+    """Names passed to os.getenv / os.environ.get / os.environ[...].
+
+    Also follows env-var reads made through a parameter that defaults to
+    `os.environ` (see `_environ_param_names`), so dependency-injected code
+    like `sol_local.py`'s `environ: Mapping[str, str] = os.environ` is
+    still recognized as reading that variable.
+    """
+    names: set[str] = set()
+    environ_aliases = _environ_param_names(tree)
 
     def literal(node: ast.AST | None) -> str | None:
         if isinstance(node, ast.Constant) and isinstance(node.value, str):
             return node.value
         return None
 
+    def is_environ_ref(node: ast.AST) -> bool:
+        return (isinstance(node, ast.Attribute) and node.attr == "environ") or (
+            isinstance(node, ast.Name) and node.id in environ_aliases
+        )
+
     for node in ast.walk(tree):
         name: str | None = None
         if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute):
             fn = node.func
             is_getenv = fn.attr == "getenv"
-            is_environ_get = (
-                fn.attr == "get"
-                and isinstance(fn.value, ast.Attribute)
-                and fn.value.attr == "environ"
-            )
+            is_environ_get = fn.attr == "get" and is_environ_ref(fn.value)
             if (is_getenv or is_environ_get) and node.args:
                 name = literal(node.args[0])
-        elif (
-            isinstance(node, ast.Subscript)
-            and isinstance(node.value, ast.Attribute)
-            and node.value.attr == "environ"
-        ):
+        elif isinstance(node, ast.Subscript) and is_environ_ref(node.value):
             name = literal(node.slice)
         if name:
             names.add(name)
