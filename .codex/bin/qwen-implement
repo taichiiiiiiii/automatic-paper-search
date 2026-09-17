@@ -1,0 +1,231 @@
+#!/bin/sh
+# External Qwen implementation worker for PaperPilot.
+#
+# This launcher is policy and launch validation, not a security boundary. The
+# shared queue owns credentials. Its legacy Flash command below is admission
+# input only: the runner requires --cloud-only --cloud-model qwen3.8-flash and
+# validates the transformed Cloud command before any model can execute. The repository
+# runner refuses overlapping workers and rechecks the worktree after waiting.
+
+set -eu
+
+PROG="qwen-implement"
+MODEL="qwen38-flash-next"
+PROVIDER="qwen_flash_local"
+CATALOG="/Users/example/.codex-local-flash/models.json"
+PROVIDER_DEFINITION='{name="Local Flash Next",base_url="http://127.0.0.1:11436/v1",wire_api="responses",requires_openai_auth=false,request_max_retries=0,stream_max_retries=0,stream_idle_timeout_ms=600000}'
+REASONING="none"
+EXECUTION_MODE="cloud-only"
+MAX_TASK_BYTES=1048576
+PROTECTED_BRANCHES="main master develop"
+POLICY_BASENAME=""
+
+usage() {
+    cat <<'USAGE'
+Usage: qwen-implement [--interactive | --cloud-only] --role backend|frontend WORKTREE
+
+Read one bounded implementation task from stdin and run an external Qwen worker
+inside a clean, registered linked worktree of this repository.
+
+WORKTREE must be the exact worktree top level on a non-protected branch.
+Primary checkouts, foreign repositories, detached HEADs, dirty worktrees, and
+main/master/develop are rejected.
+
+Default and only route: qwen3.8-flash / qwen_token_plan Individual Token Plan.
+--cloud-only is optional; --interactive is rejected. No PAYG, Flash or other
+model fallback. A configured route does not itself authorize implementation.
+USAGE
+}
+
+die() {
+    printf '%s: %s\n' "$PROG" "$1" >&2
+    exit 2
+}
+
+physical_dir() {
+    CDPATH= cd -- "$1" 2>/dev/null && pwd -P || true
+}
+
+physical_parent() {
+    physical_dir "${1%/*}"
+}
+
+byte_size() {
+    LC_ALL=C wc -c < "$1" | LC_ALL=C tr -dc '0-9'
+}
+
+has_nul() {
+    without_nul="$(LC_ALL=C tr -d '\000' < "$1" | LC_ALL=C wc -c | LC_ALL=C tr -dc '0-9')"
+    [ "$(byte_size "$1")" -ne "$without_nul" ]
+}
+
+is_blank() {
+    nonspace="$(LC_ALL=C tr -d '[:space:]' < "$1" | LC_ALL=C wc -c | LC_ALL=C tr -dc '0-9')"
+    [ "$nonspace" -eq 0 ]
+}
+
+valid_utf8() {
+    # macOS iconv can reject valid multibyte text across a 4 KiB boundary.
+    # Decode strictly; never discard or replace malformed bytes.
+    python3 -c 'import pathlib, sys; pathlib.Path(sys.argv[1]).read_bytes().decode("utf-8", errors="strict")' "$1" >/dev/null 2>&1
+}
+
+task_file=""
+prompt_file=""
+cleanup() {
+    for file in "$task_file" "$prompt_file"; do
+        if [ -n "$file" ] && [ -f "$file" ]; then
+            rm -f -- "$file"
+        fi
+    done
+}
+trap cleanup EXIT HUP INT TERM
+
+case "${1:-}" in
+    -h | --help)
+        usage
+        exit 0
+        ;;
+esac
+
+case "${1:-}" in
+    --interactive) die "interactive routing is disabled; use the fixed Cloud-only route" ;;
+    --cloud-only) EXECUTION_MODE="cloud-only"; shift ;;
+esac
+
+[ "$#" -eq 3 ] && [ "$1" = "--role" ] || {
+    usage >&2
+    die "expected --role backend|frontend WORKTREE"
+}
+case "$2" in
+    backend) POLICY_BASENAME="paperpilot_backend_implementer.instructions.md" ;;
+    frontend) POLICY_BASENAME="paperpilot_frontend_implementer.instructions.md" ;;
+    *) die "unknown implementation role: $2" ;;
+esac
+shift 2
+case "$1" in
+    -*) die "unknown option: $1" ;;
+esac
+
+for tool in git codex mktemp cat tr wc python3 rm grep; do
+    command -v "$tool" >/dev/null 2>&1 || die "required command not found: $tool"
+done
+
+# Inherited git plumbing must not redirect any launch gate.
+unset GIT_DIR GIT_WORK_TREE GIT_INDEX_FILE GIT_COMMON_DIR GIT_OBJECT_DIRECTORY GIT_ALTERNATE_OBJECT_DIRECTORIES GIT_CONFIG GIT_CONFIG_COUNT GIT_CONFIG_PARAMETERS GIT_CONFIG_GLOBAL GIT_CONFIG_SYSTEM GIT_CONFIG_NOSYSTEM 2>/dev/null || true
+
+script_path="$0"
+case "$script_path" in
+    */*) ;;
+    *) script_path="$(command -v -- "$script_path" 2>/dev/null || true)" ;;
+esac
+[ -n "$script_path" ] || die "cannot locate launcher"
+
+launcher_dir="$(physical_parent "$script_path")"
+[ -n "$launcher_dir" ] || die "cannot resolve launcher directory"
+cloud_runner="$launcher_dir/qwen-cloud-runner.py"
+[ -f "$cloud_runner" ] && [ ! -L "$cloud_runner" ] && [ -r "$cloud_runner" ] || die "cloud runner is missing or unsafe"
+launcher_top="$(git -C "$launcher_dir" rev-parse --path-format=absolute --show-toplevel 2>/dev/null || true)"
+[ -n "$launcher_top" ] || die "launcher is not inside a git repository"
+launcher_top="$(physical_dir "$launcher_top")"
+launcher_common="$(git -C "$launcher_dir" rev-parse --path-format=absolute --git-common-dir 2>/dev/null || true)"
+[ -n "$launcher_common" ] || die "cannot resolve launcher git common directory"
+launcher_common="$(physical_dir "$launcher_common")"
+
+runners_dir="$(physical_dir "$launcher_dir/../runners")"
+[ -n "$runners_dir" ] || die "cannot resolve runners directory"
+policy_file="$runners_dir/$POLICY_BASENAME"
+[ -f "$policy_file" ] && [ ! -L "$policy_file" ] && [ -r "$policy_file" ] || die "fixed policy is missing or unsafe: $policy_file"
+[ -s "$policy_file" ] || die "fixed policy is empty"
+has_nul "$policy_file" && die "fixed policy contains a NUL byte"
+valid_utf8 "$policy_file" || die "fixed policy is not valid UTF-8"
+
+target="$(physical_dir "$1")"
+[ -n "$target" ] || die "WORKTREE is not a readable directory: $1"
+target_top="$(git -C "$target" rev-parse --path-format=absolute --show-toplevel 2>/dev/null || true)"
+[ -n "$target_top" ] || die "WORKTREE is not a git worktree"
+target_top="$(physical_dir "$target_top")"
+[ "$target" = "$target_top" ] || die "WORKTREE must be the exact git top level"
+
+# A linked worktree has a regular .git file. The primary checkout has a .git
+# directory; symlink imitations are rejected.
+[ -f "$target/.git" ] && [ ! -L "$target/.git" ] || die "WORKTREE must be a registered linked worktree, not the primary checkout"
+
+target_common="$(git -C "$target" rev-parse --path-format=absolute --git-common-dir 2>/dev/null || true)"
+[ -n "$target_common" ] || die "cannot resolve target git common directory"
+target_common="$(physical_dir "$target_common")"
+[ "$target_common" = "$launcher_common" ] || die "WORKTREE belongs to another repository"
+
+target_git_dir="$(git -C "$target" rev-parse --path-format=absolute --absolute-git-dir 2>/dev/null || true)"
+[ -n "$target_git_dir" ] || die "cannot resolve target git directory"
+target_git_dir="$(physical_dir "$target_git_dir")"
+[ "$target_git_dir" != "$target_common" ] || die "primary checkout is not allowed"
+
+registered="false"
+while IFS= read -r line; do
+    case "$line" in
+        "worktree "*)
+            listed_path="${line#worktree }"
+            listed_target="$(physical_dir "$listed_path")"
+            if [ -n "$listed_target" ] && {
+                [ "$listed_target" = "$target" ] || [ "$listed_target" -ef "$target" ]
+            }; then
+                registered="true"
+                break
+            fi
+            ;;
+    esac
+done <<EOF
+$(git -C "$launcher_top" worktree list --porcelain 2>/dev/null || die "failed to list registered worktrees")
+EOF
+[ "$registered" = "true" ] || die "WORKTREE is not registered with this repository"
+
+branch_ref="$(git -C "$target" symbolic-ref -q HEAD 2>/dev/null || true)"
+[ -n "$branch_ref" ] || die "detached HEAD is not allowed"
+branch="${branch_ref#refs/heads/}"
+for protected in $PROTECTED_BRANCHES; do
+    [ "$branch" != "$protected" ] || die "protected branch is not allowed: $branch"
+done
+
+# Refuse index flags that could hide caller-owned edits from the status gate.
+for mode in plain recursive; do
+    if [ "$mode" = plain ]; then
+        flagged="$(git -C "$target" ls-files -v -- 2>/dev/null)" || die "failed to inspect index flags"
+    else
+        flagged="$(git -C "$target" ls-files -v --recurse-submodules -- 2>/dev/null)" || die "failed to inspect recursive index flags"
+    fi
+    if printf '%s\n' "$flagged" | LC_ALL=C grep -Eq '^[a-zS] '; then
+        die "assume-unchanged or skip-worktree flags are not allowed"
+    fi
+done
+
+dirty="$(git -C "$target" -c core.fsmonitor=false -c core.excludesFile=/dev/null -c core.fileMode=true -c core.trustctime=true -c core.checkStat=default -c core.symlinks=true -c core.ignoreStat=false -c core.ignorecase=false -c core.precomposeunicode=false status --porcelain=v1 --untracked-files=all --ignore-submodules=none 2>/dev/null || die "failed to inspect WORKTREE status")"
+[ -z "$dirty" ] || die "WORKTREE must be clean, including untracked files"
+
+[ ! -t 0 ] || die "read the bounded task from a pipe or redirected file"
+task_file="$(mktemp "${TMPDIR:-/tmp}/paperpilot-qwen-task.XXXXXX")" || die "cannot create task file"
+chmod 600 "$task_file"
+cat > "$task_file" || die "failed to read task from stdin"
+[ "$(byte_size "$task_file")" -le "$MAX_TASK_BYTES" ] || die "task exceeds $MAX_TASK_BYTES bytes"
+has_nul "$task_file" && die "task contains a NUL byte"
+valid_utf8 "$task_file" || die "task is not valid UTF-8"
+is_blank "$task_file" && die "task is empty or whitespace-only"
+
+prompt_file="$(mktemp "${TMPDIR:-/tmp}/paperpilot-qwen-prompt.XXXXXX")" || die "cannot create prompt file"
+chmod 600 "$prompt_file"
+printf 'Configured reasoning effort: none (provider support requires live verification).\n' > "$prompt_file" || die "cannot write effort banner"
+cat "$policy_file" >> "$prompt_file" || die "cannot copy fixed policy"
+routing_policy='Use only exact qwen3.8-flash through qwen_token_plan Individual Token Plan. Cloud-only; no PAYG, local Flash, other model/provider fallback or transport retry. Direct requests and bounded active-Goal continuations are authorized only under AGENTS.md. This worker never restarts itself. All domain, permission, effort and review constraints above remain in force.'
+printf '\n\nRouting authority (latest user instruction; supersedes only legacy model-route prose above):\n%s\n' "$routing_policy" >> "$prompt_file" || die "cannot append routing policy"
+printf '\n\n--- BOUNDED TASK (verbatim) ---\n\n' >> "$prompt_file" || die "cannot append task separator"
+cat "$task_file" >> "$prompt_file" || die "cannot append task"
+
+# Keep only the open prompt descriptor, unlink our private temporary files, and
+# replace the shell. Cancelling the public launcher PID now reaches the runner,
+# which forwards the signal and keeps the lock until its worker group stops.
+exec 3< "$prompt_file" || die "cannot open prompt descriptor"
+cleanup
+task_file=""
+prompt_file=""
+trap - EXIT HUP INT TERM
+exec python3 "$cloud_runner" "$target" "$launcher_common" "$EXECUTION_MODE" codex exec --ephemeral --strict-config --ignore-user-config -C "$target" --model "$MODEL" --sandbox workspace-write --json --disable multi_agent --disable multi_agent_v2 -c "model_provider=\"$PROVIDER\"" -c "model_catalog_json=\"$CATALOG\"" -c "model_providers.$PROVIDER=$PROVIDER_DEFINITION" -c 'model_context_window=32768' -c 'model_auto_compact_token_limit=24000' -c 'analytics.enabled=false' -c 'features.apps=false' -c 'features.plugins=false' -c 'features.remote_plugin=false' -c 'web_search="disabled"' -c "model_reasoning_effort=\"$REASONING\"" -c 'approval_policy="never"' -c 'sandbox_workspace_write.network_access=false' -c 'shell_environment_policy.inherit="core"' -c 'shell_environment_policy.ignore_default_excludes=false' -c 'agents.enabled=false' -c 'agents.max_concurrent_threads_per_session=1' -c 'agents.max_depth=0' <&3 3<&-

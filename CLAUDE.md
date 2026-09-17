@@ -1,5 +1,9 @@
 # CLAUDE.md — PaperPilot 実装ガイド
 
+現行ルーティングはAGENTS.mdを正本とする。実装・解析・文献処理・必要テストはFlash、条件付き評価のみMAX、最終採否は親Codex。以下のSingle-agent modeや旧role表は履歴であり、現行方針を上書きしない。設定変更だけではworker起動・外部操作を許可しない。
+
+> 本文は必要なタスクでのみ参照する。現行の運用・委譲・安全境界はAGENTS.mdを優先し、実人手監査・科学的根拠・公開承認のgateは省略しない。
+
 このファイルは Claude Code が本プロジェクトを実装する際に参照する指示書です。
 設計書（[`docs/design/`](docs/design/)）および市場調査レポート（[`docs/research/`](docs/research/)）と合わせて読むこと。
 原本 `.docx` は [`archive/`](archive/) に保管されていますが、**編集は markdown 側で行う**ことが正。
