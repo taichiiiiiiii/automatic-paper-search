@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paperpilot.local/schemas/conference-probe-observation-v1.schema.json",
+  "title": "PaperPilot Conference Probe Observation v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "edition_id", "adapter", "adapter_version", "source_id", "observed_at",
+    "run_id", "http_class", "accepted_count", "unknown_label_count", "source_fingerprint",
+    "source_ids", "status", "error_code"
+  ],
+  "properties": {
+    "schema_version": {"const": "conference-probe-observation-v1"},
+    "edition_id": {"type": "string", "pattern": "^[a-z0-9](?:[a-z0-9-]{0,38}[a-z0-9])?$"},
+    "adapter": {"const": "openreview-v2"},
+    "adapter_version": {"const": "1"},
+    "source_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "observed_at": {"type": "string", "format": "date-time", "pattern": "Z$"},
+    "run_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"},
+    "http_class": {"enum": ["ok", "unavailable", "error"]},
+    "accepted_count": {"type": "integer", "minimum": 0, "maximum": 25000},
+    "unknown_label_count": {"type": "integer", "minimum": 0, "maximum": 25000},
+    "source_fingerprint": {
+      "anyOf": [
+        {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        {"type": "null"}
+      ]
+    },
+    "source_ids": {
+      "type": "array", "maxItems": 25000, "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[A-Za-z0-9_-]{1,256}$"}
+    },
+    "status": {"enum": ["unavailable", "partial", "stabilizing", "anomaly", "failed"]},
+    "error_code": {
+      "anyOf": [
+        {"type": "string", "pattern": "^CONF_[A-Z0-9_]+$"},
+        {"type": "null"}
+      ]
+    }
+  }
+}
