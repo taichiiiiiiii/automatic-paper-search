@@ -1,0 +1,140 @@
+{
+  "claims": [
+    {
+      "calibrated_probability": null,
+      "calibration_id": null,
+      "claim_family": "genealogy",
+      "classification": {
+        "method": "human_review",
+        "model": null,
+        "prompt_version": null,
+        "provider": null,
+        "schema_version": "synthetic-v1"
+      },
+      "decision": "accepted",
+      "dst": "node:synthetic-child",
+      "evidence_ids": [
+        "evidence:synthetic-primary"
+      ],
+      "id": "claim:synthetic-lineage",
+      "rationale": "Synthetic, explicit extension statement.",
+      "raw_score": null,
+      "reason_codes": [],
+      "relation": "extends",
+      "review_binding": {
+        "evidence_sha256": "eb8a27ce35053fc815d21766b444d4c509e96323329660db192671c752500db7",
+        "fixture_id": "synthetic-pilot-fixture-v1",
+        "review_id": "synthetic-review-1"
+      },
+      "src": "node:synthetic-parent",
+      "trust_tier": "verified"
+    },
+    {
+      "calibrated_probability": null,
+      "calibration_id": null,
+      "claim_family": "genealogy",
+      "classification": {
+        "method": "human_review",
+        "model": null,
+        "prompt_version": null,
+        "provider": null,
+        "schema_version": "synthetic-v1"
+      },
+      "decision": "unknown",
+      "dst": "node:synthetic-parent",
+      "evidence_ids": [
+        "evidence:synthetic-primary"
+      ],
+      "id": "claim:synthetic-unknown",
+      "rationale": "",
+      "raw_score": null,
+      "reason_codes": [
+        "insufficient_evidence"
+      ],
+      "relation": null,
+      "review_binding": null,
+      "src": "node:synthetic-child",
+      "trust_tier": "tentative"
+    }
+  ],
+  "clusters": [],
+  "evidence": [
+    {
+      "cited_work_id": "node:synthetic-parent",
+      "citing_work_id": "node:synthetic-child",
+      "excerpt": "Synthetic child explicitly extends the synthetic parent mechanism.",
+      "excerpt_sha256": "e6121d47e726ae3f2f86950b1f4785d87705d7eb24a51f80fd824b38f5534d3c",
+      "id": "evidence:synthetic-primary",
+      "input_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "kind": "paper-text",
+      "locator": {
+        "page": 2,
+        "paragraph_ordinal": 1,
+        "reference_marker": "[1]",
+        "section": "Method",
+        "sentence_ordinal": 1
+      },
+      "retrieved_at": "2026-09-05T00:00:00Z",
+      "snapshot_ref": "fixture://synthetic/source-v1",
+      "source": "synthetic-primary",
+      "source_work_id": "synthetic-child",
+      "url": "https://example.invalid/synthetic-child"
+    }
+  ],
+  "links": [
+    {
+      "dst": "node:synthetic-parent",
+      "evidence_ids": [
+        "evidence:synthetic-primary"
+      ],
+      "id": "link:synthetic-citation",
+      "src": "node:synthetic-child",
+      "type": "citation"
+    }
+  ],
+  "meta": {
+    "candidate_universe": {
+      "candidate_count": 2,
+      "input_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "selection_method": "synthetic-exhaustive-v1",
+      "snapshot_ref": "fixture://synthetic/candidates-v1"
+    },
+    "generated_at": "2026-09-05T00:00:00Z",
+    "kind": "theme",
+    "producer": {
+      "name": "synthetic-fixture",
+      "version": "1"
+    }
+  },
+  "nodes": [
+    {
+      "aliases": [
+        [
+          "arxiv",
+          "2501.00001"
+        ]
+      ],
+      "first_published_at": "2025-01-01T00:00:00Z",
+      "id": "node:synthetic-parent",
+      "is_focus": true,
+      "seed_paper_id": "1111111111111111111111111111111111111111",
+      "title": "Synthetic Parent"
+    },
+    {
+      "aliases": [
+        [
+          "arxiv",
+          "2601.00001"
+        ]
+      ],
+      "first_published_at": "2026-01-01T00:00:00Z",
+      "id": "node:synthetic-child",
+      "is_focus": false,
+      "seed_paper_id": null,
+      "title": "Synthetic Child"
+    }
+  ],
+  "release_id": "synthetic-release-v1",
+  "root": "node:synthetic-parent",
+  "schema_version": "lineage-artifact-v2"
+}
