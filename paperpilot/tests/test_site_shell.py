@@ -57,7 +57,7 @@ def _expected_current(rel_path: str) -> str | None:
     Returns None for pages where no nav link is current (e.g. 404).
     """
     # /themes/ → 「系譜」
-    if rel_path in ("themes/index.html", "themes/"):
+    if rel_path in ("themes/index.html", "themes/", "lineage/index.html", "lineage/"):
         return "系譜"
     # /how-it-works/ → 「仕組み」
     if rel_path in ("how-it-works/index.html", "how-it-works/"):

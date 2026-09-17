@@ -18,6 +18,11 @@ def test_landing_exposes_search_v2_states() -> None:
         "s0-results",
         "s0-results-list",
         "s0-results-pagination",
+        "s0-search-filters",
+        "s0-filter-conference",
+        "s0-filter-year",
+        "s0-filter-type",
+        "s0-filter-reset",
         "s0-lineages-list",
     ):
         assert f'id="{element_id}"' in html
@@ -31,6 +36,8 @@ def test_search_owns_query_and_paging_url_state() -> None:
     assert "replaceState" in search
     assert "pushState" in search
     assert "popstate" in search
+    for parameter in ("conference", "year", "type"):
+        assert f'"{parameter}"' in search
     assert 'addEventListener("focus"' not in search
     assert "URLSearchParams(window.location.search)" not in landing
     assert "MutationObserver" not in landing

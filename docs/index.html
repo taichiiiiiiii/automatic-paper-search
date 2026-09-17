@@ -99,6 +99,91 @@
       max-width: 100%;
       margin-top: clamp(1.4rem, 0.8rem + 2vw, 2.2rem);
     }
+    .s0__search-help, .s0__next-steps {
+      font-family: var(--font-ja);
+      font-size: 0.875rem;
+      line-height: 1.7;
+      color: var(--color-ink-muted);
+      overflow-wrap: anywhere;
+    }
+    .s0__search-help { margin: 0.6rem 0 0; }
+    .s0__next-steps { margin-top: 1rem; }
+    .s0__next-steps summary {
+      display: list-item;
+      width: fit-content;
+      padding: 0.65rem 0;
+      cursor: pointer;
+      color: var(--color-ink);
+    }
+    .s0__next-steps summary:focus-visible {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 4px;
+    }
+    .s0__next-steps ol { margin: 0.3rem 0; padding-left: 1.5rem; }
+    .s0__next-steps li { margin-bottom: 0.45rem; }
+    .search-detail {
+      width: min(1100px, calc(100% - 24px));
+      max-width: none;
+      height: min(850px, 90dvh);
+      max-height: 90dvh;
+      padding: 0;
+      border: 1px solid var(--color-rule);
+      background: var(--color-surface);
+      color: var(--color-ink);
+    }
+    .search-detail[open] { display: flex; flex-direction: column; }
+    .search-detail::backdrop { background: rgb(20 24 22 / 58%); }
+    .search-detail__head { display: flex; flex-wrap: wrap; gap: 0.6rem 1rem; align-items: center; padding: 0.75rem; }
+    .search-detail__head h2 { margin: 0 auto 0 0; font-size: 1.1rem; }
+    .search-detail__head a, .search-detail__head button { min-height: 44px; display: inline-flex; align-items: center; }
+    .search-detail__head button { padding: 0.5rem 1rem; cursor: pointer; }
+    .search-detail__head :focus-visible { outline: 3px solid var(--color-accent); outline-offset: 2px; }
+    #search-detail-status { margin: 0; padding: 0 0.75rem 0.6rem; font-size: 0.85rem; }
+    #search-detail-body { flex: 1; min-height: 0; }
+    #search-detail-body iframe { width: 100%; height: 100%; border: 0; }
+    .s0-search-filters {
+      margin: 1rem 0 0;
+      padding: 0;
+      border: 0;
+    }
+    .s0-search-filters[hidden] { display: none; }
+    .s0-search-filters__legend {
+      margin-bottom: 0.45rem;
+      font-family: var(--font-mono);
+      font-size: var(--text-meta);
+      color: var(--color-ink-subtle);
+    }
+    .s0-search-filters__controls {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+      gap: 0.65rem;
+      align-items: end;
+    }
+    .s0-search-filters__field {
+      display: grid;
+      gap: 0.25rem;
+      min-width: 0;
+      font-family: var(--font-mono);
+      font-size: var(--text-caption);
+      color: var(--color-ink-subtle);
+    }
+    .s0-search-filters__select,
+    .s0-search-filters__reset {
+      min-height: 44px;
+      border: 1px solid var(--color-rule);
+      border-radius: 4px;
+      background: var(--color-surface);
+      color: var(--color-ink);
+      font: inherit;
+    }
+    .s0-search-filters__select { width: 100%; padding: 0.45rem 2rem 0.45rem 0.65rem; }
+    .s0-search-filters__reset { padding: 0.45rem 0.8rem; cursor: pointer; }
+    .s0-search-filters__select:focus-visible,
+    .s0-search-filters__reset:focus-visible {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 2px;
+    }
+    .s0-search-filters__reset:disabled { cursor: default; opacity: 0.55; }
 
     /* Example query chips — a single row of tappable mono tokens.
        Click fills the search input and fires the search. Uses the
@@ -214,9 +299,9 @@
 
     /* Only audit-passed lineages are linked from this normal shelf. */
     .s0__lineages {
-      margin-top: clamp(2.5rem, 1.5rem + 3vw, 4rem);
+      margin-top: 1.5rem;
       border-top: 1px solid var(--color-rule);
-      padding-top: 1.4rem;
+      padding-top: 0.75rem;
     }
     .s0__lineages-list {
       list-style: none;
@@ -298,6 +383,7 @@
       column-gap: clamp(1.25rem, 3vw, 2.5rem);
       row-gap: 0;
     }
+    .s0__confs-list[hidden] { display: none; }
     @media (min-width: 640px) {
       .s0__confs-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
@@ -376,6 +462,13 @@
       .s0__conf-link { font-size: 0.92rem; }
       .s0-results__link { grid-template-columns: minmax(0, 1fr); }
     }
+    @media (max-width: 640px) {
+      .s0-search-filters__controls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .s0-search-filters__reset { width: 100%; }
+    }
+    @media (max-width: 360px) {
+      .s0-search-filters__controls { grid-template-columns: minmax(0, 1fr); }
+    }
 
     @media (prefers-reduced-motion: reduce) {
       .s0__confs-caret { transition: none; }
@@ -419,15 +512,41 @@
         aria-autocomplete="list"
         aria-controls="s0-search-listbox"
         aria-expanded="false"
-        aria-describedby="s0-search-status"
+        aria-describedby="s0-search-help s0-search-status"
         autocomplete="off"
         spellcheck="false"
       />
+      <p class="s0__search-help" id="s0-search-help">2文字以上で検索。タイトル・著者・タグが対象です。要旨・本文の全文検索には未対応です。</p>
       <p class="site-search__status" id="s0-search-status" role="status"></p>
       <button type="button" class="site-search__retry" id="s0-search-retry" hidden>再試行</button>
       <ul class="site-search__results" id="s0-search-listbox" role="listbox" aria-label="検索結果" tabindex="-1" hidden></ul>
       <a class="site-search__more" id="s0-search-more" href="?q=&amp;page=1" hidden>すべての結果を見る</a>
     </form>
+
+    <fieldset class="s0-search-filters" id="s0-search-filters" hidden>
+      <legend class="s0-search-filters__legend">検索結果を絞り込む</legend>
+      <div class="s0-search-filters__controls">
+        <label class="s0-search-filters__field" for="s0-filter-conference">
+          学会
+          <select class="s0-search-filters__select" id="s0-filter-conference" name="conference">
+            <option value="">すべての学会</option>
+          </select>
+        </label>
+        <label class="s0-search-filters__field" for="s0-filter-year">
+          年
+          <select class="s0-search-filters__select" id="s0-filter-year" name="year">
+            <option value="">すべての年</option>
+          </select>
+        </label>
+        <label class="s0-search-filters__field" for="s0-filter-type">
+          発表種別
+          <select class="s0-search-filters__select" id="s0-filter-type" name="type">
+            <option value="">すべての発表種別</option>
+          </select>
+        </label>
+        <button class="s0-search-filters__reset" id="s0-filter-reset" type="button" disabled>絞り込みをクリア</button>
+      </div>
+    </fieldset>
 
     <!-- Example queries. The three chips are real hits in
          search-index.json (verified: diffusion 2,038 / 3d gaussian 227 /
@@ -440,19 +559,20 @@
       <button type="button" class="s0__chip" data-query="reasoning">reasoning</button>
     </div>
 
+    <details class="s0__next-steps">
+      <summary>検索した後は？</summary>
+      <ol>
+        <li>検索結果のタイトルを選び、学会カタログで論文の詳細を確認します。</li>
+        <li>家系図・スライドは、その論文の詳細から公開済みの場合のみ開けます。</li>
+        <li>監査済み家系図とスライドの一般向け自動生成は公開準備中です。</li>
+      </ol>
+    </details>
+
     <section class="s0-results" id="s0-results" aria-labelledby="s0-results-heading" aria-busy="false" hidden>
       <h2 class="s0-results__heading" id="s0-results-heading" tabindex="-1">検索結果</h2>
       <p class="s0-results__summary" id="s0-results-summary"></p>
       <ol class="s0-results__list" id="s0-results-list"></ol>
       <nav class="s0-results__pagination" id="s0-results-pagination" aria-label="検索結果ページ"></nav>
-    </section>
-
-    <section class="s0__lineages" id="s0-lineages" aria-labelledby="s0-lineages-heading">
-      <h2 class="s0__lineages-heading" id="s0-lineages-heading">系譜の公開状況</h2>
-      <p class="visually-hidden" id="s0-lineages-status" role="status">公開条件を満たす系譜は現在ありません。</p>
-      <ul class="s0__lineages-list" id="s0-lineages-list">
-        <li class="s0__lineage-empty">監査済みの系譜は準備中です。学会カタログは通常どおり利用できます。</li>
-      </ul>
     </section>
 
     <!-- Collapsible conference list. 既定で閉 (aria-expanded=false),
@@ -467,6 +587,13 @@
         <!-- populated by inline script -->
       </ul>
     </section>
+    <section class="s0__lineages" id="s0-lineages" aria-labelledby="s0-lineages-heading">
+      <h2 class="s0__lineages-heading" id="s0-lineages-heading">系譜の公開状況</h2>
+      <p class="visually-hidden" id="s0-lineages-status" role="status">公開条件を満たす系譜は現在ありません。</p>
+      <ul class="s0__lineages-list" id="s0-lineages-list">
+        <li class="s0__lineage-empty">監査済みの系譜は準備中です。学会カタログは通常どおり利用できます。</li>
+      </ul>
+    </section>
   </main>
 
   <footer class="s0-footer">
@@ -478,8 +605,18 @@
     </nav>
   </footer>
 
-  <script src="assets/search.js?v=4" defer></script>
+  <script src="assets/search.js?v=6" defer></script>
   <script src="assets/lineage-core.js?v=4" defer></script>
   <script src="assets/landing.js?v=6" defer></script>
+  <dialog id="search-detail-dialog" class="search-detail" aria-labelledby="search-detail-title" aria-describedby="search-detail-status">
+    <header class="search-detail__head">
+      <h2 id="search-detail-title">論文詳細</h2>
+      <a id="search-detail-open" href="./">通常ページで開く →</a>
+      <button id="search-detail-close" type="button">閉じて検索に戻る</button>
+    </header>
+    <p id="search-detail-status" role="status"></p>
+    <div id="search-detail-body"></div>
+  </dialog>
+  <script src="assets/search-detail.js?v=3" defer></script>
 </body>
 </html>
