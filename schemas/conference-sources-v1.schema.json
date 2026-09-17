@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paperpilot.local/schemas/conference-sources-v1.schema.json",
+  "title": "PaperPilot Conference Sources v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "apply_enabled", "defaults", "venues"],
+  "properties": {
+    "schema_version": {"const": "conference-sources-v1"},
+    "apply_enabled": {"type": "boolean"},
+    "defaults": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "probe_interval_hours",
+        "stable_min_separation_hours",
+        "stable_max_separation_hours",
+        "max_future_years"
+      ],
+      "properties": {
+        "probe_interval_hours": {"type": "integer", "minimum": 1, "maximum": 24},
+        "stable_min_separation_hours": {"type": "integer", "minimum": 1, "maximum": 168},
+        "stable_max_separation_hours": {"type": "integer", "minimum": 1, "maximum": 336},
+        "max_future_years": {"type": "integer", "minimum": 0, "maximum": 1}
+      }
+    },
+    "venues": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "items": {"$ref": "#/$defs/venue"}
+    }
+  },
+  "$defs": {
+    "yearTemplate": {
+      "type": "string",
+      "pattern": "^[^{}]*\\{year\\}[^{}]*$"
+    },
+    "ratio": {"type": "number", "exclusiveMinimum": 0, "maximum": 10},
+    "decisionLabel": {"type": "string", "pattern": "^[a-z][a-z0-9_-]{0,31}$"},
+    "venue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "venue_key",
+        "enabled",
+        "curated_class",
+        "display_template",
+        "slug_template",
+        "adapter",
+        "source_id_template",
+        "first_year",
+        "active_months_utc",
+        "count_gate",
+        "tracks"
+      ],
+      "properties": {
+        "venue_key": {"type": "string", "pattern": "^(?!daily$)[a-z0-9-]+$"},
+        "enabled": {"type": "boolean"},
+        "curated_class": {"const": "top"},
+        "display_template": {"$ref": "#/$defs/yearTemplate"},
+        "slug_template": {"$ref": "#/$defs/yearTemplate"},
+        "adapter": {"const": "openreview-v2"},
+        "source_id_template": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9.-]{0,63}/\\{year\\}/Conference$"
+        },
+        "first_year": {"type": "integer", "minimum": 2000, "maximum": 2100},
+        "active_months_utc": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 12,
+          "uniqueItems": true,
+          "items": {"type": "integer", "minimum": 1, "maximum": 12}
+        },
+        "count_gate": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "minimum_absolute",
+            "previous_edition_min_ratio",
+            "previous_edition_max_ratio"
+          ],
+          "properties": {
+            "minimum_absolute": {"type": "integer", "minimum": 1, "maximum": 25000},
+            "previous_edition_min_ratio": {"$ref": "#/$defs/ratio"},
+            "previous_edition_max_ratio": {"$ref": "#/$defs/ratio"}
+          }
+        },
+        "tracks": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["accepted_only", "accepted_decision_labels", "highlighted_labels"],
+          "properties": {
+            "accepted_only": {"const": true},
+            "accepted_decision_labels": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {"$ref": "#/$defs/decisionLabel"}
+            },
+            "highlighted_labels": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {"$ref": "#/$defs/decisionLabel"}
+            }
+          }
+        }
+      }
+    }
+  }
+}
