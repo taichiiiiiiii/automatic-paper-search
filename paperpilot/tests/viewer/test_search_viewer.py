@@ -17,6 +17,8 @@ import pytest
 VIEWER_DIR = Path(__file__).parent
 UNTRUSTED_TEXT_SCRIPT = VIEWER_DIR / "test_search_untrusted_text.mjs"
 SEARCH_V2_SCRIPT = VIEWER_DIR / "test_search_v2.mjs"
+SEARCH_FACETS_STATE_SCRIPT = VIEWER_DIR / "test_search_facets_state.mjs"
+SEARCH_FROZEN_EVAL_SCRIPT = VIEWER_DIR / "evaluate_search_frozen.mjs"
 
 
 @pytest.mark.skipif(shutil.which("node") is None, reason="node not installed")
@@ -41,6 +43,28 @@ def test_search_never_builds_html_from_untrusted_text() -> None:
 def test_search_v2_core_contract() -> None:
     result = subprocess.run(
         ["node", str(SEARCH_V2_SCRIPT)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node not installed")
+def test_search_facets_actual_initialization_state_machine() -> None:
+    result = subprocess.run(
+        ["node", str(SEARCH_FACETS_STATE_SCRIPT)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node not installed")
+def test_search_frozen_evaluation() -> None:
+    result = subprocess.run(
+        ["node", str(SEARCH_FROZEN_EVAL_SCRIPT)],
         capture_output=True,
         text=True,
         check=False,
