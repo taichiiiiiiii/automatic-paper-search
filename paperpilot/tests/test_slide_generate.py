@@ -846,6 +846,18 @@ def test_provider_usage_mismatch_fails_without_retry() -> None:
     assert provider.generate_calls == 1
 
 
+def test_provider_actual_input_usage_below_conservative_reservation_is_reconciled() -> None:
+    provider = FixtureProvider()
+    provider.usage_delta = -1
+
+    result = _generate_slide_deck_for_test(
+        _abstract_request(), provider=provider, pricing=_pricing(), at=NOW
+    )
+
+    assert provider.generate_calls == 2
+    assert result.usage.input_tokens == 198
+
+
 def test_catalog_and_abstract_hash_fail_before_provider() -> None:
     provider = FixtureProvider()
     request = _abstract_request()

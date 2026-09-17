@@ -18,6 +18,8 @@ Design decisions carried over from the hand-written file:
 * Content-addressed paper-slide deck HTML is excluded until promotion exposes
   a verified-manifest-driven list of current revisions. Filesystem discovery
   must not publish stale or unverified deck revisions as canonical URLs.
+* The v2 one-paper Focus View requires a verified paper query and is excluded
+  until a reviewed-pilot-aware canonical URL listing is implemented.
 * No `robots.txt` reference: on a GitHub Pages *project* site, crawlers read
   only the domain-root robots.txt, which GitHub owns. The sitemap has to be
   submitted manually in Search Console.
@@ -45,7 +47,7 @@ QUALITY_MANIFEST = DOCS_ROOT / "lineage-quality-v1.json"
 BASE_URL = "https://taichiiiiiiii.github.io/automatic-paper-search/"
 
 #: Pages deliberately kept out of the sitemap.
-EXCLUDED = {"404.html"}
+EXCLUDED = {"404.html", "lineage/index.html"}
 PAPER_SLIDE_DECK_PREFIX = "paper-slides-v1/decks/"
 
 

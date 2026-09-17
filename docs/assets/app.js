@@ -21,6 +21,9 @@ const PAPER_SLIDE_CONFIRMATION = [
   "人手レビューが完了するまで公開されません。",
   "目安: 数分〜十数分 / 費用カテゴリ: 低額（生成1回）",
 ].join("\n");
+const PILOT_LINEAGE_INDEX_URL = "../lineage-pilot-index-v1.json";
+const PILOT_LINEAGE_INDEX_MAX_BYTES = 256 * 1024;
+const PILOT_LINEAGE_INDEX_TIMEOUT_MS = 8_000;
 
 const state = {
   papers: [],
@@ -44,10 +47,14 @@ const state = {
   lineage: null,
   relationsByPaperId: new Map(),
   lineageNodeByPaperId: new Map(),
+  pilotLineageIndex: null,
+  pilotLineageByPaperId: new Map(),
+  pilotLineageLookupOwner: null,
 };
 
 const { escapeHtml } = window.PP;
 const LineageCore = window.PaperPilotLineageCore;
+const PilotLineageCore = window.PaperPilotLineageV2;
 const {
   validateCatalog,
   readPaperParam,
@@ -216,6 +223,172 @@ function currentConferenceSlug() {
     .split("/")
     .filter((part) => part && !part.endsWith(".html"))
     .pop() || "";
+}
+
+function createPilotLineageLookupOwner(paperId, timerHelpers = {}, onTimeout = () => {}) {
+  const setTimer = timerHelpers.setTimer ?? globalThis.setTimeout;
+  const clearTimer = timerHelpers.clearTimer ?? globalThis.clearTimeout;
+  const controller = new AbortController();
+  let active = true;
+  const timer = setTimer(() => {
+    if (!active) return;
+    active = false;
+    controller.abort(new DOMException("pilot lineage lookup timed out", "TimeoutError"));
+    onTimeout();
+  }, PILOT_LINEAGE_INDEX_TIMEOUT_MS);
+  return Object.freeze({
+    paperId,
+    controller,
+    isActive: () => active,
+    finish() {
+      if (!active) return;
+      active = false;
+      clearTimer(timer);
+    },
+    abandon() {
+      if (!active) return;
+      active = false;
+      clearTimer(timer);
+      controller.abort(new DOMException("pilot lineage lookup abandoned", "AbortError"));
+    },
+  });
+}
+
+async function readPilotLineageIndex(response) {
+  if (!response?.ok || response.redirected === true) return null;
+  const expected = new URL(PILOT_LINEAGE_INDEX_URL, window.location.href).href;
+  if (response.url && new URL(response.url).href !== expected) return null;
+  const length = response.headers?.get?.("content-length");
+  if (length !== null && length !== undefined
+      && (!/^[0-9]+$/.test(length) || Number(length) > PILOT_LINEAGE_INDEX_MAX_BYTES)) return null;
+  let bytes;
+  try {
+    if (response.body?.getReader) {
+      const reader = response.body.getReader();
+      const chunks = [];
+      let total = 0;
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        total += value.byteLength;
+        if (total > PILOT_LINEAGE_INDEX_MAX_BYTES) {
+          await reader.cancel().catch(() => {});
+          return null;
+        }
+        chunks.push(value);
+      }
+      bytes = new Uint8Array(total);
+      let offset = 0;
+      for (const chunk of chunks) {
+        bytes.set(chunk, offset);
+        offset += chunk.byteLength;
+      }
+    } else {
+      bytes = new Uint8Array(await response.arrayBuffer());
+    }
+  } catch (_) {
+    return null;
+  }
+  if (bytes.byteLength > PILOT_LINEAGE_INDEX_MAX_BYTES) return null;
+  try {
+    const raw = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes));
+    return PilotLineageCore?.parsePilotIndex(raw) || null;
+  } catch (_) {
+    return null;
+  }
+}
+
+function resolvePilotLineageForSelection(index, paperId, conference) {
+  if (!PilotLineageCore || !isPaperId(paperId) || !index) return null;
+  const entry = PilotLineageCore.resolvePilotEntry(index, paperId);
+  return entry?.conference === conference ? entry : null;
+}
+
+function renderPilotLineageSection(paper) {
+  const lookup = state.pilotLineageByPaperId.get(paper.paper_id);
+  if (!lookup || lookup.status === "unavailable") {
+    return '<div class="paper__pilot-lineage" data-pilot-lineage><p>監査済みの研究系譜はまだ公開されていません。</p></div>';
+  }
+  if (lookup.status === "loading") {
+    return '<div class="paper__pilot-lineage" data-pilot-lineage><p role="status">監査済み系譜の公開状況を確認しています…</p></div>';
+  }
+  if (lookup.status !== "ready" || lookup.paperId !== paper.paper_id) return "";
+  return `<div class="paper__pilot-lineage" data-pilot-lineage>
+    <a href="../lineage/?paper=${encodeURIComponent(paper.paper_id)}">監査済みの研究系譜を開く →</a>
+  </div>`;
+}
+
+function updatePilotLineageSection(paperId) {
+  if (state.selectedPaperId !== paperId) return false;
+  const paper = state.paperById.get(paperId);
+  const current = document.querySelector(
+    `.paper[data-paper-id="${CSS.escape(paperId)}"] [data-pilot-lineage]`,
+  );
+  if (!paper || !current) return false;
+  const template = document.createElement("template");
+  template.innerHTML = renderPilotLineageSection(paper);
+  current.replaceWith(template.content);
+  return true;
+}
+
+function abandonPilotLineageLookup(paperId = null) {
+  const owner = state.pilotLineageLookupOwner;
+  if (!owner || (paperId !== null && owner.paperId !== paperId)) return;
+  state.pilotLineageLookupOwner = null;
+  if (state.pilotLineageByPaperId.get(owner.paperId)?.status === "loading") {
+    state.pilotLineageByPaperId.delete(owner.paperId);
+  }
+  owner.abandon();
+}
+
+function finishPilotLineageLookup(owner, entry) {
+  if (state.pilotLineageLookupOwner !== owner || !owner.isActive()) return false;
+  state.pilotLineageLookupOwner = null;
+  owner.finish();
+  state.pilotLineageByPaperId.set(owner.paperId, entry
+    ? { status: "ready", paperId: owner.paperId }
+    : { status: "unavailable", paperId: owner.paperId });
+  if (state.selectedPaperId === owner.paperId) updatePilotLineageSection(owner.paperId);
+  return true;
+}
+
+function startPilotLineageLookup(paperId, timerHelpers = {}) {
+  abandonPilotLineageLookup();
+  if (!isPaperId(paperId) || !state.paperById.has(paperId) || !PilotLineageCore) return;
+  const cached = state.pilotLineageByPaperId.get(paperId);
+  if (cached && cached.status !== "loading") return;
+  let owner;
+  owner = createPilotLineageLookupOwner(paperId, timerHelpers, () => {
+    if (state.pilotLineageLookupOwner !== owner) return;
+    state.pilotLineageLookupOwner = null;
+    state.pilotLineageByPaperId.set(paperId, { status: "unavailable", paperId });
+    if (state.selectedPaperId === paperId) updatePilotLineageSection(paperId);
+  });
+  state.pilotLineageLookupOwner = owner;
+  state.pilotLineageByPaperId.set(paperId, { status: "loading", paperId });
+  const conference = currentConferenceSlug();
+  if (state.pilotLineageIndex) {
+    finishPilotLineageLookup(owner, resolvePilotLineageForSelection(state.pilotLineageIndex, paperId, conference));
+    return;
+  }
+  fetch(PILOT_LINEAGE_INDEX_URL, {
+    cache: "no-cache",
+    credentials: "same-origin",
+    redirect: "error",
+    referrerPolicy: "same-origin",
+    signal: owner.controller.signal,
+    headers: { accept: "application/json" },
+  })
+    .then(readPilotLineageIndex)
+    .then((index) => {
+      if (state.pilotLineageLookupOwner !== owner || !owner.isActive()) return;
+      if (index) state.pilotLineageIndex = index;
+      finishPilotLineageLookup(owner, resolvePilotLineageForSelection(index, paperId, conference));
+    })
+    .catch(() => {
+      if (state.pilotLineageLookupOwner !== owner || !owner.isActive()) return;
+      finishPilotLineageLookup(owner, null);
+    });
 }
 
 async function loadCollectionQuality() {
@@ -435,9 +608,15 @@ function paperSlideRequestView(paper, publicResult) {
   return { kind: "unavailable", message: unavailable, action: null };
 }
 
+function slideStatusLabel(view) {
+  return { published: "閲覧可能", loading: "公開状況を確認中", pending: "処理中",
+    ok: "人手レビュー待ち", error: "確認・生成エラー", requestable: "生成依頼が可能",
+    unavailable: "生成依頼は利用不可" }[view.kind] || "状態を確認中";
+}
+
 function renderPaperSlideAction(paper, view) {
   const statusClass = view.kind === "error" ? " paper__slides-status--error" : "";
-  const message = `<p class="paper__slides-status${statusClass}" role="status">${escapeHtml(view.message)}</p>`;
+  const message = `<p class="paper__slides-status${statusClass}" role="status"><strong>${escapeHtml(slideStatusLabel(view))}</strong> — ${escapeHtml(view.message)}</p>`;
   if (view.action === "request") {
     return `${message}<button class="paper__slides-request" type="button" data-request-slides="${escapeHtml(paper.paper_id)}">スライド案を作る</button>`;
   }
@@ -454,7 +633,7 @@ function renderPublicSlidesSection(paper) {
   let body;
   if (result.status === "published") {
     const coverage = result.entry.coverage === "full_text" ? "本文ベース" : "要旨のみ";
-    body = `<p class="paper__slides-status">人手確認済み · ${coverage}</p>
+    body = `<p class="paper__slides-status">閲覧可能 — 人手確認済み · ${coverage}</p>
       <a class="paper__slides-link" href="${escapeHtml(result.entry.deck_path)}">レビュー済みスライドを開く →</a>`;
   } else {
     body = renderPaperSlideAction(paper, paperSlideRequestView(paper, result));
@@ -474,7 +653,7 @@ function updatePublicSlidesSection(paperId) {
   status.className = "paper__slides-status";
   if (result.status === "published") {
     const coverage = result.entry.coverage === "full_text" ? "本文ベース" : "要旨のみ";
-    status.textContent = `人手確認済み · ${coverage}`;
+    status.textContent = `閲覧可能 — 人手確認済み · ${coverage}`;
     const link = document.createElement("a");
     link.className = "paper__slides-link";
     link.setAttribute("href", result.entry.deck_path);
@@ -486,7 +665,7 @@ function updatePublicSlidesSection(paperId) {
     const view = paperSlideRequestView(paper, result);
     if (view.kind === "error") status.classList.add("paper__slides-status--error");
     status.setAttribute("role", "status");
-    status.textContent = view.message;
+    status.textContent = `${slideStatusLabel(view)} — ${view.message}`;
     if (view.action) {
       const button = document.createElement("button");
       button.className = "paper__slides-request";
@@ -617,6 +796,7 @@ function renderPaper(p, idx, revealIndex = null) {
     : `<button class="paper__select" type="button" data-select-paper="${escapeHtml(p.paper_id)}" aria-expanded="false">内容を見る</button>`;
   const relationsHtml = isSelected ? renderRelationsSection(p) : "";
   const slidesHtml = isSelected ? renderPublicSlidesSection(p) : "";
+  const pilotLineageHtml = isSelected ? renderPilotLineageSection(p) : "";
 
   return `
     <li class="${paperCls}" data-idx="${idx}" data-paper-id="${escapeHtml(p.paper_id)}" id="paper-${escapeHtml(p.paper_id)}"${revealStyle}>
@@ -634,6 +814,7 @@ function renderPaper(p, idx, revealIndex = null) {
         </div>
         ${tagsHtml ? `<div class="paper__tags">${tagsHtml}</div>` : ""}
         ${linksHtml ? `<div class="paper__meta">${linksHtml}</div>` : ""}
+        ${pilotLineageHtml}
         ${slidesHtml}
         ${relationsHtml}
       </div>
@@ -822,7 +1003,12 @@ function placeSelectedPaper({ focus = false, scroll = true } = {}) {
   requestAnimationFrame(() => {
     const card = document.getElementById(`paper-${paperId}`);
     const heading = document.getElementById(`paper-heading-${paperId}`);
-    if (scroll && card) card.scrollIntoView({ block: "start" });
+    if (scroll && card) {
+      // The sticky bar grows when tags wrap, particularly inside the detail iframe.
+      const barHeight = document.querySelector(".filter-bar")?.getBoundingClientRect?.().height || 0;
+      card.style?.setProperty("scroll-margin-top", `${barHeight + 16}px`);
+      card.scrollIntoView({ block: "start" });
+    }
     if (focus && heading) heading.focus({ preventScroll: true });
   });
 }
@@ -1439,6 +1625,7 @@ function selectPaper(paperId) {
     abortFullAbstractLoad(state.selectedPaperId);
     abortPublicSlidesLoad(state.selectedPaperId);
     abandonPaperSlideRequest(state.selectedPaperId);
+    abandonPilotLineageLookup(state.selectedPaperId);
   }
   state.selectionScrollY = window.scrollY;
   const historyEntries = buildSelectionHistoryEntries({
@@ -1463,6 +1650,7 @@ function selectPaper(paperId) {
   );
   startFullAbstractLoad(paperId);
   startPublicSlidesLoad(paperId);
+  startPilotLineageLookup(paperId);
   renderList();
   placeSelectedPaper({ focus: true, scroll: true });
 }
@@ -1482,6 +1670,7 @@ function closeSelectedPaper() {
   abortFullAbstractLoad(paperId);
   abortPublicSlidesLoad(paperId);
   abandonPaperSlideRequest(paperId);
+  abandonPilotLineageLookup(paperId);
   if (state.selectedOrigin === "in-page") {
     window.history.back();
     return;
@@ -1714,6 +1903,7 @@ function bindEvents() {
       abortFullAbstractLoad(previousPaperId);
       abortPublicSlidesLoad(previousPaperId);
       abandonPaperSlideRequest(previousPaperId);
+      abandonPilotLineageLookup(previousPaperId);
     }
     if (els.search) els.search.value = state.search;
     if (els.sort) els.sort.value = state.sort;
@@ -1723,6 +1913,7 @@ function bindEvents() {
     if (state.selectedPaperId) {
       startFullAbstractLoad(state.selectedPaperId);
       startPublicSlidesLoad(state.selectedPaperId);
+      startPilotLineageLookup(state.selectedPaperId);
     }
     renderList();
     if (state.selectedPaperId) {
@@ -1760,6 +1951,7 @@ function bindEvents() {
     }
   });
   window.addEventListener("pagehide", () => {
+    abandonPilotLineageLookup();
     for (const paperId of [...state.paperSlidePollByPaperId.keys()]) {
       abandonPaperSlideRequest(paperId);
     }
@@ -1856,6 +2048,7 @@ async function init() {
   if (state.selectedPaperId) {
     startFullAbstractLoad(state.selectedPaperId);
     startPublicSlidesLoad(state.selectedPaperId);
+    startPilotLineageLookup(state.selectedPaperId);
   }
   renderList(true);
   if (state.selectedPaperId) placeSelectedPaper({ focus: false, scroll: true });
@@ -1898,22 +2091,28 @@ if (globalThis.__PAPERPILOT_CATALOG_HISTORY_TEST__ === true) {
   globalThis.__test = Object.freeze({
     abortFullAbstractLoad,
     abortPublicSlidesLoad,
+    abandonPilotLineageLookup,
     abandonPaperSlideRequest,
     beginPaperSlidePolling,
     buildSelectionHistoryEntries,
+    createPilotLineageLookupOwner,
     catalogState: state,
     ensurePaperSlideConfirmationDialog,
     openPaperSlideConfirmation,
     paperSlideRequestView,
     pollPaperSlideStatus,
     readCatalogHistoryRestore,
+    readPilotLineageIndex,
     readPaperSlideJson,
     renderPublicSlidesSection,
+    renderPilotLineageSection,
+    resolvePilotLineageForSelection,
     requestPaperSlide,
     restorePaperSlideRequest,
     shouldFocusSelectedPaperAfterPopstate,
     stopPaperSlidePolling,
     startFullAbstractLoad,
+    startPilotLineageLookup,
     startPublicSlidesLoad,
     updateFullAbstractSection,
     updatePublicSlidesSection,

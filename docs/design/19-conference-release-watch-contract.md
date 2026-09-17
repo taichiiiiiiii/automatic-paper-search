@@ -1,7 +1,7 @@
 # 19. Top Conference Release Watch v1 実装契約
 
-- **更新日:** 2026-08-30
-- **状態:** 設計確定・実装前
+- **更新日:** 2026-09-06
+- **状態:** C0–C2、C3a pure候補、C3b/C4a限定pure差分確認をローカル実装（fixture検証のみ、[32](32-local-update-and-review-intake.md)）。前年度baseline、C3残部/C4 CLI/C5、workflow、live dry-run、applyは未完了
 - **対象:** 許可済みトップ学会の新年度検出、公式 proceedings の安定確認、全件収集、検証、昇格、公開
 - **初期 adapter:** OpenReview（ICLR / NeurIPS / ICML）
 - **上位設計:** [`11-target-architecture.md`](11-target-architecture.md)
@@ -75,7 +75,6 @@ workflow や upstream response が venue entry を追加・編集してはなら
 schema_version: conference-sources-v1
 defaults:
   probe_interval_hours: 6
-  stable_probe_count: 2
   stable_min_separation_hours: 6
   stable_max_separation_hours: 48
   max_future_years: 1
@@ -101,6 +100,8 @@ venues:
 ### 3.1 Registry validation
 
 - `schema_version` は完全一致、top-level と各 entry は closed object とする。
+- v1 の安定確認回数は実装定数 `2` に固定し、registry に `stable_probe_count` を持たせない。registry、workflow
+  input、環境変数から 1 回へ緩和する経路は不正設定として拒否する。
 - `venue_key` は lowercase `[a-z0-9-]` の一意な安定 ID、`slug_template` の展開結果は
   `^[a-z0-9]([a-z0-9-]{0,38}[a-z0-9])$` とし、`daily` を拒否する。
 - `curated_class=top` は表示ラベルではなく allowlist admission を表す。外部 citation 数や検索結果で変更しない。
@@ -212,6 +213,9 @@ edition row は少なくとも次を持つ。
 ```
 
 ### 6.1 Two-probe readiness
+
+v1 は異なる scheduled run による成功観測 **2 回固定** とする。2 は設定値ではなく reducer の契約であり、
+registry や手動実行入力で増減できない。
 
 - 同じ fingerprint の成功 probe だけを連続観測として数える。
 - 2件は異なる scheduled run ID で、時刻差が `stable_min_separation_hours` 以上かつ
@@ -418,6 +422,16 @@ secret が無い場合も workflow 本体を失敗させず、Actions summary �
 6. deterministic fixture と CLI dry-run report
 
 ### R2 — candidate integration
+
+[31](31-private-review-and-conference-candidates.md)のC3aはpure候補の初回範囲だけを実装した。
+既存catalog/identity/search/detailsへの互換はfixtureで確認し、公開や永続stateの認証は行わない。
+前年度の件数baselineが入力にないため、ratio gateと初年度人手dry-runを合格とは記録しない。
+staging・共有投影の本配線・candidate packagingは引き続き残る。
+
+[32](32-local-update-and-review-intake.md)ではC3b/C4aの限定pure差分確認も実装した。
+既存catalog/全文要旨と候補を比較し、4 outcomeと未適用planを返すが、staging保存や公開は行わない。
+前年度baselineとの照合は[34](34-conference-baseline-assessment.md)の設計案段階であり、
+candidateとdry-runの`previous_edition_ratio`は引き続き`not_checked`である。
 
 1. official adapter output を既存 summary / pages projection へ接続
 2. source snapshot fingerprint と observation timestamp の生成物 binding

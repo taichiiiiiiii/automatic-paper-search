@@ -1,0 +1,188 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paperpilot.local/schemas/lineage-blind-review-pack-v1.schema.json",
+  "title": "PaperPilot private blind lineage review pack v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "pack_id",
+    "fixture_id",
+    "created_at",
+    "collection_id",
+    "release_id",
+    "reviewer_slot",
+    "status",
+    "evidence_boundary",
+    "bindings",
+    "candidate_count",
+    "candidates"
+  ],
+  "properties": {
+    "schema_version": {"const": "lineage-blind-review-pack-v1"},
+    "pack_id": {"$ref": "#/$defs/opaqueId"},
+    "fixture_id": {"$ref": "#/$defs/opaqueId"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "collection_id": {"type": "string", "minLength": 1, "maxLength": 512},
+    "release_id": {"$ref": "#/$defs/opaqueId"},
+    "reviewer_slot": {"enum": ["a", "b"]},
+    "status": {"const": "pending"},
+    "evidence_boundary": {
+      "const": "local_snapshot_hash_only_source_identity_and_excerpt_membership_unverified"
+    },
+    "bindings": {"$ref": "#/$defs/bindings"},
+    "candidate_count": {"type": "integer", "minimum": 1, "maximum": 256},
+    "candidates": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "items": {"$ref": "#/$defs/candidate"}
+    }
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "opaqueId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^[^\\s\\x00-\\x1f\\x7f]+$"
+    },
+    "aliases": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "array",
+        "prefixItems": [
+          {"enum": ["arxiv", "openreview", "acl_anthology", "cvf", "doi"]},
+          {"type": "string", "minLength": 1, "maxLength": 512}
+        ],
+        "items": false,
+        "minItems": 2,
+        "maxItems": 2
+      }
+    },
+    "node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["node_id", "title", "first_published_at", "aliases"],
+      "properties": {
+        "node_id": {"$ref": "#/$defs/opaqueId"},
+        "title": {"type": "string", "minLength": 1, "maxLength": 10000},
+        "first_published_at": {"type": "string", "minLength": 10, "maxLength": 64},
+        "aliases": {"$ref": "#/$defs/aliases"}
+      }
+    },
+    "locator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "page",
+        "section",
+        "reference_marker",
+        "sentence_ordinal",
+        "paragraph_ordinal"
+      ],
+      "properties": {
+        "page": {"type": ["integer", "null"], "minimum": 1},
+        "section": {"type": ["string", "null"], "minLength": 1},
+        "reference_marker": {"type": ["string", "null"], "minLength": 1},
+        "sentence_ordinal": {"type": ["integer", "null"], "minimum": 0},
+        "paragraph_ordinal": {"type": ["integer", "null"], "minimum": 0}
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "kind",
+        "source_work_id",
+        "cited_work_id",
+        "citing_work_id",
+        "url",
+        "locator",
+        "excerpt",
+        "excerpt_sha256",
+        "input_sha256",
+        "snapshot_ref"
+      ],
+      "properties": {
+        "source": {"$ref": "#/$defs/opaqueId"},
+        "kind": {"$ref": "#/$defs/opaqueId"},
+        "source_work_id": {"$ref": "#/$defs/opaqueId"},
+        "cited_work_id": {"$ref": "#/$defs/opaqueId"},
+        "citing_work_id": {"$ref": "#/$defs/opaqueId"},
+        "url": {"type": "string", "format": "uri", "minLength": 1, "maxLength": 4096},
+        "locator": {"$ref": "#/$defs/locator"},
+        "excerpt": {"type": "string", "minLength": 1, "maxLength": 280},
+        "excerpt_sha256": {"$ref": "#/$defs/sha256"},
+        "input_sha256": {"$ref": "#/$defs/sha256"},
+        "snapshot_ref": {
+          "type": "string",
+          "pattern": "^source-snapshot:[A-Za-z0-9._:-]{1,240}$"
+        }
+      }
+    },
+    "response": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reviewer_id",
+        "blind_to_model",
+        "blind_to_peer",
+        "citation_valid",
+        "gold_family",
+        "gold_relation",
+        "evidence_support",
+        "notes",
+        "reviewed_at"
+      ],
+      "properties": {
+        "reviewer_id": {"type": "null"},
+        "blind_to_model": {"type": "null"},
+        "blind_to_peer": {"type": "null"},
+        "citation_valid": {"type": "null"},
+        "gold_family": {"type": "null"},
+        "gold_relation": {"type": "null"},
+        "evidence_support": {"type": "null"},
+        "notes": {"type": "null"},
+        "reviewed_at": {"type": "null"}
+      }
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "review_id",
+        "src",
+        "dst",
+        "evidence_sha256",
+        "evidence",
+        "response"
+      ],
+      "properties": {
+        "review_id": {"type": "string", "pattern": "^review:[0-9a-f]{64}$"},
+        "src": {"$ref": "#/$defs/node"},
+        "dst": {"$ref": "#/$defs/node"},
+        "evidence_sha256": {"$ref": "#/$defs/sha256"},
+        "evidence": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 64,
+          "items": {"$ref": "#/$defs/evidence"}
+        },
+        "response": {"$ref": "#/$defs/response"}
+      }
+    },
+    "bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_sha256", "catalog_sha256", "candidate_snapshot_sha256"],
+      "properties": {
+        "artifact_sha256": {"$ref": "#/$defs/sha256"},
+        "catalog_sha256": {"$ref": "#/$defs/sha256"},
+        "candidate_snapshot_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  }
+}

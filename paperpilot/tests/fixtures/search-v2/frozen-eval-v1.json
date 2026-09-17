@@ -1,0 +1,115 @@
+{
+  "schema_version": "paperpilot-search-eval-v1",
+  "frozen_corpus": {
+    "index_sha256": "c6d5ef4e8e2d95d1fd61dd520521e5bc4c57f1ebad40edb1df213e0dcf64812b",
+    "row_count": 28300,
+    "index_bytes": 6633612,
+    "conference_count": 10
+  },
+  "metric_contract": {
+    "precision_at_k": "relevant canonical IDs in returned top-k / actual number returned",
+    "recall_at_k": "relevant canonical IDs in returned top-k / known relevant canonical IDs",
+    "mrr": "mean reciprocal rank of the first known relevant canonical ID over scored queries",
+    "zero_result": "A negative query with zero known relevant IDs is pass/fail only and excluded from precision, recall, and MRR denominators.",
+    "unsupported": "The Japanese concept case records the known unsupported capability, not successful retrieval. It is excluded from the six supported-query scores and must be reported separately.",
+    "judgement_scope": "Only the declared top-k pool is judged; recall is not whole-catalog recall."
+  },
+  "queries": [
+    {
+      "id": "exact-title",
+      "intent": "known exact title",
+      "query": "AbductiveMLLM: Boosting Visual Abductive Reasoning Within MLLMs",
+      "filters": {},
+      "catalog_sources": ["aaai-2026"],
+      "pool_k": 1,
+      "relevant_ids": ["a975ae530b334ab97e07817de3a60e7ed5d615ad"]
+    },
+    {
+      "id": "partial-title",
+      "intent": "known partial title",
+      "query": "continuous action chunks",
+      "filters": {},
+      "catalog_sources": ["aaai-2026"],
+      "pool_k": 5,
+      "relevant_ids": ["d45d9437014fa9a423a891e60c4cae0a1776388d"]
+    },
+    {
+      "id": "author",
+      "intent": "author substring",
+      "query": "Albina Klepach",
+      "filters": {},
+      "catalog_sources": ["aaai-2026", "iclr-2026"],
+      "pool_k": 5,
+      "relevant_ids": [
+        "635903f14761bf15185e89211906c3373fa68d2e",
+        "e860083c1151ac52bb9c245a7d9fa5f87e4ef961"
+      ]
+    },
+    {
+      "id": "tag",
+      "intent": "tag query with title and tag matches judged in the top-five pool",
+      "query": "ImageGen",
+      "filters": {},
+      "catalog_sources": ["aaai-2026", "iccv-2025"],
+      "pool_k": 5,
+      "relevant_ids": [
+        "5a6574adc99e03e2cec9fe6e93546b0ccd6b05a5",
+        "a975ae530b334ab97e07817de3a60e7ed5d615ad",
+        "dcb2744e2cb1f3797105049faccaa722a74b9100",
+        "f3887e0f54024a0fb815ad72003e9c64829e0bb1",
+        "718a990640c420bbaac879c4903c3299421367cc"
+      ]
+    },
+    {
+      "id": "facets",
+      "intent": "conference, year, and presentation-type conjunction",
+      "query": "diffusion",
+      "filters": {"conference": "aaai-2026", "year": 2026, "type": "Oral"},
+      "catalog_sources": ["aaai-2026"],
+      "pool_k": 5,
+      "relevant_ids": [
+        "b0c5b3b8f470b1dddd6be574dfefe733808f9130",
+        "f08da78dd52570fba7832e5d2af8cfd3a6b7cf82",
+        "63df9e746c93c57a2578cd888067119dc4d5f7ef",
+        "a975ae530b334ab97e07817de3a60e7ed5d615ad",
+        "f293cf4a19926329687bca2ca746ac6d22ec1d52"
+      ]
+    },
+    {
+      "id": "concept-literal",
+      "intent": "literal concept phrase; this does not claim semantic recall",
+      "query": "world models",
+      "filters": {},
+      "catalog_sources": ["aaai-2026", "cvpr-2026"],
+      "pool_k": 5,
+      "relevant_ids": [
+        "0e68c514431253b42193d6557d52a49beefcf191",
+        "b7a48011c1fe6b64d2b83ee7f4486b17041bca93",
+        "28dfc79ec0f28a1515ffa264248c88cf2cbcb717",
+        "9519b75f06ef15abb90d6ea5585976f7522e37bd",
+        "7b18d906cb1ec703d41e23a3be43a7a00a9ee3c2"
+      ]
+    },
+    {
+      "id": "negative",
+      "intent": "not-found input",
+      "query": "quokka zephyr 9f3c impossible",
+      "filters": {},
+      "catalog_sources": [],
+      "pool_k": 5,
+      "relevant_ids": [],
+      "expect_zero": true
+    },
+    {
+      "id": "japanese-unsupported",
+      "unsupported": true,
+      "intent": "unsupported Japanese concept input retained as a failure case",
+      "query": "拡散モデル",
+      "filters": {},
+      "catalog_sources": [],
+      "pool_k": 5,
+      "relevant_ids": [],
+      "expect_zero": true
+    }
+  ]
+}

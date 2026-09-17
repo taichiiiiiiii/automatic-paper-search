@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#fbf9f5" />
+  <meta name="robots" content="noindex" />
+  <title>研究系譜 Focus View — PaperPilot</title>
+  <meta name="description" content="監査済みの根拠から、研究の継承・比較関係を確認する Focus View。" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; connect-src 'self'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'" />
+  <link rel="canonical" href="https://taichiiiiiiii.github.io/automatic-paper-search/lineage/" />
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../assets/style.css?v=105" />
+  <link rel="stylesheet" href="../assets/lineage-focus.css?v=8" />
+</head>
+<body class="lineage-focus-page">
+  <noscript>
+    <div class="noscript-banner" role="alert">
+      <strong>JavaScript が必要です。</strong>
+      監査済みデータを検証してから表示するため、JavaScript を有効にしてください。
+    </div>
+  </noscript>
+  <a class="skip-link" href="#main-content">本文へスキップ</a>
+  <nav class="site-nav" aria-label="グローバル">
+    <a class="site-nav__brand" href="../">PaperPilot</a>
+    <ul class="site-nav__links">
+      <li><a href="../">探す</a></li>
+      <li><a href="../themes/" aria-current="page">系譜</a></li>
+      <li><a href="../how-it-works/">仕組み</a></li>
+    </ul>
+  </nav>
+
+  <main id="main-content" class="lineage-focus">
+    <section id="lineage-audit-status" class="lineage-focus__audit" role="status" aria-live="polite" aria-atomic="true">
+      <p class="lineage-focus__eyebrow">AUDITED LINEAGE / FOCUS VIEW</p>
+      <h1 id="lineage-audit-heading">研究系譜を検証しています</h1>
+      <p id="lineage-audit-message">公開索引と監査情報の一致を確認しています。</p>
+      <a class="lineage-focus__back" href="../">論文を探し直す →</a>
+    </section>
+
+    <article id="lineage-ready" hidden aria-labelledby="lineage-title">
+      <header class="lineage-focus__header">
+        <div>
+          <p class="lineage-focus__eyebrow">VERIFIED PILOT RELEASE</p>
+          <h1 id="lineage-title" tabindex="-1"></h1>
+          <p id="lineage-paper-meta" class="lineage-focus__meta"></p>
+        </div>
+        <a id="lineage-catalog-back" class="lineage-focus__back" href="../">論文一覧へ戻る</a>
+      </header>
+
+      <p class="lineage-focus__notice">引用は研究継承を意味しません。この研究系譜は証拠と監査に基づく自動推定を含みます。</p>
+
+      <section class="lineage-focus__controls" aria-label="系譜の表示条件">
+        <fieldset>
+          <legend>表示</legend>
+          <button type="button" data-action="view" data-value="graph" aria-pressed="true">グラフ</button>
+          <button type="button" data-action="view" data-value="list" aria-pressed="false">関係一覧</button>
+        </fieldset>
+        <label>範囲
+          <select id="lineage-hops">
+            <option value="1">直接の関係だけ</option>
+            <option value="2">2段先まで</option>
+            <option value="3">3段先まで</option>
+          </select>
+        </label>
+        <label>論文数の上限
+          <input id="lineage-limit" type="number" min="5" max="50" step="1" value="7" />
+        </label>
+        <details class="lineage-focus__advanced">
+          <summary id="lineage-advanced-summary">詳細な絞り込み</summary>
+          <div class="lineage-focus__advanced-body">
+            <label>較正済み確率の下限
+              <select id="lineage-confidence">
+                <option value="0.5">0.50</option>
+                <option value="0.7">0.70</option>
+                <option value="0.9">0.90</option>
+              </select>
+              <small>人手検証済みで確率未設定の関係は除外しません</small>
+            </label>
+            <fieldset class="lineage-focus__option-group">
+              <legend>判定</legend>
+              <label><input type="checkbox" id="lineage-tentative" /> 要確認を表示</label>
+            </fieldset>
+            <fieldset class="lineage-focus__option-group">
+              <legend>関係族</legend>
+              <label><input type="checkbox" id="lineage-genealogy" checked /> 継承</label>
+              <label><input type="checkbox" id="lineage-comparison" /> 比較</label>
+            </fieldset>
+            <fieldset class="lineage-focus__option-group">
+              <legend>関係タイプ</legend>
+              <div id="lineage-relation-options"></div>
+            </fieldset>
+            <fieldset class="lineage-focus__option-group">
+              <legend>根拠ソース</legend>
+              <div id="lineage-evidence-source-options"></div>
+            </fieldset>
+            <fieldset class="lineage-focus__option-group">
+              <legend>根拠の種類</legend>
+              <div id="lineage-evidence-kind-options"></div>
+            </fieldset>
+          </div>
+        </details>
+      </section>
+
+      <section class="lineage-focus__summary" aria-label="表示集計">
+        <p id="lineage-counts" aria-live="polite"></p>
+        <p id="lineage-exclusions"></p>
+      </section>
+
+      <div id="lineage-force-list" class="lineage-focus__warning" role="status" hidden>
+        表示上限を超えたため、グラフは描画していません。関係一覧で確認してください。
+      </div>
+
+      <section id="lineage-graph-panel" aria-labelledby="lineage-graph-heading">
+        <h2 id="lineage-graph-heading">系譜グラフ</h2>
+        <p class="lineage-focus__graph-help">実線の矢印は先行研究 → 発展研究。比較関係は破線で示し、継承とは区別します。初期表示は直接の関係・最大7論文です。</p>
+        <p id="lineage-graph-help" class="lineage-focus__graph-help">横にスクロールして全体を確認できます。キーボードではグラフにフォーカスして左右キーを使えます。重なる関係ラベルは省略しますが、関係自体は削除していません。線を選ぶと監査詳細を確認できます。読みづらい場合は「関係一覧」に切り替えてください。</p>
+        <div id="lineage-graph" class="lineage-focus__graph" role="group" aria-label="研究系譜グラフ" aria-describedby="lineage-graph-help" tabindex="0"></div>
+      </section>
+
+      <section id="lineage-list-panel" aria-labelledby="lineage-list-heading" hidden>
+        <div class="lineage-focus__list-head">
+          <h2 id="lineage-list-heading" tabindex="-1">関係一覧</h2>
+          <p id="lineage-page-status"></p>
+        </div>
+        <div id="lineage-claim-list" class="lineage-focus__claim-list"></div>
+        <nav id="lineage-pagination" class="lineage-focus__pagination" aria-label="関係一覧のページ"></nav>
+      </section>
+
+      <section aria-labelledby="lineage-nodes-heading">
+        <h2 id="lineage-nodes-heading">表示中の論文</h2>
+        <p class="lineage-focus__graph-help">表示中の検証済み関係に沿って区分しています。先行・発展は継承の向き、比較は中心論文との直接の比較です。日付順の分類ではありません。その他の関連論文には、これらに分類されない論文を表示します。区分は信頼段階を表しません。根拠と信頼段階は各関係の詳細で確認できます。</p>
+        <div id="lineage-node-cards" class="lineage-focus__node-cards"></div>
+      </section>
+    </article>
+  </main>
+
+  <dialog id="lineage-inspector" class="lineage-focus__dialog" aria-labelledby="lineage-inspector-title">
+    <div class="lineage-focus__dialog-head">
+      <h2 id="lineage-inspector-title">関係の監査詳細</h2>
+      <button type="button" data-action="close-inspector" aria-label="監査詳細を閉じる">閉じる</button>
+    </div>
+    <div id="lineage-inspector-body"></div>
+  </dialog>
+
+  <footer class="footer">
+    <span>Generated by <a href="https://github.com/taichiiiiiiii/automatic-paper-search">PaperPilot</a></span>
+    <span>Audited pilot data · MIT License</span>
+  </footer>
+
+  <script src="../assets/utils.js?v=84" defer></script>
+  <script src="../assets/catalog-core.js?v=9" defer></script>
+  <script src="../assets/lineage-v2-core.js?v=4" defer></script>
+  <script src="../assets/lineage-focus.js?v=18" defer></script>
+</body>
+</html>

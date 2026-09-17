@@ -238,7 +238,10 @@ PDF text、title、authors、abstract、citation context はすべて untrusted 
 - 「系譜由来の位置づけ」と「論文本文の主張」を混ぜず `content_origin=lineage | paper` で区別する。
   v1 は外部背景知識のsource/citation契約を持たないため、`background` bulletを生成しない
 - model の JSON は untrusted とし、closed schema、型、長さ、列挙、参照整合を runtime validator で検証する
-- parse / schema / citation failure を自由文補完で修復しない。bounded retry 後は失敗または abstract-only にする
+- parse / schema / citation failure を自由文補完で修復しない。初期のlocal Sol profileは
+  [29-slide-sol-local-execution.md](29-slide-sol-local-execution.md)に従い最大2 generation calls・retry/fallbackなしとする。
+  本番でretryを追加する場合はproviderのidempotency/課金と許可するstable error codeを先に固定する。
+  不正出力・identity不一致・秘密検出・予算超過をabstract-onlyへの降格で成功扱いにしない
 
 model に最終 artifact の identity / provenance envelope を自己申告させない。model output は slide content、
 citation reference、limitations のcandidateに限定し、producerがcanonical catalog、resolver、extraction manifest、
