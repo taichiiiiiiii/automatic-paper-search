@@ -301,14 +301,32 @@ def test_pypi_workflow_is_build_only() -> None:
     assert '"paperpilot/replay/artifacts.py"' in text
     assert '"paperpilot/replay/canonical.py"' in text
     assert '"paperpilot/replay/manifest.py"' in text
+    assert '"paperpilot/lineage_pilot/__init__.py"' in text
+    assert '"paperpilot/lineage_pilot/bundle.py"' in text
+    assert '"paperpilot/lineage_pilot/review_prep.py"' in text
+    assert '"paperpilot/lineage_pilot/review_io.py"' in text
+    assert '"paperpilot/lineage_pilot/review_intake.py"' in text
+    assert '"paperpilot/conference_watch/candidate.py"' in text
+    assert '"paperpilot/conference_watch/dry_run.py"' in text
+    assert '"paperpilot/scripts/prepare_lineage_review.py"' in text
+    assert '"paperpilot/scripts/ingest_lineage_review.py"' in text
     assert '"paperpilot/scripts/_lineage_contract.py"' in text
+    assert '"paperpilot/scripts/_lineage_contract_v2.py"' in text
     assert '"paperpilot/scripts/build_pages.py"' in text
     assert '"paperpilot/scripts/build_lineage_quality.py"' in text
     assert '"paperpilot/scripts/generate_deep_manifest.py"' in text
     assert '"paperpilot/scripts/replay_run.py"' in text
+    assert '"paperpilot/paper_slides/sol_provider.py"' in text
+    assert '"paperpilot/paper_slides/sol_local.py"' in text
+    assert '"paperpilot/paper_slides/service.py"' in text
+    assert '"paperpilot/scripts/generate_paper_slides.py"' in text
+    assert '"paperpilot/data/sol-abstract-local-v1.json"' in text
     assert 'pip" install --require-hashes' in text
     assert 'pip" install --no-deps dist/*.whl' in text
     assert 'python" -m paperpilot.scripts.replay_run --help' in text
+    assert 'python" -m paperpilot.scripts.generate_paper_slides --help' in text
+    assert 'python" -m paperpilot.scripts.prepare_lineage_review --help' in text
+    assert 'python" -m paperpilot.scripts.ingest_lineage_review --help' in text
     assert "uv export --frozen --no-dev --no-emit-project" in text
     assert "uv sync --frozen --extra release" in text
     assert "python -m build --no-isolation" in text
