@@ -92,6 +92,15 @@ def test_nojs_duplicate_pages_are_noindex_and_excluded() -> None:
         assert not any(loc.endswith(fallback.relative_to(docs).as_posix()) for loc in listed)
 
 
+def test_query_required_lineage_pilot_shell_is_not_a_published_collection() -> None:
+    source = (REPO_ROOT / "docs" / "lineage" / "index.html").read_text(encoding="utf-8")
+    assert '<meta name="robots" content="noindex" />' in source
+    assert build_sitemap.is_excluded("lineage/index.html", eligible_lineage_routes=set())
+    assert build_sitemap.is_excluded(
+        "lineage/index.html", eligible_lineage_routes={"lineage/index.html"}
+    )
+
+
 def test_deck_revisions_fail_closed_until_manifest_driven_listing(tmp_path: Path) -> None:
     """Neither current-looking nor stale deck files are trusted by discovery."""
 
