@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#fbf9f5" />
+  <meta name="theme-color" content="#ffffff" />
   <title>PaperPilot — AI 論文を横断検索。トップ会議 10 学会・28,000 本から探す</title>
   <meta name="description" content="AI/ML トップ会議 10 学会・28,000 本以上の採択論文を、タイトル・著者・タグから横断検索できます。" />
 
@@ -47,7 +47,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=optional" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+Mono:wght@400;500&display=optional" rel="stylesheet" />
 
   <link rel="stylesheet" href="assets/style.css?v=105" />
   <style>
@@ -59,6 +59,50 @@
        Japanese prose uses --font-ja; numerals / mono labels stay
        in --font-mono so the scholarly voice is consistent.
        ============================================================ */
+
+    /* ------------------------------------------------------------
+       デジタル庁デザインシステム (DADS) トークン置き換え — S0のみ。
+       値は公式パッケージ @digital-go-jp/design-tokens の dist/tokens.css
+       (design.digital.go.jp) から採用。既存のトークン名はそのまま、
+       値だけをDADSのプリミティブ/ニュートラル/キーカラー・書体・
+       フォントサイズに差し替える。HTML構造・JS・他ページ(共有
+       style.css本体)には影響しない。--text-tag / --text-caption /
+       --text-body-sm / --text-micro / --text-edge-label はバッジ・チップの
+       改行崩れ回避のため対象外のまま(既知の罠。CLAUDE.md参照)。 */
+    :root {
+      --color-bg: #ffffff;
+      --color-surface: #ffffff;
+      --color-surface-2: #f2f2f2;          /* DADS neutral gray-50 */
+      --color-surface-elevated: #ffffff;
+      --color-rule: #cccccc;               /* DADS neutral gray-200 */
+      --color-rule-strong: #999999;        /* DADS neutral gray-400 */
+
+      --color-ink: #1a1a1a;                /* DADS neutral gray-900 */
+      --color-ink-muted: #4d4d4d;          /* DADS neutral gray-700 */
+      --color-ink-subtle: #767676;         /* DADS neutral gray-536 (公式が白背景でコントラスト比4.5:1を保証) */
+
+      --color-accent: #3460fb;             /* DADS key/primitive-blue-600 (白背景で約4.99:1) */
+      --color-accent-strong: #0031d8;      /* DADS key/primitive-blue-800 */
+
+      --color-oral-ink: #c74700;           /* DADS semantic-warning-orange-2 */
+
+      --color-tag-bg: #e8f1fe;             /* DADS primitive-blue-50 */
+      --color-tag-ink: #0031d8;            /* DADS primitive-blue-800 */
+
+      --color-mark-bg: #fff0b3;            /* DADS primitive-yellow-100 */
+
+      --font-serif: "Noto Sans JP", "Hiragino Sans", "Yu Gothic UI", sans-serif;
+      --font-sans: "Noto Sans JP", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-mono: "Noto Sans Mono", "SF Mono", Menlo, monospace;
+      --font-ja: "Noto Sans JP", "Hiragino Sans", "Yu Gothic UI", sans-serif;
+
+      --text-meta: 0.875rem;                                     /* DADS font-size-14 */
+      --text-body: 1rem;                                         /* DADS font-size-16 */
+      --text-title: clamp(1.125rem, 1rem + 0.4vw, 1.375rem);     /* DADS font-size-18..22 */
+      --text-display: clamp(2.25rem, 1.6rem + 3.5vw, 4rem);      /* DADS font-size-36..64 */
+    }
+    ::selection { background: rgba(52, 96, 251, 0.25); color: var(--color-ink); }
+    ::-moz-selection { background: rgba(52, 96, 251, 0.25); color: var(--color-ink); }
 
     .s0 {
       padding: clamp(2rem, 1rem + 5vw, 5rem) var(--space-edge) 0;
