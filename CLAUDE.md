@@ -1,8 +1,8 @@
 # CLAUDE.md — PaperPilot 実装ガイド
 
-現行ルーティングはAGENTS.mdを正本とする。実装・解析・文献処理・必要テストはFlash、条件付き評価のみMAX、最終採否は親Codex。以下のSingle-agent modeや旧role表は履歴であり、現行方針を上書きしない。設定変更だけではworker起動・外部操作を許可しない。
+本ファイルは **Claude Code** がこのプロジェクトを実装する際の指示書。`AGENTS.md` / `PAPERPILOT_PROFILE.md` は Codex CLI + Qwen Flash/MAX routing 向けの別ツールの運用であり、Claude Code セッションには適用されない（role名・モデル名を混同しない）。Claude Codeでの実装・レビュー・commit/push承認境界は本ファイルが正本。`PAPERPILOT_PROFILE.md`側のSingle-agent modeや旧role表はCodex CLI運用の履歴であり、この区別はClaude Codeの現行方針にも影響しない。
 
-> 本文は必要なタスクでのみ参照する。現行の運用・委譲・安全境界はAGENTS.mdを優先し、実人手監査・科学的根拠・公開承認のgateは省略しない。
+> 本文は必要なタスクでのみ参照する。実人手監査・科学的根拠・公開承認のgate、および下記「絶対ルール」は省略しない。
 
 このファイルは Claude Code が本プロジェクトを実装する際に参照する指示書です。
 設計書（[`docs/design/`](docs/design/)）および市場調査レポート（[`docs/research/`](docs/research/)）と合わせて読むこと。
@@ -178,10 +178,10 @@ automatic-paper-search/
 
 ### エージェント動作の基本方針
 
-- 実装・レビューは [`PAPERPILOT_PROFILE.md`](PAPERPILOT_PROFILE.md) のGPT-5.6 Sol routeを使う。bounded implementationはmedium、security / provenance / schema / migration / publication-riskはhigh、ultraは使わない
-- 製品runtimeのOllama/Qwen等のLLM provider設定と、リポジトリ作業agentのmodel routingを混同しない。agentをthird-party providerへfallbackしない
+- 実装・レビューは Claude Code の `/code-review` スキルを使う。bounded implementationはmedium、security / provenance / schema / migration / publication-riskはhigh、ultraは通常使わない（cloud課金・ユーザートリガー必須のため、pre-release大型変更等でユーザーが明示的に要求した場合のみ）
+- `AGENTS.md` / `PAPERPILOT_PROFILE.md` に記載の Codex CLI + Qwen Flash/MAX routing は別ツールの運用。Claude Code はそれらのroute・workerを起動しない。製品runtimeのOllama/Qwen等のLLM provider設定と、リポジトリ作業agentのmodel routingも混同しない
+- 独立した調査・レビューは `Agent` ツールでサブエージェント（`Explore` / `general-purpose` / `Plan`）に並列委譲できる。共有生成物・manifest・asset version・lockfileの更新はownerが直列化する
 - workflow dispatch、通知、Pages / Worker / PyPI公開、secret/settings変更、`develop`へのpush/mergeはユーザーの明示承認後だけ行う
-- 独立した操作は並列化できるが、共有生成物・manifest・asset version・lockfileの更新はownerが直列化する
 
 ### 基本方針（設計原則）
 
@@ -252,9 +252,9 @@ PAPERPILOT_SMTP_*            # Email 通知
 
 ### フェーズ 1: プラン作成
 
-`planner` エージェントで以下を生成:
+TodoWrite でタスク分解し、必要に応じて `Agent` ツール（`subagent_type: Plan`）または `EnterPlanMode` でユーザーと合意した上で以下を生成する:
 - 変更ファイル一覧と見積もり行数
-- タスク分解（`TaskCreate` で追跡可能な粒度）
+- タスク分解（TodoWrite で追跡可能な粒度）
 - テスト計画（RED/GREEN、モック戦略、カバレッジ目標）
 - 依存・リスクの明示
 
@@ -262,14 +262,13 @@ PAPERPILOT_SMTP_*            # Email 通知
 
 **コードを書く前にプランを並列レビュー**。実装後の手戻りよりコストが桁違いに安い。
 
-走らせるエージェント（並列）:
+`Agent` ツールで並列に委譲する観点（`subagent_type` は `Explore` または `general-purpose`。fork でも可）:
 
-| エージェント | 観点 |
+| 観点 | 手段 |
 |---|---|
-| `architect` | システム設計整合性、スケーラビリティ、拡張性 |
-| `code-architect` | 既存パターン遵守、ブループリントの現実性 |
-| `code-explorer` | 類似/重複機能の既存確認、再利用ポイント |
-| `security-reviewer` | 設計段階で混入しやすい脅威 |
+| システム設計整合性・スケーラビリティ・拡張性、既存パターン遵守 | `Agent`（`general-purpose`） |
+| 類似/重複機能の既存確認、再利用ポイント | `Agent`（`Explore`） |
+| 設計段階で混入しやすい脅威（secrets/injection/公開リスク） | `/security-review`、またはセキュリティ観点を明示した `Agent`（`general-purpose`） |
 
 チェック 10 項目:
 1. 絶対ルール §1〜§13 に反していないか
@@ -280,7 +279,7 @@ PAPERPILOT_SMTP_*            # Email 通知
 6. Fail-Safe（外部 API 障害時の継続性）が設計に入っているか
 7. テスト計画の粒度・モック戦略・カバレッジ目標
 8. CLAUDE.md / 設計書 / README の同時更新計画
-9. `code-explorer` で既存実装と重複していないか確認済みか
+9. `Explore` 委譲で既存実装と重複していないか確認済みか
 10. PR 1 本で完結するか、分割すべきか
 
 対応方針:
@@ -299,16 +298,16 @@ PAPERPILOT_SMTP_*            # Email 通知
 3. **REFACTOR** — 設計原則に沿って整える
 4. **カバレッジ確認** — `pytest --cov=paperpilot` で **80% 以上**（現状 91%）
 
-独立した複数モジュールは`PAPERPILOT_PROFILE.md`の担当roleへ分割できる。共有生成物・manifest・asset version・lockfileはownerが直列化する。
+独立した複数モジュールは `Agent` ツール（`fork` または `general-purpose`）で並列実装できる。共有生成物・manifest・asset version・lockfileはownerが直列化する。
 
 ### フェーズ 3: コードレビュー（commit 前）
 
-commit前のreviewは`PAPERPILOT_PROFILE.md`の担当roleを使う:
+commit前のreviewは Claude Code のスキルを使う:
 
 ```
-paperpilot_backend_implementer   (Python/API/pipeline)
-paperpilot_frontend_implementer  (JS/Pages UI)
-paperpilot_security_reviewer     (security/publication-risk)
+/code-review               # medium: Python/API/pipeline、JS/Pages UI の bounded 実装
+/code-review --level high  # security / provenance / schema / migration / publication-risk
+/security-review           # secrets, injection, workflow, Worker, publication観点
 ```
 
 対応方針:
@@ -333,7 +332,7 @@ git push
 
 ### フェーズ 6: PR 前最終チェック
 
-変更範囲に応じてownerと`paperpilot_security_reviewer`が最終確認する。publication-riskを含む変更はhigh effortで独立レビューする。
+変更範囲に応じてownerと`/security-review`（または high effort の `/code-review`）が最終確認する。publication-riskを含む変更はhigh effortで独立レビューする。
 
 ### フェーズ 7: 残項目を報告
 
@@ -350,21 +349,21 @@ git push
 ```
 [Research]
     ↓
-[Plan]                     role: paperpilot_system_investigator
+[Plan]                     TodoWrite / Agent(Plan) / EnterPlanMode
     ↓
-[★ プランレビュー ★]       role: paperpilot_security_reviewer（risk時）
+[★ プランレビュー ★]       Agent(Explore/general-purpose) 並列、risk時は /security-review
     ↓        ↑
     ├────────┘ findings > 0 なら再プラン
     ↓
 [TDD: RED → GREEN → IMPROVE]
     ↓
-[コードレビュー] ──────→   roles: paperpilot_*_implementer / security_reviewer
+[コードレビュー] ──────→   /code-review（medium/high）、security-riskは /security-review
     ↓        ↑
     ├────────┘ ゼロ収束まで
     ↓
 [ローカル結果と残リスクを報告]
     ↓
-[publication/security 最終確認]
+[publication/security 最終確認]     high effort /code-review または /security-review
     ↓
 [残項目を報告]             issue作成は明示承認後のみ
     ↓
@@ -843,11 +842,13 @@ refactor(scripts): dedupe slug->venue label into _common.py (closes #30)
 
 ---
 
-## プロジェクト固有Agent profile
+## Claude Code 運用ノート
 
-現行role、model、effort、accessの正本は[`PAPERPILOT_PROFILE.md`](PAPERPILOT_PROFILE.md)、実行ルールは[`AGENTS.md`](AGENTS.md)と[`docs/design/13-agent-workboard.md`](docs/design/13-agent-workboard.md)です。実装は`paperpilot_backend_implementer`または`paperpilot_frontend_implementer`のGPT-5.6 Sol / mediumを基本とし、security・provenance・schema・migration・publication-riskだけhighで独立レビューします。製品runtimeのLLM provider設定はこのagent routingを変更しません。
+`AGENTS.md` / `PAPERPILOT_PROFILE.md`（Qwen Flash/MAX routing、GPT-5.6 Sol role表、[`docs/design/13-agent-workboard.md`](docs/design/13-agent-workboard.md)）は **Codex CLI 向けの別ツールの運用**であり、Claude Code セッションには適用されない。Claude Codeでの実装・レビュー・commit/push承認境界は本ファイル（CLAUDE.md）が正本。
 
-変更後はownerが差分とfocused/full gateを確認して結果・skip・残リスクを報告します。workflow dispatch、issue/PR作成、commit/push/merge、公開、通知、secret/settings変更は自動工程にせず、ユーザーの明示承認を得ます。
+実装は `/code-review` の medium 相当（bounded implementation）を基本とし、security・provenance・schema・migration・publication-riskは high effort で独立レビューする。ultraは通常使わない（cloud課金・ユーザートリガー必須のため、pre-release大型変更等でユーザーが明示的に要求した場合のみ）。製品runtimeのLLM provider設定（Ollama/Gemini/Groq/Claude Provider等）はこのagent routingを変更しない。
+
+変更後は差分とfocused/full gate（テスト・lint）を確認して結果・skip・残リスクを報告する。workflow dispatch、issue/PR作成、commit/push/merge、公開、通知、secret/settings変更は自動工程にせず、ユーザーの明示承認を得る。
 
 ---
 
