@@ -1,6 +1,6 @@
 # CLAUDE.md — PaperPilot 実装ガイド
 
-本ファイルは **Claude Code** がこのプロジェクトを実装する際の指示書。`AGENTS.md` / `PAPERPILOT_PROFILE.md` は Codex CLI + Qwen Flash/MAX routing 向けの別ツールの運用であり、Claude Code セッションには適用されない（role名・モデル名を混同しない）。Claude Codeでの実装・レビュー・commit/push承認境界は本ファイルが正本。`PAPERPILOT_PROFILE.md`側のSingle-agent modeや旧role表はCodex CLI運用の履歴であり、この区別はClaude Codeの現行方針にも影響しない。
+本ファイルは **Claude Code** がこのプロジェクトを実装する際の指示書。`AGENTS.md` / `PAPERPILOT_PROFILE.md` の **Codex CLI + Qwen Flash/MAX routing と role 運用**は別ツール向けであり、Claude Code セッションには適用しない（role名・モデル名を混同しない）。Claude Codeでの実装・レビュー・commit/push承認境界は本ファイルが正本。`PAPERPILOT_PROFILE.md`側のSingle-agent modeや旧role表はCodex CLI運用の履歴であり、この区別はClaude Codeの現行方針にも影響しない。
 
 > 本文は必要なタスクでのみ参照する。実人手監査・科学的根拠・公開承認のgate、および下記「絶対ルール」は省略しない。
 
@@ -178,7 +178,7 @@ automatic-paper-search/
 
 ### エージェント動作の基本方針
 
-- 実装・レビューは Claude Code の `/code-review` スキルを使う。bounded implementationはmedium、security / provenance / schema / migration / publication-riskはhigh、ultraは通常使わない（cloud課金・ユーザートリガー必須のため、pre-release大型変更等でユーザーが明示的に要求した場合のみ）
+- 実装・レビューは Claude Code の `/code-review` を使う。bounded implementationは`/code-review medium`、security / provenance / schema / migration / publication-riskは`/code-review high`を使い、`ultra`は通常使わない
 - `AGENTS.md` / `PAPERPILOT_PROFILE.md` に記載の Codex CLI + Qwen Flash/MAX routing は別ツールの運用。Claude Code はそれらのroute・workerを起動しない。製品runtimeのOllama/Qwen等のLLM provider設定と、リポジトリ作業agentのmodel routingも混同しない
 - 独立した調査・レビューは `Agent` ツールでサブエージェント（`Explore` / `general-purpose` / `Plan`）に並列委譲できる。共有生成物・manifest・asset version・lockfileの更新はownerが直列化する
 - workflow dispatch、通知、Pages / Worker / PyPI公開、secret/settings変更、`develop`へのpush/mergeはユーザーの明示承認後だけ行う
@@ -262,7 +262,7 @@ TodoWrite でタスク分解し、必要に応じて `Agent` ツール（`subage
 
 **コードを書く前にプランを並列レビュー**。実装後の手戻りよりコストが桁違いに安い。
 
-`Agent` ツールで並列に委譲する観点（`subagent_type` は `Explore` または `general-purpose`。fork でも可）:
+`Agent` ツールで並列に委譲する観点（`subagent_type` は `Explore` または `general-purpose`）:
 
 | 観点 | 手段 |
 |---|---|
@@ -298,15 +298,15 @@ TodoWrite でタスク分解し、必要に応じて `Agent` ツール（`subage
 3. **REFACTOR** — 設計原則に沿って整える
 4. **カバレッジ確認** — `pytest --cov=paperpilot` で **80% 以上**（現状 91%）
 
-独立した複数モジュールは `Agent` ツール（`fork` または `general-purpose`）で並列実装できる。共有生成物・manifest・asset version・lockfileはownerが直列化する。
+独立した複数モジュールは `Agent` ツール（`general-purpose`）で並列実装できる。共有生成物・manifest・asset version・lockfileはownerが直列化する。
 
 ### フェーズ 3: コードレビュー（commit 前）
 
 commit前のreviewは Claude Code のスキルを使う:
 
 ```
-/code-review               # medium: Python/API/pipeline、JS/Pages UI の bounded 実装
-/code-review --level high  # security / provenance / schema / migration / publication-risk
+/code-review medium        # Python/API/pipeline、JS/Pages UI の bounded 実装
+/code-review high          # security / provenance / schema / migration / publication-risk
 /security-review           # secrets, injection, workflow, Worker, publication観点
 ```
 
@@ -844,9 +844,9 @@ refactor(scripts): dedupe slug->venue label into _common.py (closes #30)
 
 ## Claude Code 運用ノート
 
-`AGENTS.md` / `PAPERPILOT_PROFILE.md`（Qwen Flash/MAX routing、GPT-5.6 Sol role表、[`docs/design/13-agent-workboard.md`](docs/design/13-agent-workboard.md)）は **Codex CLI 向けの別ツールの運用**であり、Claude Code セッションには適用されない。Claude Codeでの実装・レビュー・commit/push承認境界は本ファイル（CLAUDE.md）が正本。
+`AGENTS.md` / `PAPERPILOT_PROFILE.md` の Qwen Flash/MAX routing、GPT-5.6 Sol role表、[`docs/design/13-agent-workboard.md`](docs/design/13-agent-workboard.md) は **Codex CLI 向けの別ツールの運用**であり、Claude Code セッションには適用しない。Claude Codeでの実装・レビュー・commit/push承認境界は本ファイル（CLAUDE.md）が正本。
 
-実装は `/code-review` の medium 相当（bounded implementation）を基本とし、security・provenance・schema・migration・publication-riskは high effort で独立レビューする。ultraは通常使わない（cloud課金・ユーザートリガー必須のため、pre-release大型変更等でユーザーが明示的に要求した場合のみ）。製品runtimeのLLM provider設定（Ollama/Gemini/Groq/Claude Provider等）はこのagent routingを変更しない。
+実装は `/code-review medium`（bounded implementation）を基本とし、security・provenance・schema・migration・publication-riskは `/code-review high` で独立レビューする。`ultra`は通常使わない。製品runtimeのLLM provider設定（Ollama/Gemini/Groq/Claude Provider等）はこのagent routingを変更しない。
 
 変更後は差分とfocused/full gate（テスト・lint）を確認して結果・skip・残リスクを報告する。workflow dispatch、issue/PR作成、commit/push/merge、公開、通知、secret/settings変更は自動工程にせず、ユーザーの明示承認を得る。
 

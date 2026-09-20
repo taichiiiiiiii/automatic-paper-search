@@ -33,8 +33,6 @@ PaperPilot — AI/ML 論文自動収集・品質フィルタリングシステ�
 
 ## 目次
 
-- [統合設計文書 — 現行設計の一覧](38-unified-current-design.md) — 08〜37番の要約。まずここから読む
-
 - [検索・Focus ViewのUI/UX改善と検証状況](35-ui-ux-navigation-polish.md) — 初期7論文/1-hop、検索詳細ダイアログ、未完了の実画面確認
 
 - [~~システム概要とアーキテクチャ~~](01-overview.md) 🔴 **中身は overview ではありません**（§5.6 run_history / venue_cache の断片。本来の §1/§2 はリポジトリに存在しない・#360）
