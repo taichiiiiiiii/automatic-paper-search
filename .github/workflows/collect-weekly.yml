@@ -163,6 +163,9 @@ jobs:
             paperpilot/data/lineage-cache/classifications.json
           )
           shopt -s nullglob
+          for papers in docs/*/papers.json; do
+            includes+=("$papers")
+          done
           for lineage in docs/*/lineage.json; do
             includes+=("$lineage")
           done
@@ -222,6 +225,10 @@ jobs:
             paperpilot/data/lineage-cache/classifications.json
           )
           if [ -d "$CANDIDATE_DIR/docs" ]; then
+            while IFS= read -r -d '' papers; do
+              allowed+=("${papers#"$CANDIDATE_DIR/"}")
+            done < <(find "$CANDIDATE_DIR/docs" -mindepth 2 -maxdepth 2 \
+              -name papers.json -type f -print0)
             while IFS= read -r -d '' lineage; do
               allowed+=("${lineage#"$CANDIDATE_DIR/"}")
             done < <(find "$CANDIDATE_DIR/docs" -mindepth 2 -maxdepth 2 \

@@ -284,6 +284,20 @@ def test_weekly_generation_packages_only_changed_inputs() -> None:
     assert "SLACK" not in text
 
 
+def test_weekly_candidate_allows_changed_conference_catalogs() -> None:
+    text = (WORKFLOWS / "collect-weekly.yml").read_text(encoding="utf-8")
+
+    package_step = text.split("- name: Package changed generated files", 1)[1].split(
+        "- name: Upload generated candidate", 1
+    )[0]
+    assert "for papers in docs/*/papers.json; do" in package_step
+    assert 'includes+=("$papers")' in package_step
+
+    promote_step = text.split("- name: Validate and promote from the latest develop tip", 1)[1]
+    assert '-name papers.json -type f -print0' in promote_step
+    assert 'allowed+=("${papers#"$CANDIDATE_DIR/"}")' in promote_step
+
+
 def test_pypi_workflow_is_build_only() -> None:
     data = _load("publish.yml")
     trigger = _on(data)
