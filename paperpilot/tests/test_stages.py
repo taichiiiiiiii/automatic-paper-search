@@ -4,6 +4,9 @@ from __future__ import annotations
 
 import asyncio
 from datetime import date, timedelta
+from pathlib import Path
+
+import yaml
 
 from paperpilot.models import Paper
 from paperpilot.pipeline.stage_collect import collect
@@ -194,3 +197,65 @@ def test_metric_score_weights_combine_signals():
     )
     # 100*3 + 50*2 + 20*0.5 = 410
     assert out[0].total_score == 410.0
+
+
+def test_metric_score_require_follow_match_off_keeps_all():
+    papers = [_mk_paper("1"), _mk_paper("2")]
+    papers[0].follow_score = 100.0
+    papers[1].follow_score = 0.0
+    papers[1].keyword_score = 5.0  # only non-follow paper has any score
+    out = metric_score(
+        papers,
+        signals=[],
+        weights={"follow": 1.0, "keyword": 1.0},
+        top_n=10,
+        require_follow_match=False,
+    )
+    # Default behavior unchanged: both papers pass through.
+    assert len(out) == 2
+
+
+def test_metric_score_require_follow_match_drops_non_matches():
+    papers = [_mk_paper("1"), _mk_paper("2")]
+    papers[0].follow_score = 100.0  # followed author
+    papers[1].follow_score = 0.0  # not followed, but has a keyword hit
+    papers[1].keyword_score = 20.0
+    out = metric_score(
+        papers,
+        signals=[],
+        weights={"follow": 1.0, "keyword": 1.0},
+        top_n=10,
+        require_follow_match=True,
+    )
+    assert [p.title for p in out] == ["Paper 1"]
+
+
+def test_metric_score_require_follow_match_with_empty_watchlist_drops_everything():
+    # No signal ever set follow_score, so it stays at the Paper default (0.0) —
+    # this is what happens with an empty follow_authors/follow_orgs watchlist.
+    papers = [_mk_paper("1"), _mk_paper("2")]
+    papers[0].keyword_score = 50.0
+    papers[1].keyword_score = 30.0
+    out = metric_score(
+        papers,
+        signals=[],
+        weights={"keyword": 1.0},
+        top_n=10,
+        require_follow_match=True,
+    )
+    assert out == []
+
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+
+
+def test_daily_watch_config_enables_require_follow_match():
+    config = yaml.safe_load((_REPO_ROOT / "paperpilot" / "config.daily-watch.yaml").read_text())
+    assert config["pipeline"]["require_follow_match"] is True
+
+
+def test_weekly_config_does_not_set_require_follow_match():
+    config = yaml.safe_load((_REPO_ROOT / "paperpilot" / "config.yaml").read_text())
+    # Absent (defaults to False in metric_score) or explicitly False — the
+    # weekly deep-survey must keep ranking every paper, not just follow hits.
+    assert not config.get("pipeline", {}).get("require_follow_match", False)

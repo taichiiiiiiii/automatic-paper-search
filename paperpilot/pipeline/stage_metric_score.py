@@ -18,6 +18,7 @@ def metric_score(
     signals: list[AbstractSignal],
     weights: dict[str, float],
     top_n: int,
+    require_follow_match: bool = False,
 ) -> list[Paper]:
     if not papers:
         return []
@@ -39,6 +40,13 @@ def metric_score(
             + p.author_score * float(weights.get("author", 0.0))
             + p.keyword_score * float(weights.get("keyword", 0.0))
             + p.follow_score * float(weights.get("follow", 0.0))
+        )
+
+    if require_follow_match:
+        before = len(papers)
+        papers = [p for p in papers if p.follow_score > 0]
+        logger.info(
+            "stage2: require_follow_match kept %d/%d papers", len(papers), before
         )
 
     papers.sort(key=lambda p: p.total_score, reverse=True)

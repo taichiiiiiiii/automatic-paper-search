@@ -58,6 +58,10 @@ weights:
 pipeline:
   stage2_top_n: 10           # small batch — only the day's hits
   stage4_top_n: 10
+  # Fail-closed: drop any paper with follow_score == 0 before ranking, so an
+  # empty/misconfigured watchlist (see profile.follow_authors below) yields
+  # zero alerts instead of silently falling back to generic keyword matches.
+  require_follow_match: true
 
 # ===== LLM (Stage 4) disabled for daily runs (cost / latency) =====
 llm:

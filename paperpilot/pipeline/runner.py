@@ -240,6 +240,7 @@ class PipelineRunner:
             signals=self.signals,
             weights=self.config.get("weights", {}),
             top_n=int(pipe_cfg.get("stage2_top_n", 30)),
+            require_follow_match=bool(pipe_cfg.get("require_follow_match", False)),
         )
         s2 = len(papers)
 
