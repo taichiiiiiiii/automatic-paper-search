@@ -259,3 +259,96 @@ def test_weekly_config_does_not_set_require_follow_match():
     # Absent (defaults to False in metric_score) or explicitly False — the
     # weekly deep-survey must keep ranking every paper, not just follow hits.
     assert not config.get("pipeline", {}).get("require_follow_match", False)
+
+
+def test_collect_records_s2_outage_as_failure_not_empty_success():
+    """Regression test (closes #387): a real S2Source HTTP outage must
+    surface through stage_collect as sources_status["s2"]["ok"] == False,
+    not as a misleadingly-successful "s2 returned 0 papers" — otherwise an
+    outage is indistinguishable from a genuinely quiet day in
+    run_history.jsonl."""
+    from unittest.mock import patch as mock_patch
+
+    from paperpilot.sources.s2_source import S2Source
+
+    s2 = S2Source({"enabled": True, "delay_seconds": 0})
+    with mock_patch(
+        "paperpilot.sources.s2_source.request_with_retry", return_value=None
+    ):
+        result, _since, status = asyncio.run(
+            collect([s2], keywords=["x"], categories=[], days_back=7, max_results_per_keyword=10)
+        )
+    assert result == []
+    assert status["s2"]["ok"] is False
+    assert "s2 fetch failed for all" in (status["s2"].get("error") or "")
+
+
+def test_collect_records_arxiv_outage_as_failure_not_empty_success():
+    """Regression test (closes #387 follow-up): the same masking pattern
+    existed for ArxivSource — a real client outage (all keywords failing)
+    must surface through stage_collect as sources_status["arxiv"]["ok"] ==
+    False, not a misleadingly-successful "arxiv returned 0 papers"."""
+    from unittest.mock import patch as mock_patch
+
+    from paperpilot.sources.arxiv_source import ArxivSource
+
+    arxiv_src = ArxivSource({"enabled": True, "delay_seconds": 0})
+
+    def _boom(*args, **kwargs):
+        raise RuntimeError("arxiv client exploded")
+
+    with mock_patch.object(arxiv_src._client, "results", side_effect=_boom):
+        result, _since, status = asyncio.run(
+            collect(
+                [arxiv_src], keywords=["x"], categories=[], days_back=7, max_results_per_keyword=10
+            )
+        )
+    assert result == []
+    assert status["arxiv"]["ok"] is False
+    assert "arxiv fetch failed for all" in (status["arxiv"].get("error") or "")
+
+
+def test_collect_keeps_arxiv_partial_success_as_ok_true():
+    """Regression test (closes #387 follow-up): the claimed
+    partial-success behavior (one keyword fails, another succeeds) must
+    hold through the REAL collect() path, not just ArxivSource.fetch()
+    directly — sources_status["arxiv"]["ok"] must be True (this is not an
+    outage) and the successful keyword's real paper must be present."""
+    from datetime import datetime, timezone
+    from types import SimpleNamespace
+    from unittest.mock import patch as mock_patch
+
+    from paperpilot.sources.arxiv_source import ArxivSource
+
+    arxiv_src = ArxivSource({"enabled": True, "delay_seconds": 0})
+    good_result = SimpleNamespace(
+        title="Good Paper",
+        authors=[SimpleNamespace(name="Alice")],
+        summary="abs",
+        entry_id="http://arxiv.org/abs/2604.00001",
+        published=datetime(2026, 4, 1, tzinfo=timezone.utc),
+        get_short_id=lambda: "2604.00001",
+        doi=None,
+        pdf_url="http://pdf",
+        categories=["cs.LG"],
+        comment=None,
+    )
+
+    def fake_results(search):
+        if "bad" in search.query:
+            raise RuntimeError("boom")
+        return iter([good_result])
+
+    with mock_patch.object(arxiv_src._client, "results", side_effect=fake_results):
+        result, _since, status = asyncio.run(
+            collect(
+                [arxiv_src],
+                keywords=["bad", "good"],
+                categories=[],
+                days_back=3000,  # ensure the fixed 2026-04-01 date qualifies
+                max_results_per_keyword=10,
+            )
+        )
+    assert status["arxiv"]["ok"] is True
+    assert len(result) == 1
+    assert result[0].title == "Good Paper"

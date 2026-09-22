@@ -27,6 +27,19 @@ def test_resolve_defaults_for_other_conference():
     # Human-readable venue label flows into the title for Google Sheet naming
     assert "NEURIPS 2025" in title
 
+
+def test_resolve_defaults_rejects_path_traversal_conference():
+    """Regression test (closes #390 follow-up): a malicious --conference
+    value would otherwise let sync_to_sheets read an arbitrary local CSV
+    file (via path traversal) and upload its contents to Google Sheets —
+    an exfiltration risk, not just a local write. Must be rejected before
+    resolve_defaults() ever builds the read path."""
+    import pytest
+
+    for bad in ("../../etc/passwd", "..", "iclr/../../escape", ""):
+        with pytest.raises(ValueError):
+            s2s.resolve_defaults(bad)
+
 # ---- load_rows ----
 
 

@@ -394,3 +394,20 @@ def test_no_rule_fires_on_generic_prose() -> None:
     )
     tags = bsc.classify_tags("", generic)
     assert tags == [], f"rules fired on generic prose: {tags}"
+
+
+def test_main_rejects_path_traversal_conference_before_any_io(monkeypatch):
+    """Regression test (closes #390 follow-up): --conference is
+    path-joined into `output/<conference>/`; a malicious value must be
+    rejected before build() runs (no directory read/CSV discovery)."""
+    import sys
+    from unittest.mock import patch
+
+    called = []
+    monkeypatch.setattr(bsc, "build", lambda **kw: called.append(kw))
+    with patch.object(
+        sys, "argv", ["build_summary_csv.py", "--conference", "../../etc/passwd"]
+    ):
+        with pytest.raises(ValueError):
+            bsc.main()
+    assert called == []

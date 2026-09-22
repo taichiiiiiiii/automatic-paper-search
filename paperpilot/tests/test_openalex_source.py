@@ -6,6 +6,8 @@ from datetime import date, timedelta
 from types import SimpleNamespace
 from unittest.mock import patch
 
+import pytest
+
 from paperpilot.sources.openalex_source import OpenAlexSource
 
 
@@ -96,14 +98,42 @@ def test_fetch_drops_before_since_date():
     assert "new" in papers[0].url
 
 
-def test_fetch_http_failure_returns_empty():
+def test_fetch_raises_when_every_keyword_fails():
+    """Regression test (closes #399): if EVERY keyword's HTTP request
+    fails, this is an outage — fetch() must raise so Stage 0 records
+    sources_status["openalex"]["ok"] = False, not silently return []
+    (which would be indistinguishable from "genuinely 0 new papers this
+    run"). Mirrors the arxiv/S2 fix in #387."""
     src = OpenAlexSource({"enabled": True, "delay_seconds": 0})
     with patch(
         "paperpilot.sources.openalex_source.request_with_retry",
         return_value=_resp(500),
     ):
-        papers = src.fetch(keywords=["x"], categories=[], since_date=date.today(), max_results=5)
-    assert papers == []
+        with pytest.raises(RuntimeError, match="openalex fetch failed for all"):
+            src.fetch(keywords=["x"], categories=[], since_date=date.today(), max_results=5)
+
+
+def test_fetch_keeps_partial_results_when_only_some_keywords_fail_via_http():
+    """A per-keyword HTTP failure alongside at least one success is NOT an
+    outage worth failing the whole source over — the successful keyword's
+    real papers must still be returned, not discarded."""
+    src = OpenAlexSource({"enabled": True, "delay_seconds": 0})
+    today = date.today()
+    good_work = _openalex_work(work_id="W1", title="Good Paper", pub_date=today.isoformat())
+
+    def _fake_request(method, url, params=None, **kw):
+        if params and params.get("search") == "bad":
+            return _resp(500)
+        return _resp(200, {"results": [good_work]})
+
+    with patch(
+        "paperpilot.sources.openalex_source.request_with_retry",
+        side_effect=_fake_request,
+    ):
+        papers = src.fetch(["bad", "good"], [], today - timedelta(days=7), 10)
+
+    assert len(papers) == 1
+    assert papers[0].title == "Good Paper"
 
 
 def test_polite_pool_email_added_to_mailto():
@@ -140,6 +170,156 @@ def test_abstract_inverted_index_preserves_word_order():
     inverted = {"Fast": [0, 3], "and": [1], "reliable": [2]}
     out = OpenAlexSource._rehydrate_abstract(inverted)
     assert out == "Fast and reliable Fast"
+
+
+def test_abstract_inverted_index_negative_position_discards_whole_abstract():
+    """Regression test (closes #398): a malformed negative position must
+    not raise. It degrades the ENTIRE abstract to "" (not a partial
+    abstract with just that token dropped) — a silently incomplete
+    abstract is riskier than an explicit "no abstract" state, since
+    downstream keyword/exclusion/embedding/LLM stages treat the abstract
+    as authoritative text."""
+    inverted = {"Fast": [0], "corrupt": [-1], "reliable": [1]}
+    out = OpenAlexSource._rehydrate_abstract(inverted)
+    assert out == ""
+
+
+def test_abstract_inverted_index_non_integer_position_discards_whole_abstract():
+    """A string/float position (e.g. upstream sends "0" or 0.5) must be
+    rejected rather than crashing sorted() with mixed types."""
+    inverted = {"Fast": [0], "bad_str": ["1"], "reliable": [1]}
+    assert OpenAlexSource._rehydrate_abstract(inverted) == ""
+    inverted2 = {"Fast": [0], "bad_float": [2.5], "reliable": [1]}
+    assert OpenAlexSource._rehydrate_abstract(inverted2) == ""
+
+
+def test_abstract_inverted_index_bool_position_discards_whole_abstract():
+    """bool is a subclass of int in Python; a boolean position is still
+    nonsensical and must be rejected explicitly."""
+    inverted = {"Fast": [0], "boolean": [True]}
+    assert OpenAlexSource._rehydrate_abstract(inverted) == ""
+
+
+def test_abstract_inverted_index_non_list_positions_discards_whole_abstract():
+    """A token whose positions value isn't a list at all (e.g. a single
+    int, or a dict) must be rejected, not crash the `for idx in indices`
+    iteration or raise a confusing TypeError."""
+    inverted = {"Fast": [0], "malformed": 5}
+    assert OpenAlexSource._rehydrate_abstract(inverted) == ""
+
+
+def test_abstract_inverted_index_non_string_token_discards_whole_abstract():
+    """A non-string token key (structurally impossible from real JSON, but
+    defensive against a malformed Python dict passed directly) must be
+    rejected rather than crashing the final `" ".join(...)` on a
+    non-string element."""
+    inverted = {"Fast": [0], 123: [1]}
+    assert OpenAlexSource._rehydrate_abstract(inverted) == ""
+
+
+def test_abstract_inverted_index_wrong_top_level_type_returns_empty():
+    """A non-dict abstract_inverted_index (list/string/int) must not raise
+    when passed through the isinstance guard."""
+    assert OpenAlexSource._rehydrate_abstract([1, 2, 3]) == ""
+    assert OpenAlexSource._rehydrate_abstract("not-a-dict") == ""
+    assert OpenAlexSource._rehydrate_abstract(123) == ""
+
+
+def test_to_paper_survives_malformed_abstract_inverted_index():
+    """End-to-end (closes #398): a work item with a malformed abstract
+    inverted index must still produce a Paper (title/other fields intact,
+    abstract cleared to ""), not raise and abort the whole batch."""
+    src = OpenAlexSource({"enabled": True, "delay_seconds": 0})
+    today = date.today()
+    work = {
+        "id": "https://openalex.org/W1",
+        "title": "A Paper With Bad Abstract Data",
+        "publication_date": today.isoformat(),
+        "abstract_inverted_index": {"ok": [0], "bad": ["not-an-int"]},
+        "authorships": [],
+    }
+    paper = src._to_paper(work, "kw", today - timedelta(days=1))
+    assert paper is not None
+    assert paper.title == "A Paper With Bad Abstract Data"
+    assert paper.abstract == ""
+
+
+def test_search_skips_malformed_work_item_and_keeps_valid_siblings():
+    """Regression test (closes #398 follow-up): a malformed work item
+    anywhere in the results list (not just a bad abstract index — any
+    unexpected shape) must not abort processing of the other, valid work
+    items in the same response."""
+    src = OpenAlexSource({"enabled": True, "delay_seconds": 0})
+    today = date.today()
+    good_work = {
+        "id": "https://openalex.org/W1",
+        "title": "Good Paper",
+        "publication_date": today.isoformat(),
+        "authorships": [],
+    }
+    malformed_work = {
+        "id": "https://openalex.org/W2",
+        "title": 12345,  # .strip() on an int raises AttributeError
+        "publication_date": today.isoformat(),
+        "authorships": [],
+    }
+    body = {"results": [malformed_work, good_work]}
+    with patch(
+        "paperpilot.sources.openalex_source.request_with_retry",
+        return_value=_resp(200, body),
+    ):
+        papers = src._search("kw", today - timedelta(days=7), 10)
+    assert len(papers) == 1
+    assert papers[0].title == "Good Paper"
+
+
+def test_fetch_continues_to_next_keyword_after_search_failure(monkeypatch):
+    """Regression test (closes #398 follow-up): an unexpected exception
+    while processing one keyword's results must not prevent later
+    keywords in the same fetch() call from being processed."""
+    src = OpenAlexSource({"enabled": True, "delay_seconds": 0})
+
+    calls: list[str] = []
+
+    def _fake_search(keyword, since_date, max_results):
+        calls.append(keyword)
+        if keyword == "bad":
+            raise RuntimeError("boom")
+        return []
+
+    monkeypatch.setattr(src, "_search", _fake_search)
+    papers = src.fetch(["bad", "good"], [], date.today() - timedelta(days=7), 10)
+    assert papers == []
+    assert calls == ["bad", "good"]
+
+
+def test_fetch_survives_real_search_raising_for_one_keyword_via_http():
+    """Stronger integration test (closes #398 follow-up): unlike the test
+    above (which replaces _search() entirely), this exercises the REAL
+    _search()/HTTP-response path for both keywords — one keyword's
+    response is malformed at the response-body level (a list instead of a
+    dict, so `data.get("results")` itself raises inside _search, not just
+    a per-work-item issue), the other keyword's response is a normal valid
+    payload. The good keyword's real paper must still survive."""
+    src = OpenAlexSource({"enabled": True, "delay_seconds": 0})
+    today = date.today()
+    good_work = _openalex_work(work_id="W999", title="Good Paper", pub_date=today.isoformat())
+
+    def _fake_request(method, url, params=None, **kw):
+        if params and params.get("search") == "bad":
+            # Malformed at the response-body level: a list, not a dict —
+            # `data.get("results")` raises AttributeError inside _search.
+            return _resp(200, [1, 2, 3])
+        return _resp(200, {"results": [good_work]})
+
+    with patch(
+        "paperpilot.sources.openalex_source.request_with_retry",
+        side_effect=_fake_request,
+    ):
+        papers = src.fetch(["bad", "good"], [], today - timedelta(days=7), 10)
+
+    assert len(papers) == 1
+    assert papers[0].title == "Good Paper"
 
 
 def test_parse_pub_date_fallback_to_year():

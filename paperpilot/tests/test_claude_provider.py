@@ -43,8 +43,8 @@ def test_provider_with_api_key_is_enabled():
 def test_evaluate_batch_parses_json_array():
     papers = [_mk_paper("P1"), _mk_paper("P2")]
     eval_json = [
-        {"relevance": 5, "summary_ja": "必読", "reason": "革新", "tags": ["新手法"]},
-        {"relevance": 2, "summary_ja": "弱関連", "reason": "応用外", "tags": []},
+        {"index": 1, "relevance": 5, "summary_ja": "必読", "reason": "革新", "tags": ["新手法"]},
+        {"index": 2, "relevance": 2, "summary_ja": "弱関連", "reason": "応用外", "tags": []},
     ]
     body = _claude_body(json.dumps(eval_json))
 
@@ -71,7 +71,7 @@ def test_evaluate_batch_parses_json_array():
 def test_evaluate_batch_handles_markdown_fences():
     papers = [_mk_paper("P1")]
     wrapped = "```json\n" + json.dumps(
-        [{"relevance": 3, "summary_ja": "s", "reason": "r", "tags": []}]
+        [{"index": 1, "relevance": 3, "summary_ja": "s", "reason": "r", "tags": []}]
     ) + "\n```"
     body = _claude_body(wrapped)
     provider = ClaudeProvider({"enabled": True}, api_key="sk-ant-x")
@@ -82,6 +82,25 @@ def test_evaluate_batch_handles_markdown_fences():
         evals = provider.evaluate_batch(papers, profile="")
     assert evals[0] is not None
     assert evals[0].relevance == 3
+
+
+def test_evaluate_batch_matches_by_index_even_when_reordered():
+    """Regression test (closes #391): response array order must not
+    matter — only the "index" field determines the mapping."""
+    papers = [_mk_paper("P1"), _mk_paper("P2")]
+    eval_json = [
+        {"index": 2, "relevance": 2, "summary_ja": "s2", "reason": "r2", "tags": []},
+        {"index": 1, "relevance": 5, "summary_ja": "s1", "reason": "r1", "tags": []},
+    ]
+    body = _claude_body(json.dumps(eval_json))
+    provider = ClaudeProvider({"enabled": True}, api_key="sk-ant-x")
+    with patch(
+        "paperpilot.llm.claude_provider.request_with_retry",
+        return_value=_resp(200, body),
+    ):
+        evals = provider.evaluate_batch(papers, profile="")
+    assert evals[0] is not None and evals[0].relevance == 5  # P1
+    assert evals[1] is not None and evals[1].relevance == 2  # P2
 
 
 def test_evaluate_batch_api_failure():
@@ -126,7 +145,7 @@ def test_evaluate_batch_empty_input():
 
 def test_evaluate_batch_pads_missing_results():
     papers = [_mk_paper("P1"), _mk_paper("P2"), _mk_paper("P3")]
-    eval_json = [{"relevance": 4, "summary_ja": "", "reason": "", "tags": []}]
+    eval_json = [{"index": 1, "relevance": 4, "summary_ja": "", "reason": "", "tags": []}]
     body = _claude_body(json.dumps(eval_json))
     provider = ClaudeProvider({"enabled": True}, api_key="sk-ant-x")
     with patch(

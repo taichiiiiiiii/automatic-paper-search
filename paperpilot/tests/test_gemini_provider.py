@@ -48,8 +48,8 @@ def test_provider_has_api_key_enabled():
 def test_evaluate_batch_parses_json_array():
     papers = [_mk_paper("P1"), _mk_paper("P2")]
     eval_json = [
-        {"relevance": 4, "summary_ja": "s1", "reason": "r1", "tags": ["tag"]},
-        {"relevance": 2, "summary_ja": "s2", "reason": "r2", "tags": []},
+        {"index": 1, "relevance": 4, "summary_ja": "s1", "reason": "r1", "tags": ["tag"]},
+        {"index": 2, "relevance": 2, "summary_ja": "s2", "reason": "r2", "tags": []},
     ]
     body = _gemini_body(json.dumps(eval_json))
 
@@ -70,6 +70,25 @@ def test_evaluate_batch_parses_json_array():
     # Security: the key must NOT appear in URL or params (avoids proxy logs)
     assert "key=" not in url
     assert "key" not in (mock.call_args.kwargs.get("params") or {})
+
+
+def test_evaluate_batch_matches_by_index_even_when_reordered():
+    """Regression test (closes #391): response array order must not
+    matter — only the "index" field determines the mapping."""
+    papers = [_mk_paper("P1"), _mk_paper("P2")]
+    eval_json = [
+        {"index": 2, "relevance": 2, "summary_ja": "s2", "reason": "r2", "tags": []},
+        {"index": 1, "relevance": 4, "summary_ja": "s1", "reason": "r1", "tags": []},
+    ]
+    body = _gemini_body(json.dumps(eval_json))
+    provider = GeminiProvider({"enabled": True}, api_key="k")
+    with patch(
+        "paperpilot.llm.gemini_provider.request_with_retry",
+        return_value=_resp(200, body),
+    ):
+        evals = provider.evaluate_batch(papers, profile="")
+    assert evals[0] is not None and evals[0].relevance == 4  # P1
+    assert evals[1] is not None and evals[1].relevance == 2  # P2
 
 
 def test_evaluate_batch_api_failure():
@@ -96,7 +115,7 @@ def test_evaluate_batch_empty_candidates():
 
 def test_evaluate_batch_handles_markdown_fences():
     papers = [_mk_paper("P1")]
-    wrapped = "```json\n[{\"relevance\": 3, \"summary_ja\": \"x\", \"reason\": \"y\", \"tags\": []}]\n```"
+    wrapped = "```json\n[{\"index\": 1, \"relevance\": 3, \"summary_ja\": \"x\", \"reason\": \"y\", \"tags\": []}]\n```"
     body = _gemini_body(wrapped)
     provider = GeminiProvider({"enabled": True}, api_key="k")
     with patch(
@@ -127,7 +146,7 @@ def test_evaluate_batch_non_array_response():
 
 def test_evaluate_batch_missing_results_padded_with_none():
     papers = [_mk_paper("P1"), _mk_paper("P2"), _mk_paper("P3")]
-    eval_json = [{"relevance": 5, "summary_ja": "", "reason": "", "tags": []}]
+    eval_json = [{"index": 1, "relevance": 5, "summary_ja": "", "reason": "", "tags": []}]
     body = _gemini_body(json.dumps(eval_json))
     provider = GeminiProvider({"enabled": True}, api_key="k")
     with patch(

@@ -29,8 +29,8 @@ def _mk_paper(title: str) -> Paper:
 def test_evaluate_batch_parses_json_array():
     papers = [_mk_paper("Paper 1"), _mk_paper("Paper 2")]
     llm_json = [
-        {"relevance": 5, "summary_ja": "要約1", "reason": "必読", "tags": ["新手法"]},
-        {"relevance": 2, "summary_ja": "要約2", "reason": "弱関連", "tags": ["応用"]},
+        {"index": 1, "relevance": 5, "summary_ja": "要約1", "reason": "必読", "tags": ["新手法"]},
+        {"index": 2, "relevance": 2, "summary_ja": "要約2", "reason": "弱関連", "tags": ["応用"]},
     ]
     ollama_body = {"message": {"content": json.dumps(llm_json)}}
 
@@ -46,10 +46,32 @@ def test_evaluate_batch_parses_json_array():
     assert evals[1] is not None and evals[1].relevance == 2
 
 
+def test_evaluate_batch_matches_by_index_even_when_reordered():
+    """Regression test (closes #391): the model's response array order
+    must not matter — only the "index" field determines which paper each
+    evaluation belongs to."""
+    papers = [_mk_paper("Paper 1"), _mk_paper("Paper 2")]
+    llm_json = [
+        {"index": 2, "relevance": 2, "summary_ja": "要約2", "reason": "弱関連", "tags": []},
+        {"index": 1, "relevance": 5, "summary_ja": "要約1", "reason": "必読", "tags": []},
+    ]
+    ollama_body = {"message": {"content": json.dumps(llm_json)}}
+
+    provider = OllamaProvider({"enabled": True})
+    with patch(
+        "paperpilot.llm.ollama_provider.request_with_retry",
+        return_value=_resp(ollama_body),
+    ):
+        evals = provider.evaluate_batch(papers, profile="RAG")
+
+    assert evals[0] is not None and evals[0].relevance == 5  # Paper 1
+    assert evals[1] is not None and evals[1].relevance == 2  # Paper 2
+
+
 def test_evaluate_batch_handles_markdown_fences():
     papers = [_mk_paper("Paper 1")]
     wrapped = "```json\n" + json.dumps(
-        [{"relevance": 3, "summary_ja": "s", "reason": "r", "tags": []}]
+        [{"index": 1, "relevance": 3, "summary_ja": "s", "reason": "r", "tags": []}]
     ) + "\n```"
     ollama_body = {"message": {"content": wrapped}}
 
@@ -75,12 +97,15 @@ def test_evaluate_batch_returns_none_list_on_http_failure():
     assert evals == [None, None]
 
 
-def test_evaluate_batch_truncates_extra_results():
+def test_evaluate_batch_drops_out_of_range_index():
+    """Regression test (closes #391): an element whose index is out of
+    range for the requested batch (e.g. the model hallucinated an extra
+    paper) must be dropped, not misattributed to a real paper via
+    position."""
     papers = [_mk_paper("P1")]
-    # Model returns more elements than requested — only first is kept.
     llm_json = [
-        {"relevance": 4, "summary_ja": "a", "reason": "b", "tags": []},
-        {"relevance": 2, "summary_ja": "x", "reason": "y", "tags": []},
+        {"index": 1, "relevance": 4, "summary_ja": "a", "reason": "b", "tags": []},
+        {"index": 2, "relevance": 2, "summary_ja": "x", "reason": "y", "tags": []},
     ]
     ollama_body = {"message": {"content": json.dumps(llm_json)}}
 
@@ -98,7 +123,7 @@ def test_evaluate_batch_truncates_extra_results():
 def test_evaluate_batch_pads_missing_results():
     papers = [_mk_paper("P1"), _mk_paper("P2"), _mk_paper("P3")]
     # Model only returned 1 element — pad with None.
-    llm_json = [{"relevance": 5, "summary_ja": "a", "reason": "b", "tags": []}]
+    llm_json = [{"index": 1, "relevance": 5, "summary_ja": "a", "reason": "b", "tags": []}]
     ollama_body = {"message": {"content": json.dumps(llm_json)}}
 
     provider = OllamaProvider({"enabled": True})
@@ -111,6 +136,52 @@ def test_evaluate_batch_pads_missing_results():
     assert evals[0] is not None
     assert evals[1] is None
     assert evals[2] is None
+
+
+def test_evaluate_batch_drops_ambiguous_duplicate_index_entirely():
+    """Regression test (closes #391): if the model emits the same index
+    twice, that index is ambiguous and BOTH claimants are dropped (not
+    resolved by picking one) — silently picking a "winner" would still
+    risk attaching the wrong evaluation. The other, unambiguous paper is
+    unaffected."""
+    papers = [_mk_paper("P1"), _mk_paper("P2")]
+    llm_json = [
+        {"index": 1, "relevance": 5, "summary_ja": "first", "reason": "b", "tags": []},
+        {"index": 1, "relevance": 1, "summary_ja": "duplicate", "reason": "c", "tags": []},
+        {"index": 2, "relevance": 3, "summary_ja": "d", "reason": "e", "tags": []},
+    ]
+    ollama_body = {"message": {"content": json.dumps(llm_json)}}
+
+    provider = OllamaProvider({"enabled": True})
+    with patch(
+        "paperpilot.llm.ollama_provider.request_with_retry",
+        return_value=_resp(ollama_body),
+    ):
+        evals = provider.evaluate_batch(papers, profile="")
+    assert evals[0] is None
+    assert evals[1] is not None
+    assert evals[1].summary_ja == "d"
+    assert evals[1] is not None
+    assert evals[1].relevance == 3
+
+
+def test_evaluate_batch_drops_non_integer_or_missing_index():
+    """An element missing "index" entirely, or with a non-integer index,
+    must be dropped rather than raising or being positionally matched."""
+    papers = [_mk_paper("P1"), _mk_paper("P2")]
+    llm_json = [
+        {"relevance": 5, "summary_ja": "no index field", "reason": "b", "tags": []},
+        {"index": "two", "relevance": 3, "summary_ja": "bad index type", "reason": "c", "tags": []},
+    ]
+    ollama_body = {"message": {"content": json.dumps(llm_json)}}
+
+    provider = OllamaProvider({"enabled": True})
+    with patch(
+        "paperpilot.llm.ollama_provider.request_with_retry",
+        return_value=_resp(ollama_body),
+    ):
+        evals = provider.evaluate_batch(papers, profile="")
+    assert evals == [None, None]
 
 
 def test_evaluate_batch_non_array_response():

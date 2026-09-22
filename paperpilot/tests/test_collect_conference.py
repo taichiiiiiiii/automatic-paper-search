@@ -10,8 +10,12 @@ other-venue) carry through here.
 from __future__ import annotations
 
 import csv as _csv
+import sys
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import patch
+
+import pytest
 
 from paperpilot.scripts import collect_conference as cc
 
@@ -146,3 +150,122 @@ def test_write_outputs_clears_stale_oral_md_on_empty_recollection(tmp_path: Path
         date="2026-06-28",
     )
     assert not stale.exists()
+
+
+def test_write_outputs_rejects_path_traversal_conference_slug(tmp_path: Path):
+    """Regression test (closes #390): a malicious --conference value must
+    be rejected outright, never used to escape the output root."""
+    rows, orals = cc.build_rows(
+        [_result("Paper One", "Accepted to CVPR 2026", "2604.00009")], "CVPR"
+    )
+    for bad in ("../../etc/passwd", "..", "/etc/passwd", "cvpr/../../escape", ""):
+        with pytest.raises(ValueError):
+            cc.write_outputs(bad, rows, orals, output_root=tmp_path, date="2026-06-28")
+    # Nothing must have been written inside the root...
+    assert list(tmp_path.iterdir()) == []
+    # ...and prove the "outside" claim concretely: compute exactly what the
+    # unvalidated old code (`root / conference`) would have resolved to for
+    # one representative traversal string, and assert nothing exists there.
+    escape_target = (tmp_path / "../../etc/passwd").resolve()
+    assert not escape_target.exists()
+
+
+def test_main_cli_rejects_malicious_conference_argv(tmp_path: Path, monkeypatch):
+    """Regression test (closes #390 follow-up): the actual CLI entry point
+    (main(), not just write_outputs() called directly) must refuse a
+    malicious --conference argv value before any output is written."""
+    monkeypatch.setattr(cc, "PROJECT", tmp_path)
+    fake_result = _result("Paper One", "Accepted to CVPR 2026", "2604.00009")
+    with patch.object(cc, "fetch_results", return_value=[fake_result]):
+        with patch.object(
+            sys,
+            "argv",
+            [
+                "collect_conference.py",
+                "--conference",
+                "../../etc/passwd",
+                "--venue",
+                "CVPR",
+                "--query",
+                'co:"CVPR 2026"',
+            ],
+        ):
+            with pytest.raises(ValueError):
+                cc.main()
+    assert not (tmp_path / "output").exists()
+
+
+def test_main_writes_nothing_when_zero_papers_matched(tmp_path: Path, monkeypatch):
+    """Regression test (closes #389): when 0 papers match, main() must NOT
+    call write_outputs() at all — the old ordering wrote a header-only CSV
+    for today's date first and checked `if not rows` after, silently
+    overwriting/masking an existing good catalog file from an earlier run
+    on the same day."""
+    monkeypatch.setattr(cc, "PROJECT", tmp_path)
+    # A result whose comment doesn't match VenueSignal's acceptance pattern
+    # for CVPR -> build_rows() filters it out -> rows == [].
+    non_matching = _result("Irrelevant Paper", "Just a preprint, not accepted anywhere", "2604.00099")
+    with patch.object(cc, "fetch_results", return_value=[non_matching]):
+        with patch.object(
+            sys,
+            "argv",
+            [
+                "collect_conference.py",
+                "--conference",
+                "cvpr-2026",
+                "--venue",
+                "CVPR",
+                "--query",
+                'co:"CVPR 2026"',
+            ],
+        ):
+            rc = cc.main()
+    assert rc == 1
+    # No output/ directory (and thus no papers_<date>.csv) must exist.
+    assert not (tmp_path / "output").exists()
+
+
+def test_main_does_not_overwrite_existing_same_day_csv_on_zero_matches(
+    tmp_path: Path, monkeypatch
+):
+    """Regression test (closes #389): a same-day re-run that matches 0
+    papers (e.g. a transient VenueSignal/query issue) must leave an
+    existing good papers_<date>.csv from an earlier run untouched."""
+    monkeypatch.setattr(cc, "PROJECT", tmp_path)
+    today = cc.datetime.now(cc.timezone.utc).strftime("%Y-%m-%d")
+    existing_dir = tmp_path / "output" / "cvpr-2026"
+    existing_dir.mkdir(parents=True)
+    existing_csv = existing_dir / f"papers_{today}.csv"
+    existing_csv.write_text("title,authors\nReal Paper,Alice\n", encoding="utf-8")
+
+    non_matching = _result("Irrelevant Paper", "Just a preprint", "2604.00099")
+    with patch.object(cc, "fetch_results", return_value=[non_matching]):
+        with patch.object(
+            sys,
+            "argv",
+            [
+                "collect_conference.py",
+                "--conference",
+                "cvpr-2026",
+                "--venue",
+                "CVPR",
+                "--query",
+                'co:"CVPR 2026"',
+            ],
+        ):
+            rc = cc.main()
+    assert rc == 1
+    assert existing_csv.read_text(encoding="utf-8") == "title,authors\nReal Paper,Alice\n"
+
+
+def test_write_outputs_rejects_uppercase_or_space_conference_slug(tmp_path: Path):
+    """A conference value that isn't already slug-shaped is rejected, not
+    silently coerced (coercion would mask an operator typo)."""
+    import pytest
+
+    rows, orals = cc.build_rows(
+        [_result("Paper One", "Accepted to CVPR 2026", "2604.00009")], "CVPR"
+    )
+    for bad in ("CVPR-2026", "cvpr 2026", "cvpr_2026", "-cvpr-2026", "cvpr-2026-"):
+        with pytest.raises(ValueError):
+            cc.write_outputs(bad, rows, orals, output_root=tmp_path, date="2026-06-28")

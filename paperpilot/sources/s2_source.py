@@ -54,11 +54,28 @@ class S2Source(AbstractSource):
         # S2 ignores arXiv-style categories; we keep the param for interface
         # symmetry. Category filtering happens in Stage 1.
         papers: list[Paper] = []
+        failures: list[str] = []
         for kw in keywords:
             self._limiter.wait()
-            batch = self._search(kw, since_date, max_results)
+            try:
+                batch = self._search(kw, since_date, max_results)
+            except Exception as e:
+                # Fail-safe: one keyword failing (S2's free tier throttles
+                # aggressively, so a single 429 is routine) must not discard
+                # the papers other keywords already returned.
+                logger.warning("s2: keyword '%s' failed: %s", kw, e)
+                failures.append(kw)
+                continue
             logger.info("s2: keyword '%s' returned %d papers", kw, len(batch))
             papers.extend(batch)
+
+        if keywords and len(failures) == len(keywords):
+            # Every keyword failed: this is an outage, not "genuinely 0 new
+            # papers today". Raise so Stage 0's existing per-source failure
+            # path (stage_collect.py) records sources_status["s2"]["ok"] =
+            # False. Matches the arxiv/openalex contract exactly.
+            raise RuntimeError(f"s2 fetch failed for all {len(keywords)} keyword(s)")
+
         logger.info("s2: collected %d papers (pre-dedup)", len(papers))
         return papers
 
@@ -76,12 +93,15 @@ class S2Source(AbstractSource):
             "GET", f"{S2_BASE}/paper/search", params=params, headers=self._headers()
         )
         if resp is None or resp.status_code != 200:
-            logger.warning(
-                "s2: search failed for '%s' (status=%s)",
-                keyword,
-                getattr(resp, "status_code", None),
-            )
-            return []
+            status = getattr(resp, "status_code", None)
+            logger.warning("s2: search failed for '%s' (status=%s)", keyword, status)
+            # Raise (rather than return []) so this reaches Stage 0's
+            # existing per-source failure path (stage_collect.py's
+            # asyncio.gather(..., return_exceptions=True)) and is recorded
+            # as sources_status[name]["ok"] = False. Returning [] here would
+            # make an S2 outage indistinguishable from "genuinely 0 new
+            # papers this run" in run_history.jsonl.
+            raise RuntimeError(f"s2 search failed for '{keyword}' (status={status})")
         data = resp.json() or {}
         results: list[dict[str, Any]] = data.get("data") or []
 
@@ -112,6 +132,9 @@ class S2Source(AbstractSource):
 
         authors_raw = item.get("authors") or []
         authors = [a.get("name") for a in authors_raw if a and a.get("name")]
+        # Match CitationSignal's semantics (authors[0], not "any author with
+        # an id") so both paths agree on what "first author" means.
+        first_author_id = (authors_raw[0] or {}).get("authorId") if authors_raw else None
 
         url = item.get("url") or f"https://www.semanticscholar.org/paper/{item.get('paperId')}"
 
@@ -129,6 +152,7 @@ class S2Source(AbstractSource):
             comment=None,
             venue=item.get("venue") or None,
             matched_keywords=[matched_kw],
+            first_author_id=first_author_id,
         )
 
     @staticmethod

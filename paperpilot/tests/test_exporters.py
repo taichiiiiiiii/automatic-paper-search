@@ -9,6 +9,8 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
+import pytest
+
 from paperpilot.exporters import CSVExporter, JSONExporter, SlackExporter
 from paperpilot.models import Paper
 
@@ -261,13 +263,16 @@ def test_slack_posts_formatted_message():
 
 
 def test_slack_handles_failure():
+    """A non-2xx webhook response is a real failure: export() raises so the
+    pipeline runner records it in run_history.errors (closes #386), rather
+    than silently swallowing it and returning None."""
     exp = SlackExporter({"enabled": True}, webhook_url="http://hook")
     resp = SimpleNamespace(status_code=500, json=lambda: {})
     with patch(
         "paperpilot.exporters.slack_exporter.request_with_retry", return_value=resp
     ):
-        result = exp.export(_sample_papers())
-    assert result is None
+        with pytest.raises(RuntimeError, match="slack post failed"):
+            exp.export(_sample_papers())
 
 
 def test_slack_respects_max_items():
@@ -284,3 +289,94 @@ def test_slack_respects_max_items():
     assert body.count("\n2. ") == 1
     assert body.count("\n3. ") == 1
     assert body.count("\n4. ") == 0
+
+
+def test_slack_escapes_mrkdwn_special_chars_in_title_and_venue():
+    """Regression test (closes #397): a paper title/venue containing Slack
+    mrkdwn special characters must not break the <url|text> link syntax or
+    inject formatting/fake links."""
+    malicious = [
+        Paper(
+            title="A <malicious|link> & <https://evil.example|click here>",
+            authors=["A"],
+            abstract="abs",
+            url="http://x/1?a=1&b=2",
+            published_date=date.today(),
+            source="arxiv",
+            arxiv_id="2604.001",
+            total_score=100.0,
+            venue="<Fake Venue>",
+        )
+    ]
+    exp = SlackExporter({"enabled": True}, webhook_url="http://hook")
+    resp = SimpleNamespace(status_code=200, json=lambda: {})
+    with patch(
+        "paperpilot.exporters.slack_exporter.request_with_retry", return_value=resp
+    ) as mock:
+        exp.export(malicious)
+    body = mock.call_args.kwargs["json_body"]["text"]
+    assert "<malicious|link>" not in body
+    assert "<https://evil.example|click here>" not in body
+    assert "<Fake Venue>" not in body
+    assert "&lt;malicious|link&gt;" in body
+    assert "&lt;Fake Venue&gt;" in body
+    assert "&amp;" in body  # the raw "&" in the title/url got escaped too
+
+
+def test_slack_url_control_sequence_injection_is_neutralized():
+    """Regression test (closes #397 follow-up): escaping &/</> alone does
+    not stop Slack's <...|...> control-sequence syntax — the FIRST
+    character inside the brackets (!, @, #) selects @here / user-mention /
+    channel-mention regardless of escaping. A non-http(s) paper.url must
+    never be placed in that position; the exporter must fall back to plain
+    text instead of building a link."""
+    malicious_urls = ["!here", "@U0123456789", "#C0123456789", "javascript:alert(1)"]
+    papers = [
+        Paper(
+            title=f"Paper {i}",
+            authors=["A"],
+            abstract="abs",
+            url=u,
+            published_date=date.today(),
+            source="arxiv",
+            arxiv_id=f"2604.00{i}",
+            total_score=100.0,
+        )
+        for i, u in enumerate(malicious_urls)
+    ]
+    exp = SlackExporter({"enabled": True}, webhook_url="http://hook")
+    resp = SimpleNamespace(status_code=200, json=lambda: {})
+    with patch(
+        "paperpilot.exporters.slack_exporter.request_with_retry", return_value=resp
+    ) as mock:
+        exp.export(papers)
+    body = mock.call_args.kwargs["json_body"]["text"]
+    for u in malicious_urls:
+        assert f"<{u}|" not in body
+    # Titles must still render as plain text (no link wrapper at all).
+    for i in range(len(malicious_urls)):
+        assert f"Paper {i}" in body
+
+
+def test_slack_legitimate_https_url_still_renders_as_link():
+    """A normal http(s) url must still produce the <url|title> link."""
+    papers = [
+        Paper(
+            title="Legit Paper",
+            authors=["A"],
+            abstract="abs",
+            url="https://arxiv.org/abs/2604.00001",
+            published_date=date.today(),
+            source="arxiv",
+            arxiv_id="2604.00001",
+            total_score=100.0,
+        )
+    ]
+    exp = SlackExporter({"enabled": True}, webhook_url="http://hook")
+    resp = SimpleNamespace(status_code=200, json=lambda: {})
+    with patch(
+        "paperpilot.exporters.slack_exporter.request_with_retry", return_value=resp
+    ) as mock:
+        exp.export(papers)
+    body = mock.call_args.kwargs["json_body"]["text"]
+    assert "<https://arxiv.org/abs/2604.00001|Legit Paper>" in body

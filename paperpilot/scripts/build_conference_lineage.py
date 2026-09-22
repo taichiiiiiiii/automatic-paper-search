@@ -31,6 +31,7 @@ from typing import Any
 
 from ..identity.source_ids import IdentityError, identity_from_url, normalize_alias
 from ..utils.http import request_with_retry
+from ._common import validate_conference_slug
 from ._lineage_contract import (
     LINEAGE_ARTIFACT_VERSION,
     canonical_json_sha256,
@@ -509,6 +510,7 @@ def main() -> int:
     ap.add_argument("--email", default=None, help="OpenAlex polite-pool email")
     args = ap.parse_args()
 
+    validate_conference_slug(args.conference)
     display = args.display or args.conference.upper().replace("-", " ")
     orals = load_orals(args.conference, args.max_orals)
     if not orals:

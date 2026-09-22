@@ -29,7 +29,7 @@ import logging
 import os
 from pathlib import Path
 
-from paperpilot.scripts._common import slug_to_venue_label
+from paperpilot.scripts._common import slug_to_venue_label, validate_conference_slug
 
 logger = logging.getLogger(__name__)
 
@@ -50,6 +50,7 @@ def resolve_defaults(conference: str) -> tuple[Path, str]:
     can't drift in how they name ICLR vs NeurIPS. Pass --title
     explicitly when you need preserved acronym casing.
     """
+    validate_conference_slug(conference)
     csv_path = ROOT / "output" / conference / "summary.csv"
     title = f"PaperPilot — {slug_to_venue_label(conference)} Summary"
     return csv_path, title

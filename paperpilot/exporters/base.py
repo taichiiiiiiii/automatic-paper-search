@@ -16,4 +16,10 @@ class AbstractExporter(ABC):
 
     @abstractmethod
     def export(self, papers: list[Paper]) -> str | None:
-        """Persist papers. Returns the output path or None."""
+        """Persist papers. Returns the output path/name, or None for a no-op
+        (disabled, unconfigured, or nothing to export — never a failure).
+
+        A real failure (network error, non-2xx response, SMTP error, etc.)
+        must be raised, not swallowed into a None return: PipelineRunner
+        catches it per-exporter and records it in run_history.errors so it
+        stays visible while the pipeline still continues (fail-safe)."""

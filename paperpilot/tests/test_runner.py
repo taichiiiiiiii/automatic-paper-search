@@ -134,6 +134,107 @@ def test_runner_handles_source_failure(tmp_path: Path):
     assert any("network down" in e for e in result.errors)
 
 
+def test_runner_records_exporter_failure_in_errors(tmp_path: Path):
+    """Regression test (closes #386): a real exporter failure (Slack webhook
+    returning non-2xx, injected below) must land in result.errors /
+    run_history, not be silently swallowed. CSV/JSON stay enabled and must
+    still succeed alongside it, proving the pipeline continues past the
+    failing exporter rather than aborting."""
+    from types import SimpleNamespace
+    from unittest.mock import patch as mock_patch
+
+    config = _build_config(tmp_path)
+    config["output"]["slack"] = {"enabled": True, "max_items": 10}
+    config["env"]["slack_webhook_url"] = "https://hooks.slack.com/services/T/B/X"
+    runner = PipelineRunner(config)
+
+    papers = _fake_arxiv_papers()
+
+    async def _fake_afetch(*args, **kwargs):
+        return papers
+
+    bad_resp = SimpleNamespace(status_code=500, json=lambda: {})
+    with patch.object(runner.sources[0], "afetch", side_effect=_fake_afetch):
+        with mock_patch(
+            "paperpilot.exporters.slack_exporter.request_with_retry",
+            return_value=bad_resp,
+        ):
+            result = asyncio.run(runner.run())
+
+    assert any("export:slack" in e for e in result.errors)
+    # The pipeline must still complete and other exporters must still run.
+    assert result.output_count == 3
+    csv_files = list(tmp_path.glob("papers_*.csv"))
+    assert csv_files
+
+
+def test_runner_skips_seen_ids_when_all_exporters_fail(tmp_path: Path):
+    """Regression test (closes #400): if every enabled exporter raises, the
+    user never actually received these papers. Marking them seen anyway
+    would make stage_rule_filter's ¬seen_ids filter drop them forever on
+    every later run — a silent, permanent loss indistinguishable from
+    "already delivered"."""
+    config = _build_config(tmp_path)
+    runner = PipelineRunner(config)
+    papers = _fake_arxiv_papers()
+
+    async def _fake_afetch(*args, **kwargs):
+        return papers
+
+    for exp in runner.exporters:
+        exp.export = lambda _papers, _name=exp.name: (_ for _ in ()).throw(
+            RuntimeError(f"{_name} boom")
+        )
+
+    with patch.object(runner.sources[0], "afetch", side_effect=_fake_afetch):
+        result = asyncio.run(runner.run())
+
+    assert result.output_count == 3
+    assert any("boom" in e for e in result.errors)
+    seen_path = tmp_path / "seen_ids.json"
+    if seen_path.exists():
+        import json
+
+        with seen_path.open() as f:
+            seen = json.load(f)
+        assert seen == {}
+    # A second run with a working exporter must still see these papers
+    # (they were never actually marked seen).
+    config2 = _build_config(tmp_path)
+    runner2 = PipelineRunner(config2)
+    with patch.object(runner2.sources[0], "afetch", side_effect=_fake_afetch):
+        second = asyncio.run(runner2.run())
+    assert second.output_count == 3
+
+
+def test_runner_marks_seen_when_at_least_one_exporter_succeeds(tmp_path: Path):
+    """A partial exporter failure (at least one delivery channel worked)
+    must NOT block seen_ids from being marked — the papers were genuinely
+    delivered through the surviving exporter, so re-sending them next run
+    would be a duplicate notification, not a recovery."""
+    config = _build_config(tmp_path)
+    runner = PipelineRunner(config)
+    papers = _fake_arxiv_papers()
+
+    async def _fake_afetch(*args, **kwargs):
+        return papers
+
+    failing_exp = runner.exporters[0]
+    failing_exp.export = lambda _papers: (_ for _ in ()).throw(RuntimeError("boom"))
+
+    with patch.object(runner.sources[0], "afetch", side_effect=_fake_afetch):
+        result = asyncio.run(runner.run())
+
+    assert result.output_count == 3
+    seen_path = tmp_path / "seen_ids.json"
+    assert seen_path.exists()
+    import json
+
+    with seen_path.open() as f:
+        seen = json.load(f)
+    assert len(seen) == 3
+
+
 def test_build_llm_provider_ollama(tmp_path: Path):
     """runner._build_llm_provider picks the Ollama backend when configured."""
     from paperpilot.llm.ollama_provider import OllamaProvider

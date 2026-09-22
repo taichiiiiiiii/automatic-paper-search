@@ -26,7 +26,12 @@ from ..models import Paper
 from ..utils.http import request_with_retry
 from ..utils.json_parser import parse_llm_response
 from ..utils.logger import get_logger
-from .base import AbstractLLMProvider, PaperEvaluation, build_evaluation_prompt
+from .base import (
+    AbstractLLMProvider,
+    PaperEvaluation,
+    build_evaluation_prompt,
+    map_batch_evaluations,
+)
 
 logger = get_logger(__name__)
 
@@ -72,13 +77,7 @@ class ClaudeProvider(AbstractLLMProvider):
             )
             return [None] * len(papers)
 
-        evaluations: list[PaperEvaluation | None] = []
-        for i in range(len(papers)):
-            if i < len(parsed):
-                evaluations.append(PaperEvaluation.from_dict(parsed[i]))
-            else:
-                evaluations.append(None)
-        return evaluations
+        return map_batch_evaluations(papers, parsed)
 
     # ---- helpers ----
 

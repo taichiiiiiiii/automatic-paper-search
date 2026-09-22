@@ -32,6 +32,7 @@ Usage (default --conference iclr-2026):
 from __future__ import annotations
 
 import argparse
+import fcntl
 import json
 import os
 import re
@@ -66,7 +67,10 @@ from paperpilot.llm.base import (  # noqa: E402
     build_classify_prompt,
     provider_model_tag,
 )
-from paperpilot.scripts._common import slug_to_venue_label  # noqa: E402
+from paperpilot.scripts._common import (  # noqa: E402
+    slug_to_venue_label,
+    validate_conference_slug,
+)
 from paperpilot.scripts._lineage_classify import derive_relation  # noqa: E402
 from paperpilot.scripts._lineage_contract import (  # noqa: E402
     CLASSIFICATION_METHODS,
@@ -93,6 +97,7 @@ CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
 def resolve_paths(conference: str) -> tuple[Path, Path]:
     """Return (papers_json_path, lineage_json_path) for a conference slug."""
+    validate_conference_slug(conference)
     conf_dir = DOCS_ROOT / conference
     return conf_dir / "papers.json", conf_dir / "lineage.json"
 
@@ -272,13 +277,37 @@ _S2_FIELDS_REL = (
 )
 
 
+class S2TransientError(RuntimeError):
+    """Raised when an S2 request failed at the transport level (network
+    error / timeout / 5xx with all of request_with_retry's retries
+    exhausted).
+
+    This is distinct from a definitive 404/4xx response or a malformed
+    JSON body, both of which legitimately mean "no such data" and are
+    safe to cache as an empty/None result (closes #401). A transient
+    failure must NOT be cached that way, or a temporary S2 outage gets
+    permanently frozen into "this paper has 0 references" on disk.
+    """
+
+
 def _s2_get(url: str) -> dict[str, Any] | None:
     """GET an S2 JSON endpoint, returning the parsed body or None.
 
     Delegates retry / backoff to utils.http.request_with_retry so the
     retry policy matches the rest of the pipeline (design doc §6.2
-    Table 17). 404 is treated as "not found" (None); any other non-200
-    is logged upstream and returned as None.
+    Table 17). 404 / other definitive 4xx is treated as "not found"
+    (None); a malformed 200 body is also None. Raises S2TransientError
+    when the outcome is a transient failure rather than a definitive
+    answer — callers must not cache that outcome as a legitimate empty
+    result. Two distinct transient shapes both raise:
+      * request_with_retry itself gives up (returns None): a network
+        error, timeout, or the overall deadline was hit before any
+        response was obtained.
+      * request_with_retry exhausts its OWN retries on a 429 or 5xx and
+        returns that final response object rather than None (see
+        utils/http.py's `return resp` after exhausted 429/5xx retries) —
+        this is still "S2 never actually answered", not "S2 doesn't have
+        this data", even though a Response object is technically present.
     """
     resp = request_with_retry(
         "GET",
@@ -287,7 +316,11 @@ def _s2_get(url: str) -> dict[str, Any] | None:
         timeout=20,
     )
     if resp is None:
-        return None
+        raise S2TransientError(f"S2 request failed after retries: {url}")
+    if resp.status_code == 429 or 500 <= resp.status_code < 600:
+        raise S2TransientError(
+            f"S2 request exhausted retries with status={resp.status_code}: {url}"
+        )
     if resp.status_code == 200:
         try:
             payload = resp.json()
@@ -309,7 +342,15 @@ def fetch_paper_by_arxiv(arxiv_id: str) -> dict[str, Any] | None:
     url = (
         f"https://api.semanticscholar.org/graph/v1/paper/arXiv:{arxiv_id}?fields={_S2_FIELDS_PAPER}"
     )
-    data = _s2_get(url)
+    try:
+        data = _s2_get(url)
+    except S2TransientError as e:
+        # Fail-safe (CLAUDE.md): skip this paper, don't crash the whole
+        # build — but do NOT cache the failure as "no such paper" (#401),
+        # or a transient outage becomes a permanent data gap on disk.
+        logger.warning("s2: %s", e)
+        time.sleep(S2_RATE_DELAY)
+        return None
     if data:
         cache.write_text(json.dumps(data, ensure_ascii=False, indent=2))
     time.sleep(S2_RATE_DELAY)
@@ -355,7 +396,16 @@ def fetch_related(s2_id: str, kind: str, limit: int) -> list[dict[str, Any]]:
         f"https://api.semanticscholar.org/graph/v1/paper/{s2_id}/{kind}"
         f"?fields={_S2_FIELDS_REL}&limit={min(limit * 4, 100)}"
     )
-    data = _s2_get(url) or {}
+    try:
+        data = _s2_get(url) or {}
+    except S2TransientError as e:
+        # Fail-safe (CLAUDE.md): skip this paper's references/citations,
+        # don't crash the whole BFS — but do NOT cache the failure as "0
+        # references" (#401), or a transient S2 outage becomes a
+        # permanent, silent data gap that persists across every re-run.
+        logger.warning("s2: %s", e)
+        time.sleep(S2_RATE_DELAY)
+        return []
     items = []
     inner_key = "citedPaper" if kind == "references" else "citingPaper"
     # `or []` not just default arg: S2 occasionally returns {"data": null}
@@ -545,25 +595,38 @@ def persist_classifications(classifications: dict[str, dict], cache_path: Path) 
     overwrite the cache file.
 
     Why: ``classifications.json`` is shared by build_lineage / build_deep_lineage
-    / build_theme_lineage (CLAUDE.md §14). The merge-then-rename pattern blocks
-    both lost-update races (concurrent writers add different keys; without merge
-    the last writer would silently drop the other's contribution) and corrupt
-    JSON observable by readers (``os.replace`` is atomic on POSIX).
+    / build_theme_lineage (CLAUDE.md §14). The read-merge-write below is done
+    while holding an exclusive ``flock`` on a sibling ``.lock`` file (closes
+    #402): without that lock, two processes reading the same on-disk snapshot
+    at nearly the same time would each merge only what THEY saw on disk, and
+    the second writer's ``os.replace`` would silently drop the first writer's
+    new keys — a genuine TOCTOU lost-update race that plain merge-then-rename
+    does NOT prevent (contrary to this function's earlier docstring). The
+    flock serializes the whole read-merge-write critical section across
+    processes, so no writer's contribution is ever lost. ``os.replace`` is
+    still atomic on POSIX, so readers never observe a corrupt/partial file.
 
     Our in-memory entries take precedence on key collision — they are the
     freshest we just computed.
     """
-    if cache_path.exists():
+    cache_path.parent.mkdir(parents=True, exist_ok=True)
+    lock_path = cache_path.with_suffix(cache_path.suffix + ".lock")
+    with open(lock_path, "w") as lock_file:
+        fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
         try:
-            disk_obj = json.loads(cache_path.read_text())
-        except json.JSONDecodeError:
-            disk_obj = None
-        if isinstance(disk_obj, dict):
-            for k, v in disk_obj.items():
-                classifications.setdefault(k, v)
-    tmp = cache_path.with_suffix(cache_path.suffix + f".tmp.{os.getpid()}")
-    tmp.write_text(json.dumps(classifications, ensure_ascii=False, indent=2))
-    os.replace(tmp, cache_path)
+            if cache_path.exists():
+                try:
+                    disk_obj = json.loads(cache_path.read_text())
+                except json.JSONDecodeError:
+                    disk_obj = None
+                if isinstance(disk_obj, dict):
+                    for k, v in disk_obj.items():
+                        classifications.setdefault(k, v)
+            tmp = cache_path.with_suffix(cache_path.suffix + f".tmp.{os.getpid()}")
+            tmp.write_text(json.dumps(classifications, ensure_ascii=False, indent=2))
+            os.replace(tmp, cache_path)
+        finally:
+            fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
 
 
 def _is_degenerate_rationale(rationale: object) -> bool:

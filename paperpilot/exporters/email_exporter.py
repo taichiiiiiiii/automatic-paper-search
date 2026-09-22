@@ -26,6 +26,7 @@ logger = get_logger(__name__)
 
 DEFAULT_PORT = 587
 DEFAULT_TIMEOUT = 30
+_ALLOWED_URL_SCHEMES = ("http://", "https://")
 
 
 class EmailExporter(AbstractExporter):
@@ -57,8 +58,11 @@ class EmailExporter(AbstractExporter):
                 timeout=DEFAULT_TIMEOUT,
             )
         except OSError as e:
+            # Log then re-raise (rather than swallow) so the pipeline runner's
+            # per-exporter try/except records this in run_history.errors —
+            # this is a real failure, not the "not configured" no-op above.
             logger.warning("email: connect failed: %s", e)
-            return None
+            raise
 
         try:
             if self._smtp.get("use_tls", True):
@@ -71,8 +75,9 @@ class EmailExporter(AbstractExporter):
         except (smtplib.SMTPException, OSError) as e:
             # OSError covers ssl.SSLError / socket errors from starttls() and
             # DNS-level failures, which are NOT subclasses of SMTPException.
+            # Re-raise (see comment above) so the failure isn't invisible.
             logger.warning("email: send failed: %s", e)
-            return None
+            raise
         finally:
             with contextlib.suppress(Exception):  # best-effort cleanup
                 client.quit()
@@ -119,10 +124,24 @@ class EmailExporter(AbstractExporter):
         for rank, p in enumerate(papers, start=1):
             venue = html.escape(p.venue) if p.venue else ""
             summary = html.escape(p.llm_summary_ja) if p.llm_summary_ja else ""
+            title = html.escape(p.title)
+            if p.url.lower().startswith(_ALLOWED_URL_SCHEMES):
+                title_cell = f"<a href='{html.escape(p.url)}'>{title}</a>"
+            else:
+                # html.escape() neutralizes markup injection (quotes/angle
+                # brackets) but does nothing about the URL SCHEME itself —
+                # href='javascript:...' still executes regardless of
+                # escaping (same class of gap fixed for Slack in #397).
+                # Fall back to plain (already-escaped) text instead of
+                # emitting a link at all for a non-http(s) url.
+                logger.warning(
+                    "email: paper %r has a non-http(s) url; omitting link", p.title
+                )
+                title_cell = title
             rows.append(
                 f"<tr>"
                 f"<td>{rank}</td>"
-                f"<td><a href='{html.escape(p.url)}'>{html.escape(p.title)}</a></td>"
+                f"<td>{title_cell}</td>"
                 f"<td>{p.total_score:.1f}</td>"
                 f"<td>{venue}</td>"
                 f"<td>{p.github_stars}</td>"

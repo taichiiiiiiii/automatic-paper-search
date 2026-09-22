@@ -6,6 +6,8 @@ from datetime import date, timedelta
 from types import SimpleNamespace
 from unittest.mock import patch
 
+import pytest
+
 from paperpilot.sources.s2_source import S2Source
 
 
@@ -66,6 +68,56 @@ def test_fetch_returns_papers_within_window():
     assert p.source == "s2"
     assert p.matched_keywords == ["rag"]
     assert p.authors == ["Alice"]
+    assert p.first_author_id == "AID"
+
+
+def test_first_author_id_absent_when_no_author_has_id():
+    """Regression test (closes #393): first_author_id stays None (not KeyError)
+    when the authors list has no authorId (e.g. some S2 records omit it)."""
+    src = S2Source({"enabled": True, "delay_seconds": 0})
+    today = date.today()
+    item = _item(
+        pub_date=(today - timedelta(days=3)).isoformat(),
+        authors=[{"name": "Bob"}],
+    )
+    body = {"data": [item]}
+    with patch(
+        "paperpilot.sources.s2_source.request_with_retry",
+        return_value=_resp(200, body),
+    ):
+        papers = src.fetch(
+            keywords=["rag"],
+            categories=[],
+            since_date=today - timedelta(days=7),
+            max_results=10,
+        )
+    assert len(papers) == 1
+    assert papers[0].first_author_id is None
+
+
+def test_first_author_id_uses_first_author_not_any_author_with_id():
+    """first_author_id must reflect authors[0] specifically (matching
+    CitationSignal's semantics), not just any author that happens to have
+    an authorId."""
+    src = S2Source({"enabled": True, "delay_seconds": 0})
+    today = date.today()
+    item = _item(
+        pub_date=(today - timedelta(days=3)).isoformat(),
+        authors=[{"name": "Bob"}, {"name": "Alice", "authorId": "AID"}],
+    )
+    body = {"data": [item]}
+    with patch(
+        "paperpilot.sources.s2_source.request_with_retry",
+        return_value=_resp(200, body),
+    ):
+        papers = src.fetch(
+            keywords=["rag"],
+            categories=[],
+            since_date=today - timedelta(days=7),
+            max_results=10,
+        )
+    assert len(papers) == 1
+    assert papers[0].first_author_id is None
 
 
 def test_fetch_drops_older_than_since_date():
@@ -100,26 +152,72 @@ def test_fetch_drops_older_than_since_date():
 
 
 def test_fetch_handles_http_failure():
+    """Regression test (closes #387): a non-200 response after retries are
+    exhausted is a real outage — fetch() must raise so Stage 0 records it
+    as sources_status["s2"]["ok"] = False, not silently return [] (which
+    would be indistinguishable from "genuinely 0 new papers this run")."""
     src = S2Source({"enabled": True, "delay_seconds": 0})
     with patch(
         "paperpilot.sources.s2_source.request_with_retry",
         return_value=_resp(429),
     ):
-        papers = src.fetch(
-            keywords=["x"], categories=[], since_date=date.today(), max_results=10
-        )
-    assert papers == []
+        with pytest.raises(RuntimeError, match="s2 fetch failed for all"):
+            src.fetch(
+                keywords=["x"], categories=[], since_date=date.today(), max_results=10
+            )
 
 
 def test_fetch_handles_none_response():
+    """Same as above, for request_with_retry returning None entirely
+    (e.g. connection error) rather than an HTTP error response."""
     src = S2Source({"enabled": True, "delay_seconds": 0})
     with patch(
         "paperpilot.sources.s2_source.request_with_retry", return_value=None
     ):
+        with pytest.raises(RuntimeError, match="s2 fetch failed for all"):
+            src.fetch(
+                keywords=["x"], categories=[], since_date=date.today(), max_results=10
+            )
+
+
+def test_fetch_keeps_partial_results_when_only_some_keywords_fail():
+    """Regression test: S2's free tier throttles aggressively, so a single
+    keyword hitting a 429 is routine. That must NOT discard the papers the
+    other keywords already returned — only a total outage (every keyword
+    failing) raises. Mirrors the arxiv (#387) and openalex (#399) contract,
+    which this source previously diverged from by raising out of fetch()
+    on the very first keyword failure."""
+    src = S2Source({"enabled": True, "delay_seconds": 0})
+    good_body = {
+        "data": [
+            {
+                "paperId": "P1",
+                "title": "Good Paper",
+                "abstract": "abs",
+                "url": "http://s2/good",
+                "publicationDate": date.today().isoformat(),
+                "authors": [{"authorId": "A1", "name": "Alice"}],
+            }
+        ]
+    }
+
+    def _fake_request(method, url, params=None, **kw):
+        if params and params.get("query") == "bad":
+            return _resp(429)
+        return _resp(200, good_body)
+
+    with patch(
+        "paperpilot.sources.s2_source.request_with_retry", side_effect=_fake_request
+    ):
         papers = src.fetch(
-            keywords=["x"], categories=[], since_date=date.today(), max_results=10
+            keywords=["bad", "good"],
+            categories=[],
+            since_date=date.today() - timedelta(days=7),
+            max_results=10,
         )
-    assert papers == []
+
+    assert len(papers) == 1
+    assert papers[0].title == "Good Paper"
 
 
 def test_parse_pub_date_prefers_publication_date():

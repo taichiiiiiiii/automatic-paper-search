@@ -6,6 +6,8 @@ from datetime import date, datetime, timezone
 from types import SimpleNamespace
 from unittest.mock import patch
 
+import pytest
+
 from paperpilot.sources.arxiv_source import ArxivSource
 
 
@@ -113,14 +115,52 @@ def test_fetch_stops_when_before_since_date():
     assert papers[0].arxiv_id == "2604.01"
 
 
-def test_fetch_catches_client_exception():
+def test_fetch_raises_when_every_keyword_fails():
+    """Regression test (closes #387 follow-up): if EVERY keyword's client
+    call fails, this is an outage — fetch() must raise so Stage 0 records
+    sources_status["arxiv"]["ok"] = False, not silently return [] (which
+    would be indistinguishable from "genuinely 0 new papers this run")."""
     src = ArxivSource({"enabled": True, "delay_seconds": 0})
 
     def _boom(*args, **kwargs):
         raise RuntimeError("arxiv client exploded")
 
     with patch.object(src._client, "results", side_effect=_boom):
+        with pytest.raises(RuntimeError, match="arxiv fetch failed for all"):
+            src.fetch(
+                keywords=["x"], categories=[], since_date=date.today(), max_results=5
+            )
+
+
+def test_fetch_keeps_partial_results_when_only_some_keywords_fail():
+    """A per-keyword failure alongside at least one success is NOT an
+    outage worth failing the whole source over — the successful keyword's
+    real papers must still be returned, not discarded."""
+    src = ArxivSource({"enabled": True, "delay_seconds": 0})
+    good_result = SimpleNamespace(
+        title="Good Paper",
+        authors=[SimpleNamespace(name="Alice")],
+        summary="abs",
+        entry_id="http://arxiv.org/abs/2604.00001",
+        published=datetime(2026, 4, 1, tzinfo=timezone.utc),
+        get_short_id=lambda: "2604.00001",
+        doi=None,
+        pdf_url="http://pdf",
+        categories=["cs.LG"],
+        comment=None,
+    )
+
+    def fake_results(search):
+        if "bad" in search.query:
+            raise RuntimeError("boom")
+        return iter([good_result])
+
+    with patch.object(src._client, "results", side_effect=fake_results):
         papers = src.fetch(
-            keywords=["x"], categories=[], since_date=date.today(), max_results=5
+            keywords=["bad", "good"],
+            categories=[],
+            since_date=date(2026, 1, 1),
+            max_results=5,
         )
-    assert papers == []  # Fail-Safe: empty list, no raise
+    assert len(papers) == 1
+    assert papers[0].title == "Good Paper"

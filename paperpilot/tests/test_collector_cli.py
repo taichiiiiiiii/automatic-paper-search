@@ -8,6 +8,8 @@ from pathlib import Path
 from typing import Any
 from unittest.mock import patch
 
+import yaml
+
 from paperpilot import collector
 
 
@@ -101,3 +103,51 @@ def test_cli_defaults_no_overrides(tmp_path, monkeypatch):
     assert captured["search"]["keywords"] == ["rag"]
     assert captured["incremental"]["enabled"] is True
     assert captured["llm"]["enabled"] is True
+
+
+class _FakeProvider:
+    enabled = True
+
+
+class _FakeRunnerWithLLM(_FakeRunner):
+    """Like _FakeRunner but exposes an enabled llm_provider, as
+    _run_expand_keywords requires."""
+
+    def __init__(self, config: dict[str, Any]) -> None:
+        super().__init__(config)
+        self.llm_provider = _FakeProvider()
+
+
+def test_expand_keywords_write_excludes_env_secrets(tmp_path, monkeypatch):
+    """Regression test (closes #384): --write must never persist config['env']
+    (secrets injected from PAPERPILOT_* environment variables) into config.yaml."""
+    monkeypatch.setenv(
+        "PAPERPILOT_SLACK_WEBHOOK_URL",
+        "https://hooks.slack.com/services/T000/B000/SUPERSECRETTOKEN",
+    )
+    monkeypatch.setenv("PAPERPILOT_GITHUB_TOKEN", "ghp_supersecrettoken1234567890")
+    config_path = _write_config(tmp_path)
+
+    with patch.object(collector, "PipelineRunner", _FakeRunnerWithLLM):
+        with patch.object(
+            collector, "expand_keywords", return_value=["rag", "retrieval augmented generation"]
+        ):
+            with patch.object(
+                sys,
+                "argv",
+                ["collector.py", "--config", str(config_path), "expand-keywords", "--write"],
+            ):
+                rc = collector.main()
+
+    assert rc == 0
+    written_text = config_path.read_text(encoding="utf-8")
+    assert "SUPERSECRETTOKEN" not in written_text
+    assert "ghp_supersecrettoken" not in written_text
+    assert "hooks.slack.com" not in written_text
+
+    written_config = yaml.safe_load(written_text)
+    assert "env" not in written_config
+    assert written_config["search"]["keywords"] == [
+        "rag",
+        "retrieval augmented generation",
+    ]

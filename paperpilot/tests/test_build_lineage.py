@@ -15,7 +15,10 @@ Key invariants enforced:
 
 from __future__ import annotations
 
+import fcntl
 import json
+import threading
+import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from unittest.mock import MagicMock, patch
@@ -299,6 +302,56 @@ def test_classify_cached_merges_concurrent_writes(tmp_path: Path):
     on_disk = json.loads(cache_path.read_text())
     assert "X->Y" in on_disk, "process A's new entry persisted"
     assert "B->C" in on_disk, "process B's concurrent entry must be preserved"
+
+
+def test_persist_classifications_blocks_while_another_writer_holds_the_lock(
+    tmp_path: Path,
+):
+    """Regression test (closes #402): the previous merge-then-rename
+    implementation had NO real mutual exclusion — it only handled a writer
+    finishing strictly before another one starts (as in the test above),
+    not two writers whose read-merge-write windows genuinely overlap. That
+    is a true TOCTOU lost-update race: both read the same on-disk snapshot,
+    each merges only what it saw, and the second `os.replace` silently
+    drops the first writer's brand-new key.
+
+    This test proves real serialization: while an external holder keeps
+    the sibling `.lock` file locked, a `persist_classifications` call in
+    another thread must BLOCK (not proceed and finish) until the lock is
+    released, and once unblocked it must correctly merge with whatever is
+    on disk at that point.
+    """
+    cache_path = tmp_path / "cls.json"
+    cache_path.write_text(json.dumps({"base": {"relation": "extends"}}))
+    lock_path = cache_path.with_suffix(cache_path.suffix + ".lock")
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
+
+    done = threading.Event()
+
+    def writer():
+        build_lineage.persist_classifications({"new": {"relation": "successor"}}, cache_path)
+        done.set()
+
+    with open(lock_path, "w") as holder:
+        fcntl.flock(holder.fileno(), fcntl.LOCK_EX)
+        t = threading.Thread(target=writer)
+        t.start()
+        try:
+            time.sleep(0.3)
+            # The writer thread must still be blocked on flock — proof that
+            # a second writer cannot race ahead while the lock is held.
+            assert not done.is_set(), "writer proceeded without waiting for the lock"
+            assert json.loads(cache_path.read_text()) == {"base": {"relation": "extends"}}
+        finally:
+            fcntl.flock(holder.fileno(), fcntl.LOCK_UN)
+
+    t.join(timeout=5)
+    assert done.is_set(), "writer never completed after the lock was released"
+    final = json.loads(cache_path.read_text())
+    assert final == {
+        "base": {"relation": "extends"},
+        "new": {"relation": "successor"},
+    }
 
 
 def test_classify_cached_atomic_write_no_temp_leftover(tmp_path: Path):
@@ -1270,13 +1323,111 @@ def test_s2_get_returns_none_on_non_200():
         assert build_lineage._s2_get("https://x") is None
 
 
-def test_s2_get_returns_none_when_retry_helper_gives_up():
-    # request_with_retry returns None when overall_deadline hits
+def test_s2_get_raises_transient_error_when_retry_helper_gives_up():
+    """Regression test (closes #401): request_with_retry returning None
+    means every retry was exhausted — a real outage, not a legitimate
+    "no such paper" 404. _s2_get must raise S2TransientError rather than
+    returning None indistinguishably from a definitive not-found, so
+    callers know not to cache the failure as an empty result."""
     with patch(
         "paperpilot.scripts.build_lineage.request_with_retry",
         return_value=None,
     ):
+        with pytest.raises(build_lineage.S2TransientError):
+            build_lineage._s2_get("https://x")
+
+
+def test_s2_get_raises_transient_error_on_exhausted_429(monkeypatch):
+    """Regression test (closes #401 follow-up, per Codex review): when
+    utils.http.request_with_retry exhausts its OWN 429 retries, it returns
+    the final 429 Response object rather than None (see utils/http.py's
+    `return resp` branch) — this is still a transient throttling outage,
+    NOT S2 saying "no such paper", so it must also raise S2TransientError,
+    not fall through to the definitive-4xx `return None` path."""
+    with patch(
+        "paperpilot.scripts.build_lineage.request_with_retry",
+        return_value=_mock_resp(429),
+    ):
+        with pytest.raises(build_lineage.S2TransientError):
+            build_lineage._s2_get("https://x")
+
+
+def test_s2_get_raises_transient_error_on_exhausted_5xx():
+    """Same as above for an exhausted 5xx retry loop (utils/http.py's
+    other `return resp` branch after _MAX_RETRIES_5XX)."""
+    with patch(
+        "paperpilot.scripts.build_lineage.request_with_retry",
+        return_value=_mock_resp(503),
+    ):
+        with pytest.raises(build_lineage.S2TransientError):
+            build_lineage._s2_get("https://x")
+
+
+def test_s2_get_still_returns_none_on_definitive_4xx():
+    """A definitive, non-retried 4xx (e.g. 400/401/403 — never entered
+    request_with_retry's 429 branch) must still be treated as "not found"
+    and NOT raise, preserving existing behavior for genuine client errors."""
+    with patch(
+        "paperpilot.scripts.build_lineage.request_with_retry",
+        return_value=_mock_resp(400),
+    ):
         assert build_lineage._s2_get("https://x") is None
+
+
+def test_fetch_related_does_not_cache_on_exhausted_5xx_response(tmp_path, monkeypatch):
+    """End-to-end regression test (closes #401 follow-up): fetch_related()
+    must not write its cache file when the underlying request exhausted
+    retries on a real 5xx Response object (not a bare None), matching the
+    gap Codex's review found in the initial fix."""
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    with patch(
+        "paperpilot.scripts.build_lineage.request_with_retry",
+        return_value=_mock_resp(503),
+    ):
+        result = build_lineage.fetch_related("paperX", "references", 5)
+    assert result == []
+    assert not (tmp_path / "references_paperX.json").exists()
+
+
+# ---- transient S2 failures must not be cached as permanent empty (#401) ----
+
+
+def test_fetch_paper_by_arxiv_does_not_cache_on_transient_failure(tmp_path, monkeypatch):
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    with patch.object(
+        build_lineage,
+        "_s2_get",
+        side_effect=build_lineage.S2TransientError("boom"),
+    ):
+        result = build_lineage.fetch_paper_by_arxiv("2404.00001")
+    assert result is None
+    assert not (tmp_path / "paper_2404.00001.json").exists()
+    # A later run (S2 recovered) must actually retry, not replay a cached
+    # failure — proven by observing the mocked call is made again.
+    with patch.object(
+        build_lineage, "_s2_get", return_value={"paperId": "X", "title": "T"}
+    ) as mock2:
+        result2 = build_lineage.fetch_paper_by_arxiv("2404.00001")
+    mock2.assert_called_once()
+    assert result2 == {"paperId": "X", "title": "T"}
+    assert (tmp_path / "paper_2404.00001.json").exists()
+
+
+def test_fetch_related_does_not_cache_on_transient_failure(tmp_path, monkeypatch):
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    with patch.object(
+        build_lineage,
+        "_s2_get",
+        side_effect=build_lineage.S2TransientError("boom"),
+    ):
+        result = build_lineage.fetch_related("paperX", "references", 5)
+    assert result == []
+    assert not (tmp_path / "references_paperX.json").exists()
+    with patch.object(build_lineage, "_s2_get", return_value={"data": []}) as mock2:
+        result2 = build_lineage.fetch_related("paperX", "references", 5)
+    mock2.assert_called_once()
+    assert result2 == []
+    assert (tmp_path / "references_paperX.json").exists()
 
 
 # ---- fetch_related propagates isInfluential (#50) ----
@@ -1409,6 +1560,16 @@ def test_resolve_paths_for_other_conference():
     papers, output = build_lineage.resolve_paths("neurips-2025")
     assert papers.parent.name == "neurips-2025"
     assert output.parent.name == "neurips-2025"
+
+
+def test_resolve_paths_rejects_path_traversal_conference():
+    """Regression test (closes #390 follow-up): resolve_paths() is the
+    single chokepoint build() uses to compute the lineage.json WRITE
+    target; a malicious slug must be rejected here, not silently escape
+    docs/."""
+    for bad in ("../../etc/passwd", "..", "iclr/../../escape", ""):
+        with pytest.raises(ValueError):
+            build_lineage.resolve_paths(bad)
 
 
 def test_derive_venue_label_turns_slug_into_pretty_name():

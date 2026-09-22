@@ -42,6 +42,7 @@ class ArxivSource(AbstractSource):
     ) -> list[Paper]:
         papers: list[Paper] = []
         cat_clause = self._build_category_clause(categories)
+        failures: list[str] = []
 
         for kw in keywords:
             self._limiter.wait()
@@ -64,7 +65,30 @@ class ArxivSource(AbstractSource):
                     papers.append(self._to_paper(result, kw))
             except Exception as e:
                 logger.warning("arxiv fetch failed for keyword '%s': %s", kw, e)
+                failures.append(kw)
                 continue
+
+        if keywords and len(failures) == len(keywords):
+            # Every keyword failed: this is an outage, not "genuinely 0 new
+            # papers today". Raise so Stage 0's existing per-source failure
+            # path (stage_collect.py) records sources_status["arxiv"]["ok"]
+            # = False, rather than a misleadingly-successful empty result
+            # (same masking pattern as #387's S2 fix).
+            #
+            # A partial failure (at least one keyword succeeded) is NOT
+            # raised — `papers` is returned as-is with those real results
+            # kept, and the per-keyword warning above already logs the
+            # failure. Note the one asymmetry this implies: if a keyword's
+            # generator yields some papers before failing mid-stream, those
+            # already-appended papers survive ONLY when at least one other
+            # keyword succeeds outright — if every keyword fails this way,
+            # the raise below still discards them along with everything
+            # else, since there is no way to both signal "outage" and
+            # return partial data through this interface's single return
+            # value / exception contract. Confirmed outage visibility is
+            # judged more valuable than an unreliable partial scrap in that
+            # narrow, already-degenerate scenario.
+            raise RuntimeError(f"arxiv fetch failed for all {len(keywords)} keyword(s)")
 
         logger.info("arxiv: collected %d papers (pre-dedup)", len(papers))
         return papers

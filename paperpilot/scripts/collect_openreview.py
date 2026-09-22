@@ -108,11 +108,18 @@ def fetch_notes(
     page_size: int = _PAGE_SIZE,
     max_pages: int = _MAX_PAGES,
     timeout: float = 20.0,
-) -> list[dict[str, Any]]:
+) -> tuple[list[dict[str, Any]], bool]:
     """Page through every accepted note for ``venueid``. Network — mocked in tests.
 
-    Fail-Safe: on any non-200 / network failure the pages gathered so far are
-    returned (empty if the very first call failed) rather than raising.
+    Returns (notes, complete). Fail-Safe still applies — a mid-run failure
+    (non-200 / network error / non-JSON body) does not raise, but `complete`
+    is False so the caller knows this is a PARTIAL result, not the
+    authoritative full set collect_openreview.py exists to provide (closes
+    #388). `complete` is only True when pagination ended because a page
+    came back short — the natural end-of-results signal. Hitting
+    `max_pages` is treated as incomplete too: it exists purely as a runaway
+    guard (see its docstring), so reaching it means we can't tell whether
+    there's a page `max_pages + 1` still to fetch.
     """
     notes: list[dict[str, Any]] = []
     for page in range(max_pages):
@@ -127,18 +134,25 @@ def fetch_notes(
             timeout=timeout,
         )
         if resp is None or resp.status_code != 200:
-            break
+            return notes, False
         try:
             body = resp.json()
         except ValueError:
             # 200 with a non-JSON body (maintenance page / proxy error):
-            # Fail-Safe — return the pages gathered so far rather than raising.
-            break
-        batch = (body or {}).get("notes") or []
+            # a genuine mid-run failure, not end-of-results.
+            return notes, False
+        # A 200 with a malformed-but-valid-JSON shape (missing/null/non-list
+        # "notes", or a non-dict body) must NOT be treated as a legitimate
+        # short/empty page — `(body or {}).get("notes") or []` used to do
+        # exactly that, silently ending pagination as if complete.
+        if not isinstance(body, dict) or not isinstance(body.get("notes"), list):
+            return notes, False
+        batch = body["notes"]
         notes.extend(batch)
         if len(batch) < page_size:
-            break
-    return notes
+            return notes, True
+    # Ran out of `max_pages` iterations without a short final page.
+    return notes, False
 
 
 def build_rows(
@@ -201,9 +215,23 @@ def main() -> int:
     )
     args = ap.parse_args()
 
-    notes = fetch_notes(args.venueid)
+    notes, complete = fetch_notes(args.venueid)
     rows, highlighted = build_rows(notes, args.venue, args.venueid)
     print(f"fetched {len(notes)} OpenReview notes for venueid: {args.venueid}")
+
+    if not complete:
+        # No opt-in override: a written papers_<date>.csv has no marker
+        # distinguishing "authoritative full catalog" from "partial", so
+        # there is no safe way to publish a partial fetch under the same
+        # filename/schema the complete case uses (closes #388). Retry the
+        # run instead.
+        print(
+            f"⚠️  pagination did not reach a confirmed end (network/API failure, a "
+            f"malformed response, or hitting the max-pages guard) — {len(notes)} "
+            "notes fetched so far would be an INCOMPLETE, non-authoritative "
+            "catalog. Nothing written. Retry the run."
+        )
+        return 1
 
     if not rows:
         print(

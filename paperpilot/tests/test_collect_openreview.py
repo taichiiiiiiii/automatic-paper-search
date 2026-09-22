@@ -14,9 +14,12 @@ Key invariants:
 from __future__ import annotations
 
 import csv as _csv
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
+
+import pytest
 
 from paperpilot.scripts import collect_conference as cc
 from paperpilot.scripts import collect_openreview as co
@@ -166,19 +169,29 @@ def test_fetch_notes_paginates_until_short_page():
         return _resp(page1 if params["offset"] == 0 else page2)
 
     with patch.object(co, "request_with_retry", side_effect=fake):
-        notes = co.fetch_notes("ICLR.cc/2025/Conference", page_size=1000)
+        notes, complete = co.fetch_notes("ICLR.cc/2025/Conference", page_size=1000)
 
     assert len(notes) == 1001
+    assert complete is True
     assert calls == [0, 1000]  # advanced by page_size, stopped after short page
 
 
 def test_fetch_notes_failsafe_on_api_error():
+    """Regression test (closes #388): a total request failure must not
+    raise (Fail-Safe), but must report complete=False — this is the
+    "0 notes" case of the same partial-vs-complete distinction covered by
+    test_fetch_notes_returns_partial_on_mid_run_error below."""
     with patch.object(co, "request_with_retry", return_value=None):
-        assert co.fetch_notes("ICLR.cc/2025/Conference") == []
+        notes, complete = co.fetch_notes("ICLR.cc/2025/Conference")
+    assert notes == []
+    assert complete is False
 
 
 def test_fetch_notes_returns_partial_on_mid_run_error():
-    """Page 1 succeeds, page 2 fails -> the page-1 notes are still returned."""
+    """Regression test (closes #388): page 1 succeeds, page 2 fails -> the
+    page-1 notes are still returned (Fail-Safe), but complete=False so the
+    caller knows this is a PARTIAL, non-authoritative result — not a
+    legitimately-complete 1000-paper venue."""
     page1 = [_note(f"p{i}", "Poster", f"id{i}") for i in range(1000)]
     calls = {"n": 0}
 
@@ -187,19 +200,51 @@ def test_fetch_notes_returns_partial_on_mid_run_error():
         return _resp(page1) if calls["n"] == 1 else None
 
     with patch.object(co, "request_with_retry", side_effect=fake):
-        notes = co.fetch_notes("ICLR.cc/2025/Conference", page_size=1000)
+        notes, complete = co.fetch_notes("ICLR.cc/2025/Conference", page_size=1000)
     assert len(notes) == 1000
+    assert complete is False
 
 
 def test_fetch_notes_failsafe_on_non_json_body():
-    """200 with a non-JSON body must not raise (Fail-Safe)."""
+    """200 with a non-JSON body must not raise (Fail-Safe), and (closes
+    #388) must report complete=False since this is a genuine mid-run
+    failure, not an end-of-results signal."""
 
     def raise_json():
         raise ValueError("no json")
 
     bad = SimpleNamespace(status_code=200, json=raise_json)
     with patch.object(co, "request_with_retry", return_value=bad):
-        assert co.fetch_notes("ICLR.cc/2025/Conference") == []
+        notes, complete = co.fetch_notes("ICLR.cc/2025/Conference")
+    assert notes == []
+    assert complete is False
+
+
+def _fetch_with_malformed_second_page(malformed_body):
+    """Page 1 succeeds normally (1000 notes), page 2 returns 200 with the
+    given malformed-but-valid-JSON body. Returns fetch_notes()'s result."""
+    page1 = [_note(f"p{i}", "Poster", f"id{i}") for i in range(1000)]
+    page2 = SimpleNamespace(status_code=200, json=lambda: malformed_body)
+    calls = {"n": 0}
+
+    def fake(method, url, *, params=None, **kw):
+        calls["n"] += 1
+        return _resp(page1) if calls["n"] == 1 else page2
+
+    with patch.object(co, "request_with_retry", side_effect=fake):
+        return co.fetch_notes("ICLR.cc/2025/Conference", page_size=1000)
+
+
+def test_fetch_notes_treats_malformed_but_valid_json_shape_as_incomplete():
+    """Regression test (closes #388 follow-up): a 200 response with valid
+    JSON but a missing/null/non-list "notes" field must NOT be treated as
+    a legitimate short/empty page — `(body or {}).get("notes") or []` used
+    to silently accept this as end-of-results, letting a partial catalog
+    (page 1's 1000 notes) through as complete=True."""
+    for malformed in ({}, {"notes": None}, {"notes": "not-a-list"}, ["not", "a", "dict"]):
+        notes, complete = _fetch_with_malformed_second_page(malformed)
+        assert len(notes) == 1000, f"failed for malformed body: {malformed!r}"
+        assert complete is False, f"failed for malformed body: {malformed!r}"
 
 
 def test_build_rows_null_abstract_is_empty_not_none_string():
@@ -218,10 +263,14 @@ def test_build_rows_null_abstract_is_empty_not_none_string():
 
 
 def test_fetch_notes_stops_at_max_pages():
+    """Regression test (closes #388): hitting the max_pages runaway guard
+    without ever seeing a short page must report complete=False — we
+    genuinely cannot tell whether a page max_pages+1 exists."""
     full = [_note(f"p{i}", "Poster", f"id{i}") for i in range(2)]  # always "full"
     with patch.object(co, "request_with_retry", return_value=_resp(full)):
-        notes = co.fetch_notes("ICLR.cc/2025/Conference", page_size=2, max_pages=3)
+        notes, complete = co.fetch_notes("ICLR.cc/2025/Conference", page_size=2, max_pages=3)
     assert len(notes) == 6  # 3 pages * 2, capped by max_pages
+    assert complete is False
 
 
 # ---- end-to-end: rows feed collect_conference.write_outputs unchanged ----
@@ -241,3 +290,63 @@ def test_rows_write_via_shared_writer(tmp_path: Path):
     oral_md = (tmp_path / "iclr-2025" / "oral_summaries_ja.md").read_text(encoding="utf-8")
     assert "## 1. Oral one" in oral_md
     assert "Poster two" not in oral_md
+
+
+def test_main_refuses_to_write_partial_catalog_without_allow_partial(
+    tmp_path: Path, monkeypatch
+):
+    """Regression test (closes #388): a mid-run pagination failure must
+    refuse to write ANY output by default — publishing a partial fetch as
+    if it were the authoritative full catalog is exactly the bug this
+    issue exists to prevent."""
+    monkeypatch.setattr(cc, "PROJECT", tmp_path)
+    page1 = [_note(f"p{i}", "Poster", f"id{i}") for i in range(1000)]
+    calls = {"n": 0}
+
+    def fake(method, url, *, params=None, **kw):
+        calls["n"] += 1
+        return _resp(page1) if calls["n"] == 1 else None
+
+    with patch.object(co, "request_with_retry", side_effect=fake):
+        with patch.object(
+            sys,
+            "argv",
+            [
+                "collect_openreview.py",
+                "--conference",
+                "iclr-2025",
+                "--venue",
+                "ICLR",
+                "--venueid",
+                "ICLR.cc/2025/Conference",
+            ],
+        ):
+            rc = co.main()
+    assert rc == 1
+    assert not (tmp_path / "output").exists()
+
+
+def test_no_allow_partial_escape_hatch_exists(tmp_path: Path, monkeypatch):
+    """Regression test (closes #388 follow-up): there must be no opt-in
+    override to write a partial catalog — a written papers_<date>.csv has
+    no marker distinguishing "authoritative complete" from "partial", so
+    there's no safe way to force-write one under the same filename/schema.
+    argparse must reject --allow-partial as an unrecognized argument."""
+    monkeypatch.setattr(cc, "PROJECT", tmp_path)
+    with patch.object(
+        sys,
+        "argv",
+        [
+            "collect_openreview.py",
+            "--conference",
+            "iclr-2025",
+            "--venue",
+            "ICLR",
+            "--venueid",
+            "ICLR.cc/2025/Conference",
+            "--allow-partial",
+        ],
+    ):
+        with pytest.raises(SystemExit):
+            co.main()
+    assert not (tmp_path / "output").exists()

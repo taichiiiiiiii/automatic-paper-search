@@ -284,9 +284,9 @@ class PipelineRunner:
 
         # Export
         output_files: list[str] = []
-        for exp in self.exporters:
-            if not exp.enabled:
-                continue
+        enabled_exporters = [exp for exp in self.exporters if exp.enabled]
+        export_failures = 0
+        for exp in enabled_exporters:
             try:
                 path = exp.export(papers)
                 if path:
@@ -294,11 +294,29 @@ class PipelineRunner:
             except Exception as e:
                 logger.warning("exporter '%s' failed: %s", exp.name, e)
                 errors.append(f"export:{exp.name}:{e}")
+                export_failures += 1
 
-        # Persist seen IDs (mark all stage-2 outputs)
+        # Persist seen IDs (mark all stage-2 outputs) — but only when at
+        # least one enabled exporter actually delivered them. If every
+        # enabled exporter raised, marking these papers seen would make
+        # them permanently unreachable (stage_rule_filter drops seen_ids
+        # on every later run) despite the user never having received them.
+        # With zero enabled exporters (all no-op/unconfigured, not a
+        # failure) this always marks seen, matching prior behavior.
+        all_exporters_failed = bool(enabled_exporters) and export_failures == len(
+            enabled_exporters
+        )
         if inc_cfg.get("enabled", True):
-            seen = mark_seen(papers, seen)
-            save_seen_ids(inc_cfg.get("seen_ids_file", "./data/seen_ids.json"), seen)
+            if all_exporters_failed:
+                logger.warning(
+                    "all %d enabled exporter(s) failed; skipping seen_ids "
+                    "update so these %d paper(s) are retried next run",
+                    len(enabled_exporters),
+                    len(papers),
+                )
+            else:
+                seen = mark_seen(papers, seen)
+                save_seen_ids(inc_cfg.get("seen_ids_file", "./data/seen_ids.json"), seen)
 
         finished = datetime.now()
         duration = (finished - started).total_seconds()

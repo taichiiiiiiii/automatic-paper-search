@@ -31,6 +31,7 @@ from .base import (
     RelationClassification,
     build_classify_prompt,
     build_evaluation_prompt,
+    map_batch_evaluations,
 )
 
 logger = get_logger(__name__)
@@ -75,13 +76,7 @@ class GeminiProvider(AbstractLLMProvider):
             )
             return [None] * len(papers)
 
-        evaluations: list[PaperEvaluation | None] = []
-        for i in range(len(papers)):
-            if i < len(parsed):
-                evaluations.append(PaperEvaluation.from_dict(parsed[i]))
-            else:
-                evaluations.append(None)
-        return evaluations
+        return map_batch_evaluations(papers, parsed)
 
     # ---- Lineage classification ----
 

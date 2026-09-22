@@ -331,3 +331,26 @@ def test_title_only_resolution_is_rejected_without_network():
     with patch.object(bcl, "_get") as get:
         assert bcl.resolve_oral("Title", aliases=frozenset()) is None
     get.assert_not_called()
+
+
+def test_main_rejects_path_traversal_conference_before_reading_or_writing(monkeypatch):
+    """Regression test (closes #390 follow-up): --conference is used both
+    to READ docs/<conference>/papers.json and WRITE
+    docs/<conference>/lineage.json; a malicious value must be rejected
+    before either happens."""
+    import sys
+
+    import pytest
+
+    monkeypatch.setattr(
+        bcl,
+        "load_orals",
+        lambda *a, **kw: (_ for _ in ()).throw(AssertionError("load_orals must not run")),
+    )
+    with patch.object(
+        sys,
+        "argv",
+        ["build_conference_lineage.py", "--conference", "../../etc/passwd"],
+    ):
+        with pytest.raises(ValueError):
+            bcl.main()

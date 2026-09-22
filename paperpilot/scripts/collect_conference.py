@@ -42,6 +42,7 @@ import arxiv
 
 from ..identity import IdentityError, identity_from_url, normalize_alias
 from ..signals.venue_signal import VenueSignal
+from ._common import validate_conference_slug
 
 PROJECT = Path(__file__).resolve().parents[1]
 _ARXIV_ID_RE = re.compile(r"abs/([0-9]+\.[0-9]+)")
@@ -147,8 +148,17 @@ def write_outputs(
     date: str | None = None,
 ) -> Path:
     """Write papers_<date>.csv (+ oral_summaries_ja.md) under the conf dir."""
+    validate_conference_slug(conference)
     root = output_root if output_root is not None else PROJECT / "output"
     out_dir = root / conference
+    # Defense-in-depth: validate_conference_slug's allowlist regex already
+    # makes traversal structurally impossible (no "/" or ".." can match),
+    # but a resolve()-based containment check costs nothing and protects
+    # against a future loosening of that regex.
+    resolved_root = root.resolve()
+    resolved_out_dir = out_dir.resolve()
+    if resolved_root != resolved_out_dir and resolved_root not in resolved_out_dir.parents:
+        raise ValueError(f"conference output dir {resolved_out_dir} escapes {resolved_root}")
     out_dir.mkdir(parents=True, exist_ok=True)
     day = date or datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
@@ -201,19 +211,23 @@ def main() -> int:
 
     results = fetch_results(args.query, args.max)
     rows, oral_titles = build_rows(results, args.venue)
-    csv_path = write_outputs(args.conference, rows, oral_titles)
 
     print(f"scanned {len(results)} arXiv results for query: {args.query}")
+    if not rows:
+        # Do NOT call write_outputs: it would write a header-only CSV for
+        # today's date and silently overwrite/mask an existing good
+        # catalog file from an earlier run on the same day (closes #389).
+        print(
+            "⚠️  0 papers matched — VenueSignal needs an 'accepted to <venue>' "
+            "style comment; check --venue / --query. Nothing written."
+        )
+        return 1
+
+    csv_path = write_outputs(args.conference, rows, oral_titles)
     print(
         f"✅ {len(rows)} genuine {args.venue.upper()} papers "
         f"({len(oral_titles)} oral/highlight) -> {csv_path}"
     )
-    if not rows:
-        print(
-            "⚠️  0 papers matched — VenueSignal needs an 'accepted to <venue>' "
-            "style comment; check --venue / --query."
-        )
-        return 1
     return 0
 
 

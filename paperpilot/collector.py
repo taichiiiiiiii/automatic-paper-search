@@ -131,8 +131,11 @@ def _run_expand_keywords(
     if args.write:
         config["search"]["keywords"] = expanded
         # Preserve user comments is hard with PyYAML; we write a clean dump.
+        # `env` holds secrets injected by load_config() from the environment
+        # (see absolute rule §1: never persist secrets into config.yaml).
+        to_write = {k: v for k, v in config.items() if k != "env"}
         with config_path.open("w", encoding="utf-8") as f:
-            yaml.safe_dump(config, f, allow_unicode=True, sort_keys=False)
+            yaml.safe_dump(to_write, f, allow_unicode=True, sort_keys=False)
         print(f"✅ wrote {config_path}")
     else:
         print("ℹ️  pass --write to persist the expansion")

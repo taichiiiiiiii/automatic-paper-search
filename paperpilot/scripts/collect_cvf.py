@@ -32,6 +32,7 @@ from typing import Any
 from ..signals.venue_signal import TIER_1, TIER_2, TIER_3
 from ..utils.http import request_with_retry
 from ..utils.logger import get_logger
+from ..utils.rate_limiter import RateLimiter
 from .collect_conference import oral_titles_from_arxiv, write_outputs
 
 logger = get_logger(__name__)
@@ -114,9 +115,12 @@ def fetch_listing(cvf_id: str, *, timeout: float = 30.0) -> list[str]:
     return detail_paths(resp.text, cvf_id)
 
 
-def _fetch_one(path: str, venue: str, *, timeout: float = 30.0) -> dict[str, Any] | None:
+def _fetch_one(
+    path: str, venue: str, limiter: RateLimiter, *, timeout: float = 30.0
+) -> dict[str, Any] | None:
     # Fail-Safe: any error on a single page returns None (the row is dropped),
     # so one bad page never aborts the whole concurrent collection via ex.map.
+    limiter.wait()
     try:
         resp = request_with_retry("GET", f"{CVF_BASE}{path}", timeout=timeout)
         if resp is None or resp.status_code != 200:
@@ -127,14 +131,37 @@ def _fetch_one(path: str, venue: str, *, timeout: float = 30.0) -> dict[str, Any
         return None
 
 
-def collect(cvf_id: str, venue: str, *, max_workers: int = 8) -> list[dict[str, Any]]:
-    """Full collection: listing -> concurrent detail fetch -> rows (deduped by url)."""
+def collect(
+    cvf_id: str,
+    venue: str,
+    *,
+    max_workers: int = 8,
+    delay_seconds: float = 0.25,
+) -> list[dict[str, Any]]:
+    """Full collection: listing -> concurrent detail fetch -> rows (deduped by url).
+
+    `max_workers` bounds concurrency (existing ThreadPoolExecutor cap);
+    `delay_seconds` throttles the AGGREGATE request rate across all workers
+    via a single shared `RateLimiter`, since bounding concurrency alone
+    still lets `max_workers` requests fire back-to-back with zero spacing,
+    risking 429s / anti-scraping blocks on openaccess.thecvf.com.
+    """
     paths = fetch_listing(cvf_id)
+    limiter = RateLimiter(delay_seconds)
     rows: dict[str, dict[str, Any]] = {}
+    failed = 0
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as ex:
-        for row in ex.map(lambda p: _fetch_one(p, venue), paths):
+        for row in ex.map(lambda p: _fetch_one(p, venue, limiter), paths):
             if row and row["url"] not in rows:
                 rows[row["url"]] = row
+            elif row is None:
+                failed += 1
+    if failed:
+        logger.warning(
+            "cvf: %d/%d detail pages failed to fetch/parse (dropped)",
+            failed,
+            len(paths),
+        )
     return list(rows.values())
 
 
@@ -145,6 +172,13 @@ def main() -> int:
     ap.add_argument("--cvf-id", required=True, help='CVF listing id, e.g. "CVPR2025"')
     ap.add_argument("--max-workers", type=int, default=8, help="concurrent detail fetches")
     ap.add_argument(
+        "--delay-seconds",
+        type=float,
+        default=0.25,
+        help="minimum spacing between detail-page requests, shared across all "
+        "--max-workers threads (politeness throttle, default 0.25s)",
+    )
+    ap.add_argument(
         "--oral-arxiv-query",
         default=None,
         help='restore Oral/Highlight marks from arXiv comments (CVF has none), e.g. '
@@ -152,7 +186,12 @@ def main() -> int:
     )
     args = ap.parse_args()
 
-    rows = collect(args.cvf_id, args.venue, max_workers=args.max_workers)
+    rows = collect(
+        args.cvf_id,
+        args.venue,
+        max_workers=args.max_workers,
+        delay_seconds=args.delay_seconds,
+    )
     print(f"collected {len(rows)} {args.venue.upper()} papers from CVF {args.cvf_id}")
     if not rows:
         print("⚠️  0 papers — check --cvf-id (e.g. 'CVPR2025'). Nothing written.")

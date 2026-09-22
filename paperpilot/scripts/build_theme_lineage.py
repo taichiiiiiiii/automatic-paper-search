@@ -1685,9 +1685,14 @@ def _search_one_keyword_via_s2(
     results across keywords via ``setdefault`` for dedup.
 
     Cache lives under ``_seed_cache_path(keyword, since_year)`` — a
-    successful network call writes a JSON list there; a network
-    failure writes ``[]`` so the next run doesn't re-hit S2 in the
-    same window. This mirrors the cache pattern in ``fetch_related``.
+    successful network call (200, even with zero results) writes a JSON
+    list there. A network/API failure (resp is ``None`` or non-200)
+    deliberately does NOT write the cache (#401 fix): S2's search
+    endpoint returns 200 with an empty ``data`` array for a genuine
+    "no results" — any non-200/no-response outcome is a transport or
+    server problem, not a legitimate empty answer, and caching it as
+    ``[]`` would permanently freeze a transient outage into "this
+    keyword has 0 papers" for every future run in the same window.
     """
     if not keyword or not keyword.strip():
         return []
@@ -1719,10 +1724,14 @@ def _search_one_keyword_via_s2(
         headers={"User-Agent": "PaperPilot/0.1"},
         timeout=20,
     )
-    cache.parent.mkdir(parents=True, exist_ok=True)
     if resp is None or resp.status_code != 200:
-        cache.write_text("[]")
+        logger.warning(
+            "s2: search failed for keyword %r (status=%s); not caching",
+            keyword,
+            getattr(resp, "status_code", None),
+        )
         return []
+    cache.parent.mkdir(parents=True, exist_ok=True)
     try:
         payload = resp.json()
     except ValueError:

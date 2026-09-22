@@ -281,7 +281,10 @@ def test_discover_seeds_handles_empty_search(tmp_path: Path, monkeypatch):
 
 def test_discover_seeds_handles_none_response(tmp_path: Path, monkeypatch):
     """`request_with_retry` returning None (network failure / persistent 5xx)
-    must be tolerated — we cache an empty list and continue with other keywords."""
+    must be tolerated — the current call returns [] and other keywords
+    still proceed, but the failure must NOT be cached (closes #401): a
+    transient S2 outage must not be frozen into "this keyword has 0
+    papers" for every future run in the same cache window."""
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
     with patch.object(
         build_theme_lineage,
@@ -294,10 +297,35 @@ def test_discover_seeds_handles_none_response(tmp_path: Path, monkeypatch):
             since_year=None,
         )
     assert seeds == []
-    # Empty-list cache is still written so a re-run doesn't hit the network again.
+    # No cache file is written on transient failure — a re-run must retry.
     cache_files = list(tmp_path.glob("search_*.json"))
-    assert len(cache_files) == 1
-    assert json.loads(cache_files[0].read_text()) == []
+    assert cache_files == []
+
+
+def test_discover_seeds_retries_after_transient_failure(tmp_path: Path, monkeypatch):
+    """Regression test (closes #401): a keyword whose first attempt hit a
+    transient S2 failure must actually re-query S2 on the next run, not
+    silently replay a cached empty result."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    with patch.object(
+        build_theme_lineage,
+        "request_with_retry",
+        return_value=None,
+    ):
+        build_theme_lineage.discover_seeds(
+            keywords=["x"], top_n=10, since_year=None, use_openalex_fallback=False
+        )
+    p = _mk_s2_paper("p1")
+    with patch.object(
+        build_theme_lineage,
+        "request_with_retry",
+        return_value=_mk_s2_search_response([p]),
+    ) as mock_rwr:
+        seeds = build_theme_lineage.discover_seeds(
+            keywords=["x"], top_n=10, since_year=None, use_openalex_fallback=False
+        )
+    mock_rwr.assert_called_once()
+    assert [s["paperId"] for s in seeds] == ["p1"]
 
 
 def test_discover_seeds_handles_corrupt_cache(tmp_path: Path, monkeypatch):

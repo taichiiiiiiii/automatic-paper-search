@@ -26,6 +26,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from paperpilot.identity import IdentityError, identity_from_url, normalize_alias
+from paperpilot.scripts._common import validate_conference_slug
 
 PROJECT = Path(__file__).resolve().parents[1]
 _PAPERS_NAME_RE = re.compile(r"^papers_\d{4}-\d{2}-\d{2}\.csv$")
@@ -362,6 +363,7 @@ def main() -> None:
     )
     args = ap.parse_args()
 
+    validate_conference_slug(args.conference)
     conf_dir = PROJECT / "output" / args.conference
     input_csv = Path(args.input) if args.input else None
 

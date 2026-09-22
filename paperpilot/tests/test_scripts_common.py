@@ -4,7 +4,11 @@ from __future__ import annotations
 
 import pytest
 
-from paperpilot.scripts._common import slug_to_venue_label, theme_slug
+from paperpilot.scripts._common import (
+    slug_to_venue_label,
+    theme_slug,
+    validate_conference_slug,
+)
 
 
 def test_slug_to_venue_label_iclr():
@@ -86,6 +90,53 @@ def test_theme_slug_pure_punctuation_raises():
     # No alphanumeric content → would yield empty slug → reject.
     with pytest.raises(ValueError):
         theme_slug("!!!---///")
+
+
+# ---- validate_conference_slug ----
+
+
+def test_validate_conference_slug_accepts_valid_slugs():
+    for good in ("cvpr-2026", "iclr-2026", "emnlp-findings-2025", "acl2025", "a"):
+        assert validate_conference_slug(good) == good
+
+
+def test_validate_conference_slug_rejects_path_traversal():
+    """Regression test (closes #390)."""
+    for bad in ("../../etc/passwd", "..", "/etc/passwd", "cvpr/../escape", "a/b"):
+        with pytest.raises(ValueError):
+            validate_conference_slug(bad)
+
+
+def test_validate_conference_slug_rejects_non_slug_shapes():
+    for bad in ("", "CVPR-2026", "cvpr 2026", "cvpr_2026", "-cvpr", "cvpr-", "cvpr--2026"):
+        with pytest.raises(ValueError):
+            validate_conference_slug(bad)
+
+
+def test_validate_conference_slug_rejects_trailing_newline():
+    """Regression test (closes #390 follow-up): `re.match` with a `$`-
+    anchored pattern also matches just before a trailing newline, so
+    "cvpr-2026\n" would incorrectly pass a `.match()`-based check even
+    though it isn't slug-shaped. Must use `.fullmatch()` instead."""
+    for bad in ("cvpr-2026\n", "cvpr-2026\n\n", "\ncvpr-2026"):
+        with pytest.raises(ValueError):
+            validate_conference_slug(bad)
+
+
+def test_validate_conference_slug_rejects_reserved_name():
+    """Regression test (closes #390 follow-up): "daily" is
+    paperpilot/output/daily/ (the daily-watch pipeline's own output dir,
+    config.daily-watch.yaml), not a conference — collect_conference.py
+    writing there would corrupt/collide with the daily-watch pipeline's
+    output. Mirrors build_pages.py's NON_CONFERENCE reserved-name check."""
+    with pytest.raises(ValueError):
+        validate_conference_slug("daily")
+
+
+def test_validate_conference_slug_rejects_overlong_input():
+    with pytest.raises(ValueError):
+        validate_conference_slug("a" * 65)
+    assert validate_conference_slug("a" * 64) == "a" * 64
 
 
 def test_theme_slug_matches_url_param_regex():

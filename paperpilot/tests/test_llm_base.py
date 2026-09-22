@@ -11,8 +11,20 @@ from paperpilot.llm.base import (
     RelationClassification,
     build_classify_prompt,
     build_evaluation_prompt,
+    map_batch_evaluations,
 )
 from paperpilot.models import Paper
+
+
+def _paper(title: str) -> Paper:
+    return Paper(
+        title=title,
+        authors=["A"],
+        abstract="abs",
+        url=f"http://x/{title}",
+        published_date=date.today(),
+        source="arxiv",
+    )
 
 
 def test_paper_evaluation_from_dict_ok():
@@ -33,6 +45,19 @@ def test_paper_evaluation_invalid_relevance():
     assert PaperEvaluation.from_dict({}) is None
 
 
+def test_paper_evaluation_infinite_relevance_does_not_raise():
+    """Regression test (closes #391 follow-up): `int(float("inf"))` raises
+    OverflowError, not the ValueError/TypeError the old except clause
+    caught. json.loads() accepts the non-standard Infinity/-Infinity JSON
+    literals, so `{"relevance": Infinity}` is a reachable malformed LLM
+    response, not just a theoretical one — it must degrade to None like
+    any other invalid relevance, never raise past this validator (an
+    uncaught raise here propagates through evaluate_batch() and drops the
+    ENTIRE batch's otherwise-valid evaluations, not just this one paper)."""
+    assert PaperEvaluation.from_dict({"relevance": float("inf")}) is None
+    assert PaperEvaluation.from_dict({"relevance": float("-inf")}) is None
+
+
 def test_paper_evaluation_non_dict():
     assert PaperEvaluation.from_dict("not a dict") is None
     assert PaperEvaluation.from_dict(None) is None
@@ -42,6 +67,164 @@ def test_paper_evaluation_tags_fallback():
     ev = PaperEvaluation.from_dict({"relevance": 3, "tags": "not a list"})
     assert ev is not None
     assert ev.tags == []
+
+
+# ---- map_batch_evaluations (#391) ----
+# Every provider previously reimplemented an unsafe positional zip
+# (parsed[i] <-> papers[i]): if the LLM's response array was short,
+# reordered, had gaps, or duplicated an index, one paper's evaluation
+# could silently attach to a different paper. This is the one shared,
+# index-based, safe replacement all four providers now call.
+
+
+def test_map_batch_evaluations_happy_path_in_order():
+    papers = [_paper("A"), _paper("B")]
+    parsed = [
+        {"index": 1, "relevance": 5, "summary_ja": "s1", "reason": "r1", "tags": []},
+        {"index": 2, "relevance": 2, "summary_ja": "s2", "reason": "r2", "tags": []},
+    ]
+    result = map_batch_evaluations(papers, parsed)
+    assert result[0] is not None and result[0].relevance == 5
+    assert result[1] is not None and result[1].relevance == 2
+
+
+def test_map_batch_evaluations_reordered_response():
+    """The core #391 regression: response order must not matter."""
+    papers = [_paper("A"), _paper("B"), _paper("C")]
+    parsed = [
+        {"index": 3, "relevance": 1, "summary_ja": "c", "reason": "r", "tags": []},
+        {"index": 1, "relevance": 5, "summary_ja": "a", "reason": "r", "tags": []},
+        {"index": 2, "relevance": 3, "summary_ja": "b", "reason": "r", "tags": []},
+    ]
+    result = map_batch_evaluations(papers, parsed)
+    assert [e.summary_ja for e in result] == ["a", "b", "c"]
+
+
+def test_map_batch_evaluations_missing_index_field_dropped():
+    papers = [_paper("A")]
+    parsed = [{"relevance": 5, "summary_ja": "a", "reason": "r", "tags": []}]
+    assert map_batch_evaluations(papers, parsed) == [None]
+
+
+def test_map_batch_evaluations_non_integer_index_dropped():
+    papers = [_paper("A")]
+    parsed = [{"index": "one", "relevance": 5, "summary_ja": "a", "reason": "r", "tags": []}]
+    assert map_batch_evaluations(papers, parsed) == [None]
+
+
+def test_map_batch_evaluations_rejects_coercible_but_non_strict_int_indices():
+    """Regression test: `int(x)` would silently coerce a float, numeric
+    string, or bool into a plausible-looking valid index — that must NOT
+    happen. Only a strict `int` (excluding `bool`, an int subclass) is
+    accepted."""
+    papers = [_paper("A")]
+    for sneaky_index in (1.5, 1.0, "1", True):
+        parsed = [
+            {"index": sneaky_index, "relevance": 5, "summary_ja": "a", "reason": "r", "tags": []}
+        ]
+        assert map_batch_evaluations(papers, parsed) == [None], (
+            f"index {sneaky_index!r} ({type(sneaky_index).__name__}) was incorrectly accepted"
+        )
+
+
+def test_map_batch_evaluations_rejects_index_that_would_overflow_int():
+    """`int(float("inf"))` raises OverflowError, not caught by the old
+    `except (TypeError, ValueError)` — a strict type check sidesteps this
+    entirely by never calling int() on a non-int value."""
+    papers = [_paper("A")]
+    parsed = [
+        {"index": float("inf"), "relevance": 5, "summary_ja": "a", "reason": "r", "tags": []}
+    ]
+    assert map_batch_evaluations(papers, parsed) == [None]
+
+
+def test_map_batch_evaluations_out_of_range_index_dropped():
+    papers = [_paper("A")]
+    parsed = [
+        {"index": 0, "relevance": 5, "summary_ja": "a", "reason": "r", "tags": []},
+        {"index": 2, "relevance": 4, "summary_ja": "b", "reason": "r", "tags": []},
+    ]
+    assert map_batch_evaluations(papers, parsed) == [None]
+
+
+def test_map_batch_evaluations_duplicate_index_rejected_entirely():
+    """Regression test: a duplicate claim on the same index is ambiguous
+    and must be rejected outright (mapped to None), not resolved by
+    picking either claimant — the issue's requirement is complete-AND-
+    unique indices, not "pick a winner when non-unique"."""
+    papers = [_paper("A"), _paper("B")]
+    parsed = [
+        {"index": 1, "relevance": 5, "summary_ja": "first", "reason": "r", "tags": []},
+        {"index": 1, "relevance": 1, "summary_ja": "duplicate", "reason": "r", "tags": []},
+        {"index": 2, "relevance": 3, "summary_ja": "b", "reason": "r", "tags": []},
+    ]
+    result = map_batch_evaluations(papers, parsed)
+    assert result[0] is None  # ambiguous — neither claimant wins
+    assert result[1] is not None and result[1].summary_ja == "b"  # unaffected
+
+
+def test_map_batch_evaluations_duplicate_where_first_occurrence_is_invalid():
+    """Regression test: even if the FIRST occurrence of a duplicated index
+    fails PaperEvaluation.from_dict validation, the index is still
+    ambiguous (something else claimed it too) and must not fall through
+    to accepting the second, individually-valid occurrence."""
+    papers = [_paper("A")]
+    parsed = [
+        {"index": 1, "relevance": 99},  # invalid relevance, would be None anyway
+        {"index": 1, "relevance": 5, "summary_ja": "b", "reason": "r", "tags": []},
+    ]
+    assert map_batch_evaluations(papers, parsed) == [None]
+
+
+def test_map_batch_evaluations_gap_leaves_none():
+    papers = [_paper("A"), _paper("B"), _paper("C")]
+    parsed = [
+        {"index": 1, "relevance": 5, "summary_ja": "a", "reason": "r", "tags": []},
+        {"index": 3, "relevance": 2, "summary_ja": "c", "reason": "r", "tags": []},
+    ]
+    result = map_batch_evaluations(papers, parsed)
+    assert result[0] is not None and result[0].summary_ja == "a"
+    assert result[1] is None
+    assert result[2] is not None and result[2].summary_ja == "c"
+
+
+def test_map_batch_evaluations_non_list_input():
+    papers = [_paper("A"), _paper("B")]
+    assert map_batch_evaluations(papers, {"not": "a list"}) == [None, None]
+
+
+def test_map_batch_evaluations_non_dict_elements_dropped():
+    papers = [_paper("A")]
+    assert map_batch_evaluations(papers, ["not a dict"]) == [None]
+
+
+def test_map_batch_evaluations_invalid_evaluation_body_still_none():
+    """A valid, unique, in-range index whose OTHER fields fail
+    PaperEvaluation.from_dict validation (e.g. bad relevance) must still
+    end up None — index validity alone doesn't bypass field validation."""
+    papers = [_paper("A")]
+    parsed = [{"index": 1, "relevance": 99, "summary_ja": "a", "reason": "r", "tags": []}]
+    assert map_batch_evaluations(papers, parsed) == [None]
+
+
+def test_map_batch_evaluations_infinite_relevance_does_not_drop_whole_batch():
+    """Regression test (closes #391 follow-up): one paper's malformed
+    `"relevance": Infinity` must not raise out of map_batch_evaluations
+    and discard the OTHER, valid evaluations in the same batch — only
+    that one paper degrades to None."""
+    papers = [_paper("A"), _paper("B")]
+    parsed = [
+        {"index": 1, "relevance": float("inf"), "summary_ja": "x", "reason": "r", "tags": []},
+        {"index": 2, "relevance": 4, "summary_ja": "good", "reason": "r", "tags": []},
+    ]
+    result = map_batch_evaluations(papers, parsed)
+    assert result[0] is None
+    assert result[1] is not None and result[1].summary_ja == "good"
+
+
+def test_map_batch_evaluations_empty_papers():
+    assert map_batch_evaluations([], []) == []
+    assert map_batch_evaluations([], [{"index": 1, "relevance": 5}]) == []
 
 
 def test_build_evaluation_prompt_contains_profile_and_papers():

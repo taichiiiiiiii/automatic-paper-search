@@ -45,7 +45,13 @@ class PaperEvaluation:
         rel = d.get("relevance")
         try:
             rel_int = int(rel) if rel is not None else None
-        except (TypeError, ValueError):
+        except (TypeError, ValueError, OverflowError):
+            # OverflowError: int(float("inf")) / int(float("-inf")) raise
+            # this (not ValueError). json.loads() accepts the non-standard
+            # `Infinity`/`-Infinity` literals, so a malformed
+            # `"relevance": Infinity` from an LLM response is a reachable
+            # input, not just a theoretical one — must degrade to None like
+            # any other invalid relevance, not raise past this validator.
             return None
         if rel_int is None or rel_int < 1 or rel_int > 5:
             return None
@@ -63,6 +69,72 @@ class PaperEvaluation:
         return cls(relevance=rel_int, summary_ja=summary, reason=reason, tags=tags)
 
 
+def map_batch_evaluations(
+    papers: list[Paper], parsed: object
+) -> list[PaperEvaluation | None]:
+    """Map a parsed LLM batch response back to `papers`, one result each.
+
+    LLM summaries/relevance are untrusted derived data (AGENTS.md
+    invariant), and a raw positional zip (`parsed[i]` <-> `papers[i]`) is
+    unsafe: if the model's response array is short, reordered, has gaps,
+    or duplicates an index, one paper's evaluation can silently attach to
+    a different paper (closes #391). Every provider previously
+    reimplemented the same unsafe zip independently; this is now the one
+    shared, safe implementation.
+
+    Matching is by the explicit `"index"` field each element must carry
+    (1-based, matching the `[論文N]` numbering in build_evaluation_prompt).
+    An index must be a strict `int` (not `bool` — `bool` is an `int`
+    subclass in Python but never a meaningful index; not a float or
+    numeric string coerced via `int(...)`, since that would silently
+    accept malformed output like `1.5` or `"1"` as if it were exactly `1`)
+    and within `[1, len(papers)]`. If the SAME index value appears on more
+    than one element — regardless of whether either individual element is
+    otherwise valid — that index is ambiguous and its evaluation is
+    dropped entirely (mapped to None), never resolved by picking either
+    claimant: a duplicate claim on one paper cannot be safely disambiguated
+    by this function. A paper whose index never appears (or whose sole
+    claiming element failed `PaperEvaluation.from_dict` validation) also
+    gets None, the existing unknown/fallback value providers already
+    return for a paper they can't evaluate.
+    """
+    if not isinstance(parsed, list):
+        return [None] * len(papers)
+
+    def _valid_index(item: object) -> int | None:
+        if not isinstance(item, dict):
+            return None
+        raw_index = item.get("index")
+        # Strict type check (not `int(raw_index)`): excludes bool (an int
+        # subclass), float, and numeric strings, all of which `int()`
+        # would silently coerce into a plausible-looking valid index.
+        if type(raw_index) is not int:
+            return None
+        if raw_index < 1 or raw_index > len(papers):
+            return None
+        return raw_index
+
+    # First pass: count how many elements claim each valid index. A count
+    # of 2+ means the claim is ambiguous and must be rejected outright in
+    # the second pass, regardless of either element's own field validity.
+    index_counts: dict[int, int] = {}
+    for item in parsed:
+        index = _valid_index(item)
+        if index is not None:
+            index_counts[index] = index_counts.get(index, 0) + 1
+
+    by_index: dict[int, PaperEvaluation] = {}
+    for item in parsed:
+        index = _valid_index(item)
+        if index is None or index_counts[index] != 1:
+            continue
+        evaluation = PaperEvaluation.from_dict(item)
+        if evaluation is not None:
+            by_index[index] = evaluation
+
+    return [by_index.get(i) for i in range(1, len(papers) + 1)]
+
+
 SYSTEM_PROMPT = """\
 あなたは学術論文の評価アシスタントです。
 ユーザーの研究プロファイルに基づき、各論文の有用性を判定してください。
@@ -70,11 +142,13 @@ SYSTEM_PROMPT = """\
 ## 出力形式（厳守）
 - JSON配列のみを返してください
 - マークダウンのバッククォート（```）は絶対に含めないでください
-- 各要素: {"relevance": 1-5, "summary_ja": str, "reason": str, "tags": [str]}
+- 各要素: {"index": int, "relevance": 1-5, "summary_ja": str, "reason": str, "tags": [str]}
+- index: 評価対象の論文リストで示された番号（[論文1]なら1、[論文2]なら2、...）をそのまま設定してください
 - relevance: 1=無関係, 2=弱い関連, 3=中程度, 4=強い関連, 5=必読
 - summary_ja: 日本語で3行以内の要約
 - reason: 日本語で1文、読むべき理由（無関係なら読まなくてよい理由）
 - tags: 最大4個の日本語タグ（例: 「新手法」「ベンチマーク」「応用」「理論」）
+- 全ての論文について1件ずつ評価を返してください（省略・重複禁止）
 """
 
 _USER_TEMPLATE = """\
@@ -84,7 +158,7 @@ _USER_TEMPLATE = """\
 ## 評価対象の論文（{count}件）
 {papers_block}
 
-上記の論文を、入力順と同じ順序のJSON配列で評価してください。
+各論文について、その番号を"index"に設定したJSON配列で評価してください。
 """
 
 

@@ -42,11 +42,31 @@ class OpenAlexSource(AbstractSource):
         max_results: int,
     ) -> list[Paper]:
         papers: list[Paper] = []
+        failures: list[str] = []
         for kw in keywords:
             self._limiter.wait()
-            batch = self._search(kw, since_date, max_results)
+            try:
+                batch = self._search(kw, since_date, max_results)
+            except Exception as e:
+                # Fail-safe: one keyword's response containing unexpected
+                # data (beyond what per-work-item handling in _search
+                # already tolerates) must not abort the other keywords.
+                logger.warning("openalex: keyword '%s' failed unexpectedly: %s", kw, e)
+                failures.append(kw)
+                continue
             logger.info("openalex: keyword '%s' returned %d papers", kw, len(batch))
             papers.extend(batch)
+
+        if keywords and len(failures) == len(keywords):
+            # Every keyword failed: this is an outage, not "genuinely 0 new
+            # papers today". Raise so Stage 0's existing per-source failure
+            # path (stage_collect.py) records sources_status["openalex"]
+            # ["ok"] = False, rather than a misleadingly-successful empty
+            # result (same masking pattern fixed for arxiv/S2 in #387).
+            raise RuntimeError(
+                f"openalex fetch failed for all {len(keywords)} keyword(s)"
+            )
+
         logger.info("openalex: collected %d papers (pre-dedup)", len(papers))
         return papers
 
@@ -68,18 +88,24 @@ class OpenAlexSource(AbstractSource):
             "GET", f"{OPENALEX_BASE}/works", params=params
         )
         if resp is None or resp.status_code != 200:
-            logger.warning(
-                "openalex: search failed for '%s' (status=%s)",
-                keyword,
-                getattr(resp, "status_code", None),
-            )
-            return []
+            status = getattr(resp, "status_code", None)
+            logger.warning("openalex: search failed for '%s' (status=%s)", keyword, status)
+            raise RuntimeError(f"openalex search failed for '{keyword}' (status={status})")
         data = resp.json() or {}
         results = data.get("results") or []
 
         papers: list[Paper] = []
         for work in results:
-            paper = self._to_paper(work, keyword, since_date)
+            try:
+                paper = self._to_paper(work, keyword, since_date)
+            except Exception as e:
+                # Fail-safe: an unexpected shape anywhere in a single work
+                # item (bad title/date/authorships/ids/etc., not just the
+                # abstract index) must not abort the rest of the batch.
+                logger.warning(
+                    "openalex: skipping malformed work item for '%s': %s", keyword, e
+                )
+                continue
             if paper is not None:
                 papers.append(paper)
         return papers
@@ -170,11 +196,50 @@ class OpenAlexSource(AbstractSource):
         Malformed upstream data may assign the same position to multiple
         tokens; keep last-writer-wins so the abstract length stays bounded
         even in that degenerate case.
+
+        Fail-safe, but conservative: if the abstract_inverted_index contains
+        ANY malformed entry (non-string token, non-list positions, non-
+        integer/negative/bool position), the entire abstract degrades to ""
+        (an already-supported "no abstract" state used throughout the
+        pipeline — see e.g. AbstractLLMProvider's `(abstract or "")`)
+        rather than a silently partial abstract with tokens dropped. A
+        silently incomplete abstract is more dangerous than an explicitly
+        missing one: keyword scoring, exclusion filtering, embedding
+        ranking, and LLM prompting all treat `paper.abstract` as
+        authoritative text, and dropping the wrong token (e.g. "not") could
+        invert the intended meaning without any signal that it happened.
+        The paper itself is still kept — only the abstract is cleared —
+        since title/authors/venue/etc. are unaffected by this field.
         """
-        if not inverted:
+        if not inverted or not isinstance(inverted, dict):
             return ""
         pos_to_token: dict[int, str] = {}
         for token, indices in inverted.items():
+            if not isinstance(token, str):
+                logger.warning(
+                    "openalex: malformed abstract_inverted_index token key "
+                    "%r (expected str); discarding whole abstract",
+                    token,
+                )
+                return ""
+            if not isinstance(indices, list):
+                logger.warning(
+                    "openalex: malformed abstract_inverted_index positions for "
+                    "token %r (expected a list, got %s); discarding whole abstract",
+                    token,
+                    type(indices).__name__,
+                )
+                return ""
             for idx in indices:
+                # bool is a subclass of int in Python; exclude it explicitly
+                # since a boolean isn't a meaningful token position.
+                if isinstance(idx, bool) or not isinstance(idx, int) or idx < 0:
+                    logger.warning(
+                        "openalex: malformed abstract_inverted_index position "
+                        "%r for token %r; discarding whole abstract",
+                        idx,
+                        token,
+                    )
+                    return ""
                 pos_to_token[idx] = token
         return " ".join(pos_to_token[i] for i in sorted(pos_to_token))
