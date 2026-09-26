@@ -20,6 +20,7 @@ import hashlib
 import json
 import logging
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any
 from unittest.mock import MagicMock, patch
 
@@ -329,8 +330,13 @@ def test_discover_seeds_retries_after_transient_failure(tmp_path: Path, monkeypa
 
 
 def test_discover_seeds_handles_corrupt_cache(tmp_path: Path, monkeypatch):
-    """A garbled cache file must not crash the pipeline; treat as empty
-    and proceed (next run will rewrite it on a successful query).
+    """A garbled cache file must not crash the pipeline.
+
+    A corrupt file is now a cache MISS rather than a silent empty result,
+    so the live search runs — it is mocked here (CLAUDE.md rule 3) and
+    made to fail, which is the case this test is really about: a bad
+    cache plus an unavailable backend still degrades to [] instead of
+    raising.
 
     Fallback is disabled here so the test isolates corrupt-cache handling
     from the OpenAlex path (a real OpenAlex request would otherwise fire).
@@ -339,13 +345,18 @@ def test_discover_seeds_handles_corrupt_cache(tmp_path: Path, monkeypatch):
     cache_path = build_theme_lineage._seed_cache_path("x", None)
     cache_path.parent.mkdir(parents=True, exist_ok=True)
     cache_path.write_text("{this is not valid json")
-    seeds = build_theme_lineage.discover_seeds(
-        keywords=["x"],
-        top_n=10,
-        since_year=None,
-        use_openalex_fallback=False,
-    )
+    with patch.object(build_theme_lineage, "request_with_retry", return_value=None) as req:
+        seeds = build_theme_lineage.discover_seeds(
+            keywords=["x"],
+            top_n=10,
+            since_year=None,
+            use_openalex_fallback=False,
+        )
     assert seeds == []
+    req.assert_called_once()
+    # The failed search must not have replaced the bad file with an
+    # authoritative empty one (#401 policy).
+    assert cache_path.read_text() == "{this is not valid json"
 
 
 def test_discover_seeds_caches_per_keyword(tmp_path: Path, monkeypatch):
@@ -5100,3 +5111,480 @@ def test_theme_blacklist_vetoes_lip_to_speech_for_flash_attention():
     kept_ids = {p["paperId"] for p in kept}
     assert "contaminant" not in kept_ids
     assert "fa2" in kept_ids
+
+
+def test_fetch_related_via_openalex_raises_on_work_fetch_failure():
+    """An HTTP failure must be distinguishable from "this Work has no
+    references"; returning [] let build_lineage cache the outage."""
+    with patch.object(build_theme_lineage, "request_with_retry", return_value=None):
+        with pytest.raises(build_theme_lineage.OpenAlexTransientError):
+            build_theme_lineage.fetch_related_via_openalex("W123", "references", limit=10)
+
+
+def test_fetch_related_via_openalex_raises_on_malformed_work_body():
+    class _BadJSON:
+        status_code = 200
+
+        def json(self):
+            raise ValueError("not json")
+
+    with patch.object(build_theme_lineage, "request_with_retry", return_value=_BadJSON()):
+        with pytest.raises(build_theme_lineage.OpenAlexTransientError):
+            build_theme_lineage.fetch_related_via_openalex("W123", "references", limit=10)
+
+
+def test_fetch_related_via_openalex_raises_on_cites_query_failure():
+    with patch.object(
+        build_theme_lineage,
+        "request_with_retry",
+        return_value=SimpleNamespace(status_code=503, text=""),
+    ):
+        with pytest.raises(build_theme_lineage.OpenAlexTransientError):
+            build_theme_lineage.fetch_related_via_openalex("W123", "citations", limit=10)
+
+
+def test_fetch_openalex_works_by_ids_raises_when_every_chunk_fails():
+    """A total batch-resolve outage previously returned [], which the
+    references branch reported as "this Work resolved to no parents"."""
+    with patch.object(build_theme_lineage, "request_with_retry", return_value=None):
+        with pytest.raises(build_theme_lineage.OpenAlexTransientError):
+            build_theme_lineage._fetch_openalex_works_by_ids(["W1", "W2"])
+
+
+def _partial_chunk_fake():
+    """First of two chunks fails, second returns one usable Work."""
+    calls: list[int] = []
+
+    def fake(method, url, **kw):
+        calls.append(1)
+        if len(calls) == 1:
+            return None
+        return SimpleNamespace(
+            status_code=200,
+            json=lambda: {
+                "results": [
+                    {
+                        "id": "https://openalex.org/W9",
+                        "display_name": "Survivor",
+                        "publication_year": 2020,
+                        "cited_by_count": 1,
+                    }
+                ]
+            },
+        )
+
+    return fake
+
+
+def test_fetch_openalex_works_by_ids_reports_a_partial_chunk_failure():
+    """One lost page is still an INCOMPLETE answer. It used to return the
+    survivors as if they were the whole set, which build_lineage then
+    froze in a cache that never expires — so the ids on the failed page
+    were never fetched again. The survivors now ride along on the
+    exception instead, which forces the caller's no-cache path."""
+    ids = [f"W{i}" for i in range(1, 80)]  # 2 chunks at chunk_size=50
+    with patch.object(build_theme_lineage, "request_with_retry", side_effect=_partial_chunk_fake()):
+        with pytest.raises(build_theme_lineage.OpenAlexTransientError) as excinfo:
+            build_theme_lineage._fetch_openalex_works_by_ids(ids)
+    assert len(excinfo.value.partial) == 1
+
+
+def test_fetch_related_serves_a_partial_openalex_result_without_caching(tmp_path, monkeypatch):
+    """The run still gets the surviving parents — a sparser graph beats
+    no graph — but nothing is written to disk, so the next build retries
+    the page that failed."""
+    import paperpilot.scripts.build_lineage as bl
+
+    monkeypatch.setattr(bl, "CACHE_DIR", tmp_path)
+
+    chunk_fake = _partial_chunk_fake()  # one shared counter across both chunks
+
+    def fake(method, url, **kw):
+        if "/works/W123" in url:
+            return SimpleNamespace(
+                status_code=200,
+                json=lambda: {
+                    "referenced_works": [f"https://openalex.org/W{i}" for i in range(1, 80)]
+                },
+            )
+        return chunk_fake(method, url, **kw)
+
+    with patch.object(build_theme_lineage, "request_with_retry", side_effect=fake):
+        parents = bl.fetch_related("openalex:W123", "references", 5)
+
+    assert [p["paperId"] for p in parents] == ["openalex:W9"]
+    assert not (tmp_path / "references_openalex:W123.json").exists()
+    # Survivors must go through the SAME enrichment the complete path
+    # applies, otherwise a partial answer would reach the graph missing
+    # the entry-level fields every caller reads.
+    survivor = parents[0]
+    assert survivor["_intents"] is None
+    assert survivor["_is_influential"] is None
+    assert survivor["_contexts"] == []
+    assert survivor["title"] == "Survivor"
+
+
+def test_build_theme_lineage_runs_llm_free_without_any_llm_key(monkeypatch, tmp_path):
+    """Regression test: --llm-strict off is documented as heuristic-only
+    (derive_relation ignores `provider` in that mode), yet the builder
+    constructed a provider unconditionally and aborted with "No LLM key
+    found" before it ever reached seed discovery."""
+
+    def _no_key(*a, **kw):
+        raise RuntimeError("No LLM key found.")
+
+    monkeypatch.setattr(build_theme_lineage, "build_provider", _no_key)
+    # Stop the run right after the point that used to explode, so the test
+    # stays offline and asserts only the provider decision.
+    sentinel = RuntimeError("reached seed discovery")
+
+    def _boom(*a, **kw):
+        raise sentinel
+
+    monkeypatch.setattr(build_theme_lineage, "discover_seeds", _boom)
+
+    with pytest.raises(RuntimeError) as excinfo:
+        build_theme_lineage.build_theme_lineage(
+            theme="retrieval augmented generation",
+            depth=1,
+            seeds_count=2,
+            width=2,
+            since_year=2020,
+        )
+    assert excinfo.value is sentinel
+
+
+def test_build_theme_lineage_still_requires_a_provider_in_strict_modes(monkeypatch):
+    """The credential requirement is real when the LLM is actually used —
+    only the LLM-free path is exempt."""
+
+    def _no_key(*a, **kw):
+        raise RuntimeError("No LLM key found.")
+
+    monkeypatch.setattr(build_theme_lineage, "build_provider", _no_key)
+    with pytest.raises(RuntimeError, match="No LLM key found"):
+        build_theme_lineage.build_theme_lineage(
+            theme="retrieval augmented generation",
+            depth=1,
+            seeds_count=2,
+            width=2,
+            since_year=2020,
+            llm_strict="ambiguous",
+        )
+
+
+def test_seed_search_refetches_when_the_cache_file_is_corrupt(tmp_path, monkeypatch):
+    """A truncated cache file must be treated as a cache MISS, not as
+    "this keyword found nothing" — the latter froze zero seeds for the
+    whole TTL with no way to recover short of deleting the file."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    cache = build_theme_lineage._seed_cache_path("rag", 2020)
+    cache.parent.mkdir(parents=True, exist_ok=True)
+    cache.write_text('[{"paperId": "p1", "titl')  # truncated mid-write
+
+    payload = {"data": [{"paperId": "p1", "title": "Recovered"}]}
+    with patch.object(
+        build_theme_lineage,
+        "request_with_retry",
+        return_value=SimpleNamespace(status_code=200, json=lambda: payload),
+    ) as req:
+        items = build_theme_lineage._search_one_keyword_via_s2(keyword="rag", since_year=2020)
+
+    req.assert_called_once()
+    assert [p["paperId"] for p in items] == ["p1"]
+    # The bad file is replaced by the good result.
+    assert json.loads(cache.read_text())[0]["paperId"] == "p1"
+
+
+def test_seed_search_does_not_cache_a_malformed_200_body(tmp_path, monkeypatch):
+    """S2 (or a proxy) answering 200 with an unparseable body is a broken
+    response, not an empty result set, so it must not be persisted as one."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    cache = build_theme_lineage._seed_cache_path("rag", 2020)
+
+    class _BadJSON:
+        status_code = 200
+
+        def json(self):
+            raise ValueError("maintenance page")
+
+    with patch.object(build_theme_lineage, "request_with_retry", return_value=_BadJSON()):
+        items = build_theme_lineage._search_one_keyword_via_s2(keyword="rag", since_year=2020)
+
+    assert items == []
+    assert not cache.exists()
+
+
+def test_seed_search_cache_write_is_atomic(tmp_path, monkeypatch):
+    """The cache is written via a temp file + os.replace, so no reader can
+    observe a partially written list."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    cache = build_theme_lineage._seed_cache_path("rag", 2020)
+    payload = {"data": [{"paperId": "p1", "title": "T"}]}
+
+    replaced: list[tuple] = []
+    real_replace = build_theme_lineage.os.replace
+
+    def spy(src, dst):
+        replaced.append((src, dst))
+        return real_replace(src, dst)
+
+    with patch.object(build_theme_lineage.os, "replace", side_effect=spy):
+        with patch.object(
+            build_theme_lineage,
+            "request_with_retry",
+            return_value=SimpleNamespace(status_code=200, json=lambda: payload),
+        ):
+            build_theme_lineage._search_one_keyword_via_s2(keyword="rag", since_year=2020)
+
+    assert len(replaced) == 1
+    assert replaced[0][1] == cache
+    # No temp files left behind.
+    assert [p.name for p in tmp_path.iterdir()] == [cache.name]
+
+
+# ---- transient vs definitive OpenAlex outcomes (round-2 review follow-up) ----
+
+
+def test_fetch_related_via_openalex_treats_410_as_a_real_empty():
+    """410 Gone is a deliberate, permanent removal, so "no relations" is
+    the true answer and may be recorded in the never-expiring cache."""
+    with patch.object(
+        build_theme_lineage,
+        "request_with_retry",
+        return_value=SimpleNamespace(status_code=410, text=""),
+    ):
+        assert build_theme_lineage.fetch_related_via_openalex("W410", "references", limit=5) == []
+        assert build_theme_lineage.fetch_related_via_openalex("W410", "citations", limit=5) == []
+
+
+def test_fetch_related_via_openalex_does_not_freeze_a_404():
+    """404 promises nothing about permanence — a short indexing gap
+    produces one too. Caching it would be the same outage-as-empty bug
+    in a different coat, so it goes down the uncacheable path."""
+    with patch.object(
+        build_theme_lineage,
+        "request_with_retry",
+        return_value=SimpleNamespace(status_code=404, text=""),
+    ):
+        with pytest.raises(build_theme_lineage.OpenAlexTransientError):
+            build_theme_lineage.fetch_related_via_openalex("W404", "references", limit=5)
+
+
+def test_fetch_related_via_openalex_raises_on_exhausted_429():
+    """request_with_retry hands back the FINAL response after exhausting
+    its 429 retries, so a 429 here is a transient outage, not an answer."""
+    with patch.object(
+        build_theme_lineage,
+        "request_with_retry",
+        return_value=SimpleNamespace(status_code=429, text=""),
+    ):
+        with pytest.raises(build_theme_lineage.OpenAlexTransientError):
+            build_theme_lineage.fetch_related_via_openalex("W123", "references", limit=5)
+
+
+def test_fetch_related_via_openalex_raises_on_non_object_body():
+    """A 200 carrying a bare list used to reach `.get` and blow up with
+    AttributeError instead of the transient path."""
+    with patch.object(
+        build_theme_lineage,
+        "request_with_retry",
+        return_value=SimpleNamespace(status_code=200, json=lambda: ["not", "an", "object"]),
+    ):
+        with pytest.raises(build_theme_lineage.OpenAlexTransientError):
+            build_theme_lineage.fetch_related_via_openalex("W123", "references", limit=5)
+
+
+def test_fetch_related_via_openalex_raises_on_malformed_referenced_works():
+    with patch.object(
+        build_theme_lineage,
+        "request_with_retry",
+        return_value=SimpleNamespace(
+            status_code=200, json=lambda: {"referenced_works": "W1,W2"}
+        ),
+    ):
+        with pytest.raises(build_theme_lineage.OpenAlexTransientError):
+            build_theme_lineage.fetch_related_via_openalex("W123", "references", limit=5)
+
+
+def test_fetch_related_via_openalex_allows_a_genuinely_empty_reference_list():
+    with patch.object(
+        build_theme_lineage,
+        "request_with_retry",
+        return_value=SimpleNamespace(status_code=200, json=lambda: {"referenced_works": []}),
+    ):
+        assert build_theme_lineage.fetch_related_via_openalex("W123", "references", limit=5) == []
+
+
+def test_fetch_openalex_works_by_ids_does_not_raise_when_every_chunk_is_absent():
+    """410 on every chunk is an answer about those ids, not an outage."""
+    with patch.object(
+        build_theme_lineage,
+        "request_with_retry",
+        return_value=SimpleNamespace(status_code=410, text=""),
+    ):
+        assert build_theme_lineage._fetch_openalex_works_by_ids(["W1", "W2"]) == []
+
+
+def test_fetch_openalex_works_by_ids_raises_on_a_client_error():
+    """A 400 means our filter was wrong. It is neither an outage nor a
+    fact about the ids, so it must not reach the caller as an empty
+    result that build_lineage would then cache forever."""
+    with patch.object(
+        build_theme_lineage,
+        "request_with_retry",
+        return_value=SimpleNamespace(status_code=400, text=""),
+    ):
+        with pytest.raises(build_theme_lineage.OpenAlexTransientError):
+            build_theme_lineage._fetch_openalex_works_by_ids(["W1", "W2"])
+
+
+def test_fetch_openalex_works_by_ids_raises_on_exhausted_5xx():
+    import pytest as _pytest
+
+    with patch.object(
+        build_theme_lineage,
+        "request_with_retry",
+        return_value=SimpleNamespace(status_code=503, text=""),
+    ):
+        with _pytest.raises(build_theme_lineage.OpenAlexTransientError):
+            build_theme_lineage._fetch_openalex_works_by_ids(["W1", "W2"])
+
+
+# ---- seed search: a 200 must carry the expected shape (review follow-up) ----
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {"data": None},
+        {"error": "temporary backend failure"},
+        ["a", "bare", "list"],
+        {},
+    ],
+    ids=["null-data", "error-object", "bare-list", "no-data-key"],
+)
+def test_seed_search_does_not_cache_a_200_without_a_data_array(tmp_path, monkeypatch, payload):
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    cache = build_theme_lineage._seed_cache_path("rag", 2020)
+    with patch.object(
+        build_theme_lineage,
+        "request_with_retry",
+        return_value=SimpleNamespace(status_code=200, json=lambda: payload),
+    ):
+        assert build_theme_lineage._search_one_keyword_via_s2(keyword="rag", since_year=2020) == []
+    assert not cache.exists()
+
+
+def test_seed_search_caches_a_genuinely_empty_data_array(tmp_path, monkeypatch):
+    """S2 answers 200 with data: [] for a real "no results" — that IS
+    cacheable, and must stay so."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    cache = build_theme_lineage._seed_cache_path("rag", 2020)
+    with patch.object(
+        build_theme_lineage,
+        "request_with_retry",
+        return_value=SimpleNamespace(status_code=200, json=lambda: {"data": []}),
+    ):
+        assert build_theme_lineage._search_one_keyword_via_s2(keyword="rag", since_year=2020) == []
+    assert json.loads(cache.read_text()) == []
+
+
+def test_seed_search_does_not_cache_when_every_entry_is_unusable(tmp_path, monkeypatch):
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    cache = build_theme_lineage._seed_cache_path("rag", 2020)
+    payload = {"data": [{"noPaperId": 1}, "junk"]}
+    with patch.object(
+        build_theme_lineage,
+        "request_with_retry",
+        return_value=SimpleNamespace(status_code=200, json=lambda: payload),
+    ):
+        assert build_theme_lineage._search_one_keyword_via_s2(keyword="rag", since_year=2020) == []
+    assert not cache.exists()
+
+
+def test_seed_search_refetches_when_the_cached_list_holds_only_junk(tmp_path, monkeypatch):
+    """A cached [] is a real "no results" and is reused; a cached
+    non-empty list that yields nothing usable is corrupt and refetched."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    cache = build_theme_lineage._seed_cache_path("rag", 2020)
+    cache.parent.mkdir(parents=True, exist_ok=True)
+    cache.write_text(json.dumps([{"noPaperId": 1}]))
+
+    payload = {"data": [{"paperId": "p1", "title": "Recovered"}]}
+    with patch.object(
+        build_theme_lineage,
+        "request_with_retry",
+        return_value=SimpleNamespace(status_code=200, json=lambda: payload),
+    ) as req:
+        items = build_theme_lineage._search_one_keyword_via_s2(keyword="rag", since_year=2020)
+    req.assert_called_once()
+    assert [p["paperId"] for p in items] == ["p1"]
+
+
+def test_seed_search_reuses_a_cached_empty_result(tmp_path, monkeypatch):
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    cache = build_theme_lineage._seed_cache_path("rag", 2020)
+    cache.parent.mkdir(parents=True, exist_ok=True)
+    cache.write_text("[]")
+
+    with patch.object(build_theme_lineage, "request_with_retry") as req:
+        assert build_theme_lineage._search_one_keyword_via_s2(keyword="rag", since_year=2020) == []
+    req.assert_not_called()
+
+
+def test_fetch_related_via_openalex_does_not_cache_a_client_error(tmp_path, monkeypatch):
+    """The lineage cache has no expiry — existence alone short-circuits
+    every later run. So a 400 produced by a bug in our own query must not
+    come back as an empty result: that would be frozen on disk as "this
+    Work has no relations" and would survive the fix to the bug."""
+    import paperpilot.scripts.build_lineage as bl
+
+    monkeypatch.setattr(bl, "CACHE_DIR", tmp_path)
+    for status in (400, 401, 403, 404, 408, 422):
+        # Every call must stay inside the patch: fetch_related would
+        # otherwise reach the live OpenAlex API (CLAUDE.md rule 3).
+        with patch.object(
+            build_theme_lineage,
+            "request_with_retry",
+            return_value=SimpleNamespace(status_code=status, text=""),
+        ):
+            with pytest.raises(build_theme_lineage.OpenAlexTransientError):
+                build_theme_lineage.fetch_related_via_openalex("W123", "references", limit=5)
+            assert bl.fetch_related("openalex:W123", "references", 5) == []
+        assert not (tmp_path / "references_openalex:W123.json").exists()
+
+
+def test_fetch_related_caches_an_absent_openalex_work(tmp_path, monkeypatch):
+    """410 Gone IS a permanent fact about the Work, so it stays
+    cacheable — that is the case the uncacheable rule must not swallow."""
+    import paperpilot.scripts.build_lineage as bl
+
+    monkeypatch.setattr(bl, "CACHE_DIR", tmp_path)
+    with patch.object(
+        build_theme_lineage,
+        "request_with_retry",
+        return_value=SimpleNamespace(status_code=410, text=""),
+    ):
+        assert bl.fetch_related("openalex:W404", "references", 5) == []
+    assert (tmp_path / "references_openalex:W404.json").exists()
+
+
+def test_seed_search_refetches_a_cached_entry_without_a_title(tmp_path, monkeypatch):
+    """The cache-read predicate must match the live one. build_lineage's
+    to_node indexes paper["title"] unguarded, so a title-less cached seed
+    reaches the graph and dies with KeyError."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    cache = build_theme_lineage._seed_cache_path("rag", 2020)
+    cache.parent.mkdir(parents=True, exist_ok=True)
+    cache.write_text(json.dumps([{"paperId": "p1", "externalIds": {"ArXiv": "2401.1"}}]))
+
+    payload = {"data": [{"paperId": "p1", "title": "Recovered"}]}
+    with patch.object(
+        build_theme_lineage,
+        "request_with_retry",
+        return_value=SimpleNamespace(status_code=200, json=lambda: payload),
+    ) as req:
+        items = build_theme_lineage._search_one_keyword_via_s2(keyword="rag", since_year=2020)
+    req.assert_called_once()
+    assert items == [{"paperId": "p1", "title": "Recovered"}]

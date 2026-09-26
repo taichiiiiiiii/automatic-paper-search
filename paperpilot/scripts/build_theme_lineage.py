@@ -32,6 +32,7 @@ import math
 import os
 import re
 import sys
+import tempfile
 import unicodedata
 from collections import Counter
 from collections.abc import Callable, Iterable
@@ -90,6 +91,7 @@ from paperpilot.scripts._lineage_contract import (  # noqa: E402
 )
 from paperpilot.scripts.build_lineage import (  # noqa: E402
     CACHE_DIR,
+    OpenAlexTransientError,
     _filter_edges_by_rationale,
     build_provider,
     fetch_related,
@@ -1219,6 +1221,44 @@ def discover_seeds_via_openalex(
     return [w for w in results if isinstance(w, dict)]
 
 
+# The only status that is a permanent statement about the DATA: 410 Gone
+# means the Work was deliberately removed, so "no relations" is the true
+# answer and may be recorded in a cache that never expires. 404 is NOT in
+# this set on purpose — it promises nothing about permanence (a short
+# indexing gap, a briefly mis-served id, or a collection endpoint that
+# 404s for reasons unrelated to the Work all produce one), and freezing
+# it would be indistinguishable from the outage-as-empty bug this whole
+# change exists to remove. A deleted Work simply costs one cheap request
+# per build instead.
+_OPENALEX_ABSENT_STATUSES = frozenset({410})
+
+
+def _openalex_outcome(resp: Any) -> str:
+    """Classify an OpenAlex response as ``ok`` / ``absent`` / ``uncacheable``.
+
+    The split is by CACHEABILITY, which is what the caller actually needs:
+    ``build_lineage.fetch_related`` caches whatever comes back, and that
+    cache has no expiry — existence alone short-circuits every later run.
+
+    ``request_with_retry`` returns None only for a transport-level failure,
+    and returns the FINAL response object after exhausting its 429 / 5xx
+    retries, so those are outages despite a response object being present.
+    A 400/403/422 is different again: it means the request was wrong, which
+    is neither an outage nor a fact about the Work. Caching it as "no
+    relations" would survive the fix to whatever produced it — permanent
+    silent data loss — whereas leaving it uncached merely retries loudly
+    and recovers by itself. Only a known-absence status is cacheable.
+    """
+    if resp is None:
+        return "uncacheable"
+    status = getattr(resp, "status_code", None)
+    if status == 200:
+        return "ok"
+    if status in _OPENALEX_ABSENT_STATUSES:
+        return "absent"
+    return "uncacheable"
+
+
 def _fetch_openalex_works_by_ids(
     short_ids: list[str], *, email: str | None = None
 ) -> list[dict[str, Any]]:
@@ -1235,7 +1275,10 @@ def _fetch_openalex_works_by_ids(
         return []
     results: list[dict[str, Any]] = []
     chunk_size = 50
+    chunks = 0
+    failed_chunks = 0
     for i in range(0, len(cleaned), chunk_size):
+        chunks += 1
         chunk = cleaned[i : i + chunk_size]
         params: dict[str, Any] = {
             "filter": f"openalex:{'|'.join(chunk)}",
@@ -1250,19 +1293,28 @@ def _fetch_openalex_works_by_ids(
             headers={"User-Agent": "PaperPilot/0.1"},
             timeout=20,
         )
-        if resp is None or resp.status_code != 200:
+        outcome = _openalex_outcome(resp)
+        if outcome != "ok":
             logger.warning(
-                "openalex batch fetch failed (status=%s, chunk=%d ids)",
+                "openalex batch fetch %s (status=%s, chunk=%d ids)",
+                outcome,
                 getattr(resp, "status_code", None),
                 len(chunk),
             )
+            # A known-absence status is an answer about those ids, so it
+            # contributes nothing and does not make the whole call an
+            # outage. Anything else must reach the caller as uncacheable.
+            if outcome == "uncacheable":
+                failed_chunks += 1
             continue
         try:
             payload = resp.json()
         except ValueError:
+            failed_chunks += 1
             continue
         works = payload.get("results") if isinstance(payload, dict) else None
         if not isinstance(works, list):
+            failed_chunks += 1
             continue
         for work in works:
             if not isinstance(work, dict):
@@ -1270,6 +1322,17 @@ def _fetch_openalex_works_by_ids(
             paper = _work_to_paper_dict(work)
             if paper is not None:
                 results.append(paper)
+    if failed_chunks:
+        # Even ONE lost page makes this an incomplete answer, and the
+        # caller's cache has no expiry: persisting 30 of 80 parents would
+        # freeze the missing 50 out of every future build. Hand back what
+        # survived so this run can still render a sparser graph, but force
+        # the caller down its no-cache path.
+        raise OpenAlexTransientError(
+            f"openalex batch fetch lost {failed_chunks}/{chunks} chunk(s) "
+            f"({len(cleaned)} id(s) requested, {len(results)} resolved)",
+            partial=results,
+        )
     return results
 
 
@@ -1413,9 +1476,17 @@ def fetch_related_via_openalex(
             headers={"User-Agent": "PaperPilot/0.1"},
             timeout=20,
         )
-        if resp is None or resp.status_code != 200:
+        outcome = _openalex_outcome(resp)
+        if outcome == "uncacheable":
+            raise OpenAlexTransientError(
+                f"openalex work fetch failed (id={openalex_short_id}, "
+                f"status={getattr(resp, 'status_code', None)})"
+            )
+        if outcome == "absent":
+            # The Work is deleted or merged away: "no parents" is the true
+            # answer for this id, so it is safe to record.
             logger.warning(
-                "openalex work fetch failed (id=%s, status=%s)",
+                "openalex work is absent (id=%s, status=%s); treating as empty",
                 openalex_short_id,
                 getattr(resp, "status_code", None),
             )
@@ -1423,8 +1494,24 @@ def fetch_related_via_openalex(
         try:
             payload = resp.json()
         except ValueError:
-            return []
-        ref_urls = (payload or {}).get("referenced_works") or []
+            # A 200 with an unparseable body is a broken response, not a
+            # Work with zero references — never cache it as the latter.
+            raise OpenAlexTransientError(
+                f"openalex work fetch returned a malformed body (id={openalex_short_id})"
+            ) from None
+        if not isinstance(payload, dict):
+            raise OpenAlexTransientError(
+                f"openalex work fetch returned a non-object body (id={openalex_short_id})"
+            )
+        ref_urls = payload.get("referenced_works")
+        if ref_urls is None:
+            ref_urls = []
+        elif not isinstance(ref_urls, list):
+            # Present but the wrong shape — the response is broken, so it
+            # must not collapse into a cacheable "no references".
+            raise OpenAlexTransientError(
+                f"openalex referenced_works is not a list (id={openalex_short_id})"
+            )
         ref_ids = [
             sid for sid in (_openalex_short_id(u) for u in ref_urls if isinstance(u, str)) if sid
         ]
@@ -1444,10 +1531,18 @@ def fetch_related_via_openalex(
         # OpenAlex's 200-per-page cap, and the post-filter clamp
         # keeps the per-seed budget the caller asked for.
         wide_cap = min(len(ref_ids), _OPENALEX_PER_PAGE_MAX)
-        wide_parents = _fetch_openalex_works_by_ids(
-            ref_ids[:wide_cap],
-            email=email,
-        )
+        incomplete: OpenAlexTransientError | None = None
+        try:
+            wide_parents = _fetch_openalex_works_by_ids(
+                ref_ids[:wide_cap],
+                email=email,
+            )
+        except OpenAlexTransientError as exc:
+            # Run the surviving works through the same ranking/enrichment
+            # the complete path uses, so the partial answer has the shape
+            # callers expect, then re-raise so it is never cached.
+            incomplete = exc
+            wide_parents = exc.partial
         parents = _split_by_foundational_priority(
             wide_parents,
             budget=page_size,
@@ -1457,6 +1552,8 @@ def fetch_related_via_openalex(
             # focal cites each parent → citing=focal.arxiv, cited=parent
             for p in enriched:
                 _enrich_parent_with_unarxive(p, citing_arxiv_id=focal_arxiv)
+        if incomplete is not None:
+            raise OpenAlexTransientError(str(incomplete), partial=enriched) from None
         return enriched
     if kind == "citations":
         params = {
@@ -1473,9 +1570,15 @@ def fetch_related_via_openalex(
             headers={"User-Agent": "PaperPilot/0.1"},
             timeout=20,
         )
-        if resp is None or resp.status_code != 200:
+        outcome = _openalex_outcome(resp)
+        if outcome == "uncacheable":
+            raise OpenAlexTransientError(
+                f"openalex cites query failed (id={openalex_short_id}, "
+                f"status={getattr(resp, 'status_code', None)})"
+            )
+        if outcome == "absent":
             logger.warning(
-                "openalex cites query failed (id=%s, status=%s)",
+                "openalex work is absent (id=%s, status=%s); treating as empty",
                 openalex_short_id,
                 getattr(resp, "status_code", None),
             )
@@ -1483,10 +1586,14 @@ def fetch_related_via_openalex(
         try:
             payload = resp.json()
         except ValueError:
-            return []
+            raise OpenAlexTransientError(
+                f"openalex cites query returned a malformed body (id={openalex_short_id})"
+            ) from None
         results = payload.get("results") if isinstance(payload, dict) else None
         if not isinstance(results, list):
-            return []
+            raise OpenAlexTransientError(
+                f"openalex cites query returned no results array (id={openalex_short_id})"
+            )
         children: list[dict[str, Any]] = []
         focal_paper_id = f"{_OPENALEX_PAPER_ID_PREFIX}{openalex_short_id}"
         for work in results:
@@ -1701,10 +1808,27 @@ def _search_one_keyword_via_s2(
         try:
             cached = json.loads(cache.read_text())
         except json.JSONDecodeError:
-            return []
-        if not isinstance(cached, list):
-            return []
-        return [p for p in cached if isinstance(p, dict) and p.get("paperId")]
+            cached = None
+        if isinstance(cached, list):
+            # Same predicate as the live response below — build_lineage.to_node
+            # indexes paper["title"] unguarded, so a cached entry without one
+            # would reach the graph and raise KeyError.
+            usable = [
+                p for p in cached if isinstance(p, dict) and p.get("paperId") and p.get("title")
+            ]
+            if usable or not cached:
+                # An empty cached list is a real "no results"; only a
+                # non-empty list that yields nothing is corrupt.
+                return usable
+        # A truncated or otherwise unreadable cache file is not "this
+        # keyword found nothing" — treating it as such froze zero seeds
+        # for the whole TTL. Fall through to the live search and let the
+        # write below replace the bad file.
+        logger.warning(
+            "s2: discarding malformed seed cache for keyword %r (%s)",
+            keyword,
+            cache.name,
+        )
     params = {
         "query": keyword,
         "fields": _S2_FIELDS_SEARCH,
@@ -1731,17 +1855,60 @@ def _search_one_keyword_via_s2(
             getattr(resp, "status_code", None),
         )
         return []
-    cache.parent.mkdir(parents=True, exist_ok=True)
     try:
         payload = resp.json()
     except ValueError:
-        payload = {}
+        # A 200 whose body will not parse (proxy/maintenance page) is a
+        # broken response, not an empty result set — same reasoning as the
+        # non-200 branch above, so it must not be cached either.
+        logger.warning(
+            "s2: search returned a malformed body for keyword %r; not caching",
+            keyword,
+        )
+        return []
+    # Parsing is not enough: S2 (or a proxy in front of it) can answer 200
+    # with {"error": ...}, {"data": null} or a bare list. Each of those
+    # yields zero items, and caching that would record a backend hiccup as
+    # "this keyword has no papers" for the whole TTL.
+    data = payload.get("data") if isinstance(payload, dict) else None
+    if not isinstance(data, list):
+        logger.warning(
+            "s2: search returned no data array for keyword %r (keys=%s); not caching",
+            keyword,
+            sorted(payload)[:5] if isinstance(payload, dict) else type(payload).__name__,
+        )
+        return []
     items: list[dict[str, Any]] = [
-        p
-        for p in (payload.get("data") or [])
-        if isinstance(p, dict) and p.get("paperId") and p.get("title")
+        p for p in data if isinstance(p, dict) and p.get("paperId") and p.get("title")
     ]
-    cache.write_text(json.dumps(items, ensure_ascii=False, indent=2))
+    if data and not items:
+        # Every entry was unusable — the payload is malformed, not empty.
+        logger.warning(
+            "s2: search returned %d unusable entries for keyword %r; not caching",
+            len(data),
+            keyword,
+        )
+        return []
+    cache.parent.mkdir(parents=True, exist_ok=True)
+    # Atomic: a crash partway through a plain write_text would leave a
+    # truncated file that every later run reads back as zero seeds.
+    tmp = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            dir=cache.parent,
+            prefix=f".{cache.name}.",
+            suffix=".tmp",
+            delete=False,
+        ) as f:
+            tmp = Path(f.name)
+            json.dump(items, f, ensure_ascii=False, indent=2)
+        os.replace(tmp, cache)
+        tmp = None
+    finally:
+        if tmp is not None:
+            tmp.unlink(missing_ok=True)
     return items
 
 
@@ -2763,7 +2930,7 @@ def _run_bfs_and_descendants(
     depth: int,
     width: int,
     max_seed_cite: int,
-    provider: AbstractLLMProvider,
+    provider: AbstractLLMProvider | None,
     llm_strict: str,
 ) -> _BFSResult:
     """BFS ancestor traversal up to ``depth`` hops, then a 1-hop
@@ -3050,19 +3217,27 @@ def build_theme_lineage(
     openalex_email = (env or {}).get("openalex_email")
 
     # Issue #53: relation classification is now LLM-free (derive_relation),
-    # but build_provider is still used downstream by other scripts; here
-    # we no longer need it for the theme pipeline. Keep the call so the
-    # provider is constructed (logs config errors etc.) but we won't ever
-    # invoke .classify_relation / ._chat from this script.
-    inner_provider, _ = build_provider()
-    provider, cache = _wrap_provider_with_cache(inner_provider)
-    logger.info(
-        "theme=%r slug=%r provider=%s (cache=%d entries)",
-        sanitised,
-        slug,
-        provider.name,
-        len(cache),
-    )
+    # which ignores `provider` entirely when llm_strict is "off" (the
+    # default). Constructing a provider unconditionally therefore made an
+    # LLM-free build refuse to start with "No LLM key found" — a
+    # credential requirement for a path that never calls an LLM.
+    provider: AbstractLLMProvider | None = None
+    if llm_strict == "off":
+        logger.info(
+            "theme=%r slug=%r provider=none (llm_strict=off: heuristic-only build)",
+            sanitised,
+            slug,
+        )
+    else:
+        inner_provider, _ = build_provider()
+        provider, cache = _wrap_provider_with_cache(inner_provider)
+        logger.info(
+            "theme=%r slug=%r provider=%s (cache=%d entries)",
+            sanitised,
+            slug,
+            provider.name,
+            len(cache),
+        )
 
     # Stage 1: keyword expansion is skipped — the LLM call here was the
     # last reason this script needed a working provider. Use the raw

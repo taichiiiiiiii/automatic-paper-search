@@ -2,7 +2,11 @@
 
 from __future__ import annotations
 
+import fcntl
+import json
 import os
+import threading
+import time
 from datetime import datetime, timedelta
 
 import pytest
@@ -12,6 +16,7 @@ from paperpilot.utils.dedup import (
     filter_unseen,
     load_seen_ids,
     mark_seen,
+    merge_seen_ids,
     purge_seen_ids,
     save_seen_ids,
 )
@@ -293,3 +298,71 @@ def test_save_seen_ids_survives_os_replace_failure(tmp_path, monkeypatch):
     assert path.read_bytes() == original_bytes
     leftover = [p for p in tmp_path.iterdir() if p.name != "seen_ids.json"]
     assert leftover == []
+
+
+# ---- merge_seen_ids: locked read-merge-write (concurrent runs) ----
+
+
+def test_merge_seen_ids_keeps_a_concurrent_run_contribution(tmp_path, papers_batch):
+    """Regression test: two runs that each load the same snapshot and mark
+    disjoint papers used to last-writer-wins, so the earlier run's IDs
+    vanished and its papers were delivered a second time."""
+    path = tmp_path / "seen_ids.json"
+    # Another run has already recorded its own paper on disk.
+    save_seen_ids(path, {"arxiv:other-run": datetime.now().isoformat()})
+
+    merged = merge_seen_ids(path, papers_batch[:2], max_age_days=14)
+
+    assert "arxiv:other-run" in merged
+    for paper in papers_batch[:2]:
+        assert paper.uid in merged
+    with path.open() as f:
+        assert json.load(f) == merged
+
+
+def test_merge_seen_ids_does_not_resurrect_purged_entries(tmp_path, papers_batch):
+    """The purge is re-applied to the merged result, so an aged-out entry
+    on disk is dropped rather than carried forward."""
+    path = tmp_path / "seen_ids.json"
+    stale = (datetime.now() - timedelta(days=90)).isoformat()
+    save_seen_ids(path, {"arxiv:ancient": stale})
+
+    merged = merge_seen_ids(path, papers_batch[:1], max_age_days=14)
+
+    assert "arxiv:ancient" not in merged
+    assert papers_batch[0].uid in merged
+
+
+def test_merge_seen_ids_serializes_overlapping_writers(tmp_path, papers_batch):
+    """Proof of real mutual exclusion (same shape as the #402 lineage-cache
+    test): while an external holder keeps the sibling .lock locked, a
+    merge_seen_ids call in another thread must BLOCK rather than race
+    ahead on a stale snapshot."""
+    path = tmp_path / "seen_ids.json"
+    save_seen_ids(path, {"arxiv:pre-existing": datetime.now().isoformat()})
+    lock_path = path.with_suffix(path.suffix + ".lock")
+
+    done = threading.Event()
+
+    def writer():
+        merge_seen_ids(path, papers_batch[:1], max_age_days=14)
+        done.set()
+
+    with open(lock_path, "w") as holder:
+        fcntl.flock(holder.fileno(), fcntl.LOCK_EX)
+        t = threading.Thread(target=writer)
+        t.start()
+        try:
+            time.sleep(0.3)
+            assert not done.is_set(), "writer proceeded without waiting for the lock"
+            with path.open() as f:
+                assert list(json.load(f)) == ["arxiv:pre-existing"]
+        finally:
+            fcntl.flock(holder.fileno(), fcntl.LOCK_UN)
+
+    t.join(timeout=5)
+    assert done.is_set(), "writer never completed after the lock was released"
+    with path.open() as f:
+        final = json.load(f)
+    assert "arxiv:pre-existing" in final
+    assert papers_batch[0].uid in final

@@ -235,6 +235,65 @@ def test_runner_marks_seen_when_at_least_one_exporter_succeeds(tmp_path: Path):
     assert len(seen) == 3
 
 
+def test_runner_skips_seen_ids_when_failures_and_no_delivery(tmp_path: Path):
+    """A no-op exporter is not a delivery. CLAUDE.md rule 10 makes an
+    enabled-but-unconfigured Slack/Email exporter return None instead of
+    raising, so counting exceptions against ``len(enabled_exporters)``
+    treats "one raised, one silently did nothing" as a partial success.
+    Nothing reached the user, yet the papers were marked seen and then
+    filtered out of every later run."""
+    config = _build_config(tmp_path)
+    runner = PipelineRunner(config)
+    papers = _fake_arxiv_papers()
+
+    async def _fake_afetch(*args, **kwargs):
+        return papers
+
+    raising_exp, noop_exp = runner.exporters[0], runner.exporters[1]
+    raising_exp.export = lambda _papers: (_ for _ in ()).throw(RuntimeError("boom"))
+    # Mirrors the unconfigured-webhook/SMTP no-op: enabled, never raises,
+    # delivers nothing.
+    noop_exp.export = lambda _papers: None
+
+    with patch.object(runner.sources[0], "afetch", side_effect=_fake_afetch):
+        result = asyncio.run(runner.run())
+
+    assert result.output_count == 3
+    assert any("boom" in e for e in result.errors)
+    seen_path = tmp_path / "seen_ids.json"
+    if seen_path.exists():
+        import json
+
+        with seen_path.open() as f:
+            assert json.load(f) == {}
+
+
+def test_runner_marks_seen_when_every_exporter_no_ops(tmp_path: Path):
+    """Zero deliveries but zero failures is the "nothing is configured"
+    setup, not an outage. Prior behaviour marks these seen and must be
+    preserved, otherwise a user with no exporters configured would
+    re-process the same papers forever."""
+    config = _build_config(tmp_path)
+    runner = PipelineRunner(config)
+    papers = _fake_arxiv_papers()
+
+    async def _fake_afetch(*args, **kwargs):
+        return papers
+
+    for exp in runner.exporters:
+        exp.export = lambda _papers: None
+
+    with patch.object(runner.sources[0], "afetch", side_effect=_fake_afetch):
+        result = asyncio.run(runner.run())
+
+    assert result.output_count == 3
+    assert not result.errors
+    import json
+
+    with (tmp_path / "seen_ids.json").open() as f:
+        assert len(json.load(f)) == 3
+
+
 def test_build_llm_provider_ollama(tmp_path: Path):
     """runner._build_llm_provider picks the Ollama backend when configured."""
     from paperpilot.llm.ollama_provider import OllamaProvider

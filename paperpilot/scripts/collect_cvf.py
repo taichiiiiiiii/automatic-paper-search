@@ -107,12 +107,23 @@ def parse_detail(detail_html: str, detail_url: str, venue: str) -> dict[str, Any
     }
 
 
-def fetch_listing(cvf_id: str, *, timeout: float = 30.0) -> list[str]:
-    """Fetch the year listing and return detail-page paths. Network — mocked in tests."""
+def fetch_listing(cvf_id: str, *, timeout: float = 30.0) -> tuple[list[str], bool]:
+    """Fetch the year listing and return (detail-page paths, ok).
+
+    Network — mocked in tests. Fail-Safe still applies: a failure returns
+    an empty list rather than raising, but `ok` is False so the caller can
+    tell "the listing could not be read" apart from "this cvf_id genuinely
+    lists no papers" (a wrong --cvf-id). Both produce zero paths.
+    """
     resp = request_with_retry("GET", f"{CVF_BASE}/{cvf_id}?day=all", timeout=timeout)
     if resp is None or resp.status_code != 200:
-        return []
-    return detail_paths(resp.text, cvf_id)
+        logger.warning(
+            "cvf: listing fetch failed for %s (status=%s)",
+            cvf_id,
+            getattr(resp, "status_code", None),
+        )
+        return [], False
+    return detail_paths(resp.text, cvf_id), True
 
 
 def _fetch_one(
@@ -137,8 +148,15 @@ def collect(
     *,
     max_workers: int = 8,
     delay_seconds: float = 0.25,
-) -> list[dict[str, Any]]:
+) -> tuple[list[dict[str, Any]], bool]:
     """Full collection: listing -> concurrent detail fetch -> rows (deduped by url).
+
+    Returns (rows, complete). Like collect_openreview.fetch_notes (#388),
+    a mid-run failure does not raise — but `complete` is False so the
+    caller knows the rows are a PARTIAL set, not the authoritative full
+    proceedings this collector exists to produce. `complete` requires both
+    that the listing itself was read and that every detail page parsed;
+    a dropped detail page is a silently missing accepted paper.
 
     `max_workers` bounds concurrency (existing ThreadPoolExecutor cap);
     `delay_seconds` throttles the AGGREGATE request rate across all workers
@@ -146,7 +164,7 @@ def collect(
     still lets `max_workers` requests fire back-to-back with zero spacing,
     risking 429s / anti-scraping blocks on openaccess.thecvf.com.
     """
-    paths = fetch_listing(cvf_id)
+    paths, listing_ok = fetch_listing(cvf_id)
     limiter = RateLimiter(delay_seconds)
     rows: dict[str, dict[str, Any]] = {}
     failed = 0
@@ -162,7 +180,7 @@ def collect(
             failed,
             len(paths),
         )
-    return list(rows.values())
+    return list(rows.values()), listing_ok and failed == 0
 
 
 def main() -> int:
@@ -186,13 +204,26 @@ def main() -> int:
     )
     args = ap.parse_args()
 
-    rows = collect(
+    rows, complete = collect(
         args.cvf_id,
         args.venue,
         max_workers=args.max_workers,
         delay_seconds=args.delay_seconds,
     )
     print(f"collected {len(rows)} {args.venue.upper()} papers from CVF {args.cvf_id}")
+    if not complete:
+        # Same policy as collect_openreview (#388): a written
+        # papers_<date>.csv carries no marker distinguishing an
+        # authoritative full catalog from a partial one, so there is no
+        # safe way to publish a partial fetch under the filename and
+        # schema the complete case uses. Retry the run instead.
+        print(
+            f"⚠️  the CVF fetch did not complete (listing unreadable, or one or "
+            f"more detail pages failed) — the {len(rows)} row(s) collected so far "
+            "would be an INCOMPLETE, non-authoritative catalog. Nothing written. "
+            "Retry the run."
+        )
+        return 1
     if not rows:
         print("⚠️  0 papers — check --cvf-id (e.g. 'CVPR2025'). Nothing written.")
         return 1

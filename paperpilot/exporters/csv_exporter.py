@@ -12,6 +12,24 @@ from .base import AbstractExporter
 
 logger = get_logger(__name__)
 
+# Excel / LibreOffice / Google Sheets evaluate a cell as a formula when its
+# text begins with one of these, no matter how the CSV itself is quoted.
+# Paper titles, abstracts and author lists are untrusted upstream text, so a
+# title like `=HYPERLINK("http://attacker","click")` would execute in the
+# recipient's spreadsheet session (CWE-1236).
+_FORMULA_TRIGGERS = ("=", "+", "-", "@", "\t", "\r")
+
+
+def _neutralize(value: str) -> str:
+    """Prefix a single quote when a cell would otherwise start a formula.
+
+    Only values that actually begin with a trigger are touched, so ordinary
+    titles and abstracts round-trip byte-for-byte through the consumers that
+    read these files back (build_summary_csv / build_pages).
+    """
+    return f"'{value}" if value.startswith(_FORMULA_TRIGGERS) else value
+
+
 COLUMNS = [
     "rank",
     "total_score",
@@ -73,7 +91,7 @@ class CSVExporter(AbstractExporter):
             writer = csv.DictWriter(f, fieldnames=COLUMNS)
             writer.writeheader()
             for rank, p in enumerate(papers, start=1):
-                row = {
+                row: dict[str, object] = {
                     "rank": rank,
                     "total_score": round(p.total_score, 2),
                     "llm_relevance": p.llm_relevance if p.llm_relevance is not None else "",
@@ -117,6 +135,11 @@ class CSVExporter(AbstractExporter):
                     "uid": p.uid,
                     "doi": p.doi or "",
                 }
-                writer.writerow(row)
+                writer.writerow(
+                    {
+                        k: _neutralize(v) if isinstance(v, str) else v
+                        for k, v in row.items()
+                    }
+                )
         logger.info("csv: wrote %d rows to %s", len(papers), path)
         return str(path)

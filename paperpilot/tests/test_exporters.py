@@ -380,3 +380,45 @@ def test_slack_legitimate_https_url_still_renders_as_link():
         exp.export(papers)
     body = mock.call_args.kwargs["json_body"]["text"]
     assert "<https://arxiv.org/abs/2604.00001|Legit Paper>" in body
+
+
+def test_csv_neutralizes_spreadsheet_formula_payloads(tmp_path):
+    """CSV quoting does not stop Excel/LibreOffice from evaluating a cell
+    that starts with = + - @ — paper metadata is untrusted upstream text,
+    so those cells get an OWASP single-quote prefix."""
+    import csv as _csv
+
+    from paperpilot.exporters.csv_exporter import CSVExporter
+
+    papers = _sample_papers()
+    papers[0].title = '=HYPERLINK("http://evil.example","click")'
+    papers[0].abstract = "@SUM(1+1)*cmd"
+
+    exp = CSVExporter({"enabled": True, "dir": str(tmp_path), "encoding": "utf-8"})
+    path = exp.export(papers)
+
+    with open(path, encoding="utf-8", newline="") as f:
+        rows = list(_csv.DictReader(f))
+    assert rows[0]["title"].startswith("'=HYPERLINK")
+    assert rows[0]["abstract"].startswith("'@SUM")
+
+
+def test_csv_leaves_ordinary_text_untouched(tmp_path):
+    """Only cells that actually begin with a trigger are rewritten, so the
+    downstream readers (build_summary_csv / build_pages) still see the
+    original strings for normal papers."""
+    import csv as _csv
+
+    from paperpilot.exporters.csv_exporter import CSVExporter
+
+    papers = _sample_papers()
+    papers[0].title = "Retrieval-Augmented Generation for Knowledge Tasks"
+    papers[0].abstract = "We propose a method."
+
+    exp = CSVExporter({"enabled": True, "dir": str(tmp_path), "encoding": "utf-8"})
+    path = exp.export(papers)
+
+    with open(path, encoding="utf-8", newline="") as f:
+        rows = list(_csv.DictReader(f))
+    assert rows[0]["title"] == "Retrieval-Augmented Generation for Knowledge Tasks"
+    assert rows[0]["abstract"] == "We propose a method."

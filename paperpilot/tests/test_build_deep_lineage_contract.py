@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from unittest.mock import patch
 
 import pytest
 
@@ -24,7 +25,7 @@ class _Provider:
         }
         self.calls = 0
 
-    def _chat(self, system, user, *, json_mode=False):
+    def complete_json(self, system, user):
         self.calls += 1
         return json.dumps(self.response)
 
@@ -214,3 +215,48 @@ def test_unknown_relation_is_not_cached_or_emitted(tmp_path, monkeypatch) -> Non
     )
     assert result is None
     assert classifications == {}
+
+
+def test_gemini_fallback_provider_supports_deep_classification(tmp_path) -> None:
+    """Regression test: build_provider falls back to Gemini when no Groq
+    key is set, and the deep builder used to call Groq's private `_chat`
+    directly — so the documented fallback died with AttributeError on the
+    first cache miss instead of classifying anything."""
+    from paperpilot.llm.gemini_provider import GeminiProvider
+
+    provider = GeminiProvider(
+        {"enabled": True, "model": "gemini-2.5-flash", "temperature": 0.1},
+        api_key="k",
+    )
+    payload = json.dumps(
+        {"relation": "extends", "confidence": 0.8, "rationale": "B extends A's method."}
+    )
+    with patch.object(GeminiProvider, "_generate", return_value=payload) as gen:
+        entry = bdl._classify_cached_lenient(
+            provider,
+            _paper("A", title="Parent"),
+            _paper("B", title="Child"),
+            src_id="A",
+            dst_id="B",
+            classifications={},
+            cache_path=tmp_path / "classifications.json",
+            rate_delay=0,
+        )
+    assert gen.call_count == 1
+    assert entry is not None
+    assert entry["relation"] == "extends"
+
+
+def test_provider_without_json_completion_fails_loudly() -> None:
+    """A provider that cannot do a raw JSON completion must say so rather
+    than silently classifying nothing."""
+    from paperpilot.llm.base import AbstractLLMProvider
+
+    class _NoJSON(AbstractLLMProvider):
+        name = "nojson"
+
+        def evaluate_batch(self, papers, config):  # pragma: no cover - unused
+            return []
+
+    with pytest.raises(NotImplementedError):
+        _NoJSON({"enabled": True}).complete_json("s", "u")

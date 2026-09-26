@@ -418,3 +418,23 @@ class AbstractLLMProvider(ABC):
         don't support lineage classification return None (the caller then
         falls back / skips the edge)."""
         return None
+
+    def complete_json(self, system: str, user: str) -> str | None:
+        """Return the model's RAW response text for a prompt that asks for a
+        single JSON object, or None when the call failed.
+
+        This exists because `classify_relation` parses and validates in one
+        step, discarding a classification whose rationale is empty. The deep
+        lineage builder deliberately relaxes that rule (#304: synthesize a
+        slot-filled rationale rather than lose the whole subtree), so it has
+        to see the relation BEFORE `RelationClassification.from_dict` runs.
+        Reaching into a concrete provider's private `_chat` / `_generate` was
+        how that was done previously, which crashed with AttributeError on
+        every provider whose private method happened to be named differently.
+
+        Providers with a JSON-mode single-shot completion override this.
+        """
+        raise NotImplementedError(
+            f"{type(self).__name__} has no JSON-mode completion; it cannot be "
+            "used for deep lineage classification."
+        )

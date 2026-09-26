@@ -1430,6 +1430,35 @@ def test_fetch_related_does_not_cache_on_transient_failure(tmp_path, monkeypatch
     assert (tmp_path / "references_paperX.json").exists()
 
 
+def test_fetch_related_does_not_cache_openalex_transient_failure(tmp_path, monkeypatch):
+    """The openalex: branch cached whatever the helper returned, so an
+    OpenAlex outage was frozen on disk as "this Work has no references"
+    and every later build read it back instead of retrying — the #401
+    defect on the OpenAlex route."""
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    cache_file = tmp_path / "references_openalex:W123.json"
+
+    import paperpilot.scripts.build_theme_lineage as btl
+
+    with patch.object(
+        btl,
+        "fetch_related_via_openalex",
+        side_effect=build_lineage.OpenAlexTransientError("boom"),
+    ):
+        result = build_lineage.fetch_related("openalex:W123", "references", 5)
+
+    assert result == []
+    assert not cache_file.exists()
+
+    # Once OpenAlex recovers the next build must actually call out again
+    # (not short-circuit on a cached empty) and may then cache the result.
+    with patch.object(btl, "fetch_related_via_openalex", return_value=[]) as mock2:
+        second = build_lineage.fetch_related("openalex:W123", "references", 5)
+    mock2.assert_called_once()
+    assert second == []
+    assert cache_file.exists()
+
+
 # ---- fetch_related propagates isInfluential (#50) ----
 
 

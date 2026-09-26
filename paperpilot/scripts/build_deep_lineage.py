@@ -133,8 +133,11 @@ def _classify_cached_lenient(
     ("empty rationale → drop edge"): at depth 2+ we'd rather show a weak
     edge with a templated tooltip than lose the entire deeper tree.
     """
-    # Call LLM directly so we can inspect the raw relation before
-    # `from_dict` kills it for an empty rationale.
+    # Go through the provider's public raw-completion contract so we can
+    # inspect the relation before `from_dict` kills it for an empty
+    # rationale. Calling a concrete provider's private method here broke
+    # the documented Gemini fallback (build_provider returns Gemini when
+    # no Groq key is set, and GeminiProvider has no `_chat`).
     system, user = build_classify_prompt(a, b)
     evidence_sha256 = canonical_json_sha256(
         {"src": src_id, "dst": dst_id, "system": system, "user": user}
@@ -176,7 +179,7 @@ def _classify_cached_lenient(
         if cached_classification is not None:
             return cached
 
-    text = provider._chat(system, user, json_mode=True)
+    text = provider.complete_json(system, user)
     time.sleep(rate_delay)
     if text is None:
         return None

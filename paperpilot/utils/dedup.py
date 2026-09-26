@@ -8,6 +8,7 @@ Old IDs are purged after `max_age_days` to prevent unbounded growth.
 
 from __future__ import annotations
 
+import fcntl
 import json
 import os
 import tempfile
@@ -146,10 +147,10 @@ def save_seen_ids(path: str | Path, seen: dict[str, str]) -> None:
     write failures, not power-loss/kernel-crash durability of the rename
     itself — acceptable for this low-frequency, recoverable pipeline state.
 
-    Note: `os.replace` here is a rename, not a merge — a second concurrent
-    writer that loads/saves independently around the same time can still
-    last-writer-wins overwrite the first one's contribution (a distinct,
-    pre-existing issue from the corruption this function fixes).
+    Note: `os.replace` here is a rename, not a merge — this function
+    last-writer-wins by design and is only safe for a caller that owns the
+    whole file. A pipeline run must use `merge_seen_ids` instead, which
+    does the read-merge-write under an exclusive lock.
 
     Uses `tempfile.NamedTemporaryFile(delete=False)` (which internally opens
     with O_EXCL, guaranteeing a unique name) rather than a `.tmp.<pid>`
@@ -185,6 +186,41 @@ def save_seen_ids(path: str | Path, seen: dict[str, str]) -> None:
     finally:
         if tmp_path is not None:
             tmp_path.unlink(missing_ok=True)
+
+
+def merge_seen_ids(
+    path: str | Path, papers: list[Paper], *, max_age_days: int
+) -> dict[str, str]:
+    """Mark `papers` seen in the on-disk file and return the merged mapping.
+
+    The whole read-merge-write runs while holding an exclusive ``flock`` on
+    a sibling ``.lock`` file, for the same reason ``persist_classifications``
+    does (#402). ``save_seen_ids`` alone is atomic but not serialized: two
+    runs that each loaded the same snapshot, marked disjoint papers and
+    saved would leave only the later writer's IDs on disk, and the earlier
+    run's papers would be re-delivered as if never sent.
+
+    Merge order matters. The disk copy is re-read INSIDE the lock (it may
+    have advanced since the caller's ``load_seen_ids``), the new IDs are
+    stamped on top, and the purge is re-applied to the merged result — so
+    entries that aged out are not resurrected by a stale in-memory copy,
+    while the just-marked IDs always carry a fresh timestamp and survive.
+
+    Format is unchanged: ``{uid: ISO-8601 timestamp}``.
+    """
+    p = Path(path)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    lock_path = p.with_suffix(p.suffix + ".lock")
+    with open(lock_path, "w") as lock_file:
+        fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+        try:
+            merged = load_seen_ids(p)
+            merged = mark_seen(papers, merged)
+            merged = purge_seen_ids(merged, max_age_days)
+            save_seen_ids(p, merged)
+            return merged
+        finally:
+            fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
 
 
 def purge_seen_ids(seen: dict[str, str], max_age_days: int) -> dict[str, str]:

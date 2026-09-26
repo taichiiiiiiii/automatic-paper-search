@@ -93,6 +93,11 @@ class GeminiProvider(AbstractLLMProvider):
         parsed = parse_llm_response(text)
         return RelationClassification.from_dict(parsed)
 
+    def complete_json(self, system: str, user: str) -> str | None:
+        # `responseMimeType: application/json` is already set by _generate,
+        # so there is no separate json_mode flag to pass here.
+        return self._generate(system, user)
+
     # ---- helpers ----
 
     def _generate(self, system: str, user: str) -> str | None:

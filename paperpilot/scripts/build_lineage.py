@@ -277,6 +277,28 @@ _S2_FIELDS_REL = (
 )
 
 
+class OpenAlexTransientError(RuntimeError):
+    """The OpenAlex counterpart of S2TransientError: this result must not
+    be written to the lineage cache.
+
+    ``fetch_related``'s ``openalex:`` branch caches whatever the OpenAlex
+    helper returns, and that cache has no expiry — its mere existence
+    short-circuits every later build. So the helper must not report a
+    failure as data, whether the failure lost everything (a timeout) or
+    only part of it (one page of a multi-page fetch). Either way the
+    answer is incomplete, and freezing it would be the #401 defect on the
+    OpenAlex route.
+
+    ``partial`` carries whatever WAS successfully fetched. The caller may
+    still use it for this run — a sparser graph beats no graph — but must
+    not persist it.
+    """
+
+    def __init__(self, message: str, *, partial: list | None = None) -> None:
+        super().__init__(message)
+        self.partial: list = partial if partial is not None else []
+
+
 class S2TransientError(RuntimeError):
     """Raised when an S2 request failed at the transport level (network
     error / timeout / 5xx with all of request_with_retry's retries
@@ -387,7 +409,21 @@ def fetch_related(s2_id: str, kind: str, limit: int) -> list[dict[str, Any]]:
         )
 
         short_id = s2_id[len("openalex:") :]
-        items = fetch_related_via_openalex(short_id, kind, limit)
+        try:
+            items = fetch_related_via_openalex(short_id, kind, limit)
+        except OpenAlexTransientError as e:
+            # Same policy as the S2 branch below: hand the caller whatever
+            # survived (possibly nothing) but leave the cache untouched,
+            # so the next build retries instead of reading back a frozen
+            # partial or empty answer.
+            logger.warning(
+                "openalex %s for %s incomplete (%d usable); not caching: %s",
+                kind,
+                short_id,
+                len(e.partial),
+                e,
+            )
+            return e.partial
         cache.parent.mkdir(parents=True, exist_ok=True)
         cache.write_text(json.dumps(items, ensure_ascii=False, indent=2))
         return items

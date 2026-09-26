@@ -133,6 +133,9 @@ class GroqProvider(AbstractLLMProvider):
         parsed = parse_llm_response(text)
         return RelationClassification.from_dict(parsed)
 
+    def complete_json(self, system: str, user: str) -> str | None:
+        return self._chat(system, user, json_mode=True)
+
     # ---- helpers ----
 
     def _throttle_for_rate_limit(self) -> None:

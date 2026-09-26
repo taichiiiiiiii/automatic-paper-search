@@ -69,8 +69,10 @@ def test_parse_detail_returns_none_without_title():
 
 
 def test_fetch_listing_failsafe():
+    """A listing failure must not raise, and must report ok=False so the
+    caller can tell it apart from a genuinely empty conference id."""
     with patch.object(cvf, "request_with_retry", return_value=None):
-        assert cvf.fetch_listing("CVPR2025") == []
+        assert cvf.fetch_listing("CVPR2025") == ([], False)
 
 
 def test_collect_end_to_end_mocked():
@@ -81,10 +83,11 @@ def test_collect_end_to_end_mocked():
         return listing_resp if url.endswith("?day=all") else detail_resp
 
     with patch.object(cvf, "request_with_retry", side_effect=fake):
-        rows = cvf.collect("CVPR2025", "CVPR", max_workers=2, delay_seconds=0)
+        rows, complete = cvf.collect("CVPR2025", "CVPR", max_workers=2, delay_seconds=0)
     # two distinct detail pages, both parse to the same (mocked) detail -> deduped by url
     assert len(rows) == 2
     assert all(r["venue"] == "CVPR" for r in rows)
+    assert complete is True
 
 
 def test_collect_shares_one_rate_limiter_across_all_workers():
@@ -127,8 +130,9 @@ def test_collect_counts_and_logs_failed_pages(caplog):
 
     with patch.object(cvf, "request_with_retry", side_effect=fake):
         with caplog.at_level("WARNING"):
-            rows = cvf.collect("CVPR2025", "CVPR", max_workers=2, delay_seconds=0)
+            rows, complete = cvf.collect("CVPR2025", "CVPR", max_workers=2, delay_seconds=0)
     assert rows == []
+    assert complete is False
     # _LISTING has exactly 2 distinct detail paths (deduped); both fail here,
     # so the reported count must be exactly "2/2", not just any warning text.
     assert any(
@@ -148,3 +152,67 @@ def test_rows_write_via_shared_writer(tmp_path: Path):
     assert read[0]["venue"] == "CVPR"
     assert read[0]["source"] == "cvf"
     assert read[0]["source_id"] == "x"
+
+
+def test_collect_is_incomplete_when_one_detail_page_fails():
+    """A single dropped detail page is a silently missing accepted paper,
+    so the result must not be reported as the authoritative full set."""
+    listing_resp = SimpleNamespace(status_code=200, text=_LISTING)
+    seen: list[str] = []
+
+    def fake(method, url, **kw):
+        if url.endswith("?day=all"):
+            return listing_resp
+        seen.append(url)
+        # Fail only the first detail page; the second parses fine.
+        if len(seen) == 1:
+            return SimpleNamespace(status_code=500, text="")
+        return SimpleNamespace(status_code=200, text=_DETAIL)
+
+    with patch.object(cvf, "request_with_retry", side_effect=fake):
+        rows, complete = cvf.collect("CVPR2025", "CVPR", max_workers=1, delay_seconds=0)
+
+    assert len(rows) == 1
+    assert complete is False
+
+
+def test_collect_is_incomplete_when_the_listing_itself_fails():
+    with patch.object(cvf, "request_with_retry", return_value=None):
+        rows, complete = cvf.collect("CVPR2025", "CVPR", max_workers=2, delay_seconds=0)
+    assert rows == []
+    assert complete is False
+
+
+def test_main_writes_nothing_when_the_fetch_is_incomplete(tmp_path, monkeypatch, capsys):
+    """Regression test: a partial CVF fetch must not overwrite the day's
+    catalog. Mirrors collect_openreview's #388 policy — there is no marker
+    in papers_<date>.csv that would let a consumer tell a partial catalog
+    from a complete one, so a partial one is never published."""
+    wrote: list[object] = []
+
+    monkeypatch.setattr(cvf, "collect", lambda *a, **kw: ([{"url": "u", "title": "t"}], False))
+    monkeypatch.setattr(cvf, "write_outputs", lambda *a, **kw: wrote.append(a) or Path("x"))
+    monkeypatch.setattr(
+        "sys.argv",
+        ["collect_cvf", "--conference", "cvpr-2025", "--venue", "CVPR", "--cvf-id", "CVPR2025"],
+    )
+
+    assert cvf.main() == 1
+    assert wrote == []
+    assert "INCOMPLETE" in capsys.readouterr().out
+
+
+def test_main_writes_when_the_fetch_is_complete(tmp_path, monkeypatch, capsys):
+    wrote: list[object] = []
+
+    monkeypatch.setattr(cvf, "collect", lambda *a, **kw: ([{"url": "u", "title": "t"}], True))
+    monkeypatch.setattr(
+        cvf, "write_outputs", lambda *a, **kw: (wrote.append(a), Path("papers.csv"))[1]
+    )
+    monkeypatch.setattr(
+        "sys.argv",
+        ["collect_cvf", "--conference", "cvpr-2025", "--venue", "CVPR", "--cvf-id", "CVPR2025"],
+    )
+
+    assert cvf.main() == 0
+    assert len(wrote) == 1

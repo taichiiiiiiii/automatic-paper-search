@@ -33,12 +33,25 @@ CACHE_PATH = ROOT / "paperpilot" / "data" / "lineage-cache" / "classifications.j
 
 
 def _cache_endpoints(key: str, value: object) -> tuple[str, str] | None:
-    """Read endpoints from an opaque v2 value or a legacy ``src->dst`` key."""
+    """Read endpoints from an opaque v2 value or a legacy ``src->dst`` key.
+
+    The two v2 producers do not agree on where the endpoints live:
+    build_deep_lineage stores ``src``/``dst`` at the top level, while
+    build_theme_lineage stores them only inside ``cache_identity``. Reading
+    just the top level therefore classified every theme entry as having no
+    endpoints, and "no endpoints" is treated as orphaned — so compaction
+    deleted live theme classifications and the next rebuild had to pay for
+    those LLM calls again. Both shapes are accepted here.
+    """
 
     if key.startswith("v2:"):
         if not isinstance(value, dict):
             return None
         src, dst = value.get("src"), value.get("dst")
+        if not (isinstance(src, str) and isinstance(dst, str)):
+            identity = value.get("cache_identity")
+            if isinstance(identity, dict):
+                src, dst = identity.get("src"), identity.get("dst")
         return (src, dst) if isinstance(src, str) and isinstance(dst, str) else None
     src, separator, dst = key.partition("->")
     return (src, dst) if separator and src and dst else None

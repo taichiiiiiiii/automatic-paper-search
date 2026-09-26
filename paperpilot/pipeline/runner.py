@@ -44,7 +44,7 @@ from ..signals import (
     VenueSignal,
 )
 from ..sources import AbstractSource, ArxivSource, OpenAlexSource, S2Source
-from ..utils.dedup import load_seen_ids, mark_seen, purge_seen_ids, save_seen_ids
+from ..utils.dedup import load_seen_ids, merge_seen_ids, purge_seen_ids
 from ..utils.logger import get_logger
 from .stage_collect import collect
 from .stage_embedding import AbstractEncoder, embed_and_rank
@@ -286,37 +286,59 @@ class PipelineRunner:
         output_files: list[str] = []
         enabled_exporters = [exp for exp in self.exporters if exp.enabled]
         export_failures = 0
+        deliveries = 0
         for exp in enabled_exporters:
             try:
                 path = exp.export(papers)
-                if path:
-                    output_files.append(path)
             except Exception as e:
                 logger.warning("exporter '%s' failed: %s", exp.name, e)
                 errors.append(f"export:{exp.name}:{e}")
                 export_failures += 1
+                continue
+            # A falsy return is the documented no-op (CLAUDE.md rule 10:
+            # an unconfigured webhook/SMTP must not fail the pipeline).
+            # It is not a failure, but it is not a delivery either, so it
+            # counts towards neither tally.
+            if path:
+                output_files.append(path)
+                deliveries += 1
 
-        # Persist seen IDs (mark all stage-2 outputs) — but only when at
-        # least one enabled exporter actually delivered them. If every
-        # enabled exporter raised, marking these papers seen would make
-        # them permanently unreachable (stage_rule_filter drops seen_ids
-        # on every later run) despite the user never having received them.
-        # With zero enabled exporters (all no-op/unconfigured, not a
-        # failure) this always marks seen, matching prior behavior.
-        all_exporters_failed = bool(enabled_exporters) and export_failures == len(
-            enabled_exporters
-        )
+        # Persist seen IDs (mark all stage-2 outputs) — but only when the
+        # run did not both fail to deliver and fail outright. Marking a
+        # paper seen makes it permanently unreachable (stage_rule_filter
+        # drops seen_ids on every later run), so that is only correct once
+        # the user has actually received it.
+        #
+        # The tallies deliberately do not partition the exporters:
+        #   deliveries > 0        -> something reached the user; mark seen
+        #                            even if another channel failed, or the
+        #                            surviving delivery would be re-sent.
+        #   failures, 0 deliveries -> a real outage; retry next run.
+        #   0 failures, 0 deliveries -> nothing is configured (every
+        #                            exporter no-opped, or none is
+        #                            enabled). Not an outage; mark seen,
+        #                            matching the behaviour before #400.
+        delivery_outage = export_failures > 0 and deliveries == 0
         if inc_cfg.get("enabled", True):
-            if all_exporters_failed:
+            if delivery_outage:
                 logger.warning(
-                    "all %d enabled exporter(s) failed; skipping seen_ids "
-                    "update so these %d paper(s) are retried next run",
+                    "%d of %d enabled exporter(s) failed and none delivered; "
+                    "skipping seen_ids update so these %d paper(s) are "
+                    "retried next run",
+                    export_failures,
                     len(enabled_exporters),
                     len(papers),
                 )
             else:
-                seen = mark_seen(papers, seen)
-                save_seen_ids(inc_cfg.get("seen_ids_file", "./data/seen_ids.json"), seen)
+                # merge_seen_ids (not mark_seen + save_seen_ids): the
+                # read-merge-write runs under an exclusive lock, so a
+                # concurrent run's IDs are not overwritten by this one's
+                # stale snapshot.
+                seen = merge_seen_ids(
+                    inc_cfg.get("seen_ids_file", "./data/seen_ids.json"),
+                    papers,
+                    max_age_days=int(inc_cfg.get("max_age_days", 14)),
+                )
 
         finished = datetime.now()
         duration = (finished - started).total_seconds()
