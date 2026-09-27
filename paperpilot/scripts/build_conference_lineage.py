@@ -23,6 +23,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import sys
 import unicodedata
 from contextlib import suppress
 from datetime import datetime, timezone
@@ -31,7 +32,14 @@ from typing import Any
 
 from ..identity.source_ids import IdentityError, identity_from_url, normalize_alias
 from ..utils.http import request_with_retry
+from ..utils.logger import get_logger
+from ..utils.payload import first_unusable, openalex_short_id, openalex_work_shape
 from ._common import validate_conference_slug
+from ._fetch_state import (
+    BuildCompleteness,
+    IncompleteFetchError,
+    expansion_gate_blocks,
+)
 from ._lineage_contract import (
     LINEAGE_ARTIFACT_VERSION,
     canonical_json_sha256,
@@ -41,12 +49,14 @@ from ._lineage_contract import (
 )
 
 ROOT = Path(__file__).resolve().parents[2]
+
+logger = get_logger(__name__)
+
 DOCS = ROOT / "docs"
 OPENALEX = "https://api.openalex.org/works"
 _PRODUCER_NAME = "paperpilot.scripts.build_conference_lineage"
 _PRODUCER_VERSION = "1"
 _CLASSIFICATION_SCHEMA_VERSION = "citation-successor-v1"
-_OPENALEX_ID_RE = re.compile(r"^W[0-9]+$")
 _NATIVE_ALIAS_SOURCES = frozenset({"arxiv", "openreview", "acl_anthology", "cvf"})
 _RESOLVE_PAGE_SIZE = 25
 
@@ -62,13 +72,20 @@ _TAG_RULES: dict[str, list[str]] = {
 
 
 def _short_id(work_url: str) -> str:
-    """'https://openalex.org/W123' -> 'W123'."""
-    return (work_url or "").rstrip("/").split("/")[-1]
+    """'https://openalex.org/W123' -> 'W123', else ''.
+
+    Delegates to the shared predicate so this cannot drift from the
+    guards that admit the Works it is applied to. The local version did
+    not strip surrounding whitespace, so ``"https://openalex.org/W123 "``
+    cleared a guard that does strip and then entered the graph under the
+    id ``"W123 "``.
+    """
+    return openalex_short_id(work_url) or ""
 
 
 def _normalize_openalex_id(value: str) -> str:
-    candidate = value.strip().rstrip("/").rsplit("/", 1)[-1]
-    if not _OPENALEX_ID_RE.fullmatch(candidate):
+    candidate = openalex_short_id(value)
+    if candidate is None:
         raise ValueError(f"invalid OpenAlex work ID: {value!r}")
     return candidate
 
@@ -110,6 +127,19 @@ def _catalog_aliases(oral: dict[str, Any]) -> frozenset[tuple[str, str]]:
         aliases.add(("openalex", _normalize_openalex_id(openalex_id)))
 
     return frozenset(aliases)
+
+
+def _usable_work(work: Any) -> bool:
+    """The shape ``_work_aliases`` and ``_node`` rely on.
+
+    A missing alias is ordinary data — plenty of Works carry no DOI. A
+    non-mapping ``ids`` block or a non-mapping entry inside
+    ``locations`` is not: those reduce the Work to zero aliases, and an
+    Oral that resolves to zero aliases is indistinguishable from one
+    that simply did not match, so it left the focus set with the ledger
+    still clean.
+    """
+    return openalex_work_shape(work) is not None
 
 
 def _work_aliases(work: dict[str, Any]) -> frozenset[tuple[str, str]]:
@@ -172,8 +202,8 @@ def _select_openalex_match(
     for result in results:
         if not isinstance(result, dict):
             continue
-        work_id = _short_id(result.get("id", ""))
-        if not _OPENALEX_ID_RE.fullmatch(work_id):
+        work_id = openalex_short_id(result.get("id"))
+        if work_id is None:
             continue
         matches = aliases.issubset(_work_aliases(result))
         if matches:
@@ -200,17 +230,66 @@ def _venue_of(work: dict[str, Any]) -> str:
     return src.get("display_name") or ""
 
 
-def _get(params: dict[str, Any], *, email: str | None = None) -> dict[str, Any] | None:
+def _get(params: dict[str, Any], *, email: str | None = None) -> dict[str, Any]:
+    """One OpenAlex query. Raises IncompleteFetchError instead of
+    collapsing a failure into None.
+
+    The old signature returned None for a transport failure, a non-200
+    and a malformed body alike, and every caller read that as "nothing
+    matched". An outage therefore silently dropped Oral papers from the
+    focus set and published the survivors as the conference's complete
+    lineage. A query that legitimately matches nothing still returns a
+    dict here — with an empty ``results`` — so absence stays expressible.
+    """
     if email:
         params = {**params, "mailto": email}
     resp = request_with_retry("GET", OPENALEX, params=params, timeout=20.0)
     if resp is None or resp.status_code != 200:
-        return None
+        raise IncompleteFetchError(
+            f"openalex query failed (status={getattr(resp, 'status_code', None)}, "
+            f"filter={params.get('filter')!r})"
+        )
     try:
         data = resp.json()
     except ValueError:
-        return None
-    return data if isinstance(data, dict) else None
+        raise IncompleteFetchError(
+            f"openalex returned a malformed body (filter={params.get('filter')!r})"
+        ) from None
+    if not isinstance(data, dict):
+        raise IncompleteFetchError(
+            f"openalex returned a non-object body (filter={params.get('filter')!r})"
+        )
+    # Every endpoint this helper calls answers with a `results` array,
+    # empty when nothing matched. A 200 carrying {"error": "maintenance"}
+    # or {"results": null} is therefore a broken response — and because
+    # each caller reads `data.get("results") or []`, letting it through
+    # would silently drop an Oral from the focus set with the ledger
+    # still reporting the build complete.
+    results = data.get("results")
+    if not isinstance(results, list):
+        raise IncompleteFetchError(
+            f"openalex returned no results array (filter={params.get('filter')!r}, "
+            f"keys={sorted(data)[:5]})"
+        )
+    # Every call site selects `id`, and both consumers key Works by it:
+    # `_select_openalex_match` skips anything the id regex rejects, and
+    # `fetch_meta`/`fetch_citers` index by short id. An element without
+    # a usable id therefore disappears silently — which, for an Oral,
+    # is indistinguishable from "no unique alias match" and leaves the
+    # ledger clean. Reject the whole page instead.
+    # Validate with the predicate the CONSUMER uses, not a looser one.
+    # `_select_openalex_match` keeps only ids matching ^W[0-9]+$ and
+    # `fetch_meta` keys by the short id, so requiring merely a non-empty
+    # string moved the silent drop one level down instead of removing
+    # it: {"id": "https://openalex.org/X999"} passed and then vanished.
+    bad = first_unusable(results, _usable_work)
+    if bad is not None:
+        index, item = bad
+        raise IncompleteFetchError(
+            f"openalex returned a result with no usable OpenAlex id at index {index} "
+            f"(filter={params.get('filter')!r}, type={type(item).__name__})"
+        )
+    return data
 
 
 def resolve_oral(
@@ -230,42 +309,78 @@ def resolve_oral(
         },
         email=email,
     )
-    results = (data or {}).get("results") or []
+    results = data.get("results") or []
     if not isinstance(results, list):
         return None
     return _select_openalex_match(results, title=title, aliases=aliases)
 
 
-def fetch_meta(ids: list[str], *, email: str | None = None) -> dict[str, dict[str, Any]]:
-    """Batch-fetch title/year/authors for OpenAlex work ids (50 per request)."""
+def fetch_meta(
+    ids: list[str],
+    *,
+    email: str | None = None,
+    completeness: BuildCompleteness | None = None,
+) -> dict[str, dict[str, Any]]:
+    """Batch-fetch title/year/authors for OpenAlex work ids (50 per request).
+
+    Expansion, not subject resolution: a lost page thins the graph but
+    does not misstate what the artifact is about, so it degrades and is
+    counted rather than aborting the build.
+    """
     out: dict[str, dict[str, Any]] = {}
     for i in range(0, len(ids), 50):
         chunk = ids[i : i + 50]
-        data = _get(
-            {
-                "filter": f"ids.openalex:{'|'.join(chunk)}",
-                "per-page": 50,
-                "select": "id,title,publication_year,authorships,primary_location",
-            },
-            email=email,
-        )
-        for w in (data or {}).get("results") or []:
+        if completeness is not None:
+            completeness.expansion_attempted()
+        try:
+            data = _get(
+                {
+                    "filter": f"ids.openalex:{'|'.join(chunk)}",
+                    "per-page": 50,
+                    "select": "id,title,publication_year,authorships,primary_location",
+                },
+                email=email,
+            )
+        except IncompleteFetchError as exc:
+            logger.warning("conference lineage: metadata page failed: %s", exc)
+            if completeness is not None:
+                completeness.expansion_failed()
+            continue
+        for w in data.get("results") or []:
             out[_short_id(w.get("id", ""))] = w
     return out
 
 
-def fetch_citers(work_id: str, k: int, *, email: str | None = None) -> list[dict[str, Any]]:
-    """Top-k most-cited works that cite work_id (the descendants)."""
-    data = _get(
-        {
-            "filter": f"cites:{work_id}",
-            "sort": "cited_by_count:desc",
-            "per-page": k,
-            "select": "id,title,publication_year,authorships,primary_location",
-        },
-        email=email,
-    )
-    return (data or {}).get("results") or []
+def fetch_citers(
+    work_id: str,
+    k: int,
+    *,
+    email: str | None = None,
+    completeness: BuildCompleteness | None = None,
+) -> list[dict[str, Any]]:
+    """Top-k most-cited works that cite work_id (the descendants).
+
+    Expansion: a failure here loses descendants for one focus paper, so
+    it is counted and the build continues.
+    """
+    if completeness is not None:
+        completeness.expansion_attempted()
+    try:
+        data = _get(
+            {
+                "filter": f"cites:{work_id}",
+                "sort": "cited_by_count:desc",
+                "per-page": k,
+                "select": "id,title,publication_year,authorships,primary_location",
+            },
+            email=email,
+        )
+    except IncompleteFetchError as exc:
+        logger.warning("conference lineage: citers for %s failed: %s", work_id, exc)
+        if completeness is not None:
+            completeness.expansion_failed()
+        return []
+    return data.get("results") or []
 
 
 def _node(
@@ -355,8 +470,14 @@ def build_graph(
     citers_per: int,
     email: str | None = None,
     generated_at: str | None = None,
+    completeness: BuildCompleteness | None = None,
 ) -> dict[str, Any]:
-    """Resolve orals -> works, attach top references + citers, emit lineage graph."""
+    """Resolve orals -> works, attach top references + citers, emit lineage graph.
+
+    ``completeness`` records which Orals could not be resolved because a
+    request failed (subject resolution — a hard gate for the caller) and
+    how many expansion pages were lost (recorded, not fatal).
+    """
     if not isinstance(orals, list):
         raise ValueError("orals must be a list")
     if not isinstance(display, str) or not display.strip():
@@ -396,7 +517,17 @@ def build_graph(
     oral_records: list[tuple[dict[str, Any], list[str], str]] = []
 
     for _oral, seed_paper_id, title, aliases in prepared:
-        work = resolve_oral(title, aliases=aliases, email=email)
+        try:
+            work = resolve_oral(title, aliases=aliases, email=email)
+        except IncompleteFetchError as exc:
+            # An Oral we could not even look up is missing from the focus
+            # set for a reason that says nothing about the paper. Skipping
+            # it silently is how an outage used to shrink — or empty — the
+            # published conference lineage.
+            logger.warning("conference lineage: could not resolve %r: %s", title, exc)
+            if completeness is not None:
+                completeness.subject_failed(f"oral {title!r}: {exc}")
+            continue
         if not work:
             continue
         oid = _short_id(work.get("id", ""))
@@ -415,11 +546,39 @@ def build_graph(
             is_focus=True,
             seed_paper_id=seed_paper_id,
         )
-        refs = [_short_id(r) for r in (work.get("referenced_works") or [])][:refs_per]
+        raw_refs = work.get("referenced_works")
+        if not isinstance(raw_refs, list):
+            # The resolve query selects `referenced_works` explicitly, so
+            # a missing or null value is a broken Work rather than a
+            # paper that cites nothing. The Oral itself resolved, so this
+            # is a lost expansion, not a lost subject.
+            logger.warning(
+                "conference lineage: %r resolved without a referenced_works array", title
+            )
+            if completeness is not None:
+                completeness.expansion_attempted()
+                completeness.expansion_failed()
+            raw_refs = []
+        elif first_unusable(raw_refs, lambda r: bool(openalex_short_id(r))):
+            # `_short_id` does string surgery, so a non-string element
+            # raised AttributeError straight through the fail-safe
+            # boundary and killed the build.
+            logger.warning(
+                "conference lineage: %r has a malformed referenced_works entry", title
+            )
+            if completeness is not None:
+                completeness.expansion_attempted()
+                completeness.expansion_failed()
+            raw_refs = []
+        refs = [_short_id(r) for r in raw_refs][:refs_per]
         oral_records.append((work, refs, seed_paper_id))
         ref_ids_needed.update(refs)
 
-    ref_meta = fetch_meta(sorted(ref_ids_needed), email=email) if ref_ids_needed else {}
+    ref_meta = (
+        fetch_meta(sorted(ref_ids_needed), email=email, completeness=completeness)
+        if ref_ids_needed
+        else {}
+    )
 
     for work, refs, _seed_paper_id in oral_records:
         oid = _short_id(work.get("id", ""))
@@ -433,7 +592,12 @@ def build_graph(
                 nodes[rid] = _node(rw, venue=_venue_of(rw), tier="", is_focus=False)
             edges.append(_edge(rid, oid, nodes[rid]["year"], oyear))
         # descendants (citers)
-        for cw in fetch_citers(_short_id(work.get("id", "")), citers_per, email=email):
+        for cw in fetch_citers(
+            _short_id(work.get("id", "")),
+            citers_per,
+            email=email,
+            completeness=completeness,
+        ):
             cid = _short_id(cw.get("id", ""))
             if not cid:
                 continue
@@ -464,6 +628,7 @@ def build_graph(
             "kind": "conference",
             "generator": _PRODUCER_NAME,
             "generated_at": generated_at or _generated_at(),
+            "completeness": (completeness or BuildCompleteness()).as_meta(),
         },
     }
     issues = validate_lineage_artifact(graph, kind="conference", catalog_ids=set(seeds))
@@ -508,6 +673,15 @@ def main() -> int:
     ap.add_argument("--refs", type=int, default=4, help="references (ancestors) per oral")
     ap.add_argument("--citers", type=int, default=2, help="citing works (descendants) per oral")
     ap.add_argument("--email", default=None, help="OpenAlex polite-pool email")
+    ap.add_argument(
+        "--allow-incomplete",
+        dest="allow_incomplete",
+        action="store_true",
+        default=False,
+        help="Publish even when part of the reference/citer expansion failed and "
+        "the result is smaller than what is already published. Never overrides "
+        "the Oral-resolution gate.",
+    )
     args = ap.parse_args()
 
     validate_conference_slug(args.conference)
@@ -517,10 +691,37 @@ def main() -> int:
         print(f"⚠️  no Oral papers in docs/{args.conference}/papers.json")
         return 1
 
+    completeness = BuildCompleteness()
     graph = build_graph(
-        orals, display=display, refs_per=args.refs, citers_per=args.citers, email=args.email
+        orals,
+        display=display,
+        refs_per=args.refs,
+        citers_per=args.citers,
+        email=args.email,
+        completeness=completeness,
     )
     out = DOCS / args.conference / "lineage.json"
+
+    # Gates before the write, never after: the published file must still
+    # be the last good one if we refuse.
+    if not completeness.subject_complete:
+        print(
+            "incomplete build; published lineage left untouched: "
+            + completeness.subject_gate_message(),
+            file=sys.stderr,
+        )
+        return 4
+    if not args.allow_incomplete:
+        blocked = expansion_gate_blocks(
+            completeness,
+            new_node_count=len(graph["nodes"]),
+            new_edge_count=len(graph.get("edges") or []),
+            published_path=out,
+        )
+        if blocked:
+            print(f"incomplete build; published lineage left untouched: {blocked}", file=sys.stderr)
+            return 4
+
     out.write_text(json.dumps(graph, ensure_ascii=False, indent=0), encoding="utf-8")
     focus = sum(1 for n in graph["nodes"] if n.get("is_focus"))
     print(f"✅ {len(graph['nodes'])} nodes ({focus} orals), {len(graph['edges'])} edges -> {out}")

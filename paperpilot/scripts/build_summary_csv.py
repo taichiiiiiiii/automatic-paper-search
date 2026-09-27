@@ -27,6 +27,7 @@ from pathlib import Path
 
 from paperpilot.identity import IdentityError, identity_from_url, normalize_alias
 from paperpilot.scripts._common import validate_conference_slug
+from paperpilot.utils.csv_safety import neutralize_row
 
 PROJECT = Path(__file__).resolve().parents[1]
 _PAPERS_NAME_RE = re.compile(r"^papers_\d{4}-\d{2}-\d{2}\.csv$")
@@ -333,7 +334,11 @@ def build(
             ],
         )
         writer.writeheader()
-        writer.writerows(rows_out)
+        # summary.csv is the file a human opens, and its title/abstract/
+        # author cells are the same untrusted upstream text as the source
+        # CSV. Neutralize here too rather than relying on the input having
+        # been written by a version that already did.
+        writer.writerows(neutralize_row(row) for row in rows_out)
 
     tag_counts: dict[str, int] = {}
     for r in rows_out:

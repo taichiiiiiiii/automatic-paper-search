@@ -55,6 +55,11 @@ from paperpilot.llm.base import (  # noqa: E402
     provider_model_tag,
 )
 from paperpilot.scripts._common import theme_slug  # noqa: E402
+from paperpilot.scripts._fetch_state import (  # noqa: E402
+    BuildCompleteness,
+    IncompleteBuildError,
+    expansion_gate_blocks,
+)
 
 # #207 extraction: the 16 symbols below moved to _lineage_classify but
 # stay importable as `build_theme_lineage.X` so existing tests
@@ -100,6 +105,7 @@ from paperpilot.scripts.build_lineage import (  # noqa: E402
 )
 from paperpilot.utils.config_loader import load_env  # noqa: E402
 from paperpilot.utils.github import (  # noqa: E402
+    GitHubUnavailableError,
     fetch_repo_stars,
     load_curated_map,
     parse_github_repo_url,
@@ -107,6 +113,12 @@ from paperpilot.utils.github import (  # noqa: E402
 )
 from paperpilot.utils.http import request_with_retry  # noqa: E402
 from paperpilot.utils.logger import get_logger, setup_logging  # noqa: E402
+from paperpilot.utils.payload import (  # noqa: E402
+    first_unusable,
+    openalex_short_id,
+    openalex_work_shape,
+    s2_paper_shape,
+)
 from paperpilot.utils.unarxive import (  # noqa: E402
     _normalise_arxiv_id,
 )
@@ -604,6 +616,7 @@ def _add_cross_node_edges(
     cohort_min_year: int | None = None,
     provider: AbstractLLMProvider | None = None,
     strict_mode: str = "off",
+    completeness: BuildCompleteness | None = None,
 ) -> int:
     """Find citation links between nodes already in the graph.
 
@@ -635,7 +648,9 @@ def _add_cross_node_edges(
 
     for citing_id in list(node_ids):
         try:
-            refs = fetch_related(citing_id, "references", _CROSS_NODE_LIMIT)
+            refs = fetch_related(
+                citing_id, "references", _CROSS_NODE_LIMIT, completeness=completeness
+            )
         except Exception as exc:  # pragma: no cover - S2 fail-safe
             logger.warning("cross-node: fetch_related failed for %s: %s", citing_id, exc)
             continue
@@ -850,6 +865,12 @@ def _seed_cache_path(keyword: str, since_year: int | None) -> Path:
     return CACHE_DIR / f"search_{digest}_{suffix}.json"
 
 
+#: Upper bound on the reconstructed abstract length, in words. OpenAlex
+#: abstracts run to a few hundred; the cap exists so a malformed
+#: position cannot turn a cheap response into a huge allocation.
+_ABSTRACT_MAX_POSITION = 20_000
+
+
 def _decode_abstract_inverted_index(inverted: object) -> str:
     """Reconstruct an abstract from OpenAlex's ``abstract_inverted_index``.
 
@@ -871,28 +892,27 @@ def _decode_abstract_inverted_index(inverted: object) -> str:
         if not isinstance(word, str) or not isinstance(positions, list):
             continue
         for pos in positions:
-            if isinstance(pos, int) and pos >= 0:
+            if isinstance(pos, int) and not isinstance(pos, bool) and pos >= 0:
                 by_position[pos] = word
     if not by_position:
         return ""
-    max_pos = max(by_position.keys())
+    # A single absurd position would otherwise allocate a list of that
+    # length: `{"word": [1000000000]}` is cheap to send and expensive to
+    # decode. Real abstracts are a few hundred words.
+    max_pos = min(max(by_position.keys()), _ABSTRACT_MAX_POSITION)
     return " ".join(by_position.get(i, "") for i in range(max_pos + 1)).strip()
 
 
 def _openalex_short_id(work_url_or_id: str) -> str | None:
     """Extract the ``W...`` short ID from an OpenAlex Work URL or id.
 
-    OpenAlex returns IDs in two shapes:
-      * full URL: ``https://openalex.org/W2962917714``
-      * short:    ``W2962917714``
-
-    Anywhere we use the ID as a primary key, we want the short form.
-    Returns None for non-string / malformed inputs.
+    Thin alias for the shared predicate so that this module's consumers
+    and the ``first_unusable`` guards protecting them cannot disagree.
+    The old local version accepted anything starting with ``W`` — so
+    ``Wjunk`` and a bare ``W`` passed the guard and were then dropped
+    by the real consumer, which is the silent-drop bug one level down.
     """
-    if not isinstance(work_url_or_id, str) or not work_url_or_id:
-        return None
-    tail = work_url_or_id.rsplit("/", 1)[-1].strip()
-    return tail if tail.startswith("W") else None
+    return openalex_short_id(work_url_or_id)
 
 
 # Prefix that marks a paper dict whose ``paperId`` came from OpenAlex
@@ -1126,6 +1146,7 @@ def discover_seeds_via_openalex(
     top_n: int,
     since_year: int | None,
     email: str | None = None,
+    completeness: BuildCompleteness | None = None,
 ) -> list[dict[str, Any]]:
     """Search OpenAlex ``/works`` for the theme; return raw Work dicts.
 
@@ -1142,6 +1163,12 @@ def discover_seeds_via_openalex(
 
     Returns ``[]`` on any error (None response / non-200 / parse fail)
     so callers degrade gracefully instead of crashing the pipeline.
+
+    That empty list is ambiguous by design — it is also what a genuinely
+    unmatched query returns. When ``completeness`` is supplied the
+    failure is recorded there, which is how the caller tells the two
+    apart and refuses to publish a theme whose seed set is empty only
+    because the search never ran.
     """
     if not query or not query.strip():
         return []
@@ -1205,20 +1232,48 @@ def discover_seeds_via_openalex(
         timeout=20,
     )
     if resp is None or resp.status_code != 200:
+        status = getattr(resp, "status_code", None)
         logger.warning(
             "openalex search failed (status=%s) — fallback contributes 0 seeds",
-            getattr(resp, "status_code", None),
+            status,
         )
+        if completeness is not None:
+            completeness.subject_failed(
+                f"openalex seed search for {query!r} failed (status={status})"
+            )
         return []
     try:
         payload = resp.json()
     except ValueError as exc:
         logger.warning("openalex JSON parse failed: %s", exc)
+        if completeness is not None:
+            completeness.subject_failed(
+                f"openalex seed search for {query!r} returned a malformed body"
+            )
         return []
     results = payload.get("results") if isinstance(payload, dict) else None
     if not isinstance(results, list):
+        if completeness is not None:
+            completeness.subject_failed(
+                f"openalex seed search for {query!r} returned no results array"
+            )
         return []
-    return [w for w in results if isinstance(w, dict)]
+    # Validating the container was not enough, and neither was
+    # "the id is a non-empty string": both consumers narrow further —
+    # `_openalex_search_per_keyword` keys by it and `_work_to_paper_dict`
+    # demands a `W...` short id — so anything else was still dropped in
+    # silence, leaving an empty seed set and a theme published as though
+    # it were legitimately empty.
+    bad = first_unusable(results, lambda w: openalex_work_shape(w) is not None)
+    if bad is not None:
+        index, item = bad
+        if completeness is not None:
+            completeness.subject_failed(
+                f"openalex seed search for {query!r} returned a result with no usable "
+                f"OpenAlex id at index {index} (type={type(item).__name__})"
+            )
+        return []
+    return list(results)
 
 
 # The only status that is a permanent statement about the DATA: 410 Gone
@@ -1270,7 +1325,13 @@ def _fetch_openalex_works_by_ids(
     contribute zero (graceful degrade). Order is not preserved — the
     BFS layer already de-duplicates and re-ranks.
     """
-    cleaned: list[str] = [sid for sid in short_ids if isinstance(sid, str) and sid.startswith("W")]
+    # Keep the NORMALIZED value: validating with the shared predicate and
+    # then forwarding the raw string reintroduces the very drift the
+    # predicate exists to remove ("W123 " clears the guard and is then
+    # spliced into the filter).
+    cleaned: list[str] = [
+        short for short in (_openalex_short_id(sid) for sid in short_ids) if short
+    ]
     if not cleaned:
         return []
     results: list[dict[str, Any]] = []
@@ -1316,9 +1377,17 @@ def _fetch_openalex_works_by_ids(
         if not isinstance(works, list):
             failed_chunks += 1
             continue
+        # A malformed Work inside the page makes the page incomplete. It
+        # used to be skipped, so a chunk that returned {"results": [{}]}
+        # looked like a fully successful lookup that simply found
+        # nothing — and the caller caches that answer forever.
+        if first_unusable(works, lambda w: openalex_work_shape(w) is not None):
+            failed_chunks += 1
+            continue
         for work in works:
-            if not isinstance(work, dict):
-                continue
+            # A Work with a valid id but no title is a fact about that
+            # record, not a broken page: OpenAlex really does carry
+            # untitled entries. It stays an ordinary filtered element.
             paper = _work_to_paper_dict(work)
             if paper is not None:
                 results.append(paper)
@@ -1454,8 +1523,12 @@ def fetch_related_via_openalex(
     citing side. The lookup is silent when unarXive isn't built
     (``_contexts=[]`` → downstream year/cite fallback).
     """
-    if not openalex_short_id or not openalex_short_id.startswith("W"):
+    normalized = _openalex_short_id(openalex_short_id)
+    if normalized is None:
         return []
+    # Everything below builds URLs, filters and graph ids from this, so
+    # it must be the normalized form rather than the raw argument.
+    openalex_short_id = normalized
     page_size = min(max(1, limit), _OPENALEX_PER_PAGE_MAX)
     if kind == "references":
         # `ids`, `primary_location`, `locations`, and `doi` are included
@@ -1503,7 +1576,17 @@ def fetch_related_via_openalex(
             raise OpenAlexTransientError(
                 f"openalex work fetch returned a non-object body (id={openalex_short_id})"
             )
+        # The request explicitly selects `referenced_works`, so a 200
+        # that omits it is a broken response — {"error": "maintenance"}
+        # or {} — not a Work with no references. Rounding it to [] let
+        # build_lineage.fetch_related freeze the empty list in a cache
+        # that never expires.
         ref_urls = payload.get("referenced_works")
+        if "referenced_works" not in payload:
+            raise OpenAlexTransientError(
+                f"openalex work response omitted referenced_works "
+                f"(id={openalex_short_id}, keys={sorted(payload)[:5]})"
+            )
         if ref_urls is None:
             ref_urls = []
         elif not isinstance(ref_urls, list):
@@ -1512,9 +1595,19 @@ def fetch_related_via_openalex(
             raise OpenAlexTransientError(
                 f"openalex referenced_works is not a list (id={openalex_short_id})"
             )
-        ref_ids = [
-            sid for sid in (_openalex_short_id(u) for u in ref_urls if isinstance(u, str)) if sid
-        ]
+        # The elements are part of the answer too: OpenAlex writes every
+        # referenced_works entry as a Work URL, so one that does not
+        # yield a short id is a broken payload. Skipping it produced a
+        # shorter-but-plausible parent list that the caller then froze
+        # in a cache with no expiry.
+        bad_ref = first_unusable(ref_urls, lambda u: bool(_openalex_short_id(u)))
+        if bad_ref is not None:
+            index, item = bad_ref
+            raise OpenAlexTransientError(
+                f"openalex referenced_works has a malformed entry at index {index} "
+                f"(id={openalex_short_id}, type={type(item).__name__})"
+            )
+        ref_ids = [sid for sid in (_openalex_short_id(u) for u in ref_urls) if sid]
         # Extract focal's arXiv id for the unarXive lookup. #301:
         # _arxiv_id_from_work also reads the location URLs / DataCite DOI
         # because OpenAlex leaves ids.arxiv_id None for ~all CS works.
@@ -1594,11 +1687,16 @@ def fetch_related_via_openalex(
             raise OpenAlexTransientError(
                 f"openalex cites query returned no results array (id={openalex_short_id})"
             )
+        bad_child = first_unusable(results, lambda w: openalex_work_shape(w) is not None)
+        if bad_child is not None:
+            index, item = bad_child
+            raise OpenAlexTransientError(
+                f"openalex cites query returned a malformed Work at index {index} "
+                f"(id={openalex_short_id}, type={type(item).__name__})"
+            )
         children: list[dict[str, Any]] = []
         focal_paper_id = f"{_OPENALEX_PAPER_ID_PREFIX}{openalex_short_id}"
         for work in results:
-            if not isinstance(work, dict):
-                continue
             paper = _work_to_paper_dict(work)
             if paper is None:
                 continue
@@ -1623,7 +1721,9 @@ def _attach_empty_intent_fields(paper: dict[str, Any]) -> dict[str, Any]:
     return paper
 
 
-def _resolve_openalex_to_s2(works: list[dict]) -> list[dict[str, Any]]:
+def _resolve_openalex_to_s2(
+    works: list[dict], *, completeness: BuildCompleteness | None = None
+) -> list[dict[str, Any]]:
     """POST OpenAlex DOIs to S2 ``/paper/batch``; return S2-shape dicts.
 
     Uses ``/paper/batch`` (one request, up to 500 ids) instead of N
@@ -1635,6 +1735,11 @@ def _resolve_openalex_to_s2(works: list[dict]) -> list[dict[str, Any]]:
 
     Returns ``[]`` on error (None response, non-200, parse fail) so
     callers can fall through to whatever S2 search managed to surface.
+    That empty list is ambiguous — it is also what "no DOI resolved"
+    looks like — so a failure is recorded in ``completeness`` when one is
+    supplied. This step is part of SEED discovery: losing it means the
+    published theme is missing seeds for a reason that has nothing to do
+    with the theme.
     """
     ids: list[str] = []
     for work in works:
@@ -1656,21 +1761,56 @@ def _resolve_openalex_to_s2(works: list[dict]) -> list[dict[str, Any]]:
         timeout=30,
     )
     if resp is None or resp.status_code != 200:
+        status = getattr(resp, "status_code", None)
         logger.warning(
             "S2 /paper/batch failed (status=%s) — OpenAlex DOIs unresolved",
-            getattr(resp, "status_code", None),
+            status,
         )
+        if completeness is not None:
+            completeness.subject_failed(
+                f"s2 /paper/batch failed while resolving {len(ids)} OpenAlex DOI(s) "
+                f"(status={status})"
+            )
         return []
     try:
         data = resp.json()
     except ValueError as exc:
         logger.warning("S2 /paper/batch JSON parse failed: %s", exc)
+        if completeness is not None:
+            completeness.subject_failed("s2 /paper/batch returned a malformed body")
         return []
     if not isinstance(data, list):
+        if completeness is not None:
+            completeness.subject_failed("s2 /paper/batch returned a non-array body")
         return []
-    # /paper/batch returns nulls in-place for unmatched ids; drop them.
+    # /paper/batch returns nulls in-place for unmatched ids — that is an
+    # answer about those ids and the one hole allowed here. A non-null
+    # entry always echoes its paperId, so anything else is a broken
+    # page; dropping it silently handed `_top_up_via_openalex` a partial
+    # seed set it then used as if it were complete.
+    if len(data) != len(ids):
+        # The endpoint answers positionally, writing null for an id it
+        # does not know, so a short array is a truncated page rather
+        # than a smaller answer.
+        if completeness is not None:
+            completeness.subject_failed(
+                f"s2 /paper/batch returned {len(data)} entries for {len(ids)} ids"
+            )
+        return []
+    bad = first_unusable(data, lambda e: bool(s2_paper_shape(e)), allow_none=True)
+    if bad is not None:
+        index, item = bad
+        if completeness is not None:
+            completeness.subject_failed(
+                f"s2 /paper/batch returned a malformed entry at index {index} "
+                f"(type={type(item).__name__})"
+            )
+        return []
     resolved: list[dict[str, Any]] = []
     for entry in data:
+        # A resolved paper with no title cannot become a node
+        # (``to_node`` indexes it unguarded), but that is a fact about
+        # the record rather than a broken response.
         if isinstance(entry, dict) and entry.get("paperId") and entry.get("title"):
             resolved.append(entry)
     return resolved
@@ -1705,6 +1845,7 @@ def _openalex_search_per_keyword(
     top_n: int,
     since_year: int | None,
     email: str | None,
+    completeness: BuildCompleteness | None = None,
 ) -> list[dict[str, Any]]:
     """Run OpenAlex ``/works`` once per non-empty keyword and dedup the
     raw Work dicts by OpenAlex short ID.
@@ -1733,9 +1874,14 @@ def _openalex_search_per_keyword(
             top_n=top_n,
             since_year=since_year,
             email=email,
+            completeness=completeness,
         ):
-            wid = work.get("id")
-            if isinstance(wid, str) and wid:
+            # The normalized id, not the raw one: `W1`,
+            # `https://openalex.org/W1` and a trailing-space variant are
+            # the same Work, and deduping on the raw string let the same
+            # paper occupy several slots of the S2 batch budget.
+            wid = _openalex_short_id(work.get("id"))
+            if wid:
                 by_id.setdefault(wid, work)
     return list(by_id.values())
 
@@ -1747,6 +1893,7 @@ def _discover_seeds_openalex_primary(
     since_year: int | None,
     openalex_email: str | None,
     theme: str | None,
+    completeness: BuildCompleteness | None = None,
 ) -> list[dict[str, Any]]:
     """OpenAlex-first seed discovery path (#209 S2-free Phase 1).
 
@@ -1767,6 +1914,7 @@ def _discover_seeds_openalex_primary(
         top_n=top_n,
         since_year=since_year,
         email=openalex_email,
+        completeness=completeness,
     )
     by_id: dict[str, dict[str, Any]] = {}
     for work in works:
@@ -1781,6 +1929,7 @@ def _search_one_keyword_via_s2(
     *,
     keyword: str,
     since_year: int | None,
+    completeness: BuildCompleteness | None = None,
 ) -> list[dict[str, Any]]:
     """One ``/paper/search`` call (or a cached replay of one) for a
     single keyword.
@@ -1809,13 +1958,16 @@ def _search_one_keyword_via_s2(
             cached = json.loads(cache.read_text())
         except json.JSONDecodeError:
             cached = None
-        if isinstance(cached, list):
-            # Same predicate as the live response below — build_lineage.to_node
-            # indexes paper["title"] unguarded, so a cached entry without one
-            # would reach the graph and raise KeyError.
-            usable = [
-                p for p in cached if isinstance(p, dict) and p.get("paperId") and p.get("title")
-            ]
+        if isinstance(cached, list) and not first_unusable(
+            cached, lambda p: bool(s2_paper_shape(p))
+        ):
+            # Same structural predicate as the live response below. A
+            # single malformed entry makes the whole file untrustworthy:
+            # "keep the good ones" would replay exactly the partial-page
+            # bug from a file instead of from the network.
+            # build_lineage.to_node indexes paper["title"] unguarded, so
+            # an entry without one is still filtered out here.
+            usable = [p for p in cached if p.get("title")]
             if usable or not cached:
                 # An empty cached list is a real "no results"; only a
                 # non-empty list that yields nothing is corrupt.
@@ -1854,6 +2006,11 @@ def _search_one_keyword_via_s2(
             keyword,
             getattr(resp, "status_code", None),
         )
+        if completeness is not None:
+            completeness.subject_failed(
+                f"s2 seed search for {keyword!r} failed "
+                f"(status={getattr(resp, 'status_code', None)})"
+            )
         return []
     try:
         payload = resp.json()
@@ -1865,6 +2022,10 @@ def _search_one_keyword_via_s2(
             "s2: search returned a malformed body for keyword %r; not caching",
             keyword,
         )
+        if completeness is not None:
+            completeness.subject_failed(
+                f"s2 seed search for {keyword!r} returned a malformed body"
+            )
         return []
     # Parsing is not enough: S2 (or a proxy in front of it) can answer 200
     # with {"error": ...}, {"data": null} or a bare list. Each of those
@@ -1877,18 +2038,32 @@ def _search_one_keyword_via_s2(
             keyword,
             sorted(payload)[:5] if isinstance(payload, dict) else type(payload).__name__,
         )
+        if completeness is not None:
+            completeness.subject_failed(
+                f"s2 seed search for {keyword!r} returned no data array"
+            )
         return []
-    items: list[dict[str, Any]] = [
-        p for p in data if isinstance(p, dict) and p.get("paperId") and p.get("title")
-    ]
-    if data and not items:
-        # Every entry was unusable — the payload is malformed, not empty.
+    # "Only fail when EVERY entry is broken" still let a partial page
+    # through: one good element was enough to publish the rest of the
+    # page's losses as a smaller, plausible result. S2 echoes a paperId
+    # for every hit, so one missing it means the page is broken.
+    bad = first_unusable(data, lambda p: bool(s2_paper_shape(p)))
+    if bad is not None:
+        index, item = bad
         logger.warning(
-            "s2: search returned %d unusable entries for keyword %r; not caching",
-            len(data),
+            "s2: search returned a malformed entry at index %d for keyword %r; not caching",
+            index,
             keyword,
         )
+        if completeness is not None:
+            completeness.subject_failed(
+                f"s2 seed search for {keyword!r} returned a malformed entry at index "
+                f"{index} (type={type(item).__name__})"
+            )
         return []
+    # A hit with no title is a fact about that record, not a broken
+    # page, so it stays an ordinary filtered element.
+    items: list[dict[str, Any]] = [p for p in data if p.get("title")]
     cache.parent.mkdir(parents=True, exist_ok=True)
     # Atomic: a crash partway through a plain write_text would leave a
     # truncated file that every later run reads back as zero seeds.
@@ -1919,6 +2094,7 @@ def _top_up_via_openalex(
     top_n: int,
     since_year: int | None,
     openalex_email: str | None,
+    completeness: BuildCompleteness | None = None,
 ) -> dict[str, dict[str, Any]]:
     """OpenAlex fallback: query OpenAlex for the theme, resolve DOIs
     through S2 ``/paper/batch``, return a NEW dict that's ``by_id``
@@ -1952,10 +2128,11 @@ def _top_up_via_openalex(
         top_n=top_n,
         since_year=since_year,
         email=openalex_email,
+        completeness=completeness,
     )
     if not works:
         return by_id
-    resolved = _resolve_openalex_to_s2(works)
+    resolved = _resolve_openalex_to_s2(works, completeness=completeness)
     if not resolved:
         return by_id
     merged = dict(by_id)
@@ -1975,6 +2152,7 @@ def discover_seeds(
     openalex_email: str | None = None,
     theme: str | None = None,
     primary_source: str = "s2",
+    completeness: BuildCompleteness | None = None,
 ) -> list[dict[str, Any]]:
     """Find seed papers for the theme via S2 ``/paper/search`` (default)
     or OpenAlex ``/works`` (``primary_source="openalex"``).
@@ -2007,6 +2185,7 @@ def discover_seeds(
             since_year=since_year,
             openalex_email=openalex_email,
             theme=theme,
+            completeness=completeness,
         )
 
     # ``theme`` is optional for backwards compatibility with callers
@@ -2024,7 +2203,9 @@ def discover_seeds(
     # Step 1: gather S2 hits across all keywords.
     by_id: dict[str, dict[str, Any]] = {}
     for kw in keywords:
-        for paper in _search_one_keyword_via_s2(keyword=kw, since_year=since_year):
+        for paper in _search_one_keyword_via_s2(
+            keyword=kw, since_year=since_year, completeness=completeness
+        ):
             by_id.setdefault(paper["paperId"], paper)
 
     # Step 2: primary filter + rank.
@@ -2045,6 +2226,7 @@ def discover_seeds(
         top_n=top_n,
         since_year=since_year,
         openalex_email=openalex_email,
+        completeness=completeness,
     )
     if len(augmented) == len(by_id):
         return primary
@@ -2855,15 +3037,26 @@ def _enrich_github_stars(
     for node, ax in looked_up:
         # 1. Curated map (authoritative).
         repo_full = curated.get(ax)
+        unavailable = False
         if repo_full:
             curated_hits += 1
         else:
             # 2. GitHub Search fallback for everything else.
             try:
                 repo_full = search(node.get("title") or "", github_token=github_token)
+            except GitHubUnavailableError as exc:
+                # Throttled or erroring API. Recording "no repo" here
+                # would suppress the retry for the whole TTL window.
+                logger.warning("github search unavailable for %s: %s", ax, exc)
+                repo_full = None
+                unavailable = True
             except Exception as exc:  # pragma: no cover - defensive
+                # An unexpected failure is still a failure: caching
+                # "no repo" because we do not recognise the error is the
+                # same mistake as caching it because of a 503.
                 logger.debug("search_repo failed for %s: %s", ax, exc)
                 repo_full = None
+                unavailable = True
             if repo_full:
                 search_hits += 1
 
@@ -2872,13 +3065,24 @@ def _enrich_github_stars(
         if repo_full:
             try:
                 fetched = fetch(repo_full, github_token=github_token)
+            except GitHubUnavailableError as exc:
+                logger.warning("github stars unavailable for %s: %s", repo_full, exc)
+                fetched = None
+                unavailable = True
             except Exception as exc:  # pragma: no cover - defensive
                 logger.debug("fetch_stars failed for %s: %s", repo_full, exc)
                 fetched = None
+                unavailable = True
             if fetched is not None and fetched > 0:
                 stars = int(fetched)
                 url = f"https://github.com/{repo_full}"
                 stars_positive += 1
+
+        if unavailable:
+            # Leave this paper out of the cache entirely so the next run
+            # asks again. A stars=0 entry with a fresh timestamp would be
+            # indistinguishable from a successful "no public repo".
+            continue
 
         # Cache the result regardless of stars value — caching 0 prevents
         # weekly re-querying for papers without a public GitHub repo.
@@ -2932,6 +3136,7 @@ def _run_bfs_and_descendants(
     max_seed_cite: int,
     provider: AbstractLLMProvider | None,
     llm_strict: str,
+    completeness: BuildCompleteness | None = None,
 ) -> _BFSResult:
     """BFS ancestor traversal up to ``depth`` hops, then a 1-hop
     descendants pass from each seed (issue #55).
@@ -2974,7 +3179,9 @@ def _run_bfs_and_descendants(
         # Pull a wide pool, prioritise influential refs, then fall back to
         # citation-count desc — same heuristic build_deep_lineage uses to
         # keep BFS cost bounded.
-        all_parents = fetch_related(current["paperId"], "references", width * 4)
+        all_parents = fetch_related(
+            current["paperId"], "references", width * 4, completeness=completeness
+        )
         all_parents = [p for p in all_parents if p.get("abstract")]
 
         # #126 followup: drop foundational off-topic refs before partitioning.
@@ -3061,7 +3268,9 @@ def _run_bfs_and_descendants(
         sid = seed["paperId"]
         # Wide pool then influential-first, citation-count desc — mirrors
         # the parent partition above so descendants stay quality-anchored.
-        all_children = fetch_related(sid, "citations", desc_width * 4)
+        all_children = fetch_related(
+            sid, "citations", desc_width * 4, completeness=completeness
+        )
         all_children = [c for c in all_children if c.get("abstract")]
         # Same off-topic guard as the parent path — a foundational paper
         # masquerading as a descendant (e.g. a survey that cites the seed
@@ -3191,6 +3400,7 @@ def build_theme_lineage(
     use_openalex_fallback: bool = True,
     llm_strict: str = "off",
     primary_source: str = "s2",
+    allow_incomplete: bool = False,
 ) -> Path:
     """Run the full theme-to-family-tree pipeline; return the output path.
 
@@ -3250,6 +3460,11 @@ def build_theme_lineage(
     logger.info("using raw theme as single keyword: %r", keywords[0])
 
     # Stage 2: discover seeds.
+    # One ledger per build. Explicitly threaded rather than global:
+    # --auto-expand runs two builds in the same process, and the tests
+    # call this function repeatedly in-process, so implicit state would
+    # leak from one run into the next.
+    completeness = BuildCompleteness()
     seeds = discover_seeds(
         keywords=keywords,
         top_n=seeds_count,
@@ -3258,6 +3473,7 @@ def build_theme_lineage(
         openalex_email=openalex_email,
         theme=sanitised,
         primary_source=primary_source,
+        completeness=completeness,
     )
     # Alias merge (#274 upgrade): when ``theme_aliases.json`` has
     # alternates for this theme, run each one as its own search and
@@ -3293,6 +3509,7 @@ def build_theme_lineage(
                 openalex_email=openalex_email,
                 theme=sanitised,
                 primary_source=primary_source,
+                completeness=completeness,
             )
             for s in alt_seeds:
                 pid = s.get("paperId")
@@ -3345,6 +3562,7 @@ def build_theme_lineage(
         max_seed_cite=max_seed_cite,
         provider=provider,
         llm_strict=llm_strict,
+        completeness=completeness,
     )
     nodes = bfs_result.nodes
     edges = bfs_result.edges
@@ -3369,6 +3587,7 @@ def build_theme_lineage(
         edges,
         provider=provider,
         strict_mode=llm_strict,
+        completeness=completeness,
     )
     if cross_added:
         logger.info(
@@ -3485,6 +3704,7 @@ def build_theme_lineage(
             "since_year": since_year,
             "generated_at": _iso_z(_utc_now()),
             "provenance_breakdown": provenance_breakdown,
+            "completeness": completeness.as_meta(),
         },
     }
 
@@ -3500,6 +3720,28 @@ def build_theme_lineage(
         raise ValueError(f"generated theme violates {LINEAGE_ARTIFACT_VERSION}: {detail}")
 
     out_path = output if output is not None else (DOCS_ROOT / "themes" / slug / "lineage.json")
+
+    # Gates run BEFORE the atomic replace, which is the whole point: the
+    # builder used to swap the artifact in and only then exit non-zero,
+    # so a non-zero exit protected nothing and regen-themes' "previous
+    # build retained" was not actually true.
+    if not completeness.subject_complete:
+        # The seed set defines what this artifact is ABOUT. If a search
+        # never ran, an empty or thin seed set is an artefact of the
+        # outage, not a fact about the theme — publishing it would erase
+        # a good graph. --allow-incomplete deliberately does not cover
+        # this case.
+        raise IncompleteBuildError(completeness.subject_gate_message())
+    if not allow_incomplete:
+        blocked = expansion_gate_blocks(
+            completeness,
+            new_node_count=len(ordered_nodes),
+            new_edge_count=len(ordered_edges),
+            published_path=out_path,
+        )
+        if blocked:
+            raise IncompleteBuildError(blocked)
+
     out_path.parent.mkdir(parents=True, exist_ok=True)
     tmp_path = out_path.with_name(f".{out_path.name}.tmp.{os.getpid()}")
     try:
@@ -3601,6 +3843,18 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "without PAPERPILOT_S2_API_KEY and shared-IP throttle.",
     )
     ap.add_argument(
+        "--allow-incomplete",
+        dest="allow_incomplete",
+        action="store_true",
+        default=False,
+        help="Publish even when part of the graph expansion failed and the "
+        "result is smaller than what is already published. Intended for a "
+        "deliberate rebuild during a known upstream outage. It does NOT "
+        "override the seed-resolution gate: a theme whose seed search "
+        "never ran is never published, because its seed set is what the "
+        "artifact claims to be about.",
+    )
+    ap.add_argument(
         "--auto-expand",
         dest="auto_expand",
         action="store_true",
@@ -3672,7 +3926,15 @@ def main(argv: list[str] | None = None) -> int:
             use_openalex_fallback=args.use_openalex_fallback,
             llm_strict=args.llm_strict,
             primary_source=args.primary_source,
+            allow_incomplete=args.allow_incomplete,
         )
+    except IncompleteBuildError as exc:
+        # Exit 4 is distinct from 2 (bad input) and 3 (ran cleanly, no
+        # edges) so a workflow can tell "upstream was down, retry later"
+        # apart from "this theme is genuinely thin". Nothing was written:
+        # the gate runs before the atomic replace.
+        print(f"incomplete build; published artifact left untouched: {exc}", file=sys.stderr)
+        return 4
     except ValueError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2
@@ -3709,6 +3971,17 @@ def main(argv: list[str] | None = None) -> int:
                     use_openalex_fallback=args.use_openalex_fallback,
                     llm_strict=args.llm_strict,
                     primary_source=args.primary_source,
+                    allow_incomplete=args.allow_incomplete,
+                )
+            except IncompleteBuildError as exc:
+                # The first pass was a COMPLETE build that legitimately
+                # published; this second pass is only an enhancement
+                # attempt. Its incompleteness must not retract a good
+                # artifact or mark the whole run failed.
+                print(
+                    f"auto-expand retry hit an incomplete fetch; keeping the "
+                    f"initial lineage: {exc}",
+                    file=sys.stderr,
                 )
             except ValueError as exc:
                 # Expansion failed but the first pass is already on disk —

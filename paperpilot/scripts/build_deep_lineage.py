@@ -50,6 +50,10 @@ from paperpilot.llm.base import (  # noqa: E402
     build_classify_prompt,
     provider_model_tag,
 )
+from paperpilot.scripts._fetch_state import (  # noqa: E402
+    BuildCompleteness,
+    expansion_gate_blocks,
+)
 from paperpilot.scripts._lineage_classify import _slot_fill_rationale  # noqa: E402
 from paperpilot.scripts._lineage_contract import (  # noqa: E402
     ARXIV_ID_RE,
@@ -70,6 +74,7 @@ from paperpilot.scripts.build_lineage import (  # noqa: E402
 )
 from paperpilot.utils.json_parser import parse_llm_response  # noqa: E402
 from paperpilot.utils.logger import get_logger, setup_logging  # noqa: E402
+from paperpilot.utils.payload import s2_paper_id as _resolved_paper_id  # noqa: E402
 
 logger = get_logger(__name__)
 
@@ -228,9 +233,15 @@ def _classify_cached_lenient(
 _classify_cached = _classify_cached_lenient
 
 
-def fetch_related_by_id(s2_id: str, kind: str, top_n: int) -> list[dict]:
+def fetch_related_by_id(
+    s2_id: str,
+    kind: str,
+    top_n: int,
+    *,
+    completeness: BuildCompleteness | None = None,
+) -> list[dict]:
     """Wrapper: mirrors build_lineage.fetch_related + select_top."""
-    items = fetch_related(s2_id, kind, top_n * 4)
+    items = fetch_related(s2_id, kind, top_n * 4, completeness=completeness)
     return select_top(items, top_n)
 
 
@@ -239,10 +250,10 @@ def _require_s2_focus_identity(focus: object, requested_arxiv_id: str) -> str:
 
     if not isinstance(focus, dict):
         raise ValueError("Semantic Scholar focus response must be an object")
-    paper_id = focus.get("paperId")
+    paper_id = _resolved_paper_id(focus)
     external_ids = focus.get("externalIds")
     raw_arxiv_id = external_ids.get("ArXiv") if isinstance(external_ids, dict) else None
-    if not isinstance(paper_id, str) or not paper_id.strip() or not isinstance(raw_arxiv_id, str):
+    if paper_id is None or not isinstance(raw_arxiv_id, str):
         raise ValueError("Semantic Scholar focus is missing paperId or externalIds.ArXiv")
     try:
         _, resolved_arxiv_id = normalize_alias("arxiv", raw_arxiv_id)
@@ -262,15 +273,34 @@ def build_deep(
     top_children: int = 20,
     venue_override: str | None = None,
     tier_override: str | None = None,
+    completeness: BuildCompleteness | None = None,
 ) -> dict:
-    """BFS from focus paper up to `depth` hops in each direction."""
+    """BFS from focus paper up to `depth` hops in each direction.
+
+    ``completeness`` tallies expansion losses so the caller can refuse to
+    replace a rich published artifact with a graph that is small only
+    because the traversal could not run.
+    """
     seed_paper_id = require_paper_id(seed_paper_id, field="seed_paper_id")
     _, arxiv_id = normalize_alias("arxiv", arxiv_id)
     if ARXIV_ID_RE.fullmatch(arxiv_id) is None:
         raise ValueError("deep lineage requires a modern arXiv ID")
 
-    focus = fetch_paper_by_arxiv(arxiv_id)
+    # Subject resolution is already fail-closed here: without the focus
+    # paper there is nothing to publish, and the exit happens long before
+    # any write.
+    focus = fetch_paper_by_arxiv(arxiv_id, completeness=completeness)
     if focus is None:
+        if completeness is not None and not completeness.subject_complete:
+            # Exit 4 is the contract's "upstream was incomplete, retry
+            # later"; a bare sys.exit(str) is exit 1, which a caller
+            # cannot tell from "this arXiv id does not exist".
+            print(
+                "incomplete build; published artifact left untouched: "
+                + completeness.subject_gate_message(),
+                file=sys.stderr,
+            )
+            raise SystemExit(4)
         sys.exit(f"S2 lookup failed for arXiv:{arxiv_id}")
     focus_id = _require_s2_focus_identity(focus, arxiv_id)
     provider, rate_delay = build_provider()
@@ -299,7 +329,7 @@ def build_deep(
         """Returns list of (related_paper, edge_dict) for this hop."""
         s2_id = src_paper["paperId"]
         kind = "references" if direction == "up" else "citations"
-        related = fetch_related_by_id(s2_id, kind, top_n)
+        related = fetch_related_by_id(s2_id, kind, top_n, completeness=completeness)
         logger.info(
             "  %-60s %s → %d %s",
             src_paper.get("title", "")[:60],
@@ -444,6 +474,14 @@ def main() -> int:
     )
     ap.add_argument("--tier-override", default="A+", help="Venue tier override for the focus node")
     ap.add_argument(
+        "--allow-incomplete",
+        dest="allow_incomplete",
+        action="store_true",
+        default=False,
+        help="Publish even when part of the BFS expansion failed and the result "
+        "is smaller than what is already published.",
+    )
+    ap.add_argument(
         "--output",
         default=None,
         help="Output JSON path (default: docs/iclr-2026/deep-<arxiv_id>.json)",
@@ -452,6 +490,7 @@ def main() -> int:
 
     setup_logging()  # CLI mode: surface logger.info to stderr.
 
+    completeness = BuildCompleteness()
     result = build_deep(
         args.arxiv_id,
         seed_paper_id=args.seed_paper_id,
@@ -460,10 +499,27 @@ def main() -> int:
         top_children=args.top_children,
         venue_override=args.venue_override,
         tier_override=args.tier_override,
+        completeness=completeness,
     )
+    result["meta"]["completeness"] = completeness.as_meta()
 
     output = args.output or f"docs/iclr-2026/deep-{result['meta']['arxiv_id']}.json"
     out = ROOT / output
+
+    # Gate before the write. Without it a traversal outage published a
+    # one- or two-node graph over a rich one, and the artifact carried no
+    # sign that anything had gone wrong.
+    if not args.allow_incomplete:
+        blocked = expansion_gate_blocks(
+            completeness,
+            new_node_count=len(result["nodes"]),
+            new_edge_count=len(result.get("edges") or []),
+            published_path=out,
+        )
+        if blocked:
+            print(f"incomplete build; published artifact left untouched: {blocked}", file=sys.stderr)
+            return 4
+
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(result, ensure_ascii=False, indent=2))
     print()

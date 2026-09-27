@@ -21,6 +21,7 @@ import threading
 import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -836,7 +837,7 @@ def test_build_rejects_bad_s2_focus_alias_before_related_or_classify(
     monkeypatch.setattr(
         build_lineage,
         "fetch_paper_by_arxiv",
-        lambda arxiv_id: {
+        lambda arxiv_id, **_kw: {
             "paperId": paper_id,
             "title": "Focus",
             "externalIds": external_ids,
@@ -883,7 +884,7 @@ def test_build_preflights_all_focus_aliases_before_any_related_fetch(tmp_path: P
         "2401.00001": _focus_s2("first-id", "First", "2401.00001"),
         "2401.00002": _focus_s2("second-id", "Second", "2401.99999"),
     }
-    fetch_focus = MagicMock(side_effect=lambda arxiv_id: responses[arxiv_id])
+    fetch_focus = MagicMock(side_effect=lambda arxiv_id, **_kw: responses[arxiv_id])
     fetch_related = MagicMock()
     monkeypatch.setattr(build_lineage, "fetch_paper_by_arxiv", fetch_focus)
     monkeypatch.setattr(build_lineage, "fetch_related", fetch_related)
@@ -921,7 +922,7 @@ def test_build_normalizes_versioned_arxiv_before_fetch(tmp_path: Path, monkeypat
     monkeypatch.setattr(build_lineage, "build_provider", lambda: (_FakeProvider(None), 0))
     fetched: list[str] = []
 
-    def fetch_focus(arxiv_id: str) -> dict:
+    def fetch_focus(arxiv_id: str, **_kw) -> dict:
         fetched.append(arxiv_id)
         return _focus_s2("focus-id", "Versioned focus", "2401.00001v7")
 
@@ -965,7 +966,7 @@ def test_build_root_and_order_are_deterministic_on_degree_tie(tmp_path: Path, mo
         "2401.00001": _focus_s2("z-graph-id", "Zed", "2401.00001"),
         "2401.00002": _focus_s2("a-graph-id", "Alpha", "2401.00002"),
     }
-    monkeypatch.setattr(build_lineage, "fetch_paper_by_arxiv", lambda arxiv_id: by_arxiv[arxiv_id])
+    monkeypatch.setattr(build_lineage, "fetch_paper_by_arxiv", lambda arxiv_id, **_kw: by_arxiv[arxiv_id])
 
     result = build_lineage.build(generated_at="2026-08-30T00:00:00Z")
     assert result["root"] == "a-graph-id"
@@ -1007,7 +1008,7 @@ def test_build_rejects_ambiguous_focus_resolution(tmp_path: Path, monkeypatch):
     monkeypatch.setattr(
         build_lineage,
         "fetch_paper_by_arxiv",
-        lambda arxiv_id: _focus_s2("same-graph-id", arxiv_id, arxiv_id),
+        lambda arxiv_id, **_kw: _focus_s2("same-graph-id", arxiv_id, arxiv_id),
     )
 
     with pytest.raises(ValueError, match="same Semantic Scholar paper"):
@@ -1054,7 +1055,7 @@ def test_focus_node_carries_catalog_citation_and_stars(tmp_path: Path, monkeypat
         "citationCount": 50,  # S2's (lower / staler) count
         "externalIds": {"ArXiv": "2404.00001"},
     }
-    monkeypatch.setattr(build_lineage, "fetch_paper_by_arxiv", lambda _: focus)
+    monkeypatch.setattr(build_lineage, "fetch_paper_by_arxiv", lambda _, **_kw: focus)
     monkeypatch.setattr(build_lineage, "fetch_related", lambda *a, **kw: [])
 
     provider = _FakeProvider(return_value=None)
@@ -1115,11 +1116,11 @@ def test_related_node_uses_s2_citation_count(tmp_path: Path, monkeypatch):
         "abstract": "p",
         "citationCount": 317,
     }
-    monkeypatch.setattr(build_lineage, "fetch_paper_by_arxiv", lambda _: focus)
+    monkeypatch.setattr(build_lineage, "fetch_paper_by_arxiv", lambda _, **_kw: focus)
     monkeypatch.setattr(
         build_lineage,
         "fetch_related",
-        lambda sid, kind, limit: [parent] if kind == "references" else [],
+        lambda sid, kind, limit, **_kw: [parent] if kind == "references" else [],
     )
 
     provider = _FakeProvider(
@@ -1168,11 +1169,11 @@ def test_build_drops_unrelated_edges_and_uses_provider(tmp_path: Path, monkeypat
     child_unrelated = _focus_s2("child-unrelated-id", "Child Unrelated")
 
     # Mock S2: one call for the focus paper, two for references/citations.
-    def fake_fetch_paper(arxiv_id: str):
+    def fake_fetch_paper(arxiv_id: str, **_kw):
         assert arxiv_id == "2401.00001"
         return focus
 
-    def fake_fetch_related(s2_id: str, kind: str, limit: int):
+    def fake_fetch_related(s2_id: str, kind: str, limit: int, **_kw):
         assert s2_id == "focus-id"
         if kind == "references":
             return [parent]
@@ -1363,15 +1364,29 @@ def test_s2_get_raises_transient_error_on_exhausted_5xx():
             build_lineage._s2_get("https://x")
 
 
-def test_s2_get_still_returns_none_on_definitive_4xx():
-    """A definitive, non-retried 4xx (e.g. 400/401/403 — never entered
-    request_with_retry's 429 branch) must still be treated as "not found"
-    and NOT raise, preserving existing behavior for genuine client errors."""
+def test_s2_get_returns_none_only_for_a_404():
+    """404 is the one status that is a statement about the DATA: S2 has
+    no paper under this id, so "no neighbours" is the true answer and
+    may be cached."""
     with patch(
         "paperpilot.scripts.build_lineage.request_with_retry",
-        return_value=_mock_resp(400),
+        return_value=_mock_resp(404),
     ):
         assert build_lineage._s2_get("https://x") is None
+
+
+@pytest.mark.parametrize("status", [400, 401, 403, 422, 451])
+def test_s2_get_raises_for_a_4xx_that_is_about_our_request(status):
+    """The rest of the 4xx range describes our query or our
+    credentials, not the paper. Folding them into "not found" made a
+    revoked key look like a conference whose Orals had all vanished,
+    with the subject ledger reporting a clean build."""
+    with patch(
+        "paperpilot.scripts.build_lineage.request_with_retry",
+        return_value=_mock_resp(status),
+    ):
+        with pytest.raises(build_lineage.S2TransientError):
+            build_lineage._s2_get("https://x")
 
 
 def test_fetch_related_does_not_cache_on_exhausted_5xx_response(tmp_path, monkeypatch):
@@ -1639,7 +1654,7 @@ def test_build_prefers_arxiv_id_from_papers_json(tmp_path: Path, monkeypatch):
 
     called_with: list[str] = []
 
-    def fake_fetch_paper(arxiv_id: str):
+    def fake_fetch_paper(arxiv_id: str, **_kw):
         called_with.append(arxiv_id)
         return {
             "paperId": "p1",
@@ -1701,7 +1716,7 @@ def test_build_accepts_conference_argument(tmp_path: Path, monkeypatch):
         "citationCount": 5,
         "externalIds": {"ArXiv": "2501.00001"},
     }
-    monkeypatch.setattr(build_lineage, "fetch_paper_by_arxiv", lambda _: focus)
+    monkeypatch.setattr(build_lineage, "fetch_paper_by_arxiv", lambda _, **_kw: focus)
     monkeypatch.setattr(build_lineage, "fetch_related", lambda *a, **kw: [])
 
     provider = _FakeProvider(return_value=None)
@@ -1788,3 +1803,640 @@ def test_build_clusters_ordered_alphabetically_when_tied():
     clusters = build_lineage.build_clusters(nodes)
     # All three tied at 1 member → alphabetical.
     assert [c["label"] for c in clusters] == ["Eval", "LLM", "Vision"]
+
+
+# ---- expansion gate: an outage must not shrink a published artifact ----
+
+
+def test_expansion_gate_blocks_a_smaller_result_after_a_failure(tmp_path):
+    """The concrete case: a traversal outage leaves a two-node graph and
+    the builder overwrites a 300-node artifact with it. The gate fires
+    only when an expansion actually failed, so a genuine shrink still
+    publishes."""
+    from paperpilot.scripts._fetch_state import BuildCompleteness, expansion_gate_blocks
+
+    published = tmp_path / "lineage.json"
+    published.write_text(
+        json.dumps({"nodes": [{"id": f"n{i}"} for i in range(300)], "edges": []})
+    )
+
+    failed = BuildCompleteness(expansions_attempted=10, expansions_failed=9)
+    assert expansion_gate_blocks(
+        failed, new_node_count=2, new_edge_count=0, published_path=published
+    )
+
+    # Same tiny result, but nothing failed -> that is real data.
+    clean = BuildCompleteness(expansions_attempted=10, expansions_failed=0)
+    assert (
+        expansion_gate_blocks(
+            clean, new_node_count=2, new_edge_count=0, published_path=published
+        )
+        is None
+    )
+
+    # Failures, but the result is not a regression -> publish.
+    assert (
+        expansion_gate_blocks(
+            failed, new_node_count=300, new_edge_count=99, published_path=published
+        )
+        is None
+    )
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [{"nodes": []}, {"edges": []}, {"nodes": [], "edges": "x"}, {"meta": {}}],
+    ids=["no-edges-key", "no-nodes-key", "non-array-edges", "neither"],
+)
+def test_expansion_gate_refuses_a_published_artifact_missing_either_array(payload, tmp_path):
+    """An ABSENT key is not an empty list. Our builders always write
+    both arrays, so a file without one is not an artifact we can
+    measure — and reading the missing one as zero makes every
+    regression in that dimension read as "no regression"."""
+    from paperpilot.scripts._fetch_state import BuildCompleteness, expansion_gate_blocks
+
+    published = tmp_path / "lineage.json"
+    published.write_text(json.dumps(payload))
+    failed = BuildCompleteness(expansions_attempted=4, expansions_failed=1)
+    assert expansion_gate_blocks(
+        failed, new_node_count=1, new_edge_count=1, published_path=published
+    )
+
+
+def test_expansion_gate_allows_a_first_build(tmp_path):
+    """Nothing published yet: a sparse artifact beats none at all."""
+    from paperpilot.scripts._fetch_state import BuildCompleteness, expansion_gate_blocks
+
+    failed = BuildCompleteness(expansions_attempted=5, expansions_failed=5)
+    missing = tmp_path / "does-not-exist.json"
+    assert (
+        expansion_gate_blocks(
+            failed, new_node_count=1, new_edge_count=0, published_path=missing
+        )
+        is None
+    )
+
+
+def test_fetch_related_tallies_expansion_attempts_and_losses(tmp_path, monkeypatch):
+    from paperpilot.scripts._fetch_state import BuildCompleteness
+
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    completeness = BuildCompleteness()
+
+    with patch.object(
+        build_lineage, "_s2_get", side_effect=build_lineage.S2TransientError("boom")
+    ):
+        assert build_lineage.fetch_related("pX", "references", 5, completeness=completeness) == []
+    assert completeness.expansions_attempted == 1
+    assert completeness.expansions_failed == 1
+    assert completeness.expansion_complete is False
+
+    with patch.object(build_lineage, "_s2_get", return_value={"data": []}):
+        build_lineage.fetch_related("pY", "references", 5, completeness=completeness)
+    assert completeness.expansions_attempted == 2
+    assert completeness.expansions_failed == 1
+
+
+def test_fetch_related_does_not_count_a_cache_hit_as_an_attempt(tmp_path, monkeypatch):
+    """A cache hit never reaches the network and cannot fail; counting it
+    would dilute the failure ratio on every re-run."""
+    from paperpilot.scripts._fetch_state import BuildCompleteness
+
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    (tmp_path / "references_pZ.json").write_text("[]")
+    completeness = BuildCompleteness()
+    build_lineage.fetch_related("pZ", "references", 5, completeness=completeness)
+    assert completeness.expansions_attempted == 0
+
+
+def test_s2_get_raises_on_a_malformed_or_non_object_200(monkeypatch):
+    """A 200 whose body will not parse, or parses to something that is
+    not an object, is a broken response — not "no such paper". Returning
+    None let the conference and deep builders drop a focus paper with
+    the ledger still reporting the build complete."""
+    bad_json = SimpleNamespace(status_code=200, json=lambda: (_ for _ in ()).throw(ValueError()))
+    with patch.object(build_lineage, "request_with_retry", return_value=bad_json):
+        with pytest.raises(build_lineage.S2TransientError):
+            build_lineage._s2_get("https://example.invalid/x")
+
+    non_object = SimpleNamespace(status_code=200, json=lambda: ["not", "an", "object"])
+    with patch.object(build_lineage, "request_with_retry", return_value=non_object):
+        with pytest.raises(build_lineage.S2TransientError):
+            build_lineage._s2_get("https://example.invalid/x")
+
+
+def test_s2_get_still_returns_none_for_a_definitive_4xx(monkeypatch):
+    """"Not found" has to stay expressible, or every missing paper turns
+    into a retry that can never succeed."""
+    not_found = SimpleNamespace(status_code=404, json=lambda: {})
+    with patch.object(build_lineage, "request_with_retry", return_value=not_found):
+        assert build_lineage._s2_get("https://example.invalid/x") is None
+
+
+def test_fetch_related_treats_a_200_error_envelope_as_a_failure(tmp_path, monkeypatch):
+    """S2 answering 200 with {"error": ...} yielded an empty list that was
+    counted as success AND written to the never-expiring cache."""
+    from paperpilot.scripts._fetch_state import BuildCompleteness
+
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    completeness = BuildCompleteness()
+    with patch.object(build_lineage, "_s2_get", return_value={"error": "maintenance"}):
+        assert build_lineage.fetch_related("pE", "references", 5, completeness=completeness) == []
+    assert completeness.expansions_failed == 1
+    assert not (tmp_path / "references_pE.json").exists()
+
+
+def test_fetch_related_keeps_null_data_as_a_genuine_empty(tmp_path, monkeypatch):
+    """{"data": null} is S2's own spelling for "no neighbours" and must
+    stay a cacheable success."""
+    from paperpilot.scripts._fetch_state import BuildCompleteness
+
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    completeness = BuildCompleteness()
+    with patch.object(build_lineage, "_s2_get", return_value={"data": None}):
+        assert build_lineage.fetch_related("pN", "references", 5, completeness=completeness) == []
+    assert completeness.expansions_failed == 0
+    assert (tmp_path / "references_pN.json").exists()
+
+
+# ---- main(): end-to-end publication gates ----
+
+
+def _one_oral_conference(tmp_path: Path, monkeypatch, *, cache_name="lineage-cache"):
+    """Minimal single-Oral catalog wired into build_lineage's paths."""
+    papers_dir = tmp_path / "docs" / "neurips-2025"
+    papers_dir.mkdir(parents=True)
+    papers_path = papers_dir / "papers.json"
+    papers_path.write_text(
+        json.dumps(
+            [
+                {
+                    "paper_id": _SEED_ID,
+                    "title": "NeurIPS Paper",
+                    "type": "Oral",
+                    "tags": ["RL"],
+                    "arxiv_url": "http://arxiv.org/abs/2501.00001",
+                }
+            ]
+        )
+    )
+    cache_dir = tmp_path / cache_name
+    cache_dir.mkdir()
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", cache_dir)
+    lineage_path = papers_dir / "lineage.json"
+    monkeypatch.setattr(
+        build_lineage, "resolve_paths", lambda conf: (papers_path, lineage_path)
+    )
+    provider = _FakeProvider(return_value=None)
+    monkeypatch.setattr(build_lineage, "build_provider", lambda: (provider, 0))
+    monkeypatch.setattr("sys.argv", ["build_lineage", "--conference", "neurips-2025"])
+    return lineage_path
+
+
+def _focus_payload():
+    return {
+        "paperId": "focus-id",
+        "title": "NeurIPS Paper",
+        "year": 2025,
+        "venue": "arXiv",
+        "authors": [],
+        "abstract": "abs",
+        "citationCount": 5,
+        "externalIds": {"ArXiv": "2501.00001"},
+    }
+
+
+def test_main_refuses_to_publish_when_an_oral_lookup_failed(tmp_path: Path, monkeypatch):
+    """End-to-end pin for the conference path collect-weekly.yml runs.
+
+    An Oral whose S2 lookup failed is missing from the focus set for a
+    reason that says nothing about the paper, so the artifact would
+    misstate its own subject. The gate runs before the write, so the
+    previously published lineage survives."""
+    lineage_path = _one_oral_conference(tmp_path, monkeypatch)
+    lineage_path.write_text(json.dumps({"nodes": [{"id": "old"}] * 12, "edges": []}))
+    before = lineage_path.read_text()
+
+    def failing_focus(arxiv_id, *, completeness=None):
+        if completeness is not None:
+            completeness.subject_failed(f"arXiv:{arxiv_id} lookup failed: boom")
+        return None
+
+    monkeypatch.setattr(build_lineage, "fetch_paper_by_arxiv", failing_focus)
+    monkeypatch.setattr(build_lineage, "fetch_related", lambda *a, **kw: [])
+
+    with pytest.raises(SystemExit) as excinfo:
+        build_lineage.main()
+    assert excinfo.value.code == 4
+    assert lineage_path.read_text() == before
+
+
+def test_main_refuses_to_shrink_a_published_lineage_after_an_expansion_failure(
+    tmp_path: Path, monkeypatch
+):
+    lineage_path = _one_oral_conference(tmp_path, monkeypatch)
+    lineage_path.write_text(json.dumps({"nodes": [{"id": f"n{i}"} for i in range(50)]}))
+    before = lineage_path.read_text()
+
+    def failing_related(*_a, completeness=None, **_kw):
+        if completeness is not None:
+            completeness.expansion_attempted()
+            completeness.expansion_failed()
+        return []
+
+    monkeypatch.setattr(
+        build_lineage, "fetch_paper_by_arxiv", lambda _a, **_kw: _focus_payload()
+    )
+    monkeypatch.setattr(build_lineage, "fetch_related", failing_related)
+
+    with pytest.raises(SystemExit) as excinfo:
+        build_lineage.main()
+    assert excinfo.value.code == 4
+    assert lineage_path.read_text() == before
+
+
+def test_main_publishes_and_records_completeness_on_a_clean_run(tmp_path: Path, monkeypatch):
+    """The other half: nothing failed, so the artifact is written and
+    carries the completeness block."""
+    lineage_path = _one_oral_conference(tmp_path, monkeypatch)
+    monkeypatch.setattr(
+        build_lineage, "fetch_paper_by_arxiv", lambda _a, **_kw: _focus_payload()
+    )
+    monkeypatch.setattr(build_lineage, "fetch_related", lambda *a, **kw: [])
+
+    build_lineage.main()
+
+    payload = json.loads(lineage_path.read_text())
+    assert payload["meta"]["completeness"] == {
+        "complete": True,
+        "expansions_attempted": 0,
+        "expansions_failed": 0,
+    }
+
+
+def test_fetch_paper_by_arxiv_rejects_an_object_without_a_paper_id(tmp_path, monkeypatch):
+    """A 200 that parses to an object with no paperId is a broken
+    response: the endpoint always echoes the id it resolved. Returning
+    it let the conference builder skip the Oral as a plain miss, with
+    the ledger still reporting the build complete."""
+    from paperpilot.scripts._fetch_state import BuildCompleteness
+
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    monkeypatch.setattr(build_lineage.time, "sleep", lambda _s: None)
+    completeness = BuildCompleteness()
+    with patch.object(build_lineage, "_s2_get", return_value={}):
+        assert build_lineage.fetch_paper_by_arxiv("2501.00001", completeness=completeness) is None
+    assert not completeness.subject_complete
+    assert not (tmp_path / "paper_2501.00001.json").exists()
+
+
+def test_fetch_related_keeps_a_definitive_404_as_a_cacheable_empty(tmp_path, monkeypatch):
+    """_s2_get returns None for a definitive 4xx — S2 has no such paper,
+    so it genuinely has no neighbours. An earlier `or {}` erased that
+    distinction and the envelope check then read it as a broken
+    response, turning every missing paper into an expansion failure."""
+    from paperpilot.scripts._fetch_state import BuildCompleteness
+
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    monkeypatch.setattr(build_lineage.time, "sleep", lambda _s: None)
+    completeness = BuildCompleteness()
+    with patch.object(build_lineage, "_s2_get", return_value=None):
+        assert build_lineage.fetch_related("p404", "references", 5, completeness=completeness) == []
+    assert completeness.expansions_failed == 0
+    assert (tmp_path / "references_p404.json").exists()
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [{}, {"paperId": ""}, {"paperId": "   "}, {"paperId": 123}, {"paperId": ["x"]}],
+    ids=["missing", "empty", "blank", "int", "list"],
+)
+def test_fetch_paper_by_arxiv_rejects_an_unusable_paper_id(payload, tmp_path, monkeypatch):
+    """A truthy non-string id is worse than a missing one: it passes a
+    `not data.get("paperId")` check and is then carried into the
+    artifact as a dict key and a graph node id."""
+    from paperpilot.scripts._fetch_state import BuildCompleteness
+
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    monkeypatch.setattr(build_lineage.time, "sleep", lambda _s: None)
+    completeness = BuildCompleteness()
+    with patch.object(build_lineage, "_s2_get", return_value=payload):
+        assert build_lineage.fetch_paper_by_arxiv("2501.00001", completeness=completeness) is None
+    assert not completeness.subject_complete
+    assert not (tmp_path / "paper_2501.00001.json").exists()
+
+
+def test_fetch_paper_by_arxiv_ignores_an_unusable_cache_entry(tmp_path, monkeypatch):
+    """The cache is an optimisation, not a reason to hand back a paper
+    the rest of the build cannot key on. An entry written before the id
+    was validated must not short-circuit the lookup."""
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    monkeypatch.setattr(build_lineage.time, "sleep", lambda _s: None)
+    (tmp_path / "paper_2501.00001.json").write_text(json.dumps({"title": "no id here"}))
+
+    good = {"paperId": "S2-good", "title": "Real"}
+    with patch.object(build_lineage, "_s2_get", return_value=good) as get:
+        assert build_lineage.fetch_paper_by_arxiv("2501.00001") == good
+    assert get.call_count == 1
+
+
+def test_fetch_paper_by_arxiv_ignores_a_truncated_cache_file(tmp_path, monkeypatch):
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    monkeypatch.setattr(build_lineage.time, "sleep", lambda _s: None)
+    (tmp_path / "paper_2501.00001.json").write_text('{"paperId": "S2-tr')
+
+    good = {"paperId": "S2-good", "title": "Real"}
+    with patch.object(build_lineage, "_s2_get", return_value=good):
+        assert build_lineage.fetch_paper_by_arxiv("2501.00001") == good
+
+
+def test_fetch_paper_by_arxiv_still_uses_a_valid_cache_entry(tmp_path, monkeypatch):
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    cached = {"paperId": "S2-cached", "title": "Cached"}
+    (tmp_path / "paper_2501.00001.json").write_text(json.dumps(cached))
+    with patch.object(build_lineage, "_s2_get") as get:
+        assert build_lineage.fetch_paper_by_arxiv("2501.00001") == cached
+    get.assert_not_called()
+
+
+def test_main_allow_incomplete_never_overrides_the_subject_gate(tmp_path: Path, monkeypatch):
+    """--allow-incomplete relaxes the expansion gate only. An artifact
+    that misstates its own subject is never publishable."""
+    lineage_path = _one_oral_conference(tmp_path, monkeypatch)
+    lineage_path.write_text(json.dumps({"nodes": [{"id": "old"}] * 12, "edges": []}))
+    before = lineage_path.read_text()
+
+    def failing_focus(arxiv_id, *, completeness=None):
+        if completeness is not None:
+            completeness.subject_failed(f"arXiv:{arxiv_id} lookup failed: boom")
+        return None
+
+    monkeypatch.setattr(build_lineage, "fetch_paper_by_arxiv", failing_focus)
+    monkeypatch.setattr(build_lineage, "fetch_related", lambda *a, **kw: [])
+    monkeypatch.setattr(
+        "sys.argv",
+        ["build_lineage", "--conference", "neurips-2025", "--allow-incomplete"],
+    )
+
+    with pytest.raises(SystemExit) as excinfo:
+        build_lineage.main()
+    assert excinfo.value.code == 4
+    assert lineage_path.read_text() == before
+
+
+# ---- expansion gate: an unreadable artifact is not an absent one ----
+
+
+def test_expansion_gate_refuses_when_the_published_artifact_is_unreadable(tmp_path):
+    """"Nothing is published" is a fact and lets a sparse first build
+    through. "Something is published but cannot be parsed" is not:
+    allowing it would let a known-incomplete build overwrite an
+    artifact precisely because the artifact could not be inspected."""
+    from paperpilot.scripts._fetch_state import BuildCompleteness, expansion_gate_blocks
+
+    failed = BuildCompleteness(expansions_attempted=3, expansions_failed=1)
+    corrupt = tmp_path / "lineage.json"
+    corrupt.write_text('{"nodes": [{"id": "a"')
+    assert expansion_gate_blocks(
+        failed, new_node_count=1, new_edge_count=0, published_path=corrupt
+    )
+
+    no_nodes = tmp_path / "other.json"
+    no_nodes.write_text(json.dumps({"meta": {}}))
+    assert expansion_gate_blocks(
+        failed, new_node_count=1, new_edge_count=0, published_path=no_nodes
+    )
+
+    clean = BuildCompleteness()
+    assert (
+        expansion_gate_blocks(
+            clean, new_node_count=1, new_edge_count=0, published_path=corrupt
+        )
+        is None
+    )
+
+
+@pytest.mark.parametrize(
+    "entries",
+    [["malformed"], [{}], [None], [{"citedPaper": None}], [{"citedPaper": {"title": "no id"}}]],
+    ids=["string", "empty-dict", "null", "null-inner", "inner-without-id"],
+)
+def test_fetch_related_rejects_a_malformed_relation_entry(entries, tmp_path, monkeypatch):
+    """`{"data": ["x"]}` used to raise AttributeError straight through
+    the fail-safe boundary and kill the BFS; `{"data": [{}]}` was worse
+    — it collapsed to "no relations" and was written to a cache that
+    never expires."""
+    from paperpilot.scripts._fetch_state import BuildCompleteness
+
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    monkeypatch.setattr(build_lineage.time, "sleep", lambda _s: None)
+    completeness = BuildCompleteness()
+    with patch.object(build_lineage, "_s2_get", return_value={"data": entries}):
+        assert build_lineage.fetch_related("pB", "references", 5, completeness=completeness) == []
+    assert completeness.expansions_failed == 1
+    assert not (tmp_path / "references_pB.json").exists()
+
+
+def test_fetch_related_still_filters_a_neighbour_without_a_title(tmp_path, monkeypatch):
+    """A neighbour with no title cannot become a node, but that is a
+    fact about the record rather than a broken page: the rest of the
+    answer is real and stays cacheable."""
+    from paperpilot.scripts._fetch_state import BuildCompleteness
+
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    monkeypatch.setattr(build_lineage.time, "sleep", lambda _s: None)
+    payload = {
+        "data": [
+            {"citedPaper": {"paperId": "good", "title": "Kept"}},
+            {"citedPaper": {"paperId": "untitled"}},
+        ]
+    }
+    completeness = BuildCompleteness()
+    with patch.object(build_lineage, "_s2_get", return_value=payload):
+        items = build_lineage.fetch_related("pT", "references", 5, completeness=completeness)
+    assert [p["paperId"] for p in items] == ["good"]
+    assert completeness.expansions_failed == 0
+    assert (tmp_path / "references_pT.json").exists()
+
+
+def test_fetch_related_ignores_a_relation_cache_written_before_validation(tmp_path, monkeypatch):
+    """The cache must clear the same bar as a live response.
+
+    An entry holding `[{}]` read back as a perfectly successful "no
+    relations": it never touched the network, so it never reached the
+    ledger, and the publication gate then saw a clean build shrinking a
+    good artifact.
+    """
+    from paperpilot.scripts._fetch_state import BuildCompleteness
+
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    monkeypatch.setattr(build_lineage.time, "sleep", lambda _s: None)
+    (tmp_path / "references_pC.json").write_text(json.dumps([{}]))
+
+    live = {"data": [{"citedPaper": {"paperId": "fresh", "title": "Fresh"}}]}
+    completeness = BuildCompleteness()
+    with patch.object(build_lineage, "_s2_get", return_value=live) as get:
+        items = build_lineage.fetch_related("pC", "references", 5, completeness=completeness)
+    assert [p["paperId"] for p in items] == ["fresh"]
+    assert get.call_count == 1
+
+
+def test_fetch_related_ignores_a_truncated_relation_cache(tmp_path, monkeypatch):
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    monkeypatch.setattr(build_lineage.time, "sleep", lambda _s: None)
+    (tmp_path / "references_pD.json").write_text('[{"paperId": "tr')
+
+    live = {"data": [{"citedPaper": {"paperId": "fresh", "title": "Fresh"}}]}
+    with patch.object(build_lineage, "_s2_get", return_value=live) as get:
+        assert build_lineage.fetch_related("pD", "references", 5) != []
+    assert get.call_count == 1
+
+
+def test_fetch_related_still_uses_a_valid_relation_cache(tmp_path, monkeypatch):
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    cached = [{"paperId": "cached", "title": "Cached"}]
+    (tmp_path / "references_pE2.json").write_text(json.dumps(cached))
+    with patch.object(build_lineage, "_s2_get") as get:
+        assert build_lineage.fetch_related("pE2", "references", 5) == cached
+    get.assert_not_called()
+
+
+def test_expansion_gate_blocks_an_edge_only_regression(tmp_path):
+    """A traversal outage that loses citations without losing papers
+    leaves the node count untouched, so comparing nodes alone let a
+    10-node/5-edge result replace a 10-node/20-edge one while
+    reporting no regression."""
+    from paperpilot.scripts._fetch_state import BuildCompleteness, expansion_gate_blocks
+
+    published = tmp_path / "lineage.json"
+    published.write_text(
+        json.dumps(
+            {
+                "nodes": [{"id": f"n{i}"} for i in range(10)],
+                "edges": [{"src": "a", "dst": "b"}] * 20,
+            }
+        )
+    )
+    failed = BuildCompleteness(expansions_attempted=10, expansions_failed=3)
+    assert expansion_gate_blocks(
+        failed, new_node_count=10, new_edge_count=5, published_path=published
+    )
+    assert (
+        expansion_gate_blocks(
+            failed, new_node_count=10, new_edge_count=20, published_path=published
+        )
+        is None
+    )
+
+
+@pytest.mark.parametrize(
+    "inner",
+    [
+        {"paperId": "n1", "title": "T", "authors": [1]},
+        {"paperId": "n1", "title": "T", "authors": "A"},
+        {"paperId": "n1", "title": 7},
+        {"paperId": "n1", "title": "T", "venue": 7},
+    ],
+    ids=["authors-non-mapping", "authors-non-list", "title-non-string", "venue-non-string"],
+)
+def test_fetch_related_rejects_a_neighbour_whose_consumed_fields_are_broken(
+    inner, tmp_path, monkeypatch
+):
+    """Checking the id alone was not enough: `to_node` does
+    `a.get("name")` over `authors` and uses title/venue as strings, so
+    these cleared the element guard, were cached, and then raised
+    AttributeError through the fail-safe boundary."""
+    from paperpilot.scripts._fetch_state import BuildCompleteness
+
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    monkeypatch.setattr(build_lineage.time, "sleep", lambda _s: None)
+    completeness = BuildCompleteness()
+    payload = {"data": [{"citedPaper": inner}]}
+    with patch.object(build_lineage, "_s2_get", return_value=payload):
+        assert build_lineage.fetch_related("pS", "references", 5, completeness=completeness) == []
+    assert completeness.expansions_failed == 1
+    assert not (tmp_path / "references_pS.json").exists()
+
+
+def test_fetch_related_keeps_a_neighbour_with_no_venue_or_authors(tmp_path, monkeypatch):
+    """The other half: absent and null are ordinary data."""
+    from paperpilot.scripts._fetch_state import BuildCompleteness
+
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    monkeypatch.setattr(build_lineage.time, "sleep", lambda _s: None)
+    payload = {"data": [{"citedPaper": {"paperId": "n1", "title": "T", "venue": None}}]}
+    completeness = BuildCompleteness()
+    with patch.object(build_lineage, "_s2_get", return_value=payload):
+        items = build_lineage.fetch_related("pV", "references", 5, completeness=completeness)
+    assert [p["paperId"] for p in items] == ["n1"]
+    assert completeness.expansions_failed == 0
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {"paperId": "S2-x"},
+        {"paperId": "S2-x", "title": None},
+        {"paperId": "S2-x", "title": "   "},
+        {"paperId": "S2-x", "title": "T", "authors": [1]},
+        {"paperId": "S2-x", "title": "T", "externalIds": "bad"},
+        {"paperId": "S2-x", "title": "T", "citationCount": "bad"},
+    ],
+    ids=["no-title", "null-title", "blank-title", "authors", "externalIds", "citationCount"],
+)
+def test_fetch_paper_by_arxiv_requires_the_shape_the_focus_consumer_uses(
+    payload, tmp_path, monkeypatch
+):
+    """A focus paper is not a neighbour. `to_node` indexes
+    `paper["title"]` directly and calls `.get()` on `externalIds`, and
+    the artifact is *about* this paper — an untitled neighbour is
+    droppable data, an untitled focus is a response we cannot build
+    from."""
+    from paperpilot.scripts._fetch_state import BuildCompleteness
+
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    monkeypatch.setattr(build_lineage.time, "sleep", lambda _s: None)
+    completeness = BuildCompleteness()
+    with patch.object(build_lineage, "_s2_get", return_value=payload):
+        assert build_lineage.fetch_paper_by_arxiv("2501.00001", completeness=completeness) is None
+    assert not completeness.subject_complete
+    assert not (tmp_path / "paper_2501.00001.json").exists()
+
+
+@pytest.mark.parametrize(
+    "entry",
+    [
+        {"citedPaper": {"paperId": "n1", "title": "T"}, "isInfluential": "false"},
+        {"citedPaper": {"paperId": "n1", "title": "T"}, "intents": [{"a": 1}]},
+        {"citedPaper": {"paperId": "n1", "title": "T"}, "intents": "methodology"},
+    ],
+    ids=["influential-string", "intents-non-string", "intents-non-list"],
+)
+def test_fetch_related_rejects_a_corrupt_relation_envelope_field(entry, tmp_path, monkeypatch):
+    """These fail more quietly than a crash: `bool("false")` is True,
+    and `[str(i) for i in intents]` renders a dict as "{'a': 1}" and
+    writes it to a cache that never expires."""
+    from paperpilot.scripts._fetch_state import BuildCompleteness
+
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    monkeypatch.setattr(build_lineage.time, "sleep", lambda _s: None)
+    completeness = BuildCompleteness()
+    with patch.object(build_lineage, "_s2_get", return_value={"data": [entry]}):
+        assert build_lineage.fetch_related("pI", "references", 5, completeness=completeness) == []
+    assert completeness.expansions_failed == 1
+    assert not (tmp_path / "references_pI.json").exists()
+
+
+def test_fetch_related_ignores_a_relation_cache_with_a_broken_nested_field(tmp_path, monkeypatch):
+    """The relation cache hit must clear the same bar as the live page;
+    it used to be checked on the id alone and then crash `to_node`."""
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    monkeypatch.setattr(build_lineage.time, "sleep", lambda _s: None)
+    (tmp_path / "references_pN2.json").write_text(
+        json.dumps([{"paperId": "P1", "title": "T", "authors": [1]}])
+    )
+    live = {"data": [{"citedPaper": {"paperId": "fresh", "title": "Fresh"}}]}
+    with patch.object(build_lineage, "_s2_get", return_value=live) as get:
+        items = build_lineage.fetch_related("pN2", "references", 5)
+    assert [p["paperId"] for p in items] == ["fresh"]
+    assert get.call_count == 1

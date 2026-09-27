@@ -42,6 +42,7 @@ import arxiv
 
 from ..identity import IdentityError, identity_from_url, normalize_alias
 from ..signals.venue_signal import VenueSignal
+from ..utils.csv_safety import neutralize_row
 from ._common import validate_conference_slug
 
 PROJECT = Path(__file__).resolve().parents[1]
@@ -181,7 +182,11 @@ def write_outputs(
     with csv_path.open("w", encoding="utf-8-sig", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=_CSV_COLUMNS)
         writer.writeheader()
-        writer.writerows(projected_rows)
+        # Titles, abstracts, authors and comments here come straight from
+        # arXiv / OpenReview / CVF / ACL. CSV quoting does not stop a
+        # spreadsheet evaluating a cell that starts a formula, and this
+        # file is opened by hand and re-read by build_summary_csv.
+        writer.writerows(neutralize_row(row) for row in projected_rows)
 
     # The oral file must reflect THIS collection. When the new run has no
     # orals (e.g. a CVF / ACL re-collection of a venue first gathered from

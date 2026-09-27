@@ -11,6 +11,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from paperpilot.scripts import generate_themes_manifest as gm
 
 # ---- fixtures ----
@@ -236,10 +238,51 @@ def test_generate_manifest_ignores_unrelated_files(tmp_path: Path) -> None:
     assert [e["slug"] for e in entries] == ["moe"]
 
 
-def test_generate_manifest_skips_unreadable_json(tmp_path: Path) -> None:
+def test_generate_manifest_refuses_to_omit_an_unreadable_artifact(tmp_path: Path) -> None:
+    """An unreadable lineage.json is almost always a concurrent read of a
+    non-atomic write. Skipping it silently published a manifest that had
+    lost a live theme — the theme then disappeared from the site with no
+    error anywhere. Every other skip in this module is a judgement about
+    content; this one is the absence of a judgement."""
+    import pytest
+
     bad_dir = tmp_path / "bad"
     bad_dir.mkdir()
     (bad_dir / "lineage.json").write_text("not valid json")
+    _write_theme_json(tmp_path, "ok", theme="OK")
+
+    with pytest.raises(gm.UnreadableArtifactError, match="unreadable"):
+        gm.generate_manifest(tmp_path)
+
+
+def test_write_manifest_leaves_the_previous_one_in_place_on_an_unreadable_artifact(
+    tmp_path: Path,
+) -> None:
+    import pytest
+
+    _write_theme_json(tmp_path, "ok", theme="OK")
+    previous = gm.write_manifest(tmp_path)
+    before = previous.read_text()
+
+    bad_dir = tmp_path / "bad"
+    bad_dir.mkdir()
+    (bad_dir / "lineage.json").write_text("not valid json")
+
+    with pytest.raises(gm.UnreadableArtifactError):
+        gm.write_manifest(tmp_path)
+    assert previous.read_text() == before
+
+
+def test_generate_manifest_still_skips_an_artifact_it_could_read_and_rejected(
+    tmp_path: Path,
+) -> None:
+    """The distinction only holds if a genuine content rejection still
+    skips quietly."""
+    bad_dir = tmp_path / "bad-relation"
+    bad_dir.mkdir()
+    (bad_dir / "lineage.json").write_text(
+        json.dumps({"nodes": [], "edges": [{"rel": "not-an-allowed-relation"}], "meta": {}})
+    )
     _write_theme_json(tmp_path, "ok", theme="OK")
     entries = gm.generate_manifest(tmp_path)
     assert [e["slug"] for e in entries] == ["ok"]
@@ -286,3 +329,118 @@ def test_main_returns_nonzero_when_dir_does_not_exist(tmp_path: Path) -> None:
     missing = tmp_path / "does-not-exist"
     rc = gm.main(["--themes-dir", str(missing)])
     assert rc != 0
+
+
+@pytest.mark.parametrize(
+    "payload_patch",
+    [
+        {"edges": "broken"},
+        {"edges": ["not-a-dict"]},
+        {"nodes": "broken"},
+        {"nodes": [{}]},
+        {"nodes": [{"id": ""}]},
+    ],
+    ids=["edges-non-list", "edges-element", "nodes-non-list", "nodes-empty", "nodes-empty-id"],
+)
+def test_structurally_broken_blocks_keep_a_theme_out_of_the_manifest(
+    payload_patch, tmp_path, monkeypatch
+):
+    """A non-list `edges` used to return True from the allowlist check,
+    so a structurally broken artifact walked straight past the `rel`
+    gate that function exists to enforce — and `nodes: [{}]` was
+    published as a one-paper theme."""
+    from paperpilot.scripts import generate_themes_manifest as gtm
+
+    themes = tmp_path / "themes"
+    good = themes / "good"
+    good.mkdir(parents=True)
+    good.joinpath("lineage.json").write_text(
+        json.dumps(
+            {
+                "meta": {"theme": "Good", "generated_at": "2026-01-01T00:00:00Z"},
+                "nodes": [{"id": "n1", "year": 2024}],
+                "edges": [],
+            }
+        )
+    )
+    bad = themes / "bad"
+    bad.mkdir(parents=True)
+    payload = {
+        "meta": {"theme": "Bad", "generated_at": "2026-01-01T00:00:00Z"},
+        "nodes": [{"id": "n1"}],
+        "edges": [],
+    }
+    payload.update(payload_patch)
+    bad.joinpath("lineage.json").write_text(json.dumps(payload))
+
+    entries = gtm.generate_manifest(themes)
+    assert [e["slug"] for e in entries] == ["good"]
+
+
+@pytest.mark.parametrize(
+    "drop_key", ["nodes", "edges"], ids=["no-nodes-key", "no-edges-key"]
+)
+def test_a_theme_missing_either_array_is_not_listed(drop_key, tmp_path):
+    """An absent key is not an empty list: a payload with only `meta`
+    used to be published as a zero-paper theme, and a missing `edges`
+    walked straight past the `rel` allowlist."""
+    from paperpilot.scripts import generate_themes_manifest as gtm
+
+    themes = tmp_path / "themes"
+    bad = themes / "bad"
+    bad.mkdir(parents=True)
+    payload = {
+        "meta": {"theme": "Bad", "generated_at": "2026-01-01T00:00:00Z"},
+        "nodes": [{"id": "n1"}],
+        "edges": [],
+    }
+    payload.pop(drop_key)
+    bad.joinpath("lineage.json").write_text(json.dumps(payload))
+
+    assert gtm.generate_manifest(themes) == []
+
+
+def test_a_theme_with_both_arrays_empty_is_listed(tmp_path):
+    """`nodes: []` / `edges: []` is a theme stating it found nothing —
+    a real state, and the only legitimate way to say it."""
+    from paperpilot.scripts import generate_themes_manifest as gtm
+
+    themes = tmp_path / "themes"
+    empty = themes / "empty"
+    empty.mkdir(parents=True)
+    empty.joinpath("lineage.json").write_text(
+        json.dumps(
+            {
+                "meta": {"theme": "Empty", "generated_at": "2026-01-01T00:00:00Z"},
+                "nodes": [],
+                "edges": [],
+            }
+        )
+    )
+    entries = gtm.generate_manifest(themes)
+    assert [(e["slug"], e["paper_count"]) for e in entries] == [("empty", 0)]
+
+
+@pytest.mark.parametrize(
+    "edge", [{}, {"rel": None}, {"rel": "fabricated"}], ids=["no-rel", "null-rel", "bad-rel"]
+)
+def test_an_edge_without_an_allowed_rel_keeps_the_theme_out(edge, tmp_path):
+    """`rel` is required by the lineage contract, so "no rel" is not an
+    edge this gate may wave through: skipping the enum check when the
+    key was absent let `edges: [{}]` be published as a validated
+    theme."""
+    from paperpilot.scripts import generate_themes_manifest as gtm
+
+    themes = tmp_path / "themes"
+    bad = themes / "bad"
+    bad.mkdir(parents=True)
+    bad.joinpath("lineage.json").write_text(
+        json.dumps(
+            {
+                "meta": {"theme": "Bad", "generated_at": "2026-01-01T00:00:00Z"},
+                "nodes": [{"id": "n1"}],
+                "edges": [edge],
+            }
+        )
+    )
+    assert gtm.generate_manifest(themes) == []

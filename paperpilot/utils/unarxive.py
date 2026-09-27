@@ -64,6 +64,7 @@ from pathlib import Path
 from typing import Any
 
 from paperpilot.utils.logger import get_logger
+from paperpilot.utils.payload import openalex_short_id
 
 logger = get_logger(__name__)
 
@@ -92,7 +93,7 @@ def _normalise_openalex_short(value: str | None) -> str | None:
         candidate = candidate[len(_OPENALEX_URL_PREFIX) :]
     elif candidate.startswith(_OPENALEX_PAPERID_PREFIX):
         candidate = candidate[len(_OPENALEX_PAPERID_PREFIX) :]
-    return candidate if candidate.startswith("W") else None
+    return openalex_short_id(candidate)
 
 
 # arXiv IDs come in two forms: the pre-2007 ``arXiv:cs.LG/0512345`` style

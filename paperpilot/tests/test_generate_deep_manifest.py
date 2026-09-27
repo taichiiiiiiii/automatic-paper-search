@@ -194,3 +194,52 @@ def test_write_manifest_is_wrapper_and_overwrites_existing(docs_dir: Path) -> No
 
 def test_main_returns_nonzero_when_dir_does_not_exist(tmp_path: Path) -> None:
     assert gm.main(["--docs-dir", str(tmp_path / "missing")]) != 0
+
+
+def test_unreadable_catalog_refuses_instead_of_emptying_the_manifest(tmp_path) -> None:
+    """A truncated papers.json made every deep artifact fail its catalog
+    check, so the generator published an EMPTY deep-manifest.json and the
+    deep-lineage section disappeared from the site — with only a warning
+    in the log. A catalog that exists but will not parse is a read
+    failure, not an empty catalog."""
+    docs = tmp_path / "iclr-2026"
+    docs.mkdir(parents=True)
+    (docs / "papers.json").write_text('[{"paper_id": "aaa', encoding="utf-8")
+
+    with pytest.raises(gm.UnreadableCatalogError):
+        gm.generate_manifest(docs)
+
+
+def test_absent_catalog_is_not_a_read_failure(tmp_path) -> None:
+    """A conference directory with no catalog at all is a real state —
+    nothing collected yet — and must stay distinguishable from one whose
+    catalog could not be read."""
+    docs = tmp_path / "iclr-2026"
+    docs.mkdir(parents=True)
+    manifest = gm.generate_manifest(docs)
+    assert manifest["entries"] == []
+
+
+def test_an_unreadable_deep_artifact_refuses_the_whole_manifest(docs_dir: Path) -> None:
+    """Every other rejection here is a judgement about the artifact's
+    content. A truncated file is the one where no judgement was
+    possible, so omitting it published a manifest missing a deep tree
+    for no stated reason — and that partial manifest replaced the good
+    one. The themes manifest already closes this hole."""
+    _write_deep_json(docs_dir, "1706.03762", "Attention Is All You Need")
+    (docs_dir / "deep-2602.18473.json").write_text('{"schema_version": "lin', encoding="utf-8")
+
+    with pytest.raises(gm.UnreadableArtifactError):
+        gm.generate_manifest(docs_dir)
+
+
+def test_a_readable_but_non_contract_artifact_is_still_an_ordinary_skip(docs_dir: Path) -> None:
+    """The other half: we read it and decided against it, which is a
+    stated judgement rather than a silent omission."""
+    _write_deep_json(docs_dir, "1706.03762", "Attention Is All You Need")
+    (docs_dir / "deep-2602.18473.json").write_text(
+        json.dumps({"schema_version": "legacy-v0", "nodes": []}), encoding="utf-8"
+    )
+
+    manifest = gm.generate_manifest(docs_dir)
+    assert [e["arxiv_id"] for e in manifest["entries"]] == ["1706.03762"]

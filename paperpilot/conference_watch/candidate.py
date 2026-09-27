@@ -20,6 +20,7 @@ from typing import Any, NoReturn
 
 from paperpilot.identity.source_ids import IdentityError, identity_from_url, make_paper_id
 from paperpilot.scripts.build_summary_csv import classify_tags
+from paperpilot.utils.csv_safety import neutralize_row
 
 from .fingerprint import source_fingerprint
 from .models import (
@@ -504,8 +505,11 @@ def _summary_csv(rows: tuple[CandidateCatalogRow, ...]) -> bytes:
     writer = csv.DictWriter(stream, fieldnames=_SUMMARY_FIELDS, lineterminator="\n")
     writer.writeheader()
     for row in rows:
+        # Titles/authors/abstracts are upstream text and this CSV is
+        # opened by hand. Same neutralization the exporter and the
+        # collectors use — see paperpilot/utils/csv_safety.py.
         writer.writerow(
-            {
+            neutralize_row({
                 "title": row.title,
                 "type": row.paper_type,
                 "tags": " ".join(row.tags),
@@ -520,7 +524,7 @@ def _summary_csv(rows: tuple[CandidateCatalogRow, ...]) -> bytes:
                 "github_stars": "",
                 "source": row.source,
                 "source_id": row.source_id,
-            }
+            })
         )
     return stream.getvalue().encode("utf-8")
 

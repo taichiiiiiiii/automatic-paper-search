@@ -60,7 +60,7 @@ def test_invalid_seed_fails_before_provider_or_network(monkeypatch) -> None:
 def test_build_deep_preserves_seed_aliases_and_schema(tmp_path, monkeypatch) -> None:
     monkeypatch.setattr(bdl, "CACHE_DIR", tmp_path)
     monkeypatch.setattr(bdl, "build_provider", lambda: (_Provider(), 0.0))
-    monkeypatch.setattr(bdl, "fetch_paper_by_arxiv", lambda arxiv_id: _paper())
+    monkeypatch.setattr(bdl, "fetch_paper_by_arxiv", lambda arxiv_id, **_kw: _paper())
 
     result = bdl.build_deep(
         "2602.18473v2",
@@ -99,7 +99,7 @@ def test_s2_focus_must_confirm_requested_arxiv_before_provider(external_ids, mon
         provider_called = True
         raise AssertionError("provider must not be constructed for an identity mismatch")
 
-    monkeypatch.setattr(bdl, "fetch_paper_by_arxiv", lambda _arxiv_id: focus)
+    monkeypatch.setattr(bdl, "fetch_paper_by_arxiv", lambda _arxiv_id, **_kw: focus)
     monkeypatch.setattr(bdl, "build_provider", fail_provider)
     with pytest.raises(ValueError, match="Semantic Scholar"):
         bdl.build_deep("2602.18473", seed_paper_id=PAPER_ID, depth=0)

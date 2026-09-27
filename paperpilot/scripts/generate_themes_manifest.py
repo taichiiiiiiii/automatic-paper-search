@@ -31,9 +31,20 @@ import sys
 from pathlib import Path
 from typing import Any, TypedDict
 
+from paperpilot.utils.payload import first_unusable
+
 _log = logging.getLogger(__name__)
 
 _MANIFEST_NAME = "themes-manifest.json"
+class UnreadableArtifactError(RuntimeError):
+    """An artifact could not be read, so the manifest would be incomplete.
+
+    Distinct from an artifact we read and deliberately excluded (bad
+    slug, forbidden relation): that omission is a decision, this one is
+    a gap.
+    """
+
+
 _LINEAGE_NAME = "lineage.json"
 # Same character class enforced by theme.js's SLUG_RE — keep in sync with
 # paperpilot/scripts/_common.theme_slug() output.
@@ -61,19 +72,28 @@ class ManifestEntry(TypedDict):
 
 
 def _validate_edges(edges: Any) -> bool:
-    """Return False if any edge has a ``rel`` outside the allowed enum.
+    """Return False if the ``edges`` block is not one we can judge.
 
-    Empty list / non-list ⇒ no edges to validate ⇒ True. This intentionally
-    accepts files with zero edges so a freshly generated theme with no
-    classified relations is still listed in the manifest.
+    An empty list is fine — a freshly generated theme with no
+    classified relations still belongs in the manifest. An absent key,
+    a non-list, a non-mapping element, or an element without an allowed
+    ``rel`` is not: each of those used to return True and let a
+    structurally broken artifact walk straight past the allowlist this
+    function exists to enforce.
     """
     if not isinstance(edges, list):
-        return True
+        # Absent counts as broken: the builder always writes `edges`, so
+        # a file without one is not a theme artifact, and treating it as
+        # "nothing to validate" walked it past this very allowlist.
+        return False
     for e in edges:
         if not isinstance(e, dict):
-            continue
-        rel = e.get("rel")
-        if rel is not None and rel not in _ALLOWED_RELATIONS:
+            return False
+        # `rel` is required by the lineage contract, so "no rel" is not
+        # an edge this gate may wave through — skipping the enum check
+        # when the key is absent let `edges: [{}]` be published as a
+        # validated theme.
+        if e.get("rel") not in _ALLOWED_RELATIONS:
             return False
     return True
 
@@ -88,8 +108,10 @@ def _entry_from_file(path: Path) -> ManifestEntry | None:
     try:
         payload = json.loads(path.read_text())
     except (OSError, json.JSONDecodeError) as exc:
-        _log.warning("skip %s: unreadable (%s)", path, exc)
-        return None
+        # NOT a "skip": an unreadable artifact is almost always a
+        # concurrent read of a non-atomic write, and silently omitting it
+        # would publish a manifest that has lost a live theme.
+        raise UnreadableArtifactError(f"{path}: {exc}") from exc
     if not isinstance(payload, dict):
         _log.warning("skip %s: payload is not an object", path)
         return None
@@ -105,11 +127,11 @@ def _entry_from_file(path: Path) -> ManifestEntry | None:
     # client-side regex. Fall back to the parent directory name, which is
     # filesystem-derived and trusted.
     meta_slug = meta.get("slug")
-    if isinstance(meta_slug, str) and _SLUG_RE.match(meta_slug):
+    if isinstance(meta_slug, str) and _SLUG_RE.fullmatch(meta_slug):
         slug = meta_slug
     else:
         dir_slug = path.parent.name
-        if not _SLUG_RE.match(dir_slug):
+        if not _SLUG_RE.fullmatch(dir_slug):
             _log.warning("skip %s: directory name %r is not a valid slug", path, dir_slug)
             return None
         slug = dir_slug
@@ -126,12 +148,24 @@ def _entry_from_file(path: Path) -> ManifestEntry | None:
         generated_at = ""
 
     nodes = payload.get("nodes")
-    nodes = nodes if isinstance(nodes, list) else []
-    paper_count = sum(1 for n in nodes if isinstance(n, dict))
+    # `paper_count` is the number this manifest publishes, so counting
+    # elements we cannot read overstated it: `nodes: [{}]` was listed as
+    # a one-paper theme, and a payload with no `nodes` key at all was
+    # listed as a zero-paper one. An empty list is the only legitimate
+    # way for a theme to say it has no papers.
+    if not isinstance(nodes, list) or first_unusable(
+        nodes, lambda n: isinstance(n.get("id"), str) and bool(n["id"])
+    ):
+        _log.warning("skip %s: nodes block is not readable", path.name)
+        return None
+    paper_count = len(nodes)
 
+    # `isinstance(True, int)` is True in Python, so a boolean year
+    # produced `year_range: [true, true]`.
     years = [
-        n["year"] for n in nodes
-        if isinstance(n, dict) and isinstance(n.get("year"), int)
+        n["year"]
+        for n in nodes
+        if isinstance(n.get("year"), int) and not isinstance(n["year"], bool)
     ]
     year_range: list[int] | None = [min(years), max(years)] if years else None
 
@@ -155,20 +189,41 @@ def generate_manifest(themes_dir: Path) -> list[ManifestEntry]:
         return []
 
     entries: list[ManifestEntry] = []
+    unreadable: list[str] = []
     for sub in sorted(p for p in themes_dir.iterdir() if p.is_dir()):
         lineage_path = sub / _LINEAGE_NAME
         if not lineage_path.is_file():
             continue
-        entry = _entry_from_file(lineage_path)
+        try:
+            entry = _entry_from_file(lineage_path)
+        except UnreadableArtifactError as exc:
+            unreadable.append(str(exc))
+            continue
         if entry is not None:
             entries.append(entry)
+
+    if unreadable:
+        # Every other skip above is a judgement about the artifact's
+        # content. These are the ones where we could not form a
+        # judgement at all, so the manifest we would write is missing
+        # themes for no stated reason.
+        raise UnreadableArtifactError(
+            "refusing to build a manifest that silently omits "
+            f"{len(unreadable)} unreadable artifact(s):\n  "
+            + "\n  ".join(unreadable)
+        )
 
     entries.sort(key=lambda e: e["slug"])
     return entries
 
 
 def write_manifest(themes_dir: Path) -> Path:
-    """Generate manifest entries and write ``themes-manifest.json``."""
+    """Generate manifest entries and write ``themes-manifest.json``.
+
+    Raises ``UnreadableArtifactError`` rather than publishing a manifest
+    that dropped a theme it could not read; the previous manifest stays
+    in place.
+    """
     themes_dir.mkdir(parents=True, exist_ok=True)
     entries = generate_manifest(themes_dir)
     out = themes_dir / _MANIFEST_NAME

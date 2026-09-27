@@ -154,21 +154,78 @@ def test_search_repo_by_title_skips_short_titles() -> None:
         mock_req.assert_not_called()
 
 
-def test_search_repo_by_title_returns_none_on_failure() -> None:
+def test_search_repo_by_title_raises_when_github_is_unavailable() -> None:
+    """A throttled or erroring Search API is not evidence that the paper
+    has no repository. Returning None made the theme builder cache
+    "0 stars, no repo" with a fresh timestamp, suppressing the retry for
+    the whole TTL window."""
+    import pytest
+
     with patch("paperpilot.utils.github.request_with_retry") as mock_req:
         mock_req.return_value = None
+        with pytest.raises(gh.GitHubUnavailableError):
+            gh.search_repo_by_title("Some Reasonable Paper")
+
+        for status in (403, 429, 503):
+            resp = MagicMock()
+            resp.status_code = status
+            resp.json.return_value = {}
+            mock_req.return_value = resp
+            with pytest.raises(gh.GitHubUnavailableError):
+                gh.search_repo_by_title("Some Reasonable Paper")
+
+
+def test_search_repo_by_title_returns_none_only_for_a_200_with_no_candidate() -> None:
+    """The Search API expresses "nothing matched" as 200 with an empty
+    `items` array. That is the only answer about the paper."""
+    resp = MagicMock()
+    resp.status_code = 200
+    resp.json.return_value = {"items": []}
+    with patch("paperpilot.utils.github.request_with_retry", return_value=resp):
         assert gh.search_repo_by_title("Some Reasonable Paper") is None
 
-        resp = MagicMock()
-        resp.status_code = 503
-        resp.json.return_value = {}
-        mock_req.return_value = resp
-        assert gh.search_repo_by_title("Some Reasonable Paper") is None
+
+@pytest.mark.parametrize("status", [400, 401, 404, 422, 451])
+def test_search_repo_by_title_raises_for_any_other_status(status) -> None:
+    """A 401 is a bad credential and a 422 is a rejected query; neither
+    says the paper has no repository. The old code returned None and
+    the caller cached that for the whole TTL window. This test
+    previously pinned 422 -> None, which was the bug."""
+    rejected = MagicMock()
+    rejected.status_code = status
+    with patch("paperpilot.utils.github.request_with_retry", return_value=rejected):
+        with pytest.raises(gh.GitHubUnavailableError):
+            gh.search_repo_by_title("Some Reasonable Paper")
 
 
-def test_search_repo_by_title_skips_invalid_slug_in_response() -> None:
-    """Even if the GitHub API somehow returns a malformed ``full_name``,
-    the slug regex filters it out before it can reach the consumer."""
+def test_fetch_repo_stars_returns_none_only_for_a_404() -> None:
+    resp = MagicMock()
+    resp.status_code = 404
+    with patch("paperpilot.utils.github.request_with_retry", return_value=resp):
+        assert gh.fetch_repo_stars("owner/repo") is None
+
+
+@pytest.mark.parametrize("status", [400, 401, 422, 451])
+def test_fetch_repo_stars_raises_for_a_status_about_our_request(status) -> None:
+    resp = MagicMock()
+    resp.status_code = status
+    with patch("paperpilot.utils.github.request_with_retry", return_value=resp):
+        with pytest.raises(gh.GitHubUnavailableError):
+            gh.fetch_repo_stars("owner/repo")
+
+
+def test_search_repo_by_title_refuses_a_response_carrying_an_invalid_slug() -> None:
+    """A malformed ``full_name`` must never reach the consumer — that
+    part is unchanged and is the SSRF / path-traversal boundary.
+
+    What changed is what it *means*. GitHub does not emit a name the
+    slug regex rejects, so such an item is a broken (or tampered)
+    payload, not a repository we merely declined. Skipping it and
+    returning the next match let a page of them return None, which the
+    caller stores as "this paper has no repository" for a full TTL
+    window. It is now surfaced as unavailable, so the lookup is retried
+    instead of being frozen into the cache.
+    """
     with patch("paperpilot.utils.github.request_with_retry") as mock_req:
         mock_req.return_value = _mock_search_response([
             {"full_name": "owner/with spaces", "name": "matching title", "description": ""},
@@ -176,8 +233,18 @@ def test_search_repo_by_title_skips_invalid_slug_in_response() -> None:
             {"full_name": "owner/legit-matching-title",
              "name": "matching title", "description": ""},
         ])
-        out = gh.search_repo_by_title("Matching Title Of Paper")
-        assert out == "owner/legit-matching-title"
+        with pytest.raises(gh.GitHubUnavailableError):
+            gh.search_repo_by_title("Matching Title Of Paper")
+
+
+def test_search_repo_by_title_returns_a_valid_slug_from_a_clean_page() -> None:
+    with patch("paperpilot.utils.github.request_with_retry") as mock_req:
+        mock_req.return_value = _mock_search_response([
+            {"full_name": "owner/unrelated", "name": "something else", "description": ""},
+            {"full_name": "owner/legit-matching-title",
+             "name": "matching title", "description": ""},
+        ])
+        assert gh.search_repo_by_title("Matching Title Of Paper") == "owner/legit-matching-title"
 
 
 def test_search_repo_by_title_passes_token_via_header() -> None:
@@ -207,17 +274,32 @@ def test_fetch_repo_stars_returns_none_on_404() -> None:
         assert gh.fetch_repo_stars("owner/missing-repo") is None
 
 
-def test_fetch_repo_stars_returns_none_on_request_failure() -> None:
+def test_fetch_repo_stars_raises_when_github_is_unavailable() -> None:
+    import pytest
+
     with patch("paperpilot.utils.github.request_with_retry", return_value=None):
-        assert gh.fetch_repo_stars("owner/repo") is None
+        with pytest.raises(gh.GitHubUnavailableError):
+            gh.fetch_repo_stars("owner/repo")
+
+    for status in (403, 429, 502):
+        resp = MagicMock()
+        resp.status_code = status
+        with patch("paperpilot.utils.github.request_with_retry", return_value=resp):
+            with pytest.raises(gh.GitHubUnavailableError):
+                gh.fetch_repo_stars("owner/repo")
 
 
-def test_fetch_repo_stars_handles_non_int_stargazer_payload() -> None:
+def test_fetch_repo_stars_rejects_a_non_int_stargazer_payload() -> None:
+    """A repo object always carries an integer `stargazers_count`.
+    Rounding anything else down to 0 wrote "this repo has no stars"
+    into a fresh TTL entry, which is the outage-as-fact bug wearing a
+    200 status code."""
     resp = MagicMock()
     resp.status_code = 200
     resp.json.return_value = {"stargazers_count": "not-a-number"}
     with patch("paperpilot.utils.github.request_with_retry", return_value=resp):
-        assert gh.fetch_repo_stars("owner/repo") is None
+        with pytest.raises(gh.GitHubUnavailableError):
+            gh.fetch_repo_stars("owner/repo")
 
 
 def test_fetch_repo_stars_revalidates_slug_even_when_called_directly() -> None:
@@ -298,3 +380,96 @@ def test_module_has_no_pwc_references() -> None:
     src = Path(gh.__file__).read_text()
     assert "paperswithcode" not in src.lower()
     assert "PWC_BASE" not in src
+
+
+# ---- 200 envelopes that carry no answer ----
+
+
+@pytest.mark.parametrize(
+    "body",
+    [{}, {"message": "API rate limit exceeded"}, {"items": None}, {"items": "x"}, ["a"]],
+    ids=["empty-object", "error-envelope", "null-items", "items-not-a-list", "top-level-list"],
+)
+def test_search_repo_rejects_a_200_without_an_items_array(body) -> None:
+    """A 200 from the Search API always carries an `items` array, empty
+    when nothing matched. `(r.json() or {}).get("items") or []` turned
+    every other shape into "this paper has no repository", which the
+    caller then cached for the whole TTL window."""
+    resp = MagicMock()
+    resp.status_code = 200
+    resp.json.return_value = body
+    with patch("paperpilot.utils.github.request_with_retry", return_value=resp):
+        with pytest.raises(gh.GitHubUnavailableError):
+            gh.search_repo_by_title("Some Paper Title")
+
+
+def test_search_repo_rejects_a_malformed_body() -> None:
+    resp = MagicMock()
+    resp.status_code = 200
+    resp.json.side_effect = ValueError("not json")
+    with patch("paperpilot.utils.github.request_with_retry", return_value=resp):
+        with pytest.raises(gh.GitHubUnavailableError):
+            gh.search_repo_by_title("Some Paper Title")
+
+
+def test_search_repo_accepts_a_200_with_an_empty_items_array() -> None:
+    """The other half: an empty `items` really does mean "no repo"."""
+    resp = MagicMock()
+    resp.status_code = 200
+    resp.json.return_value = {"items": []}
+    with patch("paperpilot.utils.github.request_with_retry", return_value=resp):
+        assert gh.search_repo_by_title("Some Paper Title") is None
+
+
+@pytest.mark.parametrize(
+    "body",
+    [{}, {"message": "Not Found"}, {"stargazers_count": None}, {"stargazers_count": True}, []],
+    ids=["empty-object", "error-envelope", "null-count", "bool-count", "top-level-list"],
+)
+def test_fetch_repo_stars_rejects_a_200_without_a_star_count(body) -> None:
+    resp = MagicMock()
+    resp.status_code = 200
+    resp.json.return_value = body
+    with patch("paperpilot.utils.github.request_with_retry", return_value=resp):
+        with pytest.raises(gh.GitHubUnavailableError):
+            gh.fetch_repo_stars("owner/repo")
+
+
+def test_fetch_repo_stars_accepts_a_genuine_zero() -> None:
+    """A repo that really has no stars is an answer and must stay
+    cacheable — the point of the change is to separate it from the
+    envelopes above, not to stop recording it."""
+    resp = MagicMock()
+    resp.status_code = 200
+    resp.json.return_value = {"stargazers_count": 0}
+    with patch("paperpilot.utils.github.request_with_retry", return_value=resp):
+        assert gh.fetch_repo_stars("owner/repo") == 0
+
+
+@pytest.mark.parametrize(
+    "item",
+    [None, "a-string", {}, {"message": "rate limit"}, {"full_name": 7}],
+    ids=["null", "string", "empty-dict", "error-item", "non-string-name"],
+)
+def test_search_repo_rejects_a_malformed_item(item) -> None:
+    """The elements carry the answer. An item-shaped error envelope
+    used to fall through the loop and return None, which the caller
+    stores as "this paper has no repository" for the whole TTL."""
+    resp = MagicMock()
+    resp.status_code = 200
+    resp.json.return_value = {"items": [item]}
+    with patch("paperpilot.utils.github.request_with_retry", return_value=resp):
+        with pytest.raises(gh.GitHubUnavailableError):
+            gh.search_repo_by_title("Some Paper Title")
+
+
+def test_search_repo_still_returns_none_when_nothing_is_similar_enough() -> None:
+    """The other half: a well-formed item that simply does not match
+    the title is a real answer, not a broken page."""
+    resp = MagicMock()
+    resp.status_code = 200
+    resp.json.return_value = {
+        "items": [{"full_name": "someone/unrelated", "name": "unrelated", "description": ""}]
+    }
+    with patch("paperpilot.utils.github.request_with_retry", return_value=resp):
+        assert gh.search_repo_by_title("Segment Anything") is None

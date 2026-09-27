@@ -93,10 +93,19 @@ class _FakeProvider(AbstractLLMProvider):
 
 
 def _mk_s2_search_response(papers: list[dict]) -> MagicMock:
-    """Wrap a list of S2-shaped paper dicts in a MagicMock response."""
+    """Wrap a list of S2-shaped paper dicts in a MagicMock response.
+
+    The body carries BOTH envelope keys because these tests patch a
+    single ``request_with_retry`` that stands in for two different APIs:
+    S2 ``/paper/search`` answers ``{"data": [...]}`` and OpenAlex
+    ``/works`` answers ``{"results": [...]}``. A body with neither is
+    what a proxy or maintenance page returns, and the builder now
+    treats that as an outage rather than an empty result set — so a
+    fixture missing one of the keys would look like a live incident.
+    """
     resp = MagicMock()
     resp.status_code = 200
-    resp.json = lambda: {"data": papers}
+    resp.json = lambda: {"data": papers, "results": []}
     return resp
 
 
@@ -427,6 +436,14 @@ def _stub_external_calls(monkeypatch, *, classifier=None, chat_text=None, tmp_pa
         "build_provider",
         lambda: (provider, 0.0),
     )
+    # GitHub star enrichment runs unconditionally at the end of every
+    # build and uses its OWN http client, so patching
+    # build_theme_lineage.request_with_retry does not cover it. Left
+    # alone, any full-builder test whose seed carries an arXiv id
+    # attempts api.github.com — CLAUDE.md rule 3. Stubbing it here fixes
+    # every caller of this helper at once; a test that wants to exercise
+    # enrichment calls _enrich_github_stars directly with fake resolvers.
+    monkeypatch.setattr(build_theme_lineage, "_enrich_github_stars", lambda *a, **kw: 0)
     # Redirect the shared cache to a scratch path so tests don't pollute
     # the real classifications.json. Tests that explicitly want to
     # observe cache state should pass ``tmp_path=...``.
@@ -765,7 +782,7 @@ def test_build_root_picks_seed_with_most_relations(tmp_path: Path, monkeypatch):
     p1 = _mk_s2_paper("p_for_seed1_a", year=2018)
     p2 = _mk_s2_paper("p_for_seed1_b", year=2018)
 
-    def fake_related(s2_id, kind, limit):
+    def fake_related(s2_id, kind, limit, **_kw):
         # seed1 has two parents; seed2 has none.
         if s2_id == "seed1":
             return [p1, p2]
@@ -797,7 +814,7 @@ def test_build_respects_depth_two(tmp_path: Path, monkeypatch):
     parent = _mk_s2_paper("parent", year=2015)
     grand = _mk_s2_paper("grand", year=2010)
 
-    def fake_related(s2_id, kind, limit):
+    def fake_related(s2_id, kind, limit, **_kw):
         if s2_id == "seed":
             return [parent]
         if s2_id == "parent":
@@ -2017,7 +2034,7 @@ def test_build_adds_cross_node_edges(tmp_path: Path, monkeypatch):
         "_intents": ["methodology"],
     }
 
-    def fake_fetch_related(paper_id, kind, limit):
+    def fake_fetch_related(paper_id, kind, limit, **_kw):
         if kind != "references":
             return []
         if paper_id == "seed1":
@@ -2066,7 +2083,7 @@ def test_build_cross_node_does_not_duplicate_existing_edges(tmp_path: Path, monk
         "_intents": ["methodology"],
     }
 
-    def fake_fetch_related(paper_id, kind, limit):
+    def fake_fetch_related(paper_id, kind, limit, **_kw):
         if kind != "references":
             return []
         # Both seed (BFS) and parent (cross-node pass) have refs that lead
@@ -2117,7 +2134,7 @@ def test_build_cross_node_skips_non_influential_in_graph_refs(tmp_path: Path, mo
         "_intents": ["background"],
     }
 
-    def fake_fetch_related(paper_id, kind, limit):
+    def fake_fetch_related(paper_id, kind, limit, **_kw):
         if paper_id == "seed1" and kind == "references":
             return [s2_as_ref]
         return []
@@ -4680,6 +4697,11 @@ def test_build_theme_lineage_ignores_legacy_endpoint_cache(tmp_path, monkeypatch
     _patch_env(monkeypatch)
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "fetch-cache")
     monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+    # These two tests build the pipeline by hand rather than through
+    # _stub_external_calls, so they need the GitHub enrichment stub
+    # explicitly — without it the builder reaches api.github.com
+    # (CLAUDE.md rule 3).
+    monkeypatch.setattr(build_theme_lineage, "_enrich_github_stars", lambda *a, **kw: 0)
     # Point the classification cache at a per-test path so we can pre-seed
     # it and observe behaviour without touching the shared on-disk cache.
     monkeypatch.setattr(
@@ -4734,7 +4756,7 @@ def test_build_theme_lineage_ignores_legacy_endpoint_cache(tmp_path, monkeypatch
     # citations. Otherwise the descendants pass would call
     # classify_relation(seed, parent) — a DIFFERENT cache key — and
     # cache-miss into the BoomProvider, masking the real assertion.
-    def _fetch_related_side(s2_id, kind, limit):
+    def _fetch_related_side(s2_id, kind, limit, **_kw):
         return [parent] if kind == "references" else []
 
     with (
@@ -4778,6 +4800,11 @@ def test_build_theme_lineage_edge_serializes_provenance(tmp_path, monkeypatch):
     _patch_env(monkeypatch)
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
     monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+    # These two tests build the pipeline by hand rather than through
+    # _stub_external_calls, so they need the GitHub enrichment stub
+    # explicitly — without it the builder reaches api.github.com
+    # (CLAUDE.md rule 3).
+    monkeypatch.setattr(build_theme_lineage, "_enrich_github_stars", lambda *a, **kw: 0)
     monkeypatch.setattr(
         build_theme_lineage,
         "_CLASSIFICATION_CACHE_PATH",
@@ -4802,7 +4829,7 @@ def test_build_theme_lineage_edge_serializes_provenance(tmp_path, monkeypatch):
         "_intents": ["methodology"],
     }
 
-    def _fetch_related_side(s2_id, kind, limit):
+    def _fetch_related_side(s2_id, kind, limit, **_kw):
         return [parent] if kind == "references" else []
 
     with (
@@ -5588,3 +5615,602 @@ def test_seed_search_refetches_a_cached_entry_without_a_title(tmp_path, monkeypa
         items = build_theme_lineage._search_one_keyword_via_s2(keyword="rag", since_year=2020)
     req.assert_called_once()
     assert items == [{"paperId": "p1", "title": "Recovered"}]
+
+
+# ---- publication gates: an outage must not replace a good artifact ----
+
+
+def _existing_artifact(path: Path, node_count: int) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps({"nodes": [{"id": f"n{i}"} for i in range(node_count)], "edges": []}),
+        encoding="utf-8",
+    )
+
+
+def test_seed_search_outage_does_not_replace_a_published_theme(tmp_path, monkeypatch):
+    """The live regression: a seed-search outage returns [] exactly like a
+    theme with no papers, so the builder published an empty artifact over
+    a populated one and the loss survived the outage. The gate runs
+    BEFORE the atomic replace, so the old file is still there."""
+    from paperpilot.scripts._fetch_state import IncompleteBuildError
+
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+    _stub_external_calls(monkeypatch)
+
+    out = tmp_path / "docs" / "themes" / "outage-theme" / "lineage.json"
+    _existing_artifact(out, 40)
+    before = out.read_text()
+
+    with (
+        patch.object(build_theme_lineage, "request_with_retry", return_value=None),
+        patch.object(build_theme_lineage, "fetch_related", return_value=[]),
+    ):
+        with pytest.raises(IncompleteBuildError, match="subject resolution incomplete"):
+            build_theme_lineage.build_theme_lineage(
+                theme="Outage Theme", depth=1, seeds_count=3, width=4, since_year=None
+            )
+
+    assert out.read_text() == before
+
+
+def test_a_genuinely_empty_theme_still_publishes(tmp_path, monkeypatch):
+    """The other half of the contract: every request succeeded and the
+    theme simply has no papers. That is a fact, and it must still write a
+    valid empty artifact — the gate must not swallow it."""
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+    _stub_external_calls(monkeypatch)
+
+    with (
+        patch.object(
+            build_theme_lineage,
+            "request_with_retry",
+            return_value=_mk_s2_search_response([]),
+        ),
+        patch.object(build_theme_lineage, "fetch_related", return_value=[]),
+    ):
+        out_path = build_theme_lineage.build_theme_lineage(
+            theme="Genuinely Empty", depth=1, seeds_count=3, width=4, since_year=None
+        )
+
+    payload = json.loads(out_path.read_text())
+    assert payload["root"] is None
+    assert payload["nodes"] == []
+    assert payload["meta"]["completeness"] == {
+        "complete": True,
+        "expansions_attempted": 0,
+        "expansions_failed": 0,
+    }
+
+
+def test_completeness_block_is_recorded_on_a_normal_build(tmp_path, monkeypatch):
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+    _stub_external_calls(monkeypatch)
+    seed = _mk_s2_paper("p1", title="Seeded Paper")
+
+    with (
+        patch.object(
+            build_theme_lineage,
+            "request_with_retry",
+            return_value=_mk_s2_search_response([seed]),
+        ),
+        patch.object(build_theme_lineage, "fetch_related", return_value=[]),
+    ):
+        out_path = build_theme_lineage.build_theme_lineage(
+            theme="Normal Theme", depth=1, seeds_count=3, width=4, since_year=None
+        )
+
+    meta = json.loads(out_path.read_text())["meta"]
+    assert meta["completeness"]["complete"] is True
+
+
+def test_expansion_failures_reach_the_theme_artifact_meta(tmp_path, monkeypatch):
+    """Wiring test, not a helper test: the BFS, descendants and
+    cross-node passes each call fetch_related, and all three have to
+    forward the ledger. Without this the artifact claimed complete=True
+    through a total expansion outage."""
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+    _stub_external_calls(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "_enrich_github_stars", lambda *a, **kw: 0)
+    # The theme string has to match the seed title or the topic filter
+    # drops it, leaving no seeds and therefore no expansion to observe.
+    seed = _mk_s2_paper("p1", title="Retrieval Augmented Generation")
+
+    def failing_fetch_related(_sid, _kind, _limit, *, completeness=None):
+        if completeness is not None:
+            completeness.expansion_attempted()
+            completeness.expansion_failed()
+        return []
+
+    with (
+        patch.object(
+            build_theme_lineage,
+            "request_with_retry",
+            return_value=_mk_s2_search_response([seed]),
+        ),
+        patch.object(build_theme_lineage, "fetch_related", failing_fetch_related),
+    ):
+        out_path = build_theme_lineage.build_theme_lineage(
+            theme="Retrieval Augmented Generation",
+            depth=1,
+            seeds_count=3,
+            width=4,
+            since_year=None,
+        )
+
+    completeness_meta = json.loads(out_path.read_text())["meta"]["completeness"]
+    assert completeness_meta["expansions_failed"] > 0
+    assert completeness_meta["complete"] is False
+
+
+def test_enrich_github_stars_does_not_cache_an_api_outage(tmp_path, monkeypatch):
+    """Regression test: search() and fetch() returned None for a 403/429
+    and for "no such repo" alike, so a throttled GitHub was written to
+    the cache as a verified "0 stars, no repository" with a fresh
+    timestamp — suppressing the retry for the whole TTL window."""
+    from paperpilot.utils.github import GitHubUnavailableError
+
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    cache_path = tmp_path / build_theme_lineage._GITHUB_CACHE_FILE
+    nodes = {
+        "p1": {"id": "p1", "github_stars": 0, "arxiv_id": "2304.02643", "title": "Some Paper"},
+    }
+
+    def throttled(*_a, **_kw):
+        raise GitHubUnavailableError("rate limited (status=403)")
+
+    enriched = build_theme_lineage._enrich_github_stars(
+        nodes, curated={}, search_repo=throttled, fetch_stars=throttled
+    )
+
+    assert enriched == 0
+    cached = json.loads(cache_path.read_text()) if cache_path.exists() else {}
+    assert "2304.02643" not in cached
+
+
+def test_enrich_github_stars_caches_a_genuine_absence(tmp_path, monkeypatch):
+    """The other half: GitHub answered and the answer is "no public
+    repository". That is a fact, and caching it is what stops a weekly
+    re-query for every paper without code."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    cache_path = tmp_path / build_theme_lineage._GITHUB_CACHE_FILE
+    nodes = {
+        "p1": {"id": "p1", "github_stars": 0, "arxiv_id": "2304.02643", "title": "Some Paper"},
+    }
+
+    build_theme_lineage._enrich_github_stars(
+        nodes,
+        curated={},
+        search_repo=lambda *_a, **_kw: None,
+        fetch_stars=lambda *_a, **_kw: None,
+    )
+
+    cached = json.loads(cache_path.read_text())
+    assert cached["2304.02643"]["stars"] == 0
+
+
+@pytest.mark.parametrize(
+    "exercised",
+    ["bfs_references", "descendants_citations", "cross_node"],
+)
+def test_each_theme_expansion_path_forwards_the_ledger(exercised):
+    """Pin the three paths INDIVIDUALLY.
+
+    The end-to-end wiring test passes as long as any one of them
+    forwards the ledger, so it cannot catch a partial revert. Each path
+    is driven here on its own."""
+    from paperpilot.scripts._fetch_state import BuildCompleteness
+
+    completeness = BuildCompleteness()
+
+    # The stub must only react to the kind under test. _run_bfs_and_
+    # descendants calls fetch_related for BOTH references and citations,
+    # so a stub that counts either one lets a revert of just one of them
+    # pass on the strength of the other.
+    kind_under_test = {
+        "bfs_references": "references",
+        "descendants_citations": "citations",
+        "cross_node": "references",
+    }[exercised]
+
+    def failing(_sid, kind, _limit, *, completeness=None):
+        if kind != kind_under_test:
+            return []
+        if completeness is not None:
+            completeness.expansion_attempted()
+            completeness.expansion_failed()
+        return []
+
+    seed = {
+        "paperId": "p1",
+        "title": "Seed",
+        "year": 2020,
+        "citationCount": 1,
+        "authors": [],
+        "abstract": "a" * 80,
+        "externalIds": {},
+    }
+
+    with patch.object(build_theme_lineage, "fetch_related", failing):
+        if exercised == "cross_node":
+            build_theme_lineage._add_cross_node_edges(
+                {"p1": dict(seed, id="p1")},
+                [],
+                completeness=completeness,
+            )
+        else:
+            # _run_bfs_and_descendants drives both the ancestor BFS and
+            # the descendants pass; depth=1 reaches both.
+            build_theme_lineage._run_bfs_and_descendants(
+                [seed],
+                depth=1,
+                width=4,
+                max_seed_cite=10**9,
+                provider=None,
+                llm_strict="off",
+                completeness=completeness,
+            )
+
+    assert completeness.expansions_attempted > 0, f"{exercised} never called fetch_related"
+    assert completeness.expansions_failed > 0, f"{exercised} did not forward the ledger"
+
+
+# ---- OpenAlex seed discovery: the Works inside the array count too ----
+
+
+@pytest.mark.parametrize(
+    "bad",
+    [{}, {"id": ""}, {"id": "   "}, {"id": 7}, "not-a-dict"],
+    ids=["no-id", "empty-id", "blank-id", "non-string-id", "non-dict"],
+)
+def test_discover_seeds_via_openalex_rejects_a_work_without_a_usable_id(bad):
+    """Validating the `results` container was not enough: the caller
+    keys seeds by `id`, so `{"results": [{}]}` produced an empty seed
+    set and a theme that would publish as legitimately empty."""
+    from paperpilot.scripts._fetch_state import BuildCompleteness
+
+    resp = SimpleNamespace(status_code=200, json=lambda: {"results": [bad]})
+    completeness = BuildCompleteness()
+    with patch.object(build_theme_lineage, "request_with_retry", return_value=resp):
+        seeds = build_theme_lineage.discover_seeds_via_openalex(
+            query="Chain of Thought", top_n=5, since_year=2018, completeness=completeness
+        )
+    assert seeds == []
+    assert not completeness.subject_complete
+
+
+def test_discover_seeds_via_openalex_accepts_works_that_carry_ids():
+    from paperpilot.scripts._fetch_state import BuildCompleteness
+
+    works = [{"id": "https://openalex.org/W1"}, {"id": "https://openalex.org/W2"}]
+    resp = SimpleNamespace(status_code=200, json=lambda: {"results": works})
+    completeness = BuildCompleteness()
+    with patch.object(build_theme_lineage, "request_with_retry", return_value=resp):
+        seeds = build_theme_lineage.discover_seeds_via_openalex(
+            query="Chain of Thought", top_n=5, since_year=2018, completeness=completeness
+        )
+    assert seeds == works
+    assert completeness.subject_complete
+
+
+@pytest.mark.parametrize(
+    "body",
+    [{}, {"title": "no refs key"}],
+    ids=["empty-object", "other-keys-only"],
+)
+def test_fetch_related_via_openalex_raises_when_referenced_works_is_absent(body):
+    """The request selects `referenced_works` explicitly, so a response
+    without the key is broken. Rounding it to [] froze the loss into a
+    relation cache that has no expiry."""
+    with patch.object(
+        build_theme_lineage,
+        "request_with_retry",
+        return_value=SimpleNamespace(status_code=200, json=lambda: body),
+    ):
+        with pytest.raises(build_theme_lineage.OpenAlexTransientError):
+            build_theme_lineage.fetch_related_via_openalex("W123", "references", limit=5)
+
+
+def test_fetch_related_via_openalex_treats_null_referenced_works_as_empty():
+    """`null` is OpenAlex's own spelling for "this Work cites nothing":
+    the key is present, so the answer was given."""
+    with patch.object(
+        build_theme_lineage,
+        "request_with_retry",
+        return_value=SimpleNamespace(status_code=200, json=lambda: {"referenced_works": None}),
+    ):
+        assert build_theme_lineage.fetch_related_via_openalex("W123", "references", limit=5) == []
+
+
+def test_enrich_github_stars_does_not_cache_after_an_unexpected_error(tmp_path, monkeypatch):
+    """Caching "no repo" because we do not recognise the error is the
+    same mistake as caching it because of a 503 — the paper is then
+    suppressed for the whole TTL window."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    nodes = {"p1": {"id": "p1", "arxiv_id": "2401.00002", "github_stars": 0}}
+
+    def boom(*_a, **_kw):
+        raise RuntimeError("unparseable body")
+
+    enriched = build_theme_lineage._enrich_github_stars(
+        nodes,
+        curated={},
+        search_repo=boom,
+        fetch_stars=MagicMock(return_value=None),
+    )
+    assert enriched == 0
+    assert not (tmp_path / "github_stars.json").exists() or json.loads(
+        (tmp_path / "github_stars.json").read_text()
+    ) == {}
+
+
+def test_enrich_github_stars_does_not_cache_when_the_stars_call_errors(tmp_path, monkeypatch):
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    nodes = {"p1": {"id": "p1", "arxiv_id": "2401.00003", "github_stars": 0}}
+
+    def boom(*_a, **_kw):
+        raise RuntimeError("unparseable body")
+
+    build_theme_lineage._enrich_github_stars(
+        nodes,
+        curated={"2401.00003": "x/y"},
+        search_repo=MagicMock(return_value=None),
+        fetch_stars=boom,
+    )
+    cache_path = tmp_path / "github_stars.json"
+    assert not cache_path.exists() or json.loads(cache_path.read_text()) == {}
+
+
+# ---- the elements are part of the answer (round 3, pass 6) ----
+
+
+@pytest.mark.parametrize(
+    "wid",
+    ["https://openalex.org/X999", "https://openalex.org/", "not-a-url", 7, None],
+    ids=["wrong-prefix", "empty-tail", "no-url", "int", "null"],
+)
+def test_discover_seeds_via_openalex_rejects_an_id_the_consumer_cannot_parse(wid):
+    """`_work_to_paper_dict` needs a `W...` short id, so "non-empty
+    string" was the wrong predicate: a syntactically wrong id passed
+    and was then dropped one level down, leaving a clean ledger and an
+    empty seed set."""
+    from paperpilot.scripts._fetch_state import BuildCompleteness
+
+    resp = SimpleNamespace(status_code=200, json=lambda: {"results": [{"id": wid}]})
+    completeness = BuildCompleteness()
+    with patch.object(build_theme_lineage, "request_with_retry", return_value=resp):
+        seeds = build_theme_lineage.discover_seeds_via_openalex(
+            query="Chain of Thought", top_n=5, since_year=2018, completeness=completeness
+        )
+    assert seeds == []
+    assert not completeness.subject_complete
+
+
+def test_discover_seeds_via_openalex_keeps_an_untitled_work_a_plain_filtered_record():
+    """The other half. OpenAlex genuinely carries untitled Works, so
+    rejecting the page over one would invent an outage; the Work is
+    still dropped downstream by `_work_to_paper_dict`."""
+    from paperpilot.scripts._fetch_state import BuildCompleteness
+
+    works = [{"id": "https://openalex.org/W1"}]
+    resp = SimpleNamespace(status_code=200, json=lambda: {"results": works})
+    completeness = BuildCompleteness()
+    with patch.object(build_theme_lineage, "request_with_retry", return_value=resp):
+        seeds = build_theme_lineage.discover_seeds_via_openalex(
+            query="Chain of Thought", top_n=5, since_year=2018, completeness=completeness
+        )
+    assert seeds == works
+    assert completeness.subject_complete
+    assert build_theme_lineage._work_to_paper_dict(works[0]) is None
+
+
+def test_fetch_openalex_works_by_ids_counts_a_malformed_work_as_a_lost_chunk():
+    """A chunk answering {"results": [{}]} used to look like a fully
+    successful lookup that simply found nothing, and the caller caches
+    that answer forever."""
+    resp = SimpleNamespace(status_code=200, json=lambda: {"results": [{}]})
+    with patch.object(build_theme_lineage, "request_with_retry", return_value=resp):
+        with pytest.raises(build_theme_lineage.OpenAlexTransientError):
+            build_theme_lineage._fetch_openalex_works_by_ids(["W1"])
+
+
+def test_fetch_openalex_works_by_ids_accepts_a_genuinely_empty_page():
+    resp = SimpleNamespace(status_code=200, json=lambda: {"results": []})
+    with patch.object(build_theme_lineage, "request_with_retry", return_value=resp):
+        assert build_theme_lineage._fetch_openalex_works_by_ids(["W1"]) == []
+
+
+def test_fetch_related_via_openalex_rejects_a_malformed_citing_work():
+    resp = SimpleNamespace(status_code=200, json=lambda: {"results": [{}]})
+    with patch.object(build_theme_lineage, "request_with_retry", return_value=resp):
+        with pytest.raises(build_theme_lineage.OpenAlexTransientError):
+            build_theme_lineage.fetch_related_via_openalex("W123", "citations", limit=5)
+
+
+def test_fetch_related_via_openalex_rejects_a_malformed_referenced_works_entry():
+    resp = SimpleNamespace(status_code=200, json=lambda: {"referenced_works": [123]})
+    with patch.object(build_theme_lineage, "request_with_retry", return_value=resp):
+        with pytest.raises(build_theme_lineage.OpenAlexTransientError):
+            build_theme_lineage.fetch_related_via_openalex("W123", "references", limit=5)
+
+
+def test_resolve_openalex_to_s2_keeps_an_unmatched_null_but_rejects_a_broken_entry():
+    """/paper/batch writes null in place for an id it does not know —
+    the one legitimate hole. A malformed dict is not: dropping it
+    handed `_top_up_via_openalex` a partial seed set it used as if it
+    were complete."""
+    from paperpilot.scripts._fetch_state import BuildCompleteness
+
+    works = [{"doi": "https://doi.org/10.1/a"}, {"doi": "https://doi.org/10.1/b"}]
+
+    good = SimpleNamespace(
+        status_code=200, json=lambda: [{"paperId": "P1", "title": "Good"}, None]
+    )
+    clean = BuildCompleteness()
+    with patch.object(build_theme_lineage, "request_with_retry", return_value=good):
+        resolved = build_theme_lineage._resolve_openalex_to_s2(works, completeness=clean)
+    assert [p["paperId"] for p in resolved] == ["P1"]
+    assert clean.subject_complete
+
+    broken = SimpleNamespace(
+        status_code=200, json=lambda: [{"paperId": "P1", "title": "Good"}, {}]
+    )
+    dirty = BuildCompleteness()
+    with patch.object(build_theme_lineage, "request_with_retry", return_value=broken):
+        assert build_theme_lineage._resolve_openalex_to_s2(works, completeness=dirty) == []
+    assert not dirty.subject_complete
+
+
+def test_s2_seed_search_rejects_a_partially_broken_page(tmp_path, monkeypatch):
+    """"Fail only when EVERY entry is broken" let a partial page
+    through: one good element was enough to publish the rest of the
+    page's losses as a smaller, plausible result."""
+    from paperpilot.scripts._fetch_state import BuildCompleteness
+
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    payload = {"data": [{"paperId": "P1", "title": "Good"}, {}]}
+    resp = SimpleNamespace(status_code=200, json=lambda: payload)
+    completeness = BuildCompleteness()
+    with patch.object(build_theme_lineage, "request_with_retry", return_value=resp):
+        seeds = build_theme_lineage._search_one_keyword_via_s2(
+            keyword="chain of thought", since_year=2018, completeness=completeness
+        )
+    assert seeds == []
+    assert not completeness.subject_complete
+
+
+def test_s2_seed_search_still_filters_a_hit_without_a_title(tmp_path, monkeypatch):
+    """A hit with no title cannot become a node, but that is a fact
+    about the record rather than a broken page."""
+    from paperpilot.scripts._fetch_state import BuildCompleteness
+
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    payload = {"data": [{"paperId": "P1", "title": "Good"}, {"paperId": "P2"}]}
+    resp = SimpleNamespace(status_code=200, json=lambda: payload)
+    completeness = BuildCompleteness()
+    with patch.object(build_theme_lineage, "request_with_retry", return_value=resp):
+        seeds = build_theme_lineage._search_one_keyword_via_s2(
+            keyword="chain of thought", since_year=2018, completeness=completeness
+        )
+    assert [p["paperId"] for p in seeds] == ["P1"]
+    assert completeness.subject_complete
+
+
+def test_s2_seed_cache_with_one_malformed_entry_is_a_miss(tmp_path, monkeypatch):
+    """Keeping the good entries out of a partly-corrupt cache file
+    would replay the partial-page bug from disk instead of from the
+    network."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    cache = build_theme_lineage._seed_cache_path("chain of thought", 2018)
+    cache.parent.mkdir(parents=True, exist_ok=True)
+    cache.write_text(json.dumps([{"paperId": "P1", "title": "Cached"}, {}]))
+
+    live = {"data": [{"paperId": "P9", "title": "Fresh"}]}
+    resp = SimpleNamespace(status_code=200, json=lambda: live)
+    with patch.object(build_theme_lineage, "request_with_retry", return_value=resp) as req:
+        seeds = build_theme_lineage._search_one_keyword_via_s2(
+            keyword="chain of thought", since_year=2018
+        )
+    assert [p["paperId"] for p in seeds] == ["P9"]
+    assert req.call_count == 1
+
+
+def test_resolve_openalex_to_s2_rejects_a_short_batch_page():
+    """/paper/batch answers positionally, writing null for an id it does
+    not know, so a short array is a truncated page rather than a
+    smaller answer."""
+    from paperpilot.scripts._fetch_state import BuildCompleteness
+
+    works = [{"doi": "https://doi.org/10.1/a"}, {"doi": "https://doi.org/10.1/b"}]
+    resp = SimpleNamespace(status_code=200, json=lambda: [{"paperId": "P1", "title": "Good"}])
+    completeness = BuildCompleteness()
+    with patch.object(build_theme_lineage, "request_with_retry", return_value=resp):
+        assert build_theme_lineage._resolve_openalex_to_s2(works, completeness=completeness) == []
+    assert not completeness.subject_complete
+
+
+@pytest.mark.parametrize("bad_id", [123, True, "", "   "])
+def test_s2_seed_search_rejects_a_non_string_paper_id(bad_id, tmp_path, monkeypatch):
+    """`bool(paperId)` let 123 and True through while the consumer
+    (`_resolve_and_dedup_seeds`) requires a string and dropped them."""
+    from paperpilot.scripts._fetch_state import BuildCompleteness
+
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    payload = {"data": [{"paperId": bad_id, "title": "T"}]}
+    resp = SimpleNamespace(status_code=200, json=lambda: payload)
+    completeness = BuildCompleteness()
+    with patch.object(build_theme_lineage, "request_with_retry", return_value=resp):
+        seeds = build_theme_lineage._search_one_keyword_via_s2(
+            keyword="chain of thought", since_year=2018, completeness=completeness
+        )
+    assert seeds == []
+    assert not completeness.subject_complete
+
+
+def test_fetch_related_via_openalex_uses_the_normalized_id_in_the_request():
+    """Validating with the shared predicate and then forwarding the raw
+    argument reintroduces the drift the predicate exists to remove:
+    `"W123 "` cleared the guard and was spliced into the request URL."""
+    captured: list[str] = []
+
+    def _capture(method, url, **kwargs):
+        captured.append(url)
+        return SimpleNamespace(status_code=200, json=lambda: {"referenced_works": []})
+
+    with patch.object(build_theme_lineage, "request_with_retry", side_effect=_capture):
+        build_theme_lineage.fetch_related_via_openalex("W123 ", "references", limit=5)
+    assert captured and captured[0].endswith("/W123")
+
+
+def test_fetch_openalex_works_by_ids_normalizes_the_ids_it_sends():
+    captured: list[dict] = []
+
+    def _capture(method, url, **kwargs):
+        captured.append(kwargs.get("params") or {})
+        return SimpleNamespace(status_code=200, json=lambda: {"results": []})
+
+    with patch.object(build_theme_lineage, "request_with_retry", side_effect=_capture):
+        build_theme_lineage._fetch_openalex_works_by_ids(["W1 ", "https://openalex.org/W2"])
+    assert captured and captured[0]["filter"] == "openalex:W1|W2"
+
+
+@pytest.mark.parametrize(
+    "patch_work",
+    [{"ids": []}, {"primary_location": []}, {"locations": "x"}, {"authorships": "x"}],
+    ids=["ids-list", "primary-list", "locations-non-list", "authorships-non-list"],
+)
+def test_discover_seeds_rejects_a_work_whose_blocks_are_the_wrong_type(patch_work):
+    """`_work_to_paper_dict` does `work.get("ids") or {}` then `.get()`,
+    so a valid id with `ids: []` used to reach an AttributeError that
+    crossed the fail-safe boundary and aborted the whole build."""
+    from paperpilot.scripts._fetch_state import BuildCompleteness
+
+    work = {"id": "https://openalex.org/W1", "title": "T"}
+    work.update(patch_work)
+    resp = SimpleNamespace(status_code=200, json=lambda: {"results": [work]})
+    completeness = BuildCompleteness()
+    with patch.object(build_theme_lineage, "request_with_retry", return_value=resp):
+        seeds = build_theme_lineage.discover_seeds_via_openalex(
+            query="Chain of Thought", top_n=5, since_year=2018, completeness=completeness
+        )
+    assert seeds == []
+    assert not completeness.subject_complete
+
+
+def test_abstract_decode_is_bounded_and_rejects_boolean_positions():
+    """`{"word": [1000000000]}` is cheap to send and used to allocate a
+    list of that length. `isinstance(True, int)` is also True in
+    Python, so a boolean position indexed slot 1."""
+    decode = build_theme_lineage._decode_abstract_inverted_index
+    out = decode({"word": [1_000_000_000]})
+    assert len(out.split(" ")) <= build_theme_lineage._ABSTRACT_MAX_POSITION + 1
+    assert decode({"word": [True]}) == ""
+    assert decode({"a": [0], "b": [1]}) == "a b"

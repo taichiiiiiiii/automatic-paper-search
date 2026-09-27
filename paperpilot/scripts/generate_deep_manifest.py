@@ -30,6 +30,24 @@ from ._lineage_contract import (
 _log = logging.getLogger(__name__)
 
 _FILENAME_RE = re.compile(r"^deep-(?P<id>\d{4}\.\d{4,5}(?:v\d+)?)\.json$")
+class UnreadableArtifactError(RuntimeError):
+    """A deep artifact exists but could not be read at all.
+
+    Distinct from an artifact we read and then rejected on its content:
+    that is a stated judgement, this is a silent omission.
+    """
+
+
+class UnreadableCatalogError(RuntimeError):
+    """papers.json could not be read, so no artifact can be validated.
+
+    Every deep entry is checked against the catalog, so an empty
+    identity set is not "nothing qualifies" — it is "nothing could be
+    judged", and the resulting manifest would be empty for a reason
+    that has nothing to do with the artifacts.
+    """
+
+
 _MANIFEST_NAME = "deep-manifest.json"
 _EMPTY_GENERATED_AT = "1970-01-01T00:00:00Z"
 
@@ -65,8 +83,12 @@ def _entry_from_file(
     try:
         payload = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
-        _log.warning("skip %s: unreadable (%s)", path.name, exc)
-        return None
+        # NOT a skip. Every other rejection below is a judgement about
+        # the artifact's content; this is the one where no judgement was
+        # possible, so omitting it would publish a manifest missing a
+        # deep tree for no stated reason — the same hole the themes
+        # manifest already closes.
+        raise UnreadableArtifactError(f"{path}: {exc}") from exc
     if not isinstance(payload, dict) or payload.get("schema_version") != LINEAGE_ARTIFACT_VERSION:
         _log.warning("skip %s: not %s", path.name, LINEAGE_ARTIFACT_VERSION)
         return None
@@ -140,11 +162,24 @@ def _load_catalog_identity(docs_dir: Path) -> tuple[set[str], dict[str, str]]:
     row or silently dropping the ambiguity.
     """
 
-    try:
-        rows = json.loads((docs_dir / "papers.json").read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
-        _log.warning("catalog unavailable in %s (%s)", docs_dir, exc)
+    catalog_path = docs_dir / "papers.json"
+    if not catalog_path.exists():
+        # A conference directory with no catalog at all is a real state
+        # (nothing collected yet), not a read failure.
+        _log.warning("no catalog in %s", docs_dir)
         return set(), {}
+    try:
+        rows = json.loads(catalog_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        # The catalog EXISTS but will not parse. Returning empty
+        # identity sets here made every deep artifact fail its catalog
+        # check, so a truncated file caught mid-write published an EMPTY
+        # deep-manifest.json and the whole deep-lineage section vanished
+        # from the site with only a warning in the log.
+        raise UnreadableCatalogError(
+            f"conference catalog in {docs_dir} could not be read ({exc}); refusing to "
+            "build a manifest that would omit every deep artifact"
+        ) from exc
     if not isinstance(rows, list):
         raise ValueError("conference catalog must be an array")
 
@@ -188,19 +223,30 @@ def generate_manifest(docs_dir: Path) -> DeepManifest:
     catalog_ids, catalog_arxiv_by_paper = _load_catalog_identity(docs_dir)
     entries: list[ManifestEntry] = []
     timestamps: list[str] = []
+    unreadable: list[str] = []
     if docs_dir.is_dir():
         for path in sorted(docs_dir.glob("deep-*.json")):
             if path.name == _MANIFEST_NAME:
                 continue
-            result = _entry_from_file(
-                path,
-                catalog_ids=catalog_ids,
-                catalog_arxiv_by_paper=catalog_arxiv_by_paper,
-            )
+            try:
+                result = _entry_from_file(
+                    path,
+                    catalog_ids=catalog_ids,
+                    catalog_arxiv_by_paper=catalog_arxiv_by_paper,
+                )
+            except UnreadableArtifactError as exc:
+                unreadable.append(str(exc))
+                continue
             if result is not None:
                 entry, generated_at = result
                 entries.append(entry)
                 timestamps.append(generated_at)
+
+    if unreadable:
+        raise UnreadableArtifactError(
+            "refusing to build a manifest that silently omits "
+            f"{len(unreadable)} unreadable artifact(s):\n  " + "\n  ".join(unreadable)
+        )
 
     entries.sort(key=lambda entry: (entry["paper_id"], entry["arxiv_id"]))
     manifest = DeepManifest(

@@ -71,6 +71,11 @@ from paperpilot.scripts._common import (  # noqa: E402
     slug_to_venue_label,
     validate_conference_slug,
 )
+from paperpilot.scripts._fetch_state import (  # noqa: E402
+    BuildCompleteness,
+    IncompleteFetchError,
+    expansion_gate_blocks,
+)
 from paperpilot.scripts._lineage_classify import derive_relation  # noqa: E402
 from paperpilot.scripts._lineage_contract import (  # noqa: E402
     CLASSIFICATION_METHODS,
@@ -82,6 +87,13 @@ from paperpilot.scripts._lineage_contract import (  # noqa: E402
 )
 from paperpilot.utils.http import request_with_retry  # noqa: E402
 from paperpilot.utils.logger import get_logger, setup_logging  # noqa: E402
+from paperpilot.utils.payload import (  # noqa: E402
+    first_unusable,
+    s2_cached_neighbour_ok,
+    s2_paper_shape,
+    s2_relation_entry_ok,
+)
+from paperpilot.utils.payload import s2_paper_id as _resolved_paper_id  # noqa: E402
 
 logger = get_logger(__name__)
 
@@ -277,7 +289,7 @@ _S2_FIELDS_REL = (
 )
 
 
-class OpenAlexTransientError(RuntimeError):
+class OpenAlexTransientError(IncompleteFetchError):
     """The OpenAlex counterpart of S2TransientError: this result must not
     be written to the lineage cache.
 
@@ -299,7 +311,7 @@ class OpenAlexTransientError(RuntimeError):
         self.partial: list = partial if partial is not None else []
 
 
-class S2TransientError(RuntimeError):
+class S2TransientError(IncompleteFetchError):
     """Raised when an S2 request failed at the transport level (network
     error / timeout / 5xx with all of request_with_retry's retries
     exhausted).
@@ -347,20 +359,47 @@ def _s2_get(url: str) -> dict[str, Any] | None:
         try:
             payload = resp.json()
         except ValueError:
-            return None
+            # A 200 whose body will not parse is a broken response, not
+            # "no such paper". Returning None here let the conference and
+            # deep builders drop a focus paper without recording that
+            # anything had failed.
+            raise S2TransientError(f"S2 returned a malformed body: {url}") from None
         # S2 always returns a JSON object for the endpoints we call; narrowing
         # here keeps the return type honest for mypy and guards against the
         # rare case of an error wrapper coming back as a top-level list.
-        return payload if isinstance(payload, dict) else None
-    # 404 / 4xx / non-retryable → treat as "not found", silently skip.
-    return None
+        if not isinstance(payload, dict):
+            raise S2TransientError(f"S2 returned a non-object body: {url}")
+        return payload
+    if resp.status_code == 404:
+        # The one status that is a fact about the DATA: S2 has no paper
+        # under this id. Everything else in the 4xx range is a fact
+        # about our REQUEST or our credentials — a 400 bad query, a 401
+        # missing key, a 403 revoked key, a 422 rejected filter — and
+        # recording any of those as "no such paper" is how an outage
+        # became a permanent gap. The same split the GitHub helper
+        # already draws.
+        return None
+    raise S2TransientError(
+        f"S2 answered {resp.status_code}, which says nothing about the data: {url}"
+    )
 
 
-def fetch_paper_by_arxiv(arxiv_id: str) -> dict[str, Any] | None:
+def fetch_paper_by_arxiv(
+    arxiv_id: str, *, completeness: BuildCompleteness | None = None
+) -> dict[str, Any] | None:
     cache = CACHE_DIR / f"paper_{arxiv_id}.json"
     if cache.exists():
-        cached = json.loads(cache.read_text())
-        return cached if isinstance(cached, dict) else None
+        try:
+            cached = json.loads(cache.read_text())
+        except ValueError:
+            cached = None
+        if s2_paper_shape(cached, require_title=True) is not None:
+            return cached
+        # An entry written before the id was validated, or a truncated
+        # file, must not short-circuit the lookup: the cache is a cheap
+        # optimisation, not a reason to hand back a paper the rest of
+        # the build cannot key on.
+        logger.warning("s2: ignoring unusable cache entry for arXiv:%s", arxiv_id)
     url = (
         f"https://api.semanticscholar.org/graph/v1/paper/arXiv:{arxiv_id}?fields={_S2_FIELDS_PAPER}"
     )
@@ -371,6 +410,24 @@ def fetch_paper_by_arxiv(arxiv_id: str) -> dict[str, Any] | None:
         # build — but do NOT cache the failure as "no such paper" (#401),
         # or a transient outage becomes a permanent data gap on disk.
         logger.warning("s2: %s", e)
+        if completeness is not None:
+            # This function resolves FOCUS papers. A None here is
+            # indistinguishable from "no such paper", and skipping the
+            # paper silently is how an outage shrank the focus set.
+            completeness.subject_failed(f"arXiv:{arxiv_id} lookup failed: {e}")
+        time.sleep(S2_RATE_DELAY)
+        return None
+    if data is not None and s2_paper_shape(data, require_title=True) is None:
+        # A 200 that parses to an object without a usable paperId is a
+        # broken response, not "no such paper": the endpoint always
+        # echoes the id it resolved. Returning it let the caller skip
+        # the Oral as a plain miss, with the ledger still reporting the
+        # build complete.
+        logger.warning("s2: arXiv:%s returned an object with no usable paperId", arxiv_id)
+        if completeness is not None:
+            completeness.subject_failed(
+                f"arXiv:{arxiv_id} lookup returned an object with no usable paperId"
+            )
         time.sleep(S2_RATE_DELAY)
         return None
     if data:
@@ -379,8 +436,20 @@ def fetch_paper_by_arxiv(arxiv_id: str) -> dict[str, Any] | None:
     return data
 
 
-def fetch_related(s2_id: str, kind: str, limit: int) -> list[dict[str, Any]]:
+def fetch_related(
+    s2_id: str,
+    kind: str,
+    limit: int,
+    *,
+    completeness: BuildCompleteness | None = None,
+) -> list[dict[str, Any]]:
     """kind = 'references' or 'citations'.
+
+    This is the one place every builder's graph EXPANSION passes
+    through, so it is where expansion attempts and losses are tallied.
+    A loss here thins the graph without misstating what the artifact is
+    about, so it is counted rather than raised; the caller decides
+    whether the result is too degraded to publish.
 
     Dispatches by paperId prefix (#209 S2-free Phase 1):
 
@@ -398,8 +467,25 @@ def fetch_related(s2_id: str, kind: str, limit: int) -> list[dict[str, Any]]:
     # disk layer — keeps re-runs cheap regardless of data source.
     cache = CACHE_DIR / f"{kind}_{s2_id}.json"
     if cache.exists():
-        cached = json.loads(cache.read_text())
-        return cached if isinstance(cached, list) else []
+        # The cache must clear the same bar as a live response. An entry
+        # written by an older build can hold `[{}]`, which reads back as
+        # a perfectly successful "no relations", never touches the
+        # network, and never reaches the ledger — so the publication
+        # gate sees a clean build shrinking a good artifact. A truncated
+        # file is the same story with a JSONDecodeError that the
+        # cross-node pass swallows.
+        try:
+            cached = json.loads(cache.read_text())
+        except (OSError, ValueError):
+            cached = None
+        if isinstance(cached, list) and not first_unusable(cached, s2_cached_neighbour_ok):
+            return cached
+        logger.warning("s2: ignoring unusable relation cache %s", cache.name)
+
+    # A cache hit is not an attempt: it neither reaches the network nor
+    # can fail. Counting it would dilute the failure ratio on re-runs.
+    if completeness is not None:
+        completeness.expansion_attempted()
 
     if s2_id.startswith("openalex:"):
         # Lazy import to avoid a circular dependency: build_theme_lineage
@@ -423,6 +509,8 @@ def fetch_related(s2_id: str, kind: str, limit: int) -> list[dict[str, Any]]:
                 len(e.partial),
                 e,
             )
+            if completeness is not None:
+                completeness.expansion_failed()
             return e.partial
         cache.parent.mkdir(parents=True, exist_ok=True)
         cache.write_text(json.dumps(items, ensure_ascii=False, indent=2))
@@ -433,21 +521,66 @@ def fetch_related(s2_id: str, kind: str, limit: int) -> list[dict[str, Any]]:
         f"?fields={_S2_FIELDS_REL}&limit={min(limit * 4, 100)}"
     )
     try:
-        data = _s2_get(url) or {}
+        data = _s2_get(url)
     except S2TransientError as e:
         # Fail-safe (CLAUDE.md): skip this paper's references/citations,
         # don't crash the whole BFS — but do NOT cache the failure as "0
         # references" (#401), or a transient S2 outage becomes a
         # permanent, silent data gap that persists across every re-run.
         logger.warning("s2: %s", e)
+        if completeness is not None:
+            completeness.expansion_failed()
         time.sleep(S2_RATE_DELAY)
         return []
+    if data is None:
+        # Definitive 4xx: S2 has no such paper, so it genuinely has no
+        # neighbours. `_s2_get(url) or {}` used to erase this distinction
+        # and the envelope check below then read it as a broken response.
+        data = {"data": []}
     items = []
     inner_key = "citedPaper" if kind == "references" else "citingPaper"
-    # `or []` not just default arg: S2 occasionally returns {"data": null}
-    # for papers whose neighbour list is empty — `.get("data", [])` would
-    # then yield None and crash the loop.
-    for entry in data.get("data") or []:
+    # An envelope without a `data` ARRAY is a broken response, not a
+    # paper with no neighbours: S2 (or a proxy) answers 200 with
+    # {"error": ...} during maintenance, and treating that as an empty
+    # list both hid the failure from the ledger and froze the empty
+    # result in a cache that never expires. {"data": null} is S2's own
+    # spelling for "no neighbours" and stays a legitimate empty.
+    entries = data.get("data")
+    if entries is None:
+        entries = []
+    elif not isinstance(entries, list):
+        logger.warning("s2: %s/%s returned a non-array data field", s2_id, kind)
+        if completeness is not None:
+            completeness.expansion_failed()
+        time.sleep(S2_RATE_DELAY)
+        return []
+    if not entries and "data" not in data:
+        logger.warning("s2: %s/%s returned an envelope with no data field", s2_id, kind)
+        if completeness is not None:
+            completeness.expansion_failed()
+        time.sleep(S2_RATE_DELAY)
+        return []
+    # The entries are part of the answer too. `{"data": ["x"]}` used to
+    # raise AttributeError straight through the fail-safe boundary, and
+    # `{"data": [{}]}` was worse: it collapsed to "no relations" and was
+    # written to a cache that never expires.
+    bad = first_unusable(entries, lambda e: s2_relation_entry_ok(e, inner_key))
+    if bad is not None:
+        index, item = bad
+        logger.warning(
+            "s2: %s/%s returned a malformed entry at index %d (%s)",
+            s2_id,
+            kind,
+            index,
+            type(item).__name__,
+        )
+        if completeness is not None:
+            completeness.expansion_failed()
+        time.sleep(S2_RATE_DELAY)
+        return []
+    for entry in entries:
+        # A neighbour with no title cannot become a node, but that is a
+        # fact about the record rather than a broken page.
         p = entry.get(inner_key)
         if p and p.get("paperId") and p.get("title"):
             # Lift the entry-level isInfluential flag onto a *copy* of the
@@ -612,10 +745,10 @@ def _require_s2_focus_identity(focus: object, requested_arxiv_id: str) -> str:
 
     if not isinstance(focus, dict):
         raise ValueError("Semantic Scholar focus response must be an object")
-    paper_id = focus.get("paperId")
+    paper_id = _resolved_paper_id(focus)
     external_ids = focus.get("externalIds")
     raw_arxiv_id = external_ids.get("ArXiv") if isinstance(external_ids, dict) else None
-    if not isinstance(paper_id, str) or not paper_id.strip() or not isinstance(raw_arxiv_id, str):
+    if paper_id is None or not isinstance(raw_arxiv_id, str):
         raise ValueError("Semantic Scholar focus is missing paperId or externalIds.ArXiv")
     try:
         _, resolved_arxiv_id = normalize_alias("arxiv", raw_arxiv_id)
@@ -928,7 +1061,16 @@ def build(
     conference: str = "iclr-2026",
     venue_override: str | None = None,
     generated_at: str | None = None,
+    completeness: BuildCompleteness | None = None,
 ) -> dict:
+    """Build the conference lineage graph.
+
+    ``completeness`` records Orals whose S2 lookup failed (subject
+    resolution — a hard gate for the caller) and lost reference/citation
+    pages (counted, not fatal). Without it a transient S2 outage silently
+    dropped focus papers and the survivors were published as the
+    conference's complete lineage.
+    """
     papers_path, _ = resolve_paths(conference)
     venue_label = venue_override or derive_venue_label(conference)
 
@@ -990,7 +1132,7 @@ def build(
             arxiv_id,
             paper["title"][:60],
         )
-        focus_paper = fetch_paper_by_arxiv(arxiv_id)
+        focus_paper = fetch_paper_by_arxiv(arxiv_id, completeness=completeness)
         if not focus_paper:
             logger.warning("  S2 lookup failed for %s", arxiv_id)
             continue
@@ -1028,8 +1170,14 @@ def build(
         ]
         nodes[focus_id] = focus_node
 
-        parents = select_top(fetch_related(focus_id, "references", TOP_PARENTS * 4), TOP_PARENTS)
-        children = select_top(fetch_related(focus_id, "citations", TOP_CHILDREN * 4), TOP_CHILDREN)
+        parents = select_top(
+            fetch_related(focus_id, "references", TOP_PARENTS * 4, completeness=completeness),
+            TOP_PARENTS,
+        )
+        children = select_top(
+            fetch_related(focus_id, "citations", TOP_CHILDREN * 4, completeness=completeness),
+            TOP_CHILDREN,
+        )
         logger.info("  parents=%d children=%d", len(parents), len(children))
 
         for parent in parents:
@@ -1210,20 +1358,54 @@ def main():
         "--venue-override",
         help="Pretty venue label for focus nodes (default: upper-case slug, e.g. 'ICLR 2026')",
     )
+    parser.add_argument(
+        "--allow-incomplete",
+        dest="allow_incomplete",
+        action="store_true",
+        default=False,
+        help="Publish even when part of the reference/citation expansion failed and "
+        "the result is smaller than what is already published. Never overrides the "
+        "Oral-resolution gate.",
+    )
     args = parser.parse_args()
 
     setup_logging()  # CLI mode: surface logger.info to stderr.
 
+    completeness = BuildCompleteness()
     try:
         result = build(
             limit=args.limit,
             conference=args.conference,
             venue_override=args.venue_override,
+            completeness=completeness,
         )
     except RuntimeError as exc:
         print(f"error: {exc}", file=sys.stderr)
         sys.exit(3)
     _, output_path = resolve_paths(args.conference)
+
+    # Gates before the write. collect-weekly.yml backs the old file up
+    # and restores it when the new one has no nodes/edges, but that only
+    # catches a total wipe — a partial focus set sails straight through.
+    if not completeness.subject_complete:
+        print(
+            "incomplete build; published lineage left untouched: "
+            + completeness.subject_gate_message(),
+            file=sys.stderr,
+        )
+        sys.exit(4)
+    if not args.allow_incomplete:
+        blocked = expansion_gate_blocks(
+            completeness,
+            new_node_count=len(result["nodes"]),
+            new_edge_count=len(result.get("edges") or []),
+            published_path=output_path,
+        )
+        if blocked:
+            print(f"incomplete build; published lineage left untouched: {blocked}", file=sys.stderr)
+            sys.exit(4)
+
+    result.setdefault("meta", {})["completeness"] = completeness.as_meta()
     output_path.write_text(json.dumps(result, ensure_ascii=False, indent=2))
 
     print()

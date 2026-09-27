@@ -23,9 +23,14 @@ Add `--dry-run` to report what would be dropped without writing.
 from __future__ import annotations
 
 import argparse
+import fcntl
 import json
+import os
 import sys
+import tempfile
 from pathlib import Path
+
+from paperpilot.utils.payload import first_unusable
 
 ROOT = Path(__file__).resolve().parents[2]
 DOCS_DIR = ROOT / "docs"
@@ -57,34 +62,61 @@ def _cache_endpoints(key: str, value: object) -> tuple[str, str] | None:
     return (src, dst) if separator and src and dst else None
 
 
-def _collect_live_paper_ids() -> set[str]:
+def _collect_live_paper_ids() -> tuple[set[str], list[Path]]:
     """Walk every shipped lineage.json + deep-*.json under docs/ and
     collect every node.id string. This is the union of "papers the
     viewer might currently render"; classifications outside it are
-    eligible for removal."""
+    eligible for removal.
+
+    Returns (live_ids, unreadable_artifacts). An artifact that will not
+    parse contributes no ids, which would make every classification that
+    only it references look orphaned — and dropping is irreversible. The
+    caller must refuse to compact when the second element is non-empty
+    rather than deleting on the strength of an incomplete survey. A
+    truncated file is expected in normal operation: the lineage builders
+    write some artifacts with a plain write_text, so a concurrent read
+    can catch a partial file.
+    """
     live: set[str] = set()
-    for p in DOCS_DIR.rglob("lineage.json"):
+    unreadable: list[Path] = []
+
+    def _absorb(path: Path) -> None:
         try:
-            data = json.loads(p.read_text(encoding="utf-8"))
-        except json.JSONDecodeError:
-            continue
-        for n in data.get("nodes") or []:
-            nid = n.get("id") if isinstance(n, dict) else None
-            if isinstance(nid, str):
-                live.add(nid)
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            unreadable.append(path)
+            return
+        if not isinstance(data, dict):
+            unreadable.append(path)
+            return
+        nodes = data.get("nodes")
+        # An ABSENT key is not an empty graph. Our builders always write
+        # `nodes`, so a file without one is not an artifact we can
+        # survey — and reading it as "contributes no ids" is what makes
+        # the classifications only it references look orphaned, right
+        # before they are deleted for good. `nodes: []` is different:
+        # that is an artifact stating it has no papers.
+        if not isinstance(nodes, list) or first_unusable(
+            nodes, lambda n: isinstance(n.get("id"), str) and bool(n["id"])
+        ):
+            # Dropping here is irreversible: a node this survey cannot
+            # read makes every classification only that artifact
+            # references look orphaned, and the caller then deletes it.
+            # "Keep the ids we could parse" is exactly the partial-page
+            # bug with a destructive consequence.
+            unreadable.append(path)
+            return
+        for n in nodes:
+            live.add(n["id"])
+
+    for p in DOCS_DIR.rglob("lineage.json"):
+        _absorb(p)
     for p in DOCS_DIR.rglob("deep-*.json"):
         # Skip the manifest, which is just a list of slugs.
         if p.name == "deep-manifest.json":
             continue
-        try:
-            data = json.loads(p.read_text(encoding="utf-8"))
-        except json.JSONDecodeError:
-            continue
-        for n in data.get("nodes") or []:
-            nid = n.get("id") if isinstance(n, dict) else None
-            if isinstance(nid, str):
-                live.add(nid)
-    return live
+        _absorb(p)
+    return live, unreadable
 
 
 def compact(dry_run: bool = False) -> int:
@@ -97,7 +129,19 @@ def compact(dry_run: bool = False) -> int:
         print("cache root is not a dict — refusing to touch", file=sys.stderr)
         return 1
 
-    live = _collect_live_paper_ids()
+    # The docs survey runs OUTSIDE the lock: it is the slow part, and
+    # holding the classification lock across it would stall every
+    # concurrent lineage build. The write below re-reads under the lock.
+    live, unreadable = _collect_live_paper_ids()
+    if unreadable:
+        listing = "\n  ".join(str(p) for p in unreadable)
+        print(
+            f"refusing to compact: {len(unreadable)} lineage artifact(s) could not be "
+            "read, so the live-id survey is incomplete and every classification they "
+            f"alone reference would look orphaned:\n  {listing}",
+            file=sys.stderr,
+        )
+        return 1
     before = len(cache)
     if before == 0:
         print("cache is empty, nothing to compact.")
@@ -124,14 +168,52 @@ def compact(dry_run: bool = False) -> int:
         print("\n(dry-run; no file written)")
         return 0
 
-    # Atomic write: serialize to a sibling tmp file then os.replace.
-    tmp = CACHE_PATH.with_suffix(".json.tmp")
-    tmp.write_text(
-        json.dumps(kept, ensure_ascii=False, indent=2, sort_keys=True),
-        encoding="utf-8",
-    )
-    tmp.replace(CACHE_PATH)
+    # Take the SAME lock build_lineage.persist_classifications uses, and
+    # re-read inside it. An atomic rename stops a torn read but not a lost
+    # update: without this, a classification written after our snapshot
+    # was taken would be erased by our replace.
+    lock_path = CACHE_PATH.with_suffix(CACHE_PATH.suffix + ".lock")
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(lock_path, "w") as lock_file:
+        fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+        try:
+            try:
+                current = json.loads(CACHE_PATH.read_text(encoding="utf-8"))
+            except (FileNotFoundError, json.JSONDecodeError) as e:
+                print(f"cache became unreadable under lock: {e}", file=sys.stderr)
+                return 1
+            if not isinstance(current, dict):
+                print("cache root is not a dict — refusing to touch", file=sys.stderr)
+                return 1
+            # Only drop keys we actually surveyed. A key that appeared
+            # after the survey is evidence-free — its endpoints may be in
+            # an artifact the writer has not published yet — so it is
+            # carried over untouched rather than judged orphaned.
+            final = {k: v for k, v in current.items() if k not in cache or k in kept}
+            added = len(final) - len(kept)
+            tmp_path: Path | None = None
+            try:
+                with tempfile.NamedTemporaryFile(
+                    mode="w",
+                    encoding="utf-8",
+                    dir=CACHE_PATH.parent,
+                    prefix=f".{CACHE_PATH.name}.",
+                    suffix=".tmp",
+                    delete=False,
+                ) as f:
+                    tmp_path = Path(f.name)
+                    json.dump(final, f, ensure_ascii=False, indent=2, sort_keys=True)
+                os.replace(tmp_path, CACHE_PATH)
+                tmp_path = None
+            finally:
+                if tmp_path is not None:
+                    tmp_path.unlink(missing_ok=True)
+        finally:
+            fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
+
     new_size = CACHE_PATH.stat().st_size
+    if added:
+        print(f"carried over {added} entry/entries written during the survey")
     print(f"wrote {CACHE_PATH.relative_to(ROOT)} ({new_size // 1024} KB)")
     return 0
 

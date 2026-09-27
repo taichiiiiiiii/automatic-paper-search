@@ -7,28 +7,11 @@ from datetime import date
 from pathlib import Path
 
 from ..models import Paper
+from ..utils.csv_safety import neutralize_row
 from ..utils.logger import get_logger
 from .base import AbstractExporter
 
 logger = get_logger(__name__)
-
-# Excel / LibreOffice / Google Sheets evaluate a cell as a formula when its
-# text begins with one of these, no matter how the CSV itself is quoted.
-# Paper titles, abstracts and author lists are untrusted upstream text, so a
-# title like `=HYPERLINK("http://attacker","click")` would execute in the
-# recipient's spreadsheet session (CWE-1236).
-_FORMULA_TRIGGERS = ("=", "+", "-", "@", "\t", "\r")
-
-
-def _neutralize(value: str) -> str:
-    """Prefix a single quote when a cell would otherwise start a formula.
-
-    Only values that actually begin with a trigger are touched, so ordinary
-    titles and abstracts round-trip byte-for-byte through the consumers that
-    read these files back (build_summary_csv / build_pages).
-    """
-    return f"'{value}" if value.startswith(_FORMULA_TRIGGERS) else value
-
 
 COLUMNS = [
     "rank",
@@ -135,11 +118,6 @@ class CSVExporter(AbstractExporter):
                     "uid": p.uid,
                     "doi": p.doi or "",
                 }
-                writer.writerow(
-                    {
-                        k: _neutralize(v) if isinstance(v, str) else v
-                        for k, v in row.items()
-                    }
-                )
+                writer.writerow(neutralize_row(row))
         logger.info("csv: wrote %d rows to %s", len(papers), path)
         return str(path)

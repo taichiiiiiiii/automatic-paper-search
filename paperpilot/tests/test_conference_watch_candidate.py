@@ -521,3 +521,30 @@ def test_partial_or_malformed_published_evidence_is_rejected(state_mutator):
     with pytest.raises(CandidateValidationError) as exc:
         build_catalog_candidate(_edition(), state_mutator(_ready(snapshot)), snapshot)
     assert _error(exc) is CandidateErrorCode.PUBLISHED_CONTINUITY_INVALID
+
+
+def test_summary_csv_neutralizes_spreadsheet_formula_payloads():
+    """The candidate summary CSV carries upstream titles, authors and
+    abstracts and is opened by hand. It was the one CSV writer in the
+    package that still bypassed the shared neutralization."""
+    edition = _edition()
+    snapshot = _snapshot()
+    rows = list(snapshot.rows)
+    rows[0] = replace(rows[0], title='=HYPERLINK("http://evil.example","click")')
+    forged_rows = tuple(rows)
+    from paperpilot.conference_watch.fingerprint import source_fingerprint
+
+    fingerprint = source_fingerprint(
+        adapter_version="1",
+        edition_id=edition.edition_id,
+        source_id=edition.source_id,
+        rows=forged_rows,
+    )
+    forged = replace(snapshot, rows=forged_rows, source_fingerprint=fingerprint)
+    catalog = build_catalog_candidate(edition, _ready(forged), forged)
+
+    text = catalog.summary_csv_bytes.decode("utf-8")
+    parsed = list(csv.DictReader(io.StringIO(text)))
+    hit = [r for r in parsed if "HYPERLINK" in r["title"]]
+    assert hit, "the payload row is missing from the summary CSV"
+    assert hit[0]["title"].startswith("'=HYPERLINK")

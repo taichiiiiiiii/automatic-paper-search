@@ -25,9 +25,10 @@ Public API:
         ``None`` on any deviation (scheme, host, slug, segment count).
 
 Dependencies:
-    Only ``paperpilot.utils.http`` and ``paperpilot.utils.logger`` —
-    deliberately no imports from ``paperpilot.signals`` or
-    ``paperpilot.scripts`` to keep the dependency direction clean.
+    Only ``paperpilot.utils.http``, ``paperpilot.utils.logger`` and
+    ``paperpilot.utils.payload`` — deliberately no imports from
+    ``paperpilot.signals`` or ``paperpilot.scripts`` to keep the
+    dependency direction clean.
 """
 
 from __future__ import annotations
@@ -39,6 +40,7 @@ from urllib.parse import urlparse
 
 from .http import request_with_retry
 from .logger import get_logger
+from .payload import first_unusable, gh_repo_slug
 
 logger = get_logger(__name__)
 
@@ -59,7 +61,31 @@ _TITLE_SIM_THRESHOLD = 0.55
 # GitHub URL slug allowlist — owner / repo segments must start with an
 # alphanumeric character (so values like ``..`` or ``.git`` cannot slip
 # in) and otherwise stay inside the standard GitHub identifier set.
-_GH_SLUG_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
+class GitHubUnavailableError(RuntimeError):
+    """The GitHub API could not answer — throttled, erroring, or down.
+
+    Distinct from a successful answer of "no such repository" / "zero
+    stars", which is a fact about the paper and is safe to cache.
+    """
+
+
+#: Statuses that mean "GitHub could not answer", as opposed to "GitHub
+#: answered, and the answer is no". A 404 on ``/repos/{owner}/{repo}`` is
+#: the latter: the repository is absent or private, which is a real fact
+#: about the paper. 403 is how GitHub reports both the unauthenticated
+#: rate limit and abuse detection, and 429/5xx speak for themselves.
+_GH_UNAVAILABLE_STATUSES = frozenset({403, 429})
+
+
+def _github_unavailable(resp: object) -> bool:
+    if resp is None:
+        return True
+    status = getattr(resp, "status_code", None)
+    if status in _GH_UNAVAILABLE_STATUSES:
+        return True
+    return isinstance(status, int) and status >= 500
+
+
 _GH_NETLOC = {"github.com", "www.github.com"}
 
 # Token regex for Jaccard similarity. ASCII alnum runs of length >= 3.
@@ -91,10 +117,7 @@ def load_curated_map(path: Path | None = None) -> dict[str, str]:
     for ax, repo in raw.items():
         if ax.startswith("_"):
             continue
-        if not isinstance(repo, str) or "/" not in repo:
-            continue
-        owner, _, name = repo.partition("/")
-        if not _GH_SLUG_RE.match(owner) or not _GH_SLUG_RE.match(name):
+        if gh_repo_slug(repo) is None:
             continue
         out[ax] = repo
     return out
@@ -166,16 +189,54 @@ def search_repo_by_title(
         headers=headers,
         timeout=10,
     )
-    if r is None or r.status_code != 200:
-        return None
-    items = (r.json() or {}).get("items") or []
+    if _github_unavailable(r):
+        # A throttled or unavailable Search API is not evidence that the
+        # paper has no repository. Raising lets the caller skip caching
+        # instead of recording "no repo" for the whole TTL window.
+        raise GitHubUnavailableError(
+            f"github repo search failed (status={getattr(r, 'status_code', None)})"
+        )
+    if r.status_code != 200:
+        # The Search API expresses "nothing matched" as 200 with an
+        # empty `items` array, so NO status here is a statement about
+        # the paper: a 401 is a bad credential and a 422 is a rejected
+        # query. Returning None let the caller record "this paper has
+        # no repository" for the whole TTL window. Same split already
+        # drawn for Semantic Scholar's 404-vs-the-rest.
+        raise GitHubUnavailableError(
+            f"github repo search answered {r.status_code}, which says nothing "
+            "about whether a repository exists"
+        )
+    try:
+        payload = r.json()
+    except ValueError as exc:
+        raise GitHubUnavailableError("github repo search returned a malformed body") from exc
+    items = payload.get("items") if isinstance(payload, dict) else None
+    if not isinstance(items, list):
+        # A 200 from the Search API always carries an `items` array,
+        # empty when nothing matched. A body without one — an error
+        # envelope, an interstitial that happens to parse — says nothing
+        # about whether a repository exists, and the caller caches
+        # "no repo" for the whole TTL window.
+        raise GitHubUnavailableError(
+            "github repo search returned no items array "
+            f"(keys={sorted(payload)[:5] if isinstance(payload, dict) else type(payload).__name__})"
+        )
+    # The elements carry the answer. `{"items": [{"message": "rate
+    # limit"}]}` and `{"items": [null]}` used to fall through the loop
+    # and return None, which the caller stores as "this paper has no
+    # repository" for the whole TTL window.
+    bad = first_unusable(items, lambda i: gh_repo_slug(i.get("full_name")) is not None)
+    if bad is not None:
+        index, item = bad
+        raise GitHubUnavailableError(
+            f"github repo search returned a malformed item at index {index} "
+            f"(type={type(item).__name__})"
+        )
     for item in items:
-        full_name = item.get("full_name") or ""
-        if "/" not in full_name:
-            continue
-        owner, _, name = full_name.partition("/")
-        if not _GH_SLUG_RE.match(owner) or not _GH_SLUG_RE.match(name):
-            continue
+        # `gh_repo_slug` is the predicate the guard above used, so this
+        # loop can no longer skip an item the page was accepted for.
+        full_name = item["full_name"]
         sim = max(
             title_similarity(cleaned, item.get("name") or ""),
             title_similarity(cleaned, item.get("description") or ""),
@@ -193,17 +254,22 @@ def fetch_repo_stars(
 ) -> int | None:
     """``GET /repos/{owner}/{repo}`` -> stargazer count.
 
-    Returns ``None`` on any failure mode (network error, non-200
-    response, malformed JSON, slug regex rejection). The slug regex is
-    re-applied here even when callers think they validated the repo
-    string — defence-in-depth keeps a future refactor that moves the
-    upstream guard from breaking SSRF / path-traversal protection.
+    Returns ``None`` when the answer is genuinely negative — an unusable
+    slug, or a 404 (no public repository). A network error, a 403/429
+    throttle, a 5xx, or a 200 whose body is not a repo object raises
+    ``GitHubUnavailableError`` instead: "the API was down" is not the
+    same fact as "this repo has no stars", and the caller caches the
+    latter.
+
+    The slug regex is re-applied here even when callers think they
+    validated the repo string — defence-in-depth keeps a future refactor
+    that moves the upstream guard from breaking SSRF / path-traversal
+    protection.
     """
-    if not repo_full or "/" not in repo_full:
+    slug = gh_repo_slug(repo_full)
+    if slug is None:
         return None
-    owner, _, name = repo_full.partition("/")
-    if not _GH_SLUG_RE.match(owner) or not _GH_SLUG_RE.match(name):
-        return None
+    owner, name = slug
     headers = {"Accept": "application/vnd.github+json"}
     if github_token:
         headers["Authorization"] = f"Bearer {github_token}"
@@ -213,12 +279,37 @@ def fetch_repo_stars(
         headers=headers,
         timeout=10,
     )
-    if r is None or r.status_code != 200:
+    if _github_unavailable(r):
+        raise GitHubUnavailableError(
+            f"github repo lookup failed for {repo_full} "
+            f"(status={getattr(r, 'status_code', None)})"
+        )
+    if r.status_code == 404:
+        # The one status that is a fact about the DATA: there is no
+        # public repository at that slug.
         return None
+    if r.status_code != 200:
+        raise GitHubUnavailableError(
+            f"github repo lookup for {repo_full} answered {r.status_code}, which "
+            "says nothing about whether the repository exists"
+        )
     try:
-        return int((r.json() or {}).get("stargazers_count") or 0)
-    except (ValueError, TypeError, AttributeError):
-        return None
+        payload = r.json()
+    except ValueError as exc:
+        raise GitHubUnavailableError(
+            f"github repo lookup for {repo_full} returned a malformed body"
+        ) from exc
+    stars = payload.get("stargazers_count") if isinstance(payload, dict) else None
+    if not isinstance(stars, int) or isinstance(stars, bool):
+        # A repo object always carries an integer `stargazers_count`.
+        # Rounding anything else down to 0 wrote "this repo has no
+        # stars" into a fresh TTL entry, which is the outage-as-fact
+        # bug wearing the 200 status code.
+        raise GitHubUnavailableError(
+            f"github repo lookup for {repo_full} returned no stargazers_count "
+            f"(keys={sorted(payload)[:5] if isinstance(payload, dict) else type(payload).__name__})"
+        )
+    return stars
 
 
 # ---------- URL parsing ----------
@@ -249,6 +340,4 @@ def parse_github_repo_url(url: str | None) -> tuple[str, str] | None:
         return None
     owner = segments[0]
     repo = segments[1].removesuffix(".git")
-    if not (_GH_SLUG_RE.match(owner) and _GH_SLUG_RE.match(repo)):
-        return None
-    return owner, repo
+    return gh_repo_slug(f"{owner}/{repo}")

@@ -53,6 +53,7 @@ since the per-row licence trail no longer ships with the artifact.
 from __future__ import annotations
 
 import argparse
+import os
 import shutil
 import sys
 from collections.abc import Callable
@@ -110,8 +111,14 @@ def build_index(out_path: Path, *, sample: int | None = None) -> int:
     duckdb, hf_hub_download = _import_or_die()
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    if out_path.exists():
-        out_path.unlink()  # rebuild from scratch each time
+    # Build into a sibling and swap it in only once the whole thing
+    # succeeded. Deleting the live index first meant any failure in the
+    # multi-hour download / join / index run — a network drop, a full
+    # disk, an OOM kill — left no usable index at all, and sometimes a
+    # half-written database sitting at the authoritative path.
+    build_path = out_path.with_name(out_path.name + ".building")
+    if build_path.exists():
+        build_path.unlink()
 
     # Fetch both JSONL files via hf_hub_download (cached on repeat
     # runs — the HF cache layer dedupes by SHA). We then hand both
@@ -140,8 +147,8 @@ def build_index(out_path: Path, *, sample: int | None = None) -> int:
     spill_dir = out_path.parent / f"{out_path.name}.spill"
     spill_dir.mkdir(parents=True, exist_ok=True)
 
-    logger.info("opening DuckDB at %s", out_path)
-    conn = duckdb.connect(str(out_path))
+    logger.info("opening DuckDB at %s", build_path)
+    conn: object | None = duckdb.connect(str(build_path))
     try:
         # Constrain DuckDB's working memory and route spills to a known
         # location on the same volume as ``out_path``. Without these,
@@ -243,10 +250,22 @@ def build_index(out_path: Path, *, sample: int | None = None) -> int:
             "CREATE INDEX idx_citing_cited ON citrec(paper_arxiv_id, label)"
         )
         conn.execute("ANALYZE")
+        conn.close()
+        conn = None
+        # Only now is there something worth publishing. os.replace is
+        # atomic on POSIX, so a reader either sees the old index or the
+        # new one, never a partial file.
+        os.replace(build_path, out_path)
         logger.info("done. %d rows written to %s", inserted, out_path)
         return inserted
     finally:
-        conn.close()
+        if conn is not None:
+            conn.close()
+        # A failed run must not leave its half-built database behind: it
+        # would be mistaken for scratch on the next run and consume the
+        # same multi-GB of disk.
+        if build_path.exists():
+            build_path.unlink(missing_ok=True)
         # Remove spill scratch even on success — DuckDB doesn't promise
         # to clear it, and on a successful run it's pure dead weight
         # (multi-GB sort/hash partitions from the JOIN).
@@ -264,13 +283,22 @@ def gzip_artifact(path: Path) -> Path:
     import gzip
     import shutil
     gz_path = path.with_suffix(path.suffix + ".gz")
-    if gz_path.exists():
-        gz_path.unlink()
+    # Same reasoning as build_index: compress to a sibling and swap, so
+    # an interrupted run leaves the previous .gz intact instead of
+    # nothing (or a truncated archive that gunzips to garbage).
+    partial = gz_path.with_name(gz_path.name + ".partial")
+    if partial.exists():
+        partial.unlink()
     logger.info("gzipping %s -> %s", path, gz_path)
-    with open(path, "rb") as src, gzip.open(
-        str(gz_path), "wb", compresslevel=6
-    ) as dst:
-        shutil.copyfileobj(src, dst, length=8 * 1024 * 1024)
+    try:
+        with open(path, "rb") as src, gzip.open(
+            str(partial), "wb", compresslevel=6
+        ) as dst:
+            shutil.copyfileobj(src, dst, length=8 * 1024 * 1024)
+        os.replace(partial, gz_path)
+    finally:
+        if partial.exists():
+            partial.unlink(missing_ok=True)
     raw_mb = path.stat().st_size / 1e6
     gz_mb = gz_path.stat().st_size / 1e6
     logger.info(

@@ -9,6 +9,8 @@ from __future__ import annotations
 from types import SimpleNamespace
 from unittest.mock import patch
 
+import pytest
+
 from paperpilot.scripts import build_conference_lineage as bcl
 
 PAPER_ID = "1" * 40
@@ -214,12 +216,28 @@ def test_root_tie_break_is_independent_of_input_order():
     assert first == second
 
 
-def test_get_failsafe_on_non_json_and_error():
+def test_get_reports_a_failure_instead_of_collapsing_it_to_none():
+    """_get used to return None for a transport failure, a non-200 and a
+    malformed body alike, and every caller read that as "nothing
+    matched" — so an outage silently dropped Oral papers from the focus
+    set and published the survivors as the complete conference lineage.
+    A failure is now distinguishable from an empty match."""
     with patch.object(bcl, "request_with_retry", return_value=None):
-        assert bcl._get({"filter": "x"}) is None
+        with pytest.raises(bcl.IncompleteFetchError):
+            bcl._get({"filter": "x"})
+
     bad = SimpleNamespace(status_code=200, json=lambda: (_ for _ in ()).throw(ValueError()))
     with patch.object(bcl, "request_with_retry", return_value=bad):
-        assert bcl._get({"filter": "x"}) is None
+        with pytest.raises(bcl.IncompleteFetchError):
+            bcl._get({"filter": "x"})
+
+
+def test_get_returns_an_empty_result_set_for_a_genuine_non_match():
+    """The other half: a query that legitimately matches nothing is a
+    200 with an empty results array, and must NOT look like a failure."""
+    ok = SimpleNamespace(status_code=200, json=lambda: {"results": []})
+    with patch.object(bcl, "request_with_retry", return_value=ok):
+        assert bcl._get({"filter": "x"}) == {"results": []}
 
 
 def test_strong_arxiv_alias_selects_exact_match_not_first_search_result():
@@ -354,3 +372,253 @@ def test_main_rejects_path_traversal_conference_before_reading_or_writing(monkey
     ):
         with pytest.raises(ValueError):
             bcl.main()
+
+
+# ---- publication gates ----
+
+
+def test_build_graph_records_an_unresolvable_oral_as_a_subject_failure():
+    """An Oral we could not look up is absent from the focus set for a
+    reason that says nothing about the paper. Skipping it silently is how
+    an outage used to shrink the published conference lineage."""
+    from paperpilot.scripts._fetch_state import BuildCompleteness
+
+    orals = [
+        {
+            "title": "Catalog title",
+            "url": "https://arxiv.org/abs/2403.06764",
+            "source": "arxiv",
+            "source_id": "2403.06764",
+            "paper_id": "a" * 40,
+        }
+    ]
+    completeness = BuildCompleteness()
+    with patch.object(bcl, "request_with_retry", return_value=None):
+        graph = bcl.build_graph(
+            orals, display="ECCV 2024", refs_per=1, citers_per=1, completeness=completeness
+        )
+    assert graph["nodes"] == []
+    assert not completeness.subject_complete
+    assert "Catalog title" in completeness.subject_gate_message()
+
+
+@pytest.mark.parametrize(
+    "body",
+    [{"error": "maintenance"}, {"results": None}, {}, {"results": "not-a-list"}],
+    ids=["error-object", "null-results", "empty-object", "results-not-a-list"],
+)
+def test_get_rejects_a_200_without_a_results_array(body):
+    """Every endpoint this helper calls answers with a results array,
+    empty when nothing matched. A 200 carrying something else is a
+    broken response — and because each caller reads
+    `data.get("results") or []`, letting it through silently dropped an
+    Oral from the focus set with the ledger still reporting complete."""
+    resp = SimpleNamespace(status_code=200, json=lambda: body)
+    with patch.object(bcl, "request_with_retry", return_value=resp):
+        with pytest.raises(bcl.IncompleteFetchError):
+            bcl._get({"filter": "x"})
+
+
+def test_get_accepts_a_200_with_an_empty_results_array():
+    resp = SimpleNamespace(status_code=200, json=lambda: {"results": []})
+    with patch.object(bcl, "request_with_retry", return_value=resp):
+        assert bcl._get({"filter": "x"}) == {"results": []}
+
+
+@pytest.mark.parametrize(
+    "bad",
+    [{}, {"id": ""}, {"id": "   "}, {"id": 123}, "not-a-dict"],
+    ids=["no-id", "empty-id", "blank-id", "non-string-id", "non-dict"],
+)
+def test_get_rejects_a_result_without_a_usable_id(bad):
+    """Validating the container was not enough.
+
+    Both consumers key Works by their short id: ``_select_openalex_match``
+    skips anything the id regex rejects, and ``fetch_meta`` indexes by it.
+    An element without a usable id therefore disappeared silently — and
+    for an Oral that is indistinguishable from "no unique alias match",
+    so the paper left the focus set with the ledger still clean.
+    """
+    with patch.object(bcl, "request_with_retry", return_value=_resp({"results": [bad]})):
+        with pytest.raises(bcl.IncompleteFetchError):
+            bcl._get({"filter": "x"})
+
+
+def test_get_accepts_results_that_all_carry_ids():
+    payload = {"results": [{"id": "https://openalex.org/W1"}]}
+    with patch.object(bcl, "request_with_retry", return_value=_resp(payload)):
+        assert bcl._get({"filter": "x"}) == payload
+
+
+def _one_oral():
+    return [
+        {
+            "title": "Catalog title",
+            "url": "https://arxiv.org/abs/2403.06764",
+            "source": "arxiv",
+            "source_id": "2403.06764",
+            "paper_id": "a" * 40,
+        }
+    ]
+
+
+def test_build_graph_records_a_broken_work_as_a_subject_failure():
+    """A 200 whose results array carries a Work with no id used to
+    vanish inside ``_select_openalex_match``, leaving the Oral out of
+    the focus set with ``subject_complete`` still true."""
+    from paperpilot.scripts._fetch_state import BuildCompleteness
+
+    completeness = BuildCompleteness()
+    with patch.object(bcl, "request_with_retry", return_value=_resp({"results": [{}]})):
+        graph = bcl.build_graph(
+            _one_oral(),
+            display="ECCV 2024",
+            refs_per=1,
+            citers_per=1,
+            completeness=completeness,
+        )
+    assert graph["nodes"] == []
+    assert not completeness.subject_complete
+
+
+@pytest.mark.parametrize(
+    "refs_value",
+    [None, "not-a-list", 0],
+    ids=["missing", "non-list", "zero"],
+)
+def test_build_graph_counts_a_missing_referenced_works_as_an_expansion_failure(refs_value):
+    """The resolve query selects ``referenced_works`` explicitly, so a
+    missing or null value is a broken Work, not a paper that cites
+    nothing. `(work.get(...) or [])` rounded all three to a legitimate
+    empty and the ancestors were lost with expansions_failed == 0.
+
+    The Oral itself resolved, so this is a lost expansion rather than a
+    lost subject: the node is still published, with the loss recorded.
+    """
+    from paperpilot.scripts._fetch_state import BuildCompleteness
+
+    work = _work("W1", "Resolved title", 2024)
+    if refs_value is None:
+        work.pop("referenced_works")
+    else:
+        work["referenced_works"] = refs_value
+
+    completeness = BuildCompleteness()
+    with (
+        patch.object(bcl, "resolve_oral", return_value=work),
+        patch.object(bcl, "fetch_citers", return_value=[]),
+    ):
+        graph = bcl.build_graph(
+            _one_oral(),
+            display="ECCV 2024",
+            refs_per=1,
+            citers_per=1,
+            completeness=completeness,
+        )
+    assert [n["id"] for n in graph["nodes"]] == ["W1"]
+    assert completeness.subject_complete
+    assert completeness.expansions_failed == 1
+
+
+def test_build_graph_keeps_a_genuinely_empty_referenced_works_clean():
+    """The other half: `referenced_works: []` is a real answer."""
+    from paperpilot.scripts._fetch_state import BuildCompleteness
+
+    work = _work("W1", "Resolved title", 2024, refs=[])
+    completeness = BuildCompleteness()
+    with (
+        patch.object(bcl, "resolve_oral", return_value=work),
+        patch.object(bcl, "fetch_citers", return_value=[]),
+    ):
+        bcl.build_graph(
+            _one_oral(),
+            display="ECCV 2024",
+            refs_per=1,
+            citers_per=1,
+            completeness=completeness,
+        )
+    assert completeness.expansions_failed == 0
+
+
+@pytest.mark.parametrize(
+    "wid",
+    [
+        "https://openalex.org/X999",
+        "https://openalex.org/Wabc",
+        "https://openalex.org/",
+        "W",
+        "not-a-url",
+    ],
+    ids=["wrong-prefix", "non-numeric", "empty-tail", "bare-w", "no-url"],
+)
+def test_get_rejects_an_id_the_consumer_cannot_parse(wid):
+    """"Non-empty string" was not the consumer's predicate.
+
+    ``_select_openalex_match`` keeps only ids matching ^W[0-9]+$, so a
+    syntactically wrong id passed the presence check and then vanished
+    one level down — the same silent Oral drop, moved rather than
+    removed.
+    """
+    with patch.object(bcl, "request_with_retry", return_value=_resp({"results": [{"id": wid}]})):
+        with pytest.raises(bcl.IncompleteFetchError):
+            bcl._get({"filter": "x"})
+
+
+def test_build_graph_survives_a_malformed_referenced_works_entry():
+    """`_short_id` does string surgery, so a non-string element used to
+    raise AttributeError straight through the fail-safe boundary and
+    kill the whole build."""
+    from paperpilot.scripts._fetch_state import BuildCompleteness
+
+    work = _work("W1", "Resolved title", 2024)
+    work["referenced_works"] = [123]
+    completeness = BuildCompleteness()
+    with (
+        patch.object(bcl, "resolve_oral", return_value=work),
+        patch.object(bcl, "fetch_citers", return_value=[]),
+    ):
+        graph = bcl.build_graph(
+            _one_oral(),
+            display="ECCV 2024",
+            refs_per=1,
+            citers_per=1,
+            completeness=completeness,
+        )
+    assert [n["id"] for n in graph["nodes"]] == ["W1"]
+    assert completeness.expansions_failed == 1
+
+
+@pytest.mark.parametrize(
+    "patch_work",
+    [{"ids": "broken"}, {"primary_location": "broken"}, {"locations": "broken"}, {"locations": [1]}],
+    ids=["ids-non-mapping", "primary-non-mapping", "locations-non-list", "locations-element"],
+)
+def test_get_rejects_a_work_whose_alias_blocks_are_the_wrong_shape(patch_work):
+    """A missing alias is ordinary data — plenty of Works carry no DOI.
+    A non-mapping `ids` block reduces the Work to zero aliases, and an
+    Oral that resolves to zero aliases is indistinguishable from one
+    that simply did not match, so it left the focus set with the ledger
+    still clean."""
+    work = _work("W1", "T", 2024)
+    work.update(patch_work)
+    with patch.object(bcl, "request_with_retry", return_value=_resp({"results": [work]})):
+        with pytest.raises(bcl.IncompleteFetchError):
+            bcl._get({"filter": "x"})
+
+
+def test_get_accepts_a_work_that_simply_has_no_aliases():
+    """No `ids`, no `locations` — a real Work with nothing to match on."""
+    work = {"id": "https://openalex.org/W1", "title": "T"}
+    with patch.object(bcl, "request_with_retry", return_value=_resp({"results": [work]})):
+        assert bcl._get({"filter": "x"})["results"] == [work]
+
+
+def test_short_id_strips_surrounding_whitespace_like_the_guard_does():
+    """A concrete drift the shared predicate removes: the local helper
+    did not strip, so `"https://openalex.org/W123 "` cleared a guard
+    that does strip and then entered the graph under the id `"W123 "`."""
+    assert bcl._short_id("https://openalex.org/W123 ") == "W123"
+    assert bcl._short_id("https://openalex.org/W123") == "W123"
+    assert bcl._short_id("https://openalex.org/W123/") == "W123"
+    assert bcl._short_id("") == ""
+    assert bcl._short_id("https://openalex.org/X999") == ""

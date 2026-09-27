@@ -47,7 +47,12 @@ from __future__ import annotations
 import math
 
 from ..models import Paper
-from ..utils.github import fetch_repo_stars, load_curated_map, search_repo_by_title
+from ..utils.github import (
+    GitHubUnavailableError,
+    fetch_repo_stars,
+    load_curated_map,
+    search_repo_by_title,
+)
 from ..utils.logger import get_logger
 from .base import AbstractSignal
 
@@ -147,14 +152,24 @@ class GitHubSignal(AbstractSignal):
         is_official = bool(repo_full)
 
         # 2. GitHub Search fallback when the curated map misses.
-        if not repo_full:
-            repo_full = search_repo_by_title(
-                title or "", github_token=self._github_token
-            )
-        if not repo_full:
-            return None
+        #
+        # The helpers now raise GitHubUnavailableError when the API is
+        # throttled or down, so the lineage builders can tell an outage
+        # apart from "no repo" and skip caching it. This signal has no
+        # cache to poison and must never fail Stage 2, so it keeps the
+        # original best-effort behaviour: no data this run.
+        try:
+            if not repo_full:
+                repo_full = search_repo_by_title(
+                    title or "", github_token=self._github_token
+                )
+            if not repo_full:
+                return None
 
-        stars = fetch_repo_stars(repo_full, github_token=self._github_token)
+            stars = fetch_repo_stars(repo_full, github_token=self._github_token)
+        except GitHubUnavailableError as exc:
+            logger.debug("github unavailable for %s: %s", arxiv_id, exc)
+            return None
         if stars is None or stars <= 0:
             return None
         return f"https://github.com/{repo_full}", stars, is_official

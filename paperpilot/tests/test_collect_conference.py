@@ -269,3 +269,53 @@ def test_write_outputs_rejects_uppercase_or_space_conference_slug(tmp_path: Path
     for bad in ("CVPR-2026", "cvpr 2026", "cvpr_2026", "-cvpr-2026", "cvpr-2026-"):
         with pytest.raises(ValueError):
             cc.write_outputs(bad, rows, orals, output_root=tmp_path, date="2026-06-28")
+
+
+def test_write_outputs_neutralizes_spreadsheet_formula_payloads(tmp_path):
+    """Regression test: the CSVExporter got formula neutralization but the
+    conference collectors bypassed it, so a hostile OpenReview/CVF/ACL
+    title still reached papers_*.csv and from there summary.csv."""
+    import csv as _csv
+
+    from paperpilot.scripts import collect_conference as cc
+
+    row = {
+        "title": '=HYPERLINK("http://evil.example","click")',
+        "authors": "A; B",
+        "abstract": "@SUM(1+1)*cmd",
+        "url": "https://arxiv.org/abs/2604.00001",
+        "source": "arxiv",
+        "source_id": "2604.00001",
+    }
+    path = cc.write_outputs(
+        "cvpr-2026", [row], [], output_root=tmp_path, date="2026-09-26"
+    )
+    with path.open(encoding="utf-8-sig", newline="") as f:
+        out = list(_csv.DictReader(f))
+    assert out[0]["title"].startswith("'=HYPERLINK")
+    assert out[0]["abstract"].startswith("'@SUM")
+    # A normal URL is not a trigger, so identity parsing downstream is
+    # unaffected.
+    assert out[0]["url"] == "https://arxiv.org/abs/2604.00001"
+
+
+def test_write_outputs_leaves_ordinary_text_untouched(tmp_path):
+    import csv as _csv
+
+    from paperpilot.scripts import collect_conference as cc
+
+    row = {
+        "title": "Retrieval-Augmented Generation for Knowledge Tasks",
+        "authors": "A; B",
+        "abstract": "We propose a method.",
+        "url": "https://arxiv.org/abs/2604.00002",
+        "source": "arxiv",
+        "source_id": "2604.00002",
+    }
+    path = cc.write_outputs(
+        "cvpr-2026", [row], [], output_root=tmp_path, date="2026-09-26"
+    )
+    with path.open(encoding="utf-8-sig", newline="") as f:
+        out = list(_csv.DictReader(f))
+    assert out[0]["title"] == "Retrieval-Augmented Generation for Knowledge Tasks"
+    assert out[0]["abstract"] == "We propose a method."
