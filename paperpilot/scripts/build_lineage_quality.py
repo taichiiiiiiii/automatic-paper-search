@@ -5,13 +5,13 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import os
 import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 from paperpilot.identity.source_ids import IdentityError, normalize_alias
+from paperpilot.utils.atomic import atomic_write_bytes
 
 from ._lineage_contract import (
     canonical_focus_node,
@@ -813,10 +813,7 @@ def main() -> None:
         if args.output.read_bytes() != payload:
             raise SystemExit("lineage quality manifest is stale")
     else:
-        args.output.parent.mkdir(parents=True, exist_ok=True)
-        temporary = args.output.with_name(f".{args.output.name}.paperpilot-tmp")
-        temporary.write_bytes(payload)
-        os.replace(temporary, args.output)
+        atomic_write_bytes(args.output, payload)
     counts: dict[str, int] = {}
     for row in manifest["collections"]:
         key = f"{row['availability']}/{row['audit_status']}"

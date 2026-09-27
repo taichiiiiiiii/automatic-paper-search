@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import TypedDict
 
 from paperpilot.identity.source_ids import IdentityError, normalize_alias
+from paperpilot.utils.atomic import atomic_write_text
 
 from ._lineage_contract import (
     ARXIV_ID_RE,
@@ -268,11 +269,7 @@ def write_manifest(docs_dir: Path) -> Path:
     docs_dir.mkdir(parents=True, exist_ok=True)
     manifest = generate_manifest(docs_dir)
     out = docs_dir / _MANIFEST_NAME
-    temporary = out.with_name(f".{out.name}.paperpilot-tmp")
-    temporary.write_text(
-        json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
-    )
-    temporary.replace(out)
+    atomic_write_text(out, json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
     return out
 
 

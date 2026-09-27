@@ -54,14 +54,17 @@ from paperpilot.scripts._fetch_state import (  # noqa: E402
     BuildCompleteness,
     expansion_gate_blocks,
 )
-from paperpilot.scripts._lineage_classify import _slot_fill_rationale  # noqa: E402
+from paperpilot.scripts._lineage_classify import (  # noqa: E402
+    _load_classification_cache,
+    _slot_fill_rationale,
+)
 from paperpilot.scripts._lineage_contract import (  # noqa: E402
     ARXIV_ID_RE,
     LINEAGE_ARTIFACT_VERSION,
     canonical_json_sha256,
     make_provenance,
     require_paper_id,
-    validate_lineage_artifact,
+    require_valid_lineage_artifact,
 )
 from paperpilot.scripts.build_lineage import (  # noqa: E402
     CACHE_DIR,
@@ -72,6 +75,7 @@ from paperpilot.scripts.build_lineage import (  # noqa: E402
     select_top,
     to_node,
 )
+from paperpilot.utils.atomic import atomic_write_text  # noqa: E402
 from paperpilot.utils.json_parser import parse_llm_response  # noqa: E402
 from paperpilot.utils.logger import get_logger, setup_logging  # noqa: E402
 from paperpilot.utils.payload import s2_paper_id as _resolved_paper_id  # noqa: E402
@@ -321,9 +325,7 @@ def build_deep(
     nodes[focus_id]["aliases"] = aliases
 
     classifications_path = CACHE_DIR / "classifications.json"
-    classifications: dict[str, dict] = (
-        json.loads(classifications_path.read_text()) if classifications_path.exists() else {}
-    )
+    classifications: dict[str, dict] = _load_classification_cache(classifications_path)
 
     def expand(src_paper: dict, direction: str, top_n: int) -> list[tuple[dict, dict]]:
         """Returns list of (related_paper, edge_dict) for this hop."""
@@ -434,15 +436,12 @@ def build_deep(
             "generated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         },
     }
-    issues = validate_lineage_artifact(
+    require_valid_lineage_artifact(
         result,
         kind="deep",
         catalog_ids={seed_paper_id},
         expected_seed_paper_id=seed_paper_id,
     )
-    if issues:
-        detail = "; ".join(f"{issue.code}:{issue.path}" for issue in issues[:8])
-        raise ValueError(f"generated lineage violates {LINEAGE_ARTIFACT_VERSION}: {detail}")
     return result
 
 
@@ -520,8 +519,13 @@ def main() -> int:
             print(f"incomplete build; published artifact left untouched: {blocked}", file=sys.stderr)
             return 4
 
-    out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(result, ensure_ascii=False, indent=2))
+    require_valid_lineage_artifact(
+        result,
+        kind="deep",
+        catalog_ids={result["meta"]["seed_paper_id"]},
+        expected_seed_paper_id=result["meta"]["seed_paper_id"],
+    )
+    atomic_write_text(out, json.dumps(result, ensure_ascii=False, indent=2))
     print()
     print(f"✓ Wrote {out}")
     print(f"  nodes: {len(result['nodes'])}")

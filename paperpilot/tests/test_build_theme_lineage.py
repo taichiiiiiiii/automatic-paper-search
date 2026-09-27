@@ -28,6 +28,25 @@ import pytest
 
 from paperpilot.llm.base import AbstractLLMProvider, RelationClassification
 from paperpilot.scripts import build_theme_lineage
+from paperpilot.utils import atomic as atomic_module
+
+
+def _read_cache(path):
+    """Unwrap a versioned cache file written by the builder."""
+    raw = json.loads(path.read_text())
+    assert set(raw) == {"schema_version", "data"}, raw
+    return raw["data"]
+
+
+def _gh_cache_json(data) -> str:
+    return json.dumps(
+        {"schema_version": build_theme_lineage._GITHUB_CACHE_VERSION, "data": data}
+    )
+
+
+def _seed_cache_json(data) -> str:
+    return json.dumps({"schema_version": build_theme_lineage.SEARCH_CACHE_VERSION, "data": data})
+
 
 # ---- Test helpers ----
 
@@ -2292,7 +2311,7 @@ def test_enrich_github_stars_caches_results_to_disk(tmp_path, monkeypatch):
         search_repo=search,
         fetch_stars=fetch,
     )
-    cache = json.loads((tmp_path / "github_stars.json").read_text())
+    cache = _read_cache(tmp_path / "github_stars.json")
     assert "1610.04256" in cache
     entry = cache["1610.04256"]
     assert entry["stars"] == 42
@@ -2307,7 +2326,7 @@ def test_enrich_github_stars_uses_fresh_cache_without_resolving(tmp_path, monkey
 
     fresh_ts = datetime.now(timezone.utc).isoformat()
     (tmp_path / "github_stars.json").write_text(
-        json.dumps(
+        _gh_cache_json(
             {
                 "2103.00020": {
                     "stars": 999,
@@ -2343,7 +2362,7 @@ def test_enrich_github_stars_drops_poisoned_cache_url(tmp_path, monkeypatch):
 
     fresh_ts = datetime.now(timezone.utc).isoformat()
     (tmp_path / "github_stars.json").write_text(
-        json.dumps(
+        _gh_cache_json(
             {
                 # Stars value is real but the URL has been swapped for a
                 # ``javascript:`` payload — the kind of thing a poisoned cache
@@ -2388,7 +2407,7 @@ def test_enrich_github_stars_refreshes_stale_cache(tmp_path, monkeypatch):
 
     stale_ts = (datetime.now(timezone.utc) - timedelta(days=30)).isoformat()
     (tmp_path / "github_stars.json").write_text(
-        json.dumps(
+        _gh_cache_json(
             {
                 "1706.03762": {
                     "stars": 100,
@@ -2427,7 +2446,7 @@ def test_enrich_github_stars_caches_zero_when_no_repo_found(tmp_path, monkeypatc
         fetch_stars=fetch,
     )
     assert enriched == 0
-    cache = json.loads((tmp_path / "github_stars.json").read_text())
+    cache = _read_cache(tmp_path / "github_stars.json")
     assert cache["1234.5678"]["stars"] == 0
     assert cache["1234.5678"]["url"] is None
 
@@ -2562,7 +2581,7 @@ def test_enrich_github_stars_does_not_cache_papers_past_budget(tmp_path, monkeyp
         fetch_stars=fetch_mock,
     )
     assert fetch_mock.call_count == 1  # only the first paper resolved
-    cache = json.loads((tmp_path / "github_stars.json").read_text())
+    cache = _read_cache(tmp_path / "github_stars.json")
     assert "ax-1" in cache
     assert "ax-2" not in cache
     assert "ax-3" not in cache
@@ -5320,7 +5339,7 @@ def test_seed_search_refetches_when_the_cache_file_is_corrupt(tmp_path, monkeypa
     req.assert_called_once()
     assert [p["paperId"] for p in items] == ["p1"]
     # The bad file is replaced by the good result.
-    assert json.loads(cache.read_text())[0]["paperId"] == "p1"
+    assert _read_cache(cache)[0]["paperId"] == "p1"
 
 
 def test_seed_search_does_not_cache_a_malformed_200_body(tmp_path, monkeypatch):
@@ -5350,13 +5369,13 @@ def test_seed_search_cache_write_is_atomic(tmp_path, monkeypatch):
     payload = {"data": [{"paperId": "p1", "title": "T"}]}
 
     replaced: list[tuple] = []
-    real_replace = build_theme_lineage.os.replace
+    real_replace = atomic_module.os.replace
 
     def spy(src, dst):
         replaced.append((src, dst))
         return real_replace(src, dst)
 
-    with patch.object(build_theme_lineage.os, "replace", side_effect=spy):
+    with patch.object(atomic_module.os, "replace", side_effect=spy):
         with patch.object(
             build_theme_lineage,
             "request_with_retry",
@@ -5514,7 +5533,7 @@ def test_seed_search_caches_a_genuinely_empty_data_array(tmp_path, monkeypatch):
         return_value=SimpleNamespace(status_code=200, json=lambda: {"data": []}),
     ):
         assert build_theme_lineage._search_one_keyword_via_s2(keyword="rag", since_year=2020) == []
-    assert json.loads(cache.read_text()) == []
+    assert _read_cache(cache) == []
 
 
 def test_seed_search_does_not_cache_when_every_entry_is_unusable(tmp_path, monkeypatch):
@@ -5536,7 +5555,7 @@ def test_seed_search_refetches_when_the_cached_list_holds_only_junk(tmp_path, mo
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
     cache = build_theme_lineage._seed_cache_path("rag", 2020)
     cache.parent.mkdir(parents=True, exist_ok=True)
-    cache.write_text(json.dumps([{"noPaperId": 1}]))
+    cache.write_text(_seed_cache_json([{"noPaperId": 1}]))
 
     payload = {"data": [{"paperId": "p1", "title": "Recovered"}]}
     with patch.object(
@@ -5553,7 +5572,7 @@ def test_seed_search_reuses_a_cached_empty_result(tmp_path, monkeypatch):
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
     cache = build_theme_lineage._seed_cache_path("rag", 2020)
     cache.parent.mkdir(parents=True, exist_ok=True)
-    cache.write_text("[]")
+    cache.write_text(_seed_cache_json([]))
 
     with patch.object(build_theme_lineage, "request_with_retry") as req:
         assert build_theme_lineage._search_one_keyword_via_s2(keyword="rag", since_year=2020) == []
@@ -5604,7 +5623,7 @@ def test_seed_search_refetches_a_cached_entry_without_a_title(tmp_path, monkeypa
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
     cache = build_theme_lineage._seed_cache_path("rag", 2020)
     cache.parent.mkdir(parents=True, exist_ok=True)
-    cache.write_text(json.dumps([{"paperId": "p1", "externalIds": {"ArXiv": "2401.1"}}]))
+    cache.write_text(_seed_cache_json([{"paperId": "p1", "externalIds": {"ArXiv": "2401.1"}}]))
 
     payload = {"data": [{"paperId": "p1", "title": "Recovered"}]}
     with patch.object(
@@ -5772,7 +5791,7 @@ def test_enrich_github_stars_does_not_cache_an_api_outage(tmp_path, monkeypatch)
     )
 
     assert enriched == 0
-    cached = json.loads(cache_path.read_text()) if cache_path.exists() else {}
+    cached = _read_cache(cache_path) if cache_path.exists() else {}
     assert "2304.02643" not in cached
 
 
@@ -5793,7 +5812,7 @@ def test_enrich_github_stars_caches_a_genuine_absence(tmp_path, monkeypatch):
         fetch_stars=lambda *_a, **_kw: None,
     )
 
-    cached = json.loads(cache_path.read_text())
+    cached = _read_cache(cache_path)
     assert cached["2304.02643"]["stars"] == 0
 
 
@@ -5947,9 +5966,7 @@ def test_enrich_github_stars_does_not_cache_after_an_unexpected_error(tmp_path, 
         fetch_stars=MagicMock(return_value=None),
     )
     assert enriched == 0
-    assert not (tmp_path / "github_stars.json").exists() or json.loads(
-        (tmp_path / "github_stars.json").read_text()
-    ) == {}
+    assert not (tmp_path / "github_stars.json").exists() or _read_cache(tmp_path / "github_stars.json") == {}
 
 
 def test_enrich_github_stars_does_not_cache_when_the_stars_call_errors(tmp_path, monkeypatch):
@@ -5966,7 +5983,7 @@ def test_enrich_github_stars_does_not_cache_when_the_stars_call_errors(tmp_path,
         fetch_stars=boom,
     )
     cache_path = tmp_path / "github_stars.json"
-    assert not cache_path.exists() or json.loads(cache_path.read_text()) == {}
+    assert not cache_path.exists() or _read_cache(cache_path) == {}
 
 
 # ---- the elements are part of the answer (round 3, pass 6) ----
@@ -6111,7 +6128,7 @@ def test_s2_seed_cache_with_one_malformed_entry_is_a_miss(tmp_path, monkeypatch)
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
     cache = build_theme_lineage._seed_cache_path("chain of thought", 2018)
     cache.parent.mkdir(parents=True, exist_ok=True)
-    cache.write_text(json.dumps([{"paperId": "P1", "title": "Cached"}, {}]))
+    cache.write_text(_seed_cache_json([{"paperId": "P1", "title": "Cached"}, {}]))
 
     live = {"data": [{"paperId": "P9", "title": "Fresh"}]}
     resp = SimpleNamespace(status_code=200, json=lambda: live)
@@ -6214,3 +6231,112 @@ def test_abstract_decode_is_bounded_and_rejects_boolean_positions():
     assert len(out.split(" ")) <= build_theme_lineage._ABSTRACT_MAX_POSITION + 1
     assert decode({"word": [True]}) == ""
     assert decode({"a": [0], "b": [1]}) == "a b"
+
+
+# ---- versioned seed-search and GitHub caches (round-4 review) ----
+
+
+@pytest.mark.parametrize(
+    "legacy",
+    ["[]", '[{"paperId": "p0", "title": "Old"}]', '{"schema_version": "x", "data": []}'],
+    ids=["bare-empty", "bare-list", "other-version"],
+)
+def test_seed_search_refetches_a_legacy_cache(tmp_path, monkeypatch, legacy):
+    """An unversioned `[]` may be an outage an older builder cached."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    cache = build_theme_lineage._seed_cache_path("rag", 2020)
+    cache.parent.mkdir(parents=True, exist_ok=True)
+    cache.write_text(legacy)
+    payload = {"data": [{"paperId": "p1", "title": "Fresh"}]}
+    with patch.object(
+        build_theme_lineage,
+        "request_with_retry",
+        return_value=SimpleNamespace(status_code=200, json=lambda: payload),
+    ) as req:
+        items = build_theme_lineage._search_one_keyword_via_s2(keyword="rag", since_year=2020)
+    req.assert_called_once()
+    assert [p["paperId"] for p in items] == ["p1"]
+    assert _read_cache(cache)[0]["paperId"] == "p1"
+
+
+def test_github_cache_ignores_a_legacy_unversioned_file(tmp_path, monkeypatch):
+    """A legacy file may hold "0 stars" recorded during an outage; every
+    entry is looked up again."""
+    from datetime import datetime, timezone
+
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    fresh_ts = datetime.now(timezone.utc).isoformat()
+    (tmp_path / "github_stars.json").write_text(
+        json.dumps({"2401.00001": {"stars": 0, "url": None, "fetched_at": fresh_ts}})
+    )
+    nodes = {"p1": {"id": "p1", "arxiv_id": "2401.00001", "github_stars": 0, "title": "T"}}
+    fetch = MagicMock(return_value=5)
+    build_theme_lineage._enrich_github_stars(
+        nodes, curated={"2401.00001": "a/b"}, search_repo=MagicMock(), fetch_stars=fetch
+    )
+    fetch.assert_called_once()
+    assert nodes["p1"]["github_stars"] == 5
+
+
+@pytest.mark.parametrize(
+    "entry",
+    [
+        {"stars": "12", "url": None, "fetched_at": "NOW"},
+        {"stars": True, "url": None, "fetched_at": "NOW"},
+        {"stars": -1, "url": None, "fetched_at": "NOW"},
+        {"stars": 3, "url": None, "fetched_at": 12345},
+        {"stars": 3, "url": None, "fetched_at": "2026-09-27T00:00:00"},
+        {"stars": 3, "url": None, "fetched_at": "yesterday"},
+        {"stars": 3, "url": ["x"], "fetched_at": "NOW"},
+        "not-a-dict",
+    ],
+    ids=[
+        "string-stars",
+        "bool-stars",
+        "negative-stars",
+        "numeric-timestamp",
+        "naive-timestamp",
+        "garbage-timestamp",
+        "list-url",
+        "string-entry",
+    ],
+)
+def test_github_cache_drops_a_malformed_entry_and_refetches(tmp_path, monkeypatch, entry):
+    from datetime import datetime, timezone
+
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    fresh_ts = datetime.now(timezone.utc).isoformat()
+    if isinstance(entry, dict) and entry.get("fetched_at") == "NOW":
+        entry = {**entry, "fetched_at": fresh_ts}
+    (tmp_path / "github_stars.json").write_text(_gh_cache_json({"2401.00001": entry}))
+    nodes = {"p1": {"id": "p1", "arxiv_id": "2401.00001", "github_stars": 0, "title": "T"}}
+    fetch = MagicMock(return_value=7)
+    build_theme_lineage._enrich_github_stars(
+        nodes, curated={"2401.00001": "a/b"}, search_repo=MagicMock(), fetch_stars=fetch
+    )
+    fetch.assert_called_once()
+    assert _read_cache(tmp_path / "github_stars.json")["2401.00001"]["stars"] == 7
+
+
+def test_github_cache_ttl_compares_datetimes_not_strings(tmp_path, monkeypatch):
+    """A fresh entry stamped in a non-UTC offset sorts below the UTC
+    cutoff as a string, which used to refetch it needlessly."""
+    from datetime import datetime, timedelta, timezone
+
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    # 4h inside the 7-day TTL, but written at UTC-10 its wall-clock text
+    # reads 6h *before* the UTC cutoff, so a string compare calls it stale.
+    hst = timezone(timedelta(hours=-10))
+    recent = (datetime.now(timezone.utc) - timedelta(days=6, hours=20)).astimezone(hst)
+    (tmp_path / "github_stars.json").write_text(
+        _gh_cache_json(
+            {"2401.00001": {"stars": 4, "url": None, "fetched_at": recent.isoformat()}}
+        )
+    )
+    nodes = {"p1": {"id": "p1", "arxiv_id": "2401.00001", "github_stars": 0, "title": "T"}}
+    fetch = MagicMock(return_value=9)
+    build_theme_lineage._enrich_github_stars(
+        nodes, curated={"2401.00001": "a/b"}, search_repo=MagicMock(), fetch_stars=fetch
+    )
+    fetch.assert_not_called()
+    assert nodes["p1"]["github_stars"] == 4

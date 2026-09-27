@@ -31,6 +31,7 @@ import sys
 from pathlib import Path
 from typing import Any, TypedDict
 
+from paperpilot.utils.atomic import atomic_write_text
 from paperpilot.utils.payload import first_unusable
 
 _log = logging.getLogger(__name__)
@@ -227,7 +228,7 @@ def write_manifest(themes_dir: Path) -> Path:
     themes_dir.mkdir(parents=True, exist_ok=True)
     entries = generate_manifest(themes_dir)
     out = themes_dir / _MANIFEST_NAME
-    out.write_text(json.dumps(entries, ensure_ascii=False, indent=2) + "\n")
+    atomic_write_text(out, json.dumps(entries, ensure_ascii=False, indent=2) + "\n")
     return out
 
 

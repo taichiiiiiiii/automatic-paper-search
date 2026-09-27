@@ -704,6 +704,9 @@ uv pip install 'paperpilot[unarxive]'   # = duckdb + huggingface_hub（#362 で 
 # 2. unarXive DuckDB を build (~5 min、HF cache hit なら ~30 s)
 #    DuckDB native read_json_auto + 3-col 化 + 600ch trim で
 #    生 .duckdb は ~2-3 GB、.gz は ~1-1.5 GB (2 GB 上限内)
+#    fail closed: JSONL の壊れた行・license_info に無い sample_id・重複行が
+#    1件でもあれば既存 index を残して exit 1。upstream の孤立行を確認済みなら
+#    `--allow-unmatched N` で N 行まで許容（孤立行は空 arXiv id で公開せず除外）
 uv run python -m paperpilot.scripts.build_unarxive_index \
     --out paperpilot/data/unarxive/unarxive.duckdb
 

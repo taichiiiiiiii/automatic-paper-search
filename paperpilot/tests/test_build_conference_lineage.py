@@ -622,3 +622,29 @@ def test_short_id_strips_surrounding_whitespace_like_the_guard_does():
     assert bcl._short_id("https://openalex.org/W123/") == "W123"
     assert bcl._short_id("") == ""
     assert bcl._short_id("https://openalex.org/X999") == ""
+
+
+def test_main_final_gate_refuses_a_malformed_graph_and_keeps_the_published_file(
+    tmp_path, monkeypatch
+):
+    """The final gate runs on the exact object about to be serialized, so a
+    projection bug (here `authors: [None]`) never reaches disk."""
+    import sys
+
+    from paperpilot.tests.test_lineage_contract import _artifact
+
+    graph = _artifact()
+    graph["meta"]["completeness"] = {}
+    graph["nodes"][1]["authors"] = [None]
+    published = tmp_path / "eccv-2024" / "lineage.json"
+    published.parent.mkdir()
+    published.write_text('{"previous": true}')
+    monkeypatch.setattr(bcl, "DOCS", tmp_path)
+    monkeypatch.setattr(bcl, "load_orals", lambda *a, **kw: [{"title": "x"}])
+    monkeypatch.setattr(bcl, "build_graph", lambda *a, **kw: graph)
+    monkeypatch.setattr(bcl, "expansion_gate_blocks", lambda *a, **kw: None)
+    monkeypatch.setattr(sys, "argv", ["build_conference_lineage.py", "--conference", "eccv-2024"])
+    with pytest.raises(ValueError, match="node_authors"):
+        bcl.main()
+    assert published.read_text() == '{"previous": true}'
+    assert [p.name for p in published.parent.iterdir()] == ["lineage.json"]

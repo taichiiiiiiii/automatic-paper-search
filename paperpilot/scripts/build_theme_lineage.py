@@ -29,10 +29,8 @@ import argparse
 import hashlib
 import json
 import math
-import os
 import re
 import sys
-import tempfile
 import unicodedata
 from collections import Counter
 from collections.abc import Callable, Iterable
@@ -103,6 +101,7 @@ from paperpilot.scripts.build_lineage import (  # noqa: E402
     persist_classifications,
     to_node,
 )
+from paperpilot.utils.atomic import atomic_write_text  # noqa: E402
 from paperpilot.utils.config_loader import load_env  # noqa: E402
 from paperpilot.utils.github import (  # noqa: E402
     GitHubUnavailableError,
@@ -121,6 +120,10 @@ from paperpilot.utils.payload import (  # noqa: E402
 )
 from paperpilot.utils.unarxive import (  # noqa: E402
     _normalise_arxiv_id,
+)
+from paperpilot.utils.versioned_cache import (  # noqa: E402
+    read_versioned_cache,
+    write_versioned_cache,
 )
 
 logger = get_logger(__name__)
@@ -253,6 +256,10 @@ _THEME_BLACKLIST_PATH = Path(__file__).resolve().parents[1] / "data" / "theme_bl
 
 # ---- GitHub stars enrichment ----
 _GITHUB_CACHE_FILE = "github_stars.json"
+# Bump when a cache entry's meaning changes. v1 entries were written only
+# after "GitHub unavailable" stopped being recorded as zero stars.
+_GITHUB_CACHE_VERSION = "github-stars-cache-v1"
+SEARCH_CACHE_VERSION = "s2-search-cache-v1"
 _GITHUB_CACHE_TTL_DAYS = 7
 # Default per-run lookup budget — the workflow has no need to resolve
 # more than a couple of dozen repos per theme, and the GitHub Search
@@ -1954,10 +1961,9 @@ def _search_one_keyword_via_s2(
         return []
     cache = _seed_cache_path(keyword, since_year)
     if cache.exists():
-        try:
-            cached = json.loads(cache.read_text())
-        except json.JSONDecodeError:
-            cached = None
+        # Unversioned files predate the outage/malformed-page split and
+        # may hold an outage recorded as `[]`; they are misses.
+        cached = read_versioned_cache(cache, SEARCH_CACHE_VERSION)
         if isinstance(cached, list) and not first_unusable(
             cached, lambda p: bool(s2_paper_shape(p))
         ):
@@ -2064,26 +2070,9 @@ def _search_one_keyword_via_s2(
     # A hit with no title is a fact about that record, not a broken
     # page, so it stays an ordinary filtered element.
     items: list[dict[str, Any]] = [p for p in data if p.get("title")]
-    cache.parent.mkdir(parents=True, exist_ok=True)
     # Atomic: a crash partway through a plain write_text would leave a
     # truncated file that every later run reads back as zero seeds.
-    tmp = None
-    try:
-        with tempfile.NamedTemporaryFile(
-            mode="w",
-            encoding="utf-8",
-            dir=cache.parent,
-            prefix=f".{cache.name}.",
-            suffix=".tmp",
-            delete=False,
-        ) as f:
-            tmp = Path(f.name)
-            json.dump(items, f, ensure_ascii=False, indent=2)
-        os.replace(tmp, cache)
-        tmp = None
-    finally:
-        if tmp is not None:
-            tmp.unlink(missing_ok=True)
+    write_versioned_cache(cache, SEARCH_CACHE_VERSION, items)
     return items
 
 
@@ -2918,29 +2907,56 @@ def _dedup_nodes_by_strong_alias(
 # alongside the code that uses them.)
 
 
-def _load_github_stars_cache(cache_path: Path) -> dict[str, dict]:
-    """Load the GitHub-stars cache; return ``{}`` on missing or
-    malformed file. Extracted so the resolution loop in
-    ``_enrich_github_stars`` reads as a single linear flow."""
-    if not cache_path.exists():
-        return {}
+def _github_cache_entry_ok(entry: object) -> bool:
+    """One cached lookup the enrichment loop can trust.
+
+    ``stars`` is a non-negative non-bool int, ``fetched_at`` a
+    timezone-aware ISO timestamp (it is compared as a string against the
+    TTL cutoff, so a naive or non-string value would misorder or crash),
+    and ``url`` is null or a string the loop re-validates.
+    """
+    if not isinstance(entry, dict):
+        return False
+    stars = entry.get("stars")
+    if not isinstance(stars, int) or isinstance(stars, bool) or stars < 0:
+        return False
+    fetched_at = entry.get("fetched_at")
+    if not isinstance(fetched_at, str):
+        return False
     try:
-        data = json.loads(cache_path.read_text())
-    except (OSError, json.JSONDecodeError):
+        parsed = datetime.fromisoformat(fetched_at)
+    except ValueError:
+        return False
+    if parsed.tzinfo is None:
+        return False
+    url = entry.get("url")
+    return url is None or isinstance(url, str)
+
+
+def _load_github_stars_cache(cache_path: Path) -> dict[str, dict]:
+    """Load the GitHub-stars cache; return ``{}`` on missing, malformed
+    or legacy file, and drop any entry that fails the shape check so it
+    is looked up again. Legacy (unversioned) files may carry outages
+    recorded as zero stars, which would suppress a lookup for the whole
+    TTL window."""
+    data = read_versioned_cache(cache_path, _GITHUB_CACHE_VERSION)
+    if not isinstance(data, dict):
         return {}
-    return data if isinstance(data, dict) else {}
+    return {
+        key: entry
+        for key, entry in data.items()
+        if isinstance(key, str) and _github_cache_entry_ok(entry)
+    }
 
 
 def _save_github_stars_cache(cache: dict[str, dict], cache_path: Path) -> None:
-    """Atomically persist the GitHub-stars cache. Concurrent theme
-    runs are kept safe by the temp-file + rename pattern; on OSError
-    we warn but don't fail the build (in-memory cache stays
-    consistent for the rest of the run)."""
+    """Atomically persist the GitHub-stars cache; on OSError we warn but
+    don't fail the build (in-memory cache stays consistent for the rest
+    of the run). Last writer wins: concurrent theme runs never tear the
+    file, but one may drop the other's new keys, which only costs a
+    refetch."""
     try:
-        cache_path.parent.mkdir(parents=True, exist_ok=True)
-        tmp = cache_path.with_suffix(".json.tmp")
-        tmp.write_text(json.dumps(cache, ensure_ascii=False, indent=2))
-        tmp.replace(cache_path)
+        write_versioned_cache(cache_path, _GITHUB_CACHE_VERSION, cache)
     except OSError as exc:
         logger.warning("failed to persist github_stars cache: %s", exc)
 
@@ -2983,7 +2999,7 @@ def _enrich_github_stars(
     fetch = fetch_stars or fetch_repo_stars
     search = search_repo or search_repo_by_title
 
-    fresh_cutoff = (datetime.now(timezone.utc) - timedelta(days=_GITHUB_CACHE_TTL_DAYS)).isoformat()
+    fresh_cutoff = datetime.now(timezone.utc) - timedelta(days=_GITHUB_CACHE_TTL_DAYS)
 
     enriched = 0
     targets: list[tuple[dict, str]] = []  # (node, arxiv_id)
@@ -2992,14 +3008,11 @@ def _enrich_github_stars(
         if not ax:
             continue
         cached = cache.get(ax)
-        if cached and cached.get("fetched_at", "") >= fresh_cutoff:
-            # A corrupted cache entry (e.g. stars="abc" or stars=[1,2])
-            # would crash the enrichment loop here; fall back to 0 so
-            # the run continues and the entry is refreshed on next pass.
-            try:
-                stars = int(cached.get("stars") or 0)
-            except (ValueError, TypeError):
-                stars = 0
+        # The loader already dropped entries with a non-int `stars` or an
+        # unparseable/naive `fetched_at`. Compare datetimes, not strings:
+        # "+09:00" and "+00:00" timestamps do not sort lexically.
+        if cached and datetime.fromisoformat(cached["fetched_at"]) >= fresh_cutoff:
+            stars = cached["stars"]
             if stars > 0:
                 node["github_stars"] = stars
                 cached_url = cached.get("url")
@@ -3742,17 +3755,7 @@ def build_theme_lineage(
         if blocked:
             raise IncompleteBuildError(blocked)
 
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    tmp_path = out_path.with_name(f".{out_path.name}.tmp.{os.getpid()}")
-    try:
-        tmp_path.write_text(
-            json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
-            encoding="utf-8",
-        )
-        os.replace(tmp_path, out_path)
-    finally:
-        if tmp_path.exists():
-            tmp_path.unlink()
+    atomic_write_text(out_path, json.dumps(payload, ensure_ascii=False, indent=2) + "\n")
     logger.info(
         "wrote %s (nodes=%d edges=%d root=%s)",
         out_path,

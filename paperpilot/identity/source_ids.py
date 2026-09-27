@@ -27,7 +27,10 @@ _HOST_SOURCE: dict[str, SourceName] = {
     "www.aclanthology.org": "acl_anthology",
     "openaccess.thecvf.com": "cvf",
 }
-_ARXIV_MODERN_RE = re.compile(r"^[0-9]{4}\.[0-9]{4,5}$")
+# The one definition of the modern (post-2007) arXiv grammar; the lineage
+# contract, the unarXive lookup and the collectors derive from it.
+ARXIV_MODERN_PATTERN = r"[0-9]{4}\.[0-9]{4,5}"
+_ARXIV_MODERN_RE = re.compile(rf"^{ARXIV_MODERN_PATTERN}$")
 _ARXIV_LEGACY_RE = re.compile(r"^([A-Za-z][A-Za-z0-9.-]*)/([0-9]{7})$")
 _ARXIV_VERSION_RE = re.compile(r"v[0-9]+$")
 _OPENREVIEW_RE = re.compile(r"^[A-Za-z0-9_-]{1,256}$")
@@ -115,9 +118,9 @@ def _normalize_arxiv_url(parts: SplitResult) -> str:
     identifier = segments[1:]
     if not identifier or len(identifier) > 2:
         raise IdentityError("arXiv URL has an ambiguous ID path")
-    if segments[0] == "pdf":
-        if not identifier[-1].endswith(".pdf"):
-            raise IdentityError("arXiv PDF path must end with .pdf")
+    # arXiv's own API returns ``/pdf/<id>v<n>`` without an extension, and
+    # the site serves both forms, so ``.pdf`` is optional.
+    if segments[0] == "pdf" and identifier[-1].endswith(".pdf"):
         identifier[-1] = identifier[-1][: -len(".pdf")]
     return _normalize_arxiv_id("/".join(identifier))
 
@@ -221,6 +224,18 @@ def make_paper_id(source: str, source_id: str) -> str:
         raise IdentityError("a DOI alias cannot be a canonical paper source")
     payload = f"paperpilot:v1:{normalized_source}:{normalized_id}".encode()
     return hashlib.sha256(payload).hexdigest()[:40]
+
+
+def normalize_arxiv_id(value: str) -> str:
+    """Canonical versionless arXiv ID (modern or legacy); raises IdentityError."""
+
+    return _normalize_arxiv_id(value)
+
+
+def is_arxiv_host(host: str) -> bool:
+    """Whether ``host`` (lowercased) is one of the arXiv hosts this module parses."""
+
+    return _HOST_SOURCE.get(host) == "arxiv"
 
 
 def identity_from_url(url: str) -> PaperIdentity:

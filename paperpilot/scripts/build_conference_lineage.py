@@ -31,6 +31,7 @@ from pathlib import Path
 from typing import Any
 
 from ..identity.source_ids import IdentityError, identity_from_url, normalize_alias
+from ..utils.atomic import atomic_write_text
 from ..utils.http import request_with_retry
 from ..utils.logger import get_logger
 from ..utils.payload import first_unusable, openalex_short_id, openalex_work_shape
@@ -45,7 +46,7 @@ from ._lineage_contract import (
     canonical_json_sha256,
     make_provenance,
     require_paper_id,
-    validate_lineage_artifact,
+    require_valid_lineage_artifact,
 )
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -631,10 +632,7 @@ def build_graph(
             "completeness": (completeness or BuildCompleteness()).as_meta(),
         },
     }
-    issues = validate_lineage_artifact(graph, kind="conference", catalog_ids=set(seeds))
-    if issues:
-        detail = "; ".join(f"{issue.code}:{issue.path}" for issue in issues[:8])
-        raise ValueError(f"generated lineage violates {LINEAGE_ARTIFACT_VERSION}: {detail}")
+    require_valid_lineage_artifact(graph, kind="conference", catalog_ids=set(seeds))
     return graph
 
 
@@ -722,7 +720,8 @@ def main() -> int:
             print(f"incomplete build; published lineage left untouched: {blocked}", file=sys.stderr)
             return 4
 
-    out.write_text(json.dumps(graph, ensure_ascii=False, indent=0), encoding="utf-8")
+    require_valid_lineage_artifact(graph, kind="conference")
+    atomic_write_text(out, json.dumps(graph, ensure_ascii=False, indent=0))
     focus = sum(1 for n in graph["nodes"] if n.get("is_focus"))
     print(f"✅ {len(graph['nodes'])} nodes ({focus} orals), {len(graph['edges'])} edges -> {out}")
     return 0

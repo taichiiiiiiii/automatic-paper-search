@@ -41,12 +41,13 @@ from typing import Any
 import arxiv
 
 from ..identity import IdentityError, identity_from_url, normalize_alias
+from ..identity.source_ids import ARXIV_MODERN_PATTERN
 from ..signals.venue_signal import VenueSignal
 from ..utils.csv_safety import neutralize_row
 from ._common import validate_conference_slug
 
 PROJECT = Path(__file__).resolve().parents[1]
-_ARXIV_ID_RE = re.compile(r"abs/([0-9]+\.[0-9]+)")
+_ARXIV_MODERN_RE = re.compile(rf"^{ARXIV_MODERN_PATTERN}$")
 _ORAL_RE = re.compile(r"\b(oral|highlight)\b", re.IGNORECASE)
 
 _CSV_COLUMNS = [
@@ -67,9 +68,21 @@ _CSV_COLUMNS = [
 
 
 def _arxiv_id(entry_id: str) -> str:
-    """Extract the bare arXiv id (e.g. 2604.15174) from an entry URL."""
-    m = _ARXIV_ID_RE.search(entry_id or "")
-    return m.group(1) if m else ""
+    """Extract the bare arXiv id (e.g. 2604.15174) from an entry URL.
+
+    Parsed by the shared identity module, so only a real arXiv host
+    counts. Legacy ``archive/NNNNNNN`` IDs are skipped like any other
+    unparseable entry: the arXiv API never returns them for the recent
+    conferences this collects, and downstream file names assume the
+    slash-free modern form.
+    """
+    try:
+        identity = identity_from_url(entry_id or "")
+    except IdentityError:
+        return ""
+    if identity.source != "arxiv" or not _ARXIV_MODERN_RE.fullmatch(identity.source_id):
+        return ""
+    return identity.source_id
 
 
 def fetch_results(query: str, max_results: int, *, page_size: int = 100) -> list[Any]:

@@ -40,7 +40,7 @@ from urllib.parse import urlparse
 
 from .http import request_with_retry
 from .logger import get_logger
-from .payload import first_unusable, gh_repo_slug
+from .payload import first_unusable, gh_repo_slug, gh_search_item_ok
 
 logger = get_logger(__name__)
 
@@ -226,7 +226,7 @@ def search_repo_by_title(
     # limit"}]}` and `{"items": [null]}` used to fall through the loop
     # and return None, which the caller stores as "this paper has no
     # repository" for the whole TTL window.
-    bad = first_unusable(items, lambda i: gh_repo_slug(i.get("full_name")) is not None)
+    bad = first_unusable(items, gh_search_item_ok)
     if bad is not None:
         index, item = bad
         raise GitHubUnavailableError(
@@ -234,8 +234,8 @@ def search_repo_by_title(
             f"(type={type(item).__name__})"
         )
     for item in items:
-        # `gh_repo_slug` is the predicate the guard above used, so this
-        # loop can no longer skip an item the page was accepted for.
+        # `gh_search_item_ok` is the predicate the guard above used, so
+        # this loop can no longer skip or crash on an accepted item.
         full_name = item["full_name"]
         sim = max(
             title_similarity(cleaned, item.get("name") or ""),

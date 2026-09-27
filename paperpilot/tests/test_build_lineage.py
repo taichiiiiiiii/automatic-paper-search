@@ -1903,7 +1903,7 @@ def test_fetch_related_does_not_count_a_cache_hit_as_an_attempt(tmp_path, monkey
     from paperpilot.scripts._fetch_state import BuildCompleteness
 
     monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
-    (tmp_path / "references_pZ.json").write_text("[]")
+    _write_relation_cache(tmp_path / "references_pZ.json", [])
     completeness = BuildCompleteness()
     build_lineage.fetch_related("pZ", "references", 5, completeness=completeness)
     assert completeness.expansions_attempted == 0
@@ -2271,7 +2271,8 @@ def test_fetch_related_ignores_a_relation_cache_written_before_validation(tmp_pa
 
     monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
     monkeypatch.setattr(build_lineage.time, "sleep", lambda _s: None)
-    (tmp_path / "references_pC.json").write_text(json.dumps([{}]))
+    # Versioned, so only the element check can reject it.
+    _write_relation_cache(tmp_path / "references_pC.json", [{}])
 
     live = {"data": [{"citedPaper": {"paperId": "fresh", "title": "Fresh"}}]}
     completeness = BuildCompleteness()
@@ -2295,7 +2296,7 @@ def test_fetch_related_ignores_a_truncated_relation_cache(tmp_path, monkeypatch)
 def test_fetch_related_still_uses_a_valid_relation_cache(tmp_path, monkeypatch):
     monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
     cached = [{"paperId": "cached", "title": "Cached"}]
-    (tmp_path / "references_pE2.json").write_text(json.dumps(cached))
+    _write_relation_cache(tmp_path / "references_pE2.json", cached)
     with patch.object(build_lineage, "_s2_get") as get:
         assert build_lineage.fetch_related("pE2", "references", 5) == cached
     get.assert_not_called()
@@ -2432,11 +2433,112 @@ def test_fetch_related_ignores_a_relation_cache_with_a_broken_nested_field(tmp_p
     it used to be checked on the id alone and then crash `to_node`."""
     monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
     monkeypatch.setattr(build_lineage.time, "sleep", lambda _s: None)
-    (tmp_path / "references_pN2.json").write_text(
-        json.dumps([{"paperId": "P1", "title": "T", "authors": [1]}])
+    _write_relation_cache(
+        tmp_path / "references_pN2.json", [{"paperId": "P1", "title": "T", "authors": [1]}]
     )
     live = {"data": [{"citedPaper": {"paperId": "fresh", "title": "Fresh"}}]}
     with patch.object(build_lineage, "_s2_get", return_value=live) as get:
         items = build_lineage.fetch_related("pN2", "references", 5)
     assert [p["paperId"] for p in items] == ["fresh"]
     assert get.call_count == 1
+
+
+# ---- extract_arxiv_id is host-aware (round-4 review) ----
+
+
+@pytest.mark.parametrize(
+    ("url", "expected"),
+    [
+        ("https://arxiv.org/abs/2401.12345v2", "2401.12345"),
+        ("http://arxiv.org/pdf/2401.12345v3", "2401.12345"),
+        ("https://arxiv.org/pdf/2401.12345.pdf", "2401.12345"),
+        ("https://arxiv.org/abs/hep-th/9901001", "hep-th/9901001"),
+        ("https://openreview.net/forum?id=abc", None),
+        ("https://aclanthology.org/2025.emnlp-main.15/", None),
+        ("https://example.com/arxiv.org/abs/2401.12345", None),
+        ("https://arxiv.org.evil/abs/2401.12345", None),
+        ("", None),
+    ],
+)
+def test_extract_arxiv_id_only_trusts_arxiv_hosts(url: str, expected: str | None) -> None:
+    assert build_lineage.extract_arxiv_id(url) == expected
+
+
+def test_extract_arxiv_id_refuses_a_malformed_url_on_an_arxiv_host() -> None:
+    """An arXiv host with an unparseable path is a broken record, not "no alias"."""
+    with pytest.raises(ValueError, match="malformed arXiv URL"):
+        build_lineage.extract_arxiv_id("https://arxiv.org/list/cs.LG/recent")
+
+
+def test_non_arxiv_url_yields_no_alias_but_declared_id_still_validates() -> None:
+    paper = {"arxiv_url": "https://openaccess.thecvf.com/x.html", "arxiv_id": "2401.12345"}
+    assert build_lineage._normalize_oral_arxiv_id(paper) == "2401.12345"
+    spoofed = {"arxiv_url": "https://example.com/arxiv.org/abs/2401.12345"}
+    assert build_lineage._normalize_oral_arxiv_id(spoofed) is None
+
+
+# ---- relation cache is versioned (round-4 review) ----
+
+
+def _write_relation_cache(path: Path, data: object) -> None:
+    path.write_text(
+        json.dumps({"schema_version": build_lineage.RELATION_CACHE_VERSION, "data": data})
+    )
+
+
+@pytest.mark.parametrize(
+    "legacy",
+    [
+        [],
+        [{"paperId": "cached", "title": "Cached"}],
+        {"schema_version": "lineage-relation-cache-v0", "data": []},
+        {"data": []},
+        "false",
+    ],
+    ids=["bare-empty", "bare-list", "other-version", "no-version", "string"],
+)
+def test_fetch_related_treats_a_legacy_relation_cache_as_a_miss(tmp_path, monkeypatch, legacy):
+    """A bare `[]` is what an older builder wrote for an outage; it must
+    trigger a refetch (counted as an attempt), not replay "no relations"."""
+    from paperpilot.scripts._fetch_state import BuildCompleteness
+
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    monkeypatch.setattr(build_lineage.time, "sleep", lambda _s: None)
+    cache = tmp_path / "references_pL.json"
+    cache.write_text(json.dumps(legacy))
+    live = {"data": [{"citedPaper": {"paperId": "fresh", "title": "Fresh"}}]}
+    completeness = BuildCompleteness()
+    with patch.object(build_lineage, "_s2_get", return_value=live) as get:
+        items = build_lineage.fetch_related("pL", "references", 5, completeness=completeness)
+    assert [p["paperId"] for p in items] == ["fresh"]
+    assert get.call_count == 1
+    assert completeness.expansions_attempted == 1
+    rewritten = json.loads(cache.read_text())
+    assert rewritten["schema_version"] == build_lineage.RELATION_CACHE_VERSION
+    assert [p["paperId"] for p in rewritten["data"]] == ["fresh"]
+
+
+def test_fetch_related_trusts_a_versioned_empty_relation_cache(tmp_path, monkeypatch):
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    _write_relation_cache(tmp_path / "references_pV.json", [])
+    with patch.object(build_lineage, "_s2_get") as get:
+        assert build_lineage.fetch_related("pV", "references", 5) == []
+    get.assert_not_called()
+
+
+def test_legacy_refetch_failure_leaves_no_trusted_cache(tmp_path, monkeypatch):
+    """If the refetch of a legacy entry fails, the failure is counted and
+    nothing trusted is written in its place."""
+    from paperpilot.scripts._fetch_state import BuildCompleteness
+
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    monkeypatch.setattr(build_lineage.time, "sleep", lambda _s: None)
+    cache = tmp_path / "references_pF.json"
+    cache.write_text("[]")
+    completeness = BuildCompleteness()
+    with patch.object(
+        build_lineage, "_s2_get", side_effect=build_lineage.S2TransientError("503")
+    ):
+        assert build_lineage.fetch_related("pF", "references", 5, completeness=completeness) == []
+    assert completeness.expansions_failed == 1
+    assert cache.read_text() == "[]"

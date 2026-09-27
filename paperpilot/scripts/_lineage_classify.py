@@ -33,7 +33,6 @@ from __future__ import annotations
 
 import functools
 import json
-import os
 import re
 from collections.abc import Callable
 from pathlib import Path
@@ -45,6 +44,7 @@ from paperpilot.llm.base import (
     RelationClassification,
     provider_model_tag,
 )
+from paperpilot.utils.atomic import atomic_write_text
 from paperpilot.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -267,12 +267,7 @@ def _default_persist_classifications(
     the simple atomic-write equivalent: enough for tests and one-shot
     runs, without forcing ``_lineage_classify`` to import ``build_lineage``.
     """
-    tmp = cache_path.with_suffix(cache_path.suffix + f".tmp.{os.getpid()}")
-    tmp.write_text(
-        json.dumps(classifications, ensure_ascii=False, indent=2),
-        encoding="utf-8",
-    )
-    os.replace(tmp, cache_path)
+    atomic_write_text(cache_path, json.dumps(classifications, ensure_ascii=False, indent=2))
 
 
 class _CachedClassifyProvider(AbstractLLMProvider):

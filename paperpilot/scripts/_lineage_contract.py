@@ -14,7 +14,7 @@ from collections.abc import Mapping
 from datetime import datetime
 from typing import Any, Literal, NamedTuple
 
-from paperpilot.identity.source_ids import IdentityError, normalize_alias
+from paperpilot.identity.source_ids import ARXIV_MODERN_PATTERN, IdentityError, normalize_alias
 
 LINEAGE_ARTIFACT_VERSION = "lineage-artifact-v1"
 DEEP_MANIFEST_VERSION = "deep-manifest-v1"
@@ -22,7 +22,9 @@ LINEAGE_QUALITY_VERSION = "lineage-quality-v1"
 
 PAPER_ID_RE = re.compile(r"^[0-9a-f]{40}$")
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
-ARXIV_ID_RE = re.compile(r"^\d{4}\.\d{4,5}(?:v\d+)?$")
+# Deep artifacts are keyed by modern IDs only (their filenames embed the
+# ID); legacy ``archive/NNNNNNN`` IDs would need a path-safe encoding.
+ARXIV_ID_RE = re.compile(rf"^{ARXIV_MODERN_PATTERN}(?:v\d+)?$")
 CONFERENCE_SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9-]*$")
 QUALITY_TIMESTAMP_RE = re.compile(
     r"^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})"
@@ -148,11 +150,60 @@ def _is_quality_date(value: object) -> bool:
     return True
 
 
+def _exact_nonempty(value: object) -> bool:
+    """Nonempty and already trimmed: ``" P1 "`` is a different key from ``"P1"``."""
+
+    return _nonempty(value) and value == value.strip()
+
+
 def _node_id(node: object) -> str | None:
     if not isinstance(node, Mapping):
         return None
     value = node.get("id")
-    return value if _nonempty(value) else None
+    return value if _exact_nonempty(value) else None
+
+
+def _optional_count(value: object) -> bool:
+    return value is None or (
+        isinstance(value, int) and not isinstance(value, bool) and value >= 0
+    )
+
+
+def _node_display_issues(node: Mapping[str, Any], path: str) -> list[ContractIssue]:
+    """Check the fields the viewers render, when present.
+
+    Absent or null is legitimate (OpenAlex conference nodes carry no
+    citation count); a wrong type is a projection bug that would otherwise
+    reach the page as ``NaN`` or ``"null"``.
+    """
+
+    issues: list[ContractIssue] = []
+    if "title" in node and not isinstance(node["title"], str):
+        issues.append(ContractIssue("node_title", f"{path}.title", "string required"))
+    year = node.get("year")
+    if year is not None and (not isinstance(year, int) or isinstance(year, bool)):
+        issues.append(ContractIssue("node_year", f"{path}.year", "integer or null required"))
+    authors = node.get("authors")
+    if authors is not None and (
+        not isinstance(authors, list) or any(not isinstance(author, str) for author in authors)
+    ):
+        issues.append(ContractIssue("node_authors", f"{path}.authors", "string array required"))
+    for field in ("citation_count", "github_stars"):
+        if not _optional_count(node.get(field)):
+            issues.append(
+                ContractIssue(
+                    f"node_{field}", f"{path}.{field}", "nonnegative integer or null required"
+                )
+            )
+    if "citationCount" in node:
+        issues.append(
+            ContractIssue(
+                "node_raw_citation_count",
+                f"{path}.citationCount",
+                "provider field must be projected as citation_count",
+            )
+        )
+    return issues
 
 
 def canonical_focus_node(data: Mapping[str, Any]) -> Mapping[str, Any] | None:
@@ -370,6 +421,7 @@ def validate_lineage_artifact(
             issues.append(
                 ContractIssue("focus_flag", f"$.nodes[{index}].is_focus", "boolean required")
             )
+        issues.extend(_node_display_issues(node, f"$.nodes[{index}]"))
         if node.get("is_focus") is True:
             seed = node.get("seed_paper_id")
             if not is_paper_id(seed):
@@ -563,6 +615,33 @@ def validate_lineage_artifact(
             )
 
     return sorted(set(issues), key=lambda issue: (issue.code, issue.path, issue.detail))
+
+
+
+def require_valid_lineage_artifact(
+    data: object,
+    *,
+    kind: Literal["conference", "theme", "deep"],
+    label: str = "generated lineage",
+    catalog_ids: set[str] | None = None,
+    expected_seed_paper_id: str | None = None,
+) -> None:
+    """Raise ``ValueError`` if ``data`` violates the public lineage contract.
+
+    Builders call this on the exact object they are about to serialize,
+    after the last mutation (completeness meta included), so nothing that
+    reaches disk has skipped validation.
+    """
+
+    issues = validate_lineage_artifact(
+        data,
+        kind=kind,
+        catalog_ids=catalog_ids,
+        expected_seed_paper_id=expected_seed_paper_id,
+    )
+    if issues:
+        detail = "; ".join(f"{issue.code}:{issue.path}" for issue in issues[:8])
+        raise ValueError(f"{label} violates {LINEAGE_ARTIFACT_VERSION}: {detail}")
 
 
 def catalog_paper_ids(rows: object) -> set[str]:

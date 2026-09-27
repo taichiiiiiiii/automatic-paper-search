@@ -336,12 +336,14 @@ def s2_paper_id(payload: object) -> str | None:
     non-empty string one is a broken response. A *truthy* non-string
     (``123``, ``True``) is worse than a missing key: it survives a
     ``bool(...)`` check and is then carried into the artifact as a dict
-    key and a graph node id.
+    key and a graph node id. A padded ``" P1 "`` is refused too: it is
+    a different key from ``"P1"`` everywhere downstream, and the final
+    lineage gate rejects it as a node id.
     """
     if not isinstance(payload, dict):
         return None
     paper_id = payload.get("paperId")
-    if not isinstance(paper_id, str) or not paper_id.strip():
+    if not isinstance(paper_id, str) or not paper_id or paper_id != paper_id.strip():
         return None
     return paper_id
 
@@ -363,3 +365,19 @@ def gh_repo_slug(full_name: object) -> tuple[str, str] | None:
     if not _GH_SLUG_SEGMENT_RE.fullmatch(owner) or not _GH_SLUG_SEGMENT_RE.fullmatch(name):
         return None
     return owner, name
+
+
+def gh_search_item_ok(item: object) -> bool:
+    """One GitHub repository-search item the matcher can consume.
+
+    ``full_name`` must be a valid slug; ``name`` is always a string on a
+    real repository and ``description`` is a string or null. A dict in
+    either (an error envelope spliced into ``items``) used to pass the
+    page check and then raise inside ``title_similarity``.
+    """
+    if not isinstance(item, dict) or gh_repo_slug(item.get("full_name")) is None:
+        return False
+    description = item.get("description")
+    return isinstance(item.get("name"), str) and (
+        description is None or isinstance(description, str)
+    )

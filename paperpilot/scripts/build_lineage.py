@@ -41,6 +41,7 @@ import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, TypedDict
+from urllib.parse import urlsplit
 
 
 class ClusterEntry(TypedDict):
@@ -55,7 +56,12 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from paperpilot.identity.source_ids import IdentityError, normalize_alias  # noqa: E402
+from paperpilot.identity.source_ids import (  # noqa: E402
+    IdentityError,
+    identity_from_url,
+    is_arxiv_host,
+    normalize_alias,
+)
 from paperpilot.llm import (  # noqa: E402
     AbstractLLMProvider,
     GeminiProvider,
@@ -76,15 +82,19 @@ from paperpilot.scripts._fetch_state import (  # noqa: E402
     IncompleteFetchError,
     expansion_gate_blocks,
 )
-from paperpilot.scripts._lineage_classify import derive_relation  # noqa: E402
+from paperpilot.scripts._lineage_classify import (  # noqa: E402
+    _load_classification_cache,
+    derive_relation,
+)
 from paperpilot.scripts._lineage_contract import (  # noqa: E402
     CLASSIFICATION_METHODS,
     LINEAGE_ARTIFACT_VERSION,
     canonical_json_sha256,
     make_provenance,
     require_paper_id,
-    validate_lineage_artifact,
+    require_valid_lineage_artifact,
 )
+from paperpilot.utils.atomic import atomic_write_text  # noqa: E402
 from paperpilot.utils.http import request_with_retry  # noqa: E402
 from paperpilot.utils.logger import get_logger, setup_logging  # noqa: E402
 from paperpilot.utils.payload import (  # noqa: E402
@@ -94,6 +104,11 @@ from paperpilot.utils.payload import (  # noqa: E402
     s2_relation_entry_ok,
 )
 from paperpilot.utils.payload import s2_paper_id as _resolved_paper_id  # noqa: E402
+from paperpilot.utils.versioned_cache import (  # noqa: E402
+    CACHE_MISS,
+    read_versioned_cache,
+    write_versioned_cache,
+)
 
 logger = get_logger(__name__)
 
@@ -104,6 +119,9 @@ DOCS_ROOT = ROOT / "docs"
 PAPERS_PATH = DOCS_ROOT / "iclr-2026" / "papers.json"
 OUTPUT_PATH = DOCS_ROOT / "iclr-2026" / "lineage.json"
 CACHE_DIR = ROOT / "paperpilot" / "data" / "lineage-cache"
+# Bump when what a relation cache entry means changes. v1: written only
+# after the outage/malformed-page split, so its `[]` is a real answer.
+RELATION_CACHE_VERSION = "lineage-relation-cache-v1"
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
 
@@ -431,7 +449,7 @@ def fetch_paper_by_arxiv(
         time.sleep(S2_RATE_DELAY)
         return None
     if data:
-        cache.write_text(json.dumps(data, ensure_ascii=False, indent=2))
+        atomic_write_text(cache, json.dumps(data, ensure_ascii=False, indent=2))
     time.sleep(S2_RATE_DELAY)
     return data
 
@@ -466,21 +484,22 @@ def fetch_related(
     # Cache check is FIRST so OpenAlex and S2 routes share the same
     # disk layer — keeps re-runs cheap regardless of data source.
     cache = CACHE_DIR / f"{kind}_{s2_id}.json"
+    # The cache must clear the same bar as a live response. An entry
+    # written by an older build can hold `[{}]` — or a bare `[]` that an
+    # outage was cached as — which reads back as a perfectly successful
+    # "no relations", never touches the network, and never reaches the
+    # ledger, so the publication gate sees a clean build shrinking a good
+    # artifact. The version proves the writer already refused outages;
+    # the element check proves the entries are consumable.
+    cached = read_versioned_cache(cache, RELATION_CACHE_VERSION)
+    if (
+        cached is not CACHE_MISS
+        and isinstance(cached, list)
+        and not first_unusable(cached, s2_cached_neighbour_ok)
+    ):
+        return cached
     if cache.exists():
-        # The cache must clear the same bar as a live response. An entry
-        # written by an older build can hold `[{}]`, which reads back as
-        # a perfectly successful "no relations", never touches the
-        # network, and never reaches the ledger — so the publication
-        # gate sees a clean build shrinking a good artifact. A truncated
-        # file is the same story with a JSONDecodeError that the
-        # cross-node pass swallows.
-        try:
-            cached = json.loads(cache.read_text())
-        except (OSError, ValueError):
-            cached = None
-        if isinstance(cached, list) and not first_unusable(cached, s2_cached_neighbour_ok):
-            return cached
-        logger.warning("s2: ignoring unusable relation cache %s", cache.name)
+        logger.warning("s2: ignoring legacy or unusable relation cache %s", cache.name)
 
     # A cache hit is not an attempt: it neither reaches the network nor
     # can fail. Counting it would dilute the failure ratio on re-runs.
@@ -512,8 +531,7 @@ def fetch_related(
             if completeness is not None:
                 completeness.expansion_failed()
             return e.partial
-        cache.parent.mkdir(parents=True, exist_ok=True)
-        cache.write_text(json.dumps(items, ensure_ascii=False, indent=2))
+        write_versioned_cache(cache, RELATION_CACHE_VERSION, items)
         return items
 
     url = (
@@ -602,7 +620,7 @@ def fetch_related(
                 [str(i) for i in raw_intents] if isinstance(raw_intents, list) else None
             )
             items.append(enriched)
-    cache.write_text(json.dumps(items, ensure_ascii=False, indent=2))
+    write_versioned_cache(cache, RELATION_CACHE_VERSION, items)
     time.sleep(S2_RATE_DELAY)
     return items
 
@@ -709,8 +727,25 @@ def to_node(
 
 
 def extract_arxiv_id(arxiv_url: str) -> str | None:
-    m = re.search(r"arxiv\.org/abs/([\d\.]+)", arxiv_url or "")
-    return m.group(1) if m else None
+    """Return the canonical arXiv ID named by an arXiv URL, else None.
+
+    ``arxiv_url`` holds whatever landing page the collector had: CVF, ACL
+    and OpenReview URLs are ordinary and mean "no arXiv alias". A substring
+    search used to promote ``https://example.com/arxiv.org/abs/2401.12345``
+    to a strong arXiv alias, so the host is checked by the shared identity
+    parser. A URL on an arXiv host that the parser rejects is a malformed
+    record, not an absent alias, and raises.
+    """
+    if not arxiv_url or not arxiv_url.strip():
+        return None
+    host = (urlsplit(arxiv_url.strip()).hostname or "").lower()
+    if not is_arxiv_host(host):
+        return None
+    try:
+        identity = identity_from_url(arxiv_url)
+    except IdentityError as exc:
+        raise ValueError(f"malformed arXiv URL: {arxiv_url!r}") from exc
+    return identity.source_id
 
 
 def _normalize_oral_arxiv_id(paper: dict) -> str | None:
@@ -791,9 +826,9 @@ def persist_classifications(classifications: dict[str, dict], cache_path: Path) 
                 if isinstance(disk_obj, dict):
                     for k, v in disk_obj.items():
                         classifications.setdefault(k, v)
-            tmp = cache_path.with_suffix(cache_path.suffix + f".tmp.{os.getpid()}")
-            tmp.write_text(json.dumps(classifications, ensure_ascii=False, indent=2))
-            os.replace(tmp, cache_path)
+            atomic_write_text(
+                cache_path, json.dumps(classifications, ensure_ascii=False, indent=2)
+            )
         finally:
             fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
 
@@ -1105,11 +1140,7 @@ def build(
     edges: list[dict] = []
     focus_seed_by_graph_id: dict[str, str] = {}
     classification_cache_path = CACHE_DIR / "classifications.json"
-    classifications: dict[str, dict] = (
-        json.loads(classification_cache_path.read_text())
-        if classification_cache_path.exists()
-        else {}
-    )
+    classifications: dict[str, dict] = _load_classification_cache(classification_cache_path)
 
     # Resolve and verify every focus identity before fetching a single related
     # paper or classifying an edge.  A mismatch in any Oral therefore aborts
@@ -1294,10 +1325,7 @@ def build(
             "generated_at": generated_at or _iso_z(_utc_now()),
         },
     }
-    issues = validate_lineage_artifact(result, kind="conference", catalog_ids=set(seeds))
-    if issues:
-        detail = "; ".join(f"{issue.code}:{issue.path}" for issue in issues[:8])
-        raise ValueError(f"generated lineage violates {LINEAGE_ARTIFACT_VERSION}: {detail}")
+    require_valid_lineage_artifact(result, kind="conference", catalog_ids=set(seeds))
     return result
 
 
@@ -1406,7 +1434,10 @@ def main():
             sys.exit(4)
 
     result.setdefault("meta", {})["completeness"] = completeness.as_meta()
-    output_path.write_text(json.dumps(result, ensure_ascii=False, indent=2))
+    # Final gate on the exact bytes-to-be: the in-build check ran before
+    # the completeness meta was attached.
+    require_valid_lineage_artifact(result, kind="conference")
+    atomic_write_text(output_path, json.dumps(result, ensure_ascii=False, indent=2))
 
     print()
     print(f"✓ Wrote {output_path}")

@@ -29,6 +29,13 @@ from paperpilot.identity import (
             "a975ae530b334ab97e07817de3a60e7ed5d615ad",
         ),
         (
+            # The arXiv API's own pdf_url form carries no extension.
+            "http://arxiv.org/pdf/2601.02771v1",
+            "arxiv",
+            "2601.02771",
+            "a975ae530b334ab97e07817de3a60e7ed5d615ad",
+        ),
+        (
             "https://openreview.net/forum?id=rlZeILv3fm#discussion",
             "openreview",
             "rlZeILv3fm",

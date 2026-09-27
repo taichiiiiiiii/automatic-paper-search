@@ -165,3 +165,25 @@ def test_scaffold_refuses_to_overwrite_existing_conference_page(tmp_path: Path):
         scaffold.scaffold("existing-2026", "Existing 2026", "lede", docs_root=docs)
 
     assert (existing / "index.html").read_text(encoding="utf-8") == original
+
+
+def test_scaffold_failure_leaves_nothing_so_a_rerun_is_possible(tmp_path: Path, monkeypatch):
+    """A crash between the two writes used to strand one file, and the
+    existence check then refused every rerun."""
+    docs = tmp_path / "docs"
+    _write_template(docs)
+    real = scaffold.atomic_write_text
+
+    def fail_on_html(path, text):
+        if Path(path).name == "index.html":
+            raise OSError("disk full")
+        return real(path, text)
+
+    monkeypatch.setattr(scaffold, "atomic_write_text", fail_on_html)
+    with pytest.raises(OSError):
+        scaffold.scaffold("eccv-2026", "ECCV 2026", "lede", docs_root=docs)
+    assert list((docs / "eccv-2026").iterdir()) == []
+
+    monkeypatch.setattr(scaffold, "atomic_write_text", real)
+    out = scaffold.scaffold("eccv-2026", "ECCV 2026", "lede", docs_root=docs)
+    assert out.exists() and (docs / "eccv-2026" / "lineage.json").exists()

@@ -68,6 +68,8 @@ def test_openalex_short_id(value, expected):
         ({"paperId": "abc"}, "abc"),
         ({"paperId": ""}, None),
         ({"paperId": "  "}, None),
+        ({"paperId": " P1 "}, None),
+        ({"paperId": "P1\n"}, None),
         ({"paperId": 123}, None),
         ({"paperId": True}, None),
         ({}, None),
@@ -349,3 +351,21 @@ def test_s2_cached_neighbour_ok(paper, expected):
     from paperpilot.utils.payload import s2_cached_neighbour_ok
 
     assert s2_cached_neighbour_ok(paper) is expected
+
+
+@pytest.mark.parametrize(
+    "item,ok",
+    [
+        ({"full_name": "o/r", "name": "r", "description": None}, True),
+        ({"full_name": "o/r", "name": "r", "description": "d"}, True),
+        ({"full_name": "o/r", "name": 1, "description": None}, False),
+        ({"full_name": "o/r", "name": "r", "description": {"m": 1}}, False),
+        ({"full_name": "o/r", "description": None}, False),
+        ({"full_name": "o/../r", "name": "r", "description": None}, False),
+        (None, False),
+    ],
+)
+def test_gh_search_item_ok(item, ok):
+    from paperpilot.utils.payload import gh_search_item_ok
+
+    assert gh_search_item_ok(item) is ok

@@ -448,8 +448,32 @@ def test_fetch_repo_stars_accepts_a_genuine_zero() -> None:
 
 @pytest.mark.parametrize(
     "item",
-    [None, "a-string", {}, {"message": "rate limit"}, {"full_name": 7}],
-    ids=["null", "string", "empty-dict", "error-item", "non-string-name"],
+    [
+        None,
+        "a-string",
+        {},
+        {"message": "rate limit"},
+        {"full_name": 7},
+        {"full_name": "owner/repo", "description": None},
+        {"full_name": "owner/repo", "name": 123, "description": None},
+        {"full_name": "owner/repo", "name": None, "description": "d"},
+        {"full_name": "owner/repo", "name": "repo", "description": {"message": "x"}},
+        {"full_name": "owner/repo", "name": "repo", "description": ["d"]},
+        {"full_name": "owner/repo", "name": "repo", "description": 5},
+    ],
+    ids=[
+        "null",
+        "string",
+        "empty-dict",
+        "error-item",
+        "non-string-full-name",
+        "missing-name",
+        "numeric-name",
+        "null-name",
+        "dict-description",
+        "list-description",
+        "numeric-description",
+    ],
 )
 def test_search_repo_rejects_a_malformed_item(item) -> None:
     """The elements carry the answer. An item-shaped error envelope
@@ -470,6 +494,17 @@ def test_search_repo_still_returns_none_when_nothing_is_similar_enough() -> None
     resp.status_code = 200
     resp.json.return_value = {
         "items": [{"full_name": "someone/unrelated", "name": "unrelated", "description": ""}]
+    }
+    with patch("paperpilot.utils.github.request_with_retry", return_value=resp):
+        assert gh.search_repo_by_title("Segment Anything") is None
+
+
+@pytest.mark.parametrize("description", [None, "", "A repo"], ids=["null", "empty", "text"])
+def test_search_repo_accepts_a_string_or_null_description(description) -> None:
+    resp = MagicMock()
+    resp.status_code = 200
+    resp.json.return_value = {
+        "items": [{"full_name": "someone/unrelated", "name": "unrelated", "description": description}]
     }
     with patch("paperpilot.utils.github.request_with_retry", return_value=resp):
         assert gh.search_repo_by_title("Segment Anything") is None

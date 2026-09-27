@@ -121,6 +121,25 @@
     return true;
   }
 
+  function optionalCount(value) {
+    return value === undefined || value === null
+      || (Number.isInteger(value) && value >= 0);
+  }
+
+  // Mirrors _node_display_issues in _lineage_contract.py: absent or null
+  // is legitimate, a wrong type is a projection bug.
+  function validNodeDisplay(node) {
+    const has = (field) => Object.prototype.hasOwnProperty.call(node, field);
+    if (has("title") && typeof node.title !== "string") return false;
+    if (node.year !== undefined && node.year !== null
+        && !Number.isInteger(node.year)) return false;
+    if (node.authors !== undefined && node.authors !== null
+        && (!Array.isArray(node.authors)
+          || node.authors.some((author) => typeof author !== "string"))) return false;
+    if (!optionalCount(node.citation_count) || !optionalCount(node.github_stars)) return false;
+    return !has("citationCount");
+  }
+
   function parseArtifact(data, { kind = "conference" } = {}) {
     if (!record(data) || data.schema_version !== ARTIFACT_VERSION
         || !Array.isArray(data.nodes) || !Array.isArray(data.edges)
@@ -136,8 +155,9 @@
     const aliasKeys = new Set();
     const nodes = [];
     for (const node of data.nodes) {
-      if (!record(node) || !nonempty(node.id) || ids.has(node.id)
-          || typeof node.is_focus !== "boolean") return null;
+      if (!record(node) || !nonempty(node.id) || node.id !== node.id.trim()
+          || ids.has(node.id) || typeof node.is_focus !== "boolean"
+          || !validNodeDisplay(node)) return null;
       if (Object.prototype.hasOwnProperty.call(node, "seed_paper_id")
           && !PAPER_ID_RE.test(node.seed_paper_id)) return null;
       ids.add(node.id);

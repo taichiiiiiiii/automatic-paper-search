@@ -4,11 +4,11 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 from pathlib import Path
 from typing import Any
 
 from paperpilot.identity.projector import IdentityProjection, project_catalogs
+from paperpilot.utils.atomic import atomic_write_bytes
 
 ROOT = Path(__file__).resolve().parents[2]
 DOCS_ROOT = ROOT / "docs"
@@ -28,10 +28,7 @@ def _json_bytes(value: Any, *, indent: int | None = None) -> bytes:
 
 
 def _atomic_write(path: Path, payload: bytes) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_name(f".{path.name}.paperpilot-tmp")
-    temporary.write_bytes(payload)
-    os.replace(temporary, path)
+    atomic_write_bytes(path, payload)
 
 
 def load_conference_names(docs_root: Path) -> list[str]:

@@ -12,9 +12,15 @@
       "items": {
         "type": "object",
         "required": ["id", "is_focus"],
+        "not": {"required": ["citationCount"]},
         "properties": {
-          "id": {"type": "string", "minLength": 1},
+          "id": {"type": "string", "pattern": "^\\S(?:[\\s\\S]*\\S)?$"},
           "is_focus": {"type": "boolean"},
+          "title": {"type": "string"},
+          "year": {"type": ["integer", "null"]},
+          "authors": {"type": ["array", "null"], "items": {"type": "string"}},
+          "citation_count": {"type": ["integer", "null"], "minimum": 0},
+          "github_stars": {"type": ["integer", "null"], "minimum": 0},
           "seed_paper_id": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
           "aliases": {"$ref": "#/$defs/nodeAliases"}
         },

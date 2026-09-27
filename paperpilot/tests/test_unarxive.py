@@ -218,3 +218,14 @@ def test_is_available_when_db_present(monkeypatch):
 def test_is_available_when_db_absent(monkeypatch):
     monkeypatch.setattr(unarxive, "_open_readonly", lambda: None)
     assert unarxive.is_available() is False
+
+
+def test_normalise_arxiv_id_checks_the_host_not_a_substring():
+    """``arxiv.org/abs/`` inside another host's path is not an arXiv location."""
+    assert unarxive._normalise_arxiv_id("https://example.com/arxiv.org/abs/2010.11929") is None
+    assert unarxive._normalise_arxiv_id("https://arxiv.org.evil/abs/2010.11929") is None
+    assert (
+        unarxive._normalise_arxiv_id("https://example.com/10.48550/arXiv.2010.11929") is None
+    )
+    assert unarxive._normalise_arxiv_id("https://arxiv.org/abs/2010.11929/extra") is None
+    assert unarxive._normalise_arxiv_id("https://arxiv.org/pdf/2010.11929v1.pdf") == "2010.11929"

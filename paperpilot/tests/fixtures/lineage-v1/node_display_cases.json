@@ -1,0 +1,31 @@
+{
+  "description": "Mutations applied to the non-focus node of the shared minimal artifact. The Python validator, the JSON Schema and LineageCore.parseArtifact must all agree on every case. Setting \"id\" also rewrites the edge endpoint so only the ID itself differs; \"delete\" removes the field.",
+  "cases": [
+    {"label": "absent display fields", "delete": ["title"], "valid": true},
+    {"label": "null year", "set": {"year": null}, "valid": true},
+    {"label": "integer year", "set": {"year": 2024}, "valid": true},
+    {"label": "float year", "set": {"year": 2024.5}, "valid": false},
+    {"label": "boolean year", "set": {"year": true}, "valid": false},
+    {"label": "string year", "set": {"year": "2024"}, "valid": false},
+    {"label": "numeric title", "set": {"title": 7}, "valid": false},
+    {"label": "null title", "set": {"title": null}, "valid": false},
+    {"label": "string authors", "set": {"authors": ["A", "B"]}, "valid": true},
+    {"label": "empty authors", "set": {"authors": []}, "valid": true},
+    {"label": "null authors", "set": {"authors": null}, "valid": true},
+    {"label": "null author entry", "set": {"authors": [null]}, "valid": false},
+    {"label": "numeric author entry", "set": {"authors": [1]}, "valid": false},
+    {"label": "authors as string", "set": {"authors": "A"}, "valid": false},
+    {"label": "zero citation count", "set": {"citation_count": 0}, "valid": true},
+    {"label": "null citation count", "set": {"citation_count": null}, "valid": true},
+    {"label": "fractional citation count", "set": {"citation_count": 1.5}, "valid": false},
+    {"label": "boolean citation count", "set": {"citation_count": true}, "valid": false},
+    {"label": "negative citation count", "set": {"citation_count": -1}, "valid": false},
+    {"label": "string citation count", "set": {"citation_count": "3"}, "valid": false},
+    {"label": "raw provider citationCount", "set": {"citationCount": 3}, "valid": false},
+    {"label": "integer github stars", "set": {"github_stars": 12}, "valid": true},
+    {"label": "negative github stars", "set": {"github_stars": -3}, "valid": false},
+    {"label": "fractional github stars", "set": {"github_stars": 0.5}, "valid": false},
+    {"label": "trailing-space id", "id": "related ", "valid": false},
+    {"label": "whitespace-only id", "id": "  ", "valid": false}
+  ]
+}

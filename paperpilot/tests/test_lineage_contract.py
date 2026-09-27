@@ -406,3 +406,56 @@ def test_deep_manifest_is_closed_and_validates_slug_and_timestamp() -> None:
         "manifest_conference",
         "manifest_generated_at",
     } <= _codes(validate_deep_manifest(manifest))
+
+
+_NODE_DISPLAY_CASES = json.loads(
+    (Path(__file__).parent / "fixtures" / "lineage-v1" / "node_display_cases.json").read_text(
+        encoding="utf-8"
+    )
+)["cases"]
+
+
+def _apply_node_case(case: dict) -> dict:
+    artifact = _artifact()
+    node = artifact["nodes"][1]
+    for field in case.get("delete", []):
+        node.pop(field)
+    node.update(case.get("set", {}))
+    if "id" in case:
+        node["id"] = case["id"]
+        artifact["edges"][0]["dst"] = case["id"]
+    return artifact
+
+
+def test_node_display_fields_python_and_json_schema_are_in_parity() -> None:
+    """The same fixture drives test_lineage_core.mjs, so all three readers agree."""
+
+    schema_path = (
+        Path(__file__).resolve().parents[2] / "schemas" / "lineage-artifact-v1.schema.json"
+    )
+    validator = Draft202012Validator(
+        json.loads(schema_path.read_text(encoding="utf-8")), format_checker=FormatChecker()
+    )
+    for case in _NODE_DISPLAY_CASES:
+        artifact = _apply_node_case(case)
+        python_ok = not validate_lineage_artifact(artifact, kind="conference")
+        # The schema cannot express wire order, so an ID that re-sorts the
+        # nodes is only checked for its own pattern there.
+        schema_ok = not list(validator.iter_errors(artifact))
+        assert python_ok is case["valid"], case["label"]
+        assert schema_ok is case["valid"], case["label"]
+
+
+def test_require_valid_lineage_artifact_raises_with_issue_codes() -> None:
+    from paperpilot.scripts._lineage_contract import require_valid_lineage_artifact
+
+    require_valid_lineage_artifact(_artifact(), kind="conference")
+    bad = _artifact()
+    bad["nodes"][1]["authors"] = [None]
+    try:
+        require_valid_lineage_artifact(bad, kind="conference", label="fixture")
+    except ValueError as exc:
+        assert "fixture violates lineage-artifact-v1" in str(exc)
+        assert "node_authors:$.nodes[1].authors" in str(exc)
+    else:
+        raise AssertionError("malformed authors must be refused")

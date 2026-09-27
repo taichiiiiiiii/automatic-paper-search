@@ -54,12 +54,13 @@ from __future__ import annotations
 
 import argparse
 import os
-import shutil
 import sys
+import tempfile
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
+from paperpilot.identity.source_ids import ARXIV_MODERN_PATTERN
 from paperpilot.utils.logger import get_logger, setup_logging
 
 logger = get_logger(__name__)
@@ -98,27 +99,48 @@ def _import_or_die() -> tuple[Any, Callable[..., Any]]:
     return duckdb, hf_hub_download
 
 
-def build_index(out_path: Path, *, sample: int | None = None) -> int:
+# The shared grammar (identity.source_ids) as DuckDB regexes. Versions are
+# tolerated on input and stripped on the way in.
+_MODERN_ID_SQL = rf"{ARXIV_MODERN_PATTERN}(v[0-9]+)?"
+_LEGACY_ID_SQL = r"[A-Za-z][A-Za-z0-9.-]*/[0-9]{7}(v[0-9]+)?"
+# What paperpilot.utils.unarxive queries the `label` column with.
+_OPENALEX_LABEL_SQL = r"https://openalex\.org/W[0-9]+"
+
+
+class UnarxiveBuildError(RuntimeError):
+    """The inputs did not reconcile; the published index was left untouched."""
+
+
+def _count(conn: Any, sql: str, params: list[Any] | None = None) -> int:
+    row = conn.execute(sql, params or []).fetchone()
+    return int(row[0]) if row else 0
+
+
+def build_index(
+    out_path: Path, *, sample: int | None = None, max_unmatched: int = 0
+) -> int:
     """Download saier/unarXive_citrec and write a DuckDB index.
 
     ``sample``: if set, only the first N rows are ingested
     (development / smoke tests). Production builds use the full
     dataset (``sample=None``).
 
-    Returns the number of rows written (== row count of citrec
-    citation contexts post-join). 0 on failure (errors logged).
+    ``max_unmatched``: how many citrec rows may lack a license_info
+    row (and so a citing arXiv id). Such rows are never published —
+    an empty ``paper_arxiv_id`` matches no lookup and only hides how
+    much of the corpus was lost. The default of 0 fails closed; an
+    operator who has confirmed upstream orphans raises it explicitly.
+
+    Returns the number of rows written. Raises ``UnarxiveBuildError``
+    — leaving any existing index in place — when an input line is
+    malformed, the join loses or duplicates rows beyond the allowance,
+    or nothing would be written.
     """
     duckdb, hf_hub_download = _import_or_die()
+    if sample is not None and not isinstance(sample, int):
+        raise TypeError(f"sample must be int or None, got {type(sample)!r}")
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    # Build into a sibling and swap it in only once the whole thing
-    # succeeded. Deleting the live index first meant any failure in the
-    # multi-hour download / join / index run — a network drop, a full
-    # disk, an OOM kill — left no usable index at all, and sometimes a
-    # half-written database sitting at the authoritative path.
-    build_path = out_path.with_name(out_path.name + ".building")
-    if build_path.exists():
-        build_path.unlink()
 
     # Fetch both JSONL files via hf_hub_download (cached on repeat
     # runs — the HF cache layer dedupes by SHA). We then hand both
@@ -139,137 +161,209 @@ def build_index(out_path: Path, *, sample: int | None = None) -> int:
         repo_type="dataset",
     )
 
-    # Spill directory lives next to the output; DuckDB writes sort/hash
-    # partitions here when the JOIN exceeds memory_limit. Created before
-    # the connection opens so we can pass its path via PRAGMA, and torn
-    # down in the `finally` block whether or not the build succeeds
-    # (spills can reach several GB and silently accumulate otherwise).
-    spill_dir = out_path.parent / f"{out_path.name}.spill"
-    spill_dir.mkdir(parents=True, exist_ok=True)
+    # One private scratch directory per run, next to the output (same
+    # volume, so the final os.replace is a rename). It holds the
+    # database under construction and DuckDB's spill partitions. Fixed
+    # names (`<out>.building`, `<out>.spill`) let a second concurrent
+    # run delete the first one's live database and spill files.
+    with tempfile.TemporaryDirectory(
+        dir=out_path.parent, prefix=f".{out_path.name}.build-"
+    ) as work_dir:
+        work = Path(work_dir)
+        build_path = work / out_path.name
+        spill_dir = work / "spill"
+        spill_dir.mkdir()
 
-    logger.info("opening DuckDB at %s", build_path)
-    conn: object | None = duckdb.connect(str(build_path))
-    try:
-        # Constrain DuckDB's working memory and route spills to a known
-        # location on the same volume as ``out_path``. Without these,
-        # the initial ``read_json_auto`` over the ~18 GB citrec JSONL
-        # can OOM on memory-constrained machines (observed: silent kill
-        # on a host with 3.8 GB RAM / 2 GB swap). The PRAGMA values use
-        # parameterised binding so an operator-supplied ``--out``
-        # containing a quote can't break out of the PRAGMA statement.
-        conn.execute("PRAGMA memory_limit='2GB'")
-        conn.execute("SET temp_directory = ?", [str(spill_dir)])
-        conn.execute("PRAGMA threads=2")
-        logger.info(
-            "duckdb tuned: memory_limit=2GB, temp_directory=%s, threads=2",
-            spill_dir,
-        )
+        logger.info("opening DuckDB at %s", build_path)
+        conn: Any | None = duckdb.connect(str(build_path))
+        try:
+            # Constrain DuckDB's working memory and route spills to a known
+            # location on the same volume as ``out_path``. Without these,
+            # the initial ``read_json_auto`` over the ~18 GB citrec JSONL
+            # can OOM on memory-constrained machines (observed: silent kill
+            # on a host with 3.8 GB RAM / 2 GB swap). The PRAGMA values use
+            # parameterised binding so a path containing a quote can't
+            # break out of the statement.
+            conn.execute("PRAGMA memory_limit='2GB'")
+            conn.execute("SET temp_directory = ?", [str(spill_dir)])
+            conn.execute("PRAGMA threads=2")
+            logger.info(
+                "duckdb tuned: memory_limit=2GB, temp_directory=%s, threads=2",
+                spill_dir,
+            )
 
-        # `read_json_auto` parses JSONL when `format='newline_delimited'`.
-        # Setting `ignore_errors=true` lets us survive any malformed
-        # line without aborting the build — unarXive is well-formed
-        # but robustness is cheap here.
-        logger.info("staging license_info (DuckDB native JSON ingest)...")
-        conn.execute(
-            "CREATE TABLE license_raw AS "
-            "SELECT paper_arxiv_id, license, sample_ids FROM read_json_auto("
-            "  ?, format='newline_delimited', ignore_errors=true)",
-            [str(license_path)],
-        )
-        # Explode `sample_ids` array → one row per (sample_id, paper).
-        # `unnest` is a DuckDB built-in; the projection eliminates the
-        # array column and yields the (sample_id, paper_arxiv_id,
-        # paper_license) shape used downstream.
-        conn.execute(
-            "CREATE TABLE license_tmp AS "
-            "SELECT unnest(sample_ids) AS sample_id, "
-            "       COALESCE(paper_arxiv_id, '') AS paper_arxiv_id, "
-            "       COALESCE(license, '')        AS paper_license "
-            "FROM license_raw"
-        )
-        conn.execute("DROP TABLE license_raw")
-        lic_row = conn.execute("SELECT COUNT(*) FROM license_tmp").fetchone()
-        lic_count = int(lic_row[0]) if lic_row else 0
-        logger.info("license_info staged: %d rows", lic_count)
+            # ignore_errors=false: a malformed line aborts the build. With
+            # `true` DuckDB dropped such lines without a count, so a
+            # transfer-corrupted download published as a smaller index
+            # that looked complete.
+            logger.info("staging license_info (DuckDB native JSON ingest)...")
+            conn.execute(
+                "CREATE TABLE license_raw AS "
+                "SELECT paper_arxiv_id, license, sample_ids FROM read_json_auto("
+                "  ?, format='newline_delimited', ignore_errors=false)",
+                [str(license_path)],
+            )
+            # A present arXiv id must be a real one, exactly: the runtime
+            # looks rows up by the bare modern form, so a padded or garbage
+            # id would join, count and publish as a key nothing can match.
+            malformed_ids = _count(
+                conn,
+                "SELECT COUNT(*) FROM license_raw "
+                "WHERE paper_arxiv_id IS NOT NULL AND paper_arxiv_id <> '' "
+                "AND NOT regexp_full_match(paper_arxiv_id, ?) "
+                "AND NOT regexp_full_match(paper_arxiv_id, ?)",
+                [_MODERN_ID_SQL, _LEGACY_ID_SQL],
+            )
+            if malformed_ids:
+                raise UnarxiveBuildError(
+                    f"{malformed_ids} license_info rows carry a malformed arXiv id"
+                )
+            # Explode `sample_ids` array → one row per (sample_id, paper),
+            # storing the versionless modern id the runtime queries. A row
+            # without an arXiv id contributes no sample ids; the citrec rows
+            # that needed it are counted as unmatched below instead of being
+            # published under ''. Legacy ids are well-formed but outside the
+            # runtime's modern-only lookup, so they are flagged and dropped
+            # with a count rather than failing the build.
+            conn.execute(
+                "CREATE TABLE license_tmp AS "
+                "SELECT unnest(sample_ids) AS sample_id, "
+                "       regexp_replace(paper_arxiv_id, 'v[0-9]+$', '') AS paper_arxiv_id, "
+                "       regexp_full_match(paper_arxiv_id, ?) AS is_modern "
+                "FROM license_raw "
+                "WHERE paper_arxiv_id IS NOT NULL AND paper_arxiv_id <> ''",
+                [_MODERN_ID_SQL],
+            )
+            conn.execute("DROP TABLE license_raw")
+            lic_count = _count(conn, "SELECT COUNT(*) FROM license_tmp")
+            logger.info("license_info staged: %d rows", lic_count)
+            duplicate_ids = _count(
+                conn,
+                "SELECT COUNT(*) FROM (SELECT sample_id FROM license_tmp "
+                "GROUP BY sample_id HAVING COUNT(DISTINCT paper_arxiv_id) > 1)",
+            )
+            if duplicate_ids:
+                # One citation paragraph cannot belong to two citing papers;
+                # joining would duplicate it under both.
+                raise UnarxiveBuildError(
+                    f"{duplicate_ids} sample_ids map to more than one arXiv id"
+                )
 
-        logger.info("staging citrec (DuckDB native JSON ingest)...")
-        # `sample` arrives from argparse with `type=int` so the f-string
-        # cannot smuggle SQL; we still assert the type to keep the
-        # invariant explicit at the point of interpolation.
-        if sample is not None and not isinstance(sample, int):
-            raise TypeError(f"sample must be int or None, got {type(sample)!r}")
-        sample_clause = f" LIMIT {sample}" if sample is not None else ""
-        conn.execute(
-            f"CREATE TABLE citrec_tmp AS "
-            f"SELECT _id AS sample_id, "
-            f"       COALESCE(text, '')   AS text, "
-            f"       COALESCE(marker, '') AS marker, "
-            f"       COALESCE(label, '')  AS label "
-            f"FROM read_json_auto("
-            f"  ?, format='newline_delimited', ignore_errors=true)"
-            f"{sample_clause}",
-            [str(citrec_path)],
-        )
-        cit_row = conn.execute("SELECT COUNT(*) FROM citrec_tmp").fetchone()
-        cit_count = int(cit_row[0]) if cit_row else 0
-        logger.info("citrec staged: %d rows", cit_count)
+            logger.info("staging citrec (DuckDB native JSON ingest)...")
+            # `sample` is type-checked above, so the f-string cannot
+            # smuggle SQL.
+            sample_clause = f" LIMIT {sample}" if sample is not None else ""
+            conn.execute(
+                f"CREATE TABLE citrec_tmp AS "
+                f"SELECT _id AS sample_id, text, label "
+                f"FROM read_json_auto("
+                f"  ?, format='newline_delimited', ignore_errors=false)"
+                f"{sample_clause}",
+                [str(citrec_path)],
+            )
+            cit_count = _count(conn, "SELECT COUNT(*) FROM citrec_tmp")
+            logger.info("citrec staged: %d rows", cit_count)
+            # `label` is half of the runtime lookup key and `text` is the
+            # payload. Coalescing a missing one to '' used to publish rows
+            # that count toward every reconciliation yet can never be found
+            # (label) or say nothing (text).
+            malformed_rows = _count(
+                conn,
+                "SELECT COUNT(*) FROM citrec_tmp WHERE "
+                "sample_id IS NULL OR TRIM(CAST(sample_id AS VARCHAR)) = '' "
+                "OR text IS NULL OR TRIM(CAST(text AS VARCHAR)) = '' "
+                "OR label IS NULL OR NOT regexp_full_match(CAST(label AS VARCHAR), ?)",
+                [_OPENALEX_LABEL_SQL],
+            )
+            if malformed_rows:
+                raise UnarxiveBuildError(
+                    f"{malformed_rows} citrec rows lack a sample id, a text, "
+                    "or an OpenAlex work label"
+                )
+            unmatched = _count(
+                conn,
+                "SELECT COUNT(*) FROM citrec_tmp c WHERE NOT EXISTS "
+                "(SELECT 1 FROM license_tmp l WHERE l.sample_id = c.sample_id)",
+            )
+            if unmatched > max_unmatched:
+                raise UnarxiveBuildError(
+                    f"{unmatched} of {cit_count} citrec rows have no license_info "
+                    f"arXiv id (allowed: {max_unmatched})"
+                )
+            if unmatched:
+                logger.warning(
+                    "dropping %d citrec rows with no license_info arXiv id "
+                    "(allowed by --allow-unmatched)",
+                    unmatched,
+                )
+            legacy = _count(
+                conn,
+                "SELECT COUNT(DISTINCT c.sample_id) FROM citrec_tmp c "
+                "JOIN license_tmp l ON c.sample_id = l.sample_id WHERE NOT l.is_modern",
+            )
+            if legacy:
+                logger.info(
+                    "dropping %d citrec rows cited by pre-2007 arXiv ids "
+                    "(the runtime looks up modern ids only)",
+                    legacy,
+                )
 
-        logger.info("joining citrec_tmp with license_tmp (DuckDB-side)...")
-        # Final schema is intentionally narrow:
-        #   * paper_arxiv_id : citing arXiv id (the WHERE-clause key)
-        #   * label          : cited OpenAlex W-URL (the other WHERE key)
-        #   * text           : citation paragraph truncated to 600 chars
-        #
-        # We drop sample_id, marker, and paper_license because:
-        #   * sample_id is a UUID never queried at runtime
-        #   * marker (e.g. "[1]") is implied by `text` and unused
-        #   * paper_license is audit-only — attribution lives in the
-        #     viewer footer; per-paper licence URLs add ~120 MB without
-        #     supporting any query
-        #
-        # 600-char text cap matches the LLM-prompt budget the upstream
-        # heuristic uses and keeps the published artifact under the
-        # 2 GB GitHub Release cap (a few-row sample puts uncapped text
-        # at ~2.6 KB avg → ~24 GB total; 4.3x truncation + 50% column
-        # drop brings the projected gzipped size to ~1.5 GB).
-        conn.execute(
-            "CREATE TABLE citrec AS "
-            "SELECT COALESCE(l.paper_arxiv_id, '') AS paper_arxiv_id, "
-            "       c.label, "
-            "       SUBSTR(c.text, 1, 600) AS text "
-            "FROM citrec_tmp c "
-            "LEFT JOIN license_tmp l ON c.sample_id = l.sample_id"
-        )
-        conn.execute("DROP TABLE citrec_tmp")
-        conn.execute("DROP TABLE license_tmp")
-        inserted_row = conn.execute("SELECT COUNT(*) FROM citrec").fetchone()
-        inserted = int(inserted_row[0]) if inserted_row else 0
+            logger.info("joining citrec_tmp with license_tmp (DuckDB-side)...")
+            # Final schema is intentionally narrow:
+            #   * paper_arxiv_id : citing arXiv id (the WHERE-clause key)
+            #   * label          : cited OpenAlex W-URL (the other WHERE key)
+            #   * text           : citation paragraph truncated to 600 chars
+            #
+            # sample_id (a UUID never queried), marker (implied by `text`)
+            # and paper_license (audit-only; attribution lives in the viewer
+            # footer, ~120 MB) are dropped.
+            #
+            # 600-char text cap matches the LLM-prompt budget the upstream
+            # heuristic uses and keeps the published artifact under the
+            # 2 GB GitHub Release cap (a few-row sample puts uncapped text
+            # at ~2.6 KB avg → ~24 GB total; 4.3x truncation + 50% column
+            # drop brings the projected gzipped size to ~1.5 GB).
+            conn.execute(
+                "CREATE TABLE citrec AS "
+                "SELECT DISTINCT ON (c.sample_id) "
+                "       l.paper_arxiv_id, c.label, SUBSTR(c.text, 1, 600) AS text "
+                "FROM citrec_tmp c "
+                "JOIN license_tmp l ON c.sample_id = l.sample_id "
+                "WHERE l.is_modern"
+            )
+            inserted = _count(conn, "SELECT COUNT(*) FROM citrec")
+            expected = cit_count - unmatched - legacy
+            if inserted != expected:
+                # Duplicate citrec sample_ids, or a join that did not
+                # behave as reconciled above.
+                raise UnarxiveBuildError(
+                    f"joined {inserted} rows, expected {expected} "
+                    f"({cit_count} staged - {unmatched} unmatched - {legacy} legacy)"
+                )
+            if inserted == 0:
+                raise UnarxiveBuildError("0 rows would be written")
+            conn.execute("DROP TABLE citrec_tmp")
+            conn.execute("DROP TABLE license_tmp")
 
-        logger.info("building composite index on (paper_arxiv_id, label)...")
-        conn.execute(
-            "CREATE INDEX idx_citing_cited ON citrec(paper_arxiv_id, label)"
-        )
-        conn.execute("ANALYZE")
-        conn.close()
-        conn = None
-        # Only now is there something worth publishing. os.replace is
-        # atomic on POSIX, so a reader either sees the old index or the
-        # new one, never a partial file.
-        os.replace(build_path, out_path)
-        logger.info("done. %d rows written to %s", inserted, out_path)
-        return inserted
-    finally:
-        if conn is not None:
+            logger.info("building composite index on (paper_arxiv_id, label)...")
+            conn.execute(
+                "CREATE INDEX idx_citing_cited ON citrec(paper_arxiv_id, label)"
+            )
+            conn.execute("ANALYZE")
             conn.close()
-        # A failed run must not leave its half-built database behind: it
-        # would be mistaken for scratch on the next run and consume the
-        # same multi-GB of disk.
-        if build_path.exists():
-            build_path.unlink(missing_ok=True)
-        # Remove spill scratch even on success — DuckDB doesn't promise
-        # to clear it, and on a successful run it's pure dead weight
-        # (multi-GB sort/hash partitions from the JOIN).
-        shutil.rmtree(spill_dir, ignore_errors=True)
+            conn = None
+            # Only now is there something worth publishing. os.replace is
+            # atomic on POSIX, so a reader either sees the old index or the
+            # new one, never a partial file.
+            os.replace(build_path, out_path)
+            logger.info("done. %d rows written to %s", inserted, out_path)
+            return inserted
+        finally:
+            if conn is not None:
+                conn.close()
+            # Leaving the `with` removes the scratch directory — the
+            # half-built database and multi-GB spill partitions — on
+            # success and failure alike.
 
 
 def gzip_artifact(path: Path) -> Path:
@@ -285,19 +379,25 @@ def gzip_artifact(path: Path) -> Path:
     gz_path = path.with_suffix(path.suffix + ".gz")
     # Same reasoning as build_index: compress to a sibling and swap, so
     # an interrupted run leaves the previous .gz intact instead of
-    # nothing (or a truncated archive that gunzips to garbage).
-    partial = gz_path.with_name(gz_path.name + ".partial")
-    if partial.exists():
-        partial.unlink()
+    # nothing (or a truncated archive that gunzips to garbage). The
+    # sibling name is unique per run: a fixed `.partial` let a second
+    # run truncate the first one's in-progress archive.
     logger.info("gzipping %s -> %s", path, gz_path)
+    partial: Path | None = None
     try:
-        with open(path, "rb") as src, gzip.open(
-            str(partial), "wb", compresslevel=6
-        ) as dst:
-            shutil.copyfileobj(src, dst, length=8 * 1024 * 1024)
+        with tempfile.NamedTemporaryFile(
+            dir=gz_path.parent, prefix=f".{gz_path.name}.", suffix=".partial", delete=False
+        ) as handle:
+            partial = Path(handle.name)
+            with open(path, "rb") as src, gzip.GzipFile(
+                filename=gz_path.name, mode="wb", fileobj=handle, compresslevel=6
+            ) as dst:
+                shutil.copyfileobj(src, dst, length=8 * 1024 * 1024)
+        os.chmod(partial, 0o644)
         os.replace(partial, gz_path)
+        partial = None
     finally:
-        if partial.exists():
+        if partial is not None:
             partial.unlink(missing_ok=True)
     raw_mb = path.stat().st_size / 1e6
     gz_mb = gz_path.stat().st_size / 1e6
@@ -332,8 +432,22 @@ def main(argv: list[str] | None = None) -> int:
             "to emit it."
         ),
     )
+    ap.add_argument(
+        "--allow-unmatched",
+        type=int,
+        default=0,
+        metavar="N",
+        help=(
+            "Tolerate up to N citrec rows with no license_info arXiv id "
+            "(they are dropped, not published). Default 0 fails closed."
+        ),
+    )
     args = ap.parse_args(argv)
-    rows = build_index(args.out, sample=args.sample)
+    try:
+        rows = build_index(args.out, sample=args.sample, max_unmatched=args.allow_unmatched)
+    except UnarxiveBuildError as exc:
+        print(f"error: {exc}; existing index left untouched", file=sys.stderr)
+        return 1
     if rows == 0:
         print("error: 0 rows written", file=sys.stderr)
         return 1

@@ -30,8 +30,9 @@ from typing import Any
 
 from paperpilot.scripts._lineage_contract import (
     LINEAGE_ARTIFACT_VERSION,
-    validate_lineage_artifact,
+    require_valid_lineage_artifact,
 )
+from paperpilot.utils.atomic import atomic_write_text
 
 ROOT = Path(__file__).resolve().parents[2]
 DOCS = ROOT / "docs"
@@ -84,10 +85,7 @@ def _empty_lineage(conference: str) -> dict[str, Any]:
             "note": _EMPTY_LINEAGE_NOTE,
         },
     }
-    issues = validate_lineage_artifact(lineage, kind="conference")
-    if issues:
-        detail = "; ".join(f"{issue.code}:{issue.path}" for issue in issues[:8])
-        raise ValueError(f"empty lineage stub violates {LINEAGE_ARTIFACT_VERSION}: {detail}")
+    require_valid_lineage_artifact(lineage, kind="conference", label="empty lineage stub")
     return lineage
 
 
@@ -121,13 +119,20 @@ def scaffold(conference: str, display: str, lede: str, *, docs_root: Path | None
     if n != 1:
         raise RuntimeError(f"expected exactly one hero__lede block in template, replaced {n}")
 
-    out_dir.mkdir(parents=True, exist_ok=True)
-    (out_dir / "index.html").write_text(html, encoding="utf-8")
-
     lineage = _empty_lineage(conference)
-    (out_dir / "lineage.json").write_text(
-        json.dumps(lineage, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
-    )
+    lineage_text = json.dumps(lineage, ensure_ascii=False, indent=2) + "\n"
+    # Both files or neither: the existence check above refuses any rerun
+    # once either file is present, so a crash between the two writes
+    # would otherwise strand a half-scaffolded conference for good.
+    written: list[Path] = []
+    try:
+        for name, text in (("lineage.json", lineage_text), ("index.html", html)):
+            atomic_write_text(out_dir / name, text)
+            written.append(out_dir / name)
+    except BaseException:
+        for path in written:
+            path.unlink(missing_ok=True)
+        raise
     return out_dir / "index.html"
 
 

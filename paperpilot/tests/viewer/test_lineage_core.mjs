@@ -569,5 +569,22 @@ ok(publicThemeRows.length === 3
    && publicThemeRows.every((row) => !Core.qualityRowIsEligible(row)),
    "all 3 legacy theme artifacts remain fail closed until human-reviewed fixtures");
 
+console.log("node display fields (shared fixture with test_lineage_contract.py)");
+const nodeDisplayCases = JSON.parse(readFileSync(
+  resolve(here, "../fixtures/lineage-v1/node_display_cases.json"), "utf8",
+)).cases;
+for (const nodeCase of nodeDisplayCases) {
+  const mutated = structuredClone(artifact());
+  const node = mutated.nodes[1];
+  for (const field of nodeCase.delete || []) delete node[field];
+  Object.assign(node, nodeCase.set || {});
+  if (Object.prototype.hasOwnProperty.call(nodeCase, "id")) {
+    node.id = nodeCase.id;
+    mutated.edges[0].dst = nodeCase.id;
+  }
+  const accepted = Core.parseArtifact(mutated, { kind: "conference" }) !== null;
+  ok(accepted === nodeCase.valid, `node display: ${nodeCase.label}`);
+}
+
 console.log(`\n${passed} passed, ${failed} failed`);
 process.exit(failed > 0 ? 1 : 0);

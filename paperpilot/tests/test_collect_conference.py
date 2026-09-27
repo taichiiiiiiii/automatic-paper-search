@@ -319,3 +319,11 @@ def test_write_outputs_leaves_ordinary_text_untouched(tmp_path):
         out = list(_csv.DictReader(f))
     assert out[0]["title"] == "Retrieval-Augmented Generation for Knowledge Tasks"
     assert out[0]["abstract"] == "We propose a method."
+
+
+def test_arxiv_id_requires_a_real_arxiv_host():
+    assert cc._arxiv_id("http://arxiv.org/abs/2604.00009v1") == "2604.00009"
+    assert cc._arxiv_id("https://example.com/arxiv.org/abs/2604.00009") == ""
+    assert cc._arxiv_id("https://openreview.net/forum?id=abc") == ""
+    # Legacy IDs contain a slash; downstream file names assume the modern form.
+    assert cc._arxiv_id("http://arxiv.org/abs/hep-th/9901001v1") == ""
