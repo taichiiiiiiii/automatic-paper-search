@@ -34,6 +34,9 @@ Notes:
     - Spotlight papers are grouped with Oral into the highlighted set so the
       catalog's Oral filter surfaces both; the exact label is kept in the
       ``comment`` column for any future finer-grained display.
+    - An empty highlighted set leaves an existing oral_summaries_ja.md in place (the
+      shared writer only deletes it with --clear-oral), so a run whose decision labels
+      could not be read cannot silently turn every paper of a live catalog into Poster.
 """
 
 from __future__ import annotations
@@ -213,6 +216,12 @@ def main() -> int:
     ap.add_argument(
         "--venueid", required=True, help='OpenReview group id, e.g. "ICLR.cc/2025/Conference"'
     )
+    ap.add_argument(
+        "--clear-oral",
+        action="store_true",
+        help="delete an existing oral_summaries_ja.md when this run finds no oral titles "
+        "(default: keep it, so a skipped or empty overlay cannot erase the Oral labels)",
+    )
     args = ap.parse_args()
 
     notes, complete = fetch_notes(args.venueid)
@@ -240,7 +249,7 @@ def main() -> int:
         )
         return 1
 
-    csv_path = write_outputs(args.conference, rows, highlighted)
+    csv_path = write_outputs(args.conference, rows, highlighted, clear_oral=args.clear_oral)
     print(
         f"✅ {len(rows)} accepted {args.venue.upper()} papers "
         f"({len(highlighted)} oral/spotlight) -> {csv_path}"

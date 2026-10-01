@@ -16,7 +16,11 @@ the rest of the chain (build_summary_csv -> build_pages -> scaffold) is unchange
     paperpilot/output/<slug>/papers_YYYY-MM-DD.csv
 
 No oral_summaries_ja.md is written — the Anthology does not mark oral/spotlight,
-so every paper is a Poster in the catalog's binary type.
+so every paper is a Poster in the catalog's binary type. Oral marks come only from
+--oral-arxiv-query; without it, or when that overlay comes back incomplete (its
+--oral-max window filled, or arXiv served a malformed feed), an existing
+oral_summaries_ja.md is left untouched (--clear-oral removes it deliberately, and
+only when the overlay actually reported the venue's oral set).
 
 Usage:
     uv run python -m paperpilot.scripts.collect_acl_anthology \\
@@ -34,7 +38,13 @@ from typing import Any
 
 from ..signals.venue_signal import TIER_1, TIER_2, TIER_3
 from ..utils.http import request_with_retry
-from .collect_conference import oral_titles_from_arxiv, write_outputs
+from .collect_conference import (
+    ORAL_MALFORMED_FEED,
+    ORAL_MAX_RESULTS_DEFAULT,
+    ORAL_WINDOW_FILLED,
+    oral_titles_from_arxiv,
+    write_outputs,
+)
 
 _XML_BASE = "https://raw.githubusercontent.com/acl-org/acl-anthology/master/data/xml"
 _ANTHOLOGY_URL = "https://aclanthology.org/"
@@ -133,6 +143,22 @@ def main() -> int:
         help='restore Oral marks from arXiv comments (the Anthology marks none), e.g. '
         "co:\"ACL 2025\"",
     )
+    ap.add_argument(
+        "--oral-max",
+        type=int,
+        default=ORAL_MAX_RESULTS_DEFAULT,
+        help="how many arXiv results (newest first) the --oral-arxiv-query overlay may "
+        "scan. A fetch that fills the window is incomplete, so the overlay is skipped and "
+        f"the existing oral_summaries_ja.md is kept; raise this to cover a larger venue "
+        f"(default {ORAL_MAX_RESULTS_DEFAULT})",
+    )
+    ap.add_argument(
+        "--clear-oral",
+        action="store_true",
+        help="delete an existing oral_summaries_ja.md when this run finds no oral titles "
+        "(default: keep it, so a skipped or empty overlay cannot erase the Oral labels; "
+        "never applied while the --oral-arxiv-query overlay came back incomplete)",
+    )
     args = ap.parse_args()
 
     xml_bytes = fetch_xml(args.xml_id)
@@ -146,8 +172,38 @@ def main() -> int:
         return 1
 
     # The Anthology marks no oral/spotlight; optionally overlay arXiv-tagged orals.
-    orals = oral_titles_from_arxiv(args.oral_arxiv_query, args.venue) if args.oral_arxiv_query else []
-    csv_path = write_outputs(args.conference, rows, orals)
+    # An overlay that came back incomplete — full window or malformed feed — is skipped
+    # and the published oral list stands untouched.
+    orals: list[str] = []
+    overlay_is_known = True
+    if args.oral_arxiv_query:
+        overlay = oral_titles_from_arxiv(
+            args.oral_arxiv_query, args.venue, max_results=args.oral_max
+        )
+        overlay_is_known = overlay.titles is not None
+        if overlay.reason == ORAL_WINDOW_FILLED:
+            print(
+                f"⚠️  the oral overlay filled the --oral-max {args.oral_max} window, so it "
+                "was skipped: the existing oral_summaries_ja.md is kept as-is "
+                "(raise --oral-max above this window and re-run to refresh it)"
+            )
+        elif overlay.reason == ORAL_MALFORMED_FEED:
+            print(
+                "⚠️  the oral overlay was skipped: arXiv returned a malformed feed, so "
+                "the fetched set is missing entries: the existing "
+                "oral_summaries_ja.md is kept as-is (re-run the collection later; "
+                "--clear-oral cannot clear what this run did not establish)"
+            )
+        else:
+            orals = overlay.titles or []
+    csv_path = write_outputs(
+        args.conference,
+        rows,
+        orals,
+        # An incomplete overlay is not evidence that the venue has no orals, so it
+        # does not authorize removing the published list either.
+        clear_oral=args.clear_oral and overlay_is_known,
+    )
     print(f"✅ {len(rows)} accepted {args.venue.upper()} papers ({len(orals)} oral via arXiv) -> {csv_path}")
     return 0
 

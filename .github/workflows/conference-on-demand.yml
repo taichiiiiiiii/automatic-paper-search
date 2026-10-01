@@ -41,6 +41,11 @@ on:
         required: false
         default: '800'
         type: string
+      allow_shrink_for:
+        description: 'Comma-separated conference slugs whose catalog may shrink or change identity in this run (build_pages acknowledgement; empty = the shrink gate stays on for every conference)'
+        required: false
+        default: ''
+        type: string
 
 permissions: {}
 
@@ -66,17 +71,24 @@ jobs:
           MAXN: ${{ inputs.max }}
         run: |
           set -euo pipefail
-          if ! printf '%s' "$CONF" | grep -Eq '^[a-z0-9]([a-z0-9-]{0,38}[a-z0-9])$'; then
+          # Whole-string bash matches, never `printf | grep`: grep is line-based, so a
+          # value carrying a newline would be validated one line at a time and pass on its
+          # first line alone. The explicit newline rejection guards the reserved-path case
+          # below, which is not anchored.
+          if ! [[ "$CONF" =~ ^[a-z0-9]([a-z0-9-]{0,38}[a-z0-9])$ ]]; then
+            echo "::error::conference slug must be 2-40 chars, lowercase letters/digits/hyphens"; exit 1
+          fi
+          if [[ "$CONF" == *$'\n'* ]]; then
             echo "::error::conference slug must be 2-40 chars, lowercase letters/digits/hyphens"; exit 1
           fi
           case "$CONF" in
             assets|cvpr-2026|daily|design|how-it-works|paper-details-v1|paper-slides-v1|research|search-paper-ids-v1|themes)
               echo "::error::conference slug is a reserved public path"; exit 1 ;;
           esac
-          if ! printf '%s' "$VENUE" | grep -Eq '^[A-Za-z]{2,20}$'; then
+          if ! [[ "$VENUE" =~ ^[A-Za-z]{2,20}$ ]]; then
             echo "::error::venue must be alphabetic (e.g. NEURIPS)"; exit 1
           fi
-          if ! printf '%s' "$MAXN" | grep -Eq '^[0-9]{1,5}$'; then
+          if ! [[ "$MAXN" =~ ^[0-9]{1,5}$ ]]; then
             echo "::error::max must be a number"; exit 1
           fi
 
@@ -111,13 +123,35 @@ jobs:
       - name: Build summary + pages
         env:
           CONF: ${{ inputs.conference }}
+          ALLOW_SHRINK_FOR: ${{ inputs.allow_shrink_for }}
         run: |
           set -euo pipefail
+          # build_pages refuses a catalog that loses content against the published
+          # one unless the operator names that conference. The dispatch input
+          # reaches this script only through the environment and every slug is
+          # validated here, so it can never carry shell syntax.
+          shrink_args=()
+          # read -a <<< splits on the first line only, so a two-line value would have
+          # applied the operator's first slug and silently dropped the rest.
+          if [[ "${ALLOW_SHRINK_FOR:-}" == *$'\n'* ]]; then
+            echo "::error::allow_shrink_for must be a single comma-separated line"
+            exit 1
+          fi
+          IFS=',' read -r -a allow_shrink_slugs <<< "${ALLOW_SHRINK_FOR:-}"
+          for slug in ${allow_shrink_slugs[@]+"${allow_shrink_slugs[@]}"}; do
+            slug="${slug//[[:space:]]/}"
+            [ -n "$slug" ] || continue
+            if ! printf '%s' "$slug" | grep -Eq '^[a-z0-9][a-z0-9-]{0,62}[a-z0-9]$'; then
+              echo "::error::allow_shrink_for must be comma-separated conference slugs (2-64 lowercase letters, digits and hyphens), got: $slug"
+              exit 1
+            fi
+            shrink_args+=(--allow-shrink-for "$slug")
+          done
           uv run --frozen python paperpilot/scripts/build_summary_csv.py --conference "$CONF"
           # No --conference: rebuild every conference so conferences.json
           # aggregates all of them (a per-conference run would overwrite the
           # index with just this one).
-          uv run --frozen python paperpilot/scripts/build_pages.py
+          uv run --frozen python paperpilot/scripts/build_pages.py ${shrink_args[@]+"${shrink_args[@]}"}
 
       - name: Scaffold catalog page
         env:

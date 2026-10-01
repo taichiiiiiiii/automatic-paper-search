@@ -7,9 +7,13 @@ request_with_retry. No network.
 from __future__ import annotations
 
 import csv as _csv
+import logging
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
+
+import pytest
 
 from paperpilot.scripts import collect_acl_anthology as acl
 from paperpilot.scripts import collect_conference as cc
@@ -114,5 +118,187 @@ def test_rows_write_via_shared_writer(tmp_path: Path):
     with csv_path.open(encoding="utf-8-sig") as f:
         read = list(_csv.DictReader(f))
     assert list(read[0].keys()) == cc._CSV_COLUMNS
-    # no oral md when highlighted list is empty
+    # an empty oral list writes no oral md of its own
     assert not (tmp_path / "acl-2025" / "oral_summaries_ja.md").exists()
+
+
+def test_empty_oral_list_keeps_the_published_oral_md(tmp_path: Path) -> None:
+    """The Anthology marks no oral/spotlight, so a plain re-collection always
+    passes an empty list here; that must not erase the Oral labels an earlier
+    --oral-arxiv-query overlay established."""
+    conf_dir = tmp_path / "acl-2025"
+    conf_dir.mkdir(parents=True)
+    oral_md = conf_dir / "oral_summaries_ja.md"
+    existing = "# acl-2025 Oral / Highlight\n## 1. A Graph Method\n"
+    oral_md.write_text(existing, encoding="utf-8")
+
+    cc.write_outputs(
+        "acl-2025",
+        acl.parse_papers(_XML, "ACL"),
+        [],
+        output_root=tmp_path,
+        date="2026-06-28",
+    )
+
+    assert oral_md.read_text(encoding="utf-8") == existing
+
+
+def test_clear_oral_deletes_the_published_oral_md(tmp_path: Path) -> None:
+    """--clear-oral (clear_oral=True) is the explicit way to drop the Oral marks."""
+    conf_dir = tmp_path / "acl-2025"
+    conf_dir.mkdir(parents=True)
+    oral_md = conf_dir / "oral_summaries_ja.md"
+    oral_md.write_text("# acl-2025 Oral / Highlight\n## 1. A Graph Method\n", encoding="utf-8")
+
+    cc.write_outputs(
+        "acl-2025",
+        acl.parse_papers(_XML, "ACL"),
+        [],
+        output_root=tmp_path,
+        date="2026-06-28",
+        clear_oral=True,
+    )
+
+    assert not oral_md.exists()
+
+
+def test_main_passes_clear_oral_through(tmp_path: Path, monkeypatch) -> None:
+    """--clear-oral must reach the shared writer; the default must not clear."""
+    captured: list[dict[str, object]] = []
+    monkeypatch.setattr(acl, "fetch_xml", lambda *a, **kw: _XML)
+    monkeypatch.setattr(
+        acl, "write_outputs", lambda *a, **kw: captured.append(kw) or Path("papers.csv")
+    )
+    argv = [
+        "collect_acl_anthology.py",
+        "--conference",
+        "acl-2025",
+        "--venue",
+        "ACL",
+        "--xml-id",
+        "2025.acl",
+    ]
+    with patch.object(sys, "argv", argv):
+        assert acl.main() == 0
+    with patch.object(sys, "argv", [*argv, "--clear-oral"]):
+        assert acl.main() == 0
+
+    assert [kw["clear_oral"] for kw in captured] == [False, True]
+
+
+_ORAL_ARGV = [
+    "collect_acl_anthology.py",
+    "--conference",
+    "acl-2025",
+    "--venue",
+    "ACL",
+    "--xml-id",
+    "2025.acl",
+    "--oral-arxiv-query",
+    'co:"ACL 2025"',
+]
+
+
+def test_main_oral_max_defaults_to_the_overlay_cap(monkeypatch) -> None:
+    """--oral-max must widen the very cap the overlay reports hitting.
+
+    A second literal default would let the operator raise one and still trip the
+    other, so the collector's default is the overlay's own constant.
+    """
+    captured: list[tuple] = []
+    monkeypatch.setattr(acl, "fetch_xml", lambda *a, **kw: _XML)
+    monkeypatch.setattr(
+        acl, "write_outputs", lambda *a, **kw: (captured.append(a), Path("papers.csv"))[1]
+    )
+    monkeypatch.setattr(sys, "argv", _ORAL_ARGV)
+    with patch.object(cc, "fetch_results", return_value=[]) as fetch:
+        assert acl.main() == 0
+
+    assert fetch.call_args.args[1] == cc.ORAL_MAX_RESULTS_DEFAULT
+    assert captured[0][2] == []
+
+
+def test_main_skips_a_truncated_overlay_and_keeps_the_published_oral_md(
+    tmp_path: Path, monkeypatch, capsys
+) -> None:
+    """A full arXiv window must not replace the published oral list with a partial one.
+
+    The overlay is newest-first and bounded, so filling it says nothing about the
+    older acceptances. The collector then passes an empty list, which is what
+    ``write_outputs`` already treats as "leave oral_summaries_ja.md alone".
+    """
+    conf_dir = tmp_path / "output" / "acl-2025"
+    conf_dir.mkdir(parents=True)
+    oral_md = conf_dir / "oral_summaries_ja.md"
+    existing = "# acl-2025 Oral / Highlight\n## 1. A Graph Method\n"
+    oral_md.write_text(existing, encoding="utf-8")
+
+    monkeypatch.setattr(cc, "PROJECT", tmp_path)
+    monkeypatch.setattr(acl, "fetch_xml", lambda *a, **kw: _XML)
+    # Exactly --oral-max results: the window is full, so the overlay is incomplete.
+    filled = [
+        SimpleNamespace(title=f"Oral {i}", comment="Accepted to ACL 2025 (Oral)")
+        for i in range(2)
+    ]
+    monkeypatch.setattr(cc, "fetch_results", lambda *a, **kw: filled)
+    monkeypatch.setattr(sys, "argv", [*_ORAL_ARGV, "--oral-max", "2"])
+
+    assert acl.main() == 0
+    assert oral_md.read_text(encoding="utf-8") == existing
+    out = capsys.readouterr().out
+    assert "oral overlay filled the --oral-max 2 window" in out
+    assert "(0 oral via arXiv)" in out
+
+
+def _malformed_feed_fetch(results: list[SimpleNamespace]):
+    """A stand-in for ``fetch_results`` that logs the client's malformed-feed warning.
+
+    Mirrors arxiv 4.0.1, which logs and hands back the partial page instead of raising —
+    see test_collect_conference.py for the test that pins that against the library.
+    """
+
+    def _fetch(*_args: object, **_kwargs: object) -> list[SimpleNamespace]:
+        logging.getLogger("arxiv").warning(
+            "Malformed feed; consider handling: %s", "not well-formed (invalid token)"
+        )
+        return results
+
+    return _fetch
+
+
+@pytest.mark.parametrize("incomplete", ["window", "malformed"])
+def test_main_an_incomplete_overlay_does_not_authorize_clear_oral(
+    tmp_path: Path, monkeypatch, capsys, incomplete: str
+) -> None:
+    """--clear-oral is an operator decision about a KNOWN oral set, nothing else.
+
+    Both incomplete cases hand back no titles, and neither says the venue has no orals:
+    the window never reached the older acceptances, the malformed feed dropped entries from
+    the middle. Removing the published list on that reading would turn every paper into
+    Poster. Each case must also print its own advice, because only one of them is fixed by
+    raising --oral-max.
+    """
+    conf_dir = tmp_path / "output" / "acl-2025"
+    conf_dir.mkdir(parents=True)
+    oral_md = conf_dir / "oral_summaries_ja.md"
+    existing = "# acl-2025 Oral / Highlight\n## 1. A Graph Method\n"
+    oral_md.write_text(existing, encoding="utf-8")
+
+    monkeypatch.setattr(cc, "PROJECT", tmp_path)
+    monkeypatch.setattr(acl, "fetch_xml", lambda *a, **kw: _XML)
+    filled = [
+        SimpleNamespace(title=f"Oral {i}", comment="Accepted to ACL 2025 (Oral)")
+        for i in range(2)
+    ]
+    fetch = _malformed_feed_fetch(filled) if incomplete == "malformed" else lambda *a, **kw: filled
+    monkeypatch.setattr(cc, "fetch_results", fetch)
+    monkeypatch.setattr(sys, "argv", [*_ORAL_ARGV, "--oral-max", "2", "--clear-oral"])
+
+    assert acl.main() == 0
+    assert oral_md.read_text(encoding="utf-8") == existing
+    out = capsys.readouterr().out
+    assert "(0 oral via arXiv)" in out
+    if incomplete == "window":
+        assert "filled the --oral-max 2 window" in out and "malformed" not in out
+    else:
+        assert "malformed feed" in out and "filled the --oral-max" not in out

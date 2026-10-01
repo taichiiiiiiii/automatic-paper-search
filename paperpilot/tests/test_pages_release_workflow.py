@@ -274,6 +274,337 @@ def test_bot_workflows_promote_then_call_same_run_release() -> None:
         assert "commit-and-push.sh" not in text, name
 
 
+def _workflow_run_script(name: str, step_name: str) -> str:
+    """The ``run`` body of the single step of ``name`` called ``step_name``."""
+    data = _load(name)
+    scripts = [
+        step["run"]
+        for job in data["jobs"].values()
+        for step in job.get("steps", [])
+        if isinstance(step, dict) and step.get("name") == step_name
+    ]
+    assert len(scripts) == 1, f"{name}: expected one {step_name!r} run step, got {len(scripts)}"
+    return scripts[0]
+
+
+def _run_workflow_step_script(
+    tmp_path: Path, name: str, step_name: str, env: dict[str, str]
+) -> subprocess.CompletedProcess[str]:
+    """Execute one workflow step's own ``run`` body with bash, offline, in ``tmp_path``.
+
+    The script is taken from the YAML rather than copied here, so the test judges the gate
+    that really runs on the runner instead of a snapshot of it.
+    """
+    path = tmp_path / f"{step_name.lower().replace(' ', '-')}.sh"
+    path.write_text(_workflow_run_script(name, step_name), encoding="utf-8")
+    return subprocess.run(
+        ["bash", str(path)],
+        cwd=tmp_path,
+        env={**os.environ, **env},
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+
+
+def test_shrink_override_is_an_operator_input_and_never_shell_text() -> None:
+    """``build_pages`` only loosens its content-loss gate on an explicit slug list.
+
+    No workflow could pass ``--allow-shrink-for`` before, so an operator who
+    checked a smaller catalog by hand had no way to publish it. The input reaches
+    the script through the environment only, and every entry is validated against
+    the conference slug shape in the script before it becomes an argument.
+    """
+    for name in ("collect-weekly.yml", "conference-on-demand.yml"):
+        data = _load(name)
+        inputs = _on(data)["workflow_dispatch"]["inputs"]
+        allow = inputs["allow_shrink_for"]
+        assert allow["required"] is False, name
+        assert allow["default"] == "", name
+        assert allow["type"] == "string", name
+        assert "comma-separated" in allow["description"].lower(), name
+
+        text = (WORKFLOWS / name).read_text(encoding="utf-8")
+        # Passed exactly the way the other inputs are: as an env value.
+        carriers = [line for line in text.splitlines() if "inputs.allow_shrink_for" in line]
+        assert carriers, name
+        assert all(line.strip().startswith("ALLOW_SHRINK_FOR:") for line in carriers), name
+        # Never interpolated into a run: script, where it could carry shell text.
+        assert all(
+            "inputs.allow_shrink_for" not in step["run"]
+            for job in data["jobs"].values()
+            for step in job.get("steps", [])
+            if isinstance(step, dict) and isinstance(step.get("run"), str)
+        ), name
+        # ...and the validated list is what build_pages is finally given.
+        assert "'^[a-z0-9][a-z0-9-]{0,62}[a-z0-9]$'" in text, name
+        assert "--allow-shrink-for" in text, name
+        assert "shrink_args+=(--allow-shrink-for" in text, name
+
+
+def _allow_shrink_loop(name: str) -> str:
+    """The ``allow_shrink_for`` -> argument loop of ``name``'s run script.
+
+    Cut from ``shrink_args=()`` to the ``done`` that closes it, so the test can execute the
+    real snippet instead of re-deriving what it is expected to do.
+    """
+    data = _load(name)
+    for job in data["jobs"].values():
+        for step in job.get("steps", []):
+            run = step.get("run") if isinstance(step, dict) else None
+            if isinstance(run, str) and "shrink_args=()" in run:
+                lines = run.splitlines()
+                start = next(i for i, line in enumerate(lines) if line.strip() == "shrink_args=()")
+                end = next(
+                    i for i, line in enumerate(lines) if i > start and line.strip() == "done"
+                )
+                return "\n".join(lines[start : end + 1])
+    raise AssertionError(f"{name}: no allow_shrink_for loop")
+
+
+def _run_allow_shrink_loop(
+    tmp_path: Path, name: str, value: str
+) -> subprocess.CompletedProcess[str]:
+    """Run the extracted loop with ``ALLOW_SHRINK_FOR=value`` and echo the resulting args.
+
+    The trailer guards the array expansion the way the workflow's own build line does, so
+    an empty list works on bash < 4.4, where ``"${shrink_args[@]}"`` under ``set -u`` is
+    an unbound variable error rather than no arguments.
+    """
+    script = tmp_path / "allow-shrink-loop.sh"
+    script.write_text(
+        "set -euo pipefail\n"
+        + _allow_shrink_loop(name)
+        + "\nprintf '%s\\n' ${shrink_args[@]+\"${shrink_args[@]}\"}\n",
+        encoding="utf-8",
+    )
+    return subprocess.run(
+        ["bash", str(script)],
+        cwd=tmp_path,
+        env={**os.environ, "ALLOW_SHRINK_FOR": value},
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+
+
+def test_shrink_override_loop_emits_validated_arguments_only(
+    tmp_path: Path,
+) -> None:
+    """The operator's comma list becomes one validated arg pair per slug — nothing else.
+
+    Run with bash and no network, this is the proof the dispatch input cannot reach a
+    shell: shell syntax is refused before it becomes an argument, a value carrying a
+    newline is refused as a whole before ``IFS=',' read -a <<<`` would have kept only its
+    first line and dropped the rest, and the per-slug pattern (2-64 lowercase letters,
+    digits, hyphens) is what decides an otherwise valid shape. A double hyphen stays an
+    accepted slug for ``build_pages``' stricter validator to judge, and an empty input
+    yields no arguments at all instead of failing the expansion.
+    """
+    for name in ("collect-weekly.yml", "conference-on-demand.yml"):
+        empty = _run_allow_shrink_loop(tmp_path, name, "")
+        assert empty.returncode == 0, name + empty.stdout + empty.stderr
+        # printf with no arguments still emits its format once, i.e. one newline.
+        assert empty.stdout.strip() == "", name
+
+        looped = _run_allow_shrink_loop(tmp_path, name, "iclr-2026, neurips-2026")
+        assert looped.returncode == 0, name + looped.stdout + looped.stderr
+        assert looped.stdout.splitlines() == [
+            "--allow-shrink-for",
+            "iclr-2026",
+            "--allow-shrink-for",
+            "neurips-2026",
+        ], name
+
+        double_hyphen = _run_allow_shrink_loop(tmp_path, name, "a--b")
+        assert double_hyphen.returncode == 0, name + double_hyphen.stdout
+        assert double_hyphen.stdout.splitlines() == ["--allow-shrink-for", "a--b"], name
+
+        for payload in ("x;rm", "x\ny", "neurips-2026\niclr-2026", "iclr-2026\nx;rm"):
+            rejected = _run_allow_shrink_loop(tmp_path, name, payload)
+            assert rejected.returncode != 0, (name, repr(payload))
+            # Refused on the way in, so the payload never became an argument either.
+            assert "--allow-shrink-for" not in rejected.stdout, (name, repr(payload))
+            assert "::error::" in rejected.stdout + rejected.stderr, (name, repr(payload))
+
+        # Two pattern-valid slugs on two lines: the guard is what refuses it here, because
+        # the old line-by-line reading would have accepted the first and lost the second.
+        dropped = _run_allow_shrink_loop(tmp_path, name, "neurips-2026\niclr-2026")
+        assert "must be a single comma-separated line" in dropped.stdout + dropped.stderr, name
+
+        # The payload is never evaluated: this semicolon form would have left a file behind.
+        attack = _run_allow_shrink_loop(tmp_path, name, "x;touch pwned")
+        assert attack.returncode != 0, name
+        assert not (tmp_path / "pwned").exists(), name
+
+
+def _seed_conference_dir(tmp_path: Path, conf: str, *, with_collection: bool = True) -> None:
+    """Create ``paperpilot/output/<conf>/`` (+ a dated collection file) under ``tmp_path``."""
+    conf_dir = tmp_path / "paperpilot" / "output" / conf
+    conf_dir.mkdir(parents=True, exist_ok=True)
+    if with_collection:
+        (conf_dir / "papers_2026-09-26.csv").write_text("title\nPaper\n", encoding="utf-8")
+
+
+def _run_rebuild_projections_step(
+    tmp_path: Path, allow_shrink_for: str
+) -> subprocess.CompletedProcess[str]:
+    """Run collect-weekly's whole "Rebuild conference-local projections" step, offline.
+
+    ``uv`` is a shell function that only echoes its arguments, so the step is judged on
+    the command line it really builds without a network or a runner environment.
+    """
+    step = tmp_path / "rebuild-conference-local-projections.sh"
+    step.write_text(
+        _workflow_run_script("collect-weekly.yml", "Rebuild conference-local projections"),
+        encoding="utf-8",
+    )
+    harness = tmp_path / "rebuild-projections-harness.sh"
+    harness.write_text(
+        'uv() { echo "uv $*"; }\n' + f"source ./{step.name}\n",
+        encoding="utf-8",
+    )
+    return subprocess.run(
+        ["bash", str(harness)],
+        cwd=tmp_path,
+        env={**os.environ, "ALLOW_SHRINK_FOR": allow_shrink_for},
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+
+
+def _build_pages_calls(stdout: str) -> list[str]:
+    """The ``build_pages`` command lines the stubbed step echoed, in build order."""
+    return [line for line in stdout.splitlines() if "build_pages.py" in line]
+
+
+def _stub_uv_calls(stdout: str) -> list[str]:
+    """Every command line the stubbed ``uv`` echoed, in build order."""
+    return [line for line in stdout.splitlines() if line.startswith("uv ")]
+
+
+def _pages_command(conf: str, *, acknowledged: bool = False) -> str:
+    flag = f" --allow-shrink-for {conf}" if acknowledged else ""
+    return f"uv run --frozen python paperpilot/scripts/build_pages.py --conference {conf}{flag}"
+
+
+def test_weekly_rebuild_gives_each_conference_only_its_own_acknowledgement(
+    tmp_path: Path,
+) -> None:
+    """A scoped ``build_pages`` run may only be loosened for the conference it rebuilds.
+
+    The whole step runs under bash with ``uv`` stubbed: an unacknowledged conference keeps
+    its content-loss gate, one operator slug is never handed to another conference's run, no
+    echoed command line at all — ``build_pages`` or ``build_summary_csv`` — ever mentions
+    ``daily``, and a slug that matched no rebuilt conference fails the job instead of
+    quietly publishing with the gate still on.
+    """
+    _seed_conference_dir(tmp_path, "iclr-2026")
+    _seed_conference_dir(tmp_path, "neurips-2026")
+    _seed_conference_dir(tmp_path, "daily")
+
+    plain = _run_rebuild_projections_step(tmp_path, "")
+    assert plain.returncode == 0, plain.stdout + plain.stderr
+    assert _build_pages_calls(plain.stdout) == [
+        _pages_command("iclr-2026"),
+        _pages_command("neurips-2026"),
+    ]
+    assert "rebuilt 2 conference-local projection(s)" in plain.stdout
+
+    one = _run_rebuild_projections_step(tmp_path, "iclr-2026")
+    assert one.returncode == 0, one.stdout + one.stderr
+    assert _build_pages_calls(one.stdout) == [
+        _pages_command("iclr-2026", acknowledged=True),
+        _pages_command("neurips-2026"),
+    ]
+
+    both = _run_rebuild_projections_step(tmp_path, "neurips-2026, iclr-2026")
+    assert both.returncode == 0, both.stdout + both.stderr
+    assert _build_pages_calls(both.stdout) == [
+        _pages_command("iclr-2026", acknowledged=True),
+        _pages_command("neurips-2026", acknowledged=True),
+    ]
+    # The acknowledgement belongs to build_pages only; the summary CSV build is never
+    # given a flag it does not parse.
+    assert all(
+        "--allow-shrink-for" not in line
+        for line in both.stdout.splitlines()
+        if "build_summary_csv.py" in line
+    )
+
+    # A slug for a conference directory that holds no collection this run, ...
+    _seed_conference_dir(tmp_path, "cvpr-2026", with_collection=False)
+    stale = _run_rebuild_projections_step(tmp_path, "cvpr-2026")
+    assert stale.returncode != 0, stale.stdout
+    assert "cvpr-2026, which this run did not rebuild" in stale.stdout
+    assert _build_pages_calls(stale.stdout) == [
+        _pages_command("iclr-2026"),
+        _pages_command("neurips-2026"),
+    ]
+
+    # ... and a slug that names no directory at all, both fail the same way.
+    missing = _run_rebuild_projections_step(tmp_path, "does-not-exist")
+    assert missing.returncode != 0, missing.stdout
+    assert "does-not-exist, which this run did not rebuild" in missing.stdout
+    assert _build_pages_calls(missing.stdout) == [
+        _pages_command("iclr-2026"),
+        _pages_command("neurips-2026"),
+    ]
+
+    # The reserved daily path is skipped before any build, so it must be absent from
+    # every command the step assembles — build_summary_csv.py included, which has no
+    # content-loss gate of its own to catch a daily projection.
+    for run in (plain, one, both, stale, missing):
+        assert all("daily" not in line for line in _stub_uv_calls(run.stdout)), run.stdout
+
+
+def test_on_demand_input_gate_matches_whole_strings_not_lines(
+    tmp_path: Path,
+) -> None:
+    """A ``printf | grep`` check validates one line at a time, so a newline used to pass.
+
+    "iclr-2026\\nx" satisfied the slug pattern on its first line and reached the rest of the
+    job as a two-line value. The step now matches each input as one whole string and
+    rejects a slug carrying a newline before the reserved-path case, so the same value
+    fails — while a normal dispatch keeps passing, which is what makes the gate usable.
+    """
+    name = "conference-on-demand.yml"
+    data = _load(name)
+    step = next(
+        candidate
+        for candidate in data["jobs"]["generate"]["steps"]
+        if candidate.get("name") == "Validate inputs early"
+    )
+    assert "grep -Eq" not in step["run"], "the input gate must not match line by line"
+
+    base_env = {"CONF": "iclr-2026", "VENUE": "ICLR", "MAXN": "800"}
+
+    def run(**overrides: str) -> subprocess.CompletedProcess[str]:
+        return _run_workflow_step_script(
+            tmp_path, name, "Validate inputs early", {**base_env, **overrides}
+        )
+
+    valid = run()
+    assert valid.returncode == 0, valid.stdout + valid.stderr
+
+    for values in (
+        {"CONF": "iclr-2026\nx"},
+        {"CONF": "iclr-2026\n"},
+        {"CONF": "iclr-2026x\n"},  # pattern-valid on its own line
+        {"VENUE": "ICLR\nx"},
+        {"MAXN": "800\n0"},
+    ):
+        rejected = run(**values)
+        assert rejected.returncode != 0, values
+        assert "::error::" in rejected.stdout, values
+
+    # The reserved public paths keep being refused, newline check or not.
+    reserved = run(CONF="themes")
+    assert reserved.returncode != 0
+    assert "reserved public path" in reserved.stdout
+
+
 def test_weekly_generation_packages_only_changed_inputs() -> None:
     text = (WORKFLOWS / "collect-weekly.yml").read_text(encoding="utf-8")
     assert re.search(r"build_pages\.py \\\s*--conference", text)
@@ -292,10 +623,17 @@ def test_weekly_candidate_allows_changed_conference_catalogs() -> None:
     )[0]
     assert "for papers in docs/*/papers.json; do" in package_step
     assert 'includes+=("$papers")' in package_step
+    # build_pages.py publishes the no-JS fallback next to the catalog, so a changed
+    # catalog is a changed fallback; packaging one without the other leaves the
+    # promotion rebuild with a tracked change outside the allowlist.
+    assert "for fallback in docs/*/paper-links.html; do" in package_step
+    assert 'includes+=("$fallback")' in package_step
 
     promote_step = text.split("- name: Validate and promote from the latest develop tip", 1)[1]
     assert '-name papers.json -type f -print0' in promote_step
     assert 'allowed+=("${papers#"$CANDIDATE_DIR/"}")' in promote_step
+    assert '-name paper-links.html -type f -print0' in promote_step
+    assert 'allowed+=("${fallback#"$CANDIDATE_DIR/"}")' in promote_step
 
 
 def test_pypi_workflow_is_build_only() -> None:

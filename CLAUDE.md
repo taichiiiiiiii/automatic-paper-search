@@ -568,8 +568,16 @@ uv run python -m paperpilot.scripts.build_pages            # --conference 無し
 uv run python -m paperpilot.scripts.scaffold_conference_page --conference <slug> --display "<Display>" --lede "<lede>"
 ```
 
-- **`build_pages --conference X` は `conferences.json` を X だけに上書きする** → 集約は必ず `--conference` 無しで再実行。
-- **再収集で oral が消える罠**: CVF/ACL は oral 区分を持たないので、arXiv で先に収集した venue を再収集すると `write_outputs` が古い oral md を消し Oral=0 になる（`--oral-arxiv-query` で overlay すれば保持）。
+- **`build_pages --conference X` は X の `papers.json` / `paper-links.html` だけを書き、`conferences.json` と要旨シャードは更新しない** → 件数・要旨を揃えるため、最後に必ず `--conference` 無しで再実行。全件ビルドは全学会の検証を先に済ませてから書く（1学会でも失敗すれば何も書かない）。
+- **縮小ゲート**: 次のいずれかなら `build_pages` は何も書かずに exit 1 にする。
+  - 公開済みより行数が減る
+  - Oral 数が減る
+  - 公開済みの `paper_id` が1件でも消える
+  - 公開済みで空でなかった要旨・著者が空になる
+  - 公開済み `papers.json` が読めない
+  意図した変更だけ `--allow-shrink-for <conf>`（学会単位、複数指定可）か `--allow-shrink`（全体）で通す。
+- **Oral 一覧の保持**: CVF/ACL は oral 区分を持たない。再収集で Oral 一覧が空でも（`--oral-arxiv-query` の付け忘れ・空の overlay）、`write_outputs` は既存の `oral_summaries_ja.md` を残す。古い一覧を消したいときだけ各 collector に `--clear-oral` を付ける。overlay の arXiv 取得が上限（`--oral-max`、既定1600）に達した場合は不完全とみなし、既存の一覧を残す。
+- **workflow からの縮小許可**: `collect-weekly` / `conference-on-demand` の dispatch 入力 `allow_shrink_for`（カンマ区切りの slug）が `--allow-shrink-for` になる。promotion は `docs/sitemap.xml` も自動で再生成する。
 - **無料家系図**: S2 は 429・`build_lineage.py` は arxiv_id 必須なので、OpenReview/CVF/ACL 由来（arxiv_id 無し）には `build_conference_lineage.py`（OpenAlex title 解決→参照/被引用、LLM 不要のヒューリスティック）を使う。
 
 ---

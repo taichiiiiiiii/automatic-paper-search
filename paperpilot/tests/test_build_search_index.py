@@ -9,6 +9,7 @@ from the URL and filter on title+authors+abstract, so a hit links to
     - the "daily" output dir is excluded (it is not a conference)
     - rows with no title are skipped and reported, not fatal
     - output ordering is deterministic so rebuilds are byte-identical
+    - the v2 index is published only after the ID blocks it addresses
 """
 
 from __future__ import annotations
@@ -167,6 +168,75 @@ def test_write_paper_id_blocks_uses_global_ordinal(tmp_path: Path) -> None:
     assert len(first["paper_ids"]) == 256
     assert second["start"] == 256
     assert second["paper_ids"][0] == paper_ids[256]
+
+
+def test_prune_paper_id_blocks_drops_only_unpublished_blocks(tmp_path: Path) -> None:
+    """Pruning is the second phase, so a shrunk corpus loses its old tail."""
+
+    block_root = tmp_path / bsi.PAPER_ID_BLOCK_DIRNAME
+    published = bsi.write_paper_id_blocks(tmp_path, [f"{value:040x}" for value in range(300)])
+    assert len(published) == 2
+    (block_root / "9999.json").write_text("{}", encoding="utf-8")
+
+    removed = bsi.prune_paper_id_blocks(tmp_path, bsi.write_paper_id_blocks(tmp_path, ["a" * 40]))
+
+    assert sorted(path.name for path in removed) == ["0001.json", "9999.json"]
+    assert [path.name for path in sorted(block_root.glob("*.json"))] == ["0000.json"]
+
+
+def test_main_keeps_the_published_v2_index_when_a_block_write_fails(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """The v2 index is written last, so an interrupted rebuild cannot strand a ref.
+
+    Blocks are addressed by ``paper_ref``, so publishing a new index before its blocks
+    landed would strand search results on missing files. It is only the index that this
+    guarantees: the blocks written before the failure are already replaced, and the
+    stale ones are pruned by the next complete run.
+    """
+    import sys
+
+    import pytest
+
+    _write_papers(
+        tmp_path,
+        "iclr-2026",
+        [
+            {
+                "title": f"Paper {ordinal}",
+                "authors": ["A"],
+                "tags": [],
+                "type": "Poster",
+                "arxiv_url": f"https://arxiv.org/abs/2404.{ordinal:05d}",
+            }
+            for ordinal in range(bsi.PAPER_ID_BLOCK_SIZE + 1)
+        ],
+    )
+    index_v2 = tmp_path / bsi.INDEX_V2_FILENAME
+    published = '[["previously published index"]]'
+    index_v2.write_text(published, encoding="utf-8")
+
+    real = bsi.atomic_write_text
+    blocks: list[Path] = []
+
+    def write(path: str | Path, text: str, *, encoding: str = "utf-8") -> None:
+        target = Path(path)
+        if target.parent.name == bsi.PAPER_ID_BLOCK_DIRNAME:
+            blocks.append(target)
+            if len(blocks) > 1:
+                raise OSError("block write interrupted")
+        real(target, text, encoding=encoding)
+
+    monkeypatch.setattr(bsi, "atomic_write_text", write)
+    monkeypatch.setattr(sys, "argv", ["build_search_index", "--docs-root", str(tmp_path)])
+
+    with pytest.raises(OSError, match="interrupted"):
+        bsi.main()
+
+    assert len(blocks) == 2
+    assert blocks[0].is_file()
+    assert not blocks[1].exists()
+    assert index_v2.read_text(encoding="utf-8") == published
 
 
 def test_real_v2_projection_meets_budget_and_resolves_every_ref() -> None:

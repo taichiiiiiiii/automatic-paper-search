@@ -6,6 +6,12 @@ name: PaperPilot Weekly Deep Survey
 
 on:
   workflow_dispatch:
+    inputs:
+      allow_shrink_for:
+        description: 'Comma-separated conference slugs whose catalog may shrink or change identity in this run (build_pages acknowledgement; empty = the shrink gate stays on for every conference)'
+        required: false
+        default: ''
+        type: string
 
 permissions: {}
 
@@ -55,20 +61,65 @@ jobs:
         run: uv run --frozen python -m paperpilot.collector --config paperpilot/config.yaml
 
       - name: Rebuild conference-local projections
+        env:
+          ALLOW_SHRINK_FOR: ${{ inputs.allow_shrink_for }}
         run: |
           set -euo pipefail
+          # build_pages refuses a catalog that loses content against the published
+          # one unless the operator names that conference. The dispatch input
+          # reaches this script only through the environment and every slug is
+          # validated here, so it can never carry shell syntax.
+          shrink_args=()
+          # read -a <<< splits on the first line only, so a two-line value would have
+          # applied the operator's first slug and silently dropped the rest.
+          if [[ "${ALLOW_SHRINK_FOR:-}" == *$'\n'* ]]; then
+            echo "::error::allow_shrink_for must be a single comma-separated line"
+            exit 1
+          fi
+          IFS=',' read -r -a allow_shrink_slugs <<< "${ALLOW_SHRINK_FOR:-}"
+          for slug in ${allow_shrink_slugs[@]+"${allow_shrink_slugs[@]}"}; do
+            slug="${slug//[[:space:]]/}"
+            [ -n "$slug" ] || continue
+            if ! printf '%s' "$slug" | grep -Eq '^[a-z0-9][a-z0-9-]{0,62}[a-z0-9]$'; then
+              echo "::error::allow_shrink_for must be comma-separated conference slugs (2-64 lowercase letters, digits and hyphens), got: $slug"
+              exit 1
+            fi
+            shrink_args+=(--allow-shrink-for "$slug")
+          done
+          # Each scoped build_pages run accepts only its own conference's
+          # acknowledgement, so hand every run just the slug it covers and fail
+          # loudly on a slug that matched no rebuilt conference (a typo would
+          # otherwise leave the gate on and read as a mysterious refusal).
+          acknowledged=" ${shrink_args[*]-} "
           shopt -s nullglob
           rebuilt=0
+          used=" "
           for conf_dir in paperpilot/output/*/; do
             conf="$(basename "$conf_dir")"
             [ "$conf" != daily ] || continue
             matches=("$conf_dir"/papers_*.csv)
             [ "${#matches[@]}" -gt 0 ] || continue
+            conf_args=()
+            # The needle is quoted on both sides so $conf is matched as a literal
+            # string — a directory name is data, never part of the pattern.
+            ack_needle=" --allow-shrink-for $conf "
+            if [[ "$acknowledged" == *"$ack_needle"* ]]; then
+              conf_args=(--allow-shrink-for "$conf")
+              used+="$conf "
+            fi
             uv run --frozen python paperpilot/scripts/build_summary_csv.py \
               --conference "$conf"
             uv run --frozen python paperpilot/scripts/build_pages.py \
-              --conference "$conf"
+              --conference "$conf" ${conf_args[@]+"${conf_args[@]}"}
             rebuilt=$((rebuilt + 1))
+          done
+          for slug in ${allow_shrink_slugs[@]+"${allow_shrink_slugs[@]}"}; do
+            slug="${slug//[[:space:]]/}"
+            [ -n "$slug" ] || continue
+            if [[ "$used" != *" $slug "* ]]; then
+              echo "::error::allow_shrink_for names $slug, which this run did not rebuild"
+              exit 1
+            fi
           done
           echo "rebuilt $rebuilt conference-local projection(s)"
 
@@ -169,6 +220,9 @@ jobs:
           for lineage in docs/*/lineage.json; do
             includes+=("$lineage")
           done
+          for fallback in docs/*/paper-links.html; do
+            includes+=("$fallback")
+          done
           bash .github/scripts/package-generated-candidate.sh \
             "$CANDIDATE_DIR" "${includes[@]}"
 
@@ -233,6 +287,10 @@ jobs:
               allowed+=("${lineage#"$CANDIDATE_DIR/"}")
             done < <(find "$CANDIDATE_DIR/docs" -mindepth 2 -maxdepth 2 \
               -name lineage.json -type f -print0)
+            while IFS= read -r -d '' fallback; do
+              allowed+=("${fallback#"$CANDIDATE_DIR/"}")
+            done < <(find "$CANDIDATE_DIR/docs" -mindepth 2 -maxdepth 2 \
+              -name paper-links.html -type f -print0)
           fi
           msg="data(weekly): refresh generated survey"
           bash .github/scripts/promote-generated.sh conference \

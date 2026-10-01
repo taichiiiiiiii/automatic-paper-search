@@ -43,6 +43,7 @@ case "$promotion_kind" in
       docs/themes/_quality.json
       docs/lineage-quality-v1.json
       docs/assets/versions.json
+      docs/sitemap.xml
     )
     ;;
   conference)
@@ -57,6 +58,7 @@ case "$promotion_kind" in
       docs/search-index-v2.json
       docs/search-paper-ids-v1
       docs/assets/versions.json
+      docs/sitemap.xml
       paperpilot/data/identity-coverage-v1.json
     )
     ;;
@@ -146,6 +148,9 @@ refresh_shared_outputs() {
             --as-of "$promotion_as_of"
         fi
         uv run --frozen python paperpilot/scripts/sync_asset_versions.py
+        # Last: build_sitemap lists docs/themes/index.html only while the quality
+        # manifest this block just rebuilt marks a theme route ready + passed.
+        uv run --frozen python -m paperpilot.scripts.build_sitemap
       )
       ;;
     conference)
@@ -162,6 +167,10 @@ refresh_shared_outputs() {
             --as-of "$promotion_as_of"
         fi
         uv run --frozen python paperpilot/scripts/sync_asset_versions.py
+        # Last: it lists the pages the other steps just settled and gates the
+        # lineage/deep/theme routes on the rebuilt quality manifest, so a new
+        # docs/<slug>/index.html reaches the sitemap in the same promotion.
+        uv run --frozen python -m paperpilot.scripts.build_sitemap
       )
       ;;
     test-only)

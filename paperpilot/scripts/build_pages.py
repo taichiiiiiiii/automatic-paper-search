@@ -8,6 +8,27 @@ summary.csv.
 Run:
     python paperpilot/scripts/build_pages.py                    # all conferences
     python paperpilot/scripts/build_pages.py --conference iclr-2026
+
+A build that loses catalog content is refused and exits non-zero with every published
+file unchanged: fewer rows, fewer Oral rows, a published paper_id missing from the new
+rows, or a published abstract / author list that came back empty. Pass --allow-shrink
+once the smaller collection has been checked by hand, or --allow-shrink-for CONF to
+acknowledge the loss for that one conference while the others keep the gate.
+
+An unscoped build is also refused when the published conferences.json lists a conference
+it cannot rebuild (its output/<conf>/summary.csv is gone): that index rewrite would take
+the conference's catalog card offline, and there is no new catalog to compare to notice.
+Every --allow-shrink-for entry is validated as a slug and must name a conference this run
+publishes or one the published index still lists, so a typo fails loudly instead of being
+a silent no-op.
+
+A build scoped with --conference that produces nothing is a failure, not a skip: the
+catalog it was asked to rebuild is not there, so it exits non-zero instead of reporting
+success. An unscoped build keeps skipping a directory without summary.csv.
+
+A multi-conference build is all-or-nothing: every selected conference is prepared and
+validated in memory first, so a conference that is refused leaves the other catalogs,
+the landing index and the detail shards describing the same, previous site.
 """
 
 from __future__ import annotations
@@ -16,15 +37,17 @@ import argparse
 import csv
 import html
 import json
-import os
 import re
-import tempfile
 import unicodedata
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit
 
 from paperpilot.identity import IdentityError, identity_from_url, normalize_alias
+from paperpilot.scripts import scaffold_conference_page
+from paperpilot.scripts._common import validate_conference_slug
+from paperpilot.utils.atomic import atomic_write_text
 
 ROOT = Path(__file__).resolve().parents[2]
 PROJECT = Path(__file__).resolve().parents[1]
@@ -46,7 +69,15 @@ NON_CONFERENCE = {"daily"}
 # arXiv link. Previewing here keeps every catalog page light.
 _ABSTRACT_PREVIEW_CHARS = 320
 _PAPER_ID_RE = re.compile(r"^[0-9a-f]{40}$")
-_CONFERENCE_SLUG_RE = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,38}[a-z0-9])$")
+
+# scaffold_conference_page refuses to overwrite these docs/ paths with a catalog
+# page, so a build writing docs/<slug>/ there would collide with a static route.
+# That set is the one list of reserved public paths; the template slug in it is
+# scaffold's overwrite guard, not a public path — docs/cvpr-2026/ is a real
+# published catalog this build must keep producing.
+_RESERVED_PUBLIC_PATHS = scaffold_conference_page._RESERVED_CONFERENCE_PATHS - {
+    scaffold_conference_page.TEMPLATE_CONF
+}
 
 # A no-JS fallback is deliberately a bounded emergency view, not a second copy
 # of the full interactive application. These ceilings cover the current largest
@@ -54,6 +85,21 @@ _CONFERENCE_SLUG_RE = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,38}[a-z0-9])$")
 # decision instead of allowing an unbounded checked-in HTML artifact.
 NOJS_MAX_PAPERS = 6_000
 NOJS_MAX_RENDERED_BYTES = 3 * 1024 * 1024
+
+
+class CatalogShrinkError(RuntimeError):
+    """Refused to publish a catalog that would lose content from the one already online.
+
+    Every upstream collector degrades to a *valid but thinner* result when a fetch fails,
+    when the upstream listing page changes, or when the arXiv oral overlay is skipped, so
+    losing rows, Oral labels, published identities or field content is the signature of a
+    silent regression rather than of a venue that genuinely changed. The row count alone
+    cannot see the last three: a partial oral-overlay loss keeps every row, a
+    re-collection can return a different set of papers at the same count, and an upstream
+    markup change can empty a field while keeping the row. Publishing any of them strips
+    the live catalog with nothing left to compare against, so the build stops and demands
+    an explicit ``--allow-shrink`` / ``--allow-shrink-for`` acknowledgement.
+    """
 
 
 def _abstract_preview(text: str | None) -> str:
@@ -108,15 +154,18 @@ def _safe_http_url(value: object) -> str | None:
 
 
 def _validate_conference_slug(value: object) -> str:
-    """Return a bounded conference slug or fail before any filesystem access."""
+    """Return a conference slug or fail before any filesystem access.
 
-    if (
-        not isinstance(value, str)
-        or _CONFERENCE_SLUG_RE.fullmatch(value) is None
-        or value in NON_CONFERENCE
-    ):
-        raise ValueError("conference must be a 2-40 character lowercase slug and not reserved")
-    return value
+    Uses the collectors' own ``_common.validate_conference_slug`` so a name one of
+    them was allowed to write under ``output/<slug>/`` is always buildable here,
+    plus the public paths ``scaffold_conference_page`` reserves under ``docs/``.
+    """
+
+    if not isinstance(value, str):
+        raise ValueError("conference must be a lowercase slug and not a reserved public path")
+    if value in _RESERVED_PUBLIC_PATHS:
+        raise ValueError(f"conference {value!r} is a reserved public path under docs/")
+    return validate_conference_slug(value)
 
 
 def _contained_path(root: Path, *parts: str) -> Path:
@@ -251,35 +300,30 @@ def render_paper_links_page(
     return rendered
 
 
+def paper_links_page_path(conference: str) -> Path:
+    """Where ``conference``'s no-JS fallback is published (validated, contained)."""
+
+    conference = _validate_conference_slug(conference)
+    return _contained_path(DOCS_ROOT, conference, "paper-links.html")
+
+
+def publish_paper_links_page(output: Path, rendered: str) -> None:
+    """Atomically replace the fallback at ``output`` with an already-rendered page.
+
+    Rendering is separate from publishing so ``prepare_conference`` can run every
+    no-JS validation before a single byte of the build is published.
+    """
+
+    output.parent.mkdir(parents=True, exist_ok=True)
+    atomic_write_text(output, rendered)
+
+
 def write_paper_links_page(
     conference: str,
     papers: list[dict[str, Any]],
 ) -> Path:
-    conference = _validate_conference_slug(conference)
-    output = _contained_path(DOCS_ROOT, conference, "paper-links.html")
-    output.parent.mkdir(parents=True, exist_ok=True)
-    rendered = render_paper_links_page(conference, papers)
-    temporary: Path | None = None
-    try:
-        with tempfile.NamedTemporaryFile(
-            mode="w",
-            encoding="utf-8",
-            dir=output.parent,
-            prefix=f".{output.name}.",
-            suffix=".tmp",
-            delete=False,
-        ) as handle:
-            temporary = Path(handle.name)
-            handle.write(rendered)
-            handle.flush()
-            os.fsync(handle.fileno())
-        assert temporary is not None
-        os.chmod(temporary, 0o644)
-        os.replace(temporary, output)
-        temporary = None
-    finally:
-        if temporary is not None:
-            temporary.unlink(missing_ok=True)
+    output = paper_links_page_path(conference)
+    publish_paper_links_page(output, render_paper_links_page(conference, papers))
     return output
 
 
@@ -358,11 +402,310 @@ def _latest_data_date(conf_dir: Path) -> str | None:
     return dates[-1] if dates else None
 
 
-def build_conference(
+def _oral_rows(rows: list[Any]) -> int:
+    """Count catalog rows the viewer labels Oral (a non-dict row counts as none)."""
+    return sum(1 for row in rows if isinstance(row, dict) and row.get("type") == "Oral")
+
+
+# Fields that must not come back empty while their row survives: an upstream markup
+# change (a renamed container class, a new anthology layout) empties one of them for
+# every row at once, and the row count cannot see that.
+_CONTENT_FIELDS = ("abstract", "authors")
+
+
+def _override_hint(name: str) -> str:
+    """The acknowledgement sentence appended to every refusal, naming both flags."""
+
+    return (
+        f"Re-run with --allow-shrink (all conferences) or --allow-shrink-for {name} "
+        "(this conference only) once the collection has been checked by hand."
+    )
+
+
+def _field_is_empty(value: object) -> bool:
+    """Whether a catalog field carries no content, in whichever shape the row stores it.
+
+    ``load_summary`` publishes ``abstract`` as a string and ``authors`` as a list, and a
+    catalog checked in before that shape existed still has to be comparable, so both are
+    reduced to "is there any text in here".
+    """
+
+    if isinstance(value, str):
+        return not value.strip()
+    if isinstance(value, list):
+        return all(_field_is_empty(item) for item in value)
+    return value is None
+
+
+def _named_ids(ids: list[str], *, limit: int = 3) -> str:
+    """Name enough ids to find the loss, capped so a whole-venue loss stays readable."""
+
+    shown = ", ".join(ids[:limit])
+    more = len(ids) - limit
+    if more > 0:
+        shown += f" and {more} more"
+    return f"{shown} ({len(ids)} in total)"
+
+
+def _published_rows_by_id(published: list[Any]) -> dict[str, dict[str, Any]]:
+    """Index the published catalog by ``paper_id``, skipping rows that carry none.
+
+    A checked-in catalog predating the ``paper_id`` field cannot be matched to a new row,
+    so those rows are left out of the identity and content comparison instead of being
+    reported as a loss no build could ever satisfy.
+    """
+
+    rows: dict[str, dict[str, Any]] = {}
+    for row in published:
+        if not isinstance(row, dict):
+            continue
+        paper_id = row.get("paper_id")
+        if isinstance(paper_id, str) and paper_id:
+            rows[paper_id] = row
+    return rows
+
+
+def _collapsed_content_ids(
+    published_rows: dict[str, dict[str, Any]],
+    new_rows: dict[str, dict[str, Any]],
+    field: str,
+) -> list[str]:
+    """Published ids whose ``field`` held content and now holds none.
+
+    Only emptiness counts: ``papers.json`` ships a truncated abstract preview, so its
+    length and wording legitimately change between builds while the content is there.
+    """
+
+    collapsed: list[str] = []
+    for paper_id, published_row in published_rows.items():
+        # A paper missing altogether is refused by the identity check before this one,
+        # so a row that is not here at all is deliberately not double-reported.
+        new_row = new_rows.get(paper_id)
+        if new_row is None:
+            continue
+        had_content = not _field_is_empty(published_row.get(field))
+        if had_content and _field_is_empty(new_row.get(field)):
+            collapsed.append(paper_id)
+    return collapsed
+
+
+def _refuse_catalog_shrink(
+    name: str,
+    published_json: Path,
+    papers: list[dict[str, Any]],
+    *,
+    allow_shrink: bool,
+) -> None:
+    """Raise :class:`CatalogShrinkError` when publishing ``papers`` loses catalog content.
+
+    Compared against the currently published ``papers.json`` *before* anything is
+    written, so a refusal leaves the site exactly as it was:
+
+    - no published file -> first publication, there is nothing to lose;
+    - a file that exists but cannot be read or is not a JSON array -> refuse; an
+      artifact we cannot count must not be overwritten blindly;
+    - fewer rows than published, or fewer Oral rows than published -> refuse; a partial
+      oral-overlay loss keeps the row count and only empties the labels half-way;
+    - a published ``paper_id`` missing from the new rows -> refuse even when the count is
+      the same, because a re-collection that returned a *different* set of papers is an
+      upstream listing change, not a venue that really moved;
+    - a published non-empty ``abstract`` or ``authors`` that came back empty -> refuse.
+
+    ``allow_shrink`` is the operator's acknowledgement (``--allow-shrink`` for every
+    conference, ``--allow-shrink-for <name>`` for this one alone) that the loss is
+    intended, so it skips every check above.
+    """
+    if allow_shrink or not published_json.is_file():
+        return
+
+    try:
+        published = json.loads(published_json.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        # json.JSONDecodeError and UnicodeDecodeError are both ValueError subclasses.
+        raise CatalogShrinkError(
+            f"{name}: published catalog {published_json} exists but cannot be inspected "
+            f"({type(exc).__name__}: {exc}); refusing to overwrite it blindly. Check that "
+            f"file by hand. {_override_hint(name)}"
+        ) from exc
+    if not isinstance(published, list):
+        raise CatalogShrinkError(
+            f"{name}: published catalog {published_json} is not a JSON array; refusing to "
+            f"overwrite it. Check that file by hand. {_override_hint(name)}"
+        )
+
+    if len(papers) < len(published):
+        raise CatalogShrinkError(
+            f"{name}: the new catalog has {len(papers)} row(s) while the published catalog "
+            f"{published_json} has {len(published)}; refusing to publish a smaller catalog. "
+            f"{_override_hint(name)}"
+        )
+
+    published_oral = _oral_rows(published)
+    new_oral = _oral_rows(papers)
+    if new_oral < published_oral:
+        raise CatalogShrinkError(
+            f"{name}: the published catalog labels {published_oral} row(s) Oral and the new "
+            f"catalog labels {new_oral} (a skipped or partial arXiv oral overlay?); refusing "
+            f"to erase Oral labels. {_override_hint(name)}"
+        )
+
+    published_rows = _published_rows_by_id(published)
+    new_rows: dict[str, dict[str, Any]] = {row["paper_id"]: row for row in papers}
+    lost_ids = [paper_id for paper_id in published_rows if paper_id not in new_rows]
+    if lost_ids:
+        raise CatalogShrinkError(
+            f"{name}: {len(lost_ids)} published paper_id(s) are missing from the new "
+            f"catalog although the row count did not drop: {_named_ids(lost_ids)}. Refusing "
+            f"to publish a different set of papers. {_override_hint(name)}"
+        )
+
+    for field in _CONTENT_FIELDS:
+        collapsed = _collapsed_content_ids(published_rows, new_rows, field)
+        if collapsed:
+            raise CatalogShrinkError(
+                f"{name}: {len(collapsed)} paper(s) kept their row but lost their "
+                f"'{field}' content: {_named_ids(collapsed)}. Refusing to publish empty "
+                f"'{field}' fields. {_override_hint(name)}"
+            )
+
+
+def _published_index_names(published_index: Path) -> list[str]:
+    """The conference names the currently published landing index lists.
+
+    Returns ``[]`` when there is no published index — a first build has nothing to lose.
+    An index that exists but cannot be read or is not a JSON array is refused like an
+    uninspectable catalog: the full build is about to replace it, and a file whose
+    contents the build cannot count must not be overwritten blindly.
+    """
+    if not published_index.is_file():
+        return []
+    try:
+        published = json.loads(published_index.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        # json.JSONDecodeError and UnicodeDecodeError are both ValueError subclasses.
+        raise CatalogShrinkError(
+            f"published catalog index {published_index} exists but cannot be inspected "
+            f"({type(exc).__name__}: {exc}); refusing to overwrite it blindly. Check that "
+            "file by hand, or re-run with --allow-shrink once the tree has been checked."
+        ) from exc
+    if not isinstance(published, list):
+        raise CatalogShrinkError(
+            f"published catalog index {published_index} is not a JSON array; refusing to "
+            "overwrite it. Check that file by hand, or re-run with --allow-shrink once the "
+            "tree has been checked."
+        )
+    return [
+        entry["name"]
+        for entry in published
+        if isinstance(entry, dict) and isinstance(entry.get("name"), str) and entry["name"]
+    ]
+
+
+def _refuse_index_shrink(
+    published_index: Path,
+    building: list[str],
+    published_names: list[str],
+    *,
+    allow_shrink_for: set[str],
+) -> None:
+    """Refuse a full build that would drop a published conference from the landing index.
+
+    ``conferences.json`` is rewritten from the catalogs this run built, so a published
+    conference with no ``output/<conf>/summary.csv`` — a deleted collection dir, an output
+    dir the checkout does not carry — silently loses its catalog card along with the
+    catalog it links to. The per-catalog gate cannot see that: it compares a new catalog
+    against a published one, and here there is no new catalog at all. For a new conference
+    there is no baseline either, which is why this gate is not the catalog gate's equal.
+    """
+    building_set = set(building)
+    missing = [
+        name
+        for name in published_names
+        if name not in building_set and name not in allow_shrink_for
+    ]
+    if not missing:
+        return
+    raise CatalogShrinkError(
+        f"{_named_ids(missing)} conference(s) are listed by the published index "
+        f"{published_index} but are not part of this full build; refusing to republish the "
+        f"landing index without them. Restore their output/<conference>/summary.csv, or "
+        f"re-run with --allow-shrink (all conferences) or --allow-shrink-for <name> (one "
+        f"of them) once the tree has been checked by hand."
+    )
+
+
+def _validated_shrink_acks(
+    entries: list[str],
+    *,
+    building: list[str],
+    selected: str | None,
+    published_names: list[str],
+) -> set[str]:
+    """Validate every ``--allow-shrink-for`` entry and return the acknowledged slugs.
+
+    Each entry goes through the same validator as a conference build, so a value that
+    could never name a catalog is refused instead of quietly doing nothing. An
+    acknowledgement must also name something this run can publish: a scoped build
+    acknowledges only the conference it selected, a full build any conference it selected
+    or any conference the published index still lists. Otherwise a typo ("iclr2026")
+    reads as a successful loosening of the gate to the operator while the gate stayed on.
+    """
+    acknowledged: set[str] = set()
+    building_set = set(building)
+    for entry in entries:
+        try:
+            name = _validate_conference_slug(entry)
+        except ValueError as exc:
+            raise ValueError(f"--allow-shrink-for: {exc}") from exc
+        if selected is not None:
+            if name != selected:
+                raise ValueError(
+                    f"--allow-shrink-for {name} acknowledges nothing: this build is scoped "
+                    f"to --conference {selected}"
+                )
+        elif name not in building_set and name not in published_names:
+            raise ValueError(
+                f"--allow-shrink-for {name} acknowledges nothing: it is neither one of the "
+                f"conferences this build publishes ({', '.join(building) or 'none'}) nor a "
+                f"conference the published index lists ({', '.join(published_names) or 'none'})"
+            )
+        acknowledged.add(name)
+    return acknowledged
+
+
+@dataclass(frozen=True)
+class PreparedConference:
+    """One conference's validated catalog and rendered fallback, staged in memory.
+
+    Produced by :func:`prepare_conference` and consumed by :func:`publish_conference`.
+    Holding the finished artifacts lets a multi-conference build decide the whole run
+    before touching the live site: publishing conference #1 and only then losing #2
+    would ship a catalog whose landing index and detail shards still describe the
+    previous build.
+    """
+
+    out_json: Path
+    papers_json: str
+    fallback_output: Path
+    rendered_fallback: str
+    entry: dict[str, Any]
+
+
+def prepare_conference(
     name: str,
     *,
     detail_sink: dict[str, str] | None = None,
-) -> dict[str, Any] | None:
+    allow_shrink: bool = False,
+) -> PreparedConference | None:
+    """Build and validate ``name``'s artifacts without writing anything.
+
+    Returns ``None`` when the conference has no ``summary.csv``; :func:`main` skips that
+    for a full build and fails on it for a scoped one, because only a scoped run was
+    asked for exactly this catalog. Every check that can refuse a build runs here — the
+    identity merge into ``detail_sink``, the content-loss gate against the live catalog,
+    and the no-JS render with its row limit, duplicate-paper_id and byte-budget ceilings —
+    so publishing afterwards is only a rename, and a refusal costs the site nothing.
+    """
     name = _validate_conference_slug(name)
     summary_csv = _contained_path(PROJECT / "output", name, "summary.csv")
     if not summary_csv.exists():
@@ -376,12 +719,16 @@ def build_conference(
             if existing is not None and existing != abstract:
                 raise IdentityError(f"conflicting abstracts for paper_id {paper_id}")
             detail_sink[paper_id] = abstract
-    out_dir = _contained_path(DOCS_ROOT, name)
-    out_dir.mkdir(parents=True, exist_ok=True)
+    out_json = _contained_path(DOCS_ROOT, name) / "papers.json"
 
-    out_json = out_dir / "papers.json"
-    out_json.write_text(json.dumps(papers, ensure_ascii=False, indent=0), encoding="utf-8")
-    write_paper_links_page(name, papers)
+    # The shrink gate runs against the live catalog, so an incomplete collection
+    # cannot quietly replace a complete one.
+    _refuse_catalog_shrink(name, out_json, papers, allow_shrink=allow_shrink)
+
+    # Rendering the no-JS fallback is the last validation that can fail, and a
+    # catalog whose fallback page the build refused would be unpublishable.
+    fallback_output = paper_links_page_path(name)
+    rendered_fallback = render_paper_links_page(name, papers)
 
     tag_counts: dict[str, int] = {}
     type_counts: dict[str, int] = {}
@@ -390,20 +737,52 @@ def build_conference(
             tag_counts[t] = tag_counts.get(t, 0) + 1
         type_counts[p["type"]] = type_counts.get(p["type"], 0) + 1
 
-    return {
-        "name": name,
-        "papers": len(papers),
-        "types": type_counts,
-        "top_tags": sorted(tag_counts.items(), key=lambda x: -x[1])[:6],
-        # Real collection date (newest papers_*.csv) so the viewer's
-        # "last updated" stat reflects the data, not the page-load time.
-        "generated": _latest_data_date(summary_csv.parent),
-    }
+    return PreparedConference(
+        out_json=out_json,
+        papers_json=json.dumps(papers, ensure_ascii=False, indent=0),
+        fallback_output=fallback_output,
+        rendered_fallback=rendered_fallback,
+        entry={
+            "name": name,
+            "papers": len(papers),
+            "types": type_counts,
+            "top_tags": sorted(tag_counts.items(), key=lambda x: -x[1])[:6],
+            # Real collection date (newest papers_*.csv) so the viewer's
+            # "last updated" stat reflects the data, not the page-load time.
+            "generated": _latest_data_date(summary_csv.parent),
+        },
+    )
+
+
+def publish_conference(prepared: PreparedConference) -> None:
+    """Atomically replace one conference's ``papers.json`` and no-JS fallback."""
+
+    prepared.out_json.parent.mkdir(parents=True, exist_ok=True)
+    # The committed catalogs end in one newline, so the payload must too: without it a
+    # full rebuild rewrites every unchanged papers.json with a newline-only diff, and
+    # the promotion allowlist check dies on those tracked changes.
+    atomic_write_text(prepared.out_json, prepared.papers_json + "\n")
+    publish_paper_links_page(prepared.fallback_output, prepared.rendered_fallback)
+
+
+def build_conference(
+    name: str,
+    *,
+    detail_sink: dict[str, str] | None = None,
+    allow_shrink: bool = False,
+) -> dict[str, Any] | None:
+    """Prepare and publish ``name`` in one step, for single-catalog rebuilds."""
+
+    prepared = prepare_conference(name, detail_sink=detail_sink, allow_shrink=allow_shrink)
+    if prepared is None:
+        return None
+    publish_conference(prepared)
+    return prepared.entry
 
 
 def write_index(conferences: list[dict[str, Any]]) -> None:
     index_data = DOCS_ROOT / "conferences.json"
-    index_data.write_text(json.dumps(conferences, ensure_ascii=False, indent=2), encoding="utf-8")
+    atomic_write_text(index_data, json.dumps(conferences, ensure_ascii=False, indent=2))
 
 
 def write_detail_shards(details: dict[str, str]) -> list[Path]:
@@ -420,7 +799,8 @@ def write_detail_shards(details: dict[str, str]) -> list[Path]:
     outputs: list[Path] = []
     for prefix, papers in by_prefix.items():
         output = shard_root / f"{prefix}.json"
-        output.write_text(
+        atomic_write_text(
+            output,
             json.dumps(
                 {
                     "schema_version": "paper-details-v1",
@@ -431,7 +811,6 @@ def write_detail_shards(details: dict[str, str]) -> list[Path]:
                 separators=(",", ":"),
             )
             + "\n",
-            encoding="utf-8",
         )
         outputs.append(output)
     return outputs
@@ -440,6 +819,22 @@ def write_detail_shards(details: dict[str, str]) -> list[Path]:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--conference", help="Build only this conference (e.g. iclr-2026)")
+    ap.add_argument(
+        "--allow-shrink",
+        action="store_true",
+        help="publish a catalog that loses content against the published one (fewer rows, "
+        "fewer Oral rows, a published paper_id missing, an abstract or author list that "
+        "came back empty) for every conference (default: refuse and leave the published "
+        "site unchanged)",
+    )
+    ap.add_argument(
+        "--allow-shrink-for",
+        action="append",
+        default=[],
+        metavar="CONF",
+        help="acknowledge that loss for one conference only; repeatable. Every other "
+        "conference keeps the gate and still refuses the run",
+    )
     args = ap.parse_args()
 
     conf_dirs: list[str]
@@ -453,23 +848,89 @@ def main() -> None:
             if d.is_dir() and d.name not in NON_CONFERENCE and (d / "summary.csv").exists()
         )
 
+    published_index = DOCS_ROOT / "conferences.json"
+    # An acknowledgement that names nothing this run can publish loosens the gate for
+    # nobody, so the entries are checked before any catalog is prepared. Judging a full
+    # build's entries needs the published index, and --allow-shrink alone waives that
+    # comparison entirely — including the "cannot be inspected" refusal, because a corrupt
+    # index is exactly what this rebuild repairs and the operator already checked the tree.
+    inspect_index = not args.conference and bool(args.allow_shrink_for or not args.allow_shrink)
+    try:
+        published_names = _published_index_names(published_index) if inspect_index else []
+        allow_shrink_for = _validated_shrink_acks(
+            args.allow_shrink_for,
+            building=conf_dirs,
+            selected=args.conference,
+            published_names=published_names,
+        )
+    except (ValueError, CatalogShrinkError) as exc:
+        print(f"⚠️  {exc}")
+        raise SystemExit(1) from exc
+
     if not conf_dirs:
         print(f"No conferences with summary.csv found under {output_dir}")
         return
 
     print(f"Building {len(conf_dirs)} conference(s):")
-    results = []
+    # Phase 1: prepare the whole selection before a single published file is replaced.
+    # Publishing conference by conference would leave the earlier catalogs swapped when
+    # a later one is refused, while conferences.json and the detail shards written in
+    # phase 2 still describe the old site — an internally inconsistent publication.
+    results: list[PreparedConference] = []
     details: dict[str, str] = {}
     for name in conf_dirs:
-        res = build_conference(name, detail_sink=details)
-        if res:
-            print(f"  {name}: {res['papers']} papers")
-            results.append(res)
+        try:
+            prepared = prepare_conference(
+                name,
+                detail_sink=details,
+                allow_shrink=args.allow_shrink or name in allow_shrink_for,
+            )
+        except CatalogShrinkError as exc:
+            # Stop before anything is written: a refused catalog must leave every
+            # published artifact of this run, other conferences included, unchanged.
+            print(f"⚠️  {exc}")
+            raise SystemExit(1) from exc
+        except Exception as exc:
+            # An identity or no-JS failure aborts the run the same way; nothing has
+            # been written yet, so the live site is untouched either way.
+            print(f"⚠️  {name}: {type(exc).__name__}: {exc}")
+            raise SystemExit(1) from exc
+        if prepared is None:
+            if not args.conference:
+                # Discovery only selects directories that have a summary.csv, so an
+                # unscoped build can only lose one by a race: still a skip, exit 0.
+                continue
+            expected = _contained_path(PROJECT / "output", name, "summary.csv")
+            print(f"⚠️  {name}: nothing to build — {expected} does not exist")
+            raise SystemExit(1)
+        results.append(prepared)
+
+    # A full build also decides the landing index before publishing: a published
+    # conference it cannot rebuild would lose its catalog card with no catalog comparison
+    # to notice it. --allow-shrink is the operator's blanket acknowledgement, so it skips
+    # the comparison (and skipped the index read) rather than needing an entry per name.
+    if not args.conference and not args.allow_shrink:
+        try:
+            _refuse_index_shrink(
+                published_index,
+                conf_dirs,
+                published_names,
+                allow_shrink_for=allow_shrink_for,
+            )
+        except CatalogShrinkError as exc:
+            print(f"⚠️  {exc}")
+            raise SystemExit(1) from exc
+
+    # Phase 2: every check passed, so publish the catalogs and then the global
+    # artifacts built from the same in-memory data.
+    for prepared in results:
+        publish_conference(prepared)
+        print(f"  {prepared.entry['name']}: {prepared.entry['papers']} papers")
 
     if args.conference:
         print("\nScoped build complete; global conferences.json and detail shards unchanged.")
     else:
-        write_index(results)
+        write_index([prepared.entry for prepared in results])
         write_detail_shards(details)
         print(f"\nWrote conferences.json -> {DOCS_ROOT}/")
 

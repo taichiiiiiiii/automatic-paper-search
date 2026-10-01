@@ -350,3 +350,53 @@ def test_no_allow_partial_escape_hatch_exists(tmp_path: Path, monkeypatch):
         with pytest.raises(SystemExit):
             co.main()
     assert not (tmp_path / "output").exists()
+
+
+# ---- an empty highlighted set must not erase the published oral list ----
+
+
+def test_empty_highlighted_set_keeps_the_published_oral_md(tmp_path: Path) -> None:
+    """Notes whose `venue` label cannot be read yield no highlighted titles.
+
+    That is indistinguishable from a venue that genuinely has no Oral/Spotlight, so
+    the shared writer keeps the existing oral_summaries_ja.md instead of deleting it
+    and re-labelling every paper of a live catalog as Poster.
+    """
+    conf_dir = tmp_path / "iclr-2025"
+    conf_dir.mkdir(parents=True)
+    oral_md = conf_dir / "oral_summaries_ja.md"
+    existing = "# iclr-2025 Oral / Highlight\n## 1. Oral one\n"
+    oral_md.write_text(existing, encoding="utf-8")
+
+    notes = [{"id": "n1", "content": {"title": {"value": "Poster only"}, "venue": {"value": ""}}}]
+    rows, highlighted = co.build_rows(notes, "ICLR", "ICLR.cc/2025/Conference")
+    assert highlighted == []
+    cc.write_outputs("iclr-2025", rows, highlighted, output_root=tmp_path, date="2026-06-28")
+
+    assert oral_md.read_text(encoding="utf-8") == existing
+
+
+def test_main_passes_clear_oral_through(tmp_path: Path, monkeypatch) -> None:
+    """--clear-oral must reach the shared writer; the default must not clear."""
+    captured: list[dict[str, object]] = []
+    notes = [_note("Poster one", "Poster", "p1")]
+    monkeypatch.setattr(co, "fetch_notes", lambda *a, **kw: (notes, True))
+    monkeypatch.setattr(
+        co, "write_outputs", lambda *a, **kw: captured.append(kw) or Path("papers.csv")
+    )
+    argv = [
+        "collect_openreview.py",
+        "--conference",
+        "iclr-2025",
+        "--venue",
+        "ICLR",
+        "--venueid",
+        "ICLR.cc/2025/Conference",
+    ]
+
+    monkeypatch.setattr(sys, "argv", argv)
+    assert co.main() == 0
+    monkeypatch.setattr(sys, "argv", [*argv, "--clear-oral"])
+    assert co.main() == 0
+
+    assert [call["clear_oral"] for call in captured] == [False, True]

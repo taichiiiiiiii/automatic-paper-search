@@ -85,6 +85,18 @@ def _run(
     )
 
 
+def _shared_paths_block(text: str, kind: str) -> str:
+    """The ``shared_paths=( ... )`` literal of ``kind``'s promotion-kind branch.
+
+    Cut per branch so a path mentioned anywhere else in the script — a comment, another
+    array, a different kind's branch — cannot satisfy an assertion about what this kind
+    actually stages.
+    """
+    kinds_case = text.split('case "$promotion_kind" in', 1)[1]
+    branch = kinds_case.split(f"\n  {kind})\n", 1)[1].split(";;", 1)[0]
+    return branch.split("shared_paths=(", 1)[1].split("\n    )", 1)[0]
+
+
 def test_promoter_exists_and_never_force_pushes() -> None:
     assert SCRIPT.is_file()
     assert os.access(SCRIPT, os.X_OK)
@@ -126,9 +138,35 @@ def test_promoter_refreshes_shared_outputs_with_one_as_of() -> None:
         "build_search_index",
         "build_lineage_quality",
         "sync_asset_versions.py",
+        "build_sitemap",
     )
     offsets = [conference_block.index(command) for command in expected_order]
     assert offsets == sorted(offsets)
+
+
+def test_promoter_rebuilds_the_sitemap_it_stages() -> None:
+    """A promoted page must reach ``docs/sitemap.xml`` in the same commit.
+
+    conference-on-demand adds ``docs/<slug>/index.html``, which no other refresh
+    step lists, while ``validate_promoted_tree`` runs the sitemap tests against
+    the promoted tree — so without this the first promotion of a new conference
+    always fails on a sitemap that was never allowed to change.
+    """
+    text = SCRIPT.read_text(encoding="utf-8")
+    refresh_function = text.split("refresh_shared_outputs()", 1)[1].split(
+        "validate_promoted_tree()", 1
+    )[0]
+    for kind in ("themes", "conference"):
+        block = refresh_function.split(f"{kind})", 1)[1].split(";;", 1)[0]
+        assert "paperpilot.scripts.build_sitemap" in block, kind
+        # The sitemap lists the lineage/deep/theme routes only while the quality
+        # manifest marks them ready + passed, so it must run after that manifest.
+        assert block.index("build_lineage_quality") < block.index("build_sitemap"), kind
+
+    # ...and each promotion kind stages the sitemap its own branch regenerates: an entry
+    # listed once in the file proves nothing about which kind is allowed to change it.
+    for kind in ("themes", "conference"):
+        assert "docs/sitemap.xml" in _shared_paths_block(text, kind), kind
 
 
 def test_promotes_candidate_from_fresh_remote_tip(promotion_world: dict[str, Path]) -> None:

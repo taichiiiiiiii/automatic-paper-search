@@ -25,12 +25,14 @@ from pathlib import Path
 
 from paperpilot.identity import identity_from_url, normalize_alias
 from paperpilot.scripts import build_pages
+from paperpilot.utils.atomic import atomic_write_text
 
 ROOT = Path(__file__).resolve().parents[2]
 DOCS_ROOT = ROOT / "docs"
 
 INDEX_FILENAME = "search-index.json"
 INDEX_V2_FILENAME = "search-index-v2.json"
+PAPER_ID_BLOCK_DIRNAME = "search-paper-ids-v1"
 
 # Entries are positional pairs rather than objects: [title, conference].
 # At 28,300 papers, repeating two JSON keys per row would add ~0.7 MB raw
@@ -74,10 +76,7 @@ def build_index(docs_root: Path) -> tuple[list[list[str]], int]:
 def write_index(docs_root: Path, entries: list[list[str]]) -> Path:
     """Write the index with compact separators (it ships to every searcher)."""
     out = docs_root / INDEX_FILENAME
-    out.write_text(
-        json.dumps(entries, ensure_ascii=False, separators=(",", ":")),
-        encoding="utf-8",
-    )
+    atomic_write_text(out, json.dumps(entries, ensure_ascii=False, separators=(",", ":")))
     return out
 
 
@@ -162,10 +161,7 @@ def write_index_v2(docs_root: Path, entries: list[list[object]]) -> Path:
     """Write the compact v2 index consumed by the unified landing search."""
 
     out = docs_root / INDEX_V2_FILENAME
-    out.write_text(
-        json.dumps(entries, ensure_ascii=False, separators=(",", ":")),
-        encoding="utf-8",
-    )
+    atomic_write_text(out, json.dumps(entries, ensure_ascii=False, separators=(",", ":")))
     return out
 
 
@@ -186,24 +182,38 @@ def _paper_id_block_payload(block: int, paper_ids: list[str]) -> str:
 
 
 def write_paper_id_blocks(docs_root: Path, paper_ids: list[str]) -> list[Path]:
-    """Write fixed-size canonical-ID blocks addressed by v2 ``paper_ref``."""
+    """Write fixed-size canonical-ID blocks addressed by v2 ``paper_ref``.
 
-    block_root = docs_root / "search-paper-ids-v1"
+    Publishing is deliberately two-phase with :func:`prune_paper_id_blocks`:
+    the caller writes these blocks, then the index that addresses them, then
+    prunes. An interrupted run therefore leaves ``search-index-v2.json``
+    byte-identical instead of replaced by an index whose blocks never landed.
+    """
+
+    block_root = docs_root / PAPER_ID_BLOCK_DIRNAME
     block_root.mkdir(parents=True, exist_ok=True)
     outputs: list[Path] = []
     for start in range(0, len(paper_ids), PAPER_ID_BLOCK_SIZE):
         block = start // PAPER_ID_BLOCK_SIZE
         output = block_root / f"{block:04d}.json"
-        output.write_text(
+        atomic_write_text(
+            output,
             _paper_id_block_payload(block, paper_ids[start : start + PAPER_ID_BLOCK_SIZE]),
-            encoding="utf-8",
         )
         outputs.append(output)
-    expected = set(outputs)
-    for stale in block_root.glob("*.json"):
+    return outputs
+
+
+def prune_paper_id_blocks(docs_root: Path, published: list[Path]) -> list[Path]:
+    """Delete blocks outside ``published`` — only once the new index is live."""
+
+    expected = set(published)
+    removed: list[Path] = []
+    for stale in (docs_root / PAPER_ID_BLOCK_DIRNAME).glob("*.json"):
         if stale not in expected:
             stale.unlink()
-    return outputs
+            removed.append(stale)
+    return removed
 
 
 def main() -> None:
@@ -231,7 +241,7 @@ def main() -> None:
         actual_v2 = (args.docs_root / INDEX_V2_FILENAME).read_text(encoding="utf-8")
         if actual_v1 != expected_v1 or actual_v2 != expected_v2:
             raise SystemExit("committed search indexes are stale; rebuild without --check")
-        block_root = args.docs_root / "search-paper-ids-v1"
+        block_root = args.docs_root / PAPER_ID_BLOCK_DIRNAME
         expected_blocks = {
             block_root / f"{start // PAPER_ID_BLOCK_SIZE:04d}.json": _paper_id_block_payload(
                 start // PAPER_ID_BLOCK_SIZE,
@@ -248,8 +258,12 @@ def main() -> None:
         return
 
     out = write_index(args.docs_root, entries)
-    out_v2 = write_index_v2(args.docs_root, entries_v2)
+    # Blocks, then the index that addresses them, then the prune. Writing the
+    # index last is what keeps a published index and its block set from being
+    # torn apart by a failure part-way through the projection.
     id_blocks = write_paper_id_blocks(args.docs_root, paper_ids)
+    out_v2 = write_index_v2(args.docs_root, entries_v2)
+    prune_paper_id_blocks(args.docs_root, id_blocks)
 
     print(f"Wrote {len(entries):,} entries -> {out} ({out.stat().st_size / 1024:,.0f} KB raw)")
     print(

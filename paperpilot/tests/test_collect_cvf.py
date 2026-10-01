@@ -7,9 +7,12 @@ Parsing (detail_paths, parse_detail) is pure given HTML strings; the network
 from __future__ import annotations
 
 import csv as _csv
+import logging
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
+
+import pytest
 
 from paperpilot.scripts import collect_conference as cc
 from paperpilot.scripts import collect_cvf as cvf
@@ -216,3 +219,209 @@ def test_main_writes_when_the_fetch_is_complete(tmp_path, monkeypatch, capsys):
 
     assert cvf.main() == 0
     assert len(wrote) == 1
+
+
+def test_main_passes_clear_oral_through(tmp_path, monkeypatch) -> None:
+    """--clear-oral must reach the shared writer; the default must not clear.
+
+    CVF marks no oral/highlight, so without --oral-arxiv-query this collector always
+    writes with an empty oral list. Clearing the published oral list must therefore
+    stay an explicit operator choice, never a side effect of a plain re-collection.
+    """
+    captured: list[dict[str, object]] = []
+    monkeypatch.setattr(cvf, "collect", lambda *a, **kw: ([{"url": "u", "title": "t"}], True))
+    monkeypatch.setattr(
+        cvf, "write_outputs", lambda *a, **kw: captured.append(kw) or Path("papers.csv")
+    )
+    argv = ["collect_cvf", "--conference", "cvpr-2025", "--venue", "CVPR", "--cvf-id", "CVPR2025"]
+
+    monkeypatch.setattr("sys.argv", argv)
+    assert cvf.main() == 0
+    monkeypatch.setattr("sys.argv", [*argv, "--clear-oral"])
+    assert cvf.main() == 0
+
+    assert [call["clear_oral"] for call in captured] == [False, True]
+
+
+def _cvf_row():
+    url = "https://openaccess.thecvf.com/content/CVPR2025/html/Xiao_Det_paper.html"
+    row = cvf.parse_detail(_DETAIL, url, "CVPR")
+    assert row is not None
+    return row
+
+
+def _oral_argv(*extra: str) -> list[str]:
+    argv = [
+        "collect_cvf",
+        "--conference",
+        "cvpr-2025",
+        "--venue",
+        "CVPR",
+        "--cvf-id",
+        "CVPR2025",
+        "--oral-arxiv-query",
+        'co:"CVPR 2025"',
+    ]
+    return [*argv, *extra]
+
+
+def test_main_oral_max_defaults_to_the_overlay_cap(monkeypatch) -> None:
+    """--oral-max must widen the very cap the overlay reports hitting.
+
+    A second literal default would let the operator raise one and still trip the
+    other, so the collector's default is the overlay's own constant.
+    """
+    captured: list[tuple] = []
+    monkeypatch.setattr(cvf, "collect", lambda *a, **kw: ([_cvf_row()], True))
+    monkeypatch.setattr(
+        cvf, "write_outputs", lambda *a, **kw: (captured.append(a), Path("papers.csv"))[1]
+    )
+    monkeypatch.setattr("sys.argv", _oral_argv())
+    with patch.object(cc, "fetch_results", return_value=[]) as fetch:
+        assert cvf.main() == 0
+
+    assert fetch.call_args.args[1] == cc.ORAL_MAX_RESULTS_DEFAULT
+    assert captured[0][2] == []
+
+
+def test_main_skips_a_truncated_overlay_and_keeps_the_published_oral_md(
+    tmp_path, monkeypatch, capsys
+) -> None:
+    """A full arXiv window must not replace the published oral list with a partial one.
+
+    The overlay is newest-first and bounded, so filling it says nothing about the
+    older acceptances. The collector then passes an empty list, which is what
+    ``write_outputs`` already treats as "leave oral_summaries_ja.md alone".
+    """
+    conf_dir = tmp_path / "output" / "cvpr-2025"
+    conf_dir.mkdir(parents=True)
+    oral_md = conf_dir / "oral_summaries_ja.md"
+    existing = "# cvpr-2025 Oral / Highlight\n## 1. Some Old Oral Title\n"
+    oral_md.write_text(existing, encoding="utf-8")
+
+    monkeypatch.setattr(cc, "PROJECT", tmp_path)
+    monkeypatch.setattr(cvf, "collect", lambda *a, **kw: ([_cvf_row()], True))
+    # Exactly --oral-max results: the window is full, so the overlay is incomplete.
+    filled = [
+        SimpleNamespace(title=f"Oral {i}", comment="Accepted to CVPR 2025 (Oral)")
+        for i in range(2)
+    ]
+    monkeypatch.setattr(cc, "fetch_results", lambda *a, **kw: filled)
+    monkeypatch.setattr("sys.argv", _oral_argv("--oral-max", "2"))
+
+    assert cvf.main() == 0
+    assert oral_md.read_text(encoding="utf-8") == existing
+    today = cc.datetime.now(cc.timezone.utc).strftime("%Y-%m-%d")
+    assert (conf_dir / f"papers_{today}.csv").is_file()
+    out = capsys.readouterr().out
+    assert "oral overlay filled the --oral-max 2 window" in out
+    assert "(0 oral via arXiv)" in out
+
+
+def test_main_overlays_the_oral_md_when_the_window_is_not_full(
+    tmp_path, monkeypatch, capsys
+) -> None:
+    """The other side of the gate: a window that came back short is complete."""
+    conf_dir = tmp_path / "output" / "cvpr-2025"
+    conf_dir.mkdir(parents=True)
+    oral_md = conf_dir / "oral_summaries_ja.md"
+    oral_md.write_text("# old\n## 1. Some Old Oral Title\n", encoding="utf-8")
+
+    monkeypatch.setattr(cc, "PROJECT", tmp_path)
+    monkeypatch.setattr(cvf, "collect", lambda *a, **kw: ([_cvf_row()], True))
+    monkeypatch.setattr(
+        cc,
+        "fetch_results",
+        lambda *a, **kw: [
+            SimpleNamespace(
+                title="Fresh Oral",
+                comment="Accepted to CVPR 2025 (Oral)",
+                summary="",
+                entry_id="https://arxiv.org/abs/2501.00001v1",
+                pdf_url="",
+                authors=[],
+            )
+        ],
+    )
+    monkeypatch.setattr("sys.argv", _oral_argv("--oral-max", "8"))
+
+    assert cvf.main() == 0
+    assert "## 1. Fresh Oral" in oral_md.read_text(encoding="utf-8")
+    assert "Some Old Oral Title" not in oral_md.read_text(encoding="utf-8")
+    assert "(1 oral via arXiv)" in capsys.readouterr().out
+
+
+def _malformed_feed_fetch(results: list[SimpleNamespace]):
+    """A stand-in for ``fetch_results`` that logs the client's malformed-feed warning.
+
+    Mirrors arxiv 4.0.1, which logs and hands back the partial page instead of raising —
+    see test_collect_conference.py for the test that pins that against the library.
+    """
+
+    def _fetch(*_args: object, **_kwargs: object) -> list[SimpleNamespace]:
+        logging.getLogger("arxiv").warning(
+            "Malformed feed; consider handling: %s", "not well-formed (invalid token)"
+        )
+        return results
+
+    return _fetch
+
+
+@pytest.mark.parametrize("incomplete", ["window", "malformed"])
+def test_main_an_incomplete_overlay_does_not_authorize_clear_oral(
+    tmp_path: Path, monkeypatch, capsys, incomplete: str
+) -> None:
+    """--clear-oral is an operator decision about a KNOWN oral set, nothing else.
+
+    Both incomplete cases hand back no titles, and neither says the venue has no orals:
+    the window never reached the older acceptances, the malformed feed dropped entries from
+    the middle. Removing the published list on that reading would turn every paper into
+    Poster. Each case must also print its own advice, because only one of them is fixed by
+    raising --oral-max.
+    """
+    conf_dir = tmp_path / "output" / "cvpr-2025"
+    conf_dir.mkdir(parents=True)
+    oral_md = conf_dir / "oral_summaries_ja.md"
+    existing = "# cvpr-2025 Oral / Highlight\n## 1. Some Old Oral Title\n"
+    oral_md.write_text(existing, encoding="utf-8")
+
+    monkeypatch.setattr(cc, "PROJECT", tmp_path)
+    monkeypatch.setattr(cvf, "collect", lambda *a, **kw: ([_cvf_row()], True))
+    filled = [
+        SimpleNamespace(title=f"Oral {i}", comment="Accepted to CVPR 2025 (Oral)")
+        for i in range(2)
+    ]
+    fetch = _malformed_feed_fetch(filled) if incomplete == "malformed" else lambda *a, **kw: filled
+    monkeypatch.setattr(cc, "fetch_results", fetch)
+    monkeypatch.setattr("sys.argv", _oral_argv("--oral-max", "2", "--clear-oral"))
+
+    assert cvf.main() == 0
+    assert oral_md.read_text(encoding="utf-8") == existing
+    out = capsys.readouterr().out
+    assert "(0 oral via arXiv)" in out
+    if incomplete == "window":
+        assert "filled the --oral-max 2 window" in out and "malformed" not in out
+    else:
+        assert "malformed feed" in out and "filled the --oral-max" not in out
+
+
+def test_main_clear_oral_still_clears_after_a_complete_but_empty_overlay(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """The gate separates an unknown oral set from an empty one, it is not a refusal.
+
+    A fetch that came back short of the cap and found no arXiv-tagged oral does state
+    something about the venue, so --clear-oral keeps removing the file there.
+    """
+    conf_dir = tmp_path / "output" / "cvpr-2025"
+    conf_dir.mkdir(parents=True)
+    oral_md = conf_dir / "oral_summaries_ja.md"
+    oral_md.write_text("# cvpr-2025 Oral / Highlight\n## 1. Some Old Oral Title\n", encoding="utf-8")
+
+    monkeypatch.setattr(cc, "PROJECT", tmp_path)
+    monkeypatch.setattr(cvf, "collect", lambda *a, **kw: ([_cvf_row()], True))
+    monkeypatch.setattr(cc, "fetch_results", lambda *a, **kw: [])
+    monkeypatch.setattr("sys.argv", _oral_argv("--oral-max", "8", "--clear-oral"))
+
+    assert cvf.main() == 0
+    assert not oral_md.exists()

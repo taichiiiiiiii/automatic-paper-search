@@ -21,12 +21,14 @@ from __future__ import annotations
 
 import argparse
 import csv
+import io
 import re
 from dataclasses import dataclass
 from pathlib import Path
 
 from paperpilot.identity import IdentityError, identity_from_url, normalize_alias
 from paperpilot.scripts._common import validate_conference_slug
+from paperpilot.utils.atomic import atomic_write_text
 from paperpilot.utils.csv_safety import neutralize_row
 
 PROJECT = Path(__file__).resolve().parents[1]
@@ -313,32 +315,36 @@ def build(
     rows_out.sort(key=lambda r: (0 if r["type"] == "Oral" else 1, r["title"].lower()))
 
     dst_csv.parent.mkdir(parents=True, exist_ok=True)
-    with dst_csv.open("w", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(
-            f,
-            fieldnames=[
-                "title",
-                "type",
-                "tags",
-                "venue",
-                "authors",
-                "arxiv_url",
-                "pdf_url",
-                "abstract",
-                "arxiv_id",
-                "citation_count",
-                "venue_tier",
-                "github_stars",
-                "source",
-                "source_id",
-            ],
-        )
-        writer.writeheader()
-        # summary.csv is the file a human opens, and its title/abstract/
-        # author cells are the same untrusted upstream text as the source
-        # CSV. Neutralize here too rather than relying on the input having
-        # been written by a version that already did.
-        writer.writerows(neutralize_row(row) for row in rows_out)
+    # Buffer the whole projection, then replace summary.csv in one rename:
+    # build_pages.py reads this file in the next stage and a human opens it
+    # too, so neither may see a half-written (or emptied) catalog.
+    projection = io.StringIO(newline="")
+    writer = csv.DictWriter(
+        projection,
+        fieldnames=[
+            "title",
+            "type",
+            "tags",
+            "venue",
+            "authors",
+            "arxiv_url",
+            "pdf_url",
+            "abstract",
+            "arxiv_id",
+            "citation_count",
+            "venue_tier",
+            "github_stars",
+            "source",
+            "source_id",
+        ],
+    )
+    writer.writeheader()
+    # summary.csv is the file a human opens, and its title/abstract/
+    # author cells are the same untrusted upstream text as the source
+    # CSV. Neutralize here too rather than relying on the input having
+    # been written by a version that already did.
+    writer.writerows(neutralize_row(row) for row in rows_out)
+    atomic_write_text(dst_csv, projection.getvalue())
 
     tag_counts: dict[str, int] = {}
     for r in rows_out:
