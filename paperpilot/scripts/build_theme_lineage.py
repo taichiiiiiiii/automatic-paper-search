@@ -58,6 +58,7 @@ from paperpilot.scripts._fetch_state import (  # noqa: E402
     IncompleteBuildError,
     expansion_gate_blocks,
 )
+from paperpilot.scripts._fetch_state import focus_ids as _focus_ids_of  # noqa: E402
 
 # #207 extraction: the 16 symbols below moved to _lineage_classify but
 # stay importable as `build_theme_lineage.X` so existing tests
@@ -2112,16 +2113,29 @@ def _top_up_via_openalex(
         top_n,
         [k for k in keywords if k and k.strip()],
     )
-    works = _openalex_search_per_keyword(
-        keywords,
-        top_n=top_n,
-        since_year=since_year,
-        email=openalex_email,
-        completeness=completeness,
-    )
-    if not works:
-        return by_id
-    resolved = _resolve_openalex_to_s2(works, completeness=completeness)
+    # The helpers report outages as subject failures, which is right when
+    # OpenAlex is the primary source. Here it only tops up S2's seeds, so
+    # an outage is filed as a supplement failure. Whether the theme was
+    # resolved at all is not knowable yet (topic filter, canonical
+    # identity and alias merging all come later), so build_theme_lineage
+    # promotes supplement failures back to subject failures if no focus
+    # paper survives to the final graph.
+    scratch = BuildCompleteness()
+    try:
+        works = _openalex_search_per_keyword(
+            keywords,
+            top_n=top_n,
+            since_year=since_year,
+            email=openalex_email,
+            completeness=scratch,
+        )
+        resolved = (
+            _resolve_openalex_to_s2(works, completeness=scratch) if works else []
+        )
+    finally:
+        if completeness is not None:
+            for reason in scratch.subject_failures:
+                completeness.supplement_failed(reason)
     if not resolved:
         return by_id
     merged = dict(by_id)
@@ -3514,6 +3528,12 @@ def build_theme_lineage(
                 alt_kw,
                 sanitised,
             )
+            # An alias only widens the theme. Run it on a scratch ledger and
+            # file whatever failed — its own S2 or OpenAlex search, primary
+            # or top-up — as a supplement failure: recorded, gated on
+            # shrinkage and on every published node surviving, and promoted
+            # back to a subject failure if no focus paper survives at all.
+            alias_ledger = BuildCompleteness()
             alt_seeds = discover_seeds(
                 keywords=[alt_kw],
                 top_n=seeds_count,
@@ -3522,8 +3542,14 @@ def build_theme_lineage(
                 openalex_email=openalex_email,
                 theme=sanitised,
                 primary_source=primary_source,
-                completeness=completeness,
+                completeness=alias_ledger,
             )
+            for reason in alias_ledger.subject_failures:
+                completeness.supplement_failed(f"alias {alt_kw!r}: {reason}")
+            for reason in alias_ledger.supplement_failures:
+                completeness.supplement_failed(f"alias {alt_kw!r}: {reason}")
+            completeness.expansions_attempted += alias_ledger.expansions_attempted
+            completeness.expansions_failed += alias_ledger.expansions_failed
             for s in alt_seeds:
                 pid = s.get("paperId")
                 if pid and pid not in merged_by_id:
@@ -3738,6 +3764,20 @@ def build_theme_lineage(
     # builder used to swap the artifact in and only then exit non-zero,
     # so a non-zero exit protected nothing and regen-themes' "previous
     # build retained" was not actually true.
+    if completeness.supplement_failures and not _focus_ids_of(ordered_nodes):
+        # Supplementary sources only thin a theme that something else
+        # resolved. If no focus paper survived to the final graph, they
+        # were the only hope and their outage is why the theme is empty —
+        # publishing that as "this theme has no papers" is the bug this
+        # module exists to prevent. Decided here, on the resolved focus
+        # set, because every earlier guess (raw hits, filtered hits, merged
+        # aliases) was still upstream of the identity gate that can drop
+        # seeds.
+        for reason in completeness.supplement_failures:
+            completeness.subject_failed(
+                f"no focus paper survived; supplementary failure promoted: {reason}"
+            )
+        completeness.supplement_failures.clear()
     if not completeness.subject_complete:
         # The seed set defines what this artifact is ABOUT. If a search
         # never ran, an empty or thin seed set is an artefact of the
@@ -3751,6 +3791,8 @@ def build_theme_lineage(
             new_node_count=len(ordered_nodes),
             new_edge_count=len(ordered_edges),
             published_path=out_path,
+            new_nodes=ordered_nodes,
+            new_edges=ordered_edges,
         )
         if blocked:
             raise IncompleteBuildError(blocked)

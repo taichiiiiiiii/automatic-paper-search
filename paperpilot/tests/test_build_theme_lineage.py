@@ -5703,6 +5703,7 @@ def test_a_genuinely_empty_theme_still_publishes(tmp_path, monkeypatch):
         "complete": True,
         "expansions_attempted": 0,
         "expansions_failed": 0,
+        "supplement_failures": [],
     }
 
 
@@ -6340,3 +6341,345 @@ def test_github_cache_ttl_compares_datetimes_not_strings(tmp_path, monkeypatch):
     )
     fetch.assert_not_called()
     assert nodes["p1"]["github_stars"] == 4
+
+
+# ---- legacy S2 path: OpenAlex top-up is a supplement, not the subject ----
+
+
+def _run_top_up(tmp_path, monkeypatch, s2_papers, openalex_status=503, theme=None):
+    from paperpilot.scripts._fetch_state import BuildCompleteness
+
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+
+    def fake_rwr(method, url, **kw):
+        if "/paper/search" in url:
+            return _mk_s2_search_response(s2_papers)
+        if "openalex.org/works" in url:
+            return MagicMock(status_code=openalex_status, json=lambda: {})
+        return MagicMock(status_code=404, json=lambda: {})
+
+    completeness = BuildCompleteness()
+    with patch.object(build_theme_lineage, "request_with_retry", side_effect=fake_rwr):
+        seeds = build_theme_lineage.discover_seeds(
+            keywords=["x"], top_n=5, since_year=None, completeness=completeness, theme=theme
+        )
+    return seeds, completeness
+
+
+def test_top_up_outage_is_recorded_as_a_supplement_failure_when_s2_found_seeds(
+    tmp_path, monkeypatch
+):
+    """S2 resolved the subject; the top-up outage only thins it, so it must
+    not trip the subject gate, and it must not vanish either. The builder
+    tests below cover what the shrink gate then does with it."""
+    seeds, completeness = _run_top_up(
+        tmp_path, monkeypatch, [_mk_s2_paper("p_s2", cites=500)]
+    )
+    assert [s["paperId"] for s in seeds] == ["p_s2"]
+    assert completeness.subject_complete
+    assert len(completeness.supplement_failures) == 1
+    assert "503" in completeness.supplement_failures[0]
+    meta = completeness.as_meta()
+    assert meta["complete"] is False
+    assert meta["supplement_failures"] == completeness.supplement_failures
+
+
+def test_top_up_outage_is_always_a_supplement_at_discovery_time(tmp_path, monkeypatch):
+    """Discovery cannot know whether the theme resolved (filtering, canonical
+    identity and alias merging come later); the builder promotes the failure
+    if no focus paper survives. See the builder-level tests below."""
+    seeds, completeness = _run_top_up(tmp_path, monkeypatch, [])
+    assert seeds == []
+    assert completeness.subject_complete
+    assert len(completeness.supplement_failures) == 1
+
+
+def test_supplement_failure_count_check_without_identity_inputs(tmp_path):
+    """Counts only (no new_nodes/new_edges): the shrink check alone. The
+    identity checks are covered by
+    test_gate_compares_published_focus_node_and_edge_identities."""
+    import json as _json
+
+    from paperpilot.scripts._fetch_state import BuildCompleteness, expansion_gate_blocks
+
+    published = tmp_path / "lineage.json"
+    published.write_text(_json.dumps({"nodes": [{"id": "a"}, {"id": "b"}], "edges": [{}]}))
+    completeness = BuildCompleteness()
+    completeness.supplement_failed("openalex seed search failed (status=503)")
+    blocked = expansion_gate_blocks(
+        completeness, new_node_count=1, new_edge_count=1, published_path=published
+    )
+    assert blocked is not None and "supplementary source" in blocked
+    assert (
+        expansion_gate_blocks(
+            completeness, new_node_count=2, new_edge_count=1, published_path=published
+        )
+        is None
+    )
+
+
+def test_top_up_outage_is_a_supplement_when_filtered_s2_seeds_remain(tmp_path, monkeypatch):
+    on_topic = _mk_s2_paper("p_on", cites=500)
+    on_topic["title"] = "Speculative Decoding for Fast Inference"
+    seeds, completeness = _run_top_up(
+        tmp_path, monkeypatch, [on_topic], theme="Speculative Decoding"
+    )
+    assert [s["paperId"] for s in seeds] == ["p_on"]
+    assert completeness.subject_complete
+    assert len(completeness.supplement_failures) == 1
+
+
+def _published_theme(tmp_path, slug: str, focus: int) -> Path:
+    out = tmp_path / "docs" / "themes" / slug / "lineage.json"
+    out.parent.mkdir(parents=True)
+    nodes = [{"id": f"f{i}", "is_focus": True} for i in range(focus)]
+    out.write_text(json.dumps({"nodes": nodes, "edges": []}))
+    return out
+
+
+def _s2_ok_openalex_503(s2_papers):
+    def fake_rwr(method, url, **kw):
+        if "/paper/search" in url:
+            return _mk_s2_search_response(s2_papers)
+        if "openalex.org/works" in url:
+            return MagicMock(status_code=503, json=lambda: {})
+        return MagicMock(status_code=404, json=lambda: {})
+
+    return fake_rwr
+
+
+def test_builder_refuses_to_narrow_the_focus_set_on_a_top_up_outage(tmp_path, monkeypatch):
+    """One surviving seed can expand into as many nodes as five did; the
+    gate must compare the focus set, not only the totals."""
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+    monkeypatch.setattr(build_theme_lineage, "_aliases_for", lambda *_a: [])
+    _stub_external_calls(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "_enrich_github_stars", lambda *a, **kw: 0)
+    published = _published_theme(tmp_path, "speculative-decoding", focus=2)
+    before = published.read_text()
+    seed = _mk_s2_paper("p1", title="Speculative Decoding for Fast Inference")
+    with (
+        patch.object(
+            build_theme_lineage, "request_with_retry", side_effect=_s2_ok_openalex_503([seed])
+        ),
+        patch.object(build_theme_lineage, "fetch_related", return_value=[]),
+    ):
+        with pytest.raises(build_theme_lineage.IncompleteBuildError, match="published focus paper"):
+            build_theme_lineage.build_theme_lineage(
+                theme="Speculative Decoding", depth=1, seeds_count=3, width=4, since_year=None
+            )
+    assert published.read_text() == before
+
+
+def test_builder_publishes_with_incomplete_meta_when_the_focus_set_did_not_shrink(
+    tmp_path, monkeypatch
+):
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+    monkeypatch.setattr(build_theme_lineage, "_aliases_for", lambda *_a: [])
+    _stub_external_calls(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "_enrich_github_stars", lambda *a, **kw: 0)
+    # Same focus paper already published, same size: an incomplete build
+    # that loses nothing may replace it (and says it is incomplete).
+    published = tmp_path / "docs" / "themes" / "speculative-decoding" / "lineage.json"
+    published.parent.mkdir(parents=True)
+    published.write_text(json.dumps({"nodes": [{"id": "p1", "is_focus": True}], "edges": []}))
+    seed = _mk_s2_paper("p1", title="Speculative Decoding for Fast Inference")
+    with (
+        patch.object(
+            build_theme_lineage, "request_with_retry", side_effect=_s2_ok_openalex_503([seed])
+        ),
+        patch.object(build_theme_lineage, "fetch_related", return_value=[]),
+    ):
+        out = build_theme_lineage.build_theme_lineage(
+            theme="Speculative Decoding", depth=1, seeds_count=3, width=4, since_year=None
+        )
+    assert out == published
+    completeness = json.loads(out.read_text())["meta"]["completeness"]
+    assert completeness["complete"] is False
+    assert len(completeness["supplement_failures"]) == 1
+
+
+def test_builder_keeps_the_published_theme_when_every_s2_hit_is_filtered_out(
+    tmp_path, monkeypatch
+):
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+    monkeypatch.setattr(build_theme_lineage, "_aliases_for", lambda *_a: [])
+    _stub_external_calls(monkeypatch)
+    published = _published_theme(tmp_path, "speculative-decoding", focus=1)
+    before = published.read_text()
+    off_topic = _mk_s2_paper("p_off", title="Global Burden of Disease")
+    with (
+        patch.object(
+            build_theme_lineage, "request_with_retry", side_effect=_s2_ok_openalex_503([off_topic])
+        ),
+        patch.object(build_theme_lineage, "fetch_related", return_value=[]),
+    ):
+        with pytest.raises(build_theme_lineage.IncompleteBuildError, match="subject resolution"):
+            build_theme_lineage.build_theme_lineage(
+                theme="Speculative Decoding", depth=1, seeds_count=3, width=4, since_year=None
+            )
+    assert published.read_text() == before
+
+
+def test_builder_refuses_a_same_size_focus_swap_on_a_top_up_outage(tmp_path, monkeypatch):
+    """Published focus B, rebuilt focus A while B's source was down: the
+    counts match, but B is gone."""
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+    monkeypatch.setattr(build_theme_lineage, "_aliases_for", lambda *_a: [])
+    _stub_external_calls(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "_enrich_github_stars", lambda *a, **kw: 0)
+    published = tmp_path / "docs" / "themes" / "speculative-decoding" / "lineage.json"
+    published.parent.mkdir(parents=True)
+    published.write_text(
+        json.dumps({"nodes": [{"id": "openalex:W9", "is_focus": True}], "edges": []})
+    )
+    before = published.read_text()
+    seed = _mk_s2_paper("p1", title="Speculative Decoding for Fast Inference")
+    with (
+        patch.object(
+            build_theme_lineage, "request_with_retry", side_effect=_s2_ok_openalex_503([seed])
+        ),
+        patch.object(build_theme_lineage, "fetch_related", return_value=[]),
+    ):
+        with pytest.raises(build_theme_lineage.IncompleteBuildError, match="openalex:W9"):
+            build_theme_lineage.build_theme_lineage(
+                theme="Speculative Decoding", depth=1, seeds_count=3, width=4, since_year=None
+            )
+    assert published.read_text() == before
+
+
+def _alias_build(tmp_path, monkeypatch, fake_rwr, *, primary_source="s2"):
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+    monkeypatch.setattr(build_theme_lineage, "_aliases_for", lambda *_a: ["spec sampling"])
+    _stub_external_calls(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "_enrich_github_stars", lambda *a, **kw: 0)
+    with (
+        patch.object(build_theme_lineage, "request_with_retry", side_effect=fake_rwr),
+        patch.object(build_theme_lineage, "fetch_related", return_value=[]),
+    ):
+        out = build_theme_lineage.build_theme_lineage(
+            theme="Speculative Decoding",
+            depth=1,
+            seeds_count=1,
+            width=4,
+            since_year=None,
+            primary_source=primary_source,
+        )
+    return json.loads(out.read_text())["meta"]["completeness"]
+
+
+def test_an_alias_s2_outage_is_a_supplement_once_the_main_search_found_seeds(
+    tmp_path, monkeypatch
+):
+    """Through the builder's alias loop, not the helper: the alias's own S2
+    search fails after the main search resolved the theme."""
+    seed = _mk_s2_paper("p1", title="Speculative Decoding for Fast Inference")
+
+    def fake_rwr(method, url, **kw):
+        if "/paper/search" in url:
+            if (kw.get("params") or {}).get("query") == "spec sampling":
+                return MagicMock(status_code=503, json=lambda: {})
+            return _mk_s2_search_response([seed])
+        if "openalex.org/works" in url:
+            # A healthy, empty top-up: the only failure left is the S2 one.
+            return _mk_openalex_response([])
+        return MagicMock(status_code=404, json=lambda: {})
+
+    completeness = _alias_build(tmp_path, monkeypatch, fake_rwr)
+    assert completeness["complete"] is False
+    assert len(completeness["supplement_failures"]) == 1
+    (reason,) = completeness["supplement_failures"]
+    assert "spec sampling" in reason and "s2" in reason.lower()
+
+
+def test_an_alias_openalex_primary_outage_is_a_supplement_once_the_main_search_found_seeds(
+    tmp_path, monkeypatch
+):
+    work = _mk_openalex_work(title="Speculative Decoding for Fast Inference", doi="10.1234/a", cites=50)
+    # A canonical alias, so the main seed survives the identity gate and the
+    # theme is genuinely resolved when the alias fails.
+    work["locations"] = [{"landing_page_url": "https://arxiv.org/abs/2401.00001"}]
+
+    def fake_rwr(method, url, **kw):
+        if "openalex.org/works" in url:
+            search = (kw.get("params") or {}).get("search", "")
+            if "spec sampling" in search:
+                return MagicMock(status_code=503, json=lambda: {})
+            return _mk_openalex_response([work])
+        return MagicMock(status_code=404, json=lambda: {})
+
+    completeness = _alias_build(tmp_path, monkeypatch, fake_rwr, primary_source="openalex")
+    assert completeness["complete"] is False
+    assert any("spec sampling" in r for r in completeness["supplement_failures"])
+
+
+def test_gate_compares_published_focus_node_and_edge_identities(tmp_path):
+    from paperpilot.scripts._fetch_state import BuildCompleteness, expansion_gate_blocks
+
+    published = tmp_path / "lineage.json"
+    published.write_text(
+        json.dumps(
+            {
+                "nodes": [
+                    {"id": "a", "is_focus": True},
+                    {"id": "b", "is_focus": True},
+                    {"id": "n1", "is_focus": False},
+                ],
+                "edges": [{"src": "a", "dst": "n1", "relation": "extends"}],
+            }
+        )
+    )
+    completeness = BuildCompleteness()
+    completeness.supplement_failed("503")
+
+    def gate(nodes, edges):
+        return expansion_gate_blocks(
+            completeness,
+            new_node_count=9,
+            new_edge_count=9,
+            published_path=published,
+            new_nodes=nodes,
+            new_edges=edges,
+        )
+
+    edge = [{"src": "a", "dst": "n1", "relation": "contrasts"}]  # relation may change
+    focus = [{"id": "a", "is_focus": True}, {"id": "b", "is_focus": True}]
+    assert "focus paper" in gate([{"id": "a", "is_focus": True}, {"id": "c", "is_focus": True}, {"id": "n1"}], edge)
+    assert "node(s)" in gate([*focus, {"id": "n2"}], edge)  # same size, n1 swapped out
+    assert "edge(s)" in gate([*focus, {"id": "n1"}], [{"src": "b", "dst": "n1"}])
+    assert gate([*focus, {"id": "n1"}, {"id": "n2"}], edge) is None
+
+def test_builder_refuses_an_empty_first_theme_when_the_only_seed_has_no_canonical_id(
+    tmp_path, monkeypatch
+):
+    """S2 returns an on-topic paper with no canonical alias; the identity gate
+    drops it after discovery. With the top-up down, nothing survives, and the
+    outage must not be published as "this theme has no papers"."""
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+    monkeypatch.setattr(build_theme_lineage, "_aliases_for", lambda *_a: [])
+    _stub_external_calls(monkeypatch)
+    seed = _mk_s2_paper("p1", title="Speculative Decoding for Fast Inference")
+    seed["externalIds"] = {}
+    with (
+        patch.object(
+            build_theme_lineage, "request_with_retry", side_effect=_s2_ok_openalex_503([seed])
+        ),
+        patch.object(build_theme_lineage, "fetch_related", return_value=[]),
+    ):
+        with pytest.raises(build_theme_lineage.IncompleteBuildError, match="no focus paper survived"):
+            build_theme_lineage.build_theme_lineage(
+                theme="Speculative Decoding", depth=1, seeds_count=3, width=4, since_year=None
+            )
+    assert not (tmp_path / "docs" / "themes" / "speculative-decoding" / "lineage.json").exists()

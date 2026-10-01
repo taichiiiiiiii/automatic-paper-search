@@ -57,6 +57,11 @@ class BuildCompleteness:
     subject_failures: list[str] = field(default_factory=list)
     expansions_attempted: int = 0
     expansions_failed: int = 0
+    #: Failures of an optional source that tops up an already-resolved
+    #: subject (the legacy S2 path's OpenAlex seed top-up). Like an
+    #: expansion failure they thin the artifact without misstating what
+    #: it is about, so they are recorded and gate only on shrinkage.
+    supplement_failures: list[str] = field(default_factory=list)
 
     # ---- recording ----
 
@@ -69,6 +74,9 @@ class BuildCompleteness:
     def expansion_failed(self, reason: str | None = None) -> None:
         self.expansions_failed += 1
 
+    def supplement_failed(self, reason: str) -> None:
+        self.supplement_failures.append(reason)
+
     # ---- querying ----
 
     @property
@@ -79,6 +87,21 @@ class BuildCompleteness:
     def expansion_complete(self) -> bool:
         return self.expansions_failed == 0
 
+    @property
+    def complete(self) -> bool:
+        """Nothing optional was lost: no expansion and no supplement failed."""
+        return self.expansion_complete and not self.supplement_failures
+
+    def loss_summary(self) -> str:
+        parts = []
+        if not self.expansion_complete:
+            parts.append(
+                f"{self.expansions_failed} of {self.expansions_attempted} expansion(s) failed"
+            )
+        if self.supplement_failures:
+            parts.append(f"{len(self.supplement_failures)} supplementary source request(s) failed")
+        return " and ".join(parts)
+
     def as_meta(self) -> dict[str, object]:
         """The ``meta.completeness`` block written into the artifact.
 
@@ -88,9 +111,10 @@ class BuildCompleteness:
         is written — the guarantee is this method, not a validator.
         """
         return {
-            "complete": self.expansion_complete,
+            "complete": self.complete,
             "expansions_attempted": self.expansions_attempted,
             "expansions_failed": self.expansions_failed,
+            "supplement_failures": list(self.supplement_failures),
         }
 
     def subject_gate_message(self) -> str:
@@ -114,12 +138,12 @@ class UnreadablePublishedArtifactError(RuntimeError):
     """
 
 
-def published_graph_size(path) -> tuple[int, int] | None:
-    """``(node count, edge count)`` of the artifact currently at ``path``.
+def _published_graph(path) -> tuple[list, list] | None:
+    """``(nodes, edges)`` of the artifact at ``path``, read and checked once.
 
     Returns ``None`` only for the one case that is a genuine fact:
     nothing is published there yet. A file that exists but cannot be
-    parsed, or that carries no ``nodes`` array, raises
+    parsed, or that carries no ``nodes`` or ``edges`` array, raises
     ``UnreadablePublishedArtifactError`` — collapsing that into the same
     ``None`` would be this module's own bug in miniature, letting a
     known-incomplete build overwrite an artifact precisely because the
@@ -153,7 +177,46 @@ def published_graph_size(path) -> tuple[int, int] | None:
         # comparison baseline would silently become zero and every edge
         # regression would read as "no regression".
         raise UnreadablePublishedArtifactError(f"{p} carries no edges array")
+    return nodes, edges
+
+
+def published_graph_size(path) -> tuple[int, int] | None:
+    """``(node count, edge count)`` of the artifact at ``path``; see
+    :func:`_published_graph` for the error contract."""
+    graph = _published_graph(path)
+    if graph is None:
+        return None
+    nodes, edges = graph
     return len(nodes), len(edges)
+
+
+def focus_ids(nodes: list) -> set[str]:
+    """Ids of the ``is_focus`` nodes — the papers the artifact is about."""
+    return {
+        node["id"]
+        for node in nodes
+        if isinstance(node, dict) and node.get("is_focus") is True and isinstance(node.get("id"), str)
+    }
+
+
+def _node_ids(nodes: list) -> set[str]:
+    return {n["id"] for n in nodes if isinstance(n, dict) and isinstance(n.get("id"), str)}
+
+
+def _edge_keys(edges: list) -> set[tuple[str, str]]:
+    # Keyed by endpoints only: a re-classification may legitimately change
+    # an edge's relation, which is not a lost edge.
+    return {
+        (e["src"], e["dst"])
+        for e in edges
+        if isinstance(e, dict) and isinstance(e.get("src"), str) and isinstance(e.get("dst"), str)
+    }
+
+
+def _dropped(kind: str, missing: set) -> str:
+    shown = ", ".join(sorted(map(str, missing))[:3])
+    more = ", ..." if len(missing) > 3 else ""
+    return f"{len(missing)} published {kind} missing from the result ({shown}{more})"
 
 
 def expansion_gate_blocks(
@@ -162,35 +225,53 @@ def expansion_gate_blocks(
     new_node_count: int,
     new_edge_count: int,
     published_path,
+    new_nodes: list | None = None,
+    new_edges: list | None = None,
 ) -> str | None:
     """Return a reason to refuse publication, or None to allow it.
 
-    Only fires when an expansion actually failed. A build whose every
+    Only fires when an expansion or a supplementary source actually failed. A build whose every
     expansion succeeded publishes whatever it produced, including a
     genuinely smaller graph — that is real data, not an outage.
     """
-    if completeness.expansion_complete:
+    if completeness.complete:
         return None
+    lost = completeness.loss_summary()
     try:
-        previous = published_graph_size(published_path)
+        graph = _published_graph(published_path)
     except UnreadablePublishedArtifactError as exc:
         return (
-            f"{completeness.expansions_failed} of "
-            f"{completeness.expansions_attempted} expansion(s) failed and the "
+            f"{lost} and the "
             f"published artifact cannot be inspected to tell whether this "
             f"would shrink it ({exc}). Refusing to publish a known-incomplete "
             "build over something unreadable; re-run when the upstream "
             "recovers, or pass --allow-incomplete."
         )
-    if previous is None:
+    if graph is None:
         # Nothing published yet: there is nothing to regress, so a
         # sparse first build is better than none.
         return None
-    prev_nodes, prev_edges = previous
+    prev_nodes, prev_edges = len(graph[0]), len(graph[1])
+    if new_nodes is not None and new_edges is not None:
+        # Totals alone let a known-incomplete build trade content for
+        # content: one surviving seed can expand into as many nodes as
+        # five did, a same-size focus swap reads as "no regression", and a
+        # branch lost to a failed expansion can be offset by growth
+        # elsewhere. Everything already published must survive.
+        for kind, missing in (
+            ("focus paper(s)", focus_ids(graph[0]) - focus_ids(new_nodes)),
+            ("node(s)", _node_ids(graph[0]) - _node_ids(new_nodes)),
+            ("edge(s)", _edge_keys(graph[1]) - _edge_keys(new_edges)),
+        ):
+            if missing:
+                return (
+                    f"{lost} and {_dropped(kind, missing)}. Refusing to replace "
+                    "published content on a known-incomplete fetch; re-run when "
+                    "the upstream recovers, or pass --allow-incomplete."
+                )
     if new_node_count < prev_nodes or new_edge_count < prev_edges:
         return (
-            f"{completeness.expansions_failed} of "
-            f"{completeness.expansions_attempted} expansion(s) failed and the "
+            f"{lost} and the "
             f"result has {new_node_count} node(s)/{new_edge_count} edge(s) "
             f"against the published {prev_nodes}/{prev_edges}. Refusing to "
             "replace a larger artifact with a smaller one produced by a "

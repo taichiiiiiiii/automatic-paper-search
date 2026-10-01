@@ -2071,6 +2071,7 @@ def test_main_publishes_and_records_completeness_on_a_clean_run(tmp_path: Path, 
         "complete": True,
         "expansions_attempted": 0,
         "expansions_failed": 0,
+        "supplement_failures": [],
     }
 
 

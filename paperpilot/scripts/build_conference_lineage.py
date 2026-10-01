@@ -715,6 +715,8 @@ def main() -> int:
             new_node_count=len(graph["nodes"]),
             new_edge_count=len(graph.get("edges") or []),
             published_path=out,
+            new_nodes=graph["nodes"],
+            new_edges=graph.get("edges") or [],
         )
         if blocked:
             print(f"incomplete build; published lineage left untouched: {blocked}", file=sys.stderr)

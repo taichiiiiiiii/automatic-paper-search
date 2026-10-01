@@ -1428,6 +1428,8 @@ def main():
             new_node_count=len(result["nodes"]),
             new_edge_count=len(result.get("edges") or []),
             published_path=output_path,
+            new_nodes=result["nodes"],
+            new_edges=result.get("edges") or [],
         )
         if blocked:
             print(f"incomplete build; published lineage left untouched: {blocked}", file=sys.stderr)
