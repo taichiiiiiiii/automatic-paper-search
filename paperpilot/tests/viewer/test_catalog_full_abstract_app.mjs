@@ -19,6 +19,7 @@ function createNode(tagName, id = "") {
     children: [],
     className: "",
     id,
+    innerHTML: "",
     isConnected: true,
     tagName: tagName.toUpperCase(),
     textContent: "",
@@ -53,6 +54,15 @@ activeElement = noIdCloseControl;
 
 globalThis.__PAPERPILOT_CATALOG_HISTORY_TEST__ = true;
 globalThis.CSS = { escape: String };
+// Same escaping contract as docs/assets/utils.js: an identity stub could not
+// tell escaped shard text from injected markup.
+const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (c) => ({
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#39;",
+}[c]));
 globalThis.fetch = (_url, options) => new Promise((resolveFetch, rejectFetch) => {
   fetches.push({ options, rejectFetch, resolveFetch });
 });
@@ -63,7 +73,7 @@ globalThis.window = {
     pathname: "/cvpr-2026/",
     search: "",
   },
-  PP: { escapeHtml: String },
+  PP: { escapeHtml },
   PaperPilotLineageCore: {},
   PaperPilotCatalogCore: globalThis.PaperPilotCatalogCore,
 };
@@ -124,8 +134,10 @@ assert.deepEqual(app.catalogState.fullAbstractById.get(paperId), {
 });
 assert.equal(detailBody.children.length, 1);
 assert.equal(detailBody.children[0].tagName, "P");
-assert.equal(detailBody.children[0].textContent, "fresh <em>full</em> abstract");
-assert.equal(detailBody.children[0].children.length, 0, "detail text is not parsed as HTML");
+// The shard reaches the page only through buildAbstractDek's escaped form:
+// the em tags are text, not markup, and no node was parsed out of them.
+assert.equal(detailBody.children[0].innerHTML, "fresh &lt;em&gt;full&lt;/em&gt; abstract");
+assert.equal(detailBody.children[0].className, "paper__abstract is-full");
 assert.equal(listReplacements, 0, "detail completion does not replace the paper list");
 assert.equal(activeElement, noIdCloseControl, "completion preserves a focused no-id control");
 assert.equal(noIdCloseControl.isConnected, true);

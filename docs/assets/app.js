@@ -700,33 +700,68 @@ function safeHref(url) {
   return url && /^https?:\/\//i.test(url) ? url : "#";
 }
 
-// Wrap every case-insensitive occurrence of `escQuery` inside the
-// already-HTML-escaped `escText` with <mark>. Matching on escaped text on
-// both sides keeps it consistent (e.g. "&" -> "&amp;" on each side) and the
-// markup safe — the only tags ever injected are our own <mark>.
-function highlightTerms(escText, escQuery) {
-  if (!escQuery) return escText;
-  return escText.replace(new RegExp(escapeRegExp(escQuery), "gi"), (m) => `<mark class="hl">${m}</mark>`);
+// Wrap every case-insensitive occurrence of the raw `query` inside the RAW
+// `text` with <mark>. Matching has to happen before escaping: on escaped text
+// the query "amp" lands inside the "&amp;" that "R&D" turned into and splits
+// the entity. So each segment and each match is escaped separately and only the
+// <mark> tags we build ourselves reach the result.
+function highlightTerms(text, query) {
+  if (!query) return escapeHtml(text);
+  const re = new RegExp(escapeRegExp(query), "gi");
+  let html = "";
+  let last = 0;
+  let m;
+  while ((m = re.exec(text)) !== null) {
+    html += escapeHtml(text.slice(last, m.index));
+    html += `<mark class="hl">${escapeHtml(m[0])}</mark>`;
+    last = m.index + m[0].length;
+  }
+  return html + escapeHtml(text.slice(last));
 }
 
 // Build the abstract dek. When the query hits the abstract, slice a window
 // that begins a little before the first match (snapped to a word boundary)
 // so the highlighted term lands inside the 2-line clamp; otherwise show from
 // the top. `rawQuery` is the already-lowercased/trimmed search string.
+// The window is cut from the raw text; highlightTerms does the escaping.
 function buildAbstractView(abstract, rawQuery) {
-  const escQuery = rawQuery ? escapeHtml(rawQuery) : "";
   if (rawQuery) {
-    const i = abstract.toLowerCase().indexOf(rawQuery);
+    // The index has to come from the raw text, which is also what gets sliced:
+    // toLowerCase() is not length-preserving (U+0130 "İ" becomes two code
+    // units), so a lowercased index opened the window a character late. A
+    // case-insensitive search finds the match highlightTerms is going to mark.
+    const i = abstract.search(new RegExp(escapeRegExp(rawQuery), "i"));
     if (i > SNIPPET_LEAD) {
       let start = i - SNIPPET_LEAD;
       const sp = abstract.lastIndexOf(" ", start);
       if (sp > 0) start = sp + 1;
       const sliced = abstract.slice(start);
       const lead = '<span aria-hidden="true">… </span>';
-      return { html: lead + highlightTerms(escapeHtml(sliced), escQuery), len: sliced.length };
+      return { html: lead + highlightTerms(sliced, rawQuery), len: sliced.length };
     }
   }
-  return { html: highlightTerms(escapeHtml(abstract), escQuery), len: abstract.length };
+  return { html: highlightTerms(abstract, rawQuery), len: abstract.length };
+}
+
+// The single definition of an abstract dek, shared by the two render paths:
+// the first paint (the whole card is one HTML string) and the async
+// full-abstract update (built as nodes). Both hand the raw text to the
+// highlighter, which escapes it. A preview is windowed to the first match; a
+// loaded full abstract is shown whole (windowing would hide the text the reader
+// opened the card for). The selected card is never clamped, matching the first
+// paint. `html` is always escaped — shard text reaches markup through nothing
+// else, so <mark> is the only tag a shard can ever contribute.
+function buildAbstractDek(paperId, abstract, rawQuery, isFull, isSelected) {
+  const view = isFull
+    ? { html: highlightTerms(abstract, rawQuery), len: abstract.length }
+    : buildAbstractView(abstract, rawQuery);
+  const needsToggle = !isSelected && view.len > CLAMP_MIN;
+  return {
+    className: `paper__abstract${needsToggle ? " is-clamped" : ""}${isFull ? " is-full" : ""}`,
+    html: view.html,
+    id: `abstract-${escapeHtml(paperId)}`,
+    needsToggle,
+  };
 }
 
 // `revealIndex` opts a row into the staggered entrance: null = no animation
@@ -743,14 +778,13 @@ function renderPaper(p, idx, revealIndex = null) {
   }${reveal ? " paper--reveal" : ""}`;
   const revealStyle = reveal ? ` style="--i:${Math.min(revealIndex, 8)}"` : "";
   const q = state.search.toLowerCase().trim();
-  const escQuery = q ? escapeHtml(q) : "";
 
   const tagsHtml = p.tags.map((t) => {
     const active = state.activeTags.has(t) ? " is-active" : "";
     return `<button class="paper__tag${active}" data-tag="${escapeHtml(t)}" type="button">${escapeHtml(t)}</button>`;
   }).join("");
   const authorPreview = p.authors.slice(0, 4).join(", ") + (p.authors.length > 4 ? `, +${p.authors.length - 4}` : "");
-  const titleHtml = highlightTerms(escapeHtml(p.title), escQuery);
+  const titleHtml = highlightTerms(p.title, q);
   const linksHtml = [
     p.arxiv_url ? `<a href="${escapeHtml(safeHref(p.arxiv_url))}" target="_blank" rel="noopener">arXiv</a>` : "",
     p.pdf_url ? `<a href="${escapeHtml(safeHref(p.pdf_url))}" target="_blank" rel="noopener">PDF</a>` : "",
@@ -763,19 +797,12 @@ function renderPaper(p, idx, revealIndex = null) {
   let abstractHtml = "";
   let expandBtn = "";
   if (hasAbstract) {
-    const view = fullAbstract === null
-      ? buildAbstractView(displayedAbstract, q)
-      : {
-          html: highlightTerms(escapeHtml(displayedAbstract), escQuery),
-          len: displayedAbstract.length,
-        };
-    const needsToggle = !isSelected && view.len > CLAMP_MIN;
-    const abstractClass = `paper__abstract${needsToggle ? " is-clamped" : ""}${
-      fullAbstract !== null ? " is-full" : ""
-    }`;
-    abstractHtml = `<p class="${abstractClass}" id="abstract-${escapeHtml(p.paper_id)}">${view.html}</p>`;
-    if (needsToggle) {
-      expandBtn = `<button class="paper__expand-btn" type="button" aria-expanded="false" aria-controls="abstract-${escapeHtml(p.paper_id)}">続きを読む</button>`;
+    const dek = buildAbstractDek(
+      p.paper_id, displayedAbstract, q, fullAbstract !== null, isSelected,
+    );
+    abstractHtml = `<p class="${dek.className}" id="${dek.id}">${dek.html}</p>`;
+    if (dek.needsToggle) {
+      expandBtn = `<button class="paper__expand-btn" type="button" aria-expanded="false" aria-controls="${dek.id}">続きを読む</button>`;
     }
   }
   // No separate "matched in body" badge: the dek is windowed to the first
@@ -839,12 +866,23 @@ function getFiltered() {
 // misleading; the meaningful axes are recency (arXiv id), Oral-first, and
 // title. Array.sort is stable, so "oral" preserves the collection order
 // within each group.
+function byNewest(a, b) {
+  // A missing arXiv id is "unknown", not "oldest": id-less rows go after the
+  // dated ones and keep their collection order among themselves (the sort is
+  // stable, so 0 is enough for that).
+  const aId = a.arxiv_id || "";
+  const bId = b.arxiv_id || "";
+  if (!aId && !bId) return 0;
+  if (!aId) return 1;
+  if (!bId) return -1;
+  return bId.localeCompare(aId, undefined, { numeric: true });
+}
+
 function getSorted(list) {
   const arr = [...list];
   switch (state.sort) {
     case "newest":
-      return arr.sort((a, b) =>
-        (b.arxiv_id || "").localeCompare(a.arxiv_id || "", undefined, { numeric: true }));
+      return arr.sort(byNewest);
     case "oral":
       return arr.sort((a, b) => (a.type === "Oral" ? 0 : 1) - (b.type === "Oral" ? 0 : 1));
     case "title":
@@ -852,6 +890,28 @@ function getSorted(list) {
     default:
       return arr;
   }
+}
+
+const NEWEST_LABEL = "新着順";
+const NEWEST_UNAVAILABLE_LABEL = "新着順（arXiv ID がない学会では使えません）";
+
+// The rule is about the loaded rows, not the conference: some collections are
+// published entirely without an arXiv id (today, the CVF and OpenReview ones),
+// which left "新着順" as a silent no-op: the reader picked recency and got the
+// collection order back. When no loaded row carries an arXiv id the option is
+// disabled with the reason on its own label, and a selected or URL-restored
+// "newest" falls back to the default sort exactly as readUrlState drops an
+// unrecognised value — the URL is rewritten so the stale param can't come
+// back on the next reload.
+function applySortAvailability() {
+  const option = els.sort?.querySelector?.('option[value="newest"]');
+  if (!option) return;
+  const usable = state.papers.some((p) => p.arxiv_id);
+  option.disabled = !usable;
+  option.textContent = usable ? NEWEST_LABEL : NEWEST_UNAVAILABLE_LABEL;
+  if (usable || state.sort !== "newest") return;
+  state.sort = "default";
+  syncUrlState();
 }
 
 function getDisplayPapers() {
@@ -1025,13 +1085,27 @@ function updateFullAbstractSection(paperId) {
   const children = [];
   const displayedAbstract = detail.status === "ready" ? detail.text : paper.abstract;
   if (displayedAbstract) {
+    // Only the selected card loads a full abstract, so it is never clamped.
+    const dek = buildAbstractDek(
+      paperId, displayedAbstract, state.search.toLowerCase().trim(),
+      detail.status === "ready", true,
+    );
     const abstract = document.createElement("p");
-    abstract.className = `paper__abstract${detail.status === "ready" ? " is-full" : ""}`;
-    abstract.id = `abstract-${paperId}`;
-    // Detail shards are data, not markup. textContent also avoids rebuilding
-    // or disconnecting any of the selected card's controls.
-    abstract.textContent = displayedAbstract;
+    abstract.className = dek.className;
+    abstract.id = dek.id;
+    // buildAbstractDek escaped the shard before anything was concatenated,
+    // so this is our own markup only — the same dek the first paint renders.
+    abstract.innerHTML = dek.html;
     children.push(abstract);
+    if (dek.needsToggle) {
+      const toggle = document.createElement("button");
+      toggle.type = "button";
+      toggle.className = "paper__expand-btn";
+      toggle.textContent = "続きを読む";
+      toggle.setAttribute("aria-expanded", "false");
+      toggle.setAttribute("aria-controls", dek.id);
+      children.push(toggle);
+    }
   }
 
   const status = document.createElement("p");
@@ -1898,6 +1972,7 @@ function bindEvents() {
     const previousOrigin = state.selectedOrigin;
     const historyRestore = readCatalogHistoryRestore(event.state, state.papers.length);
     readUrlState();
+    applySortAvailability();
     applyPaperFromUrl(event.state?.paperpilotPaperSelection ? "in-page" : "direct");
     if (previousPaperId && previousPaperId !== state.selectedPaperId) {
       abortFullAbstractLoad(previousPaperId);
@@ -1980,78 +2055,156 @@ async function setLastUpdated() {
   }
 }
 
-async function init() {
-  try {
-    const [papersRes, quality] = await Promise.all([
-      // Default cache — papers.json is regenerated by the weekly collect
-      // job, so _headers Cache-Control (max-age=300 + SWR=3600) is the
-      // right policy. Stale within 5 min is fine; deploys evict edge.
-      fetch(PAPERS_URL),
-      loadCollectionQuality(),
-    ]);
-    if (!papersRes.ok) throw new Error(`papers HTTP ${papersRes.status}`);
-    state.papers = await papersRes.json();
-    state.paperById = validateCatalog(state.papers);
-    state.collectionQuality = quality;
-    if (lineageIsPublishable(quality)) {
-      try {
-        const loadedLineage = await LineageCore.fetchJsonWithSha256("lineage.json");
-        if (LineageCore.qualityRowIsPublishable(quality, {
-          artifactSha256: loadedLineage?.sha256,
-        })) {
-          const auditedLineage = LineageCore.parseArtifact(
-            loadedLineage.data, { kind: "conference" },
-          );
-          if (auditedLineage) {
-            state.lineage = auditedLineage;
-            buildRelationsIndex();
-            enableHeroLineage();
-          }
+const CATALOG_LOAD_ERROR = "論文一覧を読み込めませんでした。";
+
+// A stalled papers.json used to hold init() awaiting forever: the failure row
+// never came, so the disabled 再試行 never returned and catalogLoadInFlight
+// stayed true. The slide lookup's deadline owner aborts the request and the
+// race turns an expired deadline into the rejection init() already answers.
+function fetchCatalogPapers() {
+  let expire;
+  const deadline = new Promise((_, reject) => { expire = reject; });
+  const owner = createPublicSlideDeadlineOwner(
+    () => expire(new Error(`papers fetch timed out after ${PUBLIC_SLIDE_LOOKUP_TIMEOUT_MS} ms`)),
+  );
+  return Promise.race([fetch(PAPERS_URL, { signal: owner.controller.signal }), deadline])
+    .finally(() => owner.finish());
+}
+
+// The catalog fetch plus the optional audited-lineage read. Throws so the
+// caller can offer a way forward instead of stopping on a dead end.
+async function fetchCatalog() {
+  const [papersRes, quality] = await Promise.all([
+    // Default cache — papers.json is regenerated by the weekly collect
+    // job, so _headers Cache-Control (max-age=300 + SWR=3600) is the
+    // right policy. Stale within 5 min is fine; deploys evict edge.
+    fetchCatalogPapers(),
+    loadCollectionQuality(),
+  ]);
+  if (!papersRes.ok) throw new Error(`papers HTTP ${papersRes.status}`);
+  state.papers = await papersRes.json();
+  state.paperById = validateCatalog(state.papers);
+  // An empty catalog parses, validates and renders as "no papers" with the
+  // filters still offered — for the reader that is indistinguishable from a
+  // broken load, and it is nearly always one (a collect job that published
+  // before it wrote any rows). Take the same way forward as a failed fetch.
+  if (state.papers.length === 0) throw new Error("papers catalog is empty");
+  state.collectionQuality = quality;
+  if (lineageIsPublishable(quality)) {
+    try {
+      const loadedLineage = await LineageCore.fetchJsonWithSha256("lineage.json");
+      if (LineageCore.qualityRowIsPublishable(quality, {
+        artifactSha256: loadedLineage?.sha256,
+      })) {
+        const auditedLineage = LineageCore.parseArtifact(
+          loadedLineage.data, { kind: "conference" },
+        );
+        if (auditedLineage) {
+          state.lineage = auditedLineage;
+          buildRelationsIndex();
+          enableHeroLineage();
         }
-      } catch (error) {
-        // Lineage is an optional audited enhancement. A transient lineage
-        // fetch/hash failure must keep that affordance closed without taking
-        // the independently valid conference catalog offline.
-        console.warn("[catalog] audited lineage unavailable; keeping lineage closed:", error);
       }
+    } catch (error) {
+      // Lineage is an optional audited enhancement. A transient lineage
+      // fetch/hash failure must keep that affordance closed without taking
+      // the independently valid conference catalog offline.
+      console.warn("[catalog] audited lineage unavailable; keeping lineage closed:", error);
     }
+  }
+}
+
+// A failed load used to drop an English string into the list and return: no
+// retry, no fallback, and the aria-live counter still read "読み込み中…".
+// The row now explains the failure in Japanese, offers the same no-JS list the
+// noscript banner points at, and retries on demand.
+let catalogLoadRetryBound = false;
+let catalogControlsBound = false;
+// One load at a time. A second 再試行 click while the first was still running
+// left two init() calls racing, and the loser's failure row would then wipe a
+// catalog the other had already rendered.
+let catalogLoadInFlight = false;
+// Disabling the button blurs it, so after a keyboard-activated retry this is
+// the only record that the replacement row owes the reader their focus back
+// (WCAG 2.4.3). It is never set for a load the reader did not start from the
+// button, which is what keeps the first failure from moving focus at all.
+let catalogRetryKeepsFocus = false;
+
+function showCatalogLoadFailure() {
+  const keepFocus = catalogRetryKeepsFocus;
+  catalogRetryKeepsFocus = false;
+  els.list.innerHTML = `<li class="empty-state">${CATALOG_LOAD_ERROR}`
+    + '<a href="paper-links.html">JavaScript なしの論文リンク一覧</a>から探すか、'
+    + '<button class="empty-state__clear" type="button" id="catalog-retry">再試行</button>'
+    + 'してください。</li>';
+  if (els.resultsMeta) els.resultsMeta.textContent = `${CATALOG_LOAD_ERROR}再試行できます。`;
+  if (keepFocus) els.list.querySelector("#catalog-retry")?.focus({ preventScroll: true });
+  // bindEvents() is only reached after a successful load, so the retry
+  // affordance is wired here. Bound once: it outlives its own markup.
+  if (catalogLoadRetryBound) return;
+  catalogLoadRetryBound = true;
+  els.list.addEventListener("click", (e) => {
+    const retry = e.target.closest("#catalog-retry");
+    if (!retry || catalogLoadInFlight) return;
+    catalogRetryKeepsFocus = document.activeElement === retry;
+    retry.disabled = true;
+    init();
+  });
+}
+
+async function init() {
+  catalogLoadInFlight = true;
+  let rendered = false;
+  try {
+    await fetchCatalog();
+
+    const allTags = new Set();
+    let oralCount = 0;
+    for (const p of state.papers) {
+      p.tags.forEach((t) => allTags.add(t));
+      if (p.type === "Oral") oralCount++;
+    }
+    if (els.statTotal) els.statTotal.textContent = state.papers.length.toLocaleString();
+    if (els.statOral) els.statOral.textContent = oralCount.toLocaleString();
+    if (els.statTags) els.statTags.textContent = allTags.size.toLocaleString();
+    // "Last updated" = the real data collection date (from conferences.json),
+    // not the page-load date. Best-effort: leave the "—" placeholder if the
+    // index can't be read, since a wrong date is worse than none.
+    setLastUpdated();
+
+    // Hydrate filter state from the URL, then reflect it into the static
+    // controls (the chips read state during their build below).
+    readUrlState();
+    applySortAvailability();
+    applyPaperFromUrl("direct");
+    if (els.search) els.search.value = state.search;
+    if (els.sort) els.sort.value = state.sort;
+    buildTypeChips();
+    buildTagChips();
+    // A retry re-enters init() with the controls already live; binding twice
+    // would run every handler twice.
+    if (!catalogControlsBound) {
+      catalogControlsBound = true;
+      bindEvents();
+      setupBackToTop();
+    }
+    if (state.selectedPaperId) {
+      startFullAbstractLoad(state.selectedPaperId);
+      startPublicSlidesLoad(state.selectedPaperId);
+      startPilotLineageLookup(state.selectedPaperId);
+    }
+    renderList(true);
+    rendered = true;
+    if (state.selectedPaperId) placeSelectedPaper({ focus: false, scroll: true });
   } catch (e) {
     console.warn("[catalog] catalog load failed:", e);
-    els.list.innerHTML = `<li class="empty-state">Failed to load papers.json</li>`;
-    return;
+    // The reader can already use a catalog that made it on screen, so a throw
+    // after the paint must not trade it for a failure row. Anything that
+    // stopped before the rows exist owes them the way forward, retry included.
+    if (!rendered) showCatalogLoadFailure();
+  } finally {
+    catalogLoadInFlight = false;
   }
-
-  const allTags = new Set();
-  let oralCount = 0;
-  for (const p of state.papers) {
-    p.tags.forEach((t) => allTags.add(t));
-    if (p.type === "Oral") oralCount++;
-  }
-  if (els.statTotal) els.statTotal.textContent = state.papers.length.toLocaleString();
-  if (els.statOral) els.statOral.textContent = oralCount.toLocaleString();
-  if (els.statTags) els.statTags.textContent = allTags.size.toLocaleString();
-  // "Last updated" = the real data collection date (from conferences.json),
-  // not the page-load date. Best-effort: leave the "—" placeholder if the
-  // index can't be read, since a wrong date is worse than none.
-  setLastUpdated();
-
-  // Hydrate filter state from the URL, then reflect it into the static
-  // controls (the chips read state during their build below).
-  readUrlState();
-  applyPaperFromUrl("direct");
-  if (els.search) els.search.value = state.search;
-  if (els.sort) els.sort.value = state.sort;
-  buildTypeChips();
-  buildTagChips();
-  bindEvents();
-  setupBackToTop();
-  if (state.selectedPaperId) {
-    startFullAbstractLoad(state.selectedPaperId);
-    startPublicSlidesLoad(state.selectedPaperId);
-    startPilotLineageLookup(state.selectedPaperId);
-  }
-  renderList(true);
-  if (state.selectedPaperId) placeSelectedPaper({ focus: false, scroll: true });
 }
 
 // A back-to-top button for the long catalogs: after progressive reveal the
@@ -2093,17 +2246,21 @@ if (globalThis.__PAPERPILOT_CATALOG_HISTORY_TEST__ === true) {
     abortPublicSlidesLoad,
     abandonPilotLineageLookup,
     abandonPaperSlideRequest,
+    applySortAvailability,
     beginPaperSlidePolling,
     buildSelectionHistoryEntries,
     createPilotLineageLookupOwner,
     catalogState: state,
     ensurePaperSlideConfirmationDialog,
+    getSorted,
+    init,
     openPaperSlideConfirmation,
     paperSlideRequestView,
     pollPaperSlideStatus,
     readCatalogHistoryRestore,
     readPilotLineageIndex,
     readPaperSlideJson,
+    renderPaper,
     renderPublicSlidesSection,
     renderPilotLineageSection,
     resolvePilotLineageForSelection,

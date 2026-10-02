@@ -12,6 +12,7 @@ SCRIPTS = (
     Path(__file__).parent / "test_catalog_public_slides.mjs",
     Path(__file__).parent / "test_catalog_public_slides_app.mjs",
     Path(__file__).parent / "test_catalog_full_abstract_app.mjs",
+    Path(__file__).parent / "test_catalog_viewer_medium.mjs",
 )
 
 
