@@ -27,6 +27,20 @@ def _write_papers(docs: Path, conf: str, rows: list[dict]) -> None:
     (d / "papers.json").write_text(json.dumps(rows, ensure_ascii=False), encoding="utf-8")
 
 
+def _published_catalog_rows(docs: Path) -> int:
+    """Every row the published catalogs hold, over the conferences the landing index lists.
+
+    The corpus size is data, not a constant — each legitimate refresh moves it — so the
+    cross-check below pins the index against the catalogs instead of a literal that fails
+    the moment the collection grows.
+    """
+    index = json.loads((docs / "conferences.json").read_text(encoding="utf-8"))
+    return sum(
+        len(json.loads((docs / entry["name"] / "papers.json").read_text(encoding="utf-8")))
+        for entry in index
+    )
+
+
 def test_build_index_emits_title_and_conference(tmp_path: Path) -> None:
     _write_papers(tmp_path, "iclr-2026", [{"title": "Attention Is All You Need"}])
     entries, skipped = bsi.build_index(tmp_path)
@@ -249,7 +263,7 @@ def test_real_v2_projection_meets_budget_and_resolves_every_ref() -> None:
     resolved: list[str] = []
     for path in sorted((repo_docs / "search-paper-ids-v1").glob("*.json")):
         resolved.extend(json.loads(path.read_text(encoding="utf-8"))["paper_ids"])
-    assert len(entries) == len(resolved) == 28_300
+    assert len(entries) == len(resolved) == _published_catalog_rows(repo_docs)
     assert all(row[bsi.PAPER_REF] == ordinal for ordinal, row in enumerate(entries))
     assert all(len(paper_id) == 40 for paper_id in resolved)
 

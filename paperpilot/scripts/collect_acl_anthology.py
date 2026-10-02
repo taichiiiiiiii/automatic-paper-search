@@ -10,6 +10,15 @@ Only the main-track volumes (Long + Short papers) are kept by default; Findings,
 workshops, demos, tutorials and the student research workshop are separate
 acceptance tracks and are skipped.
 
+Keeping only known volume ids is also how a rename becomes invisible: the XML parses
+fine and a thinner row list comes out. So a collection whose XML carries none of those
+volume ids is treated as an incomplete fetch — it exits 1 and writes nothing, and there is
+no flag to talk it out of that. A collection that carries one but is missing another volume
+of the naming convention in use exits 1 the same way, and writes nothing until the operator
+acknowledges each missing id with `--allow-missing-volume ID` (repeatable, one per id): a
+single EMNLP "main" volume is complete, and a year with no short papers is normal — it just
+has to be said out loud.
+
 Writes the same outputs as collect_conference (reusing its write_outputs), so
 the rest of the chain (build_summary_csv -> build_pages -> scaffold) is unchanged:
 
@@ -88,6 +97,20 @@ def fetch_xml(xml_id: str, *, timeout: float = 30.0) -> bytes | None:
     return resp.content
 
 
+def present_volume_ids(xml_bytes: bytes) -> list[str]:
+    """Every ``<volume id="...">`` in the Anthology XML, in document order (duplicates kept).
+
+    :func:`parse_papers` filters on the volume id, so a renamed main track simply keeps
+    nothing and returns a shorter — still perfectly valid — row list. The caller needs the
+    ids the file really carries to tell that from a venue that has no such track.
+    """
+    try:
+        root = ET.fromstring(xml_bytes)
+    except ET.ParseError:
+        return []
+    return [volume.get("id") or "" for volume in root.iter("volume")]
+
+
 def parse_papers(
     xml_bytes: bytes, venue: str, *, volumes: set[str] | None = None
 ) -> list[dict[str, Any]]:
@@ -159,16 +182,74 @@ def main() -> int:
         "(default: keep it, so a skipped or empty overlay cannot erase the Oral labels; "
         "never applied while the --oral-arxiv-query overlay came back incomplete)",
     )
+    ap.add_argument(
+        "--allow-missing-volume",
+        action="append",
+        default=[],
+        metavar="ID",
+        help="acknowledge that the collection really has no main-track volume with this "
+        "id (a year with no short papers) and collect the rest; repeat once per missing "
+        "id. An id that is not missing from this run's naming convention is refused.",
+    )
     args = ap.parse_args()
 
     xml_bytes = fetch_xml(args.xml_id)
     if xml_bytes is None:
         print(f"⚠️  could not fetch Anthology XML for '{args.xml_id}'. Nothing written.")
         return 1
+
+    # The volume ids the file really carries, so a shortened collection can be told apart
+    # from a venue that genuinely has fewer main-track volumes.
+    volumes = present_volume_ids(xml_bytes)
+    found = ", ".join(sorted({v for v in volumes if v})) or "none"
+    if not (set(volumes) & _MAIN_VOLUMES):
+        # Nothing at all that names a main track: the whole track is renamed, or this is
+        # the wrong collection. Writing what came back would take every acceptance of
+        # that venue out of the catalog on a fetch that is, by definition, incomplete.
+        # One volume missing inside the convention in use is the gate below, not this one.
+        print(
+            f"⚠️  {args.xml_id}.xml carries none of the main-track volume ids "
+            f"({', '.join(sorted(_MAIN_VOLUMES))}); found volume ids: {found}. Check "
+            "--xml-id or an Anthology layout change. Nothing written."
+        )
+        return 1
+    # Two naming conventions exist: EMNLP publishes one "main" volume, ACL/NAACL split
+    # "long" + "short". Only an id missing within the convention this file uses is
+    # suspicious; the other convention's ids are always absent and are not reported.
+    convention = sorted({"main"} if "main" in volumes else {"long", "short"})
+    missing = sorted(set(convention) - set(volumes))
+    acknowledged = set(args.allow_missing_volume)
+    stray = sorted(acknowledged - set(missing))
+    if stray:
+        # An acknowledgement that names nothing this run is missing is a typo, and a typo
+        # read as a loosened gate would let the next half proceedings through.
+        print(
+            f"⚠️  --allow-missing-volume {', '.join(stray)} acknowledges nothing: the "
+            f"main-track convention in use is ({', '.join(convention)}) and the ids "
+            f"missing from it are ({', '.join(missing) or 'none'}). Nothing written."
+        )
+        return 1
+    unacknowledged = [volume for volume in missing if volume not in acknowledged]
+    if unacknowledged:
+        # A renamed track and a year that genuinely have no short papers look identical
+        # from here, so the operator has to say which one it is — per id — before a
+        # proceedings missing a whole volume is allowed into the catalog.
+        flags = " ".join(f"--allow-missing-volume {volume}" for volume in unacknowledged)
+        print(
+            f"⚠️  {args.xml_id}.xml has no main-track volume named "
+            f"{', '.join(unacknowledged)} (found volume ids: {found}); collecting the "
+            f"rest would publish a half proceedings. Check the Anthology collection, "
+            f"then re-run with {flags} if this venue really has no such volume. "
+            "Nothing written."
+        )
+        return 1
     rows = parse_papers(xml_bytes, args.venue)
     print(f"parsed {len(rows)} main-track {args.venue.upper()} papers from {args.xml_id}.xml")
     if not rows:
-        print("⚠️  0 papers — check --xml-id (e.g. '2025.acl'). Nothing written.")
+        print(
+            f"⚠️  0 papers — check --xml-id (e.g. '2025.acl'); found volume ids: "
+            f"{found}. Nothing written."
+        )
         return 1
 
     # The Anthology marks no oral/spotlight; optionally overlay arXiv-tagged orals.

@@ -15,6 +15,15 @@ The source CSV is auto-discovered (latest papers_*.csv in the conference
 directory) unless --input is given. This avoids the previous hardcoded
 "papers_2026-04-18.csv" that broke whenever the pipeline produced a new
 dated file.
+
+The file actually read is recorded in output/<conference>/summary.meta.json,
+because build_pages.py stamps the catalog's "generated" date and the newest
+papers_*.csv in the directory is not necessarily the one summary.csv came
+from — a re-collection that did not re-summarise moves the two a run apart.
+The sidecar names that file by basename, so it is written only when the source
+CSV lives in this conference directory: --input pointing somewhere else leaves
+no sidecar (and drops a stale one), and the catalog falls back to the newest
+dated papers_*.csv rather than a date taken from another directory.
 """
 
 from __future__ import annotations
@@ -22,6 +31,7 @@ from __future__ import annotations
 import argparse
 import csv
 import io
+import json
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -29,10 +39,15 @@ from pathlib import Path
 from paperpilot.identity import IdentityError, identity_from_url, normalize_alias
 from paperpilot.scripts._common import validate_conference_slug
 from paperpilot.utils.atomic import atomic_write_text
-from paperpilot.utils.csv_safety import neutralize_row
+from paperpilot.utils.csv_safety import neutralize_row, unneutralize
 
 PROJECT = Path(__file__).resolve().parents[1]
 _PAPERS_NAME_RE = re.compile(r"^papers_\d{4}-\d{2}-\d{2}\.csv$")
+
+# Names the papers_*.csv this run read, so the published catalog's "generated" date
+# describes THAT collection instead of the newest dated CSV lying around. Public
+# because build_pages.py imports it rather than recopying the name.
+SUMMARY_META_FILENAME = "summary.meta.json"
 
 
 # Fine-grained topic taxonomy. A paper gets EVERY tag whose pattern matches
@@ -273,7 +288,12 @@ def build(
 
     with src_csv.open(encoding="utf-8-sig", newline="") as f:
         reader = csv.DictReader(f)
-        for row in reader:
+        for raw_row in reader:
+            # The collector CSV is formula-neutralized for spreadsheets, so its cells
+            # are not the upstream text: drop the guard before it is carried into
+            # summary.csv, re-neutralized there, and read back by build_pages as
+            # catalog content.
+            row = {k: unneutralize(v) if isinstance(v, str) else v for k, v in raw_row.items()}
             title = strip_zero_width(row.get("title") or "").strip()
             if not title:
                 continue
@@ -345,6 +365,21 @@ def build(
     # been written by a version that already did.
     writer.writerows(neutralize_row(row) for row in rows_out)
     atomic_write_text(dst_csv, projection.getvalue())
+    # The sidecar names its source by basename, so it can only describe a CSV sitting in
+    # this conference directory. --input may point elsewhere (another conference's
+    # collection, a scratch copy); recording that name here would date THIS catalog by rows
+    # that live in THAT directory. So an out-of-directory source gets no sidecar, and one
+    # left over from an earlier run is removed — after this run nothing beside summary.csv
+    # honestly names what summary.csv was built from.
+    # The sidecar is written only once the summary it describes is in place, so a run that
+    # died before here leaves the previous one pointing at the previous summary.csv.
+    sidecar = conference_dir / SUMMARY_META_FILENAME
+    if src_csv.parent.resolve() == conference_dir.resolve():
+        atomic_write_text(
+            sidecar, json.dumps({"source": src_csv.name}, ensure_ascii=False) + "\n"
+        )
+    else:
+        sidecar.unlink(missing_ok=True)
 
     tag_counts: dict[str, int] = {}
     for r in rows_out:

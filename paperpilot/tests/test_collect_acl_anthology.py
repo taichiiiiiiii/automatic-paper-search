@@ -1,7 +1,10 @@
 """Tests for paperpilot/scripts/collect_acl_anthology.py.
 
 Parsing is pure given XML bytes; fetch_xml is exercised by patching
-request_with_retry. No network.
+request_with_retry. No network. main() refuses a fetch whose XML carries none of
+the main-track volume ids, and one that is missing a volume within the naming
+convention in use, so a thinner collection is never published silently; the
+second case goes through only with an explicit --allow-missing-volume per id.
 """
 
 from __future__ import annotations
@@ -95,6 +98,188 @@ def test_parse_papers_includes_emnlp_main_volume():
     titles = {r["title"] for r in rows}
     assert "EMNLP Main" in titles  # main volume kept
     assert "Industry Paper" not in titles  # industry track excluded
+
+
+# ---- the main-track volumes the XML actually carries ----
+
+_LONG_ONLY_XML = b"""<?xml version="1.0"?>
+<collection id="2025.acl">
+  <volume id="long">
+    <paper id="1"><title>Long Only</title>
+      <author><first>Lo</first><last>Ng</last></author>
+      <abstract>Long only.</abstract><url>2025.acl-long.1</url></paper>
+  </volume>
+</collection>
+"""
+
+_NO_MAIN_TRACK_XML = b"""<?xml version="1.0"?>
+<collection id="2026.acl">
+  <volume id="workshops">
+    <paper id="1"><title>Workshop Paper</title>
+      <author><first>Wo</first><last>rk</last></author>
+      <abstract>Workshop.</abstract><url>2026.acl-ws.1</url></paper>
+  </volume>
+  <volume id="findings">
+    <paper id="2"><title>Findings Paper</title>
+      <author><first>Fin</first><last>Dings</last></author>
+      <abstract>Findings.</abstract><url>2026.findings-acl.2</url></paper>
+  </volume>
+</collection>
+"""
+
+_XML_ID_ARGV = [
+    "collect_acl_anthology.py",
+    "--conference",
+    "acl-2026",
+    "--venue",
+    "ACL",
+    "--xml-id",
+    "2026.acl",
+]
+
+
+def test_present_volume_ids_lists_the_ids_the_file_carries() -> None:
+    assert acl.present_volume_ids(_XML) == ["long", "short", "findings"]
+    assert acl.present_volume_ids(_NO_MAIN_TRACK_XML) == ["workshops", "findings"]
+    # Unparseable XML carries nothing, which the caller reads as an incomplete fetch.
+    assert acl.present_volume_ids(b"not xml at all") == []
+
+
+def test_main_refuses_a_collection_with_no_main_track_volume(monkeypatch, capsys) -> None:
+    """A collection carrying no main-track id at all is the whole track gone.
+
+    Either the venue's main track was renamed out of the ids this script knows, or --xml-id
+    names a different collection. parse_papers keeps only the main-track volumes, so such a
+    fetch is indistinguishable from a venue that has no main track, and writing what came
+    back would take every acceptance of this venue out of the catalog. The run stops with
+    nothing written and names the ids it did find. One volume missing while the convention
+    in use still holds another is the missing-volume refusal, not this one.
+    """
+    written: list[tuple] = []
+    monkeypatch.setattr(acl, "fetch_xml", lambda *a, **kw: _NO_MAIN_TRACK_XML)
+    monkeypatch.setattr(acl, "write_outputs", lambda *a, **kw: written.append(a))
+    monkeypatch.setattr(sys, "argv", _XML_ID_ARGV)
+
+    assert acl.main() == 1
+    assert written == []
+    out = capsys.readouterr().out
+    assert "carries none of the main-track volume ids" in out
+    assert "found volume ids: findings, workshops" in out
+    assert "Nothing written" in out
+    # Distinguishable from the 0-rows refusal, which also lists the found ids: an
+    # operator has to be able to tell "no main track here" from "a main track with no
+    # papers in it" from the message alone.
+    assert "0 papers" not in out
+    assert "has no main-track volume named" not in out
+
+
+def test_main_refuses_a_missing_volume_within_the_convention(monkeypatch, capsys) -> None:
+    """A proceedings missing a volume the convention says is there is a half collection.
+
+    Some years genuinely have no short papers and a single EMNLP "main" volume is complete,
+    but from here a renamed track looks the same, so the run stops instead of publishing
+    the thinner set. The ids that did not turn up are named, as is the flag that lets the
+    operator say the gap is real.
+    """
+    written: list[tuple] = []
+    monkeypatch.setattr(acl, "fetch_xml", lambda *a, **kw: _LONG_ONLY_XML)
+    monkeypatch.setattr(
+        acl, "write_outputs", lambda *a, **kw: written.append(a) or Path("papers.csv")
+    )
+    monkeypatch.setattr(sys, "argv", _XML_ID_ARGV)
+
+    assert acl.main() == 1
+    assert written == []
+    out = capsys.readouterr().out
+    # Only "short" is named: "main" belongs to the other convention and is absent from
+    # every ACL run, so reporting it would flag a complete collection as a broken one.
+    assert "has no main-track volume named short (" in out
+    assert "found volume ids: long" in out
+    assert "--allow-missing-volume short" in out
+    assert "Nothing written." in out
+    assert "0 papers" not in out
+
+
+def test_main_collects_a_missing_volume_once_the_operator_acknowledges_it(
+    monkeypatch, capsys
+) -> None:
+    """--allow-missing-volume is the explicit "this venue really has no such volume".
+
+    The year with no short papers is legitimate, so the acknowledgement has to be enough to
+    collect the volumes that are there — one flag per id, nothing more.
+    """
+    written: list[tuple] = []
+    monkeypatch.setattr(acl, "fetch_xml", lambda *a, **kw: _LONG_ONLY_XML)
+    monkeypatch.setattr(
+        acl, "write_outputs", lambda *a, **kw: written.append(a) or Path("papers.csv")
+    )
+    monkeypatch.setattr(sys, "argv", [*_XML_ID_ARGV, "--allow-missing-volume", "short"])
+
+    assert acl.main() == 0
+    assert len(written) == 1
+    out = capsys.readouterr().out
+    assert "has no main-track volume named" not in out
+    assert "0 papers" not in out
+
+
+def test_main_refuses_an_acknowledgement_that_names_no_missing_volume(monkeypatch, capsys) -> None:
+    """A typo in the acknowledgement must not read to the operator as a loosened gate.
+
+    "main" is a real Anthology volume id — just not one this long/short collection is
+    missing — so accepting it would let a later run skip the gate without anyone noticing.
+    """
+    written: list[tuple] = []
+    monkeypatch.setattr(acl, "fetch_xml", lambda *a, **kw: _LONG_ONLY_XML)
+    monkeypatch.setattr(
+        acl, "write_outputs", lambda *a, **kw: written.append(a) or Path("papers.csv")
+    )
+    monkeypatch.setattr(sys, "argv", [*_XML_ID_ARGV, "--allow-missing-volume", "main"])
+
+    assert acl.main() == 1
+    assert written == []
+    out = capsys.readouterr().out
+    assert "acknowledges nothing" in out
+    assert "convention in use is (long, short)" in out
+    assert "Nothing written." in out
+
+
+def test_main_does_not_refuse_a_complete_convention(monkeypatch, capsys) -> None:
+    """An EMNLP-style single "main" volume is complete; nothing is refused for long/short."""
+    xml = _LONG_ONLY_XML.replace(b'id="long"', b'id="main"')
+    assert xml != _LONG_ONLY_XML
+    monkeypatch.setattr(acl, "fetch_xml", lambda *a, **kw: xml)
+    monkeypatch.setattr(acl, "write_outputs", lambda *a, **kw: Path("papers.csv"))
+    monkeypatch.setattr(sys, "argv", _XML_ID_ARGV)
+
+    assert acl.main() == 0
+    assert "has no main-track volume named" not in capsys.readouterr().out
+
+
+def test_main_reports_the_volumes_it_found_when_no_paper_survives(monkeypatch, capsys) -> None:
+    """A main-track volume full of front matter is the same silent-empty risk.
+
+    The zero-row refusal already existed; it now names the volume ids so an operator can
+    see whether the tracks were there and empty or gone entirely. Both convention volumes
+    are present here, so the run reaches the row count instead of the missing-volume gate.
+    """
+    xml = (
+        b'<collection id="2026.acl"><volume id="long">'
+        b'<paper id="1"><title>T</title></paper></volume>'
+        b'<volume id="short"><paper id="2"><title>U</title></paper></volume></collection>'
+    )
+    written: list[tuple] = []
+    monkeypatch.setattr(acl, "fetch_xml", lambda *a, **kw: xml)
+    monkeypatch.setattr(acl, "write_outputs", lambda *a, **kw: written.append(a))
+    monkeypatch.setattr(sys, "argv", _XML_ID_ARGV)
+
+    assert acl.main() == 1
+    assert written == []
+    out = capsys.readouterr().out
+    assert "0 papers" in out and "found volume ids: long" in out
+    # The other two refusals name what this one cannot: no main track at all, and a main
+    # track missing a volume the convention says is there.
+    assert "carries none of the main-track volume ids" not in out
+    assert "has no main-track volume named" not in out
 
 
 def test_venue_tier():

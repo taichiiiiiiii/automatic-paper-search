@@ -9,6 +9,13 @@ Run:
     python paperpilot/scripts/build_pages.py                    # all conferences
     python paperpilot/scripts/build_pages.py --conference iclr-2026
 
+summary.csv cells carry a spreadsheet formula guard — a leading apostrophe on a cell that
+would otherwise open with = + - @ tab or CR. The reader removes it, so the guard protects
+the CSV a human opens without ever becoming catalog text. A conference index entry's
+"generated" date comes from summary.meta.json, the collection build_summary_csv actually
+read, and falls back to the newest papers_*.csv when that sidecar is absent, unreadable or
+names no file in the conference directory.
+
 A build that loses catalog content is refused and exits non-zero with every published
 file unchanged: fewer rows, fewer Oral rows, a published paper_id missing from the new
 rows, or a published abstract / author list that came back empty. Pass --allow-shrink
@@ -47,7 +54,9 @@ from urllib.parse import urlsplit
 from paperpilot.identity import IdentityError, identity_from_url, normalize_alias
 from paperpilot.scripts import scaffold_conference_page
 from paperpilot.scripts._common import validate_conference_slug
+from paperpilot.scripts.build_summary_csv import SUMMARY_META_FILENAME
 from paperpilot.utils.atomic import atomic_write_text
+from paperpilot.utils.csv_safety import unneutralize
 
 ROOT = Path(__file__).resolve().parents[2]
 PROJECT = Path(__file__).resolve().parents[1]
@@ -330,13 +339,22 @@ def write_paper_links_page(
 def load_summary_with_details(
     summary_csv: Path,
 ) -> tuple[list[dict[str, Any]], dict[str, str]]:
-    """Load one catalog projection and its full-abstract detail records."""
+    """Load one catalog projection and its full-abstract detail records.
+
+    Cells come back without the spreadsheet formula guard (``csv_safety``), so the
+    published text is the upstream text.
+    """
 
     papers: list[dict[str, Any]] = []
     details: dict[str, str] = {}
     with summary_csv.open(encoding="utf-8", newline="") as f:
         reader = csv.DictReader(f)
-        for row in reader:
+        for raw_row in reader:
+            # summary.csv cells were formula-neutralized for the spreadsheet a human
+            # opens. That guard prefix is not part of the text, and publishing it would
+            # put "'-Deep nets" in papers.json, paper-links.html and the search index
+            # for the paper actually called "-Deep nets".
+            row = {k: unneutralize(v) if isinstance(v, str) else v for k, v in raw_row.items()}
             identity = identity_from_url(row.get("arxiv_url") or "")
             declared_source = (row.get("source") or "").strip()
             declared_source_id = (row.get("source_id") or "").strip()
@@ -395,11 +413,40 @@ def _latest_data_date(conf_dir: Path) -> str | None:
     This is the honest "last updated" value for the catalog (the viewer used
     to show the page-load date, which drifts every visit). Returns None if no
     dated papers file exists (legacy conferences built before this convention).
+
+    Only the fallback in :func:`_generated_date`: a summary.csv that recorded
+    its own source in the summary sidecar is dated by that file instead.
     """
     dates = sorted(
         m.group(1) for f in conf_dir.glob("papers_*.csv") if (m := _DATA_DATE_RE.match(f.name))
     )
     return dates[-1] if dates else None
+
+
+def _generated_date(conf_dir: Path) -> str | None:
+    """The collection date of the CSV ``conf_dir``'s summary.csv was actually built from.
+
+    ``build_summary_csv`` records the papers_*.csv it read in a sidecar beside the
+    summary, because the newest dated CSV in the directory is only a guess: a
+    re-collection that wrote a newer CSV without a re-summary would otherwise stamp the
+    catalog — and the landing page's "last updated" — with the date of rows the catalog
+    does not contain. The sidecar names that file by basename, so it is only trusted when
+    a file of that name is really in this conference directory: a name pointing elsewhere
+    (another conference's collection, a CSV since moved away) dates this catalog by rows
+    this catalog does not hold. A conference summarised before the sidecar existed, one
+    whose sidecar cannot be read or names nothing dated, and one whose sidecar names an
+    absent file, all keep the previous behaviour — the newest dated CSV — so adding the
+    sidecar does not by itself rewrite the published index.
+    """
+    try:
+        meta = json.loads((conf_dir / SUMMARY_META_FILENAME).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return _latest_data_date(conf_dir)
+    if isinstance(meta, dict) and isinstance(meta.get("source"), str):
+        match = _DATA_DATE_RE.match(meta["source"])
+        if match and (conf_dir / meta["source"]).is_file():
+            return match.group(1)
+    return _latest_data_date(conf_dir)
 
 
 def _oral_rows(rows: list[Any]) -> int:
@@ -711,6 +758,7 @@ def prepare_conference(
     if not summary_csv.exists():
         print(f"  skip {name}: no summary.csv")
         return None
+    conf_dir = summary_csv.parent
 
     papers, details = load_summary_with_details(summary_csv)
     if detail_sink is not None:
@@ -747,9 +795,10 @@ def prepare_conference(
             "papers": len(papers),
             "types": type_counts,
             "top_tags": sorted(tag_counts.items(), key=lambda x: -x[1])[:6],
-            # Real collection date (newest papers_*.csv) so the viewer's
-            # "last updated" stat reflects the data, not the page-load time.
-            "generated": _latest_data_date(summary_csv.parent),
+            # Real collection date (the papers_*.csv summary.csv was built from, per
+            # the summary sidecar; else the newest one) so the viewer's "last
+            # updated" stat reflects the data, not the page-load time.
+            "generated": _generated_date(conf_dir),
         },
     )
 

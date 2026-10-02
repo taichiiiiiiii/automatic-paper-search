@@ -577,6 +577,7 @@ uv run python -m paperpilot.scripts.scaffold_conference_page --conference <slug>
   - 公開済み `papers.json` が読めない
   意図した変更だけ `--allow-shrink-for <conf>`（学会単位、複数指定可）か `--allow-shrink`（全体）で通す。
 - **Oral 一覧の保持**: CVF/ACL は oral 区分を持たない。再収集で Oral 一覧が空でも（`--oral-arxiv-query` の付け忘れ・空の overlay）、`write_outputs` は既存の `oral_summaries_ja.md` を残す。古い一覧を消したいときだけ各 collector に `--clear-oral` を付ける。overlay の arXiv 取得が上限（`--oral-max`、既定1600）に達した場合は不完全とみなし、既存の一覧を残す。
+- **ACL Anthology の巻チェック**: `collect_acl_anthology` は、命名ルール（`main` か `long`/`short`）の中で巻が欠けていると何も書かずに exit 1。その年に本当にない巻だけ `--allow-missing-volume <id>` で通す。
 - **workflow からの縮小許可**: `collect-weekly` / `conference-on-demand` の dispatch 入力 `allow_shrink_for`（カンマ区切りの slug）が `--allow-shrink-for` になる。promotion は `docs/sitemap.xml` も自動で再生成する。
 - **無料家系図**: S2 は 429・`build_lineage.py` は arxiv_id 必須なので、OpenReview/CVF/ACL 由来（arxiv_id 無し）には `build_conference_lineage.py`（OpenAlex title 解決→参照/被引用、LLM 不要のヒューリスティック）を使う。
 

@@ -18,6 +18,10 @@ the static viewer consumes. These tests cover:
       so one refused or invalid conference leaves the whole site byte-identical
     - the committed docs/<conference>/papers.json files are byte-for-byte what this
       build would publish, including the trailing newline
+    - the spreadsheet formula guard build_summary_csv writes into summary.csv never
+      becomes catalog text, and the "generated" stamp comes from the collection that
+      CSV was built from (its sidecar), falling back to the newest dated collection
+      when the sidecar is missing, unreadable or names a file that is not there
 """
 
 from __future__ import annotations
@@ -30,7 +34,7 @@ from pathlib import Path
 import pytest
 
 from paperpilot.identity import IdentityError
-from paperpilot.scripts import build_pages
+from paperpilot.scripts import build_pages, build_summary_csv
 
 
 def _write_summary(path: Path, rows: list[dict[str, str]]) -> None:
@@ -305,6 +309,86 @@ def test_load_summary_numeric_fields_missing_become_none(tmp_path: Path):
     assert rows[0]["citation_count"] is None
     assert rows[0]["venue_tier"] is None
     assert rows[0]["github_stars"] is None
+
+
+# ---- the spreadsheet formula guard must not become catalog text ----
+
+
+def _write_collector_csv(path: Path, rows: list[dict[str, str]]) -> None:
+    """A pipeline `papers_*.csv` — the file build_summary_csv turns into summary.csv.
+
+    Its cells are written formula-neutralized by the collectors, exactly as below: the
+    guard prefix is already there when the reader starts.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fields = [
+        "title",
+        "authors",
+        "abstract",
+        "url",
+        "pdf_url",
+        "venue",
+        "arxiv_id",
+        "citation_count",
+        "venue_tier",
+        "github_stars",
+        "source",
+        "source_id",
+    ]
+    with path.open("w", encoding="utf-8-sig", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fields)
+        writer.writeheader()
+        for r in rows:
+            writer.writerow({k: r.get(k, "") for k in fields})
+
+
+def _collector_row(index: int, title: str) -> dict[str, str]:
+    return {
+        "title": title,
+        "authors": "X",
+        "abstract": "a",
+        "url": f"https://arxiv.org/abs/2404.0000{index}",
+        "pdf_url": f"https://arxiv.org/pdf/2404.0000{index}",
+        "venue": "ICLR",
+    }
+
+
+def test_formula_guard_round_trips_into_the_catalog(tmp_path: Path, monkeypatch) -> None:
+    """A title the guard prefixes stays protected in the CSVs and is published as itself.
+
+    The chain is the real one: collector `papers_*.csv` -> `summary.csv` ->
+    `papers.json` / `paper-links.html`. ``neutralize`` adds a leading "'" so a
+    spreadsheet does not evaluate the cell; that prefix is not part of the title, so the
+    reader that publishes the catalog has to remove it — otherwise the viewer searches,
+    links and shows "'-Deep nets" for the paper called "-Deep nets".
+    """
+    project, docs_root = _isolate_paths(tmp_path, monkeypatch)
+    conf_dir = project / "output" / "iclr-2026"
+    _write_collector_csv(
+        conf_dir / "papers_2026-06-28.csv",
+        [
+            _collector_row(1, "'-Deep nets"),  # neutralized "-Deep nets"
+            _collector_row(2, "'=SUM(1,1)"),  # neutralized "=SUM(1,1)"
+            _collector_row(3, "'Deep nets"),  # a real apostrophe: content, never prefixed
+        ],
+    )
+
+    build_summary_csv.build(conference_dir=conf_dir)
+    build_pages.build_conference("iclr-2026")
+
+    # summary.csv keeps the guard for the human who opens it, and never doubles it.
+    with (conf_dir / "summary.csv").open(encoding="utf-8", newline="") as f:
+        assert [row["title"] for row in csv.DictReader(f)] == [
+            "'Deep nets",
+            "'-Deep nets",
+            "'=SUM(1,1)",
+        ]
+
+    published = json.loads((docs_root / "iclr-2026" / "papers.json").read_text(encoding="utf-8"))
+    assert [p["title"] for p in published] == ["'Deep nets", "-Deep nets", "=SUM(1,1)"]
+    fallback = (docs_root / "iclr-2026" / "paper-links.html").read_text(encoding="utf-8")
+    assert ">-Deep nets</a>" in fallback
+    assert "'-Deep nets" not in fallback
 
 
 def test_build_conference_returns_none_when_summary_missing(tmp_path: Path, monkeypatch):
@@ -1459,3 +1543,88 @@ def test_build_conference_generated_none_without_dated_csv(tmp_path: Path, monke
     res = build_pages.build_conference("legacy-conf")
     assert res is not None
     assert res["generated"] is None
+
+
+def _assert_generated(conf_dir: Path, meta_text: str | None, expected: str | None) -> None:
+    """Publish a conference holding two dated CSVs and check its `generated` stamp."""
+    _write_summary(conf_dir / "summary.csv", [_row()])
+    (conf_dir / "papers_2026-05-01.csv").write_text("title\nA\n", encoding="utf-8")
+    (conf_dir / "papers_2026-06-27.csv").write_text("title\nA\n", encoding="utf-8")
+    if meta_text is not None:
+        (conf_dir / build_summary_csv.SUMMARY_META_FILENAME).write_text(
+            meta_text, encoding="utf-8"
+        )
+    entry = build_pages.build_conference("cvpr-2026")
+    assert entry is not None
+    assert entry["generated"] == expected
+
+
+@pytest.mark.parametrize(
+    ("meta_text", "expected"),
+    [
+        # Older than the newest CSV: re-collecting without re-summarising must not date
+        # the catalog by rows it does not contain.
+        (json.dumps({"source": "papers_2026-05-01.csv"}), "2026-05-01"),
+        (json.dumps({"source": "papers_2026-06-27.csv"}), "2026-06-27"),
+    ],
+)
+def test_build_conference_generated_uses_the_summary_sidecar(
+    tmp_path: Path, monkeypatch, meta_text: str, expected: str
+):
+    """`generated` comes from the sidecar naming the CSV build_summary_csv actually read."""
+    monkeypatch.setattr(build_pages, "PROJECT", tmp_path / "paperpilot")
+    monkeypatch.setattr(build_pages, "DOCS_ROOT", tmp_path / "docs")
+
+    _assert_generated(tmp_path / "paperpilot" / "output" / "cvpr-2026", meta_text, expected)
+
+
+@pytest.mark.parametrize(
+    "meta_text",
+    [
+        None,  # summarised before the sidecar existed
+        "",
+        "not json",
+        "{}",  # no source recorded
+        '{"source": "papers-january.csv"}',  # names nothing dated
+        '["papers_2026-05-01.csv"]',  # not the object the writer makes
+    ],
+    ids=["absent", "empty", "corrupt", "no-source", "undated-source", "not-an-object"],
+)
+def test_build_conference_generated_falls_back_without_a_usable_sidecar(
+    tmp_path: Path, monkeypatch, meta_text: str | None
+):
+    """An unusable sidecar keeps the previous stamp instead of failing or lying.
+
+    The committed conferences.json was built with no sidecar at all, so a build that
+    cannot read one still has to answer with the newest dated collection.
+    """
+    monkeypatch.setattr(build_pages, "PROJECT", tmp_path / "paperpilot")
+    monkeypatch.setattr(build_pages, "DOCS_ROOT", tmp_path / "docs")
+
+    _assert_generated(tmp_path / "paperpilot" / "output" / "cvpr-2026", meta_text, "2026-06-27")
+
+
+def test_build_conference_generated_ignores_a_sidecar_naming_an_absent_csv(
+    tmp_path: Path, monkeypatch
+):
+    """A sidecar names a basename, so it is this directory's file only if it is here.
+
+    A summary built with --input at another conference's CSV used to record that CSV's name
+    beside a summary whose rows came from somewhere else, and a dated collection that was
+    since moved or deleted leaves the same shape. Either way the stamp falls back to the
+    newest papers_*.csv in this directory instead of a date no file here supports.
+    """
+    monkeypatch.setattr(build_pages, "PROJECT", tmp_path / "paperpilot")
+    monkeypatch.setattr(build_pages, "DOCS_ROOT", tmp_path / "docs")
+
+    conf_dir = tmp_path / "paperpilot" / "output" / "cvpr-2026"
+    _write_summary(conf_dir / "summary.csv", [_row()])
+    (conf_dir / "papers_2026-05-01.csv").write_text("title\nA\n", encoding="utf-8")
+    (conf_dir / "papers_2026-06-27.csv").write_text("title\nA\n", encoding="utf-8")
+    (conf_dir / build_summary_csv.SUMMARY_META_FILENAME).write_text(
+        json.dumps({"source": "papers_2026-01-01.csv"}), encoding="utf-8"
+    )
+
+    entry = build_pages.build_conference("cvpr-2026")
+    assert entry is not None
+    assert entry["generated"] == "2026-06-27"

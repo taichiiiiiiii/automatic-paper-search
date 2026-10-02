@@ -51,6 +51,24 @@ def _row(source: str, source_id: str, **extra: object) -> dict[str, object]:
     }
 
 
+def _published_catalog_rows() -> int:
+    """Every row the published catalogs hold, over the conferences the landing index lists.
+
+    The corpus size is pinned, deliberately: ``EXPECTED_SOURCE_COUNTS`` is a frozen
+    per-source baseline and refreshing the catalogs means updating that table on purpose,
+    not letting it move on its own. This total is read from the catalogs for a different
+    reason — coverage. It asks whether every catalog the landing index lists was resolved
+    by this run, including one that CATALOG_DIRS forgot to walk: a conference added to the
+    index and not here fails on the row count instead of passing untested.
+    """
+    index = json.loads((ROOT / "docs" / "conferences.json").read_text())
+    total = 0
+    for entry in index:
+        papers = json.loads((ROOT / "docs" / entry["name"] / "papers.json").read_text())
+        total += len(papers)
+    return total
+
+
 def _assert_safe_error(error: SourceResolutionError, issue_code: str, *secret_values: str) -> None:
     assert error.error_code == PAPER_SLIDE_SOURCE_UNTRUSTED
     assert error.issue_code == issue_code
@@ -305,7 +323,7 @@ def test_exception_constructor_rejects_dynamic_public_codes() -> None:
     )
 
 
-def test_all_28300_catalog_rows_resolve_offline_without_title_fallback(
+def test_every_published_catalog_row_resolves_offline_without_title_fallback(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     def network_forbidden(*_args: object, **_kwargs: object) -> None:
@@ -333,6 +351,6 @@ def test_all_28300_catalog_rows_resolve_offline_without_title_fallback(
             source_counts[resolved.source] += 1
             resolved_count += 1
 
-    assert resolved_count == 28_300
+    assert resolved_count == _published_catalog_rows()
     assert dict(sorted(source_counts.items())) == EXPECTED_SOURCE_COUNTS
     assert failures == Counter()

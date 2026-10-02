@@ -4,15 +4,24 @@ The old version hardcoded SRC_CSV = "papers_2026-04-18.csv"; the tests
 here enforce that the script now (1) auto-discovers the latest
 `papers_YYYY-MM-DD.csv` under a conference directory and (2) accepts
 --conference / --input CLI flags so it can be reused beyond ICLR 2026.
+It also records which CSV it read in `summary.meta.json`, so the published
+catalog's "generated" date describes that collection rather than the newest
+dated file left in the directory, and it drops the spreadsheet formula guard
+the collectors put on their CSV cells instead of carrying it into the summary.
+The guard-free title is checked through `build_pages.load_summary_with_details`,
+the reader that produces the published catalog, because summary.csv itself is
+neutralized again on the way out and cannot show the difference.
 """
 
 from __future__ import annotations
 
 import csv
+import json
 from pathlib import Path
 
 import pytest
 
+from paperpilot.scripts import build_pages
 from paperpilot.scripts import build_summary_csv as bsc
 
 
@@ -249,6 +258,127 @@ def test_build_strips_zero_width_characters(tmp_path: Path):
         rows = list(csv.DictReader(f))
     assert rows[0]["title"] == "Navigating the Trade-Off"
     assert rows[0]["abstract"] == "Flexible pooling with attention."
+
+
+# ---- which CSV this summary came from, and the guard on its cells ----
+
+
+def test_build_records_the_source_csv_in_a_sidecar(tmp_path: Path):
+    """summary.meta.json names the CSV the summary was built from.
+
+    build_pages stamps the catalog's "generated" date from it, because the newest
+    papers_*.csv in the directory is not necessarily the collection that produced
+    summary.csv — dating a catalog by rows it does not contain makes the viewer's
+    "last updated" lie.
+    """
+    conf = tmp_path / "iclr-2026"
+    _write_papers_csv(
+        conf / "papers_2026-04-18.csv",
+        [
+            {
+                "title": "A",
+                "authors": "X",
+                "abstract": "x",
+                "url": "https://arxiv.org/abs/2404.00007",
+                "pdf_url": "p",
+                "venue": "",
+            }
+        ],
+    )
+
+    bsc.build(conference_dir=conf)
+
+    meta = json.loads((conf / bsc.SUMMARY_META_FILENAME).read_text(encoding="utf-8"))
+    assert meta == {"source": "papers_2026-04-18.csv"}
+
+
+def test_build_sidecar_names_the_explicit_input_not_the_newest_csv(tmp_path: Path):
+    """--input is what the summary came from, even with a newer dated CSV alongside."""
+    conf = tmp_path / "neurips-2025"
+    row = {
+        "title": "A",
+        "authors": "X",
+        "abstract": "x",
+        "url": "https://arxiv.org/abs/2404.00008",
+        "pdf_url": "p",
+        "venue": "",
+    }
+    _write_papers_csv(conf / "papers_2025-12-01.csv", [row])
+    _write_papers_csv(conf / "papers_2026-01-01.csv", [row])
+
+    bsc.build(conference_dir=conf, input_csv=conf / "papers_2025-12-01.csv")
+
+    meta = json.loads((conf / bsc.SUMMARY_META_FILENAME).read_text(encoding="utf-8"))
+    assert meta == {"source": "papers_2025-12-01.csv"}
+
+
+def test_build_from_another_conferences_csv_leaves_no_sidecar(tmp_path: Path):
+    """A basename in the sidecar can only ever name a CSV in this conference directory.
+
+    --input may point at another conference's collection. Recording that file's name beside
+    this directory's summary.csv would let build_pages date this catalog by a collection it
+    does not hold, so an out-of-directory source writes no sidecar — and the sidecar an
+    earlier in-directory run left is removed with it, because the summary it described is
+    gone. The catalog's stamp then falls back to the newest dated CSV actually here.
+    """
+    conf = tmp_path / "iclr-2026"
+    other = tmp_path / "emnlp-2025"
+    row = {
+        "title": "A",
+        "authors": "X",
+        "abstract": "x",
+        "url": "https://arxiv.org/abs/2404.00010",
+        "pdf_url": "p",
+        "venue": "",
+    }
+    _write_papers_csv(conf / "papers_2026-05-01.csv", [row])
+    _write_papers_csv(conf / "papers_2026-06-27.csv", [row])
+    _write_papers_csv(other / "papers_2026-01-01.csv", [row])
+    (conf / bsc.SUMMARY_META_FILENAME).write_text(
+        json.dumps({"source": "papers_2026-05-01.csv"}), encoding="utf-8"
+    )
+
+    bsc.build(conference_dir=conf, input_csv=other / "papers_2026-01-01.csv")
+
+    assert (conf / "summary.csv").exists()
+    assert not (conf / bsc.SUMMARY_META_FILENAME).exists()
+    assert build_pages._generated_date(conf) == "2026-06-27"
+
+
+def test_build_drops_the_guard_prefix_the_collector_csv_carries(tmp_path: Path):
+    """The collectors neutralize their cells, so the guard is read back off before use.
+
+    The "'" is not part of the title: left in place it mis-sorts the catalog and hides
+    the paper from the oral list, which holds the upstream text. summary.csv itself keeps
+    exactly one guard — the cell is re-neutralized on the way out, never doubled — so its
+    raw text cannot show the removal; the guard-free title is read through the catalog
+    reader, the one whose value actually ships.
+    """
+    conf = tmp_path / "iclr-2026"
+    _write_papers_csv(
+        conf / "papers_2026-04-18.csv",
+        [
+            {
+                "title": "'-Deep nets",
+                "authors": "X",
+                "abstract": "a",
+                "url": "https://arxiv.org/abs/2404.00009",
+                "pdf_url": "p",
+                "venue": "",
+            }
+        ],
+    )
+    _write_oral_md(conf / "oral_summaries_ja.md", ["-Deep nets"])
+
+    result = bsc.build(conference_dir=conf)
+    assert result.oral_count == 1
+
+    with (conf / "summary.csv").open(encoding="utf-8", newline="") as f:
+        rows = list(csv.DictReader(f))
+    assert rows[0]["title"] == "'-Deep nets"
+
+    papers, _details = build_pages.load_summary_with_details(conf / "summary.csv")
+    assert papers[0]["title"] == "-Deep nets"
 
 
 def test_build_tolerates_missing_oral_md(tmp_path: Path):

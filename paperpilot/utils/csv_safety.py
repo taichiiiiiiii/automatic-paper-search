@@ -10,6 +10,11 @@ recipient's spreadsheet session — CWE-1236.
 This lives in one place on purpose. The exporter and the conference
 collectors write different CSVs from the same untrusted fields, and fixing
 only one of them is how the gap was introduced in the first place.
+
+These CSVs are also read back — ``build_summary_csv`` turns the collector CSV into
+summary.csv and ``build_pages`` turns that into the published catalog — so
+:func:`unneutralize` is the matching removal step: the prefix guards the
+spreadsheet and must never become catalog text.
 """
 
 from __future__ import annotations
@@ -26,10 +31,34 @@ def neutralize(value: str) -> str:
     """Prefix a single quote when a cell would otherwise start a formula.
 
     Only values that actually begin with a trigger are touched, so ordinary
-    titles, abstracts and URLs round-trip byte-for-byte through the readers
-    that parse these files back (build_summary_csv / build_pages).
+    titles, abstracts and URLs are written exactly as they were read; a
+    neutralized cell is NOT the original text any more and needs
+    :func:`unneutralize` to round-trip back through the readers that parse
+    these files (build_summary_csv / build_pages).
     """
     return f"'{value}" if value.startswith(FORMULA_TRIGGERS) else value
+
+
+def unneutralize(value: str) -> str:
+    """Drop the guard prefix :func:`neutralize` added — its exact inverse.
+
+    ``neutralize`` only ever prefixes a value that opens with a trigger, so a
+    leading quote followed by a trigger is exactly what neutralize produced and
+    is not part of the text: a cell ``"'-Deep nets"`` is the paper called
+    ``"-Deep nets"``. The prefix belongs to the spreadsheet; the readers that
+    feed papers.json, paper-links.html and the search index must not publish it
+    as part of a title.
+
+    A quote followed by anything else is genuine content ("'Deep nets
+    revisited") and is left alone. Only one prefix is ever removed. A value that
+    already opened with a quote and then a trigger ("'=SUM(1)") is
+    indistinguishable from a neutralized cell and loses its quote — the one
+    ambiguity the scheme has, resolved in favour of the shape only
+    ``neutralize`` writes.
+    """
+    if value.startswith("'") and value[1:2].startswith(FORMULA_TRIGGERS):
+        return value[1:]
+    return value
 
 
 def neutralize_row(row: dict[str, T]) -> dict[str, T | str]:
