@@ -423,11 +423,20 @@
 
   function renderGraph() {
     els.graph.replaceChildren();
-    if (model.projection.forceList || model.viewState.view === "list") return;
+    if (model.projection.forceList || model.viewState.view === "list") return true;
     const nodes = model.projection.nodes;
     const claims = model.projection.claims;
     const layout = laneLayout(nodes, claims, model.projection.focus.id);
     const { width, height } = layout;
+    const positions = layout.positions;
+    const routes = new Map();
+    for (const claim of claims) {
+      const from = positions.get(claim.src);
+      const to = positions.get(claim.dst);
+      const route = from && to ? routeEdge(from, to, positions) : [];
+      if (route.length < 2) return false;
+      routes.set(claim.id, route);
+    }
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
     svg.setAttribute("width", String(width));
@@ -443,15 +452,10 @@
     const arrow = document.createElementNS(svg.namespaceURI, "path");
     arrow.setAttribute("d", "M 0 0 L 10 5 L 0 10 z");
     marker.append(arrow); defs.append(marker); svg.append(defs);
-    const positions = layout.positions;
     const labelBoxes = layout.labels.map(lane => ({left:lane.x, right:lane.x + [...lane.label].length * 16,
       top:lane.y - 18, bottom:lane.y + 6}));
     for (const claim of claims) {
-      const from = positions.get(claim.src);
-      const to = positions.get(claim.dst);
-      if (!from || !to) continue;
-      const route = routeEdge(from, to, positions);
-      if (route.length < 2) continue;
+      const route = routes.get(claim.id);
       const line = document.createElementNS(svg.namespaceURI, "polyline");
       const points = route.map(p => `${p.x},${p.y}`).join(" ");
       line.setAttribute("points", points);
@@ -506,6 +510,7 @@
       svg.append(label);
     }
     els.graph.append(svg);
+    return true;
   }
 
   function hiddenCounts(nodeId) {
@@ -683,11 +688,14 @@
     document.title = `${model.projection.focus.title} — 研究系譜 | PaperPilot`;
     renderControls();
     renderSummary();
-    const listOnly = model.projection.forceList || model.viewState.view === "list";
-    els.forceList.hidden = !model.projection.forceList;
+    const routingFailed = renderGraph() === false;
+    const listOnly = model.projection.forceList || model.viewState.view === "list" || routingFailed;
+    els.forceList.hidden = !(model.projection.forceList || routingFailed);
+    els.forceList.textContent = routingFailed
+      ? "関係線を描画できないため、関係一覧を表示しています。関係は省略していません。"
+      : "表示上限を超えたため、グラフは描画していません。関係一覧で確認してください。";
     els.graphPanel.hidden = listOnly;
     els.listPanel.hidden = !listOnly;
-    renderGraph();
     renderNodeCards();
     renderList();
   }
@@ -974,7 +982,7 @@
   buildRelationOptions();
   bindEvents();
   if (globalThis.__PAPERPILOT_LINEAGE_FOCUS_TEST__ === true) {
-    globalThis.__lineageFocusTest = Object.freeze({ MAX_BYTES, activate, closeInspector, closed, fetchBytes, laneLayout, layeredLayout, loadOwner, loadVerifiedRelease, model, nodeLanes, openInspector, parseJsonBytes, placeEdgeLabel, readBounded, rectangleEdgePoints, routeEdge, segmentHitsCard, start });
+    globalThis.__lineageFocusTest = Object.freeze({ MAX_BYTES, activate, closeInspector, closed, fetchBytes, laneLayout, layeredLayout, loadOwner, loadVerifiedRelease, model, nodeLanes, openInspector, parseJsonBytes, placeEdgeLabel, readBounded, rectangleEdgePoints, render, routeEdge, segmentHitsCard, start });
   } else {
     start();
   }

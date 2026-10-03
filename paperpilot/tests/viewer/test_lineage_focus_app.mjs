@@ -206,6 +206,29 @@ for (const node of initialSvg.children.filter(child => child.dataset?.focusId)) 
   assert.equal(node.transform, `translate(${at.x - 65} ${at.y - 31})`);
   assert.equal(node.tabindex, "0");
 }
+const originalProjection = app.model.projection;
+const firstClaim = originalProjection.claims[0];
+const unrouteableClaims = Array.from({length:44}, (_, i) => ({...firstClaim, id:`synthetic-${i}`}));
+unrouteableClaims.push({...firstClaim, id:"synthetic-unrouteable", dst:"node:intentionally-missing"});
+app.model.projection = {...originalProjection, claims:unrouteableClaims};
+app.model.page = 1;
+app.render();
+assert.equal(elements.get("lineage-graph").children.length, 0,
+  "an unrouteable claim prevents attachment of any partial SVG");
+assert.equal(elements.get("lineage-graph-panel").hidden, true);
+assert.equal(elements.get("lineage-list-panel").hidden, false);
+assert.match(elements.get("lineage-force-list").textContent, /関係線を描画できない/);
+assert.equal(elements.get("lineage-claim-list").children.length, 20);
+assert.equal(elements.get("lineage-page-status").textContent, "1 / 3 ページ（45 件）");
+app.activate({dataset:{action:"page", value:"2"}});
+assert.equal(elements.get("lineage-claim-list").children.length, 20);
+assert.equal(elements.get("lineage-page-status").textContent, "2 / 3 ページ（45 件）");
+app.model.projection = originalProjection;
+app.model.page = 1;
+app.render();
+assert.equal(elements.get("lineage-force-list").hidden, true,
+  "a later render restores normal graph mode and clears the routing warning");
+assert.equal(elements.get("lineage-graph").children.length, 1);
 const laneEdge = (src, dst, extra = {}) => ({src, dst, claim_family:"genealogy", decision:"accepted", trust_tier:"verified", ...extra});
 const laneClaims = [laneEdge("parent", "focus"), laneEdge("grandparent", "parent"),
   laneEdge("focus", "child"), laneEdge("compare", "focus", {claim_family:"comparison"}),
