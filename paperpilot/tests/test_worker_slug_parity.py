@@ -10,10 +10,21 @@ the redirect (404 in the viewer).
 This test runs the same input list through both implementations and
 fails on any mismatch. Run via the existing pytest suite; a node
 binary on PATH is required.
+
+M-5a: the parity above is only 2-way (Python theme_slug() <-> Worker
+themeSlug()). The browser-side input validation in docs/assets/theme.js
+(SLUG_RE / THEME_REQUEST_PATTERN) is a *third* independent copy of the
+same two shapes (worker/slug.js's own SLUG_RE / THEME_INPUT_PATTERN), and
+nothing pinned it against the other two — a client regex drift would let
+the browser accept input the server rejects (or the reverse) without any
+test catching it. test_theme_js_slug_regexes_match_worker_slug_js below
+closes that gap by comparing the regex literal source text of all three
+pairs, making the contract genuinely 3-way.
 """
 from __future__ import annotations
 
 import json
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -24,6 +35,7 @@ from paperpilot.scripts._common import theme_slug
 
 ROOT = Path(__file__).resolve().parents[2]
 SLUG_JS = ROOT / "worker" / "slug.js"
+THEME_JS = ROOT / "docs" / "assets" / "theme.js"
 
 # Inputs cover the everyday case + the edge cases that have bitten us:
 # whitespace runs, trailing hyphens after the 64-char cap, NFKD-strippable
@@ -92,4 +104,68 @@ def test_worker_slug_matches_python_slug() -> None:
     assert not mismatches, (
         "Worker / Python slug divergence:\n"
         + "\n".join(f"  {inp!r:50}  js={js!r}  py={py!r}" for inp, js, py in mismatches)
+    )
+
+
+def _extract_regex_literal(source: str, const_name: str) -> str:
+    """Pull the body of a ``const NAME = /.../flags;`` regex literal out of
+    JS source text (no node/eval needed — this is a text-level pin, same
+    as the `json.dumps` source-splicing trick the other viewer tests use).
+    Matches both bare ``const NAME =`` and ``export const NAME =``.
+    """
+    m = re.search(
+        rf"const\s+{re.escape(const_name)}\s*=\s*/((?:\\.|[^/\\\n])*)/[a-z]*\s*;",
+        source,
+    )
+    if m is None:
+        raise AssertionError(f"could not find `const {const_name} = /.../;` in source")
+    return m.group(1)
+
+
+def _normalize_charclass_hyphen_escape(pattern: str) -> str:
+    """``[_-]`` and ``[_\\-]`` denote the identical regex (an escaped
+    literal hyphen is behaviorally a no-op), but the two files don't
+    always agree on which style to write. Comparing *meaning* rather than
+    raw bytes means this test only fires on a real shape divergence, not
+    a cosmetic escaping choice.
+    """
+    return pattern.replace("\\-", "-")
+
+
+def test_theme_js_slug_regexes_match_worker_slug_js() -> None:
+    """M-5a: make the slug-shape parity genuinely 3-way.
+
+    worker/slug.js's themeSlug() is already pinned against Python's
+    theme_slug() above. This test adds the missing third leg: the
+    browser-side validation regexes in docs/assets/theme.js (SLUG_RE,
+    THEME_REQUEST_PATTERN) must denote exactly the same shapes as
+    worker/slug.js's own SLUG_RE / THEME_INPUT_PATTERN. A silent drift
+    here lets the client accept input the server will reject (confusing
+    post-submit error) or reject input the server would accept (a false
+    "invalid input" banner the user can't work around) — neither of
+    which the existing Python<->Worker pin would ever catch.
+    """
+    theme_src = THEME_JS.read_text(encoding="utf-8")
+    worker_src = SLUG_JS.read_text(encoding="utf-8")
+
+    theme_slug_re = _normalize_charclass_hyphen_escape(
+        _extract_regex_literal(theme_src, "SLUG_RE")
+    )
+    worker_slug_re = _normalize_charclass_hyphen_escape(
+        _extract_regex_literal(worker_src, "SLUG_RE")
+    )
+    assert theme_slug_re == worker_slug_re, (
+        f"docs/assets/theme.js SLUG_RE ({theme_slug_re!r}) != "
+        f"worker/slug.js SLUG_RE ({worker_slug_re!r})"
+    )
+
+    theme_input_re = _normalize_charclass_hyphen_escape(
+        _extract_regex_literal(theme_src, "THEME_REQUEST_PATTERN")
+    )
+    worker_input_re = _normalize_charclass_hyphen_escape(
+        _extract_regex_literal(worker_src, "THEME_INPUT_PATTERN")
+    )
+    assert theme_input_re == worker_input_re, (
+        f"docs/assets/theme.js THEME_REQUEST_PATTERN ({theme_input_re!r}) != "
+        f"worker/slug.js THEME_INPUT_PATTERN ({worker_input_re!r})"
     )

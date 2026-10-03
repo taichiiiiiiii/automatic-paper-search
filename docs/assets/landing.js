@@ -20,13 +20,27 @@
   var list = document.getElementById("s0-confs-list");
   var label = document.getElementById("s0-confs-label");
 
+  // The static "10" / "28,000" placeholders in index.html read as live,
+  // current figures. Any outcome where we never learn the real counts
+  // (fetch failure, non-200, a 200 with malformed/empty JSON) must not
+  // leave them as-is — that would silently misrepresent a stale fallback
+  // as fresh data. Swap in a neutral, honestly approximate phrase instead
+  // of a number we can't vouch for.
+  function applyUnknownConferenceCounts() {
+    if (ledeN) ledeN.textContent = "複数";
+    if (ledeM) ledeM.textContent = "多数";
+  }
+
   fetch("conferences.json", { cache: "no-cache" })
     .then(function (response) {
       if (!response.ok) throw new Error("HTTP " + response.status);
       return response.json();
     })
     .then(function (conferences) {
-      if (!Array.isArray(conferences) || !conferences.length) return;
+      if (!Array.isArray(conferences) || !conferences.length) {
+        applyUnknownConferenceCounts();
+        return;
+      }
       var valid = conferences.filter(function (conference) {
         return conference && typeof conference.name === "string" &&
           SLUG_RE.test(conference.name) &&
@@ -62,6 +76,7 @@
     })
     .catch(function (error) {
       console.warn("[s0] conferences.json load failed:", error);
+      applyUnknownConferenceCounts();
     });
 
   var toggle = document.getElementById("s0-confs-toggle");

@@ -36,6 +36,7 @@ CLS_RESERVATION_SCRIPT = VIEWER_DIR / "test_theme_gallery_cls_reservation.mjs"
 TYPOGRAPHY_TOKENS_SCRIPT = VIEWER_DIR / "test_theme_typography_tokens.mjs"
 REQUEST_PROGRESS_SCRIPT = VIEWER_DIR / "test_theme_request_progress.mjs"
 THEME_LINEAGE_CONTRACT_SCRIPT = VIEWER_DIR / "test_theme_lineage_contract.mjs"
+SUBMIT_CONTRACT_SCRIPT = VIEWER_DIR / "test_theme_submit_contract.mjs"
 REPO_ROOT = VIEWER_DIR.parents[2]
 THEME_JS = REPO_ROOT / "docs" / "assets" / "theme.js"
 THEMES_INDEX_HTML = REPO_ROOT / "docs" / "themes" / "index.html"
@@ -145,3 +146,14 @@ def test_theme_request_progress() -> None:
     # "unknown conclusion → null" case that stops fake failures being
     # surfaced to the user.
     _run_node(REQUEST_PROGRESS_SCRIPT, min_ok_lines=31)
+
+
+def test_theme_submit_contract() -> None:
+    # Review round 2 LOW items: submitTheme()'s "exists" branch (the
+    # server-returned slug, not the raw free-text input, drives the
+    # follow-up link; an invalid server slug degrades to a linkless
+    # banner), renderHeader()'s paper_count XSS guard, and the
+    # Worker-failure status -> Japanese message mapping for
+    # 403/413/415/502/503 (with Issue-fallback link reuse for 502/503,
+    # and invalid/rate_limited left unchanged, verbatim).
+    _run_node(SUBMIT_CONTRACT_SCRIPT, min_ok_lines=29)

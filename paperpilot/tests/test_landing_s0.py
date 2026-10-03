@@ -182,27 +182,56 @@ def test_landing_lineage_defaults_to_truthful_closed_state(index_text: str) -> N
     assert core < landing
 
 
-def test_no_executable_inline_scripts() -> None:
+_NON_EXECUTABLE_SCRIPT_TYPES = {"application/ld+json", "application/json", "importmap"}
+_ALL_DOCS_HTML = sorted((REPO_ROOT / "docs").rglob("*.html"))
+
+
+@pytest.mark.parametrize(
+    "html_path", _ALL_DOCS_HTML, ids=[str(p.relative_to(REPO_ROOT)) for p in _ALL_DOCS_HTML]
+)
+def test_no_executable_inline_scripts(html_path: Path) -> None:
     """CSP is `script-src 'self'` — executable inline <script> blocks are
     silently dropped by the browser (caught live on 2026-08-24: the S0
     numerals/chips/disclosure script never ran). Only inert data blocks
-    (type="application/ld+json") may be inline; all behavior must live in
-    external assets/ files.
-    """
-    import re
+    (``type="application/ld+json"`` or another non-executable type) may be
+    inline; all behavior must live in external assets/ files. Also pins
+    the related CSP-equivalent sinks: inline `on*=` event handler
+    attributes and `javascript:` URLs, both of which bypass `script-src`
+    entirely if ever reintroduced.
 
-    html = INDEX_HTML.read_text(encoding="utf-8")
+    M-5c: originally scoped to docs/index.html only; extended to every
+    page under docs/ so a page other than the landing page can't silently
+    regress.
+    """
+    html = html_path.read_text(encoding="utf-8")
     # Strip HTML comments first — prose may mention "<script>" verbatim.
     html_no_comments = re.sub(r"<!--.*?-->", "", html, flags=re.S)
+
     for m in re.finditer(r"<script([^>]*)>(.*?)</script>", html_no_comments, flags=re.S):
         attrs, body = m.group(1), m.group(2)
         if "src=" in attrs:
-            assert not body.strip(), "script[src] must have an empty body"
+            assert not body.strip(), f"{html_path}: script[src] must have an empty body"
             continue
-        assert 'type="application/ld+json"' in attrs, (
-            "executable inline <script> found — CSP script-src 'self' "
+        type_m = re.search(r'type\s*=\s*"([^"]+)"', attrs)
+        type_val = type_m.group(1).strip().lower() if type_m else ""
+        assert type_val in _NON_EXECUTABLE_SCRIPT_TYPES, (
+            f"{html_path}: executable inline <script> found — CSP script-src 'self' "
             "silently blocks it; move the code to docs/assets/*.js: " + body.strip()[:120]
         )
+
+    on_attr_m = re.search(r'\bon[a-zA-Z]+\s*=\s*["\']', html_no_comments)
+    assert on_attr_m is None, (
+        f"{html_path}: inline event handler attribute found near "
+        f"{html_no_comments[max(0, on_attr_m.start() - 40): on_attr_m.end() + 10]!r} — "
+        "CSP script-src 'self' silently blocks it; bind the listener from assets/*.js"
+    )
+
+    js_url_m = re.search(
+        r'(?:href|src|action|formaction)\s*=\s*["\']\s*javascript:',
+        html_no_comments,
+        flags=re.I,
+    )
+    assert js_url_m is None, f"{html_path}: javascript: URL found — move behavior to assets/*.js"
 
 
 def test_landing_js_referenced() -> None:
@@ -224,3 +253,77 @@ def test_landing_js_builds_dom_safely() -> None:
     """conferences.json values must never flow through innerHTML."""
     js = (REPO_ROOT / "docs" / "assets" / "landing.js").read_text(encoding="utf-8")
     assert "innerHTML" not in js and "insertAdjacentHTML" not in js
+
+
+def _brace_match_block(js: str, open_brace_index: int) -> str:
+    """Return ``js[open_brace_index:end+1]`` where ``end`` is the index of
+    the ``}`` that closes the ``{`` at ``open_brace_index``. Shared by the
+    two tests below (and mirrors the extraction trick the .mjs viewer
+    tests use for JS source).
+    """
+    depth = 0
+    end = None
+    for i in range(open_brace_index, len(js)):
+        if js[i] == "{":
+            depth += 1
+        elif js[i] == "}":
+            depth -= 1
+            if depth == 0:
+                end = i
+                break
+    assert end is not None, "could not find the matching closing brace"
+    return js[open_brace_index : end + 1]
+
+
+def _apply_unknown_counts_body(js: str) -> str:
+    m = re.search(r"function applyUnknownConferenceCounts\(\) \{", js)
+    assert m is not None, "applyUnknownConferenceCounts() helper not found in landing.js"
+    return _brace_match_block(js, m.end() - 1)
+
+
+def test_landing_numerals_degrade_on_conferences_fetch_failure() -> None:
+    """L-3: the static "10" / "28,000" numerals in index.html (#s0-n /
+    #s0-m) are placeholders meant to be overwritten with live counts from
+    conferences.json. If that fetch fails, the .catch handler must not
+    leave them untouched — a stale static number sitting where a live one
+    normally renders looks like current data when it may not be.
+    """
+    js = (REPO_ROOT / "docs" / "assets" / "landing.js").read_text(encoding="utf-8")
+    m = re.search(r"\.catch\(function \(error\) \{(.*?)\}\);", js, flags=re.S)
+    assert m is not None, "conferences.json .catch(...) handler not found in landing.js"
+    catch_body = m.group(1)
+    assert "applyUnknownConferenceCounts()" in catch_body, (
+        "conferences.json fetch failure must overwrite #s0-n / #s0-m "
+        "instead of leaving the static placeholder numerals in place"
+    )
+    helper_body = _apply_unknown_counts_body(js)
+    assert "ledeN.textContent" in helper_body and "ledeM.textContent" in helper_body, (
+        "applyUnknownConferenceCounts() must actually overwrite #s0-n / #s0-m"
+    )
+
+
+def test_landing_numerals_degrade_on_empty_or_non_array_conferences() -> None:
+    """Sibling of the fetch-failure case above: a 200 response whose body
+    is not an array, or is an empty array, must not leave the static
+    placeholder numerals in place either. Before this fix the ``.then``
+    handler's early-return guard (``if (!Array.isArray(conferences) ||
+    !conferences.length) return;``) silently kept "10" / "28,000" on
+    screen even though the fetch itself succeeded — same bug as L-3, just
+    reached via a different response shape.
+    """
+    js = (REPO_ROOT / "docs" / "assets" / "landing.js").read_text(encoding="utf-8")
+    guard_m = re.search(
+        r"if \(!Array\.isArray\(conferences\) \|\| !conferences\.length\) \{",
+        js,
+    )
+    assert guard_m is not None, (
+        "empty/non-array conferences.json guard clause not found in landing.js "
+        "(expected an `if (...) { ... }` block, not a bare `return;`)"
+    )
+    guard_body = _brace_match_block(js, guard_m.end() - 1)
+    assert "applyUnknownConferenceCounts()" in guard_body, (
+        "a 200 response with non-array/empty conferences.json must overwrite "
+        "#s0-n / #s0-m with the same 複数/多数 fallback as the catch path, "
+        "instead of leaving the static placeholder numerals in place"
+    )
+    assert "return" in guard_body, "the guard clause must still return before processing conferences"

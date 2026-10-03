@@ -319,6 +319,8 @@ function loadViewer(routes, { coreMode = "complete" } = {}) {
     scrollCanvasToNode = () => {};
     globalThis.__test = {
       eligibleThemeManifest, loadLineageQuality, loadThemeArtifact, state, init,
+      qualityPollOutcome, pollForCompletion,
+      setProgressState: (s) => { progressState = s; },
       renderCalls: () => __renderCalls,
     };
   `;
@@ -609,6 +611,126 @@ for (const coreMode of ["missing", "incomplete"]) {
   const data = await viewer.loadThemeArtifact("test-theme");
   ok(viewer.state.lineageQuality === null && data === null && calls.length === 0,
      `${coreMode} LineageCore fails closed without throwing or fetching`);
+}
+
+console.log("\nprogress-poll quality gate (M-4)");
+// Issue M-4: a slug landing in themes-manifest.json only means the build
+// produced an artifact; it says nothing about whether the quality audit
+// in that same run passed. init() only ever shows eligible rows, so
+// pollForCompletion() must re-check the same quality file + eligibility
+// rule before declaring the generation "ready" — otherwise it redirects
+// into a page that immediately renders nothing for an audit-failed
+// theme.
+
+function freshProgressState(slug) {
+  return {
+    slug, themeLabel: "Test Theme", requestId: null,
+    startedAt: Date.now(), cancelled: false, timer: null,
+  };
+}
+
+// fetchJsonWithSha256 hashes/decodes response.arrayBuffer(), NOT the
+// stub's `text` field — so a quality-manifest route's `bytes` must
+// encode the SAME JSON as `text`, or LineageCore parses an unrelated
+// (and schema-invalid) payload and every outcome silently collapses to
+// "pending". This mirrors routeFor()'s convention above.
+function qualityRouteEntry(qualityRow) {
+  const text = JSON.stringify(qualityManifest(qualityRow));
+  return ["../lineage-quality-v1.json", { text, bytes: new TextEncoder().encode(text) }];
+}
+
+function manifestRoutes(slug, qualityRow) {
+  return new Map([
+    qualityRouteEntry(qualityRow),
+    ["themes-manifest.json", {
+      text: JSON.stringify([{ slug, theme: "Test Theme", paper_count: 3 }]),
+      bytes: new TextEncoder().encode("[]"),
+    }],
+  ]);
+}
+
+{
+  // qualityPollOutcome() unit coverage for all three outcomes — fast,
+  // no event-loop sleeps, exercised directly rather than through the
+  // full 5 s-interval poll loop.
+  const readyRow = themeQualityRow({ input_sha256: artifactSha });
+  const { ctx } = loadViewer(new Map([qualityRouteEntry(readyRow)]));
+  ok((await ctx.__test.qualityPollOutcome("test-theme")) === "ready",
+     "qualityPollOutcome: ready+passed row -> \"ready\"");
+
+  const failedRow = themeQualityRow({
+    audit_status: "failed",
+    audit: {
+      ...qualityAudit(),
+      checks: qualityAudit().checks.map((check, index) => (
+        index === 0 ? { ...check, status: "failed" } : check
+      )),
+    },
+  });
+  const { ctx: failedCtx } = loadViewer(new Map([qualityRouteEntry(failedRow)]));
+  ok((await failedCtx.__test.qualityPollOutcome("test-theme")) === "failed",
+     "qualityPollOutcome: ready but audit-failed row -> \"failed\"");
+
+  const { ctx: noRowCtx } = loadViewer(new Map([qualityRouteEntry(readyRow)]));
+  ok((await noRowCtx.__test.qualityPollOutcome("other-theme")) === "pending",
+     "qualityPollOutcome: slug absent from the quality manifest -> \"pending\" (keep polling)");
+
+  const { ctx: unreadableCtx } = loadViewer(new Map());
+  ok((await unreadableCtx.__test.qualityPollOutcome("test-theme")) === "pending",
+     "qualityPollOutcome: quality file unreadable -> \"pending\" (keep polling, never \"ready\")");
+}
+
+{
+  // End-to-end: manifest has the slug, quality row is audit-failed ->
+  // pollForCompletion() must stop on this first iteration, show the
+  // failure panel, and never redirect.
+  const slug = "test-theme";
+  const failedRow = themeQualityRow({
+    audit_status: "failed",
+    audit: {
+      ...qualityAudit(),
+      checks: qualityAudit().checks.map((check, index) => (
+        index === 0 ? { ...check, status: "failed" } : check
+      )),
+    },
+  });
+  const { ctx, element } = loadViewer(manifestRoutes(slug, failedRow));
+  const viewer = ctx.__test;
+  viewer.setProgressState(freshProgressState(slug));
+  const hrefBefore = ctx.window.location.href;
+  await viewer.pollForCompletion(slug);
+  // showProgressFailure() hides the step list and fills the failure
+  // title — both start at their stub defaults (hidden=false, textContent
+  // ="") so a change here is real signal that the failure path ran, not
+  // an artifact of the stub's initial state.
+  ok(element("theme-progress-steps").hidden === true
+     && element("theme-progress-failure-title").textContent.length > 0,
+     "manifest hit + audit-failed row runs the progress failure path");
+  ok(ctx.window.location.href === hrefBefore,
+     "manifest hit + audit-failed row never redirects");
+}
+
+{
+  // End-to-end: manifest has the slug, quality row is ready+passed ->
+  // pollForCompletion() redirects to the finished theme after the
+  // "ready" pause.
+  const slug = "test-theme";
+  const passedRow = themeQualityRow({ input_sha256: artifactSha });
+  const { ctx, element } = loadViewer(manifestRoutes(slug, passedRow));
+  const viewer = ctx.__test;
+  viewer.setProgressState(freshProgressState(slug));
+  const hrefBefore = ctx.window.location.href;
+  await viewer.pollForCompletion(slug);
+  ok(element("theme-progress-failure-title").textContent === "",
+     "manifest hit + eligible row never runs the progress failure path");
+  // pollForCompletion() returns immediately after scheduling the 800ms
+  // "show the ready tick" redirect timer; wait it out to observe the
+  // actual navigation rather than asserting on a timer that hasn't
+  // fired yet.
+  await new Promise((resolve) => setTimeout(resolve, 900));
+  ok(ctx.window.location.href !== hrefBefore
+     && ctx.window.location.href === `?theme=${encodeURIComponent(slug)}`,
+     "manifest hit + eligible row redirects to the finished theme");
 }
 
 console.log(`\n${passed} passed, ${failed} failed`);

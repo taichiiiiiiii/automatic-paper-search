@@ -671,7 +671,12 @@ function renderHeader() {
   const yearRange = entry?.year_range
     ? `${entry.year_range[0]}–${entry.year_range[1]}`
     : "—";
-  const count = entry?.paper_count ?? state.data?.nodes?.length ?? 0;
+  const rawCount = entry?.paper_count ?? state.data?.nodes?.length ?? 0;
+  // entry.paper_count comes from the (untrusted) manifest/artifact data —
+  // guard before it reaches innerHTML so a malformed value can't inject
+  // markup (defense in depth; a plain number never needs escapeHtml, but
+  // a non-number here must not be interpolated raw).
+  const count = Number.isSafeInteger(rawCount) && rawCount >= 0 ? rawCount : 0;
   const keywords = Array.isArray(meta.keywords) ? meta.keywords : [];
   els.meta.innerHTML = `
     <span class="theme-meta__pill">📅 ${escapeHtml(yearRange)}</span>
@@ -894,6 +899,31 @@ function issueUrlFor(theme) {
   );
 }
 
+// Map a Worker failure status to localised UI text when the Worker's own
+// message isn't already Japanese. The origin/content-type/body-size/
+// dispatch/manifest gates in worker/themes-post.js return a fixed
+// English string for 403/413/415/502/503 — an "HTTP 502" fallback or the
+// raw English string is not useful to a Japanese-reading user. "invalid"
+// and "rate_limited" responses are NOT routed through this map (see the
+// call site in submitTheme): those already carry a Worker-authored
+// message intended to be shown verbatim, unchanged by this fix.
+const JAPANESE_CHAR_RE = /[぀-ヿ㐀-鿿]/;
+const WORKER_STATUS_MESSAGE_JA = {
+  403: "このページ以外からの依頼は受け付けていません",
+  413: "依頼の形式が正しくありません",
+  415: "依頼の形式が正しくありません",
+  502: "GitHub への依頼に失敗しました。時間をおいて再度お試しください",
+  503: "既存テーマの確認に失敗しました。時間をおいて再度お試しください",
+};
+function localizedFailureMessage(status, workerMessage) {
+  // The Worker might already speak Japanese in a future revision —
+  // never clobber that with our static map.
+  if (typeof workerMessage === "string" && JAPANESE_CHAR_RE.test(workerMessage)) {
+    return workerMessage;
+  }
+  return WORKER_STATUS_MESSAGE_JA[status] || workerMessage || `HTTP ${status}`;
+}
+
 // ---- Theme generation progress ----------------------------------------
 //
 // After the Worker accepts a submit (status "queued"), we swap the form's
@@ -1067,6 +1097,29 @@ function cancelProgress() {
   if (els.reqInput) els.reqInput.disabled = false;
 }
 
+// The slug landing in themes-manifest.json only means the pipeline wrote
+// an artifact — it says nothing about whether that run's quality audit
+// (computed in the same build) passed. init() only ever shows slugs whose
+// row in the shared quality file is ready+passed (eligibleThemeManifest /
+// LineageCore.qualityRowIsEligible), so declaring "ready" on the manifest
+// hit alone would redirect the user into a page that immediately renders
+// nothing. This re-checks the same quality file + the same eligibility
+// rule used by init() and returns:
+//   "ready"   — row exists and is eligible: safe to redirect.
+//   "failed"  — row exists but isn't eligible (e.g. audit_status
+//               "failed"): stop polling, show a failure instead of a
+//               dead redirect.
+//   "pending" — quality file unreadable, schema-invalid, or no row for
+//               this slug yet (race between the manifest and quality
+//               file landing): keep polling, do not declare ready.
+async function qualityPollOutcome(slug) {
+  const quality = await loadLineageQuality();
+  if (!quality) return "pending";
+  const row = LineageCore.resolveQualityCollection(quality, { kind: "theme", slug });
+  if (!row) return "pending";
+  return LineageCore.qualityRowIsEligible(row) ? "ready" : "failed";
+}
+
 async function pollForCompletion(slug) {
   const startedAt = Date.now();
   let consecutiveFailures = 0;
@@ -1091,12 +1144,24 @@ async function pollForCompletion(slug) {
         consecutiveFailures = 0;
         const data = await r.json();
         if (Array.isArray(data) && data.some((e) => e?.slug === slug)) {
-          setProgressStep("ready");
-          // Brief pause so the user sees the green "完了" tick.
-          setTimeout(() => {
-            window.location.href = `?theme=${encodeURIComponent(slug)}`;
-          }, 800);
-          return;
+          const outcome = await qualityPollOutcome(slug);
+          if (outcome === "ready") {
+            setProgressStep("ready");
+            // Brief pause so the user sees the green "完了" tick.
+            setTimeout(() => {
+              window.location.href = `?theme=${encodeURIComponent(slug)}`;
+            }, 800);
+            return;
+          }
+          if (outcome === "failed") {
+            showProgressFailure({
+              title: "生成されましたが品質監査を通過しませんでした",
+              message: "テーマの系譜データは生成されましたが、品質監査を通過しなかったため表示できません。別のテーマ名で試すか、しばらく時間をおいて再度お試しください。",
+              retrySlug: slug,
+            });
+            return;
+          }
+          // "pending" — quality row not published yet; keep polling.
         }
       } else {
         consecutiveFailures++;
@@ -1221,10 +1286,20 @@ async function submitTheme() {
     setRequestStatus("err", `❌ サーバから不正な応答 (HTTP ${resp.status})`);
     return;
   }
-  if (data?.ok && data.status === "exists" && data.slug) {
+  if (data?.ok && data.status === "exists") {
+    // The server's dedup slug, not the raw free-text input, is what
+    // slugFromLocation() (SLUG_RE) will later accept — "Mixture of
+    // Experts" is valid input but not a valid ?theme= value. Only
+    // build the link when data.slug is itself a valid slug; otherwise
+    // fall back to a linkless banner instead of shipping a dead link.
+    const slug = typeof data.slug === "string" && SLUG_RE.test(data.slug)
+      ? data.slug
+      : null;
     setRequestStatus(
       "ok",
-      `✅ そのテーマは既に生成済です。<a href="?theme=${encodeURIComponent(raw)}">表示する →</a>`,
+      slug
+        ? `✅ そのテーマは既に生成済です。<a href="?theme=${encodeURIComponent(slug)}">表示する →</a>`
+        : `✅ そのテーマは既に生成済です。テーマ一覧から確認してください。`,
     );
     return;
   }
@@ -1251,11 +1326,27 @@ async function submitTheme() {
     if (els.reqInput) els.reqInput.value = "";
     return;
   }
-  // Anything else (rate_limited / invalid / error) — surface the
-  // Worker's localised message verbatim.
-  const msg = (data && typeof data.message === "string" && data.message) ||
-    `HTTP ${resp.status}`;
-  setRequestStatus("err", `❌ ${escapeHtml(msg)}`);
+  // "invalid" and "rate_limited" already carry a Worker-authored message
+  // meant to be shown verbatim — unchanged by the status mapping below.
+  // Every other failure (origin/content-type/body-size/manifest/dispatch
+  // gates, all of which respond with status "error") maps its HTTP
+  // status to localised UI text when the Worker's own message isn't
+  // already Japanese.
+  const workerMessage = data && typeof data.message === "string" ? data.message : null;
+  const msg = (data?.status === "invalid" || data?.status === "rate_limited")
+    ? (workerMessage || `HTTP ${resp.status}`)
+    : localizedFailureMessage(resp.status, workerMessage);
+  let html = `❌ ${escapeHtml(msg)}`;
+  // 502 (GitHub dispatch failed) and 503 (manifest/rate-limit check
+  // failed) are exactly the cases degraded mode exists for: the Worker
+  // is reachable but couldn't complete the request. Reuse the same
+  // Issue-fallback link builder the unreachable-Worker catch block above
+  // uses, so there is one URL builder for this CTA, not two.
+  if (resp.status === 502 || resp.status === 503) {
+    const issueHref = escapeHtml(issueUrlFor(raw));
+    html += ` <a href="${issueHref}" target="_blank" rel="noopener">GitHub Issue で送信 →</a>`;
+  }
+  setRequestStatus("err", html);
 }
 
 function bindThemeRequest() {

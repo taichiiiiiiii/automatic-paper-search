@@ -17,11 +17,14 @@
   <meta name="paperpilot-api-base" content="https://paperpilot-themes.puuptdbkh082.workers.dev" />
 
   <!-- CSP defence-in-depth. GH Pages strips `_headers`, so we declare
-       the policy via meta. `connect-src` allows the workers.dev origin
-       so the cross-origin `POST /api/themes` lands; other HTMLs in
-       docs/ keep the stricter same-origin `connect-src 'self'`.
-       `textContent`-only rationale rendering carries over unchanged. -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.workers.dev; img-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'" />
+       the policy via meta. `connect-src` allows exactly the Worker host
+       named above in `paperpilot-api-base` (not a `https://*.workers.dev`
+       wildcard, which would also let the page talk to any other
+       workers.dev-hosted origin) so the cross-origin `POST /api/themes`
+       lands; other HTMLs in docs/ keep the stricter same-origin
+       `connect-src 'self'`. `textContent`-only rationale rendering
+       carries over unchanged. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://paperpilot-themes.puuptdbkh082.workers.dev; img-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'" />
 
   <link rel="canonical" href="https://taichiiiiiiii.github.io/automatic-paper-search/themes/" />
 
@@ -476,6 +479,6 @@
 
   <script src="../assets/utils.js?v=84" defer></script>
   <script src="../assets/lineage-core.js?v=5" defer></script>
-  <script src="../assets/theme.js?v=88" defer></script>
+  <script src="../assets/theme.js?v=90" defer></script>
 </body>
 </html>
