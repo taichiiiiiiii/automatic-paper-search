@@ -17,6 +17,7 @@ import {
   RATE_LIMIT_PER_HOUR,
   RATE_LIMIT_GLOBAL_PER_DAY,
   themeStatusUnavailable,
+  PAGES_ORIGIN,
 } from "./response.js";
 
 let passed = 0, failed = 0;
@@ -66,20 +67,20 @@ tests.push(test("json() sets cache-control no-store", async () => {
   eq(r.headers.get("cache-control"), "no-store");
 }));
 
-tests.push(test("json() sets access-control-allow-origin: * (GH Pages cross-origin)", async () => {
+tests.push(test("json() sets access-control-allow-origin to the fixed GH Pages origin", async () => {
   // The viewer ships from github.io and the Worker lives on a *.workers.dev
   // (or CF custom domain). Without ACAO the browser blocks the response.
+  // M-1: locked to PAGES_ORIGIN rather than reflecting the request's
+  // Origin header or using a blanket "*".
   const r = json({ ok: true, status: "queued" });
-  eq(r.headers.get("access-control-allow-origin"), "*");
+  eq(r.headers.get("access-control-allow-origin"), PAGES_ORIGIN);
 }));
 
-tests.push(test("json() does NOT set vary: origin when ACAO is *", async () => {
-  // Vary: Origin is meaningful only when ACAO reflects the request
-  // origin — with a static "*" it just splits CDN cache by origin
-  // header for nothing. Pin removal so a future review doesn't
-  // re-add it without flipping ACAO too.
+tests.push(test("json() sets vary: Origin alongside the fixed ACAO", async () => {
+  // Vary: Origin is required once ACAO is origin-specific (not "*") so a
+  // cache layer never serves this response to a different Origin.
   const r = json({ ok: true, status: "queued" });
-  eq(r.headers.get("vary"), null);
+  eq(r.headers.get("vary"), "Origin");
 }));
 
 tests.push(test("json() serializes the body", async () => {
@@ -122,7 +123,8 @@ tests.push(test("dormant theme status is non-cacheable JSON", async () => {
 
 tests.push(test("dormant theme status remains available cross-origin", async () => {
   const r = themeStatusUnavailable();
-  eq(r.headers.get("access-control-allow-origin"), "*");
+  eq(r.headers.get("access-control-allow-origin"), PAGES_ORIGIN);
+  eq(r.headers.get("vary"), "Origin");
 }));
 
 tests.push(test("dormant theme status performs zero upstream fetches", async () => {

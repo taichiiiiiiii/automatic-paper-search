@@ -50,11 +50,13 @@ PaperPilot is one product with two deployment units:
   dormant and return `404`. `wrangler.jsonc` intentionally has no static-assets
   or Paper Slide binding.
 
-The Pages viewer and Worker are cross-origin. During migration, JSON responses
-and `/api/*` preflights use `Access-Control-Allow-Origin: *`; requests do not
-carry cookies or browser credentials. Tightening this to the canonical Pages
-origin remains a separate coordinated change to both the JSON and preflight
-headers.
+The Pages viewer and Worker are cross-origin. JSON responses and `/api/*`
+preflights set `Access-Control-Allow-Origin` to the canonical Pages origin
+(`https://taichiiiiiiii.github.io`, `PAGES_ORIGIN` in `worker/response.js`)
+with `Vary: Origin`, not a blanket `*`; requests do not carry cookies or
+browser credentials. `POST /api/themes` additionally rejects (403) a request
+whose `Origin` header does not match exactly, before any KV read/write or
+subrequest — see `worker/themes-post.js`.
 
 `GET /api/themes/status` is currently dormant and always returns a stable
 `503` JSON envelope with CORS and `Cache-Control: no-store`. Cloudflare KV is
@@ -91,8 +93,10 @@ You need a developer machine with `wrangler` and Cloudflare auth.
    { binding = "RATE_LIMIT_KV", id = "abc123…" }
    ```
 
-   **Replace the 32-zero placeholder** in the root `wrangler.jsonc`
-   (`kv_namespaces[0].id`) with that real id. Commit the change.
+   **Set that id** in the root `wrangler.jsonc` (`kv_namespaces[0].id`)
+   and commit the change. (The id already checked in is the real one
+   for the current `RATE_LIMIT_KV` namespace — only re-run this step if
+   the namespace is ever recreated.)
 
 3. **Mint a fine-grained GitHub PAT** scoped to this repo with the
    `Actions: read & write` permission and store it as a Worker secret:
@@ -134,7 +138,6 @@ are not evidence that the Docker runtime gate passed:
 
 ```bash
 node --test worker/entrypoint.test.mjs
-node --test worker/index.test.mjs
 node --test worker/paper-slide-api.test.mjs
 node --test worker/paper-slide-catalog.test.mjs
 node --test worker/paper-slide-contract.test.mjs
@@ -147,6 +150,8 @@ node --test worker/paper-slide-workflow-api.test.mjs
 node --test worker/request-id.test.mjs
 node --test worker/response.test.mjs
 node --test worker/run-match.test.mjs
+node --test worker/slug.test.mjs
+node --test worker/themes-post.test.mjs
 node --test worker/validate-input.test.mjs
 uv run --extra dev pytest \
   paperpilot/tests/test_worker_node_suites.py \
@@ -154,7 +159,7 @@ uv run --extra dev pytest \
   paperpilot/tests/test_worker_slug_parity.py
 ```
 
-`test_worker_node_suites.py` pins this complete 15-suite inventory so a newly
+`test_worker_node_suites.py` pins this complete 16-suite inventory so a newly
 added Worker suite cannot silently escape pytest. The parity test runs the same
 slug inputs through the JS module and Python's
 `paperpilot.scripts._common.theme_slug()` and fails if they disagree.

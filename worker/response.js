@@ -7,16 +7,24 @@
 
 // Per-IP requests/hour cap. Sized so a single user's UI can replay form
 // submissions a few times during debugging without being locked out.
-// Also appears verbatim in the error message at worker/index.ts:L142;
-// keep the two in sync.
+// Also appears verbatim in the error message in worker/themes-post.js
+// (handlePost's rate_limited branch); keep the two in sync.
 export const RATE_LIMIT_PER_HOUR = 5;
 
 // Global daily ceiling on dispatched workflows / jobs. Even with a
 // perfect per-IP limiter, a /20 IPv6 block or a rotating proxy can
 // bypass it; this cap protects against direct-cost denial-of-service
 // against the LLM provider (Groq Stage 4 calls). Also referenced in
-// worker/index.ts:L149 — keep in sync.
+// worker/themes-post.js's rate_limited branch — keep in sync.
 export const RATE_LIMIT_GLOBAL_PER_DAY = 100;
+
+// The only origin allowed to call POST /api/themes, and the fixed value of
+// Access-Control-Allow-Origin on every response this Worker returns (CORS
+// migrated off blanket "*" — see worker/README.md "API-only Worker design").
+// Not a Worker `var` (unlike GH_OWNER etc. in wrangler.jsonc): it's a fact
+// about this Worker's own API contract, not deploy-time config, so there is
+// nothing to edit from the CF dashboard.
+export const PAGES_ORIGIN = "https://taichiiiiiiii.github.io";
 
 /**
  * Response envelope shape returned from the /api/themes endpoint.
@@ -40,15 +48,15 @@ export function json(body, init = {}) {
       "content-type": "application/json; charset=utf-8",
       "cache-control": "no-store",
       // GH-Pages-hosted viewer + workers.dev-hosted API = cross-origin.
-      // The Worker is safe to expose to any origin: input is validated,
-      // requests are KV-rate-limited per-IP + globally, no cookies are
-      // read, no PII is returned. Anyone calling /api/themes still has
-      // to clear the same per-IP and global caps. If you ever lock the
-      // API to a specific origin, set ACAO to the actual GH-Pages URL
-      // AND restore `Vary: Origin` together — they're a matched pair
-      // (the Vary makes sense only when ACAO reflects the request
-      // origin; with a static "*" it just fragments CDN cache).
-      "access-control-allow-origin": "*",
+      // ACAO is locked to PAGES_ORIGIN (not a reflected/static "*"), so
+      // `Vary: Origin` is required alongside it — without it, a cache
+      // layer could serve this origin-specific response to a different
+      // Origin. The POST handler (worker/themes-post.js) separately
+      // rejects a mismatched request Origin with 403 before doing any
+      // work; this header pair just keeps the browser-side CORS
+      // contract consistent with that check.
+      "access-control-allow-origin": PAGES_ORIGIN,
+      "vary": "Origin",
     },
     ...init,
   });

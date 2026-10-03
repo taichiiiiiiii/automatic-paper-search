@@ -607,7 +607,7 @@ uv run python -m paperpilot.scripts.scaffold_conference_page --conference <slug>
     - **オンデマンド生成パス (post 2026-06-03 CF Worker 復活)**: ユーザーが `/themes/` のフォームに入力 → CF Worker `worker/index.ts` `POST /api/themes` → input validate + manifest dedup (raw.githubusercontent.com) + per-IP rate limit (KV、5/h) + global daily cap (KV、100/day) → GitHub Actions REST API `POST /repos/.../workflows/theme-on-demand.yml/dispatches` → `build_theme_lineage.py` → credential-free candidate → latest `develop`へのCAS promotion → promoted exact-SHA Pages release。フロントは Worker URL を `docs/themes/index.html` の `<meta name="paperpilot-api-base">` から読む。空なら `window.open(GitHub Issue URL)` の degraded mode にフォールバック (Worker 不通時の保険)。`GET /api/themes/status`は固定503の休眠endpointで、完了正本は公開`themes-manifest.json`のpolling。
     - **PAT スコープ**: Worker は `GH_DISPATCH_PAT` (fine-grained PAT, `actions:write`, repo scope) を CF Workers Secrets に保持。CF Access を解除した workers.dev URL 経由でのみアクセス可能なので、ブラウザに露出しない。
     - **degraded mode**: `paperpilot-api-base` の meta が空、または Worker が非到達 (fetch エラー) の場合、フォームは `window.open(github issue URL)` で代替し、操作不能にならない。
-    - **slug 派生は 3 か所で同期**: Python `theme_slug()` (`paperpilot/scripts/_common.py`)、フロント `SLUG_RE` (`docs/assets/theme.js`)、CF Worker `themeSlug()` + `THEME_INPUT_PATTERN` (`worker/slug.js`)。`paperpilot/tests/test_worker_slug_parity.py` が **Python ↔ Worker の 3-way parity** を pin する。テーマ regex / 正規化規則を変えるときは 3 ファイル + parity テスト同時更新。
+    - **slug 派生は 3 か所で同期**: Python `theme_slug()` (`paperpilot/scripts/_common.py`)、フロント `SLUG_RE` (`docs/assets/theme.js`)、CF Worker `themeSlug()` + `THEME_INPUT_PATTERN` (`worker/slug.js`)。`paperpilot/tests/test_worker_slug_parity.py` が Python ↔ Worker ↔ フロント（`theme.js` の regex リテラル）の **3-way parity** を pin する。テーマ regex / 正規化規則を変えるときは 3 ファイル + parity テスト同時更新。
     - **入力源はテーマ文字列のみ**（`papers.json` 非依存、conference 横断）。S2 `/paper/search` で seed 論文を発見してよい（§12 の papers.json 依存ルールはこの新パイプラインに適用しない）。
     - **LLM 呼び出しは `AbstractLLMProvider` 経由（§11）**。`expand_keywords()` / `classify_relation()` ともに provider 抽象を通す。
     - **出力 path は `theme_slug()` の戻り値のみで構成**。生 `--theme` 文字列を `Path()` 構築に渡してはならない（path traversal 防止）。
@@ -695,9 +695,9 @@ uv run python -m paperpilot.scripts.scaffold_conference_page --conference <slug>
 4. `git push` → CF Workers Builds が build + deploy
 
 エンドポイント:
-- `POST /api/themes` — フォーム送信。`{ theme: string }` を受け、validate + dedup + rate-limit してから theme-on-demand.yml を dispatch。新規依頼のレスポンスは `{ ok: true, status: "queued", slug, request_id }`、既存テーマは `{ ok: true, status: "exists", slug }`、失敗時は `{ ok: false, status: "invalid" | "rate_limited" | "error", message }`
+- `POST /api/themes` — フォーム送信。`{ theme: string }` を受け、validate + dedup + rate-limit してから theme-on-demand.yml を dispatch。新規依頼のレスポンスは `{ ok: true, status: "queued", slug, request_id }`、既存テーマは `{ ok: true, status: "exists", slug }`、失敗時は `{ ok: false, status: "invalid" | "rate_limited" | "error", message }`。Origin が GH Pages（`https://taichiiiiiiii.github.io`）以外は 403、`content-type: application/json` 以外は 415、1KB 超の body は 413（いずれも KV・subrequest の前に拒否）。既存テーマ一覧（manifest）を読めない時は「既存」と答えず 503（課金・dispatch なし）、dispatch の通信失敗は 502。処理本体は `worker/themes-post.js`（Node テスト可能、`index.ts` は配線のみ）
 - `GET /api/themes/status` — 現在は常に `503` の固定JSONを返す休眠endpoint。KVではPAT付きGitHub APIを守る原子的quotaを作れないため、GitHub runs APIは呼ばない。ブラウザは公開 `themes-manifest.json` のpollingを継続する
-- `OPTIONS /api/*` — CORS preflight。GH Pages origin (任意) を `*` で許可
+- `OPTIONS /api/*` — CORS preflight。ACAO は GH Pages origin 固定 + `Vary: Origin`（`worker/response.js` の `PAGES_ORIGIN`。localhost からの `wrangler dev` 検証はこの origin 制限で 403 になる）
 
 `vars` (非 secret): `GH_OWNER`, `GH_REPO`, `GH_WORKFLOW_FILE`, `GH_REF` は `wrangler.jsonc` に直書き。変更が要るときは `wrangler.jsonc` を編集して push。
 

@@ -26,7 +26,6 @@ WORKER_DIR = Path(__file__).resolve().parents[2] / "worker"
 # on 2026-09-05 — a suite that quietly stops asserting will trip them.
 SUITES = [
     ("entrypoint.test.mjs", 17),
-    ("index.test.mjs", 14),
     ("paper-slide-api.test.mjs", 31),
     ("paper-slide-catalog.test.mjs", 18),
     ("paper-slide-contract.test.mjs", 19),
@@ -39,6 +38,8 @@ SUITES = [
     ("request-id.test.mjs", 12),
     ("response.test.mjs", 23),
     ("run-match.test.mjs", 11),
+    ("slug.test.mjs", 14),
+    ("themes-post.test.mjs", 34),
     ("validate-input.test.mjs", 10),
 ]
 

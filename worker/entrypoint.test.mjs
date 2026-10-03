@@ -1,5 +1,6 @@
 import { createPaperPilotWorker } from "./entrypoint.js";
 import { createPaperSlideApi } from "./paper-slide-api.js";
+import { PAGES_ORIGIN } from "./response.js";
 
 let passed = 0;
 let failed = 0;
@@ -396,7 +397,8 @@ tests.push(test("generic API preflight keeps the theme CORS contract", async () 
     headers: { origin: "https://example.test" },
   }), {});
   eq(response.status, 204);
-  eq(response.headers.get("access-control-allow-origin"), "*");
+  eq(response.headers.get("access-control-allow-origin"), PAGES_ORIGIN);
+  eq(response.headers.get("vary"), "Origin");
   eq(response.headers.get("access-control-allow-methods"), "GET, POST, OPTIONS");
   eq(response.headers.get("access-control-allow-headers"), "content-type");
   eq(response.headers.get("access-control-max-age"), "86400");

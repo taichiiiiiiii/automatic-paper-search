@@ -1,3 +1,5 @@
+import { PAGES_ORIGIN } from "./response.js";
+
 const PAPER_SLIDE_PATHS = new Set([
   "/api/paper-slides",
   "/api/paper-slides/status",
@@ -74,7 +76,10 @@ function themePreflight() {
   return new Response(null, {
     status: 204,
     headers: {
-      "access-control-allow-origin": "*",
+      // M-1: fixed-origin CORS, matching worker/response.js's json()
+      // envelope. Vary: Origin is required alongside a non-"*" ACAO.
+      "access-control-allow-origin": PAGES_ORIGIN,
+      "vary": "Origin",
       "access-control-allow-methods": "GET, POST, OPTIONS",
       "access-control-allow-headers": "content-type",
       "access-control-max-age": "86400",
