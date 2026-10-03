@@ -11,6 +11,14 @@ PaperPilot のサブエージェントは**プラグイン層ごとに専門化*
 | `exporter-agent` | `paperpilot/exporters/` の Exporter プラグイン開発 | sonnet | 新 Exporter 追加、CSV 列の拡張 |
 | `test-agent` | `paperpilot/tests/` のテスト整備 | sonnet | カバレッジ低下、flaky test、新モジュール後 |
 | `paperpilot-reviewer` | 絶対ルール10項目での PR レビュー | sonnet | 変更の最終チェック（MUST BE USED） |
+| `failure-path-reviewer` | 「障害・壊れた上流データ・部分取得が公開データになる」経路の深掘りレビュー（読み取り専用） | opus | collector / builder / Stage / exporter / workflow / Worker を変えた後のレビュー各回 |
+| `worker-agent` | CF Worker（`worker/`）と公開サイトのフロント（`docs/assets/*.js`、`docs/**/*.html`）の実装 | sonnet | Worker・フロントの指摘に修正方針が決まったとき |
+| `scripts-agent` | `paperpilot/scripts/`（系譜・カタログ生成）と `.github/workflows`・`.github/scripts` の実装 | sonnet | スクリプト・ワークフローの指摘に修正方針が決まったとき |
+| `verifier` | 全テスト＋ネットワーク遮断、lint、データ監査、公開 refresh のバイト一致、push 前衛生チェックを実行して報告 | haiku | 実装の後、コミット提案の前 |
+
+**モデルの選び方**: 判断が難しく見落としの損失が大きいレビューは opus（読み取り専用なので費用に上限がある）、仕様が決まった実装は sonnet、判断を伴わない検証の実行は haiku。
+
+**レビュー→修正のループ**: `failure-path-reviewer` → 実装エージェント（層ごと）→ `verifier` → `failure-path-reviewer` … を、重大・中程度が 0 になるまで繰り返す。インフラ追加・仕様変更・製品方針・公開データの削除が要るものは修正せず、ユーザー判断の一覧に回す。git 操作・push・Worker デプロイはメインセッションだけが行う。
 
 ## 基本の実行フロー
 
