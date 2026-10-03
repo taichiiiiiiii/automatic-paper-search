@@ -39,6 +39,7 @@ class CitationSignal(AbstractSignal):
         self.saturation = float(self.config.get("velocity_saturation", 2.0))
 
     def enrich_batch(self, papers: list[Paper]) -> list[Paper]:
+        self.reset_run_failures()
         # Build index: (paper, request_id) pairs for those we can query.
         indexed: list[tuple[Paper, str]] = []
         for p in papers:
@@ -55,6 +56,13 @@ class CitationSignal(AbstractSignal):
             data = self._post_batch(ids)
             if data is None:
                 continue
+            if len(data) < len(chunk):
+                # The batch answers one entry per id (nulls for unknown ids),
+                # so a short body means the tail papers keep score 0.0 for a
+                # reason unrelated to their own quality.
+                self.run_failures.append(
+                    f"batch answered {len(data)} of {len(chunk)} ids"
+                )
             # Response preserves order, nulls for missing IDs.
             for (paper, _rid), payload in zip(chunk, data, strict=False):
                 if not payload:
@@ -89,15 +97,23 @@ class CitationSignal(AbstractSignal):
             timeout=15.0,
         )
         if resp is None or resp.status_code != 200:
+            status = getattr(resp, "status_code", None)
             logger.warning(
                 "citation: batch failed (status=%s, n=%d)",
-                getattr(resp, "status_code", None),
+                status,
                 len(ids),
+            )
+            self.run_failures.append(
+                f"/paper/batch failed (status={status}, n={len(ids)})"
             )
             return None
         body = resp.json()
         if not isinstance(body, list):
             logger.warning("citation: unexpected response shape: %r", type(body))
+            self.run_failures.append(
+                f"/paper/batch returned {type(body).__name__} instead of a list "
+                f"(n={len(ids)})"
+            )
             return None
         return body
 

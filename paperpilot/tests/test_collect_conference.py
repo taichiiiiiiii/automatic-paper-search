@@ -2,10 +2,12 @@
 
 Network (arXiv) is never hit — build_rows / write_outputs are pure given
 duck-typed result objects, so we feed SimpleNamespace stand-ins for
-arxiv.Result, and the one test that drives the installed arxiv client patches
-its session's get(). The key invariant: the SAME VenueSignal acceptance
-semantics the pipeline uses (keep "accepted to <venue>", drop workshop /
-bare-mention / other-venue) carry through here.
+arxiv.Result. The malformed-feed warning those stand-ins log is the real
+library's behaviour, pinned against the installed client in
+``paperpilot/tests/test_arxiv_feed.py`` for the shared detector this script's
+``fetch_results_checked`` now delegates to. The key invariant: the SAME
+VenueSignal acceptance semantics the pipeline uses (keep "accepted to <venue>",
+drop workshop / bare-mention / other-venue) carry through here.
 """
 
 from __future__ import annotations
@@ -19,6 +21,8 @@ from unittest.mock import patch
 
 import arxiv
 import pytest
+import requests
+from requests.models import Response
 
 from paperpilot.scripts import collect_conference as cc
 
@@ -175,79 +179,73 @@ def test_fetch_results_checked_reports_completeness():
     assert list(logger.handlers) == before
 
 
-def _installed_client_outcome(monkeypatch, caplog, body: bytes) -> SimpleNamespace:
-    """Run the real ``arxiv.Client`` over one canned response body, offline.
-
-    Only the session's ``get`` is replaced, so the library's own Atom parser, its
-    malformed-feed branch and its pagination all run unchanged.
+class _CannedAdapter(requests.adapters.BaseAdapter):
+    """A transport adapter answering every request with one canned 200 body,
+    through the real ``requests.Session.send()`` pipeline — so the response hook
+    ``detect_malformed_feed(client)`` installs actually fires. All the other
+    completeness tests in this file mock ``cc.fetch_results`` itself and so never
+    touch a real session; this is the one that does.
     """
-    requested: list[str] = []
-    response = SimpleNamespace(status_code=200, content=body)
 
-    def _get(url: str, **_kwargs: object) -> SimpleNamespace:
-        requested.append(url)
-        return response
+    def __init__(self, content: bytes) -> None:
+        super().__init__()
+        self._content = content
 
+    def send(self, request, **_kwargs):  # type: ignore[override]
+        resp = Response()
+        resp.status_code = 200
+        resp._content = self._content
+        resp._content_consumed = True
+        resp.request = request
+        resp.url = request.url
+        return resp
+
+    def close(self) -> None:  # pragma: no cover - nothing to release
+        pass
+
+
+def test_fetch_results_checked_catches_a_silently_empty_page_via_the_body_hook(
+    monkeypatch,
+):
+    """HIGH-1 follow-up: an HTML throttle page is NOT malformed to the installed
+    client's own lenient parser (``recover=True``) — it logs nothing at all, so the
+    log-based half of ``test_fetch_results_checked_reports_completeness`` above
+    cannot see it. ``detect_malformed_feed``'s response hook is what catches it
+    here, driven through a real ``arxiv.Client`` and a real session (only the
+    transport is replaced) rather than a mocked ``fetch_results``.
+
+    L-4: the factory is monkeypatched to return the SAME client object every
+    call, which is exactly what would mask a regression where
+    ``fetch_results_checked`` stops passing ``client=client`` through to
+    ``fetch_results`` — a second, independently-constructed client would also
+    return this same canned object, and the hook would still fire, so the
+    assertions above alone cannot tell the two apart. Counting factory calls
+    closes that gap: ``fetch_results_checked`` must create exactly one client
+    and hand that same instance to ``fetch_results``, not one each.
+    """
     client = arxiv.Client(page_size=1, delay_seconds=0, num_retries=0)
-    monkeypatch.setattr(client._session, "get", _get)
-    caplog.clear()
-    raised: Exception | None = None
-    # Same reason fetch_results_checked lifts the level itself: an ambient ERROR level
-    # on the arxiv logger would hide the warning and read as a clean fetch.
-    with caplog.at_level(logging.WARNING, logger="arxiv"):
-        try:
-            results = list(client.results(arxiv.Search(query='co:"CVPR 2026"', max_results=5)))
-        except Exception as exc:  # the outage path is the other half of what is pinned
-            results, raised = [], exc
+    adapter = _CannedAdapter(b"<html><body>rate limited</body></html>")
+    client._session.mount("http://", adapter)
+    client._session.mount("https://", adapter)
+    factory_calls: list[tuple[object, ...]] = []
 
-    return SimpleNamespace(
-        body=body,
-        results=results,
-        raised=raised,
-        requests=len(requested),
-        malformed_records=[
-            record
-            for record in caplog.records
-            if record.name == "arxiv"
-            and record.getMessage().startswith(cc._MALFORMED_FEED_PREFIX)
-        ],
+    def _factory(*args, **kwargs):
+        factory_calls.append((args, kwargs))
+        return client
+
+    monkeypatch.setattr(cc.arxiv, "Client", _factory)
+
+    results, complete = cc.fetch_results_checked('co:"CVPR 2026"', 5)
+
+    assert results == []
+    assert complete is False
+    assert len(factory_calls) == 1, (
+        "fetch_results_checked must construct exactly one arxiv.Client and share "
+        "it with fetch_results (client=client); this test cannot otherwise tell "
+        "a dropped client= from a correctly shared one, since the factory always "
+        "hands back the same canned client regardless of call count: "
+        f"{factory_calls}"
     )
-
-
-def test_installed_arxiv_client_warns_on_a_malformed_page(caplog, monkeypatch) -> None:
-    """Pin the third-party contract ``fetch_results_checked`` rests on, offline.
-
-    arxiv 4.0.1 (the version uv.lock pins, and what ``fetch_results`` talks to) hands every
-    page to its own lxml parser and, when that parser reports the document malformed, logs
-    ``Malformed feed; consider handling: ...`` on the "arxiv" logger and HANDS BACK the page
-    it could read — no exception. That warning is therefore the only observable sign of a
-    silent partial return, so ``_MALFORMED_FEED_PREFIX`` has to keep matching the installed
-    library and not just this suite's stand-ins. If a bump makes a malformed page raise
-    instead of warn, or warn with different words, this test fails and the collectors'
-    completeness gate has to be re-read rather than trusted.
-
-    Several broken bodies are tried because the parser runs with ``recover=True``: it fixes
-    some damaged documents quietly and reports others as malformed, so what matters here is
-    that a garbage response really can reach the warn-and-continue branch.
-    """
-    outcomes = [
-        _installed_client_outcome(monkeypatch, caplog, body)
-        for body in (b"<not xml", b"not xml at all", b"")
-    ]
-
-    warned = [outcome for outcome in outcomes if outcome.malformed_records]
-    assert warned, (
-        "no non-XML response body made the installed arxiv client log a warning starting "
-        f"with {cc._MALFORMED_FEED_PREFIX!r}, and none raised: fetch_results_checked has no "
-        "signal left for a partial return and its completeness gate is now blind"
-    )
-    for outcome in warned:
-        assert all(r.levelno >= logging.WARNING for r in outcome.malformed_records)
-        # The malformed page is returned as a finished fetch: the caller has to judge it
-        # from the log line, and the empty first page stops pagination after one request.
-        assert outcome.raised is None, outcome.body
-        assert outcome.results == [], outcome.body
-        assert outcome.requests == 1, outcome.body
 
 
 def test_build_rows_is_case_insensitive_on_venue_arg():

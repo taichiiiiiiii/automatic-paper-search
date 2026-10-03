@@ -110,6 +110,12 @@ output:
 incremental:
   enabled: true
   seen_ids_file: paperpilot/data/seen_ids.daily.json
+  # Own history file: collect-daily-watch and collect-weekly both append to and
+  # push run_history.jsonl, so sharing that one file made the two workflows
+  # collide on the same record (and one run's line could be dropped by the
+  # other's push). Unset elsewhere, where run_history.jsonl still sits next to
+  # seen_ids.
+  run_history_file: paperpilot/data/run_history.daily.jsonl
   max_age_days: 3
 
 # ===== Logging =====

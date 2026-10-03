@@ -47,7 +47,9 @@ uv run pytest paperpilot/tests/ --cov=paperpilot --cov-config=/dev/null   # カ�
 
 ```txt
 # paperpilot/requirements.txt
-arxiv>=2.1.0            # arXiv API クライアント
+arxiv>=4.0.1,<5         # arXiv API クライアント（utils/arxiv_feed.py が 4.0.1 のログ文言に依存）
+lxml>=5.0               # arXiv 応答本文の厳密な Atom 検査（utils/arxiv_feed.py）
+numpy>=1.26.0           # stage_embedding（runner が import 時に読む）
 requests>=2.31.0        # HTTP (同期)
 aiohttp>=3.9.0          # HTTP (非同期 Stage 0)
 pyyaml>=6.0             # YAML 設定読み込み
@@ -147,7 +149,8 @@ automatic-paper-search/
     │   └── paper.py                     # Paper データクラス
     ├── utils/
     │   ├── config_loader.py             # YAML + .env 統合
-    │   ├── dedup.py                     # dedup + seen_ids 管理
+    │   ├── dedup.py                     # dedup + seen_ids 管理（読めない seen_ids は .corrupt-<UTC> へ退避）
+    │   ├── arxiv_feed.py                # arXiv の「例外にならない欠損」（壊れた feed・skip された entry・feed でない 200）の検出
     │   ├── rate_limiter.py              # 同期 sleep ベース
     │   ├── http.py                      # 指数バックオフ retry
     │   ├── github.py                    # 共有 GitHub 解決器（curated map + GitHub Search + Stars）
@@ -636,6 +639,7 @@ uv run python -m paperpilot.scripts.scaffold_conference_page --conference <slug>
 ワークフロー一覧 (`.github/workflows/`・全 13 本):
 - `collect-weekly.yml` — 主要会議の論文を深掘り収集 → candidate生成 → CAS promotion → exact-SHA release。**手動 `workflow_dispatch` 専用**（#245 で週次 cron 廃止）
 - `collect-daily-watch.yml` — follow 著者の新作を確認 → 通知のみ。**手動 `workflow_dispatch` 専用**（#245 で日次 cron 廃止）
+- 両 collect workflow は collector を `--fail-on-errors` で起動する（取得元・出力先・状態ファイル（seen_ids 退避）の失敗、不完全なキーワード、有効な取得元が無い run で exit 1）。シグナルの劣化（`signal:`）は失敗にせず run_history の `degraded_signals` に記録するだけ。daily-watch の実行履歴は専用ファイル `run_history.daily.jsonl`（`incremental.run_history_file`、初回実行で作成）。daily のコミット step は失敗時も走り、出力・`seen_ids.daily.json`・実行履歴をコミットする — runner は終了コードが決まる前に配信と seen_ids のスタンプを済ませている（配信先が全滅した run だけスタンプしない）ため、コミットしないと同じヒットを再通知する。weekly は失敗時に `run_history.jsonl` を artifact として保存
 
 🔴 **現行13 workflowのトリガ表** — 名前から推測せず`on:`節を確認すること。
 

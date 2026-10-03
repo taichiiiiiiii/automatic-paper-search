@@ -12,10 +12,13 @@ import fcntl
 import json
 import os
 import tempfile
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from ..models import Paper
+from .logger import get_logger
+
+logger = get_logger(__name__)
 
 
 def dedup_papers(papers: list[Paper]) -> list[Paper]:
@@ -117,24 +120,94 @@ def _merge_alias_duplicates(papers: list[Paper]) -> list[Paper]:
     return result
 
 
-def load_seen_ids(path: str | Path) -> dict[str, str]:
+def load_seen_ids(
+    path: str | Path, *, quarantine_notes: list[str] | None = None
+) -> dict[str, str]:
+    """Read the seen-ids map, treating a MISSING file as "nothing seen yet".
+
+    An EXISTING but unreadable file is a different thing and must not look like
+    the first: returning {} for it silently makes every paper the pipeline
+    already delivered look unseen again, so the next run re-sends the whole
+    backlog. The file is moved aside (see :func:`_quarantine_unreadable`) and the
+    event is logged, so the run reports it and the damaged bytes stay available
+    for recovery.
+
+    Returning {} is still the only answer this can give a run, so a caller that
+    has to put the loss in front of an operator — `PipelineRunner` — passes a
+    list as `quarantine_notes` and receives one note per file moved aside. Every
+    other caller keeps the same one-argument signature and the same
+    `dict[str, str]` return type; the notes are the report, not a second result,
+    precisely so this function's shape stays unchanged for them.
+    """
     p = Path(path)
     if not p.exists():
         return {}
     try:
         with p.open("r", encoding="utf-8") as f:
             data = json.load(f)
-    except (json.JSONDecodeError, OSError):
+    except (json.JSONDecodeError, UnicodeDecodeError, OSError) as e:
+        # UnicodeDecodeError is a ValueError, not an OSError: a file holding
+        # bytes that are not UTF-8 (a write from a different encoding, half a
+        # binary blob) used to escape here and abort the run in Stage 1 instead
+        # of being quarantined like any other unreadable state file.
+        note = _quarantine_unreadable(p, f"unreadable ({type(e).__name__}: {e})")
+        if quarantine_notes is not None:
+            quarantine_notes.append(note)
         return {}
     # Support legacy list format gracefully.
     if isinstance(data, list):
         now = datetime.now().isoformat()
         return {str(uid): now for uid in data}
     if not isinstance(data, dict):
-        # Malformed file (e.g. a string or null) — treat as empty.
+        # Valid JSON of the wrong shape (a string, null, a number) holds no IDs
+        # either way, so it is the same silent-re-send as a broken parse.
+        note = _quarantine_unreadable(p, f"not a JSON object (got {type(data).__name__})")
+        if quarantine_notes is not None:
+            quarantine_notes.append(note)
         return {}
     # Defensive: coerce any non-string values to iso-now to keep purge working.
     return {str(k): str(v) for k, v in data.items() if k}
+
+
+def _quarantine_unreadable(path: Path, reason: str) -> str:
+    """Log an existing-but-unusable seen-ids file and move it out of the way.
+
+    Moving it aside is what makes the event visible: the caller returns {} and a
+    later `save_seen_ids` overwrites the path, so a file left in place would be
+    replaced without a trace. The renamed copy keeps the damaged bytes readable
+    by hand — entries can be recovered and merged back — and the timestamped name
+    never overwrites an earlier quarantined file.
+
+    Returns the one-line note `load_seen_ids` hands to a caller that has to
+    report the loss; where the move itself failed, the note says so instead of
+    naming a file that does not exist.
+    """
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
+    target = path.with_name(f"{path.name}.corrupt-{stamp}")
+    attempt = 1
+    while target.exists():
+        target = path.with_name(f"{path.name}.corrupt-{stamp}.{attempt}")
+        attempt += 1
+    try:
+        os.replace(path, target)
+    except OSError as move_error:
+        logger.warning(
+            "seen_ids: %s is %s and could not be moved aside (%s); the next save "
+            "will overwrite it. Every paper it listed will be re-sent this run.",
+            path,
+            reason,
+            move_error,
+        )
+        return f"unreadable file could not be moved aside to {target} ({move_error})"
+    logger.warning(
+        "seen_ids: %s is %s; moved it aside to %s. Treating it as empty means every "
+        "paper it listed looks unseen again, so recover the entries by hand before "
+        "the next save if re-sending them is not acceptable.",
+        path,
+        reason,
+        target,
+    )
+    return f"unreadable file quarantined to {target}"
 
 
 def save_seen_ids(path: str | Path, seen: dict[str, str]) -> None:

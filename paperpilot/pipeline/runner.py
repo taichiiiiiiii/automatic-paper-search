@@ -63,6 +63,22 @@ class PipelineResult:
     duration_seconds: float
     sources_status: dict[str, dict[str, Any]] = field(default_factory=dict)
     errors: list[str] = field(default_factory=list)
+    # Enabled signals that lost at least one batch/lookup this run. A paper's
+    # score of 0.0 only means "unremarkable" when the signals actually
+    # answered, so degradation is reported instead of silently reshaping the
+    # ranking (Stage types stay list[Paper], rule §4).
+    degraded_signals: list[str] = field(default_factory=list)
+    # Notification deliveries capped by max_items, e.g.
+    # [{"exporter": "slack", "delivered": 10, "given": 30}] — seen_ids marks
+    # every exported paper, so the run that dropped 20 of them from the post
+    # must not look like a complete delivery.
+    truncated_deliveries: list[dict[str, Any]] = field(default_factory=list)
+    # Enabled sources whose fetch filled the whole requested window, so matching
+    # papers beyond it were never fetched: {source name: [keyword, ...]}. A cut
+    # window still shipped papers, so it is not an error and --fail-on-errors must
+    # stay green on it; it only belongs in the record so a later reader can tell a
+    # thin survey from a quiet window (the CLI prints the same line).
+    truncated_windows: dict[str, list[str]] = field(default_factory=dict)
 
 
 class PipelineRunner:
@@ -218,12 +234,46 @@ class PipelineRunner:
         for name, st in sources_status.items():
             if not st["ok"]:
                 errors.append(f"source:{name}:{st.get('error', 'unknown')}")
+        # A keyword whose fetch is known-incomplete is missing papers, so the run
+        # is not complete even though the source answered with its other keywords
+        # and Stage 0 records ok=True (HIGH-1). Stage 0 has no channel for a result
+        # that is complete-but-partial, so the source names the keywords plus the
+        # reason and the run records them as `source:` errors — the prefix
+        # collector.py's --fail-on-errors already refuses. A source that failed
+        # outright reported every keyword through the error above, so its own
+        # degraded list is not repeated here.
+        for src in self.sources:
+            if not sources_status.get(src.name, {}).get("ok", False):
+                continue
+            for kw, reason in getattr(src, "degraded_keywords", []):
+                errors.append(f"source:{src.name}: incomplete keyword '{kw}' ({reason})")
+        # The other known-partial case: a keyword that filled its window shipped
+        # papers, so it is not an error and must not fail the run — it is recorded
+        # here so the same report the CLI prints also reaches run_history. A
+        # disabled source never ran fetch(), so its own list is always empty.
+        truncated_windows: dict[str, list[str]] = {}
+        for src in self.sources:
+            cut = list(getattr(src, "truncated_keywords", []))
+            if cut:
+                truncated_windows[src.name] = cut
         s0 = len(papers)
 
         # Stage 1
         seen: dict[str, str] = {}
         if inc_cfg.get("enabled", True):
-            seen = load_seen_ids(inc_cfg.get("seen_ids_file", "./data/seen_ids.json"))
+            quarantined: list[str] = []
+            seen = load_seen_ids(
+                inc_cfg.get("seen_ids_file", "./data/seen_ids.json"),
+                quarantine_notes=quarantined,
+            )
+            # The load still had to answer {} to keep the run going, so the
+            # damaged history this run is running without is only visible if the
+            # run says it: every paper the quarantined file listed looks unseen
+            # again and is re-delivered today. `state:` is a loss the delivered
+            # survey carries, so collector.py's --fail-on-errors refuses it —
+            # a clean record beside a re-sent backlog is the worst of both.
+            for note in quarantined:
+                errors.append(f"state:seen_ids: {note}; backlog may be re-delivered")
             seen = purge_seen_ids(seen, int(inc_cfg.get("max_age_days", 14)))
         papers = rule_filter(
             papers,
@@ -235,6 +285,13 @@ class PipelineRunner:
         s1 = len(papers)
 
         # Stage 2
+        # Clear the failure channels before the stage runs: Stage 2 skips every
+        # signal when Stage 1 kept no papers, so enrich_batch's own reset would
+        # not happen and the previous run's losses would be reported twice.
+        degraded_signals: list[str] = []
+        for sig in self.signals:
+            if sig.enabled:
+                sig.reset_run_failures()
         papers = metric_score(
             papers=papers,
             signals=self.signals,
@@ -243,6 +300,24 @@ class PipelineRunner:
             require_follow_match=bool(pipe_cfg.get("require_follow_match", False)),
         )
         s2 = len(papers)
+
+        # A degraded signal never fails the run (Fail-Safe), but it has to
+        # reach run_history: score 0.0 from an unanswered lookup is different
+        # evidence from score 0.0 from an answered one, and a run where every
+        # citation lookup timed out otherwise looks like a quiet day. The
+        # signals already logged the per-batch WARNINGs, so this only names the
+        # affected ranking for the operator.
+        for sig in self.signals:
+            if not sig.enabled or not sig.run_failures:
+                continue
+            degraded_signals.append(sig.name)
+            for failure in sig.run_failures:
+                errors.append(f"signal:{sig.name}: {failure}")
+        if degraded_signals:
+            logger.warning(
+                "stage2: degraded signal(s) %s — their scores are missing, not low",
+                ", ".join(degraded_signals),
+            )
 
         # Profile for Stage 3 / Stage 4 (§4.4 fallback: keywords if unset)
         profile = self._build_profile()
@@ -287,6 +362,7 @@ class PipelineRunner:
         enabled_exporters = [exp for exp in self.exporters if exp.enabled]
         export_failures = 0
         deliveries = 0
+        truncated_deliveries: list[dict[str, Any]] = []
         for exp in enabled_exporters:
             try:
                 path = exp.export(papers)
@@ -302,6 +378,31 @@ class PipelineRunner:
             if path:
                 output_files.append(path)
                 deliveries += 1
+                # last_delivered stays None for exporters that write every
+                # paper (CSV/JSON), so only a capped notification channel can
+                # report a cut here — no max_items slicing duplicated in the
+                # runner.
+                delivered = exp.last_delivered
+                if delivered is not None and delivered < len(papers):
+                    # seen_ids is stamped from the whole export list, so the
+                    # papers behind the cut are marked as delivered even
+                    # though this post never showed them. Delivery and
+                    # stamping policy stay as they are (product decision);
+                    # this only makes the cut visible in the log and history.
+                    logger.warning(
+                        "exporter '%s' delivered %d of %d papers — the rest are "
+                        "marked seen without ever being shown",
+                        exp.name,
+                        delivered,
+                        len(papers),
+                    )
+                    truncated_deliveries.append(
+                        {
+                            "exporter": exp.name,
+                            "delivered": delivered,
+                            "given": len(papers),
+                        }
+                    )
 
         # Persist seen IDs (mark all stage-2 outputs) — but only when the
         # run did not both fail to deliver and fail outright. Marking a
@@ -355,6 +456,9 @@ class PipelineRunner:
             duration_seconds=duration,
             sources_status=sources_status,
             errors=errors,
+            degraded_signals=degraded_signals,
+            truncated_deliveries=truncated_deliveries,
+            truncated_windows=truncated_windows,
         )
         self._append_history(result, started, finished)
         return result
@@ -383,11 +487,18 @@ class PipelineRunner:
     def _append_history(
         self, result: PipelineResult, started: datetime, finished: datetime
     ) -> None:
-        # Place run_history alongside seen_ids so the data/ dir stays cohesive.
-        seen_path = self.config.get("incremental", {}).get(
-            "seen_ids_file", "./data/seen_ids.json"
-        )
-        history_path = Path(seen_path).parent / "run_history.jsonl"
+        inc_cfg = self.config.get("incremental", {}) or {}
+        # `incremental.run_history_file` lets one checkout keep one record per
+        # workflow: collect-daily-watch and collect-weekly both append and push,
+        # so sharing run_history.jsonl made them fight over the same file (L-7).
+        # Unset keeps the previous rule — place run_history alongside seen_ids so
+        # the data/ dir stays cohesive.
+        explicit = inc_cfg.get("run_history_file")
+        if explicit:
+            history_path = Path(str(explicit))
+        else:
+            seen_path = inc_cfg.get("seen_ids_file", "./data/seen_ids.json")
+            history_path = Path(seen_path).parent / "run_history.jsonl"
         history_path.parent.mkdir(parents=True, exist_ok=True)
         record = {
             "run_id": started.strftime("%Y%m%d_%H%M%S"),
@@ -398,6 +509,12 @@ class PipelineRunner:
             "sources_status": result.sources_status,
             "errors": result.errors,
             "output_files": result.output_files,
+            # Additions to the required fields of rule §9: which scores were
+            # unverifiable this run, which notification dropped papers, and which
+            # source cut a keyword short.
+            "degraded_signals": result.degraded_signals,
+            "truncated_deliveries": result.truncated_deliveries,
+            "truncated_windows": result.truncated_windows,
         }
         with history_path.open("a", encoding="utf-8") as f:
             f.write(json.dumps(record, ensure_ascii=False) + "\n")

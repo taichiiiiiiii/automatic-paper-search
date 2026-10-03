@@ -44,8 +44,19 @@ async def collect(
         # asyncio.gather(return_exceptions=True) may return BaseException
         # subclasses too (e.g. CancelledError); handle the full hierarchy.
         if isinstance(result, BaseException):
-            logger.warning("stage0: source '%s' failed: %s", src.name, result)
-            status[src.name] = {"ok": False, "count": 0, "error": str(result)}
+            error = str(result)
+            # An all-keywords raise only says HOW MANY keywords failed. The
+            # source recorded why the first one did before raising, so the
+            # reason rides along in the line run_history keeps — "all 503" and
+            # "all malformed" are different outages with different fixes, and a
+            # reader who was not here for the log cannot tell them apart
+            # otherwise.
+            degraded = getattr(src, "degraded_keywords", None)
+            if degraded:
+                kw, reason = degraded[0]
+                error = f"{error}; first keyword '{kw}': {reason}"
+            logger.warning("stage0: source '%s' failed: %s", src.name, error)
+            status[src.name] = {"ok": False, "count": 0, "error": error}
             continue
         logger.info("stage0: source '%s' returned %d papers", src.name, len(result))
         status[src.name] = {"ok": True, "count": len(result), "error": None}

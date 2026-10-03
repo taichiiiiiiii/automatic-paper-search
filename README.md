@@ -193,7 +193,7 @@ llm:
 
 他の LLM を使う場合は `paperpilot/llm/` に `AbstractLLMProvider` を継承したクラスを追加してください（Claude / Gemini / OpenAI / Groq など）。
 
-出力は `paperpilot/output/papers_YYYY-MM-DD.{csv,json}` に保存されます。
+出力は `paperpilot/output/papers_YYYY-MM-DD.{csv,json}` に保存されます（同日に既に存在する場合は上書きせず、`papers_YYYY-MM-DD-HHMMSS.{csv,json}`というrun-unique名で追加保存されます。日付・時刻は同じローカル時刻の1回の読み取りから揃えます）。CSV出力の`dir`（`output.csv.dir`）は学会カタログディレクトリ（`paperpilot/output/<conf>/`）を指してはいけません — カタログ読み手（`build_summary_csv.py` / `build_pages.py`）は素の`papers_YYYY-MM-DD.csv`名しか認識しないため、run-unique名のファイルがそこに置かれても静かに無視されます。
 
 CSVは既存36列の末尾に`uid`・`doi`を追加し、入力にある識別子をそのまま保持します。
 `uid`は既存`Paper.uid`（arXiv ID → DOI → URLの優先順）で、サイトのcanonical `paper_id`とは別物です。
@@ -356,6 +356,14 @@ Stage 4 (LLM) を有効化すると、さらに `llm_relevance (1..5)` で最終
 - `paperpilot/config.daily-watch.yaml` を参照
 - LLM / citation 無効（day-1 では意味なし）
 - 1 日窓 + 3 日 seen-ids で同じ論文の連続通知を防止
+
+両収集ワークフローとも collector を **`--fail-on-errors`** で起動します（取得元・出力先・状態ファイル（seen_ids 退避）の失敗、
+不完全なキーワード、有効な取得元が無い run は exit 1）。シグナルの劣化（`signal:`）は失敗にせず run_history の
+`degraded_signals` に記録するだけです。daily-watch は自前の実行履歴 `run_history.daily.jsonl`
+に書き込み、失敗した run でも出力・`seen_ids.daily.json`・この履歴をコミットします。
+失敗 run でも取得できた分は配信され seen_ids に記録済みなので、コミットしないと次回に同じヒットを
+再通知してしまうためです（取得できなかったキーワードは履歴と失敗した run に残ります）。weekly は失敗時に
+`run_history.jsonl` を artifact として保存します。
 
 ### Secrets（オプション）
 

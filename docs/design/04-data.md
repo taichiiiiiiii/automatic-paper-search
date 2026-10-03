@@ -96,6 +96,7 @@ incremental:
   enabled: true
   seen_ids_file: ./data/seen_ids.json
   max_age_days: 14   # 【v2.0変更】日数ベースパージ（旧: max_seen_ids: 50000）
+  run_history_file: ./data/run_history.jsonl   # 任意。省略時は seen_ids_file と同じディレクトリの run_history.jsonl（collect-daily-watch 等、複数設定が同じ履歴ファイルを奪い合わないよう専用パスを明示する用途）
 ```
 
 ## 5.3 環境変数設計（v2.0新設）

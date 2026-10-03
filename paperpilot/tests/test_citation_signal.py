@@ -81,6 +81,81 @@ def test_api_failure_leaves_paper_untouched():
 
     assert out[0].citation_count == 0
     assert out[0].citation_score == 0.0
+    # The score is 0 because the lookup never answered, not because the paper
+    # is unremarkable. PipelineRunner reads this channel to say so in
+    # result.errors / run_history.degraded_signals.
+    assert len(sig.run_failures) == 1
+    assert "status=None" in sig.run_failures[0]
+    assert "n=1" in sig.run_failures[0]
+
+
+def test_unexpected_response_shape_is_recorded():
+    paper = _mk_paper()
+    with patch(
+        "paperpilot.signals.citation_signal.request_with_retry",
+        return_value=_mock_resp(200, {"error": "not a list"}),
+    ):
+        sig = CitationSignal({"enabled": True})
+        sig.enrich_batch([paper])
+
+    assert len(sig.run_failures) == 1
+    assert "dict instead of a list" in sig.run_failures[0]
+
+
+def test_short_batch_body_records_the_lost_tail():
+    """S2 answers one entry per id, so a body shorter than the request means
+    the tail papers silently kept score 0.0 — recorded, not swallowed."""
+    papers = [_mk_paper("2604.00001"), _mk_paper("2604.00002")]
+    payload = [
+        {
+            "paperId": "abc",
+            "citationCount": 4,
+            "influentialCitationCount": 0,
+            "publicationDate": (date.today() - timedelta(days=4)).isoformat(),
+            "authors": [],
+            "venue": None,
+        }
+    ]
+    with patch(
+        "paperpilot.signals.citation_signal.request_with_retry",
+        return_value=_mock_resp(200, payload),
+    ):
+        sig = CitationSignal({"enabled": True})
+        out = sig.enrich_batch(papers)
+
+    assert out[1].citation_count == 0
+    assert sig.run_failures == ["batch answered 1 of 2 ids"]
+
+
+def test_run_failures_is_a_per_run_channel():
+    """A successful run must not re-report the previous run's outage."""
+    sig = CitationSignal({"enabled": True})
+    paper = _mk_paper()
+    payload = [
+        {
+            "paperId": "abc",
+            "citationCount": 4,
+            "influentialCitationCount": 0,
+            "publicationDate": (date.today() - timedelta(days=4)).isoformat(),
+            "authors": [],
+            "venue": None,
+        }
+    ]
+    with patch(
+        "paperpilot.signals.citation_signal.request_with_retry",
+        return_value=None,
+    ):
+        sig.enrich_batch([paper])
+    assert sig.run_failures
+
+    with patch(
+        "paperpilot.signals.citation_signal.request_with_retry",
+        return_value=_mock_resp(200, payload),
+    ):
+        sig.enrich_batch([paper])
+    assert sig.run_failures == []
+    assert sig.enrich_batch([]) == []
+    assert sig.run_failures == []
 
 
 def test_velocity_clamps_future_publication_date():

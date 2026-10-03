@@ -42,6 +42,19 @@
     "openalex": {"ok": false, "error": "disabled"}
   },
   "errors": [],
+  "degraded_signals": ["author"],
+  "truncated_deliveries": [
+    {"exporter": "slack", "delivered": 10, "given": 30}
+  ],
+  "truncated_windows": {
+    "arxiv": ["large language model"]
+  },
   "output_file": "output/papers_20260405.csv"
 }
 ```
+
+- `degraded_signals`: Stage 2 で `run_failures` を残したシグナル名のリスト（例: `author`）。そのシグナルのスコアは
+  「低い」のではなく「取得できていない」ことを示す
+- `truncated_deliveries`: `max_items` 等で配信を絶ったエクスポータごとの `{exporter, delivered, given}`。
+  `delivered` 件だけ実際に届き、残りは seen_ids には記録済みだが表示されていない
+- `truncated_windows`: 取得元ごとに、取得ウィンドウを超えて切り詰められたキーワードのリスト（`{source: [keyword, ...]}`）

@@ -190,6 +190,173 @@ def test_purge_handles_bad_timestamps():
     assert "arxiv:bad" not in kept
 
 
+# ---- load_seen_ids: an existing-but-unreadable file must not look like a fresh start ----
+
+
+def test_load_seen_ids_moves_a_broken_file_aside_and_warns(tmp_path, caplog):
+    """Regression test: silently returning {} for a corrupt seen_ids.json re-sends
+    every paper the pipeline already delivered.
+
+    The damaged file used to vanish behind an empty result. Now the run says so and
+    the bytes stay on disk under a ``.corrupt-<UTC stamp>`` name, so the entries can
+    be recovered by hand before the next ``save_seen_ids`` overwrites the path.
+    """
+    path = tmp_path / "seen_ids.json"
+    path.write_text('{"arxiv:1": "2026-01-01T00:00:00",', encoding="utf-8")  # truncated JSON
+    damaged = path.read_bytes()
+
+    with caplog.at_level("WARNING"):
+        assert load_seen_ids(path) == {}
+
+    assert not path.exists(), "the unreadable file must be moved out of the writer's way"
+    quarantined = [p for p in tmp_path.iterdir() if p.name.startswith("seen_ids.json.corrupt-")]
+    assert len(quarantined) == 1
+    assert quarantined[0].read_bytes() == damaged
+    assert ".corrupt-" in quarantined[0].name
+
+    warnings = [r for r in caplog.records if r.levelname == "WARNING"]
+    assert warnings, "an unreadable seen_ids file must not be swallowed silently"
+    text = " ".join(r.getMessage() for r in warnings)
+    assert "seen_ids.json" in text
+    assert "unseen" in text
+
+
+def test_load_seen_ids_reports_an_os_error_the_same_way(tmp_path, caplog):
+    """An unreadable path (permission / ISADirectory) is the same loss of state as
+    a parse error, so it gets the same report instead of a silent empty map."""
+    path = tmp_path / "seen_ids.json"
+    path.mkdir()  # exists, but open() raises IsADirectoryError (an OSError)
+
+    with caplog.at_level("WARNING"):
+        assert load_seen_ids(path) == {}
+
+    assert not path.exists()
+    assert [p for p in tmp_path.iterdir() if ".corrupt-" in p.name]
+    assert any("seen_ids.json" in r.getMessage() for r in caplog.records)
+
+
+def test_load_seen_ids_missing_file_stays_silent(tmp_path, caplog):
+    """A first run has no seen_ids.json at all. That is normal, not data loss, and
+    must not warn or move anything."""
+    path = tmp_path / "seen_ids.json"
+
+    with caplog.at_level("WARNING"):
+        assert load_seen_ids(path) == {}
+
+    assert caplog.records == []
+    assert list(tmp_path.iterdir()) == []
+
+
+def test_load_seen_ids_quarantine_does_not_overwrite_an_earlier_one(tmp_path, monkeypatch):
+    """Two unreadable loads that land in the same second must not delete the first
+    recoverable copy — `os.replace` would silently clobber an identical name."""
+    import paperpilot.utils.dedup as dedup_mod
+
+    frozen = datetime(2026, 10, 3, 1, 2, 3)
+
+    class _FixedDatetime:
+        @staticmethod
+        def now(_tz=None):
+            return frozen
+
+    monkeypatch.setattr(dedup_mod, "datetime", _FixedDatetime())
+
+    path = tmp_path / "seen_ids.json"
+    earlier = tmp_path / "seen_ids.json.corrupt-20261003T010203"
+    earlier.write_text("first damage", encoding="utf-8")
+    path.write_text("{ truncated", encoding="utf-8")
+
+    assert load_seen_ids(path) == {}
+
+    assert earlier.read_text(encoding="utf-8") == "first damage"
+    moved = tmp_path / "seen_ids.json.corrupt-20261003T010203.1"
+    assert moved.read_text(encoding="utf-8") == "{ truncated"
+
+
+def test_load_seen_ids_quarantines_a_file_that_is_not_utf8(tmp_path, caplog):
+    """M-1: a seen-ids file holding bytes that are not UTF-8 used to escape the
+    parse guard in load_seen_ids as a UnicodeDecodeError — a ValueError, not an
+    OSError — and abort the whole run in Stage 1.
+
+    The damage is the same kind of damage as a truncated JSON document: the IDs
+    are unreadable, so the file is quarantined, the run continues on an empty map,
+    and the bytes stay on disk for recovery.
+    """
+    path = tmp_path / "seen_ids.json"
+    damaged = b'{"arxiv:1": "\xff\xfe\x00 garbage"}'
+    path.write_bytes(damaged)
+
+    with caplog.at_level("WARNING"):
+        assert load_seen_ids(path) == {}
+
+    assert not path.exists()
+    quarantined = [p for p in tmp_path.iterdir() if ".corrupt-" in p.name]
+    assert len(quarantined) == 1
+    assert quarantined[0].read_bytes() == damaged
+
+
+def test_load_seen_ids_reports_the_quarantine_to_a_caller_that_asks(tmp_path):
+    """M-1: returning {} is the only answer load_seen_ids can give a run, and a run
+    that answers from no history at all re-delivers every paper the damaged file
+    listed. That has to reach the run record, not just the log.
+
+    The report is a keyword-only out-param so every other caller (merge_seen_ids
+    re-reads under its lock, the scripts read the map to inspect it) keeps the same
+    one-argument call and the same dict return.
+    """
+    path = tmp_path / "seen_ids.json"
+    notes: list[str] = []
+    assert load_seen_ids(path, quarantine_notes=notes) == {}
+    assert notes == [], "a first run has no damaged file to report"
+
+    path.write_text('{"arxiv:1": "2026-01-01T00:00:00"}', encoding="utf-8")
+    assert load_seen_ids(path, quarantine_notes=notes) == {
+        "arxiv:1": "2026-01-01T00:00:00"
+    }
+    assert notes == [], "a readable file is not a loss"
+
+    path.write_text("{ truncated", encoding="utf-8")
+    assert load_seen_ids(path, quarantine_notes=notes) == {}
+    assert len(notes) == 1
+    assert notes[0].startswith("unreadable file quarantined to ")
+    assert ".corrupt-" in notes[0]
+
+
+def test_load_seen_ids_reports_a_json_file_of_the_wrong_shape(tmp_path):
+    """Valid JSON that is not an object holds no IDs either, so it is the same
+    silent re-send and has to be reported like one."""
+    path = tmp_path / "seen_ids.json"
+    path.write_text('"not a map"', encoding="utf-8")
+    notes: list[str] = []
+
+    assert load_seen_ids(path, quarantine_notes=notes) == {}
+
+    assert len(notes) == 1
+    assert notes[0].startswith("unreadable file quarantined to ")
+
+
+def test_load_seen_ids_reports_a_file_it_could_not_move_aside(tmp_path, monkeypatch):
+    """When the rename itself fails the damaged file stays in place for the next
+    save to overwrite, which loses the history just as surely — so the caller still
+    gets a note, and it does not name a quarantine file that was never created."""
+    import paperpilot.utils.dedup as dedup_mod
+
+    path = tmp_path / "seen_ids.json"
+    path.write_text("{ truncated", encoding="utf-8")
+
+    def _fail_replace(_src, _dst):
+        raise OSError("permission denied")
+
+    monkeypatch.setattr(dedup_mod.os, "replace", _fail_replace)
+    notes: list[str] = []
+
+    assert load_seen_ids(path, quarantine_notes=notes) == {}
+
+    assert path.exists()
+    assert len(notes) == 1
+    assert notes[0].startswith("unreadable file could not be moved aside")
+
+
 def test_save_seen_ids_round_trips(tmp_path):
     path = tmp_path / "seen_ids.json"
     seen = {"arxiv:1": datetime.now().isoformat()}

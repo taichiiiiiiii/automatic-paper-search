@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 import asyncio
+import json
+import logging
 from datetime import date, timedelta
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any
 from unittest.mock import patch
 
@@ -168,6 +171,164 @@ def test_runner_records_exporter_failure_in_errors(tmp_path: Path):
     assert csv_files
 
 
+def _last_history_record(tmp_path: Path) -> dict[str, Any]:
+    """The run_history line the run just appended — what an operator actually
+    reads, not only the in-memory result."""
+    lines = (tmp_path / "run_history.jsonl").read_text(encoding="utf-8").splitlines()
+    assert lines
+    return json.loads(lines[-1])
+
+
+def test_runner_reports_degraded_signal_in_errors_and_history(tmp_path: Path):
+    """H-2: every citation batch failed, so all papers kept citation_score 0.0.
+
+    That must be stated in the run's own record — a ranking built on missing
+    evidence is not the same evidence as a ranking of quiet papers, and before
+    the failure channel the two were indistinguishable in run_history.jsonl.
+    """
+    config = _build_config(tmp_path)
+    config["signals"] = {"venue": {"enabled": True}, "citation": {"enabled": True}}
+    config["weights"]["citation"] = 1.0
+    runner = PipelineRunner(config)
+
+    papers = _fake_arxiv_papers()
+
+    async def _fake_afetch(*args, **kwargs):
+        return papers
+
+    with patch.object(runner.sources[0], "afetch", side_effect=_fake_afetch):
+        with patch(
+            "paperpilot.signals.citation_signal.request_with_retry",
+            return_value=None,
+        ):
+            result = asyncio.run(runner.run())
+
+    # Fail-Safe: the run still completed and exported its papers.
+    assert result.output_count == 3
+    assert len(result.errors) == 1
+    assert result.errors[0].startswith("signal:citation:")
+    assert "n=3" in result.errors[0]
+    assert result.degraded_signals == ["citation"]
+
+    record = _last_history_record(tmp_path)
+    assert record["degraded_signals"] == ["citation"]
+    assert record["errors"] == result.errors
+    # The additions never replace the fields rule §9 requires.
+    assert {"finished_at", "sources_status", "errors"} <= set(record)
+
+
+def test_runner_keeps_a_healthy_run_free_of_signal_degradation(tmp_path: Path):
+    """The channel is per run and per enabled signal: a run whose lookups
+    answered must not report a previous run's outage."""
+    config = _build_config(tmp_path)
+    config["signals"] = {"venue": {"enabled": True}, "citation": {"enabled": True}}
+    runner = PipelineRunner(config)
+    papers = _fake_arxiv_papers()
+
+    async def _fake_afetch(*args, **kwargs):
+        return papers
+
+    payload = [
+        {
+            "paperId": f"p{i}",
+            "citationCount": 0,
+            "influentialCitationCount": 0,
+            "publicationDate": date.today().isoformat(),
+            "authors": [],
+            "venue": None,
+        }
+        for i in range(3)
+    ]
+    with patch.object(runner.sources[0], "afetch", side_effect=_fake_afetch):
+        with patch(
+            "paperpilot.signals.citation_signal.request_with_retry",
+            side_effect=[SimpleNamespace(status_code=200, json=lambda: payload)],
+        ):
+            result = asyncio.run(runner.run())
+
+    assert result.errors == []
+    assert result.degraded_signals == []
+    assert _last_history_record(tmp_path)["degraded_signals"] == []
+
+
+def test_runner_warns_and_records_a_truncated_delivery(tmp_path: Path, caplog):
+    """M-6: Slack posts only papers[:max_items] while seen_ids is stamped from
+    the whole export list, so the papers behind the cut are marked seen without
+    ever being shown.
+
+    The delivery and stamping policy is deliberately unchanged (product
+    decision) — what changed is that the run says so once, in a WARNING and in
+    run_history.truncated_deliveries, using the count the exporter reports
+    rather than a second copy of the slicing.
+    """
+    config = _build_config(tmp_path)
+    config["output"]["slack"] = {"enabled": True, "max_items": 1}
+    config["env"]["slack_webhook_url"] = "https://hooks.slack.com/services/T/B/X"
+    runner = PipelineRunner(config)
+
+    papers = _fake_arxiv_papers()
+
+    async def _fake_afetch(*args, **kwargs):
+        return papers
+
+    ok = SimpleNamespace(status_code=200, json=lambda: {})
+    with caplog.at_level(logging.WARNING, logger="paperpilot.pipeline.runner"):
+        with patch.object(runner.sources[0], "afetch", side_effect=_fake_afetch):
+            with patch(
+                "paperpilot.exporters.slack_exporter.request_with_retry",
+                return_value=ok,
+            ):
+                result = asyncio.run(runner.run())
+
+    assert result.truncated_deliveries == [
+        {"exporter": "slack", "delivered": 1, "given": 3}
+    ]
+    warnings = [
+        r.getMessage()
+        for r in caplog.records
+        if r.name == "paperpilot.pipeline.runner" and r.levelno == logging.WARNING
+    ]
+    assert len(warnings) == 1
+    assert "exporter 'slack' delivered 1 of 3" in warnings[0]
+    assert _last_history_record(tmp_path)["truncated_deliveries"] == [
+        {"exporter": "slack", "delivered": 1, "given": 3}
+    ]
+    # A truncated delivery is not an error, and the stamping policy is intact:
+    # all three papers are still marked seen.
+    assert result.errors == []
+    with (tmp_path / "seen_ids.json").open(encoding="utf-8") as f:
+        assert len(json.load(f)) == 3
+
+
+def test_runner_does_not_report_a_full_notification_as_truncated(tmp_path: Path):
+    """max_items at or above the paper count is not a cut — and CSV/JSON, which
+    write every paper, must never appear in the tally."""
+    config = _build_config(tmp_path)
+    config["output"]["slack"] = {"enabled": True, "max_items": 10}
+    config["env"]["slack_webhook_url"] = "https://hooks.slack.com/services/T/B/X"
+    runner = PipelineRunner(config)
+
+    papers = _fake_arxiv_papers()
+
+    async def _fake_afetch(*args, **kwargs):
+        return papers
+
+    ok = SimpleNamespace(status_code=200, json=lambda: {})
+    with patch.object(runner.sources[0], "afetch", side_effect=_fake_afetch):
+        with patch(
+            "paperpilot.exporters.slack_exporter.request_with_retry", return_value=ok
+        ):
+            result = asyncio.run(runner.run())
+
+    assert result.truncated_deliveries == []
+    assert result.errors == []
+    assert _last_history_record(tmp_path)["truncated_deliveries"] == []
+    # The other truncation channel is per fetch too: a source whose window still had
+    # room reports no keyword, so the record cannot inherit a previous run's cut.
+    assert result.truncated_windows == {}
+    assert _last_history_record(tmp_path)["truncated_windows"] == {}
+
+
 def test_runner_skips_seen_ids_when_all_exporters_fail(tmp_path: Path):
     """Regression test (closes #400): if every enabled exporter raises, the
     user never actually received these papers. Marking them seen anyway
@@ -292,6 +453,228 @@ def test_runner_marks_seen_when_every_exporter_no_ops(tmp_path: Path):
 
     with (tmp_path / "seen_ids.json").open() as f:
         assert len(json.load(f)) == 3
+
+
+def test_runner_reports_an_incomplete_keyword_as_a_source_error(tmp_path: Path):
+    """HIGH-1: one keyword's arXiv feed was malformed, so its papers were withdrawn and
+    the source answered with the rest. Stage 0 has no channel for a result that is
+    complete-but-partial — `sources_status["arxiv"]["ok"]` is honestly True — so the
+    keyword loss has to reach result.errors (and run_history) on its own, because that
+    is the only thing --fail-on-errors reads.
+
+    The fake afetch below mimics what the real fetch() leaves behind: the surviving
+    papers plus the degraded keyword and its reason on the source itself.
+    """
+    config = _build_config(tmp_path)
+    runner = PipelineRunner(config)
+    papers = _fake_arxiv_papers()
+
+    async def _fake_afetch(*args, **kwargs):
+        runner.sources[0].degraded_keywords = [
+            ("large language model", "1 malformed feed page(s), first: Malformed feed")
+        ]
+        return papers
+
+    with patch.object(runner.sources[0], "afetch", side_effect=_fake_afetch):
+        result = asyncio.run(runner.run())
+
+    assert result.sources_status["arxiv"]["ok"] is True
+    assert (
+        "source:arxiv: incomplete keyword 'large language model' "
+        "(1 malformed feed page(s), first: Malformed feed)"
+    ) in result.errors
+    # run_history carries it, which is what the collect-* workflows read.
+    assert _last_history_record(tmp_path)["errors"] == result.errors
+
+
+def test_runner_names_the_source_of_every_incomplete_keyword(tmp_path: Path):
+    """HIGH-1 for S2 and OpenAlex: both throttle per keyword, so one failing keyword
+    alongside a succeeding one is routine and the source answers with the survivor.
+    Stage 0 then records ok=True for both, so the run is only honest if each lost
+    keyword is reported under the name of the source that lost it — that `source:`
+    prefix is what collector.py's --fail-on-errors refuses and run_history is what
+    the collect-* workflows leave behind for the operator.
+
+    The fake afetch callbacks mimic what the real fetch() leaves behind: the surviving
+    papers plus the degraded keyword and its reason on the source itself.
+    """
+    config = _build_config(tmp_path)
+    config["sources"]["s2"] = {"enabled": True, "delay_seconds": 0}
+    config["sources"]["openalex"] = {"enabled": True, "delay_seconds": 0}
+    runner = PipelineRunner(config)
+    by_name = {src.name: src for src in runner.sources}
+    assert set(by_name) == {"arxiv", "s2", "openalex"}
+    papers = _fake_arxiv_papers()
+
+    async def _answered(*args, **kwargs):
+        return papers
+
+    async def _s2_partial(*args, **kwargs):
+        by_name["s2"].degraded_keywords = [
+            ("moe", "RuntimeError: s2 search failed for 'moe' (status=429)")
+        ]
+        return papers
+
+    async def _openalex_partial(*args, **kwargs):
+        by_name["openalex"].degraded_keywords = [
+            (
+                "rag",
+                "RuntimeError: openalex search for 'rag' has no 'results' list "
+                "(got NoneType)",
+            )
+        ]
+        return papers
+
+    with patch.object(by_name["arxiv"], "afetch", side_effect=_answered):
+        with patch.object(by_name["s2"], "afetch", side_effect=_s2_partial):
+            with patch.object(
+                by_name["openalex"], "afetch", side_effect=_openalex_partial
+            ):
+                result = asyncio.run(runner.run())
+
+    assert result.sources_status["s2"]["ok"] is True
+    assert result.sources_status["openalex"]["ok"] is True
+    assert (
+        "source:s2: incomplete keyword 'moe' "
+        "(RuntimeError: s2 search failed for 'moe' (status=429))"
+    ) in result.errors
+    assert (
+        "source:openalex: incomplete keyword 'rag' "
+        "(RuntimeError: openalex search for 'rag' has no 'results' list "
+        "(got NoneType))"
+    ) in result.errors
+    assert _last_history_record(tmp_path)["errors"] == result.errors
+
+
+def test_runner_records_truncated_windows_in_the_result_and_history(
+    tmp_path: Path,
+):
+    """M-6 for the record, not just the console: a keyword that filled its window
+    shipped papers, so it is not an error and --fail-on-errors stays green — but the
+    survey is thinner than the window, and until now that was only printed. The print
+    is gone by the time anyone reads the run again, so the runner now hands the same
+    report to PipelineResult.truncated_windows and to run_history."""
+    config = _build_config(tmp_path)
+    runner = PipelineRunner(config)
+    papers = _fake_arxiv_papers()
+
+    async def _fake_afetch(*args, **kwargs):
+        runner.sources[0].truncated_keywords = ["retrieval augmented generation"]
+        return papers
+
+    with patch.object(runner.sources[0], "afetch", side_effect=_fake_afetch):
+        result = asyncio.run(runner.run())
+
+    assert result.truncated_windows == {
+        "arxiv": ["retrieval augmented generation"]
+    }
+    # A cut window is a warning, never an error: the run exported what it had.
+    assert result.errors == []
+    record = _last_history_record(tmp_path)
+    assert record["truncated_windows"] == {
+        "arxiv": ["retrieval augmented generation"]
+    }
+    # The additive field never displaces what rule §9 requires.
+    assert {"finished_at", "sources_status", "errors"} <= set(record)
+
+
+def test_runner_does_not_report_incomplete_keywords_for_a_failed_source(
+    tmp_path: Path,
+):
+    """A source that raised already reported every keyword through its own error
+    line; repeating the per-keyword list would only double-count one outage."""
+    config = _build_config(tmp_path)
+    runner = PipelineRunner(config)
+
+    async def _boom(*args, **kwargs):
+        # The real fetch() records its degraded keywords before raising.
+        runner.sources[0].degraded_keywords = [("llm", "HTTPError: 503")]
+        raise RuntimeError("arxiv fetch failed for all 1 keyword(s)")
+
+    with patch.object(runner.sources[0], "afetch", side_effect=_boom):
+        result = asyncio.run(runner.run())
+
+    assert result.sources_status["arxiv"]["ok"] is False
+    assert [e for e in result.errors if "incomplete keyword" in e] == []
+    assert any(e.startswith("source:arxiv:") for e in result.errors)
+
+
+def test_runner_reports_a_quarantined_seen_ids_file_as_a_state_error(
+    tmp_path: Path,
+):
+    """M-1: the run that loses its seen-ids history is the run that re-delivers the
+    backlog, and load_seen_ids still has to answer {} to keep going at all. Before
+    this, the only trace was a WARNING in a log nobody reads, so the record showed a
+    clean run that had just re-sent every paper it had already sent.
+
+    The `state:` prefix is what collector.py's --fail-on-errors refuses, and
+    run_history is what the collect-* workflows leave behind for the operator.
+    """
+    config = _build_config(tmp_path)
+    seen_path = tmp_path / "seen_ids.json"
+    seen_path.write_text('{"arxiv:2604.0001": "2026-01-01T00:00:00",', encoding="utf-8")
+    runner = PipelineRunner(config)
+    papers = _fake_arxiv_papers()
+
+    async def _fake_afetch(*args, **kwargs):
+        return papers
+
+    with patch.object(runner.sources[0], "afetch", side_effect=_fake_afetch):
+        result = asyncio.run(runner.run())
+
+    state_errors = [e for e in result.errors if e.startswith("state:")]
+    assert len(state_errors) == 1
+    assert state_errors[0].startswith(
+        f"state:seen_ids: unreadable file quarantined to {seen_path}.corrupt-"
+    )
+    assert state_errors[0].endswith("; backlog may be re-delivered")
+    # The delivery itself is unaffected — the run still exports what it found, so
+    # this is a report about what it re-sent, not a stage that broke.
+    assert result.output_count == 3
+    assert _last_history_record(tmp_path)["errors"] == result.errors
+
+
+def test_runner_stays_green_when_the_seen_ids_file_is_readable(
+    tmp_path: Path,
+):
+    """The counterpart: a run whose history file reads fine must not start reporting
+    state errors — a stale or invented one would fail CI on a complete survey."""
+    config = _build_config(tmp_path)
+    (tmp_path / "seen_ids.json").write_text(
+        f'{{"arxiv:9999.99999": "{date.today().isoformat()}"}}', encoding="utf-8"
+    )
+    runner = PipelineRunner(config)
+    papers = _fake_arxiv_papers()
+
+    async def _fake_afetch(*args, **kwargs):
+        return papers
+
+    with patch.object(runner.sources[0], "afetch", side_effect=_fake_afetch):
+        result = asyncio.run(runner.run())
+
+    assert result.errors == []
+
+
+def test_runner_uses_its_own_run_history_file_when_configured(tmp_path: Path):
+    """L-7: collect-daily-watch and collect-weekly both append to and push the record,
+    so sharing run_history.jsonl made them collide on one file. `incremental
+    .run_history_file` gives a config its own; when it is unset the old rule (next to
+    seen_ids) still holds, which is what every other config relies on."""
+    config = _build_config(tmp_path)
+    history = tmp_path / "nested" / "run_history.daily.jsonl"
+    config["incremental"]["run_history_file"] = str(history)
+    runner = PipelineRunner(config)
+    papers = _fake_arxiv_papers()
+
+    async def _fake_afetch(*args, **kwargs):
+        return papers
+
+    with patch.object(runner.sources[0], "afetch", side_effect=_fake_afetch):
+        asyncio.run(runner.run())
+
+    assert history.exists()
+    assert json.loads(history.read_text(encoding="utf-8").splitlines()[-1])["errors"] == []
+    assert not (tmp_path / "run_history.jsonl").exists()
 
 
 def test_build_llm_provider_ollama(tmp_path: Path):

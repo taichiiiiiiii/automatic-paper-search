@@ -38,6 +38,10 @@ class EmailExporter(AbstractExporter):
         self._smtp = dict(smtp_settings or {})
 
     def export(self, papers: list[Paper]) -> str | None:
+        # Clear first: every early return and every raise below delivered
+        # nothing, and the runner must not read a previous call's count as
+        # this run's delivery.
+        self.last_delivered = 0
         if not papers:
             logger.info("email: no papers to send")
             return None
@@ -82,6 +86,9 @@ class EmailExporter(AbstractExporter):
             with contextlib.suppress(Exception):  # best-effort cleanup
                 client.quit()
 
+        # The delivered count, not len(papers): max_items truncates the mail,
+        # and only the exporter knows where that cut fell.
+        self.last_delivered = len(top)
         logger.info("email: sent %d papers to %s", len(top), to_addr)
         return "email"
 

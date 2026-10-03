@@ -31,15 +31,19 @@ Budget semantics:
     Worst case: ``max_lookups * 2`` HTTP calls — still well inside the
     5000/h authenticated PAT limit. Papers missing arxiv_id are skipped
     without charging the budget so the top-scoring papers always get a
-    lookup.
+    lookup. When the budget runs out the papers it never reached are
+    named in one aggregated `run_failures` entry, because their score of
+    0.0 means "never asked", not "no repository".
 
 ``is_official`` is set to True only for curated entries (the
 ``paperpilot/data/paper_repos.json`` map is hand-curated to point at
 the canonical author-affiliated repository). Search-fallback hits are
 treated as best-effort matches and stay non-official.
 
-Failures degrade silently (score stays 0) — the pipeline continues so a
-GitHub outage never blocks Stage 2.
+Failures degrade the score (it stays 0) without blocking Stage 2, but they are
+no longer invisible: every failed lookup is counted and folded into one
+`run_failures` entry plus a single WARNING at the end of the run, because a
+throttled GitHub API makes *every* paper look equally codeless.
 """
 
 from __future__ import annotations
@@ -82,8 +86,15 @@ class GitHubSignal(AbstractSignal):
         # read would be wasteful, but reloading per pipeline run is
         # important so curated map updates take effect on the next run.
         self._curated = load_curated_map()
+        # Per-run failure counters. They live on the instance because the
+        # failure is detected deep inside _lookup()/enrich_one() while the
+        # report belongs to the whole batch (see _report_run_failures()).
+        self._unavailable = 0
+        self._errored = 0
+        self._last_reason = ""
 
     def enrich_batch(self, papers: list[Paper]) -> list[Paper]:
+        self._reset_run_counters()
         # Rank-order matters: high-score-so-far papers get the lookup
         # budget first. With curated + search the per-paper cost is
         # roughly even (1–2 HTTP calls), but the prioritisation still
@@ -94,7 +105,11 @@ class GitHubSignal(AbstractSignal):
             key=lambda p: p.venue_score + p.keyword_score,
             reverse=True,
         )
+        # Only papers with an arxiv_id can be looked up at all, so the budget
+        # is measured against that population (see _report_run_failures).
+        queryable = sum(1 for p in ordered if p.arxiv_id)
         budget = self.max_lookups
+        lookups = 0
         for p in ordered:
             if budget <= 0:
                 break
@@ -102,6 +117,8 @@ class GitHubSignal(AbstractSignal):
                 continue
             self.enrich_one(p)
             budget -= 1
+            lookups += 1
+        self._report_run_failures(max(queryable - lookups, 0))
         return papers
 
     def enrich_one(self, paper: Paper) -> Paper:
@@ -123,6 +140,8 @@ class GitHubSignal(AbstractSignal):
                 "github lookup failed for %s: %s",
                 paper.arxiv_id, e, exc_info=True,
             )
+            self._errored += 1
+            self._last_reason = f"{type(e).__name__}: {e}"
             return paper
 
         if result is None:
@@ -137,6 +156,55 @@ class GitHubSignal(AbstractSignal):
         return paper
 
     # ---- helpers ----
+
+    def _reset_run_counters(self) -> None:
+        """Clear the failure channel and the counters feeding its summary."""
+        self.reset_run_failures()
+        self._unavailable = 0
+        self._errored = 0
+        self._last_reason = ""
+
+    def _report_run_failures(self, budget_unqueried: int = 0) -> None:
+        """Fold every degraded lookup of this run into one entry + one WARNING.
+
+        GitHub degrades per lookup and every lookup fails the same way when the
+        API is throttled, so N near-identical entries would bury the channel.
+        CLAUDE.md error handling asks for a WARNING once retries are exhausted:
+        the per-lookup DEBUG stays as the detail trail, this is the line an
+        operator actually sees.
+
+        `budget_unqueried` is reported separately (M-3): papers the lookup budget
+        never reached are not an API failure, but their `github_score` stays 0.0
+        because nobody asked, which run_history otherwise cannot tell apart from
+        "looked, found nothing". No score or ordering changes — this only names
+        the coverage the budget cut.
+        """
+        total = self._unavailable + self._errored
+        if total:
+            parts: list[str] = []
+            if self._unavailable:
+                parts.append(f"{self._unavailable} lookup(s) unavailable")
+            if self._errored:
+                parts.append(f"{self._errored} lookup(s) raised")
+            summary = "; ".join(parts)
+            if self._last_reason:
+                summary += f"; last reason: {self._last_reason}"
+            self.run_failures.append(summary)
+            logger.warning(
+                "github: %d lookup(s) degraded this run, github_score left at 0 — %s",
+                total,
+                summary,
+            )
+        if budget_unqueried:
+            summary = (
+                f"budget exhausted after {self.max_lookups} lookups, "
+                f"{budget_unqueried} papers unqueried"
+            )
+            self.run_failures.append(summary)
+            logger.warning(
+                "github: %s — those papers keep github_score 0.0 untested",
+                summary,
+            )
 
     def _lookup(
         self, arxiv_id: str, title: str | None
@@ -157,7 +225,8 @@ class GitHubSignal(AbstractSignal):
         # throttled or down, so the lineage builders can tell an outage
         # apart from "no repo" and skip caching it. This signal has no
         # cache to poison and must never fail Stage 2, so it keeps the
-        # original best-effort behaviour: no data this run.
+        # original best-effort behaviour: no data this run, counted for the
+        # run summary in _report_run_failures().
         try:
             if not repo_full:
                 repo_full = search_repo_by_title(
@@ -168,6 +237,8 @@ class GitHubSignal(AbstractSignal):
 
             stars = fetch_repo_stars(repo_full, github_token=self._github_token)
         except GitHubUnavailableError as exc:
+            self._unavailable += 1
+            self._last_reason = str(exc)
             logger.debug("github unavailable for %s: %s", arxiv_id, exc)
             return None
         if stars is None or stars <= 0:

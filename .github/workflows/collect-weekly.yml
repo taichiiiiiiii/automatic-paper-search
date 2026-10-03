@@ -2,7 +2,9 @@ name: PaperPilot Weekly Deep Survey
 # Manual full-catalog refresh. The collector and lineage builders create a
 # changed-file candidate without repository write credentials. A later job
 # validates it against the latest develop tip, promotes it, and releases the
-# exact resulting SHA in the same run.
+# exact resulting SHA in the same run. An attempt that did not get that far
+# keeps only what a credential-less job can leave behind: its run history, as a
+# retained artefact.
 
 on:
   workflow_dispatch:
@@ -51,6 +53,7 @@ jobs:
           echo "candidate_name=weekly-candidate-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_OUTPUT"
 
       - name: Run PaperPilot collector
+        id: collector
         env:
           PAPERPILOT_GITHUB_TOKEN: ${{ github.token }}
           PAPERPILOT_S2_API_KEY: ${{ secrets.S2_API_KEY }}
@@ -58,7 +61,10 @@ jobs:
           PAPERPILOT_GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           PAPERPILOT_CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
           PAPERPILOT_GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-        run: uv run --frozen python -m paperpilot.collector --config paperpilot/config.yaml
+        # --fail-on-errors: the collector degrades by design (a throttled source
+        # or a broken webhook is skipped and the run still exits 0), which in
+        # this workflow would publish a thinner survey as if it were complete.
+        run: uv run --frozen python -m paperpilot.collector --config paperpilot/config.yaml --fail-on-errors
 
       - name: Rebuild conference-local projections
         env:
@@ -232,6 +238,40 @@ jobs:
           name: ${{ steps.candidate.outputs.candidate_name }}
           path: ${{ runner.temp }}/candidate
           if-no-files-found: error
+          retention-days: 14
+
+      - name: Check whether this attempt wrote its own run history
+        id: run_history
+        # `failure()` on its own is not enough. run_history.jsonl is tracked, so the
+        # checkout already carries the last published run's record, and an attempt
+        # that died before the collector appended anything would upload that older
+        # file under this run's name — a diagnosis of some earlier survey presented
+        # as this one's. So the gate is: the collector step must actually have run,
+        # and this attempt must have appended a line of its own (staged or not,
+        # hence the diff against HEAD).
+        if: ${{ (failure() || cancelled()) && steps.collector.outcome != 'skipped' }}
+        run: |
+          set -euo pipefail
+          if git diff --quiet HEAD -- paperpilot/data/run_history.jsonl; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No run history to retain: this attempt appended no line to paperpilot/data/run_history.jsonl, and the tracked file is the previous run's record." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Keep the run history of a failed attempt
+        if: ${{ (failure() || cancelled()) && steps.collector.outcome != 'skipped' && steps.run_history.outputs.changed == 'true' }}
+        # A collector that exits non-zero under --fail-on-errors skips the candidate
+        # above and the promote/release jobs, so its run_history.jsonl — the only
+        # record that this survey was throttled rather than quiet — would die with
+        # the runner. This job deliberately holds no write credentials (test-only
+        # promotion aside, everything reaches develop through promote-generated.sh),
+        # so the record is retained as an artefact instead of committed.
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: weekly-run-history-${{ github.run_id }}-${{ github.run_attempt }}
+          path: paperpilot/data/run_history.jsonl
+          if-no-files-found: ignore
           retention-days: 14
 
   promote:

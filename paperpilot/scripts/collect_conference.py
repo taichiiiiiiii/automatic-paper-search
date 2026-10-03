@@ -33,7 +33,6 @@ from __future__ import annotations
 import argparse
 import csv
 import io
-import logging
 import re
 from collections.abc import Iterable
 from datetime import datetime, timezone
@@ -45,6 +44,7 @@ import arxiv
 from ..identity import IdentityError, identity_from_url, normalize_alias
 from ..identity.source_ids import ARXIV_MODERN_PATTERN
 from ..signals.venue_signal import VenueSignal
+from ..utils.arxiv_feed import detect_malformed_feed
 from ..utils.atomic import atomic_write_text
 from ..utils.csv_safety import neutralize_row
 from ._common import validate_conference_slug
@@ -55,9 +55,6 @@ _ORAL_RE = re.compile(r"\b(oral|highlight)\b", re.IGNORECASE)
 # Shared by the overlay itself and the collectors' --oral-max default, so the
 # cap an operator raises is the cap the overlay reports it hit.
 ORAL_MAX_RESULTS_DEFAULT = 1600
-# The only arXiv client failure that returns quietly instead of raising; see
-# fetch_results_checked.
-_MALFORMED_FEED_PREFIX = "Malformed feed"
 
 _CSV_COLUMNS = [
     "title",
@@ -94,9 +91,21 @@ def _arxiv_id(entry_id: str) -> str:
     return identity.source_id
 
 
-def fetch_results(query: str, max_results: int, *, page_size: int = 100) -> list[Any]:
-    """Run the arXiv API query, newest first. Network call — mocked in tests."""
-    client = arxiv.Client(page_size=page_size, delay_seconds=3, num_retries=3)
+def fetch_results(
+    query: str,
+    max_results: int,
+    *,
+    page_size: int = 100,
+    client: arxiv.Client | None = None,
+) -> list[Any]:
+    """Run the arXiv API query, newest first. Network call — mocked in tests.
+
+    ``client`` lets a caller supply its own ``arxiv.Client`` so it can attach a
+    completeness watch to that exact client's session before this runs (see
+    ``fetch_results_checked``); callers with no such need get a fresh one.
+    """
+    if client is None:
+        client = arxiv.Client(page_size=page_size, delay_seconds=3, num_retries=3)
     search = arxiv.Search(
         query=query,
         max_results=max_results,
@@ -114,35 +123,21 @@ def fetch_results_checked(
     A short list is not evidence of an outage. The installed client retries HTTP
     failures and an empty non-first page and then RAISES (``HTTPError`` /
     ``UnexpectedEmptyPageError``), and it stops paginating only at ``total_results``,
-    so those paths cannot be mistaken for "the venue is that small". The one case that
-    returns quietly with fewer entries than it fetched is a malformed feed: the parser
-    logs ``Malformed feed; consider handling: ...`` on the "arxiv" logger and keeps
-    going with the pages it could read. That warning is the only observable sign of
-    such a partial return, so it is captured here rather than left in the log.
+    so those paths cannot be mistaken for "the venue is that small". Two things
+    return quietly instead with fewer entries than fetched: a malformed feed the
+    client's own parser notices (a log line) and a 200 body it does NOT notice at
+    all (an HTML throttle page, an XML error document, ...). Both are caught by
+    :func:`paperpilot.utils.arxiv_feed.detect_malformed_feed`, which the arXiv
+    source uses the same way and which owns the message prefix — this creates its
+    own ``client`` so that detector can attach to its session.
 
     ``fetch_results`` stays the raw fetch (and the mock point for the other collectors'
     tests); this wrapper is the only caller that judges completeness.
     """
-    logger = logging.getLogger("arxiv")
-    malformed: list[str] = []
-
-    class _MalformedFeedHandler(logging.Handler):
-        def emit(self, record: logging.LogRecord) -> None:
-            if record.getMessage().startswith(_MALFORMED_FEED_PREFIX):
-                malformed.append(record.getMessage())
-
-    handler = _MalformedFeedHandler(level=logging.WARNING)
-    previous_level = logger.level
-    if previous_level == logging.NOTSET or previous_level > logging.WARNING:
-        # An ambient ERROR level would hide the warning and read as "complete".
-        logger.setLevel(logging.WARNING)
-    logger.addHandler(handler)
-    try:
-        results = fetch_results(query, max_results, page_size=page_size)
-    finally:
-        logger.removeHandler(handler)
-        logger.setLevel(previous_level)
-    return results, not malformed
+    client = arxiv.Client(page_size=page_size, delay_seconds=3, num_retries=3)
+    with detect_malformed_feed(client) as feed:
+        results = fetch_results(query, max_results, page_size=page_size, client=client)
+    return results, not feed.malformed
 
 
 class OralOverlay(NamedTuple):
@@ -191,9 +186,9 @@ def oral_titles_from_arxiv(
     results, complete = fetch_results_checked(query, max_results)
     if not complete:
         print(
-            "⚠️  oral overlay incomplete: arXiv returned a malformed feed page and "
-            "kept going, so the fetched set is missing entries and the oral list "
-            "would be partial"
+            "⚠️  oral overlay incomplete: a malformed, skipped-entry or non-feed "
+            "page was detected and the client kept going, so the fetched set is "
+            "missing entries and the oral list would be partial"
         )
         return OralOverlay(None, ORAL_MALFORMED_FEED)
     if len(results) >= max_results:
@@ -345,13 +340,15 @@ def main() -> int:
 
     print(f"scanned {len(results)} arXiv results for query: {args.query}")
     if not complete:
-        # The client logged a malformed feed and continued, so entries are missing
-        # from the middle of the window. Nothing here proves which papers were lost,
-        # so the fetched set cannot be called a venue — re-run instead.
+        # A malformed, skipped-entry or non-feed page was detected and the client
+        # kept going, so entries are missing from the middle of the window.
+        # Nothing here proves which papers were lost, so the fetched set cannot
+        # be called a venue — re-run instead.
         print(
-            "⚠️  incomplete arXiv feed: the client logged a malformed page and kept "
-            "going, so this fetch is missing entries and the catalog would silently "
-            "drop papers. Re-run the collection. Nothing written."
+            "⚠️  incomplete arXiv feed: a malformed, skipped-entry or non-feed page "
+            "was detected and the client kept going, so this fetch is missing "
+            "entries and the catalog would silently drop papers. Re-run the "
+            "collection. Nothing written."
         )
         return 1
     if len(results) >= args.max:

@@ -114,7 +114,7 @@ Response: [{ paperId, citationCount: 42, venue: 'ICLR', ... }, ...]
 ```
 POST https://api.semanticscholar.org/graph/v1/author/batch
 Body: { ids: ['author_id_1', ...] }  # 最大1000件
-Params: ?fields=name,hIndex,citationCount
+Params: ?fields=authorId,name,hIndex,citationCount  # authorId は応答の照合キー
 ```
 
 ## 6.5 GitHub GraphQL API（v2.1新設）

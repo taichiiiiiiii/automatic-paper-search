@@ -4,6 +4,7 @@ Usage:
     python -m paperpilot.collector --config config.yaml
     python -m paperpilot.collector --days 3 --keyword "diffusion model"
     python -m paperpilot.collector --full         # ignore seen-ids
+    python -m paperpilot.collector --fail-on-errors   # CI: fail a degraded run
     python -m paperpilot.collector expand-keywords --write   # LLM synonym expansion
 """
 
@@ -11,12 +12,13 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import logging
 import sys
 from pathlib import Path
 
 import yaml
 
-from .pipeline import PipelineRunner
+from .pipeline import PipelineResult, PipelineRunner
 from .utils.config_loader import load_config
 from .utils.keyword_expand import expand_keywords
 from .utils.logger import get_logger, setup_logging
@@ -46,6 +48,16 @@ def parse_args() -> argparse.Namespace:
         "--skip-llm",
         action="store_true",
         help="Skip Stage 4 (LLM rerank) even if configured",
+    )
+    p.add_argument(
+        "--fail-on-errors",
+        action="store_true",
+        help=(
+            "Exit non-zero when no enabled source ran, every enabled source failed, "
+            "or a source, exporter or the run's own state file reported an error. "
+            "Off by default so an interactive run still delivers what it found; CI "
+            "runs use it so a degraded run is not read as success."
+        ),
     )
 
     sub = p.add_subparsers(dest="command")
@@ -92,6 +104,22 @@ def main() -> int:
     runner = PipelineRunner(config)
     result = asyncio.run(runner.run())
 
+    # A source that filled its requested window shipped papers, so this is a
+    # warning, not an error. It is read from the result rather than from the source
+    # plugins so the run summary and run_history can never disagree about which
+    # keywords were cut short.
+    truncated = [
+        f"{name}:{kw}"
+        for name, keywords in result.truncated_windows.items()
+        for kw in keywords
+    ]
+    if truncated:
+        logger.warning(
+            "⚠️ truncated fetch windows (matching papers beyond the window were "
+            "never fetched): %s",
+            ", ".join(truncated),
+        )
+
     logger.info(
         "✅ done: %d papers in %.1fs (stages: %s) -> %s",
         result.output_count,
@@ -102,7 +130,53 @@ def main() -> int:
     print(f"✅ {result.output_count} papers exported in {result.duration_seconds:.1f}s")
     for f in result.output_files:
         print(f"   -> {f}")
+    if args.fail_on_errors:
+        return _failure_exit_code(result, logger)
     return 0
+
+
+def _failure_exit_code(result: PipelineResult, logger: logging.Logger) -> int:
+    """Non-zero when the run was degraded, 0 when it was clean.
+
+    The pipeline is deliberately fail-safe: a throttled source or a broken
+    webhook skips its own step and the run still exits 0. That is right for an
+    interactive run and wrong for CI, where the exit code is the only thing an
+    operator reads — a run that collected nothing because every source failed
+    looks identical to a quiet day unless it fails loudly here.
+
+    Only source, exporter and pipeline-state failures count. Stage 3 / Stage 4
+    errors are recorded but degrade quality rather than delivery (the run still
+    exported what it had), so they keep the run green. An EMPTY sources_status
+    counts too: it means Stage 0 had no enabled source to ask at all, so the run
+    collected nothing for a reason that has nothing to do with the day being
+    quiet (L-8). A `state:` error is the run's own state file: a quarantined
+    seen-ids backlog changes what the run delivered, so a green exit code would
+    read as a normal day while the same papers went out a second time.
+
+    A `signal:` error (Stage 2 signal degradation, e.g. a lost author/citation
+    batch) is deliberately excluded from this check — it degrades scoring, not
+    delivery, so it is recorded in run_history's `degraded_signals` instead of
+    failing the run (L-2).
+    """
+    failed_sources = [
+        name for name, status in result.sources_status.items() if not status.get("ok", False)
+    ]
+    delivery_errors = [
+        e for e in result.errors if e.startswith(("source:", "export:", "state:"))
+    ]
+    nothing_ran = not result.sources_status
+    if not (failed_sources or delivery_errors or nothing_ran):
+        return 0
+    details: list[str] = []
+    if nothing_ran:
+        details.append("no enabled source ran (sources_status is empty)")
+    if failed_sources:
+        details.append(f"sources failed: {', '.join(failed_sources)}")
+    if delivery_errors:
+        details.append(f"errors: {', '.join(delivery_errors)}")
+    logger.error("❌ run reported failures: %s", "; ".join(details))
+    print(f"❌ degraded run: {'; '.join(details)}")
+    return 1
 
 
 def _run_expand_keywords(

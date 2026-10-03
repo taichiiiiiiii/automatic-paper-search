@@ -9,6 +9,19 @@ name: PaperPilot Daily Follow Watch
 on:
   workflow_dispatch:
 
+# One watch at a time. The commit step below appends to the tracked
+# paperpilot/data/run_history.daily.jsonl and push through
+# .github/scripts/commit-and-push.sh, so two overlapping runs raced on the same
+# file: the loser's push was rejected and its own history line never landed.
+# `cancel-in-progress: false` queues the second dispatch instead of killing a
+# collector mid-append. This does not contradict CLAUDE.md's "concurrency group
+# は採用しない" rule, which is about theme-on-demand: there the parallel units
+# are user dispatches the CF Worker fans out (5/h) and dropping a queued one
+# loses a request, while here the only trigger is an operator pressing a button.
+concurrency:
+  group: collect-daily-watch
+  cancel-in-progress: false
+
 permissions:
   contents: write
 
@@ -42,22 +55,41 @@ jobs:
           PAPERPILOT_GITHUB_TOKEN: ${{ secrets.GH_PAT || github.token }}
           PAPERPILOT_OPENALEX_EMAIL: ${{ secrets.OPENALEX_EMAIL }}
           PAPERPILOT_SLACK_WEBHOOK_URL: ${{ env.SLACK_WEBHOOK_URL }}
-        run: uv run python -m paperpilot.collector --config paperpilot/config.daily-watch.yaml
+        # --fail-on-errors: the pipeline is fail-safe by design, so a run where
+        # every source was throttled still exits 0 and would push an empty watch
+        # result as if the day were quiet. Here the exit code is the gate.
+        run: uv run python -m paperpilot.collector --config paperpilot/config.daily-watch.yaml --fail-on-errors
 
-      - name: Commit daily hits (if any)
-        # Push to develop (the script default). Migrated off main when
-        # the project moved from GitHub Pages to Cloudflare Pages — main
-        # is essentially abandoned and rebasing develop's work onto it
-        # causes conflicts (#123 followup). The retry+rebase loop in
-        # commit-and-push.sh still guards against concurrent push races
-        # with the other develop-targeting workflows.
+      - name: Commit daily hits, seen_ids and run history
+        # Runs on failure too (only a cancelled run skips it). --fail-on-errors
+        # makes a degraded collection (e.g. one arXiv keyword 503) exit 1, and
+        # that run still has to land three things:
+        # - run_history.daily.jsonl: the only evidence the day was throttled,
+        #   not quiet. It is this config's own file (incremental.run_history_file)
+        #   because daily and weekly used to fight over one run_history.jsonl.
+        # - seen_ids.daily.json: the runner (paperpilot/pipeline/runner.py)
+        #   exports and stamps seen_ids before the exit code is decided, skipping
+        #   the stamp only when every enabled exporter failed. Leaving it
+        #   uncommitted re-sent the same hits on the next run, and a corrupt file
+        #   (quarantined and rewritten by the runner) looped forever.
+        # - paperpilot/output/daily: the hits seen_ids now marks as delivered. With
+        #   CSV as the only enabled exporter, committing seen_ids without the CSV
+        #   would mark hits seen that nobody can ever read.
+        # The hits are real papers; what a degraded run lacks is the keywords it
+        # could not fetch, and the run history plus the red run record that.
+        # Exact paths only, so a `.corrupt-*` quarantine file is never staged.
+        # Push to develop (the script default): main was abandoned in the move
+        # off GitHub Pages (#123 followup); commit-and-push.sh retries + rebases
+        # against the other develop-targeting workflows.
+        if: ${{ !cancelled() }}
         run: |
           set -euo pipefail
           git config user.name "PaperPilot Bot"
           git config user.email "bot@paperpilot.dev"
           msg="👀 Daily follow-watch $(date -u +%Y-%m-%d)"
           bash .github/scripts/commit-and-push.sh "$msg" \
-            paperpilot/output/daily paperpilot/data/seen_ids.daily.json
+            paperpilot/output/daily paperpilot/data/seen_ids.daily.json \
+            paperpilot/data/run_history.daily.jsonl
 
       - name: Notify on failure
         if: failure() && env.SLACK_WEBHOOK_URL != ''

@@ -28,6 +28,9 @@ class SlackExporter(AbstractExporter):
         self.max_items = int(self.config.get("max_items", 10))
 
     def export(self, papers: list[Paper]) -> str | None:
+        # Clear first: every early return below delivered nothing, and the
+        # runner must not read a previous call's count as this run's delivery.
+        self.last_delivered = 0
         if not self._webhook_url:
             logger.info("slack: webhook URL not configured; skipping")
             return None
@@ -50,6 +53,9 @@ class SlackExporter(AbstractExporter):
             # per-exporter try/except records this in run_history.errors —
             # this is a real failure, not the "not configured" no-op above.
             raise RuntimeError(f"slack post failed (status={status})")
+        # The delivered count, not len(papers): max_items truncates the post,
+        # and only the exporter knows where that cut fell.
+        self.last_delivered = len(top)
         logger.info("slack: posted %d papers", len(top))
         return "slack"
 

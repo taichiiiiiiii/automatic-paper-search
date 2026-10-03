@@ -4,10 +4,11 @@ from __future__ import annotations
 
 import csv
 import json
-from datetime import date
+import smtplib
+from datetime import date, datetime
 from pathlib import Path
 from types import SimpleNamespace
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -291,6 +292,103 @@ def test_slack_respects_max_items():
     assert body.count("\n4. ") == 0
 
 
+# ---- the delivered count the runner reads (M-6) ----
+
+
+def test_slack_reports_the_count_it_actually_delivered():
+    """PipelineRunner must not re-derive max_items truncation by slicing the
+    list again — the exporter reports what it posted."""
+    papers = _sample_papers() * 10  # 20 papers
+    exp = SlackExporter({"enabled": True, "max_items": 3}, webhook_url="http://hook")
+    resp = SimpleNamespace(status_code=200, json=lambda: {})
+    with patch(
+        "paperpilot.exporters.slack_exporter.request_with_retry", return_value=resp
+    ):
+        assert exp.export(papers) == "slack"
+    assert exp.last_delivered == 3
+
+
+def test_slack_never_reports_a_delivery_that_did_not_happen():
+    """A failed post or an unconfigured webhook delivers nothing, so the count
+    must not keep the previous call's value (the runner reads it as a
+    truncation otherwise)."""
+    papers = _sample_papers()
+    exp = SlackExporter({"enabled": True, "max_items": 1}, webhook_url="http://hook")
+    ok = SimpleNamespace(status_code=200, json=lambda: {})
+    with patch(
+        "paperpilot.exporters.slack_exporter.request_with_retry", return_value=ok
+    ):
+        exp.export(papers)
+    assert exp.last_delivered == 1
+
+    bad = SimpleNamespace(status_code=500, json=lambda: {})
+    with patch(
+        "paperpilot.exporters.slack_exporter.request_with_retry", return_value=bad
+    ):
+        with pytest.raises(RuntimeError, match="slack post failed"):
+            exp.export(papers)
+    assert exp.last_delivered == 0
+
+    unconfigured = SlackExporter({"enabled": True}, webhook_url=None)
+    assert unconfigured.export(papers) is None
+    assert unconfigured.last_delivered == 0
+
+
+def test_email_reports_the_count_it_actually_delivered():
+    from paperpilot.exporters.email_exporter import EmailExporter
+
+    papers = _sample_papers() * 4  # 8 papers
+    exp = EmailExporter(
+        {"enabled": True, "max_items": 2},
+        smtp_settings={
+            "server": "smtp.example.com",
+            "port": 587,
+            "user": "me",
+            "password": "pass",
+            "to": "inbox@example.com",
+        },
+    )
+    fake_smtp = MagicMock()
+    with patch(
+        "paperpilot.exporters.email_exporter.smtplib.SMTP", return_value=fake_smtp
+    ):
+        assert exp.export(papers) == "email"
+    assert exp.last_delivered == 2
+
+
+def test_email_reports_no_delivery_when_smtp_fails():
+    from paperpilot.exporters.email_exporter import EmailExporter
+
+    papers = _sample_papers()
+    exp = EmailExporter(
+        {"enabled": True, "max_items": 10},
+        smtp_settings={
+            "server": "smtp.example.com",
+            "to": "inbox@example.com",
+        },
+    )
+    fake_smtp = MagicMock()
+    fake_smtp.send_message.side_effect = smtplib.SMTPException("rejected")
+    with patch(
+        "paperpilot.exporters.email_exporter.smtplib.SMTP", return_value=fake_smtp
+    ):
+        with pytest.raises(smtplib.SMTPException):
+            exp.export(papers)
+    assert exp.last_delivered == 0
+
+
+def test_file_exporters_do_not_report_a_truncated_delivery(tmp_path):
+    """CSV/JSON write every paper, so they leave the tally unset (None) — a 0
+    there would make the runner warn about papers it actually exported."""
+    exp = CSVExporter({"enabled": True, "dir": str(tmp_path), "encoding": "utf-8"})
+    assert exp.export(_sample_papers()) is not None
+    assert exp.last_delivered is None
+
+    json_exp = JSONExporter({"enabled": True, "dir": str(tmp_path)})
+    assert json_exp.export(_sample_papers()) is not None
+    assert json_exp.last_delivered is None
+
+
 def test_slack_escapes_mrkdwn_special_chars_in_title_and_venue():
     """Regression test (closes #397): a paper title/venue containing Slack
     mrkdwn special characters must not break the <url|text> link syntax or
@@ -422,3 +520,253 @@ def test_csv_leaves_ordinary_text_untouched(tmp_path):
         rows = list(_csv.DictReader(f))
     assert rows[0]["title"] == "Retrieval-Augmented Generation for Knowledge Tasks"
     assert rows[0]["abstract"] == "We propose a method."
+
+
+# ---- crash-safe replacement of the published files ----
+
+
+def test_csv_export_failure_leaves_the_existing_file_untouched(tmp_path, monkeypatch):
+    """Regression test: building the CSV must not truncate yesterday's output.
+
+    ``open(path, "w")`` empties the destination before the first row is written, so
+    any failure mid-export left a partial or empty papers_<date>.csv behind — and
+    build_summary_csv / build_pages read that file next. The rows are now rendered
+    in memory and the file is replaced by rename, so a failing row leaves the
+    published bytes alone.
+    """
+    import paperpilot.exporters.csv_exporter as csv_module
+
+    exp = CSVExporter({"enabled": True, "dir": str(tmp_path), "encoding": "utf-8"})
+    path = exp.export(_sample_papers())
+    assert path is not None
+    original_bytes = Path(path).read_bytes()
+
+    def _boom(*_args, **_kwargs):
+        raise OSError("row build failed")
+
+    monkeypatch.setattr(csv_module, "neutralize_row", _boom)
+    with pytest.raises(OSError, match="row build failed"):
+        exp.export(_sample_papers())
+
+    assert Path(path).read_bytes() == original_bytes
+    assert [p.name for p in tmp_path.iterdir()] == [Path(path).name]
+
+
+def test_json_export_failure_leaves_the_existing_file_untouched(tmp_path, monkeypatch):
+    """Same contract for the JSON side: a record that cannot be serialised must
+    not cost the run its previously published papers_<date>.json."""
+    import paperpilot.exporters.json_exporter as json_module
+
+    exp = JSONExporter({"enabled": True, "dir": str(tmp_path)})
+    path = exp.export(_sample_papers())
+    assert path is not None
+    original_bytes = Path(path).read_bytes()
+
+    def _boom(*_args, **_kwargs):
+        raise OSError("serializing failed")
+
+    monkeypatch.setattr(json_module.json, "dumps", _boom)
+    with pytest.raises(OSError, match="serializing failed"):
+        exp.export(_sample_papers())
+
+    assert Path(path).read_bytes() == original_bytes
+    assert [p.name for p in tmp_path.iterdir()] == [Path(path).name]
+
+
+def test_json_export_survives_a_failed_rename(tmp_path, monkeypatch):
+    """The rename is the last step, so a failure there is the one that used to
+    leave a torn file: the temp must be cleaned up and the original kept."""
+    import paperpilot.utils.atomic as atomic_module
+
+    exp = JSONExporter({"enabled": True, "dir": str(tmp_path)})
+    path = exp.export(_sample_papers())
+    assert path is not None
+    original_bytes = Path(path).read_bytes()
+
+    def _boom(*_args, **_kwargs):
+        raise OSError("rename failed")
+
+    monkeypatch.setattr(atomic_module.os, "replace", _boom)
+    with pytest.raises(OSError, match="rename failed"):
+        exp.export(_sample_papers())
+
+    assert Path(path).read_bytes() == original_bytes
+    assert [p.name for p in tmp_path.iterdir()] == [Path(path).name]
+
+
+# ---- same-day re-export must not clobber an earlier same-day export (M-2) ----
+
+
+def _papers_with_titles(*titles: str) -> list[Paper]:
+    papers = []
+    for i, title in enumerate(titles):
+        papers.append(
+            Paper(
+                title=title,
+                authors=["A"],
+                abstract="abs",
+                url=f"http://x/{i}",
+                published_date=date.today(),
+                source="arxiv",
+                arxiv_id=f"2604.{i:03d}",
+                total_score=float(i),
+            )
+        )
+    return papers
+
+
+def test_csv_first_export_of_the_day_uses_the_plain_name(tmp_path: Path):
+    exp = CSVExporter({"enabled": True, "dir": str(tmp_path), "encoding": "utf-8"})
+    path = exp.export(_papers_with_titles("H1"))
+    assert path is not None
+    assert Path(path).name == f"papers_{date.today().isoformat()}.csv"
+
+
+def test_csv_second_same_day_export_with_disjoint_papers_keeps_both_files(
+    tmp_path: Path,
+):
+    """Regression test (M-2): a same-day re-dispatch after a red
+    `--fail-on-errors` run must not overwrite the first run's CSV — both
+    runs' papers must stay readable on disk."""
+    exp = CSVExporter({"enabled": True, "dir": str(tmp_path), "encoding": "utf-8"})
+    first_path = exp.export(_papers_with_titles("H1"))
+    second_path = exp.export(_papers_with_titles("H2"))
+    assert first_path is not None
+    assert second_path is not None
+    assert first_path != second_path
+
+    _, first_rows = _read_csv_rows(first_path)
+    _, second_rows = _read_csv_rows(second_path)
+    assert [r["title"] for r in first_rows] == ["H1"]
+    assert [r["title"] for r in second_rows] == ["H2"]
+
+    # Both files are still on disk, independently of each other.
+    assert Path(first_path).exists()
+    assert Path(second_path).exists()
+    assert {p.name for p in tmp_path.iterdir()} == {
+        Path(first_path).name,
+        Path(second_path).name,
+    }
+
+
+def test_csv_third_same_day_export_does_not_clobber_the_second(
+    tmp_path: Path, monkeypatch
+):
+    """Even if two re-exports land in the same wall-clock second (so the
+    HHMMSS stamp collides too), the second re-export must get its own name
+    rather than overwrite the first re-export.
+
+    (L-3) The fixed clock is naive local time, not UTC: the date and the
+    HHMMSS suffix now both come from the SAME `datetime.now()` call, so even
+    the plain (first) export's date is pinned to this fixed clock, and the
+    suffix carries no trailing `Z` since it is no longer UTC.
+    """
+    import paperpilot.exporters.csv_exporter as csv_module
+
+    fixed_now = datetime(2026, 1, 1, 12, 0, 0)
+
+    class _FixedDatetime(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return fixed_now
+
+    monkeypatch.setattr(csv_module, "datetime", _FixedDatetime)
+
+    exp = CSVExporter({"enabled": True, "dir": str(tmp_path), "encoding": "utf-8"})
+    first_path = exp.export(_papers_with_titles("H1"))
+    second_path = exp.export(_papers_with_titles("H2"))
+    third_path = exp.export(_papers_with_titles("H3"))
+
+    assert first_path is not None and second_path is not None and third_path is not None
+    assert len({first_path, second_path, third_path}) == 3
+    assert Path(first_path).name == "papers_2026-01-01.csv"
+    assert Path(second_path).name == "papers_2026-01-01-120000.csv"
+    assert Path(third_path).name == "papers_2026-01-01-120000-2.csv"
+
+    for p in (first_path, second_path, third_path):
+        assert Path(p).exists()
+
+
+def test_csv_export_return_value_is_the_path_actually_written(tmp_path: Path):
+    """The runner uses the return value as the delivery signal (M-6 /
+    pipeline/runner.py), so it must name the file that was really written,
+    not a stale/plain guess."""
+    exp = CSVExporter({"enabled": True, "dir": str(tmp_path), "encoding": "utf-8"})
+    exp.export(_papers_with_titles("H1"))
+    second_path = exp.export(_papers_with_titles("H2"))
+    assert second_path is not None
+    assert Path(second_path).read_bytes()  # the returned path is readable
+    _, rows = _read_csv_rows(second_path)
+    assert [r["title"] for r in rows] == ["H2"]
+
+
+def test_json_first_export_of_the_day_uses_the_plain_name(tmp_path: Path):
+    exp = JSONExporter({"enabled": True, "dir": str(tmp_path)})
+    path = exp.export(_papers_with_titles("H1"))
+    assert path is not None
+    assert Path(path).name == f"papers_{date.today().isoformat()}.json"
+
+
+def test_json_second_same_day_export_with_disjoint_papers_keeps_both_files(
+    tmp_path: Path,
+):
+    exp = JSONExporter({"enabled": True, "dir": str(tmp_path)})
+    first_path = exp.export(_papers_with_titles("H1"))
+    second_path = exp.export(_papers_with_titles("H2"))
+    assert first_path is not None
+    assert second_path is not None
+    assert first_path != second_path
+
+    with open(first_path, encoding="utf-8") as f:
+        first_data = json.load(f)
+    with open(second_path, encoding="utf-8") as f:
+        second_data = json.load(f)
+    assert [r["title"] for r in first_data] == ["H1"]
+    assert [r["title"] for r in second_data] == ["H2"]
+    assert Path(first_path).exists()
+    assert Path(second_path).exists()
+
+
+def test_json_third_same_day_export_does_not_clobber_the_second(
+    tmp_path: Path, monkeypatch
+):
+    """(L-3) Same fixed-clock contract as the CSV counterpart: one naive local
+    `datetime.now()` drives both the date and the HHMMSS suffix, so the first
+    export's date is pinned too, and the suffix carries no trailing `Z`."""
+    import paperpilot.exporters.json_exporter as json_module
+
+    fixed_now = datetime(2026, 1, 1, 12, 0, 0)
+
+    class _FixedDatetime(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return fixed_now
+
+    monkeypatch.setattr(json_module, "datetime", _FixedDatetime)
+
+    exp = JSONExporter({"enabled": True, "dir": str(tmp_path)})
+    first_path = exp.export(_papers_with_titles("H1"))
+    second_path = exp.export(_papers_with_titles("H2"))
+    third_path = exp.export(_papers_with_titles("H3"))
+
+    assert first_path is not None and second_path is not None and third_path is not None
+    assert len({first_path, second_path, third_path}) == 3
+    assert Path(first_path).name == "papers_2026-01-01.json"
+    assert Path(second_path).name == "papers_2026-01-01-120000.json"
+    assert Path(third_path).name == "papers_2026-01-01-120000-2.json"
+    for p in (first_path, second_path, third_path):
+        assert Path(p).exists()
+
+
+def test_csv_export_keeps_the_utf8_sig_bom(tmp_path):
+    """The default encoding is utf-8-sig (Excel needs the BOM) and the bytes must
+    stay identical now that the text is encoded from a StringIO buffer."""
+    exp = CSVExporter({"enabled": True, "dir": str(tmp_path)})
+    path = exp.export(_sample_papers())
+    assert path is not None
+    raw = Path(path).read_bytes()
+    assert raw.startswith(b"\xef\xbb\xbf")
+    assert raw.endswith(b"\r\n")
+    lines = raw[len(b"\xef\xbb\xbf") :].decode("utf-8").splitlines()
+    assert lines[0].startswith("rank,total_score,")
+    assert lines[1].startswith("1,100.0,")

@@ -3,6 +3,13 @@
 Uses the official `arxiv` package which wraps the arXiv API. Requests
 are throttled by the package's built-in client; we additionally apply
 our own RateLimiter between batches to stay polite.
+
+A malformed feed page does not raise — the client logs a warning and hands back
+what it parsed (see `paperpilot.utils.arxiv_feed`) — so each keyword fetch is
+watched and such a keyword is recorded as failed rather than logged as a
+successful 0-paper keyword. Whatever that keyword had already appended is
+dropped too, because a set known to be missing entries is not evidence about
+the window, and `degraded_keywords` says which keywords went missing.
 """
 
 from __future__ import annotations
@@ -12,6 +19,7 @@ from datetime import date, datetime, timezone
 import arxiv
 
 from ..models import Paper
+from ..utils.arxiv_feed import detect_malformed_feed
 from ..utils.logger import get_logger
 from ..utils.rate_limiter import RateLimiter
 from .base import AbstractSource
@@ -32,6 +40,18 @@ class ArxivSource(AbstractSource):
             delay_seconds=delay,
             num_retries=3,
         )
+        # Keywords whose last fetch filled the whole requested window without
+        # ever reaching `since_date`, so matching papers beyond it were never
+        # fetched. Reset by every fetch(); read by the CLI run summary.
+        self.truncated_keywords: list[str] = []
+        # Keywords whose last fetch is known to be INCOMPLETE: the client read a
+        # malformed feed page or raised mid-stream. Those keywords' papers are
+        # withdrawn from the result (HIGH-1) and named here as `(keyword,
+        # reason)` so the runner can put the reason next to the keyword in
+        # run_history — a dropped keyword is invisible otherwise, because the
+        # source still returns other keywords' papers and reports ok. Reset by
+        # every fetch(); read by PipelineRunner.
+        self.degraded_keywords: list[tuple[str, str]] = []
 
     def fetch(
         self,
@@ -43,6 +63,9 @@ class ArxivSource(AbstractSource):
         papers: list[Paper] = []
         cat_clause = self._build_category_clause(categories)
         failures: list[str] = []
+        truncated: list[str] = []
+        self.truncated_keywords = []
+        self.degraded_keywords = []
 
         for kw in keywords:
             self._limiter.wait()
@@ -56,17 +79,62 @@ class ArxivSource(AbstractSource):
                 sort_order=arxiv.SortOrder.Descending,
             )
 
+            # Everything this keyword appends from here on is withdrawn if its
+            # fetch turns out incomplete (HIGH-1): an answer known to be missing
+            # entries must not ship beside the keywords that answered fully.
+            start = len(papers)
+            fetched = 0
+            reached_since_boundary = False
             try:
-                for result in self._client.results(search):
-                    pub = self._to_date(result.published)
-                    if pub < since_date:
-                        # Results are sorted DESC; older ones won't qualify.
-                        break
-                    papers.append(self._to_paper(result, kw))
+                with detect_malformed_feed(self._client) as feed:
+                    for result in self._client.results(search):
+                        fetched += 1
+                        pub = self._to_date(result.published)
+                        if pub < since_date:
+                            # Results are sorted DESC; older ones won't qualify.
+                            reached_since_boundary = True
+                            break
+                        papers.append(self._to_paper(result, kw))
             except Exception as e:
                 logger.warning("arxiv fetch failed for keyword '%s': %s", kw, e)
+                del papers[start:]
                 failures.append(kw)
+                self.degraded_keywords.append((kw, f"{type(e).__name__}: {e}"))
                 continue
+
+            if feed.malformed:
+                # The client warned and carried on with the pages it could read, so
+                # this keyword's set is missing entries — the whole set when the broken
+                # page was the first one. Nothing else distinguishes that from a genuine
+                # 0-paper day, so it is recorded as a failed keyword and the all-keywords
+                # gate below can surface it as sources_status["arxiv"]["ok"] = False.
+                logger.warning(
+                    "arxiv fetch for keyword '%s' saw %d malformed feed page(s): %s",
+                    kw,
+                    len(feed.malformed),
+                    feed.malformed[0],
+                )
+                del papers[start:]
+                failures.append(kw)
+                self.degraded_keywords.append(
+                    (
+                        kw,
+                        f"{len(feed.malformed)} malformed feed page(s), "
+                        f"first: {feed.malformed[0]}",
+                    )
+                )
+                continue
+
+            if max_results > 0 and fetched >= max_results and not reached_since_boundary:
+                truncated.append(kw)
+                logger.warning(
+                    "arxiv: keyword '%s' filled the whole %d-result window (newest "
+                    "first) without reaching since_date=%s, so matching papers older "
+                    "than the window were never fetched",
+                    kw,
+                    max_results,
+                    since_date.isoformat(),
+                )
 
         if keywords and len(failures) == len(keywords):
             # Every keyword failed: this is an outage, not "genuinely 0 new
@@ -76,19 +144,31 @@ class ArxivSource(AbstractSource):
             # (same masking pattern as #387's S2 fix).
             #
             # A partial failure (at least one keyword succeeded) is NOT
-            # raised — `papers` is returned as-is with those real results
-            # kept, and the per-keyword warning above already logs the
-            # failure. Note the one asymmetry this implies: if a keyword's
-            # generator yields some papers before failing mid-stream, those
-            # already-appended papers survive ONLY when at least one other
-            # keyword succeeds outright — if every keyword fails this way,
-            # the raise below still discards them along with everything
-            # else, since there is no way to both signal "outage" and
-            # return partial data through this interface's single return
-            # value / exception contract. Confirmed outage visibility is
-            # judged more valuable than an unreliable partial scrap in that
-            # narrow, already-degenerate scenario.
+            # raised — `papers` keeps only what the keywords that answered
+            # completely produced. Both failure paths above already withdrew a
+            # failed keyword's own partial set, so there is no asymmetry left
+            # between "some keywords succeeded" and "every keyword failed": in
+            # the latter case the raise discards nothing that a complete answer
+            # would have produced, and confirmed outage visibility is judged more
+            # valuable than an unreliable partial scrap.
             raise RuntimeError(f"arxiv fetch failed for all {len(keywords)} keyword(s)")
+
+        # A truncated keyword is deliberately NOT counted with `failures` above: it
+        # still returned real papers, and with the shipped configs (broad keywords,
+        # max_results_per_keyword: 30, days_back: 7) every keyword fills its window on
+        # a normal busy day — treating that as an outage would put the source into
+        # sources_status["arxiv"]["ok"] = False on every successful run and throw its
+        # papers away. The report goes to the run summary instead, where the operator
+        # can raise search.max_results_per_keyword.
+        self.truncated_keywords = truncated
+        if truncated:
+            logger.warning(
+                "arxiv: %d of %d keyword(s) were truncated at the %d-result window: %s",
+                len(truncated),
+                len(keywords),
+                max_results,
+                ", ".join(truncated),
+            )
 
         logger.info("arxiv: collected %d papers (pre-dedup)", len(papers))
         return papers

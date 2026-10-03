@@ -2,6 +2,10 @@
 
 total_score = sum( signal_score * weight ) for each enabled signal.
 All signal scores are normalized to [0, 100].
+
+Signal degradation never changes the return value (rule §4): it is reported
+through each signal's `run_failures` channel, which PipelineRunner reads after
+this stage returns.
 """
 
 from __future__ import annotations
@@ -31,6 +35,10 @@ def metric_score(
             logger.info("stage2: signal '%s' enriched %d papers", sig.name, len(papers))
         except Exception as e:
             logger.warning("stage2: signal '%s' failed: %s", sig.name, e)
+            # The crash is itself a degraded run: record it on the signal's
+            # per-run channel so the runner can surface it in run_history
+            # without Stage 2 gaining a second return type (rule §4).
+            sig.run_failures.append(f"enrich_batch raised {type(e).__name__}: {e}")
 
     for p in papers:
         p.total_score = (

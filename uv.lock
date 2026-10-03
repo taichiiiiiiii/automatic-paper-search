@@ -2451,6 +2451,7 @@ source = { editable = "." }
 dependencies = [
     { name = "aiohttp" },
     { name = "arxiv" },
+    { name = "lxml" },
     { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.11.*'" },
     { name = "numpy", version = "2.5.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
@@ -2494,13 +2495,14 @@ unarxive = [
 [package.metadata]
 requires-dist = [
     { name = "aiohttp", specifier = ">=3.9.0" },
-    { name = "arxiv", specifier = ">=2.1.0" },
+    { name = "arxiv", specifier = ">=4.0.1,<5" },
     { name = "build", marker = "extra == 'release'", specifier = ">=1.2,<2" },
     { name = "duckdb", marker = "extra == 'unarxive'", specifier = ">=1.0" },
     { name = "google-auth", marker = "extra == 'sheets'", specifier = ">=2.29" },
     { name = "gspread", marker = "extra == 'sheets'", specifier = ">=6.0" },
     { name = "huggingface-hub", marker = "extra == 'unarxive'", specifier = ">=0.23" },
     { name = "jsonschema", marker = "extra == 'dev'", specifier = ">=4.23" },
+    { name = "lxml", specifier = ">=5.0" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.10" },
     { name = "numpy", specifier = ">=1.26.0" },
     { name = "pypdf", marker = "extra == 'dev'", specifier = ">=6,<7" },

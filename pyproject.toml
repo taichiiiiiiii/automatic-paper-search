@@ -23,12 +23,18 @@ classifiers = [
     "Topic :: Text Processing :: Linguistic",
 ]
 dependencies = [
-    "arxiv>=2.1.0",
+    "arxiv>=4.0.1,<5",  # utils/arxiv_feed.py matches 4.0.1 log messages
     "requests>=2.31.0",
     "aiohttp>=3.9.0",
     "pyyaml>=6.0",
     "python-dotenv>=1.0.0",
     "numpy>=1.26.0",
+    # Already pulled in transitively by `arxiv` (its own Atom parser), but
+    # `utils/arxiv_feed.py` now imports it directly (its own strict, non-recovering
+    # parse of a response body) — a transitive-only dependency is not guaranteed
+    # by either install path documented in README, and test_dependency_manifests
+    # pins every direct import this way (#361/#362's lesson).
+    "lxml>=5.0",
 ]
 
 [project.optional-dependencies]
