@@ -13,6 +13,7 @@
  */
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { BASE_PATH } from "../../lib/config";
 import {
   fetchLineageQualityManifest,
   fetchThemeArtifact,
@@ -29,6 +30,14 @@ import { ThemeRequestForm } from "./ThemeRequestForm";
 
 type ViewState =
   | { phase: "loading" }
+  // LOW fix: `themes-manifest.json` itself failing to fetch (network
+  // error, non-2xx) used to collapse into the same "not-ready" state
+  // as "zero themes have passed quality audit yet" -- both rendered
+  // the identical 系譜は品質監査中です copy, so an operator-visible
+  // outage looked indistinguishable from the ordinary pre-launch
+  // state. Per CLAUDE.md's "always render a distinct error state,
+  // never empty-as-error", a fetch failure gets its own phase.
+  | { phase: "error" }
   // No theme has an eligible (ready+passed) quality row at all, OR the
   // slug this render landed on failed its own gate at fetch time (a row
   // can go stale between audit publication and artifact fetch) --
@@ -66,7 +75,11 @@ export function ThemesClient() {
         fetchLineageQualityManifest(),
       ]);
       if (cancelled) return;
-      const rawManifest = manifestResult.status === "ok" ? manifestResult.data : [];
+      if (manifestResult.status === "error") {
+        setState({ phase: "error" });
+        return;
+      }
+      const rawManifest = manifestResult.data;
       // Only strict quality-manifest rows that are ready+passed may
       // enter the picker/gallery or become a default selection -- the
       // legacy manifest and _quality.json rollup are discovery/
@@ -129,6 +142,28 @@ export function ThemesClient() {
     );
   }
 
+  if (state.phase === "error") {
+    return (
+      <section
+        role="alert"
+        aria-live="polite"
+        className="mx-auto max-w-2xl px-4 py-16 text-center sm:px-6"
+      >
+        <h2 className="font-serif text-xl font-semibold text-ink">
+          テーマ一覧を取得できませんでした
+        </h2>
+        <p className="mt-2 text-sm text-ink-muted">
+          通信エラー、または一時的な不調の可能性があります。時間をおいて再度お試しください。
+        </p>
+        <p className="mt-4 text-sm">
+          <a href="/" className="text-accent underline">
+            論文カタログへ戻る
+          </a>
+        </p>
+      </section>
+    );
+  }
+
   if (state.phase === "not-ready") {
     return (
       <section
@@ -187,7 +222,14 @@ export function ThemesClient() {
             </p>
             <ThemeRequestForm
               onReady={(slug) => {
-                window.location.href = `?theme=${encodeURIComponent(slug)}`;
+                // M4 fix: a relative `?theme=...` resolved against
+                // whatever the browser's current URL happened to be --
+                // after a next/link client-side nav elsewhere and back,
+                // or any path that isn't exactly `/themes/`, that
+                // landed on the wrong page (e.g. `/?theme=...`) instead
+                // of the theme lineage view. Always target the
+                // absolute `/themes/` path.
+                window.location.href = `${BASE_PATH}/themes/?theme=${encodeURIComponent(slug)}`;
               }}
             />
           </div>

@@ -84,13 +84,42 @@ export function ThemeRequestForm({ onReady }: { onReady: (slug: string) => void 
   const [rawInput, setRawInput] = useState("");
   const [status, setStatus] = useState<FormStatus>({ kind: "idle" });
   const [progress, setProgress] = useState<ProgressState | null>(null);
-  const cancelledRef = useRef(false);
-  const progressRef = useRef<ProgressState | null>(null);
+  // M4 fix: a single shared "cancelled" boolean let a brand-new run's
+  // startProgress() (which reset it to false) silently un-cancel a
+  // STALE run's still-in-flight poll loop/timers -- cancel A, start B,
+  // and A's loop would resume (shared ref) and could fire onReady/
+  // onFailure for the wrong slug. Each run now gets its own
+  // incrementing token; every callback a run's closures touch checks
+  // `runTokenRef.current === token` before acting, so only the
+  // current run (never a cancelled/superseded/unmounted one) can
+  // mutate state.
+  const runTokenRef = useRef(0);
+  const timeoutIdsRef = useRef<Array<ReturnType<typeof setTimeout>>>([]);
   const [, setElapsedTick] = useState(0);
 
+  const clearScheduledTimeouts = useCallback(() => {
+    for (const id of timeoutIdsRef.current) clearTimeout(id);
+    timeoutIdsRef.current = [];
+  }, []);
+
+  // Invalidate whatever run is currently in flight (if any) -- used by
+  // cancel, retry, and unmount alike so none of them can leave a timer
+  // or poll loop from a previous run alive in the background.
+  const invalidateCurrentRun = useCallback(() => {
+    runTokenRef.current += 1;
+    clearScheduledTimeouts();
+  }, [clearScheduledTimeouts]);
+
+  // No-unmount-cancel fix: ThemeRequestForm is only mounted while the
+  // "about / new theme" panel is open (ThemesClient.tsx), so closing
+  // it unmounts this component -- without this, a run's setTimeout
+  // chain and poll loop kept running and calling setState after
+  // unmount.
   useEffect(() => {
-    progressRef.current = progress;
-  }, [progress]);
+    return () => {
+      invalidateCurrentRun();
+    };
+  }, [invalidateCurrentRun]);
 
   // 1s elapsed-time ticker, running only while a progress panel is open.
   useEffect(() => {
@@ -99,24 +128,24 @@ export function ThemeRequestForm({ onReady }: { onReady: (slug: string) => void 
     return () => clearInterval(id);
   }, [progress]);
 
-  const setFailure = useCallback((failure: ProgressFailure) => {
-    cancelledRef.current = true;
+  const setFailure = useCallback((token: number, failure: ProgressFailure) => {
+    if (runTokenRef.current !== token) return;
     setProgress((prev) => (prev ? { ...prev, failure } : prev));
   }, []);
 
-  const advanceStep = useCallback((step: ProgressStep) => {
-    if (cancelledRef.current) return;
+  const advanceStep = useCallback((token: number, step: ProgressStep) => {
+    if (runTokenRef.current !== token) return;
     setProgress((prev) => (prev && !prev.failure ? { ...prev, step } : prev));
   }, []);
 
   const pollForCompletion = useCallback(
-    async (slug: string) => {
+    async (token: number, slug: string, requestId: string) => {
       const startedAt = Date.now();
       let consecutiveFailures = 0;
       let pollIter = 0;
-      while (!cancelledRef.current) {
+      while (runTokenRef.current === token) {
         if (Date.now() - startedAt > POLL_TIMEOUT_MS) {
-          setFailure({
+          setFailure(token, {
             title: "生成がタイムアウトしました (12 分経過)",
             message:
               "S2 / Groq LLM のレート制限、または GitHub Actions の内部エラーの可能性があります。数分後に再試行するか、既存テーマを確認してください。",
@@ -125,18 +154,20 @@ export function ThemeRequestForm({ onReady }: { onReady: (slug: string) => void 
         }
         try {
           const manifestResult = await fetchThemesManifest({ cache: "no-store" });
+          if (runTokenRef.current !== token) return;
           if (manifestResult.status === "ok") {
             consecutiveFailures = 0;
             if (manifestResult.data.some((e) => e.slug === slug)) {
               const outcome = await pollThemeQualityOutcome(slug);
+              if (runTokenRef.current !== token) return;
               if (outcome === "ready") {
-                advanceStep("ready");
+                advanceStep(token, "ready");
                 await new Promise((resolve) => setTimeout(resolve, 800));
-                if (!cancelledRef.current) onReady(slug);
+                if (runTokenRef.current === token) onReady(slug);
                 return;
               }
               if (outcome === "failed") {
-                setFailure({
+                setFailure(token, {
                   title: "生成されましたが品質監査を通過しませんでした",
                   message:
                     "テーマの系譜データは生成されましたが、品質監査を通過しなかったため表示できません。別のテーマ名で試すか、しばらく時間をおいて再度お試しください。",
@@ -151,16 +182,17 @@ export function ThemeRequestForm({ onReady }: { onReady: (slug: string) => void 
         } catch {
           consecutiveFailures++;
         }
+        if (runTokenRef.current !== token) return;
         setProgress((prev) =>
           prev ? { ...prev, networkWarning: consecutiveFailures >= POLL_FAILURE_THRESHOLD } : prev,
         );
         pollIter++;
-        const requestId = progressRef.current?.requestId;
-        if (pollIter % STATUS_CHECK_INTERVAL_POLLS === 0 && requestId) {
+        if (pollIter % STATUS_CHECK_INTERVAL_POLLS === 0) {
           const run = await fetchThemeRunStatus(API_BASE, requestId);
+          if (runTokenRef.current !== token) return;
           const fail = failureFromRun(run);
           if (fail) {
-            setFailure({ title: fail.title, message: fail.message, runUrl: fail.runUrl });
+            setFailure(token, { title: fail.title, message: fail.message, runUrl: fail.runUrl });
             return;
           }
         }
@@ -172,7 +204,8 @@ export function ThemeRequestForm({ onReady }: { onReady: (slug: string) => void 
 
   const startProgress = useCallback(
     (slug: string, themeLabel: string, requestId: string) => {
-      cancelledRef.current = false;
+      invalidateCurrentRun();
+      const token = runTokenRef.current;
       setStatus({ kind: "idle" });
       setProgress({
         slug,
@@ -183,27 +216,36 @@ export function ThemeRequestForm({ onReady }: { onReady: (slug: string) => void 
         networkWarning: false,
         failure: null,
       });
-      setTimeout(() => advanceStep("queue"), 5_000);
-      setTimeout(() => advanceStep("generate"), 30_000);
-      setTimeout(() => advanceStep("commit"), 180_000);
-      void pollForCompletion(slug);
+      timeoutIdsRef.current = [
+        setTimeout(() => advanceStep(token, "queue"), 5_000),
+        setTimeout(() => advanceStep(token, "generate"), 30_000),
+        setTimeout(() => advanceStep(token, "commit"), 180_000),
+      ];
+      void pollForCompletion(token, slug, requestId);
     },
-    [advanceStep, pollForCompletion],
+    [advanceStep, invalidateCurrentRun, pollForCompletion],
   );
 
   const cancelProgress = useCallback(() => {
-    cancelledRef.current = true;
+    invalidateCurrentRun();
     setProgress(null);
-  }, []);
+  }, [invalidateCurrentRun]);
 
-  const retryWithSlug = useCallback((slug: string) => {
-    cancelledRef.current = true;
-    setProgress(null);
-    setRawInput(slug.replace(/-/g, " ").replace(/\b[a-z]/g, (c) => c.toUpperCase()));
-  }, []);
+  const retryWithSlug = useCallback(
+    (slug: string) => {
+      invalidateCurrentRun();
+      setProgress(null);
+      setRawInput(slug.replace(/-/g, " ").replace(/\b[a-z]/g, (c) => c.toUpperCase()));
+    },
+    [invalidateCurrentRun],
+  );
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    // M5 fix: a double-click (or double Enter) before the first
+    // submit's fetch resolves used to fire two POSTs -- re-entrancy
+    // guard, mirrored by disabling the input/button below while pending.
+    if (status.kind === "pending") return;
     const raw = rawInput.trim();
     if (!THEME_INPUT_PATTERN.test(raw)) {
       setStatus({
@@ -221,110 +263,126 @@ export function ThemeRequestForm({ onReady }: { onReady: (slug: string) => void 
       return;
     }
     setStatus({ kind: "pending" });
-    let resp: Response;
+    // LOW fix: everything from here on used to have no catch-all, so
+    // any unexpected exception (a future edit to interpretThemesPostResponse,
+    // a thrown getter, etc.) left the form stuck on "送信中…" forever
+    // with no way for the user to recover short of a reload. The two
+    // inner try/catches below already turn the EXPECTED failure modes
+    // (network error, non-JSON body) into a specific message and
+    // `return`; this outer one is the backstop for everything else.
     try {
-      resp = await fetch(`${API_BASE}/api/themes`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ theme: raw }),
-        credentials: "omit",
-      });
-    } catch (err) {
-      setStatus({
-        kind: "err",
-        node: (
-          <>
-            ❌ サーバに届きませんでした。{" "}
-            <a href={issueUrlFor(raw)} target="_blank" rel="noopener">
-              GitHub Issue で送信 →
-            </a>
-          </>
-        ),
-      });
-      console.error("[theme-request] fetch failed:", err);
-      return;
-    }
-    let body: unknown;
-    try {
-      body = await resp.json();
-    } catch {
-      setStatus({ kind: "err", node: `❌ サーバから不正な応答 (HTTP ${resp.status})` });
-      return;
-    }
-    const outcome = interpretThemesPostResponse(resp.status, body);
-    switch (outcome.kind) {
-      case "exists":
-        setStatus({
-          kind: "ok",
-          node: outcome.slug ? (
-            <>
-              ✅ そのテーマは既に生成済です。{" "}
-              <Link href={{ pathname: "/themes/", query: { theme: outcome.slug } }}>
-                表示する →
-              </Link>
-            </>
-          ) : (
-            "✅ そのテーマは既に生成済です。テーマ一覧から確認してください。"
-          ),
+      let resp: Response;
+      try {
+        resp = await fetch(`${API_BASE}/api/themes`, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ theme: raw }),
+          credentials: "omit",
         });
-        return;
-      case "queued":
-        startProgress(outcome.slug, raw, outcome.requestId);
-        setRawInput("");
-        return;
-      case "queued_unusable":
-        setStatus({
-          kind: "ok",
-          node: "🚀 受付完了。生成は数分かかります。完了後にこのページを再読み込みしてください。",
-        });
-        setRawInput("");
-        return;
-      case "dry_run":
-        // §4.5: preview-only, the workflow was never actually
-        // dispatched -- there is nothing to poll for, so this never
-        // starts the progress panel (it would hang until the 12-minute
-        // timeout since themes-manifest.json will never gain the slug).
-        setStatus({
-          kind: "ok",
-          node: "✅ (プレビュー環境) dry-run 送信に成功しました。実際の生成は行われません。",
-        });
-        return;
-      case "rate_limited":
-        setStatus({ kind: "err", node: outcome.message });
-        return;
-      case "invalid":
-        setStatus({ kind: "err", node: `❌ ${outcome.message}` });
-        return;
-      case "paused": {
+      } catch (err) {
         setStatus({
           kind: "err",
           node: (
             <>
-              ❌ {outcome.message}{" "}
+              ❌ サーバに届きませんでした。{" "}
               <a href={issueUrlFor(raw)} target="_blank" rel="noopener">
                 GitHub Issue で送信 →
               </a>
             </>
           ),
         });
+        console.error("[theme-request] fetch failed:", err);
         return;
       }
-      case "error": {
-        setStatus({
-          kind: "err",
-          node: outcome.showIssueLink ? (
-            <>
-              ❌ {outcome.message}{" "}
-              <a href={issueUrlFor(raw)} target="_blank" rel="noopener">
-                GitHub Issue で送信 →
-              </a>
-            </>
-          ) : (
-            `❌ ${outcome.message}`
-          ),
-        });
+      let body: unknown;
+      try {
+        body = await resp.json();
+      } catch {
+        setStatus({ kind: "err", node: `❌ サーバから不正な応答 (HTTP ${resp.status})` });
         return;
       }
+      const outcome = interpretThemesPostResponse(resp.status, body);
+      switch (outcome.kind) {
+        case "exists":
+          setStatus({
+            kind: "ok",
+            node: outcome.slug ? (
+              <>
+                ✅ そのテーマは既に生成済です。{" "}
+                <Link href={{ pathname: "/themes/", query: { theme: outcome.slug } }}>
+                  表示する →
+                </Link>
+              </>
+            ) : (
+              "✅ そのテーマは既に生成済です。テーマ一覧から確認してください。"
+            ),
+          });
+          return;
+        case "queued":
+          startProgress(outcome.slug, raw, outcome.requestId);
+          setRawInput("");
+          return;
+        case "queued_unusable":
+          setStatus({
+            kind: "ok",
+            node: "🚀 受付完了。生成は数分かかります。完了後にこのページを再読み込みしてください。",
+          });
+          setRawInput("");
+          return;
+        case "dry_run":
+          // §4.5: preview-only, the workflow was never actually
+          // dispatched -- there is nothing to poll for, so this never
+          // starts the progress panel (it would hang until the
+          // 12-minute timeout since themes-manifest.json will never
+          // gain the slug).
+          setStatus({
+            kind: "ok",
+            node: "✅ (プレビュー環境) dry-run 送信に成功しました。実際の生成は行われません。",
+          });
+          return;
+        case "rate_limited":
+          setStatus({ kind: "err", node: outcome.message });
+          return;
+        case "invalid":
+          setStatus({ kind: "err", node: `❌ ${outcome.message}` });
+          return;
+        case "paused": {
+          setStatus({
+            kind: "err",
+            node: (
+              <>
+                ❌ {outcome.message}{" "}
+                <a href={issueUrlFor(raw)} target="_blank" rel="noopener">
+                  GitHub Issue で送信 →
+                </a>
+              </>
+            ),
+          });
+          return;
+        }
+        case "error": {
+          setStatus({
+            kind: "err",
+            node: outcome.showIssueLink ? (
+              <>
+                ❌ {outcome.message}{" "}
+                <a href={issueUrlFor(raw)} target="_blank" rel="noopener">
+                  GitHub Issue で送信 →
+                </a>
+              </>
+            ) : (
+              `❌ ${outcome.message}`
+            ),
+          });
+          return;
+        }
+      }
+    } catch (err) {
+      setStatus({
+        kind: "err",
+        node: "❌ 予期しないエラーが発生しました。もう一度お試しください。",
+      });
+      console.error("[theme-request] unexpected error:", err);
     }
   }
 
@@ -441,6 +499,7 @@ export function ThemeRequestForm({ onReady }: { onReady: (slug: string) => void 
           aria-describedby="theme-request-hint"
           autoComplete="off"
           value={rawInput}
+          disabled={status.kind === "pending"}
           onChange={(e) => {
             setRawInput(e.target.value);
             setStatus({ kind: "idle" });
@@ -448,7 +507,8 @@ export function ThemeRequestForm({ onReady }: { onReady: (slug: string) => void 
         />
         <button
           type="submit"
-          className="rounded-md bg-ink px-4 py-2 text-sm font-medium text-paper hover:bg-ink-muted"
+          disabled={status.kind === "pending"}
+          className="rounded-md bg-ink px-4 py-2 text-sm font-medium text-paper hover:bg-ink-muted disabled:cursor-not-allowed disabled:opacity-60"
         >
           生成する
         </button>

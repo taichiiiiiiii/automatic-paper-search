@@ -22,10 +22,12 @@
  * express statically (per-card mode accents, hover-delayed popover/
  * tooltip visibility, the onboarding arrow).
  */
+import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { exportPng, exportSvg } from "../../lib/themes-export";
 import { formatStars, formatVenue } from "../../lib/themes-format";
 import type { LineageArtifact, LineageEdge, LineageNode } from "../../lib/themes-quality";
+import { resolveFocus } from "../../lib/themes-quality";
 import {
   ALL_RELATIONS,
   computeHubSet,
@@ -44,6 +46,12 @@ import {
   X_AXIS_MODES,
   type XAxisMode,
 } from "../../lib/themes-tree";
+import {
+  loadThemePrefs,
+  readTreeUrlState,
+  saveThemePrefs,
+  writeTreeUrlParams,
+} from "../../lib/themes-url-state";
 import styles from "./LineageTree.module.css";
 
 const X_AXIS_BUTTON: Record<XAxisMode, { icon: string; label: string; title: string }> = {
@@ -146,10 +154,20 @@ export function LineageTree({
   artifact: LineageArtifact;
   slug?: string | null;
 }) {
-  const [mode, setMode] = useState<XAxisMode>(DEFAULT_X_AXIS_MODE);
+  // ---- URL state (?xaxis=&ymin=&ymax=&q=&rels=&orphan=&node=) ----------
+  // M8a port of docs/assets/theme.js's readUrlState(): read once per
+  // mount (this component remounts on theme switch -- see the `key=
+  // {currentSlug}` comment in ThemesClient.tsx) so a shared link
+  // ("I'm looking at this theme in genealogy mode filtered to
+  // 2020-2024") reproduces the same view. Every field is whitelist-
+  // validated by readTreeUrlState itself.
+  const searchParams = useSearchParams();
+  const urlState = useMemo(() => readTreeUrlState(searchParams.toString()), [searchParams]);
+
+  const [mode, setMode] = useState<XAxisMode>(() => urlState.xAxisMode ?? DEFAULT_X_AXIS_MODE);
 
   // ---- Filters (search / year range / relation chips) -----------------
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(() => urlState.searchQuery ?? "");
   const dataYearExtentsRef = useRef<{ min: number; max: number } | null>(null);
   if (dataYearExtentsRef.current === null) {
     const years = artifact.nodes
@@ -160,19 +178,73 @@ export function LineageTree({
       : null;
   }
   const dataYearExtents = dataYearExtentsRef.current;
-  const [yearRange, setYearRange] = useState<{ min: number; max: number } | null>(dataYearExtents);
+  const [yearRange, setYearRange] = useState<{ min: number; max: number } | null>(() => {
+    if (!dataYearExtents) return null;
+    return {
+      min: urlState.yearMin ?? dataYearExtents.min,
+      max: urlState.yearMax ?? dataYearExtents.max,
+    };
+  });
   const [visibleRelations, setVisibleRelations] = useState<Set<Relation>>(
-    () => new Set(DEFAULT_RELATIONS),
+    () => new Set(urlState.visibleRelations ?? DEFAULT_RELATIONS),
   );
   const [filtersOpen, setFiltersOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // URL writes are suppressed until after the mount-time prefs
+  // hydration below has had a chance to run, mirroring the original's
+  // `_urlSyncSuppressed` bootstrap guard -- otherwise the very first
+  // render's URL-sync effect could fire before a stored xAxisMode/
+  // visibleRelations preference was applied and briefly write the
+  // pre-prefs defaults back into the URL.
+  const urlSyncSuppressedRef = useRef(true);
+
+  // M8a port of loadPrefs(): mount-only, localStorage-backed fallback
+  // for xAxisMode/visibleRelations when the URL didn't already decide
+  // them (URL > prefs > built-in default, matching the original's
+  // `prefs` var feeding `state`'s initial values before readUrlState()
+  // overrides them). try/catch lives inside loadThemePrefs itself;
+  // this wraps the `window.localStorage` property access too, since
+  // some private-mode browsers throw on that access, not just on
+  // `getItem`.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: mount-only by design -- this must run exactly once per theme (per LineageTree mount) and never re-apply stored prefs over a user's later in-session choice, so `urlState.xAxisMode`/`urlState.visibleRelations` (read only to decide whether to apply them) are intentionally frozen at their mount-time value.
+  useEffect(() => {
+    try {
+      if (!urlState.xAxisMode || !urlState.visibleRelations) {
+        const prefs = loadThemePrefs(window.localStorage);
+        if (prefs) {
+          if (!urlState.xAxisMode) setMode(prefs.xAxisMode);
+          if (!urlState.visibleRelations) setVisibleRelations(new Set(prefs.visibleRelations));
+        }
+      }
+    } catch {
+      /* ignore -- localStorage disabled */
+    } finally {
+      urlSyncSuppressedRef.current = false;
+    }
+  }, []);
+
+  // M8a port of savePrefs(): persists only the two prefs fields
+  // (xAxisMode, visibleRelations), matching the original's call sites
+  // (the X-axis button handler and the relation-chip handler).
+  useEffect(() => {
+    if (urlSyncSuppressedRef.current) return;
+    try {
+      saveThemePrefs(window.localStorage, {
+        xAxisMode: mode,
+        visibleRelations: [...visibleRelations],
+      });
+    } catch {
+      /* ignore -- localStorage disabled */
+    }
+  }, [mode, visibleRelations]);
 
   // Hide orphan papers (no incident edge) by default -- ported from
   // docs/assets/theme.js's state.hideOrphans. hubSet/orphanSet are
   // computed once against the FULL node+edge set (never the relation-
   // filtered visibleEdges) so toggling relation chips or the orphan
   // toggle itself never reshuffles which papers count as hub/orphan.
-  const [hideOrphans, setHideOrphans] = useState(true);
+  const [hideOrphans, setHideOrphans] = useState(() => urlState.hideOrphans ?? true);
   const hubSet = useMemo(
     () => computeHubSet(artifact.nodes, artifact.edges),
     [artifact.nodes, artifact.edges],
@@ -190,6 +262,30 @@ export function LineageTree({
       effectiveHideOrphans ? artifact.nodes.filter((n) => !orphanSet.has(n.id)) : artifact.nodes,
     [artifact.nodes, orphanSet, effectiveHideOrphans],
   );
+
+  // M8a port of syncUrlState(): writes the filter state back into the
+  // URL via history.replaceState (not pushState -- a filter twiddle
+  // must never add a back-button entry) so the view stays shareable at
+  // any moment. Suppressed until the mount-time prefs hydration above
+  // has settled. Declared after `hideOrphans` (its dependency) rather
+  // than alongside the other two URL/prefs effects above.
+  useEffect(() => {
+    if (urlSyncSuppressedRef.current) return;
+    try {
+      const url = new URL(window.location.href);
+      writeTreeUrlParams(url.searchParams, {
+        xAxisMode: mode,
+        yearRange,
+        dataYearExtents,
+        searchQuery,
+        visibleRelations,
+        hideOrphans,
+      });
+      window.history.replaceState(null, "", url.toString());
+    } catch {
+      /* ignore -- URL/history access unexpectedly unavailable */
+    }
+  }, [mode, yearRange, searchQuery, visibleRelations, hideOrphans, dataYearExtents]);
 
   const toggleRelation = useCallback((r: Relation) => {
     setVisibleRelations((prev) => {
@@ -385,6 +481,34 @@ export function LineageTree({
     window.addEventListener("mouseup", onUp);
     return () => window.removeEventListener("mouseup", onUp);
   }, []);
+
+  // ---- ?node= permalink focus --------------------------------------------
+  // M8a port of resolveFocus() + init()'s "#65: if the URL carried a
+  // ?node=, scroll to it" landing behaviour. Canonical-only resolution
+  // (SCR-24): an unrecognised/mismatched ?node= value never falls back
+  // to the root or "first node" -- resolveFocus itself returns `null`
+  // in that case, and this effect then simply does nothing.
+  const permalinkFocus = useMemo(
+    () => resolveFocus({ nodes: artifact.nodes, root: artifact.root }, urlState.node),
+    [artifact.nodes, artifact.root, urlState.node],
+  );
+  const scrolledToPermalinkRef = useRef(false);
+  useEffect(() => {
+    if (!urlState.node || !permalinkFocus || scrolledToPermalinkRef.current) return;
+    const container = scrollRef.current;
+    const pos = positionById.get(permalinkFocus.id);
+    // The focus node might not be in `positionById` yet (hidden by the
+    // orphan/relation filters, or the layout hasn't committed this
+    // frame) -- leave the ref unset so a later render (e.g. the user
+    // clearing the filter that hid it) can still complete the scroll.
+    if (!container || !pos) return;
+    scrolledToPermalinkRef.current = true;
+    container.scrollTo({
+      left: Math.max(0, pos.x - container.clientWidth / 2 + NODE_W / 2),
+      top: Math.max(0, pos.y - container.clientHeight / 2 + NODE_H / 2),
+      behavior: "auto",
+    });
+  }, [urlState.node, permalinkFocus, positionById]);
 
   useEffect(() => {
     const container = scrollRef.current;
@@ -815,6 +939,12 @@ export function LineageTree({
                 ? styles.hubCard
                 : styles[`heat${heatBucket(p.citation_count)}`];
               const orphanClass = isOrphan ? styles.orphanCard : "";
+              // M8a: ?node= permalink highlight -- a visible ring on
+              // the card the URL asked to focus, separate from
+              // `p.is_focus` (which marks the theme's own seed papers,
+              // not an arbitrary shared-link target).
+              const permalinkClass =
+                permalinkFocus && p.id === permalinkFocus.id ? "ring-2 ring-accent" : "";
               return (
                 // biome-ignore lint/a11y/noStaticElementInteractions: same rationale as the edge <g> above -- mirrors hover/focus bubbling from the focusable card <a> inside the foreignObject to show the popover.
                 <g
@@ -840,7 +970,7 @@ export function LineageTree({
                       aria-label={`論文を新しいタブで開く: ${link.label} — ${p.title ?? p.id}`}
                       className={`block h-full w-full overflow-hidden rounded-md border px-3 py-2 text-xs ${
                         p.is_focus ? "border-accent bg-accent/5" : "border-rule bg-surface-elevated"
-                      } ${accentClass ?? ""} ${filteredClass} ${shadowClass ?? ""} ${orphanClass}`}
+                      } ${accentClass ?? ""} ${filteredClass} ${shadowClass ?? ""} ${orphanClass} ${permalinkClass}`}
                     >
                       <div className="flex items-center justify-between gap-1">
                         <span className="min-w-0 truncate text-[0.68rem] text-ink-subtle">
