@@ -3,7 +3,7 @@
 - 状態: **計画（第 6 版、レビュー第 1〜5 回の指摘を反映。重大・中程度 0）**。コードはまだ書かない（CLAUDE.md フェーズ 1.5）
 - 作成: 2026-10-04
 - 作業ブランチ: `feat/ts-migration`。`develop` への push は Worker と Pages を自動デプロイするため、移行作業は必ずこのブランチで行う
-- 無料枠の数値は 2026-10 時点の知識に基づく。**P1 の最初に Cloudflare / GitHub の現行ドキュメントで確認し、この表を更新する**
+- 無料枠の数値は **2026-10-04 に Cloudflare の現行ドキュメントで確認済み**（§1.1）
 
 ## 0. 決定事項（ユーザー指示）
 
@@ -34,15 +34,15 @@ data/config     設定 yaml/json（conference-sources、theme_aliases、denylist
 
 `data/` への移動は **P5 で 1 回だけ**行う（§7.3）。P1〜P4 の間、新しいコードは現行の場所（`docs/`、`paperpilot/data/`、`paperpilot/output/`）を**読むだけ**で、書き出しは一時ディレクトリにする（CI で、実行後に `docs/`・`paperpilot/data/`・`paperpilot/output/` の git 上の内容が変わっていないことを確かめる）。場所は `packages/core` の設定 1 か所で切り替える。
 
-### 1.1 技術の選択と無料枠（P1 で要確認）
+### 1.1 技術の選択と無料枠（2026-10-04 確認）
 
 | 層 | 選択 | 無料枠の目安と注意 |
 |---|---|---|
 | 画面 | Next.js 静的書き出し、Tailwind、shadcn/ui | 実行時サーバー不要。インラインスクリプトの扱いは §4.4 |
-| 配信 | Cloudflare Pages（Direct Upload） | 1 デプロイ 20,000 ファイル・1 ファイル 25MiB（現状 `docs/` 全体 513 ファイル、最大 6.3MB）。月のデプロイ回数上限（500 回程度）に直接アップロードも数えられるか要確認。`_headers` / `_redirects` のルール数上限あり |
-| API | Hono on Workers Free | 1 日 10 万リクエスト、CPU 10ms/リクエスト、スクリプト圧縮後 3MB、サブリクエスト 50/リクエスト。Pages Functions を使うと同じ枠を共有するので、Pages Functions は使わない |
-| DB | D1 ＋ Drizzle | DB 1 つあたり 500MB、1 日の読み取り 500 万行・書き込み 10 万行（目安）。依頼・進捗・将来の利用者データ用。論文データ本体は D1 に入れず静的 JSON のまま |
-| 正確な依頼上限 | Durable Objects（SQLite 型のみ Free で利用可） | 1 日のリクエスト数・稼働時間に上限あり。依頼数の上限カウンタ程度なら十分 |
+| 配信 | Cloudflare Pages（Direct Upload） | 1 サイト 20,000 ファイル・1 ファイル 25MiB（現状 `docs/` 全体 513 ファイル、最大 6.3MB）。ビルドは月 500 回（Git 連携のビルドに適用。直接アップロードの扱いはドキュメントに明記なし。生成ごとのリリース回数を月数十回以内に保つ）。`_headers` は 100 ルール、`_redirects` は静的 2,000・動的 100。プレビューは無制限 |
+| API | Hono on Workers Free | 1 日 10 万リクエスト（UTC 0 時にリセット）、CPU 10ms/リクエスト、スクリプトは非圧縮 64MiB まで（圧縮後の上限なし）、サブリクエスト 50/リクエスト。Pages Functions を使うと同じ枠を共有するので、Pages Functions は使わない |
+| DB | D1 ＋ Drizzle | DB 1 つあたり 500MB、アカウント合計 5GB、DB は 10 個まで、1 回の呼び出しで 50 クエリまで。依頼・進捗・将来の利用者データ用。論文データ本体は D1 に入れず静的 JSON のまま |
+| 正確な依頼上限 | Durable Objects（SQLite 型のみ Free で利用可） | 1 日 10 万リクエスト、稼働 13,000 GB-s/日、保存 5GB、読み取り 500 万行/日・書き込み 10 万行/日。超えるとその種類の操作はエラーになる（安全側に倒す設計と合う）。依頼数の上限カウンタ程度なら十分 |
 | 収集・生成 | GitHub Actions 上の Node | 公開リポジトリの標準ランナーは無料。schedule は 60 日活動がないと止まる（現行は cron 無し） |
 | 実行環境 | **Node 22 LTS**（Node 20 は 2026-04 にサポート終了） | 型除去を使えるが、安定性のため実行は tsx、テストは Vitest に統一 |
 | 道具 | pnpm（corepack）、tsx、Vitest、Playwright、Biome | 無料 |
