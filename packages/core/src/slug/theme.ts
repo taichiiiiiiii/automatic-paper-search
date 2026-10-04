@@ -34,14 +34,16 @@
 
 const SLUG_MAX_LEN = 64;
 
-/** Matches Python's `unicodedata.category(c)[0] != "C"` filter, i.e.
- * drops every Unicode "Other" general-category code point (Cc control,
- * Cf format, Cs surrogate, Co private-use, Cn unassigned). JS's `\p{C}`
- * Unicode property escape covers the same grouping. Subject to the same
- * Unicode-Character-Database-version caveat as `packages/core`'s
- * `wordRegex.ts` (Node/V8's bundled UCD vs CPython's) — not expected to
- * matter in practice. */
+// Cosmetic fix (P4 review round 2): this doc comment used to sit here,
+// describing a Unicode-category-based (`\p{C}`) ASCII-strip approach —
+// but that describes neither `SLUG_ALLOWED_RE` below (step 2: collapse
+// any run of non-`[a-z0-9]` into a single hyphen) nor the plain
+// ASCII-range strip `themeSlug()` actually uses for step 1 (which already
+// has its own accurate inline comment, right above that regex).
+/** Step 2 of {@link themeSlug}: collapse any run of characters outside
+ * `[a-z0-9]` (after lowercasing) into a single hyphen. */
 const SLUG_ALLOWED_RE = /[^a-z0-9]+/g;
+/** Step 3 of {@link themeSlug}: trim leading/trailing hyphens. */
 const SLUG_TRIM_RE = /^-+|-+$/g;
 
 /** Normalise a free-text theme label into a URL- and filesystem-safe

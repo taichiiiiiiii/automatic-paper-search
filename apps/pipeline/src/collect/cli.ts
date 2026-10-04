@@ -107,6 +107,31 @@ function topLevelFlagConsumesValue(rawName: string): boolean {
   return false;
 }
 
+/**
+ * Whether `argv` asks for help at the TOP LEVEL — i.e. a literal `--help`/
+ * `-h` token in a FLAG position, not one that is itself the VALUE of a
+ * preceding value-consuming flag (collect LOW, P4 review round 2: `main()`
+ * used to do a bare `argv.includes("--help")`, which also matched e.g.
+ * `--keyword --help` — a mistyped invocation where `--help` was meant as
+ * `--keyword`'s value — and short-circuited to printing the usage text
+ * instead of letting `parseArgs` report the real problem (argparse itself
+ * would report `--config: expected one argument`, not print help, for
+ * `--config --help`). Reuses the same value-consuming walk `parseArgs`
+ * does to find the `expand-keywords` boundary, so the two stay in sync.
+ */
+function isHelpRequested(argv: readonly string[]): boolean {
+  for (let i = 0; i < argv.length; i++) {
+    const tok = argv[i];
+    if (tok === "expand-keywords") return false; // the sub-parser has no --help of its own
+    if (tok === "--help" || tok === "-h") return true;
+    if (tok?.startsWith("--") && !tok.includes("=")) {
+      const rawName = tok.slice(2);
+      if (topLevelFlagConsumesValue(rawName)) i++; // this token's value is not a flag position
+    }
+  }
+  return false;
+}
+
 export function parseArgs(argv: readonly string[], defaultConfigPath: string): ParsedArgs {
   let splitIndex = -1;
   for (let i = 0; i < argv.length; i++) {
@@ -261,7 +286,7 @@ subcommand:
 `;
 
 export async function main(argv: readonly string[], deps: CliDeps): Promise<number> {
-  if (argv.includes("--help") || argv.includes("-h")) {
+  if (isHelpRequested(argv)) {
     (deps.stdout ?? ((line: string) => console.log(line)))(HELP_TEXT);
     return 0;
   }

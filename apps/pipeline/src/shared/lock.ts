@@ -150,7 +150,17 @@ export async function acquireLock(lockPath: string, tuning: LockTuning = {}): Pr
         let content: string | null = null;
         try {
           content = fs.readFileSync(lockPath, "utf-8");
-        } catch {
+        } catch (e) {
+          // ONLY "it's gone" (ENOENT) means "nothing to break" here. Any
+          // other failure (EISDIR — the path is now a directory; EACCES —
+          // unreadable) is a real problem, not a vanished lock: rethrow so
+          // it reaches the caller instead of silently treating the lock as
+          // released and `continue`-ing straight back to the top of the
+          // loop WITHOUT checking `deadline` or awaiting `sleep` (M1 of
+          // the P4 review round 2 — that was a synchronous busy-spin that
+          // ignored `lockTimeoutMs` entirely, since nothing in this path
+          // ever yields to the event loop).
+          if (!isEnoent(e)) throw e;
           content = null; // vanished already; nothing to break
         }
         if (content !== null) {
@@ -158,8 +168,11 @@ export async function acquireLock(lockPath: string, tuning: LockTuning = {}): Pr
         }
         continue;
       }
-    } catch {
-      // Lock file vanished between our failed create and this stat; retry.
+    } catch (e) {
+      // Same reasoning as above: only ENOENT means "the lock file vanished
+      // between our failed create and this stat" (legitimately retry);
+      // anything else (e.g. EACCES stat-ing it) must propagate.
+      if (!isEnoent(e)) throw e;
       continue;
     }
     if (Date.now() > deadline) {

@@ -161,6 +161,49 @@ it("normalizes an arxiv alias the same way as a URL-derived id", () => {
   expect(id).toBe("2301.01234");
 });
 
+// LOW (P4 review round 2): `parseQsl`'s `max_num_fields=20` cap (:242)
+// and `unquote(..., errors="replace")` semantics (:260, used for query
+// names/values — distinct from the `errors="strict"` used for path
+// segments) were ported but never pinned by a test.
+describe("OpenReview query parsing: parse_qsl max_num_fields and replace-mode unquote", () => {
+  function openreviewUrlWithExtraFields(extraFieldCount: number): string {
+    const extra = Array.from({ length: extraFieldCount }, (_, i) => `x${i}=v`).join("&");
+    return `https://openreview.net/forum?id=abc_123&${extra}`;
+  }
+
+  it("20 total query fields (the cap) parses fine", () => {
+    const id = identityFromUrl(openreviewUrlWithExtraFields(19));
+    expect(id.sourceId).toBe("abc_123");
+  });
+
+  it("21 total query fields (one over the cap) throws — max_num_fields=20", () => {
+    expect(() => identityFromUrl(openreviewUrlWithExtraFields(20))).toThrow(IdentityError);
+  });
+
+  it("an invalid (non-hex) %-escape in a query value is left as literal text, not an error (unquote leniency)", () => {
+    // Proves `%ZZ` is recognized as "not actually an escape" (both X and Y
+    // must be hex digits) rather than mis-decoded or thrown on — the id
+    // value survives character-for-character, so the FAILURE that does
+    // occur is `normalizeOpenreviewId`'s charset check (the literal `%`
+    // is not in `[A-Za-z0-9_-]`), not a decode error.
+    expect(() => identityFromUrl("https://openreview.net/forum?id=abc%ZZdef")).toThrow(
+      /invalid OpenReview forum ID: "abc%ZZdef"/,
+    );
+  });
+
+  it('an invalid UTF-8 byte in a query value is replaced (U+FFFD), not thrown on (errors="replace")', () => {
+    // `%FF` is a valid hex escape but an invalid standalone UTF-8 byte. The
+    // REPLACE-mode decoder used for query values substitutes U+FFFD and
+    // keeps going (reaching `normalizeOpenreviewId`'s charset check, which
+    // then rejects the replacement character) — a STRICT-mode decoder
+    // would instead throw deep inside `parseQsl`, surfacing as the
+    // DIFFERENT message "OpenReview query is invalid" instead.
+    expect(() => identityFromUrl("https://openreview.net/forum?id=abc%FFdef")).toThrow(
+      /invalid OpenReview forum ID: "abc�def"/,
+    );
+  });
+});
+
 describe("makePaperId", () => {
   it("make_paper_id is source scoped and validates input", () => {
     expect(makePaperId("arxiv", "2601.02771v2")).toBe(makePaperId("arxiv", "2601.02771"));

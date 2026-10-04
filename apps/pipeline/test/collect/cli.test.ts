@@ -136,6 +136,29 @@ it("test_cli_skip_llm_disables_stage4", async () => {
   expect(builtConfigs[0]?.llm?.enabled).toBe(false);
 });
 
+// collect LOW (P4 review round 2): `main()` used to short-circuit to
+// printing help on a bare `argv.includes("--help")`, which also matched
+// `--help` sitting in a VALUE position (here: the missing value for
+// `--config`). It must only trigger on a `--help`/`-h` FLAG token.
+it("--help as a flag's VALUE (not a flag token) does not short-circuit to help text", async () => {
+  const stdout: string[] = [];
+  const builtConfigs: Config[] = [];
+  const deps: CliDeps = {
+    createRunner: (config: Config): RunnerLike => {
+      builtConfigs.push(config);
+      return { run: async () => fakeResult() };
+    },
+    logger: noopLogger(),
+    stdout: (line) => stdout.push(line),
+  };
+  const rc = await main(["--config", "--help"], deps);
+  // argparse parity: `--config` consumed "--help" as its (look-ahead
+  // rejected) value, so this is a usage error, not help text.
+  expect(rc).toBe(2);
+  expect(builtConfigs.length).toBe(0);
+  expect(stdout.some((l) => l.includes("usage: collector"))).toBe(false);
+});
+
 it("test_cli_defaults_no_overrides", async () => {
   const configPath = writeConfig();
   const { builtConfigs } = await runMain(["--config", configPath]);

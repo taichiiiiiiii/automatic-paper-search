@@ -687,6 +687,37 @@ it("test_build_llm_provider_claude (runner wired through the real factory)", () 
   expect(runner.llmProvider?.enabled).toBe(true);
 });
 
+// #27 of docs/migration/p4-followups.md / collect LOW (P4 review round 2):
+// `llm.enabled: true` with a RECOGNIZED provider name but no matching
+// `.env` API key used to build a disabled provider silently — no
+// `stage4:` entry recorded, unlike an unknown provider name (the test
+// just above records one). That contradicted #27's own documented claim
+// that an unusable LLM gets recorded in run_history.
+it("records a stage4: error when a recognized LLM provider has no API key (collect LOW / #27)", async () => {
+  const config = buildConfig({ llm: { enabled: true, provider: "gemini" } });
+  // Deliberately NOT setting config.env.geminiApiKey.
+  const runner = buildRunner(config, {
+    llmProviderFactory: (llmCfg, env) =>
+      buildLlmProviderFromConfig(llmCfg, env, {
+        fetchImpl: async (): Promise<HttpResponseLike> => ({ status: 200, json: async () => ({}) }),
+      }),
+  });
+  expect(runner.llmProvider).toBeInstanceOf(GeminiProvider);
+  expect(runner.llmProvider?.enabled).toBe(false); // no API key -> auto-disabled
+  vi.spyOn(runner.sources[0]?.source as never, "fetch").mockResolvedValue({
+    papers: fakeArxivPapers(),
+    truncatedKeywords: [],
+    degradedKeywords: [],
+  });
+
+  const result = await runner.run();
+
+  expect(result.errors.some((e) => e.startsWith("stage4:"))).toBe(true);
+  expect(result.errors.find((e) => e.startsWith("stage4:"))).toContain("unavailable");
+  // Still Fail-Safe: the run completes and ships papers through unranked.
+  expect(result.outputCount).toBeGreaterThan(0);
+});
+
 it("test_build_llm_provider_unknown_returns_none", () => {
   const config = buildConfig({ llm: { enabled: true, provider: "bogus-vendor" } });
   const runner = buildRunner(config);

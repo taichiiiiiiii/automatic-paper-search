@@ -82,6 +82,30 @@ describe("requestWithRetry", () => {
     expect(calls).toBe(2);
   });
 
+  // LOW (P4 review round 2): `isTimeoutError`'s `e.name === "TimeoutError"`
+  // branch exists for a REAL fetch adapter's `AbortSignal.timeout()`,
+  // which rejects with a DOMException named "TimeoutError" — a distinct
+  // class from this module's own `TimeoutError` (already covered just
+  // above). Only that branch, not the custom class, was ever exercised.
+  it("retries once on a DOMException-shaped timeout (name === 'TimeoutError', not the custom class)", async () => {
+    let calls = 0;
+    const fetchImpl = vi.fn(async () => {
+      calls += 1;
+      if (calls === 1) {
+        const e = new Error("The operation was aborted due to timeout");
+        e.name = "TimeoutError";
+        throw e;
+      }
+      return resp(200);
+    });
+    const r = await requestWithRetry(
+      { method: "GET", url: "http://x" },
+      { fetchImpl, sleep: async () => {} },
+    );
+    expect(r?.status).toBe(200);
+    expect(calls).toBe(2);
+  });
+
   it("returns null on a generic request exception", async () => {
     const fetchImpl = vi.fn().mockRejectedValue(new Error("boom"));
     const r = await requestWithRetry({ method: "GET", url: "http://x" }, { fetchImpl });

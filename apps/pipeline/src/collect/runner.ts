@@ -270,10 +270,28 @@ export class PipelineRunner {
   private buildLlmProvider(): LLMProvider | null {
     const llmCfg = this.config.llm;
     if (!llmCfg?.enabled) return null;
-    if (this.deps.llmProvider) return this.deps.llmProvider;
-    if (this.deps.llmProviderFactory) {
-      const built = this.deps.llmProviderFactory(llmCfg, this.config.env);
-      if (built) return built;
+    const built =
+      this.deps.llmProvider ?? this.deps.llmProviderFactory?.(llmCfg, this.config.env) ?? null;
+    if (built) {
+      // #27 of docs/migration/p4-followups.md / collect LOW (P4 review
+      // round 2): a RECOGNIZED provider whose own `enabled` getter is
+      // `false` (e.g. `GeminiProvider`/`GroqProvider`/`ClaudeProvider`
+      // auto-disabling because `.env` has no matching API key) used to
+      // return here silently — `run()`'s Stage 4 branch would then see a
+      // non-null-but-disabled `llmProvider` and skip straight to slicing
+      // `papers`, with NO `stage4:` entry in `errors`/run_history. That
+      // contradicted #27's own claim that an unusable configured
+      // LLM/encoder gets recorded (Python only warns, but #27 is the
+      // documented TS-side difference). Treat it the same as an unknown
+      // provider name: still return the (disabled) instance — Fail-Safe,
+      // `run()` just won't call it — but also record the reason so the
+      // degradation is visible.
+      if (!built.enabled) {
+        const reason = `provider '${String(llmCfg.provider ?? "")}' unavailable (missing API key)`;
+        this.deps.logger?.warn(`runner: ${reason} — skipping Stage 4`);
+        this.llmProviderUnavailableReason = reason;
+      }
+      return built;
     }
     const reason = `unknown LLM provider '${String(llmCfg.provider ?? "")}'`;
     this.deps.logger?.warn(`runner: ${reason} — skipping Stage 4`);

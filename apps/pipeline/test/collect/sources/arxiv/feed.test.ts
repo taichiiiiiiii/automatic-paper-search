@@ -144,6 +144,56 @@ describe("parseArxivFeed — COL-02/03: non-feed body detection", () => {
     }
   });
 
+  // LOW (P4 review round 2): the existing MALFORMED_BODIES/
+  // SILENTLY_EMPTY_BODIES cases only assert `result.ok === false`, which a
+  // mutant can satisfy via a DIFFERENT failure path (e.g. `parser.parse`
+  // itself throwing, or the "lost page" COL-03 check below) without this
+  // specific `XMLValidator.validate` gate (:239) actually doing anything.
+  // This body is well-formed enough for `parser.parse` to happily accept
+  // it (a mismatched closing tag is NOT one of the handful of things the
+  // lenient parser itself checks), but `XMLValidator.validate` — a real,
+  // strict well-formedness check — correctly rejects it; pinning the exact
+  // "not valid XML" reason text proves THIS branch, not a downstream one,
+  // produced the rejection.
+  it("rejects a body XMLValidator flags as not well-formed even though the lenient parser itself would accept it (:239)", () => {
+    const body =
+      '<?xml version="1.0" encoding="UTF-8"?>' +
+      '<feed xmlns="http://www.w3.org/2005/Atom" xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/">' +
+      "<opensearch:totalResults>5</opensearch:totalResults>" +
+      "</feedx>"; // mismatched closing tag
+    const result = parseArxivFeed(body);
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.reason).toContain("not valid XML");
+      expect(result.reason).toContain("closing tag");
+    }
+  });
+
+  // LOW (P4 review round 2): the SILENTLY_EMPTY_BODIES cases that DO
+  // reach the root-shape check (:260) all have a root key OTHER than
+  // "feed" (`<html>`/`<error>`). This specifically exercises `feed` being
+  // present but NOT object-shaped (a bare-text `<feed>` with no
+  // attributes/children parses to a plain string) — the
+  // `typeof feed !== "object"` arm, distinct from the "missing feed key
+  // entirely" arm those other cases hit.
+  it("rejects a well-formed <feed> root that parses to a non-object value (:260)", () => {
+    const body = "<feed>plain text body, no namespace, no children</feed>";
+    const result = parseArxivFeed(body);
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.reason).toContain("unexpected root element");
+      expect(result.reason).toContain('"feed"');
+      // Specifically the :260 non-object-root arm, NOT the (also
+      // "unexpected root element \"feed\"") :270 xmlns-mismatch arm a
+      // string `feed` value would otherwise fall through to undetected
+      // (indexing a string with `["@_xmlns"]` returns `undefined`, not a
+      // throw, so a mutant that drops the `typeof`/`Array.isArray` checks
+      // here and only keeps `!feed` would still produce a similarly-
+      // worded, but NOT xmlns-mentioning, message from a DIFFERENT arm).
+      expect(result.reason).not.toContain("xmlns=");
+    }
+  });
+
   it("rejects a feed whose root is not the Atom namespace, even with tag name 'feed' (:249)", () => {
     const body =
       '<?xml version="1.0" encoding="UTF-8"?>' +

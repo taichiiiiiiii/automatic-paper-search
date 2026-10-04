@@ -78,4 +78,17 @@ describe("real tsx spawn of collect/cli.ts", () => {
     expect(status).toBe(2);
     expect(stdout).toMatch(/invalid int value/i);
   }, 30_000);
+
+  // MEDIUM-14 (P4 review round 2): `runRealCli`'s top-level try/catch
+  // (cli.ts, mapping any thrown error to `return 1`) was never exercised —
+  // a mutant changing that `return 1` to `return 0` would survive. A
+  // nonexistent `--config` path makes `loadConfig` throw
+  // `ConfigNotFoundError`, which `main()` does not catch (only
+  // `CliUsageError` is), so it reaches `runRealCli`'s catch.
+  it("--config pointing at a nonexistent file exits 1 via runRealCli's catch (MEDIUM-14)", () => {
+    const { status, stdout } = runCli(["--config", "/definitely/does/not/exist-xyz.yaml"]);
+    expect(status).toBe(1);
+    expect(stdout).toMatch(/fatal/i);
+    expect(stdout).toMatch(/Config file not found/i);
+  }, 30_000);
 });
