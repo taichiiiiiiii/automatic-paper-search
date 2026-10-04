@@ -13,6 +13,8 @@ import {
   buildIndex,
   buildIndexV2,
   CONFERENCE,
+  checkSearchIndexes,
+  INDEX_FILENAME,
   INDEX_V2_FILENAME,
   PAPER_ID_BLOCK_DIRNAME,
   PAPER_ID_BLOCK_SIZE,
@@ -207,6 +209,40 @@ describe("buildIndexV2", () => {
     expect(() => buildIndexV2(docs)).toThrow(/paper_id/);
   });
 
+  // CAT-29: `type` must be exactly "Oral" or "Poster" — any other value
+  // (including a legitimate summary.csv value like "Workshop" or a typo)
+  // must reject the row rather than silently embedding it.
+  it("rejects a row whose type is neither Oral nor Poster", () => {
+    writePapers("iclr-2026", [
+      {
+        title: "Bad Type",
+        authors: [],
+        tags: [],
+        type: "Workshop",
+        arxiv_url: "https://arxiv.org/abs/2404.00001",
+      },
+    ]);
+    expect(() => buildIndexV2(docs)).toThrow(/type must be Oral or Poster/);
+  });
+
+  // CAT-29: an embedded source/source_id pair that is well-formed (both
+  // present, both strings) but does not match the identity derived from
+  // the row's own `arxiv_url` must be rejected, not silently trusted.
+  it("rejects an embedded source/source_id that does not match the native URL", () => {
+    writePapers("iclr-2026", [
+      {
+        title: "Mismatched Source",
+        authors: [],
+        tags: [],
+        type: "Poster",
+        arxiv_url: "https://openreview.net/forum?id=abc123DEF",
+        source: "openreview",
+        source_id: "wrongID999",
+      },
+    ]);
+    expect(() => buildIndexV2(docs)).toThrow(/embedded source identity mismatch/);
+  });
+
   it("row shape fields are at the documented ordinals", () => {
     writePapers("x-2025", [
       {
@@ -313,4 +349,66 @@ describe("writeSearchIndexes two-phase publish order (CAT-30)", () => {
 
 it("PAPER_ID_BLOCK_SIZE matches the Python constant", () => {
   expect(PAPER_ID_BLOCK_SIZE).toBe(256);
+});
+
+// CAT-31: `checkSearchIndexes` (the `--check` body of `build_search_index.py`'s
+// `main()`) had no test and no CLI calling it at all — a regression there
+// would go undetected by the whole suite. Ported from Python's
+// `test_check_detects_stale_index` family.
+describe("checkSearchIndexes (CAT-31)", () => {
+  function seedValidIndexes(): void {
+    writePapers("iclr-2026", [
+      {
+        title: "Check Paper",
+        authors: ["A"],
+        tags: ["X"],
+        type: "Poster",
+        arxiv_url: "https://arxiv.org/abs/2404.00001",
+      },
+    ]);
+    writeSearchIndexes(docs);
+  }
+
+  it("passes against a freshly written, untampered index", () => {
+    seedValidIndexes();
+    expect(() => checkSearchIndexes(docs)).not.toThrow();
+  });
+
+  it("rejects a tampered search-index-v2.json without rewriting it", () => {
+    seedValidIndexes();
+    const v2Path = join(docs, INDEX_V2_FILENAME);
+    writeFileSync(v2Path, '[["tampered"]]', "utf-8");
+    const v1Before = readFileSync(join(docs, INDEX_FILENAME), "utf-8");
+
+    expect(() => checkSearchIndexes(docs)).toThrow(/stale/);
+    expect(readFileSync(v2Path, "utf-8")).toBe('[["tampered"]]');
+    expect(readFileSync(join(docs, INDEX_FILENAME), "utf-8")).toBe(v1Before);
+  });
+
+  it("rejects an extra paper-ID block file, leaving the tree unchanged", () => {
+    seedValidIndexes();
+    const blockRoot = join(docs, PAPER_ID_BLOCK_DIRNAME);
+    const extraPath = join(blockRoot, "9999.json");
+    const extraPayload =
+      '{"schema_version":"search-paper-ids-v1","block":9999,"start":0,"paper_ids":[]}\n';
+    writeFileSync(extraPath, extraPayload, "utf-8");
+    const v2Before = readFileSync(join(docs, INDEX_V2_FILENAME), "utf-8");
+
+    expect(() => checkSearchIndexes(docs)).toThrow(/stale/);
+    expect(fs.existsSync(extraPath)).toBe(true);
+    expect(readFileSync(extraPath, "utf-8")).toBe(extraPayload);
+    expect(readFileSync(join(docs, INDEX_V2_FILENAME), "utf-8")).toBe(v2Before);
+  });
+
+  it("rejects a deleted paper-ID block file, leaving other files unchanged", () => {
+    seedValidIndexes();
+    const blockRoot = join(docs, PAPER_ID_BLOCK_DIRNAME);
+    const blockPath = join(blockRoot, "0000.json");
+    const v2Before = readFileSync(join(docs, INDEX_V2_FILENAME), "utf-8");
+    rmSync(blockPath);
+
+    expect(() => checkSearchIndexes(docs)).toThrow(/stale/);
+    expect(fs.existsSync(blockPath)).toBe(false);
+    expect(readFileSync(join(docs, INDEX_V2_FILENAME), "utf-8")).toBe(v2Before);
+  });
 });

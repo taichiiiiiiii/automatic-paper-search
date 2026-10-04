@@ -401,6 +401,38 @@ it("promote({kind:'themes'}) with the default hooks rejects and pushes nothing",
   expect(remoteDevelopSha()).toBe(before);
 });
 
+// LOW: `await refreshSharedOutputs(...)` must actually be awaited — a
+// missing `await` would leave its rejection as a floating, unhandled
+// promise rather than something `promote()` can catch, so execution
+// would fall through to `validatePromotedTree`/commit/push as though the
+// refresh had succeeded.
+it("a refreshSharedOutputs rejection is awaited and propagates, pushing nothing", async () => {
+  const before = remoteDevelopSha();
+  let validateCalled = false;
+  await expect(
+    promote({
+      kind: "test-only",
+      candidateDir: world.candidate,
+      commitMessage: "data(test): refresh-rejects",
+      allowedPaths: ["docs/themes"],
+      git: adapter,
+      cwd: world.checkout,
+      promoteBaseSha: baseSha(),
+      promoteMaxAttempts: 1,
+      promoteNoSleep: true,
+      promotionTestMode: true,
+      refreshSharedOutputs: async () => {
+        throw new PromotionError("refresh failed");
+      },
+      validatePromotedTree: async () => {
+        validateCalled = true;
+      },
+    }),
+  ).rejects.toThrow(/refresh failed/);
+  expect(validateCalled).toBe(false);
+  expect(remoteDevelopSha()).toBe(before);
+});
+
 it("a validatePromotedTree rejection is awaited and propagates, pushing nothing", async () => {
   const before = remoteDevelopSha();
   await expect(

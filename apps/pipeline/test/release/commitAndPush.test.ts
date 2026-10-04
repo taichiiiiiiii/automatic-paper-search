@@ -169,6 +169,41 @@ it("PUB-23: a genuine rebase conflict is aborted, leaving the repo usable and th
   expect(gitRun(world.local, ["status", "--porcelain"]).trim()).toBe("");
 });
 
+// LOW: pin the exact jittered backoff formula
+// `(attempt * 3 + floor(random() * 5)) * 1000` ms between retries — a
+// test asserting only "it eventually fails"/"it eventually succeeds"
+// can't catch a wrong coefficient or a dropped jitter term.
+it("backs off with the exact jittered formula (attempt*3 + floor(random*5)) * 1000 ms", async () => {
+  const hooks = join(world.remote, "hooks");
+  mkdirSync(hooks, { recursive: true });
+  writeFileSync(join(hooks, "pre-receive"), "#!/bin/sh\necho 'always reject for test'\nexit 1\n", {
+    mode: 0o755,
+  });
+
+  const delays: number[] = [];
+  const sleep = (ms: number): Promise<void> => {
+    delays.push(ms);
+    return Promise.resolve();
+  };
+  const random = () => 0.4; // floor(0.4 * 5) = 2
+
+  await expect(
+    commitAndPush({
+      message: "data(themes): doomed push",
+      stagePaths: ["docs/themes/"],
+      git: adapter,
+      cwd: world.local,
+      maxAttempts: 3,
+      sleep,
+      random,
+    }),
+  ).rejects.toThrow(/push failed/);
+
+  // maxAttempts=3: sleeps happen after attempts 1 and 2, never after the
+  // final (3rd) attempt.
+  expect(delays).toEqual([(1 * 3 + 2) * 1000, (2 * 3 + 2) * 1000]);
+});
+
 it("stages a commit message containing shell metacharacters literally", async () => {
   const payload = 'data(themes): "$(touch pwned)" `id`';
   const outcome = await commitAndPush({

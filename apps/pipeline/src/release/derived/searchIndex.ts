@@ -327,9 +327,15 @@ export function checkSearchIndexes(docsRoot: string): void {
   const expectedPaths = new Set(expectedBlocks.keys());
   const sameSet =
     actualPaths.size === expectedPaths.size && [...actualPaths].every((p) => expectedPaths.has(p));
-  const sameContent = [...expectedBlocks.entries()].every(
-    ([path, payload]) => readFileSync(path, "utf-8") === payload,
-  );
+  // Short-circuit on `sameSet`: a missing expected block (sameSet already
+  // false) must still report the clean "stale" error below, not crash
+  // with an uncaught ENOENT from reading a block that `sameSet` already
+  // proved doesn't exist.
+  const sameContent =
+    sameSet &&
+    [...expectedBlocks.entries()].every(
+      ([path, payload]) => readFileSync(path, "utf-8") === payload,
+    );
   if (!sameSet || !sameContent) {
     throw new Error("committed search paper ID blocks are stale");
   }

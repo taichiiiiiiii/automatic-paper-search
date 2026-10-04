@@ -91,6 +91,21 @@ it("validateJsonBundle rejects an invalid sitemap.xml", () => {
   expect(() => validateJsonBundle(docs)).toThrow(/sitemap/);
 });
 
+// PUB-35: validateJsonBundle's own conferences.json must be a non-empty
+// array (distinct from the "entry with no catalog" check below, which
+// requires the array to be non-empty and then checks each entry).
+it("validateJsonBundle rejects an empty local conferences.json", () => {
+  writeValidBundle();
+  writeFileSync(join(docs, "conferences.json"), "[]");
+  expect(() => validateJsonBundle(docs)).toThrow(/conferences.json must be a non-empty array/);
+});
+
+it("validateJsonBundle rejects a conferences.json that is not an array at all", () => {
+  writeValidBundle();
+  writeFileSync(join(docs, "conferences.json"), '{"name":"iclr-2026"}');
+  expect(() => validateJsonBundle(docs)).toThrow(/conferences.json must be a non-empty array/);
+});
+
 it("validateJsonBundle rejects a conferences.json entry with no catalog", () => {
   writeValidBundle();
   writeFileSync(
@@ -210,6 +225,48 @@ it("smokeRemote rejects a marker SHA mismatch", async () => {
       fetchImpl: fakeFetch(validSmokeRoutes("b".repeat(40))),
     }),
   ).rejects.toThrow(/does not match/);
+});
+
+// PUB-35: the deployed root response must actually be the HTML shell, not
+// e.g. a JSON error page or an empty body that happened to return 200.
+it("smokeRemote rejects a deployed root page that is not HTML", async () => {
+  const routes = validSmokeRoutes(SHA);
+  routes["/"] = '{"error":"not found"}';
+  await expect(
+    smokeRemote({
+      baseUrl: "https://paperpilot.pages.dev",
+      expectedSha: SHA,
+      fetchImpl: fakeFetch(routes),
+    }),
+  ).rejects.toThrow(/root page is not HTML/);
+});
+
+// PUB-35: the first conferences.json entry (used as the representative
+// smoke route) must carry a `name` string, or there is nothing to smoke
+// beyond the already-checked conferences.json/search-index-v2.json/
+// lineage-quality-v1.json fetches themselves.
+it("smokeRemote rejects a representative conference entry with no name", async () => {
+  const routes = validSmokeRoutes(SHA);
+  routes["/conferences.json"] = JSON.stringify([{ papers: 10 }]);
+  await expect(
+    smokeRemote({
+      baseUrl: "https://paperpilot.pages.dev",
+      expectedSha: SHA,
+      fetchImpl: fakeFetch(routes),
+    }),
+  ).rejects.toThrow(/representative conference has no name/);
+});
+
+it("smokeRemote rejects an empty deployed search-index-v2.json", async () => {
+  const routes = validSmokeRoutes(SHA);
+  routes["/search-index-v2.json"] = "[]";
+  await expect(
+    smokeRemote({
+      baseUrl: "https://paperpilot.pages.dev",
+      expectedSha: SHA,
+      fetchImpl: fakeFetch(routes),
+    }),
+  ).rejects.toThrow(/search-index-v2.json is empty/);
 });
 
 it("smokeRemote rejects an empty deployed conferences.json", async () => {

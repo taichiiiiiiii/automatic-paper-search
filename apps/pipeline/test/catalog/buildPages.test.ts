@@ -147,6 +147,21 @@ describe("loadSummaryWithDetails", () => {
     expect(() => loadSummaryWithDetails(join(conf, "summary.csv"))).toThrow(IdentityError);
   });
 
+  // CAT-16: the complementary half-pair — source_id declared, source left
+  // blank. The existing "only source declared" case above can pass even
+  // with the Boolean-presence check removed (normalizeAlias("openreview",
+  // "") still throws IdentityError downstream), so it does not alone pin
+  // this check; this case does, because `declaredSource` is falsy here —
+  // without the explicit presence check, the `if (declaredSource)`
+  // validation block below is skipped entirely and nothing throws.
+  it("CAT-16: throws IdentityError when only source_id is declared (source blank)", () => {
+    const conf = join(roots.outputRoot, "iclr-2026");
+    writeSummaryCsv(conf, [
+      arxivRow(1, { source_id: "abc123DEF" }), // source left blank
+    ]);
+    expect(() => loadSummaryWithDetails(join(conf, "summary.csv"))).toThrow(IdentityError);
+  });
+
   it("CAT-16: throws IdentityError when declared source/source_id mismatches the native URL", () => {
     const conf = join(roots.outputRoot, "iclr-2026");
     writeSummaryCsv(conf, [
