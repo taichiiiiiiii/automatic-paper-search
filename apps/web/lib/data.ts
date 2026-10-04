@@ -67,17 +67,28 @@ export const ConferenceSummarySchema = z
   .passthrough();
 export type ConferenceSummary = z.infer<typeof ConferenceSummarySchema>;
 
-const ConferencesSchema = z.array(ConferenceSummarySchema);
-
-/** Fetches /conferences.json (the catalog index: one summary row per conference). */
+/** Fetches /conferences.json (the catalog index: one summary row per
+ * conference).
+ *
+ * Validates row-by-row (SCR-09's own filtering, extended from
+ * landing.js's name/papers-only check to the full row shape): one row
+ * with a malformed/unread field (e.g. a future schema change touching
+ * `types`/`top_tags`) is dropped, not treated as a reason to reject the
+ * whole file and blank out every conference on the landing page. Only a
+ * non-array top-level response, an HTTP failure, or a fetch/parse
+ * exception is a real `error` result. */
 export async function fetchConferences(): Promise<DataResult<ConferenceSummary[]>> {
   try {
     const raw = await fetchJson("/conferences.json");
-    const parsed = ConferencesSchema.safeParse(raw);
-    if (!parsed.success) {
-      return { status: "error", error: `conferences.json: ${parsed.error.message}` };
+    if (!Array.isArray(raw)) {
+      return { status: "error", error: "conferences.json: expected an array" };
     }
-    return { status: "ok", data: parsed.data };
+    const rows: ConferenceSummary[] = [];
+    for (const item of raw) {
+      const parsed = ConferenceSummarySchema.safeParse(item);
+      if (parsed.success) rows.push(parsed.data);
+    }
+    return { status: "ok", data: rows };
   } catch (err) {
     return { status: "error", error: errorMessage(err) };
   }
@@ -96,8 +107,12 @@ export const PaperSchema = z
     authors: z.array(z.string()),
     abstract: z.string(),
     arxiv_id: z.string(),
-    citation_count: z.number(),
-    venue_tier: z.number(),
+    // build_pages.py's _maybe_int() returns int | None for any CSV cell
+    // that is missing or unparseable -- a null here is a real value
+    // this app must render (e.g. "citation count unknown"), not a
+    // reason to fail the whole conference's catalog.
+    citation_count: z.number().nullable(),
+    venue_tier: z.number().nullable(),
   })
   .passthrough();
 export type Paper = z.infer<typeof PaperSchema>;

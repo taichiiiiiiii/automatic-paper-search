@@ -30,6 +30,8 @@ export function SearchDetailDialog() {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const triggerRef = useRef<HTMLAnchorElement | null>(null);
   const frameRef = useRef<HTMLIFrameElement | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const slowTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const [frameSrc, setFrameSrc] = useState<string | null>(null);
   const [directHref, setDirectHref] = useState("./");
@@ -50,6 +52,11 @@ export function SearchDetailDialog() {
       setStatus(LOADING_MESSAGE);
       setFrameSrc(url.href);
       dialog.showModal();
+      // showModal() would otherwise focus the first focusable element in
+      // tree order -- the "通常ページで開く" link, not the close button
+      // a keyboard/screen-reader user expects to land on when a dialog
+      // opens.
+      closeButtonRef.current?.focus();
     }
     document.addEventListener("click", onDocumentClick);
     return () => document.removeEventListener("click", onDocumentClick);
@@ -58,13 +65,16 @@ export function SearchDetailDialog() {
   // One "this is taking a while" timer per opening, tied to the iframe's
   // src -- never reset by an unrelated re-render (e.g. the load handler
   // setting `status`), and always cancelled when the dialog closes
-  // (frameSrc -> null) or a new paper is opened (frameSrc changes).
+  // (frameSrc -> null), a new paper is opened (frameSrc changes), or the
+  // iframe finishes loading before the timeout (handleFrameLoad clears
+  // it) -- a paper that loads in 2s must not have its LOADED_MESSAGE
+  // overwritten by SLOW_MESSAGE 13s later.
   useEffect(() => {
     if (!frameSrc) return;
-    const timer = setTimeout(() => {
+    slowTimerRef.current = setTimeout(() => {
       if (dialogRef.current?.open) setStatus(SLOW_MESSAGE);
     }, SLOW_TIMEOUT_MS);
-    return () => clearTimeout(timer);
+    return () => clearTimeout(slowTimerRef.current);
   }, [frameSrc]);
 
   function handleClose() {
@@ -82,6 +92,7 @@ export function SearchDetailDialog() {
     // A load event from an iframe that is no longer the tracked one (a
     // stale dialog opening) must not touch the current dialog's state.
     if (!dialog?.open || frameRef.current !== frame) return;
+    clearTimeout(slowTimerRef.current);
     setStatus(LOADED_MESSAGE);
     // Key events inside an iframe do not bubble to the parent dialog.
     try {
@@ -116,7 +127,12 @@ export function SearchDetailDialog() {
         <a id="search-detail-open" href={directHref}>
           通常ページで開く →
         </a>
-        <button id="search-detail-close" type="button" onClick={() => dialogRef.current?.close()}>
+        <button
+          ref={closeButtonRef}
+          id="search-detail-close"
+          type="button"
+          onClick={() => dialogRef.current?.close()}
+        >
           閉じて検索に戻る
         </button>
       </header>

@@ -52,7 +52,7 @@ describe("fetchSearchIdBlock", () => {
       status: "ok",
       data: { schema_version: "search-paper-ids-v1", block: 0, start: 0, paper_ids: paperIds },
     });
-    expect(fetch).toHaveBeenCalledWith("/search-paper-ids-v1/0000.json");
+    expect(fetch).toHaveBeenCalledWith("/search-paper-ids-v1/0000.json", { cache: "no-cache" });
   });
 
   it("fails closed on an HTTP error", async () => {

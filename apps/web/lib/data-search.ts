@@ -56,7 +56,7 @@ export async function fetchSearchIdBlock(
   totalRows: number,
 ): Promise<DataResult<IdBlock>> {
   try {
-    const res = await fetch(publicPath(`/${blockFile(block * BLOCK_SIZE)}`));
+    const res = await fetch(publicPath(`/${blockFile(block * BLOCK_SIZE)}`), { cache: "no-cache" });
     if (!res.ok) {
       throw new Error(`search-paper-ids-v1/${block} fetch failed: HTTP ${res.status}`);
     }

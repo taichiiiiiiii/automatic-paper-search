@@ -385,10 +385,16 @@ export function SearchArea({ handleRef }: { handleRef?: Ref<SearchAreaHandle> })
   function handleInputChange(value: string) {
     queryRef.current = value;
     setQueryValue(value);
-    updateQueryUrl(value);
+    // The input keeps the raw value the user typed (including spaces),
+    // matching search.js's own `input.value` -- but the URL and the
+    // query actually run are always the trimmed form (search.js's
+    // 'input' handler reads `input.value.trim()`), so leading/trailing
+    // spaces never show up as a literal "+" in `?q=`.
+    const trimmedQuery = value.trim();
+    updateQueryUrl(trimmedQuery);
     clearTimeout(inputTimerRef.current);
     inputTimerRef.current = setTimeout(() => {
-      runQuery(value, null);
+      runQuery(trimmedQuery, null);
     }, DEBOUNCE_MS);
   }
 

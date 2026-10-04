@@ -53,8 +53,20 @@ describe("fetchConferences", () => {
     }
   });
 
-  it("returns an error state (not empty data) on schema mismatch", async () => {
+  it("drops a malformed row instead of rejecting the whole response (SCR-09 extended to the full row shape)", async () => {
+    mockFetchOnce([validConference, { name: "cvpr-2026" /* missing required fields */ }]);
+    const result = await fetchConferences();
+    expect(result).toEqual({ status: "ok", data: [validConference] });
+  });
+
+  it("returns ok with no rows (not an error) when every row is malformed", async () => {
     mockFetchOnce([{ name: "cvpr-2026" /* missing required fields */ }]);
+    const result = await fetchConferences();
+    expect(result).toEqual({ status: "ok", data: [] });
+  });
+
+  it("returns an error state when the top-level response is not an array", async () => {
+    mockFetchOnce({ not: "an array" });
     const result = await fetchConferences();
     expect(result.status).toBe("error");
   });
@@ -97,6 +109,13 @@ describe("fetchConferencePapers", () => {
     const result = await fetchConferencePapers("../../etc/passwd");
     expect(result.status).toBe("error");
     expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it("accepts a null citation_count/venue_tier (build_pages.py's _maybe_int() can return None)", async () => {
+    const paper = { ...validPaper, citation_count: null, venue_tier: null };
+    mockFetchOnce([paper]);
+    const result = await fetchConferencePapers("cvpr-2026");
+    expect(result).toEqual({ status: "ok", data: [paper] });
   });
 });
 
