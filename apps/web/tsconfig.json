@@ -1,7 +1,14 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "target": "ES2017",
+    // ES2022 (not Next's template default ES2017): apps/web now imports
+    // @paperpilot/core (lib/config.ts, lib/data.ts), whose package.json
+    // `exports` points straight at its TS source, so tsc type-checks
+    // that source under *this* file's `target`/`lib`. core's own
+    // pycompat/round.ts uses BigInt literals (ES2020+), so anything
+    // lower than tsconfig.base.json's ES2022 fails here even though
+    // Next's SWC build is unaffected (it does its own downleveling).
+    "target": "ES2022",
     "lib": ["dom", "dom.iterable", "ES2022"],
     "allowJs": true,
     "module": "esnext",

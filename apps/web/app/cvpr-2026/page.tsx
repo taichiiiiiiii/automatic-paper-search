@@ -1,48 +1,44 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type { DataResult, Paper } from "../../lib/data";
+import { fetchConferencePapers } from "../../lib/data";
 
-type LoadState =
-  | { status: "loading" }
-  | { status: "loaded"; count: number }
-  | { status: "error"; message: string };
-
+/**
+ * Minimal placeholder: fetches the real /cvpr-2026/papers.json (copied
+ * from docs/ by scripts/copy-data.ts) via lib/data.ts and shows the
+ * paper count. A later page agent replaces this with the full catalog
+ * page (filter bar, search, tag chips -- docs/cvpr-2026/index.html).
+ */
 export default function Cvpr2026Page() {
-  const [state, setState] = useState<LoadState>({ status: "loading" });
+  const [result, setResult] = useState<DataResult<Paper[]> | { status: "loading" }>({
+    status: "loading",
+  });
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/placeholder/cvpr-2026.json")
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-      })
-      .then((data: unknown) => {
-        if (cancelled) return;
-        const count = Array.isArray(data) ? data.length : 0;
-        setState({ status: "loaded", count });
-      })
-      .catch((err: unknown) => {
-        if (cancelled) return;
-        setState({
-          status: "error",
-          message: err instanceof Error ? err.message : "unknown error",
-        });
-      });
+    fetchConferencePapers("cvpr-2026").then((r) => {
+      if (!cancelled) setResult(r);
+    });
     return () => {
       cancelled = true;
     };
   }, []);
 
   return (
-    <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-16">
-      <h1 className="text-3xl font-bold tracking-tight">CVPR 2026</h1>
-      {state.status === "loading" && <p className="text-sm text-slate-500">読み込み中…</p>}
-      {state.status === "loaded" && (
-        <p className="text-sm text-slate-500">{state.count} 件取得（placeholder）</p>
+    <main id="main-content" className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-16 sm:px-6">
+      <h1 className="font-serif text-3xl font-bold tracking-tight text-ink">CVPR 2026</h1>
+      {result.status === "loading" && <p className="text-sm text-ink-subtle">読み込み中…</p>}
+      {result.status === "ok" && (
+        <p className="text-sm text-ink-muted">
+          <span className="font-mono text-ink">{result.data.length}</span>{" "}
+          件の採択論文（placeholder）
+        </p>
       )}
-      {state.status === "error" && (
-        <p className="text-sm text-red-600">読み込み失敗: {state.message}</p>
+      {result.status === "error" && (
+        <p className="text-sm text-accent-strong" role="alert">
+          論文一覧の読み込みに失敗しました: {result.error}
+        </p>
       )}
     </main>
   );

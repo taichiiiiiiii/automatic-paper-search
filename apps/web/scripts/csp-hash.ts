@@ -20,7 +20,7 @@ import { createHash } from "node:crypto";
 import { readdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
-import { API_BASE } from "../lib/config";
+import { buildCspContent } from "../lib/config";
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const OUT_DIR = join(SCRIPT_DIR, "..", "out");
@@ -58,21 +58,11 @@ function collectInlineScriptHashes(html: string): string[] {
   return hashes;
 }
 
-/** Non-script directives: identical on every page, by construction. */
-function buildCspContent(scriptHashes: string[]): string {
+/** This page's full CSP content: site-wide directives (from
+ * @paperpilot/core, via lib/config) plus this page's own script-src. */
+function cspContentFor(scriptHashes: string[]): string {
   const scriptSrc = `script-src 'self'${scriptHashes.length ? ` ${scriptHashes.join(" ")}` : ""}`;
-  const directives = [
-    `default-src 'self'`,
-    scriptSrc,
-    `connect-src 'self' ${API_BASE}`,
-    `style-src 'self'`,
-    `font-src 'self'`,
-    `img-src 'self' data:`,
-    `base-uri 'self'`,
-    `form-action 'self'`,
-    `object-src 'none'`,
-  ];
-  return directives.join("; ");
+  return buildCspContent(scriptSrc);
 }
 
 function upsertMetaCsp(html: string, content: string): string {
@@ -94,7 +84,7 @@ async function main(): Promise<void> {
   for (const file of files.sort()) {
     const html = await readFile(file, "utf8");
     const hashes = collectInlineScriptHashes(html);
-    const cspContent = buildCspContent(hashes);
+    const cspContent = cspContentFor(hashes);
     const updated = upsertMetaCsp(html, cspContent);
     await writeFile(file, updated, "utf8");
     console.log(`csp-hash: ${relative(OUT_DIR, file)} -> ${hashes.length} inline script hash(es)`);

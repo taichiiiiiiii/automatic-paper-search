@@ -1,0 +1,124 @@
+import { afterEach, describe, expect, it, vi } from "vitest";
+import {
+  type ConferenceSummary,
+  fetchConferencePapers,
+  fetchConferences,
+  fetchSearchIndex,
+} from "../lib/data";
+
+function mockFetchOnce(body: unknown, init?: { ok?: boolean; status?: number }): void {
+  const ok = init?.ok ?? true;
+  const status = init?.status ?? (ok ? 200 : 500);
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async () => ({
+      ok,
+      status,
+      json: async () => body,
+    })),
+  );
+}
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
+
+const validConference: ConferenceSummary = {
+  name: "cvpr-2026",
+  papers: 2,
+  types: { Oral: 1, Poster: 1 },
+  top_tags: [["LLM", 2]],
+  generated: "2026-06-28",
+};
+
+describe("fetchConferences", () => {
+  it("returns ok with parsed data for a well-formed conferences.json", async () => {
+    mockFetchOnce([validConference]);
+    const result = await fetchConferences();
+    expect(result).toEqual({ status: "ok", data: [validConference] });
+  });
+
+  it("fetches /conferences.json", async () => {
+    mockFetchOnce([validConference]);
+    await fetchConferences();
+    expect(fetch).toHaveBeenCalledWith("/conferences.json");
+  });
+
+  it("returns an error state (not empty data) on HTTP failure", async () => {
+    mockFetchOnce(null, { ok: false, status: 404 });
+    const result = await fetchConferences();
+    expect(result.status).toBe("error");
+    if (result.status === "error") {
+      expect(result.error).toContain("404");
+    }
+  });
+
+  it("returns an error state (not empty data) on schema mismatch", async () => {
+    mockFetchOnce([{ name: "cvpr-2026" /* missing required fields */ }]);
+    const result = await fetchConferences();
+    expect(result.status).toBe("error");
+  });
+
+  it("returns an error state when fetch itself rejects (network failure)", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => {
+        throw new TypeError("network error");
+      }),
+    );
+    const result = await fetchConferences();
+    expect(result).toEqual({ status: "error", error: "network error" });
+  });
+});
+
+describe("fetchConferencePapers", () => {
+  const validPaper = {
+    title: "Example Paper",
+    type: "Oral",
+    tags: ["LLM"],
+    venue: "CVPR",
+    authors: ["A. Author"],
+    abstract: "An abstract.",
+    arxiv_id: "",
+    citation_count: 0,
+    venue_tier: 2,
+  };
+
+  it("fetches /<slug>/papers.json", async () => {
+    mockFetchOnce([validPaper]);
+    const result = await fetchConferencePapers("cvpr-2026");
+    expect(fetch).toHaveBeenCalledWith("/cvpr-2026/papers.json");
+    expect(result).toEqual({ status: "ok", data: [validPaper] });
+  });
+
+  it("rejects a slug that cannot be a safe path segment, without fetching", async () => {
+    const fetchSpy = vi.fn();
+    vi.stubGlobal("fetch", fetchSpy);
+    const result = await fetchConferencePapers("../../etc/passwd");
+    expect(result.status).toBe("error");
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+});
+
+describe("fetchSearchIndex", () => {
+  it("parses a well-formed 7-tuple entry", async () => {
+    const entry = ["Some Title", "aaai-2026", 0, ["Author"], ["LLM"], 2026, "Oral"];
+    mockFetchOnce([entry]);
+    const result = await fetchSearchIndex();
+    expect(result).toEqual({ status: "ok", data: [entry] });
+  });
+
+  it("rejects an entry whose type is not Oral/Poster", async () => {
+    const entry = ["Some Title", "aaai-2026", 0, ["Author"], ["LLM"], 2026, "Workshop"];
+    mockFetchOnce([entry]);
+    const result = await fetchSearchIndex();
+    expect(result.status).toBe("error");
+  });
+
+  it("accepts a null year", async () => {
+    const entry = ["Some Title", "aaai-2026", 0, ["Author"], ["LLM"], null, "Poster"];
+    mockFetchOnce([entry]);
+    const result = await fetchSearchIndex();
+    expect(result.status).toBe("ok");
+  });
+});
