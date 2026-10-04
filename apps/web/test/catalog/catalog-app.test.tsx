@@ -186,3 +186,43 @@ describe("CatalogApp paper-links link (catalog LOW)", () => {
     expect(link.getAttribute("href")).toBe("/test-conf/paper-links/");
   });
 });
+
+describe("CatalogApp null -> null popstate restore (P2 review LOW-3)", () => {
+  it("restores scroll/focus immediately on a popstate that carries a snapshot but does not change selectedPaperId", async () => {
+    window.history.replaceState(null, "", "/test-conf/");
+    await renderLoaded([PAPER_A, PAPER_B]);
+
+    const scrollToSpy = vi.spyOn(window, "scrollTo").mockImplementation(() => {});
+
+    // selectedPaperId is null both before and after this popstate (the
+    // URL carries no `?paper=`) -- only the restore effect's OTHER
+    // dependency, `restoreNonce`, changes. Without it, the restore
+    // effect's dependency array is just `[selectedPaperId]`, which does
+    // NOT change here, so React never re-runs it and this snapshot is
+    // silently dropped: a user who double-taps Back (landing on two
+    // list-only history entries in a row) would lose the scroll/focus
+    // restore their SECOND Back press' snapshot was for.
+    const listState = {
+      paperpilotCatalogRestore: {
+        version: 1,
+        visibleCount: 30,
+        scrollY: 999,
+        focusPaperId: PAPER_A.paper_id,
+      },
+    };
+    await act(async () => {
+      window.history.replaceState(listState, "", "/test-conf/");
+      window.dispatchEvent(new PopStateEvent("popstate", { state: listState }));
+    });
+    await act(async () => {
+      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+    });
+
+    expect(scrollToSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ top: 999, behavior: "auto" }),
+    );
+    expect(document.activeElement).toBe(
+      document.querySelector(`[data-select-paper="${PAPER_A.paper_id}"]`),
+    );
+  });
+});

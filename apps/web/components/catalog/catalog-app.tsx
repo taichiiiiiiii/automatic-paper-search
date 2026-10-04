@@ -131,6 +131,15 @@ export function CatalogApp({
   // LIST (no selected paper) and the LIST entry carries a restore
   // snapshot. Consumed once by the scroll/focus-restore effect below.
   const pendingListRestoreRef = useRef<{ scrollY: number; focusPaperId: string } | null>(null);
+  // P2 review LOW-3: bumped every popstate so the scroll/focus-restore
+  // effect below reliably re-runs even on a null -> null
+  // `selectedPaperId` popstate (one that carries a restore snapshot
+  // but does not itself change the selection, e.g. landing on two
+  // list-only history entries in a row) -- that effect's OWN
+  // dependency (`selectedPaperId`) would otherwise be unchanged, so
+  // React would never re-run it and the snapshot would be silently
+  // dropped instead of restoring scroll/focus.
+  const [restoreNonce, setRestoreNonce] = useState(0);
   const retryButtonRef = useRef<HTMLButtonElement | null>(null);
   const retryFocusPendingRef = useRef(false);
   const pilotIndexRef = useRef<PilotLineageIndex | null>(null);
@@ -295,6 +304,11 @@ export function CatalogApp({
       // A popstate restore never animates either (docs/assets/app.js's
       // popstate handler calls the no-arg `renderList()`).
       setRevealBatch(null);
+      // P2 review LOW-3: forces the restore effect below to re-run for
+      // THIS popstate specifically, even when `selectedPaperId` itself
+      // didn't change (null -> null) -- see `restoreNonce`'s own
+      // declaration above.
+      setRestoreNonce((n) => n + 1);
     }
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
@@ -405,6 +419,14 @@ export function CatalogApp({
   // was at before selecting a paper, and returns keyboard focus to that
   // paper's select button -- falling back to the search input if the
   // list has since changed and that paper is no longer rendered.
+  //
+  // P2 review LOW-3: `restoreNonce` is not read in the body -- it only
+  // forces this effect to re-run on EVERY popstate, including a null ->
+  // null `selectedPaperId` one (its own dependency on `selectedPaperId`
+  // alone would otherwise never change, so the effect would never
+  // re-run and a restore snapshot landed by that popstate would be
+  // silently dropped instead of applied).
+  // biome-ignore lint/correctness/useExhaustiveDependencies: restoreNonce (above) is not read in the body -- it only forces a re-run on every popstate.
   useEffect(() => {
     if (selectedPaperId) return;
     const pending = pendingListRestoreRef.current;
@@ -422,7 +444,7 @@ export function CatalogApp({
     // effect cares about always sets it in the SAME batched update as
     // `selectedPaperId` (the popstate handler above), so by the time
     // this effect runs the DOM already reflects both.
-  }, [selectedPaperId]);
+  }, [selectedPaperId, restoreNonce]);
 
   // --- user-driven mutations ------------------------------------------------
   function resetReveal() {

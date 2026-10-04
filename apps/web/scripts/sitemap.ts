@@ -19,10 +19,13 @@
  * never hand-edited. No `priority` / `changefreq` elements (search engines
  * ignore both) -- same decision as the current Python generator.
  */
+import { createHash } from "node:crypto";
+import type { Dirent } from "node:fs";
 import { readdir, readFile, stat, writeFile } from "node:fs/promises";
 import { dirname, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { canonicalUrl } from "../lib/config";
+import { parseQualityManifest, qualityRowIsEligible } from "../lib/lineage/core";
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const OUT_DIR = join(SCRIPT_DIR, "..", "out");
@@ -55,26 +58,36 @@ const HEADER_COMMENT = [
   "     engines ignore both. -->",
 ].join("\n");
 
-interface LineageQualityRow {
-  readonly kind?: unknown;
-  readonly slug?: unknown;
-  readonly conference?: unknown;
-  readonly availability?: unknown;
-  readonly audit_status?: unknown;
-}
-
 /**
  * Site-relative routes the lineage quality manifest authorises for the
- * sitemap, ported 1:1 from `paperpilot/scripts/build_sitemap.py`'s
- * `_eligible_lineage_routes` (safety contracts CAT-39): only `kind`
- * "conference" / "theme" / "deep" rows that are both `availability:
- * "ready"` and `audit_status: "passed"` become a route. `manifestRaw`
- * being unparseable, not an object, or missing a `collections` array
- * returns an empty set -- sitemap discovery is a publication boundary,
- * so it fails closed (excludes every lineage/deep/themes route) instead
- * of falling back to "the page got built, so list it".
+ * sitemap, now sharing the SAME strict reader and eligibility rule as
+ * the client (`lib/lineage/core.ts`'s `parseQualityManifest` +
+ * `qualityRowIsEligible`), not a loose `availability`/`audit_status`
+ * string check (P2 review MEDIUM-2). The previous loose check listed
+ * a row whose `audit_status` was "passed" even when its audit contract
+ * itself was inconsistent or incomplete (e.g. a missing
+ * `golden_fixture` check) -- something both
+ * `paperpilot/scripts/build_sitemap.py`'s
+ * `validate_lineage_quality_manifest` (Python) and the client's own
+ * gate already treat as NOT eligible, so the sitemap could end up
+ * listing (and un-`noindex`ing, see `isLineageGatedRoute` below) a
+ * route the client itself still renders as "監査待ち". `manifestRaw`
+ * being unparseable, not matching the closed schema, or containing even
+ * one malformed/unrelated row now makes the WHOLE manifest `null` (the
+ * same fail-closed contract `parseQualityManifest` already enforces for
+ * every other caller) -- sitemap discovery is a publication boundary,
+ * so this never falls back to a partial read.
+ *
+ * A `kind: "deep"` row additionally requires its `manifest_input_sha256`
+ * to match the conference's actual `deep-manifest.json` hash
+ * (SCR-27/28, the same binding the deep viewer itself enforces) --
+ * `deepManifestSha256ByConference` supplies that hash per conference;
+ * a conference missing from it is excluded ("else excluded").
  */
-export function eligibleLineageRoutes(manifestRaw: string | null): Set<string> {
+export function eligibleLineageRoutes(
+  manifestRaw: string | null,
+  deepManifestSha256ByConference: ReadonlyMap<string, string> = new Map(),
+): Set<string> {
   const routes = new Set<string>();
   if (manifestRaw === null) return routes;
   let payload: unknown;
@@ -83,18 +96,16 @@ export function eligibleLineageRoutes(manifestRaw: string | null): Set<string> {
   } catch {
     return routes;
   }
-  if (typeof payload !== "object" || payload === null) return routes;
-  const collections = (payload as { collections?: unknown }).collections;
-  if (!Array.isArray(collections)) return routes;
-  for (const row of collections as LineageQualityRow[]) {
-    if (typeof row !== "object" || row === null) continue;
-    if (row.availability !== "ready" || row.audit_status !== "passed") continue;
-    if (row.kind === "conference" && typeof row.slug === "string") {
-      routes.add(`/${row.slug}/lineage/`);
+  const quality = parseQualityManifest(payload);
+  if (!quality) return routes;
+  for (const row of quality.collections) {
+    if (row.kind === "conference") {
+      if (qualityRowIsEligible(row)) routes.add(`/${row.slug}/lineage/`);
     } else if (row.kind === "theme") {
-      routes.add("/themes/");
+      if (qualityRowIsEligible(row)) routes.add("/themes/");
     } else if (row.kind === "deep" && typeof row.conference === "string") {
-      routes.add(`/${row.conference}/deep/`);
+      const manifestSha256 = deepManifestSha256ByConference.get(row.conference) ?? null;
+      if (qualityRowIsEligible(row, { manifestSha256 })) routes.add(`/${row.conference}/deep/`);
     }
   }
   return routes;
@@ -248,9 +259,43 @@ async function readLineageQualityManifest(outDir: string): Promise<string | null
   }
 }
 
+/**
+ * SHA-256-hashes every `<conference>/deep-manifest.json` published
+ * under `outDir`, for `eligibleLineageRoutes`'s deep-row manifest-hash
+ * check (SCR-27/28) -- same raw-bytes-SHA-256-hex algorithm as
+ * `fetchJsonWithSha256` in lib/lineage/core.ts. A conference directory
+ * with no `deep-manifest.json` (or that fails to read) is simply absent
+ * from the returned map, which `eligibleLineageRoutes` already treats
+ * as "exclude its deep route".
+ */
+async function readDeepManifestSha256ByConference(outDir: string): Promise<Map<string, string>> {
+  const result = new Map<string, string>();
+  let entries: Dirent[];
+  try {
+    entries = await readdir(outDir, { withFileTypes: true });
+  } catch {
+    return result;
+  }
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+    try {
+      const bytes = await readFile(join(outDir, entry.name, "deep-manifest.json"));
+      result.set(entry.name, createHash("sha256").update(bytes).digest("hex"));
+    } catch {
+      // No deep-manifest.json for this conference -- its deep route just
+      // stays excluded, not a build error.
+    }
+  }
+  return result;
+}
+
 async function main(): Promise<void> {
   await assertOutDir(OUT_DIR);
-  const eligible = eligibleLineageRoutes(await readLineageQualityManifest(OUT_DIR));
+  const deepManifestSha256ByConference = await readDeepManifestSha256ByConference(OUT_DIR);
+  const eligible = eligibleLineageRoutes(
+    await readLineageQualityManifest(OUT_DIR),
+    deepManifestSha256ByConference,
+  );
   const urls = sitemapUrls(await collectPages(OUT_DIR), eligible);
   if (urls.length === 0) {
     throw new Error(`no public index.html pages under ${OUT_DIR}; run next build first`);

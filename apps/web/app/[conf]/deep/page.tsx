@@ -12,16 +12,18 @@ import {
 import { conferenceDisplayName } from "../../../lib/lineage/conference-name";
 import {
   type DeepManifest,
+  type DeepManifestEntry,
   type LineageArtifact,
   parseArtifact,
   parseDeepManifest,
+  type QualityManifest,
   type QualityRow,
   qualityRowIsEligible,
   qualityRowIsPublishable,
   type Relation,
   resolveDeepFocusGate,
   resolveFocus,
-  resolveManifestEntry,
+  resolveQualityCollection,
   resolveView,
 } from "../../../lib/lineage/core";
 import {
@@ -71,6 +73,14 @@ type GateState =
       manifest: DeepManifest;
       manifestSha256: string;
       eligibleRows: QualityRow[];
+      // P2 review LOW-4: kept alongside `eligibleRows` so
+      // `eligibleEntries` below can resolve each manifest ENTRY to its
+      // own quality row by exact path (`resolveQualityCollection`),
+      // ported from deep.js `init`'s own manifest-entry-driven
+      // iteration -- NOT the other way around (eligible row -> entry by
+      // paper_id), which could resolve two eligible deep rows to the
+      // same manifest entry (duplicate `paper_id`) and list it twice.
+      quality: QualityManifest;
     };
 
 type ArtifactIssue = null | "verify-failed" | "root-mismatch";
@@ -176,7 +186,7 @@ export default function ConferenceDeepPage() {
         setState({ phase: "pending" });
         return;
       }
-      setState({ phase: "ready", manifest, manifestSha256, eligibleRows });
+      setState({ phase: "ready", manifest, manifestSha256, eligibleRows, quality: quality.data });
     }
     run();
     return () => {
@@ -184,22 +194,33 @@ export default function ConferenceDeepPage() {
     };
   }, [slug]);
 
+  // P2 review LOW-4: driven by the MANIFEST's own entries (deep.js
+  // `init`'s own order), each resolved to its quality row by the exact
+  // path `resolveQualityCollection` expects
+  // (`${slug}/${entry.filename}`) -- not the reverse (an eligible row
+  // looked up by `paper_id` in the manifest), which could resolve two
+  // eligible rows to the one manifest entry sharing that `paper_id` and
+  // list the same paper twice in the picker. `seenPaperIds` is a second,
+  // defensive dedupe (manifest entries are already unique by `paper_id`
+  // and `filename`, so this should never trigger in practice).
   const eligibleEntries = useMemo(() => {
     if (state.phase !== "ready") return [];
-    return state.eligibleRows
-      .map((row) => ({
-        row,
-        entry: resolveManifestEntry(state.manifest, { paper: row.paper_id ?? null }),
-      }))
-      .filter(
-        (
-          pair,
-        ): pair is {
-          row: QualityRow;
-          entry: NonNullable<ReturnType<typeof resolveManifestEntry>>;
-        } => pair.entry !== null,
-      );
-  }, [state]);
+    const seenPaperIds = new Set<string>();
+    const pairs: { row: QualityRow; entry: DeepManifestEntry }[] = [];
+    for (const entry of state.manifest.entries) {
+      if (seenPaperIds.has(entry.paper_id)) continue;
+      const row = resolveQualityCollection(state.quality, {
+        kind: "deep",
+        conference: slug,
+        paperId: entry.paper_id,
+        path: `${slug}/${entry.filename}`,
+      });
+      if (!row || !qualityRowIsEligible(row, { manifestSha256: state.manifestSha256 })) continue;
+      seenPaperIds.add(entry.paper_id);
+      pairs.push({ row, entry });
+    }
+    return pairs;
+  }, [state, slug]);
 
   useEffect(() => {
     if (state.phase !== "ready" || eligibleEntries.length === 0) return;
@@ -292,8 +313,21 @@ export default function ConferenceDeepPage() {
 
   // A failed explicit `?paper=`/`?arxiv=` request reads the same as "no
   // row eligible yet" everywhere in this header/gate -- see
-  // `focusRequestFailed`'s declaration above.
-  const ready = state.phase === "ready" && !focusRequestFailed;
+  // `focusRequestFailed`'s declaration above. `uiReady` gates the
+  // picker/filter/view-toggle UI shell (it may show while a newly
+  // selected paper's own artifact is still loading or failed).
+  const uiReady = state.phase === "ready" && !focusRequestFailed;
+  // P2 review MEDIUM-3: `heroReady` additionally requires the SELECTED
+  // paper's own artifact to have loaded successfully. The old single
+  // `ready` flag only tracked `state.phase`/`focusRequestFailed`, so the
+  // "（監査済み）" / "…検証済みです" hero copy stayed up even while
+  // `artifact` was still loading, or after `fetchLineageArtifactBytes`
+  // errored, the hash/root mismatched, or during the brief window right
+  // after switching the `<select>` (artifact/artifactIssue reset to
+  // null before the new fetch resolves) -- all of which must read as
+  // "監査待ち", matching deep.js `init`'s own early return before it
+  // writes the ready hero text.
+  const heroReady = uiReady && artifact !== null && artifactIssue === null;
 
   return (
     <main id="main-content" className="mx-auto flex max-w-4xl flex-col gap-8 px-4 py-12 sm:px-6">
@@ -309,21 +343,21 @@ export default function ConferenceDeepPage() {
           / Deep Lineage
         </nav>
         <h1 className="font-serif text-2xl font-bold text-ink">
-          <em>Deep Lineage</em> — {ready ? READY_TITLE : `${display} 監査待ち`}
+          <em>Deep Lineage</em> — {heroReady ? READY_TITLE : `${display} 監査待ち`}
         </h1>
         <p className="text-sm text-ink-muted">
-          {ready
+          {heroReady
             ? READY_LEDE
             : `${display} の深掘り系譜データは品質監査中です。合格するまで内容は公開しません。`}
         </p>
         <p className="text-xs text-ink-subtle">
-          {ready
+          {heroReady
             ? READY_NOTE
             : "構造・識別子・関係根拠と入力ハッシュの検証が完了するまで、未監査データは読み込みません。"}
         </p>
       </header>
 
-      {!ready && (
+      {!uiReady && (
         <AuditStatus
           heading={state.phase === "loading" ? LOADING_HEADING : "公開監査を待っています"}
           message={
@@ -336,7 +370,7 @@ export default function ConferenceDeepPage() {
         />
       )}
 
-      {ready && (
+      {uiReady && (
         <article className="flex flex-col gap-6">
           <div className="flex flex-wrap items-center gap-3">
             <fieldset className="flex gap-1.5 border-0 p-0">

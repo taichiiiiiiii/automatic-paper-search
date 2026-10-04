@@ -697,7 +697,9 @@ async function verifyLarge(bundle: LargeBundle): Promise<Release | null> {
   });
 }
 
-describe("large deterministic Focus View", () => {
+// 200-node / 1,000-claim synthetic release: legitimately slow under CPU
+// contention, so this suite gets its own timeout instead of the 5s default.
+describe("large deterministic Focus View", { timeout: 60_000 }, () => {
   it("200-node/1,000-claim synthetic release verifies with correct default projection", async () => {
     const largeBundle = makeLargeBundle();
     const largeRelease = await verifyLarge(largeBundle);

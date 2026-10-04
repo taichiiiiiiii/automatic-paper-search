@@ -21,16 +21,25 @@ import { conferenceLineageIsEligible, lineageDataIsNonStub } from "./route-eligi
  * not render the "監査待ち" pending shell for data that was never meant
  * to have a lineage page at all).
  */
-async function listConferencesWithLineageData(): Promise<string[]> {
+export async function listConferencesWithLineageData(): Promise<string[]> {
   const candidates = await listConferenceSlugsWithFile("lineage.json");
+  // P2 review LOW-5: this used to swallow a `readFile` failure here
+  // into `null` ("no data for this conference"), the SAME fallback
+  // `lineageDataIsNonStub`'s own internal try/catch already uses for
+  // malformed JSON. But `candidates` already comes from `readFile`
+  // succeeding -- a read failure HERE, for a slug `listConferenceSlugsWithFile`
+  // itself found via `stat`, means `public/<conf>/lineage.json` is
+  // missing/unreadable despite `docs/<conf>/lineage.json` existing
+  // (e.g. the `prebuild` copy step from `docs/` to `public/` did not
+  // run, or failed, or raced). That is a build-environment
+  // inconsistency, not "this conference legitimately has no lineage
+  // data yet" -- it must fail the build loudly (same principle as
+  // `lib/lineage/server-fs.ts`'s own `readdir` failure, see that
+  // file's header comment), not silently drop the route.
   const withData = await Promise.all(
     candidates.map(async (conf) => {
-      try {
-        const raw = await readFile(join(process.cwd(), "public", conf, "lineage.json"), "utf8");
-        return lineageDataIsNonStub(raw) ? conf : null;
-      } catch {
-        return null;
-      }
+      const raw = await readFile(join(process.cwd(), "public", conf, "lineage.json"), "utf8");
+      return lineageDataIsNonStub(raw) ? conf : null;
     }),
   );
   return withData.filter((conf): conf is string => conf !== null);

@@ -59,7 +59,12 @@ export default function ConferenceLineagePage() {
   const display = conferenceDisplayName(slug);
   const [state, setState] = useState<GateState>({ phase: "loading" });
   const [focusId, setFocusId] = useState<string | null>(null);
-  const [focusNotFound, setFocusNotFound] = useState(false);
+  // P2 review LOW-1: stores `resolveLineageFocusGate`'s own `mount`
+  // decision directly, rather than the inverse of a separately-stored
+  // `notFound` boolean -- `mount` is the ONE field the render below
+  // branches on (ported: `{gate.mount ? <LineageGraph/> : notice}`), so
+  // there is no second piece of state that could ever drift from it.
+  const [focusMount, setFocusMount] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
@@ -109,7 +114,7 @@ export default function ConferenceLineagePage() {
       // drawing the root graph -- see lib/lineage/core.ts
       // `resolveLineageFocusGate`'s header.
       const gate = resolveLineageFocusGate(artifact, requested);
-      setFocusNotFound(gate.notFound);
+      setFocusMount(gate.mount);
       setFocusId(gate.focusId);
       setState({ phase: "ready", artifact });
     }
@@ -163,12 +168,12 @@ export default function ConferenceLineagePage() {
 
       {state.phase === "ready" && (
         <article>
-          {focusNotFound ? (
+          {focusMount ? (
+            <LineageGraph artifact={state.artifact} initialFocusId={focusId} />
+          ) : (
             <p role="alert" className="mb-4 text-sm text-accent-strong">
               指定された論文IDはこの監査済み系譜にありません。
             </p>
-          ) : (
-            <LineageGraph artifact={state.artifact} initialFocusId={focusId} />
           )}
         </article>
       )}

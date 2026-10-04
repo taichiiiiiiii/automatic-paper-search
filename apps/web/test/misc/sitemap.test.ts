@@ -212,13 +212,104 @@ describe("isLineageGatedRoute", () => {
 });
 
 /**
- * Review finding M3: ports `test_malformed_quality_manifest_excludes_
- * every_lineage_route` and `test_sitemap_lists_only_ready_and_passed_
- * lineage_routes` from paperpilot/tests/test_build_sitemap.py (adapted
- * to this generator's `/<conf>/lineage/` / `/<conf>/deep/` / `/themes/`
- * route shapes instead of `.html` file paths).
+ * Review finding M3 (round 1) / MEDIUM-2 (round 2): ports
+ * `test_malformed_quality_manifest_excludes_every_lineage_route` and
+ * `test_sitemap_lists_only_ready_and_passed_lineage_routes` from
+ * paperpilot/tests/test_build_sitemap.py (adapted to this generator's
+ * `/<conf>/lineage/` / `/<conf>/deep/` / `/themes/` route shapes
+ * instead of `.html` file paths).
+ *
+ * MEDIUM-2: `eligibleLineageRoutes` used to check only `availability`/
+ * `audit_status` directly off the raw JSON, so a row with
+ * `audit_status: "passed"` but an internally inconsistent/incomplete
+ * audit contract (something `lib/lineage/core.ts`'s
+ * `parseQualityManifest` + `qualityRowIsEligible` -- what the CLIENT
+ * actually gates on -- already rejects) could still get listed here.
+ * These fixtures mirror the ones `test/lineage/core.test.ts`'s "quality
+ * gate" describe block already proved parse successfully, so a row that
+ * is eligible there is eligible here too.
  */
 describe("eligibleLineageRoutes", () => {
+  const PAPER_ID = "1".repeat(40);
+
+  function qualityRow(overrides: Record<string, unknown> = {}): Record<string, unknown> {
+    return {
+      collection_id: "conference:iclr-2026",
+      kind: "conference",
+      slug: "iclr-2026",
+      label: "ICLR 2026",
+      path: "iclr-2026/lineage.json",
+      availability: "ready",
+      audit_status: "passed",
+      freshness: "fresh",
+      generated_at: "2026-08-30T00:00:00Z",
+      snapshot_date: null,
+      node_count: 12,
+      edge_count: 20,
+      artifact_schema_version: "lineage-artifact-v1",
+      input_sha256: "b".repeat(64),
+      audit: {
+        fixture_sha256: "9".repeat(64),
+        evaluated_at: "2026-08-30T00:00:00Z",
+        actor: "ci:audit-v1",
+        checks: [
+          {
+            name: "artifact_contract_v1",
+            status: "passed",
+            observed: 0,
+            expected: 0,
+            evidence: [],
+          },
+          {
+            name: "golden_fixture",
+            status: "passed",
+            observed: "fixture-sha",
+            expected: "matching frozen fixture",
+            evidence: [],
+          },
+        ],
+      },
+      ...overrides,
+    };
+  }
+
+  function themeRow(overrides: Record<string, unknown> = {}): Record<string, unknown> {
+    return qualityRow({
+      collection_id: "theme:flash-attention",
+      kind: "theme",
+      slug: "flash-attention",
+      label: "Flash Attention",
+      path: "themes/flash-attention/lineage.json",
+      input_sha256: "f".repeat(64),
+      ...overrides,
+    });
+  }
+
+  function deepRow(overrides: Record<string, unknown> = {}): Record<string, unknown> {
+    return qualityRow({
+      collection_id: `deep:iclr-2026:${PAPER_ID}`,
+      kind: "deep",
+      conference: "iclr-2026",
+      slug: "iclr-2026",
+      paper_id: PAPER_ID,
+      arxiv_id: "2602.18473",
+      path: "iclr-2026/deep-2602.18473.json",
+      manifest_path: "iclr-2026/deep-manifest.json",
+      manifest_input_sha256: "c".repeat(64),
+      input_sha256: "d".repeat(64),
+      ...overrides,
+    });
+  }
+
+  function qualityManifest(rows: unknown[]): string {
+    return JSON.stringify({
+      schema_version: "lineage-quality-v1",
+      as_of: "2026-08-30T00:00:00Z",
+      audit_version: "audit-v1",
+      collections: rows,
+    });
+  }
+
   it("excludes every lineage route when the manifest is missing", () => {
     expect(eligibleLineageRoutes(null)).toEqual(new Set());
   });
@@ -230,48 +321,75 @@ describe("eligibleLineageRoutes", () => {
     expect(eligibleLineageRoutes(JSON.stringify([1, 2, 3]))).toEqual(new Set());
   });
 
-  it("includes only ready+passed rows, mapped to their route", () => {
-    const manifest = JSON.stringify({
-      collections: [
-        { kind: "conference", slug: "iclr-2026", availability: "ready", audit_status: "passed" },
-        { kind: "conference", slug: "cvpr-2026", availability: "ready", audit_status: "failed" },
-        {
-          kind: "theme",
-          slug: "flash-attention",
-          availability: "ready",
-          audit_status: "passed",
-        },
-        {
-          kind: "deep",
-          conference: "iclr-2026",
-          availability: "ready",
-          audit_status: "passed",
-        },
-        {
-          kind: "conference",
-          slug: "aaai-2026",
-          availability: "unavailable",
-          audit_status: "unknown",
-        },
-      ],
-    });
-    expect(eligibleLineageRoutes(manifest)).toEqual(
-      new Set(["/iclr-2026/lineage/", "/themes/", "/iclr-2026/deep/"]),
+  it("excludes every route when one unrelated row in an otherwise-valid manifest is malformed (fail-closed, not partial)", () => {
+    // parseQualityManifest fails the WHOLE manifest on one bad row --
+    // the old loose check would have kept the other, otherwise-valid
+    // rows' routes.
+    const raw = qualityManifest([
+      qualityRow(),
+      { ...deepRow(), audit_status: "not-a-real-status" },
+    ]);
+    expect(eligibleLineageRoutes(raw)).toEqual(new Set());
+  });
+
+  it("includes only ready+passed rows with a fully-consistent, passed audit contract, mapped to their route", () => {
+    const raw = qualityManifest([qualityRow(), deepRow(), themeRow()]);
+    const deepManifestSha256ByConference = new Map([["iclr-2026", "c".repeat(64)]]);
+    expect(eligibleLineageRoutes(raw, deepManifestSha256ByConference)).toEqual(
+      new Set(["/iclr-2026/lineage/", "/iclr-2026/deep/", "/themes/"]),
     );
   });
 
+  it("excludes a conference row whose audit_status is passed but the audit contract itself is inconsistent", () => {
+    // The old loose (availability/audit_status string-only) check would
+    // have listed this route; audit_status: "passed" requires every
+    // check in `audit.checks` to report "passed" -- here one reports
+    // "failed" despite the row claiming "passed" overall, so
+    // parseQualityManifest now rejects the whole manifest.
+    const base = qualityRow();
+    const inconsistent = {
+      ...base,
+      audit: {
+        ...(base.audit as Record<string, unknown>),
+        checks: [
+          {
+            name: "artifact_contract_v1",
+            status: "passed",
+            observed: 0,
+            expected: 0,
+            evidence: [],
+          },
+          { name: "golden_fixture", status: "failed", observed: "x", expected: "y", evidence: [] },
+        ],
+      },
+    };
+    expect(eligibleLineageRoutes(qualityManifest([inconsistent]))).toEqual(new Set());
+  });
+
+  it("excludes a deep route when no deep-manifest hash is supplied for its conference (else excluded)", () => {
+    expect(eligibleLineageRoutes(qualityManifest([deepRow()]))).toEqual(new Set());
+  });
+
+  it("excludes a deep route when the supplied deep-manifest hash does not match the row's manifest_input_sha256", () => {
+    const raw = qualityManifest([deepRow()]);
+    const wrongHash = new Map([["iclr-2026", "0".repeat(64)]]);
+    expect(eligibleLineageRoutes(raw, wrongHash)).toEqual(new Set());
+  });
+
   it("matches today's real docs/lineage-quality-v1.json shape: every row fails audit, so nothing is eligible", () => {
-    // audit_status is "failed" for every row in the real manifest today
-    // (ready + failed, never ready + passed) -- same real-data check as
-    // test_repo_sitemap_is_up_to_date on the Python side.
-    const manifest = JSON.stringify({
-      collections: [
-        { kind: "conference", slug: "iclr-2026", availability: "ready", audit_status: "failed" },
-        { kind: "theme", slug: "flash-attention", availability: "ready", audit_status: "failed" },
-        { kind: "deep", conference: "iclr-2026", availability: "ready", audit_status: "failed" },
-      ],
+    // audit_status is "unknown"/"failed" for every row in the real
+    // manifest today (never "ready" + "passed") -- same real-data check
+    // as test_repo_sitemap_is_up_to_date on the Python side.
+    const unaudited = qualityRow({
+      audit_status: "unknown",
+      audit: {
+        fixture_sha256: null,
+        evaluated_at: "2026-08-30T00:00:00Z",
+        actor: "ci:audit-v1",
+        checks: [],
+      },
     });
-    expect(eligibleLineageRoutes(manifest)).toEqual(new Set());
+    expect(eligibleLineageRoutes(qualityManifest([unaudited]))).toEqual(new Set());
   });
 });
 

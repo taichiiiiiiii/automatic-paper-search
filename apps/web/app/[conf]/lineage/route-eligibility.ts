@@ -3,6 +3,11 @@
  * module (not the .tsx layout itself) so they are unit-testable without
  * exercising JSX -- same separation as `app/[conf]/paper-links/logic.ts`.
  */
+import {
+  parseQualityManifest,
+  qualityRowIsEligible,
+  resolveQualityCollection,
+} from "../../../lib/lineage/core";
 
 interface LineageArtifactShape {
   readonly nodes?: unknown;
@@ -29,23 +34,27 @@ export function lineageDataIsNonStub(raw: string): boolean {
   return Array.isArray(nodes) && nodes.length > 0;
 }
 
-interface LineageQualityRow {
-  readonly kind?: unknown;
-  readonly slug?: unknown;
-  readonly availability?: unknown;
-  readonly audit_status?: unknown;
-}
-
 /**
  * True when the lineage quality manifest (`lineage-quality-v1.json`)
  * marks this conference's `conference` collection row `ready` +
- * `passed` (safety contracts CAT-39). A missing/malformed manifest, or
- * any row shape other than an exact match, is NOT eligible -- the same
- * fail-closed rule as `scripts/sitemap.ts`'s `eligibleLineageRoutes`,
- * used here to decide whether the built page itself should carry
- * `robots: noindex` (the client-side gate in `page.tsx` already decides
+ * `passed` under the FULL audit contract (safety contracts CAT-39),
+ * using the same strict reader + eligibility rule as the client
+ * (`lib/lineage/core.ts`'s `parseQualityManifest` +
+ * `qualityRowIsEligible`, via `resolveQualityCollection` for the exact
+ * row selector) instead of a loose `availability`/`audit_status`
+ * string check (P2 review MEDIUM-2). The previous loose check could
+ * accept a row with `audit_status: "passed"` whose audit itself was
+ * inconsistent or incomplete (e.g. missing the `golden_fixture` check)
+ * -- a shape the client's `qualityRowIsEligible` already rejects -- so
+ * this page could be left indexable while the client-side gate in
+ * `page.tsx` still renders the "監査待ち" pending shell for the exact
+ * same row. A missing/malformed manifest, or any row failing strict
+ * validation, is NOT eligible -- the same fail-closed rule
+ * `scripts/sitemap.ts`'s `eligibleLineageRoutes` now shares, used here
+ * to decide whether the built page itself should carry `robots:
+ * noindex` (the client-side gate in `page.tsx` separately decides
  * whether to render the real graph or the "監査待ち" pending shell; this
- * is the separate, server-rendered head-metadata signal to crawlers).
+ * is the server-rendered head-metadata signal to crawlers).
  */
 export function conferenceLineageIsEligible(manifestRaw: string | null, conf: string): boolean {
   if (manifestRaw === null) return false;
@@ -55,16 +64,12 @@ export function conferenceLineageIsEligible(manifestRaw: string | null, conf: st
   } catch {
     return false;
   }
-  if (typeof parsed !== "object" || parsed === null) return false;
-  const collections = (parsed as { collections?: unknown }).collections;
-  if (!Array.isArray(collections)) return false;
-  return (collections as LineageQualityRow[]).some(
-    (row) =>
-      typeof row === "object" &&
-      row !== null &&
-      row.kind === "conference" &&
-      row.slug === conf &&
-      row.availability === "ready" &&
-      row.audit_status === "passed",
-  );
+  const quality = parseQualityManifest(parsed);
+  if (!quality) return false;
+  const row = resolveQualityCollection(quality, {
+    kind: "conference",
+    slug: conf,
+    path: `${conf}/lineage.json`,
+  });
+  return qualityRowIsEligible(row);
 }
