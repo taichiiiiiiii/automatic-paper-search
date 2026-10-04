@@ -7,7 +7,10 @@ the heuristic templates — they short-circuit future LLM rescue calls
 
 from __future__ import annotations
 
+import fcntl
 import json
+
+import pytest
 
 from paperpilot.llm.base import TEMPLATE_RATIONALES
 from paperpilot.scripts.purge_template_classifications import (
@@ -204,6 +207,181 @@ def test_cli_missing_cache_file_is_no_op(tmp_path):
     finally:
         _sys.argv = old_argv
     assert rc == 0
+
+
+def test_cli_write_failure_leaves_original_file_intact(tmp_path, monkeypatch):
+    """A write failure mid-replace (disk full, permission error, etc.)
+    must not corrupt the pre-purge file, and must not leave a stray
+    temp file behind. ``atomic_write_text`` only ever replaces the
+    destination via ``os.replace`` after the payload is fully written
+    to a sibling temp file; mock ``os.replace`` to raise and confirm
+    the original content survives untouched."""
+    from paperpilot.scripts import purge_template_classifications as mod
+
+    cache_path = tmp_path / "classifications.json"
+    original = {
+        "drop->me": {
+            "relation": "extends",
+            "confidence": 0.7,
+            "rationale": _sample_template(),
+        },
+        "keep->me": {
+            "relation": "extends",
+            "confidence": 0.9,
+            "rationale": "specific paper reason",
+        },
+    }
+    original_text = json.dumps(original)
+    cache_path.write_text(original_text, encoding="utf-8")
+
+    def _boom(*args, **kwargs):
+        raise OSError("disk full (simulated)")
+
+    monkeypatch.setattr("paperpilot.utils.atomic.os.replace", _boom)
+
+    import sys as _sys
+
+    old_argv = _sys.argv
+    _sys.argv = ["purge_template_classifications.py", "--cache", str(cache_path)]
+    try:
+        with pytest.raises(OSError):
+            mod.main()
+    finally:
+        _sys.argv = old_argv
+
+    # Original file untouched.
+    assert cache_path.read_text(encoding="utf-8") == original_text
+    # No leftover temp file in the directory.
+    leftovers = [p for p in tmp_path.iterdir() if p.name != "classifications.json"
+                 and p.name != "classifications.json.lock"]
+    assert leftovers == [], f"stray temp files left behind: {leftovers}"
+
+
+def test_cli_acquires_and_releases_the_shared_lock(tmp_path, monkeypatch):
+    """main() must take an exclusive flock on the same sibling
+    ``<cache>.lock`` file that ``build_lineage.persist_classifications``
+    uses for this cache (CLAUDE.md §14), and release it again — so a
+    purge can never interleave with another process's read-merge-write
+    of the shared classifications.json."""
+    from paperpilot.scripts import purge_template_classifications as mod
+
+    cache_path = tmp_path / "classifications.json"
+    cache_path.write_text(
+        json.dumps(
+            {"a->b": {"relation": "extends", "confidence": 0.9, "rationale": "x"}}
+        ),
+        encoding="utf-8",
+    )
+
+    ops: list[int] = []
+    real_flock = fcntl.flock
+
+    def _spy_flock(fd, op):
+        ops.append(op)
+        return real_flock(fd, op)
+
+    monkeypatch.setattr(
+        "paperpilot.scripts.purge_template_classifications.fcntl.flock", _spy_flock
+    )
+
+    import sys as _sys
+
+    old_argv = _sys.argv
+    _sys.argv = ["purge_template_classifications.py", "--cache", str(cache_path)]
+    try:
+        rc = mod.main()
+    finally:
+        _sys.argv = old_argv
+
+    assert rc == 0
+    assert ops == [fcntl.LOCK_EX, fcntl.LOCK_UN]
+    assert (tmp_path / "classifications.json.lock").exists()
+
+
+def test_cli_lock_read_replace_unlock_happen_in_order(tmp_path):
+    """main() must acquire the lock, THEN read the cache, THEN replace the
+    file, THEN release the lock — in exactly that order.
+
+    Scoped thin proxies replace the module-under-test's own `fcntl` /
+    `json` name and the atomic-write helper's own `os` name (each a
+    simple __getattr__-delegating wrapper that records one event before
+    calling through to the real thing). This is deliberately NOT a global
+    patch of `fcntl.flock` or `Path.read_text` — tmp_path itself relies on
+    pathlib internals, so patching Path.read_text process-wide would risk
+    recording pytest's own fixture machinery as a spurious "read" event
+    (or breaking it outright), and patching the real `fcntl` module object
+    would affect any other code importing fcntl during the test.
+    """
+    from paperpilot.scripts import purge_template_classifications as mod
+    from paperpilot.utils import atomic as atomic_mod
+
+    events: list[str] = []
+    real_fcntl = fcntl
+    real_json = json
+    import os as real_os
+
+    class _FcntlProxy:
+        def __getattr__(self, name):
+            return getattr(real_fcntl, name)
+
+        def flock(self, fd, op):
+            if op == real_fcntl.LOCK_EX:
+                events.append("lock")
+            elif op == real_fcntl.LOCK_UN:
+                events.append("unlock")
+            return real_fcntl.flock(fd, op)
+
+    class _JsonProxy:
+        def __getattr__(self, name):
+            return getattr(real_json, name)
+
+        def loads(self, s, *args, **kwargs):
+            events.append("read")
+            return real_json.loads(s, *args, **kwargs)
+
+    class _OsProxy:
+        def __getattr__(self, name):
+            return getattr(real_os, name)
+
+        def replace(self, src, dst):
+            events.append("replace")
+            return real_os.replace(src, dst)
+
+    cache_path = tmp_path / "classifications.json"
+    cache = {
+        "drop->me": {
+            "relation": "extends",
+            "confidence": 0.7,
+            "rationale": _sample_template(),
+        },
+        "keep->me": {
+            "relation": "extends",
+            "confidence": 0.9,
+            "rationale": "specific paper reason",
+        },
+    }
+    cache_path.write_text(json.dumps(cache), encoding="utf-8")
+
+    orig_fcntl, orig_json, orig_atomic_os = mod.fcntl, mod.json, atomic_mod.os
+    mod.fcntl = _FcntlProxy()
+    mod.json = _JsonProxy()
+    atomic_mod.os = _OsProxy()
+
+    import sys as _sys
+
+    old_argv = _sys.argv
+    _sys.argv = ["purge_template_classifications.py", "--cache", str(cache_path)]
+    try:
+        rc = mod.main()
+    finally:
+        _sys.argv = old_argv
+        mod.fcntl = orig_fcntl
+        mod.json = orig_json
+        atomic_mod.os = orig_atomic_os
+
+    assert rc == 0
+    assert events == ["lock", "read", "replace", "unlock"], events
+    assert json.loads(cache_path.read_text()) == {"keep->me": cache["keep->me"]}
 
 
 def test_cli_malformed_cache_returns_nonzero(tmp_path):

@@ -68,6 +68,15 @@ jobs:
           THEMES_INPUT: ${{ inputs.themes }}
         run: |
           set -euo pipefail
+          # `IFS=',' read -ra <<<` reads one line only, so a value carrying
+          # a newline would silently keep just its first line and drop the
+          # rest (same failure mode conference-on-demand.yml's
+          # allow_shrink_for guard exists for) — reject the whole input
+          # outright before the split, rather than line-by-line.
+          if [[ "$THEMES_INPUT" == *$'\n'* || "$THEMES_INPUT" == *$'\r'* ]]; then
+            echo "::error::themes must not contain newline/CR characters"
+            exit 1
+          fi
           if [ -n "$THEMES_INPUT" ]; then
             IFS=',' read -ra THEMES <<< "$THEMES_INPUT"
           else
@@ -82,12 +91,19 @@ jobs:
             exit 1
           fi
 
+          # Same allowed-character pattern as the single-theme input
+          # (worker/slug.js's THEME_INPUT_PATTERN) applied per
+          # comma-separated entry, whole-string via bash `[[ =~ ]]` rather
+          # than `printf | grep` (see theme-on-demand.yml's "Validate
+          # input early" step for why that distinction matters).
+          theme_re='^[A-Za-z0-9 _-]{2,80}$'
+
           failed=0
           attempted=0
           for raw_theme in "${THEMES[@]}"; do
             theme="$(printf '%s' "$raw_theme" | sed -E 's/^[[:space:]]+|[[:space:]]+$//g')"
-            if [ -z "$theme" ] || [ "${#theme}" -gt 80 ]; then
-              echo "::warning::invalid theme entry skipped"
+            if ! [[ "$theme" =~ $theme_re ]]; then
+              echo "::warning::invalid theme entry skipped: ${theme:0:80}"
               failed=$((failed + 1))
               attempted=$((attempted + 1))
               continue

@@ -1009,6 +1009,26 @@ function statusUrlForRequest(apiBase, requestId) {
   return `${apiBase.replace(/\/$/, "")}/api/themes/status?request_id=${encodeURIComponent(requestId)}`;
 }
 
+// failureFromRun() forwards run.html_url (from the GitHub Actions runs
+// API, via the Worker) straight through as runUrl — it's attacker-shaped
+// data in principle (anything the Worker/GitHub API response could ever
+// contain), so showProgressFailure() must never assign it to a.href
+// without checking both the scheme and the host first. `javascript:`,
+// `data:`, or a lookalike host (e.g. "https://evil.test/github.com")
+// must all degrade to no link rather than a clickable one. Pure (no DOM)
+// so the .mjs unit test can exercise it directly.
+function safeRunUrl(url) {
+  if (typeof url !== "string" || !url) return null;
+  let parsed;
+  try {
+    parsed = new URL(url);
+  } catch (_) {
+    return null;
+  }
+  if (parsed.protocol !== "https:" || parsed.hostname !== "github.com") return null;
+  return url;
+}
+
 function setProgressStep(step) {
   if (!els.progressSteps) return;
   const idx = PROGRESS_STEPS.indexOf(step);
@@ -1062,11 +1082,12 @@ function showProgressFailure({ title, message, retrySlug, runUrl }) {
       // bad markup. rel=noopener + target=_blank so navigating away
       // doesn't kill the user's progress view.
       els.progressFailureMsg.textContent = message;
-      if (runUrl) {
+      const safeUrl = safeRunUrl(runUrl);
+      if (safeUrl) {
         const sep = document.createElement("span");
         sep.textContent = " ";
         const a = document.createElement("a");
-        a.href = runUrl;
+        a.href = safeUrl;
         a.target = "_blank";
         a.rel = "noopener noreferrer";
         a.textContent = "GitHub Actions のログを開く →";

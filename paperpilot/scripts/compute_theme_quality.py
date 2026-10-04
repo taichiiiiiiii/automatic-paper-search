@@ -60,6 +60,7 @@ from pathlib import Path
 
 from paperpilot.scripts.audit_lineage_quality import edge_metrics
 from paperpilot.scripts.audit_theme_seeds import _is_on_topic
+from paperpilot.utils.atomic import atomic_write_text
 
 ROOT = Path(__file__).resolve().parents[2]
 THEMES_DIR = ROOT / "docs" / "themes"
@@ -138,8 +139,13 @@ def compute_quality(now: datetime | None = None) -> dict:
 def main(argv: list[str] | None = None) -> int:
     rollup = compute_quality()
     THEMES_DIR.mkdir(parents=True, exist_ok=True)
-    OUT_PATH.write_text(
-        json.dumps(rollup, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    # atomic_write_text (temp file + os.replace) instead of a plain
+    # write_text so a write failure (disk full, killed process) can
+    # never leave readers (the viewer fetching this file) a torn/partial
+    # JSON body. _quality.json has no other writer, so no lock/merge is
+    # needed here — unlike the shared classifications.json cache.
+    atomic_write_text(
+        OUT_PATH, json.dumps(rollup, ensure_ascii=False, indent=2) + "\n"
     )
     n = rollup["summary"]["theme_count"]
     high = rollup["summary"]["themes_with_template_rationale_high"]

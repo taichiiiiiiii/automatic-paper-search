@@ -200,3 +200,43 @@ def test_evaluate_batch_non_array_response():
 def test_evaluate_batch_empty_input():
     provider = OllamaProvider({"enabled": True})
     assert provider.evaluate_batch([], profile="x") == []
+
+
+# ---- Malformed 200 response body ----
+# A 200 status only means the HTTP transport succeeded; the body can
+# still be garbage (HTML error page, truncated stream) or valid JSON of
+# the wrong shape. Pre-fix, `resp.json()` was called unguarded.
+
+
+def test_evaluate_batch_non_json_200_returns_none_no_exception():
+    def _raise():
+        raise json.JSONDecodeError("Expecting value", "<html>not json</html>", 0)
+
+    resp = SimpleNamespace(status_code=200, json=_raise)
+    provider = OllamaProvider({"enabled": True})
+    with patch(
+        "paperpilot.llm.ollama_provider.request_with_retry",
+        return_value=resp,
+    ):
+        evals = provider.evaluate_batch([_mk_paper("P1")], profile="")
+    assert evals == [None]
+
+
+def test_chat_wrong_shape_json_top_level_list_returns_none():
+    provider = OllamaProvider({"enabled": True})
+    with patch(
+        "paperpilot.llm.ollama_provider.request_with_retry",
+        return_value=_resp(["not", "an", "object"]),
+    ):
+        result = provider._chat("s", "u")
+    assert result is None
+
+
+def test_chat_wrong_shape_message_not_a_dict_returns_none():
+    provider = OllamaProvider({"enabled": True})
+    with patch(
+        "paperpilot.llm.ollama_provider.request_with_retry",
+        return_value=_resp({"message": "not-a-dict"}),
+    ):
+        result = provider._chat("s", "u")
+    assert result is None

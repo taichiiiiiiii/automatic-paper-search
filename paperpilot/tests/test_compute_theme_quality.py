@@ -136,6 +136,31 @@ def test_compute_quality_handles_missing_lineage_json(tmp_path, monkeypatch):
     assert rollup["summary"]["theme_count"] == 0
 
 
+def test_main_write_failure_leaves_original_file_intact(synthetic_themes_dir, monkeypatch):
+    """A write failure mid-replace must not corrupt a pre-existing
+    _quality.json, and must not leave a stray temp file behind.
+    ``atomic_write_text`` only replaces the destination via
+    ``os.replace`` after the payload is fully written to a sibling temp
+    file; mock ``os.replace`` to raise and confirm the previous content
+    (and absence of temp files) survives."""
+    out_path = synthetic_themes_dir / "_quality.json"
+    previous_content = json.dumps({"stale": "previous rollup"})
+    out_path.write_text(previous_content, encoding="utf-8")
+
+    def _boom(*args, **kwargs):
+        raise OSError("disk full (simulated)")
+
+    monkeypatch.setattr("paperpilot.utils.atomic.os.replace", _boom)
+
+    with pytest.raises(OSError):
+        ctq.main([])
+
+    assert out_path.read_text(encoding="utf-8") == previous_content
+    # No leftover atomic-write temp file (dotfile, .tmp suffix) behind.
+    tmp_leftovers = list(synthetic_themes_dir.glob(".*.tmp"))
+    assert tmp_leftovers == [], f"stray temp files left behind: {tmp_leftovers}"
+
+
 def test_main_writes_output_file(synthetic_themes_dir, capsys):
     """End-to-end CLI happy path: main() must write the file and report
     the counts to stdout."""

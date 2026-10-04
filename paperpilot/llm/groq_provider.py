@@ -37,6 +37,7 @@ from .base import (
     build_classify_prompt,
     build_evaluation_prompt,
     map_batch_evaluations,
+    safe_json_response,
 )
 
 logger = get_logger(__name__)
@@ -157,6 +158,30 @@ class GroqProvider(AbstractLLMProvider):
         # the actual return time, not from when we entered the throttle.
         self._last_call_ts = time.monotonic()
 
+    def _record_failure(self) -> None:
+        """Increment the consecutive-failure counter and latch the
+        quota-exhausted circuit breaker once it crosses the threshold.
+
+        Every failure branch in ``_chat`` (non-200, non-JSON/wrong-shape
+        body, empty ``choices``, empty/unusable ``content``) MUST route
+        through here rather than incrementing ``_consecutive_failures``
+        directly. Pre-fix, only the non-200 branch checked the threshold
+        — 3 consecutive empty-content 200s (a real failure mode: Groq
+        returning a message with no text) silently ran the counter up
+        without ever latching ``_quota_exhausted``, so the breaker never
+        opened for that failure class.
+        """
+        self._consecutive_failures += 1
+        if self._consecutive_failures >= QUOTA_EXHAUSTED_THRESHOLD:
+            self._quota_exhausted = True
+            logger.warning(
+                "groq: %d consecutive unusable responses (non-200, non-JSON "
+                "or empty) — latching; quota may be exhausted, "
+                "short-circuiting further LLM calls to heuristic-only for "
+                "the rest of this run",
+                self._consecutive_failures,
+            )
+
     def _chat(self, system: str, user: str, *, json_mode: bool = False) -> str | None:
         # Circuit-breaker short-circuit: once we've hit the quota-
         # exhausted threshold, every further call returns None without
@@ -193,25 +218,24 @@ class GroqProvider(AbstractLLMProvider):
                 "groq: chat/completions failed (status=%s)",
                 getattr(resp, "status_code", None),
             )
-            self._consecutive_failures += 1
-            if self._consecutive_failures >= QUOTA_EXHAUSTED_THRESHOLD:
-                self._quota_exhausted = True
-                logger.warning(
-                    "groq: %d consecutive failures — assuming daily / TPM "
-                    "quota exhausted, short-circuiting further LLM calls "
-                    "to heuristic-only for the rest of this run",
-                    self._consecutive_failures,
-                )
+            self._record_failure()
             return None
-        data = resp.json() or {}
-        choices = data.get("choices") or []
-        if not choices:
-            logger.warning("groq: empty choices in response")
-            self._consecutive_failures += 1
+        data = safe_json_response(resp)
+        if data is None:
+            logger.warning("groq: chat/completions response was not valid JSON")
+            self._record_failure()
             return None
-        content = (choices[0].get("message") or {}).get("content")
+        choices = data.get("choices")
+        if not isinstance(choices, list) or not choices:
+            logger.warning("groq: empty/invalid choices in response")
+            self._record_failure()
+            return None
+        first_choice = choices[0]
+        message = first_choice.get("message") if isinstance(first_choice, dict) else None
+        content = message.get("content") if isinstance(message, dict) else None
         if not (isinstance(content, str) and content.strip()):
-            self._consecutive_failures += 1
+            logger.warning("groq: empty/unusable content in response")
+            self._record_failure()
             return None
         # Success — reset the failure counter so a transient blip doesn't
         # latch the circuit breaker open.

@@ -17,6 +17,13 @@
 //     in the HTML data-step value can't crash the DOM helper.
 //   - PROGRESS_STEPS stays in sync with the HTML data-step values
 //     (read both files, intersect).
+//   - safeRunUrl() gates the only href showProgressFailure() ever
+//     assigns: it rejects any scheme other than https: and any host
+//     other than github.com before the GitHub Actions run link
+//     (run.html_url, sourced from the Worker's proxy of the GitHub runs
+//     API) reaches the DOM. A regression here would let a crafted
+//     html_url (e.g. "javascript:...") execute when the user clicks the
+//     "ログを開く" link.
 //
 // Run via: node paperpilot/tests/viewer/test_theme_request_progress.mjs
 
@@ -67,9 +74,10 @@ const code = [
   extractFunction(themeSrc, "failureFromRun"),
   extractFunction(themeSrc, "progressPercentFor"),
   extractFunction(themeSrc, "statusUrlForRequest"),
+  extractFunction(themeSrc, "safeRunUrl"),
   // Return the helpers as a record so the caller picks them up cleanly
   // — avoids the TDZ surprises that bite eval-into-let scoping in ESM.
-  "return { PROGRESS_STEPS, REQUEST_ID_RE, failureFromRun, progressPercentFor, statusUrlForRequest };",
+  "return { PROGRESS_STEPS, REQUEST_ID_RE, failureFromRun, progressPercentFor, statusUrlForRequest, safeRunUrl };",
 ].join("\n");
 
 // new Function gives us a fresh function scope with no TDZ traps.
@@ -80,6 +88,7 @@ const {
   failureFromRun,
   progressPercentFor,
   statusUrlForRequest,
+  safeRunUrl,
 } = helpers;
 
 // ---- mini assertion harness ----
@@ -185,6 +194,26 @@ ok(timedOut.title.includes("タイムアウト"),
 
 ok(failureFromRun({ status: "completed", conclusion: "neutral" }) === null,
    "unknown conclusion (e.g. neutral) → null (don't surface fake failures)");
+
+console.log("\nsafeRunUrl");
+ok(safeRunUrl("javascript:alert(1)") === null,
+   "javascript: scheme is rejected");
+ok(safeRunUrl("http://github.com/owner/repo/actions/runs/1") === null,
+   "http: (non-https) github.com is rejected");
+ok(safeRunUrl("https://evil.test/github.com") === null,
+   "https: with a lookalike path but wrong host is rejected");
+ok(safeRunUrl("https://evil.test/?u=github.com") === null,
+   "https: with github.com only in the query string is rejected");
+ok(safeRunUrl("https://github.com.evil.test/") === null,
+   "https: with github.com as a subdomain prefix of another host is rejected");
+ok(safeRunUrl("not a url") === null,
+   "an unparseable string is rejected (new URL() throws, caught)");
+ok(safeRunUrl("") === null, "empty string is rejected");
+ok(safeRunUrl(null) === null, "null is rejected");
+ok(safeRunUrl(undefined) === null, "undefined is rejected");
+const validRunUrl = "https://github.com/owner/repo/actions/runs/1";
+ok(safeRunUrl(validRunUrl) === validRunUrl,
+   "a valid https://github.com/<owner>/<repo>/actions/runs/<id> URL is passed through unchanged");
 
 console.log(`\n${passed} passed, ${failed} failed`);
 process.exit(failed > 0 ? 1 : 0);

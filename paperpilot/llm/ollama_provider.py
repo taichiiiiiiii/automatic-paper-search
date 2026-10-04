@@ -29,6 +29,7 @@ from .base import (
     PaperEvaluation,
     build_evaluation_prompt,
     map_batch_evaluations,
+    safe_json_response,
 )
 
 logger = get_logger(__name__)
@@ -93,9 +94,12 @@ class OllamaProvider(AbstractLLMProvider):
                 getattr(resp, "status_code", None),
             )
             return None
-        data = resp.json() or {}
-        message = data.get("message") or {}
-        content = message.get("content")
+        data = safe_json_response(resp)
+        if data is None:
+            logger.warning("ollama: /api/chat response was not valid JSON")
+            return None
+        message = data.get("message")
+        content = message.get("content") if isinstance(message, dict) else None
         if not isinstance(content, str) or not content.strip():
             logger.warning("ollama: empty response body")
             return None

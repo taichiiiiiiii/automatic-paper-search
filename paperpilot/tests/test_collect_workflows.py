@@ -1,14 +1,24 @@
-"""Contract tests for .github/workflows/collect-daily-watch.yml's commit step.
+"""Contract tests for the collector steps of collect-daily-watch.yml and
+collect-weekly.yml.
 
-The collector runs with ``--fail-on-errors``, so a degraded daily run (e.g. one
-arXiv keyword 503) exits 1. The runner (paperpilot/pipeline/runner.py) has by
-then already exported the hits and stamped ``seen_ids.daily.json`` (it skips the
-stamp only when every enabled exporter failed). A commit step that is skipped on
-failure therefore lost the stamp and re-sent the same hits next run; one that
-committed only seen_ids would mark CSV-only hits seen that nobody can read. The
-contract: a single commit step that runs unless cancelled and stages exactly the
-daily output, seen_ids and the daily run history — never a ``.corrupt-*``
-quarantine file.
+The collector runs with ``--fail-on-errors`` in both workflows, so a degraded
+run (e.g. one arXiv keyword 503) exits 1 instead of silently publishing a
+thinner result as if it were complete.
+
+For collect-daily-watch.yml specifically: the runner
+(paperpilot/pipeline/runner.py) has by then already exported the hits and
+stamped ``seen_ids.daily.json`` (it skips the stamp only when every enabled
+exporter failed). A commit step that is skipped on failure therefore lost the
+stamp and re-sent the same hits next run; one that committed only seen_ids
+would mark CSV-only hits seen that nobody can read. The contract: a single
+commit step that runs unless cancelled and stages exactly the daily output,
+seen_ids and the daily run history — never a ``.corrupt-*`` quarantine file.
+
+For collect-weekly.yml: there is no equivalent commit step (its generated
+files move through promote-generated.sh instead), but the collector step's
+``--fail-on-errors`` guard and its ``id: collector`` (which the later
+"Check whether this attempt wrote its own run history" step keys off of)
+are still a contract worth pinning.
 """
 
 from __future__ import annotations
@@ -20,17 +30,18 @@ import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW_PATH = REPO_ROOT / ".github" / "workflows" / "collect-daily-watch.yml"
+WEEKLY_WORKFLOW_PATH = REPO_ROOT / ".github" / "workflows" / "collect-weekly.yml"
 
 
-def _load_workflow() -> dict[str, Any]:
-    data = yaml.safe_load(WORKFLOW_PATH.read_text(encoding="utf-8"))
+def _load_workflow(path: Path = WORKFLOW_PATH) -> dict[str, Any]:
+    data = yaml.safe_load(path.read_text(encoding="utf-8"))
     assert isinstance(data, dict)
     return data
 
 
-def _steps() -> list[dict[str, Any]]:
-    workflow = _load_workflow()
-    steps = workflow["jobs"]["watch"]["steps"]
+def _steps(path: Path = WORKFLOW_PATH, *, job: str = "watch") -> list[dict[str, Any]]:
+    workflow = _load_workflow(path)
+    steps = workflow["jobs"][job]["steps"]
     assert isinstance(steps, list)
     return steps
 
@@ -49,6 +60,17 @@ def test_collector_step_passes_fail_on_errors() -> None:
     collect_step = _find_step(steps, name_contains="Run PaperPilot")
     run = collect_step.get("run") or ""
     assert "--fail-on-errors" in run
+
+
+def test_weekly_collector_step_passes_fail_on_errors() -> None:
+    steps = _steps(WEEKLY_WORKFLOW_PATH, job="generate")
+    collect_step = _find_step(steps, name_contains="Run PaperPilot")
+    run = collect_step.get("run") or ""
+    assert "--fail-on-errors" in run
+    # The "Check whether this attempt wrote its own run history" step
+    # downstream gates on `steps.collector.outcome`, so the id must not
+    # drift out from under it.
+    assert collect_step.get("id") == "collector"
 
 
 def _commit_steps(steps: list[dict[str, Any]]) -> list[dict[str, Any]]:

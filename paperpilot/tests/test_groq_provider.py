@@ -24,6 +24,16 @@ def _groq_body(text: str) -> dict:
     return {"choices": [{"message": {"content": text}}]}
 
 
+def _non_json_resp(status: int = 200):
+    """A 200 (or other status) whose body is not valid JSON at all —
+    e.g. an HTML error page or a truncated stream."""
+
+    def _raise():
+        raise json.JSONDecodeError("Expecting value", "<html>not json</html>", 0)
+
+    return SimpleNamespace(status_code=status, json=_raise)
+
+
 def _mk_paper(title: str) -> Paper:
     return Paper(
         title=title,
@@ -204,6 +214,59 @@ def test_classify_relation_api_failure_returns_none():
     assert rc is None
 
 
+# ---- Malformed 200 response body ----
+# A 200 status only means the HTTP transport succeeded; the body can
+# still be garbage (HTML error page, truncated stream) or valid JSON of
+# the wrong shape. Pre-fix, `resp.json()` was called unguarded and a
+# non-JSON body raised straight out of `_chat`, uncaught by any
+# `classify_relation` caller (only Stage 4's evaluate_batch path had
+# incidental protection elsewhere).
+
+
+def test_evaluate_batch_non_json_200_returns_none_no_exception():
+    provider = GroqProvider({"enabled": True}, api_key="k")
+    with patch(
+        "paperpilot.llm.groq_provider.request_with_retry",
+        return_value=_non_json_resp(200),
+    ):
+        evals = provider.evaluate_batch([_mk_paper("P1")], profile="")
+    assert evals == [None]
+
+
+def test_classify_relation_non_json_200_returns_none_no_exception():
+    provider = GroqProvider({"enabled": True}, api_key="k")
+    with patch(
+        "paperpilot.llm.groq_provider.request_with_retry",
+        return_value=_non_json_resp(200),
+    ):
+        rc = provider.classify_relation({"title": "A"}, {"title": "B"})
+    assert rc is None
+
+
+def test_chat_wrong_shape_json_top_level_list_returns_none():
+    """200 + syntactically valid JSON, but the top level is a list, not
+    the expected object — must degrade like any other malformed body."""
+    provider = GroqProvider({"enabled": True}, api_key="k")
+    with patch(
+        "paperpilot.llm.groq_provider.request_with_retry",
+        return_value=_resp(200, ["not", "an", "object"]),
+    ):
+        result = provider._chat("s", "u")
+    assert result is None
+
+
+def test_chat_wrong_shape_choices_not_a_list_returns_none():
+    """200 + a JSON object, but `choices` is the wrong type (e.g. a
+    string instead of a list) — must not raise trying to index it."""
+    provider = GroqProvider({"enabled": True}, api_key="k")
+    with patch(
+        "paperpilot.llm.groq_provider.request_with_retry",
+        return_value=_resp(200, {"choices": "not-a-list"}),
+    ):
+        result = provider._chat("s", "u")
+    assert result is None
+
+
 # ---- Rate limiter (#129) ----
 # Groq free tier is 30 RPM. PaperPilot's build_theme_lineage in
 # --llm-strict=all fires ~40 classify_relation calls in a tight loop,
@@ -375,3 +438,54 @@ def test_groq_provider_failure_counter_resets_on_success(monkeypatch):
         assert provider._chat("s", "u") is None     # fail 2
 
     assert provider._quota_exhausted is False
+
+
+def test_groq_provider_latches_on_consecutive_empty_content_200s(monkeypatch):
+    """A 200 with an empty/unusable `choices[0].message.content` is a
+    real Groq failure mode (not a transport error), but pre-fix only the
+    non-200 branch ever checked the consecutive-failure threshold —
+    empty-content responses incremented the counter without ever being
+    able to latch `_quota_exhausted`. 3 consecutive empty-content 200s
+    must now latch the breaker exactly like 3 consecutive non-200s."""
+    monkeypatch.setattr("paperpilot.llm.groq_provider.time.monotonic", lambda: 0.0)
+    monkeypatch.setattr("paperpilot.llm.groq_provider.time.sleep", lambda s: None)
+
+    provider = GroqProvider({"enabled": True}, api_key="k")
+    empty_body = {"choices": [{"message": {"content": ""}}]}
+
+    with patch(
+        "paperpilot.llm.groq_provider.request_with_retry",
+        return_value=_resp(200, empty_body),
+    ) as mock:
+        assert provider._chat("s", "u") is None
+        assert provider._chat("s", "u") is None
+        assert provider._chat("s", "u") is None
+        assert provider._quota_exhausted is True
+        # 4th call short-circuits — no further API hit.
+        assert provider._chat("s", "u") is None
+
+    assert mock.call_count == 3
+
+
+def test_groq_provider_latches_on_consecutive_non_json_200s(monkeypatch):
+    """Same latch guarantee as the empty-content case above, but for a
+    200 whose body isn't valid JSON at all (task item 1 x item 2
+    overlap): 3 consecutive non-JSON 200s must also open the breaker,
+    not just silently increment a counter nothing ever checks."""
+    monkeypatch.setattr("paperpilot.llm.groq_provider.time.monotonic", lambda: 0.0)
+    monkeypatch.setattr("paperpilot.llm.groq_provider.time.sleep", lambda s: None)
+
+    provider = GroqProvider({"enabled": True}, api_key="k")
+
+    with patch(
+        "paperpilot.llm.groq_provider.request_with_retry",
+        return_value=_non_json_resp(200),
+    ) as mock:
+        assert provider._chat("s", "u") is None
+        assert provider._chat("s", "u") is None
+        assert provider._chat("s", "u") is None
+        assert provider._quota_exhausted is True
+        # 4th call short-circuits — no further API hit.
+        assert provider._chat("s", "u") is None
+
+    assert mock.call_count == 3

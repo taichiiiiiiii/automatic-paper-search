@@ -32,6 +32,7 @@ from .base import (
     build_classify_prompt,
     build_evaluation_prompt,
     map_batch_evaluations,
+    safe_json_response,
 )
 
 logger = get_logger(__name__)
@@ -128,13 +129,21 @@ class GeminiProvider(AbstractLLMProvider):
                 getattr(resp, "status_code", None),
             )
             return None
-        data = resp.json() or {}
-        candidates = data.get("candidates") or []
-        if not candidates:
-            logger.warning("gemini: empty candidates in response")
+        data = safe_json_response(resp)
+        if data is None:
+            logger.warning("gemini: generateContent response was not valid JSON")
             return None
-        parts = (candidates[0].get("content") or {}).get("parts") or []
-        if not parts:
+        candidates = data.get("candidates")
+        if not isinstance(candidates, list) or not candidates:
+            logger.warning("gemini: empty/invalid candidates in response")
             return None
-        text = parts[0].get("text")
+        first_candidate = candidates[0]
+        content_obj = (
+            first_candidate.get("content") if isinstance(first_candidate, dict) else None
+        )
+        parts = content_obj.get("parts") if isinstance(content_obj, dict) else None
+        if not isinstance(parts, list) or not parts:
+            return None
+        first_part = parts[0]
+        text = first_part.get("text") if isinstance(first_part, dict) else None
         return text if isinstance(text, str) and text.strip() else None

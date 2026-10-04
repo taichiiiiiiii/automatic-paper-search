@@ -210,3 +210,72 @@ def test_classify_relation_rejects_invalid_relation():
     ):
         rc = provider.classify_relation({"title": "A"}, {"title": "B"})
     assert rc is None
+
+
+# ---- Malformed 200 response body ----
+# A 200 status only means the HTTP transport succeeded; the body can
+# still be garbage (HTML error page, truncated stream) or valid JSON of
+# the wrong shape. Pre-fix, `resp.json()` was called unguarded.
+
+
+def test_evaluate_batch_non_json_200_returns_none_no_exception():
+    def _raise():
+        raise json.JSONDecodeError("Expecting value", "<html>not json</html>", 0)
+
+    resp = SimpleNamespace(status_code=200, json=_raise)
+    provider = GeminiProvider({"enabled": True}, api_key="k")
+    with patch(
+        "paperpilot.llm.gemini_provider.request_with_retry",
+        return_value=resp,
+    ):
+        evals = provider.evaluate_batch([_mk_paper("P1")], profile="")
+    assert evals == [None]
+
+
+def test_classify_relation_non_json_200_returns_none_no_exception():
+    def _raise():
+        raise json.JSONDecodeError("Expecting value", "<html>not json</html>", 0)
+
+    resp = SimpleNamespace(status_code=200, json=_raise)
+    provider = GeminiProvider({"enabled": True}, api_key="k")
+    with patch(
+        "paperpilot.llm.gemini_provider.request_with_retry",
+        return_value=resp,
+    ):
+        rc = provider.classify_relation({"title": "A"}, {"title": "B"})
+    assert rc is None
+
+
+def test_generate_wrong_shape_json_top_level_list_returns_none():
+    provider = GeminiProvider({"enabled": True}, api_key="k")
+    with patch(
+        "paperpilot.llm.gemini_provider.request_with_retry",
+        return_value=_resp(200, ["not", "an", "object"]),
+    ):
+        result = provider._generate("s", "u")
+    assert result is None
+
+
+def test_generate_wrong_shape_candidates_not_a_list_returns_none():
+    provider = GeminiProvider({"enabled": True}, api_key="k")
+    with patch(
+        "paperpilot.llm.gemini_provider.request_with_retry",
+        return_value=_resp(200, {"candidates": "not-a-list"}),
+    ):
+        result = provider._generate("s", "u")
+    assert result is None
+
+
+def test_generate_non_dict_first_part_returns_none():
+    """``parts: ["str"]`` — a non-dict first part — must degrade to None
+    rather than raising on ``first_part.get(...)``. ``_generate`` already
+    guards this with ``isinstance(first_part, dict)`` before calling
+    ``.get("text")``."""
+    provider = GeminiProvider({"enabled": True}, api_key="k")
+    body = {"candidates": [{"content": {"parts": ["str"]}}]}
+    with patch(
+        "paperpilot.llm.gemini_provider.request_with_retry",
+        return_value=_resp(200, body),
+    ):
+        result = provider._generate("s", "u")
+    assert result is None

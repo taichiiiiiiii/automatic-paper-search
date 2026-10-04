@@ -984,6 +984,376 @@ def test_main_returns_3_when_zero_edges(tmp_path: Path, monkeypatch):
             ]
         )
     assert rc == 3, f"expected exit 3 on 0 edges, got {rc}"
+    # Write-order fix (issue #45): the CLI's exit-3 judgment is now made
+    # BEFORE the atomic replace, so a brand-new slug gets nothing written
+    # at all — not even a nodes-only artifact.
+    assert not (tmp_path / "out.json").exists()
+
+
+def test_main_zero_edges_leaves_existing_published_file_byte_identical(
+    tmp_path: Path, monkeypatch
+):
+    """A theme that already has a published lineage.json must come back
+    byte-identical when a re-run produces 0 edges — the exit-3 judgment
+    now runs before the write, not after it (issue #45)."""
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+
+    published = tmp_path / "docs" / "themes" / "x" / "lineage.json"
+    published.parent.mkdir(parents=True)
+    original_bytes = b'{"nodes": [{"id": "p1"}], "edges": [], "untouched": true}\n'
+    published.write_bytes(original_bytes)
+
+    _stub_external_calls(monkeypatch)
+    _force_classify_failures(monkeypatch)
+    seed = _mk_s2_paper("seed", year=2020)
+    parent = _mk_s2_paper("parent", year=2015)
+    with (
+        patch.object(
+            build_theme_lineage,
+            "request_with_retry",
+            return_value=_mk_s2_search_response([seed]),
+        ),
+        patch.object(build_theme_lineage, "fetch_related", return_value=[parent]),
+    ):
+        rc = build_theme_lineage.main(
+            ["--theme", "X", "--depth", "1", "--seeds", "1", "--width", "4"]
+        )
+    assert rc == 3, f"expected exit 3 on 0 edges, got {rc}"
+    assert published.read_bytes() == original_bytes
+
+
+def test_build_theme_lineage_allow_edgeless_default_still_publishes(
+    tmp_path: Path, monkeypatch
+):
+    """Library default (``allow_edgeless=True``): a direct call keeps
+    publishing a 0-edge result — only the CLI opts out."""
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+
+    _stub_external_calls(monkeypatch)
+    _force_classify_failures(monkeypatch)
+    seed = _mk_s2_paper("seed", year=2020)
+    parent = _mk_s2_paper("parent", year=2015)
+    with (
+        patch.object(
+            build_theme_lineage,
+            "request_with_retry",
+            return_value=_mk_s2_search_response([seed]),
+        ),
+        patch.object(build_theme_lineage, "fetch_related", return_value=[parent]),
+    ):
+        out_path = build_theme_lineage.build_theme_lineage(
+            theme="X", depth=1, seeds_count=1, width=4, since_year=None
+        )
+    assert json.loads(out_path.read_text())["edges"] == []
+
+
+def test_build_theme_lineage_allow_edgeless_false_raises_without_writing(
+    tmp_path: Path, monkeypatch
+):
+    """``allow_edgeless=False`` (what main() passes) raises instead of
+    writing — and creates no slug directory for a brand-new theme."""
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+
+    _stub_external_calls(monkeypatch)
+    _force_classify_failures(monkeypatch)
+    seed = _mk_s2_paper("seed", year=2020)
+    parent = _mk_s2_paper("parent", year=2015)
+    with (
+        patch.object(
+            build_theme_lineage,
+            "request_with_retry",
+            return_value=_mk_s2_search_response([seed]),
+        ),
+        patch.object(build_theme_lineage, "fetch_related", return_value=[parent]),
+    ):
+        with pytest.raises(build_theme_lineage.ZeroEdgeBuildError):
+            build_theme_lineage.build_theme_lineage(
+                theme="X",
+                depth=1,
+                seeds_count=1,
+                width=4,
+                since_year=None,
+                allow_edgeless=False,
+            )
+    assert not (tmp_path / "docs" / "themes" / "x").exists()
+
+
+def test_auto_expand_retries_after_zero_edge_first_pass(tmp_path: Path, monkeypatch):
+    """A first pass that raises ``ZeroEdgeBuildError`` (0 edges, nothing
+    written, no out_path to inspect) still gets --auto-expand's one
+    rescue retry at larger BFS parameters."""
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+
+    call_log: list[dict] = []
+
+    def fake_build(*, theme, depth, seeds_count, width, **kwargs):
+        call_log.append({"depth": depth, "seeds": seeds_count, "width": width})
+        if len(call_log) == 1:
+            raise build_theme_lineage.ZeroEdgeBuildError("0 edges on first pass")
+        out = tmp_path / "out.json"
+        out.write_text(
+            json.dumps(
+                {
+                    "nodes": [{"id": f"n{i}"} for i in range(20)],
+                    "edges": [{"src": f"n{i}", "dst": f"n{i + 1}"} for i in range(10)],
+                }
+            )
+        )
+        return out
+
+    monkeypatch.setattr(build_theme_lineage, "build_theme_lineage", fake_build)
+
+    rc = build_theme_lineage.main(
+        [
+            "--theme",
+            "Mamba",
+            "--depth",
+            "1",
+            "--seeds",
+            "5",
+            "--width",
+            "8",
+            "--auto-expand",
+            "--output",
+            str(tmp_path / "out.json"),
+        ]
+    )
+    assert rc == 0
+    assert len(call_log) == 2, f"expected 2 builds, got {len(call_log)}: {call_log}"
+    assert call_log[0] == {"depth": 1, "seeds": 5, "width": 8}
+    assert call_log[1] == {"depth": 2, "seeds": 10, "width": 12}
+
+
+def test_auto_expand_both_passes_zero_edges_returns_3_without_writing(
+    tmp_path: Path, monkeypatch, capsys
+):
+    """Both the first pass and its one auto-expand retry raise
+    ``ZeroEdgeBuildError`` → exit 3, nothing ever written."""
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+
+    call_count = [0]
+
+    def fake_build(*, theme, depth, seeds_count, width, **kwargs):
+        call_count[0] += 1
+        raise build_theme_lineage.ZeroEdgeBuildError("0 edges")
+
+    monkeypatch.setattr(build_theme_lineage, "build_theme_lineage", fake_build)
+
+    out = tmp_path / "out.json"
+    rc = build_theme_lineage.main(
+        [
+            "--theme",
+            "Mamba",
+            "--depth",
+            "1",
+            "--seeds",
+            "5",
+            "--width",
+            "8",
+            "--auto-expand",
+            "--output",
+            str(out),
+        ]
+    )
+    assert rc == 3
+    assert call_count[0] == 2
+    assert not out.exists()
+    assert "0 edges" in capsys.readouterr().err
+
+
+def test_auto_expand_retry_zero_edges_keeps_initial_sparse_lineage(
+    tmp_path: Path, monkeypatch, capsys
+):
+    """First pass succeeds with a sparse-but-edged lineage (triggers the
+    generic auto-expand retry); the retry itself raises
+    ``ZeroEdgeBuildError`` → the first pass's file must survive untouched
+    and the run must still exit 0."""
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+
+    call_count = [0]
+    out = tmp_path / "out.json"
+    initial_payload = {
+        "nodes": [{"id": "n0"}, {"id": "n1"}],
+        "edges": [{"src": "n0", "dst": "n1"}],
+    }
+
+    def fake_build(*, theme, depth, seeds_count, width, **kwargs):
+        call_count[0] += 1
+        if call_count[0] == 1:
+            out.write_text(json.dumps(initial_payload))
+            return out
+        raise build_theme_lineage.ZeroEdgeBuildError("0 edges on retry")
+
+    monkeypatch.setattr(build_theme_lineage, "build_theme_lineage", fake_build)
+
+    rc = build_theme_lineage.main(
+        [
+            "--theme",
+            "Mamba",
+            "--depth",
+            "1",
+            "--seeds",
+            "5",
+            "--width",
+            "8",
+            "--auto-expand",
+            "--output",
+            str(out),
+        ]
+    )
+    assert rc == 0
+    assert call_count[0] == 2
+    assert json.loads(out.read_text()) == initial_payload
+    assert "auto-expand retry produced 0 edges" in capsys.readouterr().err
+
+
+def test_zero_edge_retry_returning_a_sparse_graph_does_not_trigger_a_third_build(
+    tmp_path: Path, monkeypatch
+):
+    """A first pass that raises ``ZeroEdgeBuildError`` consumes
+    --auto-expand's one retry (``used_zero_edge_retry = True``). When that
+    retry itself succeeds but produces a SPARSE (below SPARSE_NODES /
+    SPARSE_EDGES) non-empty graph, the generic sparse-rebuild block further
+    down must NOT spend a second retry on the same run — ``main()`` guards
+    this with ``if args.auto_expand and not used_zero_edge_retry``. Without
+    that guard this would be a 3rd build; the sparse retry result is kept
+    as-is."""
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+
+    call_log: list[dict] = []
+    out = tmp_path / "out.json"
+    # Below SPARSE_NODES (15) / SPARSE_EDGES (5) — sparse but non-empty.
+    sparse_payload = {
+        "nodes": [{"id": "n0"}, {"id": "n1"}],
+        "edges": [{"src": "n0", "dst": "n1"}],
+    }
+
+    def fake_build(*, theme, depth, seeds_count, width, **kwargs):
+        call_log.append({"depth": depth, "seeds": seeds_count, "width": width})
+        if len(call_log) == 1:
+            raise build_theme_lineage.ZeroEdgeBuildError("0 edges on first pass")
+        out.write_text(json.dumps(sparse_payload))
+        return out
+
+    monkeypatch.setattr(build_theme_lineage, "build_theme_lineage", fake_build)
+
+    rc = build_theme_lineage.main(
+        [
+            "--theme",
+            "Mamba",
+            "--depth",
+            "1",
+            "--seeds",
+            "5",
+            "--width",
+            "8",
+            "--auto-expand",
+            "--output",
+            str(out),
+        ]
+    )
+    assert rc == 0
+    assert len(call_log) == 2, f"expected exactly 2 builds, got {len(call_log)}: {call_log}"
+    assert json.loads(out.read_text()) == sparse_payload
+
+
+def test_auto_expand_zero_edge_retry_incomplete_build_error_returns_4(
+    tmp_path: Path, monkeypatch, capsys
+):
+    """First pass raises ``ZeroEdgeBuildError``; the --auto-expand retry
+    then raises ``IncompleteBuildError`` → exit 4 (distinct from exit 2's
+    "bad input" and exit 3's "ran cleanly, no edges"). Nothing is written
+    for a new slug."""
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+
+    call_count = [0]
+    out = tmp_path / "out.json"
+
+    def fake_build(*, theme, depth, seeds_count, width, **kwargs):
+        call_count[0] += 1
+        if call_count[0] == 1:
+            raise build_theme_lineage.ZeroEdgeBuildError("0 edges on first pass")
+        raise build_theme_lineage.IncompleteBuildError("upstream fetch incomplete")
+
+    monkeypatch.setattr(build_theme_lineage, "build_theme_lineage", fake_build)
+
+    rc = build_theme_lineage.main(
+        [
+            "--theme",
+            "Mamba",
+            "--depth",
+            "1",
+            "--seeds",
+            "5",
+            "--width",
+            "8",
+            "--auto-expand",
+            "--output",
+            str(out),
+        ]
+    )
+    assert rc == 4
+    assert call_count[0] == 2
+    assert not out.exists()
+    assert "incomplete build" in capsys.readouterr().err
+
+
+def test_auto_expand_zero_edge_retry_value_error_returns_2(
+    tmp_path: Path, monkeypatch, capsys
+):
+    """First pass raises ``ZeroEdgeBuildError``; the --auto-expand retry
+    then raises a plain ``ValueError`` → exit 2 (bad input / build error),
+    distinct from exit 3 (clean zero-edge) and exit 4 (incomplete fetch)."""
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+
+    call_count = [0]
+    out = tmp_path / "out.json"
+
+    def fake_build(*, theme, depth, seeds_count, width, **kwargs):
+        call_count[0] += 1
+        if call_count[0] == 1:
+            raise build_theme_lineage.ZeroEdgeBuildError("0 edges on first pass")
+        raise ValueError("malformed identity alias")
+
+    monkeypatch.setattr(build_theme_lineage, "build_theme_lineage", fake_build)
+
+    rc = build_theme_lineage.main(
+        [
+            "--theme",
+            "Mamba",
+            "--depth",
+            "1",
+            "--seeds",
+            "5",
+            "--width",
+            "8",
+            "--auto-expand",
+            "--output",
+            str(out),
+        ]
+    )
+    assert rc == 2
+    assert call_count[0] == 2
+    assert not out.exists()
+    assert "error: malformed identity alias" in capsys.readouterr().err
 
 
 def test_build_prioritises_influential_parents_over_citation_count(tmp_path: Path, monkeypatch):

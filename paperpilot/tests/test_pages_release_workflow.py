@@ -732,3 +732,172 @@ def test_on_demand_theme_candidate_is_scoped_to_one_slug() -> None:
     assert '"$RUNNER_TEMP/candidate" "$msg" "$PRIMARY_PATH"' in text
     assert "paperpilot/data/lineage-cache/classifications.json" not in text
     assert re.search(r"^\s+docs/themes(?:\s|$)", text, re.MULTILINE) is None
+
+
+def test_theme_on_demand_input_gate_matches_whole_strings_not_lines(
+    tmp_path: Path,
+) -> None:
+    """Same contract as ``test_on_demand_input_gate_matches_whole_strings_not_lines``
+    (conference-on-demand.yml), for theme-on-demand.yml's single-theme gate.
+
+    "Vision Transformer\\nx;rm" must not pass by satisfying the pattern on its
+    first line alone — the step matches each input as one whole string and
+    explicitly rejects an embedded newline/CR before the anchored character
+    class gets a chance to, while a normal dispatch keeps passing.
+    """
+    name = "theme-on-demand.yml"
+    data = _load(name)
+    step = next(
+        candidate
+        for candidate in data["jobs"]["generate"]["steps"]
+        if candidate.get("name") == "Validate input early"
+    )
+    assert "grep -Eq" not in step["run"], "the input gate must not match line by line"
+
+    # Both inputs reach the step only through `env:`, never spliced into the
+    # script, so a value cannot carry shell syntax into `run:` regardless of
+    # what the pattern check below does.
+    carriers = [
+        line
+        for line in (WORKFLOWS / name).read_text(encoding="utf-8").splitlines()
+        if "github.event.inputs.theme" in line or "github.event.inputs.request_id" in line
+    ]
+    assert carriers
+    assert all(
+        line.strip().startswith("THEME_INPUT:") or line.strip().startswith("REQUEST_ID:")
+        for line in carriers
+    )
+
+    def run(**overrides: str) -> subprocess.CompletedProcess[str]:
+        env = {"THEME_INPUT": "Vision Transformer", "REQUEST_ID": ""}
+        env.update(overrides)
+        return _run_workflow_step_script(tmp_path, name, "Validate input early", env)
+
+    valid = run()
+    assert valid.returncode == 0, valid.stdout + valid.stderr
+
+    valid_with_request_id = run(REQUEST_ID="req-123")
+    assert valid_with_request_id.returncode == 0, (
+        valid_with_request_id.stdout + valid_with_request_id.stderr
+    )
+
+    for values in (
+        {"THEME_INPUT": "Vision Transformer\nx;rm"},
+        {"THEME_INPUT": "Vision Transformer\n"},
+        {"THEME_INPUT": "Vision Transformer\r"},
+        {"THEME_INPUT": "x;rm"},
+        {"THEME_INPUT": "a"},  # below the 2-char minimum
+        {"THEME_INPUT": "a" * 81},  # above the 80-char maximum
+        {"REQUEST_ID": "req\nx"},
+        {"REQUEST_ID": "req\rx"},
+    ):
+        rejected = run(**values)
+        assert rejected.returncode != 0, values
+        assert "::error::" in rejected.stdout + rejected.stderr, values
+
+    # The semicolon form is never evaluated: refused before it could run.
+    attack = run(THEME_INPUT="x;touch pwned")
+    assert attack.returncode != 0
+    assert not (tmp_path / "pwned").exists()
+
+
+def _regen_theme_command(theme: str) -> str:
+    return (
+        "uv run --frozen python -m paperpilot.scripts.build_theme_lineage "
+        f"--theme {theme} --depth 1 --seeds 5 --width 8 --since-year 2018 "
+        "--llm-strict ambiguous --primary-source openalex"
+    )
+
+
+def _run_regen_themes_step(tmp_path: Path, themes_input: str) -> subprocess.CompletedProcess[str]:
+    """Run regen-themes.yml's whole "Regenerate requested themes" step, offline.
+
+    ``uv`` is a shell function that only echoes its arguments (mirrors
+    ``_run_rebuild_projections_step`` for collect-weekly.yml), and
+    ``GITHUB_STEP_SUMMARY`` is pointed at a scratch file so the step's own
+    ``>> "$GITHUB_STEP_SUMMARY"`` writes under ``set -u`` don't fail outside
+    a real runner.
+    """
+    step = tmp_path / "regenerate-requested-themes.sh"
+    step.write_text(
+        _workflow_run_script("regen-themes.yml", "Regenerate requested themes"),
+        encoding="utf-8",
+    )
+    harness = tmp_path / "regen-themes-harness.sh"
+    harness.write_text(
+        'uv() { echo "uv $*"; }\n' + f"source ./{step.name}\n",
+        encoding="utf-8",
+    )
+    return subprocess.run(
+        ["bash", str(harness)],
+        cwd=tmp_path,
+        env={
+            **os.environ,
+            "THEMES_INPUT": themes_input,
+            "GITHUB_STEP_SUMMARY": str(tmp_path / "step-summary.md"),
+        },
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+
+
+def test_regen_themes_per_theme_gate_matches_whole_strings_not_lines(
+    tmp_path: Path,
+) -> None:
+    """regen-themes.yml's comma-separated ``themes`` input gets the same
+    whole-string treatment as the single-theme input.
+
+    ``IFS=',' read -ra`` only reads one line, so "Flash Attention\\nx;rm"
+    would otherwise keep just its first line and silently drop the rest —
+    the step now refuses any newline/CR in the whole input outright. Each
+    surviving comma-separated entry is checked against the same
+    [A-Za-z0-9 _-]{2,80} pattern as theme-on-demand.yml's single-theme gate
+    (worker/slug.js's THEME_INPUT_PATTERN), whole-string via bash
+    ``[[ =~ ]]`` rather than ``printf | grep``.
+    """
+    run_text = _workflow_run_script("regen-themes.yml", "Regenerate requested themes")
+    assert "grep -Eq" not in run_text, "the per-theme gate must not match line by line"
+
+    # The dispatch input reaches the step only through `env:`, never
+    # spliced into the script.
+    text = (WORKFLOWS / "regen-themes.yml").read_text(encoding="utf-8")
+    carriers = [line for line in text.splitlines() if "inputs.themes" in line]
+    assert carriers
+    assert all(line.strip().startswith("THEMES_INPUT:") for line in carriers)
+    assert "inputs.themes" not in run_text
+
+    two = _run_regen_themes_step(tmp_path, "Flash Attention, Mixture of Experts")
+    assert two.returncode == 0, two.stdout + two.stderr
+    uv_lines = [line for line in two.stdout.splitlines() if line.startswith("uv ")]
+    assert uv_lines == [
+        _regen_theme_command("Flash Attention"),
+        _regen_theme_command("Mixture of Experts"),
+    ]
+
+    # A newline embedded in the whole input is refused before the
+    # comma-split even runs — never silently truncated to its first entry.
+    truncated = _run_regen_themes_step(tmp_path, "Flash Attention\nx;rm")
+    assert truncated.returncode != 0
+    assert "::error::" in truncated.stdout + truncated.stderr
+    assert not [line for line in truncated.stdout.splitlines() if line.startswith("uv ")]
+
+    # One pattern-invalid entry among valid ones is warned and skipped,
+    # not a hard failure for the whole run (today's per-entry semantics).
+    mixed = _run_regen_themes_step(tmp_path, "Flash Attention, x;rm")
+    assert mixed.returncode == 0, mixed.stdout + mixed.stderr
+    assert [line for line in mixed.stdout.splitlines() if line.startswith("uv ")] == [
+        _regen_theme_command("Flash Attention"),
+    ]
+    assert "::warning::invalid theme entry skipped" in mixed.stdout
+
+    # Every entry invalid: no uv call at all, and the step fails outright.
+    all_invalid = _run_regen_themes_step(tmp_path, "x;rm")
+    assert all_invalid.returncode != 0
+    assert not [line for line in all_invalid.stdout.splitlines() if line.startswith("uv ")]
+    assert "::error::all theme regenerations failed" in all_invalid.stdout
+
+    # The semicolon form is never evaluated, newline-truncated or not.
+    attack = _run_regen_themes_step(tmp_path, "x;touch pwned")
+    assert attack.returncode != 0
+    assert not (tmp_path / "pwned").exists()

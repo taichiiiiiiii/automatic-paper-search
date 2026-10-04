@@ -9,6 +9,12 @@
 //      (403/413/415/502/503), the Issue-fallback link reuse for 502/503,
 //      and that "invalid"/"rate_limited" messages are shown verbatim,
 //      unchanged by the mapping.
+//   4. showProgressFailure()'s runUrl handling — the GitHub Actions run
+//      link (run.html_url, sourced from the Worker's proxy of the GitHub
+//      runs API) must only ever become a clickable link when it is an
+//      https:// URL whose host is exactly github.com. Anything else
+//      (javascript:, http:, a lookalike host) must render the failure
+//      text with no link at all, never a dangerous href.
 //
 // Unlike test_theme_lineage_contract.mjs's loadViewer() (which stubs out
 // render/renderHeader/etc. to isolate init()'s control flow), this harness
@@ -151,6 +157,7 @@ function loadViewer({ apiBase = "https://paperpilot-themes.example.workers.dev" 
       state, els,
       renderHeader, submitTheme, issueUrlFor,
       localizedFailureMessage,
+      showProgressFailure, safeRunUrl,
     };
   `;
   vm.runInContext(themeSrcStripped + "\n" + probe, ctx, { filename: "theme.js" });
@@ -308,6 +315,56 @@ for (const c of MAPPED_FAILURES) {
   await ctx.__test.submitTheme();
   const html = element("theme-request-status").innerHTML;
   ok(!html.includes("<img"), "an invalid-status Worker message is escaped before reaching innerHTML");
+}
+
+console.log("\nshowProgressFailure(): runUrl scheme/host gating");
+
+function linkIn(msgEl) {
+  return msgEl.children.find((c) => typeof c.href === "string");
+}
+
+const UNSAFE_RUN_URLS = [
+  ["javascript:alert(1)", "javascript: scheme"],
+  ["http://github.com/owner/repo/actions/runs/1", "http: (non-https) github.com"],
+  ["https://evil.test/owner/repo", "a non-github.com host"],
+];
+
+for (const [runUrl, label] of UNSAFE_RUN_URLS) {
+  const { ctx, element } = loadViewer();
+  ctx.__test.showProgressFailure({
+    title: "失敗しました",
+    message: "メッセージ",
+    runUrl,
+  });
+  const msg = element("theme-progress-failure-msg");
+  ok(linkIn(msg) === undefined, `${label} → no <a> link is rendered`);
+  ok(!JSON.stringify(msg.children).includes("javascript:") &&
+     !JSON.stringify(msg.children).includes("evil.test"),
+     `${label} → the rejected URL never reaches any rendered node`);
+}
+
+{
+  const { ctx, element } = loadViewer();
+  const validRunUrl = "https://github.com/owner/repo/actions/runs/1";
+  ctx.__test.showProgressFailure({
+    title: "失敗しました",
+    message: "メッセージ",
+    runUrl: validRunUrl,
+  });
+  const msg = element("theme-progress-failure-msg");
+  const link = linkIn(msg);
+  ok(link !== undefined, "a valid https://github.com/... run URL → a link is rendered");
+  ok(link?.href === validRunUrl, "the rendered link's href is exactly the valid run URL");
+  ok(link?.target === "_blank" && link?.rel === "noopener noreferrer",
+     "the rendered link keeps target=_blank + rel=noopener noreferrer");
+}
+
+{
+  // No runUrl at all must still behave like today: failure text with no link.
+  const { ctx, element } = loadViewer();
+  ctx.__test.showProgressFailure({ title: "失敗しました", message: "メッセージ" });
+  ok(linkIn(element("theme-progress-failure-msg")) === undefined,
+     "no runUrl → no link is rendered");
 }
 
 console.log(`\n${passed} passed, ${failed} failed`);

@@ -3358,6 +3358,23 @@ def _run_bfs_and_descendants(
     )
 
 
+class ZeroEdgeBuildError(RuntimeError):
+    """Raised instead of publishing when the caller opted out of 0-edge
+    results via ``build_theme_lineage(..., allow_edgeless=False)``.
+
+    A structurally empty edge set is not itself evidence of an upstream
+    outage — the fetches can all have succeeded with the classifier simply
+    never deriving a relation, or a theme search legitimately finding
+    nothing — so this is opt-in, not automatic (see ``allow_edgeless`` on
+    ``build_theme_lineage``). ``main()`` is the one caller that opts in,
+    because it is also the one place that already judges 0 edges a
+    failure (exit code 3, see issue #45); raising here — BEFORE the
+    atomic replace, like the completeness gates — means that judgment and
+    the write decision can no longer disagree. The previously published
+    artifact, if any, is left byte-identical.
+    """
+
+
 def _log_classify_summary(
     classify_attempted: int,
     classify_succeeded: int,
@@ -3397,8 +3414,12 @@ def _log_classify_summary(
         )
     if not has_edges:
         logger.warning(
-            "produced 0 edges — data quality is degraded; the JSON is still "
-            "written but the viewer will show nodes only. See issue #45."
+            "produced 0 edges — data quality is degraded. A direct "
+            "library call still publishes this (a lone seed, every "
+            "parent filtered, or a genuinely empty theme are all valid "
+            "facts); the CLI refuses to publish an edgeless artifact "
+            "(exit 3, nothing written; any previously published "
+            "lineage.json is left untouched). See issue #45."
         )
 
 
@@ -3428,6 +3449,7 @@ def build_theme_lineage(
     llm_strict: str = "off",
     primary_source: str = "s2",
     allow_incomplete: bool = False,
+    allow_edgeless: bool = True,
 ) -> Path:
     """Run the full theme-to-family-tree pipeline; return the output path.
 
@@ -3439,6 +3461,20 @@ def build_theme_lineage(
         ``referenced_works`` / ``cites:`` filter. No S2 calls anywhere
         on the success path — survives without ``PAPERPILOT_S2_API_KEY``
         and without CI runner IP throttle.
+
+    ``allow_edgeless`` (issue #45 write-order fix): when False, a result
+    with 0 edges raises :class:`ZeroEdgeBuildError` instead of being
+    written — mirroring exactly the condition the CLI (``main()``) uses
+    to decide its non-fatal exit code 3, so the write and the exit-code
+    decision can no longer disagree. Defaults to True (today's
+    behaviour: a 0-edge result, including a genuinely empty one, is a
+    valid artifact and gets published) because direct library callers
+    — including a lot of this module's own tests — legitimately produce
+    small or edgeless graphs (a lone seed with no discoverable parents,
+    every parent filtered as non-influential or foundational, a theme
+    search that genuinely found nothing) and have never asked for those
+    to be refused. ``main()`` is the one caller that *does* want 0 edges
+    treated as a failure, so it alone passes ``allow_edgeless=False``.
     """
     sanitised = sanitize_theme(theme)
     slug = theme_slug(sanitised)
@@ -3797,6 +3833,32 @@ def build_theme_lineage(
         if blocked:
             raise IncompleteBuildError(blocked)
 
+    # Issue #45 write-order fix: this condition mirrors exactly what
+    # main() uses to decide its non-fatal exit code 3 (`not
+    # payload.get("edges")`, no node scoping). It used to run only in
+    # main(), AFTER the atomic replace below — so a 0-edge build already
+    # overwrote a good published artifact by the time anything decided
+    # the run was a failure, and regen-themes.yml's bulk loop (which
+    # keeps going on a non-zero exit and later packages all of
+    # docs/themes verbatim) staged that overwritten file into its
+    # promotion candidate despite the "previous build retained" message
+    # it prints on failure. Decided here, before the write, like the
+    # completeness gates above: when the caller has opted in via
+    # ``allow_edgeless=False``, a non-zero exit must mean nothing was
+    # published. Opt-in (not automatic) because a direct library call
+    # with the default True legitimately produces 0-edge graphs all the
+    # time — a lone seed with no discoverable parents, every parent
+    # filtered as non-influential or foundational, a theme search that
+    # genuinely found nothing — and those must still publish; see
+    # test_a_genuinely_empty_theme_still_publishes and the many other
+    # tests in this suite that call build_theme_lineage() directly and
+    # expect a 0-edge write to succeed.
+    if not allow_edgeless and not ordered_edges:
+        raise ZeroEdgeBuildError(
+            f"0 edges produced for theme {sanitised!r} (slug {slug!r}) over "
+            f"{len(ordered_nodes)} node(s); refusing to write {out_path}"
+        )
+
     atomic_write_text(out_path, json.dumps(payload, ensure_ascii=False, indent=2) + "\n")
     logger.info(
         "wrote %s (nodes=%d edges=%d root=%s)",
@@ -3960,19 +4022,72 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     output = Path(args.output) if args.output else None
-    try:
-        out_path = build_theme_lineage(
+
+    def _attempt(depth: int, seeds_count: int, width: int) -> Path:
+        return build_theme_lineage(
             theme=args.theme,
-            depth=args.depth,
-            seeds_count=args.seeds_count,
-            width=args.width,
+            depth=depth,
+            seeds_count=seeds_count,
+            width=width,
             since_year=args.since_year,
             output=output,
             use_openalex_fallback=args.use_openalex_fallback,
             llm_strict=args.llm_strict,
             primary_source=args.primary_source,
             allow_incomplete=args.allow_incomplete,
+            # The CLI is the one caller that treats 0 edges as a failure
+            # (exit code 3 below) — see build_theme_lineage()'s
+            # `allow_edgeless` docstring for why every other caller keeps
+            # the default True.
+            allow_edgeless=False,
         )
+
+    # Consumed once the ZeroEdgeBuildError branch below has already spent
+    # --auto-expand's one retry, so the generic sparse-rebuild block further
+    # down does not spend a second one on the same run.
+    used_zero_edge_retry = False
+
+    try:
+        out_path = _attempt(args.depth, args.seeds_count, args.width)
+    except ZeroEdgeBuildError as exc:
+        # Issue #45 write-order fix: the builder now refuses to write when
+        # it produces 0 edges (the gate runs BEFORE the atomic replace), so
+        # there is no out_path here to retry against — nothing was
+        # published for a new slug, and an existing published artifact is
+        # left untouched. --auto-expand still gets its one retry at larger
+        # BFS parameters before giving up: 0 edges is the sparsest possible
+        # outcome and exactly what --auto-expand exists to rescue.
+        if not args.auto_expand:
+            print(
+                f"0 edges produced; published artifact left untouched: {exc}",
+                file=sys.stderr,
+            )
+            return 3
+        used_zero_edge_retry = True
+        d2, s2, w2 = _expand_params(args.depth, args.seeds_count, args.width)
+        print(
+            f"auto-expand: first pass produced 0 edges; retrying with "
+            f"--depth {d2} --seeds {s2} --width {w2}",
+            file=sys.stderr,
+        )
+        try:
+            out_path = _attempt(d2, s2, w2)
+        except ZeroEdgeBuildError as exc2:
+            print(
+                "auto-expand retry also produced 0 edges; published "
+                f"artifact left untouched: {exc2}",
+                file=sys.stderr,
+            )
+            return 3
+        except IncompleteBuildError as exc2:
+            print(
+                f"incomplete build; published artifact left untouched: {exc2}",
+                file=sys.stderr,
+            )
+            return 4
+        except ValueError as exc2:
+            print(f"error: {exc2}", file=sys.stderr)
+            return 2
     except IncompleteBuildError as exc:
         # Exit 4 is distinct from 2 (bad input) and 3 (ran cleanly, no
         # edges) so a workflow can tell "upstream was down, retry later"
@@ -3984,13 +4099,15 @@ def main(argv: list[str] | None = None) -> int:
         print(f"error: {exc}", file=sys.stderr)
         return 2
 
-    # Auto-expand: detect a sparse lineage and rebuild with larger BFS
-    # parameters. The classification cache (lineage-cache/classifications.json)
-    # is shared between the two passes, so the LLM cost of the retry is
-    # bounded by the *new* parent/child pairs that the wider BFS surfaces —
-    # typically a small minority. Same out_path so the viewer URL is
-    # stable across retries.
-    if args.auto_expand:
+    # Auto-expand: detect a sparse (but non-zero-edge) lineage and rebuild
+    # with larger BFS parameters. The classification cache
+    # (lineage-cache/classifications.json) is shared between the two
+    # passes, so the LLM cost of the retry is bounded by the *new*
+    # parent/child pairs that the wider BFS surfaces — typically a small
+    # minority. Same out_path so the viewer URL is stable across retries.
+    # Skipped when the ZeroEdgeBuildError branch above already spent the
+    # one retry --auto-expand grants per run.
+    if args.auto_expand and not used_zero_edge_retry:
         try:
             initial = json.loads(out_path.read_text())
         except (OSError, json.JSONDecodeError):
@@ -4006,17 +4123,15 @@ def main(argv: list[str] | None = None) -> int:
                 file=sys.stderr,
             )
             try:
-                out_path = build_theme_lineage(
-                    theme=args.theme,
-                    depth=d2,
-                    seeds_count=s2,
-                    width=w2,
-                    since_year=args.since_year,
-                    output=output,
-                    use_openalex_fallback=args.use_openalex_fallback,
-                    llm_strict=args.llm_strict,
-                    primary_source=args.primary_source,
-                    allow_incomplete=args.allow_incomplete,
+                out_path = _attempt(d2, s2, w2)
+            except ZeroEdgeBuildError as exc:
+                # The first pass already wrote a non-empty (if sparse)
+                # lineage; this retry is only an enhancement attempt and
+                # must not retract it or mark the whole run failed.
+                print(
+                    f"auto-expand retry produced 0 edges; keeping the "
+                    f"initial lineage: {exc}",
+                    file=sys.stderr,
                 )
             except IncompleteBuildError as exc:
                 # The first pass was a COMPLETE build that legitimately
@@ -4039,7 +4154,11 @@ def main(argv: list[str] | None = None) -> int:
 
     # Issue #45: non-fatal exit code 3 distinguishes "ran cleanly but
     # produced no edges" from a normal success. CI / bulk scripts can
-    # detect this and trigger an alert without having to grep logs.
+    # detect this and trigger an alert without having to grep logs. In
+    # steady state this is now unreachable for a real build (0 edges
+    # raises ZeroEdgeBuildError above, before anything is written), but it
+    # stays as a defense-in-depth check for any out_path produced another
+    # way (e.g. a stubbed build in a test).
     try:
         payload = json.loads(out_path.read_text())
     except (OSError, json.JSONDecodeError) as exc:
@@ -4053,8 +4172,8 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     if not payload.get("edges"):
         print(
-            "warning: 0 edges produced — output written but viewer will show "
-            "nodes only. Re-run after LLM quota resets (see issue #45).",
+            "warning: 0 edges produced; published artifact left untouched. "
+            "Re-run after LLM quota resets (see issue #45).",
             file=sys.stderr,
         )
         return 3

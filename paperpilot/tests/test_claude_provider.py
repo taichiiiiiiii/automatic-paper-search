@@ -157,3 +157,43 @@ def test_evaluate_batch_pads_missing_results():
     assert evals[0] is not None
     assert evals[1] is None
     assert evals[2] is None
+
+
+# ---- Malformed 200 response body ----
+# A 200 status only means the HTTP transport succeeded; the body can
+# still be garbage (HTML error page, truncated stream) or valid JSON of
+# the wrong shape. Pre-fix, `resp.json()` was called unguarded.
+
+
+def test_evaluate_batch_non_json_200_returns_none_no_exception():
+    def _raise():
+        raise json.JSONDecodeError("Expecting value", "<html>not json</html>", 0)
+
+    resp = SimpleNamespace(status_code=200, json=_raise)
+    provider = ClaudeProvider({"enabled": True}, api_key="sk-ant-x")
+    with patch(
+        "paperpilot.llm.claude_provider.request_with_retry",
+        return_value=resp,
+    ):
+        evals = provider.evaluate_batch([_mk_paper("P1")], profile="")
+    assert evals == [None]
+
+
+def test_messages_wrong_shape_json_top_level_list_returns_none():
+    provider = ClaudeProvider({"enabled": True}, api_key="sk-ant-x")
+    with patch(
+        "paperpilot.llm.claude_provider.request_with_retry",
+        return_value=_resp(200, ["not", "an", "object"]),
+    ):
+        result = provider._messages("s", "u")
+    assert result is None
+
+
+def test_messages_wrong_shape_content_not_a_list_returns_none():
+    provider = ClaudeProvider({"enabled": True}, api_key="sk-ant-x")
+    with patch(
+        "paperpilot.llm.claude_provider.request_with_retry",
+        return_value=_resp(200, {"content": "not-a-list"}),
+    ):
+        result = provider._messages("s", "u")
+    assert result is None

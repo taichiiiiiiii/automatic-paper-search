@@ -61,29 +61,43 @@ jobs:
     steps:
       - name: Validate input early
         # Reject before checkout so a malformed dispatch doesn't burn a
-        # full job. Pattern allows letters/digits/space/hyphen/underscore;
+        # full job. Pattern allows letters/digits/space/hyphen/underscore,
+        # 2-80 chars (same shape as worker/slug.js's THEME_INPUT_PATTERN —
+        # don't change the pattern here without updating that too).
         # Python's theme_slug NFKD-normalises the rest, but anything that
         # could shape-shift past the slugger (control chars, command
         # substitution probes) is denied here.
+        #
+        # Whole-string bash match, never `printf | grep`: grep is
+        # line-based, so a value carrying a newline would be validated one
+        # line at a time and pass on its first line alone. The explicit
+        # newline/CR rejection guards the same failure mode from surviving
+        # inside the anchored character class (mirrors conference-on-demand.yml's
+        # "Validate inputs early" step).
         env:
           THEME_INPUT: ${{ github.event.inputs.theme }}
           REQUEST_ID: ${{ github.event.inputs.request_id }}
         run: |
-          set -u
-          len=${#THEME_INPUT}
-          if [ "$len" -lt 2 ] || [ "$len" -gt 80 ]; then
-            echo "::error::theme length out of range (got $len chars, want 2..80)"
+          set -euo pipefail
+          if [[ "$THEME_INPUT" == *$'\n'* || "$THEME_INPUT" == *$'\r'* ]]; then
+            echo "::error::theme must not contain newline/CR characters"
             exit 1
           fi
-          # Print via printf %s to avoid bash interpreting escape sequences
-          # in the user-supplied string.
-          if ! printf '%s' "$THEME_INPUT" | grep -Eq '^[A-Za-z0-9 _\-]+$'; then
-            echo "::error::theme contains characters outside [A-Za-z0-9 _-]"
+          theme_re='^[A-Za-z0-9 _-]{2,80}$'
+          if ! [[ "$THEME_INPUT" =~ $theme_re ]]; then
+            echo "::error::theme must be 2-80 chars of [A-Za-z0-9 _-]"
             exit 1
           fi
-          if [ -n "${REQUEST_ID:-}" ] && ! printf '%s' "$REQUEST_ID" | grep -Eq '^[A-Za-z0-9._:-]{1,128}$'; then
-            echo "::error::request_id has an invalid format"
-            exit 1
+          if [ -n "${REQUEST_ID:-}" ]; then
+            if [[ "$REQUEST_ID" == *$'\n'* || "$REQUEST_ID" == *$'\r'* ]]; then
+              echo "::error::request_id must not contain newline/CR characters"
+              exit 1
+            fi
+            request_id_re='^[A-Za-z0-9._:-]{1,128}$'
+            if ! [[ "$REQUEST_ID" =~ $request_id_re ]]; then
+              echo "::error::request_id has an invalid format"
+              exit 1
+            fi
           fi
 
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4

@@ -18,6 +18,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from typing import Any
 
 from ..models import Paper
 
@@ -369,6 +370,33 @@ def build_classify_prompt(a: dict, b: dict) -> tuple[str, str]:
         b_abstract=(b.get("abstract") or "")[:_CLASSIFY_ABSTRACT_TRIM],
     )
     return CLASSIFY_SYSTEM_PROMPT, user
+
+
+def safe_json_response(resp: Any) -> dict | None:
+    """Parse ``resp.json()`` defensively for providers behind a hosted
+    chat/completions endpoint (Groq / Gemini / Claude / Ollama).
+
+    A 200 status code only means the HTTP transport succeeded — the body
+    itself can still be an HTML error page, a truncated stream, or valid
+    JSON of the wrong shape (e.g. a bare list/string instead of the
+    expected object). Pre-fix, every provider called ``resp.json() or {}``
+    unguarded: a non-JSON body raised ``requests``' (or ``simplejson``'s)
+    ``JSONDecodeError`` — a ``ValueError`` subclass — straight out of
+    ``_chat`` / ``_generate`` / ``_messages``. Nothing but Stage 4's own
+    try/except caught that, so a ``classify_relation`` call from a
+    lineage builder would crash the whole run instead of degrading to
+    the heuristic fallback like every other failure mode.
+
+    Returns the parsed object only when it decodes AND is a ``dict``
+    (every provider's top-level response shape is an object); otherwise
+    returns ``None`` so callers can treat "200 but garbage/wrong-shape
+    body" exactly like "non-200" or "transport failure".
+    """
+    try:
+        data = resp.json()
+    except ValueError:
+        return None
+    return data if isinstance(data, dict) else None
 
 
 def provider_model_tag(provider: AbstractLLMProvider) -> str:

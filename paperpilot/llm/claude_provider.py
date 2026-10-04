@@ -31,6 +31,7 @@ from .base import (
     PaperEvaluation,
     build_evaluation_prompt,
     map_batch_evaluations,
+    safe_json_response,
 )
 
 logger = get_logger(__name__)
@@ -107,10 +108,13 @@ class ClaudeProvider(AbstractLLMProvider):
                 getattr(resp, "status_code", None),
             )
             return None
-        data = resp.json() or {}
-        content = data.get("content") or []
-        if not content:
-            logger.warning("claude: empty content array")
+        data = safe_json_response(resp)
+        if data is None:
+            logger.warning("claude: /v1/messages response was not valid JSON")
+            return None
+        content = data.get("content")
+        if not isinstance(content, list) or not content:
+            logger.warning("claude: empty/invalid content array")
             return None
         # Find the first text block; ignore tool_use / other types.
         for part in content:
