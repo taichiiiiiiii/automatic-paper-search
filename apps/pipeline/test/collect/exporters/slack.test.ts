@@ -186,6 +186,33 @@ it("test_slack_url_control_sequence_injection_is_neutralized", async () => {
   for (let i = 0; i < maliciousUrls.length; i++) expect(body).toContain(`Paper ${i}`);
 });
 
+it("formats the header with the LOCAL calendar date, not the UTC date (collect LOW: clock, non-noon case)", async () => {
+  // Pacific/Kiritimati is UTC+14: a local instant shortly after local
+  // midnight is still the PREVIOUS day in UTC. `process.env.TZ` is set
+  // explicitly for this test only, so it is deterministic regardless of
+  // the host/CI's own default timezone.
+  const originalTz = process.env.TZ;
+  process.env.TZ = "Pacific/Kiritimati";
+  try {
+    const localToday = new Date(2026, 3, 10, 2, 0, 0); // 2026-04-10T02:00 local
+    expect(localToday.toISOString().slice(0, 10)).toBe("2026-04-09"); // UTC day is the 9th
+    const captured: Captured = {};
+    const exp = new SlackExporter(
+      { enabled: true },
+      {
+        fetchImpl: captureFetch(okResp(), captured),
+        webhookUrl: "http://hook",
+        today: () => localToday,
+      },
+    );
+    await exp.export(samplePapers());
+    expect(captured.body?.text).toContain("2026-04-10");
+    expect(captured.body?.text).not.toContain("2026-04-09");
+  } finally {
+    process.env.TZ = originalTz;
+  }
+});
+
 it("test_slack_legitimate_https_url_still_renders_as_link", async () => {
   const papers = [
     createPaper({

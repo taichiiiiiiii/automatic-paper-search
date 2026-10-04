@@ -305,6 +305,202 @@ describe("ArxivSource.fetch — malformed feed pages (COL-01..06)", () => {
   });
 });
 
+describe("ArxivSource.fetch — totalResults must stay consistent across pages (H3)", () => {
+  it("degrades a keyword when a later page reports a different totalResults than page 1", async () => {
+    // Page 1: totalResults=250, 100 entries (pageSize=100, offset 0).
+    // Page 2 (offset=100): totalResults=150, 100 entries — inconsistent
+    // with page 1's claimed total. The real `arxiv` package's `Client`
+    // never re-reads totalResults after page 1, so this kind of
+    // disagreement would just silently keep paging against the stale
+    // number; this port must instead treat it as a sign of a bad response
+    // and withdraw+degrade the keyword, not ship a result built from two
+    // different claimed result sets.
+    // A second, clean keyword rides along so this is a partial-degradation
+    // case (COL-06), not the all-keywords-failed case (COL-07) — the thing
+    // under test is the degraded reason text and withdrawal, not the
+    // all-failed exception.
+    const goodBody = atomFeed({
+      entries: [{ id: "http://arxiv.org/abs/2604.09999", published: "2026-04-01T00:00:00Z" }],
+    });
+    let flakyPage = 0;
+    const src = new ArxivSource(
+      { delaySeconds: 0, pageSize: 100, numRetries: 0 },
+      {
+        fetchText: async (url) => {
+          if (url.includes("good")) return textResp(200, goodBody);
+          flakyPage += 1;
+          if (flakyPage === 1) {
+            return textResp(
+              200,
+              atomFeed({ totalResults: 250, entries: newest(100, "2026-04-10") }),
+            );
+          }
+          return textResp(
+            200,
+            atomFeed({
+              totalResults: 150,
+              startIndex: 100,
+              entries: newest(100, "2026-04-09", "2603.0000"),
+            }),
+          );
+        },
+      },
+    );
+    const result = await src.fetch({
+      keywords: ["flaky", "good"],
+      categories: [],
+      sinceDate: "2026-01-01",
+      maxResults: 1000,
+    });
+    expect(result.papers.map((p) => p.arxivId)).toEqual(["2604.09999"]);
+    expect(result.degradedKeywords.map(([kw]) => kw)).toEqual(["flaky"]);
+    expect(result.degradedKeywords[0]?.[1]).toContain("totalResults changed mid-fetch");
+    expect(result.degradedKeywords[0]?.[1]).toContain("page 1 reported 250");
+    expect(result.degradedKeywords[0]?.[1]).toContain("reported 150");
+  });
+
+  it("pages correctly against page 1's total when every page agrees (regression)", async () => {
+    let page = 0;
+    const src = new ArxivSource(
+      { delaySeconds: 0, pageSize: 2, numRetries: 0 },
+      {
+        fetchText: async () => {
+          page += 1;
+          if (page === 1) {
+            return textResp(200, atomFeed({ totalResults: 3, entries: newest(2, "2026-04-10") }));
+          }
+          return textResp(
+            200,
+            atomFeed({
+              totalResults: 3,
+              startIndex: 2,
+              entries: newest(1, "2026-04-09", "2603.0000"),
+            }),
+          );
+        },
+      },
+    );
+    const result = await src.fetch({
+      keywords: ["transformer"],
+      categories: [],
+      sinceDate: "2026-01-01",
+      maxResults: 10,
+    });
+    expect(result.papers).toHaveLength(3);
+    expect(result.degradedKeywords).toEqual([]);
+  });
+
+  it("degrades a keyword when a non-first page answers zero entries, even if it claims startIndex is past the end (H3 sharpen)", async () => {
+    // Page 1: totalResults=5, 2 entries (pageSize=2) -> our own offset
+    // tracking is 2, still < 5, so we legitimately request page 2. Page 2
+    // (offset=2) reports the SAME totalResults=5 (consistent) but LIES
+    // about startIndex (claims 5, i.e. "already past the end") while
+    // answering zero entries. `feed.ts`'s COL-03 check trusts that
+    // self-reported startIndex and calls this a clean "past the end" page
+    // (`ok: true`); the real `arxiv` package does not trust it either way —
+    // it raises `UnexpectedEmptyPageError` for ANY non-first page with zero
+    // results, purely based on page position. A second, clean keyword rides
+    // along so this is the partial-degradation path (COL-06), not
+    // all-keywords-failed (COL-07).
+    const goodBody = atomFeed({
+      entries: [{ id: "http://arxiv.org/abs/2604.08888", published: "2026-04-01T00:00:00Z" }],
+    });
+    let flakyCalls = 0;
+    const src = new ArxivSource(
+      { delaySeconds: 0, pageSize: 2, numRetries: 0 },
+      {
+        fetchText: async (url) => {
+          if (url.includes("good")) return textResp(200, goodBody);
+          flakyCalls += 1;
+          if (flakyCalls === 1) {
+            return textResp(200, atomFeed({ totalResults: 5, entries: newest(2, "2026-04-10") }));
+          }
+          // Forged: claims startIndex=5 (>= totalResults=5) with 0 entries,
+          // even though we only asked for offset=2.
+          return textResp(200, atomFeed({ totalResults: 5, startIndex: 5, entries: [] }));
+        },
+      },
+    );
+    const result = await src.fetch({
+      keywords: ["flaky", "good"],
+      categories: [],
+      sinceDate: "2026-01-01",
+      maxResults: 10,
+    });
+    expect(result.papers.map((p) => p.arxivId)).toEqual(["2604.08888"]);
+    expect(result.degradedKeywords.map(([kw]) => kw)).toEqual(["flaky"]);
+    expect(result.degradedKeywords[0]?.[1]).toContain("answered zero entries unexpectedly");
+  });
+});
+
+describe("ArxivSource.fetch — pacing (M6): waits before every request, not once per keyword", () => {
+  it("paces every page request, not just the first, for a single keyword", async () => {
+    const waitTimes: number[] = [];
+    let now = 0;
+    const page1 = atomFeed({ totalResults: 2, entries: newest(1, "2026-04-10") });
+    const page2 = atomFeed({
+      totalResults: 2,
+      startIndex: 1,
+      entries: newest(1, "2026-04-09", "2603.0000"),
+    });
+    let call = 0;
+    const src = new ArxivSource(
+      { delaySeconds: 1, pageSize: 1, numRetries: 0 },
+      {
+        fetchText: async () => {
+          call += 1;
+          waitTimes.push(now);
+          return textResp(200, call === 1 ? page1 : page2);
+        },
+        now: () => now,
+        sleep: async (ms) => {
+          now += ms;
+        },
+      },
+    );
+    await src.fetch({
+      keywords: ["transformer"],
+      categories: [],
+      sinceDate: "2026-01-01",
+      maxResults: 10,
+    });
+    expect(call).toBe(2);
+    // The second page's request must be paced at least `delaySeconds`
+    // (1000ms) after the first — not fired back-to-back.
+    expect((waitTimes[1] as number) - (waitTimes[0] as number)).toBeGreaterThanOrEqual(1000);
+  });
+
+  it("paces every retry of the same page, not just the first attempt", async () => {
+    const waitTimes: number[] = [];
+    let now = 0;
+    let call = 0;
+    const src = new ArxivSource(
+      { delaySeconds: 1, numRetries: 2 },
+      {
+        fetchText: async () => {
+          call += 1;
+          waitTimes.push(now);
+          if (call < 3) return textResp(500, "");
+          return textResp(200, atomFeed({ entries: [] }));
+        },
+        now: () => now,
+        sleep: async (ms) => {
+          now += ms;
+        },
+      },
+    );
+    await src.fetch({
+      keywords: ["transformer"],
+      categories: [],
+      sinceDate: "2026-01-01",
+      maxResults: 10,
+    });
+    expect(call).toBe(3);
+    expect((waitTimes[1] as number) - (waitTimes[0] as number)).toBeGreaterThanOrEqual(1000);
+    expect((waitTimes[2] as number) - (waitTimes[1] as number)).toBeGreaterThanOrEqual(1000);
+  });
+});
+
 describe("ArxivSource.fetch — truncated windows (COL-09)", () => {
   it("records a window-filling keyword as truncated", async () => {
     const body = atomFeed({ totalResults: 3, entries: newest(3, "2026-04-10") });

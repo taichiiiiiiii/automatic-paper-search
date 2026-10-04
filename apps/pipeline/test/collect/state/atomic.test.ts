@@ -78,6 +78,29 @@ it("test_new_file_is_world_readable_and_existing_mode_is_kept", () => {
   expect(statSync(priv).mode & 0o777).toBe(0o600);
 });
 
+it("test_short_write_is_retried_until_the_full_payload_is_written (M1)", () => {
+  // Simulate `fs.writeSync` writing at most 3 bytes per call, the way a
+  // real partial `write(2)` can — without throwing, so the only defense is
+  // checking (and looping on) the return value.
+  const out = join(dir, "a.json");
+  const real = fs.writeSync;
+  const shortWriteImpl = ((
+    fd: number,
+    buffer: NodeJS.ArrayBufferView,
+    offset?: number,
+    length?: number,
+  ) => {
+    const off = offset ?? 0;
+    const total = length ?? (buffer as Buffer).length - off;
+    const capped = Math.min(3, total);
+    return real(fd, buffer as Buffer, off, capped);
+  }) as typeof fs.writeSync;
+  vi.spyOn(fs, "writeSync").mockImplementation(shortWriteImpl);
+  const payload = "0123456789abcdef"; // forces several short writes
+  atomicWriteText(out, payload);
+  expect(readFileSync(out, "utf-8")).toBe(payload);
+});
+
 it("test_atomic_write_bytes_round_trips", () => {
   const out = join(dir, "a.bin");
   atomicWriteBytes(out, Buffer.from([0x00, 0x01]));

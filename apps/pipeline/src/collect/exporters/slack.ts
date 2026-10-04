@@ -10,6 +10,7 @@
 import type { FetchLike } from "../http/requestWithRetry.js";
 import { requestWithRetry } from "../http/requestWithRetry.js";
 import type { Paper } from "../model/paper.js";
+import { toLocalIsoDate } from "../pyish.js";
 import type { Exporter } from "./exporter.js";
 
 const ALLOWED_URL_SCHEMES = ["http://", "https://"];
@@ -82,7 +83,10 @@ export class SlackExporter implements Exporter {
   }
 
   private format(papers: readonly Paper[]): string {
-    const today = (this.deps.today ? this.deps.today() : new Date()).toISOString().slice(0, 10);
+    // Python: `date.today().isoformat()` — LOCAL calendar date (collect
+    // LOW: "today" UTC vs local). `toISOString()` reads the UTC date,
+    // which disagrees with the local date near local midnight.
+    const today = toLocalIsoDate(this.deps.today ? this.deps.today() : new Date());
     const lines = [`*\u{1F4DA} PaperPilot — ${today} (${papers.length}件)*`];
     papers.forEach((p, i) => {
       const rank = i + 1;

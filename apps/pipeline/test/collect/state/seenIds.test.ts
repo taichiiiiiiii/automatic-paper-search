@@ -16,12 +16,14 @@ import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createPaper, type Paper } from "../../../src/collect/model/paper.js";
 import {
+  acquireLock,
   dedupPapers,
   filterUnseen,
   loadSeenIds,
   markSeen,
   mergeSeenIds,
   purgeSeenIds,
+  releaseLock,
   saveSeenIds,
 } from "../../../src/collect/state/seenIds.js";
 
@@ -288,6 +290,17 @@ it("test_save_seen_ids_round_trips", () => {
   expect(loadSeenIds(path)).toEqual(seen);
 });
 
+it("test_save_seen_ids_temp_file_mode_is_0600_like_python (collect LOW)", () => {
+  // Python's `save_seen_ids` deliberately uses `tempfile.NamedTemporaryFile`
+  // default mode 0o600 (never chmod'd wider before the rename — see that
+  // function's own doc comment). The old TS temp file relied on
+  // `fs.openSync`'s default mode (0o666 & ~umask), which under the common
+  // 022 umask publishes 0o644 instead.
+  const path = join(dir, "seen_ids.json");
+  saveSeenIds(path, { "arxiv:1": "2026-01-01T00:00:00" });
+  expect(fs.statSync(path).mode & 0o777).toBe(0o600);
+});
+
 it("test_save_seen_ids_leaves_no_tmp_file_behind", () => {
   const path = join(dir, "seen_ids.json");
   saveSeenIds(path, { "arxiv:1": new Date().toISOString() });
@@ -324,6 +337,29 @@ it("test_save_seen_ids_does_not_truncate_existing_file_if_write_fails", () => {
   expect(() => saveSeenIds(path, { "arxiv:2": new Date().toISOString() })).toThrow("disk full");
   expect(readFileSync(path)).toEqual(originalBytes);
   expect(fs.readdirSync(dir)).toEqual(["seen_ids.json"]);
+});
+
+it("test_save_seen_ids_retries_a_short_write_until_the_full_payload_lands (M1)", () => {
+  // `fs.writeSync` can write fewer bytes than asked without throwing (a
+  // partial `write(2)`); a single unchecked call would rename a
+  // silently-truncated temp file over seen_ids.json.
+  const path = join(dir, "seen_ids.json");
+  const real = fs.writeSync;
+  const shortWriteImpl = ((
+    fd: number,
+    buffer: NodeJS.ArrayBufferView,
+    offset?: number,
+    length?: number,
+  ) => {
+    const off = offset ?? 0;
+    const total = length ?? (buffer as Buffer).length - off;
+    const capped = Math.min(5, total);
+    return real(fd, buffer as Buffer, off, capped);
+  }) as typeof fs.writeSync;
+  vi.spyOn(fs, "writeSync").mockImplementation(shortWriteImpl);
+  const seen = { "arxiv:1": "2026-01-01T00:00:00", "arxiv:2": "2026-01-02T00:00:00" };
+  saveSeenIds(path, seen);
+  expect(loadSeenIds(path)).toEqual(seen);
 });
 
 it("test_save_seen_ids_survives_os_replace_failure", () => {
@@ -368,6 +404,30 @@ it("test_merge_seen_ids_does_not_resurrect_purged_entries", async () => {
   expect(merged[`arxiv:${batch[0]?.arxivId}`]).toBeDefined();
 });
 
+it("test_merge_seen_ids_forwards_quarantine_notes_and_logger (seen_ids merge quarantine not reported)", async () => {
+  // A file that is unreadable AT MERGE TIME (not just at the run's earlier
+  // `loadSeenIds` call) must still surface — `mergeSeenIds` used to call
+  // `loadSeenIds(path)` with no `quarantineNotes`/`logger`, so this event
+  // had zero visibility: no WARNING, no note a caller could turn into a
+  // `state:seen_ids` error.
+  const path = join(dir, "seen_ids.json");
+  writeFileSync(path, "{ truncated");
+  const notes: string[] = [];
+  const warnings: string[] = [];
+
+  const batch = papersBatch();
+  const merged = await mergeSeenIds(path, batch.slice(0, 1), {
+    maxAgeDays: 14,
+    quarantineNotes: notes,
+    logger: { warn: (m) => warnings.push(m) },
+  });
+
+  expect(merged[`arxiv:${batch[0]?.arxivId}`]).toBeDefined();
+  expect(notes.length).toBe(1);
+  expect(notes[0]).toMatch(/^unreadable file quarantined to /);
+  expect(warnings.length).toBeGreaterThan(0);
+});
+
 describe("test_merge_seen_ids_serializes_overlapping_writers (adapted — see module header)", () => {
   it("blocks while the sibling .lock file exists, proceeds once it is removed", async () => {
     const path = join(dir, "seen_ids.json");
@@ -398,6 +458,147 @@ describe("test_merge_seen_ids_serializes_overlapping_writers (adapted — see mo
     expect(done).toBe(true);
     expect(final["arxiv:pre-existing"]).toBeDefined();
     expect(final[`arxiv:${batch[0]?.arxivId}`]).toBeDefined();
+  });
+});
+
+// ---- lock: owner token, rename-to-tombstone stale break, ownership check (M5) ----
+
+describe("seen_ids.lock: owner token + ownership-checked release (M5)", () => {
+  it("release is a no-op when the lock no longer holds this caller's token", async () => {
+    const path = join(dir, "seen_ids.json");
+    const lockPath = `${path}.lock`;
+
+    const tokenA = await acquireLock(lockPath);
+    // Simulate a THIRD caller's fresh lock landing at the same path (as if
+    // A's lock had been broken as stale and re-acquired by someone else)
+    // by overwriting the file A still thinks it owns.
+    fs.writeFileSync(lockPath, "someone-elses-token");
+
+    // A's (now-stale) release must NOT delete the someone-else lock.
+    releaseLock(lockPath, tokenA);
+
+    expect(fs.existsSync(lockPath)).toBe(true);
+    expect(fs.readFileSync(lockPath, "utf-8")).toBe("someone-elses-token");
+
+    // Cleanup for the test's own sake.
+    fs.unlinkSync(lockPath);
+  });
+
+  it("release unlinks the lock when the token still matches (happy path)", async () => {
+    const path = join(dir, "seen_ids.json");
+    const lockPath = `${path}.lock`;
+    const token = await acquireLock(lockPath);
+    expect(fs.existsSync(lockPath)).toBe(true);
+    releaseLock(lockPath, token);
+    expect(fs.existsSync(lockPath)).toBe(false);
+  });
+
+  it("breaks a stale lock via rename-to-tombstone, not an unconditional unlink, and proceeds", async () => {
+    const path = join(dir, "seen_ids.json");
+    const lockPath = `${path}.lock`;
+    writeFileSync(lockPath, "stale-owner-token");
+    const longAgo = new Date(Date.now() - 120_000);
+    fs.utimesSync(lockPath, longAgo, longAgo);
+
+    const renameCalls: string[] = [];
+    const realRename = fs.renameSync;
+    vi.spyOn(fs, "renameSync").mockImplementation((src, dst) => {
+      renameCalls.push(String(src));
+      return realRename(src, dst);
+    });
+
+    const token = await acquireLock(lockPath, { staleLockMs: 60_000, lockTimeoutMs: 5000 });
+
+    // The break used a rename (to a tombstone), never an unlink of the
+    // stale file directly.
+    expect(renameCalls).toContain(lockPath);
+    // No `.stale-` tombstone left behind (best-effort cleanup ran).
+    expect(fs.readdirSync(dir).some((n) => n.includes(".stale-"))).toBe(false);
+    // The NEW lock holds our fresh token, not the old stale content.
+    expect(fs.readFileSync(lockPath, "utf-8")).toBe(token);
+
+    releaseLock(lockPath, token);
+  });
+
+  it("mergeSeenIds end-to-end: breaks a stale foreign lock and still serializes a live one", async () => {
+    const path = join(dir, "seen_ids.json");
+    saveSeenIds(path, { "arxiv:pre-existing": new Date().toISOString() });
+    const lockPath = `${path}.lock`;
+
+    // A live (non-stale) holder still blocks — unchanged contract.
+    const fd = fs.openSync(lockPath, "wx");
+    fs.writeSync(fd, "live-holder-token");
+
+    const batch = papersBatch();
+    let done = false;
+    const mergePromise = mergeSeenIds(path, batch.slice(0, 1), {
+      maxAgeDays: 14,
+      lockTimeoutMs: 2000,
+      lockPollIntervalMs: 5,
+    }).then((r) => {
+      done = true;
+      return r;
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    expect(done).toBe(false);
+
+    fs.closeSync(fd);
+    fs.unlinkSync(lockPath);
+
+    const final = await mergePromise;
+    expect(done).toBe(true);
+    expect(final["arxiv:pre-existing"]).toBeDefined();
+    expect(final[`arxiv:${batch[0]?.arxivId}`]).toBeDefined();
+  });
+
+  it("acquireLock times out and leaves the foreign lock file unchanged (COL-22)", async () => {
+    const path = join(dir, "seen_ids.json");
+    const lockPath = `${path}.lock`;
+    const fd = fs.openSync(lockPath, "wx");
+    fs.writeSync(fd, "someone-elses-live-lock");
+    fs.closeSync(fd);
+    const beforeMtime = fs.statSync(lockPath).mtimeMs;
+    const beforeContent = fs.readFileSync(lockPath, "utf-8");
+
+    await expect(
+      acquireLock(lockPath, {
+        lockTimeoutMs: 80,
+        lockPollIntervalMs: 10,
+        staleLockMs: 10_000_000, // never looks stale within the timeout window
+      }),
+    ).rejects.toThrow(/timed out waiting for lock/);
+
+    // The foreign lock must be untouched: still there, same content, same mtime.
+    expect(fs.existsSync(lockPath)).toBe(true);
+    expect(fs.readFileSync(lockPath, "utf-8")).toBe(beforeContent);
+    expect(fs.statSync(lockPath).mtimeMs).toBe(beforeMtime);
+
+    fs.unlinkSync(lockPath);
+  });
+
+  it("mergeSeenIds rejects on lock timeout and leaves seen_ids.json unchanged", async () => {
+    const path = join(dir, "seen_ids.json");
+    const original = { "arxiv:untouched": new Date().toISOString() };
+    saveSeenIds(path, original);
+    const originalBytes = readFileSync(path);
+    const lockPath = `${path}.lock`;
+    const fd = fs.openSync(lockPath, "wx");
+    fs.writeSync(fd, "someone-elses-live-lock");
+
+    const batch = papersBatch();
+    await expect(
+      mergeSeenIds(path, batch.slice(0, 1), {
+        maxAgeDays: 14,
+        lockTimeoutMs: 80,
+        lockPollIntervalMs: 10,
+        staleLockMs: 10_000_000,
+      }),
+    ).rejects.toThrow(/timed out waiting for lock/);
+
+    expect(readFileSync(path)).toEqual(originalBytes);
+    fs.closeSync(fd);
+    fs.unlinkSync(lockPath);
   });
 });
 

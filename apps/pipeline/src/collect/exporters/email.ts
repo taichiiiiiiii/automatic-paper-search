@@ -15,6 +15,7 @@
  */
 
 import type { Paper } from "../model/paper.js";
+import { toLocalIsoDate } from "../pyish.js";
 import type { Exporter } from "./exporter.js";
 
 const ALLOWED_URL_SCHEMES = ["http://", "https://"];
@@ -103,7 +104,9 @@ export class EmailExporter implements Exporter {
     }
 
     const top = papers.slice(0, this.maxItems);
-    const today = (this.deps.today ? this.deps.today() : new Date()).toISOString().slice(0, 10);
+    // Python: `date.today().isoformat()` — LOCAL calendar date (collect
+    // LOW: "today" UTC vs local, same bug class as citation.ts/slack.ts).
+    const today = toLocalIsoDate(this.deps.today ? this.deps.today() : new Date());
     const message = this.buildMessage(top, toAddr, today);
 
     let client: SmtpClient;

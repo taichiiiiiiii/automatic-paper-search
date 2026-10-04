@@ -138,6 +138,19 @@ export function yearToIsoDate(year: number): string {
   return `${String(year).padStart(4, "0")}-01-01`;
 }
 
+/**
+ * `date.today().isoformat()` (or any `datetime.isoformat()`'s date part) —
+ * the LOCAL calendar date, not `Date.prototype.toISOString()`'s UTC date.
+ * Python's `date.today()` always reads the local wall-clock date; using
+ * `Date#toISOString().slice(0, 10)` instead (collect LOW: "today" UTC vs
+ * local) shifts the computed date by a day near local midnight whenever
+ * the local UTC offset makes the UTC and local calendar dates disagree.
+ */
+export function toLocalIsoDate(d: Date): string {
+  const pad = (n: number, w = 2) => String(n).padStart(w, "0");
+  return `${pad(d.getFullYear(), 4)}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
 /** ISO `YYYY-MM-DD` string comparison (lexicographic == chronological for zero-padded dates). */
 export function isoDateLess(a: string, b: string): boolean {
   return a < b;

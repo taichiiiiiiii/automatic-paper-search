@@ -393,6 +393,19 @@ export function loadSeenIds(
 // the Python original having two as well)
 // ---------------------------------------------------------------------
 
+/**
+ * `fs.writeSync` can write fewer bytes than given in one call (M1): a
+ * single unchecked call would rename a silently-truncated temp file over
+ * `seen_ids.json`, with no exception raised to catch it. Loop until the
+ * whole buffer lands.
+ */
+function writeAll(fd: number, payload: Buffer): void {
+  let written = 0;
+  while (written < payload.length) {
+    written += fs.writeSync(fd, payload, written, payload.length - written);
+  }
+}
+
 function writeFileAtomicNoChmod(path: string, text: string): void {
   const dir = dirname(path);
   fs.mkdirSync(dir, { recursive: true });
@@ -402,7 +415,13 @@ function writeFileAtomicNoChmod(path: string, text: string): void {
     for (let attempt = 0; attempt < 10; attempt++) {
       const candidate = `${dir}/.${path.split("/").pop()}.${randomBytes(8).toString("hex")}.tmp`;
       try {
-        fd = fs.openSync(candidate, "wx");
+        // Mode 0o600, matching Python's `tempfile.NamedTemporaryFile`
+        // default (see `save_seen_ids`'s own doc comment: deliberately
+        // more restrictive than a plain `open(path, "w")`, and never
+        // widened before the rename). `fs.openSync`'s default mode
+        // (0o666 & ~umask) would publish a world/group-readable temp file
+        // for a brief pre-rename window even when the umask is permissive.
+        fd = fs.openSync(candidate, "wx", 0o600);
         tmpPath = candidate;
         break;
       } catch (e) {
@@ -413,7 +432,7 @@ function writeFileAtomicNoChmod(path: string, text: string): void {
     if (fd === null || tmpPath === null) {
       throw new Error(`could not create a unique temp file next to ${path}`);
     }
-    fs.writeSync(fd, Buffer.from(text, "utf-8"));
+    writeAll(fd, Buffer.from(text, "utf-8"));
     fs.closeSync(fd);
     fd = null;
     fs.renameSync(tmpPath, path);
@@ -457,25 +476,74 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-/** Acquires the sibling `<path>.lock` (see module doc for the O_EXCL scheme). */
-async function acquireLock(lockPath: string): Promise<void> {
-  const deadline = Date.now() + LOCK_ACQUIRE_TIMEOUT_MS;
+export interface LockTuning {
+  staleLockMs?: number;
+  lockTimeoutMs?: number;
+  lockPollIntervalMs?: number;
+}
+
+/** Reads the owner token currently written in a lock file, or `null` if it cannot be read. */
+function readLockToken(lockPath: string): string | null {
+  try {
+    return fs.readFileSync(lockPath, "utf-8");
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Acquires the sibling `<path>.lock` (see module doc for the O_EXCL
+ * scheme) and returns a unique OWNER TOKEN this caller must hand back to
+ * {@link releaseLock} (M5).
+ *
+ * Each acquisition writes a fresh random token (not just `process.pid`,
+ * which is reused across acquisitions in the same process and is not
+ * unique across the separate PID namespaces of this pipeline's concurrent
+ * containers) into the lock file. `releaseLock` refuses to unlink a lock
+ * whose current content is not this exact token — the backstop for the
+ * race below, where a lock judged stale is broken while its original
+ * holder is still finishing (not actually dead, just slow): without the
+ * check, that holder's own delayed `finally { releaseLock() }` would
+ * unlink whatever NEW, perfectly fresh lock a third caller created at the
+ * same path in the meantime, letting a fourth caller acquire while the
+ * third is still mid-critical-section.
+ *
+ * Breaking a stale lock itself moves it aside to a unique tombstone name
+ * via `fs.renameSync` rather than `fs.unlinkSync`: an atomic rename, not a
+ * blind delete, so the broken lock's content survives (briefly, for
+ * forensics) instead of vanishing with no trace of what was stolen and
+ * when. `renameSync` throwing ENOENT (another caller already renamed or
+ * released it first) is treated the same as a losing race for `wx`
+ * create: retry the loop rather than erroring out.
+ */
+export async function acquireLock(lockPath: string, tuning: LockTuning = {}): Promise<string> {
+  const staleLockMs = tuning.staleLockMs ?? STALE_LOCK_MS;
+  const lockTimeoutMs = tuning.lockTimeoutMs ?? LOCK_ACQUIRE_TIMEOUT_MS;
+  const pollIntervalMs = tuning.lockPollIntervalMs ?? LOCK_POLL_INTERVAL_MS;
+  const deadline = Date.now() + lockTimeoutMs;
   for (;;) {
+    const token = `${process.pid}-${randomBytes(8).toString("hex")}`;
     try {
       const fd = fs.openSync(lockPath, "wx");
-      fs.writeSync(fd, String(process.pid));
+      fs.writeSync(fd, token);
       fs.closeSync(fd);
-      return;
+      return token;
     } catch (e) {
       if ((e as NodeJS.ErrnoException).code !== "EEXIST") throw e;
     }
     try {
       const stat = fs.statSync(lockPath);
-      if (Date.now() - stat.mtimeMs > STALE_LOCK_MS) {
+      if (Date.now() - stat.mtimeMs > staleLockMs) {
+        const tombstone = `${lockPath}.stale-${randomBytes(8).toString("hex")}`;
         try {
-          fs.unlinkSync(lockPath);
+          fs.renameSync(lockPath, tombstone);
+          try {
+            fs.unlinkSync(tombstone);
+          } catch {
+            /* best-effort cleanup of the tombstone */
+          }
         } catch {
-          /* another caller may have already cleared it; retry the loop */
+          /* another caller already broke/replaced it first; retry the loop */
         }
         continue;
       }
@@ -486,11 +554,19 @@ async function acquireLock(lockPath: string): Promise<void> {
     if (Date.now() > deadline) {
       throw new Error(`timed out waiting for lock ${lockPath}`);
     }
-    await sleep(LOCK_POLL_INTERVAL_MS);
+    await sleep(pollIntervalMs);
   }
 }
 
-function releaseLock(lockPath: string): void {
+/**
+ * Releases a lock this caller acquired, identified by the exact token
+ * {@link acquireLock} returned (M5). If the file at `lockPath` no longer
+ * holds that token — broken as stale and re-acquired by someone else, or
+ * never ours — this is a no-op: unlinking it would delete another
+ * holder's active lock out from under it.
+ */
+export function releaseLock(lockPath: string, token: string): void {
+  if (readLockToken(lockPath) !== token) return;
   try {
     fs.unlinkSync(lockPath);
   } catch {
@@ -510,19 +586,35 @@ function releaseLock(lockPath: string): void {
 export async function mergeSeenIds(
   path: string,
   papers: readonly Paper[],
-  options: { maxAgeDays: number; now?: () => Date },
+  options: {
+    maxAgeDays: number;
+    now?: () => Date;
+    /**
+     * Forwarded to the lock-protected re-read (same shape as
+     * {@link LoadSeenIdsOptions}) — a file that turns unreadable between
+     * the run's EARLY `loadSeenIds` call and this later re-read would
+     * otherwise be quarantined with zero visibility: no logger warning,
+     * no note a caller could surface as a `state:seen_ids` error.
+     */
+    quarantineNotes?: string[];
+    logger?: { warn: (msg: string) => void };
+  } & LockTuning,
 ): Promise<Record<string, string>> {
   const now = options.now ?? (() => new Date());
   fs.mkdirSync(dirname(path), { recursive: true });
   const lockPath = `${path}.lock`;
-  await acquireLock(lockPath);
+  const token = await acquireLock(lockPath, options);
   try {
-    let merged = loadSeenIds(path);
+    let merged = loadSeenIds(path, {
+      now,
+      quarantineNotes: options.quarantineNotes,
+      logger: options.logger,
+    });
     merged = markSeen(papers, merged, now);
     merged = purgeSeenIds(merged, options.maxAgeDays, now);
     saveSeenIds(path, merged);
     return merged;
   } finally {
-    releaseLock(lockPath);
+    releaseLock(lockPath, token);
   }
 }

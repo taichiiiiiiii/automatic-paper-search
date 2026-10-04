@@ -143,6 +143,56 @@ describe("parseArxivFeed — COL-02/03: non-feed body detection", () => {
       expect(result.skipped).toEqual([]);
     }
   });
+
+  it("rejects a feed whose root is not the Atom namespace, even with tag name 'feed' (:249)", () => {
+    const body =
+      '<?xml version="1.0" encoding="UTF-8"?>' +
+      '<feed xmlns="urn:not-atom" xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/">' +
+      "<opensearch:totalResults>5</opensearch:totalResults>" +
+      "</feed>";
+    const result = parseArxivFeed(body);
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.reason).toContain("not an Atom feed");
+      expect(result.reason).toContain("urn:not-atom");
+    }
+  });
+
+  it("rejects a well-formed Atom feed entirely missing opensearch:totalResults (:257)", () => {
+    const body =
+      '<?xml version="1.0" encoding="UTF-8"?>' +
+      '<feed xmlns="http://www.w3.org/2005/Atom">' +
+      "<opensearch:itemsPerPage>0</opensearch:itemsPerPage>" +
+      "</feed>";
+    const result = parseArxivFeed(body);
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.reason).toContain("missing opensearch:totalResults");
+  });
+
+  it("rejects a non-numeric opensearch:totalResults rather than defaulting to 0 (M7)", () => {
+    const body =
+      '<?xml version="1.0" encoding="UTF-8"?>' +
+      '<feed xmlns="http://www.w3.org/2005/Atom" xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/">' +
+      "<opensearch:totalResults>not-a-number</opensearch:totalResults>" +
+      "</feed>";
+    const result = parseArxivFeed(body);
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.reason).toContain("non-numeric opensearch:totalResults");
+      expect(result.reason).toContain("not-a-number");
+    }
+  });
+
+  it("rejects an empty opensearch:totalResults element rather than defaulting to 0 (M7)", () => {
+    const body =
+      '<?xml version="1.0" encoding="UTF-8"?>' +
+      '<feed xmlns="http://www.w3.org/2005/Atom" xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/">' +
+      "<opensearch:totalResults></opensearch:totalResults>" +
+      "</feed>";
+    const result = parseArxivFeed(body);
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.reason).toContain("non-numeric opensearch:totalResults");
+  });
 });
 
 describe("parseArxivFeed — COL-01/06: per-entry skip within a well-formed page", () => {

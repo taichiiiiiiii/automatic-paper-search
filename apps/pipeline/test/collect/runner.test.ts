@@ -12,7 +12,7 @@
  * returns_none` and `_disabled_returns_none` do not need a real provider
  * and are ported as-is.
  */
-import { existsSync, mkdtempSync, readFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
@@ -541,6 +541,58 @@ it("test_runner_reports_a_quarantined_seen_ids_file_as_a_state_error", async () 
   expect(lastHistoryRecord(join(dir, "run_history.jsonl")).errors).toEqual(result.errors);
 });
 
+it("reports a seen_ids quarantine that happens DURING the merge (not just the early read) as a state:seen_ids error (collect LOW)", async () => {
+  // The file is READABLE (in fact missing) at the run's early `loadSeenIds`
+  // call, so that one reports nothing. It only turns corrupt mid-run — as
+  // a side effect of the Slack exporter's own network call, which runs
+  // after Stage 1 but before the final `mergeSeenIds` — so only a caller
+  // that forwards quarantine reporting INTO `mergeSeenIds` itself (not
+  // just the early read) can ever see this one.
+  const seenPath = join(dir, "seen_ids.json");
+  const config = buildConfig({
+    output: {
+      csv: { enabled: true, dir, encoding: "utf-8" },
+      json: { enabled: true, dir },
+      slack: { enabled: true },
+    },
+    env: {
+      githubToken: null,
+      s2ApiKey: null,
+      openalexEmail: null,
+      slackWebhookUrl: "http://hook.example/webhook",
+      geminiApiKey: null,
+      claudeApiKey: null,
+      groqApiKey: null,
+      groqModel: null,
+      geminiModel: null,
+      smtp: { server: null, port: 587, user: null, password: null, to: null, useTls: true },
+    },
+  });
+  let slackPosted = false;
+  const runner = buildRunner(config, {
+    fetchImpl: async (url) => {
+      if (String(url).includes("hook.example")) {
+        slackPosted = true;
+        writeFileSync(seenPath, "{ truncated-by-slack-side-effect");
+      }
+      return { status: 200, json: async () => ({}) };
+    },
+  });
+  vi.spyOn(runner.sources[0]?.source as never, "fetch").mockResolvedValue({
+    papers: fakeArxivPapers(),
+    truncatedKeywords: [],
+    degradedKeywords: [],
+  });
+
+  const result = await runner.run();
+
+  expect(slackPosted).toBe(true);
+  const stateErrors = result.errors.filter((e) => e.startsWith("state:"));
+  expect(stateErrors.length).toBe(1);
+  expect(stateErrors[0]).toContain("unreadable file quarantined to");
+  expect(stateErrors[0]).toContain("backlog may be re-delivered");
+});
+
 it("test_runner_stays_green_when_the_seen_ids_file_is_readable", async () => {
   const config = buildConfig();
   const { writeFileSync } = await import("node:fs");
@@ -589,6 +641,60 @@ it("test_build_llm_provider_disabled_returns_none", () => {
   const config = buildConfig({ llm: { enabled: false, provider: "ollama" } });
   const runner = buildRunner(config);
   expect(runner.llmProvider).toBeNull();
+});
+
+it("records a stage4: error when llm.enabled but no usable provider was built (collect LOW)", async () => {
+  // Previously: `buildLlmProvider` warned and returned null, but `run()`
+  // only ever pushed a `stage4:` error from a THROWN exception inside
+  // `llmRerank` — an `llm.enabled: true` misconfiguration (unknown
+  // provider name, nothing injected) silently downgraded to "nobody asked
+  // for Stage 4" with no entry in `errors`/run_history beyond the WARNING.
+  const config = buildConfig({ llm: { enabled: true, provider: "bogus-vendor" } });
+  const runner = buildRunner(config);
+  expect(runner.llmProvider).toBeNull();
+  vi.spyOn(runner.sources[0]?.source as never, "fetch").mockResolvedValue({
+    papers: fakeArxivPapers(),
+    truncatedKeywords: [],
+    degradedKeywords: [],
+  });
+
+  const result = await runner.run();
+
+  expect(result.errors.some((e) => e.startsWith("stage4:"))).toBe(true);
+  expect(result.errors.find((e) => e.startsWith("stage4:"))).toContain("bogus-vendor");
+  // Still Fail-Safe: the run completes and ships papers through unranked.
+  expect(result.outputCount).toBeGreaterThan(0);
+});
+
+it("does NOT record a stage4: error when Stage 4 was simply never configured (no regression)", async () => {
+  const config = buildConfig(); // no `llm` key at all
+  const runner = buildRunner(config);
+  expect(runner.llmProvider).toBeNull();
+  vi.spyOn(runner.sources[0]?.source as never, "fetch").mockResolvedValue({
+    papers: fakeArxivPapers(),
+    truncatedKeywords: [],
+    degradedKeywords: [],
+  });
+
+  const result = await runner.run();
+
+  expect(result.errors.some((e) => e.startsWith("stage4:"))).toBe(false);
+});
+
+it("records a stage3: error when embedding.enabled but no usable encoder was built (collect LOW)", async () => {
+  const config = buildConfig({ embedding: { enabled: true, backend: "bogus-backend" } });
+  const runner = buildRunner(config);
+  expect(runner.encoder).toBeNull();
+  vi.spyOn(runner.sources[0]?.source as never, "fetch").mockResolvedValue({
+    papers: fakeArxivPapers(),
+    truncatedKeywords: [],
+    degradedKeywords: [],
+  });
+
+  const result = await runner.run();
+
+  expect(result.errors.some((e) => e.startsWith("stage3:"))).toBe(true);
+  expect(result.errors.find((e) => e.startsWith("stage3:"))).toContain("bogus-backend");
 });
 
 it("test_build_signals_puts_keyword_before_github", () => {

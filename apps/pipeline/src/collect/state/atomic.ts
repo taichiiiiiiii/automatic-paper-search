@@ -45,6 +45,24 @@ function existingMode(path: string): number {
   }
 }
 
+/**
+ * `fs.writeSync` is not guaranteed to write the whole buffer in one call
+ * (Node's own docs: "It is unsafe to use fs.writeSync() multiple times on
+ * the same file without waiting for the callback" is about async/sync
+ * interleaving, but the return value — bytes actually written — can be
+ * SHORTER than the buffer for the same reasons a raw `write(2)` syscall can
+ * be partial). A single unchecked call (M1) silently renames a truncated
+ * temp file over the destination on a short write, with no exception to
+ * catch it. Loop until every byte is written, mirroring what Python's
+ * `file.write()` already guarantees internally.
+ */
+function writeAll(fd: number, payload: Buffer): void {
+  let written = 0;
+  while (written < payload.length) {
+    written += fs.writeSync(fd, payload, written, payload.length - written);
+  }
+}
+
 /** Opens a uniquely-named temp file (O_EXCL semantics) next to `destPath`, retrying on collision. */
 function openUniqueTemp(destPath: string): { path: string; fd: number } {
   const dir = dirname(destPath);
@@ -69,7 +87,7 @@ export function atomicWriteBytes(path: string, payload: Buffer): void {
   const temp = openUniqueTemp(path);
   let cleaned = false;
   try {
-    fs.writeSync(temp.fd, payload);
+    writeAll(temp.fd, payload);
     fs.closeSync(temp.fd);
     fs.chmodSync(temp.path, mode);
     fs.renameSync(temp.path, path);

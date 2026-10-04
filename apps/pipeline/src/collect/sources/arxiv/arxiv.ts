@@ -99,9 +99,20 @@ export class ArxivSource implements Source {
     return `${ARXIV_QUERY_BASE}?${params.toString()}`;
   }
 
+  /**
+   * Fetches one page's body, retrying on failure. The pacing wait happens
+   * HERE — once per actual HTTP attempt (first try AND every retry, for
+   * every page) — matching the installed `arxiv` package's own
+   * `Client.__try_parse_feed`, which enforces `delay_seconds` immediately
+   * before every `session.get(...)` call it makes, page or retry alike
+   * (M6: a per-keyword wait only throttles the FIRST request of a
+   * multi-page or retried fetch, letting every later request on the same
+   * keyword go out back-to-back).
+   */
   private async fetchPageText(url: string): Promise<string> {
     let lastError: unknown;
     for (let attempt = 0; attempt <= this.numRetries; attempt++) {
+      await this.limiter.wait();
       try {
         const resp = await this.fetchText(url);
         if (resp.status !== 200) {
@@ -143,13 +154,22 @@ export class ArxivSource implements Source {
     const catClause = ArxivSource.buildCategoryClause(categories);
 
     for (const kw of keywords) {
-      await this.limiter.wait();
       const query = ArxivSource.buildQuery(kw, catClause);
       const startIndexInPapers = papers.length;
       let fetchedCount = 0;
       let reachedSinceBoundary = false;
       let degradedReason: string | null = null;
       let offset = 0;
+      // H3: the total this keyword's PAGE 1 reported. The real `arxiv`
+      // package's `Client._results` reads `total_results` once, from the
+      // first page, and keeps paging against that same number for the
+      // whole fetch (`arxiv/__init__.py::Client._results`) — it never
+      // re-reads totalResults from a later page. Re-reading it per page (as
+      // this port used to) silently accepts an inconsistent later page
+      // (e.g. a throttled/cached response reporting a different total) as
+      // just a smaller-or-larger result set instead of the sign of a bad
+      // response that it is.
+      let pageOneTotal: number | null = null;
 
       try {
         pageLoop: for (;;) {
@@ -159,6 +179,19 @@ export class ArxivSource implements Source {
 
           if (!parsed.ok) {
             degradedReason = parsed.reason;
+            break;
+          }
+
+          if (offset === 0) {
+            pageOneTotal = parsed.totalResults;
+          } else if (pageOneTotal !== null && parsed.totalResults !== pageOneTotal) {
+            // A later page disagrees with page 1 about how many results
+            // exist at all — not a count this fetch can keep paging
+            // against, and not distinguishable from a throttled/cached
+            // response splicing two different result sets together.
+            degradedReason =
+              `arxiv feed totalResults changed mid-fetch: page 1 reported ${pageOneTotal}, ` +
+              `a later page (offset=${offset}) reported ${parsed.totalResults}`;
             break;
           }
 
@@ -187,9 +220,25 @@ export class ArxivSource implements Source {
           }
 
           const rawOnPage = parsed.entries.length + parsed.skipped.length;
-          if (rawOnPage === 0) break; // nothing left on this page at all
+          if (rawOnPage === 0) {
+            // Only reachable for a NON-first page here (the offset===0 clean-
+            // empty-first-page case above already returned). We only ever
+            // request this page because our OWN offset tracking still had
+            // `offset < pageOneTotal` — i.e. by our own accounting there
+            // should be more results. A page that answers zero entries
+            // anyway is exactly the real `arxiv` package's
+            // `UnexpectedEmptyPageError` (`len(feed.results) == 0 and not
+            // first_page`, raised unconditionally regardless of what the
+            // response body's OWN `startIndex` metadata claims — H3
+            // sharpen): treat it as a lost page, not a quiet end-of-results,
+            // since `feed.ts`'s COL-03 check trusts the body's self-reported
+            // `startIndex`/`totalResults`, which a forged or buggy response
+            // could claim is already past the end even though it is not.
+            degradedReason = `arxiv feed page at offset=${offset} answered zero entries unexpectedly (not the first page)`;
+            break;
+          }
           offset += rawOnPage;
-          if (offset >= parsed.totalResults) break; // covered the whole result set
+          if (offset >= (pageOneTotal as number)) break; // covered the whole result set
         }
       } catch (e) {
         papers.length = startIndexInPapers; // withdraw: a mid-stream failure taints this keyword's whole set

@@ -58,13 +58,30 @@ export class GitHubSignal extends BaseSignal {
   private unavailable = 0;
   private errored = 0;
   private lastReason = "";
+  /**
+   * Set once, at construction, when `paper_repos.json` exists but could
+   * not be read (collect LOW: "corrupt paper_repos.json silently ignored
+   * -> warn+record"). `loadCuratedMap` already WARNS via the logger
+   * (matching Python's `load_curated_map`); this additionally RECORDS the
+   * degradation on the per-run `runFailures` channel every run, the same
+   * way every other persistent-until-restart GitHubSignal problem would
+   * be visible in `degraded_signals`/run_history, not just the log.
+   */
+  private readonly curatedMapWarning: string | null = null;
 
   constructor(config: GitHubSignalConfig = {}, deps: GitHubSignalDeps) {
     super(config);
     this.maxLookups = config.max_lookups ?? 50;
     this.githubToken = deps.githubToken ?? null;
     this.deps = deps;
-    this.curated = loadCuratedMap(deps.curatedMapPath);
+    let captured: string | null = null;
+    this.curated = loadCuratedMap(deps.curatedMapPath, {
+      warn: (msg) => {
+        captured = msg;
+        deps.logger?.warn(msg);
+      },
+    });
+    this.curatedMapWarning = captured;
   }
 
   private resetRunCounters(): void {
@@ -72,6 +89,7 @@ export class GitHubSignal extends BaseSignal {
     this.unavailable = 0;
     this.errored = 0;
     this.lastReason = "";
+    if (this.curatedMapWarning) this.runFailures.push(this.curatedMapWarning);
   }
 
   async enrichBatch(papers: Paper[]): Promise<Paper[]> {

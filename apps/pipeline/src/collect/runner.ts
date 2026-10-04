@@ -78,6 +78,15 @@ export class PipelineRunner {
   readonly encoder: AbstractEncoder | null;
   private readonly config: Config;
   private readonly deps: RunnerDeps;
+  // Set only when Stage 4/3 was explicitly asked for (`llm.enabled`
+  // / `embedding.enabled`) but no usable provider/encoder could be built —
+  // as opposed to nobody asking for the stage at all. `run()` turns this
+  // into a `stage3:`/`stage4:` entry in `errors` (collect LOW: "Stage3/4
+  // skipped with only warning when no provider"), since a misconfiguration
+  // that silently downgrades a requested stage to a no-op is itself a
+  // degradation worth recording, not just a log line.
+  private llmProviderUnavailableReason: string | null = null;
+  private encoderUnavailableReason: string | null = null;
 
   constructor(config: Config, deps: RunnerDeps) {
     this.config = config;
@@ -248,9 +257,9 @@ export class PipelineRunner {
     const llmCfg = this.config.llm;
     if (!llmCfg?.enabled) return null;
     if (this.deps.llmProvider) return this.deps.llmProvider;
-    this.deps.logger?.warn(
-      `runner: unknown LLM provider '${String(llmCfg.provider ?? "")}' — skipping Stage 4`,
-    );
+    const reason = `unknown LLM provider '${String(llmCfg.provider ?? "")}'`;
+    this.deps.logger?.warn(`runner: ${reason} — skipping Stage 4`);
+    this.llmProviderUnavailableReason = reason;
     return null;
   }
 
@@ -258,9 +267,9 @@ export class PipelineRunner {
     const embCfg = this.config.embedding;
     if (!embCfg?.enabled) return null;
     if (this.deps.encoder) return this.deps.encoder;
-    this.deps.logger?.warn(
-      `runner: encoder backend '${embCfg.backend ?? "minilm"}' unavailable — skipping Stage 3`,
-    );
+    const reason = `encoder backend '${embCfg.backend ?? "minilm"}' unavailable`;
+    this.deps.logger?.warn(`runner: ${reason} — skipping Stage 3`);
+    this.encoderUnavailableReason = reason;
     return null;
   }
 
@@ -377,6 +386,14 @@ export class PipelineRunner {
         errors.push(`stage3:${(e as Error).message}`);
       }
       s3 = papers.length;
+    } else if (this.encoderUnavailableReason) {
+      // `embedding.enabled: true` but no usable encoder was built — a
+      // configuration-level degradation, not merely "nobody asked for
+      // Stage 3". Recorded alongside the already-logged WARNING so a
+      // consumer of run_history can see it too (COL-18 already excludes
+      // `stage3:`/`stage4:` from the `--fail-on-errors` exit-code gate, so
+      // this does not change exit codes).
+      errors.push(`stage3:${this.encoderUnavailableReason}`);
     }
 
     // Stage 4 (optional)
@@ -396,8 +413,13 @@ export class PipelineRunner {
         errors.push(`stage4:${(e as Error).message}`);
         papers = stage4TopN > 0 ? papers.slice(0, stage4TopN) : papers;
       }
-    } else if (stage4TopN > 0) {
-      papers = papers.slice(0, stage4TopN);
+    } else {
+      if (this.llmProviderUnavailableReason) {
+        errors.push(`stage4:${this.llmProviderUnavailableReason}`);
+      }
+      if (stage4TopN > 0) {
+        papers = papers.slice(0, stage4TopN);
+      }
     }
     const s4 = papers.length;
 
@@ -440,10 +462,21 @@ export class PipelineRunner {
             `skipping seen_ids update so these ${papers.length} paper(s) are retried next run`,
         );
       } else {
+        const mergeQuarantined: string[] = [];
         seen = await mergeSeenIds(seenIdsFile, papers, {
           maxAgeDays: incCfg.max_age_days ?? 14,
           now: this.deps.clock,
+          quarantineNotes: mergeQuarantined,
+          logger: this.deps.logger,
         });
+        // The file can turn unreadable between the early `loadSeenIds`
+        // read above and this lock-protected re-read; without forwarding
+        // these notes too, that later quarantine event would have zero
+        // visibility (COL-20 expects every quarantine to surface as a
+        // `state:seen_ids` error, not just the first one this run hits).
+        for (const note of mergeQuarantined) {
+          errors.push(`state:seen_ids: ${note}; backlog may be re-delivered`);
+        }
       }
     }
 

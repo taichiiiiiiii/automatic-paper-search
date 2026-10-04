@@ -134,6 +134,27 @@ function opensearchInt(feed: Record<string, unknown>, key: string): number {
   return Number.isNaN(n) ? 0 : n;
 }
 
+/**
+ * Strict integer parse for `opensearch:totalResults` ONLY (M7):
+ * `itemsPerPage`/`startIndex` stay lenient via {@link opensearchInt} (a
+ * malformed value there is cosmetic — it only feeds a snippet/log line),
+ * but `totalResults` DRIVES pagination (`arxiv.ts`'s page-fill loop) and
+ * the COL-03 "lost page" check just below. Defaulting an empty or
+ * non-numeric value to 0 would silently read as "clean 0-result page" —
+ * exactly the kind of ambiguous response COL-02 exists to reject, not
+ * explain away as a legitimate empty day. Returns `null` on anything that
+ * is not a plain base-10 integer (missing is handled separately by the
+ * caller's existing `=== undefined` check, before this is ever called).
+ */
+function strictOpensearchInt(feed: Record<string, unknown>, key: string): number | null {
+  const raw = feed[key];
+  if (typeof raw !== "string") return null;
+  const trimmed = raw.trim();
+  if (!/^-?\d+$/.test(trimmed)) return null;
+  const n = Number.parseInt(trimmed, 10);
+  return Number.isNaN(n) ? null : n;
+}
+
 function asArray<T>(v: T | T[] | undefined): T[] {
   if (v === undefined) return [];
   return Array.isArray(v) ? v : [v];
@@ -261,7 +282,15 @@ export function parseArxivFeed(body: string): ArxivFeedResult {
     };
   }
 
-  const totalResults = opensearchInt(feedObj, "opensearch:totalResults");
+  const totalResults = strictOpensearchInt(feedObj, "opensearch:totalResults");
+  if (totalResults === null) {
+    return {
+      ok: false,
+      reason:
+        `non-feed 200 response body: Atom feed has a non-numeric opensearch:totalResults ` +
+        `(${JSON.stringify(feedObj["opensearch:totalResults"])}): ${snippet(body)}`,
+    };
+  }
   const itemsPerPage = opensearchInt(feedObj, "opensearch:itemsPerPage");
   const startIndex = opensearchInt(feedObj, "opensearch:startIndex");
 

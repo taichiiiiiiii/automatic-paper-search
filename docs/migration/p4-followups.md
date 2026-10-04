@@ -27,3 +27,5 @@
 | 23 | theme が `build_lineage` 系の関数を局所コピーで持つ（`theme/node.ts`・`providerFactory.ts`・`fetchRelated.ts`・`edges.ts` の rationale 判定）。conference/deep 側は theme から import している → 共通の置き場所（`lineage/shared`）に移す | P4d-2/3 |
 | 24 | LLM が返した confidence がちょうど 1.0 / 0.0 の時、edge JSON に `1`/`0` と出る（Python は `1.0`/`0.0`）。`--llm-strict` 使用時のみ。`classify.ts`・`contract/v1.ts` で `pyFloat` を使う | P4d-2 |
 | 25 | `theme_slug` が Python・Worker・web・pipeline の 4 か所に独立実装 → P5 で TS の 1 か所に集約し、パリティテストを TS 内で完結 | P4d-2 |
+| 26 | collect の runner に実 LLM provider / embedding encoder の生成（LLM-06 等の provider factory）を接続する。未接続の間 `llm.enabled: true` の設定は run_history に `stage4:` エラーを記録する（意図的。失敗にはしない） | P4 review 1 |
+| 27 | Python との意図的な差: arXiv の `totalResults` 不正値を拒否（Python は 0 扱い）、使えない LLM/encoder と壊れた `paper_repos.json` を run_history に記録（Python は警告のみ） | P4 review 1 |

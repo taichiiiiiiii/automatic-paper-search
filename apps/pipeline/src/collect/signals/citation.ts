@@ -14,6 +14,7 @@
 import type { FetchLike } from "../http/requestWithRetry.js";
 import { requestWithRetry } from "../http/requestWithRetry.js";
 import type { Paper } from "../model/paper.js";
+import { pyStrptimeYMD, toLocalIsoDate } from "../pyish.js";
 import { BaseSignal } from "./signal.js";
 
 const S2_BATCH_URL = "https://api.semanticscholar.org/graph/v1/paper/batch";
@@ -45,10 +46,6 @@ interface CitationBatchPayload {
   year?: unknown;
   authors?: unknown;
   venue?: unknown;
-}
-
-function toIsoDateOnly(d: Date): string {
-  return d.toISOString().slice(0, 10);
 }
 
 export class CitationSignal extends BaseSignal {
@@ -170,15 +167,18 @@ export class CitationSignal extends BaseSignal {
     today: Date,
   ): number {
     if (cites <= 0) return 0.0;
-    let pub: string | null = null;
-    if (
-      typeof payload.publicationDate === "string" &&
-      /^\d{4}-\d{2}-\d{2}$/.test(payload.publicationDate)
-    ) {
-      pub = payload.publicationDate;
-    }
-    if (pub === null) pub = paper.publishedDate;
-    const todayStr = toIsoDateOnly(today);
+    // Python: `datetime.strptime(pub_str, "%Y-%m-%d")`, which raises
+    // ValueError (falling back to `paper.published_date`) on a string that
+    // merely LOOKS like YYYY-MM-DD but is not a real calendar date (e.g.
+    // S2 occasionally returning "2026-13-45"). The old shape-only regex
+    // check here accepted such garbage, and `Date.parse` on it is NaN —
+    // propagating through `daysBetween`/`Math.max` to a NaN `citationScore`
+    // (collect LOW: malformed S2 publicationDate -> NaN score).
+    let pub =
+      (typeof payload.publicationDate === "string"
+        ? pyStrptimeYMD(payload.publicationDate)
+        : null) ?? paper.publishedDate;
+    const todayStr = toLocalIsoDate(today);
     // S2 occasionally returns a publicationDate in the future (embargo /
     // timezone glitch). Clamp so velocity never gets artificially inflated
     // by a negative elapsed-days fallthrough.

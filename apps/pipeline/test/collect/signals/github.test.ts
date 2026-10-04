@@ -7,6 +7,9 @@
  * `sig.enrich_one(paper)` directly call `sig.enrichOneAsync(paper)` here
  * instead (documented in `signals/github.ts`'s `enrichOne` doc comment).
  */
+import { mkdtempSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { expect, it, vi } from "vitest";
 import { createPaper } from "../../../src/collect/model/paper.js";
 import { GitHubSignal, MAX_STARS, starsToScore } from "../../../src/collect/signals/github.js";
@@ -311,4 +314,41 @@ it("test_github_token_passed_to_resolvers", async () => {
     { githubToken: "ghp_xyz" },
     expect.anything(),
   );
+});
+
+// ---------- corrupt paper_repos.json: warn AND record (collect LOW) ----------
+
+it("records a corrupt paper_repos.json on runFailures every run, not just a log line", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "github-signal-test-"));
+  const p = join(dir, "paper_repos.json");
+  writeFileSync(p, "{ not valid json");
+  const warnings: string[] = [];
+  const sig = new GitHubSignal(
+    { enabled: true },
+    {
+      fetchImpl: async () => ({ status: 404, json: async () => ({}) }),
+      curatedMapPath: p,
+      logger: { warn: (m) => warnings.push(m) },
+    },
+  );
+  expect(sig.curated).toEqual({});
+  expect(warnings.length).toBe(1); // loadCuratedMap's own warn, already covered elsewhere
+
+  // Even a run with nothing else to fail must surface the degradation.
+  const out = await sig.enrichBatch([]);
+  expect(out).toEqual([]);
+  expect(sig.runFailures.some((f) => f.includes("paper_repos.json unreadable"))).toBe(true);
+
+  // And again on a second run — this is a persistent (construction-time)
+  // problem, not a one-shot event that `resetRunFailures()` should erase.
+  await sig.enrichBatch([]);
+  expect(sig.runFailures.some((f) => f.includes("paper_repos.json unreadable"))).toBe(true);
+});
+
+it("does not record anything extra when paper_repos.json is readable (no regression)", async () => {
+  const sig = newSignal();
+  sig.curated = {};
+  const out = await sig.enrichBatch([]);
+  expect(out).toEqual([]);
+  expect(sig.runFailures).toEqual([]);
 });

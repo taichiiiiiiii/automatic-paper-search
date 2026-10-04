@@ -92,6 +92,25 @@ it("test_send_invokes_smtp_with_tls", async () => {
   expect(client.sentMessage?.text).toContain("Paper B");
 });
 
+it("formats the subject with the LOCAL calendar date, not the UTC date (collect LOW: clock, non-noon case)", async () => {
+  const originalTz = process.env.TZ;
+  process.env.TZ = "Pacific/Kiritimati"; // UTC+14
+  try {
+    const localToday = new Date(2026, 3, 10, 2, 0, 0); // 2026-04-10T02:00 local
+    expect(localToday.toISOString().slice(0, 10)).toBe("2026-04-09"); // UTC day is the 9th
+    const client = new FakeClient();
+    const exp = new EmailExporter(
+      { enabled: true, max_items: 10 },
+      { smtp: BASE_SMTP, transport: factoryFor(client), today: () => localToday },
+    );
+    await exp.export([mkPaper("Paper A")]);
+    expect(client.sentMessage?.subject).toContain("2026-04-10");
+    expect(client.sentMessage?.subject).not.toContain("2026-04-09");
+  } finally {
+    process.env.TZ = originalTz;
+  }
+});
+
 it("test_respects_max_items", async () => {
   const client = new FakeClient();
   const papers = Array.from({ length: 30 }, (_, i) => mkPaper(`P${i}`));

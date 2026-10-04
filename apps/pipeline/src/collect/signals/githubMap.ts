@@ -28,14 +28,29 @@ const DEFAULT_PAPER_REPOS_FILE = join(
  * `_meta` key is documentation and is filtered out. Malformed entries
  * (non-string values, missing slash, or an owner/name failing the slug
  * regex) are dropped silently so a typo never breaks the build. A missing
- * or corrupt file yields `{}`.
+ * file yields `{}` silently; an EXISTING but unreadable file (bad JSON,
+ * an OSError reading it) also yields `{}` but WARNS first (collect LOW:
+ * was silently ignored) — mirrors Python's `load_curated_map`, which logs
+ * `"paper_repos.json unreadable (...); skipping curated layer"` on the
+ * same two exception classes (`OSError`/`JSONDecodeError`).
  */
-export function loadCuratedMap(path: string = DEFAULT_PAPER_REPOS_FILE): Record<string, string> {
+export function loadCuratedMap(
+  path: string = DEFAULT_PAPER_REPOS_FILE,
+  logger?: { warn: (msg: string) => void },
+): Record<string, string> {
   if (!existsSync(path)) return {};
+  let text: string;
+  try {
+    text = readFileSync(path, "utf-8");
+  } catch (e) {
+    logger?.warn(`paper_repos.json unreadable (${(e as Error).message}); skipping curated layer`);
+    return {};
+  }
   let raw: unknown;
   try {
-    raw = JSON.parse(readFileSync(path, "utf-8"));
-  } catch {
+    raw = JSON.parse(text);
+  } catch (e) {
+    logger?.warn(`paper_repos.json unreadable (${(e as Error).message}); skipping curated layer`);
     return {};
   }
   if (typeof raw !== "object" || raw === null || Array.isArray(raw)) return {};

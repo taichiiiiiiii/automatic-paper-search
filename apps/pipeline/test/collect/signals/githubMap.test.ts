@@ -51,6 +51,26 @@ it("test_load_curated_map_handles_corrupt_json", () => {
   expect(loadCuratedMap(p)).toEqual({});
 });
 
+it("warns (does not silently ignore) a corrupt paper_repos.json (collect LOW)", () => {
+  // Python's `load_curated_map` logs a WARNING on an unreadable file
+  // ("paper_repos.json unreadable (...); skipping curated layer") before
+  // this port existed; the old TS version swallowed the same
+  // JSON.parse failure with no logger call at all.
+  const p = withFile("{ not valid json");
+  const warnings: string[] = [];
+  expect(loadCuratedMap(p, { warn: (m) => warnings.push(m) })).toEqual({});
+  expect(warnings.length).toBe(1);
+  expect(warnings[0]).toContain("paper_repos.json unreadable");
+  expect(warnings[0]).toContain("skipping curated layer");
+});
+
+it("does not warn for a plain missing file (no regression)", () => {
+  const dir = mkdtempSync(join(tmpdir(), "curated-map-test-"));
+  const warnings: string[] = [];
+  expect(loadCuratedMap(join(dir, "missing.json"), { warn: (m) => warnings.push(m) })).toEqual({});
+  expect(warnings).toEqual([]);
+});
+
 it("test_load_curated_map_handles_missing_file", () => {
   const dir = mkdtempSync(join(tmpdir(), "curated-map-test-"));
   expect(loadCuratedMap(join(dir, "missing.json"))).toEqual({});
