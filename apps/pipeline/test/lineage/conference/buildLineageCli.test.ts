@@ -105,4 +105,126 @@ describe("runBuildLineageCli", () => {
     expect(code).toBe(4);
     expect(() => readFileSync(lineagePath)).toThrow();
   });
+
+  // LIN-06: build_lineage's references/citations expansion (as opposed to
+  // the oral/focus SUBJECT lookup above) can fail independently —
+  // `main()` must refuse to shrink an already-published lineage.json and
+  // exit 4, leaving the file byte-identical.
+  it("exit 4 when expansion failures would shrink an already-published lineage (LIN-06), file untouched", async () => {
+    const repoRoot = makeRepo();
+    const lineagePath = join(repoRoot, "docs", "testconf", "lineage.json");
+    const published = {
+      schema_version: "lineage-artifact-v1",
+      root: "S2FOCUS",
+      nodes: [
+        {
+          id: "S2FOCUS",
+          title: "Oral Paper One",
+          is_focus: true,
+          seed_paper_id: PAPER_ID_ONE,
+          year: 2026,
+        },
+        { id: "S2PARENT", title: "Parent Paper", is_focus: false, year: 2020 },
+      ],
+      edges: [
+        {
+          src: "S2PARENT",
+          dst: "S2FOCUS",
+          relation: "extends",
+          rel: "extends",
+          confidence: 0.6,
+          conf: 0.6,
+        },
+      ],
+      clusters: [],
+      meta: {},
+    };
+    writeFileSync(lineagePath, JSON.stringify(published));
+
+    // Focus resolves fine (subject gate passes) but references/citations
+    // both fail -> an expansion failure, not a subject one.
+    const deps = makeDeps(async (url: string) => {
+      if (url.includes("arXiv:")) {
+        return {
+          status: 200,
+          json: async () => ({
+            paperId: "S2FOCUS",
+            title: "Oral Paper One",
+            year: 2026,
+            authors: [],
+            abstract: "x",
+            externalIds: { ArXiv: "2601.00001" },
+          }),
+        };
+      }
+      return { status: 503, json: async () => ({}) };
+    });
+    const code = await runBuildLineageCli(parseArgs(["--conference", "testconf"]), deps, repoRoot);
+    expect(code).toBe(4);
+    expect(JSON.parse(readFileSync(lineagePath, "utf8"))).toEqual(published);
+  });
+
+  // LIN-07's other direction (even the Python test suite has no positive
+  // test for this): `--allow-incomplete` DOES bypass the EXPANSION gate
+  // (unlike the subject gate above) — the same outage that exit-4'd
+  // above must now publish successfully.
+  it("LIN-07: --allow-incomplete DOES bypass the expansion gate (positive direction), publishing despite the same outage", async () => {
+    const repoRoot = makeRepo();
+    const lineagePath = join(repoRoot, "docs", "testconf", "lineage.json");
+    const published = {
+      schema_version: "lineage-artifact-v1",
+      root: "S2FOCUS",
+      nodes: [
+        {
+          id: "S2FOCUS",
+          title: "Oral Paper One",
+          is_focus: true,
+          seed_paper_id: PAPER_ID_ONE,
+          year: 2026,
+        },
+        { id: "S2PARENT", title: "Parent Paper", is_focus: false, year: 2020 },
+      ],
+      edges: [
+        {
+          src: "S2PARENT",
+          dst: "S2FOCUS",
+          relation: "extends",
+          rel: "extends",
+          confidence: 0.6,
+          conf: 0.6,
+        },
+      ],
+      clusters: [],
+      meta: {},
+    };
+    writeFileSync(lineagePath, JSON.stringify(published));
+
+    const deps = makeDeps(async (url: string) => {
+      if (url.includes("arXiv:")) {
+        return {
+          status: 200,
+          json: async () => ({
+            paperId: "S2FOCUS",
+            title: "Oral Paper One",
+            year: 2026,
+            authors: [],
+            abstract: "x",
+            externalIds: { ArXiv: "2601.00001" },
+          }),
+        };
+      }
+      return { status: 503, json: async () => ({}) };
+    });
+    const code = await runBuildLineageCli(
+      parseArgs(["--conference", "testconf", "--allow-incomplete"]),
+      deps,
+      repoRoot,
+    );
+    expect(code).toBe(0);
+    const written = JSON.parse(readFileSync(lineagePath, "utf8"));
+    // It published a (smaller) result rather than refusing — exactly the
+    // override the subject gate test above showed is NOT available.
+    expect(written).not.toEqual(published);
+    expect(written.meta.completeness.complete).toBe(false);
+  });
 });

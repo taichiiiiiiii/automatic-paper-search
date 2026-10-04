@@ -292,7 +292,14 @@ export function splitByFoundationalPriority(
  * here) doesn't provide them. */
 export function attachEmptyIntentFields(paper: ThemePaper): ThemePaper {
   if (paper._intents === undefined) paper._intents = null;
-  if (paper._is_influential === undefined) paper._is_influential = undefined as unknown as boolean;
+  // Was `undefined as unknown as boolean` (a type-cast lie, not a real
+  // value) — matched the sibling `_intents` line's INTENT (mirror
+  // Python's `_is_influential=None`) but not its actual null assignment.
+  // `undefined` serialized as JSON `null` under the old, permissive
+  // `pyJsonDumps`, so this was silent; the stricter port (throws on a
+  // bare `undefined`, since Python has no such value) now surfaces it
+  // wherever a cached/serialized paper dict carries this field unset.
+  if (paper._is_influential === undefined) paper._is_influential = null;
   if (paper._contexts === undefined) paper._contexts = [];
   return paper;
 }

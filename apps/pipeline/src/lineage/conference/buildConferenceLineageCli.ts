@@ -7,6 +7,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { pyJsonDumps } from "@paperpilot/core";
 import { validateConferenceSlug } from "../../catalog/slug.js";
+import type { FetchInit, HttpResponseLike } from "../../collect/http/requestWithRetry.js";
 import { atomicWriteText } from "../../collect/state/atomic.js";
 import { requireValidLineageArtifact } from "../contract/v1.js";
 import { BuildCompleteness, expansionGateBlocks } from "../fetch-state/completeness.js";
@@ -120,11 +121,52 @@ export async function runBuildConferenceLineageCli(
   return 0;
 }
 
+/**
+ * M6 (review): the raw global `fetch` has no timeout of its own — an
+ * OpenAlex request that never resolves (hung TCP connection, a load
+ * balancer that accepts the connection but never responds) would hang
+ * this CLI run forever. Wraps every call with the same AbortController +
+ * timer pattern `lineage/theme/cli.ts`'s `defaultDeps` uses, including
+ * that same fix's lesson (see its comment): the timer must stay armed
+ * through `resp.json()`, not just until `fetch()` resolves with headers,
+ * or a server that sends headers promptly and then stalls the body would
+ * still hang indefinitely.
+ */
+export function defaultFetchImpl(
+  fetchFn: typeof fetch = fetch,
+): (url: string, init: FetchInit) => Promise<HttpResponseLike> {
+  return async (url, init) => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), init.timeoutMs);
+    let resp: Response;
+    try {
+      resp = await fetchFn(url, {
+        method: init.method,
+        headers: init.headers,
+        body: init.body,
+        signal: controller.signal,
+      });
+    } catch (e) {
+      clearTimeout(timer);
+      throw e;
+    }
+    return {
+      status: resp.status,
+      json: async () => {
+        try {
+          return await resp.json();
+        } finally {
+          clearTimeout(timer);
+        }
+      },
+    };
+  };
+}
+
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const { fetch } = globalThis as unknown as { fetch: OpenAlexDeps["fetchImpl"] };
-  runBuildConferenceLineageCli(parseArgs(process.argv.slice(2)), { fetchImpl: fetch }).then(
-    (code) => {
-      process.exitCode = code;
-    },
-  );
+  runBuildConferenceLineageCli(parseArgs(process.argv.slice(2)), {
+    fetchImpl: defaultFetchImpl(),
+  }).then((code) => {
+    process.exitCode = code;
+  });
 }

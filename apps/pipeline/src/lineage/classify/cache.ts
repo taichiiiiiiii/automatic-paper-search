@@ -30,6 +30,123 @@ function isPlainObject(x: unknown): x is Record<string, unknown> {
 
 export type ClassificationCache = Record<string, unknown>;
 
+// ---------------------------------------------------------------------------
+// H1: a NaN/Infinity-tolerant JSON reader.
+//
+// `pyJsonDumps` (packages/core) writes bare `NaN`/`Infinity`/`-Infinity`
+// tokens for non-finite numbers — exactly like Python's `json.dump`
+// (`allow_nan=True`, the default, used by every writer in this cache's
+// history, Python and TS alike). Python's `json.loads` accepts those bare
+// tokens back in (mapping them to `float("nan")`/`inf`/`-inf`); `JSON.parse`
+// does not — it throws a `SyntaxError`. Before this clamp existed (see
+// `relationClassificationFromDict` in `llm/base.ts`), a confidence of
+// `float("nan")` could reach the cache; reading such a file back with plain
+// `JSON.parse` would always throw, and a broad catch there would read the
+// whole file as "empty", silently losing every entry in it the next time
+// something persists (`persistClassifications`' setdefault-merge can only
+// carry over keys it could parse off disk).
+// U+E000-range markers (Unicode Private Use Area) rather than NUL-delimited
+// text: a raw control character (e.g. U+0000) inside a JSON string literal
+// is itself invalid JSON ("Bad control character in string literal"),
+// which made the very substitution meant to make the text parseable
+// produce a STILL-unparseable string.
+const NON_FINITE_SENTINEL = {
+  nan: "PYISH_NAN",
+  posInf: "PYISH_POS_INF",
+  negInf: "PYISH_NEG_INF",
+} as const;
+
+/** Replace bare `NaN`/`Infinity`/`-Infinity` tokens with quoted sentinel
+ * strings, but ONLY outside string literals (a rationale could legitimately
+ * contain the substring "NaN"). Returns `null` if no such token was found
+ * (so the caller knows the original `SyntaxError` was for an unrelated
+ * reason and shouldn't be retried). */
+function quoteNonFiniteTokensOutsideStrings(text: string): string | null {
+  let out = "";
+  let inString = false;
+  let touched = false;
+  let i = 0;
+  while (i < text.length) {
+    const ch = text[i]!;
+    if (inString) {
+      out += ch;
+      if (ch === "\\" && i + 1 < text.length) {
+        out += text[i + 1];
+        i += 2;
+        continue;
+      }
+      if (ch === '"') inString = false;
+      i++;
+      continue;
+    }
+    if (ch === '"') {
+      inString = true;
+      out += ch;
+      i++;
+      continue;
+    }
+    const rest = text.slice(i, i + 9); // longest token is "-Infinity" (9 chars)
+    const m = /^-?Infinity|^NaN/.exec(rest);
+    if (m) {
+      const token = m[0];
+      const sentinel =
+        token === "NaN"
+          ? NON_FINITE_SENTINEL.nan
+          : token.startsWith("-")
+            ? NON_FINITE_SENTINEL.negInf
+            : NON_FINITE_SENTINEL.posInf;
+      out += `"${sentinel}"`;
+      i += token.length;
+      touched = true;
+      continue;
+    }
+    out += ch;
+    i++;
+  }
+  return touched ? out : null;
+}
+
+function reviveNonFiniteSentinels(v: unknown): unknown {
+  if (v === NON_FINITE_SENTINEL.nan) return Number.NaN;
+  if (v === NON_FINITE_SENTINEL.posInf) return Number.POSITIVE_INFINITY;
+  if (v === NON_FINITE_SENTINEL.negInf) return Number.NEGATIVE_INFINITY;
+  if (Array.isArray(v)) return v.map(reviveNonFiniteSentinels);
+  if (isPlainObject(v)) {
+    const out: Record<string, unknown> = {};
+    for (const [k, val] of Object.entries(v)) out[k] = reviveNonFiniteSentinels(val);
+    return out;
+  }
+  return v;
+}
+
+/**
+ * `JSON.parse`, but tolerant of bare `NaN`/`Infinity`/`-Infinity` tokens
+ * the way Python's `json.loads` is. Throws the ORIGINAL `SyntaxError` when
+ * the text isn't JSON for some other reason (including when the
+ * NaN/Infinity-tolerant retry ALSO fails to parse — a genuinely malformed
+ * file is still a parse error either way, not silently swallowed here).
+ */
+export function tolerantJsonParse(text: string): unknown {
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    if (!(e instanceof SyntaxError)) throw e;
+    const sanitized = quoteNonFiniteTokensOutsideStrings(text);
+    if (sanitized === null) throw e;
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(sanitized);
+    } catch {
+      throw e; // still broken for some other reason — report the ORIGINAL error
+    }
+    return reviveNonFiniteSentinels(parsed);
+  }
+}
+
+function isFsErrnoError(e: unknown): e is NodeJS.ErrnoException {
+  return e instanceof Error && typeof (e as NodeJS.ErrnoException).code === "string";
+}
+
 /**
  * Fallback persistence used when {@link CachedClassifyProvider} is
  * constructed without an explicit `persistFn`. Simple atomic-write
@@ -64,10 +181,31 @@ export async function persistClassifications(
   fs.mkdirSync(dirname(cachePath), { recursive: true });
   await withClassificationLock(cachePath, () => {
     if (fs.existsSync(cachePath)) {
+      const raw = fs.readFileSync(cachePath, "utf-8");
       let diskObj: unknown = null;
       try {
-        diskObj = JSON.parse(fs.readFileSync(cachePath, "utf-8"));
-      } catch {
+        diskObj = tolerantJsonParse(raw);
+      } catch (e) {
+        if (!(e instanceof SyntaxError)) throw e;
+        // H1 (#review): Python's `persist_classifications` treats ANY
+        // unparseable disk file as `None` (empty) and proceeds to
+        // overwrite it with just the in-memory snapshot — which is safe
+        // in Python because `json.loads` tolerates the bare
+        // NaN/Infinity/-Infinity tokens `json.dump` itself writes, so in
+        // practice "unparseable" there only ever meant "truly corrupt
+        // (truncated, etc.)". `tolerantJsonParse` above already closes
+        // that same gap for this port. An EMPTY (never-written / fully
+        // truncated-to-nothing) file is still safe to treat as `{}` — a
+        // file this port would otherwise discard. Anything else that
+        // remains unparseable IS existing data we cannot safely merge;
+        // silently overwriting it with only our in-memory keys would
+        // erase every other entry, so this port refuses instead
+        // (intentional divergence from Python, not a parity gap).
+        if (raw.trim() !== "") {
+          throw new Error(
+            `refusing to overwrite unparseable, non-empty classification cache at ${cachePath}: ${(e as Error).message}`,
+          );
+        }
         diskObj = null;
       }
       if (isPlainObject(diskObj)) {
@@ -88,9 +226,14 @@ export function loadClassificationCache(cachePath: string): ClassificationCache 
   if (!fs.existsSync(cachePath)) return {};
   let data: unknown;
   try {
-    data = JSON.parse(fs.readFileSync(cachePath, "utf-8"));
-  } catch {
-    return {};
+    data = tolerantJsonParse(fs.readFileSync(cachePath, "utf-8"));
+  } catch (e) {
+    // Mirrors Python's `except (json.JSONDecodeError, OSError)`: malformed
+    // JSON or an I/O error reading the file starts the cache empty rather
+    // than crashing the build. Anything else (a genuine bug) propagates —
+    // a bare `catch {}` previously swallowed everything indiscriminately.
+    if (e instanceof SyntaxError || isFsErrnoError(e)) return {};
+    throw e;
   }
   return isPlainObject(data) ? data : {};
 }
@@ -208,6 +351,18 @@ export class CachedClassifyProvider implements LLMProvider {
         try {
           await this.persistFn(this.cache, this.cachePath);
         } catch (e) {
+          // TS port of `except OSError` (Python's `_CachedClassifyProvider`
+          // only ever sees disk I/O failures here — `fcntl.flock` has no
+          // timeout). This port's lock DOES have one (`lock.ts`'s
+          // LOCK_ACQUIRE_TIMEOUT_MS, a TS-only addition with no Python
+          // analogue): a timeout means another writer has been holding the
+          // lock for 30s+, a real concurrency problem, not a benign I/O
+          // hiccup — swallowing it here (review LOW) would hide that the
+          // in-memory cache accumulated an entry nothing downstream will
+          // ever see persisted. Only fs-style errno errors are swallowed;
+          // anything else (including a lock timeout `Error`, which has no
+          // `.code`) propagates.
+          if (!isFsErrnoError(e)) throw e;
           this.logger?.warn(
             `classifications cache persist failed (${(e as Error).message}) — in-memory state still consistent`,
           );

@@ -1,7 +1,7 @@
 /**
  * Vitest port of `paperpilot/tests/test_generate_themes_manifest.py`.
  */
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { chmodSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { beforeEach, describe, expect, it } from "vitest";
@@ -78,6 +78,36 @@ beforeEach(() => {
 describe("generateManifest", () => {
   it("returns [] for an empty dir", () => {
     expect(generateManifest(themesDir)).toEqual([]);
+  });
+
+  it("returns [] when themesDir does not exist at all (mirrors Python's `not themes_dir.is_dir()`)", () => {
+    expect(generateManifest(join(themesDir, "does-not-exist"))).toEqual([]);
+  });
+
+  // LOW (#review): a themesDir path that EXISTS but is a plain file
+  // (not a directory) is the other `not is_dir()` case Python returns
+  // [] for safely. Anything else that fails (permission error, etc.)
+  // must propagate rather than being swallowed into the same "no
+  // themes" result `writeManifest` would otherwise persist to disk.
+  it("returns [] when themesDir exists but is a file, not a directory", () => {
+    const filePath = join(themesDir, "not-a-dir");
+    writeFileSync(filePath, "x");
+    expect(generateManifest(filePath)).toEqual([]);
+  });
+
+  // LOW (#review): a themesDir that EXISTS and IS a directory, but
+  // can't actually be LISTED (e.g. permission denied) is NOT the same
+  // as "no themes" — it must throw, not silently return [] (which
+  // `writeManifest` would then persist, erasing a real manifest).
+  it("throws (does not silently report []) when themesDir exists but cannot be read (permission denied)", () => {
+    const restricted = join(themesDir, "restricted");
+    mkdirSync(restricted);
+    chmodSync(restricted, 0o000);
+    try {
+      expect(() => generateManifest(restricted)).toThrow();
+    } finally {
+      chmodSync(restricted, 0o755); // restore so the tmp dir can be cleaned up
+    }
   });
 
   it("builds a single-theme entry", () => {

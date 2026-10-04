@@ -93,6 +93,21 @@ function isPlainObject(x: unknown): x is Record<string, unknown> {
   return typeof x === "object" && x !== null && !Array.isArray(x);
 }
 
+/**
+ * Python's 2-arg `min`/`max`: keep the first argument unless the second
+ * one is strictly less/greater (via `<`/`>`). `NaN` compared with `<`/`>`
+ * is always `false` in both languages, so — UNLIKE JS's `Math.min`/
+ * `Math.max`, which always propagate a `NaN` argument to the result
+ * regardless of position — `pyMin2(1, NaN)` keeps `1` (the first arg is
+ * unchanged because `NaN < 1` is `false`), matching CPython exactly.
+ */
+function pyMin2(a: number, b: number): number {
+  return b < a ? b : a;
+}
+function pyMax2(a: number, b: number): number {
+  return b > a ? b : a;
+}
+
 // ---------------------------------------------------------------------------
 // PaperEvaluation.from_dict (LLM-28..30)
 // ---------------------------------------------------------------------------
@@ -308,7 +323,15 @@ export function relationClassificationFromDict(d: unknown): RelationClassificati
   if (GENERIC_TEMPLATE_RATIONALES.has(rationale)) return null;
   const rawConfidence = "confidence" in d ? d.confidence : 0.7;
   let confidence = pyFloatCoerce(rawConfidence, 0.7);
-  confidence = Math.max(0, Math.min(1, confidence));
+  // H1 (#review): `Math.max(0, Math.min(1, NaN))` is NaN in JS (NaN
+  // poisons both calls regardless of argument order) — Python's
+  // `max(0.0, min(1.0, float("nan")))` is 1.0 (verified against CPython:
+  // nan/inf/-inf/"nan" all clamp the same way the two-arg min/max
+  // comparisons below reproduce). A bare NaN written to the classification
+  // cache JSON is unparseable by `JSON.parse` on the next read (H1), so
+  // clamping here is also what keeps every classification this port
+  // writes JSON-round-trippable.
+  confidence = pyMax2(0, pyMin2(1, confidence));
   return { relation: rel as Relation, confidence, rationale };
 }
 

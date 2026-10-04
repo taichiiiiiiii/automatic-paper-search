@@ -161,20 +161,31 @@ export function generateManifest(
   themesDir: string,
   logger?: GenerateThemesManifestLogger,
 ): ManifestEntry[] {
-  let subdirs: string[];
-  try {
-    subdirs = readdirSync(themesDir)
-      .filter((name) => {
-        try {
-          return statSync(join(themesDir, name)).isDirectory();
-        } catch {
-          return false;
-        }
-      })
-      .sort(codepointCompare);
-  } catch {
+  // LOW (#review): Python's `generate_manifest` returns `[]` only when
+  // `not themes_dir.is_dir()` — true for both "doesn't exist" and
+  // "exists but is a file", neither of which raises in Python. The
+  // previous TS version used a `try { readdirSync(...) } catch { return
+  // [] }` around the WHOLE read, which collapsed ANY failure (a
+  // permission error, a transient I/O error) into the same empty
+  // result — and `writeManifest` writes whatever this returns straight
+  // to disk, so a transient failure here could silently overwrite a
+  // real, non-empty `themes-manifest.json` with `[]`. Check existence
+  // and type first (mirroring `is_dir()` exactly, via a stat that never
+  // throws for "missing"); anything else that fails is a real problem
+  // and must propagate, not be swallowed as "no themes".
+  const themesDirStat = statSync(themesDir, { throwIfNoEntry: false });
+  if (themesDirStat === undefined || !themesDirStat.isDirectory()) {
     return [];
   }
+  const subdirs = readdirSync(themesDir)
+    .filter((name) => {
+      try {
+        return statSync(join(themesDir, name)).isDirectory();
+      } catch {
+        return false;
+      }
+    })
+    .sort(codepointCompare);
 
   const entries: ManifestEntry[] = [];
   const unreadable: string[] = [];

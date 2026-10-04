@@ -91,12 +91,26 @@ export interface ThemeGraphNode {
 
 /** Truncate `text` to `maxLen`, breaking at the nearest earlier space
  * (never mid-word) when the cut would otherwise land inside one, and
- * append an ellipsis. Mirrors `to_node`'s tldr/short_abstract cuts. */
+ * append an ellipsis. Mirrors `to_node`'s tldr/short_abstract cuts.
+ *
+ * M9 (#review): Python slices `str` by Unicode CODE POINT
+ * (`abstract[:maxLen]`), not UTF-16 code unit. A native `text.slice(0,
+ * maxLen)` counts UTF-16 units instead, so any abstract containing a
+ * character outside the Basic Multilingual Plane (rare emoji, some CJK
+ * extension ideographs — each represented as a surrogate PAIR, 2 units)
+ * can have `maxLen` land between the pair's two halves, producing a lone
+ * unpaired surrogate (an invalid, unrepresentable code point) in the
+ * output. `Array.from(text)` splits by code point, matching Python. */
 function truncateAtWordBoundary(text: string, maxLen: number, minLastSpace: number): string {
-  let cut = text.slice(0, maxLen).trim();
-  if (cut && text.length > maxLen) {
+  const codePoints = Array.from(text);
+  let cut = codePoints.slice(0, maxLen).join("").trim();
+  if (cut && codePoints.length > maxLen) {
     const lastSpace = cut.lastIndexOf(" ");
     if (lastSpace > minLastSpace) {
+      // Safe to slice `cut` itself by UTF-16 offset here: a plain ASCII
+      // space is always exactly one code unit and never the second half
+      // of a surrogate pair, so `lastIndexOf(" ")` can only ever return
+      // an offset that already falls on a code-point boundary.
       cut = `${cut.slice(0, lastSpace)}…`;
     }
   }

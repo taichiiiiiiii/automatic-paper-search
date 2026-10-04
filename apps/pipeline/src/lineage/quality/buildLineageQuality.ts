@@ -65,11 +65,20 @@ export function parseTime(value: string): Date {
   const normalized = value.endsWith("Z") ? `${value.slice(0, -1)}+00:00` : value;
   const m = ISO_RE.exec(normalized);
   if (!m) throw new Error(`invalid isoformat string: ${JSON.stringify(value)}`);
-  const [, y, mo, d, h, mi, s, , offset] = m;
+  const [, y, mo, d, h, mi, s, frac, offset] = m;
   assertValidCalendar(Number(y), Number(mo), Number(d), Number(h), Number(mi), Number(s ?? "0"));
   if (offset === undefined) {
     throw new Error("timestamp must include a timezone");
   }
+  // LOW (#review): Python's `datetime.fromisoformat` keeps fractional
+  // seconds; this regex captured them (group 7) but the destructuring
+  // used to skip straight past that group to `offset`, silently
+  // truncating e.g. "...:00.5Z" down to the whole second. `Date.UTC`'s
+  // optional 7th (milliseconds) argument recovers sub-second precision
+  // — clamped to JS's millisecond resolution (a documented, unavoidable
+  // gap versus Python's microseconds, same as this codebase's other
+  // noted sub-millisecond-precision gaps).
+  const millis = frac ? Number(frac.padEnd(3, "0").slice(0, 3)) : 0;
   const ms = Date.UTC(
     Number(y),
     Number(mo) - 1,
@@ -77,6 +86,7 @@ export function parseTime(value: string): Date {
     Number(h),
     Number(mi),
     Number(s ?? "0"),
+    millis,
   );
   const offSign = offset.startsWith("-") ? -1 : 1;
   const offH = Number(offset.slice(1, 3));
@@ -529,7 +539,9 @@ function readFileBytesOrNull(path: string): Buffer | null {
   }
 }
 
-function collectionRow(options: {
+/** Exported for direct unit testing of the per-collection audit (LIN-51)
+ * without having to assemble a full `docs/` tree for `buildManifest`. */
+export function collectionRow(options: {
   docsRoot: string;
   kind: LineageArtifactKind;
   slug: string;

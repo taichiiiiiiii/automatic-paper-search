@@ -4,7 +4,7 @@
  * cases of `paperpilot/tests/test_build_lineage.py`, plus direct unit
  * tests of `BuildCompleteness`'s documented behaviour (LIN-01..04).
  */
-import { mkdtempSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
@@ -230,14 +230,108 @@ describe("expansionGateBlocks", () => {
     const failed = new BuildCompleteness({ expansionsAttempted: 1, expansionsFailed: 1 });
     const newNodes = [{ id: "focus-b", is_focus: true }, { id: "n1" }];
     const newEdges = [{ src: "focus-b", dst: "n1" }];
-    expect(
-      expansionGateBlocks(failed, {
+    const reason = expansionGateBlocks(failed, {
+      newNodeCount: newNodes.length,
+      newEdgeCount: newEdges.length,
+      publishedPath: published,
+      newNodes,
+      newEdges,
+    });
+    expect(reason).toBeTruthy();
+    // The "focus paper(s)" check runs FIRST and short-circuits on the
+    // lost focus-a — proves THIS specific check (not node(s)/edge(s))
+    // is what fired.
+    expect(reason).toContain("focus paper(s)");
+  });
+
+  // LIN-02: the three identity checks (focus paper(s) / node(s) / edge(s))
+  // are separate `checks` array entries, each with its own `missing.size
+  // > 0` test. One isolated scenario per check, so a mutant that disables
+  // any ONE of the three independently of the others is caught — the
+  // combined "same-size focus swap" test above always trips the focus
+  // check first and can't tell the other two apart.
+  describe("LIN-02: each identity check is independently load-bearing", () => {
+    it("node(s) check: a dropped NON-focus node blocks even though every focus id is intact", () => {
+      const published = write("lineage.json", {
+        nodes: [{ id: "focus-a", is_focus: true }, { id: "n1" }, { id: "n2" }],
+        edges: [
+          { src: "focus-a", dst: "n1" },
+          { src: "focus-a", dst: "n2" },
+        ],
+      });
+      const failed = new BuildCompleteness({ expansionsAttempted: 1, expansionsFailed: 1 });
+      // n2 is gone; focus-a (the only focus id) survives untouched.
+      const newNodes = [{ id: "focus-a", is_focus: true }, { id: "n1" }];
+      const newEdges = [{ src: "focus-a", dst: "n1" }];
+      const reason = expansionGateBlocks(failed, {
         newNodeCount: newNodes.length,
         newEdgeCount: newEdges.length,
         publishedPath: published,
         newNodes,
         newEdges,
-      }),
+      });
+      expect(reason).toBeTruthy();
+      expect(reason).toContain("node(s)");
+      expect(reason).not.toContain("focus paper(s)");
+    });
+
+    it("edge(s) check: a same-COUNT edge identity swap blocks even though every node AND every focus id is intact (isolates the identity check from the totals fallback below it)", () => {
+      // Edge count and node/focus identity are UNCHANGED (2 edges, same 3
+      // nodes) — only which specific edge exists differs (focus-a->n2
+      // replaced by focus-a->n3). A mutant that drops the "edge(s)"
+      // `checks` entry would fall through to the totals-only comparison
+      // at the bottom of `expansionGateBlocks`, which sees 3/3 nodes and
+      // 2/2 edges — no regression — and would wrongly allow this.
+      const published = write("lineage.json", {
+        nodes: [{ id: "focus-a", is_focus: true }, { id: "n1" }, { id: "n2" }, { id: "n3" }],
+        edges: [
+          { src: "focus-a", dst: "n1" },
+          { src: "focus-a", dst: "n2" },
+        ],
+      });
+      const failed = new BuildCompleteness({ expansionsAttempted: 1, expansionsFailed: 1 });
+      const newNodes = [
+        { id: "focus-a", is_focus: true },
+        { id: "n1" },
+        { id: "n2" },
+        { id: "n3" },
+      ];
+      const newEdges = [
+        { src: "focus-a", dst: "n1" },
+        { src: "focus-a", dst: "n3" }, // same count, different identity than published's focus-a->n2
+      ];
+      const reason = expansionGateBlocks(failed, {
+        newNodeCount: newNodes.length,
+        newEdgeCount: newEdges.length,
+        publishedPath: published,
+        newNodes,
+        newEdges,
+      });
+      expect(reason).toBeTruthy();
+      expect(reason).toContain("edge(s)");
+      expect(reason).not.toContain("focus paper(s)");
+      expect(reason).not.toContain("node(s) missing");
+    });
+  });
+});
+
+describe("LIN-03: publishedGraph distinguishes genuine absence (ENOENT) from an unreadable file", () => {
+  it("a non-ENOENT read error (e.g. the path is a directory) throws, it does NOT read as 'nothing published'", () => {
+    const dirPath = join(dir, "lineage.json");
+    // Create a DIRECTORY at the artifact's path: reading it throws EISDIR,
+    // not ENOENT. A mutant that treats every read failure as "absent"
+    // would wrongly return null/allow a known-incomplete build to publish
+    // over this, instead of refusing because the published artifact
+    // couldn't even be inspected.
+    mkdirSync(dirPath);
+    expect(() => publishedGraphSize(dirPath)).toThrow();
+    const failed = new BuildCompleteness({ expansionsAttempted: 1, expansionsFailed: 1 });
+    expect(
+      expansionGateBlocks(failed, { newNodeCount: 1, newEdgeCount: 0, publishedPath: dirPath }),
     ).toBeTruthy();
+  });
+
+  it("a genuinely missing file (ENOENT) is the one case that reads as null/not-yet-published", () => {
+    expect(publishedGraphSize(join(dir, "truly-missing.json"))).toBeNull();
   });
 });

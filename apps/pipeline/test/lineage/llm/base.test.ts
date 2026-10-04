@@ -294,6 +294,40 @@ describe("RelationClassification", () => {
     ).toBe(0.0);
   });
 
+  it("H1: clamps a non-finite confidence the way CPython's max(0, min(1, x)) does, not JS's NaN-poisoning Math.max/min", () => {
+    // Verified against real CPython: max(0.0, min(1.0, float("nan"))) ==
+    // 1.0 (min(1.0, nan) keeps the first arg because `nan < 1.0` is
+    // False; max(0.0, 1.0) then keeps 1.0 because `1.0 > 0.0` is True).
+    // JS's `Math.max(0, Math.min(1, NaN))` is NaN in either argument
+    // order — the bug this guards against.
+    const rationale = "論文 B は論文 A と根本的に異なる定式化を採用している。";
+    expect(
+      relationClassificationFromDict({ relation: "contrasts", confidence: Number.NaN, rationale })
+        ?.confidence,
+    ).toBe(1.0);
+    expect(
+      relationClassificationFromDict({
+        relation: "contrasts",
+        confidence: "nan",
+        rationale,
+      })?.confidence,
+    ).toBe(1.0);
+    expect(
+      relationClassificationFromDict({
+        relation: "contrasts",
+        confidence: Number.POSITIVE_INFINITY,
+        rationale,
+      })?.confidence,
+    ).toBe(1.0);
+    expect(
+      relationClassificationFromDict({
+        relation: "contrasts",
+        confidence: Number.NEGATIVE_INFINITY,
+        rationale,
+      })?.confidence,
+    ).toBe(0.0);
+  });
+
   it("test_build_classify_prompt_contains_both_papers", () => {
     const a = { title: "AlphaNet", year: 2020, abstract: "First idea." };
     const b = { title: "BetaNet", year: 2024, abstract: "Improved version." };

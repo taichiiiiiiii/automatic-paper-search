@@ -13,7 +13,7 @@
  * problem.
  */
 
-import { readdirSync, readFileSync } from "node:fs";
+import { readdirSync, statSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
 import { codepointCompare } from "@paperpilot/core";
 import {
@@ -353,6 +353,35 @@ export function auditLineage(
 }
 
 /** Glob both `docs/<slug>/lineage.json` and `docs/themes/<slug>/lineage.json`, sorted by path. */
+/**
+ * LIN-50 (#review fix): membership here must be EXISTENCE-only, mirroring
+ * Python's `_collect_targets` (`DOCS_DIR.glob(<star>/lineage.json)`) — a glob
+ * only checks that a directory entry exists, it never attempts to READ
+ * it. The read/parse of each target (and the "unreadable" FAIL it
+ * produces) happens later, one target at a time, in
+ * `runAuditLineageQualityCli`'s own try/catch.
+ *
+ * The previous implementation used `readFileSync(p)` (discarding the
+ * content) as its existence probe. That conflated "genuinely absent"
+ * with "exists but could not be read for some other reason" (a
+ * permission error, a transient I/O error, `EISDIR`, etc): either way
+ * the `catch {}` silently excluded the path from `targets` — so a
+ * docs/ tree whose only conference's `lineage.json` happened to be
+ * unreadable produced `targets.length === 0` and the CLI printed
+ * "no lineage.json found" and exited 0, instead of surfacing a FAIL and
+ * exiting 1. `pathExistsNotEnoent` below only treats the ENOENT case as
+ * absence; any other stat failure means something real is THERE and
+ * must become a target so the per-target read reports it.
+ */
+function pathExistsNotEnoent(p: string): boolean {
+  try {
+    statSync(p);
+    return true;
+  } catch (e) {
+    return (e as NodeJS.ErrnoException).code !== "ENOENT";
+  }
+}
+
 export function collectTargets(docsDir: string): string[] {
   const targets = new Set<string>();
   let topLevel: string[] = [];
@@ -365,12 +394,7 @@ export function collectTargets(docsDir: string): string[] {
   }
   for (const name of topLevel) {
     const p = join(docsDir, name, "lineage.json");
-    try {
-      readFileSync(p);
-      targets.add(p);
-    } catch {
-      // not present — not a target
-    }
+    if (pathExistsNotEnoent(p)) targets.add(p);
   }
   const themesDir = join(docsDir, "themes");
   let themeSlugs: string[] = [];
@@ -383,12 +407,7 @@ export function collectTargets(docsDir: string): string[] {
   }
   for (const slug of themeSlugs) {
     const p = join(themesDir, slug, "lineage.json");
-    try {
-      readFileSync(p);
-      targets.add(p);
-    } catch {
-      // not present
-    }
+    if (pathExistsNotEnoent(p)) targets.add(p);
   }
   return Array.from(targets).sort(codepointCompare);
 }

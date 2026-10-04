@@ -104,7 +104,11 @@ export async function runBuildDeepLineageCli(
   repoRoot: string = DEFAULT_REPO_ROOT,
 ): Promise<number> {
   const completeness = new BuildCompleteness();
-  const { provider, rateDelay } = deps.buildProvider();
+  // LIN-24: do NOT call `deps.buildProvider()` here. `buildDeep` must
+  // confirm the S2 response's arXiv id matches the requested one BEFORE
+  // any provider is constructed; passing the thunk (rather than calling
+  // it eagerly) lets `buildDeep` invoke it at the right point, only once
+  // the identity check has already succeeded.
   let result: Record<string, unknown>;
   try {
     result = await buildDeep(
@@ -117,8 +121,7 @@ export async function runBuildDeepLineageCli(
         venueOverride: args.venueOverride,
         tierOverride: args.tierOverride,
         completeness,
-        provider,
-        rateDelayMs: rateDelay * 1000,
+        buildProvider: deps.buildProvider,
       },
       deps,
     );

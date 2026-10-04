@@ -4,7 +4,7 @@
  * `paperpilot/scripts/audit_theme_seeds.py`, as opposed to the
  * per-paper predicate already covered in `auditThemeSeeds.test.ts`).
  */
-import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
+import { chmodSync, mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { beforeEach, describe, expect, it } from "vitest";
@@ -22,10 +22,28 @@ function writeLineage(slug: string, payload: unknown): void {
 }
 
 describe("auditThemeSeeds", () => {
-  it("returns exit 0 with no themes directory entries", () => {
-    const result = auditThemeSeeds(join(themesDir, "does-not-exist"));
+  it("returns exit 0 for an EXISTING but empty themes directory", () => {
+    const result = auditThemeSeeds(themesDir);
     expect(result.exitCode).toBe(0);
     expect(result.seenThemes).toBe(0);
+  });
+
+  // LOW (#review): a themes directory that does not exist at all must
+  // NOT read as "nothing to report" — Python's `audit()` has no
+  // try/except around this and crashes (non-zero exit) on a missing
+  // dir; silently swallowing it here would let an outage/misconfigured
+  // path report a clean audit.
+  it("throws (does not silently report clean) when the themes directory does not exist at all", () => {
+    expect(() => auditThemeSeeds(join(themesDir, "does-not-exist"))).toThrow();
+  });
+
+  it("throws (does not silently report clean) when the themes directory exists but cannot be listed (permission denied)", () => {
+    chmodSync(themesDir, 0o000);
+    try {
+      expect(() => auditThemeSeeds(themesDir)).toThrow();
+    } finally {
+      chmodSync(themesDir, 0o755);
+    }
   });
 
   it("flags a theme whose focus seed is off-topic", () => {

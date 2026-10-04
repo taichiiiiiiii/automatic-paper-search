@@ -320,19 +320,49 @@ describe("GroqProvider — quota-exhausted circuit breaker (#30)", () => {
   });
 
   it("test_groq_provider_failure_counter_resets_on_success", async () => {
-    const responses = [resp(429), resp(429), resp(200, groqBody("ok")), resp(429), resp(429)];
-    let i = 0;
+    // LLM-19 (#review: this test previously "cannot fail"): with only 2
+    // failures on either side of the success, the breaker never latches
+    // EITHER WAY (threshold is 3) — a missing reset and a working reset
+    // produce the exact same `chat()` return sequence
+    // (null,null,"ok",null,null), so the assertions below alone can't
+    // tell them apart. The discriminator is a 6th call: WITH the reset,
+    // the post-success run of failures is only 3 long by the 6th call,
+    // so the breaker latches only AT that 6th call (which still goes out
+    // for real before latching); WITHOUT the reset, the pre-success 2
+    // failures carry over and the 4th call alone already hits the
+    // threshold (2 carried + 1 new = 3), latching early and silently
+    // short-circuiting calls 5 and 6 — both still return `null`, but
+    // never reach the network. Asserting the real call COUNT (not just
+    // the return values) is what pins the reset.
+    const responses = [
+      resp(429),
+      resp(429),
+      resp(200, groqBody("ok")),
+      resp(429),
+      resp(429),
+      resp(429),
+    ];
+    const rwr = vi.fn(async (_opts: RequestWithRetryOptions) => {
+      const next = responses[rwr.mock.calls.length - 1];
+      if (next === undefined) throw new Error("unexpected extra network call");
+      return next;
+    });
     const p = new GroqProvider({ enabled: true }, "k", {
       fetchImpl: unreachableFetch,
       now: () => 0,
       sleep: async () => {},
-      requestWithRetryFn: async () => responses[i++] as HttpResponseLike,
+      requestWithRetryFn: rwr,
     });
     expect(await p.chat("s", "u")).toBeNull();
     expect(await p.chat("s", "u")).toBeNull();
     expect(await p.chat("s", "u")).toBe("ok");
     expect(await p.chat("s", "u")).toBeNull();
     expect(await p.chat("s", "u")).toBeNull();
+    expect(await p.chat("s", "u")).toBeNull();
+    // All 6 scripted responses were consumed by a REAL call — the
+    // breaker never latched early, proving the post-success failure
+    // run started back at zero.
+    expect(rwr.mock.calls.length).toBe(6);
   });
 
   it("test_groq_provider_latches_on_consecutive_empty_content_200s", async () => {

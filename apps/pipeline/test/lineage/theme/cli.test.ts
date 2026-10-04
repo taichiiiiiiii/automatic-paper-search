@@ -7,7 +7,7 @@
 import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { FetchInit, HttpResponseLike } from "../../../src/collect/http/requestWithRetry.js";
 import { IncompleteBuildError } from "../../../src/lineage/fetch-state/completeness.js";
 import type {
@@ -17,6 +17,7 @@ import type {
 import { ZeroEdgeBuildError } from "../../../src/lineage/theme/build.js";
 import {
   CliArgError,
+  defaultDeps,
   expandParams,
   parseArgs,
   runThemeCli,
@@ -358,5 +359,52 @@ describe("runThemeCli", () => {
       expect(calls).toBe(2);
       expect(rc).toBe(4);
     });
+  });
+});
+
+describe("defaultDeps' fetchImpl — abort timer must cover the body read, not just headers (M6 LOW)", () => {
+  const realFetch = globalThis.fetch;
+
+  afterEach(() => {
+    globalThis.fetch = realFetch;
+    vi.useRealTimers();
+  });
+
+  it("the abort timer stays armed through resp.json(), not just until fetch() resolves", async () => {
+    vi.useFakeTimers();
+    let sawAbort = false;
+    globalThis.fetch = vi.fn(
+      (_url: string, opts: { signal: AbortSignal }) =>
+        Promise.resolve({
+          status: 200,
+          json: () =>
+            new Promise((_resolve, reject) => {
+              // A server that sent headers but is stalled on the body:
+              // this promise only ever settles if the SAME timer/signal
+              // that governed the initial fetch() call also covers this
+              // read. If the implementation cleared the timer as soon as
+              // fetch() resolved (the bug), this abort listener never
+              // fires and the promise hangs forever.
+              opts.signal.addEventListener("abort", () => {
+                sawAbort = true;
+                reject(new DOMException("aborted", "AbortError"));
+              });
+            }),
+        }) as unknown as Promise<Response>,
+    ) as unknown as typeof fetch;
+
+    const deps = defaultDeps(mkdtempSync(join(tmpdir(), "cli-defaultdeps-")));
+    const respPromise = deps.fetchImpl("https://example.invalid/x", {
+      method: "GET",
+      timeoutMs: 50,
+    });
+    const resp = await respPromise;
+    const jsonPromise = resp.json().catch(() => "aborted");
+
+    await vi.advanceTimersByTimeAsync(100);
+    const result = await jsonPromise;
+
+    expect(sawAbort).toBe(true);
+    expect(result).toBe("aborted");
   });
 });

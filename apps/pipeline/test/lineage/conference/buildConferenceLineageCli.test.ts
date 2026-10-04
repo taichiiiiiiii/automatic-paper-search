@@ -9,10 +9,11 @@
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type { HttpResponseLike } from "../../../src/collect/http/requestWithRetry.js";
 import type { OpenAlexDeps } from "../../../src/lineage/conference/buildConferenceLineage.js";
 import {
+  defaultFetchImpl,
   parseArgs,
   runBuildConferenceLineageCli,
 } from "../../../src/lineage/conference/buildConferenceLineageCli.js";
@@ -174,5 +175,57 @@ describe("runBuildConferenceLineageCli", () => {
     );
     expect(code).toBe(4);
     expect(JSON.parse(readFileSync(lineagePath, "utf8"))).toEqual(published);
+  });
+});
+
+describe("defaultFetchImpl (M6: raw global fetch had no timeout)", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("aborts a hung request once init.timeoutMs elapses", async () => {
+    vi.useFakeTimers();
+    const fakeFetch = vi.fn(
+      (_url: string, opts: { signal: AbortSignal }) =>
+        new Promise((_resolve, reject) => {
+          opts.signal.addEventListener("abort", () =>
+            reject(new DOMException("aborted", "AbortError")),
+          );
+        }),
+    ) as unknown as typeof fetch;
+
+    const fetchImpl = defaultFetchImpl(fakeFetch);
+    const promise = fetchImpl("https://api.openalex.org/works", { method: "GET", timeoutMs: 50 });
+    const assertion = expect(promise).rejects.toThrow(/aborted/i);
+    await vi.advanceTimersByTimeAsync(100);
+    await assertion;
+  });
+
+  it("keeps the timer armed through resp.json(), not just until fetch() resolves with headers", async () => {
+    vi.useFakeTimers();
+    let sawAbort = false;
+    const fakeFetch = vi.fn(
+      (_url: string, opts: { signal: AbortSignal }) =>
+        Promise.resolve({
+          status: 200,
+          json: () =>
+            new Promise((_resolve, reject) => {
+              opts.signal.addEventListener("abort", () => {
+                sawAbort = true;
+                reject(new DOMException("aborted", "AbortError"));
+              });
+            }),
+        }) as unknown as Promise<Response>,
+    ) as unknown as typeof fetch;
+
+    const fetchImpl = defaultFetchImpl(fakeFetch);
+    const resp = await fetchImpl("https://api.openalex.org/works", {
+      method: "GET",
+      timeoutMs: 50,
+    });
+    const jsonPromise = resp.json().catch(() => "aborted");
+    await vi.advanceTimersByTimeAsync(100);
+    expect(await jsonPromise).toBe("aborted");
+    expect(sawAbort).toBe(true);
   });
 });

@@ -17,6 +17,7 @@ import type {
 import type { Paper } from "../../../src/collect/model/paper.js";
 import {
   CachedClassifyProvider,
+  loadClassificationCache,
   persistClassifications,
 } from "../../../src/lineage/classify/cache.js";
 import {
@@ -158,6 +159,46 @@ describe("CachedClassifyProvider", () => {
     expect("x->y" in cache).toBe(true);
   });
 
+  it("LOW: a plain fs I/O error from persistFn is swallowed (logged), in-memory cache stays consistent", async () => {
+    const dir = tmpDir();
+    const cachePath = join(dir, "classifications.json");
+    const inner = new FakeProvider({ relation: "extends", confidence: 0.9, rationale: "r" });
+    const cache: Record<string, unknown> = {};
+    const warnings: string[] = [];
+    const ioError = Object.assign(new Error("ENOSPC: no space left on device"), {
+      code: "ENOSPC",
+    });
+    const cached = new CachedClassifyProvider(inner, cache, {
+      cachePath,
+      persistFn: () => {
+        throw ioError;
+      },
+      logger: { warn: (m) => warnings.push(m) },
+    });
+    const rc = await cached.classifyRelation({ paperId: "x" }, { paperId: "y" });
+    expect(rc).not.toBeNull(); // the classification itself still succeeds
+    expect("x->y" in cache).toBe(true); // in-memory cache still updated
+    expect(warnings.some((w) => w.includes("persist failed"))).toBe(true);
+  });
+
+  it("LOW (review cache.ts:210): a non-fs error from persistFn (e.g. a lock-acquire timeout) propagates rather than being swallowed", async () => {
+    const dir = tmpDir();
+    const cachePath = join(dir, "classifications.json");
+    const inner = new FakeProvider({ relation: "extends", confidence: 0.9, rationale: "r" });
+    const cache: Record<string, unknown> = {};
+    const lockTimeout = new Error("timed out waiting for lock /x/classifications.json.lock");
+    const cached = new CachedClassifyProvider(inner, cache, {
+      cachePath,
+      persistFn: () => {
+        throw lockTimeout;
+      },
+      logger: { warn: () => undefined },
+    });
+    await expect(cached.classifyRelation({ paperId: "x" }, { paperId: "y" })).rejects.toThrow(
+      /timed out waiting for lock/,
+    );
+  });
+
   it("a null-valued cache entry is a MISS (matches Python's `dict.get() is not None`), not a permanent poisoned hit", async () => {
     // Python's `self._cache.get(key)` returns `None` for BOTH a missing key
     // and a key explicitly stored as `null` — there's no third state, so
@@ -217,7 +258,7 @@ describe("persistClassifications", () => {
     const cachePath = join(dir, "cls.json");
     writeFileSync(cachePath, JSON.stringify({ base: { relation: "extends" } }));
     const lockPath = `${cachePath}.lock`;
-    await acquireClassificationLock(lockPath);
+    const token = await acquireClassificationLock(lockPath);
 
     let done = false;
     const writerPromise = persistClassifications(
@@ -231,21 +272,100 @@ describe("persistClassifications", () => {
     expect(done).toBe(false);
     expect(JSON.parse(readFileSync(cachePath, "utf-8"))).toEqual({ base: { relation: "extends" } });
 
-    releaseClassificationLock(lockPath);
+    releaseClassificationLock(lockPath, token);
     await writerPromise;
     expect(done).toBe(true);
     const final = JSON.parse(readFileSync(cachePath, "utf-8"));
     expect(final).toEqual({ base: { relation: "extends" }, new: { relation: "successor" } });
   });
 
-  it("tolerates a corrupt on-disk cache (treats as empty and proceeds)", async () => {
+  it("tolerates an empty on-disk cache file (treats as empty and proceeds)", async () => {
     const dir = tmpDir();
     const cachePath = join(dir, "cls.json");
-    writeFileSync(cachePath, "{not valid json");
+    writeFileSync(cachePath, "");
     const classifications: Record<string, unknown> = { "A->B": { relation: "extends" } };
     await persistClassifications(classifications, cachePath);
     expect(JSON.parse(readFileSync(cachePath, "utf-8"))).toEqual({
       "A->B": { relation: "extends" },
     });
+  });
+
+  it("H1: refuses to overwrite a non-empty, genuinely unparseable on-disk cache (would otherwise silently discard it)", async () => {
+    const dir = tmpDir();
+    const cachePath = join(dir, "cls.json");
+    writeFileSync(cachePath, "{not valid json");
+    const classifications: Record<string, unknown> = { "A->B": { relation: "extends" } };
+    await expect(persistClassifications(classifications, cachePath)).rejects.toThrow(
+      /refusing to overwrite/,
+    );
+    // The original (unparseable) file must be left untouched — not
+    // clobbered with just the in-memory snapshot.
+    expect(readFileSync(cachePath, "utf-8")).toBe("{not valid json");
+  });
+
+  it("H1: a cache file containing bare NaN/Infinity tokens (as Python's json.dump writes, and as an unclamped confidence used to produce) is read and merged, not discarded", async () => {
+    const dir = tmpDir();
+    const cachePath = join(dir, "cls.json");
+    // `JSON.parse` alone rejects this — only `tolerantJsonParse` (used by
+    // persistClassifications' merge step) accepts it, the way Python's
+    // `json.loads` always has.
+    writeFileSync(
+      cachePath,
+      '{\n  "old->entry": {"relation": "extends", "confidence": NaN, "rationale": "r"}\n}',
+    );
+    const classifications: Record<string, unknown> = {
+      "A->B": { relation: "extends", confidence: 0.9, rationale: "new" },
+    };
+    await persistClassifications(classifications, cachePath);
+    const onDisk = JSON.parse(
+      // The written file itself contains a bare NaN for the carried-over
+      // entry (pyJsonDumps writes NaN like Python does) — JSON.parse can't
+      // read that back either, so inspect the raw text instead of
+      // round-tripping through JSON.parse for this assertion.
+      readFileSync(cachePath, "utf-8").replace("NaN", "null"),
+    );
+    expect(onDisk["A->B"]).toEqual({ relation: "extends", confidence: 0.9, rationale: "new" });
+    expect(onDisk["old->entry"]).toEqual({ relation: "extends", confidence: null, rationale: "r" });
+    expect(readFileSync(cachePath, "utf-8")).toContain("NaN");
+  });
+});
+
+describe("loadClassificationCache", () => {
+  it("returns {} for a missing file", () => {
+    const dir = tmpDir();
+    expect(loadClassificationCache(join(dir, "does-not-exist.json"))).toEqual({});
+  });
+
+  it("returns {} for a genuinely malformed file (narrow catch: SyntaxError)", () => {
+    const dir = tmpDir();
+    const cachePath = join(dir, "cls.json");
+    writeFileSync(cachePath, "{not valid json");
+    expect(loadClassificationCache(cachePath)).toEqual({});
+  });
+
+  it("H1: loads a cache file containing bare NaN/Infinity tokens instead of discarding it as unreadable", () => {
+    const dir = tmpDir();
+    const cachePath = join(dir, "cls.json");
+    writeFileSync(
+      cachePath,
+      '{"a->b": {"relation": "extends", "confidence": NaN, "rationale": "r1"}, ' +
+        '"c->d": {"relation": "extends", "confidence": Infinity, "rationale": "r2"}, ' +
+        '"e->f": {"relation": "extends", "confidence": -Infinity, "rationale": "r3"}}',
+    );
+    const cache = loadClassificationCache(cachePath);
+    expect((cache["a->b"] as { confidence: number }).confidence).toBeNaN();
+    expect((cache["c->d"] as { confidence: number }).confidence).toBe(Number.POSITIVE_INFINITY);
+    expect((cache["e->f"] as { confidence: number }).confidence).toBe(Number.NEGATIVE_INFINITY);
+  });
+
+  it("does not mistake a rationale string containing the substring 'NaN' for a bare token", () => {
+    const dir = tmpDir();
+    const cachePath = join(dir, "cls.json");
+    writeFileSync(
+      cachePath,
+      '{"a->b": {"relation": "extends", "confidence": 0.8, "rationale": "NaN-like degenerate output"}}',
+    );
+    const cache = loadClassificationCache(cachePath);
+    expect((cache["a->b"] as { rationale: string }).rationale).toBe("NaN-like degenerate output");
   });
 });

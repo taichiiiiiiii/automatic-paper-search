@@ -260,7 +260,7 @@ export interface ThemePaper {
   // Fields populated later by BFS edge construction, not by seed discovery.
   _intents?: string[] | null;
   _contexts?: unknown[];
-  _is_influential?: boolean;
+  _is_influential?: boolean | null;
   seed_paper_id?: string;
   [extra: string]: unknown;
 }

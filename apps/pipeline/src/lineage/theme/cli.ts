@@ -150,7 +150,10 @@ export function expandParams(
   ];
 }
 
-function defaultDeps(repoRoot: string = DEFAULT_REPO_ROOT): BuildThemeLineageDeps {
+/** Exported for tests (the M6 fetch-timeout-covers-body-read fix lives in
+ * the `fetchImpl` this builds); production callers rely on the
+ * `runThemeCli` default. */
+export function defaultDeps(repoRoot: string = DEFAULT_REPO_ROOT): BuildThemeLineageDeps {
   const docsRoot = join(repoRoot, "docs");
   const env = loadEnv(join(repoRoot, "paperpilot", ".env"));
   const fetchImpl: (url: string, init: FetchInit) => Promise<HttpResponseLike> = async (
@@ -159,17 +162,37 @@ function defaultDeps(repoRoot: string = DEFAULT_REPO_ROOT): BuildThemeLineageDep
   ) => {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), init.timeoutMs);
+    let resp: Response;
     try {
-      const resp = await fetch(url, {
+      resp = await fetch(url, {
         method: init.method,
         headers: init.headers,
         body: init.body,
         signal: controller.signal,
       });
-      return { status: resp.status, json: () => resp.json() };
-    } finally {
+    } catch (e) {
       clearTimeout(timer);
+      throw e;
     }
+    // M6 (review, LOW): `json()` is lazy — the caller reads the body
+    // AFTER this function returns. Clearing the abort timer here (right
+    // after the response HEADERS arrive, in a `finally` around only the
+    // `fetch()` call above) would leave the body read with no timeout at
+    // all: a server that sends headers promptly and then stalls the body
+    // stream could hang the build forever. The timer must stay armed —
+    // and the same `AbortController` still cover — the body read too, so
+    // it's cleared from INSIDE the `json()` thunk once that read settles,
+    // not before the caller even gets a chance to call it.
+    return {
+      status: resp.status,
+      json: async () => {
+        try {
+          return await resp.json();
+        } finally {
+          clearTimeout(timer);
+        }
+      },
+    };
   };
   return {
     fetchImpl,

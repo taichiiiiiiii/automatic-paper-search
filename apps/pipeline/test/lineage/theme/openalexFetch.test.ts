@@ -5,15 +5,19 @@
  * contract LIN-20 (a transient OpenAlex failure must never collapse into
  * a cacheable empty answer).
  */
+
+import { pyJsonDumps } from "@paperpilot/core";
 import { describe, expect, it, vi } from "vitest";
 import type { FetchInit, HttpResponseLike } from "../../../src/collect/http/requestWithRetry.js";
 import type { OpenAlexDeps } from "../../../src/lineage/theme/openalexFetch.js";
 import {
+  attachEmptyIntentFields,
   discoverSeedsViaOpenalex,
   fetchOpenAlexWorksByIds,
   fetchRelatedViaOpenalex,
   OpenAlexTransientError,
 } from "../../../src/lineage/theme/openalexFetch.js";
+import type { ThemePaper } from "../../../src/lineage/theme/openalexWork.js";
 
 function jsonResp(status: number, body: unknown): HttpResponseLike {
   return { status, json: async () => body };
@@ -267,5 +271,31 @@ describe("fetchOpenAlexWorksByIds", () => {
     });
     await fetchOpenAlexWorksByIds(["https://openalex.org/W5", " W6 "], deps);
     expect(captured[0]).toBe("openalex:W5|W6");
+  });
+});
+
+describe("attachEmptyIntentFields — defaults must be JSON-serializable `null`, not bare `undefined`", () => {
+  it("sets an unset _is_influential to null (mirrors Python's None), not undefined", () => {
+    const paper = { paperId: "openalex:W1" } as unknown as ThemePaper;
+    attachEmptyIntentFields(paper);
+    expect(paper._is_influential).toBeNull();
+    expect("_is_influential" in paper).toBe(true);
+    // `pyJsonDumps` throws on a bare `undefined` (Python has no such
+    // value) — a cached/serialized paper dict carrying this field as
+    // `undefined` instead of `null` would break the very next write that
+    // includes it (versionedCache.ts's `writeVersionedCache`, or any
+    // provenance hash downstream). This is the regression check.
+    expect(() => pyJsonDumps(paper)).not.toThrow();
+    expect(JSON.parse(pyJsonDumps(paper))._is_influential).toBeNull();
+  });
+
+  it("leaves an already-set _is_influential (true/false) untouched", () => {
+    const truthy = { paperId: "p1", _is_influential: true } as unknown as ThemePaper;
+    attachEmptyIntentFields(truthy);
+    expect(truthy._is_influential).toBe(true);
+
+    const falsy = { paperId: "p2", _is_influential: false } as unknown as ThemePaper;
+    attachEmptyIntentFields(falsy);
+    expect(falsy._is_influential).toBe(false);
   });
 });

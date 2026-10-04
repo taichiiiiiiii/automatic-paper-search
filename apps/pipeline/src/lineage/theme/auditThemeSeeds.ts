@@ -152,12 +152,17 @@ export function auditThemeSeeds(themesDir: string, logger?: AuditThemeSeedsLogge
   const problems: AuditProblem[] = [];
   let seenThemes = 0;
 
-  let names: string[];
-  try {
-    names = readdirSync(themesDir).sort(codepointCompare);
-  } catch {
-    names = [];
-  }
+  // LOW (#review): Python's `audit()` has NO try/except around
+  // `THEMES_DIR.iterdir()` — on a themes dir that doesn't exist at all,
+  // Python's `iterdir()` raises `FileNotFoundError` and the script
+  // crashes (a non-zero exit via the uncaught traceback), not a clean
+  // "0 themes audited, all clean" exit 0. The previous TS version's
+  // `catch { names = [] }` silently turned a genuinely missing/
+  // unreadable themes dir into "nothing to report" — exactly the kind
+  // of outage this audit exists to catch. Let it propagate; an empty
+  // (but EXISTING) directory still legitimately yields `[]` with no
+  // error, matching Python's `iterdir()` on an empty dir.
+  const names = readdirSync(themesDir).sort(codepointCompare);
 
   for (const name of names) {
     const themeDir = join(themesDir, name);

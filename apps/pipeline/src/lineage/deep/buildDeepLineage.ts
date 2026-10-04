@@ -238,8 +238,22 @@ export interface BuildDeepOptions {
   venueOverride?: string | null;
   tierOverride?: string | null;
   completeness?: BuildCompleteness | null;
-  provider: LLMProvider;
-  rateDelayMs: number;
+  /**
+   * LIN-24: Python's `build_deep()` constructs the LLM provider (line
+   * `provider, rate_delay = build_provider()`) AFTER
+   * `_require_s2_focus_identity` confirms the S2 response's arXiv id
+   * actually matches the one requested — a mismatched/wrong seed must
+   * fail before paying for provider construction (which can itself fail
+   * loudly, e.g. "No LLM key found") or make any further network call.
+   * Prefer `buildProvider` (a thunk) so that ordering is preserved here;
+   * it is invoked only once, right after the identity check succeeds.
+   * `provider`/`rateDelayMs` remain for callers (existing tests) that
+   * already have a concrete provider in hand and don't care about this
+   * ordering — `buildProvider` takes precedence when both are given.
+   */
+  buildProvider?: () => { provider: LLMProvider; rateDelay: number };
+  provider?: LLMProvider;
+  rateDelayMs?: number;
   generatedAtOverride?: string | null;
 }
 
@@ -261,8 +275,7 @@ export async function buildDeep(
     venueOverride = null,
     tierOverride = null,
     completeness = null,
-    provider,
-    rateDelayMs,
+    buildProvider,
     generatedAtOverride = null,
   } = options;
   const seedPaperId = requirePaperId(options.seedPaperId, "seed_paper_id");
@@ -281,6 +294,13 @@ export async function buildDeep(
     throw new DeepSubjectNotFoundError(`S2 lookup failed for arXiv:${arxivId}`);
   }
   const focusId = requireS2FocusIdentity(focus, arxivId);
+  // LIN-24: provider construction happens HERE, only after the identity
+  // check above has already succeeded — never before it.
+  const resolvedProvider = buildProvider ? buildProvider() : null;
+  const provider = resolvedProvider ? resolvedProvider.provider : (options.provider as LLMProvider);
+  const rateDelayMs = resolvedProvider
+    ? resolvedProvider.rateDelay * 1000
+    : (options.rateDelayMs as number);
   const aliases = [
     ["arxiv", arxivId],
     ["semantic_scholar", focusId],

@@ -26,10 +26,16 @@ export const CLASSIFICATION_SCHEMA_VERSION = "relation-classification-v1";
 type PaperLike = Record<string, unknown>;
 
 function fields(paper: PaperLike): { title: unknown; year: unknown; citations: unknown } {
+  // Python's `dict.get(key)` always returns `None` for an absent key — the
+  // key itself is never omitted. `pyJsonDumps` now throws on a bare JS
+  // `undefined` (the LOW item closing the undefined/non-plain-object gap)
+  // rather than silently writing `null` for it, so every optional access
+  // here must coerce an absent field to `null` explicitly to keep hashing
+  // the same canonical shape Python does.
   return {
-    title: paper.title,
-    year: paper.year,
-    citations: "citationCount" in paper ? paper.citationCount : paper.citation_count,
+    title: paper.title ?? null,
+    year: paper.year ?? null,
+    citations: ("citationCount" in paper ? paper.citationCount : paper.citation_count) ?? null,
   };
 }
 
@@ -49,9 +55,9 @@ export function heuristicEvidenceInput(options: {
     child: fields(child),
     intent_record: {
       ...fields(intentRecord),
-      intents: intentRecord._intents,
-      contexts: intentRecord._contexts,
-      is_influential: intentRecord._is_influential,
+      intents: intentRecord._intents ?? null,
+      contexts: intentRecord._contexts ?? null,
+      is_influential: intentRecord._is_influential ?? null,
     },
   };
 }

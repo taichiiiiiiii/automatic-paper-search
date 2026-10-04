@@ -170,4 +170,36 @@ describe("buildThemeLineage", () => {
       ),
     ).rejects.toThrow(/refusing to write/);
   });
+
+  // LIN-15/16: a supplement (top-up) failure that leaves ZERO focus
+  // papers must be PROMOTED to a subject failure (build.ts:490) — an
+  // outage that happens to coincide with "nothing survived identity
+  // filtering" must not be published as a legitimately-empty theme.
+  it("promotes a supplement failure to a subject failure when it leaves zero focus papers (LIN-15/16)", async () => {
+    const deps = depsFor(async (url) => {
+      if (url.includes("/references") || url.includes("/citations")) {
+        return jsonResp(200, { data: [] });
+      }
+      if (url.includes("openalex.org")) {
+        // OpenAlex top-up (triggered because S2 alone found fewer than
+        // seedsCount) fails outright -> a supplement failure.
+        return jsonResp(503, {});
+      }
+      // S2 search succeeds, but the one hit has NO canonical alias, so
+      // the identity gate drops it -> zero surviving focus papers.
+      return mkSearchResponse(
+        [s2Paper("p1", { arxivId: undefined as unknown as string })].map((p) => ({
+          ...p,
+          externalIds: {},
+        })),
+      );
+    });
+    await expect(
+      buildThemeLineage(
+        { theme: "Promotion Theme", depth: 1, seedsCount: 3, width: 4, sinceYear: null },
+        deps,
+      ),
+    ).rejects.toThrow(/no focus paper survived/);
+    expect(existsSync(join(docsRoot, "themes", "promotion-theme", "lineage.json"))).toBe(false);
+  });
 });
