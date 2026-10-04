@@ -8,7 +8,7 @@
     "dev": "next dev",
     "prebuild": "tsx scripts/copy-data.ts",
     "build": "next build",
-    "postbuild": "tsx scripts/csp-hash.ts",
+    "postbuild": "tsx scripts/strip-nojs.ts && tsx scripts/csp-hash.ts && tsx scripts/redirects.ts && tsx scripts/sitemap.ts",
     "copy-data": "tsx scripts/copy-data.ts",
     "csp-hash": "tsx scripts/csp-hash.ts",
     "test": "vitest run",

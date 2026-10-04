@@ -1,0 +1,213 @@
+/*
+ * Page-local CSS for interactive chrome that Tailwind utility classes
+ * can't express without a dynamic `style=` attribute (CSP style-src
+ * 'self' forbids that -- see the P2 brief): per-mode card accents
+ * (computeModeData's tier/novelty/lineage-hue buckets), the hover-
+ * delayed card popover / edge tooltip, the onboarding arrow, and the
+ * minimap viewport frame. Every dynamic *position* (popover/tooltip
+ * placement, minimap dot/viewport coordinates) is still set via SVG
+ * attributes or <canvas> pixel calls from the component, never via a
+ * `style=` prop -- this file only supplies static, class-selected
+ * presentation.
+ */
+
+/* ---- computeModeData visual hooks (venue tier / novelty / lineage hue) */
+
+.tier1 {
+  box-shadow: inset 3px 0 0 0 oklch(58% 0.15 85);
+}
+.tier2 {
+  box-shadow: inset 3px 0 0 0 oklch(58% 0.1 220);
+}
+.tier3 {
+  box-shadow: inset 3px 0 0 0 var(--color-rule-strong);
+}
+
+.noveltyDisrupt {
+  box-shadow: inset 3px 0 0 0 var(--rel-supersedes);
+}
+.noveltyIncremental {
+  box-shadow: inset 3px 0 0 0 var(--rel-extends);
+}
+
+/* 12 hue buckets, 30deg apart -- see lib/themes-tree.ts's
+ * computeModeData() genealogy branch (hash(ancestor id) % 360). */
+.hue0 {
+  box-shadow: inset 3px 0 0 0 oklch(62% 0.14 0);
+}
+.hue1 {
+  box-shadow: inset 3px 0 0 0 oklch(62% 0.14 30);
+}
+.hue2 {
+  box-shadow: inset 3px 0 0 0 oklch(62% 0.14 60);
+}
+.hue3 {
+  box-shadow: inset 3px 0 0 0 oklch(62% 0.14 90);
+}
+.hue4 {
+  box-shadow: inset 3px 0 0 0 oklch(62% 0.14 120);
+}
+.hue5 {
+  box-shadow: inset 3px 0 0 0 oklch(62% 0.14 150);
+}
+.hue6 {
+  box-shadow: inset 3px 0 0 0 oklch(62% 0.14 180);
+}
+.hue7 {
+  box-shadow: inset 3px 0 0 0 oklch(62% 0.14 210);
+}
+.hue8 {
+  box-shadow: inset 3px 0 0 0 oklch(62% 0.14 240);
+}
+.hue9 {
+  box-shadow: inset 3px 0 0 0 oklch(62% 0.14 270);
+}
+.hue10 {
+  box-shadow: inset 3px 0 0 0 oklch(62% 0.14 300);
+}
+.hue11 {
+  box-shadow: inset 3px 0 0 0 oklch(62% 0.14 330);
+}
+
+/* ---- Card hover popover (#69) --------------------------------------- */
+
+.popoverPanel {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 120ms var(--ease);
+  box-shadow: 0 8px 24px rgba(20, 15, 10, 0.16);
+}
+.popoverPanel.popoverVisible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* ---- Edge tooltip ---------------------------------------------------- */
+
+.edgeHit {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 14;
+  cursor: pointer;
+}
+
+.tooltipPanel {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 100ms var(--ease);
+  box-shadow: 0 6px 18px rgba(20, 15, 10, 0.16);
+}
+.tooltipPanel.tooltipVisible {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ---- Onboarding coach-mark ------------------------------------------- */
+
+.onboardingArrow {
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-bottom: 7px solid var(--color-accent);
+}
+
+/* ---- Minimap ---------------------------------------------------------- */
+
+.minimapCanvas {
+  display: block;
+  cursor: pointer;
+  touch-action: none;
+}
+
+/* ---- HUB / TREND / orphan status badges (docs/assets/theme.js #83,
+ * #68, orphan) -- editorial mono micro-tags next to the venue label.
+ * Colour + word are dual-encoded so colour is never the sole signal. */
+
+.badge {
+  display: inline-block;
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  line-height: 1.45;
+  padding: 0.06rem 0.34rem;
+  border-radius: 3px;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+.badgeHub {
+  background: oklch(92% 0.09 90);
+  color: oklch(42% 0.12 90);
+}
+.badgeTrend {
+  background: oklch(93% 0.06 30);
+  color: oklch(45% 0.18 30);
+}
+.badgeOrphan {
+  background: oklch(94% 0.012 270);
+  color: oklch(45% 0.02 270);
+  cursor: help;
+}
+
+/* ---- Hub ring / orphan dashed border ---------------------------------- */
+
+/* #83: hub cards get a gold ring INSTEAD OF the citation-heat halo below
+ * (mirrors docs/assets/theme.js's CSS, where `.node-card--theme.node-
+ * card--hub`'s box-shadow fully replaces the heat halo via higher
+ * selector specificity -- not an additive glow). `!important` makes that
+ * replacement deterministic here too, regardless of class order. */
+.hubCard {
+  border-color: oklch(70% 0.13 90) !important;
+  box-shadow:
+    0 0 0 1px oklch(70% 0.13 90 / 0.5),
+    0 1px 4px oklch(70% 0.13 90 / 0.18) !important;
+}
+
+/* Orphan cards: dashed border + slight fade, additive with whatever
+ * heat/hub box-shadow class is also applied (only `border-style` is
+ * forced here, not `border-color` or `box-shadow`). */
+.orphanCard {
+  border-style: dashed !important;
+  opacity: 0.78;
+}
+
+/* ---- Citation-count heat halo (#67) ------------------------------------
+ * docs/assets/theme.js: box-shadow 0 calc(2px + h*4px) calc(8px + h*14px)
+ * oklch(58% 0.18 30 / calc(0.04 + h*0.08)), continuous h = heatBucket's
+ * input before quantisation. Each step below samples that formula at
+ * h = bucket / (HEAT_BUCKET_COUNT - 1) = bucket / 5. */
+.heat0 {
+  box-shadow:
+    0 1px 2px oklch(0% 0 0 / 0.04),
+    0 2px 8px oklch(58% 0.18 30 / 0.04);
+}
+.heat1 {
+  box-shadow:
+    0 1px 2px oklch(0% 0 0 / 0.04),
+    0 2.8px 10.8px oklch(58% 0.18 30 / 0.056);
+}
+.heat2 {
+  box-shadow:
+    0 1px 2px oklch(0% 0 0 / 0.04),
+    0 3.6px 13.6px oklch(58% 0.18 30 / 0.072);
+}
+.heat3 {
+  box-shadow:
+    0 1px 2px oklch(0% 0 0 / 0.04),
+    0 4.4px 16.4px oklch(58% 0.18 30 / 0.088);
+}
+.heat4 {
+  box-shadow:
+    0 1px 2px oklch(0% 0 0 / 0.04),
+    0 5.2px 19.2px oklch(58% 0.18 30 / 0.104);
+}
+.heat5 {
+  box-shadow:
+    0 1px 2px oklch(0% 0 0 / 0.04),
+    0 6px 22px oklch(58% 0.18 30 / 0.12);
+}

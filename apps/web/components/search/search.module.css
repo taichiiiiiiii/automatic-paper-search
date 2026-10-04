@@ -1,0 +1,300 @@
+/*
+ * Ported from docs/assets/style.css's `.site-search*` rules and
+ * docs/index.html's inline `.s0-search-filters*` / `.s0-results*`
+ * rules (design doc §8 P2: "copy the rules into the module nearly
+ * verbatim -- that's where the 320/375px behaviour already lives").
+ * Colors/type/spacing route through the site-wide @theme tokens in
+ * app/globals.css (same custom-property names as the original).
+ */
+
+.searchLandmark {
+  display: contents;
+}
+
+.siteSearch {
+  position: relative;
+  margin-top: 1.7rem;
+  max-width: 100%;
+}
+
+.label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--text-tag);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-ink-subtle);
+  margin-bottom: 0.5rem;
+}
+
+.input {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 0.7rem 0.9rem;
+  min-height: 44px;
+  font: inherit;
+  font-size: var(--text-body);
+  color: var(--color-ink);
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-rule-strong);
+  border-radius: 3px;
+}
+.input::placeholder {
+  color: var(--color-ink-subtle);
+}
+.input:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-color: var(--color-accent);
+}
+
+.searchHelp {
+  margin: 0.6rem 0 0;
+  font-family: var(--font-ja);
+  font-size: 0.875rem;
+  line-height: 1.7;
+  color: var(--color-ink-muted);
+  overflow-wrap: anywhere;
+}
+
+.status {
+  min-height: 1.4em;
+  margin-top: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  color: var(--color-ink-subtle);
+}
+
+.retry {
+  min-height: 44px;
+  margin: 0.15rem 0 0.4rem;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid var(--color-accent);
+  border-radius: 3px;
+  background: var(--color-surface-elevated);
+  color: var(--color-accent-strong);
+  font: 500 var(--text-meta) var(--font-mono);
+  cursor: pointer;
+}
+
+.results {
+  position: absolute;
+  z-index: 20;
+  left: 0;
+  right: 0;
+  margin: 0.2rem 0 0;
+  padding: 0;
+  list-style: none;
+  max-height: 22rem;
+  overflow-y: auto;
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-rule);
+  border-radius: 3px;
+  box-shadow: 0 8px 24px oklch(18% 0.012 270 / 0.12);
+}
+.results a {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.2rem 0.8rem;
+  padding: 0.6rem 0.9rem;
+  color: var(--color-ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-rule);
+}
+.results [aria-selected="true"] > a {
+  background: var(--color-surface-2);
+  box-shadow: inset 3px 0 0 var(--color-accent);
+}
+.results a:hover,
+.results a:focus-visible {
+  background: var(--color-surface-2);
+  outline: none;
+}
+.results a:focus-visible {
+  box-shadow: inset 3px 0 0 var(--color-accent);
+}
+.results li:last-child a {
+  border-bottom: 0;
+}
+
+.title {
+  min-width: 0;
+  font-size: var(--text-body-sm);
+}
+.meta {
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  letter-spacing: 0.05em;
+  color: var(--color-ink-subtle);
+  text-align: right;
+}
+.authors {
+  grid-column: 1 / -1;
+  overflow: hidden;
+  color: var(--color-ink-muted);
+  font-size: var(--text-caption);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.more {
+  display: block;
+  min-height: 44px;
+  margin-top: 0.25rem;
+  padding: 0.65rem 0.9rem;
+  border: 1px solid var(--color-rule);
+  border-radius: 3px;
+  background: var(--color-surface-elevated);
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .results {
+    position: static;
+    max-height: none;
+    box-shadow: none;
+  }
+  .results a {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .meta {
+    text-align: left;
+  }
+}
+
+/* ---- Facets ---------------------------------------------------- */
+
+.filters {
+  margin: 1rem 0 0;
+  padding: 0;
+  border: 0;
+}
+.filtersLegend {
+  margin-bottom: 0.45rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  color: var(--color-ink-subtle);
+}
+.filtersControls {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+  gap: 0.65rem;
+  align-items: end;
+}
+.filtersField {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  color: var(--color-ink-subtle);
+}
+.filtersSelect,
+.filtersReset {
+  min-height: 44px;
+  border: 1px solid var(--color-rule);
+  border-radius: 4px;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font: inherit;
+}
+.filtersSelect {
+  width: 100%;
+  padding: 0.45rem 2rem 0.45rem 0.65rem;
+}
+.filtersReset {
+  padding: 0.45rem 0.8rem;
+  cursor: pointer;
+}
+.filtersSelect:focus-visible,
+.filtersReset:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+.filtersReset:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+@media (max-width: 640px) {
+  .filtersControls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .filtersReset {
+    width: 100%;
+  }
+}
+@media (max-width: 360px) {
+  .filtersControls {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ---- Full results ----------------------------------------------- */
+
+.resultsSection {
+  margin-top: clamp(2rem, 1.2rem + 3vw, 3.5rem);
+  border-top: 1px solid var(--color-rule);
+  padding-top: 1.4rem;
+}
+.resultsHeading {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(1.35rem, 1.1rem + 1vw, 1.8rem);
+  font-weight: 500;
+}
+.resultsSummary {
+  margin: 0.3rem 0 1rem;
+  color: var(--color-ink-subtle);
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+}
+.resultsList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-rule);
+}
+.resultsItem {
+  border-bottom: 1px solid var(--color-rule);
+}
+.resultsLink {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.2rem 1rem;
+  padding: 0.9rem 0.35rem;
+  color: var(--color-ink);
+  text-decoration: none;
+}
+.resultsLink:hover {
+  background: var(--color-surface-2);
+  text-decoration: none;
+}
+.pagination {
+  min-height: 44px;
+  margin-top: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+}
+.pagerLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.45rem 0.7rem;
+}
+.pagePosition {
+  color: var(--color-ink-subtle);
+}
+
+@media (max-width: 480px) {
+  .resultsLink {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

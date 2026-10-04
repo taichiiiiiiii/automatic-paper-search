@@ -39,7 +39,9 @@ function publicPath(path: string): string {
 }
 
 async function fetchJson(path: string): Promise<unknown> {
-  const res = await fetch(publicPath(path));
+  // no-cache: revalidate every time, as the original viewers did, so a
+  // freshly promoted catalog is never hidden behind a stale browser copy.
+  const res = await fetch(publicPath(path), { cache: "no-cache" });
   if (!res.ok) {
     throw new Error(`fetch ${path} failed: HTTP ${res.status}`);
   }

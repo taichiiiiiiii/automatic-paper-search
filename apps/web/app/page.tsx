@@ -1,52 +1,32 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import type { ConferenceSummary, DataResult } from "../lib/data";
-import { fetchConferences } from "../lib/data";
+import { HomeJsonLd } from "../components/landing/json-ld";
+import { Landing } from "../components/landing/landing";
+import { buildMetadata } from "../lib/metadata";
 
 /**
- * P2 step-0 placeholder: real header/footer (from the root layout) +
- * the conference count read from /conferences.json via lib/data.ts.
- * A later page agent replaces this with the full S0 search-first
- * landing page (docs/index.html).
+ * S0 search-first top page (port of docs/index.html). A server component
+ * so it can export `metadata` directly (no sibling layout.tsx needed at
+ * the route root, unlike apps/web/app/cvpr-2026 -- see that directory's
+ * layout.tsx for why nested client routes need one); all interactive
+ * behavior lives in the client component it renders.
+ *
+ * `<HomeJsonLd />` (row 4 of docs/migration/p2-parity-gaps.md) is a
+ * sibling, not a child, of `<Landing />`: it is inert `<head>` data
+ * (Next.js App Router hoists the `<script>` it renders into `<head>`
+ * automatically), not part of the `<main id="main-content">` page
+ * content that `<Landing />` itself renders.
  */
+export const metadata = buildMetadata({
+  path: "/",
+  title: "PaperPilot — AI 論文を横断検索。トップ会議 10 学会・28,000 本から探す",
+  description:
+    "AI/ML トップ会議 10 学会・28,000 本以上の採択論文を、タイトル・著者・タグから横断検索できます。",
+});
+
 export default function HomePage() {
-  const [result, setResult] = useState<DataResult<ConferenceSummary[]> | { status: "loading" }>({
-    status: "loading",
-  });
-
-  useEffect(() => {
-    let cancelled = false;
-    fetchConferences().then((r) => {
-      if (!cancelled) setResult(r);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const totalPapers =
-    result.status === "ok" ? result.data.reduce((sum, c) => sum + c.papers, 0) : null;
-
   return (
-    <main id="main-content" className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-16 sm:px-6">
-      <h1 className="font-serif text-3xl font-bold tracking-tight text-ink">PaperPilot</h1>
-      <p className="text-base text-ink-muted">
-        AI/ML トップ会議の採択論文を横断検索できます（TypeScript 移行の土台段階 —
-        本来の検索トップは後続ページで実装）。
-      </p>
-      {result.status === "loading" && <p className="text-sm text-ink-subtle">読み込み中…</p>}
-      {result.status === "ok" && (
-        <p className="text-sm text-ink-muted">
-          <span className="font-mono text-ink">{result.data.length}</span> 学会 ・{" "}
-          <span className="font-mono text-ink">{totalPapers?.toLocaleString()}</span> 本の論文
-        </p>
-      )}
-      {result.status === "error" && (
-        <p className="text-sm text-accent-strong" role="alert">
-          学会一覧の読み込みに失敗しました: {result.error}
-        </p>
-      )}
-    </main>
+    <>
+      <HomeJsonLd />
+      <Landing />
+    </>
   );
 }

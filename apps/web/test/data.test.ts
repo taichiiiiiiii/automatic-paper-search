@@ -41,7 +41,7 @@ describe("fetchConferences", () => {
   it("fetches /conferences.json", async () => {
     mockFetchOnce([validConference]);
     await fetchConferences();
-    expect(fetch).toHaveBeenCalledWith("/conferences.json");
+    expect(fetch).toHaveBeenCalledWith("/conferences.json", { cache: "no-cache" });
   });
 
   it("returns an error state (not empty data) on HTTP failure", async () => {
@@ -87,7 +87,7 @@ describe("fetchConferencePapers", () => {
   it("fetches /<slug>/papers.json", async () => {
     mockFetchOnce([validPaper]);
     const result = await fetchConferencePapers("cvpr-2026");
-    expect(fetch).toHaveBeenCalledWith("/cvpr-2026/papers.json");
+    expect(fetch).toHaveBeenCalledWith("/cvpr-2026/papers.json", { cache: "no-cache" });
     expect(result).toEqual({ status: "ok", data: [validPaper] });
   });
 

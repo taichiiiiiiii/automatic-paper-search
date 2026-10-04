@@ -29,13 +29,20 @@ const SCRIPT_TAG_RE = /<script\b([^>]*)>([\s\S]*?)<\/script>/g;
 
 /** Independent re-implementation of inline-script extraction, kept
  * deliberately separate from scripts/csp-hash.ts so this test can catch
- * bugs in that script rather than merely restating it. */
+ * bugs in that script rather than merely restating it.
+ *
+ * Excludes `type="application/ld+json"` (and other non-executable data
+ * blocks, e.g. "application/json"/"importmap") the same way
+ * scripts/csp-hash.ts does: a browser never executes such a script, so
+ * it is not subject to `script-src` and must not be hashed into it. */
 function collectInlineScriptHashes(html: string): string[] {
   const hashes: string[] = [];
   for (const match of html.matchAll(SCRIPT_TAG_RE)) {
     const attrs = match[1] ?? "";
     const body = match[2] ?? "";
     if (/\bsrc\s*=/.test(attrs)) continue;
+    const typeMatch = /\btype\s*=\s*"([^"]+)"/i.exec(attrs);
+    if (typeMatch?.[1] === "application/ld+json") continue;
     hashes.push(`'sha256-${sha256Base64(body)}'`);
   }
   return hashes;
@@ -98,6 +105,32 @@ describe("CSP contract over built out/", () => {
         ).toBe(true);
       }
     }
+  });
+
+  it("the home page's JSON-LD block is a non-executable data script, not hashed into script-src", async () => {
+    const indexFile = join(OUT_DIR, "index.html");
+    expect(htmlFiles.includes(indexFile), `${indexFile} not found among built pages`).toBe(true);
+    const html = await readFile(indexFile, "utf8");
+    const ldJsonMatch = /<script type="application\/ld\+json">([\s\S]*?)<\/script>/.exec(html);
+    expect(
+      ldJsonMatch,
+      'no <script type="application/ld+json"> found on the home page',
+    ).not.toBeNull();
+    const body = ldJsonMatch?.[1] ?? "";
+    expect(() => JSON.parse(body)).not.toThrow();
+    const parsed = JSON.parse(body);
+    expect(parsed["@type"]).toBe("WebSite");
+    expect(parsed.potentialAction["@type"]).toBe("SearchAction");
+    // The ld+json body itself must never appear in script-src: its hash
+    // is deliberately excluded (scripts/csp-hash.ts), unlike every
+    // executable inline script on the page.
+    const cspContent = extractCspContent(html);
+    const scriptSrcDirective = cspContent
+      .split(";")
+      .map((d) => d.trim())
+      .find((d) => d.startsWith("script-src"));
+    const ldJsonHash = `'sha256-${sha256Base64(body)}'`;
+    expect(scriptSrcDirective?.includes(ldJsonHash)).toBe(false);
   });
 
   it("no CSP uses 'unsafe-inline'", async () => {

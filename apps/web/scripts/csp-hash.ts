@@ -46,13 +46,22 @@ function sha256Base64(text: string): string {
   return createHash("sha256").update(Buffer.from(text, "utf8")).digest("base64");
 }
 
-/** Hashes of every inline (no src=) <script> body found in the page, in order. */
+/** Hashes of every inline, executable (no `src=`) `<script>` body found
+ * in the page, in order. A `type="application/ld+json"` (or other
+ * non-executable data-block type, e.g. "application/json"/"importmap")
+ * script is excluded: the browser never executes it as script, so it
+ * is not subject to `script-src` at all (CSP applies to script
+ * elements the HTML/JS spec would execute) -- hashing it and adding
+ * that hash to `script-src` would be a no-op at best, and would hide a
+ * real CSP mismatch at worst if a future type value changed meaning. */
 function collectInlineScriptHashes(html: string): string[] {
   const hashes: string[] = [];
   for (const match of html.matchAll(SCRIPT_TAG_RE)) {
     const attrs = match[1] ?? "";
     const body = match[2] ?? "";
     if (/\bsrc\s*=/.test(attrs)) continue; // external script: not hashed, not inline
+    const typeMatch = /\btype\s*=\s*"([^"]+)"/i.exec(attrs);
+    if (typeMatch?.[1] === "application/ld+json") continue; // non-executable data block
     hashes.push(`'sha256-${sha256Base64(body)}'`);
   }
   return hashes;

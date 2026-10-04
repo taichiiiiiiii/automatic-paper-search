@@ -1,0 +1,49 @@
+/*
+ * Descendant selectors instead of a per-row className: this page can
+ * list several thousand rows (e.g. cvpr-2026 has 4,000+ papers), and a
+ * static-export Server Component's rendered tree is serialized twice
+ * (the real HTML plus Next's embedded RSC hydration payload) -- a
+ * repeated className string on every row's <li>/<h2>/<a> would be
+ * charged against the no-JS rendered-byte budget (safety contract
+ * CAT-18) twice over. Styling the list from here instead keeps the
+ * per-row markup down to the attributes that actually vary (id,
+ * data-paper-id, href, the title/status text).
+ */
+
+.list {
+  list-style: none;
+  padding: 0;
+}
+
+.list > li {
+  overflow-wrap: anywhere;
+  border-top: 1px solid var(--color-rule);
+  padding: 1rem 1.5rem;
+}
+
+.list h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.list a {
+  color: inherit;
+}
+
+.list a:hover {
+  color: var(--color-accent);
+}
+
+.status {
+  margin: 0.25rem 0 0;
+  font-size: 0.75rem;
+  color: var(--color-ink-subtle);
+}
+
+.empty {
+  padding: 2.5rem 1.5rem;
+  font-size: 0.875rem;
+  color: var(--color-ink-muted);
+}
