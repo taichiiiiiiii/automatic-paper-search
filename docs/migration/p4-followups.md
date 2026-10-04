@@ -11,3 +11,5 @@
 | 7 | build_pages 系の Python テスト（約 2,500 行）のうち未移植の分: CAT-04 の Oral overlay・authors 版、CAT-23 の sidecar 周りの端のケース | P4b part 1 |
 | 8 | `paperLinksGate.ts` のバイト上限は見積もり。実際の上限は web の postbuild テスト（strip 後 3MB 未満）で担保している | P4b part 1 |
 | 9 | identity・slug を `packages/core` へ（#2 と合わせて） | P4b part 1 |
+| 10 | `conference/shared/venueTier.ts` が `collect/signals/venue.ts` の TIER 集合を複製 → venue.ts から export して複製を消す | P4c part 1 |
+| 11 | `conference/shared/pyText.ts` の `html.unescape` は部分移植（名前付き実体は主要なものと Latin-1 のみ、`;` 無しの古い実体は未対応） | P4c part 1 |
