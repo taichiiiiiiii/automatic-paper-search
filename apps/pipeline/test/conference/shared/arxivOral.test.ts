@@ -29,7 +29,7 @@ function entry(
   };
 }
 
-function feedBody(entries: ArxivAcceptedResult[], total?: number): string {
+function feedBody(entries: ArxivAcceptedResult[], total?: number, startIndex = 0): string {
   const xml = entries
     .map(
       (e) => `<entry>
@@ -48,7 +48,7 @@ function feedBody(entries: ArxivAcceptedResult[], total?: number): string {
 <feed xmlns="http://www.w3.org/2005/Atom" xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom">
   <opensearch:totalResults>${total ?? entries.length}</opensearch:totalResults>
   <opensearch:itemsPerPage>${entries.length}</opensearch:itemsPerPage>
-  <opensearch:startIndex>0</opensearch:startIndex>
+  <opensearch:startIndex>${startIndex}</opensearch:startIndex>
   ${xml}
 </feed>`;
 }
@@ -222,5 +222,41 @@ describe("fetchArxivResultsChecked", () => {
     // the scan instead of being folded in as if it were trustworthy.
     expect(results.length).toBe(2);
     expect(complete).toBe(false);
+  });
+
+  it("LOW (P4 review round 2): a non-first page that comes back empty is incomplete, even though it self-reports being legitimately past the end", async () => {
+    // page 1: totalResults=5, 2 entries (a full pageSize=2 page) -> our own
+    // running offset becomes 2, still short of the promised total of 5, so
+    // a page 2 fetch is issued. page 2 comes back with ZERO entries but
+    // its OWN totalResults=5 (unchanged) and startIndex=5 (>= its own
+    // total) — `parseArxivFeed` accepts this as `ok:true` (it only checks
+    // THAT page's own startIndex/total agreement, not our offset), so
+    // without the fix this would be trusted as "we're done" even though
+    // only 2 of the promised 5 results were ever collected.
+    const page1 = [
+      entry("P1", "Accepted to CVPR 2026", "2604.00001"),
+      entry("P2", "Accepted to CVPR 2026", "2604.00002"),
+    ];
+    const fetchText = async (url: string) => ({
+      status: 200,
+      text: async () => (url.includes("start=0") ? feedBody(page1, 5) : feedBody([], 5, 5)),
+    });
+    const { results, complete } = await fetchArxivResultsChecked(
+      'co:"CVPR 2026"',
+      1000,
+      { fetchText },
+      2,
+    );
+    expect(results.length).toBe(2);
+    expect(complete).toBe(false);
+  });
+
+  it("is complete when the VERY FIRST page comes back legitimately empty (a genuine zero-result venue)", async () => {
+    const fetchText = async () => ({ status: 200, text: async () => feedBody([], 0, 0) });
+    const { results, complete } = await fetchArxivResultsChecked('co:"CVPR 2026"', 10, {
+      fetchText,
+    });
+    expect(results).toEqual([]);
+    expect(complete).toBe(true);
   });
 });

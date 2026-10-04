@@ -5,7 +5,7 @@
  */
 
 import { validateArtifact } from "@paperpilot/core";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { type Edition, makeFetchLimits } from "../../../src/conference/watch/models.js";
 import {
   normalizeDecision,
@@ -57,6 +57,22 @@ function singlePageTransport(notes: unknown[]): StrictTransport {
 }
 
 const limits = makeFetchLimits({ pageSize: 100 });
+
+/**
+ * A deterministic `monotonicMs` stand-in: returns `values[0]`, then
+ * `values[1]`, ... advancing one entry per call, and repeats the last
+ * entry once the list is exhausted. Lets a test pin exactly which of
+ * `retrieve()`'s several `this.monotonicMs()` calls crosses a deadline,
+ * instead of racing a real clock (P4 review round 2, MEDIUM-9).
+ */
+function clockSequence(values: readonly number[]): () => number {
+  let i = 0;
+  return () => {
+    const v = i < values.length ? (values[i] as number) : (values[values.length - 1] as number);
+    i += 1;
+    return v;
+  };
+}
 
 describe("normalizeDecision", () => {
   it("matches a single configured decision by token", () => {
@@ -275,5 +291,121 @@ describe("OpenReviewV2Adapter (CNF-22/23)", () => {
     if (result.kind === "snapshot") {
       expect(result.snapshot.unknownDecisions).toEqual([["withdrawn", 1]]);
     }
+  });
+
+  // P4 review round 2, MEDIUM-9: `retrieve()`'s four `this.monotonicMs() >=
+  // deadlineMs` / `>= requestDeadlineMs` checks (top of the page loop,
+  // right after a page fetch, inside the per-note loop, and right before
+  // the fingerprint computation) were never exercised by any test — every
+  // existing case used the default wall clock, which never actually
+  // crosses a deadline in a fast unit test. Each case below pins a
+  // `clockSequence` so exactly one of those four checks fires.
+  describe("MEDIUM-9: deadline checks", () => {
+    it("top-of-loop (before the first page fetch) times out with no rows and never calls the transport", async () => {
+      const get = vi.fn(async () => okResponse([note("n1", "accept")]));
+      const adapter = new OpenReviewV2Adapter({
+        transport: { get },
+        monotonicMs: clockSequence([0, 2_000]), // started=0 -> deadlineMs=1000; loop-top check sees 2000
+      });
+      const result = await adapter.collect(
+        EDITION,
+        makeFetchLimits({ pageSize: 100, jobDeadlineSeconds: 1 }),
+      );
+      expect(result.kind).toBe("error");
+      expect(result.errorCode).toBe("CONF_SOURCE_TIMEOUT");
+      expect(result.snapshot).toBeNull();
+      expect(get).not.toHaveBeenCalled();
+    });
+
+    it("right after a page fetch (request deadline already passed) times out before reading the body", async () => {
+      const get = vi.fn(async () => okResponse([note("n1", "accept")]));
+      const adapter = new OpenReviewV2Adapter({
+        transport: { get },
+        // started=0 -> deadlineMs=1_000_000 (job deadline is generous);
+        // loop-top check sees 10 (fine); requestDeadlineMs = min(deadlineMs,
+        // 20 + 1*1000) = 1020; post-fetch check sees 2000 >= 1020 -> timeout,
+        // even though the fetch itself "succeeded".
+        monotonicMs: clockSequence([0, 10, 20, 2_000]),
+      });
+      const result = await adapter.collect(
+        EDITION,
+        makeFetchLimits({ pageSize: 100, jobDeadlineSeconds: 1000, requestTimeoutSeconds: 1 }),
+      );
+      expect(result.kind).toBe("error");
+      expect(result.errorCode).toBe("CONF_SOURCE_TIMEOUT");
+      expect(get).toHaveBeenCalledTimes(1);
+    });
+
+    it("inside the per-note loop times out before any row is exposed, even though pagination completed", async () => {
+      const notes = [note("n1", "accept")];
+      const adapter = new OpenReviewV2Adapter({
+        transport: singlePageTransport(notes),
+        // started=0 -> deadlineMs=1000. loop-top=10, requestDeadlineMs calc
+        // base=20 (-> min(1000, 20+1000)=1000), post-fetch=30 (all fine, <
+        // 1000) -> pagination completes (1 note == declared count). The
+        // per-note loop's first check then sees 2000 >= 1000 -> timeout,
+        // before normalizeNote ever runs for that note.
+        monotonicMs: clockSequence([0, 10, 20, 30, 2_000]),
+      });
+      const result = await adapter.collect(
+        EDITION,
+        makeFetchLimits({ pageSize: 100, jobDeadlineSeconds: 1, requestTimeoutSeconds: 1 }),
+      );
+      expect(result.kind).toBe("error");
+      expect(result.errorCode).toBe("CONF_SOURCE_TIMEOUT");
+      expect(result.snapshot).toBeNull();
+    });
+
+    it("right before the fingerprint computation times out after every row was already normalized", async () => {
+      const notes = [note("n1", "accept")];
+      const adapter = new OpenReviewV2Adapter({
+        transport: singlePageTransport(notes),
+        // Same as above, but the per-note loop's own check (5th call) sees
+        // 50 (< 1000, passes, so the single note IS normalized) and only
+        // the 6th call (right after the per-note loop, before the
+        // fingerprint) sees 2000 >= 1000 -> timeout.
+        monotonicMs: clockSequence([0, 10, 20, 30, 50, 2_000]),
+      });
+      const result = await adapter.collect(
+        EDITION,
+        makeFetchLimits({ pageSize: 100, jobDeadlineSeconds: 1, requestTimeoutSeconds: 1 }),
+      );
+      expect(result.kind).toBe("error");
+      expect(result.errorCode).toBe("CONF_SOURCE_TIMEOUT");
+      expect(result.snapshot).toBeNull();
+    });
+  });
+
+  // P4 review round 2, MEDIUM-9 (CNF-22): `notes.length > limits.maxNotes`
+  // (the unconditional guard, reached regardless of whether the API ever
+  // declared a `count`) was never exercised when no page ever includes a
+  // `count` field — only the `expectedCount !== null` branches were
+  // covered. Two full (pageSize-filled) pages with no `count` push the
+  // running total past `maxNotes` before either page's own `batch.length <
+  // pageSize` short-page check gets a chance to fire.
+  it("MEDIUM-9: exceeding maxNotes with no page ever declaring a count fails closed (SOURCE_PARTIAL)", async () => {
+    let calls = 0;
+    const transport: StrictTransport = {
+      get: async () => {
+        calls += 1;
+        const notes =
+          calls === 1
+            ? [note("n1", "accept"), note("n2", "accept")]
+            : [note("n3", "accept"), note("n4", "accept")];
+        return {
+          statusCode: 200,
+          content: Buffer.from(JSON.stringify({ notes })), // no "count" field at all
+          requestCount: 1,
+        };
+      },
+    };
+    const adapter = new OpenReviewV2Adapter({ transport });
+    const result = await adapter.collect(
+      EDITION,
+      makeFetchLimits({ pageSize: 2, maxNotes: 3, maxPages: 10 }),
+    );
+    expect(result.kind).toBe("error");
+    expect(result.errorCode).toBe("CONF_SOURCE_PARTIAL");
+    expect(calls).toBe(2);
   });
 });

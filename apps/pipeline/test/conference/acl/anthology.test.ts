@@ -8,6 +8,7 @@
 import { existsSync, mkdtempSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { XMLValidator } from "fast-xml-parser";
 import { beforeEach, describe, expect, it } from "vitest";
 import {
   type AclFetchText,
@@ -110,6 +111,52 @@ describe("presentVolumeIds", () => {
         ],
       },
     ]);
+    expect(presentVolumeIds(xml)).toEqual([]);
+  });
+
+  // P4 review round 2, LOW: `XMLValidator.validate` (and `.parse()`)
+  // silently accept a document with MULTIPLE top-level root elements, as
+  // long as at least one of the sibling roots is a childless/self-closed
+  // tag (e.g. a decoy `<filler/>` next to the real `<collection>...
+  // </collection>`) — its own "Multiple possible root nodes found" check
+  // only fires when BOTH siblings have children. Real `ET.fromstring`
+  // (expat) rejects ANY of these as not well-formed; this was an untested
+  // gap in `tryParseXml`'s well-formedness checks.
+  it("returns [] for a document with a childless decoy root beside the real one", () => {
+    const real = anthologyXml([
+      { id: "long", papers: [{ stub: "2025.acl-long.1", title: "X", authors: [["A", "B"]] }] },
+    ]).replace(/^<\?xml version="1.0"\?>/, "");
+    const decoyThenReal = `<?xml version="1.0"?><filler/>${real}`;
+    const realThenDecoy = `<?xml version="1.0"?>${real}<filler/>`;
+    // Confirms this specific shape is NOT already caught by
+    // `XMLValidator.validate` on its own (i.e. this test exercises the
+    // NEW check, not the pre-existing one) — see module comment above.
+    expect(XMLValidator.validate(decoyThenReal)).toBe(true);
+    expect(presentVolumeIds(decoyThenReal)).toEqual([]);
+    expect(presentVolumeIds(realThenDecoy)).toEqual([]);
+  });
+
+  it("a processing instruction before the single real root element is still well-formed", () => {
+    // Sanity check for the fix above: a `<?xml ...?>` declaration (already
+    // present in every other fixture here) must NOT itself count as a
+    // second "root" and trip the new check.
+    const xml = anthologyXml([
+      { id: "long", papers: [{ stub: "2025.acl-long.1", title: "X", authors: [["A", "B"]] }] },
+    ]);
+    expect(presentVolumeIds(xml)).toEqual(["long"]);
+  });
+
+  // P4 review round 2, LOW: a bare, unescaped `&` inside an attribute
+  // value is not well-formed XML 1.0 (expat rejects it the same way it
+  // rejects a bare `&` in text content, already covered above for
+  // elements) — `decodeXmlEntities`/`decodeEntitiesInPlace` already walk
+  // attribute values too, but no test pinned that specific case.
+  it("returns [] for a bare, unescaped & inside an attribute value (H2/M8)", () => {
+    const xml = `<?xml version="1.0"?><collection id="2025.acl"><volume id="long & short">
+      <paper id="1"><title>X</title>
+      <author><first>A</first><last>B</last></author>
+      <url>2025.acl-long.1</url></paper>
+    </volume></collection>`;
     expect(presentVolumeIds(xml)).toEqual([]);
   });
 });

@@ -103,6 +103,7 @@ export async function fetchArxivResultsChecked(
   let firstPageTotal: number | null = null;
 
   for (;;) {
+    const isFirstPage = offset === 0;
     const url = buildPageUrl(query, offset, pageSize);
     const resp = await deps.fetchText(url);
     if (resp.status !== 200) {
@@ -138,16 +139,22 @@ export async function fetchArxivResultsChecked(
 
     const rawOnPage = page.entries.length + page.skipped.length;
     if (rawOnPage === 0) {
-      // `parseArxivFeed` itself already refuses `ok:true` with zero raw
-      // entries unless the page's OWN `startIndex`/`totalResults` agree
-      // we are legitimately past the end (or `totalResults` is 0), so
-      // reaching this point with `rawOnPage === 0` is always a genuine
-      // end-of-results page, first or not — never the real `arxiv`
-      // package's `UnexpectedEmptyPageError` case (which only arises
-      // when a page unexpectedly has zero results despite the index
-      // believing more remain; `parseArxivFeed` reports that as
-      // `ok: false` instead, caught above).
-      return { results, complete: !sawMalformed };
+      // `parseArxivFeed` lets `ok:true` through with zero raw entries
+      // whenever THIS page's own `startIndex`/`totalResults` agree we are
+      // past the end (or `totalResults` is 0) — but that is the page
+      // trusting its OWN self-reported position, not proof that it is
+      // consistent with how much we have actually paged through so far.
+      // On the first page there is nothing to be inconsistent with, so an
+      // empty-but-`ok` page there is a genuine "zero results" venue. On any
+      // LATER page, though, we only ever requested it because our own
+      // running `offset` was still short of `firstPageTotal` — i.e. the
+      // index on page 1 promised more entries than we have collected. A
+      // later page nonetheless coming back with zero raw entries is
+      // exactly the real `arxiv` package's `UnexpectedEmptyPageError`
+      // condition (an unexpectedly empty page despite the total implying
+      // more remain), ported here as "incomplete" rather than trusting the
+      // page's own end-of-results claim (P4 review round 2, LOW).
+      return { results, complete: isFirstPage && !sawMalformed };
     }
     offset += rawOnPage;
     if (offset >= firstPageTotal) {

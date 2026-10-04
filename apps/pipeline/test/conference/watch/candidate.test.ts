@@ -15,6 +15,7 @@ import {
 } from "../../../src/conference/watch/candidate.js";
 import {
   type Edition,
+  type EditionState,
   initialState,
   makeFetchLimits,
 } from "../../../src/conference/watch/models.js";
@@ -153,6 +154,56 @@ describe("validateCandidateSnapshot / buildCatalogCandidate (CNF-31/33)", () => 
     expect(() => buildCatalogCandidate(EDITION, badReadiness, snapshot)).toThrow(
       CandidateValidationError,
     );
+  });
+
+  // P4 review round 2, MEDIUM-10 (CNF-32): port of Python's
+  // `test_partial_or_malformed_published_evidence_is_rejected` — a fresh
+  // READY state has `publishedFingerprint`/`publishedCount`/
+  // `publishedSourceIds` all unset (null/null/[]). Setting only ONE of the
+  // three to a non-empty value (without the other two) must still be
+  // rejected at `buildCatalogCandidate`'s `publishedFieldsPresent`
+  // all-or-none check (candidate.ts ~line 550) — previously untested, so a
+  // mutant deleting that check survived.
+  it.each([
+    ["fingerprint only", (r: EditionState) => ({ ...r, publishedFingerprint: "e".repeat(64) })],
+    ["count only", (r: EditionState) => ({ ...r, publishedCount: 0 })],
+    ["source ids only", (r: EditionState) => ({ ...r, publishedSourceIds: ["x"] })],
+  ] as const)("MEDIUM-10: rejects partial published evidence (%s)", async (_label, mutate) => {
+    const { snapshot, readiness } = await readySnapshotAndState();
+    const partialReadiness = mutate(readiness);
+    let caught: unknown;
+    try {
+      buildCatalogCandidate(EDITION, partialReadiness, snapshot);
+    } catch (e) {
+      caught = e;
+    }
+    expect(caught).toBeInstanceOf(CandidateValidationError);
+    expect((caught as CandidateValidationError).code).toBe("CONF_COUNT_SHRINK");
+  });
+
+  // Companion case: all three published-evidence fields ARE present and
+  // internally consistent (matching the current rows), but the
+  // fingerprint's own format is malformed (not 64 lowercase hex chars).
+  // This exercises the separate `HASH_RE.test(publishedFingerprint)` check
+  // (candidate.ts ~line 571), reached only once the partial-evidence gate
+  // above has already passed.
+  it("MEDIUM-10: rejects a malformed published-fingerprint format even when all three fields are otherwise consistent", async () => {
+    const { snapshot, readiness } = await readySnapshotAndState();
+    const sourceIds = snapshot.rows.map((row) => row.sourceId);
+    const malformedReadiness = {
+      ...readiness,
+      publishedFingerprint: "not-a-valid-hash",
+      publishedCount: sourceIds.length,
+      publishedSourceIds: sourceIds,
+    };
+    let caught: unknown;
+    try {
+      buildCatalogCandidate(EDITION, malformedReadiness, snapshot);
+    } catch (e) {
+      caught = e;
+    }
+    expect(caught).toBeInstanceOf(CandidateValidationError);
+    expect((caught as CandidateValidationError).code).toBe("CONF_COUNT_SHRINK");
   });
 
   it("CNF-33: rejects a malformed edition (non-matching adapter)", async () => {

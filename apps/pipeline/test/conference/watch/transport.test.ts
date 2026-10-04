@@ -2,9 +2,28 @@
  * Port of `test_conference_watch_openreview.py`'s `SecurePinnedTransport`
  * cases (CNF-24, docs/migration/safety-contracts.md). Like the Python
  * suite, every test here injects a fake resolver/raw-transport — no real
- * socket is touched.
+ * socket is touched. (P4 review round 2, MEDIUM-3: the private-address
+ * DNS-rejection tests used to omit `transport`, which meant a passing
+ * mutant on the `isPublicAddress` gate would fall through to the REAL
+ * default `NodeHttpsTransport` and attempt an actual connection to
+ * 10.0.0.5 / 100.64.0.1 from inside a unit test. Both now inject a
+ * recording fake transport and assert `request()` is never called, and a
+ * dedicated netguard test below spies on `node:https`'s `request` to
+ * fail loudly if anything in this file ever reaches it.)
  */
-import { describe, expect, it, vi } from "vitest";
+import * as https from "node:https";
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+// `node:https`'s native namespace is not configurable, so `vi.spyOn`
+// cannot redefine a property on it directly (ESM module namespaces are
+// frozen). Replacing the module with a plain (spread) object via
+// `vi.mock` makes every export a configurable, writable property — the
+// same pattern `collect/state/atomic.test.ts` uses for `node:fs`.
+vi.mock("node:https", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("node:https")>();
+  return { ...actual };
+});
+
 import { makeFetchLimits } from "../../../src/conference/watch/models.js";
 import {
   type DNSResolver,
@@ -21,7 +40,27 @@ function fakeResolver(addresses: string[]): DNSResolver {
   return { resolve: async () => addresses };
 }
 
+/** A `RawTransport` whose `request()` must never be called — fails the test immediately if it is. */
+function unreachableTransport(): RawTransport & { calls: number } {
+  const t = {
+    supportsIpPinning: true as const,
+    calls: 0,
+    request: async () => {
+      t.calls += 1;
+      throw new Error("RawTransport.request() must never be called for a rejected private address");
+    },
+  };
+  return t;
+}
+
 const clock = { monotonicMs: () => Date.now() };
+
+// Netguard: if ANY test in this file (or a regression in the library code)
+// ever reaches Node's real `https.request`, fail loudly instead of
+// silently attempting a real socket from inside the test suite.
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 function bufferedResponse(
   status: number,
@@ -163,24 +202,11 @@ describe("isPublicAddress (M6 — exact ipaddress.is_global port)", () => {
 describe("SecurePinnedTransport (CNF-24)", () => {
   const limits = makeFetchLimits();
 
-  it("rejects private-address DNS resolution", async () => {
-    const transport = new SecurePinnedTransport({ resolver: fakeResolver(["10.0.0.5"]), ...clock });
-    await expect(
-      transport.get("https://api2.openreview.net/notes", {
-        params: {},
-        limits,
-        deadlineMs: Date.now() + 10_000,
-      }),
-    ).rejects.toThrow(TransportError);
-  });
-
-  it("rejects DNS resolution to the shared-address-space (100.64.0.0/10) CGN range (M6)", async () => {
-    // This range is NOT private/loopback/link-local by the old naive
-    // check, so removing the port's exact `is_global` logic would let
-    // this resolve and connect — the exact gap the review flagged as
-    // "fails no test".
+  it("rejects private-address DNS resolution (MEDIUM-3: never falls through to the real transport)", async () => {
+    const raw = unreachableTransport();
     const transport = new SecurePinnedTransport({
-      resolver: fakeResolver(["100.64.0.1"]),
+      resolver: fakeResolver(["10.0.0.5"]),
+      transport: raw,
       ...clock,
     });
     await expect(
@@ -189,7 +215,44 @@ describe("SecurePinnedTransport (CNF-24)", () => {
         limits,
         deadlineMs: Date.now() + 10_000,
       }),
+    ).rejects.toMatchObject({ code: "CONF_SOURCE_HTTP_ERROR" });
+    expect(raw.calls).toBe(0);
+  });
+
+  it("rejects DNS resolution to the shared-address-space (100.64.0.0/10) CGN range (MEDIUM-3/M6: never falls through to the real transport)", async () => {
+    // This range is NOT private/loopback/link-local by the old naive
+    // check, so removing the port's exact `is_global` logic would let
+    // this resolve and connect — the exact gap the review flagged as
+    // "fails no test".
+    const raw = unreachableTransport();
+    const transport = new SecurePinnedTransport({
+      resolver: fakeResolver(["100.64.0.1"]),
+      transport: raw,
+      ...clock,
+    });
+    await expect(
+      transport.get("https://api2.openreview.net/notes", {
+        params: {},
+        limits,
+        deadlineMs: Date.now() + 10_000,
+      }),
+    ).rejects.toMatchObject({ code: "CONF_SOURCE_HTTP_ERROR" });
+    expect(raw.calls).toBe(0);
+  });
+
+  it("MEDIUM-3 netguard: a rejected private address never reaches node:https even with the REAL default transport", async () => {
+    const httpsRequestSpy = vi.spyOn(https, "request").mockImplementation(() => {
+      throw new Error("a real https.request() must never be attempted from a unit test");
+    });
+    const transport = new SecurePinnedTransport({ resolver: fakeResolver(["10.0.0.5"]), ...clock });
+    await expect(
+      transport.get("https://api2.openreview.net/notes", {
+        params: {},
+        limits,
+        deadlineMs: Date.now() + 10_000,
+      }),
     ).rejects.toThrow(TransportError);
+    expect(httpsRequestSpy).not.toHaveBeenCalled();
   });
 
   it("rejects a 3xx redirect status without following it", async () => {

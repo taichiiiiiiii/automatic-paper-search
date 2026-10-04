@@ -239,17 +239,31 @@ function authorName(authorNode: PoNode): string {
 }
 
 /**
+ * Count genuine top-level elements in a `preserveOrder` parse tree,
+ * ignoring processing instructions (`?xml`, ...) — a well-formed XML
+ * document has exactly one (the root element). `fast-xml-parser`'s own
+ * `.parse()` silently accepts `<a/><b/>` as two sibling top-level nodes;
+ * this is what `tryParseXml` uses to reject that the way expat (what
+ * Python's `ET.fromstring` uses) does (P4 review round 2, LOW).
+ */
+function topLevelElementCount(nodes: PoNode[]): number {
+  return nodes.filter((n) => Object.keys(n).some((k) => k !== ":@" && !k.startsWith("?"))).length;
+}
+
+/**
  * Parse `xmlText` into a preserveOrder tree, or `null` if it is not
  * well-formed — same outcome as Python's `ET.fromstring` raising
  * `ParseError` (H2: fast-xml-parser's own `.parse()` does NOT reject a
- * truncated document, a mismatched closing tag, or an undefined entity on
- * its own, so both `XMLValidator.validate` (markup well-formedness) and
- * `decodeEntitiesInPlace` (entity well-formedness, M8) must pass).
+ * truncated document, a mismatched closing tag, an undefined entity, or
+ * multiple top-level root elements on its own, so `XMLValidator.validate`
+ * (markup well-formedness), the single-root check below, and
+ * `decodeEntitiesInPlace` (entity well-formedness, M8) must all pass).
  */
 function tryParseXml(xmlText: string): PoNode[] | null {
   if (XMLValidator.validate(xmlText) !== true) return null;
   try {
     const root = xmlParser.parse(xmlText) as PoNode[];
+    if (topLevelElementCount(root) !== 1) return null;
     if (!decodeEntitiesInPlace(root)) return null;
     return root;
   } catch {
