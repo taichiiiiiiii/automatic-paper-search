@@ -17,7 +17,9 @@
  * orals (`../shared/arxivOral.ts::oralTitlesFromArxiv`).
  */
 
+import { pySplit } from "@paperpilot/core/pycompat";
 import { XMLParser, XMLValidator } from "fast-xml-parser";
+import { venueTier } from "../../collect/signals/venue.js";
 import {
   type ArxivFetchDeps,
   type ConferenceRow,
@@ -39,18 +41,6 @@ const ANTHOLOGY_URL = "https://aclanthology.org/";
  * / demos / industry / tutorials / srw live in their own volumes.
  */
 const MAIN_VOLUMES = new Set(["long", "short", "main"]);
-
-const TIER_1 = new Set(["NEURIPS", "NIPS", "ICML", "ICLR"]);
-const TIER_2 = new Set(["AAAI", "CVPR", "ACL", "EMNLP"]);
-const TIER_3 = new Set(["AISTATS", "NAACL", "ECCV", "ICCV", "IJCAI", "KDD", "WWW"]);
-
-function venueTier(venue: string): number {
-  const v = venue.toUpperCase();
-  if (TIER_1.has(v)) return 1;
-  if (TIER_2.has(v)) return 2;
-  if (TIER_3.has(v)) return 3;
-  return 0;
-}
 
 // ---------------------------------------------------------------------------
 // preserveOrder-mode XML tree walking (keeps inline-markup text in document
@@ -224,8 +214,14 @@ function poText(children: PoNode[]): string {
   return parts.join("");
 }
 
+/**
+ * `" ".join(s.split())` — Python's no-arg `str.split()` splits on *runs*
+ * of its own whitespace set (which differs slightly from JS's `\s`; see
+ * `@paperpilot/core/pycompat`'s `pySplit` doc comment) and never produces
+ * empty tokens, so no `.filter(Boolean)` is needed on top of it (p4-followups #28).
+ */
 function collapseWhitespace(s: string): string {
-  return s.split(/\s+/).filter(Boolean).join(" ");
+  return pySplit(s).join(" ");
 }
 
 /** Flattened, whitespace-collapsed text of the first `tag` found directly in `children`. */

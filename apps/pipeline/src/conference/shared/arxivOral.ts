@@ -28,13 +28,9 @@
  * continues, but the whole fetch is reported `complete: false`.
  */
 
+import { ARXIV_MODERN_PATTERN, IdentityError, identityFromUrl } from "@paperpilot/core/identity";
 import { VenueSignal } from "../../collect/signals/venue.js";
 import { parseArxivFeed } from "../../collect/sources/arxiv/feed.js";
-import {
-  ARXIV_MODERN_PATTERN,
-  IdentityError,
-  identityFromUrl,
-} from "../../release/identity/sourceIds.js";
 import type { ConferenceRow } from "./csvColumns.js";
 import { pyWhitespaceCollapse } from "./pyText.js";
 

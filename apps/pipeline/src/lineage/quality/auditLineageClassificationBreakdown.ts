@@ -6,7 +6,7 @@
  */
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
-import { codepointCompare } from "@paperpilot/core";
+import { codepointCompare, pyRound } from "@paperpilot/core";
 import { TEMPLATE_RATIONALES } from "../llm/base.js";
 
 function isMapping(value: unknown): value is Record<string, unknown> {
@@ -189,12 +189,20 @@ export function auditClassificationsCache(cachePath: string): ClassificationsCac
   };
 }
 
+/**
+ * Python `f"{v * 100 / total:.1f}%"` (`_percent_table`) — round-half-to-even
+ * on the exact binary value, not `.toFixed(1)`'s half-up-ish behaviour
+ * (p4-followups.md #18). `pyRound(..., 1)` resolves the tie exactly as
+ * CPython would; the subsequent `.toFixed(1)` only re-displays that
+ * already-rounded value (no further rounding decision left to make, so
+ * it cannot diverge from Python there).
+ */
 function percentTable(counts: Record<string, number>): [string, string][] {
   const total = Object.values(counts).reduce((a, b) => a + b, 0);
   if (total === 0) return [];
   return Object.entries(counts)
     .sort((a, b) => b[1] - a[1])
-    .map(([k, v]) => [k, `${v} (${((v * 100) / total).toFixed(1)}%)`]);
+    .map(([k, v]) => [k, `${v} (${pyRound((v * 100) / total, 1).toFixed(1)}%)`]);
 }
 
 export function printHuman(

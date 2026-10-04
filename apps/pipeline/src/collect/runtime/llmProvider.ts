@@ -4,7 +4,7 @@
  * dispatch (#26/#29 of docs/migration/p4-followups.md, COL-26 of
  * docs/migration/safety-contracts.md).
  *
- * DECISION: this does NOT reuse `lineage/theme/providerFactory.ts`'s
+ * DECISION: this does NOT reuse `lineage/shared/providerFactory.ts`'s
  * `buildProvider` (even though it is the one already-ported "pick an LLM
  * provider" function in this codebase). That function solves a different
  * problem with different semantics: it AUTO-selects Groq-then-Gemini by

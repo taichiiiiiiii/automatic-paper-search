@@ -22,7 +22,7 @@
  * it has no C-extension dependency and is exercised by its own tests.
  */
 
-import { isArxivHost } from "../../catalog/identity.js";
+import { isArxivHost } from "@paperpilot/core/identity";
 import { openalexShortId } from "../theme/openalexWork.js";
 
 const OPENALEX_URL_PREFIX = "https://openalex.org/";

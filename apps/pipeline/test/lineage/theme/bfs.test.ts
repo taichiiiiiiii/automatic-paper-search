@@ -11,9 +11,9 @@ import { join } from "node:path";
 import { beforeEach, describe, expect, it } from "vitest";
 import type { FetchInit, HttpResponseLike } from "../../../src/collect/http/requestWithRetry.js";
 import { BuildCompleteness } from "../../../src/lineage/fetch-state/completeness.js";
+import type { FetchRelatedDeps } from "../../../src/lineage/shared/fetchRelated.js";
 import { addCrossNodeEdges, runBfsAndDescendants } from "../../../src/lineage/theme/bfs.js";
 import type { ThemeEdge } from "../../../src/lineage/theme/edges.js";
-import type { FetchRelatedDeps } from "../../../src/lineage/theme/fetchRelated.js";
 import type { ThemePaper } from "../../../src/lineage/theme/openalexWork.js";
 
 function jsonResp(status: number, body: unknown): HttpResponseLike {

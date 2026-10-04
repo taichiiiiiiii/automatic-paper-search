@@ -8,7 +8,7 @@ import {
   validateCandidateDirArg,
   validateIncludedPathArg,
   validateSmokeRelativePath,
-} from "../../src/release/paths.js";
+} from "../../src/paths/index.js";
 
 it("validateAllowlistEntry rejects absolute, empty, .. and .git paths", () => {
   expect(validateAllowlistEntry("docs/themes")).toEqual(["docs", "themes"]);

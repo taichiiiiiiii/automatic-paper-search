@@ -7,7 +7,7 @@
 
 import { createHash } from "node:crypto";
 import { pyJsonDumps } from "@paperpilot/core";
-import { IdentityError, identityFromUrl } from "../../release/identity/sourceIds.js";
+import { IdentityError, identityFromUrl } from "@paperpilot/core/identity";
 import {
   buildCatalogCandidate,
   CandidateValidationError,

@@ -17,7 +17,7 @@
  * drop edge" policy so a thin-but-real edge survives at depth 2+.
  */
 
-import { normalizeAlias } from "../../catalog/identity.js";
+import { normalizeAlias } from "@paperpilot/core/identity";
 import type {
   ClassifyPaperLike,
   LLMProvider,
@@ -53,8 +53,8 @@ import {
   type BuildCompletenessForExpansion,
   type FetchRelatedDeps,
   fetchRelated as fetchRelatedShared,
-} from "../theme/fetchRelated.js";
-import { type ThemeGraphNode, toNode } from "../theme/node.js";
+} from "../shared/fetchRelated.js";
+import { type ThemeGraphNode, toNode } from "../shared/node.js";
 
 const PRODUCER_NAME = "paperpilot.scripts.build_deep_lineage";
 const PRODUCER_VERSION = "p2-v1";

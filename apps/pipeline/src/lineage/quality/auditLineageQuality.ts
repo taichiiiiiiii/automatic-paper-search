@@ -15,7 +15,7 @@
 
 import { readdirSync, statSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
-import { codepointCompare } from "@paperpilot/core";
+import { codepointCompare, pyRound } from "@paperpilot/core";
 import {
   isFoundationalAncestor,
   _TEMPLATE_RATIONALES_SET as TEMPLATE_RATIONALES_SET,
@@ -271,9 +271,16 @@ export function offtopicNonfocusMetric(data: Record<string, unknown>): OfftopicN
   };
 }
 
-/** Python `f"{ratio:.0%}"` — nearest-integer percentage (ties handled the ordinary round-half-away-from-zero way; see module doc comment on this being a non-persisted message string). */
+/**
+ * Python `f"{ratio:.0%}"` — verified against real CPython
+ * (`format(r, ".0%") == format(r * 100, ".0f")` for every probed ratio):
+ * ties round to the nearest EVEN integer, not away from zero. `Math.round`
+ * always rounds half up, so e.g. ratio=0.125 (-> 12.5) printed "13%" here
+ * where Python prints "12%" (p4-followups.md #18). Replaced with
+ * `pyRound`, which reproduces Python's `round()` exactly.
+ */
 function pct(ratio: number): string {
-  return `${Math.round(ratio * 100)}%`;
+  return `${pyRound(ratio * 100, 0)}%`;
 }
 
 export function auditOfftopicNonfocus(data: Record<string, unknown>): string[] {

@@ -20,7 +20,7 @@ import {
   searchRepoByTitle,
 } from "../../collect/signals/githubApi.js";
 import { loadCuratedMap } from "../../collect/signals/githubMap.js";
-import type { ThemeGraphNode } from "./node.js";
+import type { ThemeGraphNode } from "../shared/node.js";
 import { readVersionedCache, writeVersionedCache } from "./versionedCache.js";
 
 const GITHUB_CACHE_VERSION = "github-stars-cache-v1";

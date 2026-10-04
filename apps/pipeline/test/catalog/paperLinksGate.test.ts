@@ -1,6 +1,7 @@
 /** Ported from the validation half of paperpilot/tests/test_catalog_nojs_fallback.py. */
+
+import { IdentityError } from "@paperpilot/core/identity";
 import { describe, expect, it } from "vitest";
-import { IdentityError } from "../../src/catalog/identity.js";
 import { assertPaperLinksGate, NOJS_MAX_PAPERS } from "../../src/catalog/paperLinksGate.js";
 
 const PAPER_A = "a".repeat(40);

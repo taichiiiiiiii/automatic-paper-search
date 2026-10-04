@@ -2,6 +2,9 @@
  * Port of `test_conference_watch_baseline.py` / `test_conference_ratio_assessment.py`
  * (CNF-36, docs/migration/safety-contracts.md).
  */
+
+import { validateArtifact } from "@paperpilot/core";
+import { makePaperId } from "@paperpilot/core/identity";
 import { describe, expect, it } from "vitest";
 import {
   assessPreviousEditionRatio,
@@ -18,7 +21,6 @@ import {
   type StrictTransport,
 } from "../../../src/conference/watch/openreview.js";
 import { parseRegistry } from "../../../src/conference/watch/registry.js";
-import { makePaperId } from "../../../src/release/identity/sourceIds.js";
 
 const REGISTRY_OBJECT = {
   schema_version: "conference-sources-v1",
@@ -146,12 +148,12 @@ describe("assessPreviousEditionRatio (CNF-36)", () => {
     // Inclusive bound check: 2 editions * 0.5 = 1 (min), * 2.0 = 4 (max).
     expect(assessment.effectiveMinimum).toBe(1);
     expect(assessment.effectiveMaximum).toBe(4);
-    // NOTE: `schemas/conference-baseline-assessment-v1.schema.json` has no
-    // `$id`, so `@paperpilot/core`'s `validateArtifact` cannot look it up
-    // (ajv registers schemas by `$id`, and this one lacks it) — a
-    // pre-existing gap in `schemas/`, outside this task's edit scope. The
-    // report shape is checked by hand against that schema's field list
-    // instead (see the other assertions in this file).
+    // `schemas/conference-baseline-assessment-v1.schema.json` now has an
+    // `$id` (p4-followups.md #16 — it previously lacked one, so ajv could
+    // not look it up by name), so the report shape can be checked against
+    // the real schema directly, matching `test_conference_ratio_assessment.py`.
+    const report = JSON.parse(assessment.reportBytes.toString("utf-8"));
+    expect(validateArtifact("conference-baseline-assessment-v1", report).ok).toBe(true);
   });
 
   it("reports below_minimum when the current count undershoots the ratio", async () => {

@@ -6,10 +6,10 @@
 
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { validateConferenceSlug } from "@paperpilot/core/slug";
 import { CliUsageError, parseArgs as parseFlags } from "../shared/cli/argparse.js";
 import { isMain } from "../shared/cli/isMain.js";
 import { buildSummary } from "./buildSummary.js";
-import { validateConferenceSlug } from "./slug.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 // apps/pipeline/src/catalog -> repo root (4 levels up).

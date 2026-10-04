@@ -176,6 +176,32 @@ describe("parsePapers", () => {
     </volume></collection>`;
     expect(parsePapers(xml, "ACL")).toEqual([]);
   });
+
+  // p4-followups #28: collapseWhitespace() now uses pySplit (Python's
+  // no-arg str.split() whitespace set) instead of JS's `\s`. The two sets
+  // disagree on U+0085 (NEL, Python-only whitespace) and U+FEFF (BOM,
+  // JS-only whitespace) — see @paperpilot/core/pycompat's pySplit doc
+  // comment. This fingerprints the ACTUAL difference, not just same-output
+  // ordinary-whitespace cases the rest of this suite already covers.
+  it("collapses Python-only whitespace (U+0085 NEL) that JS's \\s does not match", () => {
+    const xml = `<?xml version="1.0"?><collection id="2025.acl"><volume id="long">
+      <paper id="1"><title>Title\u0085With\u0085NEL</title>
+      <author><first>A</first><last>B</last></author>
+      <url>2025.acl-long.1</url></paper>
+    </volume></collection>`;
+    const rows = parsePapers(xml, "ACL");
+    expect(rows[0]?.title).toBe("Title With NEL");
+  });
+
+  it("does NOT treat U+FEFF (BOM) as whitespace, unlike JS's .trim()/\\s", () => {
+    const xml = `<?xml version="1.0"?><collection id="2025.acl"><volume id="long">
+      <paper id="1"><title>﻿Kept Together</title>
+      <author><first>A</first><last>B</last></author>
+      <url>2025.acl-long.1</url></paper>
+    </volume></collection>`;
+    const rows = parsePapers(xml, "ACL");
+    expect(rows[0]?.title).toBe("﻿Kept Together");
+  });
 });
 
 describe("runCollectAclMain (CNF-05..10)", () => {

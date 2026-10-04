@@ -4,8 +4,8 @@
  *
  * TS port of `paperpilot/scripts/_lineage_contract.py` (LIN-45, LIN-46, LIN-50,
  * LIN-51 of docs/migration/safety-contracts.md). Deliberately dependency-free
- * beyond `@paperpilot/core` pycompat and the already-ported identity helpers
- * in `apps/pipeline/src/catalog/identity.ts` — producers, quality audits and
+ * beyond `@paperpilot/core` pycompat and the identity helpers in
+ * `@paperpilot/core/identity` — producers, quality audits and
  * manifest generators all call the same validator here so a JSON Schema
  * implementation detail cannot create a second interpretation of the wire
  * format (same rationale as the Python original's module doc comment).
@@ -16,7 +16,7 @@
 
 import { createHash } from "node:crypto";
 import { codepointCompare, pyJsonDumps } from "@paperpilot/core";
-import { ARXIV_MODERN_PATTERN, IdentityError, normalizeAlias } from "../../catalog/identity.js";
+import { ARXIV_MODERN_PATTERN, IdentityError, normalizeAlias } from "@paperpilot/core/identity";
 
 export const LINEAGE_ARTIFACT_VERSION = "lineage-artifact-v1";
 export const DEEP_MANIFEST_VERSION = "deep-manifest-v1";

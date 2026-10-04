@@ -7,8 +7,10 @@
  * (`paperpilot/utils/payload.py::openalex_short_id`,
  * `paperpilot/utils/unarxive.py::_normalise_arxiv_id`) — neither of those
  * two is ported elsewhere in the repo yet, so they live here, scoped to
- * this module's needs, rather than as a `packages/core` promotion (same
- * pattern as `apps/pipeline/src/catalog/identity.ts`'s scope note).
+ * this module's needs, rather than as a `packages/core` promotion (the
+ * identity helpers this module DOES share, `ARXIV_MODERN_PATTERN` /
+ * `isArxivHost`, were promoted to `@paperpilot/core/identity` per
+ * docs/migration/p4-followups.md #1/#2/#9/#20).
  *
  * Safety contracts: LIN-20 (partial-chunk OpenAlex fetch failures do not
  * cache — see `fetchOpenAlexWorksByIds.ts`), LIN-22 (DataCite DOI must
@@ -16,7 +18,7 @@
  * explicitly opts in via `allowDataciteDoi`).
  */
 
-import { ARXIV_MODERN_PATTERN, isArxivHost } from "../../catalog/identity.js";
+import { ARXIV_MODERN_PATTERN, isArxivHost } from "@paperpilot/core/identity";
 
 // ---- openalex_short_id (utils/payload.py) ----
 

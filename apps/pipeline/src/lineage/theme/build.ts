@@ -22,7 +22,7 @@
  * string never reaches a `Path`.
  */
 
-import { codepointCompare, pyIsoformat, pyJsonDumps } from "@paperpilot/core";
+import { codepointCompare, pyFloat, pyIsoformat, pyJsonDumps } from "@paperpilot/core";
 import type { FetchLike } from "../../collect/http/requestWithRetry.js";
 import type { LLMProvider } from "../../collect/llm/provider.js";
 import type { GitHubApiDeps } from "../../collect/signals/githubApi.js";
@@ -73,6 +73,20 @@ interface FullLogger {
  * an outage. Raised BEFORE the atomic replace, like the completeness
  * gates, so the previously published artifact (if any) is untouched. */
 export class ZeroEdgeBuildError extends Error {}
+
+/**
+ * Non-mutating JSON-safe view of `edge` for `pyJsonDumps`: `conf`/
+ * `confidence` are a Python `float` in the source (p4-followups #24), so
+ * an exactly-1.0/0.0 value must serialize as `1.0`/`0.0`, not `1`/`0`.
+ * Applied only right before serialization (the duplicate-elimination
+ * byte-comparison below, and the final write) — not at `ThemeEdge`
+ * construction (`edges.ts::makeEdge`) or anywhere `edge.confidence` is
+ * still read as a plain `number` (arithmetic, `typeof` checks,
+ * `validateLineageArtifact`), since `PyFloat` has no numeric coercion.
+ */
+export function edgeForJson(edge: ThemeEdge): Record<string, unknown> {
+  return { ...edge, conf: pyFloat(edge.conf), confidence: pyFloat(edge.confidence) };
+}
 
 export interface LogClassifySummaryDeps {
   logger?: { info?: (msg: string) => void; warn: (msg: string) => void };
@@ -400,13 +414,13 @@ export async function buildThemeLineage(
   const orderedEdges = groupKeys.map(([src, dst, relation]) => {
     const group = edgeGroups.get(`${src}\u0000${dst}\u0000${relation}`)!;
     let best = group[0]!;
-    let bestJson = pyJsonDumps(best, {
+    let bestJson = pyJsonDumps(edgeForJson(best), {
       ensureAscii: false,
       sortKeys: true,
       separators: [",", ":"],
     });
     for (const candidate of group.slice(1)) {
-      const candidateJson = pyJsonDumps(candidate, {
+      const candidateJson = pyJsonDumps(edgeForJson(candidate), {
         ensureAscii: false,
         sortKeys: true,
         separators: [",", ":"],
@@ -515,7 +529,11 @@ export async function buildThemeLineage(
     );
   }
 
-  atomicWriteText(outPath, `${pyJsonDumps(payload, { ensureAscii: false, indent: 2 })}\n`);
+  // `payload` itself keeps plain-number edge confidence (already validated
+  // above, and read again below by `expansionGateBlocks`); only the bytes
+  // written to disk need the float marker (p4-followups #24).
+  const payloadForJson = { ...payload, edges: orderedEdges.map(edgeForJson) };
+  atomicWriteText(outPath, `${pyJsonDumps(payloadForJson, { ensureAscii: false, indent: 2 })}\n`);
   logger.warn(
     `wrote ${outPath} (nodes=${orderedNodes.length} edges=${orderedEdges.length} root=${rootId})`,
   );

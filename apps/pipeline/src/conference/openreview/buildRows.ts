@@ -4,9 +4,9 @@
  * `_value` / `_decision` / `_venue_tier` helpers).
  */
 
+import { venueTier } from "../../collect/signals/venue.js";
 import type { ConferenceRow } from "../shared/csvColumns.js";
 import { pyWhitespaceCollapse } from "../shared/pyText.js";
-import { venueTier } from "../shared/venueTier.js";
 import type { OpenReviewNote } from "./fetchNotes.js";
 
 export const OPENREVIEW_FORUM = "https://openreview.net/forum?id=";

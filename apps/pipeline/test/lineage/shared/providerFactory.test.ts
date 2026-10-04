@@ -6,7 +6,7 @@
  */
 import { describe, expect, it } from "vitest";
 import type { Env } from "../../../src/collect/config/env.js";
-import { buildProvider } from "../../../src/lineage/theme/providerFactory.js";
+import { buildProvider } from "../../../src/lineage/shared/providerFactory.js";
 
 const neverFetch = async () => {
   throw new Error("buildProvider must not perform network I/O");

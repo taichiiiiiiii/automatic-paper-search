@@ -1,6 +1,13 @@
 /**
  * TS port of `paperpilot/tests/test_identity_source_ids.py` — golden
  * contracts for deterministic source-derived PaperPilot IDs.
+ *
+ * Merges the two independent test suites that grew up around this
+ * module's two former copies (`apps/pipeline/src/catalog/identity.ts` and
+ * `apps/pipeline/src/release/identity/sourceIds.ts`) per
+ * docs/migration/p4-followups.md #1/#2/#9/#20. No case below is dropped;
+ * none conflicted (both suites test the one consolidated implementation
+ * identically).
  */
 import { describe, expect, it } from "vitest";
 import {
@@ -8,7 +15,7 @@ import {
   identityFromUrl,
   makePaperId,
   normalizeAlias,
-} from "../../../src/release/identity/sourceIds.js";
+} from "../../src/identity/index.js";
 
 describe("identityFromUrl golden vectors", () => {
   const cases: Array<[string, string, string, string]> = [
@@ -59,6 +66,30 @@ describe("identityFromUrl golden vectors", () => {
       expect(identityFromUrl(url)).toEqual({ source, sourceId, paperId });
     });
   }
+
+  it("parses a legacy arXiv id (archive/number)", () => {
+    const id = identityFromUrl("https://arxiv.org/abs/hep-th/9901001");
+    expect(id.source).toBe("arxiv");
+    expect(id.sourceId).toBe("hep-th/9901001");
+  });
+
+  it("is deterministic (same URL -> same paper_id every time)", () => {
+    const a = identityFromUrl("https://arxiv.org/abs/2301.01234");
+    const b = identityFromUrl("https://arxiv.org/abs/2301.01234");
+    expect(a.paperId).toBe(b.paperId);
+  });
+
+  it("normalizes a /pdf/<id>.pdf URL the same as /abs/<id>", () => {
+    const abs = identityFromUrl("https://arxiv.org/abs/2301.01234");
+    const pdf = identityFromUrl("https://arxiv.org/pdf/2301.01234.pdf");
+    expect(pdf.paperId).toBe(abs.paperId);
+  });
+
+  it("strips the version suffix from an arXiv id", () => {
+    const withV = identityFromUrl("https://arxiv.org/abs/2301.01234v3");
+    const withoutV = identityFromUrl("https://arxiv.org/abs/2301.01234");
+    expect(withV.paperId).toBe(withoutV.paperId);
+  });
 });
 
 it("arxiv legacy id preserves subarchive and drops version", () => {
@@ -95,6 +126,9 @@ describe("unknown or ambiguous url fails without title fallback", () => {
     "https://openreview.net/forum?id=one%2Ftwo",
     "https://aclanthology.org/one/two/",
     "https://openaccess.thecvf.com/content/CVPR2025/papers/test.html",
+    // From the former catalog/identity.ts suite:
+    "https://arxiv.org/abs/2301.01234?x=1",
+    "https://user:pass@arxiv.org/abs/2301.01234",
   ];
   for (const url of urls) {
     it(`rejects ${JSON.stringify(url)}`, () => {
@@ -112,6 +146,7 @@ describe("invalid alias fails", () => {
     ["arxiv", "https://arxiv.org/abs/2601.02771"],
     ["arxiv", "2601.02771 v2"],
     ["pmid", "12345"],
+    ["ssrn", "123"],
   ];
   for (const [namespace, value] of cases) {
     it(`rejects ${namespace}=${JSON.stringify(value)}`, () => {
@@ -120,9 +155,26 @@ describe("invalid alias fails", () => {
   }
 });
 
-it("make_paper_id is source scoped and validates input", () => {
-  expect(makePaperId("arxiv", "2601.02771v2")).toBe(makePaperId("arxiv", "2601.02771"));
-  expect(makePaperId("cvf", "Same_ID")).not.toBe(makePaperId("acl_anthology", "Same_ID"));
-  expect(() => makePaperId("unknown", "x")).toThrow(IdentityError);
-  expect(() => makePaperId("arxiv", "")).toThrow(IdentityError);
+it("normalizes an arxiv alias the same way as a URL-derived id", () => {
+  const [source, id] = normalizeAlias("arxiv", "2301.01234v2");
+  expect(source).toBe("arxiv");
+  expect(id).toBe("2301.01234");
+});
+
+describe("makePaperId", () => {
+  it("make_paper_id is source scoped and validates input", () => {
+    expect(makePaperId("arxiv", "2601.02771v2")).toBe(makePaperId("arxiv", "2601.02771"));
+    expect(makePaperId("cvf", "Same_ID")).not.toBe(makePaperId("acl_anthology", "Same_ID"));
+    expect(() => makePaperId("unknown", "x")).toThrow(IdentityError);
+    expect(() => makePaperId("arxiv", "")).toThrow(IdentityError);
+  });
+
+  it("is a 40-hex-character digest (sha256, truncated — not sha1)", () => {
+    const id = makePaperId("arxiv", "2301.01234");
+    expect(id).toMatch(/^[0-9a-f]{40}$/);
+  });
+
+  it("differs for different source ids", () => {
+    expect(makePaperId("arxiv", "2301.01234")).not.toBe(makePaperId("arxiv", "2301.01235"));
+  });
 });

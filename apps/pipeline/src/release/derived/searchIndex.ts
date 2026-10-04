@@ -21,9 +21,9 @@
 
 import { mkdirSync, readdirSync, readFileSync, statSync, unlinkSync } from "node:fs";
 import { join } from "node:path";
+import { identityFromUrl, normalizeAlias } from "@paperpilot/core/identity";
 import { codepointCompare, pyJsonDumps, pyStrip } from "@paperpilot/core/pycompat";
 import { atomicWriteText } from "../../collect/state/atomic.js";
-import { identityFromUrl, normalizeAlias } from "../identity/sourceIds.js";
 
 export const INDEX_FILENAME = "search-index.json";
 export const INDEX_V2_FILENAME = "search-index-v2.json";

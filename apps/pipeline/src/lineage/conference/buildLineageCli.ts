@@ -5,7 +5,7 @@
  */
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { pyJsonDumps } from "@paperpilot/core";
+import { pyFloat, pyJsonDumps } from "@paperpilot/core";
 import { loadEnv } from "../../collect/config/env.js";
 import type { LLMProvider } from "../../collect/llm/provider.js";
 import { atomicWriteText } from "../../collect/state/atomic.js";
@@ -13,7 +13,7 @@ import { CliUsageError, parseArgs as parseFlags } from "../../shared/cli/argpars
 import { isMain } from "../../shared/cli/isMain.js";
 import { requireValidLineageArtifact } from "../contract/v1.js";
 import { BuildCompleteness } from "../fetch-state/completeness.js";
-import { buildProvider } from "../theme/providerFactory.js";
+import { buildProvider } from "../shared/providerFactory.js";
 import {
   type BuildLineageDeps,
   build,
@@ -168,7 +168,18 @@ export async function runBuildLineageCli(
   meta.completeness = completeness.asMeta();
   result.meta = meta;
   requireValidLineageArtifact(result, { kind: "conference" });
-  atomicWriteText(lineagePath, pyJsonDumps(result, { ensureAscii: false, indent: 2 }));
+  // `edge.confidence`/`conf` are a Python float; wrap only for the bytes
+  // written to disk (not `result` itself, already validated above as a
+  // plain number and read again below for the stdout summary) so an
+  // exactly-1.0/0.0 LLM confidence serializes as "1.0"/"0.0", not "1"/"0"
+  // (p4-followups #24).
+  const edgesForJson = ((result.edges as Record<string, unknown>[]) ?? []).map((e) => ({
+    ...e,
+    conf: pyFloat(e.conf as number),
+    confidence: pyFloat(e.confidence as number),
+  }));
+  const resultForJson = { ...result, edges: edgesForJson };
+  atomicWriteText(lineagePath, pyJsonDumps(resultForJson, { ensureAscii: false, indent: 2 }));
 
   const nodesArr = result.nodes as Record<string, unknown>[];
   const edgesArr = result.edges as Record<string, unknown>[];

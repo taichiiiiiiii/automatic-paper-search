@@ -2,11 +2,11 @@
 import { mkdirSync, mkdtempSync, readFileSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { IdentityError } from "@paperpilot/core/identity";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { loadSummaryWithDetails } from "../../src/catalog/buildPages.js";
 import { buildSummary, findLatestCsv, loadOralTitles } from "../../src/catalog/buildSummary.js";
 import { dictReader } from "../../src/catalog/csv.js";
-import { IdentityError } from "../../src/catalog/identity.js";
 
 let tmpDir: string;
 

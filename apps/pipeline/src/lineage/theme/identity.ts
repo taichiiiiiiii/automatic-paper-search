@@ -12,7 +12,7 @@
 
 import { readFileSync } from "node:fs";
 import { codepointCompare } from "@paperpilot/core";
-import { IdentityError, makePaperId, normalizeAlias } from "../../catalog/identity.js";
+import { IdentityError, makePaperId, normalizeAlias } from "@paperpilot/core/identity";
 import { isPaperId } from "../contract/v1.js";
 
 export const CANONICAL_ALIAS_NAMESPACES: ReadonlySet<string> = new Set([

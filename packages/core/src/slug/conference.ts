@@ -14,6 +14,17 @@
  * before a trailing "\n" — does NOT accept a trailing newline. A plain
  * `RegExp.test()` with `^...$` is therefore already Python-`fullmatch`
  * equivalent here; no extra trailing-newline guard is needed.
+ *
+ * Consolidated into `packages/core` per docs/migration/p4-followups.md
+ * #2/#9/#20: this validator used to exist twice —
+ * `apps/pipeline/src/catalog/slug.ts` (threw a plain `RangeError`) and
+ * `apps/pipeline/src/conference/shared/conferenceSlug.ts` (threw its own
+ * `InvalidConferenceSlugError`) — written independently during P4b/P4d
+ * because each task's edit scope excluded `packages/core`. The ONE error
+ * type kept here, {@link InvalidConferenceSlugError}, extends `RangeError`
+ * so every existing `.toThrow(RangeError)` assertion (e.g. LIN-11) keeps
+ * passing unchanged, while callers that want the more specific class can
+ * still catch it by name.
  */
 
 const SLUG_MAX_LEN = 64;
@@ -24,11 +35,21 @@ const CONFERENCE_SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
  * output dir, not a conference) — kept as a local literal, mirroring the
  * Python module's own documented layering choice.
  */
-const RESERVED_CONFERENCE_SLUGS = new Set(["daily"]);
+export const RESERVED_CONFERENCE_SLUGS: ReadonlySet<string> = new Set(["daily"]);
 
-export class InvalidConferenceSlugError extends Error {}
+export class InvalidConferenceSlugError extends RangeError {}
 
-/** Throws {@link InvalidConferenceSlugError} unless `conference` is already a safe slug. */
+/**
+ * Validate that a `--conference` CLI value is already a safe slug. Unlike
+ * a transform-free-text-into-a-slug function, a conference slug is
+ * provided directly by the operator/workflow and is path-joined as-is
+ * into output directories, so it must be REJECTED outright if it isn't
+ * already slug-shaped (closing path traversal, and failing loudly on a
+ * typo instead of silently coercing it).
+ *
+ * @throws {InvalidConferenceSlugError} (a `RangeError`) unless `conference`
+ * is already a safe slug.
+ */
 export function validateConferenceSlug(conference: string): string {
   if (
     !conference ||

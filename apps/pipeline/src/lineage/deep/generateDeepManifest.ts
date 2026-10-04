@@ -10,7 +10,7 @@
 import { mkdirSync, readdirSync, readFileSync } from "node:fs";
 import { basename, join } from "node:path";
 import { codepointCompare, pyJsonDumps } from "@paperpilot/core";
-import { IdentityError, normalizeAlias } from "../../catalog/identity.js";
+import { IdentityError, normalizeAlias } from "@paperpilot/core/identity";
 import { atomicWriteText } from "../../collect/state/atomic.js";
 import {
   ARXIV_ID_RE,

@@ -13,9 +13,33 @@
 import type { Paper } from "../model/paper.js";
 import { BaseSignal } from "./signal.js";
 
-const TIER_1 = new Set(["NEURIPS", "NIPS", "ICML", "ICLR"]);
-const TIER_2 = new Set(["AAAI", "CVPR", "ACL", "EMNLP"]);
-const TIER_3 = new Set(["AISTATS", "NAACL", "ECCV", "ICCV", "IJCAI", "KDD", "WWW"]);
+/**
+ * Exported per docs/migration/p4-followups.md #10: the authoritative
+ * conference collectors (OpenReview / CVF, via
+ * `conference/shared/venueTier.ts`) used to keep a verbatim-copied
+ * duplicate of these three sets because this module kept them
+ * module-private. They are the one definition now.
+ */
+export const TIER_1: ReadonlySet<string> = new Set(["NEURIPS", "NIPS", "ICML", "ICLR"]);
+export const TIER_2: ReadonlySet<string> = new Set(["AAAI", "CVPR", "ACL", "EMNLP"]);
+export const TIER_3: ReadonlySet<string> = new Set([
+  "AISTATS",
+  "NAACL",
+  "ECCV",
+  "ICCV",
+  "IJCAI",
+  "KDD",
+  "WWW",
+]);
+
+/** Tier (1/2/3) for a VenueSignal token, or 0 when the venue is in none of the tier sets. */
+export function venueTier(venue: string): number {
+  const v = venue.toUpperCase();
+  if (TIER_1.has(v)) return 1;
+  if (TIER_2.has(v)) return 2;
+  if (TIER_3.has(v)) return 3;
+  return 0;
+}
 
 const VENUE_PATTERN =
   /\b(?:accepted (?:at|to|by)|to appear (?:at|in)|published (?:at|in))\s+(?:the\s+)?([A-Za-z]+)/i;
@@ -46,7 +70,7 @@ export class VenueSignal extends BaseSignal {
     let venueName: string | null = null;
     if (match?.[1]) {
       const candidate = match[1].toUpperCase();
-      const tiers: readonly [Set<string>, number, number][] = [
+      const tiers: readonly [ReadonlySet<string>, number, number][] = [
         [TIER_1, 1, 100],
         [TIER_2, 2, 80],
         [TIER_3, 3, 60],

@@ -6,22 +6,32 @@
  * turns a canonical native record ID into a stable PaperPilot ID and
  * rejects ambiguous or unknown inputs instead of falling back to titles.
  *
- * This module lives under `apps/pipeline/src/release/` (not
- * `packages/core/`) only because of this change's edit limits — the
- * Python original and the safety-contracts table (PUB-05, RPL-09) both
- * point at a shared `packages/core` home. See the final report for this
- * change for the consolidation follow-up; `apps/pipeline/src/catalog/**`
- * (owned by a concurrent change) may need the same logic and should not
- * duplicate it independently once that follow-up lands.
+ * Consolidated home per docs/migration/p4-followups.md #1/#2/#9/#20: this
+ * module used to exist twice — `apps/pipeline/src/catalog/identity.ts` and
+ * `apps/pipeline/src/release/identity/sourceIds.ts` — written independently
+ * during P4b because each task's edit scope excluded `packages/core`. The
+ * body kept here is the `release/identity/sourceIds.ts` one: it hand-ports
+ * `urlsplit`/`unquote`/`parse_qsl` instead of using the WHATWG `URL` parser,
+ * because `URL` normalizes (`..` path collapse, percent-re-encoding, idna
+ * host normalization) where Python's `urlsplit` is lax, and the failure
+ * tests this module must satisfy (invalid port, userinfo-bearing authority,
+ * a raw `%2F` surviving to a validator, `parse_qsl`'s `max_num_fields=20`
+ * cap) depend on that laxness. `catalog/identity.ts`'s retired body used
+ * `decodeURIComponent` directly for the same job, which is slightly less
+ * faithful on malformed input (no field cap on a query string; a bad
+ * %-escape is rejected eagerly instead of being replaced like Python's
+ * `unquote(..., errors="replace")` does for query values) — real, UTF-8,
+ * well-formed input is unaffected, so every existing catalog/release
+ * caller's observable output is unchanged.
  *
- * `identity_from_url` deliberately does NOT use the WHATWG `URL` parser:
- * `URL` normalizes (`..` path collapse, percent-re-encoding, idna host
- * normalization) where Python's `urlsplit` is lax, and this module's
- * failure tests (invalid port, userinfo-bearing authority, raw `%2F`
- * surviving to a validator) depend on that laxness. `urlsplit` /
- * `unquote(errors="strict")` / `parse_qsl` are hand-ported below to the
- * exact subset of behaviour the Python test suite
+ * This module intentionally does NOT use the WHATWG `URL` parser — see
+ * above. `urlsplit` / `unquote(errors="strict")` / `parse_qsl` are
+ * hand-ported below to the exact subset of behaviour the Python test suite
  * (`paperpilot/tests/test_identity_source_ids.py`) exercises.
+ *
+ * Node-only (uses `node:crypto`), so this lives under the `@paperpilot/core/identity`
+ * subpath rather than the top-level barrel — browser code (`apps/web`) never
+ * imports it.
  */
 
 import { createHash } from "node:crypto";

@@ -12,7 +12,7 @@
 
 import * as fs from "node:fs";
 import { dirname } from "node:path";
-import { pyJsonDumps } from "@paperpilot/core/pycompat";
+import { pyFloat, pyJsonDumps } from "@paperpilot/core/pycompat";
 import type {
   ClassifyPaperLike,
   LLMProvider,
@@ -26,6 +26,33 @@ import { withClassificationLock } from "./lock.js";
 
 function isPlainObject(x: unknown): x is Record<string, unknown> {
   return typeof x === "object" && x !== null && !Array.isArray(x);
+}
+
+/**
+ * Shallow, non-mutating JSON-safe view of `classifications` for
+ * `pyJsonDumps`: `confidence` is a Python `float` in the source
+ * (`RelationClassification.confidence`), so an exactly-1.0/0.0 value must
+ * serialize as `1.0`/`0.0`, not `1`/`0` (p4-followups.md #24). Wrapped
+ * only here, right before serialization — NOT at the point each cache
+ * entry is built (`CachedClassifyProvider.classifyRelation`, above) —
+ * because `PyFloat` has no `valueOf`/numeric coercion, and the SAME
+ * in-memory `classifications` object is read back for cache hits
+ * (`relationClassificationFromDict(cached)`) and mutated by this module's
+ * own disk-merge (`setdefault`) within the same process; only the bytes
+ * actually written to disk need the float marker.
+ */
+export function toJsonSafeClassifications(
+  classifications: ClassificationCache,
+): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(classifications)) {
+    if (isPlainObject(value) && typeof value.confidence === "number") {
+      out[key] = { ...value, confidence: pyFloat(value.confidence) };
+    } else {
+      out[key] = value;
+    }
+  }
+  return out;
 }
 
 export type ClassificationCache = Record<string, unknown>;
@@ -159,7 +186,10 @@ export function defaultPersistClassifications(
   classifications: ClassificationCache,
   cachePath: string,
 ): void {
-  atomicWriteText(cachePath, pyJsonDumps(classifications, { ensureAscii: false, indent: 2 }));
+  atomicWriteText(
+    cachePath,
+    pyJsonDumps(toJsonSafeClassifications(classifications), { ensureAscii: false, indent: 2 }),
+  );
 }
 
 /**
@@ -214,7 +244,10 @@ export async function persistClassifications(
         }
       }
     }
-    atomicWriteText(cachePath, pyJsonDumps(classifications, { ensureAscii: false, indent: 2 }));
+    atomicWriteText(
+      cachePath,
+      pyJsonDumps(toJsonSafeClassifications(classifications), { ensureAscii: false, indent: 2 }),
+    );
   });
 }
 

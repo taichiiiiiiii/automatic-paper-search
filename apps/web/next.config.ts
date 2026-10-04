@@ -22,8 +22,9 @@ const nextConfig: NextConfig = {
       ".js": [".js", ".ts", ".tsx"],
     };
     // Client code imports only the browser-safe subpaths
-    // ("@paperpilot/core/site", "/pycompat"); never the barrel or
-    // "/schemas", which read schemas/*.json from disk with node:fs.
+    // ("@paperpilot/core/site", "/pycompat", "/slug"); never the
+    // barrel, "/schemas" (reads schemas/*.json from disk with
+    // node:fs), or "/identity" (uses node:crypto).
     return config;
   },
 };

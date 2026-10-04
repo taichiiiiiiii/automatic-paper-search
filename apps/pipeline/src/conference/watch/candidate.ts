@@ -9,9 +9,9 @@
 
 import { createHash } from "node:crypto";
 import { pyFloat, pyIsoformat } from "@paperpilot/core";
+import { IdentityError, identityFromUrl, makePaperId } from "@paperpilot/core/identity";
 import { classifyTags } from "../../catalog/buildSummary.js";
 import { neutralizeRow } from "../../collect/exporters/csvSafety.js";
-import { IdentityError, identityFromUrl, makePaperId } from "../../release/identity/sourceIds.js";
 import { canonicalJsonBytes } from "./canonicalJson.js";
 import { sourceFingerprint } from "./fingerprint.js";
 import {

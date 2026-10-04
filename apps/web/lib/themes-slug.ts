@@ -8,12 +8,19 @@
  * it, so this file must never redefine them with "equivalent but not
  * identical" patterns.
  *
- * Only the two regexes are ported here — `themeSlug()` itself (the NFKD
- * normalisation that *derives* a slug from free text) is server-side
- * authority only; the browser never derives its own slug, it only
- * validates one it already has (a `?theme=` URL param or a slug the
- * Worker echoed back in a JSON response).
+ * The two regexes are the browser's OWN validation — `themeSlug()` (the
+ * NFKD normalisation that *derives* a slug from free text) is
+ * server-side authority only; the browser never derives its own slug,
+ * it only validates one it already has (a `?theme=` URL param or a slug
+ * the Worker echoed back in a JSON response). `themeSlug` is re-exported
+ * below anyway, from the single consolidated `@paperpilot/core/slug`
+ * implementation (docs/migration/p4-followups.md #25, TS side only), so
+ * this file stays the one place web code imports anything "theme slug"
+ * shaped from, and so this package's own parity test
+ * (test/themes/slug-parity.test.ts) can extend to cover it directly.
  */
+
+export { themeSlug } from "@paperpilot/core/slug";
 
 /** Mirror of paperpilot/scripts/_common._SLUG_ALLOWED_RE / theme_slug()
  * output, and of worker/slug.js's `SLUG_RE`. Validates slugs read from

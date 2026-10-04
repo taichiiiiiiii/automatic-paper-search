@@ -33,9 +33,9 @@
 import { cpSync, mkdtempSync, realpathSync, rmSync, statSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { isDirPermitted, isFilePermitted, validateAllowlistEntry } from "@paperpilot/core/paths";
 import { walkCandidateFiles } from "./candidateWalk.js";
 import { type GitAdapter, git, gitOk } from "./git/gitAdapter.js";
-import { isDirPermitted, isFilePermitted, validateAllowlistEntry } from "./paths.js";
 
 export type PromotionKind = "themes" | "conference" | "test-only";
 

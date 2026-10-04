@@ -4,8 +4,10 @@
  * DOI dedup tests from `paperpilot/tests/test_build_theme_lineage.py`
  * (safety contract LIN-25).
  */
+
+import { makePaperId } from "@paperpilot/core/identity";
 import { describe, expect, it } from "vitest";
-import { makePaperId } from "../../../src/catalog/identity.js";
+import type { ThemeGraphNode } from "../../../src/lineage/shared/node.js";
 import {
   dedupByTitleYear,
   dedupNodesByStrongAlias,
@@ -18,7 +20,7 @@ import {
   resolveAndDedupSeeds,
   resolveSeedPaperId,
 } from "../../../src/lineage/theme/identity.js";
-import { type ThemeGraphNode, toThemeNode } from "../../../src/lineage/theme/node.js";
+import { toThemeNode } from "../../../src/lineage/theme/node.js";
 import type { ThemePaper } from "../../../src/lineage/theme/openalexWork.js";
 
 function mkS2Paper(

@@ -4,13 +4,16 @@
  * found -> `RuntimeError`, which the CLI turns into exit 3; never
  * `sys.exit` directly, so this stays safe to call from a non-CLI host).
  *
- * Scope note: `build_provider` belongs to `build_lineage.py` (the
- * conference/ICLR builder script), a separate P4d task from this one.
- * `build_theme_lineage.py` imports and calls it directly, so a local,
- * scoped copy lives here — same pattern as `./node.ts`'s scope note.
- * The concrete providers it constructs (`GroqProvider`/`GeminiProvider`)
- * ARE imported from the concurrently-ported `apps/pipeline/src/lineage/llm/`
- * per this task's brief.
+ * Consolidated per docs/migration/p4-followups.md #23: this used to be a
+ * local, scoped copy inside `apps/pipeline/src/lineage/theme/
+ * providerFactory.ts` (`build_theme_lineage.py` imports and calls
+ * `build_provider` directly), because the P4d task that ported
+ * `build_lineage.py`'s conference/ICLR builder and the one that ported
+ * the theme builder had non-overlapping edit scopes. The conference and
+ * deep builders' own CLIs (`buildLineageCli.ts`, `buildDeepLineageCli.ts`)
+ * already called this same function via `../theme/providerFactory.js` —
+ * that reverse dependency (conference/deep reaching into theme/ for
+ * logic that was never theme-specific) is what this move fixes.
  */
 
 import type { Env } from "../../collect/config/env.js";

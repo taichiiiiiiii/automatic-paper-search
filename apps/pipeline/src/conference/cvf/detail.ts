@@ -3,9 +3,9 @@
  * `paperpilot/scripts/collect_cvf.py::parse_detail` (+ `_reformat_author`).
  */
 
+import { venueTier } from "../../collect/signals/venue.js";
 import type { ConferenceRow } from "../shared/csvColumns.js";
 import { htmlUnescape, stripTagsUnescapeCollapse } from "../shared/pyText.js";
-import { venueTier } from "../shared/venueTier.js";
 
 const ABSTRACT_RE = /<div id="abstract"[^>]*>([\s\S]*?)<\/div>/;
 const TITLE_RE = /<meta\s+name="citation_title"\s+content="(.*?)"/i;

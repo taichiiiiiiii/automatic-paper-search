@@ -15,7 +15,7 @@ import {
   fetchRelated,
   S2TransientError,
   s2Get,
-} from "../../../src/lineage/theme/fetchRelated.js";
+} from "../../../src/lineage/shared/fetchRelated.js";
 
 function jsonResp(status: number, body: unknown): HttpResponseLike {
   return { status, json: async () => body };

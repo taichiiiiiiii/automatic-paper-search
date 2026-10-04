@@ -10,6 +10,7 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { IdentityError } from "@paperpilot/core/identity";
 import { beforeEach, describe, expect, it } from "vitest";
 import {
   buildConference,
@@ -26,7 +27,6 @@ import {
 } from "../../src/catalog/buildPages.js";
 import { SUMMARY_META_FILENAME } from "../../src/catalog/buildSummary.js";
 import { writeDictCsv } from "../../src/catalog/csv.js";
-import { IdentityError } from "../../src/catalog/identity.js";
 
 let tmpDir: string;
 let roots: CatalogRoots;

@@ -15,6 +15,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { pyJsonDumps } from "@paperpilot/core/pycompat";
 import { atomicWriteText } from "../../collect/state/atomic.js";
+import { toJsonSafeClassifications } from "./cache.js";
 import { withClassificationLock } from "./lock.js";
 
 function isPlainObject(x: unknown): x is Record<string, unknown> {
@@ -222,9 +223,17 @@ export async function compact(options: CompactOptions): Promise<number> {
       if (!(k in cache) || k in kept) final[k] = v;
     }
     added = Object.keys(final).length - Object.keys(kept).length;
+    // `confidence` is a Python float; wrap it so an exactly-1.0/0.0
+    // cached value re-serializes as "1.0"/"0.0", not "1"/"0"
+    // (p4-followups #24) — see cache.ts's toJsonSafeClassifications doc
+    // comment for why this is re-asserted by field, not value-detected.
     atomicWriteText(
       options.cachePath,
-      pyJsonDumps(final, { ensureAscii: false, indent: 2, sortKeys: true }),
+      pyJsonDumps(toJsonSafeClassifications(final), {
+        ensureAscii: false,
+        indent: 2,
+        sortKeys: true,
+      }),
     );
     return null;
   });

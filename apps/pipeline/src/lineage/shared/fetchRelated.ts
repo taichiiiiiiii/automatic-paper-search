@@ -2,15 +2,20 @@
  * References/citations BFS dispatcher — TS port of
  * `paperpilot/scripts/build_lineage.py`'s `S2TransientError`, `_s2_get`,
  * `fetch_related` (the S2 half; the `openalex:`-prefixed half dispatches
- * to `./openalexFetch.ts`'s `fetchRelatedViaOpenalex`, already ported).
+ * to `../theme/openalexFetch.ts`'s `fetchRelatedViaOpenalex`).
  *
- * Scope note: `fetch_related` belongs to `build_lineage.py` (the
- * conference/ICLR builder), a separate P4d task from this one — but
- * `build_theme_lineage.py`'s BFS (`_run_bfs_and_descendants`, in
- * `bfs.ts`) calls it directly and dispatches by paperId prefix, so a
- * local, scoped copy of the S2 half lives here (same pattern as
- * `./node.ts`/`./providerFactory.ts`'s scope notes) alongside the
- * already-in-scope OpenAlex half.
+ * Consolidated per docs/migration/p4-followups.md #23: this used to be a
+ * local, scoped copy inside `apps/pipeline/src/lineage/theme/
+ * fetchRelated.ts` (`build_theme_lineage.py`'s BFS calls it directly and
+ * dispatches by paperId prefix), because the P4d task that ported
+ * `build_lineage.py`'s conference/ICLR builder and the one that ported
+ * the theme builder had non-overlapping edit scopes. The conference and
+ * deep builders already called this same function via
+ * `../theme/fetchRelated.js` — that reverse dependency is what this move
+ * fixes; the OpenAlex half it dispatches to (`openalexFetch.ts`), plus
+ * `payloadShape.ts`/`versionedCache.ts`, stay in `../theme/` (they are
+ * not duplicated anywhere, so moving them is out of this follow-up's
+ * scope).
  *
  * Safety contracts: LIN-02 (this is the "expansion" side of the
  * completeness ledger — a loss here is counted, not raised), LIN-20 (a
@@ -26,10 +31,10 @@ import {
   fetchRelatedViaOpenalex,
   type OpenAlexDeps,
   OpenAlexTransientError,
-} from "./openalexFetch.js";
-import type { ThemePaper } from "./openalexWork.js";
-import { s2CachedNeighbourOk, s2RelationEntryOk } from "./payloadShape.js";
-import { readVersionedCache, writeVersionedCache } from "./versionedCache.js";
+} from "../theme/openalexFetch.js";
+import type { ThemePaper } from "../theme/openalexWork.js";
+import { s2CachedNeighbourOk, s2RelationEntryOk } from "../theme/payloadShape.js";
+import { readVersionedCache, writeVersionedCache } from "../theme/versionedCache.js";
 
 export const RELATION_CACHE_VERSION = "lineage-relation-cache-v1";
 /** Unauthenticated S2 quota is harsh; stay well under it. */

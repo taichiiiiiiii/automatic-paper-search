@@ -6,10 +6,11 @@
 
 import type { ClassifyPaperLike, LLMProvider } from "../../collect/llm/provider.js";
 import { deriveRelation, isFoundationalAncestor } from "../classify/classify.js";
+import type { BuildCompletenessForExpansion } from "../shared/fetchRelated.js";
+import { type FetchRelatedDeps, fetchRelated } from "../shared/fetchRelated.js";
+import type { ThemeGraphNode } from "../shared/node.js";
 import { isTrending, makeEdge, type ThemeEdge } from "./edges.js";
-import type { BuildCompletenessForExpansion } from "./fetchRelated.js";
-import { type FetchRelatedDeps, fetchRelated } from "./fetchRelated.js";
-import { type ThemeGraphNode, toThemeNode } from "./node.js";
+import { toThemeNode } from "./node.js";
 import type { ThemePaper } from "./openalexWork.js";
 import { filterOffTopicRefs } from "./seedFilters.js";
 

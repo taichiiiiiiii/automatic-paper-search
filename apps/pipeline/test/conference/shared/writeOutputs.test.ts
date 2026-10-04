@@ -14,11 +14,11 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { IdentityError } from "@paperpilot/core/identity";
+import { InvalidConferenceSlugError } from "@paperpilot/core/slug";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { InvalidConferenceSlugError } from "../../../src/conference/shared/conferenceSlug.js";
 import { type ConferenceRow, CSV_COLUMNS } from "../../../src/conference/shared/csvColumns.js";
 import { writeOutputs } from "../../../src/conference/shared/writeOutputs.js";
-import { IdentityError } from "../../../src/release/identity/sourceIds.js";
 
 // CNF-19 "atomic write" mutant check: wraps the real `atomicWriteText` so
 // the file still actually gets written (every other test's assertions

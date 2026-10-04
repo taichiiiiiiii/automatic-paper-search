@@ -70,6 +70,34 @@ describe("normalizeDecision", () => {
   });
 });
 
+// p4-followups #28: normalizedText() now uses pySplit (Python's no-arg
+// str.split() whitespace set) instead of JS's `\s`. This feeds
+// sourceFingerprint, so it's worth pinning the one case where the two
+// whitespace sets actually disagree — see @paperpilot/core/pycompat's
+// pySplit doc comment — not just ordinary-whitespace titles the rest of
+// this suite already exercises identically either way.
+describe("normalizedText whitespace set (p4-followups #28)", () => {
+  it("collapses Python-only whitespace (U+0085 NEL) that JS's \\s does not match", async () => {
+    const notes = [note("n1", "accept", "Title\u0085With\u0085NEL")];
+    const adapter = new OpenReviewV2Adapter({ transport: singlePageTransport(notes) });
+    const result = await adapter.collect(EDITION, limits);
+    expect(result.kind).toBe("snapshot");
+    if (result.kind === "snapshot") {
+      expect(result.snapshot.rows[0]?.title).toBe("Title With NEL");
+    }
+  });
+
+  it("does NOT treat U+FEFF (BOM) as whitespace, unlike JS's .trim()/\\s", async () => {
+    const notes = [note("n1", "accept", "﻿Kept Together")];
+    const adapter = new OpenReviewV2Adapter({ transport: singlePageTransport(notes) });
+    const result = await adapter.collect(EDITION, limits);
+    expect(result.kind).toBe("snapshot");
+    if (result.kind === "snapshot") {
+      expect(result.snapshot.rows[0]?.title).toBe("﻿Kept Together");
+    }
+  });
+});
+
 describe("OpenReviewV2Adapter (CNF-22/23)", () => {
   it("returns a complete snapshot for a single, fully-fetched page", async () => {
     const notes = [note("n1", "accept"), note("n2", "reject")];

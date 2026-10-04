@@ -2,6 +2,8 @@
  * Port of `test_conference_watch_dry_run.py` / `test_conference_dry_run_integration.py`
  * (CNF-34/35, docs/migration/safety-contracts.md).
  */
+
+import { makePaperId } from "@paperpilot/core/identity";
 import { describe, expect, it } from "vitest";
 import { buildCatalogCandidate } from "../../../src/conference/watch/candidate.js";
 import {
@@ -23,7 +25,6 @@ import {
   observationFromDetection,
   reduceReadiness,
 } from "../../../src/conference/watch/stability.js";
-import { makePaperId } from "../../../src/release/identity/sourceIds.js";
 
 const EDITION: Edition = {
   editionId: "iclr-2026",

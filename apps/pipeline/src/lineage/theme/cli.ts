@@ -18,8 +18,8 @@ import type { FetchInit, HttpResponseLike } from "../../collect/http/requestWith
 import { CliUsageError, parseArgs as parseFlags } from "../../shared/cli/argparse.js";
 import { isMain } from "../../shared/cli/isMain.js";
 import { IncompleteBuildError } from "../fetch-state/completeness.js";
+import { buildProvider } from "../shared/providerFactory.js";
 import { type BuildThemeLineageDeps, buildThemeLineage, ZeroEdgeBuildError } from "./build.js";
-import { buildProvider } from "./providerFactory.js";
 import { sanitizeTheme } from "./slug.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));

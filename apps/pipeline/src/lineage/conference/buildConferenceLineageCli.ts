@@ -6,7 +6,7 @@
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { pyJsonDumps } from "@paperpilot/core";
-import { validateConferenceSlug } from "../../catalog/slug.js";
+import { validateConferenceSlug } from "@paperpilot/core/slug";
 import type { FetchInit, HttpResponseLike } from "../../collect/http/requestWithRetry.js";
 import { atomicWriteText } from "../../collect/state/atomic.js";
 import { parseArgs as parseFlags } from "../../shared/cli/argparse.js";

@@ -10,9 +10,7 @@ import { describe, expect, it } from "vitest";
 import { deriveRelation } from "../../../src/lineage/classify/classify.js";
 import {
   classificationProvenance,
-  filterEdgesByRationale,
   heuristicEvidenceInput,
-  isDegenerateRationale,
   isTrending,
   makeEdge,
 } from "../../../src/lineage/theme/edges.js";
@@ -121,34 +119,5 @@ describe("isTrending (#68)", () => {
     expect(isTrending({ citationCount: 700, year: 2023 }, 2026)).toBe(true); // exactly 3y boundary
     expect(isTrending({ citationCount: 9999 }, 2026)).toBe(false); // missing year
     expect(isTrending({ citationCount: 9999, year: 2030 }, 2026)).toBe(false); // future year
-  });
-});
-
-// LIN-37: port of test_build_lineage.py::test_build_final_filter_drops_short_rationale_edges
-describe("filterEdgesByRationale / isDegenerateRationale (LIN-37)", () => {
-  it("drops edges whose rationale is below MIN_RATIONALE_LEN, not just empty ones", () => {
-    const edges = [
-      { src: "a", dst: "b", rel: "extends", conf: 0.7, rationale: "A" },
-      { src: "a", dst: "c", rel: "extends", conf: 0.7, rationale: "   " },
-      {
-        src: "a",
-        dst: "d",
-        rel: "extends",
-        conf: 0.7,
-        rationale: "論文 B は論文 A の手法を別ドメインに拡張している。",
-      },
-    ];
-    const kept = filterEdgesByRationale(edges);
-    expect(kept).toHaveLength(1);
-    expect(kept[0]?.dst).toBe("d");
-  });
-
-  it("isDegenerateRationale: non-string, empty-after-trim, and below-floor are all degenerate; a full sentence is not", () => {
-    expect(isDegenerateRationale(undefined)).toBe(true);
-    expect(isDegenerateRationale(null)).toBe(true);
-    expect(isDegenerateRationale(123)).toBe(true);
-    expect(isDegenerateRationale("   ")).toBe(true);
-    expect(isDegenerateRationale("A")).toBe(true);
-    expect(isDegenerateRationale("論文 B は論文 A の手法を別ドメインに拡張している。")).toBe(false);
   });
 });

@@ -20,8 +20,8 @@
 
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { IdentityError, identityFromUrl, normalizeAlias } from "../../catalog/identity.js";
-import { validateConferenceSlug } from "../../catalog/slug.js";
+import { IdentityError, identityFromUrl, normalizeAlias } from "@paperpilot/core/identity";
+import { validateConferenceSlug } from "@paperpilot/core/slug";
 import type { FetchLike } from "../../collect/http/requestWithRetry.js";
 import { requestWithRetry } from "../../collect/http/requestWithRetry.js";
 import { firstUnusable } from "../../collect/signals/payload.js";

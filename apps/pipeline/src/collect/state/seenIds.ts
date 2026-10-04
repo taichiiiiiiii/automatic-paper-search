@@ -46,6 +46,7 @@ import { randomBytes } from "node:crypto";
 // `monkeypatch.setattr(dedup_mod.os, "replace", ...)`.
 import * as fs from "node:fs";
 import { dirname } from "node:path";
+import { acquireLock, type LockTuning, releaseLock } from "../../shared/lock.js";
 import type { Paper } from "../model/paper.js";
 import { paperUid } from "../model/paper.js";
 
@@ -468,111 +469,17 @@ export function saveSeenIds(path: string, seen: Readonly<Record<string, string>>
 // merge under lock (COL-22)
 // ---------------------------------------------------------------------
 
-const STALE_LOCK_MS = 60_000;
-const LOCK_ACQUIRE_TIMEOUT_MS = 30_000;
-const LOCK_POLL_INTERVAL_MS = 20;
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-export interface LockTuning {
-  staleLockMs?: number;
-  lockTimeoutMs?: number;
-  lockPollIntervalMs?: number;
-}
-
-/** Reads the owner token currently written in a lock file, or `null` if it cannot be read. */
-function readLockToken(lockPath: string): string | null {
-  try {
-    return fs.readFileSync(lockPath, "utf-8");
-  } catch {
-    return null;
-  }
-}
-
+export type { LockTuning };
 /**
- * Acquires the sibling `<path>.lock` (see module doc for the O_EXCL
- * scheme) and returns a unique OWNER TOKEN this caller must hand back to
- * {@link releaseLock} (M5).
- *
- * Each acquisition writes a fresh random token (not just `process.pid`,
- * which is reused across acquisitions in the same process and is not
- * unique across the separate PID namespaces of this pipeline's concurrent
- * containers) into the lock file. `releaseLock` refuses to unlink a lock
- * whose current content is not this exact token — the backstop for the
- * race below, where a lock judged stale is broken while its original
- * holder is still finishing (not actually dead, just slow): without the
- * check, that holder's own delayed `finally { releaseLock() }` would
- * unlink whatever NEW, perfectly fresh lock a third caller created at the
- * same path in the meantime, letting a fourth caller acquire while the
- * third is still mid-critical-section.
- *
- * Breaking a stale lock itself moves it aside to a unique tombstone name
- * via `fs.renameSync` rather than `fs.unlinkSync`: an atomic rename, not a
- * blind delete, so the broken lock's content survives (briefly, for
- * forensics) instead of vanishing with no trace of what was stolen and
- * when. `renameSync` throwing ENOENT (another caller already renamed or
- * released it first) is treated the same as a losing race for `wx`
- * create: retry the loop rather than erroring out.
+ * Consolidated per docs/migration/p4-followups.md #13: the lockfile
+ * scheme itself (owner-token + TOCTOU-safe stale-lock break via
+ * rename-to-tombstone) now lives in `../../shared/lock.ts`, shared with
+ * `lineage/classify/lock.ts`. These two names are re-exported unchanged
+ * so every existing import of `acquireLock`/`releaseLock`/`LockTuning`
+ * FROM THIS MODULE (this file's own callers, `collect/runner.ts`, and
+ * this module's own test suite) keeps working.
  */
-export async function acquireLock(lockPath: string, tuning: LockTuning = {}): Promise<string> {
-  const staleLockMs = tuning.staleLockMs ?? STALE_LOCK_MS;
-  const lockTimeoutMs = tuning.lockTimeoutMs ?? LOCK_ACQUIRE_TIMEOUT_MS;
-  const pollIntervalMs = tuning.lockPollIntervalMs ?? LOCK_POLL_INTERVAL_MS;
-  const deadline = Date.now() + lockTimeoutMs;
-  for (;;) {
-    const token = `${process.pid}-${randomBytes(8).toString("hex")}`;
-    try {
-      const fd = fs.openSync(lockPath, "wx");
-      fs.writeSync(fd, token);
-      fs.closeSync(fd);
-      return token;
-    } catch (e) {
-      if ((e as NodeJS.ErrnoException).code !== "EEXIST") throw e;
-    }
-    try {
-      const stat = fs.statSync(lockPath);
-      if (Date.now() - stat.mtimeMs > staleLockMs) {
-        const tombstone = `${lockPath}.stale-${randomBytes(8).toString("hex")}`;
-        try {
-          fs.renameSync(lockPath, tombstone);
-          try {
-            fs.unlinkSync(tombstone);
-          } catch {
-            /* best-effort cleanup of the tombstone */
-          }
-        } catch {
-          /* another caller already broke/replaced it first; retry the loop */
-        }
-        continue;
-      }
-    } catch {
-      // Lock file vanished between our failed create and this stat; retry.
-      continue;
-    }
-    if (Date.now() > deadline) {
-      throw new Error(`timed out waiting for lock ${lockPath}`);
-    }
-    await sleep(pollIntervalMs);
-  }
-}
-
-/**
- * Releases a lock this caller acquired, identified by the exact token
- * {@link acquireLock} returned (M5). If the file at `lockPath` no longer
- * holds that token — broken as stale and re-acquired by someone else, or
- * never ours — this is a no-op: unlinking it would delete another
- * holder's active lock out from under it.
- */
-export function releaseLock(lockPath: string, token: string): void {
-  if (readLockToken(lockPath) !== token) return;
-  try {
-    fs.unlinkSync(lockPath);
-  } catch {
-    /* already released */
-  }
-}
+export { acquireLock, releaseLock };
 
 /**
  * Mark `papers` seen in the on-disk file and return the merged mapping. The

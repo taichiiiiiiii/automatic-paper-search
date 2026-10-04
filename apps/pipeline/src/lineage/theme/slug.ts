@@ -13,14 +13,19 @@
  * operator-supplied `--output` override's slug segment through here
  * too).
  *
- * `themeSlug`'s algorithm matches `worker/slug.js`'s `themeSlug()`
- * exactly (3-way parity with the Python original and the CF Worker is
- * pinned by `paperpilot/tests/test_worker_slug_parity.py` on the Python
- * side) — this is a third, independent transcription rather than an
- * import of `worker/slug.js` because this task's edit scope is limited
- * to `apps/pipeline/src/lineage/theme/**`; keep all three in sync by
- * hand if the algorithm ever changes.
+ * `themeSlug` itself is consolidated in `@paperpilot/core/slug` per
+ * docs/migration/p4-followups.md #25 (TS side only) — it used to be a
+ * third, independent transcription of the same algorithm as
+ * `worker/slug.js` and the Python original, written here only because
+ * this task's edit scope was limited to
+ * `apps/pipeline/src/lineage/theme/**`. `worker/slug.js` (the CF
+ * Worker's own copy) is deliberately left untouched — it is production
+ * code until P5 — and the Python original is still the ultimate
+ * authority; `packages/core/test/slug/theme.test.ts` now pins all three
+ * against each other directly.
  */
+
+export { themeSlug } from "@paperpilot/core/slug";
 
 const SLUG_MAX_LEN = 64;
 const THEME_MAX_LEN = 500;
@@ -57,39 +62,6 @@ export function sanitizeTheme(theme: string): string {
     throw new RangeError(`theme exceeds ${THEME_MAX_LEN} chars (got ${cleaned.length})`);
   }
   return cleaned;
-}
-
-const SLUG_ALLOWED_RE = /[^a-z0-9]+/g;
-const SLUG_TRIM_RE = /^-+|-+$/g;
-
-/** Normalise a free-text theme label into a URL- and filesystem-safe
- * slug.
- *
- * Algorithm:
- *  1. NFKD-normalise, drop anything outside ASCII — strips combining
- *     marks and rejects characters with no ASCII fallback (e.g. CJK).
- *  2. Lowercase, replace any run of non-`[a-z0-9]` with a single hyphen.
- *  3. Trim leading/trailing hyphens.
- *  4. Cap to 64 characters; trim a trailing hyphen left by the cut.
- *
- * @throws {RangeError} input is empty/whitespace-only, OR collapses to
- * an empty slug after normalisation.
- */
-export function themeSlug(label: string): string {
-  if (!label || !label.trim()) {
-    throw new RangeError("theme_slug: label must be non-empty");
-  }
-  // Python: unicodedata.normalize("NFKD", label).encode("ascii", "ignore").decode()
-  // biome-ignore lint/suspicious/noControlCharactersInRegex: intentional — strips every non-ASCII code point (including control chars), mirroring Python's `.encode("ascii", "ignore")`.
-  const normalised = label.normalize("NFKD").replace(/[^\x00-\x7f]/g, "");
-  let slug = normalised.toLowerCase().replace(SLUG_ALLOWED_RE, "-").replace(SLUG_TRIM_RE, "");
-  if (slug.length > SLUG_MAX_LEN) {
-    slug = slug.slice(0, SLUG_MAX_LEN).replace(/-+$/, "");
-  }
-  if (!slug) {
-    throw new RangeError(`theme_slug: derived slug is empty for input: ${JSON.stringify(label)}`);
-  }
-  return slug;
 }
 
 const SLUG_SHAPE_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;

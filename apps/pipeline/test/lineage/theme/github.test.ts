@@ -6,8 +6,8 @@ import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { ThemeGraphNode } from "../../../src/lineage/shared/node.js";
 import { enrichGithubStars } from "../../../src/lineage/theme/github.js";
-import type { ThemeGraphNode } from "../../../src/lineage/theme/node.js";
 
 const GITHUB_CACHE_VERSION = "github-stars-cache-v1";
 

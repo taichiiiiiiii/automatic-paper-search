@@ -31,7 +31,7 @@
  * check use the same budget rather than silently drifting apart.
  */
 
-import { IdentityError } from "./identity.js";
+import { IdentityError } from "@paperpilot/core/identity";
 
 export const NOJS_MAX_PAPERS = 6_000;
 export const NOJS_MAX_RENDERED_BYTES = 3 * 1024 * 1024;

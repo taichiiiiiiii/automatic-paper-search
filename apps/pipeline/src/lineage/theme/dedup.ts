@@ -6,7 +6,7 @@
  */
 
 import { codepointCompare, PY_WORD_CLASS_SOURCE } from "@paperpilot/core";
-import { makePaperId } from "../../catalog/identity.js";
+import { makePaperId } from "@paperpilot/core/identity";
 import {
   type AliasablePaper,
   CANONICAL_ALIAS_NAMESPACES,

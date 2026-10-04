@@ -22,6 +22,7 @@ import {
   unlinkSync,
 } from "node:fs";
 import { basename, dirname, join } from "node:path";
+import { IdentityError, identityFromUrl, normalizeAlias } from "@paperpilot/core/identity";
 import {
   codepointCompare,
   pyJsonDumps,
@@ -32,7 +33,6 @@ import {
 import { neutralizeRow, unneutralize } from "../collect/exporters/csvSafety.js";
 import { atomicWriteText } from "../collect/state/atomic.js";
 import { dictReader, stripBom, writeDictCsv } from "./csv.js";
-import { IdentityError, identityFromUrl, normalizeAlias } from "./identity.js";
 import { TOPIC_RULES_COMPILED } from "./topicRules.js";
 
 /**

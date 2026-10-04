@@ -147,3 +147,28 @@ describe("offtopicNonfocusMetric", () => {
     expect(m.offtopic_ratio).toBe(0);
   });
 });
+
+describe("percentage display uses Python round-half-to-even, not Math.round (p4-followups #18)", () => {
+  it("formats an exact .5 tie to the nearest EVEN percent, not rounded up", () => {
+    const template: string = TEMPLATE_RATIONALES.extends_methodology ?? "";
+    // 5/8 == 62.5% exactly: Python's f"{0.625:.0%}" == "62%" (round-half-
+    // to-even; 62 is even). `Math.round(62.5)` would give "63%" instead —
+    // this is the one case where the two disagree.
+    function edge(rationale: string): Record<string, unknown> {
+      return { src: "a", dst: "b", rationale };
+    }
+    const edges = [
+      ...Array(5)
+        .fill(0)
+        .map(() => edge(template)),
+      edge("specific non-template text one"),
+      edge("specific non-template text two"),
+      edge("specific non-template text three"),
+    ];
+    const { warnings, failures } = auditEdges({ edges });
+    expect(failures.some((f) => f.startsWith("template_rationale_ratio="))).toBe(false);
+    const warning = warnings.find((w) => w.startsWith("template_rationale_ratio="));
+    expect(warning).toContain("template_rationale_ratio=62%");
+    expect(warning).not.toContain("63%");
+  });
+});

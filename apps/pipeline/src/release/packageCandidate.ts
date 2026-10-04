@@ -7,13 +7,13 @@
 
 import { copyFileSync, lstatSync, mkdirSync, readdirSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
-import { type GitAdapter, git } from "./git/gitAdapter.js";
 import {
   isUnderIncludedPath,
   PathSafetyError,
   validateCandidateDirArg,
   validateIncludedPathArg,
-} from "./paths.js";
+} from "@paperpilot/core/paths";
+import { type GitAdapter, git } from "./git/gitAdapter.js";
 
 export class PackageCandidateError extends Error {}
 

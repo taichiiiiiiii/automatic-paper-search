@@ -16,14 +16,10 @@
 
 import { existsSync, mkdirSync, realpathSync, unlinkSync } from "node:fs";
 import * as path from "node:path";
+import { IdentityError, identityFromUrl, normalizeAlias } from "@paperpilot/core/identity";
+import { validateConferenceSlug } from "@paperpilot/core/slug";
 import { neutralizeRow } from "../../collect/exporters/csvSafety.js";
 import { atomicWriteText } from "../../collect/state/atomic.js";
-import {
-  IdentityError,
-  identityFromUrl,
-  normalizeAlias,
-} from "../../release/identity/sourceIds.js";
-import { validateConferenceSlug } from "./conferenceSlug.js";
 import { type ConferenceRow, CSV_COLUMNS } from "./csvColumns.js";
 
 export interface WriteOutputsOptions {

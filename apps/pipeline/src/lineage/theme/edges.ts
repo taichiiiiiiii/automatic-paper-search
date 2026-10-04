@@ -1,22 +1,21 @@
 /**
  * Edge construction + provenance binding — TS port of
  * `paperpilot/scripts/build_theme_lineage.py`'s `_heuristic_evidence_input`,
- * `_classification_provenance`, `_make_edge`, `_is_trending`, plus
- * `build_lineage.py`'s `_is_degenerate_rationale`/`_filter_edges_by_rationale`
- * (LIN-37 — scope note: belongs to `build_lineage.py`, a separate P4d
- * task, copied locally because `build_theme_lineage`'s own final filter
- * depends on it; same pattern as `./node.ts`).
+ * `_classification_provenance`, `_make_edge`, `_is_trending`.
+ *
+ * `_is_degenerate_rationale`/`_filter_edges_by_rationale` (LIN-37) are
+ * `build_lineage.py`'s own functions, consolidated into
+ * `../shared/rationale.ts` per docs/migration/p4-followups.md #23 and
+ * re-exported here unchanged so this module's own importers
+ * (`./build.ts`) are unaffected.
  */
 
 import type { LLMProvider } from "../../collect/llm/provider.js";
 import type { DerivedEdge } from "../classify/classify.js";
 import { CLASSIFICATION_METHODS, canonicalJsonSha256, makeProvenance } from "../contract/v1.js";
-import {
-  buildClassifyPrompt,
-  codePointLength,
-  MIN_RATIONALE_LEN,
-  providerModelTag,
-} from "../llm/base.js";
+import { buildClassifyPrompt, providerModelTag } from "../llm/base.js";
+
+export { filterEdgesByRationale, isDegenerateRationale } from "../shared/rationale.js";
 
 export const PRODUCER_NAME = "paperpilot.scripts.build_theme_lineage";
 export const PRODUCER_VERSION = "p2t-v1";
@@ -171,23 +170,4 @@ export function isTrending(
   if (age > TRENDING_AGE_LIMIT_YEARS) return false;
   const ageYears = Math.max(age, 0.5);
   return cit / ageYears >= TRENDING_VELOCITY_THRESHOLD;
-}
-
-// ---- LIN-37: drop edges with an empty/degenerate rationale ----
-
-/** True iff `rationale` is empty or below the `MIN_RATIONALE_LEN` floor
- * (#297). Centralises the "is this a meaningless tooltip" test. */
-export function isDegenerateRationale(rationale: unknown): boolean {
-  if (typeof rationale !== "string") return true;
-  return codePointLength(rationale.trim()) < MIN_RATIONALE_LEN;
-}
-
-/** Drop edges whose rationale is empty or below the min-length floor —
- * belt-and-braces final filter (`RelationClassification.from_dict` and
- * the cache-hit guard already reject both, but this also catches edges
- * built outside those paths). */
-export function filterEdgesByRationale<T extends { rationale?: unknown }>(
-  edges: readonly T[],
-): T[] {
-  return edges.filter((e) => !isDegenerateRationale(e.rationale));
 }

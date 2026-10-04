@@ -7,9 +7,16 @@
 import { existsSync, mkdtempSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { pyJsonDumps } from "@paperpilot/core";
 import { beforeEach, describe, expect, it } from "vitest";
 import type { FetchInit, HttpResponseLike } from "../../../src/collect/http/requestWithRetry.js";
-import { type BuildThemeLineageDeps, buildThemeLineage } from "../../../src/lineage/theme/build.js";
+import type { DerivedEdge } from "../../../src/lineage/classify/classify.js";
+import {
+  type BuildThemeLineageDeps,
+  buildThemeLineage,
+  edgeForJson,
+} from "../../../src/lineage/theme/build.js";
+import { makeEdge } from "../../../src/lineage/theme/edges.js";
 
 function jsonResp(status: number, body: unknown): HttpResponseLike {
   return { status, json: async () => body };
@@ -201,5 +208,33 @@ describe("buildThemeLineage", () => {
       ),
     ).rejects.toThrow(/no focus paper survived/);
     expect(existsSync(join(docsRoot, "themes", "promotion-theme", "lineage.json"))).toBe(false);
+  });
+});
+
+describe("edgeForJson (p4-followups #24)", () => {
+  it("wraps an exactly-1.0/0.0 confidence so it serializes as the Python float literal, not a bare int", () => {
+    const classification: DerivedEdge = {
+      relation: "successor",
+      confidence: 1,
+      rationale: "an LLM returned exactly 1.0 confidence",
+      provenance: "llm",
+    };
+    const edge = makeEdge(classification, {
+      srcId: "a",
+      dstId: "b",
+      parent: {},
+      child: {},
+      intentRecord: {},
+      provider: null,
+    });
+    // The in-memory edge keeps plain numbers (arithmetic/typeof checks
+    // downstream must keep working on it).
+    expect(edge.conf).toBe(1);
+    expect(edge.confidence).toBe(1);
+    const json = pyJsonDumps(edgeForJson(edge), { ensureAscii: false });
+    expect(json).toContain('"conf": 1.0');
+    expect(json).toContain('"confidence": 1.0');
+    expect(json).not.toMatch(/"conf": 1,/);
+    expect(json).not.toMatch(/"confidence": 1,/);
   });
 });

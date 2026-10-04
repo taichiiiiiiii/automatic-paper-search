@@ -5,7 +5,8 @@
  * (DNS pinning, retries, byte limits) lives in `./transport.ts`.
  */
 
-import { IdentityError, makePaperId } from "../../catalog/identity.js";
+import { IdentityError, makePaperId } from "@paperpilot/core/identity";
+import { pySplit } from "@paperpilot/core/pycompat";
 import { sourceFingerprint } from "./fingerprint.js";
 import {
   type DetectionResult,
@@ -49,7 +50,12 @@ function normalizedText(value: unknown, required: boolean, maximum = 100_000): s
     if (required) throw new RangeError("required text is missing");
     return "";
   }
-  const normalized = value.split(/\s+/).filter(Boolean).join(" ");
+  // `" ".join(value.split())` (p4-followups #28): Python's no-arg
+  // `str.split()` whitespace set differs slightly from JS's `\s` — see
+  // `@paperpilot/core/pycompat`'s `pySplit` doc comment — and this feeds
+  // `sourceFingerprint` below, so using the real set (not `.filter(Boolean)`
+  // over `\s+`) matters for byte-identical fingerprints on exotic input.
+  const normalized = pySplit(value).join(" ");
   if ((required && !normalized) || normalized.length > maximum) {
     throw new RangeError("text field is empty or oversized");
   }

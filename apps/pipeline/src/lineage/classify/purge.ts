@@ -21,6 +21,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { pyJsonDumps } from "@paperpilot/core/pycompat";
 import { atomicWriteText } from "../../collect/state/atomic.js";
 import { TEMPLATE_RATIONALES } from "../llm/base.js";
+import { toJsonSafeClassifications } from "./cache.js";
 import { withClassificationLock } from "./lock.js";
 
 const TEMPLATE_RATIONALES_SET: ReadonlySet<string> = new Set(Object.values(TEMPLATE_RATIONALES));
@@ -109,9 +110,13 @@ function purgeLocked(
   }
 
   // Pretty-print with stable key order so the diff in git is meaningful.
+  // `confidence` is a Python float; wrap it so an exactly-1.0/0.0 cached
+  // value re-serializes as "1.0"/"0.0", not "1"/"0" (p4-followups #24) —
+  // JSON.parse already lost the float/int distinction reading `cache` in,
+  // so this is re-asserted by field, not detected from the parsed value.
   atomicWriteText(
     cachePath,
-    `${pyJsonDumps(kept, { ensureAscii: false, indent: 2, sortKeys: true })}\n`,
+    `${pyJsonDumps(toJsonSafeClassifications(kept), { ensureAscii: false, indent: 2, sortKeys: true })}\n`,
   );
   options.log(`wrote purged cache to ${cachePath}`);
   return 0;

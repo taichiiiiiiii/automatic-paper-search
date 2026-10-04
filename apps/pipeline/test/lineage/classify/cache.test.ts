@@ -328,6 +328,26 @@ describe("persistClassifications", () => {
     expect(onDisk["old->entry"]).toEqual({ relation: "extends", confidence: null, rationale: "r" });
     expect(readFileSync(cachePath, "utf-8")).toContain("NaN");
   });
+
+  it('writes an exactly-1.0 confidence as the Python float literal "1.0", not the int-looking "1" (p4-followups #24)', async () => {
+    const dir = tmpDir();
+    const cachePath = join(dir, "cls.json");
+    const classifications: Record<string, unknown> = {
+      "A->B": { relation: "successor", confidence: 1, rationale: "exact LLM confidence" },
+      "C->D": { relation: "extends", confidence: 0, rationale: "exact zero confidence" },
+    };
+    await persistClassifications(classifications, cachePath);
+    const raw = readFileSync(cachePath, "utf-8");
+    // Must be the float literal, not the bare integer — JSON.parse can't
+    // tell these apart, so this assertion has to be on the raw text.
+    expect(raw).toContain('"confidence": 1.0');
+    expect(raw).toContain('"confidence": 0.0');
+    expect(raw).not.toMatch(/"confidence": 1,/);
+    expect(raw).not.toMatch(/"confidence": 0,/);
+    // The in-memory object passed in is untouched (still a plain number) —
+    // callers that read it back for a cache hit must not see a PyFloat.
+    expect((classifications["A->B"] as { confidence: unknown }).confidence).toBe(1);
+  });
 });
 
 describe("loadClassificationCache", () => {

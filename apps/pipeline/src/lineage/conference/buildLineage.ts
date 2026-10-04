@@ -17,12 +17,12 @@
  * `github_stars` still come from `papers.json` — S2 is used only for edge
  * structure plus neighbour titles/authors.
  *
- * Reuses already-ported pieces that are scoped to this module in the
- * Python original (see their own doc comments for the scope-note
- * pattern): `toNode`/`venueTierFor` (theme/node.ts), `buildProvider`
- * (theme/providerFactory.ts), `fetchRelated`/`s2Get`/`S2TransientError`
- * (theme/fetchRelated.ts), `deriveRelation` + the classification cache
- * (classify/classify.ts, classify/cache.ts).
+ * Reuses the shared `build_lineage.py`-family pieces consolidated in
+ * `../shared/` per docs/migration/p4-followups.md #23: `toNode`/
+ * `venueTierFor` (shared/node.ts), `buildProvider`
+ * (shared/providerFactory.ts), `fetchRelated`/`s2Get`/`S2TransientError`
+ * (shared/fetchRelated.ts), plus `deriveRelation` + the classification
+ * cache (classify/classify.ts, classify/cache.ts).
  */
 
 import { readFileSync } from "node:fs";
@@ -33,8 +33,8 @@ import {
   identityFromUrl,
   isArxivHost,
   normalizeAlias,
-} from "../../catalog/identity.js";
-import { validateConferenceSlug } from "../../catalog/slug.js";
+} from "@paperpilot/core/identity";
+import { validateConferenceSlug } from "@paperpilot/core/slug";
 import type {
   ClassifyPaperLike,
   LLMProvider,
@@ -71,8 +71,9 @@ import {
   fetchRelated as fetchRelatedShared,
   S2TransientError,
   s2Get,
-} from "../theme/fetchRelated.js";
-import { type ThemeGraphNode, toNode } from "../theme/node.js";
+} from "../shared/fetchRelated.js";
+import { type ThemeGraphNode, toNode } from "../shared/node.js";
+import { filterEdgesByRationale, isDegenerateRationale } from "../shared/rationale.js";
 import { s2PaperId, s2PaperShape } from "../theme/payloadShape.js";
 
 export { S2TransientError };
@@ -262,21 +263,13 @@ export function requireS2FocusIdentity(focus: unknown, requestedArxivId: string)
 }
 
 // ---------- Final-output rationale filter (LIN-37) ----------
-
-const MIN_RATIONALE_LEN = 10;
-
-/** TS port of `_is_degenerate_rationale` (#297). */
-export function isDegenerateRationale(rationale: unknown): boolean {
-  if (typeof rationale !== "string") return true;
-  return Array.from(rationale.trim()).length < MIN_RATIONALE_LEN;
-}
-
-/** TS port of `_filter_edges_by_rationale`: belt-and-braces final filter. */
-export function filterEdgesByRationale<T extends { rationale?: unknown }>(
-  edges: readonly T[],
-): T[] {
-  return edges.filter((e) => !isDegenerateRationale(e.rationale));
-}
+//
+// Consolidated per docs/migration/p4-followups.md #23: this file used
+// to carry its own verbatim copy (`MIN_RATIONALE_LEN = 10`,
+// `Array.from(rationale.trim()).length`) independently of
+// `lineage/theme/edges.ts`'s byte-for-byte-identical copy. Both are now
+// the one implementation in `../shared/rationale.ts`.
+export { filterEdgesByRationale, isDegenerateRationale };
 
 // ---------- classify_cached_v2 ----------
 

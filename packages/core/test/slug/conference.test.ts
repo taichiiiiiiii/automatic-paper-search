@@ -1,11 +1,13 @@
 /**
  * Port of `paperpilot/tests/test_scripts_common.py::test_validate_conference_slug_*`.
+ *
+ * Merges the two formerly-duplicated suites around this validator
+ * (`apps/pipeline/src/catalog/slug.ts` and
+ * `apps/pipeline/src/conference/shared/conferenceSlug.ts`) per
+ * docs/migration/p4-followups.md #2/#9/#20.
  */
 import { describe, expect, it } from "vitest";
-import {
-  InvalidConferenceSlugError,
-  validateConferenceSlug,
-} from "../../../src/conference/shared/conferenceSlug.js";
+import { InvalidConferenceSlugError, validateConferenceSlug } from "../../src/slug/conference.js";
 
 describe("validateConferenceSlug", () => {
   it("accepts valid slugs", () => {
@@ -39,5 +41,9 @@ describe("validateConferenceSlug", () => {
   it("rejects overlong input but accepts exactly 64 chars", () => {
     expect(() => validateConferenceSlug("a".repeat(65))).toThrow(InvalidConferenceSlugError);
     expect(validateConferenceSlug("a".repeat(64))).toBe("a".repeat(64));
+  });
+
+  it("the one error type is also a RangeError (backward-compat: former catalog/slug.ts threw plain RangeError)", () => {
+    expect(() => validateConferenceSlug("")).toThrow(RangeError);
   });
 });

@@ -1,5 +1,7 @@
 /**
- * `lineage/theme/node.ts` — `toNode`'s tldr/short_abstract truncation.
+ * `lineage/shared/node.ts` — `toNode`'s tldr/short_abstract truncation.
+ * Relocated from `test/lineage/theme/node.test.ts` per
+ * docs/migration/p4-followups.md #23 (this logic was never theme-specific).
  * Review M9: Python slices `str` by Unicode code point
  * (`abstract[:maxLen]`); a native `String.prototype.slice` counts UTF-16
  * code units instead, which can split a surrogate pair (any character
@@ -7,7 +9,7 @@
  * ideographs) right down the middle.
  */
 import { describe, expect, it } from "vitest";
-import { toNode } from "../../../src/lineage/theme/node.js";
+import { toNode } from "../../../src/lineage/shared/node.js";
 import type { ThemePaper } from "../../../src/lineage/theme/openalexWork.js";
 
 function paperWithAbstract(abstract: string): ThemePaper {

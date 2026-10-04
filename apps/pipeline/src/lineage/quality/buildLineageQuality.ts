@@ -11,7 +11,7 @@ import { createHash } from "node:crypto";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { codepointCompare, pyJsonDumps } from "@paperpilot/core";
-import { IdentityError, normalizeAlias } from "../../catalog/identity.js";
+import { IdentityError, normalizeAlias } from "@paperpilot/core/identity";
 import {
   canonicalFocusNode,
   isPaperId,

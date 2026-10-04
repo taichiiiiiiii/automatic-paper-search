@@ -24,9 +24,9 @@
 
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { IdentityError, identityFromUrl, normalizeAlias } from "@paperpilot/core/identity";
 import { codepointCompare, pyFloat, pyJsonDumps } from "@paperpilot/core/pycompat";
 import { atomicWriteBytes } from "../../collect/state/atomic.js";
-import { IdentityError, identityFromUrl, normalizeAlias } from "../identity/sourceIds.js";
 
 export interface IdentityFailure {
   conference: string;

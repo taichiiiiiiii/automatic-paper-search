@@ -26,15 +26,15 @@
 
 import { existsSync, mkdirSync, readdirSync, readFileSync, realpathSync, statSync } from "node:fs";
 import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
+import { IdentityError, identityFromUrl, normalizeAlias } from "@paperpilot/core/identity";
 import { pyJsonDumps, pyRstrip, pySplit, pyStrip } from "@paperpilot/core/pycompat";
+import { validateConferenceSlug } from "@paperpilot/core/slug";
 import { unneutralize } from "../collect/exporters/csvSafety.js";
 import { atomicWriteText } from "../collect/state/atomic.js";
 import { parseArgs as parseFlags } from "../shared/cli/argparse.js";
 import { SUMMARY_META_FILENAME } from "./buildSummary.js";
 import { dictReader } from "./csv.js";
-import { IdentityError, identityFromUrl, normalizeAlias } from "./identity.js";
 import { assertPaperLinksGate } from "./paperLinksGate.js";
-import { validateConferenceSlug } from "./slug.js";
 
 export interface CatalogRoots {
   /** Directory containing `<conference>/summary.csv` (Python: `PROJECT / "output"`). */

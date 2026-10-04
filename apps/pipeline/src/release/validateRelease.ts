@@ -37,8 +37,8 @@
 
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
+import { validateSmokeRelativePath } from "@paperpilot/core/paths";
 import { XMLValidator } from "fast-xml-parser";
-import { validateSmokeRelativePath } from "./paths.js";
 
 export class ValidateReleaseError extends Error {}
 

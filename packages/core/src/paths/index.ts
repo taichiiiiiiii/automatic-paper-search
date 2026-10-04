@@ -1,12 +1,14 @@
 /**
  * Relative-path safety helpers shared by the Node release scripts
- * (promoter, candidate packager, release validator).
+ * (promoter, candidate packager, release validator) and, per
+ * docs/migration/p4-followups.md #1, intended for the catalog/replay code
+ * too (PUB-05, RPL-09).
  *
- * `docs/migration/safety-contracts.md` targets `packages/core/paths` for
- * PUB-05 and RPL-09 (a path-safety helper shared with the catalog/replay
- * code). This change's edit limits restrict it to
- * `apps/pipeline/src/release/**`, so the logic lives here instead; see the
- * final report for the consolidation follow-up.
+ * Consolidated into `packages/core` per that follow-up: this module used
+ * to live at `apps/pipeline/src/release/paths.ts` only, because that P4b
+ * task's edit scope excluded `packages/core`. Pure string/array logic, no
+ * `node:fs`/`node:crypto` — safe for the browser-safe subpath export
+ * (`@paperpilot/core/paths`).
  */
 
 export class PathSafetyError extends Error {}
