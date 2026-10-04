@@ -38,8 +38,16 @@
  * tombstoned file's content + mtime are then checked against the
  * snapshot taken before the rename: a match means it really was the
  * same old, stale lock and the tombstone is discarded; a mismatch means
- * a fresh lock got clobbered, so it is renamed back into place and this
- * caller just retries the loop instead of proceeding.
+ * a fresh lock got clobbered, so it is restored and this caller just
+ * retries the loop instead of proceeding. That restore uses `linkSync`
+ * (fails with EEXIST if something is already at `lockPath`), not
+ * `renameSync` — `rename` would silently OVERWRITE whatever a third
+ * party created at `lockPath` in the meantime (P4 review round 3 LOW: the
+ * exact TOCTOU window this function exists to close elsewhere was still
+ * open on its own restore path). If a `link` finds the path already
+ * occupied, that occupant — not our stale copy — wins; this caller's
+ * observation was itself broken by someone else, so it just leaves the
+ * new lock alone and discards the tombstone.
  */
 
 import { randomBytes } from "node:crypto";
@@ -108,18 +116,22 @@ function breakStaleLockIfStillStale(
   // We raced a fresh acquisition: what we moved aside is NOT the lock we
   // observed as stale (different content/mtime — a new, legitimate owner
   // grabbed this path in the window between our staleness read and the
-  // rename above). Put it back rather than discard someone else's live
-  // lock.
+  // rename above). Put it back — via `link`, not `rename` (see doc
+  // comment above): `link` fails with EEXIST instead of silently
+  // overwriting whatever that new, legitimate owner has since (re-)created
+  // at `lockPath`, including a lock acquired by yet another caller in the
+  // window between the mismatch we just observed and this restore attempt.
   try {
-    fs.renameSync(tombstone, lockPath);
+    fs.linkSync(tombstone, lockPath);
+  } catch (e) {
+    if ((e as NodeJS.ErrnoException).code !== "EEXIST") throw e;
+    // Someone else's lock already occupies `lockPath` — leave it be; our
+    // tombstone copy is simply discarded below instead of restored.
+  }
+  try {
+    fs.unlinkSync(tombstone);
   } catch {
-    // `lockPath` was recreated again (or something else is now there) —
-    // drop our tombstone copy rather than clobber whatever is current.
-    try {
-      fs.unlinkSync(tombstone);
-    } catch {
-      /* already gone */
-    }
+    /* already gone */
   }
 }
 

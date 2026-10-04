@@ -158,6 +158,52 @@ describe("acquireLock / releaseLock", () => {
     await acquirePromise.catch(() => {});
   });
 
+  // P4 review round 3 LOW: the mismatch branch above restores the
+  // tombstone with `renameSync(tombstone, lockPath)`, which — unlike
+  // `linkSync` — succeeds even when something ALREADY occupies
+  // `lockPath`, silently overwriting it. This simulates a THIRD lock
+  // appearing at `lockPath` in the window between the mismatch being
+  // detected (forced here via a mocked `statSync` on the tombstone path)
+  // and the restore attempt: with the fix (`linkSync`, EEXIST-safe) that
+  // third lock must survive untouched; with the old `renameSync` this
+  // test is RED (the stale tombstone's own "crashed-owner" content
+  // silently clobbers it).
+  it("restoring a mismatched tombstone never silently overwrites whatever a third party already created at lockPath in that window", async () => {
+    const dir = tmpDir();
+    const lockPath = join(dir, "x.lock");
+    writeFileSync(lockPath, "crashed-owner");
+    const old = Date.now() - (STALE_LOCK_MS + 5_000);
+    fs.utimesSync(lockPath, old / 1000, old / 1000);
+
+    const statMock = fs.statSync as unknown as Mock;
+    const realStatSync = (await vi.importActual<typeof import("node:fs")>("node:fs")).statSync;
+    let injected = false;
+    statMock.mockImplementation((p: fs.PathLike, ...rest: unknown[]) => {
+      const result = realStatSync(p, ...(rest as []));
+      if (!injected && String(p).includes(".stale-")) {
+        injected = true;
+        // `p` here is the TOMBSTONE path `breakStaleLockIfStillStale`
+        // just renamed the stale lock to — `lockPath` itself is
+        // momentarily vacant. A third, independent caller grabs it right
+        // now, and we force a content/mtime mismatch so the restore
+        // branch (not the "still stale, discard" branch) runs next.
+        writeFileSync(lockPath, "third-party-fresh-owner");
+        return { ...result, mtimeMs: result.mtimeMs + 1 };
+      }
+      return result;
+    });
+
+    await expect(
+      acquireLock(lockPath, { lockTimeoutMs: 300, lockPollIntervalMs: 10 }),
+    ).rejects.toThrow(/timed out/);
+
+    // The critical invariant: the third party's lock must be exactly what
+    // it wrote, never clobbered by our restore of the stale tombstone.
+    expect(readFileSync(lockPath, "utf-8")).toBe("third-party-fresh-owner");
+    // And the tombstone itself must still be cleaned up either way.
+    expect(fs.readdirSync(dir).some((f) => f.includes(".stale-"))).toBe(false);
+  });
+
   it("acquisition that times out rejects and leaves the held lock file unchanged", async () => {
     vi.useFakeTimers();
     const dir = tmpDir();

@@ -299,6 +299,37 @@ describe("SecurePinnedTransport (CNF-24)", () => {
     expect(calls).toBe(2);
   });
 
+  // P4 review round 3 LOW: the 429 retry bound (`attempt >= limits.maxRetries`
+  // -> throw CONF_SOURCE_RATE_LIMITED) was never exercised all the way to
+  // exhaustion — only the "retries once then succeeds" path above was
+  // covered. A transport that ALWAYS answers 429 must make exactly
+  // `maxRetries + 1` requests (attempts 0..maxRetries inclusive) before
+  // giving up with CONF_SOURCE_RATE_LIMITED.
+  it("exhausts all retries on persistent 429s and reports CONF_SOURCE_RATE_LIMITED after exactly maxRetries + 1 requests", async () => {
+    let calls = 0;
+    const raw: RawTransport = {
+      supportsIpPinning: true,
+      request: async () => {
+        calls += 1;
+        return bufferedResponse(429, Buffer.alloc(0));
+      },
+    };
+    const transport = new SecurePinnedTransport({
+      resolver: fakeResolver(["93.184.216.34"]),
+      transport: raw,
+      sleep: async () => {},
+      ...clock,
+    });
+    await expect(
+      transport.get("https://api2.openreview.net/notes", {
+        params: {},
+        limits,
+        deadlineMs: Date.now() + 10_000,
+      }),
+    ).rejects.toMatchObject({ code: "CONF_SOURCE_RATE_LIMITED" });
+    expect(calls).toBe(limits.maxRetries + 1);
+  });
+
   it("does not retry a malformed response (Content-Length mismatch -> SOURCE_PARTIAL, no second call)", async () => {
     let calls = 0;
     const raw: RawTransport = {

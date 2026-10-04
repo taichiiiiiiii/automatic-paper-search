@@ -107,9 +107,25 @@ function topLevelFlagConsumesValue(rawName: string): boolean {
   return false;
 }
 
+const EXPAND_KEYWORDS_BOOLEAN_FLAGS = Object.keys(EXPAND_KEYWORDS_SPEC).filter(
+  (name) => EXPAND_KEYWORDS_SPEC[name as keyof typeof EXPAND_KEYWORDS_SPEC].type === "boolean",
+);
+
+/** Same resolution as {@link topLevelFlagConsumesValue}, against the
+ * `expand-keywords` subparser's own (much smaller) flag spec. */
+function expandKeywordsFlagConsumesValue(rawName: string): boolean {
+  if (EXPAND_KEYWORDS_BOOLEAN_FLAGS.includes(rawName)) return false;
+  if (rawName in EXPAND_KEYWORDS_SPEC) return true;
+  const candidates = Object.keys(EXPAND_KEYWORDS_SPEC).filter((name) => name.startsWith(rawName));
+  if (candidates.length === 1) {
+    return !EXPAND_KEYWORDS_BOOLEAN_FLAGS.includes(candidates[0] as string);
+  }
+  return false;
+}
+
 /**
- * Whether `argv` asks for help at the TOP LEVEL — i.e. a literal `--help`/
- * `-h` token in a FLAG position, not one that is itself the VALUE of a
+ * Which help text (if any) `argv` asks for — i.e. a literal `--help`/`-h`
+ * token in a FLAG position, not one that is itself the VALUE of a
  * preceding value-consuming flag (collect LOW, P4 review round 2: `main()`
  * used to do a bare `argv.includes("--help")`, which also matched e.g.
  * `--keyword --help` — a mistyped invocation where `--help` was meant as
@@ -118,18 +134,40 @@ function topLevelFlagConsumesValue(rawName: string): boolean {
  * would report `--config: expected one argument`, not print help, for
  * `--config --help`). Reuses the same value-consuming walk `parseArgs`
  * does to find the `expand-keywords` boundary, so the two stay in sync.
+ *
+ * `argparse` gives EVERY (sub)parser its own auto-added `-h`/`--help`
+ * (collect LOW, P4 review round 3: this used to assume "the sub-parser has
+ * no --help of its own" and always return `null` once `expand-keywords`
+ * appeared, so `collector expand-keywords --help` fell through to
+ * `parseArgs`'s normal handling of an unrecognized `--help` flag for that
+ * subcommand instead of printing its usage and exiting 0). Once the
+ * `expand-keywords` boundary is found, the rest of `argv` is scanned the
+ * same value-consuming way, but against the SUBCOMMAND's own flag spec
+ * (`--max` takes a value, `--write` does not) — mirroring how a top-level
+ * flag typed after `expand-keywords` is invisible to the subparser (see
+ * `parseArgs` below) and must not skew this scan either.
  */
-function isHelpRequested(argv: readonly string[]): boolean {
+function helpRequest(argv: readonly string[]): "top" | "expand-keywords" | null {
   for (let i = 0; i < argv.length; i++) {
     const tok = argv[i];
-    if (tok === "expand-keywords") return false; // the sub-parser has no --help of its own
-    if (tok === "--help" || tok === "-h") return true;
+    if (tok === "expand-keywords") {
+      for (let j = i + 1; j < argv.length; j++) {
+        const subTok = argv[j];
+        if (subTok === "--help" || subTok === "-h") return "expand-keywords";
+        if (subTok?.startsWith("--") && !subTok.includes("=")) {
+          const rawName = subTok.slice(2);
+          if (expandKeywordsFlagConsumesValue(rawName)) j++;
+        }
+      }
+      return null;
+    }
+    if (tok === "--help" || tok === "-h") return "top";
     if (tok?.startsWith("--") && !tok.includes("=")) {
       const rawName = tok.slice(2);
       if (topLevelFlagConsumesValue(rawName)) i++; // this token's value is not a flag position
     }
   }
-  return false;
+  return null;
 }
 
 export function parseArgs(argv: readonly string[], defaultConfigPath: string): ParsedArgs {
@@ -285,9 +323,25 @@ subcommand:
     --write           Rewrite config.yaml with the expanded keywords in place
 `;
 
+/**
+ * Simplified analogue of the `expand-keywords` SUBPARSER's own
+ * argparse-generated `--help` output (P4 review round 3 LOW: argparse
+ * gives every subparser its own `-h`/`--help`, same as the top level —
+ * see {@link helpRequest}).
+ */
+export const EXPAND_KEYWORDS_HELP_TEXT = `usage: collector expand-keywords [-h] [--max MAX] [--write]
+
+options:
+  -h, --help   Show this help message and exit
+  --max MAX    Maximum number of LLM-suggested additions (default: 10)
+  --write      Rewrite config.yaml with the expanded keywords in place
+`;
+
 export async function main(argv: readonly string[], deps: CliDeps): Promise<number> {
-  if (isHelpRequested(argv)) {
-    (deps.stdout ?? ((line: string) => console.log(line)))(HELP_TEXT);
+  const help = helpRequest(argv);
+  if (help !== null) {
+    const stdoutFn = deps.stdout ?? ((line: string) => console.log(line));
+    stdoutFn(help === "top" ? HELP_TEXT : EXPAND_KEYWORDS_HELP_TEXT);
     return 0;
   }
   let args: ParsedArgs;

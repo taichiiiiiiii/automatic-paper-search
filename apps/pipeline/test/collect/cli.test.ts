@@ -159,6 +159,85 @@ it("--help as a flag's VALUE (not a flag token) does not short-circuit to help t
   expect(stdout.some((l) => l.includes("usage: collector"))).toBe(false);
 });
 
+// collect LOW (P4 review round 3): argparse auto-adds `-h`/`--help` to
+// EVERY (sub)parser, including `expand-keywords`'s own subparser — this
+// used to assume it had none and fall through to the ordinary (and wrong)
+// "unrecognized flag" handling for that subcommand instead.
+it("collector expand-keywords --help prints the subcommand's own usage and exits 0", async () => {
+  const stdout: string[] = [];
+  const builtConfigs: Config[] = [];
+  const deps: CliDeps = {
+    createRunner: (config: Config): RunnerLike => {
+      builtConfigs.push(config);
+      return { run: async () => fakeResult() };
+    },
+    logger: noopLogger(),
+    stdout: (line) => stdout.push(line),
+  };
+  const rc = await main(["expand-keywords", "--help"], deps);
+  expect(rc).toBe(0);
+  expect(builtConfigs.length).toBe(0);
+  expect(stdout.some((l) => l.includes("usage: collector expand-keywords"))).toBe(true);
+  // Not the TOP-LEVEL help text — the two must stay distinct.
+  expect(stdout.some((l) => l.includes("PaperPilot — AI/ML paper auto-collector"))).toBe(false);
+});
+
+it("collector expand-keywords -h (short flag) also prints the subcommand's usage", async () => {
+  const stdout: string[] = [];
+  const deps: CliDeps = {
+    createRunner: (): RunnerLike => ({ run: async () => fakeResult() }),
+    logger: noopLogger(),
+    stdout: (line) => stdout.push(line),
+  };
+  const rc = await main(["expand-keywords", "-h"], deps);
+  expect(rc).toBe(0);
+  expect(stdout.some((l) => l.includes("usage: collector expand-keywords"))).toBe(true);
+});
+
+it("collector expand-keywords --max 5 --help still finds --help after a value-consuming flag", async () => {
+  const stdout: string[] = [];
+  const deps: CliDeps = {
+    createRunner: (): RunnerLike => ({ run: async () => fakeResult() }),
+    logger: noopLogger(),
+    stdout: (line) => stdout.push(line),
+  };
+  const rc = await main(["expand-keywords", "--max", "5", "--help"], deps);
+  expect(rc).toBe(0);
+  expect(stdout.some((l) => l.includes("usage: collector expand-keywords"))).toBe(true);
+});
+
+it("collector expand-keywords --write (no --help) does NOT print subcommand help", async () => {
+  const configPath = writeConfig();
+  const stdout: string[] = [];
+  const builtConfigs: Config[] = [];
+  const deps: CliDeps = {
+    createRunner: (config: Config): RunnerLike => {
+      builtConfigs.push(config);
+      return {
+        llmProvider: {
+          name: "fake",
+          enabled: true,
+          batchSize: 1,
+          evaluateBatch: async () => [],
+          chat: async () => null,
+          classifyRelation: async () => null,
+          completeJson: async () => {
+            throw new Error("fake provider has no JSON-mode completion");
+          },
+        },
+        run: async () => fakeResult(),
+      };
+    },
+    logger: noopLogger(),
+    expandKeywordsFn: async () => ["rag"],
+    stdout: (line) => stdout.push(line),
+  };
+  const rc = await main(["--config", configPath, "expand-keywords", "--write"], deps);
+  expect(rc).toBe(0);
+  expect(builtConfigs.length).toBe(1);
+  expect(stdout.some((l) => l.includes("usage: collector"))).toBe(false);
+});
+
 it("test_cli_defaults_no_overrides", async () => {
   const configPath = writeConfig();
   const { builtConfigs } = await runMain(["--config", configPath]);

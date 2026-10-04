@@ -146,6 +146,30 @@ describe("presentVolumeIds", () => {
     expect(presentVolumeIds(xml)).toEqual(["long"]);
   });
 
+  // P4 review round 3, LOW: `topLevelElementCount` used to count ANY
+  // top-level `#text` node (even whitespace-only, even a lone BOM) as a
+  // second "root", rejecting documents real expat accepts fine.
+  it("accepts a trailing processing instruction after the root (the whitespace text node between them is not a second root)", () => {
+    const xml = `${anthologyXml([
+      { id: "long", papers: [{ stub: "2025.acl-long.1", title: "X", authors: [["A", "B"]] }] },
+    ])}\n<?pi data?>`;
+    expect(presentVolumeIds(xml)).toEqual(["long"]);
+  });
+
+  it("accepts a document prefixed with a U+FEFF BOM before the XML declaration", () => {
+    const xml = `﻿${anthologyXml([
+      { id: "long", papers: [{ stub: "2025.acl-long.1", title: "X", authors: [["A", "B"]] }] },
+    ])}`;
+    expect(presentVolumeIds(xml)).toEqual(["long"]);
+  });
+
+  it("still rejects genuine non-whitespace text sitting at the top level (not a BOM, not whitespace)", () => {
+    const xml = `${anthologyXml([
+      { id: "long", papers: [{ stub: "2025.acl-long.1", title: "X", authors: [["A", "B"]] }] },
+    ])}stray-text`;
+    expect(presentVolumeIds(xml)).toEqual([]);
+  });
+
   // P4 review round 2, LOW: a bare, unescaped `&` inside an attribute
   // value is not well-formed XML 1.0 (expat rejects it the same way it
   // rejects a bare `&` in text content, already covered above for

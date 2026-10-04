@@ -245,9 +245,32 @@ function authorName(authorNode: PoNode): string {
  * `.parse()` silently accepts `<a/><b/>` as two sibling top-level nodes;
  * this is what `tryParseXml` uses to reject that the way expat (what
  * Python's `ET.fromstring` uses) does (P4 review round 2, LOW).
+ *
+ * Also ignores a WHITESPACE-ONLY top-level `#text` node (P4 review round 3
+ * LOW): `fast-xml-parser` produces one for the newline between
+ * `</collection>` and a trailing `<?pi ...?>`, and — only when a BOM
+ * precedes an `<?xml ...?>` declaration rather than the root element
+ * itself — for a leading U+FEFF too (it strips a BOM that directly
+ * precedes the root, but not one that precedes the XML declaration).
+ * Real expat accepts both documents; the previous unconditional
+ * `k !== ":@"` check counted either stray text node as a second "root"
+ * and rejected them. A NON-whitespace top-level text node (after
+ * stripping a leading BOM) is still counted — expat rejects that — so
+ * this only widens the ignore-list by exactly the insignificant case.
  */
 function topLevelElementCount(nodes: PoNode[]): number {
-  return nodes.filter((n) => Object.keys(n).some((k) => k !== ":@" && !k.startsWith("?"))).length;
+  return nodes.filter((n) =>
+    Object.keys(n).some((k) => {
+      if (k === ":@" || k.startsWith("?")) return false;
+      if (k === "#text")
+        return (
+          String(n[k])
+            .replace(/^\uFEFF/, "")
+            .trim() !== ""
+        );
+      return true;
+    }),
+  ).length;
 }
 
 /**
