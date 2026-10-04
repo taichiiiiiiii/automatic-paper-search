@@ -16,6 +16,27 @@
 //   iterating the MANIFEST's own entries and resolving each one's row
 //   by its exact path (`resolveQualityCollection`), ported from
 //   deep.js's own manifest-entry-driven binding.
+//
+// P2 review round 3 findings:
+//
+//   LOW-B -- there was no POSITIVE test proving the fully-happy path
+//   (eligible row + matching manifest entry + matching, root/seed
+//   verified artifact) actually renders the audited ready hero. Every
+//   existing test above only exercised a failure/edge branch.
+//
+//   LOW-C -- `eligibleEntries`'s `if (!row || !qualityRowIsEligible(row,
+//   { manifestSha256 })) continue;` had no test pinning the
+//   `qualityRowIsEligible` half specifically: a manifest entry whose
+//   row resolves (by exact path) but fails eligibility (e.g. ready but
+//   not passed) must still be excluded from the picker.
+//
+//   LOW-E -- `uiReady` used to be `state.phase === "ready" &&
+//   !focusRequestFailed`, which says nothing about whether any manifest
+//   entry actually bound to an eligible row. A conference with ≥1
+//   eligible `deep` row but zero entries resolving to one by exact path
+//   used to still show the view-toggle + an empty, option-less
+//   `<select>` instead of the audit-pending shell. Fixed by also
+//   requiring `eligibleEntries.length > 0`.
 import { act, cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import ConferenceDeepPage from "../../app/[conf]/deep/page";
@@ -114,6 +135,32 @@ function manifestEntry(
     arxiv_id: arxivId,
     title,
     filename: `deep-${arxivId}.json`,
+  };
+}
+
+const DEEP_PAPER_ID = "1".repeat(40);
+
+/** A minimal but fully-valid `lineage-artifact-v1` payload for kind
+ * "deep": a single root node that is its own focus, with `seed_paper_id`
+ * matching the quality row's `paper_id` (required for `resolveFocus` to
+ * find it) and `meta.seed_paper_id` matching too (page.tsx's own
+ * root/seed cross-check). Shape mirrors
+ * test/lineage/lineage-focus-not-found.test.tsx's `ARTIFACT` fixture. */
+function deepArtifact(): unknown {
+  return {
+    schema_version: ARTIFACT_VERSION,
+    root: "root",
+    nodes: [
+      {
+        id: "root",
+        title: "Root Paper",
+        is_focus: true,
+        seed_paper_id: DEEP_PAPER_ID,
+      },
+    ],
+    edges: [],
+    clusters: [],
+    meta: { kind: "deep", generated_at: "2026-08-30T00:00:00Z", seed_paper_id: DEEP_PAPER_ID },
   };
 }
 
@@ -217,5 +264,135 @@ describe("conference deep page: manifest-entry-driven picker (P2 review LOW-4)",
     const options = select.querySelectorAll("option");
     expect(options).toHaveLength(1);
     expect(options[0]?.textContent).toBe("Paper One");
+  });
+});
+
+describe("conference deep page: fully-eligible happy path (P2 review round 3 LOW-B)", () => {
+  it('renders the "（監査済み）" hero and "検証済みです" note once the gate, manifest entry, and matching artifact all resolve', async () => {
+    const row = deepRow({ paper_id: DEEP_PAPER_ID });
+    vi.spyOn(dataLineage, "fetchLineageQualityManifest").mockResolvedValue({
+      status: "ok",
+      data: qualityManifest([row]),
+    });
+    vi.spyOn(dataLineage, "fetchDeepManifestBytes").mockResolvedValue({
+      status: "ok",
+      data: {
+        raw: {
+          schema_version: MANIFEST_VERSION,
+          conference: CONF,
+          generated_at: "2026-08-30T00:00:00Z",
+          entries: [manifestEntry(row.paper_id as string, row.arxiv_id as string, "Paper One")],
+        },
+        sha256: MANIFEST_SHA,
+      },
+    });
+    vi.spyOn(dataLineage, "fetchLineageArtifactBytes").mockResolvedValue({
+      status: "ok",
+      data: { raw: deepArtifact(), sha256: row.input_sha256 as string },
+    });
+
+    await act(async () => {
+      render(<ConferenceDeepPage />);
+    });
+
+    await screen.findByText(/検証済みです/);
+    expect(screen.getByRole("heading", { level: 1 }).textContent).toContain("（監査済み）");
+    expect(screen.getByRole("combobox", { name: /Select focus paper/i })).not.toBeNull();
+    expect(screen.queryByRole("alert")).toBeNull();
+  });
+});
+
+describe("conference deep page: manifest-entry eligibility filter (P2 review round 3 LOW-C)", () => {
+  it("excludes a manifest entry whose own quality row resolves by path but fails the eligibility gate (ready but not passed)", async () => {
+    const paperOne = DEEP_PAPER_ID;
+    const paperTwo = "2".repeat(40);
+    const eligibleRowEntry = deepRow({
+      collection_id: `deep:${CONF}:a-first`,
+      paper_id: paperOne,
+      arxiv_id: "2602.18473",
+      path: `${CONF}/deep-2602.18473.json`,
+    });
+    // Resolvable by exact path/paper_id (so `resolveQualityCollection`
+    // returns a non-null row) but `audit_status: "failed"` means
+    // `qualityRowIsEligible` must reject it -- the `!row` half of the
+    // guard alone would NOT catch this.
+    const ineligibleRowEntry = deepRow({
+      collection_id: `deep:${CONF}:b-second`,
+      paper_id: paperTwo,
+      arxiv_id: "2602.18474",
+      path: `${CONF}/deep-2602.18474.json`,
+      input_sha256: "e".repeat(64),
+      audit_status: "failed",
+    });
+    const entry1 = manifestEntry(paperOne, "2602.18473", "Paper One");
+    const entry2 = manifestEntry(paperTwo, "2602.18474", "Paper Two");
+
+    vi.spyOn(dataLineage, "fetchLineageQualityManifest").mockResolvedValue({
+      status: "ok",
+      data: qualityManifest([eligibleRowEntry, ineligibleRowEntry]),
+    });
+    vi.spyOn(dataLineage, "fetchDeepManifestBytes").mockResolvedValue({
+      status: "ok",
+      data: {
+        raw: {
+          schema_version: MANIFEST_VERSION,
+          conference: CONF,
+          generated_at: "2026-08-30T00:00:00Z",
+          entries: [entry1, entry2],
+        },
+        sha256: MANIFEST_SHA,
+      },
+    });
+    vi.spyOn(dataLineage, "fetchLineageArtifactBytes").mockResolvedValue({
+      status: "error",
+      error: "network boom",
+    });
+
+    await act(async () => {
+      render(<ConferenceDeepPage />);
+    });
+    const select = await screen.findByRole("combobox", { name: /Select focus paper/i });
+    const options = select.querySelectorAll("option");
+    expect(options).toHaveLength(1);
+    expect(options[0]?.textContent).toBe("Paper One");
+  });
+});
+
+describe("conference deep page: ui shell requires at least one bound entry (P2 review round 3 LOW-E)", () => {
+  it("keeps the audit-pending shell (no view toggle, no picker) when a deep row is eligible but no manifest entry resolves to it by exact path", async () => {
+    // Eligible under the fetched manifest's hash, but its `path` does
+    // not match what the one manifest entry would resolve to
+    // (`${slug}/${entry.filename}`) -- `eligibleRows.length > 0` so
+    // `state.phase` becomes "ready", yet `eligibleEntries` stays empty.
+    const row = deepRow({ path: `${CONF}/deep-mismatched-path.json` });
+    vi.spyOn(dataLineage, "fetchLineageQualityManifest").mockResolvedValue({
+      status: "ok",
+      data: qualityManifest([row]),
+    });
+    vi.spyOn(dataLineage, "fetchDeepManifestBytes").mockResolvedValue({
+      status: "ok",
+      data: {
+        raw: {
+          schema_version: MANIFEST_VERSION,
+          conference: CONF,
+          generated_at: "2026-08-30T00:00:00Z",
+          entries: [manifestEntry(row.paper_id as string, row.arxiv_id as string, "Paper One")],
+        },
+        sha256: MANIFEST_SHA,
+      },
+    });
+    vi.spyOn(dataLineage, "fetchLineageArtifactBytes").mockResolvedValue({
+      status: "error",
+      error: "network boom",
+    });
+
+    await act(async () => {
+      render(<ConferenceDeepPage />);
+    });
+
+    await screen.findByText("公開監査を待っています");
+    expect(screen.queryByRole("combobox", { name: /Select focus paper/i })).toBeNull();
+    expect(screen.queryByRole("button", { name: "グラフ" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "関係リスト" })).toBeNull();
   });
 });

@@ -316,7 +316,19 @@ export default function ConferenceDeepPage() {
   // `focusRequestFailed`'s declaration above. `uiReady` gates the
   // picker/filter/view-toggle UI shell (it may show while a newly
   // selected paper's own artifact is still loading or failed).
-  const uiReady = state.phase === "ready" && !focusRequestFailed;
+  //
+  // P2 review round 3 LOW-E: `state.phase === "ready"` only means at
+  // least one `deep` quality row was eligible under the fetched
+  // manifest's hash -- it says nothing about whether any MANIFEST ENTRY
+  // actually resolves to one of those rows by exact path
+  // (`eligibleEntries` above, ported from deep.js `init`'s own
+  // manifest-entry-driven binding). A manifest/quality-manifest pair
+  // that is otherwise eligible but where no entry's path lines up with
+  // an eligible row used to still flip `uiReady` true, showing the view
+  // toggle and an empty, option-less `<select>` instead of the
+  // audit-pending shell deep.js keeps in that case. `uiReady` now also
+  // requires at least one bound entry.
+  const uiReady = state.phase === "ready" && !focusRequestFailed && eligibleEntries.length > 0;
   // P2 review MEDIUM-3: `heroReady` additionally requires the SELECTED
   // paper's own artifact to have loaded successfully. The old single
   // `ready` flag only tracked `state.phase`/`focusRequestFailed`, so the

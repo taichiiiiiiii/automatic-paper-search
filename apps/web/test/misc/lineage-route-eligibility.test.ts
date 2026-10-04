@@ -105,11 +105,36 @@ describe("conferenceLineageIsEligible", () => {
   });
 
   it("is false when the manifest otherwise parses but has one malformed, unrelated row (fail-closed, not partial)", () => {
-    // Two rows with the same `collection_id` violate
-    // `parseQualityManifest`'s strictly-ascending-order requirement,
-    // which fails the WHOLE manifest -- not just the offending row --
-    // so even the first, otherwise-valid row stops being eligible.
-    const raw = manifest([qualityRow(), qualityRow()]);
+    // P2 review round 3 LOW-A: the previous version of this fixture used
+    // TWO IDENTICAL `qualityRow()`s. That is malformed for the wrong
+    // reason (a duplicate `collection_id` violates
+    // `parseQualityManifest`'s strictly-ascending-order rule), but a
+    // naive, non-`parseQualityManifest`-based implementation of
+    // `conferenceLineageIsEligible` -- e.g. one that just scans
+    // `collections` for a `kind: "conference"` row matching `slug` and
+    // checks `availability`/`audit_status` directly, never validating
+    // the manifest as a whole -- would still find the first, valid row
+    // and return `true`, so the old fixture could not tell
+    // `parseQualityManifest`-backed validation apart from that looser
+    // check. Here the first row is a genuinely valid, eligible
+    // iclr-2026 `conference` row; the second is a wholly UNRELATED
+    // `theme` row carrying an extra, unexpected key, which fails
+    // `parseQualityManifest`'s `exactKeys` check and so fails the WHOLE
+    // manifest -- not just the offending row -- so even the first,
+    // otherwise-valid row must stop being eligible. A naive per-row scan
+    // would never notice the second row's malformation and would wrongly
+    // return `true`.
+    const unrelatedMalformedThemeRow = {
+      ...qualityRow({
+        kind: "theme",
+        collection_id: "theme:zz-other-theme",
+        slug: "zz-other-theme",
+        path: "themes/zz-other-theme/lineage.json",
+        input_sha256: "c".repeat(64),
+      }),
+      unexpected_extra_key: "not part of the schema",
+    };
+    const raw = manifest([qualityRow(), unrelatedMalformedThemeRow]);
     expect(conferenceLineageIsEligible(raw, "iclr-2026")).toBe(false);
   });
 
