@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "postbuild": "tsx scripts/csp-hash.ts",
+    "csp-hash": "tsx scripts/csp-hash.ts",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json"
   },

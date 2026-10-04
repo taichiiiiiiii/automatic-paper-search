@@ -1,0 +1,84 @@
+name: ts-ci
+
+# TypeScript migration CI gate (docs/design/39-typescript-cloudflare-migration.md
+# §4.3, §7.3). Lints/typechecks/tests/builds the new pnpm workspace
+# (apps/**, packages/**) on the feat/ts-migration branch, in parallel with the
+# existing Python-only tests.yml, until the P5 cutover commit replaces both
+# with the Node release pipeline.
+#
+# This job is deliberately credential-free: no CLOUDFLARE_* secret is
+# referenced and there is no `wrangler` deploy step. Per §4.3 "認証情報",
+# the Cloudflare Pages token is only ever handed to a deploy job restricted
+# to a develop-only GitHub environment — never to a feat-branch CI run.
+
+on:
+  push:
+    branches: ["feat/ts-migration"]
+    paths:
+      - "apps/**"
+      - "packages/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "tsconfig.base.json"
+      - "biome.json"
+      - ".github/workflows/ts-ci.yml"
+  pull_request:
+    paths:
+      - "apps/**"
+      - "packages/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "tsconfig.base.json"
+      - "biome.json"
+      - ".github/workflows/ts-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ts-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Enable corepack
+        # package.json pins packageManager (pnpm@10.34.6); corepack reads it
+        # directly, so no separate pnpm/action-setup third-party action is
+        # needed.
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint (Biome)
+        run: pnpm exec biome check .
+
+      - name: Typecheck
+        run: pnpm -r --if-present typecheck
+
+      - name: Test
+        run: pnpm -r --if-present test
+
+      - name: Build web
+        # Guarded: apps/web is the only package with a build script today,
+        # but this must not hard-fail if that script is ever removed or if
+        # apps/web itself does not exist yet at some earlier point in P1.
+        run: |
+          if [ -f apps/web/package.json ] && node -e "process.exit(require('./apps/web/package.json').scripts?.build ? 0 : 1)"; then
+            pnpm --filter @paperpilot/web build
+          else
+            echo "apps/web has no build script; skipping build"
+          fi

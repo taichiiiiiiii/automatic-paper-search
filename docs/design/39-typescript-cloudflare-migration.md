@@ -137,14 +137,14 @@ apps/api（Hono）→ D1 に依頼・進捗、Durable Objects で上限 → them
 
 **方針: script のハッシュ以外の指令をサイト全体で 1 つにそろえる**
 1. `default-src`・`connect-src`（`'self'` と API ホスト）・`style-src`・`font-src`・`img-src`・`base-uri`・`form-action` は**全ページ同じ値**にする。値は `packages/core` の設定から生成する。
-2. ページごとに変わるのは `script-src` の `'sha256-...'` だけ。ビルド後の処理で各 HTML のインラインスクリプト（App Router の `self.__next_f.push(...)`）の sha256 を集め、そのページのメタ CSP に書き込む。最終成果物から取るので 1 回のデプロイ内では安定する。`'unsafe-inline'` は使わない。
+2. ページごとに変わるのは `script-src` の `'sha256-...'` だけ。ビルド後の処理で各 HTML のインラインスクリプト（App Router の `self.__next_f.push(...)`）の sha256 を集め、そのページのメタ CSP に書き込む。最終成果物から取るので 1 回のデプロイ内では安定する。**ビルドをやり直すとハッシュは変わる**（Next がビルドごとに乱数のビルド ID をインラインスクリプトに埋め込むため、P1 の実証で各ページ 1 本だけ変わることを確認）。そのため「1 回ビルドしたその成果物からハッシュを取り、その成果物をそのまま公開する」を守り、smoke では配信 HTML がその成果物と一致することを確かめる。`'unsafe-inline'` は使わない。
 3. スタイルは全ページ `style-src 'self'` を目指す。フォントは next/font で自サイトから配信し（Google Fonts を許可しない、`font-src 'self'`）、`style=""` 属性を出す部品（next/image、プリレンダー時に style を出す Radix/shadcn の一部）は使わないかクラスに置き換える。どうしても残る場合は `'unsafe-hashes'` ＋ハッシュで個別に許可し、その一覧を契約テストで固定する。
 4. `frame-ancestors` はメタ CSP では効かないので、`_headers` に **`frame-ancestors 'self'` だけ**を書く（他の指令をヘッダーにも書くとメタ CSP と両方が適用され、ハッシュ許可が効かなくなる）。`'none'` にすると横断検索の同一オリジン iframe が壊れる。
 5. Cloudflare 側の自動挿入（Rocket Loader、Web Analytics の自動挿入、メールアドレス難読化）は切る。smoke で配信された HTML 1 枚が成果物とバイト一致することを確かめる。
 6. 論文データは今と同じく**ブラウザ側で fetch し、ビルド時に埋め込まない**（埋め込むと RSC のインラインスクリプトにデータが丸ごと入り、現行の「1 ページ gzip 1MB 未満」が崩れる）。
 7. **P1 で先に契約テストを作る**: 書き出し結果に「ハッシュ未登録のインラインスクリプト」「許可一覧にないインライン style 属性」「`on*=` 属性」「`javascript:` URL」が 0 件。script 以外の CSP 指令が全ページで同一。各ページから画面内遷移で `/themes/` に入って投稿まで通る（Playwright）。
 
-この方式が成り立たない場合（ハッシュが不安定など）は、インラインスクリプトを出さない構成（Vite の MPA ＋ React など）に切り替え、その時点でユーザーに報告する。
+**P1 で実証済み**（2026-10-04、`apps/web` の最小構成: Next 15 App Router・静的書き出し・Tailwind 4 で、インライン style・`on*=`・`javascript:` は出ず、ハッシュ方式の契約テストが通った。shadcn/Radix の部品を足す P2 で同じ契約テストを再確認する）。この方式が成り立たない場合（ハッシュが不安定など）は、インラインスクリプトを出さない構成（Vite の MPA ＋ React など）に切り替え、その時点でユーザーに報告する。
 
 ### 4.5 API の置き場所と独自ドメイン
 
