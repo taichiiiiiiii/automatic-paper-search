@@ -638,6 +638,7 @@ uv run python -m paperpilot.scripts.scaffold_conference_page --conference <slug>
 
 移行が完了する（P5）まで、上の Python 向けルールと次のルールを両方守る。
 
+- **Node 22 以上**（jsdom 30・wrangler 4 が要求。CI も Node 22）。ホストの Node が 20 の場合は `npx --yes -p node@22 node -e 'console.log(process.execPath)'` で得た Node 22 を PATH の先頭に置いて実行する。
 - **場所**: `apps/web`（Next.js 静的書き出し）、`apps/api`（Hono on Workers）、`apps/pipeline`（Node の収集・生成）、`packages/core`（データ形式・共有ロジック・Python 互換関数）。道具は pnpm（`npx --yes pnpm@10.34.6 …`、corepack が使えない環境向け）、Biome、Vitest、tsx。
 - **絶対ルールの TS 版**: 外部 API を叩くテストを書かない（`fetch` を注入してモック）。API キーは環境変数のみ。LLM 呼び出しは共通インターフェース（§11 の `AbstractLLMProvider` 相当）を経由する。lineage / theme JSON の生成元は 1 つ（§13・§14）。スコアの正規化式・重みは変えない（§5）。
 - **TDD とカバレッジ**: テストを先に書く。Vitest のカバレッジ 80% 以上。

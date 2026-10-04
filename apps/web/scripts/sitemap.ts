@@ -46,12 +46,70 @@ const HEADER_COMMENT = [
   "     The 404 fallback, Next internal underscore routes, and any page whose own",
   "     robots meta says noindex are excluded (that is how the generated paper-links",
   "     no-JS duplicates stay out). Theme query variants share the theme page and are",
-  "     never listed separately. Lineage and deep routes are listed as soon as they",
-  "     are built; the strict quality-manifest gate that holds them back today is",
-  "     ported with the pipeline phase (safety contracts CAT-39). URLs are absolute,",
-  "     from the one origin/prefix setting in packages/core, and carry no priority or",
-  "     changefreq elements: search engines ignore both. -->",
+  "     never listed separately. A conference lineage, deep, or themes route is",
+  "     listed only once lineage-quality-v1.json marks its collection ready and",
+  "     passed (safety contracts CAT-39, ported from build_sitemap.py's",
+  "     _eligible_lineage_routes); a missing or malformed manifest excludes every",
+  "     one of them. URLs are absolute, from the one origin/prefix setting in",
+  "     packages/core, and carry no priority or changefreq elements: search",
+  "     engines ignore both. -->",
 ].join("\n");
+
+interface LineageQualityRow {
+  readonly kind?: unknown;
+  readonly slug?: unknown;
+  readonly conference?: unknown;
+  readonly availability?: unknown;
+  readonly audit_status?: unknown;
+}
+
+/**
+ * Site-relative routes the lineage quality manifest authorises for the
+ * sitemap, ported 1:1 from `paperpilot/scripts/build_sitemap.py`'s
+ * `_eligible_lineage_routes` (safety contracts CAT-39): only `kind`
+ * "conference" / "theme" / "deep" rows that are both `availability:
+ * "ready"` and `audit_status: "passed"` become a route. `manifestRaw`
+ * being unparseable, not an object, or missing a `collections` array
+ * returns an empty set -- sitemap discovery is a publication boundary,
+ * so it fails closed (excludes every lineage/deep/themes route) instead
+ * of falling back to "the page got built, so list it".
+ */
+export function eligibleLineageRoutes(manifestRaw: string | null): Set<string> {
+  const routes = new Set<string>();
+  if (manifestRaw === null) return routes;
+  let payload: unknown;
+  try {
+    payload = JSON.parse(manifestRaw);
+  } catch {
+    return routes;
+  }
+  if (typeof payload !== "object" || payload === null) return routes;
+  const collections = (payload as { collections?: unknown }).collections;
+  if (!Array.isArray(collections)) return routes;
+  for (const row of collections as LineageQualityRow[]) {
+    if (typeof row !== "object" || row === null) continue;
+    if (row.availability !== "ready" || row.audit_status !== "passed") continue;
+    if (row.kind === "conference" && typeof row.slug === "string") {
+      routes.add(`/${row.slug}/lineage/`);
+    } else if (row.kind === "theme") {
+      routes.add("/themes/");
+    } else if (row.kind === "deep" && typeof row.conference === "string") {
+      routes.add(`/${row.conference}/deep/`);
+    }
+  }
+  return routes;
+}
+
+const SLUG_RE = "[a-z0-9][a-z0-9-]*";
+const LINEAGE_ROUTE_RE = new RegExp(`^/${SLUG_RE}/lineage/$`);
+const DEEP_ROUTE_RE = new RegExp(`^/${SLUG_RE}/deep/$`);
+
+/** Whether `path` is one this postbuild step must gate on the lineage
+ * quality manifest before listing (CAT-39), independent of whether the
+ * page itself happens to be noindex. */
+export function isLineageGatedRoute(path: string): boolean {
+  return path === "/themes/" || LINEAGE_ROUTE_RE.test(path) || DEEP_ROUTE_RE.test(path);
+}
 
 /** Characters that must not appear raw in XML text or attribute values. */
 export function escapeXml(value: string): string {
@@ -109,11 +167,22 @@ export function hasNoindexMeta(html: string): boolean {
   return false;
 }
 
-/** Absolute sitemap URLs: landing page first, then sorted by path. */
-export function sitemapUrls(pages: readonly BuiltPage[]): string[] {
+/**
+ * Absolute sitemap URLs: landing page first, then sorted by path.
+ *
+ * `eligibleLineageRoutesSet` defaults to empty -- the same fail-closed
+ * default as `eligibleLineageRoutes(null)` -- so a caller that forgets
+ * to pass it gets "exclude every lineage/deep/themes route" rather than
+ * "list them unconditionally".
+ */
+export function sitemapUrls(
+  pages: readonly BuiltPage[],
+  eligibleLineageRoutesSet: ReadonlySet<string> = new Set(),
+): string[] {
   const paths = pages
     .filter((page) => isPublicIndexPage(page.relPath) && !hasNoindexMeta(page.html))
-    .map((page) => sitePathFromIndexPage(page.relPath));
+    .map((page) => sitePathFromIndexPage(page.relPath))
+    .filter((path) => !isLineageGatedRoute(path) || eligibleLineageRoutesSet.has(path));
   // All URLs share one origin, so a plain sort is also "landing first":
   // "/" is a prefix of every other path and therefore sorts before it.
   return [...new Set(paths)].sort().map((path) => canonicalUrl(path));
@@ -167,9 +236,22 @@ async function assertOutDir(outDir: string): Promise<void> {
   }
 }
 
+/** Reads the published `lineage-quality-v1.json` from `out/` (copied
+ * there from `public/` by `next build`'s static export, itself copied
+ * from `docs/` by the `prebuild` step) -- `null` on any read failure,
+ * which `eligibleLineageRoutes` already treats as "exclude everything". */
+async function readLineageQualityManifest(outDir: string): Promise<string | null> {
+  try {
+    return await readFile(join(outDir, "lineage-quality-v1.json"), "utf8");
+  } catch {
+    return null;
+  }
+}
+
 async function main(): Promise<void> {
   await assertOutDir(OUT_DIR);
-  const urls = sitemapUrls(await collectPages(OUT_DIR));
+  const eligible = eligibleLineageRoutes(await readLineageQualityManifest(OUT_DIR));
+  const urls = sitemapUrls(await collectPages(OUT_DIR), eligible);
   if (urls.length === 0) {
     throw new Error(`no public index.html pages under ${OUT_DIR}; run next build first`);
   }

@@ -6,6 +6,7 @@ import { CatalogApp } from "../../components/catalog/catalog-app";
 import { selectCatalogConferences } from "../../lib/catalog-conferences";
 import { getCatalogCopy } from "../../lib/catalog-copy";
 import { buildMetadata } from "../../lib/metadata";
+import { assertConferenceHasPapersJson } from "./paper-links/build-guard";
 
 /**
  * The conference catalog route (docs/<conf>/index.html, one per row of
@@ -34,7 +35,15 @@ function readConferencesJson(): ConferencesRow[] {
 }
 
 export function generateStaticParams(): Array<{ conf: string }> {
-  return readConferencesJson().map((row) => ({ conf: row.name }));
+  const rows = readConferencesJson();
+  // See paper-links/build-guard.ts: a static export has no server to
+  // 404 a missing papers.json at request time, so a conference listed
+  // in conferences.json without one must fail the build here, loudly,
+  // rather than silently 404-ing the live route later.
+  for (const row of rows) {
+    assertConferenceHasPapersJson(row.name);
+  }
+  return rows.map((row) => ({ conf: row.name }));
 }
 
 // Static export: every valid path is enumerated above. An unknown

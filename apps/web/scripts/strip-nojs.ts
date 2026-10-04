@@ -11,8 +11,16 @@
  * ordinary links without hydration.
  *
  * Runs BEFORE csp-hash.ts, so the stripped pages carry no script hashes.
+ *
+ * Next's static export also writes a plain-text copy of the same RSC
+ * payload next to the HTML (`index.txt`, used for client-side
+ * navigation prefetch) -- stripping `<script>` tags from the HTML does
+ * nothing to that file, so a no-JS route's `index.txt` is deleted
+ * outright. It is never fetched by a page the no-JS route itself
+ * renders (there is no client-side navigation into or within it), so
+ * removing it cannot break anything this route needs.
  */
-import { readdir, readFile, stat, writeFile } from "node:fs/promises";
+import { readdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -50,6 +58,15 @@ async function main(): Promise<void> {
     await writeFile(file, after);
     stripped += 1;
     console.log(`strip-nojs: ${rel}/index.html ${before.length} -> ${after.length} bytes`);
+
+    const rscPayload = join(OUT_DIR, rel, "index.txt");
+    try {
+      await rm(rscPayload);
+      console.log(`strip-nojs: removed ${rel}/index.txt`);
+    } catch {
+      // Not every Next version/route necessarily writes one -- nothing
+      // to remove is not an error.
+    }
   }
   console.log(`strip-nojs: ${stripped} no-JS page(s)`);
 }

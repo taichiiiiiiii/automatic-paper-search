@@ -11,10 +11,14 @@
  * (see docs/design/39-typescript-cloudflare-migration.md §4.4). Only
  * script-src varies, carrying that page's inline-script hashes.
  *
- * Also writes out/_headers containing only `frame-ancestors 'self'`
+ * Also writes out/_headers with a `frame-ancestors 'self'`
+ * Content-Security-Policy header scoped to every path (`/*`)
  * (frame-ancestors has no effect in a meta CSP, so it must ship as an
  * HTTP header instead; it is kept out of the meta tag's own directives
- * to avoid two CSPs disagreeing).
+ * to avoid two CSPs disagreeing). A bare `frame-ancestors 'self'` line
+ * with no path pattern is not a valid Cloudflare Pages `_headers` rule
+ * (https://developers.cloudflare.com/pages/configuration/headers/) and
+ * is silently ignored by the platform, not merely unoptimized.
  */
 import { createHash } from "node:crypto";
 import { readdir, readFile, writeFile } from "node:fs/promises";
@@ -27,6 +31,12 @@ const OUT_DIR = join(SCRIPT_DIR, "..", "out");
 
 const SCRIPT_TAG_RE = /<script\b([^>]*)>([\s\S]*?)<\/script>/g;
 const META_CSP_RE = /<meta\s+http-equiv="Content-Security-Policy"[^>]*>/i;
+/** Next emits this literally (case preserved) as the first element of
+ * `<head>`. The CSP meta must be inserted after it, not before: HTML5
+ * requires a `<meta charset>` declaration to appear within the first
+ * 1024 bytes of the document, and this page's CSP content (one hash per
+ * inline script) can itself run well past that if it comes first. */
+const CHARSET_META_RE = /<meta\s+charSet="[^"]*"\s*\/?>/i;
 
 async function listHtmlFiles(dir: string): Promise<string[]> {
   const entries = await readdir(dir, { withFileTypes: true });
@@ -79,6 +89,11 @@ function upsertMetaCsp(html: string, content: string): string {
   if (META_CSP_RE.test(html)) {
     return html.replace(META_CSP_RE, metaTag);
   }
+  const charsetMatch = CHARSET_META_RE.exec(html);
+  if (charsetMatch) {
+    const insertAt = charsetMatch.index + charsetMatch[0].length;
+    return html.slice(0, insertAt) + metaTag + html.slice(insertAt);
+  }
   if (!html.includes("<head>")) {
     throw new Error("expected a literal <head> tag to inject CSP meta after");
   }
@@ -98,7 +113,11 @@ async function main(): Promise<void> {
     await writeFile(file, updated, "utf8");
     console.log(`csp-hash: ${relative(OUT_DIR, file)} -> ${hashes.length} inline script hash(es)`);
   }
-  await writeFile(join(OUT_DIR, "_headers"), `frame-ancestors 'self'\n`, "utf8");
+  await writeFile(
+    join(OUT_DIR, "_headers"),
+    "/*\n  Content-Security-Policy: frame-ancestors 'self'\n",
+    "utf8",
+  );
   console.log(`csp-hash: wrote ${join(OUT_DIR, "_headers")}`);
 }
 

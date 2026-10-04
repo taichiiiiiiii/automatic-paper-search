@@ -5,8 +5,10 @@ import { describe, expect, it } from "vitest";
 import { canonicalUrl, PUBLIC_ORIGIN } from "../../lib/config";
 import type { BuiltPage } from "../../scripts/sitemap";
 import {
+  eligibleLineageRoutes,
   escapeXml,
   hasNoindexMeta,
+  isLineageGatedRoute,
   isPublicIndexPage,
   renderSitemap,
   sitemapUrls,
@@ -194,21 +196,153 @@ describe("renderSitemap", () => {
   });
 });
 
+describe("isLineageGatedRoute", () => {
+  it("matches a conference lineage or deep route, and the shared themes route", () => {
+    expect(isLineageGatedRoute("/iclr-2026/lineage/")).toBe(true);
+    expect(isLineageGatedRoute("/iclr-2026/deep/")).toBe(true);
+    expect(isLineageGatedRoute("/themes/")).toBe(true);
+  });
+
+  it("does not match an ordinary catalog/themes-subpage route", () => {
+    expect(isLineageGatedRoute("/iclr-2026/")).toBe(false);
+    expect(isLineageGatedRoute("/")).toBe(false);
+    expect(isLineageGatedRoute("/themes/flash-attention/")).toBe(false);
+    expect(isLineageGatedRoute("/iclr-2026/paper-links/")).toBe(false);
+  });
+});
+
+/**
+ * Review finding M3: ports `test_malformed_quality_manifest_excludes_
+ * every_lineage_route` and `test_sitemap_lists_only_ready_and_passed_
+ * lineage_routes` from paperpilot/tests/test_build_sitemap.py (adapted
+ * to this generator's `/<conf>/lineage/` / `/<conf>/deep/` / `/themes/`
+ * route shapes instead of `.html` file paths).
+ */
+describe("eligibleLineageRoutes", () => {
+  it("excludes every lineage route when the manifest is missing", () => {
+    expect(eligibleLineageRoutes(null)).toEqual(new Set());
+  });
+
+  it("excludes every lineage route when the manifest is malformed", () => {
+    expect(eligibleLineageRoutes("{}")).toEqual(new Set());
+    expect(eligibleLineageRoutes("not json")).toEqual(new Set());
+    expect(eligibleLineageRoutes(JSON.stringify({ collections: "nope" }))).toEqual(new Set());
+    expect(eligibleLineageRoutes(JSON.stringify([1, 2, 3]))).toEqual(new Set());
+  });
+
+  it("includes only ready+passed rows, mapped to their route", () => {
+    const manifest = JSON.stringify({
+      collections: [
+        { kind: "conference", slug: "iclr-2026", availability: "ready", audit_status: "passed" },
+        { kind: "conference", slug: "cvpr-2026", availability: "ready", audit_status: "failed" },
+        {
+          kind: "theme",
+          slug: "flash-attention",
+          availability: "ready",
+          audit_status: "passed",
+        },
+        {
+          kind: "deep",
+          conference: "iclr-2026",
+          availability: "ready",
+          audit_status: "passed",
+        },
+        {
+          kind: "conference",
+          slug: "aaai-2026",
+          availability: "unavailable",
+          audit_status: "unknown",
+        },
+      ],
+    });
+    expect(eligibleLineageRoutes(manifest)).toEqual(
+      new Set(["/iclr-2026/lineage/", "/themes/", "/iclr-2026/deep/"]),
+    );
+  });
+
+  it("matches today's real docs/lineage-quality-v1.json shape: every row fails audit, so nothing is eligible", () => {
+    // audit_status is "failed" for every row in the real manifest today
+    // (ready + failed, never ready + passed) -- same real-data check as
+    // test_repo_sitemap_is_up_to_date on the Python side.
+    const manifest = JSON.stringify({
+      collections: [
+        { kind: "conference", slug: "iclr-2026", availability: "ready", audit_status: "failed" },
+        { kind: "theme", slug: "flash-attention", availability: "ready", audit_status: "failed" },
+        { kind: "deep", conference: "iclr-2026", availability: "ready", audit_status: "failed" },
+      ],
+    });
+    expect(eligibleLineageRoutes(manifest)).toEqual(new Set());
+  });
+});
+
+describe("sitemapUrls gated on the lineage quality manifest", () => {
+  it("drops a lineage/deep/themes page by default (fail closed, no eligible set passed)", () => {
+    const urls = sitemapUrls([
+      page("index.html"),
+      page("iclr-2026/lineage/index.html"),
+      page("iclr-2026/deep/index.html"),
+      page("themes/index.html"),
+    ]);
+    expect(urls).toEqual([canonicalUrl("/")]);
+  });
+
+  it("keeps a lineage/deep/themes page once its exact route is eligible", () => {
+    const eligible = new Set(["/iclr-2026/lineage/"]);
+    const urls = sitemapUrls(
+      [page("index.html"), page("iclr-2026/lineage/index.html"), page("themes/index.html")],
+      eligible,
+    );
+    expect(urls).toEqual([canonicalUrl("/"), canonicalUrl("/iclr-2026/lineage/")]);
+  });
+
+  it("never lets eligibility leak across conferences", () => {
+    const eligible = new Set(["/eccv-2024/lineage/"]);
+    const urls = sitemapUrls([page("index.html"), page("iclr-2026/lineage/index.html")], eligible);
+    expect(urls).toEqual([canonicalUrl("/")]);
+  });
+});
+
 describe("built out/sitemap.xml", () => {
   // Skipped until scripts/sitemap.ts is wired into postbuild and a `next
   // build` has produced apps/web/out (same convention as test/csp.test.ts).
   it.skipIf(!existsSync(BUILT_SITEMAP))(
-    "lists exactly the published, indexable pages under out/",
+    "lists exactly the published, indexable, lineage-quality-eligible pages under out/",
     () => {
       const xml = readFileSync(BUILT_SITEMAP, "utf8");
       const listed = [...xml.matchAll(/<loc>([^<]*)<\/loc>/g)].map((match) => match[1] ?? "");
+      // Independent of scripts/sitemap.ts's own eligibleLineageRoutes, so
+      // this test can catch a bug there rather than only restating it.
+      const manifestPath = join(OUT_DIR, "lineage-quality-v1.json");
+      const eligible = new Set<string>();
+      if (existsSync(manifestPath)) {
+        const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as {
+          collections?: {
+            kind: string;
+            slug?: string;
+            conference?: string;
+            availability: string;
+            audit_status: string;
+          }[];
+        };
+        for (const row of manifest.collections ?? []) {
+          if (row.availability !== "ready" || row.audit_status !== "passed") continue;
+          if (row.kind === "conference" && row.slug) eligible.add(`/${row.slug}/lineage/`);
+          else if (row.kind === "theme") eligible.add("/themes/");
+          else if (row.kind === "deep" && row.conference) eligible.add(`/${row.conference}/deep/`);
+        }
+      }
+      const isLineageRoute = (path: string): boolean =>
+        path === "/themes/" || /^\/[a-z0-9-]+\/(?:lineage|deep)\/$/.test(path);
+
       const expected = walkIndexPages(OUT_DIR, OUT_DIR)
         .filter(
           (relPath) =>
             isPublicIndexPage(relPath) &&
             !hasNoindexMeta(readFileSync(join(OUT_DIR, relPath), "utf8")),
         )
-        .map((relPath) => canonicalUrl(sitePathFromIndexPage(relPath)))
+        .map((relPath) => sitePathFromIndexPage(relPath))
+        .filter((path) => !isLineageRoute(path) || eligible.has(path))
+        .map((path) => canonicalUrl(path))
         .sort();
 
       expect(listed).toEqual(expected);

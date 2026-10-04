@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { SiteFooter } from "../components/site-footer";
 import { SiteHeader } from "../components/site-header";
@@ -5,11 +6,27 @@ import { buildMetadata } from "../lib/metadata";
 import { fontVariables } from "./fonts";
 import "./globals.css";
 
-export const metadata = buildMetadata({
-  path: "/",
-  title: "PaperPilot",
-  description: "AI/ML トップ会議の採択論文をタイトル・著者・タグから横断検索できるツール。",
-});
+// `icons` set on the root layout's metadata is inherited by every page
+// that does not set its own (Next.js metadata merging), so this is the
+// one place favicon parity with docs/*.html's `<link rel="icon">` tags
+// needs to be declared. Assets copied from docs/assets/ by
+// scripts/copy-data.ts into public/assets/ -- see lib/metadata.ts's
+// DEFAULT_OG_IMAGE doc comment for the same asset-provenance note.
+const ICONS: Metadata["icons"] = {
+  icon: [
+    { url: "/assets/favicon.svg", type: "image/svg+xml" },
+    { url: "/assets/favicon-32.png", sizes: "32x32", type: "image/png" },
+  ],
+};
+
+export const metadata: Metadata = {
+  ...buildMetadata({
+    path: "/",
+    title: "PaperPilot",
+    description: "AI/ML トップ会議の採択論文をタイトル・著者・タグから横断検索できるツール。",
+  }),
+  icons: ICONS,
+};
 
 /**
  * Every page's top-level element must be `<main id="main-content">` so

@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { selectCatalogConferences } from "../../../lib/catalog-conferences";
 import { buildMetadata } from "../../../lib/metadata";
+import { assertConferenceHasPapersJson } from "./build-guard";
 
 /**
  * The no-JS link-list route (`docs/<conf>/paper-links.html` today, design
@@ -31,7 +32,13 @@ function readConferenceSlugs(): string[] {
 }
 
 export function generateStaticParams(): Array<{ conf: string }> {
-  return readConferenceSlugs().map((conf) => ({ conf }));
+  const slugs = readConferenceSlugs();
+  // See build-guard.ts: a static export has no server to 404 a missing
+  // papers.json at request time, so this must fail the build here.
+  for (const conf of slugs) {
+    assertConferenceHasPapersJson(conf);
+  }
+  return slugs.map((conf) => ({ conf }));
 }
 
 export const dynamicParams = false;
@@ -42,12 +49,27 @@ export async function generateMetadata({
   params: Promise<{ conf: string }>;
 }): Promise<Metadata> {
   const { conf } = await params;
+  const base = buildMetadata({
+    path: `/${conf}/paper-links/`,
+    title: `${conf} 論文リンク一覧 — PaperPilot`,
+    description: "論文タイトルから原論文を開けます。JavaScript なしで利用できる簡易一覧です。",
+  });
+  // No canonical link here: this page IS noindex (a duplicate no-JS
+  // projection of `/<conf>/`), and the original
+  // docs/<conf>/paper-links.html never carried a self-canonical tag
+  // either -- a canonical pointing at a noindex page is a contradictory
+  // signal to crawlers. Omitting `alternates` entirely would NOT do
+  // this: Next's metadata merging inherits an unset field from the
+  // nearest ancestor that sets one (here, the root layout's `/`
+  // canonical) rather than leaving it empty, which is worse than a
+  // self-canonical (it would point this page's canonical at the home
+  // page). `canonical: undefined` is what actually clears it.
   return {
-    ...buildMetadata({
-      path: `/${conf}/paper-links/`,
-      title: `${conf} 論文リンク一覧 — PaperPilot`,
-      description: "論文タイトルから原論文を開けます。JavaScript なしで利用できる簡易一覧です。",
-    }),
+    title: base.title,
+    description: base.description,
+    openGraph: base.openGraph,
+    twitter: base.twitter,
+    alternates: { canonical: undefined },
     robots: { index: false, follow: true },
   };
 }

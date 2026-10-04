@@ -37,4 +37,22 @@ describe("strip-nojs", () => {
       expect(Buffer.byteLength(html), conf).toBeLessThan(3 * 1024 * 1024);
     }
   });
+
+  // LOW finding: Next's static export also writes a plain-text copy of
+  // the RSC payload (index.txt) next to index.html, used for
+  // client-side navigation prefetch. Stripping <script> tags does
+  // nothing to that separate file -- it shipped a ~2.2MB duplicate of
+  // the page's content on every no-JS paper-links route (observed on
+  // cvpr-2026: 1.7MB index.html + 2.24MB index.txt) until this was
+  // deleted outright.
+  it("deletes index.txt (the RSC payload) alongside every no-JS paper-links route", () => {
+    if (!existsSync(OUT)) return;
+    const confs = readdirSync(OUT).filter((d) =>
+      existsSync(join(OUT, d, "paper-links", "index.html")),
+    );
+    expect(confs.length).toBeGreaterThan(0);
+    for (const conf of confs) {
+      expect(existsSync(join(OUT, conf, "paper-links", "index.txt")), conf).toBe(false);
+    }
+  });
 });

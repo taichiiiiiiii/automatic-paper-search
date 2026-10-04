@@ -1,7 +1,6 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { buildPaperLinkRows, type PaperLinksSourcePaper } from "./logic";
 import styles from "./paper-links.module.css";
 
@@ -32,8 +31,16 @@ function readPapers(conf: string): PaperLinksSourcePaper[] {
   let raw: string;
   try {
     raw = readFileSync(path, "utf8");
-  } catch {
-    notFound();
+  } catch (err) {
+    // A static export has no server to 404 this at request time: fail the
+    // build loudly instead of rendering Next's not-found fallback as a
+    // 200-status static page (the bug this replaces -- see build-guard.ts,
+    // which should already keep this route from being generated at all;
+    // this throw is the last-resort backstop if that guard is ever
+    // bypassed).
+    throw new Error(`${conf}/papers.json is missing; cannot render /${conf}/paper-links/`, {
+      cause: err,
+    });
   }
   const parsed = JSON.parse(raw);
   if (!Array.isArray(parsed)) {

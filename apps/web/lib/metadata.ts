@@ -27,22 +27,36 @@ export interface BuildMetadataOptions {
   path: string;
   title: string;
   description: string;
-  /** Omit when no OG image asset is published yet for this page. */
+  /** Overrides the site-wide default OG image (DEFAULT_OG_IMAGE) for a
+   * page that has its own. */
   ogImage?: OgImage;
 }
 
+/** Published by `scripts/copy-data.ts` into `public/assets/og-image.png`
+ * (copied from `docs/assets/og-image.png`). Every page gets at least
+ * this image in its Open Graph / Twitter Card tags -- the current
+ * docs/*.html site sets the identical image + dimensions on every page
+ * (only the alt text differs per page), and omitting it entirely (the
+ * prior behaviour when a page did not pass `ogImage`) is a head-parity
+ * regression, not an intentional "no image" state. */
+const DEFAULT_OG_IMAGE: OgImage = {
+  path: "/assets/og-image.png",
+  width: 1200,
+  height: 630,
+  alt: "PaperPilot — AI/ML トップ会議の採択論文を横断検索",
+};
+
 export function buildMetadata(options: BuildMetadataOptions): Metadata {
   const url = canonicalUrl(options.path);
-  const images = options.ogImage
-    ? [
-        {
-          url: canonicalUrl(options.ogImage.path),
-          width: options.ogImage.width,
-          height: options.ogImage.height,
-          alt: options.ogImage.alt,
-        },
-      ]
-    : undefined;
+  const ogImage = options.ogImage ?? DEFAULT_OG_IMAGE;
+  const images = [
+    {
+      url: canonicalUrl(ogImage.path),
+      width: ogImage.width,
+      height: ogImage.height,
+      alt: ogImage.alt,
+    },
+  ];
 
   return {
     title: options.title,
@@ -60,10 +74,10 @@ export function buildMetadata(options: BuildMetadataOptions): Metadata {
       images,
     },
     twitter: {
-      card: images ? "summary_large_image" : "summary",
+      card: "summary_large_image",
       title: options.title,
       description: options.description,
-      images: images?.map((img) => img.url),
+      images: images.map((img) => img.url),
     },
   };
 }

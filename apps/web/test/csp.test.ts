@@ -185,4 +185,27 @@ describe("CSP contract over built out/", () => {
     const path = join(OUT_DIR, "404.html");
     await expect(stat(path)).resolves.toBeDefined();
   });
+
+  // Review finding M2: a bare `frame-ancestors 'self'` line with no path
+  // pattern is not a valid Cloudflare Pages `_headers` rule and is
+  // silently ignored by the platform -- pin the exact bytes so a future
+  // edit cannot drift back to that invalid shape.
+  it("out/_headers is a valid Cloudflare Pages rule, not a bare directive line", async () => {
+    const content = await readFile(join(OUT_DIR, "_headers"), "utf8");
+    expect(content).toBe("/*\n  Content-Security-Policy: frame-ancestors 'self'\n");
+  });
+
+  // LOW finding: HTML5 requires <meta charset> within the first 1024
+  // bytes; inserting the CSP meta (which can itself run long, one hash
+  // per inline script) before it risked pushing charset past that limit.
+  it("charset meta appears before the CSP meta on every page", async () => {
+    for (const file of htmlFiles) {
+      const html = await readFile(file, "utf8");
+      const charsetIndex = html.search(/<meta\s+charSet="[^"]*"\s*\/?>/i);
+      const cspIndex = html.indexOf('<meta http-equiv="Content-Security-Policy"');
+      expect(charsetIndex, `${file}: missing charset meta`).toBeGreaterThanOrEqual(0);
+      expect(cspIndex, `${file}: missing CSP meta`).toBeGreaterThanOrEqual(0);
+      expect(charsetIndex, file).toBeLessThan(cspIndex);
+    }
+  });
 });
