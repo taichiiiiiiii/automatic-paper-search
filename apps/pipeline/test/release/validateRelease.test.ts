@@ -1,0 +1,215 @@
+/**
+ * TS port (portable subset) of the validate-pages-release checks described
+ * by `paperpilot/tests/test_pages_release_workflow.py`'s string-level
+ * assertions (PUB-26..37) plus the two Cloudflare-era additions from
+ * design doc §4.3/§4.4 (no design/research publishing, CSP meta present).
+ */
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { afterEach, beforeEach, expect, it } from "vitest";
+import {
+  DEFAULT_REQUIRED_ARTIFACTS,
+  smokeRemote,
+  ValidateReleaseError,
+  validateJsonBundle,
+  validateLocal,
+  validateSha,
+} from "../../src/release/validateRelease.js";
+
+let docs: string;
+beforeEach(() => {
+  docs = mkdtempSync(join(tmpdir(), "paperpilot-validate-release-"));
+});
+afterEach(() => {
+  rmSync(docs, { recursive: true, force: true });
+});
+
+const SHA = "a".repeat(40);
+
+function writeValidBundle(): void {
+  for (const artifact of DEFAULT_REQUIRED_ARTIFACTS) {
+    const path = join(docs, artifact);
+    mkdirSync(join(path, ".."), { recursive: true });
+  }
+  writeFileSync(
+    join(docs, "index.html"),
+    '<!doctype html><html><head><meta http-equiv="Content-Security-Policy" content="default-src \'self\'"></head></html>',
+  );
+  writeFileSync(
+    join(docs, "404.html"),
+    '<!doctype html><meta http-equiv="Content-Security-Policy" content="x">',
+  );
+  mkdirSync(join(docs, "iclr-2026"), { recursive: true });
+  writeFileSync(join(docs, "iclr-2026", "papers.json"), "[]");
+  writeFileSync(join(docs, "conferences.json"), JSON.stringify([{ name: "iclr-2026" }]));
+  writeFileSync(join(docs, "search-index.json"), "[]");
+  writeFileSync(join(docs, "search-index-v2.json"), "[]");
+  writeFileSync(join(docs, "lineage-quality-v1.json"), "{}");
+  writeFileSync(join(docs, "sitemap.xml"), '<?xml version="1.0"?><urlset></urlset>');
+  mkdirSync(join(docs, "assets"), { recursive: true });
+  writeFileSync(join(docs, "assets", "versions.json"), "{}");
+}
+
+it("validateSha rejects anything but 40 lowercase hex", () => {
+  expect(() => validateSha(SHA)).not.toThrow();
+  expect(() => validateSha("ABC")).toThrow(ValidateReleaseError);
+  expect(() => validateSha(SHA.toUpperCase())).toThrow(ValidateReleaseError);
+});
+
+it("validateLocal passes a well-formed bundle at the expected SHA", () => {
+  writeValidBundle();
+  expect(() =>
+    validateLocal({ expectedSha: SHA, docsRoot: docs, actualHeadSha: SHA }),
+  ).not.toThrow();
+});
+
+it("validateLocal rejects a checkout at the wrong SHA", () => {
+  writeValidBundle();
+  expect(() =>
+    validateLocal({ expectedSha: SHA, docsRoot: docs, actualHeadSha: "b".repeat(40) }),
+  ).toThrow(/checkout SHA/);
+});
+
+it("validateLocal rejects a missing required artifact", () => {
+  writeValidBundle();
+  rmSync(join(docs, "404.html"));
+  expect(() => validateLocal({ expectedSha: SHA, docsRoot: docs, actualHeadSha: SHA })).toThrow(
+    /missing Pages artifact: 404.html/,
+  );
+});
+
+it("validateJsonBundle rejects invalid JSON anywhere under the docs root", () => {
+  writeValidBundle();
+  writeFileSync(join(docs, "iclr-2026", "papers.json"), "{not json");
+  expect(() => validateJsonBundle(docs)).toThrow(/invalid JSON/);
+});
+
+it("validateJsonBundle rejects an invalid sitemap.xml", () => {
+  writeValidBundle();
+  writeFileSync(join(docs, "sitemap.xml"), "<urlset><bad></urlset>");
+  expect(() => validateJsonBundle(docs)).toThrow(/sitemap/);
+});
+
+it("validateJsonBundle rejects a conferences.json entry with no catalog", () => {
+  writeValidBundle();
+  writeFileSync(
+    join(docs, "conferences.json"),
+    JSON.stringify([{ name: "iclr-2026" }, { name: "ghost-2026" }]),
+  );
+  expect(() => validateJsonBundle(docs)).toThrow(/missing catalog for conference "ghost-2026"/);
+});
+
+it("validateJsonBundle rejects published docs/design content", () => {
+  writeValidBundle();
+  mkdirSync(join(docs, "design"), { recursive: true });
+  writeFileSync(join(docs, "design", "39-plan.md"), "secret plan");
+  expect(() => validateJsonBundle(docs)).toThrow(/forbidden published path/);
+});
+
+it("validateJsonBundle rejects a published *_IMPLEMENTER.md file", () => {
+  writeValidBundle();
+  writeFileSync(join(docs, "QWEN_IMPLEMENTER.md"), "ops notes");
+  expect(() => validateJsonBundle(docs)).toThrow(/forbidden published path/);
+});
+
+it("validateJsonBundle rejects an HTML page with no CSP meta tag", () => {
+  writeValidBundle();
+  writeFileSync(join(docs, "no-csp.html"), "<!doctype html><html></html>");
+  expect(() => validateJsonBundle(docs)).toThrow(/missing CSP meta tag/);
+});
+
+// ---- smoke (injected fetch, no real network) ----
+
+function fakeFetch(routes: Record<string, string>) {
+  return async (url: string) => {
+    const path = url.replace(/^https?:\/\/[^/]+/, "");
+    const body = routes[path];
+    if (body === undefined) {
+      return {
+        status: 404,
+        async text() {
+          return "not found";
+        },
+      };
+    }
+    return {
+      status: 200,
+      async text() {
+        return body;
+      },
+    };
+  };
+}
+
+function validSmokeRoutes(sha: string): Record<string, string> {
+  return {
+    "/": "<!doctype html><html></html>",
+    "/_paperpilot-deployment.json": JSON.stringify({ source_sha: sha }),
+    "/conferences.json": JSON.stringify([{ name: "iclr-2026" }]),
+    "/search-index-v2.json": JSON.stringify([["T", "iclr-2026", 0, [], [], 2026, "Oral"]]),
+    "/lineage-quality-v1.json": JSON.stringify({
+      collections: [{ path: "iclr-2026/lineage/", availability: "ready", audit_status: "passed" }],
+    }),
+    "/iclr-2026/": "<!doctype html><html></html>",
+    "/iclr-2026/lineage/": "<!doctype html><html></html>",
+  };
+}
+
+it("smokeRemote passes a well-formed deployment and follows the ready+passed lineage route", async () => {
+  const result = await smokeRemote({
+    baseUrl: "https://paperpilot.pages.dev",
+    expectedSha: SHA,
+    fetchImpl: fakeFetch(validSmokeRoutes(SHA)),
+  });
+  expect(result.routes).toEqual([
+    "https://paperpilot.pages.dev/iclr-2026/",
+    "https://paperpilot.pages.dev/iclr-2026/lineage/",
+  ]);
+});
+
+it("smokeRemote rejects a non-https base URL", async () => {
+  await expect(
+    smokeRemote({
+      baseUrl: "http://paperpilot.pages.dev",
+      expectedSha: SHA,
+      fetchImpl: fakeFetch(validSmokeRoutes(SHA)),
+    }),
+  ).rejects.toThrow(/https/);
+});
+
+it("smokeRemote rejects a marker SHA mismatch", async () => {
+  await expect(
+    smokeRemote({
+      baseUrl: "https://paperpilot.pages.dev",
+      expectedSha: SHA,
+      fetchImpl: fakeFetch(validSmokeRoutes("b".repeat(40))),
+    }),
+  ).rejects.toThrow(/does not match/);
+});
+
+it("smokeRemote rejects an empty deployed conferences.json", async () => {
+  const routes = validSmokeRoutes(SHA);
+  routes["/conferences.json"] = "[]";
+  await expect(
+    smokeRemote({
+      baseUrl: "https://paperpilot.pages.dev",
+      expectedSha: SHA,
+      fetchImpl: fakeFetch(routes),
+    }),
+  ).rejects.toThrow(/conferences.json is empty/);
+});
+
+it("smokeRemote rejects an unsafe lineage path from lineage-quality-v1.json", async () => {
+  const routes = validSmokeRoutes(SHA);
+  routes["/lineage-quality-v1.json"] = JSON.stringify({
+    collections: [{ path: "https://evil.example/", availability: "ready", audit_status: "passed" }],
+  });
+  await expect(
+    smokeRemote({
+      baseUrl: "https://paperpilot.pages.dev",
+      expectedSha: SHA,
+      fetchImpl: fakeFetch(routes),
+    }),
+  ).rejects.toThrow(/unsafe smoke path/);
+});
