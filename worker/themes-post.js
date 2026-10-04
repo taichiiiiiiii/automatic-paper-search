@@ -125,7 +125,7 @@ async function alreadyGenerated(slug, env, fetchImpl) {
   let resp;
   try {
     // L-7: never silently follow a redirect away from the pinned ref/path.
-    resp = await fetchImpl(manifestUrl, { redirect: "error" });
+    resp = await fetchImpl(manifestUrl, { redirect: "manual" });
   } catch {
     return { ok: false };
   }
@@ -145,7 +145,7 @@ async function dispatchWorkflow(theme, requestId, env, fetchImpl) {
   const resp = await fetchImpl(url, {
     method: "POST",
     // L-7: same redirect guard on the dispatch call.
-    redirect: "error",
+    redirect: "manual",
     headers: {
       "authorization": `Bearer ${env.GH_DISPATCH_PAT}`,
       "accept": "application/vnd.github+json",

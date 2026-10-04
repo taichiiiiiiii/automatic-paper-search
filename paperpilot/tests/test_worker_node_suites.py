@@ -39,7 +39,7 @@ SUITES = [
     ("response.test.mjs", 23),
     ("run-match.test.mjs", 11),
     ("slug.test.mjs", 14),
-    ("themes-post.test.mjs", 34),
+    ("themes-post.test.mjs", 36),
     ("validate-input.test.mjs", 10),
 ]
 

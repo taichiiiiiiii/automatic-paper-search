@@ -152,7 +152,7 @@ tests.push(test("sends only the closed workflow input allowlist to the fixed HTT
   const [url, init] = calls[0];
   eq(url, "https://api.github.com/repos/taichiiiiiiii/automatic-paper-search/actions/workflows/paper-slides-on-demand.yml/dispatches");
   eq(init.method, "POST");
-  eq(init.redirect, "error");
+  eq(init.redirect, "manual");
   eq(init.headers.authorization, `Bearer ${TOKEN}`);
   eq(JSON.parse(init.body), {
     ref: "develop",

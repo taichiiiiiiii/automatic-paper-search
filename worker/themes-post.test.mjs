@@ -7,7 +7,7 @@
 // circuit before any KV read/write or subrequest (M-1, L-6); a manifest
 // fetch failure never collapses into "exists" (H-1); a KV put throw or
 // a dispatch throw both fail closed as JSON errors instead of an
-// uncaught 500 (L-1); redirect: "error" on both outbound fetches (L-7);
+// uncaught 500 (L-1); redirect: "manual" on both outbound fetches (L-7; workerd rejects "error");
 // and the full happy-path order (input validation → manifest dedup →
 // per-IP limit → global cap → dispatch → response).
 
@@ -71,7 +71,7 @@ function putThrowingKV(message = "KV put failed") {
 
 // Programmable fetch stub keyed by URL prefix. Each call is recorded
 // (url, init) so tests can assert call counts, order, and that
-// `redirect: "error"` was actually passed through.
+// `redirect: "manual"` was actually passed through.
 function makeFetch({ manifest, dispatch } = {}) {
   const calls = [];
   const impl = async (url, init) => {
@@ -482,22 +482,40 @@ tests.push(test("neither dispatch throw nor failure logs the PAT", async () => {
   }
 }));
 
-// ---- L-7: redirect: "error" on outbound fetches ----
+// ---- L-7: redirect: "manual" on outbound fetches (a 3xx is !ok, so it fails closed) ----
 
-tests.push(test("manifest fetch passes redirect: error", async () => {
+tests.push(test("manifest fetch passes redirect: manual", async () => {
   const fetchImpl = makeFetch();
   const handlePost = createThemesPostHandler({ fetch: fetchImpl });
   await handlePost(postRequest(), { ...ENV, RATE_LIMIT_KV: makeKV() });
   const manifestCall = fetchImpl.calls.find((c) => c.url.startsWith("https://raw.githubusercontent.com"));
-  eq(manifestCall.init.redirect, "error");
+  eq(manifestCall.init.redirect, "manual");
 }));
 
-tests.push(test("dispatch fetch passes redirect: error", async () => {
+tests.push(test("dispatch fetch passes redirect: manual", async () => {
   const fetchImpl = makeFetch();
   const handlePost = createThemesPostHandler({ fetch: fetchImpl });
   await handlePost(postRequest(), { ...ENV, RATE_LIMIT_KV: makeKV() });
   const dispatchCall = fetchImpl.calls.find((c) => c.url.startsWith("https://api.github.com"));
-  eq(dispatchCall.init.redirect, "error");
+  eq(dispatchCall.init.redirect, "manual");
+}));
+
+tests.push(test("manifest 3xx under redirect: manual -> 503 error, no dispatch", async () => {
+  const fetchImpl = makeFetch({
+    manifest: { response: new Response(null, { status: 302, headers: { location: "https://attacker.test/" } }) },
+  });
+  const handlePost = createThemesPostHandler({ fetch: fetchImpl });
+  const res = await handlePost(postRequest(), { ...ENV, RATE_LIMIT_KV: makeKV() });
+  eq(res.status, 503);
+  eq((await readJson(res)).status, "error");
+  eq(fetchImpl.calls.filter((c) => c.url.startsWith("https://api.github.com")).length, 0);
+}));
+
+tests.push(test("dispatch 3xx under redirect: manual -> 502 error", async () => {
+  const fetchImpl = makeFetch({ dispatch: { response: new Response(null, { status: 307, headers: { location: "https://attacker.test/" } }) } });
+  const handlePost = createThemesPostHandler({ fetch: fetchImpl });
+  const res = await handlePost(postRequest(), { ...ENV, RATE_LIMIT_KV: makeKV() });
+  eq(res.status, 502);
 }));
 
 // ---- happy path / overall order ----

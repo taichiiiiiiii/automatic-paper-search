@@ -226,7 +226,7 @@ export function createPaperSlideDispatchAdapter(config = {}) {
       const operation = (async () => {
         const response = await fetchImpl(endpoint, {
           method: "POST",
-          redirect: "error",
+          redirect: "manual",
           signal: controller.signal,
           headers: {
             authorization: `Bearer ${token}`,
