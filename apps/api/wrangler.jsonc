@@ -1,0 +1,71 @@
+{
+  // Preview/dev-only Cloudflare Worker config for apps/api (Hono port of
+  // worker/, §4.5). This is NOT the production Worker — the production
+  // Worker stays on root wrangler.jsonc / worker/index.ts until the P5
+  // cutover (§7.3: "ルートの wrangler.jsonc と worker/ は apps/api が完成する
+  // まで触らない"). Deliberately a different name, a different KV id, and
+  // no reference to the production KV id (3e11d3e73dae42a8b94f06a9fa9de19f)
+  // or the production Worker name (paperpilot-themes) anywhere in this
+  // file — see the task's hard limits and §4.5 "プレビュー・開発用の API は
+  // 本番の生成を起こさない".
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "paperpilot-api-preview",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-04-21",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true
+  },
+  // Non-secret vars. GH_REF is intentionally NOT "develop" (the dispatch-
+  // mode check in src/lib/dispatch-mode.ts refuses dry-run against that
+  // ref as a misconfiguration guard). DISPATCH_MODE is explicit per §4.5 —
+  // never inferred from whether a PAT secret happens to be set.
+  "vars": {
+    "GH_OWNER": "taichiiiiiiii",
+    "GH_REPO": "automatic-paper-search",
+    "GH_WORKFLOW_FILE": "theme-on-demand.yml",
+    "GH_REF": "feat/ts-migration",
+    "DISPATCH_MODE": "dry-run"
+  },
+  // §4.2-6/7: origin allowlist + accept-stop flag, read fresh per request.
+  // TODO(user, §10-6): create a preview-only KV namespace with
+  //   `wrangler kv namespace create CONFIG_KV --preview -c apps/api/wrangler.jsonc`
+  // and replace the placeholder id below. Do not reuse the production
+  // RATE_LIMIT_KV namespace id from the root wrangler.jsonc. After
+  // creating it, write two keys so the Worker isn't fail-closed-paused by
+  // default: `origin_allowlist` (a JSON array of exact allowed origin
+  // strings) and `accepting` (exactly the string "true"). Also write
+  // `namespace_tag` (any short label, e.g. "apps-api-preview") so
+  // GET /api/health's kv_namespace_tag field proves which namespace this
+  // Worker is actually bound to — deliberately NOT a `vars` entry, see
+  // src/config.ts's KV_KEY_NAMESPACE_TAG comment.
+  "kv_namespaces": [
+    {
+      "binding": "CONFIG_KV",
+      "id": "TODO-create-a-preview-only-kv-namespace-and-put-its-id-here"
+    }
+  ],
+  // §5: exact quota counting via a SQLite-backed Durable Object.
+  // `new_sqlite_classes` (not `new_classes`) is required for the Free
+  // plan per §4.5 — `new_classes` fails to deploy on Workers Free.
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "QUOTA",
+        "class_name": "QuotaCounter"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["QuotaCounter"]
+    }
+  ]
+  // Secrets (not committed): set with
+  //   wrangler secret put GH_DISPATCH_PAT -c apps/api/wrangler.jsonc
+  // Per §4.5, the preview Worker should NOT be given a real PAT — leave
+  // it unset while DISPATCH_MODE=dry-run; only a real deploy that
+  // deliberately flips to DISPATCH_MODE=live needs one, and that's a
+  // user/ops action outside this task's scope.
+}
