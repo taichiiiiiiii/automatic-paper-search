@@ -69,17 +69,42 @@ async function runPromote(args: string[]): Promise<void> {
   emitPromoteOutputs(result.sourceSha, result.changed);
 }
 
-async function runPackage(args: string[]): Promise<void> {
-  if (args.length < 2) {
-    die("usage: package <candidate-dir> <included-path>...");
+/**
+ * `packageCandidate` resolves every included path, and runs every `git`
+ * command, against `repoRoot` — unlike `promote`/`commit-push` (which pass
+ * their own `cwd` straight through to `git` for commands that don't care
+ * where the repo root actually is), a WRONG repo root here does not fail
+ * loudly: `git diff`/`ls-files` would just report paths relative to
+ * whatever directory this was invoked from, and the packager would copy
+ * the wrong files (or silently nothing) rather than error. An explicit
+ * `--repo-root <path>` makes this overridable/testable instead of always
+ * trusting `process.cwd()` to already be the repo root.
+ */
+function extractRepoRootOverride(argv: readonly string[]): { rest: string[]; repoRoot: string } {
+  let repoRoot: string | undefined;
+  const rest: string[] = [];
+  for (let i = 0; i < argv.length; i++) {
+    if (argv[i] === "--repo-root") {
+      repoRoot = argv[++i];
+    } else {
+      rest.push(argv[i] as string);
+    }
   }
-  const [candidateDir, ...includedPaths] = args as [string, ...string[]];
+  return { rest, repoRoot: repoRoot ?? process.cwd() };
+}
+
+async function runPackage(args: string[]): Promise<void> {
+  const { rest, repoRoot } = extractRepoRootOverride(args);
+  if (rest.length < 2) {
+    die("usage: package [--repo-root <path>] <candidate-dir> <included-path>...");
+  }
+  const [candidateDir, ...includedPaths] = rest as [string, ...string[]];
   const git = createGitAdapter();
   const result = packageCandidate({
     candidateDir,
     includedPaths,
     git,
-    repoRoot: process.cwd(),
+    repoRoot,
     snapshotMode: process.env.PAPERPILOT_PACKAGE_INCLUDE_UNCHANGED === "1",
   });
   console.log(`packaged ${result.copied} generated file(s) in ${candidateDir}`);

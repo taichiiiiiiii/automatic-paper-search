@@ -17,4 +17,5 @@ export { PyFloat, type PyJsonDumpsOptions, pyFloat, pyJsonDumps } from "./jsonDu
 export { pyRound } from "./round.js";
 export { codepointCompare, pySortedStrings } from "./sort.js";
 export { nfkc, pyCasefold, pyLower } from "./text.js";
+export { pyLstrip, pyRstrip, pySplit, pyStrip } from "./whitespace.js";
 export { isPyWordChar, PY_WORD_CLASS_SOURCE, pyWordCharRegex } from "./wordRegex.js";

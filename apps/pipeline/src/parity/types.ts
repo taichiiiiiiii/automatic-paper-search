@@ -83,6 +83,13 @@ interface ParityReportBase {
   extraFiles: string[];
   fileResults: FileResult[];
   summary: ParitySummary;
+  /**
+   * Symlinks either tree could not resolve to a plain file (dangling, or
+   * pointing to a directory) — reported explicitly rather than silently
+   * excluded, since content neither side compared is never "equal".
+   * `side` distinguishes which root the entry was found under.
+   */
+  skippedEntries: Array<{ side: "expected" | "actual"; path: string; reason: string }>;
 }
 
 export interface CompareTreesReport extends ParityReportBase {

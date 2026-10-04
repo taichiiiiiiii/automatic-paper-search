@@ -63,6 +63,42 @@ it("project_catalogs reports alias conflict", () => {
   expect(result.coverage.alias_conflicts).toBe(1);
 });
 
+// IDN-08 (no Python test exists; written from identity/projector.py's own
+// logic — see `hash_collisions`/`duplicate_paper_ids`/the CVF fingerprint
+// check in project_catalogs): a duplicate paper_id, or a CVF filename stem
+// that two different canonical paths both resolve to, must not produce a
+// "valid" projection. (A genuine SHA-256 hash collision is not constructible
+// in a test — Python's own test suite has the same gap — so only the
+// duplicate and CVF-ambiguity halves are covered here.)
+it("IDN-08: a paper_id appearing twice (duplicate) makes the projection invalid", () => {
+  writeCatalog("iclr-2026", [{ title: "A", arxiv_url: "https://arxiv.org/abs/2404.00001" }]);
+  writeCatalog("neurips-2026", [{ title: "A", arxiv_url: "https://arxiv.org/abs/2404.00001" }]);
+  const result = projectCatalogs(docs, ["iclr-2026", "neurips-2026"], "2026-08-30T00:00:00Z");
+  expect(result.coverage.valid).toBe(false);
+  expect(result.coverage.duplicate_paper_ids).toBe(1);
+  expect(result.coverage.hash_collisions).toBe(0);
+});
+
+it("IDN-08: a CVF filename stem shared by two different collections (canonical paths) is rejected", () => {
+  writeCatalog("cvpr-2026", [
+    {
+      title: "A",
+      arxiv_url:
+        "https://openaccess.thecvf.com/content/CVPR2026/html/Smith_Paper_CVPR_2026_paper.html",
+    },
+  ]);
+  writeCatalog("iccv-2025", [
+    {
+      title: "B, a different paper that happens to share a filename stem",
+      arxiv_url:
+        "https://openaccess.thecvf.com/content/ICCV2025/html/Smith_Paper_CVPR_2026_paper.html",
+    },
+  ]);
+  const result = projectCatalogs(docs, ["cvpr-2026", "iccv-2025"], "2026-08-30T00:00:00Z");
+  expect(result.coverage.valid).toBe(false);
+  expect(result.coverage.failures.some((f) => f.error.includes("CVF filename stem"))).toBe(true);
+});
+
 it("project_catalogs records parse failure without fallback", () => {
   writeCatalog("bad-2026", [{ title: "Looks usable", arxiv_url: "bad" }]);
   const result = projectCatalogs(docs, ["bad-2026"], "2026-08-30T00:00:00Z");
@@ -191,4 +227,39 @@ it("check passes once the projection has been written, and still writes nothing 
       check: true,
     }),
   ).not.toThrow();
+});
+
+it("check throws when the alias/catalog projection is stale even though the coverage report matches, and writes nothing", () => {
+  writeCatalog("iclr-2026", [{ title: "A", arxiv_url: "https://arxiv.org/abs/2601.00001" }]);
+  const coverageDir = mkdtempSync(join(tmpdir(), "paperpilot-coverage-"));
+  const coveragePath = join(coverageDir, "coverage.json");
+
+  buildIdentityLite({
+    docsRoot: docs,
+    conferenceNames: ["iclr-2026"],
+    asOf: "2026-08-30T00:00:00Z",
+    coveragePath,
+  });
+  const publishedPapersJson = join(docs, "iclr-2026", "papers.json");
+  const beforeCheck = readFileSync(publishedPapersJson, "utf-8");
+  const aliasesPath = join(docs, "identity-aliases-v1.json");
+
+  // Hand-edit the published aliases file directly (bypassing identity-lite
+  // entirely) without touching the papers.json inputs that `coveragePayload`
+  // is computed from — the coverage report on disk still matches a fresh
+  // recomputation, so only the alias/catalog projection check can catch this.
+  writeFileSync(aliasesPath, "[]", "utf-8");
+
+  expect(() =>
+    buildIdentityLite({
+      docsRoot: docs,
+      conferenceNames: ["iclr-2026"],
+      asOf: "2026-08-30T00:00:00Z",
+      coveragePath,
+      check: true,
+    }),
+  ).toThrow(/identity projections are stale/);
+  // Refused: nothing on disk was rewritten by the failed --check.
+  expect(readFileSync(publishedPapersJson, "utf-8")).toBe(beforeCheck);
+  expect(readFileSync(aliasesPath, "utf-8")).toBe("[]");
 });

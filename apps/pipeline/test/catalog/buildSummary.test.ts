@@ -1,5 +1,5 @@
 /** Ported from paperpilot/tests/test_build_summary_csv.py. */
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
@@ -158,6 +158,23 @@ describe("buildSummary", () => {
     expect(poster?.type).toBe("Poster");
   });
 
+  // Whitespace LOW: Python's str.split()/strip() use a different whitespace
+  // set than JS's \s/.trim() (U+001C-U+001F, U+0085 are Python-only
+  // whitespace). normalizeTitle collapses whitespace runs via
+  // `" ".join(s.split())` in Python — a title differing only by one of
+  // these exotic whitespace characters (or run length) must still match
+  // the oral-titles set.
+  it("matches an oral title despite Python-only whitespace (U+001C) and run-length differences", () => {
+    const conf = join(tmpDir, "iclr-2026");
+    writePapersCsv(join(conf, "papers_2026-04-18.csv"), [
+      { title: "Scaling  Language\x1cModels", url: "http://arxiv.org/abs/2404.00001" },
+    ]);
+    writeOralMd(join(conf, "oral_summaries_ja.md"), ["Scaling Language Models"]);
+
+    const result = buildSummary({ conferenceDir: conf });
+    expect(result.oralCount).toBe(1);
+  });
+
   it("sorts Oral rows first, then by lowercased title", () => {
     const conf = join(tmpDir, "iclr-2026");
     writePapersCsv(join(conf, "papers_2026-04-18.csv"), [
@@ -244,5 +261,26 @@ describe("buildSummary", () => {
     writePapersCsv(elsewhere, [{ title: "B", url: "http://arxiv.org/abs/2404.00002" }]);
     buildSummary({ conferenceDir: conf, inputCsv: elsewhere });
     expect(() => readFileSync(join(conf, "summary.meta.json"))).toThrow();
+  });
+
+  // LOW: the same-directory check must resolve symlinks (matching Python's
+  // `Path.resolve()`), not just compare lexical paths — a conference
+  // directory reached through a symlink to the same real location as the
+  // source CSV is still "the same directory" and should still get a sidecar.
+  it("writes the sidecar when --input's real directory matches conferenceDir only via a symlink", () => {
+    const real = join(tmpDir, "real-iclr-2026");
+    writePapersCsv(join(real, "papers_2026-04-18.csv"), [
+      { title: "A", url: "http://arxiv.org/abs/2404.00001" },
+    ]);
+    const viaSymlink = join(tmpDir, "iclr-2026-alias");
+    symlinkSync(real, viaSymlink);
+
+    // conferenceDir is the symlink; --input is the SAME file reached by its
+    // real (non-symlinked) path — lexically different strings, same
+    // physical directory, so the sidecar must still be written.
+    buildSummary({ conferenceDir: viaSymlink, inputCsv: join(real, "papers_2026-04-18.csv") });
+
+    const meta = JSON.parse(readFileSync(join(real, "summary.meta.json"), "utf-8"));
+    expect(meta).toEqual({ source: "papers_2026-04-18.csv" });
   });
 });

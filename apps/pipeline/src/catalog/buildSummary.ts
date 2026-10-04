@@ -12,9 +12,23 @@
  * round trip) so its output is byte-identical for the same input.
  */
 
-import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, unlinkSync } from "node:fs";
-import { basename, dirname, join, resolve } from "node:path";
-import { codepointCompare, pyJsonDumps, pyLower } from "@paperpilot/core/pycompat";
+import {
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  realpathSync,
+  statSync,
+  unlinkSync,
+} from "node:fs";
+import { basename, dirname, join } from "node:path";
+import {
+  codepointCompare,
+  pyJsonDumps,
+  pyLower,
+  pySplit,
+  pyStrip,
+} from "@paperpilot/core/pycompat";
 import { neutralizeRow, unneutralize } from "../collect/exporters/csvSafety.js";
 import { atomicWriteText } from "../collect/state/atomic.js";
 import { dictReader, stripBom, writeDictCsv } from "./csv.js";
@@ -96,7 +110,7 @@ export function stripZeroWidth(s: string): string {
 
 /** Collapse whitespace runs and lowercase, for oral-title matching only. */
 export function normalizeTitle(s: string): string {
-  return pyLower(s.trim().replace(/\s+/g, " "));
+  return pyLower(pySplit(s).join(" "));
 }
 
 export function classifyTags(title: string, abstract: string): string[] {
@@ -149,12 +163,12 @@ export function buildSummary(options: BuildSummaryOptions): BuildSummaryResult {
     for (const [k, v] of Object.entries(rawRow)) {
       row[k] = typeof v === "string" ? unneutralize(v) : v;
     }
-    const title = stripZeroWidth(row.title ?? "").trim();
+    const title = pyStrip(stripZeroWidth(row.title ?? ""));
     if (!title) continue;
     const abstract = stripZeroWidth(row.abstract ?? "");
     const identity = identityFromUrl(row.url ?? "");
-    const declaredSource = (row.source ?? "").trim();
-    const declaredSourceId = (row.source_id ?? "").trim();
+    const declaredSource = pyStrip(row.source ?? "");
+    const declaredSourceId = pyStrip(row.source_id ?? "");
     if (Boolean(declaredSource) !== Boolean(declaredSourceId)) {
       throw new IdentityError("source and source_id must be present together");
     }
@@ -174,7 +188,7 @@ export function buildSummary(options: BuildSummaryOptions): BuildSummaryResult {
       authors: row.authors ?? "",
       arxiv_url: row.url ?? "",
       pdf_url: row.pdf_url ?? "",
-      abstract: abstract.replace(/\n/g, " ").trim(),
+      abstract: pyStrip(abstract.replace(/\n/g, " ")),
       arxiv_id: row.arxiv_id ?? "",
       citation_count: row.citation_count ?? "",
       venue_tier: row.venue_tier ?? "",
@@ -199,8 +213,12 @@ export function buildSummary(options: BuildSummaryOptions): BuildSummaryResult {
   atomicWriteText(dstCsv, csvText);
 
   const sidecar = join(conferenceDir, SUMMARY_META_FILENAME);
-  const srcAbsDir = resolve(dirname(srcCsv));
-  const confAbsDir = resolve(conferenceDir);
+  // realpathSync (not path.resolve, which is purely lexical) so a
+  // conference directory reached via a symlink is correctly recognized as
+  // "the same directory" as the source CSV's real location — matching
+  // Python's `Path.resolve()`, which follows symlinks.
+  const srcAbsDir = realpathSync(dirname(srcCsv));
+  const confAbsDir = realpathSync(conferenceDir);
   if (srcAbsDir === confAbsDir) {
     atomicWriteText(
       sidecar,
@@ -216,7 +234,7 @@ export function buildSummary(options: BuildSummaryOptions): BuildSummaryResult {
 
   const tagCounts = new Map<string, number>();
   for (const r of rowsOut) {
-    for (const t of r.tags.split(/\s+/).filter(Boolean)) {
+    for (const t of pySplit(r.tags)) {
       tagCounts.set(t, (tagCounts.get(t) ?? 0) + 1);
     }
   }

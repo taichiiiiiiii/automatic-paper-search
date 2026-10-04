@@ -60,11 +60,48 @@ it("validateCandidateDirArg requires an absolute path outside the repo", () => {
   expect(() => validateCandidateDirArg("/repo/candidate", "/repo")).toThrow(PathSafetyError);
 });
 
-it("validateSmokeRelativePath rejects scheme/host/query/fragment/leading-slash/..", () => {
+it("validateSmokeRelativePath accepts an ordinary relative path", () => {
   expect(() => validateSmokeRelativePath("iclr-2026/")).not.toThrow();
+});
+
+// PUB-36: each unsafe-path clause gets its own input, isolated from the
+// others, so a mutant that disables ONE clause can't hide behind a
+// different clause in the same input also catching it (the single
+// combined "https://evil.example/" case used to cover scheme AND netloc
+// at once, for example, so deleting either check alone stayed green).
+it("PUB-36: rejects a scheme (mailto:, no host/netloc) on its own", () => {
+  expect(() => validateSmokeRelativePath("mailto:evil@example.com")).toThrow(PathSafetyError);
+});
+
+it("PUB-36: rejects a scheme+host URL (the realistic absolute-URL case)", () => {
   expect(() => validateSmokeRelativePath("https://evil.example/")).toThrow(PathSafetyError);
+});
+
+it("PUB-36: rejects a single leading slash, isolated from netloc", () => {
+  // Exactly one leading "/" (not "//"), so `netloc` stays empty here —
+  // this input can only be caught by the leading-slash check itself.
   expect(() => validateSmokeRelativePath("/iclr-2026/")).toThrow(PathSafetyError);
+});
+
+it("PUB-36: rejects a protocol-relative //host path", () => {
+  // Note: any `//host` path necessarily also starts with "/", so this
+  // input is mathematically never isolated from the leading-slash check
+  // (by the time `netloc` would be the deciding clause, the leading-slash
+  // check has already decided it) — the dedicated netloc computation
+  // cannot be isolated by any input to this function. This case is kept
+  // as a real-world regression pin, not a netloc-isolation proof.
+  expect(() => validateSmokeRelativePath("//evil.example/path")).toThrow(PathSafetyError);
+});
+
+it("PUB-36: rejects a query string, isolated from the other clauses", () => {
   expect(() => validateSmokeRelativePath("iclr-2026/?x=1")).toThrow(PathSafetyError);
+});
+
+it("PUB-36: rejects a fragment, isolated from the other clauses", () => {
   expect(() => validateSmokeRelativePath("iclr-2026/#frag")).toThrow(PathSafetyError);
+});
+
+it("PUB-36: rejects a .. path segment, isolated from the other clauses", () => {
   expect(() => validateSmokeRelativePath("../etc/passwd")).toThrow(PathSafetyError);
+  expect(() => validateSmokeRelativePath("iclr-2026/../../etc/passwd")).toThrow(PathSafetyError);
 });

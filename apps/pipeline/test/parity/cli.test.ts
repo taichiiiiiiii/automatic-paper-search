@@ -125,6 +125,8 @@ describe("parity CLI", () => {
   });
 
   it("supports --run + --expect-exit-code and fails the overall check on a mismatched exit code", async () => {
+    // Explicit timeout: this spawns the CLI as a real tsx subprocess, which
+    // itself spawns `node -e`, twice; the 5s default can flake under load.
     const tmp = await fs.mkdtemp(path.join(os.tmpdir(), "parity-cli-run-"));
     try {
       const dir = path.join(tmp, "dir");
@@ -161,7 +163,7 @@ describe("parity CLI", () => {
     } finally {
       await fs.rm(tmp, { recursive: true, force: true });
     }
-  });
+  }, 30_000);
 
   it("runs --run BEFORE comparing, so a command that writes into dir is caught as a leak", async () => {
     const tmp = await fs.mkdtemp(path.join(os.tmpdir(), "parity-cli-leak-"));

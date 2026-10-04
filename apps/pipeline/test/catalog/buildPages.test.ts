@@ -4,6 +4,7 @@ import {
   mkdirSync,
   mkdtempSync,
   readFileSync,
+  rmSync,
   symlinkSync,
   writeFileSync,
 } from "node:fs";
@@ -23,6 +24,7 @@ import {
   writeDetailShards,
   writeIndex,
 } from "../../src/catalog/buildPages.js";
+import { SUMMARY_META_FILENAME } from "../../src/catalog/buildSummary.js";
 import { writeDictCsv } from "../../src/catalog/csv.js";
 import { IdentityError } from "../../src/catalog/identity.js";
 
@@ -132,6 +134,81 @@ describe("loadSummaryWithDetails", () => {
     ]);
     expect(() => loadSummaryWithDetails(join(conf, "summary.csv"))).toThrow(IdentityError);
   });
+
+  // CAT-16 (no Python test exists; written from docs/migration/safety-contracts.md's
+  // description): the identity gate on summary.csv load rejects a declared
+  // source/source_id that is only half-present, or that doesn't match the
+  // identity derived from the native URL.
+  it("CAT-16: throws IdentityError when only one of source/source_id is declared", () => {
+    const conf = join(roots.outputRoot, "iclr-2026");
+    writeSummaryCsv(conf, [
+      arxivRow(1, { source: "openreview" }), // source_id left blank
+    ]);
+    expect(() => loadSummaryWithDetails(join(conf, "summary.csv"))).toThrow(IdentityError);
+  });
+
+  it("CAT-16: throws IdentityError when declared source/source_id mismatches the native URL", () => {
+    const conf = join(roots.outputRoot, "iclr-2026");
+    writeSummaryCsv(conf, [
+      {
+        title: "A",
+        arxiv_url: "https://openreview.net/forum?id=abc123DEF",
+        source: "openreview",
+        source_id: "wrongID123",
+      },
+    ]);
+    expect(() => loadSummaryWithDetails(join(conf, "summary.csv"))).toThrow(IdentityError);
+  });
+
+  it("CAT-16: accepts a declared source/source_id that matches the native URL", () => {
+    const conf = join(roots.outputRoot, "iclr-2026");
+    writeSummaryCsv(conf, [
+      {
+        title: "A",
+        arxiv_url: "https://openreview.net/forum?id=abc123DEF",
+        source: "openreview",
+        source_id: "abc123DEF",
+      },
+    ]);
+    const { papers } = loadSummaryWithDetails(join(conf, "summary.csv"));
+    expect(papers[0]?.source).toBe("openreview");
+  });
+
+  // CAT-17 (no Python test exists): conflicting full abstracts for the same
+  // paper_id are rejected both WITHIN one conference's summary.csv (covered
+  // above) and ACROSS conferences, via the shared `detailSink` that
+  // buildPagesMain threads through every prepareConference() call in a
+  // full build.
+  it("CAT-17: throws IdentityError on conflicting abstracts for the same paper_id across conferences", () => {
+    const url = "https://arxiv.org/abs/2404.00001";
+    writeSummaryCsv(join(roots.outputRoot, "conf-a"), [
+      { title: "A", arxiv_url: url, abstract: "First abstract" },
+    ]);
+    writeSummaryCsv(join(roots.outputRoot, "conf-b"), [
+      { title: "A", arxiv_url: url, abstract: "Different abstract" },
+    ]);
+    const result = buildPagesMain(parseBuildPagesArgs([]), roots);
+    expect(result.exitCode).toBe(1);
+    expect(existsSync(roots.docsRoot)).toBe(false);
+  });
+
+  // Whitespace LOW: Python's str.strip()/split() use a different whitespace
+  // set than JS's .trim()/\s (U+001C-U+001F, U+0085 are Python-only
+  // whitespace; see packages/core/src/pycompat/whitespace.ts). A naive
+  // .trim()/split(/\s+/) port leaves these in place instead of
+  // stripping/splitting on them.
+  it("strips/splits on Python-only whitespace (U+001C, U+0085), not just JS's \\s", () => {
+    const conf = join(roots.outputRoot, "iclr-2026");
+    writeSummaryCsv(conf, [
+      arxivRow(1, {
+        tags: "LLM\x1cVLM",
+        abstract: "\x85Has an abstract\x85",
+      }),
+    ]);
+    const { papers } = loadSummaryWithDetails(join(conf, "summary.csv"));
+    expect(papers[0]?.tags).toEqual(["LLM", "VLM"]);
+    expect(papers[0]?.abstract).toBe("Has an abstract");
+  });
 });
 
 describe("prepareConference / buildConference — CAT-01..05 shrink gate", () => {
@@ -190,6 +267,33 @@ describe("prepareConference / buildConference — CAT-01..05 shrink gate", () =>
     expect(() => buildConference(confName, roots)).toThrow(/cannot be inspected/);
   });
 
+  it("CAT-05: refuses a published papers.json that parses but is not a JSON array", () => {
+    const confName = "sample-conf";
+    const conf = join(roots.outputRoot, confName);
+    const docsConf = join(roots.docsRoot, confName);
+    mkdirSync(docsConf, { recursive: true });
+    const notAnArray = '{"papers": []}';
+    writeFileSync(join(docsConf, "papers.json"), notAnArray);
+    writeSummaryCsv(conf, [arxivRow(1)]);
+    expect(() => buildConference(confName, roots)).toThrow(/not a JSON array/);
+    // Refused: the uninspectable file must be left byte-for-byte untouched.
+    expect(readFileSync(join(docsConf, "papers.json"), "utf-8")).toBe(notAnArray);
+  });
+
+  it("CAT-05: a first publication has no baseline, so an uninspectable papers.json can be replaced once removed", () => {
+    const confName = "sample-conf";
+    const conf = join(roots.outputRoot, confName);
+    const docsConf = join(roots.docsRoot, confName);
+    mkdirSync(docsConf, { recursive: true });
+    writeFileSync(join(docsConf, "papers.json"), "{not valid json");
+    writeSummaryCsv(conf, [arxivRow(1)]);
+    expect(() => buildConference(confName, roots)).toThrow(/cannot be inspected/);
+
+    rmSync(join(docsConf, "papers.json"));
+    expect(() => buildConference(confName, roots)).not.toThrow();
+    expect(JSON.parse(readFileSync(join(docsConf, "papers.json"), "utf-8"))).toHaveLength(1);
+  });
+
   it("publishes a catalog of equal size without complaint", () => {
     const confName = "sample-conf";
     const conf = join(roots.outputRoot, confName);
@@ -243,6 +347,22 @@ describe("--allow-shrink / --allow-shrink-for (CAT-08..10)", () => {
     writeSummaryCsv(join(roots.outputRoot, "iclr-2026"), [arxivRow(1)]);
     const result = buildPagesMain(parseBuildPagesArgs(["--allow-shrink-for", "iclr2026!"]), roots);
     expect(result.exitCode).toBe(1);
+  });
+
+  it("CAT-10: a slug-shaped --allow-shrink-for that names no buildable/indexed conference aborts the run", () => {
+    // "iclr2026" is a syntactically valid slug (unlike "iclr2026!" above) but
+    // this run only builds/indexes "iclr-2026" — a slug-shaped typo must not
+    // silently loosen the gate for a different conference's entry. This is
+    // a FIRST publication (no baseline, nothing could shrink anyway), so
+    // the acknowledgement-naming check is the ONLY thing that can abort
+    // this run — a weaker test that also shrinks something would still
+    // pass even if that check were deleted, caught independently by the
+    // per-conference shrink gate.
+    writeSummaryCsv(join(roots.outputRoot, "iclr-2026"), [arxivRow(1)]);
+
+    const result = buildPagesMain(parseBuildPagesArgs(["--allow-shrink-for", "iclr2026"]), roots);
+    expect(result.exitCode).toBe(1);
+    expect(existsSync(join(roots.docsRoot, "iclr-2026", "papers.json"))).toBe(false);
   });
 
   it("CAT-10: a scoped build's --allow-shrink-for naming a DIFFERENT conference acknowledges nothing", () => {
@@ -330,6 +450,26 @@ describe("two-phase all-or-nothing publish (CAT-11, CAT-13)", () => {
     expect(readFileSync(join(roots.docsRoot, "conferences.json"), "utf-8")).toBe("[]");
     expect(existsSync(join(roots.docsRoot, "paper-details-v1"))).toBe(false);
   });
+
+  // Ported from test_single_conference_build_does_not_overwrite_global_index:
+  // calling buildConference() directly (above) can never fail this check —
+  // it never touches conferences.json/shards regardless of implementation.
+  // Only driving the real CLI entry point (buildPagesMain + --conference)
+  // actually exercises the routing that decides whether a scoped run skips
+  // the global index/shard rewrite.
+  it("CAT-13: a scoped CLI build (buildPagesMain --conference) leaves an unrelated published index byte-identical", () => {
+    const confName = "cvpr-2026";
+    writeSummaryCsv(join(roots.outputRoot, confName), [arxivRow(1)]);
+    mkdirSync(roots.docsRoot, { recursive: true });
+    const original = '[{"name":"existing-2025","papers":10}]\n';
+    writeFileSync(join(roots.docsRoot, "conferences.json"), original);
+
+    const result = buildPagesMain(parseBuildPagesArgs(["--conference", confName]), roots);
+    expect(result.exitCode).toBe(0);
+    expect(existsSync(join(roots.docsRoot, confName, "papers.json"))).toBe(true);
+    expect(readFileSync(join(roots.docsRoot, "conferences.json"), "utf-8")).toBe(original);
+    expect(existsSync(join(roots.docsRoot, "paper-details-v1"))).toBe(false);
+  });
 });
 
 describe("indexed-but-unrebuildable conference refusal (CAT-06, CAT-07)", () => {
@@ -357,6 +497,21 @@ describe("CAT-12: scoped build with no summary.csv fails, not skips", () => {
   it("exits 1 for a named conference that has no summary.csv", () => {
     const result = buildPagesMain(parseBuildPagesArgs(["--conference", "ghost-conf"]), roots);
     expect(result.exitCode).toBe(1);
+  });
+});
+
+describe("full build with a missing/empty output root", () => {
+  it("throws (does not silently exit 0) when the output root does not exist at all", () => {
+    // Python's `output_dir.iterdir()` raises FileNotFoundError here — an
+    // uncaught exception (non-zero exit), not the "No conferences" skip.
+    expect(existsSync(roots.outputRoot)).toBe(false);
+    expect(() => buildPagesMain(parseBuildPagesArgs([]), roots)).toThrow();
+  });
+
+  it("exits 0 with 'No conferences' when the output root exists but is empty", () => {
+    mkdirSync(roots.outputRoot, { recursive: true });
+    const result = buildPagesMain(parseBuildPagesArgs([]), roots);
+    expect(result.exitCode).toBe(0);
   });
 });
 
@@ -394,6 +549,65 @@ describe("write_index / write_detail_shards (CAT-20, CAT-21)", () => {
     const raw = readFileSync(join(roots.docsRoot, "conferences.json"), "utf-8");
     expect(raw.endsWith("\n")).toBe(false);
     expect(raw).toContain("\n  ");
+  });
+});
+
+describe("`generated` sidecar (CAT-23)", () => {
+  function setUpDatedCsvs(confDir: string): void {
+    writeSummaryCsv(confDir, [arxivRow(1)]);
+    writeFileSync(join(confDir, "papers_2026-05-01.csv"), "title\nA\n");
+    writeFileSync(join(confDir, "papers_2026-06-27.csv"), "title\nA\n");
+  }
+
+  it("uses the summary sidecar naming the older dated CSV, not the newest", () => {
+    const confDir = join(roots.outputRoot, "cvpr-2026");
+    setUpDatedCsvs(confDir);
+    writeFileSync(
+      join(confDir, SUMMARY_META_FILENAME),
+      JSON.stringify({ source: "papers_2026-05-01.csv" }),
+    );
+    expect(buildConference("cvpr-2026", roots)?.generated).toBe("2026-05-01");
+  });
+
+  it("uses the summary sidecar naming the newest dated CSV", () => {
+    const confDir = join(roots.outputRoot, "cvpr-2026");
+    setUpDatedCsvs(confDir);
+    writeFileSync(
+      join(confDir, SUMMARY_META_FILENAME),
+      JSON.stringify({ source: "papers_2026-06-27.csv" }),
+    );
+    expect(buildConference("cvpr-2026", roots)?.generated).toBe("2026-06-27");
+  });
+
+  it.each([
+    ["absent", undefined],
+    ["empty", ""],
+    ["corrupt", "not json"],
+    ["no-source", "{}"],
+    ["undated-source", '{"source": "papers-january.csv"}'],
+    ["not-an-object", '["papers_2026-05-01.csv"]'],
+  ])("falls back to the newest dated CSV without a usable sidecar (%s)", (_label, metaText) => {
+    const confDir = join(roots.outputRoot, "cvpr-2026");
+    setUpDatedCsvs(confDir);
+    if (metaText !== undefined) {
+      writeFileSync(join(confDir, SUMMARY_META_FILENAME), metaText);
+    }
+    expect(buildConference("cvpr-2026", roots)?.generated).toBe("2026-06-27");
+  });
+
+  it("ignores a sidecar naming a dated CSV absent from this directory", () => {
+    const confDir = join(roots.outputRoot, "cvpr-2026");
+    setUpDatedCsvs(confDir);
+    writeFileSync(
+      join(confDir, SUMMARY_META_FILENAME),
+      JSON.stringify({ source: "papers_2026-01-01.csv" }), // not written above
+    );
+    expect(buildConference("cvpr-2026", roots)?.generated).toBe("2026-06-27");
+  });
+
+  it("is null when no dated CSV exists at all", () => {
+    writeSummaryCsv(join(roots.outputRoot, "legacy-conf"), [arxivRow(1)]);
+    expect(buildConference("legacy-conf", roots)?.generated).toBeNull();
   });
 });
 

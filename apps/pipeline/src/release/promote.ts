@@ -9,28 +9,31 @@
  * staged.
  *
  * `refreshSharedOutputs` / `validatePromotedTree` are injected so this
- * library does not hard-code a dependency on `apps/pipeline/src/catalog/`
- * (owned by a concurrent change) or shell out to Python. The default
- * implementations here wire in the two derived builders this change does
- * own (`./derived/searchIndex.ts`, `./derived/identityLite.ts`); the other
- * shared-output refreshers the shell original runs for a `conference`
- * promotion (`build_pages.py`, `build_lineage_quality.py`,
- * `sync_asset_versions.py`, `build_sitemap.py`) and for a `themes`
- * promotion (`generate_themes_manifest.py`, `compute_theme_quality.py`,
- * etc.) are **not wired** here — the default hook throws a clear
- * "not wired until apps/pipeline/src/catalog lands" error for any kind
- * other than `test-only`, which is the intentional gap this change
- * reports. A caller that already has those builders (or the real Python
- * CLIs, shelled out) can pass its own `refreshSharedOutputs` /
- * `validatePromotedTree` to run them for real.
+ * library does not hard-code a dependency on the catalog/lineage builders
+ * or shell out to Python. Both default hooks throw for every kind except
+ * `test-only` (matching the shell's `test-only) ;;` no-op branch) — a
+ * caller that has the real builders wired (TS ports or the Python CLIs,
+ * shelled out) must pass its own `refreshSharedOutputs` /
+ * `validatePromotedTree`.
+ *
+ * `defaultRefreshSharedOutputs` previously ran two of the several
+ * `conference`-kind shared-output refreshers for real (identity-lite +
+ * search index, leaving `build_pages.py`, `build_lineage_quality.py`,
+ * `sync_asset_versions.py`, and `build_sitemap.py` un-run) and only threw
+ * for `themes`. That let a `conference` promotion appear to succeed —
+ * "refresh" returned normally — while silently skipping most of what the
+ * shell script's `conference)` branch actually refreshes, so a promoted
+ * tree could ship a stale `conferences.json` / lineage-quality / sitemap /
+ * asset-versions with no error at all. Throwing unconditionally here (for
+ * every kind other than `test-only`) turns that silent partial success
+ * into a loud, correct failure until every refresher for a given kind is
+ * wired (tracked in docs/migration/p4-followups.md #3).
  */
 
 import { cpSync, mkdtempSync, realpathSync, rmSync, statSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { walkCandidateFiles } from "./candidateWalk.js";
-import { buildIdentityLite, loadConferenceNames } from "./derived/identityLite.js";
-import { writeSearchIndexes } from "./derived/searchIndex.js";
 import { type GitAdapter, git, gitOk } from "./git/gitAdapter.js";
 import { isDirPermitted, isFilePermitted, validateAllowlistEntry } from "./paths.js";
 
@@ -79,34 +82,23 @@ export type ValidatePromotedTreeFn = (ctx: ValidateContext) => void | Promise<vo
 export class PromotionError extends Error {}
 
 /**
- * Default `refreshSharedOutputs`: wires only the two derived builders this
- * change owns (search index + identity-lite), and only for the
- * `conference` kind (the `themes` kind's shared-output refreshers —
- * `generate_themes_manifest`, `compute_theme_quality`, `build_lineage_quality`
- * — have no TS port yet). `test-only` is a no-op, matching the shell's
- * `test-only) ;;` branch.
+ * Default `refreshSharedOutputs`: throws for every kind other than
+ * `test-only` (which is a no-op, matching the shell's `test-only) ;;`
+ * branch). Neither the `conference` refresher set (`build_pages.py`,
+ * `build_identity_lite`, `build_search_index`, `build_lineage_quality.py`,
+ * `sync_asset_versions.py`, `build_sitemap.py`) nor the `themes` set
+ * (`generate_themes_manifest.py`, `compute_theme_quality.py`,
+ * `build_lineage_quality.py`) is run here, even though TS ports exist for
+ * some of them — running a subset without the rest would (again) look
+ * like success while shipping a stale tree. See the module doc comment.
  */
-export const defaultRefreshSharedOutputs: RefreshSharedOutputsFn = ({ tree, kind, asOf }) => {
+export const defaultRefreshSharedOutputs: RefreshSharedOutputsFn = ({ kind }) => {
   if (kind === "test-only") return;
-  if (kind !== "conference") {
-    throw new PromotionError(
-      `refreshSharedOutputs for kind "${kind}" is not wired until apps/pipeline/src/catalog lands ` +
-        "(build_pages / themes-manifest / lineage-quality / sync_asset_versions / build_sitemap have no TS port in this change)",
-    );
-  }
-  const docsRoot = join(tree, "docs");
-  // Mirrors the shell's `conference)` branch order: build_pages.py (not
-  // wired here — see the error above if this is ever reached without a
-  // custom hook), build_identity_lite, build_search_index. identity-lite
-  // and search-index are the two builders this change ports.
-  const conferenceNames = loadConferenceNames(docsRoot);
-  buildIdentityLite({
-    docsRoot,
-    conferenceNames,
-    asOf,
-    coveragePath: join(tree, "paperpilot", "data", "identity-coverage-v1.json"),
-  });
-  writeSearchIndexes(docsRoot);
+  throw new PromotionError(
+    `refreshSharedOutputs for kind "${kind}" is not wired (build_pages / identity-lite / search-index / ` +
+      "themes-manifest / theme-quality / lineage-quality / sync_asset_versions / build_sitemap have no " +
+      "complete TS wiring here — see docs/migration/p4-followups.md #3)",
+  );
 };
 
 /**

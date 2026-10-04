@@ -381,6 +381,77 @@ def gen_word_regex_cases():
     return cases
 
 
+# --- str.strip()/lstrip()/rstrip()/split() (no-arg whitespace forms) --------
+
+# CPython's exact `str.isspace()` set, computed once (not hand-transcribed)
+# so a transcription slip can't silently narrow or widen the TS port's idea
+# of "Python whitespace". See packages/core/src/pycompat/whitespace.ts.
+_PY_WHITESPACE_CODEPOINTS = [cp for cp in range(0x110000) if chr(cp).isspace()]
+
+
+def gen_strip_split_cases():
+    # A dedicated local RNG (not the module-level `random` used by the other
+    # generators above) so adding this generator can never perturb the
+    # already-committed values of any other fixture section, regardless of
+    # where this function is called from in main().
+    rng = random.Random(20261004)
+    ws_chars = [chr(cp) for cp in _PY_WHITESPACE_CODEPOINTS]
+    samples = [
+        "",
+        "   ",
+        "hello",
+        "  hello  ",
+        "hello world",
+        "  hello   world  ",
+        "\thello\tworld\n",
+        "a\tb\nc\r\nd",
+        # Python-only whitespace JS's \s/.trim() misses: U+001C-U+001F, U+0085.
+        "\x1chello\x1d",
+        "hello\x1cworld",
+        "\x85hello\x85world\x85",
+        "a\x1cb\x1dc\x1ed\x1fe",
+        # JS-only whitespace Python's str.strip() does NOT treat as space:
+        # U+FEFF (BOM/ZWNBSP) must survive a pyStrip()/pySplit() round trip.
+        "﻿hello",
+        "hello﻿",
+        "﻿hello﻿ world﻿",
+        # U+200B (ZERO WIDTH SPACE) is also NOT Python whitespace (category Cf).
+        "​hello​ world",
+        # Every individual Python whitespace code point, alone and padding a word.
+        *ws_chars,
+        *[f"{ch}word{ch}" for ch in ws_chars],
+        *[f"word{ch}word" for ch in ws_chars],
+        # Every whitespace code point, doubled, to exercise run-collapsing.
+        *[ch * 3 for ch in ws_chars],
+        # A run that mixes several distinct whitespace code points.
+        "".join(ws_chars),
+        "x" + "".join(ws_chars) + "y",
+        # NBSP / fullwidth space / line separator mid-string (both strip+split).
+        "hello world",
+        "hello　world",
+        "hello world !",
+    ]
+    for _ in range(12):
+        n = rng.randint(1, 6)
+        parts = ["".join(chr(rng.randint(0x41, 0x7A)) for _ in range(rng.randint(1, 4))) for _ in range(n)]
+        sep_pool = ws_chars
+        s = rng.choice(sep_pool) if rng.random() < 0.5 else ""
+        for part in parts:
+            s += part + rng.choice(sep_pool) * rng.randint(1, 3)
+        samples.append(s)
+
+    cases = []
+    for s in samples:
+        cases.append({
+            "input": s,
+            "strip": s.strip(),
+            "lstrip": s.lstrip(),
+            "rstrip": s.rstrip(),
+            "split": s.split(),
+        })
+    return cases
+
+
 def main():
     data = {
         "pythonVersion": sys.version,
@@ -392,6 +463,7 @@ def main():
         "isoformat": gen_isoformat_cases(),
         "text": gen_text_cases(),
         "wordRegex": gen_word_regex_cases(),
+        "stripSplit": gen_strip_split_cases(),
     }
     out_path = __file__.rsplit("/", 1)[0] + "/cases.json"
     with open(out_path, "w", encoding="utf-8") as f:

@@ -44,15 +44,31 @@ function toResult(proc: SpawnSyncReturns<string>): GitCommandResult {
   };
 }
 
-/** Real adapter: shells out to the `git` binary on `PATH`. */
-export function createGitAdapter(): GitAdapter {
+/** Bounds a single `git` subcommand so a hung/stuck process cannot block the promoter forever. */
+const DEFAULT_GIT_TIMEOUT_MS = 120_000;
+
+/**
+ * Real adapter: shells out to the `git` binary on `PATH`.
+ *
+ * `GIT_TERMINAL_PROMPT=0` (default, overridable via `options.env`) stops a
+ * failed-auth `fetch`/`push` from blocking on an interactive username/
+ * password prompt with no terminal attached — this process has no operator
+ * to answer it, so a credential prompt must fail fast, not hang. `timeout`
+ * bounds the subprocess itself for the same reason (a wedged network call
+ * or git hook that never exits must not block the promoter indefinitely);
+ * on timeout `spawnSync` sets `proc.error` (an `ETIMEDOUT`-shaped error),
+ * which {@link toResult} rethrows.
+ */
+export function createGitAdapter(timeoutMs: number = DEFAULT_GIT_TIMEOUT_MS): GitAdapter {
   return {
     run(cwd, args, options) {
       const proc = spawnSync("git", args as string[], {
         cwd,
         encoding: "utf-8",
-        env: { ...process.env, ...options?.env },
+        env: { ...process.env, GIT_TERMINAL_PROMPT: "0", ...options?.env },
         maxBuffer: 64 * 1024 * 1024,
+        timeout: timeoutMs,
+        killSignal: "SIGKILL",
       });
       return toResult(proc);
     },

@@ -29,3 +29,4 @@
 | 25 | `theme_slug` が Python・Worker・web・pipeline の 4 か所に独立実装 → P5 で TS の 1 か所に集約し、パリティテストを TS 内で完結 | P4d-2 |
 | 26 | collect の runner に実 LLM provider / embedding encoder の生成（LLM-06 等の provider factory）を接続する。未接続の間 `llm.enabled: true` の設定は run_history に `stage4:` エラーを記録する（意図的。失敗にはしない） | P4 review 1 |
 | 27 | Python との意図的な差: arXiv の `totalResults` 不正値を拒否（Python は 0 扱い）、使えない LLM/encoder と壊れた `paper_repos.json` を run_history に記録（Python は警告のみ） | P4 review 1 |
+| 28 | `conference/acl/anthology.ts:122`・`conference/watch/openreview.ts:52` を `pyStrip`/`pySplit` に置き換える（指紋が変わり得る箇所） | P4 review 1 |

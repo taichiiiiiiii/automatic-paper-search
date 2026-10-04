@@ -72,7 +72,7 @@ it("commit-push subcommand pushes a staged change to a local remote", () => {
   expect(output).toContain("push succeeded");
   const log = runGit(remote, ["log", "--oneline"]);
   expect(log.split("\n").length).toBe(2);
-});
+}, 30_000); // real tsx subprocess + git operations; the 5s default can flake under load
 
 it("package subcommand copies only changed files under the included path", () => {
   const repo = join(base, "repo");
@@ -87,6 +87,28 @@ it("package subcommand copies only changed files under the included path", () =>
 
   const candidate = join(base, "candidate");
   const output = runCli(repo, ["package", candidate, "docs/themes"]);
+  expect(output).toContain("packaged 1 generated file");
+  expect(readFileSync(join(candidate, "docs/themes/new/lineage.json"), "utf-8")).toContain("new");
+});
+
+// LOW: packageCandidate resolves included paths AND runs every git command
+// against the repo root, so running it from a SUBDIRECTORY of the repo
+// (process.cwd() !== the repo root) must not silently miscompute diffs —
+// --repo-root makes the real root explicit instead of always trusting cwd.
+it("package subcommand works when invoked from a subdirectory via --repo-root", () => {
+  const repo = join(base, "repo");
+  mkdirSync(repo);
+  runGit(repo, ["init", "--initial-branch=develop"]);
+  mkdirSync(join(repo, "docs", "themes"), { recursive: true });
+  writeFileSync(join(repo, "README.md"), "baseline\n");
+  runGit(repo, ["add", "."]);
+  runGit(repo, ["commit", "-m", "seed"]);
+  mkdirSync(join(repo, "docs", "themes", "new"), { recursive: true });
+  writeFileSync(join(repo, "docs", "themes", "new", "lineage.json"), '{"new":true}\n');
+
+  const subdir = join(repo, "docs");
+  const candidate = join(base, "candidate-subdir");
+  const output = runCli(subdir, ["package", "--repo-root", repo, candidate, "docs/themes"]);
   expect(output).toContain("packaged 1 generated file");
   expect(readFileSync(join(candidate, "docs/themes/new/lineage.json"), "utf-8")).toContain("new");
 });
@@ -127,4 +149,4 @@ it("promote subcommand prints source_sha and changed, and appends to GITHUB_OUTP
   expect(output).toContain("source_sha=");
   expect(output).toContain("changed=true");
   expect(readFileSync(githubOutput, "utf-8")).toContain("changed=true");
-});
+}, 30_000); // real tsx subprocess + a worktree-based promotion; the 5s default can flake under load

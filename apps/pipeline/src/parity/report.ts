@@ -39,6 +39,12 @@ export function formatSummary(report: ParityReport): string {
 
   lines.push(...listLines("missing files", report.missingFiles));
   lines.push(...listLines("extra files", report.extraFiles));
+  lines.push(
+    ...listLines(
+      "skipped symlinks (dangling or pointing to a directory)",
+      report.skippedEntries.map((s) => `${s.side}: ${s.path} (${s.reason})`),
+    ),
+  );
 
   const differing = report.fileResults.filter((f) => !f.equal);
   if (differing.length > 0) {

@@ -31,12 +31,18 @@ export async function compareTrees(options: CompareTreesOptions): Promise<Compar
   const start = Date.now();
   const rules = options.rules ?? {};
 
-  const [expectedFiles, actualFiles] = await Promise.all([
+  const [expectedListing, actualListing] = await Promise.all([
     listFiles(options.expectedRoot),
     listFiles(options.actualRoot),
   ]);
+  const expectedFiles = expectedListing.files;
+  const actualFiles = actualListing.files;
   const expectedSet = new Set(expectedFiles);
   const actualSet = new Set(actualFiles);
+  const skippedEntries = [
+    ...expectedListing.skipped.map((s) => ({ side: "expected" as const, ...s })),
+    ...actualListing.skipped.map((s) => ({ side: "actual" as const, ...s })),
+  ];
 
   const missingFiles = expectedFiles.filter((f) => !actualSet.has(f)).sort();
   const extraFiles = actualFiles.filter((f) => !expectedSet.has(f)).sort();
@@ -67,7 +73,10 @@ export async function compareTrees(options: CompareTreesOptions): Promise<Compar
   };
 
   const equal =
-    missingFiles.length === 0 && extraFiles.length === 0 && summary.filesDiffering === 0;
+    missingFiles.length === 0 &&
+    extraFiles.length === 0 &&
+    summary.filesDiffering === 0 &&
+    skippedEntries.length === 0;
 
   const report: CompareTreesReport = {
     mode: "compare-trees",
@@ -80,6 +89,7 @@ export async function compareTrees(options: CompareTreesOptions): Promise<Compar
     fileResults,
     summary,
     ignoredPointers,
+    skippedEntries,
   };
   if (options.rulesFile) report.rulesFile = options.rulesFile;
   return report;
@@ -92,10 +102,28 @@ async function compareJsonFile(
   rules: RulesFile,
   ignoredPointers: IgnoredPointerEntry[],
 ): Promise<FileResult> {
-  const [expectedText, actualText] = await Promise.all([
-    readFileText(expectedAbs),
-    readFileText(actualAbs),
-  ]);
+  let expectedText: string;
+  let actualText: string;
+  try {
+    expectedText = await readFileText(expectedAbs);
+  } catch (err) {
+    return {
+      path: relPath,
+      kind: "json",
+      equal: false,
+      parseError: `expected: ${(err as Error).message}`,
+    };
+  }
+  try {
+    actualText = await readFileText(actualAbs);
+  } catch (err) {
+    return {
+      path: relPath,
+      kind: "json",
+      equal: false,
+      parseError: `actual: ${(err as Error).message}`,
+    };
+  }
 
   let expectedValue: JsonValue;
   let actualValue: JsonValue;

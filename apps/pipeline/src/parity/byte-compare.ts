@@ -19,12 +19,18 @@ export async function compareTreesByteExact(
 ): Promise<ExpectUnchangedReport> {
   const start = Date.now();
 
-  const [dirFiles, snapshotFiles] = await Promise.all([
+  const [dirListing, snapshotListing] = await Promise.all([
     listFiles(options.dir),
     listFiles(options.snapshot),
   ]);
+  const dirFiles = dirListing.files;
+  const snapshotFiles = snapshotListing.files;
   const dirSet = new Set(dirFiles);
   const snapshotSet = new Set(snapshotFiles);
+  const skippedEntries = [
+    ...snapshotListing.skipped.map((s) => ({ side: "expected" as const, ...s })),
+    ...dirListing.skipped.map((s) => ({ side: "actual" as const, ...s })),
+  ];
 
   const missingFiles = snapshotFiles.filter((f) => !dirSet.has(f)).sort();
   const extraFiles = dirFiles.filter((f) => !snapshotSet.has(f)).sort();
@@ -54,7 +60,10 @@ export async function compareTreesByteExact(
   };
 
   const equal =
-    missingFiles.length === 0 && extraFiles.length === 0 && summary.filesDiffering === 0;
+    missingFiles.length === 0 &&
+    extraFiles.length === 0 &&
+    summary.filesDiffering === 0 &&
+    skippedEntries.length === 0;
 
   return {
     mode: "expect-unchanged",
@@ -66,5 +75,6 @@ export async function compareTreesByteExact(
     extraFiles,
     fileResults,
     summary,
+    skippedEntries,
   };
 }

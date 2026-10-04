@@ -21,7 +21,7 @@
 
 import { mkdirSync, readdirSync, readFileSync, statSync, unlinkSync } from "node:fs";
 import { join } from "node:path";
-import { codepointCompare, pyJsonDumps } from "@paperpilot/core/pycompat";
+import { codepointCompare, pyJsonDumps, pyStrip } from "@paperpilot/core/pycompat";
 import { atomicWriteText } from "../../collect/state/atomic.js";
 import { identityFromUrl, normalizeAlias } from "../identity/sourceIds.js";
 
@@ -94,7 +94,7 @@ export function buildIndex(docsRoot: string): { entries: V1Entry[]; skipped: num
 
     const rows = JSON.parse(readFileSync(papersJson, "utf-8")) as Array<Record<string, unknown>>;
     for (const row of rows) {
-      const title = (typeof row.title === "string" ? row.title : "").trim();
+      const title = pyStrip(typeof row.title === "string" ? row.title : "");
       if (!title) {
         skipped += 1;
         continue;
@@ -141,7 +141,7 @@ export function buildIndexV2(docsRoot: string): { entries: V2Entry[]; paperIds: 
       }
       const row = rawRow as Record<string, unknown>;
       const title = row.title;
-      if (typeof title !== "string" || !title.trim()) {
+      if (typeof title !== "string" || !pyStrip(title)) {
         throw new Error(`${name} row ${ordinal}: title is required`);
       }
 
@@ -174,7 +174,15 @@ export function buildIndexV2(docsRoot: string): { entries: V2Entry[]; paperIds: 
       }
 
       const sourceYear = row.year;
-      if (sourceYear !== undefined && sourceYear !== null && typeof sourceYear !== "number") {
+      if (
+        sourceYear !== undefined &&
+        sourceYear !== null &&
+        (typeof sourceYear !== "number" || !Number.isInteger(sourceYear))
+      ) {
+        // Matches Python's `isinstance(source_year, int)`: a JSON float
+        // like 2024.5 must be rejected, not silently truncated/accepted —
+        // only `typeof === "number"` would let it through (JS has no
+        // separate int/float type).
         throw new Error(`${name} row ${ordinal}: year must be integer or null`);
       }
       const match = CONFERENCE_YEAR_RE.exec(name);
@@ -185,7 +193,7 @@ export function buildIndexV2(docsRoot: string): { entries: V2Entry[]; paperIds: 
             ? Number.parseInt(match[1] as string, 10)
             : null;
 
-      entries.push([title.trim(), name, paperIds.length, authors, tags, year, paperType]);
+      entries.push([pyStrip(title), name, paperIds.length, authors, tags, year, paperType]);
       paperIds.push(identity.paperId);
     });
   }

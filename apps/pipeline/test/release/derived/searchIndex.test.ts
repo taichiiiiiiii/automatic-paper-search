@@ -3,15 +3,17 @@
  * unit tests; the two tests that scrape the real committed `docs/` tree
  * and `docs/index.html` are covered by the parity run instead, not here).
  */
+import * as fs from "node:fs";
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { dirname, join } from "node:path";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   AUTHORS,
   buildIndex,
   buildIndexV2,
   CONFERENCE,
+  INDEX_V2_FILENAME,
   PAPER_ID_BLOCK_DIRNAME,
   PAPER_ID_BLOCK_SIZE,
   PAPER_REF,
@@ -21,8 +23,16 @@ import {
   writeIndex,
   writeIndexV2,
   writePaperIdBlocks,
+  writeSearchIndexes,
   YEAR,
 } from "../../../src/release/derived/searchIndex.js";
+
+// Same seam as apps/pipeline/test/collect/state/atomic.test.ts: node:fs's
+// native namespace isn't configurable, so vi.spyOn needs a vi.mock'd copy.
+vi.mock("node:fs", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("node:fs")>();
+  return { ...actual };
+});
 
 let docs: string;
 
@@ -31,6 +41,7 @@ beforeEach(() => {
 });
 afterEach(() => {
   rmSync(docs, { recursive: true, force: true });
+  vi.restoreAllMocks();
 });
 
 function writePapers(conf: string, rows: unknown[]): void {
@@ -63,6 +74,23 @@ describe("buildIndex", () => {
 
   it("trims surrounding whitespace", () => {
     writePapers("iclr-2026", [{ title: "  Padded Title\n" }]);
+    const { entries } = buildIndex(docs);
+    expect(entries[0]?.[TITLE]).toBe("Padded Title");
+  });
+
+  // Whitespace LOW: a title that is ONLY Python-only whitespace (U+001C,
+  // U+0085 — not in JS's \s/.trim() set; see packages/core/src/pycompat/
+  // whitespace.ts) must still be treated as blank, and a title padded with
+  // it must still be trimmed, matching `(row.get("title") or "").strip()`.
+  it("skips a row whose title is only Python-only whitespace", () => {
+    writePapers("iclr-2026", [{ title: "Keeps" }, { title: "\x1c\x85" }]);
+    const { entries, skipped } = buildIndex(docs);
+    expect(entries.map((e) => e[TITLE])).toEqual(["Keeps"]);
+    expect(skipped).toBe(1);
+  });
+
+  it("trims Python-only whitespace (U+0085), not just JS's \\s", () => {
+    writePapers("iclr-2026", [{ title: "\x85Padded Title\x85" }]);
     const { entries } = buildIndex(docs);
     expect(entries[0]?.[TITLE]).toBe("Padded Title");
   });
@@ -119,6 +147,50 @@ describe("buildIndexV2", () => {
       ["Attention", "iclr-2026", 0, ["Alice", "Bob"], ["LLM"], 2026, "Oral"],
     ]);
     expect(paperIds).toEqual(["b871855522b0b31384df3e40fca6800540085f1f"]);
+  });
+
+  it("trims Python-only whitespace (U+0085) from the embedded title", () => {
+    writePapers("iclr-2026", [
+      {
+        title: "\x85Attention\x85",
+        authors: [],
+        tags: [],
+        type: "Oral",
+        arxiv_url: "https://openreview.net/forum?id=AbC_123",
+      },
+    ]);
+    const { entries } = buildIndexV2(docs);
+    expect(entries[0]?.[0]).toBe("Attention");
+  });
+
+  it("rejects a title that is only Python-only whitespace", () => {
+    writePapers("iclr-2026", [
+      {
+        title: "\x1c\x85",
+        authors: [],
+        tags: [],
+        type: "Oral",
+        arxiv_url: "https://openreview.net/forum?id=AbC_123",
+      },
+    ]);
+    expect(() => buildIndexV2(docs)).toThrow(/title is required/);
+  });
+
+  // LOW: Python's row validation checks `isinstance(source_year, int)`,
+  // so a JSON float like 2024.5 must be rejected — not silently accepted
+  // just because JS has only one `number` type (no separate int/float).
+  it("rejects a non-integer embedded year (e.g. 2024.5)", () => {
+    writePapers("iclr-2026", [
+      {
+        title: "Non-integer year",
+        authors: [],
+        tags: [],
+        type: "Poster",
+        arxiv_url: "https://arxiv.org/abs/2404.00001",
+        year: 2024.5,
+      },
+    ]);
+    expect(() => buildIndexV2(docs)).toThrow(/year must be integer/);
   });
 
   it("rejects mismatched embedded identity", () => {
@@ -192,6 +264,50 @@ describe("paper ID blocks", () => {
     const removed = prunePaperIdBlocks(docs, writePaperIdBlocks(docs, ["a".repeat(40)]));
 
     expect(removed.map((p) => p.split("/").pop()).sort()).toEqual(["0001.json", "9999.json"]);
+  });
+});
+
+// CAT-30 write order: ported from
+// test_main_keeps_the_published_v2_index_when_a_block_write_fails. The v2
+// index is written LAST (after all paper-ID blocks), so an interrupted
+// block write must leave a previously-published search-index-v2.json
+// byte-identical — never replaced by an index whose blocks never landed.
+describe("writeSearchIndexes two-phase publish order (CAT-30)", () => {
+  it("keeps the published v2 index byte-identical when a later block write fails", () => {
+    writePapers(
+      "iclr-2026",
+      Array.from({ length: PAPER_ID_BLOCK_SIZE + 1 }, (_, ordinal) => ({
+        title: `Paper ${ordinal}`,
+        authors: ["A"],
+        tags: [],
+        type: "Poster",
+        arxiv_url: `https://arxiv.org/abs/2404.${String(ordinal).padStart(5, "0")}`,
+      })),
+    );
+    const indexV2Path = join(docs, INDEX_V2_FILENAME);
+    const published = '[["previously published index"]]';
+    writeFileSync(indexV2Path, published, "utf-8");
+
+    const blockRoot = join(docs, PAPER_ID_BLOCK_DIRNAME);
+    let blockWrites = 0;
+    const realRenameSync = fs.renameSync;
+    vi.spyOn(fs, "renameSync").mockImplementation(
+      (src: Parameters<typeof realRenameSync>[0], dst: Parameters<typeof realRenameSync>[1]) => {
+        if (dirname(String(dst)) === blockRoot) {
+          blockWrites += 1;
+          if (blockWrites > 1) {
+            throw new Error("block write interrupted");
+          }
+        }
+        return realRenameSync(src, dst);
+      },
+    );
+
+    expect(() => writeSearchIndexes(docs)).toThrow("block write interrupted");
+    expect(blockWrites).toBe(2); // the 2nd (of 2) block writes is the one that fails
+    expect(readFileSync(join(blockRoot, "0000.json"), "utf-8")).toContain('"block":0');
+    expect(fs.existsSync(join(blockRoot, "0001.json"))).toBe(false);
+    expect(readFileSync(indexV2Path, "utf-8")).toBe(published);
   });
 });
 

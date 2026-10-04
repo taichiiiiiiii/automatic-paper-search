@@ -168,6 +168,30 @@ it("smokeRemote passes a well-formed deployment and follows the ready+passed lin
   ]);
 });
 
+// LOW: the shell original percent-encodes the smoke path with
+// `urllib.parse.quote(path, safe="/-._~")` before fetching it — a route
+// segment with a space or non-ASCII character must be encoded the same
+// way (byte-wise UTF-8 %XX, "/" left alone), not passed through raw.
+it("smokeRemote percent-encodes smoke route paths like Python's urllib.parse.quote", async () => {
+  const routes = validSmokeRoutes(SHA);
+  routes["/conferences.json"] = JSON.stringify([{ name: "a conf" }]);
+  routes["/a%20conf/"] = "<!doctype html><html></html>";
+  routes["/lineage-quality-v1.json"] = JSON.stringify({
+    collections: [{ path: "thème/lineage/", availability: "ready", audit_status: "passed" }],
+  });
+  routes["/th%C3%A8me/lineage/"] = "<!doctype html><html></html>";
+
+  const result = await smokeRemote({
+    baseUrl: "https://paperpilot.pages.dev",
+    expectedSha: SHA,
+    fetchImpl: fakeFetch(routes),
+  });
+  expect(result.routes).toEqual([
+    "https://paperpilot.pages.dev/a%20conf/",
+    "https://paperpilot.pages.dev/th%C3%A8me/lineage/",
+  ]);
+});
+
 it("smokeRemote rejects a non-https base URL", async () => {
   await expect(
     smokeRemote({
@@ -212,4 +236,89 @@ it("smokeRemote rejects an unsafe lineage path from lineage-quality-v1.json", as
       fetchImpl: fakeFetch(routes),
     }),
   ).rejects.toThrow(/unsafe smoke path/);
+});
+
+// ---- M6: per-fetch timeout + retry, matching the shell's
+// `curl --connect-timeout 5 --max-time 15 --retry 2 --retry-all-errors` ----
+
+function noSleep(): Promise<void> {
+  return Promise.resolve();
+}
+
+it("smokeRemote retries a transient failure and succeeds on the 3rd attempt", async () => {
+  const routes = validSmokeRoutes(SHA);
+  let indexAttempts = 0;
+  const fetchImpl = async (url: string) => {
+    const path = url.replace(/^https?:\/\/[^/]+/, "");
+    if (path === "/") {
+      indexAttempts += 1;
+      if (indexAttempts < 3) {
+        return {
+          status: 503,
+          async text() {
+            return "unavailable";
+          },
+        };
+      }
+    }
+    const body = routes[path];
+    return {
+      status: body === undefined ? 404 : 200,
+      async text() {
+        return body ?? "not found";
+      },
+    };
+  };
+
+  const result = await smokeRemote({
+    baseUrl: "https://paperpilot.pages.dev",
+    expectedSha: SHA,
+    fetchImpl,
+    sleep: noSleep,
+  });
+  expect(indexAttempts).toBe(3);
+  expect(result.routes.length).toBeGreaterThan(0);
+});
+
+it("smokeRemote gives up after the configured retries (bounded attempts, not infinite)", async () => {
+  let attempts = 0;
+  const fetchImpl = async () => {
+    attempts += 1;
+    return {
+      status: 503,
+      async text() {
+        return "unavailable";
+      },
+    };
+  };
+
+  await expect(
+    smokeRemote({
+      baseUrl: "https://paperpilot.pages.dev",
+      expectedSha: SHA,
+      fetchImpl,
+      retries: 2,
+      sleep: noSleep,
+    }),
+  ).rejects.toThrow(/HTTP 503/);
+  expect(attempts).toBe(3);
+});
+
+it("smokeRemote times out a hung fetch instead of waiting forever", async () => {
+  const fetchImpl = (_url: string, init?: { signal?: AbortSignal }) =>
+    new Promise<{ status: number; text(): Promise<string> }>((_resolve, reject) => {
+      init?.signal?.addEventListener("abort", () => reject(new Error("aborted")));
+      // Never resolves on its own — only the timeout's abort ends this.
+    });
+
+  await expect(
+    smokeRemote({
+      baseUrl: "https://paperpilot.pages.dev",
+      expectedSha: SHA,
+      fetchImpl,
+      timeoutMs: 10,
+      retries: 0,
+      sleep: noSleep,
+    }),
+  ).rejects.toThrow(/timed out/);
 });

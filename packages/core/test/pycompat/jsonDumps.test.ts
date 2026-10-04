@@ -95,4 +95,26 @@ describe("pyJsonDumps", () => {
     expect(pyJsonDumps({}, { indent: 2 })).toBe("{}");
     expect(pyJsonDumps([], { indent: 2 })).toBe("[]");
   });
+
+  it("throws on undefined (top-level, array element, and object value) instead of silently writing null", () => {
+    expect(() => pyJsonDumps(undefined)).toThrow(/undefined/);
+    expect(() => pyJsonDumps([1, undefined, 3])).toThrow(/undefined/);
+    expect(() => pyJsonDumps({ a: 1, b: undefined })).toThrow(/undefined/);
+    // null is unaffected — it is Python's None and must keep serializing.
+    expect(pyJsonDumps(null)).toBe("null");
+    expect(pyJsonDumps({ a: null })).toBe('{"a": null}');
+  });
+
+  it("throws on a non-plain object (class instance, Date, Set) instead of silently writing {}", () => {
+    class Foo {
+      x = 1;
+    }
+    expect(() => pyJsonDumps(new Foo())).toThrow(/non-plain object/);
+    expect(() => pyJsonDumps(new Date())).toThrow(/non-plain object/);
+    expect(() => pyJsonDumps(new Set([1, 2]))).toThrow(/non-plain object/);
+    expect(() => pyJsonDumps({ a: new Date() })).toThrow(/non-plain object/);
+    // Map and a plain object literal (or Object.create(null)) are still fine.
+    expect(pyJsonDumps(new Map([["a", 1]]))).toBe('{"a": 1}');
+    expect(pyJsonDumps(Object.assign(Object.create(null), { a: 1 }))).toBe('{"a": 1}');
+  });
 });

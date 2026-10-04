@@ -98,6 +98,26 @@
  * - `/` (forward slash) is **never** escaped, matching Python (some other
  *   JSON encoders escape it; Python's does not).
  *
+ * ## Fails closed on values Python's `json.dumps` could never be given
+ *
+ * Python has no `undefined` — every value passed to `json.dumps` is an
+ * explicit `None`/`int`/`float`/`str`/`bool`/`dict`/`list` (or a custom
+ * encoder's output). `undefined` appearing anywhere in a TS value tree
+ * (top-level, inside an array, or as an object property's value) is almost
+ * always a programming mistake carried over from JS (a missing field read
+ * as `undefined` instead of being omitted, or an accidental `?? undefined`)
+ * — silently writing `null` for it (as plain `JSON.stringify`-alikes do)
+ * would hide that mistake and diverge from the Python source without any
+ * signal. `pyJsonDumps` therefore **throws** a `TypeError` on `undefined`
+ * rather than encoding it. Likewise, a non-plain object (a class instance,
+ * `Date`, `Set`, `RegExp`, etc — anything whose prototype isn't
+ * `Object.prototype`/`null`, except the explicitly-supported `Map` and
+ * {@link PyFloat}) has no well-defined Python `dict` shape, and silently
+ * serializing `Object.entries()` of it (often `{}`, since most such objects
+ * have no *own enumerable* properties) would quietly publish wrong/empty
+ * data; `pyJsonDumps` throws for these too. Convert to a plain object/array
+ * (e.g. `date.toISOString()`, `[...set]`) at the call site instead.
+ *
  * Verified against real CPython `json.dumps` output; see
  * packages/core/test/pycompat/jsonDumps.test.ts and
  * packages/core/test/pycompat/fixtures/gen.py.
@@ -155,6 +175,12 @@ function escapeString(s: string, ensureAscii: boolean): string {
   return out;
 }
 
+/** A plain object literal, or `Object.create(null)` — not a class instance, `Date`, `Set`, `RegExp`, etc. */
+function isPlainObject(value: object): boolean {
+  const proto = Object.getPrototypeOf(value);
+  return proto === Object.prototype || proto === null;
+}
+
 function entriesOf(value: object): Array<[string, unknown]> {
   if (value instanceof Map) {
     return Array.from(value.entries()) as Array<[string, unknown]>;
@@ -184,7 +210,13 @@ export function pyJsonDumps(value: unknown, options: PyJsonDumpsOptions = {}): s
   }
 
   function encode(v: unknown, level: number): string {
-    if (v === null || v === undefined) return "null";
+    if (v === null) return "null";
+    if (v === undefined) {
+      throw new TypeError(
+        "pyJsonDumps: cannot serialize undefined (Python has no equivalent — " +
+          "omit the key/element, or use null for Python's None)",
+      );
+    }
     if (v instanceof PyFloat) return pyFloatRepr(v.value);
     if (typeof v === "boolean") return v ? "true" : "false";
     if (typeof v === "number") return encodeNumber(v);
@@ -201,6 +233,13 @@ export function pyJsonDumps(value: unknown, options: PyJsonDumpsOptions = {}): s
     }
 
     if (typeof v === "object") {
+      if (!(v instanceof Map) && !isPlainObject(v)) {
+        const ctorName = (v as { constructor?: { name?: string } }).constructor?.name ?? "unknown";
+        throw new TypeError(
+          `pyJsonDumps: cannot serialize non-plain object (constructor: ${ctorName}); ` +
+            "pass a plain object or a Map, not a class instance/Date/Set/etc",
+        );
+      }
       let entries = entriesOf(v);
       if (entries.length === 0) return "{}";
       if (sortKeys) {

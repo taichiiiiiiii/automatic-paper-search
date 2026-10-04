@@ -19,6 +19,20 @@
  * because `curl` is file-oriented. Holding responses in memory removes
  * the temp-directory cleanup trap (PUB-37) as a risk category entirely
  * rather than reimplementing it.
+ *
+ * Every smoke fetch is bounded and retried like the shell's
+ * `curl --connect-timeout 5 --max-time 15 --retry 2 --retry-all-errors`:
+ * default 15s per-attempt timeout (`timeoutMs`), 2 retries after the first
+ * failure (`retries`, so 3 attempts total), retrying on a non-2xx status
+ * exactly like a thrown/timed-out attempt. Two intentional differences from
+ * the shell, both acceptable because this never touches the real network in
+ * a test and the retry behavior itself isn't a safety contract:
+ *   - `--connect-timeout 5` (a separate, shorter deadline for the TCP/TLS
+ *     handshake alone) has no equivalent here; `timeoutMs` is one overall
+ *     per-attempt deadline covering connect + response, matching `--max-time`.
+ *   - curl's default retry backoff is unspecified/exponential-ish; this port
+ *     uses an explicit `1000 * 2**attempt` backoff (`sleep`, injectable so
+ *     tests don't actually wait).
  */
 
 import { readdirSync, readFileSync, statSync } from "node:fs";
@@ -184,24 +198,126 @@ function isDirectory(path: string): boolean {
 // Smoke test (remote)
 // ---------------------------------------------------------------------------
 
-export type FetchTextFn = (url: string) => Promise<{ status: number; text(): Promise<string> }>;
+export type FetchTextFn = (
+  url: string,
+  init?: { signal?: AbortSignal },
+) => Promise<{ status: number; text(): Promise<string> }>;
 
 export interface SmokeRemoteOptions {
   baseUrl: string;
   expectedSha: string;
   fetchImpl: FetchTextFn;
+  /** Per-attempt timeout, matching the shell's `curl --max-time 15`. Default 15000. */
+  timeoutMs?: number;
+  /** Additional attempts after the first failure, matching the shell's `curl --retry 2`. Default 2. */
+  retries?: number;
+  /** Backoff between attempts; injectable so tests don't actually wait. Default a real `setTimeout`. */
+  sleep?: (ms: number) => Promise<void>;
 }
 
 export interface SmokeRemoteResult {
   routes: string[];
 }
 
-async function fetchOrThrow(fetchImpl: FetchTextFn, url: string, what: string): Promise<string> {
-  const response = await fetchImpl(url);
-  if (response.status < 200 || response.status >= 300) {
-    throw new ValidateReleaseError(`fetch failed for ${what} (${url}): HTTP ${response.status}`);
+const DEFAULT_SMOKE_TIMEOUT_MS = 15_000;
+const DEFAULT_SMOKE_RETRIES = 2;
+
+function defaultSmokeSleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * One fetch attempt bounded by `timeoutMs`, matching the shell's
+ * `curl --connect-timeout 5 --max-time 15` (collapsed here to a single
+ * overall per-attempt deadline — see the module doc comment's "intentional
+ * differences"). `fetchImpl` is given an `AbortSignal` so a real `fetch`
+ * actually cancels the in-flight request rather than merely being raced.
+ */
+async function fetchOnce(
+  fetchImpl: FetchTextFn,
+  url: string,
+  timeoutMs: number,
+): Promise<{ status: number; text(): Promise<string> }> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetchImpl(url, { signal: controller.signal });
+  } catch (exc) {
+    // Normalize to a single, recognizable message regardless of what error
+    // text a given `fetchImpl` throws on abort (a real `fetch()` throws its
+    // own `AbortError`; a hand-rolled one in a test may throw anything).
+    if (controller.signal.aborted) {
+      throw new ValidateReleaseError(`timed out after ${timeoutMs}ms fetching ${url}`);
+    }
+    throw exc;
+  } finally {
+    clearTimeout(timer);
   }
-  return response.text();
+}
+
+interface RetryConfig {
+  timeoutMs: number;
+  retries: number;
+  sleep: (ms: number) => Promise<void>;
+}
+
+/**
+ * Fetch with a bounded timeout and up to `retries` additional attempts,
+ * matching the shell's `curl --retry 2 --retry-all-errors` — retries on a
+ * non-2xx status exactly like a thrown/timed-out attempt (the shell's
+ * `--retry-all-errors` flag, without which curl would only retry on a
+ * narrower set of transient error codes).
+ */
+async function fetchOrThrow(
+  fetchImpl: FetchTextFn,
+  url: string,
+  what: string,
+  config: RetryConfig,
+): Promise<string> {
+  let lastError: unknown;
+  for (let attempt = 0; attempt <= config.retries; attempt += 1) {
+    try {
+      const response = await fetchOnce(fetchImpl, url, config.timeoutMs);
+      if (response.status < 200 || response.status >= 300) {
+        throw new ValidateReleaseError(
+          `fetch failed for ${what} (${url}): HTTP ${response.status}`,
+        );
+      }
+      return await response.text();
+    } catch (exc) {
+      lastError = exc;
+      if (attempt < config.retries) {
+        await config.sleep(2 ** attempt * 1000);
+      }
+    }
+  }
+  throw lastError instanceof Error
+    ? lastError
+    : new ValidateReleaseError(`fetch failed for ${what} (${url})`);
+}
+
+/**
+ * Percent-encode a validated smoke-route path exactly like the shell
+ * original's `urllib.parse.quote(parts.path, safe="/-._~")`: every UTF-8
+ * byte of a character outside `[A-Za-z0-9\-._~/]` becomes an uppercase
+ * `%XX` escape (so `/` stays a path separator, unlike plain
+ * `encodeURIComponent`, which would also escape `/` and leaves `!*'()`
+ * un-escaped — neither matches Python's `quote()`).
+ */
+const SMOKE_PATH_SAFE_RE = /^[A-Za-z0-9\-._~/]$/;
+
+function percentEncodeSmokePath(path: string): string {
+  let out = "";
+  for (const ch of path) {
+    if (ch.codePointAt(0)! < 128 && SMOKE_PATH_SAFE_RE.test(ch)) {
+      out += ch;
+      continue;
+    }
+    for (const byte of Buffer.from(ch, "utf-8")) {
+      out += `%${byte.toString(16).toUpperCase().padStart(2, "0")}`;
+    }
+  }
+  return out;
 }
 
 /** Validations 7-11 of the shell original (PUB-32..36), run against a deployed exact-SHA bundle. */
@@ -212,26 +328,26 @@ export async function smokeRemote(options: SmokeRemoteOptions): Promise<SmokeRem
     throw new ValidateReleaseError("Pages URL must use https");
   }
 
-  const indexHtml = await fetchOrThrow(options.fetchImpl, `${baseUrl}/`, "index.html");
+  const config: RetryConfig = {
+    timeoutMs: options.timeoutMs ?? DEFAULT_SMOKE_TIMEOUT_MS,
+    retries: options.retries ?? DEFAULT_SMOKE_RETRIES,
+    sleep: options.sleep ?? defaultSmokeSleep,
+  };
+  const get = (url: string, what: string): Promise<string> =>
+    fetchOrThrow(options.fetchImpl, url, what, config);
+
+  const indexHtml = await get(`${baseUrl}/`, "index.html");
   if (!indexHtml.toLowerCase().includes("<!doctype html")) {
     throw new ValidateReleaseError("root page is not HTML");
   }
 
-  const deploymentText = await fetchOrThrow(
-    options.fetchImpl,
-    `${baseUrl}/_paperpilot-deployment.json`,
-    "deployment marker",
-  );
+  const deploymentText = await get(`${baseUrl}/_paperpilot-deployment.json`, "deployment marker");
   const deployment = JSON.parse(deploymentText) as Record<string, unknown>;
   if (deployment.source_sha !== options.expectedSha) {
     throw new ValidateReleaseError("deployed marker does not match requested source SHA");
   }
 
-  const conferencesText = await fetchOrThrow(
-    options.fetchImpl,
-    `${baseUrl}/conferences.json`,
-    "conferences.json",
-  );
+  const conferencesText = await get(`${baseUrl}/conferences.json`, "conferences.json");
   const conferences = JSON.parse(conferencesText);
   if (!Array.isArray(conferences) || conferences.length === 0) {
     throw new ValidateReleaseError("deployed conferences.json is empty");
@@ -241,21 +357,13 @@ export async function smokeRemote(options: SmokeRemoteOptions): Promise<SmokeRem
     throw new ValidateReleaseError("representative conference has no name");
   }
 
-  const searchText = await fetchOrThrow(
-    options.fetchImpl,
-    `${baseUrl}/search-index-v2.json`,
-    "search-index-v2.json",
-  );
+  const searchText = await get(`${baseUrl}/search-index-v2.json`, "search-index-v2.json");
   const search = JSON.parse(searchText);
   if (!Array.isArray(search) || search.length === 0) {
     throw new ValidateReleaseError("deployed search-index-v2.json is empty");
   }
 
-  const qualityText = await fetchOrThrow(
-    options.fetchImpl,
-    `${baseUrl}/lineage-quality-v1.json`,
-    "lineage-quality-v1.json",
-  );
+  const qualityText = await get(`${baseUrl}/lineage-quality-v1.json`, "lineage-quality-v1.json");
   const quality = JSON.parse(qualityText) as { collections?: Array<Record<string, unknown>> };
   const lineagePaths = (quality.collections ?? [])
     .filter((row) => row.availability === "ready" && row.audit_status === "passed")
@@ -270,8 +378,8 @@ export async function smokeRemote(options: SmokeRemoteOptions): Promise<SmokeRem
   const routes: string[] = [];
   for (const relativePath of paths) {
     validateSmokeRelativePath(relativePath);
-    const url = `${baseUrl}/${relativePath.replace(/^\/+/, "")}`;
-    await fetchOrThrow(options.fetchImpl, url, `smoke route ${relativePath}`);
+    const url = `${baseUrl}/${percentEncodeSmokePath(relativePath.replace(/^\/+/, ""))}`;
+    await get(url, `smoke route ${relativePath}`);
     routes.push(url);
   }
 

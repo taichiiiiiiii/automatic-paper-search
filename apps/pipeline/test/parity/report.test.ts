@@ -14,6 +14,7 @@ function baseReport(overrides: Partial<CompareTreesReport> = {}): CompareTreesRe
     fileResults: [],
     summary: { filesCompared: 0, filesEqual: 0, filesDiffering: 0, missing: 0, extra: 0 },
     ignoredPointers: [],
+    skippedEntries: [],
     ...overrides,
   };
 }

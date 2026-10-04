@@ -3,7 +3,7 @@
  * subset — this module is a library, not a script invoked via subprocess,
  * so "script exists and executable" has no TS equivalent).
  */
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, expect, it } from "vitest";
@@ -128,6 +128,47 @@ it("eventually fails after max retries when every push is rejected", async () =>
   ).rejects.toThrow(/push failed/);
 });
 
+// PUB-23 (no Python test exists for this half — only the shell script's
+// own comment documents it): a genuine rebase CONFLICT (not merely a
+// rejected fast-forward) must `rebase --abort` so the retry loop — and the
+// repo on disk after a final failure — are never left mid-rebase.
+it("PUB-23: a genuine rebase conflict is aborted, leaving the repo usable and the error clean", async () => {
+  const competitor = join(world.base, "competitor-conflict");
+  gitRun(world.base, ["clone", world.remote, "competitor-conflict"]);
+  const conflictFile = join(competitor, "docs", "themes", "test-theme", "lineage.json");
+  mkdirSync(join(competitor, "docs", "themes", "test-theme"), { recursive: true });
+  writeFileSync(conflictFile, '{"slug":"test-theme","from":"competitor"}\n');
+  gitRun(competitor, ["add", "docs/themes/test-theme/lineage.json"]);
+  gitRun(competitor, ["commit", "-m", "competitor also edits the same line"]);
+  gitRun(competitor, ["push", "origin", "develop"]);
+
+  // Our local side edits the SAME line of the SAME file differently, so
+  // every rebase attempt against the competitor's commit conflicts the
+  // same way every time (not just a non-fast-forward that a plain rebase
+  // would resolve cleanly).
+  writeFileSync(
+    join(world.local, "docs", "themes", "test-theme", "lineage.json"),
+    '{"slug":"test-theme","from":"local"}\n',
+  );
+
+  await expect(
+    commitAndPush({
+      message: "data(themes): conflicting edit",
+      stagePaths: ["docs/themes/"],
+      git: adapter,
+      cwd: world.local,
+      noSleep: true,
+      maxAttempts: 2,
+    }),
+  ).rejects.toThrow(/push failed/);
+
+  // The repo must be left clean — no rebase stuck in progress — proving
+  // `rebase --abort` actually ran rather than leaving conflict markers.
+  expect(existsSync(join(world.local, ".git", "rebase-merge"))).toBe(false);
+  expect(existsSync(join(world.local, ".git", "rebase-apply"))).toBe(false);
+  expect(gitRun(world.local, ["status", "--porcelain"]).trim()).toBe("");
+});
+
 it("stages a commit message containing shell metacharacters literally", async () => {
   const payload = 'data(themes): "$(touch pwned)" `id`';
   const outcome = await commitAndPush({
@@ -226,6 +267,8 @@ it("respects an overridden push branch", async () => {
   ).toBe(2);
 });
 
+// Explicit timeout: 5 real `git clone`+commit+push attempts (with rebase
+// retries) can comfortably exceed the 5s default under CI/load contention.
 it("five parallel runs against the same remote all publish", async () => {
   const remote = join(world.base, "remote5.git");
   mkdirSync(remote);
@@ -270,4 +313,4 @@ it("five parallel runs against the same remote all publish", async () => {
   for (const slug of themes) {
     expect(log).toContain(slug);
   }
-});
+}, 30_000);

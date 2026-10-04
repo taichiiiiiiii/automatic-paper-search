@@ -26,7 +26,7 @@
 
 import { existsSync, mkdirSync, readdirSync, readFileSync, realpathSync, statSync } from "node:fs";
 import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
-import { pyJsonDumps } from "@paperpilot/core/pycompat";
+import { pyJsonDumps, pyRstrip, pySplit, pyStrip } from "@paperpilot/core/pycompat";
 import { unneutralize } from "../collect/exporters/csvSafety.js";
 import { atomicWriteText } from "../collect/state/atomic.js";
 import { SUMMARY_META_FILENAME } from "./buildSummary.js";
@@ -82,13 +82,13 @@ export class CatalogShrinkError extends Error {
 }
 
 function abstractPreview(text: string | null | undefined): string {
-  const trimmed = (text ?? "").trim();
+  const trimmed = pyStrip(text ?? "");
   const chars = Array.from(trimmed); // code-point aware, matching Python's `len`/slicing on `str`.
   if (chars.length <= ABSTRACT_PREVIEW_CHARS) return trimmed;
   const head = chars.slice(0, ABSTRACT_PREVIEW_CHARS).join("");
   const lastSpace = head.lastIndexOf(" ");
-  const cut = (lastSpace === -1 ? head : head.slice(0, lastSpace)).replace(/\s+$/, "");
-  return `${cut || head.replace(/\s+$/, "")}…`;
+  const cut = pyRstrip(lastSpace === -1 ? head : head.slice(0, lastSpace));
+  return `${cut || pyRstrip(head)}…`;
 }
 
 const FLOAT_LIKE_RE = /^[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$/;
@@ -96,7 +96,7 @@ const FLOAT_LIKE_RE = /^[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$/;
 /** Parse a numeric field from the CSV. Empty / missing / unparseable -> null. */
 function maybeInt(value: string | null | undefined): number | null {
   if (value === null || value === undefined) return null;
-  const trimmed = value.trim();
+  const trimmed = pyStrip(value);
   if (!trimmed) return null;
   if (!FLOAT_LIKE_RE.test(trimmed)) return null; // reject JS-only numeric forms Python's float() would reject.
   const parsed = Number(trimmed);
@@ -196,8 +196,8 @@ export function loadSummaryWithDetails(summaryCsv: string): {
       row[k] = typeof v === "string" ? unneutralize(v) : v;
     }
     const identity = identityFromUrl(row.arxiv_url ?? "");
-    const declaredSource = (row.source ?? "").trim();
-    const declaredSourceId = (row.source_id ?? "").trim();
+    const declaredSource = pyStrip(row.source ?? "");
+    const declaredSourceId = pyStrip(row.source_id ?? "");
     if (Boolean(declaredSource) !== Boolean(declaredSourceId)) {
       throw new IdentityError("source and source_id must be present together");
     }
@@ -208,7 +208,7 @@ export function loadSummaryWithDetails(summaryCsv: string): {
       }
     }
 
-    const fullAbstract = (row.abstract ?? "").trim();
+    const fullAbstract = pyStrip(row.abstract ?? "");
     const existingAbstract = details.get(identity.paperId);
     if (existingAbstract !== undefined && existingAbstract !== fullAbstract) {
       throw new IdentityError(`conflicting abstracts for paper_id ${identity.paperId}`);
@@ -217,11 +217,11 @@ export function loadSummaryWithDetails(summaryCsv: string): {
     papers.push({
       title: row.title ?? "",
       type: row.type ?? "",
-      tags: row.tags ? row.tags.split(/\s+/).filter(Boolean) : [],
+      tags: row.tags ? pySplit(row.tags) : [],
       venue: row.venue ?? "",
       authors: (row.authors ?? "")
         .split(/[;,]/)
-        .map((a) => a.trim())
+        .map((a) => pyStrip(a))
         .filter(Boolean),
       arxiv_url: row.arxiv_url ?? "",
       pdf_url: row.pdf_url ?? "",
@@ -296,7 +296,7 @@ function overrideHint(name: string): string {
 }
 
 function fieldIsEmpty(value: unknown): boolean {
-  if (typeof value === "string") return value.trim() === "";
+  if (typeof value === "string") return pyStrip(value) === "";
   if (Array.isArray(value)) return value.every((item) => fieldIsEmpty(item));
   return value === null || value === undefined;
 }
@@ -661,12 +661,12 @@ export function buildPagesMain(args: BuildPagesArgs, roots: CatalogRoots): Build
   if (args.conference) {
     confDirs = [args.conference];
   } else {
-    let entries: string[];
-    try {
-      entries = readdirSync(roots.outputRoot);
-    } catch {
-      entries = [];
-    }
+    // Matches Python's `output_dir.iterdir()`: a missing/unreadable output
+    // root is an uncaught exception there (crash, non-zero exit), NOT an
+    // empty "No conferences" skip — only an output root that exists but is
+    // genuinely empty takes that path. Swallowing ENOENT here used to turn
+    // a missing `paperpilot/output/` into a silent, successful no-op run.
+    const entries = readdirSync(roots.outputRoot);
     confDirs = entries
       .filter((name) => {
         const dir = join(roots.outputRoot, name);
