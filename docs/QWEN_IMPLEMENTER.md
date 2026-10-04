@@ -215,7 +215,7 @@ provider/catalog設定とHTTP/stream retry指定を照合し、元の予算・�
 
 > 履歴・非運用・現行起動に使用禁止。現行手順は[AGENTS.md](../AGENTS.md)。
 
-以下は当時の固定経路と検証記録であり、現在の起動指示ではない。旧Flashの記録も[履歴文書](FLASH_IMPLEMENTER.md)に保持する。
+以下は当時の固定経路と検証記録であり、現在の起動指示ではない。旧Flashの記録（`docs/FLASH_IMPLEMENTER.md`）は 2026-10-04 に整理で削除した。git の履歴で読める。
 
 ### 当時の固定経路
 

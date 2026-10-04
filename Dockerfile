@@ -106,7 +106,6 @@ ENV PATH=/opt/paperpilot/bin:/usr/local/bin:/usr/bin:/bin
 COPY --from=ops-build --chown=0:0 /opt/paperpilot /opt/paperpilot
 COPY --from=ops-build --chown=0:0 /build/paperpilot /workspace/paperpilot
 COPY --chown=0:0 schemas/ /workspace/schemas/
-COPY --chown=0:0 scripts/ /workspace/scripts/
 
 RUN rm -f /opt/paperpilot/bin/pip /opt/paperpilot/bin/pip3 /opt/paperpilot/bin/pip3.12 \
  && rm -rf /opt/paperpilot/lib/python3.12/site-packages/pip \

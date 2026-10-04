@@ -39,7 +39,6 @@ _CONTEXT_ROOTS = (
     "docker",
     "paperpilot",
     "schemas",
-    "scripts",
     "worker",
 )
 _CONTEXT_FILES = (

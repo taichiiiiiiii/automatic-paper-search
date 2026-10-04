@@ -108,7 +108,7 @@ follows [Semantic Versioning](https://semver.org/) and the
   completed history subsections (686 of its 792 lines). Both are now split
   **losslessly** (md5 of the reconstruction matches the pre-split file):
   the CHANGELOG history moves verbatim to
-  [`CHANGELOG-archive.md`](CHANGELOG-archive.md) and the implementation
+  `CHANGELOG-archive.md` (removed 2026-10-04; read it at commit `40bb734`) and the implementation
   status chapter moves verbatim to
   [`docs/design/09-implementation-status.md`](docs/design/09-implementation-status.md),
   each leaving a pointer plus a re-measured current-state summary. No prose
@@ -274,8 +274,8 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 > **過去の履歴** — 完了済みの詳細セクション 20 本（#209 S2-free 移行、CF Worker
 > 復活 #233–#238、unarXive Phase J #222、lineage 品質改善 Tier 1 / edge audit、
-> #285 prep など）は [`CHANGELOG-archive.md`](CHANGELOG-archive.md) へ一字一句
-> そのまま退避した（無損失・md5 検証済み）。
+> #285 prep など）は `CHANGELOG-archive.md` へ一字一句
+> そのまま退避した（無損失・md5 検証済み）。同ファイルは 2026-10-04 に整理で削除した。内容は commit `40bb734` で読める。
 
 ## [0.1.0] — 2026-04-17
 
