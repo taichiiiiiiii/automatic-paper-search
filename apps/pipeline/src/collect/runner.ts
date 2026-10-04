@@ -5,7 +5,8 @@
  */
 
 import { dirname, join } from "node:path";
-import type { Config } from "./config/types.js";
+import type { Env } from "./config/env.js";
+import type { Config, LlmConfig } from "./config/types.js";
 import { CSVExporter } from "./exporters/csv.js";
 import { EmailExporter, type SmtpClientFactory } from "./exporters/email.js";
 import type { Exporter } from "./exporters/exporter.js";
@@ -61,12 +62,25 @@ export interface RunnerDeps {
   /** Overrides the default `paperpilot/data/paper_repos.json` path for GitHubSignal. */
   githubCuratedMapPath?: string;
   /**
-   * Test/integration seam: real LLM providers are P4d (not implemented in
-   * this port). When `config.llm.enabled` is true, this override (if
-   * given) is used as-is; otherwise Stage 4 stays disabled.
+   * Test/integration seam: when `config.llm.enabled` is true, this
+   * override (if given) is used as-is instead of {@link llmProviderFactory}
+   * — the fake-provider pattern most unit tests in `runner.test.ts` use
+   * (`buildRunner`'s default deps set neither, so those tests are
+   * unaffected by #26/#29's real wiring below).
    */
   llmProvider?: LLMProvider | null;
-  /** Same seam as `llmProvider`, for Stage 3 (real encoders are P4d). */
+  /**
+   * Real-provider construction (#26/#29 of docs/migration/p4-followups.md).
+   * Called only when `config.llm.enabled` is true AND {@link llmProvider}
+   * was not given. Returns `null` for an unrecognized `config.llm.provider`
+   * name, in which case `buildLlmProvider` reports the same
+   * `unknown LLM provider '<name>'` reason it always has. The production
+   * entry point (`collect/cli.ts`) wires this to
+   * `collect/runtime/llmProvider.ts`'s `buildLlmProviderFromConfig`; tests
+   * that don't set it get the pre-#26 behavior unchanged.
+   */
+  llmProviderFactory?: (llmCfg: LlmConfig, env: Env) => LLMProvider | null;
+  /** Same seam as `llmProvider`, for Stage 3 (real encoders are P4d — see #26's encoder note). */
   encoder?: AbstractEncoder | null;
 }
 
@@ -257,6 +271,10 @@ export class PipelineRunner {
     const llmCfg = this.config.llm;
     if (!llmCfg?.enabled) return null;
     if (this.deps.llmProvider) return this.deps.llmProvider;
+    if (this.deps.llmProviderFactory) {
+      const built = this.deps.llmProviderFactory(llmCfg, this.config.env);
+      if (built) return built;
+    }
     const reason = `unknown LLM provider '${String(llmCfg.provider ?? "")}'`;
     this.deps.logger?.warn(`runner: ${reason} — skipping Stage 4`);
     this.llmProviderUnavailableReason = reason;

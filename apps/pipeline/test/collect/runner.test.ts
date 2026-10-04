@@ -6,11 +6,12 @@
  * source, "fetch")` replaces the whole `Source.fetch()` (part-1's
  * `FetchResult`-returning contract) the same way.
  *
- * `test_build_llm_provider_ollama/gemini/groq/claude` are NOT ported: real
- * LLM providers are P4d (not implemented in this port — see `runner.ts`'s
- * `buildLlmProvider` doc comment). `test_build_llm_provider_unknown_
- * returns_none` and `_disabled_returns_none` do not need a real provider
- * and are ported as-is.
+ * `test_build_llm_provider_ollama/gemini/groq/claude` ARE now ported
+ * (#26/#29 of docs/migration/p4-followups.md wired the real factory) —
+ * see the "real LLM provider construction" block near the bottom of this
+ * file. `test_build_llm_provider_unknown_returns_none` and
+ * `_disabled_returns_none` need no factory at all (both pre-date #26) and
+ * are unchanged.
  */
 import { existsSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -20,6 +21,11 @@ import type { Config } from "../../src/collect/config/types.js";
 import type { HttpResponseLike } from "../../src/collect/http/requestWithRetry.js";
 import { createPaper, type Paper } from "../../src/collect/model/paper.js";
 import { PipelineRunner, type RunnerDeps } from "../../src/collect/runner.js";
+import { buildLlmProviderFromConfig } from "../../src/collect/runtime/llmProvider.js";
+import { ClaudeProvider } from "../../src/lineage/llm/claude.js";
+import { GeminiProvider } from "../../src/lineage/llm/gemini.js";
+import { GroqProvider } from "../../src/lineage/llm/groq.js";
+import { OllamaProvider } from "../../src/lineage/llm/ollama.js";
 
 const NOW = new Date("2026-04-10T09:00:00");
 
@@ -629,6 +635,56 @@ it("test_runner_uses_its_own_run_history_file_when_configured", async () => {
   expect(existsSync(historyPath)).toBe(true);
   expect(lastHistoryRecord(historyPath).errors).toEqual([]);
   expect(existsSync(join(dir, "run_history.jsonl"))).toBe(false);
+});
+
+it("test_build_llm_provider_ollama (runner wired through the real factory)", () => {
+  const config = buildConfig({ llm: { enabled: true, provider: "ollama", model: "qwen2.5:7b" } });
+  const runner = buildRunner(config, {
+    llmProviderFactory: (llmCfg, env) =>
+      buildLlmProviderFromConfig(llmCfg, env, {
+        fetchImpl: async (): Promise<HttpResponseLike> => ({ status: 200, json: async () => ({}) }),
+      }),
+  });
+  expect(runner.llmProvider).toBeInstanceOf(OllamaProvider);
+});
+
+it("test_build_llm_provider_gemini (runner wired through the real factory)", () => {
+  const config = buildConfig({ llm: { enabled: true, provider: "gemini" } });
+  config.env.geminiApiKey = "k";
+  const runner = buildRunner(config, {
+    llmProviderFactory: (llmCfg, env) =>
+      buildLlmProviderFromConfig(llmCfg, env, {
+        fetchImpl: async (): Promise<HttpResponseLike> => ({ status: 200, json: async () => ({}) }),
+      }),
+  });
+  expect(runner.llmProvider).toBeInstanceOf(GeminiProvider);
+  expect(runner.llmProvider?.enabled).toBe(true); // api key wired through
+});
+
+it("test_build_llm_provider_groq (runner wired through the real factory)", () => {
+  const config = buildConfig({ llm: { enabled: true, provider: "groq" } });
+  config.env.groqApiKey = "gsk_k";
+  const runner = buildRunner(config, {
+    llmProviderFactory: (llmCfg, env) =>
+      buildLlmProviderFromConfig(llmCfg, env, {
+        fetchImpl: async (): Promise<HttpResponseLike> => ({ status: 200, json: async () => ({}) }),
+      }),
+  });
+  expect(runner.llmProvider).toBeInstanceOf(GroqProvider);
+  expect(runner.llmProvider?.enabled).toBe(true);
+});
+
+it("test_build_llm_provider_claude (runner wired through the real factory)", () => {
+  const config = buildConfig({ llm: { enabled: true, provider: "claude" } });
+  config.env.claudeApiKey = "sk-ant-k";
+  const runner = buildRunner(config, {
+    llmProviderFactory: (llmCfg, env) =>
+      buildLlmProviderFromConfig(llmCfg, env, {
+        fetchImpl: async (): Promise<HttpResponseLike> => ({ status: 200, json: async () => ({}) }),
+      }),
+  });
+  expect(runner.llmProvider).toBeInstanceOf(ClaudeProvider);
+  expect(runner.llmProvider?.enabled).toBe(true);
 });
 
 it("test_build_llm_provider_unknown_returns_none", () => {

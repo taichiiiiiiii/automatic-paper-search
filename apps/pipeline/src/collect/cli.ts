@@ -17,13 +17,18 @@
  */
 
 import { writeFileSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { stringify as stringifyYaml } from "yaml";
 import { CliUsageError, parseArgs as parseFlags } from "../shared/cli/argparse.js";
+import { isMain } from "../shared/cli/isMain.js";
 import { loadConfig } from "./config/load.js";
 import type { Config } from "./config/types.js";
 import { expandKeywords } from "./keywordExpand.js";
 import type { LLMProvider } from "./llm/provider.js";
-import type { Logger } from "./logger.js";
+import { createLogger, type Logger } from "./logger.js";
+import { PipelineRunner } from "./runner.js";
+import { createRunnerDeps } from "./runtime/createRunnerDeps.js";
 
 export { CliUsageError } from "../shared/cli/argparse.js";
 
@@ -225,7 +230,41 @@ async function runExpandKeywords(
   return 0;
 }
 
+/**
+ * Simplified analogue of `collector.py`'s argparse-generated `--help`
+ * output. The shared strict parser (`shared/cli/argparse.ts`) has no
+ * built-in `-h`/`--help` support (M3 of the P4 review intentionally kept
+ * it to the subset argparse features this port's CLIs actually used), so
+ * `main()` checks for it itself, before `parseArgs` — a typo'd
+ * `--totally-bogus-flag` still falls through to `parseArgs` and exits 2
+ * exactly as before; only the literal `-h`/`--help` token short-circuits.
+ */
+export const HELP_TEXT = `usage: collector [--config CONFIG] [--days DAYS] [--keyword KEYWORD]
+                  [--full] [--skip-llm] [--fail-on-errors]
+                  [expand-keywords [--max MAX] [--write]]
+
+PaperPilot — AI/ML paper auto-collector
+
+options:
+  --config CONFIG     Path to config.yaml (default: paperpilot/config.yaml)
+  --days DAYS         Override search.days_back
+  --keyword KEYWORD   Append additional search keyword (repeatable)
+  --full              Ignore seen-ids (re-output papers from previous runs)
+  --skip-llm          Skip Stage 4 (LLM rerank) even if configured
+  --fail-on-errors    Exit non-zero when the run was degraded
+  -h, --help          Show this help message and exit
+
+subcommand:
+  expand-keywords     Use the configured LLM provider to add synonyms to search.keywords
+    --max MAX         Maximum number of LLM-suggested additions (default: 10)
+    --write           Rewrite config.yaml with the expanded keywords in place
+`;
+
 export async function main(argv: readonly string[], deps: CliDeps): Promise<number> {
+  if (argv.includes("--help") || argv.includes("-h")) {
+    (deps.stdout ?? ((line: string) => console.log(line)))(HELP_TEXT);
+    return 0;
+  }
   let args: ParsedArgs;
   try {
     args = parseArgs(argv, deps.defaultConfigPath ?? "config.yaml");
@@ -286,4 +325,69 @@ export async function main(argv: readonly string[], deps: CliDeps): Promise<numb
 
   if (args.failOnErrors) return failureExitCode(result, deps.logger, stdout);
   return 0;
+}
+
+// ---- real entry point (#26/#29 of docs/migration/p4-followups.md) ----
+
+const HERE = dirname(fileURLToPath(import.meta.url));
+// apps/pipeline/src/collect/cli.ts -> repo root is 4 levels up (one less
+// than lineage/theme/cli.ts's 5, since collect/ sits one level shallower).
+const DEFAULT_REPO_ROOT = resolve(HERE, "..", "..", "..", "..");
+const DEFAULT_CONFIG_PATH = join(DEFAULT_REPO_ROOT, "paperpilot", "config.yaml");
+
+/**
+ * Builds the `CliDeps` a real (non-test) run uses: `createRunner` wires a
+ * real `PipelineRunner` through `createRunnerDeps()` (real fetch, the real
+ * LLM provider factory, the SMTP-unavailable transport — see that
+ * module's and `collect/runtime/*`'s doc comments), and `logger` is a
+ * console(+file) logger built from `config.logging` — mirroring
+ * `collector.py::main`'s `load_config` -> `setup_logging` ordering: Python
+ * reads `logging.level`/`logging.file` from the SAME loaded config object
+ * before doing anything else, so this peeks the config once up front for
+ * that purpose. `main()` itself still calls `loadConfig` again internally
+ * (`deps.loadConfigFn` is not overridden) — an extra cheap YAML+`.env`
+ * read, not a behavior difference, since `loadConfig` has no side effects
+ * and `args.config` cannot differ between the two reads (this function
+ * only reads `--config`, which `parseArgs`'s own exact logic below
+ * reproduces just enough of to find).
+ */
+export function createDefaultCliDeps(argv: readonly string[]): CliDeps {
+  let logger: Logger;
+  try {
+    const peeked = parseArgs(argv, DEFAULT_CONFIG_PATH);
+    const cfg = loadConfig(peeked.config);
+    const logCfg = cfg.logging ?? {};
+    logger = createLogger("paperpilot", { level: logCfg.level, file: logCfg.file });
+  } catch {
+    // A bad `--config` value or a missing config file is `main()`'s own
+    // job to report (via a thrown CliUsageError/ConfigNotFoundError this
+    // peek must not swallow) — fall back to a plain console logger so
+    // that report still has somewhere to go.
+    logger = createLogger("paperpilot", { level: "INFO" });
+  }
+  return {
+    createRunner: (config) => new PipelineRunner(config, createRunnerDeps()),
+    logger,
+    defaultConfigPath: DEFAULT_CONFIG_PATH,
+  };
+}
+
+/** Runs the real CLI; never throws — every failure path maps to a logged
+ * message and a non-zero `process.exitCode` (mirrors Python's uncaught-
+ * exception-exits-1 contract for e.g. a missing config file, which
+ * `main()` itself does not catch). */
+export async function runRealCli(argv: readonly string[]): Promise<number> {
+  const deps = createDefaultCliDeps(argv);
+  try {
+    return await main(argv, deps);
+  } catch (e) {
+    deps.logger.error(`collector: fatal: ${(e as Error).message}`);
+    return 1;
+  }
+}
+
+if (isMain(import.meta.url)) {
+  runRealCli(process.argv.slice(2)).then((code) => {
+    process.exitCode = code;
+  });
 }
