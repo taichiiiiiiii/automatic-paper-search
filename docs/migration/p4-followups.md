@@ -13,3 +13,9 @@
 | 9 | identity・slug を `packages/core` へ（#2 と合わせて） | P4b part 1 |
 | 10 | `conference/shared/venueTier.ts` が `collect/signals/venue.ts` の TIER 集合を複製 → venue.ts から export して複製を消す | P4c part 1 |
 | 11 | `conference/shared/pyText.ts` の `html.unescape` は部分移植（名前付き実体は主要なものと Latin-1 のみ、`;` 無しの古い実体は未対応） | P4c part 1 |
+| 12 | 分類キャッシュのロック: TS は O_EXCL のロックファイル、Python は flock（`.lock` を消さない）。共存期間に Python が残した `.lock` があると TS は 60 秒の stale 待ちになる。P5 で Python が消えれば解消。それまで同時実行しない | P4d-1 |
+| 13 | ロックの実装が `collect/state/seenIds.ts` と `lineage/classify/lock.ts` に重複 → 共通化 | P4d-1 |
+| 14 | safety-contracts.md の LLM-18 の記述が古い（今は空応答でも遮断器が作動する）。P5 の文書書き直しで直す | P4d-1 |
+| 15 | safety-contracts.md の「移植先」列のパスが実際の配置（`apps/pipeline/src/...`）と違う。P5 で更新 | P4c |
+| 16 | `schemas/conference-baseline-assessment-v1.schema.json` に `$id` が無く validateArtifact で引けない | P4c part 2 |
+| 17 | scaffold の登録 manifest を `apps/web/lib/catalog-copy.ts` に接続 | P4c part 2 |
