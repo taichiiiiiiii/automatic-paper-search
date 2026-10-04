@@ -8,6 +8,8 @@ import { describe, expect, it, vi } from "vitest";
 import { makeFetchLimits } from "../../../src/conference/watch/models.js";
 import {
   type DNSResolver,
+  isPublicAddress,
+  pinnedLookup,
   type RawResponse,
   type RawTransport,
   SecurePinnedTransport,
@@ -71,11 +73,116 @@ describe("validateFixedEndpoint (CNF-24)", () => {
   });
 });
 
+describe("pinnedLookup (M6)", () => {
+  it("replies with an array of {address,family} when called with {all:true} (Node 22 autoSelectFamily)", () => {
+    const lookup = pinnedLookup("93.184.216.34");
+    const cb = vi.fn();
+    lookup("api2.openreview.net", { all: true }, cb);
+    expect(cb).toHaveBeenCalledWith(null, [{ address: "93.184.216.34", family: 4 }]);
+  });
+
+  it("replies with the legacy (err, address, family) shape when all is not set", () => {
+    const lookup = pinnedLookup("93.184.216.34");
+    const cb = vi.fn();
+    lookup("api2.openreview.net", {}, cb);
+    expect(cb).toHaveBeenCalledWith(null, "93.184.216.34", 4);
+  });
+
+  it("always resolves to the pinned address regardless of the hostname asked for", () => {
+    const lookup = pinnedLookup("93.184.216.34");
+    const cb = vi.fn();
+    lookup("totally-different-host.example", { all: true }, cb);
+    expect(cb).toHaveBeenCalledWith(null, [{ address: "93.184.216.34", family: 4 }]);
+  });
+
+  it("uses family 6 for an IPv6 pin", () => {
+    const lookup = pinnedLookup("2606:4700:4700::1111");
+    const cb = vi.fn();
+    lookup("host", {}, cb);
+    expect(cb).toHaveBeenCalledWith(null, "2606:4700:4700::1111", 6);
+  });
+});
+
+describe("isPublicAddress (M6 — exact ipaddress.is_global port)", () => {
+  it.each([
+    ["8.8.8.8", true],
+    ["93.184.216.34", true],
+    ["10.0.0.5", false],
+    ["127.0.0.1", false],
+    ["169.254.1.1", false],
+    ["172.16.0.1", false],
+    ["192.168.1.1", false],
+    // Ranges the old string-prefix check missed entirely:
+    ["100.64.0.1", false], // shared address space (CGN), 100.64.0.0/10
+    ["100.63.255.255", true], // just outside that range
+    ["100.128.0.0", true], // just outside the other side
+    ["198.18.0.1", false], // benchmarking, 198.18.0.0/15
+    ["192.0.2.1", false], // TEST-NET-1
+    ["198.51.100.1", false], // TEST-NET-2
+    ["203.0.113.1", false], // TEST-NET-3
+    ["240.0.0.1", false], // reserved, 240.0.0.0/4
+    ["255.255.255.255", false],
+    // The two documented 192.0.0.0/24 exceptions carved back OUT to public:
+    ["192.0.0.9", true],
+    ["192.0.0.10", true],
+    ["192.0.0.8", false], // one below the first exception: still private
+    ["192.0.0.11", false], // one above the second exception: still private
+  ])("IPv4 %s -> %s", (addr, expected) => {
+    expect(isPublicAddress(addr)).toBe(expected);
+  });
+
+  it.each([
+    ["2606:4700:4700::1111", true],
+    ["::1", false],
+    ["::", false],
+    ["fe80::1", false],
+    ["fc00::1", false],
+    ["fd12:3456:789a::1", false],
+    ["2001:db8::1", false], // documentation range, 2001:db8::/32
+    ["3fff::1", false], // RFC 9637 documentation range
+    ["2001::1", false], // TEREDO, inside 2001::/23
+    ["2001:1::1", true], // carved-out exception within 2001::/23
+    ["2001:4:112::1", true], // carved-out exception (AMT)
+    // Deprecated RFC 3879 site-local is NOT in Python's private list —
+    // matching that exactly (not "improving" on it) matters for parity.
+    ["fec0::1", true],
+  ])("IPv6 %s -> %s", (addr, expected) => {
+    expect(isPublicAddress(addr)).toBe(expected);
+  });
+
+  it("IPv4-mapped IPv6 defers to the mapped IPv4 address's own rule", () => {
+    expect(isPublicAddress("::ffff:8.8.8.8")).toBe(true); // global IPv4, mapped
+    expect(isPublicAddress("::ffff:10.0.0.5")).toBe(false); // private IPv4, mapped
+  });
+
+  it("rejects garbage that is neither a valid IPv4 nor IPv6 address", () => {
+    expect(isPublicAddress("not-an-ip")).toBe(false);
+  });
+});
+
 describe("SecurePinnedTransport (CNF-24)", () => {
   const limits = makeFetchLimits();
 
   it("rejects private-address DNS resolution", async () => {
     const transport = new SecurePinnedTransport({ resolver: fakeResolver(["10.0.0.5"]), ...clock });
+    await expect(
+      transport.get("https://api2.openreview.net/notes", {
+        params: {},
+        limits,
+        deadlineMs: Date.now() + 10_000,
+      }),
+    ).rejects.toThrow(TransportError);
+  });
+
+  it("rejects DNS resolution to the shared-address-space (100.64.0.0/10) CGN range (M6)", async () => {
+    // This range is NOT private/loopback/link-local by the old naive
+    // check, so removing the port's exact `is_global` logic would let
+    // this resolve and connect — the exact gap the review flagged as
+    // "fails no test".
+    const transport = new SecurePinnedTransport({
+      resolver: fakeResolver(["100.64.0.1"]),
+      ...clock,
+    });
     await expect(
       transport.get("https://api2.openreview.net/notes", {
         params: {},
@@ -151,6 +258,46 @@ describe("SecurePinnedTransport (CNF-24)", () => {
       }),
     ).rejects.toThrow(TransportError);
     expect(calls).toBe(1);
+  });
+
+  it("CNF-24: rejects a non-identity Content-Encoding (we never request compression and can't trust its length accounting)", async () => {
+    const raw: RawTransport = {
+      supportsIpPinning: true,
+      request: async () => bufferedResponse(200, Buffer.from("{}"), [["content-encoding", "gzip"]]),
+    };
+    const transport = new SecurePinnedTransport({
+      resolver: fakeResolver(["93.184.216.34"]),
+      transport: raw,
+      ...clock,
+    });
+    await expect(
+      transport.get("https://api2.openreview.net/notes", {
+        params: {},
+        limits,
+        deadlineMs: Date.now() + 10_000,
+      }),
+    ).rejects.toThrow(TransportError);
+  });
+
+  it("CNF-24: an explicit Content-Encoding: identity is fine", async () => {
+    const raw: RawTransport = {
+      supportsIpPinning: true,
+      request: async () =>
+        bufferedResponse(200, Buffer.from('{"notes":[],"count":0}'), [
+          ["content-encoding", "identity"],
+        ]),
+    };
+    const transport = new SecurePinnedTransport({
+      resolver: fakeResolver(["93.184.216.34"]),
+      transport: raw,
+      ...clock,
+    });
+    const resp = await transport.get("https://api2.openreview.net/notes", {
+      params: {},
+      limits,
+      deadlineMs: Date.now() + 10_000,
+    });
+    expect(resp.statusCode).toBe(200);
   });
 
   it("rejects an oversized response declared via Content-Length", async () => {

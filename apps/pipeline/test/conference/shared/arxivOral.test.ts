@@ -171,4 +171,56 @@ describe("fetchArxivResultsChecked", () => {
     expect(results).toEqual([]);
     expect(complete).toBe(false);
   });
+
+  it("H3: keeps page-1's total for pagination and stops once it's covered, ignoring a later page's agreeing total", async () => {
+    // page 1 total=4, page 2 (same total=4) covers the rest -> complete.
+    const page1 = [
+      entry("P1", "Accepted to CVPR 2026", "2604.00001"),
+      entry("P2", "Accepted to CVPR 2026", "2604.00002"),
+    ];
+    const page2 = [
+      entry("P3", "Accepted to CVPR 2026", "2604.00003"),
+      entry("P4", "Accepted to CVPR 2026", "2604.00004"),
+    ];
+    const fetchText = async (url: string) => ({
+      status: 200,
+      text: async () => (url.includes("start=0") ? feedBody(page1, 4) : feedBody(page2, 4)),
+    });
+    const { results, complete } = await fetchArxivResultsChecked(
+      'co:"CVPR 2026"',
+      10,
+      { fetchText },
+      2,
+    );
+    expect(results.length).toBe(4);
+    expect(complete).toBe(true);
+  });
+
+  it("H3: a later page reporting a DIFFERENT total than page 1 is incomplete (does not keep re-reading totalResults)", async () => {
+    // page 1: totalResults=250, 2 entries (pageSize=2). page 2: totalResults
+    // drifts to 150 (would otherwise make offset>=total trip early/wrongly) —
+    // must be reported incomplete instead of trusted.
+    const page1 = [
+      entry("P1", "Accepted to CVPR 2026", "2604.00001"),
+      entry("P2", "Accepted to CVPR 2026", "2604.00002"),
+    ];
+    const page2 = [
+      entry("P3", "Accepted to CVPR 2026", "2604.00003"),
+      entry("P4", "Accepted to CVPR 2026", "2604.00004"),
+    ];
+    const fetchText = async (url: string) => ({
+      status: 200,
+      text: async () => (url.includes("start=0") ? feedBody(page1, 250) : feedBody(page2, 150)),
+    });
+    const { results, complete } = await fetchArxivResultsChecked(
+      'co:"CVPR 2026"',
+      1000,
+      { fetchText },
+      2,
+    );
+    // Only page 1's 2 entries were kept — the drifted page-2 total aborted
+    // the scan instead of being folded in as if it were trustworthy.
+    expect(results.length).toBe(2);
+    expect(complete).toBe(false);
+  });
 });

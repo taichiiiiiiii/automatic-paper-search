@@ -97,6 +97,14 @@ export async function fetchArxivResultsChecked(
   const results: ArxivAcceptedResult[] = [];
   let offset = 0;
   let sawMalformed = false;
+  // TS port of the real `arxiv` package's `Client._results`: it reads
+  // `total_results` from page 1 ONLY (`feed.header.total_results`) and
+  // reuses that same value for every later page's "have we covered the
+  // whole result set" check — it never re-reads the field from a later
+  // page (H3). A later page reporting a *different* total (a torn or
+  // concurrently-edited index) can no longer be trusted, so that fetch is
+  // reported incomplete instead of silently paging against a stale bound.
+  let firstPageTotal: number | null = null;
 
   for (;;) {
     const url = buildPageUrl(query, offset, pageSize);
@@ -107,6 +115,11 @@ export async function fetchArxivResultsChecked(
     const body = await resp.text();
     const page = parseArxivFeed(body);
     if (!page.ok) {
+      return { results, complete: false };
+    }
+    if (firstPageTotal === null) {
+      firstPageTotal = page.totalResults;
+    } else if (page.totalResults !== firstPageTotal) {
       return { results, complete: false };
     }
     if (page.skipped.length > 0) {
@@ -129,10 +142,19 @@ export async function fetchArxivResultsChecked(
 
     const rawOnPage = page.entries.length + page.skipped.length;
     if (rawOnPage === 0) {
+      // `parseArxivFeed` itself already refuses `ok:true` with zero raw
+      // entries unless the page's OWN `startIndex`/`totalResults` agree
+      // we are legitimately past the end (or `totalResults` is 0), so
+      // reaching this point with `rawOnPage === 0` is always a genuine
+      // end-of-results page, first or not — never the real `arxiv`
+      // package's `UnexpectedEmptyPageError` case (which only arises
+      // when a page unexpectedly has zero results despite the index
+      // believing more remain; `parseArxivFeed` reports that as
+      // `ok: false` instead, caught above).
       return { results, complete: !sawMalformed };
     }
     offset += rawOnPage;
-    if (offset >= page.totalResults) {
+    if (offset >= firstPageTotal) {
       return { results, complete: !sawMalformed };
     }
   }

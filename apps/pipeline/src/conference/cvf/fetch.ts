@@ -102,6 +102,14 @@ export async function collect(
   const logger: CvfLogger = options.logger ?? console;
 
   const { paths, ok: listingOk } = await fetchListing(cvfId, deps, { logger });
+  // LOW: `concurrent.futures.ThreadPoolExecutor(max_workers=0)` raises
+  // `ValueError: max_workers must be greater than 0` — `mapConcurrent`'s
+  // own `Math.max(1, ...)` clamp instead silently ran a single worker,
+  // masking an operator typo (`--max-workers 0`) as "it worked, just
+  // slowly" rather than failing loudly like the Python original.
+  if (maxWorkers <= 0) {
+    throw new RangeError(`max_workers must be greater than 0 (got ${maxWorkers})`);
+  }
   const limiter = new SerializedRateLimiter(new RateLimiter(delaySeconds));
 
   const fetched = await mapConcurrent(paths, maxWorkers, (path) =>

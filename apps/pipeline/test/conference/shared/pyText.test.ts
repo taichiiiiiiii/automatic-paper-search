@@ -37,6 +37,24 @@ describe("htmlUnescape", () => {
     expect(htmlUnescape("&notarealentity; x")).toBe("&notarealentity; x");
     expect(htmlUnescape("&amp x")).toBe("&amp x");
   });
+
+  it("accepts an uppercase hex marker &#X..; like CPython's html.unescape (LOW)", () => {
+    // Verified against a real `html.unescape`: html.unescape("&#X49;") == "I".
+    expect(htmlUnescape("&#X49;")).toBe("I");
+    expect(htmlUnescape("&#x49;")).toBe("I");
+  });
+
+  it("drops (does not pass through) the HTML5 _invalid_codepoints numeric refs (LOW)", () => {
+    // Verified against real CPython: html.unescape("&#1;") == "" (not "\x01"),
+    // and likewise for &#11; (0x0B) and &#127; (0x7F) and a noncharacter
+    // (&#64976; == 0xFDD0).
+    expect(htmlUnescape("a&#1;b")).toBe("ab");
+    expect(htmlUnescape("a&#11;b")).toBe("ab");
+    expect(htmlUnescape("a&#127;b")).toBe("ab");
+    expect(htmlUnescape("a&#64976;b")).toBe("ab");
+    // Still passes through an ordinary printable codepoint untouched.
+    expect(htmlUnescape("&#65;")).toBe("A");
+  });
 });
 
 describe("stripTagsUnescapeCollapse", () => {

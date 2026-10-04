@@ -5,6 +5,7 @@
  * exercise `main.ts` directly with injected deps).
  */
 import { CliUsageError } from "../shared/cliArgs.js";
+import { fetchImplWithTimeout } from "../shared/networkTimeout.js";
 import { runOpenreviewMain } from "./main.js";
 
 async function main(): Promise<void> {
@@ -17,7 +18,9 @@ async function main(): Promise<void> {
   try {
     const exitCode = await runOpenreviewMain(process.argv.slice(2), {
       outputRoot,
-      request: { fetchImpl: (url, init) => fetch(url, init) },
+      // M6: `init.timeoutMs` (`fetchNotes`'s 20s default) must actually
+      // abort the request — plain `fetch(url, init)` silently ignores it.
+      request: { fetchImpl: fetchImplWithTimeout() },
     });
     process.exitCode = exitCode;
   } catch (e) {

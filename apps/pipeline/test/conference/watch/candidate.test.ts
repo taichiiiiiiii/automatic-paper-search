@@ -131,12 +131,75 @@ describe("validateCandidateSnapshot / buildCatalogCandidate (CNF-31/33)", () => 
     expect(() => validateCandidateSnapshot(EDITION, dup)).toThrow(CandidateValidationError);
   });
 
+  it("CNF-32: rejects a candidate whose row count is below the edition's minimum_absolute", async () => {
+    const { snapshot, readiness } = await readySnapshotAndState();
+    const strictEdition: Edition = {
+      ...EDITION,
+      countGate: { ...EDITION.countGate, minimumAbsolute: 3 }, // only 2 rows exist
+    };
+    expect(() => buildCatalogCandidate(strictEdition, readiness, snapshot)).toThrow(
+      CandidateValidationError,
+    );
+  });
+
+  it("CNF-32: rejects published continuity evidence naming a source id absent from the current rows", async () => {
+    const { snapshot, readiness } = await readySnapshotAndState();
+    const badReadiness = {
+      ...readiness,
+      publishedFingerprint: "a".repeat(64),
+      publishedCount: 2,
+      publishedSourceIds: ["nonexistent-id-1", "nonexistent-id-2"],
+    };
+    expect(() => buildCatalogCandidate(EDITION, badReadiness, snapshot)).toThrow(
+      CandidateValidationError,
+    );
+  });
+
   it("CNF-33: rejects a malformed edition (non-matching adapter)", async () => {
     const { snapshot, readiness } = await readySnapshotAndState();
     const badEdition = { ...EDITION, adapter: "something-else" as never };
     expect(() => buildCatalogCandidate(badEdition, readiness, snapshot)).toThrow(
       CandidateValidationError,
     );
+  });
+
+  it("LOW: identity_coverage serializes as 1.0, not the bare integer 1 (pyFloat)", async () => {
+    const { snapshot, readiness } = await readySnapshotAndState();
+    const candidate = buildCatalogCandidate(EDITION, readiness, snapshot);
+    const sourceQuality = JSON.parse(candidate.sourceQualityBytes.toString("utf-8"));
+    expect(sourceQuality.identity_coverage).toBe(1);
+    expect(candidate.sourceQualityBytes.toString("utf-8")).toContain('"identity_coverage":1.0');
+  });
+
+  it("LOW: source_observed_at keeps 6-digit microseconds for a nonzero-millisecond timestamp", async () => {
+    const notes = [note("n1", "accept"), note("n2", "reject")];
+    const transport: StrictTransport = {
+      get: async () => ({
+        statusCode: 200,
+        content: Buffer.from(JSON.stringify({ notes, count: notes.length })),
+        requestCount: 1,
+      }),
+    };
+    const adapter = new OpenReviewV2Adapter({ transport });
+    const limits = makeFetchLimits();
+    const result = await adapter.collect(EDITION, limits);
+    if (result.kind !== "snapshot") throw new Error("expected a snapshot");
+    const snapshot = result.snapshot;
+
+    let state = initialState(EDITION);
+    const obs1 = observationFromDetection(EDITION, result, {
+      observedAt: new Date("2026-01-01T00:00:00.456Z"),
+      runId: "run-1",
+    });
+    state = reduceReadiness(state, obs1, EDITION).state;
+    const obs2 = observationFromDetection(EDITION, result, {
+      observedAt: new Date("2026-01-02T00:00:00.456Z"),
+      runId: "run-2",
+    });
+    const readiness = reduceReadiness(state, obs2, EDITION).state;
+
+    const candidate = buildCatalogCandidate(EDITION, readiness, snapshot);
+    expect(candidate.sourceObservedAt).toBe("2026-01-02T00:00:00.456000Z");
   });
 
   it("CNF-33: rejects a malformed nested edition value (min ratio > max ratio)", () => {

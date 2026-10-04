@@ -73,24 +73,179 @@ export interface DNSResolver {
   resolve(hostname: string, port: number, timeoutMs: number): Promise<string[]>;
 }
 
-/** Validates the system resolver actually returned public (not private/loopback/link-local) addresses. */
-function isPublicAddress(value: string): boolean {
-  if (isIPv4(value)) {
-    const octets = value.split(".").map(Number);
-    const a = octets[0] ?? 0;
-    const b = octets[1] ?? 0;
-    if (a === 10 || a === 127 || a === 0) return false;
-    if (a === 169 && b === 254) return false;
-    if (a === 172 && b >= 16 && b <= 31) return false;
-    if (a === 192 && b === 168) return false;
-    if (a >= 224) return false; // multicast/reserved
-    return true;
+// ---------------------------------------------------------------------------
+// isPublicAddress — exact port of CPython 3.12 `ipaddress.ip_address(value)
+// .is_global` (M6 of the P4 review). The original string-prefix check above
+// missed several IANA special-purpose ranges CNF-24 depends on for real
+// DNS-rebinding protection (100.64.0.0/10 shared address space, 198.18.0.0/15
+// benchmarking, the three TEST-NET blocks, 240.0.0.0/4 reserved, …) — ported
+// verbatim from `_IPv4Constants`/`_IPv6Constants` in
+// `.../lib/python3.12/ipaddress.py` rather than re-derived, since a
+// hand-rolled subset "fails no test" per the review (nothing exercised the
+// gap). IPv4-mapped IPv6 (`::ffff:a.b.c.d`) is checked FIRST against the
+// IPv4 rule, matching `IPv6Address.is_global`'s own `ipv4_mapped` delegation
+// (e.g. `::ffff:8.8.8.8` is global even though the whole `::ffff:0:0/96`
+// block is otherwise listed as IPv6-private).
+// ---------------------------------------------------------------------------
+
+interface CidrV4 {
+  base: number;
+  bits: number;
+}
+
+function ipv4ToInt(value: string): number {
+  const octets = value.split(".").map(Number);
+  return (
+    (((octets[0] ?? 0) << 24) |
+      ((octets[1] ?? 0) << 16) |
+      ((octets[2] ?? 0) << 8) |
+      (octets[3] ?? 0)) >>>
+    0
+  );
+}
+
+function cidrV4(cidr: string): CidrV4 {
+  const [ip, bitsStr] = cidr.split("/");
+  return { base: ipv4ToInt(ip as string), bits: Number(bitsStr) };
+}
+
+function ipv4InCidr(ip: number, cidr: CidrV4): boolean {
+  if (cidr.bits === 0) return true;
+  const mask = cidr.bits >= 32 ? 0xffffffff : (0xffffffff << (32 - cidr.bits)) >>> 0;
+  return (ip & mask) === (cidr.base & mask);
+}
+
+// `_IPv4Constants` (ipaddress.py): the IANA-special-purpose blocks that make
+// `is_private` true, and the two carve-outs (`_private_networks_exceptions`)
+// that make it false again within one of those blocks.
+const IPV4_PUBLIC_NETWORK = cidrV4("100.64.0.0/10"); // shared address space (CGN)
+const IPV4_PRIVATE_NETWORKS = [
+  "0.0.0.0/8",
+  "10.0.0.0/8",
+  "127.0.0.0/8",
+  "169.254.0.0/16",
+  "172.16.0.0/12",
+  "192.0.0.0/24",
+  "192.0.0.170/31",
+  "192.0.2.0/24",
+  "192.168.0.0/16",
+  "198.18.0.0/15",
+  "198.51.100.0/24",
+  "203.0.113.0/24",
+  "240.0.0.0/4",
+  "255.255.255.255/32",
+].map(cidrV4);
+const IPV4_PRIVATE_EXCEPTIONS = ["192.0.0.9/32", "192.0.0.10/32"].map(cidrV4);
+
+/** `IPv4Address.is_global`: `self not in public_network(100.64/10) and not is_private`. */
+function ipv4IsGlobal(ip: number): boolean {
+  if (ipv4InCidr(ip, IPV4_PUBLIC_NETWORK)) return false;
+  const isPrivate =
+    IPV4_PRIVATE_NETWORKS.some((n) => ipv4InCidr(ip, n)) &&
+    !IPV4_PRIVATE_EXCEPTIONS.some((n) => ipv4InCidr(ip, n));
+  return !isPrivate;
+}
+
+interface CidrV6 {
+  base: bigint;
+  bits: number;
+}
+
+/** Expand a (possibly `::`-compressed, possibly dotted-quad-tailed) IPv6 address to 8 hex groups. */
+function expandIPv6Groups(address: string): string[] {
+  const zoneless = address.split("%")[0] as string;
+  const parts = zoneless.split("::");
+  if (parts.length > 2) throw new Error(`not an IPv6 address: ${address}`);
+
+  const expandDottedTail = (groups: string[]): string[] => {
+    const last = groups[groups.length - 1];
+    if (!last?.includes(".")) return groups;
+    const octets = last.split(".").map(Number);
+    const hi = (((octets[0] ?? 0) << 8) | (octets[1] ?? 0)).toString(16);
+    const lo = (((octets[2] ?? 0) << 8) | (octets[3] ?? 0)).toString(16);
+    return [...groups.slice(0, -1), hi, lo];
+  };
+
+  const left = expandDottedTail((parts[0] ?? "").split(":").filter((g) => g !== ""));
+  if (parts.length === 1) return left;
+  const right = expandDottedTail((parts[1] ?? "").split(":").filter((g) => g !== ""));
+  const missing = 8 - (left.length + right.length);
+  if (missing < 0) throw new Error(`not an IPv6 address: ${address}`);
+  return [...left, ...Array(missing).fill("0"), ...right];
+}
+
+function ipv6ToBigInt(address: string): bigint {
+  const groups = expandIPv6Groups(address);
+  if (groups.length !== 8) throw new Error(`not an IPv6 address: ${address}`);
+  let value = 0n;
+  for (const g of groups) {
+    const n = Number.parseInt(g === "" ? "0" : g, 16);
+    if (Number.isNaN(n) || n < 0 || n > 0xffff) throw new Error(`not an IPv6 address: ${address}`);
+    value = (value << 16n) | BigInt(n);
   }
+  return value;
+}
+
+function cidrV6(cidr: string): CidrV6 {
+  const [addr, bitsStr] = cidr.split("/");
+  return { base: ipv6ToBigInt(addr as string), bits: Number(bitsStr) };
+}
+
+function ipv6InCidr(ip: bigint, cidr: CidrV6): boolean {
+  if (cidr.bits === 0) return true;
+  const shift = BigInt(128 - cidr.bits);
+  const fullMask = (1n << 128n) - 1n;
+  const mask = shift === 0n ? fullMask : fullMask ^ ((1n << shift) - 1n);
+  return (ip & mask) === (cidr.base & mask);
+}
+
+// `_IPv6Constants` (ipaddress.py). Note `fec0::/10` (deprecated RFC 3879
+// site-local) is deliberately ABSENT here, matching Python exactly — not an
+// oversight to "improve".
+const IPV6_PRIVATE_NETWORKS = [
+  "::1/128",
+  "::/128",
+  "::ffff:0:0/96",
+  "64:ff9b:1::/48",
+  "100::/64",
+  "2001::/23",
+  "2001:db8::/32",
+  "2002::/16",
+  "3fff::/20",
+  "fc00::/7",
+  "fe80::/10",
+].map(cidrV6);
+const IPV6_PRIVATE_EXCEPTIONS = [
+  "2001:1::1/128",
+  "2001:1::2/128",
+  "2001:3::/32",
+  "2001:4:112::/48",
+  "2001:20::/28",
+  "2001:30::/28",
+].map(cidrV6);
+const IPV4_MAPPED_PREFIX = cidrV6("::ffff:0:0/96");
+
+/** `IPv6Address.is_global`, including the `ipv4_mapped` delegation. */
+function ipv6IsGlobal(ip: bigint): boolean {
+  if (ipv6InCidr(ip, IPV4_MAPPED_PREFIX)) {
+    const mapped = Number(ip & 0xffffffffn) >>> 0;
+    return ipv4IsGlobal(mapped);
+  }
+  const isPrivate =
+    IPV6_PRIVATE_NETWORKS.some((n) => ipv6InCidr(ip, n)) &&
+    !IPV6_PRIVATE_EXCEPTIONS.some((n) => ipv6InCidr(ip, n));
+  return !isPrivate;
+}
+
+/** Validates the system resolver actually returned a globally-reachable address — exact port of `ipaddress.ip_address(value).is_global`, see module comment above. */
+export function isPublicAddress(value: string): boolean {
+  if (isIPv4(value)) return ipv4IsGlobal(ipv4ToInt(value));
   if (isIPv6(value)) {
-    const lower = value.toLowerCase();
-    if (lower === "::1" || lower === "::") return false;
-    if (lower.startsWith("fe80:") || lower.startsWith("fc") || lower.startsWith("fd")) return false;
-    return true;
+    try {
+      return ipv6IsGlobal(ipv6ToBigInt(value));
+    } catch {
+      return false;
+    }
   }
   return false;
 }
@@ -325,6 +480,47 @@ function isTimeout(e: unknown): boolean {
  * suite's own all-mocked `SecurePinnedTransport` tests) — kept minimal
  * and best-effort for real operator use.
  */
+/**
+ * A `net.connect`-compatible `lookup` callback that always resolves to
+ * `ipAddress`, regardless of what hostname/options it is asked to look up
+ * for — this is how the pin is enforced (M6 of the P4 review).
+ *
+ * Node's own "Happy Eyeballs" dual-stack connect (`autoSelectFamily`,
+ * default-on since Node 18.13 and unconditionally on by Node 22) calls
+ * `lookup(hostname, { ..., all: true }, callback)` and requires the
+ * callback to reply with an ARRAY of `{ address, family }` objects — the
+ * legacy single-address form `callback(err, address, family)` the
+ * original code always used is only valid when `all` is falsy. A lookup
+ * that ignores `opts.all` and always replies in the legacy shape is
+ * silently discarded by Node's dual-stack path, so the connection never
+ * actually pins to `ipAddress` (and, in practice, usually never connects
+ * at all) — this was untested because no test here opens a real socket.
+ */
+export function pinnedLookup(
+  ipAddress: string,
+): (
+  hostname: string,
+  options: unknown,
+  callback: (
+    err: NodeJS.ErrnoException | null,
+    address: string | { address: string; family: number }[],
+    family?: number,
+  ) => void,
+) => void {
+  const family = isIPv6(ipAddress) ? 6 : 4;
+  return (_hostname, options, callback) => {
+    const all =
+      typeof options === "object" &&
+      options !== null &&
+      (options as { all?: boolean }).all === true;
+    if (all) {
+      callback(null, [{ address: ipAddress, family }]);
+    } else {
+      callback(null, ipAddress, family);
+    }
+  };
+}
+
 export class NodeHttpsTransport implements RawTransport {
   readonly supportsIpPinning = true as const;
 
@@ -351,7 +547,7 @@ export class NodeHttpsTransport implements RawTransport {
           path: req.target,
           method: "GET",
           headers: req.headers,
-          lookup: (_hostname, _opts, cb) => cb(null, req.ipAddress, 4),
+          lookup: pinnedLookup(req.ipAddress),
           timeout: req.connectTimeoutMs,
         },
         (res) => {

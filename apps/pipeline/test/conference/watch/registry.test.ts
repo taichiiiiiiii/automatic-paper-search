@@ -103,6 +103,16 @@ describe("parseRegistry", () => {
     expect(() => parseRegistry(obj)).toThrow(RegistryError);
   });
 
+  it("CNF-26: rejects tracks.accepted_only = false (v1 requires accepted_only=true)", () => {
+    const obj = validRegistryObject();
+    (obj.venues as Record<string, unknown>[])[0]!.tracks = {
+      accepted_only: false,
+      accepted_decision_labels: ["accept", "reject"],
+      highlighted_labels: ["accept"],
+    };
+    expect(() => parseRegistry(obj)).toThrow(RegistryError);
+  });
+
   it("CNF-26: rejects scope widening (unsupported adapter)", () => {
     const obj = validRegistryObject();
     (obj.venues as Record<string, unknown>[])[0]!.adapter = "some-other-adapter";

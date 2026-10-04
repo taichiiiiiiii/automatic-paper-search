@@ -3,7 +3,7 @@
  * — TS port of `paperpilot/conference_watch/stability.py` (CNF-27/28/29).
  */
 
-import { pyJsonDumps } from "@paperpilot/core";
+import { pyIsoformat, pyJsonDumps } from "@paperpilot/core";
 import {
   type DetectionResult,
   type Edition,
@@ -15,8 +15,14 @@ import {
 } from "./models.js";
 import { STABLE_PROBE_COUNT } from "./registry.js";
 
+/**
+ * Port of the Python side's `value.isoformat().replace("+00:00", "Z")`.
+ * `pyIsoformat` keeps Python's microsecond-field rule — omitted entirely
+ * when the sub-second value is exactly 0, otherwise always a full 6-digit
+ * `.ffffff` — rather than JS's native 3-digit millisecond text.
+ */
 function isoTimestamp(value: Date): string {
-  return value.toISOString().replace(/\.000Z$/, "Z");
+  return pyIsoformat(value).replace("+00:00", "Z");
 }
 
 /** `public_dict(observation)` equivalent: the exact snake_case shape `conference-probe-observation-v1` requires. */

@@ -151,6 +151,53 @@ describe("OpenReviewV2Adapter (CNF-22/23)", () => {
     expect(result.kind).toBe("unavailable");
   });
 
+  it("CNF-22: a short page before the expected count is reached fails closed (SOURCE_PARTIAL)", async () => {
+    // count=4 promised; page 1 delivers a full page (2/2, count matches,
+    // not yet reached); page 2 comes back SHORT (1 note, less than
+    // pageSize) while still short of the expected total of 4 — this is a
+    // distinct branch from the "count drift" case above (the count never
+    // changes here).
+    let calls = 0;
+    const transport: StrictTransport = {
+      get: async () => {
+        calls += 1;
+        if (calls === 1) return okResponse([note("n1", "accept"), note("n2", "accept")], 4);
+        return okResponse([note("n3", "accept")], 4);
+      },
+    };
+    const adapter = new OpenReviewV2Adapter({ transport });
+    const result = await adapter.collect(EDITION, makeFetchLimits({ pageSize: 2 }));
+    expect(result.kind).toBe("error");
+    expect(result.errorCode).toBe("CONF_SOURCE_PARTIAL");
+  });
+
+  it("CNF-22: a response exceeding maxResponseBytes fails closed (SOURCE_PARTIAL)", async () => {
+    const bigNotes = [note("n1", "accept"), note("n2", "accept"), note("n3", "accept")];
+    const transport: StrictTransport = { get: async () => okResponse(bigNotes, bigNotes.length) };
+    const adapter = new OpenReviewV2Adapter({ transport });
+    const tinyLimits = makeFetchLimits({ pageSize: 100, maxResponseBytes: 10 });
+    const result = await adapter.collect(EDITION, tinyLimits);
+    expect(result.kind).toBe("error");
+    expect(result.errorCode).toBe("CONF_SOURCE_PARTIAL");
+  });
+
+  it("CNF-22: exhausting maxPages without ever confirming completion fails closed (SOURCE_PARTIAL, not !completed silently)", async () => {
+    // No `count` header at all, and every page comes back exactly
+    // pageSize-full, so the loop never gets a chance to decide the fetch
+    // is done — it just runs out of maxPages iterations.
+    const transport: StrictTransport = {
+      get: async () => ({
+        statusCode: 200,
+        content: Buffer.from(JSON.stringify({ notes: [note("n", "accept")] })), // no "count"
+        requestCount: 1,
+      }),
+    };
+    const adapter = new OpenReviewV2Adapter({ transport });
+    const result = await adapter.collect(EDITION, makeFetchLimits({ pageSize: 1, maxPages: 2 }));
+    expect(result.kind).toBe("error");
+    expect(result.errorCode).toBe("CONF_SOURCE_PARTIAL");
+  });
+
   it("CNF-22: a malformed (non-JSON) body is a typed parse error", async () => {
     const transport: StrictTransport = {
       get: async () => ({ statusCode: 200, content: Buffer.from("not json"), requestCount: 1 }),

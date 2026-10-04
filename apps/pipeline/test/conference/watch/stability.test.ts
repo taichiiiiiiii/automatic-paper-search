@@ -75,6 +75,28 @@ function snapshotWith(rows: NormalizedPaper[]): SourceSnapshot {
   };
 }
 
+describe("probeObservationToJson timestamp formatting (LOW — microseconds)", () => {
+  it("renders a nonzero-millisecond observedAt as 6-digit microseconds, not JS's native 3-digit ms", () => {
+    const snapshot = snapshotWith([makeRow("1"), makeRow("2")]);
+    const observation = observationFromDetection(
+      EDITION,
+      { kind: "snapshot", snapshot, errorCode: null },
+      { observedAt: new Date("2026-01-01T00:00:00.123Z"), runId: "run-1" },
+    );
+    expect(probeObservationToJson(observation).observed_at).toBe("2026-01-01T00:00:00.123000Z");
+  });
+
+  it("omits the fractional part entirely when observedAt has exactly zero milliseconds", () => {
+    const snapshot = snapshotWith([makeRow("1"), makeRow("2")]);
+    const observation = observationFromDetection(
+      EDITION,
+      { kind: "snapshot", snapshot, errorCode: null },
+      { observedAt: new Date("2026-01-01T00:00:00Z"), runId: "run-1" },
+    );
+    expect(probeObservationToJson(observation).observed_at).toBe("2026-01-01T00:00:00Z");
+  });
+});
+
 describe("observationFromDetection (CNF-27)", () => {
   it("validates against the real schema", () => {
     const snapshot = snapshotWith([makeRow("1"), makeRow("2"), makeRow("3")]);
@@ -202,6 +224,32 @@ describe("reduceReadiness (CNF-28/29)", () => {
     const r = reduceReadiness(published, shrunk, EDITION);
     expect(r.action).toBe("anomaly");
     expect(r.reason).toBe("CONF_COUNT_SHRINK");
+  });
+
+  it("CNF-28: a published source id removed (swapped out), even with the count unchanged, is an anomaly", () => {
+    const rows = [makeRow("1"), makeRow("2"), makeRow("4")]; // "3" replaced by "4"; still 3 rows
+    const published: ReturnType<typeof initialState> = {
+      ...initialState(EDITION),
+      phase: "published",
+      publishedFingerprint: "x".repeat(64),
+      publishedCount: 3,
+      publishedSourceIds: ["1", "2", "3"],
+    };
+    const swapped = okObservation(rows, new Date("2026-01-01T00:00:00Z"), "run-1");
+    const r = reduceReadiness(published, swapped, EDITION);
+    expect(r.action).toBe("anomaly");
+    expect(r.reason).toBe("CONF_IDENTITY_CONFLICT");
+  });
+
+  it("CNF-29: an observation timestamped BEFORE the last qualifying observation throws", () => {
+    const rows = [makeRow("1"), makeRow("2"), makeRow("3")];
+    let state = initialState(EDITION);
+    const obs1 = okObservation(rows, new Date("2026-01-02T00:00:00Z"), "run-1");
+    state = reduceReadiness(state, obs1, EDITION).state;
+    expect(state.phase).toBe("stabilizing");
+
+    const earlier = okObservation(rows, new Date("2026-01-01T00:00:00Z"), "run-2");
+    expect(() => reduceReadiness(state, earlier, EDITION)).toThrow(/backwards/);
   });
 
   it("CNF-28: an unchanged published snapshot is a no-op", () => {

@@ -14,7 +14,7 @@
  * difference, not a parity gap in the write behavior itself.
  */
 
-import { existsSync, mkdirSync, unlinkSync } from "node:fs";
+import { existsSync, mkdirSync, realpathSync, unlinkSync } from "node:fs";
 import * as path from "node:path";
 import { neutralizeRow } from "../../collect/exporters/csvSafety.js";
 import { atomicWriteText } from "../../collect/state/atomic.js";
@@ -47,6 +47,35 @@ export interface WriteOutputsDeps {
 
 function utcDateString(d: Date): string {
   return d.toISOString().slice(0, 10);
+}
+
+/**
+ * Python's `Path.resolve()` (`strict=False`, the default used by the
+ * original's `root.resolve()` / `out_dir.resolve()`): follow every
+ * symlink along the LONGEST EXISTING prefix of `p`, then append whatever
+ * trailing segments don't exist yet lexically (LOW: containment symlink
+ * resolution). `path.resolve()` alone is purely lexical — it never
+ * touches the filesystem — so a symlinked `outputRoot` (or an
+ * intermediate ancestor) could make the lexical containment check below
+ * pass while the directory `mkdirSync` actually creates (following the
+ * real symlink) lands outside `outputRoot` entirely.
+ */
+function resolveNonStrict(p: string): string {
+  let existing = path.resolve(p);
+  const pending: string[] = [];
+  while (!existsSync(existing)) {
+    const parent = path.dirname(existing);
+    if (parent === existing) break; // reached the filesystem root; give up resolving further
+    pending.unshift(path.basename(existing));
+    existing = parent;
+  }
+  let real: string;
+  try {
+    real = realpathSync(existing);
+  } catch {
+    real = existing;
+  }
+  return pending.length > 0 ? path.join(real, ...pending) : real;
 }
 
 function csvField(value: string): string {
@@ -91,8 +120,8 @@ export function writeOutputs(
   // makes traversal structurally impossible, but a resolve()-based
   // containment check costs nothing and protects against a future
   // loosening of that regex (mirrors the Python original).
-  const resolvedRoot = path.resolve(root);
-  const resolvedOutDir = path.resolve(outDir);
+  const resolvedRoot = resolveNonStrict(root);
+  const resolvedOutDir = resolveNonStrict(outDir);
   const withinRoot =
     resolvedRoot === resolvedOutDir || resolvedOutDir.startsWith(resolvedRoot + path.sep);
   if (!withinRoot) {

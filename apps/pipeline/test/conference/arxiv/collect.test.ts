@@ -68,6 +68,59 @@ describe("runCollectConferenceMain (CNF-11/12/13)", () => {
     expect(existsSync(join(outputRoot, "cvpr-2026"))).toBe(false);
   });
 
+  it("H3: refuses a fetch where page 2 reports a different totalResults than page 1, writes nothing", async () => {
+    // Page 1: totalResults=250, a full 100-entry page (pageSize default is
+    // 100) — so pagination continues to page 2 instead of stopping. Page 2:
+    // totalResults drifts to 150. The fetch must not keep paging against
+    // whichever total it last saw; it refuses the whole run instead.
+    const page1Entries = Array.from({ length: 100 }, (_, i) => ({
+      id: `http://arxiv.org/abs/2501.${String(i).padStart(5, "0")}`,
+      comment: "Accepted to CVPR 2026",
+    }));
+    const page2Entries = Array.from({ length: 100 }, (_, i) => ({
+      id: `http://arxiv.org/abs/2502.${String(i).padStart(5, "0")}`,
+      comment: "Accepted to CVPR 2026",
+    }));
+    const fetchText = async (url: string) => ({
+      status: 200,
+      text: async () =>
+        url.includes("start=0")
+          ? atomFeed({ entries: page1Entries, totalResults: 250 })
+          : atomFeed({ entries: page2Entries, totalResults: 150 }),
+    });
+    const code = await runCollectConferenceMain([...baseArgv, "--max", "1000"], {
+      arxiv: { fetchText },
+      outputRoot,
+    });
+    expect(code).toBe(1);
+    expect(existsSync(join(outputRoot, "cvpr-2026"))).toBe(false);
+  });
+
+  it("CNF-11: a well-formed feed with one skipped entry (missing <updated>) still refuses, writes nothing", async () => {
+    const goodEntry =
+      `<entry><id>http://arxiv.org/abs/2501.00001</id><updated>2025-01-01T00:00:00Z</updated>` +
+      `<published>2025-01-01T00:00:00Z</published><title>Good</title><summary>abs</summary>` +
+      `<author><name>A</name></author><arxiv:comment>Accepted to CVPR 2026</arxiv:comment></entry>`;
+    // Missing <updated> — buildEntry() skips this one (COL-01/06), but the
+    // page itself still parses as a well-formed Atom feed.
+    const skippedEntry =
+      `<entry><id>http://arxiv.org/abs/2501.00002</id>` +
+      `<published>2025-01-01T00:00:00Z</published><title>Skipped</title><summary>abs</summary>` +
+      `<author><name>A</name></author><arxiv:comment>Accepted to CVPR 2026</arxiv:comment></entry>`;
+    const feed =
+      `<?xml version="1.0" encoding="UTF-8"?><feed xmlns="http://www.w3.org/2005/Atom" xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom">` +
+      `<opensearch:totalResults>2</opensearch:totalResults><opensearch:startIndex>0</opensearch:startIndex>` +
+      goodEntry +
+      skippedEntry +
+      `</feed>`;
+    const code = await runCollectConferenceMain(baseArgv, {
+      arxiv: fixedFetch(feed),
+      outputRoot,
+    });
+    expect(code).toBe(1);
+    expect(existsSync(join(outputRoot, "cvpr-2026"))).toBe(false);
+  });
+
   it("CNF-12: refuses a fetch that filled the --max window, no override exists", async () => {
     const entries = Array.from({ length: 5 }, (_, i) => ({
       id: `http://arxiv.org/abs/2501.0000${i}`,

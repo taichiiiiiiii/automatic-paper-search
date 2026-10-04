@@ -17,7 +17,7 @@
  * orals (`../shared/arxivOral.ts::oralTitlesFromArxiv`).
  */
 
-import { XMLParser } from "fast-xml-parser";
+import { XMLParser, XMLValidator } from "fast-xml-parser";
 import {
   type ArxivFetchDeps,
   type ConferenceRow,
@@ -68,7 +68,113 @@ const xmlParser = new XMLParser({
   parseTagValue: false,
   parseAttributeValue: false,
   trimValues: false,
+  // Entity decoding is done ourselves (decodeXmlEntities below), with the
+  // exact semantics `ET.fromstring` (expat) uses — not fast-xml-parser's
+  // own (HTML-flavored, numeric-char-ref-skipping) default — so leave
+  // every `&...;` untouched here (H2/M8).
+  processEntities: false,
 });
+
+// ---------------------------------------------------------------------------
+// XML 1.0 (expat) entity decoding — H2/M8 of the P4 review.
+//
+// fast-xml-parser's validator (`XMLValidator.validate`, used in
+// `tryParseXml` below) catches malformed markup (unclosed/mismatched tags,
+// truncated documents, syntactically-broken numeric refs like `&#X49;`
+// with an uppercase `X`) but is lenient about an *undefined* named entity
+// like `&foo;` — real Python `ET.fromstring` (expat) rejects that as
+// not-well-formed. The decoder below reproduces expat's entity handling
+// exactly: only the five predefined XML entities, decimal (`&#NNN;`) and
+// lowercase-hex (`&#xHH;`) numeric references restricted to valid XML
+// `Char`s, and a bare `&` or any other named entity invalidates the whole
+// document (returns `null`) the same way a `ParseError` would — this is
+// NOT Python's `html.unescape` (HTML5 semantics, C1 remap, dropped
+// controls, case-insensitive `#x`/`#X`), which is a different, unrelated
+// port living in `../shared/pyText.ts` for CVF's HTML scraping.
+// ---------------------------------------------------------------------------
+
+const XML_PREDEFINED_ENTITIES: Readonly<Record<string, string>> = {
+  amp: "&",
+  lt: "<",
+  gt: ">",
+  quot: '"',
+  apos: "'",
+};
+
+/** XML 1.0 `Char` production: the code points expat allows a character reference to produce. */
+function isValidXmlChar(cp: number): boolean {
+  return (
+    cp === 0x9 ||
+    cp === 0xa ||
+    cp === 0xd ||
+    (cp >= 0x20 && cp <= 0xd7ff) ||
+    (cp >= 0xe000 && cp <= 0xfffd) ||
+    (cp >= 0x10000 && cp <= 0x10ffff)
+  );
+}
+
+const XML_ENTITY_OR_AMP_RE = /&([^;&]{0,64}?);|&/g;
+
+/**
+ * Decode exactly the entities `ET.fromstring` decodes, or return `null` if
+ * `text` contains anything expat would reject as not-well-formed: a bare
+ * `&`, an undefined named entity, a numeric reference using uppercase
+ * `X` (expat requires lowercase `x`) or landing outside the XML `Char`
+ * range (e.g. a lone surrogate or NUL).
+ */
+function decodeXmlEntities(text: string): string | null {
+  if (!text.includes("&")) return text;
+  let ok = true;
+  const decoded = text.replace(XML_ENTITY_OR_AMP_RE, (full: string, body?: string) => {
+    if (body === undefined) {
+      ok = false; // a bare "&" with no entity after it
+      return full;
+    }
+    const named = XML_PREDEFINED_ENTITIES[body];
+    if (named !== undefined) return named;
+    const decMatch = /^#([0-9]+)$/.exec(body);
+    const hexMatch = /^#x([0-9a-fA-F]+)$/.exec(body);
+    if (decMatch || hexMatch) {
+      const cp = decMatch
+        ? Number.parseInt(decMatch[1] as string, 10)
+        : Number.parseInt((hexMatch as RegExpExecArray)[1] as string, 16);
+      if (!isValidXmlChar(cp)) {
+        ok = false;
+        return full;
+      }
+      return String.fromCodePoint(cp);
+    }
+    ok = false; // undefined named entity (e.g. &foo;), or "&#X.." uppercase X
+    return full;
+  });
+  return ok ? decoded : null;
+}
+
+/** Decode entities in every `#text` leaf and attribute value of a preserveOrder tree, in place. Returns `false` (document unparseable) if any value fails {@link decodeXmlEntities}. */
+function decodeEntitiesInPlace(nodes: unknown): boolean {
+  if (!Array.isArray(nodes)) return true;
+  for (const node of nodes as PoNode[]) {
+    const attrs = node[":@"];
+    if (attrs) {
+      for (const key of Object.keys(attrs)) {
+        const decoded = decodeXmlEntities(attrs[key] as string);
+        if (decoded === null) return false;
+        attrs[key] = decoded;
+      }
+    }
+    for (const key of Object.keys(node)) {
+      if (key === ":@") continue;
+      if (key === "#text") {
+        const decoded = decodeXmlEntities(String(node[key]));
+        if (decoded === null) return false;
+        node[key] = decoded;
+      } else if (!decodeEntitiesInPlace(node[key])) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
 
 function poAttr(node: PoNode, name: string): string | null {
   const attrs = node[":@"];
@@ -136,9 +242,20 @@ function authorName(authorNode: PoNode): string {
   return [first, last].filter(Boolean).join(" ");
 }
 
+/**
+ * Parse `xmlText` into a preserveOrder tree, or `null` if it is not
+ * well-formed — same outcome as Python's `ET.fromstring` raising
+ * `ParseError` (H2: fast-xml-parser's own `.parse()` does NOT reject a
+ * truncated document, a mismatched closing tag, or an undefined entity on
+ * its own, so both `XMLValidator.validate` (markup well-formedness) and
+ * `decodeEntitiesInPlace` (entity well-formedness, M8) must pass).
+ */
 function tryParseXml(xmlText: string): PoNode[] | null {
+  if (XMLValidator.validate(xmlText) !== true) return null;
   try {
-    return xmlParser.parse(xmlText) as PoNode[];
+    const root = xmlParser.parse(xmlText) as PoNode[];
+    if (!decodeEntitiesInPlace(root)) return null;
+    return root;
   } catch {
     return null;
   }

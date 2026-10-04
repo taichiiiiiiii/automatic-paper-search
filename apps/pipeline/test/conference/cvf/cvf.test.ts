@@ -105,6 +105,30 @@ describe("fetchListing (CNF-03)", () => {
 });
 
 describe("collect (CNF-03)", () => {
+  it("LOW: rejects --max-workers 0 instead of silently running 1 worker", async () => {
+    const fetchImpl = fakeFetch(LISTING, DETAIL);
+    await expect(
+      collect(
+        "CVPR2025",
+        "CVPR",
+        { fetchImpl, ...NO_SLEEP },
+        { maxWorkers: 0, delaySeconds: 0, logger: { warn: () => {} } },
+      ),
+    ).rejects.toThrow(RangeError);
+  });
+
+  it("LOW: rejects a negative --max-workers too", async () => {
+    const fetchImpl = fakeFetch(LISTING, DETAIL);
+    await expect(
+      collect(
+        "CVPR2025",
+        "CVPR",
+        { fetchImpl, ...NO_SLEEP },
+        { maxWorkers: -1, delaySeconds: 0, logger: { warn: () => {} } },
+      ),
+    ).rejects.toThrow(RangeError);
+  });
+
   it("end-to-end: two distinct detail pages dedup to two rows", async () => {
     const fetchImpl = fakeFetch(LISTING, DETAIL);
     const { rows, complete } = await collect(
@@ -205,6 +229,28 @@ describe("runCvfMain (CNF-03 / CNF-04)", () => {
       text: async () => "",
       json: async () => ({}),
     }));
+    const rc = await runCvfMain(
+      ["--conference", "cvpr-2025", "--venue", "CVPR", "--cvf-id", "CVPR2025"],
+      {
+        outputRoot: tmp,
+        cvf: { fetchImpl, ...NO_SLEEP },
+        arxiv: { fetchText: vi.fn() },
+        print: () => {},
+      },
+    );
+    expect(rc).toBe(1);
+    expect(existsSync(join(tmp, "cvpr-2025"))).toBe(false);
+  });
+
+  it("CNF-04: a COMPLETE fetch that legitimately found zero papers exits 1 and writes nothing", async () => {
+    // The listing itself is readable (complete=true) but carries no
+    // detail links at all — e.g. a typo'd --cvf-id for a real but empty
+    // CVF year page. Distinct from the "incomplete fetch" case above.
+    const fetchImpl = vi.fn(async (url: string) =>
+      url.endsWith("?day=all")
+        ? { status: 200, text: async () => "<html>no papers here</html>", json: async () => ({}) }
+        : { status: 500, text: async () => "", json: async () => ({}) },
+    );
     const rc = await runCvfMain(
       ["--conference", "cvpr-2025", "--venue", "CVPR", "--cvf-id", "CVPR2025"],
       {

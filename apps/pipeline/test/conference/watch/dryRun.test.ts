@@ -213,6 +213,62 @@ describe("buildCatalogUpdateDryRun (CNF-34)", () => {
     void candidate;
   });
 
+  it("CNF-34: missing full details is INDETERMINATE even when the preview catalog bytes already match (not no_change)", async () => {
+    let state = initialState(EDITION);
+    const notes = [note("n1", "accept")];
+    const transport: StrictTransport = {
+      get: async () => ({
+        statusCode: 200,
+        content: Buffer.from(JSON.stringify({ notes, count: notes.length })),
+        requestCount: 1,
+      }),
+    };
+    const adapter = new OpenReviewV2Adapter({ transport });
+    const result = await adapter.collect(EDITION, makeFetchLimits());
+    if (result.kind !== "snapshot") throw new Error("expected snapshot");
+    const obs1 = observationFromDetection(EDITION, result, {
+      observedAt: new Date("2026-01-01T00:00:00Z"),
+      runId: "run-1",
+    });
+    state = reduceReadiness(state, obs1, EDITION).state;
+    const obs2 = observationFromDetection(EDITION, result, {
+      observedAt: new Date("2026-01-02T00:00:00Z"),
+      runId: "run-2",
+    });
+    state = reduceReadiness(state, obs2, EDITION).state;
+
+    // A throwaway baseline just to extract candidateCatalogBytes — its
+    // own content doesn't matter (it's independent of currentCatalogBytes).
+    const dummyRow = {
+      title: "Dummy",
+      type: "Poster",
+      tags: [],
+      venue: "ICLR 2026",
+      authors: ["X"],
+      arxiv_url: "https://openreview.net/forum?id=dummy",
+      pdf_url: "https://openreview.net/pdf?id=dummy",
+      abstract: "",
+      arxiv_id: "",
+      citation_count: null,
+      venue_tier: null,
+      github_stars: null,
+      paper_id: makePaperId("openreview", "dummy"),
+      source: "openreview",
+      source_id: "dummy",
+    };
+    const probe = buildCatalogUpdateDryRun(EDITION, state, result.snapshot, {
+      currentCatalogBytes: Buffer.from(JSON.stringify([dummyRow])),
+    });
+
+    // Now the "current" catalog IS byte-identical to the candidate's own
+    // preview bytes, and no currentDetailsBytes is supplied — a naive
+    // "bytes match -> no_change" would wrongly report no_change here.
+    const dryRun = buildCatalogUpdateDryRun(EDITION, state, result.snapshot, {
+      currentCatalogBytes: probe.candidateCatalogBytes,
+    });
+    expect(dryRun.outcome).toBe("indeterminate");
+  });
+
   it("is a pure function: calling it twice with the same inputs returns byte-identical reports", async () => {
     let state = initialState(EDITION);
     const notes = [note("n1", "accept")];

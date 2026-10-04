@@ -9,19 +9,38 @@ import {
   mkdtempSync,
   readdirSync,
   readFileSync,
+  symlinkSync,
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { InvalidConferenceSlugError } from "../../../src/conference/shared/conferenceSlug.js";
 import { type ConferenceRow, CSV_COLUMNS } from "../../../src/conference/shared/csvColumns.js";
 import { writeOutputs } from "../../../src/conference/shared/writeOutputs.js";
 import { IdentityError } from "../../../src/release/identity/sourceIds.js";
 
+// CNF-19 "atomic write" mutant check: wraps the real `atomicWriteText` so
+// the file still actually gets written (every other test's assertions
+// stay valid), but records every call — the mutant this guards against is
+// `writeOutputs` switching to a direct `fs.writeFileSync` (which would
+// never call this wrapper at all, so `atomicWriteCalls` would stay empty).
+const atomicWriteCalls: string[] = [];
+vi.mock("../../../src/collect/state/atomic.js", async (importOriginal) => {
+  const real = await importOriginal<typeof import("../../../src/collect/state/atomic.js")>();
+  return {
+    ...real,
+    atomicWriteText: (path: string, text: string, options?: unknown) => {
+      atomicWriteCalls.push(path);
+      return real.atomicWriteText(path, text, options as never);
+    },
+  };
+});
+
 let tmp: string;
 beforeEach(() => {
   tmp = mkdtempSync(join(tmpdir(), "write-outputs-"));
+  atomicWriteCalls.length = 0;
 });
 
 /** Minimal CSV parser for test assertions (no quoted-comma fields in these fixtures). */
@@ -196,11 +215,33 @@ describe("writeOutputs: CNF-17 path traversal / slug validation", () => {
       ).toThrow(InvalidConferenceSlugError);
     }
   });
+
+  it("LOW: rejects a slug-shaped conference dir that is actually a symlink escaping outputRoot", () => {
+    // The slug itself is perfectly valid ("escaped-conf" passes
+    // validateConferenceSlug), so this is NOT the regex-level traversal
+    // case above — it's a symlink planted at the join()'d path itself.
+    // A purely lexical path.resolve()-based containment check cannot see
+    // this: it never touches the filesystem, so it sees
+    // "<tmp>/escaped-conf" as textually "within" <tmp> regardless of what
+    // that path actually resolves to on disk.
+    const outside = mkdtempSync(join(tmpdir(), "write-outputs-outside-"));
+    symlinkSync(outside, join(tmp, "escaped-conf"));
+    expect(() =>
+      writeOutputs("escaped-conf", [openreviewRow()], [], { outputRoot: tmp, date: "2026-06-28" }),
+    ).toThrow(/escapes/);
+    // Nothing was written into the symlink target either.
+    expect(existsSync(join(outside, "papers_2026-06-28.csv"))).toBe(false);
+  });
 });
 
 describe("writeOutputs: CNF-18 identity consistency", () => {
-  it("throws IdentityError when source is declared without source_id (or vice versa)", () => {
+  it("throws IdentityError when source is declared without source_id", () => {
     const row = openreviewRow({ source: "openreview" }); // source_id missing
+    expect(() => writeOutputs("iclr-2025", [row], [], { outputRoot: tmp })).toThrow(IdentityError);
+  });
+
+  it("CNF-18: throws IdentityError when source_id is declared without source (the OTHER half of the pair check)", () => {
+    const row = openreviewRow({ source_id: "abc123" }); // source missing
     expect(() => writeOutputs("iclr-2025", [row], [], { outputRoot: tmp })).toThrow(IdentityError);
   });
 
@@ -247,6 +288,17 @@ describe("writeOutputs: CNF-19 atomic write + formula neutralization", () => {
     const rows = parseCsv(readFileSync(csvPath, "utf-8"));
     expect(rows[0]!.title).toBe("Retrieval-Augmented Generation for Knowledge Tasks");
     expect(rows[0]!.abstract).toBe("We propose a method.");
+  });
+
+  it("CNF-19: both the CSV and the oral md go through atomicWriteText, not a direct writeFileSync", () => {
+    const csvPath = writeOutputs("cvpr-2026", [openreviewRow()], ["Some Oral"], {
+      outputRoot: tmp,
+      date: "2026-09-26",
+    });
+    const oralMdPath = join(tmp, "cvpr-2026", "oral_summaries_ja.md");
+    expect(atomicWriteCalls).toContain(csvPath);
+    expect(atomicWriteCalls).toContain(oralMdPath);
+    expect(atomicWriteCalls.length).toBe(2);
   });
 });
 

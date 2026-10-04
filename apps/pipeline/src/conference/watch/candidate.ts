@@ -8,6 +8,7 @@
  */
 
 import { createHash } from "node:crypto";
+import { pyFloat, pyIsoformat } from "@paperpilot/core";
 import { classifyTags } from "../../catalog/buildSummary.js";
 import { neutralizeRow } from "../../collect/exporters/csvSafety.js";
 import { IdentityError, identityFromUrl, makePaperId } from "../../release/identity/sourceIds.js";
@@ -156,8 +157,14 @@ function utc(value: unknown, field: string): Date {
   return value;
 }
 
+/**
+ * `_timestamp` port: `value.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")`.
+ * `pyIsoformat` keeps Python's microsecond-field rule — omitted entirely
+ * when the sub-second value is exactly 0, otherwise always a full 6-digit
+ * `.ffffff` — rather than JS's native 3-digit millisecond text.
+ */
 function timestamp(value: Date): string {
-  return value.toISOString().replace(/\.000Z$/, "Z");
+  return pyIsoformat(value).replace("+00:00", "Z");
 }
 
 function jsonBytes(value: unknown): Buffer {
@@ -619,7 +626,7 @@ export function buildCatalogCandidate(
     accepted_count: snapshot.rows.length,
     projected_count: rows.length,
     identity_resolved_count: rows.length,
-    identity_coverage: 1.0,
+    identity_coverage: pyFloat(1),
     duplicate_title_count: duplicateTitles,
     unknown_decision_count: unknownDecisions.reduce((sum, [, n]) => sum + n, 0),
     unknown_decisions: unknownDecisions.map(([label, n]) => [label, n]),

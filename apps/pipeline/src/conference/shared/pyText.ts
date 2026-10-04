@@ -206,16 +206,37 @@ const C1_NUMERIC_SUBSTITUTIONS: Readonly<Record<number, number>> = {
   159: 0x0178,
 };
 
+/**
+ * HTML5's `_invalid_codepoints` (`cpython/Lib/html/__init__.py`): numeric
+ * references that land here are DROPPED (replaced with `""`) rather than
+ * passed through as the literal code point. Checked only after the C1
+ * substitution table and the surrogate/out-of-range `U+FFFD` fallback
+ * above, same order CPython's `_replace_charref` uses.
+ */
+const DROPPED_NUMERIC_REF_CODEPOINTS: ReadonlySet<number> = new Set([
+  0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0xb, 0xe, 0xf, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16,
+  0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0x7f, 0xfdd0, 0xfdd1, 0xfdd2, 0xfdd3,
+  0xfdd4, 0xfdd5, 0xfdd6, 0xfdd7, 0xfdd8, 0xfdd9, 0xfdda, 0xfddb, 0xfddc, 0xfddd, 0xfdde, 0xfddf,
+  0xfde0, 0xfde1, 0xfde2, 0xfde3, 0xfde4, 0xfde5, 0xfde6, 0xfde7, 0xfde8, 0xfde9, 0xfdea, 0xfdeb,
+  0xfdec, 0xfded, 0xfdee, 0xfdef, 0xfffe, 0xffff, 0x1fffe, 0x1ffff, 0x2fffe, 0x2ffff, 0x3fffe,
+  0x3ffff, 0x4fffe, 0x4ffff, 0x5fffe, 0x5ffff, 0x6fffe, 0x6ffff, 0x7fffe, 0x7ffff, 0x8fffe, 0x8ffff,
+  0x9fffe, 0x9ffff, 0xafffe, 0xaffff, 0xbfffe, 0xbffff, 0xcfffe, 0xcffff, 0xdfffe, 0xdffff, 0xefffe,
+  0xeffff, 0xffffe, 0xfffff, 0x10fffe, 0x10ffff,
+]);
+
 function numericRefToChar(codepoint: number): string {
   const mapped = C1_NUMERIC_SUBSTITUTIONS[codepoint];
   if (mapped !== undefined) return String.fromCodePoint(mapped);
   if (codepoint === 0x00 || (codepoint >= 0xd800 && codepoint <= 0xdfff) || codepoint > 0x10ffff) {
     return "�";
   }
+  if (DROPPED_NUMERIC_REF_CODEPOINTS.has(codepoint)) return "";
   return String.fromCodePoint(codepoint);
 }
 
-const ENTITY_RE = /&(#x[0-9a-fA-F]+|#[0-9]+|[a-zA-Z][a-zA-Z0-9]*);/g;
+// `#x` / `#X` (case-insensitive, per CPython's `if s[1] in 'xX'`) for hex,
+// `#` + digits for decimal, else a bare name.
+const ENTITY_RE = /&(#[xX][0-9a-fA-F]+|#[0-9]+|[a-zA-Z][a-zA-Z0-9]*);/g;
 
 /** Documented partial port of Python's `html.unescape` — see module doc above. */
 export function htmlUnescape(text: string): string {
