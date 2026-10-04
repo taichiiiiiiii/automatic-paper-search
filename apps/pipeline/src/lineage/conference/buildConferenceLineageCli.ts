@@ -9,6 +9,8 @@ import { pyJsonDumps } from "@paperpilot/core";
 import { validateConferenceSlug } from "../../catalog/slug.js";
 import type { FetchInit, HttpResponseLike } from "../../collect/http/requestWithRetry.js";
 import { atomicWriteText } from "../../collect/state/atomic.js";
+import { parseArgs as parseFlags } from "../../shared/cli/argparse.js";
+import { isMain } from "../../shared/cli/isMain.js";
 import { requireValidLineageArtifact } from "../contract/v1.js";
 import { BuildCompleteness, expansionGateBlocks } from "../fetch-state/completeness.js";
 import { buildGraph, loadOrals, type OpenAlexDeps } from "./buildConferenceLineage.js";
@@ -27,44 +29,31 @@ export interface BuildConferenceLineageCliArgs {
   allowIncomplete: boolean;
 }
 
+/**
+ * M3 of the P4 review: mirrors `build_conference_lineage.py`'s argparse
+ * flags through the shared strict parser instead of a hand-rolled
+ * `switch` (which silently became `NaN` for a bad `--max-orals`/`--refs`/
+ * `--citers` via `Number(argv[++i])`).
+ */
 export function parseArgs(argv: readonly string[]): BuildConferenceLineageCliArgs {
-  let conference: string | undefined;
-  let display: string | null = null;
-  let maxOrals = 20;
-  let refs = 4;
-  let citers = 2;
-  let email: string | null = null;
-  let allowIncomplete = false;
-  for (let i = 0; i < argv.length; i++) {
-    const tok = argv[i];
-    switch (tok) {
-      case "--conference":
-        conference = argv[++i];
-        break;
-      case "--display":
-        display = argv[++i] as string;
-        break;
-      case "--max-orals":
-        maxOrals = Number(argv[++i]);
-        break;
-      case "--refs":
-        refs = Number(argv[++i]);
-        break;
-      case "--citers":
-        citers = Number(argv[++i]);
-        break;
-      case "--email":
-        email = argv[++i] as string;
-        break;
-      case "--allow-incomplete":
-        allowIncomplete = true;
-        break;
-      default:
-        throw new Error(`unrecognized argument: ${tok}`);
-    }
-  }
-  if (conference === undefined) throw new Error("--conference is required");
-  return { conference, display, maxOrals, refs, citers, email, allowIncomplete };
+  const parsed = parseFlags(argv, {
+    conference: { type: "string", required: true },
+    display: { type: "string" },
+    "max-orals": { type: "int", default: 20 },
+    refs: { type: "int", default: 4 },
+    citers: { type: "int", default: 2 },
+    email: { type: "string" },
+    "allow-incomplete": { type: "boolean" },
+  });
+  return {
+    conference: parsed.conference as string,
+    display: (parsed.display as string | undefined) ?? null,
+    maxOrals: parsed["max-orals"] as number,
+    refs: parsed.refs as number,
+    citers: parsed.citers as number,
+    email: (parsed.email as string | undefined) ?? null,
+    allowIncomplete: parsed["allow-incomplete"] as boolean,
+  };
 }
 
 export async function runBuildConferenceLineageCli(
@@ -163,10 +152,19 @@ export function defaultFetchImpl(
   };
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
-  runBuildConferenceLineageCli(parseArgs(process.argv.slice(2)), {
-    fetchImpl: defaultFetchImpl(),
-  }).then((code) => {
-    process.exitCode = code;
-  });
+if (isMain(import.meta.url)) {
+  let parsed: BuildConferenceLineageCliArgs | undefined;
+  try {
+    parsed = parseArgs(process.argv.slice(2));
+  } catch (e) {
+    process.stderr.write(`error: ${(e as Error).message}\n`);
+    process.exitCode = 2;
+  }
+  if (parsed !== undefined) {
+    runBuildConferenceLineageCli(parsed, {
+      fetchImpl: defaultFetchImpl(),
+    }).then((code) => {
+      process.exitCode = code;
+    });
+  }
 }

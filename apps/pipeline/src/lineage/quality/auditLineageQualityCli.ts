@@ -6,6 +6,8 @@
 import { readFileSync } from "node:fs";
 import { basename, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { CliUsageError, parseArgs as parseFlags } from "../../shared/cli/argparse.js";
+import { isMain } from "../../shared/cli/isMain.js";
 import {
   auditLineage,
   collectTargets,
@@ -24,22 +26,29 @@ export interface AuditLineageQualityCliArgs {
   themesOnly: boolean;
 }
 
+/**
+ * M3 of the P4 review: mirrors `audit_lineage_quality.py`'s argparse
+ * flags (`--min-year`, `--include-themes`, `--themes-only`) through the
+ * shared strict parser; `--docs-dir` is a TS-only test seam (Python
+ * hardcodes `DOCS_ROOT`). The old hand-rolled `if`/`else if` chain
+ * silently ignored any other flag and let `--min-year x` become `NaN`.
+ */
 export function parseArgs(
   argv: readonly string[],
   repoRoot: string = DEFAULT_REPO_ROOT,
 ): AuditLineageQualityCliArgs {
-  let docsDir = resolve(repoRoot, "docs");
-  let minYear: number | null = null;
-  let includeThemes = false;
-  let themesOnly = false;
-  for (let i = 0; i < argv.length; i++) {
-    const tok = argv[i];
-    if (tok === "--min-year") minYear = Number(argv[++i]);
-    else if (tok === "--include-themes") includeThemes = true;
-    else if (tok === "--themes-only") themesOnly = true;
-    else if (tok === "--docs-dir") docsDir = argv[++i] as string;
-  }
-  return { docsDir, minYear, includeThemes, themesOnly };
+  const parsed = parseFlags(argv, {
+    "min-year": { type: "int" },
+    "include-themes": { type: "boolean" },
+    "themes-only": { type: "boolean" },
+    "docs-dir": { type: "string", default: resolve(repoRoot, "docs") },
+  });
+  return {
+    docsDir: parsed["docs-dir"] as string,
+    minYear: (parsed["min-year"] as number | undefined) ?? null,
+    includeThemes: parsed["include-themes"] as boolean,
+    themesOnly: parsed["themes-only"] as boolean,
+  };
 }
 
 function isThemePath(path: string): boolean {
@@ -113,6 +122,15 @@ export function runAuditLineageQualityCli(args: AuditLineageQualityCliArgs): num
   return 0;
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
-  process.exitCode = runAuditLineageQualityCli(parseArgs(process.argv.slice(2)));
+if (isMain(import.meta.url)) {
+  try {
+    process.exitCode = runAuditLineageQualityCli(parseArgs(process.argv.slice(2)));
+  } catch (e) {
+    if (e instanceof CliUsageError) {
+      process.stderr.write(`error: ${e.message}\n`);
+      process.exitCode = 2;
+    } else {
+      throw e;
+    }
+  }
 }

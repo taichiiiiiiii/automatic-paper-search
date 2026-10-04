@@ -18,6 +18,7 @@
  */
 
 import { appendFileSync } from "node:fs";
+import { isMain } from "../shared/cli/isMain.js";
 import { commitAndPush } from "./commitAndPush.js";
 import { createGitAdapter } from "./git/gitAdapter.js";
 import { packageCandidate } from "./packageCandidate.js";
@@ -27,6 +28,27 @@ import { smokeRemote, validateLocal } from "./validateRelease.js";
 function die(message: string): never {
   console.error(`::error::${message}`);
   process.exit(1);
+}
+
+/**
+ * M3 of the P4 review: validates an optional positive-integer env var
+ * the same way `promote-generated.sh` validates `PROMOTE_MAX_ATTEMPTS`
+ * (`[[ "$max_attempts" =~ ^[1-9][0-9]*$ ]] || die ...`) — no leading
+ * zero, no sign, no decimal, at least 1. `commit-and-push.sh` never
+ * actually validates `COMMIT_PUSH_MAX_ATTEMPTS` at all (it's used
+ * unchecked in a bash `for` loop), but an unvalidated attempt count that
+ * reaches `commitAndPush`/`promote` as `0`/negative/`NaN` would silently
+ * skip every retry or loop forever depending on the caller, so this
+ * applies the same regex to both env vars rather than reproducing that
+ * gap.
+ */
+function positiveIntEnv(name: string): number | undefined {
+  const raw = process.env[name];
+  if (raw === undefined || raw === "") return undefined;
+  if (!/^[1-9][0-9]*$/.test(raw)) {
+    die(`${name} must be positive`);
+  }
+  return Number.parseInt(raw, 10);
 }
 
 function emitPromoteOutputs(sourceSha: string, changed: boolean): void {
@@ -60,9 +82,7 @@ async function runPromote(args: string[]): Promise<void> {
     cwd: process.cwd(),
     promoteAsOf: process.env.PROMOTE_AS_OF,
     promoteBaseSha: process.env.PROMOTE_BASE_SHA,
-    promoteMaxAttempts: process.env.PROMOTE_MAX_ATTEMPTS
-      ? Number.parseInt(process.env.PROMOTE_MAX_ATTEMPTS, 10)
-      : undefined,
+    promoteMaxAttempts: positiveIntEnv("PROMOTE_MAX_ATTEMPTS"),
     promoteNoSleep: process.env.PROMOTE_NO_SLEEP === "1",
     promotionTestMode: process.env.PAPERPILOT_PROMOTION_TEST_MODE === "1",
   });
@@ -93,6 +113,32 @@ function extractRepoRootOverride(argv: readonly string[]): { rest: string[]; rep
   return { rest, repoRoot: repoRoot ?? process.cwd() };
 }
 
+/**
+ * M3: `package-generated-candidate.sh` requires the exact string `"0"`
+ * or `"1"` (`[[ "$snapshot_mode" == "0" || "$snapshot_mode" == "1" ]] ||
+ * die ...`) — anything else (e.g. `"true"`, `"2"`, a typo) dies, it does
+ * not silently fall back to `false` the way `=== "1"` alone would.
+ */
+function packageIncludeUnchangedEnv(): boolean {
+  const raw = process.env.PAPERPILOT_PACKAGE_INCLUDE_UNCHANGED;
+  if (raw === undefined || raw === "0") return false;
+  if (raw === "1") return true;
+  die("PAPERPILOT_PACKAGE_INCLUDE_UNCHANGED must be 0 or 1");
+}
+
+/**
+ * M3: `commit-and-push.sh` substitutes the default with `${COMMIT_PUSH_BRANCH:-develop}`,
+ * which falls back on an EMPTY value too, not just an unset one — unlike
+ * the `options.branch ?? "develop"` `??` in `commitAndPush.ts`, which
+ * only falls back when the property is `undefined`. An explicitly empty
+ * `COMMIT_PUSH_BRANCH=""` would otherwise reach `commitAndPush` as `""`
+ * and build a bogus `origin/` ref instead of defaulting to `develop`.
+ */
+function commitPushBranchEnv(): string | undefined {
+  const raw = process.env.COMMIT_PUSH_BRANCH;
+  return raw === undefined || raw === "" ? undefined : raw;
+}
+
 async function runPackage(args: string[]): Promise<void> {
   const { rest, repoRoot } = extractRepoRootOverride(args);
   if (rest.length < 2) {
@@ -105,7 +151,7 @@ async function runPackage(args: string[]): Promise<void> {
     includedPaths,
     git,
     repoRoot,
-    snapshotMode: process.env.PAPERPILOT_PACKAGE_INCLUDE_UNCHANGED === "1",
+    snapshotMode: packageIncludeUnchangedEnv(),
   });
   console.log(`packaged ${result.copied} generated file(s) in ${candidateDir}`);
 }
@@ -121,10 +167,8 @@ async function runCommitPush(args: string[]): Promise<void> {
     stagePaths,
     git,
     cwd: process.cwd(),
-    branch: process.env.COMMIT_PUSH_BRANCH,
-    maxAttempts: process.env.COMMIT_PUSH_MAX_ATTEMPTS
-      ? Number.parseInt(process.env.COMMIT_PUSH_MAX_ATTEMPTS, 10)
-      : undefined,
+    branch: commitPushBranchEnv(),
+    maxAttempts: positiveIntEnv("COMMIT_PUSH_MAX_ATTEMPTS"),
     noSleep: process.env.COMMIT_PUSH_NO_SLEEP === "1",
   });
   if (outcome.status === "noop") {
@@ -184,8 +228,6 @@ async function main(): Promise<void> {
   }
 }
 
-const isMainModule =
-  process.argv[1]?.endsWith("release/cli.ts") || process.argv[1]?.endsWith("release/cli.js");
-if (isMainModule) {
+if (isMain(import.meta.url)) {
   void main();
 }

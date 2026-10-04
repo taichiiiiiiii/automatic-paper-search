@@ -88,6 +88,29 @@ it("test_cli_days_override", async () => {
   expect(builtConfigs[0]?.search?.days_back).toBe(3);
 });
 
+// M3 of the P4 review: the shared parser's unique-prefix abbreviation
+// (argparse's `allow_abbrev=True` default) — `--fail-on-error` is a
+// prefix of only `--fail-on-errors`, so it must resolve the same way the
+// fully-spelled flag does.
+it("--fail-on-error (unambiguous prefix) resolves to --fail-on-errors", async () => {
+  const configPath = writeConfig();
+  const { rc, builtConfigs } = await runMain(["--config", configPath, "--fail-on-error"], {
+    result: fakeResult({ sourcesStatus: { arxiv: { ok: false, count: 0, error: "boom" } } }),
+  });
+  expect(builtConfigs.length).toBe(1);
+  expect(rc).toBe(1); // failureExitCode path only runs when --fail-on-errors was actually set
+});
+
+// M3: `--days` is `type=int` in collector.py; a non-numeric value must
+// exit 2 (CliUsageError), not silently become NaN the way the old
+// `Number(argv[++i])` did.
+it("--days x (non-integer) exits 2 without building a config/runner", async () => {
+  const configPath = writeConfig();
+  const { rc, builtConfigs } = await runMain(["--config", configPath, "--days", "x"]);
+  expect(rc).toBe(2);
+  expect(builtConfigs.length).toBe(0);
+});
+
 it("test_cli_keyword_append", async () => {
   const configPath = writeConfig();
   const { builtConfigs } = await runMain([

@@ -13,6 +13,7 @@ import type {
   RelationClassification,
 } from "../../../src/collect/llm/provider.js";
 import {
+  defaultDeps,
   parseArgs,
   type RunBuildDeepLineageCliDeps,
   runBuildDeepLineageCli,
@@ -178,5 +179,33 @@ describe("runBuildDeepLineageCli", () => {
       ),
     ).rejects.toThrow(/arXiv identity does not match/);
     expect(buildProviderSpy).not.toHaveBeenCalled();
+  });
+});
+
+// M2 of the P4 review: this CLI file used to have NO entry block at all
+// (importing/running it did nothing). `defaultDeps` is the real
+// `buildProvider`/`fetchImpl`/`cacheDir` wiring the new entry block uses.
+describe("defaultDeps (real entry-point wiring, M2)", () => {
+  it("constructs real fetchImpl/cacheDir/sleep/buildProvider deps without touching the network", () => {
+    const repoRoot = mkdtempSync(join(tmpdir(), "build-deep-lineage-defaultdeps-"));
+    try {
+      const deps = defaultDeps(repoRoot);
+      expect(typeof deps.fetchImpl).toBe("function");
+      expect(typeof deps.sleep).toBe("function");
+      expect(typeof deps.buildProvider).toBe("function");
+      expect(deps.cacheDir).toContain("lineage-cache");
+    } finally {
+      rmSync(repoRoot, { recursive: true, force: true });
+    }
+  });
+
+  it("buildProvider() throws (LLM-44) lazily, not during defaultDeps() construction, when no LLM key is configured", () => {
+    const repoRoot = mkdtempSync(join(tmpdir(), "build-deep-lineage-defaultdeps-nokey-"));
+    try {
+      const deps = defaultDeps(repoRoot); // must not throw here
+      expect(() => deps.buildProvider()).toThrow(/No LLM key found/);
+    } finally {
+      rmSync(repoRoot, { recursive: true, force: true });
+    }
   });
 });

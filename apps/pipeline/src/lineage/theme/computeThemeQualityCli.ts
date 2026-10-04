@@ -6,6 +6,7 @@
 import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { isMain } from "../../shared/cli/isMain.js";
 import { writeThemeQuality } from "./computeThemeQuality.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -38,6 +39,6 @@ export function runComputeThemeQualityCli(
   return 0;
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (isMain(import.meta.url)) {
   process.exitCode = runComputeThemeQualityCli();
 }

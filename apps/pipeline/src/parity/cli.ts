@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { writeFile } from "node:fs/promises";
+import { isMain } from "../shared/cli/isMain.js";
 import { compareTreesByteExact } from "./byte-compare.js";
 import { compareTrees } from "./compare-trees.js";
 import { formatSummary } from "./report.js";
@@ -95,13 +96,7 @@ export async function runCli(
   return { exitCode: report.equal ? 0 : 1, report };
 }
 
-const isMainModule = (() => {
-  const entry = process.argv[1];
-  if (!entry) return false;
-  return import.meta.url === `file://${entry}` || import.meta.url.endsWith(entry);
-})();
-
-if (isMainModule) {
+if (isMain(import.meta.url)) {
   runCli(process.argv.slice(2)).then(
     ({ exitCode }) => {
       process.exitCode = exitCode;

@@ -1,8 +1,13 @@
 #!/usr/bin/env node
 /**
  * Real-network entry point for `runCvfMain` — tests exercise `main.ts`
- * directly with injected deps.
+ * directly with injected deps. M2 of the P4 review: this file used to
+ * call `main()` unconditionally with no entry guard at all, so merely
+ * IMPORTING it (a future test, a barrel) would fire a real network
+ * request as a side effect — the same hazard `acl/cli.ts`'s guard
+ * documents, just with no guard here yet to even be fragile.
  */
+import { isMain } from "../../shared/cli/isMain.js";
 import { CliUsageError } from "../shared/cliArgs.js";
 import { fetchImplWithTimeout, fetchTextWithTimeout } from "../shared/networkTimeout.js";
 import { runCvfMain } from "./main.js";
@@ -40,4 +45,6 @@ async function main(): Promise<void> {
   }
 }
 
-main();
+if (isMain(import.meta.url)) {
+  main();
+}

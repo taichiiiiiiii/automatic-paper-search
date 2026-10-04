@@ -79,6 +79,24 @@ describe("parseArgs", () => {
       autoExpand: false,
     });
   });
+
+  // M3 of the P4 review: migrated from a hand-rolled switch to the
+  // shared strict parser — pin the behaviour that actually changed.
+  it("accepts --theme=value (single token), same as two tokens", () => {
+    expect(parseArgs(["--theme=Mixture of Experts"]).theme).toBe("Mixture of Experts");
+  });
+
+  it("resolves a unique prefix abbreviation (--auto-exp -> --auto-expand)", () => {
+    expect(parseArgs(["--theme", "X", "--auto-exp"]).autoExpand).toBe(true);
+  });
+
+  it("rejects a non-integer --depth instead of silently becoming NaN", () => {
+    expect(() => parseArgs(["--theme", "X", "--depth", "x"])).toThrow(CliArgError);
+  });
+
+  it("--no-openalex-fallback flips useOpenalexFallback to false", () => {
+    expect(parseArgs(["--theme", "X", "--no-openalex-fallback"]).useOpenalexFallback).toBe(false);
+  });
 });
 
 describe("expandParams", () => {

@@ -14,6 +14,7 @@ import type {
   RelationClassification,
 } from "../../../src/collect/llm/provider.js";
 import {
+  defaultDeps,
   parseArgs,
   type RunBuildLineageCliDeps,
   runBuildLineageCli,
@@ -226,5 +227,35 @@ describe("runBuildLineageCli", () => {
     // override the subject gate test above showed is NOT available.
     expect(written).not.toEqual(published);
     expect(written.meta.completeness.complete).toBe(false);
+  });
+});
+
+// M2 of the P4 review: this CLI's entry block used to be a permanent stub
+// ("build_lineage CLI wiring (env/provider construction) is not yet
+// connected.") that printed a message and exited 1 for every invocation,
+// regardless of argv — a CLI that never does the thing it's named for.
+// `defaultDeps` is the real wiring the entry block now calls.
+describe("defaultDeps (real entry-point wiring, M2)", () => {
+  it("constructs real fetchImpl/cacheDir/sleep/buildProvider deps without touching the network", () => {
+    const repoRoot = mkdtempSync(join(tmpdir(), "build-lineage-defaultdeps-"));
+    try {
+      const deps = defaultDeps(repoRoot);
+      expect(typeof deps.fetchImpl).toBe("function");
+      expect(typeof deps.sleep).toBe("function");
+      expect(typeof deps.buildProvider).toBe("function");
+      expect(deps.cacheDir).toContain("lineage-cache");
+    } finally {
+      rmSync(repoRoot, { recursive: true, force: true });
+    }
+  });
+
+  it("buildProvider() throws (LLM-44) lazily, not during defaultDeps() construction, when no LLM key is configured", () => {
+    const repoRoot = mkdtempSync(join(tmpdir(), "build-lineage-defaultdeps-nokey-"));
+    try {
+      const deps = defaultDeps(repoRoot); // must not throw here
+      expect(() => deps.buildProvider()).toThrow(/No LLM key found/);
+    } finally {
+      rmSync(repoRoot, { recursive: true, force: true });
+    }
   });
 });

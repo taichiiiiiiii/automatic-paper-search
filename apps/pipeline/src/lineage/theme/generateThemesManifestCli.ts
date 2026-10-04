@@ -4,24 +4,30 @@
  */
 
 import { existsSync, readFileSync, statSync } from "node:fs";
+import { CliUsageError, parseArgs as parseFlags } from "../../shared/cli/argparse.js";
+import { isMain } from "../../shared/cli/isMain.js";
 import type { ManifestEntry } from "./generateThemesManifest.js";
 import { writeManifest } from "./generateThemesManifest.js";
 
 export class CliArgError extends Error {}
 
+/**
+ * M3 of the P4 review: mirrors `generate_themes_manifest.py`'s argparse
+ * (`--themes-dir`, required) through the shared strict parser —
+ * `CliArgError` (this file's own public error type, kept for
+ * compatibility) now wraps the shared parser's {@link CliUsageError}
+ * rather than being thrown from a hand-rolled loop that treated any
+ * non-`--themes-dir` flag as unrecognized but never supported
+ * `--themes-dir=value` or prefix abbreviation.
+ */
 export function parseArgs(argv: readonly string[]): { themesDir: string } {
-  let themesDir: string | undefined;
-  for (let i = 0; i < argv.length; i++) {
-    if (argv[i] === "--themes-dir") {
-      themesDir = argv[++i];
-    } else {
-      throw new CliArgError(`unrecognized argument: ${argv[i]}`);
-    }
+  try {
+    const parsed = parseFlags(argv, { "themes-dir": { type: "string", required: true } });
+    return { themesDir: parsed["themes-dir"] as string };
+  } catch (e) {
+    if (e instanceof CliUsageError) throw new CliArgError(e.message);
+    throw e;
   }
-  if (themesDir === undefined) {
-    throw new CliArgError("--themes-dir is required");
-  }
-  return { themesDir };
 }
 
 export function runGenerateThemesManifestCli(argv: readonly string[]): number {
@@ -53,6 +59,6 @@ export function runGenerateThemesManifestCli(argv: readonly string[]): number {
   return 0;
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (isMain(import.meta.url)) {
   process.exitCode = runGenerateThemesManifestCli(process.argv.slice(2));
 }

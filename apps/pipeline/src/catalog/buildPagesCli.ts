@@ -6,6 +6,8 @@
 
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { CliUsageError } from "../shared/cli/argparse.js";
+import { isMain } from "../shared/cli/isMain.js";
 import { buildPagesMain, type CatalogRoots, parseBuildPagesArgs } from "./buildPages.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -44,14 +46,22 @@ function extractRootOverrides(argv: readonly string[]): { rest: string[]; roots:
 }
 
 export function runBuildPagesCli(argv: readonly string[], roots?: CatalogRoots): number {
-  if (roots !== undefined) {
-    return buildPagesMain(parseBuildPagesArgs(argv), roots).exitCode;
+  try {
+    if (roots !== undefined) {
+      return buildPagesMain(parseBuildPagesArgs(argv), roots).exitCode;
+    }
+    const extracted = extractRootOverrides(argv);
+    const args = parseBuildPagesArgs(extracted.rest);
+    return buildPagesMain(args, extracted.roots).exitCode;
+  } catch (e) {
+    if (e instanceof CliUsageError) {
+      process.stderr.write(`build_pages: error: ${e.message}\n`);
+      return 2;
+    }
+    throw e;
   }
-  const extracted = extractRootOverrides(argv);
-  const args = parseBuildPagesArgs(extracted.rest);
-  return buildPagesMain(args, extracted.roots).exitCode;
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (isMain(import.meta.url)) {
   process.exitCode = runBuildPagesCli(process.argv.slice(2));
 }

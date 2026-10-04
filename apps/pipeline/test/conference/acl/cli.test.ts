@@ -1,58 +1,42 @@
 /**
  * ACL CLI entry point (LOW of the P4 review: "ACL has no CLI entry
- * point"). `isMain()` is this file's own LOCAL guard (the shared
- * `isMain()` helper that will replace it, per M2, is a separate later
- * task) — it compares `realpathSync` of `import.meta.url` and
- * `process.argv[1]` instead of the naive `import.meta.url ===
- * file://${argv[1]}` string comparison other lineage CLIs use, which
- * breaks on a symlinked / space-containing / non-ASCII invocation path.
+ * point"). This file used to pin a LOCAL `isMain()` this module exported
+ * (its own `realpathSync`-based guard, predating the shared helper). M2
+ * of the P4 review promoted that exact logic to the package-wide
+ * `shared/cli/isMain.ts` (covered by `test/shared/cli/isMain.test.ts`,
+ * including the symlink case) and this file now calls that shared
+ * helper instead of defining its own — it no longer exports an `isMain`
+ * of its own to test in isolation. What's worth pinning here is that the
+ * entry guard actually fires for THIS file specifically, end-to-end,
+ * which `isMainEntry.test.ts`'s spawn-based tests cover across every
+ * CLI including this one.
  */
-import { mkdtempSync, symlinkSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { afterEach, describe, expect, it } from "vitest";
-import { isMain } from "../../../src/conference/acl/cli.js";
+import { describe, expect, it } from "vitest";
 
-const THIS_CLI_SOURCE_FILE = fileURLToPath(
-  new URL("../../../src/conference/acl/cli.ts", import.meta.url),
+const SOURCE = readFileSync(
+  fileURLToPath(new URL("../../../src/conference/acl/cli.ts", import.meta.url)),
+  "utf-8",
 );
 
-const originalArgv1: string | undefined = process.argv[1];
-afterEach(() => {
-  process.argv[1] = originalArgv1 as string;
-});
-
-describe("isMain (ACL CLI entry point)", () => {
-  it("is false when argv[1] is undefined (module only imported, e.g. by a test)", () => {
-    process.argv[1] = undefined as unknown as string;
-    expect(isMain()).toBe(false);
+describe("ACL CLI entry point uses the shared isMain guard", () => {
+  it("imports isMain from the package-wide shared/cli/isMain module", () => {
+    expect(SOURCE).toMatch(
+      /import\s*\{\s*isMain\s*\}\s*from\s*"\.\.\/\.\.\/shared\/cli\/isMain\.js"/,
+    );
   });
 
-  it("is false when argv[1] names an unrelated file (this process's real entry, e.g. vitest)", () => {
-    // Whatever the real test runner's argv[1] already is (not this
-    // module), importing this file in a test must never behave as "main".
-    expect(originalArgv1).toBeDefined();
-    expect(originalArgv1).not.toBe(THIS_CLI_SOURCE_FILE);
-    process.argv[1] = originalArgv1 as string;
-    expect(isMain()).toBe(false);
+  it("guards main() with isMain(import.meta.url), not a local reimplementation", () => {
+    expect(SOURCE).toMatch(/if\s*\(\s*isMain\(import\.meta\.url\)\s*\)\s*\{\s*main\(\);/);
   });
 
-  it("is false when argv[1] points to a nonexistent path", () => {
-    process.argv[1] = "/nonexistent/path/that/does/not/exist.ts";
-    expect(isMain()).toBe(false);
+  it("no longer defines a local isMain() of its own", () => {
+    expect(SOURCE).not.toMatch(/export function isMain\(/);
+    expect(SOURCE).not.toMatch(/import\s*\{\s*realpathSync\s*\}/);
   });
 
-  it("is true when argv[1] is this file's own compiled/source path", () => {
-    process.argv[1] = THIS_CLI_SOURCE_FILE;
-    expect(isMain()).toBe(true);
-  });
-
-  it("is true when argv[1] is a SYMLINK to this file (the bug a bare file://argv[1] string compare has)", () => {
-    const dir = mkdtempSync(join(tmpdir(), "acl-cli-isMain-"));
-    const link = join(dir, "cli-invoked-via-symlink.ts");
-    symlinkSync(THIS_CLI_SOURCE_FILE, link);
-    process.argv[1] = link;
-    expect(isMain()).toBe(true);
+  it("no longer uses the naive file://(argv[1]) string-comparison guard", () => {
+    expect(SOURCE).not.toMatch(/file:\/\/\$\{process\.argv\[1\]\}/);
   });
 });

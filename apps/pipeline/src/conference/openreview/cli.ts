@@ -2,8 +2,12 @@
 /**
  * Real-network entry point for `runOpenreviewMain` — the only file in this
  * module that is allowed to touch the real network / wall clock (tests
- * exercise `main.ts` directly with injected deps).
+ * exercise `main.ts` directly with injected deps). M2 of the P4 review:
+ * this used to call `main()` unconditionally with no entry guard, so
+ * merely importing it could fire a real network request as a side
+ * effect.
  */
+import { isMain } from "../../shared/cli/isMain.js";
 import { CliUsageError } from "../shared/cliArgs.js";
 import { fetchImplWithTimeout } from "../shared/networkTimeout.js";
 import { runOpenreviewMain } from "./main.js";
@@ -33,4 +37,6 @@ async function main(): Promise<void> {
   }
 }
 
-main();
+if (isMain(import.meta.url)) {
+  main();
+}

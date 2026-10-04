@@ -6,6 +6,8 @@
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { pyJsonDumps } from "@paperpilot/core";
+import { CliUsageError, parseArgs as parseFlags } from "../../shared/cli/argparse.js";
+import { isMain } from "../../shared/cli/isMain.js";
 import {
   auditClassificationsCache,
   auditPublishedThemes,
@@ -16,11 +18,27 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 // apps/pipeline/src/lineage/quality -> repo root (5 levels up).
 const DEFAULT_REPO_ROOT = resolve(HERE, "..", "..", "..", "..", "..");
 
+/**
+ * M3 of the P4 review: mirrors `audit_lineage_classification_breakdown.py`'s
+ * argparse (`--json`, store_true) through the shared strict parser — the
+ * old `argv.includes("--json")` silently accepted (and ignored) any other
+ * flag/typo instead of exiting non-zero.
+ */
 export function runAuditLineageClassificationBreakdownCli(
   argv: readonly string[],
   repoRoot: string = DEFAULT_REPO_ROOT,
 ): number {
-  const asJson = argv.includes("--json");
+  let asJson: boolean;
+  try {
+    const parsed = parseFlags(argv, { json: { type: "boolean" } });
+    asJson = parsed.json as boolean;
+  } catch (e) {
+    if (e instanceof CliUsageError) {
+      process.stderr.write(`error: ${e.message}\n`);
+      return 2;
+    }
+    throw e;
+  }
   const themesDir = join(repoRoot, "docs", "themes");
   const cachePath = join(repoRoot, "paperpilot", "data", "lineage-cache", "classifications.json");
   const published = auditPublishedThemes(themesDir, (value) => {
@@ -41,6 +59,6 @@ export function runAuditLineageClassificationBreakdownCli(
   return 0;
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (isMain(import.meta.url)) {
   process.exitCode = runAuditLineageClassificationBreakdownCli(process.argv.slice(2));
 }

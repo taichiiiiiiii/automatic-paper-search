@@ -9,6 +9,8 @@ import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { atomicWriteBytes } from "../../collect/state/atomic.js";
+import { CliUsageError, parseArgs as parseFlags } from "../../shared/cli/argparse.js";
+import { isMain } from "../../shared/cli/isMain.js";
 import { buildManifest, manifestPayload, type QualityPolicy } from "./buildLineageQuality.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -38,46 +40,39 @@ export function defaultArgs(
 
 export class CliArgError extends Error {}
 
+/**
+ * M3 of the P4 review: mirrors `build_lineage_quality.py`'s argparse
+ * flags through the shared strict parser. `CliArgError` (this file's
+ * own public error type, pinned by existing tests) now wraps the shared
+ * parser's {@link CliUsageError}.
+ */
 export function parseArgs(
   argv: readonly string[],
   repoRoot: string = DEFAULT_REPO_ROOT,
 ): BuildLineageQualityCliArgs {
   const base = defaultArgs(repoRoot);
-  let docsRoot = base.docsRoot;
-  let fixtures = base.fixtures;
-  let policy = base.policy;
-  let output = base.output;
-  let asOf: string | undefined;
-  let check = false;
-  for (let i = 0; i < argv.length; i++) {
-    const tok = argv[i];
-    switch (tok) {
-      case "--docs-root":
-        docsRoot = argv[++i] as string;
-        break;
-      case "--fixtures":
-        fixtures = argv[++i] as string;
-        break;
-      case "--policy":
-        policy = argv[++i] as string;
-        break;
-      case "--output":
-        output = argv[++i] as string;
-        break;
-      case "--as-of":
-        asOf = argv[++i];
-        break;
-      case "--check":
-        check = true;
-        break;
-      default:
-        throw new CliArgError(`unrecognized argument: ${tok}`);
-    }
+  let parsed: Record<string, unknown>;
+  try {
+    parsed = parseFlags(argv, {
+      "docs-root": { type: "string", default: base.docsRoot },
+      fixtures: { type: "string", default: base.fixtures },
+      policy: { type: "string", default: base.policy },
+      output: { type: "string", default: base.output },
+      "as-of": { type: "string", required: true },
+      check: { type: "boolean" },
+    });
+  } catch (e) {
+    if (e instanceof CliUsageError) throw new CliArgError(e.message);
+    throw e;
   }
-  if (asOf === undefined) {
-    throw new CliArgError("--as-of is required");
-  }
-  return { docsRoot, fixtures, policy, output, asOf, check };
+  return {
+    docsRoot: parsed["docs-root"] as string,
+    fixtures: parsed.fixtures as string,
+    policy: parsed.policy as string,
+    output: parsed.output as string,
+    asOf: parsed["as-of"] as string,
+    check: parsed.check as boolean,
+  };
 }
 
 export interface BuildLineageQualityCliResult {
@@ -131,6 +126,6 @@ export function runCli(argv: readonly string[]): number {
   return result.exitCode;
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (isMain(import.meta.url)) {
   process.exitCode = runCli(process.argv.slice(2));
 }

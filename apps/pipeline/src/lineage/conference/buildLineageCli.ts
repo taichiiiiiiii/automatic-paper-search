@@ -6,13 +6,18 @@
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { pyJsonDumps } from "@paperpilot/core";
+import { loadEnv } from "../../collect/config/env.js";
 import type { LLMProvider } from "../../collect/llm/provider.js";
 import { atomicWriteText } from "../../collect/state/atomic.js";
+import { CliUsageError, parseArgs as parseFlags } from "../../shared/cli/argparse.js";
+import { isMain } from "../../shared/cli/isMain.js";
 import { requireValidLineageArtifact } from "../contract/v1.js";
 import { BuildCompleteness } from "../fetch-state/completeness.js";
+import { buildProvider } from "../theme/providerFactory.js";
 import {
   type BuildLineageDeps,
   build,
+  cacheDirFor,
   expansionGateBlocks,
   resolveConferencePaths,
 } from "./buildLineage.js";
@@ -28,31 +33,80 @@ export interface BuildLineageCliArgs {
   allowIncomplete: boolean;
 }
 
+/**
+ * M3 of the P4 review: mirrors `build_lineage.py`'s argparse flags
+ * through the shared strict parser instead of a hand-rolled `switch`
+ * (which let `--limit x` silently become `NaN`).
+ */
 export function parseArgs(argv: readonly string[]): BuildLineageCliArgs {
-  let limit: number | null = null;
-  let conference = "iclr-2026";
-  let venueOverride: string | null = null;
-  let allowIncomplete = false;
-  for (let i = 0; i < argv.length; i++) {
-    const tok = argv[i];
-    switch (tok) {
-      case "--limit":
-        limit = Number(argv[++i]);
-        break;
-      case "--conference":
-        conference = argv[++i] as string;
-        break;
-      case "--venue-override":
-        venueOverride = argv[++i] as string;
-        break;
-      case "--allow-incomplete":
-        allowIncomplete = true;
-        break;
-      default:
-        throw new Error(`unrecognized argument: ${tok}`);
+  const parsed = parseFlags(argv, {
+    limit: { type: "int" },
+    conference: { type: "string", default: "iclr-2026" },
+    "venue-override": { type: "string" },
+    "allow-incomplete": { type: "boolean" },
+  });
+  return {
+    limit: (parsed.limit as number | undefined) ?? null,
+    conference: parsed.conference as string,
+    venueOverride: (parsed["venue-override"] as string | undefined) ?? null,
+    allowIncomplete: parsed["allow-incomplete"] as boolean,
+  };
+}
+
+/**
+ * Real `buildProvider`/`fetchImpl`/`cacheDir` wiring for the CLI entry
+ * point (M2 of the P4 review: this used to be a stub that always printed
+ * "not yet connected" and exited 1, regardless of argv — a CLI that
+ * never does the thing it's named for). Mirrors
+ * `buildDeepLineageCli.ts`'s `defaultDeps` (same `BuildLineageDeps`
+ * shape); kept as a separate copy rather than a shared helper so each
+ * CLI's wiring stays independently readable/testable, same as
+ * `lineage/theme/cli.ts`'s own `defaultDeps`.
+ */
+export function defaultDeps(repoRoot: string = DEFAULT_REPO_ROOT): RunBuildLineageCliDeps {
+  const env = loadEnv(join(repoRoot, "paperpilot", ".env"));
+  const fetchImpl: BuildLineageDeps["fetchImpl"] = async (url, init) => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), init.timeoutMs);
+    let resp: Response;
+    try {
+      resp = await fetch(url, {
+        method: init.method,
+        headers: init.headers,
+        body: init.body,
+        signal: controller.signal,
+      });
+    } catch (e) {
+      clearTimeout(timer);
+      throw e;
     }
-  }
-  return { limit, conference, venueOverride, allowIncomplete };
+    return {
+      status: resp.status,
+      json: async () => {
+        try {
+          return await resp.json();
+        } finally {
+          clearTimeout(timer);
+        }
+      },
+    };
+  };
+  return {
+    fetchImpl,
+    cacheDir: cacheDirFor(repoRoot),
+    sleep: (ms) => new Promise((r) => setTimeout(r, ms)),
+    email: env.openalexEmail,
+    logger: {
+      warn: (msg) => process.stderr.write(`${msg}\n`),
+    },
+    buildProvider: () =>
+      buildProvider({
+        env,
+        ambientEnv: process.env,
+        fetchImpl,
+        sleep: (ms) => new Promise((r) => setTimeout(r, ms)),
+      }),
+  };
 }
 
 export interface RunBuildLineageCliDeps extends BuildLineageDeps {
@@ -133,15 +187,30 @@ export async function runBuildLineageCli(
   return 0;
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
-  // Intentionally left for a future wiring pass: constructing the real
-  // `buildProvider`/`fetchImpl`/`cacheDir` deps here needs the ambient
-  // `.env` loader (packages/core config, P1) wired the same way the
-  // Python CLI's `setup_logging()` + `load_env()` are. Programmatic
-  // callers (tests, the eventual promoter) should call
-  // `runBuildLineageCli` directly with explicit deps.
-  process.stderr.write(
-    "build_lineage CLI wiring (env/provider construction) is not yet connected.\n",
-  );
-  process.exitCode = 1;
+if (isMain(import.meta.url)) {
+  let parsed: BuildLineageCliArgs | undefined;
+  try {
+    parsed = parseArgs(process.argv.slice(2));
+  } catch (e) {
+    if (e instanceof CliUsageError) {
+      process.stderr.write(`error: ${e.message}\n`);
+      process.exitCode = 2;
+    } else {
+      throw e;
+    }
+  }
+  if (parsed !== undefined) {
+    runBuildLineageCli(parsed, defaultDeps()).then(
+      (code) => {
+        process.exitCode = code;
+      },
+      // A dependency-construction failure (no LLM key configured,
+      // LLM-44) must exit non-zero with a clear message — never leave
+      // the process to exit 0 having done nothing.
+      (err) => {
+        process.stderr.write(`error: ${(err as Error).message}\n`);
+        process.exitCode = 3;
+      },
+    );
+  }
 }

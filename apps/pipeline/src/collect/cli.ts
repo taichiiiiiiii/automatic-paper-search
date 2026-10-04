@@ -18,11 +18,14 @@
 
 import { writeFileSync } from "node:fs";
 import { stringify as stringifyYaml } from "yaml";
+import { CliUsageError, parseArgs as parseFlags } from "../shared/cli/argparse.js";
 import { loadConfig } from "./config/load.js";
 import type { Config } from "./config/types.js";
 import { expandKeywords } from "./keywordExpand.js";
 import type { LLMProvider } from "./llm/provider.js";
 import type { Logger } from "./logger.js";
+
+export { CliUsageError } from "../shared/cli/argparse.js";
 
 export interface RunnerRunResult {
   outputCount: number;
@@ -51,49 +54,87 @@ export interface ParsedArgs {
   expandWrite: boolean;
 }
 
+/** Top-level flags, valid before the `expand-keywords` subcommand (if any). */
+const TOP_LEVEL_SPEC = {
+  config: { type: "string" as const },
+  days: { type: "int" } as const,
+  keyword: { type: "repeated-string" } as const,
+  full: { type: "boolean" } as const,
+  "skip-llm": { type: "boolean" } as const,
+  "fail-on-errors": { type: "boolean" } as const,
+};
+
+/** `expand-keywords` subcommand flags — Python's own sub-parser. */
+const EXPAND_KEYWORDS_SPEC = {
+  max: { type: "int", default: 10 } as const,
+  write: { type: "boolean" } as const,
+};
+
+/**
+ * M3 of the P4 review: mirrors `collector.py`'s `argparse` parser
+ * (including its `expand-keywords` subparser) through the shared strict
+ * engine. An unrecognized/typo'd flag (the old `switch`'s `default:
+ * break` silently ignored one) or a non-integer `--days` now throws
+ * {@link CliUsageError}; `--fail-on-error` resolves to `--fail-on-errors`
+ * via unique-prefix abbreviation, matching `allow_abbrev=True`.
+ *
+ * The `expand-keywords` subcommand is Python's own sub-parser: once that
+ * bare token appears, every argv entry up to it is parsed against the
+ * top-level spec, and everything after it against the subcommand's own
+ * spec — mirroring argparse's own all-remaining-args-go-to-the-subparser
+ * behaviour (a top-level flag typed AFTER `expand-keywords` is not
+ * recognized by the subparser either, just like the real CLI).
+ */
+const TOP_LEVEL_BOOLEAN_FLAGS = Object.keys(TOP_LEVEL_SPEC).filter(
+  (name) => TOP_LEVEL_SPEC[name as keyof typeof TOP_LEVEL_SPEC].type === "boolean",
+);
+
+/** Same exact/unique-prefix resolution the shared parser itself uses, just
+ * to decide — while scanning for the `expand-keywords` boundary below —
+ * whether a flag token consumes the next argv entry as its value. */
+function topLevelFlagConsumesValue(rawName: string): boolean {
+  if (TOP_LEVEL_BOOLEAN_FLAGS.includes(rawName)) return false;
+  if (rawName in TOP_LEVEL_SPEC) return true;
+  const candidates = Object.keys(TOP_LEVEL_SPEC).filter((name) => name.startsWith(rawName));
+  if (candidates.length === 1) return !TOP_LEVEL_BOOLEAN_FLAGS.includes(candidates[0] as string);
+  // Unknown/ambiguous — let the real parser raise the precise error later;
+  // don't consume a value here so the split location isn't skewed by it.
+  return false;
+}
+
 export function parseArgs(argv: readonly string[], defaultConfigPath: string): ParsedArgs {
+  let splitIndex = -1;
+  for (let i = 0; i < argv.length; i++) {
+    const tok = argv[i];
+    if (tok === "expand-keywords") {
+      splitIndex = i;
+      break;
+    }
+    if (tok?.startsWith("--") && !tok.includes("=")) {
+      const rawName = tok.slice(2);
+      if (topLevelFlagConsumesValue(rawName)) i++; // skip this flag's value token
+    }
+  }
+  const topArgv = splitIndex >= 0 ? argv.slice(0, splitIndex) : argv;
+  const subArgv = splitIndex >= 0 ? argv.slice(splitIndex + 1) : [];
+
+  const top = parseFlags(topArgv, TOP_LEVEL_SPEC);
   const args: ParsedArgs = {
-    config: defaultConfigPath,
-    keywords: [],
-    full: false,
-    skipLlm: false,
-    failOnErrors: false,
+    config: (top.config as string | undefined) ?? defaultConfigPath,
+    days: top.days as number | undefined,
+    keywords: top.keyword as string[],
+    full: top.full as boolean,
+    skipLlm: top["skip-llm"] as boolean,
+    failOnErrors: top["fail-on-errors"] as boolean,
     expandMax: 10,
     expandWrite: false,
   };
-  for (let i = 0; i < argv.length; i++) {
-    const tok = argv[i];
-    switch (tok) {
-      case "--config":
-        args.config = argv[++i] as string;
-        break;
-      case "--days":
-        args.days = Number(argv[++i]);
-        break;
-      case "--keyword":
-        args.keywords.push(argv[++i] as string);
-        break;
-      case "--full":
-        args.full = true;
-        break;
-      case "--skip-llm":
-        args.skipLlm = true;
-        break;
-      case "--fail-on-errors":
-        args.failOnErrors = true;
-        break;
-      case "expand-keywords":
-        args.command = "expand-keywords";
-        break;
-      case "--max":
-        args.expandMax = Number(argv[++i]);
-        break;
-      case "--write":
-        args.expandWrite = true;
-        break;
-      default:
-        break;
-    }
+
+  if (splitIndex >= 0) {
+    args.command = "expand-keywords";
+    const sub = parseFlags(subArgv, EXPAND_KEYWORDS_SPEC);
+    args.expandMax = sub.max as number;
+    args.expandWrite = sub.write as boolean;
   }
   return args;
 }
@@ -185,7 +226,16 @@ async function runExpandKeywords(
 }
 
 export async function main(argv: readonly string[], deps: CliDeps): Promise<number> {
-  const args = parseArgs(argv, deps.defaultConfigPath ?? "config.yaml");
+  let args: ParsedArgs;
+  try {
+    args = parseArgs(argv, deps.defaultConfigPath ?? "config.yaml");
+  } catch (e) {
+    if (e instanceof CliUsageError) {
+      deps.logger.error(`collector: error: ${e.message}`);
+      return 2;
+    }
+    throw e;
+  }
   const loadCfg = deps.loadConfigFn ?? loadConfig;
   const config = loadCfg(args.config);
   const stdout = deps.stdout ?? ((line: string) => console.log(line));

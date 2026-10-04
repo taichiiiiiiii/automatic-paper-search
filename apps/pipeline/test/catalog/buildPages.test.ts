@@ -470,6 +470,31 @@ describe("two-phase all-or-nothing publish (CAT-11, CAT-13)", () => {
     expect(readFileSync(join(roots.docsRoot, "conferences.json"), "utf-8")).toBe(original);
     expect(existsSync(join(roots.docsRoot, "paper-details-v1"))).toBe(false);
   });
+
+  // M3 of the P4 review: parseBuildPagesArgs used to hand-roll its own
+  // switch, which never split `--flag=value` tokens at all — only
+  // `--conference cvpr-2026` (two tokens) worked; `--conference=cvpr-2026`
+  // silently fell through to the `default: break` no-op, so the flag was
+  // ignored and the run back-slid to the unscoped, every-conference path.
+  it("--conference=cvpr-2026 (single token) scopes the build exactly like two separate tokens", () => {
+    const confName = "cvpr-2026";
+    writeSummaryCsv(join(roots.outputRoot, confName), [arxivRow(1)]);
+    mkdirSync(roots.docsRoot, { recursive: true });
+    const original = '[{"name":"existing-2025","papers":10}]\n';
+    writeFileSync(join(roots.docsRoot, "conferences.json"), original);
+
+    const args = parseBuildPagesArgs([`--conference=${confName}`]);
+    expect(args.conference).toBe(confName);
+    const result = buildPagesMain(args, roots);
+    expect(result.exitCode).toBe(0);
+    expect(existsSync(join(roots.docsRoot, confName, "papers.json"))).toBe(true);
+    // Unchanged conferences.json/no shards is exactly the scoped-build
+    // signature CAT-13 pins above — proves `=` really did scope the run,
+    // rather than falling through to an unscoped full build that just
+    // happens to also write this conference's papers.json.
+    expect(readFileSync(join(roots.docsRoot, "conferences.json"), "utf-8")).toBe(original);
+    expect(existsSync(join(roots.docsRoot, "paper-details-v1"))).toBe(false);
+  });
 });
 
 describe("indexed-but-unrebuildable conference refusal (CAT-06, CAT-07)", () => {

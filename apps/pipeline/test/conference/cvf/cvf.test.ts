@@ -300,6 +300,42 @@ describe("runCvfMain (CNF-03 / CNF-04)", () => {
     expect(existsSync(join(confDir, "oral_summaries_ja.md"))).toBe(false);
   });
 
+  // M3 of the P4 review: the shared parser's `boolean` branch used to
+  // ignore an inline `=value` entirely, so `--clear-oral=false` silently
+  // became `true` — the exact opposite of what the operator asked for,
+  // and the old published oral list would be deleted (CNF-16's "a
+  // skipped or empty overlay cannot erase the Oral labels" guarantee,
+  // defeated by a flag that LOOKS like it says "don't"). argparse itself
+  // rejects an explicit value on a zero-arg (`store_true`) action, so
+  // this must throw, not run with `clearOral: true`.
+  it("rejects --clear-oral=false instead of silently treating it as true", async () => {
+    const confDir = join(tmp, "cvpr-2025");
+    mkdirSync(confDir, { recursive: true });
+    writeFileSync(join(confDir, "oral_summaries_ja.md"), "# old\n## 1. Old\n", "utf-8");
+    await expect(
+      runCvfMain(
+        [
+          "--conference",
+          "cvpr-2025",
+          "--venue",
+          "CVPR",
+          "--cvf-id",
+          "CVPR2025",
+          "--clear-oral=false",
+        ],
+        {
+          outputRoot: tmp,
+          cvf: { fetchImpl: cvfFetch() },
+          arxiv: { fetchText: vi.fn() },
+          now: () => new Date("2026-06-28"),
+          print: () => {},
+        },
+      ),
+    ).rejects.toThrow(/ignored explicit argument/);
+    // Never reached the writer at all — the old file must survive.
+    expect(readFileSync(join(confDir, "oral_summaries_ja.md"), "utf-8")).toBe("# old\n## 1. Old\n");
+  });
+
   it("oral-max defaults to the shared overlay cap (--oral-max omitted => ORAL_MAX_RESULTS_DEFAULT)", async () => {
     // A feed with exactly ORAL_MAX_RESULTS_DEFAULT entries (one page, all
     // on a single arXiv page since it's under the 100-per-page fetch

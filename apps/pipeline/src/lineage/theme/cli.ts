@@ -15,6 +15,8 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadEnv } from "../../collect/config/env.js";
 import type { FetchInit, HttpResponseLike } from "../../collect/http/requestWithRetry.js";
+import { CliUsageError, parseArgs as parseFlags } from "../../shared/cli/argparse.js";
+import { isMain } from "../../shared/cli/isMain.js";
 import { IncompleteBuildError } from "../fetch-state/completeness.js";
 import { type BuildThemeLineageDeps, buildThemeLineage, ZeroEdgeBuildError } from "./build.js";
 import { buildProvider } from "./providerFactory.js";
@@ -40,93 +42,57 @@ export interface ThemeCliArgs {
 
 export class CliArgError extends Error {}
 
-const LLM_STRICT_VALUES = new Set(["off", "ambiguous", "all"]);
-const PRIMARY_SOURCE_VALUES = new Set(["s2", "openalex"]);
+const THEME_CLI_SPEC = {
+  theme: { type: "string" as const, required: true },
+  depth: { type: "int" as const, default: 2 },
+  seeds: { type: "int" as const, default: 8 },
+  width: { type: "int" as const, default: 8 },
+  "since-year": { type: "int" as const },
+  output: { type: "string" as const },
+  "no-openalex-fallback": { type: "boolean" as const },
+  "llm-strict": {
+    type: "string" as const,
+    choices: ["off", "ambiguous", "all"] as const,
+    default: "off",
+  },
+  "primary-source": {
+    type: "string" as const,
+    choices: ["s2", "openalex"] as const,
+    default: "s2",
+  },
+  "allow-incomplete": { type: "boolean" as const },
+  "auto-expand": { type: "boolean" as const },
+};
 
-/** Parse CLI argv into `ThemeCliArgs`. Mirrors `_build_arg_parser`'s
- * flag set; `--theme` is required. */
+/**
+ * Parse CLI argv into `ThemeCliArgs` — M3 of the P4 review: mirrors
+ * `_build_arg_parser`'s flag set through the shared strict parser
+ * (unique-prefix abbreviation, `--flag=value`, `--depth x` exiting
+ * instead of becoming `NaN`) instead of a hand-rolled `switch`.
+ * `--theme` is required. `CliArgError` (this file's own public error
+ * type, pinned by existing tests) now wraps the shared parser's
+ * {@link CliUsageError}.
+ */
 export function parseArgs(argv: readonly string[]): ThemeCliArgs {
-  let theme: string | undefined;
-  let depth = 2;
-  let seedsCount = 8;
-  let width = 8;
-  let sinceYear: number | null = null;
-  let output: string | null = null;
-  let useOpenalexFallback = true;
-  let llmStrict: "off" | "ambiguous" | "all" = "off";
-  let primarySource: "s2" | "openalex" = "s2";
-  let allowIncomplete = false;
-  let autoExpand = false;
-
-  for (let i = 0; i < argv.length; i++) {
-    const tok = argv[i];
-    switch (tok) {
-      case "--theme":
-        theme = argv[++i];
-        break;
-      case "--depth":
-        depth = Number(argv[++i]);
-        break;
-      case "--seeds":
-        seedsCount = Number(argv[++i]);
-        break;
-      case "--width":
-        width = Number(argv[++i]);
-        break;
-      case "--since-year":
-        sinceYear = Number(argv[++i]);
-        break;
-      case "--output":
-        output = argv[++i] ?? null;
-        break;
-      case "--no-openalex-fallback":
-        useOpenalexFallback = false;
-        break;
-      case "--llm-strict": {
-        const v = argv[++i];
-        if (!v || !LLM_STRICT_VALUES.has(v)) {
-          throw new CliArgError(
-            `--llm-strict must be one of off, ambiguous, all (got ${JSON.stringify(v)})`,
-          );
-        }
-        llmStrict = v as "off" | "ambiguous" | "all";
-        break;
-      }
-      case "--primary-source": {
-        const v = argv[++i];
-        if (!v || !PRIMARY_SOURCE_VALUES.has(v)) {
-          throw new CliArgError(
-            `--primary-source must be one of s2, openalex (got ${JSON.stringify(v)})`,
-          );
-        }
-        primarySource = v as "s2" | "openalex";
-        break;
-      }
-      case "--allow-incomplete":
-        allowIncomplete = true;
-        break;
-      case "--auto-expand":
-        autoExpand = true;
-        break;
-      default:
-        throw new CliArgError(`unrecognized argument: ${tok}`);
-    }
-  }
-  if (theme === undefined) {
-    throw new CliArgError("--theme is required");
+  let parsed: Record<string, unknown>;
+  try {
+    parsed = parseFlags(argv, THEME_CLI_SPEC);
+  } catch (e) {
+    if (e instanceof CliUsageError) throw new CliArgError(e.message);
+    throw e;
   }
   return {
-    theme,
-    depth,
-    seedsCount,
-    width,
-    sinceYear,
-    output,
-    useOpenalexFallback,
-    llmStrict,
-    primarySource,
-    allowIncomplete,
-    autoExpand,
+    theme: parsed.theme as string,
+    depth: parsed.depth as number,
+    seedsCount: parsed.seeds as number,
+    width: parsed.width as number,
+    sinceYear: (parsed["since-year"] as number | undefined) ?? null,
+    output: (parsed.output as string | undefined) ?? null,
+    useOpenalexFallback: !(parsed["no-openalex-fallback"] as boolean),
+    llmStrict: parsed["llm-strict"] as "off" | "ambiguous" | "all",
+    primarySource: parsed["primary-source"] as "s2" | "openalex",
+    allowIncomplete: parsed["allow-incomplete"] as boolean,
+    autoExpand: parsed["auto-expand"] as boolean,
   };
 }
 
@@ -384,7 +350,7 @@ export async function runThemeCli(
   return 0;
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (isMain(import.meta.url)) {
   runThemeCli(process.argv.slice(2)).then((code) => {
     process.exitCode = code;
   });

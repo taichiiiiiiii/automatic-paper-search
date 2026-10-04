@@ -7,11 +7,15 @@
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { pyJsonDumps } from "@paperpilot/core";
+import { loadEnv } from "../../collect/config/env.js";
 import type { LLMProvider } from "../../collect/llm/provider.js";
 import { atomicWriteText } from "../../collect/state/atomic.js";
-import type { BuildLineageDeps } from "../conference/buildLineage.js";
+import { CliUsageError, parseArgs as parseFlags } from "../../shared/cli/argparse.js";
+import { isMain } from "../../shared/cli/isMain.js";
+import { type BuildLineageDeps, cacheDirFor } from "../conference/buildLineage.js";
 import { requireValidLineageArtifact } from "../contract/v1.js";
 import { BuildCompleteness } from "../fetch-state/completeness.js";
+import { buildProvider } from "../theme/providerFactory.js";
 import {
   buildDeep,
   DeepSubjectIncompleteError,
@@ -35,62 +39,88 @@ export interface BuildDeepLineageCliArgs {
   output: string | null;
 }
 
+/**
+ * M3 of the P4 review: mirrors `build_deep_lineage.py`'s argparse flags
+ * through the shared strict parser instead of a hand-rolled `switch`
+ * (which let `--depth`/`--top-parents`/`--top-children` silently become
+ * `NaN` on a bad value).
+ */
 export function parseArgs(argv: readonly string[]): BuildDeepLineageCliArgs {
-  let arxivId: string | undefined;
-  let seedPaperId: string | undefined;
-  let depth = 2;
-  let topParents = 20;
-  let topChildren = 20;
-  let venueOverride = "ICLR 2026";
-  let tierOverride = "A+";
-  let allowIncomplete = false;
-  let output: string | null = null;
-  for (let i = 0; i < argv.length; i++) {
-    const tok = argv[i];
-    switch (tok) {
-      case "--arxiv-id":
-        arxivId = argv[++i];
-        break;
-      case "--seed-paper-id":
-        seedPaperId = argv[++i];
-        break;
-      case "--depth":
-        depth = Number(argv[++i]);
-        break;
-      case "--top-parents":
-        topParents = Number(argv[++i]);
-        break;
-      case "--top-children":
-        topChildren = Number(argv[++i]);
-        break;
-      case "--venue-override":
-        venueOverride = argv[++i] as string;
-        break;
-      case "--tier-override":
-        tierOverride = argv[++i] as string;
-        break;
-      case "--allow-incomplete":
-        allowIncomplete = true;
-        break;
-      case "--output":
-        output = argv[++i] as string;
-        break;
-      default:
-        throw new Error(`unrecognized argument: ${tok}`);
-    }
-  }
-  if (arxivId === undefined) throw new Error("--arxiv-id is required");
-  if (seedPaperId === undefined) throw new Error("--seed-paper-id is required");
+  const parsed = parseFlags(argv, {
+    "arxiv-id": { type: "string", required: true },
+    "seed-paper-id": { type: "string", required: true },
+    depth: { type: "int", default: 2 },
+    "top-parents": { type: "int", default: 20 },
+    "top-children": { type: "int", default: 20 },
+    "venue-override": { type: "string", default: "ICLR 2026" },
+    "tier-override": { type: "string", default: "A+" },
+    "allow-incomplete": { type: "boolean" },
+    output: { type: "string" },
+  });
   return {
-    arxivId,
-    seedPaperId,
-    depth,
-    topParents,
-    topChildren,
-    venueOverride,
-    tierOverride,
-    allowIncomplete,
-    output,
+    arxivId: parsed["arxiv-id"] as string,
+    seedPaperId: parsed["seed-paper-id"] as string,
+    depth: parsed.depth as number,
+    topParents: parsed["top-parents"] as number,
+    topChildren: parsed["top-children"] as number,
+    venueOverride: parsed["venue-override"] as string,
+    tierOverride: parsed["tier-override"] as string,
+    allowIncomplete: parsed["allow-incomplete"] as boolean,
+    output: (parsed.output as string | undefined) ?? null,
+  };
+}
+
+/**
+ * Real `buildProvider`/`fetchImpl`/`cacheDir` wiring for the CLI entry
+ * point (M2 of the P4 review: this file used to have NO entry block at
+ * all, so running it for real did nothing). `LLM-24` note: the thunk is
+ * passed through uncalled — `buildDeep` invokes it only once the arXiv
+ * identity check has already succeeded, same as `runBuildDeepLineageCli`
+ * requires of every caller.
+ */
+export function defaultDeps(repoRoot: string = DEFAULT_REPO_ROOT): RunBuildDeepLineageCliDeps {
+  const env = loadEnv(join(repoRoot, "paperpilot", ".env"));
+  const fetchImpl: BuildLineageDeps["fetchImpl"] = async (url, init) => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), init.timeoutMs);
+    let resp: Response;
+    try {
+      resp = await fetch(url, {
+        method: init.method,
+        headers: init.headers,
+        body: init.body,
+        signal: controller.signal,
+      });
+    } catch (e) {
+      clearTimeout(timer);
+      throw e;
+    }
+    return {
+      status: resp.status,
+      json: async () => {
+        try {
+          return await resp.json();
+        } finally {
+          clearTimeout(timer);
+        }
+      },
+    };
+  };
+  return {
+    fetchImpl,
+    cacheDir: cacheDirFor(repoRoot),
+    sleep: (ms) => new Promise((r) => setTimeout(r, ms)),
+    email: env.openalexEmail,
+    logger: {
+      warn: (msg) => process.stderr.write(`${msg}\n`),
+    },
+    buildProvider: () =>
+      buildProvider({
+        env,
+        ambientEnv: process.env,
+        fetchImpl,
+        sleep: (ms) => new Promise((r) => setTimeout(r, ms)),
+      }),
   };
 }
 
@@ -179,4 +209,34 @@ export async function runBuildDeepLineageCli(
     process.stdout.write(`    ${k}: ${v}\n`);
   }
   return 0;
+}
+
+if (isMain(import.meta.url)) {
+  let parsed: BuildDeepLineageCliArgs | undefined;
+  try {
+    parsed = parseArgs(process.argv.slice(2));
+  } catch (e) {
+    if (e instanceof CliUsageError) {
+      process.stderr.write(`error: ${e.message}\n`);
+      process.exitCode = 2;
+    } else {
+      throw e;
+    }
+  }
+  if (parsed !== undefined) {
+    runBuildDeepLineageCli(parsed, defaultDeps()).then(
+      (code) => {
+        process.exitCode = code;
+      },
+      // `buildProvider()` throwing (no LLM key configured, LLM-44) or any
+      // other dependency-construction failure must exit non-zero with a
+      // clear message — never leave the process to exit 0 having done
+      // nothing (the exact failure mode `buildLineageCli.ts`'s old stub
+      // guard avoided only by refusing to run at all).
+      (err) => {
+        process.stderr.write(`error: ${(err as Error).message}\n`);
+        process.exitCode = 3;
+      },
+    );
+  }
 }

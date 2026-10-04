@@ -6,6 +6,8 @@
 
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { CliUsageError, parseArgs as parseFlags } from "../shared/cli/argparse.js";
+import { isMain } from "../shared/cli/isMain.js";
 import { buildSummary } from "./buildSummary.js";
 import { validateConferenceSlug } from "./slug.js";
 
@@ -20,35 +22,42 @@ export interface BuildSummaryCliArgs {
   root?: string;
 }
 
+/**
+ * M3 of the P4 review: `--conference`/`--input` mirror
+ * `build_summary_csv.py`'s argparse flags through the shared strict
+ * parser; `--output-root`/`--root` are TS-only test seams (no Python
+ * equivalent) kept in the same spec so they get the same strictness
+ * (unknown-flag/missing-value errors) rather than a separate ad-hoc loop.
+ */
 export function parseBuildSummaryCliArgs(argv: readonly string[]): BuildSummaryCliArgs {
-  const args: BuildSummaryCliArgs = { conference: "iclr-2026" };
-  for (let i = 0; i < argv.length; i++) {
-    const tok = argv[i];
-    switch (tok) {
-      case "--conference":
-        args.conference = argv[++i] as string;
-        break;
-      case "--input":
-        args.input = argv[++i] as string;
-        break;
-      case "--output-root":
-        args.outputRoot = argv[++i] as string;
-        break;
-      case "--root":
-        args.root = argv[++i] as string;
-        break;
-      default:
-        break;
-    }
-  }
-  return args;
+  const parsed = parseFlags(argv, {
+    conference: { type: "string", default: "iclr-2026" },
+    input: { type: "string" },
+    "output-root": { type: "string" },
+    root: { type: "string" },
+  });
+  return {
+    conference: parsed.conference as string,
+    input: parsed.input as string | undefined,
+    outputRoot: parsed["output-root"] as string | undefined,
+    root: parsed.root as string | undefined,
+  };
 }
 
 export function runBuildSummaryCli(
   argv: readonly string[],
   repoRootDefault: string = DEFAULT_REPO_ROOT,
 ): number {
-  const args = parseBuildSummaryCliArgs(argv);
+  let args: BuildSummaryCliArgs;
+  try {
+    args = parseBuildSummaryCliArgs(argv);
+  } catch (e) {
+    if (e instanceof CliUsageError) {
+      process.stderr.write(`build_summary_csv: error: ${e.message}\n`);
+      return 2;
+    }
+    throw e;
+  }
   validateConferenceSlug(args.conference);
   const repoRoot = args.root ?? repoRootDefault;
   const outputRoot = args.outputRoot ?? join(repoRoot, "paperpilot", "output");
@@ -65,6 +74,6 @@ export function runBuildSummaryCli(
   return 0;
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (isMain(import.meta.url)) {
   process.exitCode = runBuildSummaryCli(process.argv.slice(2));
 }

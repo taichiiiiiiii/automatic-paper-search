@@ -150,3 +150,93 @@ it("promote subcommand prints source_sha and changed, and appends to GITHUB_OUTP
   expect(output).toContain("changed=true");
   expect(readFileSync(githubOutput, "utf-8")).toContain("changed=true");
 }, 30_000); // real tsx subprocess + a worktree-based promotion; the 5s default can flake under load
+
+// M3 of the P4 review: release/cli.ts used to pass every attempt-count env
+// var straight through `Number.parseInt(..., 10)` with no validation at
+// all — "" / "abc" / "-1" / "0" would reach `commitAndPush`/`promote` as
+// `NaN`/a non-positive count instead of failing loudly the way
+// `promote-generated.sh`'s own `[[ "$max_attempts" =~ ^[1-9][0-9]*$ ]] ||
+// die ...` does. These exercise the real CLI subprocess so `die()`'s
+// `process.exit(1)` is actually observed, not just unit-tested in
+// isolation.
+function expectCliDies(cwd: string, args: string[], env: Record<string, string>): string {
+  try {
+    runCli(cwd, args, env);
+    throw new Error("expected the CLI to exit non-zero, but it succeeded");
+  } catch (e) {
+    const err = e as { status?: number; stderr?: string };
+    expect(err.status).toBe(1);
+    return String(err.stderr ?? "");
+  }
+}
+
+it("PROMOTE_MAX_ATTEMPTS must be a positive integer (matches promote-generated.sh's regex)", () => {
+  const repo = join(base, "repo");
+  mkdirSync(repo);
+  runGit(repo, ["init", "--initial-branch=develop"]);
+  const candidate = join(base, "candidate");
+  mkdirSync(candidate);
+  writeFileSync(join(candidate, "x.json"), "{}\n");
+
+  for (const bad of ["0", "-1", "abc", "1.5", "01"]) {
+    const stderr = expectCliDies(repo, ["promote", "test-only", candidate, "msg", "x.json"], {
+      PROMOTE_MAX_ATTEMPTS: bad,
+    });
+    expect(stderr).toContain("PROMOTE_MAX_ATTEMPTS must be positive");
+  }
+});
+
+it("COMMIT_PUSH_MAX_ATTEMPTS must be a positive integer (the shell never checks this, but an unvalidated 0/NaN would break every retry)", () => {
+  const repo = join(base, "repo");
+  mkdirSync(repo);
+  runGit(repo, ["init", "--initial-branch=develop"]);
+  writeFileSync(join(repo, "x.txt"), "a\n");
+
+  for (const bad of ["0", "-3", "nope"]) {
+    const stderr = expectCliDies(repo, ["commit-push", "msg", "x.txt"], {
+      COMMIT_PUSH_MAX_ATTEMPTS: bad,
+    });
+    expect(stderr).toContain("COMMIT_PUSH_MAX_ATTEMPTS must be positive");
+  }
+});
+
+it("PAPERPILOT_PACKAGE_INCLUDE_UNCHANGED must be exactly 0 or 1 (matches package-generated-candidate.sh)", () => {
+  const repo = join(base, "repo");
+  mkdirSync(repo);
+  runGit(repo, ["init", "--initial-branch=develop"]);
+  mkdirSync(join(repo, "docs"), { recursive: true });
+  writeFileSync(join(repo, "docs", "x.json"), "{}\n");
+  runGit(repo, ["add", "."]);
+  runGit(repo, ["commit", "-m", "seed"]);
+  const candidate = join(base, "candidate-bad-env");
+
+  for (const bad of ["true", "2", "yes"]) {
+    const stderr = expectCliDies(repo, ["package", candidate, "docs"], {
+      PAPERPILOT_PACKAGE_INCLUDE_UNCHANGED: bad,
+    });
+    expect(stderr).toContain("PAPERPILOT_PACKAGE_INCLUDE_UNCHANGED must be 0 or 1");
+  }
+});
+
+it("COMMIT_PUSH_BRANCH='' falls back to develop, matching the shell's :- default substitution", () => {
+  const remote = join(base, "remote.git");
+  mkdirSync(remote);
+  runGit(remote, ["init", "--bare", "--initial-branch=develop"]);
+  const local = join(base, "local-empty-branch");
+  mkdirSync(local);
+  runGit(local, ["init", "--initial-branch=develop"]);
+  runGit(local, ["remote", "add", "origin", remote]);
+  writeFileSync(join(local, "README.md"), "seed\n");
+  runGit(local, ["add", "README.md"]);
+  runGit(local, ["commit", "-m", "seed"]);
+  runGit(local, ["push", "-u", "origin", "develop"]);
+  writeFileSync(join(local, "note.txt"), "x\n");
+
+  const output = runCli(local, ["commit-push", "data(test): empty branch env", "note.txt"], {
+    COMMIT_PUSH_NO_SLEEP: "1",
+    COMMIT_PUSH_BRANCH: "",
+  });
+  expect(output).toContain("push succeeded");
+  const log = runGit(remote, ["log", "--oneline", "develop"]);
+  expect(log.split("\n").length).toBe(2);
+}, 30_000);

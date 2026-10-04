@@ -29,6 +29,7 @@ import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { pyJsonDumps, pyRstrip, pySplit, pyStrip } from "@paperpilot/core/pycompat";
 import { unneutralize } from "../collect/exporters/csvSafety.js";
 import { atomicWriteText } from "../collect/state/atomic.js";
+import { parseArgs as parseFlags } from "../shared/cli/argparse.js";
 import { SUMMARY_META_FILENAME } from "./buildSummary.js";
 import { dictReader } from "./csv.js";
 import { IdentityError, identityFromUrl, normalizeAlias } from "./identity.js";
@@ -630,25 +631,24 @@ export interface BuildPagesArgs {
   allowShrinkFor: string[];
 }
 
+/**
+ * M3 of the P4 review: mirrors `build_pages.py`'s argparse flags
+ * (`--conference`, `--allow-shrink`, `--allow-shrink-for`) through the
+ * shared strict parser — an unknown flag, a missing `--allow-shrink-for`
+ * value, etc. now throw {@link CliUsageError} (mapped to exit 2 by the
+ * CLI entry point) instead of being silently ignored.
+ */
 export function parseBuildPagesArgs(argv: readonly string[]): BuildPagesArgs {
-  const args: BuildPagesArgs = { allowShrink: false, allowShrinkFor: [] };
-  for (let i = 0; i < argv.length; i++) {
-    const tok = argv[i];
-    switch (tok) {
-      case "--conference":
-        args.conference = argv[++i];
-        break;
-      case "--allow-shrink":
-        args.allowShrink = true;
-        break;
-      case "--allow-shrink-for":
-        args.allowShrinkFor.push(argv[++i] as string);
-        break;
-      default:
-        break;
-    }
-  }
-  return args;
+  const parsed = parseFlags(argv, {
+    conference: { type: "string" },
+    "allow-shrink": { type: "boolean" },
+    "allow-shrink-for": { type: "repeated-string" },
+  });
+  return {
+    conference: parsed.conference as string | undefined,
+    allowShrink: parsed["allow-shrink"] as boolean,
+    allowShrinkFor: parsed["allow-shrink-for"] as string[],
+  };
 }
 
 export interface BuildPagesMainResult {
