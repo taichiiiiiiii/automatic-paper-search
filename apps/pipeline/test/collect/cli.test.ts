@@ -136,6 +136,10 @@ it("test_expand_keywords_write_excludes_env_secrets", async () => {
         batchSize: 1,
         evaluateBatch: async () => [],
         chat: async () => null,
+        classifyRelation: async () => null,
+        completeJson: async () => {
+          throw new Error("fake provider has no JSON-mode completion");
+        },
       },
       run: async () => fakeResult(),
     }),

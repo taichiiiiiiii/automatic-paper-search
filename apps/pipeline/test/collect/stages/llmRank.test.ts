@@ -2,7 +2,11 @@
  * Port of `paperpilot/tests/test_stage_llm_rank.py`.
  */
 import { expect, it } from "vitest";
-import type { LLMProvider, PaperEvaluation } from "../../../src/collect/llm/provider.js";
+import type {
+  LLMProvider,
+  PaperEvaluation,
+  RelationClassification,
+} from "../../../src/collect/llm/provider.js";
 import { createPaper, type Paper } from "../../../src/collect/model/paper.js";
 import { llmRerank } from "../../../src/collect/stages/llmRank.js";
 
@@ -26,6 +30,14 @@ class FakeProvider implements LLMProvider {
 
   async chat(): Promise<string | null> {
     return null;
+  }
+
+  async classifyRelation(): Promise<RelationClassification | null> {
+    return null;
+  }
+
+  async completeJson(): Promise<string | null> {
+    throw new Error("FakeProvider has no JSON-mode completion");
   }
 }
 

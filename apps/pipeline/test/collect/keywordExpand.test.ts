@@ -23,6 +23,12 @@ function fakeProvider(chat: LLMProvider["chat"]): LLMProvider {
       return [];
     },
     chat,
+    async classifyRelation() {
+      return null;
+    },
+    async completeJson() {
+      throw new Error("fakeProvider has no JSON-mode completion");
+    },
   };
 }
 
