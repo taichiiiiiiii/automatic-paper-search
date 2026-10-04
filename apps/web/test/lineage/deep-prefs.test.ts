@@ -19,6 +19,7 @@
  */
 import { describe, expect, it } from "vitest";
 import type { Relation } from "../../lib/lineage/core";
+import { resolveView } from "../../lib/lineage/core";
 import {
   buildDeepPrefsPayload,
   DEEP_STORAGE_KEY,
@@ -28,9 +29,10 @@ import {
   loadDeepRelations,
   parseDeepPrefsJson,
   readDeepPrefs,
+  readDeepViewPref,
   readRelationsParam,
   resolveInitialRelations,
-  saveDeepRelations,
+  saveDeepPrefs,
   serializeRelationsParam,
 } from "../../lib/lineage/deep-prefs";
 import { STORAGE_KEY as LINEAGE_STORAGE_KEY } from "../../lib/lineage/layout/constants";
@@ -199,38 +201,38 @@ describe("readDeepPrefs", () => {
   });
 });
 
-describe("buildDeepPrefsPayload / saveDeepRelations (the page's save path)", () => {
-  it("serialises the filter under deep.js's own field name", () => {
+describe("buildDeepPrefsPayload / saveDeepPrefs (the page's save path)", () => {
+  it("serialises the filter with no view when none is given", () => {
     expect(buildDeepPrefsPayload(setOf("extends", "supersedes"))).toEqual({
       visibleRelations: ["extends", "supersedes"],
     });
   });
 
-  it("keeps a stored view so this page's relations-only write cannot reset it", () => {
-    const previous: DeepPrefs = { view: "graph", visibleRelations: ["extends"] };
-    expect(buildDeepPrefsPayload(setOf("extends"), previous)).toEqual({
+  it("always writes the CURRENT view together with the filter, like deep.js savePrefs", () => {
+    expect(buildDeepPrefsPayload(setOf("extends"), "graph")).toEqual({
       visibleRelations: ["extends"],
       view: "graph",
     });
-  });
-
-  it("drops an unusable stored view instead of carrying it forward", () => {
-    expect(buildDeepPrefsPayload(setOf("extends"), { view: "topics" })).toEqual({
+    expect(buildDeepPrefsPayload(setOf("extends"), "list")).toEqual({
       visibleRelations: ["extends"],
+      view: "list",
     });
   });
 
-  it("round-trips through storage, keeping the unrelated stored field", () => {
-    const store = storeWith({ view: "graph", visibleRelations: ["supersedes"] });
-    saveDeepRelations(setOf("extends", "contrasts"), () => store);
+  it("round-trips through storage: a relations-only save with the page's current view overwrites, not merges", () => {
+    // deep.js's savePrefs never re-reads storage first -- a save always
+    // reflects the page's own current state, so a stale stored "list"
+    // is replaced outright by whatever view the page passes in.
+    const store = storeWith({ view: "list", visibleRelations: ["supersedes"] });
+    saveDeepPrefs(setOf("extends", "contrasts"), "graph", () => store);
     expect(storedPrefs(store).view).toBe("graph");
     expect(sorted(loadDeepRelations(null, () => store))).toEqual(["contrasts", "extends"]);
   });
 
   it("still writes when the stored blob is unreadable", () => {
     const store = memoryStore({ [DEEP_STORAGE_KEY]: "{" });
-    saveDeepRelations(setOf("extends"), () => store);
-    expect(storedPrefs(store)).toEqual({ visibleRelations: ["extends"] });
+    saveDeepPrefs(setOf("extends"), "graph", () => store);
+    expect(storedPrefs(store)).toEqual({ visibleRelations: ["extends"], view: "graph" });
   });
 
   it("survives a setItem that throws (private mode / quota)", () => {
@@ -240,18 +242,47 @@ describe("buildDeepPrefsPayload / saveDeepRelations (the page's save path)", () 
         throw new Error("QuotaExceededError");
       },
     };
-    expect(() => saveDeepRelations(setOf("extends"), () => throwingSet)).not.toThrow();
+    expect(() => saveDeepPrefs(setOf("extends"), "graph", () => throwingSet)).not.toThrow();
   });
 
   it("survives a localStorage getter that throws, writing nothing", () => {
     const blocked = () => {
       throw new Error("SecurityError: localStorage is blocked");
     };
-    expect(() => saveDeepRelations(setOf("extends"), blocked)).not.toThrow();
+    expect(() => saveDeepPrefs(setOf("extends"), "graph", blocked)).not.toThrow();
   });
 
   it("ignores a storage source that is simply absent (server)", () => {
-    expect(() => saveDeepRelations(setOf("extends"), () => null)).not.toThrow();
+    expect(() => saveDeepPrefs(setOf("extends"), "graph", () => null)).not.toThrow();
+  });
+});
+
+describe("readDeepViewPref + core.ts resolveView (deep.js's initial state.view)", () => {
+  it("reads a valid stored view", () => {
+    expect(readDeepViewPref({ view: "list" })).toBe("list");
+  });
+
+  it("returns null for a missing/non-string stored view, same as a missing prefs blob", () => {
+    expect(readDeepViewPref(null)).toBeNull();
+    expect(readDeepViewPref({})).toBeNull();
+    expect(readDeepViewPref({ view: 42 })).toBeNull();
+  });
+
+  it("feeds straight into core.ts resolveView with the same precedence as deep.js's own init", () => {
+    expect(resolveView({ urlView: "list", savedView: readDeepViewPref({ view: "graph" }) })).toBe(
+      "list",
+    );
+    expect(resolveView({ urlView: null, savedView: readDeepViewPref({ view: "graph" }) })).toBe(
+      "graph",
+    );
+    expect(resolveView({ urlView: null, savedView: readDeepViewPref(null) })).toBe("graph");
+    expect(
+      resolveView({
+        urlView: null,
+        savedView: readDeepViewPref(null),
+        matchMedia: () => ({ matches: true }),
+      }),
+    ).toBe("list");
   });
 });
 
@@ -263,21 +294,24 @@ describe("serializeRelationsParam / deepDisplayUrl (deep.js syncDisplayUrl)", ()
     expect(serializeRelationsParam(new Set<Relation>())).toBe("");
   });
 
-  it("replaces the relations key and keeps every other parameter", () => {
+  it("replaces both the view and relations keys, keeping every other parameter", () => {
     const href = deepDisplayUrl(
-      "https://example.test/iclr-2026/deep/?paper=abc&view=graph&relations=supersedes",
+      "https://example.test/iclr-2026/deep/?paper=abc&view=list&relations=supersedes",
       setOf("extends", "contrasts"),
+      "graph",
     );
     const params = new URL(href).searchParams;
     expect(params.get("relations")).toBe("contrasts,extends");
     expect(params.get("paper")).toBe("abc");
     expect(params.get("view")).toBe("graph");
     expect([...params.keys()].filter((key) => key === "relations")).toHaveLength(1);
+    expect([...params.keys()].filter((key) => key === "view")).toHaveLength(1);
   });
 
-  it("adds the key when the URL has no query yet", () => {
-    expect(deepDisplayUrl("https://example.test/iclr-2026/deep/", setOf("extends"))).toBe(
-      "https://example.test/iclr-2026/deep/?relations=extends",
-    );
+  it("adds both keys when the URL has no query yet", () => {
+    const href = deepDisplayUrl("https://example.test/iclr-2026/deep/", setOf("extends"), "list");
+    const params = new URL(href).searchParams;
+    expect(params.get("view")).toBe("list");
+    expect(params.get("relations")).toBe("extends");
   });
 });

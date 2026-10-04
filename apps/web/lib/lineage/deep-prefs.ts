@@ -18,7 +18,7 @@
  * Same boundary as that file: the relation maths themselves take plain
  * strings/records so they can be unit tested without a `window`, and
  * the two functions that do touch storage (`loadDeepRelations`/
- * `saveDeepRelations`) take the store as a *thunk*. That is not
+ * `saveDeepPrefs`) take the store as a *thunk*. That is not
  * decoration -- Safari raises when the `window.localStorage` *property
  * itself* is read with cookies blocked, before `getItem`/`setItem` ever
  * run, so the property access has to sit inside the `try` too. A page
@@ -26,6 +26,14 @@
  */
 import type { Relation } from "./core";
 import { ALL_RELATIONS, DEFAULT_VISIBLE_RELATIONS } from "./relations";
+
+/** deep.js's own two view values (`.view-btn[data-view]`). Defined
+ * locally rather than importing lib/lineage/layout/constants.ts's
+ * `LineageView` -- the values are identical, but that module is the
+ * conference lineage viewer's own (it also has "topics"/"timeline"
+ * layouts deep.js has no equivalent of), and this file's header already
+ * explains why deep's prefs stay independently pinned to deep.js. */
+export type DeepView = "list" | "graph";
 
 /** Ported from deep.js `STORAGE_KEY`. */
 export const DEEP_STORAGE_KEY = "pp.deep.prefs";
@@ -47,14 +55,15 @@ export interface DeepPrefsStore {
 
 export type DeepPrefsStoreSource = () => DeepPrefsStore | null;
 
-/** The shape actually written back out. `view` is only re-emitted when
- * the blob already carried a valid one: this port has no list/graph
- * toggle yet (docs/migration/p2-parity-gaps.md's graph-view gap), so it
- * must not invent a view -- but it must not erase the visitor's saved
- * one either, or the toggle's eventual port would silently reset it. */
+/** The shape actually written back out -- matches deep.js `savePrefs`'s
+ * payload exactly: both fields always written together from the
+ * page's current in-memory state (`view` is optional here only because
+ * a caller that has not resolved an initial view yet, e.g. during a
+ * unit test, may omit it -- the page itself always has one once the
+ * tree is ready). */
 export interface SerializableDeepPrefs {
   visibleRelations: Relation[];
-  view?: "list" | "graph";
+  view?: DeepView;
 }
 
 /** Ported from deep.js `loadPrefs`'s `JSON.parse` (whose `catch`
@@ -112,13 +121,18 @@ export function serializeRelationsParam(visibleRelations: ReadonlySet<Relation>)
   return [...visibleRelations].sort().join(",");
 }
 
-/** Ported from deep.js `savePrefs`'s `JSON.stringify` payload. */
+/** Ported from deep.js `savePrefs`'s `JSON.stringify` payload --
+ * `{view: state.view, visibleRelations: [...state.visibleRelations]}`.
+ * Unlike the conference lineage viewer's `pp.lineage.prefs` writer,
+ * deep.js never re-reads storage before writing; it always writes its
+ * own current in-memory `view`+`visibleRelations` together, so this
+ * takes `view` directly rather than threading a previously-stored blob
+ * through. */
 export function buildDeepPrefsPayload(
   visibleRelations: ReadonlySet<Relation>,
-  previous: DeepPrefs | null = null,
+  view?: DeepView,
 ): SerializableDeepPrefs {
   const payload: SerializableDeepPrefs = { visibleRelations: [...visibleRelations] };
-  const view = previous?.view;
   if (view === "list" || view === "graph") payload.view = view;
   return payload;
 }
@@ -154,40 +168,46 @@ export function loadDeepRelations(
   return resolveInitialRelations(readRelationsParam(search), readDeepPrefs(source));
 }
 
-/** `savePrefs()`: re-reads the stored blob (so a `view` written by the
- * original site survives our relations-only write) and stores the new
- * filter. Never throws -- a blocked accessor, a throwing `getItem`, or
- * a quota/private-mode `setItem` all leave the page working with
- * in-memory state only. */
-export function saveDeepRelations(
+/** `savePrefs()`: writes the page's current `view`+`visibleRelations`
+ * together, matching the original exactly (it never re-reads storage
+ * first -- see `buildDeepPrefsPayload`'s header). Never throws -- a
+ * blocked accessor or a quota/private-mode `setItem` both leave the
+ * page working with in-memory state only. */
+export function saveDeepPrefs(
   visibleRelations: ReadonlySet<Relation>,
+  view: DeepView,
   source: DeepPrefsStoreSource,
 ): void {
   const store = resolveStore(source);
   if (!store) return;
-  let previous: DeepPrefs | null = null;
   try {
-    previous = parseDeepPrefsJson(store.getItem(DEEP_STORAGE_KEY));
-  } catch {
-    previous = null;
-  }
-  try {
-    store.setItem(
-      DEEP_STORAGE_KEY,
-      JSON.stringify(buildDeepPrefsPayload(visibleRelations, previous)),
-    );
+    store.setItem(DEEP_STORAGE_KEY, JSON.stringify(buildDeepPrefsPayload(visibleRelations, view)));
   } catch {
     /* localStorage may be disabled */
   }
 }
 
+/** Ported from deep.js's initial `state.view` resolution
+ * (`LineageCore.resolveView({urlView, savedView, matchMedia})`) --
+ * deep.js reuses the conference lineage viewer's own `resolveView`
+ * (lib/lineage/core.ts) verbatim rather than defining its own, so this
+ * does too, just narrowing `prefs.view` to a string first since
+ * `DeepPrefs.view` is `unknown` (untrusted stored data). */
+export function readDeepViewPref(prefs: DeepPrefs | null): string | null {
+  return typeof prefs?.view === "string" ? prefs.view : null;
+}
+
 /** Ported from `syncDisplayUrl`: the href to `history.replaceState`
- * after a chip toggle, carrying the filter in `?relations=`. Only the
- * `relations` key is touched -- this page has no view toggle yet, so an
- * existing `?view=` is left as the visitor wrote it. Every other query
- * parameter (notably the picker's `?paper=`) is preserved. */
-export function deepDisplayUrl(href: string, visibleRelations: ReadonlySet<Relation>): string {
+ * after a chip/view-button click, carrying both `?view=` and
+ * `?relations=`. Every other query parameter (notably the picker's
+ * `?paper=`) is preserved. */
+export function deepDisplayUrl(
+  href: string,
+  visibleRelations: ReadonlySet<Relation>,
+  view: DeepView,
+): string {
   const url = new URL(href);
+  url.searchParams.set("view", view);
   url.searchParams.set("relations", serializeRelationsParam(visibleRelations));
   return url.toString();
 }

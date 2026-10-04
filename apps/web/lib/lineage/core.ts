@@ -906,6 +906,35 @@ export function resolveFocus(
   return uniqueMatch(data.nodes.filter((node) => node.id === raw));
 }
 
+/** P2 review M7: a `?focus=` that does not resolve against the audited
+ * artifact must not fall back to drawing the root graph -- an unknown
+ * id looking like it "worked" (showing some graph, just not the one
+ * requested) is worse than showing nothing. Pulled out of
+ * app/[conf]/lineage/page.tsx as a pure function so the "don't mount
+ * the graph at all" decision is unit-testable without a DOM/React
+ * render -- the page only has to call this once and branch on
+ * `mount`. */
+export interface LineageFocusGate {
+  /** Whether `<LineageGraph>` may be mounted at all. */
+  mount: boolean;
+  /** `initialFocusId` to hand `<LineageGraph>` when `mount` is true. */
+  focusId: string | null;
+  /** Whether to show the "not found" notice (`requested` was non-empty
+   * and did not resolve). */
+  notFound: boolean;
+}
+
+export function resolveLineageFocusGate(
+  data: LineageArtifact | null,
+  requested: string | null | undefined,
+): LineageFocusGate {
+  const focusNode = resolveFocus(data, requested);
+  if (nonempty(requested) && !focusNode) {
+    return { mount: false, focusId: null, notFound: true };
+  }
+  return { mount: true, focusId: focusNode?.id ?? data?.root ?? null, notFound: false };
+}
+
 export function resolveManifestEntry(
   manifest: DeepManifest | null,
   { paper = null, arxiv = null }: { paper?: string | null; arxiv?: string | null } = {},
@@ -922,6 +951,44 @@ export function resolveManifestEntry(
     );
   }
   return manifest.entries[0] || null;
+}
+
+/** P2 review: deep-linking a specific paper on `/[conf]/deep/` via
+ * `?paper=`/`?arxiv=`. `resolveManifestEntry` above already has the
+ * right fail-closed shape for this on its own -- it only falls back to
+ * `entries[0]` when BOTH params are empty (no explicit request); an
+ * explicit `paper`/`arxiv` that matches nothing returns `null`, never
+ * `entries[0]` (SCR-28). This wraps that in the one extra decision the
+ * page needs: `entries` here must already be filtered down to this
+ * conference's ELIGIBLE rows (never the raw, unaudited manifest, same
+ * as docs/assets/deep.js `init`'s own pre-filtered `state.manifest`),
+ * and the page must not show the picker/graph UI at all when an
+ * explicit request fails to resolve -- it must look the same as "no
+ * row eligible yet", not quietly swap in a different paper. */
+export interface DeepFocusGate {
+  /** Whether the ready picker/graph UI may be shown at all. */
+  mount: boolean;
+  /** The entry to select when `mount` is true. */
+  entry: DeepManifestEntry | null;
+}
+
+export function resolveDeepFocusGate(
+  eligibleEntries: readonly DeepManifestEntry[],
+  request: { paper?: string | null; arxiv?: string | null } = {},
+): DeepFocusGate {
+  if (eligibleEntries.length === 0) return { mount: false, entry: null };
+  const explicit = nonempty(request.paper) || nonempty(request.arxiv);
+  const entry = resolveManifestEntry(
+    {
+      schema_version: MANIFEST_VERSION,
+      conference: "",
+      generated_at: "",
+      entries: [...eligibleEntries],
+    },
+    request,
+  );
+  if (explicit && !entry) return { mount: false, entry: null };
+  return { mount: true, entry };
 }
 
 export function resolveView({

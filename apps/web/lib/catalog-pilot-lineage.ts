@@ -11,76 +11,60 @@
  * collide across conferences), the card offers a link to that audited
  * view; otherwise it says plainly that none is published yet.
  *
- * `parsePilotLineageIndex` below is a deliberately conservative,
- * fail-closed SUBSET of the full index contract
- * (docs/assets/lineage-v2-core.js `parsePilotIndex`, SCR-47/48): it
- * validates `schema_version`, the entry count bound, and that every
- * entry has a well-formed `paper_id` + conference slug with no
- * duplicates, but does NOT validate the `artifact`/`fixture`/`quality`
- * path+sha256 triples those entries also carry (the catalog never reads
- * or renders lineage content itself -- it only resolves "does an entry
- * exist for this paper in this conference" to decide whether to show a
- * link). The full contract belongs in a shared module
- * (`packages/core/lineage/contract-v2.ts`, per safety-contracts.md) for
- * whichever page actually fetches and renders the audited artifact; this
- * file must not grow a second definition of it.
+ * `parsePilotLineageIndex`/`resolvePilotLineageForSelection` below used
+ * to be a hand-rolled, deliberately conservative SUBSET of the full
+ * index contract -- validating only `schema_version`, the entry count
+ * bound, and a well-formed `paper_id`/conference slug, while skipping
+ * the `artifact`/`fixture`/`quality` path+sha256 triples (SCR-47) and
+ * the branded-value replay guard (SCR-48). That was a placeholder from
+ * before the full v2 reader existed. Now that
+ * `lib/lineage/v2` (SCR-47/SCR-48) is ported, this module delegates to
+ * it directly -- `parsePilotIndex`/`resolvePilotEntry` -- instead of
+ * keeping a second, looser definition of the same contract. The
+ * catalog still never reads or renders lineage content itself; it only
+ * resolves "does a fully-verified entry exist for this paper in this
+ * conference" to decide whether to show a link. The exported names/
+ * shapes here are kept stable (`PilotLineageIndex`, `PilotLineageEntry`,
+ * `parsePilotLineageIndex`, `resolvePilotLineageForSelection`) because
+ * `lib/catalog-data.ts` and `components/catalog/catalog-app.tsx` (both
+ * outside this file's ownership) import them and only ever check the
+ * resolved entry's truthiness -- they do not need to change.
  */
 import { BASE_PATH } from "@paperpilot/core/site";
 import { isPaperId } from "./catalog-core";
+import { parsePilotIndex, resolvePilotEntry } from "./lineage/v2";
+import type { PilotIndex, PilotIndexEntry } from "./lineage/v2/types";
 
 export const PILOT_LINEAGE_INDEX_PATH = `${BASE_PATH}/lineage-pilot-index-v1.json`;
 export const PILOT_LINEAGE_INDEX_MAX_BYTES = 256 * 1024;
 export const PILOT_LINEAGE_INDEX_TIMEOUT_MS = 8_000;
 
-const SLUG_RE = /^[a-z0-9][a-z0-9-]*$/;
-const PILOT_INDEX_MAX_ENTRIES = 100;
+export type PilotLineageEntry = PilotIndexEntry;
+export type PilotLineageIndex = PilotIndex;
 
-export interface PilotLineageEntry {
-  paper_id: string;
-  conference: string;
-}
-
-export interface PilotLineageIndex {
-  schema_version: "lineage-pilot-index-v1";
-  entries: PilotLineageEntry[];
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return value !== null && typeof value === "object" && !Array.isArray(value);
-}
-
+/** Full lineage-pilot-index-v1 contract (SCR-47/48) -- see this file's
+ * header. Fails closed (`null`) on anything the strict v2 reader does
+ * not accept, including today's production index (an entry-less
+ * `{schema_version, entries: []}`), which still parses fine since an
+ * empty `entries` array trivially satisfies every per-entry check. */
 export function parsePilotLineageIndex(value: unknown): PilotLineageIndex | null {
-  if (!isRecord(value)) return null;
-  if (value.schema_version !== "lineage-pilot-index-v1") return null;
-  if (!Array.isArray(value.entries) || value.entries.length > PILOT_INDEX_MAX_ENTRIES) return null;
-  const ids = new Set<string>();
-  const entries: PilotLineageEntry[] = [];
-  for (const raw of value.entries) {
-    if (
-      !isRecord(raw) ||
-      !isPaperId(raw.paper_id) ||
-      typeof raw.conference !== "string" ||
-      !SLUG_RE.test(raw.conference) ||
-      ids.has(raw.paper_id)
-    ) {
-      return null;
-    }
-    ids.add(raw.paper_id);
-    entries.push({ paper_id: raw.paper_id, conference: raw.conference });
-  }
-  return { schema_version: "lineage-pilot-index-v1", entries };
+  return parsePilotIndex(value);
 }
 
 /** Finds the one entry (if any) that matches BOTH `paperId` and the
  * current conference -- a stale/foreign entry can never resolve to a
- * link on another conference's card. */
+ * link on another conference's card. `resolvePilotEntry` also enforces
+ * SCR-48's replay guard: only a value THIS module's `parsePilotIndex`
+ * produced (branded, deep-frozen) can resolve, so a structurally
+ * identical object built by hand (or round-tripped through
+ * `structuredClone`/`JSON`) never resolves. */
 export function resolvePilotLineageForSelection(
   index: PilotLineageIndex | null,
   paperId: string,
   conference: string,
 ): PilotLineageEntry | null {
-  if (!index || !isPaperId(paperId)) return null;
-  const entry = index.entries.find((e) => e.paper_id === paperId);
+  if (!isPaperId(paperId)) return null;
+  const entry = resolvePilotEntry(index, paperId);
   return entry && entry.conference === conference ? entry : null;
 }
 

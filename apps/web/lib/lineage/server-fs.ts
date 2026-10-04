@@ -30,12 +30,17 @@ const SLUG_RE = /^[a-z0-9][a-z0-9-]*$/;
  * conferences ship a `lineage.html`/`deep.html` today.
  */
 export async function listConferenceSlugsWithFile(fileName: string): Promise<string[]> {
-  let names: string[];
-  try {
-    names = await readdir(DOCS_DIR);
-  } catch {
-    return [];
-  }
+  // P2 review LOW: this used to swallow a `readdir(DOCS_DIR)` failure
+  // (missing/unreadable `docs/`, e.g. a misconfigured checkout or a
+  // future repo layout change) into an empty array -- which
+  // `generateStaticParams` would then read as "zero conferences have
+  // this file", silently building NO lineage/deep routes for the
+  // entire site instead of failing the build loudly. `docs/` not
+  // existing is a build-environment error, not "no conference is
+  // eligible yet" (that latter case is each per-conference `stat`
+  // below, which legitimately means "this one conference lacks the
+  // file" and must stay non-fatal).
+  const names = await readdir(DOCS_DIR);
   const slugs: string[] = [];
   for (const name of names) {
     if (!SLUG_RE.test(name)) continue;

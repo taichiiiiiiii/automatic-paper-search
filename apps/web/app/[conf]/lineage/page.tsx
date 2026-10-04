@@ -11,7 +11,7 @@ import {
   parseArtifact,
   qualityRowIsEligible,
   qualityRowIsPublishable,
-  resolveFocus,
+  resolveLineageFocusGate,
   resolveQualityCollection,
 } from "../../../lib/lineage/core";
 
@@ -91,13 +91,26 @@ export default function ConferenceLineagePage() {
         setState({ phase: "pending" });
         return;
       }
-      const requested = new URLSearchParams(window.location.search).get("focus");
-      const focusNode = resolveFocus(artifact, requested);
-      if (requested && !focusNode) {
-        setFocusNotFound(true);
-      } else {
-        setFocusId(focusNode?.id ?? artifact.root);
+      // P2 review LOW: ported from lineage.js `init`'s `if
+      // (!state.data.root) { ...; return; }` -- that check sits BEFORE
+      // the lines that unhide the ready UI and stamp the "（監査済み）"
+      // heading, so an empty artifact (no root, e.g. a lineage-quality
+      // row that passed audit over a structurally-empty graph) never
+      // reaches the ready look at all; it leaves the page showing
+      // exactly the same copy as "not ready yet". This port must not
+      // show "（監査済み）" over an empty graph just because `artifact`
+      // itself parsed.
+      if (!artifact.root) {
+        setState({ phase: "pending" });
+        return;
       }
+      const requested = new URLSearchParams(window.location.search).get("focus");
+      // M7 (P2 review): an unknown `?focus=` must not fall back to
+      // drawing the root graph -- see lib/lineage/core.ts
+      // `resolveLineageFocusGate`'s header.
+      const gate = resolveLineageFocusGate(artifact, requested);
+      setFocusNotFound(gate.notFound);
+      setFocusId(gate.focusId);
       setState({ phase: "ready", artifact });
     }
     run();
@@ -150,12 +163,13 @@ export default function ConferenceLineagePage() {
 
       {state.phase === "ready" && (
         <article>
-          {focusNotFound && (
+          {focusNotFound ? (
             <p role="alert" className="mb-4 text-sm text-accent-strong">
               指定された論文IDはこの監査済み系譜にありません。
             </p>
+          ) : (
+            <LineageGraph artifact={state.artifact} initialFocusId={focusId} />
           )}
-          <LineageGraph artifact={state.artifact} initialFocusId={focusId} />
         </article>
       )}
     </main>

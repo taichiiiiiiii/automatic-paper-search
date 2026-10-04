@@ -20,6 +20,7 @@ import {
   placeEdgeLabel,
   rectangleEdgePoints,
   routeEdge,
+  safeEvidenceLink,
   segmentHitsCard,
 } from "../../../lib/lineage/v2/layout";
 import type { LineageV2Claim, LineageV2Node } from "../../../lib/lineage/v2/types";
@@ -388,5 +389,28 @@ describe("nodeLanes / laneLayout", () => {
     );
     expect(comparisonTop).toBeGreaterThan(familyBottom);
     expect(JSON.stringify([mixedNodes, mixedClaims])).toBe(before);
+  });
+});
+
+// P2 review LOW: safeEvidenceLink (SCR-45's render-time "open the
+// source" link guard, components/lineage/focus/InspectorDialog.tsx)
+// had no direct test -- only lib/lineage/v2/url-alias.ts's
+// `validHttpUrl` (the write-time/validation-time analogue, see
+// test/lineage/focus/url-alias.test.ts) was ever exercised.
+describe("safeEvidenceLink", () => {
+  it("returns the normalized href for an http(s) URL", () => {
+    expect(safeEvidenceLink("https://example.com/paper")).toBe("https://example.com/paper");
+    expect(safeEvidenceLink("http://example.com/paper")).toBe("http://example.com/paper");
+  });
+
+  it("returns null for a non-http(s) scheme", () => {
+    expect(safeEvidenceLink("javascript:alert(1)")).toBeNull();
+    expect(safeEvidenceLink("ftp://example.com/paper")).toBeNull();
+    expect(safeEvidenceLink("file:///etc/passwd")).toBeNull();
+  });
+
+  it("returns null for a malformed URL instead of throwing", () => {
+    expect(safeEvidenceLink("https://[")).toBeNull();
+    expect(safeEvidenceLink("not a url")).toBeNull();
   });
 });

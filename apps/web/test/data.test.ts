@@ -141,3 +141,23 @@ describe("fetchSearchIndex", () => {
     expect(result.status).toBe("ok");
   });
 });
+
+describe("fetchConferences — null generated", () => {
+  it("keeps a row whose generated date is null (build_pages._generated_date may return None)", async () => {
+    const row = {
+      name: "cvpr-2026",
+      papers: 10,
+      types: { Oral: 1, Poster: 9 },
+      top_tags: [["LLM", 3]],
+      generated: null,
+    };
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response(JSON.stringify([row]), { status: 200 })),
+    );
+    const result = await fetchConferences();
+    expect(result.status).toBe("ok");
+    if (result.status === "ok") expect(result.data.map((r) => r.name)).toContain("cvpr-2026");
+    vi.unstubAllGlobals();
+  });
+});

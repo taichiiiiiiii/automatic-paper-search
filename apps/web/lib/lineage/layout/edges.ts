@@ -15,6 +15,15 @@
  * lib/lineage/layout/view-model.ts's `buildGraph`, so an edge lands on
  * the card's actual rendered bottom instead of the static slot once
  * fonts have settled -- see that file for the DOM side.
+ *
+ * `buildEdgePath`/`computeSvgSize` take optional `nodeW`/`padding`
+ * overrides (defaulting to this module's own NODE_W/PADDING) so
+ * lib/lineage/layout/deep-view-model.ts can reuse the exact same
+ * bezier/canvas-size math with deep.js's own 240×180 card dimensions
+ * instead of duplicating it -- deep.js's `drawSvg` edge loop and this
+ * file's are otherwise identical. Every existing call site keeps
+ * calling these with no override, so the lineage viewer's own geometry
+ * is unaffected.
  */
 import type { LineageEdge } from "../core";
 import { NODE_H, NODE_W, PADDING } from "./constants";
@@ -106,10 +115,11 @@ export function buildEdgePath(
   b: PositionedLike,
   fanOffset: number,
   heightOf: (node: PositionedLike) => number = () => NODE_H,
+  nodeW: number = NODE_W,
 ): EdgeGeometry {
-  const ax = a._x + NODE_W / 2 + fanOffset;
+  const ax = a._x + nodeW / 2 + fanOffset;
   const ay = a._y + heightOf(a);
-  const bx = b._x + NODE_W / 2;
+  const bx = b._x + nodeW / 2;
   const by = b._y;
   const midY = (ay + by) / 2;
   return {
@@ -130,9 +140,11 @@ export interface SvgSize {
 export function computeSvgSize(
   positioned: readonly PositionedLike[],
   heightOf: (node: PositionedLike) => number = () => NODE_H,
+  nodeW: number = NODE_W,
+  padding: number = PADDING,
 ): SvgSize {
   if (positioned.length === 0) return { width: 0, height: 0 };
-  const width = Math.max(...positioned.map((p) => p._x + NODE_W)) + PADDING;
-  const height = Math.max(...positioned.map((p) => p._y + heightOf(p))) + PADDING;
+  const width = Math.max(...positioned.map((p) => p._x + nodeW)) + padding;
+  const height = Math.max(...positioned.map((p) => p._y + heightOf(p))) + padding;
   return { width, height };
 }

@@ -126,6 +126,11 @@ export function CatalogApp({
 
   const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const focusSelectedHeadingRef = useRef(false);
+  // Ported from app.js's popstate handler's `else if (historyRestore)`
+  // branch (app.js:1999-2006): set only when Back/Forward returns to the
+  // LIST (no selected paper) and the LIST entry carries a restore
+  // snapshot. Consumed once by the scroll/focus-restore effect below.
+  const pendingListRestoreRef = useRef<{ scrollY: number; focusPaperId: string } | null>(null);
   const retryButtonRef = useRef<HTMLButtonElement | null>(null);
   const retryFocusPendingRef = useRef(false);
   const pilotIndexRef = useRef<PilotLineageIndex | null>(null);
@@ -278,6 +283,14 @@ export function CatalogApp({
             : "direct"
           : null,
       );
+      // Mirrors app.js's `if (state.selectedPaperId) {...} else if
+      // (historyRestore) {...}`: a selection restore is handled by the
+      // "scroll/focus the selected card" effect; only a plain list
+      // restore (no selection) needs the snapshot's scroll/focus target.
+      pendingListRestoreRef.current =
+        !nextSelectedId && historyRestore
+          ? { scrollY: historyRestore.scrollY, focusPaperId: historyRestore.focusPaperId }
+          : null;
       setVisibleCount(historyRestore?.visibleCount ?? PAGE_SIZE);
       // A popstate restore never animates either (docs/assets/app.js's
       // popstate handler calls the no-arg `renderList()`).
@@ -384,6 +397,31 @@ export function CatalogApp({
       }
     });
     return () => cancelAnimationFrame(raf);
+  }, [selectedPaperId]);
+
+  // --- scroll/focus restore for a plain list return (Back/Forward) --------
+  // Ported from app.js's popstate handler's `else if (historyRestore)`
+  // branch (app.js:1999-2006): restores the scroll position the reader
+  // was at before selecting a paper, and returns keyboard focus to that
+  // paper's select button -- falling back to the search input if the
+  // list has since changed and that paper is no longer rendered.
+  useEffect(() => {
+    if (selectedPaperId) return;
+    const pending = pendingListRestoreRef.current;
+    if (!pending) return;
+    pendingListRestoreRef.current = null;
+    const raf = requestAnimationFrame(() => {
+      window.scrollTo({ top: pending.scrollY, behavior: "auto" });
+      const returnedSelect = document.querySelector<HTMLElement>(
+        `[data-select-paper="${pending.focusPaperId}"]`,
+      );
+      (returnedSelect ?? document.getElementById("search"))?.focus({ preventScroll: true });
+    });
+    return () => cancelAnimationFrame(raf);
+    // `visibleCount` is not read in this body; the one transition this
+    // effect cares about always sets it in the SAME batched update as
+    // `selectedPaperId` (the popstate handler above), so by the time
+    // this effect runs the DOM already reflects both.
   }, [selectedPaperId]);
 
   // --- user-driven mutations ------------------------------------------------
@@ -501,7 +539,10 @@ export function CatalogApp({
   const typeChips = buildTypeChips(papers);
   const tagsExpanded = tagsManuallyExpanded || tagGroups.tailActiveByDefault;
   const activeFilters = hasActiveFilters({ search, type, activeTags });
-  const paperLinksHref = `${BASE_PATH}/${conf}/paper-links.html`;
+  // Review LOW: this used to point at the pre-port `paper-links.html`
+  // filename; the ported no-JS route is `/<conf>/paper-links/`
+  // (app/[conf]/paper-links/page.tsx, trailingSlash static export).
+  const paperLinksHref = `${BASE_PATH}/${conf}/paper-links/`;
   const pilotLineageHref = `${BASE_PATH}/lineage/?paper=${encodeURIComponent(selectedPaperId ?? "")}`;
 
   return (

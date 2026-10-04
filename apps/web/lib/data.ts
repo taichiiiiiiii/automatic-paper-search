@@ -62,7 +62,7 @@ export const ConferenceSummarySchema = z
     papers: z.number(),
     types: z.record(z.string(), z.number()),
     top_tags: z.array(z.tuple([z.string(), z.number()])),
-    generated: z.string(),
+    generated: z.string().nullable(),
   })
   .passthrough();
 export type ConferenceSummary = z.infer<typeof ConferenceSummarySchema>;

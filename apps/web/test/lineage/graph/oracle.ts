@@ -17,6 +17,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(here, "..", "..", "..", "..", "..");
 const UTILS_JS = resolve(REPO_ROOT, "docs/assets/utils.js");
 const LINEAGE_JS = resolve(REPO_ROOT, "docs/assets/lineage.js");
+const DEEP_JS = resolve(REPO_ROOT, "docs/assets/deep.js");
 
 function makeStubElement(): Record<string, unknown> {
   const el: Record<string, unknown> = {
@@ -148,4 +149,97 @@ export function loadLineageOracle(): LineageOracle {
   vm.runInContext(`${lineageSrc}\n${probe}`, context, { filename: LINEAGE_JS });
 
   return ctx.__oracle as LineageOracle;
+}
+
+export interface DeepLineageOracle {
+  layoutTree: (nodes: unknown[], edges: unknown[], focusId: string | null) => unknown[];
+  NODE_W: number;
+  NODE_H: number;
+  LEVEL_GAP: number;
+  SIBLING_GAP: number;
+  PADDING: number;
+}
+
+/** Same technique as `loadLineageOracle`, but evaluates
+ * docs/assets/deep.js instead of docs/assets/lineage.js. deep.js's
+ * module-level `init()` call fires fetches and reads `location.search`
+ * at eval time, so (like lineage.js's trailing `init();`) it is
+ * stripped before the source is run -- the parity tests only need
+ * `layoutTree` and the layout constants, not the full init flow (that
+ * is covered by paperpilot/tests/viewer/test_deep_publication_gate.mjs
+ * separately). */
+export function loadDeepOracle(): DeepLineageOracle {
+  const stubDoc = {
+    getElementById: () => makeStubElement(),
+    querySelector: () => null,
+    querySelectorAll: () => [],
+    createElement: () => makeStubElement(),
+    createElementNS: () => makeStubElement(),
+    addEventListener() {},
+    fonts: { ready: Promise.resolve() },
+  };
+  const localStorageBacking = new Map<string, string>();
+  const localStorageStub = {
+    getItem: (k: string) =>
+      localStorageBacking.has(k) ? (localStorageBacking.get(k) as string) : null,
+    setItem: (k: string, v: string) => localStorageBacking.set(k, v),
+    removeItem: (k: string) => localStorageBacking.delete(k),
+  };
+  const ctx: Record<string, unknown> = {
+    document: stubDoc,
+    localStorage: localStorageStub,
+    URLSearchParams,
+    console,
+    Math,
+    JSON,
+    Map,
+    Set,
+    Array,
+    Promise,
+    setTimeout,
+    clearTimeout,
+    requestAnimationFrame: (cb: () => void) => setTimeout(cb, 0),
+  };
+  ctx.window = {
+    PP: undefined,
+    PaperPilotLineageCore: {
+      resolveView: () => "graph",
+      parseQualityManifest: () => null,
+      resolveQualityCollection: () => null,
+      qualityRowIsEligible: () => false,
+      qualityRowIsPublishable: () => false,
+      fetchJsonWithSha256: async () => null,
+      parseArtifact: () => null,
+      selectActiveEdges: (edges: unknown[]) => edges,
+      resolveFocus: () => null,
+      resolveManifestEntry: () => null,
+      parseDeepManifest: () => null,
+    },
+    location: { search: "", pathname: "/iclr-2026/deep.html" },
+    matchMedia: undefined,
+    document: stubDoc,
+    localStorage: localStorageStub,
+    addEventListener() {},
+    removeEventListener() {},
+  };
+  ctx.globalThis = ctx;
+  const context = vm.createContext(ctx);
+
+  const utilsSrc = readFileSync(UTILS_JS, "utf8");
+  vm.runInContext(utilsSrc, context, { filename: UTILS_JS });
+
+  const deepSrc = readFileSync(DEEP_JS, "utf8").replace(/\binit\(\);\s*$/, "");
+  const probe = `
+    globalThis.__oracle = {
+      layoutTree,
+      NODE_W,
+      NODE_H,
+      LEVEL_GAP,
+      SIBLING_GAP,
+      PADDING,
+    };
+  `;
+  vm.runInContext(`${deepSrc}\n${probe}`, context, { filename: DEEP_JS });
+
+  return ctx.__oracle as DeepLineageOracle;
 }

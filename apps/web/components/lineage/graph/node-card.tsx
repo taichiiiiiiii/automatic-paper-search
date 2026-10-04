@@ -18,6 +18,16 @@
  * is exactly what makes measuring it meaningful. The foreignObject's
  * `overflow="visible"` lets that natural height render even before
  * the first measurement corrects the viewport to match.
+ *
+ * `variant="deep"` (default: unset, i.e. the conference lineage card)
+ * switches the card body to match docs/assets/deep.js `drawSvg`'s
+ * `.node-card--deep` markup instead of lineage.js's: up to 3 authors
+ * (not 2) with a `+N` suffix, no `kinds` chips, no "📈 trending" badge,
+ * and a `📖 <citation_count>` meta span alongside the star count --
+ * deep's larger 240×180 cards show more metadata per card than the
+ * conference tree/timeline's 220×150 ones. Additive: every existing
+ * caller omits `variant`, so the conference lineage viewer's cards are
+ * byte-identical to before this prop existed.
  */
 import { forwardRef } from "react";
 import type { LineageNode } from "../../../lib/lineage/core";
@@ -42,21 +52,29 @@ export interface NodeCardProps {
   isFocus: boolean;
   onSelect: (id: string) => void;
   onHoverChange?: (id: string, hovered: boolean) => void;
+  /** See this file's header. Omit for the conference lineage card. */
+  variant?: "deep";
 }
 
 export const NodeCard = forwardRef<HTMLButtonElement, NodeCardProps>(function NodeCard(
-  { node, width, height, isFocus, onSelect, onHoverChange },
+  { node, width, height, isFocus, onSelect, onHoverChange, variant },
   ref,
 ) {
+  const isDeep = variant === "deep";
   const authorsList = Array.isArray(node.authors) ? node.authors : [];
+  const authorSlice = isDeep ? 3 : 2;
   const authors =
-    authorsList.slice(0, 2).join(", ") +
-    (authorsList.length > 2 ? ` +${authorsList.length - 2}` : "");
-  const kinds = Array.isArray(node.kinds) ? (node.kinds as unknown[]) : [];
+    authorsList.slice(0, authorSlice).join(", ") +
+    (authorsList.length > authorSlice ? ` +${authorsList.length - authorSlice}` : "");
+  const kinds = isDeep ? [] : Array.isArray(node.kinds) ? (node.kinds as unknown[]) : [];
   const stars = formatStars(node.github_stars);
+  const citationCount =
+    isDeep && typeof node.citation_count === "number" && node.citation_count > 0
+      ? node.citation_count.toLocaleString()
+      : null;
   const venue = formatVenue(node.venue, node.year);
   const tier = venueTierKey(node.venue_tier);
-  const isTrending = node.is_trending === true;
+  const isTrending = !isDeep && node.is_trending === true;
 
   return (
     <foreignObject x={node._x} y={node._y} width={width} height={height} overflow="visible">
@@ -92,13 +110,14 @@ export const NodeCard = forwardRef<HTMLButtonElement, NodeCardProps>(function No
         {typeof node.tldr === "string" && node.tldr && (
           <p className="line-clamp-2 text-[0.68rem] text-ink-muted">{node.tldr}</p>
         )}
-        {(kinds.length > 0 || stars) && (
+        {(kinds.length > 0 || stars || citationCount) && (
           <div className="mt-auto flex flex-wrap items-center gap-1 text-[0.62rem] text-ink-subtle">
             {kinds.map((k) => (
               <span key={String(k)} className="rounded bg-surface-2 px-1 py-0.5">
                 {String(k)}
               </span>
             ))}
+            {citationCount && <span>📖 {citationCount}</span>}
             {stars && <span>⭐{stars}</span>}
           </div>
         )}

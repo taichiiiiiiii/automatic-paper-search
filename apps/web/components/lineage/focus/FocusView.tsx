@@ -123,6 +123,13 @@ export function FocusView({ release, initialState }: FocusViewProps) {
       });
       const nextProjection = nextState && selectFocusProjection(release, nextState);
       if (nextProjection) {
+        // P2 review LOW: a later popstate that DOES project again must
+        // recover from a previously-shown closed message -- without
+        // this, one bad `?focus=` (e.g. a manually edited URL) wedged
+        // the page on the "監査済みの系譜は表示できません" screen even
+        // after the visitor navigated Back/Forward to a URL that
+        // resolves fine, since `closedMessage` was never cleared here.
+        setClosedMessage(null);
         setViewState(nextState);
         setPage(1);
         return;

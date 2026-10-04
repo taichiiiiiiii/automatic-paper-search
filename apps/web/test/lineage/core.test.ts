@@ -14,6 +14,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
+  type DeepManifestEntry,
   fetchJsonWithSha256,
   type LineageArtifact,
   MAX_JSON_BYTES,
@@ -23,7 +24,9 @@ import {
   parseQualityManifest,
   qualityRowIsEligible,
   qualityRowIsPublishable,
+  resolveDeepFocusGate,
   resolveFocus,
+  resolveLineageFocusGate,
   resolveManifestEntry,
   resolveQualityCollection,
   resolveView,
@@ -246,6 +249,44 @@ describe("focus resolution", () => {
   });
 });
 
+describe("resolveLineageFocusGate (P2 review M7)", () => {
+  const parsed = parseArtifact(artifact(), { kind: "conference" }) as LineageArtifact;
+
+  it("mounts the graph at the root when no focus was requested", () => {
+    const gate = resolveLineageFocusGate(parsed, null);
+    expect(gate).toEqual({ mount: true, focusId: "root", notFound: false });
+  });
+
+  it("mounts the graph at the requested node when it resolves", () => {
+    const gate = resolveLineageFocusGate(parsed, paperId);
+    expect(gate).toEqual({ mount: true, focusId: "root", notFound: false });
+  });
+
+  // The bug this gate fixes: an unknown `?focus=` must not draw the
+  // root graph (that reads as "showing what was asked for", when it is
+  // not) -- `mount` must be false, not true-with-the-root-id.
+  it("does NOT mount the graph for an unknown focus -- fails closed, no root fallback", () => {
+    const gate = resolveLineageFocusGate(parsed, "unknown");
+    expect(gate).toEqual({ mount: false, focusId: null, notFound: true });
+  });
+
+  it("does not mount when there is no artifact at all", () => {
+    expect(resolveLineageFocusGate(null, "whatever")).toEqual({
+      mount: false,
+      focusId: null,
+      notFound: true,
+    });
+  });
+
+  it("an empty string request is treated the same as no request", () => {
+    expect(resolveLineageFocusGate(parsed, "")).toEqual({
+      mount: true,
+      focusId: "root",
+      notFound: false,
+    });
+  });
+});
+
 describe("deep manifest", () => {
   const manifest = {
     schema_version: "deep-manifest-v1",
@@ -302,6 +343,63 @@ describe("deep manifest", () => {
     expect(resolveManifestEntry(parsed, { paper: paperId })?.filename).toBe("deep-2602.18473.json");
     expect(resolveManifestEntry(parsed, { arxiv: "2602.18473" })?.paper_id).toBe(paperId);
     expect(resolveManifestEntry(parsed, { arxiv: "2401.00001" })).toBeNull();
+  });
+});
+
+describe("resolveDeepFocusGate (deep-page `?paper=`/`?arxiv=`)", () => {
+  const entryA: DeepManifestEntry = {
+    paper_id: paperId,
+    aliases: [["arxiv", "2602.18473"]],
+    arxiv_id: "2602.18473",
+    title: "A",
+    filename: "deep-a.json",
+  };
+  const entryB: DeepManifestEntry = {
+    paper_id: otherPaperId,
+    aliases: [["arxiv", "2602.99999"]],
+    arxiv_id: "2602.99999",
+    title: "B",
+    filename: "deep-b.json",
+  };
+
+  it("with no explicit request, defaults to the first eligible entry", () => {
+    expect(resolveDeepFocusGate([entryA, entryB], {})).toEqual({ mount: true, entry: entryA });
+  });
+
+  it("an explicit ?paper= selects the matching eligible entry, even if it is not first", () => {
+    expect(resolveDeepFocusGate([entryA, entryB], { paper: otherPaperId })).toEqual({
+      mount: true,
+      entry: entryB,
+    });
+  });
+
+  it("an explicit ?arxiv= selects the matching eligible entry", () => {
+    expect(resolveDeepFocusGate([entryA, entryB], { arxiv: "2602.99999" })).toEqual({
+      mount: true,
+      entry: entryB,
+    });
+  });
+
+  // The SCR-28 case this gate exists for: an explicit request that
+  // does not match ANY eligible entry must fail closed, never silently
+  // swap in the first eligible entry instead.
+  it("an explicit ?paper= that matches nothing fails closed -- does not fall back to the first entry", () => {
+    expect(resolveDeepFocusGate([entryA, entryB], { paper: "9".repeat(40) })).toEqual({
+      mount: false,
+      entry: null,
+    });
+  });
+
+  it("an explicit ?arxiv= that matches nothing fails closed", () => {
+    expect(resolveDeepFocusGate([entryA, entryB], { arxiv: "0000.00000" })).toEqual({
+      mount: false,
+      entry: null,
+    });
+  });
+
+  it("no eligible entries at all never mounts, request or not", () => {
+    expect(resolveDeepFocusGate([], { paper: paperId })).toEqual({ mount: false, entry: null });
+    expect(resolveDeepFocusGate([], {})).toEqual({ mount: false, entry: null });
   });
 });
 
@@ -832,5 +930,61 @@ describe("bounded JSON fetch", () => {
       })),
     );
     expect(await fetchJsonWithSha256("fallback-oversize.json")).toBeNull();
+  });
+
+  // P2 review LOW: the `expectedSha256` verification branch itself
+  // (as opposed to the byte-limit/streaming behavior above) had no
+  // test -- neither the mismatch rejection nor the matching-hash
+  // success path.
+  function stubFetchReturning(bytes: Uint8Array) {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => ({
+        ok: true,
+        headers: { get: () => null },
+        arrayBuffer: async () =>
+          bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength),
+      })),
+    );
+  }
+
+  async function sha256Hex(bytes: Uint8Array): Promise<string> {
+    const digest = await globalThis.crypto.subtle.digest("SHA-256", bytes as BufferSource);
+    return Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, "0")).join("");
+  }
+
+  it("returns the data when expectedSha256 matches the fetched bytes", async () => {
+    const bytes = new TextEncoder().encode('{"ok":true}');
+    const realHash = await sha256Hex(bytes);
+    stubFetchReturning(bytes);
+    const result = await fetchJsonWithSha256<{ ok: boolean }>("matching.json", undefined, {
+      expectedSha256: realHash,
+    });
+    expect(result?.data?.ok).toBe(true);
+    expect(result?.sha256).toBe(realHash);
+  });
+
+  it("returns null when expectedSha256 does not match the fetched bytes (hash mismatch)", async () => {
+    const bytes = new TextEncoder().encode('{"ok":true}');
+    const wrongHash = "0".repeat(64);
+    stubFetchReturning(bytes);
+    const result = await fetchJsonWithSha256("mismatch.json", undefined, {
+      expectedSha256: wrongHash,
+    });
+    expect(result).toBeNull();
+  });
+
+  it("rejects a malformed expectedSha256 before ever calling fetch", async () => {
+    const fetchSpy = vi.fn(async () => ({
+      ok: true,
+      headers: { get: () => null },
+      arrayBuffer: async () => new ArrayBuffer(0),
+    }));
+    vi.stubGlobal("fetch", fetchSpy);
+    const result = await fetchJsonWithSha256("whatever.json", undefined, {
+      expectedSha256: "not-a-sha256",
+    });
+    expect(result).toBeNull();
+    expect(fetchSpy).not.toHaveBeenCalled();
   });
 });
