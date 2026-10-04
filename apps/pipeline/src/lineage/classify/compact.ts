@@ -15,7 +15,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { pyJsonDumps } from "@paperpilot/core/pycompat";
 import { atomicWriteText } from "../../collect/state/atomic.js";
-import { toJsonSafeClassifications } from "./cache.js";
+import { toJsonSafeClassifications, tolerantJsonParse } from "./cache.js";
 import { withClassificationLock } from "./lock.js";
 
 function isPlainObject(x: unknown): x is Record<string, unknown> {
@@ -67,7 +67,7 @@ export function collectLivePaperIds(docsDir: string): { live: Set<string>; unrea
   function absorb(path: string): void {
     let data: unknown;
     try {
-      data = JSON.parse(readFileSync(path, "utf-8"));
+      data = tolerantJsonParse(readFileSync(path, "utf-8"));
     } catch {
       unreadable.push(path);
       return;
@@ -146,7 +146,7 @@ export async function compact(options: CompactOptions): Promise<number> {
 
   let cache: unknown;
   try {
-    cache = JSON.parse(readFileSync(options.cachePath, "utf-8"));
+    cache = tolerantJsonParse(readFileSync(options.cachePath, "utf-8"));
   } catch (e) {
     errorLog(`cache unreadable: ${(e as Error).message}`);
     return 1;
@@ -206,7 +206,7 @@ export async function compact(options: CompactOptions): Promise<number> {
   const result = await withClassificationLock(options.cachePath, (): number | null => {
     let current: unknown;
     try {
-      current = JSON.parse(readFileSync(options.cachePath, "utf-8"));
+      current = tolerantJsonParse(readFileSync(options.cachePath, "utf-8"));
     } catch (e) {
       errorLog(`cache became unreadable under lock: ${(e as Error).message}`);
       return 1;

@@ -169,4 +169,83 @@ describe("compact — refuses to delete on an incomplete survey", () => {
     expect(errors.join("\n")).toContain("refusing to compact");
     expect(JSON.parse(readFileSync(cachePath, "utf-8"))).toEqual({ "a->b": {}, "c->a": {} });
   });
+
+  // H1 leftover (#review): `compact()` used a plain `JSON.parse` to read
+  // the classifications cache at three sites (the initial snapshot, and
+  // the re-read under the lock) — a cache containing a bare NaN/Infinity
+  // confidence (which `pyJsonDumps` itself writes, same as Python's
+  // `json.dump`) would throw there and be reported as "cache unreadable"
+  // instead of being compacted. Switched to the same NaN-tolerant reader
+  // `cache.ts`'s own loader uses.
+  it("H1: tolerates a bare NaN confidence in the on-disk cache instead of reporting it as unreadable", async () => {
+    const dir = tmpDir();
+    const docsDir = join(dir, "docs");
+    mkdirSync(join(docsDir, "conf"), { recursive: true });
+    writeFileSync(
+      join(docsDir, "conf", "lineage.json"),
+      JSON.stringify({ nodes: [{ id: "a" }, { id: "b" }] }),
+    );
+    const cachePath = join(dir, "cache", "classifications.json");
+    mkdirSync(join(dir, "cache"), { recursive: true });
+    writeFileSync(
+      cachePath,
+      '{"a->b": {"relation": "extends", "confidence": NaN, "rationale": "r"}, ' +
+        '"x->y": {"relation": "extends", "confidence": 0.5, "rationale": "r2"}}',
+    );
+    const errors: string[] = [];
+    const rc = await compact({ cachePath, docsDir, errorLog: (l) => errors.push(l) });
+    expect(errors).toEqual([]);
+    expect(rc).toBe(0);
+    // "a->b" is live (both endpoints appear in the surveyed lineage), so
+    // it must be kept — and reading it back required tolerating the bare
+    // NaN rather than failing the whole parse.
+    const onDisk = readFileSync(cachePath, "utf-8");
+    expect(onDisk).toContain("a->b");
+    expect(onDisk).not.toContain("x->y"); // orphaned -> dropped
+  });
+
+  // H1 leftover (#review, compact.ts:70): the docs-survey side (`absorb()`)
+  // also used a plain `JSON.parse`. A lineage artifact carrying a bare NaN
+  // elsewhere in its JSON (not in `nodes`, which this function never reads
+  // beyond `.id`) must not make the whole file read as "unreadable" and
+  // block the compaction.
+  it("H1 (compact.ts:70): tolerates a bare NaN present elsewhere in a surveyed lineage.json", async () => {
+    const dir = tmpDir();
+    const docsDir = join(dir, "docs");
+    mkdirSync(join(docsDir, "conf"), { recursive: true });
+    writeFileSync(
+      join(docsDir, "conf", "lineage.json"),
+      '{"nodes": [{"id": "a"}, {"id": "b"}], ' +
+        '"edges": [{"src": "a", "dst": "b", "confidence": NaN}]}',
+    );
+    const cachePath = seedCache(dir, { "a->b": {}, "c->a": {} });
+    const errors: string[] = [];
+    const rc = await compact({ cachePath, docsDir, errorLog: (l) => errors.push(l) });
+    expect(errors).toEqual([]);
+    expect(rc).toBe(0);
+    expect(JSON.parse(readFileSync(cachePath, "utf-8"))).toEqual({ "a->b": {} });
+  });
+
+  // pyFloat write-site (p4-followups #24, compact.ts:232): the final
+  // write wraps `confidence` so an exactly-1.0 value serializes as the
+  // Python float literal "1.0", not the int-looking "1" — `JSON.parse`
+  // can't tell those apart, so the assertion has to be on the raw bytes.
+  it('writes an exactly-1.0 confidence as the Python float literal "1.0", not "1" (p4-followups #24)', async () => {
+    const dir = tmpDir();
+    const docsDir = join(dir, "docs");
+    mkdirSync(join(docsDir, "conf"), { recursive: true });
+    writeFileSync(
+      join(docsDir, "conf", "lineage.json"),
+      JSON.stringify({ nodes: [{ id: "a" }, { id: "b" }] }),
+    );
+    const cachePath = seedCache(dir, {
+      "a->b": { relation: "extends", confidence: 1, rationale: "exact confidence" },
+    });
+    const rc = await compact({ cachePath, docsDir });
+    expect(rc).toBe(0);
+    const raw = readFileSync(cachePath, "utf-8");
+    expect(raw).toContain('"confidence": 1.0');
+    expect(raw).not.toMatch(/"confidence": 1,/);
+    expect(raw).not.toMatch(/"confidence": 1\}/);
+  });
 });

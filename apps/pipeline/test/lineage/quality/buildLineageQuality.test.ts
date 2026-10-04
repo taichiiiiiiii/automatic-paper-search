@@ -149,6 +149,106 @@ describe("collectionRow (LIN-51): fail-closed golden-fixture matching", () => {
   });
 });
 
+// MEDIUM-11 (#review, LIN-51): each of these three golden-fixture rules
+// was previously untested in isolation — a mutant breaking any ONE of
+// them left a bad fixture reading as "passed" (confirmed red below).
+describe("collectionRow (LIN-51): the three golden-fixture label rules, each in isolation", () => {
+  it("FAILs when a focus node has no on_topic=true label in focus_labels (build.ts:452-453)", () => {
+    const docsRoot = tmpDocsDir();
+    const sha = writeArtifact(docsRoot, "lineage.json");
+    const row = collectionRow({
+      docsRoot,
+      kind: "theme",
+      slug: "t",
+      label: "T",
+      relativePath: "lineage.json",
+      snapshotDate: null,
+      generatedHint: null,
+      fixture: {
+        input_sha256: sha,
+        reviewer: "alice",
+        reviewed_at: "2026-08-30T00:00:00Z",
+        focus_labels: [], // "focus" node is never labelled
+        sample_labels: [{ node_id: "related", on_topic: true }],
+      },
+      asOfText: "2026-09-01T00:00:00Z",
+      maxAgeDays: 365,
+      catalogIds: null,
+    });
+    expect(row.audit_status).toBe("failed");
+    const golden = row.audit.checks.find((c) => c.name === "golden_fixture");
+    expect(golden?.status).toBe("failed");
+    expect(golden?.evidence).toContain("focus:focus");
+  });
+
+  it("FAILs when sample_labels has more than 20 entries (build.ts:456)", () => {
+    const docsRoot = tmpDocsDir();
+    const sha = writeArtifact(docsRoot, "lineage.json");
+    const sampleLabels = Array.from({ length: 21 }, () => ({
+      node_id: "related",
+      on_topic: true, // every sample on-topic -> isolates the limit check
+    }));
+    const row = collectionRow({
+      docsRoot,
+      kind: "theme",
+      slug: "t",
+      label: "T",
+      relativePath: "lineage.json",
+      snapshotDate: null,
+      generatedHint: null,
+      fixture: {
+        input_sha256: sha,
+        reviewer: "alice",
+        reviewed_at: "2026-08-30T00:00:00Z",
+        focus_labels: [{ node_id: "focus", on_topic: true }],
+        sample_labels: sampleLabels,
+      },
+      asOfText: "2026-09-01T00:00:00Z",
+      maxAgeDays: 365,
+      catalogIds: null,
+    });
+    expect(row.audit_status).toBe("failed");
+    const golden = row.audit.checks.find((c) => c.name === "golden_fixture");
+    expect(golden?.status).toBe("failed");
+    expect(golden?.evidence).toContain("sample-limit-exceeded");
+  });
+
+  it("FAILs when more than 10% of labelled samples are off-topic (build.ts:467-469)", () => {
+    const docsRoot = tmpDocsDir();
+    const sha = writeArtifact(docsRoot, "lineage.json");
+    // 10 samples, 2 off-topic -> 20% > the 10% threshold. Sample count
+    // (10) stays under the 20-sample limit so this isolates the
+    // off-topic-rate rule alone.
+    const sampleLabels = [
+      ...Array.from({ length: 8 }, () => ({ node_id: "related", on_topic: true })),
+      ...Array.from({ length: 2 }, () => ({ node_id: "related", on_topic: false })),
+    ];
+    const row = collectionRow({
+      docsRoot,
+      kind: "theme",
+      slug: "t",
+      label: "T",
+      relativePath: "lineage.json",
+      snapshotDate: null,
+      generatedHint: null,
+      fixture: {
+        input_sha256: sha,
+        reviewer: "alice",
+        reviewed_at: "2026-08-30T00:00:00Z",
+        focus_labels: [{ node_id: "focus", on_topic: true }],
+        sample_labels: sampleLabels,
+      },
+      asOfText: "2026-09-01T00:00:00Z",
+      maxAgeDays: 365,
+      catalogIds: null,
+    });
+    expect(row.audit_status).toBe("failed");
+    const golden = row.audit.checks.find((c) => c.name === "golden_fixture");
+    expect(golden?.status).toBe("failed");
+    expect(golden?.evidence).toContain("sample-off-topic-rate");
+  });
+});
+
 // LOW (#review): Python's `_parse_time` (`datetime.fromisoformat`) keeps
 // fractional seconds; verified against real CPython that
 // "2026-01-01T00:00:00.5Z" parses to microsecond 500000, not 0.
@@ -162,5 +262,99 @@ describe("parseTime: fractional seconds (LOW)", () => {
 
   it("still parses a plain (fraction-less) timestamp the same as before", () => {
     expect(parseTime("2026-01-01T00:00:00Z").getTime()).toBe(Date.UTC(2026, 0, 1, 0, 0, 0, 0));
+  });
+});
+
+// MEDIUM-12 (#review, buildLineageQuality.ts:70): `parseTime` must
+// require a timezone offset — a mutant that drops the
+// `offset === undefined` check would silently accept a naive timestamp
+// (no `Z`/`+HH:MM`) and treat it as already UTC, exactly the ambiguity
+// this port's doc comment says it exists to remove.
+describe("parseTime: rejects a timestamp with no timezone (MEDIUM-12)", () => {
+  it("throws for a naive (timezone-less) ISO timestamp", () => {
+    expect(() => parseTime("2026-01-01T00:00:00")).toThrow(/timezone/);
+  });
+
+  it("still accepts the same timestamp WITH an explicit offset", () => {
+    expect(() => parseTime("2026-01-01T00:00:00+00:00")).not.toThrow();
+  });
+});
+
+// MEDIUM-12 (#review, buildLineageQuality.ts:606-616): an artifact that
+// exists but fails to parse (or parses to a non-object) must read as
+// availability "failed" — not "unavailable" (reserved for "genuinely
+// nothing published yet") and not "unknown". A mutant that changed this
+// branch's `availability` field to one of those two values passed every
+// OTHER test in this suite, because none of them inspected `availability`
+// on the malformed-JSON path directly.
+describe("collectionRow (MEDIUM-12): an unparseable artifact is availability/audit_status 'failed'", () => {
+  it("is 'failed', not 'unavailable' or 'unknown', when the file exists but is not valid JSON", () => {
+    const docsRoot = mkdtempSync(join(tmpdir(), "quality-row-"));
+    writeFileSync(join(docsRoot, "lineage.json"), "{not valid json");
+    const row = collectionRow({
+      docsRoot,
+      kind: "theme",
+      slug: "t",
+      label: "T",
+      relativePath: "lineage.json",
+      snapshotDate: null,
+      generatedHint: null,
+      fixture: null,
+      asOfText: "2026-09-01T00:00:00Z",
+      maxAgeDays: 365,
+      catalogIds: null,
+    });
+    expect(row.availability).toBe("failed");
+    expect(row.audit_status).toBe("failed");
+  });
+
+  it("is also 'failed' when the file parses to valid JSON that is not an object (e.g. an array)", () => {
+    const docsRoot = mkdtempSync(join(tmpdir(), "quality-row-"));
+    writeFileSync(join(docsRoot, "lineage.json"), "[]");
+    const row = collectionRow({
+      docsRoot,
+      kind: "theme",
+      slug: "t",
+      label: "T",
+      relativePath: "lineage.json",
+      snapshotDate: null,
+      generatedHint: null,
+      fixture: null,
+      asOfText: "2026-09-01T00:00:00Z",
+      maxAgeDays: 365,
+      catalogIds: null,
+    });
+    expect(row.availability).toBe("failed");
+    expect(row.audit_status).toBe("failed");
+  });
+});
+
+// LIN-50 (#review): an empty-stub artifact (`nodes: [] edges: []`) is a
+// genuine fact — nothing has been generated yet — and must read as
+// availability "unavailable", distinct from "sparse" (has nodes, no
+// edges) and "failed" (couldn't even be parsed). Previously only
+// exercised end-to-end via the golden/parity fixture, which can't isolate
+// this one branch from everything else `buildManifest` touches.
+describe("collectionRow (LIN-50): an empty-stub artifact is availability 'unavailable'", () => {
+  it("reads nodes=[] edges=[] as 'unavailable', not 'sparse' or 'failed'", () => {
+    const docsRoot = mkdtempSync(join(tmpdir(), "quality-row-"));
+    writeFileSync(
+      join(docsRoot, "lineage.json"),
+      JSON.stringify({ schema_version: "lineage-artifact-v1", root: null, nodes: [], edges: [] }),
+    );
+    const row = collectionRow({
+      docsRoot,
+      kind: "theme",
+      slug: "t",
+      label: "T",
+      relativePath: "lineage.json",
+      snapshotDate: null,
+      generatedHint: null,
+      fixture: null,
+      asOfText: "2026-09-01T00:00:00Z",
+      maxAgeDays: 365,
+      catalogIds: null,
+    });
+    expect(row.availability).toBe("unavailable");
   });
 });

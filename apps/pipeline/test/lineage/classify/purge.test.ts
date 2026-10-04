@@ -140,6 +140,46 @@ describe("purgeTemplateClassificationsMain (CLI)", () => {
     expect(rc).toBe(1);
   });
 
+  // H1 leftover (#review, purge.ts:88): this CLI used a plain `JSON.parse`
+  // to read the cache, so a bare NaN/Infinity confidence (which
+  // `pyJsonDumps` itself writes, same as Python's `json.dump`) would make
+  // an otherwise-structurally-fine cache read as "malformed" and refuse to
+  // purge. Switched to the same NaN-tolerant reader `cache.ts`'s own
+  // loader uses.
+  it("H1: tolerates a bare NaN confidence in the cache instead of treating it as malformed", async () => {
+    const dir = tmpDir();
+    const cachePath = join(dir, "classifications.json");
+    writeFileSync(
+      cachePath,
+      `{"a->b": {"relation": "extends", "confidence": NaN, "rationale": "${sampleTemplate()}"}, ` +
+        '"c->d": {"relation": "extends", "confidence": 0.9, "rationale": "specific paper reason"}}',
+    );
+    const rc = await purgeTemplateClassificationsMain({ cachePath });
+    expect(rc).toBe(0);
+    const onDisk = readFileSync(cachePath, "utf-8");
+    expect(onDisk).not.toContain("a->b"); // template-poisoned -> dropped
+    expect(onDisk).toContain("c->d"); // kept
+  });
+
+  // pyFloat write-site (p4-followups #24, purge.ts:119): the purged cache
+  // write wraps `confidence` so an exactly-1.0 value serializes as the
+  // Python float literal "1.0", not the int-looking "1".
+  it('writes an exactly-1.0 confidence as the Python float literal "1.0", not "1" (p4-followups #24)', async () => {
+    const dir = tmpDir();
+    const cachePath = join(dir, "classifications.json");
+    const cache = {
+      "drop->me": { relation: "extends", confidence: 0.7, rationale: sampleTemplate() },
+      "keep->me": { relation: "extends", confidence: 1, rationale: "exact LLM confidence" },
+    };
+    writeFileSync(cachePath, JSON.stringify(cache));
+    const rc = await purgeTemplateClassificationsMain({ cachePath });
+    expect(rc).toBe(0);
+    const raw = readFileSync(cachePath, "utf-8");
+    expect(raw).toContain('"confidence": 1.0');
+    expect(raw).not.toMatch(/"confidence": 1,/);
+    expect(raw).not.toMatch(/"confidence": 1\}/);
+  });
+
   it("test_cli_acquires_and_releases_the_shared_lock (lock file created and removed)", async () => {
     const dir = tmpDir();
     const cachePath = join(dir, "classifications.json");

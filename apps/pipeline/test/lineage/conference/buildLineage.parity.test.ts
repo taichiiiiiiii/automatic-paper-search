@@ -171,3 +171,56 @@ describe("build() parity: LLM-dark heuristic fallback path", () => {
     expect(result).toEqual(expected);
   });
 });
+
+/** Always returns the same classification — lets a test control the one
+ * candidate edge `build()`'s S2PARENT/S2CHILD fixtures produce. */
+class FixedClassificationProvider implements LLMProvider {
+  readonly name = "fixed";
+  enabled = true;
+  batchSize = 1;
+  constructor(private readonly classification: RelationClassification | null) {}
+  async evaluateBatch(): Promise<(PaperEvaluation | null)[]> {
+    return [];
+  }
+  async chat(): Promise<string | null> {
+    return null;
+  }
+  async classifyRelation(
+    _a: ClassifyPaperLike,
+    _b: ClassifyPaperLike,
+  ): Promise<RelationClassification | null> {
+    return this.classification;
+  }
+  async completeJson(): Promise<string | null> {
+    return null;
+  }
+}
+
+describe("LIN-37 call site (buildLineage.ts:701): filterEdgesByRationale is actually applied to build()'s output", () => {
+  it("drops a candidate edge whose LLM classification carries a 3-char rationale, keeping both endpoint nodes", async () => {
+    const docsRoot = makeTmpDocsRoot();
+    const deps = makeDeps();
+    const result = await build(
+      {
+        docsRoot,
+        repoRoot: docsRoot,
+        conference: "testconf",
+        generatedAt: "2026-08-30T00:00:00Z",
+        provider: new FixedClassificationProvider({
+          relation: "extends",
+          confidence: 0.9,
+          rationale: "xyz", // below MIN_RATIONALE_LEN (10) -> degenerate
+        }),
+        rateDelayMs: 0,
+      },
+      deps,
+    );
+    // Both nodes from the fixture (focus + the parent the classifier ran
+    // against) were discovered — only the edge connecting them was
+    // filtered. A mutant that drops the `filterEdgesByRationale` call at
+    // buildLineage.ts:701 would leave it in `edges`.
+    const nodeIds = (result.nodes as Record<string, unknown>[]).map((n) => n.id).sort();
+    expect(nodeIds).toEqual(["S2CHILD", "S2FOCUS", "S2PARENT"]);
+    expect(result.edges).toEqual([]);
+  });
+});

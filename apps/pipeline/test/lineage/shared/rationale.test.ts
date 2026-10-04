@@ -38,4 +38,29 @@ describe("filterEdgesByRationale / isDegenerateRationale (LIN-37)", () => {
     expect(isDegenerateRationale("A")).toBe(true);
     expect(isDegenerateRationale("論文 B は論文 A の手法を別ドメインに拡張している。")).toBe(false);
   });
+
+  // MEDIUM-13 (#review): the exact `MIN_RATIONALE_LEN` (10) boundary. The
+  // Python/TS rule is `len(trimmed) < MIN_RATIONALE_LEN` — strictly less
+  // than, so exactly 10 code points is NOT degenerate. A mutant that
+  // widens this to `<=` would flip ONLY this exact-10 case (9 is
+  // degenerate under both operators, so a 9-length case alone can't
+  // distinguish them).
+  it("boundary: exactly MIN_RATIONALE_LEN (10) code points is NOT degenerate, 9 IS (< vs <= mutant)", () => {
+    expect(isDegenerateRationale("123456789")).toBe(true); // 9 chars
+    expect(isDegenerateRationale("1234567890")).toBe(false); // 10 chars, the boundary itself
+  });
+
+  // MEDIUM-13 (#review): pins the `.trim()` call itself. Built so that
+  // trimming moves the string from "below floor" to "even further below
+  // floor" is NOT the point — instead this is built so the UNTRIMMED
+  // length is >= MIN_RATIONALE_LEN (10) while the TRIMMED length is below
+  // it, so a mutant that drops `.trim()` would read the untrimmed string
+  // as long enough (not degenerate) where the real code (trim first) must
+  // call it degenerate.
+  it("whitespace padding cannot rescue a below-floor rationale (pins the .trim() call)", () => {
+    const padded = `       123`; // 7 spaces + 3 chars = 10 raw code points, trims to "123" (len 3)
+    expect(padded.length).toBe(10);
+    expect(padded.trim()).toBe("123");
+    expect(isDegenerateRationale(padded)).toBe(true);
+  });
 });

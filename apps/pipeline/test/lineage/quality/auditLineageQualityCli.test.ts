@@ -83,4 +83,19 @@ describe("runAuditLineageQualityCli", () => {
     const rc = runAuditLineageQualityCli(parseArgs(["--docs-dir", docsDir], docsDir));
     expect(rc).toBe(0);
   });
+
+  // MEDIUM-12 (#review, auditLineageQualityCli.ts:85): `[]` is valid JSON
+  // (`JSON.parse` succeeds) and `typeof [] === "object"` — only the
+  // explicit `Array.isArray(data)` clause rejects it as "not an object".
+  // Without it this would fall through to `isEmptyStub`/`auditLineage`,
+  // which both read `data.nodes`/`data.edges` as `undefined` on an array
+  // and could read as a clean "OK", silently exiting 0 on a structurally
+  // wrong file.
+  it("FAILs and exits 1 when lineage.json parses to a JSON array, not an object", () => {
+    const docsDir = tmpDocsDir();
+    mkdirSync(join(docsDir, "conf-array"), { recursive: true });
+    writeFileSync(join(docsDir, "conf-array", "lineage.json"), "[]");
+    const rc = runAuditLineageQualityCli(parseArgs(["--docs-dir", docsDir], docsDir));
+    expect(rc).toBe(1);
+  });
 });

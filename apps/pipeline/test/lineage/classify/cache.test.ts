@@ -4,10 +4,11 @@
  * `persist_classifications` lock tests from
  * `paperpilot/tests/test_build_lineage.py`.
  */
+import * as fs from "node:fs";
 import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type {
   ClassifyPaperLike,
   LLMProvider,
@@ -19,11 +20,22 @@ import {
   CachedClassifyProvider,
   loadClassificationCache,
   persistClassifications,
+  tolerantJsonParse,
 } from "../../../src/lineage/classify/cache.js";
 import {
   acquireClassificationLock,
   releaseClassificationLock,
 } from "../../../src/lineage/classify/lock.js";
+
+// `node:fs`'s native namespace is not configurable, so `vi.spyOn` cannot
+// redefine a property on it directly. Replacing the module with a plain
+// (spread) object via `vi.mock` makes every export a configurable,
+// writable property — the standard Vitest way to monkeypatch a builtin
+// (same pattern as test/collect/state/atomic.test.ts).
+vi.mock("node:fs", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("node:fs")>();
+  return { ...actual };
+});
 
 class FakeProvider implements LLMProvider {
   readonly name = "fake";
@@ -387,5 +399,103 @@ describe("loadClassificationCache", () => {
     );
     const cache = loadClassificationCache(cachePath);
     expect((cache["a->b"] as { rationale: string }).rationale).toBe("NaN-like degenerate output");
+  });
+
+  // H1 leftover (#review cache.ts:268): `loadClassificationCache`'s catch
+  // narrows to SyntaxError (malformed JSON) OR an fs errno error (missing
+  // file, permission problem, etc) — anything else is a genuine bug and
+  // must propagate, not be silently read back as "{}" (which previously
+  // happened with a bare `catch {}`).
+  it("H1 (cache.ts:268): a non-SyntaxError, non-fs-errno error from reading the file propagates instead of being swallowed as {}", () => {
+    const dir = tmpDir();
+    const cachePath = join(dir, "cls.json");
+    writeFileSync(cachePath, "{}");
+    const boom = new Error("totally unrelated bug, not a parse or fs problem");
+    const spy = vi.spyOn(fs, "readFileSync").mockImplementation(() => {
+      throw boom;
+    });
+    try {
+      expect(() => loadClassificationCache(cachePath)).toThrow(boom);
+    } finally {
+      spy.mockRestore();
+    }
+  });
+});
+
+describe("persistClassifications: narrowed catch (H1 leftover, cache.ts:219)", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  // The on-disk-parse catch inside `persistClassifications` only treats a
+  // `SyntaxError` as "existing cache is corrupt, proceed carefully" (see
+  // the big comment there); anything else must propagate rather than be
+  // folded into that same corrupt-file handling, which would otherwise
+  // either silently discard or silently merge over data based on a bug
+  // unrelated to JSON parsing.
+  it("a non-SyntaxError thrown while parsing the on-disk cache propagates, leaving the file untouched", async () => {
+    const dir = tmpDir();
+    const cachePath = join(dir, "cls.json");
+    // The marker is embedded in a JSON string VALUE (so the file is
+    // otherwise perfectly valid JSON) purely so the mock below can
+    // recognise "this is the parse of OUR on-disk cache" and leave every
+    // other JSON.parse call in the process (vitest's own machinery
+    // included) running the real implementation — a `mockImplementationOnce`
+    // keyed only on call order would risk being consumed by an unrelated
+    // call first.
+    const MARKER = "PERSIST_CATCH_TEST_MARKER_8f2c";
+    const original = `{"existing": {"relation": "extends", "confidence": 0.5, "rationale": "${MARKER}"}}`;
+    writeFileSync(cachePath, original);
+
+    const realParse: (text: string, reviver?: (key: string, value: unknown) => unknown) => unknown =
+      JSON.parse.bind(JSON);
+    const spy = vi
+      .spyOn(JSON, "parse")
+      .mockImplementation((text: string, reviver?: (key: string, value: unknown) => unknown) => {
+        if (typeof text === "string" && text.includes(MARKER)) {
+          throw new TypeError("boom: not a SyntaxError");
+        }
+        return realParse(text, reviver);
+      });
+    try {
+      // Must be the ORIGINAL TypeError propagating unchanged — not merely
+      // some rejection whose message happens to contain the same text (a
+      // mutant that drops the `instanceof SyntaxError` rethrow falls
+      // through to the "refusing to overwrite unparseable, non-empty
+      // classification cache" `Error` a few lines down, which embeds the
+      // caught error's `.message` verbatim — so a plain substring match
+      // on "boom: not a SyntaxError" would NOT distinguish the two).
+      let caught: unknown;
+      await persistClassifications({ "A->B": { relation: "extends" } }, cachePath).catch((e) => {
+        caught = e;
+      });
+      expect(caught).toBeInstanceOf(TypeError);
+      expect((caught as Error).message).toBe("boom: not a SyntaxError");
+    } finally {
+      spy.mockRestore();
+    }
+    // The existing on-disk cache must still be there, byte-for-byte —
+    // nothing was overwritten by the (failed) merge-and-write.
+    expect(readFileSync(cachePath, "utf-8")).toBe(original);
+  });
+});
+
+describe("tolerantJsonParse: escaped-quote scanner (H1 leftover, cache.ts:100)", () => {
+  // `quoteNonFiniteTokensOutsideStrings` has to track whether it is
+  // currently inside a JSON string literal so it never substitutes a
+  // bare NaN/Infinity token THAT APPEARS INSIDE a rationale string. The
+  // tricky part is an escaped quote (`\"`) inside that string: a scanner
+  // that doesn't special-case the backslash would see the escaped `"` as
+  // the string's closing quote, drop back to "outside a string" early,
+  // and then treat the literal text `NaN` that follows (still really
+  // inside the JSON string) as a bare token to substitute — corrupting
+  // the string's content instead of leaving it alone.
+  it("an escaped quote inside a rationale string does not fool the scanner into treating a literal 'NaN' substring as a bare token", () => {
+    const text =
+      '{"a->b": {"relation": "extends", "confidence": NaN, ' +
+      '"rationale": "She said \\"NaN\\" is weird"}}';
+    const parsed = tolerantJsonParse(text) as Record<string, Record<string, unknown>>;
+    expect(parsed["a->b"]!.confidence).toBeNaN();
+    expect(parsed["a->b"]!.rationale).toBe('She said "NaN" is weird');
   });
 });

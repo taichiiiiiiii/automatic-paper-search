@@ -230,6 +230,90 @@ describe("runBuildLineageCli", () => {
   });
 });
 
+// pyFloat write-site (p4-followups #24, buildLineageCli.ts:178-179): the
+// bytes `runBuildLineageCli` writes must carry the Python float literal
+// for an exactly-1.0 LLM confidence, not the int-looking "1" — `result`
+// itself (validated earlier as a plain number) is untouched; only the
+// disk bytes need the marker. `JSON.parse` can't distinguish "1.0" from
+// "1", so this has to assert on the raw text.
+describe("pyFloat write-site (p4-followups #24, buildLineageCli.ts:178-179)", () => {
+  it('writes an exactly-1.0 LLM confidence as "1.0", not "1", in lineage.json', async () => {
+    const repoRoot = makeRepo();
+    const lineagePath = join(repoRoot, "docs", "testconf", "lineage.json");
+
+    class FixedConfidenceProvider implements LLMProvider {
+      readonly name = "fixed";
+      enabled = true;
+      batchSize = 1;
+      async evaluateBatch(): Promise<(PaperEvaluation | null)[]> {
+        return [];
+      }
+      async chat(): Promise<string | null> {
+        return null;
+      }
+      async classifyRelation(): Promise<RelationClassification | null> {
+        return {
+          relation: "extends",
+          confidence: 1,
+          rationale: "an LLM returned exactly 1.0 confidence for this pair",
+        };
+      }
+      async completeJson(): Promise<string | null> {
+        return null;
+      }
+    }
+
+    const deps = makeDeps(async (url: string) => {
+      if (url.includes("arXiv:")) {
+        return {
+          status: 200,
+          json: async () => ({
+            paperId: "S2FOCUS",
+            title: "Oral Paper One",
+            year: 2026,
+            authors: [],
+            abstract: "x",
+            externalIds: { ArXiv: "2601.00001" },
+          }),
+        };
+      }
+      if (url.includes("/references")) {
+        return {
+          status: 200,
+          json: async () => ({
+            data: [
+              {
+                citedPaper: {
+                  paperId: "S2PARENT",
+                  title: "Parent Paper",
+                  year: 2020,
+                  venue: "NeurIPS",
+                  citationCount: 50,
+                  authors: [],
+                  abstract: "Parent abstract.",
+                  externalIds: {},
+                },
+                isInfluential: true,
+                intents: [],
+              },
+            ],
+          }),
+        };
+      }
+      return { status: 200, json: async () => ({ data: [] }) };
+    });
+    deps.buildProvider = () => ({ provider: new FixedConfidenceProvider(), rateDelay: 0 });
+
+    const code = await runBuildLineageCli(parseArgs(["--conference", "testconf"]), deps, repoRoot);
+    expect(code).toBe(0);
+    const raw = readFileSync(lineagePath, "utf8");
+    expect(raw).toContain('"conf": 1.0');
+    expect(raw).toContain('"confidence": 1.0');
+    expect(raw).not.toMatch(/"conf": 1,/);
+    expect(raw).not.toMatch(/"confidence": 1,/);
+  });
+});
+
 // M2 of the P4 review: this CLI's entry block used to be a permanent stub
 // ("build_lineage CLI wiring (env/provider construction) is not yet
 // connected.") that printed a message and exited 1 for every invocation,

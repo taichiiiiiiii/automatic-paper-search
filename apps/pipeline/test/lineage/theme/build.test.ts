@@ -4,19 +4,27 @@
  * end-to-end tests (`test_a_genuinely_empty_theme_still_publishes`,
  * `test_completeness_block_is_recorded_on_a_normal_build`).
  */
-import { existsSync, mkdtempSync, readFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pyJsonDumps } from "@paperpilot/core";
 import { beforeEach, describe, expect, it } from "vitest";
 import type { FetchInit, HttpResponseLike } from "../../../src/collect/http/requestWithRetry.js";
+import type {
+  ClassifyPaperLike,
+  LLMProvider,
+  PaperEvaluation,
+  RelationClassification,
+} from "../../../src/collect/llm/provider.js";
 import type { DerivedEdge } from "../../../src/lineage/classify/classify.js";
+import { IncompleteBuildError } from "../../../src/lineage/fetch-state/completeness.js";
 import {
   type BuildThemeLineageDeps,
   buildThemeLineage,
   edgeForJson,
 } from "../../../src/lineage/theme/build.js";
 import { makeEdge } from "../../../src/lineage/theme/edges.js";
+import { sanitizeTheme, themeLineagePath, themeSlug } from "../../../src/lineage/theme/slug.js";
 
 function jsonResp(status: number, body: unknown): HttpResponseLike {
   return { status, json: async () => body };
@@ -211,6 +219,83 @@ describe("buildThemeLineage", () => {
   });
 });
 
+describe("MEDIUM-4 (#review, build.ts:523): the expansion gate's IncompleteBuildError is actually thrown and respected", () => {
+  it("refuses to shrink a larger/differently-focused published lineage after an expansion failure, leaving the file byte-unchanged", async () => {
+    const theme = "Incomplete Gate Theme";
+    const slug = themeSlug(sanitizeTheme(theme));
+    const outPath = themeLineagePath(docsRoot, slug);
+    mkdirSync(join(docsRoot, "themes", slug), { recursive: true });
+    // Larger AND differently-focused than what this build can produce
+    // (the new build's only focus will be "p1"): any one of "focus
+    // paper(s)"/"node(s)"/"edge(s)" missing is enough to block.
+    const published = {
+      schema_version: "lineage-artifact-v1",
+      root: "other-focus",
+      nodes: [
+        { id: "other-focus", title: "Other Focus", is_focus: true, seed_paper_id: "f".repeat(40) },
+        { id: "other-parent", title: "Other Parent", is_focus: false },
+      ],
+      edges: [
+        {
+          src: "other-parent",
+          dst: "other-focus",
+          rel: "extends",
+          relation: "extends",
+          conf: 0.6,
+          confidence: 0.6,
+          rationale: "a real published rationale",
+          provenance: {},
+        },
+      ],
+      clusters: [],
+      meta: {},
+    };
+    const publishedBytes = JSON.stringify(published);
+    writeFileSync(outPath, publishedBytes);
+
+    // Seed search succeeds (subject gate passes) but references/citations
+    // both fail -> an expansion failure, not a subject one (same split as
+    // buildLineageCli.test.ts's LIN-06 test).
+    const seed = s2Paper("p1", { title: "Incomplete Gate Theme Seed", cites: 100 });
+    const deps = depsFor(async (url) => {
+      if (url.includes("/references") || url.includes("/citations")) {
+        return jsonResp(503, {});
+      }
+      return mkSearchResponse([seed]);
+    });
+
+    await expect(
+      buildThemeLineage({ theme, depth: 1, seedsCount: 1, width: 4, sinceYear: null }, deps),
+    ).rejects.toThrow(IncompleteBuildError);
+    // The published file must be untouched, byte-for-byte.
+    expect(readFileSync(outPath, "utf-8")).toBe(publishedBytes);
+
+    // allowIncomplete=true bypasses the EXPANSION gate (not the subject
+    // gate) and publishes despite the same outage.
+    const deps2 = depsFor(async (url) => {
+      if (url.includes("/references") || url.includes("/citations")) {
+        return jsonResp(503, {});
+      }
+      return mkSearchResponse([seed]);
+    });
+    const written = await buildThemeLineage(
+      {
+        theme,
+        depth: 1,
+        seedsCount: 1,
+        width: 4,
+        sinceYear: null,
+        allowIncomplete: true,
+      },
+      deps2,
+    );
+    expect(written).toBe(outPath);
+    const payload = JSON.parse(readFileSync(outPath, "utf-8"));
+    expect(payload).not.toEqual(published);
+    expect(payload.meta.completeness.complete).toBe(false);
+  });
+});
+
 describe("edgeForJson (p4-followups #24)", () => {
   it("wraps an exactly-1.0/0.0 confidence so it serializes as the Python float literal, not a bare int", () => {
     const classification: DerivedEdge = {
@@ -236,5 +321,125 @@ describe("edgeForJson (p4-followups #24)", () => {
     expect(json).toContain('"confidence": 1.0');
     expect(json).not.toMatch(/"conf": 1,/);
     expect(json).not.toMatch(/"confidence": 1,/);
+  });
+});
+
+/** A fixed-answer LLM provider for the two integration tests below —
+ * every `classifyRelation` call returns the same classification, so the
+ * one candidate edge each test's fetchImpl produces is driven entirely
+ * by the constructor argument. */
+class FixedClassificationProvider implements LLMProvider {
+  readonly name = "fixed";
+  enabled = true;
+  batchSize = 1;
+  constructor(private readonly classification: RelationClassification | null) {}
+  async evaluateBatch(): Promise<(PaperEvaluation | null)[]> {
+    return [];
+  }
+  async chat(): Promise<string | null> {
+    return null;
+  }
+  async classifyRelation(
+    _a: ClassifyPaperLike,
+    _b: ClassifyPaperLike,
+  ): Promise<RelationClassification | null> {
+    return this.classification;
+  }
+  async completeJson(): Promise<string | null> {
+    return null;
+  }
+}
+
+describe("LIN-37 call site (build.ts:378): filterEdgesByRationale is actually applied to the published graph", () => {
+  it("drops a candidate edge whose LLM classification carries a 3-char rationale, keeping both endpoint nodes", async () => {
+    const seed = s2Paper("seed1", { title: "Short Rationale Theme Seed", cites: 100 });
+    const parent = s2Paper("parent1", {
+      title: "Some Unrelated Earlier Parent Paper",
+      year: 2015,
+      cites: 50,
+      arxivId: "2015.00002",
+    });
+    const deps = depsFor(async (url) => {
+      if (url.includes("/references")) {
+        return jsonResp(200, {
+          data: [{ citedPaper: parent, isInfluential: true, intents: [] }],
+        });
+      }
+      if (url.includes("/citations")) return jsonResp(200, { data: [] });
+      return mkSearchResponse([seed]);
+    });
+    deps.buildProvider = () => ({
+      provider: new FixedClassificationProvider({
+        relation: "extends",
+        confidence: 0.9,
+        rationale: "xyz", // below MIN_RATIONALE_LEN (10) -> degenerate
+      }),
+      rateDelay: 0,
+    });
+    const outPath = await buildThemeLineage(
+      {
+        theme: "Short Rationale Theme",
+        depth: 1,
+        seedsCount: 3,
+        width: 4,
+        sinceYear: null,
+        llmStrict: "all",
+      },
+      deps,
+    );
+    const payload = JSON.parse(readFileSync(outPath, "utf-8"));
+    // The candidate edge existed (both nodes were discovered) but was
+    // filtered out — a mutant that drops the `filterEdgesByRationale`
+    // call at build.ts:378 would leave it in `edges`.
+    expect(payload.nodes.map((n: Record<string, unknown>) => n.id).sort()).toEqual([
+      "parent1",
+      "seed1",
+    ]);
+    expect(payload.edges).toEqual([]);
+  });
+});
+
+describe("pyFloat write-site (p4-followups #24, build.ts:535 edgeForJson)", () => {
+  it("the actual file buildThemeLineage writes contains the Python float literal for an exactly-1.0 LLM confidence", async () => {
+    const seed = s2Paper("seed2", { title: "Pyfloat Write Site Theme Seed", cites: 100 });
+    const parent = s2Paper("parent2", {
+      title: "Another Unrelated Earlier Parent Paper",
+      year: 2015,
+      cites: 50,
+      arxivId: "2015.00003",
+    });
+    const deps = depsFor(async (url) => {
+      if (url.includes("/references")) {
+        return jsonResp(200, {
+          data: [{ citedPaper: parent, isInfluential: true, intents: [] }],
+        });
+      }
+      if (url.includes("/citations")) return jsonResp(200, { data: [] });
+      return mkSearchResponse([seed]);
+    });
+    deps.buildProvider = () => ({
+      provider: new FixedClassificationProvider({
+        relation: "extends",
+        confidence: 1,
+        rationale: "an LLM returned exactly 1.0 confidence for this specific pair",
+      }),
+      rateDelay: 0,
+    });
+    const outPath = await buildThemeLineage(
+      {
+        theme: "Pyfloat Write Site Theme",
+        depth: 1,
+        seedsCount: 3,
+        width: 4,
+        sinceYear: null,
+        llmStrict: "all",
+      },
+      deps,
+    );
+    const raw = readFileSync(outPath, "utf-8");
+    expect(raw).toContain('"conf": 1.0');
+    expect(raw).toContain('"confidence": 1.0');
+    expect(raw).not.toMatch(/"conf": 1,/);
+    expect(raw).not.toMatch(/"confidence": 1,/);
   });
 });

@@ -182,6 +182,110 @@ describe("runBuildDeepLineageCli", () => {
   });
 });
 
+// pyFloat write-site (p4-followups #24, buildDeepLineageCli.ts:202-203):
+// the bytes `runBuildDeepLineageCli` writes must carry the Python float
+// literal for an exactly-1.0 LLM confidence, not the int-looking "1" —
+// `JSON.parse` can't distinguish the two, so this asserts on raw text.
+describe("pyFloat write-site (p4-followups #24, buildDeepLineageCli.ts:202-203)", () => {
+  it('writes an exactly-1.0 LLM confidence as "1.0", not "1", in the deep artifact', async () => {
+    const repoRoot = mkdtempSync(join(tmpdir(), "build-deep-cli-pyfloat-"));
+    tmpDirs.push(repoRoot);
+    const outDir = join(repoRoot, "docs", "iclr-2026");
+    mkdirSync(outDir, { recursive: true });
+    const outPath = join(outDir, "deep-2602.18473.json");
+
+    class FixedConfidenceProvider implements LLMProvider {
+      readonly name = "fixed";
+      enabled = true;
+      batchSize = 1;
+      async evaluateBatch(): Promise<(PaperEvaluation | null)[]> {
+        return [];
+      }
+      async chat(): Promise<string | null> {
+        return null;
+      }
+      async classifyRelation(
+        _a: ClassifyPaperLike,
+        _b: ClassifyPaperLike,
+      ): Promise<RelationClassification | null> {
+        return null;
+      }
+      async completeJson(): Promise<string | null> {
+        return JSON.stringify({
+          relation: "extends",
+          confidence: 1,
+          rationale: "an LLM returned exactly 1.0 confidence for this pair",
+        });
+      }
+    }
+
+    const deps: RunBuildDeepLineageCliDeps = {
+      cacheDir: mkdtempSync(join(tmpdir(), "build-deep-cli-pyfloat-cache-")),
+      sleep: async () => {},
+      fetchImpl: async (url: string) => {
+        if (url.includes("arXiv:")) {
+          return {
+            status: 200,
+            json: async () => ({
+              paperId: "S2FOCUS",
+              title: "Deep Focus Paper",
+              year: 2026,
+              authors: [],
+              abstract: "x",
+              externalIds: { ArXiv: "2602.18473" },
+            }),
+          };
+        }
+        if (url.includes("/references")) {
+          return {
+            status: 200,
+            json: async () => ({
+              data: [
+                {
+                  citedPaper: {
+                    paperId: "S2PARENT",
+                    title: "Parent Paper",
+                    year: 2020,
+                    venue: "NeurIPS",
+                    citationCount: 50,
+                    authors: [],
+                    abstract: "Parent abstract.",
+                    externalIds: {},
+                  },
+                  isInfluential: true,
+                  intents: [],
+                },
+              ],
+            }),
+          };
+        }
+        return { status: 200, json: async () => ({ data: [] }) };
+      },
+      buildProvider: () => ({ provider: new FixedConfidenceProvider(), rateDelay: 0 }),
+    };
+    tmpDirs.push(deps.cacheDir);
+
+    const code = await runBuildDeepLineageCli(
+      parseArgs([
+        "--arxiv-id",
+        "2602.18473",
+        "--seed-paper-id",
+        SEED_PAPER_ID,
+        "--output",
+        outPath,
+      ]),
+      deps,
+      repoRoot,
+    );
+    expect(code).toBe(0);
+    const raw = readFileSync(outPath, "utf8");
+    expect(raw).toContain('"conf": 1.0');
+    expect(raw).toContain('"confidence": 1.0');
+    expect(raw).not.toMatch(/"conf": 1,/);
+    expect(raw).not.toMatch(/"confidence": 1,/);
+  });
+});
+
 // M2 of the P4 review: this CLI file used to have NO entry block at all
 // (importing/running it did nothing). `defaultDeps` is the real
 // `buildProvider`/`fetchImpl`/`cacheDir` wiring the new entry block uses.

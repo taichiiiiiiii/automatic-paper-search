@@ -21,7 +21,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { pyJsonDumps } from "@paperpilot/core/pycompat";
 import { atomicWriteText } from "../../collect/state/atomic.js";
 import { TEMPLATE_RATIONALES } from "../llm/base.js";
-import { toJsonSafeClassifications } from "./cache.js";
+import { toJsonSafeClassifications, tolerantJsonParse } from "./cache.js";
 import { withClassificationLock } from "./lock.js";
 
 const TEMPLATE_RATIONALES_SET: ReadonlySet<string> = new Set(Object.values(TEMPLATE_RATIONALES));
@@ -85,7 +85,7 @@ function purgeLocked(
 ): number {
   let cache: unknown;
   try {
-    cache = JSON.parse(readFileSync(cachePath, "utf-8"));
+    cache = tolerantJsonParse(readFileSync(cachePath, "utf-8"));
   } catch (e) {
     options.errorLog(`ERROR reading ${cachePath}: ${(e as Error).message}`);
     return 1;
