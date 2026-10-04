@@ -1,0 +1,49 @@
+[
+  {
+    "method": "GET",
+    "url": "https://api.openalex.org/works",
+    "params": {
+      "search": "Mamba",
+      "per-page": 25,
+      "filter": "primary_topic.field.id:fields/17"
+    }
+  },
+  {
+    "method": "GET",
+    "url": "https://api.openalex.org/works/W1001",
+    "params": {
+      "select": "id,referenced_works,ids,primary_location,locations,doi"
+    }
+  },
+  {
+    "method": "GET",
+    "url": "https://api.openalex.org/works",
+    "params": {
+      "filter": "openalex:W1002",
+      "per-page": 1
+    }
+  },
+  {
+    "method": "GET",
+    "url": "https://api.openalex.org/works",
+    "params": {
+      "filter": "cites:W1001",
+      "per-page": 16,
+      "sort": "cited_by_count:desc"
+    }
+  },
+  {
+    "method": "GET",
+    "url": "https://api.openalex.org/works/W1002",
+    "params": {
+      "select": "id,referenced_works,ids,primary_location,locations,doi"
+    }
+  },
+  {
+    "method": "GET",
+    "url": "https://api.openalex.org/works/W1003",
+    "params": {
+      "select": "id,referenced_works,ids,primary_location,locations,doi"
+    }
+  }
+]

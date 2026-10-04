@@ -19,3 +19,11 @@
 | 15 | safety-contracts.md の「移植先」列のパスが実際の配置（`apps/pipeline/src/...`）と違う。P5 で更新 | P4c |
 | 16 | `schemas/conference-baseline-assessment-v1.schema.json` に `$id` が無く validateArtifact で引けない | P4c part 2 |
 | 17 | scaffold の登録 manifest を `apps/web/lib/catalog-copy.ts` に接続 | P4c part 2 |
+| 18 | `audit_lineage_quality` の百分率表示が `Math.round`/`toFixed`（Python は偶数丸め）。.5 の境目だけ表示文が違い得る → `pyRound` に置き換える | P4d-3 |
+| 19 | `buildLineageCli.ts`・`buildDeepLineageCli.ts` の実行入口（`.env` と設定の読み込み）が仮。workflow から呼ぶ前に配線する | P4d-3 |
+| 20 | `validateConferenceSlug` が `catalog/slug.ts`（RangeError）と `conference/shared/conferenceSlug.ts`（独自エラー）に重複（#9 と同時に片付け、LIN-11 のテストも合わせる） | P4d-3 |
+| 21 | **判断待ち**: `lineage_pilot/**`・`prepare_lineage_review.py`・`ingest_lineage_review.py`（運用者向けのレビュー取り込み。公開データの生成には使っていない）を移植するか捨てるか。P5 で Python を消すので、どちらかに決める必要がある | P4d-3 |
+| 22 | **判断待ち**: `build_unarxive_index.py` は DuckDB の SQL そのもの。Node の DuckDB 束縛（例: `@duckdb/node-api`）の追加承認が要る。読み取り側は「使えない」既定で移植済み | P4d-3 |
+| 23 | theme が `build_lineage` 系の関数を局所コピーで持つ（`theme/node.ts`・`providerFactory.ts`・`fetchRelated.ts`・`edges.ts` の rationale 判定）。conference/deep 側は theme から import している → 共通の置き場所（`lineage/shared`）に移す | P4d-2/3 |
+| 24 | LLM が返した confidence がちょうど 1.0 / 0.0 の時、edge JSON に `1`/`0` と出る（Python は `1.0`/`0.0`）。`--llm-strict` 使用時のみ。`classify.ts`・`contract/v1.ts` で `pyFloat` を使う | P4d-2 |
+| 25 | `theme_slug` が Python・Worker・web・pipeline の 4 か所に独立実装 → P5 で TS の 1 か所に集約し、パリティテストを TS 内で完結 | P4d-2 |

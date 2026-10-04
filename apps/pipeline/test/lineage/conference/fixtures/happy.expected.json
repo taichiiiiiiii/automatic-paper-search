@@ -1,0 +1,122 @@
+{
+  "schema_version": "lineage-artifact-v1",
+  "root": "W100",
+  "nodes": [
+    {
+      "id": "W100",
+      "title": "Oral Paper One",
+      "year": 2026,
+      "venue": "ICLR 2026",
+      "venue_tier": "A",
+      "authors": [
+        "A. Author"
+      ],
+      "kinds": [],
+      "github_stars": 0,
+      "is_focus": true,
+      "seed_paper_id": "1111111111111111111111111111111111111111"
+    },
+    {
+      "id": "W200",
+      "title": "Reference Paper",
+      "year": 2020,
+      "venue": "NeurIPS",
+      "venue_tier": "",
+      "authors": [
+        "B. Author"
+      ],
+      "kinds": [],
+      "github_stars": 0,
+      "is_focus": false
+    },
+    {
+      "id": "W300",
+      "title": "Citer Paper",
+      "year": 2027,
+      "venue": "ICML",
+      "venue_tier": "",
+      "authors": [
+        "C. Author"
+      ],
+      "kinds": [],
+      "github_stars": 0,
+      "is_focus": false
+    }
+  ],
+  "edges": [
+    {
+      "src": "W100",
+      "dst": "W300",
+      "rel": "successor",
+      "relation": "successor",
+      "conf": 0.4,
+      "confidence": 0.4,
+      "rationale": "引用関係から導出（後継）。LLM 分類前のヒューリスティック。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_conference_lineage",
+          "version": "1"
+        },
+        "evidence": {
+          "source": "openalex",
+          "kind": "citation",
+          "sha256": "08bfce622097215173d951e7d96f81c737dc7c5d3724134ac40c03a3bfe30324"
+        },
+        "classification": {
+          "method": "citation_heuristic",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "citation-successor-v1"
+        }
+      }
+    },
+    {
+      "src": "W200",
+      "dst": "W100",
+      "rel": "successor",
+      "relation": "successor",
+      "conf": 0.4,
+      "confidence": 0.4,
+      "rationale": "引用関係から導出（後継）。LLM 分類前のヒューリスティック。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_conference_lineage",
+          "version": "1"
+        },
+        "evidence": {
+          "source": "openalex",
+          "kind": "citation",
+          "sha256": "70b6e58ca7716c403eb7384a44281c40555e0c62ffefaaad5dc0ea88181eae54"
+        },
+        "classification": {
+          "method": "citation_heuristic",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "citation-successor-v1"
+        }
+      }
+    }
+  ],
+  "clusters": [
+    {
+      "id": "other",
+      "label": "Other",
+      "focus_ids": [
+        "W100"
+      ]
+    }
+  ],
+  "meta": {
+    "kind": "conference",
+    "generator": "paperpilot.scripts.build_conference_lineage",
+    "generated_at": "2026-08-30T00:00:00Z",
+    "completeness": {
+      "complete": true,
+      "expansions_attempted": 2,
+      "expansions_failed": 0,
+      "supplement_failures": []
+    }
+  }
+}
