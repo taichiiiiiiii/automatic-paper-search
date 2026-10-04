@@ -5,6 +5,16 @@
 - 作業ブランチ: `feat/ts-migration`。`develop` への push は Worker と Pages を自動デプロイするため、移行作業は必ずこのブランチで行う
 - 無料枠の数値は **2026-10-04 に Cloudflare の現行ドキュメントで確認済み**（§1.1）
 
+## 進捗（2026-10-05 時点、`feat/ts-migration`、未 push）
+
+| フェーズ | 状態 |
+|---|---|
+| P1 土台 | 完了（CSP 方式の実証、比較ツール、Python 互換関数、スキーマ検証、TS CI） |
+| P2 画面 | 完了。レビュー 3 回で重大・中程度 0。残りの差は [`docs/migration/p2-parity-gaps.md`](../migration/p2-parity-gaps.md) |
+| P3 API | 完了（Hono、Durable Objects の正確な上限、空打ちモード、受付停止スイッチ） |
+| P4 収集・生成 | 完了。レビュー 3 回で重大・中程度 0。残作業と判断待ちは [`docs/migration/p4-followups.md`](../migration/p4-followups.md) |
+| P5 切替 | 未着手。ユーザー作業（Cloudflare トークン・プレビュー資源）と各段の承認が必要 |
+
 ## 0. 決定事項（ユーザー指示）
 
 | 決定 | 出典 |
