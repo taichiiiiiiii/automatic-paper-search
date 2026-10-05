@@ -101,7 +101,7 @@ describe("plan -> apply -> verify -> apply --reverse round trip", () => {
     expect(lighthouserc).toContain('"http://localhost/iclr-2026/lineage/"');
     expect(lighthouserc).toContain("Lighthouse CI config fixture.");
 
-    applyReverse({ git: adapter, cwd: repo });
+    applyReverse({ git: adapter, cwd: repo }, legacySha);
     gitRun(repo, ["commit", "-m", "revert(p5): back to legacy"]);
     const revertedSha = gitRun(repo, ["rev-parse", "HEAD"]);
 

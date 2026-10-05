@@ -23,7 +23,13 @@ import { flipLayoutModeToLegacy, flipLayoutModeToP5 } from "./layoutFlip.js";
 import { applyLighthouseEdit, reverseLighthouseEdit } from "./lighthouseEdit.js";
 import { buildPlan, planIsClean } from "./plan.js";
 import type { RuleEntry } from "./rules.js";
-import { applyWorkflowSwap, reverseWorkflowSwap, type WorkflowSwapResult } from "./workflowSwap.js";
+import { verifyMove } from "./verify.js";
+import {
+  applyWorkflowSwap,
+  listStagedWorkflowFiles,
+  reverseWorkflowSwap,
+  type WorkflowSwapResult,
+} from "./workflowSwap.js";
 
 export class ApplyError extends Error {}
 
@@ -36,6 +42,17 @@ export interface ApplyOptions {
   readonly cwd: string;
   /** Must equal a gated delete entry's `requiresConfirmDelete` exactly, or `apply` refuses the whole operation. */
   readonly confirmDelete?: string;
+  /**
+   * Forward `apply` only (p5-plan.md §5.1 L8): by default, a missing or
+   * empty `.github/workflows-p5` makes `apply` refuse the *entire*
+   * operation before touching anything — not silently skip the workflow
+   * swap while still moving data, flipping the layout, and patching
+   * `.gitignore`/`.lighthouserc.json`, which would commit a `LAYOUT_MODE:
+   * "p5"` tree with no Node workflows at all (no CI, no releases). Pass
+   * `true` only for a deliberate incremental rehearsal where another
+   * agent's `.github/workflows-p5` has not landed yet.
+   */
+  readonly allowMissingWorkflows?: boolean;
 }
 
 export interface ApplyResult {
@@ -90,6 +107,17 @@ export function apply(options: ApplyOptions): ApplyResult {
     }
   }
 
+  // L8: refuse — never silently skip — a missing/empty .github/workflows-p5,
+  // checked up front (before any `git mv`/`git add`) so the refusal leaves
+  // the tree untouched, same as the --confirm-delete gate above.
+  if (listStagedWorkflowFiles(cwd).length === 0 && !options.allowMissingWorkflows) {
+    throw new ApplyError(
+      "refusing to apply: .github/workflows-p5 is missing or empty, so the workflow swap " +
+        "(and its three deletes) would be skipped while data still moves and LAYOUT_MODE still " +
+        "flips to p5 — pass --allow-missing-workflows to accept that on purpose",
+    );
+  }
+
   // 1. git mv / git rm (+ the two configs' restricted-key edits) for every entry.
   for (const entry of plan.entries) {
     if (entry.class === "move") {
@@ -124,16 +152,42 @@ export function apply(options: ApplyOptions): ApplyResult {
 }
 
 /**
- * Reverse: the exact inverse of {@link apply}. Requires `beforeRef`
- * (default `HEAD^`) to resolve to the pre-apply commit — true both for the
- * real cutover commit B (always built as one commit on top of the prior
- * develop tip) and for a round-trip test's `apply` -> commit -> `apply
- * --reverse` sequence. Used to restore the two `delete`-class files and
- * the three deleted workflow names, none of which are recoverable from
- * the current working tree alone.
+ * Reverse: the exact inverse of {@link apply}. `beforeRef` is **required**
+ * (p5-plan.md §5.2/§6.2 R-B, review finding M3) — there is no implicit
+ * `HEAD^` default, because that silently assumes HEAD *is* the cutover
+ * commit B with nothing committed on top of it, which stops being true the
+ * moment any post-B commit lands (R-B can run up to a week after Merge B,
+ * per §6.2's observation window). Callers who do have post-B `data/**`
+ * changes to carry back first must use {@link "./carryBack.js"}'s
+ * `carryBack` — a separate, standalone mode — *before* calling this
+ * function, never by passing some other ref here and hoping this function
+ * also absorbs the drift.
+ *
+ * Before touching anything, this asserts (via {@link verifyMove}) that
+ * `HEAD`'s tree is *exactly* `beforeRef`'s forward-`apply` result — the
+ * same byte-SHA/mode/no-extra-diff proof `verify` itself performs. If it
+ * is not (a post-B commit changed something `verify(beforeRef, "HEAD")`
+ * would flag, or `beforeRef`'s own tree doesn't reclassify cleanly, or a
+ * prior `git revert` of the cutover commit already undid some of it —
+ * review probe P5), this throws {@link ApplyError} and mutates nothing.
+ * Without this check, the previous implementation would run the workflow
+ * swap, the `.lighthouserc.json`/`LAYOUT_MODE`/`.gitignore` reversals, and
+ * *then* start `git mv`-ing data back, only to crash partway through
+ * (review probe P4) — leaving a half-reversed tree with no commit to
+ * explain it, which is strictly worse than refusing up front.
  */
-export function applyReverse(options: ApplyOptions, beforeRef = "HEAD^"): ApplyResult {
+export function applyReverse(options: ApplyOptions, beforeRef: string): ApplyResult {
   const { git: adapter, cwd } = options;
+
+  const verification = verifyMove({ git: adapter, cwd, before: beforeRef, after: "HEAD" });
+  if (!verification.ok) {
+    throw new ApplyError(
+      `refusing to reverse: HEAD is not exactly ${beforeRef}'s forward-apply result, so ` +
+        "reversing now would silently half-reverse or desync the tree " +
+        `(run \`dataMove verify ${beforeRef} HEAD\` for the full report):\n` +
+        verification.problems.map((p) => `  - ${p}`).join("\n"),
+    );
+  }
 
   const beforePaths = git(adapter, cwd, ["ls-tree", "-r", "--name-only", beforeRef])
     .split("\n")

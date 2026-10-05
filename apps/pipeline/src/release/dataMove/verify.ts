@@ -51,19 +51,34 @@ export interface VerifyOptions {
   readonly cwd: string;
   readonly before: string;
   readonly after: string;
+  /**
+   * Mirrors `apply`'s `allowMissingWorkflows` (p5-plan.md §5.1 L8): by
+   * default, `<before>` having no files under `.github/workflows-p5`
+   * is itself a verify problem (a real cutover commit must have staged
+   * workflows to swap in), not a silent pass-through. Pass `true` only to
+   * verify a deliberate incremental rehearsal commit made before another
+   * agent's `.github/workflows-p5` landed.
+   */
+  readonly allowMissingWorkflows?: boolean;
 }
 
-function lsTree(adapter: GitAdapter, cwd: string, ref: string): Map<string, string> {
+interface TreeEntry {
+  readonly sha: string;
+  readonly mode: string;
+}
+
+function lsTree(adapter: GitAdapter, cwd: string, ref: string): Map<string, TreeEntry> {
   const out = git(adapter, cwd, ["ls-tree", "-r", "--full-tree", ref]);
-  const map = new Map<string, string>();
+  const map = new Map<string, TreeEntry>();
   if (out.length === 0) return map;
   for (const line of out.split("\n")) {
     const tab = line.indexOf("\t");
     if (tab === -1) continue;
     const meta = line.slice(0, tab).split(/\s+/);
+    const mode = meta[0];
     const sha = meta[2];
     const path = line.slice(tab + 1);
-    if (sha) map.set(path, sha);
+    if (sha && mode) map.set(path, { sha, mode });
   }
   return map;
 }
@@ -138,29 +153,50 @@ export function verifyMove(options: VerifyOptions): VerifyReport {
 
   for (const entry of plan.entries) {
     if (entry.class === "move") {
-      const srcSha = beforeTree.get(entry.path) ?? null;
-      const destSha = afterTree.get(entry.dest) ?? null;
+      const srcEntry = beforeTree.get(entry.path) ?? null;
+      const destEntry = afterTree.get(entry.dest) ?? null;
       if (afterTree.has(entry.path)) {
         problems.push(`move ${entry.path}: source still present in <after>`);
       }
-      if (destSha === null) {
+      if (destEntry === null) {
         problems.push(`move ${entry.path}: destination ${entry.dest} missing from <after>`);
-      } else if (destSha !== srcSha) {
+      } else if (destEntry.sha !== srcEntry?.sha) {
         problems.push(
-          `move ${entry.path}: blob SHA changed (${srcSha} -> ${destSha}) — content was not preserved`,
+          `move ${entry.path}: blob SHA changed (${srcEntry?.sha} -> ${destEntry.sha}) — content was not preserved`,
+        );
+      } else if (destEntry.mode !== srcEntry?.mode) {
+        problems.push(
+          `move ${entry.path}: file mode changed (${srcEntry?.mode} -> ${destEntry.mode}) — ` +
+            "a byte-identical move must preserve permissions too (L2)",
         );
       }
-      manifest.push({ path: entry.path, dest: entry.dest, class: entry.class, blobSha: srcSha });
+      manifest.push({
+        path: entry.path,
+        dest: entry.dest,
+        class: entry.class,
+        blobSha: srcEntry?.sha ?? null,
+      });
       moved++;
     } else if (entry.class === "stay") {
-      const beforeSha = beforeTree.get(entry.path) ?? null;
-      const afterSha = afterTree.get(entry.path) ?? null;
-      if (afterSha === null) {
+      const beforeEntry = beforeTree.get(entry.path) ?? null;
+      const afterEntry = afterTree.get(entry.path) ?? null;
+      if (afterEntry === null) {
         problems.push(`stay ${entry.path}: missing from <after>`);
-      } else if (afterSha !== beforeSha) {
-        problems.push(`stay ${entry.path}: changed unexpectedly (${beforeSha} -> ${afterSha})`);
+      } else if (afterEntry.sha !== beforeEntry?.sha) {
+        problems.push(
+          `stay ${entry.path}: changed unexpectedly (${beforeEntry?.sha} -> ${afterEntry.sha})`,
+        );
+      } else if (afterEntry.mode !== beforeEntry?.mode) {
+        problems.push(
+          `stay ${entry.path}: file mode changed unexpectedly (${beforeEntry?.mode} -> ${afterEntry.mode})`,
+        );
       }
-      manifest.push({ path: entry.path, dest: null, class: entry.class, blobSha: beforeSha });
+      manifest.push({
+        path: entry.path,
+        dest: null,
+        class: entry.class,
+        blobSha: beforeEntry?.sha ?? null,
+      });
       stayed++;
     } else if (entry.class === "delete") {
       if (afterTree.has(entry.path)) {
@@ -170,7 +206,7 @@ export function verifyMove(options: VerifyOptions): VerifyReport {
         path: entry.path,
         dest: null,
         class: entry.class,
-        blobSha: beforeTree.get(entry.path) ?? null,
+        blobSha: beforeTree.get(entry.path)?.sha ?? null,
       });
       deleted++;
     } else {
@@ -178,10 +214,17 @@ export function verifyMove(options: VerifyOptions): VerifyReport {
       if (afterTree.has(entry.path)) {
         problems.push(`moveEdit ${entry.path}: source still present in <after>`);
       }
-      const destSha = afterTree.get(entry.dest) ?? null;
-      if (destSha === null) {
+      const srcEntry = beforeTree.get(entry.path) ?? null;
+      const destEntry = afterTree.get(entry.dest) ?? null;
+      if (destEntry === null) {
         problems.push(`moveEdit ${entry.path}: destination ${entry.dest} missing from <after>`);
       } else {
+        if (destEntry.mode !== srcEntry?.mode) {
+          problems.push(
+            `moveEdit ${entry.path}: file mode changed (${srcEntry?.mode} -> ${destEntry.mode}) — ` +
+              "an allowed-key edit must preserve permissions too (L2)",
+          );
+        }
         try {
           const beforeContent = showRaw(adapter, cwd, `${before}:${entry.path}`);
           const afterContent = showRaw(adapter, cwd, `${after}:${entry.dest}`);
@@ -204,7 +247,7 @@ export function verifyMove(options: VerifyOptions): VerifyReport {
         path: entry.path,
         dest: entry.dest,
         class: entry.class,
-        blobSha: beforeTree.get(entry.path) ?? null,
+        blobSha: srcEntry?.sha ?? null,
       });
       moveEdited++;
     }
@@ -263,16 +306,19 @@ export function verifyMove(options: VerifyOptions): VerifyReport {
     for (const p of stagedBefore) {
       const name = p.slice(WORKFLOWS_P5_PREFIX.length);
       const dest = `${WORKFLOWS_PREFIX}${name}`;
+      const srcEntry = beforeTree.get(p);
       if (afterTree.has(p)) {
         problems.push(
           `workflow swap: ${p} should have moved out of workflows-p5 but is still in <after>`,
         );
       }
-      const destSha = afterTree.get(dest);
-      if (destSha === undefined) {
+      const destEntry = afterTree.get(dest);
+      if (destEntry === undefined) {
         problems.push(`workflow swap: expected ${dest} in <after>`);
-      } else if (destSha !== beforeTree.get(p)) {
+      } else if (destEntry.sha !== srcEntry?.sha) {
         problems.push(`workflow swap: ${dest} content does not match staged ${p}`);
+      } else if (destEntry.mode !== srcEntry?.mode) {
+        problems.push(`workflow swap: ${dest} file mode does not match staged ${p}`);
       }
     }
     for (const name of DELETED_WORKFLOW_NAMES) {
@@ -280,10 +326,22 @@ export function verifyMove(options: VerifyOptions): VerifyReport {
         problems.push(`workflow swap: ${WORKFLOWS_PREFIX}${name} should have been deleted`);
       }
     }
+  } else if (!options.allowMissingWorkflows) {
+    // L8 (mirrors `apply`'s refusal): a cutover commit with nothing staged
+    // under `.github/workflows-p5` at <before> is never legitimate on its
+    // own — either it's a real cutover (and this is a drift bug worth
+    // catching) or it's a deliberate incremental rehearsal, which must opt
+    // in explicitly via `allowMissingWorkflows`.
+    problems.push(
+      "workflow swap: <before> has no files under .github/workflows-p5 — refusing " +
+        "(pass allowMissingWorkflows to verify a deliberate incremental rehearsal commit)",
+    );
   } else {
     for (const name of DELETED_WORKFLOW_NAMES) {
       const p = `${WORKFLOWS_PREFIX}${name}`;
-      if (beforeTree.has(p) && beforeTree.get(p) !== afterTree.get(p)) {
+      const beforeEntry = beforeTree.get(p);
+      const afterEntry = afterTree.get(p);
+      if (beforeEntry && beforeEntry.sha !== afterEntry?.sha) {
         problems.push(`workflow swap: ${p} changed even though the swap should have been skipped`);
       }
     }

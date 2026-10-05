@@ -329,8 +329,7 @@ The edits allowed on the two config files are restricted to these keys:
 `.env` is now looked up in `data/config/` by `loadConfig`. `.env*` is already globally gitignored.
 
 **Code and other files changed in the same commit B (all prepared in A, flipped mechanically):**
-- `packages/core/src/layout` `LAYOUT_MODE = "p5"`.
-- `searchIndex` v1 generation and check removed.
+- `packages/core/src/layout` `LAYOUT_MODE = "p5"`. **This single flip is also what retires `searchIndex` v1** (follow-up #5) — `writeSearchIndexes`/`checkSearchIndexes` (`apps/pipeline/src/release/derived/searchIndex.ts`) take `mode: LayoutMode = LAYOUT_MODE`, and every caller (`searchIndexCli.ts`, `promoteHooks.ts`'s refresh/validate command tables, `promote.ts`'s `SHARED_PATHS`, `validateRelease.ts`'s `DEFAULT_REQUIRED_ARTIFACTS`) uses that default rather than hard-coding a mode. Under `"p5"` neither function touches `search-index.json` at all. **No separate edit to any of those files is needed in B** — confirmed by reading each call site (none passes an explicit `mode` argument); B's `dataMove` tool output (the layout flip plus the rule-table moves/deletes) is sufficient on its own. This was previously listed as its own bullet ("searchIndex v1 generation and check removed"), which read as if B needed a second, hand-written code edit beyond the layout flip; it doesn't, and `dataMove verify`'s enumerated allowlist (§5.2) is written on that basis — it does not and must not allow an edit to `searchIndex.ts` itself.
 - `git mv .github/workflows-p5/*` → `.github/workflows/` (overwrite); delete `ts-ci.yml`, `publish.yml`, `paper-slides-on-demand.yml`.
 - `.lighthouserc.json`.
 - `.gitignore`:
@@ -344,21 +343,28 @@ The edits allowed on the two config files are restricted to these keys:
 ### 5.2 Data-move tool (A9): `apps/pipeline/src/release/dataMove/{rules.ts,cli.ts}`
 - `rules.ts`: the table above as ordered rules: prefix or glob → `{move: dest} | stay | delete | moveEdit: {dest, allowedKeys}`.
 - `cli.ts plan`: runs `git ls-files` and maps every path. Exit 1 on any unmapped path, any two sources mapping to one destination, or a destination that already exists.
-- `cli.ts apply [--reverse]`:
+- `cli.ts apply [--confirm-delete <path>] [--allow-missing-workflows]`:
   - `git mv` per rule, `git rm` for deletes.
   - Applies the A10 patch to the config files and `.gitignore`, flips `LAYOUT_MODE`, moves the staged workflows.
-  - `--reverse` maps `data/**` back for rollback (§6, step R-B).
-- `cli.ts verify <before> <after>`:
+  - Refuses the *entire* call, before touching anything, if `.github/workflows-p5` is missing or empty — never a silent skip — unless `--allow-missing-workflows` is passed (review finding L8).
+- `cli.ts apply --reverse --before <sha> [--allow-missing-workflows]`:
+  - `--before <sha>` is **required** — no implicit `HEAD^` default (review finding M3). Before touching anything, asserts (the same proof `verify` performs) that `HEAD`'s tree is *exactly* `<sha>`'s forward-`apply` result; refuses, untouched, otherwise. This only ever reconstructs the exact tree the forward `apply` on `<sha>` produced — it is not, and must not be used as, a general "undo however much history has piled up since" tool. See §6.2 R-B for when this applies vs. `carry-back`.
+- `cli.ts carry-back --since <sha>`:
+  - The R-B step 4 case `apply --reverse` cannot cover on its own: every path changed in `<sha>..HEAD` under `data/` (add, modify, or delete) is mapped back onto its legacy path via the reverse of the rule table and replayed there (`git add`/`git rm --ignore-unmatch`). Refuses the whole call, untouched, if any changed path has no legacy-path equivalent (for example a p5-only `data/config/conference-copy/<slug>.json`). Never touches `LAYOUT_MODE`, `.gitignore`/`.lighthouserc.json`, or the workflow directories — that structural half is `apply --reverse`'s or a plain `git revert`'s job (§6.2 R-B).
+- `cli.ts verify <before> <after> [--allow-missing-workflows]`:
   - `git ls-tree -r` both commits.
-  - For every move rule, the blob SHA at the old path in `<before>` equals the blob SHA at the new path in `<after>`.
+  - For every move rule, the blob SHA *and file mode* at the old path in `<before>` equal the blob SHA and mode at the new path in `<after>` (review finding L2 — a chmod-only change is not byte-identical).
   - For `moveEdit`, the line diff is limited to the allowed keys.
   - Counts: N_before(docs+paperpilot/data+paperpilot/output) = N_moved + N_moveEdit + N_stay + N_deleted, with deletes equal to the enumerated list.
   - `git diff -M100% --name-status <before> <after>` contains only R100 for moves, the enumerated D, R+M for moveEdit, and M/A/D on code/workflow paths from an allowlist.
+  - `<before>` having no files under `.github/workflows-p5` is itself a problem by default, mirroring `apply`'s L8 gate, unless `--allow-missing-workflows` is passed.
   - Writes a JSON manifest (path, blob SHA, class) to stdout for the PR description.
 - Tests:
   - The rule table covers today's `git ls-files` (run in CI on feat): no orphans, no collisions.
-  - apply → verify → `apply --reverse` on a temp clone gives a byte-identical tree.
-  - A tampered blob fails verify.
+  - apply → verify → `apply --reverse --before <sha>` on a temp clone gives a byte-identical tree.
+  - A tampered blob, a chmod-only change, an untracked extra change, and a tampered workflow-swap destination all fail verify.
+  - `apply --reverse` refuses cleanly (no partial mutation) when `HEAD` has a post-`<sha>` commit under `data/**`, or when the cutover commit was already `git revert`ed first (review probes P4, P5).
+  - `carry-back` carries a brand-new post-B file, a modification of a pre-existing one, and a deletion; refuses on an unmappable path.
 
 **Format-only proof (§7.2), a pre-cutover checkpoint.** On a develop snapshot in a temp dir:
 1. `apply`.
@@ -494,11 +500,49 @@ Format: ☐ marks user or approval. ✔ is the checkpoint. ↩ is the rollback f
     - Then ☐ remove the GitHub Pages origin from the allowlist.
 12. Tier C PR (☐ approval).
 
-**↩ R-B (after Merge B, before C):**
+**↩ R-B (after Merge B, before C).** Rewritten (review finding M3): the
+previous draft ran `git revert -m 1 <mergeB>` *before* `dataMove apply
+--reverse`, and described the reverse step as if one `apply --reverse`
+call could both undo B's own structural move *and* carry forward
+whatever post-B `data/**` commits had landed since — the tool never
+supported either. `apply --reverse`'s `--before <sha>` precondition is
+"`HEAD` is *exactly* `<sha>`'s forward-`apply` result" (`verifyMove`'s own
+check, enforced before anything is touched); a prior `git revert` already
+breaks that precondition (probe P5 — `LAYOUT_MODE` is back to `"legacy"`
+before `apply --reverse` even starts), and so does any ordinary post-B
+commit under `data/**` (probe P4). Two genuinely different cases, in this
+order:
+
 1. `accepting=false`.
 2. List data commits since B: `git log <mergeB>..origin/develop -- data/`.
-3. `git revert -m 1 <mergeB>`, and B′ first if present.
-4. Run `dataMove apply --reverse` limited to the files changed after B, so post-cutover `data/state` (`seen_ids*`, `run_history*`, classifications) and new published/inputs files are carried back to `paperpilot/…` and `docs/…`. Commit.
+3. **No data commits since B** (rollback is immediate — nothing in step 6 or
+   later ran yet): `dataMove apply --reverse --before <mergeB>^` directly,
+   then commit. Skip to step 7. Plain `git revert` is not used for the
+   data/layout/workflow files at all — `apply --reverse` already produces
+   the byte-identical pre-B tree on its own.
+4. **Data commits exist since B** (the common case — R-B can run up to the
+   §6.2 step 11 observation week later, by which point `collect-weekly`/
+   `collect-daily-watch`/`regen-themes`/`conference-on-demand` have
+   almost certainly run):
+   a. `dataMove carry-back --since <mergeB>` **first, while `data/**` is
+      still live** (it reads every changed path via `git show HEAD:…`; run
+      it after a `git revert` and there is nothing left to read). This
+      writes every post-B `data/**` add/modify/delete back onto its legacy
+      path (`paperpilot/…`/`docs/…`) via the reverse rule table, and
+      refuses the whole call — untouched — if any changed path has no
+      legacy equivalent (for example a brand-new
+      `data/config/conference-copy/<slug>.json`, which is p5-only and
+      never existed under `paperpilot/data`; resolve that by hand before
+      retrying). Commit this as its own commit.
+   b. `git revert -m 1 <mergeB>` (B′ first if present) now undoes B's own
+      structural diff — the original rule-table moves, the `LAYOUT_MODE`
+      flip, the workflow swap, `.gitignore`/`.lighthouserc.json` — on top
+      of (a)'s commit. **A conflict here is expected, not a bug**: if a
+      *pre-existing* published/state file (one B itself moved, not a
+      brand-new post-B one) was also modified after B, (a) already wrote
+      today's content to its legacy path, and `git revert` separately
+      tries to recreate that same path from B's own parent's (older)
+      blob — resolve by keeping (a)'s content. Commit.
 5. Pushing `docs/**` triggers the Python `pages.yml`, which re-releases the old site to GitHub Pages, overwriting the redirect site if step 10 ran.
 6. Remove `<PUBLIC_ORIGIN>` from the allowlist.
 7. The apps/api Worker stays (Phase W is independent); Durable Object counters need no action. The Cloudflare Pages project is left idle or its production deployment removed (☐).
@@ -555,7 +599,7 @@ Revert does **not** undo: Workers Builds settings, KV values, DO storage, Cloudf
 | R17 | Required-check names break merges | Keep `tests.yml` and job `test`; P0-4 |
 | R18 | Concurrent conference-on-demand runs conflict on the copy manifest | One file per slug |
 | R19 | `daily/papers.json` deletion was blocked before | Explicit user confirmation in P0-4 |
-| R20 | Revert does not carry post-cutover state (`seen_ids` and so on) | `dataMove apply --reverse` for files changed after B (R-B step 4) |
+| R20 | Revert does not carry post-cutover state (`seen_ids` and so on) | `dataMove carry-back --since <B>`, run before `git revert` (R-B step 4a) |
 | R21 | Uncertain Cloudflare/GitHub API shapes (deployment list, rollback endpoint, deployment id format, `wrangler kv` defaults, `queue:` key, reusable-workflow concurrency, Workers Builds monorepo install, lhci directory URLs) | Each is marked **verify**; A4 is coded against injected fetch, then exercised once in the P2 rehearsal (deployment list) before production |
 | R22 | D1 expected by the design but not implemented | No binding in P5; recorded as a P3 gap / P6 item |
 
