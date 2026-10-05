@@ -7,24 +7,21 @@
 // worker/slug.js's regex literals that isn't mirrored here fails loudly
 // instead of silently drifting (the thing API-08/SCR-31/OUT-53 exist to
 // prevent).
-import { readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+//
+// (p5-plan.md §2 A1, risk R9): this used to read + eval worker/slug.js's
+// source at test time. worker/slug.js is production code, untouched
+// until P5, so this test must not depend on its live content to pass or
+// fail -- it now reads a committed, frozen fixture
+// (fixtures/worker-slug-regex-expected.json) generated once from the real
+// worker/slug.js by fixtures/gen-worker-regex-expected.mjs (same pattern
+// as packages/core/test/slug/fixtures/gen-worker-expected.mjs). If
+// worker/slug.js's SLUG_RE / THEME_INPUT_PATTERN is intentionally
+// changed, re-run that generator and commit the new fixture.
 import { describe, expect, it } from "vitest";
 import { SLUG_RE, THEME_INPUT_PATTERN } from "../../lib/themes-slug";
-
-const here = dirname(fileURLToPath(import.meta.url));
-const WORKER_SLUG_JS = resolve(here, "../../../../worker/slug.js");
-
-function extractRegexLiteral(src: string, constName: string): RegExp {
-  const re = new RegExp(`(?:export\\s+)?const\\s+${constName}\\s*=\\s*(/.*?/[a-z]*)\\s*;`);
-  const match = src.match(re);
-  if (!match?.[1]) {
-    throw new Error(`could not find const ${constName} in worker/slug.js`);
-  }
-  // eslint-disable-next-line no-eval -- trusted local source file, not user input
-  return new Function(`return ${match[1]};`)() as RegExp;
-}
+import workerSlugRegexExpected from "./fixtures/worker-slug-regex-expected.json" with {
+  type: "json",
+};
 
 // A battery of inputs exercising every edge the two patterns care
 // about (empty, min/max length, every allowed character class,
@@ -34,7 +31,8 @@ function extractRegexLiteral(src: string, constName: string): RegExp {
 // character class (`[A-Za-z0-9 _\-]` -> `[A-Za-z0-9 _-]`), which is a
 // semantics-preserving rewrite but would make a byte-exact comparison
 // flap every time `biome check --write` runs (one of this brief's
-// required verify commands).
+// required verify commands). Kept in sync with
+// fixtures/gen-worker-regex-expected.mjs's own copy of these lists.
 const SLUG_PROBES = [
   "",
   "a",
@@ -60,25 +58,30 @@ const THEME_INPUT_PROBES = [
   "semi;colon",
 ];
 
-describe("theme slug regex parity with worker/slug.js", () => {
-  const workerSrc = readFileSync(WORKER_SLUG_JS, "utf8");
+describe("theme slug regex parity with worker/slug.js (frozen fixture)", () => {
+  const slugReExpected = new Map(
+    workerSlugRegexExpected.slugRe.map((c) => [c.input, c.matches] as const),
+  );
+  const themeInputExpected = new Map(
+    workerSlugRegexExpected.themeInputPattern.map((c) => [c.input, c.matches] as const),
+  );
 
   it("SLUG_RE agrees with worker/slug.js's SLUG_RE on every probe input", () => {
-    const workerRe = extractRegexLiteral(workerSrc, "SLUG_RE");
     for (const probe of SLUG_PROBES) {
-      expect(SLUG_RE.test(probe), `SLUG_RE.test(${JSON.stringify(probe)})`).toBe(
-        workerRe.test(probe),
-      );
+      const expected = slugReExpected.get(probe);
+      expect(expected, `missing fixture entry for ${JSON.stringify(probe)}`).toBeDefined();
+      expect(SLUG_RE.test(probe), `SLUG_RE.test(${JSON.stringify(probe)})`).toBe(expected);
     }
   });
 
   it("THEME_INPUT_PATTERN agrees with worker/slug.js's THEME_INPUT_PATTERN on every probe input", () => {
-    const workerRe = extractRegexLiteral(workerSrc, "THEME_INPUT_PATTERN");
     for (const probe of THEME_INPUT_PROBES) {
+      const expected = themeInputExpected.get(probe);
+      expect(expected, `missing fixture entry for ${JSON.stringify(probe)}`).toBeDefined();
       expect(
         THEME_INPUT_PATTERN.test(probe),
         `THEME_INPUT_PATTERN.test(${JSON.stringify(probe)})`,
-      ).toBe(workerRe.test(probe));
+      ).toBe(expected);
     }
   });
 

@@ -1,13 +1,34 @@
 /**
- * Parity harness: the TS port of `audit_lineage_quality.py` run against the
- * REAL `docs/` tree must produce the exact same per-collection OK/SKIP/WARN/
- * FAIL lines (and exit code) as the real Python script. Confirmed first by
- * running `uv run --extra dev python -m paperpilot.scripts.audit_lineage_quality
- * [--include-themes]` directly and diffing against this test's TS-side
- * reconstruction of the same report, at the time this test was written.
+ * Parity harness: the TS port of `audit_lineage_quality.py` must produce the
+ * exact same per-collection OK/SKIP/WARN/FAIL lines (and exit code) as the
+ * real Python script. Confirmed first by running `uv run --extra dev
+ * python -m paperpilot.scripts.audit_lineage_quality [--include-themes]`
+ * directly and diffing against this test's TS-side reconstruction of the
+ * same report, at the time this test was written.
+ *
+ * (b)-class test (p5-plan.md §2 A1, risk R9): the assertions below hardcode
+ * specific per-conference/per-theme lines (exact popularity_sinks counts,
+ * off-topic ratios), so this is a frozen-expectation comparison, not a
+ * live-data invariant. It reads a frozen `docs/` fixture tree
+ * (`../fixtures/docs`, see `../fixtures/README.md`) instead of the live
+ * repo tree, so a later legitimate update to the real
+ * `docs/<conf>/lineage.json` or `docs/themes/<slug>/lineage.json` files
+ * cannot flip these hardcoded lines out from under this test. The fixture
+ * tree is trimmed to exactly what `collectTargets()`/`auditLineage()` read
+ * (each conference's/theme's `lineage.json` only -- no `papers.json`,
+ * `conferences.json`, `themes-manifest.json` or deep artifacts, none of
+ * which this code path touches; see `../fixtures/README.md` for how that
+ * was verified).
+ *
+ * Known residual live dependencies: `auditLineage()` internally calls
+ * `loadDenylist()` with no argument and (via `auditOfftopicNonfocus()` →
+ * `isFoundationalAncestor()`) reads a module-level foundational-allowlist
+ * path -- both resolve through `layoutFor(getRepoRoot())` to LIVE files
+ * (src change needed to inject a path override is out of A1's test-only
+ * scope -- see `../fixtures/README.md`).
  */
 import { readFileSync } from "node:fs";
-import { basename, dirname, resolve } from "node:path";
+import { basename, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import {
@@ -18,8 +39,7 @@ import {
 } from "../../../src/lineage/quality/auditLineageQuality.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const REPO_ROOT = resolve(HERE, "..", "..", "..", "..", "..");
-const DOCS_ROOT = resolve(REPO_ROOT, "docs");
+const DOCS_ROOT = join(HERE, "fixtures", "docs");
 
 function isThemePath(path: string): boolean {
   return path.split(/[\\/]/).includes("themes");

@@ -1,12 +1,17 @@
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { getRepoRoot } from "@paperpilot/core";
+import { layoutFor } from "@paperpilot/core/layout";
 import { describe, expect, it } from "vitest";
 import { compareTrees } from "../../src/parity/compare-trees.js";
 
-const here = path.dirname(fileURLToPath(import.meta.url));
-// apps/pipeline/test/parity -> apps/pipeline/test -> apps/pipeline -> apps -> <repo root>
-const repoRoot = path.resolve(here, "../../../..");
-const docsRoot = path.join(repoRoot, "docs");
+// (a)-class invariant (p5-plan.md §2 A1, risk R9): this test's claim --
+// "comparing the published tree to itself is equal" -- holds regardless of
+// what the published data actually contains, so it stays pointed at the
+// REAL repo tree via layoutFor(getRepoRoot()) rather than a frozen fixture.
+// Under LAYOUT_MODE "legacy" this still resolves to <repoRoot>/docs, so the
+// behaviour is byte-identical to the previous hardcoded path; once commit B
+// flips LAYOUT_MODE to "p5" it follows the move to data/published with no
+// code change here.
+const docsRoot = layoutFor(getRepoRoot()).published;
 
 /**
  * Self-check (docs/design/39 §7.2): the parity tool must agree with itself on the real

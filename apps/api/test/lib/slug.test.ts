@@ -2,6 +2,7 @@
 
 import { describe, expect, it } from "vitest";
 import { THEME_INPUT_PATTERN, themeSlug } from "../../src/lib/slug.js";
+import workerSlugExpected from "../fixtures/worker-slug-expected.json" with { type: "json" };
 
 describe("themeSlug", () => {
   it("simple ASCII title", () =>
@@ -51,35 +52,28 @@ describe("THEME_INPUT_PATTERN", () => {
 // so a future edit to one without the other is caught here instead of only
 // by paperpilot/tests/test_worker_slug_parity.py (which never sees this
 // copy).
+//
+// (p5-plan.md §2 A1, risk R9): this used to dynamic-`import()` the live
+// worker/slug.js module at test time. worker/slug.js is production code,
+// untouched until P5, so this test must not depend on its live behaviour
+// to pass or fail -- it now reads a committed, frozen fixture
+// (../fixtures/worker-slug-expected.json) generated once from the real
+// worker/slug.js by ../fixtures/gen-worker-slug-expected.mjs (same
+// pattern as packages/core/test/slug/fixtures/gen-worker-expected.mjs).
+// If worker/slug.js is intentionally changed, re-run that generator and
+// commit the new fixture.
 describe("parity with worker/slug.js", () => {
-  it("matches on a representative sample", async () => {
-    // @ts-expect-error untyped legacy module, read-only reference for parity
-    const legacy = await import("../../../../worker/slug.js");
-    const samples = [
-      "Mixture of Experts",
-      "Vision_Transformer",
-      "  Diffusion Model  ",
-      "RLHF",
-      "BERT 2018",
-      "a".repeat(200),
-    ];
-    for (const sample of samples) {
-      expect(themeSlug(sample)).toBe(legacy.themeSlug(sample));
+  it("matches on a representative sample", () => {
+    for (const { input, slug } of workerSlugExpected.themeSlugSamples) {
+      expect(themeSlug(input)).toBe(slug);
     }
     // Compare by behaviour, not by .source string: biome's formatter drops
     // the redundant backslash before a trailing `-` in a character class
     // (functionally identical, since an unescaped `-` immediately before
     // `]` is already literal), so the two patterns' source text legitimately
     // differs while still accepting/rejecting the exact same strings.
-    for (const candidate of [
-      "Vision Transformer",
-      "$(rm -rf ~)",
-      "a",
-      "a".repeat(81),
-      "テスト",
-      "Direct-Preference-Optimization",
-    ]) {
-      expect(THEME_INPUT_PATTERN.test(candidate)).toBe(legacy.THEME_INPUT_PATTERN.test(candidate));
+    for (const { input, matches } of workerSlugExpected.themeInputPatternCandidates) {
+      expect(THEME_INPUT_PATTERN.test(input)).toBe(matches);
     }
   });
 });
