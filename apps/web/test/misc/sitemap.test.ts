@@ -18,8 +18,13 @@ import {
 const TEST_DIR = dirname(fileURLToPath(import.meta.url));
 const OUT_DIR = join(TEST_DIR, "..", "..", "out");
 const BUILT_SITEMAP = join(OUT_DIR, "sitemap.xml");
-/** The document shape this generator has to keep (read-only here). */
-const LEGACY_SITEMAP = join(TEST_DIR, "..", "..", "..", "..", "docs", "sitemap.xml");
+/**
+ * The document shape this generator has to keep. A frozen byte-identical
+ * copy of `docs/sitemap.xml` (docs/migration/p5-plan.md §2 A1): the test
+ * must not read the real `docs/` tree at test time. See
+ * apps/web/test/fixtures/legacy/README.md for how it was captured.
+ */
+const LEGACY_SITEMAP = join(TEST_DIR, "..", "fixtures", "legacy", "sitemap.xml");
 
 const XML_DECLARATION = '<?xml version="1.0" encoding="UTF-8"?>';
 const URLSET_OPEN_LINE = '<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">';

@@ -17,17 +17,28 @@ import { describe, expect, it } from "vitest";
  * Requires `next build` to have already run (same hard requirement as
  * test/csp.test.ts) -- there is no built `out/` to compare against
  * otherwise.
+ *
+ * The "docs/<conf>/paper-links.html" side is a frozen byte-identical
+ * copy under test/fixtures/legacy/ rather than the real docs/ tree
+ * (docs/migration/p5-plan.md §2 A1: this test must not read docs/ at
+ * test time). Only eccv-2024 and aaai-2026 are frozen -- the smallest
+ * two of the 10 published conferences -- rather than the originally
+ * tested cvpr-2026 (2.1 MB of HTML): every row in every conference's
+ * paper-links.html has an anchor (verified by inspection), so the two
+ * smallest conferences exercise exactly the same parsing/parity logic
+ * as any larger one, at a fraction of the fixture size. See
+ * test/fixtures/legacy/README.md.
  */
 
 const TEST_DIR = dirname(fileURLToPath(import.meta.url));
 const WEB_ROOT = join(TEST_DIR, "..", "..");
 const OUT_DIR = join(WEB_ROOT, "out");
-const DOCS_DIR = join(WEB_ROOT, "..", "..", "docs");
+const LEGACY_FIXTURES_DIR = join(WEB_ROOT, "test", "fixtures", "legacy");
 const PUBLIC_DIR = join(WEB_ROOT, "public");
 
 const ROBOTS_NOINDEX_RE = /<meta[^>]*\bname="robots"[^>]*\bcontent="[^"]*noindex[^"]*"/i;
 
-const CONFERENCES = ["eccv-2024", "cvpr-2026"] as const;
+const CONFERENCES = ["eccv-2024", "aaai-2026"] as const;
 
 interface PaperRow {
   readonly paperId: string;
@@ -105,12 +116,12 @@ async function exists(path: string): Promise<boolean> {
 }
 
 describe.each(CONFERENCES)("paper-links parity: %s", (conf) => {
-  it("lists the exact same (title, href) set as the current docs/<conf>/paper-links.html", async () => {
-    const legacyPath = join(DOCS_DIR, conf, "paper-links.html");
+  it("lists the exact same (title, href) set as the frozen docs/<conf>/paper-links.html fixture", async () => {
+    const legacyPath = join(LEGACY_FIXTURES_DIR, conf, "paper-links.html");
     const builtPath = join(OUT_DIR, conf, "paper-links", "index.html");
 
     if (!(await exists(legacyPath))) {
-      throw new Error(`${legacyPath} does not exist -- is this still a published conference?`);
+      throw new Error(`${legacyPath} does not exist -- is the frozen fixture missing?`);
     }
     if (!(await exists(builtPath))) {
       throw new Error(

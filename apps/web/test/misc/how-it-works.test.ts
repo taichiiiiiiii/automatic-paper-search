@@ -7,8 +7,15 @@ const TEST_DIR = dirname(fileURLToPath(import.meta.url));
 const PAGE_DIR = join(TEST_DIR, "..", "..", "app", "how-it-works");
 const PAGE_SOURCE = join(PAGE_DIR, "page.tsx");
 const STYLES_SOURCE = join(PAGE_DIR, "how-it-works.module.css");
-/** The page this port has to reproduce (read-only). */
-const LEGACY_PAGE = join(TEST_DIR, "..", "..", "..", "..", "docs", "how-it-works", "index.html");
+/**
+ * The page this port has to reproduce. A frozen byte-identical copy of
+ * `docs/how-it-works/index.html` (docs/migration/p5-plan.md §2 A1): the
+ * test must not read the real `docs/` tree at test time (it moves/goes
+ * away under P5 §5.1, and would otherwise pass/fail on whatever the
+ * pipeline last wrote there instead of a fixed contract). See
+ * apps/web/test/fixtures/legacy/README.md for how it was captured.
+ */
+const LEGACY_PAGE = join(TEST_DIR, "..", "fixtures", "legacy", "how-it-works", "index.html");
 const BUILT_PAGE = join(TEST_DIR, "..", "..", "out", "how-it-works", "index.html");
 
 /** Regions whose rendered copy must survive the port, by CSS class in the
