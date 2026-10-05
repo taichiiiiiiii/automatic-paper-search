@@ -7,7 +7,7 @@
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { pyFloat, pyJsonDumps } from "@paperpilot/core";
-import { layoutFor } from "@paperpilot/core/layout";
+import { LAYOUT_MODE, type LayoutMode, layoutFor } from "@paperpilot/core/layout";
 import { loadEnv } from "../../collect/config/env.js";
 import type { LLMProvider } from "../../collect/llm/provider.js";
 import { atomicWriteText } from "../../collect/state/atomic.js";
@@ -72,6 +72,28 @@ export function parseArgs(argv: readonly string[]): BuildDeepLineageCliArgs {
 }
 
 /**
+ * Where `.env` lives, as a function of the layout mode — p5-plan.md §2
+ * A2 follow-up #19 ("load .env from layout.config"). Mirrors
+ * `layoutFor`'s own `collectConfig()` quirk for `config.yaml`
+ * (`packages/core/src/layout/index.ts`): under `"legacy"` it lives one
+ * level ABOVE `layout.config` (`paperpilot/.env`, parallel to
+ * `paperpilot/data` — byte-identical to this CLI's old hard-coded
+ * `join(repoRoot, "paperpilot", ".env")`, so tier A stays inert), and
+ * only moves INSIDE `layout.config` under `"p5"` (`data/config/.env`,
+ * alongside `config.yaml` — p5-plan.md §5.1: "`.env` is now looked up in
+ * `data/config/` by `loadConfig`"). Kept as a local helper (not a new
+ * `layoutFor` export) per this task's edit-scope limits; duplicated from
+ * `buildLineageCli.ts`'s own copy for the same "each CLI's wiring stays
+ * independently readable" reason `defaultDeps` itself already is.
+ */
+export function envFilePath(repoRoot: string, mode: LayoutMode = LAYOUT_MODE): string {
+  if (mode === "legacy") {
+    return join(repoRoot, "paperpilot", ".env");
+  }
+  return join(layoutFor(repoRoot, mode).config, ".env");
+}
+
+/**
  * Real `buildProvider`/`fetchImpl`/`cacheDir` wiring for the CLI entry
  * point (M2 of the P4 review: this file used to have NO entry block at
  * all, so running it for real did nothing). `LLM-24` note: the thunk is
@@ -80,7 +102,7 @@ export function parseArgs(argv: readonly string[]): BuildDeepLineageCliArgs {
  * requires of every caller.
  */
 export function defaultDeps(repoRoot: string = DEFAULT_REPO_ROOT): RunBuildDeepLineageCliDeps {
-  const env = loadEnv(join(repoRoot, "paperpilot", ".env"));
+  const env = loadEnv(envFilePath(repoRoot));
   const fetchImpl: BuildLineageDeps["fetchImpl"] = async (url, init) => {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), init.timeoutMs);
@@ -223,32 +245,49 @@ export async function runBuildDeepLineageCli(
   return 0;
 }
 
+/**
+ * Simplified analogue of argparse's auto-generated `--help` — see
+ * `buildLineageCli.ts`'s own `isHelpRequest`/`HELP_TEXT` doc comment for
+ * the full rationale (same documented simplification, duplicated here).
+ */
+export const HELP_TEXT = `usage: build_deep_lineage --arxiv-id ID --seed-paper-id ID [--depth N] [--top-parents N] [--top-children N] [--venue-override VENUE] [--tier-override TIER] [--allow-incomplete] [--output FILE]`;
+
+export function isHelpRequest(argv: readonly string[]): boolean {
+  return argv.includes("--help") || argv.includes("-h");
+}
+
 if (isMain(import.meta.url)) {
-  let parsed: BuildDeepLineageCliArgs | undefined;
-  try {
-    parsed = parseArgs(process.argv.slice(2));
-  } catch (e) {
-    if (e instanceof CliUsageError) {
-      process.stderr.write(`error: ${e.message}\n`);
-      process.exitCode = 2;
-    } else {
-      throw e;
+  const argv = process.argv.slice(2);
+  if (isHelpRequest(argv)) {
+    console.log(HELP_TEXT);
+    process.exitCode = 0;
+  } else {
+    let parsed: BuildDeepLineageCliArgs | undefined;
+    try {
+      parsed = parseArgs(argv);
+    } catch (e) {
+      if (e instanceof CliUsageError) {
+        process.stderr.write(`error: ${e.message}\n`);
+        process.exitCode = 2;
+      } else {
+        throw e;
+      }
     }
-  }
-  if (parsed !== undefined) {
-    runBuildDeepLineageCli(parsed, defaultDeps()).then(
-      (code) => {
-        process.exitCode = code;
-      },
-      // `buildProvider()` throwing (no LLM key configured, LLM-44) or any
-      // other dependency-construction failure must exit non-zero with a
-      // clear message — never leave the process to exit 0 having done
-      // nothing (the exact failure mode `buildLineageCli.ts`'s old stub
-      // guard avoided only by refusing to run at all).
-      (err) => {
-        process.stderr.write(`error: ${(err as Error).message}\n`);
-        process.exitCode = 3;
-      },
-    );
+    if (parsed !== undefined) {
+      runBuildDeepLineageCli(parsed, defaultDeps()).then(
+        (code) => {
+          process.exitCode = code;
+        },
+        // `buildProvider()` throwing (no LLM key configured, LLM-44) or any
+        // other dependency-construction failure must exit non-zero with a
+        // clear message — never leave the process to exit 0 having done
+        // nothing (the exact failure mode `buildLineageCli.ts`'s old stub
+        // guard avoided only by refusing to run at all).
+        (err) => {
+          process.stderr.write(`error: ${(err as Error).message}\n`);
+          process.exitCode = 3;
+        },
+      );
+    }
   }
 }

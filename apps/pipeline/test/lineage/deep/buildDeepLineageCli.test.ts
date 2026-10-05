@@ -14,6 +14,7 @@ import type {
 } from "../../../src/collect/llm/provider.js";
 import {
   defaultDeps,
+  envFilePath,
   parseArgs,
   type RunBuildDeepLineageCliDeps,
   runBuildDeepLineageCli,
@@ -311,5 +312,23 @@ describe("defaultDeps (real entry-point wiring, M2)", () => {
     } finally {
       rmSync(repoRoot, { recursive: true, force: true });
     }
+  });
+});
+
+// p5-plan.md §2 A2 follow-up #19 — see buildLineageCli.test.ts's own
+// `envFilePath` describe block for the full rationale; duplicated here
+// since `buildDeepLineageCli.ts` keeps its own independent copy of the
+// helper, same as it already does for `defaultDeps`.
+describe("envFilePath (p5-plan.md §2 A2 follow-up #19)", () => {
+  it("legacy: paperpilot/.env (byte-identical to the pre-change hard-coded path, tier-A inert)", () => {
+    expect(envFilePath("/repo", "legacy")).toBe(join("/repo", "paperpilot", ".env"));
+  });
+
+  it("p5: inside layout.config, alongside config.yaml (data/config/.env)", () => {
+    expect(envFilePath("/repo", "p5")).toBe(join("/repo", "data", "config", ".env"));
+  });
+
+  it("defaults to the current LAYOUT_MODE ('legacy') when no mode is given", () => {
+    expect(envFilePath("/repo")).toBe(join("/repo", "paperpilot", ".env"));
   });
 });

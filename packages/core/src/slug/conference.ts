@@ -34,8 +34,19 @@ const CONFERENCE_SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
  * "daily" is `paperpilot/output/daily/` (config.daily-watch.yaml's own
  * output dir, not a conference) — kept as a local literal, mirroring the
  * Python module's own documented layering choice.
+ *
+ * "lineage" is added per docs/migration/p5-plan.md §4.1
+ * (`conference-on-demand.yml` row: "reserved list = core
+ * `RESERVED_CONFERENCE_SLUGS` (adds lineage; keeps cvpr-2026, daily;
+ * contract-tested)") — it is a real top-level site route
+ * (`apps/web/lib/catalog-constants.ts::RESERVED_CATALOG_SLUGS`), so a
+ * new conference slug must never be able to shadow it. `themes` and
+ * `how-it-works` are also real top-level routes but are not listed in
+ * the plan's wording here, so they are deliberately left out of this
+ * set (unlike `apps/pipeline/src/conference/scaffold/registerConference.ts`'s
+ * own, broader `RESERVED_CONFERENCE_SLUGS`, which already covers both).
  */
-export const RESERVED_CONFERENCE_SLUGS: ReadonlySet<string> = new Set(["daily"]);
+export const RESERVED_CONFERENCE_SLUGS: ReadonlySet<string> = new Set(["daily", "lineage"]);
 
 export class InvalidConferenceSlugError extends RangeError {}
 

@@ -38,6 +38,19 @@ describe("validateConferenceSlug", () => {
     expect(() => validateConferenceSlug("daily")).toThrow(InvalidConferenceSlugError);
   });
 
+  // p5-plan.md §4.1 (conference-on-demand.yml row): "reserved list = core
+  // RESERVED_CONFERENCE_SLUGS (adds lineage; keeps cvpr-2026, daily;
+  // contract-tested)" -- `lineage` is a real top-level route
+  // (apps/web/lib/catalog-constants.ts RESERVED_CATALOG_SLUGS) that a
+  // new conference slug must never be able to shadow.
+  it("rejects the reserved name 'lineage' (p5-plan.md §4.1)", () => {
+    expect(() => validateConferenceSlug("lineage")).toThrow(InvalidConferenceSlugError);
+  });
+
+  it("still accepts 'cvpr-2026' (not reserved)", () => {
+    expect(validateConferenceSlug("cvpr-2026")).toBe("cvpr-2026");
+  });
+
   it("rejects overlong input but accepts exactly 64 chars", () => {
     expect(() => validateConferenceSlug("a".repeat(65))).toThrow(InvalidConferenceSlugError);
     expect(validateConferenceSlug("a".repeat(64))).toBe("a".repeat(64));

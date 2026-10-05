@@ -10,7 +10,20 @@
  * current page follows the same "<Display> 採択論文" heading pattern, so
  * the "採択論文" emphasis is applied once in the hero component instead
  * of being duplicated into this data.
+ *
+ * p5-plan.md §2 A2 follow-up #17: for a conference NOT yet in this
+ * static map, `getCatalogCopy` now also checks the per-slug file
+ * `apps/pipeline/src/conference/scaffold/cli.ts` writes to
+ * `<layout.config>/conference-copy/<slug>.json` (operator-supplied
+ * `--display`/`DISPLAY` + `LEDE`, read at build time through
+ * `catalog-copy-reader.ts`) before falling back to the fully generic
+ * slug-derived copy. `CATALOG_COPY` always wins when a slug is in it --
+ * the per-slug file is only a stopgap until a reviewed entry is added
+ * here. Every value returned by this function is rendered through JSX
+ * (`{copy.display}` etc. -- see `components/catalog/catalog-hero.tsx`),
+ * which escapes it automatically; nothing here needs to pre-escape HTML.
  */
+import { readConferenceCopyFile } from "./catalog-copy-reader";
 
 export interface CatalogCopy {
   display: string;
@@ -104,17 +117,38 @@ export const CATALOG_COPY: Record<string, CatalogCopy> = {
   },
 };
 
-/** Falls back to a generic-but-honest copy set for any conference added
- * to conferences.json before this map is updated -- never silently
- * renders `undefined`. */
-export function getCatalogCopy(slug: string): CatalogCopy {
-  return (
-    CATALOG_COPY[slug] ?? {
-      display: slug,
-      description: `${slug} 採択論文のフィルタブル一覧。タイトル・著者・要旨での検索、トピックタグ、採択形式、並び替えで絞り込めます。`,
+/**
+ * Three-tier fallback (p5-plan.md §2 A2 follow-up #17):
+ *   1. `CATALOG_COPY[slug]` -- the reviewed static map.
+ *   2. The build-time per-slug `conference-copy/<slug>.json` file, if
+ *      one exists for `slug` (operator-supplied `--display`/`DISPLAY` +
+ *      `LEDE` from `conference/scaffold/cli.ts`).
+ *   3. The fully generic, slug-derived copy -- never silently renders
+ *      `undefined`.
+ *
+ * `repoRoot` is an injectable override for tests only; production
+ * callers always use the default (the real repo root).
+ */
+export function getCatalogCopy(slug: string, repoRoot?: string): CatalogCopy {
+  const builtin = CATALOG_COPY[slug];
+  if (builtin) return builtin;
+
+  const fromFile = readConferenceCopyFile(slug, repoRoot);
+  if (fromFile) {
+    return {
+      display: fromFile.display,
+      description: `${fromFile.display} 採択論文のフィルタブル一覧。タイトル・著者・要旨での検索、トピックタグ、採択形式、並び替えで絞り込めます。`,
       tagline: "",
-      lede: "",
+      lede: fromFile.lede,
       source: "Auto-tagged · MIT License",
-    }
-  );
+    };
+  }
+
+  return {
+    display: slug,
+    description: `${slug} 採択論文のフィルタブル一覧。タイトル・著者・要旨での検索、トピックタグ、採択形式、並び替えで絞り込めます。`,
+    tagline: "",
+    lede: "",
+    source: "Auto-tagged · MIT License",
+  };
 }
