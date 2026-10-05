@@ -20,4 +20,8 @@ export default defineConfig({
   esbuild: {
     jsx: "automatic",
   },
+  test: {
+    // Fills jsdom's missing Element.scrollTo / scrollIntoView (see file).
+    setupFiles: ["./test/setup/jsdom-scroll.ts"],
+  },
 });
