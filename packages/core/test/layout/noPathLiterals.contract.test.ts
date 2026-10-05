@@ -38,6 +38,16 @@ const SCAN_DIRS = [
 const EXEMPT_PREFIX = join(REPO_ROOT, "packages", "core", "src", "layout");
 
 /**
+ * The data-move tool (changeset A9, p5-plan.md §5.2) exists to name the
+ * legacy paths it moves FROM: its rule table and .gitignore patch must
+ * spell out docs/, paperpilot/data and paperpilot/output. Destinations
+ * still come from relLayout("p5"). It runs once, at the cutover.
+ */
+const EXEMPT_DIRS: readonly string[] = [
+  join(REPO_ROOT, "apps", "pipeline", "src", "release", "dataMove"),
+];
+
+/**
  * Files this A0 changeset does not own (another tier-A changeset's edit
  * scope — p5-plan.md §2) and therefore cannot route through `layoutFor()`
  * here. Each entry must be the one line in that file this test would
@@ -65,6 +75,7 @@ function listSourceFiles(dir: string): string[] {
   for (const entry of entries) {
     const full = join(dir, entry.name);
     if (full === EXEMPT_PREFIX || full.startsWith(`${EXEMPT_PREFIX}/`)) continue;
+    if (EXEMPT_DIRS.some((d) => full === d || full.startsWith(`${d}/`))) continue;
     if (EXEMPT_FILES.has(relative(REPO_ROOT, full))) continue;
     if (entry.isDirectory()) {
       out.push(...listSourceFiles(full));
