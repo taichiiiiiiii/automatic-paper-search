@@ -190,6 +190,10 @@ const DATA_STATE_FILES = new Set([
   "seen_ids.json",
   "seen_ids.daily.json",
   "run_history.jsonl",
+  // Review round 3, M1: the daily-watch run history (config.daily-watch.yaml's
+  // `incremental.run_history_file`, committed by collect-daily-watch). Without
+  // it, R-B carry-back refuses after any daily-watch run.
+  "run_history.daily.jsonl",
   "identity-coverage-v1.json",
 ]);
 const DATA_CONFIG_FILES = new Set([

@@ -6,7 +6,7 @@
  *   tsx cli.ts plan
  *   tsx cli.ts apply [--confirm-delete <path>] [--allow-missing-workflows]
  *   tsx cli.ts apply --reverse --before <sha> [--allow-missing-workflows]
- *   tsx cli.ts carry-back --since <sha> [--manifest <path>]
+ *   tsx cli.ts carry-back --since <sha> --manifest <path>
  *   tsx cli.ts finish-revert --manifest <path>
  *   tsx cli.ts verify <before> <after> [--allow-missing-workflows]
  *   tsx cli.ts rehearse [--repo <path>] [--keep]
@@ -34,7 +34,6 @@ import { isMain } from "../../shared/cli/isMain.js";
 import { createGitAdapter } from "../git/gitAdapter.js";
 import { ApplyError, apply, applyReverse } from "./apply.js";
 import {
-  buildManifest,
   CarryBackError,
   type CarryBackManifest,
   carryBack,
@@ -143,23 +142,43 @@ function runCarryBack(args: string[]): void {
     }
   }
   if (since === undefined) {
-    die("usage: carry-back --since <sha> [--manifest <path>]");
+    die("usage: carry-back --since <sha> --manifest <path>");
+  }
+  // Review round 3, L3: finish-revert cannot run without the manifest, so
+  // it is required, and an empty value (for example an unset
+  // "$RUNNER_TEMP/…" expanding oddly, or "") is refused up front.
+  if (manifestPath === undefined || manifestPath.trim() === "") {
+    die(
+      "carry-back requires --manifest <path> (a writable file outside the repository, for " +
+        "example /tmp/carry-back.json); finish-revert reads it",
+    );
   }
 
   const adapter = createGitAdapter();
   const cwd = process.cwd();
   try {
-    const result = carryBack({ git: adapter, cwd, since: since as string });
+    const result = carryBack({
+      git: adapter,
+      cwd,
+      since: since as string,
+      // p5-plan.md §6.2 R-B step 4: the deterministic handoff to
+      // `finish-revert --manifest <file>`. Written before anything is
+      // staged, so an unwritable path leaves the index untouched. Write it
+      // outside the repository so no commit can pick it up.
+      writeManifest: (manifest) =>
+        writeFileSync(manifestPath as string, `${JSON.stringify(manifest, null, 2)}\n`),
+    });
     for (const entry of result.entries) {
       console.log(`${entry.status}\t${entry.p5Path} -> ${entry.legacyPath}`);
     }
     console.log(`carried back ${result.entries.length} path(s) since ${since}`);
-    if (manifestPath !== undefined) {
-      // p5-plan.md §6.2 R-B step 4: the deterministic handoff to
-      // `finish-revert --manifest <file>`. Write it outside the repository
-      // (the runbook uses a temp path) so no commit can pick it up.
-      writeFileSync(manifestPath, `${JSON.stringify(buildManifest(result), null, 2)}\n`);
-      console.log(`manifest written: ${manifestPath}`);
+    console.log(`manifest written: ${manifestPath}`);
+    if (!result.staged) {
+      // Review round 3, M2: a delete-only carry-back stages nothing.
+      console.log(
+        "nothing is staged (every carried-back path was a deletion B had already made); the " +
+          "carry-back commit must still exist: git commit --allow-empty",
+      );
     }
   } catch (error) {
     if (error instanceof CarryBackError) {
@@ -271,7 +290,7 @@ function main(): void {
           "  plan\n" +
           "  apply [--confirm-delete <path>] [--allow-missing-workflows]\n" +
           "  apply --reverse --before <sha> [--allow-missing-workflows]\n" +
-          "  carry-back --since <sha> [--manifest <path>]\n" +
+          "  carry-back --since <sha> --manifest <path>\n" +
           "  finish-revert --manifest <path>\n" +
           "  verify <before> <after> [--allow-missing-workflows]\n" +
           "  rehearse [--repo <path>] [--keep]",

@@ -270,68 +270,122 @@ async function runValidate(args: string[]): Promise<void> {
   }
 }
 
-/**
- * A missing/empty required env var dies loudly (never silently reaches
- * `recordDeployment`/`getProductionDeploymentId`/etc. as `undefined` and
- * gets stringified into a URL or payload as `"undefined"`).
- */
-function requiredEnv(name: string): string {
-  const raw = process.env[name];
-  if (raw === undefined || raw === "") {
-    die(`${name} is required`);
-  }
-  return raw as string;
-}
-
 const SOURCE_SHA_RE = /^[0-9a-f]{40}$/;
 
-function requiredShaEnv(name: string): string {
-  const raw = requiredEnv(name);
-  if (!SOURCE_SHA_RE.test(raw)) {
-    die(`${name} must be 40 lowercase hex characters`);
-  }
-  return raw;
+/**
+ * One subcommand's declared env (P5 tier-A review round 3, L2): the names
+ * its handler requires UNCONDITIONALLY (`required`, i.e. dies if absent
+ * regardless of any other env var's value) and the names it requires only
+ * in some cases (`conditional`, for example `gh-record`'s `ARTIFACT_NAME`).
+ * A handler reads a required env var only through its own spec's
+ * {@link EnvSpec.require}/{@link EnvSpec.requireSha}, which accept only a
+ * declared name (a type error at compile time, a thrown error at run
+ * time), so {@link REQUIRED_ENV_BY_SUBCOMMAND} is built from the same
+ * declarations the handlers read and cannot drift from them.
+ */
+export interface EnvSpec<R extends string = string, C extends string = never> {
+  readonly subcommand: string;
+  readonly required: readonly R[];
+  readonly conditional: readonly C[];
+  /** A missing/empty env var dies loudly (never reaches a URL or payload as `"undefined"`). */
+  require(name: R | C): string;
+  /** {@link require}, plus the 40-lowercase-hex check. */
+  requireSha(name: R | C): string;
 }
+
+export function envSpec<const R extends string, const C extends string = never>(
+  subcommand: string,
+  required: readonly R[],
+  conditional: readonly C[] = [],
+): EnvSpec<R, C> {
+  const declared = new Set<string>([...required, ...conditional]);
+  const require = (name: R | C): string => {
+    if (!declared.has(name)) {
+      // A programming error, not an operator one: the name was never declared.
+      throw new Error(`${subcommand}: env var ${name} is not declared in its env spec`);
+    }
+    const raw = process.env[name];
+    if (raw === undefined || raw === "") {
+      die(`${name} is required`);
+    }
+    return raw as string;
+  };
+  return {
+    subcommand,
+    required,
+    conditional,
+    require,
+    requireSha(name) {
+      const raw = require(name);
+      if (!SOURCE_SHA_RE.test(raw)) {
+        die(`${name} must be 40 lowercase hex characters`);
+      }
+      return raw;
+    },
+  };
+}
+
+// Subcommands that read only argv, or only OPTIONAL env (`process.env.X ??
+// <default>`, or `positiveIntEnv`, which dies only on a MALFORMED value),
+// declare an empty spec: an explicit empty list, never a missing entry.
+const PROMOTE_ENV = envSpec("promote", []);
+const PACKAGE_ENV = envSpec("package", []);
+const COMMIT_PUSH_ENV = envSpec("commit-push", []);
+const VALIDATE_ENV = envSpec("validate", []);
+const MARKER_ENV = envSpec("marker", []);
+const NO_SKIP_GATE_ENV = envSpec("no-skip-gate", []);
+const CF_DEPLOYMENT_ID_ENV = envSpec("cf-deployment-id", [
+  "CF_ACCOUNT_ID",
+  "CF_PROJECT",
+  "CF_API_TOKEN",
+  "SOURCE_SHA",
+]);
+const CF_ROLLBACK_ENV = envSpec("cf-rollback", ["CF_ACCOUNT_ID", "CF_PROJECT", "CF_API_TOKEN"]);
+const CF_VERIFY_DEPLOYMENT_ENV = envSpec("cf-verify-deployment", [
+  "CF_ACCOUNT_ID",
+  "CF_PROJECT",
+  "CF_API_TOKEN",
+]);
+/** `ARTIFACT_NAME` is required unless `RELEASE_KIND` is `"rollback"` (see `artifactNameEnvFor`). */
+const GH_RECORD_ENV = envSpec(
+  "gh-record",
+  ["RELEASE_KIND", "GITHUB_TOKEN", "GITHUB_REPOSITORY", "SOURCE_SHA", "CF_DEPLOYMENT_ID"],
+  ["ARTIFACT_NAME"],
+);
+
+/** Every subcommand's env spec, keyed by subcommand (one per `main` switch case). */
+export const ENV_SPECS: Readonly<Record<string, EnvSpec<string, string>>> = Object.fromEntries(
+  [
+    PROMOTE_ENV,
+    PACKAGE_ENV,
+    COMMIT_PUSH_ENV,
+    VALIDATE_ENV,
+    MARKER_ENV,
+    NO_SKIP_GATE_ENV,
+    CF_DEPLOYMENT_ID_ENV,
+    CF_ROLLBACK_ENV,
+    CF_VERIFY_DEPLOYMENT_ENV,
+    GH_RECORD_ENV,
+  ].map((spec) => [spec.subcommand, spec as EnvSpec<string, string>]),
+);
 
 /**
  * P5 tier-A review round 2, N3: the env vars each subcommand's handler
- * calls `requiredEnv`/`requiredShaEnv` on UNCONDITIONALLY -- i.e. dies
- * if absent, regardless of any other env var's value. Exported (rather
- * than left as scattered calls inside each `run*` function) so
- * `apps/pipeline/test/workflows/required-env-coverage.test.ts` can
- * check, for every staged workflow step that invokes `release/cli.ts
- * <subcommand>`, that its `env:` block actually provides every name
- * listed here -- deriving the check from this one list instead of a
- * second, hand-maintained copy that could silently drift from the real
- * `requiredEnv` calls below (the gap that let N3's missing
- * `ARTIFACT_NAME` in `pages-rollback.yml`'s "record" step through
- * round 1 unnoticed).
+ * requires UNCONDITIONALLY. `apps/pipeline/test/workflows/
+ * required-env-coverage.test.ts` checks, for every staged workflow step
+ * that invokes `release/cli.ts <subcommand>`, that its `env:` block
+ * provides every name listed here (the gap that let N3's missing
+ * `ARTIFACT_NAME` in `pages-rollback.yml`'s "record" step through round 1
+ * unnoticed). Derived from {@link ENV_SPECS}, the same declarations the
+ * handlers read (review round 3, L2).
  *
- * Subcommands that read only argv, or only OPTIONAL env (`promote`,
- * `package`, `commit-push`, `validate`, `marker`, `no-skip-gate`) are
- * intentionally omitted -- an empty required-env list, not a missing
- * entry, since every one of their env reads is `process.env.X ??
- * <default>` / `positiveIntEnv` (dies only on a MALFORMED value, never
- * on an absent one).
- *
- * `gh-record`'s `ARTIFACT_NAME` is NOT listed here: it is the one
- * CONDITIONALLY required env var (required unless `RELEASE_KIND` is
- * literally `"rollback"` -- see `artifactNameEnvFor`), which this
- * unconditional-only list cannot express. The coverage test special-
- * cases it via {@link GH_RECORD_CONDITIONAL_ARTIFACT_NAME}.
+ * `gh-record`'s `ARTIFACT_NAME` is NOT listed here: it is that spec's one
+ * `conditional` name, which this unconditional-only list cannot express.
+ * The coverage test special-cases it via
+ * {@link GH_RECORD_CONDITIONAL_ARTIFACT_NAME}.
  */
-export const REQUIRED_ENV_BY_SUBCOMMAND: Readonly<Record<string, readonly string[]>> = {
-  "cf-deployment-id": ["CF_ACCOUNT_ID", "CF_PROJECT", "CF_API_TOKEN", "SOURCE_SHA"],
-  "cf-rollback": ["CF_ACCOUNT_ID", "CF_PROJECT", "CF_API_TOKEN"],
-  "cf-verify-deployment": ["CF_ACCOUNT_ID", "CF_PROJECT", "CF_API_TOKEN"],
-  "gh-record": [
-    "RELEASE_KIND",
-    "GITHUB_TOKEN",
-    "GITHUB_REPOSITORY",
-    "SOURCE_SHA",
-    "CF_DEPLOYMENT_ID",
-  ],
-};
+export const REQUIRED_ENV_BY_SUBCOMMAND: Readonly<Record<string, readonly string[]>> =
+  Object.fromEntries(Object.values(ENV_SPECS).map((spec) => [spec.subcommand, spec.required]));
 
 /**
  * `gh-record`'s one conditionally-required env var (see
@@ -343,7 +397,7 @@ export const REQUIRED_ENV_BY_SUBCOMMAND: Readonly<Record<string, readonly string
  * sets the literal, and only that step may omit it.
  */
 export const GH_RECORD_CONDITIONAL_ARTIFACT_NAME = {
-  envVar: "ARTIFACT_NAME",
+  envVar: GH_RECORD_ENV.conditional[0] as "ARTIFACT_NAME",
   exemptReleaseKindLiteral: "rollback",
 } as const;
 
@@ -385,10 +439,10 @@ function emitKeyValueOutputs(pairs: Record<string, string>): void {
 async function runCfDeploymentId(): Promise<void> {
   const result = await getProductionDeploymentId({
     fetchImpl: cfFetch,
-    accountId: requiredEnv("CF_ACCOUNT_ID"),
-    project: requiredEnv("CF_PROJECT"),
-    apiToken: requiredEnv("CF_API_TOKEN"),
-    sourceSha: requiredShaEnv("SOURCE_SHA"),
+    accountId: CF_DEPLOYMENT_ID_ENV.require("CF_ACCOUNT_ID"),
+    project: CF_DEPLOYMENT_ID_ENV.require("CF_PROJECT"),
+    apiToken: CF_DEPLOYMENT_ID_ENV.require("CF_API_TOKEN"),
+    sourceSha: CF_DEPLOYMENT_ID_ENV.requireSha("SOURCE_SHA"),
   });
   emitKeyValueOutputs({
     cf_deployment_id: result.deploymentId,
@@ -401,9 +455,9 @@ async function runCfRollback(args: string[]): Promise<void> {
   const [deploymentId] = args as [string];
   const result = await rollbackDeployment({
     fetchImpl: cfFetch,
-    accountId: requiredEnv("CF_ACCOUNT_ID"),
-    project: requiredEnv("CF_PROJECT"),
-    apiToken: requiredEnv("CF_API_TOKEN"),
+    accountId: CF_ROLLBACK_ENV.require("CF_ACCOUNT_ID"),
+    project: CF_ROLLBACK_ENV.require("CF_PROJECT"),
+    apiToken: CF_ROLLBACK_ENV.require("CF_API_TOKEN"),
     deploymentId,
   });
   emitKeyValueOutputs({ cf_deployment_id: result.deploymentId });
@@ -424,9 +478,9 @@ async function runCfVerifyDeployment(args: string[]): Promise<void> {
   }
   const commitHash = await getDeploymentCommitHash({
     fetchImpl: cfFetch,
-    accountId: requiredEnv("CF_ACCOUNT_ID"),
-    project: requiredEnv("CF_PROJECT"),
-    apiToken: requiredEnv("CF_API_TOKEN"),
+    accountId: CF_VERIFY_DEPLOYMENT_ENV.require("CF_ACCOUNT_ID"),
+    project: CF_VERIFY_DEPLOYMENT_ENV.require("CF_PROJECT"),
+    apiToken: CF_VERIFY_DEPLOYMENT_ENV.require("CF_API_TOKEN"),
     deploymentId,
   });
   // Extracted to pagesApi.ts's assertCommitHashMatches (P5 tier-A review
@@ -446,24 +500,24 @@ async function runCfVerifyDeployment(args: string[]): Promise<void> {
  */
 function artifactNameEnvFor(releaseKind: "normal" | "rollback"): string | null {
   if (releaseKind === "normal") {
-    return requiredEnv("ARTIFACT_NAME");
+    return GH_RECORD_ENV.require("ARTIFACT_NAME");
   }
   const raw = process.env.ARTIFACT_NAME ?? "";
   return raw === "" ? null : raw;
 }
 
 async function runGhRecord(): Promise<void> {
-  const releaseKind = requiredEnv("RELEASE_KIND");
+  const releaseKind = GH_RECORD_ENV.require("RELEASE_KIND");
   if (releaseKind !== "normal" && releaseKind !== "rollback") {
     die("RELEASE_KIND must be normal or rollback");
   }
   const requestIdRaw = process.env.REQUEST_ID ?? "";
   const result = await recordDeployment({
     fetchImpl: ghFetch,
-    token: requiredEnv("GITHUB_TOKEN"),
-    repo: requiredEnv("GITHUB_REPOSITORY"),
-    sourceSha: requiredShaEnv("SOURCE_SHA"),
-    cfDeploymentId: requiredEnv("CF_DEPLOYMENT_ID"),
+    token: GH_RECORD_ENV.require("GITHUB_TOKEN"),
+    repo: GH_RECORD_ENV.require("GITHUB_REPOSITORY"),
+    sourceSha: GH_RECORD_ENV.requireSha("SOURCE_SHA"),
+    cfDeploymentId: GH_RECORD_ENV.require("CF_DEPLOYMENT_ID"),
     releaseKind,
     requestId: requestIdRaw === "" ? null : requestIdRaw,
     artifactName: artifactNameEnvFor(releaseKind),

@@ -4,6 +4,7 @@
  * mode `apply --reverse` cannot provide on its own (it only ever touches
  * paths that existed in its `beforeRef`'s own plan).
  */
+import { spawnSync } from "node:child_process";
 import {
   chmodSync,
   existsSync,
@@ -12,11 +13,13 @@ import {
   symlinkSync,
   writeFileSync,
 } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it } from "vitest";
 import { apply } from "../../../src/release/dataMove/apply.js";
 import {
   CarryBackError,
+  type CarryBackManifest,
   carryBack,
   reverseMapDataPath,
 } from "../../../src/release/dataMove/carryBack.js";
@@ -321,4 +324,151 @@ describe("carryBack", () => {
     );
     expect(gitRun(repo, ["diff", "--cached", "--name-only"])).toBe("");
   }, 20_000);
+
+  it("RED/GREEN: carries a 755 mode on a moveEdit config (--chmod +x), index and worktree", () => {
+    fixture = buildFixtureRepo();
+    const repo = fixture.repo;
+    const cutoverSha = applyAndCommitCutover(repo);
+    const p5Config = join(repo, "data/config/config.yaml");
+    writeFileSync(
+      p5Config,
+      readFileSync(p5Config, "utf-8").replace("max_age_days: 14", "max_age_days: 30"),
+    );
+    chmodSync(p5Config, 0o755);
+    gitRun(repo, ["add", "-A"]);
+    gitRun(repo, ["commit", "-q", "-m", "post-B: config tweak, now executable"]);
+
+    carryBack({ git: adapter, cwd: repo, since: cutoverSha });
+    expect(gitRun(repo, ["ls-files", "-s", "paperpilot/config.yaml"])).toMatch(/^100755 /);
+    expect(gitRun(repo, ["diff", "--name-only"])).toBe("");
+  }, 20_000);
+
+  it("reports staged=false for a delete-only carry-back (M2: the commit must be --allow-empty)", () => {
+    fixture = buildFixtureRepo();
+    const repo = fixture.repo;
+    const cutoverSha = applyAndCommitCutover(repo);
+    gitRun(repo, ["rm", "-q", "data/published/themes/flash-attention/lineage.json"]);
+    gitRun(repo, ["commit", "-q", "-m", "post-B: delete a theme"]);
+
+    const result = carryBack({ git: adapter, cwd: repo, since: cutoverSha });
+    expect(result.entries.map((e) => e.status)).toEqual(["D"]);
+    expect(result.staged).toBe(false);
+    expect(gitRun(repo, ["status", "--porcelain"])).toBe("");
+  }, 20_000);
+});
+
+describe("carryBack: atomic on late failures (review round 3, L3)", () => {
+  /** The reviewer's r3rb4 shape: an added config file (sorts first) plus a post-B change to a moveEdit key. */
+  function addConfigAndDriftLoggingKey(repo: string): void {
+    writeFileSync(join(repo, "data/config/conference-sources-v1.yaml"), "sources: []\n");
+    const p5Config = join(repo, "data/config/config.yaml");
+    const text = readFileSync(p5Config, "utf-8");
+    const drifted = text.replace("file: logs/paperpilot.log", "file: logs/paperpilot-weekly.log");
+    expect(drifted).not.toBe(text);
+    writeFileSync(p5Config, drifted);
+    gitRun(repo, ["add", "-A"]);
+    gitRun(repo, ["commit", "-q", "-m", "post-B: new config file + logging.file change"]);
+  }
+
+  it("RED/GREEN: a moveEdit key changed after B refuses the whole call; nothing staged, no manifest", () => {
+    fixture = buildFixtureRepo();
+    const repo = fixture.repo;
+    const cutoverSha = applyAndCommitCutover(repo);
+    addConfigAndDriftLoggingKey(repo);
+
+    let written: CarryBackManifest | undefined;
+    expect(() =>
+      carryBack({
+        git: adapter,
+        cwd: repo,
+        since: cutoverSha,
+        writeManifest: (m) => {
+          written = m;
+        },
+      }),
+    ).toThrow(CarryBackError);
+    expect(() => carryBack({ git: adapter, cwd: repo, since: cutoverSha })).toThrow(
+      /data\/config\/config\.yaml: its moveEdit keys cannot be reversed/,
+    );
+    expect(written).toBeUndefined();
+    expect(gitRun(repo, ["status", "--porcelain"])).toBe("");
+    expect(existsSync(join(repo, "paperpilot/data/conference-sources-v1.yaml"))).toBe(false);
+  }, 20_000);
+
+  it("RED/GREEN: an unwritable manifest refuses before anything is staged", () => {
+    fixture = buildFixtureRepo();
+    const repo = fixture.repo;
+    const cutoverSha = applyAndCommitCutover(repo);
+    writeFileSync(join(repo, "data/config/conference-sources-v1.yaml"), "sources: []\n");
+    writeFileSync(join(repo, "data/state/seen_ids.json"), '{"x":1}\n');
+    gitRun(repo, ["add", "-A"]);
+    gitRun(repo, ["commit", "-q", "-m", "post-B: two data changes"]);
+
+    expect(() =>
+      carryBack({
+        git: adapter,
+        cwd: repo,
+        since: cutoverSha,
+        writeManifest: () => {
+          throw new Error("EACCES: permission denied, open '/carry-back.json'");
+        },
+      }),
+    ).toThrow(/cannot write the manifest[\s\S]*nothing was staged/);
+    expect(gitRun(repo, ["status", "--porcelain"])).toBe("");
+  }, 20_000);
+
+  describe("real tsx spawn", () => {
+    const here = dirname(fileURLToPath(import.meta.url));
+    const repoRoot = join(here, "..", "..", "..", "..", "..");
+    const tsx = join(repoRoot, "node_modules", ".bin", "tsx");
+    const cli = join(repoRoot, "apps", "pipeline", "src", "release", "dataMove", "cli.ts");
+
+    function run(repo: string, args: string[]) {
+      return spawnSync(tsx, [cli, ...args], { cwd: repo, encoding: "utf-8" });
+    }
+
+    it("RED/GREEN: --manifest into a missing directory exits 1 with the index untouched", () => {
+      fixture = buildFixtureRepo();
+      const repo = fixture.repo;
+      const cutoverSha = applyAndCommitCutover(repo);
+      writeFileSync(join(repo, "data/config/conference-sources-v1.yaml"), "sources: []\n");
+      gitRun(repo, ["add", "-A"]);
+      gitRun(repo, ["commit", "-q", "-m", "post-B: new config file"]);
+
+      const missing = join(fixture.base, "no-such-dir", "carry-back.json");
+      const result = run(repo, ["carry-back", "--since", cutoverSha, "--manifest", missing]);
+      expect(result.status).toBe(1);
+      expect(result.stderr).toMatch(/cannot write the manifest/);
+      expect(gitRun(repo, ["status", "--porcelain"])).toBe("");
+    }, 30_000);
+
+    it("RED/GREEN: carry-back without --manifest (or with an empty one) is refused", () => {
+      fixture = buildFixtureRepo();
+      const repo = fixture.repo;
+      const cutoverSha = applyAndCommitCutover(repo);
+      writeFileSync(join(repo, "data/state/seen_ids.json"), '{"x":1}\n');
+      gitRun(repo, ["commit", "-q", "-am", "post-B: seen ids"]);
+
+      for (const extra of [[], ["--manifest", ""]]) {
+        const result = run(repo, ["carry-back", "--since", cutoverSha, ...extra]);
+        expect(result.status).toBe(1);
+        expect(result.stderr).toMatch(/requires --manifest/);
+      }
+      expect(gitRun(repo, ["status", "--porcelain"])).toBe("");
+    }, 30_000);
+
+    it("prints the --allow-empty instruction when nothing is staged (M2)", () => {
+      fixture = buildFixtureRepo();
+      const repo = fixture.repo;
+      const cutoverSha = applyAndCommitCutover(repo);
+      gitRun(repo, ["rm", "-q", "data/published/themes/flash-attention/lineage.json"]);
+      gitRun(repo, ["commit", "-q", "-m", "post-B: delete a theme"]);
+      const manifestPath = join(fixture.base, "carry-back.json");
+
+      const result = run(repo, ["carry-back", "--since", cutoverSha, "--manifest", manifestPath]);
+      expect(result.status).toBe(0);
+      expect(result.stdout).toMatch(/git commit --allow-empty/);
+      expect(JSON.parse(readFileSync(manifestPath, "utf-8")).entries).toHaveLength(1);
+    }, 30_000);
+  });
 });

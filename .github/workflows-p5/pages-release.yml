@@ -143,13 +143,21 @@ jobs:
           pnpm -r --if-present test --reporter=default --reporter=json --outputFile.json=.vitest-release-report.json
 
       - name: No skipped tests
+        # P5 tier-A review round 3, L1: one explicit report per workspace
+        # package with a test script, never a `find` over whatever exists. A
+        # package that wrote no report (a non-vitest `test`, a dropped
+        # reporter flag) fails the gate, because its report cannot be read,
+        # instead of silently dropping out of the list. The list must equal
+        # what `dataMove rehearse` derives (findTestPackageDirs);
+        # apps/pipeline/test/workflows/release-no-skip-gate-reports.test.ts
+        # pins that equality, so a new package fails CI until it is added.
         run: |
           set -euo pipefail
-          reports=()
-          while IFS= read -r -d '' f; do
-            reports+=("$f")
-          done < <(find apps packages -maxdepth 2 -name .vitest-release-report.json -print0)
-          pnpm exec tsx apps/pipeline/src/release/cli.ts no-skip-gate "${reports[@]}"
+          pnpm exec tsx apps/pipeline/src/release/cli.ts no-skip-gate \
+            apps/api/.vitest-release-report.json \
+            apps/pipeline/.vitest-release-report.json \
+            apps/web/.vitest-release-report.json \
+            packages/core/.vitest-release-report.json
 
       - name: Theme seed audit
         run: pnpm exec tsx apps/pipeline/src/lineage/theme/auditThemeSeedsCli.ts

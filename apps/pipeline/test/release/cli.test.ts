@@ -9,7 +9,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "nod
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { afterEach, beforeEach, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const CLI = join(__dirname, "..", "..", "src", "release", "cli.ts");
@@ -431,4 +431,73 @@ it("no-skip-gate subcommand passes a clean vitest JSON report and fails a report
   );
   const stderr = expectCliDies(base, ["no-skip-gate", bad], {});
   expect(stderr).toContain("pending");
+});
+
+// P5 tier-A review round 3, L1: the release passes one explicit report
+// per test package; a package that wrote no report must fail the gate, not
+// drop out of it.
+it("no-skip-gate fails when one of the named reports is missing, even if the others are clean", () => {
+  const good = join(base, "report-present.json");
+  writeFileSync(
+    good,
+    JSON.stringify({
+      numTotalTests: 1,
+      numPendingTests: 0,
+      numTodoTests: 0,
+      testResults: [{ assertionResults: [{ title: "ok", status: "passed" }] }],
+    }),
+  );
+  const missing = join(base, "apps", "new-package", ".vitest-release-report.json");
+  const stderr = expectCliDies(base, ["no-skip-gate", good, missing], {});
+  expect(stderr).toContain(missing);
+});
+
+// P5 tier-A review round 3, L2: REQUIRED_ENV_BY_SUBCOMMAND used to be a
+// hand-maintained list next to scattered `requiredEnv(...)` calls, so a new
+// `requiredEnv("X")` in a handler silently escaped the workflow env-coverage
+// check. Every handler now reads required env only through its own
+// `envSpec(...)`, and the exported list is built from those specs. These
+// tests pin that there is no other route.
+describe("release/cli.ts env specs are the only way a handler requires env (L2)", () => {
+  const source = readFileSync(CLI, "utf-8");
+
+  it("every <SPEC>.require/requireSha call names a var its own spec declares", async () => {
+    const { ENV_SPECS } = await import("../../src/release/cli.js");
+    const specVars = new Map<string, string>();
+    for (const m of source.matchAll(/const (\w+) = envSpec\(\s*"([a-z-]+)"/g)) {
+      specVars.set(m[1] as string, m[2] as string);
+    }
+    expect(specVars.size).toBe(Object.keys(ENV_SPECS).length);
+    const calls = [...source.matchAll(/(\w+)\.(require|requireSha)\(([^)]*)\)/g)];
+    expect(calls.length).toBeGreaterThan(10);
+    for (const [call, receiver, , arg] of calls) {
+      const subcommand = specVars.get(receiver as string);
+      expect(subcommand, `${call}: receiver is not an envSpec`).toBeDefined();
+      const literal = /^\s*"([A-Z0-9_]+)"\s*$/.exec(arg as string);
+      expect(literal, `${call}: the env var name must be a plain string literal`).not.toBeNull();
+      const spec = ENV_SPECS[subcommand as string];
+      expect(
+        [...(spec?.required ?? []), ...(spec?.conditional ?? [])],
+        `${call}: ${literal?.[1]} is not declared in the "${subcommand}" env spec`,
+      ).toContain(literal?.[1]);
+    }
+  });
+
+  it("no free requiredEnv/requiredShaEnv helper (a second route around the specs) exists", () => {
+    expect(source).not.toMatch(/\brequired(Sha)?Env\s*\(/);
+  });
+
+  it("every main() subcommand has an env spec (no silent `?? []` default)", async () => {
+    const { REQUIRED_ENV_BY_SUBCOMMAND } = await import("../../src/release/cli.js");
+    const mainBody = source.slice(source.indexOf("async function main"));
+    const cases = [...mainBody.matchAll(/case "([a-z-]+)":/g)].map((m) => m[1]).sort();
+    expect(cases.length).toBeGreaterThan(5);
+    expect(Object.keys(REQUIRED_ENV_BY_SUBCOMMAND).sort()).toEqual(cases);
+  });
+
+  it("an undeclared name throws at run time too (a cast around the type check)", async () => {
+    const { envSpec } = await import("../../src/release/cli.js");
+    const spec = envSpec("cf-rollback", ["CF_ACCOUNT_ID"]);
+    expect(() => spec.require("ZZ_NEW_REQUIRED" as never)).toThrow(/not declared/);
+  });
 });

@@ -10,9 +10,11 @@
  *
  * This derives the required-env list from
  * `apps/pipeline/src/release/cli.ts`'s own exported
- * `REQUIRED_ENV_BY_SUBCOMMAND` (never a second, hand-maintained copy
- * that could drift from the real `requiredEnv` calls) and checks every
- * staged workflow step whose `run:` invokes `release/cli.ts <subcommand>`.
+ * `REQUIRED_ENV_BY_SUBCOMMAND`, which is built from the same per-handler
+ * `envSpec(...)` declarations the handlers read (review round 3, L2;
+ * `test/release/cli.test.ts` pins that there is no other route), and
+ * checks every `release/cli.ts <subcommand>` call in every staged
+ * workflow step's `run:`.
  */
 import { describe, expect, it } from "vitest";
 import {
@@ -29,7 +31,8 @@ interface CliInvocation {
   env: Record<string, unknown>;
 }
 
-const CLI_INVOCATION_RE = /release\/cli\.ts\s+([a-z-]+)/;
+/** Global: a `run:` with two `release/cli.ts` calls has both checked (review round 3, L2). */
+const CLI_INVOCATION_RE = /release\/cli\.ts\s+([a-z-]+)/g;
 
 /**
  * GitHub Actions sets these on every step's process environment
@@ -60,15 +63,15 @@ function allCliInvocations(): CliInvocation[] {
       for (const step of stepsOf(job)) {
         const run = typeof step.run === "string" ? step.run : undefined;
         if (run === undefined) continue;
-        const match = CLI_INVOCATION_RE.exec(run);
-        if (match === null) continue;
-        found.push({
-          file,
-          jobId,
-          stepName: typeof step.name === "string" ? step.name : "(unnamed step)",
-          subcommand: match[1] as string,
-          env: (step.env as Record<string, unknown>) ?? {},
-        });
+        for (const match of run.matchAll(CLI_INVOCATION_RE)) {
+          found.push({
+            file,
+            jobId,
+            stepName: typeof step.name === "string" ? step.name : "(unnamed step)",
+            subcommand: match[1] as string,
+            env: (step.env as Record<string, unknown>) ?? {},
+          });
+        }
       }
     }
   }
@@ -83,11 +86,19 @@ describe("every release/cli.ts <subcommand> invocation's env: covers that subcom
   });
 
   for (const invocation of invocations) {
-    const required = REQUIRED_ENV_BY_SUBCOMMAND[invocation.subcommand] ?? [];
+    const required = REQUIRED_ENV_BY_SUBCOMMAND[invocation.subcommand];
     const label = `${invocation.file} / ${invocation.jobId} / "${invocation.stepName}" (${invocation.subcommand})`;
 
+    it(`${label}: invokes a subcommand release/cli.ts declares an env spec for`, () => {
+      // Review round 3, L2: an unknown subcommand used to default to [] and pass silently.
+      expect(
+        required,
+        `unknown release/cli.ts subcommand "${invocation.subcommand}"`,
+      ).toBeDefined();
+    });
+
     it(`${label}: env: has every unconditionally-required key`, () => {
-      const missing = required.filter(
+      const missing = (required ?? []).filter(
         (name) => !(name in invocation.env) && !AMBIENT_RUNNER_ENV.has(name),
       );
       expect(missing, `missing required env var(s): ${JSON.stringify(missing)}`).toEqual([]);

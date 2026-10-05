@@ -71,11 +71,11 @@ function postBProbeCommit(repo: string): void {
   gitRun(repo, ["commit", "-q", "-m", "post-B: weekly + theme changes"]);
 }
 
-/** carry-back -> manifest round-trip through JSON -> commit. */
+/** carry-back -> manifest round-trip through JSON -> commit, exactly as runbook step 4a says (`--allow-empty`). */
 function carryBackAndCommit(repo: string, mergeB: string): CarryBackManifest {
   const result = carryBack({ git: adapter, cwd: repo, since: mergeB });
   const manifest = parseManifest(JSON.stringify(buildManifest(result)));
-  gitRun(repo, ["commit", "-q", "-m", "carry-back data since B"]);
+  gitRun(repo, ["commit", "-q", "--allow-empty", "-m", "carry-back data since B"]);
   return manifest;
 }
 
@@ -217,7 +217,9 @@ describe("finishRevert: fail-closed paths", () => {
       write(repo, "apps/web/README.md", "# something in between\n");
       gitRun(repo, ["commit", "-q", "-am", "unrelated commit between carry-back and revert"]);
       revertNoCommit(repo, mergeB);
-      expect(() => finishRevert({ git: adapter, cwd: repo, manifest })).toThrow(/HEAD\^ is/);
+      expect(() => finishRevert({ git: adapter, cwd: repo, manifest })).toThrow(
+        /\[commits-in-between\][^\n]*Do not reset over these commits/,
+      );
     },
     TIMEOUT,
   );
@@ -355,6 +357,165 @@ describe("finishRevert: fail-closed paths", () => {
       };
       expect(() => finishRevert({ git: lossy, cwd: repo, manifest })).toThrow(
         /differ from "pre-B tree \+ carried-back changes"[\s\S]*paperpilot\/data\/seen_ids\.json/,
+      );
+    },
+    TIMEOUT,
+  );
+});
+
+describe("finishRevert: delete-only carry-back and the HEAD refusals (review round 3, M2)", () => {
+  /** The reviewer's r3rb2 probe: the only post-B data change is a deletion, then a post-B workflow + layout commit. */
+  function deleteOnlyThenNonDataCommit(repo: string): void {
+    gitRun(repo, ["rm", "-q", "data/published/themes/flash-attention/lineage.json"]);
+    gitRun(repo, ["commit", "-q", "-m", "post-B: delete a theme"]);
+    // Edits away from the lines B itself rewrote, so the revert merges them without a conflict (as in the probe).
+    const appendTo = (rel: string, line: string) =>
+      write(repo, rel, `${readFileSync(join(repo, rel), "utf-8")}${line}\n`);
+    appendTo(".github/workflows/tests.yml", "# tweaked after B");
+    const layoutPath = "packages/core/src/layout/index.ts";
+    write(repo, layoutPath, `// edited after B\n${readFileSync(join(repo, layoutPath), "utf-8")}`);
+    gitRun(repo, ["commit", "-q", "-am", "post-B: workflow + layout edit"]);
+  }
+
+  it(
+    "RED/GREEN: the documented sequence (commit --allow-empty) finishes a delete-only rollback",
+    () => {
+      fixture = buildFixtureRepo();
+      const repo = fixture.repo;
+      const { base, mergeB } = cutoverMerge(repo);
+      deleteOnlyThenNonDataCommit(repo);
+
+      const result = carryBack({ git: adapter, cwd: repo, since: mergeB });
+      expect(result.staged).toBe(false);
+      const manifest = parseManifest(JSON.stringify(buildManifest(result)));
+      gitRun(repo, ["commit", "-q", "--allow-empty", "-m", "carry-back data since B"]);
+      revertNoCommit(repo, mergeB);
+      finishRevert({ git: adapter, cwd: repo, manifest });
+      gitRun(repo, ["commit", "-q", "-m", "Revert B (finish-revert)"]);
+
+      const expected = treeOf(repo, base);
+      expected.delete("docs/themes/flash-attention/lineage.json");
+      const tests = expected.get(".github/workflows/tests.yml") as TreeFile;
+      expected.set(".github/workflows/tests.yml", {
+        ...tests,
+        content: `${tests.content}\n# tweaked after B`,
+      });
+      const layout = expected.get("packages/core/src/layout/index.ts") as TreeFile;
+      expected.set("packages/core/src/layout/index.ts", {
+        ...layout,
+        content: `// edited after B\n${layout.content}`,
+      });
+      expect(sorted(treeOf(repo, "HEAD"))).toEqual(sorted(expected));
+      expect(gitRun(repo, ["status", "--porcelain"])).toBe("");
+    },
+    TIMEOUT,
+  );
+
+  it(
+    "RED/GREEN: without the empty commit it refuses as [no-carry-back-commit], and the documented remedy converges",
+    () => {
+      fixture = buildFixtureRepo();
+      const repo = fixture.repo;
+      const { mergeB } = cutoverMerge(repo);
+      deleteOnlyThenNonDataCommit(repo);
+      const postB = gitRun(repo, ["rev-parse", "HEAD"]);
+
+      const manifest = parseManifest(
+        JSON.stringify(buildManifest(carryBack({ git: adapter, cwd: repo, since: mergeB }))),
+      );
+      // Plain `git commit` refuses: nothing is staged.
+      expect(
+        adapter.run(repo, ["commit", "-q", "-m", "carry-back"], { env: GIT_ENV }).exitCode,
+      ).not.toBe(0);
+      revertNoCommit(repo, mergeB);
+      expect(() => finishRevert({ git: adapter, cwd: repo, manifest })).toThrow(
+        /\[no-carry-back-commit\][\s\S]*Do not reset anything[\s\S]*git revert --abort[\s\S]*--allow-empty/,
+      );
+      // Not the "HEAD^ is …" refusal the old runbook mapped to `git reset --hard HEAD^`.
+      expect(() => finishRevert({ git: adapter, cwd: repo, manifest })).not.toThrow(/HEAD\^ is/);
+      expect(gitRun(repo, ["rev-parse", "HEAD"])).toBe(postB);
+
+      // The remedy: abort the revert, commit empty, redo b and c.
+      gitRun(repo, ["revert", "--abort"]);
+      gitRun(repo, ["commit", "-q", "--allow-empty", "-m", "carry-back data since B"]);
+      revertNoCommit(repo, mergeB);
+      finishRevert({ git: adapter, cwd: repo, manifest });
+      gitRun(repo, ["commit", "-q", "-m", "Revert B (finish-revert)"]);
+      expect(gitRun(repo, ["rev-parse", "HEAD~2"])).toBe(postB);
+      expect(gitRun(repo, ["ls-tree", "-r", "--name-only", "HEAD", "--", "data/"])).toBe("");
+    },
+    TIMEOUT,
+  );
+
+  it(
+    "RED/GREEN: a revert that auto-committed refuses as [revert-auto-committed]; git reset --keep HEAD^ converges",
+    () => {
+      fixture = buildFixtureRepo();
+      const repo = fixture.repo;
+      const { mergeB } = cutoverMerge(repo);
+      write(repo, "apps/web/README.md", "# web (edited after B)\n");
+      gitRun(repo, ["commit", "-q", "-am", "post-B: non-data edit"]);
+      const manifest = carryBackAndCommit(repo, mergeB);
+      expect(manifest.entries).toEqual([]);
+      const carryBackCommit = gitRun(repo, ["rev-parse", "HEAD"]);
+      expect(gitRun(repo, ["rev-parse", "HEAD^"])).toBe(manifest.head);
+
+      // The mistake: revert without --no-commit, which commits cleanly here.
+      gitRun(repo, ["revert", "--no-edit", "-m", "1", mergeB]);
+      expect(gitRun(repo, ["rev-parse", "HEAD^"])).toBe(carryBackCommit);
+      expect(() => finishRevert({ git: adapter, cwd: repo, manifest })).toThrow(
+        /\[revert-auto-committed\][\s\S]*git reset --keep HEAD\^/,
+      );
+
+      gitRun(repo, ["reset", "-q", "--keep", "HEAD^"]);
+      expect(gitRun(repo, ["rev-parse", "HEAD"])).toBe(carryBackCommit);
+      revertNoCommit(repo, mergeB);
+      finishRevert({ git: adapter, cwd: repo, manifest });
+      gitRun(repo, ["commit", "-q", "-m", "Revert B (finish-revert)"]);
+      expect(gitRun(repo, ["ls-tree", "-r", "--name-only", "HEAD", "--", "data/"])).toBe("");
+      expect(gitRun(repo, ["show", "HEAD:apps/web/README.md"])).toBe("# web (edited after B)");
+    },
+    TIMEOUT,
+  );
+});
+
+describe("finishRevert: ownership branches (review round 3, L4)", () => {
+  it(
+    "RED/GREEN: pins an untouched managed path to HEAD (a hand edit staged after the revert is undone)",
+    () => {
+      fixture = buildFixtureRepo();
+      const repo = fixture.repo;
+      const { mergeB } = cutoverMerge(repo);
+      postBProbeCommit(repo);
+      const manifest = carryBackAndCommit(repo, mergeB);
+      revertNoCommit(repo, mergeB);
+      // docs/design/ stays in place under B (never touched), but is a managed root.
+      write(repo, "docs/design/39-x.md", "# hand edit during the rollback\n");
+      gitRun(repo, ["add", "docs/design/39-x.md"]);
+      const result = finishRevert({ git: adapter, cwd: repo, manifest });
+      expect(result.restored).toContain("docs/design/39-x.md");
+      expect(readFileSync(join(repo, "docs/design/39-x.md"), "utf-8")).toBe("# design\n");
+    },
+    TIMEOUT,
+  );
+
+  it(
+    "RED/GREEN: a legacy path B moved away and a post-B commit re-created outside carry-back gets its pre-B entry",
+    () => {
+      fixture = buildFixtureRepo();
+      const repo = fixture.repo;
+      const { base, mergeB } = cutoverMerge(repo);
+      postBProbeCommit(repo);
+      write(repo, "docs/conferences.json", '["re-created after B"]\n');
+      gitRun(repo, ["add", "docs/conferences.json"]);
+      gitRun(repo, ["commit", "-q", "-m", "post-B: something re-creates a legacy path"]);
+      const manifest = carryBackAndCommit(repo, mergeB);
+      revertNoCommit(repo, mergeB);
+      const result = finishRevert({ git: adapter, cwd: repo, manifest });
+      expect(result.restored).toContain("docs/conferences.json");
+      gitRun(repo, ["commit", "-q", "-m", "Revert B (finish-revert)"]);
+      expect(gitRun(repo, ["show", "HEAD:docs/conferences.json"])).toBe(
+        gitRun(repo, ["show", `${base}:docs/conferences.json`]),
       );
     },
     TIMEOUT,

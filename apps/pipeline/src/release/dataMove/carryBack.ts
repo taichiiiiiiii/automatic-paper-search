@@ -42,7 +42,7 @@
 import { rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { type GitAdapter, git } from "../git/gitAdapter.js";
-import { reverseConfigEdits } from "./configEdit.js";
+import { ConfigEditError, reverseConfigEdits } from "./configEdit.js";
 import { buildPlan } from "./plan.js";
 import {
   classifyPath,
@@ -69,6 +69,13 @@ export interface CarryBackResult {
   readonly head: string;
   /** `since`, resolved to a full commit sha. */
   readonly since: string;
+  /**
+   * Whether anything ended up staged (review round 3, M2). A delete-only
+   * carry-back stages nothing: every D legacy path was already removed by
+   * B. The carry-back commit must still exist (finish-revert anchors on it),
+   * so the runbook always commits with `git commit --allow-empty`.
+   */
+  readonly staged: boolean;
 }
 
 export interface CarryBackOptions {
@@ -76,6 +83,13 @@ export interface CarryBackOptions {
   readonly cwd: string;
   /** The cutover commit B (or any ref) — every `data/**` change in `<since>..HEAD` is carried back. */
   readonly since: string;
+  /**
+   * Persists the manifest (review round 3, L3). Called after every check
+   * has passed and before anything is staged, so an unwritable manifest
+   * path refuses the call with the index untouched. A throw is reported as
+   * a {@link CarryBackError}.
+   */
+  readonly writeManifest?: (manifest: CarryBackManifest) => void;
 }
 
 const DATA_PREFIXES = ["data/published/", "data/state/", "data/inputs/", "data/config/"] as const;
@@ -232,10 +246,13 @@ function assertCleanWorktree(adapter: GitAdapter, cwd: string, label: string): v
 
 /**
  * Carries every `data/**` change in `<since>..HEAD` back onto its legacy
- * path. Resolves every changed path's legacy mapping *and* its file mode
- * *before* mutating anything (refusing the whole call, untouched, if any
- * path has no mapping or is not a plain file), same fail-closed-and-atomic
- * discipline as `apply`/`applyReverse`. Refuses a dirty worktree.
+ * path. Resolves every changed path's legacy mapping, its file mode and,
+ * for a `moveEdit` config, its reverse-edited text, then writes the
+ * manifest, all *before* mutating anything (refusing the whole call,
+ * untouched, if any path has no mapping, is not a plain file, or changed a
+ * moveEdit key after B, or the manifest cannot be written), same
+ * fail-closed-and-atomic discipline as `apply`/`applyReverse`. Refuses a
+ * dirty worktree.
  *
  * A plain `move` path is staged by blob id and mode (`git update-index
  * --cacheinfo`), so bytes and the executable bit are carried exactly (a
@@ -264,6 +281,8 @@ export function carryBack(options: CarryBackOptions): CarryBackResult {
     change: DiffEntry;
     entry: MoveEntry | MoveEditEntry;
     blob: IndexEntry | undefined;
+    /** The reverse-edited text of a non-D `moveEdit` path, computed before anything is staged. */
+    content: string | undefined;
   }[] = [];
   const problems: string[] = [];
   for (const change of changes) {
@@ -279,18 +298,50 @@ export function carryBack(options: CarryBackOptions): CarryBackResult {
       );
       continue;
     }
-    resolved.push({ change, entry, blob });
+    let content: string | undefined;
+    if (entry.class === "moveEdit" && change.status !== "D") {
+      // Review round 3, L3 (a): computed here, not while staging, so a
+      // post-B change to one of the edited keys (no exact reverse) refuses
+      // the whole call before any earlier entry is staged.
+      const raw = gitRaw(adapter, cwd, ["show", `HEAD:${change.path}`], CarryBackError);
+      try {
+        content = reverseConfigEdits(raw, entry.edits);
+      } catch (error) {
+        if (!(error instanceof ConfigEditError)) throw error;
+        problems.push(
+          `  - ${change.path}: its moveEdit keys cannot be reversed onto ${entry.path} ` +
+            `(${error.message}); carry this change back by hand`,
+        );
+        continue;
+      }
+    }
+    resolved.push({ change, entry, blob, content });
   }
   if (problems.length > 0) {
     throw new CarryBackError(
       `refusing to carry back: ${problems.length} path(s) under data/ changed since ${since} that ` +
-        "cannot be replayed onto a legacy path (no legacy-path equivalent, or not a plain file; " +
-        `never silently dropped):\n${problems.join("\n")}`,
+        "cannot be replayed onto a legacy path (no legacy-path equivalent, not a plain file, or a " +
+        `moveEdit key changed after B; never silently dropped):\n${problems.join("\n")}`,
     );
   }
 
-  const entries: CarryBackEntry[] = [];
-  for (const { change, entry, blob } of resolved) {
+  const entries: CarryBackEntry[] = resolved.map(({ change, entry }) => ({
+    p5Path: change.path,
+    legacyPath: entry.path,
+    status: change.status,
+  }));
+  if (options.writeManifest !== undefined) {
+    // Review round 3, L3 (b): the last check before the first mutation.
+    try {
+      options.writeManifest({ version: 1, since: sinceSha, head, entries });
+    } catch (error) {
+      throw new CarryBackError(
+        `refusing to carry back: cannot write the manifest (${String(error)}); nothing was staged`,
+      );
+    }
+  }
+
+  for (const { change, entry, blob, content } of resolved) {
     if (change.status === "D" || blob === undefined) {
       // The legacy path was already absent (removed by the original B
       // move) in every real-world case this runs against; --ignore-unmatch
@@ -305,9 +356,7 @@ export function carryBack(options: CarryBackOptions): CarryBackResult {
       ]);
       git(adapter, cwd, ["checkout", "--", entry.path]);
     } else {
-      const raw = gitRaw(adapter, cwd, ["show", `HEAD:${change.path}`], CarryBackError);
-      const content = reverseConfigEdits(raw, entry.edits);
-      writeFileSync(join(cwd, entry.path), content, {
+      writeFileSync(join(cwd, entry.path), content as string, {
         mode: blob.mode === "100755" ? 0o755 : 0o644,
       });
       git(adapter, cwd, ["add", "--", entry.path]);
@@ -319,10 +368,10 @@ export function carryBack(options: CarryBackOptions): CarryBackResult {
       ]);
       git(adapter, cwd, ["checkout", "--", entry.path]);
     }
-    entries.push({ p5Path: change.path, legacyPath: entry.path, status: change.status });
   }
 
-  return { entries, head, since: sinceSha };
+  const staged = adapter.run(cwd, ["diff", "--cached", "--quiet"]).exitCode !== 0;
+  return { entries, head, since: sinceSha, staged };
 }
 
 // ---------------------------------------------------------------------------
@@ -526,6 +575,93 @@ function expectedOwnedEntries(
   return expected;
 }
 
+/** `git rev-parse --verify -q <rev>`, or `undefined` when it does not resolve (for example `HEAD~2` on a short history). */
+function tryRevParse(adapter: GitAdapter, cwd: string, rev: string): string | undefined {
+  const result = adapter.run(cwd, ["rev-parse", "--verify", "-q", `${rev}^{commit}`]);
+  return result.exitCode === 0 ? result.stdout.trim() : undefined;
+}
+
+function hasDataPaths(adapter: GitAdapter, cwd: string, rev: string): boolean {
+  return readTree(adapter, cwd, rev, ["data/"], FinishRevertError).size > 0;
+}
+
+/** `rev` holds nothing under `data/` while its first parent does: the shape of a committed revert of B. */
+function looksLikeRevertOfB(adapter: GitAdapter, cwd: string, rev: string): boolean {
+  return !hasDataPaths(adapter, cwd, rev) && hasDataPaths(adapter, cwd, `${rev}^1`);
+}
+
+/**
+ * Review round 3, M2: `HEAD` must be the carry-back commit, sitting
+ * directly on the manifest's `head`. The three ways it can fail need
+ * different remedies, so each gets its own message, keyed by a tag the
+ * runbook (p5-plan.md §6.2 R-B step 4c) maps to a remedy:
+ *
+ *  - `[no-carry-back-commit]`: `HEAD` is still `manifest.head`. A
+ *    delete-only carry-back stages nothing, so a plain `git commit` made
+ *    no commit. Nothing to reset: abort the revert, commit with
+ *    `--allow-empty`, redo the revert.
+ *  - `[revert-auto-committed]`: `HEAD` is a committed revert of B, and
+ *    `HEAD^` is the carry-back commit on `manifest.head`. Only then is
+ *    dropping `HEAD` safe, and only with `git reset --keep HEAD^`.
+ *  - `[commits-in-between]`: anything else. Never reset; abort the revert
+ *    and rerun carry-back from the current `HEAD`.
+ */
+function assertHeadIsCarryBackCommit(
+  adapter: GitAdapter,
+  cwd: string,
+  manifest: CarryBackManifest,
+): void {
+  const head = git(adapter, cwd, ["rev-parse", "--verify", "HEAD^{commit}"]);
+  if (head === manifest.head) {
+    throw new FinishRevertError(
+      `refusing to finish [no-carry-back-commit]: HEAD is still ${manifest.head}, the commit ` +
+        "carry-back ran on, so there is no carry-back commit on top of it (a delete-only " +
+        "carry-back stages nothing, and `git commit` without --allow-empty makes no commit). " +
+        "Do not reset anything: run `git revert --abort` (if a revert is in progress), then " +
+        "`git commit --allow-empty`, " +
+        "then redo `git revert --no-commit -m 1` and finish-revert",
+    );
+  }
+  const legacyPaths = new Set(manifest.entries.map((e) => e.legacyPath));
+  const changedOutsideManifest = (from: string, to: string): string[] =>
+    nameList(adapter, cwd, ["diff", "--no-renames", "--name-only", "-z", from, to]).filter(
+      (p) => !legacyPaths.has(p),
+    );
+
+  const headParent = git(adapter, cwd, ["rev-parse", "--verify", "HEAD^1"]);
+  if (headParent !== manifest.head) {
+    if (
+      tryRevParse(adapter, cwd, "HEAD~2") === manifest.head &&
+      changedOutsideManifest(manifest.head, "HEAD~1").length === 0 &&
+      looksLikeRevertOfB(adapter, cwd, "HEAD")
+    ) {
+      throw new FinishRevertError(
+        `refusing to finish [revert-auto-committed]: HEAD^ is ${headParent}, but the carry-back ` +
+          `ran on ${manifest.head}. HEAD is a committed revert of B (git revert ran without ` +
+          "--no-commit) on top of the carry-back commit. Drop only that revert commit with " +
+          "`git reset --keep HEAD^`, then redo `git revert --no-commit -m 1` and finish-revert",
+      );
+    }
+    throw new FinishRevertError(
+      `refusing to finish [commits-in-between]: HEAD^ is ${headParent}, but the carry-back ran on ` +
+        `${manifest.head}; HEAD must be the carry-back commit itself, with nothing in between. ` +
+        "Do not reset over these commits: run `git revert --abort` if a revert is in progress, " +
+        "then redo carry-back (a new manifest) from the current HEAD",
+    );
+  }
+  const strays = changedOutsideManifest("HEAD^1", "HEAD");
+  if (strays.length > 0) {
+    const hint = looksLikeRevertOfB(adapter, cwd, "HEAD")
+      ? " HEAD looks like a committed revert of B made with no carry-back commit under it: " +
+        "`git reset --keep HEAD^`, `git commit --allow-empty`, then redo the revert with --no-commit."
+      : "";
+    throw new FinishRevertError(
+      "refusing to finish: HEAD changes path(s) the manifest does not name, so it is not the " +
+        `carry-back commit:\n${list(strays)}${hint === "" ? "" : `\n${hint.trim()}`}`,
+    );
+  }
+}
+
 /**
  * `cli.ts finish-revert --manifest <file>` (p5-plan.md §6.2 R-B step 4c,
  * review finding N4): run after the carry-back commit and
@@ -546,10 +682,10 @@ function expectedOwnedEntries(
  *
  * Stages only; the caller commits once. Fails closed:
  *  - before touching anything, when `HEAD` is not the carry-back commit
- *    (`HEAD^` differs from the manifest's `head`, or `HEAD` changes a path
- *    the manifest does not name; for example `git revert` ran without
- *    `--no-commit` and auto-committed), or nothing is staged (the revert
- *    has not run);
+ *    (see {@link assertHeadIsCarryBackCommit}: no carry-back commit at
+ *    all, a revert that auto-committed, or commits in between; or `HEAD`
+ *    changes a path the manifest does not name), or nothing is staged (the
+ *    revert has not run);
  *  - after resolving, when a conflicted path remains that it does not own
  *    (an unrelated structural conflict needs a human), anything remains
  *    under `data/` (tracked or untracked), or an owned path still differs
@@ -558,28 +694,7 @@ function expectedOwnedEntries(
 export function finishRevert(options: FinishRevertOptions): FinishRevertResult {
   const { git: adapter, cwd, manifest } = options;
 
-  const headParent = git(adapter, cwd, ["rev-parse", "--verify", "HEAD^1"]);
-  if (headParent !== manifest.head) {
-    throw new FinishRevertError(
-      `refusing to finish: HEAD^ is ${headParent}, but the carry-back ran on ${manifest.head}; HEAD ` +
-        "must be the carry-back commit itself (run `git revert` with --no-commit, and nothing in between)",
-    );
-  }
-  const legacyPaths = new Set(manifest.entries.map((e) => e.legacyPath));
-  const strays = nameList(adapter, cwd, [
-    "diff",
-    "--no-renames",
-    "--name-only",
-    "-z",
-    "HEAD^1",
-    "HEAD",
-  ]).filter((p) => !legacyPaths.has(p));
-  if (strays.length > 0) {
-    throw new FinishRevertError(
-      "refusing to finish: HEAD changes path(s) the manifest does not name, so it is not the " +
-        `carry-back commit:\n${list(strays)}`,
-    );
-  }
+  assertHeadIsCarryBackCommit(adapter, cwd, manifest);
   const before = readIndex(adapter, cwd);
   const staged = adapter.run(cwd, ["diff", "--cached", "--quiet"]).exitCode !== 0;
   if (!staged && before.unmerged.size === 0) {
