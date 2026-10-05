@@ -336,6 +336,19 @@ it("cf-deployment-id subcommand dies loudly on a malformed SOURCE_SHA (requiredS
   }
 });
 
+// P5 tier-A review round 2 (survivor fix): previously untested at the
+// CLI level. The expected-sha format check runs BEFORE any `requiredEnv`
+// call or network access, so this stays within the "no network in
+// tests" hard limit even with no CF_* env vars set at all.
+it("cf-verify-deployment subcommand dies loudly on a malformed expected-sha, before checking env or any network call", () => {
+  const repo = join(base, "repo-cf-verify-deployment");
+  mkdirSync(repo);
+  for (const bad of ["not-a-sha", "a".repeat(39), "A".repeat(40)]) {
+    const stderr = expectCliDies(repo, ["cf-verify-deployment", "dep-1", bad], {});
+    expect(stderr).toContain("expected-sha must be 40 lowercase hex characters");
+  }
+});
+
 it("gh-record subcommand dies loudly on a malformed SOURCE_SHA (requiredShaEnv), before any network call", () => {
   const repo = join(base, "repo-gh-record");
   mkdirSync(repo);
@@ -348,6 +361,48 @@ it("gh-record subcommand dies loudly on a malformed SOURCE_SHA (requiredShaEnv),
     ARTIFACT_NAME: "cf-pages-test",
   });
   expect(stderr).toContain("SOURCE_SHA must be 40 lowercase hex characters");
+});
+
+// N3 (P5 tier-A review round 2): `pages-rollback.yml`'s "record" step
+// never sets ARTIFACT_NAME (no rebuild happens anywhere in a rollback),
+// so `ARTIFACT_NAME` must be required for RELEASE_KIND=normal but
+// optional for RELEASE_KIND=rollback. Both cases below die before any
+// network call (`requiredEnv`/`recordDeployment`'s own validation both
+// run before the first `fetch`), so this stays within the "no network
+// in tests" hard limit while still exercising the real CLI subprocess.
+it("gh-record subcommand requires ARTIFACT_NAME when RELEASE_KIND=normal, before any network call", () => {
+  const repo = join(base, "repo-gh-record-normal-no-artifact");
+  mkdirSync(repo);
+  const stderr = expectCliDies(repo, ["gh-record"], {
+    RELEASE_KIND: "normal",
+    GITHUB_TOKEN: "tok",
+    GITHUB_REPOSITORY: "owner/repo",
+    SOURCE_SHA: "a".repeat(40),
+    CF_DEPLOYMENT_ID: "dep-1",
+    // ARTIFACT_NAME deliberately omitted.
+  });
+  expect(stderr).toContain("ARTIFACT_NAME is required");
+});
+
+it("gh-record subcommand does NOT require ARTIFACT_NAME when RELEASE_KIND=rollback, before any network call", () => {
+  const repo = join(base, "repo-gh-record-rollback-no-artifact");
+  mkdirSync(repo);
+  // CF_DEPLOYMENT_ID is deliberately malformed (recordDeployment's own
+  // CF_DEPLOYMENT_ID_RE check, which runs before artifactName's and
+  // before any network call) so this test proves the CLI got PAST the
+  // missing ARTIFACT_NAME without dying on it -- if rollback still
+  // required ARTIFACT_NAME, the stderr below would instead say
+  // "ARTIFACT_NAME is required", never reaching this check.
+  const stderr = expectCliDies(repo, ["gh-record"], {
+    RELEASE_KIND: "rollback",
+    GITHUB_TOKEN: "tok",
+    GITHUB_REPOSITORY: "owner/repo",
+    SOURCE_SHA: "a".repeat(40),
+    CF_DEPLOYMENT_ID: "bad id with spaces",
+    // ARTIFACT_NAME deliberately omitted.
+  });
+  expect(stderr).not.toContain("ARTIFACT_NAME");
+  expect(stderr).toContain("invalid cfDeploymentId");
 });
 
 it("no-skip-gate subcommand passes a clean vitest JSON report and fails a report with a skip", () => {

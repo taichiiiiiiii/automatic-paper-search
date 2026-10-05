@@ -174,6 +174,30 @@ export async function getDeploymentCommitHash(options: CfVerifyDeploymentOptions
   return commitHash;
 }
 
+/**
+ * P5 tier-A review round 2 (survivor fix): `cli.ts`'s
+ * `runCfVerifyDeployment` used to inline this `commitHash !==
+ * expectedSha` compare directly after its `await
+ * getDeploymentCommitHash(...)` call -- which only a LIVE Cloudflare
+ * fetch could ever drive far enough to exercise, so no test could kill
+ * a mutant that flipped `!==` to `===` (or dropped the check entirely)
+ * without violating the "never hit the network" hard limit. Extracted
+ * here as a pure, network-free compare so it is unit-testable on its
+ * own, the same way `getDeploymentCommitHash`'s own format checks
+ * already are.
+ */
+export function assertCommitHashMatches(
+  deploymentId: string,
+  commitHash: string,
+  expectedSha: string,
+): void {
+  if (commitHash !== expectedSha) {
+    throw new CloudflareApiError(
+      `Cloudflare deployment ${deploymentId} commit_hash ${commitHash} does not match expected ${expectedSha}`,
+    );
+  }
+}
+
 export interface CfRollbackOptions {
   fetchImpl: CfFetchFn;
   accountId: string;

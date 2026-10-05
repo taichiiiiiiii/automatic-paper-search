@@ -158,19 +158,23 @@ describe("DEFAULT_SOURCE_DIR (M4 of the P5 tier-A review)", () => {
     expect(DEFAULT_SOURCE_DIR).toBe(layoutFor(getRepoRoot()).legacySite);
   });
 
-  // True only of the PRE-MOVE (legacy) tree: once commit B's `apply` has
-  // actually run (including during this task's own p5-rehearsal, which
-  // applies that move to a scratch clone), `layoutFor(...).legacySite` is
-  // `legacy/gh-pages-site`, not `docs`. An explicit `LAYOUT_MODE` check,
-  // not a mode branch on what this test asserts, skips it there -- the
-  // test above (resolves through `layoutFor`, not a literal) stays
-  // meaningful in both modes and is NOT gated.
-  it.skipIf(LAYOUT_MODE !== "legacy")(
-    "is byte-identical to the pre-fix docs/ path while LAYOUT_MODE is legacy (inert, no behavior change)",
-    () => {
+  // Pins the mode-appropriate literal instead of skipping in either mode
+  // (P5 tier-A review round 2, N1): pre-move (legacy) resolves to the
+  // pre-fix `docs/` path, byte-identical to before this changeset; once
+  // commit B's `apply` has run (including during this task's own
+  // p5-rehearsal, which applies that move to a scratch clone),
+  // `layoutFor(...).legacySite` is `legacy/gh-pages-site`. The test above
+  // (resolves through `layoutFor`, not a literal) already covers both
+  // modes without branching; this one additionally pins which literal
+  // that resolves to, in each mode, so neither path shape can silently
+  // drift.
+  it("resolves to the mode-appropriate legacy site literal (inert, no behavior change)", () => {
+    if (LAYOUT_MODE === "legacy") {
       expect(DEFAULT_SOURCE_DIR).toBe(join(getRepoRoot(), "docs"));
-    },
-  );
+    } else {
+      expect(DEFAULT_SOURCE_DIR).toBe(join(getRepoRoot(), "legacy", "gh-pages-site"));
+    }
+  });
 });
 
 describe("mapLegacyPath", () => {

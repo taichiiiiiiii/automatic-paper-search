@@ -31,15 +31,23 @@ import {
 const REPO_ROOT = "/repo";
 
 describe("LAYOUT_MODE", () => {
-  // This pins the pre-cutover state of the single switch itself (p5-plan.md
-  // §5.1: "Commit B changes exactly one literal"). It is true by
-  // construction once commit B flips `LAYOUT_MODE` to "p5" (including
-  // during this task's own p5-rehearsal, which applies that same flip to a
-  // scratch clone) -- an explicit `LAYOUT_MODE` check, not a mode branch on
-  // what the test asserts, skips it there rather than asserting something
-  // the flip itself makes false.
-  it.skipIf(LAYOUT_MODE !== "legacy")("defaults to legacy until commit B flips it", () => {
-    expect(LAYOUT_MODE).toBe("legacy");
+  // Pins the single switch's state in BOTH modes instead of skipping in
+  // one of them (P5 tier-A review round 2, N1): pre-cutover it must be
+  // exactly "legacy" (p5-plan.md §5.1: "Commit B changes exactly one
+  // literal"); once commit B flips it (including during this task's own
+  // p5-rehearsal, which applies that same flip to a scratch clone) it
+  // must be exactly "p5". Branches on the mode-appropriate literal rather
+  // than skipping either branch, and additionally pins the matching
+  // `relLayout` root so a typo'd mode string (e.g. "P5"/"data") cannot
+  // slip through either branch unnoticed.
+  it("is exactly the mode-appropriate literal (legacy pre-B, p5 after)", () => {
+    if (LAYOUT_MODE === "legacy") {
+      expect(LAYOUT_MODE).toBe("legacy");
+      expect(relLayout(LAYOUT_MODE).published).toBe("docs");
+    } else {
+      expect(LAYOUT_MODE).toBe("p5");
+      expect(relLayout(LAYOUT_MODE).published).toBe("data/published");
+    }
   });
 });
 

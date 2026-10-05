@@ -136,19 +136,34 @@ it("rejects a malformed requestId before making any request (null is still allow
   ).resolves.toBeDefined();
 });
 
-it("rejects a malformed artifactName before making any request", async () => {
+it("rejects a malformed artifactName before making any request (null is still allowed)", async () => {
   let called = false;
-  const fetchImpl: GhFetchFn = async () => {
+  const rejectingFetch: GhFetchFn = async () => {
     called = true;
     return { status: 201, text: async () => "{}" };
   };
   await expect(
-    recordDeployment({ ...baseOptions(fetchImpl), artifactName: "has a space" }),
+    recordDeployment({ ...baseOptions(rejectingFetch), artifactName: "has a space" }),
   ).rejects.toThrow(GithubApiError);
   await expect(
-    recordDeployment({ ...baseOptions(fetchImpl), artifactName: "has/slash" }),
+    recordDeployment({ ...baseOptions(rejectingFetch), artifactName: "has/slash" }),
   ).rejects.toThrow(GithubApiError);
   expect(called).toBe(false);
+
+  // N3 (P5 tier-A review round 2): a rollback record has no artifact at
+  // all, so `null` must be accepted (same shape as `requestId` above)
+  // rather than forced through the regex.
+  const calls: Array<{ url: string; body: unknown }> = [];
+  const acceptingFetch: GhFetchFn = async (url, init) => {
+    calls.push({ url, body: JSON.parse(init.body) });
+    return url.endsWith("/deployments")
+      ? { status: 201, text: async () => JSON.stringify({ id: 1 }) }
+      : { status: 201, text: async () => "{}" };
+  };
+  await expect(
+    recordDeployment({ ...baseOptions(acceptingFetch), artifactName: null }),
+  ).resolves.toBeDefined();
+  expect(calls[0]?.body).toMatchObject({ payload: { artifact_name: null } });
 });
 
 it("rejects a deployment response with no numeric id", async () => {

@@ -8,6 +8,7 @@
  */
 import { expect, it } from "vitest";
 import {
+  assertCommitHashMatches,
   type CfFetchFn,
   CloudflareApiError,
   getDeploymentCommitHash,
@@ -244,7 +245,7 @@ it("getDeploymentCommitHash rejects a malformed deployment id before making any 
   expect(called).toBe(false);
 });
 
-it("getDeploymentCommitHash rejects a missing/malformed commit_hash rather than returning undefined (M2)", async () => {
+it("getDeploymentCommitHash rejects a missing commit_hash rather than returning undefined (M2)", async () => {
   const fetchImpl: CfFetchFn = async () => ({
     status: 200,
     json: async () => ({ success: true, result: { deployment_trigger: { metadata: {} } } }),
@@ -258,6 +259,56 @@ it("getDeploymentCommitHash rejects a missing/malformed commit_hash rather than 
       deploymentId: "dep-1",
     }),
   ).rejects.toThrow(/unexpected format/);
+});
+
+// P5 tier-A review round 2 (survivor fix): the "missing" case above
+// never exercises COMMIT_HASH_RE itself (`typeof commitHash !==
+// "string"` already rejects `undefined` on its own) -- a mutant that
+// made the regex check a no-op (e.g. always `true`) survived. These
+// cover commit_hash values that ARE a string, but not 40 lowercase hex
+// characters.
+it("getDeploymentCommitHash rejects a present-but-malformed commit_hash (M2, round 2)", async () => {
+  for (const bad of ["not-hex-at-all", "A".repeat(40), "a".repeat(39), `${"a".repeat(40)}\n`]) {
+    const fetchImpl: CfFetchFn = async () => ({
+      status: 200,
+      json: async () => ({
+        success: true,
+        result: { deployment_trigger: { metadata: { commit_hash: bad } } },
+      }),
+    });
+    await expect(
+      getDeploymentCommitHash({
+        fetchImpl,
+        accountId: "acct",
+        project: "proj",
+        apiToken: SECRET_TOKEN,
+        deploymentId: "dep-1",
+      }),
+    ).rejects.toThrow(/unexpected format/);
+  }
+});
+
+// P5 tier-A review round 2 (survivor fix): `cli.ts`'s
+// `runCfVerifyDeployment` used to inline this compare right after an
+// `await getDeploymentCommitHash(...)` call, which only a live
+// Cloudflare fetch could drive far enough to exercise -- no test could
+// kill a `!==` -> `===` (or dropped-check) mutant without a real
+// network call. Extracted as a pure function so it's testable here.
+it("assertCommitHashMatches passes silently when the hashes match", () => {
+  expect(() => assertCommitHashMatches("dep-1", SHA, SHA)).not.toThrow();
+});
+
+it("assertCommitHashMatches throws, naming both the deployment id and both hashes, on a mismatch", () => {
+  const other = "b".repeat(40);
+  expect(() => assertCommitHashMatches("dep-1", SHA, other)).toThrow(CloudflareApiError);
+  try {
+    assertCommitHashMatches("dep-1", SHA, other);
+    throw new Error("expected assertCommitHashMatches to throw");
+  } catch (e) {
+    expect((e as Error).message).toContain("dep-1");
+    expect((e as Error).message).toContain(SHA);
+    expect((e as Error).message).toContain(other);
+  }
 });
 
 it("getDeploymentCommitHash surfaces the API's own error message, never the token, on failure", async () => {

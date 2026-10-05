@@ -38,17 +38,6 @@ const NAIVE_GUARD_PATTERNS = [
   /process\.argv\[1\]\?\.endsWith\(/,
 ];
 
-/**
- * `collect/cli.ts` intentionally has no entry block at all (yet): it
- * exports `main(argv, deps)` for programmatic/test callers only, and the
- * real network-wiring entry point is a separate, not-yet-landed task —
- * unlike every other file here, it was never on M2's list of guards to
- * fix (the grep in the P4 review that enumerated the naive-guard sites
- * never matched this file). Documented here instead of silently excluded
- * so this test is itself the record of that gap, not a blind spot.
- */
-const NO_ENTRY_BLOCK_YET = new Set(["collect/cli.ts"]);
-
 describe("every *Cli.ts / cli.ts uses the shared isMain guard (M2 inventory)", () => {
   const files = findCliFiles(SRC_ROOT);
 
@@ -68,11 +57,6 @@ describe("every *Cli.ts / cli.ts uses the shared isMain guard (M2 inventory)", (
         expect(source).not.toMatch(pattern);
       }
     });
-
-    if (NO_ENTRY_BLOCK_YET.has(rel)) {
-      it.skip(`${rel}: has no entry block yet (documented exception)`, () => {});
-      continue;
-    }
 
     it(`${rel}: guards its entry block with isMain(import.meta.url)`, () => {
       expect(source).toMatch(/isMain\(import\.meta\.url\)/);

@@ -41,6 +41,26 @@ describe("L4: pages-release.yml's build job asserts the marker and checks HEAD==
     expect(validateIdx).toBeGreaterThan(assertIdx);
   });
 
+  // P5 tier-A review round 2 (survivor fix): the test above only checks
+  // that SOME step mentions `_paperpilot-deployment.json` -- it doesn't
+  // pin the actual compare, so replacing `test "$marker_sha" =
+  // "$SOURCE_SHA"` with a no-op `true` survived. Pinned here for both
+  // the build job's own fast-fail assert AND the deploy job's assert
+  // right after downloading the artifact (same literal shape, two
+  // independent places it could silently regress).
+  it('the literal `test "$marker_sha" = "$SOURCE_SHA"` compare is present (not replaced by a no-op)', () => {
+    const buildAssertStep = steps.find(
+      (s) => typeof s.run === "string" && s.run.includes("_paperpilot-deployment.json"),
+    );
+    expect(buildAssertStep?.run).toContain('test "$marker_sha" = "$SOURCE_SHA"');
+
+    const [, deployJob] = jobsOf(doc).find(([id]) => id === "deploy") as [string, YamlDoc];
+    const deployAssertStep = (deployJob.steps as YamlDoc[]).find(
+      (s) => s.name === "Assert marker matches the requested SHA",
+    );
+    expect(deployAssertStep?.run).toContain('test "$marker_sha" = "$SOURCE_SHA"');
+  });
+
   it('"Validate local Pages bundle" uses `validate local <sha>` (HEAD==SHA check), not `validate bundle`', () => {
     const validateStep = steps.find((s) => s.name === "Validate local Pages bundle");
     expect(validateStep?.run).toContain('validate local "$SOURCE_SHA" apps/web/out');
@@ -66,11 +86,39 @@ describe("L7: collect-daily-watch.yml passes PAPERPILOT_SLACK_WEBHOOK_URL to the
   });
 });
 
-describe("M4: legacy-redirects.yml passes --source from the legacy site layout root", () => {
-  it('the "Generate the redirect site" step passes --source legacy/gh-pages-site', () => {
+describe("N2 (P5 tier-A review round 2): legacy-redirects.yml passes no cwd-relative --source", () => {
+  // M4 (round 1) added an explicit `--source legacy/gh-pages-site` to
+  // pin the p5-era literal path. That regressed: `pnpm --filter
+  // @paperpilot/web run legacy-redirects` runs with cwd = apps/web, so
+  // the relative path resolved to the nonexistent
+  // apps/web/legacy/gh-pages-site and the generator always failed (see
+  // generator.cwd.spawn.test.ts for the real-process reproduction). The
+  // generator's own default (`layoutFor(REPO_ROOT).legacySite`, computed
+  // from the script's own location, not the workflow's cwd) already
+  // resolves to the correct literal in both layouts, so the only safe
+  // forms here are: no `--source` at all, or one anchored to an
+  // absolute, workspace-rooted path that does not depend on cwd.
+  it('the "Generate the redirect site" step passes no relative --source', () => {
     const doc = readWorkflow("legacy-redirects.yml");
     const [, job] = jobsOf(doc).find(([id]) => id === "redirect") as [string, YamlDoc];
     const step = (job.steps as YamlDoc[]).find((s) => s.name === "Generate the redirect site");
-    expect(step?.run).toContain("--source legacy/gh-pages-site");
+    const run = step?.run as string;
+    const sourceMatch = /--source\s+(\S+)/.exec(run);
+    if (sourceMatch) {
+      const value = sourceMatch[1] as string;
+      expect(
+        value.startsWith("/") ||
+          value.startsWith("$GITHUB_WORKSPACE") ||
+          value.startsWith('"$GITHUB_WORKSPACE'),
+        `--source value ${JSON.stringify(value)} must be absolute/workspace-anchored, not resolved against the step's cwd`,
+      ).toBe(true);
+    }
+  });
+
+  it("does not forward flags through a literal ` -- --` (pnpm would swallow everything after a bare `--`)", () => {
+    const doc = readWorkflow("legacy-redirects.yml");
+    for (const run of allRunStrings(doc)) {
+      expect(run).not.toMatch(/\s--\s--/);
+    }
   });
 });

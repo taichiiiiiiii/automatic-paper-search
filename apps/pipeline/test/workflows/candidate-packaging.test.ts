@@ -72,3 +72,38 @@ describe('H4: the "Upload generated candidate" step in every generate job upload
     expect(sawAtLeastOneCandidateUpload).toBe(true);
   });
 });
+
+// P5 tier-A review round 2 (survivor fix): the describe block above only
+// checks the UPLOAD step's `with.path` -- it never confirms anything
+// actually ran `release/cli.ts package` to populate that directory
+// first. Deleting the "Package exact ... candidate" step entirely
+// survived every existing test (the only runtime guard,
+// `if-no-files-found: error`, isn't visible to a static YAML check).
+describe("H4 (round 2): every generate job runs `release/cli.ts package` before uploading the candidate", () => {
+  let sawAtLeastOnePackageStep = false;
+
+  for (const file of EXPECTED_WORKFLOW_FILES) {
+    const doc = docs.get(file);
+    for (const [jobId, job] of jobsOf(doc)) {
+      if (jobId !== "generate") continue;
+      const steps: YamlDoc[] = job.steps ?? [];
+      const uploadIdx = steps.findIndex((s) => s.name === "Upload generated candidate");
+      if (uploadIdx < 0) continue; // covered by the sanity check above
+      it(`${file}: a step before "Upload generated candidate" invokes release/cli.ts package`, () => {
+        const packageIdx = steps.findIndex(
+          (s) => typeof s.run === "string" && /release\/cli\.ts\s+package\b/.test(s.run),
+        );
+        expect(
+          packageIdx,
+          `${file}'s generate job has no step invoking \`release/cli.ts package\` before uploading the candidate`,
+        ).toBeGreaterThanOrEqual(0);
+        sawAtLeastOnePackageStep = true;
+        expect(packageIdx).toBeLessThan(uploadIdx);
+      });
+    }
+  }
+
+  it("sanity: at least one release/cli.ts package step was actually found", () => {
+    expect(sawAtLeastOnePackageStep).toBe(true);
+  });
+});

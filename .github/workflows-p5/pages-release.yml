@@ -129,9 +129,18 @@ jobs:
         run: pnpm --filter @paperpilot/web build
 
       - name: Full test suite with no skips
+        # P5 tier-A review round 2 (N1): the literal `--` separator made
+        # pnpm forward `["--","--reporter=json","--outputFile=…"]` to each
+        # package's `vitest run` -- vitest 3 ignores everything after a
+        # bare `--`, so no package ever wrote a report, and `no-skip-gate`
+        # below died on empty argv before checking anything. Passing the
+        # flags directly (no `--`) forwards them as real CLI args; `.json`
+        # must be appended to --outputFile.json for vitest's JSON reporter
+        # to pick the right destination when `--reporter=default` is also
+        # given (both reporters run; only the json one needs a file).
         run: |
           set -euo pipefail
-          pnpm -r --if-present test -- --reporter=json --outputFile=.vitest-release-report.json
+          pnpm -r --if-present test --reporter=default --reporter=json --outputFile.json=.vitest-release-report.json
 
       - name: No skipped tests
         run: |

@@ -50,12 +50,18 @@ jobs:
         uses: ./.github/actions/setup-pnpm
 
       - name: Generate the redirect site
-        # M4 of the P5 tier-A review: explicit `--source`, the same p5-era
-        # literal path pages-release.yml's ADMIT_PATHS and pages.yml's
-        # `paths:` already use, rather than relying on the generator's own
-        # `layoutFor(REPO_ROOT).legacySite` default resolving correctly at
-        # whatever moment this workflow actually runs.
-        run: pnpm --filter @paperpilot/web run legacy-redirects -- --source legacy/gh-pages-site
+        # P5 tier-A review round 2 (N2): the M4 fix above regressed this.
+        # `pnpm --filter X run <script>` executes with cwd = that
+        # package's directory (apps/web), so the relative `--source
+        # legacy/gh-pages-site` resolved to the nonexistent
+        # apps/web/legacy/gh-pages-site and the generator always failed.
+        # The generator's own default --
+        # `layoutFor(REPO_ROOT).legacySite`, computed from
+        # `apps/web/scripts/legacy-redirects.ts`'s own script-relative
+        # REPO_ROOT, never this workflow's cwd -- already resolves to the
+        # correct p5-era literal path in both layouts, so no `--source`
+        # override is needed or safe to pass here.
+        run: pnpm --filter @paperpilot/web run legacy-redirects
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3

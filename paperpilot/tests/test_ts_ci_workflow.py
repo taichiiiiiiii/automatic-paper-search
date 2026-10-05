@@ -31,6 +31,14 @@ EXPECTED_PATHS = {
     "tsconfig.base.json",
     "biome.json",
     ".github/workflows/ts-ci.yml",
+    # P5 tier-A review round 2: the p5-rehearsal job below applies the
+    # A9 data-move commit to a scratch clone of docs/ and
+    # paperpilot/{data,output}, using the workflows staged under
+    # .github/workflows-p5/ -- a PR touching only one of these three
+    # used to never re-trigger the rehearsal at all.
+    ".github/workflows-p5/**",
+    "docs/**",
+    "paperpilot/**",
 }
 
 

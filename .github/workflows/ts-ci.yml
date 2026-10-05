@@ -10,6 +10,17 @@ name: ts-ci
 # referenced and there is no `wrangler` deploy step. Per §4.3 "認証情報",
 # the Cloudflare Pages token is only ever handed to a deploy job restricted
 # to a develop-only GitHub environment — never to a feat-branch CI run.
+#
+# `paths:` (P5 tier-A review round 2): includes `.github/workflows-p5/**`,
+# `docs/**` and `paperpilot/**` because the `p5-rehearsal` job below
+# applies the A9 data-move commit to a scratch clone of `docs/` and
+# `paperpilot/data|output/`, using the workflows staged under
+# `.github/workflows-p5/` -- a PR that only touched one of those three
+# never re-ran the rehearsal before. `paths:` is a trigger-level filter
+# (GitHub Actions has no per-job path filter), so this also re-runs the
+# `test` job (lint/typecheck/build of apps/**+packages/**, unrelated to
+# docs/paperpilot) on a docs-only or paperpilot-only PR -- an accepted,
+# reported trade-off (extra CI minutes on those PRs), not a new gap.
 
 on:
   push:
@@ -23,6 +34,9 @@ on:
       - "tsconfig.base.json"
       - "biome.json"
       - ".github/workflows/ts-ci.yml"
+      - ".github/workflows-p5/**"
+      - "docs/**"
+      - "paperpilot/**"
   pull_request:
     paths:
       - "apps/**"
@@ -33,6 +47,9 @@ on:
       - "tsconfig.base.json"
       - "biome.json"
       - ".github/workflows/ts-ci.yml"
+      - ".github/workflows-p5/**"
+      - "docs/**"
+      - "paperpilot/**"
   workflow_dispatch:
 
 permissions:

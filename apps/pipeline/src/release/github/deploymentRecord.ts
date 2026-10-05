@@ -78,7 +78,17 @@ export interface RecordDeploymentOptions {
   cfDeploymentId: string;
   releaseKind: string;
   requestId: string | null;
-  artifactName: string;
+  /**
+   * `null` only for a rollback record (P5 tier-A review round 2, N3):
+   * `pages-rollback.yml`'s "record" step never builds an artifact (no
+   * rebuild happens anywhere in a rollback, per p5-plan.md §4.3), so it
+   * has no `ARTIFACT_NAME` to pass. A normal release always builds one
+   * and must keep passing it -- `cli.ts`'s `runGhRecord` still requires
+   * it when `releaseKind === "normal"`; only this module's own
+   * validation, and the JSON payload, accept `null` as well as a
+   * regex-checked string.
+   */
+  artifactName: string | null;
   /** `PUBLIC_ORIGIN` (@paperpilot/core/site) — the deployment's `environment_url`. */
   environmentUrl: string;
 }
@@ -135,7 +145,7 @@ export async function recordDeployment(
   if (options.requestId !== null && !REQUEST_ID_RE.test(options.requestId)) {
     throw new GithubApiError(`invalid requestId: ${JSON.stringify(options.requestId)}`);
   }
-  if (!ARTIFACT_NAME_RE.test(options.artifactName)) {
+  if (options.artifactName !== null && !ARTIFACT_NAME_RE.test(options.artifactName)) {
     throw new GithubApiError(`invalid artifactName: ${JSON.stringify(options.artifactName)}`);
   }
   const created = await ghPost(

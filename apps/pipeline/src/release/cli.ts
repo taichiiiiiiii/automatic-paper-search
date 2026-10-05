@@ -24,7 +24,7 @@
  *   tsx cli.ts cf-deployment-id                      (env CF_API_TOKEN, CF_ACCOUNT_ID, CF_PROJECT, SOURCE_SHA)
  *   tsx cli.ts cf-rollback <deployment-id>           (env CF_API_TOKEN, CF_ACCOUNT_ID, CF_PROJECT)
  *   tsx cli.ts cf-verify-deployment <deployment-id> <expected-sha>  (env CF_API_TOKEN, CF_ACCOUNT_ID, CF_PROJECT)
- *   tsx cli.ts gh-record                             (env GITHUB_TOKEN, GITHUB_REPOSITORY, SOURCE_SHA, CF_DEPLOYMENT_ID, RELEASE_KIND, REQUEST_ID, ARTIFACT_NAME)
+ *   tsx cli.ts gh-record                             (env GITHUB_TOKEN, GITHUB_REPOSITORY, SOURCE_SHA, CF_DEPLOYMENT_ID, RELEASE_KIND, REQUEST_ID, ARTIFACT_NAME [required unless RELEASE_KIND=rollback])
  *   tsx cli.ts no-skip-gate <vitest-json-report>...
  */
 
@@ -33,6 +33,7 @@ import { PUBLIC_ORIGIN } from "@paperpilot/core/site";
 import { CliUsageError, parseArgs as parseFlags } from "../shared/cli/argparse.js";
 import { isMain } from "../shared/cli/isMain.js";
 import {
+  assertCommitHashMatches,
   type CfFetchFn,
   getDeploymentCommitHash,
   getProductionDeploymentId,
@@ -292,6 +293,60 @@ function requiredShaEnv(name: string): string {
   return raw;
 }
 
+/**
+ * P5 tier-A review round 2, N3: the env vars each subcommand's handler
+ * calls `requiredEnv`/`requiredShaEnv` on UNCONDITIONALLY -- i.e. dies
+ * if absent, regardless of any other env var's value. Exported (rather
+ * than left as scattered calls inside each `run*` function) so
+ * `apps/pipeline/test/workflows/required-env-coverage.test.ts` can
+ * check, for every staged workflow step that invokes `release/cli.ts
+ * <subcommand>`, that its `env:` block actually provides every name
+ * listed here -- deriving the check from this one list instead of a
+ * second, hand-maintained copy that could silently drift from the real
+ * `requiredEnv` calls below (the gap that let N3's missing
+ * `ARTIFACT_NAME` in `pages-rollback.yml`'s "record" step through
+ * round 1 unnoticed).
+ *
+ * Subcommands that read only argv, or only OPTIONAL env (`promote`,
+ * `package`, `commit-push`, `validate`, `marker`, `no-skip-gate`) are
+ * intentionally omitted -- an empty required-env list, not a missing
+ * entry, since every one of their env reads is `process.env.X ??
+ * <default>` / `positiveIntEnv` (dies only on a MALFORMED value, never
+ * on an absent one).
+ *
+ * `gh-record`'s `ARTIFACT_NAME` is NOT listed here: it is the one
+ * CONDITIONALLY required env var (required unless `RELEASE_KIND` is
+ * literally `"rollback"` -- see `artifactNameEnvFor`), which this
+ * unconditional-only list cannot express. The coverage test special-
+ * cases it via {@link GH_RECORD_CONDITIONAL_ARTIFACT_NAME}.
+ */
+export const REQUIRED_ENV_BY_SUBCOMMAND: Readonly<Record<string, readonly string[]>> = {
+  "cf-deployment-id": ["CF_ACCOUNT_ID", "CF_PROJECT", "CF_API_TOKEN", "SOURCE_SHA"],
+  "cf-rollback": ["CF_ACCOUNT_ID", "CF_PROJECT", "CF_API_TOKEN"],
+  "cf-verify-deployment": ["CF_ACCOUNT_ID", "CF_PROJECT", "CF_API_TOKEN"],
+  "gh-record": [
+    "RELEASE_KIND",
+    "GITHUB_TOKEN",
+    "GITHUB_REPOSITORY",
+    "SOURCE_SHA",
+    "CF_DEPLOYMENT_ID",
+  ],
+};
+
+/**
+ * `gh-record`'s one conditionally-required env var (see
+ * {@link artifactNameEnvFor}): required unless the calling step's own
+ * literal `RELEASE_KIND` env value is `"rollback"`. A step that sets
+ * `RELEASE_KIND` to a GitHub Actions expression (e.g.
+ * `${{ inputs.release_kind }}`), not the literal string `"rollback"`,
+ * must still provide `ARTIFACT_NAME` -- today only `pages-rollback.yml`
+ * sets the literal, and only that step may omit it.
+ */
+export const GH_RECORD_CONDITIONAL_ARTIFACT_NAME = {
+  envVar: "ARTIFACT_NAME",
+  exemptReleaseKindLiteral: "rollback",
+} as const;
+
 /** Real fetch, narrowed to the shape `pagesApi.ts` needs — see its own module doc comment re: never printing `apiToken`. */
 const cfFetch: CfFetchFn = async (url, init) => {
   const response = await fetch(url, init);
@@ -374,12 +429,27 @@ async function runCfVerifyDeployment(args: string[]): Promise<void> {
     apiToken: requiredEnv("CF_API_TOKEN"),
     deploymentId,
   });
-  if (commitHash !== expectedSha) {
-    die(
-      `Cloudflare deployment ${deploymentId} commit_hash ${commitHash} does not match expected ${expectedSha}`,
-    );
-  }
+  // Extracted to pagesApi.ts's assertCommitHashMatches (P5 tier-A review
+  // round 2, survivor fix) so the compare itself is unit-testable
+  // without a live Cloudflare fetch.
+  assertCommitHashMatches(deploymentId, commitHash, expectedSha);
   console.log(`verified Cloudflare deployment ${deploymentId} matches ${expectedSha}`);
+}
+
+/**
+ * `ARTIFACT_NAME` is required only for a "normal" release (P5 tier-A
+ * review round 2, N3): `pages-rollback.yml`'s "record" step never
+ * builds an artifact (no rebuild happens anywhere in a rollback, per
+ * p5-plan.md §4.3), so it has nothing to pass here and must not be
+ * forced to invent one. Still regex-checked (by `recordDeployment`)
+ * whenever it IS present, in either release kind.
+ */
+function artifactNameEnvFor(releaseKind: "normal" | "rollback"): string | null {
+  if (releaseKind === "normal") {
+    return requiredEnv("ARTIFACT_NAME");
+  }
+  const raw = process.env.ARTIFACT_NAME ?? "";
+  return raw === "" ? null : raw;
 }
 
 async function runGhRecord(): Promise<void> {
@@ -396,7 +466,7 @@ async function runGhRecord(): Promise<void> {
     cfDeploymentId: requiredEnv("CF_DEPLOYMENT_ID"),
     releaseKind,
     requestId: requestIdRaw === "" ? null : requestIdRaw,
-    artifactName: requiredEnv("ARTIFACT_NAME"),
+    artifactName: artifactNameEnvFor(releaseKind),
     environmentUrl: PUBLIC_ORIGIN,
   });
   console.log(`recorded GitHub deployment ${result.deploymentId}`);
