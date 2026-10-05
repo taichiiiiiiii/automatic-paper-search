@@ -4,14 +4,17 @@
  * assertions (PUB-26..37) plus the two Cloudflare-era additions from
  * design doc §4.3/§4.4 (no design/research publishing, CSP meta present).
  */
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, expect, it } from "vitest";
 import {
   DEFAULT_REQUIRED_ARTIFACTS,
+  DEPLOYMENT_MARKER_FILENAME,
+  requiredArtifactsFor,
   smokeRemote,
   ValidateReleaseError,
+  validateBundle,
   validateJsonBundle,
   validateLocal,
   validateSha,
@@ -378,4 +381,349 @@ it("smokeRemote times out a hung fetch instead of waiting forever", async () => 
       sleep: noSleep,
     }),
   ).rejects.toThrow(/timed out/);
+});
+
+// ---- p5-plan.md §2 A4: requiredArtifactsFor / validateBundle ----
+
+it("requiredArtifactsFor: legacy mode never includes the marker, build mode or not", () => {
+  expect(requiredArtifactsFor("legacy")).not.toContain(DEPLOYMENT_MARKER_FILENAME);
+  expect(requiredArtifactsFor("legacy", { buildMode: true })).not.toContain(
+    DEPLOYMENT_MARKER_FILENAME,
+  );
+});
+
+it("requiredArtifactsFor: p5 mode includes the marker only in build mode", () => {
+  expect(requiredArtifactsFor("p5")).not.toContain(DEPLOYMENT_MARKER_FILENAME);
+  expect(requiredArtifactsFor("p5", { buildMode: true })).toContain(DEPLOYMENT_MARKER_FILENAME);
+});
+
+it("DEFAULT_REQUIRED_ARTIFACTS equals requiredArtifactsFor()'s default (current LAYOUT_MODE, non-build)", () => {
+  expect(DEFAULT_REQUIRED_ARTIFACTS).toEqual(requiredArtifactsFor());
+});
+
+it("validateBundle passes a well-formed bundle with no SHA/HEAD check at all", () => {
+  writeValidBundle();
+  expect(() => validateBundle({ docsRoot: docs })).not.toThrow();
+});
+
+it("validateBundle rejects a missing required artifact", () => {
+  writeValidBundle();
+  rmSync(join(docs, "404.html"));
+  expect(() => validateBundle({ docsRoot: docs })).toThrow(/missing Pages artifact: 404.html/);
+});
+
+it("validateBundle rejects a docsRoot that does not exist", () => {
+  expect(() => validateBundle({ docsRoot: join(docs, "nope") })).toThrow(
+    /docs root does not exist/,
+  );
+});
+
+it("validateBundle honours an explicit requiredArtifacts override", () => {
+  writeValidBundle();
+  expect(() =>
+    validateBundle({ docsRoot: docs, requiredArtifacts: ["index.html", "nonexistent.json"] }),
+  ).toThrow(/missing Pages artifact: nonexistent.json/);
+});
+
+// ---- p5-plan.md §2 A4: smoke extensions (--wait-marker, --expect-bytes, --expect-404, --expect-redirect, CSP header) ----
+
+interface FakeRoute {
+  status: number;
+  body?: string | Buffer;
+  headers?: Record<string, string>;
+}
+
+function fakeFetchFull(routes: Record<string, FakeRoute>) {
+  return async (url: string, _init?: { redirect?: "manual" | "follow" }) => {
+    const path = url.replace(/^https?:\/\/[^/]+/, "");
+    const route = routes[path];
+    if (route === undefined) {
+      return {
+        status: 404,
+        async text() {
+          return "not found";
+        },
+        async arrayBuffer() {
+          return new ArrayBuffer(0);
+        },
+        headers: { get: () => null },
+      };
+    }
+    const bodyBuffer =
+      typeof route.body === "string"
+        ? Buffer.from(route.body, "utf-8")
+        : (route.body ?? Buffer.alloc(0));
+    return {
+      status: route.status,
+      async text() {
+        return bodyBuffer.toString("utf-8");
+      },
+      async arrayBuffer() {
+        return new Uint8Array(bodyBuffer).buffer as ArrayBuffer;
+      },
+      headers: {
+        get(name: string) {
+          return route.headers?.[name.toLowerCase()] ?? null;
+        },
+      },
+    };
+  };
+}
+
+function toFakeRoutes(routes: Record<string, string>): Record<string, FakeRoute> {
+  const out: Record<string, FakeRoute> = {};
+  for (const [path, body] of Object.entries(routes)) {
+    out[path] = { status: 200, body };
+  }
+  return out;
+}
+
+function fakeNow(startMs: number, stepMs: number): () => number {
+  let t = startMs;
+  return () => {
+    const value = t;
+    t += stepMs;
+    return value;
+  };
+}
+
+it("smokeRemote --wait-marker polls until the marker reports the expected SHA", async () => {
+  const routes = validSmokeRoutes(SHA);
+  let markerCalls = 0;
+  const fetchImpl = async (url: string) => {
+    const path = url.replace(/^https?:\/\/[^/]+/, "");
+    if (path === `/${DEPLOYMENT_MARKER_FILENAME}`) {
+      markerCalls += 1;
+      const sha = markerCalls < 2 ? "b".repeat(40) : SHA;
+      return {
+        status: 200,
+        async text() {
+          return JSON.stringify({ source_sha: sha });
+        },
+      };
+    }
+    const body = routes[path];
+    return {
+      status: body === undefined ? 404 : 200,
+      async text() {
+        return body ?? "not found";
+      },
+    };
+  };
+
+  const result = await smokeRemote({
+    baseUrl: "https://paperpilot.pages.dev",
+    expectedSha: SHA,
+    fetchImpl,
+    waitMarkerSeconds: 10,
+    now: fakeNow(0, 1),
+    sleep: noSleep,
+  });
+  expect(markerCalls).toBeGreaterThanOrEqual(2);
+  expect(result.routes.length).toBeGreaterThan(0);
+});
+
+it("smokeRemote --wait-marker gives up once the deadline passes, surfacing the mismatch", async () => {
+  const routes = validSmokeRoutes(SHA);
+  routes[`/${DEPLOYMENT_MARKER_FILENAME}`] = JSON.stringify({ source_sha: "b".repeat(40) });
+  await expect(
+    smokeRemote({
+      baseUrl: "https://paperpilot.pages.dev",
+      expectedSha: SHA,
+      fetchImpl: fakeFetch(routes),
+      waitMarkerSeconds: 1,
+      now: fakeNow(0, 2000),
+      sleep: noSleep,
+    }),
+  ).rejects.toThrow(/does not match/);
+});
+
+function expectBytesBaseRoutes(): Record<string, FakeRoute> {
+  return {
+    [`/${DEPLOYMENT_MARKER_FILENAME}`]: { status: 200, body: JSON.stringify({ source_sha: SHA }) },
+    "/conferences.json": { status: 200, body: JSON.stringify([{ name: "iclr-2026" }]) },
+    "/search-index-v2.json": {
+      status: 200,
+      body: JSON.stringify([["T", "iclr-2026", 0, [], [], 2026, "Oral"]]),
+    },
+    "/lineage-quality-v1.json": { status: 200, body: JSON.stringify({ collections: [] }) },
+  };
+}
+
+it("smokeRemote --expect-bytes passes when served bytes are byte-identical to the local build output", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "paperpilot-expect-bytes-"));
+  try {
+    writeFileSync(join(dir, "index.html"), "<!doctype html><html>A</html>");
+    writeFileSync(join(dir, "404.html"), "<!doctype html><html>404</html>");
+    mkdirSync(join(dir, "iclr-2026"), { recursive: true });
+    writeFileSync(join(dir, "iclr-2026", "index.html"), "<!doctype html><html>conf</html>");
+
+    const routes = expectBytesBaseRoutes();
+    routes["/"] = { status: 200, body: readFileSync(join(dir, "index.html")) };
+    routes["/404.html"] = { status: 200, body: readFileSync(join(dir, "404.html")) };
+    routes["/iclr-2026/"] = {
+      status: 200,
+      body: readFileSync(join(dir, "iclr-2026", "index.html")),
+    };
+
+    await expect(
+      smokeRemote({
+        baseUrl: "https://paperpilot.pages.dev",
+        expectedSha: SHA,
+        fetchImpl: fakeFetchFull(routes),
+        expectBytesDir: dir,
+      }),
+    ).resolves.toBeDefined();
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+it("smokeRemote --expect-bytes rejects a byte mismatch", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "paperpilot-expect-bytes-mismatch-"));
+  try {
+    writeFileSync(join(dir, "index.html"), "<!doctype html><html>A</html>");
+    writeFileSync(join(dir, "404.html"), "<!doctype html><html>404</html>");
+    mkdirSync(join(dir, "iclr-2026"), { recursive: true });
+    writeFileSync(join(dir, "iclr-2026", "index.html"), "<!doctype html><html>conf</html>");
+
+    const routes = expectBytesBaseRoutes();
+    routes["/"] = { status: 200, body: "<!doctype html><html>DIFFERENT BYTES</html>" };
+    routes["/404.html"] = { status: 200, body: readFileSync(join(dir, "404.html")) };
+    routes["/iclr-2026/"] = {
+      status: 200,
+      body: readFileSync(join(dir, "iclr-2026", "index.html")),
+    };
+
+    await expect(
+      smokeRemote({
+        baseUrl: "https://paperpilot.pages.dev",
+        expectedSha: SHA,
+        fetchImpl: fakeFetchFull(routes),
+        expectBytesDir: dir,
+      }),
+    ).rejects.toThrow(/does not byte-match/);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+it("smokeRemote --expect-404 passes when the path truly 404s", async () => {
+  const routes = validSmokeRoutes(SHA);
+  await expect(
+    smokeRemote({
+      baseUrl: "https://paperpilot.pages.dev",
+      expectedSha: SHA,
+      fetchImpl: fakeFetch(routes),
+      expect404Paths: ["/__pp_smoke_missing__/"],
+    }),
+  ).resolves.toBeDefined();
+});
+
+it("smokeRemote --expect-404 fails when the path actually resolves", async () => {
+  const routes = validSmokeRoutes(SHA);
+  routes["/__pp_smoke_missing__/"] = "<!doctype html><html>oops, exists</html>";
+  await expect(
+    smokeRemote({
+      baseUrl: "https://paperpilot.pages.dev",
+      expectedSha: SHA,
+      fetchImpl: fakeFetch(routes),
+      expect404Paths: ["/__pp_smoke_missing__/"],
+    }),
+  ).rejects.toThrow(/expected HTTP 404/);
+});
+
+it("smokeRemote --expect-redirect passes on a 301 with a relative Location", async () => {
+  const routes = toFakeRoutes(validSmokeRoutes(SHA));
+  routes["/iclr-2026/lineage.html"] = { status: 301, headers: { location: "/iclr-2026/lineage/" } };
+  await expect(
+    smokeRemote({
+      baseUrl: "https://paperpilot.pages.dev",
+      expectedSha: SHA,
+      fetchImpl: fakeFetchFull(routes),
+      expectRedirects: [{ from: "/iclr-2026/lineage.html", to: "/iclr-2026/lineage/" }],
+    }),
+  ).resolves.toBeDefined();
+});
+
+it("smokeRemote --expect-redirect passes on a 301 with an absolute Location (R21, unverified which form Cloudflare sends)", async () => {
+  const routes = toFakeRoutes(validSmokeRoutes(SHA));
+  routes["/iclr-2026/lineage.html"] = {
+    status: 301,
+    headers: { location: "https://paperpilot.pages.dev/iclr-2026/lineage/" },
+  };
+  await expect(
+    smokeRemote({
+      baseUrl: "https://paperpilot.pages.dev",
+      expectedSha: SHA,
+      fetchImpl: fakeFetchFull(routes),
+      expectRedirects: [{ from: "/iclr-2026/lineage.html", to: "/iclr-2026/lineage/" }],
+    }),
+  ).resolves.toBeDefined();
+});
+
+it("smokeRemote --expect-redirect fails on a non-301 status", async () => {
+  const routes = toFakeRoutes(validSmokeRoutes(SHA));
+  routes["/x.html"] = { status: 200, body: "<!doctype html>" };
+  await expect(
+    smokeRemote({
+      baseUrl: "https://paperpilot.pages.dev",
+      expectedSha: SHA,
+      fetchImpl: fakeFetchFull(routes),
+      expectRedirects: [{ from: "/x.html", to: "/x/" }],
+    }),
+  ).rejects.toThrow(/expected HTTP 301/);
+});
+
+it("smokeRemote --expect-redirect fails when Location points somewhere else", async () => {
+  const routes = toFakeRoutes(validSmokeRoutes(SHA));
+  routes["/x.html"] = { status: 301, headers: { location: "/somewhere-else/" } };
+  await expect(
+    smokeRemote({
+      baseUrl: "https://paperpilot.pages.dev",
+      expectedSha: SHA,
+      fetchImpl: fakeFetchFull(routes),
+      expectRedirects: [{ from: "/x.html", to: "/x/" }],
+    }),
+  ).rejects.toThrow(/Location resolved to/);
+});
+
+it("smokeRemote checkCspHeader:true passes when the header equals exactly \"frame-ancestors 'self'\"", async () => {
+  const routes = toFakeRoutes(validSmokeRoutes(SHA));
+  routes["/"] = {
+    status: 200,
+    body: "<!doctype html><html></html>",
+    headers: { "content-security-policy": "frame-ancestors 'self'" },
+  };
+  await expect(
+    smokeRemote({
+      baseUrl: "https://paperpilot.pages.dev",
+      expectedSha: SHA,
+      fetchImpl: fakeFetchFull(routes),
+      checkCspHeader: true,
+    }),
+  ).resolves.toBeDefined();
+});
+
+it("smokeRemote checkCspHeader:true fails when the header is missing or different", async () => {
+  const routes = toFakeRoutes(validSmokeRoutes(SHA));
+  await expect(
+    smokeRemote({
+      baseUrl: "https://paperpilot.pages.dev",
+      expectedSha: SHA,
+      fetchImpl: fakeFetchFull(routes),
+      checkCspHeader: true,
+    }),
+  ).rejects.toThrow(/Content-Security-Policy header/);
+});
+
+it("smokeRemote does not check the CSP header by default (current LAYOUT_MODE is legacy)", async () => {
+  const routes = toFakeRoutes(validSmokeRoutes(SHA));
+  await expect(
+    smokeRemote({
+      baseUrl: "https://paperpilot.pages.dev",
+      expectedSha: SHA,
+      fetchImpl: fakeFetchFull(routes),
+    }),
+  ).resolves.toBeDefined();
 });

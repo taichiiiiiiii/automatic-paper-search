@@ -35,9 +35,10 @@
  *     tests don't actually wait).
  */
 
+import { createHash } from "node:crypto";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
-import { LAYOUT_MODE } from "@paperpilot/core/layout";
+import { LAYOUT_MODE, type LayoutMode } from "@paperpilot/core/layout";
 import { validateSmokeRelativePath } from "@paperpilot/core/paths";
 import { XMLValidator } from "fast-xml-parser";
 
@@ -81,8 +82,42 @@ const P5_REQUIRED_ARTIFACTS: readonly string[] = [
   "_headers",
 ];
 
-export const DEFAULT_REQUIRED_ARTIFACTS: readonly string[] =
-  LAYOUT_MODE === "p5" ? P5_REQUIRED_ARTIFACTS : LEGACY_REQUIRED_ARTIFACTS;
+/** `marker`'s output filename (p5-plan.md §4.3 "Write deterministic deployment marker" / §4.4 A4). */
+export const DEPLOYMENT_MARKER_FILENAME = "_paperpilot-deployment.json";
+
+export interface RequiredArtifactsOptions {
+  /**
+   * p5-plan.md §2 A4: "Plus `_paperpilot-deployment.json` in build mode."
+   * The release workflow's `build` stage runs `marker` BEFORE `validate
+   * local` (§4.3), so that stage's required list must include it; the
+   * promoter's `validate bundle` step (§3 validate step 7) runs before
+   * any marker exists in the tree at all, so it must not. Ignored under
+   * `"legacy"` mode (the marker doesn't exist pre-P5).
+   */
+  buildMode?: boolean;
+}
+
+/**
+ * p5-plan.md §2 A4: the required-artifact list for `mode`, switched by
+ * layout mode exactly like {@link DEFAULT_REQUIRED_ARTIFACTS} (which this
+ * now derives from), plus the optional build-mode marker addition. Kept
+ * as a function (not just the `DEFAULT_REQUIRED_ARTIFACTS` constant) so a
+ * caller — `validateBundle`, and any future `validate local --build`
+ * wiring — can ask for either list without re-deriving it or flipping
+ * `LAYOUT_MODE` in a test.
+ */
+export function requiredArtifactsFor(
+  mode: LayoutMode = LAYOUT_MODE,
+  options: RequiredArtifactsOptions = {},
+): readonly string[] {
+  const base = mode === "p5" ? P5_REQUIRED_ARTIFACTS : LEGACY_REQUIRED_ARTIFACTS;
+  if (mode === "p5" && options.buildMode) {
+    return [...base, DEPLOYMENT_MARKER_FILENAME];
+  }
+  return base;
+}
+
+export const DEFAULT_REQUIRED_ARTIFACTS: readonly string[] = requiredArtifactsFor();
 
 /** Design doc §4.3 "公開対象": these must never appear in the published site root. */
 const FORBIDDEN_PUBLISHED_PREFIXES = ["design", "research"];
@@ -217,14 +252,64 @@ function isDirectory(path: string): boolean {
   }
 }
 
+export interface ValidateBundleOptions {
+  docsRoot: string;
+  requiredArtifacts?: readonly string[];
+}
+
+/**
+ * p5-plan.md §2 A4: "`validate bundle <out-dir>`: same as `validateLocal`
+ * without the HEAD==SHA check. Needed because the promote worktree's
+ * HEAD is the pre-commit tip" — the promoter's §3 validate step 7 runs
+ * inside a detached `git worktree add --detach $tree $remoteSha` BEFORE
+ * this attempt's candidate is committed, so there is no meaningful
+ * "expected SHA" to check HEAD against yet (unlike the release
+ * workflow's `build`/`admit` stages, which validate an already-committed
+ * exact SHA via {@link validateLocal}).
+ */
+export function validateBundle(options: ValidateBundleOptions): void {
+  if (!isDirectory(options.docsRoot)) {
+    throw new ValidateReleaseError(`docs root does not exist: ${options.docsRoot}`);
+  }
+  const required = options.requiredArtifacts ?? requiredArtifactsFor();
+  for (const artifact of required) {
+    if (!statSyncSafe(join(options.docsRoot, artifact))) {
+      throw new ValidateReleaseError(`missing Pages artifact: ${artifact}`);
+    }
+  }
+  validateJsonBundle(options.docsRoot);
+}
+
 // ---------------------------------------------------------------------------
 // Smoke test (remote)
 // ---------------------------------------------------------------------------
 
+/**
+ * `headers`/`arrayBuffer` are OPTIONAL on the response shape so every
+ * pre-existing test's hand-rolled fake (`{status, text()}`, no headers,
+ * no `arrayBuffer`) keeps satisfying this type unchanged — only the A4
+ * extensions that actually need a header or raw bytes (`--expect-bytes`,
+ * `--expect-redirect`, the `_headers` CSP check) require a fake that
+ * supplies them, and each of those throws a clear error if the injected
+ * `fetchImpl` didn't.
+ */
+export interface SmokeFetchResponse {
+  status: number;
+  text(): Promise<string>;
+  arrayBuffer?(): Promise<ArrayBuffer>;
+  headers?: { get(name: string): string | null };
+}
+
 export type FetchTextFn = (
   url: string,
-  init?: { signal?: AbortSignal },
-) => Promise<{ status: number; text(): Promise<string> }>;
+  init?: { signal?: AbortSignal; redirect?: "manual" | "follow" },
+) => Promise<SmokeFetchResponse>;
+
+/** p5-plan.md §2 A4 `smoke --expect-redirect <from>=<to>`. */
+export interface ExpectRedirect {
+  from: string;
+  to: string;
+}
 
 export interface SmokeRemoteOptions {
   baseUrl: string;
@@ -236,6 +321,36 @@ export interface SmokeRemoteOptions {
   retries?: number;
   /** Backoff between attempts; injectable so tests don't actually wait. Default a real `setTimeout`. */
   sleep?: (ms: number) => Promise<void>;
+  /**
+   * `smoke --wait-marker <seconds>`: poll `_paperpilot-deployment.json`
+   * until it reports `expectedSha` (alias propagation lag, p5-plan.md §4.3
+   * "record" / R13) instead of failing on the first mismatch.
+   */
+  waitMarkerSeconds?: number;
+  /** Poll interval while waiting for the marker. Default 2000ms. */
+  waitMarkerPollIntervalMs?: number;
+  /** Injectable clock for {@link waitMarkerSeconds}'s deadline, so tests never depend on real wall-clock time. Default `Date.now`. */
+  now?: () => number;
+  /**
+   * `smoke --expect-bytes <out-dir>`: sha256 of the exact bytes served at
+   * `/`, `/404.html`, and the representative conference's `/` must equal
+   * the same local files' bytes (R14 — Cloudflare auto-injection could
+   * otherwise silently rewrite served HTML).
+   */
+  expectBytesDir?: string;
+  /** `smoke --expect-404 <path>` (repeatable). */
+  expect404Paths?: readonly string[];
+  /** `smoke --expect-redirect <from>=<to>` (repeatable). */
+  expectRedirects?: readonly ExpectRedirect[];
+  /**
+   * `_headers` check (p5-plan.md §2 A4): the deployed `/` response's
+   * `Content-Security-Policy` header must equal exactly
+   * `frame-ancestors 'self'` — the legacy GitHub Pages site never sent
+   * this header at all (CSP was meta-tag only), so this defaults to
+   * `LAYOUT_MODE === "p5"` rather than running unconditionally and
+   * breaking legacy smoke byte-for-byte.
+   */
+  checkCspHeader?: boolean;
 }
 
 export interface SmokeRemoteResult {
@@ -260,11 +375,12 @@ async function fetchOnce(
   fetchImpl: FetchTextFn,
   url: string,
   timeoutMs: number,
-): Promise<{ status: number; text(): Promise<string> }> {
+  init: { redirect?: "manual" | "follow" } = {},
+): Promise<SmokeFetchResponse> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    return await fetchImpl(url, { signal: controller.signal });
+    return await fetchImpl(url, { signal: controller.signal, ...init });
   } catch (exc) {
     // Normalize to a single, recognizable message regardless of what error
     // text a given `fetchImpl` throws on abort (a real `fetch()` throws its
@@ -291,12 +407,21 @@ interface RetryConfig {
  * `--retry-all-errors` flag, without which curl would only retry on a
  * narrower set of transient error codes).
  */
-async function fetchOrThrow(
+/**
+ * Fetch with a bounded timeout and up to `retries` additional attempts,
+ * matching the shell's `curl --retry 2 --retry-all-errors` — retries on a
+ * non-2xx status exactly like a thrown/timed-out attempt (the shell's
+ * `--retry-all-errors` flag, without which curl would only retry on a
+ * narrower set of transient error codes). Returns the raw response (not
+ * its decoded text), so callers that need headers or bytes don't have to
+ * re-fetch.
+ */
+async function fetchResponseOrThrow(
   fetchImpl: FetchTextFn,
   url: string,
   what: string,
   config: RetryConfig,
-): Promise<string> {
+): Promise<SmokeFetchResponse> {
   let lastError: unknown;
   for (let attempt = 0; attempt <= config.retries; attempt += 1) {
     try {
@@ -306,7 +431,7 @@ async function fetchOrThrow(
           `fetch failed for ${what} (${url}): HTTP ${response.status}`,
         );
       }
-      return await response.text();
+      return response;
     } catch (exc) {
       lastError = exc;
       if (attempt < config.retries) {
@@ -317,6 +442,205 @@ async function fetchOrThrow(
   throw lastError instanceof Error
     ? lastError
     : new ValidateReleaseError(`fetch failed for ${what} (${url})`);
+}
+
+async function fetchOrThrow(
+  fetchImpl: FetchTextFn,
+  url: string,
+  what: string,
+  config: RetryConfig,
+): Promise<string> {
+  const response = await fetchResponseOrThrow(fetchImpl, url, what, config);
+  return response.text();
+}
+
+async function fetchBytesOrThrow(
+  fetchImpl: FetchTextFn,
+  url: string,
+  what: string,
+  config: RetryConfig,
+): Promise<Buffer> {
+  const response = await fetchResponseOrThrow(fetchImpl, url, what, config);
+  if (!response.arrayBuffer) {
+    throw new ValidateReleaseError(
+      `fetchImpl for ${what} (${url}) does not support arrayBuffer() (required by --expect-bytes)`,
+    );
+  }
+  return Buffer.from(await response.arrayBuffer());
+}
+
+function sha256Hex(data: Buffer): string {
+  return createHash("sha256").update(data).digest("hex");
+}
+
+/**
+ * `smoke --expect-bytes <out-dir>`: the served `/`, `/404.html`, and the
+ * representative conference's `/` must be byte-identical to the local
+ * build output (R14) — compared as raw bytes, never decoded text, so a
+ * non-UTF-8 byte difference can't slip through a `TextDecoder`'s
+ * replacement-character smoothing.
+ */
+async function checkExpectBytes(
+  fetchImpl: FetchTextFn,
+  baseUrl: string,
+  dir: string,
+  representative: string,
+  config: RetryConfig,
+): Promise<void> {
+  const pairs: ReadonlyArray<readonly [route: string, localRelPath: string]> = [
+    ["/", "index.html"],
+    ["/404.html", "404.html"],
+    [`/${representative}/`, `${representative}/index.html`],
+  ];
+  for (const [route, localRelPath] of pairs) {
+    const remote = await fetchBytesOrThrow(
+      fetchImpl,
+      `${baseUrl}${route}`,
+      `bytes at ${route}`,
+      config,
+    );
+    let local: Buffer;
+    try {
+      local = readFileSync(join(dir, ...localRelPath.split("/")));
+    } catch (exc) {
+      throw new ValidateReleaseError(
+        `--expect-bytes: cannot read local ${localRelPath} under ${dir}: ${(exc as Error).message}`,
+      );
+    }
+    if (sha256Hex(remote) !== sha256Hex(local)) {
+      throw new ValidateReleaseError(
+        `--expect-bytes: deployed ${route} does not byte-match local ${localRelPath}`,
+      );
+    }
+  }
+}
+
+/** `smoke --expect-404 <path>`: a single, non-retried fetch — a 404 here is the EXPECTED outcome, not a transient failure to retry past. */
+async function checkExpect404(
+  fetchImpl: FetchTextFn,
+  baseUrl: string,
+  rawPath: string,
+  timeoutMs: number,
+): Promise<void> {
+  const relative = rawPath.replace(/^\/+/, "");
+  validateSmokeRelativePath(relative);
+  const url = `${baseUrl}/${percentEncodeSmokePath(relative)}`;
+  const response = await fetchOnce(fetchImpl, url, timeoutMs);
+  if (response.status !== 404) {
+    throw new ValidateReleaseError(
+      `--expect-404 ${rawPath}: expected HTTP 404, got ${response.status}`,
+    );
+  }
+}
+
+/**
+ * `smoke --expect-redirect <from>=<to>`: a single, non-retried fetch with
+ * `redirect: "manual"` so the injected `fetchImpl` (and a real `fetch`)
+ * surfaces the 301 itself instead of transparently following it. The
+ * `Location` header is resolved against `baseUrl` before comparing
+ * `pathname` — Cloudflare Pages may emit either an absolute or a
+ * path-relative `Location` (R21, unverified offline either way), and
+ * both normalize to the same `URL`.
+ */
+async function checkExpectRedirect(
+  fetchImpl: FetchTextFn,
+  baseUrl: string,
+  redirect: ExpectRedirect,
+  timeoutMs: number,
+): Promise<void> {
+  const response = await fetchOnce(fetchImpl, `${baseUrl}${redirect.from}`, timeoutMs, {
+    redirect: "manual",
+  });
+  if (response.status !== 301) {
+    throw new ValidateReleaseError(
+      `--expect-redirect ${redirect.from}=${redirect.to}: expected HTTP 301, got ${response.status}`,
+    );
+  }
+  const location = response.headers?.get("location");
+  if (!location) {
+    throw new ValidateReleaseError(
+      `--expect-redirect ${redirect.from}=${redirect.to}: response has no Location header`,
+    );
+  }
+  const resolved = new URL(location, baseUrl);
+  const expected = new URL(redirect.to, baseUrl);
+  if (resolved.origin !== expected.origin || resolved.pathname !== expected.pathname) {
+    throw new ValidateReleaseError(
+      `--expect-redirect ${redirect.from}=${redirect.to}: Location resolved to ${resolved.pathname}`,
+    );
+  }
+}
+
+/** `_headers` check: the deployed `/` response's CSP header, not the meta tag — `frame-ancestors` has no effect in a meta CSP (apps/web/scripts/csp-hash.ts's own doc comment), so only the HTTP header proves it shipped. */
+async function checkCspHeader(
+  fetchImpl: FetchTextFn,
+  baseUrl: string,
+  config: RetryConfig,
+): Promise<void> {
+  const response = await fetchResponseOrThrow(
+    fetchImpl,
+    `${baseUrl}/`,
+    "index.html (CSP header)",
+    config,
+  );
+  if (!response.headers) {
+    throw new ValidateReleaseError(
+      "fetchImpl for / does not expose headers (required by the CSP header check)",
+    );
+  }
+  const header = response.headers.get("content-security-policy");
+  if (header !== "frame-ancestors 'self'") {
+    throw new ValidateReleaseError(
+      `expected Content-Security-Policy header "frame-ancestors 'self'" at /, got ${JSON.stringify(header)}`,
+    );
+  }
+}
+
+/**
+ * `smoke --wait-marker <seconds>`: polls the marker until it reports
+ * `expectedSha`, instead of failing on the very first fetch (R13, alias
+ * propagation lag). A mismatch or any fetch error is swallowed and
+ * retried until `seconds` elapses (per the injectable `now`/`sleep`, never
+ * real wall-clock time in a test); the final poll's actual failure is
+ * what gets thrown, not a generic timeout.
+ */
+async function waitForMarker(
+  fetchImpl: FetchTextFn,
+  baseUrl: string,
+  expectedSha: string,
+  waitSeconds: number,
+  pollIntervalMs: number,
+  now: () => number,
+  sleep: (ms: number) => Promise<void>,
+  timeoutMs: number,
+): Promise<void> {
+  const deadline = now() + waitSeconds * 1000;
+  let lastError: unknown;
+  for (;;) {
+    try {
+      const text = await fetchOrThrow(
+        fetchImpl,
+        `${baseUrl}/${DEPLOYMENT_MARKER_FILENAME}`,
+        "deployment marker",
+        {
+          timeoutMs,
+          retries: 0,
+          sleep,
+        },
+      );
+      const marker = JSON.parse(text) as Record<string, unknown>;
+      if (marker.source_sha === expectedSha) return;
+      lastError = new ValidateReleaseError("deployed marker does not match requested source SHA");
+    } catch (exc) {
+      lastError = exc;
+    }
+    if (now() >= deadline) {
+      throw lastError instanceof Error
+        ? lastError
+        : new ValidateReleaseError(`marker did not report ${expectedSha} within ${waitSeconds}s`);
+    }
+    await sleep(pollIntervalMs);
+  }
 }
 
 /**
@@ -359,12 +683,25 @@ export async function smokeRemote(options: SmokeRemoteOptions): Promise<SmokeRem
   const get = (url: string, what: string): Promise<string> =>
     fetchOrThrow(options.fetchImpl, url, what, config);
 
+  if (options.waitMarkerSeconds !== undefined) {
+    await waitForMarker(
+      options.fetchImpl,
+      baseUrl,
+      options.expectedSha,
+      options.waitMarkerSeconds,
+      options.waitMarkerPollIntervalMs ?? 2000,
+      options.now ?? Date.now,
+      config.sleep,
+      config.timeoutMs,
+    );
+  }
+
   const indexHtml = await get(`${baseUrl}/`, "index.html");
   if (!indexHtml.toLowerCase().includes("<!doctype html")) {
     throw new ValidateReleaseError("root page is not HTML");
   }
 
-  const deploymentText = await get(`${baseUrl}/_paperpilot-deployment.json`, "deployment marker");
+  const deploymentText = await get(`${baseUrl}/${DEPLOYMENT_MARKER_FILENAME}`, "deployment marker");
   const deployment = JSON.parse(deploymentText) as Record<string, unknown>;
   if (deployment.source_sha !== options.expectedSha) {
     throw new ValidateReleaseError("deployed marker does not match requested source SHA");
@@ -404,6 +741,26 @@ export async function smokeRemote(options: SmokeRemoteOptions): Promise<SmokeRem
     const url = `${baseUrl}/${percentEncodeSmokePath(relativePath.replace(/^\/+/, ""))}`;
     await get(url, `smoke route ${relativePath}`);
     routes.push(url);
+  }
+
+  for (const path of options.expect404Paths ?? []) {
+    await checkExpect404(options.fetchImpl, baseUrl, path, config.timeoutMs);
+  }
+  for (const redirect of options.expectRedirects ?? []) {
+    await checkExpectRedirect(options.fetchImpl, baseUrl, redirect, config.timeoutMs);
+  }
+  const shouldCheckCspHeader = options.checkCspHeader ?? LAYOUT_MODE === "p5";
+  if (shouldCheckCspHeader) {
+    await checkCspHeader(options.fetchImpl, baseUrl, config);
+  }
+  if (options.expectBytesDir !== undefined) {
+    await checkExpectBytes(
+      options.fetchImpl,
+      baseUrl,
+      options.expectBytesDir,
+      representative,
+      config,
+    );
   }
 
   return { routes };

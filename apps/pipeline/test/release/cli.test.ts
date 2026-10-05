@@ -240,3 +240,96 @@ it("COMMIT_PUSH_BRANCH='' falls back to develop, matching the shell's :- default
   const log = runGit(remote, ["log", "--oneline", "develop"]);
   expect(log.split("\n").length).toBe(2);
 }, 30_000);
+
+// ---- p5-plan.md §2 A4: validate bundle / marker / no-skip-gate (real tsx subprocess) ----
+
+function writeLegacyBundle(dir: string): void {
+  const csp = '<meta http-equiv="Content-Security-Policy" content="default-src \'self\'">';
+  writeFileSync(join(dir, "index.html"), `<!doctype html><html><head>${csp}</head></html>`);
+  writeFileSync(join(dir, "404.html"), `<!doctype html><html><head>${csp}</head></html>`);
+  mkdirSync(join(dir, "iclr-2026"), { recursive: true });
+  writeFileSync(join(dir, "iclr-2026", "papers.json"), "[]");
+  writeFileSync(join(dir, "conferences.json"), JSON.stringify([{ name: "iclr-2026" }]));
+  writeFileSync(join(dir, "search-index.json"), "[]");
+  writeFileSync(join(dir, "search-index-v2.json"), "[]");
+  writeFileSync(join(dir, "lineage-quality-v1.json"), "{}");
+  writeFileSync(join(dir, "sitemap.xml"), '<?xml version="1.0"?><urlset></urlset>');
+  mkdirSync(join(dir, "assets"), { recursive: true });
+  writeFileSync(join(dir, "assets", "versions.json"), "{}");
+}
+
+it("validate bundle subcommand passes a well-formed bundle with no SHA/HEAD check", () => {
+  const dir = join(base, "bundle-ok");
+  mkdirSync(dir, { recursive: true });
+  writeLegacyBundle(dir);
+  const output = runCli(base, ["validate", "bundle", dir]);
+  expect(output).toContain("validated");
+});
+
+it("validate bundle subcommand fails loudly on a missing required artifact", () => {
+  const dir = join(base, "bundle-bad");
+  mkdirSync(dir, { recursive: true });
+  writeLegacyBundle(dir);
+  rmSync(join(dir, "404.html"));
+  const stderr = expectCliDies(base, ["validate", "bundle", dir], {});
+  expect(stderr).toContain("missing Pages artifact: 404.html");
+});
+
+it("marker subcommand writes a byte-identical _paperpilot-deployment.json from env", () => {
+  const dir = join(base, "marker-out");
+  mkdirSync(dir, { recursive: true });
+  const sha = "c".repeat(40);
+  const output = runCli(base, ["marker", dir], {
+    SOURCE_SHA: sha,
+    RELEASE_KIND: "normal",
+    REQUEST_ID: "push-1-1",
+  });
+  expect(output).toContain("wrote");
+  const written = readFileSync(join(dir, "_paperpilot-deployment.json"), "utf-8");
+  expect(JSON.parse(written)).toEqual({
+    release_kind: "normal",
+    request_id: "push-1-1",
+    schema_version: "paperpilot-deployment-v1",
+    source_sha: sha,
+  });
+  expect(written.endsWith("}\n")).toBe(true);
+});
+
+it("marker subcommand dies loudly on a malformed SOURCE_SHA", () => {
+  const dir = join(base, "marker-bad");
+  mkdirSync(dir, { recursive: true });
+  const stderr = expectCliDies(base, ["marker", dir], {
+    SOURCE_SHA: "not-a-sha",
+    RELEASE_KIND: "normal",
+    REQUEST_ID: "",
+  });
+  expect(stderr).toContain("SOURCE_SHA");
+});
+
+it("no-skip-gate subcommand passes a clean vitest JSON report and fails a report with a skip", () => {
+  const good = join(base, "report-good.json");
+  writeFileSync(
+    good,
+    JSON.stringify({
+      numTotalTests: 1,
+      numPendingTests: 0,
+      numTodoTests: 0,
+      testResults: [{ assertionResults: [{ title: "ok", status: "passed" }] }],
+    }),
+  );
+  const output = runCli(base, ["no-skip-gate", good]);
+  expect(output).toContain("clean");
+
+  const bad = join(base, "report-bad.json");
+  writeFileSync(
+    bad,
+    JSON.stringify({
+      numTotalTests: 1,
+      numPendingTests: 1,
+      numTodoTests: 0,
+      testResults: [{ assertionResults: [{ title: "skipped one", status: "skipped" }] }],
+    }),
+  );
+  const stderr = expectCliDies(base, ["no-skip-gate", bad], {});
+  expect(stderr).toContain("pending");
+});
