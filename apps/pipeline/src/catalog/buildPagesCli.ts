@@ -4,8 +4,9 @@
  * `--allow-shrink`, `--allow-shrink-for`).
  */
 
-import { dirname, join, resolve } from "node:path";
+import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { layoutFor } from "@paperpilot/core/layout";
 import { CliUsageError } from "../shared/cli/argparse.js";
 import { isMain } from "../shared/cli/isMain.js";
 import { buildPagesMain, type CatalogRoots, parseBuildPagesArgs } from "./buildPages.js";
@@ -15,9 +16,10 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const DEFAULT_REPO_ROOT = resolve(HERE, "..", "..", "..", "..");
 
 export function defaultRoots(repoRoot: string = DEFAULT_REPO_ROOT): CatalogRoots {
+  const layout = layoutFor(repoRoot);
   return {
-    outputRoot: join(repoRoot, "paperpilot", "output"),
-    docsRoot: join(repoRoot, "docs"),
+    outputRoot: layout.inputs,
+    docsRoot: layout.published,
   };
 }
 

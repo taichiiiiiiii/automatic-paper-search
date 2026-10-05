@@ -6,6 +6,7 @@
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { pyFloat, pyJsonDumps } from "@paperpilot/core";
+import { layoutFor } from "@paperpilot/core/layout";
 import { loadEnv } from "../../collect/config/env.js";
 import type { LLMProvider } from "../../collect/llm/provider.js";
 import { atomicWriteText } from "../../collect/state/atomic.js";
@@ -118,7 +119,7 @@ export async function runBuildLineageCli(
   deps: RunBuildLineageCliDeps,
   repoRoot: string = DEFAULT_REPO_ROOT,
 ): Promise<number> {
-  const docsRoot = join(repoRoot, "docs");
+  const docsRoot = layoutFor(repoRoot).published;
   const completeness = new BuildCompleteness();
   let result: Record<string, unknown>;
   try {

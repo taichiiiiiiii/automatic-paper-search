@@ -13,6 +13,7 @@
 import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { classificationsCache, layoutFor, lineageCacheDir } from "@paperpilot/core/layout";
 import { loadEnv } from "../../collect/config/env.js";
 import type { FetchInit, HttpResponseLike } from "../../collect/http/requestWithRetry.js";
 import { CliUsageError, parseArgs as parseFlags } from "../../shared/cli/argparse.js";
@@ -120,7 +121,8 @@ export function expandParams(
  * the `fetchImpl` this builds); production callers rely on the
  * `runThemeCli` default. */
 export function defaultDeps(repoRoot: string = DEFAULT_REPO_ROOT): BuildThemeLineageDeps {
-  const docsRoot = join(repoRoot, "docs");
+  const layout = layoutFor(repoRoot);
+  const docsRoot = layout.published;
   const env = loadEnv(join(repoRoot, "paperpilot", ".env"));
   const fetchImpl: (url: string, init: FetchInit) => Promise<HttpResponseLike> = async (
     url,
@@ -162,20 +164,14 @@ export function defaultDeps(repoRoot: string = DEFAULT_REPO_ROOT): BuildThemeLin
   };
   return {
     fetchImpl,
-    cacheDir: join(repoRoot, "paperpilot", "data", "lineage-cache"),
+    cacheDir: lineageCacheDir(layout),
     sleep: (ms) => new Promise((r) => setTimeout(r, ms)),
     email: env.openalexEmail,
     docsRoot,
     identityAliasesPath: join(docsRoot, "identity-aliases-v1.json"),
-    githubCachePath: join(repoRoot, "paperpilot", "data", "lineage-cache", "github_stars.json"),
+    githubCachePath: join(lineageCacheDir(layout), "github_stars.json"),
     githubToken: env.githubToken,
-    classificationCachePath: join(
-      repoRoot,
-      "paperpilot",
-      "data",
-      "lineage-cache",
-      "classifications.json",
-    ),
+    classificationCachePath: classificationsCache(layout),
     githubApiDeps: { fetchImpl },
     buildProvider: () =>
       buildProvider({

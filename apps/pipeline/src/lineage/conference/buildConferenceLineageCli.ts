@@ -6,6 +6,7 @@
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { pyJsonDumps } from "@paperpilot/core";
+import { layoutFor } from "@paperpilot/core/layout";
 import { validateConferenceSlug } from "@paperpilot/core/slug";
 import type { FetchInit, HttpResponseLike } from "../../collect/http/requestWithRetry.js";
 import { atomicWriteText } from "../../collect/state/atomic.js";
@@ -61,7 +62,7 @@ export async function runBuildConferenceLineageCli(
   deps: OpenAlexDeps,
   repoRoot: string = DEFAULT_REPO_ROOT,
 ): Promise<number> {
-  const docsRoot = join(repoRoot, "docs");
+  const docsRoot = layoutFor(repoRoot).published;
   validateConferenceSlug(args.conference);
   const display = args.display || args.conference.toUpperCase().replace(/-/g, " ");
   const orals = loadOrals(docsRoot, args.conference, args.maxOrals);

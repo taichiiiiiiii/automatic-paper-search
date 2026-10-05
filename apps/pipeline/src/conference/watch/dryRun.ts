@@ -8,6 +8,7 @@
 import { createHash } from "node:crypto";
 import { pyJsonDumps } from "@paperpilot/core";
 import { IdentityError, identityFromUrl } from "@paperpilot/core/identity";
+import { relLayout } from "@paperpilot/core/layout";
 import {
   buildCatalogCandidate,
   CandidateValidationError,
@@ -475,11 +476,11 @@ export function buildCatalogUpdateDryRun(
     outcome === "changes_detected"
       ? [
           {
-            path: `docs/${candidate.editionId}/papers.json`,
+            path: `${relLayout().published}/${candidate.editionId}/papers.json`,
             ...artifactBinding(candidateCatalogBytes),
           },
           {
-            path: `paperpilot/output/${candidate.editionId}/summary.csv`,
+            path: `${relLayout().inputs}/${candidate.editionId}/summary.csv`,
             ...artifactBinding(candidate.summaryCsvBytes),
           },
         ]

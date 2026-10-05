@@ -6,6 +6,7 @@
 import { readFileSync } from "node:fs";
 import { basename, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { layoutFor } from "@paperpilot/core/layout";
 import { CliUsageError, parseArgs as parseFlags } from "../../shared/cli/argparse.js";
 import { isMain } from "../../shared/cli/isMain.js";
 import {
@@ -41,7 +42,7 @@ export function parseArgs(
     "min-year": { type: "int" },
     "include-themes": { type: "boolean" },
     "themes-only": { type: "boolean" },
-    "docs-dir": { type: "string", default: resolve(repoRoot, "docs") },
+    "docs-dir": { type: "string", default: layoutFor(repoRoot).published },
   });
   return {
     docsDir: parsed["docs-dir"] as string,

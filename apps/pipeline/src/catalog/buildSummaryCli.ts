@@ -6,6 +6,7 @@
 
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { layoutFor } from "@paperpilot/core/layout";
 import { validateConferenceSlug } from "@paperpilot/core/slug";
 import { CliUsageError, parseArgs as parseFlags } from "../shared/cli/argparse.js";
 import { isMain } from "../shared/cli/isMain.js";
@@ -60,7 +61,7 @@ export function runBuildSummaryCli(
   }
   validateConferenceSlug(args.conference);
   const repoRoot = args.root ?? repoRootDefault;
-  const outputRoot = args.outputRoot ?? join(repoRoot, "paperpilot", "output");
+  const outputRoot = args.outputRoot ?? layoutFor(repoRoot).inputs;
   const confDir = join(outputRoot, args.conference);
   const result = buildSummary({ conferenceDir: confDir, inputCsv: args.input ?? null });
 

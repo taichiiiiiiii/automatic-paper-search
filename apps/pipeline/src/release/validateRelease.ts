@@ -37,6 +37,7 @@
 
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
+import { LAYOUT_MODE } from "@paperpilot/core/layout";
 import { validateSmokeRelativePath } from "@paperpilot/core/paths";
 import { XMLValidator } from "fast-xml-parser";
 
@@ -50,7 +51,8 @@ export function validateSha(sha: string): void {
   }
 }
 
-export const DEFAULT_REQUIRED_ARTIFACTS: readonly string[] = [
+/** Legacy required-artifact list -- unchanged from before this changeset. */
+const LEGACY_REQUIRED_ARTIFACTS: readonly string[] = [
   "index.html",
   "404.html",
   "conferences.json",
@@ -60,6 +62,27 @@ export const DEFAULT_REQUIRED_ARTIFACTS: readonly string[] = [
   "sitemap.xml",
   "assets/versions.json",
 ];
+
+/**
+ * p5-plan.md §2 A4: drops `search-index.json` (v1) and
+ * `assets/versions.json` (no longer generated); adds `_redirects` /
+ * `_headers` (Next's static-export postbuild outputs). `_paperpilot-
+ * deployment.json` (build mode only) is A4's `marker`/`validate bundle`
+ * extension, out of this changeset's scope.
+ */
+const P5_REQUIRED_ARTIFACTS: readonly string[] = [
+  "index.html",
+  "404.html",
+  "conferences.json",
+  "search-index-v2.json",
+  "lineage-quality-v1.json",
+  "sitemap.xml",
+  "_redirects",
+  "_headers",
+];
+
+export const DEFAULT_REQUIRED_ARTIFACTS: readonly string[] =
+  LAYOUT_MODE === "p5" ? P5_REQUIRED_ARTIFACTS : LEGACY_REQUIRED_ARTIFACTS;
 
 /** Design doc §4.3 "公開対象": these must never appear in the published site root. */
 const FORBIDDEN_PUBLISHED_PREFIXES = ["design", "research"];

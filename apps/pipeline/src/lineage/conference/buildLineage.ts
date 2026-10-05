@@ -34,6 +34,7 @@ import {
   isArxivHost,
   normalizeAlias,
 } from "@paperpilot/core/identity";
+import { layoutFor, lineageCacheDir } from "@paperpilot/core/layout";
 import { validateConferenceSlug } from "@paperpilot/core/slug";
 import type {
   ClassifyPaperLike,
@@ -111,7 +112,7 @@ export function resolveConferencePaths(
 }
 
 export function cacheDirFor(repoRoot: string): string {
-  return join(repoRoot, "paperpilot", "data", "lineage-cache");
+  return lineageCacheDir(layoutFor(repoRoot));
 }
 
 // ---------- S2 focus-paper fetch (LIN-20) ----------

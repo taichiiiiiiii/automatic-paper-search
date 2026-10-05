@@ -6,6 +6,7 @@
 import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { layoutFor } from "@paperpilot/core/layout";
 import { isMain } from "../../shared/cli/isMain.js";
 import { writeThemeQuality } from "./computeThemeQuality.js";
 
@@ -16,7 +17,7 @@ const DEFAULT_REPO_ROOT = resolve(HERE, "..", "..", "..", "..", "..");
 const HIGH_TEMPLATE_RATIO = 0.3;
 
 export function runComputeThemeQualityCli(
-  themesDir: string = join(DEFAULT_REPO_ROOT, "docs", "themes"),
+  themesDir: string = join(layoutFor(DEFAULT_REPO_ROOT).published, "themes"),
 ): number {
   const out = writeThemeQuality({ themesDir });
   const rollup = JSON.parse(readFileSync(out, "utf-8")) as {

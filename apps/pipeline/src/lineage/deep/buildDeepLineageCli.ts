@@ -7,6 +7,7 @@
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { pyFloat, pyJsonDumps } from "@paperpilot/core";
+import { layoutFor } from "@paperpilot/core/layout";
 import { loadEnv } from "../../collect/config/env.js";
 import type { LLMProvider } from "../../collect/llm/provider.js";
 import { atomicWriteText } from "../../collect/state/atomic.js";
@@ -170,7 +171,8 @@ export async function runBuildDeepLineageCli(
   meta.completeness = completeness.asMeta();
 
   const out =
-    args.output ?? join(repoRoot, "docs", "iclr-2026", `deep-${meta.arxiv_id as string}.json`);
+    args.output ??
+    join(layoutFor(repoRoot).published, "iclr-2026", `deep-${meta.arxiv_id as string}.json`);
 
   if (!args.allowIncomplete) {
     const nodes = result.nodes as unknown[];

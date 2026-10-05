@@ -11,13 +11,15 @@
  * component pulled it in.
  */
 import { readdir, stat } from "node:fs/promises";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { layoutFor } from "@paperpilot/core/layout";
 
 // This file lives at apps/web/lib/lineage/server-fs.ts -- four segments
 // below the repo root (apps, web, lib, lineage), so four ".." reach it.
 const HERE = dirname(fileURLToPath(import.meta.url));
-const DOCS_DIR = join(HERE, "..", "..", "..", "..", "docs");
+const REPO_ROOT = resolve(HERE, "..", "..", "..", "..");
+const DOCS_DIR = layoutFor(REPO_ROOT).published;
 
 const SLUG_RE = /^[a-z0-9][a-z0-9-]*$/;
 

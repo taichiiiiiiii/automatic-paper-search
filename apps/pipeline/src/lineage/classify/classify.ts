@@ -13,8 +13,8 @@
  */
 
 import { readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { getRepoRoot } from "@paperpilot/core";
+import { foundationalAllowlist, layoutFor } from "@paperpilot/core/layout";
 import type {
   ClassifyPaperLike,
   Relation,
@@ -449,10 +449,7 @@ export { makeDerived as _make_derived };
 
 // ===== Foundational-ancestor allowlist (#277) =====
 
-const FOUNDATIONAL_ALLOWLIST_PATH = resolve(
-  dirname(fileURLToPath(import.meta.url)),
-  "../../../../../paperpilot/data/lineage_foundational_allowlist.json",
-);
+const FOUNDATIONAL_ALLOWLIST_PATH = foundationalAllowlist(layoutFor(getRepoRoot()));
 const FOUNDATIONAL_ALLOWLIST_CONFIDENCE = 0.65;
 
 let cachedAllowlist: RegExp[] | null = null;

@@ -5,23 +5,15 @@
  */
 
 import { existsSync, readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { layoutFor, paperRepos } from "@paperpilot/core/layout";
 import { ghRepoSlug } from "./payload.js";
 
 // apps/pipeline/src/collect/signals/githubMap.ts -> repo root is 5 levels up.
 const HERE = dirname(fileURLToPath(import.meta.url));
-const DEFAULT_PAPER_REPOS_FILE = join(
-  HERE,
-  "..",
-  "..",
-  "..",
-  "..",
-  "..",
-  "paperpilot",
-  "data",
-  "paper_repos.json",
-);
+const DEFAULT_REPO_ROOT = resolve(HERE, "..", "..", "..", "..", "..");
+const DEFAULT_PAPER_REPOS_FILE = paperRepos(layoutFor(DEFAULT_REPO_ROOT));
 
 /**
  * Reads `paper_repos.json` and returns `arxivId -> "owner/repo"`. The

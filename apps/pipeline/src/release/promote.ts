@@ -33,6 +33,7 @@
 import { cpSync, mkdtempSync, realpathSync, rmSync, statSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { LAYOUT_MODE, type LayoutMode, relLayout } from "@paperpilot/core/layout";
 import { isDirPermitted, isFilePermitted, validateAllowlistEntry } from "@paperpilot/core/paths";
 import { walkCandidateFiles } from "./candidateWalk.js";
 import { type GitAdapter, git, gitOk } from "./git/gitAdapter.js";
@@ -42,28 +43,60 @@ export type PromotionKind = "themes" | "conference" | "test-only";
 const AS_OF_RE = /^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$/;
 const BASE_SHA_RE = /^[0-9a-f]{40}$/;
 
-const SHARED_PATHS: Record<PromotionKind, string[]> = {
-  themes: [
-    "docs/themes/themes-manifest.json",
-    "docs/themes/_quality.json",
-    "docs/lineage-quality-v1.json",
-    "docs/assets/versions.json",
-    "docs/sitemap.xml",
-  ],
-  conference: [
-    "docs/conferences.json",
-    "docs/identity-aliases-v1.json",
-    "docs/lineage-quality-v1.json",
-    "docs/paper-details-v1",
-    "docs/search-index.json",
-    "docs/search-index-v2.json",
-    "docs/search-paper-ids-v1",
-    "docs/assets/versions.json",
-    "docs/sitemap.xml",
-    "paperpilot/data/identity-coverage-v1.json",
-  ],
-  "test-only": [],
-};
+/**
+ * p5-plan.md §3 "SHARED_PATHS (p5)": built from `relLayout()` so the
+ * data-move commit (B) only has to flip `LAYOUT_MODE`, never edit this
+ * table. The legacy entries are untouched byte-for-byte (same strings as
+ * before this changeset) — only *how* they're built changed. The p5 list
+ * additionally drops `assets/versions.json` / `sitemap.xml` (no longer
+ * generated/promoted; see §3) and `search-index.json` v1 (follow-up #5).
+ */
+function sharedPathsForMode(mode: LayoutMode): Record<PromotionKind, string[]> {
+  const rel = relLayout(mode);
+  if (mode === "p5") {
+    return {
+      themes: [
+        `${rel.published}/themes/themes-manifest.json`,
+        `${rel.published}/themes/_quality.json`,
+        `${rel.published}/lineage-quality-v1.json`,
+      ],
+      conference: [
+        `${rel.published}/conferences.json`,
+        `${rel.published}/identity-aliases-v1.json`,
+        `${rel.published}/lineage-quality-v1.json`,
+        `${rel.published}/paper-details-v1`,
+        `${rel.published}/search-index-v2.json`,
+        `${rel.published}/search-paper-ids-v1`,
+        `${rel.state}/identity-coverage-v1.json`,
+      ],
+      "test-only": [],
+    };
+  }
+  return {
+    themes: [
+      `${rel.published}/themes/themes-manifest.json`,
+      `${rel.published}/themes/_quality.json`,
+      `${rel.published}/lineage-quality-v1.json`,
+      `${rel.published}/assets/versions.json`,
+      `${rel.published}/sitemap.xml`,
+    ],
+    conference: [
+      `${rel.published}/conferences.json`,
+      `${rel.published}/identity-aliases-v1.json`,
+      `${rel.published}/lineage-quality-v1.json`,
+      `${rel.published}/paper-details-v1`,
+      `${rel.published}/search-index.json`,
+      `${rel.published}/search-index-v2.json`,
+      `${rel.published}/search-paper-ids-v1`,
+      `${rel.published}/assets/versions.json`,
+      `${rel.published}/sitemap.xml`,
+      `${rel.state}/identity-coverage-v1.json`,
+    ],
+    "test-only": [],
+  };
+}
+
+const SHARED_PATHS: Record<PromotionKind, string[]> = sharedPathsForMode(LAYOUT_MODE);
 
 export interface RefreshContext {
   tree: string;

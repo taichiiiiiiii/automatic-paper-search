@@ -13,8 +13,13 @@
  */
 
 import { readFileSync } from "node:fs";
-import { join } from "node:path";
 import { getRepoRoot } from "@paperpilot/core";
+import {
+  denylist as denylistPathFor,
+  layoutFor,
+  themeAliases as themeAliasesPathFor,
+  themeBlacklist as themeBlacklistPathFor,
+} from "@paperpilot/core/layout";
 import { themeSlug } from "./slug.js";
 
 export interface ThemeSeedLike {
@@ -111,7 +116,7 @@ interface DenylistData {
 let cachedDenylist: { path: string; data: DenylistData } | undefined;
 
 function defaultDenylistPath(): string {
-  return join(getRepoRoot(), "paperpilot", "data", "lineage_denylist.json");
+  return denylistPathFor(layoutFor(getRepoRoot()));
 }
 
 /** `(paperId set, compiled title-regexes)` from
@@ -208,7 +213,7 @@ type ThemeAliasMap = Record<string, string[]>;
 let cachedAliases: { path: string; data: ThemeAliasMap } | undefined;
 
 function defaultThemeAliasesPath(): string {
-  return join(getRepoRoot(), "paperpilot", "data", "theme_aliases.json");
+  return themeAliasesPathFor(layoutFor(getRepoRoot()));
 }
 
 /** The alias map from `theme_aliases.json`: lower-cased theme string ->
@@ -246,7 +251,7 @@ type ThemeBlacklistMap = Record<string, readonly string[]>;
 let cachedBlacklist: { path: string; data: ThemeBlacklistMap } | undefined;
 
 function defaultThemeBlacklistPath(): string {
-  return join(getRepoRoot(), "paperpilot", "data", "theme_blacklist.json");
+  return themeBlacklistPathFor(layoutFor(getRepoRoot()));
 }
 
 /** Per-theme keyword blacklist from `theme_blacklist.json`. Keys are

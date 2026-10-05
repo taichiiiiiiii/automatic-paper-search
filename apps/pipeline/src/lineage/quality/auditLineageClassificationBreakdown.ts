@@ -7,6 +7,7 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { codepointCompare, pyRound } from "@paperpilot/core";
+import { relLayout } from "@paperpilot/core/layout";
 import { TEMPLATE_RATIONALES } from "../llm/base.js";
 
 function isMapping(value: unknown): value is Record<string, unknown> {
@@ -210,7 +211,7 @@ export function printHuman(
   cache: ClassificationsCacheAudit,
   write: (line: string) => void,
 ): void {
-  write("=== Published lineage (docs/themes/*/lineage.json) ===");
+  write(`=== Published lineage (${relLayout().published}/themes/*/lineage.json) ===`);
   for (const provenance of NEW_ENUMS) {
     const relCounts = published.per_provenance_rel[provenance] ?? {};
     const total = Object.values(relCounts).reduce((a, b) => a + b, 0);
@@ -219,7 +220,9 @@ export function printHuman(
   }
 
   if (cache.available) {
-    write("\n=== Persistent LLM cache (paperpilot/data/lineage-cache/classifications.json) ===");
+    write(
+      `\n=== Persistent LLM cache (${relLayout().state}/lineage-cache/classifications.json) ===`,
+    );
     write(`total entries: ${cache.total_entries} (unrelated dropped: ${cache.unrelated_dropped})`);
     const wf = cache.wellformed_rel;
     write(

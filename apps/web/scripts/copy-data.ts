@@ -25,11 +25,14 @@
  * the last run must not linger here as stale, no-longer-published data.
  */
 import { copyFile, mkdir, readdir, rm } from "node:fs/promises";
-import { dirname, join, relative, sep } from "node:path";
+import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
+import { layoutFor } from "@paperpilot/core/layout";
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
-const DOCS_DIR = join(SCRIPT_DIR, "..", "..", "..", "docs");
+// apps/web/scripts -> repo root (3 levels up).
+const REPO_ROOT = resolve(SCRIPT_DIR, "..", "..", "..");
+const DOCS_DIR = layoutFor(REPO_ROOT).published;
 const PUBLIC_DIR = join(SCRIPT_DIR, "..", "public");
 
 const EXCLUDED_TOP_LEVEL_DIRS = new Set(["design", "research", "migration"]);

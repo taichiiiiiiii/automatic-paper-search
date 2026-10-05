@@ -8,8 +8,9 @@
  * outside tests.
  */
 
-import { dirname, join, resolve } from "node:path";
+import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { layoutFor } from "@paperpilot/core/layout";
 import { CliUsageError, parseArgs as parseFlags } from "../../shared/cli/argparse.js";
 import { isMain } from "../../shared/cli/isMain.js";
 import { checkSearchIndexes, writeSearchIndexes } from "./searchIndex.js";
@@ -24,7 +25,7 @@ export interface SearchIndexCliArgs {
 }
 
 export function defaultDocsRoot(repoRoot: string = DEFAULT_REPO_ROOT): string {
-  return join(repoRoot, "docs");
+  return layoutFor(repoRoot).published;
 }
 
 /**

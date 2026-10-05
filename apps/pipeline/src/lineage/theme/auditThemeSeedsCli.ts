@@ -6,6 +6,7 @@
 
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { layoutFor } from "@paperpilot/core/layout";
 import { isMain } from "../../shared/cli/isMain.js";
 import { auditThemeSeeds } from "./auditThemeSeeds.js";
 
@@ -14,7 +15,7 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const DEFAULT_REPO_ROOT = resolve(HERE, "..", "..", "..", "..", "..");
 
 export function runAuditThemeSeedsCli(
-  themesDir: string = join(DEFAULT_REPO_ROOT, "docs", "themes"),
+  themesDir: string = join(layoutFor(DEFAULT_REPO_ROOT).published, "themes"),
 ): number {
   const result = auditThemeSeeds(themesDir, { warn: (msg) => process.stdout.write(`${msg}\n`) });
 

@@ -6,6 +6,7 @@
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { pyJsonDumps } from "@paperpilot/core";
+import { classificationsCache, layoutFor } from "@paperpilot/core/layout";
 import { CliUsageError, parseArgs as parseFlags } from "../../shared/cli/argparse.js";
 import { isMain } from "../../shared/cli/isMain.js";
 import {
@@ -39,8 +40,9 @@ export function runAuditLineageClassificationBreakdownCli(
     }
     throw e;
   }
-  const themesDir = join(repoRoot, "docs", "themes");
-  const cachePath = join(repoRoot, "paperpilot", "data", "lineage-cache", "classifications.json");
+  const layout = layoutFor(repoRoot);
+  const themesDir = join(layout.published, "themes");
+  const cachePath = classificationsCache(layout);
   const published = auditPublishedThemes(themesDir, (value) => {
     process.stderr.write(
       `WARNING: unknown provenance value ${JSON.stringify(value)} — forward-compat passthrough; ` +

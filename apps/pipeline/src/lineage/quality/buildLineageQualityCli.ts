@@ -8,6 +8,7 @@
 import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { auditFixtures, layoutFor, qualityPolicy } from "@paperpilot/core/layout";
 import { atomicWriteBytes } from "../../collect/state/atomic.js";
 import { CliUsageError, parseArgs as parseFlags } from "../../shared/cli/argparse.js";
 import { isMain } from "../../shared/cli/isMain.js";
@@ -29,11 +30,12 @@ export interface BuildLineageQualityCliArgs {
 export function defaultArgs(
   repoRoot: string = DEFAULT_REPO_ROOT,
 ): Omit<BuildLineageQualityCliArgs, "asOf" | "check"> {
-  const docsRoot = join(repoRoot, "docs");
+  const layout = layoutFor(repoRoot);
+  const docsRoot = layout.published;
   return {
     docsRoot,
-    fixtures: join(repoRoot, "paperpilot", "data", "lineage-audit-fixtures-v1.json"),
-    policy: join(repoRoot, "paperpilot", "data", "lineage-quality-policy-v1.json"),
+    fixtures: auditFixtures(layout),
+    policy: qualityPolicy(layout),
     output: join(docsRoot, "lineage-quality-v1.json"),
   };
 }
