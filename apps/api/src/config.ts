@@ -3,22 +3,27 @@
 // worker/response.js's PAGES_ORIGIN, extended to the §4.2-6 "allow both old
 // and new origin during the migration" list.
 //
-// NOTE: packages/core/src/site/config.ts landed concurrently (another agent,
-// same P3 window) and exports PUBLIC_ORIGIN — but that is the *future*
-// Cloudflare Pages origin (e.g. https://paperpilot.pages.dev), still a
-// placeholder pending the user's Pages project. PRODUCTION_ORIGINS below is
-// deliberately the *current* GitHub Pages origin: that's what is actually
-// serving production traffic during P3 (the migration isn't cut over yet),
-// so it's what a dry-run Worker must refuse to impersonate today.
-//
-// TODO(P5): once Cloudflare Pages is live, add packages/core/src/site's
-// PUBLIC_ORIGIN to PRODUCTION_ORIGINS (and to the real KV origin_allowlist —
-// an ops action, not a code change) so dry-run also self-refuses for the
-// new production origin.
+// packages/core/src/site/config.ts's PUBLIC_ORIGIN is the *future*
+// Cloudflare Pages origin (e.g. https://paperpilot.pages.dev as of this
+// writing) — still a placeholder pending the user's Pages project (that
+// file's own TODO, not resolved here; this file does not hard-code a copy
+// of the value, so it tracks whatever packages/core currently exports
+// without drifting). PRODUCTION_ORIGINS below (resolves this file's former
+// TODO(P5)) includes both: the *current* GitHub Pages origin, which is what
+// is actually serving production traffic today, and the *future* Pages
+// origin, so a dry-run Worker already self-refuses for either one — ready
+// ahead of §6.2 Phase W, inert until PUBLIC_ORIGIN stops being a
+// placeholder and the KV origin_allowlist is updated to match (an ops
+// action, not a code change).
+
+import { PUBLIC_ORIGIN } from "@paperpilot/core/site";
 
 // Origins that count as "production" for the dry-run self-refusal rule
 // (§4.5: "GH_REF=develop または本番 origin の時は dry-run を拒否する").
-export const PRODUCTION_ORIGINS: readonly string[] = ["https://taichiiiiiiii.github.io"];
+export const PRODUCTION_ORIGINS: readonly string[] = [
+  "https://taichiiiiiiii.github.io",
+  PUBLIC_ORIGIN,
+];
 
 // The branch ref that denotes "this would dispatch against the real,
 // production theme-on-demand workflow". Refusing dry-run when GH_REF equals
