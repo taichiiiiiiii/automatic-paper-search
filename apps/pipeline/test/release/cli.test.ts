@@ -261,6 +261,11 @@ function writeLegacyBundle(dir: string): void {
   writeFileSync(join(dir, "sitemap.xml"), '<?xml version="1.0"?><urlset></urlset>');
   mkdirSync(join(dir, "assets"), { recursive: true });
   writeFileSync(join(dir, "assets", "versions.json"), "{}");
+  // p5-only required artifacts (Next's static-export postbuild outputs);
+  // written unconditionally (harmless extra files under legacy) so this
+  // fixture is a valid bundle under BOTH layout modes.
+  writeFileSync(join(dir, "_redirects"), "/old /new 301\n");
+  writeFileSync(join(dir, "_headers"), "/*\n  Content-Security-Policy: frame-ancestors 'self'\n");
 }
 
 it("validate bundle subcommand passes a well-formed bundle with no SHA/HEAD check", () => {

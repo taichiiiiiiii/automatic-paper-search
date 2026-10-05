@@ -9,6 +9,7 @@
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { layoutFor } from "@paperpilot/core/layout";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { HttpResponseLike } from "../../../src/collect/http/requestWithRetry.js";
 import type { OpenAlexDeps } from "../../../src/lineage/conference/buildConferenceLineage.js";
@@ -29,7 +30,7 @@ afterEach(() => {
 function makeRepo(): { repoRoot: string; docsDir: string } {
   const repoRoot = mkdtempSync(join(tmpdir(), "conf-lineage-cli-"));
   tmpDirs.push(repoRoot);
-  const docsDir = join(repoRoot, "docs", "testconf");
+  const docsDir = join(layoutFor(repoRoot).published, "testconf");
   mkdirSync(docsDir, { recursive: true });
   writeFileSync(
     join(docsDir, "papers.json"),

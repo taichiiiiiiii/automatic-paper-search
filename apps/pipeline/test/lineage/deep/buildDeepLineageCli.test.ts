@@ -5,6 +5,7 @@
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { LAYOUT_MODE } from "@paperpilot/core/layout";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type {
   ClassifyPaperLike,
@@ -328,7 +329,7 @@ describe("envFilePath (p5-plan.md §2 A2 follow-up #19)", () => {
     expect(envFilePath("/repo", "p5")).toBe(join("/repo", "data", "config", ".env"));
   });
 
-  it("defaults to the current LAYOUT_MODE ('legacy') when no mode is given", () => {
-    expect(envFilePath("/repo")).toBe(join("/repo", "paperpilot", ".env"));
+  it("defaults to the current LAYOUT_MODE when no mode is given", () => {
+    expect(envFilePath("/repo")).toBe(envFilePath("/repo", LAYOUT_MODE));
   });
 });

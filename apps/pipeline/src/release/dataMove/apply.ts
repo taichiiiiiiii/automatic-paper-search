@@ -2,7 +2,8 @@
  * `cli.ts apply [--reverse]` (p5-plan.md §5.2/§5.3): performs the data-move
  * commit's mechanics against the live working tree — `git mv`/`git rm`
  * for every rule-table entry, the two config files' restricted-key edits,
- * the `.gitignore` patch, the `LAYOUT_MODE` literal flip, and the
+ * the `.gitignore` patch, the `LAYOUT_MODE` literal flip, the
+ * `.lighthouserc.json` rewrite (p5-plan.md §4.1), and the
  * `.github/workflows-p5` staging swap. Stages everything (`git add`/
  * `git mv`/`git rm`); never commits — the caller (the real cutover runbook
  * step, or a test) commits once, by hand, same as every other script in
@@ -19,6 +20,7 @@ import { type GitAdapter, git } from "../git/gitAdapter.js";
 import { applyConfigEdits, reverseConfigEdits } from "./configEdit.js";
 import { applyGitignorePatch, reverseGitignorePatch } from "./gitignorePatch.js";
 import { flipLayoutModeToLegacy, flipLayoutModeToP5 } from "./layoutFlip.js";
+import { applyLighthouseEdit, reverseLighthouseEdit } from "./lighthouseEdit.js";
 import { buildPlan, planIsClean } from "./plan.js";
 import type { RuleEntry } from "./rules.js";
 import { applyWorkflowSwap, reverseWorkflowSwap, type WorkflowSwapResult } from "./workflowSwap.js";
@@ -27,6 +29,7 @@ export class ApplyError extends Error {}
 
 const GITIGNORE_REL = ".gitignore";
 const LAYOUT_REL = "packages/core/src/layout/index.ts";
+const LIGHTHOUSERC_REL = ".lighthouserc.json";
 
 export interface ApplyOptions {
   readonly git: GitAdapter;
@@ -110,6 +113,10 @@ export function apply(options: ApplyOptions): ApplyResult {
   writeRepoFile(cwd, LAYOUT_REL, flipLayoutModeToP5(readRepoFile(cwd, LAYOUT_REL)));
   git(adapter, cwd, ["add", "--", LAYOUT_REL]);
 
+  // 3b. .lighthouserc.json rewrite (p5-plan.md §4.1).
+  writeRepoFile(cwd, LIGHTHOUSERC_REL, applyLighthouseEdit(readRepoFile(cwd, LIGHTHOUSERC_REL)));
+  git(adapter, cwd, ["add", "--", LIGHTHOUSERC_REL]);
+
   // 4. Workflow staging swap (skips gracefully if workflows-p5 is missing/empty).
   const workflowSwap = applyWorkflowSwap(adapter, cwd);
 
@@ -141,6 +148,10 @@ export function applyReverse(options: ApplyOptions, beforeRef = "HEAD^"): ApplyR
 
   // 4'. Workflow staging swap, reversed.
   const workflowSwap = reverseWorkflowSwap(adapter, cwd, beforeRef);
+
+  // 3b'. .lighthouserc.json rewrite, reversed.
+  writeRepoFile(cwd, LIGHTHOUSERC_REL, reverseLighthouseEdit(readRepoFile(cwd, LIGHTHOUSERC_REL)));
+  git(adapter, cwd, ["add", "--", LIGHTHOUSERC_REL]);
 
   // 3'. LAYOUT_MODE flip, reversed.
   writeRepoFile(cwd, LAYOUT_REL, flipLayoutModeToLegacy(readRepoFile(cwd, LAYOUT_REL)));

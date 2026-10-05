@@ -18,7 +18,41 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
+import { auditFixtures, identityCoverage, layoutFor, relLayout } from "../../src/layout/index.js";
 import { getRepoRoot, listSchemaNames, validateArtifact } from "../../src/schemas/index.js";
+
+/**
+ * `python-verdicts.json`'s `file` fields were recorded once (frozen
+ * fixture, see this file's header doc comment) against the legacy roots,
+ * since that is what existed when the fixture was generated: 385 cases
+ * under `docs/` (-> `layout.published`), plus two individually-named
+ * files under `paperpilot/data/` whose p5 destination differs
+ * (`identity-coverage-v1.json` -> `layout.state`;
+ * `lineage-audit-fixtures-v1.json` -> `layout.config` -- the two roots
+ * that both happen to equal `paperpilot/data` under legacy but diverge
+ * under p5). Resolving every one of these against the CURRENT
+ * `LAYOUT_MODE` (via the layout module's own named helpers, never a
+ * hard-coded `"docs"`/`"paperpilot/data"`) is what lets this suite stay
+ * green after the A9 data-move commit relocates them -- the fixture's
+ * *filenames* don't change, only where they live on disk.
+ */
+function resolvePublishedFixturePath(repoRoot: string, legacyRelPath: string): string {
+  const layout = layoutFor(repoRoot);
+  const docsPrefix = `${relLayout("legacy").published}/`;
+  if (legacyRelPath.startsWith(docsPrefix)) {
+    return join(layout.published, legacyRelPath.slice(docsPrefix.length));
+  }
+  if (legacyRelPath === "paperpilot/data/identity-coverage-v1.json") {
+    return identityCoverage(layout);
+  }
+  if (legacyRelPath === "paperpilot/data/lineage-audit-fixtures-v1.json") {
+    return auditFixtures(layout);
+  }
+  throw new Error(
+    `python-verdicts.json fixture path ${JSON.stringify(legacyRelPath)} has no known ` +
+      "layout mapping (resolvePublishedFixturePath needs a new case)",
+  );
+}
 
 interface SampleError {
   path: string;
@@ -81,7 +115,7 @@ describe("ajv vs Python jsonschema agreement", () => {
     it(
       `${testCase.file} against ${testCase.schema} (python ok=${testCase.ok})`,
       () => {
-        const absolutePath = join(getRepoRoot(), testCase.file);
+        const absolutePath = resolvePublishedFixturePath(getRepoRoot(), testCase.file);
         const data = JSON.parse(readFileSync(absolutePath, "utf8"));
         const result = validateArtifact(testCase.schema, data);
 

@@ -7,6 +7,7 @@
 import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { LAYOUT_MODE } from "@paperpilot/core/layout";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { FetchInit, HttpResponseLike } from "../../../src/collect/http/requestWithRetry.js";
 import { IncompleteBuildError } from "../../../src/lineage/fetch-state/completeness.js";
@@ -443,7 +444,7 @@ describe("envFilePath (L10: loads .env through the layout like buildLineageCli)"
     expect(envFilePath("/repo", "p5")).toBe(join("/repo", "data", "config", ".env"));
   });
 
-  it("defaults to the current LAYOUT_MODE ('legacy') when no mode is given", () => {
-    expect(envFilePath("/repo")).toBe(join("/repo", "paperpilot", ".env"));
+  it("defaults to the current LAYOUT_MODE when no mode is given", () => {
+    expect(envFilePath("/repo")).toBe(envFilePath("/repo", LAYOUT_MODE));
   });
 });

@@ -10,8 +10,9 @@
 // build malformed shapes (deleted/mistyped fields) to probe the fail-closed
 // validator, which requires loosely-typed mutation helpers throughout.
 import { readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { layoutFor } from "@paperpilot/core/layout";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   type DeepManifestEntry,
@@ -823,7 +824,7 @@ describe("node display fields (shared fixture with test_lineage_contract.py)", (
 });
 
 describe("the real published quality manifest stays fail-closed", () => {
-  const publicQualityPath = resolve(REPO_ROOT, "docs/lineage-quality-v1.json");
+  const publicQualityPath = join(layoutFor(REPO_ROOT).published, "lineage-quality-v1.json");
   const publicQuality = parseQualityManifest(JSON.parse(readFileSync(publicQualityPath, "utf8")));
 
   it("matches the strict reader", () => {

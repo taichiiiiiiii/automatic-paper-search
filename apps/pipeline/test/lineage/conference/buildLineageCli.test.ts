@@ -6,6 +6,7 @@
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { LAYOUT_MODE, layoutFor } from "@paperpilot/core/layout";
 import { afterEach, describe, expect, it } from "vitest";
 import type {
   ClassifyPaperLike,
@@ -53,7 +54,7 @@ afterEach(() => {
 function makeRepo(): string {
   const repoRoot = mkdtempSync(join(tmpdir(), "build-lineage-cli-"));
   tmpDirs.push(repoRoot);
-  const docsDir = join(repoRoot, "docs", "testconf");
+  const docsDir = join(layoutFor(repoRoot).published, "testconf");
   mkdirSync(docsDir, { recursive: true });
   writeFileSync(
     join(docsDir, "papers.json"),
@@ -78,7 +79,7 @@ function makeDeps(fetchImpl: RunBuildLineageCliDeps["fetchImpl"]): RunBuildLinea
 describe("runBuildLineageCli", () => {
   it("exit 4 on a subject-resolution outage, and never writes lineage.json", async () => {
     const repoRoot = makeRepo();
-    const lineagePath = join(repoRoot, "docs", "testconf", "lineage.json");
+    const lineagePath = join(layoutFor(repoRoot).published, "testconf", "lineage.json");
     const deps = makeDeps(async () => ({ status: 503, json: async () => ({}) }));
     const code = await runBuildLineageCli(parseArgs(["--conference", "testconf"]), deps, repoRoot);
     expect(code).toBe(4);
@@ -97,7 +98,7 @@ describe("runBuildLineageCli", () => {
 
   it("--allow-incomplete never overrides the subject gate (LIN-07)", async () => {
     const repoRoot = makeRepo();
-    const lineagePath = join(repoRoot, "docs", "testconf", "lineage.json");
+    const lineagePath = join(layoutFor(repoRoot).published, "testconf", "lineage.json");
     const deps = makeDeps(async () => ({ status: 503, json: async () => ({}) }));
     const code = await runBuildLineageCli(
       parseArgs(["--conference", "testconf", "--allow-incomplete"]),
@@ -114,7 +115,7 @@ describe("runBuildLineageCli", () => {
   // exit 4, leaving the file byte-identical.
   it("exit 4 when expansion failures would shrink an already-published lineage (LIN-06), file untouched", async () => {
     const repoRoot = makeRepo();
-    const lineagePath = join(repoRoot, "docs", "testconf", "lineage.json");
+    const lineagePath = join(layoutFor(repoRoot).published, "testconf", "lineage.json");
     const published = {
       schema_version: "lineage-artifact-v1",
       root: "S2FOCUS",
@@ -172,7 +173,7 @@ describe("runBuildLineageCli", () => {
   // above must now publish successfully.
   it("LIN-07: --allow-incomplete DOES bypass the expansion gate (positive direction), publishing despite the same outage", async () => {
     const repoRoot = makeRepo();
-    const lineagePath = join(repoRoot, "docs", "testconf", "lineage.json");
+    const lineagePath = join(layoutFor(repoRoot).published, "testconf", "lineage.json");
     const published = {
       schema_version: "lineage-artifact-v1",
       root: "S2FOCUS",
@@ -240,7 +241,7 @@ describe("runBuildLineageCli", () => {
 describe("pyFloat write-site (p4-followups #24, buildLineageCli.ts:178-179)", () => {
   it('writes an exactly-1.0 LLM confidence as "1.0", not "1", in lineage.json', async () => {
     const repoRoot = makeRepo();
-    const lineagePath = join(repoRoot, "docs", "testconf", "lineage.json");
+    const lineagePath = join(layoutFor(repoRoot).published, "testconf", "lineage.json");
 
     class FixedConfidenceProvider implements LLMProvider {
       readonly name = "fixed";
@@ -363,7 +364,7 @@ describe("envFilePath (p5-plan.md §2 A2 follow-up #19)", () => {
     expect(envFilePath("/repo", "p5")).toBe(join("/repo", "data", "config", ".env"));
   });
 
-  it("defaults to the current LAYOUT_MODE ('legacy') when no mode is given", () => {
-    expect(envFilePath("/repo")).toBe(join("/repo", "paperpilot", ".env"));
+  it("defaults to the current LAYOUT_MODE when no mode is given", () => {
+    expect(envFilePath("/repo")).toBe(envFilePath("/repo", LAYOUT_MODE));
   });
 });

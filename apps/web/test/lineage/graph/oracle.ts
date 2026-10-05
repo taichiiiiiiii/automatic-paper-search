@@ -9,15 +9,22 @@
 // test time means drift between docs/assets/lineage.js and the port
 // fails this suite immediately, instead of silently going stale.
 import { readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import vm from "node:vm";
+import { layoutFor } from "@paperpilot/core/layout";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(here, "..", "..", "..", "..", "..");
-const UTILS_JS = resolve(REPO_ROOT, "docs/assets/utils.js");
-const LINEAGE_JS = resolve(REPO_ROOT, "docs/assets/lineage.js");
-const DEEP_JS = resolve(REPO_ROOT, "docs/assets/deep.js");
+// The original viewer JS this oracle evaluates lives in `legacySite/assets`
+// (legacy: docs/assets, same directory as `published`'s own assets/; p5:
+// legacy/gh-pages-site/assets, once the A9 data move freezes the old site
+// there). Never `published` -- these three files are the hand-written
+// viewer scripts, not generated data.
+const LEGACY_ASSETS_DIR = join(layoutFor(REPO_ROOT).legacySite, "assets");
+const UTILS_JS = join(LEGACY_ASSETS_DIR, "utils.js");
+const LINEAGE_JS = join(LEGACY_ASSETS_DIR, "lineage.js");
+const DEEP_JS = join(LEGACY_ASSETS_DIR, "deep.js");
 
 function makeStubElement(): Record<string, unknown> {
   const el: Record<string, unknown> = {

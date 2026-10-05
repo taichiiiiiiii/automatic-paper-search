@@ -9,7 +9,7 @@ import { mkdir, mkdtemp, readdir, readFile, rm, writeFile } from "node:fs/promis
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { getRepoRoot } from "@paperpilot/core";
-import { layoutFor } from "@paperpilot/core/layout";
+import { LAYOUT_MODE, layoutFor } from "@paperpilot/core/layout";
 import { PUBLIC_ORIGIN } from "@paperpilot/core/site";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
@@ -158,9 +158,19 @@ describe("DEFAULT_SOURCE_DIR (M4 of the P5 tier-A review)", () => {
     expect(DEFAULT_SOURCE_DIR).toBe(layoutFor(getRepoRoot()).legacySite);
   });
 
-  it("is byte-identical to the pre-fix docs/ path while LAYOUT_MODE is legacy (inert, no behavior change)", () => {
-    expect(DEFAULT_SOURCE_DIR).toBe(join(getRepoRoot(), "docs"));
-  });
+  // True only of the PRE-MOVE (legacy) tree: once commit B's `apply` has
+  // actually run (including during this task's own p5-rehearsal, which
+  // applies that move to a scratch clone), `layoutFor(...).legacySite` is
+  // `legacy/gh-pages-site`, not `docs`. An explicit `LAYOUT_MODE` check,
+  // not a mode branch on what this test asserts, skips it there -- the
+  // test above (resolves through `layoutFor`, not a literal) stays
+  // meaningful in both modes and is NOT gated.
+  it.skipIf(LAYOUT_MODE !== "legacy")(
+    "is byte-identical to the pre-fix docs/ path while LAYOUT_MODE is legacy (inert, no behavior change)",
+    () => {
+      expect(DEFAULT_SOURCE_DIR).toBe(join(getRepoRoot(), "docs"));
+    },
+  );
 });
 
 describe("mapLegacyPath", () => {

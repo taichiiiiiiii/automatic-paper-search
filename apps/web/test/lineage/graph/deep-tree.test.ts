@@ -15,8 +15,9 @@
  * conference artifact.
  */
 import { readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { layoutFor } from "@paperpilot/core/layout";
 import { describe, expect, it } from "vitest";
 import type { LineageEdge, LineageNode } from "../../../lib/lineage/core";
 import { layoutDeepTree } from "../../../lib/lineage/layout/deep-tree";
@@ -32,7 +33,7 @@ interface RawDeepJson {
 }
 
 const raw: RawDeepJson = JSON.parse(
-  readFileSync(resolve(REPO_ROOT, "docs/iclr-2026/deep-1706.03762.json"), "utf8"),
+  readFileSync(join(layoutFor(REPO_ROOT).published, "iclr-2026", "deep-1706.03762.json"), "utf8"),
 );
 
 const nodes: LineageNode[] = raw.nodes;

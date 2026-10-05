@@ -48,6 +48,14 @@ describe("plan -> apply -> verify -> apply --reverse round trip", () => {
     expect(gitRun(fixture.repo, ["status", "--porcelain"])).toBe("");
   });
 
+  // This test and the two below it do several real `git` subprocess
+  // calls (buildFixtureRepo + apply/applyReverse's own `git mv`/`add`/
+  // `commit`/`show` invocations); under `pnpm -r`'s parallel
+  // workspace-package execution this has been observed to exceed
+  // vitest's 5000ms default timeout from CPU contention alone (each
+  // step is sub-second in isolation) -- an explicit timeout, not a
+  // smaller fixture, is the fix, since the work itself is the real
+  // cost, not a hang.
   it("apply, commit, verify, apply --reverse, commit: byte-identical tree", () => {
     fixture = buildFixtureRepo();
     const repo = fixture.repo;
@@ -87,13 +95,18 @@ describe("plan -> apply -> verify -> apply --reverse round trip", () => {
     expect(movedConfig).toContain("file: logs/paperpilot.log");
     // Comments/other lines untouched.
     expect(readFileSync(join(repo, ".gitignore"), "utf-8")).toContain("node_modules/");
+    // .lighthouserc.json rewrite (p5-plan.md §4.1) landed too.
+    const lighthouserc = readFileSync(join(repo, ".lighthouserc.json"), "utf-8");
+    expect(lighthouserc).toContain('"staticDistDir": "./apps/web/out"');
+    expect(lighthouserc).toContain('"http://localhost/iclr-2026/lineage/"');
+    expect(lighthouserc).toContain("Lighthouse CI config fixture.");
 
     applyReverse({ git: adapter, cwd: repo });
     gitRun(repo, ["commit", "-m", "revert(p5): back to legacy"]);
     const revertedSha = gitRun(repo, ["rev-parse", "HEAD"]);
 
     expect(treeSha(repo, revertedSha)).toBe(treeSha(repo, legacySha));
-  });
+  }, 20_000);
 
   it("verify fails when a moved blob was tampered with", () => {
     fixture = buildFixtureRepo();
@@ -109,7 +122,7 @@ describe("plan -> apply -> verify -> apply --reverse round trip", () => {
     const report = verifyMove({ git: adapter, cwd: repo, before: legacySha, after: tamperedSha });
     expect(report.ok).toBe(false);
     expect(report.problems.some((p) => p.includes("blob SHA changed"))).toBe(true);
-  });
+  }, 20_000);
 
   it("verify fails when a moveEdit touches a key outside its allowlist", () => {
     fixture = buildFixtureRepo();
@@ -132,5 +145,5 @@ describe("plan -> apply -> verify -> apply --reverse round trip", () => {
     expect(
       report.problems.some((p) => p.includes("does not equal the allowed-key transform")),
     ).toBe(true);
-  });
+  }, 20_000);
 });

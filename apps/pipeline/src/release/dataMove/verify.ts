@@ -20,6 +20,7 @@ import { git } from "../git/gitAdapter.js";
 import { applyConfigEdits, ConfigEditError } from "./configEdit.js";
 import { applyGitignorePatch, GitignorePatchError } from "./gitignorePatch.js";
 import { flipLayoutModeToP5, LayoutFlipError } from "./layoutFlip.js";
+import { applyLighthouseEdit, LighthouseEditError } from "./lighthouseEdit.js";
 import { buildPlan, planIsClean } from "./plan.js";
 import { isManagedPath, type RuleClass, type RuleEntry } from "./rules.js";
 
@@ -77,6 +78,7 @@ function showRaw(adapter: GitAdapter, cwd: string, ref: string): string {
 
 const GITIGNORE_REL = ".gitignore";
 const LAYOUT_REL = "packages/core/src/layout/index.ts";
+const LIGHTHOUSERC_REL = ".lighthouserc.json";
 const WORKFLOWS_P5_PREFIX = ".github/workflows-p5/";
 const WORKFLOWS_PREFIX = ".github/workflows/";
 const DELETED_WORKFLOW_NAMES = ["ts-ci.yml", "publish.yml", "paper-slides-on-demand.yml"];
@@ -240,6 +242,21 @@ export function verifyMove(options: VerifyOptions): VerifyReport {
     }
   }
 
+  // .lighthouserc.json rewrite (p5-plan.md §4.1).
+  try {
+    const beforeLighthouse = showRaw(adapter, cwd, `${before}:${LIGHTHOUSERC_REL}`);
+    const afterLighthouse = showRaw(adapter, cwd, `${after}:${LIGHTHOUSERC_REL}`);
+    if (applyLighthouseEdit(beforeLighthouse) !== afterLighthouse) {
+      problems.push(`${LIGHTHOUSERC_REL}: <after> does not equal the expected rewrite of <before>`);
+    }
+  } catch (error) {
+    if (error instanceof LighthouseEditError) {
+      problems.push(`${LIGHTHOUSERC_REL}: ${error.message}`);
+    } else {
+      throw error;
+    }
+  }
+
   // Workflow staging swap.
   const stagedBefore = [...beforeTree.keys()].filter((p) => p.startsWith(WORKFLOWS_P5_PREFIX));
   if (stagedBefore.length > 0) {
@@ -284,6 +301,7 @@ export function verifyMove(options: VerifyOptions): VerifyReport {
   }
   allowedTouched.add(GITIGNORE_REL);
   allowedTouched.add(LAYOUT_REL);
+  allowedTouched.add(LIGHTHOUSERC_REL);
   for (const p of stagedBefore) {
     allowedTouched.add(p);
     allowedTouched.add(`${WORKFLOWS_PREFIX}${p.slice(WORKFLOWS_P5_PREFIX.length)}`);

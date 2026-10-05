@@ -7,6 +7,7 @@
 import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { auditFixtures, layoutFor, qualityPolicy } from "@paperpilot/core/layout";
 import { describe, expect, it } from "vitest";
 import {
   CliArgError,
@@ -17,17 +18,15 @@ import {
 
 function setupRepo(): { repoRoot: string; docsRoot: string } {
   const repoRoot = mkdtempSync(join(tmpdir(), "quality-cli-"));
-  const docsRoot = join(repoRoot, "docs");
+  const layout = layoutFor(repoRoot);
+  const docsRoot = layout.published;
   mkdirSync(join(docsRoot, "themes"), { recursive: true });
   writeFileSync(join(docsRoot, "conferences.json"), "[]");
   writeFileSync(join(docsRoot, "themes", "themes-manifest.json"), "[]");
-  mkdirSync(join(repoRoot, "paperpilot", "data"), { recursive: true });
+  mkdirSync(layout.config, { recursive: true });
+  writeFileSync(auditFixtures(layout), JSON.stringify({ collections: [] }));
   writeFileSync(
-    join(repoRoot, "paperpilot", "data", "lineage-audit-fixtures-v1.json"),
-    JSON.stringify({ collections: [] }),
-  );
-  writeFileSync(
-    join(repoRoot, "paperpilot", "data", "lineage-quality-policy-v1.json"),
+    qualityPolicy(layout),
     JSON.stringify({ conference_max_age_days: 365, theme_max_age_days: 365 }),
   );
   return { repoRoot, docsRoot };
@@ -75,10 +74,11 @@ describe("runBuildLineageQualityCli / runCli (LIN-52)", () => {
 
   it("runCli prints 'lineage quality manifest is stale' and returns 1 for a stale --check", () => {
     const { repoRoot } = setupRepo();
-    const fixtures = join(repoRoot, "paperpilot", "data", "lineage-audit-fixtures-v1.json");
-    const policy = join(repoRoot, "paperpilot", "data", "lineage-quality-policy-v1.json");
-    const output = join(repoRoot, "docs", "lineage-quality-v1.json");
-    const docsRoot = join(repoRoot, "docs");
+    const layout = layoutFor(repoRoot);
+    const fixtures = auditFixtures(layout);
+    const policy = qualityPolicy(layout);
+    const output = join(layout.published, "lineage-quality-v1.json");
+    const docsRoot = layout.published;
     const common = [
       "--docs-root",
       docsRoot,

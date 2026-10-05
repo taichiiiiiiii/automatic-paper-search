@@ -7,6 +7,7 @@
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { identityCoverage, layoutFor } from "@paperpilot/core/layout";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   defaultCoveragePath,
@@ -48,13 +49,11 @@ function writeCatalog(slug: string, rows: unknown[]): void {
 
 describe("defaultDocsRoot / defaultCoveragePath (layout-derived defaults)", () => {
   it("docsRoot is layout.published", () => {
-    expect(defaultDocsRoot(repoRoot)).toBe(join(repoRoot, "docs"));
+    expect(defaultDocsRoot(repoRoot)).toBe(layoutFor(repoRoot).published);
   });
 
   it("coveragePath is layout.state/identity-coverage-v1.json", () => {
-    expect(defaultCoveragePath(repoRoot)).toBe(
-      join(repoRoot, "paperpilot", "data", "identity-coverage-v1.json"),
-    );
+    expect(defaultCoveragePath(repoRoot)).toBe(identityCoverage(layoutFor(repoRoot)));
   });
 });
 

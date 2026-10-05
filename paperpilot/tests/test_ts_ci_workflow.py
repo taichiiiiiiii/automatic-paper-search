@@ -150,11 +150,14 @@ def test_no_pnpm_install_without_frozen_lockfile() -> None:
 
 
 def test_setup_node_version_is_22() -> None:
+    # One `setup-node` step per job (each job is its own fresh runner), not
+    # one for the whole file: `p5-rehearsal` (added for this task's
+    # rehearse.ts job) needs its own, independent of `test`'s.
     data = _load()
-    steps = _all_steps(data)
-    node_steps = [s for s in steps if "setup-node" in (s.get("uses") or "")]
-    assert len(node_steps) == 1
-    assert node_steps[0]["with"]["node-version"] == "22"
+    for job_name, job in data["jobs"].items():
+        node_steps = [s for s in job.get("steps", []) if "setup-node" in (s.get("uses") or "")]
+        assert len(node_steps) == 1, f"job {job_name!r} must have exactly one setup-node step"
+        assert node_steps[0]["with"]["node-version"] == "22"
 
 
 def test_checks_biome_typecheck_and_test_all_present() -> None:
@@ -180,6 +183,13 @@ def test_web_build_step_is_guarded_and_filtered() -> None:
 
 
 def test_no_deploy_or_release_job() -> None:
+    # `p5-rehearsal` (added for this task: the clone/install/apply/verify/
+    # build/test rehearsal of the A9 data-move commit) is explicitly
+    # allowed alongside `test` -- it is read-only/credential-free exactly
+    # like `test` (test_no_secrets_referenced_anywhere and
+    # test_no_wrangler_or_pages_deploy already scan the WHOLE file, so a
+    # deploy/wrangler/secrets step added to either job still fails this
+    # module's other tests). Any job name beyond these two is unexpected.
     data = _load()
     job_names = set(data["jobs"].keys())
-    assert job_names == {"test"}
+    assert job_names == {"test", "p5-rehearsal"}

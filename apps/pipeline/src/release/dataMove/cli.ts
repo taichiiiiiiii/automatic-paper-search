@@ -1,10 +1,12 @@
 #!/usr/bin/env node
+
 /**
  * CLI entry point for the data-move tool (p5-plan.md §5.2, changeset A9).
  *
  *   tsx cli.ts plan
  *   tsx cli.ts apply [--reverse] [--confirm-delete <path>]
  *   tsx cli.ts verify <before> <after>
+ *   tsx cli.ts rehearse [--repo <path>] [--keep]
  *
  * Every subcommand resolves the repository root from `process.cwd()` (run
  * this from the repo/worktree root, exactly like the other `release/`
@@ -12,10 +14,12 @@
  * with `git add`/`git mv`/`git rm` but never commits.
  */
 
+import { parseOrExit } from "../../shared/cli/argparse.js";
 import { isMain } from "../../shared/cli/isMain.js";
 import { createGitAdapter } from "../git/gitAdapter.js";
 import { ApplyError, apply, applyReverse } from "./apply.js";
 import { buildPlan, planIsClean } from "./plan.js";
+import { runRehearsal } from "./rehearse.js";
 import { verifyMove } from "./verify.js";
 
 function die(message: string): never {
@@ -100,6 +104,18 @@ function runVerify(args: string[]): void {
   }
 }
 
+function runRehearse(args: string[]): void {
+  const flags = parseOrExit(
+    args,
+    {
+      repo: { type: "string", default: process.cwd() },
+      keep: { type: "boolean" },
+    },
+    "cli.ts rehearse",
+  );
+  process.exitCode = runRehearsal({ repo: flags.repo as string, keep: flags.keep as boolean });
+}
+
 function main(): void {
   const [command, ...rest] = process.argv.slice(2);
   switch (command) {
@@ -112,12 +128,16 @@ function main(): void {
     case "verify":
       runVerify(rest);
       break;
+    case "rehearse":
+      runRehearse(rest);
+      break;
     default:
       die(
-        "usage: cli.ts {plan|apply|verify} ...\n" +
+        "usage: cli.ts {plan|apply|verify|rehearse} ...\n" +
           "  plan\n" +
           "  apply [--reverse] [--confirm-delete <path>]\n" +
-          "  verify <before> <after>",
+          "  verify <before> <after>\n" +
+          "  rehearse [--repo <path>] [--keep]",
       );
   }
 }

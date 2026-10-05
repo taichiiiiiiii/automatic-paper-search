@@ -45,6 +45,16 @@ export interface Layout {
   legacySite: string;
   /** Where the Node workflow YAML live. Legacy staged `.github/workflows-p5`; p5 `.github/workflows`. */
   workflowsDir: string;
+  /**
+   * Where the head-metadata assets (favicon, OG image — see
+   * `apps/web/scripts/copy-data.ts`'s `HEAD_ASSET_FILES`) live on disk.
+   * Legacy `docs/assets` (part of the live site, `published`'s own
+   * `assets/` subdirectory); p5 `apps/web/static/assets` (p5-plan.md §5.1:
+   * the data move relocates just these three files there, since
+   * `apps/web/public/` is wiped and regenerated on every build and so
+   * cannot hold a tracked source file).
+   */
+  headAssets: string;
 }
 
 /** The same five roots plus `workflowsDir`, as repo-relative POSIX strings (never joined with a platform path separator) — for allowlists, `SHARED_PATHS`, and workflow `paths:` filters. See {@link relLayout}. */
@@ -58,6 +68,7 @@ const REL_LAYOUTS: Readonly<Record<LayoutMode, RelLayout>> = {
     config: "paperpilot/data",
     legacySite: "docs",
     workflowsDir: ".github/workflows-p5",
+    headAssets: "docs/assets",
   },
   p5: {
     published: "data/published",
@@ -66,6 +77,7 @@ const REL_LAYOUTS: Readonly<Record<LayoutMode, RelLayout>> = {
     config: "data/config",
     legacySite: "legacy/gh-pages-site",
     workflowsDir: ".github/workflows",
+    headAssets: "apps/web/static/assets",
   },
 };
 
@@ -94,6 +106,7 @@ export function layoutFor(repoRoot: string, mode: LayoutMode = LAYOUT_MODE): Lay
     config: toAbsolute(repoRoot, rel.config),
     legacySite: toAbsolute(repoRoot, rel.legacySite),
     workflowsDir: toAbsolute(repoRoot, rel.workflowsDir),
+    headAssets: toAbsolute(repoRoot, rel.headAssets),
   };
 }
 

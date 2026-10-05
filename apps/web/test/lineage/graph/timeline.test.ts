@@ -7,8 +7,9 @@
  * case below for that).
  */
 import { readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { layoutFor } from "@paperpilot/core/layout";
 import { describe, expect, it } from "vitest";
 import type { LineageNode } from "../../../lib/lineage/core";
 import { layoutTimeline } from "../../../lib/lineage/layout/timeline";
@@ -18,7 +19,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(here, "..", "..", "..", "..", "..");
 
 const raw: { nodes: LineageNode[] } = JSON.parse(
-  readFileSync(resolve(REPO_ROOT, "docs/iclr-2026/lineage.json"), "utf8"),
+  readFileSync(join(layoutFor(REPO_ROOT).published, "iclr-2026", "lineage.json"), "utf8"),
 );
 
 const oracle = loadLineageOracle();

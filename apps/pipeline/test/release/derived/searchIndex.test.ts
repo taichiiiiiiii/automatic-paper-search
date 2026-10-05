@@ -441,11 +441,21 @@ describe("checkSearchIndexes (CAT-31)", () => {
     seedValidIndexes();
     const v2Path = join(docs, INDEX_V2_FILENAME);
     writeFileSync(v2Path, '[["tampered"]]', "utf-8");
-    const v1Before = readFileSync(join(docs, INDEX_FILENAME), "utf-8");
+    // v1 (search-index.json) is only ever written under "legacy"
+    // (writeSearchIndexes/checkSearchIndexes's own LAYOUT_MODE gate,
+    // follow-up #5) -- seedValidIndexes's own writeSearchIndexes call
+    // reflects that, so this checks "whatever v1 state exists stays
+    // unchanged" rather than assuming the file is always present.
+    const v1Path = join(docs, INDEX_FILENAME);
+    const v1Before = fs.existsSync(v1Path) ? readFileSync(v1Path, "utf-8") : null;
 
     expect(() => checkSearchIndexes(docs)).toThrow(/stale/);
     expect(readFileSync(v2Path, "utf-8")).toBe('[["tampered"]]');
-    expect(readFileSync(join(docs, INDEX_FILENAME), "utf-8")).toBe(v1Before);
+    if (v1Before === null) {
+      expect(fs.existsSync(v1Path)).toBe(false);
+    } else {
+      expect(readFileSync(v1Path, "utf-8")).toBe(v1Before);
+    }
   });
 
   it("rejects an extra paper-ID block file, leaving the tree unchanged", () => {

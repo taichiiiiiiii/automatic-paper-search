@@ -31,7 +31,14 @@ import {
 const REPO_ROOT = "/repo";
 
 describe("LAYOUT_MODE", () => {
-  it("defaults to legacy until commit B flips it", () => {
+  // This pins the pre-cutover state of the single switch itself (p5-plan.md
+  // §5.1: "Commit B changes exactly one literal"). It is true by
+  // construction once commit B flips `LAYOUT_MODE` to "p5" (including
+  // during this task's own p5-rehearsal, which applies that same flip to a
+  // scratch clone) -- an explicit `LAYOUT_MODE` check, not a mode branch on
+  // what the test asserts, skips it there rather than asserting something
+  // the flip itself makes false.
+  it.skipIf(LAYOUT_MODE !== "legacy")("defaults to legacy until commit B flips it", () => {
     expect(LAYOUT_MODE).toBe("legacy");
   });
 });
@@ -45,6 +52,7 @@ describe("relLayout", () => {
       config: "paperpilot/data",
       legacySite: "docs",
       workflowsDir: ".github/workflows-p5",
+      headAssets: "docs/assets",
     });
   });
 
@@ -56,6 +64,7 @@ describe("relLayout", () => {
       config: "data/config",
       legacySite: "legacy/gh-pages-site",
       workflowsDir: ".github/workflows",
+      headAssets: "apps/web/static/assets",
     });
   });
 
@@ -73,6 +82,7 @@ describe("layoutFor", () => {
       config: join(REPO_ROOT, "paperpilot", "data"),
       legacySite: join(REPO_ROOT, "docs"),
       workflowsDir: join(REPO_ROOT, ".github", "workflows-p5"),
+      headAssets: join(REPO_ROOT, "docs", "assets"),
     });
   });
 
@@ -84,6 +94,7 @@ describe("layoutFor", () => {
       config: join(REPO_ROOT, "data", "config"),
       legacySite: join(REPO_ROOT, "legacy", "gh-pages-site"),
       workflowsDir: join(REPO_ROOT, ".github", "workflows"),
+      headAssets: join(REPO_ROOT, "apps", "web", "static", "assets"),
     });
   });
 
@@ -249,8 +260,10 @@ describe("collectConfig", () => {
   });
 });
 
-// Type-only check that Layout's shape is exactly the plan's six fields
-// (a change here is a deliberate, reviewed shape change).
+// Type-only check that Layout's shape is exactly the plan's seven fields
+// (a change here is a deliberate, reviewed shape change). `headAssets` was
+// added for p5-plan.md §4.1/A5 (the head-metadata assets copy-data.ts
+// reads: docs/assets in legacy, apps/web/static/assets in p5).
 const _shapeCheck: Layout = {
   published: "",
   state: "",
@@ -258,5 +271,6 @@ const _shapeCheck: Layout = {
   config: "",
   legacySite: "",
   workflowsDir: "",
+  headAssets: "",
 };
 void _shapeCheck;

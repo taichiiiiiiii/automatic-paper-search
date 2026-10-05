@@ -7,6 +7,7 @@
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { LAYOUT_MODE } from "@paperpilot/core/layout";
 import { afterEach, beforeEach, expect, it } from "vitest";
 import {
   DEFAULT_REQUIRED_ARTIFACTS,
@@ -185,6 +186,11 @@ it("smokeRemote passes a well-formed deployment and follows the ready+passed lin
     baseUrl: "https://paperpilot.pages.dev",
     expectedSha: SHA,
     fetchImpl: fakeFetch(validSmokeRoutes(SHA)),
+    // Not what this test is about (see the dedicated checkCspHeader:true/
+    // false-by-default tests below); fakeFetch's responses don't expose
+    // `.headers` at all, so this must be explicit rather than relying on
+    // LAYOUT_MODE's default.
+    checkCspHeader: false,
   });
   expect(result.routes).toEqual([
     "https://paperpilot.pages.dev/iclr-2026/",
@@ -209,6 +215,7 @@ it("smokeRemote percent-encodes smoke route paths like Python's urllib.parse.quo
     baseUrl: "https://paperpilot.pages.dev",
     expectedSha: SHA,
     fetchImpl: fakeFetch(routes),
+    checkCspHeader: false, // not what this test is about; see comment above
   });
   expect(result.routes).toEqual([
     "https://paperpilot.pages.dev/a%20conf/",
@@ -341,6 +348,7 @@ it("smokeRemote retries a transient failure and succeeds on the 3rd attempt", as
     expectedSha: SHA,
     fetchImpl,
     sleep: noSleep,
+    checkCspHeader: false, // not what this test is about; its fetchImpl returns no headers
   });
   expect(indexAttempts).toBe(3);
   expect(result.routes.length).toBeGreaterThan(0);
@@ -524,6 +532,7 @@ it("smokeRemote --wait-marker polls until the marker reports the expected SHA", 
     waitMarkerSeconds: 10,
     now: fakeNow(0, 1),
     sleep: noSleep,
+    checkCspHeader: false, // not what this test is about; its fetchImpl returns no headers
   });
   expect(markerCalls).toBeGreaterThanOrEqual(2);
   expect(result.routes.length).toBeGreaterThan(0);
@@ -649,6 +658,7 @@ it("smokeRemote --expect-bytes passes when served bytes are byte-identical to th
         expectedSha: SHA,
         fetchImpl: fakeFetchFull(routes),
         expectBytesDir: dir,
+        checkCspHeader: false, // not what this test is about; its routes carry no CSP header
       }),
     ).resolves.toBeDefined();
   } finally {
@@ -678,6 +688,7 @@ it("smokeRemote --expect-bytes rejects a byte mismatch", async () => {
         expectedSha: SHA,
         fetchImpl: fakeFetchFull(routes),
         expectBytesDir: dir,
+        checkCspHeader: false, // not what this test is about; its routes carry no CSP header
       }),
     ).rejects.toThrow(/does not byte-match/);
   } finally {
@@ -693,6 +704,7 @@ it("smokeRemote --expect-404 passes when the path truly 404s", async () => {
       expectedSha: SHA,
       fetchImpl: fakeFetch(routes),
       expect404Paths: ["/__pp_smoke_missing__/"],
+      checkCspHeader: false, // not what this test is about; fakeFetch returns no headers
     }),
   ).resolves.toBeDefined();
 });
@@ -719,6 +731,7 @@ it("smokeRemote --expect-redirect passes on a 301 with a relative Location", asy
       expectedSha: SHA,
       fetchImpl: fakeFetchFull(routes),
       expectRedirects: [{ from: "/iclr-2026/lineage.html", to: "/iclr-2026/lineage/" }],
+      checkCspHeader: false, // not what this test is about; its routes carry no CSP header
     }),
   ).resolves.toBeDefined();
 });
@@ -735,6 +748,7 @@ it("smokeRemote --expect-redirect passes on a 301 with an absolute Location (R21
       expectedSha: SHA,
       fetchImpl: fakeFetchFull(routes),
       expectRedirects: [{ from: "/iclr-2026/lineage.html", to: "/iclr-2026/lineage/" }],
+      checkCspHeader: false, // not what this test is about; its routes carry no CSP header
     }),
   ).resolves.toBeDefined();
 });
@@ -794,8 +808,24 @@ it("smokeRemote checkCspHeader:true fails when the header is missing or differen
   ).rejects.toThrow(/Content-Security-Policy header/);
 });
 
-it("smokeRemote does not check the CSP header by default (current LAYOUT_MODE is legacy)", async () => {
+// This test is literally about `smokeRemote`'s own
+// `shouldCheckCspHeader = options.checkCspHeader ?? LAYOUT_MODE === "p5"`
+// default (p5-plan.md §2 A4: no HTTP CSP header existed pre-P5, only the
+// meta tag), so branching its fixture/assertion on `LAYOUT_MODE` here is
+// the test's actual subject, not a workaround.
+it("smokeRemote's default CSP header check follows the current LAYOUT_MODE", async () => {
   const routes = toFakeRoutes(validSmokeRoutes(SHA));
+  if (LAYOUT_MODE === "p5") {
+    // Under p5 the default is to check, so the fixture must actually
+    // carry the header for this to resolve.
+    routes["/"] = {
+      status: 200,
+      body: "<!doctype html><html></html>",
+      headers: { "content-security-policy": "frame-ancestors 'self'" },
+    };
+  }
+  // Under legacy the default is to NOT check, so routes["/"] carrying no
+  // header at all must still resolve.
   await expect(
     smokeRemote({
       baseUrl: "https://paperpilot.pages.dev",

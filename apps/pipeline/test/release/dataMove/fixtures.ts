@@ -72,6 +72,31 @@ export const LAYOUT_FIXTURE = `export type LayoutMode = "legacy" | "p5";
 export const LAYOUT_MODE: LayoutMode = "legacy";
 `;
 
+export const LIGHTHOUSERC_FIXTURE = `{
+  "_comment": "Lighthouse CI config fixture.",
+  "ci": {
+    "collect": {
+      "staticDistDir": "./docs",
+      "url": [
+        "http://localhost/index.html",
+        "http://localhost/iclr-2026/index.html",
+        "http://localhost/iclr-2026/lineage.html",
+        "http://localhost/themes/index.html"
+      ],
+      "numberOfRuns": 3
+    },
+    "assert": {
+      "assertions": {
+        "categories:performance": ["warn", { "minScore": 0.85 }]
+      }
+    },
+    "upload": {
+      "target": "temporary-public-storage"
+    }
+  }
+}
+`;
+
 const WORKFLOW_FIXTURE = (name: string) =>
   `name: ${name}\non: push\njobs:\n  x:\n    runs-on: ubuntu-latest\n`;
 
@@ -145,9 +170,10 @@ export function buildFixtureRepo(): FixtureRepo {
   // Outside every managed root.
   write(repo, "apps/web/README.md", "# web\n");
 
-  // .gitignore + the layout module.
+  // .gitignore + the layout module + lighthouserc.
   write(repo, ".gitignore", GITIGNORE_FIXTURE);
   write(repo, "packages/core/src/layout/index.ts", LAYOUT_FIXTURE);
+  write(repo, ".lighthouserc.json", LIGHTHOUSERC_FIXTURE);
 
   // Staged workflows: tests.yml is overwritten, legacy-redirects.yml is
   // brand new, the three named workflows are deleted.

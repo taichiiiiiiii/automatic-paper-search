@@ -15,8 +15,9 @@
  * union the TS port's edges are typed against).
  */
 import { readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { layoutFor } from "@paperpilot/core/layout";
 import { describe, expect, it } from "vitest";
 import type { LineageEdge, LineageNode } from "../../../lib/lineage/core";
 import { layoutTree } from "../../../lib/lineage/layout/tree";
@@ -32,7 +33,7 @@ interface RawLineageJson {
 }
 
 const raw: RawLineageJson = JSON.parse(
-  readFileSync(resolve(REPO_ROOT, "docs/iclr-2026/lineage.json"), "utf8"),
+  readFileSync(join(layoutFor(REPO_ROOT).published, "iclr-2026", "lineage.json"), "utf8"),
 );
 
 const nodes: LineageNode[] = raw.nodes;
