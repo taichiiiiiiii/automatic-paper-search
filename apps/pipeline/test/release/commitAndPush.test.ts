@@ -333,6 +333,8 @@ it("five parallel runs against the same remote all publish", async () => {
     themes.map(async (slug) => {
       const local = join(world.base, `local-${slug}`);
       gitRun(world.base, ["clone", remote, local]);
+      gitRun(local, ["config", "user.name", "test"]);
+      gitRun(local, ["config", "user.email", "test@example.com"]);
       const dir = join(local, "docs", "themes", slug);
       mkdirSync(dir, { recursive: true });
       writeFileSync(join(dir, "lineage.json"), `{"slug":"${slug}"}\n`);
