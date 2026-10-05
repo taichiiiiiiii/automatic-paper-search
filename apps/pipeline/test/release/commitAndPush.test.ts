@@ -40,6 +40,11 @@ beforeEach(() => {
   const local = join(base, "local");
   mkdirSync(local);
   gitRun(local, ["init", "--initial-branch=develop"]);
+  // commitAndPush itself runs git without GIT_ENV, exactly like the
+  // workflows (which `git config user.*` first). A CI runner has no global
+  // identity, so the repo must carry one or every commit fails there.
+  gitRun(local, ["config", "user.name", "test"]);
+  gitRun(local, ["config", "user.email", "test@example.com"]);
   gitRun(local, ["remote", "add", "origin", remote]);
   writeFileSync(join(local, "README.md"), "seed\n");
   gitRun(local, ["add", "README.md"]);
