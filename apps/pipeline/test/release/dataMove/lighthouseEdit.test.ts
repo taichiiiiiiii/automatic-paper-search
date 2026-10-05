@@ -42,22 +42,27 @@ describe("applyLighthouseEdit / reverseLighthouseEdit", () => {
 });
 
 /**
- * The real `.lighthouserc.json` is read-only here, never written. Once
- * commit B's `apply` has actually rewritten the real file for p5
- * (including during this task's own p5-rehearsal, which applies that
- * same rewrite to a scratch clone), it no longer contains the legacy
- * literals -- an explicit `LAYOUT_MODE` check, not a mode branch on what
- * this test asserts, skips it there.
+ * The real `.lighthouserc.json` is read-only here, never written. The test
+ * runs in both layouts and asserts the fact that holds in the current one
+ * (review round 2, N1: a mode-gated skip reports "skipped" after commit B,
+ * which the release no-skip gate rejects). Legacy: each legacy literal
+ * occurs exactly once, so B's rewrite applies and round-trips, and the
+ * reverse refuses. p5 (after B): R-B's reverse applies and round-trips,
+ * and a second forward rewrite refuses.
  */
 describe("against the real repository's .lighthouserc.json (read-only)", () => {
-  it.skipIf(LAYOUT_MODE !== "legacy")(
-    "contains exactly one occurrence of each legacy literal today",
-    () => {
-      const root = execFileSync("git", ["rev-parse", "--show-toplevel"], {
-        encoding: "utf-8",
-      }).trim();
-      const text = readFileSync(`${root}/.lighthouserc.json`, "utf-8");
-      expect(() => applyLighthouseEdit(text)).not.toThrow();
-    },
-  );
+  it("is rewritable in exactly the direction the current layout needs, and round-trips", () => {
+    const root = execFileSync("git", ["rev-parse", "--show-toplevel"], {
+      encoding: "utf-8",
+    }).trim();
+    const text = readFileSync(`${root}/.lighthouserc.json`, "utf-8");
+    expect(["legacy", "p5"]).toContain(LAYOUT_MODE);
+    if (LAYOUT_MODE === "legacy") {
+      expect(reverseLighthouseEdit(applyLighthouseEdit(text))).toBe(text);
+      expect(() => reverseLighthouseEdit(text)).toThrow(LighthouseEditError);
+    } else {
+      expect(applyLighthouseEdit(reverseLighthouseEdit(text))).toBe(text);
+      expect(() => applyLighthouseEdit(text)).toThrow(LighthouseEditError);
+    }
+  });
 });

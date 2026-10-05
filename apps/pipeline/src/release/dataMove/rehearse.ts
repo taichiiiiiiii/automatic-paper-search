@@ -4,7 +4,8 @@
  * branch from current develop, then run the full suite, web build,
  * `validate bundle` and `verify`. Repeat as often as needed, offline."):
  * runs that whole clone -> install -> apply -> verify -> build -> test
- * sequence in one shot, inside a fresh temp directory, and exits non-zero
+ * -> no-skip gate sequence in one shot (the test and gate steps are the
+ * exact release-validate commands, review round 2 N1), inside a fresh temp directory, and exits non-zero
  * the instant any step fails. This is the automated form of the manual
  * loop the plan's own P1/P2 checkpoints (§6.2) describe by hand, wrapped
  * so CI (the `p5-rehearsal` job in `ts-ci.yml`, feat-branch only, no
@@ -40,7 +41,7 @@
  */
 
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, rmSync } from "node:fs";
+import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { parseOrExit } from "../../shared/cli/argparse.js";
@@ -51,6 +52,9 @@ import { createGitAdapter, git } from "../git/gitAdapter.js";
 export type Command = readonly string[];
 
 const CONFIRM_DELETE_PATH = "docs/daily/papers.json";
+/** Same file name `.github/workflows-p5/pages-release.yml` uses for the release no-skip gate. */
+export const VITEST_REPORT_NAME = ".vitest-release-report.json";
+const WORKSPACE_GROUPS = ["apps", "packages"] as const;
 const REHEARSAL_COMMIT_MESSAGE = "p5 rehearsal: apply data move (scratch commit, never pushed)";
 
 /**
@@ -59,7 +63,15 @@ const REHEARSAL_COMMIT_MESSAGE = "p5 rehearsal: apply data move (scratch commit,
  * module's test file — independent of the slow, real-process-spawning
  * orchestration in {@link runRehearsal}.
  */
-export function rehearseSteps(clonePath: string): readonly Command[] {
+export function rehearseSteps(
+  clonePath: string,
+  testPackageDirs: readonly string[],
+): readonly Command[] {
+  if (testPackageDirs.length === 0) {
+    throw new Error(
+      "rehearse: no workspace package with a test script (the no-skip gate would check nothing)",
+    );
+  }
   return [
     ["pnpm", "install", "--offline", "--frozen-lockfile"],
     [
@@ -94,8 +106,54 @@ export function rehearseSteps(clonePath: string): readonly Command[] {
       "HEAD",
     ],
     ["pnpm", "--filter", "@paperpilot/web", "build"],
-    ["pnpm", "-r", "--no-bail", "test"],
+    // The exact release-validate command (review N1): no literal `--`
+    // (pnpm 10 forwards it and vitest 3 ignores every flag after it, so no
+    // report was ever written), and the JSON reporter alongside the default
+    // one. Each package writes its report into its own directory.
+    [
+      "pnpm",
+      "-r",
+      "--if-present",
+      "test",
+      "--reporter=default",
+      "--reporter=json",
+      `--outputFile.json=${VITEST_REPORT_NAME}`,
+    ],
+    // The real release gate, over one explicit report per package with a
+    // test script — a package that wrote no report fails the gate (the
+    // file cannot be read) instead of silently dropping out of a `find`.
+    [
+      "pnpm",
+      "exec",
+      "tsx",
+      "apps/pipeline/src/release/cli.ts",
+      "no-skip-gate",
+      ...testPackageDirs.map((dir) => `${dir}/${VITEST_REPORT_NAME}`),
+    ],
   ];
+}
+
+/**
+ * The workspace packages (per `pnpm-workspace.yaml`'s `apps/*` and
+ * `packages/*` globs) whose `package.json` has a `test` script — exactly
+ * the set `pnpm -r --if-present test` runs, so exactly the set of reports
+ * the gate must see. Sorted, repo-relative.
+ */
+export function findTestPackageDirs(root: string): string[] {
+  const dirs: string[] = [];
+  for (const group of WORKSPACE_GROUPS) {
+    const groupDir = join(root, group);
+    if (!existsSync(groupDir)) continue;
+    for (const name of readdirSync(groupDir).sort()) {
+      const manifest = join(groupDir, name, "package.json");
+      if (!existsSync(manifest)) continue;
+      const pkg = JSON.parse(readFileSync(manifest, "utf-8")) as {
+        scripts?: Record<string, unknown>;
+      };
+      if (typeof pkg.scripts?.test === "string") dirs.push(`${group}/${name}`);
+    }
+  }
+  return dirs;
 }
 
 export interface RehearsalOptions {
@@ -105,6 +163,8 @@ export interface RehearsalOptions {
   readonly makeTempDir?: () => string;
   readonly spawn?: (argv: Command, options: { cwd: string }) => { exitCode: number };
   readonly log?: (line: string) => void;
+  /** Overridable for tests (to simulate a cleanup failure); defaults to a real `rmSync`. */
+  readonly removeDir?: (path: string) => void;
 }
 
 function defaultMakeTempDir(): string {
@@ -132,49 +192,67 @@ export function runRehearsal(options: RehearsalOptions): number {
   const log = options.log ?? ((line: string) => console.log(line));
   const spawn = options.spawn ?? defaultSpawn;
   const makeTempDir = options.makeTempDir ?? defaultMakeTempDir;
+  const removeDir =
+    options.removeDir ?? ((path: string) => rmSync(path, { recursive: true, force: true }));
 
   const workDir = makeTempDir();
   const clonePath = join(workDir, "clone");
-  let exitCode = 0;
+  let stepsExitCode = 1;
+  let cleanupFailed = false;
   try {
-    log(`[rehearse] cloning ${options.repo} -> ${clonePath}`);
-    const adapter = createGitAdapter();
-    const cloneResult = adapter.run(workDir, [
-      "clone",
-      "--no-hardlinks",
-      "--quiet",
-      options.repo,
-      clonePath,
-    ]);
-    if (cloneResult.exitCode !== 0) {
-      log(`[rehearse] git clone failed: ${cloneResult.stderr || cloneResult.stdout}`);
-      return 1;
-    }
-    const headSha = git(adapter, clonePath, ["rev-parse", "HEAD"]);
-    log(`[rehearse] cloned HEAD ${headSha}`);
-
-    for (const argv of rehearseSteps(clonePath)) {
-      log(`[rehearse] $ ${argv.join(" ")}`);
-      const result = spawn(argv, { cwd: clonePath });
-      if (result.exitCode !== 0) {
-        log(`[rehearse] FAILED (exit ${result.exitCode}): ${argv.join(" ")}`);
-        return 1;
-      }
-    }
-    log("[rehearse] all steps passed");
-    return 0;
+    stepsExitCode = runSteps(options.repo, clonePath, workDir, spawn, log);
   } finally {
     if (!options.keep) {
       try {
-        rmSync(workDir, { recursive: true, force: true });
+        removeDir(workDir);
       } catch (error) {
-        log(`[rehearse] warning: failed to clean up ${workDir}: ${String(error)}`);
-        exitCode = exitCode || 1;
+        // Review LOW: a cleanup failure used to be logged and then dropped
+        // (the in-flight return value won). It now fails the rehearsal.
+        log(`[rehearse] FAILED to clean up ${workDir}: ${String(error)}`);
+        cleanupFailed = true;
       }
     } else {
       log(`[rehearse] kept temp dir: ${workDir}`);
     }
   }
+  return cleanupFailed ? 1 : stepsExitCode;
+}
+
+function runSteps(
+  repo: string,
+  clonePath: string,
+  workDir: string,
+  spawn: NonNullable<RehearsalOptions["spawn"]>,
+  log: (line: string) => void,
+): number {
+  log(`[rehearse] cloning ${repo} -> ${clonePath}`);
+  const adapter = createGitAdapter();
+  const cloneResult = adapter.run(workDir, ["clone", "--no-hardlinks", "--quiet", repo, clonePath]);
+  if (cloneResult.exitCode !== 0) {
+    log(`[rehearse] git clone failed: ${cloneResult.stderr || cloneResult.stdout}`);
+    return 1;
+  }
+  const headSha = git(adapter, clonePath, ["rev-parse", "HEAD"]);
+  log(`[rehearse] cloned HEAD ${headSha}`);
+
+  const testPackageDirs = findTestPackageDirs(clonePath);
+  if (testPackageDirs.length === 0) {
+    log(
+      "[rehearse] FAILED: no workspace package has a test script (the no-skip gate would check nothing)",
+    );
+    return 1;
+  }
+  log(`[rehearse] packages under the no-skip gate: ${testPackageDirs.join(", ")}`);
+  for (const argv of rehearseSteps(clonePath, testPackageDirs)) {
+    log(`[rehearse] $ ${argv.join(" ")}`);
+    const result = spawn(argv, { cwd: clonePath });
+    if (result.exitCode !== 0) {
+      log(`[rehearse] FAILED (exit ${result.exitCode}): ${argv.join(" ")}`);
+      return 1;
+    }
+  }
+  log("[rehearse] all steps passed");
+  return 0;
 }
 
 function main(): void {

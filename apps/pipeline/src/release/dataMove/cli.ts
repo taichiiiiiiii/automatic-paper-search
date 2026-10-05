@@ -6,7 +6,8 @@
  *   tsx cli.ts plan
  *   tsx cli.ts apply [--confirm-delete <path>] [--allow-missing-workflows]
  *   tsx cli.ts apply --reverse --before <sha> [--allow-missing-workflows]
- *   tsx cli.ts carry-back --since <sha>
+ *   tsx cli.ts carry-back --since <sha> [--manifest <path>]
+ *   tsx cli.ts finish-revert --manifest <path>
  *   tsx cli.ts verify <before> <after> [--allow-missing-workflows]
  *   tsx cli.ts rehearse [--repo <path>] [--keep]
  *
@@ -21,15 +22,26 @@
  * result (nothing committed on top). For the general R-B case where
  * ordinary post-cutover commits (`collect-weekly`, `theme-on-demand`, …)
  * have landed under `data/**` since the cutover commit B, use
- * `carry-back --since <B>` first (and a plain `git revert -m 1 <B>`
- * afterwards for the structural half) — see §6.2 R-B.
+ * `carry-back --since <B> --manifest <file>` first, then
+ * `git revert --no-commit -m 1 <B>` for the structural half, then
+ * `finish-revert --manifest <file>` to resolve that revert's conflicts and
+ * orphans from the manifest — see §6.2 R-B.
  */
 
+import { readFileSync, writeFileSync } from "node:fs";
 import { parseOrExit } from "../../shared/cli/argparse.js";
 import { isMain } from "../../shared/cli/isMain.js";
 import { createGitAdapter } from "../git/gitAdapter.js";
 import { ApplyError, apply, applyReverse } from "./apply.js";
-import { CarryBackError, carryBack } from "./carryBack.js";
+import {
+  buildManifest,
+  CarryBackError,
+  type CarryBackManifest,
+  carryBack,
+  FinishRevertError,
+  finishRevert,
+  parseManifest,
+} from "./carryBack.js";
 import { buildPlan, planIsClean } from "./plan.js";
 import { runRehearsal } from "./rehearse.js";
 import { verifyMove } from "./verify.js";
@@ -117,17 +129,21 @@ function runApply(args: string[]): void {
 
 function runCarryBack(args: string[]): void {
   let since: string | undefined;
+  let manifestPath: string | undefined;
   for (let i = 0; i < args.length; i++) {
     const token = args[i];
     if (token === "--since") {
       since = args[++i];
       if (since === undefined) die("--since requires a value");
+    } else if (token === "--manifest") {
+      manifestPath = args[++i];
+      if (manifestPath === undefined) die("--manifest requires a value");
     } else {
       die(`unrecognized argument: ${token}`);
     }
   }
   if (since === undefined) {
-    die("usage: carry-back --since <sha>");
+    die("usage: carry-back --since <sha> [--manifest <path>]");
   }
 
   const adapter = createGitAdapter();
@@ -138,8 +154,54 @@ function runCarryBack(args: string[]): void {
       console.log(`${entry.status}\t${entry.p5Path} -> ${entry.legacyPath}`);
     }
     console.log(`carried back ${result.entries.length} path(s) since ${since}`);
+    if (manifestPath !== undefined) {
+      // p5-plan.md §6.2 R-B step 4: the deterministic handoff to
+      // `finish-revert --manifest <file>`. Write it outside the repository
+      // (the runbook uses a temp path) so no commit can pick it up.
+      writeFileSync(manifestPath, `${JSON.stringify(buildManifest(result), null, 2)}\n`);
+      console.log(`manifest written: ${manifestPath}`);
+    }
   } catch (error) {
     if (error instanceof CarryBackError) {
+      die(error.message);
+    }
+    throw error;
+  }
+}
+
+function runFinishRevert(args: string[]): void {
+  let manifestPath: string | undefined;
+  for (let i = 0; i < args.length; i++) {
+    const token = args[i];
+    if (token === "--manifest") {
+      manifestPath = args[++i];
+      if (manifestPath === undefined) die("--manifest requires a value");
+    } else {
+      die(`unrecognized argument: ${token}`);
+    }
+  }
+  if (manifestPath === undefined) {
+    die("usage: finish-revert --manifest <path>");
+  }
+
+  const adapter = createGitAdapter();
+  const cwd = process.cwd();
+  try {
+    let text: string;
+    try {
+      text = readFileSync(manifestPath, "utf-8");
+    } catch (error) {
+      die(`failed to read manifest ${manifestPath}: ${String(error)}`);
+    }
+    const manifest: CarryBackManifest = parseManifest(text);
+    const result = finishRevert({ git: adapter, cwd, manifest });
+    for (const p of result.removed) console.log(`removed: ${p}`);
+    for (const p of result.restored) console.log(`set to expected content: ${p}`);
+    console.log(
+      "finish-revert: index matches pre-B tree + carried-back changes; commit once to finish",
+    );
+  } catch (error) {
+    if (error instanceof FinishRevertError) {
       die(error.message);
     }
     throw error;
@@ -194,6 +256,9 @@ function main(): void {
     case "carry-back":
       runCarryBack(rest);
       break;
+    case "finish-revert":
+      runFinishRevert(rest);
+      break;
     case "verify":
       runVerify(rest);
       break;
@@ -202,11 +267,12 @@ function main(): void {
       break;
     default:
       die(
-        "usage: cli.ts {plan|apply|carry-back|verify|rehearse} ...\n" +
+        "usage: cli.ts {plan|apply|carry-back|finish-revert|verify|rehearse} ...\n" +
           "  plan\n" +
           "  apply [--confirm-delete <path>] [--allow-missing-workflows]\n" +
           "  apply --reverse --before <sha> [--allow-missing-workflows]\n" +
-          "  carry-back --since <sha>\n" +
+          "  carry-back --since <sha> [--manifest <path>]\n" +
+          "  finish-revert --manifest <path>\n" +
           "  verify <before> <after> [--allow-missing-workflows]\n" +
           "  rehearse [--repo <path>] [--keep]",
       );

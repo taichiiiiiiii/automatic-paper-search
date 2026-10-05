@@ -349,8 +349,18 @@ The edits allowed on the two config files are restricted to these keys:
   - Refuses the *entire* call, before touching anything, if `.github/workflows-p5` is missing or empty — never a silent skip — unless `--allow-missing-workflows` is passed (review finding L8).
 - `cli.ts apply --reverse --before <sha> [--allow-missing-workflows]`:
   - `--before <sha>` is **required** — no implicit `HEAD^` default (review finding M3). Before touching anything, asserts (the same proof `verify` performs) that `HEAD`'s tree is *exactly* `<sha>`'s forward-`apply` result; refuses, untouched, otherwise. This only ever reconstructs the exact tree the forward `apply` on `<sha>` produced — it is not, and must not be used as, a general "undo however much history has piled up since" tool. See §6.2 R-B for when this applies vs. `carry-back`.
-- `cli.ts carry-back --since <sha>`:
-  - The R-B step 4 case `apply --reverse` cannot cover on its own: every path changed in `<sha>..HEAD` under `data/` (add, modify, or delete) is mapped back onto its legacy path via the reverse of the rule table and replayed there (`git add`/`git rm --ignore-unmatch`). Refuses the whole call, untouched, if any changed path has no legacy-path equivalent (for example a p5-only `data/config/conference-copy/<slug>.json`). Never touches `LAYOUT_MODE`, `.gitignore`/`.lighthouserc.json`, or the workflow directories — that structural half is `apply --reverse`'s or a plain `git revert`'s job (§6.2 R-B).
+- `cli.ts carry-back --since <sha> [--manifest <file>]`:
+  - The R-B step 4 case `apply --reverse` cannot cover on its own: every path changed in `<sha>..HEAD` under `data/` (add, modify, or delete) is mapped back onto its legacy path via the reverse of the rule table and replayed there. A plain file is staged by blob id and mode (`git update-index --cacheinfo`), so bytes and the executable bit carry exactly; the two collector configs go through the inverse of their `moveEdit` key edits. The diff is read with `--no-renames -z` (a post-B rename becomes delete + add; a non-ASCII path is not C-quoted).
+  - Refuses the whole call, untouched, if the worktree is dirty, if any changed path has no legacy-path equivalent (for example a p5-only `data/config/conference-copy/<slug>.json`), if a status is not plain A/M/D (a typechange), or if a changed file is not a plain `100644`/`100755` file (a symlink is refused, not flattened).
+  - `--manifest <file>` writes `{version, since, head, entries}`: `since` resolved to a sha, the `HEAD` it ran on, and every replayed entry. Write it outside the repository.
+  - Never touches `LAYOUT_MODE`, `.gitignore`/`.lighthouserc.json`, or the workflow directories — that structural half is `git revert`'s job, finished by `finish-revert` (§6.2 R-B).
+- `cli.ts finish-revert --manifest <file>` (review round 2, N4): run after the carry-back commit and `git revert --no-commit -m 1 <mergeB>`. It does not trust how the revert resolved the data paths. The cutover moves many byte-identical blobs (the real tree has 100 copies of one lineage-cache blob, plus identical stubs), so the revert's rename detection pairs them arbitrarily. Measured on the test fixture, the revert both conflicted (a post-B delete surfaces as a rename/delete `DU` that resurrects the pre-B file) and **silently merged the post-B `seen_ids.json` change into `docs/themes/themes-manifest.json`**. Instead, every path it owns is set to the entry the manifest and the pre-B tree dictate:
+  - nothing under `data/`;
+  - an A/M legacy path holds the carry-back commit's content, and a D legacy path is absent;
+  - any other path B touched and nobody changed since B gets its `<mergeB>^1` entry (a pure revert);
+  - any other legacy managed path keeps `HEAD`'s entry.
+
+  It stages only. It refuses, before touching anything, when `HEAD` is not the carry-back commit (`HEAD^` ≠ manifest `head`, or `HEAD` changes a path the manifest does not name, for example after a revert that auto-committed), when nothing is staged, or when a file B moved *outside* `data/` changed after B. Those are the three head assets in `apps/web/static/assets/` and the frozen `legacy/gh-pages-site/`. `carry-back` only reads `data/`, so such a change would otherwise be silently replaced by its pre-B content; carry it back by hand. After resolving, it refuses on any remaining conflict it does not own (for example a post-B edit to a line of `.gitignore` that B patched), on anything left under `data/` (tracked or untracked), and on any owned path that still differs from its expected entry.
 - `cli.ts verify <before> <after> [--allow-missing-workflows]`:
   - `git ls-tree -r` both commits.
   - For every move rule, the blob SHA *and file mode* at the old path in `<before>` equal the blob SHA and mode at the new path in `<after>` (review finding L2 — a chmod-only change is not byte-identical).
@@ -364,7 +374,8 @@ The edits allowed on the two config files are restricted to these keys:
   - apply → verify → `apply --reverse --before <sha>` on a temp clone gives a byte-identical tree.
   - A tampered blob, a chmod-only change, an untracked extra change, and a tampered workflow-swap destination all fail verify.
   - `apply --reverse` refuses cleanly (no partial mutation) when `HEAD` has a post-`<sha>` commit under `data/**`, or when the cutover commit was already `git revert`ed first (review probes P4, P5).
-  - `carry-back` carries a brand-new post-B file, a modification of a pre-existing one, and a deletion; refuses on an unmappable path.
+  - `carry-back` carries a brand-new post-B file, a modification of a pre-existing one, a deletion, a rename (as D+A), a non-ASCII path, a `moveEdit` config change (legacy key values restored) and the executable bit. It refuses on an unmappable path, a typechange, a symlink and a dirty worktree.
+  - The review's N4 probe as a fixture regression: B is a real `--no-ff` merge; a post-B commit modifies, deletes and adds under `data/`; then carry-back, `git revert --no-commit -m 1 B` and `finish-revert`. The exact final tree is asserted: the pre-B tree plus the three changes at their legacy paths, nothing under `data/`. The test also checks each `finish-revert` refusal.
 
 **Format-only proof (§7.2), a pre-cutover checkpoint.** On a develop snapshot in a temp dir:
 1. `apply`.
@@ -523,26 +534,68 @@ order:
 4. **Data commits exist since B** (the common case — R-B can run up to the
    §6.2 step 11 observation week later, by which point `collect-weekly`/
    `collect-daily-watch`/`regen-themes`/`conference-on-demand` have
-   almost certainly run):
-   a. `dataMove carry-back --since <mergeB>` **first, while `data/**` is
-      still live** (it reads every changed path via `git show HEAD:…`; run
-      it after a `git revert` and there is nothing left to read). This
-      writes every post-B `data/**` add/modify/delete back onto its legacy
-      path (`paperpilot/…`/`docs/…`) via the reverse rule table, and
-      refuses the whole call — untouched — if any changed path has no
-      legacy equivalent (for example a brand-new
-      `data/config/conference-copy/<slug>.json`, which is p5-only and
-      never existed under `paperpilot/data`; resolve that by hand before
-      retrying). Commit this as its own commit.
-   b. `git revert -m 1 <mergeB>` (B′ first if present) now undoes B's own
-      structural diff — the original rule-table moves, the `LAYOUT_MODE`
-      flip, the workflow swap, `.gitignore`/`.lighthouserc.json` — on top
-      of (a)'s commit. **A conflict here is expected, not a bug**: if a
-      *pre-existing* published/state file (one B itself moved, not a
-      brand-new post-B one) was also modified after B, (a) already wrote
-      today's content to its legacy path, and `git revert` separately
-      tries to recreate that same path from B's own parent's (older)
-      blob — resolve by keeping (a)'s content. Commit.
+   almost certainly run). Four steps, each deterministic:
+   a. `dataMove carry-back --since <mergeB> --manifest "$RUNNER_TEMP/carry-back.json"`
+      **first, while `data/**` is still live**. It reads every changed
+      path via `HEAD`; after a `git revert` there is nothing left to read.
+      This replays every post-B `data/**` add/modify/delete onto its
+      legacy path (`paperpilot/…`/`docs/…`) via the reverse rule table.
+      It refuses the whole call, untouched, if any changed path has no
+      legacy equivalent. For example, a brand-new
+      `data/config/conference-copy/<slug>.json` is p5-only and never
+      existed under `paperpilot/data`; resolve that by hand before
+      retrying. Commit this as its own commit, with nothing in between
+      and no `git add -A`.
+   b. `git revert --no-commit -m 1 <mergeB>` undoes B's own structural
+      diff: the rule-table moves, the `LAYOUT_MODE` flip, the workflow
+      swap, `.gitignore`/`.lighthouserc.json`. Always use `--no-commit`.
+      The exit code may be 1 with conflicts; do **not** resolve them by
+      hand. Expected, as measured in the fixture regression:
+      - **deletes conflict**: a post-B delete surfaces as a rename/delete
+        `DU` that would resurrect the pre-B file;
+      - **modifies usually do not**, but the rename pairing among
+        identical blobs is arbitrary, so a post-B change can be merged
+        into the wrong legacy file without any conflict;
+      - **adds never conflict**, but leave the p5 copy tracked as an
+        orphan under `data/`.
+
+      (The previous text of this step had it backwards: it said modifies
+      conflict and to "keep (a)'s content".)
+   c. `dataMove finish-revert --manifest "$RUNNER_TEMP/carry-back.json"`
+      sets every data path to its expected entry from the manifest and the
+      pre-B tree (§5.2), then `git commit` once. If it refuses, the
+      message names the paths:
+      - a conflict outside the data paths, for example a post-B edit to a
+        `.gitignore` line B patched: resolve it by hand, then rerun c;
+      - `HEAD` not being the carry-back commit because the revert
+        auto-committed (it ran without `--no-commit`): `git reset --hard
+        HEAD^` drops that revert commit and leaves the carry-back commit
+        at `HEAD`; then redo b with `--no-commit`. Use `git revert --abort`
+        only while a revert is still in progress;
+      - a post-B change to a file B moved outside `data/`: carry it to its
+        legacy path by hand in the carry-back commit, then redo b and c.
+   d. **B's own two deletions come back as at `<mergeB>^1`.** Decision,
+      with evidence:
+      - `docs/search-index.json` (v1) must exist in the legacy layout.
+        Under `"legacy"`, `searchIndex.ts` writes v1 and `--check`
+        ENOENTs without it (round-1 H5). The Python
+        `build_search_index.py` writes it, and
+        `paperpilot/tests/test_published_assets_are_parseable.py` and
+        `test_landing_s0.py` read the shipped copy. `docs/assets/search.js`
+        itself fetches v2, so v1 is a compatibility artifact, but the legacy
+        checks require it.
+      - `docs/daily/papers.json` was deleted only by B's
+        user-confirmed rule (§5.1, R19). It is part of the pre-B legacy
+        tree, so the pure revert restores it. Its deletion is confirmed
+        again at the next cutover (P0-4).
+
+      The final tree is therefore exactly the pre-B tree plus every post-B
+      change at its legacy path. However, v1 at `<mergeB>^1` predates
+      the carried-back catalog. So, in the legacy tree, regenerate it with
+      `pnpm exec tsx apps/pipeline/src/release/derived/searchIndexCli.ts`
+      (legacy mode writes v1), check it with `--check`, and commit it
+      separately if it changed. This is one data-only commit, kept apart
+      from the revert so the revert stays reviewable.
 5. Pushing `docs/**` triggers the Python `pages.yml`, which re-releases the old site to GitHub Pages, overwriting the redirect site if step 10 ran.
 6. Remove `<PUBLIC_ORIGIN>` from the allowlist.
 7. The apps/api Worker stays (Phase W is independent); Durable Object counters need no action. The Cloudflare Pages project is left idle or its production deployment removed (☐).
@@ -599,7 +652,7 @@ Revert does **not** undo: Workers Builds settings, KV values, DO storage, Cloudf
 | R17 | Required-check names break merges | Keep `tests.yml` and job `test`; P0-4 |
 | R18 | Concurrent conference-on-demand runs conflict on the copy manifest | One file per slug |
 | R19 | `daily/papers.json` deletion was blocked before | Explicit user confirmation in P0-4 |
-| R20 | Revert does not carry post-cutover state (`seen_ids` and so on) | `dataMove carry-back --since <B>`, run before `git revert` (R-B step 4a) |
+| R20 | Revert does not carry post-cutover state (`seen_ids` and so on), resurrects post-B deletions, orphans post-B additions under `data/`, or merges a post-B change into the wrong file (identical-blob rename pairing) | `dataMove carry-back --since <B> --manifest <f>` before `git revert --no-commit -m 1 <B>`, then `dataMove finish-revert --manifest <f>` (R-B step 4a–c). The fixture regression asserts the exact final tree |
 | R21 | Uncertain Cloudflare/GitHub API shapes (deployment list, rollback endpoint, deployment id format, `wrangler kv` defaults, `queue:` key, reusable-workflow concurrency, Workers Builds monorepo install, lhci directory URLs) | Each is marked **verify**; A4 is coded against injected fetch, then exercised once in the P2 rehearsal (deployment list) before production |
 | R22 | D1 expected by the design but not implemented | No binding in P5; recorded as a P3 gap / P6 item |
 

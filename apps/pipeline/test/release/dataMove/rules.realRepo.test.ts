@@ -35,46 +35,58 @@ describe("the rule table against the real repository's git ls-files", () => {
     expect(plan.problems).toEqual([]);
   });
 
-  // The next three tests assert quantities/filenames that are only true of
-  // the PRE-MOVE (legacy) tree: once commit B's `apply` has actually run
-  // (including during this task's own p5-rehearsal, which applies the move
-  // to a scratch clone), `docs/`/`paperpilot/data/`/`paperpilot/output/`
-  // are empty and these specific managed-path counts/names no longer
-  // apply to the real repo's `git ls-files` -- the test immediately above
-  // (no unmapped path, no collision) stays meaningful in both modes and is
-  // NOT gated. An explicit `LAYOUT_MODE` check, not a mode branch on what
-  // each assertion expects, skips these three post-move.
-  it.skipIf(LAYOUT_MODE !== "legacy")(
-    "every managed-root path appears in the plan and vice versa",
-    () => {
-      const paths = realLsFiles();
-      const plan = buildPlan({ paths });
-      const managed = paths.filter(isManagedPath);
-      expect(plan.entries.length).toBe(paths.length);
-      expect(managed.length).toBeGreaterThan(900); // docs/ + paperpilot/data/ + paperpilot/output/ + 3 config files
-    },
-  );
-
-  it.skipIf(LAYOUT_MODE !== "legacy")(
-    "the two gated/ungated deletes are exactly docs/daily/papers.json and docs/search-index.json",
-    () => {
-      const paths = realLsFiles();
-      const plan = buildPlan({ paths });
-      const deletes = plan.entries
-        .filter((e) => e.class === "delete")
-        .map((e) => e.path)
-        .sort();
-      expect(deletes).toEqual(["docs/daily/papers.json", "docs/search-index.json"]);
-    },
-  );
-
-  it.skipIf(LAYOUT_MODE !== "legacy")("both collector config files are moveEdit entries", () => {
+  // The next three tests run in both layouts and assert the fact that
+  // holds in the current one (review round 2, N1: a mode-gated skip reports
+  // "skipped" once commit B flips LAYOUT_MODE, which the release no-skip
+  // gate rejects). Legacy: the pre-move tree, with the managed roots full
+  // of move/moveEdit/delete entries. p5 (after B, including the p5
+  // rehearsal clone): the moved tree, where every remaining managed-root
+  // path is a `stay` and the data lives under data/.
+  it("every tracked path is in the plan, and the managed roots match the current layout", () => {
     const paths = realLsFiles();
     const plan = buildPlan({ paths });
-    const moveEdits = plan.entries
-      .filter((e) => e.class === "moveEdit")
+    const managed = paths.filter(isManagedPath);
+    expect(plan.entries.length).toBe(paths.length);
+    expect(["legacy", "p5"]).toContain(LAYOUT_MODE);
+    if (LAYOUT_MODE === "legacy") {
+      expect(managed.length).toBeGreaterThan(900); // docs/ + paperpilot/data/ + paperpilot/output/ + 3 config files
+      expect(paths.filter((p) => p.startsWith("data/"))).toEqual([]);
+    } else {
+      expect(paths.filter((p) => p.startsWith("data/")).length).toBeGreaterThan(900);
+      const notStay = plan.entries.filter((e) => isManagedPath(e.path) && e.class !== "stay");
+      expect(notStay.map((e) => e.path)).toEqual([]);
+    }
+  });
+
+  it("the two deletes are exactly docs/daily/papers.json and docs/search-index.json (legacy), and gone after B (p5)", () => {
+    const paths = realLsFiles();
+    const deletes = buildPlan({ paths })
+      .entries.filter((e) => e.class === "delete")
       .map((e) => e.path)
       .sort();
-    expect(moveEdits).toEqual(["paperpilot/config.daily-watch.yaml", "paperpilot/config.yaml"]);
+    if (LAYOUT_MODE === "legacy") {
+      expect(deletes).toEqual(["docs/daily/papers.json", "docs/search-index.json"]);
+    } else {
+      expect(deletes).toEqual([]);
+      expect(paths).not.toContain("docs/daily/papers.json");
+      expect(paths).not.toContain("docs/search-index.json");
+    }
+  });
+
+  it("both collector config files are moveEdit entries (legacy), and live under data/config (p5)", () => {
+    const paths = realLsFiles();
+    const moveEdits = buildPlan({ paths })
+      .entries.filter((e) => e.class === "moveEdit")
+      .map((e) => e.path)
+      .sort();
+    if (LAYOUT_MODE === "legacy") {
+      expect(moveEdits).toEqual(["paperpilot/config.daily-watch.yaml", "paperpilot/config.yaml"]);
+    } else {
+      expect(moveEdits).toEqual([]);
+      expect(paths).toEqual(
+        expect.arrayContaining(["data/config/config.daily-watch.yaml", "data/config/config.yaml"]),
+      );
+      expect(paths).not.toContain("paperpilot/config.yaml");
+    }
   });
 });

@@ -179,6 +179,16 @@ export function apply(options: ApplyOptions): ApplyResult {
 export function applyReverse(options: ApplyOptions, beforeRef: string): ApplyResult {
   const { git: adapter, cwd } = options;
 
+  // Review LOW ("no clean-worktree precondition"): a dirty tree, or
+  // untracked files sitting at a legacy path, would get silently
+  // overwritten or half-moved by the `git mv`/write-then-add loop below.
+  const dirtyStatus = git(adapter, cwd, ["status", "--porcelain"]);
+  if (dirtyStatus.length > 0) {
+    throw new ApplyError(
+      `refusing to reverse: the worktree is not clean (git status --porcelain is non-empty):\n${dirtyStatus}`,
+    );
+  }
+
   const verification = verifyMove({ git: adapter, cwd, before: beforeRef, after: "HEAD" });
   if (!verification.ok) {
     throw new ApplyError(

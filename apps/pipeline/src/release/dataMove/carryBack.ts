@@ -31,18 +31,29 @@
  *
  * Deliberately does **not** touch the `data/**` side, the `LAYOUT_MODE`
  * literal, `.gitignore`/`.lighthouserc.json`, or the workflow directories
- * at all — the real R-B runbook (p5-plan.md §6.2) pairs this with a plain
- * `git revert -m 1 <mergeB>` for that structural half, run *after* this
- * (reverting first would already erase the `data/**` content this reads).
+ * at all — the real R-B runbook (p5-plan.md §6.2) pairs this with
+ * `git revert --no-commit -m 1 <mergeB>` for that structural half, run
+ * *after* this (reverting first would already erase the `data/**` content
+ * this reads), and then {@link finishRevert} (`cli.ts finish-revert
+ * --manifest <file>`), which resolves the revert's conflicts and orphans
+ * deterministically from the manifest this step writes (review N4).
  */
 
-import { mkdirSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { rmSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import { type GitAdapter, git } from "../git/gitAdapter.js";
 import { reverseConfigEdits } from "./configEdit.js";
-import { classifyPath, type MoveEditEntry, type MoveEntry, UnmappedPathError } from "./rules.js";
+import { buildPlan } from "./plan.js";
+import {
+  classifyPath,
+  isManagedPath,
+  type MoveEditEntry,
+  type MoveEntry,
+  UnmappedPathError,
+} from "./rules.js";
 
 export class CarryBackError extends Error {}
+export class FinishRevertError extends Error {}
 
 export type CarryBackStatus = "A" | "M" | "D";
 
@@ -54,6 +65,10 @@ export interface CarryBackEntry {
 
 export interface CarryBackResult {
   readonly entries: readonly CarryBackEntry[];
+  /** `HEAD` when carry-back ran (before its own commit) — `finishRevert` asserts the carry-back commit sits directly on it. */
+  readonly head: string;
+  /** `since`, resolved to a full commit sha. */
+  readonly since: string;
 }
 
 export interface CarryBackOptions {
@@ -117,92 +132,544 @@ interface DiffEntry {
   readonly path: string;
 }
 
-function parseDataDiff(out: string): DiffEntry[] {
-  const entries: DiffEntry[] = [];
-  for (const raw of out.split("\n")) {
-    if (raw.length === 0) continue;
-    const tab = raw.indexOf("\t");
-    if (tab === -1) continue;
-    const status = raw.slice(0, tab);
-    const path = raw.slice(tab + 1);
-    if (status !== "A" && status !== "M" && status !== "D") {
-      throw new CarryBackError(
-        `carry-back only understands plain add/modify/delete diff statuses, got "${status}" for ${path} ` +
-          "(a rename/copy status would mean --no-renames wasn't honoured)",
-      );
-    }
-    entries.push({ status, path });
-  }
-  return entries;
+interface IndexEntry {
+  readonly mode: string;
+  readonly sha: string;
 }
 
-function readRepoFile(cwd: string, rel: string, content: string): void {
-  const full = join(cwd, rel);
-  mkdirSync(dirname(full), { recursive: true });
-  writeFileSync(full, content);
-}
-
-function showRaw(adapter: GitAdapter, cwd: string, ref: string): string {
-  const result = adapter.run(cwd, ["show", ref]);
+/** Runs git and returns its raw (untrimmed) stdout, throwing `ErrorClass` on a non-zero exit. */
+function gitRaw(
+  adapter: GitAdapter,
+  cwd: string,
+  args: readonly string[],
+  ErrorClass: new (message: string) => Error,
+): string {
+  const result = adapter.run(cwd, args);
   if (result.exitCode !== 0) {
-    throw new CarryBackError(`git show ${ref} failed: ${result.stderr || result.stdout}`);
+    throw new ErrorClass(`git ${args.join(" ")} failed: ${result.stderr || result.stdout}`);
   }
   return result.stdout;
 }
 
 /**
+ * Parses `git diff --no-renames --name-status -z` output. `-z` is what
+ * keeps a non-ASCII path (for example `data/published/themes/café/…`)
+ * byte-exact: without it git C-quotes the path (`"…caf\303\251…"`), the
+ * quoted form matches no rule-table path, and the whole carry-back is
+ * refused as unmapped. Each record is `<status>\0<path>\0`; a rename/copy
+ * record (`<RNNN|CNNN>\0<from>\0<to>\0`) can only appear if
+ * `--no-renames` was not honoured and is refused, as is every other
+ * status that is not a plain A/M/D (for example `T`, a typechange such as
+ * a regular file replaced by a symlink) — this tool only knows how to
+ * replay plain adds, modifies and deletes.
+ */
+function parseDataDiff(out: string): DiffEntry[] {
+  const tokens = out.split("\0");
+  if (tokens[tokens.length - 1] === "") tokens.pop();
+  const entries: DiffEntry[] = [];
+  let i = 0;
+  while (i < tokens.length) {
+    const status = tokens[i] as string;
+    if (status.startsWith("R") || status.startsWith("C")) {
+      throw new CarryBackError(
+        `carry-back only understands plain add/modify/delete diff statuses, got "${status}" for ` +
+          `${tokens[i + 1]} -> ${tokens[i + 2]} (a rename/copy status means --no-renames wasn't honoured)`,
+      );
+    }
+    const path = tokens[i + 1];
+    if (path === undefined) {
+      throw new CarryBackError(`malformed git diff -z output: status "${status}" with no path`);
+    }
+    if (status !== "A" && status !== "M" && status !== "D") {
+      throw new CarryBackError(
+        `carry-back only understands plain add/modify/delete diff statuses, got "${status}" for ${path}`,
+      );
+    }
+    entries.push({ status, path });
+    i += 2;
+  }
+  return entries;
+}
+
+/** `git ls-tree -r -z <ref> -- <prefix>` as `path -> {mode, sha}` (blobs only). */
+function readTree(
+  adapter: GitAdapter,
+  cwd: string,
+  ref: string,
+  prefixes: readonly string[],
+  ErrorClass: new (message: string) => Error,
+): Map<string, IndexEntry> {
+  const out = gitRaw(adapter, cwd, ["ls-tree", "-r", "-z", ref, "--", ...prefixes], ErrorClass);
+  const map = new Map<string, IndexEntry>();
+  for (const record of out.split("\0")) {
+    if (record.length === 0) continue;
+    const tab = record.indexOf("\t");
+    const [mode, , sha] = record.slice(0, tab).split(" ");
+    if (tab === -1 || mode === undefined || sha === undefined) {
+      throw new ErrorClass(`malformed git ls-tree -z record: ${JSON.stringify(record)}`);
+    }
+    map.set(record.slice(tab + 1), { mode, sha });
+  }
+  return map;
+}
+
+/**
+ * Only plain files are carried back. A symlink (`120000`) or submodule
+ * (`160000`) under `data/` has no faithful text-file replay; none exists
+ * today, so meeting one is refused (fail closed) rather than flattened.
+ */
+const CARRYABLE_MODES = new Set(["100644", "100755"]);
+
+/** Refuses (review LOW: "no clean-worktree precondition") rather than overwrite or half-move uncommitted/untracked state. */
+function assertCleanWorktree(adapter: GitAdapter, cwd: string, label: string): void {
+  const status = git(adapter, cwd, ["status", "--porcelain"]);
+  if (status.length > 0) {
+    throw new CarryBackError(
+      `refusing to ${label}: the worktree is not clean (git status --porcelain is non-empty):\n${status}`,
+    );
+  }
+}
+
+/**
  * Carries every `data/**` change in `<since>..HEAD` back onto its legacy
- * path. Resolves every changed path's legacy mapping *before* mutating
- * anything (refusing the whole call, untouched, if any path has none),
- * same fail-closed-and-atomic discipline as `apply`/`applyReverse`.
+ * path. Resolves every changed path's legacy mapping *and* its file mode
+ * *before* mutating anything (refusing the whole call, untouched, if any
+ * path has no mapping or is not a plain file), same fail-closed-and-atomic
+ * discipline as `apply`/`applyReverse`. Refuses a dirty worktree.
+ *
+ * A plain `move` path is staged by blob id and mode (`git update-index
+ * --cacheinfo`), so bytes and the executable bit are carried exactly (a
+ * 755 -> 644 change too, which a write-then-`git add` over an existing
+ * 755 file would silently keep). A `moveEdit` path (the two collector
+ * configs) is rewritten through {@link reverseConfigEdits} first, then
+ * staged with its mode set explicitly both ways.
  */
 export function carryBack(options: CarryBackOptions): CarryBackResult {
   const { git: adapter, cwd, since } = options;
 
-  const diffOut = git(adapter, cwd, [
-    "diff",
-    "--no-renames",
-    "--name-status",
-    since,
-    "HEAD",
-    "--",
-    "data/",
-  ]);
-  const changes = parseDataDiff(diffOut);
+  assertCleanWorktree(adapter, cwd, "carry back");
+  const head = git(adapter, cwd, ["rev-parse", "--verify", "HEAD^{commit}"]);
+  const sinceSha = git(adapter, cwd, ["rev-parse", "--verify", `${since}^{commit}`]);
 
-  const resolved: { change: DiffEntry; entry: MoveEntry | MoveEditEntry }[] = [];
-  const unmapped: string[] = [];
+  const diffOut = gitRaw(
+    adapter,
+    cwd,
+    ["diff", "--no-renames", "--name-status", "-z", sinceSha, "HEAD", "--", "data/"],
+    CarryBackError,
+  );
+  const changes = parseDataDiff(diffOut);
+  const headTree = readTree(adapter, cwd, "HEAD", ["data/"], CarryBackError);
+
+  const resolved: {
+    change: DiffEntry;
+    entry: MoveEntry | MoveEditEntry;
+    blob: IndexEntry | undefined;
+  }[] = [];
+  const problems: string[] = [];
   for (const change of changes) {
     const entry = reverseMapDataPath(change.path);
     if (entry === undefined) {
-      unmapped.push(change.path);
-    } else {
-      resolved.push({ change, entry });
+      problems.push(`  - ${change.path}: no legacy-path equivalent in the rule table`);
+      continue;
     }
+    const blob = change.status === "D" ? undefined : headTree.get(change.path);
+    if (change.status !== "D" && (blob === undefined || !CARRYABLE_MODES.has(blob.mode))) {
+      problems.push(
+        `  - ${change.path}: mode ${blob?.mode ?? "<missing>"} is not a plain file (100644/100755)`,
+      );
+      continue;
+    }
+    resolved.push({ change, entry, blob });
   }
-  if (unmapped.length > 0) {
+  if (problems.length > 0) {
     throw new CarryBackError(
-      `refusing to carry back: ${unmapped.length} path(s) under data/ changed since ${since} with ` +
-        "no legacy-path equivalent in the rule table (never silently dropped):\n" +
-        unmapped.map((p) => `  - ${p}`).join("\n"),
+      `refusing to carry back: ${problems.length} path(s) under data/ changed since ${since} that ` +
+        "cannot be replayed onto a legacy path (no legacy-path equivalent, or not a plain file; " +
+        `never silently dropped):\n${problems.join("\n")}`,
     );
   }
 
   const entries: CarryBackEntry[] = [];
-  for (const { change, entry } of resolved) {
-    if (change.status === "D") {
+  for (const { change, entry, blob } of resolved) {
+    if (change.status === "D" || blob === undefined) {
       // The legacy path was already absent (removed by the original B
       // move) in every real-world case this runs against; --ignore-unmatch
       // makes that a no-op instead of an error.
-      git(adapter, cwd, ["rm", "--ignore-unmatch", "--", entry.path]);
+      git(adapter, cwd, ["rm", "-q", "--ignore-unmatch", "--", entry.path]);
+    } else if (entry.class === "move") {
+      git(adapter, cwd, [
+        "update-index",
+        "--add",
+        "--cacheinfo",
+        `${blob.mode},${blob.sha},${entry.path}`,
+      ]);
+      git(adapter, cwd, ["checkout", "--", entry.path]);
     } else {
-      const raw = showRaw(adapter, cwd, `HEAD:${change.path}`);
-      const content = entry.class === "moveEdit" ? reverseConfigEdits(raw, entry.edits) : raw;
-      readRepoFile(cwd, entry.path, content);
+      const raw = gitRaw(adapter, cwd, ["show", `HEAD:${change.path}`], CarryBackError);
+      const content = reverseConfigEdits(raw, entry.edits);
+      writeFileSync(join(cwd, entry.path), content, {
+        mode: blob.mode === "100755" ? 0o755 : 0o644,
+      });
       git(adapter, cwd, ["add", "--", entry.path]);
+      git(adapter, cwd, [
+        "update-index",
+        `--chmod=${blob.mode === "100755" ? "+x" : "-x"}`,
+        "--",
+        entry.path,
+      ]);
+      git(adapter, cwd, ["checkout", "--", entry.path]);
     }
     entries.push({ p5Path: change.path, legacyPath: entry.path, status: change.status });
   }
 
-  return { entries };
+  return { entries, head, since: sinceSha };
+}
+
+// ---------------------------------------------------------------------------
+// The carry-back manifest (`carry-back --manifest <file>`)
+// ---------------------------------------------------------------------------
+
+/**
+ * What `carry-back --manifest <file>` writes and `finish-revert
+ * --manifest <file>` reads: the resolved cutover commit (`since`), the
+ * `HEAD` carry-back ran on (its own commit must sit directly on top),
+ * and every entry it replayed.
+ */
+export interface CarryBackManifest {
+  readonly version: 1;
+  readonly since: string;
+  readonly head: string;
+  readonly entries: readonly CarryBackEntry[];
+}
+
+const SHA_RE = /^[0-9a-f]{40}([0-9a-f]{24})?$/;
+
+export function buildManifest(result: CarryBackResult): CarryBackManifest {
+  return { version: 1, since: result.since, head: result.head, entries: result.entries };
+}
+
+/**
+ * Parses and strictly validates a manifest. Every entry must round-trip
+ * through {@link reverseMapDataPath} to the same legacy path, so a
+ * hand-edited or truncated manifest is refused instead of steering
+ * `finishRevert`'s `git rm`/`git checkout` at arbitrary paths.
+ */
+export function parseManifest(text: string): CarryBackManifest {
+  let value: unknown;
+  try {
+    value = JSON.parse(text);
+  } catch (error) {
+    throw new FinishRevertError(`manifest is not valid JSON: ${String(error)}`);
+  }
+  const m = value as Partial<CarryBackManifest> | null;
+  if (typeof m !== "object" || m === null || m.version !== 1) {
+    throw new FinishRevertError(
+      "manifest: expected an object with version 1 (from carry-back --manifest)",
+    );
+  }
+  if (typeof m.since !== "string" || !SHA_RE.test(m.since)) {
+    throw new FinishRevertError(
+      `manifest: "since" must be a full commit sha, got ${JSON.stringify(m.since)}`,
+    );
+  }
+  if (typeof m.head !== "string" || !SHA_RE.test(m.head)) {
+    throw new FinishRevertError(
+      `manifest: "head" must be a full commit sha, got ${JSON.stringify(m.head)}`,
+    );
+  }
+  if (!Array.isArray(m.entries)) {
+    throw new FinishRevertError('manifest: "entries" must be an array');
+  }
+  const entries: CarryBackEntry[] = [];
+  for (const raw of m.entries as unknown[]) {
+    const e = raw as Partial<CarryBackEntry> | null;
+    if (
+      typeof e !== "object" ||
+      e === null ||
+      typeof e.p5Path !== "string" ||
+      typeof e.legacyPath !== "string" ||
+      (e.status !== "A" && e.status !== "M" && e.status !== "D")
+    ) {
+      throw new FinishRevertError(`manifest: malformed entry ${JSON.stringify(raw)}`);
+    }
+    if (reverseMapDataPath(e.p5Path)?.path !== e.legacyPath) {
+      throw new FinishRevertError(
+        `manifest: entry ${e.p5Path} -> ${e.legacyPath} does not match the rule table's reverse mapping`,
+      );
+    }
+    entries.push({ p5Path: e.p5Path, legacyPath: e.legacyPath, status: e.status });
+  }
+  return { version: 1, since: m.since, head: m.head, entries };
+}
+
+// ---------------------------------------------------------------------------
+// finishRevert (p5-plan.md §6.2 R-B step 4c, review finding N4)
+// ---------------------------------------------------------------------------
+
+export interface FinishRevertOptions {
+  readonly git: GitAdapter;
+  readonly cwd: string;
+  readonly manifest: CarryBackManifest;
+}
+
+export interface FinishRevertResult {
+  /** Paths removed from the index and worktree (p5 paths, D legacy paths, resurrected or mis-merged leftovers). */
+  readonly removed: readonly string[];
+  /** Paths set to their expected blob and mode (A/M legacy paths, and any path the revert merged wrongly). */
+  readonly restored: readonly string[];
+}
+
+/** The index as `path -> {mode, sha}` for stage 0, plus every path with a conflict stage. */
+function readIndex(
+  adapter: GitAdapter,
+  cwd: string,
+): { stage0: Map<string, IndexEntry>; unmerged: Set<string> } {
+  const out = gitRaw(adapter, cwd, ["ls-files", "-s", "-z"], FinishRevertError);
+  const stage0 = new Map<string, IndexEntry>();
+  const unmerged = new Set<string>();
+  for (const record of out.split("\0")) {
+    if (record.length === 0) continue;
+    const tab = record.indexOf("\t");
+    const [mode, sha, stage] = record.slice(0, tab).split(" ");
+    const path = record.slice(tab + 1);
+    if (tab === -1 || mode === undefined || sha === undefined || stage === undefined) {
+      throw new FinishRevertError(`malformed git ls-files -s -z record: ${JSON.stringify(record)}`);
+    }
+    if (stage === "0") stage0.set(path, { mode, sha });
+    else unmerged.add(path);
+  }
+  return { stage0, unmerged };
+}
+
+function nameList(adapter: GitAdapter, cwd: string, args: readonly string[]): string[] {
+  return gitRaw(adapter, cwd, args, FinishRevertError)
+    .split("\0")
+    .filter((p) => p.length > 0);
+}
+
+function list(paths: Iterable<string>): string {
+  return [...paths].map((p) => `  - ${p}`).join("\n");
+}
+
+function sameEntry(a: IndexEntry | undefined, b: IndexEntry | undefined): boolean {
+  return a?.mode === b?.mode && a?.sha === b?.sha;
+}
+
+/** Runs `git <prefix> <paths…>` in bounded argv chunks. */
+function gitChunked(
+  adapter: GitAdapter,
+  cwd: string,
+  prefix: readonly string[],
+  items: readonly string[],
+): void {
+  for (let i = 0; i < items.length; i += 200) {
+    git(adapter, cwd, [...prefix, ...items.slice(i, i + 200)]);
+  }
+}
+
+/**
+ * The tree `finishRevert` must leave, over the paths it owns:
+ *  - nothing under `data/`;
+ *  - for a manifest legacy path: the carry-back commit's (`HEAD`'s) entry
+ *    for A/M, nothing for D;
+ *  - for any other path B touched that has not changed since B (`HEAD`
+ *    equals `<mergeB>`): the pre-B (`<mergeB>^1`) entry — a pure revert;
+ *  - for any other legacy managed path (`docs/`, `paperpilot/data/`, …):
+ *    `HEAD`'s entry (B did not touch it, so the revert must not either).
+ * A path B touched that *did* change after B outside `data/` and the
+ * legacy roots (for example a workflow edited after the cutover) is left
+ * to `git revert`'s own merge: not owned here.
+ */
+function expectedOwnedEntries(
+  adapter: GitAdapter,
+  cwd: string,
+  manifest: CarryBackManifest,
+  indexPaths: Iterable<string>,
+): Map<string, IndexEntry | undefined> {
+  const base = git(adapter, cwd, ["rev-parse", "--verify", `${manifest.since}^1`]);
+  const touchedByB = nameList(adapter, cwd, [
+    "diff",
+    "--no-renames",
+    "--name-only",
+    "-z",
+    base,
+    manifest.since,
+  ]);
+  const baseTree = readTree(adapter, cwd, base, [], FinishRevertError);
+  const bTree = readTree(adapter, cwd, manifest.since, [], FinishRevertError);
+  const headTree = readTree(adapter, cwd, "HEAD", [], FinishRevertError);
+  const byLegacy = new Map(manifest.entries.map((e) => [e.legacyPath, e]));
+  const touched = new Set(touchedByB);
+
+  const expected = new Map<string, IndexEntry | undefined>();
+  const candidates = new Set([
+    ...touchedByB,
+    ...byLegacy.keys(),
+    ...manifest.entries.map((e) => e.p5Path),
+    ...headTree.keys(),
+    ...indexPaths,
+  ]);
+  for (const path of candidates) {
+    const entry = byLegacy.get(path);
+    if (path.startsWith("data/")) {
+      expected.set(path, undefined);
+    } else if (entry !== undefined) {
+      expected.set(path, entry.status === "D" ? undefined : headTree.get(path));
+    } else if (touched.has(path)) {
+      if (isManagedPath(path) || sameEntry(headTree.get(path), bTree.get(path))) {
+        expected.set(path, baseTree.get(path));
+      }
+    } else if (isManagedPath(path)) {
+      expected.set(path, headTree.get(path));
+    }
+  }
+  return expected;
+}
+
+/**
+ * `cli.ts finish-revert --manifest <file>` (p5-plan.md §6.2 R-B step 4c,
+ * review finding N4): run after the carry-back commit and
+ * `git revert --no-commit -m 1 <mergeB>` (always `--no-commit`, so the
+ * index is left staged whether or not the revert conflicted).
+ *
+ * It does not trust how `git revert` resolved the data paths. The
+ * revert's rename detection pairs identical blobs arbitrarily (the
+ * cutover moves many byte-identical files, for example `{}` stubs), so it
+ * can both conflict (a post-B deletion surfaces as a rename/delete `DU`
+ * that resurrects the pre-B file) and silently merge a post-B change
+ * into the *wrong* legacy file. Instead, every path it owns (see
+ * {@link expectedOwnedEntries}) is set to the entry the manifest and the
+ * pre-B tree dictate: post-B deletions stay deleted, post-B additions
+ * exist only at their legacy path, nothing remains under `data/`, and
+ * B's own deletions (`docs/search-index.json` v1, `docs/daily/papers.json`)
+ * come back exactly as at `<mergeB>^1`.
+ *
+ * Stages only; the caller commits once. Fails closed:
+ *  - before touching anything, when `HEAD` is not the carry-back commit
+ *    (`HEAD^` differs from the manifest's `head`, or `HEAD` changes a path
+ *    the manifest does not name; for example `git revert` ran without
+ *    `--no-commit` and auto-committed), or nothing is staged (the revert
+ *    has not run);
+ *  - after resolving, when a conflicted path remains that it does not own
+ *    (an unrelated structural conflict needs a human), anything remains
+ *    under `data/` (tracked or untracked), or an owned path still differs
+ *    from its expected entry.
+ */
+export function finishRevert(options: FinishRevertOptions): FinishRevertResult {
+  const { git: adapter, cwd, manifest } = options;
+
+  const headParent = git(adapter, cwd, ["rev-parse", "--verify", "HEAD^1"]);
+  if (headParent !== manifest.head) {
+    throw new FinishRevertError(
+      `refusing to finish: HEAD^ is ${headParent}, but the carry-back ran on ${manifest.head}; HEAD ` +
+        "must be the carry-back commit itself (run `git revert` with --no-commit, and nothing in between)",
+    );
+  }
+  const legacyPaths = new Set(manifest.entries.map((e) => e.legacyPath));
+  const strays = nameList(adapter, cwd, [
+    "diff",
+    "--no-renames",
+    "--name-only",
+    "-z",
+    "HEAD^1",
+    "HEAD",
+  ]).filter((p) => !legacyPaths.has(p));
+  if (strays.length > 0) {
+    throw new FinishRevertError(
+      "refusing to finish: HEAD changes path(s) the manifest does not name, so it is not the " +
+        `carry-back commit:\n${list(strays)}`,
+    );
+  }
+  const before = readIndex(adapter, cwd);
+  const staged = adapter.run(cwd, ["diff", "--cached", "--quiet"]).exitCode !== 0;
+  if (!staged && before.unmerged.size === 0) {
+    throw new FinishRevertError(
+      `refusing to finish: nothing is staged; run \`git revert --no-commit -m 1 ${manifest.since}\` first`,
+    );
+  }
+
+  // B also moves files to destinations outside data/ (the three head
+  // assets to apps/web/static/assets/, the frozen site to
+  // legacy/gh-pages-site/). carry-back only reads data/, so a post-B change
+  // to one of those would be silently replaced by its pre-B content below.
+  // Refuse instead.
+  const base = git(adapter, cwd, ["rev-parse", "--verify", `${manifest.since}^1`]);
+  const nonDataDests = new Set(
+    buildPlan({ paths: [...readTree(adapter, cwd, base, [], FinishRevertError).keys()] })
+      .entries.flatMap((e) => (e.class === "move" || e.class === "moveEdit" ? [e.dest] : []))
+      .filter((dest) => !dest.startsWith("data/")),
+  );
+  const uncarried = nameList(adapter, cwd, [
+    "diff",
+    "--no-renames",
+    "--name-only",
+    "-z",
+    manifest.since,
+    manifest.head,
+  ]).filter((p) => nonDataDests.has(p));
+  if (uncarried.length > 0) {
+    throw new FinishRevertError(
+      "refusing to finish: path(s) B moved outside data/ changed after B; carry-back does not " +
+        `carry these, so the revert would silently drop the change (resolve by hand):\n${list(uncarried)}`,
+    );
+  }
+
+  const expected = expectedOwnedEntries(adapter, cwd, manifest, [
+    ...before.stage0.keys(),
+    ...before.unmerged,
+  ]);
+  const removed: string[] = [];
+  const restored: string[] = [];
+  for (const [path, want] of [...expected.entries()].sort(([a], [b]) => (a < b ? -1 : 1))) {
+    const have = before.stage0.get(path);
+    if (!before.unmerged.has(path) && sameEntry(have, want)) continue;
+    if (want === undefined) removed.push(path);
+    else restored.push(path);
+  }
+  const reset = [...removed, ...restored];
+  // `git rm --cached` clears every stage (conflicts included); the worktree is fixed below.
+  gitChunked(adapter, cwd, ["rm", "-q", "-f", "--cached", "--ignore-unmatch", "--"], reset);
+  for (const path of removed) rmSync(join(cwd, path), { force: true });
+  for (let i = 0; i < restored.length; i += 200) {
+    const cacheinfo = restored.slice(i, i + 200).flatMap((path) => {
+      const want = expected.get(path) as IndexEntry;
+      return ["--cacheinfo", `${want.mode},${want.sha},${path}`];
+    });
+    git(adapter, cwd, ["update-index", "--add", ...cacheinfo]);
+  }
+  gitChunked(adapter, cwd, ["checkout", "--"], restored);
+
+  const after = readIndex(adapter, cwd);
+  if (after.unmerged.size > 0) {
+    throw new FinishRevertError(
+      `refusing to finish: ${after.unmerged.size} conflicted path(s) the carry-back manifest does ` +
+        `not explain (resolve by hand, then rerun):\n${list(after.unmerged)}`,
+    );
+  }
+  const dataLeftover = [
+    ...[...after.stage0.keys()].filter((p) => p.startsWith("data/")),
+    ...nameList(adapter, cwd, ["ls-files", "-z", "--others", "--exclude-standard", "--", "data/"]),
+  ];
+  if (dataLeftover.length > 0) {
+    throw new FinishRevertError(
+      "refusing to finish: path(s) remain under data/ after the revert and cleanup (expected none " +
+        `once the legacy structural revert is complete):\n${list(dataLeftover)}`,
+    );
+  }
+  const mismatches: string[] = [];
+  for (const [path, want] of expected) {
+    const have = after.stage0.get(path);
+    if (!sameEntry(have, want)) {
+      const show = (e: IndexEntry | undefined) => (e ? `${e.mode} ${e.sha}` : "<absent>");
+      mismatches.push(`${path}: expected ${show(want)}, index has ${show(have)}`);
+    }
+  }
+  if (mismatches.length > 0) {
+    throw new FinishRevertError(
+      `refusing to finish: ${mismatches.length} path(s) differ from "pre-B tree + carried-back ` +
+        `changes" (nothing committed; inspect with git status):\n${list(mismatches.sort())}`,
+    );
+  }
+
+  return { removed, restored };
 }

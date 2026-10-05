@@ -35,21 +35,27 @@ describe("flipLayoutModeToP5 / flipLayoutModeToLegacy", () => {
 
 /**
  * The real `packages/core/src/layout/index.ts` is read-only here, never
- * written. Once commit B's `apply` has actually flipped the real file to
- * `"p5"` (including during this task's own p5-rehearsal, which applies
- * that same flip to a scratch clone), "contains exactly one legacy
- * literal" is no longer true of it -- an explicit `LAYOUT_MODE` check,
- * not a mode branch on what this test asserts, skips it there.
+ * written. The test runs in both layouts and asserts the fact that holds
+ * in the current one (review round 2, N1: a mode-gated skip reports
+ * "skipped" after commit B, which the release no-skip gate rejects).
+ * Legacy: exactly one legacy literal, so B's forward flip applies and a
+ * reverse flip refuses. p5 (after B, including the p5 rehearsal clone):
+ * exactly one p5 literal, so R-B's reverse flip applies and a second
+ * forward flip refuses.
  */
 describe("against the real repository's layout module (read-only)", () => {
-  it.skipIf(LAYOUT_MODE !== "legacy")(
-    "contains exactly one legacy LAYOUT_MODE literal today",
-    () => {
-      const root = execFileSync("git", ["rev-parse", "--show-toplevel"], {
-        encoding: "utf-8",
-      }).trim();
-      const text = readFileSync(`${root}/packages/core/src/layout/index.ts`, "utf-8");
-      expect(() => flipLayoutModeToP5(text)).not.toThrow();
-    },
-  );
+  it("contains exactly one LAYOUT_MODE literal for the current layout, flippable only the other way", () => {
+    const root = execFileSync("git", ["rev-parse", "--show-toplevel"], {
+      encoding: "utf-8",
+    }).trim();
+    const text = readFileSync(`${root}/packages/core/src/layout/index.ts`, "utf-8");
+    expect(["legacy", "p5"]).toContain(LAYOUT_MODE);
+    if (LAYOUT_MODE === "legacy") {
+      expect(flipLayoutModeToLegacy(flipLayoutModeToP5(text))).toBe(text);
+      expect(() => flipLayoutModeToLegacy(text)).toThrow(LayoutFlipError);
+    } else {
+      expect(flipLayoutModeToP5(flipLayoutModeToLegacy(text))).toBe(text);
+      expect(() => flipLayoutModeToP5(text)).toThrow(LayoutFlipError);
+    }
+  });
 });

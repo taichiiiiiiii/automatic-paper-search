@@ -101,3 +101,18 @@ describe("applyReverse: the happy path is unaffected by the new pre-check", () =
     );
   }, 20_000);
 });
+
+describe("applyReverse: clean-worktree precondition (review round 2 LOW)", () => {
+  it("RED/GREEN: refuses, untouched, when an untracked file sits at a legacy path", () => {
+    fixture = buildFixtureRepo();
+    const repo = fixture.repo;
+    const { legacySha } = applyAndCommitCutover(repo);
+    mkdirSync(join(repo, "docs/cvpr-2026"), { recursive: true });
+    writeFileSync(join(repo, "docs/cvpr-2026/papers.json"), "local scratch\n");
+    const treeBefore = gitRun(repo, ["write-tree"]);
+
+    expect(() => applyReverse({ git: adapter, cwd: repo }, legacySha)).toThrow(/not clean/);
+    expect(gitRun(repo, ["write-tree"])).toBe(treeBefore);
+    expect(gitRun(repo, ["status", "--porcelain"])).toBe("?? docs/cvpr-2026/");
+  }, 20_000);
+});

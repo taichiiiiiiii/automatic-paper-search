@@ -16,15 +16,10 @@
  * fail-closed), so any NEW one introduced anywhere must be caught the
  * same way a regression of the two fixed ones would be.
  *
- * `apps/pipeline/test/release/dataMove/**` is owned by a different,
- * concurrent P5 changeset (the data-move tool) and is intentionally
- * excluded here with this comment naming that -- its own six
- * `LAYOUT_MODE`-keyed skips are that agent's to convert, and asserting
- * on them from this changeset would make this test fail for a fix that
- * isn't this changeset's to make. They also do not affect today's gate:
- * `LAYOUT_MODE` is "legacy" in the real repo, so `skipIf(LAYOUT_MODE !==
- * "legacy")` evaluates to `skipIf(false)` and none of the six actually
- * skip right now -- only a p5-mode rehearsal flips that.
+ * `apps/pipeline/test/release/dataMove/**` was excluded until the
+ * data-move changeset converted its own six `LAYOUT_MODE`-keyed skips
+ * (layoutFlip, gitignorePatch, lighthouseEdit, rules.realRepo) into
+ * mode-aware assertions; the scan now covers it like every other file.
  */
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
@@ -33,9 +28,6 @@ import { describe, expect, it } from "vitest";
 
 const REPO_ROOT = getRepoRoot();
 const SCAN_ROOTS = ["apps", "packages"];
-const EXCLUDED_DIR_PREFIXES = [
-  join("apps", "pipeline", "test", "release", "dataMove"), // owned by the dataMove changeset
-];
 
 function findTestFiles(dir: string): string[] {
   const out: string[] = [];
@@ -52,10 +44,6 @@ function findTestFiles(dir: string): string[] {
   return out;
 }
 
-function isExcluded(relPath: string): boolean {
-  return EXCLUDED_DIR_PREFIXES.some((prefix) => relPath.startsWith(prefix));
-}
-
 /** A `.skip(`/`.skipIf(` call where `LAYOUT_MODE` appears on the same
  * source line as the call -- matches this codebase's actual style of
  * gating a conditional skip on that flag, without requiring a full JS
@@ -63,18 +51,19 @@ function isExcluded(relPath: string): boolean {
  * here, or this doc comment would match its own scan.) */
 const SKIP_CALL_WITH_LAYOUT_MODE = /\b(?:it|describe)\.(?:skip|skipIf)\s*\([^)]*\bLAYOUT_MODE\b/;
 
-describe("no test file (outside dataMove) calls .skip(/.skipIf( keyed on LAYOUT_MODE", () => {
-  const allFiles = SCAN_ROOTS.flatMap((root) => findTestFiles(join(REPO_ROOT, root)));
-  const files = allFiles
-    .map((f) => relative(REPO_ROOT, f))
-    .filter((relPath) => !isExcluded(relPath));
+describe("no test file calls .skip(/.skipIf( keyed on LAYOUT_MODE", () => {
+  const files = SCAN_ROOTS.flatMap((root) => findTestFiles(join(REPO_ROOT, root))).map((f) =>
+    relative(REPO_ROOT, f),
+  );
 
   it("found a non-trivial number of test files (sanity: the scan isn't silently matching nothing)", () => {
     expect(files.length).toBeGreaterThan(50);
   });
 
-  it("excluded at least the known dataMove LAYOUT_MODE-skip files (sanity: the exclusion isn't silently matching everything)", () => {
-    expect(allFiles.length).toBeGreaterThan(files.length);
+  it("scans the data-move tests too (no exclusion left)", () => {
+    expect(files).toContain(
+      join("apps", "pipeline", "test", "release", "dataMove", "rules.realRepo.test.ts"),
+    );
   });
 
   for (const relPath of files) {

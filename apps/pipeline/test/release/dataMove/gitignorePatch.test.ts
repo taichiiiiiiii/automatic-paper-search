@@ -44,26 +44,27 @@ describe("applyGitignorePatch", () => {
 
 /**
  * The real repository's `.gitignore` is read-only here, never written.
- * This sanity-checks that the patch's targeted blocks still look as
- * `apply`/`verify` expect in the PRE-MOVE (legacy) `.gitignore` -- once
- * commit B's `apply` has actually run (including during this task's own
- * p5-rehearsal, which applies that same patch to a scratch clone),
- * `.gitignore` is already patched and this specific assertion no longer
- * applies to it (the real `verify`/round-trip coverage for the patched
- * shape lives in `roundTrip.test.ts`). An explicit `LAYOUT_MODE` check,
- * not a mode branch on what this test asserts, skips it there.
+ * The test runs in both layouts and asserts the fact that holds in the
+ * current one (review round 2, N1: a mode-gated skip reports "skipped"
+ * after commit B, which the release no-skip gate rejects). Legacy: every
+ * block the patch targets occurs exactly once, so B's patch applies and
+ * round-trips. p5 (after B): the file is already patched, so R-B's
+ * reverse applies and round-trips, and patching it a second time refuses.
  */
 describe("against the real repository's .gitignore (read-only)", () => {
-  it.skipIf(LAYOUT_MODE !== "legacy")(
-    "contains exactly one occurrence of each block this patch targets",
-    async () => {
-      const { readFileSync } = await import("node:fs");
-      const { execFileSync } = await import("node:child_process");
-      const root = execFileSync("git", ["rev-parse", "--show-toplevel"], {
-        encoding: "utf-8",
-      }).trim();
-      const text = readFileSync(`${root}/.gitignore`, "utf-8");
-      expect(() => applyGitignorePatch(text)).not.toThrow();
-    },
-  );
+  it("is patchable in exactly the direction the current layout needs, and round-trips", async () => {
+    const { readFileSync } = await import("node:fs");
+    const { execFileSync } = await import("node:child_process");
+    const root = execFileSync("git", ["rev-parse", "--show-toplevel"], {
+      encoding: "utf-8",
+    }).trim();
+    const text = readFileSync(`${root}/.gitignore`, "utf-8");
+    expect(["legacy", "p5"]).toContain(LAYOUT_MODE);
+    if (LAYOUT_MODE === "legacy") {
+      expect(reverseGitignorePatch(applyGitignorePatch(text))).toBe(text);
+    } else {
+      expect(applyGitignorePatch(reverseGitignorePatch(text))).toBe(text);
+      expect(() => applyGitignorePatch(text)).toThrow(GitignorePatchError);
+    }
+  });
 });

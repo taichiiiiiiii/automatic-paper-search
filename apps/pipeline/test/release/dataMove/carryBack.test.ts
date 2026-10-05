@@ -4,7 +4,14 @@
  * mode `apply --reverse` cannot provide on its own (it only ever touches
  * paths that existed in its `beforeRef`'s own plan).
  */
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import {
+  chmodSync,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  symlinkSync,
+  writeFileSync,
+} from "node:fs";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { apply } from "../../../src/release/dataMove/apply.js";
@@ -16,6 +23,7 @@ import {
 import {
   adapter,
   buildFixtureRepo,
+  CONFIG_YAML_FIXTURE,
   cleanupFixtureRepo,
   type FixtureRepo,
   gitRun,
@@ -72,6 +80,17 @@ describe("reverseMapDataPath", () => {
     // conference-copy/<slug>.json is new in p5 (plan §2 A2) — never existed
     // under paperpilot/data, so there is nothing to carry it back to.
     expect(reverseMapDataPath("data/config/conference-copy/cvpr-2027.json")).toBeUndefined();
+  }, 20_000);
+
+  it("RED/GREEN: is injective — a p5 path whose legacy candidate maps elsewhere is refused (round-trip dest check)", () => {
+    // paperpilot/data/seen_ids.json forward-maps to data/state/seen_ids.json,
+    // so data/config/seen_ids.json must not be "carried back" onto it too.
+    expect(reverseMapDataPath("data/config/seen_ids.json")).toBeUndefined();
+    // ...and the reverse: lineage_denylist.json lives in data/config, not data/state.
+    expect(reverseMapDataPath("data/state/lineage_denylist.json")).toBeUndefined();
+    expect(reverseMapDataPath("data/config/lineage_denylist.json")?.path).toBe(
+      "paperpilot/data/lineage_denylist.json",
+    );
   }, 20_000);
 
   it("returns undefined for a path outside every data/ root", () => {
@@ -176,5 +195,130 @@ describe("carryBack", () => {
 
     const result = carryBack({ git: adapter, cwd: repo, since: cutoverSha });
     expect(result.entries).toEqual([]);
+  }, 20_000);
+
+  it("RED/GREEN: reverses the moveEdit config edits (legacy paths, not p5 paths) on a post-B config change", () => {
+    fixture = buildFixtureRepo();
+    const repo = fixture.repo;
+    const cutoverSha = applyAndCommitCutover(repo);
+    const p5Config = join(repo, "data/config/config.yaml");
+    writeFileSync(
+      p5Config,
+      readFileSync(p5Config, "utf-8").replace("max_age_days: 14", "max_age_days: 30"),
+    );
+    gitRun(repo, ["commit", "-q", "-am", "post-B: config tweak"]);
+
+    carryBack({ git: adapter, cwd: repo, since: cutoverSha });
+    expect(readFileSync(join(repo, "paperpilot/config.yaml"), "utf-8")).toBe(
+      CONFIG_YAML_FIXTURE.replace("max_age_days: 14", "max_age_days: 30"),
+    );
+  }, 20_000);
+
+  it("RED/GREEN: refuses a typechange (status T) instead of flattening it; nothing staged", () => {
+    fixture = buildFixtureRepo();
+    const repo = fixture.repo;
+    const cutoverSha = applyAndCommitCutover(repo);
+    gitRun(repo, ["rm", "-q", "data/state/seen_ids.json"]);
+    symlinkSync("../published/conferences.json", join(repo, "data/state/seen_ids.json"));
+    gitRun(repo, ["add", "-A"]);
+    gitRun(repo, ["commit", "-q", "-m", "post-B: typechange"]);
+
+    expect(() => carryBack({ git: adapter, cwd: repo, since: cutoverSha })).toThrow(/"T"/);
+    expect(gitRun(repo, ["status", "--porcelain"])).toBe("");
+  }, 20_000);
+
+  it("refuses an added symlink (mode 120000) instead of flattening it", () => {
+    fixture = buildFixtureRepo();
+    const repo = fixture.repo;
+    const cutoverSha = applyAndCommitCutover(repo);
+    symlinkSync("classifications.json", join(repo, "data/state/lineage-cache/link.json"));
+    // lineage-cache/* is gitignored (only classifications.json is unignored); force-add like the real cache files.
+    gitRun(repo, ["add", "-f", "data/state/lineage-cache/link.json"]);
+    gitRun(repo, ["commit", "-q", "-m", "post-B: symlink"]);
+
+    expect(() => carryBack({ git: adapter, cwd: repo, since: cutoverSha })).toThrow(
+      /mode 120000 is not a plain file/,
+    );
+    expect(gitRun(repo, ["status", "--porcelain"])).toBe("");
+  }, 20_000);
+
+  it("RED/GREEN: a post-B rename inside data/ is carried back as delete + add (--no-renames)", () => {
+    fixture = buildFixtureRepo();
+    const repo = fixture.repo;
+    const cutoverSha = applyAndCommitCutover(repo);
+    mkdirSync(join(repo, "data/published/themes/flash-attn"), { recursive: true });
+    gitRun(repo, [
+      "mv",
+      "data/published/themes/flash-attention/lineage.json",
+      "data/published/themes/flash-attn/lineage.json",
+    ]);
+    gitRun(repo, ["commit", "-q", "-m", "post-B: rename theme"]);
+
+    const result = carryBack({ git: adapter, cwd: repo, since: cutoverSha });
+    expect(result.entries.map((e) => `${e.status} ${e.legacyPath}`).sort()).toEqual([
+      "A docs/themes/flash-attn/lineage.json",
+      "D docs/themes/flash-attention/lineage.json",
+    ]);
+    expect(readFileSync(join(repo, "docs/themes/flash-attn/lineage.json"), "utf-8")).toBe(
+      '{"nodes":[]}\n',
+    );
+  }, 20_000);
+
+  it("RED/GREEN: carries a non-ASCII path byte-exactly (-z, no C-quoting)", () => {
+    fixture = buildFixtureRepo();
+    const repo = fixture.repo;
+    const cutoverSha = applyAndCommitCutover(repo);
+    mkdirSync(join(repo, "data/published/themes/café"), { recursive: true });
+    writeFileSync(join(repo, "data/published/themes/café/lineage.json"), '{"nodes":["é"]}\n');
+    gitRun(repo, ["add", "-A"]);
+    gitRun(repo, ["commit", "-q", "-m", "post-B: café"]);
+
+    const result = carryBack({ git: adapter, cwd: repo, since: cutoverSha });
+    expect(result.entries).toEqual([
+      {
+        p5Path: "data/published/themes/café/lineage.json",
+        legacyPath: "docs/themes/café/lineage.json",
+        status: "A",
+      },
+    ]);
+    expect(readFileSync(join(repo, "docs/themes/café/lineage.json"), "utf-8")).toBe(
+      '{"nodes":["é"]}\n',
+    );
+  }, 20_000);
+
+  it("RED/GREEN: carries the executable bit (index mode and worktree)", () => {
+    fixture = buildFixtureRepo();
+    const repo = fixture.repo;
+    const cutoverSha = applyAndCommitCutover(repo);
+    writeFileSync(join(repo, "data/inputs/daily/run.sh"), "#!/bin/sh\necho hi\n");
+    chmodSync(join(repo, "data/inputs/daily/run.sh"), 0o755);
+    chmodSync(join(repo, "data/inputs/cvpr-2026/summary.csv"), 0o755);
+    gitRun(repo, ["add", "-A"]);
+    gitRun(repo, ["commit", "-q", "-m", "post-B: executables"]);
+
+    carryBack({ git: adapter, cwd: repo, since: cutoverSha });
+    expect(gitRun(repo, ["ls-files", "-s", "paperpilot/output/daily/run.sh"])).toMatch(/^100755 /);
+    // A mode-only change (M) on a pre-existing file carries too.
+    expect(gitRun(repo, ["ls-files", "-s", "paperpilot/output/cvpr-2026/summary.csv"])).toMatch(
+      /^100755 /,
+    );
+    // The worktree matches the index (nothing left unstaged).
+    expect(gitRun(repo, ["diff", "--name-only"])).toBe("");
+  }, 20_000);
+
+  it("RED/GREEN: refuses a dirty worktree (an untracked file at a legacy path) and touches nothing", () => {
+    fixture = buildFixtureRepo();
+    const repo = fixture.repo;
+    const cutoverSha = applyAndCommitCutover(repo);
+    writeFileSync(join(repo, "data/state/seen_ids.json"), '{"changed":1}\n');
+    gitRun(repo, ["commit", "-q", "-am", "post-B: seen ids"]);
+    mkdirSync(join(repo, "paperpilot/data"), { recursive: true });
+    writeFileSync(join(repo, "paperpilot/data/seen_ids.json"), "local scratch\n");
+
+    expect(() => carryBack({ git: adapter, cwd: repo, since: cutoverSha })).toThrow(/not clean/);
+    expect(readFileSync(join(repo, "paperpilot/data/seen_ids.json"), "utf-8")).toBe(
+      "local scratch\n",
+    );
+    expect(gitRun(repo, ["diff", "--cached", "--name-only"])).toBe("");
   }, 20_000);
 });

@@ -53,6 +53,40 @@ describe("verifyMove: L2 file mode", () => {
     expect(report.problems.some((p) => p.includes("file mode changed"))).toBe(true);
   }, 20_000);
 
+  it("RED/GREEN: a stay file chmod'ed executable fails verify with the stay-mode message", () => {
+    fixture = buildFixtureRepo();
+    const repo = fixture.repo;
+    const legacySha = applyUncommitted(repo);
+    chmodSync(join(repo, "docs/design/39-x.md"), 0o755);
+    gitRun(repo, ["add", "-A"]);
+    gitRun(repo, ["commit", "-m", "data(p5): cutover (stay chmod)"]);
+    const afterSha = gitRun(repo, ["rev-parse", "HEAD"]);
+
+    const report = verifyMove({ git: adapter, cwd: repo, before: legacySha, after: afterSha });
+    expect(report.ok).toBe(false);
+    expect(report.problems).toContain(
+      "stay docs/design/39-x.md: file mode changed unexpectedly (100644 -> 100755)",
+    );
+  }, 20_000);
+
+  it("RED/GREEN: a moveEdit destination chmod'ed executable fails verify with the moveEdit-mode message", () => {
+    fixture = buildFixtureRepo();
+    const repo = fixture.repo;
+    const legacySha = applyUncommitted(repo);
+    chmodSync(join(repo, "data/config/config.yaml"), 0o755);
+    gitRun(repo, ["add", "-A"]);
+    gitRun(repo, ["commit", "-m", "data(p5): cutover (moveEdit chmod)"]);
+    const afterSha = gitRun(repo, ["rev-parse", "HEAD"]);
+
+    const report = verifyMove({ git: adapter, cwd: repo, before: legacySha, after: afterSha });
+    expect(report.ok).toBe(false);
+    expect(
+      report.problems.some((p) =>
+        p.startsWith("moveEdit paperpilot/config.yaml: file mode changed (100644 -> 100755)"),
+      ),
+    ).toBe(true);
+  }, 20_000);
+
   it("a move with unchanged mode passes (sanity: the new check isn't over-eager)", () => {
     fixture = buildFixtureRepo();
     const repo = fixture.repo;
