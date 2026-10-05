@@ -13,6 +13,7 @@
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { LAYOUT_MODE, layoutFor, relLayout } from "@paperpilot/core/layout";
 import { afterEach, beforeEach, expect, it } from "vitest";
 import { createGitAdapter, git } from "../../src/release/git/gitAdapter.js";
 import { PromotionError, promote } from "../../src/release/promote.js";
@@ -41,7 +42,7 @@ it("themes refresh table matches §3's ordered list", () => {
       "tsx",
       "apps/pipeline/src/lineage/theme/generateThemesManifestCli.ts",
       "--themes-dir",
-      join(TREE, "docs", "themes"),
+      join(layoutFor(TREE).published, "themes"),
     ],
     ["pnpm", "exec", "tsx", "apps/pipeline/src/lineage/theme/computeThemeQualityCli.ts"],
     [
@@ -85,14 +86,21 @@ it("test-only refresh/validate tables are empty (zero-spawn no-op)", () => {
   expect(validateCommandsFor("test-only", TREE)).toEqual([]);
 });
 
-it("validate table (same for both kinds) matches §3's ordered list", () => {
+// M5 (P5 tier-A review): the web build must run BEFORE `pnpm -r test`,
+// not after (p5-plan.md §3's literal order) -- several apps/web tests
+// are `it.skipIf(!existsSync(OUT_DIR))` and would silently report
+// "skipped" instead of exercising real build output on a fresh
+// worktree, which the no-skip-gate-equivalent in `pnpm -r test` would
+// then fail for the wrong reason. See promoteHooks.ts's own doc
+// comment on `validateCommandsFor` for the full rationale.
+it("validate table (same for both kinds) matches §3's ordered list, built BEFORE tested (M5)", () => {
   const expected: Command[] = [
     ["pnpm", "exec", "biome", "check", "."],
+    ["pnpm", "--filter", "@paperpilot/web", "build"],
     ["pnpm", "-r", "test"],
     ["pnpm", "exec", "tsx", "apps/pipeline/src/lineage/theme/auditThemeSeedsCli.ts"],
     ["pnpm", "exec", "tsx", "apps/pipeline/src/lineage/quality/auditLineageQualityCli.ts"],
     ["pnpm", "exec", "tsx", "apps/pipeline/src/release/derived/searchIndexCli.ts", "--check"],
-    ["pnpm", "--filter", "@paperpilot/web", "build"],
     [
       "pnpm",
       "exec",
@@ -105,6 +113,19 @@ it("validate table (same for both kinds) matches §3's ordered list", () => {
   ];
   expect(validateCommandsFor("themes", TREE)).toEqual(expected);
   expect(validateCommandsFor("conference", TREE)).toEqual(expected);
+});
+
+it("the web build step precedes `pnpm -r test` in the validate table (M5, explicit index check)", () => {
+  const table = validateCommandsFor("conference", TREE);
+  const buildIndex = table.findIndex(
+    (cmd) => cmd[0] === "pnpm" && cmd[1] === "--filter" && cmd[2] === "@paperpilot/web",
+  );
+  const testIndex = table.findIndex(
+    (cmd) => cmd[0] === "pnpm" && cmd[1] === "-r" && cmd[2] === "test",
+  );
+  expect(buildIndex).toBeGreaterThanOrEqual(0);
+  expect(testIndex).toBeGreaterThanOrEqual(0);
+  expect(buildIndex).toBeLessThan(testIndex);
 });
 
 // ---- 2. fake spawn: cwd recorded, non-zero exit short-circuits ----
@@ -204,18 +225,24 @@ beforeEach(() => {
   mkdirSync(checkout);
   gitRun(checkout, ["init", "--initial-branch=develop"]);
   gitRun(checkout, ["remote", "add", "origin", remote]);
-  // Seeds every legacy `themes` SHARED_PATHS entry (promote.ts) so the
-  // integration test's `git add -A -- <sharedPaths>` step has something
-  // to match for each path, even though the stub refresh table below
-  // only touches `themes-manifest.json` -- exactly like a real repo
-  // after at least one prior promotion.
-  mkdirSync(join(checkout, "docs", "themes"), { recursive: true });
-  mkdirSync(join(checkout, "docs", "assets"), { recursive: true });
-  writeFileSync(join(checkout, "docs", "themes", "themes-manifest.json"), "{}\n");
-  writeFileSync(join(checkout, "docs", "themes", "_quality.json"), "{}\n");
-  writeFileSync(join(checkout, "docs", "lineage-quality-v1.json"), "{}\n");
-  writeFileSync(join(checkout, "docs", "assets", "versions.json"), "{}\n");
-  writeFileSync(join(checkout, "docs", "sitemap.xml"), "<urlset></urlset>\n");
+  // Seeds every `themes` SHARED_PATHS entry for the CURRENT LAYOUT_MODE
+  // (promote.ts's `sharedPathsForMode`) so the integration test's `git add
+  // -A -- <sharedPaths>` step has something to match for each path, even
+  // though the stub refresh table below only touches
+  // `themes-manifest.json` -- exactly like a real repo after at least one
+  // prior promotion. Legacy keeps two extra entries
+  // (`assets/versions.json`, `sitemap.xml`) that p5 drops (p5-plan.md §3:
+  // "sync_asset_versions"/"build_sitemap" are no longer generated/promoted).
+  const publishedDir = layoutFor(checkout).published;
+  mkdirSync(join(publishedDir, "themes"), { recursive: true });
+  writeFileSync(join(publishedDir, "themes", "themes-manifest.json"), "{}\n");
+  writeFileSync(join(publishedDir, "themes", "_quality.json"), "{}\n");
+  writeFileSync(join(publishedDir, "lineage-quality-v1.json"), "{}\n");
+  if (LAYOUT_MODE === "legacy") {
+    mkdirSync(join(publishedDir, "assets"), { recursive: true });
+    writeFileSync(join(publishedDir, "assets", "versions.json"), "{}\n");
+    writeFileSync(join(publishedDir, "sitemap.xml"), "<urlset></urlset>\n");
+  }
   gitRun(checkout, ["add", "."]);
   gitRun(checkout, ["commit", "-m", "seed"]);
   gitRun(checkout, ["push", "-u", "origin", "develop"]);
@@ -238,16 +265,17 @@ function baseSha(): string {
 
 it("integration: a themes promotion with a stub refresh/validate table that writes into a SHARED_PATHS file succeeds and pushes", async () => {
   const spawn = createRealSpawn();
-  // The stub table writes into docs/themes/themes-manifest.json -- a
-  // `themes` SHARED_PATHS entry (promote.ts), so the write is staged and
-  // committed alongside the candidate. It only works because `cwd` is
+  // The stub table writes into layout.published/themes/themes-manifest.json
+  // -- a `themes` SHARED_PATHS entry (promote.ts), so the write is staged
+  // and committed alongside the candidate. It only works because `cwd` is
   // really `tree` (a relative path resolves against the process cwd the
   // real spawn was given).
+  const themesManifestRel = `${relLayout(LAYOUT_MODE).published}/themes/themes-manifest.json`;
   const stubRefresh = [
     [
       "node",
       "-e",
-      "require('fs').writeFileSync('docs/themes/themes-manifest.json', JSON.stringify({refreshed: true}))",
+      `require('fs').writeFileSync(${JSON.stringify(themesManifestRel)}, JSON.stringify({refreshed: true}))`,
     ],
   ] satisfies Command[];
   const stubValidate: Command[] = [["node", "-e", "process.exit(0)"]];
@@ -270,7 +298,9 @@ it("integration: a themes promotion with a stub refresh/validate table that writ
   const verify = join(world.base, "verify");
   gitRun(world.base, ["clone", world.remote, verify]);
   expect(
-    JSON.parse(readFileSync(join(verify, "docs", "themes", "themes-manifest.json"), "utf-8")),
+    JSON.parse(
+      readFileSync(join(layoutFor(verify).published, "themes", "themes-manifest.json"), "utf-8"),
+    ),
   ).toEqual({ refreshed: true });
   expect(
     readFileSync(join(verify, "docs", "themes", "new-theme", "lineage.json"), "utf-8"),

@@ -178,13 +178,18 @@ it("PROMOTE_MAX_ATTEMPTS must be a positive integer (matches promote-generated.s
   mkdirSync(candidate);
   writeFileSync(join(candidate, "x.json"), "{}\n");
 
+  // 5 real CLI subprocess spawns (one per `bad` value); under `pnpm -r`'s
+  // parallel workspace-package execution this has been observed to
+  // exceed vitest's 5000ms default timeout from CPU contention alone
+  // (each spawn is sub-second in isolation) -- an explicit timeout is
+  // the fix, since the work itself is the real cost, not a hang.
   for (const bad of ["0", "-1", "abc", "1.5", "01"]) {
     const stderr = expectCliDies(repo, ["promote", "test-only", candidate, "msg", "x.json"], {
       PROMOTE_MAX_ATTEMPTS: bad,
     });
     expect(stderr).toContain("PROMOTE_MAX_ATTEMPTS must be positive");
   }
-});
+}, 20_000);
 
 it("COMMIT_PUSH_MAX_ATTEMPTS must be a positive integer (the shell never checks this, but an unvalidated 0/NaN would break every retry)", () => {
   const repo = join(base, "repo");
@@ -304,6 +309,40 @@ it("marker subcommand dies loudly on a malformed SOURCE_SHA", () => {
     REQUEST_ID: "",
   });
   expect(stderr).toContain("SOURCE_SHA");
+});
+
+// L11 (P5 tier-A review): `requiredShaEnv` (cli.ts) is shared by both
+// `cf-deployment-id` and `gh-record` to validate `SOURCE_SHA` before any
+// network call -- previously untested by any subcommand. `cf-deployment-id`
+// exercises it with the fewest other required env vars; a malformed
+// SOURCE_SHA must die BEFORE `getProductionDeploymentId` ever calls
+// `fetchImpl` (so this real-subprocess test never touches the network).
+it("cf-deployment-id subcommand dies loudly on a malformed SOURCE_SHA (requiredShaEnv), before any network call", () => {
+  const repo = join(base, "repo-cf-deployment-id");
+  mkdirSync(repo);
+  for (const bad of ["not-a-sha", "a".repeat(39), "A".repeat(40), `${"a".repeat(40)}\n`]) {
+    const stderr = expectCliDies(repo, ["cf-deployment-id"], {
+      CF_ACCOUNT_ID: "acct",
+      CF_PROJECT: "proj",
+      CF_API_TOKEN: "tok",
+      SOURCE_SHA: bad,
+    });
+    expect(stderr).toContain("SOURCE_SHA must be 40 lowercase hex characters");
+  }
+});
+
+it("gh-record subcommand dies loudly on a malformed SOURCE_SHA (requiredShaEnv), before any network call", () => {
+  const repo = join(base, "repo-gh-record");
+  mkdirSync(repo);
+  const stderr = expectCliDies(repo, ["gh-record"], {
+    RELEASE_KIND: "normal",
+    GITHUB_TOKEN: "tok",
+    GITHUB_REPOSITORY: "owner/repo",
+    SOURCE_SHA: "not-a-sha",
+    CF_DEPLOYMENT_ID: "dep-1",
+    ARTIFACT_NAME: "cf-pages-test",
+  });
+  expect(stderr).toContain("SOURCE_SHA must be 40 lowercase hex characters");
 });
 
 it("no-skip-gate subcommand passes a clean vitest JSON report and fails a report with a skip", () => {

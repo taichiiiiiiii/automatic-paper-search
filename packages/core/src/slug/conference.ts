@@ -31,22 +31,62 @@ const SLUG_MAX_LEN = 64;
 const CONFERENCE_SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
 /**
- * "daily" is `paperpilot/output/daily/` (config.daily-watch.yaml's own
- * output dir, not a conference) — kept as a local literal, mirroring the
- * Python module's own documented layering choice.
+ * Reserved top-level routes/paths a `--conference` value must never
+ * collide with. This is now the ONE canonical list (L6 of the P5
+ * tier-A review): it used to exist twice — this narrower `{daily,
+ * lineage}` set here, plus a separate, broader local `Set` in
+ * `apps/pipeline/src/conference/scaffold/registerConference.ts` — so
+ * `writeConferenceCopyFile` (which only ever called THIS module's
+ * `validateConferenceSlug`) rejected far fewer reserved names than
+ * `registerConference` did for what is conceptually the same "don't
+ * let a new conference shadow a real site path" check.
+ * `registerConference.ts` now imports this set instead of defining its
+ * own; `writeConferenceCopyFile` gets the same protection for free
+ * through `validateConferenceSlug`.
  *
- * "lineage" is added per docs/migration/p5-plan.md §4.1
- * (`conference-on-demand.yml` row: "reserved list = core
- * `RESERVED_CONFERENCE_SLUGS` (adds lineage; keeps cvpr-2026, daily;
- * contract-tested)") — it is a real top-level site route
- * (`apps/web/lib/catalog-constants.ts::RESERVED_CATALOG_SLUGS`), so a
- * new conference slug must never be able to shadow it. `themes` and
- * `how-it-works` are also real top-level routes but are not listed in
- * the plan's wording here, so they are deliberately left out of this
- * set (unlike `apps/pipeline/src/conference/scaffold/registerConference.ts`'s
- * own, broader `RESERVED_CONFERENCE_SLUGS`, which already covers both).
+ * - "daily" is `paperpilot/output/daily/` (config.daily-watch.yaml's own
+ *   output dir, not a conference).
+ * - "lineage", "themes", "how-it-works" are real top-level site routes
+ *   (`apps/web/lib/catalog-constants.ts::RESERVED_CATALOG_SLUGS`;
+ *   "lineage" per docs/migration/p5-plan.md §4.1).
+ * - "assets", "design", "paper-details-v1", "paper-slides-v1",
+ *   "research", "search-paper-ids-v1" are the legacy static-site
+ *   reserved paths `scaffold_conference_page.py` guarded — several no
+ *   longer correspond to a real route in the new site, but rejecting
+ *   them too costs nothing and guards against the old `docs/` tree
+ *   still being served during the migration's co-existence period
+ *   (design doc §7.3).
+ *
+ * **Deliberately NOT included: `"cvpr-2026"`.** `validateConferenceSlug`
+ * is the GENERAL `--conference` validator used by every pipeline CLI
+ * that operates on an EXISTING conference (`buildPagesCli`,
+ * `buildSummaryCli`, `buildLineageCli`, `buildConferenceLineageCli`,
+ * …) — `cvpr-2026` is a real, already-published conference those CLIs
+ * are routinely re-run against, so reserving it here would reject
+ * every one of those calls (see `packages/core/test/slug/
+ * conference.test.ts`'s pinned "still accepts 'cvpr-2026'" case).
+ * `.github/workflows-p5/conference-on-demand.yml`'s own `RESERVED_SLUGS`
+ * guard (a SEPARATE, scaffold-time-only check against creating a NEW
+ * conference with that name) is expected to equal
+ * `[...RESERVED_CONFERENCE_SLUGS] + ["cvpr-2026"]` — that one extra
+ * entry has to stay a workflow-local addition, not part of this shared
+ * set. (Note for whoever next edits that workflow: this module's
+ * export is the source of truth for the other ten; only `cvpr-2026` is
+ * workflow-only. This changeset does not edit any workflow file
+ * itself.)
  */
-export const RESERVED_CONFERENCE_SLUGS: ReadonlySet<string> = new Set(["daily", "lineage"]);
+export const RESERVED_CONFERENCE_SLUGS: ReadonlySet<string> = new Set([
+  "daily",
+  "themes",
+  "lineage",
+  "how-it-works",
+  "assets",
+  "design",
+  "paper-details-v1",
+  "paper-slides-v1",
+  "research",
+  "search-paper-ids-v1",
+]);
 
 export class InvalidConferenceSlugError extends RangeError {}
 

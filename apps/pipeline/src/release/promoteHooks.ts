@@ -129,16 +129,35 @@ export function refreshCommandsFor(kind: PromotionKind, tree: string, asOf: stri
   ];
 }
 
-/** §3 validate table — identical steps for both `themes` and `conference`. */
+/**
+ * §3 validate table — identical steps for both `themes` and `conference`.
+ *
+ * **Order correction (reported in this changeset's handback, not a
+ * silent deviation — same pattern as this module's path-resolution
+ * correction above):** p5-plan.md §3 literally lists `pnpm -r test`
+ * (step 2) BEFORE `pnpm --filter @paperpilot/web build` (step 6). The
+ * P5 tier-A review (H2/M5) found that ordering fail-closed: several
+ * `apps/web` tests (csp, head-metadata, sitemap, redirects, paper-links
+ * build safety, …) are `it.skipIf(!existsSync(OUT_DIR/…))`, so on a
+ * fresh worktree with no prior `apps/web/out` they report `skipped`,
+ * and this validate table's own `no-skip-gate` equivalent inside `pnpm
+ * -r test`'s reporter would then fail every promotion for a reason
+ * that has nothing to do with the promoted data. This table instead
+ * runs the web build right after `biome check .` and before `pnpm -r
+ * test`, so every build-output-dependent test actually exercises real
+ * output on every validate run, matching `tests.yml`'s own order
+ * (`ts-ci.yml`'s replacement, per the same review) instead of the
+ * plan's literal text.
+ */
 export function validateCommandsFor(kind: PromotionKind, _tree: string): Command[] {
   if (kind === "test-only") return [];
   return [
     ["pnpm", "exec", "biome", "check", "."],
+    ["pnpm", "--filter", "@paperpilot/web", "build"],
     ["pnpm", "-r", "test"],
     pnpmExecTsx("apps/pipeline/src/lineage/theme/auditThemeSeedsCli.ts"),
     pnpmExecTsx("apps/pipeline/src/lineage/quality/auditLineageQualityCli.ts"),
     pnpmExecTsx("apps/pipeline/src/release/derived/searchIndexCli.ts", ["--check"]),
-    ["pnpm", "--filter", "@paperpilot/web", "build"],
     pnpmExecTsx("apps/pipeline/src/release/cli.ts", ["validate", "bundle", "apps/web/out"]),
   ];
 }

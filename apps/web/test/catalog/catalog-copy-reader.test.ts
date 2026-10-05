@@ -11,7 +11,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { conferenceCopyDir, layoutFor } from "@paperpilot/core/layout";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { readConferenceCopyFile } from "../../lib/catalog-copy-reader";
+import { ConferenceCopyFileError, readConferenceCopyFile } from "../../lib/catalog-copy-reader";
 
 let repoRoot: string;
 
@@ -41,11 +41,15 @@ describe("readConferenceCopyFile", () => {
     expect(readConferenceCopyFile("no-such-slug", repoRoot)).toBeNull();
   });
 
-  it("returns null for malformed JSON (never throws/crashes the build)", () => {
+  // L6 (P5 tier-A review): a file that EXISTS but fails to parse as JSON
+  // at all must fail the build loudly, not silently fall back to generic
+  // copy -- unlike the "missing" / "wrong shape" cases below, which are
+  // still a soft `null` fallback.
+  it("throws ConferenceCopyFileError for malformed JSON (a broken copy file must fail the build)", () => {
     const dir = conferenceCopyDir(layoutFor(repoRoot));
     mkdirSync(dir, { recursive: true });
     writeFileSync(join(dir, "broken.json"), "{not json", "utf-8");
-    expect(readConferenceCopyFile("broken", repoRoot)).toBeNull();
+    expect(() => readConferenceCopyFile("broken", repoRoot)).toThrow(ConferenceCopyFileError);
   });
 
   it("returns null when display/lede are missing or not strings", () => {

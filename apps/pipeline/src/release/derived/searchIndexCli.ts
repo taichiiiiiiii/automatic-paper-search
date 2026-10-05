@@ -70,7 +70,12 @@ export function runSearchIndexCliArgs(args: SearchIndexCliArgs): SearchIndexCliR
 
   const result = writeSearchIndexes(args.docsRoot);
   const lines = [
-    `Wrote ${result.entries.length.toLocaleString()} entries -> ${result.outV1}`,
+    // `outV1` is `undefined` under p5 mode (follow-up #5: v1 is never
+    // written there) -- omit the line entirely rather than print
+    // "-> undefined".
+    ...(result.outV1
+      ? [`Wrote ${result.entries.length.toLocaleString()} entries -> ${result.outV1}`]
+      : []),
     `Wrote ${result.entriesV2.length.toLocaleString()} entries -> ${result.outV2}`,
     `Wrote ${result.idBlocks.length} canonical-ID blocks`,
   ];

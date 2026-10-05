@@ -43,6 +43,14 @@ jobs:
       - name: Typecheck
         run: pnpm -r --if-present typecheck
 
+      - name: Build web
+        # Before the tests (H2/M5 of the P5 tier-A review, moved up from
+        # after "Test"): apps/web's own contract tests (CSP, paper-links
+        # parity, lineage routes, sitemap, redirects, copy-data) read the
+        # built apps/web/out and otherwise report "skipped" on a clean
+        # runner, silently losing coverage instead of actually running.
+        run: pnpm --filter @paperpilot/web build
+
       - name: Test
         # Skips are how this suite would hide missing tooling (same
         # reasoning as the pre-P5 Python tests.yml's "No skipped tests"
@@ -54,12 +62,7 @@ jobs:
             echo "::warning::some tests skipped in CI — check the test output above"
           fi
 
-      - name: Build web
-        # Before validate bundle: the web contract tests (CSP, paper-links
-        # parity, lineage routes, sitemap) read the built apps/web/out,
-        # and this proves the exact tree the release pipeline will also
-        # build still produces a valid bundle.
-        run: pnpm --filter @paperpilot/web build
-
       - name: Validate bundle
+        # Proves the exact tree the test step just built (and the release
+        # pipeline will also build) still produces a valid bundle.
         run: pnpm exec tsx apps/pipeline/src/release/cli.ts validate bundle apps/web/out

@@ -53,16 +53,14 @@ const EXEMPT_DIRS: readonly string[] = [
  * here. Each entry must be the one line in that file this test would
  * otherwise flag, with the reason it is out of THIS change's scope.
  *
- * - `apps/web/scripts/legacy-redirects.ts` (changeset A8, §5.4): its own
- *   doc comment says the source directory is deliberately a CLI argument,
- *   with `DEFAULT_SOURCE_DIR = docs/` as a fallback that "must keep
- *   working unchanged across" the A9 data move — i.e. the file's author
- *   already decided this default stays legacy-only rather than following
- *   `LAYOUT_MODE`. Not in this task's ownership list (only
- *   `apps/web/scripts/copy-data.ts` is); left for A8/A9 to resolve
- *   (route through `layoutFor` or keep as a documented exception).
+ * `apps/web/scripts/legacy-redirects.ts` (changeset A8, §5.4) was
+ * exempted here while its `DEFAULT_SOURCE_DIR` still hard-coded `docs/`.
+ * M4 of the P5 tier-A review resolved that: it now reads
+ * `layoutFor(REPO_ROOT).legacySite` (byte-identical to the old
+ * hard-coded value under `LAYOUT_MODE` "legacy"), so the exemption is
+ * removed rather than kept stale.
  */
-const EXEMPT_FILES: ReadonlySet<string> = new Set(["apps/web/scripts/legacy-redirects.ts"]);
+const EXEMPT_FILES: ReadonlySet<string> = new Set<string>([]);
 
 function listSourceFiles(dir: string): string[] {
   let entries: Dirent[];

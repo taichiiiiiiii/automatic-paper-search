@@ -351,6 +351,69 @@ it("PAPER_ID_BLOCK_SIZE matches the Python constant", () => {
   expect(PAPER_ID_BLOCK_SIZE).toBe(256);
 });
 
+// H5 (p5 review): writeSearchIndexes/checkSearchIndexes must gate v1
+// (`search-index.json`) on the layout mode -- p5's data move deletes
+// `docs/search-index.json` and the promoter's p5 SHARED_PATHS never
+// allowlists it, so writing/checking it under p5 mode would ENOENT the
+// validate step and make the conference refresh hook produce an
+// untracked file `promote.ts` rejects. Each test below passes `mode`
+// EXPLICITLY (never flips the `LAYOUT_MODE` module constant), per the
+// review's note that a test must exercise both modes through the
+// parameter.
+describe("search-index v1 is gated on layout mode (follow-up #5)", () => {
+  function seedOnePaper(): void {
+    writePapers("iclr-2026", [
+      {
+        title: "Mode Paper",
+        authors: ["A"],
+        tags: ["X"],
+        type: "Poster",
+        arxiv_url: "https://arxiv.org/abs/2404.00001",
+      },
+    ]);
+  }
+
+  it("writeSearchIndexes(docs, 'legacy') writes v1 (byte-identical to the default)", () => {
+    seedOnePaper();
+    const result = writeSearchIndexes(docs, "legacy");
+    expect(result.outV1).toBe(join(docs, INDEX_FILENAME));
+    expect(fs.existsSync(join(docs, INDEX_FILENAME))).toBe(true);
+    expect(fs.existsSync(join(docs, INDEX_V2_FILENAME))).toBe(true);
+  });
+
+  it("writeSearchIndexes(docs, 'p5') never writes search-index.json, but still writes v2 + blocks", () => {
+    seedOnePaper();
+    const result = writeSearchIndexes(docs, "p5");
+    expect(result.outV1).toBeUndefined();
+    expect(fs.existsSync(join(docs, INDEX_FILENAME))).toBe(false);
+    expect(fs.existsSync(join(docs, INDEX_V2_FILENAME))).toBe(true);
+    expect(result.idBlocks.length).toBeGreaterThan(0);
+  });
+
+  it("checkSearchIndexes(docs, 'p5') passes with no search-index.json on disk at all", () => {
+    seedOnePaper();
+    writeSearchIndexes(docs, "p5");
+    expect(fs.existsSync(join(docs, INDEX_FILENAME))).toBe(false);
+    expect(() => checkSearchIndexes(docs, "p5")).not.toThrow();
+  });
+
+  it("checkSearchIndexes(docs, 'legacy') still rejects a stale v1 file", () => {
+    seedOnePaper();
+    writeSearchIndexes(docs, "legacy");
+    writeFileSync(join(docs, INDEX_FILENAME), '[["tampered","x"]]', "utf-8");
+    expect(() => checkSearchIndexes(docs, "legacy")).toThrow(/stale/);
+  });
+
+  it("checkSearchIndexes(docs, 'p5') ignores a stale/tampered v1 file left over on disk", () => {
+    seedOnePaper();
+    writeSearchIndexes(docs, "legacy"); // writes a v1 file
+    writeFileSync(join(docs, INDEX_FILENAME), '[["tampered","x"]]', "utf-8");
+    // Under p5 mode v1 is out of scope entirely -- a stale leftover must
+    // not fail the check (v2 + blocks are still fresh from the write above).
+    expect(() => checkSearchIndexes(docs, "p5")).not.toThrow();
+  });
+});
+
 // CAT-31: `checkSearchIndexes` (the `--check` body of `build_search_index.py`'s
 // `main()`) had no test and no CLI calling it at all — a regression there
 // would go undetected by the whole suite. Ported from Python's

@@ -50,12 +50,17 @@ describe("getCatalogCopy", () => {
     expect(copy.lede).toBe("");
   });
 
-  it("tier 3: a malformed copy file still falls back to the generic copy (never throws)", () => {
+  // L6 (P5 tier-A review): a malformed copy file used to silently fall
+  // back to the generic copy, so a corrupted operator-supplied file
+  // could publish placeholder text for a real conference with no error
+  // anywhere. `readConferenceCopyFile` now throws for this case
+  // (`catalog-copy-reader.test.ts`), and `getCatalogCopy` deliberately
+  // does NOT catch it -- the malformed file must fail the build.
+  it("tier 3 (REVISED, L6): a malformed copy file throws instead of silently falling back", () => {
     const dir = conferenceCopyDir(layoutFor(repoRoot));
     mkdirSync(dir, { recursive: true });
     writeFileSync(join(dir, "broken.json"), "{not json", "utf-8");
-    expect(() => getCatalogCopy("broken", repoRoot)).not.toThrow();
-    expect(getCatalogCopy("broken", repoRoot).display).toBe("broken");
+    expect(() => getCatalogCopy("broken", repoRoot)).toThrow();
   });
 
   it("renders the copy-file display/lede escaped (no HTML injection) via CatalogHero", () => {

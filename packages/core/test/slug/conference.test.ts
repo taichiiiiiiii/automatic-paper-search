@@ -7,7 +7,11 @@
  * docs/migration/p4-followups.md #2/#9/#20.
  */
 import { describe, expect, it } from "vitest";
-import { InvalidConferenceSlugError, validateConferenceSlug } from "../../src/slug/conference.js";
+import {
+  InvalidConferenceSlugError,
+  RESERVED_CONFERENCE_SLUGS,
+  validateConferenceSlug,
+} from "../../src/slug/conference.js";
 
 describe("validateConferenceSlug", () => {
   it("accepts valid slugs", () => {
@@ -50,6 +54,41 @@ describe("validateConferenceSlug", () => {
   it("still accepts 'cvpr-2026' (not reserved)", () => {
     expect(validateConferenceSlug("cvpr-2026")).toBe("cvpr-2026");
   });
+
+  // L6 of the P5 tier-A review: this is now the ONE canonical reserved
+  // list (apps/pipeline/src/conference/scaffold/registerConference.ts's
+  // own, separate, broader copy was removed in favor of importing this
+  // one). Pinned explicitly so a future edit can't silently shrink it
+  // back down -- each of these used to be rejected only by
+  // registerConference's local check, never by `writeConferenceCopyFile`.
+  it("RESERVED_CONFERENCE_SLUGS is the full canonical set (single source of truth, L6)", () => {
+    expect([...RESERVED_CONFERENCE_SLUGS].sort()).toEqual(
+      [
+        "assets",
+        "daily",
+        "design",
+        "how-it-works",
+        "lineage",
+        "paper-details-v1",
+        "paper-slides-v1",
+        "research",
+        "search-paper-ids-v1",
+        "themes",
+      ].sort(),
+    );
+  });
+
+  it("rejects every entry of the canonical reserved set", () => {
+    for (const reserved of RESERVED_CONFERENCE_SLUGS) {
+      expect(() => validateConferenceSlug(reserved)).toThrow(InvalidConferenceSlugError);
+    }
+  });
+
+  // NOTE for whoever next edits .github/workflows-p5/conference-on-demand.yml
+  // (not touched by this changeset): its own `RESERVED_SLUGS` env var must
+  // equal `[...RESERVED_CONFERENCE_SLUGS, "cvpr-2026"]` -- see this
+  // module's RESERVED_CONFERENCE_SLUGS doc comment for why "cvpr-2026" is
+  // a workflow-only addition, never part of this shared set.
 
   it("rejects overlong input but accepts exactly 64 chars", () => {
     expect(() => validateConferenceSlug("a".repeat(65))).toThrow(InvalidConferenceSlugError);

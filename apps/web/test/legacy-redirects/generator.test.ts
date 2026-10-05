@@ -8,10 +8,13 @@
 import { mkdir, mkdtemp, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { getRepoRoot } from "@paperpilot/core";
+import { layoutFor } from "@paperpilot/core/layout";
 import { PUBLIC_ORIGIN } from "@paperpilot/core/site";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   buildRedirectPageHtml,
+  DEFAULT_SOURCE_DIR,
   generateLegacyRedirectSite,
   mapLegacyPath,
 } from "../../scripts/legacy-redirects";
@@ -147,6 +150,16 @@ describe("generateLegacyRedirectSite", () => {
     await generateLegacyRedirectSite({ sourceDir, outDir });
     const html = await readFile(join(outDir, "404.html"), "utf8");
     expect(html).toContain(`<link rel="canonical" href="${PUBLIC_ORIGIN}/">`);
+  });
+});
+
+describe("DEFAULT_SOURCE_DIR (M4 of the P5 tier-A review)", () => {
+  it("resolves through layoutFor(REPO_ROOT).legacySite, not a hard-coded docs/ literal", () => {
+    expect(DEFAULT_SOURCE_DIR).toBe(layoutFor(getRepoRoot()).legacySite);
+  });
+
+  it("is byte-identical to the pre-fix docs/ path while LAYOUT_MODE is legacy (inert, no behavior change)", () => {
+    expect(DEFAULT_SOURCE_DIR).toBe(join(getRepoRoot(), "docs"));
   });
 });
 

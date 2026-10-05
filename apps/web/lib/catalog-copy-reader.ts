@@ -6,9 +6,18 @@
  * `lib/lineage/server-fs.ts`: import this ONLY from a server component
  * / build-time module, never a `"use client"` component.
  *
- * A missing or malformed file returns `null` -- `getCatalogCopy`
- * (`catalog-copy.ts`) falls back to its generic copy in that case, it
- * never throws the build.
+ * A MISSING file returns `null` -- `getCatalogCopy` (`catalog-copy.ts`)
+ * falls back to its generic copy in that case, same as a well-formed
+ * file with an empty/missing `display`/`lede`.
+ *
+ * A file that EXISTS but contains malformed JSON throws instead (L6 of
+ * the P5 tier-A review): silently falling back there would mean a
+ * corrupted operator-supplied copy file publishes generic placeholder
+ * text with no error anywhere, for a conference whose scaffold step
+ * (`conference/scaffold/cli.ts`) already successfully wrote a file --
+ * the corruption would have to happen AFTER a successful write, which
+ * is exactly the kind of silent data-loss a build should fail loudly
+ * on instead of papering over.
  */
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
@@ -30,10 +39,14 @@ function isNonEmptyString(value: unknown): value is string {
   return typeof value === "string" && value.trim() !== "";
 }
 
+export class ConferenceCopyFileError extends Error {}
+
 /**
  * Reads `<layout.config>/conference-copy/<slug>.json`. Returns `null`
- * when the file doesn't exist, isn't valid JSON, isn't an object, or is
- * missing a non-empty string `display`/`lede` -- never throws.
+ * when the file doesn't exist, isn't a JSON object, or is missing a
+ * non-empty string `display`/`lede`. Throws {@link ConferenceCopyFileError}
+ * when the file EXISTS but fails to parse as JSON at all (L6) -- this
+ * one case is deliberately NOT folded into the `null` fallback.
  */
 export function readConferenceCopyFile(
   slug: string,
@@ -44,8 +57,10 @@ export function readConferenceCopyFile(
   let parsed: unknown;
   try {
     parsed = JSON.parse(readFileSync(path, "utf-8"));
-  } catch {
-    return null;
+  } catch (exc) {
+    throw new ConferenceCopyFileError(
+      `malformed JSON in conference copy file ${path}: ${(exc as Error).message}`,
+    );
   }
   if (typeof parsed !== "object" || parsed === null) return null;
   const { display, lede } = parsed as Record<string, unknown>;

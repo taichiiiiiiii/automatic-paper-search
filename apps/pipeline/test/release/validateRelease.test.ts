@@ -52,6 +52,12 @@ function writeValidBundle(): void {
   writeFileSync(join(docs, "sitemap.xml"), '<?xml version="1.0"?><urlset></urlset>');
   mkdirSync(join(docs, "assets"), { recursive: true });
   writeFileSync(join(docs, "assets", "versions.json"), "{}");
+  // p5-only required artifacts (Next's static-export postbuild outputs);
+  // written unconditionally (harmless extra files under legacy, where
+  // they're not in DEFAULT_REQUIRED_ARTIFACTS and nothing checks their
+  // absence) so this fixture is a valid bundle under BOTH layout modes.
+  writeFileSync(join(docs, "_redirects"), "/old /new 301\n");
+  writeFileSync(join(docs, "_headers"), "/*\n  Content-Security-Policy: frame-ancestors 'self'\n");
 }
 
 it("validateSha rejects anything but 40 lowercase hex", () => {
@@ -521,6 +527,77 @@ it("smokeRemote --wait-marker polls until the marker reports the expected SHA", 
   });
   expect(markerCalls).toBeGreaterThanOrEqual(2);
   expect(result.routes.length).toBeGreaterThan(0);
+});
+
+// L11 (P5 tier-A review): the two tests above don't actually PIN the
+// SHA compare inside `waitForMarker` (validateRelease.ts's internal
+// `if (marker.source_sha === expectedSha) return;`). `smokeRemote`
+// re-fetches and re-compares the marker ONE MORE TIME after
+// `waitForMarker` returns (the ":706" backstop) -- so an inverted
+// compare (`!==`) that makes the wait loop exit "successfully" on the
+// very FIRST mismatch still produces the exact same thrown error
+// message via that backstop, and the "polls until expected" test's own
+// `markerCalls >= 2` assertion happens to still pass too (the backstop
+// fetch IS the 2nd call). Verified empirically: flipping `===` to
+// `!==` left the whole existing suite green. This test closes that gap
+// by counting marker-route fetches and sleep calls DIRECTLY, which can
+// only reach the asserted counts if the wait loop itself genuinely
+// polled across multiple (mismatching) attempts before giving up --
+// the inverted/short-circuited mutation gives exactly 1 wait-loop
+// fetch + 1 backstop fetch = 2 total and 0 sleeps, which fails both
+// assertions below.
+it("smokeRemote --wait-marker genuinely polls multiple times on a persistent mismatch (pins the internal SHA compare, L11)", async () => {
+  const routes = validSmokeRoutes(SHA);
+  let markerCalls = 0;
+  const sleepCalls: number[] = [];
+  const fetchImpl = async (url: string) => {
+    const path = url.replace(/^https?:\/\/[^/]+/, "");
+    if (path === `/${DEPLOYMENT_MARKER_FILENAME}`) {
+      markerCalls += 1;
+      // Always mismatched: a correct implementation can only ever
+      // learn this by polling repeatedly until the deadline, then
+      // throwing from INSIDE waitForMarker -- it never reaches the
+      // backstop fetch at all.
+      return {
+        status: 200,
+        async text() {
+          return JSON.stringify({ source_sha: "b".repeat(40) });
+        },
+      };
+    }
+    const body = routes[path];
+    return {
+      status: body === undefined ? 404 : 200,
+      async text() {
+        return body ?? "not found";
+      },
+    };
+  };
+  const recordingSleep = (ms: number): Promise<void> => {
+    sleepCalls.push(ms);
+    return Promise.resolve();
+  };
+
+  await expect(
+    smokeRemote({
+      baseUrl: "https://paperpilot.pages.dev",
+      expectedSha: SHA,
+      fetchImpl,
+      waitMarkerSeconds: 10,
+      now: fakeNow(0, 3000),
+      sleep: recordingSleep,
+    }),
+  ).rejects.toThrow(/does not match/);
+
+  // A correct implementation polls (fetch, check now() < deadline,
+  // sleep) in a loop and ONLY throws once the deadline is exceeded, so
+  // it accumulates several marker fetches and several sleeps -- never
+  // falls through to a separate backstop fetch afterwards (the error
+  // is thrown from inside waitForMarker itself). The inverted/
+  // short-circuited mutation described above instead produces exactly
+  // 2 marker fetches (1 in the loop + 1 backstop) and 0 sleeps.
+  expect(markerCalls).toBeGreaterThan(2);
+  expect(sleepCalls.length).toBeGreaterThan(1);
 });
 
 it("smokeRemote --wait-marker gives up once the deadline passes, surfacing the mismatch", async () => {

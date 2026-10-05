@@ -75,6 +75,34 @@ describe("writeConferenceCopyFile", () => {
     );
   });
 
+  // L6 (P5 tier-A review): writeConferenceCopyFile used to only reject
+  // {daily, lineage} -- far fewer reserved names than
+  // registerConference.ts's own, separate, broader list. Now that core's
+  // RESERVED_CONFERENCE_SLUGS is the single canonical list (both scaffold
+  // modules go through it), writeConferenceCopyFile rejects every one of
+  // these the same way registerConference always did.
+  it("rejects every reserved top-level route slug (single canonical list, L6)", () => {
+    for (const reserved of [
+      "themes",
+      "how-it-works",
+      "assets",
+      "design",
+      "paper-details-v1",
+      "paper-slides-v1",
+      "research",
+      "search-paper-ids-v1",
+    ]) {
+      expect(() => writeConferenceCopyFile(reserved, { display: "X", lede: "Y" }, copyDir)).toThrow(
+        InvalidConferenceSlugError,
+      );
+    }
+  });
+
+  it("still accepts the real conference 'cvpr-2026' (deliberately not reserved -- see core's doc comment)", () => {
+    const path = writeConferenceCopyFile("cvpr-2026", { display: "X", lede: "Y" }, copyDir);
+    expect(JSON.parse(readFileSync(path, "utf-8")).display).toBe("X");
+  });
+
   it("rejects empty display/lede", () => {
     expect(() =>
       writeConferenceCopyFile("neurips-2026", { display: "", lede: "ok" }, copyDir),

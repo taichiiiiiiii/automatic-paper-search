@@ -120,6 +120,60 @@ export async function getProductionDeploymentId(
   return { deploymentId: newest.id, deploymentUrl: newest.url };
 }
 
+const COMMIT_HASH_RE = /^[0-9a-f]{40}$/;
+
+export interface CfVerifyDeploymentOptions {
+  fetchImpl: CfFetchFn;
+  accountId: string;
+  project: string;
+  apiToken: string;
+  /** The deployment id a rollback is about to target. */
+  deploymentId: string;
+}
+
+interface CfDeploymentGetBody extends CfErrorBody {
+  result?: { deployment_trigger?: { metadata?: { commit_hash?: string } } };
+}
+
+/**
+ * `GET /accounts/{account}/pages/projects/{project}/deployments/{id}` —
+ * returns that single deployment's `commit_hash` (40-hex, regex-checked
+ * before it is returned, same discipline as every other value in this
+ * module that can reach `GITHUB_OUTPUT`/a POST body downstream).
+ *
+ * M2 of the P5 tier-A review: a rollback must never POST
+ * `.../rollback` against a deployment id before confirming that id's
+ * own recorded `commit_hash` really is the SHA the operator asked to
+ * roll back to — otherwise a forged or stale `cf_deployment_id` (e.g.
+ * from an unvalidated GitHub Deployment payload) switches production
+ * to the wrong build before smoke ever has a chance to catch it.
+ */
+export async function getDeploymentCommitHash(options: CfVerifyDeploymentOptions): Promise<string> {
+  if (!DEPLOYMENT_ID_RE.test(options.deploymentId)) {
+    throw new CloudflareApiError("deployment id has an unexpected format");
+  }
+  const url = `https://api.cloudflare.com/client/v4/accounts/${encodeURIComponent(
+    options.accountId,
+  )}/pages/projects/${encodeURIComponent(options.project)}/deployments/${encodeURIComponent(
+    options.deploymentId,
+  )}`;
+  const response = await options.fetchImpl(url, {
+    method: "GET",
+    headers: { Authorization: `Bearer ${options.apiToken}` },
+  });
+  const body = (await response.json()) as CfDeploymentGetBody;
+  if (response.status < 200 || response.status >= 300 || body.success !== true) {
+    throw new CloudflareApiError(
+      `Cloudflare Pages deployment lookup failed: ${describeCfError(response.status, body)}`,
+    );
+  }
+  const commitHash = body.result?.deployment_trigger?.metadata?.commit_hash;
+  if (typeof commitHash !== "string" || !COMMIT_HASH_RE.test(commitHash)) {
+    throw new CloudflareApiError("Cloudflare deployment commit_hash has an unexpected format");
+  }
+  return commitHash;
+}
+
 export interface CfRollbackOptions {
   fetchImpl: CfFetchFn;
   accountId: string;

@@ -160,14 +160,27 @@ jobs:
           echo "base_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           echo "candidate_name=conference-candidate-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_OUTPUT"
 
+      - name: Package exact conference candidate
+        # H4 of the P5 tier-A review: `actions/upload-artifact` roots a
+        # multi-path artifact at the paths' least common ancestor
+        # (`data/`), which strips the `published/`/`inputs/`/`config/`
+        # prefix promote.ts's allowlist requires — package through the
+        # release CLI first (as theme-on-demand.yml / collect-weekly.yml
+        # already do) so the uploaded tree keeps its real
+        # repo-root-relative layout.
+        env:
+          CONF: ${{ inputs.conference }}
+          PAPERPILOT_PACKAGE_INCLUDE_UNCHANGED: "1"
+        run: |
+          set -euo pipefail
+          pnpm exec tsx apps/pipeline/src/release/cli.ts package "$RUNNER_TEMP/candidate" \
+            "data/published/$CONF" "data/inputs/$CONF" "data/config/conference-copy/$CONF.json"
+
       - name: Upload generated candidate
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: ${{ steps.candidate.outputs.candidate_name }}
-          path: |
-            data/published/${{ inputs.conference }}
-            data/inputs/${{ inputs.conference }}
-            data/config/conference-copy/${{ inputs.conference }}.json
+          path: ${{ runner.temp }}/candidate
           if-no-files-found: error
           retention-days: 14
 

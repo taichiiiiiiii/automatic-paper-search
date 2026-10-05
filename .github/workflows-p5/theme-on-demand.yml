@@ -81,7 +81,15 @@ jobs:
         # User input goes through env var only (never spliced into the
         # shell command line), so command-substitution-style attacks are
         # impossible here.
+        #
+        # PAPERPILOT_GROQ_API_KEY / PAPERPILOT_S2_API_KEY (H3 of the P5
+        # tier-A review): without these, buildProvider() throws "No LLM
+        # key found" and every on-demand theme request fails; S2 also
+        # runs unauthenticated without its key. Same secret names as the
+        # live theme-on-demand.yml step this one replaces.
         env:
+          PAPERPILOT_GROQ_API_KEY: ${{ secrets.PAPERPILOT_GROQ_API_KEY }}
+          PAPERPILOT_S2_API_KEY: ${{ secrets.PAPERPILOT_S2_API_KEY }}
           THEME_INPUT: ${{ inputs.theme }}
         run: |
           set -euo pipefail

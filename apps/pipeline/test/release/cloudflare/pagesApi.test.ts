@@ -10,6 +10,7 @@ import { expect, it } from "vitest";
 import {
   type CfFetchFn,
   CloudflareApiError,
+  getDeploymentCommitHash,
   getProductionDeploymentId,
   rollbackDeployment,
 } from "../../../src/release/cloudflare/pagesApi.js";
@@ -191,6 +192,87 @@ it("rollbackDeployment surfaces the API's own error message, never the token, on
       project: "proj",
       apiToken: SECRET_TOKEN,
       deploymentId: "dep-target",
+    });
+  } catch (e) {
+    caught = e;
+  }
+  expect(caught).toBeInstanceOf(CloudflareApiError);
+  const message = (caught as Error).message;
+  expect(message).toContain("deployment not found");
+  expect(message).not.toContain(SECRET_TOKEN);
+});
+
+it("getDeploymentCommitHash returns the deployment's commit_hash", async () => {
+  const fetchImpl: CfFetchFn = async () => ({
+    status: 200,
+    json: async () => ({
+      success: true,
+      result: { deployment_trigger: { metadata: { commit_hash: SHA } } },
+    }),
+  });
+  const commitHash = await getDeploymentCommitHash({
+    fetchImpl,
+    accountId: "acct",
+    project: "proj",
+    apiToken: SECRET_TOKEN,
+    deploymentId: "dep-1",
+  });
+  expect(commitHash).toBe(SHA);
+});
+
+it("getDeploymentCommitHash rejects a malformed deployment id before making any request (M2)", async () => {
+  let called = false;
+  const fetchImpl: CfFetchFn = async () => {
+    called = true;
+    return {
+      status: 200,
+      json: async () => ({
+        success: true,
+        result: { deployment_trigger: { metadata: { commit_hash: SHA } } },
+      }),
+    };
+  };
+  await expect(
+    getDeploymentCommitHash({
+      fetchImpl,
+      accountId: "acct",
+      project: "proj",
+      apiToken: SECRET_TOKEN,
+      deploymentId: "bad id!",
+    }),
+  ).rejects.toThrow(/unexpected format/);
+  expect(called).toBe(false);
+});
+
+it("getDeploymentCommitHash rejects a missing/malformed commit_hash rather than returning undefined (M2)", async () => {
+  const fetchImpl: CfFetchFn = async () => ({
+    status: 200,
+    json: async () => ({ success: true, result: { deployment_trigger: { metadata: {} } } }),
+  });
+  await expect(
+    getDeploymentCommitHash({
+      fetchImpl,
+      accountId: "acct",
+      project: "proj",
+      apiToken: SECRET_TOKEN,
+      deploymentId: "dep-1",
+    }),
+  ).rejects.toThrow(/unexpected format/);
+});
+
+it("getDeploymentCommitHash surfaces the API's own error message, never the token, on failure", async () => {
+  const fetchImpl: CfFetchFn = async () => ({
+    status: 404,
+    json: async () => ({ success: false, errors: [{ message: "deployment not found" }] }),
+  });
+  let caught: unknown;
+  try {
+    await getDeploymentCommitHash({
+      fetchImpl,
+      accountId: "acct",
+      project: "proj",
+      apiToken: SECRET_TOKEN,
+      deploymentId: "dep-1",
     });
   } catch (e) {
     caught = e;

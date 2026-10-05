@@ -23,6 +23,7 @@
  *   tsx cli.ts marker <out-dir>                      (env SOURCE_SHA, RELEASE_KIND, REQUEST_ID)
  *   tsx cli.ts cf-deployment-id                      (env CF_API_TOKEN, CF_ACCOUNT_ID, CF_PROJECT, SOURCE_SHA)
  *   tsx cli.ts cf-rollback <deployment-id>           (env CF_API_TOKEN, CF_ACCOUNT_ID, CF_PROJECT)
+ *   tsx cli.ts cf-verify-deployment <deployment-id> <expected-sha>  (env CF_API_TOKEN, CF_ACCOUNT_ID, CF_PROJECT)
  *   tsx cli.ts gh-record                             (env GITHUB_TOKEN, GITHUB_REPOSITORY, SOURCE_SHA, CF_DEPLOYMENT_ID, RELEASE_KIND, REQUEST_ID, ARTIFACT_NAME)
  *   tsx cli.ts no-skip-gate <vitest-json-report>...
  */
@@ -33,6 +34,7 @@ import { CliUsageError, parseArgs as parseFlags } from "../shared/cli/argparse.j
 import { isMain } from "../shared/cli/isMain.js";
 import {
   type CfFetchFn,
+  getDeploymentCommitHash,
   getProductionDeploymentId,
   rollbackDeployment,
 } from "./cloudflare/pagesApi.js";
@@ -352,6 +354,34 @@ async function runCfRollback(args: string[]): Promise<void> {
   emitKeyValueOutputs({ cf_deployment_id: result.deploymentId });
 }
 
+/**
+ * `cf-verify-deployment` (M2 of the P5 tier-A review): confirms a
+ * deployment id's own recorded `commit_hash` equals the SHA the caller
+ * is about to roll back to, BEFORE pages-rollback.yml's `rollback` job
+ * POSTs `.../rollback` against it. Dies (never silently proceeds) on any
+ * mismatch or malformed input.
+ */
+async function runCfVerifyDeployment(args: string[]): Promise<void> {
+  if (args.length !== 2) die("usage: cf-verify-deployment <deployment-id> <expected-sha>");
+  const [deploymentId, expectedSha] = args as [string, string];
+  if (!SOURCE_SHA_RE.test(expectedSha)) {
+    die("expected-sha must be 40 lowercase hex characters");
+  }
+  const commitHash = await getDeploymentCommitHash({
+    fetchImpl: cfFetch,
+    accountId: requiredEnv("CF_ACCOUNT_ID"),
+    project: requiredEnv("CF_PROJECT"),
+    apiToken: requiredEnv("CF_API_TOKEN"),
+    deploymentId,
+  });
+  if (commitHash !== expectedSha) {
+    die(
+      `Cloudflare deployment ${deploymentId} commit_hash ${commitHash} does not match expected ${expectedSha}`,
+    );
+  }
+  console.log(`verified Cloudflare deployment ${deploymentId} matches ${expectedSha}`);
+}
+
 async function runGhRecord(): Promise<void> {
   const releaseKind = requiredEnv("RELEASE_KIND");
   if (releaseKind !== "normal" && releaseKind !== "rollback") {
@@ -402,6 +432,9 @@ async function main(): Promise<void> {
       case "cf-rollback":
         await runCfRollback(rest);
         break;
+      case "cf-verify-deployment":
+        await runCfVerifyDeployment(rest);
+        break;
       case "gh-record":
         await runGhRecord();
         break;
@@ -410,7 +443,7 @@ async function main(): Promise<void> {
         break;
       default:
         die(
-          "usage: cli.ts {promote|package|commit-push|validate|marker|cf-deployment-id|cf-rollback|gh-record|no-skip-gate} ...\n" +
+          "usage: cli.ts {promote|package|commit-push|validate|marker|cf-deployment-id|cf-rollback|cf-verify-deployment|gh-record|no-skip-gate} ...\n" +
             "  promote <themes|conference|test-only> <candidate-dir> <commit-message> <allowed-path>...\n" +
             "  package <candidate-dir> <included-path>...\n" +
             '  commit-push "<message>" <stage-path>...\n' +
@@ -420,6 +453,7 @@ async function main(): Promise<void> {
             "  marker <out-dir>\n" +
             "  cf-deployment-id\n" +
             "  cf-rollback <deployment-id>\n" +
+            "  cf-verify-deployment <deployment-id> <expected-sha>\n" +
             "  gh-record\n" +
             "  no-skip-gate <vitest-json-report>...",
         );

@@ -97,6 +97,15 @@ jobs:
           echo "rebuilt $rebuilt conference-local projection(s)"
 
       - name: Regenerate eligible conference lineages
+        # PAPERPILOT_GROQ_API_KEY / PAPERPILOT_GEMINI_API_KEY (H3 of the
+        # P5 tier-A review): without either, buildProvider() throws "No
+        # LLM key found" and every conference with an Oral paper fails,
+        # so the catalog refresh never promotes. Same secret names as the
+        # live collect-weekly.yml step this one replaces; the no-key
+        # retain-and-exit-0 guard below is restored from that same step.
+        env:
+          PAPERPILOT_GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          PAPERPILOT_GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           set -euo pipefail
           attempted=0
@@ -108,6 +117,12 @@ jobs:
             echo "| Conference | Result | Published candidate |"
             echo "|---|---|---|"
           } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ -z "${PAPERPILOT_GROQ_API_KEY:-}" ] && [ -z "${PAPERPILOT_GEMINI_API_KEY:-}" ]; then
+            echo "| all | no LLM key | previous lineages retained |" >> "$GITHUB_STEP_SUMMARY"
+            echo "::notice::no lineage LLM key configured; retaining published lineages"
+            exit 0
+          fi
 
           shopt -s nullglob
           for papers in data/published/*/papers.json; do

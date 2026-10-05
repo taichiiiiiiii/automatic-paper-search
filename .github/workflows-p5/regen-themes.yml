@@ -36,7 +36,14 @@ jobs:
         uses: ./.github/actions/setup-pnpm
 
       - name: Regenerate requested themes
+        # PAPERPILOT_GROQ_API_KEY / PAPERPILOT_S2_API_KEY (H3 of the P5
+        # tier-A review): without these, buildProvider() throws "No LLM
+        # key found" and every regeneration fails; S2 also runs
+        # unauthenticated without its key. Same secret names as the live
+        # regen-themes.yml step this one replaces.
         env:
+          PAPERPILOT_GROQ_API_KEY: ${{ secrets.PAPERPILOT_GROQ_API_KEY }}
+          PAPERPILOT_S2_API_KEY: ${{ secrets.PAPERPILOT_S2_API_KEY }}
           THEMES_INPUT: ${{ inputs.themes }}
           THEME_RE: '^[A-Za-z0-9 _-]{2,80}$'
         run: |
@@ -113,13 +120,26 @@ jobs:
           echo "base_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           echo "candidate_name=themes-candidate-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_OUTPUT"
 
+      - name: Package exact themes candidate
+        # H4 of the P5 tier-A review: `actions/upload-artifact` roots a
+        # multi-path artifact at the paths' least common ancestor
+        # (`data/`), which strips the `published/`/`state/` prefix
+        # promote.ts's allowlist requires — package through the release
+        # CLI first (as theme-on-demand.yml / collect-weekly.yml already
+        # do) so the uploaded tree keeps its real repo-root-relative
+        # layout.
+        env:
+          PAPERPILOT_PACKAGE_INCLUDE_UNCHANGED: "1"
+        run: |
+          set -euo pipefail
+          pnpm exec tsx apps/pipeline/src/release/cli.ts package "$RUNNER_TEMP/candidate" \
+            data/published/themes data/state/lineage-cache/classifications.json
+
       - name: Upload generated candidate
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: ${{ steps.candidate.outputs.candidate_name }}
-          path: |
-            data/published/themes
-            data/state/lineage-cache/classifications.json
+          path: ${{ runner.temp }}/candidate
           if-no-files-found: error
           retention-days: 14
 

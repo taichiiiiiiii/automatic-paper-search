@@ -88,13 +88,55 @@ export interface RecordDeploymentResult {
 }
 
 const REPO_RE = /^[\w.-]+\/[\w.-]+$/;
+// Same shape as cloudflare/pagesApi.ts's own `DEPLOYMENT_ID_RE` (the
+// Cloudflare deployment id this value actually came from, earlier in
+// the same release pipeline) -- duplicated rather than imported so this
+// module has no dependency on the cloudflare/ subtree.
+const CF_DEPLOYMENT_ID_RE = /^[A-Za-z0-9-]{1,64}$/;
+// Same shape as marker.ts's own `REQUEST_ID_RE` -- the value comes from
+// the same `REQUEST_ID` env var pages-release.yml / theme-on-demand.yml
+// already regex-check at dispatch time; duplicated for the same
+// no-cross-module-dependency reason as above.
+const REQUEST_ID_RE = /^[A-Za-z0-9._:-]{1,128}$/;
+// `ARTIFACT_NAME` is built by the job itself (pages-release.yml:
+// `cf-pages-$SOURCE_SHA`) and never comes from an untrusted actor
+// input, but it still reaches a GitHub API payload unescaped (L1 of the
+// P5 tier-A review) -- the same conservative "ASCII identifier" charset
+// as the other two regexes above, wide enough for the real
+// `cf-pages-<40-hex>` shape plus any future artifact-name scheme built
+// from the same characters.
+const ARTIFACT_NAME_RE = /^[A-Za-z0-9._-]{1,128}$/;
 
-/** `gh-record`: `POST /repos/{repo}/deployments`, then `POST .../deployments/{id}/statuses` with `state: "success"`. */
+/**
+ * `gh-record`: `POST /repos/{repo}/deployments`, then `POST
+ * .../deployments/{id}/statuses` with `state: "success"`.
+ *
+ * L1 of the P5 tier-A review: `cfDeploymentId`, `requestId`, and
+ * `artifactName` used to reach the GitHub API payload with no format
+ * check at all (unlike `sourceSha`, already regex-checked by the CLI's
+ * `requiredShaEnv`, and `repo`, checked just below) -- an unchecked
+ * string embedded in a JSON request body is not a `GITHUB_OUTPUT`
+ * newline-injection vector the way an UNQUOTED shell value would be,
+ * but it is still the known-good ledger's own input validation gap: a
+ * malformed/oversized value from a compromised upstream step would be
+ * recorded verbatim into the GitHub Deployment this module creates.
+ * All three are validated here, BEFORE the first `ghPost` call, exactly
+ * like `repo` already was.
+ */
 export async function recordDeployment(
   options: RecordDeploymentOptions,
 ): Promise<RecordDeploymentResult> {
   if (!REPO_RE.test(options.repo)) {
     throw new GithubApiError(`invalid repo: ${JSON.stringify(options.repo)}`);
+  }
+  if (!CF_DEPLOYMENT_ID_RE.test(options.cfDeploymentId)) {
+    throw new GithubApiError(`invalid cfDeploymentId: ${JSON.stringify(options.cfDeploymentId)}`);
+  }
+  if (options.requestId !== null && !REQUEST_ID_RE.test(options.requestId)) {
+    throw new GithubApiError(`invalid requestId: ${JSON.stringify(options.requestId)}`);
+  }
+  if (!ARTIFACT_NAME_RE.test(options.artifactName)) {
+    throw new GithubApiError(`invalid artifactName: ${JSON.stringify(options.artifactName)}`);
   }
   const created = await ghPost(
     options.fetchImpl,

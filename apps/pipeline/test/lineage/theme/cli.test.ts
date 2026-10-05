@@ -18,6 +18,7 @@ import { ZeroEdgeBuildError } from "../../../src/lineage/theme/build.js";
 import {
   CliArgError,
   defaultDeps,
+  envFilePath,
   expandParams,
   parseArgs,
   runThemeCli,
@@ -424,5 +425,25 @@ describe("defaultDeps' fetchImpl — abort timer must cover the body read, not j
 
     expect(sawAbort).toBe(true);
     expect(result).toBe("aborted");
+  });
+});
+
+// L10 (P5 tier-A review): this CLI's `defaultDeps` used to hard-code
+// `join(repoRoot, "paperpilot", ".env")` -- a literal that bypasses the
+// A0 layout switch entirely, so flipping `LAYOUT_MODE` to `"p5"`
+// (`data/config/.env`) would silently leave it reading the WRONG
+// location (or nothing), unlike `buildLineageCli.ts`'s own `envFilePath`
+// (p5-plan.md §2 A2 follow-up #19), which this mirrors.
+describe("envFilePath (L10: loads .env through the layout like buildLineageCli)", () => {
+  it("legacy: paperpilot/.env (byte-identical to the pre-change hard-coded path, tier-A inert)", () => {
+    expect(envFilePath("/repo", "legacy")).toBe(join("/repo", "paperpilot", ".env"));
+  });
+
+  it("p5: inside layout.config, alongside config.yaml (data/config/.env)", () => {
+    expect(envFilePath("/repo", "p5")).toBe(join("/repo", "data", "config", ".env"));
+  });
+
+  it("defaults to the current LAYOUT_MODE ('legacy') when no mode is given", () => {
+    expect(envFilePath("/repo")).toBe(join("/repo", "paperpilot", ".env"));
   });
 });

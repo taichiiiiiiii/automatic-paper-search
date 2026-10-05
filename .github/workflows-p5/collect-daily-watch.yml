@@ -28,9 +28,14 @@ jobs:
         uses: ./.github/actions/setup-pnpm
 
       - name: Run PaperPilot (daily follow-watch)
+        # L7 of the P5 tier-A review: PAPERPILOT_SLACK_WEBHOOK_URL, same
+        # as the live collect-daily-watch.yml's collector step. Slack
+        # export is disabled today (no webhook configured), but enabling
+        # it must not require re-discovering this missing env var.
         env:
           PAPERPILOT_GITHUB_TOKEN: ${{ secrets.GH_PAT || github.token }}
           PAPERPILOT_OPENALEX_EMAIL: ${{ secrets.OPENALEX_EMAIL }}
+          PAPERPILOT_SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: pnpm exec tsx apps/pipeline/src/collect/cli.ts --config data/config/config.daily-watch.yaml --fail-on-errors
 
       - name: Commit daily hits, seen_ids and run history

@@ -25,15 +25,22 @@
 import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
+import { layoutFor } from "@paperpilot/core/layout";
 import { canonicalUrl, LEGACY_GITHUB_PAGES_BASE_PATH, PUBLIC_ORIGIN } from "@paperpilot/core/site";
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(SCRIPT_DIR, "..", "..", "..");
 
-/** Default source: today's legacy site. After the A9 data move this
- * becomes `legacy/gh-pages-site`; callers pass `--source` to point at
- * the new location without editing this file. */
-export const DEFAULT_SOURCE_DIR = join(REPO_ROOT, "docs");
+/**
+ * Default source: `layoutFor(REPO_ROOT).legacySite` -- today's legacy
+ * site (`docs/`, `LAYOUT_MODE` "legacy") byte-identically, and
+ * `legacy/gh-pages-site` once commit B flips `LAYOUT_MODE` to "p5" --
+ * callers may still pass `--source` to point elsewhere without editing
+ * this file (M4 of the P5 tier-A review: this used to hard-code `docs/`
+ * forever, so after the cutover it would publish only the 404
+ * catch-all).
+ */
+export const DEFAULT_SOURCE_DIR = layoutFor(REPO_ROOT).legacySite;
 
 /** Default output: a gitignored build artifact under apps/web, never
  * committed (see apps/web/.gitignore). */

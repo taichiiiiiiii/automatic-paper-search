@@ -62,38 +62,17 @@
 
 import { existsSync, mkdirSync, readFileSync } from "node:fs";
 import { dirname } from "node:path";
+import { RESERVED_CONFERENCE_SLUGS } from "@paperpilot/core/slug";
 import { atomicWriteText } from "../../collect/state/atomic.js";
 import { validateConferenceSlug } from "../shared/index.js";
 
 /**
- * Reserved top-level routes/paths a conference slug must never collide
- * with. Union of the new site's reserved catalog routes
- * (`apps/web/lib/catalog-constants.ts::RESERVED_CATALOG_SLUGS` — not
- * imported directly since `apps/web` is outside this task's package
- * graph; kept in sync by hand, same as the Python/Worker/frontend 3-way
- * slug parity CLAUDE.md §14 already requires elsewhere) and the legacy
- * static-site reserved paths `scaffold_conference_page.py` guarded
- * (`assets`, `design`, `how-it-works`, `paper-details-v1`,
- * `paper-slides-v1`, `research`, `search-paper-ids-v1`, `themes`) — several
- * of those no longer correspond to a real route in the new site, but
- * rejecting them too costs nothing and guards against the old `docs/`
- * tree still being served during the migration's co-existence period
- * (design doc §7.3).
+ * Re-exported for backward compatibility (this module used to define
+ * its own, separate copy of this set — see
+ * `packages/core/src/slug/conference.ts`'s doc comment, L6 of the P5
+ * tier-A review, for why there is now exactly one canonical list).
  */
-export const RESERVED_CONFERENCE_SLUGS: ReadonlySet<string> = new Set([
-  // apps/web/lib/catalog-constants.ts RESERVED_CATALOG_SLUGS
-  "daily",
-  "themes",
-  "lineage",
-  "how-it-works",
-  // legacy docs/ reserved paths (scaffold_conference_page.py)
-  "assets",
-  "design",
-  "paper-details-v1",
-  "paper-slides-v1",
-  "research",
-  "search-paper-ids-v1",
-]);
+export { RESERVED_CONFERENCE_SLUGS };
 
 /** Matches a plain multi-line text field: printable Unicode plus `\n`, no C0/C1 control characters (CNF-21's injection defense, reframed for a JSON data field instead of an HTML template). */
 function isPlainText(value: string): boolean {

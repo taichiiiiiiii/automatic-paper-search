@@ -15,13 +15,25 @@
  * `apps/pipeline/src/catalog/` only because of this change's edit limits —
  * see the final report for the consolidation note.
  *
- * `docs/search-index.json` (v1) is kept for parity until P5 removes it
- * (design doc §9.3); this module still produces it.
+ * `docs/search-index.json` (v1) is kept for parity under `"legacy"` only
+ * (design doc §9.3, docs/migration/p4-followups.md follow-up #5): the
+ * data move deletes `docs/search-index.json` and p5's promoter
+ * `SHARED_PATHS` (`../promote.ts`) never allowlists it, so {@link
+ * writeSearchIndexes} and {@link checkSearchIndexes} gate v1
+ * generation/verification on `mode` (default {@link LAYOUT_MODE}) the
+ * same way `validateRelease.ts`'s `requiredArtifactsFor` gates its
+ * artifact list — an explicit parameter a test can pass directly,
+ * never a global flipped mid-test. Under `"p5"` neither function
+ * touches `search-index.json` at all: `writeSearchIndexes` never calls
+ * {@link writeIndex}, and `checkSearchIndexes` never reads it, so a p5
+ * release validate / conference-refresh promotion no longer ENOENTs on
+ * it nor produces an untracked file `promote.ts` would reject.
  */
 
 import { mkdirSync, readdirSync, readFileSync, statSync, unlinkSync } from "node:fs";
 import { join } from "node:path";
 import { identityFromUrl, normalizeAlias } from "@paperpilot/core/identity";
+import { LAYOUT_MODE, type LayoutMode } from "@paperpilot/core/layout";
 import { codepointCompare, pyJsonDumps, pyStrip } from "@paperpilot/core/pycompat";
 import { atomicWriteText } from "../../collect/state/atomic.js";
 
@@ -272,21 +284,30 @@ export interface WriteSearchIndexesResult {
   entriesV2: V2Entry[];
   skipped: number;
   idBlocks: string[];
-  outV1: string;
+  /** `undefined` under `mode: "p5"` — v1 is never written (follow-up #5). */
+  outV1: string | undefined;
   outV2: string;
   removedBlocks: string[];
 }
 
 /**
- * The non-`--check` body of `main()`: write v1, then ID blocks, then v2,
- * then prune. This exact order is what keeps a published index and its
- * block set from being torn apart by a failure part-way through.
+ * The non-`--check` body of `main()`: write v1 (legacy only), then ID
+ * blocks, then v2, then prune. This exact order (for the parts that do
+ * run) is what keeps a published index and its block set from being torn
+ * apart by a failure part-way through. `mode` (default {@link
+ * LAYOUT_MODE}) gates v1: under `"p5"`, {@link writeIndex} is never
+ * called at all -- `docs/search-index.json` is not merely left stale,
+ * it is never touched, matching p5's promoter `SHARED_PATHS` (which
+ * does not allowlist it) and the data move (which deletes it).
  */
-export function writeSearchIndexes(docsRoot: string): WriteSearchIndexesResult {
+export function writeSearchIndexes(
+  docsRoot: string,
+  mode: LayoutMode = LAYOUT_MODE,
+): WriteSearchIndexesResult {
   const { entries, skipped } = buildIndex(docsRoot);
   const { entries: entriesV2, paperIds } = buildIndexV2(docsRoot);
 
-  const outV1 = writeIndex(docsRoot, entries);
+  const outV1 = mode === "legacy" ? writeIndex(docsRoot, entries) : undefined;
   const idBlocks = writePaperIdBlocks(docsRoot, paperIds);
   const outV2 = writeIndexV2(docsRoot, entriesV2);
   const removedBlocks = prunePaperIdBlocks(docsRoot, idBlocks);
@@ -294,16 +315,26 @@ export function writeSearchIndexes(docsRoot: string): WriteSearchIndexesResult {
   return { entries, entriesV2, skipped, idBlocks, outV1, outV2, removedBlocks };
 }
 
-/** The `--check` body of `main()`: raise if committed outputs are stale. */
-export function checkSearchIndexes(docsRoot: string): void {
+/**
+ * The `--check` body of `main()`: raise if committed outputs are stale.
+ * `mode` (default {@link LAYOUT_MODE}) gates v1 the same way {@link
+ * writeSearchIndexes} does -- under `"p5"` this never reads
+ * `docs/search-index.json` (it does not exist post-data-move), so only
+ * v2 and the paper-ID blocks are verified.
+ */
+export function checkSearchIndexes(docsRoot: string, mode: LayoutMode = LAYOUT_MODE): void {
   const { entries } = buildIndex(docsRoot);
   const { entries: entriesV2, paperIds } = buildIndexV2(docsRoot);
 
-  const expectedV1 = pyJsonDumps(entries, { ensureAscii: false, separators: [",", ":"] });
   const expectedV2 = pyJsonDumps(entriesV2, { ensureAscii: false, separators: [",", ":"] });
-  const actualV1 = readFileSync(join(docsRoot, INDEX_FILENAME), "utf-8");
   const actualV2 = readFileSync(join(docsRoot, INDEX_V2_FILENAME), "utf-8");
-  if (actualV1 !== expectedV1 || actualV2 !== expectedV2) {
+  let v1Stale = false;
+  if (mode === "legacy") {
+    const expectedV1 = pyJsonDumps(entries, { ensureAscii: false, separators: [",", ":"] });
+    const actualV1 = readFileSync(join(docsRoot, INDEX_FILENAME), "utf-8");
+    v1Stale = actualV1 !== expectedV1;
+  }
+  if (v1Stale || actualV2 !== expectedV2) {
     throw new Error("committed search indexes are stale; rebuild without --check");
   }
 

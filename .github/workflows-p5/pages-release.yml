@@ -52,6 +52,14 @@ permissions: {}
 concurrency:
   group: paperpilot-pages-production
   cancel-in-progress: false
+  # (verify) Live pre-P5 pages-release.yml also sets `queue: max` here.
+  # `concurrency.queue` is not in the GitHub Actions concurrency schema
+  # this changeset could check offline (no network access) — adding an
+  # unrecognized key risks a hard workflow-parse failure, not a graceful
+  # ignore, which would be worse than the L5 gap it's meant to close.
+  # Left out until the next online verification pass confirms the exact
+  # key/value GitHub Actions accepts there; tracked in this task's
+  # handback as an unresolved (verify) item (P5 tier-A review, L5).
 
 env:
   # Must equal packages/core/src/site/config.ts's PAGES_PROJECT_NAME /
@@ -112,6 +120,14 @@ jobs:
       - name: Typecheck
         run: pnpm -r --if-present typecheck
 
+      - name: Build web
+        # Before the tests: apps/web's own contract tests (CSP, sitemap,
+        # redirects, paper-links build safety, copy-data, ...) read the
+        # built apps/web/out/public, and no-skip-gate below fails the
+        # whole release if they report "skipped" (no OUT_DIR/PUBLIC_DIR)
+        # instead of actually running (H2 of the P5 tier-A review).
+        run: pnpm --filter @paperpilot/web build
+
       - name: Full test suite with no skips
         run: |
           set -euo pipefail
@@ -166,15 +182,28 @@ jobs:
           REQUEST_ID: ${{ inputs.request_id }}
         run: pnpm exec tsx apps/pipeline/src/release/cli.ts marker apps/web/out
 
-      - name: Validate local Pages bundle
+      - name: Assert the marker matches before validating the bundle
+        # L4 of the P5 tier-A review: the marker was previously only
+        # asserted once, much later, in the deploy job (after the
+        # artifact was already downloaded) — a mismatch here fails fast,
+        # in the same job that just wrote it, before any upload/deploy.
         env:
           SOURCE_SHA: ${{ inputs.source_sha }}
-        run: pnpm exec tsx apps/pipeline/src/release/cli.ts validate bundle apps/web/out
-
-      - name: Hash the built tree
         run: |
           set -euo pipefail
-          (cd apps/web/out && find . -type f -print0 | sort -z | xargs -0 sha256sum) > "$RUNNER_TEMP/out.sha256"
+          marker_sha="$(jq -r '.source_sha' apps/web/out/_paperpilot-deployment.json)"
+          test "$marker_sha" = "$SOURCE_SHA"
+
+      - name: Validate local Pages bundle
+        # `validate local` (not `validate bundle`): also checks this
+        # job's own checkout HEAD equals the exact SHA being released
+        # (L4 of the P5 tier-A review — `validate bundle` has no HEAD==SHA
+        # check, which is correct for the promoter's pre-commit worktree
+        # but wrong here, where the checkout above is already pinned to
+        # inputs.source_sha).
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha }}
+        run: pnpm exec tsx apps/pipeline/src/release/cli.ts validate local "$SOURCE_SHA" apps/web/out
 
       - name: Set artifact metadata
         id: metadata
@@ -214,7 +243,7 @@ jobs:
           # Must be a subset of pages.yml's `paths:` filter (p5-plan.md
           # §2 A7 assertion 8) — apps/pipeline/test/workflows pins that
           # inequality the other way round.
-          ADMIT_PATHS: "data/published apps/web packages/core schemas pnpm-lock.yaml package.json"
+          ADMIT_PATHS: "data/published data/config/conference-copy apps/web packages/core schemas pnpm-lock.yaml package.json"
         run: |
           set -euo pipefail
           git fetch --no-tags origin develop
@@ -273,11 +302,15 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           SOURCE_SHA: ${{ inputs.source_sha }}
           ARTIFACT_DIR: ${{ runner.temp }}/cf-pages
-        # Pinned to the exact wrangler range this workspace already
-        # depends on (apps/api/package.json: "wrangler": "^4.147.0").
+        # L3 of the P5 tier-A review: the workspace's own lockfile-pinned
+        # wrangler (apps/api/package.json: "wrangler": "^4.147.0",
+        # installed by Setup pnpm above), not `npx --yes wrangler@...`,
+        # whose transitive dependencies would otherwise resolve outside
+        # the lockfile at deploy time with the account-wide Cloudflare
+        # token already in env.
         run: |
           set -euo pipefail
-          npx --yes wrangler@4.147.0 pages deploy "$ARTIFACT_DIR" \
+          pnpm --filter @paperpilot/api exec wrangler pages deploy "$ARTIFACT_DIR" \
             --project-name="$CF_PAGES_PROJECT" \
             --branch="$CF_PAGES_PRODUCTION_BRANCH" \
             --commit-hash="$SOURCE_SHA" \
@@ -299,7 +332,7 @@ jobs:
         run: pnpm exec tsx apps/pipeline/src/release/cli.ts cf-deployment-id
 
   smoke:
-    needs: [admit, deploy]
+    needs: [build, admit, deploy]
     if: needs.admit.outputs.deployable == 'true' && needs.deploy.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 10

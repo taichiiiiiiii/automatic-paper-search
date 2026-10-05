@@ -106,8 +106,18 @@ jobs:
             echo "::error::target SHA has no successful cloudflare-pages-production deployment"
             exit 1
           }
-          echo "target_sha=$TARGET_SHA" >> "$GITHUB_OUTPUT"
-          echo "cf_deployment_id=$cf_deployment_id" >> "$GITHUB_OUTPUT"
+          # M2 of the P5 tier-A review: `gh api --jq` prints the payload
+          # field raw. A crafted deployment payload (any actor/workflow
+          # with `deployments: write`) could otherwise smuggle an extra
+          # `key=value` line into $GITHUB_OUTPUT via an embedded newline.
+          # Regex-check before writing, and write both validated values
+          # from one printf so no unvalidated string ever reaches
+          # $GITHUB_OUTPUT on its own.
+          [[ "$cf_deployment_id" =~ ^[A-Za-z0-9-]{1,64}$ ]] || {
+            echo "::error::cf_deployment_id has an unexpected format"
+            exit 1
+          }
+          printf 'target_sha=%s\ncf_deployment_id=%s\n' "$TARGET_SHA" "$cf_deployment_id" >> "$GITHUB_OUTPUT"
 
   rollback:
     needs: validate_target
@@ -133,6 +143,20 @@ jobs:
 
       - name: Setup pnpm
         uses: ./.github/actions/setup-pnpm
+
+      - name: Verify the Cloudflare deployment matches the target SHA
+        # M2 of the P5 tier-A review: GET the deployment and require its
+        # OWN recorded commit_hash to equal target_sha before any
+        # mutating rollback call — never trust validate_target's id
+        # alone to already mean "safe to roll back to" (production would
+        # otherwise switch to a mismatched build before smoke runs).
+        env:
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CF_PROJECT: ${{ env.CF_PAGES_PROJECT }}
+          DEPLOYMENT_ID: ${{ needs.validate_target.outputs.cf_deployment_id }}
+          TARGET_SHA: ${{ needs.validate_target.outputs.target_sha }}
+        run: pnpm exec tsx apps/pipeline/src/release/cli.ts cf-verify-deployment "$DEPLOYMENT_ID" "$TARGET_SHA"
 
       - name: Roll back to the known-good Cloudflare deployment
         id: rollback

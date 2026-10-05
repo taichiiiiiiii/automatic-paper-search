@@ -50,7 +50,12 @@ jobs:
         uses: ./.github/actions/setup-pnpm
 
       - name: Generate the redirect site
-        run: pnpm --filter @paperpilot/web run legacy-redirects
+        # M4 of the P5 tier-A review: explicit `--source`, the same p5-era
+        # literal path pages-release.yml's ADMIT_PATHS and pages.yml's
+        # `paths:` already use, rather than relying on the generator's own
+        # `layoutFor(REPO_ROOT).legacySite` default resolving correctly at
+        # whatever moment this workflow actually runs.
+        run: pnpm --filter @paperpilot/web run legacy-redirects -- --source legacy/gh-pages-site
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3

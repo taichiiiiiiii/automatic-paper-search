@@ -98,6 +98,59 @@ it("rejects a malformed repo before making any request", async () => {
   expect(called).toBe(false);
 });
 
+// L1 (P5 tier-A review): cfDeploymentId/requestId/artifactName used to
+// reach the GitHub API payload with no format check at all -- each must
+// now be regex-validated BEFORE the first request, same as repo above.
+it("rejects a malformed cfDeploymentId before making any request", async () => {
+  let called = false;
+  const fetchImpl: GhFetchFn = async () => {
+    called = true;
+    return { status: 201, text: async () => "{}" };
+  };
+  await expect(
+    recordDeployment({ ...baseOptions(fetchImpl), cfDeploymentId: "has a space" }),
+  ).rejects.toThrow(GithubApiError);
+  await expect(
+    recordDeployment({ ...baseOptions(fetchImpl), cfDeploymentId: "has\nnewline" }),
+  ).rejects.toThrow(GithubApiError);
+  expect(called).toBe(false);
+});
+
+it("rejects a malformed requestId before making any request (null is still allowed)", async () => {
+  let called = false;
+  const rejectingFetch: GhFetchFn = async () => {
+    called = true;
+    return { status: 201, text: async () => "{}" };
+  };
+  await expect(
+    recordDeployment({ ...baseOptions(rejectingFetch), requestId: "bad id with spaces" }),
+  ).rejects.toThrow(GithubApiError);
+  expect(called).toBe(false);
+
+  const acceptingFetch: GhFetchFn = async (url) =>
+    url.endsWith("/deployments")
+      ? { status: 201, text: async () => JSON.stringify({ id: 1 }) }
+      : { status: 201, text: async () => "{}" };
+  await expect(
+    recordDeployment({ ...baseOptions(acceptingFetch), requestId: null }),
+  ).resolves.toBeDefined();
+});
+
+it("rejects a malformed artifactName before making any request", async () => {
+  let called = false;
+  const fetchImpl: GhFetchFn = async () => {
+    called = true;
+    return { status: 201, text: async () => "{}" };
+  };
+  await expect(
+    recordDeployment({ ...baseOptions(fetchImpl), artifactName: "has a space" }),
+  ).rejects.toThrow(GithubApiError);
+  await expect(
+    recordDeployment({ ...baseOptions(fetchImpl), artifactName: "has/slash" }),
+  ).rejects.toThrow(GithubApiError);
+  expect(called).toBe(false);
+});
+
 it("rejects a deployment response with no numeric id", async () => {
   const fetchImpl: GhFetchFn = async () => ({
     status: 201,

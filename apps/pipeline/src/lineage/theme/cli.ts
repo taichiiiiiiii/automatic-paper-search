@@ -13,7 +13,13 @@
 import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { classificationsCache, layoutFor, lineageCacheDir } from "@paperpilot/core/layout";
+import {
+  classificationsCache,
+  LAYOUT_MODE,
+  type LayoutMode,
+  layoutFor,
+  lineageCacheDir,
+} from "@paperpilot/core/layout";
 import { loadEnv } from "../../collect/config/env.js";
 import type { FetchInit, HttpResponseLike } from "../../collect/http/requestWithRetry.js";
 import { CliUsageError, parseArgs as parseFlags } from "../../shared/cli/argparse.js";
@@ -117,13 +123,35 @@ export function expandParams(
   ];
 }
 
+/**
+ * Where `.env` lives, as a function of the layout mode — p5-plan.md §2
+ * A2 follow-up #19 ("load .env from layout.config"), L10 of the P5
+ * tier-A review. Mirrors `layoutFor`'s own `collectConfig()` quirk for
+ * `config.yaml` (`packages/core/src/layout/index.ts`): under
+ * `"legacy"` it lives one level ABOVE `layout.config`
+ * (`paperpilot/.env`, parallel to `paperpilot/data` — byte-identical to
+ * this CLI's old hard-coded `join(repoRoot, "paperpilot", ".env")`, so
+ * tier A stays inert), and only moves INSIDE `layout.config` under
+ * `"p5"` (`data/config/.env`, alongside `config.yaml`). Kept as a local
+ * helper (not a new `layoutFor` export) per this task's edit-scope
+ * limits; duplicated from `lineage/conference/buildLineageCli.ts`'s own
+ * `envFilePath` for the same "each CLI's wiring stays independently
+ * readable" reason that module's own doc comment gives.
+ */
+export function envFilePath(repoRoot: string, mode: LayoutMode = LAYOUT_MODE): string {
+  if (mode === "legacy") {
+    return join(repoRoot, "paperpilot", ".env");
+  }
+  return join(layoutFor(repoRoot, mode).config, ".env");
+}
+
 /** Exported for tests (the M6 fetch-timeout-covers-body-read fix lives in
  * the `fetchImpl` this builds); production callers rely on the
  * `runThemeCli` default. */
 export function defaultDeps(repoRoot: string = DEFAULT_REPO_ROOT): BuildThemeLineageDeps {
   const layout = layoutFor(repoRoot);
   const docsRoot = layout.published;
-  const env = loadEnv(join(repoRoot, "paperpilot", ".env"));
+  const env = loadEnv(envFilePath(repoRoot));
   const fetchImpl: (url: string, init: FetchInit) => Promise<HttpResponseLike> = async (
     url,
     init,
