@@ -1,0 +1,208 @@
+name: pages-rollback
+
+# Manual rollback to a previously-recorded known-good Cloudflare Pages
+# deployment (docs/migration/p5-plan.md §4.4). Deliberately does NOT call
+# pages-release.yml any more: no rebuild happens anywhere in this
+# workflow — it only re-points Cloudflare's production alias at an
+# artifact that already deployed successfully, then re-records a new
+# `cloudflare-pages-production` GitHub Deployment for the rolled-back
+# SHA. Data and branches are not rolled back.
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: Known-good 40-character develop ancestor that was already recorded as a successful cloudflare-pages-production deployment
+        required: true
+        type: string
+      confirm:
+        description: Type ROLLBACK to confirm a Cloudflare-Pages-only rollback
+        required: true
+        type: string
+
+permissions: {}
+
+concurrency:
+  group: paperpilot-pages-production
+  cancel-in-progress: false
+
+env:
+  # Must equal packages/core/src/site/config.ts's PAGES_PROJECT_NAME /
+  # PAGES_PRODUCTION_BRANCH / PUBLIC_ORIGIN — same equality pages-release.yml
+  # pins (p5-plan.md §2 A7 assertion 11).
+  CF_PAGES_PROJECT: "paperpilot-pages-TODO"
+  CF_PAGES_PRODUCTION_BRANCH: "production"
+  PUBLIC_ORIGIN: "https://paperpilot.pages.dev"
+
+jobs:
+  validate_target:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      deployments: read
+    outputs:
+      target_sha: ${{ steps.validate.outputs.target_sha }}
+      cf_deployment_id: ${{ steps.validate.outputs.cf_deployment_id }}
+    steps:
+      - name: Checkout current protected workflow code
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: develop
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Validate ancestor and successful deployment record
+        id: validate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TARGET_SHA: ${{ inputs.target_sha }}
+          CONFIRM: ${{ inputs.confirm }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          [[ "$CONFIRM" == "ROLLBACK" ]] || {
+            echo "::error::confirm must be exactly ROLLBACK"
+            exit 1
+          }
+          [[ "$TARGET_SHA" =~ ^[0-9a-f]{40}$ ]] || {
+            echo "::error::target_sha must be 40 lowercase hex"
+            exit 1
+          }
+          git cat-file -e "$TARGET_SHA^{commit}"
+          git merge-base --is-ancestor "$TARGET_SHA" origin/develop || {
+            echo "::error::target SHA is not an ancestor of develop"
+            exit 1
+          }
+
+          deployment_ids="$(
+            gh api \
+              -H 'Accept: application/vnd.github+json' \
+              "/repos/$REPO/deployments?environment=cloudflare-pages-production&ref=$TARGET_SHA&per_page=100" \
+              --jq '.[].id'
+          )"
+          cf_deployment_id=""
+          while IFS= read -r deployment_id; do
+            [[ -n "$deployment_id" ]] || continue
+            state="$(
+              gh api \
+                -H 'Accept: application/vnd.github+json' \
+                "/repos/$REPO/deployments/$deployment_id/statuses?per_page=1" \
+                --jq '.[0].state // ""'
+            )"
+            [[ "$state" == "success" ]] || continue
+            payload_sha="$(
+              gh api -H 'Accept: application/vnd.github+json' \
+                "/repos/$REPO/deployments/$deployment_id" --jq '.payload.source_sha // ""'
+            )"
+            [[ "$payload_sha" == "$TARGET_SHA" ]] || continue
+            cf_deployment_id="$(
+              gh api -H 'Accept: application/vnd.github+json' \
+                "/repos/$REPO/deployments/$deployment_id" --jq '.payload.cf_deployment_id // ""'
+            )"
+            break
+          done <<< "$deployment_ids"
+          [[ -n "$cf_deployment_id" ]] || {
+            echo "::error::target SHA has no successful cloudflare-pages-production deployment"
+            exit 1
+          }
+          echo "target_sha=$TARGET_SHA" >> "$GITHUB_OUTPUT"
+          echo "cf_deployment_id=$cf_deployment_id" >> "$GITHUB_OUTPUT"
+
+  rollback:
+    needs: validate_target
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    environment:
+      name: cloudflare-pages-deploy
+    outputs:
+      # cli.ts's cf-rollback subcommand writes the key `cf_deployment_id`
+      # (the NEW Cloudflare deployment id after rollback) to
+      # $GITHUB_OUTPUT itself — read that exact key here, renamed at this
+      # job-output boundary only so record's "new" vs validate_target's
+      # "old" id read unambiguously at the call site.
+      new_cf_deployment_id: ${{ steps.rollback.outputs.cf_deployment_id }}
+    steps:
+      - name: Checkout release scripts
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+
+      - name: Roll back to the known-good Cloudflare deployment
+        id: rollback
+        env:
+          # cli.ts's cf-rollback subcommand reads CF_API_TOKEN /
+          # CF_ACCOUNT_ID / CF_PROJECT (not the CLOUDFLARE_* names
+          # wrangler itself reads) and takes the deployment id as a
+          # POSITIONAL argument, not an env var — DEPLOYMENT_ID below is
+          # a plain shell variable for that, consumed only in `run:`.
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CF_PROJECT: ${{ env.CF_PAGES_PROJECT }}
+          DEPLOYMENT_ID: ${{ needs.validate_target.outputs.cf_deployment_id }}
+        # (verify) POST .../deployments/{id}/rollback endpoint shape, per
+        # p5-plan.md §2 A4.
+        run: pnpm exec tsx apps/pipeline/src/release/cli.ts cf-rollback "$DEPLOYMENT_ID"
+
+  smoke:
+    needs: [validate_target, rollback]
+    if: needs.rollback.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout release scripts
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+
+      - name: Smoke the rolled-back SHA
+        # No byte compare here: no fresh artifact was built for a
+        # rollback (p5-plan.md §4.4 step 3) — marker, 404 and redirect
+        # checks only.
+        env:
+          TARGET_SHA: ${{ needs.validate_target.outputs.target_sha }}
+        run: |
+          set -euo pipefail
+          pnpm exec tsx apps/pipeline/src/release/cli.ts validate smoke "$PUBLIC_ORIGIN" "$TARGET_SHA" \
+            --wait-marker 300 \
+            --expect-404 /__pp_smoke_missing__/ \
+            --expect-redirect /iclr-2026/lineage.html=/iclr-2026/lineage/
+
+  record:
+    needs: [validate_target, rollback, smoke]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - name: Checkout release scripts
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+
+      - name: Record the rollback deployment
+        env:
+          # cli.ts's gh-record subcommand reads GITHUB_TOKEN /
+          # GITHUB_REPOSITORY (the latter already a default env var the
+          # runner sets on every job).
+          GITHUB_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ needs.validate_target.outputs.target_sha }}
+          RELEASE_KIND: rollback
+          REQUEST_ID: rollback-${{ github.run_id }}-${{ github.run_attempt }}
+          CF_DEPLOYMENT_ID: ${{ needs.rollback.outputs.new_cf_deployment_id }}
+        run: pnpm exec tsx apps/pipeline/src/release/cli.ts gh-record

@@ -1,0 +1,183 @@
+name: theme-on-demand
+run-name: "theme-on-demand: ${{ inputs.theme || 'manual' }} / ${{ inputs.request_id || 'manual' }}"
+
+# On-demand single-theme generation (docs/migration/p5-plan.md §4.1),
+# triggered by the CF Worker (apps/api) via the GitHub Actions REST API
+# dispatch when the in-browser form on /themes/ is submitted. No
+# concurrency group: a bounded fresh-tip compare-and-swap retry in the
+# promoter handles concurrent requests instead (kept from the pre-P5
+# workflow, #125/#121).
+
+on:
+  workflow_dispatch:
+    inputs:
+      theme:
+        description: 'Free-text theme to generate (max 80 chars, e.g. "Vision Transformer")'
+        required: true
+        type: string
+      request_id:
+        description: Opaque request identifier used for exact run matching
+        required: false
+        default: ""
+        type: string
+
+permissions: {}
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    outputs:
+      as_of: ${{ steps.candidate.outputs.as_of }}
+      base_sha: ${{ steps.candidate.outputs.base_sha }}
+      candidate_name: ${{ steps.candidate.outputs.candidate_name }}
+      primary_path: ${{ steps.candidate.outputs.primary_path }}
+    steps:
+      - name: Validate input early
+        # Same shape as apps/api's THEME_INPUT_PATTERN
+        # (apps/api/src/lib/slug.ts) — pinned equal by
+        # apps/pipeline/test/workflows (p5-plan.md §2 A7 assertion 13).
+        # Whole-string bash match, never `printf | grep`: grep is
+        # line-based, so a value carrying a newline would be validated
+        # one line at a time and pass on its first line alone.
+        env:
+          THEME_INPUT: ${{ inputs.theme }}
+          REQUEST_ID: ${{ inputs.request_id }}
+          THEME_RE: '^[A-Za-z0-9 _-]{2,80}$'
+          REQUEST_ID_RE: '^[A-Za-z0-9._:-]{1,128}$'
+        run: |
+          set -euo pipefail
+          if [[ "$THEME_INPUT" == *$'\n'* || "$THEME_INPUT" == *$'\r'* ]]; then
+            echo "::error::theme must not contain newline/CR characters"
+            exit 1
+          fi
+          [[ "$THEME_INPUT" =~ $THEME_RE ]] || {
+            echo "::error::theme must be 2-80 chars of [A-Za-z0-9 _-]"
+            exit 1
+          }
+          if [ -n "${REQUEST_ID:-}" ]; then
+            if [[ "$REQUEST_ID" == *$'\n'* || "$REQUEST_ID" == *$'\r'* ]]; then
+              echo "::error::request_id must not contain newline/CR characters"
+              exit 1
+            fi
+            [[ "$REQUEST_ID" =~ $REQUEST_ID_RE ]] || {
+              echo "::error::request_id has an invalid format"
+              exit 1
+            }
+          fi
+
+      - name: Checkout develop
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: develop
+          persist-credentials: false
+
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+
+      - name: Generate theme lineage
+        # User input goes through env var only (never spliced into the
+        # shell command line), so command-substitution-style attacks are
+        # impossible here.
+        env:
+          THEME_INPUT: ${{ inputs.theme }}
+        run: |
+          set -euo pipefail
+          pnpm exec tsx apps/pipeline/src/lineage/theme/cli.ts \
+            --theme "$THEME_INPUT" \
+            --depth 1 --seeds 5 --width 8 --since-year 2018 \
+            --llm-strict ambiguous \
+            --primary-source openalex \
+            --auto-expand
+
+      - name: Freeze candidate metadata
+        id: candidate
+        env:
+          THEME_INPUT: ${{ inputs.theme }}
+          PRIMARY_PATH_RE: '^data/published/themes/[a-z0-9-]{1,64}$'
+        run: |
+          set -euo pipefail
+          slug="$(pnpm exec tsx apps/pipeline/src/lineage/theme/slugCli.ts)"
+          primary_path="data/published/themes/$slug"
+          [[ "$primary_path" =~ $PRIMARY_PATH_RE ]] || {
+            echo "::error::generated theme path is invalid"
+            exit 1
+          }
+          test -f "$primary_path/lineage.json"
+          echo "as_of=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
+          echo "base_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "candidate_name=theme-candidate-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_OUTPUT"
+          echo "primary_path=$primary_path" >> "$GITHUB_OUTPUT"
+
+      - name: Package exact theme candidate
+        env:
+          PRIMARY_PATH: ${{ steps.candidate.outputs.primary_path }}
+          PAPERPILOT_PACKAGE_INCLUDE_UNCHANGED: "1"
+        run: |
+          set -euo pipefail
+          pnpm exec tsx apps/pipeline/src/release/cli.ts package "$RUNNER_TEMP/candidate" "$PRIMARY_PATH"
+
+      - name: Upload generated candidate
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ${{ steps.candidate.outputs.candidate_name }}
+          path: ${{ runner.temp }}/candidate
+          if-no-files-found: error
+          retention-days: 14
+
+  promote:
+    needs: generate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    outputs:
+      source_sha: ${{ steps.promote.outputs.source_sha }}
+      changed: ${{ steps.promote.outputs.changed }}
+    steps:
+      - name: Checkout develop
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: develop
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+
+      - name: Download generated candidate
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: ${{ needs.generate.outputs.candidate_name }}
+          path: ${{ runner.temp }}/candidate
+
+      - name: Validate and promote from the latest develop tip
+        id: promote
+        env:
+          PROMOTE_AS_OF: ${{ needs.generate.outputs.as_of }}
+          PROMOTE_BASE_SHA: ${{ needs.generate.outputs.base_sha }}
+          THEME_INPUT: ${{ inputs.theme }}
+          PRIMARY_PATH: ${{ needs.generate.outputs.primary_path }}
+          PRIMARY_PATH_RE: '^data/published/themes/[a-z0-9-]{1,64}$'
+        run: |
+          set -euo pipefail
+          [[ "$PRIMARY_PATH" =~ $PRIMARY_PATH_RE ]] || {
+            echo "::error::candidate theme path is invalid"
+            exit 1
+          }
+          msg=$(printf 'data(themes): on-demand generation of "%s"' "$THEME_INPUT")
+          pnpm exec tsx apps/pipeline/src/release/cli.ts promote themes \
+            "$RUNNER_TEMP/candidate" "$msg" "$PRIMARY_PATH"
+
+  release:
+    needs: promote
+    if: needs.promote.outputs.changed == 'true'
+    permissions:
+      contents: read
+      deployments: write
+    uses: ./.github/workflows/pages-release.yml
+    with:
+      source_sha: ${{ needs.promote.outputs.source_sha }}
+      release_kind: normal
+      request_id: ${{ inputs.request_id }}

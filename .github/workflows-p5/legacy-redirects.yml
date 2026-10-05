@@ -1,0 +1,62 @@
+name: legacy-redirects
+
+# Publishes the frozen GitHub Pages redirect site (legacy/gh-pages-site ->
+# legacy/redirect, docs/migration/p5-plan.md §5.4). Dispatch-only with an
+# explicit confirmation until runbook step 10 (§6.2) — a push trigger on
+# legacy/redirect/** paths may be added afterwards, but not before.
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: Type REDIRECT to confirm publishing the GitHub Pages redirect site
+        required: true
+        type: string
+
+permissions: {}
+
+concurrency:
+  group: paperpilot-legacy-pages
+  cancel-in-progress: false
+
+jobs:
+  redirect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Validate confirmation
+        env:
+          CONFIRM: ${{ inputs.confirm }}
+        run: |
+          set -euo pipefail
+          [[ "$CONFIRM" == "REDIRECT" ]] || {
+            echo "::error::confirm must be exactly REDIRECT"
+            exit 1
+          }
+
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+
+      - name: Generate the redirect site
+        run: pnpm --filter @paperpilot/web run legacy-redirects
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
+        with:
+          path: apps/web/legacy-out
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4

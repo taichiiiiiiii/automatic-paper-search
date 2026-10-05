@@ -1,0 +1,52 @@
+name: setup-pnpm
+description: >-
+  Node 22 + corepack-enabled pnpm + a frozen-lockfile install. Mirrors the
+  proven sequence from the pre-cutover ts-ci.yml (setup-node -> corepack
+  enable -> pnpm install --frozen-lockfile), factored into one composite
+  action so every staged P5 workflow (docs/migration/p5-plan.md §2 A7, §4)
+  shares exactly one copy instead of re-typing it. "composite" is
+  deliberate over a container/Docker action: it adds zero image pull time
+  and every step still shows individually in the run log.
+
+inputs:
+  cache-dependency-path:
+    description: >-
+      Passed through to actions/setup-node's `cache-dependency-path`
+      input. Optional: corepack must enable pnpm BEFORE setup-node's own
+      `cache: pnpm` lookup can find the pnpm binary on PATH, so caching is
+      wired through a second, explicit setup-node call rather than the
+      first one (verify: whether setup-node's cache input works at all
+      without pnpm already on PATH before it runs).
+    required: false
+    default: "pnpm-lock.yaml"
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Node 22
+      uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      with:
+        node-version: "22"
+
+    - name: Enable corepack
+      # package.json pins packageManager (pnpm@10.34.6); corepack reads it
+      # directly, so no separate pnpm/action-setup third-party action is
+      # needed (same approach ts-ci.yml already proved).
+      shell: bash
+      run: corepack enable
+
+    - name: Cache pnpm store
+      # A second setup-node call, now that pnpm is on PATH (corepack
+      # enable above), so its pnpm-aware cache lookup can resolve the
+      # store path. (verify) whether this double-call pattern is the
+      # right way to get setup-node's pnpm cache without a separate
+      # pnpm/action-setup action.
+      uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      with:
+        node-version: "22"
+        cache: pnpm
+        cache-dependency-path: ${{ inputs.cache-dependency-path }}
+
+    - name: Install dependencies
+      shell: bash
+      run: pnpm install --frozen-lockfile

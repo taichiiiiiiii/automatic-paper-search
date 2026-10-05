@@ -1,0 +1,34 @@
+name: pages
+
+# Publishes the latest develop tip through the exact-SHA reusable release
+# (docs/migration/p5-plan.md §4.1). `paths:` here must stay a superset of
+# pages-release.yml's `admit` job's diff path set (p5-plan.md §2 A7
+# assertion 8), or a stale-skip is never superseded — apps/pipeline/test/workflows
+# pins that inequality.
+
+on:
+  push:
+    branches: [develop]
+    paths:
+      - "data/published/**"
+      - "apps/web/**"
+      - "packages/core/**"
+      - "schemas/**"
+      - "pnpm-lock.yaml"
+      - "package.json"
+      - "apps/pipeline/src/release/**"
+      - ".github/workflows/pages*.yml"
+      - ".github/actions/**"
+
+permissions: {}
+
+jobs:
+  release:
+    permissions:
+      contents: read
+      deployments: write
+    uses: ./.github/workflows/pages-release.yml
+    with:
+      source_sha: ${{ github.sha }}
+      release_kind: normal
+      request_id: push-${{ github.run_id }}-${{ github.run_attempt }}

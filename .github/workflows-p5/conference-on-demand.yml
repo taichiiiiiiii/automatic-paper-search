@@ -1,0 +1,223 @@
+name: conference-on-demand
+run-name: "conference-on-demand: ${{ inputs.conference || 'manual' }}"
+
+# Operator-triggered creation of a NEW conference catalog
+# (docs/migration/p5-plan.md §4.1). Not wired to the in-browser form
+# (adding a conference is a curated operator action) — a plain
+# workflow_dispatch, no CF Worker / rate-limit layer, no LLM secrets.
+
+on:
+  workflow_dispatch:
+    inputs:
+      conference:
+        description: 'Slug, lowercase + hyphens (e.g. neurips-2026)'
+        required: true
+        type: string
+      venue:
+        description: 'VenueSignal token to keep (e.g. NEURIPS / CVPR / ICLR)'
+        required: true
+        type: string
+      query:
+        description: 'arXiv query (e.g. co:"NeurIPS 2026")'
+        required: true
+        type: string
+      display:
+        description: 'Display name (e.g. "NeurIPS 2026")'
+        required: true
+        type: string
+      lede:
+        description: 'Hero lede sentence(s), plain text (HTML is escaped)'
+        required: true
+        type: string
+      max:
+        description: 'Max arXiv results to scan'
+        required: false
+        default: "800"
+        type: string
+      allow_shrink_for:
+        description: 'Comma-separated conference slugs whose catalog may shrink (empty = shrink gate stays on)'
+        required: false
+        default: ""
+        type: string
+
+permissions: {}
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    outputs:
+      as_of: ${{ steps.candidate.outputs.as_of }}
+      base_sha: ${{ steps.candidate.outputs.base_sha }}
+      candidate_name: ${{ steps.candidate.outputs.candidate_name }}
+    steps:
+      - name: Validate inputs early
+        # Defence-in-depth at the YAML layer: slug / venue / max are
+        # constrained before any TS runs. The free-text query / display /
+        # lede reach the CLIs ONLY via env vars (never spliced into a
+        # shell command line).
+        env:
+          CONF: ${{ inputs.conference }}
+          VENUE: ${{ inputs.venue }}
+          MAXN: ${{ inputs.max }}
+          CONF_RE: '^[a-z0-9]([a-z0-9-]{0,38}[a-z0-9])$'
+          VENUE_RE: '^[A-Za-z]{2,20}$'
+          MAXN_RE: '^[0-9]{1,5}$'
+          RESERVED_SLUGS: "assets cvpr-2026 daily design how-it-works lineage paper-details-v1 paper-slides-v1 research search-paper-ids-v1 themes"
+        run: |
+          set -euo pipefail
+          if [[ "$CONF" == *$'\n'* ]]; then
+            echo "::error::conference slug must not contain a newline"
+            exit 1
+          fi
+          [[ "$CONF" =~ $CONF_RE ]] || {
+            echo "::error::conference slug must be 2-40 chars, lowercase letters/digits/hyphens"
+            exit 1
+          }
+          for reserved in $RESERVED_SLUGS; do
+            [[ "$CONF" != "$reserved" ]] || {
+              echo "::error::conference slug is a reserved public path"
+              exit 1
+            }
+          done
+          [[ "$VENUE" =~ $VENUE_RE ]] || {
+            echo "::error::venue must be alphabetic (e.g. NEURIPS)"
+            exit 1
+          }
+          [[ "$MAXN" =~ $MAXN_RE ]] || {
+            echo "::error::max must be a number"
+            exit 1
+          }
+
+      - name: Checkout develop
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: develop
+          persist-credentials: false
+
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+
+      - name: Collect conference papers from arXiv
+        env:
+          CONF: ${{ inputs.conference }}
+          VENUE: ${{ inputs.venue }}
+          QUERY: ${{ inputs.query }}
+          MAXN: ${{ inputs.max }}
+        run: |
+          set -euo pipefail
+          pnpm exec tsx apps/pipeline/src/conference/arxiv/cli.ts \
+            --conference "$CONF" --venue "$VENUE" --query "$QUERY" --max "$MAXN" \
+            --output-root data/inputs
+
+      - name: Build summary + pages
+        # build_pages refuses a catalog that loses content against the
+        # published one unless the operator names that conference. The
+        # dispatch input reaches the CLI only through the environment,
+        # and every slug is validated here, so it can never carry shell
+        # syntax.
+        env:
+          CONF: ${{ inputs.conference }}
+          ALLOW_SHRINK_FOR: ${{ inputs.allow_shrink_for }}
+        run: |
+          set -euo pipefail
+          if [[ "${ALLOW_SHRINK_FOR:-}" == *$'\n'* ]]; then
+            echo "::error::allow_shrink_for must be a single comma-separated line"
+            exit 1
+          fi
+          shrink_args=()
+          IFS=',' read -r -a allow_shrink_slugs <<< "${ALLOW_SHRINK_FOR:-}"
+          for slug in ${allow_shrink_slugs[@]+"${allow_shrink_slugs[@]}"}; do
+            slug="${slug//[[:space:]]/}"
+            [ -n "$slug" ] || continue
+            if ! printf '%s' "$slug" | grep -Eq '^[a-z0-9][a-z0-9-]{0,62}[a-z0-9]$'; then
+              echo "::error::allow_shrink_for must be comma-separated conference slugs, got: $slug"
+              exit 1
+            fi
+            shrink_args+=(--allow-shrink-for "$slug")
+          done
+          pnpm exec tsx apps/pipeline/src/catalog/buildSummaryCli.ts --conference "$CONF"
+          # No --conference: rebuild every conference so conferences.json
+          # aggregates all of them.
+          pnpm exec tsx apps/pipeline/src/catalog/buildPagesCli.ts ${shrink_args[@]+"${shrink_args[@]}"}
+
+      - name: Scaffold catalog copy
+        env:
+          CONF: ${{ inputs.conference }}
+          DISPLAY: ${{ inputs.display }}
+          LEDE: ${{ inputs.lede }}
+        run: |
+          set -euo pipefail
+          pnpm exec tsx apps/pipeline/src/conference/scaffold/cli.ts --conference "$CONF"
+
+      - name: Freeze candidate metadata
+        id: candidate
+        run: |
+          set -euo pipefail
+          echo "as_of=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
+          echo "base_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "candidate_name=conference-candidate-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload generated candidate
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ${{ steps.candidate.outputs.candidate_name }}
+          path: |
+            data/published/${{ inputs.conference }}
+            data/inputs/${{ inputs.conference }}
+            data/config/conference-copy/${{ inputs.conference }}.json
+          if-no-files-found: error
+          retention-days: 14
+
+  promote:
+    needs: generate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    outputs:
+      source_sha: ${{ steps.promote.outputs.source_sha }}
+      changed: ${{ steps.promote.outputs.changed }}
+    steps:
+      - name: Checkout develop
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: develop
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+
+      - name: Download generated candidate
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: ${{ needs.generate.outputs.candidate_name }}
+          path: ${{ runner.temp }}/candidate
+
+      - name: Validate and promote from the latest develop tip
+        id: promote
+        env:
+          PROMOTE_AS_OF: ${{ needs.generate.outputs.as_of }}
+          PROMOTE_BASE_SHA: ${{ needs.generate.outputs.base_sha }}
+          CONF: ${{ inputs.conference }}
+          DISPLAY: ${{ inputs.display }}
+        run: |
+          set -euo pipefail
+          msg=$(printf 'data(conf): add %s catalog (on-demand)' "$DISPLAY")
+          pnpm exec tsx apps/pipeline/src/release/cli.ts promote conference \
+            "$RUNNER_TEMP/candidate" "$msg" \
+            "data/published/$CONF" "data/inputs/$CONF" "data/config/conference-copy/$CONF.json"
+
+  release:
+    needs: promote
+    if: needs.promote.outputs.changed == 'true'
+    permissions:
+      contents: read
+      deployments: write
+    uses: ./.github/workflows/pages-release.yml
+    with:
+      source_sha: ${{ needs.promote.outputs.source_sha }}
+      release_kind: normal
+      request_id: conference-${{ github.run_id }}-${{ github.run_attempt }}

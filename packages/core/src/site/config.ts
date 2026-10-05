@@ -24,6 +24,32 @@
 export const PUBLIC_ORIGIN = "https://paperpilot.pages.dev";
 
 /**
+ * Cloudflare Pages project name (design doc §7.4 Phase W / P0-1;
+ * docs/migration/p5-plan.md §2 A5, §4 "Workflow env constants"). Used by
+ * the staged `pages-release.yml` (`--project-name="$CF_PAGES_PROJECT"`)
+ * and `cf-deployment-id` / `cf-rollback`.
+ *
+ * PLACEHOLDER (verify): the user creates the Direct Upload Pages project
+ * (p5-plan.md §6.2 P0-1) and reports back its exact project name here.
+ * Until then this is not a real Cloudflare project and nothing in the
+ * staged `.github/workflows-p5/` tree runs (GitHub ignores that folder),
+ * so this placeholder is inert.
+ */
+export const PAGES_PROJECT_NAME = "paperpilot-pages-TODO";
+
+/**
+ * Cloudflare Pages production branch name (design doc §7.4; p5-plan.md
+ * §2 A5, §6.1 P0-1). `wrangler pages deploy --branch="$CF_PAGES_PRODUCTION_BRANCH"`
+ * must match whatever the user configures as "production" for the Pages
+ * project, or the deploy lands as a non-production preview.
+ *
+ * PLACEHOLDER (verify): the user decides the production branch name when
+ * creating the Pages project (p5-plan.md §6.2 P0-1). `"production"` is
+ * the plan's own example value, not a confirmed one.
+ */
+export const PAGES_PRODUCTION_BRANCH = "production";
+
+/**
  * Path prefix on the current production origin. Cloudflare Pages serves
  * from the domain root, so every page lives at `/<slug>/` with no prefix.
  */

@@ -7,8 +7,24 @@ import {
   canonicalUrl,
   LEGACY_GITHUB_PAGES_BASE_PATH,
   legacyGithubPagesUrl,
+  PAGES_PRODUCTION_BRANCH,
+  PAGES_PROJECT_NAME,
   PUBLIC_ORIGIN,
 } from "../../src/site/config.js";
+
+describe("PAGES_PROJECT_NAME", () => {
+  it("is a non-empty string the staged workflows can reference as CF_PAGES_PROJECT (p5-plan.md §2 A5)", () => {
+    expect(typeof PAGES_PROJECT_NAME).toBe("string");
+    expect(PAGES_PROJECT_NAME.length).toBeGreaterThan(0);
+  });
+});
+
+describe("PAGES_PRODUCTION_BRANCH", () => {
+  it("is a non-empty string the staged workflows can reference as CF_PAGES_PRODUCTION_BRANCH (p5-plan.md §2 A5)", () => {
+    expect(typeof PAGES_PRODUCTION_BRANCH).toBe("string");
+    expect(PAGES_PRODUCTION_BRANCH.length).toBeGreaterThan(0);
+  });
+});
 
 describe("BASE_PATH", () => {
   it("is empty: Cloudflare Pages serves from the domain root (design doc §4.1-4.2)", () => {
