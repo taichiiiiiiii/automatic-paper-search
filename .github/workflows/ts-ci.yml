@@ -69,10 +69,9 @@ jobs:
       - name: Typecheck
         run: pnpm -r --if-present typecheck
 
-      - name: Test
-        run: pnpm -r --if-present test
-
       - name: Build web
+        # Before the tests: the web contract tests (CSP, paper-links parity,
+        # lineage routes, sitemap) read the built apps/web/out.
         # Guarded: apps/web is the only package with a build script today,
         # but this must not hard-fail if that script is ever removed or if
         # apps/web itself does not exist yet at some earlier point in P1.
@@ -82,3 +81,6 @@ jobs:
           else
             echo "apps/web has no build script; skipping build"
           fi
+
+      - name: Test
+        run: pnpm -r --if-present test
