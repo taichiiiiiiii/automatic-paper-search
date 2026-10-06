@@ -177,7 +177,7 @@ function runCarryBack(args: string[]): void {
       // Review round 3, M2: a delete-only carry-back stages nothing.
       console.log(
         "nothing is staged (every carried-back path was a deletion B had already made); the " +
-          "carry-back commit must still exist: git commit --allow-empty",
+          "carry-back commit must still exist: git commit --no-verify --allow-empty",
       );
     }
   } catch (error) {

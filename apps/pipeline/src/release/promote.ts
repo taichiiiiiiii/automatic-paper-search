@@ -51,7 +51,7 @@ const BASE_SHA_RE = /^[0-9a-f]{40}$/;
  * additionally drops `assets/versions.json` / `sitemap.xml` (no longer
  * generated/promoted; see §3) and `search-index.json` v1 (follow-up #5).
  */
-function sharedPathsForMode(mode: LayoutMode): Record<PromotionKind, string[]> {
+export function sharedPathsForMode(mode: LayoutMode): Record<PromotionKind, string[]> {
   const rel = relLayout(mode);
   if (mode === "p5") {
     return {

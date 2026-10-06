@@ -467,7 +467,7 @@ describe("carryBack: atomic on late failures (review round 3, L3)", () => {
 
       const result = run(repo, ["carry-back", "--since", cutoverSha, "--manifest", manifestPath]);
       expect(result.status).toBe(0);
-      expect(result.stdout).toMatch(/git commit --allow-empty/);
+      expect(result.stdout).toMatch(/git commit --no-verify --allow-empty/);
       expect(JSON.parse(readFileSync(manifestPath, "utf-8")).entries).toHaveLength(1);
     }, 30_000);
   });

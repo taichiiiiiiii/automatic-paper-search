@@ -73,7 +73,7 @@ export interface CarryBackResult {
    * Whether anything ended up staged (review round 3, M2). A delete-only
    * carry-back stages nothing: every D legacy path was already removed by
    * B. The carry-back commit must still exist (finish-revert anchors on it),
-   * so the runbook always commits with `git commit --allow-empty`.
+   * so the runbook always commits with `git commit --no-verify --allow-empty`.
    */
   readonly staged: boolean;
 }
@@ -596,6 +596,17 @@ function looksLikeRevertOfB(adapter: GitAdapter, cwd: string, rev: string): bool
  * staged-but-uncommitted carry-back, so an `--allow-empty` commit made
  * after it holds none of the carried content. The carry-back has to be
  * staged again (or, with no revert in progress, committed as it stands).
+ *
+ * Every carry-back commit here uses `git commit --no-verify` (review
+ * round 5, L4): the repo's pre-commit hooks reject any added file over
+ * 500 KB (`check-added-large-files --maxkb=500`, no `exclude`) and rewrite
+ * trailing whitespace / a missing final newline (`end-of-file-fixer`,
+ * `trailing-whitespace`). A carried-back catalog (for example
+ * `docs/<conf>/papers.json`) routinely exceeds 500 KB, so the hooks would
+ * either reject the commit outright or rewrite a carried file's bytes —
+ * either way making HEAD's content no longer match what `carry-back`
+ * staged, exactly the state {@link assertHeadHoldsCarriedContent}'s
+ * `[carry-back-incomplete]` check exists to refuse.
  */
 function redoCarryBackRemedy(manifest: CarryBackManifest): string {
   return (
@@ -603,9 +614,10 @@ function redoCarryBackRemedy(manifest: CarryBackManifest): string {
     "carry-back was staged but never committed. If a revert is in progress, `git revert --abort` " +
     "(this also discards the staged carry-back), then rerun " +
     `\`dataMove carry-back --since ${manifest.since} --manifest <the same file>\`, then ` +
-    '`git commit --allow-empty -m "rollback: carry back data since B"`. If no revert is in ' +
-    "progress and `git diff --cached` still shows the carry-back, `git commit --allow-empty` " +
-    "commits it. Then redo `git revert --no-commit -m 1` and finish-revert"
+    '`git commit --no-verify --allow-empty -m "rollback: carry back data since B"`. If no revert ' +
+    "is in progress and `git diff --cached` still shows the carry-back, " +
+    "`git commit --no-verify --allow-empty` commits it. Then redo `git revert --no-commit -m 1` " +
+    "and finish-revert"
   );
 }
 
@@ -686,9 +698,9 @@ function assertHeadHoldsCarriedContent(
         "`git revert --abort` discarded the staged carry-back). Nothing was changed. Do not reset: " +
         "run `git revert --abort` if a revert is in progress, then rerun " +
         `\`dataMove carry-back --since ${manifest.since} --manifest <the same file>\` from the ` +
-        'current HEAD (a new manifest), commit with `git commit --allow-empty -m "rollback: carry ' +
-        `back data since B"\`, then redo \`git revert --no-commit -m 1\` and finish-revert:\n` +
-        list(problems),
+        "current HEAD (a new manifest), commit with `git commit --no-verify --allow-empty -m " +
+        '"rollback: carry back data since B"`, then redo `git revert --no-commit -m 1` and ' +
+        `finish-revert:\n${list(problems)}`,
     );
   }
 }
@@ -726,8 +738,8 @@ function assertHeadIsCarryBackCommit(
         (deleteOnly
           ? "The manifest holds deletions only, so the carry-back staged nothing and `git commit` " +
             "without --allow-empty made no commit: run `git revert --abort` (if a revert is in " +
-            "progress), then `git commit --allow-empty`, then redo `git revert --no-commit -m 1` " +
-            "and finish-revert"
+            "progress), then `git commit --no-verify --allow-empty`, then redo " +
+            "`git revert --no-commit -m 1` and finish-revert"
           : redoCarryBackRemedy(manifest)),
     );
   }
@@ -764,11 +776,11 @@ function assertHeadIsCarryBackCommit(
       ? " HEAD looks like a committed revert of B made with no carry-back commit under it: " +
         "`git reset --keep HEAD^`, then " +
         (deleteOnly
-          ? "`git commit --allow-empty` (the manifest holds deletions only), then redo the revert " +
+          ? "`git commit --no-verify --allow-empty` (the manifest holds deletions only), then redo the revert " +
             "with --no-commit and finish-revert."
           : `rerun \`dataMove carry-back --since ${manifest.since} --manifest <the same file>\` ` +
             "(the manifest has added or modified entries, which an empty commit would not hold), " +
-            "commit with `git commit --allow-empty`, then redo the revert with --no-commit and " +
+            "commit with `git commit --no-verify --allow-empty`, then redo the revert with --no-commit and " +
             "finish-revert.")
       : "";
     throw new FinishRevertError(

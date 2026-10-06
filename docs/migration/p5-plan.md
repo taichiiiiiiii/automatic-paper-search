@@ -353,7 +353,7 @@ The edits allowed on the two config files are restricted to these keys:
   - The R-B step 4 case `apply --reverse` cannot cover on its own: every path changed in `<sha>..HEAD` under `data/` (add, modify, or delete) is mapped back onto its legacy path via the reverse of the rule table and replayed there. A plain file is staged by blob id and mode (`git update-index --cacheinfo`), so bytes and the executable bit carry exactly; the two collector configs go through the inverse of their `moveEdit` key edits (mode carried both ways too). The diff is read with `--no-renames -z` (a post-B rename becomes delete + add; a non-ASCII path is not C-quoted).
   - Validates everything before staging anything (review round 3, L3): it refuses the whole call, with the index untouched, if the worktree is dirty, if any changed path has no legacy-path equivalent (for example a p5-only `data/config/conference-copy/<slug>.json`), if a status is not plain A/M/D (a typechange), if a changed file is not a plain `100644`/`100755` file (a symlink is refused, not flattened), if a post-B change touched one of a collector config's `moveEdit` keys (its legacy value cannot be restored mechanically; carry that change back by hand), or if the manifest cannot be written.
   - `--manifest <file>` is required (an empty value is refused). It writes `{version, since, head, entries}`: `since` resolved to a sha, the `HEAD` it ran on, and every replayed entry. The file is written after every check and before the first staged change. Write it outside the repository.
-  - A delete-only carry-back stages nothing (B already removed every legacy path), and says so; the carry-back commit must still be made, with `git commit --allow-empty` (review round 3, M2).
+  - A delete-only carry-back stages nothing (B already removed every legacy path), and says so; the carry-back commit must still be made, with `git commit --no-verify --allow-empty` (review round 3, M2).
   - Never touches `LAYOUT_MODE`, `.gitignore`/`.lighthouserc.json`, or the workflow directories — that structural half is `git revert`'s job, finished by `finish-revert` (§6.2 R-B).
 - `cli.ts finish-revert --manifest <file>` (review round 2, N4): run after the carry-back commit and `git revert --no-commit -m 1 <mergeB>`. It does not trust how the revert resolved the data paths. The cutover moves many byte-identical blobs (the real tree has 100 copies of one lineage-cache blob, plus identical stubs), so the revert's rename detection pairs them arbitrarily. Measured on the test fixture, the revert both conflicted (a post-B delete surfaces as a rename/delete `DU` that resurrects the pre-B file) and **silently merged the post-B `seen_ids.json` change into `docs/themes/themes-manifest.json`**. Instead, every path it owns is set to the entry the manifest and the pre-B tree dictate:
   - nothing under `data/`;
@@ -552,25 +552,60 @@ order:
       `data/config/conference-copy/<slug>.json` is p5-only and never
       existed under `paperpilot/data`; resolve that by hand before
       retrying. Then commit, always as
-      `git commit --allow-empty -m "rollback: carry back data since B"`,
-      as its own commit, with nothing in between and no `git add -A`.
-      `--allow-empty` is required, not optional: a delete-only carry-back
-      (for example a theme deleted after B) stages nothing, because B
-      already removed every legacy path, so a plain `git commit` makes no
-      commit and step c then refuses (review round 3, M2). carry-back
-      prints "nothing is staged" in that case. The tool does not commit by
-      itself: every `dataMove` subcommand only stages, so the operator
-      reviews `git diff --cached` and commits under their own identity.
+      `git commit --no-verify --allow-empty -m "rollback: carry back data
+      since B"`, as its own commit, with nothing in between and no
+      `git add -A`. `--allow-empty` is required, not optional: a
+      delete-only carry-back (for example a theme deleted after B) stages
+      nothing, because B already removed every legacy path, so a plain
+      `git commit` makes no commit and step c then refuses (review round
+      3, M2). carry-back prints "nothing is staged" in that case.
+      `--no-verify` is also required, not optional (review round 5, L4):
+      `.pre-commit-config.yaml` has `check-added-large-files --maxkb=500`,
+      `end-of-file-fixer` and `trailing-whitespace`, with no `exclude` for
+      carried-back data. A carried-back catalog (for example
+      `docs/<conf>/papers.json`) routinely exceeds 500 KB, and the other
+      two hooks rewrite trailing whitespace / a missing final newline — on
+      a checkout with the hooks installed, either one would make the
+      committed content stop matching byte-for-byte what `carry-back`
+      staged, which is exactly what finish-revert's
+      `[carry-back-incomplete]` check (review round 4, H1) then refuses.
+      Every carry-back commit in this procedure — step a, the remedies
+      under `[no-carry-back-commit]`, `[carry-back-incomplete]` and
+      `HEAD changes path(s) the manifest does not name`, and the tool's
+      own hints — uses `git commit --no-verify --allow-empty`.
+      The tool does not commit by itself: every `dataMove` subcommand only
+      stages, so the operator reviews `git diff --cached` and commits
+      under their own identity.
 
       **If `git` itself fails partway through step a** (for example a
       `git update-index`/`git checkout` call errors after some paths are
       already staged): do not run `git reset --hard` — that can discard
-      real uncommitted work elsewhere in the worktree. Instead
-      `git restore --staged -- <paths carry-back touched>` (or, if nothing
-      else is staged, `git reset --keep HEAD`, never `--hard`) to undo just
-      the partial staging, delete the manifest file carry-back already
-      wrote, confirm `git status --porcelain` is empty, and rerun step a
-      from a clean worktree (review round 4, L3 — a rerun over a
+      real uncommitted work elsewhere in the worktree, and do not run
+      `git reset --keep HEAD` either — with no target change (`HEAD` to
+      `HEAD`) it only clears the index, leaving exactly what the worktree
+      already has (a brand-new legacy file stays untracked, a modified one
+      stays modified), so `git status --porcelain` stays non-empty; it is
+      not a safe equivalent. Instead (review round 5, L3; verified empty-
+      and partial-stage behaviour in a throwaway repo):
+      ```
+      git diff --cached --name-only -z | xargs -0 git restore --staged --worktree --
+      ```
+      This needs no path list and is always safe here, because
+      `assertCleanWorktree` guarantees the index held nothing else before
+      step a started, so whatever is staged right now is exactly (a
+      prefix of) what step a itself staged — `--staged` alone would only
+      unstage, leaving whatever `git checkout -- <path>` already wrote in
+      the worktree behind (a brand-new legacy file stays untracked, a
+      modified one stays modified); `--worktree` together with `--staged`
+      restores both from `HEAD` in one command, which for a path `HEAD`
+      does not have — a brand-new legacy file — means removing it
+      entirely. (Do **not** instead list every `legacyPath` the manifest
+      names: a path the crash never reached is in neither `HEAD` nor the
+      index, and `git restore -- <that path>` errors with "did not match
+      any file(s) known to git" and restores *nothing*, not even the
+      paths that do need it.) Then delete the manifest file carry-back
+      already wrote, confirm `git status --porcelain` is empty, and rerun
+      step a from a clean worktree (review round 4, L3 — a rerun over a
       half-staged index or a stale manifest is caught fail-closed by
       carry-back's own clean-worktree check and by finish-revert's
       `assertHeadIsCarryBackCommit`/`assertHeadHoldsCarriedContent`, but a
@@ -603,20 +638,22 @@ order:
           genuinely staged nothing (every legacy path was already removed
           by B), so a plain `git commit` made no commit: run
           `git revert --abort` (if a revert is in progress), then
-          `git commit --allow-empty -m "rollback: carry back data since B"`,
-          then redo b and c.
+          `git commit --no-verify --allow-empty -m "rollback: carry back
+          data since B"`, then redo b and c.
         - if the manifest holds **any add/modify entry**, the carry-back
           *did* stage real content — the operator's own `git commit` in
           step a just never ran (forgotten, or rejected by a pre-commit
-          hook). `git revert --abort` **discards that staged carry-back**,
-          so an `--allow-empty` commit made right after it would hold none
-          of the carried content — see `[carry-back-incomplete]` below for
-          what happens if you do this anyway. Instead: run
-          `git revert --abort` (if a revert is in progress), **rerun step a
-          first** (`dataMove carry-back --since <mergeB> --manifest <the
-          same file>`, which re-stages the same content from the still-live
-          `data/**`), *then* `git commit --allow-empty -m "rollback: carry
-          back data since B"`, then redo b and c.
+          hook — see the `--no-verify` note on step a above: this is
+          exactly that rejection). `git revert --abort` **discards that
+          staged carry-back**, so an `--allow-empty` commit made right
+          after it would hold none of the carried content — see
+          `[carry-back-incomplete]` below for what happens if you do this
+          anyway. Instead: run `git revert --abort` (if a revert is in
+          progress), **rerun step a first** (`dataMove carry-back --since
+          <mergeB> --manifest <the same file>`, which re-stages the same
+          content from the still-live `data/**`), *then*
+          `git commit --no-verify --allow-empty -m "rollback: carry back
+          data since B"`, then redo b and c.
       - `[carry-back-incomplete]` (review round 4, H1): `HEAD` is the
         carry-back commit, directly on the right parent, with nothing
         extraneous — but it does not actually hold every manifest entry's
@@ -624,7 +661,7 @@ order:
         manifest, as above). Nothing was changed. The remedy is the same as
         the second `[no-carry-back-commit]` case above: abort the revert if
         one is in progress, rerun step a from the current `HEAD` (a new
-        manifest), commit `--allow-empty`, then redo b and c.
+        manifest), commit `--no-verify --allow-empty`, then redo b and c.
       - `[revert-auto-committed]`: the revert ran without `--no-commit`,
         and the tool has checked that `HEAD` is a committed revert of B
         directly on the carry-back commit. Drop only that revert commit
@@ -640,7 +677,7 @@ order:
       - `HEAD changes path(s) the manifest does not name`: `HEAD` is not
         the carry-back commit. If the message adds that `HEAD` looks like a
         committed revert of B with no carry-back commit under it:
-        `git reset --keep HEAD^`, `git commit --allow-empty`, then redo b
+        `git reset --keep HEAD^`, `git commit --no-verify --allow-empty`, then redo b
         and c. Otherwise inspect `git show HEAD` before doing anything.
       - a conflict outside the data paths, for example a post-B edit to a
         `.gitignore` line B patched: resolve it by hand, then rerun c;
@@ -737,11 +774,41 @@ order:
          and neither depends on the carried catalog, so a non-zero exit
          means something else drifted and needs investigating, not a
          blind re-run.
-      6. Run the legacy release gate locally, exactly as
-         `pages-release.yml` would: `uv run --extra dev pytest
-         paperpilot/tests/` and
-         `.github/scripts/validate-pages-release.sh local <mergeB
-         revert commit's sha> docs`. Both must pass before pushing.
+      6. Run the legacy release gate locally, **in the same order and with
+         the same commands** `pages-release.yml` runs it (review round 5,
+         L3 — the previous text only ran `pytest`, which misses `ruff`,
+         the `--extra unarxive` dependency `pages-release.yml` installs,
+         and the "no skipped tests" check `pages-release.yml:93-108`
+         enforces; a local pass without those can still fail loudly in
+         CI). Typed one at a time (not as a saved script, so a failure
+         never silently exits the operator's own shell on `exit 1`):
+         - `uv run --frozen --extra dev ruff check paperpilot/`.
+         - `uv run --frozen --extra dev --extra unarxive pytest
+           paperpilot/tests -q -rs 2>&1 | tee pytest-result.txt`, then
+           read `pytest-result.txt`'s summary line by hand: it must say
+           `0 failed` and report no `skipped`/`SKIPPED` line (CI's own
+           check is `grep -Eq '(^| )[0-9]+ skipped(,| in|$)|^SKIPPED '
+           pytest-result.txt`, which must find nothing). **(verify)**
+           `--extra unarxive` removes one known skip (duckdb); a second,
+           Linux-only test
+           (`test_slide_pdf_isolation.py::test_isolated_visibility_gate_has_exact_parity_with_core`,
+           `skipif(not sys.platform.startswith("linux"))`) is expected to
+           skip on a non-Linux operator machine and nowhere else — confirm
+           that is the *only* skip reported before treating a local "0
+           failed" as equivalent to CI's clean run, and still run the real
+           gate on Linux (or the Docker runner) before trusting it fully.
+         - `bash .github/scripts/validate-pages-release.sh local
+           "$(git rev-parse HEAD)" docs`.
+         `"$(git rev-parse HEAD)"`, not a sha written into this runbook, is
+         deliberate (review round 5, L3): the previous text said "<mergeB
+         revert commit's sha>", which is only the right argument *before*
+         the data-only commit below. After that commit, HEAD has moved, and
+         `validate-pages-release.sh` refuses with `checkout SHA … != …`
+         against the now-stale value. Run these three commands **twice** —
+         once now, before the data-only commit (`$(git rev-parse HEAD)` is
+         then step c's finish-revert commit), and once more right after it
+         (`$(git rev-parse HEAD)` is then that new commit) — both runs must
+         pass before pushing.
          - If `viewer/test_search_viewer.py::test_search_frozen_evaluation`
            fails, that is expected whenever the carried-back catalog
            changed anything `docs/search-index-v2.json` derives from — it
@@ -761,9 +828,13 @@ order:
            re-run the gate. Leave the fixture's `queries` entries alone;
            only `frozen_corpus` is derived from the index file itself.
 
-      Commit the result of steps 1–5 as **one separate data-only commit**,
-      kept apart from the revert so the revert stays reviewable. Only
-      after step 6 passes does **this list's own next item, step 5**
+      Commit the result of **steps 1–6, including this step's own
+      frozen-fixture edit**, as **one separate data-only commit** (review
+      round 5, L3 — "steps 1–5" silently excluded the fixture update step
+      6 itself may require; pushing without it fails `pages.yml` at the
+      frozen eval), kept apart from the revert so the revert stays
+      reviewable. Only after the second, post-commit run of step 6's gate
+      passes does **this list's own next item, step 5**
       ("Pushing `docs/**` …", below) make the legacy site match "pre-B
       tree plus every post-B change".
 5. Pushing `docs/**` triggers the Python `pages.yml`, which re-releases the old site to GitHub Pages, overwriting the redirect site if step 10 ran.

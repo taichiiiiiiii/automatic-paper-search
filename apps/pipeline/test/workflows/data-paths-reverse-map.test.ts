@@ -17,12 +17,11 @@
  * by hand.
  */
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
-import { LAYOUT_MODE, relLayout } from "@paperpilot/core/layout";
+import { LAYOUT_MODE } from "@paperpilot/core/layout";
 import { describe, expect, it } from "vitest";
 import { reverseMapDataPath } from "../../src/release/dataMove/carryBack.js";
 import { buildPlan } from "../../src/release/dataMove/plan.js";
+import { sharedPathsForMode } from "../../src/release/promote.js";
 import { EXPECTED_WORKFLOW_FILES, jobsOf, readAllWorkflows, type YamlDoc } from "./helpers.js";
 
 const P5_ONLY_PREFIXES = ["data/config/conference-copy/"];
@@ -195,47 +194,28 @@ describe("allChildrenMap: a directory token requires EVERY real child to map, no
 });
 
 /**
- * Extracts every `` `${rel.published}/…}` ``/`` `${rel.state}/…}` ``
- * literal from promote.ts's `sharedPathsForMode`'s own `if (mode ===
- * "p5")` branch, by reading and lightly parsing its *source text*
- * (never executed: `sharedPathsForMode` itself is not exported, and this
- * test must not add an export promote.ts doesn't already have — out of
- * this changeset's ownership). This is what makes the comparison below
- * catch real drift: a hand-copied literal list can silently diverge from
- * promote.ts without any test noticing.
+ * Review round 5, L2: the old version of this check parsed promote.ts's
+ * *source text* for `` `${rel.published}/…}` ``/`` `${rel.state}/…}` ``
+ * template literals inside `sharedPathsForMode`'s `if (mode === "p5")`
+ * branch, because `sharedPathsForMode` itself was not exported. That scan
+ * only recognised paths written exactly as that template-literal shape —
+ * mutant R1c (adding a path built with `join(rel.published, …)` instead)
+ * survived, because the regex simply never saw it. `sharedPathsForMode`
+ * is now exported (apps/pipeline/src/release/promote.ts), so this reads
+ * the real, live list for every {@link PromotionKind} instead of
+ * re-deriving a brittle approximation of it — any path `sharedPathsForMode`
+ * returns, however it is built, is covered.
  */
-function extractP5SharedPathsFromPromoteSource(): string[] {
-  const repoRoot = execFileSync("git", ["rev-parse", "--show-toplevel"], {
-    encoding: "utf-8",
-  }).trim();
-  const src = readFileSync(join(repoRoot, "apps/pipeline/src/release/promote.ts"), "utf-8");
-  const fnStart = src.indexOf("function sharedPathsForMode");
-  if (fnStart === -1)
-    throw new Error("promote.ts: sharedPathsForMode not found (did it move/rename?)");
-  const p5If = src.indexOf('if (mode === "p5")', fnStart);
-  if (p5If === -1)
-    throw new Error('promote.ts: sharedPathsForMode\'s if (mode === "p5") branch not found');
-  const braceStart = src.indexOf("{", p5If);
-  let depth = 0;
-  let i = braceStart;
-  for (; i < src.length; i++) {
-    if (src[i] === "{") depth++;
-    else if (src[i] === "}" && --depth === 0) break;
-  }
-  const block = src.slice(braceStart, i + 1);
-  const rel = relLayout("p5");
-  const paths: string[] = [];
-  for (const m of block.matchAll(/`\$\{rel\.(published|state)\}([^`]*)`/g)) {
-    paths.push(`${m[1] === "published" ? rel.published : rel.state}${m[2]}`);
-  }
-  return paths;
+function p5SharedPaths(): string[] {
+  const byKind = sharedPathsForMode("p5");
+  return [...byKind.themes, ...byKind.conference, ...byKind["test-only"]];
 }
 
-describe("p5 SHARED_PATHS (promote.ts) all map back to a legacy path (review round 4, L2)", () => {
-  const P5_SHARED_PATHS = [...new Set(extractP5SharedPathsFromPromoteSource())];
+describe("p5 SHARED_PATHS (promote.ts) all map back to a legacy path (review round 4, L2; round 5, L2)", () => {
+  const P5_SHARED_PATHS = [...new Set(p5SharedPaths())];
 
   it("sanity: this list is non-empty and includes both a file and a directory entry", () => {
-    expect(P5_SHARED_PATHS.length).toBeGreaterThanOrEqual(9);
+    expect(P5_SHARED_PATHS.length).toBeGreaterThan(0);
     expect(P5_SHARED_PATHS).toContain("data/published/paper-details-v1");
   });
 
