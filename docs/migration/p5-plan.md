@@ -561,6 +561,20 @@ order:
       prints "nothing is staged" in that case. The tool does not commit by
       itself: every `dataMove` subcommand only stages, so the operator
       reviews `git diff --cached` and commits under their own identity.
+
+      **If `git` itself fails partway through step a** (for example a
+      `git update-index`/`git checkout` call errors after some paths are
+      already staged): do not run `git reset --hard` — that can discard
+      real uncommitted work elsewhere in the worktree. Instead
+      `git restore --staged -- <paths carry-back touched>` (or, if nothing
+      else is staged, `git reset --keep HEAD`, never `--hard`) to undo just
+      the partial staging, delete the manifest file carry-back already
+      wrote, confirm `git status --porcelain` is empty, and rerun step a
+      from a clean worktree (review round 4, L3 — a rerun over a
+      half-staged index or a stale manifest is caught fail-closed by
+      carry-back's own clean-worktree check and by finish-revert's
+      `assertHeadIsCarryBackCommit`/`assertHeadHoldsCarriedContent`, but a
+      clean restart is simpler than relying on that).
    b. `git revert --no-commit -m 1 <mergeB>` undoes B's own structural
       diff: the rule-table moves, the `LAYOUT_MODE` flip, the workflow
       swap, `.gitignore`/`.lighthouserc.json`. Always use `--no-commit`.
@@ -581,11 +595,36 @@ order:
       pre-B tree (§5.2). It stages only. If it refuses, the message names
       the cause; every remedy below keeps every real commit:
       - `[no-carry-back-commit]`: `HEAD` is still the commit carry-back
-        ran on, so step a's commit was never made (a delete-only carry-back
-        committed without `--allow-empty`). Nothing to reset. Run
-        `git revert --abort` (if a revert is in progress), then
-        `git commit --allow-empty -m "rollback: carry back data since B"`,
-        then redo b and c.
+        ran on, so step a's commit was never made. Nothing to reset.
+        **The remedy depends on the manifest (review round 4, H1 — do not
+        apply the delete-only remedy to an add/modify manifest, and vice
+        versa):**
+        - if the manifest holds **deletions only**, step a's carry-back
+          genuinely staged nothing (every legacy path was already removed
+          by B), so a plain `git commit` made no commit: run
+          `git revert --abort` (if a revert is in progress), then
+          `git commit --allow-empty -m "rollback: carry back data since B"`,
+          then redo b and c.
+        - if the manifest holds **any add/modify entry**, the carry-back
+          *did* stage real content — the operator's own `git commit` in
+          step a just never ran (forgotten, or rejected by a pre-commit
+          hook). `git revert --abort` **discards that staged carry-back**,
+          so an `--allow-empty` commit made right after it would hold none
+          of the carried content — see `[carry-back-incomplete]` below for
+          what happens if you do this anyway. Instead: run
+          `git revert --abort` (if a revert is in progress), **rerun step a
+          first** (`dataMove carry-back --since <mergeB> --manifest <the
+          same file>`, which re-stages the same content from the still-live
+          `data/**`), *then* `git commit --allow-empty -m "rollback: carry
+          back data since B"`, then redo b and c.
+      - `[carry-back-incomplete]` (review round 4, H1): `HEAD` is the
+        carry-back commit, directly on the right parent, with nothing
+        extraneous — but it does not actually hold every manifest entry's
+        content (for example an empty commit made over an add/modify
+        manifest, as above). Nothing was changed. The remedy is the same as
+        the second `[no-carry-back-commit]` case above: abort the revert if
+        one is in progress, rerun step a from the current `HEAD` (a new
+        manifest), commit `--allow-empty`, then redo b and c.
       - `[revert-auto-committed]`: the revert ran without `--no-commit`,
         and the tool has checked that `HEAD` is a committed revert of B
         directly on the carry-back commit. Drop only that revert commit
@@ -646,11 +685,87 @@ order:
 
       The final tree is therefore exactly the pre-B tree plus every post-B
       change at its legacy path. However, v1 at `<mergeB>^1` predates
-      the carried-back catalog. So, in the legacy tree, regenerate it with
-      `pnpm exec tsx apps/pipeline/src/release/derived/searchIndexCli.ts`
-      (legacy mode writes v1), check it with `--check`, and commit it
-      separately if it changed. This is one data-only commit, kept apart
-      from the revert so the revert stays reviewable.
+      the carried-back catalog, and so does everything else the legacy
+      Python site derives from it (review round 4, M1 — step 4d
+      previously regenerated only v1, so the legacy release gate failed on
+      any carried-back catalog change). In the legacy tree, regenerate
+      **every** legacy-only derived artifact, in this order, and commit
+      the result as **one separate data-only commit**, kept apart from the
+      revert so the revert stays reviewable:
+      1. **First, before any rebuild**: if a post-B brand-new conference
+         was carried back with `papers.json` but no legacy
+         `index.html`/`paper-links.html` (`test_catalog_nojs_fallback.py`
+         skips a conference directory with no `index.html`, so it would
+         otherwise ship linked from `conferences.json` and 404 on the
+         legacy site), build its legacy page by hand now with
+         `scaffold_conference_page.py`, using the same
+         `--conference`/`--display`/`--lede` the original p5-side
+         generation used — steps 2 and 3 below both need this page to
+         already exist, not be added afterward.
+      2. `uv run python -m paperpilot.scripts.build_pages` with **no**
+         `--conference` flag, so it re-derives every conference's
+         `papers.json`/`paper-links.html` plus `conferences.json` and the
+         per-conference abstract shards together (the same ordering rule
+         as the normal catalog-update flow — a `--conference`-scoped build
+         alone leaves `conferences.json` stale). If the shrink gate fires
+         on a legitimate carried-back deletion, pass the matching
+         `--allow-shrink-for <conf>`/`--allow-shrink` (same flags the
+         normal flow uses); do not treat the gate itself as a bug.
+      3. `uv run python -m paperpilot.scripts.build_search_index` —
+         the **authoritative** regenerator (what the legacy site actually
+         ships from): it writes `docs/search-index.json` (v1),
+         `docs/search-index-v2.json`, and the `docs/search-paper-ids-v1/`
+         shards together, all derived from step 2's `papers.json` files.
+      4. `pnpm exec tsx apps/pipeline/src/release/derived/searchIndexCli.ts
+         --check` — **check only, never write here.** `searchIndexCli`'s
+         own writer (legacy mode) produces the same three artifacts as
+         step 3 through the TS parity port, not the production path; this
+         step is the migration-parity confirmation that the TS port still
+         agrees byte-for-byte with what Python's `build_search_index.py`
+         (the real legacy generator) just wrote. A non-zero exit here is a
+         parity regression to investigate — fix the TS port, don't
+         "resolve" it by letting `searchIndexCli` overwrite step 3's
+         output.
+      5. `uv run python -m paperpilot.scripts.sync_asset_versions --check`
+         and `uv run python -m paperpilot.scripts.build_sitemap --check`.
+         If step 1 scaffolded a brand-new conference page, run both
+         **once in write mode first** (no `--check`) — a scaffolded page
+         changes both the asset-version references and the sitemap, so
+         `--check` would correctly fail until they catch up — then
+         `--check` to confirm. Otherwise go straight to `--check`: the
+         revert already restores the pre-B versions/sitemap byte-for-byte
+         and neither depends on the carried catalog, so a non-zero exit
+         means something else drifted and needs investigating, not a
+         blind re-run.
+      6. Run the legacy release gate locally, exactly as
+         `pages-release.yml` would: `uv run --extra dev pytest
+         paperpilot/tests/` and
+         `.github/scripts/validate-pages-release.sh local <mergeB
+         revert commit's sha> docs`. Both must pass before pushing.
+         - If `viewer/test_search_viewer.py::test_search_frozen_evaluation`
+           fails, that is expected whenever the carried-back catalog
+           changed anything `docs/search-index-v2.json` derives from — it
+           is the same frozen-fixture-vs-legitimate-update class the plan
+           already decided for promote (changeset A1 above, decision R9).
+           There is no generator script for this fixture yet
+           (**(verify)** whether one should be added as a follow-up), so
+           "by hand" means concretely, per what
+           `paperpilot/tests/viewer/evaluate_search_frozen.mjs` actually
+           checks: update `frozen_corpus` in
+           `paperpilot/tests/fixtures/search-v2/frozen-eval-v1.json`'s
+           three fields to match the regenerated
+           `docs/search-index-v2.json` —
+           `index_sha256` from `sha256sum docs/search-index-v2.json`,
+           `index_bytes` from `wc -c < docs/search-index-v2.json`, and
+           `row_count` from `jq 'length' docs/search-index-v2.json` — then
+           re-run the gate. Leave the fixture's `queries` entries alone;
+           only `frozen_corpus` is derived from the index file itself.
+
+      Commit the result of steps 1–5 as **one separate data-only commit**,
+      kept apart from the revert so the revert stays reviewable. Only
+      after step 6 passes does **this list's own next item, step 5**
+      ("Pushing `docs/**` …", below) make the legacy site match "pre-B
+      tree plus every post-B change".
 5. Pushing `docs/**` triggers the Python `pages.yml`, which re-releases the old site to GitHub Pages, overwriting the redirect site if step 10 ran.
 6. Remove `<PUBLIC_ORIGIN>` from the allowlist.
 7. The apps/api Worker stays (Phase W is independent); Durable Object counters need no action. The Cloudflare Pages project is left idle or its production deployment removed (☐).

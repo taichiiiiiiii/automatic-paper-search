@@ -336,6 +336,27 @@ it("cf-deployment-id subcommand dies loudly on a malformed SOURCE_SHA (requiredS
   }
 });
 
+// LOW (P5 tier-A review round 4): `EnvSpec.require` already treats an
+// empty-string env var as missing (`raw === undefined || raw === ""`,
+// cli.ts), but this was untested at the CLI level. An empty string is what
+// a workflow step produces when a secret/variable is configured but
+// resolves empty (e.g. `CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}` with
+// the secret unset) -- unlike an *unset* name, `process.env.CF_ACCOUNT_ID`
+// is then the string `""`, not `undefined`, so a naive `??`/truthiness-free
+// check would let it through to a Cloudflare API URL as a literal empty
+// path segment.
+it("cf-deployment-id subcommand dies loudly on an empty-string CF_ACCOUNT_ID, before any network call", () => {
+  const repo = join(base, "repo-cf-deployment-id-empty-account");
+  mkdirSync(repo);
+  const stderr = expectCliDies(repo, ["cf-deployment-id"], {
+    CF_ACCOUNT_ID: "",
+    CF_PROJECT: "proj",
+    CF_API_TOKEN: "tok",
+    SOURCE_SHA: "a".repeat(40),
+  });
+  expect(stderr).toContain("CF_ACCOUNT_ID is required");
+});
+
 // P5 tier-A review round 2 (survivor fix): previously untested at the
 // CLI level. The expected-sha format check runs BEFORE any `requiredEnv`
 // call or network access, so this stays within the "no network in

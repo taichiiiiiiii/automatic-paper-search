@@ -433,6 +433,11 @@ describe("finishRevert: delete-only carry-back and the HEAD refusals (review rou
       );
       // Not the "HEAD^ is …" refusal the old runbook mapped to `git reset --hard HEAD^`.
       expect(() => finishRevert({ git: adapter, cwd: repo, manifest })).not.toThrow(/HEAD\^ is/);
+      // Manifest is delete-only, so this must NOT get review round 4 H1's "redo carry-back" text
+      // (an empty commit genuinely is the fix here).
+      expect(() => finishRevert({ git: adapter, cwd: repo, manifest })).not.toThrow(
+        /is NOT the fix/,
+      );
       expect(gitRun(repo, ["rev-parse", "HEAD"])).toBe(postB);
 
       // The remedy: abort the revert, commit empty, redo b and c.

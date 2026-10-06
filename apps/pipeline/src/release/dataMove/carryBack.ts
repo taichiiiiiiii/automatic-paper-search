@@ -591,15 +591,121 @@ function looksLikeRevertOfB(adapter: GitAdapter, cwd: string, rev: string): bool
 }
 
 /**
+ * The `[no-carry-back-commit]` remedy when the manifest has an A or M
+ * entry (review round 4, H1): `git revert --abort` also discards the
+ * staged-but-uncommitted carry-back, so an `--allow-empty` commit made
+ * after it holds none of the carried content. The carry-back has to be
+ * staged again (or, with no revert in progress, committed as it stands).
+ */
+function redoCarryBackRemedy(manifest: CarryBackManifest): string {
+  return (
+    "The manifest has added or modified entries, so an empty commit is NOT the fix: the " +
+    "carry-back was staged but never committed. If a revert is in progress, `git revert --abort` " +
+    "(this also discards the staged carry-back), then rerun " +
+    `\`dataMove carry-back --since ${manifest.since} --manifest <the same file>\`, then ` +
+    '`git commit --allow-empty -m "rollback: carry back data since B"`. If no revert is in ' +
+    "progress and `git diff --cached` still shows the carry-back, `git commit --allow-empty` " +
+    "commits it. Then redo `git revert --no-commit -m 1` and finish-revert"
+  );
+}
+
+/**
+ * Review round 4, H1: `HEAD` (the carry-back commit) must actually hold
+ * every manifest entry, before anything is resolved. Without this, an
+ * empty carry-back commit made over an A/M manifest made every A/M legacy
+ * path's expected entry "absent", so finish-revert deleted the collector
+ * config and state and its own final self-check agreed:
+ *  - A/M `move`: `HEAD:<legacyPath>` has the blob and mode of
+ *    `<manifest.head>:<p5Path>`;
+ *  - A/M `moveEdit`: same mode, and the content equals
+ *    {@link reverseConfigEdits} of that blob;
+ *  - D: `HEAD` has no `<legacyPath>`.
+ * Compatible with the `[commits-in-between]` remedy: a rerun carry-back
+ * over legacy paths that already hold the content stages nothing, yet
+ * `HEAD` still holds the right blobs.
+ */
+function assertHeadHoldsCarriedContent(
+  adapter: GitAdapter,
+  cwd: string,
+  manifest: CarryBackManifest,
+): void {
+  // The whole tree, not a pathspec per entry: a large manifest would overflow argv.
+  const headTree = readTree(adapter, cwd, "HEAD", [], FinishRevertError);
+  const sourceTree = readTree(adapter, cwd, manifest.head, ["data/"], FinishRevertError);
+  const show = (e: IndexEntry | undefined) => (e ? `${e.mode} ${e.sha}` : "<absent>");
+  const problems: string[] = [];
+  for (const entry of manifest.entries) {
+    const have = headTree.get(entry.legacyPath);
+    if (entry.status === "D") {
+      if (have !== undefined) {
+        problems.push(`${entry.legacyPath}: a carried-back deletion, but HEAD has ${show(have)}`);
+      }
+      continue;
+    }
+    const source = sourceTree.get(entry.p5Path);
+    const rule = reverseMapDataPath(entry.p5Path);
+    if (source === undefined || rule === undefined) {
+      problems.push(`${entry.p5Path}: absent from ${manifest.head}, which carry-back read it from`);
+      continue;
+    }
+    if (rule.class === "move") {
+      if (!sameEntry(have, source)) {
+        problems.push(
+          `${entry.legacyPath}: expected ${show(source)} (from ${entry.p5Path}), HEAD has ${show(have)}`,
+        );
+      }
+      continue;
+    }
+    if (have === undefined || have.mode !== source.mode) {
+      problems.push(
+        `${entry.legacyPath}: expected mode ${source.mode} (from ${entry.p5Path}), HEAD has ${show(have)}`,
+      );
+      continue;
+    }
+    let want: string;
+    try {
+      want = reverseConfigEdits(
+        gitRaw(adapter, cwd, ["show", `${manifest.head}:${entry.p5Path}`], FinishRevertError),
+        rule.edits,
+      );
+    } catch (error) {
+      if (!(error instanceof ConfigEditError)) throw error;
+      problems.push(
+        `${entry.legacyPath}: ${entry.p5Path} cannot be reverse-edited (${error.message})`,
+      );
+      continue;
+    }
+    if (gitRaw(adapter, cwd, ["show", `HEAD:${entry.legacyPath}`], FinishRevertError) !== want) {
+      problems.push(`${entry.legacyPath}: content differs from the reverse-edited ${entry.p5Path}`);
+    }
+  }
+  if (problems.length > 0) {
+    throw new FinishRevertError(
+      "refusing to finish [carry-back-incomplete]: HEAD does not hold the carried-back content, " +
+        "so the carry-back commit is incomplete (for example an empty commit made after " +
+        "`git revert --abort` discarded the staged carry-back). Nothing was changed. Do not reset: " +
+        "run `git revert --abort` if a revert is in progress, then rerun " +
+        `\`dataMove carry-back --since ${manifest.since} --manifest <the same file>\` from the ` +
+        'current HEAD (a new manifest), commit with `git commit --allow-empty -m "rollback: carry ' +
+        `back data since B"\`, then redo \`git revert --no-commit -m 1\` and finish-revert:\n` +
+        list(problems),
+    );
+  }
+}
+
+/**
  * Review round 3, M2: `HEAD` must be the carry-back commit, sitting
  * directly on the manifest's `head`. The three ways it can fail need
  * different remedies, so each gets its own message, keyed by a tag the
  * runbook (p5-plan.md §6.2 R-B step 4c) maps to a remedy:
  *
- *  - `[no-carry-back-commit]`: `HEAD` is still `manifest.head`. A
- *    delete-only carry-back stages nothing, so a plain `git commit` made
- *    no commit. Nothing to reset: abort the revert, commit with
- *    `--allow-empty`, redo the revert.
+ *  - `[no-carry-back-commit]`: `HEAD` is still `manifest.head`. Nothing
+ *    to reset. If the manifest holds deletions only, the carry-back staged
+ *    nothing and a plain `git commit` made no commit: abort the revert,
+ *    commit with `--allow-empty`, redo the revert. Otherwise the carry-back
+ *    was staged but never committed, and `git revert --abort` discards it,
+ *    so it must be rerun before the `--allow-empty` commit (review round
+ *    4, H1; see {@link redoCarryBackRemedy}).
  *  - `[revert-auto-committed]`: `HEAD` is a committed revert of B, and
  *    `HEAD^` is the carry-back commit on `manifest.head`. Only then is
  *    dropping `HEAD` safe, and only with `git reset --keep HEAD^`.
@@ -612,14 +718,17 @@ function assertHeadIsCarryBackCommit(
   manifest: CarryBackManifest,
 ): void {
   const head = git(adapter, cwd, ["rev-parse", "--verify", "HEAD^{commit}"]);
+  const deleteOnly = manifest.entries.every((e) => e.status === "D");
   if (head === manifest.head) {
     throw new FinishRevertError(
       `refusing to finish [no-carry-back-commit]: HEAD is still ${manifest.head}, the commit ` +
-        "carry-back ran on, so there is no carry-back commit on top of it (a delete-only " +
-        "carry-back stages nothing, and `git commit` without --allow-empty makes no commit). " +
-        "Do not reset anything: run `git revert --abort` (if a revert is in progress), then " +
-        "`git commit --allow-empty`, " +
-        "then redo `git revert --no-commit -m 1` and finish-revert",
+        "carry-back ran on, so there is no carry-back commit on top of it. Do not reset anything. " +
+        (deleteOnly
+          ? "The manifest holds deletions only, so the carry-back staged nothing and `git commit` " +
+            "without --allow-empty made no commit: run `git revert --abort` (if a revert is in " +
+            "progress), then `git commit --allow-empty`, then redo `git revert --no-commit -m 1` " +
+            "and finish-revert"
+          : redoCarryBackRemedy(manifest)),
     );
   }
   const legacyPaths = new Set(manifest.entries.map((e) => e.legacyPath));
@@ -653,7 +762,14 @@ function assertHeadIsCarryBackCommit(
   if (strays.length > 0) {
     const hint = looksLikeRevertOfB(adapter, cwd, "HEAD")
       ? " HEAD looks like a committed revert of B made with no carry-back commit under it: " +
-        "`git reset --keep HEAD^`, `git commit --allow-empty`, then redo the revert with --no-commit."
+        "`git reset --keep HEAD^`, then " +
+        (deleteOnly
+          ? "`git commit --allow-empty` (the manifest holds deletions only), then redo the revert " +
+            "with --no-commit and finish-revert."
+          : `rerun \`dataMove carry-back --since ${manifest.since} --manifest <the same file>\` ` +
+            "(the manifest has added or modified entries, which an empty commit would not hold), " +
+            "commit with `git commit --allow-empty`, then redo the revert with --no-commit and " +
+            "finish-revert.")
       : "";
     throw new FinishRevertError(
       "refusing to finish: HEAD changes path(s) the manifest does not name, so it is not the " +
@@ -684,7 +800,9 @@ function assertHeadIsCarryBackCommit(
  *  - before touching anything, when `HEAD` is not the carry-back commit
  *    (see {@link assertHeadIsCarryBackCommit}: no carry-back commit at
  *    all, a revert that auto-committed, or commits in between; or `HEAD`
- *    changes a path the manifest does not name), or nothing is staged (the
+ *    changes a path the manifest does not name), when `HEAD` does not hold
+ *    every manifest entry's carried content (`[carry-back-incomplete]`, see
+ *    {@link assertHeadHoldsCarriedContent}), or nothing is staged (the
  *    revert has not run);
  *  - after resolving, when a conflicted path remains that it does not own
  *    (an unrelated structural conflict needs a human), anything remains
@@ -695,6 +813,7 @@ export function finishRevert(options: FinishRevertOptions): FinishRevertResult {
   const { git: adapter, cwd, manifest } = options;
 
   assertHeadIsCarryBackCommit(adapter, cwd, manifest);
+  assertHeadHoldsCarriedContent(adapter, cwd, manifest);
   const before = readIndex(adapter, cwd);
   const staged = adapter.run(cwd, ["diff", "--cached", "--quiet"]).exitCode !== 0;
   if (!staged && before.unmerged.size === 0) {
