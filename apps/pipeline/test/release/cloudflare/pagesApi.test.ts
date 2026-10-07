@@ -48,6 +48,83 @@ it("getProductionDeploymentId picks the newest matching deployment by created_on
   expect(result).toEqual({ deploymentId: "dep-newer", deploymentUrl: "https://newer.pages.dev" });
 });
 
+it("getProductionDeploymentId asks for an explicit page size", async () => {
+  let seenUrl = "";
+  const fetchImpl: CfFetchFn = async (url) => {
+    seenUrl = String(url);
+    return {
+      status: 200,
+      json: async () => ({
+        success: true,
+        result: [
+          {
+            id: "dep-1",
+            url: "https://one.pages.dev",
+            created_on: "2026-06-01T00:00:00Z",
+            deployment_trigger: { metadata: { commit_hash: SHA } },
+          },
+        ],
+      }),
+    };
+  };
+  await getProductionDeploymentId({
+    fetchImpl,
+    accountId: "acct",
+    project: "proj",
+    apiToken: SECRET_TOKEN,
+    sourceSha: SHA,
+  });
+  expect(seenUrl).toContain("/deployments?env=production&per_page=25");
+});
+
+it("getProductionDeploymentId skips a newer deploy for the same commit that is skipped, failed or not production", async () => {
+  const base = { deployment_trigger: { metadata: { commit_hash: SHA } } };
+  const fetchImpl = listFetch([
+    {
+      ...base,
+      id: "dep-good",
+      url: "https://good.pages.dev",
+      created_on: "2026-01-01T00:00:00Z",
+      environment: "production",
+      is_skipped: false,
+      latest_stage: { status: "success" },
+    },
+    {
+      ...base,
+      id: "dep-skipped",
+      url: "https://s.pages.dev",
+      created_on: "2026-06-01T00:00:00Z",
+      environment: "production",
+      is_skipped: true,
+      latest_stage: { status: "success" },
+    },
+    {
+      ...base,
+      id: "dep-failed",
+      url: "https://f.pages.dev",
+      created_on: "2026-06-02T00:00:00Z",
+      environment: "production",
+      latest_stage: { status: "failure" },
+    },
+    {
+      ...base,
+      id: "dep-preview",
+      url: "https://p.pages.dev",
+      created_on: "2026-06-03T00:00:00Z",
+      environment: "preview",
+      latest_stage: { status: "success" },
+    },
+  ]);
+  const result = await getProductionDeploymentId({
+    fetchImpl,
+    accountId: "acct",
+    project: "proj",
+    apiToken: SECRET_TOKEN,
+    sourceSha: SHA,
+  });
+  expect(result).toEqual({ deploymentId: "dep-good", deploymentUrl: "https://good.pages.dev" });
+});
+
 it("getProductionDeploymentId ignores deployments for a different commit", async () => {
   const fetchImpl = listFetch([
     {

@@ -77,7 +77,27 @@ interface CfDeploymentListEntry {
   id?: string;
   url?: string;
   created_on?: string;
+  environment?: string;
+  is_skipped?: boolean;
+  latest_stage?: { status?: string };
   deployment_trigger?: { metadata?: { commit_hash?: string } };
+}
+
+/**
+ * The list API does not document its sort order or default page size, so
+ * ask for an explicit page size and never trust list order (we sort by
+ * `created_on` below). A field the API documents but a response omits is
+ * not held against the entry; a present field that says "not a finished
+ * production deploy" is.
+ */
+const DEPLOYMENT_LIST_PER_PAGE = 25;
+
+function isFinishedProductionDeploy(entry: CfDeploymentListEntry): boolean {
+  if (entry.environment !== undefined && entry.environment !== "production") return false;
+  if (entry.is_skipped === true) return false;
+  const status = entry.latest_stage?.status;
+  if (status !== undefined && status !== "success") return false;
+  return true;
 }
 
 interface CfDeploymentListBody extends CfErrorBody {
@@ -90,7 +110,7 @@ export async function getProductionDeploymentId(
 ): Promise<CfDeploymentIdResult> {
   const url = `https://api.cloudflare.com/client/v4/accounts/${encodeURIComponent(
     options.accountId,
-  )}/pages/projects/${encodeURIComponent(options.project)}/deployments?env=production`;
+  )}/pages/projects/${encodeURIComponent(options.project)}/deployments?env=production&per_page=${DEPLOYMENT_LIST_PER_PAGE}`;
   const response = await options.fetchImpl(url, {
     method: "GET",
     headers: { Authorization: `Bearer ${options.apiToken}` },
@@ -102,7 +122,9 @@ export async function getProductionDeploymentId(
     );
   }
   const matches = (body.result ?? []).filter(
-    (entry) => entry.deployment_trigger?.metadata?.commit_hash === options.sourceSha,
+    (entry) =>
+      entry.deployment_trigger?.metadata?.commit_hash === options.sourceSha &&
+      isFinishedProductionDeploy(entry),
   );
   if (matches.length === 0) {
     throw new CloudflareApiError(

@@ -25,6 +25,9 @@ permissions: {}
 concurrency:
   group: paperpilot-pages-production
   cancel-in-progress: false
+  # FIFO with pages-release.yml; without it a rollback and a pending
+  # release in the same group would cancel each other.
+  queue: max
 
 env:
   # Must equal packages/core/src/site/config.ts's PAGES_PROJECT_NAME /

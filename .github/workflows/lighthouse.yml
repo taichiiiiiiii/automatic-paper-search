@@ -36,14 +36,7 @@ jobs:
         run: pnpm --filter @paperpilot/web build
 
       - name: Run Lighthouse CI
-        # (verify, PENDING-UNPINNED): no 40-hex SHA for this third-party
-        # action could be looked up offline (hard limit: no network in
-        # this task). Tracked explicitly in
-        # apps/pipeline/test/workflows's PENDING_UNPINNED_ACTIONS list so
-        # the pin-everything contract test stays an honest allowlist
-        # instead of silently accepting any unpinned `uses:`. Pin a real
-        # SHA here before this workflow moves into .github/workflows/.
-        uses: treosh/lighthouse-ci-action@v12
+        uses: treosh/lighthouse-ci-action@3e7e23fb74242897f95c0ba9cabad3d0227b9b18 # v12
         with:
           configPath: "./.lighthouserc.json"
           uploadArtifacts: true

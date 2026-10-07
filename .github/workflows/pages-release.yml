@@ -52,14 +52,10 @@ permissions: {}
 concurrency:
   group: paperpilot-pages-production
   cancel-in-progress: false
-  # (verify) Live pre-P5 pages-release.yml also sets `queue: max` here.
-  # `concurrency.queue` is not in the GitHub Actions concurrency schema
-  # this changeset could check offline (no network access) — adding an
-  # unrecognized key risks a hard workflow-parse failure, not a graceful
-  # ignore, which would be worse than the L5 gap it's meant to close.
-  # Left out until the next online verification pass confirms the exact
-  # key/value GitHub Actions accepts there; tracked in this task's
-  # handback as an unresolved (verify) item (P5 tier-A review, L5).
+  # Keep every pending release in FIFO order (max 100) instead of the
+  # default `single`, which would cancel an older pending release whenever
+  # a newer one queues. Same group and queue as pages-rollback.yml.
+  queue: max
 
 env:
   # Must equal packages/core/src/site/config.ts's PAGES_PROJECT_NAME /
