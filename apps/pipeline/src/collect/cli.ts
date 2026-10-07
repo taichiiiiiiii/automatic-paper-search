@@ -17,8 +17,9 @@
  */
 
 import { writeFileSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
+import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { collectConfig } from "@paperpilot/core/layout";
 import { stringify as stringifyYaml } from "yaml";
 import { CliUsageError, parseArgs as parseFlags } from "../shared/cli/argparse.js";
 import { isMain } from "../shared/cli/isMain.js";
@@ -309,7 +310,7 @@ export const HELP_TEXT = `usage: collector [--config CONFIG] [--days DAYS] [--ke
 PaperPilot — AI/ML paper auto-collector
 
 options:
-  --config CONFIG     Path to config.yaml (default: paperpilot/config.yaml)
+  --config CONFIG     Path to config.yaml (default: data/config/config.yaml)
   --days DAYS         Override search.days_back
   --keyword KEYWORD   Append additional search keyword (repeatable)
   --full              Ignore seen-ids (re-output papers from previous runs)
@@ -412,7 +413,7 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 // apps/pipeline/src/collect/cli.ts -> repo root is 4 levels up (one less
 // than lineage/theme/cli.ts's 5, since collect/ sits one level shallower).
 const DEFAULT_REPO_ROOT = resolve(HERE, "..", "..", "..", "..");
-const DEFAULT_CONFIG_PATH = join(DEFAULT_REPO_ROOT, "paperpilot", "config.yaml");
+const DEFAULT_CONFIG_PATH = collectConfig(DEFAULT_REPO_ROOT);
 
 /**
  * Builds the `CliDeps` a real (non-test) run uses: `createRunner` wires a
