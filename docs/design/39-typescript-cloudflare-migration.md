@@ -5,7 +5,7 @@
 - 作業ブランチ: `feat/ts-migration`。`develop` への push は Worker と Pages を自動デプロイするため、移行作業は必ずこのブランチで行う
 - 無料枠の数値は **2026-10-04 に Cloudflare の現行ドキュメントで確認済み**（§1.1）
 
-## 進捗（2026-10-05 時点、`feat/ts-migration`、未 push）
+## 進捗（2026-10-07 時点）
 
 | フェーズ | 状態 |
 |---|---|
@@ -13,7 +13,18 @@
 | P2 画面 | 完了。レビュー 3 回で重大・中程度 0。残りの差は [`docs/migration/p2-parity-gaps.md`](../migration/p2-parity-gaps.md) |
 | P3 API | 完了（Hono、Durable Objects の正確な上限、空打ちモード、受付停止スイッチ） |
 | P4 収集・生成 | 完了。レビュー 3 回で重大・中程度 0。残作業と判断待ちは [`docs/migration/p4-followups.md`](../migration/p4-followups.md) |
-| P5 切替 | 未着手。ユーザー作業（Cloudflare トークン・プレビュー資源）と各段の承認が必要 |
+| P5 切替 | **Tier A 完了**（A0〜A12、`feat/ts-migration` の `0d85e50` まで。レビュー 5 回、`origin/feat/ts-migration` と同じ）。**commit B と Tier C はブランチ `p5/consolidate` で先に作成済み**（下記）。本番側の段（P0 の準備、Merge A、Phase W、Merge B、観察）は、この文書の時点で完了の記録が無い。どれもユーザー作業と各段の承認が要る。手順は [`docs/migration/p5-plan.md`](../migration/p5-plan.md) §6.2 |
+
+### P5 の内訳（`p5/consolidate`、未 push・`develop` に merge しない）
+
+| 段 | 状態 |
+|---|---|
+| commit B（`83a7551`） | `dataMove apply` でデータを `data/{published,state,inputs,config}` に移し、`LAYOUT_MODE` を `"p5"` に、Node の workflow を `.github/workflows/` に移した。`ts-ci.yml`・`publish.yml`・`paper-slides-on-demand.yml` を削除 |
+| Tier C の削除（`24cf1c1`） | `paperpilot/`（Python）、`pyproject.toml`、`uv.lock`、Docker 一式、`tools/`、`.github/scripts/`、`worker/`、ルートの `wrangler.jsonc`、フィクスチャ生成用の `.py` を削除。`tests.yml` に「`.codex/` 以外の tracked な `*.py` が 0 件」の検査 |
+| Tier C の文書 | README・CHANGELOG・`.claude/agents/*`・`.claude/skills/*`・本書の進捗・[`safety-contracts.md`](../migration/safety-contracts.md)（p4-followups #14 LLM-18、#15「移植先」列）を書き直した（未 commit）。CLAUDE.md と AGENTS.md の書き直しは保留（下書きのみ。ユーザーの許可待ち） |
+| 未決 | 判断待ち 8（`AGENTS.md`・`PAPERPILOT_PROFILE.md`・`docs/QWEN_IMPLEMENTER.md`・`.codex/` を残すか）。古い設計書の整理（§9.3 の 9 本）。Cloudflare Pages のプロジェクト名・本番ブランチ・公開 origin（今は仮の値） |
+
+⚠️ **`p5/consolidate` は Phase W と Merge B が終わるまで `develop` に merge しない。** `develop` の本番は今も `worker/`（Workers Builds が自動デプロイ）と Python の workflow で動いている。また Phase W の戻し手順が使う `wrangler.legacy-rollback.jsonc` はこのブランチでは消えている。
 
 ## 判断結果（2026-10-05、ユーザー「推奨で進めてください」）
 

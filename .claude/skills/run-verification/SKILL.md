@@ -1,61 +1,87 @@
 ---
 name: run-verification
-description: PaperPilot の全検証を一括実行（pytest + カバレッジ + venue 検出率 + スモークテスト）。ユーザーが「テスト流して」「動作確認して」「検証して」「PR を出す前にチェック」と言った時に起動する。
+description: PaperPilot の全検証を一括実行（Biome + typecheck + web build + Vitest 全テスト + bundle 検証 + venue 検出率 + データ監査、任意でスモーク）。ユーザーが「テスト流して」「動作確認して」「検証して」「PR を出す前にチェック」と言った時に起動する。
 ---
 
 # run-verification — PaperPilot 検証ループスキル
 
-## いつ起動するか
+コードは TypeScript だけ（Node 22+、pnpm 10.34.6）。Python・uv・Docker の検証はもう無い。
 
-- 「テスト全部流して」「CI 相当のチェック」
-- 「リリース前／PR 前の検証」
-- 「スコア計算が合っているか確認」
-- 「develop にマージできる状態か確認」
+## いつ使うか
 
-## 検証レイヤー
+- 「テストを全部流して」「CI 相当のチェック」
+- 「PR 前の検証」
+- 「スコア計算が合っているか確かめて」
+- 「merge できる状態か確かめて」（このブランチ `p5/consolidate` は P5 切替手順が終わるまで `develop` に merge しない）
 
-| レイヤー | 目的 | 実行コマンド |
-|---------|------|------------|
-| L1. ユニットテスト | 個別モジュールの挙動 | `pytest paperpilot/tests/` |
-| L2. カバレッジ | 80%+ 維持（現状 91%、tests 636 件） | `pytest --cov=paperpilot --cov-report=term` |
-| L3. Venue 検出率 | ≥95%（§9 Table 21） | `pytest paperpilot/tests/test_venue_stress.py` |
-| L4. ランナー統合テスト | Stage 0-4 の通し動作 | `pytest paperpilot/tests/test_runner.py` |
-| L5. スモークテスト（任意） | 実 arXiv で小規模実行 | `python -m paperpilot.collector --days 3 --keyword <kw>` |
-
-## 実行手順
-
-### Step 1: 一括テスト + カバレッジ（必須）
+## 準備
 
 ```bash
-cd /root/work/Research/automatic-paper-search
-python3 -m pytest paperpilot/tests/ \
-    --cov=paperpilot \
-    --cov-report=term \
-    --cov-config=/dev/null \
-    -q
+node --version          # 22 以上。20 なら npx --yes -p node@22 node -e 'console.log(process.execPath)' の Node を PATH の先頭に
+pnpm --version          # 10.34.6。無ければ npx --yes pnpm@10.34.6
+pnpm install --frozen-lockfile
 ```
 
-**合格基準**
-- 全テスト pass（現状 240）
-- TOTAL coverage ≥80%
-- 全本体モジュール ≥80%（`paperpilot/tests/`・`__init__.py`・`config_loader.py` の一部は除く）
+## 検証の段
 
-### Step 2: Venue 検出率の再確認
+| 段 | 目的 | コマンド |
+|---|---|---|
+| L1. lint | 書式と静的検査（error は 0） | `pnpm exec biome check .` |
+| L2. 型 | 全パッケージの型検査 | `pnpm -r typecheck` |
+| L3. web build | 静的書き出し（web の契約テストが使う） | `pnpm --filter @paperpilot/web build` |
+| L4. 全テスト | core・api・web・pipeline の Vitest | `pnpm -r test` |
+| L5. bundle | 公開物の形の検査 | `pnpm exec tsx apps/pipeline/src/release/cli.ts validate bundle apps/web/out` |
+| L6. venue 検出率 | 95% 以上（§9 Table 21） | `pnpm --filter @paperpilot/pipeline exec vitest run test/collect/signals/venue.test.ts` |
+| L7. データ監査 | CI の `data-audit` と同じ | 下の Step 4 |
+| L8. スモーク（任意） | 本物の arXiv で小さく実行 | 下の Step 5 |
+
+## 手順
+
+### Step 1: lint と型（必須）
 
 ```bash
-python3 -m pytest paperpilot/tests/test_venue_stress.py -v
+pnpm exec biome check .
+pnpm -r typecheck
 ```
 
-- `test_detection_rate_above_95_percent` が pass すること
-- 60+ パターンがすべて期待通り分類されること
+### Step 2: web build → 全テスト（必須）
 
-### Step 3: CLI 動作確認（軽量スモーク）
-
-**要 arXiv ネット接続**。通常は PR 前に1回回すだけで十分。
+build を先にする。`apps/web` の契約テスト（CSP・paper-links・lineage の経路・sitemap・redirects・copy-data）は `apps/web/out` を読み、無いと skip になる。
 
 ```bash
-# 3日分 × 1キーワード × CSV出力のみ（最短で 10秒前後）
-cat > /tmp/smoke.yaml << 'EOF'
+pnpm --filter @paperpilot/web build
+pnpm -r test > "$TMPDIR/pp-test.log" 2>&1; echo "exit=$?"
+grep -E 'Test Files|Tests ' "$TMPDIR/pp-test.log"
+```
+
+- `head` で切らない（パッケージごとの集計が消える）。全体で 1〜1.5 分ほど。
+- 件数の目安（`feat/ts-migration` 時点）: core 1,845、api 214、web 887、pipeline 2,633。このブランチでは変わり得るので、実行結果の数字を報告する。
+- **合格:** 全部 pass、skip 0。skip があれば理由を報告する（リリースでは `no-skip-gate` が失敗にする）。
+
+### Step 3: bundle と venue 検出率
+
+```bash
+pnpm exec tsx apps/pipeline/src/release/cli.ts validate bundle apps/web/out
+pnpm --filter @paperpilot/pipeline exec vitest run test/collect/signals/venue.test.ts
+```
+
+`test_detection_rate_above_95_percent` が通ること。
+
+### Step 4: データ監査（公開データ・家系図を触ったとき）
+
+```bash
+pnpm exec tsx apps/pipeline/src/lineage/theme/auditThemeSeedsCli.ts
+pnpm exec tsx apps/pipeline/src/lineage/quality/auditLineageQualityCli.ts
+pnpm exec tsx apps/pipeline/src/release/derived/searchIndexCli.ts --check
+```
+
+### Step 5: 収集のスモーク（任意。本物の arXiv に出る）
+
+ネットに出るので、ユーザーが頼んだときだけ回す。出力は一時ディレクトリに置き、`data/` には書かない。
+
+```bash
+SMOKE="$TMPDIR/pp_smoke"; rm -rf "$SMOKE"; mkdir -p "$SMOKE"
+cat > "$SMOKE/smoke.yaml" <<EOF
 search:
   keywords: [retrieval augmented generation]
   categories: [cs.CL]
@@ -75,65 +101,64 @@ pipeline:
 llm:
   enabled: false
 output:
-  csv:  { enabled: true, dir: /tmp/pp_smoke }
-  json: { enabled: true, dir: /tmp/pp_smoke }
+  csv:  { enabled: true, dir: $SMOKE }
+  json: { enabled: true, dir: $SMOKE }
 incremental:
   enabled: false
-  seen_ids_file: /tmp/pp_smoke/seen.json
+  seen_ids_file: $SMOKE/seen.json
 EOF
-rm -rf /tmp/pp_smoke && mkdir -p /tmp/pp_smoke
-python3 -m paperpilot.collector --config /tmp/smoke.yaml
+pnpm exec tsx apps/pipeline/src/collect/cli.ts --config "$SMOKE/smoke.yaml"
 ```
 
-**確認項目**
-- `✅ N papers exported` が表示される
-- `/tmp/pp_smoke/papers_YYYY-MM-DD.{csv,json}` が生成される
-- JSON に `llm_relevance: null` が入っている（Stage 4 無効時の pass-through）
-- エラーメッセージが無い
+確かめること:
+- `$SMOKE/papers_YYYY-MM-DD.{csv,json}` ができる
+- JSON の `llm_relevance` が `null`（Stage 4 無効）
+- エラーが無い（設定キーが足りないと言われたら `collect/config/types.ts` を見て足す）
 
-### Step 4: 設定/ドキュメント整合性チェック
+### Step 6: 設定と文書の整合
 
-- `paperpilot/config.yaml` に書かれているキーが `runner._build_*` 側でハンドルされているか
-- `.env.example` に新規環境変数があるか
-- `CLAUDE.md` の「実装ステータス」表が最新か
+- `data/config/config.yaml` のキーを `collect/config/types.ts` と `collect/runner.ts` が扱っているか
+- 新しい環境変数が `data/config/.env.example` と `collect/config/env.ts` にあるか
+- CLAUDE.md・README・設計書 39 の記述が実物と合っているか
 
-### Step 5: git 状態確認
+### Step 7: git の状態
 
 ```bash
-# 意図しないファイルを commit しそうになっていないか
-git status
-# 特に確認するもの：
-#   - .env が ignore されているか
-#   - paperpilot/output/papers_*.csv はコミット対象でよい（CI も commit する）
-#   - paperpilot/logs/ はローカルのみ
+git status --short
+git ls-files '*.py' ':!.codex'     # 何も出ないこと（tests.yml と同じ検査）
+git diff --check
 ```
 
-## 合格条件（すべてクリア）
+- `.env` が出ていないこと
+- `data/` の変更は意図したものだけ（builder を回して出た差分を混ぜない）
+- `apps/web/out`・`node_modules` は git 管理外
 
-- [ ] L1: 全テスト pass
-- [ ] L2: カバレッジ 80%+（本体モジュール個別でも 80%+）
-- [ ] L3: Venue 検出率 ≥95%
-- [ ] L4: PipelineRunner の統合テストが pass
-- [ ] L5: スモーク実行で 1件以上出力
-- [ ] `.env` が `git status` で `Untracked` / `Modified` に出ていない
-- [ ] `develop` ブランチで作業している（`main` 直接コミット禁止）
+## 合格条件
 
-## 失敗時の対処
+- [ ] L1: Biome の error 0
+- [ ] L2: typecheck 通過
+- [ ] L3: web build 成功
+- [ ] L4: 全テスト pass、skip 0
+- [ ] L5: bundle 検証 pass
+- [ ] L6: venue 検出率 95% 以上
+- [ ] L7: データ監査 exit 0（触った場合）
+- [ ] `.env` が `git status` に出ていない
+- [ ] commit・push・merge はユーザーの承認の後（`develop` / `main` に直接 push しない）
 
-| 症状 | 原因の目星 | 対処 |
-|------|---------|------|
-| 新規テストが落ちる | 実装が追いついていない（まだ RED） | `add-plugin` スキルの Step 1〜2 に戻る |
-| カバレッジが 80% を割る | 新規コードのテスト不足 | 欠落モジュールを `--cov-report=term-missing` で特定 |
-| Venue 検出率が 95% 未満 | 正規表現が壊れた | `signals/venue_signal.py` を直近の commit と diff |
-| スモークで 0件出力 | arXiv 側で該当なし or since_date が厳しすぎ | `--days 14` で期間を広げて再確認 |
-| `paperpilot/data/seen_ids.json` のせいで 0件 | 前回の実行結果が残っている | `--full` で差分を無視する、または一時的に消す |
-| 実API に到達してしまうテスト | モックし忘れ | `unittest.mock.patch` で `request_with_retry` を必ずモック |
+## 失敗したとき
 
-## パフォーマンス目安
+| 症状 | 目星 | 対処 |
+|---|---|---|
+| 新しいテストが落ちる | まだ RED | `add-plugin` の Step 1〜2 に戻る |
+| web のテストが skip | build していない | Step 2 の順で回す |
+| `Unsupported engine` / 構文エラー | Node が 22 未満 | Node 22 を PATH の先頭に |
+| venue 検出率が 95% 未満 | 正規表現が壊れた | `collect/signals/venue.ts` を直前の commit と比べる |
+| スモークで 0 件 | 該当なし、または期間が短い | `days_back` を 14 に広げる |
+| テストが本物の API に出る | `fetchImpl` の注入漏れ | テストとコードの両方を直す |
+| bundle 検証が落ちる | 公開物の必須ファイル・形の崩れ | `release/validateRelease.ts` のメッセージを読む |
 
-- ユニットテスト 240 本: ~6 秒
-- カバレッジ付き: ~8 秒
-- スモーク（arXiv 1 キーワード）: 10〜20 秒
-- 本番実行（4 キーワード × 3 カテゴリ）: 30〜60 秒
+## 時間の目安
 
-これより明らかに遅い場合、どこかで `requests` 直呼び出しや `time.sleep` が紛れ込んでいる可能性あり。
+- 全テスト: 1〜1.5 分（2026-10 の実測）
+
+これより明らかに遅いときは、どこかで本物の `fetch` や実時間の sleep が混ざっている可能性がある。

@@ -1,303 +1,132 @@
 # PaperPilot
 
-AI/ML 論文を arXiv / Semantic Scholar / OpenAlex から自動収集し、品質シグナルで絞り込んだ上で **系譜（家系図）として可視化** するパイプライン。補助出力として CSV / JSON / Slack / Email にも配信できます。
+AI/ML 論文を arXiv / Semantic Scholar / OpenAlex から集め、品質シグナルで絞り込み、**系譜（家系図）として見せる**ツールです。補助出力として CSV / JSON / Slack にも配信できます。
 
-**主要な出力:** GitHub Pages 上の10学会・28,300件の横断検索と学会別カタログ。サイト上のフォームから新規テーマ投稿 → CF Worker (`worker/index.ts`) が validate + dedup + rate-limit してから `theme-on-demand.yml` を直接 dispatch して生成します。
-論文系譜は引用・分類結果をそのまま公開せず、品質監査、artifact hash、strict schemaの全条件を満たしたcollectionだけを表示します。現在のsnapshotには公開条件を満たす系譜がないため、系譜UIは準備中としてfail closedです。
+**主な出力:** 10 学会・28,300 本の横断検索と学会別カタログ（静的サイト）。サイトのフォームから新しいテーマを投稿すると、API（`apps/api`）が検査・重複確認・回数制限をしてから `theme-on-demand.yml` を起動し、テーマの家系図を作ります。
+論文の系譜は、品質監査・artifact hash・strict schema の条件をすべて満たしたものだけを表示します。今のデータには条件を満たす系譜がないため、系譜の画面は「準備中」で閉じています（fail closed）。
 
-**3 つの運用モード + 1 つの手動メンテナンス**（GitHub Actions）：
-- **週次深掘り**（現在は手動起動のみ、`collect-weekly.yml`）— 収集 → スコアリング → summary.csv → papers.json → lineage.json の全工程を回す（旧 Sat 7:00 JST の schedule は停止中）
-- **毎日の著者ウォッチ**（現在は手動起動のみ、`collect-daily-watch.yml`）— フォロー中の研究者の新作を通知する lean 経路（LLM 不使用、旧 07:00 JST の schedule は停止中）
-- **オンデマンドテーマ生成**（フォーム経由、`theme-on-demand.yml`）— サイト上のフォームから新テーマを 1 件だけ生成、CF Worker `worker/index.ts` 経由で直接 `theme-on-demand.yml` を dispatch。`/themes/` ギャラリーは **このフォーム経由で生成されたテーマだけ** を表示する
-- **手動バルク再生成**（`regen-themes.yml` の `workflow_dispatch` のみ）— LLM 契約変更や lineage 形式バンプ等のメンテナンス用ブレークグラス。通常は使わない（PR #261 で週次 cron を廃止）
+> **移行中の注意（2026-10-07）:** Python から TypeScript への移行の最終段（P5）です。このブランチ（`p5/consolidate`）は TypeScript だけの構成です。本番（`develop`）はまだ旧構成（GitHub Pages・旧 Worker・Python の workflow）で動いています。切替の手順は [`docs/migration/p5-plan.md`](docs/migration/p5-plan.md)、全体の設計は [`docs/design/39-typescript-cloudflare-migration.md`](docs/design/39-typescript-cloudflare-migration.md) を見てください。
+
+**運用の形**（GitHub Actions。schedule で動くのは Lighthouse だけで、ほかは手動かフォームから起動）:
+- **週次深掘り**（`collect-weekly.yml`）— 収集 → スコア → summary.csv → papers.json → lineage.json の全工程
+- **毎日の著者ウォッチ**（`collect-daily-watch.yml`）— フォロー中の研究者の新作を Slack に通知する軽い経路（LLM なし）
+- **テーマ生成**（`theme-on-demand.yml`）— サイトのフォームから 1 テーマだけ作る
+- **学会カタログの追加**（`conference-on-demand.yml`）— arXiv の自己申告から新しい学会カタログを作る
+- **一括再生成**（`regen-themes.yml`）— LLM の契約や家系図の形式を変えたときの保守用
 
 ## 特徴
 
-- **5段階パイプライン**（全 Stage 実装済み）
-  - Stage 0: arXiv + Semantic Scholar + OpenAlex からの並列収集（async）
-  - Stage 1: ルールベースフィルタ（カテゴリ/日付/除外語/差分）
-  - Stage 2: 品質シグナル（venue / citation / author / GitHub Stars / keyword / **follow**）でスコアリング
-  - Stage 3: Embedding 類似度（MiniLM、オプション）
-  - Stage 4: **LLM によるリランク + 日本語要約**（Ollama / Gemini / Claude / Groq）
-- **家系図ビューア** — 監査合格した関係だけを表示。既存学会ビューに加え、一論文の`lineage/?paper=<paper_id>` Focus Viewをローカル実装。初期7論文・18関係・1-hop、上限変更・枝の追加、関係の解釈・根拠・人手レビュー詳細に対応。公開pilot indexは空であり、実論文の系譜はまだ利用できない
-- **FollowSignal** — 特定研究者 / 組織の新作を day-1 で最上位に（他シグナルが熟成前でも）
-- **プラグイン構造** — Source / Signal / Exporter / LLMProvider は基底クラスを継承するだけで追加可能
-- **設定駆動** — `config.yaml` でキーワード・カテゴリ・重み・LLMモデル・フォロー研究者を変更
-- **秘匿分離** — API キー類は `.env` のみ（`config.yaml` に書かない）
-- **冪等性** — 既出論文は seen_ids で除外。同じ config で2回実行しても重複しない
-- **Fail-Safe** — 外部API障害時は該当ソース/シグナルをスキップして継続
-- **学会横断検索** — トップページ（`docs/index.html`）でタイトル・著者・タグを2文字以上入力し、学会・年・発表種別で絞り込む。条件付きURLの共有、20件ずつのページ送り、ブラウザの「戻る」に対応。要旨全文・日本語の概念検索は未対応。現行索引は `docs/search-index-v2.json`（`paperpilot/scripts/build_search_index.py` が生成）で、canonical paper IDから各学会カタログのselected cardへ遷移する。`search-index.json`は互換artifactとして残る
-- **グローバルナビ** — サイト画面は `<nav class="site-nav">`（探す / 系譜 / 仕組み）を共有
-- **アセット版数の自動同期** — `paperpilot/scripts/sync_asset_versions.py` が CSS/JS の内容ハッシュから `?v=` を付け替え、`docs/assets/versions.json` を唯一の真実源として全 HTML に書き戻す。手で `?v=` を書き換えない
+- **5 段のパイプライン**
+  - Stage 0: arXiv + Semantic Scholar + OpenAlex から並列に収集
+  - Stage 1: ルールでの絞り込み（カテゴリ・日付・除外語・既出）
+  - Stage 2: 品質シグナル（venue / citation / author / GitHub Stars / keyword / **follow**）でスコア
+  - Stage 3: Embedding 類似度（TypeScript 版では未対応。有効にすると記録して続行）
+  - Stage 4: **LLM による並べ替えと日本語要約**（Ollama / Gemini / Claude / Groq）
+- **家系図ビューア** — 監査に合格した関係だけを表示します。学会ごとの家系図に加え、一論文の Focus View（`/lineage/?paper=<paper_id>`）があります。公開用の pilot index は今は空です。
+- **FollowSignal** — 決めた研究者・組織の新作を初日から上位に出します。
+- **プラグイン構造** — Source / Signal / Exporter / LLM provider は、決まったインターフェースを実装するだけで足せます。
+- **設定で動く** — `data/config/config.yaml` でキーワード・カテゴリ・重み・LLM・フォローする研究者を変えます。
+- **秘密の分離** — API キーは環境変数だけに置きます（`config.yaml` に書かない）。
+- **冪等** — 既出の論文は seen_ids で除きます。同じ設定で 2 回動かしても重複しません。
+- **失敗に強い** — 外部 API が落ちてもその部品だけ飛ばして続けます。失敗は実行履歴に残します。
+- **学会横断検索** — トップページでタイトル・著者・タグを 2 文字以上入れると、学会・年・発表種別で絞り込めます。条件付き URL の共有、20 件ずつの表示、ブラウザの「戻る」に対応します。要旨全文・日本語の概念検索は未対応です。索引は `data/published/search-index-v2.json` で、canonical paper ID から学会カタログの該当カードへ移動します。
 
 ## 必要環境
 
-- Docker Engine / Docker Desktop と Docker Compose
-- wrapper起動用のホストPython 3.10+（依存packageは不要）
-- 承認済みの digest 固定 base image（Python 3.12 / uv 0.12.7 / Node 20）
-- 任意で GitHub Personal Access Token（API レート制限を 60 → 5,000 req/h に拡大）
+- Node.js 22 以上
+- pnpm 10.34.6（`package.json` の `packageManager` で固定。corepack で有効にするか `npx --yes pnpm@10.34.6 …`）
+- 任意: GitHub Personal Access Token（GitHub API の上限を 60 → 5,000 req/h に上げる）
 
-ホストPythonは安全なDocker wrapperのpreflightに使います。ホスト`uv`はlock更新や短い補助checkだけに使い、
-production実行と統合testの正規経路はDockerへ移行します。現時点のGitHub Actionsはまだ`uv`経路で、
-approved imageによるruntime/CI shadow gate後に移行します。完全な境界は [`docker/README.md`](docker/README.md) を参照してください。
+Python・uv・Docker はもう使いません。
 
 ## セットアップ
 
 ```bash
-# placeholderをローカル用ファイルへコピー
-cp docker/docker-env.example .env.docker
-
-# 各placeholderを、別途承認して明示取得したrepository@sha256へ置換してからexport
-set -a
-. ./.env.docker
-set +a
-
-# canonical wrapperは暗黙pullを行わない
-docker/paperpilot-compose build collector
+corepack enable                    # 使えなければ npx --yes pnpm@10.34.6 install --frozen-lockfile
+pnpm install --frozen-lockfile
+cp data/config/.env.example data/config/.env   # 使う API キーだけ埋める（git には入らない）
 ```
 
-`.env.docker`はbase image digestなどの非秘密入力専用です。API keyはそこへ書かず、必要な名前だけを
-`docker/paperpilot-compose run --env NAME ...`で渡します。現在のchecked-in exampleは意図的に無効であり、
-承認済みdigest setと実image buildはまだ完了していません。
-
-## 実行
+## よく使うコマンド
 
 ```bash
-# デフォルト設定で実行
-docker/paperpilot-compose run --rm --no-deps collector
+# 検証
+pnpm exec biome check .
+pnpm -r typecheck
+pnpm --filter @paperpilot/web build      # apps/web/out に静的書き出し（契約テストの一部が使う）
+pnpm -r test
 
-# 過去3日間のみ
-docker/paperpilot-compose run --rm --no-deps collector \
-  --config /etc/paperpilot/config.yaml --days 3
+# 収集（Stage 0〜4）
+pnpm exec tsx apps/pipeline/src/collect/cli.ts --config data/config/config.yaml
+pnpm exec tsx apps/pipeline/src/collect/cli.ts --config data/config/config.yaml --days 3
+pnpm exec tsx apps/pipeline/src/collect/cli.ts --config data/config/config.yaml --keyword "diffusion model"
+pnpm exec tsx apps/pipeline/src/collect/cli.ts --config data/config/config.yaml --full       # seen_ids を無視
+pnpm exec tsx apps/pipeline/src/collect/cli.ts --config data/config/config.yaml --skip-llm   # Stage 4 を飛ばす
 
-# キーワードを追加
-docker/paperpilot-compose run --rm --no-deps collector \
-  --config /etc/paperpilot/config.yaml --keyword "diffusion model"
-
-# seen_ids を無視して再出力
-docker/paperpilot-compose run --rm --no-deps collector \
-  --config /etc/paperpilot/config.yaml --full
-
-# LLM 評価（Stage 4）を一時的にスキップ
-docker/paperpilot-compose run --rm --no-deps collector \
-  --config /etc/paperpilot/config.yaml --skip-llm
-
-# approved images取得後に実行するDocker統合test（現時点では未実施）
-docker/paperpilot-compose build test node-test
-docker/paperpilot-compose run --rm --no-deps test
-docker/paperpilot-compose run --rm --no-deps node-test
-
-# GitHub Pagesと同じproject baseでローカルpreview
-docker/paperpilot-compose build site-preview
-docker/paperpilot-compose --profile preview up --no-build site-preview
-# http://127.0.0.1:8137/automatic-paper-search/
+# サイトをローカルで見る
+pnpm --filter @paperpilot/web dev
 ```
 
-ホスト上の`uv run`は、Docker imageを作る前の高速な補助checkには使えますが、Docker gateの代替にはしません。
+- `--config` は必ず渡してください。CLI の既定値はまだ旧パス（`paperpilot/config.yaml`）を指しています。
+- 出力は `data/inputs/papers_YYYY-MM-DD.{csv,json}` です。同じ日のファイルがあれば上書きせず、`papers_YYYY-MM-DD-HHMMSS.*` という別名で足します。CSV の出力先を学会のフォルダ（`data/inputs/<conf>/`）にしないでください。カタログの道具は素の `papers_YYYY-MM-DD.csv` しか読まないので、別名のファイルは黙って無視されます。
 
-### Replay Lite（Identity Lite のオフライン再検証）
+## 学会カタログを作る・更新する
 
-Replay Lite R0 は、retention 内の凍結入力と `run-manifest-v1` を検証し、登録済みの
-`identity-lite-v1` projector が同じ出力 byte を生成することをネットワークなしで確認します。
-リポジトリ内の fixture は次のコマンドで再生できます。
+収集元は学会によって使い分けます。arXiv 以外の収集器は出力先を `PAPERPILOT_OUTPUT_ROOT` で受け取ります。
 
 ```bash
-docker/paperpilot-compose run --rm --no-deps test \
-  /opt/paperpilot/bin/python -I -m paperpilot.scripts.replay_run \
-  --manifest paperpilot/tests/fixtures/replay-lite-r0/manifest.json \
-  --repo-root paperpilot/tests/fixtures/replay-lite-r0/repository \
-  --artifact-root paperpilot/tests/fixtures/replay-lite-r0/bundle \
-  --output-dir /tmp/replay-output \
-  --now 2026-08-30T00:00:00Z
+# arXiv の自己申告（採択の 3〜4 割の部分収録。どの学会でも可）
+pnpm exec tsx apps/pipeline/src/conference/arxiv/cli.ts --conference <slug> --venue <TOKEN> \
+  --query 'co:"<Conf Year>"' --max 1600 --output-root data/inputs
+# OpenReview（ICLR / NeurIPS / ICML の全件、Oral/Spotlight の公式ラベル付き）
+PAPERPILOT_OUTPUT_ROOT=data/inputs pnpm exec tsx apps/pipeline/src/conference/openreview/cli.ts \
+  --conference iclr-2026 --venue ICLR --venueid "ICLR.cc/2026/Conference"
+# CVF Open Access（CVPR / ICCV の全件）
+PAPERPILOT_OUTPUT_ROOT=data/inputs pnpm exec tsx apps/pipeline/src/conference/cvf/cli.ts \
+  --conference cvpr-2025 --venue CVPR --cvf-id CVPR2025 --oral-arxiv-query 'co:"CVPR 2025"'
+# ACL Anthology（ACL / EMNLP / NAACL の全件）
+PAPERPILOT_OUTPUT_ROOT=data/inputs pnpm exec tsx apps/pipeline/src/conference/acl/cli.ts \
+  --conference acl-2025 --venue ACL --xml-id 2025.acl --oral-arxiv-query 'co:"ACL 2025"'
+
+# summary → ページ → 横断検索の索引
+pnpm exec tsx apps/pipeline/src/catalog/buildSummaryCli.ts --conference <slug>
+pnpm exec tsx apps/pipeline/src/catalog/buildPagesCli.ts        # --conference なしで conferences.json も作り直す
+pnpm exec tsx apps/pipeline/src/release/derived/searchIndexCli.ts
+# 新しい学会なら、表示名と紹介文を書く（data/config/conference-copy/<slug>.json）
+DISPLAY="<Display>" LEDE="<lede>" pnpm exec tsx apps/pipeline/src/conference/scaffold/cli.ts --conference <slug>
 ```
 
-`--output-dir` は存在しないか空である必要があります。CLI は manifest、lock hash、artifact の
-期限・size・SHA-256、生成後の全 output hash を検証し、全件一致した場合だけ出力ディレクトリを
-atomic publish します。collector、外部 API、LLM、manifest に書かれた任意 command は実行せず、
-retention 外や未登録 projector の replay は保証しません。失敗時は stable な `REPLAY_*` code を
-標準エラーへ出して非ゼロ終了します。完全な契約は
-[`docs/design/15-replay-lite-contract.md`](docs/design/15-replay-lite-contract.md) を参照してください。
+公開済みより件数・Oral 数が減る、論文が消える、要旨・著者が空になる場合、`buildPagesCli` は何も書かずに止まります。意図した変更だけ `--allow-shrink-for <slug>` で通します。
 
-### 試験用の一論文スライド
-
-要旨から未レビューのWebスライドを作るSol接続・共通処理・CLIを実装しています。初期profileは
-CVPR 2025の「Transformers without Normalization」1論文・日本語に固定し、要旨の内容hash、
-2回までの生成、時間・費用上限を検証します。出力はHTML/JSON/CSS/JSを含むローカルpreview一式です。
-
-現在は通信を模したテストと表示確認までで、実APIによる生成、公開サイトからの依頼、本文版、一般公開は未完了です。
-API keyは環境変数だけで受け取り、設定ファイルやCLI引数に書きません。
-実行入口・対象ID・期限付きprofile・Dockerの残る条件は
-[`29-slide-sol-local-execution.md`](docs/design/29-slide-sol-local-execution.md)を参照してください。
-
-## 検索結果から詳細を確認する（ローカルUI）
-
-Focus Viewの「表示中の論文」は中心・先行研究・発展研究・比較対象・その他の関連論文に分けて表示します。区分は信頼段階ではなく、信頼段階は各関係の詳細で確認できます。
-表示中の検証済み関係に基づく区分であり、年やタイトルから継承を推測するものではありません。
-グラフも先行・中心・発展の区分で並べ、比較対象とその他は下側に分離します。
-関係線はカードを避けて描画し、重なるラベルは省略します。省略した関係名も線の監査詳細と「関係一覧」で確認できます。
-比較を有効にすると、中心論文に直接つながる比較対象も論文数の上限内で追加します。比較先を連鎖的には広げません。
-
-ローカルUIでは、横断検索の「すべての結果を見る」で表示する一覧から、検索条件を残したまま論文詳細を
-ダイアログで開けます。「閉じて検索に戻る」で元の位置へ戻り、「通常ページで開く」で従来の学会ページへ移動します。
-Ctrl/Cmdクリック等の通常リンク操作も維持します。スライド状態表示は依頼受付を有効化するものではありません。
-
-## 学会の前年度比チェック（ローカルAPI）
-
-`paperpilot.conference_watch.assess_previous_edition_ratio`は、registry・現年度snapshot・直前年のPUBLISHED state・
-catalog bytesの整合性を検査し、`passed` / `below_minimum` / `above_maximum`とJSONレポートを返します。
-
-```python
-from paperpilot.conference_watch import assess_previous_edition_ratio
-
-assessment = assess_previous_edition_ratio(
-    registry, edition, snapshot, previous_state,
-    previous_catalog_bytes=previous_catalog_bytes,
-)
-report_bytes = assessment.report_bytes
-```
-
-入力は呼出側で用意したdomain modelとbytesです。API自身はファイル・ネットワークへアクセスせず、公開状態も変更しません。
-`passed`は入力間の整合性と件数範囲だけを意味し、自動更新・公開の許可ではありません。
-不正入力は固定コードの`PreviousEditionRatioAssessmentError`で拒否します。
-詳細は[前年度比の契約](docs/design/34-conference-baseline-assessment.md)を参照してください。
-
-## Stage 4 (LLM rerank) — Ollama セットアップ（任意）
-
-Stage 4 を使うと LLM が各論文に `relevance (1-5) / 日本語要約 / 読むべき理由 / タグ` を付与し、関連度順にリランクします。完全ローカルで無料動作する **Ollama** を推奨します。これはPaperPilot製品runtimeの任意設定です。開発実装はFlashを基本とし、親が監督する対話中の依頼だけ混雑時にqwen3.7-plusを使います。設計・レビューはGPT-5.6 Solのままで、最新の起動条件は[実装担当の運用手順](docs/QWEN_IMPLEMENTER.md)を参照してください。
-
-> 以下はホスト補助経路です。Docker-first phase 1ではcollectorからhost上の`localhost:11434`へ接続する
-> 経路をまだ認可していないため、Ollamaをproduction Docker経路としては未検証です。
+## 家系図
 
 ```bash
-# 1. Ollama インストール  (https://ollama.com)
-curl -fsSL https://ollama.com/install.sh | sh
-
-# 2. モデル取得（日本語に強い qwen2.5 を推奨 / 7B で ~5GB）
-ollama pull qwen2.5:7b
-
-# 3. Ollama サーバ起動（別ターミナル）
-ollama serve
+# 学会の家系図（S2 + LLM。arxiv_id が要る）
+pnpm exec tsx apps/pipeline/src/lineage/conference/buildLineageCli.ts --conference iclr-2026
+# 学会の家系図（OpenAlex のみ、LLM 不要。arxiv_id の無い学会向け）
+pnpm exec tsx apps/pipeline/src/lineage/conference/buildConferenceLineageCli.ts --conference cvpr-2025
+# テーマの家系図（workflow と同じ指定）
+pnpm exec tsx apps/pipeline/src/lineage/theme/cli.ts --theme "Vision Transformer" \
+  --primary-source openalex --llm-strict ambiguous
+pnpm exec tsx apps/pipeline/src/lineage/theme/generateThemesManifestCli.ts
 ```
 
-`paperpilot/config.yaml` の `llm` セクションを有効化：
+- LLM の鍵は `PAPERPILOT_GROQ_API_KEY` を優先し、無ければ `PAPERPILOT_GEMINI_API_KEY` を使います。無料枠なら Groq を勧めます。
+- テーマ CLI の主なフラグ: `--theme`（必須）、`--depth`（既定 2）、`--seeds`（既定 8）、`--width`（既定 8）、`--since-year`、`--primary-source`（`s2` / `openalex`、既定 `s2`）、`--llm-strict`（`off` / `ambiguous` / `all`、既定 `off`）。
+- 家系図の JSON は builder だけが作ります。手で編集しません。
+- テーマのビューアは Y 軸が年、X 軸が引用数順です。辺の色は関係の種別（`supersedes` / `successor` / `extends` / `ablation` / `baseline_only` / `contrasts`）で分かれます。
 
-```yaml
-llm:
-  enabled: true
-  provider: ollama
-  model: qwen2.5:7b
-  host: http://localhost:11434
-  batch_size: 5
-  timeout_seconds: 120
-```
+### Stage 4 をローカルの Ollama で使う（任意）
 
-他の LLM を使う場合は `paperpilot/llm/` に `AbstractLLMProvider` を継承したクラスを追加してください（Claude / Gemini / OpenAI / Groq など）。
+[Ollama](https://ollama.com) を入れ、モデル（例: `ollama pull qwen2.5:7b`）を取得し、`ollama serve` で起動します。そのあと `data/config/config.yaml` を `llm.enabled: true`・`llm.provider: ollama` にします。
 
-出力は `paperpilot/output/papers_YYYY-MM-DD.{csv,json}` に保存されます（同日に既に存在する場合は上書きせず、`papers_YYYY-MM-DD-HHMMSS.{csv,json}`というrun-unique名で追加保存されます。日付・時刻は同じローカル時刻の1回の読み取りから揃えます）。CSV出力の`dir`（`output.csv.dir`）は学会カタログディレクトリ（`paperpilot/output/<conf>/`）を指してはいけません — カタログ読み手（`build_summary_csv.py` / `build_pages.py`）は素の`papers_YYYY-MM-DD.csv`名しか認識しないため、run-unique名のファイルがそこに置かれても静かに無視されます。
-
-CSVは既存36列の末尾に`uid`・`doi`を追加し、入力にある識別子をそのまま保持します。
-`uid`は既存`Paper.uid`（arXiv ID → DOI → URLの優先順）で、サイトのcanonical `paper_id`とは別物です。
-DOIが未取得なら空欄のままです。識別子の転記は原典照合済みという意味ではありません。
-列数を固定してCSVを読む外部ツールでは、追加2列への対応が必要です。
-
-## 家系図ビューア
-
-新しい一論文ビューは、検索結果→学会カタログの選択カード→監査済み家系図の導線を持ちます。
-`lineage-pilot-index-v1.json`に合格した論文が登録されるまでカードにリンクを出さず、直接URLを開いても
-未監査データを表示しません。`paperpilot.lineage_pilot`のローカルAPIは既存のartifact・review fixture・qualityを
-実catalogと照合し、新規のローカル出力先へ組み立てるだけです。論文収集・人手承認・公開は行いません。
-入力契約と公開前gateは[一論文家系図の接続契約](docs/design/30-lineage-pilot-viewer-delivery.md)を参照してください。
-
-未監査の候補から、二人分の独立した確認資料をローカルで作る入口もあります。
-`python -m paperpilot.scripts.prepare_lineage_review --help`で引数を確認できます。
-この処理は凍結した候補と原典snapshotを入力に取り、機械の判断を伏せた`reviewer-a.json` / `reviewer-b.json`と、
-担当者専用の`coordinator.json`を作ります。保存先はGitリポジトリ外にある所有者専用ディレクトリ内の新規フォルダーに
-限定し、回答欄は未入力のままです。論文の収集、回答の取込、人手承認、家系図の公開は行いません。
-入力・保存条件と配布上の注意は[非公開レビュー準備](docs/design/31-private-review-and-conference-candidates.md)を参照してください。
-
-Python APIの`paperpilot.lineage_pilot.review_io.write_private_review_intake`は、同一プロセスで準備したbundleと
-回答bytesを検証し、取込結果だけを新規の非公開フォルダーへ`intake.json`として保存します。
-回答ファイルから取り込む入口は`python -m paperpilot.scripts.ingest_lineage_review --help`で確認できます。
-準備時と同じ元入力・識別子・作成日時に加え、配布した3原本の`--original-review-dir`、少なくとも一方の
-`--reviewer-a-answer` / `--reviewer-b-answer`、`--incorporated-at`、新規`--output`を指定します。
-原本との全byte一致を確認し、回答不足は`pending`、不一致は`disagreement`として保存します。
-原本と回答はGit外の所有者専用0700フォルダー・0600通常ファイルが必要で、原本配下への出力や既存出力の上書きは拒否します。
-`complete`でも監査済み・公開可能にはしません。利用条件と残作業は
-[非公開回答の取込・保存](docs/design/33-private-review-intake-cli.md)を参照してください。
-
-パイプラインの成果物を `docs/<conference>/` 配下の静的サイトに変換する補助パイプラインが `paperpilot/scripts/` にあります。
-
-```
-output/<conf>/papers_YYYY-MM-DD.csv
-  │
-  ├─ build_summary_csv.py   → summary.csv（8 列 + 自動タグ）
-  ├─ build_pages.py         → docs/<conf>/papers.json（一覧ビュー）
-  └─ build_lineage.py       → docs/<conf>/lineage.json（家系図）
-                              （S2 引用グラフ + LLM 関係分類）
-```
-
-### ローカルで実行
-
-```bash
-# 論文一覧ビューだけ（LLM 不要）
-docker/paperpilot-compose run --rm --no-deps ops \
-  -m paperpilot.scripts.build_summary_csv --conference iclr-2026
-docker/paperpilot-compose run --rm --no-deps ops \
-  -m paperpilot.scripts.build_pages --conference iclr-2026
-```
-
-外部API/LLMを使う`build_lineage`は、credentialを持たない`ops`（network none）の責務外です。Docker-first phase 1には
-networked operator targetがまだないため、これをcanonicalなローカル実行としては案内しません。workflow移行と同じ
-明示承認gateで専用targetを追加します。
-
-`docs/` 以下は GitHub Pages が自動デプロイします（`develop` への push を `.github/workflows/pages.yml` がフックし、公開対象変更時だけexact-SHA検証・releaseを実行）。ブラウザからカタログを利用でき、テーマ追加は `/themes/` のフォームからCF Worker経由で依頼できます。完了確認は公開 `themes-manifest.json` をpollingします。PAT付きGitHub runs APIを読むstatus endpointは、原子的quota/cacheを実装するまで休眠中です。
-
-### LLM プロバイダの優先順位
-
-`build_lineage.py` は `PAPERPILOT_GROQ_API_KEY` を優先し、無ければ `PAPERPILOT_GEMINI_API_KEY` にフォールバックします。1 Oral 論文あたり最大 30 件の引用関係を分類するため、無料枠を考えると Groq 推奨です。
-
-### テーマで時系列家系図を生成（任意）
-
-学会単位ではなく **任意の研究テーマ**（例: `Mixture of Experts`, `RAG`, `Direct Preference Optimization`）から、時系列を Y 軸にした家系図を生成できます。出力は `docs/themes/<slug>/lineage.json` に置かれ、`docs/themes/index.html` のピッカーから切り替えられます。
-
-テーマ探索本体は外部API/LLMを使うため、Docker-first phase 1のcredential-free `ops`では実行しません。既存artifactから
-ピッカー用manifestだけを決定的に再生成する場合は次を使います。
-
-```bash
-docker/paperpilot-compose run --rm --no-deps ops \
-  -m paperpilot.scripts.generate_themes_manifest --themes-dir docs/themes
-```
-
-主なフラグ:
-
-| フラグ | 既定 | 説明 |
-|---|---|---|
-| `--theme STR` | (必須) | 自由文字列。500 字以内、制御文字は除去される |
-| `--depth N` | 2 | 各 seed から祖先方向の BFS 深さ |
-| `--seeds N` | 8 | テーマ検索結果から焦点とする論文数 |
-| `--width N` | 8 | 1 hop あたり保持する親論文数（cost 制御） |
-| `--since-year YYYY` | なし | この年以降の論文のみ採用 |
-
-ビューアは Y 軸が「年（rank-based 等間隔: 出現年だけが等間隔で並ぶ）」、X 軸が引用数順の chronological tree です。エッジ色は `supersedes / successor / extends / ablation / baseline / contrasts` の関係種別ごとに分かれます。
-
-## 設定（`paperpilot/config.yaml`）
+## 設定（`data/config/config.yaml`）
 
 ```yaml
 search:
   keywords: [large language model, retrieval augmented generation]
   categories: [cs.LG, cs.AI, cs.CL]
   days_back: 7
-  max_results_per_keyword: 30
-
-sources:
-  arxiv: { enabled: true, delay_seconds: 3 }
-  s2:    { enabled: true, delay_seconds: 1 }
-
-signals:
-  venue:    { enabled: true }
-  citation: { enabled: true, velocity_saturation: 2.0 }
-  author:   { enabled: true }
-  github:   { enabled: true, max_lookups: 50 }
 
 weights:
   venue: 3.0
@@ -305,124 +134,98 @@ weights:
   citation: 1.5
   author: 1.0
   keyword: 0.5
-
-pipeline:
-  stage2_top_n: 30
-  stage4_top_n: 10
+  embedding: 2.5
+  follow: 3.5
 
 llm:
-  enabled: false        # true にして Ollama を起動すれば Stage 4 が有効
-  provider: ollama
-  model: qwen2.5:7b
+  enabled: false
+  provider: ollama   # ollama / gemini / claude / groq
 ```
+
+実物はもっと項目があります（`sources`・`signals`・`pipeline`・`output`・`incremental` など）。毎日のウォッチ用は `data/config/config.daily-watch.yaml`（LLM・citation なし）です。
 
 ## スコアリング
 
-各シグナルは 0〜100 に正規化され、`weights` で重み付けされた合計が `total_score` になります。
+各シグナルを 0〜100 に正規化し、`weights` で重み付けした合計が `total_score` になります。
 
 | シグナル | 出典 | 正規化 |
-|----------|------|--------|
-| venue | arXiv comment 欄を正規表現でパース | Tier1=100 / Tier2=80 / Tier3=60 / Workshop=30 |
+|---|---|---|
+| follow | フォローリスト | 著者一致=100 / 所属一致=50 / 不一致=0 |
+| venue | arXiv の comment 欄を正規表現で解析 | Tier1=100 / Tier2=80 / Tier3=60 / Workshop=30 |
 | citation | Semantic Scholar `/paper/batch` | `min(citations_per_day / saturation, 1) × 100` |
 | author | Semantic Scholar `/author/batch` | `min(h_index / 50, 1) × 100` |
-| github | Papers with Code → GitHub Stars | `log(stars+1) / log(10001) × 100` |
-| keyword | タイトル・アブストラクトのキーワード一致 | `min(match_count / 3, 1) × 100` |
+| github | 対応表 → GitHub 検索 → Stars | `log(stars+1) / log(10001) × 100` |
+| keyword | タイトル・要旨のキーワード一致 | `min(match_count / 3, 1) × 100` |
 
-Stage 4 (LLM) を有効化すると、さらに `llm_relevance (1..5)` で最終ランキングされます。
+Stage 4 を有効にすると、さらに `llm_relevance`（1..5）で並べ替えます。
+
+## 公開と API
+
+- **サイト:** `apps/web`（Next.js の静的書き出し）を Cloudflare Pages に出します。`pages.yml` → `pages-release.yml` が validate → build → admit → deploy → smoke → record の順に進め、検証した exact SHA だけを公開します。戻すときは `pages-rollback.yml`（作り直さず、記録済みのデプロイに戻す）。
+- **API:** `apps/api`（Hono on Cloudflare Workers）。`POST /api/themes`（テーマ依頼）、`GET /api/health`（受付状態の確認）。KV の `accepting` で受付を止められ、`origin_allowlist` で呼び出し元を絞ります。回数制限は Durable Object で数えます。
+- **旧 URL:** GitHub Pages には転送ページ（`legacy/redirect/`、`legacy-redirects.yml`）を置き、クエリと `#` を保って新しい URL に送ります。
+- Cloudflare Pages のプロジェクト名と公開 origin はまだ仮の値です（ユーザーがプロジェクトを作ってから決める）。
 
 ## GitHub Actions
 
-> ⚠️ **定期実行されているのは `lighthouse.yml`（毎週月曜 02:00 UTC）だけです**（2026-08-20 実測）。
-> 下の 2 つの収集ワークフローは **#245（2026-06-04）で cron を外し、手動実行専用**になりました。
-> テーマ家系図へスコープを絞った際に「会議カタログ収集と著者ウォッチはテーマ生成に寄与しない」と
-> 判断されたためで、ワークフロー自体は残してあるので `workflow_dispatch` でいつでも回せます。
-> 実測の最終実行は collect-weekly が 2026-05-29、collect-daily-watch が 2026-06-02。
-> ∴ `docs/` のカタログは **`generated: 2026-06-28` で凍結**しています。
+| workflow | 起動 | 内容 |
+|---|---|---|
+| `tests.yml` | PR、`develop`/`main` への push、手動 | Python が残っていないか、Biome、typecheck、web build、全テスト、bundle 検証 |
+| `data-audit.yml` | 家系図 JSON・監査コードの push/PR、手動 | テーマ seed と家系図の品質監査 |
+| `pages.yml` | `develop` の公開対象の push | `pages-release.yml` を呼ぶ |
+| `pages-release.yml` | 呼び出し専用 | Cloudflare Pages への 6 段の公開と記録 |
+| `pages-rollback.yml` | 手動（`ROLLBACK` 確認） | 記録済みのデプロイに戻す |
+| `lighthouse.yml` | PR、毎週月曜 02:00 UTC、手動 | Core Web Vitals（警告のみ） |
+| `collect-weekly.yml` | 手動 | 週次の深掘り収集 → 候補 → promote → 公開 |
+| `collect-daily-watch.yml` | 手動 | 著者ウォッチ → Slack 通知 → 状態をコミット |
+| `regen-themes.yml` | 手動 | テーマの一括再生成 |
+| `theme-on-demand.yml` | フォーム経由・手動 | 1 テーマ生成 → promote → 公開 |
+| `conference-on-demand.yml` | 手動 | 新しい学会カタログ → promote → 公開 |
+| `legacy-redirects.yml` | 手動（`REDIRECT` 確認） | 旧 GitHub Pages に転送サイトを出す |
 
-### 1. 週次深掘り — `.github/workflows/collect-weekly.yml`
+収集の 2 本は `--fail-on-errors` で動きます（取得元や出力の失敗、不完全なキーワードで exit 1）。シグナルの劣化は失敗にせず、実行履歴の `degraded_signals` に残します。daily-watch は失敗した run でも出力・`data/state/seen_ids.daily.json`・`data/state/run_history.daily.jsonl` をコミットします（コミットしないと同じ論文を再通知するため）。weekly は失敗時に `data/state/run_history.jsonl` を artifact に残します。
 
-**手動実行のみ**（`workflow_dispatch`。旧: 毎週土曜 07:00 JST ＝ Fri 22:00 UTC、#245 で廃止）。
-フル機能で生成し、credential-free candidateを作成してからlatest `develop`へCAS promotionし、promoted exact SHAをreleaseします。
-
-- `paperpilot/config.yaml` を参照
-- Stage 0〜4 フル稼働（LLM 有効時は Ollama/Gemini/Claude で日本語要約）
-- 先週 1 週間の引用数・Stars・venue 情報が熟成した状態で総合ランキング
-
-### 2. 毎日の著者ウォッチ — `.github/workflows/collect-daily-watch.yml`
-
-**手動実行のみ**（`workflow_dispatch`。旧: 毎朝 07:00 JST ＝ 22:00 UTC、#245 で廃止）。
-`follow_authors` / `follow_orgs` にヒットした論文だけ Slack 通知。
-
-- `paperpilot/config.daily-watch.yaml` を参照
-- LLM / citation 無効（day-1 では意味なし）
-- 1 日窓 + 3 日 seen-ids で同じ論文の連続通知を防止
-
-両収集ワークフローとも collector を **`--fail-on-errors`** で起動します（取得元・出力先・状態ファイル（seen_ids 退避）の失敗、
-不完全なキーワード、有効な取得元が無い run は exit 1）。シグナルの劣化（`signal:`）は失敗にせず run_history の
-`degraded_signals` に記録するだけです。daily-watch は自前の実行履歴 `run_history.daily.jsonl`
-に書き込み、失敗した run でも出力・`seen_ids.daily.json`・この履歴をコミットします。
-失敗 run でも取得できた分は配信され seen_ids に記録済みなので、コミットしないと次回に同じヒットを
-再通知してしまうためです（取得できなかったキーワードは履歴と失敗した run に残ります）。weekly は失敗時に
-`run_history.jsonl` を artifact として保存します。
-
-### Secrets（オプション）
+### Secrets
 
 | 名前 | 用途 |
-|------|------|
-| `GH_PAT` | GitHub API 用 PAT（未設定時は `github.token` を使用） |
-| `S2_API_KEY` | Semantic Scholar API |
-| `OPENALEX_EMAIL` | OpenAlex polite-pool |
-| `GEMINI_API_KEY` | Gemini プロバイダ（Stage 4 + lineage 分類） |
-| `CLAUDE_API_KEY` | Claude プロバイダ（Stage 4） |
-| `GROQ_API_KEY` | Groq プロバイダ（lineage 分類の第一候補、無料枠 30 RPM） |
-| `SLACK_WEBHOOK_URL` | Slack 通知 + 失敗通知 |
+|---|---|
+| `GH_PAT` | daily-watch の push（無ければ `github.token`） |
+| `OPENALEX_EMAIL` | OpenAlex polite pool |
+| `S2_API_KEY` / `GEMINI_API_KEY` / `CLAUDE_API_KEY` / `GROQ_API_KEY` | 週次収集の取得元・LLM |
+| `PAPERPILOT_GROQ_API_KEY` / `PAPERPILOT_S2_API_KEY` | テーマ家系図 |
+| `SLACK_WEBHOOK_URL` | 通知と失敗通知 |
+| `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` | Pages の公開・戻し（environment `cloudflare-pages-deploy` に置く） |
 
 ## ディレクトリ構成
 
 ```
 automatic-paper-search/
-├── docs/
-│   ├── index.html          # ランディング（学会一覧 + サイト横断検索）
-│   ├── 404.html            # GH Pages の SPA フォールバック
-│   ├── conferences.json    # 全学会の集約インデックス
-│   ├── search-index-v2.json # 現行の横断検索インデックス（28,300 件）
-│   ├── sitemap.xml         # サイトマップ
-│   ├── <10 学会>/          # iclr-2026/ cvpr-2025/ cvpr-2026/ neurips-2025/ icml-2025/ ...
-│   │   └── index.html, lineage.html, {papers,lineage}.json
-│   ├── themes/             # テーマartifact 3本 + 投稿フォーム（表示eligibleは現在0件）
-│   ├── how-it-works/       # サイトの仕組み
-│   ├── research/           # 市場調査レポート
-│   ├── design/             # 基本設計書
-│   ├── daily/              # papers.json のみ。⚠️ どの HTML/JS からも参照が無い死データ（2026-08-20 実測）
-│   └── assets/             # CSS / JS / 画像 / versions.json
-└── paperpilot/
-    ├── collector.py        # CLI エントリ
-    ├── config.yaml         # 検索設定（秘匿情報なし）
-    ├── .env.example        # 環境変数テンプレート
-    ├── pipeline/           # Stage 0〜4 の実装
-    ├── sources/            # arXiv / S2 / OpenAlex
-    ├── signals/            # venue / citation / author / github / keyword / follow
-    ├── exporters/          # CSV / JSON / Slack / Email
-    ├── llm/                # Ollama / Gemini / Claude / Groq
-    ├── scripts/            # ビューア・索引生成（全 33 Python scripts。主要: build_summary_csv /
-    │                       # build_pages / build_lineage / build_deep_lineage /
-    │                       # build_theme_lineage / build_search_index / sync_asset_versions /
-    │                       # generate_{deep,themes}_manifest。詳細は paperpilot/scripts/README.md）
-    ├── models/paper.py     # 論文データモデル
-    ├── utils/              # config_loader, dedup, http, rate_limiter, logger
-    ├── data/               # seen_ids.json, run_history.jsonl, lineage-cache/
-    ├── output/             # papers_YYYY-MM-DD.{csv,json}
-    └── logs/               # paperpilot.log
+├── apps/
+│   ├── web/          # Next.js 静的書き出し（Cloudflare Pages）
+│   ├── api/          # Hono on Cloudflare Workers（テーマ依頼 API）
+│   └── pipeline/     # 収集（collect/）、学会収集器（conference/）、カタログ（catalog/）、
+│                     # 家系図（lineage/）、公開道具（release/）
+├── packages/core/    # 共有のデータ形式・zod スキーマ・データ配置の切替・slug・identity
+├── schemas/          # JSON Schema（正本）
+├── data/
+│   ├── published/    # サイトが配信する JSON（conferences.json、search-index-v2.json、<学会>/、themes/）
+│   ├── state/        # seen_ids、run_history、lineage-cache
+│   ├── inputs/       # 収集器の CSV/JSON
+│   └── config/       # config.yaml、config.daily-watch.yaml、denylist・alias、.env.example
+├── legacy/redirect/  # 旧 GitHub Pages の転送サイト
+├── docs/             # design/（設計書）、migration/（移行の記録）、research/（市場調査）
+├── archive/          # 原本 .docx
+└── .github/          # workflows/（12 本）、actions/setup-pnpm/
 ```
 
 ## 拡張ポイント
 
-- **新しい Source の追加**: `sources/base.py` の `AbstractSource` を継承し `fetch()` を実装
-- **新しい Signal の追加**: `signals/base.py` の `AbstractSignal` を継承し `enrich_one()` または `enrich_batch()` を実装
-- **新しい Exporter の追加**: `exporters/base.py` の `AbstractExporter` を継承し `export()` を実装
-- **新しい LLMProvider の追加**: `llm/base.py` の `AbstractLLMProvider` を継承し `evaluate_batch()` を実装（家系図分類にも対応したい場合は `classify_relation()` も）
+- **Source:** `apps/pipeline/src/collect/sources/source.ts` の `Source` を実装し、`collect/runner.ts` の `buildSources()` に登録
+- **Signal:** `collect/signals/signal.ts` の `BaseSignal` を継承して `enrichOne()` か `enrichBatch()` を実装し、`buildSignals()` に登録
+- **Exporter:** `collect/exporters/exporter.ts` の `Exporter` を実装し、`buildExporters()` に登録
+- **LLM provider:** `collect/llm/provider.ts` の `LLMProvider` を `lineage/llm/` に実装し、`collect/runtime/llmProvider.ts` に登録
 
-詳細は [`docs/design/`](docs/design/) の基本設計書 v2.1 を参照。
+開発のルールは [`CLAUDE.md`](CLAUDE.md)、設計は [`docs/design/`](docs/design/) を見てください。
 
 ## ライセンス
 

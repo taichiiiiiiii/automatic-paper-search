@@ -1,203 +1,154 @@
 # agent-orchestration — サブエージェントの実行順序と分担
 
-PaperPilot のサブエージェントは**プラグイン層ごとに専門化**されています。メインセッションは各エージェントを並列に呼び出し、最後に `paperpilot-reviewer` で統合レビューする流れです。
+PaperPilot のサブエージェントは**層ごとに専門化**している。メインセッションが各エージェントを並列に呼び、最後に `paperpilot-reviewer` でまとめてレビューする。コードはすべて TypeScript（`apps/web`・`apps/api`・`apps/pipeline`・`packages/core`）。Python はもう無い。
 
 ## エージェント一覧
 
-| エージェント | 担当 | モデル | 自動起動トリガー |
-|-------------|------|------|------------|
-| `source-agent` | `paperpilot/sources/` の Source プラグイン開発 | sonnet | 新 Source 追加、arXiv/S2/OpenAlex 改修 |
-| `signal-agent` | `paperpilot/signals/` の Signal プラグイン開発 | sonnet | 新 Signal 追加、スコア正規化変更 |
-| `exporter-agent` | `paperpilot/exporters/` の Exporter プラグイン開発 | sonnet | 新 Exporter 追加、CSV 列の拡張 |
-| `test-agent` | `paperpilot/tests/` のテスト整備 | sonnet | カバレッジ低下、flaky test、新モジュール後 |
-| `paperpilot-reviewer` | 絶対ルール10項目での PR レビュー | sonnet | 変更の最終チェック（MUST BE USED） |
-| `failure-path-reviewer` | 「障害・壊れた上流データ・部分取得が公開データになる」経路の深掘りレビュー（読み取り専用） | opus | collector / builder / Stage / exporter / workflow / Worker を変えた後のレビュー各回 |
-| `worker-agent` | CF Worker（`worker/`）と公開サイトのフロント（`docs/assets/*.js`、`docs/**/*.html`）の実装 | sonnet | Worker・フロントの指摘に修正方針が決まったとき |
-| `scripts-agent` | `paperpilot/scripts/`（系譜・カタログ生成）と `.github/workflows`・`.github/scripts` の実装 | sonnet | スクリプト・ワークフローの指摘に修正方針が決まったとき |
-| `verifier` | 全テスト＋ネットワーク遮断、lint、データ監査、公開 refresh のバイト一致、push 前衛生チェックを実行して報告 | haiku | 実装の後、コミット提案の前 |
+| エージェント | 担当 | モデル | 呼ぶとき |
+|---|---|---|---|
+| `source-agent` | `apps/pipeline/src/collect/sources/` の Source | sonnet | 新 Source 追加、arXiv/S2/OpenAlex の改修 |
+| `signal-agent` | `apps/pipeline/src/collect/signals/` の Signal | sonnet | 新 Signal 追加、スコア正規化の変更 |
+| `exporter-agent` | `apps/pipeline/src/collect/exporters/` の Exporter | sonnet | 新 Exporter 追加、CSV 列の拡張 |
+| `test-agent` | `apps/*/test/`・`packages/core/test/` のテスト整備 | sonnet | テスト不足、flaky test、新モジュールの後 |
+| `paperpilot-reviewer` | 絶対ルールでの最終レビュー | sonnet | 変更の最終チェック（必ず使う） |
+| `failure-path-reviewer` | 「障害・壊れた上流データ・部分取得が公開データになる」経路の深掘りレビュー（読み取り専用） | opus | collector / builder / Stage / exporter / release / workflow / API を変えた後の各回 |
+| `worker-agent` | API（`apps/api`）とサイト（`apps/web`）の実装 | sonnet | API・画面の指摘に直し方が決まったとき |
+| `scripts-agent` | `apps/pipeline/src` の builder・収集器・release 道具と `.github/workflows` の実装 | sonnet | それらの指摘に直し方が決まったとき |
+| `verifier` | Biome・typecheck・web build・全テスト・bundle 検証・データ監査・refresh のバイト一致・衛生チェックを実行して報告 | haiku | 実装の後、commit を提案する前 |
 
-**モデルの選び方**: 判断が難しく見落としの損失が大きいレビューは opus（読み取り専用なので費用に上限がある）、仕様が決まった実装は sonnet、判断を伴わない検証の実行は haiku。
+**モデルの選び方:** 判断が難しく見落としの損が大きいレビューは opus（読み取り専用なので費用に上限がある）。仕様が決まった実装は sonnet。判断の要らない検証の実行は haiku。
 
-**レビュー→修正のループ**: `failure-path-reviewer` → 実装エージェント（層ごと）→ `verifier` → `failure-path-reviewer` … を、重大・中程度が 0 になるまで繰り返す。インフラ追加・仕様変更・製品方針・公開データの削除が要るものは修正せず、ユーザー判断の一覧に回す。git 操作・push・Worker デプロイはメインセッションだけが行う。
+**レビュー → 修正のループ:** `failure-path-reviewer` → 実装エージェント（層ごと）→ `verifier` → `failure-path-reviewer` … を、重大・中程度が 0 になるまで回す。インフラの追加・仕様変更・製品方針・公開データの削除が要るものは直さず、ユーザー判断の一覧に回す。git 操作・push・デプロイ・KV 書き込み・workflow の dispatch はメインセッションだけが、ユーザーの承認の後に行う。
 
-## 基本の実行フロー
+## 基本の流れ
 
 ```
-[ ユーザー要求 ]
+[ ユーザーの依頼 ]
        │
-       ├─→ 単一レイヤーの変更（例: 新 Signal 追加）
+       ├─→ 1 層だけの変更（例: 新 Signal）
        │   └─→ signal-agent で TDD 実装
-       │       └─→ test-agent で不足テスト補完・カバレッジ確認
+       │       └─→ test-agent で足りないテストを補う
        │           └─→ paperpilot-reviewer で最終レビュー
-       │               └─→ develop へ commit / push
+       │               └─→ verifier → メインセッションが報告（commit はユーザー承認後）
        │
-       └─→ 複数レイヤーに跨る変更（例: 新 Source + それ向け Signal）
+       └─→ 複数の層にまたがる変更（例: 新 Source + それ向けの Signal）
            ├─→ source-agent ─┐
-           │                  ├─ 並列実行
+           │                  ├─ 並列
            ├─→ signal-agent ─┘
-           │
-           └─→ test-agent（全体のテスト整合性チェック）
-               └─→ paperpilot-reviewer
-                   └─→ develop へ commit / push
+           └─→ test-agent → paperpilot-reviewer → verifier
 ```
 
-## 並列実行の原則
+## 並列と逐次
 
-独立した変更は**必ず並列**で呼び出す。例：
+独立した変更は**必ず並列**で呼ぶ（例: 新 Source と新 Exporter）。次は**逐次**:
 
-- 新 Source + 新 Exporter → `source-agent` と `exporter-agent` を同時起動
-- 既存 Source 修正 + 既存 Signal 修正 → 互いに依存しなければ並列
+- 実装 → `test-agent` で補う → `paperpilot-reviewer` で確認
+- `Paper` モデル（`collect/model/paper.ts`）に項目が要る → reviewer が承認 → 該当エージェントが実装
+- 共有の生成物・manifest・lockfile を触る変更は 1 つずつ
 
-逆に以下は**逐次**：
-
-- `*-agent` で実装 → `test-agent` で補完 → `paperpilot-reviewer` で最終確認（順序あり）
-- Paper モデルに新フィールドが必要な場合 → reviewer で承認 → 当該 agent 実装
-
-## 各エージェントの責務境界
+## 責務の境界
 
 ```
 ┌─────────────────────────────────────────────┐
-│ paperpilot-reviewer (最後に必ず起動)       │
-│ - 絶対ルール10項目チェック                  │
-│ - Paper モデル変更の承認                    │
-│ - CRITICAL / HIGH / MEDIUM 判定             │
+│ paperpilot-reviewer（最後に必ず使う）        │
+│ - 絶対ルールのチェック                        │
+│ - Paper モデル変更の承認                      │
+│ - CRITICAL / HIGH / MEDIUM の判定             │
 └─────────────────────────────────────────────┘
        ↑ 最終レビュー
 ┌──────────────┬──────────────┬──────────────┐
 │ source-agent │ signal-agent │ exporter-ag. │
 │  sources/    │  signals/    │  exporters/  │
-│ ├ arxiv      │ ├ venue      │ ├ csv        │
+│ ├ arxiv/     │ ├ venue      │ ├ csv        │
 │ ├ s2         │ ├ citation   │ ├ json       │
 │ ├ openalex   │ ├ author     │ ├ slack      │
-│ └ <new>      │ ├ github     │ ├ email      │
+│ └ <new>      │ ├ github     │ ├ email(未対応)│
 │              │ ├ keyword    │ └ <new>      │
+│              │ ├ follow     │              │
 │              │ └ <new>      │              │
 └──────────────┴──────────────┴──────────────┘
-                     ↓ テスト補完
+                     ↓ テストを補う
           ┌──────────────────────┐
-          │    test-agent         │
-          │ tests/ のみ触る       │
-          │ カバレッジ維持        │
+          │ test-agent            │
+          │ test/ だけを触る      │
           │ 本体は触らない        │
           └──────────────────────┘
 ```
 
-### 重なる領域の取り扱い
+### 重なる領域
 
 | 変更 | 主担当 | 副担当 |
-|------|-------|-------|
-| 新 Source 追加 + Paper フィールド追加 | source-agent | paperpilot-reviewer（Paper 変更承認） |
-| 新 Signal 追加 + Paper フィールド追加 | signal-agent | paperpilot-reviewer |
-| CSV 列を追加 | exporter-agent | — |
-| CSV 列を削除 | paperpilot-reviewer（承認必須） | exporter-agent |
-| `pipeline/runner.py` の `_build_*` に分岐追加 | 該当 \*-agent | — |
-| `pipeline/runner.py` の Stage 順序変更 | paperpilot-reviewer のみ | — |
-| `stage_metric_score.py` の `total_score` 計算式変更 | paperpilot-reviewer のみ（設計書も改訂） | — |
+|---|---|---|
+| 新 Source + `Paper` の項目追加 | source-agent | paperpilot-reviewer（Paper 変更の承認） |
+| 新 Signal + `Paper` の項目追加 | signal-agent | paperpilot-reviewer |
+| CSV 列を足す | exporter-agent | — |
+| CSV 列を消す | paperpilot-reviewer（承認が要る） | exporter-agent |
+| `collect/runner.ts` の `build*()` に分岐を足す | 該当エージェント | — |
+| `collect/runner.ts` の Stage の順序を変える | paperpilot-reviewer のみ | — |
+| `collect/stages/metricScore.ts` の `total_score` の式を変える | paperpilot-reviewer のみ（設計書も改訂） | — |
+| 家系図・カタログ・release・workflow | scripts-agent | failure-path-reviewer |
+| API・画面 | worker-agent | failure-path-reviewer |
 
-## エージェントの起動ガイドライン
+## 呼ぶ・呼ばないの目安
 
-### 1. 専門エージェントを呼ぶべき場合
+- 「新しい〜を足して」 → 該当エージェント
+- 「テストだけ書いて」 → `test-agent`
+- 「PR 前チェック」「レビュー」 → `paperpilot-reviewer`（必要なら `failure-path-reviewer`）
+- 軽い typo、README / CLAUDE.md だけの更新、`config.yaml` の既存キーの値の変更 → メインセッションで済ませる（構造を変えるなら reviewer）
 
-- 「新しい〜を追加して」系 → 該当 `*-agent`
-- 「テストだけ書いて」「カバレッジ上げて」→ `test-agent`
-- 「PR 前チェック」「コードレビュー」→ `paperpilot-reviewer`
+## 引き渡すもの
 
-### 2. 専門エージェントを呼ばなくていい場合
+- 変えたファイル（`git diff --name-only`）
+- 足したテスト名
+- 実行したコマンドと結果（`pnpm --filter … exec vitest run …` の件数）
+- 残った仕様の疑問（reviewer へ）
 
-- 軽微な typo 修正 → メインエージェントで完結
-- README / CLAUDE.md の更新のみ → メインエージェントで完結
-- `config.yaml` の既存キーの値変更 → メインエージェントで完結（構造変更なら reviewer）
+## 全エージェント共通のルール
 
-### 3. 並列起動の推奨ケース
+1. **担当範囲を超えない。** 超えるなら reviewer に引き継ぐ
+2. **外部 API を叩くテストを書かない。** `fetch` を注入してモックする
+3. **秘密は環境変数（`data/config/.env`・secrets）だけ。** `config.yaml` やソースに書かない
+4. **TDD の順序を守る。** RED → GREEN → REFACTOR → 登録 → 検証
+5. **独立した作業は並列に呼ぶ**
+6. **最終レビューは必ず paperpilot-reviewer**
+7. **データのパスは `packages/core/src/layout` から取る。** 直書きしない
+8. **git の書き込み・push・デプロイ・KV 書き込み・dispatch はしない**（メインセッションがユーザー承認の後に行う）
 
-複数プラグイン層を同時に触るとき：
+## 絶対ルールの所有者
 
-```
-# 例: 新しい API 連携（source + signal + exporter を同時に作る）
-並列起動:
-  - source-agent: PubMedSource 実装
-  - signal-agent: PubMedCitationSignal 実装
-  - exporter-agent: PubMedDiscordExporter 実装
-  （互いに依存しない場合のみ）
+CLAUDE.md「絶対ルール」の各項目を誰が一次的に守るか。**reviewer は常に全項目を二次チェックする。**
 
-逐次:
-  - test-agent: 3 つの追加テストを統合的に検証
-  - paperpilot-reviewer: 10項目チェック
-```
+| # | ルール | 一次 | 二次 | 備考 |
+|---|---|---|---|---|
+| 1 | API キーは環境変数だけ | 該当エージェント | reviewer | source / exporter で起きやすい |
+| 2 | `.env` は git に入れない | 全員 | reviewer | commit 前に `git status` |
+| 3 | 外部 API を叩くテストを書かない | source / signal / exporter / test-agent | reviewer | `fetch` を注入 |
+| 4 | Stage の入出力の型を変えない | **reviewer だけが承認** | — | |
+| 5 | スコアの式・重みを仕様なしに変えない | signal-agent（式）/ reviewer（重み） | reviewer | 設計書と同期 |
+| 6 | Stage 1 はフィルタだけ | **reviewer だけが承認** | — | `collect/stages/ruleFilter.ts` |
+| 7 | Signal は `enrichBatch` を優先 | signal-agent | reviewer | |
+| 8 | seen_ids は `{id: timestamp}`、`max_age_days` で消す | source-agent（uid）/ reviewer | — | `collect/state/seenIds.ts` |
+| 9 | run_history に `finished_at` / `sources_status` / `errors` | **reviewer のみ** | — | `collect/state/runHistory.ts`・`runner.ts` |
+| 10 | Slack は webhook 未設定なら何もしない | exporter-agent | reviewer | |
+| 11 | LLM は `LLMProvider` を通す | reviewer | — | 実装は `lineage/llm/` |
+| 13・14 | 家系図 JSON の生成元は 1 つ | scripts-agent | failure-path-reviewer | 手で編集しない |
+| 15 | 論文のメタデータを作り話で埋めない | 全員 | reviewer・failure-path-reviewer | |
 
-## エージェント間の引き渡し契約
+## LLM 関連の分担（llm-agent は作らない）
 
-エージェントが作業を終えたら**次のエージェントに渡す情報**：
-
-- 変更したファイルのリスト（`git diff --name-only develop..HEAD`）
-- 追加したテストケース名
-- カバレッジの before/after（test-agent へ）
-- 未解決の仕様疑問（reviewer へ）
-
-## 絶対ルール（全エージェント共通）
-
-1. **担当範囲を絶対に超えない。** 超える必要があるなら reviewer に引き継ぐ
-2. **外部 API を叩くテストを書かない。** モック必須
-3. **`.env` に秘匿情報。** `config.yaml` に書かない
-4. **TDD の順序を守る。** RED → GREEN → REFACTOR → REGISTER → VERIFY
-5. **複数エージェント変更時は並列起動。** 独立作業を直列にしない
-6. **最終レビューは必ず paperpilot-reviewer。** 他のエージェントが pass と言っても reviewer を通す
-
-## CLAUDE.md「絶対ルール10項目」の所有者マトリクス
-
-`CLAUDE.md`「絶対ルール」セクションの各項目をどのエージェントが一次的に守るかを明示。**reviewer は常に全項目を二次チェック**。
-
-| # | ルール | 一次所有 | 二次 | 備考 |
-|---|--------|---------|------|------|
-| 1 | API キーは `.env` にのみ記載。`config.yaml` や `.py` ソースに書かない | 該当 \*-agent | reviewer | 特に source/exporter で発生 |
-| 2 | `.env` は `.gitignore` で除外されている | 全エージェント | reviewer | commit 前に `git status` で確認 |
-| 3 | 外部 API を叩くテストを書かない。必ずモック | source / signal / exporter / test-agent | reviewer | `request_with_retry` を必ず patch |
-| 4 | 既存の Stage インターフェース（入出力の型）を変更しない | **reviewer のみ承認可** | — | 変更したい場合は reviewer に相談 |
-| 5 | スコアリングの正規化式・重みを仕様なく変更しない | signal-agent（式）/ reviewer（重み） | reviewer | 設計書 Table 12 と同期 |
-| 6 | Stage 1 はフィルタのみ。スコアリングを混ぜない（§4.2） | **reviewer のみ承認可** | — | `stage_rule_filter.py` の変更は reviewer 経由 |
-| 7 | Signal は `enrich_batch` を優先（§3.2.2） | signal-agent | reviewer | バッチ API があれば override |
-| 8 | seen_ids は `{id: timestamp}` 形式。`max_age_days` でパージ | source-agent（uid 生成）/ reviewer | — | 形式変更は reviewer |
-| 9 | run_history.jsonl には `finished_at` / `sources_status` / `errors` を含める | **reviewer のみ** | — | `pipeline/runner.py` の構造責務 |
-| 10 | Slack / Email 通知は webhook・SMTP 未設定時に no-op | exporter-agent | reviewer | `return None + logger.info` |
-
-### 判断フロー
-
-```
-変更が絶対ルールに触れる？
-  ├─ 一次所有 = 特定の *-agent
-  │    → その agent で実装 → test-agent → reviewer（二次チェック）
-  │
-  └─ 一次所有 = "reviewer のみ"（項目 4, 6, 9）
-       → reviewer にまず相談
-       → reviewer が承認した設計に基づいて *-agent で実装
-       → reviewer が最終確認
-```
-
-## llm/ ディレクトリの扱い（llm-agent を作らない方針の補完）
-
-中間セット（5 エージェント）には llm-agent を含めなかったため、`paperpilot/llm/` の変更は**以下のように分担**する：
-
-| 変更内容 | 一次担当 | 理由 |
-|---------|---------|------|
-| 新 LLM Provider 追加（例: ClaudeProvider, OpenAIProvider） | paperpilot-reviewer が設計承認 → source-agent 相当の TDD で実装 | 頻度が低い + `AbstractLLMProvider` パターンが Source に類似 |
-| 既存 Provider のバグ修正（Ollama/Gemini） | paperpilot-reviewer | 変更影響が Stage 4 に限定されるため reviewer 判断で十分 |
-| プロンプトの文言修正（`llm/base.py` の `SYSTEM_PROMPT` 等） | paperpilot-reviewer | 出力フォーマットが壊れない範囲で調整 |
-| Stage 4 のロジック変更（`pipeline/stage_llm_rank.py`） | paperpilot-reviewer | Stage フローに影響するため reviewer 専権 |
-| LLM 関連のテスト追加 | test-agent | モックテストは `test-agent` が担当 |
-
-### 将来的に llm-agent を作る判断基準
-
-- LLM Provider が 4 種類以上になったら分離（現在: 2 種類）
-- Stage 4 のロジックが複雑化してプロバイダ独立の処理が 100 行超えたら分離
-- プロンプトエンジニアリングを頻繁に調整するフェーズに入ったら分離
+| 変更 | 一次担当 |
+|---|---|
+| 新しい provider（`lineage/llm/<name>.ts` + `collect/runtime/llmProvider.ts` への登録） | reviewer が設計を承認 → source-agent と同じ TDD の流れで実装 |
+| 既存 provider のバグ修正（Ollama / Gemini / Groq / Claude） | paperpilot-reviewer |
+| プロンプトの文言（`lineage/llm/base.ts` の `CLASSIFY_SYSTEM_PROMPT` など） | paperpilot-reviewer（出力形式を壊さない範囲で） |
+| Stage 4 のロジック（`collect/stages/llmRank.ts`） | paperpilot-reviewer |
+| LLM 関連のテスト | test-agent |
 
 ## Skills との連携
 
-各エージェントは以下の Skill を活用する：
+| Skill | いつ見るか | エージェント |
+|---|---|---|
+| `add-plugin` | プラグイン追加の TDD 手順 | source / signal / exporter-agent |
+| `run-verification` | 検証の一括実行 | test-agent / reviewer / verifier |
 
-| Skill | いつ参照 | エージェント |
-|-------|---------|----------|
-| `add-plugin` | プラグイン追加の TDD フロー詳細 | source / signal / exporter-agent |
-| `run-verification` | テスト・カバレッジ・スモーク検証の一括実行 | test-agent / reviewer |
-
-Skill の全文は `.claude/skills/<name>/SKILL.md` にあり、エージェントは必要に応じて `Read` ツールで参照すればよい。
+全文は `.claude/skills/<name>/SKILL.md`。
