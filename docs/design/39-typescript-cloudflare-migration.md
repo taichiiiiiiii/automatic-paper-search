@@ -5,7 +5,7 @@
 - 作業ブランチ: `feat/ts-migration`。`develop` への push は Worker と Pages を自動デプロイするため、移行作業は必ずこのブランチで行う
 - 無料枠の数値は **2026-10-04 に Cloudflare の現行ドキュメントで確認済み**（§1.1）
 
-## 進捗（2026-10-05 時点、`feat/ts-migration`、未 push）
+## 進捗（2026-10-07 時点、`feat/ts-migration`）
 
 | フェーズ | 状態 |
 |---|---|
@@ -13,7 +13,7 @@
 | P2 画面 | 完了。レビュー 3 回で重大・中程度 0。残りの差は [`docs/migration/p2-parity-gaps.md`](../migration/p2-parity-gaps.md) |
 | P3 API | 完了（Hono、Durable Objects の正確な上限、空打ちモード、受付停止スイッチ） |
 | P4 収集・生成 | 完了。レビュー 3 回で重大・中程度 0。残作業と判断待ちは [`docs/migration/p4-followups.md`](../migration/p4-followups.md) |
-| P5 切替 | 未着手。ユーザー作業（Cloudflare トークン・プレビュー資源）と各段の承認が必要 |
+| P5 切替 | 手元（オフライン）でできる準備（tier A: A0〜A4・A6〜A11）は完了。2026-10-07 時点で、データ移動のリハーサル・形式差の確認（差 0、B′ 不要）・所要時間の計測（timeout の変更不要）が合格（[`p5-plan.md` §8](../migration/p5-plan.md)）。残りは A5・A12（Cloudflare Pages のプロジェクト名と本番 URL が必要）と、ユーザー作業（Cloudflare トークン・Pages プロジェクト・GitHub environment・Workers Builds 設定）、各段の承認 |
 
 ## 判断結果（2026-10-05、ユーザー「推奨で進めてください」）
 
