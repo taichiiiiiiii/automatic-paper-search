@@ -37,6 +37,17 @@ jobs:
       - name: Setup pnpm
         uses: ./.github/actions/setup-pnpm
 
+      - name: No Python left in the repo
+        # Tier C (docs/migration/p5-plan.md §6.3): the Python codebase is
+        # gone; .codex/ is the one excluded tree (decision 8).
+        run: |
+          py_files="$(git ls-files '*.py' ':!.codex')"
+          if [ -n "$py_files" ]; then
+            echo "::error::tracked *.py files outside .codex/ (Tier C forbids them):"
+            echo "$py_files"
+            exit 1
+          fi
+
       - name: Lint (Biome)
         run: pnpm exec biome check .
 

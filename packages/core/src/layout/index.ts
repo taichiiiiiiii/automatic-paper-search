@@ -41,7 +41,7 @@ export interface Layout {
   inputs: string;
   /** Config data files (denylist, allowlists, theme aliases/blacklist, paper repos, quality policy, audit fixtures, conference sources, per-slug conference copy). Legacy `paperpilot/data` (shared with `state`); p5 `data/config`. */
   config: string;
-  /** The frozen legacy GitHub Pages site. Legacy `docs` (shared with `published`, since it's the live site); p5 `legacy/gh-pages-site` (until deleted in tier C). */
+  /** The frozen legacy GitHub Pages site. Legacy `docs` (shared with `published`, since it's the live site); p5 `legacy/gh-pages-site`. That folder was deleted in tier C (p5-plan.md §6.3); the key stays because `dataMove`'s rule table still names it as the move destination (and the R-B reverse source) of the old site. Nothing reads files under it any more. */
   legacySite: string;
   /** Where the Node workflow YAML live. Legacy staged `.github/workflows-p5`; p5 `.github/workflows`. */
   workflowsDir: string;

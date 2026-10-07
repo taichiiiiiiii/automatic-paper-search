@@ -55,10 +55,9 @@ const EXEMPT_DIRS: readonly string[] = [
  *
  * `apps/web/scripts/legacy-redirects.ts` (changeset A8, §5.4) was
  * exempted here while its `DEFAULT_SOURCE_DIR` still hard-coded `docs/`.
- * M4 of the P5 tier-A review resolved that: it now reads
- * `layoutFor(REPO_ROOT).legacySite` (byte-identical to the old
- * hard-coded value under `LAYOUT_MODE` "legacy"), so the exemption is
- * removed rather than kept stale.
+ * M4 of the P5 tier-A review resolved that (it read
+ * `layoutFor(REPO_ROOT).legacySite`), and since Tier C it reads only the
+ * frozen `legacy/redirect/paths.json`, so the exemption stays removed.
  */
 const EXEMPT_FILES: ReadonlySet<string> = new Set<string>([]);
 

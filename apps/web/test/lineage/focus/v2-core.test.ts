@@ -1,7 +1,8 @@
 /**
  * Ports paperpilot/tests/viewer/test_lineage_v2_core.mjs's cases 1:1
  * against the TS port in lib/lineage/v2/* (not the JS) -- same
- * fixtures (paperpilot/tests/fixtures/lineage-pilot/positive-release),
+ * fixtures (apps/web/test/fixtures/lineage-pilot/positive-release, copied byte-identically
+ * from the deleted paperpilot/tests/fixtures/lineage-pilot/positive-release),
  * same `makeLargeBundle`/`rebind` synthetic-release generator, same
  * assertions. See lib/lineage/v2/constants.ts's module doc for why
  * byte-identical behaviour with docs/assets/lineage-v2-core.js matters
@@ -34,7 +35,7 @@ import {
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repository = resolve(here, "../../../../..");
-const bundleRoot = resolve(repository, "paperpilot/tests/fixtures/lineage-pilot/positive-release");
+const bundleRoot = resolve(repository, "apps/web/test/fixtures/lineage-pilot/positive-release");
 
 if (!existsSync(bundleRoot)) {
   throw new Error(

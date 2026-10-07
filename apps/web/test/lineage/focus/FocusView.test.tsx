@@ -28,7 +28,7 @@ import type { PilotIndex, PilotIndexEntry } from "../../../lib/lineage/v2/types"
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repository = resolve(here, "../../../../..");
-const bundleRoot = resolve(repository, "paperpilot/tests/fixtures/lineage-pilot/positive-release");
+const bundleRoot = resolve(repository, "apps/web/test/fixtures/lineage-pilot/positive-release");
 
 // `verifyPilotRelease`'s `asBytes` only accepts a same-realm
 // `ArrayBuffer`/`Uint8Array` (`instanceof` checks, by design --

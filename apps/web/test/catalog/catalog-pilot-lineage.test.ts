@@ -6,7 +6,8 @@
  * (SCR-47/48) that lib/catalog-pilot-lineage.ts delegates to
  * lib/lineage/v2 for, instead of the old hand-rolled subset. Uses the
  * same real fixture as test/lineage/focus/v2-core.test.ts
- * (paperpilot/tests/fixtures/lineage-pilot/positive-release) so a
+ * (apps/web/test/fixtures/lineage-pilot/positive-release, copied byte-identically
+ * from the deleted paperpilot/tests/fixtures/lineage-pilot/positive-release) so a
  * drift between the fixture and the v2 reader fails here too.
  */
 import { readFileSync } from "node:fs";
@@ -24,7 +25,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const repository = resolve(here, "../../../..");
 const fixturePath = resolve(
   repository,
-  "paperpilot/tests/fixtures/lineage-pilot/positive-release/lineage-pilot-index-v1.json",
+  "apps/web/test/fixtures/lineage-pilot/positive-release/lineage-pilot-index-v1.json",
 );
 
 const rawFixture = JSON.parse(readFileSync(fixturePath, "utf8")) as {

@@ -1,7 +1,7 @@
 /**
  * Ports paperpilot/tests/viewer/test_lineage_core.mjs's cases against
  * lib/lineage/core.ts (the TS port of docs/assets/lineage-core.js),
- * plus paperpilot/tests/fixtures/lineage-v1/node_display_cases.json
+ * plus apps/web/test/fixtures/lineage-v1/node_display_cases.json (ex paperpilot/tests/fixtures/lineage-v1)
  * (shared with the Python validator) and the real, published
  * docs/lineage-quality-v1.json (so a change there that silently
  * widens eligibility is caught here too, not just in Python).
@@ -799,7 +799,7 @@ describe("theme artifact parsing", () => {
 describe("node display fields (shared fixture with test_lineage_contract.py)", () => {
   const fixturePath = resolve(
     REPO_ROOT,
-    "paperpilot/tests/fixtures/lineage-v1/node_display_cases.json",
+    "apps/web/test/fixtures/lineage-v1/node_display_cases.json",
   );
   const nodeDisplayCases = JSON.parse(readFileSync(fixturePath, "utf8")).cases as Array<{
     label: string;

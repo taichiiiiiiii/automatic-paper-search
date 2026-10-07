@@ -86,31 +86,30 @@ describe("L7: collect-daily-watch.yml passes PAPERPILOT_SLACK_WEBHOOK_URL to the
   });
 });
 
-describe("N2 (P5 tier-A review round 2): legacy-redirects.yml passes no cwd-relative --source", () => {
+describe("N2 (P5 tier-A review round 2): legacy-redirects.yml passes no cwd-relative path flag", () => {
   // M4 (round 1) added an explicit `--source legacy/gh-pages-site` to
   // pin the p5-era literal path. That regressed: `pnpm --filter
   // @paperpilot/web run legacy-redirects` runs with cwd = apps/web, so
-  // the relative path resolved to the nonexistent
-  // apps/web/legacy/gh-pages-site and the generator always failed (see
-  // generator.cwd.spawn.test.ts for the real-process reproduction). The
-  // generator's own default (`layoutFor(REPO_ROOT).legacySite`, computed
-  // from the script's own location, not the workflow's cwd) already
-  // resolves to the correct literal in both layouts, so the only safe
-  // forms here are: no `--source` at all, or one anchored to an
-  // absolute, workspace-rooted path that does not depend on cwd.
-  it('the "Generate the redirect site" step passes no relative --source', () => {
+  // the relative path resolved under apps/web and the generator always
+  // failed (see apps/web/test/legacy-redirects/generator.cwd.spawn.test.ts
+  // for the real-process reproduction). Since Tier C the generator reads
+  // the frozen legacy/redirect/paths.json (`--paths`, default computed
+  // from the script's own location), so the only safe forms for any
+  // path flag here are: none at all, or an absolute, workspace-rooted
+  // path that does not depend on cwd.
+  it('the "Generate the redirect site" step passes no relative --paths/--source/--out', () => {
     const doc = readWorkflow("legacy-redirects.yml");
     const [, job] = jobsOf(doc).find(([id]) => id === "redirect") as [string, YamlDoc];
     const step = (job.steps as YamlDoc[]).find((s) => s.name === "Generate the redirect site");
     const run = step?.run as string;
-    const sourceMatch = /--source\s+(\S+)/.exec(run);
-    if (sourceMatch) {
-      const value = sourceMatch[1] as string;
+    expect(run).toContain("legacy-redirects");
+    for (const match of run.matchAll(/--(?:paths|source|out)\s+(\S+)/g)) {
+      const value = match[1] as string;
       expect(
         value.startsWith("/") ||
           value.startsWith("$GITHUB_WORKSPACE") ||
           value.startsWith('"$GITHUB_WORKSPACE'),
-        `--source value ${JSON.stringify(value)} must be absolute/workspace-anchored, not resolved against the step's cwd`,
+        `${match[0]} must be absolute/workspace-anchored, not resolved against the step's cwd`,
       ).toBe(true);
     }
   });

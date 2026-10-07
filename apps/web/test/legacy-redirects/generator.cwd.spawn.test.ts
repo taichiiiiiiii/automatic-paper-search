@@ -3,9 +3,10 @@
  * process, that `legacy-redirects.yml`'s actual invocation shape --
  * `pnpm --filter @paperpilot/web run legacy-redirects` with `cwd =
  * apps/web` (`pnpm --filter X run <script>` always chdirs into that
- * package's directory before running it) -- works, and that the
- * regressed shape it used to be (`-- --source legacy/gh-pages-site`,
- * a path RELATIVE to that cwd) does not.
+ * package's directory before running it) -- works, and that a
+ * cwd-relative path argument (the shape that regressed once, as
+ * `--source legacy/gh-pages-site`; today `--paths
+ * legacy/redirect/paths.json`) does not.
  *
  * A unit test calling `generateLegacyRedirectSite()` directly (see
  * `generator.test.ts`) cannot catch this: it never goes through
@@ -16,11 +17,9 @@
  * code / stderr), the same technique `isMainEntry.spawn.test.ts` uses
  * for the same reason.
  *
- * The fixture tree is named `legacy/gh-pages-site` (the p5-era shape,
- * not today's legacy `docs/`) precisely because this is the shape the
- * real workflow's default resolves to once commit B lands; using an
- * absolute path to it here proves cwd-independence without depending on
- * today's `LAYOUT_MODE` or on the real repo's own `docs/` content.
+ * The fixture list lives at `<tmp>/legacy/redirect/paths.json` (the
+ * real file's repo-relative shape), so an absolute path to it proves
+ * cwd-independence without depending on the real repo's own list.
  */
 import { execFileSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
@@ -62,15 +61,16 @@ function runGenerator(args: string[]): RunResult {
 }
 
 let tmpRoot: string;
-let sourceDir: string;
+let pathsFile: string;
 let outDir: string;
 
 beforeEach(() => {
   tmpRoot = mkdtempSync(join(tmpdir(), "legacy-redirects-cwd-"));
-  sourceDir = join(tmpRoot, "legacy", "gh-pages-site");
+  const listDir = join(tmpRoot, "legacy", "redirect");
+  pathsFile = join(listDir, "paths.json");
   outDir = join(tmpRoot, "out");
-  mkdirSync(sourceDir, { recursive: true });
-  writeFileSync(join(sourceDir, "index.html"), "<html>p5-shaped fixture</html>", "utf8");
+  mkdirSync(listDir, { recursive: true });
+  writeFileSync(pathsFile, JSON.stringify({ paths: ["index.html"] }), "utf8");
 });
 
 afterEach(() => {
@@ -78,19 +78,23 @@ afterEach(() => {
 });
 
 describe("legacy-redirects.ts spawned with cwd=apps/web (matches the workflow's pnpm --filter cwd)", () => {
-  it("a --source RELATIVE to cwd (the regressed workflow shape) cannot find the p5-shaped tree", () => {
-    // Mirrors the exact regressed `run:` line:
-    // `pnpm --filter @paperpilot/web run legacy-redirects -- --source legacy/gh-pages-site`
-    // resolves to the nonexistent apps/web/legacy/gh-pages-site, not to
-    // this fixture's tmpRoot/legacy/gh-pages-site.
-    const result = runGenerator(["--source", "legacy/gh-pages-site", "--out", outDir]);
+  it("a --paths RELATIVE to cwd (the regressed workflow shape) cannot find the list", () => {
+    // `pnpm --filter @paperpilot/web run legacy-redirects -- --paths legacy/redirect/paths.json`
+    // would resolve to the nonexistent apps/web/legacy/redirect/paths.json.
+    const result = runGenerator(["--paths", "legacy/redirect/paths.json", "--out", outDir]);
     expect(result.status).not.toBe(0);
     expect(result.stderr).toMatch(/ENOENT/);
   }, 30_000);
 
-  it("an ABSOLUTE --source (or none, relying on the layout-derived default) works regardless of cwd", () => {
-    const result = runGenerator(["--source", sourceDir, "--out", outDir]);
+  it("an ABSOLUTE --paths works regardless of cwd", () => {
+    const result = runGenerator(["--paths", pathsFile, "--out", outDir]);
     expect(result.status).toBe(0);
-    expect(result.stdout).toMatch(/wrote \d+ page\(s\)/);
+    expect(result.stdout).toMatch(/wrote 2 page\(s\)/);
+  }, 30_000);
+
+  it("no --paths (the workflow's real shape) uses the script-relative frozen list", () => {
+    const result = runGenerator(["--out", outDir]);
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain(join(REPO_ROOT, "legacy", "redirect", "paths.json"));
   }, 30_000);
 });

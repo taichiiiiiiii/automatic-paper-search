@@ -1,7 +1,7 @@
 name: legacy-redirects
 
-# Publishes the frozen GitHub Pages redirect site (legacy/gh-pages-site ->
-# legacy/redirect, docs/migration/p5-plan.md §5.4). Dispatch-only with an
+# Publishes the GitHub Pages redirect site (one stub per path in the
+# frozen legacy/redirect/paths.json, docs/migration/p5-plan.md §5.4). Dispatch-only with an
 # explicit confirmation until runbook step 10 (§6.2) — a push trigger on
 # legacy/redirect/** paths may be added afterwards, but not before.
 
@@ -50,17 +50,12 @@ jobs:
         uses: ./.github/actions/setup-pnpm
 
       - name: Generate the redirect site
-        # P5 tier-A review round 2 (N2): the M4 fix above regressed this.
         # `pnpm --filter X run <script>` executes with cwd = that
-        # package's directory (apps/web), so the relative `--source
-        # legacy/gh-pages-site` resolved to the nonexistent
-        # apps/web/legacy/gh-pages-site and the generator always failed.
-        # The generator's own default --
-        # `layoutFor(REPO_ROOT).legacySite`, computed from
-        # `apps/web/scripts/legacy-redirects.ts`'s own script-relative
-        # REPO_ROOT, never this workflow's cwd -- already resolves to the
-        # correct p5-era literal path in both layouts, so no `--source`
-        # override is needed or safe to pass here.
+        # package's directory (apps/web), so a relative `--paths`/`--out`
+        # would resolve under apps/web (P5 tier-A review round 2, N2).
+        # The generator's own default -- legacy/redirect/paths.json,
+        # computed from the script's own location, never this
+        # workflow's cwd -- is the frozen list, so no override is passed.
         run: pnpm --filter @paperpilot/web run legacy-redirects
 
       - name: Upload Pages artifact
