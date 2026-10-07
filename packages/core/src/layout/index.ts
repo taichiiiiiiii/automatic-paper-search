@@ -26,7 +26,7 @@ import { join } from "node:path";
 export type LayoutMode = "legacy" | "p5";
 
 /** The mode every caller uses by default until commit B flips it. */
-export const LAYOUT_MODE: LayoutMode = "legacy";
+export const LAYOUT_MODE: LayoutMode = "p5";
 
 /**
  * The five root kinds plus the staged-workflows directory, as absolute

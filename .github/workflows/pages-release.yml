@@ -1,4 +1,21 @@
-name: Reusable exact-SHA Pages release
+name: pages-release
+
+# Reusable exact-SHA Cloudflare Pages release (docs/migration/p5-plan.md
+# §4.3). Six stages plus record: validate -> build -> admit -> deploy ->
+# smoke -> record. Unlike the pre-P5 GitHub Pages version, this workflow
+# is normal-release only now — pages-rollback.yml (§4.4) no longer calls
+# it; rollback never rebuilds, it only re-points Cloudflare at an
+# already-deployed artifact, so there is nothing left here for it to
+# reuse.
+#
+# Called by: pages.yml, theme-on-demand.yml, conference-on-demand.yml,
+# regen-themes.yml, collect-weekly.yml (all staged in this same
+# directory). Each caller grants `contents: read` + `deployments: write`
+# and passes no `secrets:` — the deploy job's Cloudflare credentials come
+# from the `cloudflare-pages-deploy` GitHub Environment, which binds to
+# any job that declares that `environment:`, reusable-workflow or not
+# (verify: this is the documented behaviour of Environment secrets, not
+# re-confirmed by a live run here).
 
 on:
   workflow_call:
@@ -8,7 +25,7 @@ on:
         required: true
         type: string
       release_kind:
-        description: Whether this is a normal release or a rollback
+        description: Always "normal" — rollback has its own workflow and never calls this one
         required: true
         type: string
       request_id:
@@ -18,26 +35,46 @@ on:
         type: string
     outputs:
       source_sha:
-        description: Exact commit packaged into the Pages artifact
+        description: Exact commit packaged into the Cloudflare Pages artifact
         value: ${{ jobs.build.outputs.source_sha }}
       artifact_name:
-        description: Uploaded Pages artifact name
+        description: Uploaded build artifact name
         value: ${{ jobs.build.outputs.artifact_name }}
-      page_url:
-        description: URL returned by the Pages deployment
-        value: ${{ jobs.deploy.outputs.page_url }}
+      cf_deployment_id:
+        description: Cloudflare Pages deployment id, filtered on commit_hash
+        value: ${{ jobs.deploy.outputs.cf_deployment_id }}
+      deployment_url:
+        description: Per-deployment Cloudflare URL (not the alias), for a pre-alias smoke
+        value: ${{ jobs.deploy.outputs.deployment_url }}
 
 permissions: {}
 
 concurrency:
   group: paperpilot-pages-production
   cancel-in-progress: false
-  queue: max
+  # (verify) Live pre-P5 pages-release.yml also sets `queue: max` here.
+  # `concurrency.queue` is not in the GitHub Actions concurrency schema
+  # this changeset could check offline (no network access) — adding an
+  # unrecognized key risks a hard workflow-parse failure, not a graceful
+  # ignore, which would be worse than the L5 gap it's meant to close.
+  # Left out until the next online verification pass confirms the exact
+  # key/value GitHub Actions accepts there; tracked in this task's
+  # handback as an unresolved (verify) item (P5 tier-A review, L5).
+
+env:
+  # Must equal packages/core/src/site/config.ts's PAGES_PROJECT_NAME /
+  # PAGES_PRODUCTION_BRANCH / PUBLIC_ORIGIN (p5-plan.md §2 A7 assertion
+  # 11; apps/pipeline/test/workflows pins this equality). Both PAGES_*
+  # constants are placeholders pending the user's Cloudflare Pages
+  # project (see that file) — update both places together.
+  CF_PAGES_PROJECT: "paperpilot-pages-TODO"
+  CF_PAGES_PRODUCTION_BRANCH: "production"
+  PUBLIC_ORIGIN: "https://paperpilot.pages.dev"
 
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     permissions:
       contents: read
     steps:
@@ -52,8 +89,8 @@ jobs:
             echo "::error::source_sha must be 40 lowercase hex"
             exit 1
           }
-          [[ "$RELEASE_KIND" == "normal" || "$RELEASE_KIND" == "rollback" ]] || {
-            echo "::error::release_kind must be normal or rollback"
+          [[ "$RELEASE_KIND" == "normal" ]] || {
+            echo "::error::release_kind must be normal (rollback uses pages-rollback.yml, not this workflow)"
             exit 1
           }
           [[ -z "$REQUEST_ID" || "$REQUEST_ID" =~ ^[A-Za-z0-9._:-]{1,128}$ ]] || {
@@ -74,47 +111,67 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
 
-      - name: Setup Python
-        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
-        with:
-          python-version: "3.12"
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
 
-      - name: Setup Node
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-        with:
-          node-version: "20"
+      - name: Lint (Biome)
+        run: pnpm exec biome check .
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
-        with:
-          version: "0.12.7"
-          enable-cache: true
+      - name: Typecheck
+        run: pnpm -r --if-present typecheck
 
-      - name: Install locked dependencies
-        run: uv sync --frozen --extra dev --extra unarxive
-
-      - name: Lint
-        run: uv run --frozen --extra dev ruff check paperpilot/
+      - name: Build web
+        # Before the tests: apps/web's own contract tests (CSP, sitemap,
+        # redirects, paper-links build safety, copy-data, ...) read the
+        # built apps/web/out/public, and no-skip-gate below fails the
+        # whole release if they report "skipped" (no OUT_DIR/PUBLIC_DIR)
+        # instead of actually running (H2 of the P5 tier-A review).
+        run: pnpm --filter @paperpilot/web build
 
       - name: Full test suite with no skips
+        # P5 tier-A review round 2 (N1): the literal `--` separator made
+        # pnpm forward `["--","--reporter=json","--outputFile=…"]` to each
+        # package's `vitest run` -- vitest 3 ignores everything after a
+        # bare `--`, so no package ever wrote a report, and `no-skip-gate`
+        # below died on empty argv before checking anything. Passing the
+        # flags directly (no `--`) forwards them as real CLI args; `.json`
+        # must be appended to --outputFile.json for vitest's JSON reporter
+        # to pick the right destination when `--reporter=default` is also
+        # given (both reporters run; only the json one needs a file).
         run: |
           set -euo pipefail
-          uv run --frozen --extra dev --extra unarxive \
-            pytest paperpilot/tests -q -rs 2>&1 | tee pytest-result.txt
-          if grep -Eq '(^| )[0-9]+ skipped(,| in|$)|^SKIPPED ' pytest-result.txt; then
-            echo "::error::release validation may not skip tests"
-            exit 1
-          fi
+          pnpm -r --if-present test --reporter=default --reporter=json --outputFile.json=.vitest-release-report.json
 
-      - name: Validate local Pages bundle
-        env:
-          SOURCE_SHA: ${{ inputs.source_sha }}
-        run: bash .github/scripts/validate-pages-release.sh local "$SOURCE_SHA" docs
+      - name: No skipped tests
+        # P5 tier-A review round 3, L1: one explicit report per workspace
+        # package with a test script, never a `find` over whatever exists. A
+        # package that wrote no report (a non-vitest `test`, a dropped
+        # reporter flag) fails the gate, because its report cannot be read,
+        # instead of silently dropping out of the list. The list must equal
+        # what `dataMove rehearse` derives (findTestPackageDirs);
+        # apps/pipeline/test/workflows/release-no-skip-gate-reports.test.ts
+        # pins that equality, so a new package fails CI until it is added.
+        run: |
+          set -euo pipefail
+          pnpm exec tsx apps/pipeline/src/release/cli.ts no-skip-gate \
+            apps/api/.vitest-release-report.json \
+            apps/pipeline/.vitest-release-report.json \
+            apps/web/.vitest-release-report.json \
+            packages/core/.vitest-release-report.json
+
+      - name: Theme seed audit
+        run: pnpm exec tsx apps/pipeline/src/lineage/theme/auditThemeSeedsCli.ts
+
+      - name: Lineage quality audit
+        run: pnpm exec tsx apps/pipeline/src/lineage/quality/auditLineageQualityCli.ts
+
+      - name: Search index check
+        run: pnpm exec tsx apps/pipeline/src/release/derived/searchIndexCli.ts --check
 
   build:
     needs: validate
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     permissions:
       contents: read
     outputs:
@@ -127,33 +184,43 @@ jobs:
           ref: ${{ inputs.source_sha }}
           persist-credentials: false
 
-      - name: Revalidate exact checkout and Pages bundle
-        env:
-          SOURCE_SHA: ${{ inputs.source_sha }}
-        run: bash .github/scripts/validate-pages-release.sh local "$SOURCE_SHA" docs
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+
+      - name: Build apps/web
+        # prebuild copies data/published -> public/; postbuild strips
+        # no-JS fallbacks, hashes CSP, writes redirects + sitemap.
+        run: pnpm --filter @paperpilot/web build
 
       - name: Write deterministic deployment marker
         env:
           SOURCE_SHA: ${{ inputs.source_sha }}
           RELEASE_KIND: ${{ inputs.release_kind }}
           REQUEST_ID: ${{ inputs.request_id }}
-        run: |
-          python3 - <<'PY'
-          import json
-          import os
-          from pathlib import Path
+        run: pnpm exec tsx apps/pipeline/src/release/cli.ts marker apps/web/out
 
-          marker = {
-              "schema_version": "paperpilot-deployment-v1",
-              "source_sha": os.environ["SOURCE_SHA"],
-              "release_kind": os.environ["RELEASE_KIND"],
-              "request_id": os.environ["REQUEST_ID"] or None,
-          }
-          Path("docs/_paperpilot-deployment.json").write_text(
-              json.dumps(marker, ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n",
-              encoding="utf-8",
-          )
-          PY
+      - name: Assert the marker matches before validating the bundle
+        # L4 of the P5 tier-A review: the marker was previously only
+        # asserted once, much later, in the deploy job (after the
+        # artifact was already downloaded) — a mismatch here fails fast,
+        # in the same job that just wrote it, before any upload/deploy.
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha }}
+        run: |
+          set -euo pipefail
+          marker_sha="$(jq -r '.source_sha' apps/web/out/_paperpilot-deployment.json)"
+          test "$marker_sha" = "$SOURCE_SHA"
+
+      - name: Validate local Pages bundle
+        # `validate local` (not `validate bundle`): also checks this
+        # job's own checkout HEAD equals the exact SHA being released
+        # (L4 of the P5 tier-A review — `validate bundle` has no HEAD==SHA
+        # check, which is correct for the promoter's pre-commit worktree
+        # but wrong here, where the checkout above is already pinned to
+        # inputs.source_sha).
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha }}
+        run: pnpm exec tsx apps/pipeline/src/release/cli.ts validate local "$SOURCE_SHA" apps/web/out
 
       - name: Set artifact metadata
         id: metadata
@@ -161,13 +228,13 @@ jobs:
           SOURCE_SHA: ${{ inputs.source_sha }}
         run: |
           echo "source_sha=$SOURCE_SHA" >> "$GITHUB_OUTPUT"
-          echo "artifact_name=github-pages-$SOURCE_SHA" >> "$GITHUB_OUTPUT"
+          echo "artifact_name=cf-pages-$SOURCE_SHA" >> "$GITHUB_OUTPUT"
 
-      - name: Upload one Pages artifact
-        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
+      - name: Upload the exact built bundle
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: ${{ steps.metadata.outputs.artifact_name }}
-          path: docs
+          path: apps/web/out
           retention-days: 14
 
   admit:
@@ -186,71 +253,168 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Reject stale normal release before deployment
+      - name: Reject stale release before deployment
         id: freshness
         env:
           SOURCE_SHA: ${{ inputs.source_sha }}
-          RELEASE_KIND: ${{ inputs.release_kind }}
+          # Must be a subset of pages.yml's `paths:` filter (p5-plan.md
+          # §2 A7 assertion 8) — apps/pipeline/test/workflows pins that
+          # inequality the other way round.
+          ADMIT_PATHS: "data/published data/config/conference-copy apps/web packages/core schemas pnpm-lock.yaml package.json"
         run: |
           set -euo pipefail
-          if [ "$RELEASE_KIND" = rollback ]; then
-            echo "deployable=true" >> "$GITHUB_OUTPUT"
-            echo "::notice::rollback bypasses the normal develop-tip freshness gate"
-            exit 0
-          fi
-
           git fetch --no-tags origin develop
           tip="$(git rev-parse refs/remotes/origin/develop)"
           git merge-base --is-ancestor "$SOURCE_SHA" "$tip" || {
-            echo "::error::normal release source is not an ancestor of develop"
+            echo "::error::release source is not an ancestor of develop"
             exit 1
           }
-          if git diff --quiet "$SOURCE_SHA" "$tip" -- docs; then
+          read -r -a admit_paths <<< "$ADMIT_PATHS"
+          if git diff --quiet "$SOURCE_SHA" "$tip" -- "${admit_paths[@]}"; then
             echo "deployable=true" >> "$GITHUB_OUTPUT"
           else
             echo "deployable=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::skipping stale Pages artifact; newer docs exist at $tip"
+            echo "::notice::skipping stale Pages artifact; newer admit-set content exists at $tip"
           fi
 
   deploy:
     needs: [build, admit]
-    if: needs.admit.outputs.deployable == 'true'
+    if: needs.admit.outputs.deployable == 'true' && github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
       contents: read
-      pages: write
-      id-token: write
     environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      name: cloudflare-pages-deploy
     outputs:
-      page_url: ${{ steps.deployment.outputs.page_url }}
+      cf_deployment_id: ${{ steps.cf.outputs.cf_deployment_id }}
+      deployment_url: ${{ steps.cf.outputs.deployment_url }}
     steps:
-      - name: Configure Pages
-        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
-
-      - name: Deploy the validated artifact
-        id: deployment
-        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
-        with:
-          artifact_name: ${{ needs.build.outputs.artifact_name }}
-
-  smoke:
-    needs: [admit, deploy]
-    if: needs.admit.outputs.deployable == 'true' && needs.deploy.result == 'success'
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout current validation script
+      - name: Checkout release scripts
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
 
-      - name: Smoke exact deployed SHA
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+
+      - name: Download the validated artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: ${{ needs.build.outputs.artifact_name }}
+          path: ${{ runner.temp }}/cf-pages
+
+      - name: Assert marker matches the requested SHA
         env:
-          PAGE_URL: ${{ needs.deploy.outputs.page_url }}
           SOURCE_SHA: ${{ inputs.source_sha }}
-        run: bash .github/scripts/validate-pages-release.sh smoke "$PAGE_URL" "$SOURCE_SHA"
+          ARTIFACT_DIR: ${{ runner.temp }}/cf-pages
+        run: |
+          set -euo pipefail
+          marker_sha="$(jq -r '.source_sha' "$ARTIFACT_DIR/_paperpilot-deployment.json")"
+          test "$marker_sha" = "$SOURCE_SHA"
+
+      - name: Deploy to Cloudflare Pages
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          ARTIFACT_DIR: ${{ runner.temp }}/cf-pages
+        # L3 of the P5 tier-A review: the workspace's own lockfile-pinned
+        # wrangler (apps/api/package.json: "wrangler": "^4.147.0",
+        # installed by Setup pnpm above), not `npx --yes wrangler@...`,
+        # whose transitive dependencies would otherwise resolve outside
+        # the lockfile at deploy time with the account-wide Cloudflare
+        # token already in env.
+        run: |
+          set -euo pipefail
+          pnpm --filter @paperpilot/api exec wrangler pages deploy "$ARTIFACT_DIR" \
+            --project-name="$CF_PAGES_PROJECT" \
+            --branch="$CF_PAGES_PRODUCTION_BRANCH" \
+            --commit-hash="$SOURCE_SHA" \
+            --commit-dirty=false
+
+      - name: Resolve the Cloudflare deployment id
+        id: cf
+        env:
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CF_PROJECT: ${{ env.CF_PAGES_PROJECT }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+        # (verify) GET /accounts/{id}/pages/projects/{project}/deployments?env=production
+        # response shape, per p5-plan.md §2 A4. No shell redirect to
+        # $GITHUB_OUTPUT: cli.ts's cf-deployment-id subcommand already
+        # appends `cf_deployment_id=...` / `deployment_url=...` to
+        # $GITHUB_OUTPUT itself (it is a normal env var the runner sets
+        # for every step).
+        run: pnpm exec tsx apps/pipeline/src/release/cli.ts cf-deployment-id
+
+  smoke:
+    needs: [build, admit, deploy]
+    if: needs.admit.outputs.deployable == 'true' && needs.deploy.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout release scripts
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+
+      - name: Download the validated artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: ${{ needs.build.outputs.artifact_name }}
+          path: ${{ runner.temp }}/cf-pages
+
+      - name: Smoke the per-deployment URL first
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          DEPLOYMENT_URL: ${{ needs.deploy.outputs.deployment_url }}
+        run: |
+          set -euo pipefail
+          [[ -z "$DEPLOYMENT_URL" ]] || pnpm exec tsx apps/pipeline/src/release/cli.ts validate smoke "$DEPLOYMENT_URL" "$SOURCE_SHA"
+
+      - name: Smoke exact deployed SHA on the production alias
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          ARTIFACT_DIR: ${{ runner.temp }}/cf-pages
+        run: |
+          set -euo pipefail
+          pnpm exec tsx apps/pipeline/src/release/cli.ts validate smoke "$PUBLIC_ORIGIN" "$SOURCE_SHA" \
+            --wait-marker 300 \
+            --expect-bytes "$ARTIFACT_DIR" \
+            --expect-404 /__pp_smoke_missing__/ \
+            --expect-redirect /iclr-2026/lineage.html=/iclr-2026/lineage/
+
+  record:
+    needs: [build, deploy, smoke]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - name: Checkout release scripts
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+
+      - name: Record the known-good deployment
+        env:
+          # cli.ts's gh-record subcommand reads GITHUB_TOKEN /
+          # GITHUB_REPOSITORY (the latter is already a default env var
+          # the runner sets on every job; it is never overridden here).
+          GITHUB_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          RELEASE_KIND: ${{ inputs.release_kind }}
+          REQUEST_ID: ${{ inputs.request_id }}
+          ARTIFACT_NAME: ${{ needs.build.outputs.artifact_name }}
+          CF_DEPLOYMENT_ID: ${{ needs.deploy.outputs.cf_deployment_id }}
+        run: pnpm exec tsx apps/pipeline/src/release/cli.ts gh-record

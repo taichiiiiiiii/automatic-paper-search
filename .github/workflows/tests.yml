@@ -1,21 +1,14 @@
 name: tests
 
-# The only automated gate this repository has for code correctness.
+# The Node CI gate for the P5 workspace (docs/migration/p5-plan.md §4.1).
+# Staged here under .github/workflows-p5/ — GitHub only looks at
+# .github/workflows/, so this file does not run until commit B moves it
+# into place. It keeps the same file name and job id ("test") as the
+# pre-P5 Python tests.yml so that any branch-protection required check
+# configured against "tests / test" keeps matching (R17).
 #
-# Until #358 there was none: CLAUDE.md documented a "develop へ PR → CI
-# (test / ruff / mypy) → merge" flow, but no workflow ran pytest, ruff or
-# mypy. A merge to develop publishes docs/ straight to production through
-# pages.yml, so the sole thing standing between a broken change and the
-# live site was somebody remembering to run the suite locally.
-#
-# mypy is deliberately absent: it crashes with INTERNAL ERROR on this
-# Python/typeshed combination (fails on typeshed's builtins.pyi even for a
-# single file), so it cannot gate anything today. See CLAUDE.md.
-#
-# Node is installed because part of the suite shells out to it: the viewer
-# and Cloudflare Worker suites are .mjs files run through subprocess
-# (#364/#365). Without node those tests skip silently, which would make
-# this workflow look green while covering 85 fewer assertions.
+# Absorbs ts-ci.yml (deleted in commit B): this is now the only CI gate,
+# Python or Node, once the cutover lands.
 
 on:
   pull_request:
@@ -23,53 +16,53 @@ on:
     branches: [develop, main]
   workflow_dispatch:
 
-permissions:
-  contents: read
-
 concurrency:
   group: tests-${{ github.ref }}
   cancel-in-progress: true
 
+permissions: {}
+
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          python-version: "3.12"
+          persist-credentials: false
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v3
+      - name: Lint (Biome)
+        run: pnpm exec biome check .
 
-      - name: Assert node is present
-        # A silent skip would hide the .mjs suites. Fail loudly instead.
-        run: node --version
+      - name: Typecheck
+        run: pnpm -r --if-present typecheck
 
-      - name: Lint
-        # --extra dev is required: ruff and pytest live in
-        # [project.optional-dependencies].dev, so a bare `uv run` cannot find
-        # them on a clean checkout. This passed locally only because uv fell
-        # back to /usr/local/bin/ruff, a system binary CI does not have.
-        run: uv run --extra dev ruff check paperpilot/
+      - name: Build web
+        # Before the tests (H2/M5 of the P5 tier-A review, moved up from
+        # after "Test"): apps/web's own contract tests (CSP, paper-links
+        # parity, lineage routes, sitemap, redirects, copy-data) read the
+        # built apps/web/out and otherwise report "skipped" on a clean
+        # runner, silently losing coverage instead of actually running.
+        run: pnpm --filter @paperpilot/web build
 
-      - name: Tests
-        run: uv run --extra dev pytest paperpilot/tests -q
-
-      - name: No skipped tests
-        # Skips are how this suite hides missing tooling. If something
-        # starts skipping in CI we want to see it, not average it away.
+      - name: Test
+        # Skips are how this suite would hide missing tooling (same
+        # reasoning as the pre-P5 Python tests.yml's "No skipped tests"
+        # step). A skip warns loudly instead of being averaged away.
         run: |
           set -o pipefail
-          uv run --extra dev pytest paperpilot/tests -q -rs 2>&1 | tee result.txt
-          if grep -qE "^[0-9]+ .*skipped" result.txt; then
-            echo "::warning::some tests skipped in CI — check the -rs output above"
+          pnpm -r --if-present test 2>&1 | tee "$RUNNER_TEMP/test-output.txt"
+          if grep -qE '[0-9]+ skipped' "$RUNNER_TEMP/test-output.txt"; then
+            echo "::warning::some tests skipped in CI — check the test output above"
           fi
+
+      - name: Validate bundle
+        # Proves the exact tree the test step just built (and the release
+        # pipeline will also build) still produces a valid bundle.
+        run: pnpm exec tsx apps/pipeline/src/release/cli.ts validate bundle apps/web/out

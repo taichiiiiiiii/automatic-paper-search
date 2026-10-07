@@ -29,14 +29,14 @@ dist/
 # Git requires the dir itself to NOT be ignored for the negation to
 # bite (a `dir/` rule ignores the directory wholesale and overrides
 # any `!dir/file` inside it). See #131 followup.
-paperpilot/data/lineage-cache/*
-!paperpilot/data/lineage-cache/classifications.json
+data/state/lineage-cache/*
+!data/state/lineage-cache/classifications.json
 
 # unarXive citation contexts DuckDB (Phase J). build_unarxive_index.py
 # produces a ~7GB unarxive.duckdb under paperpilot/data/unarxive/; the
 # release artefact lives on GitHub Releases (downloaded by CI on demand)
 # so the local dir should never be staged.
-paperpilot/data/unarxive/
+data/state/unarxive/
 
 # TypeScript monorepo (docs/design/39-typescript-cloudflare-migration.md)
 node_modules/
@@ -48,3 +48,6 @@ coverage/
 
 # vitest JSON reports written by the release no-skip gate (pages-release.yml)
 .vitest-release-report.json
+
+# P5 operator logs (apply, docs/migration/p5-plan.md §5.1) — never committed.
+logs/

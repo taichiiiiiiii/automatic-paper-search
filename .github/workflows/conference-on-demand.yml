@@ -1,17 +1,10 @@
 name: conference-on-demand
 run-name: "conference-on-demand: ${{ inputs.conference || 'manual' }}"
-# Operator-triggered creation of a NEW conference catalog (e.g. neurips-2026),
-# end-to-end:
-#   collect_conference.py  -> paperpilot/output/<slug>/papers_*.csv (+ oral md)
-#   build_summary_csv.py   -> summary.csv (auto-tags + Oral matching)
-#   build_pages.py         -> docs/<slug>/papers.json (+ conferences.json)
-#   scaffold_conference_page.py -> docs/<slug>/index.html (+ empty lineage.json)
-#   promotion validation   -> exact develop SHA -> reusable Pages release
-#
-# Unlike theme-on-demand.yml this is NOT wired to the in-browser form — adding
-# a conference is a curated operator action, so it's a plain workflow_dispatch
-# with no CF Worker / rate-limit layer. It also needs no LLM / unarXive: the
-# catalog (list) is built purely from arXiv metadata + the VenueSignal classifier.
+
+# Operator-triggered creation of a NEW conference catalog
+# (docs/migration/p5-plan.md §4.1). Not wired to the in-browser form
+# (adding a conference is a curated operator action) — a plain
+# workflow_dispatch, no CF Worker / rate-limit layer, no LLM secrets.
 
 on:
   workflow_dispatch:
@@ -39,12 +32,12 @@ on:
       max:
         description: 'Max arXiv results to scan'
         required: false
-        default: '800'
+        default: "800"
         type: string
       allow_shrink_for:
-        description: 'Comma-separated conference slugs whose catalog may shrink or change identity in this run (build_pages acknowledgement; empty = the shrink gate stays on for every conference)'
+        description: 'Comma-separated conference slugs whose catalog may shrink (empty = shrink gate stays on)'
         required: false
-        default: ''
+        default: ""
         type: string
 
 permissions: {}
@@ -52,62 +45,60 @@ permissions: {}
 jobs:
   generate:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
     outputs:
       as_of: ${{ steps.candidate.outputs.as_of }}
       base_sha: ${{ steps.candidate.outputs.base_sha }}
       candidate_name: ${{ steps.candidate.outputs.candidate_name }}
-    permissions:
-      contents: read
-    timeout-minutes: 20
     steps:
       - name: Validate inputs early
-        # Defence-in-depth at the YAML layer: the slug / venue / max are
-        # constrained before any Python runs. The free-text query / display /
-        # lede reach Python ONLY via env vars (never spliced into a shell
-        # command line), so shell-injection probes can't execute here.
+        # Defence-in-depth at the YAML layer: slug / venue / max are
+        # constrained before any TS runs. The free-text query / display /
+        # lede reach the CLIs ONLY via env vars (never spliced into a
+        # shell command line).
         env:
           CONF: ${{ inputs.conference }}
           VENUE: ${{ inputs.venue }}
           MAXN: ${{ inputs.max }}
+          CONF_RE: '^[a-z0-9]([a-z0-9-]{0,38}[a-z0-9])$'
+          VENUE_RE: '^[A-Za-z]{2,20}$'
+          MAXN_RE: '^[0-9]{1,5}$'
+          RESERVED_SLUGS: "assets cvpr-2026 daily design how-it-works lineage paper-details-v1 paper-slides-v1 research search-paper-ids-v1 themes"
         run: |
           set -euo pipefail
-          # Whole-string bash matches, never `printf | grep`: grep is line-based, so a
-          # value carrying a newline would be validated one line at a time and pass on its
-          # first line alone. The explicit newline rejection guards the reserved-path case
-          # below, which is not anchored.
-          if ! [[ "$CONF" =~ ^[a-z0-9]([a-z0-9-]{0,38}[a-z0-9])$ ]]; then
-            echo "::error::conference slug must be 2-40 chars, lowercase letters/digits/hyphens"; exit 1
-          fi
           if [[ "$CONF" == *$'\n'* ]]; then
-            echo "::error::conference slug must be 2-40 chars, lowercase letters/digits/hyphens"; exit 1
+            echo "::error::conference slug must not contain a newline"
+            exit 1
           fi
-          case "$CONF" in
-            assets|cvpr-2026|daily|design|how-it-works|paper-details-v1|paper-slides-v1|research|search-paper-ids-v1|themes)
-              echo "::error::conference slug is a reserved public path"; exit 1 ;;
-          esac
-          if ! [[ "$VENUE" =~ ^[A-Za-z]{2,20}$ ]]; then
-            echo "::error::venue must be alphabetic (e.g. NEURIPS)"; exit 1
-          fi
-          if ! [[ "$MAXN" =~ ^[0-9]{1,5}$ ]]; then
-            echo "::error::max must be a number"; exit 1
-          fi
+          [[ "$CONF" =~ $CONF_RE ]] || {
+            echo "::error::conference slug must be 2-40 chars, lowercase letters/digits/hyphens"
+            exit 1
+          }
+          for reserved in $RESERVED_SLUGS; do
+            [[ "$CONF" != "$reserved" ]] || {
+              echo "::error::conference slug is a reserved public path"
+              exit 1
+            }
+          done
+          [[ "$VENUE" =~ $VENUE_RE ]] || {
+            echo "::error::venue must be alphabetic (e.g. NEURIPS)"
+            exit 1
+          }
+          [[ "$MAXN" =~ $MAXN_RE ]] || {
+            echo "::error::max must be a number"
+            exit 1
+          }
 
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Checkout develop
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: develop
           persist-credentials: false
 
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
-        with:
-          python-version: '3.12'
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
-        with:
-          version: '0.12.7'
-
-      - name: uv sync
-        run: uv sync --frozen --extra dev
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
 
       - name: Collect conference papers from arXiv
         env:
@@ -117,51 +108,49 @@ jobs:
           MAXN: ${{ inputs.max }}
         run: |
           set -euo pipefail
-          uv run --frozen python -m paperpilot.scripts.collect_conference \
-            --conference "$CONF" --venue "$VENUE" --query "$QUERY" --max "$MAXN"
+          pnpm exec tsx apps/pipeline/src/conference/arxiv/cli.ts \
+            --conference "$CONF" --venue "$VENUE" --query "$QUERY" --max "$MAXN" \
+            --output-root data/inputs
 
       - name: Build summary + pages
+        # build_pages refuses a catalog that loses content against the
+        # published one unless the operator names that conference. The
+        # dispatch input reaches the CLI only through the environment,
+        # and every slug is validated here, so it can never carry shell
+        # syntax.
         env:
           CONF: ${{ inputs.conference }}
           ALLOW_SHRINK_FOR: ${{ inputs.allow_shrink_for }}
         run: |
           set -euo pipefail
-          # build_pages refuses a catalog that loses content against the published
-          # one unless the operator names that conference. The dispatch input
-          # reaches this script only through the environment and every slug is
-          # validated here, so it can never carry shell syntax.
-          shrink_args=()
-          # read -a <<< splits on the first line only, so a two-line value would have
-          # applied the operator's first slug and silently dropped the rest.
           if [[ "${ALLOW_SHRINK_FOR:-}" == *$'\n'* ]]; then
             echo "::error::allow_shrink_for must be a single comma-separated line"
             exit 1
           fi
+          shrink_args=()
           IFS=',' read -r -a allow_shrink_slugs <<< "${ALLOW_SHRINK_FOR:-}"
           for slug in ${allow_shrink_slugs[@]+"${allow_shrink_slugs[@]}"}; do
             slug="${slug//[[:space:]]/}"
             [ -n "$slug" ] || continue
             if ! printf '%s' "$slug" | grep -Eq '^[a-z0-9][a-z0-9-]{0,62}[a-z0-9]$'; then
-              echo "::error::allow_shrink_for must be comma-separated conference slugs (2-64 lowercase letters, digits and hyphens), got: $slug"
+              echo "::error::allow_shrink_for must be comma-separated conference slugs, got: $slug"
               exit 1
             fi
             shrink_args+=(--allow-shrink-for "$slug")
           done
-          uv run --frozen python paperpilot/scripts/build_summary_csv.py --conference "$CONF"
+          pnpm exec tsx apps/pipeline/src/catalog/buildSummaryCli.ts --conference "$CONF"
           # No --conference: rebuild every conference so conferences.json
-          # aggregates all of them (a per-conference run would overwrite the
-          # index with just this one).
-          uv run --frozen python paperpilot/scripts/build_pages.py ${shrink_args[@]+"${shrink_args[@]}"}
+          # aggregates all of them.
+          pnpm exec tsx apps/pipeline/src/catalog/buildPagesCli.ts ${shrink_args[@]+"${shrink_args[@]}"}
 
-      - name: Scaffold catalog page
+      - name: Scaffold catalog copy
         env:
           CONF: ${{ inputs.conference }}
           DISPLAY: ${{ inputs.display }}
           LEDE: ${{ inputs.lede }}
         run: |
           set -euo pipefail
-          uv run --frozen python -m paperpilot.scripts.scaffold_conference_page \
-            --conference "$CONF" --display "$DISPLAY" --lede "$LEDE"
+          pnpm exec tsx apps/pipeline/src/conference/scaffold/cli.ts --conference "$CONF"
 
       - name: Freeze candidate metadata
         id: candidate
@@ -171,13 +160,27 @@ jobs:
           echo "base_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           echo "candidate_name=conference-candidate-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_OUTPUT"
 
+      - name: Package exact conference candidate
+        # H4 of the P5 tier-A review: `actions/upload-artifact` roots a
+        # multi-path artifact at the paths' least common ancestor
+        # (`data/`), which strips the `published/`/`inputs/`/`config/`
+        # prefix promote.ts's allowlist requires — package through the
+        # release CLI first (as theme-on-demand.yml / collect-weekly.yml
+        # already do) so the uploaded tree keeps its real
+        # repo-root-relative layout.
+        env:
+          CONF: ${{ inputs.conference }}
+          PAPERPILOT_PACKAGE_INCLUDE_UNCHANGED: "1"
+        run: |
+          set -euo pipefail
+          pnpm exec tsx apps/pipeline/src/release/cli.ts package "$RUNNER_TEMP/candidate" \
+            "data/published/$CONF" "data/inputs/$CONF" "data/config/conference-copy/$CONF.json"
+
       - name: Upload generated candidate
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: ${{ steps.candidate.outputs.candidate_name }}
-          path: |
-            docs/${{ inputs.conference }}
-            paperpilot/output/${{ inputs.conference }}
+          path: ${{ runner.temp }}/candidate
           if-no-files-found: error
           retention-days: 14
 
@@ -191,22 +194,17 @@ jobs:
       source_sha: ${{ steps.promote.outputs.source_sha }}
       changed: ${{ steps.promote.outputs.changed }}
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Checkout develop
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: develop
           fetch-depth: 0
 
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
-        with:
-          python-version: "3.12"
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
 
-      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
-        with:
-          version: "0.12.7"
-
-      - run: uv sync --frozen --extra dev --extra unarxive
-
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+      - name: Download generated candidate
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: ${{ needs.generate.outputs.candidate_name }}
           path: ${{ runner.temp }}/candidate
@@ -221,16 +219,16 @@ jobs:
         run: |
           set -euo pipefail
           msg=$(printf 'data(conf): add %s catalog (on-demand)' "$DISPLAY")
-          bash .github/scripts/promote-generated.sh conference \
-            "$RUNNER_TEMP/candidate" "$msg" "docs/$CONF" "paperpilot/output/$CONF"
+          pnpm exec tsx apps/pipeline/src/release/cli.ts promote conference \
+            "$RUNNER_TEMP/candidate" "$msg" \
+            "data/published/$CONF" "data/inputs/$CONF" "data/config/conference-copy/$CONF.json"
 
   release:
     needs: promote
     if: needs.promote.outputs.changed == 'true'
     permissions:
       contents: read
-      pages: write
-      id-token: write
+      deployments: write
     uses: ./.github/workflows/pages-release.yml
     with:
       source_sha: ${{ needs.promote.outputs.source_sha }}
