@@ -897,6 +897,25 @@ Revert does **not** undo: Workers Builds settings, KV values, DO storage, Cloudf
 | R21 | Uncertain Cloudflare/GitHub API shapes (deployment list, rollback endpoint, deployment id format, `wrangler kv` defaults, `queue:` key, reusable-workflow concurrency, Workers Builds monorepo install, lhci directory URLs) | Each is marked **verify**; A4 is coded against injected fetch, then exercised once in the P2 rehearsal (deployment list) before production |
 | R22 | D1 expected by the design but not implemented | No binding in P5; recorded as a P3 gap / P6 item |
 
+## 8. Tier A offline checkpoint results (2026-10-07, `0d85e50`)
+
+The §6.2 P1 checkpoint items that need no user input, run on `feat/ts-migration` at `0d85e50` (which already contains `origin/develop`; `git rev-list HEAD..origin/develop` = 0).
+
+**Suite on the branch (Node 22.23.3, local).** `biome check .`: 0 errors (22 warnings, 50 infos). `pnpm -r typecheck`: pass. `pnpm -r test`: core 1,845, api 214, web 887, pipeline 2,633 — 5,579 passed, 0 failed. CI (`ts-ci.yml` run 37492964548): `test` and `p5-rehearsal` both green.
+
+**Rehearsal (§5.3).** `dataMove/cli.ts rehearse --keep`: clone → offline install → `apply` → `verify` → web build → `pnpm -r test` (json reporters) → `no-skip-gate`: all steps passed, 4 reports clean, 1 min 50 s locally (139 s in CI).
+
+**Format-only proof (§5.2, B′ decision).** In the rehearsal clone (p5 layout, after `apply`), ran both refresh tables with `--as-of 2026-08-30T00:00:00Z` (the `as_of` already recorded in `lineage-quality-v1.json` and `identity-coverage-v1.json`): `generateThemesManifestCli`, `computeThemeQualityCli`, `buildPagesCli` (10 conferences, 28,300 rows), `identityLiteCli` (coverage 100.0 %), `searchIndexCli` (28,300 entries, 111 ID blocks), `buildLineageQualityCli`. `git status` afterwards: exactly one modified file, `data/published/themes/_quality.json`, whose only change is the run-time `generated_at` line. Every other published, state and input byte is unchanged. **Result: zero content and zero formatting differences, so no B′ commit is needed.** The `_quality.json` timestamp changes on every themes refresh by design and is not format noise. Re-run this check on the real develop tip during the pause (§6.2 Merge B step 3), because develop may receive generated data before then.
+
+**Timings (A11).** CI (`ubuntu-latest`, run 37492964548): checkout 16 s, setup-node 6 s, install 5 s (warm cache), biome 2 s, typecheck 13 s, web build 29 s, `pnpm -r test` 97 s. Local (Apple M4 Pro, 12 cores; CI is about 1.5× slower on the test step): offline install 0 s, themes refresh 2 s total, conference refresh 9 s total (`buildPagesCli` 6 s), biome 2 s, typecheck 6 s, `pnpm -r test` 63 s, three audits/checks 2 s total, web build 11 s, `validate bundle` 1 s.
+
+One promote attempt on CI is therefore about install 10 s + refresh ≤ 15 s + validate (biome + full test + audits + web build + bundle) ≈ 2.5 min, so about 3 min per attempt. Using the A11 rule (3 × attempt + git ≈ 10–11 min):
+- Promote `timeout-minutes` of 20 (`theme-on-demand`, `regen-themes`, `conference-on-demand`) and 30 (`collect-weekly`) keep about 2× headroom. **No change.**
+- Release `validate` 30 min against about 2.5 min measured. **No change.**
+- The full Vitest suite stays in the promote validate step; a scoped `--project pipeline,core` run is not needed.
+
+**Still open in tier A.** A5 needs the real `PAGES_PROJECT_NAME` (now `paperpilot-pages-TODO`) and the confirmed `PUBLIC_ORIGIN` (now `https://paperpilot.pages.dev`), from §6.2 P0-1. A12 (`p5-runbook.md`) is written once those values exist, because it must hold the real names.
+
 ### Critical files for implementation
 - /Users/taichi/work/paper/apps/pipeline/src/release/promote.ts (plus a new `promoteHooks.ts` and `cli.ts` changes)
 - /Users/taichi/work/paper/apps/pipeline/src/release/validateRelease.ts (bundle mode, marker, smoke extensions, Cloudflare id and rollback, record)
