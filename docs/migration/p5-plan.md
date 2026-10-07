@@ -922,3 +922,27 @@ One promote attempt on CI is therefore about install 10 s + refresh ≤ 15 s + v
 - /Users/taichi/work/paper/packages/core/src/site/config.ts (with a new `packages/core/src/layout/index.ts`)
 - /Users/taichi/work/paper/.github/scripts/promote-generated.sh and /Users/taichi/work/paper/.github/workflows/pages-release.yml (the behaviour to reproduce)
 - /Users/taichi/work/paper/apps/api/wrangler.jsonc (split into production and preview) and /Users/taichi/work/paper/apps/web/scripts/copy-data.ts
+
+## 9. Order change: tier C front-loaded on p5/consolidate (2026-10-07)
+
+**Decision.** The user chose "1 project = 1 folder", so tier C no longer waits for a week of observation. Branch `p5/consolidate` (on top of `feat/ts-migration` at `0d85e50`) already holds:
+- `83a7551`: commit B (`dataMove apply --confirm-delete docs/daily/papers.json`: data into `data/{published,state,inputs,config}`, layout flipped to p5, `.github/workflows-p5` moved into `.github/workflows`).
+- `24cf1c1`: the tier C deletion (Python `paperpilot/`, `pyproject.toml`, `uv.lock`, Docker, `containers/`, `tools/`, `.github/scripts/`, `worker/`, root `wrangler.jsonc`, `wrangler.legacy-rollback.jsonc`).
+- `c57fb7f` (TS suite stands alone; `legacy/gh-pages-site/` replaced by the frozen `legacy/redirect/paths.json`; `.py` CI guard in `tests.yml`), `4a33025` (`queue: max`, lighthouse pin, Pages list filter), `5e67d51`, `988579a`, `de597a9` (docs).
+
+**Old order (§1, §6.2).** Merge A (feat, inert) → Phase W (Worker to `apps/api`, with `worker/` rollback material on develop) → B generated during the pause on the develop tip → observation → tier C PR.
+
+**New order** (operator checklist: `p5-runbook.md`):
+1. P0, P1 (gates now run on `p5/consolidate`), P2 rehearsal (build straight from the branch; no `apply`).
+2. Merge A of `feat/ts-migration` is kept. Develop has no `apps/`, `package.json` or lockfile, so Phase W cannot happen before the cutover without it. Pin `NODE_VERSION=22` in Workers Builds first (auto `pnpm install --frozen-lockfile`, default Node 24).
+3. Phase W as before, but W3 must use root directory `apps/api`. The root-`/` alternative is gone because the cutover merge deletes the root `wrangler.jsonc`.
+4. Prepare: check B is still current (`git log 0d85e50..origin/develop -- docs paperpilot/data paperpilot/output`, `git diff --stat 0d85e50 origin/develop`). If develop only has the feat docs commits, merge `origin/develop` into the branch (expected conflict: `docs/design/39-typescript-cloudflare-migration.md` only). If develop has new generated data, regenerate B on the develop tip and cherry-pick `83a7551..p5/consolidate` onto it.
+5. Cutover = one merge commit `<mergeB>` that carries B **and** C. No generation during the pause unless step 4 found new data.
+6. Observation, then close the Worker rollback window. There is no separate tier C PR. What is left of §6.3: CLAUDE.md/AGENTS.md (protected), decision 8 (`.codex/`), `.pre-commit-config.yaml`.
+
+**Why the rollback steps change.**
+- Worker: after `<mergeB>`, develop has no `worker/` and no `wrangler.legacy-rollback.jsonc`. Rollback is `wrangler rollback` to an earlier `apps/api` version (post-DO-migration only), or a redeploy of the old Worker from a `feat/ts-migration` checkout with `wrangler.legacy-rollback.jsonc` (stub `QuotaCounter`). Keep `feat/ts-migration` and keep `apps/api` on legacy `migrations` (not `exports`) until the window closes.
+- R-B: `<mergeB>` is B + C, so `dataMove apply --reverse --before <mergeB>^` refuses (HEAD is not a pure forward apply), and `dataMove verify <mergeB>^1 <mergeB>` fails; verify B on its own commit (`verify 0d85e50 83a7551`). With no commits after `<mergeB>`, plain `git revert -m 1 <mergeB>` gives exactly the `<mergeB>^1` tree. With later data commits, the 4a–4c path (carry-back → `git revert --no-commit -m 1 <mergeB>` → finish-revert) still works and also restores C's deletions.
+- The Python legacy gate (R-B 4d: `uv`, `pytest`, `build_pages.py`, `validate-pages-release.sh`) is not in the post-merge tree. It only becomes usable after step 4b restores the `<mergeB>^1` files.
+
+**Checked offline (2026-10-08, scratch clone, no push).** Simulated develop = `77f7fae` + Merge A (`c88c966`), then merged `p5/consolidate` (only conflict: design doc 39). Then: one post-merge data commit with an add, a modify and a delete → `carry-back` → `--no-verify --allow-empty` commit → `git revert --no-commit -m 1` → `finish-revert` passed, and the staged tree equalled `<mergeB>^1` plus the three carried paths, with `paperpilot/`, `worker/`, `wrangler.jsonc`, `pyproject.toml` and `.github/scripts/` restored. `apply --reverse --before <mergeB>^` refused as expected. Plain `git revert -m 1 <mergeB>` with no later commits left `git diff <mergeB>^1 HEAD` empty. `dataMove verify 0d85e50 83a7551` exited 0.
