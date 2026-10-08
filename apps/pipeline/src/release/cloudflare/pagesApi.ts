@@ -66,6 +66,14 @@ export interface CfDeploymentIdOptions {
   apiToken: string;
   /** 40-hex commit SHA to match against `deployment_trigger.metadata.commit_hash`. */
   sourceSha: string;
+  /** Polling budget for an in-progress newest deployment (default `DEPLOYMENT_POLL_MAX_ATTEMPTS`). */
+  maxAttempts?: number;
+  /** Delay between polls in ms (default `DEPLOYMENT_POLL_INTERVAL_MS`). */
+  pollIntervalMs?: number;
+  /** Injected sleep so tests run instantly (default: real `setTimeout`). */
+  sleep?: (ms: number) => Promise<void>;
+  /** Max list pages walked per poll (default `DEPLOYMENT_LIST_MAX_PAGES`). */
+  maxPages?: number;
 }
 
 export interface CfDeploymentIdResult {
@@ -87,59 +95,126 @@ interface CfDeploymentListEntry {
  * The list API does not document its sort order or default page size, so
  * ask for an explicit page size and never trust list order (we sort by
  * `created_on` below). A field the API documents but a response omits is
- * not held against the entry; a present field that says "not a finished
+ * not held against the entry; a present field that says "not a
  * production deploy" is.
  */
 const DEPLOYMENT_LIST_PER_PAGE = 25;
+/** Hard cap on list pages walked per poll (25 × 10 = the newest 250 production deploys). */
+export const DEPLOYMENT_LIST_MAX_PAGES = 10;
+/** Default polling budget: 10 attempts, 6 s apart (≈ 54 s of waiting in the worst case). */
+export const DEPLOYMENT_POLL_MAX_ATTEMPTS = 10;
+export const DEPLOYMENT_POLL_INTERVAL_MS = 6_000;
 
-function isFinishedProductionDeploy(entry: CfDeploymentListEntry): boolean {
+/**
+ * `latest_stage.status` values Cloudflare documents: `idle`, `active`,
+ * `canceled`, `success`, `failure`, `skipped`. `success` is the only one
+ * we return; `failure`/`canceled` are terminal failures; `skipped` is
+ * dropped like `is_skipped`. Anything else (`idle`, `active`, or an
+ * undocumented value such as `queued`) is treated as still in progress.
+ * An ABSENT status is treated as success (unchanged from before: a field
+ * a response omits is not held against the entry).
+ */
+const TERMINAL_FAILURE_STATUSES: ReadonlySet<string> = new Set(["failure", "canceled"]);
+
+function isProductionCandidate(entry: CfDeploymentListEntry, sourceSha: string): boolean {
+  if (entry.deployment_trigger?.metadata?.commit_hash !== sourceSha) return false;
   if (entry.environment !== undefined && entry.environment !== "production") return false;
   if (entry.is_skipped === true) return false;
-  const status = entry.latest_stage?.status;
-  if (status !== undefined && status !== "success") return false;
+  if (entry.latest_stage?.status === "skipped") return false;
   return true;
 }
 
 interface CfDeploymentListBody extends CfErrorBody {
   result?: CfDeploymentListEntry[];
+  result_info?: { total_pages?: number };
 }
 
-/** `cf-deployment-id`: finds the newest production deployment for `sourceSha`. */
+function realSleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Walks the production deployment list (page 1, 2, … up to
+ * `result_info.total_pages`, never more than `DEPLOYMENT_LIST_MAX_PAGES`)
+ * and stops at the first page that contains any candidate for
+ * `sourceSha`. Returns every candidate seen.
+ */
+async function fetchCandidates(options: CfDeploymentIdOptions): Promise<CfDeploymentListEntry[]> {
+  const base = `https://api.cloudflare.com/client/v4/accounts/${encodeURIComponent(
+    options.accountId,
+  )}/pages/projects/${encodeURIComponent(options.project)}/deployments?env=production&per_page=${DEPLOYMENT_LIST_PER_PAGE}`;
+  const maxPages = options.maxPages ?? DEPLOYMENT_LIST_MAX_PAGES;
+  const candidates: CfDeploymentListEntry[] = [];
+  for (let page = 1; page <= maxPages; page++) {
+    const url = page === 1 ? base : `${base}&page=${page}`;
+    const response = await options.fetchImpl(url, {
+      method: "GET",
+      headers: { Authorization: `Bearer ${options.apiToken}` },
+    });
+    const body = (await response.json()) as CfDeploymentListBody;
+    if (response.status < 200 || response.status >= 300 || body.success !== true) {
+      throw new CloudflareApiError(
+        `Cloudflare Pages deployment list failed: ${describeCfError(response.status, body)}`,
+      );
+    }
+    for (const entry of body.result ?? []) {
+      if (isProductionCandidate(entry, options.sourceSha)) candidates.push(entry);
+    }
+    if (candidates.length > 0) break;
+    const totalPages = body.result_info?.total_pages;
+    if (typeof totalPages !== "number" || !Number.isFinite(totalPages) || page >= totalPages) break;
+  }
+  return candidates;
+}
+
+/**
+ * `cf-deployment-id`: finds the newest production deployment for
+ * `sourceSha` and waits (bounded) for it to finish.
+ *
+ * `wrangler pages deploy` can return before the deploy stage finishes,
+ * so the newest entry for the SHA may still be `idle`/`active`. The
+ * decision is always made on the NEWEST entry for the SHA (by
+ * `created_on`) — never "any successful entry" — so an older successful
+ * deploy of the same SHA is not returned while a newer one is in
+ * progress or has failed. Not finding the SHA at all fails immediately.
+ */
 export async function getProductionDeploymentId(
   options: CfDeploymentIdOptions,
 ): Promise<CfDeploymentIdResult> {
-  const url = `https://api.cloudflare.com/client/v4/accounts/${encodeURIComponent(
-    options.accountId,
-  )}/pages/projects/${encodeURIComponent(options.project)}/deployments?env=production&per_page=${DEPLOYMENT_LIST_PER_PAGE}`;
-  const response = await options.fetchImpl(url, {
-    method: "GET",
-    headers: { Authorization: `Bearer ${options.apiToken}` },
-  });
-  const body = (await response.json()) as CfDeploymentListBody;
-  if (response.status < 200 || response.status >= 300 || body.success !== true) {
-    throw new CloudflareApiError(
-      `Cloudflare Pages deployment list failed: ${describeCfError(response.status, body)}`,
-    );
+  const maxAttempts = Math.max(1, options.maxAttempts ?? DEPLOYMENT_POLL_MAX_ATTEMPTS);
+  const intervalMs = options.pollIntervalMs ?? DEPLOYMENT_POLL_INTERVAL_MS;
+  const sleep = options.sleep ?? realSleep;
+  let lastStatus = "";
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    const candidates = await fetchCandidates(options);
+    if (candidates.length === 0) {
+      throw new CloudflareApiError(
+        `no production Cloudflare Pages deployment found for commit ${options.sourceSha}`,
+      );
+    }
+    candidates.sort((a, b) => Date.parse(b.created_on ?? "") - Date.parse(a.created_on ?? ""));
+    const newest = candidates[0] as CfDeploymentListEntry;
+    const status = newest.latest_stage?.status;
+    if (status !== undefined && TERMINAL_FAILURE_STATUSES.has(status)) {
+      throw new CloudflareApiError(
+        `newest production Cloudflare Pages deployment for commit ${options.sourceSha} ended with status ${JSON.stringify(status)}`,
+      );
+    }
+    if (status === undefined || status === "success") {
+      if (typeof newest.id !== "string" || !DEPLOYMENT_ID_RE.test(newest.id)) {
+        throw new CloudflareApiError("Cloudflare deployment id has an unexpected format");
+      }
+      if (typeof newest.url !== "string" || !PAGES_URL_RE.test(newest.url)) {
+        throw new CloudflareApiError("Cloudflare deployment url has an unexpected format");
+      }
+      return { deploymentId: newest.id, deploymentUrl: newest.url };
+    }
+    lastStatus = status;
+    if (attempt < maxAttempts) await sleep(intervalMs);
   }
-  const matches = (body.result ?? []).filter(
-    (entry) =>
-      entry.deployment_trigger?.metadata?.commit_hash === options.sourceSha &&
-      isFinishedProductionDeploy(entry),
+  throw new CloudflareApiError(
+    `newest production Cloudflare Pages deployment for commit ${options.sourceSha} still has status ${JSON.stringify(lastStatus)} after ${maxAttempts} attempts`,
   );
-  if (matches.length === 0) {
-    throw new CloudflareApiError(
-      `no production Cloudflare Pages deployment found for commit ${options.sourceSha}`,
-    );
-  }
-  matches.sort((a, b) => Date.parse(b.created_on ?? "") - Date.parse(a.created_on ?? ""));
-  const newest = matches[0] as CfDeploymentListEntry;
-  if (typeof newest.id !== "string" || !DEPLOYMENT_ID_RE.test(newest.id)) {
-    throw new CloudflareApiError("Cloudflare deployment id has an unexpected format");
-  }
-  if (typeof newest.url !== "string" || !PAGES_URL_RE.test(newest.url)) {
-    throw new CloudflareApiError("Cloudflare deployment url has an unexpected format");
-  }
-  return { deploymentId: newest.id, deploymentUrl: newest.url };
 }
 
 const COMMIT_HASH_RE = /^[0-9a-f]{40}$/;

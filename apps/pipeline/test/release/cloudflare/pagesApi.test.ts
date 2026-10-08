@@ -77,7 +77,7 @@ it("getProductionDeploymentId asks for an explicit page size", async () => {
   expect(seenUrl).toContain("/deployments?env=production&per_page=25");
 });
 
-it("getProductionDeploymentId skips a newer deploy for the same commit that is skipped, failed or not production", async () => {
+it("getProductionDeploymentId skips a newer deploy for the same commit that is skipped or not production", async () => {
   const base = { deployment_trigger: { metadata: { commit_hash: SHA } } };
   const fetchImpl = listFetch([
     {
@@ -100,11 +100,11 @@ it("getProductionDeploymentId skips a newer deploy for the same commit that is s
     },
     {
       ...base,
-      id: "dep-failed",
-      url: "https://f.pages.dev",
+      id: "dep-stage-skipped",
+      url: "https://ss.pages.dev",
       created_on: "2026-06-02T00:00:00Z",
       environment: "production",
-      latest_stage: { status: "failure" },
+      latest_stage: { status: "skipped" },
     },
     {
       ...base,
@@ -430,4 +430,202 @@ it("the Authorization header carries the token, but it never reaches the URL or 
   ).rejects.toThrow(/no production Cloudflare Pages deployment found/);
   expect(seenAuth).toBe(`Bearer ${SECRET_TOKEN}`);
   expect(seenUrl).not.toContain(SECRET_TOKEN);
+});
+
+// Review fix (MEDIUM): `wrangler pages deploy` can return before the
+// deploy stage finishes. The newest entry for the SHA is polled
+// (bounded, injected sleep) instead of being filtered out.
+function entry(id: string, createdOn: string, status?: string, sha = SHA) {
+  return {
+    id,
+    url: `https://${id}.pages.dev`,
+    created_on: createdOn,
+    environment: "production",
+    ...(status === undefined ? {} : { latest_stage: { status } }),
+    deployment_trigger: { metadata: { commit_hash: sha } },
+  };
+}
+
+/** Serves one list response per call (the last one repeats), counting calls. */
+function sequenceFetch(pages: unknown[][]): CfFetchFn & { calls: string[] } {
+  const calls: string[] = [];
+  const fn: CfFetchFn = async (url) => {
+    calls.push(url);
+    const result = pages[Math.min(calls.length - 1, pages.length - 1)];
+    return { status: 200, json: async () => ({ success: true, result }) };
+  };
+  return Object.assign(fn, { calls });
+}
+
+function baseOptions(fetchImpl: CfFetchFn, sleeps: number[] = []) {
+  return {
+    fetchImpl,
+    accountId: "acct",
+    project: "proj",
+    apiToken: SECRET_TOKEN,
+    sourceSha: SHA,
+    sleep: async (ms: number) => {
+      sleeps.push(ms);
+    },
+  };
+}
+
+it("getProductionDeploymentId polls an in-progress newest deployment until it succeeds", async () => {
+  const fetchImpl = sequenceFetch([
+    [entry("dep-new", "2026-06-01T00:00:00Z", "idle")],
+    [entry("dep-new", "2026-06-01T00:00:00Z", "active")],
+    [entry("dep-new", "2026-06-01T00:00:00Z", "success")],
+  ]);
+  const sleeps: number[] = [];
+  const result = await getProductionDeploymentId({
+    ...baseOptions(fetchImpl, sleeps),
+    pollIntervalMs: 6000,
+  });
+  expect(result).toEqual({ deploymentId: "dep-new", deploymentUrl: "https://dep-new.pages.dev" });
+  expect(fetchImpl.calls).toHaveLength(3);
+  expect(sleeps).toEqual([6000, 6000]);
+});
+
+it("getProductionDeploymentId does not return an older success while a newer deploy of the same SHA is in progress", async () => {
+  const older = entry("dep-old", "2026-01-01T00:00:00Z", "success");
+  const fetchImpl = sequenceFetch([
+    [older, entry("dep-new", "2026-06-01T00:00:00Z", "active")],
+    [older, entry("dep-new", "2026-06-01T00:00:00Z", "success")],
+  ]);
+  const result = await getProductionDeploymentId(baseOptions(fetchImpl));
+  expect(result.deploymentId).toBe("dep-new");
+  expect(fetchImpl.calls).toHaveLength(2);
+});
+
+it("getProductionDeploymentId throws when the newest deployment for the SHA failed, even if an older one succeeded", async () => {
+  for (const status of ["failure", "canceled"]) {
+    const fetchImpl = sequenceFetch([
+      [
+        entry("dep-old", "2026-01-01T00:00:00Z", "success"),
+        entry("dep-new", "2026-06-01T00:00:00Z", status),
+      ],
+    ]);
+    const sleeps: number[] = [];
+    await expect(getProductionDeploymentId(baseOptions(fetchImpl, sleeps))).rejects.toThrow(
+      new RegExp(`ended with status "${status}"`),
+    );
+    expect(sleeps).toEqual([]);
+  }
+});
+
+it("getProductionDeploymentId throws a CloudflareApiError when the polling budget runs out", async () => {
+  const fetchImpl = sequenceFetch([[entry("dep-new", "2026-06-01T00:00:00Z", "active")]]);
+  const sleeps: number[] = [];
+  let caught: unknown;
+  try {
+    await getProductionDeploymentId({ ...baseOptions(fetchImpl, sleeps), maxAttempts: 4 });
+  } catch (e) {
+    caught = e;
+  }
+  expect(caught).toBeInstanceOf(CloudflareApiError);
+  expect((caught as Error).message).toMatch(/still has status "active" after 4 attempts/);
+  expect((caught as Error).message).not.toContain(SECRET_TOKEN);
+  expect(fetchImpl.calls).toHaveLength(4);
+  expect(sleeps).toHaveLength(3);
+});
+
+it("getProductionDeploymentId defaults to 10 polls 6 s apart", async () => {
+  const fetchImpl = sequenceFetch([[entry("dep-new", "2026-06-01T00:00:00Z", "idle")]]);
+  const sleeps: number[] = [];
+  await expect(getProductionDeploymentId(baseOptions(fetchImpl, sleeps))).rejects.toThrow(
+    /after 10 attempts/,
+  );
+  expect(fetchImpl.calls).toHaveLength(10);
+  expect(sleeps).toEqual(Array(9).fill(6000));
+});
+
+// Review fix (LOW): list order is undocumented, so follow
+// result_info.total_pages (bounded) until the SHA shows up.
+function pagedFetch(totalPages: number, shaOnPage: number | null): CfFetchFn & { calls: string[] } {
+  const calls: string[] = [];
+  const fn: CfFetchFn = async (url) => {
+    calls.push(url);
+    const page = Number(new URL(url).searchParams.get("page") ?? "1");
+    const result =
+      page === shaOnPage
+        ? [entry("dep-found", "2026-06-01T00:00:00Z", "success")]
+        : [entry(`dep-other-${page}`, "2026-06-01T00:00:00Z", "success", "b".repeat(40))];
+    return {
+      status: 200,
+      json: async () => ({ success: true, result, result_info: { total_pages: totalPages } }),
+    };
+  };
+  return Object.assign(fn, { calls });
+}
+
+it("getProductionDeploymentId follows pagination to find the SHA on page 2", async () => {
+  const fetchImpl = pagedFetch(5, 2);
+  const result = await getProductionDeploymentId(baseOptions(fetchImpl));
+  expect(result.deploymentId).toBe("dep-found");
+  expect(fetchImpl.calls).toHaveLength(2);
+  expect(fetchImpl.calls[0]).toContain("/deployments?env=production&per_page=25");
+  expect(fetchImpl.calls[0]).not.toContain("&page=");
+  expect(fetchImpl.calls[1]).toContain("/deployments?env=production&per_page=25&page=2");
+});
+
+it("getProductionDeploymentId stops at total_pages", async () => {
+  const fetchImpl = pagedFetch(3, null);
+  await expect(getProductionDeploymentId(baseOptions(fetchImpl))).rejects.toThrow(
+    /no production Cloudflare Pages deployment found/,
+  );
+  expect(fetchImpl.calls).toHaveLength(3);
+});
+
+it("getProductionDeploymentId never walks more than 10 pages", async () => {
+  const fetchImpl = pagedFetch(1000, 11);
+  await expect(getProductionDeploymentId(baseOptions(fetchImpl))).rejects.toThrow(
+    /no production Cloudflare Pages deployment found/,
+  );
+  expect(fetchImpl.calls).toHaveLength(10);
+});
+
+it("getProductionDeploymentId fails on a page-2 API error without leaking the token", async () => {
+  let n = 0;
+  const fetchImpl: CfFetchFn = async () => {
+    n++;
+    if (n === 1) {
+      return {
+        status: 200,
+        json: async () => ({ success: true, result: [], result_info: { total_pages: 2 } }),
+      };
+    }
+    return {
+      status: 429,
+      json: async () => ({ success: false, errors: [{ message: "rate limited" }] }),
+    };
+  };
+  let caught: unknown;
+  try {
+    await getProductionDeploymentId(baseOptions(fetchImpl));
+  } catch (e) {
+    caught = e;
+  }
+  expect(caught).toBeInstanceOf(CloudflareApiError);
+  expect((caught as Error).message).toContain("rate limited");
+  expect((caught as Error).message).not.toContain(SECRET_TOKEN);
+});
+
+it("no getProductionDeploymentId error path ever contains the token", async () => {
+  const cases: CfFetchFn[] = [
+    sequenceFetch([[entry("dep-new", "2026-06-01T00:00:00Z", "failure")]]),
+    sequenceFetch([[entry("dep-new", "2026-06-01T00:00:00Z", "active")]]),
+    sequenceFetch([[]]),
+    sequenceFetch([[{ ...entry("dep-new", "2026-06-01T00:00:00Z"), id: "bad id" }]]),
+  ];
+  for (const fetchImpl of cases) {
+    let caught: unknown;
+    try {
+      await getProductionDeploymentId({ ...baseOptions(fetchImpl), maxAttempts: 2 });
+    } catch (e) {
+      caught = e;
+    }
+    expect(caught).toBeInstanceOf(CloudflareApiError);
+    expect(String((caught as Error).message)).not.toContain(SECRET_TOKEN);
+    expect(String((caught as Error).stack)).not.toContain(SECRET_TOKEN);
+  }
 });
