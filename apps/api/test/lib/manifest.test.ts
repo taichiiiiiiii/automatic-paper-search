@@ -1,8 +1,9 @@
 // Ported from worker/themes-post.test.mjs's H-1 manifest-failure tests
 // (API-09/10), isolated to the extracted manifest module.
 
+import { relLayout } from "@paperpilot/core/layout";
 import { describe, expect, it } from "vitest";
-import { alreadyGenerated } from "../../src/lib/manifest.js";
+import { alreadyGenerated, themesManifestPath } from "../../src/lib/manifest.js";
 
 const ENV = { GH_OWNER: "taichiiiiiiii", GH_REPO: "automatic-paper-search", GH_REF: "develop" };
 
@@ -68,5 +69,20 @@ describe("alreadyGenerated", () => {
       () => new Response(null, { status: 302, headers: { location: "https://attacker.test/" } }),
     );
     expect((await alreadyGenerated("x", ENV, fetchImpl)).ok).toBe(false);
+  });
+
+  it("fetches the manifest from the layout's published root on GH_REF", async () => {
+    const fetchImpl = makeFetch(() => new Response("[]", { status: 200 }));
+    await alreadyGenerated("x", ENV, fetchImpl);
+    expect(fetchImpl.calls[0]?.url).toBe(
+      `https://raw.githubusercontent.com/${ENV.GH_OWNER}/${ENV.GH_REPO}/${ENV.GH_REF}/${relLayout().published}/themes/themes-manifest.json`,
+    );
+  });
+});
+
+describe("themesManifestPath", () => {
+  it("is docs/... before the P5 data move and data/published/... after it", () => {
+    expect(themesManifestPath("legacy")).toBe("docs/themes/themes-manifest.json");
+    expect(themesManifestPath("p5")).toBe("data/published/themes/themes-manifest.json");
   });
 });
