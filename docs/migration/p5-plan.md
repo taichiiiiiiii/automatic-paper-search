@@ -1,6 +1,6 @@
 # P5 実装計画（切替）
 
-> 2026-10-05 作成（opus の計画エージェント）。設計書 [39](../design/39-typescript-cloudflare-migration.md) §7.4・§8 P5 の詳細版。本文は英語のまま保存。**(verify)** は Cloudflare / GitHub の仕様を未確認の箇所。
+> 2026-10-05 作成（opus の計画エージェント）。設計書 [39](../design/39-typescript-cloudflare-migration.md) §7.4・§8 P5 の詳細版。本文は英語のまま保存。**(verify)** は Cloudflare / GitHub の仕様を未確認の箇所。2026-10-07/08 に公式ドキュメントで確認した結果は §10 にまとめ、§2〜§7 の該当箇所も直した（§6.2 は [`p5-runbook.md`](p5-runbook.md) に置き換え済みなので本文は直していない）。
 
 ## 0. What I found that changes the plan
 
@@ -118,8 +118,8 @@ All tier A changesets can be done on the branch now with no deploy. A5 and A6 ad
   - `--expect-404 /__pp_smoke_missing__/`: requires HTTP 404.
   - `--expect-redirect /iclr-2026/lineage.html=/iclr-2026/lineage/`: 301 with `redirect:"manual"`.
   - `_headers` check: response CSP header equals exactly `frame-ancestors 'self'`.
-- `cf-deployment-id`: env `CF_API_TOKEN`, `CF_ACCOUNT_ID`, `CF_PROJECT`, `SOURCE_SHA`. Lists the project's production deployments **(verify endpoint/shape: `GET /accounts/{id}/pages/projects/{project}/deployments?env=production`)** and picks the newest with `deployment_trigger.metadata.commit_hash == SHA`. Prints the id and the per-deployment URL. Never prints the token.
-- `cf-rollback`: **(verify endpoint: `POST …/deployments/{id}/rollback`)**. Returns the new deployment id.
+- `cf-deployment-id`: env `CF_API_TOKEN`, `CF_ACCOUNT_ID`, `CF_PROJECT`, `SOURCE_SHA`. Lists the project's production deployments with `GET /accounts/{id}/pages/projects/{project}/deployments?env=production&per_page=25` (confirmed 2026-10-07; documented params are `env`, `page`, `per_page`; the commit sits at `deployment_trigger.metadata.commit_hash`). Sort order and the default `per_page` are undocumented, so the code (`4a33025`) passes `per_page=25`, keeps only entries with `environment == "production"`, `latest_stage.status == "success"` and `is_skipped != true`, and picks the newest of those with `commit_hash == SHA` by sorting on `created_on` itself, never by list order (`cloudflare/pagesApi.ts`). Prints the id and the per-deployment URL. Never prints the token.
+- `cf-rollback`: `POST /accounts/{id}/pages/projects/{project}/deployments/{deployment_id}/rollback` (confirmed: exists, needs Pages Write, no request body, returns a Deployment object). Prints `result.id`. **Whether that is a new deployment id or the target's id is undocumented**: record which it is the first time a production rollback runs (the P2 preview cannot exercise it — the endpoint only targets production deployments; runbook P2 step 5 and observation step 11).
 - `gh-record`: env-driven `gh api`-equivalent fetch to create a Deployment and its success status (see §4.3, record stage).
 - `no-skip-gate <vitest-json…>`: fails if any test is skipped, todo, or pending.
 - Tests: an injected fetch for every network path; marker bytes compared to a fixture generated from the old Python one-liner; no real network.
@@ -144,6 +144,7 @@ All tier A changesets can be done on the branch now with no deploy. A5 and A6 ad
   - `worker/rollback-entry.ts` re-exports `worker/index.ts`'s default and adds a stub `export class QuotaCounter` that answers 503.
   - `wrangler.legacy-rollback.jsonc` keeps the old config, adds the `QUOTA` binding and the same migration `v1`, so it can go back onto a Worker that already has the DO class.
   - Inert, because Workers Builds only reads the configured file.
+  - **Status (2026-10-08):** both files exist only on `feat/ts-migration` (C deletes them on `p5/consolidate`), so they serve the Phase W rollback window before the cutover only. Decision: no old-Worker fallback after `<mergeB>` (§9, runbook "↩ Worker").
 - Tests:
   - Parse both wrangler files (JSONC). Production has `DISPATCH_MODE=live`, `GH_REF=develop`, the production KV id and no `d1_databases`.
   - Preview has a different name, no production KV id, and `DISPATCH_MODE=dry-run`.
@@ -244,9 +245,9 @@ Common to every workflow:
 | `tests.yml` (**keep the file name and job id `test`**, which branch protection may require; the user confirms) | PR, push to `develop`/`main`, dispatch | `contents: read`; group `tests-${{ github.ref }}`, cancel-in-progress | setup-pnpm → `biome check .` → `pnpm -r typecheck` → `pnpm -r test` (skip → `::warning`, as today) → web build → `validate bundle apps/web/out`. Absorbs `ts-ci.yml` (deleted in B). In C, add `git ls-files '*.py'` must be 0 (excluding `.codex/` if kept) |
 | `data-audit.yml` | push `develop`/`main` and PR, paths `data/published/themes/*/lineage.json`, `data/published/themes/themes-manifest.json`, `data/published/*/lineage.json`, `apps/pipeline/src/lineage/**`, the workflow itself; dispatch | `contents: read` (drops the unused `pull-requests: write`) | Two `continue-on-error` audit steps (`auditThemeSeedsCli`, `auditLineageQualityCli`) piped through `tee`, the same `GITHUB_STEP_SUMMARY` block, a final fail step |
 | `pages.yml` | push `develop`, paths `data/published/**`, `apps/web/**`, `packages/core/**`, `schemas/**`, `pnpm-lock.yaml`, `package.json`, `apps/pipeline/src/release/**`, `.github/workflows/pages*.yml`, `.github/actions/**` | job: `contents: read`, `deployments: write` | `uses: ./.github/workflows/pages-release.yml` with `source_sha: github.sha`, `release_kind: normal`, `request_id: push-<run_id>-<attempt>` |
-| `pages-release.yml` (reusable) | `workflow_call` with `source_sha`, `release_kind` (`normal` only), `request_id` | group `paperpilot-pages-production`, `cancel-in-progress: false` (re-check whether the existing `queue: max` key is real before carrying it over **(verify)**) | 6 stages + record, see §4.3 |
-| `pages-rollback.yml` | dispatch `target_sha`, `confirm` (`ROLLBACK`) | same group; `validate_target`: `contents: read`, `deployments: read`; `rollback`: environment `cloudflare-pages-deploy`; `record`: `deployments: write` | §4.4 |
-| `lighthouse.yml` | PR paths `apps/web/**`, `packages/core/**`, `.lighthouserc.json`, the workflow; schedule `0 2 * * 1`; dispatch | `contents: read`, `pull-requests: write` | setup-pnpm → web build → treosh action (pinned SHA). `.lighthouserc.json`: `staticDistDir: ./apps/web/out`; URLs `/`, `/iclr-2026/`, `/iclr-2026/lineage/`, `/themes/` (**verify** that the lhci static server resolves directory index) |
+| `pages-release.yml` (reusable) | `workflow_call` with `source_sha`, `release_kind` (`normal` only), `request_id` | group `paperpilot-pages-production`, `cancel-in-progress: false`, `queue: max` (confirmed valid: FIFO queue of up to 100 pending runs instead of only the newest; invalid together with `cancel-in-progress: true`. Set in `4a33025`) | 6 stages + record, see §4.3 |
+| `pages-rollback.yml` | dispatch `target_sha`, `confirm` (`ROLLBACK`) | same group and `queue: max` (`4a33025`); `validate_target`: `contents: read`, `deployments: read`; `rollback`: environment `cloudflare-pages-deploy`; `record`: `deployments: write` | §4.4 |
+| `lighthouse.yml` | PR paths `apps/web/**`, `packages/core/**`, `.lighthouserc.json`, the workflow; schedule `0 2 * * 1`; dispatch | `contents: read`, `pull-requests: write` | setup-pnpm → web build → `treosh/lighthouse-ci-action@3e7e23fb74242897f95c0ba9cabad3d0227b9b18` (v12, pinned in `4a33025`). `.lighthouserc.json`: `staticDistDir: ./apps/web/out`; URLs `/`, `/iclr-2026/`, `/iclr-2026/lineage/`, `/themes/` (confirmed: the lhci static server resolves directory URLs to `index.html`) |
 | `collect-weekly.yml` | dispatch `allow_shrink_for` | generate: `contents: read`; promote: `contents: write`; release job: `contents: read`, `deployments: write`. Secrets as today (`S2_API_KEY`, `OPENALEX_EMAIL`, `GEMINI_API_KEY`, `CLAUDE_API_KEY`, `GROQ_API_KEY`, `github.token`) | See below |
 | `collect-daily-watch.yml` | dispatch | group `collect-daily-watch` (unchanged); `contents: write`; `SLACK_WEBHOOK_URL`, `GH_PAT` / `github.token`, `OPENALEX_EMAIL` | Pinned checkout → setup-pnpm → `collect/cli.ts --config data/config/config.daily-watch.yaml --fail-on-errors` → `if: !cancelled()` `release/cli.ts commit-push "$MSG" data/inputs/daily data/state/seen_ids.daily.json data/state/run_history.daily.jsonl` → failure Slack curl with URL and run link via env |
 | `regen-themes.yml` | dispatch `themes` | as weekly; `PAPERPILOT_GROQ_API_KEY`, `PAPERPILOT_S2_API_KEY` | Newline guard; jq over `data/published/themes/*/lineage.json` `.meta.theme`; regex per entry; `lineage/theme/cli.ts … --llm-strict ambiguous --primary-source openalex`; refresh (`generateThemesManifestCli`, `computeThemeQualityCli`); upload `data/published/themes` and `data/state/lineage-cache/classifications.json`; promote `themes` with those two allowed paths; release. The unarXive download step is removed (decision: no DuckDB) |
@@ -267,7 +268,8 @@ Common to every workflow:
 ### 4.2 GitHub environments (user)
 - `cloudflare-pages-deploy`: deployment branch policy = `develop` only. Secrets `CLOUDFLARE_API_TOKEN` (Pages: Edit) and `CLOUDFLARE_ACCOUNT_ID`. Used only by the `deploy` and `rollback` jobs.
 - `cloudflare-pages-production`: no secrets, no job uses it. It is the **known-good ledger**, written only by `record` through the REST API.
-- **Why two names:** a job with `environment:` auto-creates a GitHub Deployment and marks it success when the job ends, which is before smoke. That reproduces the weakness §4.3 says to remove.
+- **Why two names:** a job with `environment:` auto-creates a GitHub Deployment and marks it success when the job ends, which is before smoke (confirmed). That reproduces the weakness §4.3 says to remove.
+  - Optional: `environment: { name: cloudflare-pages-deploy, deployment: false }` keeps the environment's secrets and branch policy but suppresses that automatic Deployment, so the `cloudflare-pages-deploy` history stays empty. Not required for correctness, because the known-good ledger is the separate `cloudflare-pages-production` name.
 - `github-pages`: kept, used only by `legacy-redirects.yml`.
 
 ### 4.3 `pages-release.yml`: the six stages plus record
@@ -277,10 +279,10 @@ Common to every workflow:
 | **validate** (`contents: read`, about 20–30 min per A11) | Env checks: SHA `^[0-9a-f]{40}$`, `release_kind == normal`, request_id regex → checkout exact SHA (`persist-credentials: false`), `rev-parse HEAD` == SHA → setup-pnpm → `biome check .` → `pnpm -r typecheck` → `pnpm -r test` with json reporters → `release/cli.ts no-skip-gate` (fails on any skip, as today) → `auditThemeSeedsCli`, `auditLineageQualityCli`, `searchIndexCli --check` |
 | **build** (`contents: read`) | Checkout exact SHA → setup-pnpm → `pnpm --filter @paperpilot/web build` (prebuild copies `data/published` → `public/`; postbuild strip-nojs, csp-hash, redirects, sitemap) → `release/cli.ts marker apps/web/out` → `validate local $SHA apps/web/out` (p5 required list incl. marker) → `sha256sum` manifest of `out/` → `upload-artifact` `cf-pages-$SHA` (exact bytes, retention 14). Outputs `artifact_name` |
 | **admit** (`contents: read`, `fetch-depth: 0`) | rollback never comes here. `merge-base --is-ancestor $SHA origin/develop` → `git diff --quiet $SHA $tip -- data/published apps/web packages/core schemas pnpm-lock.yaml package.json` → `deployable=true/false`. **This set must be ⊆ `pages.yml` paths** (contract test), or a skipped stale release is never superseded |
-| **deploy** (environment `cloudflare-pages-deploy`, `if: deployable && github.ref == 'refs/heads/develop'`, `contents: read`) | Download artifact → assert marker `source_sha == SHA` → `npx --yes wrangler@<exact pinned 4.x> pages deploy <dir> --project-name="$CF_PAGES_PROJECT" --branch="$CF_PAGES_PRODUCTION_BRANCH" --commit-hash="$SHA" --commit-dirty=false` (token and account via env `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID`) → `release/cli.ts cf-deployment-id` gives `cf_deployment_id` and `deployment_url` (filtered on commit_hash, never scraped from wrangler stdout) |
+| **deploy** (environment `cloudflare-pages-deploy`, `if: deployable && github.ref == 'refs/heads/develop'`, `contents: read`) | Download artifact → assert marker `source_sha == SHA` → `pnpm --filter @paperpilot/api exec wrangler pages deploy <dir> --project-name="$CF_PAGES_PROJECT" --branch="$CF_PAGES_PRODUCTION_BRANCH" --commit-hash="$SHA" --commit-dirty=false` (the flags are confirmed; the code uses the lockfile-pinned `apps/api` devDependency wrangler, not `npx --yes wrangler@<pinned>`) (token and account via env `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID`) → `release/cli.ts cf-deployment-id` gives `cf_deployment_id` and `deployment_url` (filtered on commit_hash, never scraped from wrangler stdout) |
 | **smoke** (`contents: read`, no secrets) | Download artifact → `release/cli.ts validate smoke "$PUBLIC_ORIGIN" "$SHA" --wait-marker 300 --expect-bytes <dir> --expect-404 … --expect-redirect …`. Optionally also smoke `deployment_url` first, which cannot be affected by alias lag |
-| **record** (`deployments: write`, `needs: [deploy, smoke]`) | Through `gh api` with env only: `POST /repos/$REPO/deployments` with `ref=$SHA`, `environment=cloudflare-pages-production`, `auto_merge=false`, `required_contexts=[]`, `production_environment=true`, `payload={source_sha, cf_deployment_id, release_kind, request_id, artifact_name}`; then `POST …/statuses` with `state=success`, `environment_url=$PUBLIC_ORIGIN`. The cf id is regex-checked (**verify the id format**, likely a UUID) |
-| concurrency | Workflow-level group `paperpilot-pages-production` (verify that it is honoured in a called workflow; today's file relies on that too) |
+| **record** (`deployments: write`, `needs: [deploy, smoke]`) | Through `gh api` with env only: `POST /repos/$REPO/deployments` with `ref=$SHA`, `environment=cloudflare-pages-production`, `auto_merge=false`, `required_contexts=[]`, `production_environment=true`, `payload={source_sha, cf_deployment_id, release_kind, request_id, artifact_name}`; then `POST …/statuses` with `state=success`, `environment_url=$PUBLIC_ORIGIN`. The cf id is regex-checked (`^[A-Za-z0-9-]{1,64}$`; the format is confirmed to be a UUID, which this accepts) |
+| concurrency | Workflow-level group `paperpilot-pages-production` with `queue: max`. Workflow-level `concurrency` in a called workflow is honoured (secondary sources; not stated in the official docs). Never give a caller workflow the same group name: caller and callee would then wait on each other |
 
 If smoke fails, a bad deploy stays live with no record, exactly as today. The runbook says the operator immediately runs `pages-rollback` to the last recorded known-good SHA. Automatic rollback is not added.
 
@@ -288,9 +290,9 @@ Callers (`pages.yml` and the four generation workflows) grant `contents: read` a
 
 ### 4.4 `pages-rollback.yml`
 1. **validate_target:** `confirm == ROLLBACK`; SHA regex; `cat-file -e`; ancestor of `origin/develop`; `gh api deployments?environment=cloudflare-pages-production&ref=$SHA` → newest whose latest status is `success` → payload `source_sha == SHA` and `cf_deployment_id` regex → output. Only SHAs released to Cloudflare after P5 can be rolled back; old `github-pages` records are rejected.
-2. **rollback** (environment `cloudflare-pages-deploy`, develop-only `if`): `release/cli.ts cf-rollback` (verify endpoint).
+2. **rollback** (environment `cloudflare-pages-deploy`, develop-only `if`): `release/cli.ts cf-rollback` (endpoint confirmed, §2 A4; record whether `result.id` is new or the target id on first use).
 3. **smoke:** marker == target SHA plus 404, redirect and header checks. No byte compare, because no artifact exists.
-4. **record:** new deployment with `release_kind: rollback` and the new cf id.
+4. **record:** new deployment with `release_kind: rollback` and the cf id returned by step 2 (new or target id, see A4).
 
 No rebuild anywhere, per §4.3. Data and branches are not rolled back.
 
@@ -418,7 +420,7 @@ The commit is generated by `apply` **during the pause**, on the exact develop ti
 ## 6. Worker cutover (Q4) and the detailed §7.4 runbook (Q6)
 
 ### 6.1 KV values (production namespace `3e11d3e73dae42a8b94f06a9fa9de19f`)
-Write with `wrangler kv key put --namespace-id=3e11… <key> <value> --remote`. **Verify:** wrangler 4 may default `kv` commands to local storage, so pass `--remote`. Never add preview or `<hash>.<project>.pages.dev` origins.
+Write with `wrangler kv key put --namespace-id=3e11… <key> <value> --remote`. Confirmed: wrangler 4 `kv` commands default to local storage, so `--remote` is required on every put and get. Never add preview or `<hash>.<project>.pages.dev` origins.
 
 | Key | Phase W | Cutover step 1 | Cutover step 4 | After step 8 | After observation |
 |---|---|---|---|---|---|
@@ -427,6 +429,8 @@ Write with `wrangler kv key put --namespace-id=3e11… <key> <value> --remote`. 
 | `namespace_tag` | `"paperpilot-themes-production"` | | | | |
 
 ### 6.2 Runbook
+
+> **Superseded (2026-10-08).** The operator checklist and the order are now [`p5-runbook.md`](p5-runbook.md) (the front-loaded tier C order of §9). This section is kept as the historical plan and is **not** updated. Where it differs, the runbook wins; in particular: Merge B and the tier C PR are one merge `<mergeB>`; W3 leaves the build command empty (§10 item 8); the root-`/` alternative to W3 is gone; there is no old-Worker fallback after `<mergeB>`, and Workers Builds is stopped with Disconnect (§10 items 9, 12); decision 8 is settled (keep `.codex/` and `.pre-commit-config.yaml`). The **(verify)** marks below are resolved in §10.
 
 Format: ☐ marks user or approval. ✔ is the checkpoint. ↩ is the rollback for that step.
 
@@ -468,7 +472,7 @@ Format: ☐ marks user or approval. ✔ is the checkpoint. ↩ is the rollback f
 **Phase W: switch the Worker to apps/api (☐ each step).**
 - **W1.** Write KV `accepting=true`, `origin_allowlist=["https://taichiiiiiiii.github.io"]`, `namespace_tag`. Read them back with `wrangler kv key get --remote`.
 - **W2.** Local `pnpm --filter @paperpilot/api exec wrangler deploy --dry-run --outdir <tmp>` with the production config. Also `wrangler deploy --dry-run -c wrangler.legacy-rollback.jsonc` to prove the fallback bundles.
-- **W3.** Workers Builds root directory → `apps/api` (§10-7). Install/build command so the pnpm workspace resolves (**verify**; for example a build command of `cd ../.. && corepack enable && pnpm install --frozen-lockfile` and a deploy command of `npx wrangler deploy`). Then retry the latest build.
+- **W3.** Workers Builds root directory → `apps/api` (§10-7). Install/build command so the pnpm workspace resolves (**verify**; for example a build command of `cd ../.. && corepack enable && pnpm install --frozen-lockfile` and a deploy command of `npx wrangler deploy`). [Superseded: Workers Builds installs automatically; leave the build command empty, see §10 item 8.] Then retry the latest build.
 
   **Alternative:** keep root `/` and point root `wrangler.jsonc` `main` at `apps/api/src/index.ts`. The config stays git-revertable, but it diverges from §10-7. Present this to the user if W3 install resolution fails.
 - **W4.** ✔ Checks:
@@ -480,7 +484,7 @@ Format: ☐ marks user or approval. ✔ is the checkpoint. ↩ is the rollback f
 - **↩ W:**
   - Immediately set `accepting=false` (fail closed; wait 60 seconds or more).
   - Then either use Workers version rollback to a previous apps/api version, or redeploy the legacy Worker with `wrangler deploy -c wrangler.legacy-rollback.jsonc` (stub `QuotaCounter`, same migration `v1`).
-  - Cloudflare blocks version rollback across DO migrations, and redeploying `worker/` without the class fails, so **do not** roll back to a pre-DO version of the plain `worker/` (**verify** both behaviours in current docs). Optionally set the root directory back to `/` afterwards.
+  - Cloudflare blocks version rollback across DO migrations, and redeploying `worker/` without the class fails, so **do not** roll back to a pre-DO version of the plain `worker/` (**verify** both behaviours in current docs) [version rollback across a DO migration is confirmed blocked, §10 item 9; superseded by the runbook's ↩ W]. Optionally set the root directory back to `/` afterwards.
 
 **Merge B: the cutover**
 1. ☐ KV `accepting=false`. ✔ `/api/health` shows `accepting:false`; wait at least 5 more minutes.
@@ -855,8 +859,8 @@ Revert does **not** undo: Workers Builds settings, KV values, DO storage, Cloudf
   - `legacy/gh-pages-site/` — only after its tests point at the A1 fixtures. The redirect generator's legacy path list must be frozen into `legacy/redirect/paths.json` first.
   - The 14 fixture-generator `.py` files under `apps/` and `packages/` (outputs stay; add a README noting their origin).
   - Python-only parts of `apps/pipeline/src/parity` if any (**verify** `run-command.ts` usage; keep `compare-trees`).
-  - `.pre-commit-config.yaml` ruff/mypy hooks (or the whole file).
-  - `.codex/`, `AGENTS.md`, `PAPERPILOT_PROFILE.md`, `docs/QWEN_IMPLEMENTER.md` **only if decision 8 says delete**. If kept, the completion check excludes `.codex/`.
+  - `.pre-commit-config.yaml` ruff/mypy hooks. **Decided 2026-10-08: keep the file** (only the generic hooks remain).
+  - `.codex/`, `AGENTS.md`, `PAPERPILOT_PROFILE.md`, `docs/QWEN_IMPLEMENTER.md` **only if decision 8 says delete**. **Decided 2026-10-08: keep them**; the completion check excludes `.codex/`.
   - Stale `docs/design` files (nine, consolidated).
 - **Rewrite:**
   - CLAUDE.md: TS-only rules, the new 12-workflow trigger table, the `data/` layout, KV switch and `/api/health` ops, Cloudflare release and rollback; remove the uv/Docker/unarXive sections.
@@ -874,8 +878,8 @@ Revert does **not** undo: Workers Builds settings, KV values, DO storage, Cloudf
 
 | # | Risk | Mitigation / offline check |
 |---|---|---|
-| R1 | Merging feat puts a root `package.json` and `pnpm-lock.yaml` on develop, so Workers Builds may attempt a pnpm workspace install with the wrong Node and fail to deploy the old Worker | P0-3 inspection; pin `NODE_VERSION`; check the build log in Merge A while the old Worker keeps serving (a failed build does not take down the live version) |
-| R2 | Worker rollback across the DO migration | A6 stub-DO rollback config plus `--dry-run` in W2; primary rollback = KV pause |
+| R1 | Merging feat puts a root `package.json` and `pnpm-lock.yaml` on develop, so Workers Builds runs `pnpm install --frozen-lockfile` automatically, on Node 24 by default since 2026-07-30, and may fail to deploy the old Worker | Confirmed behaviour. Before Merge A set build variable `NODE_VERSION=22` (optionally `PNPM_VERSION=10.34.6`); `SKIP_DEPENDENCY_INSTALL=1` would disable the auto install. Check the build log in Merge A while the old Worker keeps serving (a failed build does not take down the live version) |
+| R2 | Worker rollback across the DO migration | Confirmed: no Workers version rollback across a DO lifecycle change (migration). A6 stub-DO rollback config plus `--dry-run` in W2 (Phase W window only); primary rollback = KV pause, then `wrangler rollback` to a post-migration `apps/api` version. Do not switch `apps/api` to the DO `exports` style while the rollback window is open |
 | R3 | KV order mistakes (fail-closed pauses production) or writing to local KV | §6.1 table, `--remote`, read back before each push; `/api/health` after every change |
 | R4 | Silent partial refresh (stale shared outputs) | A3 command-table test pinned to the shell order; hooks throw on any non-zero exit |
 | R5 | Promoter runs stale job code against a newer tip | Hooks spawn with `cwd=tree` and the tree's own install (tested) |
@@ -889,12 +893,12 @@ Revert does **not** undo: Workers Builds settings, KV values, DO storage, Cloudf
 | R13 | Alias propagation makes smoke flaky | `--wait-marker` poll; smoke the per-deployment URL too |
 | R14 | Cloudflare auto-injection breaks CSP or byte equality | P0-5 settings; smoke byte compare |
 | R15 | Pages token is account-wide and can push to production | Only in the develop-only environment; never on feat CI (contract test); residual risk recorded |
-| R16 | Workers Builds preview builds from feat with production bindings and PAT after the root switch | P0-3 confirmation; recheck after W3 |
+| R16 | Workers Builds preview builds from feat with production bindings and PAT after the root switch | Turn off Settings → Build → Branch control → "Enable Preview Builds" in P0-3; recheck after W3 |
 | R17 | Required-check names break merges | Keep `tests.yml` and job `test`; P0-4 |
 | R18 | Concurrent conference-on-demand runs conflict on the copy manifest | One file per slug |
 | R19 | `daily/papers.json` deletion was blocked before | Explicit user confirmation in P0-4 |
 | R20 | Revert does not carry post-cutover state (`seen_ids` and so on), resurrects post-B deletions, orphans post-B additions under `data/`, or merges a post-B change into the wrong file (identical-blob rename pairing) | `dataMove carry-back --since <B> --manifest <f>` before `git revert --no-commit -m 1 <B>`, then `dataMove finish-revert --manifest <f>` (R-B step 4a–c). The fixture regression asserts the exact final tree |
-| R21 | Uncertain Cloudflare/GitHub API shapes (deployment list, rollback endpoint, deployment id format, `wrangler kv` defaults, `queue:` key, reusable-workflow concurrency, Workers Builds monorepo install, lhci directory URLs) | Each is marked **verify**; A4 is coded against injected fetch, then exercised once in the P2 rehearsal (deployment list) before production |
+| R21 | Uncertain Cloudflare/GitHub API shapes (deployment list, rollback endpoint, deployment id format, `wrangler kv` defaults, `queue:` key, reusable-workflow concurrency, Workers Builds monorepo install, lhci directory URLs) | Checked against official docs 2026-10-07/08 (§10). Still open: list sort order and default `per_page` (code filters and sorts itself), whether rollback's `result.id` is new or the target (record on first production rollback), and whether a root of `apps/api` installs the whole workspace (Workers Builds log in W3). A4 is coded against injected fetch; the deployment list is exercised once in the P2 rehearsal before production |
 | R22 | D1 expected by the design but not implemented | No binding in P5; recorded as a P3 gap / P6 item |
 
 ## 8. Tier A offline checkpoint results (2026-10-07, `0d85e50`)
@@ -934,15 +938,35 @@ One promote attempt on CI is therefore about install 10 s + refresh ≤ 15 s + v
 
 **New order** (operator checklist: `p5-runbook.md`):
 1. P0, P1 (gates now run on `p5/consolidate`), P2 rehearsal (build straight from the branch; no `apply`).
-2. Merge A of `feat/ts-migration` is kept. Develop has no `apps/`, `package.json` or lockfile, so Phase W cannot happen before the cutover without it. Pin `NODE_VERSION=22` in Workers Builds first (auto `pnpm install --frozen-lockfile`, default Node 24).
+2. Merge A of `feat/ts-migration` is kept. Develop has no `apps/`, `package.json` or lockfile, so Phase W cannot happen before the cutover without it. Pin `NODE_VERSION=22` (optionally `PNPM_VERSION=10.34.6`) in Workers Builds first (auto `pnpm install --frozen-lockfile`, default Node 24 since 2026-07-30). Decision 2026-10-08: Phase W stays a separate stage after Merge A.
 3. Phase W as before, but W3 must use root directory `apps/api`. The root-`/` alternative is gone because the cutover merge deletes the root `wrangler.jsonc`.
 4. Prepare: check B is still current (`git log 0d85e50..origin/develop -- docs paperpilot/data paperpilot/output`, `git diff --stat 0d85e50 origin/develop`). If develop only has the feat docs commits, merge `origin/develop` into the branch (expected conflict: `docs/design/39-typescript-cloudflare-migration.md` only). If develop has new generated data, regenerate B on the develop tip and cherry-pick `83a7551..p5/consolidate` onto it.
 5. Cutover = one merge commit `<mergeB>` that carries B **and** C. No generation during the pause unless step 4 found new data.
-6. Observation, then close the Worker rollback window. There is no separate tier C PR. What is left of §6.3: CLAUDE.md/AGENTS.md (protected), decision 8 (`.codex/`), `.pre-commit-config.yaml`.
+6. Observation, then close the Worker rollback window. There is no separate tier C PR. What is left of §6.3: CLAUDE.md/AGENTS.md (protected). Decided 2026-10-08: keep `.codex/` (decision 8) and `.pre-commit-config.yaml`.
 
 **Why the rollback steps change.**
-- Worker: after `<mergeB>`, develop has no `worker/` and no `wrangler.legacy-rollback.jsonc`. Rollback is `wrangler rollback` to an earlier `apps/api` version (post-DO-migration only), or a redeploy of the old Worker from a `feat/ts-migration` checkout with `wrangler.legacy-rollback.jsonc` (stub `QuotaCounter`). Keep `feat/ts-migration` and keep `apps/api` on legacy `migrations` (not `exports`) until the window closes.
+- Worker: after `<mergeB>`, develop has no `worker/` and no `wrangler.legacy-rollback.jsonc`. Rollback is `accepting=false`, then `wrangler rollback` to an earlier `apps/api` version (post-DO-migration only), or a fixed `apps/api` pushed to develop. **Decision 2026-10-08: no old-Worker fallback** — the old `worker/` hard-codes the GitHub Pages CORS origin, ignores KV `accepting`, and reads `docs/themes/themes-manifest.json`, which no longer exists after the data move. If it is ever needed anyway, first stop Workers Builds with Settings → Builds → Disconnect (documented; there is no pause toggle), then `wrangler deploy -c wrangler.legacy-rollback.jsonc` from a `feat/ts-migration` checkout. Keep `feat/ts-migration` and keep `apps/api` on legacy `migrations` (not `exports`) until the window closes.
 - R-B: `<mergeB>` is B + C, so `dataMove apply --reverse --before <mergeB>^` refuses (HEAD is not a pure forward apply), and `dataMove verify <mergeB>^1 <mergeB>` fails; verify B on its own commit (`verify 0d85e50 83a7551`). With no commits after `<mergeB>`, plain `git revert -m 1 <mergeB>` gives exactly the `<mergeB>^1` tree. With later data commits, the 4a–4c path (carry-back → `git revert --no-commit -m 1 <mergeB>` → finish-revert) still works and also restores C's deletions.
 - The Python legacy gate (R-B 4d: `uv`, `pytest`, `build_pages.py`, `validate-pages-release.sh`) is not in the post-merge tree. It only becomes usable after step 4b restores the `<mergeB>^1` files.
 
 **Checked offline (2026-10-08, scratch clone, no push).** Simulated develop = `77f7fae` + Merge A (`c88c966`), then merged `p5/consolidate` (only conflict: design doc 39). Then: one post-merge data commit with an add, a modify and a delete → `carry-back` → `--no-verify --allow-empty` commit → `git revert --no-commit -m 1` → `finish-revert` passed, and the staged tree equalled `<mergeB>^1` plus the three carried paths, with `paperpilot/`, `worker/`, `wrangler.jsonc`, `pyproject.toml` and `.github/scripts/` restored. `apply --reverse --before <mergeB>^` refused as expected. Plain `git revert -m 1 <mergeB>` with no later commits left `git diff <mergeB>^1 HEAD` empty. `dataMove verify 0d85e50 83a7551` exited 0.
+
+## 10. Platform facts verified against official docs (2026-10-07/08)
+
+These resolve the **(verify)** marks in §2–§7. `p5-runbook.md` already follows them. (Elsewhere in this plan, `§10-N` such as `§10-1` or `§10-7` means design doc 39 §10, not this section; this section is cited as "§10 item N".)
+
+1. **Pages deployment list.** `GET /accounts/{account_id}/pages/projects/{project}/deployments?env=production` exists. Documented query params: `env`, `page`, `per_page`. The commit is at `deployment_trigger.metadata.commit_hash`. Sort order and the default `per_page` are **not documented**, so `cf-deployment-id` passes `per_page=25` and filters on `environment == "production"`, `latest_stage.status == "success"` and `is_skipped != true` before matching the SHA (`4a33025`).
+2. **Pages rollback.** `POST …/deployments/{deployment_id}/rollback` exists; Pages Write; no body; returns a Deployment. Whether `result.id` is a **new** id or the target id is undocumented. Production-only, so it cannot be tried in the P2 preview; record the answer on the first production rollback (runbook observation step 11).
+3. **Deployment id format.** UUID. The code checks the looser `^[A-Za-z0-9-]{1,64}$` (`cloudflare/pagesApi.ts`), which accepts it; tightening to a strict UUID pattern is optional.
+4. **`wrangler kv` in wrangler 4.** Defaults to local storage; `--remote` is required for every production put/get.
+5. **`concurrency.queue: max`.** Valid syntax: keeps a FIFO queue of up to 100 pending runs in the group instead of only the newest. Not allowed together with `cancel-in-progress: true`. Set on `pages-release.yml` and `pages-rollback.yml` (`4a33025`).
+6. **Concurrency in reusable workflows.** Workflow-level `concurrency` in a called workflow is honoured (secondary sources; the official docs do not say it explicitly). A caller must never use the same group name, or caller and callee deadlock on each other.
+7. **Automatic Deployments.** A job with `environment:` auto-creates a GitHub Deployment. `environment: { name: …, deployment: false }` suppresses it while keeping secrets and protection rules (optional for `cloudflare-pages-deploy`; not needed for correctness).
+8. **Workers Builds.** With a lockfile present it runs `pnpm install --frozen-lockfile` automatically. Default Node is 24 since 2026-07-30, so set build variable `NODE_VERSION=22` (optionally `PNPM_VERSION=10.34.6`) **before Merge A**. `SKIP_DEPENDENCY_INSTALL=1` disables the auto install. The W3 example build command `cd ../.. && corepack enable && pnpm install` is redundant: leave the build command empty and keep the deploy command `npx wrangler deploy`. Turn off preview builds with Settings → Build → Branch control → "Enable Preview Builds" (R16). Still to check in the W3 build log: that a root directory of `apps/api` installs the whole workspace.
+9. **Durable Objects and rollback.** Workers version rollback is blocked across a DO lifecycle change (migration). Do not move `apps/api` to the DO `exports` style while the Worker rollback window is open.
+10. **Lighthouse CI.** The lhci static server resolves directory URLs to `index.html`. `treosh/lighthouse-ci-action` is pinned to `3e7e23fb74242897f95c0ba9cabad3d0227b9b18` (v12) in `4a33025`.
+11. **`wrangler pages deploy`.** `--branch`, `--commit-hash` and `--commit-dirty` are confirmed. The workflows call `pnpm --filter @paperpilot/api exec wrangler` (lockfile-pinned devDependency), not `npx --yes wrangler@<pinned>`.
+12. **Stopping Workers Builds.** Settings → Builds → **Disconnect** is the documented, safest way; there is no pause toggle. Record every build setting first and re-enter it after Connect.
+13. **Code fix found during this review.** `apps/api` read the themes manifest from `docs/themes`; since `48b25a0` it uses `relLayout().published`, so it follows the layout flip.
+
+**Decisions (2026-10-08, user: "推奨で進めて").** Phase W stays a separate stage after Merge A. No old-Worker fallback after `<mergeB>` (rollback = `accepting=false`, `wrangler rollback` to a post-migration `apps/api` version, or a fixed `apps/api`). Keep `.codex/` (decision 8) and `.pre-commit-config.yaml`.
