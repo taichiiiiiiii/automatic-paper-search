@@ -221,7 +221,7 @@ git revert -m 1 <mergeA>
      ```
 
 3. DO 導入前の素の `worker/` には**戻さない**。Cloudflare は DO migration より前の版への version rollback を拒否します。クラスのない `worker/` を出し直すと失敗します。
-4. 旧 Worker を出し直した後は、次の develop への push で `apps/api` が出し直されないようにする。例: root directory を `/` に戻し、deploy command を `npx wrangler deploy -c wrangler.legacy-rollback.jsonc` にする（要確認）。root `/` と既定の deploy command（ルートの `wrangler.jsonc`、DO クラスなし）の組み合わせには戻さない。
+4. 旧 Worker を出し直した後は、次の develop への push で `apps/api` が出し直されないようにする。例: root directory を `/` に戻し、deploy command を `npx wrangler deploy -c wrangler.legacy-rollback.jsonc` にする（要確認）。root `/` と既定の deploy command（ルートの `wrangler.jsonc`、DO クラスなし）の組み合わせには戻さない。公式に書かれていていちばん確実なのは、Settings → Builds → Disconnect でビルドを止める方法（設定を控えてから。手順は「↩ Worker（`<mergeB>` の後）」の 5）。この時点の旧 Worker は、データ移動の前なので manifest の場所と CORS（GitHub Pages）がそのまま合う。
 
 ---
 
@@ -600,26 +600,28 @@ B 自身の 2 つの削除は `<mergeB>^1` の状態で戻ります。
 
 `<mergeB>` の後の develop には `worker/` も `wrangler.legacy-rollback.jsonc` もありません。
 
-1. すぐに `accepting=false`（60 秒以上待つ）。
-2. まず apps/api の以前の版に戻す（DO migration の後の版だけ）。
+1. ☐ すぐに `accepting=false` にする（60 秒以上待つ）。✔ `/api/health` が `accepting:false` を返す。
+2. 原則は「apps/api を直して前に進める」。修正を develop に入れれば、Workers Builds が apps/api を出し直す。
+3. 急ぐときは apps/api の以前の版に戻す。戻せるのは Durable Object の migration（v1）の後に出した版だけ（Cloudflare の制約）。
 
    ```
    pnpm --filter @paperpilot/api exec wrangler rollback <version-id>
    ```
 
-3. 旧 Worker が要るときは、`feat/ts-migration`（`c88c966`）を別の作業ツリーに出して、そこから出し直す。
+4. 旧 Worker（`origin/feat/ts-migration` の `worker/`）は、**そのままでは代わりになりません**（2026-10-08 にコードで確認）。
+   - CORS の許可は `https://taichiiiiiiii.github.io` だけで、コードに直書き（`worker/response.js` の `PAGES_ORIGIN`）。KV の `origin_allowlist` も読まない。新サイトのフォームは preflight で失敗する。
+   - 重複確認で `develop/docs/themes/themes-manifest.json` を読む（`worker/themes-post.js`）。データ移動の後はこのファイルが無く 404 になり、すべての依頼が 503 になる。
+   - KV の `accepting` を読まず、`/api/health` も無い。止めるには再デプロイするか、secret `GH_DISPATCH_PAT` を消すしかない。
+   - dispatch の入力（`theme`、`request_id`）と `ref` は新しい `theme-on-demand.yml` と合っている。応答の形も新しいフォームが読める。KV のキーは apps/api とぶつからない。
 
-   ```
-   git worktree add ../paper-worker-rollback origin/feat/ts-migration
-   cd ../paper-worker-rollback
-   pnpm install --frozen-lockfile
-   ./apps/api/node_modules/.bin/wrangler deploy --dry-run --outdir "$TMPDIR/legacy-dry" -c wrangler.legacy-rollback.jsonc
-   ./apps/api/node_modules/.bin/wrangler deploy -c wrangler.legacy-rollback.jsonc
-   ```
-
-   - 旧 Worker は `GH_REF=develop` の `theme-on-demand.yml` を dispatch します。いまの develop ではそれは Node 版です。入力（`theme`、`request_id`）が合うかは（要確認）。
-   - 旧 Worker の CORS が `<PUBLIC_ORIGIN>` を通すかは（要確認）。通らなければ、新サイトのフォームは使えません。
-4. 次の develop への push で apps/api が出し直されないようにする（Workers Builds の自動デプロイを止める方法は要確認）。
+   旧 Worker を使うなら、上の 3 点を直した版を前もって用意しておく（☐ 判断。今は用意していない）。
+5. 旧 Worker を出し直す場合は、**先に** Workers Builds を止める。止めないと、次の develop への push で apps/api に上書きされる。
+   - ☐ いまのビルド設定（リポジトリ、production branch、root directory `apps/api`、build・deploy command、build watch paths、build variables の `NODE_VERSION` など）をすべて控える。
+   - ☐ Dashboard → Workers & Pages → `paperpilot-themes` → Settings → Builds → **Disconnect**。切断中は push してもビルドもデプロイも起きない。
+   - そのあと、用意した旧 Worker を `wrangler deploy -c wrangler.legacy-rollback.jsonc` で出す（DO の stub クラスと migration v1 を保つため、`wrangler rollback` ではなく `deploy`）。
+   - ↩ 元に戻すときは Settings → Builds → **Connect** でつなぎ直し、控えた設定を入れ直す（切断で設定が残るかは公式に書かれていないので、入れ直す前提）。つないだ後の最初の develop への push か手動ビルドで、apps/api が出し直される。
+   - 使わないもの: deploy command を `npx wrangler versions upload` に変える方法（DO の migration を含む版はアップロードできず失敗しうる）、Branch control の変更や Build watch paths（完全には止まらない）。
+   - 出典: https://developers.cloudflare.com/workers/ci-cd/builds/#disconnecting-builds 、https://developers.cloudflare.com/workers/configuration/versions-and-deployments/rollbacks/
 
 ---
 
@@ -629,7 +631,7 @@ B 自身の 2 つの削除は `<mergeB>^1` の状態で戻ります。
 
 | 戻らないもの | 戻し方の場所 |
 |---|---|
-| Workers Builds の設定（root directory、`NODE_VERSION`、preview builds） | ↩ W 手順 4、↩ Worker（`<mergeB>` の後）手順 4 |
+| Workers Builds の設定（root directory、`NODE_VERSION`、preview builds、Disconnect） | ↩ W 手順 4、↩ Worker（`<mergeB>` の後）手順 5 |
 | KV の値 | 6.1 の表、R-B 手順 1・6 |
 | DO の保存内容 | R-B 手順 7（何もしない） |
 | Worker の版（`wrangler rollback` と旧 Worker の出し直し） | ↩ W、↩ Worker（`<mergeB>` の後） |
