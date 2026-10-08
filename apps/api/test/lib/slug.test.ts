@@ -1,8 +1,12 @@
 // Ported 1:1 from worker/slug.test.mjs.
 
-import { themeSlug as coreThemeSlug } from "@paperpilot/core/slug";
+import {
+  SLUG_RE as coreSlugRe,
+  THEME_INPUT_PATTERN as coreThemeInputPattern,
+  themeSlug as coreThemeSlug,
+} from "@paperpilot/core/slug";
 import { describe, expect, it } from "vitest";
-import { THEME_INPUT_PATTERN, themeSlug } from "../../src/lib/slug.js";
+import { SLUG_RE, THEME_INPUT_PATTERN, themeSlug } from "../../src/lib/slug.js";
 import workerSlugExpected from "../fixtures/worker-slug-expected.json" with { type: "json" };
 
 describe("themeSlug", () => {
@@ -54,6 +58,10 @@ describe("THEME_INPUT_PATTERN", () => {
 describe("themeSlug comes from @paperpilot/core/slug", () => {
   it("is the very same function object as core's export", () => {
     expect(themeSlug).toBe(coreThemeSlug);
+  });
+  it("THEME_INPUT_PATTERN and SLUG_RE are core's very same RegExp objects", () => {
+    expect(THEME_INPUT_PATTERN).toBe(coreThemeInputPattern);
+    expect(SLUG_RE).toBe(coreSlugRe);
   });
   it("agrees with core on the frozen fixture battery", () => {
     for (const { input } of workerSlugExpected.themeSlugSamples) {
