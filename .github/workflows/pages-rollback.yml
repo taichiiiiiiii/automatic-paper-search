@@ -48,6 +48,17 @@ jobs:
       target_sha: ${{ steps.validate.outputs.target_sha }}
       cf_deployment_id: ${{ steps.validate.outputs.cf_deployment_id }}
     steps:
+      - name: Refuse placeholder Cloudflare settings
+        run: |
+          set -euo pipefail
+          # packages/core/src/site/config.ts and this file still hold the
+          # placeholder until the user creates the Pages project. Stop in
+          # seconds instead of after a full validate + build (review M1).
+          if [[ "$CF_PAGES_PROJECT" == *TODO* || -z "$CF_PAGES_PROJECT" ]]; then
+            echo "::error::CF_PAGES_PROJECT is still a placeholder ($CF_PAGES_PROJECT); set the real Cloudflare Pages project first (docs/migration/p5-runbook.md P0)"
+            exit 1
+          fi
+
       - name: Checkout current protected workflow code
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:

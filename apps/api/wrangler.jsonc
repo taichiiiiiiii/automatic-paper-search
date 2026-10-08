@@ -1,22 +1,15 @@
 {
-  // Production Cloudflare Worker config for apps/api (Hono port of
-  // worker/, §4.5), prepared ahead of docs/migration/p5-plan.md §6.2
-  // Phase W. Tier A / inert: nothing in this repo's deploy pipeline reads
-  // this file yet — Workers Builds' root-directory setting still points
-  // at `/` (root wrangler.jsonc / worker/index.ts) until Phase W step W3
-  // repoints it at apps/api. Until then this file sits unused alongside
-  // the preview config `wrangler.preview.jsonc` (same directory, local
-  // use via `-c wrangler.preview.jsonc`).
+  // Production Cloudflare Worker config for apps/api (Hono, §4.5).
+  // Workers Builds deploys it once its root directory is `apps/api`
+  // (docs/migration/p5-runbook.md, Phase W). Local preview uses
+  // `wrangler.preview.jsonc` in this directory (`-c wrangler.preview.jsonc`).
   //
-  // Same production Worker name/KV id as the pre-cutover root
-  // wrangler.jsonc (§6.1: binding names are per-Worker, so `CONFIG_KV` ->
-  // the same namespace id `RATE_LIMIT_KV` already binds is fine — the old
-  // Worker's rate-limit keys do not collide with `accepting`,
-  // `origin_allowlist` or `namespace_tag`). The id below is copied
-  // verbatim from the root wrangler.jsonc's `kv_namespaces[0].id` — see
-  // apps/api/test/wrangler-config.test.ts, which asserts this file's id
-  // equals that file's id byte-for-byte rather than trusting a
-  // transcription.
+  // Same production Worker name and KV namespace as the old Worker
+  // (binding names are per-Worker, so `CONFIG_KV` -> the namespace the old
+  // Worker bound as `RATE_LIMIT_KV` is fine; its rate-limit keys do not
+  // collide with `accepting`, `origin_allowlist` or `namespace_tag`).
+  // apps/api/test/wrangler-config.test.ts pins the id and vars to the last
+  // values of the deleted root wrangler.jsonc.
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "paperpilot-themes",
   "main": "src/index.ts",

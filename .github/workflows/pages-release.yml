@@ -9,13 +9,11 @@ name: pages-release
 # reuse.
 #
 # Called by: pages.yml, theme-on-demand.yml, conference-on-demand.yml,
-# regen-themes.yml, collect-weekly.yml (all staged in this same
-# directory). Each caller grants `contents: read` + `deployments: write`
+# regen-themes.yml, collect-weekly.yml (all in this directory). Each caller grants `contents: read` + `deployments: write`
 # and passes no `secrets:` — the deploy job's Cloudflare credentials come
 # from the `cloudflare-pages-deploy` GitHub Environment, which binds to
 # any job that declares that `environment:`, reusable-workflow or not
-# (verify: this is the documented behaviour of Environment secrets, not
-# re-confirmed by a live run here).
+# (documented GitHub behaviour, confirmed 2026-10-07; p5-plan.md §10).
 
 on:
   workflow_call:
@@ -93,6 +91,17 @@ jobs:
             echo "::error::request_id has an invalid format"
             exit 1
           }
+
+      - name: Refuse placeholder Cloudflare settings
+        run: |
+          set -euo pipefail
+          # packages/core/src/site/config.ts and this file still hold the
+          # placeholder until the user creates the Pages project. Stop in
+          # seconds instead of after a full validate + build (review M1).
+          if [[ "$CF_PAGES_PROJECT" == *TODO* || -z "$CF_PAGES_PROJECT" ]]; then
+            echo "::error::CF_PAGES_PROJECT is still a placeholder ($CF_PAGES_PROJECT); set the real Cloudflare Pages project first (docs/migration/p5-runbook.md P0)"
+            exit 1
+          fi
 
       - name: Checkout exact source SHA
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4

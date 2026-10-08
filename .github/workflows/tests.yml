@@ -1,14 +1,10 @@
 name: tests
 
-# The Node CI gate for the P5 workspace (docs/migration/p5-plan.md §4.1).
-# Staged here under .github/workflows-p5/ — GitHub only looks at
-# .github/workflows/, so this file does not run until commit B moves it
-# into place. It keeps the same file name and job id ("test") as the
-# pre-P5 Python tests.yml so that any branch-protection required check
-# configured against "tests / test" keeps matching (R17).
-#
-# Absorbs ts-ci.yml (deleted in commit B): this is now the only CI gate,
-# Python or Node, once the cutover lands.
+# The CI gate for the TypeScript workspace (docs/migration/p5-plan.md §4.1).
+# It keeps the same file name and job id ("test") as the pre-P5 Python
+# tests.yml so that any branch-protection required check configured
+# against "tests / test" keeps matching (R17). It absorbed ts-ci.yml and
+# is the only CI gate.
 
 on:
   pull_request:
