@@ -44,7 +44,7 @@ jobs:
           PAPERPILOT_OPENALEX_EMAIL: ${{ secrets.OPENALEX_EMAIL }}
           PAPERPILOT_GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           PAPERPILOT_CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
-          PAPERPILOT_GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          PAPERPILOT_GROQ_API_KEY: ${{ secrets.PAPERPILOT_GROQ_API_KEY || secrets.GROQ_API_KEY }}
         run: pnpm exec tsx apps/pipeline/src/collect/cli.ts --config data/config/config.yaml --fail-on-errors
 
       - name: Rebuild conference-local projections
@@ -104,7 +104,7 @@ jobs:
         # live collect-weekly.yml step this one replaces; the no-key
         # retain-and-exit-0 guard below is restored from that same step.
         env:
-          PAPERPILOT_GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          PAPERPILOT_GROQ_API_KEY: ${{ secrets.PAPERPILOT_GROQ_API_KEY || secrets.GROQ_API_KEY }}
           PAPERPILOT_GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           set -euo pipefail
