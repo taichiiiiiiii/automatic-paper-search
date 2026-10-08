@@ -36,6 +36,10 @@
 | メール通知 | TS 版では対応しない（有効にすると記録して失敗扱い）。既存設定はオフ |
 | 類似度計算（Stage 3 embedding） | TS 版では対応しない（有効にすると stage3 として記録）。既存設定はオフ |
 | 論文スライド（判断待ち 1） | P5 で削除（既定案どおり） |
+| 旧コードの削除の時期（2026-10-07、ユーザー「1 プロジェクトに 1 フォルダー」） | Tier C を前倒しし、`p5/consolidate` にデータ移動（B）と削除（C）を入れる。順番の変更は [`p5-plan.md` §9](../migration/p5-plan.md)、手順は [`p5-runbook.md`](../migration/p5-runbook.md) |
+| Worker の切替（2026-10-08、推奨） | 切替の merge とは別の段階（Phase W）で、feat の Merge A の後に行う |
+| 切替後の旧 Worker の予備（2026-10-08、推奨） | 用意しない。戻し方は受付停止・apps/api の以前の版への rollback・修正版の出し直し（手順書「↩ Worker」） |
+| `.codex/`・`AGENTS.md`・Qwen 関係の文書（判断待ち 8）、`.pre-commit-config.yaml` | 当面は残す（2026-10-08、推奨）。`.py` の検査は `.codex/` を除外 |
 
 ## 0. 決定事項（ユーザー指示）
 

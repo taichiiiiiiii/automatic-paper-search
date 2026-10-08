@@ -614,7 +614,7 @@ B 自身の 2 つの削除は `<mergeB>^1` の状態で戻ります。
    - KV の `accepting` を読まず、`/api/health` も無い。止めるには再デプロイするか、secret `GH_DISPATCH_PAT` を消すしかない。
    - dispatch の入力（`theme`、`request_id`）と `ref` は新しい `theme-on-demand.yml` と合っている。応答の形も新しいフォームが読める。KV のキーは apps/api とぶつからない。
 
-   旧 Worker を使うなら、上の 3 点を直した版を前もって用意しておく（☐ 判断。今は用意していない）。
+   **決定（2026-10-08、ユーザー「推奨で進めて」）: 旧 Worker の予備は用意しない。** 切替後の戻し方は、受付停止（`accepting=false`）、apps/api の以前の版への `wrangler rollback`、修正版を develop に入れて出し直す、の 3 つ。apps/api は切替の前に Phase W で本番に出して確かめてある。旧 Worker が要るほどの事態になったら、上の 3 点を直してから出す（その場合も手順 5 で先にビルドを止める）。
 5. 旧 Worker を出し直す場合は、**先に** Workers Builds を止める。止めないと、次の develop への push で apps/api に上書きされる。
    - ☐ いまのビルド設定（リポジトリ、production branch、root directory `apps/api`、build・deploy command、build watch paths、build variables の `NODE_VERSION` など）をすべて控える。
    - ☐ Dashboard → Workers & Pages → `paperpilot-themes` → Settings → Builds → **Disconnect**。切断中は push してもビルドもデプロイも起きない。
