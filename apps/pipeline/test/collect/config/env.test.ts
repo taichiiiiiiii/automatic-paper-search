@@ -10,6 +10,7 @@ import { dirname, join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   defaultDotenvStartDir,
+  defaultDotenvStopDir,
   findDotenvUpward,
   loadEnv,
   parseDotenv,
@@ -99,11 +100,22 @@ describe("findDotenvUpward: skips a non-regular-file .env (P4 review round 3 LOW
 });
 
 describe("defaultDotenvStartDir (P4 review round 3 LOW)", () => {
-  it("resolves to <repoRoot>/paperpilot/utils, where repoRoot contains pnpm-workspace.yaml", () => {
+  it("resolves to the layout's config dir (data/config), under the repo root containing pnpm-workspace.yaml", () => {
     const startDir = defaultDotenvStartDir();
-    expect(startDir.endsWith(join("paperpilot", "utils"))).toBe(true);
+    expect(startDir.endsWith(join("data", "config"))).toBe(true);
+    expect(existsSync(join(startDir, ".env.example"))).toBe(true);
     const repoRoot = dirname(dirname(startDir));
     expect(existsSync(join(repoRoot, "pnpm-workspace.yaml"))).toBe(true);
+    expect(defaultDotenvStopDir()).toBe(repoRoot);
+  });
+
+  it("findDotenvUpward with a stopDir never looks above it", () => {
+    const outer = join(dir, "outer");
+    const inner = join(outer, "repo", "data", "config");
+    mkdirSync(inner, { recursive: true });
+    writeFileSync(join(outer, ".env"), "PAPERPILOT_GITHUB_TOKEN=outside\n");
+    expect(findDotenvUpward(inner, join(outer, "repo"))).toBeNull();
+    expect(findDotenvUpward(inner)).toBe(join(outer, ".env"));
   });
 
   it("loadEnv's default start dir (no startDir override) is no longer process.cwd() — a .env reachable only via cwd is NOT picked up", () => {
