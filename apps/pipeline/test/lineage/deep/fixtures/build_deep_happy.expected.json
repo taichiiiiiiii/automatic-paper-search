@@ -1,0 +1,144 @@
+{
+  "schema_version": "lineage-artifact-v1",
+  "root": "S2FOCUS",
+  "nodes": [
+    {
+      "id": "S2CHILD",
+      "title": "Child Paper",
+      "year": 2027,
+      "venue": "ICML",
+      "venue_tier": "A+",
+      "authors": [
+        "C. Author"
+      ],
+      "kinds": [],
+      "citation_count": 3,
+      "github_stars": 0,
+      "tldr": "Child abstract.",
+      "short_abstract": "Child abstract.",
+      "is_focus": false
+    },
+    {
+      "id": "S2FOCUS",
+      "title": "Deep Focus Paper",
+      "year": 2026,
+      "venue": "ICLR 2026",
+      "venue_tier": "A+",
+      "authors": [
+        "A. Author"
+      ],
+      "kinds": [
+        "focus"
+      ],
+      "citation_count": 0,
+      "github_stars": 0,
+      "tldr": "Focus abstract.",
+      "short_abstract": "Focus abstract.",
+      "arxiv_id": "2602.18473",
+      "is_focus": true,
+      "seed_paper_id": "1111111111111111111111111111111111111111",
+      "aliases": [
+        [
+          "arxiv",
+          "2602.18473"
+        ],
+        [
+          "semantic_scholar",
+          "S2FOCUS"
+        ]
+      ]
+    },
+    {
+      "id": "S2PARENT",
+      "title": "Parent Paper",
+      "year": 2020,
+      "venue": "NeurIPS",
+      "venue_tier": "A+",
+      "authors": [
+        "B. Author"
+      ],
+      "kinds": [],
+      "citation_count": 100,
+      "github_stars": 0,
+      "tldr": "Parent abstract.",
+      "short_abstract": "Parent abstract.",
+      "is_focus": false
+    }
+  ],
+  "edges": [
+    {
+      "src": "S2FOCUS",
+      "dst": "S2CHILD",
+      "rel": "successor",
+      "relation": "successor",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "十分に長い具体的な論文固有の根拠文です。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_deep_lineage",
+          "version": "p2-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "4d1420d2ed992ee1c576aad23a452c7414bab3f93adfdadb296dde62ccf8266e"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "fake",
+          "model": "fake",
+          "prompt_version": "relation-prompt-v1",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "S2PARENT",
+      "dst": "S2FOCUS",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Deep Focus Paper」(2026) は「Parent Paper」(2020) と引用関係にある（extends）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_deep_lineage",
+          "version": "p2-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "7b6a15f01494ef05ca762328bc1c2772ca8000e5d59c075423b295a5f71dfe02"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "fake",
+          "model": "fake",
+          "prompt_version": "relation-prompt-v1",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    }
+  ],
+  "clusters": [],
+  "meta": {
+    "source": "build_deep_lineage.py",
+    "kind": "deep",
+    "generator": "paperpilot.scripts.build_deep_lineage",
+    "arxiv_id": "2602.18473",
+    "seed_paper_id": "1111111111111111111111111111111111111111",
+    "aliases": [
+      [
+        "arxiv",
+        "2602.18473"
+      ],
+      [
+        "semantic_scholar",
+        "S2FOCUS"
+      ]
+    ],
+    "depth": 1,
+    "generated_at": "FIXED"
+  }
+}

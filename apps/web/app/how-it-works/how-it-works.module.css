@@ -1,0 +1,411 @@
+/*
+ * Page-scoped composition for /how-it-works/.
+ *
+ * Ported from two places in docs/how-it-works/index.html:
+ *   1. its own page <style> block (the .section-head / .rel-* / .how /
+ *      .seealso / .guide-cta rules) -- kept as-is, value for value.
+ *   2. the shared `style.css` rules that page relied on but that are NOT
+ *      part of the ported design tokens (app/globals.css only ports the
+ *      `:root` custom properties + `.skip-link`): the .hero* block. Those
+ *      are inlined here, merged to the values that actually applied to
+ *      this page's `hero hero--guide hero--compact` element (later rules
+ *      win over earlier ones at equal specificity, so `.hero--compact`'s
+ *      padding-top and `.hero--guide`'s padding-bottom are what the
+ *      current page renders; `.hero--compact .hero__breadcrumb` /
+ *      `.hero__title` overrides are already folded in too).
+ *
+ * A CSS module (not Tailwind utilities) because this page's layout is a
+ * grid with token-driven borders/rails, and it must stay byte-faithful to
+ * the shipped design. Colors still go through the tokens only -- the single
+ * exception is the hero's radial gradient, which docs/assets/style.css also
+ * writes out as a raw oklch() value. CSP-safe: bundled to a real .css file,
+ * so the built page has no <style> element and no style="" attribute (the
+ * current page's inline <style> block and its one style="" attribute are
+ * exactly what this file replaces).
+ *
+ * Not ported on purpose: the shared hero's inline-SVG paper-grain layer
+ * (`style.css .hero::before`, a 330-character data URI). It is decorative
+ * chrome of the shared sheet -- which the foundation left unported for the
+ * same reason it restyled .site-nav / .footer with Tailwind -- and keeping it
+ * would mean an unbreakable declaration this repo's formatter cannot reason
+ * about. Everything that carries content (type scale, spacing, the § mark,
+ * the relation rails and specimens) is ported.
+ */
+
+.page {
+  padding-bottom: var(--space-section);
+}
+
+/* ---------- HERO (merged .hero / .hero--guide / .hero--compact) ---------- */
+.hero {
+  position: relative;
+  padding: calc(var(--space-section) * 0.35) var(--space-edge) calc(var(--space-section) * 0.5);
+  border-bottom: 1px solid var(--color-rule);
+  background-color: var(--color-surface);
+  background-image: radial-gradient(ellipse at 80% -10%, oklch(94% 0.03 80) 0%, transparent 60%);
+  /* Keep the breadcrumb/title/lede above the decorative § mark. */
+  isolation: isolate;
+}
+
+/* Editorial "§" section mark. On the compact hero it sits beside the
+   title instead of the top-right corner, where the breadcrumb would
+   crowd it. Hidden on narrow viewports. */
+.hero::after {
+  content: "§";
+  position: absolute;
+  top: auto;
+  bottom: calc(var(--space-section) * 0.2);
+  right: var(--space-edge);
+  font-family: var(--font-serif);
+  font-size: clamp(1.6rem, 0.9rem + 1.5vw, 2.4rem);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--color-accent);
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: 0;
+  font-variation-settings: "opsz" 48;
+}
+
+@media (max-width: 720px) {
+  .hero::after {
+    display: none;
+  }
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.7rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-tag);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-ink-subtle);
+}
+.breadcrumb a {
+  color: inherit;
+}
+.breadcrumb a:hover {
+  color: var(--color-ink);
+}
+
+.heroTitle {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: var(--text-display);
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  margin: 0;
+  color: var(--color-ink);
+  font-variation-settings: "opsz" 36;
+  animation: heroTitleSettle 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  /* Japanese wraps mid-word otherwise, which breaks bilingual titles at
+     ugly points; keep each JP run intact. */
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+@keyframes heroTitleSettle {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heroTitle {
+    animation: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .heroTitle {
+    /* Cap at ~28px so a long title does not eat the first screen. */
+    font-size: clamp(1.6rem, 1.2rem + 4vw, 2rem);
+    line-height: 1.15;
+  }
+}
+
+.heroTitle em {
+  font-style: italic;
+  color: var(--color-ink-muted);
+  font-weight: 400;
+  text-decoration: underline;
+  text-decoration-color: var(--color-accent);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 0.18em;
+}
+
+.heroLede {
+  max-width: 60ch;
+  font-size: clamp(1rem, 0.92rem + 0.4vw, 1.18rem);
+  color: var(--color-ink-muted);
+  line-height: 1.55;
+  margin: 0;
+  /* Editorial standfirst rule, anchoring the lede to the title. */
+  padding-left: 1rem;
+  border-left: 2px solid var(--color-accent);
+}
+
+.ledeStrong {
+  color: var(--color-ink-muted);
+  font-weight: 500;
+}
+
+/* ---------- Section headers (mono eyebrow + note, hairline above) ---------- */
+.sectionHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 1rem;
+  padding: var(--space-section) var(--space-edge) 0;
+  border-top: 1px solid var(--color-rule);
+}
+/* The .how / .seealso sections carry their own inset + hairline, so the
+   header inside them drops both (was a style="" attribute on the
+   current page -- class instead, for style-src 'self'). */
+.sectionHeadBare {
+  padding: 0;
+  border-top: 0;
+}
+.sectionHeadTitle {
+  font-family: var(--font-mono);
+  font-size: var(--text-tag);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+  margin: 0;
+  font-weight: 600;
+}
+.sectionHeadNote {
+  font-family: var(--font-mono);
+  font-size: var(--text-tag);
+  color: var(--color-ink-subtle);
+  margin: 0;
+}
+
+/* ---------- Relation specimen list ---------- */
+.relList {
+  list-style: none;
+  margin: 1.5rem 0 0;
+  padding: 0 var(--space-edge);
+}
+.relRow {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  gap: 0.4rem 1.1rem;
+  align-items: baseline;
+  padding: 1.2rem 0;
+  border-top: 1px solid var(--color-rule);
+  border-left: 3px solid var(--rel, var(--color-rule-strong));
+  padding-left: 1rem;
+}
+.relRow:last-child {
+  border-bottom: 1px solid var(--color-rule);
+}
+
+/* Inheritance-strength grading: the gold "descent" family is heaviest.
+   The weak "baseline" read is carried by the neutral-gray rail + dotted
+   specimen + lighter title -- never by row opacity, which would drop the
+   body text under the WCAG AA 4.5:1 floor. */
+.relRowSupersedes {
+  --rel: var(--rel-supersedes);
+  border-left-width: 4px;
+}
+.relRowSuccessor {
+  --rel: var(--rel-successor);
+  border-left-width: 4px;
+}
+.relRowExtends {
+  --rel: var(--rel-extends);
+}
+.relRowAblation {
+  --rel: var(--rel-ablation);
+}
+.relRowBaseline {
+  --rel: var(--rel-baseline);
+}
+.relRowContrasts {
+  --rel: var(--rel-contrasts);
+}
+.relRowBaseline .relRowJa {
+  color: var(--color-ink-muted);
+  font-weight: 400;
+}
+
+.relRowEdge {
+  grid-row: span 2;
+  align-self: center;
+  width: 56px;
+  height: 16px;
+  display: block;
+}
+.relRowEdge line {
+  stroke-linecap: round;
+}
+
+.relRowHead {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.relRowJa {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: var(--text-title);
+  font-weight: 500;
+  color: var(--color-ink);
+  letter-spacing: -0.01em;
+}
+.relRowSupersedes .relRowJa,
+.relRowSuccessor .relRowJa {
+  font-weight: 600;
+}
+.relRowKey {
+  font-family: var(--font-mono);
+  font-size: var(--text-tag);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-ink-subtle);
+}
+.relRowMeaning {
+  grid-column: 2;
+  font-size: var(--text-body);
+  line-height: 1.6;
+  color: var(--color-ink-muted);
+  margin: 0.25rem 0 0;
+}
+.relRowEg {
+  grid-column: 2;
+  margin: 0.45rem 0 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  color: var(--color-ink-subtle);
+  letter-spacing: 0.02em;
+}
+.relRowEg b {
+  color: var(--color-ink-muted);
+  font-weight: 500;
+}
+
+/* ---------- "どう判定しているか" ---------- */
+.how {
+  padding: var(--space-section) var(--space-edge) 0;
+  border-top: 1px solid var(--color-rule);
+}
+.howBody {
+  max-width: 64ch;
+  font-size: var(--text-body);
+  line-height: 1.75;
+  color: var(--color-ink-muted);
+}
+.howBody strong {
+  color: var(--color-ink);
+  font-weight: 500;
+}
+.howSteps {
+  list-style: none;
+  margin: 1.4rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.4rem;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  color: var(--color-ink-muted);
+}
+.howSteps li {
+  padding: 0.3rem 0.7rem;
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-rule);
+  border-radius: 999px;
+}
+.howSteps .howArrow {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: var(--color-ink-subtle);
+}
+
+/* ---------- さらに詳しく ---------- */
+.seealso {
+  padding: var(--space-section) var(--space-edge) 0;
+}
+.seealsoLinks {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.4rem;
+  margin: 0.8rem 0 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+}
+.seealsoLinks a {
+  color: var(--color-ink-muted);
+}
+.seealsoLinks a:hover {
+  color: var(--color-accent-strong);
+}
+.seealsoNote {
+  font-family: var(--font-mono);
+  font-size: var(--text-tag);
+  color: var(--color-ink-subtle);
+  margin: 0;
+}
+
+.guideCta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 44px;
+  margin-top: 1.6rem;
+  padding: 0.7rem 1.45rem;
+  background: var(--color-ink);
+  color: var(--color-surface);
+  border: 1px solid var(--color-ink);
+  border-radius: 7px;
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  text-decoration: none;
+  transition-property: background-color, transform;
+  transition-duration: var(--duration-fast);
+  transition-timing-function: var(--ease);
+}
+.guideCta:hover {
+  background: var(--color-accent-strong);
+  border-color: var(--color-accent-strong);
+  color: var(--color-surface);
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+.guideCta:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 7px;
+}
+
+/* Phones: the specimen line moves above its label instead of sharing a
+   64px column, so nothing overflows at 320px. */
+@media (max-width: 480px) {
+  .relRow {
+    grid-template-columns: 1fr;
+  }
+  .relRowEdge {
+    grid-row: auto;
+    margin-bottom: 0.2rem;
+  }
+  .relRowMeaning,
+  .relRowEg {
+    grid-column: 1;
+  }
+}

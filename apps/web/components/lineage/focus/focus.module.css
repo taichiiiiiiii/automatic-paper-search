@@ -1,0 +1,460 @@
+/*
+ * Ported from docs/assets/lineage-focus.css, re-skinned onto the
+ * ported design tokens (app/globals.css `@theme`) instead of the
+ * page-local `--lf-*` custom properties the original declared. Two
+ * approximations where no equivalent token exists yet (documented so
+ * a future token addition can replace them):
+ *   - comparison edges/lane accents use --rel-contrasts (the same hue
+ *     docs/assets/style.css uses for the "contrasts" relation, which
+ *     is what most comparison claims resolve to)
+ *   - tentative ("要確認") edges/labels and the closed-audit top rule
+ *     use --color-oral-ink / --color-oral-border (the only existing
+ *     warm "attention" tokens) in place of the original's bespoke
+ *     oranges (#b06432/#9b4c24/#a5483f)
+ * No inline style= is used anywhere that reads this file (CSP
+ * style-src 'self').
+ */
+
+.root {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 2.5rem 0 4.5rem;
+}
+
+.root :focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--color-ink-muted);
+  font:
+    500 0.72rem / 1.3 var(--font-mono),
+    monospace;
+  letter-spacing: 0.12em;
+}
+
+.auditSection {
+  max-width: 660px;
+  padding: 1.75rem 0;
+  border-block: 1px solid var(--color-rule);
+}
+
+.auditSection.closed {
+  border-top-color: var(--color-oral-border);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.header h1 {
+  margin: 0.3rem 0 0.55rem;
+  overflow-wrap: anywhere;
+  line-height: 1.3;
+}
+
+.meta {
+  color: var(--color-ink-muted);
+}
+
+.backLink {
+  display: inline-flex;
+  min-height: 44px;
+  flex: 0 0 auto;
+  align-items: center;
+  font-weight: 600;
+  color: var(--color-accent);
+}
+.backLink:hover {
+  color: var(--color-accent-strong);
+}
+
+.graphHelp {
+  max-width: 70ch;
+  color: var(--color-ink-muted);
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+.notice {
+  margin: 1.25rem 0;
+  padding: 0.75rem 0.9rem;
+  border-left: 3px solid var(--color-accent);
+  background: var(--color-surface-2);
+  font-size: 0.9rem;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 0.75rem 1.1rem;
+  padding: 1.1rem 0;
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.controls fieldset {
+  display: flex;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.controls legend,
+.controls > label {
+  color: var(--color-ink-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.controls label {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.controls fieldset label {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+.controls button,
+.controls select,
+.controls input[type="number"] {
+  min-height: 44px;
+  border: 1px solid var(--color-rule);
+  border-radius: 3px;
+  background: var(--color-surface-elevated);
+  color: var(--color-ink);
+  font: inherit;
+}
+
+.controls button[aria-pressed="true"] {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-surface);
+}
+
+.advanced {
+  flex-basis: 100%;
+}
+.advanced > summary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  width: fit-content;
+  color: var(--color-ink-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.advancedBody {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
+  gap: 1rem 1.35rem;
+  padding: 0.875rem;
+  border: 1px solid var(--color-rule);
+  background: var(--color-surface-elevated);
+}
+.optionGroup > div {
+  display: grid;
+  gap: 2px;
+}
+.smallPrint {
+  max-width: 220px;
+  font-size: 0.68rem;
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--color-ink-muted);
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  padding: 0.75rem 0;
+  font:
+    0.78rem / 1.5 var(--font-mono),
+    monospace;
+  color: var(--color-ink-muted);
+}
+
+.warning {
+  margin: 0.75rem 0;
+  padding: 0.875rem;
+  border: 1px solid var(--color-oral-border);
+  background: var(--color-oral-bg);
+}
+
+.graphWrap {
+  overflow: auto;
+  min-height: 360px;
+  border: 1px solid var(--color-rule);
+  background-color: var(--color-surface-elevated);
+  background-image:
+    linear-gradient(var(--color-surface-2) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-surface-2) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+.graphWrap svg {
+  display: block;
+  min-width: 760px;
+}
+
+.edge {
+  stroke: var(--color-accent);
+  stroke-width: 2;
+}
+.edgeComparison {
+  stroke: var(--rel-contrasts);
+  stroke-dasharray: 5 4;
+}
+.edgeTentative {
+  stroke: var(--color-oral-ink);
+  stroke-dasharray: 8 6;
+}
+.edgeLabel {
+  fill: var(--color-accent);
+  paint-order: stroke;
+  stroke: var(--color-surface-elevated);
+  stroke-width: 5px;
+  stroke-linejoin: round;
+  font:
+    600 11px / 1.2 var(--font-sans),
+    sans-serif;
+  pointer-events: none;
+}
+.edgeLabelTentative {
+  fill: var(--color-oral-ink);
+}
+.edgeHit {
+  stroke: transparent;
+  stroke-width: 44;
+  cursor: pointer;
+}
+.nodeRect {
+  fill: var(--color-surface-elevated);
+  stroke: var(--color-rule);
+  stroke-width: 1.5;
+}
+.nodeFocus .nodeRect {
+  stroke: var(--color-accent);
+  stroke-width: 3;
+}
+.nodeText {
+  fill: var(--color-ink);
+  font:
+    500 12px / 1.2 var(--font-sans),
+    sans-serif;
+  pointer-events: none;
+}
+.laneLabel {
+  paint-order: stroke fill;
+  stroke: var(--color-bg);
+  stroke-width: 6px;
+  stroke-linejoin: round;
+  pointer-events: none;
+  fill: currentColor;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.nodeCards {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 0.75rem;
+}
+.lane {
+  min-width: 0;
+}
+.laneHeading {
+  margin: 0 0 0.6rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 2px solid var(--color-rule);
+  font-weight: 600;
+}
+.laneCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  gap: 0.6rem;
+}
+
+.card {
+  padding: 0.875rem;
+  border: 1px solid var(--color-rule);
+  background: var(--color-surface-elevated);
+}
+.card h3 {
+  margin: 0 0 0.45rem;
+  overflow-wrap: anywhere;
+  line-height: 1.45;
+}
+.card p {
+  margin: 0.3rem 0;
+  color: var(--color-ink-muted);
+  font-size: 0.83rem;
+}
+.cardActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.6rem;
+}
+.cardActions button {
+  min-height: 44px;
+  border: 1px solid var(--color-rule);
+  border-radius: 3px;
+  background: var(--color-surface-elevated);
+  color: var(--color-ink);
+  font: inherit;
+}
+
+.listHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.claimList {
+  display: grid;
+  gap: 0.6rem;
+}
+.claim {
+  padding: 0.875rem;
+  border: 1px solid var(--color-rule);
+  background: var(--color-surface-elevated);
+}
+.claim h3 {
+  margin: 0 0 0.45rem;
+  overflow-wrap: anywhere;
+  line-height: 1.45;
+}
+.claim p {
+  margin: 0.3rem 0;
+  color: var(--color-ink-muted);
+  font-size: 0.83rem;
+}
+.claimMeta {
+  font:
+    0.75rem / 1.45 var(--font-mono),
+    monospace;
+}
+.claim button {
+  min-height: 44px;
+  border: 1px solid var(--color-rule);
+  border-radius: 3px;
+  background: var(--color-surface-elevated);
+  color: var(--color-ink);
+  font: inherit;
+}
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 1.1rem;
+}
+.pagination button {
+  min-height: 44px;
+  border: 1px solid var(--color-rule);
+  border-radius: 3px;
+  background: var(--color-surface-elevated);
+  color: var(--color-ink);
+  font: inherit;
+}
+
+.dialog {
+  width: min(760px, calc(100% - 28px));
+  max-height: min(84vh, 820px);
+  padding: 0;
+  overflow: auto;
+  border: 1px solid var(--color-rule);
+  background: var(--color-surface-elevated);
+  color: var(--color-ink);
+}
+.dialog::backdrop {
+  background: rgb(20 24 22 / 58%);
+}
+.dialogHead {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.1rem;
+  padding: 0.875rem 1.1rem;
+  border-bottom: 1px solid var(--color-rule);
+  background: var(--color-surface-elevated);
+}
+.dialogHead h2 {
+  margin: 0;
+}
+.dialogHead button,
+.dialogBody button {
+  min-height: 44px;
+}
+.dialogBody {
+  padding: 1.1rem;
+}
+.facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem 1.1rem;
+}
+.facts dt {
+  color: var(--color-ink-muted);
+  font-size: 0.75rem;
+}
+.facts dd {
+  margin: 0.1rem 0 0.5rem;
+  overflow-wrap: anywhere;
+}
+.evidenceList {
+  padding-left: 1.25rem;
+}
+.evidenceList li {
+  margin: 0.75rem 0;
+}
+.hash {
+  overflow-wrap: anywhere;
+  font:
+    0.72rem / 1.45 var(--font-mono),
+    monospace;
+}
+
+@media (max-width: 720px) {
+  .root {
+    width: min(100% - 22px, 680px);
+    padding-top: 1.5rem;
+  }
+  .header,
+  .summary,
+  .facts {
+    display: block;
+  }
+  .controls {
+    align-items: stretch;
+  }
+  .controls > label,
+  .controls fieldset,
+  .advanced {
+    width: 100%;
+  }
+  .controls fieldset {
+    flex-wrap: wrap;
+  }
+  .controls button,
+  .controls select {
+    flex: 1;
+  }
+  .graphWrap {
+    min-height: 0;
+  }
+}

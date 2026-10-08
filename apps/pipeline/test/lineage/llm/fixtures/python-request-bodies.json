@@ -1,0 +1,83 @@
+{
+  "groq_eval": {
+    "method": "POST",
+    "url": "https://api.groq.com/openai/v1/chat/completions",
+    "headers": {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer gsk_x"
+    },
+    "json_body": {
+      "model": "llama-3.3-70b-versatile",
+      "messages": [
+        {
+          "role": "system",
+          "content": "あなたは学術論文の評価アシスタントです。\nユーザーの研究プロファイルに基づき、各論文の有用性を判定してください。\n\n## 出力形式（厳守）\n- JSON配列のみを返してください\n- マークダウンのバッククォート（```）は絶対に含めないでください\n- 各要素: {\"index\": int, \"relevance\": 1-5, \"summary_ja\": str, \"reason\": str, \"tags\": [str]}\n- index: 評価対象の論文リストで示された番号（[論文1]なら1、[論文2]なら2、...）をそのまま設定してください\n- relevance: 1=無関係, 2=弱い関連, 3=中程度, 4=強い関連, 5=必読\n- summary_ja: 日本語で3行以内の要約\n- reason: 日本語で1文、読むべき理由（無関係なら読まなくてよい理由）\n- tags: 最大4個の日本語タグ（例: 「新手法」「ベンチマーク」「応用」「理論」）\n- 全ての論文について1件ずつ評価を返してください（省略・重複禁止）\n"
+        },
+        {
+          "role": "user",
+          "content": "## あなたの研究プロファイル\nRAG research profile\n\n## 評価対象の論文（2件）\n[論文1]\nタイトル: Paper One\nカテゴリ: cs.CL\n学会: ICLR\nGitHub Stars: 42\n引用数: 7\nアブストラクト: An abstract with some content.\n\n[論文2]\nタイトル: Paper Two\nカテゴリ: cs.CL\n学会: ICLR\nGitHub Stars: 42\n引用数: 7\nアブストラクト: An abstract with some content.\n\n各論文について、その番号を\"index\"に設定したJSON配列で評価してください。\n"
+        }
+      ],
+      "temperature": 0.2
+    },
+    "timeout": 60.0
+  },
+  "groq_classify": {
+    "method": "POST",
+    "url": "https://api.groq.com/openai/v1/chat/completions",
+    "headers": {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer gsk_x"
+    },
+    "json_body": {
+      "model": "llama-3.3-70b-versatile",
+      "messages": [
+        {
+          "role": "system",
+          "content": "Compare two AI/ML papers (A older, B newer). Output ONLY JSON:\n{\"relation\":\"<one>\",\"confidence\":<0.0-1.0>,\"rationale\":\"<one Japanese sentence>\"}\n\nrelation values (pick one): supersedes / successor / extends / ablation / baseline_only / contrasts / unrelated\n- supersedes: 同じアプローチで明確に性能を凌駕、基準論文を置き換える\n- successor: 研究ラインの自然な発展、漸進的な改良\n- extends: 同じ手法を別ドメイン・別タスク・別規模に応用\n- ablation: 構成要素の寄与を分解測定する解析論文\n- baseline_only: 比較対象として引用するだけで、知的な継承はない\n- contrasts: 同じ問題に対する根本的に異なるアプローチ\n\nrationale rules — read carefully, most errors are here:\n- 30-200 chars, one Japanese sentence\n- MUST mention a concrete concept from B's title or abstract (a method name, dataset, metric, or architectural choice), so the reader knows which two papers are compared.\n- NEVER output these heuristic templates (emitting them wastes an LLM call):\n  - \"論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している\"\n  - \"論文 B は論文 A の研究ラインを継承し自然に発展させている\"\n  - \"論文 B は論文 A をベースライン比較にのみ用いている\"\n\nExamples (each names a concrete concept):\n- extends: \"B のグラフ畳み込み層は、A のスペクトル法を空間領域に再定式化し計算量を O(E) に落としている。\"\n- supersedes: \"B (FlashAttention-2) は A と同じ exact attention のまま work partitioning を改良し2倍高速化、A を置き換える。\"\n- ablation: \"B は A の各構成要素を取り除いて精度への寄与を分解測定している。\"\n"
+        },
+        {
+          "role": "user",
+          "content": "PAPER A (older / target):\nTitle: AlphaNet\nYear: 2020\nAbstract: First idea.\n\nPAPER B (newer / candidate):\nTitle: BetaNet\nYear: 2024\nAbstract: Improved version.\n\nHow does Paper B relate to Paper A?\n"
+        }
+      ],
+      "temperature": 0.2,
+      "response_format": {
+        "type": "json_object"
+      }
+    },
+    "timeout": 60.0
+  },
+  "gemini_eval": {
+    "method": "POST",
+    "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent",
+    "headers": {
+      "Content-Type": "application/json",
+      "x-goog-api-key": "g_k"
+    },
+    "json_body": {
+      "systemInstruction": {
+        "parts": [
+          {
+            "text": "あなたは学術論文の評価アシスタントです。\nユーザーの研究プロファイルに基づき、各論文の有用性を判定してください。\n\n## 出力形式（厳守）\n- JSON配列のみを返してください\n- マークダウンのバッククォート（```）は絶対に含めないでください\n- 各要素: {\"index\": int, \"relevance\": 1-5, \"summary_ja\": str, \"reason\": str, \"tags\": [str]}\n- index: 評価対象の論文リストで示された番号（[論文1]なら1、[論文2]なら2、...）をそのまま設定してください\n- relevance: 1=無関係, 2=弱い関連, 3=中程度, 4=強い関連, 5=必読\n- summary_ja: 日本語で3行以内の要約\n- reason: 日本語で1文、読むべき理由（無関係なら読まなくてよい理由）\n- tags: 最大4個の日本語タグ（例: 「新手法」「ベンチマーク」「応用」「理論」）\n- 全ての論文について1件ずつ評価を返してください（省略・重複禁止）\n"
+          }
+        ]
+      },
+      "contents": [
+        {
+          "role": "user",
+          "parts": [
+            {
+              "text": "## あなたの研究プロファイル\nRAG research profile\n\n## 評価対象の論文（2件）\n[論文1]\nタイトル: Paper One\nカテゴリ: cs.CL\n学会: ICLR\nGitHub Stars: 42\n引用数: 7\nアブストラクト: An abstract with some content.\n\n[論文2]\nタイトル: Paper Two\nカテゴリ: cs.CL\n学会: ICLR\nGitHub Stars: 42\n引用数: 7\nアブストラクト: An abstract with some content.\n\n各論文について、その番号を\"index\"に設定したJSON配列で評価してください。\n"
+            }
+          ]
+        }
+      ],
+      "generationConfig": {
+        "temperature": 0.2,
+        "responseMimeType": "application/json"
+      }
+    },
+    "timeout": 60.0
+  }
+}

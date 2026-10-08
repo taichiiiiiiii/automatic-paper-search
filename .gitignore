@@ -37,3 +37,14 @@ paperpilot/data/lineage-cache/*
 # release artefact lives on GitHub Releases (downloaded by CI on demand)
 # so the local dir should never be staged.
 paperpilot/data/unarxive/
+
+# TypeScript monorepo (docs/design/39-typescript-cloudflare-migration.md)
+node_modules/
+.next/
+apps/web/out/
+*.tsbuildinfo
+.vitest/
+coverage/
+
+# vitest JSON reports written by the release no-skip gate (pages-release.yml)
+.vitest-release-report.json

@@ -1,0 +1,267 @@
+/*
+ * Ported from docs/index.html's inline `<style>` (the `.s0*` rules,
+ * minus the page-local DADS color re-skin, which was a one-off visual
+ * choice for the old GitHub Pages landing and is not one of the ported
+ * design tokens -- this page uses the same tokens as every other
+ * apps/web page, from app/globals.css's `@theme`).
+ */
+
+.s0 {
+  padding: clamp(2rem, 1rem + 5vw, 5rem) var(--space-edge) 0;
+  max-width: 62rem;
+  margin: 0 auto;
+}
+
+.lede {
+  max-width: 34rem;
+  margin: 0;
+  font-family: var(--font-ja);
+  font-size: clamp(1.05rem, 0.95rem + 0.4vw, 1.35rem);
+  line-height: 1.65;
+  color: var(--color-ink);
+  letter-spacing: 0.01em;
+}
+.ledeEm {
+  font-family: var(--font-serif);
+  font-style: normal;
+  font-weight: 500;
+}
+.ledeN {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-feature-settings: "tnum";
+}
+
+.examples {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0.95rem 0 0;
+  padding: 0;
+  border: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  color: var(--color-ink-subtle);
+}
+.examplesLabel {
+  margin: 0;
+  letter-spacing: 0.04em;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.85rem;
+  padding: 0.18rem 0.7rem;
+  background: var(--color-tag-bg);
+  color: var(--color-tag-ink);
+  border: 1px solid var(--color-rule);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--duration-fast) var(--ease),
+    border-color var(--duration-fast) var(--ease),
+    color var(--duration-fast) var(--ease);
+}
+.chip:hover {
+  background: var(--color-surface-elevated);
+  border-color: var(--color-accent);
+  color: var(--color-accent-strong);
+}
+.chip:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.nextSteps {
+  margin-top: 1rem;
+  font-family: var(--font-ja);
+  font-size: 0.875rem;
+  line-height: 1.7;
+  color: var(--color-ink-muted);
+}
+.nextSteps summary {
+  display: list-item;
+  width: fit-content;
+  padding: 0.65rem 0;
+  cursor: pointer;
+  color: var(--color-ink);
+}
+.nextSteps summary:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+}
+.nextSteps ol {
+  margin: 0.3rem 0;
+  padding-left: 1.5rem;
+}
+.nextSteps li {
+  margin-bottom: 0.45rem;
+}
+
+/* Collapsible conference list. */
+.confs {
+  margin-top: clamp(2.5rem, 1.5rem + 3vw, 4rem);
+  border-top: 1px solid var(--color-rule);
+  padding-top: 1.4rem;
+}
+.confsToggle {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  padding: 0.5rem 0;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: var(--text-tag);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+  text-align: left;
+}
+.confsToggle:hover {
+  color: var(--color-accent-strong);
+}
+.confsToggle:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+.confsCaret {
+  display: inline-block;
+  font-size: 0.85em;
+  color: var(--color-ink-subtle);
+}
+.confsList {
+  list-style: none;
+  margin: 0.8rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  column-gap: clamp(1.25rem, 3vw, 2.5rem);
+  row-gap: 0;
+}
+@media (min-width: 640px) {
+  .confsList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1024px) {
+  .confsList {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.conf {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--color-rule);
+}
+.confLink {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-ink);
+  text-decoration: none;
+  letter-spacing: -0.005em;
+}
+.confLink:hover {
+  color: var(--color-accent-strong);
+  text-decoration: none;
+}
+.confLink:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+.confCount {
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink-muted);
+}
+
+/* Audited-lineage shelf -- static truthful-closed state only. */
+.lineages {
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--color-rule);
+  padding-top: 0.75rem;
+}
+.lineagesHeading {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(1.35rem, 1.1rem + 1vw, 1.8rem);
+  font-weight: 500;
+}
+.lineagesList {
+  list-style: none;
+  margin: 0.9rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: 0.75rem;
+}
+.lineageEmpty {
+  padding: 0.9rem 0;
+  color: var(--color-ink-muted);
+}
+.lineageItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--color-rule);
+  border-radius: 0.5rem;
+}
+.lineageLink {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-ink);
+  text-decoration: none;
+  letter-spacing: -0.005em;
+}
+.lineageLink:hover {
+  color: var(--color-accent-strong);
+}
+.lineageLink:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+.lineageMeta {
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  color: var(--color-ink-muted);
+}
+.lineageStale {
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  color: var(--color-ink-subtle);
+}
+
+@media (max-width: 480px) {
+  .s0 {
+    padding-top: clamp(1.4rem, 1rem + 2vw, 2rem);
+  }
+  .lede {
+    font-size: 1rem;
+  }
+  .confLink {
+    font-size: 0.92rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chip {
+    transition: none;
+  }
+}

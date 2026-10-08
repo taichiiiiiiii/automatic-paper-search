@@ -1,0 +1,28 @@
+{
+  "name": "@paperpilot/core",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./site": "./src/site/index.ts",
+    "./pycompat": "./src/pycompat/index.ts",
+    "./schemas": "./src/schemas/index.ts",
+    "./identity": "./src/identity/index.ts",
+    "./layout": "./src/layout/index.ts",
+    "./paths": "./src/paths/index.ts",
+    "./slug": "./src/slug/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "ajv": "^8.17.0",
+    "ajv-formats": "^3.0.0",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "json-schema-to-zod": "^2.8.1"
+  }
+}

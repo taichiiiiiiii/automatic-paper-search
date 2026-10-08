@@ -1,0 +1,138 @@
+{
+  "schema_version": "lineage-artifact-v1",
+  "root": "S2FOCUS",
+  "nodes": [
+    {
+      "id": "S2CHILD",
+      "title": "Child Paper",
+      "year": 2027,
+      "venue": "ICML",
+      "venue_tier": "A+",
+      "authors": [
+        "C. Author"
+      ],
+      "kinds": [],
+      "citation_count": 3,
+      "github_stars": 0,
+      "tldr": "Child abstract.",
+      "short_abstract": "Child abstract.",
+      "is_focus": false
+    },
+    {
+      "id": "S2FOCUS",
+      "title": "Oral Paper One",
+      "year": 2026,
+      "venue": "TESTCONF",
+      "venue_tier": "A+",
+      "authors": [
+        "A. Author"
+      ],
+      "kinds": [
+        "vision"
+      ],
+      "citation_count": 5,
+      "github_stars": 2,
+      "tldr": "Focus abstract.",
+      "short_abstract": "Focus abstract.",
+      "arxiv_id": "2601.00001",
+      "is_focus": true,
+      "seed_paper_id": "1111111111111111111111111111111111111111",
+      "aliases": [
+        [
+          "arxiv",
+          "2601.00001"
+        ],
+        [
+          "semantic_scholar",
+          "S2FOCUS"
+        ]
+      ]
+    },
+    {
+      "id": "S2PARENT",
+      "title": "Parent Paper",
+      "year": 2020,
+      "venue": "NeurIPS",
+      "venue_tier": "A+",
+      "authors": [
+        "B. Author"
+      ],
+      "kinds": [],
+      "citation_count": 100,
+      "github_stars": 0,
+      "tldr": "Parent abstract.",
+      "short_abstract": "Parent abstract.",
+      "is_focus": false
+    }
+  ],
+  "edges": [
+    {
+      "src": "S2FOCUS",
+      "dst": "S2CHILD",
+      "rel": "successor",
+      "relation": "successor",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「Child Paper」(2027) は「Oral Paper One」(2026) を結果として参照している。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_lineage",
+          "version": "p2-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-metadata",
+          "sha256": "0ca49f4a8e22f1d24a9d098331b4456fa1ef0ccf79fad1f8e75325ab8ef97e17"
+        },
+        "classification": {
+          "method": "intent_map",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "S2PARENT",
+      "dst": "S2FOCUS",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「Oral Paper One」(2026) は「Parent Paper」(2020) の手法を拡張している。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_lineage",
+          "version": "p2-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-metadata",
+          "sha256": "fd0bd8f4b0c7edb7561879191fdba5730d53e6a1a933201ccc522bb6ce4e8b6f"
+        },
+        "classification": {
+          "method": "intent_map",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    }
+  ],
+  "clusters": [
+    {
+      "id": "vision",
+      "label": "vision",
+      "focus_ids": [
+        "S2FOCUS"
+      ]
+    }
+  ],
+  "meta": {
+    "kind": "conference",
+    "generator": "paperpilot.scripts.build_lineage",
+    "generated_at": "2026-08-30T00:00:00Z"
+  }
+}

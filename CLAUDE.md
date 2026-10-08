@@ -634,18 +634,32 @@ uv run python -m paperpilot.scripts.scaffold_conference_page --conference <slug>
 
 ---
 
+## TypeScript 移行中の開発ルール（`feat/ts-migration`、計画: [`docs/design/39-typescript-cloudflare-migration.md`](docs/design/39-typescript-cloudflare-migration.md)）
+
+移行が完了する（P5）まで、上の Python 向けルールと次のルールを両方守る。
+
+- **Node 22 以上**（jsdom 30・wrangler 4 が要求。CI も Node 22）。ホストの Node が 20 の場合は `npx --yes -p node@22 node -e 'console.log(process.execPath)'` で得た Node 22 を PATH の先頭に置いて実行する。
+- **場所**: `apps/web`（Next.js 静的書き出し）、`apps/api`（Hono on Workers）、`apps/pipeline`（Node の収集・生成）、`packages/core`（データ形式・共有ロジック・Python 互換関数）。道具は pnpm（`npx --yes pnpm@10.34.6 …`、corepack が使えない環境向け）、Biome、Vitest、tsx。
+- **絶対ルールの TS 版**: 外部 API を叩くテストを書かない（`fetch` を注入してモック）。API キーは環境変数のみ。LLM 呼び出しは共通インターフェース（§11 の `AbstractLLMProvider` 相当）を経由する。lineage / theme JSON の生成元は 1 つ（§13・§14）。スコアの正規化式・重みは変えない（§5）。
+- **TDD とカバレッジ**: テストを先に書く。Vitest のカバレッジ 80% 以上。
+- **移行中のデータ**: 新しいコードは `docs/`・`paperpilot/data/`・`paperpilot/output/` を読むだけ。書き出しは一時ディレクトリ。データの正本は develop。
+- **一致判定**: Python 版を置き換える前に `apps/pipeline/src/parity` で同じ入力の結果が一致することを確かめる（§7.2）。丸め・数値表記・並び順・時刻・正規表現は `packages/core` の Python 互換関数を使う。
+- **公開しない**: Cloudflare Pages へのアップロード（プレビュー含む）、Worker のデプロイ、develop への merge はユーザー承認後だけ。Cloudflare のトークンは扱わない（作成・登録はユーザー）。
+- **安全対策の移植**: [`docs/migration/safety-contracts.md`](docs/migration/safety-contracts.md) の表の各行を、テストごと移植する。
+
 ## CI / GitHub Actions
 
-ワークフロー一覧 (`.github/workflows/`・全 13 本):
+ワークフロー一覧 (`.github/workflows/`・全 14 本):
 - `collect-weekly.yml` — 主要会議の論文を深掘り収集 → candidate生成 → CAS promotion → exact-SHA release。**手動 `workflow_dispatch` 専用**（#245 で週次 cron 廃止）
 - `collect-daily-watch.yml` — follow 著者の新作を確認 → 通知のみ。**手動 `workflow_dispatch` 専用**（#245 で日次 cron 廃止）
 - 両 collect workflow は collector を `--fail-on-errors` で起動する（取得元・出力先・状態ファイル（seen_ids 退避）の失敗、不完全なキーワード、有効な取得元が無い run で exit 1）。シグナルの劣化（`signal:`）は失敗にせず run_history の `degraded_signals` に記録するだけ。daily-watch の実行履歴は専用ファイル `run_history.daily.jsonl`（`incremental.run_history_file`、初回実行で作成）。daily のコミット step は失敗時も走り、出力・`seen_ids.daily.json`・実行履歴をコミットする — runner は終了コードが決まる前に配信と seen_ids のスタンプを済ませている（配信先が全滅した run だけスタンプしない）ため、コミットしないと同じヒットを再通知する。weekly は失敗時に `run_history.jsonl` を artifact として保存
 
-🔴 **現行13 workflowのトリガ表** — 名前から推測せず`on:`節を確認すること。
+🔴 **現行14 workflowのトリガ表** — 名前から推測せず`on:`節を確認すること。
 
 | workflow | push | PR | schedule | release | dispatch |
 |---|:--:|:--:|:--:|:--:|:--:|
 | `tests` | ✅ `develop`/`main` | ✅ | | | ✅ |
+| `ts-ci`（TypeScript 移行の CI、デプロイなし・secrets なし） | ✅ `feat/ts-migration`（paths 限定） | ✅（paths 限定） | | | ✅ |
 | `data-audit` | ✅ | ✅ | | | ✅ |
 | `pages` | ✅ `develop` | | | | |
 | `pages-release` | | | | | reusable (`workflow_call`) |
