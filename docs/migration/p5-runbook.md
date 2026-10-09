@@ -23,10 +23,7 @@
 7. 切替（`p5/consolidate` を merge commit で取り込む = B + C）
 8. 観察と、Worker を戻せる期間の終わり
 
-> **置き換えが必要な値（A5 で決まるまで仮）**
-> この文書の `<PAGES_PROJECT>` と `<PUBLIC_ORIGIN>` は仮の印です。Cloudflare Pages のプロジェクト名と本番 origin が P0-1 で決まったら、この文書の印をすべて実際の値に置き換えます。
-> 同じ値は次の場所にもあります（同時に直す）: `packages/core/src/site/config.ts` の `PAGES_PROJECT_NAME`（今は `"paperpilot-pages-TODO"`）・`PUBLIC_ORIGIN`（今は `"https://paperpilot.pages.dev"`）・`PAGES_PRODUCTION_BRANCH`（今は `"production"`）、`.github/workflows/pages-release.yml` と `.github/workflows/pages-rollback.yml` の env `CF_PAGES_PROJECT` / `CF_PAGES_PRODUCTION_BRANCH` / `PUBLIC_ORIGIN`、テストの `apps/web/test/landing/landing-json-ld.test.ts`（origin を直書き）。
-> この branch では B が済んでいるので、workflow は `.github/workflows-p5/` ではなく `.github/workflows/` にあります。
+> **値（2026-10-09 確定）**: Pages プロジェクト `paperpilot`、公開 origin `https://paperpilot.pages.dev`。本番ブランチ `production` はプロジェクト側の設定とまだ照合していない（違えば公開の段階で安全側に止まる）。値の置き場所は `packages/core/src/site/config.ts` と `.github/workflows/pages-release.yml`・`pages-rollback.yml` の env。
 
 ## 記号
 
@@ -63,7 +60,7 @@ pnpm --filter @paperpilot/api exec wrangler kv key get --namespace-id=3e11d3e73d
 | キー | Phase W | 切替 手順 1 | 切替 手順 4 | 手順 8 の後 | 観察の後 |
 |---|---|---|---|---|---|
 | `accepting` | `"true"` | `"false"` | `"false"` | `"true"` | `"true"` |
-| `origin_allowlist` | `["https://taichiiiiiiii.github.io"]` | 同じ | `+ "<PUBLIC_ORIGIN>"` | 同じ | `["<PUBLIC_ORIGIN>"]`（転送ページが動いたら GitHub Pages を外す） |
+| `origin_allowlist` | `["https://taichiiiiiiii.github.io"]` | 同じ | `+ "https://paperpilot.pages.dev"` | 同じ | `["https://paperpilot.pages.dev"]`（転送ページが動いたら GitHub Pages を外す） |
 | `namespace_tag` | `"paperpilot-themes-production"` | | | | |
 
 ---
@@ -136,13 +133,13 @@ git ls-files docs ':!docs/design' ':!docs/migration' ':!docs/research' ':!docs/Q
 2. ☐ 本番ではないブランチに上げる。プレビュー URL ができます。Cloudflare Access は任意です。
 
    ```
-   pnpm --filter @paperpilot/api exec wrangler pages deploy "$PWD/apps/web/out" --project-name=<PAGES_PROJECT> --branch=rehearsal
+   pnpm --filter @paperpilot/api exec wrangler pages deploy "$PWD/apps/web/out" --project-name=paperpilot --branch=rehearsal
    ```
 
 3. ☐ smoke を通す。値は `.github/workflows/pages-release.yml` と同じです。
 
    ```
-   pnpm exec tsx apps/pipeline/src/release/cli.ts validate smoke https://rehearsal.<PAGES_PROJECT>.pages.dev "$(git rev-parse HEAD)" --expect-bytes apps/web/out --expect-404 /__pp_smoke_missing__/ --expect-redirect /iclr-2026/lineage.html=/iclr-2026/lineage/
+   pnpm exec tsx apps/pipeline/src/release/cli.ts validate smoke https://rehearsal.paperpilot.pages.dev "$(git rev-parse HEAD)" --expect-bytes apps/web/out --expect-404 /__pp_smoke_missing__/ --expect-redirect /iclr-2026/lineage.html=/iclr-2026/lineage/
    ```
 
 4. ☐ ブラウザで全種類のページを見る。CSP のコンソールエラーがないこと。テーマ投稿フォームは 403 か縮退表示になります。プレビューの origin は許可していないので、これで正常です。
@@ -306,7 +303,7 @@ git cherry-pick 83a7551..origin/p5/consolidate
    - `git log --oneline 0d85e50..origin/develop -- docs paperpilot/data paperpilot/output` に、準備のときになかったデータ commit がない。
    - `git rev-list --count p5/consolidate..origin/develop` が 0。
    - 新しいデータ commit があれば、準備の 3a か 3b からやり直す（停止は続ける）。
-4. ☐ KV `origin_allowlist` に `<PUBLIC_ORIGIN>` を足す。
+4. ☐ KV `origin_allowlist` に `https://paperpilot.pages.dev` を足す。
 5. ☐ PR を develop に **merge commit** で取り込む（以下 `<mergeB>`）。squash や rebase は使わない。R-B は `<mergeB>^1` を B の前の tree として使います。
    ✔ 確認:
    - Node 版 `pages.yml` が validate → build → admit → deploy → smoke → record まですべて緑。
@@ -321,7 +318,7 @@ git cherry-pick 83a7551..origin/p5/consolidate
    - CSP ヘッダは `frame-ancestors` だけ。全ページに meta CSP がある。
    - ブラウザで見て CSP 違反がない。
    - 新サイトのテーマ投稿フォームが停止中の表示になる。
-   - `<PUBLIC_ORIGIN>` からの preflight で ACAO が返る。
+   - `https://paperpilot.pages.dev` からの preflight で ACAO が返る。
 7. ☐ 5 本の workflow を戻す（同じファイル名の Node 版が動きます）。
 
    ```
@@ -593,7 +590,7 @@ B 自身の 2 つの削除は `<mergeB>^1` の状態で戻ります。
 
 5. ☐ push する。`docs/**` が変わると、戻った Python の `pages.yml` が動き、旧サイトを GitHub Pages に出し直します。手順 10 を実行済みなら、転送ページは上書きされます。
    - 戻った旧 workflow（`theme-on-demand.yml` など）は、切替の手順 7 で enable したままです。旧の流れで動いてよいかを確かめてから `accepting=true` に戻す（要確認）。
-6. ☐ 許可リストから `<PUBLIC_ORIGIN>` を外す。
+6. ☐ 許可リストから `https://paperpilot.pages.dev` を外す。
 7. apps/api の Worker はそのまま残す。revert でルートの `wrangler.jsonc` と `worker/` が戻りますが、Workers Builds の root directory は `apps/api` のままなので、出し直されるのは apps/api です。Durable Object のカウンタは何もしなくてよい。☐ Cloudflare Pages のプロジェクトは使わずに置くか、本番デプロイを消す。
 
 ### ↩ Worker（`<mergeB>` の後）
@@ -639,3 +636,17 @@ B 自身の 2 つの削除は `<mergeB>^1` の状態で戻ります。
 | GitHub Deployment の記録 | §6.2 に個別の手順なし（要確認） |
 | GitHub Pages の中身（転送ページ） | R-B 手順 5（旧 `pages.yml` が上書き） |
 | workflow の有効・無効 | 切替 手順 2・7 |
+
+---
+
+## 実施記録
+
+| 日時（JST） | 段階 | 結果 |
+|---|---|---|
+| 2026-10-09 | P3 Merge A | PR #435 を merge commit `3287edf` で取り込み。Python `tests`・GitHub Pages の公開 5 段とも成功。旧 Worker は `exists` を返した |
+| 2026-10-09 | W1 | KV の 3 キーを書き込み、`--remote` で読み戻して一致 |
+| 2026-10-09 | W2 | apps/api（80.7 KiB）と旧 Worker の戻し設定（20.2 KiB）の dry-run が通った |
+| 2026-10-09 | W3（代替） | ダッシュボードがボット確認で開けないため、`pnpm --filter @paperpilot/api exec wrangler deploy` で直接出した（版 `43e31d5f-b77b-400b-9330-4e513f7707c1`）。Workers Builds の root directory は `/` のまま（☐ ユーザー作業で `apps/api` に変える） |
+| 2026-10-09 | W4 | `/api/health`・CORS（ACAO 完全一致と `Vary: Origin`）・知らない origin の 403・既存テーマの `exists` がすべて合格 |
+| 2026-10-09 | W5 | 失敗。GitHub への dispatch が `401 Bad credentials`（`GH_DISPATCH_PAT` の失効。最後の成功は 2026-06-27）。`accepting=false` にして受付を止めた（503 `paused`）。☐ PAT を作り直して `wrangler secret put GH_DISPATCH_PAT` |
+| 2026-10-09 | P2 | `d7ace34` のビルドを `--branch=rehearsal` でプレビューに出した（https://rehearsal.paperpilot.pages.dev）。`validate smoke`（marker・byte 一致・404・転送）が合格。主要 6 ページの表示と meta CSP を確認 |
