@@ -143,6 +143,9 @@ export function defaultDeps(repoRoot: string = DEFAULT_REPO_ROOT): RunBuildDeepL
         ambientEnv: process.env,
         fetchImpl,
         sleep: (ms) => new Promise((r) => setTimeout(r, ms)),
+        // Surface why an LLM call failed (status code) in the CI log;
+        // without it every failure silently falls back to the heuristic.
+        logger: { warn: (msg) => process.stderr.write(`${msg}\n`) },
       }),
   };
 }
