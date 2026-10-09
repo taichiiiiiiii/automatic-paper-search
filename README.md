@@ -214,7 +214,6 @@ automatic-paper-search/
 │   └── config/       # config.yaml、config.daily-watch.yaml、denylist・alias、.env.example
 ├── legacy/redirect/  # 旧 GitHub Pages の転送サイト
 ├── docs/             # design/（設計書）、migration/（移行の記録）、research/（市場調査）
-├── archive/          # 原本 .docx
 └── .github/          # workflows/（12 本）、actions/setup-pnpm/
 ```
 

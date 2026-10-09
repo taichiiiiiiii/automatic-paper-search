@@ -121,19 +121,14 @@ interface SeeAlsoLink {
 
 const SEEALSO_LINKS: readonly SeeAlsoLink[] = [
   {
-    icon: "✅",
-    href: "https://github.com/taichiiiiiiii/automatic-paper-search/blob/develop/docs/design/09-implementation-status.md",
-    label: "実装ステータス（現況の単一の真実源）",
-  },
-  {
     icon: "📐",
-    href: "https://github.com/taichiiiiiiii/automatic-paper-search/tree/develop/docs/design",
-    label: "基本設計書（パイプライン・スコアリング／v2.1 時点）",
+    href: "https://github.com/taichiiiiiiii/automatic-paper-search/blob/develop/docs/design/39-typescript-cloudflare-migration.md",
+    label: "設計とロードマップ（TypeScript / Cloudflare 構成）",
   },
   {
-    icon: "📊",
-    href: "https://github.com/taichiiiiiiii/automatic-paper-search/tree/develop/docs/research",
-    label: "市場調査レポート",
+    icon: "✅",
+    href: "https://github.com/taichiiiiiiii/automatic-paper-search/tree/develop/docs/migration",
+    label: "移行と運用の記録",
   },
 ];
 

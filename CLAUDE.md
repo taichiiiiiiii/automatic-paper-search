@@ -4,7 +4,7 @@
 
 > 本文は必要なタスクでのみ参照する。人手監査・科学的根拠・公開承認の gate と、下の「絶対ルール」は省略しない。
 
-設計書は [`docs/design/`](docs/design/)、移行の記録は [`docs/migration/`](docs/migration/)、市場調査は [`docs/research/`](docs/research/)。原本 `.docx` は [`archive/`](archive/) にある。**編集は markdown 側で行う。**
+設計書は [`docs/design/`](docs/design/)、移行の記録は [`docs/migration/`](docs/migration/)。
 
 ---
 
@@ -84,7 +84,6 @@ automatic-paper-search/
 │   └── config/     # config.yaml、config.daily-watch.yaml、denylist・allowlist・alias、.env.example
 │                   # conference-copy/<slug>.json（scaffold CLI が作る、1 slug = 1 ファイル）
 ├── legacy/redirect/   # 旧 GitHub Pages 用の転送サイト（legacy-redirects.yml が公開）
-├── archive/           # 原本 .docx（編集禁止）
 ├── docs/              # design/、migration/、research/、QWEN_IMPLEMENTER.md（配信はしない）
 └── .github/
     ├── workflows/     # Node の workflow 12 本（下の表）
@@ -537,7 +536,7 @@ Hono on Cloudflare Workers。本番設定は `apps/api/wrangler.jsonc`（Worker 
 
 ## Claude Code 運用ノート
 
-- `AGENTS.md` / `PAPERPILOT_PROFILE.md` の Qwen・Codex の routing と role 表、[`docs/design/13-agent-workboard.md`](docs/design/13-agent-workboard.md) は Codex CLI 向けの別運用。Claude Code には適用しない。
+- `AGENTS.md` / `PAPERPILOT_PROFILE.md` の Qwen・Codex の routing と role 表は Codex CLI 向けの別運用。Claude Code には適用しない。
 - 製品の LLM provider 設定（Ollama / Gemini / Groq / Claude）は、作業エージェントの routing とは別物。混同しない。
 - サブエージェントは `.claude/agents/`、手順は `.claude/skills/`（`run-verification`・`add-plugin`）。
 - 変更後は差分と gate（lint・typecheck・テスト）を確かめ、結果・skip・残リスクを報告する。workflow の dispatch、issue/PR 作成、commit/push/merge、公開、通知、secret・設定の変更はユーザーの明示承認を取る。
