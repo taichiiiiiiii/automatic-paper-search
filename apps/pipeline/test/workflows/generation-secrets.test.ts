@@ -8,7 +8,13 @@
  * configured -> retain published lineages, exit 0" guard.
  */
 import { describe, expect, it } from "vitest";
-import { jobsOf, readWorkflow, type YamlDoc } from "./helpers.js";
+import {
+  jobsOf,
+  listWorkflowFiles,
+  readWorkflow,
+  readWorkflowRawText,
+  type YamlDoc,
+} from "./helpers.js";
 
 function jobNamed(doc: YamlDoc, jobId: string): YamlDoc {
   const found = jobsOf(doc).find(([id]) => id === jobId);
@@ -59,6 +65,33 @@ describe("H3: generation steps carry the exact LLM/S2 secrets the live workflows
     );
     // biome-ignore lint/suspicious/noTemplateCurlyInString: literal GitHub Actions expression (YAML env value), not a JS template literal.
     expect(step.env?.PAPERPILOT_GEMINI_API_KEY).toBe("${{ secrets.GEMINI_API_KEY }}");
+  });
+
+  it("collect-weekly.yml's generate/\"Run PaperPilot collector\" step reads the S2 key under the theme workflows' name", () => {
+    const step = stepNamed(
+      jobNamed(readWorkflow("collect-weekly.yml"), "generate"),
+      "Run PaperPilot collector",
+    );
+    // R0-2: the collector reads PAPERPILOT_S2_API_KEY (collect/config/env.ts);
+    // the secret is PAPERPILOT_S2_API_KEY everywhere, with the pre-P5
+    // S2_API_KEY kept only as a fallback.
+    expect(step.env?.PAPERPILOT_S2_API_KEY).toBe(
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: literal GitHub Actions expression (YAML env value), not a JS template literal.
+      "${{ secrets.PAPERPILOT_S2_API_KEY || secrets.S2_API_KEY }}",
+    );
+  });
+
+  it("no workflow reads the S2 key from secrets.S2_API_KEY without preferring PAPERPILOT_S2_API_KEY", () => {
+    const files = listWorkflowFiles();
+    expect(files).toContain("collect-weekly.yml");
+    for (const name of files) {
+      for (const line of readWorkflowRawText(name).split("\n")) {
+        if (!/secrets\.S2_API_KEY\b/.test(line)) continue;
+        expect(line, `${name}: ${line.trim()}`).toContain(
+          "secrets.PAPERPILOT_S2_API_KEY || secrets.S2_API_KEY",
+        );
+      }
+    }
   });
 
   it("collect-weekly.yml's lineage step restores the no-LLM-key retain-and-exit-0 guard", () => {

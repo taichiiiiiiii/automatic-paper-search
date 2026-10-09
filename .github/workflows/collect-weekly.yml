@@ -40,7 +40,9 @@ jobs:
         id: collector
         env:
           PAPERPILOT_GITHUB_TOKEN: ${{ github.token }}
-          PAPERPILOT_S2_API_KEY: ${{ secrets.S2_API_KEY }}
+          # Same name the theme workflows use; S2_API_KEY stays as a fallback
+          # for the pre-P5 name (R0-2).
+          PAPERPILOT_S2_API_KEY: ${{ secrets.PAPERPILOT_S2_API_KEY || secrets.S2_API_KEY }}
           PAPERPILOT_OPENALEX_EMAIL: ${{ secrets.OPENALEX_EMAIL }}
           PAPERPILOT_GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           PAPERPILOT_CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}

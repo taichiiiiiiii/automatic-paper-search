@@ -191,8 +191,8 @@ Stage 4 を有効にすると、さらに `llm_relevance`（1..5）で並べ替�
 |---|---|
 | `GH_PAT` | daily-watch の push（無ければ `github.token`） |
 | `OPENALEX_EMAIL` | OpenAlex polite pool |
-| `S2_API_KEY` / `GEMINI_API_KEY` / `CLAUDE_API_KEY` / `GROQ_API_KEY` | 週次収集の取得元・LLM |
-| `PAPERPILOT_GROQ_API_KEY` / `PAPERPILOT_S2_API_KEY` | テーマ家系図 |
+| `PAPERPILOT_S2_API_KEY`（旧名 `S2_API_KEY` も可）/ `GEMINI_API_KEY` / `CLAUDE_API_KEY` / `GROQ_API_KEY` | 週次収集の取得元・LLM |
+| `PAPERPILOT_GROQ_API_KEY` / `PAPERPILOT_S2_API_KEY` | テーマ家系図（`PAPERPILOT_S2_API_KEY` は週次収集と共通） |
 | `SLACK_WEBHOOK_URL` | 通知と失敗通知 |
 | `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` | Pages の公開・戻し（environment `cloudflare-pages-deploy` に置く） |
 
