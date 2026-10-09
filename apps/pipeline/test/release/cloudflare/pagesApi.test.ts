@@ -13,6 +13,7 @@ import {
   CloudflareApiError,
   getDeploymentCommitHash,
   getProductionDeploymentId,
+  pickNewest,
   rollbackDeployment,
 } from "../../../src/release/cloudflare/pagesApi.js";
 
@@ -562,7 +563,8 @@ it("getProductionDeploymentId follows pagination to find the SHA on page 2", asy
   const fetchImpl = pagedFetch(5, 2);
   const result = await getProductionDeploymentId(baseOptions(fetchImpl));
   expect(result.deploymentId).toBe("dep-found");
-  expect(fetchImpl.calls).toHaveLength(2);
+  // R0-2: a match on page 2 does not end the walk (order is undocumented).
+  expect(fetchImpl.calls).toHaveLength(5);
   expect(fetchImpl.calls[0]).toContain("/deployments?env=production&per_page=25");
   expect(fetchImpl.calls[0]).not.toContain("&page=");
   expect(fetchImpl.calls[1]).toContain("/deployments?env=production&per_page=25&page=2");
@@ -628,4 +630,114 @@ it("no getProductionDeploymentId error path ever contains the token", async () =
     expect(String((caught as Error).message)).not.toContain(SECRET_TOKEN);
     expect(String((caught as Error).stack)).not.toContain(SECRET_TOKEN);
   }
+});
+
+// R0-2 (review LOW): the walk used to stop at the first page with any
+// match. List order is undocumented, so a newer deploy of the same SHA can
+// sit on a later page; every page up to the cap is scanned and the newest
+// match by created_on wins.
+function pagesFetch(
+  totalPages: number,
+  byPage: Record<number, unknown[]>,
+): CfFetchFn & { calls: string[] } {
+  const calls: string[] = [];
+  const fn: CfFetchFn = async (url) => {
+    calls.push(url);
+    const page = Number(new URL(url).searchParams.get("page") ?? "1");
+    const result = byPage[page] ?? [
+      entry(`dep-other-${page}`, "2026-06-01T00:00:00Z", "success", "b".repeat(40)),
+    ];
+    return {
+      status: 200,
+      json: async () => ({ success: true, result, result_info: { total_pages: totalPages } }),
+    };
+  };
+  return Object.assign(fn, { calls });
+}
+
+it("getProductionDeploymentId picks a newer match on a later page over an older match on page 1", async () => {
+  const fetchImpl = pagesFetch(4, {
+    1: [entry("dep-old", "2026-01-01T00:00:00Z", "success")],
+    3: [entry("dep-new", "2026-06-01T00:00:00Z", "success")],
+  });
+  const result = await getProductionDeploymentId(baseOptions(fetchImpl));
+  expect(result).toEqual({ deploymentId: "dep-new", deploymentUrl: "https://dep-new.pages.dev" });
+  expect(fetchImpl.calls).toHaveLength(4);
+});
+
+it("getProductionDeploymentId keeps the page-1 match when later pages only hold older ones", async () => {
+  const fetchImpl = pagesFetch(3, {
+    1: [entry("dep-new", "2026-06-01T00:00:00Z", "success")],
+    2: [entry("dep-old", "2026-01-01T00:00:00Z", "success")],
+  });
+  const result = await getProductionDeploymentId(baseOptions(fetchImpl));
+  expect(result.deploymentId).toBe("dep-new");
+  expect(fetchImpl.calls).toHaveLength(3);
+});
+
+it("getProductionDeploymentId does not return a page-1 success while a newer deploy on page 2 is in progress", async () => {
+  let attempt = 0;
+  const calls: string[] = [];
+  const fetchImpl: CfFetchFn = async (url) => {
+    calls.push(url);
+    const page = Number(new URL(url).searchParams.get("page") ?? "1");
+    if (page === 1) attempt++;
+    const result =
+      page === 1
+        ? [entry("dep-old", "2026-01-01T00:00:00Z", "success")]
+        : [entry("dep-new", "2026-06-01T00:00:00Z", attempt === 1 ? "active" : "success")];
+    return {
+      status: 200,
+      json: async () => ({ success: true, result, result_info: { total_pages: 2 } }),
+    };
+  };
+  const sleeps: number[] = [];
+  const result = await getProductionDeploymentId(baseOptions(fetchImpl, sleeps));
+  expect(result.deploymentId).toBe("dep-new");
+  expect(calls).toHaveLength(4);
+  expect(sleeps).toHaveLength(1);
+});
+
+it("getProductionDeploymentId fails on a newer failed deploy on a later page even if page 1 has a success", async () => {
+  const fetchImpl = pagesFetch(2, {
+    1: [entry("dep-old", "2026-01-01T00:00:00Z", "success")],
+    2: [entry("dep-new", "2026-06-01T00:00:00Z", "failure")],
+  });
+  await expect(getProductionDeploymentId(baseOptions(fetchImpl))).rejects.toThrow(
+    /ended with status "failure"/,
+  );
+});
+
+it("getProductionDeploymentId still caps the scan at 10 pages when matches exist", async () => {
+  const byPage: Record<number, unknown[]> = {
+    1: [entry("dep-in-cap", "2026-01-01T00:00:00Z", "success")],
+    11: [entry("dep-beyond-cap", "2026-06-01T00:00:00Z", "success")],
+  };
+  const fetchImpl = pagesFetch(1000, byPage);
+  const result = await getProductionDeploymentId(baseOptions(fetchImpl));
+  expect(result.deploymentId).toBe("dep-in-cap");
+  expect(fetchImpl.calls).toHaveLength(10);
+});
+
+it("pickNewest is order-independent and treats a missing/unparseable created_on as the oldest", () => {
+  type E = { id: string; created_on?: string };
+  const a: E = { id: "a", created_on: "2026-03-01T00:00:00Z" };
+  const b: E = { id: "b", created_on: "2026-05-01T00:00:00Z" };
+  const c: E = { id: "c", created_on: "2026-04-01T00:00:00Z" };
+  const bad: E = { id: "bad", created_on: "not a date" };
+  const missing: E = { id: "missing" };
+  const orders: E[][] = [
+    [a, b, c],
+    [b, c, a],
+    [c, a, b],
+    [bad, a, b, missing, c],
+  ];
+  for (const order of orders) {
+    expect(pickNewest(order).id).toBe("b");
+  }
+  expect(pickNewest([bad, a]).id).toBe("a");
+  expect(pickNewest([missing, bad]).id).toBe("missing");
+  // Tie: the earlier-seen entry wins.
+  const tie: E = { id: "x", created_on: "2026-05-01T00:00:00Z" };
+  expect(pickNewest([tie, b]).id).toBe("x");
 });

@@ -129,6 +129,24 @@ interface CfDeploymentListBody extends CfErrorBody {
   result_info?: { total_pages?: number };
 }
 
+/** `created_on` as epoch ms; a missing/unparseable timestamp sorts as the oldest. */
+function createdOnMs(entry: { created_on?: string }): number {
+  const ms = Date.parse(entry.created_on ?? "");
+  return Number.isNaN(ms) ? Number.NEGATIVE_INFINITY : ms;
+}
+
+/**
+ * The newest candidate by `created_on`, independent of list/page order.
+ * On a tie the earlier-seen entry wins (deterministic). Exported for tests.
+ */
+export function pickNewest<T extends { created_on?: string }>(candidates: readonly T[]): T {
+  let best = candidates[0] as T;
+  for (const candidate of candidates.slice(1)) {
+    if (createdOnMs(candidate) > createdOnMs(best)) best = candidate;
+  }
+  return best;
+}
+
 function realSleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -136,8 +154,12 @@ function realSleep(ms: number): Promise<void> {
 /**
  * Walks the production deployment list (page 1, 2, … up to
  * `result_info.total_pages`, never more than `DEPLOYMENT_LIST_MAX_PAGES`)
- * and stops at the first page that contains any candidate for
- * `sourceSha`. Returns every candidate seen.
+ * and returns every candidate for `sourceSha` on every page walked.
+ *
+ * It deliberately does NOT stop at the first page that has a match: the
+ * list's sort order is undocumented, so a later page may hold a NEWER
+ * deployment of the same commit (e.g. a re-run deploy). The caller picks
+ * the newest candidate by `created_on` across all pages.
  */
 async function fetchCandidates(options: CfDeploymentIdOptions): Promise<CfDeploymentListEntry[]> {
   const base = `https://api.cloudflare.com/client/v4/accounts/${encodeURIComponent(
@@ -160,7 +182,6 @@ async function fetchCandidates(options: CfDeploymentIdOptions): Promise<CfDeploy
     for (const entry of body.result ?? []) {
       if (isProductionCandidate(entry, options.sourceSha)) candidates.push(entry);
     }
-    if (candidates.length > 0) break;
     const totalPages = body.result_info?.total_pages;
     if (typeof totalPages !== "number" || !Number.isFinite(totalPages) || page >= totalPages) break;
   }
@@ -192,8 +213,7 @@ export async function getProductionDeploymentId(
         `no production Cloudflare Pages deployment found for commit ${options.sourceSha}`,
       );
     }
-    candidates.sort((a, b) => Date.parse(b.created_on ?? "") - Date.parse(a.created_on ?? ""));
-    const newest = candidates[0] as CfDeploymentListEntry;
+    const newest = pickNewest(candidates);
     const status = newest.latest_stage?.status;
     if (status !== undefined && TERMINAL_FAILURE_STATUSES.has(status)) {
       throw new CloudflareApiError(
