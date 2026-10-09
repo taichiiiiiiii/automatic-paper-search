@@ -13,7 +13,8 @@
  *  6. GitHub stars enrichment (`github.ts`).
  *  7. Final strong-alias node dedup (`dedup.ts`).
  *  8. Drop degenerate-rationale edges, log the classify summary.
- *  9. Serialize lineage-artifact-v1 in graph-ID/wire-key order, validate,
+ *  9. Prune non-focus nodes no surviving edge touches (`pruneEdgelessNodes`).
+ * 10. Serialize lineage-artifact-v1 in graph-ID/wire-key order, validate,
  *     run the completeness gates, then atomically replace the output.
  *
  * Per CLAUDE.md absolute rule §14: this is the sole writer of
@@ -122,6 +123,28 @@ export function logClassifySummary(
         "edgeless artifact (exit 3, nothing written; any previously published lineage.json is left untouched). See issue #45.",
     );
   }
+}
+
+/**
+ * Drop every non-focus node that no edge touches (R2: the lineage
+ * quality audit's `orphan_node_count` must be 0 for a publicly eligible
+ * lineage). Focus/seed nodes — and therefore the root, which is always
+ * picked among them — are kept even when edge-less, so a lone-seed or
+ * genuinely edge-less theme still publishes its seeds. Order of the
+ * surviving nodes is preserved. `clusters` is always `[]` for themes and
+ * `meta.seeds` lists only focus ids, so nothing else references a pruned
+ * node; edges are not touched.
+ */
+export function pruneEdgelessNodes<T extends { id: string; is_focus?: boolean }>(
+  nodes: readonly T[],
+  edges: readonly { src: string; dst: string }[],
+): T[] {
+  const touched = new Set<string>();
+  for (const edge of edges) {
+    touched.add(edge.src);
+    touched.add(edge.dst);
+  }
+  return nodes.filter((node) => node.is_focus === true || touched.has(node.id));
 }
 
 /** Pick degree-desc / graph-ID-asc; never use input-order fallback. */
@@ -449,7 +472,10 @@ export async function buildThemeLineage(
       node.seed_paper_id = seedPaperId;
     }
   }
-  const orderedNodes = [...nodes.values()].sort((a, b) => codepointCompare(a.id, b.id));
+  const orderedNodes = pruneEdgelessNodes(
+    [...nodes.values()].sort((a, b) => codepointCompare(a.id, b.id)),
+    orderedEdges,
+  );
 
   const rootId = pickRootSeed([...focusIdSet].sort(codepointCompare), orderedEdges);
 

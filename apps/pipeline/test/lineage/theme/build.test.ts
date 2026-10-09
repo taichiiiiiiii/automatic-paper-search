@@ -22,6 +22,7 @@ import {
   type BuildThemeLineageDeps,
   buildThemeLineage,
   edgeForJson,
+  pruneEdgelessNodes,
 } from "../../../src/lineage/theme/build.js";
 import { makeEdge } from "../../../src/lineage/theme/edges.js";
 import { sanitizeTheme, themeLineagePath, themeSlug } from "../../../src/lineage/theme/slug.js";
@@ -351,7 +352,7 @@ class FixedClassificationProvider implements LLMProvider {
 }
 
 describe("LIN-37 call site (build.ts:378): filterEdgesByRationale is actually applied to the published graph", () => {
-  it("drops a candidate edge whose LLM classification carries a 3-char rationale, keeping both endpoint nodes", async () => {
+  it("drops a candidate edge whose LLM classification carries a 3-char rationale, then prunes the now edge-less non-focus endpoint", async () => {
     const seed = s2Paper("seed1", { title: "Short Rationale Theme Seed", cites: 100 });
     const parent = s2Paper("parent1", {
       title: "Some Unrelated Earlier Parent Paper",
@@ -390,11 +391,10 @@ describe("LIN-37 call site (build.ts:378): filterEdgesByRationale is actually ap
     const payload = JSON.parse(readFileSync(outPath, "utf-8"));
     // The candidate edge existed (both nodes were discovered) but was
     // filtered out — a mutant that drops the `filterEdgesByRationale`
-    // call at build.ts:378 would leave it in `edges`.
-    expect(payload.nodes.map((n: Record<string, unknown>) => n.id).sort()).toEqual([
-      "parent1",
-      "seed1",
-    ]);
+    // call would leave it in `edges` (and keep "parent1" as its endpoint).
+    // With the edge gone, the non-focus "parent1" is edge-less and is
+    // pruned (R2 orphan pruning); the focus seed always survives.
+    expect(payload.nodes.map((n: Record<string, unknown>) => n.id).sort()).toEqual(["seed1"]);
     expect(payload.edges).toEqual([]);
   });
 });
@@ -441,5 +441,34 @@ describe("pyFloat write-site (p4-followups #24, build.ts:535 edgeForJson)", () =
     expect(raw).toContain('"confidence": 1.0');
     expect(raw).not.toMatch(/"conf": 1,/);
     expect(raw).not.toMatch(/"confidence": 1,/);
+  });
+});
+
+describe("pruneEdgelessNodes (R2: orphan_node_count must be 0)", () => {
+  const nodes = [
+    { id: "a", is_focus: true },
+    { id: "b", is_focus: false },
+    { id: "c", is_focus: false },
+    { id: "d", is_focus: true },
+    { id: "e" },
+  ];
+
+  it("drops non-focus nodes no edge touches, keeps focus nodes even when edge-less, preserves order", () => {
+    const kept = pruneEdgelessNodes(nodes, [{ src: "c", dst: "a" }]);
+    expect(kept.map((n) => n.id)).toEqual(["a", "c", "d"]);
+  });
+
+  it("keeps a non-focus node that appears only as an edge source or only as a target", () => {
+    const kept = pruneEdgelessNodes(nodes, [
+      { src: "b", dst: "a" },
+      { src: "d", dst: "e" },
+    ]);
+    expect(kept.map((n) => n.id)).toEqual(["a", "b", "d", "e"]);
+  });
+
+  it("returns only the focus nodes for an edge-less graph and does not mutate its input", () => {
+    const input = [...nodes];
+    expect(pruneEdgelessNodes(input, []).map((n) => n.id)).toEqual(["a", "d"]);
+    expect(input).toEqual(nodes);
   });
 });
