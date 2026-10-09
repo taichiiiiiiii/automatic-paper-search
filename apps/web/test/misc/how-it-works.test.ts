@@ -30,8 +30,10 @@ const COPY_REGIONS = [
   "rel-row__eg",
   "how__steps",
   "how__body",
-  "seealso__note",
-  "seealso__links",
+  // seealso__note / seealso__links diverge on purpose since the cutover: the
+  // legacy page linked to design docs 01-38 and docs/research, which were
+  // removed (b7d1be4). The built page links to design doc 39 and
+  // docs/migration instead; see the dedicated test below.
   "guide-cta",
 ] as const;
 
@@ -180,6 +182,13 @@ describe("built /how-it-works/ page parity with docs/how-it-works/index.html", (
       }
     },
   );
+
+  it.skipIf(!existsSync(BUILT_PAGE))("links only to design docs that still exist", () => {
+    const built = readFileSync(BUILT_PAGE, "utf8");
+    expect(built).toContain("docs/design/39-typescript-cloudflare-migration.md");
+    expect(built).toContain("tree/develop/docs/migration");
+    expect(built).not.toMatch(/docs\/design\/(0[1-9]|[12][0-9]|3[0-8])-|docs\/research/);
+  });
 
   it.skipIf(!existsSync(BUILT_PAGE))("emits no inline style for the CSP contract", () => {
     const built = read(BUILT_PAGE);

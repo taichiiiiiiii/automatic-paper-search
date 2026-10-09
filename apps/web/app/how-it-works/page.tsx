@@ -230,9 +230,8 @@ export default function HowItWorksPage() {
             さらに詳しく
           </h2>
           <p className={styles.seealsoNote}>
-            実装の詳細は GitHub のドキュメントへ。<strong>いま動いている実装の現況</strong>
-            は実装ステータスが単一の真実源です（基本設計書 01–07 は v2.1・2026-04-05
-            時点の記録で、現在の実装とは差があります）。
+            実装の詳細は GitHub のドキュメントへ。<strong>いまの構成と今後の計画</strong>
+            は設計書 39 番、切替と運用の経過は移行の記録にあります。
           </p>
         </div>
         <ul className={styles.seealsoLinks}>
