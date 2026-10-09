@@ -326,8 +326,9 @@ export async function promote(options: PromoteOptions): Promise<PromoteResult> {
       }
       const untracked = git(adapter, tree, ["ls-files", "--others", "--exclude-standard"]);
       if (untracked.trim() !== "") {
+        const listed = untracked.trim().split("\n").slice(0, 20).join(", ");
         throw new PromotionError(
-          "refresh produced untracked files outside the promotion allowlist",
+          `refresh produced untracked files outside the promotion allowlist: ${listed}`,
         );
       }
 
