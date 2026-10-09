@@ -1,64 +1,54 @@
 # CLAUDE.md — PaperPilot 実装ガイド
 
-本ファイルは **Claude Code** がこのプロジェクトを実装する際の指示書。`AGENTS.md` / `PAPERPILOT_PROFILE.md` の **Codex CLI + Qwen Flash/MAX routing と role 運用**は別ツール向けであり、Claude Code セッションには適用しない（role名・モデル名を混同しない）。Claude Codeでの実装・レビュー・commit/push承認境界は本ファイルが正本。`PAPERPILOT_PROFILE.md`側のSingle-agent modeや旧role表はCodex CLI運用の履歴であり、この区別はClaude Codeの現行方針にも影響しない。
+本ファイルは **Claude Code** がこのプロジェクトで作業するときの指示書。Claude Code での実装・レビュー・commit/push の承認境界は本ファイルが正本。`AGENTS.md` / `PAPERPILOT_PROFILE.md` / `.codex/` の Codex CLI・Qwen の運用は別ツール向けで、Claude Code には適用しない（残すか消すかは判断待ち 8）。
 
-> 本文は必要なタスクでのみ参照する。実人手監査・科学的根拠・公開承認のgate、および下記「絶対ルール」は省略しない。
+> 本文は必要なタスクでのみ参照する。人手監査・科学的根拠・公開承認の gate と、下の「絶対ルール」は省略しない。
 
-このファイルは Claude Code が本プロジェクトを実装する際に参照する指示書です。
-設計書（[`docs/design/`](docs/design/)）および市場調査レポート（[`docs/research/`](docs/research/)）と合わせて読むこと。
-原本 `.docx` は [`archive/`](archive/) に保管されていますが、**編集は markdown 側で行う**ことが正。
+設計書は [`docs/design/`](docs/design/)、移行の記録は [`docs/migration/`](docs/migration/)、市場調査は [`docs/research/`](docs/research/)。原本 `.docx` は [`archive/`](archive/) にある。**編集は markdown 側で行う。**
+
+---
+
+## ⚠️ このブランチの状態（`p5/consolidate`）
+
+- Python を TypeScript に移し終え、「1 プロジェクト = 1 フォルダ」に整理したブランチ。`feat/ts-migration` の上に P5 の commit B（`dataMove apply`、`83a7551`）と Tier C の削除（`24cf1c1`）を載せている。
+- 削除済み: `paperpilot/`（Python 一式）、`pyproject.toml`、`uv.lock`、Docker 一式（`Dockerfile`・`docker-compose.yml`・`docker/`・`containers/`）、`tools/`、`.github/scripts/`、旧 Worker `worker/`、ルートの `wrangler.jsonc`。
+- 🔴 **P5 切替の手順書（[`docs/migration/p5-runbook.md`](docs/migration/p5-runbook.md)）の「切替」の段階に来るまで、このブランチを `develop` に merge しない。** `develop` の本番は今も `worker/`（Cloudflare Workers Builds が自動デプロイ）と Python の workflow で動いている。merge すると本番の Worker と workflow が消える。
+- Phase W（Worker を apps/api に切り替える段階）は、`feat/ts-migration` を develop に入れた後（Merge A）、このブランチを merge する前に行う。切替後に旧 Worker を予備として使うことはしない（2026-10-08 の決定）。
+- 本番の値: Cloudflare Pages のプロジェクトは `paperpilot`、公開 origin は `https://paperpilot.pages.dev`（2026-10-09 確定）。本番ブランチは `production`（プロジェクト設定と照合済み）。値は `packages/core/src/site/config.ts` と `pages-release.yml`・`pages-rollback.yml` の env の 3 か所で揃える。
 
 ---
 
 ## プロジェクト概要
 
-- **目的：** AI/ML 論文を arXiv / Semantic Scholar / OpenAlex から自動収集し、品質シグナルで絞り込んだ上で **系譜（家系図）として可視化** するパイプライン
-- **主要な出力：** GitHub Pages 上の10学会・28,300件の横断検索と学会別カタログ。lineageは品質manifestでfail closedし、現在の表示eligibleは0件。サイト上のフォームから新規テーマ投稿可能（CF Worker `worker/index.ts` → `theme-on-demand.yml` dispatch → credential-free candidate → latest `develop`へのCAS promotion → promoted exact-SHA Pages release）。補助出力として CSV / JSON / Slack / Email も維持
-- **対象ユーザー：** AI/ML 研究者、R&D エンジニア、独立リサーチャー
-- **運用コスト目標：** ¥0〜¥1,500/月（Stage 4 LLM / 系譜分類 LLM のみ有料オプション）
-- **差別化：** OSS・ローカル実行可能・YAML 設定駆動・日本語対応・品質シグナル統合スコア・**LLM による引用関係の意味分類**（`supersedes` / `successor` / `extends` / `ablation` / `baseline_only` / `contrasts` / `unrelated`）
-- **参照仕様書：** [`docs/design/`](docs/design/)（v2.1、Round 2 レビュー25件反映版、原本は `archive/`）
+- **目的:** AI/ML 論文を arXiv / Semantic Scholar / OpenAlex から集め、品質シグナルで絞り込み、**系譜（家系図）として見せる**。
+- **主な出力:** 10 学会・28,300 本の横断検索と学会別カタログ（静的サイト）。系譜は品質 manifest で fail closed し、今の表示対象は 0 件。サイトのフォームからテーマを投稿できる（`apps/api` → `theme-on-demand.yml` → 候補を作る → 最新 `develop` へ CAS で promote → その exact SHA を公開）。補助出力として CSV / JSON / Slack も残す。
+- **公開先:** 移行後は Cloudflare Pages（静的書き出し）と Cloudflare Workers（API）。旧 GitHub Pages は転送ページ（`legacy/redirect/`）になる。
+- **対象ユーザー:** AI/ML 研究者、R&D エンジニア、独立リサーチャー。
+- **運用コスト目標:** ¥0 が基本（LLM の有料枠と独自ドメインだけが任意の費用）。
+- **差別化:** OSS、YAML 設定、日本語対応、品質シグナルの統合スコア、**LLM による引用関係の意味分類**（`supersedes` / `successor` / `extends` / `ablation` / `baseline_only` / `contrasts` / `unrelated`）。
 
 ---
 
-## 環境情報
+## 環境と道具
 
-```
-正規実行：Docker（production / integration test）
-ホスト要件：Docker Engine / Docker Desktop、Compose、wrapper用Python 3.10+
-CI移行中：現行GitHub Actionsはhost uv。approved-image runtime / CI-shadow gate後にDockerへ移行
-```
-
-### 開発ツール
-
-正規のproduction / integration-test経路は `docker/paperpilot-compose` です。checked-in digestは意図的に無効で、approved imageのbuild/runtime検証は未実施です。以下のhost `uv` はlock保守と短い補助check専用で、Docker gateの代替ではありません（bare の `ruff`/`mypy`/`pytest` は解決しないことがある）:
+- **Node 22 以上**（`package.json` の `engines`。jsdom・wrangler 4 が要求。CI も Node 22）。ホストが Node 20 なら `npx --yes -p node@22 node -e 'console.log(process.execPath)'` で得た Node 22 を PATH の先頭に置く。
+- **pnpm 10.34.6**（`packageManager` で固定）。corepack が使えない環境では `npx --yes pnpm@10.34.6 …`。
+- **Biome**（lint・format）、**Vitest**（テスト）、**tsx**（CLI 実行）、**TypeScript 5.9**。
+- Python・uv・Docker はもう使わない。
 
 ```bash
-uv run ruff check paperpilot/                 # lint（push 前必須。pytest は I001 import-sort を拾わない）
-uv run mypy paperpilot/                        # type check ⚠️現環境では INTERNAL ERROR で走らない（後述「既知の環境問題」）
-uv run --extra dev pytest paperpilot/tests/    # host補助の全テスト（件数は実行ごとに記録）
-uv run pytest paperpilot/tests/test_venue_signal.py::test_x -q   # 単一テスト
-uv run pytest paperpilot/tests/ --cov=paperpilot --cov-config=/dev/null   # カバレッジ
+pnpm install --frozen-lockfile
+pnpm exec biome check .                 # lint（error は 0 にする。warning/info は可）
+pnpm -r typecheck                       # 全パッケージの型検査
+pnpm -r test                            # 全テスト（Vitest）
+pnpm --filter @paperpilot/web build     # 静的書き出し → apps/web/out
+pnpm exec tsx apps/pipeline/src/release/cli.ts validate bundle apps/web/out
 ```
 
-**既知の pre-existing failure は解消済み**（2026-08-20、Issue #357）。長年「node 環境依存」→のち「#257 の移行残り」と説明されてきたが、**どちらも誤り**だった。真因は `test_theme_typography_tokens.mjs` の `extractSelectorBlock()` が**グループ化セレクタを読めない**こと。`.node-card--theme .node-card__hub,` はカンマ終端なので `<selector>{` に一致せず、色だけ指定する後続の単独規則を検査していた。CSS は #329 の意図どおり `var(--text-micro)`(0.58rem) で正しい。⚠️**CSS を `--text-body-sm`(0.78rem) に「直す」な** — バッジが 34% 巨大化し `white-space: nowrap` の venue 行が壊れる。`pip install -e '.[dev]'` 互換も維持。
-
-### 依存ライブラリ
-
-```txt
-# paperpilot/requirements.txt
-arxiv>=4.0.1,<5         # arXiv API クライアント（utils/arxiv_feed.py が 4.0.1 のログ文言に依存）
-lxml>=5.0               # arXiv 応答本文の厳密な Atom 検査（utils/arxiv_feed.py）
-numpy>=1.26.0           # stage_embedding（runner が import 時に読む）
-requests>=2.31.0        # HTTP (同期)
-aiohttp>=3.9.0          # HTTP (非同期 Stage 0)
-pyyaml>=6.0             # YAML 設定読み込み
-python-dotenv>=1.0.0    # .env 読み込み
-
-# paperpilot/requirements-dev.txt
-pytest>=8.0
-pytest-cov>=4.1
-```
+- テスト件数（`feat/ts-migration` 時点、2026-10-07）: core 1,845、api 214、web 887、pipeline 2,633。このブランチでは変わり得るので、報告は実行結果の数字を使う。
+- `apps/web` の契約テストの一部は `apps/web/out` を読む。先に web build をしないと skip になる（`tests.yml` も build → test の順）。
+- `pnpm -r test` の出力はログファイルに書いてから `Test Files|Tests` を grep する。`head` で切ると各パッケージの集計が消える。
+- カバレッジ計測の道具（`@vitest/coverage-v8` など）はまだ入っていない。入れるなら依存追加の承認を取る。
 
 ---
 
@@ -66,114 +56,43 @@ pytest-cov>=4.1
 
 ```
 automatic-paper-search/
-├── CLAUDE.md                            # このファイル
-├── README.md                            # ユーザー向けドキュメント
-├── docs/
-│   ├── design/                          # 基本設計書 v2.1（markdown 正本）
-│   ├── research/                        # 市場調査レポート v2.0（markdown 正本）
-│   ├── iclr-2026/                       # GitHub Pages 論文ビューア（家系図ビュー本命）
-│   │   ├── index.html                   # 採択論文一覧（papers.json を表示）
-│   │   ├── lineage.html                 # 家系図ビュー（lineage.json を表示）
-│   │   ├── papers.json                  # build_pages.py が生成
-│   │   └── lineage.json                 # build_lineage.py が生成
-│   └── assets/                          # 共通 CSS/JS（app.js / lineage.js / style.css）
-├── archive/                             # 原本 .docx の保管先（編集禁止）
-├── .github/
-│   └── workflows/
-│       ├── collect-weekly.yml           # 手動 workflow_dispatch のみ（#245 で週次 cron 廃止。PAT に workflow scope 必要）
-│       ├── collect-daily-watch.yml      # 手動 workflow_dispatch のみ（#245 で日次 cron 廃止）
-│       ├── regen-themes.yml             # 手動 workflow_dispatch のみ (PR #261 で週次 cron 廃止)
-│       ├── theme-on-demand.yml          # オンデマンド単一テーマのcandidate生成・CAS promotion・exact-SHA release
-│       ├── lighthouse.yml               # PR ごと + 週次の Lighthouse / Core Web Vitals 測定
-│       ├── data-audit.yml               # ★ PR/push 時に audit_theme_seeds + audit_lineage_quality 自動実行 → off-topic seed / 構造異常 regression を block
-│       ├── paper-slides-on-demand.yml   # Paper Slide provider未接続の休眠scaffold
-│       └── publish.yml                  # build-only package検証（PyPI upload/OIDCなし）
-└── paperpilot/
-    ├── collector.py                     # CLI エントリーポイント
-    ├── config.yaml                      # 週次深掘り設定（秘匿情報なし）
-    ├── config.daily-watch.yaml          # 毎日の follow-watch 用 lean config
-    ├── .env.example                     # 環境変数テンプレート（Git 管理対象）
-    ├── .env                             # 秘匿情報（Git 管理外・絶対にコミットしない）
-    ├── .gitignore
-    ├── requirements.txt                 # 本番依存
-    ├── requirements-dev.txt             # 開発・テスト依存
-    ├── pipeline/                        # ステージ定義
-    │   ├── runner.py                    # PipelineRunner（全 Stage の統合）
-    │   ├── stage_collect.py             # Stage 0: asyncio 並列収集
-    │   ├── stage_rule_filter.py         # Stage 1: カテゴリ/日付/除外/差分
-    │   ├── stage_metric_score.py        # Stage 2: シグナル統合スコア
-    │   └── stage_llm_rank.py            # Stage 4: LLM リランク
-    ├── sources/                         # Source プラグイン
-    │   ├── base.py                      # AbstractSource
-    │   ├── arxiv_source.py              # arXiv API
-    │   ├── s2_source.py                 # Semantic Scholar
-    │   └── openalex_source.py           # OpenAlex
-    ├── signals/                         # 品質シグナル
-    │   ├── base.py                      # AbstractSignal（batch 対応）
-    │   ├── venue_signal.py              # 学会採択 (arXiv comment regex)
-    │   ├── citation_signal.py           # S2 /paper/batch
-    │   ├── author_signal.py             # S2 /author/batch (h-index)
-    │   ├── github_signal.py             # 共有 utils.github 経由で curated map → GitHub Search → GitHub Stars (log-scale)
-    │   ├── follow_signal.py             # 著者/組織ウォッチリスト (day-1 authority)
-    │   └── keyword_signal.py            # match_count / 3 * 100
-    ├── exporters/                       # 出力
-    │   ├── base.py                      # AbstractExporter
-    │   ├── csv_exporter.py
-    │   ├── json_exporter.py
-    │   ├── slack_exporter.py
-    │   └── email_exporter.py            # SMTP + STARTTLS, HTML/plain multipart
-    ├── llm/                             # Stage 4 LLM プロバイダ + 系譜関係分類
-    │   ├── base.py                      # AbstractLLMProvider, PaperEvaluation, RelationClassification
-    │   ├── ollama_provider.py           # ローカル無料
-    │   ├── gemini_provider.py           # Gemini (無料枠あり)
-    │   ├── groq_provider.py             # Groq Llama 3.3 (lineage 分類の無料第一候補)
-    │   └── claude_provider.py           # Anthropic Claude（設計書の第一推奨）
-    ├── scripts/                         # ビューア生成スクリプト（補助ツール群）
-    │   ├── collect_conference.py        # arXiv co:"<conf>" → VenueSignal 採択抽出 → output/<conf>/papers_*.csv (arXiv自己申告のみ=部分収録)
-    │   ├── collect_openreview.py        # OpenReview api2 venueid → 全採択論文 + Oral/Spotlight/Poster 区分 → output/<conf>/papers_*.csv (ICLR/NeurIPS/ICML の権威的全件収録、write_outputs を collect_conference と共有)
-    │   ├── collect_cvf.py               # CVF Open Access (openaccess.thecvf.com) listing → 各論文 detail を並列 fetch (citation_* meta + abstract) → 全採択収録 (CVPR/ICCV、ECCV は ECVA で別) write_outputs 共有。CVF は oral 区分を持たないので `--oral-arxiv-query 'co:"CVPR 2025"'` で arXiv 申告 oral を overlay (oral_titles_from_arxiv)
-    │   ├── collect_acl_anthology.py     # ACL Anthology XML dump (github acl-org/acl-anthology) → 本会議 long/short/main 全採択 + abstract → 収録 (ACL/EMNLP/NAACL) write_outputs 共有。同様に `--oral-arxiv-query` で oral overlay 可
-    │   ├── scaffold_conference_page.py  # cvpr-2026 テンプレ → docs/<conf>/index.html (+ 空 lineage.json)
-    │   ├── build_summary_csv.py         # full CSV → summary.csv (8 列 + 自動タグ)
-    │   ├── build_pages.py               # summary.csv → docs/<conf>/papers.json
-    │   ├── build_search_index.py       # 全 docs/<conf>/papers.json → docs/search-index-v2.json（canonical paper ID付き横断検索）
-    │   ├── sync_asset_versions.py      # docs/assets/*.{css,js} の内容ハッシュ → 全 HTML の ?v= を統一（--check で乖離検査）
-    │   ├── build_sitemap.py            # docs/**/*.html → docs/sitemap.xml を生成（--check で乖離検査。手編集禁止）
-    │   ├── build_lineage.py             # papers.json + S2 + LLM → lineage.json (arxiv_id 必須・S2 律速)
-    │   ├── build_conference_lineage.py  # Oral の title→OpenAlex 解決→参照/被引用で家系図 (S2/LLM 不要の free-tier fallback、edge は引用方向の successor ヒューリスティック) → docs/<conf>/lineage.json
-    │   ├── build_deep_lineage.py        # 1 論文 × N hop BFS → docs/<conf>/deep.json
-    │   ├── build_theme_lineage.py       # テーマ文字列 + S2 + LLM → docs/themes/<slug>/lineage.json
-    │   ├── generate_deep_manifest.py    # docs/<conf>/deep-*.json → deep-manifest.json
-    │   └── generate_themes_manifest.py  # docs/themes/<slug>/lineage.json → themes-manifest.json
-    ├── models/
-    │   └── paper.py                     # Paper データクラス
-    ├── utils/
-    │   ├── config_loader.py             # YAML + .env 統合
-    │   ├── dedup.py                     # dedup + seen_ids 管理（読めない seen_ids は .corrupt-<UTC> へ退避）
-    │   ├── arxiv_feed.py                # arXiv の「例外にならない欠損」（壊れた feed・skip された entry・feed でない 200）の検出
-    │   ├── rate_limiter.py              # 同期 sleep ベース
-    │   ├── http.py                      # 指数バックオフ retry
-    │   ├── github.py                    # 共有 GitHub 解決器（curated map + GitHub Search + Stars）
-    │   ├── json_parser.py               # LLM 3段階フォールバック
-    │   └── logger.py                    # 日次ローテ (7日保持)
-    ├── tests/                           # pytest + Node wrapperテスト（件数は実行時に記録）
-    │   ├── conftest.py
-    │   ├── test_*.py                    # 各モジュールのユニット/統合テスト
-    │   └── test_venue_stress.py         # 60 パターンで検出率 95% 以上
-    ├── data/                            # 永続データ（CI でコミット）
-    │   ├── seen_ids.json                # 差分更新用（Stage 1）
-    │   ├── run_history.jsonl            # 実行履歴
-    │   └── lineage-cache/               # S2 メタ + LLM 関係分類キャッシュ
-    ├── output/                          # 日次 CSV/JSON（CI でコミット）
-    │   ├── daily/                       # 通常ランの出力
-    │   └── iclr-2026/                   # 学会別ランの出力
-    │       ├── papers_YYYY-MM-DD.{csv,json}
-    │       ├── summary.csv              # build_summary_csv.py の出力
-    │       ├── oral_summaries_ja.md     # Oral 判定の入力
-    │       └── run_history.jsonl
-    └── logs/                            # ログ（ローカル専用）
-        └── paperpilot.log*              # 日次ローテ
+├── CLAUDE.md / README.md / CHANGELOG.md
+├── AGENTS.md / PAPERPILOT_PROFILE.md / .codex/   # Codex CLI 向け（判断待ち 8）
+├── package.json / pnpm-workspace.yaml / pnpm-lock.yaml / tsconfig.base.json / biome.json
+├── .lighthouserc.json                       # staticDistDir: ./apps/web/out
+├── apps/
+│   ├── web/        # Next.js 静的書き出し（Cloudflare Pages）。app/・components/・lib/・scripts/・static/・test/
+│   ├── api/        # Hono on Cloudflare Workers。src/{app,index,config}.ts、routes/、lib/、durable/quota-object.ts
+│   │               # wrangler.jsonc（本番 paperpilot-themes）、wrangler.preview.jsonc（プレビュー、dry-run）
+│   └── pipeline/   # Node の収集・生成・公開道具
+│       └── src/
+│           ├── collect/      # Stage 0〜4（stages/）、sources/、signals/、exporters/、llm/、state/、runner.ts、cli.ts
+│           ├── conference/   # 学会収集器 acl/・arxiv/・cvf/・openreview/、scaffold/、watch/、shared/
+│           ├── catalog/      # buildSummary（summary.csv）、buildPages（papers.json・conferences.json）
+│           ├── lineage/      # conference/・deep/・theme/・classify/・llm/・quality/・contract/・unarxive/
+│           ├── release/      # cli.ts（promote・package・commit-push・validate・marker・cf-*・gh-record・no-skip-gate）
+│           │                 # derived/（searchIndex・identityLite）、dataMove/、cloudflare/、github/、git/
+│           ├── parity/       # 比較ツール（compare-trees）
+│           └── shared/       # lock・CLI 共通（isMain）
+├── packages/
+│   └── core/       # 共有のデータ形式・zod スキーマ・layout 切替・slug・identity・paths・Python 互換関数（pycompat/）・site 設定
+├── schemas/        # JSON Schema（正本）
+├── data/
+│   ├── published/  # サイトが配信する JSON（conferences.json、search-index-v2.json、<conf>/、themes/ …）
+│   ├── state/      # seen_ids.json、seen_ids.daily.json、run_history.jsonl、lineage-cache/
+│   ├── inputs/     # 収集器の CSV/JSON（<conf>/、daily/、papers_YYYY-MM-DD.*）
+│   └── config/     # config.yaml、config.daily-watch.yaml、denylist・allowlist・alias、.env.example
+│                   # conference-copy/<slug>.json（scaffold CLI が作る、1 slug = 1 ファイル）
+├── legacy/redirect/   # 旧 GitHub Pages 用の転送サイト（legacy-redirects.yml が公開）
+├── archive/           # 原本 .docx（編集禁止）
+├── docs/              # design/、migration/、research/、QWEN_IMPLEMENTER.md（配信はしない）
+└── .github/
+    ├── workflows/     # Node の workflow 12 本（下の表）
+    └── actions/setup-pnpm/   # Node 22 + corepack + frozen install の共通 action
 ```
+
+- データの置き場所はコードに直書きしない。`packages/core/src/layout/index.ts` の `layoutFor()` / `relLayout()` を使う（`LAYOUT_MODE` はこのブランチで `"p5"`）。
+- `legacy/gh-pages-site/`（旧サイトの凍結コピー）は別作業で削除される予定。新しいコードから読まない。
 
 ---
 
@@ -181,150 +100,101 @@ automatic-paper-search/
 
 ### エージェント動作の基本方針
 
-- 実装・レビューは Claude Code の `/code-review` を使う。bounded implementationは`/code-review medium`、security / provenance / schema / migration / publication-riskは`/code-review high`を使い、`ultra`は通常使わない
-- `AGENTS.md` / `PAPERPILOT_PROFILE.md` に記載の Codex CLI + Qwen Flash/MAX routing は別ツールの運用。Claude Code はそれらのroute・workerを起動しない。製品runtimeのOllama/Qwen等のLLM provider設定と、リポジトリ作業agentのmodel routingも混同しない
-- 独立した調査・レビューは `Agent` ツールでサブエージェント（`Explore` / `general-purpose` / `Plan`）に並列委譲できる。共有生成物・manifest・asset version・lockfileの更新はownerが直列化する
-- workflow dispatch、通知、Pages / Worker / PyPI公開、secret/settings変更、`develop`へのpush/mergeはユーザーの明示承認後だけ行う
+- 実装・レビューは Claude Code の `/code-review` を使う。bounded な実装は `/code-review medium`、security・provenance・schema・migration・publication-risk は `/code-review high`。`ultra` は通常使わない。
+- 独立した調査・レビューは `Agent` ツールでサブエージェントに並列で任せてよい。共有の生成物・manifest・lockfile の更新は owner が直列に行う。
+- workflow の dispatch、通知、Cloudflare / GitHub Pages への公開、Worker のデプロイ、KV への書き込み、secret・設定の変更、`develop` への push・merge は、ユーザーの明示承認の後だけ行う。
 
-### 基本方針（設計原則）
+### 設計原則
 
-- **Open/Closed 原則：** 新しい Source / Signal / Exporter / LLMProvider は、基底クラス（`Abstract*`）を継承してプラグインとして追加する。既存コードは変更しない
-- **Fail-Safe：** 外部 API 障害時は該当コンポーネントをスキップしてパイプライン継続
-- **設定駆動：** キーワード・カテゴリ・重み・出力先はすべて `config.yaml` で制御
-- **冪等性：** 同じ config で2回実行しても `seen_ids` で差分管理され出力が重複しない
-- **秘匿分離：** API キー類は `.env` のみ、`config.yaml` に**絶対に書かない**
-- **1ファイル1責務：** 1モジュール1つの Source / Signal / Exporter
-- **型ヒント必須：** すべての関数シグネチャに型アノテーション
-- **Docstring 必須：** モジュール先頭と公開 API に何故（Why）と使い方を記載
+- **Open/Closed:** 新しい Source / Signal / Exporter / LLM provider は、既存のインターフェース（`Source`・`Signal`/`BaseSignal`・`Exporter`・`LLMProvider`）を実装して足す。既存の実装は書き換えない。
+- **Fail-Safe:** 外部 API の障害時はその部品を飛ばしてパイプラインを続ける。ただし失敗は必ず記録する（run_history・`--fail-on-errors`）。黙って空データにしない。
+- **設定駆動:** キーワード・カテゴリ・重み・出力先は `data/config/config.yaml` で決める。
+- **冪等性:** 同じ config で 2 回実行しても `seen_ids` で差分管理され、出力が重複しない。
+- **秘匿分離:** API キーは環境変数（`.env` または GitHub / Cloudflare の secrets）だけ。`config.yaml` やソースに書かない。
+- **1 ファイル 1 責務。** 公開 API には「なぜ」と使い方のコメントを書く。型は `strict` のまま通す（`any` で逃げない）。
+- **CLI は `isMain()` で守る。** import しただけで通信や書き込みが走らないようにする（`apps/pipeline/src/shared/cli/isMain.ts`）。引数は strict に解析し、知らないフラグは exit 2。
 
-### コーディング規約
+### HTTP とエラー処理
 
-```python
-# 良い例
-def enrich_batch(self, papers: list[Paper]) -> list[Paper]:
-    """S2 /paper/batch で引用数を取得（最大500件/リクエスト）。"""
-
-# 悪い例（型ヒントなし・docstring なし）
-def enrich_batch(self, papers):
-    pass
-```
-
-### エラーハンドリング
-
-- 外部 API 呼び出しは必ず `utils/http.request_with_retry` を経由する
-- HTTP 429: 指数バックオフ（2s→4s→8s…最大30s）を最大3回
-- HTTP 5xx: 固定3秒待機を最大2回
-- Timeout: 1回リトライ
-- 3回失敗したら WARNING ログ出力してその件はスキップ（パイプライン全体は継続）
-
-```python
-# リトライの実装パターン
-from paperpilot.utils.http import request_with_retry
-
-resp = request_with_retry("GET", url, params=params, timeout=10)
-if resp is None or resp.status_code != 200:
-    return None  # Fail-Safe: 空で返して上流で継続
-```
+- 収集側の HTTP は `apps/pipeline/src/collect/http/requestWithRetry.ts` を通す。429 は指数待機（2 秒から倍、上限 30 秒、最大 3 回）、5xx は 3 秒固定で最大 2 回、タイムアウトは 1 回だけ再試行。全体の期限で合計時間を抑える。
+- 失敗した件は WARNING を出して飛ばし、パイプライン全体は続ける。失敗は run_history に残す。
+- `fetch` は注入できる形にする（テストでモックするため）。`AbortSignal.timeout` で実際に中断する。
 
 ### 環境変数
 
-`.env` ファイルから読み込む。ハードコードは絶対に禁止。
+ハードコードは禁止。ローカルでは `data/config/.env`（git 管理外。雛形は `data/config/.env.example`）に書く。`collect/config/load.ts` が `--config` と同じディレクトリから読む。
 
-```python
-# paperpilot/utils/config_loader.py が以下を自動注入
-PAPERPILOT_GITHUB_TOKEN      # GitHub API レート制限緩和
+```
+PAPERPILOT_GITHUB_TOKEN      # GitHub API のレート制限緩和
 PAPERPILOT_S2_API_KEY        # Semantic Scholar
-PAPERPILOT_OPENALEX_EMAIL    # OpenAlex polite-pool
-PAPERPILOT_GEMINI_API_KEY    # Gemini プロバイダ
-PAPERPILOT_CLAUDE_API_KEY    # Claude プロバイダ
+PAPERPILOT_OPENALEX_EMAIL    # OpenAlex polite pool
+PAPERPILOT_GEMINI_API_KEY    # Gemini
+PAPERPILOT_CLAUDE_API_KEY    # Claude
+PAPERPILOT_GROQ_API_KEY      # Groq（系譜の関係分類）
 PAPERPILOT_SLACK_WEBHOOK_URL # Slack 通知
-PAPERPILOT_SMTP_*            # Email 通知
 ```
 
-**例外（paper-slides Sol local pilot）：** `PAPERPILOT_OPENAI_API_KEY` / `OPENAI_API_KEY` は `paperpilot/paper_slides/sol_local.py` が `config_loader.py` を経由せず直接 `os.environ` から読む。config.yaml / CLI 引数 / 生成物のどこにもキーを触れさせないための意図的な例外（[`docs/design/29-slide-sol-local-execution.md`](docs/design/29-slide-sol-local-execution.md)）。`.env.example` にコメント付きで記載する。
+- Email（SMTP）は TS 版では対応しない。`output.email.enabled: true` の run は `export:email:` として記録され失敗扱いになる（p4-followups #29）。出荷済みの config はどちらも無効。
+- Stage 3（embedding）も TS 版では対応しない。有効にすると `stage3:` として記録して続行する。
 
 ---
 
-## 開発ワークフロー（プランレビュー → TDD → PR レビュー）
+## 開発ワークフロー（プランレビュー → TDD → レビュー）
 
-**この順序を守ること。** 実装/レビューのタイミングで手戻りコストが 10〜100 倍変わる。
+**この順序を守る。** 手戻りのコストは実装後ほど大きい。
 
-### フェーズ 0: 調査 (Research & Reuse)
+### フェーズ 0: 調査
 
-`gh search repos` / `gh search code` → Context7 でライブラリ docs → npm/PyPI/crates.io レジストリ → 最後に Exa。既存実装が 80% 以上をカバーするなら採用を優先。
+`gh search repos` / `gh search code` → Context7 でライブラリの docs → npm レジストリ → 最後に Exa。既存実装で 8 割以上まかなえるなら再利用を優先する。新しい依存の追加はユーザー承認が要る。
 
 ### フェーズ 1: プラン作成
 
-TodoWrite でタスク分解し、必要に応じて `Agent` ツール（`subagent_type: Plan`）または `EnterPlanMode` でユーザーと合意した上で以下を生成する:
-- 変更ファイル一覧と見積もり行数
-- タスク分解（TodoWrite で追跡可能な粒度）
-- テスト計画（RED/GREEN、モック戦略、カバレッジ目標）
-- 依存・リスクの明示
+TodoWrite でタスクを分け、必要なら `Agent`（`Plan`）や `EnterPlanMode` でユーザーと合意する。変更ファイルと行数の見積もり、テスト計画（RED/GREEN、モックの方針）、依存とリスクを書く。
 
-### フェーズ 1.5: プランレビュー（★ 着手前に必須 ★）
+### フェーズ 1.5: プランレビュー（着手前に必須）
 
-**コードを書く前にプランを並列レビュー**。実装後の手戻りよりコストが桁違いに安い。
-
-`Agent` ツールで並列に委譲する観点（`subagent_type` は `Explore` または `general-purpose`）:
+コードを書く前にプランを並列レビューする。
 
 | 観点 | 手段 |
 |---|---|
-| システム設計整合性・スケーラビリティ・拡張性、既存パターン遵守 | `Agent`（`general-purpose`） |
-| 類似/重複機能の既存確認、再利用ポイント | `Agent`（`Explore`） |
-| 設計段階で混入しやすい脅威（secrets/injection/公開リスク） | `/security-review`、またはセキュリティ観点を明示した `Agent`（`general-purpose`） |
+| 設計の整合性・拡張性、既存パターンの遵守 | `Agent`（`general-purpose`） |
+| 似た機能・重複の確認、再利用できる箇所 | `Agent`（`Explore`） |
+| secrets・injection・公開リスク | `/security-review`、またはセキュリティ観点を明示した `Agent` |
 
-チェック 10 項目:
-1. 絶対ルール §1〜§13 に反していないか
-2. Stage インターフェース（入出力の型）を崩していないか
-3. スコアリング正規化式・重みを無断で変えていないか
-4. API キーが `.env` 分離か
-5. プラグインは基底クラス継承設計か
-6. Fail-Safe（外部 API 障害時の継続性）が設計に入っているか
-7. テスト計画の粒度・モック戦略・カバレッジ目標
-8. CLAUDE.md / 設計書 / README の同時更新計画
-9. `Explore` 委譲で既存実装と重複していないか確認済みか
-10. PR 1 本で完結するか、分割すべきか
+確認する 10 項目:
+1. 絶対ルールに反していないか
+2. Stage の入出力の型を崩していないか
+3. スコアの正規化式・重みを無断で変えていないか
+4. API キーが環境変数に分離されているか
+5. プラグインは既存インターフェースの実装になっているか
+6. 外部 API 障害時に続行できる設計か（失敗は記録されるか）
+7. テスト計画の粒度・モックの方針
+8. CLAUDE.md・設計書・README を同時に更新する計画か
+9. 既存実装との重複を確認したか
+10. PR 1 本で終わるか、分けるべきか
 
-対応方針:
-- **CRITICAL / HIGH** → プランを修正して再レビュー（プラン段階ループ）
-- **MEDIUM** → プランに注記して TDD 開始、該当箇所で再確認
-- **LOW** → そのまま進行、後段レビューで拾う
-
-**ユーザー判断を仰ぐ**: "GO / プラン再作成 / スコープ縮小" のいずれか。
+CRITICAL / HIGH はプランを直して再レビュー。MEDIUM は注記して着手。LOW は後段で拾う。最後にユーザーに「GO / 作り直し / 縮小」を聞く。
 
 ### フェーズ 2: TDD 実装
 
-**強制サイクル**:
-
-1. **RED** — `paperpilot/tests/test_<module>.py` を先に書き、失敗を確認
-2. **GREEN** — 最小実装でテストを通す
+1. **RED** — `apps/<app>/test/…` または `packages/core/test/…` に先にテストを書き、失敗を確かめる
+2. **GREEN** — 最小の実装で通す
 3. **REFACTOR** — 設計原則に沿って整える
-4. **カバレッジ確認** — `pytest --cov=paperpilot` で **80% 以上**（現状 91%）
+4. 丸め・数値表記・並び順・時刻・正規表現は `packages/core/src/pycompat/` の関数を使う（公開データのバイト一致を保つため）
 
-独立した複数モジュールは `Agent` ツール（`general-purpose`）で並列実装できる。共有生成物・manifest・asset version・lockfileはownerが直列化する。
-
-### フェーズ 3: コードレビュー（commit 前）
-
-commit前のreviewは Claude Code のスキルを使う:
+### フェーズ 3〜4: コードレビューと修正
 
 ```
-/code-review medium        # Python/API/pipeline、JS/Pages UI の bounded 実装
+/code-review medium        # bounded な実装
 /code-review high          # security / provenance / schema / migration / publication-risk
-/security-review           # secrets, injection, workflow, Worker, publication観点
+/security-review           # secrets、injection、workflow、Worker、公開
 ```
 
-対応方針:
-- **CRITICAL / HIGH** → commit 前に必ず修正
-- **MEDIUM** → できる範囲で修正、残りはフェーズ 7 で報告
-- **LOW** → 残リスクとして報告
+CRITICAL / HIGH は commit 前に必ず直し、0 になるまで繰り返す。MEDIUM はできる範囲で直し、残りは報告。
 
-### フェーズ 4: イテレーティブ修正
+### フェーズ 5: 報告、承認後の commit & push
 
-CRITICAL / HIGH がゼロに収束するまで再レビュー → 修正を繰り返す。実績: 2〜6 イテレーションで収束。
-
-### フェーズ 5: 検証結果の報告、承認後のcommit & push
-
-差分・検証・skip・残リスクを先に報告する。ユーザーがcommit/pushを明示承認した場合だけ、Conventional Commits形式を使う:
+差分・検証結果・skip・残リスクを先に報告する。ユーザーが commit / push を明示承認したときだけ、Conventional Commits で行う。
 
 ```bash
 git commit -m "<type>(<scope>): <subject> (closes #N)"
@@ -333,112 +203,41 @@ git push
 
 `type`: `feat` / `fix` / `refactor` / `docs` / `test` / `chore` / `perf` / `ci`
 
-### フェーズ 6: PR 前最終チェック
+### フェーズ 6〜8: 最終確認・残項目・PR
 
-変更範囲に応じてownerと`/security-review`（または high effort の `/code-review`）が最終確認する。publication-riskを含む変更はhigh effortで独立レビューする。
+公開リスクを含む変更は high effort で独立レビューする。残項目は報告だけにし、issue 作成・PR 作成・`develop` への merge はユーザー承認の後に行う。
 
-### フェーズ 7: 残項目を報告
+### テストの方針
 
-フェーズ 3 / 6 で残った項目を報告する。issue作成は外部副作用なので、ユーザーの明示承認なしに行わない。
-
-### フェーズ 8: PR 作成・CI・merge
-
-ローカル検証とpublication/security reviewの結果を提示し、ユーザー承認後だけPR作成・`develop`へのmergeを行う。
-
-🔴 **`develop` の公開対象変更は `pages.yml` が検証し、reusable releaseへexact SHAを渡して本番公開する。** 2026-08-23 に `tests.yml` を追加するまで **テスト/lint を走らせる CI は 1 本も存在せず**（#358）、merge 前のローカル実行だけが唯一のゲートだった。現在は `tests.yml` が PR と `develop`/`main` への push で `ruff` + `pytest` を走らせる。⚠️ ただし **mypy はこの環境で INTERNAL ERROR で起動しない**ため CI に入れていない＝型検査は依然として未実施。
-
-### 全体タイミング図
-
-```
-[Research]
-    ↓
-[Plan]                     TodoWrite / Agent(Plan) / EnterPlanMode
-    ↓
-[★ プランレビュー ★]       Agent(Explore/general-purpose) 並列、risk時は /security-review
-    ↓        ↑
-    ├────────┘ findings > 0 なら再プラン
-    ↓
-[TDD: RED → GREEN → IMPROVE]
-    ↓
-[コードレビュー] ──────→   /code-review（medium/high）、security-riskは /security-review
-    ↓        ↑
-    ├────────┘ ゼロ収束まで
-    ↓
-[ローカル結果と残リスクを報告]
-    ↓
-[publication/security 最終確認]     high effort /code-review または /security-review
-    ↓
-[残項目を報告]             issue作成は明示承認後のみ
-    ↓
-[ユーザー承認 → PR / CI / merge]
-```
-
-### テスト実行
+- **実 API を叩かない。** `fetch` を注入してモックする。LLM はキャッシュかモック。
+- テストは `apps/*/test/`・`packages/core/test/` に置く。収集の e2e は `apps/pipeline/test/collect/cli.e2e.test.ts`（偽の fetch で配線全体を通す）。
+- 生成済みのフィクスチャ（Python 時代の出力を含む）は消さない。期待値を手で書き換えるときは理由を書く。
+- venue 検出率の境界テスト（95% 以上）は `apps/pipeline/test/collect/signals/venue.test.ts` の `test_detection_rate_above_95_percent`。
 
 ```bash
-# 全テスト（~27s、2026-08-20 実測）
-uv run pytest paperpilot/tests/
-
-# 特定モジュールのみ
-uv run pytest paperpilot/tests/test_venue_signal.py -v
-
-# カバレッジ付き
-uv run pytest paperpilot/tests/ --cov=paperpilot --cov-report=term --cov-config=/dev/null
-
-# Venue 正規表現ストレステスト（検出率 95% 以上を維持する境界テスト）
-uv run pytest paperpilot/tests/test_venue_stress.py
+pnpm --filter @paperpilot/pipeline test                     # 1 パッケージ
+pnpm --filter @paperpilot/pipeline exec vitest run test/collect/signals/venue.test.ts
 ```
-
-### 外部 API のテスト方針
-
-- **実 API を叩かない。** テスト中は必ず `unittest.mock.patch` で `request_with_retry` をモックする
-- 既存のモック例は `tests/test_citation_signal.py` / `tests/test_s2_source.py` などを参照
 
 ---
 
-## 各モジュールの実装仕様
+## 各モジュールの仕様
 
 ### Paper（データモデル）
 
-`paperpilot/models/paper.py` の dataclass。全 Stage を流通する中核エンティティ。
-
-```python
-@dataclass
-class Paper:
-    # 必須 (Stage 0)
-    title: str; authors: list[str]; abstract: str; url: str
-    published_date: date; source: str  # "arxiv" | "s2" | "openalex"
-
-    # Stage 0 で任意設定
-    arxiv_id: str | None; doi: str | None; pdf_url: str | None
-    categories: list[str]; comment: str | None
-
-    # Stage 2 で enrich
-    venue: str | None; venue_tier: int; venue_score: float
-    github_url, github_stars, github_score, has_code, is_official_repo
-    citation_count, influential_citations, citation_velocity, citation_score
-    first_author_id, author_h_index, author_score
-    keyword_match_count, keyword_score
-
-    # Stage 2 最終
-    total_score: float; matched_keywords: list[str]
-
-    # Stage 4 LLM
-    llm_relevance: int | None  # 1..5 or None
-    llm_summary_ja, llm_reason, llm_tags
-```
+`apps/pipeline/src/collect/model/paper.ts` の `Paper`。全 Stage を流れる中心のデータ。必須項目（title・authors・abstract・url・published_date・source）、Stage 0 の任意項目（arxiv_id・doi・pdf_url・categories・comment）、Stage 2 の enrich 項目（venue・github・citation・author・keyword の各スコア）、`total_score`、Stage 4 の `llm_relevance`（1..5 または null）・`llm_summary_ja` などを持つ。フィールド名は Python 版と同じ（出力 CSV/JSON の互換のため）。
 
 ### スコアリング（変更禁止）
 
-各シグナルは 0〜100 に正規化。`weights` で重み付けした合計が `total_score`。
+各シグナルを 0〜100 に正規化し、`weights` で重み付けした合計が `total_score`。実装は `collect/stages/metricScore.ts`、重みは `data/config/config.yaml` の `weights`。
 
-| シグナル | 正規化式 | デフォルト重み |
-|---------|---------|--------------|
-| follow | 著者完全一致=100 / 所属部分一致=50 / 不一致=0 | **3.5**（day-1 最強） |
+| シグナル | 正規化式 | 既定の重み |
+|---|---|---|
+| follow | 著者完全一致=100 / 所属部分一致=50 / 不一致=0 | **3.5** |
 | venue | Tier1=100 / Tier2=80 / Tier3=60 / Workshop=30 / 未査読=0 | **3.0** |
-| embedding | cos 類似度 × 100（Stage 3 有効時のみ） | **2.5** |
+| embedding | cos 類似度 × 100（Stage 3 有効時のみ。TS 版は未対応） | **2.5** |
 | github | `log(stars+1) / log(10001) × 100` | **2.0** |
-| citation | `min(cites/day / saturation, 1) × 100` (sat=2.0) | **1.5** |
+| citation | `min(cites/day / saturation, 1) × 100`（sat=2.0） | **1.5** |
 | author | `min(h_index / 50, 1) × 100` | **1.0** |
 | keyword | `min(match_count / 3, 1) × 100` | **0.5** |
 
@@ -447,339 +246,223 @@ class Paper:
 ### Stage フロー（変更禁止）
 
 ```
-Stage 0: collect (async 並列)  → dedup
-Stage 1: rule_filter           → category ∧ since_date ∧ exclude_words ∧ ¬seen_ids
-Stage 2: metric_score          → 各 signal.enrich_batch → total_score → top_n
-(Stage 3: embedding)           → Stage 3 有効時は Stage 2 結果に embedding 重みを加算
-Stage 4: llm_rank              → provider.evaluate_batch → relevance 降順 → top_n
-Export                         → CSVExporter / JSONExporter / SlackExporter / EmailExporter
-State                          → save_seen_ids + append_run_history
+Stage 0: collect (並列)        → dedup                         collect/stages/collect.ts
+Stage 1: rule_filter           → category ∧ since_date ∧ exclude_words ∧ ¬seen_ids   ruleFilter.ts
+Stage 2: metric_score          → 各 signal.enrichBatch → total_score → top_n          metricScore.ts
+(Stage 3: embedding)           → TS 版は未対応（有効にすると stage3 として記録）    embedding.ts
+Stage 4: llm_rank              → provider.evaluateBatch → relevance 降順 → top_n     llmRank.ts
+Export                         → CSV / JSON / Slack（Email は未対応）               collect/exporters/
+State                          → seen_ids 保存 + run_history 追記                    collect/state/
 ```
 
-### Visualization 層（家系図ビュー）
+統合は `collect/runner.ts`（`PipelineRunner`）、実行入口は `collect/cli.ts`。
 
-配信用 Exporter とは別に、GitHub Pages 上の家系図ビューを生成する **補助パイプライン** を `paperpilot/scripts/` に置く。通常ランの後に順に実行し、`docs/<conference>/` を更新する（`develop` への push を `.github/workflows/pages.yml` がフックして自動デプロイ。`docs/**` 変更のあるコミットのみが Pages run を発火する `paths:` フィルタ済）。
+### 可視化（家系図）の生成
 
 ```
-output/<conf>/papers_YYYY-MM-DD.csv
-  │
-  ├─ build_summary_csv.py   → summary.csv（8 列 + 自動タグ）
-  │
-  └─ build_pages.py         → docs/<conf>/papers.json（一覧ビュー用）
-       │
-       ├─ build_search_index.py   → docs/search-index-v2.json（10 学会 28,300 本、canonical paper ID付き横断検索）
-       │
-       ├─ build_lineage.py        → docs/<conf>/lineage.json
-       │     │                      - Oral 全 N 本 × depth 1 の浅い家系図集
-       │     │                      - S2 から references/citations 取得
-       │     │                      - AbstractLLMProvider で関係分類
-       │     │                      - lineage-cache/ にキャッシュして再開可能
-       │     ▼
-       │   docs/<conf>/lineage.html   （Topics/家系図/時系列の 3 モード切替）
-       │
-       └─ build_deep_lineage.py   → docs/<conf>/deep.json
-             │                      - 1 本 × depth N の BFS（祖先・子孫）
-             │                      - lenient classifier（rationale 空のときは
-             │                        テンプレで補完、弱いエッジも残す）
-             ▼
-           docs/<conf>/deep.html   （tree-only の 1 本集中ビュー）
+data/inputs/<conf>/papers_YYYY-MM-DD.csv
+  ├─ catalog/buildSummaryCli.ts      → data/inputs/<conf>/summary.csv（8 列 + 自動タグ）
+  └─ catalog/buildPagesCli.ts        → data/published/<conf>/papers.json、conferences.json、要旨シャード
+       ├─ release/derived/searchIndexCli.ts           → data/published/search-index-v2.json（+ search-paper-ids-v1/）
+       ├─ lineage/conference/buildLineageCli.ts       → data/published/<conf>/lineage.json（S2 + LLM）
+       ├─ lineage/conference/buildConferenceLineageCli.ts → 同上（OpenAlex のみ、LLM 不要の無料版）
+       └─ lineage/deep/buildDeepLineageCli.ts         → data/published/<conf>/deep-*.json
+            └─ lineage/deep/generateDeepManifestCli.ts → deep-manifest.json
 
-[テーマ文字列] → build_theme_lineage.py → docs/themes/<slug>/lineage.json
-                  - **--primary-source openalex (post #217 default in workflows)**:
-                    OpenAlex /works?search=<theme>&filter=concepts.id:...
-                    → top-N seeds (paperId='openalex:W...')
-                  - --primary-source s2 (legacy): keyword_expand → S2
-                    /paper/search → top-N seeds (paperId=sha1 hash)
-                  - 各 seed から BFS depth-N (jiez方向):
-                    - openalex: → OpenAlex referenced_works / cites
-                    - S2 sha1: → S2 /paper/{id}/references|citations
-                  - 関係分類: contexts (S2-only) → intent map (S2-only)
-                    → year/cite contrast → optional LLM
-                  - OpenAlex source の edge は _intents=None / _contexts=[]
-                    なので derive_relation は year/cite or LLM に fall through
-generate_themes_manifest.py → docs/themes/themes-manifest.json
-                  ▼
-           docs/themes/index.html   （テーマピッカー + 年軸 chronological tree、
-                                     Y 軸 rank-based 等間隔）
+[テーマ文字列] → lineage/theme/cli.ts → data/published/themes/<slug>/lineage.json
+                  lineage/theme/generateThemesManifestCli.ts → themes-manifest.json
+                  lineage/theme/computeThemeQualityCli.ts    → 品質集計
+品質: lineage/quality/{buildLineageQuality,auditLineageQuality}Cli.ts、lineage/theme/auditThemeSeedsCli.ts
 ```
 
-関係種別（LLM 分類出力）: `supersedes` / `successor` / `extends` / `ablation` / `baseline_only` / `contrasts` / `unrelated` （`unrelated` はエッジから除外）。
-
-**重要：** scripts の LLM 呼び出しは、パイプラインと同じ `AbstractLLMProvider` 抽象を経由する（urllib 直叩き禁止、絶対ルール §11）。
+関係の種別は `supersedes` / `successor` / `extends` / `ablation` / `baseline_only` / `contrasts` / `unrelated`（`unrelated` は辺から除く）。
 
 ### プラグイン追加手順
 
-1. 該当する基底クラスを継承（`AbstractSource` / `AbstractSignal` / `AbstractExporter` / `AbstractLLMProvider`）
-2. テストを先に書く（既存のモックパターンを参照）
-3. 実装
-4. `__init__.py` の `__all__` に追加
-5. `pipeline/runner.py` の `_build_sources()` / `_build_signals()` / `_build_exporters()` / `_build_llm_provider()` に登録
-6. `config.yaml` / `.env.example` に設定を追加
+1. 該当するインターフェースを実装する: `collect/sources/source.ts` の `Source`、`collect/signals/signal.ts` の `BaseSignal`、`collect/exporters/exporter.ts` の `Exporter`、`collect/llm/provider.ts` の `LLMProvider`（実装は `lineage/llm/` に置く）
+2. テストを先に書く（`fetch` を注入するモックの形は既存テストに合わせる）
+3. 実装する
+4. `collect/runner.ts` の `buildSources()` / `buildSignals()` / `buildExporters()`、LLM は `collect/runtime/llmProvider.ts` の `buildLlmProviderFromConfig()` に登録する
+5. `data/config/config.yaml` と `data/config/.env.example` に設定を足す
+
+手順の詳細は `.claude/skills/add-plugin/SKILL.md`。
 
 ---
 
-## フロントエンド（`docs/`）アーキテクチャと検証
+## フロントエンド（`apps/web`）
 
-設計書/パイプライン記述は Python 側に厚いが、実際のユーザー体験（学会カタログ・家系図・ランディング）は `docs/` の静的サイトが担う。ここが薄かったので明記する。
+- Next.js の静的書き出し（`output: export`）。ページ: `/`（検索トップ）、`/[conf]/`（学会カタログ）、`/[conf]/lineage/`、`/[conf]/deep/`、`/[conf]/paper-links/`、`/lineage/`（一論文の Focus View）、`/themes/`、`/how-it-works/`。
+- `prebuild` が `scripts/copy-data.ts` で `data/published` を `public/` に写す。`postbuild` が `strip-nojs` → `csp-hash`（ページごとのハッシュ CSP）→ `redirects`（`out/_redirects`、旧 `.html` URL の 301）→ `sitemap`（`out/sitemap.xml`）を順に実行する。
+- `out/_headers` は `frame-ancestors 'self'` だけ。script の CSP はページの meta に入る。インラインスクリプトを足すときはハッシュが付くことをテストで確かめる。
+- 公開 origin・API の URL（`API_BASE`）・パスの接頭辞は `packages/core/src/site/config.ts` の 1 か所だけで決める。
+- テーマ投稿フォーム: `components/themes/ThemeRequestForm.tsx`、`lib/themes-request.ts`。API が止まっていれば `paused`、空打ちモードなら `dry_run` を表示する。API が無いときは GitHub Issue へ逃がす（degraded mode）。
+- 見た目は旧サイトのトークン（色・文字・余白）を引き継ぐ。生の色リテラルを書かない。モバイル 320/375px で横はみ出し 0、開閉ボタンは `aria-expanded`、件数は `aria-live` を保つ。
+- ローカル確認: `pnpm --filter @paperpilot/web dev`、または build 後に `apps/web/out` を静的サーバーで開く。Lighthouse は `lighthouse.yml`（warn のみ）。
 
-### 構成
-- `docs/` = GitHub Pages 配信の静的サイト。`pages.yml` が `docs/**` を含む push で自動デプロイ（`develop` ブランチ）。本番 = `https://taichiiiiiiii.github.io/automatic-paper-search/`。
-- **共有アセット `docs/assets/`**（全ページ同じファイルを共有）:
-  - `style.css` — デザイントークン（`:root` の CSS custom properties）＋全コンポーネント。editorial 方向（Newsreader serif + Inter + JetBrains Mono、warm-cream OKLCH パレット）。**生の色リテラル禁止＝必ず `--color-*` / `--text-*` / `--space-*` / `--duration-*` / `--ease` / `--rel-*` トークン経由**。
-  - `app.js` — 学会カタログのビューア（検索・トピックタグ/採択形式チップ・ソート・progressive reveal 30件/回・URL 状態同期・back-to-top）。`<conf>/papers.json` を fetch。
-  - `landing.js` — S0 検索トップの挙動（学会数/論文数の動的注入・学会リストの開閉・例示チップ→検索・`?q=` パーマリンク同期・fine-pointer 限定の初期フォーカス）。`conferences.json` を fetch。CSP が `script-src 'self'` のため**インライン script は全ページ禁止**（外部 assets/*.js のみ。`test_landing_s0.py` が pin）。
-  - `search.js` — 学会横断検索（現行は`search-index-v2.json`をfetchし、paper IDでselected cardへ遷移。v1 indexは互換artifactとして残る）。
-  - `lineage.js` — 家系図ビューア（Topics / Tree / Timeline モード、SVG グラフ）。`<conf>/lineage.json` を fetch。
-  - `theme.js` — テーマ生成フォーム＋テーマ家系図（`/themes/`）。
-- **ページ**: `docs/index.html`（検索ファーストの S0 トップ = 検索窓1本+例示チップ+折りたたみ学会リスト（#372 P1）、ページ固有 CSS はインライン `<style>`）/ `docs/<conf>/index.html`（学会カタログ）/ `docs/<conf>/lineage.html`（家系図）/ `docs/themes/index.html` / `docs/how-it-works/`。
-- **データの流れ**: `summary.csv` → `build_pages.py` → `docs/<conf>/papers.json`（**要旨は320字プレビュー**でページ <1MB gzip）＋ `docs/conferences.json`（集約 index）。
+---
 
-### 重要な規約
-- **アセットの cache-bust バージョンは `sync_asset_versions.py` が管理する（手で揃えない）**: アセットを編集したら `uv run python paperpilot/scripts/sync_asset_versions.py` を実行する。版はアセットの内容ハッシュが変わったときだけ繰り上がり、参照は 1 箇所（`docs/assets/versions.json`）から全 HTML に書き戻されるのでページ間でズレない。`--check` は書き込まずに乖離を報告して非ゼロ終了する。
-  - **手動の `grep | sed` 一括置換はもう使わない**。それが飛ばされて 2 度ズレた（themes だけ別版になった既往／`utils.js` が v=75 の 10 ページと v=82 の 4 ページに分裂）。`test_sync_asset_versions.py::test_repo_docs_have_no_divergent_asset_versions` が実サイトを検査して再発を落とす。
-- **`docs/sitemap.xml` は `build_sitemap.py` が生成する（手編集禁止）**: ページを足したら `uv run python -m paperpilot.scripts.build_sitemap` を実行する。手作業だった頃に 6 URL のまま放置され、**会議カタログ 8 件（約 23,000 本）と `eccv-2024/lineage.html` が未掲載**だった（#367）。`test_build_sitemap.py` が実サイトとの一致を検査する。
-- **トピックタグ分類** = `build_summary_csv.py` の `TOPIC_RULES`（~60 カテゴリの regex、title+abstract マッチ、複数タグ可）。viewer は各会議の**上位18タグ**だけチップ表示するので大規模タクソノミでも自動適応（CV 会議は CV タスク、NLP 会議は NLP タスクが出る）。greedy な語（"evaluation"/"benchmark" 動詞/"alignment"）は避け、リソース導入表現で絞る。
-- **モバイル**: タグチップは ≤720px で横スワイプ1行、フォーム入力は 16px（iOS の focus ズーム防止、`!important` で component CSS を上書き）。全ページ 320/375px で横はみ出しゼロを維持。
-- **a11y**: 開閉ボタンは `aria-expanded`＋`aria-controls`、件数表示は `aria-live`、focus ring は `--color-accent` で統一。
+## カタログを追加・更新する流れ
 
-### 検証（スクリーンショット）
-- **MCP playwright は使えない**（X server 不在: "Missing X server or $DISPLAY"）。node + playwright-core を headless で直叩く:
-  - `executablePath: /root/.cache/ms-playwright/chromium_headless_shell-1223/chrome-headless-shell-linux64/chrome-headless-shell`、`args:['--no-sandbox']`
-  - CJS: `import pkg from '/root/.npm/_npx/9833c18b2d85bc59/node_modules/playwright-core/index.js'; const {chromium}=pkg`
-  - ローカル配信: `cd docs && python3 -m http.server 8137`
-  - ディレクトリ URL（`/cvpr-2026/`）と `/index.html` 直叩きのどちらでも可（#371 で `setLastUpdated` の slug 導出が `.html` セグメントを除外するようになった）
-  - **node 実行後は cwd が `/root` にリセット** → `gh` は `-R taichiiiiiiii/automatic-paper-search` を明示（`gh api` は `-R` 非対応）
-- frontendは`paperpilot/tests/viewer/*.py`とNode `.mjs` contract testsで自動検証し、必要に応じてローカル目視・headless screenshotを追加する。CIの`lighthouse.yml`は対象docs PRでCore Web Vitalsを **warn-only** 測定する（ブロックしない）。
-
-### カタログを追加 / 更新するフロー
-収集ソースは venue で使い分ける（[CI / GitHub Actions] の `conference-on-demand.yml` 解説も参照）:
+収集元は venue で使い分ける。学会収集器（arxiv 以外）は出力先を環境変数 `PAPERPILOT_OUTPUT_ROOT` で受け取る（既定値なし）。
 
 ```bash
-# 1) 収集（どれか）
-#   arXiv 自己申告（部分収録 ~30-40%、どの venue でも可）
-uv run python -m paperpilot.scripts.collect_conference --conference <slug> --venue <TOKEN> --query 'co:"<Conf Year>"' --max 1600
-#   権威的全件: OpenReview = ICLR/NeurIPS/ICML（Oral/Spotlight 公式ラベル付き）
-uv run python -m paperpilot.scripts.collect_openreview --conference iclr-2026 --venue ICLR --venueid "ICLR.cc/2026/Conference"
-#   権威的全件: CVF Open Access = CVPR/ICCV（ECCV は ECVA で別）。oral 区分が無いので --oral-arxiv-query で arXiv 申告 oral を overlay
-uv run python -m paperpilot.scripts.collect_cvf --conference cvpr-2025 --venue CVPR --cvf-id CVPR2025 --oral-arxiv-query 'co:"CVPR 2025"'
-#   権威的全件: ACL Anthology = ACL/EMNLP/NAACL（XML に要旨あり）
-uv run python -m paperpilot.scripts.collect_acl_anthology --conference acl-2025 --venue ACL --xml-id 2025.acl --oral-arxiv-query 'co:"ACL 2025"'
+# 1) 収集（どれか 1 つ）
+#   arXiv 自己申告（部分収録、採択の 3〜4 割。どの venue でも可）
+pnpm exec tsx apps/pipeline/src/conference/arxiv/cli.ts --conference <slug> --venue <TOKEN> \
+  --query 'co:"<Conf Year>"' --max 1600 --output-root data/inputs
+#   全件: OpenReview = ICLR/NeurIPS/ICML（Oral/Spotlight の公式ラベル付き）
+PAPERPILOT_OUTPUT_ROOT=data/inputs pnpm exec tsx apps/pipeline/src/conference/openreview/cli.ts \
+  --conference iclr-2026 --venue ICLR --venueid "ICLR.cc/2026/Conference"
+#   全件: CVF Open Access = CVPR/ICCV。oral 区分が無いので arXiv 申告の oral を重ねる
+PAPERPILOT_OUTPUT_ROOT=data/inputs pnpm exec tsx apps/pipeline/src/conference/cvf/cli.ts \
+  --conference cvpr-2025 --venue CVPR --cvf-id CVPR2025 --oral-arxiv-query 'co:"CVPR 2025"'
+#   全件: ACL Anthology = ACL/EMNLP/NAACL
+PAPERPILOT_OUTPUT_ROOT=data/inputs pnpm exec tsx apps/pipeline/src/conference/acl/cli.ts \
+  --conference acl-2025 --venue ACL --xml-id 2025.acl --oral-arxiv-query 'co:"ACL 2025"'
 
-# 2) summary 化 → ページ生成 → （新規なら）ページ scaffold
-uv run python -m paperpilot.scripts.build_summary_csv --conference <slug>
-uv run python -m paperpilot.scripts.build_pages            # --conference 無しで conferences.json も再集約（必須）
-uv run python -m paperpilot.scripts.scaffold_conference_page --conference <slug> --display "<Display>" --lede "<lede>"
+# 2) summary → ページ → （新規なら）scaffold
+pnpm exec tsx apps/pipeline/src/catalog/buildSummaryCli.ts --conference <slug>
+pnpm exec tsx apps/pipeline/src/catalog/buildPagesCli.ts          # --conference なしで conferences.json も作り直す
+DISPLAY="<Display>" LEDE="<lede>" pnpm exec tsx apps/pipeline/src/conference/scaffold/cli.ts --conference <slug>
+pnpm exec tsx apps/pipeline/src/release/derived/searchIndexCli.ts  # 横断検索の索引（--check で差分検査）
 ```
 
-- **`build_pages --conference X` は X の `papers.json` / `paper-links.html` だけを書き、`conferences.json` と要旨シャードは更新しない** → 件数・要旨を揃えるため、最後に必ず `--conference` 無しで再実行。全件ビルドは全学会の検証を先に済ませてから書く（1学会でも失敗すれば何も書かない）。
-- **縮小ゲート**: 次のいずれかなら `build_pages` は何も書かずに exit 1 にする。
-  - 公開済みより行数が減る
-  - Oral 数が減る
-  - 公開済みの `paper_id` が1件でも消える
-  - 公開済みで空でなかった要旨・著者が空になる
-  - 公開済み `papers.json` が読めない
-  意図した変更だけ `--allow-shrink-for <conf>`（学会単位、複数指定可）か `--allow-shrink`（全体）で通す。
-- **Oral 一覧の保持**: CVF/ACL は oral 区分を持たない。再収集で Oral 一覧が空でも（`--oral-arxiv-query` の付け忘れ・空の overlay）、`write_outputs` は既存の `oral_summaries_ja.md` を残す。古い一覧を消したいときだけ各 collector に `--clear-oral` を付ける。overlay の arXiv 取得が上限（`--oral-max`、既定1600）に達した場合は不完全とみなし、既存の一覧を残す。
-- **ACL Anthology の巻チェック**: `collect_acl_anthology` は、命名ルール（`main` か `long`/`short`）の中で巻が欠けていると何も書かずに exit 1。その年に本当にない巻だけ `--allow-missing-volume <id>` で通す。
-- **workflow からの縮小許可**: `collect-weekly` / `conference-on-demand` の dispatch 入力 `allow_shrink_for`（カンマ区切りの slug）が `--allow-shrink-for` になる。promotion は `docs/sitemap.xml` も自動で再生成する。
-- **無料家系図**: S2 は 429・`build_lineage.py` は arxiv_id 必須なので、OpenReview/CVF/ACL 由来（arxiv_id 無し）には `build_conference_lineage.py`（OpenAlex title 解決→参照/被引用、LLM 不要のヒューリスティック）を使う。
+- **`buildPagesCli --conference X` は X の `papers.json` だけを書く。** `conferences.json` と要旨シャードは作り直さないので、最後に `--conference` なしで実行する。全件ビルドは全学会の検証を先に済ませ、1 学会でも失敗すれば何も書かない。
+- **縮小ゲート:** 公開済みより行数が減る、Oral 数が減る、公開済みの `paper_id` が 1 件でも消える、要旨・著者が空になる、公開済みの `papers.json` が読めない — どれかなら何も書かずに exit 1。意図した変更だけ `--allow-shrink-for <conf>`（複数可）か `--allow-shrink` で通す。workflow では dispatch 入力 `allow_shrink_for` がこれになる。
+- **Oral 一覧の保持:** CVF/ACL は oral 区分を持たない。再収集で Oral 一覧が空でも既存の `oral_summaries_ja.md` を残す。消したいときだけ `--clear-oral`。overlay の取得が `--oral-max` に達したら不完全とみなして既存を残す。
+- **ACL の巻チェック:** 必要な巻が欠けていれば何も書かずに exit 1。その年に本当に無い巻だけ `--allow-missing-volume <id>`。
+- **新しい学会の文言:** `scaffold/cli.ts` が `data/config/conference-copy/<slug>.json` を書き、`apps/web/lib/catalog-copy.ts` が読む。共有の manifest は使わない。
+- **無料の家系図:** S2 は 429 が多く、`buildLineageCli` は arxiv_id が要る。OpenReview/CVF/ACL 由来（arxiv_id なし）には `buildConferenceLineageCli`（OpenAlex で題名を解決、LLM 不要）を使う。
 
 ---
 
 ## 絶対ルール
 
-1. **API キーは `.env` にのみ記載。`config.yaml` や `.py` ソースには絶対に書かない**
-2. **`.env` は `.gitignore` で除外されている。コミット前に `git status` で確認**
-3. **外部 API を叩くテストを書かない。必ずモック**
-4. **既存の Stage インターフェース（入出力の型）を変更しない**
-5. **スコアリングの正規化式・重みを仕様なく変更しない**
-6. **Stage 1 はフィルタのみ。スコアリングを混ぜない（§4.2）**
-7. **Signal は `enrich_batch` を優先（§3.2.2）。1件ずつ処理はパフォーマンス劣化**
-8. **seen_ids は `{id: timestamp}` 形式。`max_age_days` でパージ**
-9. **run_history.jsonl には `finished_at` / `sources_status` / `errors` を含める**
-10. **Slack / Email 通知は webhook・SMTP 未設定時に no-op（pipeline を失敗させない）**
-11. **`paperpilot/scripts/` の LLM 呼び出しは `AbstractLLMProvider` を経由する。`urllib` / `requests` で Groq・Gemini・Claude を直叩きしない（二重実装を避ける）**
-    - **例外（paper-slides Sol local pilot）:** `paperpilot/scripts/generate_paper_slides.py` が呼ぶ `paperpilot/paper_slides/sol_provider.py`（OpenAI 直叩き、stdlib `http.client`）は `AbstractLLMProvider` を経由しない。本番 Stage/pipeline に registry 登録されない単一論文・非公開のローカル実験canaryであり、監査性のため意図的にスコープを絞った独立実装（[`docs/design/29-slide-sol-local-execution.md`](docs/design/29-slide-sol-local-execution.md)）。他の LLM 呼び出しをこの例外で正当化しない。
-12. **`paperpilot/scripts/` はパイプライン出力（`output/<conf>/papers_YYYY-MM-DD.csv`）のみを入力源とする。スクリプト側で arXiv / S2 を再クロールして venue / citation / authors を再取得しない（Stage 2 の成果物を信頼する）**
-    - **例外（家系図構築）:** `build_lineage.py` / `build_deep_lineage.py` が引用グラフ（S2 `references` / `citations`）を取得することは必要不可欠なので許可する。ただし焦点論文の `venue` / `venue_tier` / `citation_count` / `github_stars` は `papers.json`（Stage 2 成果物）の値を優先し、S2 からは引用関係のメタデータ（paperId, 引用 paperId のタイトル等）のみを取る。
-13. **家系図ビューの `docs/<conf>/lineage.json` は `build_lineage.py` が唯一の生成元。手編集禁止**
-14. **テーマ家系図 (`docs/themes/<slug>/lineage.json`) は `build_theme_lineage.py` が唯一の生成元。手編集禁止**
-    - **オンデマンド生成パス (post 2026-06-03 CF Worker 復活)**: ユーザーが `/themes/` のフォームに入力 → CF Worker `worker/index.ts` `POST /api/themes` → input validate + manifest dedup (raw.githubusercontent.com) + per-IP rate limit (KV、5/h) + global daily cap (KV、100/day) → GitHub Actions REST API `POST /repos/.../workflows/theme-on-demand.yml/dispatches` → `build_theme_lineage.py` → credential-free candidate → latest `develop`へのCAS promotion → promoted exact-SHA Pages release。フロントは Worker URL を `docs/themes/index.html` の `<meta name="paperpilot-api-base">` から読む。空なら `window.open(GitHub Issue URL)` の degraded mode にフォールバック (Worker 不通時の保険)。`GET /api/themes/status`は固定503の休眠endpointで、完了正本は公開`themes-manifest.json`のpolling。
-    - **PAT スコープ**: Worker は `GH_DISPATCH_PAT` (fine-grained PAT, `actions:write`, repo scope) を CF Workers Secrets に保持。CF Access を解除した workers.dev URL 経由でのみアクセス可能なので、ブラウザに露出しない。
-    - **degraded mode**: `paperpilot-api-base` の meta が空、または Worker が非到達 (fetch エラー) の場合、フォームは `window.open(github issue URL)` で代替し、操作不能にならない。
-    - **slug 派生は 3 か所で同期**: Python `theme_slug()` (`paperpilot/scripts/_common.py`)、フロント `SLUG_RE` (`docs/assets/theme.js`)、CF Worker `themeSlug()` + `THEME_INPUT_PATTERN` (`worker/slug.js`)。`paperpilot/tests/test_worker_slug_parity.py` が Python ↔ Worker ↔ フロント（`theme.js` の regex リテラル）の **3-way parity** を pin する。テーマ regex / 正規化規則を変えるときは 3 ファイル + parity テスト同時更新。
-    - **入力源はテーマ文字列のみ**（`papers.json` 非依存、conference 横断）。S2 `/paper/search` で seed 論文を発見してよい（§12 の papers.json 依存ルールはこの新パイプラインに適用しない）。
-    - **LLM 呼び出しは `AbstractLLMProvider` 経由（§11）**。`expand_keywords()` / `classify_relation()` ともに provider 抽象を通す。
-    - **出力 path は `theme_slug()` の戻り値のみで構成**。生 `--theme` 文字列を `Path()` 構築に渡してはならない（path traversal 防止）。
-    - **`docs/themes/<slug>/lineage.json` のスキーマは conference 版 `lineage.json` と互換**（`root` / `nodes` / `edges` / `meta`）。`meta.source = "build_theme_lineage.py"`、`meta.theme` / `meta.slug` / `meta.keywords` / `meta.seeds` / `meta.depth` / `meta.since_year` / `meta.generated_at` を含む。
-    - **`docs/themes/themes-manifest.json` は `generate_themes_manifest.py` のみが生成**。`build_theme_lineage.py` 内では生成しない（並列実行時の race 回避）。マニフェスト生成時に `rel` 値が許可 enum (`supersedes` / `successor` / `extends` / `ablation` / `baseline_only` / `contrasts` / `unrelated`) に該当しないテーマは skip する（cache poisoning 抑止）。
-    - **キャッシュ (`paperpilot/data/lineage-cache/classifications.json`) は他 lineage スクリプトと共有**。`_classify_cached` が書込前に on-disk cache を再読込してマージし、`os.replace` でアトミックに書き出すため、並列ランでも他プロセスのエントリを上書きしない。
-    - **OpenAlex-primary (post #217 / PR-G, 2026-05-27 production default)**: `theme-on-demand.yml` / `regen-themes.yml` は **`--primary-source openalex`** で起動する。`discover_seeds` は OpenAlex `/works?search=...&filter=concepts.id:C41008148|C33923547|C137293760` を直接叩き、`_work_to_paper_dict` で S2-shape paper dict に変換 (paperId=`openalex:W...`)。BFS の references/citations も OpenAlex (`Work.referenced_works` の batch fetch + `/works?filter=cites:W{id}`) で完結し、S2 API は一切呼ばない。これは S2 free-tier の shared CI IP throttle と非 organizational email での key 申請拒否を恒久回避するため。`PAPERPILOT_OPENALEX_EMAIL` を設定すると polite pool (`mailto=...`) で 10 req/s + 100K/day。
-    - **`--primary-source s2` (legacy fallback)**: S2 `/paper/search` を主、OpenAlex を fallback とする旧パイプライン。S2 paperId 形式 (sha1 hash) で BFS は S2 endpoints。S2 が `top_n` 未満しか返さない場合に自動で OpenAlex `/works` 検索 → DOI 抽出 → S2 `/paper/batch` で paperId 解決。`--no-openalex-fallback` で fallback 無効化 (テスト用途)。fallback と theme alias 検索（`theme_aliases.json`、primary source を問わない）の障害は `meta.completeness.supplement_failures` に記録する。最終グラフに focus 論文が1本も残らなければ subject failure（exit 4、`--allow-incomplete` でも解除不可）に昇格する。残っていれば、expansion 失敗と同じく不完全ビルドのゲートにかかる。不完全ビルドのゲート（全 builder 共通）は、公開済みより node/edge 数が縮むか、公開済みの focus 論文・node・edge（src,dst）が1つでも消える場合に公開を止める（再実行か `--allow-incomplete`）。S2 API key が用意できる環境 (e.g. .edu / 独自ドメインメール) では citation contexts と intent ラベルが取れる利点があるが、workflows の default ではない。
-    - **品質改善ノイズ防止 (#127 / #186 / #188 / #189)**: 5 レイヤで off-topic 論文を除外する:
-        1. **S2 `fieldsOfStudy` ゲート (#188)**: `/paper/search` リクエストに `fieldsOfStudy=Computer Science,Mathematics,Linguistics` を渡し、API レベルで医療 / 生物 / 工学論文を除外。"World Model" → "Global Burden of Disease"、"Flash Attention" → 糖尿病管理論文の混入を防ぐ。
-        2. **OpenAlex `concepts.id` 同等ゲート (#189 / #190)**: `discover_seeds_via_openalex` の `filter` に `concepts.id:C41008148|C33923547|C137293760` (Computer Science / Mathematics / Linguistics) を追加。S2 throttle 時の OpenAlex fallback でも同等のドメイン制約。OR syntax は `field:val1|val2|val3` 形式 (field 名を OR 値ごとに繰り返すと HTTP 400)。
-        3. **Seed topic 関連度 (`_filter_topic_relevant_seeds` #127 / #186)**: 2 単語以上のテーマで substring チェック。**2 単語 → 両方必須** (CoT-COVID 誤通過 #186 で強化)、**3+ 単語 → `ceil(N×0.5)` 必須**。verbatim phrase が title+abstract に含まれれば word-by-word チェック skip (escape hatch)。RAG / MoE / BERT のような短い single-word テーマは false match 多発するため自動 skip。
-        4. **Foundational ref フィルタ (`_filter_off_topic_refs`)**: BFS で取得した parent/child 候補のうち、`citationCount > 2 × max(seed citations)` かつ S2 intent に "methodology" を含まないものを除外。"methodology" 意図がある場合はそのまま採用（その citing paper の手法を本当に支えている foundational ref のため）。閾値は初期 3x から #127 followup で 2x に絞り込み。
-        5. **Implementation denylist (`_is_implementation_foundation`)**: `paperpilot/data/lineage_denylist.json` に列挙された paperId / title pattern にマッチする論文（Adam optimizer / TensorFlow / PyTorch / Scikit-learn / NumPy / SciPy / Batch Normalization / Dropout / Keras / pandas 等）は methodology intent があっても**無条件で除外**。これらは「実装の foundational」であって「研究線譜の foundational」ではないため。PyTorch Geometric のような topic-specific lib は title pattern が catch しないので残る。新しい canonical lib paper を見つけたら denylist JSON に追記する。
-    - **Theme alias フォールバック (#195)**: canonical テーマ名で seed=0 になる場合、`paperpilot/data/theme_aliases.json` の代替キーワードを順次試行。例: "Speculative Decoding" → "Speculative Sampling" (S2 が後者の名義で index している)。lowercase + trim でキーマッチ、最初の成功で打ち切り。
-    - **Seed quality audit (#187)**: `uv run python -m paperpilot.scripts.audit_theme_seeds` で `docs/themes/*/lineage.json` を巡回、off-topic seed を検出。CIでは`.github/workflows/data-audit.yml`がtheme/conference lineage JSON、manifest、関連builder/auditor、workflow自身の変更をpaths対象としてpush/PRで監査し、手動dispatchも受ける。実際の最終run時刻は外部状態なので、ローカル文書の固定値として扱わない。
-    - **LLM rationale (`--llm-strict=ambiguous` がデフォルト)**: `theme-on-demand.yml` は **`--llm-strict=ambiguous`** を有効化。S2 intent が `_INTENT_RELATION_MAP` のキー (methodology / result / background) に一致しない edge のみ Groq (Llama 3.3 70B) で paper-specific 分類。`--llm-strict=all` は Groq free tier の **TPM 12,000 / RPD 1,000 / TPD 100,000** 制約 (2026-06-06 確認) で破綻する (~500 tokens × 25 RPM = 12,500 TPM → 429 throttle 連鎖で 15 min timeout 到達、daily 限度も同時に削り落ちる)。Paid plan で `config.yaml` の `llm.rate_limit_rpm` を 1000+ に上げてから `--llm-strict=all` を使う。`GroqProvider` 内蔵 rate limiter (default 25 RPM) は RPM 制約だけカバー、TPM は prompt サイズで間接的に制御する。**Daily 上限 (RPD/TPD) は内蔵リミッタで追跡しない**ため、複数 theme を連投すると突発的に枯渇する — empirical で free tier は 1 rolling 24h 窓に ~2-3 large theme 実行が限度。
-    - **Groq 429 circuit breaker (#191)**: `GroqProvider` が連続 3 回失敗 (request_with_retry が None / 非 200 を返す) で `_quota_exhausted=True` に latch、以降の `_chat` は API call 前に None を即返却。caller (`_CachedClassifyProvider`) は S2 intent heuristic にフォールバック。これで Groq daily quota 切れでも 15 min workflow timeout-minutes で cancel されず、heuristic で完走する。成功 200 で counter リセット (transient blip で latch しない)。
-    - **LLM prompt 品質保証 (#131)**: `CLASSIFY_SYSTEM_PROMPT` (`paperpilot/llm/base.py`) は LLM が heuristic template を翻訳しないように設計されている。enum 定義を短く抽象化、MUST/MUST NOT 指示で template phrasing を明示禁止、Good 例で paper-specific rationale を few-shot 提示。Token budget は ~250 tokens に抑制 (Groq TPM 制約のため)。第二防衛線として `RelationClassification.from_dict` が `_GENERIC_TEMPLATE_RATIONALES` の文字列を返した場合 None を返して heuristic フォールバックさせる。template 追加時は両方 (prompt の MUST NOT リスト + `_GENERIC_TEMPLATE_RATIONALES`) を同期更新する。
-    - **classification cache 共有 (theme 品質改善の本命)**: `build_theme_lineage` は `paperpilot/data/lineage-cache/classifications.json` を build_lineage と共有。`_CachedClassifyProvider` が AbstractLLMProvider をラップし、key `f"{a.paperId}->{b.paperId}"` で hit すれば LLM call を skip。free-tier Groq の TPM 制約はあくまで「1 run あたり」の問題で、cache が複数 run に渡って蓄積するため、テーマ再生成 / 複数テーマ間で同じ (parent, child) ペアが出てくれば LLM cost ゼロで paper-specific rationale が再利用される。template entry は from_dict の rejection (#131 第二防衛線) でヒット時も拒否され heuristic フォールバック → 次回 LLM 機会あれば再分類されて cache 更新。`persist_classifications` で atomic write (build_lineage と同じ pattern)。
-    - **並列 dispatch の push 競合対策**（#121 / #125）: Worker は per-IP 5/h + global 100/day で並列 dispatch を許す設計のため、複数の `theme-on-demand` run が同時刻に `develop` へ push すると 1 本以外が `! [rejected] develop -> develop (fetch first)` で discard されていた。
-        - **現行対策**: generate jobはwrite credentialを持たずcandidate artifactを作り、別promote jobがlatest `develop`に対して許可pathとbase SHAを検証してCAS promotionする。成功時はpromoted exact SHAだけをreleaseへ渡す。旧`commit-and-push.sh` retryは現行publication経路ではない。
-        - **concurrency group は採用しない**。GitHub Actionsの同一groupはpendingを1件しか保持しないため、複数依頼を落とし得る。現行の競合境界はpromoterのfresh-tip検証、許可path限定、bounded CAS retryである。
+1. **API キーは環境変数（`.env`・GitHub Secrets・Cloudflare Secrets）だけに置く。`config.yaml`・ソース・生成物・ログに書かない**
+2. **`.env` は `.gitignore` で除外済み。commit 前に `git status` で確かめる**
+3. **外部 API を叩くテストを書かない。`fetch` を注入してモックする**
+4. **Stage の入出力の型（Stage I/O 契約）を変えない**
+5. **スコアの正規化式・重みを仕様なしに変えない**
+6. **Stage 1 はフィルタだけ。スコア計算を混ぜない**
+7. **Signal は `enrichBatch` を優先する。1 件ずつの処理は遅い**
+8. **seen_ids は `{id: timestamp}` 形式。`max_age_days` で消す**
+9. **run_history には `finished_at` / `sources_status` / `errors` を入れる**
+10. **Slack 通知は webhook 未設定なら何もしない（パイプラインを失敗させない）**
+11. **LLM 呼び出しは `LLMProvider` インターフェース（`collect/llm/provider.ts`、実装は `lineage/llm/`）を通す。Groq・Gemini・Claude を `fetch` で直接叩く二重実装をしない**
+12. **カタログ系の道具は収集器の出力（`data/inputs/<conf>/papers_YYYY-MM-DD.csv`）だけを入力にする。venue・citation・著者を再クロールしない**
+    - 例外（家系図）: 引用グラフ（references / citations）の取得は許す。焦点論文の `venue` / `venue_tier` / `citation_count` / `github_stars` は `papers.json` の値を優先する
+13. **`data/published/<conf>/lineage.json` の生成元は `lineage/conference/` の builder だけ。手で編集しない**
+14. **`data/published/themes/<slug>/lineage.json` の生成元は `lineage/theme/cli.ts` だけ。`themes-manifest.json` の生成元は `generateThemesManifestCli.ts` だけ。手で編集しない**（詳細は下の「テーマ家系図」）
+15. **論文のメタデータ（題名・著者・venue・DOI・引用数・関係）を作り話で埋めない。** 取れなかった値は空・null・失敗として記録する
+16. **公開・デプロイ・dispatch・通知・merge・KV 書き込みはユーザー承認の後だけ**
+17. **このブランチは P5 切替手順（Phase W・Merge B）が終わるまで `develop` に merge しない**（上の「このブランチの状態」）
+
+### テーマ家系図（ルール 14 の詳細）
+
+- **依頼の流れ:** `/themes/` のフォーム → `apps/api` の `POST /api/themes`（origin 許可リスト → 受付スイッチ → 入力検査 → manifest で重複確認 → Durable Object で枠を数える → dispatch）→ `theme-on-demand.yml` → `lineage/theme/cli.ts` → 候補 → 最新 `develop` へ CAS で promote → exact SHA を公開。完了の正本は公開済みの `themes-manifest.json`（ブラウザが polling）。`GET /api/themes/status` は固定 503 の休眠 endpoint。
+- **slug:** 正本は `packages/core/src/slug/theme.ts` の `themeSlug()`。`apps/web/lib/themes-slug.ts` はそれを再 export する。`apps/api/src/lib/slug.ts` はまだ 1:1 の複製（core へ移す TODO あり）。規則を変えるときは両方とテストを同時に変える。
+- **出力パスは `themeSlug()` の戻り値だけで作る。** 生の `--theme` 文字列をパスに使わない（path traversal 防止）。
+- **スキーマは会議版と互換**（`root` / `nodes` / `edges` / `meta`）。`meta.theme` / `meta.slug` / `meta.keywords` / `meta.seeds` / `meta.depth` / `meta.since_year` / `meta.generated_at` を持つ。
+- **manifest は builder の中で作らない**（並列実行の競合を避ける）。`rel` が許可 enum 外のテーマは manifest から外す。
+- **OpenAlex が主:** workflow は `--primary-source openalex` で起動する（S2 の共有 IP 制限を避ける）。`--primary-source s2` は旧経路。`PAPERPILOT_OPENALEX_EMAIL` で polite pool。
+- **ノイズ除け 5 層:** S2 の `fieldsOfStudy`、OpenAlex の `concepts.id`（Computer Science / Mathematics / Linguistics）、seed の話題一致（2 語は両方、3 語以上は半分以上）、基盤論文の引用数フィルタ（seed 最大の 2 倍超で methodology でないもの）、実装系の denylist（`data/config/lineage_denylist.json`）。実装は `lineage/theme/seedFilters.ts` ほか。
+- **別名:** seed が 0 件なら `data/config/theme_aliases.json` の代替語を順に試す。
+- **不完全ビルドのゲート:** 公開済みより node/edge が減る、公開済みの焦点論文・node・edge が消える場合は公開しない（再実行か `--allow-incomplete`）。焦点論文が 1 本も残らなければ subject failure（exit 4、`--allow-incomplete` でも通らない）。
+- **workflow は `--llm-strict ambiguous` で起動する**（CLI 自体の既定は `off`、`--primary-source` の既定は `s2`）。Groq 無料枠（TPM 12,000 / RPD 1,000 / TPD 100,000、2026-06-06 確認）では `all` は破綻する。内蔵の RPM 制限（既定 25）は日次上限を追わない。
+- **Groq の遮断器:** `lineage/llm/groq.ts` は使えない応答（200 以外・JSON でない本文・空の choices・空の content）が 3 回続くと遮断し、以後は API を呼ばずにヒューリスティックへ落ちる。成功で数え直す。
+- **プロンプトの質:** `lineage/llm/base.ts` の `CLASSIFY_SYSTEM_PROMPT` はテンプレ文の翻訳を禁じる。テンプレ的な根拠は分類結果として受け取らない。テンプレを足すときは両方を同時に直す。
+- **分類キャッシュ:** `data/state/lineage-cache/classifications.json` を全 builder で共有する。書く直前にディスクから読み直して合わせ、ロック（`apps/pipeline/src/shared/lock.ts`）と原子的な置き換えで書く。
+- **並列依頼:** concurrency group は使わない（GitHub は pending を 1 件しか持たず依頼を落とす）。生成ジョブは書き込み権限を持たず、promote が最新 `develop` に対して許可パスと base SHA を検査して CAS で入れる。
+- **監査:** `auditThemeSeedsCli.ts`・`auditLineageQualityCli.ts`。`data-audit.yml` が該当パスの push/PR で走る。
 
 ---
 
-## TypeScript 移行中の開発ルール（`feat/ts-migration`、計画: [`docs/design/39-typescript-cloudflare-migration.md`](docs/design/39-typescript-cloudflare-migration.md)）
-
-移行が完了する（P5）まで、上の Python 向けルールと次のルールを両方守る。
-
-- **Node 22 以上**（jsdom 30・wrangler 4 が要求。CI も Node 22）。ホストの Node が 20 の場合は `npx --yes -p node@22 node -e 'console.log(process.execPath)'` で得た Node 22 を PATH の先頭に置いて実行する。
-- **場所**: `apps/web`（Next.js 静的書き出し）、`apps/api`（Hono on Workers）、`apps/pipeline`（Node の収集・生成）、`packages/core`（データ形式・共有ロジック・Python 互換関数）。道具は pnpm（`npx --yes pnpm@10.34.6 …`、corepack が使えない環境向け）、Biome、Vitest、tsx。
-- **絶対ルールの TS 版**: 外部 API を叩くテストを書かない（`fetch` を注入してモック）。API キーは環境変数のみ。LLM 呼び出しは共通インターフェース（§11 の `AbstractLLMProvider` 相当）を経由する。lineage / theme JSON の生成元は 1 つ（§13・§14）。スコアの正規化式・重みは変えない（§5）。
-- **TDD とカバレッジ**: テストを先に書く。Vitest のカバレッジ 80% 以上。
-- **移行中のデータ**: 新しいコードは `docs/`・`paperpilot/data/`・`paperpilot/output/` を読むだけ。書き出しは一時ディレクトリ。データの正本は develop。
-- **一致判定**: Python 版を置き換える前に `apps/pipeline/src/parity` で同じ入力の結果が一致することを確かめる（§7.2）。丸め・数値表記・並び順・時刻・正規表現は `packages/core` の Python 互換関数を使う。
-- **公開しない**: Cloudflare Pages へのアップロード（プレビュー含む）、Worker のデプロイ、develop への merge はユーザー承認後だけ。Cloudflare のトークンは扱わない（作成・登録はユーザー）。
-- **安全対策の移植**: [`docs/migration/safety-contracts.md`](docs/migration/safety-contracts.md) の表の各行を、テストごと移植する。
-
 ## CI / GitHub Actions
 
-ワークフロー一覧 (`.github/workflows/`・全 14 本):
-- `collect-weekly.yml` — 主要会議の論文を深掘り収集 → candidate生成 → CAS promotion → exact-SHA release。**手動 `workflow_dispatch` 専用**（#245 で週次 cron 廃止）
-- `collect-daily-watch.yml` — follow 著者の新作を確認 → 通知のみ。**手動 `workflow_dispatch` 専用**（#245 で日次 cron 廃止）
-- 両 collect workflow は collector を `--fail-on-errors` で起動する（取得元・出力先・状態ファイル（seen_ids 退避）の失敗、不完全なキーワード、有効な取得元が無い run で exit 1）。シグナルの劣化（`signal:`）は失敗にせず run_history の `degraded_signals` に記録するだけ。daily-watch の実行履歴は専用ファイル `run_history.daily.jsonl`（`incremental.run_history_file`、初回実行で作成）。daily のコミット step は失敗時も走り、出力・`seen_ids.daily.json`・実行履歴をコミットする — runner は終了コードが決まる前に配信と seen_ids のスタンプを済ませている（配信先が全滅した run だけスタンプしない）ため、コミットしないと同じヒットを再通知する。weekly は失敗時に `run_history.jsonl` を artifact として保存
+`.github/workflows/` の Node workflow は 12 本。どれも `permissions: {}` を最上位に置き、ジョブに最小権限を付ける。action は commit SHA で固定し、`./.github/actions/setup-pnpm` で Node 22 と依存を入れる。dispatch 入力は `env:` 経由でだけシェルに渡し、全体一致の正規表現と改行の拒否で検査する。
 
-🔴 **現行14 workflowのトリガ表** — 名前から推測せず`on:`節を確認すること。
+🔴 **トリガ表** — 名前から推測せず `on:` 節を確かめること。
 
-| workflow | push | PR | schedule | release | dispatch |
-|---|:--:|:--:|:--:|:--:|:--:|
-| `tests` | ✅ `develop`/`main` | ✅ | | | ✅ |
-| `ts-ci`（TypeScript 移行の CI、デプロイなし・secrets なし） | ✅ `feat/ts-migration`（paths 限定） | ✅（paths 限定） | | | ✅ |
-| `data-audit` | ✅ | ✅ | | | ✅ |
-| `pages` | ✅ `develop` | | | | |
-| `pages-release` | | | | | reusable (`workflow_call`) |
-| `pages-rollback` | | | | | ✅ |
-| `lighthouse` | | ✅ | ✅ `0 2 * * 1` | | ✅ |
-| `publish` | | ✅ | | | ✅ |
-| `paper-slides-on-demand` | | | | | ✅（休眠 scaffold） |
-| `collect-weekly` / `collect-daily-watch` / `regen-themes` / `theme-on-demand` / `conference-on-demand` | | | | | ✅ のみ |
+| workflow | push | PR | schedule | dispatch | その他 |
+|---|:--:|:--:|:--:|:--:|---|
+| `tests` | ✅ `develop`/`main` | ✅ | | ✅ | job 名 `test`（必須チェック名を保つ） |
+| `data-audit` | ✅ `develop`/`main`（paths） | ✅（paths） | | ✅ | |
+| `pages` | ✅ `develop`（paths） | | | | `pages-release` を呼ぶ |
+| `pages-release` | | | | | `workflow_call` のみ（reusable） |
+| `pages-rollback` | | | | ✅（`ROLLBACK` 確認） | |
+| `lighthouse` | | ✅（paths） | ✅ `0 2 * * 1` | ✅ | |
+| `collect-weekly` / `collect-daily-watch` / `regen-themes` / `theme-on-demand` / `conference-on-demand` | | | | ✅ のみ | |
+| `legacy-redirects` | | | | ✅（`REDIRECT` 確認） | 旧 GitHub Pages に転送サイトを出す |
 
-- **`schedule` を持つのは `lighthouse` ただ 1 本**（`collect-*` は #245、`regen-themes` は #261 で cron 廃止）。
-  ∴ **カタログは自動更新されない**（`conferences.json` は `generated: 2026-06-28` で凍結）。更新は `workflow_dispatch` で明示的に回す。
-- `data-audit` はtheme/conference lineage JSON、theme manifest、関連builder/auditor、workflow自身をpaths対象としてpush/PRで走り、手動dispatchも受ける。最終run時刻は外部状態として都度確認する。
-- `tests.yml` が `ruff` + `pytest` を走らせる（2026-08-23 追加）。**mypy は含まない**（環境の INTERNAL ERROR で起動しないため）。
-  🔴 **実行は `uv run --extra dev …` でなければならない**。`pytest` / `ruff` は `[project.optional-dependencies].dev` にあるので、素の `uv run` はクリーンなチェックアウトで `Failed to spawn` になる。ローカルで通っていたのは `/usr/local/bin` のシステム版に落ちていたからで、CI にそれは無い。
-- `regen-themes.yml` — 手動 `workflow_dispatch` 専用 (PR #261 で週次 cron 廃止)。LLM 契約変更や lineage 形式バンプ後にバルク再生成する break-glass
-- `theme-on-demand.yml` — フォーム送信または手動dispatchで1テーマのcandidateを生成し、latest `develop`へCAS promotionしてpromoted exact SHAをrelease
-- `conference-on-demand.yml` — 手動 `workflow_dispatch` で**新しい学会カタログ**を generate → validate → latest `develop` へCAS promotion → exact-SHA Pages releaseする。入力: `conference`(slug) / `venue`(VenueSignal token) / `query`(arXiv `co:"…"`) / `display` / `lede`（plain text）/ `max`。LLM/unarXive 不要 (カタログは arXiv メタ + VenueSignal のみで構築)。**arXiv 自己申告ベースなので部分収録(採択集合の ~30-40%)**。**ICLR/NeurIPS/ICML は `collect_openreview.py`(OpenReview api2 venueid → 全採択 + Oral/Spotlight/Poster 区分)で権威的に全件収録するのが正**(当面は手動: collect_openreview → build_summary_csv → build_pages → 既存ページなら lede/footer を OpenReview 表記に手修正。専用 workflow `openreview-on-demand.yml` は未実装=follow-up)
-- `data-audit.yml` — `docs/themes/*/lineage.json` 等が変わった PR/push で seed/lineage 監査
-- `lighthouse.yml` — frontend 変更 PR + 月曜定例で Core Web Vitals 計測
-- `pages.yml` — `develop` の公開対象変更から、検証済みexact SHAだけを reusable `pages-release.yml` でGitHub Pagesへデプロイ
-- `pages-rollback.yml` — 明示確認付きの手動rollback。branch/dataは巻き戻さず、既知のancestor SHAのPages artifactだけを再公開
-- `publish.yml` — PRまたは手動起動のbuild-only検証。PyPI upload/OIDC権限は持たない
-- `paper-slides-on-demand.yml` — request/callback seamはローカル実装済みだが、production adapter/binding/catalog pin/provider未接続の休眠scaffold。claim/fence後も安全にfailedへ閉じ、生成・公開しない
+- **schedule を持つのは `lighthouse` だけ。** カタログは自動では更新されない。更新は dispatch で明示的に回す。
+- `tests.yml`: `.codex/` を除く tracked な `*.py` が 0 件か → Biome → typecheck → web build → test（skip は warning）→ `validate bundle`。
+- `data-audit.yml`: `data/published/themes/*/lineage.json`・`themes-manifest.json`・`data/published/*/lineage.json`・関連 builder/auditor の変更で 2 つの監査を走らせる。
+- `pages.yml`: `data/published/**`・`data/config/conference-copy/**`・`apps/web/**`・`packages/core/**`・`schemas/**`・lockfile・`apps/pipeline/src/release/**` などの push で、`source_sha: github.sha` を `pages-release.yml` に渡す。
+- 収集の 2 本は collector を `--fail-on-errors` で起動する（取得元・出力・状態ファイルの失敗、不完全なキーワード、有効な取得元なしで exit 1）。シグナルの劣化は失敗にせず run_history の `degraded_signals` に残す。daily-watch は失敗時もコミット step を走らせ、`data/inputs/daily`・`data/state/seen_ids.daily.json`・`data/state/run_history.daily.jsonl` を `release/cli.ts commit-push` で入れる（入れないと同じヒットを再通知する）。weekly は失敗時に `data/state/run_history.jsonl` を artifact に残す。
+- 生成系（weekly・regen-themes・theme-on-demand・conference-on-demand）の形は共通: 書き込み権限なしで候補を作る → `release/cli.ts package` → artifact → 別ジョブの `release/cli.ts promote <kind>` が最新 `develop` に CAS で入れる（promote 先ツリー自身のコードで共有出力を作り直して検査する）→ promote した exact SHA を `pages-release.yml` に渡す。
+- `.github/workflows/*.yml` を push するには PAT に `workflow` scope が要る。
 
-### 必要な GitHub Secrets
+### GitHub Secrets と environments
 
-| 名前 | 用途 | 必須？ |
-|------|------|------|
-| `GH_PAT` | GitHub API 用 PAT（未設定時は `github.token` fallback） | 推奨 |
-| `S2_API_KEY` | Semantic Scholar (`--primary-source s2` 利用時のみ。post #217 default OpenAlex では未使用) | 任意 |
-| `CLAUDE_API_KEY` | 将来の Claude Provider 用 | 任意 |
-| `SLACK_WEBHOOK_URL` | Slack 通知 + 失敗時通知 | 任意 |
-| `PAPERPILOT_GROQ_API_KEY` | テーマ家系図の LLM 分類 (Groq) | テーマ生成に必須 |
-| `PAPERPILOT_OPENALEX_EMAIL` | OpenAlex polite pool（フォールバックの安定性向上） | 推奨 |
+| 名前 | 使う workflow | 用途 |
+|---|---|---|
+| `GH_PAT` | collect-daily-watch | push 用 PAT（無ければ `github.token`） |
+| `OPENALEX_EMAIL` | collect-weekly、collect-daily-watch | OpenAlex polite pool |
+| `S2_API_KEY` / `GEMINI_API_KEY` / `CLAUDE_API_KEY` / `GROQ_API_KEY` | collect-weekly | 収集と Stage 4・家系図分類 |
+| `PAPERPILOT_GROQ_API_KEY` / `PAPERPILOT_S2_API_KEY` | regen-themes、theme-on-demand | テーマ家系図の分類・S2 |
+| `SLACK_WEBHOOK_URL` | collect-daily-watch | 通知と失敗通知 |
+| `LHCI_GITHUB_APP_TOKEN` | lighthouse | 任意 |
+| `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` | pages-release、pages-rollback | environment `cloudflare-pages-deploy`（develop のみ）の secret |
 
-### CF Worker (theme submission API)
+- `cloudflare-pages-deploy`: deploy と rollback のジョブだけが使う。develop のみ許可。
+- `cloudflare-pages-production`: secret なし。どのジョブも `environment:` に書かない。`record` ジョブが REST API で書く「正常に出た SHA の台帳」。ジョブに `environment:` を書くと smoke の前に成功扱いの Deployment ができてしまうので、名前を分けている。
+- `github-pages`: `legacy-redirects.yml` だけが使う。
+- Worker の secret `GH_DISPATCH_PAT`（fine-grained、このリポジトリのみ、Actions: Read & write）は Cloudflare 側に置く。
 
-`worker/index.ts` を `wrangler.jsonc` の設定で `paperpilot-themes.puuptdbkh082.workers.dev` にデプロイ。`develop` への push で CF Workers Builds (GitHub 連携) が自動 build + deploy。
+---
 
-**Worker 名の経緯**: 元は `automatic-paper-search` (workers.dev URL も同じ) だったが、2026-06-03 にその URL に **Cloudflare Access Application が紐付き、Worker 削除 + 再作成でも消えない** 状態が判明。Application を消すには Zero Trust Free を活性化 (規約同意 + 課金情報入力) する必要があったため、Worker 名を `paperpilot-themes` に変更して新 URL で Access binding を回避した。これは workers.dev のサブドメイン単位で Access が account に bind される仕様への workaround。
+## 公開（Cloudflare Pages）とロールバック
 
-**初回 / 再構築時の手順**:
+`pages-release.yml`（group `paperpilot-pages-production`、`cancel-in-progress: false`）は 6 段 + 記録。
 
-1. Worker 名が新規 (workers.dev 上で衝突なし) であることを確認。既に Access binding が存在する name は避ける。
-2. KV namespace を作成: `wrangler kv namespace create RATE_LIMIT_KV` → 出た id を `wrangler.jsonc` の `kv_namespaces[0].id` に書き戻す (placeholder のままだと deploy が validate で reject される)
-3. Secret を設定: dashboard の Variables and Secrets → "+ Add" → Type=Secret, Name=`GH_DISPATCH_PAT`, Value=fine-grained PAT (this repo only, **Actions: Read & write**)。CLI 派は `wrangler secret put GH_DISPATCH_PAT` でも可
-4. `git push` → CF Workers Builds が build + deploy
+1. **validate** — SHA・`release_kind`（`normal` のみ）・request_id を検査 → exact SHA を checkout → Biome・typecheck・web build・全テスト → `release/cli.ts no-skip-gate`（skip が 1 件でもあれば失敗）→ `auditThemeSeedsCli`・`auditLineageQualityCli`・`searchIndexCli --check`
+2. **build** — `pnpm --filter @paperpilot/web build` → `release/cli.ts marker apps/web/out` → `validate local $SHA apps/web/out` → artifact `cf-pages-$SHA`
+3. **admit** — SHA が `origin/develop` の祖先で、公開対象のパスが tip と同じときだけ `deployable=true`（古いリリースを出さない）。このパス集合は `pages.yml` の paths に含まれていること（契約テスト）
+4. **deploy** — environment `cloudflare-pages-deploy`、develop のみ。marker を確かめ、`wrangler pages deploy … --commit-hash=$SHA` → `release/cli.ts cf-deployment-id`（commit_hash で絞る。wrangler の出力を読まない）
+5. **smoke** — secret なし。`release/cli.ts validate smoke "$PUBLIC_ORIGIN" "$SHA" --wait-marker … --expect-bytes …`（デプロイ固有 URL も先に smoke できる）
+6. **record** — `release/cli.ts gh-record` が `cloudflare-pages-production` に GitHub Deployment と success status を書く（payload に `source_sha`・`cf_deployment_id` など）
 
-エンドポイント:
-- `POST /api/themes` — フォーム送信。`{ theme: string }` を受け、validate + dedup + rate-limit してから theme-on-demand.yml を dispatch。新規依頼のレスポンスは `{ ok: true, status: "queued", slug, request_id }`、既存テーマは `{ ok: true, status: "exists", slug }`、失敗時は `{ ok: false, status: "invalid" | "rate_limited" | "error", message }`。Origin が GH Pages（`https://taichiiiiiiii.github.io`）以外は 403、`content-type: application/json` 以外は 415、1KB 超の body は 413（いずれも KV・subrequest の前に拒否）。既存テーマ一覧（manifest）を読めない時は「既存」と答えず 503（課金・dispatch なし）、dispatch の通信失敗は 502。処理本体は `worker/themes-post.js`（Node テスト可能、`index.ts` は配線のみ）
-- `GET /api/themes/status` — 現在は常に `503` の固定JSONを返す休眠endpoint。KVではPAT付きGitHub APIを守る原子的quotaを作れないため、GitHub runs APIは呼ばない。ブラウザは公開 `themes-manifest.json` のpollingを継続する
-- `OPTIONS /api/*` — CORS preflight。ACAO は GH Pages origin 固定 + `Vary: Origin`（`worker/response.js` の `PAGES_ORIGIN`。localhost からの `wrangler dev` 検証はこの origin 制限で 403 になる）
+smoke が失敗すると、壊れたデプロイが記録なしで残る。運用者はすぐ `pages-rollback.yml` で最後に記録された SHA に戻す（自動ロールバックはしない）。
 
-`vars` (非 secret): `GH_OWNER`, `GH_REPO`, `GH_WORKFLOW_FILE`, `GH_REF` は `wrangler.jsonc` に直書き。変更が要るときは `wrangler.jsonc` を編集して push。
+**`pages-rollback.yml`**（dispatch、`confirm=ROLLBACK`）: 対象 SHA が develop の祖先で `cloudflare-pages-production` に成功記録があるか確かめる → `cf-verify-deployment` → `cf-rollback`（environment `cloudflare-pages-deploy`）→ smoke（marker・404・転送・ヘッダ。バイト比較はしない）→ `release_kind: rollback` で記録。作り直し（rebuild）はしない。データとブランチは戻さない。P5 以後に Cloudflare に出した SHA だけが対象。
 
-### unarXive DuckDB アーティファクト (PR #222 Phase J / オペレータ runbook)
+---
 
-PR #222 で **citation contexts** を S2 不要で取得できるが、 unarXive
-2022 dataset → DuckDB の build は CI で毎回やると 10 min + 7GB DL
-で workflow timeout を圧迫する。**1 回 build → GitHub Release に
-artifact 上げる → workflow が DL する** 構造。
+## API（`apps/api`）
 
-オペレータ手順 (1 回だけ):
+Hono on Cloudflare Workers。本番設定は `apps/api/wrangler.jsonc`（Worker 名 `paperpilot-themes`、`DISPATCH_MODE=live`、KV binding `CONFIG_KV` = 本番 namespace `3e11d3e73dae42a8b94f06a9fa9de19f`、Durable Object `QUOTA` = `QuotaCounter`）。プレビューは `wrangler.preview.jsonc`（`paperpilot-api-preview`、`DISPATCH_MODE=dry-run`、プレビュー用 KV）。
 
-```bash
-# 1. 依存追加 (一時的、メイン pyproject.toml には入れない)
-uv pip install 'paperpilot[unarxive]'   # = duckdb + huggingface_hub（#362 で extra 化）
+| endpoint | 中身 |
+|---|---|
+| `POST /api/themes` | origin が KV `origin_allowlist` に無ければ 403 → `accepting` が `"true"` でなければ 503 `paused`（枠も dispatch も使わない）→ `content-type` が JSON でなければ 415、1KB 超は 413 → 入力検査 → manifest で既存なら `exists`（manifest が読めなければ 503）→ 枠（IP ごと 5/時、全体 100/日、Durable Object で正確に数える）→ dispatch。新規は `{ ok: true, status: "queued", slug, request_id }` |
+| `GET /api/health` | 読むだけ。`{ accepting, dispatch_mode, pat_configured, kv_namespace_tag }` |
+| `GET /api/themes/status` | 固定 503 の休眠 endpoint |
+| `OPTIONS /api/*` | CORS preflight。許可リストの origin だけ ACAO を返し、`Vary: Origin` |
 
-# 2. unarXive DuckDB を build (~5 min、HF cache hit なら ~30 s)
-#    DuckDB native read_json_auto + 3-col 化 + 600ch trim で
-#    生 .duckdb は ~2-3 GB、.gz は ~1-1.5 GB (2 GB 上限内)
-#    fail closed: JSONL の壊れた行・license_info に無い sample_id・重複行が
-#    1件でもあれば既存 index を残して exit 1。upstream の孤立行を確認済みなら
-#    `--allow-unmatched N` で N 行まで許容（孤立行は空 arXiv id で公開せず除外）
-uv run python -m paperpilot.scripts.build_unarxive_index \
-    --out paperpilot/data/unarxive/unarxive.duckdb
-
-# 3. GitHub Release tag `unarxive-v1` を作って `.gz` を attach
-#    生 .duckdb は uploadしない (2 GB 超 + 帯域コスト)
-gh release create unarxive-v1 \
-    paperpilot/data/unarxive/unarxive.duckdb.gz \
-    --title "unarXive 2022 DuckDB index (CC-BY-SA-4.0)" \
-    --notes "Source: saier/unarXive_citrec, built $(date -u +%Y-%m-%d). \
-Citation contexts for arXiv CS papers 1991-2022-03. \
-Schema: (paper_arxiv_id, label, text[600ch]). gunzip on download."
-```
-
-ライセンス: unarXive 2022 は CC-BY-SA-4.0。`paper_license` 列は
-2 GB 制約のために build 時に drop 済 (audit-only で runtime 未使用)。
-viewer footer に「data: unarXive 2022 (Saier et al., CC-BY-SA-4.0)」
-を必ず明記すること — 列削除した分、footer 明記が attribution 唯一の手段。
-
-artifact が無い場合:
-- workflow の DL step は `continue-on-error: true` で graceful skip
-- `paperpilot.utils.unarxive.is_available()` が False を返す
-- `fetch_contexts()` が `[]` 返却 → year/cite + LLM fallback
-- **build pipeline は壊れない** (Phase J 効果が無効化されるだけ)
-
-更新タイミング: unarXive 2022 は 2022-03 cutoff で固定 dataset。Re-build
-は基本不要。HF dataset 側に新版が出たら新 tag (`unarxive-v2` 等) で
-artifact 入れ替え → workflow 内 URL も更新。
-
-### 注意
-
-`.github/workflows/*.yml` を push するには PAT に **`workflow` scope が必要**。
-PAT 更新手順: <https://github.com/settings/tokens> → 既存 PAT を編集 → `workflow` にチェック。
+- **受付スイッチ:** KV `accepting` が文字列 `"true"` のときだけ受け付ける。値が無い・違う・読めないときは止まる（fail closed）。
+- **origin 許可リスト:** KV `origin_allowlist`（JSON 配列）。プレビューや `<hash>.<project>.pages.dev` を入れない。
+- **空打ちモード:** `DISPATCH_MODE=dry-run` は本番の ref・origin を指していれば拒否する。本番は常に `live`。
+- **KV の操作（承認が要る）:** `wrangler kv key put --namespace-id=3e11d3e73dae42a8b94f06a9fa9de19f <key> <value> --remote`。wrangler 4 は既定でローカルに書く場合があるので `--remote` を付け、`wrangler kv key get --remote` で読み戻し、`/api/health` で確かめる。各段の値は `docs/migration/p5-plan.md` §6.1。
+- D1 はまだ使っていない（P6 の項目）。
 
 ---
 
 ## Issue 作成ワークフロー
 
-レビューで検出された「ブロッキングではないが望ましい」項目を、ユーザーがissue作成を明示承認した場合に使う手順。承認前は候補を報告するだけに留める。過去実績: 13 件を 23 分でバッチ投入 (#20〜#32)。
+レビューで見つかった「止めるほどではないが直したい」項目を、ユーザーが issue 作成を明示承認したときに使う。承認前は候補を報告するだけ。
 
-### Step 1. 1 issue = 1 問題 に分解
-
-関連が強い複数指摘でも、別 issue に分けて本文でクロスリンク（`#21 の続き`）。
-
-### Step 2. タイトル
-
-`[<カテゴリ>] <日本語サマリ>` 形式。
+1. **1 issue = 1 問題に分ける。** 関係が強くても別 issue にし、本文で相互にリンクする（`#21 の続き`）。
+2. **タイトル:** `[<カテゴリ>] <日本語の要約>`。
 
 | 接頭辞 | GitHub ラベル |
 |---|---|
@@ -789,54 +472,31 @@ PAT 更新手順: <https://github.com/settings/tokens> → 既存 PAT を編集 
 | `[tests]` / `[test-quality]` | `test` |
 | `[typing]` | `typing` |
 | `[scripts]` / `[spec-gap]` | `enhancement` |
-| `[infrastructure]` | `infrastructure` (blocked 時は `help wanted` 併用) |
+| `[infrastructure]` | `infrastructure`（止まっていれば `help wanted` も） |
 
-### Step 3. 本文テンプレート（5 セクション・順序厳守）
+3. **本文（5 節、この順）:**
 
 ```markdown
 ## 概要
 （1-2 段落。何が起きていて、なぜ問題か）
 
 ## 背景
-（該当 CLAUDE.md §N / 設計書 §N / 過去 incident を引用）
+（CLAUDE.md §N / 設計書 §N / 過去の事例）
 
 ## 該当
-（file:line とコードスニペット）
+（file:line とコード片）
 
 ## 提案 / あるべき記述
-（具体的な修正方針、before/after コード例）
+（直し方、before/after）
 
 ## タスク
-- [ ] 具体的アクション 1
+- [ ] 具体的な作業
 - [ ] 必要ならテスト追加
 - [ ] 必要ならドキュメント更新
 ```
 
-### Step 4. 投入
-
-```bash
-gh issue create \
-  --title "[refactor] foo を bar に統一" \
-  --label "refactor" \
-  --body "$(cat <<'EOF'
-## 概要
-...
-EOF
-)"
-```
-
-関連 issue 群は **数分以内に連続投入** する。
-
-### Step 5. 解決時のコミット
-
-`closes #N` 節を含める:
-
-```
-fix(typing): resolve 7 mypy errors across scripts/ and tests/ (closes #32)
-refactor(scripts): dedupe slug->venue label into _common.py (closes #30)
-```
-
-複数まとめて閉じる場合: `fix: resolve issues #1-#7, #10, #13, #15, #16`
+4. **投入:** `gh issue create --title "…" --label "…" --body "$(cat <<'EOF' … EOF)"`。関連 issue はまとめて続けて入れる。
+5. **解決時の commit:** `closes #N` を入れる（例: `fix(pipeline): … (closes #32)`）。
 
 ---
 
@@ -844,62 +504,53 @@ refactor(scripts): dedupe slug->venue label into _common.py (closes #30)
 
 | ミス | 対策 |
 |---|---|
-| API キーを `config.yaml` や `.py` に書く | 必ず `.env` から読み込む |
-| 外部 API を叩くテストを書く | `unittest.mock.patch` で `request_with_retry` をモック |
-| Stage 1 にスコアリングを混ぜる | Stage 2 の KeywordSignal に移す（§4.2） |
-| Signal で 1件ずつ loop を書く | `enrich_batch` を実装してバッチ API を使う（§4.3.1） |
-| テスト失敗のまま commit | `pytest` を通してから commit |
-| CI で `output/` が ignore されてコミットされない | `.gitignore` で除外しない（CI が commit するため） |
-| 新しい Source を追加したのに runner に登録し忘れ | `_build_sources()` に分岐追加 |
-| 新しい Signal / Exporter を `__init__.py` で export し忘れ | `__all__` を必ず更新 |
+| API キーを `config.yaml` やソースに書く | 環境変数から読む |
+| 外部 API を叩くテストを書く | `fetch` を注入してモックする |
+| データのパスを直書きする | `layoutFor()` / `relLayout()` を使う |
+| CLI を import しただけで通信が走る | `isMain()` で守る |
+| Stage 1 にスコア計算を混ぜる | Stage 2 の keyword シグナルに移す |
+| Signal で 1 件ずつ loop を書く | `enrichBatch` でバッチ API を使う |
+| JS の `Math.round` / `toFixed` / `split(/\s+/)` で Python 版と結果がずれる | `packages/core/src/pycompat/` の関数を使う |
+| テスト失敗のまま commit | `pnpm -r test` を通してから |
+| web build をせずにテストして skip を見落とす | build → test の順に回す |
+| 新しい Source/Signal/Exporter を runner に登録し忘れる | `runner.ts` の `build*()` に足す |
+| collector を `--config` なしで起動する | 既定の設定パスはまだ古い値（`paperpilot/config.yaml`）なので、`--config data/config/config.yaml` を必ず渡す |
 
 ---
 
 ## 仕様変更時のルール
 
-**仕様・設計に変更が生じた場合は、このファイル（CLAUDE.md）と設計書（[`docs/design/`](docs/design/)）を必ず同時に更新すること。**
+**仕様・設計を変えたら、このファイルと設計書（[`docs/design/`](docs/design/)）を同時に直す。**
 
-| 変更の種類 | 更新箇所 |
+| 変更の種類 | 直す場所 |
 |---|---|
-| スコアリング重み・正規化式 | CLAUDE.md「スコアリング」表、`paperpilot/config.yaml` の `weights`、設計書 Table 12 |
-| Stage の入出力の型 | `pipeline/stage_*.py`、`tests/test_stage*.py`、CLAUDE.md「Stage フロー」 |
-| 新 Source / Signal / Exporter 追加 | `paperpilot/<kind>/<name>.py`、`tests/`、`runner.py`、`config.yaml`、CLAUDE.md「フォルダ構成」「プラグイン追加手順」 |
-| 新 LLMProvider 追加 | `paperpilot/llm/<name>_provider.py`、`tests/`、`runner._build_llm_provider()`、`config.yaml`、`.env.example`、CLAUDE.md |
-| 環境変数追加 | `.env.example`、`utils/config_loader.py` の `load_config()`、CLAUDE.md「環境変数」 |
-| 新しい config キー | `config.yaml`、`runner.py` の該当 builder、設計書 §5.2 |
-| GitHub Actions の変更 | `.github/workflows/*.yml`、README「GitHub Actions」節、CLAUDE.md「CI / GitHub Actions」 |
-| venue 検出の tier / パターン変更 | `signals/venue_signal.py`、`tests/test_venue_stress.py`、設計書 §5.3.1 |
+| スコアの重み・正規化式 | CLAUDE.md「スコアリング」、`data/config/config.yaml` の `weights`、`collect/stages/metricScore.ts`、設計書 |
+| Stage の入出力の型 | `collect/stages/*.ts`、`apps/pipeline/test/collect/stages/`、CLAUDE.md「Stage フロー」 |
+| Source / Signal / Exporter の追加 | `collect/<kind>/`、テスト、`runner.ts`、`config.yaml`、CLAUDE.md |
+| LLM provider の追加 | `lineage/llm/<name>.ts`、テスト、`collect/runtime/llmProvider.ts`、`config.yaml`、`.env.example`、CLAUDE.md |
+| 環境変数の追加 | `data/config/.env.example`、`collect/config/env.ts`、CLAUDE.md「環境変数」 |
+| 公開 JSON の形 | `schemas/`、`packages/core` の zod、生成元と読み手のテスト |
+| GitHub Actions | `.github/workflows/*.yml`、README「GitHub Actions」、CLAUDE.md「CI / GitHub Actions」、workflow の契約テスト |
+| venue の tier・パターン | `collect/signals/venue.ts`、`venue.test.ts`、設計書 |
 
 ---
 
 ## Claude Code 運用ノート
 
-`AGENTS.md` / `PAPERPILOT_PROFILE.md` の Qwen Flash/MAX routing、GPT-5.6 Sol role表、[`docs/design/13-agent-workboard.md`](docs/design/13-agent-workboard.md) は **Codex CLI 向けの別ツールの運用**であり、Claude Code セッションには適用しない。Claude Codeでの実装・レビュー・commit/push承認境界は本ファイル（CLAUDE.md）が正本。
-
-実装は `/code-review medium`（bounded implementation）を基本とし、security・provenance・schema・migration・publication-riskは `/code-review high` で独立レビューする。`ultra`は通常使わない。製品runtimeのLLM provider設定（Ollama/Gemini/Groq/Claude Provider等）はこのagent routingを変更しない。
-
-変更後は差分とfocused/full gate（テスト・lint）を確認して結果・skip・残リスクを報告する。workflow dispatch、issue/PR作成、commit/push/merge、公開、通知、secret/settings変更は自動工程にせず、ユーザーの明示承認を得る。
+- `AGENTS.md` / `PAPERPILOT_PROFILE.md` の Qwen・Codex の routing と role 表、[`docs/design/13-agent-workboard.md`](docs/design/13-agent-workboard.md) は Codex CLI 向けの別運用。Claude Code には適用しない。
+- 製品の LLM provider 設定（Ollama / Gemini / Groq / Claude）は、作業エージェントの routing とは別物。混同しない。
+- サブエージェントは `.claude/agents/`、手順は `.claude/skills/`（`run-verification`・`add-plugin`）。
+- 変更後は差分と gate（lint・typecheck・テスト）を確かめ、結果・skip・残リスクを報告する。workflow の dispatch、issue/PR 作成、commit/push/merge、公開、通知、secret・設定の変更はユーザーの明示承認を取る。
 
 ---
 
 ## 実装ステータス
 
-詳細な実装状況表・過去の改善履歴・既知のオープン項目は
-[`docs/design/09-implementation-status.md`](docs/design/09-implementation-status.md) に移設した
-（2026-06-03 時点の記録を原文のまま保持し、冒頭に 2026-08-18 実測の現況を追記）。
+現在の状況は設計書 [`39-typescript-cloudflare-migration.md`](docs/design/39-typescript-cloudflare-migration.md) の「進捗」表、[`docs/migration/p5-plan.md`](docs/migration/p5-plan.md)（切替の手順と危険）、[`docs/migration/p4-followups.md`](docs/migration/p4-followups.md)（残作業）を正とする。移行前の記録は [`docs/design/09-implementation-status.md`](docs/design/09-implementation-status.md)。
 
-現況の要点（2026-08-18 実測。数値は実データを集計して確認したもの）:
-
-- **カタログ = 10 会議 / 28,300 本**（`docs/conferences.json`、生成 2026-06-28）
-- **会議家系図の実データは 2 会議のみ**（`iclr-2026` / `eccv-2024`）。残り 8 会議の `lineage.json` は ~290B の空スタブ
-- **テーマ家系図は 3 本公開**（flash-attention / mixture-of-experts / vision-transformer）
-- **deep tree 14 本はビューアへの導線が無く orphan**
-- **アセット版数は `sync_asset_versions.py` が統一管理**（2026-08-19 に是正）。かつて `utils.js` が
-  v=75(10 ページ) と v=82(4 ページ) に分裂していたが、`--check` が乖離と `?v=` 無し参照を検出して
-  非ゼロ終了するようになり、`test_sync_asset_versions.py` が実サイトを検査している
-- テストは **1,103 passed / 1 skipped**（2026-08-23 実測）（skip は operator 専用 unarXive の 1 件＝`duckdb` 未導入時の設計どおり。実行は必ず `uv run --extra dev` — 素の `uv run` は PATH のシステム pytest に落ち、そこには duckdb が入っているため件数が 16 件ずれる）、lint（ruff）は clean。
-  mypy は環境側で INTERNAL ERROR（既存の `build_pages.py` でも再現するため本リポジトリ由来ではない）
+- カタログは 10 学会 / 28,300 本（`data/published/conferences.json`）。
+- 系譜は品質 manifest で fail closed。表示対象は 0 件。
 
 ---
 
-*最終更新：2026年8月20日（定期整理: ① テスト/lint に関する記述を実測に一致（`~22s`→`~27s`、bare `python3 -m pytest`→`uv run`）、② 唯一の恒常 failure を #357 で解消（原因はテスト補助関数がグループ化セレクタを読めなかったこと。「node 環境依存」も「#257 の移行残り」も誤診だった）、③ **存在しない CI（test/ruff/mypy）の記述を削除しローカル実行が唯一のゲートである旨を明記**、④ mypy が現環境で INTERNAL ERROR で走らないことを実行例に併記。2026-08-18 の変更＝CHANGELOG 履歴 20 本の無損失退避・実装ステータス章の `docs/design/09-implementation-status.md` への移設・#347〜#353 の反映。詳細は CHANGELOG.md ## [Unreleased] 参照）*
+*最終更新: 2026-10-07（P5 Tier C。Python・uv・Docker・旧 Worker の記述を消し、TypeScript だけの構成・`data/` の配置・12 workflow・Cloudflare の公開とロールバック・KV スイッチと `/api/health` に書き直した）*

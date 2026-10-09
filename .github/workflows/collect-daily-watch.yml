@@ -1,99 +1,76 @@
-name: PaperPilot Daily Follow Watch
+name: collect-daily-watch
 
-# Author-watch notifier (no LLM, no citation lookups). Kept around for
-# manual dispatch but the daily cron is **disabled** (2026-06-04): the
-# project's active focus is the テーマ家系図, and the follow-author
-# alert path doesn't feed into theme generation. Re-enable by adding
-# the `schedule:` block back if real-time alerts become useful again.
+# Author-watch notifier (no LLM, no citation lookups). Manual dispatch
+# only (docs/migration/p5-plan.md §4.1). `cancel-in-progress: false`
+# queues a second dispatch instead of killing a collector mid-append,
+# since the commit step appends to tracked state files.
 
 on:
   workflow_dispatch:
 
-# One watch at a time. The commit step below appends to the tracked
-# paperpilot/data/run_history.daily.jsonl and push through
-# .github/scripts/commit-and-push.sh, so two overlapping runs raced on the same
-# file: the loser's push was rejected and its own history line never landed.
-# `cancel-in-progress: false` queues the second dispatch instead of killing a
-# collector mid-append. This does not contradict CLAUDE.md's "concurrency group
-# は採用しない" rule, which is about theme-on-demand: there the parallel units
-# are user dispatches the CF Worker fans out (5/h) and dropping a queued one
-# loses a request, while here the only trigger is an operator pressing a button.
 concurrency:
   group: collect-daily-watch
   cancel-in-progress: false
 
-permissions:
-  contents: write
+permissions: {}
 
 jobs:
   watch:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    env:
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          python-version: '3.12'
+          # commit-push rebases HEAD onto origin/develop and pushes HEAD:develop;
+          # pin develop so a dispatch from another branch cannot push its commits.
+          ref: develop
 
-      # Match collect-weekly + theme workflows on uv. requirements.txt
-      # was missing numpy / python-dotenv (only pyproject.toml has them),
-      # so the legacy `pip install -r ...` path crashed on collector
-      # import with ModuleNotFoundError. uv reads pyproject.toml directly.
-      - name: Install uv
-        uses: astral-sh/setup-uv@v6
-        with:
-          version: '0.7.x'
-
-      - name: uv sync
-        run: uv sync
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
 
       - name: Run PaperPilot (daily follow-watch)
+        # L7 of the P5 tier-A review: PAPERPILOT_SLACK_WEBHOOK_URL, same
+        # as the live collect-daily-watch.yml's collector step. Slack
+        # export is disabled today (no webhook configured), but enabling
+        # it must not require re-discovering this missing env var.
         env:
           PAPERPILOT_GITHUB_TOKEN: ${{ secrets.GH_PAT || github.token }}
           PAPERPILOT_OPENALEX_EMAIL: ${{ secrets.OPENALEX_EMAIL }}
-          PAPERPILOT_SLACK_WEBHOOK_URL: ${{ env.SLACK_WEBHOOK_URL }}
-        # --fail-on-errors: the pipeline is fail-safe by design, so a run where
-        # every source was throttled still exits 0 and would push an empty watch
-        # result as if the day were quiet. Here the exit code is the gate.
-        run: uv run python -m paperpilot.collector --config paperpilot/config.daily-watch.yaml --fail-on-errors
+          PAPERPILOT_SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: pnpm exec tsx apps/pipeline/src/collect/cli.ts --config data/config/config.daily-watch.yaml --fail-on-errors
 
       - name: Commit daily hits, seen_ids and run history
-        # Runs on failure too (only a cancelled run skips it). --fail-on-errors
-        # makes a degraded collection (e.g. one arXiv keyword 503) exit 1, and
-        # that run still has to land three things:
-        # - run_history.daily.jsonl: the only evidence the day was throttled,
-        #   not quiet. It is this config's own file (incremental.run_history_file)
-        #   because daily and weekly used to fight over one run_history.jsonl.
-        # - seen_ids.daily.json: the runner (paperpilot/pipeline/runner.py)
-        #   exports and stamps seen_ids before the exit code is decided, skipping
-        #   the stamp only when every enabled exporter failed. Leaving it
-        #   uncommitted re-sent the same hits on the next run, and a corrupt file
-        #   (quarantined and rewritten by the runner) looped forever.
-        # - paperpilot/output/daily: the hits seen_ids now marks as delivered. With
-        #   CSV as the only enabled exporter, committing seen_ids without the CSV
-        #   would mark hits seen that nobody can ever read.
-        # The hits are real papers; what a degraded run lacks is the keywords it
-        # could not fetch, and the run history plus the red run record that.
-        # Exact paths only, so a `.corrupt-*` quarantine file is never staged.
-        # Push to develop (the script default): main was abandoned in the move
-        # off GitHub Pages (#123 followup); commit-and-push.sh retries + rebases
-        # against the other develop-targeting workflows.
+        # Runs on failure too (only a cancelled run skips it): a
+        # degraded collection still has to land run_history.daily.jsonl
+        # (the only evidence the day was throttled, not quiet),
+        # seen_ids.daily.json and the output it marks as delivered.
         if: ${{ !cancelled() }}
+        env:
+          GIT_AUTHOR_NAME: "PaperPilot Bot"
+          GIT_AUTHOR_EMAIL: "bot@paperpilot.dev"
+          GIT_COMMITTER_NAME: "PaperPilot Bot"
+          GIT_COMMITTER_EMAIL: "bot@paperpilot.dev"
         run: |
           set -euo pipefail
-          git config user.name "PaperPilot Bot"
-          git config user.email "bot@paperpilot.dev"
           msg="👀 Daily follow-watch $(date -u +%Y-%m-%d)"
-          bash .github/scripts/commit-and-push.sh "$msg" \
-            paperpilot/output/daily paperpilot/data/seen_ids.daily.json \
-            paperpilot/data/run_history.daily.jsonl
+          pnpm exec tsx apps/pipeline/src/release/cli.ts commit-push "$msg" \
+            data/inputs/daily data/state/seen_ids.daily.json \
+            data/state/run_history.daily.jsonl
 
       - name: Notify on failure
-        if: failure() && env.SLACK_WEBHOOK_URL != ''
+        if: failure()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
+          set -euo pipefail
+          if [ -z "${SLACK_WEBHOOK_URL:-}" ]; then
+            echo "no Slack webhook configured; skipping notification"
+            exit 0
+          fi
           curl -X POST "$SLACK_WEBHOOK_URL" \
             -H 'Content-type: application/json' \
-            -d "{\"text\": \"⚠️ PaperPilot DAILY follow-watch failed: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}"
+            -d "{\"text\": \"⚠️ PaperPilot DAILY follow-watch failed: ${RUN_URL}\"}"

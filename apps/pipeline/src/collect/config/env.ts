@@ -48,6 +48,7 @@
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { layoutFor } from "@paperpilot/core/layout";
 
 export interface SmtpEnv {
   server: string | null;
@@ -143,8 +144,9 @@ export function parseDotenv(text: string): Record<string, string> {
  * first match, or `null` if none exists all the way up to the filesystem
  * root.
  */
-export function findDotenvUpward(startDir: string): string | null {
+export function findDotenvUpward(startDir: string, stopDir?: string): string | null {
   let dir = resolve(startDir);
+  const stop = stopDir === undefined ? undefined : resolve(stopDir);
   for (;;) {
     const candidate = join(dir, ".env");
     if (existsSync(candidate)) {
@@ -155,6 +157,7 @@ export function findDotenvUpward(startDir: string): string | null {
         // keep walking as if it had never existed.
       }
     }
+    if (stop !== undefined && dir === stop) return null;
     const parent = dirname(dir);
     if (parent === dir) return null;
     dir = parent;
@@ -183,14 +186,19 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 
 /**
  * The default start dir for {@link findDotenvUpward} when `loadEnv` is
- * called with no `.env` next to the config file — `<repoRoot>/paperpilot/
- * utils`, matching Python's `find_dotenv(usecwd=False)` caller-module
- * directory (see module doc). Recomputed on each call (cheap: a handful of
- * `existsSync` checks) rather than cached, so it stays correct if this
- * module is ever relocated within the workspace.
+ * called with no `.env` next to the config file: the layout's config
+ * directory (`data/config/` after the P5 move, where `.env.example`
+ * lives). The default search stops at the repository root
+ * ({@link defaultDotenvStopDir}) so a `.env` outside the checkout (e.g. in
+ * `$HOME`) is never picked up implicitly.
  */
 export function defaultDotenvStartDir(): string {
-  return join(findRepoRoot(HERE), "paperpilot", "utils");
+  return layoutFor(findRepoRoot(HERE)).config;
+}
+
+/** Upper bound of the default `.env` search: the repository root. */
+export function defaultDotenvStopDir(): string {
+  return findRepoRoot(HERE);
 }
 
 /**
@@ -226,7 +234,11 @@ function getenv(vars: Record<string, string>, key: string): string | null {
  */
 export function loadEnv(dotenvPath: string | null = null, startDir?: string): Env {
   const fileVars: Record<string, string> = {};
-  const resolvedPath = dotenvPath ?? findDotenvUpward(startDir ?? defaultDotenvStartDir());
+  const resolvedPath =
+    dotenvPath ??
+    (startDir === undefined
+      ? findDotenvUpward(defaultDotenvStartDir(), defaultDotenvStopDir())
+      : findDotenvUpward(startDir));
   if (resolvedPath && existsSync(resolvedPath)) {
     Object.assign(fileVars, parseDotenv(readFileSync(resolvedPath, "utf-8")));
   }

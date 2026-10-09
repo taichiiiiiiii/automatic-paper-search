@@ -1,8 +1,8 @@
 name: regen-themes
-# Operator-only bulk regeneration of existing theme family trees. Generation is
-# read-only with respect to the repository; a separate promotion job validates
-# the candidate on the latest develop tip and hands the exact promoted SHA to
-# the reusable Pages release in this same workflow run.
+
+# Operator-only bulk regeneration of existing theme family trees
+# (docs/migration/p5-plan.md §4.1). The unarXive DuckDB download step
+# from the pre-P5 workflow is removed (decision: no DuckDB).
 
 on:
   workflow_dispatch:
@@ -10,7 +10,8 @@ on:
       themes:
         description: 'Comma-separated themes to regen (default: every existing theme)'
         required: false
-        default: ''
+        default: ""
+        type: string
 
 permissions: {}
 
@@ -25,54 +26,30 @@ jobs:
       base_sha: ${{ steps.candidate.outputs.base_sha }}
       candidate_name: ${{ steps.candidate.outputs.candidate_name }}
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Checkout develop
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: develop
           persist-credentials: false
 
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
-        with:
-          python-version: '3.12'
-
-      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
-        with:
-          version: '0.12.7'
-
-      - name: Install locked dependencies
-        run: uv sync --frozen --extra dev --extra unarxive
-
-      - name: Download unarXive DuckDB (optional)
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -u
-          mkdir -p paperpilot/data/unarxive
-          gz=paperpilot/data/unarxive/unarxive.duckdb.gz
-          out=paperpilot/data/unarxive/unarxive.duckdb
-          if gh release download unarxive-v1 \
-               --repo "${{ github.repository }}" \
-               --pattern unarxive.duckdb.gz \
-               --output "$gz" \
-               --clobber && gunzip -f "$gz"; then
-            echo "unarXive DuckDB ready"
-          else
-            echo "::notice::unarXive DuckDB unavailable; citation contexts disabled"
-            rm -f "$gz" "$out"
-          fi
-        continue-on-error: true
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
 
       - name: Regenerate requested themes
+        # PAPERPILOT_GROQ_API_KEY / PAPERPILOT_S2_API_KEY (H3 of the P5
+        # tier-A review): without these, buildProvider() throws "No LLM
+        # key found" and every regeneration fails; S2 also runs
+        # unauthenticated without its key. Same secret names as the live
+        # regen-themes.yml step this one replaces.
         env:
           PAPERPILOT_GROQ_API_KEY: ${{ secrets.PAPERPILOT_GROQ_API_KEY }}
           PAPERPILOT_S2_API_KEY: ${{ secrets.PAPERPILOT_S2_API_KEY }}
           THEMES_INPUT: ${{ inputs.themes }}
+          THEME_RE: '^[A-Za-z0-9 _-]{2,80}$'
         run: |
           set -euo pipefail
-          # `IFS=',' read -ra <<<` reads one line only, so a value carrying
-          # a newline would silently keep just its first line and drop the
-          # rest (same failure mode conference-on-demand.yml's
-          # allow_shrink_for guard exists for) — reject the whole input
-          # outright before the split, rather than line-by-line.
+          # `IFS=',' read -ra <<<` reads one line only, so a value
+          # carrying a newline would silently keep just its first line.
           if [[ "$THEMES_INPUT" == *$'\n'* || "$THEMES_INPUT" == *$'\r'* ]]; then
             echo "::error::themes must not contain newline/CR characters"
             exit 1
@@ -82,7 +59,7 @@ jobs:
           else
             shopt -s nullglob
             THEMES=()
-            for lineage in docs/themes/*/lineage.json; do
+            for lineage in data/published/themes/*/lineage.json; do
               THEMES+=("$(jq -r '.meta.theme // empty' "$lineage")")
             done
           fi
@@ -91,18 +68,11 @@ jobs:
             exit 1
           fi
 
-          # Same allowed-character pattern as the single-theme input
-          # (worker/slug.js's THEME_INPUT_PATTERN) applied per
-          # comma-separated entry, whole-string via bash `[[ =~ ]]` rather
-          # than `printf | grep` (see theme-on-demand.yml's "Validate
-          # input early" step for why that distinction matters).
-          theme_re='^[A-Za-z0-9 _-]{2,80}$'
-
           failed=0
           attempted=0
           for raw_theme in "${THEMES[@]}"; do
             theme="$(printf '%s' "$raw_theme" | sed -E 's/^[[:space:]]+|[[:space:]]+$//g')"
-            if ! [[ "$theme" =~ $theme_re ]]; then
+            if ! [[ "$theme" =~ $THEME_RE ]]; then
               echo "::warning::invalid theme entry skipped: ${theme:0:80}"
               failed=$((failed + 1))
               attempted=$((attempted + 1))
@@ -110,7 +80,7 @@ jobs:
             fi
             attempted=$((attempted + 1))
             echo "::group::regen $theme"
-            if uv run --frozen python -m paperpilot.scripts.build_theme_lineage \
+            if pnpm exec tsx apps/pipeline/src/lineage/theme/cli.ts \
                 --theme "$theme" \
                 --depth 1 --seeds 5 --width 8 --since-year 2018 \
                 --llm-strict ambiguous \
@@ -138,9 +108,9 @@ jobs:
       - name: Refresh candidate projections
         run: |
           set -euo pipefail
-          uv run --frozen python -m paperpilot.scripts.generate_themes_manifest \
-            --themes-dir docs/themes
-          uv run --frozen python -m paperpilot.scripts.compute_theme_quality
+          pnpm exec tsx apps/pipeline/src/lineage/theme/generateThemesManifestCli.ts \
+            --themes-dir data/published/themes
+          pnpm exec tsx apps/pipeline/src/lineage/theme/computeThemeQualityCli.ts
 
       - name: Freeze candidate metadata
         id: candidate
@@ -150,13 +120,26 @@ jobs:
           echo "base_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           echo "candidate_name=themes-candidate-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_OUTPUT"
 
+      - name: Package exact themes candidate
+        # H4 of the P5 tier-A review: `actions/upload-artifact` roots a
+        # multi-path artifact at the paths' least common ancestor
+        # (`data/`), which strips the `published/`/`state/` prefix
+        # promote.ts's allowlist requires — package through the release
+        # CLI first (as theme-on-demand.yml / collect-weekly.yml already
+        # do) so the uploaded tree keeps its real repo-root-relative
+        # layout.
+        env:
+          PAPERPILOT_PACKAGE_INCLUDE_UNCHANGED: "1"
+        run: |
+          set -euo pipefail
+          pnpm exec tsx apps/pipeline/src/release/cli.ts package "$RUNNER_TEMP/candidate" \
+            data/published/themes data/state/lineage-cache/classifications.json
+
       - name: Upload generated candidate
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: ${{ steps.candidate.outputs.candidate_name }}
-          path: |
-            docs/themes
-            paperpilot/data/lineage-cache/classifications.json
+          path: ${{ runner.temp }}/candidate
           if-no-files-found: error
           retention-days: 14
 
@@ -170,22 +153,17 @@ jobs:
       source_sha: ${{ steps.promote.outputs.source_sha }}
       changed: ${{ steps.promote.outputs.changed }}
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Checkout develop
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: develop
           fetch-depth: 0
 
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
-        with:
-          python-version: '3.12'
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
 
-      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
-        with:
-          version: '0.12.7'
-
-      - run: uv sync --frozen --extra dev --extra unarxive
-
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+      - name: Download generated candidate
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: ${{ needs.generate.outputs.candidate_name }}
           path: ${{ runner.temp }}/candidate
@@ -198,17 +176,16 @@ jobs:
         run: |
           set -euo pipefail
           msg="data(themes): manual bulk regeneration"
-          bash .github/scripts/promote-generated.sh themes \
+          pnpm exec tsx apps/pipeline/src/release/cli.ts promote themes \
             "$RUNNER_TEMP/candidate" "$msg" \
-            docs/themes paperpilot/data/lineage-cache/classifications.json
+            data/published/themes data/state/lineage-cache/classifications.json
 
   release:
     needs: promote
     if: needs.promote.outputs.changed == 'true'
     permissions:
       contents: read
-      pages: write
-      id-token: write
+      deployments: write
     uses: ./.github/workflows/pages-release.yml
     with:
       source_sha: ${{ needs.promote.outputs.source_sha }}

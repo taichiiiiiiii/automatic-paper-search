@@ -1,179 +1,191 @@
 ---
 name: add-plugin
-description: PaperPilot に新しい Source / Signal / Exporter / LLMProvider を TDD で追加する手順。ユーザーが「新しい〜を追加して」「別の API / モデルに対応して」と言った時に起動する。
+description: PaperPilot に新しい Source / Signal / Exporter / LLM provider を TDD で追加する手順（TypeScript、apps/pipeline）。ユーザーが「新しい〜を追加して」「別の API / モデルに対応して」と言った時に起動する。
 ---
 
 # add-plugin — PaperPilot プラグイン追加スキル
 
-PaperPilot は Open/Closed 原則で設計されている。新しい外部連携は基底クラスを継承して追加し、既存コードは変更しない。
+PaperPilot は Open/Closed で作られている。新しい外部連携は決まったインターフェースを実装して足し、既存の実装は書き換えない。コードは TypeScript（`apps/pipeline/src/collect/`）。
 
-## いつ起動するか
+## いつ使うか
 
-- 「新しい Source を追加（例：PubMed / Crossref / bioRxiv）」
-- 「新しい Signal を追加（例：Altmetric / Twitter mentions）」
-- 「新しい Exporter を追加（例：Discord / Notion）」
-- 「新しい LLM Provider を追加（例：Claude / OpenAI / Groq）」
+- 「新しい Source を足して（例: PubMed / Crossref / bioRxiv）」
+- 「新しい Signal を足して（例: Altmetric）」
+- 「新しい Exporter を足して（例: Discord / Notion）」
+- 「新しい LLM provider を足して（例: OpenAI）」
 
-## 判断：どの基底クラスを継承するか
+## どのインターフェースを実装するか
 
-| やりたいこと | 継承先 | 配置 |
-|-------------|-------|------|
-| 外部 API から論文メタデータを取りたい | `sources.base.AbstractSource` | `paperpilot/sources/<name>_source.py` |
-| 論文に品質シグナル（venue/引用/stars 等）を付加したい | `signals.base.AbstractSignal` | `paperpilot/signals/<name>_signal.py` |
-| 結果を新しい宛先に配信したい | `exporters.base.AbstractExporter` | `paperpilot/exporters/<name>_exporter.py` |
-| 別の LLM で Stage 4 をやりたい | `llm.base.AbstractLLMProvider` | `paperpilot/llm/<name>_provider.py` |
+| やりたいこと | 実装するもの | 置き場所 | テスト |
+|---|---|---|---|
+| 外部 API から論文を取る | `Source`（`collect/sources/source.ts`） | `collect/sources/<name>.ts` | `test/collect/sources/<name>.test.ts` |
+| 論文に品質シグナルを付ける | `BaseSignal`（`collect/signals/signal.ts`） | `collect/signals/<name>.ts` | `test/collect/signals/<name>.test.ts` |
+| 結果を新しい宛先に配る | `Exporter`（`collect/exporters/exporter.ts`） | `collect/exporters/<name>.ts` | `test/collect/exporters/<name>.test.ts` |
+| 別の LLM で Stage 4 / 関係分類をする | `LLMProvider`（`collect/llm/provider.ts`） | `lineage/llm/<name>.ts` | `test/lineage/llm/<name>.test.ts` |
 
-## TDD 順序（絶対に守る）
+パスはすべて `apps/pipeline/` から。
+
+## TDD の順序（必ず守る）
 
 ### Step 1: RED — テストを先に書く
 
-`paperpilot/tests/test_<module_name>.py` を作成。外部 HTTP は `unittest.mock.patch` でモックする。
-
-**参考にする既存テスト**
+外部 HTTP は `fetchImpl` を注入してモックする。時計と sleep も注入する。
 
 | 種類 | お手本 |
-|------|-------|
-| Source | `tests/test_s2_source.py`（fetch / failure / paging / API key header） |
-| Signal (バッチ) | `tests/test_citation_signal.py`（/paper/batch モック、ID 欠落スキップ） |
-| Signal (1件処理) | `tests/test_github_signal_flow.py`（多段 lookup、fallback） |
-| Exporter | `tests/test_email_exporter.py`（smtplib モック、不完全設定時 no-op） |
-| LLM Provider | `tests/test_gemini_provider.py`（generateContent、JSON 3段階パース） |
+|---|---|
+| Source | `test/collect/sources/s2.test.ts`（取得・失敗・ページング・API キーのヘッダ） |
+| Signal（バッチ） | `test/collect/signals/citation.test.ts`（/paper/batch、ID 欠落の論文を飛ばす） |
+| Signal（多段） | `test/collect/signals/github.test.ts`、`githubApi.test.ts` |
+| Exporter | `test/collect/exporters/slack.test.ts`（未設定で no-op、失敗で throw） |
+| LLM provider | `test/lineage/llm/gemini.test.ts`、`groq.test.ts` |
 
-**必ず含めるテストケース**
+必ず入れるケース:
 
-- 正常系（happy path）
-- HTTP 障害（非200、None、exception）でも raise しない（Fail-Safe）
-- API キー / webhook / SMTP 等が未設定のときに no-op / enabled=False
-- バッチ API の場合：入力リストより少ない結果が返ったら None で pad
-- バッチ API の場合：余分な結果は truncate
+- 正常系
+- HTTP の失敗（200 以外・`null`・例外）が**記録される**こと（Source は `degradedKeywords` / `AllKeywordsFailedError`、Signal は `runFailures`、Exporter は throw、LLM は `null` を返してヒューリスティックへ）。失敗を空データや 0 点として出さない
+- API キー・webhook が無いときに no-op / `enabled = false`
+- バッチ API なら、結果が入力より少ない・多い場合
 
-### Step 2: GREEN — 最小実装
+### Step 2: GREEN — 最小の実装
 
-**テンプレ（Source 例）**
+**雛形（Source の例）**
 
-```python
-# paperpilot/sources/pubmed_source.py
-from __future__ import annotations
-from datetime import date
-from ..models import Paper
-from ..utils.http import request_with_retry  # 必ずこれを使う（429/5xx retry 込み）
-from ..utils.logger import get_logger
-from ..utils.rate_limiter import RateLimiter
-from .base import AbstractSource
+```ts
+// apps/pipeline/src/collect/sources/pubmed.ts
+import { RateLimiter } from "../http/rateLimiter.js";
+import { type FetchLike, requestWithRetry } from "../http/requestWithRetry.js";
+import type { Paper } from "../model/paper.js";
+import {
+  AllKeywordsFailedError,
+  type DegradedKeyword,
+  type FetchParams,
+  type FetchResult,
+  type Source,
+} from "./source.js";
 
-logger = get_logger(__name__)
+export interface PubMedSourceConfig {
+  enabled?: boolean;
+  delaySeconds?: number;
+}
 
-class PubMedSource(AbstractSource):
-    name = "pubmed"
+export interface PubMedSourceDeps {
+  fetchImpl: FetchLike;
+  apiKey: string | null; // 秘密は引数で受け取る。process.env を読まない
+  sleep?: (ms: number) => Promise<void>;
+  now?: () => number;
+}
 
-    def __init__(self, config: dict, api_key: str | None = None) -> None:
-        super().__init__(config)
-        self._limiter = RateLimiter(float(self.config.get("delay_seconds", 1.0)))
-        self._api_key = api_key
+export class PubMedSource implements Source {
+  readonly name = "pubmed";
+  // RateLimiter の引数は rateLimiter.ts のコンストラクタに合わせる
 
-    def fetch(self, keywords, categories, since_date, max_results) -> list[Paper]:
-        papers: list[Paper] = []
-        for kw in keywords:
-            self._limiter.wait()
-            papers.extend(self._search(kw, since_date, max_results))
-        return papers
+  constructor(
+    private readonly config: PubMedSourceConfig,
+    private readonly deps: PubMedSourceDeps,
+  ) {}
 
-    def _search(self, keyword, since_date, max_results) -> list[Paper]:
-        resp = request_with_retry("GET", URL, params={...})
-        if resp is None or resp.status_code != 200:
-            return []  # Fail-Safe
-        # parse ...
+  async fetch(params: FetchParams): Promise<FetchResult> {
+    const papers: Paper[] = [];
+    const truncatedKeywords: string[] = [];
+    const degradedKeywords: DegradedKeyword[] = [];
+    for (const keyword of params.keywords) {
+      const resp = await requestWithRetry(
+        { method: "GET", url: URL, params: { term: keyword } },
+        { fetchImpl: this.deps.fetchImpl, sleep: this.deps.sleep, now: this.deps.now },
+      );
+      if (resp === null || resp.status !== 200) {
+        degradedKeywords.push([keyword, `HTTP ${resp?.status ?? "no response"}`]);
+        continue; // 失敗は記録して次へ。黙って 0 件にしない
+      }
+      // 本文を検査して Paper に変換する。読めない項目も degradedKeywords に残す
+    }
+    if (degradedKeywords.length === params.keywords.length && params.keywords.length > 0) {
+      throw new AllKeywordsFailedError("pubmed: every keyword failed", { truncatedKeywords, degradedKeywords });
+    }
+    return { papers, truncatedKeywords, degradedKeywords };
+  }
+}
 ```
 
-### Step 3: REFACTOR — 整える
+`HttpResponseLike` の項目名（`status` など）と `RateLimiter` の使い方は、書く前に `collect/http/` の実物で確かめる。
 
-- 関数は 50 行以内・ファイルは 800 行以内
-- 型ヒント + docstring（Why を書く、What はコードから読める）
-- `logger.info` / `logger.warning` を要所に
+### Step 3: REFACTOR
+
+- 関数は短く、ファイルは 800 行以内
+- 公開する関数には「なぜ」のコメント
+- 丸め・数値表記・並び順は `packages/core/src/pycompat/` を使う
+- `pnpm exec biome check <files>` と typecheck を通す
 
 ### Step 4: 登録
 
-1. **`__init__.py` の `__all__` に追加**
-   ```python
-   # paperpilot/sources/__init__.py
-   from .pubmed_source import PubMedSource
-   __all__ = [..., "PubMedSource"]
+1. **`collect/runner.ts` の該当する builder に分岐を足す**
+   ```ts
+   // buildSources()
+   if (srcsCfg.pubmed) {
+     entries.push({
+       source: new PubMedSource(
+         { enabled: srcsCfg.pubmed.enabled, delaySeconds: srcsCfg.pubmed.delay_seconds },
+         { fetchImpl: this.deps.fetchImpl, apiKey: env.pubmedApiKey, sleep: this.deps.sleep, now: this.deps.now },
+       ),
+       enabled: srcsCfg.pubmed.enabled ?? true,
+     });
+   }
    ```
-
-2. **`pipeline/runner.py` の該当 builder に分岐追加**
-   ```python
-   def _build_sources(self):
-       ...
-       if "pubmed" in srcs_cfg:
-           sources.append(PubMedSource(srcs_cfg["pubmed"], api_key=env.get("pubmed_api_key")))
-   ```
-
-3. **`config.yaml` に設定を追加**
+   LLM provider は `collect/runtime/llmProvider.ts` の `buildLlmProviderFromConfig()` に `case` を足す。
+2. **設定の型** — `collect/config/types.ts`（例: `SourcesConfig` に `pubmed?: SourceEntryConfig`）
+3. **`data/config/config.yaml` に設定を足す**
    ```yaml
    sources:
      pubmed:
        enabled: false
        delay_seconds: 1.0
    ```
-
-4. **`.env.example` に環境変数を追加**（秘匿情報ある場合）
+4. **秘密があれば `data/config/.env.example` に名前を足す**
    ```
    PAPERPILOT_PUBMED_API_KEY=
    ```
-
-5. **`utils/config_loader.py` の env 統合に追加**
-   ```python
-   config["env"] = {
-       ...,
-       "pubmed_api_key": os.getenv("PAPERPILOT_PUBMED_API_KEY"),
-   }
-   ```
-
-6. **CLAUDE.md のフォルダ構成・ステータス表を更新**
+5. **`collect/config/env.ts` の `Env` と読み込みに足す**（`pubmedApiKey: get("PAPERPILOT_PUBMED_API_KEY")` の形）
+6. **CLAUDE.md のフォルダ構成を更新する**
 
 ### Step 5: VERIFY
 
 ```bash
-# テスト + カバレッジ維持
-python3 -m pytest paperpilot/tests/test_<new_module>.py -v
-python3 -m pytest paperpilot/tests/ --cov=paperpilot --cov-report=term --cov-config=/dev/null
-
-# 80% 以上を維持（現状 91%、tests 636 件）
+pnpm --filter @paperpilot/pipeline exec vitest run test/collect/sources/pubmed.test.ts
+pnpm --filter @paperpilot/pipeline typecheck
+pnpm exec biome check apps/pipeline/src/collect/sources/pubmed.ts apps/pipeline/test/collect/sources/pubmed.test.ts
+pnpm --filter @paperpilot/pipeline test      # 既存のテスト（runner・config）が壊れていないか
 ```
 
-## 絶対に守ること
+## 必ず守ること
 
-- **外部 API を叩くテストを書かない。** `request_with_retry` を必ずモックする
-- **秘匿情報（API キー / webhook）は `.env` のみ。** `config.yaml` にも `.py` にも書かない
-- **失敗時は return None / 空リスト。** `raise` で pipeline を落とさない
-- **Signal は `enrich_batch` を優先。** バッチ API がある場合は 1件ずつループで呼ばない（§4.3.1 の設計意図）
-- **スコアは 0〜100 に正規化。** `weights` は config で指定、コードに埋め込まない
-- **`__init__.py` の `__all__` 更新を忘れない**
+- **外部 API を叩くテストを書かない。** `fetchImpl` を注入する
+- **秘密は環境変数（`data/config/.env`・secrets）だけ。** `config.yaml` にもソースにも書かない
+- **失敗を空データにしない。** 記録して続ける（run は止めない）。CLI は `--fail-on-errors` で非 0 にできる
+- **Signal は `enrichBatch` を優先する**（§4.3.1）
+- **スコアは 0〜100。** 重みは config から。コードに書かない
+- **データのパスを直書きしない。** `packages/core/src/layout` を使う
+- **新しい依存を足さない**（足すならユーザー承認）
 
 ## よくあるミス
 
 | ミス | 対策 |
-|------|------|
-| `requests.get` を直接呼んでしまう | `utils.http.request_with_retry` を使う（指数バックオフ付き） |
-| バッチ API なのに 1件ずつループ | `enrich_batch` を override する |
-| テストで live API を叩く | `unittest.mock.patch` で `request_with_retry` をモック |
-| `runner.py` の登録を忘れる | 追加したら `_build_sources/signals/exporters/llm_provider` の該当関数を必ず確認 |
-| `.env.example` の更新を忘れる | 他の人が再現できなくなる。必ず追記 |
-| config のキー変更で既存テストが落ちる | `tests/test_config_loader.py` と既存 `runner` テストを確認 |
+|---|---|
+| `fetch` を直接呼ぶ | `requestWithRetry` と注入した `fetchImpl` を使う |
+| バッチ API なのに 1 件ずつ | `enrichBatch` を上書きする |
+| テストで本物の API | `fetchImpl` を偽物にする |
+| runner への登録忘れ | `buildSources()` / `buildSignals()` / `buildExporters()` / `buildLlmProviderFromConfig()` を確かめる |
+| `.env.example` の更新忘れ | 他の人が再現できない。必ず足す |
+| 設定キーの変更で既存テストが落ちる | `test/collect/config/` と `runner.test.ts` を確かめる |
 
 ## チェックリスト
 
-実装完了時に全てチェック：
-
-- [ ] `tests/test_<name>.py` が先にあり、それが全部 pass する
-- [ ] 正常系 + 失敗系 + 未設定系のテストが揃っている
-- [ ] `request_with_retry` を使っている（直接 `requests.X` していない）
-- [ ] 秘匿情報は引数で渡される設計（`__init__` で受け取る）
-- [ ] `paperpilot/<kind>/__init__.py` の `__all__` に追加済み
-- [ ] `pipeline/runner.py` の builder に登録済み
-- [ ] `config.yaml` に設定セクション追加（`enabled: false` がデフォルト）
-- [ ] `.env.example` に必要な環境変数を追加
-- [ ] `utils/config_loader.py` の env dict に追加（秘匿情報ある場合）
-- [ ] `CLAUDE.md` のフォルダ構成・実装ステータス表を更新
-- [ ] `pytest --cov=paperpilot` で 80% 以上キープ
-- [ ] `develop` ブランチに commit（main には push しない）
+- [ ] テストが先にあり、全部通る
+- [ ] 正常・失敗・未設定のテストがそろっている
+- [ ] `requestWithRetry` を使っている（`fetch` の直呼びなし）
+- [ ] 秘密は引数で受け取る
+- [ ] runner（または `llmProvider.ts`）に登録した
+- [ ] `config/types.ts` と `config.yaml` に設定を足した（既定 `enabled: false`）
+- [ ] `.env.example` と `config/env.ts` に秘密の名前を足した
+- [ ] CLAUDE.md のフォルダ構成を更新した
+- [ ] lint・typecheck・pipeline のテストが通る
+- [ ] commit・push はユーザーの承認の後にメインセッションが行う（`develop` / `main` に直接 push しない）

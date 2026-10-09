@@ -1,14 +1,14 @@
 {
-  "_comment": "Lighthouse CI config. staticDistDir tells lhci to spin up a local server pointing at docs/, so URLs below resolve against http://localhost:<random-port>/. Assertions are calibrated against the spring 2026 baseline measured locally — bump them up over time as fixes ship, don't loosen.",
+  "_comment": "Lighthouse CI config. staticDistDir tells lhci to spin up a local server pointing at the static export (apps/web/out), so URLs below resolve against http://localhost:<random-port>/. Assertions are calibrated against the spring 2026 baseline measured locally — bump them up over time as fixes ship, don't loosen.",
 
   "ci": {
     "collect": {
-      "staticDistDir": "./docs",
+      "staticDistDir": "./apps/web/out",
       "url": [
-        "http://localhost/index.html",
-        "http://localhost/iclr-2026/index.html",
-        "http://localhost/iclr-2026/lineage.html",
-        "http://localhost/themes/index.html"
+        "http://localhost/",
+        "http://localhost/iclr-2026/",
+        "http://localhost/iclr-2026/lineage/",
+        "http://localhost/themes/"
       ],
       "numberOfRuns": 3,
       "settings": {

@@ -15,9 +15,9 @@ Start with the requested files and their tests; do not preload all documentation
 - All external API calls need bounded retries, timeouts, rate limiting, caching where appropriate, and deterministic mocks in tests.
 - Keep source identity and provenance. Deduplicate with stable identifiers and explicit fallback rules; do not merge papers by title alone.
 - LLM summaries and relation labels are untrusted derived data. Preserve evidence links, schema validation, cache versioning, and an `unknown`/fallback path.
-- `docs/assets/versions.json` is the source of truth for asset versions; do not hand-edit cache query strings.
-- Docker is the selected target for the canonical production and integration-test path. For local Docker work, use `docker/paperpilot-compose`; do not bypass its digest/platform preflight with raw Compose. Existing GitHub workflows still use host `uv` until the approved-image runtime and CI-shadow gates pass, so do not claim that production or CI has already migrated.
-- The checked-in Docker digest example is intentionally invalid. Do not pull/build images, choose a digest set, migrate CI, or claim runtime verification without the corresponding explicit approval and evidence. Host `uv` is limited to lock maintenance and short auxiliary checks during this transition, never evidence that the Docker gate passed.
+- The site is a Next.js static export (`apps/web`); its build hashes asset file names and writes the CSP hashes, so there is no hand-maintained asset version file. Do not hand-edit generated output under `apps/web/out` or `data/published`.
+- The project is TypeScript only (Node 22+, pnpm 10.34.6): `apps/web`, `apps/api`, `apps/pipeline`, `packages/core`, data under `data/{published,state,inputs,config}`. Python, `uv` and Docker were removed; do not reintroduce them. The checks are `pnpm exec biome check .`, `pnpm -r typecheck`, `pnpm --filter @paperpilot/web build`, and `pnpm -r test`. Resolve data paths through `packages/core/src/layout`, never path literals.
+- The `p5/consolidate` branch must not be merged to `develop` before the P5 cutover runbook (`docs/migration/p5-runbook.md`) reaches the cutover step: `develop` production still runs the old `worker/` and the Python workflows.
 - Never dispatch workflows, change Cloudflare/GitHub secrets, publish Pages, send Slack/email, merge to `develop`, or bulk regenerate themes without explicit user approval.
 
 ## Commit and push

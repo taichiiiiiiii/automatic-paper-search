@@ -1,7 +1,12 @@
 // Ported 1:1 from worker/slug.test.mjs.
 
+import {
+  SLUG_RE as coreSlugRe,
+  THEME_INPUT_PATTERN as coreThemeInputPattern,
+  themeSlug as coreThemeSlug,
+} from "@paperpilot/core/slug";
 import { describe, expect, it } from "vitest";
-import { THEME_INPUT_PATTERN, themeSlug } from "../../src/lib/slug.js";
+import { SLUG_RE, THEME_INPUT_PATTERN, themeSlug } from "../../src/lib/slug.js";
 import workerSlugExpected from "../fixtures/worker-slug-expected.json" with { type: "json" };
 
 describe("themeSlug", () => {
@@ -47,22 +52,31 @@ describe("THEME_INPUT_PATTERN", () => {
   });
 });
 
-// Drift pin: until packages/core owns slug (TODO in src/lib/slug.ts), this
-// cross-checks the apps/api copy against the still-canonical worker/slug.js
-// so a future edit to one without the other is caught here instead of only
-// by paperpilot/tests/test_worker_slug_parity.py (which never sees this
-// copy).
-//
-// (p5-plan.md §2 A1, risk R9): this used to dynamic-`import()` the live
-// worker/slug.js module at test time. worker/slug.js is production code,
-// untouched until P5, so this test must not depend on its live behaviour
-// to pass or fail -- it now reads a committed, frozen fixture
-// (../fixtures/worker-slug-expected.json) generated once from the real
-// worker/slug.js by ../fixtures/gen-worker-slug-expected.mjs (same
-// pattern as packages/core/test/slug/fixtures/gen-worker-expected.mjs).
-// If worker/slug.js is intentionally changed, re-run that generator and
-// commit the new fixture.
-describe("parity with worker/slug.js", () => {
+// Single-definition pin (safety-contracts.md API-08): apps/api must not
+// carry its own themeSlug copy — it re-exports @paperpilot/core/slug's.
+// Identity (not just equal outputs) so a reintroduced local copy fails here.
+describe("themeSlug comes from @paperpilot/core/slug", () => {
+  it("is the very same function object as core's export", () => {
+    expect(themeSlug).toBe(coreThemeSlug);
+  });
+  it("THEME_INPUT_PATTERN and SLUG_RE are core's very same RegExp objects", () => {
+    expect(THEME_INPUT_PATTERN).toBe(coreThemeInputPattern);
+    expect(SLUG_RE).toBe(coreSlugRe);
+  });
+  it("agrees with core on the frozen fixture battery", () => {
+    for (const { input } of workerSlugExpected.themeSlugSamples) {
+      expect(themeSlug(input)).toBe(coreThemeSlug(input));
+    }
+  });
+});
+
+// Frozen behavioural contract with the retired worker/slug.js
+// (p5-plan.md §2 A1, risk R9): ../fixtures/worker-slug-expected.json was
+// generated once from the real worker/slug.js (see ../fixtures/README.md;
+// the generator was deleted with worker/ in Tier C). The api now serves
+// core's themeSlug, so this pins that the Workers-era outputs and the
+// THEME_INPUT_PATTERN accept/reject set survived the consolidation.
+describe("parity with worker/slug.js (frozen fixture)", () => {
   it("matches on a representative sample", () => {
     for (const { input, slug } of workerSlugExpected.themeSlugSamples) {
       expect(themeSlug(input)).toBe(slug);

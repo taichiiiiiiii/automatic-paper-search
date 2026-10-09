@@ -10,11 +10,10 @@ fail).
 - **Source**: `worker/slug.js`, as of **2026-10-05**, at commit
   `a2642020bbfc39f040384693641cc5d10050e99e` (`git rev-parse HEAD` at the
   time this fixture was added).
-- **Generator**: `gen-worker-slug-expected.mjs` in this directory. Run with
-  `node apps/api/test/fixtures/gen-worker-slug-expected.mjs` from the repo
-  root. Not a vitest test file and not run in CI.
-- **Re-generate** (and commit the new output) only if `worker/slug.js`'s
-  `themeSlug()` or `THEME_INPUT_PATTERN` is intentionally changed.
+- **Generator**: `gen-worker-slug-expected.mjs` (deleted in Tier C together with `worker/`,
+  p5-plan.md §6.3 — it needed the real `worker/slug.js` to run). The
+  output is now a permanently frozen contract; recover the generator
+  from git history if its logic is ever needed.
 
 Same pattern as `packages/core/test/slug/fixtures/gen-worker-expected.mjs`
 / `worker-slug-expected.json`, and

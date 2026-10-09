@@ -1,6 +1,6 @@
 ---
 name: worker-agent
-description: Implements bounded, spec'd changes in the CF Worker (worker/, wrangler.jsonc) and the public site front (docs/assets/landing.js, search.js, theme.js, lineage.js, lineage-core.js, utils.js, docs/**/*.html). Use when a review finding in those files has an agreed fix. Does not deploy, push, or run git.
+description: Implements bounded, spec'd changes in the API Worker (apps/api — Hono on Cloudflare Workers, wrangler.jsonc / wrangler.preview.jsonc) and the site front (apps/web — Next.js static export). Use when a review finding in those files has an agreed fix. Does not deploy, push, write KV, or run git.
 tools: Read, Write, Edit, Bash, Grep, Glob
 model: sonnet
 ---
@@ -11,18 +11,19 @@ You implement the fix you are given, nothing more.
 
 ## Hard limits
 
-- Never run git write commands, `wrangler deploy`, `npm install`/`npx` installs, or anything that publishes. A push to `develop` deploys the Worker; that decision belongs to the user via the parent.
-- No network access. Tests must be offline.
-- Edit only the files the task names. Do not touch `docs/assets/versions.json` or `?v=` strings; the parent runs `sync_asset_versions.py`.
+- Never run git write commands, `wrangler deploy` / `wrangler pages deploy`, `wrangler kv … put`, dependency installs that change `pnpm-lock.yaml`, or anything that publishes. Deploys, KV writes and the merge that switches production are the user's decisions via the parent.
+- No network access. Tests must be offline (inject `fetch` and fake KV / Durable Object bindings the way the existing `apps/api/test/lib/*.test.ts` and `test/routes/*.test.ts` do).
+- Edit only the files the task names. Do not hand-edit `apps/web/out` or files under `data/`.
 
 ## Contracts you must keep
 
-- CSP is `script-src 'self'`: no inline scripts or inline event handlers on any page. UI strings are Japanese.
-- Every dynamic value reaching `innerHTML` goes through `PP.escapeHtml`; URLs only via existing validated builders.
-- Slug parity: Python `paperpilot/scripts/_common.theme_slug`, `docs/assets/theme.js` (`SLUG_RE`, `THEME_REQUEST_PATTERN`) and `worker/slug.js` (`themeSlug`, `THEME_INPUT_PATTERN`) must agree; change all of them together or none.
-- Worker logic that needs tests goes in `.js` modules (like `response.js`, `slug.js`, `entrypoint.js`). Node here is 20.x without TS stripping, so `worker/index.ts` cannot be imported by tests.
-- The Worker holds `GH_DISPATCH_PAT`; it must never appear in a response or log.
+- **API (`apps/api`):** the order in `src/routes/themes.ts` — origin allowlist (KV `origin_allowlist`) → accept switch (KV `accepting`, only the exact string `"true"` accepts; missing/other/read error = paused, fail closed, no quota charge, no dispatch) → content-type (415) → body size → JSON parse → input validation → manifest dedup → `DISPATCH_MODE` sanity → `cf-connecting-ip` → quota (Durable Object `QuotaCounter`) → request id → dispatch. `GET /api/health` stays read-only. `DISPATCH_MODE` is `live` in `wrangler.jsonc` and `dry-run` in `wrangler.preview.jsonc`; dry-run must refuse the production ref/origin. The preview config must never name the production Worker or KV namespace.
+- **Secrets:** `GH_DISPATCH_PAT` must never appear in a response or log.
+- **Slug:** the canonical rule is `packages/core/src/slug/theme.ts` (`themeSlug`); `apps/web/lib/themes-slug.ts` re-exports it, but `apps/api/src/lib/slug.ts` is still a 1:1 copy (its TODO says to move it to core). Change the rule in both places and their tests together, or not at all.
+- **Web (`apps/web`):** static export only. Script CSP is per-page hashes injected by `scripts/csp-hash.ts`; `out/_headers` carries only `frame-ancestors 'self'`. Do not add inline scripts or event-handler attributes that the hash step does not cover. Keep `dangerouslySetInnerHTML` limited to the existing escaped builders (`lib/catalog-text.ts`, `lib/landing-json-ld.ts`, `lib/lineage/layout/format.ts`); URLs only via existing validated builders. UI strings are Japanese.
+- **Site config:** origin, path prefix and `API_BASE` come only from `packages/core/src/site/config.ts`.
+- The theme form must keep its `paused`, `dry_run` and degraded (no API → GitHub Issue) states.
 
 ## Verify before reporting
 
-Run the node suites you touched (`node worker/<suite>.test.mjs`, `node paperpilot/tests/viewer/<suite>.mjs`) and `uv run --extra dev pytest -q -p no:cacheprovider` on the pytest wrappers that run them (`test_worker_node_suites.py`, the viewer wrappers). Report exactly what you ran, its output summary, what changed, and anything unverified.
+Run `pnpm exec biome check <changed files>`, `pnpm --filter @paperpilot/api typecheck` / `pnpm --filter @paperpilot/web typecheck`, and the targeted tests (`pnpm --filter @paperpilot/api exec vitest run <files>`, `pnpm --filter @paperpilot/web exec vitest run <files>`). For web changes that affect output, run `pnpm --filter @paperpilot/web build` first (several web contract tests read `apps/web/out`) and then `test/csp.test.ts`. Report exactly what you ran, its output summary, what changed, and anything unverified.

@@ -1,23 +1,12 @@
 name: theme-on-demand
-# Run name preserves the server-generated request ID for audit correlation.
-# GET /api/themes/status is deliberately dormant and always returns 503;
-# browsers determine completion by polling the public themes-manifest.json.
-# The fallback labels manually dispatched or re-run jobs whose inputs are absent.
 run-name: "theme-on-demand: ${{ inputs.theme || 'manual' }} / ${{ inputs.request_id || 'manual' }}"
-# On-demand single-theme generation. Triggered by the CF Worker via
-# the GitHub Actions REST API `POST /repos/.../workflows/.../dispatches`
-# when the in-browser form on /themes/ is submitted. Generates one
-# theme, promotes its exact lineage path, and releases the promoted SHA.
-#
-# Differences from regen-themes.yml:
-#   - takes a single `theme` input instead of iterating every existing
-#     theme; intentionally fast (~2-3 min) so the user is willing to wait
-#     on the page;
-#   - no scheduled run — only fires on dispatch;
-#   - includes a hardened input validator (length cap + pattern) before
-#     the Python script sees the user-supplied string. The Python side
-#     also normalises via theme_slug(), but defence-in-depth at the YAML
-#     layer keeps shell injection probes out of `run:` blocks entirely.
+
+# On-demand single-theme generation (docs/migration/p5-plan.md §4.1),
+# triggered by the CF Worker (apps/api) via the GitHub Actions REST API
+# dispatch when the in-browser form on /themes/ is submitted. No
+# concurrency group: a bounded fresh-tip compare-and-swap retry in the
+# promoter handles concurrent requests instead (kept from the pre-P5
+# workflow, #125/#121).
 
 on:
   workflow_dispatch:
@@ -27,175 +16,84 @@ on:
         required: true
         type: string
       request_id:
-        description: 'Opaque request identifier used for exact run matching'
+        description: Opaque request identifier used for exact run matching
         required: false
-        default: ''
+        default: ""
         type: string
 
 permissions: {}
 
-# No concurrency group: GitHub Actions only keeps ONE pending job per
-# group, so a `cancel-in-progress: false` group would silently drop the
-# 2nd-through-Nth queued dispatch when a user submits 3+ themes back to
-# back (the worker rate-limit allows 5/h). The promoter instead uses a
-# bounded fresh-tip compare-and-swap retry and rebuilds shared projections
-# whenever concurrent requests race.
-# See #125 for the failure mode this avoids and the original #121 fix.
-
 jobs:
   generate:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
     outputs:
       as_of: ${{ steps.candidate.outputs.as_of }}
       base_sha: ${{ steps.candidate.outputs.base_sha }}
       candidate_name: ${{ steps.candidate.outputs.candidate_name }}
       primary_path: ${{ steps.candidate.outputs.primary_path }}
-    permissions:
-      contents: read
-    # 15 min (was 8) so Groq rate-limiting + S2 retries can't push us past
-    # the workflow timeout. With Groq's 25-RPM throttle + ~90 LLM calls
-    # worst case, the LLM phase alone is ~4 min; S2/OpenAlex throttling
-    # has been observed adding another 1-2 min. See #131 for the
-    # truncated run that motivated this bump.
-    timeout-minutes: 15
     steps:
       - name: Validate input early
-        # Reject before checkout so a malformed dispatch doesn't burn a
-        # full job. Pattern allows letters/digits/space/hyphen/underscore,
-        # 2-80 chars (same shape as worker/slug.js's THEME_INPUT_PATTERN —
-        # don't change the pattern here without updating that too).
-        # Python's theme_slug NFKD-normalises the rest, but anything that
-        # could shape-shift past the slugger (control chars, command
-        # substitution probes) is denied here.
-        #
+        # Same shape as apps/api's THEME_INPUT_PATTERN
+        # (apps/api/src/lib/slug.ts) — pinned equal by
+        # apps/pipeline/test/workflows (p5-plan.md §2 A7 assertion 13).
         # Whole-string bash match, never `printf | grep`: grep is
-        # line-based, so a value carrying a newline would be validated one
-        # line at a time and pass on its first line alone. The explicit
-        # newline/CR rejection guards the same failure mode from surviving
-        # inside the anchored character class (mirrors conference-on-demand.yml's
-        # "Validate inputs early" step).
+        # line-based, so a value carrying a newline would be validated
+        # one line at a time and pass on its first line alone.
         env:
-          THEME_INPUT: ${{ github.event.inputs.theme }}
-          REQUEST_ID: ${{ github.event.inputs.request_id }}
+          THEME_INPUT: ${{ inputs.theme }}
+          REQUEST_ID: ${{ inputs.request_id }}
+          THEME_RE: '^[A-Za-z0-9 _-]{2,80}$'
+          REQUEST_ID_RE: '^[A-Za-z0-9._:-]{1,128}$'
         run: |
           set -euo pipefail
           if [[ "$THEME_INPUT" == *$'\n'* || "$THEME_INPUT" == *$'\r'* ]]; then
             echo "::error::theme must not contain newline/CR characters"
             exit 1
           fi
-          theme_re='^[A-Za-z0-9 _-]{2,80}$'
-          if ! [[ "$THEME_INPUT" =~ $theme_re ]]; then
+          [[ "$THEME_INPUT" =~ $THEME_RE ]] || {
             echo "::error::theme must be 2-80 chars of [A-Za-z0-9 _-]"
             exit 1
-          fi
+          }
           if [ -n "${REQUEST_ID:-}" ]; then
             if [[ "$REQUEST_ID" == *$'\n'* || "$REQUEST_ID" == *$'\r'* ]]; then
               echo "::error::request_id must not contain newline/CR characters"
               exit 1
             fi
-            request_id_re='^[A-Za-z0-9._:-]{1,128}$'
-            if ! [[ "$REQUEST_ID" =~ $request_id_re ]]; then
+            [[ "$REQUEST_ID" =~ $REQUEST_ID_RE ]] || {
               echo "::error::request_id has an invalid format"
               exit 1
-            fi
+            }
           fi
 
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Checkout develop
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: develop
           persist-credentials: false
 
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
-        with:
-          python-version: '3.12'
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
-        with:
-          version: '0.12.7'
-
-      - name: uv sync
-        run: uv sync --frozen --extra dev --extra unarxive
-
-      # #209 Phase J / PR #222: download the prebuilt unarXive DuckDB
-      # so `paperpilot.utils.unarxive.fetch_contexts()` can return real
-      # citation paragraphs instead of falling back to year/cite heuristics.
-      # The artifact is ~2-3 GB; we host it on a GitHub Release because
-      # it's stable, public, and within the 2 GB/asset cap once gzipped.
-      #
-      # If the asset is missing (no Release tagged `unarxive-v1`,
-      # 404 from CDN, etc.), the curl `|| true` swallows the error and
-      # the build pipeline degrades gracefully: `is_available()` reports
-      # False and every `fetch_contexts()` call returns []. Edges fall
-      # through to the year/cite + LLM path as if Phase J wasn't merged.
-      # No crash, no warning spam — operators see "unarXive disabled"
-      # in the lineage build log.
-      #
-      # To install: build the DuckDB once via
-      #   uv run python -m paperpilot.scripts.build_unarxive_index
-      # then upload the emitted `unarxive.duckdb.gz` companion to a
-      # new GitHub Release tagged `unarxive-v1`. The raw `.duckdb`
-      # is larger than the 2 GB per-asset cap and must not be uploaded.
-      - name: Download unarXive DuckDB (citation contexts, optional)
-        env:
-          # `gh release download` uses this token to authenticate against
-          # the GitHub REST asset endpoint. The anonymous public download
-          # URL (releases/download/<tag>/<name>) returns 404 for private
-          # repos even from inside Actions; the API endpoint resolves
-          # with the workflow's contents:read permission.
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -u
-          mkdir -p paperpilot/data/unarxive
-          # Release asset is gzipped (~1.5 GB) so it fits the 2 GB
-          # per-asset cap; we gunzip on the runner before the lineage
-          # pipeline opens it.
-          gz=paperpilot/data/unarxive/unarxive.duckdb.gz
-          out=paperpilot/data/unarxive/unarxive.duckdb
-          if gh release download unarxive-v1 \
-               --repo "${{ github.repository }}" \
-               --pattern unarxive.duckdb.gz \
-               --output "$gz" \
-               --clobber && gunzip -f "$gz"; then
-            echo "unarXive DuckDB ready: $(du -h "$out" | cut -f1)"
-          else
-            echo "::notice::unarXive DuckDB unavailable on Release unarxive-v1; citation contexts disabled (pipeline degrades to heuristics)"
-            rm -f "$gz" "$out"
-          fi
-        continue-on-error: true
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
 
       - name: Generate theme lineage
         # User input goes through env var only (never spliced into the
-        # shell command line) so command-substitution-style attacks are
-        # impossible here. Python side also defends.
+        # shell command line), so command-substitution-style attacks are
+        # impossible here.
         #
-        # --llm-strict=ambiguous (not =all): Groq free tier is RPM-capped
-        # AND TPM-capped (6,000 tokens/min). At ~2,000 tokens per call
-        # (system prompt + two 600-char abstracts + response), even 4 RPM
-        # exceeds the TPM budget; --llm-strict=all on the free tier hits
-        # 429 throttles in the back half of the burst and either pushes
-        # the run past the workflow timeout (15 min) or falls back to
-        # heuristic templates anyway.
-        #
-        # Honest design: heuristic for the ~80% of edges S2 already
-        # classified (methodology / result / background intents), LLM
-        # only for the truly ambiguous edges where the heuristic falls
-        # back to "extends" by default. Operators on a Groq paid plan
-        # who can raise llm.rate_limit_rpm can switch to --llm-strict=all
-        # if they want full LLM coverage. #131 documents the trade.
+        # PAPERPILOT_GROQ_API_KEY / PAPERPILOT_S2_API_KEY (H3 of the P5
+        # tier-A review): without these, buildProvider() throws "No LLM
+        # key found" and every on-demand theme request fails; S2 also
+        # runs unauthenticated without its key. Same secret names as the
+        # live theme-on-demand.yml step this one replaces.
         env:
           PAPERPILOT_GROQ_API_KEY: ${{ secrets.PAPERPILOT_GROQ_API_KEY }}
           PAPERPILOT_S2_API_KEY: ${{ secrets.PAPERPILOT_S2_API_KEY }}
-          THEME_INPUT: ${{ github.event.inputs.theme }}
+          THEME_INPUT: ${{ inputs.theme }}
         run: |
           set -euo pipefail
-          # --auto-expand (#247): if the first pass produces a sparse
-          # lineage (e.g. Mixture of Depths returned 9 nodes / 3 edges
-          # at these defaults), retry once with depth=2, seeds=10,
-          # width=12. The classifications.json cache is shared between
-          # the two passes so the LLM cost of the retry is just the
-          # *new* parent/child pairs the wider BFS surfaces.
-          uv run --frozen python -m paperpilot.scripts.build_theme_lineage \
+          pnpm exec tsx apps/pipeline/src/lineage/theme/cli.ts \
             --theme "$THEME_INPUT" \
             --depth 1 --seeds 5 --width 8 --since-year 2018 \
             --llm-strict ambiguous \
@@ -205,13 +103,13 @@ jobs:
       - name: Freeze candidate metadata
         id: candidate
         env:
-          THEME_INPUT: ${{ github.event.inputs.theme }}
+          THEME_INPUT: ${{ inputs.theme }}
+          PRIMARY_PATH_RE: '^data/published/themes/[a-z0-9-]{1,64}$'
         run: |
           set -euo pipefail
-          slug="$(uv run --frozen python -c \
-            'import os; from paperpilot.scripts._common import theme_slug; print(theme_slug(os.environ["THEME_INPUT"]))')"
-          primary_path="docs/themes/$slug"
-          [[ "$primary_path" =~ ^docs/themes/[a-z0-9-]{1,64}$ ]] || {
+          slug="$(pnpm exec tsx apps/pipeline/src/lineage/theme/slugCli.ts)"
+          primary_path="data/published/themes/$slug"
+          [[ "$primary_path" =~ $PRIMARY_PATH_RE ]] || {
             echo "::error::generated theme path is invalid"
             exit 1
           }
@@ -223,13 +121,11 @@ jobs:
 
       - name: Package exact theme candidate
         env:
-          CANDIDATE_DIR: ${{ runner.temp }}/candidate
           PRIMARY_PATH: ${{ steps.candidate.outputs.primary_path }}
           PAPERPILOT_PACKAGE_INCLUDE_UNCHANGED: "1"
         run: |
           set -euo pipefail
-          bash .github/scripts/package-generated-candidate.sh \
-            "$CANDIDATE_DIR" "$PRIMARY_PATH"
+          pnpm exec tsx apps/pipeline/src/release/cli.ts package "$RUNNER_TEMP/candidate" "$PRIMARY_PATH"
 
       - name: Upload generated candidate
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -249,22 +145,17 @@ jobs:
       source_sha: ${{ steps.promote.outputs.source_sha }}
       changed: ${{ steps.promote.outputs.changed }}
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Checkout develop
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: develop
           fetch-depth: 0
 
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
-        with:
-          python-version: "3.12"
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
 
-      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
-        with:
-          version: "0.12.7"
-
-      - run: uv sync --frozen --extra dev --extra unarxive
-
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+      - name: Download generated candidate
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: ${{ needs.generate.outputs.candidate_name }}
           path: ${{ runner.temp }}/candidate
@@ -276,14 +167,15 @@ jobs:
           PROMOTE_BASE_SHA: ${{ needs.generate.outputs.base_sha }}
           THEME_INPUT: ${{ inputs.theme }}
           PRIMARY_PATH: ${{ needs.generate.outputs.primary_path }}
+          PRIMARY_PATH_RE: '^data/published/themes/[a-z0-9-]{1,64}$'
         run: |
           set -euo pipefail
-          [[ "$PRIMARY_PATH" =~ ^docs/themes/[a-z0-9-]{1,64}$ ]] || {
+          [[ "$PRIMARY_PATH" =~ $PRIMARY_PATH_RE ]] || {
             echo "::error::candidate theme path is invalid"
             exit 1
           }
           msg=$(printf 'data(themes): on-demand generation of "%s"' "$THEME_INPUT")
-          bash .github/scripts/promote-generated.sh themes \
+          pnpm exec tsx apps/pipeline/src/release/cli.ts promote themes \
             "$RUNNER_TEMP/candidate" "$msg" "$PRIMARY_PATH"
 
   release:
@@ -291,8 +183,7 @@ jobs:
     if: needs.promote.outputs.changed == 'true'
     permissions:
       contents: read
-      pages: write
-      id-token: write
+      deployments: write
     uses: ./.github/workflows/pages-release.yml
     with:
       source_sha: ${{ needs.promote.outputs.source_sha }}

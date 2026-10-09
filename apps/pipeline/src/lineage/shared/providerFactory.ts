@@ -92,7 +92,7 @@ export function buildProvider(deps: BuildProviderDeps): {
       const up = preference.toUpperCase();
       throw new Error(
         `PAPERPILOT_LLM_PROVIDER=${preference} requested but no key found ` +
-          `(set PAPERPILOT_${up}_API_KEY in paperpilot/.env, or ${up}_API_KEY in the environment).`,
+          `(set PAPERPILOT_${up}_API_KEY in data/config/.env, or ${up}_API_KEY in the environment).`,
       );
     }
     return preference === "gemini" ? makeGemini() : makeGroq();

@@ -51,8 +51,12 @@ describe("H3: generation steps carry the exact LLM/S2 secrets the live workflows
       jobNamed(readWorkflow("collect-weekly.yml"), "generate"),
       "Regenerate eligible conference lineages",
     );
-    // biome-ignore lint/suspicious/noTemplateCurlyInString: literal GitHub Actions expression (YAML env value), not a JS template literal.
-    expect(step.env?.PAPERPILOT_GROQ_API_KEY).toBe("${{ secrets.GROQ_API_KEY }}");
+    // The repo registers PAPERPILOT_GROQ_API_KEY (the name theme/regen use);
+    // GROQ_API_KEY stays as a fallback for the pre-P5 name.
+    expect(step.env?.PAPERPILOT_GROQ_API_KEY).toBe(
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: literal GitHub Actions expression (YAML env value), not a JS template literal.
+      "${{ secrets.PAPERPILOT_GROQ_API_KEY || secrets.GROQ_API_KEY }}",
+    );
     // biome-ignore lint/suspicious/noTemplateCurlyInString: literal GitHub Actions expression (YAML env value), not a JS template literal.
     expect(step.env?.PAPERPILOT_GEMINI_API_KEY).toBe("${{ secrets.GEMINI_API_KEY }}");
   });

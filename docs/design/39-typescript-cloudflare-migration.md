@@ -5,7 +5,7 @@
 - 作業ブランチ: `feat/ts-migration`。`develop` への push は Worker と Pages を自動デプロイするため、移行作業は必ずこのブランチで行う
 - 無料枠の数値は **2026-10-04 に Cloudflare の現行ドキュメントで確認済み**（§1.1）
 
-## 進捗（2026-10-07 時点、`feat/ts-migration`）
+## 進捗（2026-10-07 時点）
 
 | フェーズ | 状態 |
 |---|---|
@@ -13,7 +13,18 @@
 | P2 画面 | 完了。レビュー 3 回で重大・中程度 0。残りの差は [`docs/migration/p2-parity-gaps.md`](../migration/p2-parity-gaps.md) |
 | P3 API | 完了（Hono、Durable Objects の正確な上限、空打ちモード、受付停止スイッチ） |
 | P4 収集・生成 | 完了。レビュー 3 回で重大・中程度 0。残作業と判断待ちは [`docs/migration/p4-followups.md`](../migration/p4-followups.md) |
-| P5 切替 | 手元（オフライン）でできる準備（tier A: A0〜A4・A6〜A11）は完了。2026-10-07 時点で、データ移動のリハーサル・形式差の確認（差 0、B′ 不要）・所要時間の計測（timeout の変更不要）が合格（[`p5-plan.md` §8](../migration/p5-plan.md)）。残りは A5・A12（Cloudflare Pages のプロジェクト名と本番 URL が必要）と、ユーザー作業（Cloudflare トークン・Pages プロジェクト・GitHub environment・Workers Builds 設定）、各段の承認 |
+| P5 切替 | **Tier A 完了**（A0〜A12、`feat/ts-migration` の `0d85e50` まで。レビュー 5 回、`origin/feat/ts-migration` と同じ）。**commit B と Tier C はブランチ `p5/consolidate` で先に作成済み**（下記）。本番側の段（P0 の準備、Merge A、Phase W、Merge B、観察）は、この文書の時点で完了の記録が無い。どれもユーザー作業と各段の承認が要る。手順は [`docs/migration/p5-plan.md`](../migration/p5-plan.md) §6.2 |
+
+### P5 の内訳（`p5/consolidate`、未 push・`develop` に merge しない）
+
+| 段 | 状態 |
+|---|---|
+| commit B（`83a7551`） | `dataMove apply` でデータを `data/{published,state,inputs,config}` に移し、`LAYOUT_MODE` を `"p5"` に、Node の workflow を `.github/workflows/` に移した。`ts-ci.yml`・`publish.yml`・`paper-slides-on-demand.yml` を削除 |
+| Tier C の削除（`24cf1c1`） | `paperpilot/`（Python）、`pyproject.toml`、`uv.lock`、Docker 一式、`tools/`、`.github/scripts/`、`worker/`、ルートの `wrangler.jsonc`、フィクスチャ生成用の `.py` を削除。`tests.yml` に「`.codex/` 以外の tracked な `*.py` が 0 件」の検査 |
+| Tier C の文書 | README・CHANGELOG・`.claude/agents/*`・`.claude/skills/*`・本書の進捗・[`safety-contracts.md`](../migration/safety-contracts.md)（p4-followups #14 LLM-18、#15「移植先」列）を書き直した（未 commit）。CLAUDE.md と AGENTS.md の書き直しは保留（下書きのみ。ユーザーの許可待ち） |
+| 未決 | 判断待ち 8（`AGENTS.md`・`PAPERPILOT_PROFILE.md`・`docs/QWEN_IMPLEMENTER.md`・`.codex/` を残すか）。古い設計書の整理（§9.3 の 9 本）。Cloudflare Pages のプロジェクト名・本番ブランチ・公開 origin（今は仮の値） |
+
+⚠️ **`p5/consolidate` は Phase W と Merge B が終わるまで `develop` に merge しない。** `develop` の本番は今も `worker/`（Workers Builds が自動デプロイ）と Python の workflow で動いている。また Phase W の戻し手順が使う `wrangler.legacy-rollback.jsonc` はこのブランチでは消えている。
 
 ## 判断結果（2026-10-05、ユーザー「推奨で進めてください」）
 
@@ -25,6 +36,10 @@
 | メール通知 | TS 版では対応しない（有効にすると記録して失敗扱い）。既存設定はオフ |
 | 類似度計算（Stage 3 embedding） | TS 版では対応しない（有効にすると stage3 として記録）。既存設定はオフ |
 | 論文スライド（判断待ち 1） | P5 で削除（既定案どおり） |
+| 旧コードの削除の時期（2026-10-07、ユーザー「1 プロジェクトに 1 フォルダー」） | Tier C を前倒しし、`p5/consolidate` にデータ移動（B）と削除（C）を入れる。順番の変更は [`p5-plan.md` §9](../migration/p5-plan.md)、手順は [`p5-runbook.md`](../migration/p5-runbook.md) |
+| Worker の切替（2026-10-08、推奨） | 切替の merge とは別の段階（Phase W）で、feat の Merge A の後に行う |
+| 切替後の旧 Worker の予備（2026-10-08、推奨） | 用意しない。戻し方は受付停止・apps/api の以前の版への rollback・修正版の出し直し（手順書「↩ Worker」） |
+| `.codex/`・`AGENTS.md`・Qwen 関係の文書（判断待ち 8）、`.pre-commit-config.yaml` | 当面は残す（2026-10-08、推奨）。`.py` の検査は `.codex/` を除外 |
 
 ## 0. 決定事項（ユーザー指示）
 
@@ -236,18 +251,23 @@ P1 の成果物として、`paperpilot/` と `.github/scripts/` を洗い出し�
 - ルートの `wrangler.jsonc` と `worker/` は `apps/api` が完成するまで触らない（Workers Builds が読むため）。**例外**: §4.2-7 の KV スイッチ・origin 許可リスト・`/api/health` と、判断待ち 5 の `c090c84` は、ユーザー承認のうえ develop の `worker/` に先に入れる。停止中の画面表示（paused）も、P5 までは現行の `docs/assets/theme.js` が利用者の見る画面なので、同じく承認のうえ develop に入れて Pages を再リリースする。
 - 新しい CI ジョブ（Node のテスト・ビルド）は feat ブランチに追加し、既存の `tests.yml` と並行して走らせる。
 
-### 7.4 P5 切替手順書（P4d 完了時に詳細を書く）
-1. 依頼受付を止める（§4.2-7 の KV フラグ）。止めている間に来た依頼は枠を消費しない。KV は全拠点への反映に時間がかかる（60 秒以上）ため、`/api/health` が `accepting: false` を返すのを確かめ、さらに数分待ってから次へ進む。
-2. 実行中の生成 run がゼロになるのを確認する（現行 promoter は途中で切り替わっても `set -euo pipefail` と CAS 検査で安全側に止まる）。
-3. リハーサル: feat の成果物を**本番ではないブランチ**（プレビュー、必要なら Access で閉じる）に手元の wrangler で上げ、本番と同じ確認（smoke、CSP、転送、404）を通す（ユーザー承認）。本番ブランチへの初回デプロイは 4 の merge 後に、正規のリリース（6 段）で行う。
-4. develop に merge（データ移動・workflow・promoter のパスの 1 commit を含む）。merge 後に `/api/health` でスイッチが「停止」のままか確認する（本物の POST では確かめない）。
-5. Workers Builds が読むルートを `apps/api` に変える（ユーザー作業）。デプロイ後に `/api/health` で「停止」のまま・`dispatch_mode: live`・`pat_configured: true` を確認する。
-6. 本番 URL の全ページ・正規リリースの smoke・API の読み取り系を確認する。
-7. 依頼受付を再開する（ユーザー承認）。
-8. 本物の依頼を 1 件だけ通し（ユーザー承認）、dispatch → 生成 → promotion → 公開まで通ることを確かめる。失敗したら直ちに受付を止めて 11 に進む。
-9. GitHub Pages に転送ページを上げる（8 が通った後。切替 commit では旧サイトを先に消さない）。
-10. Python の削除 commit は、9 の後に観察期間（1 週間程度、生成 run が正常に回ることを確認）を置いてから入れる。
-11. 失敗した場合の戻し方: Python の削除 commit が既に入っていれば先にそれを revert し、次に切替 commit を revert し GitHub Pages の公開を戻す。revert では戻らないもの（Workers Builds のルート設定、D1・Durable Objects の状態、切替後に `data/` に入った生成 commit、`data/state` の seen_ids）は手順書に個別の戻し方を書く。
+### 7.4 P5 切替手順書（要約。正本は [`p5-runbook.md`](../migration/p5-runbook.md)）
+2026-10-07 に Tier C を前倒しし、データ移動（B）と旧コードの削除（C）を 1 つの merge にまとめた（[`p5-plan.md` §9](../migration/p5-plan.md)）。Worker の切替は、その merge より前の別の段（Phase W）で行う（2026-10-08 の判断）。以下は順序の要約で、コマンドと確認点は手順書に従う。Cloudflare／GitHub の仕様の確認結果は [`p5-plan.md` §10](../migration/p5-plan.md)。
+1. P0 準備（ユーザー作業）: Cloudflare Pages のプロジェクト・本番ブランチ・公開 origin を決め、トークンと GitHub の environment を作る。Workers Builds の今の設定を控え、**Merge A より前に** build variable `NODE_VERSION=22`（任意で `PNPM_VERSION=10.34.6`）を入れる（ロックファイルがあると `pnpm install --frozen-lockfile` が自動で走り、既定の Node は 24）。preview builds を止める（Settings → Build → Branch control）。必須チェック名を確かめる。
+2. P1 オフライン確認: `p5/consolidate` で biome・typecheck・全テスト・web build・`validate bundle`・`dataMove verify` を通す。
+3. P2 リハーサル（ユーザー承認）: `p5/consolidate` のビルドを**本番ではないブランチ**（プレビュー、必要なら Access で閉じる）に手元の wrangler で上げ、smoke・CSP・転送・404 を確かめる。本番ブランチへの初回デプロイは 7 の merge 後に、正規のリリース（6 段）で行う。
+4. Merge A（ユーザー承認）: `feat/ts-migration` を merge commit で develop に入れる。本番の動作は変わらない。Workers Builds のログで、Node 22 で install が通り、旧 Worker が出し直されたことを確かめる。
+5. Phase W（各手順ユーザー承認）: KV に `accepting=true`・`origin_allowlist`・`namespace_tag` を書いて読み戻す（`--remote` 必須）。Workers Builds の root directory を `apps/api` にする（build command は空、deploy command は `npx wrangler deploy`）。`/api/health`・CORS・既存テーマの POST を確かめ、**旧**サイトから本物の依頼を 1 件通す。旧版の手順 5（merge の後に root を切り替える）は、この段に前倒しした。
+6. 切替の準備: B が develop に対して古くなっていないか確かめる（新しい生成データがあれば B を develop の先端で作り直す）。PR を開き、CI を緑にする。
+7. 切替: 依頼受付を止める（§4.2-7 の KV フラグ。`/api/health` が `accepting: false` を返してから、さらに数分待つ）。生成 workflow 5 本を無効にし、実行中・待ちの run が 0 件であることを確かめる。B が古くないことを確かめ直し、`origin_allowlist` に新しい origin を足す。`p5/consolidate` を **merge commit** で develop に取り込む（以下 `<mergeB>`。データ移動・workflow・promoter のパス・Python と旧 `worker/` の削除を含む）。正規リリース（6 段と record）が緑で、`/api/health` が「停止」のままであることを確かめ（本物の POST では確かめない）、本番 URL の全ページを確認する。
+8. workflow を有効に戻し、依頼受付を再開する（ユーザー承認）。**新**サイトから本物の依頼を 1 件だけ通し、dispatch → 生成 → promotion → 公開まで通ることを確かめる。失敗したら直ちに受付を止めて 12 に進む。
+9. GitHub Pages に転送ページを上げる（`legacy-redirects.yml`。8 が通った後）。Search Console に新しい sitemap を登録する。
+10. 観察（1 週間程度）: 生成 run が通ることを確かめ、許可リストから GitHub Pages の origin を外す。2 回目以降の本番リリースの後で `pages-rollback.yml` を確かめる。Python の削除は `<mergeB>` に入っているので、別の削除 commit は無い。
+11. Worker を戻せる期間を閉じる（ユーザー承認）。閉じるまでは `feat/ts-migration` を消さず、`apps/api` を DO の `exports` 形式に移さない（DO の migration をまたぐ version rollback はできない）。
+12. 失敗した場合の戻し方:
+    - Worker: まず受付を止める。次に `apps/api` の以前の版へ `wrangler rollback`（DO migration の後の版だけ）するか、修正版を develop に入れて出し直す。**切替後の旧 Worker の予備は用意しない**（2026-10-08）。どうしても旧 Worker を出すときは、先に Workers Builds を Settings → Builds → Disconnect で止める。
+    - サイトとデータ: `<mergeB>` の後に commit が無ければ `git revert -m 1 <mergeB>`。生成 commit があれば `dataMove carry-back` → `git revert --no-commit -m 1 <mergeB>` → `dataMove finish-revert` の順（B と C は一緒に戻る）。そのあと旧 `pages.yml` が GitHub Pages を出し直す。
+    - revert で戻らないもの（Workers Builds の設定、KV の値、Durable Objects の状態、Cloudflare Pages のデプロイ、GitHub Deployment の記録、workflow の有効・無効）は、手順書の「revert で戻らないもの」の表に個別の戻し方がある。
 
 ### 7.5 開発ルールの更新（P1）
 CLAUDE.md の絶対ルール・TDD 手順・カバレッジ目標は Python を前提にしている。P1 で TS 版の規約（Vitest のカバレッジ 80%、LLM 共通インターフェース、唯一の生成元のパス、モック必須）を CLAUDE.md に追記し、`.claude/agents/*` と `.claude/skills/*` を TS 版に対応させる。

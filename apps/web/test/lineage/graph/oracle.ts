@@ -5,23 +5,20 @@
 // paperpilot/tests/viewer/test_theme_xaxis_layout.mjs (stub DOM +
 // `globalThis.__test = {...}` probe appended to the script source).
 //
-// Deliberately NOT a pre-generated fixture: reading the JS source at
-// test time means drift between docs/assets/lineage.js and the port
-// fails this suite immediately, instead of silently going stale.
+// Deliberately NOT a pre-generated fixture of layout outputs: the JS
+// source itself is evaluated at test time, so any divergence of the port
+// from it fails this suite immediately.
 import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import vm from "node:vm";
-import { layoutFor } from "@paperpilot/core/layout";
 
 const here = dirname(fileURLToPath(import.meta.url));
-const REPO_ROOT = resolve(here, "..", "..", "..", "..", "..");
-// The original viewer JS this oracle evaluates lives in `legacySite/assets`
-// (legacy: docs/assets, same directory as `published`'s own assets/; p5:
-// legacy/gh-pages-site/assets, once the A9 data move freezes the old site
-// there). Never `published` -- these three files are the hand-written
-// viewer scripts, not generated data.
-const LEGACY_ASSETS_DIR = join(layoutFor(REPO_ROOT).legacySite, "assets");
+// The original hand-written viewer JS this oracle evaluates (old
+// docs/assets/{utils,lineage,deep}.js), copied byte-identically into the
+// frozen fixtures before legacy/gh-pages-site was deleted in Tier C
+// (p5-plan.md §6.3; see apps/web/test/fixtures/legacy/README.md).
+const LEGACY_ASSETS_DIR = resolve(here, "..", "..", "fixtures", "legacy", "assets");
 const UTILS_JS = join(LEGACY_ASSETS_DIR, "utils.js");
 const LINEAGE_JS = join(LEGACY_ASSETS_DIR, "lineage.js");
 const DEEP_JS = join(LEGACY_ASSETS_DIR, "deep.js");

@@ -6,6 +6,23 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Changed — TypeScript への全面移行と「1 プロジェクト = 1 フォルダ」（P5、ブランチ `p5/consolidate`）
+
+- **データを `data/` に集めた（commit B、`dataMove apply`）。** `docs/` の公開 JSON は `data/published/`、`paperpilot/data/` の実行状態は `data/state/`、設定データは `data/config/`、`paperpilot/output/` の収集結果は `data/inputs/` に移した。`packages/core/src/layout` の `LAYOUT_MODE` を `"p5"` にした。workflow は `.github/workflows-p5/` から `.github/workflows/` に移した。
+- **workflow は Node の 12 本になった。** `tests`・`data-audit`・`pages`・`pages-release`・`pages-rollback`・`lighthouse`・`collect-weekly`・`collect-daily-watch`・`regen-themes`・`theme-on-demand`・`conference-on-demand`・`legacy-redirects`。`ts-ci.yml`・`publish.yml`・`paper-slides-on-demand.yml` は消した。`tests.yml` は `.codex/` 以外に tracked な `*.py` が無いことも検査する。
+- **公開先を Cloudflare Pages に替える準備ができた。** `pages-release.yml` が validate → build → admit → deploy → smoke → record の 6 段 + 記録で exact SHA だけを出し、`pages-rollback.yml` が記録済みのデプロイに戻す。旧 GitHub Pages には `legacy/redirect/` の転送サイトを `legacy-redirects.yml` で出す。Pages のプロジェクト名と公開 origin はまだ仮の値。
+- **API は `apps/api`（Hono on Cloudflare Workers）。** KV の `accepting`（受付スイッチ、fail closed）と `origin_allowlist`、`GET /api/health`、Durable Object での回数制限、`DISPATCH_MODE`（`live` / `dry-run`）を持つ。
+- **文書を書き直した。** README、`.claude/agents/*`、`.claude/skills/*` を TypeScript だけの構成・`data/` の配置・12 workflow・Cloudflare の公開に合わせた。`docs/migration/safety-contracts.md` の「移植先」列を TS の実配置にし（p4-followups #15）、LLM-18 の記述を今の遮断器の動き（空の応答が続いても遮断する）に直した（#14）。設計書 39 の進捗を更新した。
+
+### Removed
+
+- **Python 一式:** `paperpilot/`（収集・カタログ・家系図・論文スライド・lineage review 道具・テスト）、`pyproject.toml`、`uv.lock`、`.pre-commit-config.yaml` の ruff/mypy、`apps/` と `packages/` のフィクスチャ生成用 `.py`（生成済みの出力は残した）。
+- **Docker 一式:** `Dockerfile`、`docker-compose.yml`、`docker/`、`containers/`、`.dockerignore`。
+- **旧 Worker と周辺:** `worker/`、ルートの `wrangler.jsonc`、`tools/`、`.github/scripts/`（`promote-generated.sh`・`validate-pages-release.sh` など。Node 版は `apps/pipeline/src/release/`）。
+- TS 版を作らなかったもの: 論文スライド（判断待ち 1 の既定案）、unarXive の DuckDB 索引の作成、家系図レビューの取り込み道具（いずれも 2026-10-05 の判断結果）、replay、Google Sheets 連携（判断待ち 7）、SMTP 送信、Stage 3 の embedding（有効にすると記録して続行）。
+
+> このブランチは、P5 切替手順（`docs/migration/p5-plan.md` §6.2 の Phase W と Merge B）が終わるまで `develop` に merge しない。`develop` の本番はまだ `worker/` と Python の workflow で動いている。
+
 ### Added
 
 - **Above-the-fold density for catalog and lineage pages (#370).** All ten

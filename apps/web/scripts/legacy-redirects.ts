@@ -4,43 +4,32 @@
  * legacy static site after the Cloudflare Pages cutover (design doc
  * §5.4 / docs/migration/p5-plan.md §5.4, changeset A8).
  *
- * The legacy site lives at `docs/` today (LAYOUT_MODE "legacy") and
- * moves to `legacy/gh-pages-site/` once the data move (A9) lands, so
- * both the source directory and the output directory are CLI
- * arguments rather than hard-coded -- this file must keep working
- * unchanged across that move. Only `*.html` pages are mirrored (plus a
- * generated `404.html` catch-all, `.nojekyll`, and a copy of
- * `legacy/redirect/redirect.js`); every `*.json` / other data file
- * under the source directory is left alone -- this script never reads
- * their contents and never writes one.
+ * The old site's own tree (`legacy/gh-pages-site/`) was deleted in
+ * Tier C (p5-plan.md §6.3). Before that, the list of every `*.html`
+ * page it served (plus `404.html`) was frozen into
+ * `legacy/redirect/paths.json`; this generator reads only that list and
+ * never walks a site directory. It writes a stub page per listed path
+ * (plus a generated `404.html` catch-all, `.nojekyll`, and a copy of
+ * `legacy/redirect/redirect.js`) into a gitignored output directory.
  *
- * This generator, and every file it writes, is INERT while
- * LAYOUT_MODE is "legacy" (CLAUDE.md "TypeScript 移行中の開発ルール"):
- * nothing here runs as part of `predev`/`prebuild`/`postbuild`, it
- * writes only inside a gitignored output directory, and it is wired to
- * a real GitHub Pages deploy only by the (separate, not-yet-created)
- * `legacy-redirects.yml` workflow, dispatch-only until the runbook's
- * cutover step 10.
+ * Wired to a real GitHub Pages deploy only by `legacy-redirects.yml`
+ * (dispatch-only, runbook cutover step 10).
  */
-import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
-import { dirname, join, relative, resolve, sep } from "node:path";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { layoutFor } from "@paperpilot/core/layout";
 import { canonicalUrl, LEGACY_GITHUB_PAGES_BASE_PATH, PUBLIC_ORIGIN } from "@paperpilot/core/site";
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(SCRIPT_DIR, "..", "..", "..");
 
 /**
- * Default source: `layoutFor(REPO_ROOT).legacySite` -- today's legacy
- * site (`docs/`, `LAYOUT_MODE` "legacy") byte-identically, and
- * `legacy/gh-pages-site` once commit B flips `LAYOUT_MODE` to "p5" --
- * callers may still pass `--source` to point elsewhere without editing
- * this file (M4 of the P5 tier-A review: this used to hard-code `docs/`
- * forever, so after the cutover it would publish only the 404
- * catch-all).
+ * Default path list: the frozen `legacy/redirect/paths.json`, resolved
+ * from this script's own location (never the caller's cwd -- `pnpm
+ * --filter @paperpilot/web run` chdirs into apps/web; see
+ * generator.cwd.spawn.test.ts).
  */
-export const DEFAULT_SOURCE_DIR = layoutFor(REPO_ROOT).legacySite;
+export const DEFAULT_PATHS_FILE = join(REPO_ROOT, "legacy", "redirect", "paths.json");
 
 /** Default output: a gitignored build artifact under apps/web, never
  * committed (see apps/web/.gitignore). */
@@ -57,8 +46,46 @@ const REDIRECT_JS_PLACEHOLDER = "%%NEW_ORIGIN%%";
 const CATCH_ALL_NAME = "404.html";
 
 export interface LegacyRedirectOptions {
-  readonly sourceDir: string;
+  /** Site-relative POSIX paths (no leading "/"), e.g. `iclr-2026/lineage.html`. */
+  readonly paths: readonly string[];
   readonly outDir: string;
+}
+
+export interface LegacyRedirectCliOptions {
+  readonly pathsFile: string;
+  readonly outDir: string;
+}
+
+/** One safe site-relative `*.html` path: no leading "/", no "." / ".."
+ * / empty segment, no backslash -- so a stub can never be written
+ * outside `outDir`. */
+const SAFE_HTML_PATH = /^(?!.*(?:^|\/)\.{1,2}(?:\/|$))[^/\\]+(?:\/[^/\\]+)*\.html$/;
+
+/**
+ * Reads and validates a frozen path list (`legacy/redirect/paths.json`
+ * shape: `{ "paths": string[] }`). Throws on a missing/invalid file, a
+ * non-string or unsafe entry, or a duplicate, rather than silently
+ * publishing a partial redirect site.
+ */
+export async function readFrozenPaths(file: string): Promise<string[]> {
+  const parsed = JSON.parse(await readFile(file, "utf8")) as unknown;
+  const paths = (parsed as { paths?: unknown } | null)?.paths;
+  if (!Array.isArray(paths)) {
+    throw new Error(`legacy-redirects: ${file} has no "paths" array`);
+  }
+  const seen = new Set<string>();
+  for (const entry of paths) {
+    if (typeof entry !== "string" || !SAFE_HTML_PATH.test(entry)) {
+      throw new Error(
+        `legacy-redirects: ${file} has an invalid path entry ${JSON.stringify(entry)}`,
+      );
+    }
+    if (seen.has(entry)) {
+      throw new Error(`legacy-redirects: ${file} lists ${JSON.stringify(entry)} twice`);
+    }
+    seen.add(entry);
+  }
+  return paths as string[];
 }
 
 /**
@@ -110,22 +137,6 @@ export function buildRedirectPageHtml(targetUrl: string): string {
 `;
 }
 
-/** Recursively lists every `*.html` file under `dir`, as POSIX
- * relative paths (no leading "/"). */
-async function listHtmlFiles(dir: string, base: string): Promise<string[]> {
-  const entries = await readdir(dir, { withFileTypes: true });
-  const files: string[] = [];
-  for (const entry of entries) {
-    const full = join(dir, entry.name);
-    if (entry.isDirectory()) {
-      files.push(...(await listHtmlFiles(full, base)));
-    } else if (entry.isFile() && entry.name.endsWith(".html")) {
-      files.push(relative(base, full).split(sep).join("/"));
-    }
-  }
-  return files;
-}
-
 async function writeRedirectJs(outDir: string): Promise<void> {
   const template = await readFile(REDIRECT_JS_SOURCE, "utf8");
   if (!template.includes(REDIRECT_JS_PLACEHOLDER)) {
@@ -139,8 +150,8 @@ async function writeRedirectJs(outDir: string): Promise<void> {
 
 /**
  * Generates the full redirect site into `options.outDir`: a stub page
- * for every `*.html` file under `options.sourceDir` (at the identical
- * relative path, so the old URL still resolves to a real file), a
+ * for every entry of `options.paths` (at the identical relative path, so
+ * the old URL still resolves to a real file), a
  * `404.html` catch-all redirecting to the new site's root, `.nojekyll`
  * (this is a plain static tree, not a Jekyll one), and `redirect.js`
  * with its origin placeholder filled in. No `sitemap.xml` is written.
@@ -151,13 +162,15 @@ async function writeRedirectJs(outDir: string): Promise<void> {
 export async function generateLegacyRedirectSite(
   options: LegacyRedirectOptions,
 ): Promise<{ written: string[] }> {
-  const { sourceDir, outDir } = options;
+  const { paths, outDir } = options;
   await mkdir(outDir, { recursive: true });
 
-  const htmlFiles = await listHtmlFiles(sourceDir, sourceDir);
   const written: string[] = [];
 
-  for (const relPath of htmlFiles) {
+  for (const relPath of paths) {
+    if (!SAFE_HTML_PATH.test(relPath)) {
+      throw new Error(`legacy-redirects: refusing unsafe path ${JSON.stringify(relPath)}`);
+    }
     if (relPath === CATCH_ALL_NAME) {
       // Handled separately below, regardless of source content.
       continue;
@@ -182,16 +195,16 @@ export async function generateLegacyRedirectSite(
 
 export function parseArgs(
   argv: readonly string[],
-  defaults: LegacyRedirectOptions,
-): LegacyRedirectOptions {
-  let sourceDir = defaults.sourceDir;
+  defaults: LegacyRedirectCliOptions,
+): LegacyRedirectCliOptions {
+  let pathsFile = defaults.pathsFile;
   let outDir = defaults.outDir;
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
-    if (arg === "--source") {
+    if (arg === "--paths") {
       const value = argv[i + 1];
       if (value !== undefined) {
-        sourceDir = resolve(value);
+        pathsFile = resolve(value);
         i++;
       }
     } else if (arg === "--out") {
@@ -202,7 +215,7 @@ export function parseArgs(
       }
     }
   }
-  return { sourceDir, outDir };
+  return { pathsFile, outDir };
 }
 
 function invokedAsScript(): boolean {
@@ -212,12 +225,13 @@ function invokedAsScript(): boolean {
 
 async function main(): Promise<void> {
   const options = parseArgs(process.argv.slice(2), {
-    sourceDir: DEFAULT_SOURCE_DIR,
+    pathsFile: DEFAULT_PATHS_FILE,
     outDir: DEFAULT_OUT_DIR,
   });
-  const { written } = await generateLegacyRedirectSite(options);
+  const paths = await readFrozenPaths(options.pathsFile);
+  const { written } = await generateLegacyRedirectSite({ paths, outDir: options.outDir });
   console.log(
-    `legacy-redirects: wrote ${written.length} page(s) + redirect.js + .nojekyll from ${options.sourceDir} to ${options.outDir}`,
+    `legacy-redirects: wrote ${written.length} page(s) + redirect.js + .nojekyll from ${options.pathsFile} to ${options.outDir}`,
   );
 }
 

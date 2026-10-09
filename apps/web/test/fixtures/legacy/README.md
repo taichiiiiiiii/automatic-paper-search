@@ -19,6 +19,7 @@ added in. No content was edited by hand.
 | `sitemap.xml` | `docs/sitemap.xml` | `apps/web/test/misc/sitemap.test.ts` |
 | `eccv-2024/paper-links.html` | `docs/eccv-2024/paper-links.html` | `apps/web/test/catalog/paper-links-parity.test.ts` |
 | `aaai-2026/paper-links.html` | `docs/aaai-2026/paper-links.html` | `apps/web/test/catalog/paper-links-parity.test.ts` |
+| `assets/utils.js`, `assets/lineage.js`, `assets/deep.js` | `legacy/gh-pages-site/assets/*` (= old `docs/assets/*`) | `apps/web/test/lineage/graph/oracle.ts` |
 
 The parity test originally also covered `cvpr-2026` (2.1 MB of HTML);
 it was swapped for `aaai-2026` (316 KB) because both conferences
@@ -26,11 +27,11 @@ exercise identical per-row parsing logic (every row has an anchor in
 both legacy files — verified by inspection) and the smaller one halves
 the fixture footprint added to the repo without losing coverage.
 
-To refresh a fixture after an intentional change to the real `docs/`
-site (pre-P5 only — once the layout flips to `p5` in commit B, these
-pages are frozen in `legacy/gh-pages-site/` per §5.1 and `docs/` stops
-being published at all): re-copy the file and re-run
-`pnpm --filter @paperpilot/web exec vitest run`.
+The three `assets/*.js` files were copied byte-identically (`git
+cat-file blob`) from `legacy/gh-pages-site/assets/` just before Tier C
+deleted that folder (§6.3); the list of the old site's HTML pages lives
+on in `legacy/redirect/paths.json`. The old site no longer exists in
+the repo, so these fixtures are frozen for good: never refresh them.
 
 `biome.json`'s `files.includes` already excludes `**/fixtures/**`, so
 these files are never reformatted or linted.

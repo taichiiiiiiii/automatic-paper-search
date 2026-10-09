@@ -28,7 +28,7 @@ import {
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repository = resolve(here, "../../../../..");
-const fixtureRoot = resolve(repository, "paperpilot/tests/fixtures/lineage-pilot/positive-release");
+const fixtureRoot = resolve(repository, "apps/web/test/fixtures/lineage-pilot/positive-release");
 if (!existsSync(fixtureRoot)) {
   throw new Error(
     `fixture root not found at ${fixtureRoot} -- check the relative depth from this test file`,

@@ -136,15 +136,10 @@ export function allUsesStrings(doc: YamlDoc): string[] {
  * Third-party `uses:` refs that are known not to be pinned to a 40-hex
  * SHA, with the reason. p5-plan.md §2 A7 assertion 2 requires every
  * `uses:` to be pinned (or the local composite action); this is the
- * one documented, reported exception rather than a silent gap — see the
- * task's final report for what unblocks removing it.
+ * one documented, reported exception rather than a silent gap. Empty since
+ * treosh/lighthouse-ci-action was pinned to its v12 commit (2026-10-07).
  */
-export const PENDING_UNPINNED_ACTIONS: ReadonlySet<string> = new Set([
-  // No 40-hex SHA for this third-party action could be looked up
-  // offline (hard limit: no network). lighthouse.yml carries the same
-  // comment inline.
-  "treosh/lighthouse-ci-action@v12",
-]);
+export const PENDING_UNPINNED_ACTIONS: ReadonlySet<string> = new Set<string>([]);
 
 /**
  * `apps/pipeline/src/.../*Cli.ts` (or any `.ts`) paths referenced as
