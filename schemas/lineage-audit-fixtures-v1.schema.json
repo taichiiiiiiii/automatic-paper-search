@@ -25,7 +25,11 @@
           "reviewer": {"type": "string", "minLength": 1},
           "reviewed_at": {"type": "string", "format": "date-time"},
           "focus_labels": {"$ref": "#/$defs/labels"},
-          "sample_labels": {"$ref": "#/$defs/labels", "maxItems": 20}
+          "sample_labels": {
+            "$ref": "#/$defs/labels",
+            "maxItems": 20,
+            "description": "At most 20 rows; the quality builder additionally requires at least min(20, node count) rows with distinct node_id values that exist in the graph, and at most 10% off-topic."
+          }
         }
       }
     }

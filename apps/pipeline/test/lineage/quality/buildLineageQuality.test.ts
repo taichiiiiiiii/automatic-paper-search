@@ -72,7 +72,11 @@ function goodFixture(inputSha256: string): GoldenFixture {
     reviewer: "alice",
     reviewed_at: "2026-08-30T00:00:00Z",
     focus_labels: [{ node_id: "focus", on_topic: true }],
-    sample_labels: [{ node_id: "related", on_topic: true }],
+    // min(20, node count) = 2 distinct nodes must be sampled.
+    sample_labels: [
+      { node_id: "focus", on_topic: true },
+      { node_id: "related", on_topic: true },
+    ],
   };
 }
 
@@ -169,7 +173,10 @@ describe("collectionRow (LIN-51): the three golden-fixture label rules, each in 
         reviewer: "alice",
         reviewed_at: "2026-08-30T00:00:00Z",
         focus_labels: [], // "focus" node is never labelled
-        sample_labels: [{ node_id: "related", on_topic: true }],
+        sample_labels: [
+          { node_id: "focus", on_topic: true },
+          { node_id: "related", on_topic: true },
+        ],
       },
       asOfText: "2026-09-01T00:00:00Z",
       maxAgeDays: 365,
@@ -246,6 +253,108 @@ describe("collectionRow (LIN-51): the three golden-fixture label rules, each in 
     const golden = row.audit.checks.find((c) => c.name === "golden_fixture");
     expect(golden?.status).toBe("failed");
     expect(golden?.evidence).toContain("sample-off-topic-rate");
+  });
+});
+
+function bigArtifactText(nonFocusCount: number): string {
+  const base = artifact();
+  const nodes = [
+    { id: "focus", title: "Focus", is_focus: true, seed_paper_id: PAPER_ID },
+    ...Array.from({ length: nonFocusCount }, (_, i) => ({
+      id: `n${String(i).padStart(2, "0")}`,
+      title: `Node ${i}`,
+      is_focus: false,
+    })),
+  ];
+  const edges = nodes.slice(1).map((n) => ({
+    src: "focus",
+    dst: n.id,
+    rel: "extends",
+    relation: "extends",
+    conf: 0.8,
+    confidence: 0.8,
+    rationale: "Specific evidence",
+    provenance: provenance(),
+  }));
+  return JSON.stringify({ ...base, nodes, edges });
+}
+
+function rowFor(text: string, sampleLabels: unknown): ReturnType<typeof collectionRow> {
+  const docsRoot = tmpDocsDir();
+  writeFileSync(join(docsRoot, "lineage.json"), text);
+  const sha = createHash("sha256").update(text, "utf8").digest("hex");
+  return collectionRow({
+    docsRoot,
+    kind: "theme",
+    slug: "t",
+    label: "T",
+    relativePath: "lineage.json",
+    snapshotDate: null,
+    generatedHint: null,
+    fixture: {
+      input_sha256: sha,
+      reviewer: "alice",
+      reviewed_at: "2026-08-30T00:00:00Z",
+      focus_labels: [{ node_id: "focus", on_topic: true }],
+      sample_labels: sampleLabels,
+    },
+    asOfText: "2026-09-01T00:00:00Z",
+    maxAgeDays: 365,
+    catalogIds: null,
+  });
+}
+
+function golden(row: ReturnType<typeof collectionRow>) {
+  return row.audit.checks.find((c) => c.name === "golden_fixture");
+}
+
+// R2: an empty (or one-node, repeated) sample list used to pass the
+// <=10% off-topic rule vacuously, so a fixture that sampled nothing
+// read as a reviewed graph.
+describe("collectionRow (LIN-51): sample coverage floor min(20, node count) distinct node_ids", () => {
+  it("FAILs an empty sample_labels list", () => {
+    const row = rowFor(JSON.stringify(artifact()), []);
+    expect(row.audit_status).toBe("failed");
+    expect(golden(row)?.status).toBe("failed");
+    expect(golden(row)?.evidence).toEqual(["sample-coverage:0<2"]);
+  });
+
+  it("FAILs a sample list that repeats one node instead of covering distinct nodes", () => {
+    const row = rowFor(JSON.stringify(artifact()), [
+      { node_id: "related", on_topic: true },
+      { node_id: "related", on_topic: true },
+    ]);
+    expect(golden(row)?.status).toBe("failed");
+    expect(golden(row)?.evidence).toEqual(["sample-duplicate:related", "sample-coverage:1<2"]);
+  });
+
+  it("does not count unknown node ids toward coverage", () => {
+    const row = rowFor(JSON.stringify(artifact()), [
+      { node_id: "related", on_topic: true },
+      { node_id: "ghost", on_topic: true },
+    ]);
+    expect(golden(row)?.evidence).toEqual(["sample:ghost", "sample-coverage:1<2"]);
+  });
+
+  it("caps the floor at 20 for a graph larger than 20 nodes", () => {
+    const text = bigArtifactText(30); // 31 nodes
+    const twenty = Array.from({ length: 20 }, (_, i) => ({
+      node_id: `n${String(i).padStart(2, "0")}`,
+      on_topic: true,
+    }));
+    expect(golden(rowFor(text, twenty))?.status).toBe("passed");
+    expect(golden(rowFor(text, twenty.slice(0, 19)))?.evidence).toEqual(["sample-coverage:19<20"]);
+  });
+
+  it("still applies the 10% off-topic rule once coverage is met (2/20 = 10% passes, 3/20 fails)", () => {
+    const text = bigArtifactText(25);
+    const rows = (offTopic: number) =>
+      Array.from({ length: 20 }, (_, i) => ({
+        node_id: `n${String(i).padStart(2, "0")}`,
+        on_topic: i >= offTopic,
+      }));
+    expect(golden(rowFor(text, rows(2)))?.status).toBe("passed");
+    expect(golden(rowFor(text, rows(3)))?.evidence).toEqual(["sample-off-topic-rate"]);
   });
 });
 
