@@ -102,6 +102,7 @@
 - **ただし中身はテーマから外れている**: 20 ノードのうち GNN と言えるのは約 8〜9 件（グラフ信号処理・DeepWalk・LINE・Geometric Deep Learning・GCN と GNN のサーベイ・SuperGlue）。残り約 11 件（SLAM、SfM、ScanNet、SuperPoint、LoFTR、音声認識、機械翻訳、拡散モデルのサーベイ等）は、focus に選ばれた SuperGlue（GNN を使う特徴点マッチング）から引用をたどって広がったもの。関係はすべて「引用と年の差から後継と推定」、確信度は一律 0.7。監査基準（テーマ外 1 割以下）に対して約 55% で、**正直に監査すれば不合格**。公開しない
 - **R2 の見直し**: 人手監査の前に、生成の質を上げる必要がある（クラス B）。次の作業を R2-3 の前に入れる
   - R2-2b: テーマから外れる原因を直す。focus の選び方（題名に語が入っているだけの論文を避ける）と、引用をたどる範囲（テーマとの関連が弱いノードを入れない）
+    - **R2-2b の実装（2026-10-10、未マージ）**: `apps/pipeline/src/lineage/theme/topicScope.ts` を追加。(1) seed の順位に「題名がテーマそのものか／手法の一部として使うだけか（with/using/via …）」の重みを掛ける、(2) root は「テーマが主題の seed」→「テーマ内ノードとの edge 数」の順で選ぶ（GNN は SuperGlue → GNN サーベイ）、(3) BFS は「題名・要旨・TL;DR にテーマ語（別名、`theme_aliases.json` の `_topic_terms`、複数形・頭字語を含む）がある」「foundational allowlist」「テーマ内ノード 2 件以上から引用でつながる」のどれかを満たす候補だけを入れる（`--topic-min-support`、`--no-topic-gate`）、(4) 年と引用数だけの推定（`year_cite`）は `citation_heuristic`・`successor`・確信度 0.4 に落とし、`contrasts` は LLM か引用文脈の分類からしか出さない。オフライン評価 `evalTopicDriftCli.ts` で、公開中の成果物に入場条件を当て直すと GNN 20→8、MoE 39→11、ViT 44→34、FlashAttention 15→3 ノード（成果物に残る TL;DR と edge だけで判定するので、実際の再生成より厳しめ）
   - R2-2c: 4 テーマを新しい生成で作り直す（`regen-themes` を dispatch。系譜は fail-closed のままなので公開には出ない）
   - その後に R2-3（人手監査）。私が根拠つきの判定案を作り、ユーザーが確認する
 - 残しておく注意: 不完全な取得で作り直したとき（`--allow-incomplete` なし）、前回あった孤立ノードが消えることで「縮んだ」と判定され、公開が止まることがある。安全側に止まるだけなので、今は直さない

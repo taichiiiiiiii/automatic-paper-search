@@ -33,6 +33,7 @@ import {
   filterTopicRelevantSeeds,
   type ThemeSeedLike,
 } from "./seedFilters.js";
+import { TopicScope } from "./topicScope.js";
 import { readVersionedCache, writeVersionedCache } from "./versionedCache.js";
 
 // ---- S2 endpoints (seed discovery only; BFS over S2 is out of this
@@ -198,7 +199,14 @@ export function rankAndTruncate<
   T extends { year?: unknown; title?: unknown; citationCount?: unknown },
 >(
   papers: Iterable<T>,
-  options: { topN: number; sinceYear: number | null; currentYear?: number },
+  options: {
+    topN: number;
+    sinceYear: number | null;
+    currentYear?: number;
+    /** R2-2b: per-paper multiplier on the velocity score (topic role,
+     * `TopicScope.seedWeight`). Omitted -> 1 for every paper. */
+    weight?: (paper: T) => number;
+  },
 ): T[] {
   let candidates = [...papers];
   if (options.sinceYear !== null) {
@@ -210,24 +218,49 @@ export function rankAndTruncate<
     );
   }
   const currentYear = options.currentYear ?? new Date().getFullYear();
-  const scored = candidates.map((p, i) => ({ p, i, score: computeSeedScore(p, currentYear) }));
+  const weight = options.weight ?? (() => 1);
+  const scored = candidates.map((p, i) => ({
+    p,
+    i,
+    score: computeSeedScore(p, currentYear) * weight(p),
+  }));
   scored.sort((a, b) => (b.score !== a.score ? b.score - a.score : a.i - b.i));
   return scored.slice(0, options.topN).map((s) => s.p);
 }
 
 // ---- _apply_seed_filters ----
 
+/**
+ * Denylist / topic-relevance / blacklist filters, then velocity ranking.
+ * R2-2b: with a theme, each seed's velocity score is multiplied by its
+ * topic-role weight (`TopicScope.seedWeight`), so a paper whose title is
+ * about the theme outranks one that merely uses it as a method component
+ * ("SuperGlue: ... With Graph Neural Networks") or mentions it only in
+ * the abstract. `topicScope: null` disables the weighting.
+ */
 export function applySeedFilters<T extends ThemeSeedLike & { year?: unknown }>(
   byId: ReadonlyMap<string, T>,
-  options: { theme: string | null; topN: number; sinceYear: number | null },
+  options: {
+    theme: string | null;
+    topN: number;
+    sinceYear: number | null;
+    topicScope?: TopicScope | null;
+  },
 ): T[] {
   let candidates = [...byId.values()];
   candidates = filterDenylistedSeeds(candidates);
+  let scope: TopicScope | null = null;
   if (options.theme) {
     candidates = filterTopicRelevantSeeds(candidates, options.theme);
     candidates = filterThemeBlacklist(candidates, options.theme);
+    scope =
+      options.topicScope === undefined ? TopicScope.forTheme(options.theme) : options.topicScope;
   }
-  return rankAndTruncate(candidates, { topN: options.topN, sinceYear: options.sinceYear });
+  return rankAndTruncate(candidates, {
+    topN: options.topN,
+    sinceYear: options.sinceYear,
+    weight: scope ? (p) => scope.seedWeight(p) : undefined,
+  });
 }
 
 // ---- _openalex_search_per_keyword / _discover_seeds_openalex_primary ----
@@ -259,6 +292,7 @@ export async function discoverSeedsOpenalexPrimary(
     topN: number;
     sinceYear: number | null;
     theme: string | null;
+    topicScope?: TopicScope | null;
   },
   deps: OpenAlexDeps,
   completeness?: BuildCompletenessLike | null,
@@ -274,6 +308,7 @@ export async function discoverSeedsOpenalexPrimary(
     theme: options.theme,
     topN: options.topN,
     sinceYear: options.sinceYear,
+    topicScope: options.topicScope,
   });
 }
 
@@ -423,6 +458,8 @@ export async function discoverSeeds(
     useOpenalexFallback?: boolean;
     theme?: string | null;
     primarySource?: "s2" | "openalex";
+    /** R2-2b seed weighting; default `TopicScope.forTheme(theme)`. */
+    topicScope?: TopicScope | null;
   },
   deps: DiscoverSeedsDeps,
   completeness?: DiscoverSeedsCompleteness | null,
@@ -434,10 +471,15 @@ export async function discoverSeeds(
     useOpenalexFallback = true,
     theme = null,
     primarySource = "s2",
+    topicScope,
   } = options;
 
   if (primarySource === "openalex") {
-    return discoverSeedsOpenalexPrimary({ keywords, topN, sinceYear, theme }, deps, completeness);
+    return discoverSeedsOpenalexPrimary(
+      { keywords, topN, sinceYear, theme, topicScope },
+      deps,
+      completeness,
+    );
   }
 
   if (theme === null) {
@@ -454,12 +496,12 @@ export async function discoverSeeds(
     }
   }
 
-  const primary = applySeedFilters(byId, { theme, topN, sinceYear });
+  const primary = applySeedFilters(byId, { theme, topN, sinceYear, topicScope });
   if (!useOpenalexFallback || primary.length >= topN) return primary;
 
   const augmented = await topUpViaOpenalex(byId, { keywords, topN, sinceYear }, deps, completeness);
   if (augmented.size === byId.size) return primary;
-  const merged = applySeedFilters(augmented, { theme, topN, sinceYear });
+  const merged = applySeedFilters(augmented, { theme, topN, sinceYear, topicScope });
   deps.logger?.warn(
     `OpenAlex fallback added ${merged.length - primary.length} new seeds (final=${merged.length})`,
   );

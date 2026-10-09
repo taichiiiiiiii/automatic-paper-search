@@ -4,15 +4,20 @@
  * `_run_bfs_and_descendants`, `_add_cross_node_edges`.
  */
 
-import type { ClassifyPaperLike, LLMProvider } from "../../collect/llm/provider.js";
-import { deriveRelation, isFoundationalAncestor } from "../classify/classify.js";
+import type {
+  ClassifyPaperLike,
+  LLMProvider,
+  RelationClassification,
+} from "../../collect/llm/provider.js";
+import { type DerivedEdge, deriveRelation, isFoundationalAncestor } from "../classify/classify.js";
 import type { BuildCompletenessForExpansion } from "../shared/fetchRelated.js";
 import { type FetchRelatedDeps, fetchRelated } from "../shared/fetchRelated.js";
 import type { ThemeGraphNode } from "../shared/node.js";
-import { isTrending, makeEdge, type ThemeEdge } from "./edges.js";
+import { demoteLowInformationEdge, isTrending, makeEdge, type ThemeEdge } from "./edges.js";
 import { toThemeNode } from "./node.js";
 import type { ThemePaper } from "./openalexWork.js";
 import { filterOffTopicRefs } from "./seedFilters.js";
+import type { TopicScope } from "./topicScope.js";
 
 type Paper = ThemePaper;
 
@@ -43,6 +48,16 @@ export interface BFSResult {
   seedIds: string[];
   classifyAttempted: number;
   classifySucceeded: number;
+  /** R2-2b: LLM `classifyRelation` calls made / calls that returned
+   * nothing usable (null). A null makes `deriveRelation` keep its
+   * heuristic, which this module then demotes to `citation_heuristic`. */
+  llmCalls: number;
+  llmUnusable: number;
+  /** R2-2b: candidates the topic gate kept out of the graph, and the
+   * ones it let in only because >= `minSupport` on-topic nodes link to
+   * them (deferred pass). Both 0 when no `topicScope` is given. */
+  topicRejected: number;
+  topicAdmittedBySupport: number;
 }
 
 export interface RunBfsOptions {
@@ -53,6 +68,55 @@ export interface RunBfsOptions {
   llmStrict: string;
   /** Overrides `new Date().getUTCFullYear()` for deterministic tests (#68 trending badge). */
   currentYear?: number;
+  /** R2-2b admission gate. `null`/omitted = admit every candidate (the
+   * pre-R2-2b behaviour, kept for library callers and old tests). */
+  topicScope?: TopicScope | null;
+}
+
+/** Counts LLM calls / unusable answers around a provider. */
+interface LlmCounter {
+  calls: number;
+  unusable: number;
+  classify?: (a: ClassifyPaperLike, b: ClassifyPaperLike) => Promise<RelationClassification | null>;
+}
+
+function llmCounter(provider: LLMProvider | null): LlmCounter {
+  const counter: LlmCounter = { calls: 0, unusable: 0 };
+  if (provider) {
+    counter.classify = async (a, b) => {
+      counter.calls += 1;
+      const result = await provider.classifyRelation(a, b);
+      if (result === null) counter.unusable += 1;
+      return result;
+    };
+  }
+  return counter;
+}
+
+/** `deriveRelation` + the R2-2b demotion of `year_cite` guesses. */
+async function classifyPair(
+  intentRecord: Record<string, unknown>,
+  parent: Record<string, unknown>,
+  child: Record<string, unknown>,
+  counter: LlmCounter,
+  llmStrict: string,
+): Promise<DerivedEdge | null> {
+  const cls = await deriveRelation(intentRecord as ClassifyPaperLike, {
+    parent: parent as ClassifyPaperLike,
+    child: child as ClassifyPaperLike,
+    classifyRelation: counter.classify,
+    strictMode: llmStrict as "off" | "ambiguous" | "all",
+  });
+  return cls === null ? null : demoteLowInformationEdge(cls, parent, child);
+}
+
+/** A candidate the topic gate turned away, with every on-topic admitted
+ * node that linked to it — admitted later if that reaches `minSupport`. */
+interface PendingCandidate {
+  paper: Paper;
+  /** anchor id -> direction ("parent": candidate is cited by anchor;
+   * "child": candidate cites anchor) and the anchor paper. */
+  links: Map<string, { direction: "parent" | "child"; anchor: Paper }>;
 }
 
 /** BFS ancestor traversal up to `depth` hops, then a 1-hop descendants
@@ -61,6 +125,14 @@ export interface RunBfsOptions {
  * BFS direction conventions:
  *  - ancestors: parent (cited, carries intents) -> current (citing)
  *  - descendants: seed (older, focus) -> child (newer, carries intents)
+ *
+ * R2-2b topic gate (only with `options.topicScope`): a candidate joins
+ * the graph only if it mentions the theme (title/abstract/TL;DR), is on
+ * the foundational allowlist, or — in a deferred pass after the BFS —
+ * at least `minSupport` distinct already-admitted on-topic nodes link to
+ * it. Support-admitted nodes get their edges but are not expanded
+ * further, so they cannot open a new off-topic neighbourhood. The gate
+ * runs before the width cut, so on-topic candidates fill the width.
  */
 export async function runBfsAndDescendants(
   seeds: readonly Paper[],
@@ -69,22 +141,53 @@ export async function runBfsAndDescendants(
   completeness?: BuildCompletenessForExpansion | null,
 ): Promise<BFSResult> {
   const { depth, width, maxSeedCite, provider, llmStrict } = options;
+  const scope = options.topicScope ?? null;
   const currentYear = options.currentYear ?? new Date().getUTCFullYear();
+  const counter = llmCounter(provider);
 
   const nodes = new Map<string, ThemeGraphNode>();
   const edges: ThemeEdge[] = [];
 
   const seedIds: string[] = [];
   const frontier: [Paper, number][] = [];
+  /** Admitted nodes that may lend support (on-topic seeds + nodes
+   * admitted because they match the theme). */
+  const onTopic = new Set<string>();
   for (const seed of seeds) {
     const sid = seed.paperId;
     nodes.set(sid, toThemeNode(seed, { focus: true, trending: isTrending(seed, currentYear) }));
     seedIds.push(sid);
     frontier.push([seed, 0]);
+    if (scope === null || scope.isOnTopic(seed)) onTopic.add(sid);
   }
 
   let classifyAttempted = 0;
   let classifySucceeded = 0;
+  const pending = new Map<string, PendingCandidate>();
+
+  /** Gate one candidate seen from `anchor`. Returns true when it may be
+   * used now (already in the graph, or admitted). */
+  const gate = (candidate: Paper, anchor: Paper, direction: "parent" | "child"): boolean => {
+    const cid = candidate.paperId;
+    if (scope === null || nodes.has(cid)) return true;
+    let entry = pending.get(cid);
+    if (onTopic.has(anchor.paperId)) {
+      if (!entry) {
+        entry = { paper: candidate, links: new Map() };
+        pending.set(cid, entry);
+      }
+      if (!entry.links.has(anchor.paperId)) {
+        entry.links.set(anchor.paperId, { direction, anchor });
+      }
+    }
+    // Support is only granted in the deferred pass, so that a candidate's
+    // edges are created exactly once, from every supporting anchor.
+    const why = scope.admits(candidate, 0);
+    if (why === null) return false;
+    pending.delete(cid);
+    if (why === "topic") onTopic.add(cid);
+    return true;
+  };
 
   const visited = new Set<string>(seedIds);
   while (frontier.length > 0) {
@@ -100,6 +203,7 @@ export async function runBfsAndDescendants(
     );
     allParents = allParents.filter((p) => p.abstract);
     allParents = filterOffTopicRefs(allParents, { maxSeedCite });
+    if (scope !== null) allParents = allParents.filter((p) => gate(p, current, "parent"));
 
     const influential = allParents.filter((p) => p._is_influential !== false);
     const nonInfluential = allParents.filter((p) => p._is_influential === false);
@@ -118,12 +222,7 @@ export async function runBfsAndDescendants(
         nodes.set(pid, toThemeNode(parent, { trending: isTrending(parent, currentYear) }));
       }
       classifyAttempted += 1;
-      const cls = await deriveRelation(parent as ClassifyPaperLike, {
-        parent: parent as ClassifyPaperLike,
-        child: current as ClassifyPaperLike,
-        classifyRelation: provider ? (a, b) => provider.classifyRelation(a, b) : undefined,
-        strictMode: llmStrict as "off" | "ambiguous" | "all",
-      });
+      const cls = await classifyPair(parent, parent, current, counter, llmStrict);
       if (cls !== null) {
         classifySucceeded += 1;
         edges.push(
@@ -152,6 +251,9 @@ export async function runBfsAndDescendants(
     let allChildren = await fetchRelated(sid, "citations", descWidth * 4, deps, completeness);
     allChildren = allChildren.filter((c) => c.abstract);
     allChildren = filterOffTopicRefs(allChildren, { maxSeedCite });
+    if (scope !== null) {
+      allChildren = allChildren.filter((c) => c.paperId === sid || gate(c, seed, "child"));
+    }
     const influential = allChildren.filter((c) => c._is_influential !== false);
     const nonInfluential = allChildren.filter((c) => c._is_influential === false);
     const children = [
@@ -165,12 +267,7 @@ export async function runBfsAndDescendants(
       if (!nodes.has(cid)) {
         nodes.set(cid, toThemeNode(child, { trending: isTrending(child, currentYear) }));
       }
-      const cls = await deriveRelation(child as ClassifyPaperLike, {
-        parent: seed as ClassifyPaperLike,
-        child: child as ClassifyPaperLike,
-        classifyRelation: provider ? (a, b) => provider.classifyRelation(a, b) : undefined,
-        strictMode: llmStrict as "off" | "ambiguous" | "all",
-      });
+      const cls = await classifyPair(child, seed, child, counter, llmStrict);
       if (cls === null) continue;
       if (edges.some((e) => e.src === sid && e.dst === cid)) continue;
       edges.push(
@@ -190,7 +287,55 @@ export async function runBfsAndDescendants(
     deps.logger?.warn(`descendants pass added ${descAdded} edges (seed -> newer citing papers)`);
   }
 
-  return { nodes, edges, seedIds, classifyAttempted, classifySucceeded };
+  // R2-2b deferred pass: candidates without a theme match that enough
+  // on-topic nodes link to. Iterated in first-seen order (deterministic).
+  let topicAdmittedBySupport = 0;
+  let topicRejected = 0;
+  if (scope !== null) {
+    for (const [cid, entry] of pending) {
+      if (nodes.has(cid)) continue;
+      if (scope.admits(entry.paper, entry.links.size) === null) {
+        topicRejected += 1;
+        continue;
+      }
+      nodes.set(cid, toThemeNode(entry.paper, { trending: isTrending(entry.paper, currentYear) }));
+      topicAdmittedBySupport += 1;
+      for (const { direction, anchor } of entry.links.values()) {
+        const [parent, child] =
+          direction === "parent" ? [entry.paper, anchor] : [anchor, entry.paper];
+        if (direction === "parent") classifyAttempted += 1;
+        const cls = await classifyPair(entry.paper, parent, child, counter, llmStrict);
+        if (cls === null) continue;
+        if (direction === "parent") classifySucceeded += 1;
+        if (edges.some((e) => e.src === parent.paperId && e.dst === child.paperId)) continue;
+        edges.push(
+          makeEdge(cls, {
+            srcId: parent.paperId,
+            dstId: child.paperId,
+            parent,
+            child,
+            intentRecord: entry.paper,
+            provider,
+          }),
+        );
+      }
+    }
+    deps.logger?.warn(
+      `topic gate: kept ${topicRejected} off-topic candidate(s) out; admitted ${topicAdmittedBySupport} by support (>= ${scope.options.minSupport} on-topic links)`,
+    );
+  }
+
+  return {
+    nodes,
+    edges,
+    seedIds,
+    classifyAttempted,
+    classifySucceeded,
+    llmCalls: counter.calls,
+    llmUnusable: counter.unusable,
+    topicRejected,
+    topicAdmittedBySupport,
+  };
 }
 
 export interface AddCrossNodeEdgesOptions {
@@ -210,6 +355,7 @@ export async function addCrossNodeEdges(
   completeness?: BuildCompletenessForExpansion | null,
 ): Promise<number> {
   const { provider, strictMode, cohortMinYear = null } = options;
+  const counter = llmCounter(provider);
   const seedIds = options.seedIds ?? new Set<string>();
   const existing = new Set(edges.map((e) => `${e.src}\u0000${e.dst}`));
   const nodeIds = new Set(nodes.keys());
@@ -238,12 +384,13 @@ export async function addCrossNodeEdges(
       const edgeKey = `${refId}\u0000${citingId}`;
       if (existing.has(edgeKey)) continue;
       const citingNode = nodes.get(citingId);
-      const cls = await deriveRelation(ref as ClassifyPaperLike, {
-        parent: ref as ClassifyPaperLike,
-        child: citingNode as unknown as ClassifyPaperLike,
-        classifyRelation: provider ? (a, b) => provider.classifyRelation(a, b) : undefined,
-        strictMode: strictMode as "off" | "ambiguous" | "all",
-      });
+      const cls = await classifyPair(
+        ref,
+        ref,
+        citingNode as unknown as Record<string, unknown>,
+        counter,
+        strictMode,
+      );
       if (cls === null) continue;
       edges.push(
         makeEdge(cls, {

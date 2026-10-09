@@ -113,6 +113,65 @@ export function classificationProvenance(
   });
 }
 
+// ---- R2-2b: low-information citation edges ----
+
+/** Confidence of an edge backed only by "B cites A" plus the two years —
+ * same value the conference builder uses for its `citation_heuristic`
+ * edges, and below every real classifier's output (context patterns
+ * 0.75+, intent map / year-cite 0.7, LLM floor 0.4 with typical 0.8). */
+export const CITATION_HEURISTIC_CONFIDENCE = 0.4;
+
+const CITATION_TITLE_TRIM = 60;
+
+function trimTitle(paper: PaperLike): string {
+  const raw = typeof paper.title === "string" ? paper.title.trim() : "";
+  if (!raw) return "引用元の論文";
+  const cps = Array.from(raw.replaceAll("「", "").replaceAll("」", ""));
+  return cps.length > CITATION_TITLE_TRIM
+    ? `${cps.slice(0, CITATION_TITLE_TRIM - 1).join("")}…`
+    : cps.join("");
+}
+
+function yearOf(paper: PaperLike): string {
+  return typeof paper.year === "number" && Number.isInteger(paper.year) ? String(paper.year) : "?";
+}
+
+/**
+ * Demote the year/citation-count guess to what it really is: a citation
+ * link of unknown kind. `deriveRelationHeuristic`'s `year_cite` branch
+ * labels a pair "contrasts" when the two papers are ≤1 year apart with
+ * similar citation counts, and "successor" when 1–5 years apart —
+ * neither says anything about the content ("SuperGlue contrasts Text Data
+ * Augmentation"). Under `--llm-strict ambiguous` with OpenAlex data
+ * (which carries no S2 intents, so every pair is "ambiguous") the LLM is
+ * asked, but when it returns nothing usable (quota latch, HTTP error,
+ * malformed JSON) `applyLlmClassification` keeps the heuristic verbatim.
+ * That is how a whole lineage ended up as 0.7 successor/contrasts.
+ *
+ * Here such an edge becomes `successor` at
+ * {@link CITATION_HEURISTIC_CONFIDENCE} with provenance method
+ * `citation_heuristic` (already in the v1 contract's closed set, and what
+ * the conference builder emits for the same evidence), so `contrasts`
+ * only ever comes from a real classification (LLM or citation-context
+ * pattern) and the quality audit can count these edges through
+ * `meta.provenance_breakdown`. Every other classification passes through.
+ */
+export function demoteLowInformationEdge(
+  classification: DerivedEdge,
+  parent: PaperLike,
+  child: PaperLike,
+): DerivedEdge {
+  if (classification.provenance !== "year_cite") return classification;
+  return {
+    relation: "successor",
+    confidence: CITATION_HEURISTIC_CONFIDENCE,
+    rationale:
+      `「${trimTitle(child)}」(${yearOf(child)}) は「${trimTitle(parent)}」(${yearOf(parent)}) を引用している` +
+      "（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+    provenance: "citation_heuristic",
+  };
+}
+
 export interface ThemeEdge {
   src: string;
   dst: string;

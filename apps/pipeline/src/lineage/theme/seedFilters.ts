@@ -244,6 +244,47 @@ export function aliasesFor(theme: string, path?: string): string[] {
   return loadThemeAliases(path)[theme.trim().toLowerCase()] ?? [];
 }
 
+// ---- R2-2b topic-scope terms (`_topic_terms` in theme_aliases.json) ----
+
+let cachedTopicTerms: { path: string; data: ThemeAliasMap } | undefined;
+
+/** Extra phrases that count as "about this theme" for the topic scope
+ * (`topicScope.ts`), from the `_topic_terms` object in
+ * `theme_aliases.json`: lower-cased theme string -> phrases. Unlike the
+ * aliases these are NOT searched — they only widen what the BFS
+ * admission gate and the seed-role test accept (e.g. "graph
+ * convolutional network" for "Graph Neural Network"). Kept in the alias
+ * file (whose loader already skips `_`-prefixed keys) so the data/config
+ * file set, and with it the data-move rule table, stays unchanged.
+ * Missing/malformed -> no extra terms. */
+export function loadTopicTerms(path: string = defaultThemeAliasesPath()): ThemeAliasMap {
+  if (cachedTopicTerms?.path === path) return cachedTopicTerms.data;
+  let out: ThemeAliasMap = {};
+  try {
+    const raw: unknown = JSON.parse(readFileSync(path, "utf-8"));
+    const terms =
+      raw !== null && typeof raw === "object" && !Array.isArray(raw)
+        ? (raw as Record<string, unknown>)._topic_terms
+        : undefined;
+    if (terms !== null && typeof terms === "object" && !Array.isArray(terms)) {
+      for (const [k, v] of Object.entries(terms as Record<string, unknown>)) {
+        if (k.startsWith("_") || !Array.isArray(v)) continue;
+        const clean = v.filter((s): s is string => typeof s === "string" && s.trim() !== "");
+        if (clean.length > 0) out[k.trim().toLowerCase()] = clean;
+      }
+    }
+  } catch {
+    out = {};
+  }
+  cachedTopicTerms = { path, data: out };
+  return out;
+}
+
+/** `_topic_terms` phrases for `theme` (lower-cased, trimmed key). */
+export function topicTermsFor(theme: string, path?: string): string[] {
+  return loadTopicTerms(path)[theme.trim().toLowerCase()] ?? [];
+}
+
 // ---- #209 Tier 1 per-theme keyword blacklist (LIN-31) ----
 
 type ThemeBlacklistMap = Record<string, readonly string[]>;
@@ -310,4 +351,5 @@ export function _resetSeedFilterCachesForTests(): void {
   cachedDenylist = undefined;
   cachedAliases = undefined;
   cachedBlacklist = undefined;
+  cachedTopicTerms = undefined;
 }
