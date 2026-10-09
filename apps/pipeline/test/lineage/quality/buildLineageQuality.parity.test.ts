@@ -19,15 +19,13 @@
  * helpers, so this test follows the move automatically once `LAYOUT_MODE`
  * flips, with no change here.
  *
- * `AS_OF` stays the pinned instant baked into `docs/lineage-quality-v1.json`'s
- * own `as_of` field (confirmed below) -- that field is NOT derived from
- * wall-clock time by the builder (it's an input), so keeping it hardcoded
- * here reproduces the committed artifact's `as_of`/freshness-derived
- * `audit_status` values exactly, matching this test's original as-of
- * handling. If a future promotion legitimately re-pins `as_of` to a new
- * instant, this constant must be updated to match (not a drift risk this
- * test can absorb on its own, same as any other promoter-coordinated
- * input).
+ * The as-of instant is read from the committed artifact's own `as_of`
+ * field. The builder takes it as an input (not wall-clock), and every
+ * promotion re-pins it to the promote time (`promote.ts`, `asOf`), so a
+ * hardcoded constant broke the promoted tree's own test run on the first
+ * real promotion (theme-on-demand run 37947503311). Reading it back keeps
+ * the invariant exact: rebuilding at the artifact's instant must reproduce
+ * the artifact byte for byte.
  */
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -40,15 +38,22 @@ import {
 } from "../../../src/lineage/quality/buildLineageQuality.js";
 
 const LAYOUT = layoutFor(getRepoRoot());
-const AS_OF = "2026-08-30T00:00:00Z";
+const COMMITTED_PATH = join(LAYOUT.published, "lineage-quality-v1.json");
 
 describe("buildManifest invariant: live published inputs reproduce the committed lineage-quality-v1.json", () => {
-  it("byte-equals the committed artifact when rebuilt from the live inputs at the pinned --as-of instant", () => {
+  it("byte-equals the committed artifact when rebuilt from the live inputs at its own as_of instant", () => {
+    const expected = readFileSync(COMMITTED_PATH);
+    const asOf: unknown = JSON.parse(expected.toString("utf8")).as_of;
+    expect(typeof asOf).toBe("string");
     const fixtures = JSON.parse(readFileSync(auditFixtures(LAYOUT), "utf8"));
     const policy = JSON.parse(readFileSync(qualityPolicy(LAYOUT), "utf8"));
-    const manifest = buildManifest({ docsRoot: LAYOUT.published, asOf: AS_OF, fixtures, policy });
+    const manifest = buildManifest({
+      docsRoot: LAYOUT.published,
+      asOf: asOf as string,
+      fixtures,
+      policy,
+    });
     const actual = manifestPayload(manifest);
-    const expected = readFileSync(join(LAYOUT.published, "lineage-quality-v1.json"));
     expect(actual.equals(expected)).toBe(true);
   });
 });
