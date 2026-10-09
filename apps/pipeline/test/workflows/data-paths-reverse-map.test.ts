@@ -18,11 +18,17 @@
  */
 import { execFileSync } from "node:child_process";
 import { LAYOUT_MODE } from "@paperpilot/core/layout";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { reverseMapDataPath } from "../../src/release/dataMove/carryBack.js";
 import { buildPlan } from "../../src/release/dataMove/plan.js";
 import { sharedPathsForMode } from "../../src/release/promote.js";
 import { EXPECTED_WORKFLOW_FILES, jobsOf, readAllWorkflows, type YamlDoc } from "./helpers.js";
+
+// This file runs real subprocesses (tsx/node/git). Each spawn is
+// sub-second alone but can take seconds under `pnpm -r test`'s parallel
+// load (or a loaded CI runner), so vitest's 5 s test / 10 s hook defaults
+// flake. Raised for this file only; explicit per-test timeouts still win.
+vi.setConfig({ testTimeout: 30_000, hookTimeout: 30_000 });
 
 const P5_ONLY_PREFIXES = ["data/config/conference-copy/"];
 const WRITER_RE = /release\/cli\.ts\s+(commit-push|package|promote)\b/;

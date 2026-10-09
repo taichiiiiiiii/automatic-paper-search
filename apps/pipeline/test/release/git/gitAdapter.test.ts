@@ -7,8 +7,14 @@
 import { chmodSync, mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, expect, it } from "vitest";
+import { afterEach, expect, it, vi } from "vitest";
 import { createGitAdapter } from "../../../src/release/git/gitAdapter.js";
+
+// This file runs real subprocesses (tsx/node/git). Each spawn is
+// sub-second alone but can take seconds under `pnpm -r test`'s parallel
+// load (or a loaded CI runner), so vitest's 5 s test / 10 s hook defaults
+// flake. Raised for this file only; explicit per-test timeouts still win.
+vi.setConfig({ testTimeout: 30_000, hookTimeout: 30_000 });
 
 let fakeBinDir: string | undefined;
 
