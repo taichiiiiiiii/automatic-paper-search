@@ -42,6 +42,13 @@ function notFoundResponse(): { ok: false; status: 404; json: () => Promise<unkno
   return { ok: false, status: 404, json: async () => null };
 }
 
+// Every waitFor below polls past a 120 ms input debounce plus async fetch
+// handling. Testing Library's 1 s default (and vitest's 5 s test default)
+// is too tight when jsdom shares the host with `pnpm -r test`'s other
+// workers; a longer *wait* changes nothing about what is asserted.
+const WAIT = { timeout: 10_000 };
+vi.setConfig({ testTimeout: 30_000 });
+
 beforeEach(() => {
   window.history.replaceState(null, "", "/");
 });
@@ -73,7 +80,7 @@ describe("SearchArea: search index failure", () => {
     await waitFor(() => {
       const retry = screen.getByRole("button", { name: RETRY_LABEL });
       expect(retry.hasAttribute("hidden")).toBe(false);
-    });
+    }, WAIT);
     expect(screen.getByRole("status").textContent).toBe(LOAD_ERROR_MESSAGE);
     expect(container.textContent).not.toContain("0 件");
   });
@@ -99,7 +106,7 @@ describe("SearchArea: paper-id block failure", () => {
     await waitFor(() => {
       const retry = screen.getByRole("button", { name: RETRY_LABEL });
       expect(retry.hasAttribute("hidden")).toBe(false);
-    });
+    }, WAIT);
     expect(screen.getByRole("status").textContent).toBe(LOAD_ERROR_MESSAGE);
     // Scoped to the suggestions listbox: the facet <select>s legitimately
     // populate their own native <option>s from the loaded index before
@@ -176,24 +183,28 @@ describe("SearchArea: out-of-order responses", () => {
     render(<SearchArea />);
 
     await typeQuery("alpha");
-    await waitFor(() =>
-      expect(fetchMock).toHaveBeenCalledWith(
-        expect.stringContaining("0001.json"),
-        expect.anything(),
-      ),
+    await waitFor(
+      () =>
+        expect(fetchMock).toHaveBeenCalledWith(
+          expect.stringContaining("0001.json"),
+          expect.anything(),
+        ),
+      WAIT,
     );
 
     await typeQuery("beta");
-    await waitFor(() =>
-      expect(fetchMock).toHaveBeenCalledWith(
-        expect.stringContaining("0000.json"),
-        expect.anything(),
-      ),
+    await waitFor(
+      () =>
+        expect(fetchMock).toHaveBeenCalledWith(
+          expect.stringContaining("0000.json"),
+          expect.anything(),
+        ),
+      WAIT,
     );
 
     // Resolve the *later* query's (beta's) block first.
     block0.resolve();
-    await waitFor(() => expect(screen.getByText("Beta Quantum Networks")).toBeTruthy());
+    await waitFor(() => expect(screen.getByText("Beta Quantum Networks")).toBeTruthy(), WAIT);
 
     // Now let the *earlier* query's (alpha's) response arrive late.
     block1.resolve();
