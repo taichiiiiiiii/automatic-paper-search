@@ -251,6 +251,17 @@ jobs:
     outputs:
       deployable: ${{ steps.freshness.outputs.deployable }}
     steps:
+      # deploy below is gated on develop and would otherwise just skip green,
+      # after callers already promoted data to develop. Fail loudly here,
+      # in a job that holds no Cloudflare secrets.
+      - name: Refuse non-develop refs
+        env:
+          REF: ${{ github.ref }}
+        run: |
+          if [ "$REF" != "refs/heads/develop" ]; then
+            echo "::error::pages-release deploys only from develop (got $REF); data may already be on develop, re-run from develop"
+            exit 1
+          fi
       - name: Checkout exact release source with branch history
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:

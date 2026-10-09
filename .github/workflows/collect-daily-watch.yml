@@ -23,6 +23,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          # commit-push rebases HEAD onto origin/develop and pushes HEAD:develop;
+          # pin develop so a dispatch from another branch cannot push its commits.
+          ref: develop
 
       - name: Setup pnpm
         uses: ./.github/actions/setup-pnpm

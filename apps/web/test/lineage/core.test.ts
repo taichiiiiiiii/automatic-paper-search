@@ -831,9 +831,12 @@ describe("the real published quality manifest stays fail-closed", () => {
     expect(publicQuality).not.toBeNull();
   });
 
-  it("all 10 conference artifacts remain fail closed until their audits pass", () => {
+  // Counts are lower bounds, not exact: conference-on-demand and the theme
+  // workflows add rows, and promote reruns this suite on the promoted tree.
+  // The invariant is that every row stays fail closed until audited.
+  it("all conference artifacts (at least the original 10) remain fail closed until their audits pass", () => {
     const rows = publicQuality?.collections.filter((row) => row.kind === "conference") ?? [];
-    expect(rows).toHaveLength(10);
+    expect(rows.length).toBeGreaterThanOrEqual(10);
     expect(rows.every((row) => !qualityRowIsEligible(row))).toBe(true);
   });
 
@@ -843,9 +846,9 @@ describe("the real published quality manifest stays fail-closed", () => {
     expect(rows.every((row) => !qualityRowIsEligible(row))).toBe(true);
   });
 
-  it("all 3 legacy theme artifacts remain fail closed until human-reviewed fixtures", () => {
+  it("all theme artifacts (at least the 3 legacy ones) remain fail closed until human-reviewed fixtures", () => {
     const rows = publicQuality?.collections.filter((row) => row.kind === "theme") ?? [];
-    expect(rows).toHaveLength(3);
+    expect(rows.length).toBeGreaterThanOrEqual(3);
     expect(rows.every((row) => !qualityRowIsEligible(row))).toBe(true);
   });
 });
