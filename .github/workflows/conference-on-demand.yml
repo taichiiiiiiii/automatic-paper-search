@@ -230,6 +230,10 @@ jobs:
       contents: read
       deployments: write
     uses: ./.github/workflows/pages-release.yml
+    # Environment secrets (cloudflare-pages-deploy) reach jobs in a called
+    # workflow only when the caller inherits secrets; without this the
+    # deploy job sees an empty CLOUDFLARE_API_TOKEN (Merge B run 37945562305).
+    secrets: inherit
     with:
       source_sha: ${{ needs.promote.outputs.source_sha }}
       release_kind: normal
