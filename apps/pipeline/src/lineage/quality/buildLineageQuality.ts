@@ -196,6 +196,13 @@ function edgeConfidence(edge: Record<string, unknown>): unknown {
   return "confidence" in edge ? edge.confidence : edge.conf;
 }
 
+/**
+ * Golden-fixture sample policy (LIN-51): `sample_labels` holds at most
+ * this many rows and at least `min(SAMPLE_LIMIT, node count)` rows with
+ * distinct node ids; at most 10% of the labelled samples may be off-topic.
+ */
+export const SAMPLE_LIMIT = 20;
+
 export interface GoldenFixture {
   input_sha256?: unknown;
   reviewer?: unknown;
@@ -453,7 +460,14 @@ function artifactChecks(
       .filter((id) => !labelledFocus.has(id))
       .sort(codepointCompare);
     fixtureFailures.push(...missingFocus.map((id) => `focus:${id}`));
-    if ((sampleLabels as unknown[]).length > 20) fixtureFailures.push("sample-limit-exceeded");
+    // Sample policy: at most SAMPLE_LIMIT rows, and at least
+    // min(SAMPLE_LIMIT, node count) rows with DISTINCT valid node_ids.
+    // Without the floor an empty (or one-node, repeated) sample list
+    // vacuously satisfied the <=10% off-topic rule below and read as a
+    // reviewed graph.
+    if ((sampleLabels as unknown[]).length > SAMPLE_LIMIT) {
+      fixtureFailures.push("sample-limit-exceeded");
+    }
     const invalidSamples = (sampleLabels as unknown[])
       .filter(
         (row) =>
@@ -461,6 +475,23 @@ function artifactChecks(
       )
       .map((row) => String(isMapping(row) ? row.node_id : row));
     fixtureFailures.push(...invalidSamples.map((id) => `sample:${id}`));
+    const sampledIds = new Set<string>();
+    const duplicateSamples = new Set<string>();
+    for (const row of sampleLabels as unknown[]) {
+      if (!isMapping(row) || !idSet.has(row.node_id as string)) continue;
+      const id = row.node_id as string;
+      if (sampledIds.has(id)) duplicateSamples.add(id);
+      sampledIds.add(id);
+    }
+    fixtureFailures.push(
+      ...Array.from(duplicateSamples)
+        .sort(codepointCompare)
+        .map((id) => `sample-duplicate:${id}`),
+    );
+    const requiredSamples = Math.min(SAMPLE_LIMIT, idSet.size);
+    if (sampledIds.size < requiredSamples) {
+      fixtureFailures.push(`sample-coverage:${sampledIds.size}<${requiredSamples}`);
+    }
     const labelledSamples = (sampleLabels as unknown[]).filter(
       (row): row is Record<string, unknown> => isMapping(row),
     );
