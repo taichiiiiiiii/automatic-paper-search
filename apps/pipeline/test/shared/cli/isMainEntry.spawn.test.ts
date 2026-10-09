@@ -27,7 +27,13 @@ import { mkdtempSync, rmSync, symlinkSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+// This file runs real subprocesses (tsx/node/git). Each spawn is
+// sub-second alone but can take seconds under `pnpm -r test`'s parallel
+// load (or a loaded CI runner), so vitest's 5 s test / 10 s hook defaults
+// flake. Raised for this file only; explicit per-test timeouts still win.
+vi.setConfig({ testTimeout: 30_000, hookTimeout: 30_000 });
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 // apps/pipeline/test/shared/cli -> repo root (5 levels up).

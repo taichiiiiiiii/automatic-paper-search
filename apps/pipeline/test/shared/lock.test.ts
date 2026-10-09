@@ -19,6 +19,12 @@ import type { Mock } from "vitest";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { acquireLock, releaseLock, withLock } from "../../src/shared/lock.js";
 
+// This file runs real subprocesses (tsx/node/git). Each spawn is
+// sub-second alone but can take seconds under `pnpm -r test`'s parallel
+// load (or a loaded CI runner), so vitest's 5 s test / 10 s hook defaults
+// flake. Raised for this file only; explicit per-test timeouts still win.
+vi.setConfig({ testTimeout: 30_000, hookTimeout: 30_000 });
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 // apps/pipeline/test/shared -> repo root (4 levels up), matching
 // test/collect/cli.spawn.test.ts's own REPO_ROOT derivation.
@@ -231,12 +237,14 @@ describe("acquireLock / releaseLock", () => {
   it("a stale lock file that fails to read with EACCES (not ENOENT) rejects promptly instead of busy-spinning forever", () => {
     const dir = tmpDir();
     const lockPath = join(dir, "x.lock");
-    const started = Date.now();
     let output: { code: number | null; stdout: string };
     try {
       const stdout = execFileSync(TSX, [STALE_BRANCH_CHILD, lockPath, "200"], {
         encoding: "utf-8",
-        timeout: 5_000, // the kill timer: a regression must not hang this test forever
+        // The kill timer: a regression must not hang this test forever. Kept
+        // well above tsx startup under load; the timing bound below is
+        // measured inside the child, so a generous kill timer loosens nothing.
+        timeout: 20_000,
       });
       output = { code: 0, stdout };
     } catch (e) {
@@ -248,13 +256,14 @@ describe("acquireLock / releaseLock", () => {
       }
       output = { code: err.status, stdout: String(err.stdout ?? "") };
     }
-    const elapsedMs = Date.now() - started;
-
     expect(output.stdout).toContain("REJECTED");
-    // Generous bound well under the 5s kill timer, but tight enough that
-    // a busy-spin (which would run until killed) cannot pass it.
-    expect(elapsedMs).toBeLessThan(2_000);
-  }, 10_000);
+    // acquireLock's own wall time (measured in the child, excluding process
+    // startup): generous against the 200 ms lockTimeoutMs, but tight enough
+    // that a busy-spin (which would run until killed) cannot pass it.
+    const elapsed = /ELAPSED_MS:(\d+)/.exec(output.stdout);
+    expect(elapsed).not.toBeNull();
+    expect(Number(elapsed?.[1])).toBeLessThan(2_000);
+  });
 });
 
 describe("withLock", () => {

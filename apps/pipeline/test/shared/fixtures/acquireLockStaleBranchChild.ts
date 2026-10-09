@@ -32,6 +32,9 @@ utimesSync(lockPath, old / 1000, old / 1000);
 // No read permission -> readFileSync(lockPath) throws EACCES, not ENOENT.
 chmodSync(lockPath, 0o000);
 
+// Timed here, around acquireLock alone, so the parent's bound does not
+// also absorb tsx/node startup (which can take seconds on a loaded host).
+const started = Date.now();
 acquireLock(lockPath, {
   staleLockMs: 10,
   lockTimeoutMs: Number(lockTimeoutMsRaw),
@@ -39,9 +42,11 @@ acquireLock(lockPath, {
 })
   .then((token) => {
     console.log(`ACQUIRED:${token}`);
+    console.log(`ELAPSED_MS:${Date.now() - started}`);
     process.exit(0);
   })
   .catch((e: unknown) => {
     console.log(`REJECTED:${(e as Error).message}`);
+    console.log(`ELAPSED_MS:${Date.now() - started}`);
     process.exit(1);
   });

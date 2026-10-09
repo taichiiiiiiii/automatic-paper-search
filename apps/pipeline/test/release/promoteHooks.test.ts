@@ -14,7 +14,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "nod
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { LAYOUT_MODE, layoutFor, relLayout } from "@paperpilot/core/layout";
-import { afterEach, beforeEach, expect, it } from "vitest";
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { createGitAdapter, git } from "../../src/release/git/gitAdapter.js";
 import { PromotionError, promote } from "../../src/release/promote.js";
 import {
@@ -26,6 +26,12 @@ import {
   type SpawnFn,
   validateCommandsFor,
 } from "../../src/release/promoteHooks.js";
+
+// This file runs real subprocesses (tsx/node/git). Each spawn is
+// sub-second alone but can take seconds under `pnpm -r test`'s parallel
+// load (or a loaded CI runner), so vitest's 5 s test / 10 s hook defaults
+// flake. Raised for this file only; explicit per-test timeouts still win.
+vi.setConfig({ testTimeout: 30_000, hookTimeout: 30_000 });
 
 const TREE = "/tmp/some-promoted-tree";
 const AS_OF = "2026-08-30T00:00:00Z";
