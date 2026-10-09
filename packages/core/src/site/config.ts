@@ -41,9 +41,9 @@ export const PAGES_PROJECT_NAME = "paperpilot";
  * must match whatever the user configures as "production" for the Pages
  * project, or the deploy lands as a non-production preview.
  *
- * Not yet confirmed against the project's setting (the CLI cannot read
- * it). A mismatch fails closed: the deploy lands as a preview and
- * `cf-deployment-id` finds no production deployment for the SHA.
+ * Matches the project's `production_branch` (checked via the API on
+ * 2026-10-09). A mismatch would fail closed: the deploy would land as a
+ * preview and `cf-deployment-id` would find no production deployment.
  */
 export const PAGES_PRODUCTION_BRANCH = "production";
 

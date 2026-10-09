@@ -23,7 +23,7 @@
 7. 切替（`p5/consolidate` を merge commit で取り込む = B + C）
 8. 観察と、Worker を戻せる期間の終わり
 
-> **値（2026-10-09 確定）**: Pages プロジェクト `paperpilot`、公開 origin `https://paperpilot.pages.dev`。本番ブランチ `production` はプロジェクト側の設定とまだ照合していない（違えば公開の段階で安全側に止まる）。値の置き場所は `packages/core/src/site/config.ts` と `.github/workflows/pages-release.yml`・`pages-rollback.yml` の env。
+> **値（2026-10-09 確定）**: Pages プロジェクト `paperpilot`、公開 origin `https://paperpilot.pages.dev`、本番ブランチ `production`（プロジェクトの `production_branch` と照合済み）。値の置き場所は `packages/core/src/site/config.ts` と `.github/workflows/pages-release.yml`・`pages-rollback.yml` の env。
 
 ## 記号
 
@@ -650,3 +650,5 @@ B 自身の 2 つの削除は `<mergeB>^1` の状態で戻ります。
 | 2026-10-09 | W4 | `/api/health`・CORS（ACAO 完全一致と `Vary: Origin`）・知らない origin の 403・既存テーマの `exists` がすべて合格 |
 | 2026-10-09 | W5 | 失敗。GitHub への dispatch が `401 Bad credentials`（`GH_DISPATCH_PAT` の失効。最後の成功は 2026-06-27）。`accepting=false` にして受付を止めた（503 `paused`）。☐ PAT を作り直して `wrangler secret put GH_DISPATCH_PAT` |
 | 2026-10-09 | P2 | `d7ace34` のビルドを `--branch=rehearsal` でプレビューに出した（https://rehearsal.paperpilot.pages.dev）。`validate smoke`（marker・byte 一致・404・転送）が合格。主要 6 ページの表示と meta CSP を確認 |
+| 2026-10-09 | W3（設定） | computer use でダッシュボードを操作。Workers Builds の root directory を `/apps/api` に、変数 `NODE_VERSION=22` を追加。Build command は空、Deploy command は `npx wrangler deploy`、プレビューブランチのビルドは元からオフ。ビルドの再実行はしていない（develop の `apps/api` は今動いている `p5/consolidate` 版と `wrangler.jsonc` などが違い、再実行すると本番 Worker が差し替わるため）。次に develop へ push したときに新しい設定でビルドされる |
+| 2026-10-09 | Pages 設定 | `paperpilot` の `production_branch` が `production` であることを API で確認。workflow の値と一致 |

@@ -14,7 +14,7 @@
 - 削除済み: `paperpilot/`（Python 一式）、`pyproject.toml`、`uv.lock`、Docker 一式（`Dockerfile`・`docker-compose.yml`・`docker/`・`containers/`）、`tools/`、`.github/scripts/`、旧 Worker `worker/`、ルートの `wrangler.jsonc`。
 - 🔴 **P5 切替の手順書（[`docs/migration/p5-runbook.md`](docs/migration/p5-runbook.md)）の「切替」の段階に来るまで、このブランチを `develop` に merge しない。** `develop` の本番は今も `worker/`（Cloudflare Workers Builds が自動デプロイ）と Python の workflow で動いている。merge すると本番の Worker と workflow が消える。
 - Phase W（Worker を apps/api に切り替える段階）は、`feat/ts-migration` を develop に入れた後（Merge A）、このブランチを merge する前に行う。切替後に旧 Worker を予備として使うことはしない（2026-10-08 の決定）。
-- 本番の値: Cloudflare Pages のプロジェクトは `paperpilot`、公開 origin は `https://paperpilot.pages.dev`（2026-10-09 確定）。本番ブランチ `production` はプロジェクト側の設定とまだ照合していない（違えば公開の段階で安全側に止まる）。値は `packages/core/src/site/config.ts` と `pages-release.yml`・`pages-rollback.yml` の env の 3 か所で揃える。
+- 本番の値: Cloudflare Pages のプロジェクトは `paperpilot`、公開 origin は `https://paperpilot.pages.dev`（2026-10-09 確定）。本番ブランチは `production`（プロジェクト設定と照合済み）。値は `packages/core/src/site/config.ts` と `pages-release.yml`・`pages-rollback.yml` の env の 3 か所で揃える。
 
 ---
 
