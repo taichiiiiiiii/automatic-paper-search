@@ -56,6 +56,12 @@ import { type IdentityAliasIndex, loadIdentityAliases, resolveAndDedupSeeds } fr
 import type { ThemePaper } from "./openalexWork.js";
 import { aliasesFor } from "./seedFilters.js";
 import { sanitizeTheme, themeLineagePath, themeSlug } from "./slug.js";
+import {
+  pickTopicalRoot,
+  type TopicPaperLike,
+  TopicScope,
+  type TopicScopeOptions,
+} from "./topicScope.js";
 
 /** Every full-method logger this pipeline's sub-modules ask for, built
  * once from whatever subset the caller supplies (missing methods
@@ -147,12 +153,21 @@ export function pruneEdgelessNodes<T extends { id: string; is_focus?: boolean }>
   return nodes.filter((node) => node.is_focus === true || touched.has(node.id));
 }
 
-/** Pick degree-desc / graph-ID-asc; never use input-order fallback. */
+/** Pick degree-desc / graph-ID-asc; never use input-order fallback.
+ *
+ * R2-2b: with `topical`, the root is instead the most central seed among
+ * those whose main subject is the theme (`pickTopicalRoot`: topic role
+ * first, then edges to on-topic nodes, then all edges, then graph ID).
+ * Raw degree alone rewarded the seed that dragged in the largest
+ * off-topic neighbourhood — SuperGlue (GNNs as a component of feature
+ * matching) became the GNN root through its SLAM/SfM/ScanNet references. */
 export function pickRootSeed(
   seedIds: readonly string[],
   cleanedEdges: readonly ThemeEdge[],
+  topical?: { scope: TopicScope; papers: ReadonlyMap<string, TopicPaperLike> },
 ): string | null {
   if (seedIds.length === 0) return null;
+  if (topical) return pickTopicalRoot(seedIds, cleanedEdges, topical.papers, topical.scope);
   const edgeCount = new Map<string, number>();
   for (const e of cleanedEdges) {
     edgeCount.set(e.src, (edgeCount.get(e.src) ?? 0) + 1);
@@ -190,6 +205,10 @@ export interface BuildThemeLineageOptions {
   /** When `false`, a 0-edge result throws `ZeroEdgeBuildError` instead of
    * being written. Defaults to `true` (today's library-caller default). */
   allowEdgeless?: boolean;
+  /** R2-2b topic-scope tunables (seed weighting, root choice, BFS
+   * admission gate); omitted fields take `DEFAULT_TOPIC_SCOPE_OPTIONS`.
+   * `{ gate: false }` turns the BFS admission gate off. */
+  topicScope?: Partial<TopicScopeOptions>;
 }
 
 /** All injected dependencies for one `buildThemeLineage` call. Not a
@@ -252,6 +271,7 @@ export async function buildThemeLineage(
     primarySource = "s2",
     allowIncomplete = false,
     allowEdgeless = true,
+    topicScope: topicScopeOptions = {},
   } = options;
 
   const sanitised = sanitizeTheme(theme);
@@ -294,12 +314,21 @@ export async function buildThemeLineage(
   }
 
   const keywords = [sanitised];
+  const topicScope = TopicScope.forTheme(sanitised, topicScopeOptions);
 
   const completeness: DiscoverSeedsCompleteness & BuildCompleteness =
     new BuildCompleteness() as unknown as DiscoverSeedsCompleteness & BuildCompleteness;
 
   let seeds = await discoverSeeds(
-    { keywords, topN: seedsCount, sinceYear, useOpenalexFallback, theme: sanitised, primarySource },
+    {
+      keywords,
+      topN: seedsCount,
+      sinceYear,
+      useOpenalexFallback,
+      theme: sanitised,
+      primarySource,
+      topicScope,
+    },
     netDeps,
     completeness,
   );
@@ -318,6 +347,7 @@ export async function buildThemeLineage(
           useOpenalexFallback,
           theme: sanitised,
           primarySource,
+          topicScope,
         },
         netDeps,
         aliasLedger as unknown as DiscoverSeedsCompleteness,
@@ -333,9 +363,11 @@ export async function buildThemeLineage(
         if (pid && !mergedById.has(pid)) mergedById.set(pid, s);
       }
     }
-    const ranked = [...mergedById.values()].sort(
-      (a, b) => (Number(b.citationCount) || 0) - (Number(a.citationCount) || 0),
-    );
+    // R2-2b: citation count weighted by topic role, so an alias search
+    // cannot re-promote a seed that only uses the theme as a component.
+    const weighted = (p: ThemePaper): number =>
+      (Number(p.citationCount) || 0) * topicScope.seedWeight(p);
+    const ranked = [...mergedById.values()].sort((a, b) => weighted(b) - weighted(a));
     seeds = ranked.slice(0, seedsCount);
   }
 
@@ -358,6 +390,7 @@ export async function buildThemeLineage(
       provider,
       llmStrict,
       currentYear: wallClockNow().getUTCFullYear(),
+      topicScope,
     },
     netDeps,
     completeness,
@@ -366,6 +399,13 @@ export async function buildThemeLineage(
   let edges: ThemeEdge[] = bfsResult.edges;
   let seedIds = bfsResult.seedIds;
   const { classifyAttempted, classifySucceeded } = bfsResult;
+  if (provider !== null && bfsResult.llmCalls > 0 && bfsResult.llmUnusable > 0) {
+    logger.warn(
+      `LLM classifier returned nothing usable for ${bfsResult.llmUnusable}/${bfsResult.llmCalls} BFS pair(s); ` +
+        "those pairs keep only their heuristic signal and year/citation guesses are emitted as " +
+        "citation_heuristic successor edges (confidence 0.4), never as contrasts",
+    );
+  }
 
   const crossAdded = await addCrossNodeEdges(
     nodes,
@@ -477,7 +517,10 @@ export async function buildThemeLineage(
     orderedEdges,
   );
 
-  const rootId = pickRootSeed([...focusIdSet].sort(codepointCompare), orderedEdges);
+  const rootId = pickRootSeed([...focusIdSet].sort(codepointCompare), orderedEdges, {
+    scope: topicScope,
+    papers: nodes as ReadonlyMap<string, TopicPaperLike>,
+  });
 
   const provenanceBreakdown: Record<string, number> = {};
   for (const e of orderedEdges) {

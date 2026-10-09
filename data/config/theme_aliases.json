@@ -1,5 +1,5 @@
 {
-  "_doc": "Optional alternate search keywords per theme. Used by build_theme_lineage.py to UNION additional canonical-name variants into the seed pool (#274 — was: \"fallback when primary returns 0\", which missed cases like \"Flash Attention\" vs the one-word \"FlashAttention\" canonical paper). Aliases are merged in parallel with the primary keyword, then the unified pool is re-ranked by citation count and capped at seeds_count. Keys are lower-cased theme strings (the same normalisation discover_seeds applies internally).",
+  "_doc": "Optional alternate search keywords per theme. Used by build_theme_lineage.py to UNION additional canonical-name variants into the seed pool (#274 — was: \"fallback when primary returns 0\", which missed cases like \"Flash Attention\" vs the one-word \"FlashAttention\" canonical paper). Aliases are merged in parallel with the primary keyword, then the unified pool is re-ranked by citation count and capped at seeds_count. Keys are lower-cased theme strings (the same normalisation discover_seeds applies internally). `_topic_terms` (R2-2b, design doc 40) is NOT searched: lower-cased theme -> extra phrases that also count as 'about this theme' for the topic scope (apps/pipeline/src/lineage/theme/topicScope.ts: seed role, root choice, BFS admission gate). The theme itself, its aliases, plural/space-less forms and a 3+ letter initialism are always included.",
   "speculative decoding": [
     "speculative sampling"
   ],
@@ -33,5 +33,46 @@
   "vision transformer": [
     "ViT image patches",
     "Vision Transformer image recognition"
-  ]
+  ],
+  "_topic_terms": {
+    "graph neural network": [
+      "graph convolutional network",
+      "graph convolution",
+      "graph attention network",
+      "message passing neural network",
+      "graph representation learning",
+      "graph embedding",
+      "network embedding",
+      "node embedding",
+      "deep learning on graphs",
+      "geometric deep learning",
+      "graph signal processing",
+      "signal processing on graphs",
+      "gcn"
+    ],
+    "mixture of experts": [
+      "sparsely gated",
+      "conditional computation",
+      "expert routing",
+      "routed experts",
+      "gating network",
+      "switch transformer"
+    ],
+    "vision transformer": [
+      "visual transformer",
+      "image transformer",
+      "transformers for image recognition",
+      "swin transformer",
+      "deit",
+      "data efficient image transformers"
+    ],
+    "flash attention": [
+      "io aware",
+      "memory efficient attention",
+      "efficient attention",
+      "exact attention",
+      "attention kernel",
+      "fused attention"
+    ]
+  }
 }

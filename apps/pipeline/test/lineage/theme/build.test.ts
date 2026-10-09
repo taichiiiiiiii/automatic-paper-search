@@ -355,7 +355,9 @@ describe("LIN-37 call site (build.ts:378): filterEdgesByRationale is actually ap
   it("drops a candidate edge whose LLM classification carries a 3-char rationale, then prunes the now edge-less non-focus endpoint", async () => {
     const seed = s2Paper("seed1", { title: "Short Rationale Theme Seed", cites: 100 });
     const parent = s2Paper("parent1", {
-      title: "Some Unrelated Earlier Parent Paper",
+      // Mentions the theme so the R2-2b topic gate admits it and the
+      // rationale filter (not the gate) is what removes the edge.
+      title: "Some Earlier Short Rationale Theme Parent Paper",
       year: 2015,
       cites: 50,
       arxivId: "2015.00002",
@@ -403,7 +405,8 @@ describe("pyFloat write-site (p4-followups #24, build.ts:535 edgeForJson)", () =
   it("the actual file buildThemeLineage writes contains the Python float literal for an exactly-1.0 LLM confidence", async () => {
     const seed = s2Paper("seed2", { title: "Pyfloat Write Site Theme Seed", cites: 100 });
     const parent = s2Paper("parent2", {
-      title: "Another Unrelated Earlier Parent Paper",
+      // Mentions the theme so the R2-2b topic gate admits it.
+      title: "An Earlier Pyfloat Write Site Theme Parent Paper",
       year: 2015,
       cites: 50,
       arxivId: "2015.00003",

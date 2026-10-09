@@ -150,7 +150,8 @@ describe("runThemeCli", () => {
     const parent = {
       citedPaper: {
         paperId: "parent1",
-        title: "Foundational method",
+        // Mentions the theme so the R2-2b topic gate admits it.
+        title: "Foundational method for Happy Path Theme",
         year: 2015,
         citationCount: 500,
         abstract: "a".repeat(80),

@@ -28,6 +28,7 @@ import { IncompleteBuildError } from "../fetch-state/completeness.js";
 import { buildProvider } from "../shared/providerFactory.js";
 import { type BuildThemeLineageDeps, buildThemeLineage, ZeroEdgeBuildError } from "./build.js";
 import { sanitizeTheme } from "./slug.js";
+import { DEFAULT_TOPIC_SCOPE_OPTIONS } from "./topicScope.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 // apps/pipeline/src/lineage/theme -> repo root (5 levels up).
@@ -45,6 +46,11 @@ export interface ThemeCliArgs {
   primarySource: "s2" | "openalex";
   allowIncomplete: boolean;
   autoExpand: boolean;
+  /** R2-2b: BFS admission gate on/off (`--no-topic-gate`). */
+  topicGate: boolean;
+  /** R2-2b: on-topic links needed to admit a candidate without a theme
+   * match (`--topic-min-support`, default 2). */
+  topicMinSupport: number;
 }
 
 export class CliArgError extends Error {}
@@ -69,6 +75,8 @@ const THEME_CLI_SPEC = {
   },
   "allow-incomplete": { type: "boolean" as const },
   "auto-expand": { type: "boolean" as const },
+  "no-topic-gate": { type: "boolean" as const },
+  "topic-min-support": { type: "int" as const, default: DEFAULT_TOPIC_SCOPE_OPTIONS.minSupport },
 };
 
 /**
@@ -100,6 +108,8 @@ export function parseArgs(argv: readonly string[]): ThemeCliArgs {
     primarySource: parsed["primary-source"] as "s2" | "openalex",
     allowIncomplete: parsed["allow-incomplete"] as boolean,
     autoExpand: parsed["auto-expand"] as boolean,
+    topicGate: !(parsed["no-topic-gate"] as boolean),
+    topicMinSupport: parsed["topic-min-support"] as number,
   };
 }
 
@@ -244,6 +254,11 @@ export async function runThemeCli(
     throw e;
   }
 
+  if (args.topicMinSupport < 1) {
+    process.stderr.write("error: --topic-min-support must be >= 1\n");
+    return 2;
+  }
+
   try {
     sanitizeTheme(args.theme);
   } catch (exc) {
@@ -269,6 +284,7 @@ export async function runThemeCli(
         allowIncomplete: args.allowIncomplete,
         // The CLI is the one caller that treats 0 edges as a failure.
         allowEdgeless: false,
+        topicScope: { gate: args.topicGate, minSupport: args.topicMinSupport },
       },
       deps,
     );

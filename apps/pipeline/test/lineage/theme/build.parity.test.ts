@@ -165,6 +165,10 @@ describe("buildThemeLineage <-> build_theme_lineage.py parity (OpenAlex-primary)
         width: 4,
         sinceYear: null,
         primarySource: "openalex",
+        // The Python golden output predates the R2-2b topic gate (its
+        // parent paper does not mention "Mamba"); parity pins the legacy
+        // traversal, the gate has its own tests (topicScope/bfs).
+        topicScope: { gate: false },
       },
       deps,
     );
@@ -194,6 +198,10 @@ describe("buildThemeLineage <-> build_theme_lineage.py parity (OpenAlex-primary)
         width: 4,
         sinceYear: null,
         primarySource: "openalex",
+        // The Python golden output predates the R2-2b topic gate (its
+        // parent paper does not mention "Mamba"); parity pins the legacy
+        // traversal, the gate has its own tests (topicScope/bfs).
+        topicScope: { gate: false },
       },
       deps,
     );
@@ -235,6 +243,10 @@ describe("buildThemeLineage <-> build_theme_lineage.py parity (OpenAlex-primary)
         width: 4,
         sinceYear: null,
         primarySource: "openalex",
+        // The Python golden output predates the R2-2b topic gate (its
+        // parent paper does not mention "Mamba"); parity pins the legacy
+        // traversal, the gate has its own tests (topicScope/bfs).
+        topicScope: { gate: false },
       },
       deps,
     );
