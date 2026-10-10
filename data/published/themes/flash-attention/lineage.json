@@ -1,4 +1,5 @@
 {
+  "schema_version": "lineage-artifact-v1",
   "root": "openalex:W4281758439",
   "nodes": [
     {
@@ -8,57 +9,32 @@
       "venue": "arXiv (Cornell University)",
       "venue_tier": "preprint",
       "authors": [
-        "Tri Dao"
+        "Dao, Tri",
+        "Daniel Y. Fu",
+        "Stefano Ermon",
+        "Atri Rudra",
+        "Christopher Ré"
       ],
       "kinds": [],
-      "citation_count": 459,
-      "github_stars": 4,
-      "tldr": "The explosive growth of machine learning has produced an equally explosive proliferation of accelerator architectures, yet no systematic…",
-      "short_abstract": "The explosive growth of machine learning has produced an equally explosive proliferation of accelerator architectures, yet no systematic framework maps the computational character of a workload to the hardware that serves it best. This paper builds that framework and uses it to motivate a concrete design. We decompose modern ML workloads — transformers, CNNs, GNNs, diffusion and state-space models — into their core compute primitives, characterize each by arithmetic intensity, memory-access pattern, and parallelism, and evaluate how GPUs, TPUs, systolic arrays, dataflow processors, wafer-scale engines, and neuromorphic chips serve them. The recurring finding is that the binding constraint has shifted from peak FLOPS to memory bandwidth and data-movement energy — a shift that low-precision quantization only sharpens. Using hierarchical roofline and utilization modelling, we quantify it and consolidate eight persistent, unsolved problems in current designs. Those problems motivate the…",
+      "citation_count": 454,
+      "github_stars": 5,
+      "tldr": "FlashAttention computes attention one block of keys at a time and divides by the softmax normalizer only at the end. How large is its…",
+      "short_abstract": "FlashAttention computes attention one block of keys at a time and divides by the softmax normalizer only at the end. How large is its rounding error, and is it worse than that of ordinary two-pass attention? This note bounds the forward error of FlashAttention-2 for one query, compares it with two-pass attention, and measures the one place where it really goes wrong: the split-KV (Flash-Decoding) merge. Main results One identity does most of the work. An error that hits a key's weight in both the numerator and the normalizer costs only the spread of the values around the output, not their size. Most of FlashAttention's roundings are of this kind. No worst-case winner. FlashAttention-2 and two-pass attention share the same leading term: the cast of the weights to bf16 or fp16. Peaked attention favours FlashAttention-2. The key at the running maximum has weight exactly 1 and casts without error; two-pass casts 1/ℓ, which is rarely representable. The split-KV merge breaks the structure.…",
       "arxiv_id": "2205.14135",
       "doi": "10.48550/arxiv.2205.14135",
       "is_focus": true,
-      "github_url": "https://github.com/xrsrke/flashattention"
-    },
-    {
-      "id": "openalex:W4376226279",
-      "title": "Multimodal Learning With Transformers: A Survey",
-      "year": 2023,
-      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
-      "venue_tier": "preprint",
-      "authors": [
-        "Peng Xu",
-        "Xiatian Zhu",
-        "David A. Clifton"
+      "aliases": [
+        [
+          "arxiv",
+          "2205.14135"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2205.14135"
+        ]
       ],
-      "kinds": [],
-      "citation_count": 848,
-      "github_stars": 0,
-      "tldr": "Transformer is a promising neural network learner, and has achieved great success in various machine learning tasks. Thanks to the recent…",
-      "short_abstract": "Transformer is a promising neural network learner, and has achieved great success in various machine learning tasks. Thanks to the recent prevalence of multimodal applications and Big Data, Transformer-based multimodal learning has become a hot topic in AI research. This paper presents a comprehensive survey of Transformer techniques oriented at multimodal data. The main contents of this survey include: (1) a background of multimodal learning, Transformer ecosystem, and the multimodal Big Data era, (2) a systematic review of Vanilla Transformer, Vision Transformer, and multimodal Transformers, from a geometrically topological perspective, (3) a review of multimodal Transformer applications, via two important paradigms, i.e., for multimodal pretraining and for specific multimodal tasks, (4) a summary of the common challenges and designs shared by the multimodal Transformer models and applications, and (5) a discussion of open problems and potential research directions for the community.",
-      "doi": "10.1109/tpami.2023.3275156",
-      "is_trending": true
-    },
-    {
-      "id": "openalex:W4386076539",
-      "title": "EfficientViT: Memory Efficient Vision Transformer with Cascaded Group Attention",
-      "year": 2023,
-      "venue": "arXiv",
-      "venue_tier": "preprint",
-      "authors": [
-        "Xinyu Liu",
-        "Houwen Peng",
-        "Ningxin Zheng",
-        "Yuqing Yang",
-        "Han Hu"
-      ],
-      "kinds": [],
-      "citation_count": 729,
-      "github_stars": 0,
-      "tldr": "Vision transformers have shown great success due to their high model capabilities. However, their remarkable performance is accompanied by…",
-      "short_abstract": "Vision transformers have shown great success due to their high model capabilities. However, their remarkable performance is accompanied by heavy computation costs, which makes them unsuitable for real-time applications. In this paper, we propose a family of high-speed vision transformers named Efficient ViT. We find that the speed of existing transformer models is commonly bounded by memory inefficient operations, especially the tensor reshaping and element-wise functions in MHSA. Therefore, we design a new building block with a sandwich layout, i.e., using a single memory-bound MHSA between efficient FFN layers, which improves memory efficiency while enhancing channel communication. Moreover, we discover that the attention maps share high similarities across heads, leading to computational redundancy. To address this, we present a cascaded group attention module feeding attention heads with different splits of the full feature, which not only saves computation cost but also improves…",
-      "doi": "10.1109/cvpr52729.2023.01386",
-      "is_trending": true
+      "github_url": "https://github.com/xrsrke/flashattention",
+      "seed_paper_id": "256457b8ca6c95c8f70427fc8e7ba423a466defb"
     },
     {
       "id": "openalex:W4384648639",
@@ -70,41 +46,64 @@
         "Tri Dao"
       ],
       "kinds": [],
-      "citation_count": 141,
+      "citation_count": 143,
       "github_stars": 0,
       "tldr": "Scaling Transformers to longer sequence lengths has been a major problem in the last several years, promising to improve performance in…",
       "short_abstract": "Scaling Transformers to longer sequence lengths has been a major problem in the last several years, promising to improve performance in language modeling and high-resolution image understanding, as well as to unlock new applications in code, audio, and video generation. The attention layer is the main bottleneck in scaling to longer sequences, as its runtime and memory increase quadratically in the sequence length. FlashAttention exploits the asymmetric GPU memory hierarchy to bring significant memory saving (linear instead of quadratic) and runtime speedup (2-4$\\times$ compared to optimized baselines), with no approximation. However, FlashAttention is still not nearly as fast as optimized matrix-multiply (GEMM) operations, reaching only 25-40\\% of the theoretical maximum FLOPs/s. We observe that the inefficiency is due to suboptimal work partitioning between different thread blocks and warps on the GPU, causing either low-occupancy or unnecessary shared memory reads/writes. We…",
       "arxiv_id": "2307.08691",
       "doi": "10.48550/arxiv.2307.08691",
-      "is_focus": true
+      "is_focus": true,
+      "aliases": [
+        [
+          "arxiv",
+          "2307.08691"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2307.08691"
+        ]
+      ],
+      "seed_paper_id": "add0a17fc98c4511ac65397a3e43a2a5a03376b5"
     },
     {
-      "id": "openalex:W4391876619",
-      "title": "Lost in the Middle: How Language Models Use Long Contexts",
+      "id": "openalex:W4400611982",
+      "title": "FlashAttention-3: Fast and Accurate Attention with Asynchrony and Low-precision",
       "year": 2024,
-      "venue": "Transactions of the Association for Computational Linguistics",
+      "venue": "arXiv (Cornell University)",
       "venue_tier": "preprint",
       "authors": [
-        "Nelson F. Liu",
-        "Kevin Lin",
-        "John Hewitt",
-        "Ashwin Paranjape",
-        "Michele Bevilacqua"
+        "Shah, Jay",
+        "Ganesh Bikshandi",
+        "Zhang, Ying",
+        "Vijay Thakkar",
+        "Pradeep Ramani"
       ],
       "kinds": [],
-      "citation_count": 887,
+      "citation_count": 16,
       "github_stars": 0,
-      "tldr": "Abstract While recent language models have the ability to take long contexts as input, relatively little is known about how well they use…",
-      "short_abstract": "Abstract While recent language models have the ability to take long contexts as input, relatively little is known about how well they use longer context. We analyze the performance of language models on two tasks that require identifying relevant information in their input contexts: multi-document question answering and key-value retrieval. We find that performance can degrade significantly when changing the position of relevant information, indicating that current language models do not robustly make use of information in long input contexts. In particular, we observe that performance is often highest when relevant information occurs at the beginning or end of the input context, and significantly degrades when models must access relevant information in the middle of long contexts, even for explicitly long-context models. Our analysis provides a better understanding of how language models use their input context and provides new evaluation protocols for future long-context language…",
-      "doi": "10.1162/tacl_a_00638",
-      "is_trending": true
+      "tldr": "Attention, as a core layer of the ubiquitous Transformer architecture, is the bottleneck for large language models and long-context…",
+      "short_abstract": "Attention, as a core layer of the ubiquitous Transformer architecture, is the bottleneck for large language models and long-context applications. FlashAttention elaborated an approach to speed up attention on GPUs through minimizing memory reads/writes. However, it has yet to take advantage of new capabilities present in recent hardware, with FlashAttention-2 achieving only 35% utilization on the H100 GPU. We develop three main techniques to speed up attention on Hopper GPUs: exploiting asynchrony of the Tensor Cores and TMA to (1) overlap overall computation and data movement via warp-specialization and (2) interleave block-wise matmul and softmax operations, and (3) block quantization and incoherent processing that leverages hardware support for FP8 low-precision. We demonstrate that our method, FlashAttention-3, achieves speedup on H100 GPUs by 1.5-2.0$\\times$ with FP16 reaching up to 740 TFLOPs/s (75% utilization), and with FP8 reaching close to 1.2 PFLOPs/s. We validate that FP8…",
+      "arxiv_id": "2407.08608",
+      "doi": "10.48550/arxiv.2407.08608",
+      "is_focus": true,
+      "aliases": [
+        [
+          "arxiv",
+          "2407.08608"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2407.08608"
+        ]
+      ],
+      "seed_paper_id": "d316270e9ecf7f73add37e0a3cee8569edcbb1e2"
     },
     {
       "id": "openalex:W4402667891",
       "title": "Point Transformer V3: Simpler, Faster, Stronger",
       "year": 2024,
-      "venue": "arXiv",
-      "venue_tier": "preprint",
+      "venue": "IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings",
+      "venue_tier": "A+",
       "authors": [
         "Xiaoyang Wu",
         "Li Jiang",
@@ -113,19 +112,26 @@
         "Xihui Liu"
       ],
       "kinds": [],
-      "citation_count": 415,
+      "citation_count": 618,
       "github_stars": 0,
       "tldr": "This paper is not motivated to seek innovation within the attention mechanism. Instead, it focuses on overcoming the existing trade-offs…",
       "short_abstract": "This paper is not motivated to seek innovation within the attention mechanism. Instead, it focuses on overcoming the existing trade-offs between accuracy and efficiency within the context of point cloud processing, leveraging the power of scale. Drawing inspiration from recent advances in 3D large-scale representation learning, we recognize that model performance is more influenced by scale than by intricate design. Therefore, we present Point Transformer V3 (PTv3), which prioritizes simplicity and efficiency over the accuracy of certain mechanisms that are minor to the over-all performance after scaling, such as replacing the precise neighbor search by KNN with an efficient serialized neighbor mapping of point clouds organized with specific patterns. This principle enables significant scaling, expanding the receptive field from 16 to 1024 points while remaining efficient (a 3 x increase in processing speed and a 10 x improvement in memory efficiency compared with its pre-decessor,…",
       "doi": "10.1109/cvpr52733.2024.00463",
-      "is_trending": true
+      "is_trending": true,
+      "aliases": [
+        [
+          "doi",
+          "10.1109/cvpr52733.2024.00463"
+        ]
+      ],
+      "is_focus": false
     },
     {
       "id": "openalex:W4402727033",
       "title": "Efficient Deformable ConvNets: Rethinking Dynamic and Sparse Operator for Vision Applications",
       "year": 2024,
-      "venue": "arXiv",
-      "venue_tier": "preprint",
+      "venue": "IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings",
+      "venue_tier": "A+",
       "authors": [
         "Yuwen Xiong",
         "Zhiqi Li",
@@ -134,255 +140,242 @@
         "Xizhou Zhu"
       ],
       "kinds": [],
-      "citation_count": 217,
+      "citation_count": 259,
       "github_stars": 0,
       "tldr": "We introduce Deformable Convolution v4 (DCNv4), a highly efficient and effective operator designed for a broad spectrum of vision…",
       "short_abstract": "We introduce Deformable Convolution v4 (DCNv4), a highly efficient and effective operator designed for a broad spectrum of vision applications. DCNv4 addresses the limitations of its predecessor, DCNv3, with two key enhancements: 1. removing softmax normalization in spatial aggregation to enhance its dynamic property and expressive power and 2. optimizing memory access to minimize redundant operations for speedup. These improvements result in a significantly faster convergence compared to DCNv3 and a substantial increase in processing speed, with DCNv4 achieving more than three times the forward speed. DCNv4 demonstrates exceptional performance across various tasks, including image classification, instance and semantic segmentation, and notably, image generation. When integrated into generative models like U-Net in the latent diffusion model, DCNv4 outperforms its baseline, underscoring its possibility to enhance generative models. In practical applications, replacing DCNv3 with…",
-      "doi": "10.1109/cvpr52733.2024.00540"
+      "doi": "10.1109/cvpr52733.2024.00540",
+      "aliases": [
+        [
+          "doi",
+          "10.1109/cvpr52733.2024.00540"
+        ]
+      ],
+      "is_focus": false
     },
     {
-      "id": "openalex:W4402716294",
-      "title": "Modeling Dense Multimodal Interactions Between Biological Pathways and Histology for Survival Prediction",
+      "id": "openalex:W4404400671",
+      "title": "Uncovering Nested Data Parallelism and Data Reuse in DNN Computation with FractalTensor",
       "year": 2024,
-      "venue": "arXiv",
+      "venue": "ACM SIGOPS Symposium on Operating Systems Principles (SOSP)",
       "venue_tier": "preprint",
       "authors": [
-        "Guillaume Jaume",
-        "Anurag Vaidya",
-        "Richard J. Chen",
-        "Drew F. K. Williamson",
-        "Paul Pu Liang"
-      ],
-      "kinds": [],
-      "citation_count": 112,
-      "github_stars": 0,
-      "tldr": "Integrating whole-slide images (WSIs) and bulk tran-scriptomics for predicting patient survival can improve our understanding of patient…",
-      "short_abstract": "Integrating whole-slide images (WSIs) and bulk tran-scriptomics for predicting patient survival can improve our understanding of patient prognosis. However, this multi-modal task is particularly challenging due to the different nature of these data: WSIs represent a very high-dimensional spatial description of a tumor, while bulk tran-scriptomics represent a global description of gene expression levels within that tumor. In this context, our work aims to address two key challenges: (1) how can we tokenize transcriptomics in a semantically meaningful and interpretable way?, and (2) how can we capture dense multi-modal interactions between these two modalities? Here, we propose to learn biological pathway tokens from transcriptomics that can encode specific cellular functions. Together with histology patch tokens that encode the slide morphology, we argue that they form appropriate reasoning units for interpretability. We fuse both modalities using a memoryefficient multimodal…",
-      "doi": "10.1109/cvpr52733.2024.01100"
-    },
-    {
-      "id": "openalex:W4415797154",
-      "title": "FlashAttention-3: Fast and Accurate Attention with Asynchrony and Low-precision",
-      "year": 2024,
-      "venue": "arXiv",
-      "venue_tier": "preprint",
-      "authors": [
-        "Ganesh Bikshandi",
-        "Tri Dao",
-        "Pradeep Ramani",
-        "Jay P. Shah",
-        "Vijay Thakkar"
-      ],
-      "kinds": [],
-      "citation_count": 27,
-      "github_stars": 0,
-      "tldr": "",
-      "doi": "10.52202/079017-2193",
-      "is_focus": true
-    },
-    {
-      "id": "openalex:W4411403346",
-      "title": "A Comprehensive Overview of Large Language Models",
-      "year": 2025,
-      "venue": "ACM Transactions on Intelligent Systems and Technology",
-      "venue_tier": "preprint",
-      "authors": [
-        "Humza Naveed",
-        "Asad Ullah Khan",
-        "Shi Qiu",
-        "Muhammad Saqib",
-        "Saeed Anwar"
-      ],
-      "kinds": [],
-      "citation_count": 481,
-      "github_stars": 0,
-      "tldr": "Large Language Models (LLMs) have recently demonstrated remarkable capabilities in natural language processing tasks and beyond. This…",
-      "short_abstract": "Large Language Models (LLMs) have recently demonstrated remarkable capabilities in natural language processing tasks and beyond. This success of LLMs has led to a large influx of research contributions in this direction. These works encompass diverse topics such as architectural innovations, better training strategies, context length improvements, fine-tuning, multimodal LLMs, robotics, datasets, benchmarking, efficiency, and more. With the rapid development of techniques and regular breakthroughs in LLM research, it has become considerably challenging to perceive the bigger picture of the advances in this direction. Considering the rapidly emerging plethora of literature on LLMs, it is imperative that the research community is able to benefit from a concise yet comprehensive overview of the recent developments in this field. This article provides an overview of the literature on a broad range of LLM-related concepts. Our self-contained comprehensive overview of LLMs discusses…",
-      "doi": "10.1145/3744746",
-      "is_trending": true
-    },
-    {
-      "id": "openalex:W4411886797",
-      "title": "RiNALMo: general-purpose RNA language models can generalize well on structure prediction tasks",
-      "year": 2025,
-      "venue": "Nature Communications",
-      "venue_tier": "preprint",
-      "authors": [
-        "Rafael Josip Penić",
-        "Tin Vlašić",
-        "Roland G. Huber",
-        "Yue Wan",
-        "Mile Šikić"
-      ],
-      "kinds": [],
-      "citation_count": 69,
-      "github_stars": 0,
-      "tldr": "While RNA has recently been recognized as an interesting small-molecule drug target, many challenges remain to be addressed before we take…",
-      "short_abstract": "While RNA has recently been recognized as an interesting small-molecule drug target, many challenges remain to be addressed before we take full advantage of it. This emphasizes the necessity to improve our understanding of its structures and functions. Over the years, sequencing technologies have produced an enormous amount of unlabeled RNA data, which hides a huge potential. Motivated by the successes of protein language models, we introduce RiboNucleic Acid Language Model (RiNALMo) to unveil the hidden code of RNA. RiNALMo is the largest RNA language model to date, with 650M parameters pre-trained on 36M non-coding RNA sequences from several databases. It can extract hidden knowledge and capture the underlying structure information implicitly embedded within the RNA sequences. RiNALMo achieves state-of-the-art results on several downstream tasks. Notably, we show that its generalization capabilities overcome the inability of other deep learning methods for secondary structure…",
-      "doi": "10.1038/s41467-025-60872-5"
-    },
-    {
-      "id": "openalex:W4416203937",
-      "title": "MXBLAS: Accelerating 8-bit Deep Learning with a Unified Micro-Scaled GEMM Library",
-      "year": 2025,
-      "venue": "arXiv",
-      "venue_tier": "preprint",
-      "authors": [
-        "Wang Wei-hu",
-        "Yaqi Xia",
-        "Donglin Yang",
-        "Xiaobo Zhou",
-        "Dazhao Cheng"
+        "Siran Liu",
+        "C. Qi",
+        "Ying Cao",
+        "Chao Yang",
+        "Weifang Hu"
       ],
       "kinds": [],
       "citation_count": 2,
       "github_stars": 0,
-      "tldr": "Micro-scaling General Matrix Multiplication (MX-GEMM), which leverages 8-bit micro-scaling format (MX-format) inputs, represents a…",
-      "short_abstract": "Micro-scaling General Matrix Multiplication (MX-GEMM), which leverages 8-bit micro-scaling format (MX-format) inputs, represents a significant step forward in accelerating deep learning workloads. The MX-format space is diverse, encompassing various scaling patterns and granularities. However, current MX-GEMM implementations typically adopt a model-oriented approach, where format customization is tailored to individual models. This results in three key limitations: rigid problem-kernel coupling, inefficient promotion operations, and overlooked quantization overhead.",
-      "doi": "10.1145/3712285.3759809"
+      "tldr": "To speed up computation, deep neural networks (DNNs) usually rely on highly optimized tensor operators. Despite the effectiveness, tensor…",
+      "short_abstract": "To speed up computation, deep neural networks (DNNs) usually rely on highly optimized tensor operators. Despite the effectiveness, tensor operators are often defined empirically with ad hoc semantics. This hinders the analysis and optimization across operator boundaries. FractalTensor is a programming framework that addresses this challenge. At the core, FractalTensor is a nested list-based abstract data type (ADT), where each element is a tensor with static shape or another FractalTensor (i.e., nested). DNNs are then de-fined by high-order array compute operators like map/reduce/scan and array access operators like window/stride on FractalTensor. This new way of DNN definition explicitly exposes nested data parallelism and fine-grained data access patterns, opening new opportunities for whole program analysis and optimization. To exploit these opportunities, from the FractalTensor-based code the compiler extracts a nested multi-dimensional dataflow graph called Extended Task…",
+      "doi": "10.1145/3694715.3695961",
+      "aliases": [
+        [
+          "doi",
+          "10.1145/3694715.3695961"
+        ]
+      ],
+      "is_focus": false
     },
     {
-      "id": "openalex:W4416004314",
-      "title": "Porting a Fortran plasma simulation to Exascale on AMD GPUs using both OpenMP and Kokkos",
+      "id": "openalex:W4413168296",
+      "title": "MambaGaze-Stereo: Enhanced Depth Estimation for Autonomous Driving via Selective Attention and State Space Models",
       "year": 2025,
-      "venue": "arXiv",
+      "venue": "Procedia Computer Science",
       "venue_tier": "preprint",
       "authors": [
-        "Etienne Malaboeuf",
-        "Kévin Obrejan",
-        "Mathieu Peybernes",
-        "Julien Bigot",
-        "Emily Bourne"
+        "Zhaoxuan Lu",
+        "Lyuchao Liao",
+        "Sijing Cai",
+        "Liangpeng Gao",
+        "Maolin Zhang"
       ],
       "kinds": [],
-      "citation_count": 1,
+      "citation_count": 0,
       "github_stars": 0,
-      "tldr": "This paper presents the 2-step work undertaken to port Gysela, a petascale Fortran simulation code for turbulence in tokamak plasmas, to…",
-      "short_abstract": "This paper presents the 2-step work undertaken to port Gysela, a petascale Fortran simulation code for turbulence in tokamak plasmas, to GPUs. The initial porting process using OpenMP offloading allowed for good performance in most of the code with speedups ranging from × 1 to × 12.5, with the exception of the collision operator, which became a major bottleneck. This performance critical operator was then rewritten in C++ using Kokkos. The new version is known as KoLiOp, and is one of the code modules with the largest speedups relative to the CPU baseline. We explain our strategy in both phases of development and provide an in-depth analysis of how we leveraged each framework for overall performance. The techniques detailed are applicable to other codes seeking to use a portability layer. Finally, we present a comparative benchmark run on the CPU (AMD Genoa), GPU (MI250X) and APU (MI300A) partitions of the Adastra machine.",
-      "doi": "10.1145/3731599.3768148"
-    },
-    {
-      "id": "openalex:W4416146831",
-      "title": "LiquidGEMM: Hardware-Efficient W4A8 GEMM Kernel for High-Performance LLM Serving",
-      "year": 2025,
-      "venue": "arXiv",
-      "venue_tier": "preprint",
-      "authors": [
-        "Huanqi Hu",
-        "Bowen Xiao",
-        "Shixuan Sun",
-        "Jingran Yin",
-        "Zhexi Zhang"
+      "tldr": "In autonomous driving, accurate and real-time depth estimation is essential for precise environmental perception and safe decision-making.…",
+      "short_abstract": "In autonomous driving, accurate and real-time depth estimation is essential for precise environmental perception and safe decision-making. However, traditional stereo matching approaches often struggle with capturing long-range dependencies, preserving fine details, and achieving robust disparity estimation in complex scenes. To address these challenges, we introduce MambaGaze-Stereo, a stereo matching framework based on State Space Models (SSM). Our framework includes a MobileNetV4-based feature extraction module, which significantly enhances multi-scale feature representation. We further incorporate a FlashAttention-based Feature Correlation Enhancement Module (FACEM), which utilizes an efficient attention mechanism to improve feature correlation and disparity estimation accuracy. Additionally, we propose the Mamba Selective Multi-Update Block (MSMUB), leveraging bidirectional selective attention to enable adaptive feature modeling across various scales, meeting the spatial…",
+      "doi": "10.1016/j.procs.2025.07.113",
+      "aliases": [
+        [
+          "doi",
+          "10.1016/j.procs.2025.07.113"
+        ]
       ],
-      "kinds": [],
-      "citation_count": 1,
-      "github_stars": 0,
-      "tldr": "Quantization is a critical technique for accelerating LLM inference by reducing memory footprint and improving computational efficiency.…",
-      "short_abstract": "Quantization is a critical technique for accelerating LLM inference by reducing memory footprint and improving computational efficiency. Among various schemes, 4-bit weight and 8-bit activation quantization (W4A8) offers a strong balance between accuracy and performance. However, existing W4A8 GEMM kernels fall short in practice due to inefficient dequantization on CUDA Cores, which cannot keep pace with the high throughput of Tensor Cores. In this paper, we present LiquidGEMM, a hardware-efficient W4A8 GEMM kernel for efficient LLM serving. LiquidGEMM designs two key techniques: LiquidQuant, a hardware-efficient quantization method that enables fast, overflow-safe dequantization using just two arithmetic instructions per four elements; and an implicit fine-grained pipeline that fully overlaps weight loading, dequantization, and MMA across warp groups without software synchronization or redundant memory traffic. Experimental results show that LiquidGEMM achieves up to 2.90x speedup…",
-      "doi": "10.1145/3712285.3759852"
-    },
-    {
-      "id": "openalex:W4417508702",
-      "title": "The CUR Decomposition of Self-Attention Matrices in Vision Transformers",
-      "year": 2025,
-      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
-      "venue_tier": "preprint",
-      "authors": [
-        "Chong Wu",
-        "Maolin Che",
-        "Hong Yan"
-      ],
-      "kinds": [],
-      "citation_count": 1,
-      "github_stars": 0,
-      "tldr": "Transformers have achieved great success in natural language processing and computer vision. The core and basic technique of transformers…",
-      "short_abstract": "Transformers have achieved great success in natural language processing and computer vision. The core and basic technique of transformers is the self-attention mechanism. The vanilla self-attention mechanism has quadratic complexity, which limits its applications to vision tasks. Most of the existing linear self-attention mechanisms will sacrifice performance to some extent to reduce complexity. In this paper, we propose a novel linear approximation of the vanilla self-attention mechanism named CURSA to achieve both high performance and low complexity at the same time. CURSA is based on the CUR decomposition to decompose the multiplication of large matrices into the multiplication of several small matrices to achieve almost linear complexity. Experiment results of CURSA in image classification tasks, semantic segmentation tasks, object detection tasks, and long-range arena show that it outperforms state-of-the-art self-attention mechanisms with better data efficiency, faster speed,…",
-      "doi": "10.1109/tpami.2025.3646452"
+      "is_focus": false
     }
   ],
   "edges": [
     {
       "src": "openalex:W4281758439",
-      "dst": "openalex:W4391876619",
-      "rel": "extends",
-      "conf": 0.65,
-      "rationale": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
-      "provenance": "foundational_allowlist"
-    },
-    {
-      "src": "openalex:W4281758439",
-      "dst": "openalex:W4376226279",
-      "rel": "extends",
-      "conf": 0.65,
-      "rationale": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
-      "provenance": "foundational_allowlist"
-    },
-    {
-      "src": "openalex:W4281758439",
-      "dst": "openalex:W4386076539",
-      "rel": "extends",
-      "conf": 0.65,
-      "rationale": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
-      "provenance": "foundational_allowlist"
-    },
-    {
-      "src": "openalex:W4281758439",
-      "dst": "openalex:W4411403346",
-      "rel": "extends",
-      "conf": 0.65,
-      "rationale": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
-      "provenance": "foundational_allowlist"
-    },
-    {
-      "src": "openalex:W4415797154",
-      "dst": "openalex:W4417508702",
-      "rel": "contrasts",
-      "conf": 0.8,
-      "rationale": "B の CURSA は、A の FlashAttention の低精度アプローチとは異なり、CU 分解に基づく線形近似を採用している。",
-      "provenance": "llm"
-    },
-    {
-      "src": "openalex:W4415797154",
-      "dst": "openalex:W4416146831",
-      "rel": "successor",
-      "conf": 0.8,
-      "rationale": "LiquidGEMM は、FlashAttention-3 が利用する低精度演算の基盤となる W4A8 GEMM カーネルをハードウェア効率的に最適化することで、LLM サービス全体の性能向上に貢献する。",
-      "provenance": "llm"
-    },
-    {
-      "src": "openalex:W4281758439",
       "dst": "openalex:W4402667891",
       "rel": "extends",
+      "relation": "extends",
       "conf": 0.65,
+      "confidence": 0.65,
       "rationale": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
-      "provenance": "foundational_allowlist"
-    },
-    {
-      "src": "openalex:W4415797154",
-      "dst": "openalex:W4416203937",
-      "rel": "extends",
-      "conf": 0.8,
-      "rationale": "MXBLAS の統一されたマイクロスケール GEMM ライブラリは、FlashAttention-3 の低精度計算を加速するための基盤を提供する。",
-      "provenance": "llm"
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-metadata",
+          "sha256": "42f88590bd2b40ac42c65bcf6926818131f17f33076559f92980d20d1f99c4f2"
+        },
+        "classification": {
+          "method": "foundational_allowlist",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
     },
     {
       "src": "openalex:W4281758439",
       "dst": "openalex:W4402727033",
       "rel": "extends",
+      "relation": "extends",
       "conf": 0.65,
+      "confidence": 0.65,
       "rationale": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
-      "provenance": "foundational_allowlist"
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-metadata",
+          "sha256": "116c161c95215055f07e663b13fc82f2ba83c6b535ad58f10c37c114c13f8c5e"
+        },
+        "classification": {
+          "method": "foundational_allowlist",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
     },
     {
       "src": "openalex:W4281758439",
-      "dst": "openalex:W4402716294",
+      "dst": "openalex:W4413168296",
       "rel": "extends",
+      "relation": "extends",
       "conf": 0.65,
+      "confidence": 0.65,
       "rationale": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
-      "provenance": "foundational_allowlist"
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-metadata",
+          "sha256": "6a5e72ea154a7b300d310ff1a8537c9bf43444b38a2aa0c28e721d8c83eec7c7"
+        },
+        "classification": {
+          "method": "foundational_allowlist",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4384648639",
+      "dst": "openalex:W4402667891",
+      "rel": "contrasts",
+      "relation": "contrasts",
+      "conf": 0.85,
+      "confidence": 0.85,
+      "rationale": "B の Point Transformer V3 は注意機構の高速化ではなく、点群処理向けにシンプルなスケール重視設計を採用し、A の FlashAttention-2 の高速注意アルゴリズムとは根本的に異なるアプローチです。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "05f8838f35575d1303c57f1939526b4994b4446bc2434c029a1c65cfdcc49f5c"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4400611982",
+      "dst": "openalex:W4404400671",
+      "rel": "contrasts",
+      "relation": "contrasts",
+      "conf": 0.85,
+      "confidence": 0.85,
+      "rationale": "B の FractalTensor は DNN 計算全体のネストされたデータ並列性とデータ再利用を明らかにし、A の FlashAttention-3 が注意機構の非同期低精度実装に特化している点と根本的に異なるアプローチである。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "03dbc57451ac62a4529a665270488859fb556bd60aa78aa36f4768c73d382063"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4400611982",
+      "dst": "openalex:W4413168296",
+      "rel": "contrasts",
+      "relation": "contrasts",
+      "conf": 0.78,
+      "confidence": 0.78,
+      "rationale": "MambaGaze-Stereo の選択的注意機構は、FlashAttention-3 の GPU 非同期最適化とは根本的に異なる手法である",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "463e6ee8d60bdcae4d01c437c7c1dafe2be1e0b200ec5d1c6937e25c54ba02a0"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
+          "schema_version": "relation-classification-v1"
+        }
+      }
     }
   ],
+  "clusters": [],
   "meta": {
+    "kind": "theme",
+    "generator": "paperpilot.scripts.build_theme_lineage",
     "source": "build_theme_lineage.py",
     "theme": "Flash Attention",
     "slug": "flash-attention",
@@ -392,14 +385,20 @@
     "seeds": [
       "openalex:W4281758439",
       "openalex:W4384648639",
-      "openalex:W4415797154"
+      "openalex:W4400611982"
     ],
     "depth": 1,
     "since_year": 2018,
-    "generated_at": "2026-06-14T08:21:52.372848+00:00",
+    "generated_at": "2026-10-10T04:36:54.720000Z",
     "provenance_breakdown": {
-      "foundational_allowlist": 7,
+      "foundational_allowlist": 3,
       "llm": 3
+    },
+    "completeness": {
+      "complete": true,
+      "expansions_attempted": 10,
+      "expansions_failed": 0,
+      "supplement_failures": []
     }
   }
 }
