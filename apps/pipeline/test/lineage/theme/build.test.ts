@@ -24,6 +24,7 @@ import {
   edgeForJson,
   pruneEdgelessNodes,
 } from "../../../src/lineage/theme/build.js";
+import { DegradedClassificationError } from "../../../src/lineage/theme/classificationGate.js";
 import { makeEdge } from "../../../src/lineage/theme/edges.js";
 import { sanitizeTheme, themeLineagePath, themeSlug } from "../../../src/lineage/theme/slug.js";
 
@@ -520,5 +521,61 @@ describe("pruneEdgelessNodes (R2: orphan_node_count must be 0)", () => {
     const input = [...nodes];
     expect(pruneEdgelessNodes(input, []).map((n) => n.id)).toEqual(["a", "d"]);
     expect(input).toEqual(nodes);
+  });
+});
+
+describe("R2-6 evidence-classified gate (design 41 D3)", () => {
+  function gateDeps(provider: LLMProvider) {
+    const seed = s2Paper("seedg", { title: "Gate Theme Seed Paper", cites: 100 });
+    const parent = s2Paper("parentg", {
+      title: "An Earlier Gate Theme Parent Paper",
+      year: 2016,
+      cites: 60,
+      arxivId: "2016.00009",
+    });
+    const deps = depsFor(async (url) => {
+      if (url.includes("/references")) {
+        return jsonResp(200, { data: [{ citedPaper: parent, isInfluential: true, intents: [] }] });
+      }
+      if (url.includes("/citations")) return jsonResp(200, { data: [] });
+      return mkSearchResponse([seed]);
+    });
+    deps.buildProvider = () => ({ provider, rateDelay: 0 });
+    return deps;
+  }
+  const opts = {
+    theme: "Gate Theme",
+    depth: 1,
+    seedsCount: 3,
+    width: 4,
+    sinceYear: null,
+    llmStrict: "all" as const,
+  };
+
+  it("refuses to write when the LLM answered nothing (only year/citation guesses survive)", async () => {
+    const deps = gateDeps(new FixedClassificationProvider(null));
+    const target = themeLineagePath(docsRoot, themeSlug(sanitizeTheme("Gate Theme")));
+    await expect(
+      buildThemeLineage({ ...opts, minClassifiedRate: 0.8 }, deps),
+    ).rejects.toBeInstanceOf(DegradedClassificationError);
+    expect(existsSync(target)).toBe(false);
+    // Without a threshold (library default) the same build still publishes.
+    const out = await buildThemeLineage(opts, gateDeps(new FixedClassificationProvider(null)));
+    const payload = JSON.parse(readFileSync(out, "utf-8"));
+    expect(payload.meta.provenance_breakdown).toEqual({ citation_heuristic: 1 });
+  });
+
+  it("publishes when the LLM classified the edges, recording the answering fallback provider", async () => {
+    const provider = new FixedClassificationProvider({
+      relation: "extends",
+      confidence: 0.9,
+      rationale: "B は A の手法をゲート付きの新しい設定へ拡張している",
+      producedBy: { provider: "gemini", model: "gemini:gemini-2.5-flash" },
+    });
+    const out = await buildThemeLineage({ ...opts, minClassifiedRate: 0.8 }, gateDeps(provider));
+    const payload = JSON.parse(readFileSync(out, "utf-8"));
+    expect(payload.meta.provenance_breakdown).toEqual({ llm: 1 });
+    expect(payload.edges[0].provenance.classification.provider).toBe("gemini");
+    expect(payload.edges[0].provenance.classification.model).toBe("gemini:gemini-2.5-flash");
   });
 });

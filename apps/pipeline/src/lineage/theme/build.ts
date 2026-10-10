@@ -35,12 +35,14 @@ import {
   focusIds,
   IncompleteBuildError,
 } from "../fetch-state/completeness.js";
+import { usageOf } from "../llm/fallback.js";
 import { addCrossNodeEdges, confirmSupportAdmissions, runBfsAndDescendants } from "./bfs.js";
 import {
   type CachedClassifyProviderDeps,
   type ThemeProducerIdentity,
   wrapProviderWithThemeCache,
 } from "./cachedClassifyProvider.js";
+import { DegradedClassificationError, evidenceClassifiedRate } from "./classificationGate.js";
 import { dedupNodesByStrongAlias, remapEdgeEndpoints } from "./dedup.js";
 import { type DiscoverSeedsCompleteness, discoverSeeds } from "./discoverSeeds.js";
 import type { ThemeEdge } from "./edges.js";
@@ -209,6 +211,16 @@ export interface BuildThemeLineageOptions {
    * admission gate); omitted fields take `DEFAULT_TOPIC_SCOPE_OPTIONS`.
    * `{ gate: false }` turns the BFS admission gate off. */
   topicScope?: Partial<TopicScopeOptions>;
+  /**
+   * R2-6 (design 41 D3): minimum share of edges whose relation is backed
+   * by real evidence — LLM, S2 intents, citation context, … (see
+   * `classificationGate.ts`; only year/citation guesses are
+   * unclassified). Below it, `DegradedClassificationError` is thrown
+   * BEFORE the write, like the completeness gates. `null`/omitted
+   * disables the gate (library callers and older tests); the CLI always
+   * passes a threshold. Provider-agnostic: applies whatever `llmStrict` is.
+   */
+  minClassifiedRate?: number | null;
 }
 
 /** All injected dependencies for one `buildThemeLineage` call. Not a
@@ -272,6 +284,7 @@ export async function buildThemeLineage(
     allowIncomplete = false,
     allowEdgeless = true,
     topicScope: topicScopeOptions = {},
+    minClassifiedRate = null,
   } = options;
 
   const sanitised = sanitizeTheme(theme);
@@ -619,6 +632,29 @@ export async function buildThemeLineage(
   if (!allowEdgeless && orderedEdges.length === 0) {
     throw new ZeroEdgeBuildError(
       `0 edges produced for theme ${JSON.stringify(sanitised)} (slug ${JSON.stringify(slug)}) over ${orderedNodes.length} node(s); refusing to write ${outPath}`,
+    );
+  }
+
+  // R2-6 (design 41 D3): refuse to publish a lineage whose relations are
+  // mostly year/citation guesses (no evidence source answered).
+  const classifiedRate = evidenceClassifiedRate(provenanceBreakdown);
+  logger.info(
+    `evidence-classified rate: ${classifiedRate.ratio === null ? "n/a" : `${(classifiedRate.ratio * 100).toFixed(1)}%`} ` +
+      `(classified=${classifiedRate.classified}/${classifiedRate.total}, year/citation guesses=${classifiedRate.guessed})` +
+      (minClassifiedRate !== null
+        ? `, threshold=${(minClassifiedRate * 100).toFixed(1)}%`
+        : ", gate disabled"),
+  );
+  if (
+    minClassifiedRate !== null &&
+    classifiedRate.ratio !== null &&
+    classifiedRate.ratio < minClassifiedRate
+  ) {
+    throw new DegradedClassificationError(
+      sanitised,
+      classifiedRate,
+      minClassifiedRate,
+      usageOf(innerProviderForSummary),
     );
   }
 
