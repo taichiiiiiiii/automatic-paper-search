@@ -17,7 +17,7 @@ import {
 } from "./helpers.js";
 
 describe("staged workflow inventory", () => {
-  it("contains exactly the 12 files the plan names, nothing more or less", () => {
+  it("contains exactly the files the plan names (12 + R2-6 regen-retry.yml), nothing more or less", () => {
     expect(listWorkflowFiles()).toEqual(EXPECTED_WORKFLOW_FILES);
   });
 });

@@ -12,7 +12,7 @@ import { getRepoRoot } from "@paperpilot/core";
 import { layoutFor } from "@paperpilot/core/layout";
 import { parse } from "yaml";
 
-/** The exact 12 staged workflow file names (p5-plan.md §2 A7), sorted. */
+/** The exact staged workflow file names (p5-plan.md §2 A7, + R2-6 regen-retry.yml), sorted. */
 export const EXPECTED_WORKFLOW_FILES = [
   "collect-daily-watch.yml",
   "collect-weekly.yml",
@@ -23,6 +23,7 @@ export const EXPECTED_WORKFLOW_FILES = [
   "pages-release.yml",
   "pages-rollback.yml",
   "pages.yml",
+  "regen-retry.yml",
   "regen-themes.yml",
   "tests.yml",
   "theme-on-demand.yml",

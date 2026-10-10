@@ -39,6 +39,9 @@ describe("H3: generation steps carry the exact LLM/S2 secrets the live workflows
     expect(step.env?.PAPERPILOT_GROQ_API_KEY).toBe("${{ secrets.PAPERPILOT_GROQ_API_KEY }}");
     // biome-ignore lint/suspicious/noTemplateCurlyInString: literal GitHub Actions expression (YAML env value), not a JS template literal.
     expect(step.env?.PAPERPILOT_S2_API_KEY).toBe("${{ secrets.PAPERPILOT_S2_API_KEY }}");
+    // R2-6 (design 41 D2): Gemini free tier is the fallback classifier.
+    // biome-ignore lint/suspicious/noTemplateCurlyInString: literal GitHub Actions expression (YAML env value), not a JS template literal.
+    expect(step.env?.PAPERPILOT_GEMINI_API_KEY).toBe("${{ secrets.PAPERPILOT_GEMINI_API_KEY }}");
   });
 
   it('regen-themes.yml\'s generate/"Regenerate requested themes" step', () => {
@@ -50,6 +53,9 @@ describe("H3: generation steps carry the exact LLM/S2 secrets the live workflows
     expect(step.env?.PAPERPILOT_GROQ_API_KEY).toBe("${{ secrets.PAPERPILOT_GROQ_API_KEY }}");
     // biome-ignore lint/suspicious/noTemplateCurlyInString: literal GitHub Actions expression (YAML env value), not a JS template literal.
     expect(step.env?.PAPERPILOT_S2_API_KEY).toBe("${{ secrets.PAPERPILOT_S2_API_KEY }}");
+    // R2-6 (design 41 D2): Gemini free tier is the fallback classifier.
+    // biome-ignore lint/suspicious/noTemplateCurlyInString: literal GitHub Actions expression (YAML env value), not a JS template literal.
+    expect(step.env?.PAPERPILOT_GEMINI_API_KEY).toBe("${{ secrets.PAPERPILOT_GEMINI_API_KEY }}");
   });
 
   it('collect-weekly.yml\'s generate/"Regenerate eligible conference lineages" step', () => {
