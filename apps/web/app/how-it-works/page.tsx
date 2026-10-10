@@ -127,13 +127,13 @@ const SEEALSO_LINKS: readonly SeeAlsoLink[] = [
   },
   {
     icon: "📐",
-    href: "https://github.com/taichiiiiiiii/automatic-paper-search/blob/develop/docs/design/39-typescript-cloudflare-migration.md",
-    label: "設計とロードマップ（TypeScript / Cloudflare 構成）",
+    href: "https://github.com/taichiiiiiiii/automatic-paper-search/blob/develop/docs/design/40-post-cutover-roadmap.md",
+    label: "今後の計画（ロードマップ、設計書 40）",
   },
   {
     icon: "✅",
-    href: "https://github.com/taichiiiiiiii/automatic-paper-search/tree/develop/docs/migration",
-    label: "移行と運用の記録",
+    href: "https://github.com/taichiiiiiiii/automatic-paper-search/blob/develop/docs/migration/p5-runbook.md",
+    label: "運用の手順と記録",
   },
 ];
 

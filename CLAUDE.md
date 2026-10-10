@@ -133,7 +133,7 @@ PAPERPILOT_GROQ_API_KEY      # Groq（系譜の関係分類）
 PAPERPILOT_SLACK_WEBHOOK_URL # Slack 通知
 ```
 
-- Email（SMTP）は TS 版では対応しない。`output.email.enabled: true` の run は `export:email:` として記録され失敗扱いになる（p4-followups #29）。出荷済みの config はどちらも無効。
+- Email（SMTP）は TS 版では対応しない。`output.email.enabled: true` の run は `export:email:` として記録され失敗扱いになる（TS 版の既知の制限）。出荷済みの config はどちらも無効。
 - Stage 3（embedding）も TS 版では対応しない。有効にすると `stage3:` として記録して続行する。
 
 ---
@@ -451,7 +451,7 @@ Hono on Cloudflare Workers。本番設定は `apps/api/wrangler.jsonc`（Worker 
 - **受付スイッチ:** KV `accepting` が文字列 `"true"` のときだけ受け付ける。値が無い・違う・読めないときは止まる（fail closed）。
 - **origin 許可リスト:** KV `origin_allowlist`（JSON 配列）。プレビューや `<hash>.<project>.pages.dev` を入れない。
 - **空打ちモード:** `DISPATCH_MODE=dry-run` は本番の ref・origin を指していれば拒否する。本番は常に `live`。
-- **KV の操作（承認が要る）:** `wrangler kv key put --namespace-id=3e11d3e73dae42a8b94f06a9fa9de19f <key> <value> --remote`。wrangler 4 は既定でローカルに書く場合があるので `--remote` を付け、`wrangler kv key get --remote` で読み戻し、`/api/health` で確かめる。各段の値は `docs/migration/p5-plan.md` §6.1。
+- **KV の操作（承認が要る）:** `wrangler kv key put --namespace-id=3e11d3e73dae42a8b94f06a9fa9de19f <key> <value> --remote`。wrangler 4 は既定でローカルに書く場合があるので `--remote` を付け、`wrangler kv key get --remote` で読み戻し、`/api/health` で確かめる。各段の値と記録は `docs/migration/p5-runbook.md`。
 - D1 はまだ使っていない（P6 の項目）。
 
 ---
@@ -545,7 +545,7 @@ Hono on Cloudflare Workers。本番設定は `apps/api/wrangler.jsonc`（Worker 
 
 ## 実装ステータス
 
-現在の状況は設計書 [`39-typescript-cloudflare-migration.md`](docs/design/39-typescript-cloudflare-migration.md) の「進捗」表、[`docs/migration/p5-plan.md`](docs/migration/p5-plan.md)（切替の手順と危険）、[`docs/migration/p4-followups.md`](docs/migration/p4-followups.md)（残作業）を正とする。移行前の記録は [`docs/design/09-implementation-status.md`](docs/design/09-implementation-status.md)。
+現在の状況は設計書 [`40-post-cutover-roadmap.md`](docs/design/40-post-cutover-roadmap.md)（計画）と [`41-lineage-publication-and-reliability.md`](docs/design/41-lineage-publication-and-reliability.md)（系譜の公開方針と実装メモ）、運用は [`docs/migration/p5-runbook.md`](docs/migration/p5-runbook.md) を正とする。移行の設計（39）・計画（p5-plan）・残作業表（p4-followups）などは 2026-10-10 に削除した（git の履歴に残っている）。
 
 - カタログは 10 学会 / 28,300 本（`data/published/conferences.json`）。
 - 系譜は品質 manifest で fail closed。表示対象は 0 件。

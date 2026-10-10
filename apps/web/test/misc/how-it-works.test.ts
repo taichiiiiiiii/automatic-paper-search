@@ -206,10 +206,11 @@ describe("built /how-it-works/ page parity with docs/how-it-works/index.html", (
 
   it.skipIf(!existsSync(BUILT_PAGE))("links only to design docs that still exist", () => {
     const built = readFileSync(BUILT_PAGE, "utf8");
-    expect(built).toContain("docs/design/39-typescript-cloudflare-migration.md");
+    expect(built).toContain("docs/design/40-post-cutover-roadmap.md");
     expect(built).toContain("docs/design/41-lineage-publication-and-reliability.md");
-    expect(built).toContain("tree/develop/docs/migration");
-    expect(built).not.toMatch(/docs\/design\/(0[1-9]|[12][0-9]|3[0-8])-|docs\/research/);
+    expect(built).toContain("docs/migration/p5-runbook.md");
+    // 01-39 and docs/research were removed (2026-10-10); never link to them.
+    expect(built).not.toMatch(/docs\/design\/(0[1-9]|[12][0-9]|3[0-9])-|docs\/research/);
   });
 
   it.skipIf(!existsSync(BUILT_PAGE))(

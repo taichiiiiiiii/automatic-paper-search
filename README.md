@@ -5,7 +5,7 @@ AI/ML 論文を arXiv / Semantic Scholar / OpenAlex から集め、品質シグ�
 **主な出力:** 10 学会・28,300 本の横断検索と学会別カタログ（静的サイト）。サイトのフォームから新しいテーマを投稿すると、API（`apps/api`）が検査・重複確認・回数制限をしてから `theme-on-demand.yml` を起動し、テーマの家系図を作ります。
 論文の系譜は、品質監査・artifact hash・strict schema の条件をすべて満たしたものだけを表示します。今のデータには条件を満たす系譜がないため、系譜の画面は「準備中」で閉じています（fail closed）。
 
-> **移行中の注意（2026-10-07）:** Python から TypeScript への移行の最終段（P5）です。このブランチ（`p5/consolidate`）は TypeScript だけの構成です。本番（`develop`）はまだ旧構成（GitHub Pages・旧 Worker・Python の workflow）で動いています。切替の手順は [`docs/migration/p5-plan.md`](docs/migration/p5-plan.md)、全体の設計は [`docs/design/39-typescript-cloudflare-migration.md`](docs/design/39-typescript-cloudflare-migration.md) を見てください。
+> **構成（2026-10-10）:** TypeScript（pnpm workspace）と Cloudflare Pages / Workers で動いています（2026-10-09 に切替）。今後の計画は [`docs/design/40-post-cutover-roadmap.md`](docs/design/40-post-cutover-roadmap.md)、系譜の公開方針は [`docs/design/41-lineage-publication-and-reliability.md`](docs/design/41-lineage-publication-and-reliability.md)、運用は [`docs/migration/p5-runbook.md`](docs/migration/p5-runbook.md) を見てください。
 
 **運用の形**（GitHub Actions。schedule で動くのは Lighthouse だけで、ほかは手動かフォームから起動）:
 - **週次深掘り**（`collect-weekly.yml`）— 収集 → スコア → summary.csv → papers.json → lineage.json の全工程

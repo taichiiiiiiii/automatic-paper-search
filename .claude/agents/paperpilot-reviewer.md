@@ -24,7 +24,7 @@ PaperPilot の設計原則（Open/Closed、Fail-Safe、秘密の分離、冪等�
 ## 見る資料
 
 1. `CLAUDE.md`（絶対ルール、スコアの式、Stage フロー、テーマ家系図の詳細）
-2. 設計書 `docs/design/`（§4.2〜§4.5 の Stage 仕様、§5.3 の重み）、`docs/design/39-typescript-cloudflare-migration.md`
+2. 設計書 `docs/design/`（§4.2〜§4.5 の Stage 仕様、§5.3 の重み）、`docs/design/40-post-cutover-roadmap.md`・`docs/design/41-lineage-publication-and-reliability.md`
 3. `docs/migration/safety-contracts.md`（安全対策の一覧と TS での置き場所）
 4. 既存のテスト（`apps/*/test/`・`packages/core/test/`）
 

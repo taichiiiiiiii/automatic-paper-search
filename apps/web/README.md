@@ -1,7 +1,7 @@
 # apps/web
 
-Next.js app (static export) for the TypeScript/Cloudflare migration (see
-`docs/design/39-typescript-cloudflare-migration.md`).
+Next.js app (static export) served from Cloudflare Pages (see
+`docs/design/40-post-cutover-roadmap.md` and `docs/design/41-lineage-publication-and-reliability.md`).
 
 ## `tsconfig.json` notes
 
