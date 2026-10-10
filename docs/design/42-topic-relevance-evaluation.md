@@ -1,6 +1,6 @@
 # 42. テーマ内判定（topic relevance）の比較評価（R2-4 / 41 D4）
 
-状態: 調査完了・推奨あり（生成器の挙動は未変更）
+状態: 調査完了。推奨（段階 1＋段階 2）を R2-11 で生成器に組み込んだ（[41](41-lineage-publication-and-reliability.md) D7。下の「組み込み（R2-11）」）
 関連: [41](41-lineage-publication-and-reliability.md) D4、`apps/pipeline/src/lineage/theme/topicScope.ts`、`bfs.ts`
 
 ## 結論
@@ -152,6 +152,45 @@ LLM の見積もり（題名 + 要旨の先頭 1000 字 ≈ 1 件 250 トーク�
 
 `0 ≤ z < 1.0` かつ語一致なし、または `z < 0` かつ語一致あり。この帯だけを 20 件ずつ判定する（ViT でも約 32k トークン）。判定はキャッシュして再生成では聞き直さない。D2 の予算と D3 の失敗時の扱い（使えなければ段階 2 の判定のまま）に従う。
 
+## 組み込み（R2-11）
+
+[41](41-lineage-publication-and-reliability.md) D7 の決定に従い、段階 1 と段階 2 を生成器に入れた。
+
+| 項目 | 内容 | 場所 |
+|---|---|---|
+| 段階 1 | 既定を「語一致のみ」にした（`minSupport` 0＝支持による採用なし、`admitFoundational` false）。被引用側の provisional もなくした。許可リストは関係分類（`deriveRelation`）と根の選択だけに使う。旧規則は `--topic-min-support 2` などで明示したときだけ動く | `topicScope.ts`、`cli.ts` |
+| 段階 2 | `TopicScope.admits(p, support, z)` / `admitsDescendant(p, z)`。参照は `(語一致 AND z≥0) OR z≥1.0`、被引用は `(題名が主題 AND z≥0) OR z≥1.0`。許可リストの論文も同じ条件で判定し、通れば理由を `foundational` と記録する | `topicScope.ts` |
+| z のプール | `runBfsAndDescendants` の最初に、全 seed の references（`width×4`）と citations（`descWidth×4`）を取得する（BFS 本体と同じ呼び出しなので、2 回目はキャッシュから読む）。要旨のあるものと seed を 1 回でまとめて埋め込み、μ・σ を固定する。depth 2 以降の新しい候補も同じ μ・σ で z にする | `bfs.ts`、`topicEmbedding.ts` |
+| 埋め込み | `TopicEmbedder` インタフェース。本番は `@huggingface/transformers` 3.8.1（`apps/pipeline` の optionalDependency）を動的 import する。モデルは `Xenova/bge-small-en-v1.5`、q8、revision `ea104dacec62c0de699686887e3f920caeb4f3e3` で固定。パッケージとモデルは最初のキャッシュ未命中のときだけ読み込む | `topicEmbedding.ts` |
+| ベクトルのキャッシュ | `data/state/lineage-cache/embeddings/emb_<model>_<rev12>_<sha256(model,revision,text)>.json`。値は小数 4 桁に丸める（新規に計算した値も丸めるので、キャッシュの有無で結果が変わらない） | 同上 |
+| フォールバック | パッケージがない・モデルを取得できない・推論で例外、のどれでも段階 1 の規則で続け、生成は止めない。成果物の `meta.topic_gate` に `method: "terms"` と `fallback_reason` を記録する | 同上 |
+| 記録 | `meta.topic_gate = {method: "embedding+terms" \| "terms", model, revision, thresholds: {z_lo, z_hi}, pool_size}`。`lineage-artifact-v1` の `meta` は追加のキーを許すので、スキーマも core の判定も変えていない。gate を切ったとき（`--no-topic-gate`、Python 時代の parity テスト）は記録しない | `build.ts` |
+| CLI | `--no-topic-embedding` で段階 1 の規則だけにできる。`--topic-min-support` の既定は 0（0 以上を受け付ける） | `cli.ts` |
+| CI | `regen-themes.yml`・`theme-on-demand.yml` に `actions/cache`（SHA 固定、v6.1.0）を 2 つ足した。モデル（約 35 MB、キーはモデル名＋revision）と、ベクトル（実行ごとに更新して前回分を引き継ぐ） | workflows |
+
+### ベクトルを git に入れない理由
+
+- 1 件あたり約 3 KB（384 次元・小数 4 桁の JSON）。1 テーマの候補は seed 5・width 8 で最大約 240 件なので、1 回の生成で最大約 0.7 MB、数百ファイルになる。
+- 被引用の上位は作り直すたびに入れ替わるので、テーマを作り直すごとに増え続け、git の履歴に残り続ける。promote の許可パスも広げる必要がある。
+- 失っても再計算で同じ値に戻る（版を固定し、丸めている）。そのため Actions の cache に置く。決定性は、版の固定・丸め・Actions の cache で保つ。cache が消えても、同じ CPU 系統なら丸めた値は同じになる。
+
+### 本番の経路での再評価
+
+`evalRelevanceCli.ts --embed` は、`TopicScope` の既定値と `topicEmbedding.ts`（実モデル）を、評価セットのテーマごとの候補全体をプールとして通す。2026-10-10、M 系 CPU での結果:
+
+| 行 | P | R | F1 | TP/FP/FN | 公開済み 残る on/off |
+|---|---|---|---|---|---|
+| 本番 段階 1（既定値、z なし） | 0.85 | 0.68 | 0.76 | 53/9/25 | 31/41 · 2/109 |
+| 本番 段階 2（embedding+terms） | **0.87** | **0.77** | **0.82** | 60/9/18 | 33/41 · 3/109 |
+
+上の推奨行（scores ファイルから計算した値）と一致した。初回は 375 件を約 24 s で埋め込み（RSS 約 300 MB）、キャッシュが温まった 2 回目は 0.1 s だった。
+
+### 注意
+
+- `onnxruntime-node` は、推論の後に `process.exit()` を呼ぶと macOS で異常終了する（rc 134）。テーマの CLI は `process.exitCode` を使っているので問題ない。新しい CLI で埋め込みを使うときも `process.exit()` は呼ばないこと。
+- optionalDependency なので、`pnpm install` をするすべての CI ジョブにも入る（取得するのは約 128 MB、展開後は約 380 MB）。重さが問題になったら、別パッケージに分けて生成ジョブだけで入れる。
+- 41 D7 の「方針の `theme_min_generated_at` を進める」は、マージして作り直すときに行う。進めると、今の未監査公開（GNN・MoE）は作り直すまで非公開になる。
+
 ## 再実行
 
 ```sh
@@ -162,6 +201,8 @@ npm i --prefix <emb> @huggingface/transformers@3
 pnpm exec tsx apps/pipeline/src/lineage/theme/eval/computeRelevanceEmbeddings.ts --transformers <emb> --model-cache <emb>/models
 # 比較（オフライン・約 10 s）
 pnpm exec tsx apps/pipeline/src/lineage/theme/eval/evalRelevanceCli.ts [--failures] [--json]
+# 本番の経路（TopicScope + topicEmbedding.ts、実モデル）の行を足す（R2-11）
+pnpm exec tsx apps/pipeline/src/lineage/theme/eval/evalRelevanceCli.ts --embed --model-cache <dir> --vector-cache <dir>
 ```
 
 正解ファイルは `relevance-eval-v1.json`（380 件、1.3 MB）、埋め込みスコアは `relevance-eval-v1.scores.json`。標本の取り出しと正解付けは手作業で行った（取り出しは sha1 順の決まった標本で、手順は上に書いたとおり）。

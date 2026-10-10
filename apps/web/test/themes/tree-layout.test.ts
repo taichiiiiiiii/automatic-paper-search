@@ -27,6 +27,7 @@ import {
   matchesYear,
   SPARSE_EDGE_THRESHOLD,
   SPARSE_NODE_THRESHOLD,
+  sparseLineageNotice,
   UNKNOWN_YEAR,
   venueTierBucket,
 } from "../../lib/themes-tree";
@@ -302,5 +303,17 @@ describe("isSparseLineage", () => {
   });
   it("at or above both thresholds is not sparse", () => {
     expect(isSparseLineage(SPARSE_NODE_THRESHOLD, SPARSE_EDGE_THRESHOLD)).toBe(false);
+  });
+});
+
+describe("sparseLineageNotice", () => {
+  it("states the counts and does not promise a scheduled regeneration", () => {
+    const text = sparseLineageNotice(7, 3);
+    expect(text).toContain("(7 件 / 3 edges)");
+    expect(text).toContain(
+      "論文が少ないうちは家系図が薄くなります。作り直しで密になることがあります。",
+    );
+    // There is no weekly (Sunday) regeneration of themes.
+    expect(text).not.toMatch(/毎週|日曜|熟成/);
   });
 });

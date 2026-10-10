@@ -25,6 +25,7 @@ import type { ThemePaper } from "./openalexWork.js";
 import { guardRelation } from "./relationGuard.js";
 import { deriveS2Relation, type S2RelationContext } from "./s2Relations.js";
 import { filterOffTopicRefs } from "./seedFilters.js";
+import { prepareTopicGate, type TopicEmbedder, type TopicGateMeta } from "./topicEmbedding.js";
 import type { TopicScope } from "./topicScope.js";
 
 type Paper = ThemePaper;
@@ -77,6 +78,9 @@ export interface BFSResult {
   /** R2-2d: candidates the BFS identified as another ID of a node already
    * in the graph (same title, preprint vs venue version) and folded into it. */
   titleMerged: number;
+  /** R2-11: how the topic gate judged candidates (`meta.topic_gate`);
+   * `null` when the gate is off / no scope. */
+  topicGate: TopicGateMeta | null;
 }
 
 export interface RunBfsOptions {
@@ -93,6 +97,12 @@ export interface RunBfsOptions {
   /** R2-10 (design 41 D6): classify edges from Semantic Scholar citation
    * evidence first. `null`/omitted = the pre-R2-10 path only. */
   s2Relations?: S2RelationContext | null;
+  /** R2-11 (design 41 D7): embedding relevance for the topic gate. With
+   * an embedder the seeds' references/citations are prefetched once
+   * (the same cached `fetchRelated` calls the BFS makes) and embedded as
+   * the z-score pool; on any failure the term-only rule applies.
+   * `null`/omitted = term-only rule. */
+  topicEmbedder?: TopicEmbedder | null;
 }
 
 /** Counts LLM calls / unusable answers around a provider. */
@@ -181,6 +191,12 @@ interface PendingCandidate {
  * {@link confirmSupportAdmissions} after the cross-node pass. A candidate with the same title as a
  * node already in (or pending for) the graph is folded into that node
  * (`TitleIdentity`), so one work never appears twice.
+ *
+ * R2-11 (design 41 D7): by default neither the allowlist nor support
+ * admits on its own and there are no provisional citing papers; with
+ * `options.topicEmbedder` each candidate also gets an embedding z-score
+ * (`topicEmbedding.ts`) and `TopicScope.admits` applies the
+ * embedding+terms rule. `BFSResult.topicGate` records which rule ran.
  */
 export async function runBfsAndDescendants(
   seeds: readonly Paper[],
@@ -211,6 +227,43 @@ export async function runBfsAndDescendants(
     titles.register(sid, seed);
     frontier.push([seed, 0]);
     if (scope === null || scope.isOnTopic(seed)) onTopic.add(sid);
+  }
+
+  // R2-11: embedding z-scores over the depth-1 pool (all seeds, their
+  // references and citing papers), computed once before any admission.
+  const descWidth = Math.max(Math.floor(width / 2), 4);
+  let relevance: Awaited<ReturnType<typeof prepareTopicGate>>["relevance"] = null;
+  let topicGate: TopicGateMeta | null = null;
+  if (scope?.options.gate) {
+    const embedder = options.topicEmbedder ?? null;
+    const pool: Paper[] = [];
+    if (embedder !== null) {
+      for (const seed of seeds) {
+        for (const [kind, limit] of [
+          ["references", width * 4],
+          ["citations", descWidth * 4],
+        ] as const) {
+          try {
+            // No completeness ledger here: the BFS call below records it.
+            const got = await fetchRelated(seed.paperId, kind, limit, deps, null);
+            pool.push(...got.filter((p) => p.abstract));
+          } catch {
+            // The BFS fetch below retries and records the failure.
+          }
+        }
+      }
+    }
+    ({ relevance, meta: topicGate } = await prepareTopicGate({
+      scope,
+      seeds,
+      pool,
+      embedder,
+      logger: deps.logger,
+    }));
+    deps.logger?.warn(
+      `topic gate: method=${topicGate.method} pool=${topicGate.pool_size}` +
+        (topicGate.fallback_reason ? ` (fallback: ${topicGate.fallback_reason})` : ""),
+    );
   }
 
   let classifyAttempted = 0;
@@ -257,11 +310,11 @@ export async function runBfsAndDescendants(
     }
     // Support is only granted in the deferred pass, so that a candidate's
     // edges are created exactly once, from every supporting anchor.
-    const why = scope.admits(candidate, 0);
+    const why = scope.admits(candidate, 0, relevance?.z(cid));
     if (why === null) return false;
     pending.delete(cid);
     titles.register(cid, candidate);
-    if (why === "topic") onTopic.add(cid);
+    if (why === "topic" || why === "embedding") onTopic.add(cid);
     return true;
   };
 
@@ -271,7 +324,7 @@ export async function runBfsAndDescendants(
   const gateDescendant = (candidate: Paper): boolean => {
     const cid = candidate.paperId;
     if (scope === null || nodes.has(cid)) return true;
-    const why = scope.admitsDescendant(candidate);
+    const why = scope.admitsDescendant(candidate, relevance?.z(cid));
     if (why === null) {
       descendantsRejected += 1;
       return false;
@@ -298,6 +351,7 @@ export async function runBfsAndDescendants(
     allParents = allParents.filter((p) => p.abstract);
     allParents = filterOffTopicRefs(allParents, { maxSeedCite });
     allParents = canonicalise(allParents, current.paperId);
+    if (relevance !== null) await relevance.ensure(allParents);
     if (scope !== null) allParents = allParents.filter((p) => gate(p, current, "parent"));
 
     const influential = allParents.filter((p) => p._is_influential !== false);
@@ -341,13 +395,13 @@ export async function runBfsAndDescendants(
 
   // #55: descendants direction.
   let descAdded = 0;
-  const descWidth = Math.max(Math.floor(width / 2), 4);
   for (const seed of seeds) {
     const sid = seed.paperId;
     let allChildren = await fetchRelated(sid, "citations", descWidth * 4, deps, completeness);
     allChildren = allChildren.filter((c) => c.abstract);
     allChildren = filterOffTopicRefs(allChildren, { maxSeedCite });
     allChildren = canonicalise(allChildren, sid);
+    if (relevance !== null) await relevance.ensure(allChildren);
     if (scope !== null) {
       allChildren = allChildren.filter((c) => c.paperId === sid || gateDescendant(c));
     }
@@ -392,7 +446,7 @@ export async function runBfsAndDescendants(
   if (scope !== null) {
     for (const [cid, entry] of pending) {
       if (nodes.has(cid)) continue;
-      if (scope.admits(entry.paper, entry.links.size) === null) {
+      if (scope.admits(entry.paper, entry.links.size, relevance?.z(cid)) === null) {
         topicRejected += 1;
         continue;
       }
@@ -421,8 +475,14 @@ export async function runBfsAndDescendants(
     }
     topicRejected += descendantsRejected;
     deps.logger?.warn(
-      `topic gate: kept ${topicRejected} off-topic candidate(s) out (${descendantsRejected} citing paper(s) whose title is not about the theme); admitted ${topicAdmittedBySupport} by support (>= ${scope.options.minSupport} on-topic links, confirmed after the cross-node pass)`,
+      `topic gate: kept ${topicRejected} off-topic candidate(s) out (${descendantsRejected} citing paper(s) whose title is not about the theme); ` +
+        (scope.options.minSupport > 0
+          ? `admitted ${topicAdmittedBySupport} by support (>= ${scope.options.minSupport} on-topic links, confirmed after the cross-node pass)`
+          : "support admission off"),
     );
+    if (topicGate !== null && relevance !== null && relevance.unscored > 0) {
+      topicGate = { ...topicGate, unscored: relevance.unscored };
+    }
   }
   if (titleMerged > 0) {
     deps.logger?.warn(
@@ -443,6 +503,7 @@ export async function runBfsAndDescendants(
     provisional,
     onTopicIds: onTopic,
     titleMerged,
+    topicGate,
   };
 }
 

@@ -43,6 +43,7 @@ import {
   NODE_H,
   NODE_W,
   type Relation,
+  sparseLineageNotice,
   X_AXIS_MODES,
   type XAxisMode,
 } from "../../lib/themes-tree";
@@ -811,8 +812,7 @@ export function LineageTree({
           role="status"
           className="mt-2 rounded-md border border-rule bg-surface-2 px-3 py-2 text-xs text-ink-muted"
         >
-          🌱 このテーマは家系図がまだ薄いです ({artifact.nodes.length} 件 / {artifact.edges.length}{" "}
-          edges)。引用グラフが熟成すると毎週日曜の再生成で密になります。
+          {sparseLineageNotice(artifact.nodes.length, artifact.edges.length)}
         </p>
       )}
 

@@ -77,6 +77,29 @@ jobs:
       - name: Setup pnpm
         uses: ./.github/actions/setup-pnpm
 
+      # R2-11 (design 41 D7): the topic gate embeds candidates with
+      # Xenova/bge-small-en-v1.5 (q8, ~35 MB, revision pinned in
+      # apps/pipeline/src/lineage/theme/topicEmbedding.ts). Model files are
+      # keyed by model + revision; vectors (~3 KB per paper, keyed by
+      # model + revision + sha256(text) inside the files) roll forward per
+      # run. Both live in the git-ignored lineage cache, never in git. A
+      # cache miss only costs a download / re-embedding; if the model is
+      # unavailable the generator falls back to the term-only rule and
+      # records meta.topic_gate.method = "terms".
+      - name: Restore topic-embedding model
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: data/state/lineage-cache/models
+          key: topic-embedding-model-Xenova-bge-small-en-v1.5-ea104dacec62c0de699686887e3f920caeb4f3e3
+
+      - name: Restore topic-embedding vectors
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: data/state/lineage-cache/embeddings
+          key: topic-embedding-vectors-ea104dacec62-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            topic-embedding-vectors-ea104dacec62-
+
       - name: Generate theme lineage
         # User input goes through env var only (never spliced into the
         # shell command line), so command-substitution-style attacks are

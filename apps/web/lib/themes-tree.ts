@@ -485,3 +485,11 @@ export const SPARSE_EDGE_THRESHOLD = 5;
 export function isSparseLineage(nodeCount: number, edgeCount: number): boolean {
   return nodeCount < SPARSE_NODE_THRESHOLD || edgeCount < SPARSE_EDGE_THRESHOLD;
 }
+
+/** One-line hint shown under a sparse lineage. There is no scheduled
+ * regeneration (themes are rebuilt only on request / by an operator), so
+ * the copy must not promise one (the old text claimed a weekly Sunday
+ * rebuild). */
+export function sparseLineageNotice(nodeCount: number, edgeCount: number): string {
+  return `🌱 このテーマは家系図がまだ薄いです (${nodeCount} 件 / ${edgeCount} edges)。論文が少ないうちは家系図が薄くなります。作り直しで密になることがあります。`;
+}

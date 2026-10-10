@@ -184,18 +184,60 @@ describe("root choice", () => {
 });
 
 describe("TopicScope.admits", () => {
-  it("admits on topic, foundational, or with enough support; gate off admits all", () => {
+  it("R2-11 default: only a theme-term match admits (no allowlist, no support)", () => {
     const scope = gnn();
+    expect(DEFAULT_TOPIC_SCOPE_OPTIONS).toMatchObject({
+      minSupport: 0,
+      admitFoundational: false,
+      zLo: 0,
+      zHi: 1.0,
+    });
     expect(scope.admits(SURVEY, 0)).toBe("topic");
+    expect(scope.admits({ title: "Attention Is All You Need" }, 0)).toBeNull();
+    expect(scope.admits({ title: "Structure-from-Motion Revisited" }, 99)).toBeNull();
+    expect(scope.supportSuffices(99)).toBe(false);
+    expect(gnn({ gate: false }).admits({ title: "SfM" }, 0)).toBe("topic");
+  });
+
+  it("the pre-R2-11 allowlist / support admission stays available as an opt-in", () => {
+    const scope = gnn({ minSupport: 2, admitFoundational: true });
     expect(scope.admits({ title: "Attention Is All You Need" }, 0)).toBe("foundational");
     expect(scope.admits({ title: "Structure-from-Motion Revisited" }, 1)).toBeNull();
     expect(scope.admits({ title: "Structure-from-Motion Revisited" }, 2)).toBe("support");
     expect(gnn({ minSupport: 3 }).admits({ title: "SfM" }, 2)).toBeNull();
-    expect(
-      gnn({ admitFoundational: false }).admits({ title: "Attention Is All You Need" }, 0),
-    ).toBeNull();
-    expect(gnn({ gate: false }).admits({ title: "SfM" }, 0)).toBe("topic");
-    expect(DEFAULT_TOPIC_SCOPE_OPTIONS.minSupport).toBe(2);
+  });
+
+  it("with an embedding z: (term match AND z >= 0) OR z >= 1.0", () => {
+    const scope = gnn();
+    const off = { title: "Structure-from-Motion Revisited" };
+    // Term match: kept unless the embedding puts it below the pool mean.
+    expect(scope.admits(SURVEY, 0, 0)).toBe("topic");
+    expect(scope.admits(SURVEY, 0, -0.01)).toBeNull();
+    // No term match: needs a high z.
+    expect(scope.admits(off, 0, 0.99)).toBeNull();
+    expect(scope.admits(off, 0, 1.0)).toBe("embedding");
+    // The allowlist no longer admits by itself, but an allowlisted paper
+    // that passes the rule is reported as foundational.
+    const attn = { title: "Attention Is All You Need" };
+    expect(scope.admits(attn, 0, 0.5)).toBeNull();
+    expect(scope.admits(attn, 0, 1.2)).toBe("foundational");
+    // Support (opt-in) still needs z >= zLo; null z falls back to terms.
+    expect(gnn({ minSupport: 2 }).admits(off, 2, 0.1)).toBe("support");
+    expect(gnn({ minSupport: 2 }).admits(off, 2, -0.1)).toBeNull();
+    expect(scope.admits(SURVEY, 0, null)).toBe("topic");
+    // Custom thresholds.
+    expect(gnn({ zLo: 0.5, zHi: 2 }).admits(SURVEY, 0, 0.4)).toBeNull();
+    expect(gnn({ zLo: 0.5, zHi: 2 }).admits(off, 0, 1.5)).toBeNull();
+  });
+
+  it("citing papers with an embedding z: (title about the theme AND z >= 0) OR z >= 1.0", () => {
+    const scope = gnn();
+    expect(scope.admitsDescendant(SURVEY, 0.2)).toBe("topic");
+    expect(scope.admitsDescendant(SURVEY, -0.2)).toBeNull();
+    // Component title / abstract-only: only a high z admits.
+    expect(scope.admitsDescendant(SUPERGLUE, 0.9)).toBeNull();
+    expect(scope.admitsDescendant(SUPERGLUE, 1.1)).toBe("topic");
+    expect(scope.admitsDescendant({ title: "UltraAttn" }, 1.3)).toBe("topic");
   });
 });
 
@@ -253,7 +295,7 @@ describe("runBfsAndDescendants topic gate", () => {
     });
     const result = await runBfsAndDescendants(
       [SEED_A, SEED_B],
-      { ...BFS_OPTS, topicScope: gnn() },
+      { ...BFS_OPTS, topicScope: gnn({ minSupport: 2 }) },
       deps,
     );
     expect(result.nodes.has("gcn")).toBe(true);
@@ -290,10 +332,29 @@ describe("runBfsAndDescendants topic gate", () => {
     const deps = bfsDeps({ seedA: [ref(SFM)], offSeed: [ref(SFM)] });
     const result = await runBfsAndDescendants(
       [SEED_A, offSeed],
-      { ...BFS_OPTS, topicScope: gnn() },
+      { ...BFS_OPTS, topicScope: gnn({ minSupport: 2 }) },
       deps,
     );
     expect(result.nodes.has("sfm")).toBe(false);
+  });
+
+  it("R2-11 default: a reference shared by two seeds is not admitted by support", async () => {
+    const deps = bfsDeps({
+      seedA: [ref(ON_TOPIC), ref(SLAM), ref(SFM)],
+      seedB: [ref(SFM)],
+    });
+    const result = await runBfsAndDescendants(
+      [SEED_A, SEED_B],
+      { ...BFS_OPTS, topicScope: gnn() },
+      deps,
+    );
+    expect(result.nodes.has("gcn")).toBe(true);
+    expect(result.nodes.has("sfm")).toBe(false);
+    expect(result.nodes.has("slam")).toBe(false);
+    expect(result.topicAdmittedBySupport).toBe(0);
+    expect(result.provisional.size).toBe(0);
+    // No embedder: the term rule ran, recorded for meta.topic_gate.
+    expect(result.topicGate).toMatchObject({ method: "terms", model: null });
   });
 });
 
@@ -425,14 +486,25 @@ describe("_topic_terms in theme_aliases.json", () => {
 });
 
 describe("CLI topic flags", () => {
-  it("parses --no-topic-gate and --topic-min-support (default 2)", () => {
-    expect(parseArgs(["--theme", "X"])).toMatchObject({ topicGate: true, topicMinSupport: 2 });
+  it("parses --no-topic-gate, --no-topic-embedding and --topic-min-support (default 0)", () => {
+    expect(parseArgs(["--theme", "X"])).toMatchObject({
+      topicGate: true,
+      topicMinSupport: 0,
+      topicEmbedding: true,
+    });
     expect(
-      parseArgs(["--theme", "X", "--no-topic-gate", "--topic-min-support", "3"]),
-    ).toMatchObject({ topicGate: false, topicMinSupport: 3 });
+      parseArgs([
+        "--theme",
+        "X",
+        "--no-topic-gate",
+        "--topic-min-support",
+        "3",
+        "--no-topic-embedding",
+      ]),
+    ).toMatchObject({ topicGate: false, topicMinSupport: 3, topicEmbedding: false });
   });
 
-  it("forwards them to buildThemeLineage and rejects a support below 1", async () => {
+  it("forwards them to buildThemeLineage and rejects a negative support", async () => {
     const seen: BuildThemeLineageOptions[] = [];
     const outDir = mkdtempSync(join(tmpdir(), "topic-cli-"));
     const outPath = join(outDir, "lineage.json");
@@ -446,9 +518,18 @@ describe("CLI topic flags", () => {
       await runThemeCli(["--theme", "GNN", "--topic-min-support", "3"], { deps, buildFn }),
     ).toBe(0);
     expect(seen[0]?.topicScope).toEqual({ gate: true, minSupport: 3 });
+    expect(seen[0]?.topicEmbedding).toBe(true);
     expect(
-      await runThemeCli(["--theme", "GNN", "--topic-min-support", "0"], { deps, buildFn }),
-    ).toBe(2);
+      await runThemeCli(["--theme", "GNN", "--topic-min-support", "0", "--no-topic-embedding"], {
+        deps,
+        buildFn,
+      }),
+    ).toBe(0);
+    expect(seen[1]?.topicScope).toEqual({ gate: true, minSupport: 0 });
+    expect(seen[1]?.topicEmbedding).toBe(false);
+    expect(await runThemeCli(["--theme", "GNN", "--topic-min-support=-1"], { deps, buildFn })).toBe(
+      2,
+    );
   });
 });
 
@@ -482,8 +563,15 @@ describe("offline admission re-application", () => {
     ],
   };
 
-  it("drops the off-topic neighbourhood and moves the root to the subject seed", () => {
+  it("R2-11 default: DeepWalk (no theme term) is no longer kept by support", () => {
     const r = reapplyAdmission(artifact, gnn());
+    expect(r.kept.map((k) => k.id).sort()).toEqual(["gat", "gcn", "superglue", "survey"]);
+    expect(r.dropped.find((d) => d.id === "deepwalk")?.support).toBe(2);
+    expect(r.root).toBe("survey");
+  });
+
+  it("drops the off-topic neighbourhood and moves the root to the subject seed", () => {
+    const r = reapplyAdmission(artifact, gnn({ minSupport: 2 }));
     expect(r.kept.map((k) => k.id).sort()).toEqual([
       "deepwalk",
       "gat",
@@ -508,9 +596,11 @@ describe("offline admission re-application", () => {
     writeFileSync(path, JSON.stringify(artifact));
     const report = evaluateArtifact(path);
     expect(report.nodeCountBefore).toBe(8);
-    expect(report.nodeCountAfter).toBe(5);
+    expect(report.nodeCountAfter).toBe(4);
+    expect(evaluateArtifact(path, { minSupport: 2 }).nodeCountAfter).toBe(5);
     expect(runEvalCli([path, "--json"])).toBe(0);
     expect(runEvalCli([])).toBe(2);
-    expect(runEvalCli([path, "--min-support", "0"])).toBe(2);
+    expect(runEvalCli([path, "--json", "--min-support", "0"])).toBe(0);
+    expect(runEvalCli([path, "--min-support", "-1"])).toBe(2);
   });
 });

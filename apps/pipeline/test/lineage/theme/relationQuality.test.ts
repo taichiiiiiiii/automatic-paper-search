@@ -38,8 +38,10 @@ import {
 import { looksLikeDataset, TopicScope, themeTerms } from "../../../src/lineage/theme/topicScope.js";
 
 const MOE = "Mixture of Experts";
-const moe = () => new TopicScope(MOE, []);
+const moe = (options = {}) => new TopicScope(MOE, [], options);
 const gnn = (options = {}) => new TopicScope("Graph Neural Network", [], options);
+/** Pre-R2-11 opt-in: co-citation support admission (and provisional citing papers). */
+const SUPPORT = { minSupport: 2 };
 
 function paper(
   pid: string,
@@ -96,16 +98,20 @@ describe("descendant and dataset admission", () => {
   it("admits a citing paper only when its title is about the theme", () => {
     const s = moe();
     expect(s.admitsDescendant({ title: "Region-Aware MoE Network" })).toBe("topic");
-    // Theme only in the abstract / as a tool: provisional (needs non-seed support).
-    expect(
-      s.admitsDescendant({
-        title: "Channel Estimation for Pinching-Antenna Systems (PASS)",
-        abstract: "We use a mixture of experts (MoE) estimator.",
-      }),
-    ).toBe("provisional");
+    const channel = {
+      title: "Channel Estimation for Pinching-Antenna Systems (PASS)",
+      abstract: "We use a mixture of experts (MoE) estimator.",
+    };
+    // R2-11 default: theme only in the abstract / as a tool is rejected.
+    expect(s.admitsDescendant(channel)).toBeNull();
     expect(gnn().admitsDescendant({ title: "Feature Matching With Graph Neural Networks" })).toBe(
-      "provisional",
+      null,
     );
+    // With support admission opted in it is provisional (needs non-seed support).
+    expect(moe(SUPPORT).admitsDescendant(channel)).toBe("provisional");
+    expect(
+      gnn(SUPPORT).admitsDescendant({ title: "Feature Matching With Graph Neural Networks" }),
+    ).toBe("provisional");
     // No theme term: rejected; the foundational allowlist does not apply.
     expect(s.admitsDescendant({ title: "Point Transformer V3" })).toBeNull();
     expect(
@@ -124,8 +130,10 @@ describe("descendant and dataset admission", () => {
     expect(
       looksLikeDataset({ title: "Non-local Neural Networks", abstract: "We propose a block." }),
     ).toBe(false);
-    expect(gnn().admits(pets, 9)).toBeNull();
-    expect(gnn().admits({ title: "Non-local Neural Networks" }, 2)).toBe("support");
+    expect(gnn(SUPPORT).admits(pets, 9)).toBeNull();
+    expect(gnn(SUPPORT).admits({ title: "Non-local Neural Networks" }, 2)).toBe("support");
+    // R2-11 default: support admission is off.
+    expect(gnn().admits({ title: "Non-local Neural Networks" }, 9)).toBeNull();
   });
 });
 
@@ -177,7 +185,7 @@ describe("runBfsAndDescendants (R2-2d)", () => {
     const seed = paper("fa1", "FlashAttention: Fast and Memory-Efficient Exact Attention", {
       year: 2022,
     });
-    const scope = new TopicScope("Flash Attention", ["FlashAttention IO-Awareness"]);
+    const scope = new TopicScope("Flash Attention", ["FlashAttention IO-Awareness"], SUPPORT);
     const ptv3 = paper("ptv3", "Point Transformer V3: Simpler, Faster, Stronger", { year: 2024 });
     const gaze = paper("gaze", "MambaGaze-Stereo: Depth Estimation via Selective Attention", {
       year: 2025,
@@ -237,7 +245,7 @@ describe("runBfsAndDescendants (R2-2d)", () => {
     });
     const result = await runBfsAndDescendants(
       [seedA, seedB],
-      { ...OPTS, currentYear: 2026, topicScope: gnn() },
+      { ...OPTS, currentYear: 2026, topicScope: gnn(SUPPORT) },
       bfsDeps({ seedA: [glorot], seedB: [glorot] }),
     );
     expect(result.provisional).toEqual(new Set(["glorot"]));

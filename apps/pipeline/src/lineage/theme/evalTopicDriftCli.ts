@@ -12,7 +12,10 @@
  *
  *   pnpm exec tsx apps/pipeline/src/lineage/theme/evalTopicDriftCli.ts \
  *     data/published/themes/graph-neural-network/lineage.json [...] [--json]
- *     [--min-support N] [--no-foundational]
+ *     [--min-support N] [--foundational | --no-foundational]
+ *
+ * Defaults follow the live gate (R2-11: support off, allowlist off);
+ * `--min-support 2 --foundational` re-applies the pre-R2-11 rules.
  *
  * Exit 0 always on readable input (it is a report, not a gate); exit 2
  * on unreadable input or bad flags.
@@ -159,10 +162,11 @@ export function runEvalCli(argv: readonly string[]): number {
     const a = argv[i]!;
     if (a === "--json") json = true;
     else if (a === "--no-foundational") admitFoundational = false;
+    else if (a === "--foundational") admitFoundational = true;
     else if (a === "--min-support") {
       const v = Number(argv[++i]);
-      if (!Number.isInteger(v) || v < 1) {
-        process.stderr.write("error: --min-support needs a positive integer\n");
+      if (!Number.isInteger(v) || v < 0) {
+        process.stderr.write("error: --min-support needs a non-negative integer (0 = off)\n");
         return 2;
       }
       minSupport = v;
