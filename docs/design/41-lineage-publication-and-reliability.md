@@ -187,3 +187,45 @@ D5 の原則を生成側で守るようにした。**強い関係（extends・su
   - MoE と FA は作り直すと `lineage_relation_share` で非公開になる（基準は変えていない）。D5 の原則どおりの結果で、裏付けのない強い関係を基準を通すために残すことはしなかった。公開に戻すには、引用文の取りこぼし（MoE で S2 に引用文がない組、「inspired by [54] … [26]」のように 2 本を引く文）を減らすか、基準そのものを利用者が見直す
   - 生成の規則が変わったので、作り直してから `theme_min_generated_at` を進める（skill の手順どおり。この作業では進めていない）
   - S2 の被引用数を同一性の検査に渡していない（S2 の参考文献の取得は被引用側の `citationCount` も返すが、キャッシュに残していない）。テーマ外のノード（FA の DeepSeek-V3.2、ViT のレーダーの論文、MoE の Conditional Channel Gated Networks）はこの検査の対象外で、話題の判定（D7）の課題
+
+## 実装メモ（R2-23、引用文で裏付けられる強い関係の取りこぼし）
+
+R2-22 の後、手作業ラベルで正しい強い関係 31 本のうち残るのは 19 本だった（適合率 19/19）。**適合率を保ったまま、引用文（または引用元の論文自身の文）で裏付けられる強い関係を拾い直した。** D5 の原則（被引用論文を名指しし、手がかりの語を含む文が必要）と公開の基準（`theme_min_lineage_share` 0.10）は変えていない。LLM の新しい呼び出しはしていない。S2 と OpenAlex への問い合わせは調査用に少量（参考文献の再取得 103 件、被引用側の /citations 2 件、OpenAlex の要旨 2 件、S2 の著者 8 件のバッチ）で、結果は作業用のディレクトリに置き、`data/state` は書き換えていない。
+
+- **調べたこと（作業の指示 a〜e）**
+  - (a) S2 は 1 組に引用文を何本も返す（再取得した 304 組のうち 78 組が 5 本以上、最大 21 本）。キャッシュが **4 本で切っていた**ため、裏付けの文が落ちていた（ViViT ← ViT「We propose … inspired by … [18]」、MoCo v3 ← ViT「our modified ViT」、Swin ← ViT の対比の文はどれも 5 本目以降）。被引用側の `/citations` は同じ引用の記録を返すだけで、文は増えない
+  - (b) 複数の文献を引く文: 被引用論文の番号が推定できないと「inspired by [54] who … [26]」を名指しと判定できなかった。文脈どうしで共通の番号がちょうど 1 つならそれを被引用論文の番号とする（V-MoE ← Shazeer で 54）。逆に、手がかりの語が別の文献にかかる文（「prior works [8, 15] …, we study the frameworks that are based on Siamese networks, including MoCo [19]」の [15]、「… pooling layers based on the Graclus method [16]」の ChebNet）を除くため、**手がかりの語から節の終わり（「.」「;」）までに被引用論文の名前か番号があること**を条件にした（番号だけで示し複数の文献を引く文では、手がかりの直後の番号の組に含まれること）。「GCN [26] … as particular instances of our approach」は被引用論文が手がかりの前に来る型なので例外
+  - (c) 手がかりの語: 既存の規則が「builds upon」「based on」「adopt」「extend」「variant of」をすでに持っていた。足したのは「our modified ViT」（自分の改変版として名指し）、対比の主語としての引用元の自称（題名の「:」の前。「These merits make Swin Transformer suitable …, in contrast to previous Transformer based architectures [19]」）、文頭の「While / Whereas X …, we / our …」の対比。自称は継承の主語には使わない（「… a special case for GShard」「the Swin Transformer is manually adapted from a standard Transformer」のように目的語であることが多い）
+  - (d) 要旨: 引用文に強い手がかりがないとき、**引用元の論文自身の要旨の 1 文**が被引用論文を語で名指しし、手がかりの語の句（次の「,」まで）にその名前があれば根拠にする（規則名 `abstract_build` / `abstract_contrast`、方式は `s2_context_rule` のまま、理由欄は「（引用元の論文の要旨から規則で判定）。要旨: "…"」）。要旨は生成側がすでに持っている OpenAlex の要旨（転置索引から復元）で、新しい取得はしない。S2 の要旨は出版社が伏せることがあるので使わない。表示は引用文と同じく 1 文・約 300 字で、サイトは出典を「新しい論文の要旨」と表示する（`apps/web/lib/lineage/evidence.ts`、how-it-works にも一文を足した）。引用文の LLM は要旨を見ないので、要旨の根拠の辺には聞かない（省略の理由 `abstract_evidence`）
+  - (e) 版の違い: S2 は arXiv 版と会議版を 1 件にまとめていた（Switch・PVT・Segmenter・ShiftViT はどれも 1 件で、引用文 0 本）。版をまたいで集めても増えない。MMoE（KDD 2018）と AdaMV-MoE（ICCV 2023）など**出版社が参考文献を伏せている論文**（`data: null`、再取得した 103 件中 6 件）は引用元側から取れない。被引用側の `/citations` には引用文があった（MMoE ← Eigen は Eigen の被引用 501 件の中にある）が、文は「… is inspired by the MoE model [21] and the recent MoE layer [16, 31]」で主語が切れ、番号の組を Shazeer と共有するので裏付けにならない。被引用数の多い論文（ViT など数万件）では 10 ページでも探し切れないので、実装はしていない
+- **実装**（`classify/apiRelations.ts`・`classify/citedTarget.ts`・`theme/s2Citations.ts`・`theme/s2Relations.ts`）
+  - S2 のキャッシュは 1 組あたり最大 12 本・各 400 字（以前は 4 本）。4 本以上を新しい上限で保存した組には `x: 1` を付け、印のない 4 本の組は次の生成で引用元の論文を 1 回だけ取り直す（取り直せなければ保存済みの 4 本を使う）。今のキャッシュでは 57 件の引用元が対象。`s2 citations summary` に `context refreshes=` を足した
+  - **引用文を増やすと既存の規則の誤りも増える**ので、同時に否定の手がかりを足した: 実験のための構造の写し（「We use the same architecture as Kipf & Welling (2017)」）、データセットごとの設定の行（「PPI and Reddit: We use …」）、学習の手順（「We adopt learning rate warmup [16] for 40 epochs」）、分析・計測の手順の踏襲（「we follow Brown et al. (2020) and include all adjectives … our analysis」「we measure the runtime … following [20]」）、「Based on DeiT and Swin, we systematically analyze …」、「We use … similar to MobileNetV3 and LeViT」。ほかに、他の文献と共有する番号の組での対比は対象を特定しない（「Unlike CNN backbone networks [53, 21] …」）、「us-ing」（PDF の改行のハイフン）の us を一人称にしない、「we propose a strong baseline model SwinIR」の baseline を比較とみなさない
+  - LLM の答えが規則と別の強い関係のとき（Shazeer ← Eigen: 規則は contrasts、キャッシュの LLM は extends）の理由欄の注記を「規則の手がかり … がない」から「食い違う」に直した（関係は R2-22 どおり baseline_only）
+- **評価用の手作業ラベル**（`test/fixtures/lineage-eval/relation-precision-r223.json`、`relationPrecisionR223.test.ts`）: R2-22 の 58 本を 12 本の引用文と要旨の全文で更新し、新しく見えた文で裏付けられる 6 本を判定し直した（V-MoE ← Shazeer、Swin ← ViT、MoCo v3 ← ViT、ViViT ← ViT、SwinIR ← Swin、Shazeer ← Eigen）。公開中の辺 1 本（Switch → Expert Choice の contrasts、正）を足した。さらに、再取得した参考文献の中で R2-23 の規則が強い関係を変える組から 19 本を手作業で判定して `rule_cases` に入れた（規則の変化から選んだので難しい例に偏る）。R2-22 の 4 本の信号での回帰は `relationPrecisionR222.test.ts`（19 → 21 本、適合率 1.00）
+
+| ラベル | R2-22 の規則 | R2-23 の規則 |
+|---|---|---|
+| R2-22 の 58 本（4 本の引用文） | 19/19（適合率 1.00）、再現率 19/31 | 21/21（1.00）、21/31（V-MoE ← Shazeer、SwinIR ← Swin） |
+| 更新した 59 本（12 本の引用文＋要旨） | 23/23（1.00）、23/32 | **25/25（1.00）、25/32**（引用文で裏付けられる正しい関係 20/21） |
+| rule_cases 19 本 | 5/14（0.36） | 7/8（0.88） |
+| 合計 78 本 | 28/37（0.76） | **32/33（0.97）**、32/39 |
+
+  - R2-22 の規則のまま引用文を 12 本にすると、rule_cases で誤りが 9 本出る（上の否定の手がかりが要る理由）。R2-23 の誤り 1 本は MAE の「Following [15], we adopt an extra BatchNorm layer」で、実装の細部の踏襲を V-MoE の「Following [39], we place the MoEs on every other layer」（設計の採用、正）と規則で見分けられない（本番では引用文の LLM が確認する対象）
+  - 残る取りこぼし 7 本: FlashDecoding++ ← FlashAttention（手がかりの文なし）、MMoE 系 3 本と AdaMV-MoE ← Expert Choice（参考文献が伏せられている、または背景だけ）、Switch ← GShard（引用文 0 本）、Shazeer ← Eigen（規則と LLM の食い違い）
+- **広い範囲の確認**（公開中の辺以外も含む、規則だけ）: 再取得した 97 件の参考文献 5,122 組（引用文のある組）で、R2-22 の規則＋4 本と R2-23 の規則＋12 本＋要旨を比べると 36 組が変わる。新しい強い関係 17 本のうち手作業で正しいのは 15 本（誤りは上の MAE と、「But different from RPE …」を Swin の対比とした 1 本）。強い関係から外れた 19 本はどれも誤りだった（データセット・比較実験の相手・「skip connections を適用できる」・複数の文献の対比など）
+- **試算**（公開中の各辺を通し直し、品質表と同じ `themeGateChecks`。R2-22 と同じく落とすレコードを除く。A は今のキャッシュの 4 本の引用文、B は 12 本に取り直した引用文と OpenAlex の要旨。新しい LLM 呼び出しなし、キャッシュにない引用文 LLM の答えは規則のまま）
+
+| テーマ | 強い関係 R2-22 後 → A → B | lineage_relation_share R2-22 後 → A → B | 今の基準での公開（B） |
+|---|---|---|---|
+| graph-neural-network | 3 → 3 → 3 | 0.023 → 0.023 → 0.023 | 非公開のまま |
+| mixture-of-experts | 3 → 4 → 5 | 0.050 → 0.067 → 0.083 | 非公開のまま |
+| vision-transformer | 9 → 10 → 13 | 0.184 → 0.204 → 0.265 | 未監査で公開 |
+| flash-attention | 4 → 4 → 4 | 0.074 → 0.074 → 0.074 | 非公開のまま |
+
+  - 増えた 6 本はすべて手作業で正しい: V-MoE ← Shazeer（extends）、Expert Choice ← Switch（contrasts）、Swin ← ViT（contrasts）、MoCo v3 ← ViT・ViViT ← ViT（extends）、SwinIR ← Swin（要旨、extends）。分類率は変わらない（GNN 0.953、MoE 0.850、ViT 0.878、FA 0.944）
+  - 本番では引用文が増えた組の引用文 LLM の問い合わせはキャッシュに当たらない（入力が変わる）。聞くのは規則が強い関係を出した組だけなので、4 テーマの試算で 9 件
+- **残る課題**
+  - MoE（0.083）・FA（0.074）・GNN（0.023）はまだ基準に届かない。MoE は参考文献が伏せられた論文（MMoE・AdaMV-MoE）と引用文のない組（Switch ← GShard）、FA は版の系列（FA-2/3）以外の辺に継承の文がないことが原因で、規則で拾える裏付けの文は残っていない。基準を下げるか、引用元の本文（arXiv の LaTeX、design 44 §3）から文を取るかは利用者の判断
+  - 生成の規則と S2 キャッシュの形が変わったので、テーマを 1 本ずつ作り直してから `theme_min_generated_at` を進める（この作業では進めていない）
+  - 文脈から読む手法名が部品の略称を拾うことがある（SwinIR の「Swin Transformer layer (STL) [56]」から「STL」を Swin の名前とみなし、「We show the effects of … STL number」を引用文に選ぶ）。強い関係には影響しないが、背景の辺の引用文の選び方の課題
