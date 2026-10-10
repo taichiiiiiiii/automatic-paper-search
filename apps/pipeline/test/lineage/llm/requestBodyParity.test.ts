@@ -96,7 +96,9 @@ describe("request-body parity vs real CPython", () => {
 
   it("groq classifyRelation: verbatim CLASSIFY_SYSTEM_PROMPT + classify prompt match Python byte-for-byte", async () => {
     let captured: RequestWithRetryOptions | undefined;
-    const p = new GroqProvider({ enabled: true }, "gsk_x", {
+    // Pin the model the frozen Python fixture was captured with; this test
+    // checks prompt parity, not the (since changed) default model.
+    const p = new GroqProvider({ enabled: true, model: "llama-3.3-70b-versatile" }, "gsk_x", {
       fetchImpl: unreachableFetch,
       requestWithRetryFn: async (opts) => {
         captured = opts;

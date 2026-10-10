@@ -62,7 +62,7 @@ export function buildProvider(deps: BuildProviderDeps): {
   const geminiKey = env.geminiApiKey || ambientEnv.GEMINI_API_KEY || null;
 
   const makeGroq = (): { provider: LLMProvider; rateDelay: number } => {
-    const model = env.groqModel || "llama-3.3-70b-versatile";
+    const model = env.groqModel || "openai/gpt-oss-120b";
     const provider = new GroqProvider(
       { enabled: true, model, temperature: 0.1, timeoutSeconds: 30 },
       groqKey,

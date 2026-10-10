@@ -29,7 +29,9 @@ import {
 } from "./base.js";
 
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
-const DEFAULT_MODEL = "llama-3.3-70b-versatile";
+// llama-3.3-70b-versatile was shut down on 2026-08-16 (Groq deprecations);
+// openai/gpt-oss-120b is the recommended replacement.
+const DEFAULT_MODEL = "openai/gpt-oss-120b";
 // Conservative default below the 30 RPM free tier so a burst of
 // classifyRelation calls doesn't silently 429 the back half of the burst.
 const DEFAULT_RATE_LIMIT_RPM = 25;
