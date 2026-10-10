@@ -274,3 +274,34 @@ describe("lineage publication tiers and edge labels (design doc 41)", () => {
     ).toBe(false);
   });
 });
+
+// R2-10 (design 41 D6): the Semantic Scholar context-rule classification
+// method. Pinned against ajv directly (no frozen Python verdict exists).
+describe("lineage-artifact-v1 classification methods (design 41 D6)", () => {
+  function themeArtifact(method: string) {
+    const repoRoot = getRepoRoot();
+    const doc = JSON.parse(
+      readFileSync(
+        join(layoutFor(repoRoot).published, "themes", "graph-neural-network", "lineage.json"),
+        "utf-8",
+      ),
+    );
+    const edge = doc.edges[0];
+    edge.provenance.classification = {
+      method,
+      provider: null,
+      model: null,
+      prompt_version: null,
+      schema_version: "relation-classification-v1",
+    };
+    return doc;
+  }
+
+  it("accepts s2_context_rule and still rejects an unknown method", () => {
+    expect(validateArtifact("lineage-artifact-v1", themeArtifact("citation_heuristic")).ok).toBe(
+      true,
+    );
+    expect(validateArtifact("lineage-artifact-v1", themeArtifact("s2_context_rule")).ok).toBe(true);
+    expect(validateArtifact("lineage-artifact-v1", themeArtifact("s2_magic")).ok).toBe(false);
+  });
+});

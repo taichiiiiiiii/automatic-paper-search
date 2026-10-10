@@ -49,7 +49,7 @@
     "classification": {
       "type": "object", "additionalProperties": false,
       "required": ["method", "provider", "model", "prompt_version", "schema_version"],
-      "properties": {"method": {"enum": ["human_review", "llm", "citation_heuristic", "intent_map", "context_pattern", "year_cite", "title_version", "foundational_allowlist"]}, "provider": {"$ref": "#/$defs/nullableText"}, "model": {"$ref": "#/$defs/nullableText"}, "prompt_version": {"$ref": "#/$defs/nullableText"}, "schema_version": {"type": "string", "minLength": 1}},
+      "properties": {"method": {"enum": ["human_review", "llm", "citation_heuristic", "intent_map", "context_pattern", "year_cite", "title_version", "foundational_allowlist", "s2_context_rule"]}, "provider": {"$ref": "#/$defs/nullableText"}, "model": {"$ref": "#/$defs/nullableText"}, "prompt_version": {"$ref": "#/$defs/nullableText"}, "schema_version": {"type": "string", "minLength": 1}},
       "allOf": [{"if": {"properties": {"method": {"const": "llm"}}, "required": ["method"]}, "then": {"properties": {"provider": {"type": "string", "minLength": 1}, "model": {"type": "string", "minLength": 1}, "prompt_version": {"type": "string", "minLength": 1}}}}]
     },
     "reviewBinding": {
