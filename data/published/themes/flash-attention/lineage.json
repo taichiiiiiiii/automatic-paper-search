@@ -66,6 +66,34 @@
       "seed_paper_id": "add0a17fc98c4511ac65397a3e43a2a5a03376b5"
     },
     {
+      "id": "openalex:W4386076539",
+      "title": "EfficientViT: Memory Efficient Vision Transformer with Cascaded Group Attention",
+      "year": 2023,
+      "venue": "IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings",
+      "venue_tier": "A+",
+      "authors": [
+        "Xinyu Liu",
+        "Houwen Peng",
+        "Ningxin Zheng",
+        "Yuqing Yang",
+        "Han Hu"
+      ],
+      "kinds": [],
+      "citation_count": 882,
+      "github_stars": 0,
+      "tldr": "Vision transformers have shown great success due to their high model capabilities. However, their remarkable performance is accompanied by…",
+      "short_abstract": "Vision transformers have shown great success due to their high model capabilities. However, their remarkable performance is accompanied by heavy computation costs, which makes them unsuitable for real-time applications. In this paper, we propose a family of high-speed vision transformers named Efficient ViT. We find that the speed of existing transformer models is commonly bounded by memory inefficient operations, especially the tensor reshaping and element-wise functions in MHSA. Therefore, we design a new building block with a sandwich layout, i.e., using a single memory-bound MHSA between efficient FFN layers, which improves memory efficiency while enhancing channel communication. Moreover, we discover that the attention maps share high similarities across heads, leading to computational redundancy. To address this, we present a cascaded group attention module feeding attention heads with different splits of the full feature, which not only saves computation cost but also improves…",
+      "doi": "10.1109/cvpr52729.2023.01386",
+      "is_trending": true,
+      "aliases": [
+        [
+          "doi",
+          "10.1109/cvpr52729.2023.01386"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
       "id": "openalex:W4400611982",
       "title": "FlashAttention-3: Fast and Accurate Attention with Asynchrony and Low-precision",
       "year": 2024,
@@ -97,121 +125,12 @@
         ]
       ],
       "seed_paper_id": "d316270e9ecf7f73add37e0a3cee8569edcbb1e2"
-    },
-    {
-      "id": "openalex:W4402667891",
-      "title": "Point Transformer V3: Simpler, Faster, Stronger",
-      "year": 2024,
-      "venue": "IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings",
-      "venue_tier": "A+",
-      "authors": [
-        "Xiaoyang Wu",
-        "Li Jiang",
-        "Peng‐Shuai Wang",
-        "Zhijian Liu",
-        "Xihui Liu"
-      ],
-      "kinds": [],
-      "citation_count": 618,
-      "github_stars": 0,
-      "tldr": "This paper is not motivated to seek innovation within the attention mechanism. Instead, it focuses on overcoming the existing trade-offs…",
-      "short_abstract": "This paper is not motivated to seek innovation within the attention mechanism. Instead, it focuses on overcoming the existing trade-offs between accuracy and efficiency within the context of point cloud processing, leveraging the power of scale. Drawing inspiration from recent advances in 3D large-scale representation learning, we recognize that model performance is more influenced by scale than by intricate design. Therefore, we present Point Transformer V3 (PTv3), which prioritizes simplicity and efficiency over the accuracy of certain mechanisms that are minor to the over-all performance after scaling, such as replacing the precise neighbor search by KNN with an efficient serialized neighbor mapping of point clouds organized with specific patterns. This principle enables significant scaling, expanding the receptive field from 16 to 1024 points while remaining efficient (a 3 x increase in processing speed and a 10 x improvement in memory efficiency compared with its pre-decessor,…",
-      "doi": "10.1109/cvpr52733.2024.00463",
-      "is_trending": true,
-      "aliases": [
-        [
-          "doi",
-          "10.1109/cvpr52733.2024.00463"
-        ]
-      ],
-      "is_focus": false
-    },
-    {
-      "id": "openalex:W4402727033",
-      "title": "Efficient Deformable ConvNets: Rethinking Dynamic and Sparse Operator for Vision Applications",
-      "year": 2024,
-      "venue": "IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings",
-      "venue_tier": "A+",
-      "authors": [
-        "Yuwen Xiong",
-        "Zhiqi Li",
-        "Yuntao Chen",
-        "Feng Wang",
-        "Xizhou Zhu"
-      ],
-      "kinds": [],
-      "citation_count": 259,
-      "github_stars": 0,
-      "tldr": "We introduce Deformable Convolution v4 (DCNv4), a highly efficient and effective operator designed for a broad spectrum of vision…",
-      "short_abstract": "We introduce Deformable Convolution v4 (DCNv4), a highly efficient and effective operator designed for a broad spectrum of vision applications. DCNv4 addresses the limitations of its predecessor, DCNv3, with two key enhancements: 1. removing softmax normalization in spatial aggregation to enhance its dynamic property and expressive power and 2. optimizing memory access to minimize redundant operations for speedup. These improvements result in a significantly faster convergence compared to DCNv3 and a substantial increase in processing speed, with DCNv4 achieving more than three times the forward speed. DCNv4 demonstrates exceptional performance across various tasks, including image classification, instance and semantic segmentation, and notably, image generation. When integrated into generative models like U-Net in the latent diffusion model, DCNv4 outperforms its baseline, underscoring its possibility to enhance generative models. In practical applications, replacing DCNv3 with…",
-      "doi": "10.1109/cvpr52733.2024.00540",
-      "aliases": [
-        [
-          "doi",
-          "10.1109/cvpr52733.2024.00540"
-        ]
-      ],
-      "is_focus": false
-    },
-    {
-      "id": "openalex:W4404400671",
-      "title": "Uncovering Nested Data Parallelism and Data Reuse in DNN Computation with FractalTensor",
-      "year": 2024,
-      "venue": "ACM SIGOPS Symposium on Operating Systems Principles (SOSP)",
-      "venue_tier": "preprint",
-      "authors": [
-        "Siran Liu",
-        "C. Qi",
-        "Ying Cao",
-        "Chao Yang",
-        "Weifang Hu"
-      ],
-      "kinds": [],
-      "citation_count": 2,
-      "github_stars": 0,
-      "tldr": "To speed up computation, deep neural networks (DNNs) usually rely on highly optimized tensor operators. Despite the effectiveness, tensor…",
-      "short_abstract": "To speed up computation, deep neural networks (DNNs) usually rely on highly optimized tensor operators. Despite the effectiveness, tensor operators are often defined empirically with ad hoc semantics. This hinders the analysis and optimization across operator boundaries. FractalTensor is a programming framework that addresses this challenge. At the core, FractalTensor is a nested list-based abstract data type (ADT), where each element is a tensor with static shape or another FractalTensor (i.e., nested). DNNs are then de-fined by high-order array compute operators like map/reduce/scan and array access operators like window/stride on FractalTensor. This new way of DNN definition explicitly exposes nested data parallelism and fine-grained data access patterns, opening new opportunities for whole program analysis and optimization. To exploit these opportunities, from the FractalTensor-based code the compiler extracts a nested multi-dimensional dataflow graph called Extended Task…",
-      "doi": "10.1145/3694715.3695961",
-      "aliases": [
-        [
-          "doi",
-          "10.1145/3694715.3695961"
-        ]
-      ],
-      "is_focus": false
-    },
-    {
-      "id": "openalex:W4413168296",
-      "title": "MambaGaze-Stereo: Enhanced Depth Estimation for Autonomous Driving via Selective Attention and State Space Models",
-      "year": 2025,
-      "venue": "Procedia Computer Science",
-      "venue_tier": "preprint",
-      "authors": [
-        "Zhaoxuan Lu",
-        "Lyuchao Liao",
-        "Sijing Cai",
-        "Liangpeng Gao",
-        "Maolin Zhang"
-      ],
-      "kinds": [],
-      "citation_count": 0,
-      "github_stars": 0,
-      "tldr": "In autonomous driving, accurate and real-time depth estimation is essential for precise environmental perception and safe decision-making.…",
-      "short_abstract": "In autonomous driving, accurate and real-time depth estimation is essential for precise environmental perception and safe decision-making. However, traditional stereo matching approaches often struggle with capturing long-range dependencies, preserving fine details, and achieving robust disparity estimation in complex scenes. To address these challenges, we introduce MambaGaze-Stereo, a stereo matching framework based on State Space Models (SSM). Our framework includes a MobileNetV4-based feature extraction module, which significantly enhances multi-scale feature representation. We further incorporate a FlashAttention-based Feature Correlation Enhancement Module (FACEM), which utilizes an efficient attention mechanism to improve feature correlation and disparity estimation accuracy. Additionally, we propose the Mamba Selective Multi-Update Block (MSMUB), leveraging bidirectional selective attention to enable adaptive feature modeling across various scales, meeting the spatial…",
-      "doi": "10.1016/j.procs.2025.07.113",
-      "aliases": [
-        [
-          "doi",
-          "10.1016/j.procs.2025.07.113"
-        ]
-      ],
-      "is_focus": false
     }
   ],
   "edges": [
     {
       "src": "openalex:W4281758439",
-      "dst": "openalex:W4402667891",
+      "dst": "openalex:W4386076539",
       "rel": "extends",
       "relation": "extends",
       "conf": 0.65,
@@ -225,148 +144,13 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-metadata",
-          "sha256": "42f88590bd2b40ac42c65bcf6926818131f17f33076559f92980d20d1f99c4f2"
+          "sha256": "72c72edfefa9c532417277262793246ee8e11e8c1e783b48961740c2e73d20a4"
         },
         "classification": {
           "method": "foundational_allowlist",
           "provider": null,
           "model": null,
           "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4281758439",
-      "dst": "openalex:W4402727033",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.65,
-      "confidence": 0.65,
-      "rationale": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "116c161c95215055f07e663b13fc82f2ba83c6b535ad58f10c37c114c13f8c5e"
-        },
-        "classification": {
-          "method": "foundational_allowlist",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4281758439",
-      "dst": "openalex:W4413168296",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.65,
-      "confidence": 0.65,
-      "rationale": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "6a5e72ea154a7b300d310ff1a8537c9bf43444b38a2aa0c28e721d8c83eec7c7"
-        },
-        "classification": {
-          "method": "foundational_allowlist",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4384648639",
-      "dst": "openalex:W4402667891",
-      "rel": "contrasts",
-      "relation": "contrasts",
-      "conf": 0.85,
-      "confidence": 0.85,
-      "rationale": "B の Point Transformer V3 は注意機構の高速化ではなく、点群処理向けにシンプルなスケール重視設計を採用し、A の FlashAttention-2 の高速注意アルゴリズムとは根本的に異なるアプローチです。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "05f8838f35575d1303c57f1939526b4994b4446bc2434c029a1c65cfdcc49f5c"
-        },
-        "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v1",
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4400611982",
-      "dst": "openalex:W4404400671",
-      "rel": "contrasts",
-      "relation": "contrasts",
-      "conf": 0.85,
-      "confidence": 0.85,
-      "rationale": "B の FractalTensor は DNN 計算全体のネストされたデータ並列性とデータ再利用を明らかにし、A の FlashAttention-3 が注意機構の非同期低精度実装に特化している点と根本的に異なるアプローチである。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "03dbc57451ac62a4529a665270488859fb556bd60aa78aa36f4768c73d382063"
-        },
-        "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v1",
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4400611982",
-      "dst": "openalex:W4413168296",
-      "rel": "contrasts",
-      "relation": "contrasts",
-      "conf": 0.78,
-      "confidence": 0.78,
-      "rationale": "MambaGaze-Stereo の選択的注意機構は、FlashAttention-3 の GPU 非同期最適化とは根本的に異なる手法である",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "463e6ee8d60bdcae4d01c437c7c1dafe2be1e0b200ec5d1c6937e25c54ba02a0"
-        },
-        "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v1",
           "schema_version": "relation-classification-v1"
         }
       }
@@ -389,16 +173,25 @@
     ],
     "depth": 1,
     "since_year": 2018,
-    "generated_at": "2026-10-10T04:36:54.720000Z",
+    "generated_at": "2026-10-10T09:26:08.978000Z",
     "provenance_breakdown": {
-      "foundational_allowlist": 3,
-      "llm": 3
+      "foundational_allowlist": 1
     },
     "completeness": {
       "complete": true,
-      "expansions_attempted": 10,
+      "expansions_attempted": 1,
       "expansions_failed": 0,
       "supplement_failures": []
+    },
+    "topic_gate": {
+      "method": "embedding+terms",
+      "model": "Xenova/bge-small-en-v1.5",
+      "revision": "ea104dacec62c0de699686887e3f920caeb4f3e3",
+      "thresholds": {
+        "z_lo": 0,
+        "z_hi": 1
+      },
+      "pool_size": 41
     }
   }
 }
