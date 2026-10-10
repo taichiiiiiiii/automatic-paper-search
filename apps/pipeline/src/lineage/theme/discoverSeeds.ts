@@ -17,6 +17,7 @@
 
 import { createHash } from "node:crypto";
 import { existsSync } from "node:fs";
+import { codepointCompare } from "@paperpilot/core";
 import type { FetchLike } from "../../collect/http/requestWithRetry.js";
 import {
   type RequestWithRetryOptions,
@@ -38,7 +39,7 @@ import {
   filterTopicRelevantSeeds,
   type ThemeSeedLike,
 } from "./seedFilters.js";
-import { TopicScope } from "./topicScope.js";
+import { looksLikeDataset, TopicScope } from "./topicScope.js";
 import { readVersionedCache, writeVersionedCache } from "./versionedCache.js";
 
 // ---- S2 endpoints (seed discovery only; BFS over S2 is out of this
@@ -369,6 +370,9 @@ export async function discoverSeedsOpenalexPrimary(
     /** R2-14: S2 search when an OpenAlex search fails (default true;
      * needs `deps.cacheDir`). */
     s2SearchFallback?: boolean;
+    /** R2-17: how many ranked candidates to return (default `topN`). The
+     * search itself still asks for `topN`-sized pages. */
+    rankLimit?: number;
   },
   deps: OpenAlexDeps & { cacheDir?: string },
   completeness?: BuildCompletenessLike | null,
@@ -409,7 +413,7 @@ export async function discoverSeedsOpenalexPrimary(
   }
   return applySeedFilters(byId, {
     theme: options.theme,
-    topN: options.topN,
+    topN: options.rankLimit ?? options.topN,
     sinceYear: options.sinceYear,
     topicScope: options.topicScope,
   });
@@ -572,23 +576,29 @@ export async function discoverSeeds(
     primarySource?: "s2" | "openalex";
     /** R2-2b seed weighting; default `TopicScope.forTheme(theme)`. */
     topicScope?: TopicScope | null;
+    /** R2-17: return up to this many ranked candidates instead of `topN`
+     * (the caller picks the final seeds: identity, survey cap, canonical
+     * method seeds — `selectThemeSeeds`). */
+    rankLimit?: number;
   },
   deps: DiscoverSeedsDeps,
   completeness?: DiscoverSeedsCompleteness | null,
 ): Promise<ThemePaper[]> {
   const {
     keywords,
-    topN,
+    topN: searchTopN,
     sinceYear,
     useOpenalexFallback = true,
     theme = null,
     primarySource = "s2",
     topicScope,
+    rankLimit,
   } = options;
+  const topN = rankLimit ?? searchTopN;
 
   if (primarySource === "openalex") {
     return discoverSeedsOpenalexPrimary(
-      { keywords, topN, sinceYear, theme, topicScope },
+      { keywords, topN: searchTopN, sinceYear, theme, topicScope, rankLimit },
       deps,
       completeness,
     );
@@ -618,4 +628,143 @@ export async function discoverSeeds(
     `OpenAlex fallback added ${merged.length - primary.length} new seeds (final=${merged.length})`,
   );
   return merged;
+}
+
+// ---- R2-17: method-paper seeds (ERROR_PATTERNS 10) ----
+
+/** Surveys whose reference lists are mined for canonical method seeds. */
+export const CANONICAL_SEED_SURVEY_SOURCES = 3;
+/** References read per survey (S2 lists, influential / most-cited first). */
+export const CANONICAL_SEED_REFERENCE_LIMIT = 200;
+
+function identityKey(p: ThemePaper): string {
+  const arxiv = p.externalIds?.ArXiv;
+  if (typeof arxiv === "string" && arxiv)
+    return `arxiv:${arxiv.replace(/v\d+$/, "").toLowerCase()}`;
+  const doi = p.externalIds?.DOI;
+  if (typeof doi === "string" && doi) return `doi:${doi.toLowerCase()}`;
+  return `title:${String(p.title)
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, " ")
+    .trim()}`;
+}
+
+/**
+ * Canonical method papers of a theme from its surveys' reference lists
+ * (a survey of GNNs cites GCN, GraphSAGE, GAT, ChebNet, MPNN; one of MoE
+ * cites Shazeer 2017, GShard, Switch, GLaM, Mixtral). A candidate must
+ *  - not be a survey/review itself (shared `isSurveyLike`) nor a dataset /
+ *    benchmark paper,
+ *  - have an abstract and mention the theme (title or abstract,
+ *    `TopicScope.isOnTopic`: theme, aliases, `_topic_terms`), and
+ *  - pass `accept` (the caller's identity / dedup test).
+ * Ranked by how many of the surveys cite it, then citation count (the
+ * larger of OpenAlex's and Semantic Scholar's, `_s2_citation_count`), then
+ * title — deterministic. `sinceYear` is deliberately NOT applied: it
+ * bounds the theme SEARCH to recent work, while the canonical methods a
+ * lineage starts from are older by nature.
+ */
+export function rankCanonicalMethodSeeds(
+  refLists: readonly (readonly ThemePaper[])[],
+  options: { scope: TopicScope; limit: number; accept?: (paper: ThemePaper) => boolean },
+): ThemePaper[] {
+  const byKey = new Map<string, { paper: ThemePaper; support: number }>();
+  for (const list of refLists) {
+    const seenHere = new Set<string>();
+    for (const p of list) {
+      if (!p || typeof p.title !== "string" || !p.title) continue;
+      const key = identityKey(p);
+      if (seenHere.has(key)) continue;
+      seenHere.add(key);
+      const hit = byKey.get(key);
+      if (hit) {
+        hit.support += 1;
+        // Prefer the OpenAlex-mapped record (BFS-expandable id).
+        if (!hit.paper.paperId.startsWith("openalex:") && p.paperId.startsWith("openalex:")) {
+          hit.paper = p;
+        }
+      } else {
+        byKey.set(key, { paper: p, support: 1 });
+      }
+    }
+  }
+  const candidates = [...byKey.values()].filter(({ paper }) => {
+    if (!paper.abstract) return false;
+    if (isSurveyLike(paper) || looksLikeDataset(paper)) return false;
+    if (!options.scope.isOnTopic(paper)) return false;
+    return true;
+  });
+  const cites = (p: ThemePaper): number =>
+    Math.max(Number(p.citationCount) || 0, Number(p._s2_citation_count) || 0);
+  candidates.sort(
+    (a, b) =>
+      b.support - a.support ||
+      cites(b.paper) - cites(a.paper) ||
+      codepointCompare(String(a.paper.title), String(b.paper.title)),
+  );
+  const out: ThemePaper[] = [];
+  for (const { paper } of candidates) {
+    if (out.length >= options.limit) break;
+    if (options.accept && !options.accept(paper)) continue;
+    out.push(paper);
+  }
+  return out;
+}
+
+/**
+ * Pick the final seeds (R2-17, ERROR_PATTERNS 10). `ranked` = search
+ * candidates in seed-score order; `canonical` = canonical method papers
+ * from the surveys' references. A seed set made only of surveys produced
+ * survey-centric reading lists (GNN: 7/13 review nodes; MoE: a star of
+ * baseline_only edges around one survey), so:
+ *  1. up to `canonicalSlots` canonical method papers come first;
+ *  2. then non-survey search candidates in rank order (`preferred` ones);
+ *  3. then the remaining canonical papers, then the other non-survey
+ *     search candidates;
+ *  4. surveys only while no method paper at all was found (`maxSurveys`,
+ *     default 1), so a theme with nothing but surveys still builds.
+ * `accept(selected, candidate)` is the caller's identity / dedup test.
+ * The artifact contract still makes the highest-degree focus node the
+ * root; with method papers as seeds a survey no longer is the only hub.
+ */
+export function selectThemeSeeds<T extends SurveyPaperLike & { paperId?: unknown }>(
+  ranked: readonly T[],
+  canonical: readonly T[],
+  options: {
+    topN: number;
+    canonicalSlots: number;
+    maxSurveys?: number;
+    accept?: (selected: readonly T[], candidate: T) => boolean;
+    /** Search candidates taken in step 2 (default: all). The builder
+     * passes "title is about the theme" (`TopicScope.role === "subject"`),
+     * so "SuperGlue: … With Graph Neural Networks" waits for step 3b. */
+    preferred?: (candidate: T) => boolean;
+  },
+): T[] {
+  const { topN, canonicalSlots } = options;
+  const maxSurveys = options.maxSurveys ?? 1;
+  const accept = options.accept ?? (() => true);
+  const selected: T[] = [];
+  const ids = new Set<unknown>();
+  const take = (p: T): void => {
+    if (selected.length >= topN || ids.has(p.paperId)) return;
+    if (!accept(selected, p)) return;
+    selected.push(p);
+    ids.add(p.paperId);
+  };
+  const preferred = options.preferred ?? (() => true);
+  for (const p of canonical.slice(0, Math.max(0, canonicalSlots))) take(p);
+  for (const p of ranked) if (!isSurveyLike(p) && preferred(p)) take(p);
+  for (const p of canonical) take(p);
+  for (const p of ranked) if (!isSurveyLike(p)) take(p);
+  if (selected.length === 0) {
+    let surveys = 0;
+    for (const p of ranked) {
+      if (surveys >= maxSurveys) break;
+      const before = selected.length;
+      take(p);
+      if (selected.length > before) surveys += 1;
+    }
+  }
+  return selected;
 }

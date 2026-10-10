@@ -126,7 +126,12 @@ describe("seed ranking (applySeedFilters with a topic scope)", () => {
       cites: 5000,
       year: 2020,
     });
-    const subject = paper("s", "Graph Neural Networks for Molecules", { cites: 2000, year: 2020 });
+    // R2-17: "Graph Neural Networks for Molecules" is now an application
+    // title (component); a title about the theme itself stays subject.
+    const subject = paper("s", "Strategies for Pre-training Graph Neural Networks", {
+      cites: 2000,
+      year: 2020,
+    });
     const byId = new Map([
       ["c", component],
       ["s", subject],
@@ -236,7 +241,15 @@ describe("TopicScope.admits", () => {
     expect(scope.admitsDescendant(SURVEY, -0.2)).toBeNull();
     // Component title / abstract-only: only a high z admits.
     expect(scope.admitsDescendant(SUPERGLUE, 0.9)).toBeNull();
-    expect(scope.admitsDescendant(SUPERGLUE, 1.1)).toBe("topic");
+    // R2-17: without an abstract about the theme, z >= zHi + 0.25.
+    expect(scope.admitsDescendant(SUPERGLUE, 1.1)).toBeNull();
+    expect(scope.admitsDescendant(SUPERGLUE, 1.3)).toBe("topic");
+    expect(
+      scope.admitsDescendant(
+        { ...SUPERGLUE, abstract: "Graph neural networks match features. The GNN is attentional." },
+        1.1,
+      ),
+    ).toBe("topic");
     expect(scope.admitsDescendant({ title: "UltraAttn" }, 1.3)).toBe("topic");
   });
 });

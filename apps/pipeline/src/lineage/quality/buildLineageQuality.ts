@@ -23,6 +23,7 @@ import {
   validateDeepManifest,
   validateLineageArtifact,
 } from "../contract/v1.js";
+import { isSurveyLike } from "../shared/surveyLike.js";
 import {
   DEFAULT_MIN_CLASSIFIED_RATE,
   evidenceClassifiedRate,
@@ -1063,6 +1064,12 @@ export interface QualityPolicy {
   theme_min_generated_at?: string;
   /** Minimum edge count of a theme lineage (`edge_density`, R2-13; default 3). */
   theme_min_edges?: number;
+  /** Maximum share of survey/review nodes (`review_share`, R2-17; default 0.4). */
+  theme_max_review_share?: number;
+  /** Minimum share of lineage (non-baseline) relations (`lineage_relation_share`, R2-17; default 0.1). */
+  theme_min_lineage_share?: number;
+  /** Minimum node count (`node_count`, R2-17; default 8). */
+  theme_min_nodes?: number;
   [key: string]: unknown;
 }
 
@@ -1194,14 +1201,46 @@ export function manifestPayload(manifest: QualityManifest): Buffer {
  *    lineage of a few disconnected papers is not useful even when every
  *    one of its edges is evidence-backed — e.g. Flash Attention run
  *    38041334727: 4 nodes, 1 edge, FlashAttention 1/2/3 unconnected.
+ *  - `node_count` (R2-17): at least `minNodes` nodes (`theme_min_nodes`,
+ *    default {@link DEFAULT_THEME_MIN_NODES}); with 4 nodes one borderline
+ *    paper is already a 25% off-topic rate, so a tiny graph can neither be
+ *    judged by the 10% sample bar nor show a lineage.
+ *  - `review_share` (R2-17): at most `maxReviewShare` of the nodes are
+ *    surveys/reviews (shared `isSurveyLike`: publication type, title,
+ *    abstract/TL;DR). The GNN run with a single survey seed had 7/13 review
+ *    nodes — a reading list, not a method lineage.
+ *  - `lineage_relation_share` (R2-17): at least `minLineageShare` of the
+ *    edges carry a lineage relation (extends / successor / supersedes /
+ *    contrasts / ablation). The MoE run's 13 edges were all baseline_only in
+ *    a star around one survey.
  */
 export interface ThemeGate {
   minClassifiedRate: number;
   minGeneratedAt: string | null;
   minEdges: number;
+  minNodes: number;
+  maxReviewShare: number;
+  minLineageShare: number;
 }
 
 export const DEFAULT_THEME_MIN_EDGES = 3;
+export const DEFAULT_THEME_MIN_NODES = 8;
+export const DEFAULT_THEME_MAX_REVIEW_SHARE = 0.4;
+export const DEFAULT_THEME_MIN_LINEAGE_SHARE = 0.1;
+/** Relations that say something about lineage (everything but `baseline_only`). */
+export const LINEAGE_RELATIONS: ReadonlySet<string> = new Set([
+  "extends",
+  "successor",
+  "supersedes",
+  "contrasts",
+  "ablation",
+]);
+
+function nonNegative(value: unknown, fallback: number, max = Number.POSITIVE_INFINITY): number {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= max
+    ? value
+    : fallback;
+}
 
 export function themeGateFromPolicy(policy: QualityPolicy): ThemeGate | null {
   const rate = policy.theme_min_evidence_classified_rate;
@@ -1213,11 +1252,64 @@ export function themeGateFromPolicy(policy: QualityPolicy): ThemeGate | null {
   return {
     minClassifiedRate: typeof rate === "number" ? rate : DEFAULT_MIN_CLASSIFIED_RATE,
     minGeneratedAt: typeof at === "string" ? at : null,
-    minEdges:
-      typeof minEdges === "number" && Number.isFinite(minEdges) && minEdges >= 0
-        ? minEdges
-        : DEFAULT_THEME_MIN_EDGES,
+    minEdges: nonNegative(minEdges, DEFAULT_THEME_MIN_EDGES),
+    minNodes: nonNegative(policy.theme_min_nodes, DEFAULT_THEME_MIN_NODES),
+    maxReviewShare: nonNegative(policy.theme_max_review_share, DEFAULT_THEME_MAX_REVIEW_SHARE, 1),
+    minLineageShare: nonNegative(
+      policy.theme_min_lineage_share,
+      DEFAULT_THEME_MIN_LINEAGE_SHARE,
+      1,
+    ),
   };
+}
+
+const round3 = (x: number): number => Math.round(x * 1000) / 1000;
+
+/** R2-17 structure checks: node_count, review_share, lineage_relation_share. */
+export function themeStructureChecks(
+  data: Record<string, unknown>,
+  gate: Pick<ThemeGate, "minNodes" | "maxReviewShare" | "minLineageShare">,
+): QualityCheck[] {
+  const nodes = Array.isArray(data.nodes) ? data.nodes.filter(isMapping) : [];
+  const edges = Array.isArray(data.edges) ? data.edges.filter(isMapping) : [];
+  const out: QualityCheck[] = [];
+  const enough = nodes.length >= gate.minNodes;
+  out.push(
+    check(
+      "node_count",
+      enough ? "passed" : "failed",
+      nodes.length,
+      gate.minNodes,
+      enough ? [] : [`nodes:${nodes.length}<${gate.minNodes}`],
+    ),
+  );
+  const reviews = nodes.filter((n) => isSurveyLike(n)).map((n) => String(n.id ?? ""));
+  const reviewShare = nodes.length === 0 ? 0 : reviews.length / nodes.length;
+  const fewReviews = nodes.length > 0 && reviewShare <= gate.maxReviewShare;
+  out.push(
+    check(
+      "review_share",
+      fewReviews ? "passed" : "failed",
+      round3(reviewShare),
+      gate.maxReviewShare,
+      fewReviews ? [] : [`reviews:${reviews.length}/${nodes.length}`, ...sortedUnique(reviews)],
+    ),
+  );
+  const lineage = edges.filter(
+    (e) => typeof e.relation === "string" && LINEAGE_RELATIONS.has(e.relation),
+  ).length;
+  const lineageShare = edges.length === 0 ? 0 : lineage / edges.length;
+  const enoughLineage = edges.length > 0 && lineageShare >= gate.minLineageShare;
+  out.push(
+    check(
+      "lineage_relation_share",
+      enoughLineage ? "passed" : "failed",
+      round3(lineageShare),
+      gate.minLineageShare,
+      enoughLineage ? [] : [`lineage:${lineage}/${edges.length}`],
+    ),
+  );
+  return out;
 }
 
 export function themeGateChecks(
@@ -1259,6 +1351,7 @@ export function themeGateChecks(
       denseEnough ? [] : [`edges:${edgeCount}<${gate.minEdges}`, `nodes:${nodeCount}`],
     ),
   );
+  out.push(...themeStructureChecks(data, gate));
   if (gate.minGeneratedAt !== null) {
     let ok = false;
     if (generatedAt !== null) {

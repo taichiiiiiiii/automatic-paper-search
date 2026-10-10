@@ -298,7 +298,11 @@ export function workToPaperDict(work: Record<string, unknown>): ThemePaper | nul
     if (typeof v === "string" && v.trim()) externalIds[kOut] = v.trim();
   }
 
-  const abstract = decodeAbstractInvertedIndex(work.abstract_inverted_index);
+  // R2-17 (ERROR_PATTERNS 13): drop an abstract that belongs to another
+  // document; an S2-mapped paper then takes the S2 abstract
+  // (`s2Expansion.ts::mergeMapped`), and no abstract beats a wrong one.
+  const decoded = decodeAbstractInvertedIndex(work.abstract_inverted_index);
+  const abstract = abstractContradictsTitle(title, decoded) ? "" : decoded;
   const primaryLocation = (
     work.primary_location && typeof work.primary_location === "object" ? work.primary_location : {}
   ) as Record<string, unknown>;
@@ -337,4 +341,93 @@ export function workToPaperDict(work: Record<string, unknown>): ThemePaper | nul
       ? { publicationType: work.type.trim() }
       : {}),
   };
+}
+
+// ---- R2-17: abstract / title sanity (ERROR_PATTERNS 13) ----
+
+const SANITY_STOPWORDS = new Set([
+  "with",
+  "from",
+  "into",
+  "over",
+  "under",
+  "using",
+  "towards",
+  "toward",
+  "via",
+  "their",
+  "this",
+  "that",
+  "these",
+  "those",
+  "based",
+  "approach",
+  "method",
+  "methods",
+  "model",
+  "models",
+  "learning",
+  "deep",
+  "neural",
+  "network",
+  "networks",
+  "paper",
+  "study",
+  "analysis",
+  "efficient",
+  "fast",
+  "large",
+  "scale",
+  "novel",
+  "improved",
+  "beyond",
+  "without",
+  "through",
+]);
+
+function escapeRe(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
+ * True when `abstract` evidently belongs to another document than
+ * `title` (OpenAlex W4281758439, the FlashAttention paper, carries a note
+ * on FlashAttention-2's rounding error as its abstract). Two cheap tests:
+ *  - anachronism: the abstract names a LATER version of the paper's own
+ *    name (title "FlashAttention: …", abstract "FlashAttention-2 …",
+ *    "FlashAttention-3"); a paper cannot discuss its successors;
+ *  - no overlap: a title with >= 5 distinctive words (>= 4 letters, not
+ *    generic ML words) shares none of them (5-letter prefix) with a
+ *    full-length (>= 200 chars) abstract.
+ */
+export function abstractContradictsTitle(title: string, abstract: string): boolean {
+  if (!title || !abstract) return false;
+  const text = abstract.normalize("NFKC");
+  const short = (title.split(":", 1)[0] ?? "").normalize("NFKC").trim();
+  const vm = /^(.*?)(?:[\s-]*v?(\d{1,2}))?$/i.exec(short);
+  const base = (vm?.[1] ?? short).trim();
+  const own = vm?.[2] !== undefined ? Number(vm[2]) : 1;
+  if (base.length >= 4 && base.split(/\s+/).length <= 4) {
+    const body = base.split(/\s+/).map(escapeRe).join("[\\s-]+");
+    const re = new RegExp(
+      `(?<![\\p{L}\\p{N}])${body}(?:[\\s-]?v?|[\\s-])(\\d{1,2})(?![\\p{L}\\p{N}.])`,
+      "giu",
+    );
+    for (const m of text.matchAll(re)) {
+      const n = Number(m[1]);
+      if (n > own && n <= 20) return true;
+    }
+  }
+  const words = [
+    ...new Set(
+      title
+        .normalize("NFKC")
+        .toLowerCase()
+        .split(/[^\p{L}\p{N}]+/u)
+        .filter((w) => w.length >= 4 && !SANITY_STOPWORDS.has(w) && /\p{L}/u.test(w)),
+    ),
+  ];
+  if (words.length < 5 || text.length < 200) return false;
+  const lower = text.toLowerCase();
+  return !words.some((w) => lower.includes(w.slice(0, 5)));
 }

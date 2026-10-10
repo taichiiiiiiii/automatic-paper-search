@@ -26,6 +26,43 @@ import { readVersionedCache, writeVersionedCache } from "./versionedCache.js";
 const GITHUB_CACHE_VERSION = "github-stars-cache-v1";
 const GITHUB_CACHE_TTL_DAYS = 7;
 const GITHUB_DEFAULT_BUDGET = 80;
+/** R2-17 (ERROR_PATTERNS 13): a repo found by TITLE SEARCH (not the
+ * curated map) is kept only when its owner matches one of the paper's
+ * authors or it has at least this many stars. Unofficial ports with a
+ * handful of stars (`xrsrke/flashattention`, 5★, for FlashAttention;
+ * `YeongHyeon/DINO_MNIST-PyTorch` for DINO) were shown as "the" code. */
+export const GITHUB_SEARCH_MIN_STARS = 100;
+
+/** True when the repo owner looks like one of the authors: an author
+ * name token of >= 4 letters, a surname of >= 3 letters at either end, or
+ * a first-initial+surname / surname+first-initial handle appears in the
+ * lower-cased owner. */
+export function ownerMatchesAuthors(repoFull: string, authors: readonly unknown[]): boolean {
+  const owner = (repoFull.split("/", 1)[0] ?? "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  if (!owner) return false;
+  for (const a of authors) {
+    const name = typeof a === "string" ? a : "";
+    const tokens = name
+      .normalize("NFKD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .split(/[^a-z]+/)
+      .filter(Boolean);
+    if (tokens.length === 0) continue;
+    const first = tokens[0]!;
+    const last = tokens[tokens.length - 1]!;
+    if (tokens.some((t) => t.length >= 4 && owner.includes(t))) return true;
+    // Short surnames ("Dao" -> "Dao-AILab") only at either end of the handle.
+    if (last.length >= 3 && (owner.startsWith(last) || owner.endsWith(last))) return true;
+    if (
+      last.length >= 2 &&
+      (owner.includes(`${first[0]}${last}`) || owner.includes(`${last}${first[0]}`))
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
 
 interface GithubCacheEntry {
   stars: number;
@@ -150,7 +187,13 @@ export async function enrichGithubStars(
     if (!ax) continue;
     const cached = cache[ax];
     if (cached && new Date(cached.fetched_at).getTime() >= freshCutoff) {
-      if (cached.stars > 0) {
+      const cachedRepo = cached.url ? parseGithubRepoUrl(cached.url) : null;
+      const weakSearchHit =
+        cachedRepo !== null &&
+        !curated[ax] &&
+        cached.stars < GITHUB_SEARCH_MIN_STARS &&
+        !ownerMatchesAuthors(cachedRepo.join("/"), Array.isArray(node.authors) ? node.authors : []);
+      if (cached.stars > 0 && !weakSearchHit) {
         node.github_stars = cached.stars;
         if (cached.url && parseGithubRepoUrl(cached.url)) {
           node.github_url = cached.url;
@@ -171,10 +214,12 @@ export async function enrichGithubStars(
 
   let curatedHits = 0;
   let searchHits = 0;
+  let rejectedSearch = 0;
   let starsPositive = 0;
   for (const [node, ax] of lookedUp) {
     let repoFull: string | null = curated[ax] ?? null;
     let unavailable = false;
+    const fromSearch = !repoFull;
     if (repoFull) {
       curatedHits += 1;
     } else {
@@ -197,7 +242,18 @@ export async function enrichGithubStars(
     if (repoFull) {
       try {
         const fetched = await fetch(repoFull, { githubToken });
-        if (fetched !== null && fetched > 0) {
+        if (
+          fetched !== null &&
+          fetched > 0 &&
+          fromSearch &&
+          fetched < GITHUB_SEARCH_MIN_STARS &&
+          !ownerMatchesAuthors(repoFull, Array.isArray(node.authors) ? node.authors : [])
+        ) {
+          rejectedSearch += 1;
+          logger?.info(
+            `github: ignoring title-search hit ${repoFull} for ${ax} (${Math.trunc(fetched)} stars < ${GITHUB_SEARCH_MIN_STARS}, owner is not an author)`,
+          );
+        } else if (fetched !== null && fetched > 0) {
           stars = Math.trunc(fetched);
           url = `https://github.com/${repoFull}`;
           starsPositive += 1;
@@ -231,7 +287,7 @@ export async function enrichGithubStars(
 
   if (curatedHits || searchHits) {
     logger?.info(
-      `github stars resolution: curated=${curatedHits}, search=${searchHits}, stars>0=${starsPositive} (of ${lookedUp.length} looked up)`,
+      `github stars resolution: curated=${curatedHits}, search=${searchHits}, stars>0=${starsPositive}, rejected search hits=${rejectedSearch} (of ${lookedUp.length} looked up)`,
     );
   }
 
