@@ -374,7 +374,9 @@ describe("LIN-37 call site (build.ts:378): filterEdgesByRationale is actually ap
     });
     deps.buildProvider = () => ({
       provider: new FixedClassificationProvider({
-        relation: "extends",
+        // baseline_only: R2-22's relation guard rewrites an abstract-only
+        // extends (and its rationale) before the rationale filter runs.
+        relation: "baseline_only",
         confidence: 0.9,
         rationale: "xyz", // below MIN_RATIONALE_LEN (10) -> degenerate
       }),
@@ -423,7 +425,9 @@ describe("pyFloat write-site (p4-followups #24, build.ts:535 edgeForJson)", () =
     });
     deps.buildProvider = () => ({
       provider: new FixedClassificationProvider({
-        relation: "extends",
+        // baseline_only: an abstract-only extends is capped at 0.6 by the
+        // R2-22 relation guard, so it could not carry 1.0.
+        relation: "baseline_only",
         confidence: 1,
         rationale: "an LLM returned exactly 1.0 confidence for this specific pair",
       }),

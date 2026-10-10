@@ -52,7 +52,7 @@ export interface SurveyGuardChange {
   before: { relation: string; confidence: number };
   after: { relation: string; confidence: number };
   /** Why: the citing paper is survey-like, or a survey/dataset endpoint of a contrasts. */
-  reason: "citing_survey" | "contrasts_endpoint" | "contrasts_no_context";
+  reason: "citing_survey" | "contrasts_endpoint" | "contrasts_no_context" | "unbacked_strong";
   rationale: string;
 }
 
@@ -103,7 +103,9 @@ export function guardArtifact(
         ? "citing_survey"
         : g.rationale.startsWith("引用文に")
           ? "contrasts_no_context"
-          : "contrasts_endpoint",
+          : g.rationale.startsWith("引用文の裏付け")
+            ? "unbacked_strong"
+            : "contrasts_endpoint",
       rationale: g.rationale,
     });
     return {

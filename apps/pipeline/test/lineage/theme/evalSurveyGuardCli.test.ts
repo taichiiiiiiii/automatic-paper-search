@@ -38,7 +38,8 @@ const artifact = {
       conf: 0.75,
       confidence: 0.75,
       rationale: "r",
-      provenance: prov("llm"),
+      // R2-22: an abstract-only LLM supersedes would be rewritten (unbacked).
+      provenance: prov("title_version"),
     },
     {
       src: "openalex:W1",
@@ -78,7 +79,11 @@ const artifact = {
       conf: 0.8,
       confidence: 0.8,
       rationale: "r",
-      provenance: prov("llm"),
+      // R2-22: a citation-context LLM extends (quote-backed); an abstract-only
+      // LLM extends would be rewritten too (see the test below).
+      provenance: {
+        classification: { method: "llm", prompt_version: "relation-prompt-v4-context" },
+      },
     },
   ],
 };
@@ -104,6 +109,15 @@ describe("guardArtifact", () => {
     expect(edges[2]).toMatchObject({ relation: "baseline_only", confidence: 0.4 });
     expect(edges[0]!.relation).toBe("supersedes");
     expect(edges[4]!.relation).toBe("extends");
+  });
+
+  it("R2-22: rewrites an abstract-only LLM extends with no quote as unbacked_strong", () => {
+    const a = structuredClone(artifact);
+    a.edges = [{ ...a.edges[4]!, provenance: prov("llm") }];
+    const { report } = guardArtifact("x.json", a);
+    expect(report.changes.map((c) => [c.before.relation, c.after.relation, c.reason])).toEqual([
+      ["extends", "baseline_only", "unbacked_strong"],
+    ]);
   });
 
   it("keeps a title_version supersedes even into a survey", () => {

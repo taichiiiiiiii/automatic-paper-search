@@ -155,6 +155,33 @@ describe("deriveS2Relation routing", () => {
     expect((await deriveS2Relation(A, B, c))?.relation).toBe("baseline_only");
   });
 
+  it("R2-22: refers_to_cited=false cannot demote a build cue that names the cited paper in words", async () => {
+    // DiffPool <- GraphSAGE: "We use the “mean” variant of GRAPHSAGE [16] …",
+    // answered refers_to_cited=false by the context LLM.
+    const llm = fakeProvider(ANSWER({ refers_to_cited: false, relation: "background" }));
+    const c = ctx(
+      sourceWith([
+        ref([
+          "We use the mean variant of GCN [3] and apply our pooling layer after every two layers.",
+        ]),
+      ]),
+      llm,
+    );
+    const e = await deriveS2Relation(A, B, c);
+    expect(e).toMatchObject({ relation: "extends", provenance: "s2_context_rule" });
+    // A downgrade that reads the named sentence as use/comparison is accepted.
+    const use = fakeProvider(ANSWER({ refers_to_cited: true, relation: "uses_resource" }));
+    const c2 = ctx(
+      sourceWith([
+        ref([
+          "We use the mean variant of GCN [3] and apply our pooling layer after every two layers.",
+        ]),
+      ]),
+      use,
+    );
+    expect((await deriveS2Relation(A, B, c2))?.relation).toBe("baseline_only");
+  });
+
   it("maps an LLM contrast about A to contrasts and a plain comparison to baseline_only", async () => {
     const contrast = fakeProvider(ANSWER({ relation: "compares_with", contrast: true }));
     const c1 = ctx(
@@ -170,8 +197,8 @@ describe("deriveS2Relation routing", () => {
     expect((await deriveS2Relation(A, B, c2))?.relation).toBe("baseline_only");
   });
 
-  it("influential without a cue is asked; not influential and no cue is not", async () => {
-    const llm = fakeProvider(ANSWER({ relation: "uses_resource" }));
+  it("R2-22: influential without a cue is not asked (the LLM cannot create a strong claim)", async () => {
+    const llm = fakeProvider(ANSWER({ relation: "builds_on" }));
     const c = ctx(
       sourceWith([
         ref(["GCN [3] is a widely used spectral graph convolution model."], { influential: true }),
@@ -179,7 +206,8 @@ describe("deriveS2Relation routing", () => {
       llm,
     );
     expect((await deriveS2Relation(A, B, c))?.relation).toBe("baseline_only");
-    expect(llm.completeJson).toHaveBeenCalledTimes(1);
+    expect(llm.completeJson).not.toHaveBeenCalled();
+    expect(c.stats.skipped.no_strong_claim).toBe(1);
   });
 
   it("an unavailable LLM keeps the rule result (contrasts only for a single-target cue)", async () => {

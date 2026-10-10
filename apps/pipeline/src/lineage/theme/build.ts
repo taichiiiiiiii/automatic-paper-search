@@ -77,6 +77,7 @@ import {
   resolveAndDedupSeeds,
   resolveSeedPaperId,
 } from "./identity.js";
+import { suspectMergedRecords } from "./nodeIdentityGuard.js";
 import type { ThemePaper } from "./openalexWork.js";
 import { S2CitationSource } from "./s2Citations.js";
 import { S2Expansion } from "./s2Expansion.js";
@@ -708,6 +709,27 @@ export async function buildThemeLineage(
     );
   }
 
+  // R2-22: mis-merged bibliographic records (an OpenAlex slide-deck record
+  // carrying ChebNet's citations). Dropped non-focus nodes take their edges
+  // with them; flagged ones stay and are listed in meta for the audit.
+  const suspects = suspectMergedRecords(
+    nodes.values() as Iterable<Record<string, unknown> & { id: string }>,
+    {
+      focusIds: new Set(seedIds),
+      currentYear: wallClockNow().getUTCFullYear(),
+    },
+  );
+  const droppedRecords = new Set(suspects.filter((s) => s.action === "dropped").map((s) => s.id));
+  if (droppedRecords.size > 0) {
+    for (const id of droppedRecords) nodes.delete(id);
+    edges = edges.filter((e) => !droppedRecords.has(e.src) && !droppedRecords.has(e.dst));
+  }
+  for (const s of suspects) {
+    logger.warn(
+      `suspect record: ${s.action} ${s.id} (${s.reasons.join(", ")}) ${JSON.stringify(s.title)}`,
+    );
+  }
+
   const cleanedEdges = filterEdgesByRationale(edges);
 
   logClassifySummary(
@@ -850,6 +872,8 @@ export async function buildThemeLineage(
       // "Inductive Representation Learning on Large Graphs"), so the
       // seed-topic audit accepts them on this provenance instead.
       ...(canonicalSeedIds.length > 0 ? { canonical_seeds: canonicalSeedIds } : {}),
+      // R2-22: records the identity guard dropped or flagged.
+      ...(suspects.length > 0 ? { suspect_records: suspects } : {}),
     },
   };
 

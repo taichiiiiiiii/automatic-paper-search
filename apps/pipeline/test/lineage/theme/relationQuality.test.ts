@@ -371,7 +371,7 @@ describe("relation guard", () => {
     expect(guardRelation(s2Contrast, resnet, vit)).toBe(s2Contrast);
     const ctxLlm = { ...contrasts, promptVersion: CONTEXT_PROMPT_VERSION };
     expect(guardRelation(ctxLlm, resnet, vit)).toBe(ctxLlm);
-    const ext = { ...contrasts, relation: "extends" as const };
+    const ext = { ...contrasts, relation: "extends" as const, provenance: "s2_context_rule" };
     expect(guardRelation(ext, resnet, vit)).toBe(ext);
     // R2-15: a survey as the CITED (parent) side may still be extended.
     expect(guardRelation(ext, { title: "A Survey of X" }, vit)).toBe(ext);
@@ -448,7 +448,13 @@ describe("relation guard", () => {
     expect(guardRelation(tv, parent, child)).toBe(tv);
     const survey = { title: "A Survey of X" };
     for (const relation of ["baseline_only", "ablation", "unrelated"] as const) {
-      const cls: DerivedEdge = { relation, confidence: 0.8, rationale: "r", provenance: "llm" };
+      // s2_context_rule: R2-22 rewrites an abstract-only LLM ablation anyway.
+      const cls: DerivedEdge = {
+        relation,
+        confidence: 0.8,
+        rationale: "r",
+        provenance: "s2_context_rule",
+      };
       expect(guardRelation(cls, { title: "Method" }, survey)).toBe(cls);
     }
   });
@@ -526,6 +532,8 @@ describe("relation-prompt-v4 rules (R2-16)", () => {
 
 // ---- offline eval ----
 
+const S2_RULE = { classification: { method: "s2_context_rule" } };
+
 describe("offline eval: merge + gate + guard with relation histograms", () => {
   it("reports merged duplicates, dropped users of the theme and guarded contrasts", () => {
     const title = "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale";
@@ -548,8 +556,9 @@ describe("offline eval: merge + gate + guard with relation histograms", () => {
         },
       ],
       edges: [
-        { src: "arxiv", dst: "cvt", rel: "extends", relation: "extends" },
-        { src: "iclr", dst: "cvt", rel: "extends", relation: "extends" },
+        // R2-22: quote-backed (rule) extends; an unbacked one would be guarded.
+        { src: "arxiv", dst: "cvt", rel: "extends", relation: "extends", provenance: S2_RULE },
+        { src: "iclr", dst: "cvt", rel: "extends", relation: "extends", provenance: S2_RULE },
         { src: "arxiv", dst: "survey", rel: "contrasts", relation: "contrasts" },
         { src: "cvt", dst: "survey", rel: "contrasts", relation: "contrasts" },
         { src: "pets", dst: "arxiv", rel: "contrasts", relation: "contrasts" },
