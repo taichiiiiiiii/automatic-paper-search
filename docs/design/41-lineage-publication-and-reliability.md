@@ -82,7 +82,7 @@
 ## 実装メモ（R2-10、D6 の段階 1）
 
 - **流れ**（`apps/pipeline/src/lineage/theme/s2Relations.ts`）: 関係ごとに、引用する側の論文の Semantic Scholar 参考文献（`/paper/{id}/references`、`contexts,intents,isInfluential`）を引き、規則 v2（`classify/apiRelations.ts`。評価と同じコード）で分類する。基礎論文の一覧と題名の版（`foundational_allowlist`・`title_version`）は今までどおり先に決まる
-  - 手がかりの語（〜を基に・〜と違い・〜より良い・データを使う、結果表の行）があるか、`isInfluential` で文脈がある関係だけ LLM に聞く。渡すのは引用文（最大 4 文）と被引用側の題名・著者・年（`llm/contextPrompt.ts`、`relation-prompt-v3-context`）。要旨の prompt（`relation-prompt-v2`）は文面を変えていないので、キャッシュ済みの答えはそのまま使える
+  - 手がかりの語（〜を基に・〜と違い・〜より良い・データを使う、結果表の行）があるか、`isInfluential` で文脈がある関係だけ LLM に聞く。渡すのは引用文（最大 4 文）と被引用側の題名・著者・年（`llm/contextPrompt.ts`、`relation-prompt-v3-context`、R2-16 で v4）。要旨の prompt（`relation-prompt-v2`、R2-16 で v4）
   - 種類名への対応: builds_on→`extends`、compares_with は「〜と違い」の語が被引用側だけを指す（引用文が 1 本だけを引いている）ときか LLM が対比と答えたときだけ `contrasts`、それ以外の compares_with・uses_resource・background→`baseline_only`
   - S2 に引用文も意図もない関係（`cites_unspecified`）と、S2 が引用側を知らない関係は今までの道（`--llm-strict` なら要旨の LLM、使えなければ年と引用の推測＝未分類）
   - LLM が使えないときは規則の結果が残る。来歴の方式は `s2_context_rule`（契約・JSON Schema・web の閉じた集合に追加。分類率では「分類済み」）。理由欄は日本語の一文＋引用文（240 字まで）
@@ -94,3 +94,22 @@
   - 速さ: 鍵なし 1.1 秒に 1 回、鍵（`PAPERPILOT_S2_API_KEY`、`x-api-key`）あり 1 秒に 1 回。429 は `Retry-After` か 2〜60 秒の指数で待ち、6 回で諦める（その回は「S2 データなし」扱い、キャッシュしない）
 - **見積もり**（R2-9 のキャッシュで今の 4 テーマの関係を置き換えた場合）: LLM が動けば分類率はどれも 100%。LLM が止まっても flash-attention 80%（4/5）、graph-neural-network 83%（29/35）、mixture-of-experts 92%（11/12）、vision-transformer 91%（99/109）で、D3 の 8 割を満たす。LLM の呼び出しは 1 テーマあたり 2〜31 回（引用文の prompt 1〜21、要旨の prompt 1〜10）
 
+## 実装メモ（R2-16、関係の根拠の厳格化）
+
+第二審査（`ERROR_PATTERNS` 2・3・4・7・8・9）と UX 確認（P1-4・P1-5）で見つかった誤りを、引用文の扱いで直した。
+
+- **規則 v3**（`classify/apiRelations.ts::classifyApiRelationV3`、本番の `classifyS2Pair` が使う。v1・v2 は評価用に残す）。引用文を 1 文ずつ見る
+  - 使える文だけを見る（`classify/citedTarget.ts`）: 参考文献の行（`[17] Tri Dao, …`）、番号だけの文（`[19, 41].`）、40 字未満、番号を除いて英字 25 字未満は捨てる
+  - その文が被引用論文を指すかを決める: 題名の前半（コロンの前）・その頭字語（PVT）・最初の単語（Swin）・第一著者の「et al.」、または推定した参考文献番号（参考文献の行、名前の直後の番号、1 本だけを引く文の多数決）が文にあれば「名指し」。1 本だけを引く文も被引用論文を指すとみなす。3 本以上を引いて名指しのない文、別の番号だけを引く文は「背景」まで
+  - 否定の手がかりを先に見る: 実験設定の踏襲（`we follow [x] and train …`、`following [x], we use …views`、`same setting as`）、`for (a) fair comparison`、アブレーション（`we also try … in [11]`）、比較語（outperform・surpass・compared with）。これらは `compares_with` か `uses_resource`（どちらも `baseline_only`）で、`builds_on` にはならない
+  - 継承の手がかりは引用側が主語のときだけ（we・our・「this paper/work」で始まる文）。`adapted from`・`built upon`・`based on`・`extends` を受け身でも拾い、S2 の意図より優先する（Swin → Video Swin は extends）
+  - 比較語は被引用論文を名指ししていれば一人称がなくても比較とみなす（`outperforming PVT-Small [34]`）
+  - 「意図＝methodology かつ influential」の弱い規則は、被引用論文を名指しする文があるときだけ
+- **contrasts**: 規則で「〜と違い」が被引用論文を名指しする（または 1 本だけを引く）文にあるときだけ。引用文の LLM が対比と答えても、規則側にその手がかりがなければ `baseline_only`。要旨だけの LLM・unarXive の文型・推定の contrasts は `relationGuard` で `baseline_only` に直す（規則 0）。サーベイ・データセットの端点の規則はそのまま
+- **引用文の表示**: 規則を発火させた文で、被引用論文を指す文だけを出す。発火した文が出せないとき・背景の規則で該当する文がないときは「被引用論文を特定できる引用文はない。」と書く。引用文の LLM には使える文だけを渡す
+- **理由欄**: 規則の理由は題名の短い名前（コロンの前、無ければ 32 字まで）で書く。LLM の理由の「A」「B」「論文 A」「B (名前)」は短い名前に置き換える（`titleizeRationale`）。基礎文献の理由は日本語で、ファイル名を出さない
+- **prompt**: 要旨の prompt は `relation-prompt-v4`（contrasts を候補から外す・サーベイは baseline_only のみ・題名の短い名前で書く・例も名前入り）。会議・深掘りの系譜も同じ prompt なので同じ版にした。引用文の prompt は `relation-prompt-v4-context`（両論文の短い名前を渡し、A/B と書かないよう指示）。キャッシュの鍵は prompt 本文の hash と版を含むので、古い答えは使われない
+- **基礎文献リスト**: 引用の記録（S2 の意図・引用文）がある組には使わない。BFS では S2 が先（R2-13 から）で、`deriveRelation` でも意図か引用文があればリストの extends を出さない
+- **引用と年代だけの推定（`citation_heuristic`）**: 関係を `successor` から `baseline_only` に変えた。契約の関係には「未分類」がなく、`successor` は研究の流れの継承を主張してしまう（Swin → ConvNeXt は競合なのに後継と表示された）。`baseline_only` は「引用しているが継承は主張しない」最も弱い値で、理由欄は「関係の種類は未分類」と書く。分類率（D3）は方式で数えるので変わらない
+- **総説の判定**: 掲載誌でも判定する（ACM Computing Surveys、IEEE Communications Surveys & Tutorials、IEEE Signal Processing Magazine、Foundations and Trends、Annual Review of、Nature Reviews など）
+- **公開中の 4 テーマでの試算**（S2 キャッシュのみ、LLM なし。`data/published` は書き換えない）: 第二審査で指摘された関係のうち、この作業の範囲の 31 本で正しいものが 5 本 → 31 本。範囲外の 3 本（PVT v2 の版検出、改訂版による逆向き 2 本）は別の作業。contrasts 2 → 0、successor 6 → 1（残りは要旨 LLM の LINE → SDNE）、英語の基礎文献の理由 14 → 0、A/B だけの理由 11 → 0、番号だけの引用文 2 → 0。R2-9 の手作業ラベル 79 本では、builds_on の適合率 6/12 → 4/6、完全一致 60 → 61
