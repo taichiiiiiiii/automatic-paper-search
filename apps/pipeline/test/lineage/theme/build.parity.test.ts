@@ -26,6 +26,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import type { FetchInit, HttpResponseLike } from "../../../src/collect/http/requestWithRetry.js";
 import { type BuildThemeLineageDeps, buildThemeLineage } from "../../../src/lineage/theme/build.js";
 import { generateManifest } from "../../../src/lineage/theme/generateThemesManifest.js";
+import { OPENALEX_WORK_SELECT } from "../../../src/lineage/theme/openalexFetch.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const FIXTURES = join(HERE, "fixtures", "mamba-openalex");
@@ -216,7 +217,14 @@ describe("buildThemeLineage <-> build_theme_lineage.py parity (OpenAlex-primary)
       // Compare params as maps, not strings — Python's dict insertion
       // order and the Node URLSearchParams iteration order needn't
       // match for this to be a faithful "same request" comparison.
-      expect(captured[i]!.params).toEqual(
+      // R2-19 deliberate deviation: list requests now trim fields with
+      // `select=OPENALEX_WORK_SELECT` (bandwidth only; same request
+      // otherwise). Strip it where the Python golden had no `select`.
+      const params = { ...captured[i]!.params };
+      if (!("select" in pythonRequests[i]!.params) && params.select === OPENALEX_WORK_SELECT) {
+        delete params.select;
+      }
+      expect(params).toEqual(
         Object.fromEntries(
           Object.entries(pythonRequests[i]!.params).map(([k, v]) => [k, String(v)]),
         ),

@@ -63,6 +63,8 @@ export interface Env {
   githubToken: string | null;
   s2ApiKey: string | null;
   openalexEmail: string | null;
+  /** R2-19: OpenAlex API key (`PAPERPILOT_OPENALEX_API_KEY`, else `OPENALEX_API_KEY`). */
+  openalexApiKey?: string | null;
   slackWebhookUrl: string | null;
   geminiApiKey: string | null;
   claudeApiKey: string | null;
@@ -255,6 +257,10 @@ export function loadEnv(dotenvPath: string | null = null, startDir?: string): En
     githubToken: get("PAPERPILOT_GITHUB_TOKEN"),
     s2ApiKey: get("PAPERPILOT_S2_API_KEY"),
     openalexEmail: get("PAPERPILOT_OPENALEX_EMAIL"),
+    openalexApiKey:
+      (get("PAPERPILOT_OPENALEX_API_KEY") ?? "").trim() ||
+      (get("OPENALEX_API_KEY") ?? "").trim() ||
+      null,
     slackWebhookUrl: get("PAPERPILOT_SLACK_WEBHOOK_URL"),
     geminiApiKey: get("PAPERPILOT_GEMINI_API_KEY"),
     claudeApiKey: get("PAPERPILOT_CLAUDE_API_KEY"),

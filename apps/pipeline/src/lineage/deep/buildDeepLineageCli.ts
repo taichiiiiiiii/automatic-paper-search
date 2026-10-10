@@ -9,6 +9,7 @@ import { fileURLToPath } from "node:url";
 import { pyFloat, pyJsonDumps } from "@paperpilot/core";
 import { LAYOUT_MODE, type LayoutMode, layoutFor } from "@paperpilot/core/layout";
 import { loadEnv } from "../../collect/config/env.js";
+import { installOpenAlexGate } from "../../collect/http/openalexGate.js";
 import type { LLMProvider } from "../../collect/llm/provider.js";
 import { atomicWriteText } from "../../collect/state/atomic.js";
 import { CliUsageError, parseArgs as parseFlags } from "../../shared/cli/argparse.js";
@@ -103,7 +104,7 @@ export function envFilePath(repoRoot: string, mode: LayoutMode = LAYOUT_MODE): s
  */
 export function defaultDeps(repoRoot: string = DEFAULT_REPO_ROOT): RunBuildDeepLineageCliDeps {
   const env = loadEnv(envFilePath(repoRoot));
-  const fetchImpl: BuildLineageDeps["fetchImpl"] = async (url, init) => {
+  const rawFetchImpl: BuildLineageDeps["fetchImpl"] = async (url, init) => {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), init.timeoutMs);
     let resp: Response;
@@ -120,6 +121,8 @@ export function defaultDeps(repoRoot: string = DEFAULT_REPO_ROOT): RunBuildDeepL
     }
     return {
       status: resp.status,
+      // R2-19: the OpenAlex budget gate reads X-RateLimit-* headers.
+      headers: resp.headers,
       json: async () => {
         try {
           return await resp.json();
@@ -129,6 +132,8 @@ export function defaultDeps(repoRoot: string = DEFAULT_REPO_ROOT): RunBuildDeepL
       },
     };
   };
+  // R2-19: OpenAlex key + daily-budget breaker; one summary line on exit.
+  const { fetchImpl } = installOpenAlexGate(rawFetchImpl, { apiKey: env.openalexApiKey });
   return {
     fetchImpl,
     cacheDir: cacheDirFor(repoRoot),

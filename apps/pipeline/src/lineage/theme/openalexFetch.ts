@@ -21,6 +21,7 @@
  * LLM fallback... build pipeline is not broken, Phase J is just inactive").
  */
 
+import { OPENALEX_MAX_OR_VALUES } from "../../collect/http/openalexGate.js";
 import type { FetchLike } from "../../collect/http/requestWithRetry.js";
 import {
   type RequestWithRetryOptions,
@@ -41,6 +42,26 @@ import { openalexWorkShape } from "./payloadShape.js";
 
 export const OPENALEX_WORKS_URL = "https://api.openalex.org/works";
 export const OPENALEX_PER_PAGE_MAX = 200;
+/** R2-19: ids per `filter=openalex:W1|W2|…` request — OpenAlex's OR-value
+ * maximum, so a 200-reference expansion costs 2 list credits, not 4. */
+export const OPENALEX_IDS_PER_BATCH = OPENALEX_MAX_OR_VALUES;
+/** R2-19: the Work fields `workToPaperDict` / `openalexWorkShape` read
+ * (`select=` trims the payload; the credit cost is per request). */
+export const OPENALEX_WORK_SELECT = [
+  "id",
+  "title",
+  "display_name",
+  "publication_year",
+  "created_date",
+  "doi",
+  "ids",
+  "type",
+  "cited_by_count",
+  "abstract_inverted_index",
+  "authorships",
+  "primary_location",
+  "locations",
+].join(",");
 
 /** Thrown instead of returning data when an OpenAlex result MUST NOT be
  * cached (mirrors `build_lineage.py::OpenAlexTransientError`). `partial`
@@ -219,14 +240,18 @@ export async function fetchOpenAlexWorksByIds(
     .filter((s): s is string => Boolean(s));
   if (cleaned.length === 0) return [];
   const results: ThemePaper[] = [];
-  const chunkSize = 50;
+  const chunkSize = OPENALEX_IDS_PER_BATCH;
   let chunks = 0;
   let failedChunks = 0;
   for (let i = 0; i < cleaned.length; i += chunkSize) {
     chunks += 1;
     const chunk = cleaned.slice(i, i + chunkSize);
     const params = withEmail(
-      { filter: `openalex:${chunk.join("|")}`, "per-page": chunk.length },
+      {
+        filter: `openalex:${chunk.join("|")}`,
+        "per-page": chunk.length,
+        select: OPENALEX_WORK_SELECT,
+      },
       deps,
     );
     const resp = (await get(OPENALEX_WORKS_URL, params, deps)) as HttpResponseLike | null;
@@ -432,7 +457,12 @@ export async function fetchRelatedViaOpenalex(
     return [];
   }
   const params = withEmail(
-    { filter: `cites:${normalized}`, "per-page": pageSize, sort: "cited_by_count:desc" },
+    {
+      filter: `cites:${normalized}`,
+      "per-page": pageSize,
+      sort: "cited_by_count:desc",
+      select: OPENALEX_WORK_SELECT,
+    },
     deps,
   );
   const resp = (await get(OPENALEX_WORKS_URL, params, deps)) as HttpResponseLike | null;

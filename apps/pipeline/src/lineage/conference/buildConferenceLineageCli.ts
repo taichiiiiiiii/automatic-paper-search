@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 import { pyJsonDumps } from "@paperpilot/core";
 import { layoutFor } from "@paperpilot/core/layout";
 import { validateConferenceSlug } from "@paperpilot/core/slug";
+import { installOpenAlexGate } from "../../collect/http/openalexGate.js";
 import type { FetchInit, HttpResponseLike } from "../../collect/http/requestWithRetry.js";
 import { atomicWriteText } from "../../collect/state/atomic.js";
 import { parseArgs as parseFlags } from "../../shared/cli/argparse.js";
@@ -142,6 +143,8 @@ export function defaultFetchImpl(
     }
     return {
       status: resp.status,
+      // R2-19: the OpenAlex budget gate reads X-RateLimit-* headers.
+      headers: resp.headers,
       json: async () => {
         try {
           return await resp.json();
@@ -162,8 +165,10 @@ if (isMain(import.meta.url)) {
     process.exitCode = 2;
   }
   if (parsed !== undefined) {
+    // R2-19: OpenAlex key (PAPERPILOT_OPENALEX_API_KEY / OPENALEX_API_KEY)
+    // + daily-budget breaker; one summary line on exit.
     runBuildConferenceLineageCli(parsed, {
-      fetchImpl: defaultFetchImpl(),
+      fetchImpl: installOpenAlexGate(defaultFetchImpl()).fetchImpl,
     }).then((code) => {
       process.exitCode = code;
     });

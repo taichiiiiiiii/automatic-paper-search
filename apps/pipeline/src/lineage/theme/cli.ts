@@ -32,6 +32,7 @@ import {
   qualityPolicy,
 } from "@paperpilot/core/layout";
 import { loadEnv } from "../../collect/config/env.js";
+import { installOpenAlexGate } from "../../collect/http/openalexGate.js";
 import type { FetchInit, HttpResponseLike } from "../../collect/http/requestWithRetry.js";
 import { CliUsageError, parseArgs as parseFlags } from "../../shared/cli/argparse.js";
 import { isMain } from "../../shared/cli/isMain.js";
@@ -250,7 +251,7 @@ export function defaultDeps(repoRoot: string = DEFAULT_REPO_ROOT): BuildThemeLin
   const layout = layoutFor(repoRoot);
   const docsRoot = layout.published;
   const env = loadEnv(envFilePath(repoRoot));
-  const fetchImpl: (url: string, init: FetchInit) => Promise<HttpResponseLike> = async (
+  const rawFetchImpl: (url: string, init: FetchInit) => Promise<HttpResponseLike> = async (
     url,
     init,
   ) => {
@@ -290,6 +291,8 @@ export function defaultDeps(repoRoot: string = DEFAULT_REPO_ROOT): BuildThemeLin
       },
     };
   };
+  // R2-19: OpenAlex key + daily-budget breaker; one summary line on exit.
+  const { fetchImpl } = installOpenAlexGate(rawFetchImpl, { apiKey: env.openalexApiKey });
   return {
     fetchImpl,
     cacheDir: lineageCacheDir(layout),

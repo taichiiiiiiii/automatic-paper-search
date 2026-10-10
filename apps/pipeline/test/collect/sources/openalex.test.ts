@@ -2,7 +2,8 @@
  * Port of `paperpilot/tests/test_openalex_source.py`.
  */
 import { describe, expect, it, vi } from "vitest";
-import type { HttpResponseLike } from "../../../src/collect/http/requestWithRetry.js";
+import { OpenAlexGate } from "../../../src/collect/http/openalexGate.js";
+import type { FetchInit, HttpResponseLike } from "../../../src/collect/http/requestWithRetry.js";
 import { OpenAlexSource } from "../../../src/collect/sources/openalex.js";
 import { AllKeywordsFailedError } from "../../../src/collect/sources/source.js";
 
@@ -592,5 +593,56 @@ describe("OpenAlexSource.parsePubDate", () => {
   it("returns null when invalid", () => {
     expect(OpenAlexSource.parsePubDate({})).toBeNull();
     expect(OpenAlexSource.parsePubDate({ publication_date: "garbage" })).toBeNull();
+  });
+});
+
+describe("OpenAlexSource — R2-19 API key and daily-budget gate", () => {
+  it("sends the key as a bearer header, stops after a budget 429, logs one summary line", async () => {
+    const inits: FetchInit[] = [];
+    const urls: string[] = [];
+    const warnings: string[] = [];
+    const fetchImpl = async (url: string, init: FetchInit): Promise<HttpResponseLike> => {
+      urls.push(url);
+      inits.push(init);
+      if (urls.length === 1) {
+        return {
+          status: 200,
+          headers: { get: (n: string) => (n === "x-ratelimit-remaining" ? "15" : null) },
+          json: async () => ({ results: [work()] }),
+        };
+      }
+      return {
+        status: 429,
+        headers: { get: (n: string) => (n === "x-ratelimit-remaining" ? "5" : null) },
+        json: async () => ({ message: "daily budget exceeded" }),
+      };
+    };
+    const src = new OpenAlexSource(
+      { delaySeconds: 0 },
+      {
+        fetchImpl,
+        budgetGate: new OpenAlexGate({ apiKey: "secret-key" }),
+        sleep: async () => {},
+        logger: { warn: (m) => warnings.push(m) },
+      },
+    );
+    const result = await src.fetch({
+      keywords: ["a", "b", "c"],
+      categories: [],
+      sinceDate: daysAgo(120),
+      maxResults: 10,
+    });
+    expect(result.papers).toHaveLength(1);
+    // keyword "b" spent the last search budget (429); "c" never left.
+    expect(urls).toHaveLength(2);
+    expect(inits[0]?.headers?.Authorization).toBe("Bearer secret-key");
+    expect(urls.join(" ")).not.toContain("secret-key");
+    const summary = warnings.filter((w) => w.startsWith("openalex budget: remaining="));
+    expect(summary).toHaveLength(1);
+    expect(summary[0]).toContain("searches=2");
+    expect(summary[0]).toContain("429=1");
+    expect(summary[0]).toContain("blocked=1");
+    expect(summary[0]).toContain("key=yes");
+    expect(warnings.join("\n")).not.toContain("secret-key");
   });
 });
