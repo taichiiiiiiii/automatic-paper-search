@@ -8959,5 +8959,280 @@
         "schema_version": "relation-classification-v1"
       }
     }
+  },
+  "v3:9cd83e10724735f459b5856f359bb52959a349260bd1ad9590a38cab345c9a88": {
+    "status": "success",
+    "expires_at": "2027-04-08T13:12:28.240000Z",
+    "cache_identity": {
+      "version": "lineage-classification-cache-v3",
+      "src": "openalex:W3122317902",
+      "dst": "openalex:W3119866685",
+      "evidence_sha256": "0f4ceae8c4e3a451c8e6776173c6346d2695dc082eee31e066dbda0e1994ed7c",
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "prompt_version": "relation-prompt-v4",
+      "schema_version": "relation-classification-v1"
+    },
+    "classification": {
+      "relation": "successor",
+      "confidence": 0.85,
+      "rationale": "Switch Transformer は GShard の条件付き計算と MoE を簡素化したルーティングで拡張し、通信コストを削減した研究ラインの自然な発展である。"
+    },
+    "provenance": {
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "evidence": {
+        "source": "semantic_scholar",
+        "kind": "relation-input",
+        "sha256": "0f4ceae8c4e3a451c8e6776173c6346d2695dc082eee31e066dbda0e1994ed7c"
+      },
+      "classification": {
+        "method": "llm",
+        "provider": "groq",
+        "model": "groq:openai/gpt-oss-120b",
+        "prompt_version": "relation-prompt-v4",
+        "schema_version": "relation-classification-v1"
+      }
+    }
+  },
+  "v3:01e7549c8baf0043ef2a0947d02f3b5ccb4a2793de52aaa33203c1cba83e743c": {
+    "status": "success",
+    "expires_at": "2027-04-08T13:13:36.770000Z",
+    "cache_identity": {
+      "version": "lineage-classification-cache-v3",
+      "src": "openalex:W4200634402",
+      "dst": "openalex:W4226079124",
+      "evidence_sha256": "6e425e52b73482fea07b83631981d8ef3231e172f1744c1fbcc484b57f90e630",
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "prompt_version": "relation-prompt-v4-context",
+      "schema_version": "relation-classification-v1"
+    },
+    "classification": {
+      "refers_to_cited": true,
+      "relation": "builds_on",
+      "contrast": false,
+      "confidence": 0.96,
+      "rationale": "Mixture-of-Experts with Expert Choice RoutingはGLaMの学習設定を踏襲し、手法を構築しています"
+    },
+    "provenance": {
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "evidence": {
+        "source": "semantic_scholar",
+        "kind": "relation-input",
+        "sha256": "6e425e52b73482fea07b83631981d8ef3231e172f1744c1fbcc484b57f90e630"
+      },
+      "classification": {
+        "method": "llm",
+        "provider": "groq",
+        "model": "groq:openai/gpt-oss-120b",
+        "prompt_version": "relation-prompt-v4-context",
+        "schema_version": "relation-classification-v1"
+      }
+    }
+  },
+  "v3:e431a0c726dd18ad7c576d20398097983b1ebdf00222ba1306875a773a0b7b9c": {
+    "status": "success",
+    "expires_at": "2027-04-08T13:13:42.856000Z",
+    "cache_identity": {
+      "version": "lineage-classification-cache-v3",
+      "src": "openalex:W2581624817",
+      "dst": "openalex:W2809290718",
+      "evidence_sha256": "6a4309ae21c0e57a4e16399435653b6afdf2c7bc50e3fc8fd87676adf4a090ad",
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "prompt_version": "relation-prompt-v4",
+      "schema_version": "relation-classification-v1"
+    },
+    "classification": {
+      "relation": "extends",
+      "confidence": 0.85,
+      "rationale": "Multi-gate Mixture-of-Experts は Sparsely-Gated Mixture-of-Experts の単一ゲート構造を拡張し、タスク間関係をモデリングすることでマルチタスク学習に適用している。"
+    },
+    "provenance": {
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "evidence": {
+        "source": "semantic_scholar",
+        "kind": "relation-input",
+        "sha256": "6a4309ae21c0e57a4e16399435653b6afdf2c7bc50e3fc8fd87676adf4a090ad"
+      },
+      "classification": {
+        "method": "llm",
+        "provider": "groq",
+        "model": "groq:openai/gpt-oss-120b",
+        "prompt_version": "relation-prompt-v4",
+        "schema_version": "relation-classification-v1"
+      }
+    }
+  },
+  "v3:315bae82a68360d205bddf700ced54d6859bd611ab1942ceaa84bc68e8ef1b6c": {
+    "status": "success",
+    "expires_at": "2027-04-08T13:14:32.773000Z",
+    "cache_identity": {
+      "version": "lineage-classification-cache-v3",
+      "src": "openalex:W4226079124",
+      "dst": "openalex:W4390873360",
+      "evidence_sha256": "09cbee17945bba6b6283899edcf408008b205943098e5218d597679461623396",
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "prompt_version": "relation-prompt-v4",
+      "schema_version": "relation-classification-v1"
+    },
+    "classification": {
+      "relation": "extends",
+      "confidence": 0.85,
+      "rationale": "AdaMV-MoE は Expert Choice Routing が提案した MoE のルーティングに加えて、タスクごとに expert 数を適応的に変える adaptive capacity を導入し、マルチタスク視覚領域へ拡張している。"
+    },
+    "provenance": {
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "evidence": {
+        "source": "semantic_scholar",
+        "kind": "relation-input",
+        "sha256": "09cbee17945bba6b6283899edcf408008b205943098e5218d597679461623396"
+      },
+      "classification": {
+        "method": "llm",
+        "provider": "groq",
+        "model": "groq:openai/gpt-oss-120b",
+        "prompt_version": "relation-prompt-v4",
+        "schema_version": "relation-classification-v1"
+      }
+    }
+  },
+  "v3:292154b9b1896eac6f6ea0ee3fda7e26699d6a36152ac37f5097bf0282077595": {
+    "status": "success",
+    "expires_at": "2027-04-08T13:14:36.185000Z",
+    "cache_identity": {
+      "version": "lineage-classification-cache-v3",
+      "src": "openalex:W4226079124",
+      "dst": "openalex:W4390874353",
+      "evidence_sha256": "88792af5f55b1c898a5e0eb3c8c73437e3aa3117cb6b8d4004e19872d136008e",
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "prompt_version": "relation-prompt-v4",
+      "schema_version": "relation-classification-v1"
+    },
+    "classification": {
+      "relation": "baseline_only",
+      "confidence": 0.78,
+      "rationale": "Robust Mixture-of-Expert Training は CNN の敵対的ロバスト性を追求し、Expert Choice Routing のルーティング手法には言及せず、単に MoE をベースラインとして利用している。"
+    },
+    "provenance": {
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "evidence": {
+        "source": "semantic_scholar",
+        "kind": "relation-input",
+        "sha256": "88792af5f55b1c898a5e0eb3c8c73437e3aa3117cb6b8d4004e19872d136008e"
+      },
+      "classification": {
+        "method": "llm",
+        "provider": "groq",
+        "model": "groq:openai/gpt-oss-120b",
+        "prompt_version": "relation-prompt-v4",
+        "schema_version": "relation-classification-v1"
+      }
+    }
+  },
+  "v3:3fd50af8bdb6aaf18efe6eaa53483ed195bd23861af27a9db59cd5da3fae50d5": {
+    "status": "success",
+    "expires_at": "2027-04-08T13:14:38.673000Z",
+    "cache_identity": {
+      "version": "lineage-classification-cache-v3",
+      "src": "openalex:W4226079124",
+      "dst": "openalex:W4394923534",
+      "evidence_sha256": "f41b7d8f3958ef3e14f47416bce08cfc5f11623f629edbae927df47b40a71067",
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "prompt_version": "relation-prompt-v4",
+      "schema_version": "relation-classification-v1"
+    },
+    "classification": {
+      "relation": "extends",
+      "confidence": 0.78,
+      "rationale": "ScheMoE はタスクスケジューリングを備えた分散学習システムを提案し、Expert Choice Routing を含む MoE 手法を大規模 GPU クラスタで拡張している。"
+    },
+    "provenance": {
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "evidence": {
+        "source": "semantic_scholar",
+        "kind": "relation-input",
+        "sha256": "f41b7d8f3958ef3e14f47416bce08cfc5f11623f629edbae927df47b40a71067"
+      },
+      "classification": {
+        "method": "llm",
+        "provider": "groq",
+        "model": "groq:openai/gpt-oss-120b",
+        "prompt_version": "relation-prompt-v4",
+        "schema_version": "relation-classification-v1"
+      }
+    }
+  },
+  "v3:36231b53148bd87ced13ca062d6d3f6a0d06da13fbb9cb4f7ac8ceeb9be2ca94": {
+    "status": "success",
+    "expires_at": "2027-04-08T13:14:41.794000Z",
+    "cache_identity": {
+      "version": "lineage-classification-cache-v3",
+      "src": "openalex:W4226079124",
+      "dst": "openalex:W4386260498",
+      "evidence_sha256": "aabdd4e2842cb51ca7e2b72f667fa4cf1e0a8585595f9d3d7adadb92a1a782a2",
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "prompt_version": "relation-prompt-v4",
+      "schema_version": "relation-classification-v1"
+    },
+    "classification": {
+      "relation": "baseline_only",
+      "confidence": 0.78,
+      "rationale": "PipeMoE は adaptive pipelining によって MoE の通信を隠蔽し、Expert Choice Routing の手法を継承せずに背景としてのみ利用している。"
+    },
+    "provenance": {
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "evidence": {
+        "source": "semantic_scholar",
+        "kind": "relation-input",
+        "sha256": "aabdd4e2842cb51ca7e2b72f667fa4cf1e0a8585595f9d3d7adadb92a1a782a2"
+      },
+      "classification": {
+        "method": "llm",
+        "provider": "groq",
+        "model": "groq:openai/gpt-oss-120b",
+        "prompt_version": "relation-prompt-v4",
+        "schema_version": "relation-classification-v1"
+      }
+    }
   }
 }
