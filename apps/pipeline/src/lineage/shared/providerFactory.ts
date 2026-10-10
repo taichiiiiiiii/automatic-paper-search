@@ -29,6 +29,24 @@ const LLM_RATE_DELAY: Readonly<Record<"groq" | "gemini", number>> = {
 };
 /** Gemini's own pacing default (the rateDelay above is not applied by every builder). */
 const GEMINI_DEFAULT_RPM = 8;
+/**
+ * R2-20: per-run Groq token budget (per provider instance = per model;
+ * the theme CLI runs one theme per process, so this is per theme). About
+ * 30% of a model's 200K tokens/day free tier, so one theme cannot eat the
+ * day. `PAPERPILOT_GROQ_RUN_TOKEN_BUDGET` overrides; `0` disables.
+ */
+export const DEFAULT_GROQ_RUN_TOKEN_BUDGET = 60_000;
+/**
+ * R2-20: model for the citation-context prompt (theme builder). Groq's
+ * free tier lists openai/gpt-oss-20b with its own 30 RPM / 1K RPD / 8K TPM
+ * / 200K TPD row, separate from gpt-oss-120b's (limits are per model;
+ * https://console.groq.com/docs/rate-limits, checked 2026-10-10). The
+ * context prompt is a short attribution + 4-way label question, so the
+ * 20b model answers it first and the main model (120b) is the fallback.
+ * `PAPERPILOT_GROQ_CONTEXT_MODEL` overrides; `off`, empty, or the main
+ * model disables the routing.
+ */
+export const DEFAULT_GROQ_CONTEXT_MODEL = "openai/gpt-oss-20b";
 
 function positiveNumber(raw: string | undefined): number | undefined {
   const n = raw === undefined || raw.trim() === "" ? Number.NaN : Number(raw);
@@ -37,6 +55,13 @@ function positiveNumber(raw: string | undefined): number | undefined {
 function nonNegativeNumber(raw: string | undefined): number | undefined {
   const n = raw === undefined || raw.trim() === "" ? Number.NaN : Number(raw);
   return Number.isFinite(n) && n >= 0 ? n : undefined;
+}
+/** `PAPERPILOT_GROQ_REASONING_EFFORT`: unset -> provider default (`low`);
+ * `off`/`none`/`default` -> omit the parameter. */
+function reasoningEffortFrom(raw: string | undefined): string | null | undefined {
+  if (raw === undefined || raw.trim() === "") return undefined;
+  const v = raw.trim().toLowerCase();
+  return v === "off" || v === "none" || v === "default" ? null : v;
 }
 
 export interface BuildProviderDeps {
@@ -64,6 +89,20 @@ export interface BuildProviderOptions {
    * behaviour.
    */
   fallback?: boolean;
+  /**
+   * R2-20: also build {@link BuiltProvider.contextProvider}, a chain that
+   * asks `PAPERPILOT_GROQ_CONTEXT_MODEL` (default gpt-oss-20b) first and
+   * then the regular chain (same member instances, so latches and budgets
+   * are shared). Only when Groq is in use and the model differs.
+   */
+  contextModelRouting?: boolean;
+}
+
+export interface BuiltProvider {
+  provider: LLMProvider;
+  rateDelay: number;
+  /** R2-20: provider for the citation-context prompt (see `contextModelRouting`). */
+  contextProvider?: LLMProvider;
 }
 
 /** Pick the first available LLM provider and return `{provider, rateDelay}`.
@@ -81,10 +120,52 @@ export interface BuildProviderOptions {
 export function buildProvider(
   deps: BuildProviderDeps,
   options: BuildProviderOptions = {},
-): {
-  provider: LLMProvider;
-  rateDelay: number;
-} {
+): BuiltProvider {
+  const built = buildMainProvider(deps, options);
+  if (!options.contextModelRouting) return built;
+  const groqKey = deps.env.groqApiKey || deps.ambientEnv.GROQ_API_KEY || null;
+  const members =
+    built.provider instanceof FallbackProvider ? [...built.provider.members] : [built.provider];
+  const mainGroq = members.find((m): m is GroqProvider => m instanceof GroqProvider);
+  const raw = deps.ambientEnv.PAPERPILOT_GROQ_CONTEXT_MODEL;
+  const ctxModel = raw === undefined ? DEFAULT_GROQ_CONTEXT_MODEL : raw.trim();
+  if (!groqKey || mainGroq === undefined || ctxModel === "" || ctxModel.toLowerCase() === "off") {
+    return built;
+  }
+  if (ctxModel === mainGroq.model) return built;
+  const ctxGroq = new GroqProvider(
+    { ...groqConfigFrom(deps.ambientEnv, DEFAULT_GROQ_RUN_TOKEN_BUDGET), model: ctxModel },
+    groqKey,
+    { fetchImpl: deps.fetchImpl, now: deps.now, sleep: deps.sleep, logger: deps.logger },
+  );
+  return {
+    ...built,
+    contextProvider: new FallbackProvider([ctxGroq, ...members], { logger: deps.logger }),
+  };
+}
+
+/** Groq settings shared by every Groq instance (env overrides; unset -> groq.ts defaults). */
+function groqConfigFrom(
+  ambientEnv: Readonly<Record<string, string | undefined>>,
+  defaultRunTokenBudget: number | undefined,
+) {
+  return {
+    enabled: true,
+    temperature: 0.1,
+    timeoutSeconds: 30,
+    // Free-tier pacing overrides; unset → the model's defaults in groq.ts.
+    rateLimitRpm: positiveNumber(ambientEnv.PAPERPILOT_GROQ_RPM),
+    rateLimitTpm: nonNegativeNumber(ambientEnv.PAPERPILOT_GROQ_TPM),
+    maxThrottleWaitSeconds: positiveNumber(ambientEnv.PAPERPILOT_GROQ_MAX_THROTTLE_WAIT_S),
+    // R2-20 token controls.
+    reasoningEffort: reasoningEffortFrom(ambientEnv.PAPERPILOT_GROQ_REASONING_EFFORT),
+    maxCompletionTokens: nonNegativeNumber(ambientEnv.PAPERPILOT_GROQ_MAX_COMPLETION_TOKENS),
+    runTokenBudget:
+      nonNegativeNumber(ambientEnv.PAPERPILOT_GROQ_RUN_TOKEN_BUDGET) ?? defaultRunTokenBudget,
+  };
+}
+
+function buildMainProvider(deps: BuildProviderDeps, options: BuildProviderOptions): BuiltProvider {
   const { env, ambientEnv } = deps;
   const groqKey = env.groqApiKey || ambientEnv.GROQ_API_KEY || null;
   const geminiKey = env.geminiApiKey || ambientEnv.GEMINI_API_KEY || null;
@@ -92,15 +173,12 @@ export function buildProvider(
   const makeGroq = (): { provider: LLMProvider; rateDelay: number } => {
     const model = env.groqModel || "openai/gpt-oss-120b";
     const provider = new GroqProvider(
+      // The default run budget is for the theme builder (one theme per
+      // process, `fallback`); conference/deep runs keep no budget unless
+      // the env sets one.
       {
-        enabled: true,
+        ...groqConfigFrom(ambientEnv, options.fallback ? DEFAULT_GROQ_RUN_TOKEN_BUDGET : undefined),
         model,
-        temperature: 0.1,
-        timeoutSeconds: 30,
-        // Free-tier pacing overrides; unset → the model's defaults in groq.ts.
-        rateLimitRpm: positiveNumber(ambientEnv.PAPERPILOT_GROQ_RPM),
-        rateLimitTpm: nonNegativeNumber(ambientEnv.PAPERPILOT_GROQ_TPM),
-        maxThrottleWaitSeconds: positiveNumber(ambientEnv.PAPERPILOT_GROQ_MAX_THROTTLE_WAIT_S),
       },
       groqKey,
       { fetchImpl: deps.fetchImpl, now: deps.now, sleep: deps.sleep, logger: deps.logger },

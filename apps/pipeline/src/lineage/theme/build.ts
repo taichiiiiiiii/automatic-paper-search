@@ -35,17 +35,19 @@ import {
   focusIds,
   IncompleteBuildError,
 } from "../fetch-state/completeness.js";
-import { usageOf } from "../llm/fallback.js";
+import { FallbackProvider, type LabelledUsage, usageOf } from "../llm/fallback.js";
 import { fetchRelated } from "../shared/fetchRelated.js";
 import {
   addCrossNodeEdges,
   addVersionFamilyEdges,
+  applyDeferredS2Relations,
   confirmSupportAdmissions,
   dropReversedEdges,
   runBfsAndDescendants,
 } from "./bfs.js";
 import {
   type CachedClassifyProviderDeps,
+  ThemeCachedClassifyProvider,
   type ThemeProducerIdentity,
   wrapProviderWithThemeCache,
 } from "./cachedClassifyProvider.js";
@@ -78,7 +80,7 @@ import {
 import type { ThemePaper } from "./openalexWork.js";
 import { S2CitationSource } from "./s2Citations.js";
 import { S2Expansion } from "./s2Expansion.js";
-import { newS2RelationStats, type S2RelationContext } from "./s2Relations.js";
+import { contextLlmSummary, newS2RelationStats, type S2RelationContext } from "./s2Relations.js";
 import { aliasesFor } from "./seedFilters.js";
 import { sanitizeTheme, themeLineagePath, themeSlug } from "./slug.js";
 import type { TopicEmbedder } from "./topicEmbedding.js";
@@ -252,7 +254,16 @@ export interface BuildThemeLineageOptions {
    * passes a threshold. Provider-agnostic: applies whatever `llmStrict` is.
    */
   minClassifiedRate?: number | null;
+  /**
+   * R2-20: citation-context pairs per LLM request (batched after the BFS,
+   * see `s2Relations.ts`). Default {@link DEFAULT_CONTEXT_BATCH_SIZE};
+   * 1 asks each pair inline (pre-R2-20 behaviour).
+   */
+  contextBatchSize?: number;
 }
+
+/** R2-20: default pairs per citation-context request. */
+export const DEFAULT_CONTEXT_BATCH_SIZE = 6;
 
 /** All injected dependencies for one `buildThemeLineage` call. Not a
  * naive `extends` of each sub-module's deps type: `OpenAlexDeps`/
@@ -280,7 +291,12 @@ export interface BuildThemeLineageDeps {
   docsRoot: string;
   identityAliasesPath: string;
   /** Only required when `llmStrict !== "off"`. */
-  buildProvider?: () => { provider: LLMProvider; rateDelay: number };
+  buildProvider?: () => {
+    provider: LLMProvider;
+    rateDelay: number;
+    /** R2-20: provider for the citation-context prompt (cheaper model first). */
+    contextProvider?: LLMProvider;
+  };
   classificationCachePath?: string | null;
   cachedClassifyProviderDeps?: Omit<CachedClassifyProviderDeps, "cachePath" | "now">;
   githubCachePath: string;
@@ -333,6 +349,7 @@ export async function buildThemeLineage(
     topicScope: topicScopeOptions = {},
     topicEmbedding = true,
     minClassifiedRate = null,
+    contextBatchSize = DEFAULT_CONTEXT_BATCH_SIZE,
   } = options;
 
   const sanitised = sanitizeTheme(theme);
@@ -356,13 +373,16 @@ export async function buildThemeLineage(
   };
 
   let provider: LLMProvider | null = null;
+  let contextProvider: LLMProvider | null = null;
   let innerProviderForSummary: LLMProvider | null = null;
+  let innerContextProvider: LLMProvider | null = null;
   if (llmStrict !== "off") {
     if (!deps.buildProvider) {
       throw new Error("buildThemeLineage: deps.buildProvider is required when llmStrict !== 'off'");
     }
-    const { provider: innerProvider } = deps.buildProvider();
+    const { provider: innerProvider, contextProvider: innerCtx } = deps.buildProvider();
     innerProviderForSummary = innerProvider;
+    innerContextProvider = innerCtx ?? null;
     const identityInfo: ThemeProducerIdentity = {
       producerName: PRODUCER_NAME,
       producerVersion: PRODUCER_VERSION,
@@ -376,7 +396,28 @@ export async function buildThemeLineage(
     };
     const wrapped = wrapProviderWithThemeCache(innerProvider, identityInfo, cacheDeps);
     provider = wrapped.provider;
+    // R2-20: the context chain shares the same in-memory cache.
+    contextProvider =
+      innerContextProvider === null
+        ? null
+        : new ThemeCachedClassifyProvider(
+            innerContextProvider,
+            wrapped.cache,
+            identityInfo,
+            cacheDeps,
+          );
   }
+  /** Usage of every provider instance (context-only members included once). */
+  const allUsage = (): LabelledUsage[] => {
+    const main = usageOf(innerProviderForSummary);
+    if (!(innerContextProvider instanceof FallbackProvider)) return main;
+    const mainMembers =
+      innerProviderForSummary instanceof FallbackProvider
+        ? innerProviderForSummary.members
+        : [innerProviderForSummary];
+    const extra = innerContextProvider.members.filter((m) => !mainMembers.includes(m));
+    return [...extra.flatMap((m) => usageOf(m)), ...main];
+  };
 
   const keywords = [sanitised];
   const topicScope = TopicScope.forTheme(sanitised, topicScopeOptions);
@@ -457,7 +498,15 @@ export async function buildThemeLineage(
           logger,
         });
   const s2Relations: S2RelationContext | null =
-    s2Source === null ? null : { source: s2Source, provider, stats: newS2RelationStats() };
+    s2Source === null
+      ? null
+      : {
+          source: s2Source,
+          provider,
+          stats: newS2RelationStats(),
+          contextProvider: contextProvider ?? provider,
+          batchSize: contextBatchSize,
+        };
   // R2-14: the same S2 reference lists fill in expansion where OpenAlex
   // has (almost) no references / citing papers.
   const s2Expansion =
@@ -583,6 +632,11 @@ export async function buildThemeLineage(
   if (crossAdded > 0) {
     logger.warn(`cross-node pass added ${crossAdded} edges (in-graph citations not seen by BFS)`);
   }
+  // R2-20: batched context-LLM answers for the pairs deferred above.
+  const deferredChanged = await applyDeferredS2Relations(edges, s2Relations, provider);
+  if (deferredChanged > 0) {
+    logger.info?.(`context-llm: ${deferredChanged} deferred edge(s) refined by batched answers`);
+  }
   // R2-13: explicit versions of one work (FlashAttention -> -2 -> -3)
   // that no citation in the data connects.
   const versionAdded = addVersionFamilyEdges(nodes, edges);
@@ -600,6 +654,7 @@ export async function buildThemeLineage(
       `s2 relations summary: rule=${st.rule}, context-llm asked=${st.llmAsked} answered=${st.llmAnswered}, ` +
         `left to the abstract/heuristic path: cites_unspecified=${st.unspecified} no-s2-data=${st.noS2Data}`,
     );
+    logger.info?.(contextLlmSummary(st));
   }
 
   // R2-2d: provisional admissions (co-citation support, abstract-only
@@ -665,6 +720,10 @@ export async function buildThemeLineage(
   // rate-limit accounting (calls / 429s / waits / breaker) next to it.
   const usage = innerProviderForSummary?.usageSummary?.();
   if (usage) logger.info?.(usage);
+  // R2-20: the context-model member(s) that only the context chain holds.
+  for (const u of allUsage()) {
+    if (u.summary && !(usage ?? "").includes(u.summary)) logger.info?.(u.summary);
+  }
 
   // Wire aliases + deterministic duplicate elimination/order.
   const edgeGroups = new Map<string, ThemeEdge[]>();
@@ -853,12 +912,7 @@ export async function buildThemeLineage(
     classifiedRate.ratio !== null &&
     classifiedRate.ratio < minClassifiedRate
   ) {
-    throw new DegradedClassificationError(
-      sanitised,
-      classifiedRate,
-      minClassifiedRate,
-      usageOf(innerProviderForSummary),
-    );
+    throw new DegradedClassificationError(sanitised, classifiedRate, minClassifiedRate, allUsage());
   }
 
   // `payload` itself keeps plain-number edge confidence (already validated

@@ -11,6 +11,21 @@
  * `record429` below. 429s are retried by `requestWithRetry` on the
  * server's `Retry-After` / `x-ratelimit-reset-*` hint and only latch the
  * breaker on a daily-limit 429 or a run of calls that stay 429.
+ *
+ * R2-20 (Groq token budget):
+ *  - a DAILY (TPD/RPD) 429 whose reset is short (<= 10 min) is waited out
+ *    instead of latching: the daily window is rolling, so tokens free up
+ *    gradually and "reset in 10s" really means 10s. It only latches when
+ *    the reset is longer, there is no reset hint, or the per-run 429
+ *    back-off budget would be exceeded;
+ *  - gpt-oss models get `reasoning_effort` (default `low`) and a
+ *    `max_completion_tokens` cap sized to the JSON answer plus a small
+ *    reasoning allowance (grown per extra answer of a batched prompt). A
+ *    response cut off by the cap (`finish_reason: "length"`) is a failed
+ *    call, never parsed;
+ *  - an optional per-run token budget latches the provider once spent, so
+ *    one theme cannot eat the whole day's quota;
+ *  - tokens are counted per prompt kind for the usage summary.
  */
 
 import type {
@@ -26,6 +41,7 @@ import {
 import { parseLlmResponse } from "../../collect/jsonParser.js";
 import type {
   ClassifyPaperLike,
+  CompletionOptions,
   LLMProvider,
   LlmUsageStats,
   PaperEvaluation,
@@ -55,6 +71,8 @@ const DEFAULT_RATE_LIMIT_RPM = 25;
  */
 const MODEL_PACING: Readonly<Record<string, { rpm: number; tpm: number }>> = {
   "openai/gpt-oss-120b": { rpm: 20, tpm: 6000 },
+  // Same free-tier row as the 120b (30 RPM / 8K TPM / 200K TPD), own quota.
+  "openai/gpt-oss-20b": { rpm: 20, tpm: 6000 },
 };
 const TOKEN_WINDOW_MS = 60_000;
 /** Completion allowance added to the prompt estimate (gpt-oss spends reasoning tokens). */
@@ -76,6 +94,27 @@ const DAILY_LIMIT_HINT_MS = 10 * 60_000;
 /** Total 429 back-off budget per provider instance (one theme per process in CI). */
 const DEFAULT_MAX_THROTTLE_WAIT_MS = 20 * 60_000;
 const DAILY_LIMIT_RE = /per day|\bRPD\b|\bTPD\b|daily/i;
+/** Short-reset daily 429s waited out per call before giving up (R2-20). */
+const MAX_DAILY_SHORT_WAITS = 3;
+
+/**
+ * R2-20: models that take `reasoning_effort` low/medium/high on Groq
+ * (https://console.groq.com/docs/reasoning, checked 2026-10-10: GPT-OSS
+ * 20B/120B and Qwen 3.8 27B). Other models get neither the effort nor a
+ * default completion cap (a non-reasoning model answers in ~250 tokens).
+ */
+const REASONING_MODEL_RE = /^openai\/gpt-oss-|^qwen\/qwen3/;
+const REASONING_EFFORTS: ReadonlySet<string> = new Set(["low", "medium", "high"]);
+export const DEFAULT_REASONING_EFFORT = "low";
+/**
+ * Completion cap for ONE JSON answer: the answer itself (~60 tokens of
+ * keys + a <=150-character Japanese rationale, ~250 tokens) plus a
+ * low-effort reasoning allowance (~500). The measured average before R2-20
+ * was ~1,450 tokens per call in total, prompt included.
+ */
+export const DEFAULT_MAX_COMPLETION_TOKENS = 768;
+/** Added to the cap for every extra answer of a batched prompt. */
+export const COMPLETION_TOKENS_PER_EXTRA_ANSWER = 256;
 
 /** `error.message` + `error.code` of a Groq/OpenAI error body ("" when absent). */
 function errorText(body: unknown): string {
@@ -104,6 +143,28 @@ export interface GroqConfig {
   rateLimitTpm?: number;
   /** Total 429 back-off budget before latching, seconds. Default 1200. */
   maxThrottleWaitSeconds?: number;
+  /**
+   * R2-20: `reasoning_effort` sent to reasoning models (`low`|`medium`|
+   * `high`). Default `low` for gpt-oss; `null`/`""`/`"off"` omits it.
+   * Ignored for models without the parameter.
+   */
+  reasoningEffort?: string | null;
+  /**
+   * R2-20: `max_completion_tokens` for a single-answer JSON call (batched
+   * prompts add {@link COMPLETION_TOKENS_PER_EXTRA_ANSWER} per extra
+   * answer). Default {@link DEFAULT_MAX_COMPLETION_TOKENS} for reasoning
+   * models, none otherwise; `0` disables the cap. Not applied to
+   * `evaluateBatch`/`chat` (free-form, longer answers).
+   */
+  maxCompletionTokens?: number | null;
+  /** R2-20: tokens this provider may spend in one run; then it latches. 0/absent = no budget. */
+  runTokenBudget?: number;
+}
+
+/** Per prompt kind: calls and tokens (R2-20 summary). */
+export interface KindUsage {
+  calls: number;
+  tokens: number;
 }
 
 /** Counters behind `usageSummary()`. */
@@ -115,6 +176,12 @@ export interface GroqUsageStats extends LlmUsageStats {
   throttleWaitMs: number;
   pacingWaitMs: number;
   tokens: number;
+  /** R2-20: short-reset daily 429s waited out instead of latching. */
+  dailyShortWaits: number;
+  /** R2-20: answers cut off by `max_completion_tokens` (failed calls). */
+  truncated: number;
+  /** R2-20: calls and tokens by prompt kind (`completeJson` opts.kind). */
+  byKind: Record<string, KindUsage>;
 }
 
 export interface GroqDeps {
@@ -150,6 +217,9 @@ export class GroqProvider implements LLMProvider {
   private readonly minCallIntervalMs: number;
   private readonly tpm: number;
   private readonly maxThrottleWaitMs: number;
+  private readonly reasoningEffort: string | null;
+  private readonly maxCompletionTokens: number | null;
+  private readonly runTokenBudget: number;
   private lastCallTs: number | null = null;
   private tokenWindow: { ts: number; tokens: number }[] = [];
   private consecutiveFailures = 0;
@@ -164,6 +234,9 @@ export class GroqProvider implements LLMProvider {
     throttleWaitMs: 0,
     pacingWaitMs: 0,
     tokens: 0,
+    dailyShortWaits: 0,
+    truncated: 0,
+    byKind: {},
     latched: false,
     latchReason: null,
     dailyLimitHit: false,
@@ -189,6 +262,23 @@ export class GroqProvider implements LLMProvider {
       budgetS !== undefined && Number.isFinite(budgetS) && budgetS > 0
         ? budgetS * 1000
         : DEFAULT_MAX_THROTTLE_WAIT_MS;
+    const reasoningModel = REASONING_MODEL_RE.test(this.model);
+    const effort =
+      config.reasoningEffort === undefined ? DEFAULT_REASONING_EFFORT : config.reasoningEffort;
+    const effortNorm = typeof effort === "string" ? effort.trim().toLowerCase() : "";
+    this.reasoningEffort = reasoningModel && REASONING_EFFORTS.has(effortNorm) ? effortNorm : null;
+    const cap = config.maxCompletionTokens;
+    this.maxCompletionTokens =
+      cap === undefined || cap === null
+        ? reasoningModel
+          ? DEFAULT_MAX_COMPLETION_TOKENS
+          : null
+        : Number.isFinite(cap) && cap > 0
+          ? Math.floor(cap)
+          : null;
+    const budget = config.runTokenBudget;
+    this.runTokenBudget =
+      budget !== undefined && Number.isFinite(budget) && budget > 0 ? budget : 0;
     this.deps = deps;
   }
 
@@ -208,7 +298,7 @@ export class GroqProvider implements LLMProvider {
   ): Promise<(PaperEvaluation | null)[]> {
     if (papers.length === 0) return [];
     const [system, user] = buildEvaluationPrompt(papers, profile);
-    const text = await this.chatRaw(system, user, false);
+    const text = await this.chatRaw(system, user, false, { kind: "evaluate" }, false);
     if (text === null) return new Array(papers.length).fill(null);
     const parsed = parseLlmResponse(text);
     if (!Array.isArray(parsed)) {
@@ -230,18 +320,22 @@ export class GroqProvider implements LLMProvider {
     // Groq's `response_format: json_object` reliably avoids markdown fences
     // or stray prose — critical because hundreds of classifications are
     // issued per lineage build.
-    const text = await this.chatRaw(system, user, true);
+    const text = await this.chatRaw(system, user, true, { kind: "abstract" });
     if (text === null) return null;
     const parsed = parseLlmResponse(text);
     return relationClassificationFromDict(parsed);
   }
 
-  async completeJson(system: string, user: string): Promise<string | null> {
-    return this.chatRaw(system, user, true);
+  async completeJson(
+    system: string,
+    user: string,
+    opts: CompletionOptions = {},
+  ): Promise<string | null> {
+    return this.chatRaw(system, user, true, opts);
   }
 
   async chat(system: string, user: string): Promise<string | null> {
-    return this.chatRaw(system, user, false);
+    return this.chatRaw(system, user, false, { kind: "chat" }, false);
   }
 
   // ---- helpers ----
@@ -322,21 +416,50 @@ export class GroqProvider implements LLMProvider {
     );
   }
 
-  /** Concise end-of-run usage line (calls, 429s, waits, latch state). */
+  /**
+   * Concise end-of-run usage line (calls, 429s, waits, latch state), then
+   * (R2-20) tokens/calls per prompt kind, short daily waits, truncated
+   * answers and the run budget. The part up to `latched=` is unchanged so
+   * existing log greps keep working.
+   */
   usageSummary(): string {
     const st = this.stats;
     const secs = (ms: number) => (ms / 1000).toFixed(1);
+    const kinds = Object.keys(st.byKind)
+      .sort()
+      .map((k) => `${k}=${st.byKind[k]?.tokens ?? 0}/${st.byKind[k]?.calls ?? 0}`)
+      .join(" ");
     return (
       `groq summary: model=${this.model}, calls=${st.calls} (ok=${st.ok}, failed=${st.failed}), ` +
       `429s=${st.rateLimited} (final=${st.finalRateLimited}), throttle_wait=${secs(st.throttleWaitMs)}s, ` +
       `pacing_wait=${secs(st.pacingWaitMs)}s, tokens=${st.tokens}, ` +
-      `latched=${st.latched ? `yes (${st.latchReason})` : "no"}`
+      `latched=${st.latched ? `yes (${st.latchReason})` : "no"}; ` +
+      `tokens/calls by kind: ${kinds || "none"}; daily_short_waits=${st.dailyShortWaits}, ` +
+      `truncated=${st.truncated}, run_budget=${this.runTokenBudget > 0 ? `${st.tokens}/${this.runTokenBudget}` : "off"}`
     );
   }
 
   /** Snapshot of the counters behind `usageSummary()`. */
   usageStats(): GroqUsageStats {
-    return { ...this.stats };
+    const byKind: Record<string, KindUsage> = {};
+    for (const [k, v] of Object.entries(this.stats.byKind)) byKind[k] = { ...v };
+    return { ...this.stats, byKind };
+  }
+
+  /** Book the tokens of one API response under its prompt kind. */
+  private account(kind: string, tokens: number): void {
+    this.stats.tokens += tokens;
+    const k = this.kindUsage(kind);
+    k.tokens += tokens;
+  }
+
+  private kindUsage(kind: string): KindUsage {
+    let k = this.stats.byKind[kind];
+    if (k === undefined) {
+      k = { calls: 0, tokens: 0 };
+      this.stats.byKind[kind] = k;
+    }
+    return k;
   }
 
   /** True once the breaker latched: every further call returns null without an API call. */
@@ -360,25 +483,67 @@ export class GroqProvider implements LLMProvider {
     }
   }
 
-  /**
-   * A call whose FINAL response is 429 (requestWithRetry already waited
-   * out every hinted reset it was allowed to). Latches immediately on a
-   * daily-limit 429, after `PERSISTENT_429_THRESHOLD` such calls in a row
-   * otherwise. Does not touch the non-429 failure counter: a throttled
-   * call says nothing about whether the API returns usable answers.
-   */
-  private async record429(resp: HttpResponseLike): Promise<void> {
-    this.stats.failed += 1;
-    this.stats.finalRateLimited += 1;
-    this.stats.rateLimited += 1;
+  /** The error message and reset hint (header or "try again in", larger) of a 429. */
+  private static async inspect429(
+    resp: HttpResponseLike,
+  ): Promise<{ message: string; hint: number | null }> {
     let message = "";
     try {
       message = errorText(await resp.json());
     } catch {
       // body unreadable: rely on headers alone
     }
-    const tryAgain = /try again in ([0-9hms.]+)/i.exec(message)?.[1];
-    const hint = rateLimitHintMs(resp.headers) ?? parseDurationMs(tryAgain ?? null);
+    // "Please try again in 4m12.5s." — drop the sentence's full stop.
+    const tryAgain = parseDurationMs(
+      /try again in ([0-9hms.]+)/i.exec(message)?.[1]?.replace(/\.+$/, "") ?? null,
+    );
+    const header = rateLimitHintMs(resp.headers);
+    const hint =
+      header !== null && tryAgain !== null ? Math.max(header, tryAgain) : (header ?? tryAgain);
+    return { message, hint };
+  }
+
+  /**
+   * R2-20: wait out a DAILY-quota 429 whose reset is short instead of
+   * latching. Groq's TPD/RPD windows are rolling, so a reset of a few
+   * seconds/minutes frees enough tokens for the next call. Only when the
+   * reset is known, <= 10 min, this call has not already waited
+   * {@link MAX_DAILY_SHORT_WAITS} times, and the wait fits the per-run 429
+   * back-off budget. Returns whether it waited (the caller retries).
+   */
+  private async waitShortDaily429(
+    info: { message: string; hint: number | null },
+    waitsSoFar: number,
+  ): Promise<boolean> {
+    const { message, hint } = info;
+    if (!DAILY_LIMIT_RE.test(message) || hint === null || hint > DAILY_LIMIT_HINT_MS) return false;
+    if (waitsSoFar >= MAX_DAILY_SHORT_WAITS) return false;
+    const wait = hint + RETRY_429_HINT_MARGIN_MS;
+    if (this.stats.throttleWaitMs + wait > this.maxThrottleWaitMs) return false;
+    this.deps.logger?.warn(
+      `groq: daily-quota 429 with a short reset (${(hint / 1000).toFixed(0)}s; rolling window) — waiting instead of latching`,
+    );
+    await (this.deps.sleep ?? defaultSleep)(wait);
+    this.stats.rateLimited += 1;
+    this.stats.throttleWaitMs += wait;
+    this.stats.dailyShortWaits += 1;
+    return true;
+  }
+
+  /**
+   * A call whose FINAL response is 429 (requestWithRetry already waited
+   * out every hinted reset it was allowed to, and a short daily reset was
+   * waited out by {@link waitShortDaily429}). Latches immediately on a
+   * daily-limit 429 (long or unknown reset, or the wait budget is spent),
+   * after `PERSISTENT_429_THRESHOLD` such calls in a row otherwise. Does
+   * not touch the non-429 failure counter: a throttled call says nothing
+   * about whether the API returns usable answers.
+   */
+  private record429(info: { message: string; hint: number | null }): void {
+    this.stats.failed += 1;
+    this.stats.finalRateLimited += 1;
+    this.stats.rateLimited += 1;
+    const { message, hint } = info;
     const hintTxt = hint !== null ? `, reset in ${(hint / 1000).toFixed(0)}s` : "";
     this.deps.logger?.warn(
       `groq: chat/completions failed (status=429${hintTxt}${message ? `: ${message.slice(0, 200)}` : ""})`,
@@ -394,7 +559,18 @@ export class GroqProvider implements LLMProvider {
     }
   }
 
-  private async chatRaw(system: string, user: string, jsonMode: boolean): Promise<string | null> {
+  /**
+   * One chat completion. `opts.kind` books the tokens; `opts.answers`
+   * grows the completion cap for batched prompts; `capped=false` sends no
+   * `max_completion_tokens` (free-form `evaluateBatch`/`chat`).
+   */
+  private async chatRaw(
+    system: string,
+    user: string,
+    jsonMode: boolean,
+    opts: CompletionOptions = {},
+    capped = true,
+  ): Promise<string | null> {
     // Circuit-breaker short-circuit: once the quota-exhausted threshold is
     // hit, every further call returns null without touching the API or
     // sleeping for the RPM throttle.
@@ -405,9 +581,26 @@ export class GroqProvider implements LLMProvider {
       );
       return null;
     }
-    const estTokens = Math.ceil((system.length + user.length) / 4) + COMPLETION_TOKEN_ESTIMATE;
+    if (this.runTokenBudget > 0 && this.stats.tokens >= this.runTokenBudget) {
+      this.latch(
+        `run token budget exhausted (${this.stats.tokens} >= ${this.runTokenBudget} tokens)`,
+      );
+      return null;
+    }
+    const kind = opts.kind ?? (jsonMode ? "json" : "chat");
+    const answers = Math.max(1, Math.floor(opts.answers ?? 1));
+    const cap =
+      capped && this.maxCompletionTokens !== null
+        ? this.maxCompletionTokens + COMPLETION_TOKENS_PER_EXTRA_ANSWER * (answers - 1)
+        : null;
+    const completionEst =
+      cap === null
+        ? COMPLETION_TOKEN_ESTIMATE * answers
+        : Math.min(cap, COMPLETION_TOKEN_ESTIMATE * answers);
+    const estTokens = Math.ceil((system.length + user.length) / 4) + completionEst;
     const reservation = await this.throttleForRateLimit(estTokens);
     this.stats.calls += 1;
+    this.kindUsage(kind).calls += 1;
 
     const body: Record<string, unknown> = {
       model: this.model,
@@ -418,8 +611,78 @@ export class GroqProvider implements LLMProvider {
       temperature: this.temperature,
     };
     if (jsonMode) body.response_format = { type: "json_object" };
+    if (this.reasoningEffort !== null) body.reasoning_effort = this.reasoningEffort;
+    if (cap !== null) body.max_completion_tokens = cap;
 
-    const resp: HttpResponseLike | null = await (this.deps.requestWithRetryFn ?? requestWithRetry)(
+    let resp: HttpResponseLike | null = null;
+    for (let dailyWaits = 0; ; dailyWaits++) {
+      resp = await this.send(body);
+      if (resp === null || resp.status !== 429) break;
+      const info = await GroqProvider.inspect429(resp);
+      if (await this.waitShortDaily429(info, dailyWaits)) continue;
+      this.record429(info);
+      // A 429 consumes no tokens: release the estimate from the TPM window.
+      reservation.tokens = 0;
+      return null;
+    }
+    if (resp === null || resp.status !== 200) {
+      this.deps.logger?.warn(`groq: chat/completions failed (status=${resp?.status ?? "null"})`);
+      this.recordFailure();
+      return null;
+    }
+    const data = await safeJsonResponse(resp);
+    if (data === null) {
+      this.deps.logger?.warn("groq: chat/completions response was not valid JSON");
+      this.recordFailure();
+      return null;
+    }
+    const usage = (data as { usage?: { total_tokens?: unknown } }).usage;
+    if (typeof usage?.total_tokens === "number" && usage.total_tokens > 0) {
+      reservation.tokens = usage.total_tokens;
+    }
+    const choices = data.choices;
+    if (!Array.isArray(choices) || choices.length === 0) {
+      this.deps.logger?.warn("groq: empty/invalid choices in response");
+      this.recordFailure();
+      return null;
+    }
+    // Every 200 is billed, usable or not.
+    this.account(kind, reservation.tokens);
+    const firstChoice = choices[0];
+    const choice =
+      firstChoice !== null && typeof firstChoice === "object"
+        ? (firstChoice as Record<string, unknown>)
+        : null;
+    if (choice?.finish_reason === "length") {
+      // Cut off by max_completion_tokens (possibly mid-reasoning): the JSON
+      // may be incomplete or parse into something partial — never use it.
+      this.stats.truncated += 1;
+      this.deps.logger?.warn(
+        `groq: answer truncated by max_completion_tokens=${cap ?? "none"} (finish_reason=length, kind=${kind}); treated as a failed call`,
+      );
+      this.recordFailure();
+      return null;
+    }
+    const message = choice?.message ?? null;
+    const content =
+      message !== null && typeof message === "object"
+        ? (message as Record<string, unknown>).content
+        : null;
+    if (!(typeof content === "string" && content.trim())) {
+      this.deps.logger?.warn("groq: empty/unusable content in response");
+      this.recordFailure();
+      return null;
+    }
+    // Success — reset the failure counters so a transient blip doesn't latch
+    // the circuit breaker open.
+    this.consecutiveFailures = 0;
+    this.consecutive429 = 0;
+    this.stats.ok += 1;
+    return content;
+  }
+
+  private send(body: Record<string, unknown>): Promise<HttpResponseLike | null> {
+    return (this.deps.requestWithRetryFn ?? requestWithRetry)(
       {
         method: "POST",
         url: GROQ_URL,
@@ -434,7 +697,8 @@ export class GroqProvider implements LLMProvider {
           maxWaitMs: RETRY_429_MAX_WAIT_MS,
           giveUpIfHintAboveMs: DAILY_LIMIT_HINT_MS,
           hintMarginMs: RETRY_429_HINT_MARGIN_MS,
-          // A daily (RPD/TPD) 429 will not clear within the run: stop now.
+          // A daily (RPD/TPD) 429 goes back to chatRaw, which waits out a
+          // short rolling-window reset itself or latches.
           giveUpOnBody: (b) => isDailyLimit429(errorText(b), null),
         },
       },
@@ -450,51 +714,5 @@ export class GroqProvider implements LLMProvider {
         },
       },
     );
-    if (resp !== null && resp.status === 429) {
-      await this.record429(resp);
-      return null;
-    }
-    if (resp === null || resp.status !== 200) {
-      this.deps.logger?.warn(`groq: chat/completions failed (status=${resp?.status ?? "null"})`);
-      this.recordFailure();
-      return null;
-    }
-    const data = await safeJsonResponse(resp);
-    if (data === null) {
-      this.deps.logger?.warn("groq: chat/completions response was not valid JSON");
-      this.recordFailure();
-      return null;
-    }
-    const choices = data.choices;
-    if (!Array.isArray(choices) || choices.length === 0) {
-      this.deps.logger?.warn("groq: empty/invalid choices in response");
-      this.recordFailure();
-      return null;
-    }
-    const firstChoice = choices[0];
-    const message =
-      firstChoice !== null && typeof firstChoice === "object"
-        ? (firstChoice as Record<string, unknown>).message
-        : null;
-    const content =
-      message !== null && typeof message === "object"
-        ? (message as Record<string, unknown>).content
-        : null;
-    if (!(typeof content === "string" && content.trim())) {
-      this.deps.logger?.warn("groq: empty/unusable content in response");
-      this.recordFailure();
-      return null;
-    }
-    // Success — reset the failure counters so a transient blip doesn't latch
-    // the circuit breaker open.
-    this.consecutiveFailures = 0;
-    this.consecutive429 = 0;
-    this.stats.ok += 1;
-    const usage = (data as { usage?: { total_tokens?: unknown } }).usage;
-    if (typeof usage?.total_tokens === "number" && usage.total_tokens > 0) {
-      reservation.tokens = usage.total_tokens;
-    }
-    this.stats.tokens += reservation.tokens;
-    return content;
   }
 }

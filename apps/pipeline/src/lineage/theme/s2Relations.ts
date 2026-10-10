@@ -26,6 +26,19 @@
  * their short titles plus the quoted English context sentence, so the web
  * shows the evidence.
  *
+ * R2-20 (Groq token budget):
+ *  - confident rule results skip the LLM ({@link contextLlmSkipReason});
+ *  - answers are cached per pair under the prompt's SEMANTIC version and
+ *    input data (`CONTEXT_SEMANTIC_VERSION`), so a cached pair is never
+ *    re-asked after a wording-only prompt edit;
+ *  - with `batchSize > 1` the uncached pairs are DEFERRED: the rule edge
+ *    goes into the graph first, and {@link resolvePendingContext} asks
+ *    up to `batchSize` pairs per request after the BFS (one JSON answer
+ *    keyed by pair id), falling back to single requests for a malformed
+ *    batch answer or a missing id. Each pair still gets its own cache
+ *    entry and its edge provenance hashes its own single-pair prompt (the
+ *    relation input), not the batch request.
+ *
  * R2-16 quote rule: the quote is the sentence that triggered the rule and
  * that identifies the cited paper (its name or reference marker, or the
  * only work the sentence cites). Bibliography lines, bare marker lists and
@@ -33,7 +46,7 @@
  * rationale says so instead of quoting an unrelated sentence.
  */
 
-import type { LLMProvider } from "../../collect/llm/provider.js";
+import type { CompletionOptions, LLMProvider } from "../../collect/llm/provider.js";
 import {
   type ApiRelation,
   classifyS2Pair,
@@ -45,16 +58,22 @@ import {
   citedIdentity,
   isUsableContext,
   pickQuote,
+  sentenceTarget,
   shortPaperName,
   titleizeRationale,
 } from "../classify/citedTarget.js";
 import type { DerivedEdge } from "../classify/classify.js";
 import { canonicalJsonSha256 } from "../contract/v1.js";
 import {
+  buildContextBatchPrompt,
   buildContextPrompt,
   CONTEXT_PROMPT_VERSION,
+  CONTEXT_SEMANTIC_VERSION,
   type ContextAnswer,
+  type ContextPromptInputs,
+  contextPromptInputs,
   parseContextAnswer,
+  parseContextBatchResponse,
   parseContextResponse,
 } from "../llm/contextPrompt.js";
 import { completeJsonAttributed } from "../llm/fallback.js";
@@ -78,10 +97,70 @@ export interface S2RelationStats {
   /** Pairs left to the caller (`cites_unspecified` / no S2 data). */
   unspecified: number;
   noS2Data: number;
+  /** R2-20: pairs whose confident rule result skipped the LLM, by reason. */
+  skipped: Record<string, number>;
+  /** R2-20: asked pairs answered from the cache (no request). */
+  cached: number;
+  /** R2-20: requests sent — single-pair and batched — and pairs in batches. */
+  singleCalls: number;
+  batchCalls: number;
+  batchPairs: number;
+  /** R2-20: pairs re-asked singly after a malformed/failed batch answer or a missing id. */
+  batchFallbacks: number;
+  /** R2-20: deferred pairs whose edge did not survive to resolution (never asked). */
+  deferredUnused: number;
+  /** R2-20: deferred pairs that shared one request with an identical pair. */
+  deduped: number;
 }
 
 export function newS2RelationStats(): S2RelationStats {
-  return { rule: 0, llmAsked: 0, llmAnswered: 0, unspecified: 0, noS2Data: 0 };
+  return {
+    rule: 0,
+    llmAsked: 0,
+    llmAnswered: 0,
+    unspecified: 0,
+    noS2Data: 0,
+    skipped: {},
+    cached: 0,
+    singleCalls: 0,
+    batchCalls: 0,
+    batchPairs: 0,
+    batchFallbacks: 0,
+    deferredUnused: 0,
+    deduped: 0,
+  };
+}
+
+/** One summary line of the context-LLM accounting (R2-20). */
+export function contextLlmSummary(st: S2RelationStats): string {
+  const skipped = Object.entries(st.skipped)
+    .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+    .map(([k, n]) => `${k}=${n}`)
+    .join(" ");
+  const requests = st.singleCalls + st.batchCalls;
+  const asked = st.llmAsked - st.deferredUnused;
+  const savedByBatch = Math.max(0, st.batchPairs - st.batchCalls);
+  return (
+    `context-llm summary: asked=${asked} (cached=${st.cached}, deduped=${st.deduped}), ` +
+    `requests=${requests} (single=${st.singleCalls}, batch=${st.batchCalls} for ${st.batchPairs} pairs, ` +
+    `batch fallbacks=${st.batchFallbacks}); calls saved: by batching=${savedByBatch}, ` +
+    `by cache=${st.cached + st.deduped}, by skip=${Object.values(st.skipped).reduce((a, b) => a + b, 0)}` +
+    `${skipped ? ` (${skipped})` : ""}, deferred-unused=${st.deferredUnused}`
+  );
+}
+
+/** A deferred context-LLM pair (R2-20 batching). */
+export interface PendingContextPair {
+  srcId: string;
+  dstId: string;
+  parent: PaperLike;
+  child: PaperLike;
+  /** The rule edge that stands until the pair is resolved. */
+  ruleEdge: DerivedEdge;
+  req: ContextRequest;
+  /** Turn the answer (or `null`) into the final edge. */
+  finish: (answer: AttributedAnswer | null) => DerivedEdge;
+  onLlm?: (usable: boolean) => void;
 }
 
 export interface S2RelationContext {
@@ -89,6 +168,14 @@ export interface S2RelationContext {
   /** `null` = rules only (`--llm-strict off`, or no provider). */
   provider: LLMProvider | null;
   stats: S2RelationStats;
+  /** R2-20: provider for the context prompt (e.g. a gpt-oss-20b-first
+   * chain); defaults to `provider`. */
+  contextProvider?: LLMProvider | null;
+  /** R2-20: pairs per context request; > 1 defers uncached pairs to
+   * {@link resolvePendingContext}. Default 1 (ask inline). */
+  batchSize?: number;
+  /** R2-20: deferred pairs (filled by `deriveS2Relation`). */
+  pending?: PendingContextPair[];
 }
 
 function yearOf(paper: PaperLike): string {
@@ -182,35 +269,107 @@ export function needsContextLlm(r: S2RuleResult, signals: PairSignals): boolean 
   return r.cue || r.influential;
 }
 
-/** Ask the context prompt; through the theme cache when it has one. */
+/** Rules whose cue is explicitly NOT a method-building one (protocol /
+ * ablation sentences; `classifySentence` checks them first). */
+const NEGATIVE_CUE_RULES: ReadonlySet<string> = new Set(["phrase_protocol", "phrase_ablation"]);
+
+/**
+ * R2-20: a reason to keep the rule result without asking the LLM, for a
+ * pair {@link needsContextLlm} would send, or `null`. The context answer
+ * can only change the published relation to `extends` (builds_on) or,
+ * when the rule itself found a contrast cue on a sentence that targets
+ * the cited paper, to `contrasts`; everything else maps to
+ * `baseline_only` like the rule. So the LLM is skipped when it cannot
+ * change the relation:
+ *  - `negative_cue`: the cue is a protocol / ablation sentence — never
+ *    builds_on by construction — and carries no contrast;
+ *  - `multi_citation`: no cue fired (S2 only marks the citation
+ *    influential) and every usable sentence cites three or more works
+ *    without naming the cited paper, or only other works — the prompt
+ *    tells the model to answer `background` then.
+ * (A survey-like citing paper never reaches here: `citing_survey`.)
+ */
+export function contextLlmSkipReason(r: S2RuleResult, signals: PairSignals): string | null {
+  if (NEGATIVE_CUE_RULES.has(r.rule) && !r.contrast) return "negative_cue";
+  if (!r.cue) {
+    const id = citedIdentity(signals.cited, signals.contexts);
+    const usable = signals.contexts.filter(isUsableContext);
+    if (
+      usable.length > 0 &&
+      usable.every((c) => {
+        const t = sentenceTarget(c.replace(/\s+/g, " ").trim(), id);
+        return t === "multi" || t === "other";
+      })
+    ) {
+      return "multi_citation";
+    }
+  }
+  return null;
+}
+
+/** One context-prompt cache request (theme cache `JsonAnswerRequest`). */
+interface ContextRequest {
+  src: string;
+  dst: string;
+  system: string;
+  user: string;
+  promptVersion: string;
+  semantic: { version: string; inputs: ContextPromptInputs };
+  opts?: CompletionOptions;
+}
+
+type AttributedAnswer = { value: ContextAnswer; producedBy: { provider: string; model: string } };
+
+/** The theme cache's methods, when `provider` is the cache wrapper. */
+interface ContextCache {
+  lookupJsonAnswer: (
+    r: ContextRequest,
+    validate: (cached: unknown) => ContextAnswer | null,
+  ) => AttributedAnswer | null;
+  storeJsonAnswer: (
+    r: ContextRequest,
+    value: ContextAnswer,
+    producedBy: { provider: string; model: string },
+  ) => Promise<void>;
+}
+
+function cacheOf(provider: LLMProvider): ContextCache | null {
+  const c = provider as LLMProvider & Partial<ContextCache>;
+  return typeof c.lookupJsonAnswer === "function" && typeof c.storeJsonAnswer === "function"
+    ? (c as unknown as ContextCache)
+    : null;
+}
+
+/** Ask one pair: cache first, then a single-pair request (cached on success). */
 async function askContext(
   provider: LLMProvider,
-  req: { src: string; dst: string; system: string; user: string },
-): Promise<{ value: ContextAnswer; producedBy: { provider: string; model: string } } | null> {
-  const cached = provider as LLMProvider & {
-    cachedJsonAnswer?: (
-      r: { src: string; dst: string; system: string; user: string; promptVersion: string },
-      parse: (text: string | null) => ContextAnswer | null,
-      validate: (cached: unknown) => ContextAnswer | null,
-    ) => Promise<{ value: ContextAnswer; producedBy: { provider: string; model: string } } | null>;
-  };
-  if (typeof cached.cachedJsonAnswer === "function") {
-    return cached.cachedJsonAnswer(
-      { ...req, promptVersion: CONTEXT_PROMPT_VERSION },
-      parseContextResponse,
-      parseContextAnswer,
-    );
+  req: ContextRequest,
+  stats: S2RelationStats,
+): Promise<AttributedAnswer | null> {
+  const cache = cacheOf(provider);
+  const hit = cache?.lookupJsonAnswer(req, parseContextAnswer) ?? null;
+  if (hit !== null) {
+    stats.cached += 1;
+    return hit;
   }
-  const answer = await completeJsonAttributed(provider, req.system, req.user);
+  if (provider.isExhausted?.() === true) return null;
+  stats.singleCalls += 1;
+  const answer = await completeJsonAttributed(provider, req.system, req.user, {
+    kind: "context",
+    answers: 1,
+  });
   const value = parseContextResponse(answer?.text ?? null);
-  return answer === null || value === null ? null : { value, producedBy: answer.producedBy };
+  if (answer === null || value === null) return null;
+  await cache?.storeJsonAnswer(req, value, answer.producedBy);
+  return { value, producedBy: answer.producedBy };
 }
 
 /**
  * Classify one pair from Semantic Scholar evidence. `parent` = cited
  * (older), `child` = citing (newer). Returns `null` when S2 has nothing to
  * say about the pair — the caller then uses its existing path.
- * `onLlm(usable)` is told about every context-LLM call.
+ * `onLlm(usable)` is told about every context-LLM call (for a deferred
+ * pair: when it is resolved).
  */
 export async function deriveS2Relation(
   parent: PaperLike,
@@ -240,8 +399,15 @@ export async function deriveS2Relation(
     ctx.stats.unspecified += 1;
     return null;
   }
-  if (ctx.provider === null || !needsContextLlm(r, signals)) {
+  const provider = ctx.contextProvider ?? ctx.provider;
+  if (ctx.provider === null || provider === null || !needsContextLlm(r, signals)) {
     ctx.stats.rule += 1;
+    return rule;
+  }
+  const skip = contextLlmSkipReason(r, signals);
+  if (skip !== null) {
+    ctx.stats.rule += 1;
+    ctx.stats.skipped[skip] = (ctx.stats.skipped[skip] ?? 0) + 1;
     return rule;
   }
   ctx.stats.llmAsked += 1;
@@ -249,34 +415,153 @@ export async function deriveS2Relation(
   // marker lists); `needsContextLlm` guarantees at least one.
   const usable = signals.contexts.filter(isUsableContext);
   const [system, user] = buildContextPrompt(parent, child, usable);
-  const answer = await askContext(ctx.provider, { src: srcId, dst: dstId, system, user });
-  onLlm?.(answer !== null);
-  if (answer === null || answer.value.confidence < MIN_LLM_CONFIDENCE) {
-    ctx.stats.rule += 1;
-    return rule;
-  }
-  ctx.stats.llmAnswered += 1;
-  const a = answer.value;
-  // R2-16: `contrasts` needs the rule's own contrast cue on a sentence
-  // that targets the cited paper, not only the model's say-so.
-  const mapped = v1RelationFor(a.relation, {
-    contrast: a.contrast && r.contrast,
-    targetsCited: a.refers_to_cited && r.singleTarget,
-  }) as DerivedEdge["relation"];
-  const evidenceSentence = r.quotable
-    ? r.evidence
-    : pickQuote(signals.contexts, citedIdentity(parent, signals.contexts));
-  return {
-    relation: mapped,
-    confidence: a.confidence,
-    rationale: `${titleizeRationale(a.rationale, parent, child)}${quote(evidenceSentence)}`,
-    provenance: "llm",
-    producedBy: answer.producedBy,
+  const req: ContextRequest = {
+    src: srcId,
+    dst: dstId,
+    system,
+    user,
     promptVersion: CONTEXT_PROMPT_VERSION,
-    evidence: {
-      source: "semantic_scholar",
-      kind: "relation-input",
-      sha256: canonicalJsonSha256({ src: srcId, dst: dstId, system, user }),
+    semantic: {
+      version: CONTEXT_SEMANTIC_VERSION,
+      inputs: contextPromptInputs(parent, child, usable),
     },
   };
+  const finish = (answer: AttributedAnswer | null): DerivedEdge => {
+    if (answer === null || answer.value.confidence < MIN_LLM_CONFIDENCE) {
+      ctx.stats.rule += 1;
+      return rule;
+    }
+    ctx.stats.llmAnswered += 1;
+    const a = answer.value;
+    // R2-16: `contrasts` needs the rule's own contrast cue on a sentence
+    // that targets the cited paper, not only the model's say-so.
+    const mapped = v1RelationFor(a.relation, {
+      contrast: a.contrast && r.contrast,
+      targetsCited: a.refers_to_cited && r.singleTarget,
+    }) as DerivedEdge["relation"];
+    const evidenceSentence = r.quotable
+      ? r.evidence
+      : pickQuote(signals.contexts, citedIdentity(parent, signals.contexts));
+    return {
+      relation: mapped,
+      confidence: a.confidence,
+      rationale: `${titleizeRationale(a.rationale, parent, child)}${quote(evidenceSentence)}`,
+      provenance: "llm",
+      producedBy: answer.producedBy,
+      promptVersion: CONTEXT_PROMPT_VERSION,
+      evidence: {
+        source: "semantic_scholar",
+        kind: "relation-input",
+        sha256: canonicalJsonSha256({ src: srcId, dst: dstId, system, user }),
+      },
+    };
+  };
+  if ((ctx.batchSize ?? 1) > 1) {
+    // Cached pairs resolve now; the rest wait for a batched request.
+    const hit = cacheOf(provider)?.lookupJsonAnswer(req, parseContextAnswer) ?? null;
+    if (hit !== null) {
+      ctx.stats.cached += 1;
+      onLlm?.(true);
+      return finish(hit);
+    }
+    if (ctx.pending === undefined) ctx.pending = [];
+    ctx.pending.push({ srcId, dstId, parent, child, ruleEdge: rule, req, finish, onLlm });
+    return rule;
+  }
+  const answer = await askContext(provider, req, ctx.stats);
+  onLlm?.(answer !== null);
+  return finish(answer);
+}
+
+/**
+ * R2-20: resolve the deferred pairs of `ctx` with batched requests.
+ * `keep(pair)` says whether the pair's rule edge is still in the graph
+ * (pairs whose edge was dropped are not asked). Identical pairs share one
+ * answer. Returns the final edge of every kept pair, in queue order.
+ */
+export async function resolvePendingContext(
+  ctx: S2RelationContext,
+  keep: (pair: PendingContextPair) => boolean,
+): Promise<{ pair: PendingContextPair; edge: DerivedEdge }[]> {
+  const queue = (ctx.pending ?? []).splice(0);
+  const provider = ctx.contextProvider ?? ctx.provider;
+  if (queue.length === 0 || provider === null) return [];
+  const kept = queue.filter((p) => {
+    if (keep(p)) return true;
+    ctx.stats.deferredUnused += 1;
+    return false;
+  });
+  // One request per distinct (src, dst, inputs).
+  const groups = new Map<string, PendingContextPair[]>();
+  for (const p of kept) {
+    const k = canonicalJsonSha256({ src: p.srcId, dst: p.dstId, inputs: p.req.semantic.inputs });
+    const g = groups.get(k);
+    if (g) {
+      g.push(p);
+      ctx.stats.deduped += 1;
+    } else groups.set(k, [p]);
+  }
+  const reps = [...groups.values()];
+  const answers = new Map<PendingContextPair, AttributedAnswer | null>();
+  const size = Math.max(1, Math.floor(ctx.batchSize ?? 1));
+  const cache = cacheOf(provider);
+  for (let i = 0; i < reps.length; i += size) {
+    const chunk = reps.slice(i, i + size).map((g) => g[0] as PendingContextPair);
+    const open: PendingContextPair[] = [];
+    for (const p of chunk) {
+      const hit = cache?.lookupJsonAnswer(p.req, parseContextAnswer) ?? null;
+      if (hit !== null) {
+        ctx.stats.cached += 1;
+        answers.set(p, hit);
+      } else open.push(p);
+    }
+    if (open.length === 1) {
+      const p = open[0] as PendingContextPair;
+      answers.set(p, await askContext(provider, p.req, ctx.stats));
+      continue;
+    }
+    if (open.length === 0) continue;
+    let parsed: Map<string, ContextAnswer> | null = null;
+    let producedBy: { provider: string; model: string } | null = null;
+    if (provider.isExhausted?.() !== true) {
+      const ids = open.map((_, n) => `p${n + 1}`);
+      const [system, user] = buildContextBatchPrompt(
+        open.map((p, n) => ({ id: ids[n] as string, inputs: p.req.semantic.inputs })),
+      );
+      ctx.stats.batchCalls += 1;
+      ctx.stats.batchPairs += open.length;
+      const res = await completeJsonAttributed(provider, system, user, {
+        kind: "context-batch",
+        answers: open.length,
+      });
+      parsed = parseContextBatchResponse(res?.text ?? null, ids);
+      producedBy = res?.producedBy ?? null;
+    }
+    for (const [n, p] of open.entries()) {
+      const value = parsed?.get(`p${n + 1}`) ?? null;
+      if (value !== null && producedBy !== null) {
+        const a = { value, producedBy };
+        await cache?.storeJsonAnswer(p.req, value, producedBy);
+        answers.set(p, a);
+      } else if (provider.isExhausted?.() === true) {
+        answers.set(p, null);
+      } else {
+        // Malformed / failed batch answer, or no answer for this id.
+        ctx.stats.batchFallbacks += 1;
+        answers.set(p, await askContext(provider, p.req, ctx.stats));
+      }
+    }
+  }
+  const out: { pair: PendingContextPair; edge: DerivedEdge }[] = [];
+  const answerOf = new Map<PendingContextPair, AttributedAnswer | null>();
+  for (const g of reps) {
+    const a = answers.get(g[0] as PendingContextPair) ?? null;
+    for (const p of g) answerOf.set(p, a);
+  }
+  for (const p of kept) {
+    const a = answerOf.get(p) ?? null;
+    p.onLlm?.(a !== null);
+    out.push({ pair: p, edge: p.finish(a) });
+  }
+  return out;
 }

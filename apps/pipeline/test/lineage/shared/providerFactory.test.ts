@@ -6,7 +6,13 @@
  */
 import { describe, expect, it } from "vitest";
 import type { Env } from "../../../src/collect/config/env.js";
-import { buildProvider } from "../../../src/lineage/shared/providerFactory.js";
+import { FallbackProvider } from "../../../src/lineage/llm/fallback.js";
+import { GroqProvider } from "../../../src/lineage/llm/groq.js";
+import {
+  buildProvider,
+  DEFAULT_GROQ_CONTEXT_MODEL,
+  DEFAULT_GROQ_RUN_TOKEN_BUDGET,
+} from "../../../src/lineage/shared/providerFactory.js";
 
 const neverFetch = async () => {
   throw new Error("buildProvider must not perform network I/O");
@@ -153,5 +159,97 @@ describe("buildProvider — Groq pacing env overrides", () => {
   it("ignores a non-numeric / non-positive PAPERPILOT_GROQ_RPM", async () => {
     expect(await sleepsFor({ PAPERPILOT_GROQ_RPM: "abc" })).toEqual([3000]);
     expect(await sleepsFor({ PAPERPILOT_GROQ_RPM: "0" })).toEqual([3000]);
+  });
+});
+
+describe("buildProvider — R2-20 token controls and context-model routing", () => {
+  const keys = { groqApiKey: "k-groq", geminiApiKey: "k-gem" };
+  const summaryOf = (p: unknown) => (p as GroqProvider).usageSummary();
+
+  it("routes the context prompt to gpt-oss-20b first, then the SAME main chain members", () => {
+    const built = buildProvider(
+      { env: mkEnv(keys), ambientEnv: {}, fetchImpl: neverFetch },
+      { fallback: true, contextModelRouting: true },
+    );
+    const main = built.provider as FallbackProvider;
+    const ctx = built.contextProvider as FallbackProvider;
+    expect(ctx).toBeInstanceOf(FallbackProvider);
+    expect(ctx.members.map((m) => m.model)).toEqual([
+      DEFAULT_GROQ_CONTEXT_MODEL,
+      "openai/gpt-oss-120b",
+      "gemini-2.5-flash",
+    ]);
+    // Shared instances: a latch / budget on the 120b is seen by both chains.
+    expect(ctx.members[1]).toBe(main.members[0]);
+    expect(ctx.members[2]).toBe(main.members[1]);
+    // Theme runs get the default run budget.
+    expect(summaryOf(ctx.members[0])).toContain(`run_budget=0/${DEFAULT_GROQ_RUN_TOKEN_BUDGET}`);
+  });
+
+  it("PAPERPILOT_GROQ_CONTEXT_MODEL=off / the main model disables the routing", () => {
+    for (const v of ["off", "", "openai/gpt-oss-120b"]) {
+      const built = buildProvider(
+        {
+          env: mkEnv(keys),
+          ambientEnv: { PAPERPILOT_GROQ_CONTEXT_MODEL: v },
+          fetchImpl: neverFetch,
+        },
+        { fallback: true, contextModelRouting: true },
+      );
+      expect(built.contextProvider).toBeUndefined();
+    }
+  });
+
+  it("no routing without a Groq key or without the option", () => {
+    expect(
+      buildProvider(
+        { env: mkEnv({ geminiApiKey: "k-gem" }), ambientEnv: {}, fetchImpl: neverFetch },
+        { fallback: true, contextModelRouting: true },
+      ).contextProvider,
+    ).toBeUndefined();
+    expect(
+      buildProvider({ env: mkEnv(keys), ambientEnv: {}, fetchImpl: neverFetch }, { fallback: true })
+        .contextProvider,
+    ).toBeUndefined();
+  });
+
+  it("run budget env override; conference/deep (no fallback option) get no default budget", () => {
+    const theme = buildProvider(
+      {
+        env: mkEnv(keys),
+        ambientEnv: { PAPERPILOT_GROQ_RUN_TOKEN_BUDGET: "12345" },
+        fetchImpl: neverFetch,
+      },
+      { fallback: true },
+    );
+    expect(summaryOf((theme.provider as FallbackProvider).members[0])).toContain(
+      "run_budget=0/12345",
+    );
+    const conf = buildProvider({ env: mkEnv(keys), ambientEnv: {}, fetchImpl: neverFetch });
+    expect(summaryOf(conf.provider)).toContain("run_budget=off");
+  });
+
+  it("reasoning effort / completion cap env reach the request body", async () => {
+    const bodies: Record<string, unknown>[] = [];
+    const fetchImpl = async (_u: string, init: { body?: unknown }) => {
+      bodies.push(JSON.parse(String(init.body)) as Record<string, unknown>);
+      return {
+        status: 200,
+        headers: new Headers(),
+        json: async () => ({ choices: [{ message: { content: "{}" } }] }),
+      };
+    };
+    const { provider } = buildProvider({
+      env: mkEnv({ groqApiKey: "k-groq" }),
+      ambientEnv: {
+        PAPERPILOT_GROQ_REASONING_EFFORT: "medium",
+        PAPERPILOT_GROQ_MAX_COMPLETION_TOKENS: "500",
+      },
+      fetchImpl,
+      sleep: async () => {},
+    });
+    await provider.completeJson("s", "u");
+    expect(bodies[0]?.reasoning_effort).toBe("medium");
+    expect(bodies[0]?.max_completion_tokens).toBe(500);
   });
 });

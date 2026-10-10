@@ -12,7 +12,18 @@ import type {
   RequestWithRetryOptions,
 } from "../../../src/collect/http/requestWithRetry.js";
 import { createPaper, type Paper } from "../../../src/collect/model/paper.js";
-import { GroqProvider, isDailyLimit429 } from "../../../src/lineage/llm/groq.js";
+import {
+  COMPLETION_TOKENS_PER_EXTRA_ANSWER,
+  DEFAULT_MAX_COMPLETION_TOKENS,
+  GroqProvider,
+  isDailyLimit429,
+} from "../../../src/lineage/llm/groq.js";
+
+const VALID_CLS = JSON.stringify({
+  relation: "extends",
+  confidence: 0.8,
+  rationale: "GraphSAGE はスペクトル GCN の畳み込みを空間領域に広げている。",
+});
 
 function resp(status: number, body: unknown = {}): HttpResponseLike {
   return { status, json: async () => body };
@@ -524,18 +535,73 @@ describe("GroqProvider — rate-limit resilience (real requestWithRetry, fake cl
     expect(fetchImpl).toHaveBeenCalledTimes(7);
   });
 
-  it("a daily-limit 429 (TPD message) latches immediately", async () => {
-    const fetchImpl = scripted([TPD_429]);
+  it("R2-20: a TPD 429 with a short reset (252s, rolling window) is waited out, not latched", async () => {
+    const fetchImpl = scripted([TPD_429, OK("after")]);
+    const { p, warns, clock } = mkProvider(fetchImpl);
+    expect(await p.chat("s", "u")).toBe("after");
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+    // requestWithRetry stops on the daily body; the provider waits the
+    // hint (+250ms margin) itself and retries once.
+    expect(clock.sleeps).toEqual([252_250]);
+    const st = p.usageStats();
+    expect(st.latched).toBe(false);
+    expect(st.dailyShortWaits).toBe(1);
+    expect(st.throttleWaitMs).toBe(252_250);
+    expect(st.finalRateLimited).toBe(0);
+    expect(warns.some((w) => w.includes("short reset (252s"))).toBe(true);
+  });
+
+  it('R2-20: a short TPD reset in the message only ("try again in 10s") is waited out too', async () => {
+    const tpd = hresp(429, {
+      error: { message: "... tokens per day (TPD): Limit 200000 ... Please try again in 10s." },
+    });
+    const fetchImpl = scripted([tpd, OK("ok")]);
+    const { p, clock } = mkProvider(fetchImpl);
+    expect(await p.chat("s", "u")).toBe("ok");
+    expect(clock.sleeps).toEqual([10_250]);
+  });
+
+  it("R2-20: a TPD 429 whose reset is > 10 minutes latches immediately", async () => {
+    const tpdLong = hresp(
+      429,
+      { error: { message: "... tokens per day (TPD) ... Please try again in 15m3s." } },
+      { "retry-after": "903" },
+    );
+    const fetchImpl = scripted([tpdLong]);
     const { p, warns, clock } = mkProvider(fetchImpl);
     expect(await p.chat("s", "u")).toBeNull();
     expect(await p.chat("s", "u")).toBeNull();
-    // Retry-After is only 252s (< 10 min), but the body names the daily
-    // quota, so requestWithRetry stops without sleeping.
     expect(fetchImpl).toHaveBeenCalledTimes(1);
     expect(clock.sleeps).toEqual([]);
     expect(p.usageStats().latched).toBe(true);
     expect(p.usageStats().latchReason).toMatch(/daily rate limit/);
     expect(warns.some((w) => w.includes("tokens per day"))).toBe(true);
+  });
+
+  it("R2-20: a TPD 429 without any reset hint latches", async () => {
+    const fetchImpl = scripted([hresp(429, { error: { message: "tokens per day (TPD)" } })]);
+    const { p } = mkProvider(fetchImpl);
+    expect(await p.chat("s", "u")).toBeNull();
+    expect(p.usageStats().latched).toBe(true);
+  });
+
+  it("R2-20: a short TPD reset that would exceed the 429 back-off budget latches", async () => {
+    const fetchImpl = scripted([TPD_429]);
+    const { p, clock } = mkProvider(fetchImpl, { maxThrottleWaitSeconds: 100 });
+    expect(await p.chat("s", "u")).toBeNull();
+    expect(clock.sleeps).toEqual([]);
+    expect(p.usageStats().latched).toBe(true);
+    expect(p.usageStats().dailyShortWaits).toBe(0);
+  });
+
+  it("R2-20: at most 3 short daily waits per call, then latch", async () => {
+    const fetchImpl = scripted([TPD_429, TPD_429, TPD_429, TPD_429]);
+    const { p, clock } = mkProvider(fetchImpl);
+    expect(await p.chat("s", "u")).toBeNull();
+    expect(fetchImpl).toHaveBeenCalledTimes(4);
+    expect(clock.sleeps).toEqual([252_250, 252_250, 252_250]);
+    expect(p.usageStats().dailyShortWaits).toBe(3);
+    expect(p.usageStats().latched).toBe(true);
   });
 
   it("a 429 whose reset is > 10 minutes is a daily limit: no retry, latch", async () => {
@@ -583,12 +649,13 @@ describe("GroqProvider — rate-limit resilience (real requestWithRetry, fake cl
     await p.chat("s", "u");
     expect(p.usageSummary()).toBe(
       "groq summary: model=openai/gpt-oss-120b, calls=2 (ok=2, failed=0), 429s=1 (final=0), " +
-        "throttle_wait=2.3s, pacing_wait=0.8s, tokens=2000, latched=no",
+        "throttle_wait=2.3s, pacing_wait=0.8s, tokens=2000, latched=no; " +
+        "tokens/calls by kind: chat=2000/2; daily_short_waits=0, truncated=0, run_budget=off",
     );
   });
 
   it("summary reports the latch reason", async () => {
-    const fetchImpl = scripted([TPD_429]);
+    const fetchImpl = scripted([hresp(429, { error: { message: "tokens per day (TPD)" } })]);
     const { p } = mkProvider(fetchImpl);
     await p.chat("s", "u");
     expect(p.usageSummary()).toContain("429s=1 (final=1)");
@@ -625,5 +692,118 @@ describe("isDailyLimit429", () => {
     ["", 9 * 60_000, false],
   ])("%j / %j → %j", (msg, hint, want) => {
     expect(isDailyLimit429(msg, hint)).toBe(want);
+  });
+});
+
+describe("GroqProvider — R2-20 token controls", () => {
+  function bodies(fetchImpl: ReturnType<typeof scripted>): Record<string, unknown>[] {
+    return fetchImpl.mock.calls.map((c) => {
+      const init = (c as unknown[])[1] as { body?: string } | undefined;
+      return JSON.parse(init?.body ?? "{}") as Record<string, unknown>;
+    });
+  }
+  const okWith = (content: string, finish: string, total?: number) =>
+    hresp(200, {
+      choices: [{ message: { content }, finish_reason: finish }],
+      ...(total !== undefined ? { usage: { total_tokens: total } } : {}),
+    });
+
+  it("sends reasoning_effort=low and a single-answer completion cap for gpt-oss", async () => {
+    const fetchImpl = scripted([OK("{}"), OK("{}")]);
+    const { p } = mkProvider(fetchImpl);
+    await p.completeJson("s", "u");
+    await p.completeJson("s", "u", { kind: "context-batch", answers: 6 });
+    const [one, six] = bodies(fetchImpl);
+    expect(one?.reasoning_effort).toBe("low");
+    expect(one?.max_completion_tokens).toBe(DEFAULT_MAX_COMPLETION_TOKENS);
+    expect(six?.max_completion_tokens).toBe(
+      DEFAULT_MAX_COMPLETION_TOKENS + 5 * COMPLETION_TOKENS_PER_EXTRA_ANSWER,
+    );
+    expect(one?.response_format).toEqual({ type: "json_object" });
+  });
+
+  it("effort and cap are configurable; 0 / off disables them", async () => {
+    const fetchImpl = scripted([OK("{}"), OK("{}")]);
+    const a = mkProvider(fetchImpl, { reasoningEffort: "medium", maxCompletionTokens: 400 }).p;
+    await a.completeJson("s", "u");
+    const b = mkProvider(fetchImpl, { reasoningEffort: null, maxCompletionTokens: 0 }).p;
+    await b.completeJson("s", "u");
+    const [ba, bb] = bodies(fetchImpl);
+    expect(ba?.reasoning_effort).toBe("medium");
+    expect(ba?.max_completion_tokens).toBe(400);
+    expect(bb && "reasoning_effort" in bb).toBe(false);
+    expect(bb && "max_completion_tokens" in bb).toBe(false);
+  });
+
+  it("models without reasoning_effort get neither parameter by default", async () => {
+    const fetchImpl = scripted([OK("{}")]);
+    const { p } = mkProvider(fetchImpl, { model: "llama-3.1-8b-instant" });
+    await p.completeJson("s", "u");
+    const [body] = bodies(fetchImpl);
+    expect(body && "reasoning_effort" in body).toBe(false);
+    expect(body && "max_completion_tokens" in body).toBe(false);
+  });
+
+  it("evaluateBatch / chat are free-form: no completion cap", async () => {
+    const fetchImpl = scripted([OK("hi")]);
+    const { p } = mkProvider(fetchImpl);
+    await p.chat("s", "u");
+    const [body] = bodies(fetchImpl);
+    expect(body?.reasoning_effort).toBe("low");
+    expect(body && "max_completion_tokens" in body).toBe(false);
+  });
+
+  it("an answer cut off by the cap (finish_reason=length) is a failed call, not a parse", async () => {
+    const fetchImpl = scripted([
+      okWith('{"relation":"extends","confidence":0.9,"rat', "length", 900),
+    ]);
+    const { p, warns } = mkProvider(fetchImpl);
+    expect(await p.completeJson("s", "u", { kind: "context" })).toBeNull();
+    const st = p.usageStats();
+    expect(st.truncated).toBe(1);
+    expect(st.failed).toBe(1);
+    expect(st.ok).toBe(0);
+    // The truncated call was still billed.
+    expect(st.tokens).toBe(900);
+    expect(st.byKind.context).toEqual({ calls: 1, tokens: 900 });
+    expect(warns.some((w) => w.includes("truncated by max_completion_tokens=768"))).toBe(true);
+  });
+
+  it("three truncated answers in a row latch like other unusable responses", async () => {
+    const t = () => okWith("", "length", 768);
+    const fetchImpl = scripted([t(), t(), t()]);
+    const { p } = mkProvider(fetchImpl);
+    for (let i = 0; i < 4; i++) expect(await p.completeJson("s", "u")).toBeNull();
+    expect(fetchImpl).toHaveBeenCalledTimes(3);
+    expect(p.usageStats().latched).toBe(true);
+  });
+
+  it("the run token budget latches the provider once spent (logged)", async () => {
+    const fetchImpl = scripted([OK("{}", 700), OK("{}", 400)]);
+    const { p, warns } = mkProvider(fetchImpl, { runTokenBudget: 1000 });
+    expect(await p.completeJson("s", "u")).toBe("{}");
+    expect(await p.completeJson("s", "u")).toBe("{}");
+    // 1100 >= 1000: no further request.
+    expect(await p.completeJson("s", "u")).toBeNull();
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+    expect(p.usageStats().latchReason).toMatch(/run token budget exhausted \(1100 >= 1000/);
+    expect(warns.some((w) => w.includes("run token budget exhausted"))).toBe(true);
+    expect(p.usageSummary()).toContain("run_budget=1100/1000");
+  });
+
+  it("books tokens per prompt kind", async () => {
+    const fetchImpl = scripted([OK("{}", 500), OK("{}", 1500), OK(VALID_CLS, 800)]);
+    const { p } = mkProvider(fetchImpl);
+    await p.completeJson("s", "u", { kind: "context" });
+    await p.completeJson("s", "u", { kind: "context-batch", answers: 4 });
+    await p.classifyRelation({ title: "a" }, { title: "b" });
+    expect(p.usageStats().byKind).toEqual({
+      abstract: { calls: 1, tokens: 800 },
+      context: { calls: 1, tokens: 500 },
+      "context-batch": { calls: 1, tokens: 1500 },
+    });
+    expect(p.usageSummary()).toContain(
+      "tokens/calls by kind: abstract=800/1 context=500/1 context-batch=1500/1",
+    );
   });
 });
