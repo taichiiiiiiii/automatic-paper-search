@@ -8758,5 +8758,165 @@
         "schema_version": "relation-classification-v1"
       }
     }
+  },
+  "v3:22f7906836aa1fed2ece0b8b05bf4ce85f487cc72dcb167ec4fdaf725ee7ac94": {
+    "status": "success",
+    "expires_at": "2027-04-08T10:42:35.337000Z",
+    "cache_identity": {
+      "version": "lineage-classification-cache-v3",
+      "src": "openalex:W3121523901",
+      "dst": "openalex:W3204076343",
+      "evidence_sha256": "8fba327a0cbdf7584b0bdcc973826ca9b710f2c5db3a886b225d218d0033e01b",
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "prompt_version": "relation-prompt-v3-context",
+      "schema_version": "relation-classification-v1"
+    },
+    "classification": {
+      "refers_to_cited": true,
+      "relation": "compares_with",
+      "contrast": false,
+      "confidence": 0.92,
+      "rationale": "AのTokens-to-Token ViTはトークン化手法を提示し、Bは精度面で比較し上回っていることを示す"
+    },
+    "provenance": {
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "evidence": {
+        "source": "semantic_scholar",
+        "kind": "relation-input",
+        "sha256": "8fba327a0cbdf7584b0bdcc973826ca9b710f2c5db3a886b225d218d0033e01b"
+      },
+      "classification": {
+        "method": "llm",
+        "provider": "groq",
+        "model": "groq:openai/gpt-oss-120b",
+        "prompt_version": "relation-prompt-v3-context",
+        "schema_version": "relation-classification-v1"
+      }
+    }
+  },
+  "v3:16f29beb34d5dbba34d32b4e699ac4e8cb102b212810bcb6205a3b93477e989f": {
+    "status": "success",
+    "expires_at": "2027-04-08T10:42:38.179000Z",
+    "cache_identity": {
+      "version": "lineage-classification-cache-v3",
+      "src": "openalex:W3147387781",
+      "dst": "openalex:W4312349930",
+      "evidence_sha256": "7103535839c4ee9e85b92b263196e9f02cd0e82b5ddd4bafb8979237288caef7",
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "prompt_version": "relation-prompt-v2",
+      "schema_version": "relation-classification-v1"
+    },
+    "classification": {
+      "relation": "contrasts",
+      "confidence": 0.85,
+      "rationale": "B の階層的ウィンドウ注意を用いた Swin Transformer V2 は、A の純粋なトランスフォーマーによる ViViT と同じ Kinetics-400 動画分類タスクで、ウィンドウ分割という根本的に異なるアプローチで競合している。"
+    },
+    "provenance": {
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "evidence": {
+        "source": "semantic_scholar",
+        "kind": "relation-input",
+        "sha256": "7103535839c4ee9e85b92b263196e9f02cd0e82b5ddd4bafb8979237288caef7"
+      },
+      "classification": {
+        "method": "llm",
+        "provider": "groq",
+        "model": "groq:openai/gpt-oss-120b",
+        "prompt_version": "relation-prompt-v2",
+        "schema_version": "relation-classification-v1"
+      }
+    }
+  },
+  "v3:adbd85b155420478e592b670dc72c0607e696953096e6ab5fc217d810ad30157": {
+    "status": "success",
+    "expires_at": "2027-04-08T10:42:45.291000Z",
+    "cache_identity": {
+      "version": "lineage-classification-cache-v3",
+      "src": "openalex:W3204076343",
+      "dst": "openalex:W4312443924",
+      "evidence_sha256": "636c4a452473ea07b259a9bef1256ba10307c25470ae251ff7ead8d09b7717d8",
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "prompt_version": "relation-prompt-v2",
+      "schema_version": "relation-classification-v1"
+    },
+    "classification": {
+      "relation": "baseline_only",
+      "confidence": 0.78,
+      "rationale": "B のタイトル『A ConvNet for the 2020s』は、A の CvT が提案した畳み込みトークン埋め込みを背景に、従来の ConvNet アーキテクチャの重要性を論じるだけで、直接的な手法の継承はない。"
+    },
+    "provenance": {
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "evidence": {
+        "source": "semantic_scholar",
+        "kind": "relation-input",
+        "sha256": "636c4a452473ea07b259a9bef1256ba10307c25470ae251ff7ead8d09b7717d8"
+      },
+      "classification": {
+        "method": "llm",
+        "provider": "groq",
+        "model": "groq:openai/gpt-oss-120b",
+        "prompt_version": "relation-prompt-v2",
+        "schema_version": "relation-classification-v1"
+      }
+    }
+  },
+  "v3:d9149ff8ea217d7396fa4ccd79fbc81a64b28016fc7dd44c911b97f09066afb0": {
+    "status": "success",
+    "expires_at": "2027-04-08T10:43:34.673000Z",
+    "cache_identity": {
+      "version": "lineage-classification-cache-v3",
+      "src": "openalex:W3204076343",
+      "dst": "openalex:W3175515048",
+      "evidence_sha256": "c3c85421e7f47c4d54f923b8a67fd7c7d02f16aa79c20775cafb3183ee42b6ea",
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "prompt_version": "relation-prompt-v3-context",
+      "schema_version": "relation-classification-v1"
+    },
+    "classification": {
+      "refers_to_cited": true,
+      "relation": "background",
+      "contrast": false,
+      "confidence": 0.92,
+      "rationale": "CvTは畳み込みを導入したVision Transformerであり、Bはそれを関連研究として紹介している。"
+    },
+    "provenance": {
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "evidence": {
+        "source": "semantic_scholar",
+        "kind": "relation-input",
+        "sha256": "c3c85421e7f47c4d54f923b8a67fd7c7d02f16aa79c20775cafb3183ee42b6ea"
+      },
+      "classification": {
+        "method": "llm",
+        "provider": "groq",
+        "model": "groq:openai/gpt-oss-120b",
+        "prompt_version": "relation-prompt-v3-context",
+        "schema_version": "relation-classification-v1"
+      }
+    }
   }
 }
