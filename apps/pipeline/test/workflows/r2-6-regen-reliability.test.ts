@@ -66,6 +66,14 @@ describe("regen-themes.yml (R2-6)", () => {
     expect(promote).toContain(PENDING);
   });
 
+  it("packages and promotes the Semantic Scholar references cache (R2-10)", () => {
+    const S2 = "data/state/lineage-cache/s2_references.json";
+    expect(step(gen, "Package exact themes candidate").run as string).toContain(S2);
+    expect(
+      step(job(doc, "promote"), "Validate and promote from the latest develop tip").run as string,
+    ).toContain(S2);
+  });
+
   it("releases only when a theme regenerated", () => {
     expect(job(doc, "release").if).toContain("needs.generate.outputs.succeeded != '0'");
   });

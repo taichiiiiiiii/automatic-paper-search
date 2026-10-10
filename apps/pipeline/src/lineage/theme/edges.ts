@@ -19,6 +19,10 @@ export { filterEdgesByRationale, isDegenerateRationale } from "../shared/rationa
 
 export const PRODUCER_NAME = "paperpilot.scripts.build_theme_lineage";
 export const PRODUCER_VERSION = "p2t-v1";
+/** Abstract prompt (`buildClassifyPrompt`). Unchanged by R2-10: pairs
+ * without Semantic Scholar data still use it, and its cached answers stay
+ * valid. Citation-context answers carry `CONTEXT_PROMPT_VERSION`
+ * (`../llm/contextPrompt.ts`, `relation-prompt-v3-context`). */
 export const PROMPT_VERSION = "relation-prompt-v2";
 export const CLASSIFICATION_SCHEMA_VERSION = "relation-classification-v1";
 
@@ -78,13 +82,17 @@ export function classificationProvenance(
   const { srcId, dstId, parent, child, intentRecord, provider } = options;
   const method = String(classification.provenance || "");
   if (method === "llm") {
-    const [system, user] = buildClassifyPrompt(parent, child);
-    const evidenceSha256 = canonicalJsonSha256({ src: srcId, dst: dstId, system, user });
+    // R2-10: a citation-context answer carries the hash of its own prompt.
+    let evidenceSha256 = classification.evidence?.sha256;
+    if (evidenceSha256 === undefined) {
+      const [system, user] = buildClassifyPrompt(parent, child);
+      evidenceSha256 = canonicalJsonSha256({ src: srcId, dst: dstId, system, user });
+    }
     return makeProvenance({
       producerName: PRODUCER_NAME,
       producerVersion: PRODUCER_VERSION,
-      evidenceSource: "semantic_scholar",
-      evidenceKind: "relation-input",
+      evidenceSource: classification.evidence?.source ?? "semantic_scholar",
+      evidenceKind: classification.evidence?.kind ?? "relation-input",
       evidenceSha256,
       method: "llm",
       // R2-6: the answering provider when the fallback chain / cache knows
@@ -93,21 +101,25 @@ export function classificationProvenance(
         classification.producedBy?.provider ??
         (provider ? String(provider.name ?? "unknown") : "unknown"),
       model: classification.producedBy?.model ?? providerModelTag(provider),
-      promptVersion: PROMPT_VERSION,
+      promptVersion: classification.promptVersion ?? PROMPT_VERSION,
       classificationSchemaVersion: CLASSIFICATION_SCHEMA_VERSION,
     });
   }
   if (!CLASSIFICATION_METHODS.has(method)) {
     throw new RangeError(`unsupported heuristic provenance method: ${JSON.stringify(method)}`);
   }
-  const evidenceSha256 = canonicalJsonSha256(
-    heuristicEvidenceInput({ srcId, dstId, parent, child, intentRecord }),
-  );
+  const evidenceSha256 =
+    classification.evidence?.sha256 ??
+    canonicalJsonSha256(heuristicEvidenceInput({ srcId, dstId, parent, child, intentRecord }));
   return makeProvenance({
     producerName: PRODUCER_NAME,
     producerVersion: PRODUCER_VERSION,
-    evidenceSource: method === "context_pattern" ? "unarxive" : "semantic_scholar",
-    evidenceKind: method === "context_pattern" ? "citation-context" : "citation-metadata",
+    evidenceSource:
+      classification.evidence?.source ??
+      (method === "context_pattern" ? "unarxive" : "semantic_scholar"),
+    evidenceKind:
+      classification.evidence?.kind ??
+      (method === "context_pattern" ? "citation-context" : "citation-metadata"),
     evidenceSha256,
     method,
     provider: null,

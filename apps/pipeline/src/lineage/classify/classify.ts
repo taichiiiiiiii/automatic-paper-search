@@ -33,6 +33,15 @@ export interface DerivedEdge {
   /** For `provenance: "llm"`: the provider/model that actually answered,
    * when known (fallback chain / provider-agnostic cache). */
   producedBy?: { provider: string; model: string };
+  /** R2-10: the evidence actually behind this classification when it is
+   * not the abstract prompt (`llm`) or the paper-metadata input (other
+   * methods) — the Semantic Scholar citation context of an
+   * `s2_context_rule` edge, or the citation-context prompt of an `llm`
+   * edge. Edge provenance hashes it instead of the default input. */
+  evidence?: { source: string; kind: string; sha256: string };
+  /** For `provenance: "llm"` answers to a prompt other than the abstract
+   * prompt (e.g. `relation-prompt-v3-context`). */
+  promptVersion?: string;
 }
 
 /** The LLM-branch DerivedEdge for a usable classification (shared by both LLM paths). */
@@ -95,6 +104,7 @@ export const VALID_PROVENANCES: ReadonlySet<string> = new Set([
   "title_version", // child title is a version-increment of parent (supersedes)
   "foundational_allowlist", // title matched lineage_foundational_allowlist.json
   "llm", // LLM provider returned a valid classification
+  "s2_context_rule", // R2-10: Semantic Scholar citation context/intents/isInfluential, rule set v2
 ]);
 export { VALID_PROVENANCES as _VALID_PROVENANCES };
 
@@ -299,7 +309,10 @@ function stripVersion(short: string): [string, number | null] {
   return [short, null];
 }
 
-function isVersionIncrement(
+/** True when `child`'s title is a version increment of `parent`'s
+ * (`title_version` supersedes, #283). Exported for the R2-10 S2 path,
+ * which leaves such pairs to the existing heuristic. */
+export function isVersionIncrement(
   parent: LineagePaperLike | null | undefined,
   child: LineagePaperLike | null | undefined,
 ): boolean {

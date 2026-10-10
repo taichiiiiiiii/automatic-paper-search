@@ -43,6 +43,7 @@ import {
   DegradedClassificationError,
   EXIT_DEGRADED_CLASSIFICATION,
 } from "./classificationGate.js";
+import { S2_REFERENCES_FILENAME } from "./s2Citations.js";
 import { sanitizeTheme } from "./slug.js";
 import { DEFAULT_TOPIC_SCOPE_OPTIONS } from "./topicScope.js";
 
@@ -294,6 +295,15 @@ export function defaultDeps(repoRoot: string = DEFAULT_REPO_ROOT): BuildThemeLin
     githubToken: env.githubToken,
     classificationCachePath: classificationsCache(layout),
     githubApiDeps: { fetchImpl },
+    // R2-10 (design 41 D6): Semantic Scholar citation contexts first.
+    // PAPERPILOT_S2_RELATIONS=off restores the pre-R2-10 path.
+    s2Citations:
+      (process.env.PAPERPILOT_S2_RELATIONS ?? "").toLowerCase() === "off"
+        ? null
+        : {
+            cachePath: join(lineageCacheDir(layout), S2_REFERENCES_FILENAME),
+            apiKey: env.s2ApiKey,
+          },
     buildProvider: () =>
       buildProvider(
         {

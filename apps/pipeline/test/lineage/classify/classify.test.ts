@@ -3,8 +3,10 @@
  * `test_lineage_slotfill_rationale.py`, and the non-`build_deep_lineage`
  * portions of `test_lineage_classify_dead_paths.py`.
  */
+
 import { describe, expect, it } from "vitest";
 import type { RelationClassification } from "../../../src/collect/llm/provider.js";
+import { classifyS2Pair } from "../../../src/lineage/classify/apiRelations.js";
 import {
   _INTENT_RELATION_MAP,
   applyLlmClassification,
@@ -19,6 +21,7 @@ import {
   VALID_PROVENANCES,
 } from "../../../src/lineage/classify/classify.js";
 import { MIN_RATIONALE_LEN } from "../../../src/lineage/llm/base.js";
+import { ruleEdge } from "../../../src/lineage/theme/s2Relations.js";
 
 function rc(
   relation: RelationClassification["relation"] = "extends",
@@ -99,6 +102,7 @@ describe("provenance", () => {
       "title_version",
       "foundational_allowlist",
       "llm",
+      "s2_context_rule",
     ]);
     expect(VALID_PROVENANCES).toEqual(expected);
 
@@ -121,6 +125,22 @@ describe("provenance", () => {
         { _intents: [] },
         { title: "FlashAttention", year: 2022 },
         { title: "FlashAttention-2", year: 2023 },
+      )?.provenance ?? "",
+    );
+    // R2-10: the Semantic Scholar context rule path (theme/s2Relations.ts).
+    const s2Signals = {
+      found: true,
+      intents: [],
+      contexts: ["We build on the GCN layer [4]."],
+      isInfluential: true,
+    };
+    collected.add(
+      ruleEdge(
+        classifyS2Pair(s2Signals),
+        s2Signals,
+        { srcId: "a", dstId: "b" },
+        { title: "GCN", year: 2017 },
+        { title: "GAT", year: 2018 },
       )?.provenance ?? "",
     );
     expect(collected).toEqual(expected);

@@ -55,6 +55,7 @@ import {
   providerModelTag,
   relationClassificationFromDict,
 } from "../llm/base.js";
+import { completeJsonAttributed } from "../llm/fallback.js";
 
 type Provenance = Record<string, unknown>;
 
@@ -193,7 +194,12 @@ export class ThemeCachedClassifyProvider implements LLMProvider {
   }
 
   /** LLM provenance for one answer by `provider`/`model`. */
-  private provenanceFor(evidenceSha256: string, provider: string, model: string): Provenance {
+  private provenanceFor(
+    evidenceSha256: string,
+    provider: string,
+    model: string,
+    promptVersion: string = this.identityInfo.promptVersion,
+  ): Provenance {
     return makeProvenance({
       producerName: this.identityInfo.producerName,
       producerVersion: this.identityInfo.producerVersion,
@@ -203,9 +209,66 @@ export class ThemeCachedClassifyProvider implements LLMProvider {
       method: "llm",
       provider,
       model,
-      promptVersion: this.identityInfo.promptVersion,
+      promptVersion,
       classificationSchemaVersion: this.identityInfo.classificationSchemaVersion,
     });
+  }
+
+  /**
+   * R2-10: cached answer to an arbitrary JSON prompt about one edge (the
+   * citation-context prompt). Same v3 cache, key and TTL rules as
+   * {@link classifyRelation}, with the prompt's own version in the
+   * identity, so context answers never collide with abstract answers.
+   * `parse` validates both fresh and cached answers; the stored
+   * `classification` is the parsed answer itself.
+   */
+  async cachedJsonAnswer<T extends object>(
+    req: { src: string; dst: string; system: string; user: string; promptVersion: string },
+    parse: (text: string | null) => T | null,
+    validate: (cached: unknown) => T | null,
+  ): Promise<{ value: T; producedBy: { provider: string; model: string } } | null> {
+    const evidenceSha256 = canonicalJsonSha256({
+      src: req.src,
+      dst: req.dst,
+      system: req.system,
+      user: req.user,
+    });
+    const identity: ThemeCacheIdentity = {
+      ...this.identityV3({ src: req.src, dst: req.dst, evidenceSha256 }),
+      prompt_version: req.promptVersion,
+    };
+    const key = `v3:${canonicalJsonSha256(identity)}`;
+    const now = this.now();
+    const template = this.provenanceFor(evidenceSha256, "x", "x", req.promptVersion);
+    const cached = this.cache[key];
+    if (
+      isPlainObject(cached) &&
+      ThemeCachedClassifyProvider.fresh(cached, now) &&
+      jsonEqual(cached.cache_identity, identity)
+    ) {
+      const value = validate(cached.classification);
+      const producer = ThemeCachedClassifyProvider.producerOf(cached.provenance, template);
+      if (value !== null && producer !== null) return { value, producedBy: producer };
+    }
+    const answer = await completeJsonAttributed(this.inner, req.system, req.user);
+    const value = parse(answer?.text ?? null);
+    if (answer === null || value === null) return null;
+    this.cache[key] = {
+      status: "success",
+      expires_at: pyIsoformat(new Date(now.getTime() + CACHE_TTL_MS)).replace("+00:00", "Z"),
+      cache_identity: identity,
+      classification: value,
+      provenance: this.provenanceFor(
+        evidenceSha256,
+        answer.producedBy.provider,
+        answer.producedBy.model,
+        req.promptVersion,
+      ),
+    };
+    if (this.cachePath !== null && this.existsSyncFn(dirnameOf(this.cachePath))) {
+      await this.persist(this.cache, this.cachePath);
+    }
+    return { value, producedBy: answer.producedBy };
   }
 
   /** Who produced a cached entry, if its provenance is a well-formed LLM record for this evidence. */
