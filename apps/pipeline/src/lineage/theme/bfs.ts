@@ -14,6 +14,8 @@ import {
   deriveRelation,
   isFoundationalAncestor,
   isVersionIncrement,
+  titleVersionEdge,
+  titleVersionOf,
 } from "../classify/classify.js";
 import type { BuildCompletenessForExpansion } from "../shared/fetchRelated.js";
 import { type FetchRelatedDeps, fetchRelated } from "../shared/fetchRelated.js";
@@ -126,9 +128,21 @@ function llmCounter(provider: LLMProvider | null): LlmCounter {
 }
 
 /** `deriveRelation` + the R2-2b demotion of `year_cite` guesses + the
- * R2-2d survey/dataset `contrasts` guard. R2-10: with `s2`, Semantic
- * Scholar evidence decides first (foundational allowlist and title-version
- * pairs keep their own rules); pairs S2 has nothing on fall through. */
+ * R2-2d survey/dataset `contrasts` guard.
+ *
+ * Order (R2-13):
+ *  1. an explicit version increment (`FlashAttention` -> `FlashAttention-2`)
+ *     is `title_version` supersedes, before anything else — S2 intents or
+ *     the foundational allowlist would otherwise turn a new version of a
+ *     work into a plain `extends`;
+ *  2. with `s2`, Semantic Scholar evidence decides (R2-10) — now also when
+ *     the cited paper is on the foundational allowlist: the allowlist was
+ *     added because OpenAlex references carry no citation intents, so where
+ *     S2 does have the citation sentences they say more than "a canonical
+ *     paper was cited" (a downstream paper that cites FlashAttention as
+ *     motivation is not an `extends` of it);
+ *  3. pairs S2 has nothing on fall through to `deriveRelation` (allowlist,
+ *     abstract LLM, heuristic). */
 async function classifyPair(
   intentRecord: Record<string, unknown>,
   parent: Record<string, unknown>,
@@ -137,11 +151,14 @@ async function classifyPair(
   llmStrict: string,
   s2: S2RelationContext | null = null,
 ): Promise<DerivedEdge | null> {
-  if (
-    s2 !== null &&
-    !isFoundationalAncestor(parent as ClassifyPaperLike) &&
-    !isVersionIncrement(parent as ClassifyPaperLike, child as ClassifyPaperLike)
-  ) {
+  if (isVersionIncrement(parent as ClassifyPaperLike, child as ClassifyPaperLike)) {
+    return guardRelation(
+      titleVersionEdge(parent as ClassifyPaperLike, child as ClassifyPaperLike),
+      parent,
+      child,
+    );
+  }
+  if (s2 !== null) {
     const fromS2 = await deriveS2Relation(parent, child, s2, (usable) => {
       counter.calls += 1;
       if (!usable) counter.unusable += 1;
@@ -558,8 +575,26 @@ export interface AddCrossNodeEdgesOptions {
   s2Relations?: S2RelationContext | null;
 }
 
+/** A graph node as the paper dict the classifiers take (`paperId` = id). */
+function nodeAsPaper(id: string, node: ThemeGraphNode | undefined): Paper {
+  return { ...(node as unknown as Record<string, unknown>), paperId: id } as unknown as Paper;
+}
+
+function yearOf(node: ThemeGraphNode | undefined): number | null {
+  const y = node?.year;
+  return typeof y === "number" && Number.isInteger(y) ? y : null;
+}
+
 /** Find citation links between nodes already in the graph (#54/#55).
- * Returns the number of edges added; mutates `edges` in place. */
+ * Returns the number of edges added; mutates `edges` in place.
+ *
+ * R2-13: a citing node whose OpenAlex reference list is empty (OpenAlex
+ * has no `referenced_works` for many arXiv-only records, e.g. all three
+ * FlashAttention papers) is also checked against its Semantic Scholar
+ * reference list (`s2Relations.source`, cached in `s2_references.json`):
+ * every other in-graph node that is not newer than it is looked up there,
+ * seed-to-seed pairs included, and each pair S2 confirms is classified
+ * like any other pair. Without `s2Relations` nothing changes. */
 export async function addCrossNodeEdges(
   nodes: ReadonlyMap<string, ThemeGraphNode>,
   edges: ThemeEdge[],
@@ -589,6 +624,19 @@ export async function addCrossNodeEdges(
       refs = await fetchRelated(citingId, "references", CROSS_NODE_LIMIT, deps, completeness);
     } catch (exc) {
       deps.logger?.warn(`cross-node: fetch_related failed for ${citingId}: ${String(exc)}`);
+      continue;
+    }
+    if (refs.length === 0 && options.s2Relations) {
+      added += await addS2ReferenceEdges(citingId, {
+        nodes,
+        edges,
+        existing,
+        isAnchor,
+        counter,
+        strictMode,
+        provider,
+        s2: options.s2Relations,
+      });
       continue;
     }
     for (const rawRef of refs) {
@@ -624,6 +672,137 @@ export async function addCrossNodeEdges(
       existing.add(edgeKey);
       added += 1;
     }
+  }
+  return added;
+}
+
+/** R2-13: in-graph references of `citingId` from its Semantic Scholar
+ * reference list (used when OpenAlex has none). Returns edges added. */
+async function addS2ReferenceEdges(
+  citingId: string,
+  ctx: {
+    nodes: ReadonlyMap<string, ThemeGraphNode>;
+    edges: ThemeEdge[];
+    existing: Set<string>;
+    isAnchor: (id: string) => boolean;
+    counter: LlmCounter;
+    strictMode: string;
+    provider: LLMProvider | null;
+    s2: S2RelationContext;
+  },
+): Promise<number> {
+  const citingNode = ctx.nodes.get(citingId);
+  const citing = nodeAsPaper(citingId, citingNode);
+  const citingYear = yearOf(citingNode);
+  let added = 0;
+  for (const [refId, refNode] of ctx.nodes) {
+    if (refId === citingId) continue;
+    const refYear = yearOf(refNode);
+    // A paper cannot cite a newer one (preprint dates aside): skip the
+    // lookup rather than store a guaranteed miss.
+    if (citingYear !== null && refYear !== null && refYear > citingYear) continue;
+    if (!(ctx.isAnchor(citingId) || ctx.isAnchor(refId))) continue;
+    const edgeKey = `${refId}\u0000${citingId}`;
+    if (ctx.existing.has(edgeKey) || ctx.existing.has(`${citingId}\u0000${refId}`)) continue;
+    const ref = nodeAsPaper(refId, refNode);
+    const lookup = await ctx.s2.source.lookup(citing, ref);
+    if (lookup.kind === "no_s2_data") return added; // whole list unavailable
+    if (!lookup.signals.found) continue; // S2: citing does not cite ref
+    const cls = await classifyPair(ref, ref, citing, ctx.counter, ctx.strictMode, ctx.s2);
+    if (cls === null) continue;
+    ctx.edges.push(
+      makeEdge(cls, {
+        srcId: refId,
+        dstId: citingId,
+        parent: ref,
+        child: citing,
+        intentRecord: ref,
+        provider: ctx.provider,
+      }),
+    );
+    ctx.existing.add(edgeKey);
+    added += 1;
+  }
+  return added;
+}
+
+/**
+ * R2-13: link explicit versions of the same work that the citation data
+ * left unconnected. For every node whose title is version N of a work
+ * ("FlashAttention-3: …"), the in-graph node with the nearest LOWER
+ * version of the same title family ("FlashAttention-2", else the
+ * unnumbered "FlashAttention") gets a `title_version` supersedes edge to
+ * it — only when both years are known and the newer version is not
+ * older, and only when no edge already joins the two in either direction
+ * (a citation-backed pair was already classified by `classifyPair`).
+ * Only the nearest predecessor is linked, so a family becomes a chain
+ * (v1 -> v2 -> v3), not a clique. Same family = same lower-cased short
+ * title (before the colon) after stripping a trailing `-N`/` N`/` vN`
+ * (`isVersionIncrement`: base >= 4 chars, version <= 20), so "GPT-4" or
+ * "YOLOv4" style names are never matched by this rule. These edges carry
+ * confidence 0.6 and say in the rationale that the citation is missing.
+ * Mutates `edges`; returns the number added.
+ */
+export function addVersionFamilyEdges(
+  nodes: ReadonlyMap<string, ThemeGraphNode>,
+  edges: ThemeEdge[],
+): number {
+  const linked = new Set<string>();
+  for (const e of edges) {
+    linked.add(`${e.src}\u0000${e.dst}`);
+    linked.add(`${e.dst}\u0000${e.src}`);
+  }
+  const versions = new Map<string, { base: string; version: number | null; year: number }>();
+  for (const [id, node] of nodes) {
+    const v = titleVersionOf(node as unknown as ClassifyPaperLike);
+    const year = yearOf(node);
+    if (v !== null && year !== null) versions.set(id, { ...v, year });
+  }
+  let added = 0;
+  for (const [childId, child] of [...versions].sort((a, b) => (a[0] < b[0] ? -1 : 1))) {
+    if (child.version === null) continue;
+    let best: string | null = null;
+    let bestVersion = -1;
+    for (const [parentId, parent] of versions) {
+      if (parentId === childId || parent.base !== child.base) continue;
+      if (parent.year > child.year) continue;
+      const childNode = nodes.get(childId);
+      const parentNode = nodes.get(parentId);
+      if (
+        !isVersionIncrement(
+          parentNode as unknown as ClassifyPaperLike,
+          childNode as unknown as ClassifyPaperLike,
+        )
+      ) {
+        continue;
+      }
+      const pv = parent.version ?? 1;
+      if (pv > bestVersion || (pv === bestVersion && best !== null && parentId < best)) {
+        best = parentId;
+        bestVersion = pv;
+      }
+    }
+    if (best === null || linked.has(`${best}\u0000${childId}`)) continue;
+    const parent = nodeAsPaper(best, nodes.get(best));
+    const childPaper = nodeAsPaper(childId, nodes.get(childId));
+    const cls = titleVersionEdge(
+      parent as unknown as ClassifyPaperLike,
+      childPaper as unknown as ClassifyPaperLike,
+      { citationBacked: false },
+    );
+    edges.push(
+      makeEdge(cls, {
+        srcId: best,
+        dstId: childId,
+        parent,
+        child: childPaper,
+        intentRecord: parent,
+        provider: null,
+      }),
+    );
+    linked.add(`${best}\u0000${childId}`);
+    linked.add(`${childId}\u0000${best}`);
+    added += 1;
   }
   return added;
 }

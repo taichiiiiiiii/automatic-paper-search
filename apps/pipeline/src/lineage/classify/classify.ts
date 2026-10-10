@@ -309,6 +309,21 @@ function stripVersion(short: string): [string, number | null] {
   return [short, null];
 }
 
+/** The version family of a paper title: the lower-cased short title
+ * (before the first colon) without a trailing version number, and that
+ * number (`null` when the title carries none, i.e. the first version).
+ * "FlashAttention-2: Faster…" -> `{ base: "flashattention", version: 2 }`.
+ * `null` for an empty title. Used by the theme builder's version-family
+ * pass (`theme/bfs.ts::addVersionFamilyEdges`). */
+export function titleVersionOf(
+  paper: LineagePaperLike | null | undefined,
+): { base: string; version: number | null } | null {
+  const short = shortTitle(paper);
+  if (!short) return null;
+  const [base, version] = stripVersion(short);
+  return { base, version: version !== null && version <= MAX_VERSION_TOKEN ? version : null };
+}
+
 /** True when `child`'s title is a version increment of `parent`'s
  * (`title_version` supersedes, #283). Exported for the R2-10 S2 path,
  * which leaves such pairs to the existing heuristic. */
@@ -355,13 +370,7 @@ export function deriveRelationHeuristic(
   }
 
   // No matching intent — title-version supersedes signal BEFORE year/cite.
-  if (isVersionIncrement(parent, child)) {
-    const rationale =
-      `「${slotFillTitle(child)}」(${slotFillYear(child)}) は` +
-      `「${slotFillTitle(parent)}」(${slotFillYear(parent)}) の` +
-      `バージョンアップ版にあたり、命名パターンから置き換え (supersedes) と推定される。`;
-    return makeDerived("supersedes", rationale, "title_version");
-  }
+  if (isVersionIncrement(parent, child)) return titleVersionEdge(parent, child);
 
   // No matching intent — year + citation contrast.
   if (parent && child) {
@@ -405,6 +414,43 @@ export function deriveRelationHeuristic(
   return null;
 }
 export { deriveRelationHeuristic as _derive_relation_heuristic };
+
+/** Confidence of a version edge inferred from titles alone, with no
+ * citation between the two papers in the data (`citationBacked: false`). */
+export const TITLE_VERSION_UNCITED_CONFIDENCE = 0.6;
+
+/**
+ * The `title_version` supersedes edge for a version increment (#283).
+ * `citationBacked: false` marks a pair linked only because the titles are
+ * explicit versions of the same work and the years do not decrease
+ * (theme builder's version-family pass): lower confidence and a rationale
+ * that says the citation data lacks the link.
+ */
+export function titleVersionEdge(
+  parent: LineagePaperLike | null | undefined,
+  child: LineagePaperLike | null | undefined,
+  options: { citationBacked?: boolean } = {},
+): DerivedEdge {
+  const citationBacked = options.citationBacked ?? true;
+  const head =
+    `「${slotFillTitle(child)}」(${slotFillYear(child)}) は` +
+    `「${slotFillTitle(parent)}」(${slotFillYear(parent)}) の`;
+  if (citationBacked) {
+    return makeDerived(
+      "supersedes",
+      `${head}バージョンアップ版にあたり、命名パターンから置き換え (supersedes) と推定される。`,
+      "title_version",
+    );
+  }
+  return {
+    relation: "supersedes",
+    confidence: TITLE_VERSION_UNCITED_CONFIDENCE,
+    rationale:
+      `${head}次の版にあたる（題名が同じ研究の明示的な版番号で、発表年も後）。` +
+      "引用データにこの引用は見当たらないが、命名から置き換え (supersedes) と推定される。",
+    provenance: "title_version",
+  };
+}
 
 /** True iff S2 intents fail to pick a key in `INTENT_RELATION_MAP`. */
 export function isAmbiguous(intentRecord: Record<string, unknown>): boolean {
@@ -509,19 +555,23 @@ export function isFoundationalAncestor(parent: LineagePaperLike | null | undefin
 }
 export { isFoundationalAncestor as _is_foundational_ancestor };
 
-/** Emit a stable extends edge for a foundational ancestor. */
-export function foundationalAncestorEdge(parent: LineagePaperLike | null | undefined): DerivedEdge {
-  let title = "";
-  if (parent && typeof parent === "object" && typeof parent.title === "string") {
-    title = (parent.title as string).trim();
-  }
-  if (!title) title = "the cited work";
+/** Emit a stable extends edge for a foundational ancestor. The rationale
+ * is Japanese and slot-filled like every other rule rationale (it used to
+ * be a fixed English template); `child` is the citing paper, when known. */
+export function foundationalAncestorEdge(
+  parent: LineagePaperLike | null | undefined,
+  child?: LineagePaperLike | null,
+): DerivedEdge {
+  const cited = `「${slotFillTitle(parent)}」(${slotFillYear(parent)})`;
+  const rationale =
+    child === undefined || child === null
+      ? `${cited} は分野の基礎文献として登録されており、この系譜の祖先として拡張関係で残している（基礎文献リストに基づく規則）。`
+      : `「${slotFillTitle(child)}」(${slotFillYear(child)}) は分野の基礎文献${cited}を引用しており、` +
+        "その系譜に連なるものとして拡張関係で残している（基礎文献リストに基づく規則）。";
   return {
     relation: "extends",
     confidence: FOUNDATIONAL_ALLOWLIST_CONFIDENCE,
-    rationale:
-      `${title} is a canonical research-lineage ancestor and is preserved here as a direct ` +
-      "extends edge — see lineage_foundational_allowlist.json.",
+    rationale,
     provenance: "foundational_allowlist",
   };
 }
@@ -561,7 +611,7 @@ export async function deriveRelation(
   // #277: foundational ancestor short-circuit, takes priority over the
   // heuristic (see Python's docstring for the two reasons).
   if (isFoundationalAncestor(parent)) {
-    return foundationalAncestorEdge(parent);
+    return foundationalAncestorEdge(parent, child);
   }
 
   if (heuristic === null) {

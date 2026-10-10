@@ -1061,6 +1061,8 @@ export interface QualityPolicy {
   theme_min_evidence_classified_rate?: number;
   /** Theme artifacts generated before this instant predate the current generator rules (design 41 D1). */
   theme_min_generated_at?: string;
+  /** Minimum edge count of a theme lineage (`edge_density`, R2-13; default 3). */
+  theme_min_edges?: number;
   [key: string]: unknown;
 }
 
@@ -1187,19 +1189,34 @@ export function manifestPayload(manifest: QualityManifest): Buffer {
  *  - `generator_current`: it was generated at or after `minGeneratedAt`,
  *    i.e. by the generator with the current topic/relation rules. Bump the
  *    policy instant whenever those rules change materially.
+ *  - `edge_density` (R2-13): it has at least `minEdges` edges
+ *    (`theme_min_edges`, default {@link DEFAULT_THEME_MIN_EDGES}). A
+ *    lineage of a few disconnected papers is not useful even when every
+ *    one of its edges is evidence-backed — e.g. Flash Attention run
+ *    38041334727: 4 nodes, 1 edge, FlashAttention 1/2/3 unconnected.
  */
 export interface ThemeGate {
   minClassifiedRate: number;
   minGeneratedAt: string | null;
+  minEdges: number;
 }
+
+export const DEFAULT_THEME_MIN_EDGES = 3;
 
 export function themeGateFromPolicy(policy: QualityPolicy): ThemeGate | null {
   const rate = policy.theme_min_evidence_classified_rate;
   const at = policy.theme_min_generated_at;
-  if (typeof rate !== "number" && typeof at !== "string") return null;
+  const minEdges = policy.theme_min_edges;
+  if (typeof rate !== "number" && typeof at !== "string" && typeof minEdges !== "number") {
+    return null;
+  }
   return {
     minClassifiedRate: typeof rate === "number" ? rate : DEFAULT_MIN_CLASSIFIED_RATE,
     minGeneratedAt: typeof at === "string" ? at : null,
+    minEdges:
+      typeof minEdges === "number" && Number.isFinite(minEdges) && minEdges >= 0
+        ? minEdges
+        : DEFAULT_THEME_MIN_EDGES,
   };
 }
 
@@ -1230,6 +1247,18 @@ export function themeGateChecks(
       ),
     );
   }
+  const edgeCount = Array.isArray(data.edges) ? data.edges.length : 0;
+  const nodeCount = Array.isArray(data.nodes) ? data.nodes.length : 0;
+  const denseEnough = edgeCount >= gate.minEdges;
+  out.push(
+    check(
+      "edge_density",
+      denseEnough ? "passed" : "failed",
+      edgeCount,
+      gate.minEdges,
+      denseEnough ? [] : [`edges:${edgeCount}<${gate.minEdges}`, `nodes:${nodeCount}`],
+    ),
+  );
   if (gate.minGeneratedAt !== null) {
     let ok = false;
     if (generatedAt !== null) {
