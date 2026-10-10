@@ -945,6 +945,39 @@ function dedupSortIssuesSimple(issues: readonly ContractIssue[]): ContractIssue[
   );
 }
 
+/**
+ * Publication tier (design doc 41 D1), derived from the checks alone:
+ * - `audited`: ready, every automatic check passed AND `golden_fixture` passed;
+ * - `unaudited`: ready, every automatic check passed, `golden_fixture` is
+ *   `unknown` (no human record for this exact artifact yet);
+ * - `blocked`: anything else (not ready, any failed/unknown automatic check,
+ *   a failed `golden_fixture`). Blocked rows are never published.
+ */
+export type PublicationTier = "audited" | "unaudited" | "blocked";
+
+export function publicationTier(
+  availability: string,
+  checks: readonly { name: string; status: string }[],
+): PublicationTier {
+  if (availability !== "ready") return "blocked";
+  if (!checks.some((c) => c.name === "artifact_contract_v1" && c.status === "passed")) {
+    return "blocked";
+  }
+  let golden: string | null = null;
+  for (const c of checks) {
+    if (c.name === "golden_fixture") {
+      golden = c.status;
+    } else if (c.status !== "passed") {
+      return "blocked";
+    }
+  }
+  if (golden === "passed") return "audited";
+  if (golden === "unknown") return "unaudited";
+  return "blocked";
+}
+
+const PUBLICATION_TIERS = new Set(["audited", "unaudited", "blocked"]);
+
 const QUALITY_ROW_KEYS = new Set([
   "collection_id",
   "kind",
@@ -962,6 +995,8 @@ const QUALITY_ROW_KEYS = new Set([
   "input_sha256",
   "audit",
 ]);
+/** Optional so manifests written before design doc 41 still validate. */
+const QUALITY_OPTIONAL_ROW_KEYS = new Set(["publication_tier"]);
 const QUALITY_DEEP_KEYS = new Set([
   "conference",
   "paper_id",
@@ -1020,7 +1055,10 @@ export function validateLineageQualityManifest(data: unknown): ContractIssue[] {
     const kind = row.kind;
     const expectedKeys =
       kind === "deep" ? new Set([...QUALITY_ROW_KEYS, ...QUALITY_DEEP_KEYS]) : QUALITY_ROW_KEYS;
-    if (!hasExactKeys(row, expectedKeys)) {
+    const rowWithoutOptional = Object.fromEntries(
+      Object.entries(row).filter(([key]) => !QUALITY_OPTIONAL_ROW_KEYS.has(key)),
+    );
+    if (!hasExactKeys(rowWithoutOptional, expectedKeys)) {
       issues.push(issue("quality_row_fields", path, "closed row object required"));
     }
 
@@ -1249,6 +1287,31 @@ export function validateLineageQualityManifest(data: unknown): ContractIssue[] {
           "failed requires a failed check",
         ),
       );
+    }
+    if ("publication_tier" in row) {
+      const tier = row.publication_tier;
+      if (typeof tier !== "string" || !PUBLICATION_TIERS.has(tier)) {
+        issues.push(
+          issue("quality_publication_tier", `${path}.publication_tier`, "closed enum required"),
+        );
+      } else if (isMapping(audit) && Array.isArray(audit.checks)) {
+        const derived = publicationTier(
+          String(row.availability),
+          (audit.checks as unknown[]).filter(isMapping).map((c) => ({
+            name: String(c.name),
+            status: String(c.status),
+          })),
+        );
+        if (derived !== tier) {
+          issues.push(
+            issue(
+              "quality_publication_tier",
+              `${path}.publication_tier`,
+              `expected ${derived} from availability/checks`,
+            ),
+          );
+        }
+      }
     }
     if (row.availability === "ready" && auditStatus === "passed") {
       if (

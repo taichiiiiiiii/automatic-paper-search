@@ -29,12 +29,32 @@
             "$ref": "#/$defs/labels",
             "maxItems": 20,
             "description": "At most 20 rows; the quality builder additionally requires at least min(20, node count) rows with distinct node_id values that exist in the graph, and at most 10% off-topic."
+          },
+          "edge_labels": {
+            "type": "array",
+            "description": "Design doc 41 D5. Human verdicts on edges, keyed by src/dst/relation. The quality builder requires one row for every edge whose relation is in the policy's strong_relations (default contrasts, supersedes); each row must name an existing edge, appear once, and say verdict=correct. A wrong verdict (with or without corrected_relation) fails golden_fixture: corrections are not applied, so the artifact must be regenerated and re-audited.",
+            "items": {"$ref": "#/$defs/edgeLabel"}
           }
         }
       }
     }
   },
   "$defs": {
+    "edgeLabel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["src", "dst", "relation", "verdict"],
+      "properties": {
+        "src": {"type": "string", "minLength": 1},
+        "dst": {"type": "string", "minLength": 1},
+        "relation": {"type": "string", "minLength": 1},
+        "verdict": {"enum": ["correct", "wrong"]},
+        "corrected_relation": {"type": "string", "minLength": 1},
+        "note": {"type": "string"}
+      },
+      "if": {"properties": {"verdict": {"const": "correct"}}, "required": ["verdict"]},
+      "then": {"not": {"required": ["corrected_relation"]}}
+    },
     "labels": {
       "type": "array",
       "items": {

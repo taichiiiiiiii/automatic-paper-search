@@ -1,5 +1,7 @@
 /**
  * Build the fail-closed conference/theme/deep lineage quality read model —
+ * every row carries a `publication_tier` (design doc 41 D1: audited /
+ * unaudited / blocked) and golden fixtures cover strong-claim edges (D5).
  * TS port of `paperpilot/scripts/build_lineage_quality.py` (LIN-48 .. LIN-52
  * of docs/migration/safety-contracts.md). Entirely read-only over the
  * published `docs/` tree plus two data files (audit fixtures, quality
@@ -16,6 +18,8 @@ import {
   canonicalFocusNode,
   isPaperId,
   type LineageArtifactKind,
+  type PublicationTier,
+  publicationTier,
   validateDeepManifest,
   validateLineageArtifact,
 } from "../contract/v1.js";
@@ -203,12 +207,88 @@ function edgeConfidence(edge: Record<string, unknown>): unknown {
  */
 export const SAMPLE_LIMIT = 20;
 
+/**
+ * Relations that make a strong claim about two papers (design doc 41 D5).
+ * Every edge carrying one of these must be covered by a human
+ * `edge_labels` row before `golden_fixture` can pass. The policy file's
+ * `strong_relations` overrides this default.
+ */
+export const DEFAULT_STRONG_RELATIONS: readonly string[] = ["contrasts", "supersedes"];
+
+export type { PublicationTier } from "../contract/v1.js";
+export { publicationTier };
+
+/** Edge-label failures for one fixture (design doc 41 D5). A label must name
+ * an existing edge by `src`/`dst`/`relation`, appear once, and say
+ * `verdict: "correct"`. A `wrong` verdict fails the fixture even with a
+ * `corrected_relation`: nothing applies corrections, so the artifact has to
+ * be regenerated and re-audited. Every edge whose relation is strong must be
+ * labelled. */
+function edgeLabelFailures(
+  edges: readonly unknown[],
+  edgeLabels: unknown,
+  strongRelations: ReadonlySet<string>,
+): string[] {
+  const failures: string[] = [];
+  const edgeKeys = new Set<string>();
+  const strongKeys: string[] = [];
+  for (const edge of edges) {
+    if (!isMapping(edge)) continue;
+    const { src, dst, relation } = edge;
+    if (typeof src !== "string" || typeof dst !== "string" || typeof relation !== "string") {
+      continue;
+    }
+    const key = `${src}->${dst}:${relation}`;
+    edgeKeys.add(key);
+    if (strongRelations.has(relation)) strongKeys.push(key);
+  }
+  let labels: unknown[] = [];
+  if (edgeLabels !== undefined) {
+    if (Array.isArray(edgeLabels)) labels = edgeLabels;
+    else failures.push("edge-labels-invalid");
+  }
+  const labelled = new Set<string>();
+  const duplicates = new Set<string>();
+  labels.forEach((row, index) => {
+    if (
+      !isMapping(row) ||
+      typeof row.src !== "string" ||
+      typeof row.dst !== "string" ||
+      typeof row.relation !== "string" ||
+      (row.verdict !== "correct" && row.verdict !== "wrong")
+    ) {
+      failures.push(`edge-label-invalid:${index}`);
+      return;
+    }
+    const key = `${row.src}->${row.dst}:${row.relation}`;
+    if (!edgeKeys.has(key)) {
+      failures.push(`edge-label-unknown:${key}`);
+      return;
+    }
+    if (labelled.has(key)) duplicates.add(key);
+    labelled.add(key);
+    if (row.verdict === "wrong") failures.push(`edge-wrong:${key}`);
+  });
+  failures.push(
+    ...Array.from(duplicates)
+      .sort(codepointCompare)
+      .map((key) => `edge-label-duplicate:${key}`),
+  );
+  failures.push(
+    ...sortedUnique(strongKeys.filter((key) => !labelled.has(key))).map(
+      (key) => `edge-unlabelled:${key}`,
+    ),
+  );
+  return failures;
+}
+
 export interface GoldenFixture {
   input_sha256?: unknown;
   reviewer?: unknown;
   reviewed_at?: unknown;
   focus_labels?: unknown;
   sample_labels?: unknown;
+  edge_labels?: unknown;
   collection_id?: string;
   [key: string]: unknown;
 }
@@ -223,6 +303,7 @@ function artifactChecks(
     generatedAt: string | null;
     catalogIds: ReadonlySet<string> | null;
     expectedSeedPaperId?: string | null;
+    strongRelations?: readonly string[];
   },
 ): { checks: QualityCheck[]; fixtureSha256: string | null } {
   const {
@@ -233,6 +314,7 @@ function artifactChecks(
     generatedAt,
     catalogIds,
     expectedSeedPaperId = null,
+    strongRelations = DEFAULT_STRONG_RELATIONS,
   } = options;
   const checks: QualityCheck[] = [];
   const nodes = data.nodes;
@@ -499,6 +581,9 @@ function artifactChecks(
     if (labelledSamples.length > 0 && offTopic / labelledSamples.length > 0.1) {
       fixtureFailures.push("sample-off-topic-rate");
     }
+    fixtureFailures.push(
+      ...edgeLabelFailures(edges, fixture.edge_labels, new Set(strongRelations)),
+    );
     checks.push(
       check(
         "golden_fixture",
@@ -546,6 +631,7 @@ export interface CollectionRow {
   path: string;
   availability: "unavailable" | "sparse" | "ready" | "failed";
   audit_status: "unknown" | "passed" | "failed";
+  publication_tier: PublicationTier;
   freshness: "fresh" | "stale";
   generated_at: string | null;
   snapshot_date: string | null;
@@ -586,6 +672,7 @@ export function collectionRow(options: {
   catalogIds: ReadonlySet<string> | null;
   collectionId?: string | null;
   expectedSeedPaperId?: string | null;
+  strongRelations?: readonly string[];
 }): CollectionRow {
   const {
     docsRoot,
@@ -601,6 +688,7 @@ export function collectionRow(options: {
     catalogIds,
     collectionId = null,
     expectedSeedPaperId = null,
+    strongRelations = DEFAULT_STRONG_RELATIONS,
   } = options;
   const path = join(docsRoot, relativePath);
   const asOf = parseTime(asOfText);
@@ -614,6 +702,7 @@ export function collectionRow(options: {
       path: relativePath,
       availability: "unavailable",
       audit_status: "unknown",
+      publication_tier: "blocked",
       freshness: "stale",
       generated_at: generatedHint,
       snapshot_date: snapshotDate,
@@ -644,6 +733,7 @@ export function collectionRow(options: {
       path: relativePath,
       availability: "failed",
       audit_status: "failed",
+      publication_tier: "blocked",
       freshness: "stale",
       generated_at: generatedHint,
       snapshot_date: snapshotDate,
@@ -686,6 +776,7 @@ export function collectionRow(options: {
     generatedAt: generatedAtStr,
     catalogIds,
     expectedSeedPaperId,
+    strongRelations,
   });
   let auditStatus: CollectionRow["audit_status"];
   if (availability !== "ready" && availability !== "failed") {
@@ -705,6 +796,7 @@ export function collectionRow(options: {
     path: relativePath,
     availability,
     audit_status: auditStatus,
+    publication_tier: publicationTier(availability, checks),
     freshness: freshness({ generatedAt: generatedAtStr, snapshotDate, asOf, maxAgeDays }),
     generated_at: generatedAtStr,
     snapshot_date: snapshotDate,
@@ -810,6 +902,7 @@ function deepCollectionRows(options: {
   fixtureMap: ReadonlyMap<string, GoldenFixture>;
   asOf: string;
   maxAgeDays: number;
+  strongRelations?: readonly string[];
 }): CollectionRow[] {
   const {
     docsRoot,
@@ -820,6 +913,7 @@ function deepCollectionRows(options: {
     fixtureMap,
     asOf,
     maxAgeDays,
+    strongRelations = DEFAULT_STRONG_RELATIONS,
   } = options;
   const conferenceDir = join(docsRoot, conference);
   const manifestRelative = `${conference}/deep-manifest.json`;
@@ -901,6 +995,7 @@ function deepCollectionRows(options: {
       catalogIds,
       collectionId,
       expectedSeedPaperId: isPaperId(paperId) ? paperId : null,
+      strongRelations,
     });
     const identityFailures =
       manifestIssues.length > 0
@@ -932,6 +1027,7 @@ function deepCollectionRows(options: {
     ].sort((a, b) => codepointCompare(a.name, b.name));
     row.audit.checks = checks;
     if (checks.some((c) => c.status === "failed")) row.audit_status = "failed";
+    row.publication_tier = publicationTier(row.availability, checks);
     row.conference = conference;
     row.paper_id = isPaperId(paperId) ? paperId : null;
     row.arxiv_id = entry ? (entry.arxiv_id ?? null) : null;
@@ -946,6 +1042,8 @@ export interface QualityPolicy {
   conference_max_age_days: number;
   theme_max_age_days: number;
   deep_max_age_days?: number;
+  /** Relations whose every edge needs a human `edge_labels` row (D5). */
+  strong_relations?: string[];
   [key: string]: unknown;
 }
 
@@ -965,6 +1063,9 @@ export function buildManifest(options: {
 }): QualityManifest {
   const { docsRoot, asOf, fixtures, policy } = options;
   parseTime(asOf); // validates, matching the Python call's side-effect-only use
+  const strongRelations = Array.isArray(policy.strong_relations)
+    ? policy.strong_relations.filter((r): r is string => typeof r === "string")
+    : DEFAULT_STRONG_RELATIONS;
   const fixtureMap = new Map<string, GoldenFixture>();
   if (Array.isArray(fixtures.collections)) {
     for (const row of fixtures.collections) {
@@ -1006,6 +1107,7 @@ export function buildManifest(options: {
         asOfText: asOf,
         maxAgeDays: Number(policy.conference_max_age_days),
         catalogIds: conferenceCatalogIds,
+        strongRelations,
       }),
     );
     collections.push(
@@ -1018,6 +1120,7 @@ export function buildManifest(options: {
         fixtureMap,
         asOf,
         maxAgeDays: Number(policy.deep_max_age_days ?? policy.conference_max_age_days),
+        strongRelations,
       }),
     );
   }
@@ -1039,6 +1142,7 @@ export function buildManifest(options: {
         asOfText: asOf,
         maxAgeDays: Number(policy.theme_max_age_days),
         catalogIds: null,
+        strongRelations,
       }),
     );
   }
