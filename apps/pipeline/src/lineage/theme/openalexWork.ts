@@ -264,6 +264,8 @@ export interface ThemePaper {
   _contexts?: unknown[];
   _is_influential?: boolean | null;
   seed_paper_id?: string;
+  /** OpenAlex Work `type` ("review", "article", …), when given (R2-15). */
+  publicationType?: string;
   [extra: string]: unknown;
 }
 
@@ -329,5 +331,10 @@ export function workToPaperDict(work: Record<string, unknown>): ThemePaper | nul
     abstract,
     authors,
     externalIds,
+    // R2-15: OpenAlex Work type ("review", "article", …) for the shared
+    // survey test; absent when OpenAlex gave none.
+    ...(typeof work.type === "string" && work.type.trim()
+      ? { publicationType: work.type.trim() }
+      : {}),
   };
 }

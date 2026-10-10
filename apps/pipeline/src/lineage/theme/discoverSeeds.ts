@@ -20,6 +20,7 @@ import { existsSync } from "node:fs";
 import type { FetchLike } from "../../collect/http/requestWithRetry.js";
 import { requestWithRetry } from "../../collect/http/requestWithRetry.js";
 import { firstUnusable } from "../../collect/signals/payload.js";
+import { isSurveyLike, type SurveyPaperLike } from "../shared/surveyLike.js";
 import {
   type BuildCompletenessLike,
   discoverSeedsViaOpenalex,
@@ -162,14 +163,10 @@ function typeOf(value: unknown): string {
 
 const SEED_VELOCITY_AGE_FLOOR_YEARS = 0.5;
 const SURVEY_VELOCITY_PENALTY = 0.3;
-/** Title-prefix patterns + colon-suffix patterns ("A ... Survey", "Foo: A Survey"). */
-const SURVEY_TITLE_RE =
-  /^(?:[Aa]n?\s+)?(?:Comprehensive\s+|Brief\s+|Short\s+|Recent\s+)?(?:Survey|Review|Tutorial|Overview|Perspective|Roadmap|Primer)\b|:\s*[Aa]\s+(?:Survey|Review|Tutorial|Overview)\b/;
-
-export function isSurvey(paper: { title?: unknown }): boolean {
-  const title = paper.title;
-  if (typeof title !== "string") return false;
-  return SURVEY_TITLE_RE.test(title);
+/** R2-15: the shared survey test (`shared/surveyLike.ts`: publication
+ * type, title incl. the #209 prefix/colon forms, abstract). */
+export function isSurvey(paper: SurveyPaperLike): boolean {
+  return isSurveyLike(paper);
 }
 
 export function computeSeedScore(

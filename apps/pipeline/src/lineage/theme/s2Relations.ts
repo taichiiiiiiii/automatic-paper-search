@@ -44,6 +44,7 @@ import {
   parseContextResponse,
 } from "../llm/contextPrompt.js";
 import { completeJsonAttributed } from "../llm/fallback.js";
+import { isSurveyLike } from "../shared/surveyLike.js";
 import type { S2CitationSource } from "./s2Citations.js";
 
 type PaperLike = Record<string, unknown>;
@@ -215,7 +216,13 @@ export async function deriveS2Relation(
     return null;
   }
   const citingTitle = typeof child.title === "string" ? child.title : undefined;
-  const signals: PairSignals = { ...lookup.signals, citingTitle };
+  // R2-15: the full survey test (publication type, title, abstract) — a
+  // review whose title has no survey word still gives only background.
+  const signals: PairSignals = {
+    ...lookup.signals,
+    citingTitle,
+    citingSurvey: isSurveyLike(child),
+  };
   const r = classifyS2Pair(signals);
   const rule = ruleEdge(r, signals, { srcId, dstId }, parent, child);
   if (rule === null) {
