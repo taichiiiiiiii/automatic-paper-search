@@ -68,6 +68,9 @@ describe("classifyS2Pair", () => {
         "phrase_protocol",
         "phrase_resource",
         "table_row",
+        // R2-23: cues read from the citing paper's own abstract.
+        "abstract_build",
+        "abstract_contrast",
       ].sort(),
     );
     expect(classifyS2Pair({ ...base, intents: ["result"], contexts: ["x [1]."] }).cue).toBe(false);

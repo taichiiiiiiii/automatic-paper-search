@@ -33,12 +33,16 @@ import { citationTargetCount } from "./citationCount.js";
 import {
   type CitedIdentity,
   citedIdentity,
+  citingSelfNames,
+  cueTargetsCited,
   isCueTarget,
   isQuotable,
   isStrongTarget,
   isUsableContext,
+  mentionsAny,
   namedOnlyInMarkerGroup,
   namesCitedPaper,
+  ownVariantOf,
   pickQuote,
   type SentenceTarget,
   sentenceTarget,
@@ -75,6 +79,12 @@ export interface PairSignals {
    * context sentences are about it (`citedTarget.ts`). Omitted = every
    * sentence is judged by its citation-marker count alone. */
   cited?: ClassifyPaperLike;
+  /** R2-23: the citing paper's abstract. A build / contrast cue in one of
+   * its sentences that names the cited paper in words ("we propose …
+   * SwinIR … based on the Swin Transformer") is evidence when the
+   * citation contexts carry no strong cue (rule `abstract_build` /
+   * `abstract_contrast`). */
+  citingAbstract?: string | null;
 }
 
 export interface ApiClassification {
@@ -379,7 +389,8 @@ export function classifyApiRelationV2(s: PairSignals): ApiClassification {
  * model/method/…". Not "this work" as an object ("Concurrent work extends
  * this work to …" is about other papers). */
 const FIRST_PERSON_BUILD: readonly RegExp[] = [
-  /\b(we|our|ours|us)\b/i,
+  // R2-23: not inside a hyphenated word ("us-ing" from a PDF line break).
+  /(?<![\w-])(we|our|ours|us)(?![\w-])/i,
   /^(in\s+)?this\s+(paper|work)\b/i,
   /\b(this|the\s+proposed)\s+(model|method|approach|architecture|design|framework)\b/i,
 ];
@@ -422,6 +433,25 @@ const PROTOCOL_PATTERNS: readonly RegExp[] = [
   // architecture, data …, and hyperparameters directly from [10]").
   /\bhyper-?parameters?\b[^.;]{0,40}\b(directly\s+)?from\b/i,
   /\b(sampl\w*|subsampl\w*)\b[^.;]{0,80}\bfollow(s|ed|ing)?\b/i,
+  // R2-23 (more contexts per pair surface more setup sentences):
+  // copying an architecture for the experiments ("We use the same
+  // architecture as Kipf & Welling (2017)"),
+  /\b(same|identical)\s+([\w-]+\s+){0,2}(architectures?|models?|networks?|backbones?|configurations?)\s+(as|to)\b/i,
+  // a per-dataset setup line ("PPI and Reddit: We use the mean pooling
+  // architecture proposed by Hamilton et al."),
+  /^[•·*\s-]*[A-Z][\w-]*(\s*(,|and|&)\s*[A-Z][\w-]*){0,4}\s*:\s*we\s+(use|adopt|employ)\b/i,
+  // a training-recipe item adopted ("We adopt learning rate warmup [16]"),
+  /\b(adopt\w*|use[sd]?|using|apply|applies|applied|employ\w*)\b[^.;]{0,40}\b(warm-?up|learning\s+rates?|lr\s+schedul\w*|epochs?|batch\s+sizes?|weight\s+decay|dropout|label[\s-]smoothing|data\s+augmentations?)\b/i,
+  // following someone's analysis / measurement procedure ("we follow
+  // Brown et al. (2020) and include all adjectives … manual labeling",
+  // "we measure the runtime … following [20]"),
+  /\bfollow(s|ed|ing)?\b[^.;]{0,120}\b(analys[ie]s|annotat\w*|label(l)?ing|measur\w*|runtime|latency|throughput)\b/i,
+  /\b(analys[ie]s|annotat\w*|label(l)?ing|measur\w*|runtime|latency|throughput)\b[^.;]{0,120}\bfollow(s|ed|ing)?\b/i,
+  // an analysis that starts from other models ("Based on … DeiT [69] and
+  // Swin [44], we systematically analyze …"), a design merely similar to
+  // others ("We use fewer blocks … similar to MobileNetV3 [26] and LeViT").
+  /\bbased\s+on\b[^.;]{0,100},\s*we\s+(\w+\s+)?(analy[sz]e|study|investigate|evaluate|compare|measure|examine|benchmark)\b/i,
+  /\bwe\s+use\b[^.;]{0,100}\bsimilar\s+to\b/i,
 ];
 const FAIR_COMPARISON =
   /\b(for|to\s+make)\s+(a\s+)?fair(er)?\s+comparisons?\b|\bfair(ly)?\s+compar\w*/i;
@@ -442,10 +472,51 @@ interface SentenceCandidate {
 
 const anyMatch = (patterns: readonly RegExp[], s: string) => patterns.some((p) => p.test(s));
 
-function classifySentence(raw: string, id: CitedIdentity): SentenceCandidate | null {
+/** R2-23: v3 contrast cues: v1/v2's plus "While X uses …, our … allows …"
+ * (Shazeer et al. <- Eigen et al.) — a sentence-initial "while"/"whereas"
+ * clause about the cited work answered by a first-person clause. A
+ * concessive "While X has been successful, we …" also matches; the
+ * contrast still needs the cited paper inside the "while" clause and a
+ * single target (`cueTargetsCited`, `isStrongTarget`). */
+const CONTRAST_PATTERNS_V3: readonly RegExp[] = [
+  ...CONTRAST_PATTERNS,
+  /^\s*(while|whereas)\b[^,;]{0,200},\s*(we|our)\b/i,
+];
+
+/** R2-23: v3's first-person test; not inside a hyphenated word ("us-ing"). */
+const FIRST_PERSON_V3 = /(?<![\w-])(we|our|ours|this\s+(paper|work))(?![\w-])/i;
+
+/** R2-23: the R2-21 generalisation cue names the cited paper BEFORE the
+ * cue ("GCN [26] … as particular instances of our approach"). */
+const INSTANCE_OF_OURS =
+  /\b(particular|special)\s+(instances?|cases?)\s+of\s+(our|the\s+proposed)\b/i;
+
+/** R2-23: the citing paper proposing its own method as a baseline. */
+const OWN_BASELINE =
+  /\b(?:we|this\s+(?:paper|work))\s+(?:propose|present|introduce|establish)s?\s+(?:an?\s+)?(?:[\w-]+\s+){0,2}baselines?\b/gi;
+
+/** R2-23: per-pair facts `classifySentence` needs beyond the cited identity. */
+interface SentenceOpts {
+  /** The citing paper's own names (`citingSelfNames`): a sentence about
+   * them is first-person in effect. */
+  self: readonly string[];
+  /** `abstract`: a sentence of the citing paper's abstract — it has no
+   * citation markers, so it must name the cited paper in words, and only
+   * build / contrast cues count. */
+  source: "context" | "abstract";
+}
+
+const CONTEXT_OPTS: SentenceOpts = { self: [], source: "context" };
+
+function classifySentence(
+  raw: string,
+  id: CitedIdentity,
+  opts: SentenceOpts = CONTEXT_OPTS,
+): SentenceCandidate | null {
   const sentence = raw.replace(/\s+/g, " ").trim();
   const target = sentenceTarget(sentence, id);
   if (!isCueTarget(target)) return null;
+  if (opts.source === "abstract" && !namesCitedPaper(sentence, id)) return null;
   const strong = isStrongTarget(target);
   const mk = (
     relation: ApiRelation,
@@ -458,11 +529,19 @@ function classifySentence(raw: string, id: CitedIdentity): SentenceCandidate | n
     // comparison; it is never quoted (see `isQuotable`).
     return strong && TABLE_ROW.test(sentence) ? mk("compares_with", "table_row", 0.65) : null;
   }
-  const fp = FIRST_PERSON.test(sentence);
+  // R2-23: the citing method's own name as the subject ("These merits make
+  // Swin Transformer suitable …") counts as first person.
+  // Not for build cues: the own name is often the object there ("Weight-
+  // update sharding … based on XLA … a special case for GShard", "while
+  // RegNet [44] …, the Swin Transformer is manually adapted from …").
+  const self = mentionsAny(sentence, opts.self);
+  const fp = FIRST_PERSON_V3.test(sentence) || self;
   const fpBuild = anyMatch(FIRST_PERSON_BUILD, sentence);
   // Negative cues first: a protocol / fair-comparison / ablation sentence
   // is never builds_on, whatever build word it also contains.
-  if (anyMatch(PROTOCOL_PATTERNS, sentence)) {
+  // R2-23: "et al." must not end the protocol patterns' clause scan ("we
+  // follow Brown et al. (2020) and include … our analysis …").
+  if (anyMatch(PROTOCOL_PATTERNS, sentence.replace(/\bet\s+al\./g, "et al"))) {
     return FAIR_COMPARISON.test(sentence) || anyMatch(COMPARE_PATTERNS, sentence)
       ? mk("compares_with", "phrase_protocol", 0.7)
       : mk("uses_resource", "phrase_protocol", 0.7);
@@ -471,7 +550,12 @@ function classifySentence(raw: string, id: CitedIdentity): SentenceCandidate | n
   if (fp && anyMatch(ABLATION_PATTERNS, sentence)) {
     return mk("compares_with", "phrase_ablation", 0.65);
   }
-  const compare = anyMatch(COMPARE_PATTERNS, sentence) && (fp || strong);
+  // R2-23: "we propose a strong baseline model SwinIR … based on the Swin
+  // Transformer" offers the citing method as a baseline for others; that
+  // "baseline" is not a comparison with the cited paper.
+  const compare = anyMatch(COMPARE_PATTERNS, sentence.replace(OWN_BASELINE, " ")) && (fp || strong);
+  const buildCues = [...ADAPT_PATTERNS, ...BUILD_PATTERNS];
+  const scope = opts.source === "abstract" ? "phrase" : "clause";
   if (
     !compare &&
     fpBuild &&
@@ -479,17 +563,43 @@ function classifySentence(raw: string, id: CitedIdentity): SentenceCandidate | n
     // R2-22: a marker shared with other works ("[8, 15]") does not single
     // the cited paper out as what is built on.
     !namedOnlyInMarkerGroup(sentence, id) &&
-    (anyMatch(ADAPT_PATTERNS, sentence) || anyMatch(BUILD_PATTERNS, sentence))
+    (ownVariantOf(sentence, id) ||
+      (anyMatch(buildCues, sentence) &&
+        // R2-23: the build cue must govern the cited paper (its name or
+        // marker inside the cue's clause), not another work of the sentence.
+        cueTargetsCited(sentence, id, buildCues, [INSTANCE_OF_OURS], scope)))
   ) {
-    return mk("builds_on", "phrase_build", 0.8);
+    return opts.source === "abstract"
+      ? mk("builds_on", "abstract_build", 0.75)
+      : mk("builds_on", "phrase_build", 0.8);
   }
   if (anyMatch(RESOURCE_CLAUSE, sentence)) return mk("uses_resource", "phrase_resource", 0.7);
-  if (fp && anyMatch(CONTRAST_PATTERNS, sentence)) {
-    return mk("compares_with", "phrase_contrast", 0.7, strong);
+  if (fp && anyMatch(CONTRAST_PATTERNS_V3, sentence)) {
+    // R2-23: a targeted contrast also needs the cue to govern the cited
+    // paper, and not through a marker group shared with other works
+    // ("Unlike CNN backbone networks [53, 21], … our PVT …").
+    const targeted =
+      strong &&
+      !namedOnlyInMarkerGroup(sentence, id) &&
+      cueTargetsCited(sentence, id, CONTRAST_PATTERNS_V3, [], scope);
+    if (opts.source === "abstract") {
+      return targeted ? mk("compares_with", "abstract_contrast", 0.7, true) : null;
+    }
+    return mk("compares_with", "phrase_contrast", 0.7, targeted);
   }
   if (compare) return mk("compares_with", "phrase_compare", 0.75);
   if (strong && TABLE_ROW.test(sentence)) return mk("compares_with", "table_row", 0.65);
   return null;
+}
+
+/** Sentences of an abstract (simple split on sentence-final punctuation). */
+export function abstractSentences(abstract: string | null | undefined): string[] {
+  if (typeof abstract !== "string") return [];
+  return abstract
+    .replace(/\s+/g, " ")
+    .split(/(?<=[.!?])\s+(?=[A-Z(“"])/)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
 }
 
 /** Rank of a sentence candidate across the pair's sentences. */
@@ -538,10 +648,27 @@ export function classifyApiRelationV3(s: PairSignals): ApiClassification {
   if (s.citingSurvey ?? isSurveyLikeTitle(s.citingTitle)) {
     return mk("background", "citing_survey", 0.8, quote());
   }
+  const sentenceOpts: SentenceOpts = {
+    self: citingSelfNames(s.citingTitle, id),
+    source: "context",
+  };
   let best: SentenceCandidate | null = null;
   for (const c of contexts) {
-    const cand = classifySentence(c, id);
+    const cand = classifySentence(c, id, sentenceOpts);
     if (cand !== null && (best === null || candidateRank(cand) > candidateRank(best))) best = cand;
+  }
+  // R2-23: no strong cue in the citation contexts — the citing paper's own
+  // abstract may state it ("we propose … SwinIR … based on the Swin
+  // Transformer", "We build on the recent Vision Transformer (ViT)"). Only
+  // a build or a targeted contrast cue on a sentence that names the cited
+  // paper in words counts (the abstract has no citation markers).
+  if (best === null || candidateRank(best) < 3) {
+    const abs: SentenceOpts = { ...sentenceOpts, source: "abstract" };
+    for (const sent of abstractSentences(s.citingAbstract)) {
+      const cand = classifySentence(sent, id, abs);
+      if (cand === null || candidateRank(cand) < 3) continue;
+      if (best === null || candidateRank(cand) > candidateRank(best)) best = cand;
+    }
   }
   if (best !== null) {
     return mk(
@@ -591,7 +718,13 @@ export const CUE_RULES: ReadonlySet<string> = new Set([
   "phrase_protocol",
   "phrase_ablation",
   "table_row",
+  "abstract_build",
+  "abstract_contrast",
 ]);
+
+/** R2-23: rules whose evidence sentence comes from the citing paper's
+ * abstract, not from a Semantic Scholar citation context. */
+export const ABSTRACT_RULES: ReadonlySet<string> = new Set(["abstract_build", "abstract_contrast"]);
 
 /** Production view of one classification (design 41 D6; rule set v3
  * since R2-16). */
@@ -611,6 +744,9 @@ export interface S2RuleResult extends ApiClassification {
   /** R2-22: the evidence sentence names the cited paper in words (title
    * stem, acronym, author, method name), not only by a reference marker. */
   namedInWords: boolean;
+  /** R2-23: the evidence sentence is from the citing paper's abstract
+   * ({@link ABSTRACT_RULES}), not a citation context. */
+  fromAbstract: boolean;
 }
 
 /** Rule set v3 plus the routing facts production needs. */
@@ -624,6 +760,7 @@ export function classifyS2Pair(s: PairSignals): S2RuleResult {
     singleTarget: base.target != null && isStrongTarget(base.target),
     quotable: isQuotable(base.evidence, id),
     namedInWords: namesCitedPaper(base.evidence, id),
+    fromAbstract: ABSTRACT_RULES.has(base.rule),
   };
 }
 

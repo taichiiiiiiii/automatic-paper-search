@@ -96,6 +96,12 @@ async function replay(it: Item): Promise<DerivedEdge> {
   return guardRelation(publishedDerived(it), parent, child);
 }
 
+/** Edges whose quote the R2-23 relabel accepts (see relation-precision-r223.json). */
+const R223_BACKED = new Set([
+  "openalex:W2581624817->openalex:W3170943566",
+  "openalex:W3138516171->openalex:W3207918547",
+]);
+
 function precision(rows: { predicted: string; it: Item }[]) {
   const judged = rows.filter((r) => STRONG.has(r.predicted) && r.it.gold.strong !== null);
   const correct = judged.filter((r) => r.it.gold.strong === true).length;
@@ -129,12 +135,19 @@ describe("R2-22 strong-claim precision on the labelled set", () => {
     }
     const p = precision(rows);
     expect(p.correct).toBe(p.predicted);
-    expect(p.predicted).toBe(19);
+    // 19 with the R2-22 rules; R2-23 adds V-MoE <- Shazeer (the marker
+    // shared by all contexts, "inspired by [54]") and SwinIR <- Swin (its
+    // own abstract) on these 4-context signals (relationPrecisionR223 has
+    // the refreshed 12-context signals).
+    expect(p.predicted).toBe(21);
     for (const r of rows.filter((x) => STRONG.has(x.predicted))) {
       const ok =
         r.it.gold.quote_backed ||
         r.method === "foundational_allowlist" ||
-        r.method === "title_version";
+        r.method === "title_version" ||
+        // R2-23: backed by sentences the R2-22 labels did not count
+        // (re-judged in relation-precision-r223.json).
+        R223_BACKED.has(`${r.it.src}->${r.it.dst}`);
       expect(ok, `${r.it.src}->${r.it.dst} (${r.method})`).toBe(true);
     }
     // Every quote-backed correct claim survives (recall on what D5 allows).

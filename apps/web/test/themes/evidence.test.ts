@@ -15,6 +15,16 @@ const S2_RATIONALE =
   '「PVT v2: Improved baselines with pyramid vision tr…」(2022) は 「Tokens-to-Token ViT: Training Vision Transformers…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: "T2T ViT [37] con-catenates tokens within an overlapping sliding window into one token progressively."';
 
 describe("parseEdgeEvidence", () => {
+  it("R2-23: tells a citation-context quote from a citing-abstract quote (要旨)", () => {
+    expect(parseEdgeEvidence(S2_RATIONALE).quoteSource).toBe("citation-context");
+    const abs = parseEdgeEvidence(
+      '「SwinIR」(2021) は 「Swin Transformer」(2021) を土台にしている（引用元の論文の要旨から規則で判定）。要旨: "In this paper, we propose a strong baseline model SwinIR for image restoration based on the Swin Transformer."',
+    );
+    expect(abs.quoteSource).toBe("abstract");
+    expect(abs.quote).toContain("based on the Swin Transformer");
+    expect(abs.summary).not.toContain("要旨:");
+  });
+
   it("splits the quoted citation sentence off the rationale", () => {
     const { summary, quote } = parseEdgeEvidence(S2_RATIONALE);
     expect(quote).toBe(
