@@ -99,6 +99,19 @@ export interface LlmUsageStats {
  */
 export type ClassifyPaperLike = Record<string, unknown>;
 
+/**
+ * R2-20: per-call hints for `completeJson`. Providers that do not meter
+ * tokens ignore them.
+ *  - `kind`: prompt family for the per-kind token accounting in the usage
+ *    summary (`context`, `context-batch`, `abstract`, ...).
+ *  - `answers`: how many JSON answers the prompt asks for (a batched
+ *    prompt); the completion-token cap grows with it. Default 1.
+ */
+export interface CompletionOptions {
+  kind?: string;
+  answers?: number;
+}
+
 export interface LLMProvider {
   readonly name: string;
   enabled: boolean;
@@ -125,7 +138,7 @@ export interface LLMProvider {
    * provider without this capability fails loudly instead of silently
    * classifying nothing.
    */
-  completeJson(system: string, user: string): Promise<string | null>;
+  completeJson(system: string, user: string, opts?: CompletionOptions): Promise<string | null>;
   /**
    * Optional one-line end-of-run usage summary (calls, rate-limit waits,
    * breaker state) for CI logs. Providers without counters omit it.

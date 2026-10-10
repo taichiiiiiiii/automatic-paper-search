@@ -23,6 +23,7 @@
 
 import type {
   ClassifyPaperLike,
+  CompletionOptions,
   LLMProvider,
   LlmUsageStats,
   PaperEvaluation,
@@ -70,16 +71,22 @@ export class FallbackProvider implements LLMProvider {
     this.deps = deps;
   }
 
+  /** Counter/log label of a member: its name, or `name:model` when the
+   * chain holds two models of one provider (R2-20 context-model routing). */
+  private label(m: LLMProvider): string {
+    return this.members.filter((x) => x.name === m.name).length > 1 ? providerModelTag(m) : m.name;
+  }
+
   /** Members that can still be asked (enabled and not latched), in order. */
   private live(): LLMProvider[] {
     const out: LLMProvider[] = [];
     for (const m of this.members) {
       if (!m.enabled) continue;
       if (m.isExhausted?.()) {
-        if (!this.announcedSkip.has(m.name)) {
-          this.announcedSkip.add(m.name);
+        if (!this.announcedSkip.has(this.label(m))) {
+          this.announcedSkip.add(this.label(m));
           this.deps.logger?.warn(
-            `llm fallback: ${m.name} is exhausted; remaining calls go to the next provider in the chain`,
+            `llm fallback: ${this.label(m)} is exhausted; remaining calls go to the next provider in the chain`,
           );
         }
         continue;
@@ -101,7 +108,7 @@ export class FallbackProvider implements LLMProvider {
     for (const m of this.live()) {
       const result = await m.classifyRelation(a, b);
       if (result !== null) {
-        this.answered.set(m.name, (this.answered.get(m.name) ?? 0) + 1);
+        this.answered.set(this.label(m), (this.answered.get(this.label(m)) ?? 0) + 1);
         return {
           ...result,
           producedBy: result.producedBy ?? { provider: m.name, model: providerModelTag(m) },
@@ -132,9 +139,13 @@ export class FallbackProvider implements LLMProvider {
     return null;
   }
 
-  async completeJson(system: string, user: string): Promise<string | null> {
+  async completeJson(
+    system: string,
+    user: string,
+    opts?: CompletionOptions,
+  ): Promise<string | null> {
     for (const m of this.live()) {
-      const text = await m.completeJson(system, user);
+      const text = await m.completeJson(system, user, opts);
       if (text !== null) return text;
     }
     return null;
@@ -149,11 +160,12 @@ export class FallbackProvider implements LLMProvider {
   async completeJsonAttributed(
     system: string,
     user: string,
+    opts?: CompletionOptions,
   ): Promise<{ text: string; producedBy: { provider: string; model: string } } | null> {
     for (const m of this.live()) {
-      const text = await m.completeJson(system, user);
+      const text = await m.completeJson(system, user, opts);
       if (text !== null) {
-        this.answered.set(m.name, (this.answered.get(m.name) ?? 0) + 1);
+        this.answered.set(this.label(m), (this.answered.get(this.label(m)) ?? 0) + 1);
         return { text, producedBy: { provider: m.name, model: providerModelTag(m) } };
       }
     }
@@ -175,10 +187,10 @@ export class FallbackProvider implements LLMProvider {
   usageSummary(): string {
     const lines = this.members.map((m) => m.usageSummary?.() ?? `${m.name} summary: n/a`);
     const answered = this.members
-      .map((m) => `${m.name}=${this.answered.get(m.name) ?? 0}`)
+      .map((m) => `${this.label(m)}=${this.answered.get(this.label(m)) ?? 0}`)
       .join(", ");
     lines.push(
-      `llm fallback summary: chain=${this.members.map((m) => m.name).join(">")}, ` +
+      `llm fallback summary: chain=${this.members.map((m) => this.label(m)).join(">")}, ` +
         `pairs answered ${answered}, unanswered=${this.unanswered}`,
     );
     return lines.join("\n");
@@ -195,11 +207,18 @@ export async function completeJsonAttributed(
   provider: LLMProvider,
   system: string,
   user: string,
+  opts?: CompletionOptions,
 ): Promise<{ text: string; producedBy: { provider: string; model: string } } | null> {
-  if (provider instanceof FallbackProvider) return provider.completeJsonAttributed(system, user);
+  if (provider instanceof FallbackProvider) {
+    return provider.completeJsonAttributed(system, user, opts);
+  }
+  // A wrapper that knows its answering member (the theme cache) says so.
+  const attributed = (provider as Partial<Pick<FallbackProvider, "completeJsonAttributed">>)
+    .completeJsonAttributed;
+  if (typeof attributed === "function") return attributed.call(provider, system, user, opts);
   let text: string | null;
   try {
-    text = await provider.completeJson(system, user);
+    text = await provider.completeJson(system, user, opts);
   } catch {
     return null;
   }
