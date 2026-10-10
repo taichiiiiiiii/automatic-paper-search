@@ -51,10 +51,17 @@ export const S2_REFERENCES_SCHEMA = "s2-references-cache-v1";
 export const S2_REFERENCES_FILENAME = "s2_references.json";
 export const S2_REFERENCES_TTL_DAYS = 90;
 export const S2_NOT_FOUND_TTL_DAYS = 14;
-export const S2_REFERENCE_FIELDS = "contexts,intents,isInfluential,externalIds,title,year";
+/** Fields of each reference / citation. The bibliographic fields beyond
+ * what relation classification needs (abstract, venue, citationCount,
+ * authors) let the same fetched list serve as BFS expansion candidates
+ * (R2-14, `./s2Expansion.ts`) without a second request. */
+export const S2_REFERENCE_FIELDS =
+  "contexts,intents,isInfluential,externalIds,title,year,abstract,venue,citationCount,authors";
 const S2_GRAPH = "https://api.semanticscholar.org/graph/v1";
 const PAGE_LIMIT = 1000;
 const MAX_PAGES = 10;
+/** Citing papers are fetched for expansion only: one page is plenty. */
+const CITATION_PAGES = 1;
 const MAX_CONTEXTS = 4;
 const MAX_CONTEXT_CHARS = 400;
 export const S2_KEYLESS_INTERVAL_MS = 1100;
@@ -113,19 +120,33 @@ export interface S2CitationStats {
   cacheHits: number;
   pairsFound: number;
   pairsMissing: number;
+  /** R2-14: `/citations` lists fetched / failed for expansion. */
+  citationListsFetched: number;
+  citationListsFailed: number;
 }
 
 type PaperLike = Record<string, unknown>;
 
-interface RawRef {
+/** The paper inside one `/references` (`citedPaper`) or `/citations`
+ * (`citingPaper`) entry. */
+export interface S2EdgePaper {
+  paperId?: unknown;
+  title?: unknown;
+  externalIds?: Record<string, unknown> | null;
+  year?: unknown;
+  abstract?: unknown;
+  venue?: unknown;
+  citationCount?: unknown;
+  authors?: unknown;
+}
+
+/** One entry of `/paper/{id}/references` or `/paper/{id}/citations`. */
+export interface RawRef {
   contexts?: unknown;
   intents?: unknown;
   isInfluential?: unknown;
-  citedPaper?: {
-    paperId?: unknown;
-    title?: unknown;
-    externalIds?: Record<string, unknown> | null;
-  } | null;
+  citedPaper?: S2EdgePaper | null;
+  citingPaper?: S2EdgePaper | null;
 }
 
 const S2_SHA = /^[0-9a-f]{40}$/;
@@ -298,6 +319,8 @@ export class S2CitationSource {
     cacheHits: 0,
     pairsFound: 0,
     pairsMissing: 0,
+    citationListsFetched: 0,
+    citationListsFailed: 0,
   };
 
   constructor(cachePath: string | null, deps: S2CitationDeps) {
@@ -334,33 +357,11 @@ export class S2CitationSource {
         return { kind: "pair", signals: signalsOf(entry.pairs[dk] ?? null) };
       }
     }
-    let refs = this.memo.get(ck);
-    if (refs === undefined) {
-      const got = await this.fetchCiting(citing);
-      if (got === "failed") {
-        this.memo.set(ck, null);
-        return { kind: "no_s2_data", reason: "fetch-failed" };
-      }
-      if (got === "not-found") {
-        this.memo.set(ck, null);
-        this.entries[ck] = { s2: null, fetched_at: isoZ(this.now()), pairs: {} };
-        this.dirty.add(ck);
-        return { kind: "no_s2_data", reason: "citing-not-in-s2" };
-      }
-      refs = got.refs;
-      this.memo.set(ck, refs);
-      if (!entry || entry.s2 !== got.s2) {
-        entry = { s2: got.s2, fetched_at: isoZ(this.now()), pairs: {} };
-        this.entries[ck] = entry;
-      }
-    }
-    if (refs === null || !entry) {
-      const current = this.entries[ck];
-      return {
-        kind: "no_s2_data",
-        reason: current && current.s2 === null ? "citing-not-in-s2" : "fetch-failed",
-      };
-    }
+    const loaded = await this.refsFor(ck, citing, entry);
+    if (loaded === "not-found") return { kind: "no_s2_data", reason: "citing-not-in-s2" };
+    if (loaded === "failed") return { kind: "no_s2_data", reason: "fetch-failed" };
+    const { refs } = loaded;
+    entry = loaded.entry;
     const ref = findReference(refs, cited);
     const pair = ref === null ? null : compact(ref);
     entry.pairs[dk] = pair;
@@ -370,6 +371,92 @@ export class S2CitationSource {
     return { kind: "pair", signals: signalsOf(pair) };
   }
 
+  /** The full S2 reference list of `citing` (fetched once per run and
+   * shared with {@link lookup}). `null` = S2 has no such paper or could
+   * not be reached this run. R2-14: BFS expansion fallback. */
+  async referenceList(citing: PaperLike): Promise<RawRef[] | null> {
+    const ck = graphIdOf(citing);
+    if (ck === null) return null;
+    let entry = this.entries[ck];
+    if (entry && !this.fresh(entry)) entry = undefined;
+    const loaded = await this.refsFor(ck, citing, entry);
+    return typeof loaded === "string" ? null : loaded.refs;
+  }
+
+  /** One page (up to 1000) of S2's citing papers of `cited`, or `null`
+   * when S2 has no such paper / could not be reached. Not cached here:
+   * the expansion layer caches what it keeps. R2-14. */
+  async citationList(cited: PaperLike): Promise<RawRef[] | null> {
+    const ck = graphIdOf(cited);
+    if (ck === null) return null;
+    const entry = this.entries[ck];
+    const known = entry && this.fresh(entry) ? entry.s2 : undefined;
+    if (known === null) return null; // S2 has no such paper (recently checked)
+    try {
+      const ids = known ? [known] : lookupIdsOf(cited);
+      for (const id of ids) {
+        const list = await this.fetchList(id, "citations", CITATION_PAGES);
+        if (list !== null) {
+          this.stats.citationListsFetched += 1;
+          return list;
+        }
+      }
+      const title = str(cited.title);
+      if (!known && title) {
+        const matched = await this.matchTitle(title);
+        if (matched !== null) {
+          const list = await this.fetchList(matched, "citations", CITATION_PAGES);
+          if (list !== null) {
+            this.stats.citationListsFetched += 1;
+            return list;
+          }
+        }
+      }
+      return null;
+    } catch (exc) {
+      if (!(exc instanceof TransientS2Error)) throw exc;
+      this.stats.citationListsFailed += 1;
+      this.deps.logger?.warn(`s2 citations: ${exc.message}`);
+      return null;
+    }
+  }
+
+  /** The reference list of `citing` from this run's memo or S2, keeping
+   * the cache entry in step. `entry` is the fresh cache entry (if any). */
+  private async refsFor(
+    ck: string,
+    citing: PaperLike,
+    entry: CitingEntry | undefined,
+  ): Promise<{ refs: RawRef[]; entry: CitingEntry } | "not-found" | "failed"> {
+    if (entry && entry.s2 === null) return "not-found";
+    let refs = this.memo.get(ck);
+    if (refs === undefined) {
+      const got = await this.fetchCiting(citing);
+      if (got === "failed") {
+        this.memo.set(ck, null);
+        return "failed";
+      }
+      if (got === "not-found") {
+        this.memo.set(ck, null);
+        this.entries[ck] = { s2: null, fetched_at: isoZ(this.now()), pairs: {} };
+        this.dirty.add(ck);
+        return "not-found";
+      }
+      refs = got.refs;
+      this.memo.set(ck, refs);
+      if (!entry || entry.s2 !== got.s2) {
+        entry = { s2: got.s2, fetched_at: isoZ(this.now()), pairs: {} };
+        this.entries[ck] = entry;
+      }
+    }
+    const current = entry ?? this.entries[ck];
+    if (refs === null || !current) {
+      return current && current.s2 === null ? "not-found" : "failed";
+    }
+    if (current.s2 === null) return "not-found";
+    return { refs, entry: current };
+  }
+
   /** Fetch the full reference list of `citing`. */
   private async fetchCiting(
     citing: PaperLike,
@@ -377,7 +464,7 @@ export class S2CitationSource {
     const ids = lookupIdsOf(citing);
     try {
       for (const id of ids) {
-        const refs = await this.fetchReferences(id);
+        const refs = await this.fetchList(id, "references", MAX_PAGES);
         if (refs !== null) {
           this.stats.citingFetched += 1;
           return { s2: id, refs };
@@ -387,7 +474,7 @@ export class S2CitationSource {
       if (title) {
         const matched = await this.matchTitle(title);
         if (matched !== null) {
-          const refs = await this.fetchReferences(matched);
+          const refs = await this.fetchList(matched, "references", MAX_PAGES);
           if (refs !== null) {
             this.stats.citingFetched += 1;
             return { s2: matched, refs };
@@ -404,13 +491,18 @@ export class S2CitationSource {
     }
   }
 
-  /** All pages of `/paper/{id}/references`; null when S2 has no such paper. */
-  private async fetchReferences(id: string): Promise<RawRef[] | null> {
+  /** Up to `maxPages` pages of `/paper/{id}/{kind}`; null when S2 has no
+   * such paper. */
+  private async fetchList(
+    id: string,
+    kind: "references" | "citations",
+    maxPages: number,
+  ): Promise<RawRef[] | null> {
     const out: RawRef[] = [];
     let offset = 0;
-    for (let page = 0; page < MAX_PAGES; page++) {
+    for (let page = 0; page < maxPages; page++) {
       const url =
-        `${S2_GRAPH}/paper/${encodeURI(id)}/references` +
+        `${S2_GRAPH}/paper/${encodeURI(id)}/${kind}` +
         `?fields=${S2_REFERENCE_FIELDS}&limit=${PAGE_LIMIT}&offset=${offset}`;
       const body = await this.getJson(url);
       if (body === null) return page === 0 ? null : out;

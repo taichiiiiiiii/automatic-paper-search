@@ -22,7 +22,10 @@
  */
 
 import type { FetchLike } from "../../collect/http/requestWithRetry.js";
-import { requestWithRetry } from "../../collect/http/requestWithRetry.js";
+import {
+  type RequestWithRetryOptions,
+  requestWithRetry,
+} from "../../collect/http/requestWithRetry.js";
 import type { ClassifyPaperLike } from "../../collect/llm/provider.js";
 import { firstUnusable } from "../../collect/signals/payload.js";
 import { isFoundationalAncestor } from "../classify/classify.js";
@@ -64,10 +67,26 @@ interface HttpResponseLike {
   json(): Promise<unknown>;
 }
 
+/** R2-14: retry budget of the seed search. The default (3 x 20 s
+ * deadline, three 429 retries) gave up after ~60 s when OpenAlex was
+ * throttling, leaving a theme with 0 seeds (exit 4). The search is one
+ * request per theme, so it may wait out a throttle: up to 6 retries
+ * honouring `Retry-After` (capped at 60 s each) within 4 minutes, and no
+ * waiting at all for a hint above 2 minutes (a daily quota) — the S2
+ * search fallback (`discoverSeeds.ts`) takes over then. */
+export const OPENALEX_SEARCH_DEADLINE_MS = 240_000;
+export const OPENALEX_SEARCH_RETRY_429 = {
+  maxRetries: 6,
+  maxWaitMs: 60_000,
+  giveUpIfHintAboveMs: 120_000,
+  hintMarginMs: 250,
+} as const;
+
 function get(
   url: string,
   params: Record<string, string | number | boolean | undefined>,
   deps: OpenAlexDeps,
+  budget?: Pick<RequestWithRetryOptions, "overallDeadlineMs" | "retry429">,
 ) {
   return requestWithRetry(
     {
@@ -76,6 +95,7 @@ function get(
       params,
       headers: { "User-Agent": "PaperPilot/0.1" },
       timeoutMs: 20_000,
+      ...budget,
     },
     deps,
   );
@@ -124,7 +144,10 @@ export async function discoverSeedsViaOpenalex(
     deps,
   );
 
-  const resp = (await get(OPENALEX_WORKS_URL, params, deps)) as HttpResponseLike | null;
+  const resp = (await get(OPENALEX_WORKS_URL, params, deps, {
+    overallDeadlineMs: OPENALEX_SEARCH_DEADLINE_MS,
+    retry429: OPENALEX_SEARCH_RETRY_429,
+  })) as HttpResponseLike | null;
   if (resp === null || resp.status !== 200) {
     const status = resp ? resp.status : null;
     deps.logger?.warn(`openalex search failed (status=${status}) — fallback contributes 0 seeds`);

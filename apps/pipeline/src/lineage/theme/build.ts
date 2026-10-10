@@ -62,6 +62,7 @@ import { enrichGithubStars } from "./github.js";
 import { type IdentityAliasIndex, loadIdentityAliases, resolveAndDedupSeeds } from "./identity.js";
 import type { ThemePaper } from "./openalexWork.js";
 import { S2CitationSource } from "./s2Citations.js";
+import { S2Expansion } from "./s2Expansion.js";
 import { newS2RelationStats, type S2RelationContext } from "./s2Relations.js";
 import { aliasesFor } from "./seedFilters.js";
 import { sanitizeTheme, themeLineagePath, themeSlug } from "./slug.js";
@@ -332,6 +333,8 @@ export async function buildThemeLineage(
     now: deps.monotonicNow,
     logger,
     email: deps.email,
+    // R2-14: the S2 seed-search fallback uses the S2 key when there is one.
+    s2ApiKey: deps.s2Citations?.apiKey ?? null,
   };
 
   let provider: LLMProvider | null = null;
@@ -436,6 +439,17 @@ export async function buildThemeLineage(
         });
   const s2Relations: S2RelationContext | null =
     s2Source === null ? null : { source: s2Source, provider, stats: newS2RelationStats() };
+  // R2-14: the same S2 reference lists fill in expansion where OpenAlex
+  // has (almost) no references / citing papers.
+  const s2Expansion =
+    s2Source === null
+      ? null
+      : new S2Expansion({
+          source: s2Source,
+          openalex: netDeps,
+          cacheDir: deps.cacheDir,
+          logger,
+        });
 
   const bfsResult = await runBfsAndDescendants(
     seeds,
@@ -453,10 +467,12 @@ export async function buildThemeLineage(
       topicScope,
       s2Relations,
       topicEmbedder: topicEmbedding ? (deps.topicEmbedder ?? null) : null,
+      s2Expansion,
     },
     netDeps,
     completeness,
   );
+  if (s2Expansion !== null) logger.info?.(s2Expansion.summary());
   let nodes = bfsResult.nodes;
   let edges: ThemeEdge[] = bfsResult.edges;
   let seedIds = bfsResult.seedIds;
