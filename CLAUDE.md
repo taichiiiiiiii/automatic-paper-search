@@ -1,6 +1,6 @@
 # CLAUDE.md — PaperPilot 実装ガイド
 
-本ファイルは **Claude Code** がこのプロジェクトで作業するときの指示書。Claude Code での実装・レビュー・commit/push の承認境界は本ファイルが正本。`AGENTS.md` / `PAPERPILOT_PROFILE.md` / `.codex/` の Codex CLI・Qwen の運用は別ツール向けで、Claude Code には適用しない（残すか消すかは判断待ち 8）。
+本ファイルは **Claude Code** がこのプロジェクトで作業するときの指示書で、実装・レビュー・commit/push の承認境界の唯一の正本。Codex CLI・Qwen 向けだった `AGENTS.md`・`PAPERPILOT_PROFILE.md`・`docs/QWEN_IMPLEMENTER.md`・`.codex/` は 2026-10-11 に削除し、残すべき規約はここ（下の「絶対ルール」17〜19）に移した。
 
 > 本文は必要なタスクでのみ参照する。人手監査・科学的根拠・公開承認の gate と、下の「絶対ルール」は省略しない。
 
@@ -57,7 +57,6 @@ pnpm exec tsx apps/pipeline/src/release/cli.ts validate bundle apps/web/out
 ```
 automatic-paper-search/
 ├── CLAUDE.md / README.md / CHANGELOG.md
-├── AGENTS.md / PAPERPILOT_PROFILE.md / .codex/   # Codex CLI 向け（判断待ち 8）
 ├── package.json / pnpm-workspace.yaml / pnpm-lock.yaml / tsconfig.base.json / biome.json
 ├── .lighthouserc.json                       # staticDistDir: ./apps/web/out
 ├── apps/
@@ -84,7 +83,7 @@ automatic-paper-search/
 │   └── config/     # config.yaml、config.daily-watch.yaml、denylist・allowlist・alias、.env.example
 │                   # conference-copy/<slug>.json（scaffold CLI が作る、1 slug = 1 ファイル）
 ├── legacy/redirect/   # 旧 GitHub Pages 用の転送サイト（legacy-redirects.yml が公開）
-├── docs/              # design/、migration/、research/、QWEN_IMPLEMENTER.md（配信はしない）
+├── docs/              # design/（40〜45）、migration/（p5-runbook・safety-contracts）。配信はしない
 └── .github/
     ├── workflows/     # Node の workflow 12 本（下の表）
     └── actions/setup-pnpm/   # Node 22 + corepack + frozen install の共通 action
@@ -354,7 +353,9 @@ pnpm exec tsx apps/pipeline/src/release/derived/searchIndexCli.ts  # 横断検�
 14. **`data/published/themes/<slug>/lineage.json` の生成元は `lineage/theme/cli.ts` だけ。`themes-manifest.json` の生成元は `generateThemesManifestCli.ts` だけ。手で編集しない**（詳細は下の「テーマ家系図」）
 15. **論文のメタデータ（題名・著者・venue・DOI・引用数・関係）を作り話で埋めない。** 取れなかった値は空・null・失敗として記録する
 16. **公開・デプロイ・dispatch・通知・merge・KV 書き込みはユーザー承認の後だけ**
-17. **このブランチは P5 切替手順（Phase W・Merge B）が終わるまで `develop` に merge しない**（上の「このブランチの状態」）
+17. **論文は安定した ID（DOI・arXiv・OpenAlex・S2）と明示した代替規則で重複をまとめる。題名だけで同じ論文と見なさない。** 出典（どの API のどの記録か）を保つ
+18. **LLM の要約と関係ラベルは信用しない派生データとして扱う。** 根拠（引用文・API の記録）へのリンク、schema の検査、キャッシュの版、`unknown` や規則への fallback を必ず残す
+19. **commit は 1 つの論理単位にし、小さく戻せる形にする。** 指定したパスだけを stage し、秘密・生成物・無関係な変更を入れない
 
 ### テーマ家系図（ルール 14 の詳細）
 
@@ -394,7 +395,7 @@ pnpm exec tsx apps/pipeline/src/release/derived/searchIndexCli.ts  # 横断検�
 | `legacy-redirects` | | | | ✅（`REDIRECT` 確認） | 旧 GitHub Pages に転送サイトを出す |
 
 - **schedule を持つのは `lighthouse` だけ。** カタログは自動では更新されない。更新は dispatch で明示的に回す。
-- `tests.yml`: `.codex/` を除く tracked な `*.py` が 0 件か → Biome → typecheck → web build → test（skip は warning）→ `validate bundle`。
+- `tests.yml`: tracked な `*.py` が 0 件か → Biome → typecheck → web build → test（skip は warning）→ `validate bundle`。
 - `data-audit.yml`: `data/published/themes/*/lineage.json`・`themes-manifest.json`・`data/published/*/lineage.json`・関連 builder/auditor の変更で 2 つの監査を走らせる。
 - `pages.yml`: `data/published/**`・`data/config/conference-copy/**`・`apps/web/**`・`packages/core/**`・`schemas/**`・lockfile・`apps/pipeline/src/release/**` などの push で、`source_sha: github.sha` を `pages-release.yml` に渡す。
 - 収集の 2 本は collector を `--fail-on-errors` で起動する（取得元・出力・状態ファイルの失敗、不完全なキーワード、有効な取得元なしで exit 1）。シグナルの劣化は失敗にせず run_history の `degraded_signals` に残す。daily-watch は失敗時もコミット step を走らせ、`data/inputs/daily`・`data/state/seen_ids.daily.json`・`data/state/run_history.daily.jsonl` を `release/cli.ts commit-push` で入れる（入れないと同じヒットを再通知する）。weekly は失敗時に `data/state/run_history.jsonl` を artifact に残す。
@@ -536,7 +537,6 @@ Hono on Cloudflare Workers。本番設定は `apps/api/wrangler.jsonc`（Worker 
 
 ## Claude Code 運用ノート
 
-- `AGENTS.md` / `PAPERPILOT_PROFILE.md` の Qwen・Codex の routing と role 表は Codex CLI 向けの別運用。Claude Code には適用しない。
 - 製品の LLM provider 設定（Ollama / Gemini / Groq / Claude）は、作業エージェントの routing とは別物。混同しない。
 - サブエージェントは `.claude/agents/`、手順は `.claude/skills/`（`run-verification`・`add-plugin`）。
 - 変更後は差分と gate（lint・typecheck・テスト）を確かめ、結果・skip・残リスクを報告する。workflow の dispatch、issue/PR 作成、commit/push/merge、公開、通知、secret・設定の変更はユーザーの明示承認を取る。

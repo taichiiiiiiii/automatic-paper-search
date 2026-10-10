@@ -33,7 +33,7 @@ Prerequisite: Node 22+ and pnpm 10.34.6. If `node --version` is below 22, put a 
    ```
 
    PASS only when `comm` prints nothing and the result is `DIFF UNCHANGED`. On FAIL, report the paths and the changed hunks (`diff "$S/before.diff" "$S/after.diff"`). Restore with `git checkout -- <path>` ONLY a path that was absent from `$S/before` (clean before the refresh); never restore a path that already had uncommitted changes, because that destroys the parent's work — report it instead.
-8. Hygiene: `git ls-files '*.py' ':!.codex'` must print nothing (same check as `tests.yml`); `git status --short` filtered for `.env` and `.tmp` (a modified `pnpm-lock.yaml` is expected only when a dependency changed — report it, not FAIL); `git diff --check`; `{ git diff --name-only; git ls-files --others --exclude-standard; } | xargs grep -lnE "/Users/[a-z]"` (must print nothing); and `git fetch -q origin && git rev-list --left-right --count origin/develop...HEAD`.
+8. Hygiene: `git ls-files '*.py'` must print nothing (same check as `tests.yml`); `git status --short` filtered for `.env` and `.tmp` (a modified `pnpm-lock.yaml` is expected only when a dependency changed — report it, not FAIL); `git diff --check`; `{ git diff --name-only; git ls-files --others --exclude-standard; } | xargs grep -lnE "/Users/[a-z]"` (must print nothing); and `git fetch -q origin && git rev-list --left-right --count origin/develop...HEAD`.
 
 ## Output
 

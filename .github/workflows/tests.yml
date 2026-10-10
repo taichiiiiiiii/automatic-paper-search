@@ -34,12 +34,12 @@ jobs:
         uses: ./.github/actions/setup-pnpm
 
       - name: No Python left in the repo
-        # Tier C (docs/migration/p5-plan.md §6.3): the Python codebase is
-        # gone; .codex/ is the one excluded tree (decision 8).
+        # Tier C: the Python codebase is gone, and the last Python (.codex/
+        # helper scripts) was removed on 2026-10-11.
         run: |
-          py_files="$(git ls-files '*.py' ':!.codex')"
+          py_files="$(git ls-files '*.py')"
           if [ -n "$py_files" ]; then
-            echo "::error::tracked *.py files outside .codex/ (Tier C forbids them):"
+            echo "::error::tracked *.py files (Tier C forbids them):"
             echo "$py_files"
             exit 1
           fi

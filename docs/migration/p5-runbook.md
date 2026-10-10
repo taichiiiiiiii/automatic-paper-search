@@ -76,7 +76,7 @@ pnpm --filter @paperpilot/api exec wrangler kv key get --namespace-id=3e11d3e73d
    - 環境変数 `NODE_VERSION=22` を入れる。`PNPM_VERSION=10.34.6` も入れてよい。Merge A でルートに `pnpm-lock.yaml` ができると、Workers Builds は build command の前に `pnpm install --frozen-lockfile` を自動で実行します。既定の Node は 24 です（R1）。`SKIP_DEPENDENCY_INSTALL` は入れない。
    - Settings > Build > Branch control の「Enable Preview Builds」を切る（39 §10-4、R16）。
    - `p5/consolidate` と `feat/ts-migration` はすでに push 済みです。この 2 つのブランチのビルドが Workers Builds の履歴にないことを確かめる（要確認）。
-4. ☐ develop のブランチ保護の必須チェック名を確かめる（R17。`tests.yml` の job `test`）。`.codex/` と Codex/Qwen 文書を残すか決める（判断待ち 8）。`docs/daily/papers.json` の削除を確定する（B に含まれています）。
+4. ☐ develop のブランチ保護の必須チェック名を確かめる（R17。`tests.yml` の job `test`）。`.codex/` と Codex/Qwen 文書を残すか決める（判断待ち 8 → 2026-10-11 に削除と決定）。`docs/daily/papers.json` の削除を確定する（B に含まれています）。
 5. ☐ Pages プロジェクトの設定: Web Analytics の自動挿入を切る。独自ドメインなら、そのゾーンの Rocket Loader と email obfuscation も切る。
 6. ☐ この順序（§9）で進めることを承認する。特に、切替の merge で `worker/` と Python が develop から消えること。
 
@@ -352,7 +352,7 @@ git cherry-pick 83a7551..origin/p5/consolidate
 13. 閉じた後にできること: `exports` 形式への移行、`feat/ts-migration` の整理。
 14. この branch に入っていない §6.3 の残り（要確認）:
     - `CLAUDE.md` と `AGENTS.md` の書き直し（保護ファイル。ユーザーが適用する）。
-    - `.codex/` と Codex/Qwen 文書の扱い（判断待ち 8）。
+    - `.codex/` と Codex/Qwen 文書の扱い（判断待ち 8。2026-10-11 に削除済み）。
     - `.pre-commit-config.yaml` は ruff/mypy の hook がなく、汎用の hook だけ残っています。残すかを決める。
     ✔ 完了条件は 39 §8 の P5。`tests.yml` の `.py` 関門（`git ls-files '*.py' ':!.codex'` が 0 件）はこの branch に入っています。
 

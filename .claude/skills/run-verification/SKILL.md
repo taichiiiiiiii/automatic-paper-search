@@ -125,7 +125,7 @@ pnpm exec tsx apps/pipeline/src/collect/cli.ts --config "$SMOKE/smoke.yaml"
 
 ```bash
 git status --short
-git ls-files '*.py' ':!.codex'     # 何も出ないこと（tests.yml と同じ検査）
+git ls-files '*.py'                # 何も出ないこと（tests.yml と同じ検査）
 git diff --check
 ```
 
