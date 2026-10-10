@@ -28,6 +28,8 @@ import { citationTargetCount } from "./citationCount.js";
 export interface CitedIdentity {
   /** Names the citing paper may use for the cited paper (lower-cased). */
   aliases: string[];
+  /** R2-21: the cited paper's first-author surname (folded, lower-cased), when known. */
+  surname?: string | null;
   /** The cited paper's numeric reference marker in the citing paper,
    * when it could be inferred from the contexts (`null` otherwise). */
   marker: number | null;
@@ -159,19 +161,63 @@ function str(v: unknown): string {
   return typeof v === "string" ? v.trim() : "";
 }
 
-function firstAuthorSurname(paper: ClassifyPaperLike): string | null {
-  const raw = (paper as Record<string, unknown>).authors;
-  if (!Array.isArray(raw) || raw.length === 0) return null;
-  const first = raw[0];
+/**
+ * R2-21: fold diacritics, including the spacing accents PDF extraction
+ * leaves behind ("Veliˇckovi´c" -> "Velickovic"), and compatibility forms
+ * ("ﬁ" -> "fi"), so names in S2 contexts match the cited paper's metadata.
+ */
+export function foldText(s: string): string {
+  // Spacing accents first: NFKD turns "´" into a space plus a combining mark.
+  return s
+    .replace(/[\u00a8\u00b4\u02c6-\u02df]/gu, "")
+    .normalize("NFKD")
+    .replace(/\p{M}/gu, "")
+    .normalize("NFC");
+}
+
+/** Surname of one author entry ("Thomas N. Kipf" -> "Kipf", "Wagner, Christopher" -> "Wagner"). */
+function surnameOf(entry: unknown): string | null {
   const name =
-    typeof first === "string"
-      ? first
-      : first && typeof first === "object"
-        ? str((first as { name?: unknown }).name)
+    typeof entry === "string"
+      ? entry
+      : entry && typeof entry === "object"
+        ? str((entry as { name?: unknown }).name)
         : "";
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  const last = parts[parts.length - 1];
+  const comma = name.indexOf(",");
+  const parts = (comma > 0 ? name.slice(0, comma) : name).trim().split(/\s+/).filter(Boolean);
+  const last = comma > 0 ? parts.join(" ") : parts[parts.length - 1];
+  return last ? foldText(last) : null;
+}
+
+/** Surnames of the cited paper's authors, in order (empty when unknown). */
+function authorSurnames(paper: ClassifyPaperLike): string[] {
+  const raw = (paper as Record<string, unknown>).authors;
+  if (!Array.isArray(raw)) return [];
+  return raw.map(surnameOf).filter((s): s is string => s !== null && s.length > 0);
+}
+
+function firstAuthorSurname(paper: ClassifyPaperLike): string | null {
+  const last = authorSurnames(paper)[0];
   return last && last.length >= 3 ? last : null;
+}
+
+/**
+ * R2-21: how a citing paper writes the cited paper's author list in an
+ * author-year citation: "Kipf and Welling", "Kipf & Welling" (two
+ * authors), "Hamilton, Ying, and Leskovec" (three). "<first> et al" is
+ * added by {@link citedAliases} for any author count.
+ */
+function authorListAliases(paper: ClassifyPaperLike): string[] {
+  const s = authorSurnames(paper);
+  if (s.length === 2) return [`${s[0]} and ${s[1]}`, `${s[0]} & ${s[1]}`];
+  if (s.length === 3) {
+    return [
+      `${s[0]}, ${s[1]}, and ${s[2]}`,
+      `${s[0]}, ${s[1]} and ${s[2]}`,
+      `${s[0]}, ${s[1]}, & ${s[2]}`,
+    ];
+  }
+  return [];
 }
 
 /** The part of a title before its first colon (the method name for
@@ -216,13 +262,126 @@ export function citedAliases(cited: ClassifyPaperLike): string[] {
   }
   const surname = firstAuthorSurname(cited);
   if (surname) out.add(`${surname.toLowerCase()} et al`);
+  if (surname) for (const a of authorListAliases(cited)) out.add(a.toLowerCase());
   return [...out].filter((a) => a.length >= 3);
 }
 
+/** The year written right after an author mention: "et al. (2017b)",
+ * "Welling, 2016", "Leskovec 2017)". */
+const YEAR_AFTER = /^\.?\s*,?\s*\(?\s*((?:1[89]|20)\d{2})([a-z]?)\b/;
+
 function mentions(sentence: string, alias: string): boolean {
   // Word-bounded, case-insensitive; "Swin" matches "Swin-B" but not "CSWin".
-  const re = new RegExp(`(?<![\\p{L}\\p{N}])${escapeRe(alias)}(?![\\p{L}])`, "iu");
-  return re.test(sentence);
+  const re = new RegExp(`(?<![\\p{L}\\p{N}])${escapeRe(foldText(alias))}(?![\\p{L}])`, "giu");
+  const text = foldText(sentence);
+  const years = new Set<string>();
+  let hit = false;
+  for (const m of text.matchAll(re)) {
+    hit = true;
+    const y = YEAR_AFTER.exec(text.slice((m.index ?? 0) + m[0].length));
+    if (y === null) continue;
+    // R2-21: an author citation is ambiguous when the same author list is
+    // cited with a lettered year ("Hamilton et al. (2017b)" — the same
+    // authors have several papers that year) or with two different years
+    // in one sentence ("Kipf & Welling, 2017 … Kipf & Welling, 2016").
+    if (y[2]) return false;
+    years.add(y[1] as string);
+  }
+  return hit && years.size <= 1;
+}
+
+/** Family / generic acronyms that never name one paper on their own. */
+const GENERIC_NAMES: ReadonlySet<string> = new Set(
+  [
+    "AI",
+    "ML",
+    "NLP",
+    "CV",
+    "NN",
+    "NNS",
+    "DNN",
+    "CNN",
+    "RNN",
+    "GNN",
+    "MLP",
+    "LSTM",
+    "GRU",
+    "GPU",
+    "TPU",
+    "CPU",
+    "SOTA",
+    "LLM",
+    "MOE",
+    "API",
+    "PCA",
+    "SVM",
+    "WL",
+    "ROI",
+    "IEEE",
+    "ACM",
+  ].map((w) => w.toLowerCase()),
+);
+
+/** A token shaped like a method name: two or more capitals ("GCN",
+ * "GraphSAGE", "MoNet", "PATCHY-SAN"), letters/digits/hyphens only. */
+const METHOD_NAME = /^(?=(?:[^\p{Lu}]*\p{Lu}){2})\p{L}[\p{L}\p{N}-]{1,24}$/u;
+
+function normaliseName(raw: string): string | null {
+  // "GCNs" / "DCNNs" -> "GCN" / "DCNN" (plural of an all-caps acronym).
+  const name = /^\p{Lu}[\p{Lu}\p{N}-]+s$/u.test(raw) ? raw.slice(0, -1) : raw;
+  if (!METHOD_NAME.test(name)) return null;
+  const low = name.toLowerCase();
+  if (GENERIC_NAMES.has(low) || GENERIC_WORDS.has(low) || low.length < 3) return null;
+  return low;
+}
+
+/**
+ * R2-21: method names the citing paper itself gives the cited paper,
+ * read from the pair's contexts: a name-shaped token written right before
+ * the cited paper's own citation — "GCN (Kipf and Welling 2017)",
+ * "GraphSAGE (Hamilton, Ying, and Leskovec 2017)", "GRAPHSAGE [16]" when
+ * 16 is the cited paper's inferred marker, "network (GCN) [4]". Many
+ * method papers carry their name only in the abstract or not at all
+ * ("Semi-Supervised Classification with Graph Convolutional Networks"),
+ * so the title stem cannot supply it. The name only counts for this
+ * pair's sentences (it comes from them).
+ */
+export function contextMethodNames(
+  contexts: readonly string[],
+  cited: ClassifyPaperLike,
+  marker: number | null,
+): string[] {
+  const surname = firstAuthorSurname(cited)?.toLowerCase() ?? null;
+  const out = new Set<string>();
+  const NAME_BEFORE = /(?<![\p{L}\p{N}_-])\(?([\p{L}][\p{L}\p{N}-]{1,24})\)?\s*([[(])/gu;
+  for (const raw of contexts) {
+    if (typeof raw !== "string") continue;
+    const c = foldText(raw);
+    for (const m of c.matchAll(NAME_BEFORE)) {
+      const name = normaliseName(m[1] as string);
+      if (name === null) continue;
+      const at = (m.index ?? 0) + m[0].length;
+      const rest = c.slice(at, at + 120);
+      let cites = false;
+      if (m[2] === "[") {
+        const close = rest.indexOf("]");
+        if (marker !== null && close > 0)
+          cites = numericMarkers(`[${rest.slice(0, close + 1)}`).includes(marker);
+      } else if (surname !== null) {
+        // "(Kipf and Welling 2017)", "(Hamilton et al., 2017)", "(Kipf & Welling, 2017; …)".
+        const head = rest.toLowerCase();
+        cites =
+          head.startsWith(surname) &&
+          /^[\s,&]|^\s*et\s+al|^\s+and\b/.test(head.slice(surname.length));
+        // Not "(Hamilton et al., 2017b)": a lettered year may be another paper.
+        const close = head.indexOf(")");
+        if (cites && /\b(?:1[89]|20)\d{2}[a-z]\b/.test(head.slice(0, close > 0 ? close : 60)))
+          cites = false;
+      }
+      if (cites) out.add(name);
+    }
+  }
+  return [...out];
 }
 
 /** Every numeric marker of a sentence ("[3, 7-9]" -> 3, 7, 8, 9). */
@@ -265,7 +424,7 @@ export function inferCitedMarker(
     if (!isBibliographyLine(c)) continue;
     const m = /^\s*\[(\d{1,4})\]/.exec(c);
     if (!m) continue;
-    const low = c.toLowerCase();
+    const low = foldText(c).toLowerCase();
     const hits = titleWords.filter((w) => low.includes(w)).length;
     if (
       (surname && low.includes(surname)) ||
@@ -277,12 +436,13 @@ export function inferCitedMarker(
   const votes = new Map<number, number>();
   const vote = (n: number, w: number) => votes.set(n, (votes.get(n) ?? 0) + w);
   for (const c of contexts) {
+    const folded = foldText(c);
     for (const alias of aliases) {
       const re = new RegExp(
-        `(?<![\\p{L}\\p{N}])${escapeRe(alias)}(?:[-\\s]?[\\p{L}\\p{N}]{1,6})?\\s*\\[(\\d{1,4})\\]`,
+        `(?<![\\p{L}\\p{N}])${escapeRe(foldText(alias))}(?:[-\\s]?[\\p{L}\\p{N}]{1,6})?\\s*\\[(\\d{1,4})\\]`,
         "giu",
       );
-      for (const m of c.matchAll(re)) vote(Number(m[1]), 3);
+      for (const m of folded.matchAll(re)) vote(Number(m[1]), 3);
     }
     const ms = numericMarkers(c);
     if (ms.length === 1 && citationTargetCount(c) === 1) vote(ms[0] as number, 1);
@@ -305,7 +465,18 @@ export function citedIdentity(
 ): CitedIdentity {
   if (!cited) return { aliases: [], marker: null };
   const aliases = citedAliases(cited);
-  return { aliases, marker: inferCitedMarker(contexts, cited, aliases) };
+  const marker = inferCitedMarker(contexts, cited, aliases);
+  const names = contextMethodNames(contexts, cited, marker).filter((n) => !aliases.includes(n));
+  const surname = firstAuthorSurname(cited)?.toLowerCase() ?? null;
+  return { aliases: [...aliases, ...names], marker, surname };
+}
+
+/** Surnames of the author-year citations of a sentence ("Bronstein et al.
+ * (2017)", "(Kipf and Welling, 2017)", "Atwood & Towsley 2016"). */
+function authorYearSurnames(sentence: string): string[] {
+  const re =
+    /(?<![\p{L}])(\p{Lu}[\p{L}'’-]+)(?:\s+et\s+al\.?|\s*(?:,|and|&)\s*\p{Lu}[\p{L}'’-]+(?:,?\s*(?:and|&)\s*\p{Lu}[\p{L}'’-]+)?)?,?\s*\(?(?:1[89]|20)\d{2}[a-z]?\b/gu;
+  return [...foldText(sentence).matchAll(re)].map((m) => (m[1] as string).toLowerCase());
 }
 
 /** How `sentence` refers to the cited paper (see {@link SentenceTarget}). */
@@ -315,6 +486,13 @@ export function sentenceTarget(sentence: string, id: CitedIdentity): SentenceTar
   if (id.marker !== null && markers.includes(id.marker)) return "named";
   const count = citationTargetCount(sentence);
   if (id.marker !== null && markers.length > 0 && count === markers.length) return "other";
+  // R2-21: the only citation is an author-year one of somebody else
+  // ("We refer the reader to … Bronstein et al. (2017); Hamilton et al."
+  // attached by S2 to Bianchi et al.'s ARMA paper).
+  if (count === 1 && id.surname && markers.length === 0) {
+    const cites = authorYearSurnames(sentence);
+    if (cites.length > 0 && !cites.includes(id.surname)) return "other";
+  }
   if (count === 1) return "single";
   if (count === 0) return "unmarked";
   if (count === 2) return "pair";

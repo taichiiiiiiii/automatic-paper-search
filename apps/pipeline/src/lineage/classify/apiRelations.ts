@@ -387,6 +387,15 @@ const ADAPT_PATTERNS: readonly RegExp[] = [
   /\b(spatiotemporal\s+|temporal\s+)?adaptation\s+of\b/i,
   /\bbased\s+on\b/i,
   /\bextend(s|ed|ing)?\b/i,
+  // R2-21: the citing method generalises the cited one ("… GCN [21] and
+  // DCNN [3] on graphs as particular instances of our approach", "our
+  // framework subsumes …"). Only "of OUR …": "our work is a particular
+  // instance of MoNet" says the opposite and does not match.
+  /\b(particular|special)\s+(instances?|cases?)\s+of\s+(our|the\s+proposed)\b/i,
+  /\b(we|our\s+\w+)\s+(subsume|subsumes|generali[sz]e|generali[sz]es)\b/i,
+  // R2-21: "we use the “mean” variant of GraphSAGE [16]" (quoted words
+  // allowed between the verb and variant/version).
+  /\b(we|our\s+\w+)\s+(use|uses|employ|employs|adopt|adopts)\s+(the\s+|a\s+)?([\w"“”'‘’-]+\s+){0,3}(variant|version)\s+of\b/i,
 ];
 
 const PROTOCOL_PATTERNS: readonly RegExp[] = [
