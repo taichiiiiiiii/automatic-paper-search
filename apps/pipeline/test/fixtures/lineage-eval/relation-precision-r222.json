@@ -1,0 +1,3165 @@
+{
+ "description": "R2-22 labelled strong-claim set (design 41 D5). Every published strong edge of the four theme lineages (audit drafts R2-8, R2-21 GNN hand check) plus hard negatives/positives of the rule set. s2 = the Semantic Scholar signals of the pair (null = S2 has no record), context_llm_answer = the cached citation-context LLM answer (null = none cached). gold.strong: true = the lineage claim is right, false = not a lineage claim, null = undecided. gold.quote_backed: a citing sentence names the cited paper with a build/contrast cue (only such claims may be published strong; title_version is backed by the titles).",
+ "edges": [
+  {
+   "theme": "flash-attention",
+   "src": "openalex:W2940744433",
+   "dst": "openalex:W3015468748",
+   "cited": {
+    "title": "Generating Long Sequences with Sparse Transformers",
+    "authors": [
+     "Rewon Child",
+     "Scott Gray",
+     "Alec Radford",
+     "Ilya Sutskever"
+    ],
+    "year": 2019
+   },
+   "citing": {
+    "title": "Longformer: The Long-Document Transformer",
+    "authors": [
+     "Iz Beltagy",
+     "Matthew E. Peters",
+     "Arman Cohan"
+    ],
+    "year": 2020,
+    "abstract": "The quadratic complexity of standard attention (O(N²)) remains the dominant bottleneck for training and deploying large language models on long sequences. We introduce Murmurative Attention, a novel attention mechanism that replaces pairwise token-token interactions with token-to-slot interactions over a fixed-size learnable memory pool of M slots, achieving O(N·M) complexity with M ≪ N. The mechanism operates in four phases per round: (1) select — each token hard-selects the top-k relevant slots via dot-product similarity; (2) attend — tokens compute a standard softmax over their selected slo"
+   },
+   "published": {
+    "relation": "extends",
+    "method": "s2_context_rule",
+    "prompt_version": null,
+    "confidence": 0.8,
+    "rationale": "「Longformer」(2020) は 「Generating Long Sequences with …」(2019) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We use two different model sizes, a small (12 layers, 512 hidden size) model as in Dai et al. (2019), and a large (30 layers, 512 hidden size) model as in Child et al. (2019).\""
+   },
+   "s2": {
+    "found": true,
+    "intents": [
+     "methodology"
+    ],
+    "contexts": [
+     "The model with the most similar attention pattern to ours is Sparse Trans-former (Child et al., 2019), which uses a form of dilated sliding window of blocks of size 8x8 provided by BlockSparse (Gray et al., 2017).",
+     "We use two different model sizes, a small (12 layers, 512 hidden size) model as in Dai et al. (2019), and a large (30 layers, 512 hidden size) model as in Child et al. (2019)."
+    ],
+    "isInfluential": false
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": false,
+    "relation": "baseline_only",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "引用文は「大きいモデルは Child et al. と同じ層数・次元」という実験設定の踏襲で、手法の継承ではない（R2-16 の否定の手がかり「as in」に当たる）"
+   }
+  },
+  {
+   "theme": "flash-attention",
+   "src": "openalex:W2940744433",
+   "dst": "openalex:W3091156754",
+   "cited": {
+    "title": "Generating Long Sequences with Sparse Transformers",
+    "authors": [
+     "Rewon Child",
+     "Scott Gray",
+     "Alec Radford",
+     "Ilya Sutskever"
+    ],
+    "year": 2019
+   },
+   "citing": {
+    "title": "Rethinking Attention with Performers",
+    "authors": [
+     "Krzysztof Choromański",
+     "Valerii Likhosherstov",
+     "David Dohan",
+     "Xingyou Song",
+     "Andreea Gane"
+    ],
+    "year": 2020,
+    "abstract": "We introduce Performers, Transformer architectures which can estimate regular (softmax) full-rank-attention Transformers with provable accuracy, but using only linear (as opposed to quadratic) space and time complexity, without relying on any priors such as sparsity or low-rankness. To approximate softmax attention-kernels, Performers use a novel Fast Attention Via positive Orthogonal Random features approach (FAVOR+), which may be of independent interest for scalable kernel methods. FAVOR+ can be also used to efficiently model kernelizable attention mechanisms beyond softmax. This representat"
+   },
+   "published": {
+    "relation": "extends",
+    "method": "s2_context_rule",
+    "prompt_version": null,
+    "confidence": 0.5,
+    "rationale": "「Rethinking Attention with Perfo…」(2020) は 「Generating Long Sequences with …」(2019) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \", 2018) or incorporate structural priors on attention such as sparsity (Child et al., 2019), pooling-based compression (Rae et al.\""
+   },
+   "s2": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     ", 2018) or incorporate structural priors on attention such as sparsity (Child et al., 2019), pooling-based compression (Rae et al.",
+     "…to approximate regular attention, but rather propose simpler and more tractable attention mechanisms, often by incorporating additional constraints (e.g. identical query and key sets as in (Kitaev et al., 2020)), or by trading regular with sparse attention using more layers (Child et al., 2019).",
+     "Several solutions have been proposed to address this issue (Beltagy et al., 2020; Gulati et al., 2020; Chan et al., 2020; Child et al., 2019; Bello et al., 2019).",
+     "…the attention mechanism to attend to local neighborhoods (Parmar et al., 2018) or incorporate structural priors on attention such as sparsity (Child et al., 2019), pooling-based compression (Rae et al., 2020) clustering/binning/convolution techniques (e.g. (Roy et al., 2020) which applies k…"
+    ],
+    "isInfluential": true
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": false,
+    "relation": "baseline_only",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "引用文は疎な注意の先行研究を列挙する背景の文。Performer は核法による線形注意で Sparse Transformer を土台にしていない"
+   }
+  },
+  {
+   "theme": "flash-attention",
+   "src": "openalex:W2997517014",
+   "dst": "openalex:W3091156754",
+   "cited": {
+    "title": "Efficient Content-Based Sparse Attention with Routing Transformers",
+    "authors": [
+     "Aurko Roy",
+     "Mohammad Saffar",
+     "Ashish Vaswani",
+     "David Grangier"
+    ],
+    "year": 2021
+   },
+   "citing": {
+    "title": "Rethinking Attention with Performers",
+    "authors": [
+     "Krzysztof Choromański",
+     "Valerii Likhosherstov",
+     "David Dohan",
+     "Xingyou Song",
+     "Andreea Gane"
+    ],
+    "year": 2020,
+    "abstract": "We introduce Performers, Transformer architectures which can estimate regular (softmax) full-rank-attention Transformers with provable accuracy, but using only linear (as opposed to quadratic) space and time complexity, without relying on any priors such as sparsity or low-rankness. To approximate softmax attention-kernels, Performers use a novel Fast Attention Via positive Orthogonal Random features approach (FAVOR+), which may be of independent interest for scalable kernel methods. FAVOR+ can be also used to efficiently model kernelizable attention mechanisms beyond softmax. This representat"
+   },
+   "published": {
+    "relation": "extends",
+    "method": "s2_context_rule",
+    "prompt_version": null,
+    "confidence": 0.5,
+    "rationale": "「Rethinking Attention with Perfo…」(2020) は 「Efficient Content-Based Sparse …」(2021) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"(Roy et al., 2020) which applies k-means clustering to learn dynamic sparse attention regions, or (Kitaev et al.\""
+   },
+   "s2": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "(Roy et al., 2020) which applies k-means clustering to learn dynamic sparse attention regions, or (Kitaev et al.",
+     "…on attention such as sparsity (Child et al., 2019), pooling-based compression (Rae et al., 2020) clustering/binning/convolution techniques (e.g. (Roy et al., 2020) which applies k -means clustering to learn dynamic sparse attention regions, or (Kitaev et al., 2020), where locality sensitive…",
+     ", 2020) or cluster-based attention (Roy et al., 2020).",
+     "We emphasize that in principle, FAVOR+ can also be combined with other techniques, such as reversible layers (Kitaev et al., 2020) or cluster-based attention (Roy et al., 2020)."
+    ],
+    "isInfluential": true
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": false,
+    "relation": "baseline_only",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "先行研究を列挙する背景の文。さらに年が逆転（Routing Transformer の TACL 版は 2021、arXiv 版は 2020-03）"
+   }
+  },
+  {
+   "theme": "flash-attention",
+   "src": "openalex:W3015468748",
+   "dst": "openalex:W3091156754",
+   "cited": {
+    "title": "Longformer: The Long-Document Transformer",
+    "authors": [
+     "Iz Beltagy",
+     "Matthew E. Peters",
+     "Arman Cohan"
+    ],
+    "year": 2020
+   },
+   "citing": {
+    "title": "Rethinking Attention with Performers",
+    "authors": [
+     "Krzysztof Choromański",
+     "Valerii Likhosherstov",
+     "David Dohan",
+     "Xingyou Song",
+     "Andreea Gane"
+    ],
+    "year": 2020,
+    "abstract": "We introduce Performers, Transformer architectures which can estimate regular (softmax) full-rank-attention Transformers with provable accuracy, but using only linear (as opposed to quadratic) space and time complexity, without relying on any priors such as sparsity or low-rankness. To approximate softmax attention-kernels, Performers use a novel Fast Attention Via positive Orthogonal Random features approach (FAVOR+), which may be of independent interest for scalable kernel methods. FAVOR+ can be also used to efficiently model kernelizable attention mechanisms beyond softmax. This representat"
+   },
+   "published": {
+    "relation": "extends",
+    "method": "s2_context_rule",
+    "prompt_version": null,
+    "confidence": 0.5,
+    "rationale": "「Rethinking Attention with Perfo…」(2020) は 「Longformer」(2020) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \", 2020), where locality sensitive hashing is used to group together tokens of similar embeddings), sliding windows (Beltagy et al., 2020), or truncated targeting (Chelba et al.\""
+   },
+   "s2": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "…(Roy et al., 2020) which applies k -means clustering to learn dynamic sparse attention regions, or (Kitaev et al., 2020), where locality sensitive hashing is used to group together tokens of similar embeddings), sliding windows (Beltagy et al., 2020), or truncated targeting (Chelba et al., 2020).",
+     "Several solutions have been proposed to address this issue (Beltagy et al., 2020; Gulati et al., 2020; Chan et al., 2020; Child et al., 2019; Bello et al., 2019).",
+     ", 2020), where locality sensitive hashing is used to group together tokens of similar embeddings), sliding windows (Beltagy et al., 2020), or truncated targeting (Chelba et al.",
+     "Unfortunately, there is a lack of rigorous guarantees for the representation power produced by such methods, and sometimes the validity of sparsity patterns can only be veriﬁed empirically through trial and error by constructing special GPU operations (e.g. either writing C++ CUDA kernels (Child et al., 2019) or using TVMs (Beltagy et al., 2020))."
+    ],
+    "isInfluential": true
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": false,
+    "relation": "baseline_only",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "「sliding windows (Beltagy et al.)」と列挙する背景の文。継承ではない"
+   }
+  },
+  {
+   "theme": "flash-attention",
+   "src": "openalex:W3015468748",
+   "dst": "openalex:W4281758439",
+   "cited": {
+    "title": "Longformer: The Long-Document Transformer",
+    "authors": [
+     "Iz Beltagy",
+     "Matthew E. Peters",
+     "Arman Cohan"
+    ],
+    "year": 2020
+   },
+   "citing": {
+    "title": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness",
+    "authors": [
+     "Dao, Tri",
+     "Daniel Y. Fu",
+     "Stefano Ermon",
+     "Atri Rudra",
+     "Christopher Ré"
+    ],
+    "year": 2022,
+    "abstract": ""
+   },
+   "published": {
+    "relation": "extends",
+    "method": "s2_context_rule",
+    "prompt_version": null,
+    "confidence": 0.5,
+    "rationale": "「FlashAttention」(2022) は 「Longformer」(2020) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Longformer and BigBird do not support sequence lengths longer than 8092.\""
+   },
+   "s2": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "√ For large sequence lengths 𝑁 , 𝑠 is often set to 𝑁 − 1 / 2 [12] or 𝑁 − 1 log 𝑁 [3, 18, 96], resulting in Θ ( 𝑁 𝑁 ) or Θ ( 𝑁 log 𝑁 ) IO complexity.",
+     "These methods range from sparse-approximation [53, 77] to low-rank approximation [13, 52, 88], and their combinations [3, 9, 96].",
+     "We measure each method with and without dropout, masking, or both—except for Block Sparse, Longformer, and BigBird.",
+     "Longformer and BigBird do not support sequence lengths longer than 8092."
+    ],
+    "isInfluential": true
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": false,
+    "relation": "baseline_only",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "引用文「Longformer と BigBird は 8092 より長い系列を扱えない」は比較・限界の指摘。FlashAttention は近似ではない厳密な注意で、Longformer を土台にしていない"
+   }
+  },
+  {
+   "theme": "flash-attention",
+   "src": "openalex:W3092852584",
+   "dst": "openalex:W4281758439",
+   "cited": {
+    "title": "SMYRF: Efficient Attention using Asymmetric Clustering",
+    "authors": [
+     "Giannis Daras",
+     "Nikita Kitaev",
+     "Augustus Odena",
+     "Alexandros G. Dimakis"
+    ],
+    "year": 2020
+   },
+   "citing": {
+    "title": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness",
+    "authors": [
+     "Dao, Tri",
+     "Daniel Y. Fu",
+     "Stefano Ermon",
+     "Atri Rudra",
+     "Christopher Ré"
+    ],
+    "year": 2022,
+    "abstract": ""
+   },
+   "published": {
+    "relation": "extends",
+    "method": "s2_context_rule",
+    "prompt_version": null,
+    "confidence": 0.5,
+    "rationale": "「FlashAttention」(2022) は 「SMYRF」(2020) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Linformer Attention [88], Smyrf [20], and LongShortFormer (LSFormer) [98].\""
+   },
+   "s2": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "Linformer Attention [88], Smyrf [20], and LongShortFormer (LSFormer) [98].",
+     "There are numerous approaches to overcome this bottleneck, including approximation with hashing (i.e., sparse) such as Reformer [53] and Smyrf [20] and with low-rank approximation such as Performer [13, 56].",
+     ", sparse) such as Reformer [49] and Smyrf [18] and with low-rank approximation such as Performer [11, 52].",
+     "[18] Giannis Daras, Nikita Kitaev, Augustus Odena, and Alexandros G Dimakis."
+    ],
+    "isInfluential": true
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": false,
+    "relation": "baseline_only",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "引用文は比較対象（Linformer・Smyrf・LSFormer）を列挙しただけ"
+   }
+  },
+  {
+   "theme": "flash-attention",
+   "src": "openalex:W4281758439",
+   "dst": "openalex:W4384648639",
+   "cited": {
+    "title": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness",
+    "authors": [
+     "Dao, Tri",
+     "Daniel Y. Fu",
+     "Stefano Ermon",
+     "Atri Rudra",
+     "Christopher Ré"
+    ],
+    "year": 2022
+   },
+   "citing": {
+    "title": "FlashAttention-2: Faster Attention with Better Parallelism and Work Partitioning",
+    "authors": [
+     "Tri Dao"
+    ],
+    "year": 2023,
+    "abstract": "Scaling Transformers to longer sequence lengths has been a major problem in the last several years, promising to improve performance in language modeling and high-resolution image understanding, as well as to unlock new applications in code, audio, and video generation. The attention layer is the main bottleneck in scaling to longer sequences, as its runtime and memory increase quadratically in the sequence length. FlashAttention exploits the asymmetric GPU memory hierarchy to bring significant memory saving (linear instead of quadratic) and runtime speedup (2-4$\\times$ compared to optimized b"
+   },
+   "published": {
+    "relation": "supersedes",
+    "method": "title_version",
+    "prompt_version": null,
+    "confidence": 0.7,
+    "rationale": "「FlashAttention-2: Faster Attention with Better Parallelism …」(2023) は「FlashAttention: Fast and Memory-Efficient Exact Attention w…」(2022) のバージョンアップ版にあたり、命名パターンから置き換え (supersedes) と推定される。"
+   },
+   "s2": null,
+   "context_llm_answer": null,
+   "gold": {
+    "strong": true,
+    "relation": "supersedes",
+    "quote_backed": true,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "同じ著者による FlashAttention の第 2 版。supersedes で妥当"
+   }
+  },
+  {
+   "theme": "flash-attention",
+   "src": "openalex:W4281758439",
+   "dst": "openalex:W4388327470",
+   "cited": {
+    "title": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness",
+    "authors": [
+     "Dao, Tri",
+     "Daniel Y. Fu",
+     "Stefano Ermon",
+     "Atri Rudra",
+     "Christopher Ré"
+    ],
+    "year": 2022
+   },
+   "citing": {
+    "title": "FlashDecoding++: Faster Large Language Model Inference on GPUs",
+    "authors": [
+     "Ke Hong",
+     "Guohao Dai",
+     "Jiaming Xu",
+     "Qiuli Mao",
+     "Xiuhong Li"
+    ],
+    "year": 2023,
+    "abstract": "As the Large Language Model (LLM) becomes increasingly important in various domains. However, the following challenges still remain unsolved in accelerating LLM inference: (1) Synchronized partial softmax update. The softmax operation requires a synchronized update operation among each partial softmax result, leading to ~20% overheads for the attention computation in LLMs. (2) Under-utilized computation of flat GEMM. The shape of matrices performing GEMM in LLM inference is flat, leading to under-utilized computation and >50% performance loss after padding zeros in previous designs. (3) Perfor"
+   },
+   "published": {
+    "relation": "extends",
+    "method": "s2_context_rule",
+    "prompt_version": null,
+    "confidence": 0.5,
+    "rationale": "「FlashDecoding++」(2023) は 「FlashAttention」(2022) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"FlashAttention [18, 19] optimizes the self-attention computation process during the prefill phase through improved parallelism and workload distribution.\""
+   },
+   "s2": {
+    "found": true,
+    "intents": [
+     "methodology"
+    ],
+    "contexts": [
+     "To improve the parallelism, previous designs [18, 13] divide the attention matrices into smaller tiles and rows are also split to compute partial softmax results.",
+     "FlashAttention [18, 19] optimizes the self-attention computation process during the prefill phase through improved parallelism and workload distribution.",
+     "The softmax is then recomputed using the synchronized partial softmax scheme (used in FlashAttention [18, 19] and FlashDecoding [13]) shown in Figure 4(b).",
+     "TensorRT-LLM [14] is built upon the TensorRT [38] and the FasterTransformer [33] engine ( C++ ) and incorporates cutting-edge open-source technologies such as FlashAttention [18, 19]."
+    ],
+    "isInfluential": true
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": true,
+    "relation": "extends",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "FlashDecoding++ は FlashAttention / Flash-Decoding の推論向けの発展で、土台にしている"
+   }
+  },
+  {
+   "theme": "flash-attention",
+   "src": "openalex:W4281758439",
+   "dst": "openalex:W4400611982",
+   "cited": {
+    "title": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness",
+    "authors": [
+     "Dao, Tri",
+     "Daniel Y. Fu",
+     "Stefano Ermon",
+     "Atri Rudra",
+     "Christopher Ré"
+    ],
+    "year": 2022
+   },
+   "citing": {
+    "title": "FlashAttention-3: Fast and Accurate Attention with Asynchrony and Low-precision",
+    "authors": [
+     "Shah, Jay",
+     "Ganesh Bikshandi",
+     "Zhang, Ying",
+     "Vijay Thakkar",
+     "Pradeep Ramani"
+    ],
+    "year": 2024,
+    "abstract": "Attention, as a core layer of the ubiquitous Transformer architecture, is the bottleneck for large language models and long-context applications. FlashAttention elaborated an approach to speed up attention on GPUs through minimizing memory reads/writes. However, it has yet to take advantage of new capabilities present in recent hardware, with FlashAttention-2 achieving only 35% utilization on the H100 GPU. We develop three main techniques to speed up attention on Hopper GPUs: exploiting asynchrony of the Tensor Cores and TMA to (1) overlap overall computation and data movement via warp-special"
+   },
+   "published": {
+    "relation": "supersedes",
+    "method": "title_version",
+    "prompt_version": null,
+    "confidence": 0.7,
+    "rationale": "「FlashAttention-3: Fast and Accurate Attention with Asynchro…」(2024) は「FlashAttention: Fast and Memory-Efficient Exact Attention w…」(2022) のバージョンアップ版にあたり、命名パターンから置き換え (supersedes) と推定される。"
+   },
+   "s2": null,
+   "context_llm_answer": null,
+   "gold": {
+    "strong": true,
+    "relation": "supersedes",
+    "quote_backed": true,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "FlashAttention 系列の第 3 版（Hopper 向け）。FA-1 から見て新版にあたり supersedes で許容（FA-2→FA-3 と重複する推移の辺）"
+   }
+  },
+  {
+   "theme": "flash-attention",
+   "src": "openalex:W4384648639",
+   "dst": "openalex:W4400611982",
+   "cited": {
+    "title": "FlashAttention-2: Faster Attention with Better Parallelism and Work Partitioning",
+    "authors": [
+     "Tri Dao"
+    ],
+    "year": 2023
+   },
+   "citing": {
+    "title": "FlashAttention-3: Fast and Accurate Attention with Asynchrony and Low-precision",
+    "authors": [
+     "Shah, Jay",
+     "Ganesh Bikshandi",
+     "Zhang, Ying",
+     "Vijay Thakkar",
+     "Pradeep Ramani"
+    ],
+    "year": 2024,
+    "abstract": "Attention, as a core layer of the ubiquitous Transformer architecture, is the bottleneck for large language models and long-context applications. FlashAttention elaborated an approach to speed up attention on GPUs through minimizing memory reads/writes. However, it has yet to take advantage of new capabilities present in recent hardware, with FlashAttention-2 achieving only 35% utilization on the H100 GPU. We develop three main techniques to speed up attention on Hopper GPUs: exploiting asynchrony of the Tensor Cores and TMA to (1) overlap overall computation and data movement via warp-special"
+   },
+   "published": {
+    "relation": "supersedes",
+    "method": "title_version",
+    "prompt_version": null,
+    "confidence": 0.7,
+    "rationale": "「FlashAttention-3: Fast and Accurate Attention with Asynchro…」(2024) は「FlashAttention-2: Faster Attention with Better Parallelism …」(2023) のバージョンアップ版にあたり、命名パターンから置き換え (supersedes) と推定される。"
+   },
+   "s2": null,
+   "context_llm_answer": null,
+   "gold": {
+    "strong": true,
+    "relation": "supersedes",
+    "quote_backed": true,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "FA-2 の次の版。supersedes で妥当"
+   }
+  },
+  {
+   "theme": "flash-attention",
+   "src": "openalex:W4384648639",
+   "dst": "openalex:W7220440728",
+   "cited": {
+    "title": "FlashAttention-2: Faster Attention with Better Parallelism and Work Partitioning",
+    "authors": [
+     "Tri Dao"
+    ],
+    "year": 2023
+   },
+   "citing": {
+    "title": "Efficient FlashAttention on Blackwell via Fixed-Shift Softmax and Persistent Scheduling",
+    "authors": [
+     "Олександр Сташук",
+     "Hongtao Yu",
+     "Jay Shah"
+    ],
+    "year": 2026,
+    "abstract": "On Blackwell, normalization and operand movement can limit attention kernels whose matrix multiplications are already deeply pipelined. We implement an FA4-style pipeline in Triton TLX with fixed-shift dense softmax and a saved inverse denominator for backward. The fixed shift removes recurrent accumulator corrections; the saved reciprocal moves row normalization from the quadratic backward loop into linear preprocessing. The guarded causal path uses a first-block anchor with selective recovery, and fully masked diagonal contractions are skipped. A packed BF16 exponential approximation and pip"
+   },
+   "published": {
+    "relation": "extends",
+    "method": "s2_context_rule",
+    "prompt_version": null,
+    "confidence": 0.8,
+    "rationale": "「Efficient FlashAttention on Bla…」(2026) は 「FlashAttention-2」(2023) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We follow the FlashAttention algorithms in using e P for unnormalized shifted exponentials, m for the row shift, ℓ for their row sum, and L for log-sum-exp [2, 3, 4].\""
+   },
+   "s2": {
+    "found": true,
+    "intents": [],
+    "contexts": [
+     "Skipping fully masked blocks is standard in causal attention [2].",
+     "FlashAttention kernels avoid materializing score and probability matrices in HBM through tiling [1, 2, 3, 4].",
+     "Later FlashAttention kernels sought to keep arithmetic units busy within each tile: FlashAttention-2 improved work partitioning [2], FlashAttention-3 overlapped matrix multiplication and softmax on Hopper [3], and FlashAttention-4 developed an asynchronous Blackwell pipeline [4].",
+     "We follow the FlashAttention algorithms in using e P for unnormalized shifted exponentials, m for the row shift, ℓ for their row sum, and L for log-sum-exp [2, 3, 4]."
+    ],
+    "isInfluential": true
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": true,
+    "relation": "extends",
+    "quote_backed": true,
+    "quote": "We follow the FlashAttention algorithms in using e P for unnormalized shifted exponentials, m for the row shift, ℓ for their row sum, and L for log-sum-exp [2, 3, 4].",
+    "source": "audit-draft-r2-8",
+    "note": "引用文「We follow the FlashAttention algorithms…」。FA-2 のアルゴリズムを Blackwell 向けに実装しており extends で妥当"
+   }
+  },
+  {
+   "theme": "graph-neural-network",
+   "src": "openalex:W2116341502",
+   "dst": "openalex:W2788919350",
+   "cited": {
+    "title": "The Graph Neural Network Model",
+    "authors": [
+     "Franco Scarselli",
+     "M. Gori",
+     "Ah Chung Tsoi",
+     "Markus Hagenbuchner",
+     "Gabriele Monfardini"
+    ],
+    "year": 2008
+   },
+   "citing": {
+    "title": "An End-to-End Deep Learning Architecture for Graph Classification",
+    "authors": [
+     "Muhan Zhang",
+     "Zhicheng Cui",
+     "Marion Neumann",
+     "Yixin Chen"
+    ],
+    "year": 2018,
+    "abstract": "Neural networks are typically designed to deal with data in tensor forms. In this paper, we propose a novel neural network architecture accepting graphs of arbitrary structure. Given a dataset containing graphs in the form of (G,y) where G is a graph and y is its class, we aim to develop neural networks that read the graphs directly and learn a classification function. There are two main challenges: 1) how to extract useful features characterizing the rich information encoded in a graph for classification purpose, and 2) how to sequentially read a graph in a meaningful and consistent order. To"
+   },
+   "published": {
+    "relation": "baseline_only",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4-context",
+    "confidence": 0.88,
+    "rationale": "The Graph Neural Network Modelを関連研究として言及している 引用文: \"…on generalizing neural networks to graphs: 1) given a single graph structure, infer signals in graph forms or infer labels of individual nodes (Scarselli et al. 2009; Bruna et al. 2013; Henaff, Bruna, and LeCun 2015; Li et al. 2015; Deffe…\""
+   },
+   "s2": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "DGCNN is also related to the Graph neural networks (GNNs) (Scarselli et al. 2009; Li et al. 2015), Diffusion-CNN (Atwood and Towsley 2016), and Neural Graph Fingerprints (Duvenaud et al.",
+     "Neural networks for graphs There are two lines of research on generalizing neural networks to graphs: 1) given a single graph structure, infer signals in graph forms or infer labels of individual nodes (Scarselli et al. 2009; Bruna et al. 2013; Henaff, Bruna, and LeCun 2015; Li et al. 2015; Defferrard, Bresson, and Vandergheynst 2016; Kipf and Welling 2016); and 2) given a set of graphs with diffe",
+     "…on generalizing neural networks to graphs: 1) given a single graph structure, infer signals in graph forms or infer labels of individual nodes (Scarselli et al. 2009; Bruna et al. 2013; Henaff, Bruna, and LeCun 2015; Li et al. 2015; Defferrard, Bresson, and Vandergheynst 2016; Kipf and…",
+     "DGCNN is also related to the Graph neural networks (GNNs) (Scarselli et al. 2009; Li et al. 2015), Diffusion-CNN\n(Atwood and Towsley 2016), and Neural Graph Fingerprints (Duvenaud et al. 2015) in how to extract node features."
+    ],
+    "isInfluential": true
+   },
+   "context_llm_answer": {
+    "refers_to_cited": true,
+    "relation": "background",
+    "contrast": false,
+    "confidence": 0.88,
+    "rationale": "The Graph Neural Network Modelを関連研究として言及している"
+   },
+   "gold": {
+    "strong": false,
+    "relation": "baseline_only",
+    "quote_backed": false,
+    "quote": null,
+    "source": "r2-22",
+    "note": "weak rule on a related-work list"
+   }
+  },
+  {
+   "theme": "graph-neural-network",
+   "src": "openalex:W2116341502",
+   "dst": "openalex:W2912636151",
+   "cited": {
+    "title": "The Graph Neural Network Model",
+    "authors": [
+     "Franco Scarselli",
+     "M. Gori",
+     "Ah Chung Tsoi",
+     "Markus Hagenbuchner",
+     "Gabriele Monfardini"
+    ],
+    "year": 2008
+   },
+   "citing": {
+    "title": "Graph Neural Networks with Convolutional ARMA Filters",
+    "authors": [
+     "Filippo Maria Bianchi",
+     "Daniele Grattarola",
+     "Lorenzo Livi",
+     "Cesare Alippi"
+    ],
+    "year": 2021,
+    "abstract": "Popular graph neural networks implement convolution operations on graphs based on polynomial spectral filters. In this paper, we propose a novel graph convolutional layer inspired by the auto-regressive moving average (ARMA) filter that, compared to polynomial ones, provides a more flexible frequency response, is more robust to noise, and better captures the global graph structure. We propose a graph neural network implementation of the ARMA filter with a recursive and distributed formulation, obtaining a convolutional layer that is efficient to train, localized in the node space, and can be t"
+   },
+   "published": {
+    "relation": "baseline_only",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4-context",
+    "confidence": 0.8,
+    "rationale": "Scarselli et al. 2009を参照し、背景情報として提示 引用文: \"Finally, similarly to GNNs operating in the node domain (Scarselli et al., 2009; Gallicchio & Micheli, 2010), each GCS layer computes the ﬁltered signal ¯ x i at vertex i as a combination of signals x ( t ) j in its 1-hop neighborhood, j ∈…\""
+   },
+   "s2": {
+    "found": true,
+    "intents": [
+     "background",
+     "methodology"
+    ],
+    "contexts": [
+     "…graph to learn nodes/graph embeddings (Perozzi et al., 2014; Duvenaud et al., 2015; Yang et al., 2016; Hamilton et al., 2017; Bac-ciu et al., 2018), or to directly perform inference tasks by mapping the node features into categorical labels or real values (Scarselli et al., 2009; Micheli, 2009).",
+     "Finally, similarly to GNNs operating in the node domain (Scarselli et al., 2009; Gallicchio & Micheli, 2010), each GCS layer computes the ﬁltered signal ¯ x i at vertex i as a combination of signals x ( t ) j in its 1-hop neighborhood, j ∈ N ( i ) ; such a commutative aggregation solves the problem…",
+     "Finally, similarly to GNNs operating in the node domain (Scarselli et al., 2009; Gallicchio & Micheli, 2010), each GCS layer computes the filtered signal x̄ i at vertex i as a combination of signals x j in its 1-hop neighborhood, j ∈ N (i); such a commutative aggregation solves the problem of undefined vertex ordering and varying neighborhood sizes.",
+     ", 2018), or to directly perform inference tasks by mapping the node features into categorical labels or real values (Scarselli et al., 2009; Micheli, 2009)."
+    ],
+    "isInfluential": true
+   },
+   "context_llm_answer": {
+    "refers_to_cited": false,
+    "relation": "background",
+    "contrast": false,
+    "confidence": 0.8,
+    "rationale": "Scarselli et al. 2009を参照し、背景情報として提示"
+   },
+   "gold": {
+    "strong": false,
+    "relation": "baseline_only",
+    "quote_backed": false,
+    "quote": null,
+    "source": "r2-22",
+    "note": "weak rule; 'similarly to GNNs …' background"
+   }
+  },
+  {
+   "theme": "graph-neural-network",
+   "src": "openalex:W2406128552",
+   "dst": "openalex:W2766453196",
+   "cited": {
+    "title": "Learning Convolutional Neural Networks for Graphs",
+    "authors": [
+     "Mathias Niepert",
+     "Mohamed M. Ahmed",
+     "Konstantin Kutzkov"
+    ],
+    "year": 2016
+   },
+   "citing": {
+    "title": "Graph Attention Networks",
+    "authors": [
+     "Petar Veličković",
+     "Casanova, A",
+     "P Liò",
+     "Guillem Cucurull",
+     "A Romero"
+    ],
+    "year": 2017,
+    "abstract": "We present graph attention networks (GATs), novel neural network architectures that operate on graph-structured data, leveraging masked self-attentional layers to address the shortcomings of prior methods based on graph convolutions or their approximations. By stacking layers in which nodes are able to attend over their neighborhoods' features, we enable (implicitly) specifying different weights to different nodes in a neighborhood, without requiring any kind of costly matrix operation (such as inversion) or depending on knowing the graph structure upfront. In this way, we address several key "
+   },
+   "published": {
+    "relation": "extends",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4",
+    "confidence": 0.92,
+    "rationale": "Graph Attention Networks は Graph Convolutional Networks の局所集約を注意機構で拡張し、隣接ノードへの重み付けを学習している。"
+   },
+   "s2": {
+    "found": false,
+    "intents": [],
+    "contexts": [],
+    "isInfluential": null
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": false,
+    "relation": "baseline_only",
+    "quote_backed": false,
+    "quote": null,
+    "source": "r2-21-handcheck",
+    "note": "abstract-LLM extends; GAT cites PATCHY-SAN as related work only"
+   }
+  },
+  {
+   "theme": "graph-neural-network",
+   "src": "openalex:W2406128552",
+   "dst": "openalex:W2788919350",
+   "cited": {
+    "title": "Learning Convolutional Neural Networks for Graphs",
+    "authors": [
+     "Mathias Niepert",
+     "Mohamed M. Ahmed",
+     "Konstantin Kutzkov"
+    ],
+    "year": 2016
+   },
+   "citing": {
+    "title": "An End-to-End Deep Learning Architecture for Graph Classification",
+    "authors": [
+     "Muhan Zhang",
+     "Zhicheng Cui",
+     "Marion Neumann",
+     "Yixin Chen"
+    ],
+    "year": 2018,
+    "abstract": "Neural networks are typically designed to deal with data in tensor forms. In this paper, we propose a novel neural network architecture accepting graphs of arbitrary structure. Given a dataset containing graphs in the form of (G,y) where G is a graph and y is its class, we aim to develop neural networks that read the graphs directly and learn a classification function. There are two main challenges: 1) how to extract useful features characterizing the rich information encoded in a graph for classification purpose, and 2) how to sequentially read a graph in a meaningful and consistent order. To"
+   },
+   "published": {
+    "relation": "baseline_only",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4-context",
+    "confidence": 0.87,
+    "rationale": "Learning Convolutional Neural Networks for Graphsを関連研究として言及している 引用文: \"(Niepert, Ahmed, and Kutzkov 2016) used graph labeling methods, especially WL, to sort vertices in a preprocessing step, since the final WL colors define an ordering based on graph topology.\""
+   },
+   "s2": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "Among these methods, PSCN and ECC can leverage additional edge features.",
+     "(Niepert, Ahmed, and Kutzkov 2016) used graph labeling methods, especially WL, to sort vertices in a preprocessing step, since the final WL colors define an ordering based on graph topology.",
+     "Among them, PATCHY-SAN (PSCN) (Niepert, Ahmed, and Kutzkov 2016) is the closest to ours.",
+     "However, for sorting-based methods DGCNN and PATCHY-SAN (Niepert, Ahmed, and Kutzkov 2016), additional care is required."
+    ],
+    "isInfluential": true
+   },
+   "context_llm_answer": {
+    "refers_to_cited": true,
+    "relation": "background",
+    "contrast": false,
+    "confidence": 0.87,
+    "rationale": "Learning Convolutional Neural Networks for Graphsを関連研究として言及している"
+   },
+   "gold": {
+    "strong": false,
+    "relation": "baseline_only",
+    "quote_backed": false,
+    "quote": null,
+    "source": "r2-22",
+    "note": "'PATCHY-SAN is the closest to ours' — related work / comparison"
+   }
+  },
+  {
+   "theme": "graph-neural-network",
+   "src": "openalex:W2519887557",
+   "dst": "openalex:W2554952599",
+   "cited": {
+    "title": "Semi-Supervised Classification with Graph Convolutional Networks",
+    "authors": [
+     "Thomas Kipf",
+     "Max Welling"
+    ],
+    "year": 2016
+   },
+   "citing": {
+    "title": "Variational Graph Auto-Encoders",
+    "authors": [
+     "Thomas Kipf",
+     "Max Welling"
+    ],
+    "year": 2016,
+    "abstract": "We introduce the variational graph auto-encoder (VGAE), a framework for unsupervised learning on graph-structured data based on the variational auto-encoder (VAE). This model makes use of latent variables and is capable of learning interpretable latent representations for undirected graphs. We demonstrate this model using a graph convolutional network (GCN) encoder and a simple inner product decoder. Our model achieves competitive results on a link prediction task in citation networks. In contrast to most existing models for unsupervised learning on graph-structured data and link prediction, o"
+   },
+   "published": {
+    "relation": "extends",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4-context",
+    "confidence": 0.96,
+    "rationale": "Variational Graph Auto‑EncodersはGCNをエンコーダとして採用し、Semi‑Supervised Classification …を拡張している。 引用文: \"For a featureless approach, we simply drop the dependence on X and replace X with the identity matrix in the GCN. Non-probabilistic graph auto-encoder (GAE) model For a non-probabilistic variant of the VGAE model, we calculate embeddings Z…\""
+   },
+   "s2": {
+    "found": true,
+    "intents": [
+     "methodology"
+    ],
+    "contexts": [
+     "We demonstrate this model using a graph convolutional network (GCN) [4] encoder and a simple inner product decoder.",
+     "We further introduce stochastic latent variables zi, summarized in an N × F matrix Z. Node features are summarized in an N ×D matrix X.\nInference model We take a simple inference model parameterized by a two-layer GCN: q(Z |X,A) = ∏N\ni=1 q(zi |X,A) , with q(zi |X,A) = N (zi |µi,diag(σ2i )) .",
+     "(1)\nHere, µ = GCNµ(X,A) is the matrix of mean vectors µi; similarly logσ = GCNσ(X,A).",
+     "For a featureless approach, we simply drop the dependence on X and replace X with the identity matrix in the GCN.\nNon-probabilistic graph auto-encoder (GAE) model For a non-probabilistic variant of the VGAE model, we calculate embeddings Z and the reconstructed adjacency matrix Â as follows:\nÂ = σ ( ZZ> ) , with Z = GCN(X,A) ."
+    ],
+    "isInfluential": true
+   },
+   "context_llm_answer": {
+    "refers_to_cited": true,
+    "relation": "builds_on",
+    "contrast": false,
+    "confidence": 0.96,
+    "rationale": "Variational Graph Auto‑EncodersはGCNをエンコーダとして採用し、Semi‑Supervised Classification …を拡張している。"
+   },
+   "gold": {
+    "strong": true,
+    "relation": "extends",
+    "quote_backed": true,
+    "quote": "For a featureless approach, we simply drop the dependence on X and replace X with the identity matrix in the GCN. Non-probabilistic graph auto-encoder (GAE) model For a non-probabilistic variant of the VGAE model, we calculate embeddings Z and the reconstructed adjacency matrix Â as follows: Â = σ ( ZZ> ) , with Z = GCN(X,A) .",
+    "source": "r2-21-handcheck",
+    "note": "VGAE uses a GCN encoder"
+   }
+  },
+  {
+   "theme": "graph-neural-network",
+   "src": "openalex:W2519887557",
+   "dst": "openalex:W2558460151",
+   "cited": {
+    "title": "Semi-Supervised Classification with Graph Convolutional Networks",
+    "authors": [
+     "Thomas Kipf",
+     "Max Welling"
+    ],
+    "year": 2016
+   },
+   "citing": {
+    "title": "Geometric Deep Learning on Graphs and Manifolds Using Mixture Model CNNs",
+    "authors": [
+     "Federico Monti",
+     "Davide Boscaini",
+     "Jonathan Masci",
+     "Emanuele Rodolà",
+     "Jan Svoboda"
+    ],
+    "year": 2017,
+    "abstract": "Deep learning has achieved a remarkable performance breakthrough in several fields, most notably in speech recognition, natural language processing, and computer vision. In particular, convolutional neural network (CNN) architectures currently produce state-of-the-art performance on a variety of image analysis tasks such as object detection and recognition. Most of deep learning research has so far focused on dealing with 1D, 2D, or 3D Euclidean-structured data such as acoustic signals, images, or videos. Recently, there has been an increasing interest in geometric deep learning, attempting to"
+   },
+   "published": {
+    "relation": "baseline_only",
+    "method": "s2_context_rule",
+    "prompt_version": null,
+    "confidence": 0.7,
+    "rationale": "「Geometric Deep Learning on Grap…」(2017) は 「Semi-Supervised Classification …」(2016) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We followed verbatim the experimental settings presented in [44, 21].\""
+   },
+   "s2": {
+    "found": true,
+    "intents": [
+     "background",
+     "result",
+     "methodology"
+    ],
+    "contexts": [
+     "Kipf and Welling [21] further simplified this approach using simple filters operating on 1-hop neighborhoods of the graph.",
+     "Kipf and Welling [26] further simpliﬁed this approach using simple ﬁlters operating on 1-hop neighborhoods of the graph.",
+     "We followed verbatim the experimental settings presented in [44, 21].",
+     "Such a construction allows to formulate previously proposed Geodesic CNN (GCNN) [26] and Anisotropic CNN (ACNN) [7] on manifolds or GCN [21] and DCNN [3] on graphs as particular instances of our approach."
+    ],
+    "isInfluential": true
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": true,
+    "relation": "extends",
+    "quote_backed": true,
+    "quote": "Such a construction allows to formulate previously proposed Geodesic CNN (GCNN) [26] and Anisotropic CNN (ACNN) [7] on manifolds or GCN [21] and DCNN [3] on graphs as particular instances of our approach.",
+    "source": "r2-21-handcheck",
+    "note": "MoNet generalises GCN ('particular instances of our approach')"
+   }
+  },
+  {
+   "theme": "graph-neural-network",
+   "src": "openalex:W2519887557",
+   "dst": "openalex:W2996847713",
+   "cited": {
+    "title": "Semi-Supervised Classification with Graph Convolutional Networks",
+    "authors": [
+     "Thomas Kipf",
+     "Max Welling"
+    ],
+    "year": 2016
+   },
+   "citing": {
+    "title": "Spatial-Temporal Synchronous Graph Convolutional Networks: A New Framework for Spatial-Temporal Network Data Forecasting",
+    "authors": [
+     "Chao Song",
+     "Youfang Lin",
+     "Shengnan Guo",
+     "Huaiyu Wan"
+    ],
+    "year": 2020,
+    "abstract": "Spatial-temporal network data forecasting is of great importance in a huge amount of applications for traffic management and urban planning. However, the underlying complex spatial-temporal correlations and heterogeneities make this problem challenging. Existing methods usually use separate components to capture spatial and temporal correlations and ignore the heterogeneities in spatial-temporal data. In this paper, we propose a novel model, named Spatial-Temporal Synchronous Graph Convolutional Networks (STSGCN), for spatial-temporal network data forecasting. The model is able to effectively "
+   },
+   "published": {
+    "relation": "extends",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4-context",
+    "confidence": 0.92,
+    "rationale": "Semi-Supervised Classification with Graph Convolutional NetworksのGCNを基に、Spatial-Temporal Synchronous Graph Convolutional Networksで応用した。 引用文: \"GCN (Kipf and Welling 2017) simpliﬁes ChebNet to a more simple form and achieves state-of-the-art performance on various tasks.\""
+   },
+   "s2": {
+    "found": true,
+    "intents": [
+     "background"
+    ],
+    "contexts": [
+     "GCN (Kipf and Welling 2017) simpliﬁes ChebNet to a more simple form and achieves state-of-the-art performance on various tasks.",
+     "GCN (Kipf and Welling 2017) simplifies ChebNet to a more simple form and achieves state-of-the-art performance on various tasks."
+    ],
+    "isInfluential": false
+   },
+   "context_llm_answer": {
+    "refers_to_cited": true,
+    "relation": "builds_on",
+    "contrast": false,
+    "confidence": 0.92,
+    "rationale": "Semi-Supervised Classification with Graph Convolutional NetworksのGCNを基に、Spatial-Temporal Synchronous Graph Convolutional Networksで応用した。"
+   },
+   "gold": {
+    "strong": false,
+    "relation": "baseline_only",
+    "quote_backed": false,
+    "quote": null,
+    "source": "r2-21-handcheck",
+    "note": "STSGCN describes GCN as background; no build evidence"
+   }
+  },
+  {
+   "theme": "graph-neural-network",
+   "src": "openalex:W2519887557",
+   "dst": "openalex:W2998496395",
+   "cited": {
+    "title": "Semi-Supervised Classification with Graph Convolutional Networks",
+    "authors": [
+     "Thomas Kipf",
+     "Max Welling"
+    ],
+    "year": 2016
+   },
+   "citing": {
+    "title": "Measuring and Relieving the Over-Smoothing Problem for Graph Neural Networks from the Topological View",
+    "authors": [
+     "Deli Chen",
+     "Yankai Lin",
+     "Wei Li",
+     "Peng Li",
+     "Jie Zhou"
+    ],
+    "year": 2020,
+    "abstract": "Graph Neural Networks (GNNs) have achieved promising performance on a wide range of graph-based tasks. Despite their success, one severe limitation of GNNs is the over-smoothing issue (indistinguishable representations of nodes in different classes). In this work, we present a systematic and quantitative study on the over-smoothing issue of GNNs. First, we introduce two quantitative metrics, MAD and MADGap, to measure the smoothness and over-smoothness of the graph nodes representations, respectively. Then, we verify that smoothing is the nature of GNNs and the critical factor leading to over-"
+   },
+   "published": {
+    "relation": "extends",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4-context",
+    "confidence": 0.93,
+    "rationale": "Semi-Supervised Classification with Graph Convolutional NetworksのGCNを用いて、Over-Smoothing問題の分析と対策を行った。 引用文: \"Finally, the MAD value given the target node pairs is calculated by averaging the non-zero values in ¯ D tgt : (4) Li, Han, and Wu (2018) perform a theoretical analysis on the graph convolution network (GCN), and conclude that performing s…\""
+   },
+   "s2": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "Finally, the MAD value given the target node pairs is calculated by averaging the non-zero values in ¯ D tgt : (4) Li, Han, and Wu (2018) perform a theoretical analysis on the graph convolution network (GCN), and conclude that performing smoothing operation on node representations is the key mechanism why GCN works.",
+     "Figure 1: The prediction accuracy (Acc) and MADGap of GCNs (Kipf and Welling 2017) on the CORA dataset.",
+     "Besides, Li et al. (2019a) use the residual/dense connections and dilated convolutions to stack up to 56 GCN layers.",
+     "Pareja et al. (2019) propose the EvolveGCN that uses the RNN to evolve the graph model itself over time."
+    ],
+    "isInfluential": true
+   },
+   "context_llm_answer": {
+    "refers_to_cited": true,
+    "relation": "builds_on",
+    "contrast": false,
+    "confidence": 0.93,
+    "rationale": "Semi-Supervised Classification with Graph Convolutional NetworksのGCNを用いて、Over-Smoothing問題の分析と対策を行った。"
+   },
+   "gold": {
+    "strong": false,
+    "relation": "baseline_only",
+    "quote_backed": false,
+    "quote": null,
+    "source": "r2-21-handcheck",
+    "note": "over-smoothing analysis cites GCN as background"
+   }
+  },
+  {
+   "theme": "graph-neural-network",
+   "src": "openalex:W2558460151",
+   "dst": "openalex:W2766453196",
+   "cited": {
+    "title": "Geometric Deep Learning on Graphs and Manifolds Using Mixture Model CNNs",
+    "authors": [
+     "Federico Monti",
+     "Davide Boscaini",
+     "Jonathan Masci",
+     "Emanuele Rodolà",
+     "Jan Svoboda"
+    ],
+    "year": 2017
+   },
+   "citing": {
+    "title": "Graph Attention Networks",
+    "authors": [
+     "Petar Veličković",
+     "Casanova, A",
+     "P Liò",
+     "Guillem Cucurull",
+     "A Romero"
+    ],
+    "year": 2017,
+    "abstract": "We present graph attention networks (GATs), novel neural network architectures that operate on graph-structured data, leveraging masked self-attentional layers to address the shortcomings of prior methods based on graph convolutions or their approximations. By stacking layers in which nodes are able to attend over their neighborhoods' features, we enable (implicitly) specifying different weights to different nodes in a neighborhood, without requiring any kind of costly matrix operation (such as inversion) or depending on knowing the graph structure upfront. In this way, we address several key "
+   },
+   "published": {
+    "relation": "extends",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4-context",
+    "confidence": 0.92,
+    "rationale": "MoNet（Monti et al. 2016）の枠組みを拡張し、GATを再構築する 引用文: \"Monti et al. (2016) presented mixture model CNNs (MoNet), a spatial approach which provides a uniﬁed generalization of CNN architectures to graphs.\""
+   },
+   "s2": {
+    "found": true,
+    "intents": [
+     "result",
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "More speciﬁcally, setting the pseudo-coordinate function to be u ( x, y ) = f ( x ) k f ( y ) , where f ( x ) represent (potentially MLP-transformed) features of node x and k is concatenation; and the weight function to be w j ( u ) = softmax(MLP( u )) (with the softmax performed over the entire neighborhood of a node) would make MoNet’s patch operator similar to ours.",
+     "It is worth noting that, as Kipf & Welling (2017) and Atwood & Towsley (2016), our work can also be reformulated as a particular instance of MoNet (Monti et al., 2016).",
+     "Monti et al. (2016) presented mixture model CNNs (MoNet), a spatial approach which provides a uniﬁed generalization of CNN architectures to graphs.",
+     "• As mentioned in Section 1, GAT can be reformulated as a particular instance of MoNet (Monti et al., 2016)."
+    ],
+    "isInfluential": true
+   },
+   "context_llm_answer": {
+    "refers_to_cited": true,
+    "relation": "builds_on",
+    "contrast": false,
+    "confidence": 0.92,
+    "rationale": "MoNet（Monti et al. 2016）の枠組みを拡張し、GATを再構築する"
+   },
+   "gold": {
+    "strong": false,
+    "relation": "baseline_only",
+    "quote_backed": false,
+    "quote": null,
+    "source": "r2-21-handcheck",
+    "note": "GAT relates itself to MoNet (comparison)"
+   }
+  },
+  {
+   "theme": "graph-neural-network",
+   "src": "openalex:W2558460151",
+   "dst": "openalex:W2912636151",
+   "cited": {
+    "title": "Geometric Deep Learning on Graphs and Manifolds Using Mixture Model CNNs",
+    "authors": [
+     "Federico Monti",
+     "Davide Boscaini",
+     "Jonathan Masci",
+     "Emanuele Rodolà",
+     "Jan Svoboda"
+    ],
+    "year": 2017
+   },
+   "citing": {
+    "title": "Graph Neural Networks with Convolutional ARMA Filters",
+    "authors": [
+     "Filippo Maria Bianchi",
+     "Daniele Grattarola",
+     "Lorenzo Livi",
+     "Cesare Alippi"
+    ],
+    "year": 2021,
+    "abstract": "Popular graph neural networks implement convolution operations on graphs based on polynomial spectral filters. In this paper, we propose a novel graph convolutional layer inspired by the auto-regressive moving average (ARMA) filter that, compared to polynomial ones, provides a more flexible frequency response, is more robust to noise, and better captures the global graph structure. We propose a graph neural network implementation of the ARMA filter with a recursive and distributed formulation, obtaining a convolutional layer that is efficient to train, localized in the node space, and can be t"
+   },
+   "published": {
+    "relation": "successor",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4",
+    "confidence": 0.85,
+    "rationale": "Graph Neural Networks with Convolutional ARMA Filters は Mixture Model CNN のグラフ畳み込みを拡張し、ARMA フィルタによる柔軟な周波数応答を導入している。"
+   },
+   "s2": {
+    "found": true,
+    "intents": [],
+    "contexts": [],
+    "isInfluential": false
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": false,
+    "relation": "baseline_only",
+    "quote_backed": false,
+    "quote": null,
+    "source": "r2-21-handcheck",
+    "note": "abstract-LLM successor without evidence"
+   }
+  },
+  {
+   "theme": "graph-neural-network",
+   "src": "openalex:W2618170429",
+   "dst": "openalex:W2912636151",
+   "cited": {
+    "title": "CayleyNets: Graph Convolutional Neural Networks With Complex Rational Spectral Filters",
+    "authors": [
+     "Ron Levie",
+     "Federico Monti",
+     "Xavier Bresson",
+     "Michael M. Bronstein"
+    ],
+    "year": 2018
+   },
+   "citing": {
+    "title": "Graph Neural Networks with Convolutional ARMA Filters",
+    "authors": [
+     "Filippo Maria Bianchi",
+     "Daniele Grattarola",
+     "Lorenzo Livi",
+     "Cesare Alippi"
+    ],
+    "year": 2021,
+    "abstract": "Popular graph neural networks implement convolution operations on graphs based on polynomial spectral filters. In this paper, we propose a novel graph convolutional layer inspired by the auto-regressive moving average (ARMA) filter that, compared to polynomial ones, provides a more flexible frequency response, is more robust to noise, and better captures the global graph structure. We propose a graph neural network implementation of the ARMA filter with a recursive and distributed formulation, obtaining a convolutional layer that is efficient to train, localized in the node space, and can be t"
+   },
+   "published": {
+    "relation": "extends",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4",
+    "confidence": 0.75,
+    "rationale": "Graph Neural Networks with Convolutional ARMA Filters は、CayleyNets が提案したスペクトル領域の有理フィルタ概念を受け継ぎつつ、ARMA フィルタという新たな周波数応答を導入している"
+   },
+   "s2": {
+    "found": true,
+    "intents": [],
+    "contexts": [],
+    "isInfluential": false
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": null,
+    "relation": "extends",
+    "quote_backed": false,
+    "quote": null,
+    "source": "r2-21-handcheck",
+    "note": "undecided in the R2-21 hand check (no S2 context)"
+   }
+  },
+  {
+   "theme": "graph-neural-network",
+   "src": "openalex:W2624431344",
+   "dst": "openalex:W2790814121",
+   "cited": {
+    "title": "Inductive Representation Learning on Large Graphs",
+    "authors": [
+     "Hamilton, William L.",
+     "Rex Ying",
+     "Jure Leskovec"
+    ],
+    "year": 2017
+   },
+   "citing": {
+    "title": "Stochastic Training of Graph Convolutional Networks with Variance Reduction",
+    "authors": [
+     "Jianfei Chen",
+     "Jun Zhu",
+     "Le Song"
+    ],
+    "year": 2017,
+    "abstract": "Graph convolutional networks (GCNs) are powerful deep neural networks for graph-structured data. However, GCN computes the representation of a node recursively from its neighbors, making the receptive field size grow exponentially with the number of layers. Previous attempts on reducing the receptive field size by subsampling neighbors do not have a convergence guarantee, and their receptive field size per node is still in the order of hundreds. In this paper, we develop control variate based algorithms which allow sampling an arbitrarily small neighbor size. Furthermore, we prove new theoreti"
+   },
+   "published": {
+    "relation": "baseline_only",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4-context",
+    "confidence": 0.95,
+    "rationale": "Inductive Representation Learningの近傍サンプリングを利用している 引用文: \"There are V ∏L l=2D (l) such sums to compute on the first graph convolution layer, and overall cost is not larger than O(V D ∏L l=2D K), if we subsample the graph such that the max degree is D, following Hamilton et al. (2017a). The sparse…\""
+   },
+   "s2": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background",
+     "result"
+    ],
+    "contexts": [
+     "To reduce the receptive field size, Hamilton et al. (2017a) propose a neighbor sampling (NS) algorithm.",
+     "3 NEIGHBOR SAMPLING To reduce the receptive field size, Hamilton et al. (2017a) propose a neighbor sampling (NS) algorithm. On the l-th layer, they randomly choose D neighbors for each node, and develop an estimator uNS of u based on Monte-Carlo approximation u ≈ uNS = D D(l) ∑ v∈D(l) pvhv , where D ⊂ [D]+ is a subset of D neighbors. In this way, they reduce the receptive field size from | ∪v∈VB n",
+     "We find that our architecture can reach 97.8% testing micro-F1 on the PPI dataset, which is significantly higher than 59.8% reported by Hamilton et al. (2017a).",
+     "There are V ∏L l=2D (l) such sums to compute on the first graph convolution layer, and overall cost is not larger than O(V D ∏L l=2D K), if we subsample the graph such that the max degree is D, following Hamilton et al. (2017a). The sparse time complexity is D/D((1)) times higher than NS."
+    ],
+    "isInfluential": true
+   },
+   "context_llm_answer": {
+    "refers_to_cited": true,
+    "relation": "uses_resource",
+    "contrast": false,
+    "confidence": 0.95,
+    "rationale": "Inductive Representation Learningの近傍サンプリングを利用している"
+   },
+   "gold": {
+    "strong": false,
+    "relation": "baseline_only",
+    "quote_backed": false,
+    "quote": null,
+    "source": "r2-22",
+    "note": "VR-GCN follows GraphSAGE's neighbour sampling as a setup and compares against it"
+   }
+  },
+  {
+   "theme": "graph-neural-network",
+   "src": "openalex:W2624431344",
+   "dst": "openalex:W2811124557",
+   "cited": {
+    "title": "Inductive Representation Learning on Large Graphs",
+    "authors": [
+     "Hamilton, William L.",
+     "Rex Ying",
+     "Jure Leskovec"
+    ],
+    "year": 2017
+   },
+   "citing": {
+    "title": "Hierarchical graph representation learning with differentiable pooling",
+    "authors": [
+     "Zhitao Ying",
+     "Jiaxuan You",
+     "Christopher Morris",
+     "Xiang Ren",
+     "William L. Hamilton"
+    ],
+    "year": 2018,
+    "abstract": "Recently, graph neural networks (GNNs) have revolutionized the field of graph representation learning through effectively learned node embeddings, and achieved state-of-the-art results in tasks such as node classification and link prediction. However, current GNN methods are inherently flat and do not learn hierarchical representations of graphs---a limitation that is especially problematic for the task of graph classification, where the goal is to predict the label associated with an entire graph. Here we propose DiffPool, a differentiable graph pooling module that can generate hierarchical r"
+   },
+   "published": {
+    "relation": "baseline_only",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4-context",
+    "confidence": 0.85,
+    "rationale": "GraphSAGE実装をベースに利用している 引用文: \"We use the “mean” variant of GRAPHSAGE [16] and apply a DIFFPOOL layer after every two GRAPHSAGE layers in our architecture.\""
+   },
+   "s2": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "For the GRAPHSAGE and SET2SET baselines, we use the base implementation and hyperparameter sweeps as in our DIFFPOOL approach.",
+     "We use the “mean” variant of GRAPHSAGE [16] and apply a DIFFPOOL layer after every two GRAPHSAGE layers in our architecture.",
+     "These results provide positive answers to our motivating questions Q1 and Q2: We observe that our DIFFPOOL approach obtains the highest average performance among all pooling approaches for GNNs, improves upon the base GRAPHSAGE architecture by an average of 6.27%, and achieves stateof-the-art results on 4 out of 5 benchmarks.",
+     "In recent years there has been a surge of interest in developing graph neural networks (GNNs)—general deep learning architectures that can operate over graph structured data, such as social network data [16, 21, 36] or graph-based representations of molecules [7, 11, 15]."
+    ],
+    "isInfluential": true
+   },
+   "context_llm_answer": {
+    "refers_to_cited": false,
+    "relation": "background",
+    "contrast": false,
+    "confidence": 0.85,
+    "rationale": "GraphSAGE実装をベースに利用している"
+   },
+   "gold": {
+    "strong": true,
+    "relation": "extends",
+    "quote_backed": true,
+    "quote": "We use the “mean” variant of GRAPHSAGE [16] and apply a DIFFPOOL layer after every two GRAPHSAGE layers in our architecture.",
+    "source": "r2-21-handcheck",
+    "note": "'We use the mean variant of GRAPHSAGE [16] … in our architecture'"
+   }
+  },
+  {
+   "theme": "graph-neural-network",
+   "src": "openalex:W2624431344",
+   "dst": "openalex:W3000120900",
+   "cited": {
+    "title": "Inductive Representation Learning on Large Graphs",
+    "authors": [
+     "Hamilton, William L.",
+     "Rex Ying",
+     "Jure Leskovec"
+    ],
+    "year": 2017
+   },
+   "citing": {
+    "title": "GraphLIME: Local Interpretable Model Explanations for Graph Neural Networks",
+    "authors": [
+     "Qiang Huang",
+     "Makoto Yamada",
+     "Yuan Tian",
+     "Dinesh Singh",
+     "Yi Chang"
+    ],
+    "year": 2022,
+    "abstract": "Graph structured data has wide applicability in various domains such as physics, chemistry, biology, computer vision, and social networks, to name a few. Recently, graph neural networks (GNN) were shown to be successful in effectively representing graph structured data because of their good performance and generalization ability. However, explaining the effectiveness of GNN models is a challenging task because of the complex nonlinear transformations made over the iterations. In this paper, we propose GraphLIME, a local interpretable model explanation for graphs using the Hilbert-Schmidt Indep"
+   },
+   "published": {
+    "relation": "extends",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4-context",
+    "confidence": 0.9,
+    "rationale": "Inductive Representation Learning on Large GraphsのGraphSAGEを実装し、GraphLIMEで解釈モデルに組み込んだ。 引用文: \"Then, we trained a GraphSAGE clas-siﬁer and obtained the predictions on testing samples.\""
+   },
+   "s2": {
+    "found": true,
+    "intents": [
+     "methodology"
+    ],
+    "contexts": [
+     "We trained the GraphSAGE [26] and GAT [27], which are widely used GNN models, for the following explanation experiments.",
+     "Then, we trained a GraphSAGE clas-siﬁer and obtained the predictions on testing samples.",
+     "Concretely, we artiﬁcially and randomly added 10 ”noisy” features in each sample’s feature vector and then trained a GraphSAGE model whose test accuracy was more than 80%.",
+     "We created pairs of classiﬁers by repeatedly training pairs of GraphSAGE classiﬁers until their training accuracy and test accuracy were both above 80% and the difference in their test accuracy was more than 5%."
+    ],
+    "isInfluential": true
+   },
+   "context_llm_answer": {
+    "refers_to_cited": true,
+    "relation": "builds_on",
+    "contrast": false,
+    "confidence": 0.9,
+    "rationale": "Inductive Representation Learning on Large GraphsのGraphSAGEを実装し、GraphLIMEで解釈モデルに組み込んだ。"
+   },
+   "gold": {
+    "strong": false,
+    "relation": "baseline_only",
+    "quote_backed": false,
+    "quote": null,
+    "source": "r2-21-handcheck",
+    "note": "GraphLIME trains a GraphSAGE classifier to explain (use)"
+   }
+  },
+  {
+   "theme": "graph-neural-network",
+   "src": "openalex:W2963984147",
+   "dst": "openalex:W2788919350",
+   "cited": {
+    "title": "Diffusion-Convolutional Neural Networks",
+    "authors": [
+     "James R. Atwood",
+     "Don Towsley"
+    ],
+    "year": 2016
+   },
+   "citing": {
+    "title": "An End-to-End Deep Learning Architecture for Graph Classification",
+    "authors": [
+     "Muhan Zhang",
+     "Zhicheng Cui",
+     "Marion Neumann",
+     "Yixin Chen"
+    ],
+    "year": 2018,
+    "abstract": "Neural networks are typically designed to deal with data in tensor forms. In this paper, we propose a novel neural network architecture accepting graphs of arbitrary structure. Given a dataset containing graphs in the form of (G,y) where G is a graph and y is its class, we aim to develop neural networks that read the graphs directly and learn a classification function. There are two main challenges: 1) how to extract useful features characterizing the rich information encoded in a graph for classification purpose, and 2) how to sequentially read a graph in a meaningful and consistent order. To"
+   },
+   "published": {
+    "relation": "extends",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4-context",
+    "confidence": 0.95,
+    "rationale": "Diffusion-Convolutional Neural Networksの拡散CNNを用いて多尺度特徴を抽出し、An End-to-End Deep Learning Architecture for Graph Classificationで採用した。 引用文: \"(Atwood and Towsley 2016) proposed DiffusionCNN, which propagates neighbors with different hops to the center using different weights.\""
+   },
+   "s2": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "DiffusionCNN (DCNN) (Atwood and Towsley 2016) uses diffusion graph convolutions to extract multi-scale substructure features.",
+     "(Atwood and Towsley 2016) proposed DiffusionCNN, which propagates neighbors with different hops to the center using different weights.",
+     "2015; Defferrard, Bresson, and Vandergheynst 2016; Kipf and Welling 2016); and 2) given a set of graphs with different structure and sizes, learn to predict the class labels of unseen graphs (the graph classification problem) (Duvenaud et al. 2015; Atwood and Towsley 2016; Niepert, Ahmed, and Kutzkov 2016; Simonovsky and Komodakis 2017; Lei et al. 2017).",
+     "However, to perform graph-level classification, GNNs supervise a single node, and Diffusion-CNN and Neural Graph Fingerprints use summed node features."
+    ],
+    "isInfluential": true
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": false,
+    "relation": "baseline_only",
+    "quote_backed": false,
+    "quote": null,
+    "source": "r2-21-handcheck",
+    "note": "DGCNN lists DCNN as related work"
+   }
+  },
+  {
+   "theme": "graph-neural-network",
+   "src": "openalex:W3152893301",
+   "dst": "openalex:W2998496395",
+   "cited": {
+    "title": "Graph neural networks: A review of methods and applications",
+    "authors": [
+     "Jie Zhou",
+     "Ganqu Cui",
+     "Shengding Hu",
+     "Zhengyan Zhang",
+     "Cheng Hong Yang"
+    ],
+    "year": 2020
+   },
+   "citing": {
+    "title": "Measuring and Relieving the Over-Smoothing Problem for Graph Neural Networks from the Topological View",
+    "authors": [
+     "Deli Chen",
+     "Yankai Lin",
+     "Wei Li",
+     "Peng Li",
+     "Jie Zhou"
+    ],
+    "year": 2020,
+    "abstract": "Graph Neural Networks (GNNs) have achieved promising performance on a wide range of graph-based tasks. Despite their success, one severe limitation of GNNs is the over-smoothing issue (indistinguishable representations of nodes in different classes). In this work, we present a systematic and quantitative study on the over-smoothing issue of GNNs. First, we introduce two quantitative metrics, MAD and MADGap, to measure the smoothness and over-smoothness of the graph nodes representations, respectively. Then, we verify that smoothing is the nature of GNNs and the critical factor leading to over-"
+   },
+   "published": {
+    "relation": "baseline_only",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4-context",
+    "confidence": 0.95,
+    "rationale": "Graph Neural Networksの過学習問題を指摘し、Zhou et al.（2018）の伝搬分類を参照している。 引用文: \"The GNN models and their propagation methods are listed in Table 1, in which the propagation taxonomy follows Zhou et al. (2018).\""
+   },
+   "s2": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "The GNN models and their propagation methods are listed in Table 1, in which the propagation taxonomy follows Zhou et al. (2018).",
+     "Despite their success in graph modeling, oversmoothing is a common issue faced by GNNs (Li, Han, and Wu 2018; Zhou et al. 2018), which means that the representations of the graph nodes of different classes would become indistinguishable when stacking multiple layers, which seriously hurts the model performance (e.",
+     "Previous works (Li, Han, and Wu 2018; Zhou et al. 2018) have proven that over-smoothing is a common phenomenon in GNNs. Li, Han, and Wu (2018) prove that the graph convolution of the GCN model is actually a special form of Laplacian smoothing.",
+     "Previous works (Li, Han, and Wu 2018; Zhou et al. 2018) have proven that over-smoothing is a common phenomenon in GNNs."
+    ],
+    "isInfluential": true
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": false,
+    "relation": "baseline_only",
+    "quote_backed": false,
+    "quote": null,
+    "source": "r2-22",
+    "note": "taxonomy 'follows Zhou et al.' (background)"
+   }
+  },
+  {
+   "theme": "mixture-of-experts",
+   "src": "openalex:W1593114658",
+   "dst": "openalex:W2581624817",
+   "cited": {
+    "title": "Learning Factored Representations in a Deep Mixture of Experts",
+    "authors": [
+     "David Eigen",
+     "Marc’Aurelio Ranzato",
+     "Ilya Sutskever"
+    ],
+    "year": 2013
+   },
+   "citing": {
+    "title": "Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer",
+    "authors": [
+     "Noam Shazeer",
+     "Azalia Mirhoseini",
+     "Krzysztof Maziarz",
+     "Andy Davis",
+     "Quoc Viet Le"
+    ],
+    "year": 2017,
+    "abstract": "The capacity of a neural network to absorb information is limited by its number of parameters. Conditional computation, where parts of the network are active on a per-example basis, has been proposed in theory as a way of dramatically increasing model capacity without a proportional increase in computation. In practice, however, there are significant algorithmic and performance challenges. In this work, we address these challenges and finally realize the promise of conditional computation, achieving greater than 1000x improvements in model capacity with only minor losses in computational effic"
+   },
+   "published": {
+    "relation": "extends",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4-context",
+    "confidence": 0.92,
+    "rationale": "Learning Factored Representatio…はMoEのアイデアを拡張し、Bは位置ごとに異なるゲーティングを導入して対照的にする。 引用文: \"Eigen et al. (2013) introduce the idea of using multiple MoEs with their own gating networks as parts of a deep model.\""
+   },
+   "s2": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "Eigen et al. (2013) introduce the idea of using multiple MoEs with their own gating networks as parts of a deep model.",
+     "While Eigen et al. (2013) uses two stacked MoEs allowing for two sets of gating decisions, our convolutional application of the MoE allows for different gating decisions at each position in the text.",
+     "Eigen et al. (2013) describe the same phenomenon, and use a hard constraint at the beginning of training to avoid this local minimum.",
+     "…forms of conditional computation have been proposed as a way to increase model capacity without a proportional increase in computational costs (Davis & Arel, 2013; Bengio et al., 2013; Eigen et al., 2013; Ludovic Denoyer, 2014; Cho & Bengio, 2014; Bengio et al., 2015; Almahairi et al., 2015)."
+    ],
+    "isInfluential": true
+   },
+   "context_llm_answer": {
+    "refers_to_cited": true,
+    "relation": "builds_on",
+    "contrast": true,
+    "confidence": 0.92,
+    "rationale": "Learning Factored Representatio…はMoEのアイデアを拡張し、Bは位置ごとに異なるゲーティングを導入して対照的にする。"
+   },
+   "gold": {
+    "strong": true,
+    "relation": "extends",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "Shazeer らは Eigen らの深い MoE を引き継いで疎なゲーティングに拡張。ただし理由欄に「B は」「対照的にする」と A/B 表記と矛盾した文が残る（表示の問題）; rationale also carried the A/B template leftover 'Bは…対照的にする'"
+   }
+  },
+  {
+   "theme": "mixture-of-experts",
+   "src": "openalex:W1593114658",
+   "dst": "openalex:W2809290718",
+   "cited": {
+    "title": "Learning Factored Representations in a Deep Mixture of Experts",
+    "authors": [
+     "David Eigen",
+     "Marc’Aurelio Ranzato",
+     "Ilya Sutskever"
+    ],
+    "year": 2013
+   },
+   "citing": {
+    "title": "Modeling Task Relationships in Multi-task Learning with Multi-gate Mixture-of-Experts",
+    "authors": [
+     "Jiaqi Ma",
+     "Zhe Zhao",
+     "Xinyang Yi",
+     "Jilin Chen",
+     "Lichan Hong"
+    ],
+    "year": 2018,
+    "abstract": "Neural-based multi-task learning has been successfully used in many real-world large-scale applications such as recommendation systems. For example, in movie recommendations, beyond providing users movies which they tend to purchase and watch, the system might also optimize for users liking the movies afterwards. With multi-task learning, we aim to build a single model that learns these multiple goals and tasks simultaneously. However, the prediction quality of commonly used multi-task models is often sensitive to the relationships between tasks. It is therefore important to study the modeling"
+   },
+   "published": {
+    "relation": "extends",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4",
+    "confidence": 0.85,
+    "rationale": "Multi-gate Mixture-of-Experts は Deep Mixture of Experts の MoE 構造をマルチタスク向けに複数ゲートで拡張し、タスク間関係をモデル化している。"
+   },
+   "s2": {
+    "found": false,
+    "intents": [],
+    "contexts": [],
+    "isInfluential": null
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": true,
+    "relation": "extends",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "MMoE は MoE を多タスクの複数ゲートに拡張しており関係はもっともらしいが、引用文がなく要旨だけの LLM 判定"
+   }
+  },
+  {
+   "theme": "mixture-of-experts",
+   "src": "openalex:W2242818861",
+   "dst": "openalex:W3014879845",
+   "cited": {
+    "title": "Estimating or Propagating Gradients Through Stochastic Neurons for Conditional Computation",
+    "authors": [
+     "Yoshua Bengio",
+     "Nicholas Léonard",
+     "Aaron C. Courville"
+    ],
+    "year": 2013
+   },
+   "citing": {
+    "title": "Conditional Channel Gated Networks for Task-Aware Continual Learning",
+    "authors": [
+     "Davide Abati",
+     "Jakub M. Tomczak",
+     "Tijmen Blankevoort",
+     "Simone Calderara",
+     "Rita Cucchiara"
+    ],
+    "year": 2020,
+    "abstract": "Convolutional Neural Networks experience catastrophic forgetting when optimized on a sequence of learning problems: as they meet the objective of the current training examples, their performance on previous tasks drops drastically. In this work, we introduce a novel framework to tackle this problem with conditional computation. We equip each convolutional layer with task-specific gating modules, selecting which filters to apply on the given input. This way, we achieve two appealing properties. Firstly, the execution patterns of the gates allow to identify and protect important filters, ensurin"
+   },
+   "published": {
+    "relation": "extends",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4",
+    "confidence": 0.73,
+    "rationale": "Conditional Channel Gated Networks は確率的ニューロンによる条件計算の概念をタスク認識型継続学習に拡張し、チャネルゲーティングで動的に計算を制御している。"
+   },
+   "s2": {
+    "found": true,
+    "intents": [],
+    "contexts": [],
+    "isInfluential": false
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": false,
+    "relation": "baseline_only",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "条件付き計算の基礎を背景として引くだけと思われる。引用文がなく、ゲーティングの勾配推定法を継承した証拠はない（引用側ノード自体もテーマ外の候補）"
+   }
+  },
+  {
+   "theme": "mixture-of-experts",
+   "src": "openalex:W2581624817",
+   "dst": "openalex:W2809290718",
+   "cited": {
+    "title": "Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer",
+    "authors": [
+     "Noam Shazeer",
+     "Azalia Mirhoseini",
+     "Krzysztof Maziarz",
+     "Andy Davis",
+     "Quoc Viet Le"
+    ],
+    "year": 2017
+   },
+   "citing": {
+    "title": "Modeling Task Relationships in Multi-task Learning with Multi-gate Mixture-of-Experts",
+    "authors": [
+     "Jiaqi Ma",
+     "Zhe Zhao",
+     "Xinyang Yi",
+     "Jilin Chen",
+     "Lichan Hong"
+    ],
+    "year": 2018,
+    "abstract": "Neural-based multi-task learning has been successfully used in many real-world large-scale applications such as recommendation systems. For example, in movie recommendations, beyond providing users movies which they tend to purchase and watch, the system might also optimize for users liking the movies afterwards. With multi-task learning, we aim to build a single model that learns these multiple goals and tasks simultaneously. However, the prediction quality of commonly used multi-task models is often sensitive to the relationships between tasks. It is therefore important to study the modeling"
+   },
+   "published": {
+    "relation": "extends",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4",
+    "confidence": 0.85,
+    "rationale": "Multi-gate Mixture-of-Experts は Sparsely-Gated Mixture-of-Experts の単一ゲート構造を拡張し、タスク間関係をモデリングすることでマルチタスク学習に適用している。"
+   },
+   "s2": {
+    "found": false,
+    "intents": [],
+    "contexts": [],
+    "isInfluential": null
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": true,
+    "relation": "extends",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "MMoE は Shazeer らの MoE 層の考え方を使っておりもっともらしいが、引用文がなく要旨だけの LLM 判定"
+   }
+  },
+  {
+   "theme": "mixture-of-experts",
+   "src": "openalex:W2581624817",
+   "dst": "openalex:W3170943566",
+   "cited": {
+    "title": "Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer",
+    "authors": [
+     "Noam Shazeer",
+     "Azalia Mirhoseini",
+     "Krzysztof Maziarz",
+     "Andy Davis",
+     "Quoc Viet Le"
+    ],
+    "year": 2017
+   },
+   "citing": {
+    "title": "Scaling Vision with Sparse Mixture of Experts",
+    "authors": [
+     "Carlos Riquelme",
+     "Joan Puigcerver",
+     "Basil Mustafa",
+     "Maxim Neumann",
+     "Rodolphe Jenatton"
+    ],
+    "year": 2021,
+    "abstract": "Sparsely-gated Mixture of Experts networks (MoEs) have demonstrated excellent scalability in Natural Language Processing. In Computer Vision, however, almost all performant networks are \"dense\", that is, every input is processed by every parameter. We present a Vision MoE (V-MoE), a sparse version of the Vision Transformer, that is scalable and competitive with the largest dense networks. When applied to image recognition, V-MoE matches the performance of state-of-the-art networks, while requiring as little as half of the compute at inference time. Further, we propose an extension to the routi"
+   },
+   "published": {
+    "relation": "extends",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4-context",
+    "confidence": 0.9,
+    "rationale": "Outrageously Large Neural NetworksのTOP-kゲーティングを採用 被引用論文を特定できる引用文はない。"
+   },
+   "s2": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background",
+     "result"
+    ],
+    "contexts": [
+     "The difference between previous formulations [54] is that we apply TOPk after the softmax over experts weights [39], instead of before.",
+     "This is essentially the same approach as followed by [54, 39, 22].",
+     "Our approach is inspired by [54] who proposed a top-k gating in LSTMs, with auxiliary losses ensuring the expert balance [26].",
+     "Given the TOP-i position, the default—or vanilla—routing, as used in [54, 39, 22], assigns tokens to experts as follows."
+    ],
+    "isInfluential": true
+   },
+   "context_llm_answer": {
+    "refers_to_cited": true,
+    "relation": "builds_on",
+    "contrast": false,
+    "confidence": 0.9,
+    "rationale": "Outrageously Large Neural NetworksのTOP-kゲーティングを採用"
+   },
+   "gold": {
+    "strong": true,
+    "relation": "extends",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "V-MoE は Shazeer らの top-k ゲーティングを使う。関係は定説どおり（引用文は特定できていない）"
+   }
+  },
+  {
+   "theme": "mixture-of-experts",
+   "src": "openalex:W2581624817",
+   "dst": "openalex:W4226079124",
+   "cited": {
+    "title": "Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer",
+    "authors": [
+     "Noam Shazeer",
+     "Azalia Mirhoseini",
+     "Krzysztof Maziarz",
+     "Andy Davis",
+     "Quoc Viet Le"
+    ],
+    "year": 2017
+   },
+   "citing": {
+    "title": "Mixture-of-Experts with Expert Choice Routing",
+    "authors": [
+     "Yanqi Zhou",
+     "Tao Lei",
+     "Hanxiao Liu",
+     "Nan Du",
+     "Yanping Huang"
+    ],
+    "year": 2022,
+    "abstract": "Sparsely-activated Mixture-of-experts (MoE) models allow the number of parameters to greatly increase while keeping the amount of computation for a given token or a given sample unchanged. However, a poor expert routing strategy (e.g. one resulting in load imbalance) can cause certain experts to be under-trained, leading to an expert being under or over-specialized. Prior work allocates a fixed number of experts to each token using a top-k function regardless of the relative importance of different tokens. To address this, we propose a heterogeneous mixture-of-experts employing an expert choic"
+   },
+   "published": {
+    "relation": "extends",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4-context",
+    "confidence": 0.9,
+    "rationale": "Outrageously Large Neural NetworksはスパースMoEを導入し、Bはそのアイデアを採用する。 引用文: \"At the high level, we adopt the idea of sparsely activated Mixture-of-Experts (MoE) [31].\""
+   },
+   "s2": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "This distribution denotes the preference over experts of each incoming token, which is computed similarly in a conventional gating network [10, 21, 31].",
+     "Mixture of Experts: Sparsely-gated MoE [31] is the ﬁrst model to demonstrate massive improvements in model capacity, training time, or model quality with gating.",
+     "At the high level, we adopt the idea of sparsely activated Mixture-of-Experts (MoE) [31].",
+     "Conventional MoE models employ token-choice routing which independently selects the top-k experts for each token [10, 21, 31]."
+    ],
+    "isInfluential": true
+   },
+   "context_llm_answer": {
+    "refers_to_cited": true,
+    "relation": "builds_on",
+    "contrast": false,
+    "confidence": 0.9,
+    "rationale": "Outrageously Large Neural NetworksはスパースMoEを導入し、Bはそのアイデアを採用する。"
+   },
+   "gold": {
+    "strong": true,
+    "relation": "extends",
+    "quote_backed": true,
+    "quote": "At the high level, we adopt the idea of sparsely activated Mixture-of-Experts (MoE) [31].",
+    "source": "audit-draft-r2-8",
+    "note": "引用文「we adopt the idea of sparsely activated MoE」がそのまま根拠"
+   }
+  },
+  {
+   "theme": "mixture-of-experts",
+   "src": "openalex:W2809290718",
+   "dst": "openalex:W4390873360",
+   "cited": {
+    "title": "Modeling Task Relationships in Multi-task Learning with Multi-gate Mixture-of-Experts",
+    "authors": [
+     "Jiaqi Ma",
+     "Zhe Zhao",
+     "Xinyang Yi",
+     "Jilin Chen",
+     "Lichan Hong"
+    ],
+    "year": 2018
+   },
+   "citing": {
+    "title": "AdaMV-MoE: Adaptive Multi-Task Vision Mixture-of-Experts",
+    "authors": [
+     "Tianlong Chen",
+     "Xuxi Chen",
+     "Xianzhi Du",
+     "Abdullah M. Rashwan",
+     "Fan Yang"
+    ],
+    "year": 2023,
+    "abstract": "Sparsely activated Mixture-of-Experts (MoE) is becoming a promising paradigm for multi-task learning (MTL). Instead of compressing multiple tasks’ knowledge into a single model, MoE separates the parameter space and only utilizes the relevant model pieces given task type and its input, which provides stabilized MTL training and ultra-efficient inference. However, current MoE approaches adopt a fixed network capacity (e.g., two experts in usual) for all tasks. It potentially results in the over-fitting of simple tasks or the under-fitting of challenging scenarios, especially when tasks are sign"
+   },
+   "published": {
+    "relation": "extends",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4",
+    "confidence": 0.85,
+    "rationale": "AdaMV-MoE は Multi-gate Mixture-of-Experts のマルチタスク MoE を視覚タスク向けに適応させ、画像領域でのタスク関係モデリングを拡張している。"
+   },
+   "s2": {
+    "found": false,
+    "intents": [],
+    "contexts": [],
+    "isInfluential": null
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": true,
+    "relation": "extends",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "AdaMV-MoE は多タスク視覚 MoE で、MMoE の多タスク MoE を引き継ぐのはもっともらしい。ただし引用文がなく要旨だけの LLM 判定"
+   }
+  },
+  {
+   "theme": "mixture-of-experts",
+   "src": "openalex:W2963254338",
+   "dst": "openalex:W4390873360",
+   "cited": {
+    "title": "Hard Mixtures of Experts for Large Scale Weakly Supervised Vision",
+    "authors": [
+     "Sam Gross",
+     "Marc’Aurelio Ranzato",
+     "Arthur D. Szlam"
+    ],
+    "year": 2017
+   },
+   "citing": {
+    "title": "AdaMV-MoE: Adaptive Multi-Task Vision Mixture-of-Experts",
+    "authors": [
+     "Tianlong Chen",
+     "Xuxi Chen",
+     "Xianzhi Du",
+     "Abdullah M. Rashwan",
+     "Fan Yang"
+    ],
+    "year": 2023,
+    "abstract": "Sparsely activated Mixture-of-Experts (MoE) is becoming a promising paradigm for multi-task learning (MTL). Instead of compressing multiple tasks’ knowledge into a single model, MoE separates the parameter space and only utilizes the relevant model pieces given task type and its input, which provides stabilized MTL training and ultra-efficient inference. However, current MoE approaches adopt a fixed network capacity (e.g., two experts in usual) for all tasks. It potentially results in the over-fitting of simple tasks or the under-fitting of challenging scenarios, especially when tasks are sign"
+   },
+   "published": {
+    "relation": "extends",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4",
+    "confidence": 0.85,
+    "rationale": "AdaMV-MoE は Hard Mixtures of Experts のハード MoE 構造に適応的マルチタスク機構を加え、視覚タスクへ拡張している。"
+   },
+   "s2": {
+    "found": false,
+    "intents": [],
+    "contexts": [],
+    "isInfluential": null
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": false,
+    "relation": "baseline_only",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "Hard MoE（弱教師の大規模画像分類）を土台にした証拠はない。引用文なし・要旨だけの LLM 判定で、背景の引用と見るのが自然"
+   }
+  },
+  {
+   "theme": "mixture-of-experts",
+   "src": "openalex:W2963254338",
+   "dst": "openalex:W4390874353",
+   "cited": {
+    "title": "Hard Mixtures of Experts for Large Scale Weakly Supervised Vision",
+    "authors": [
+     "Sam Gross",
+     "Marc’Aurelio Ranzato",
+     "Arthur D. Szlam"
+    ],
+    "year": 2017
+   },
+   "citing": {
+    "title": "Robust Mixture-of-Expert Training for Convolutional Neural Networks",
+    "authors": [
+     "Yihua Zhang",
+     "Ruisi Cai",
+     "Tianlong Chen",
+     "Guanhua Zhang",
+     "Huan Zhang"
+    ],
+    "year": 2023,
+    "abstract": "Sparsely-gated Mixture of Expert (MoE), an emerging deep model architecture, has demonstrated a great promise to enable high-accuracy and ultra-efficient model inference. Despite the growing popularity of MoE, little work investigated its potential to advance convolutional neural networks (CNNs), especially in the plane of adversarial robustness. Since the lack of robustness has become one of the main hurdles for CNNs, in this paper we ask: How to adversarially robustify a CNN-based MoE model? Can we robustly train it like an ordinary CNN model? Our pilot study shows that the conventional adve"
+   },
+   "published": {
+    "relation": "baseline_only",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4-context",
+    "confidence": 0.7,
+    "rationale": "Hard Mixtures of Experts for La…を背景として言及 引用文: \"We remark that although the usefulness of AT (MoE) was exploited in [30] for the MoE-type ViT, it is not effective for training MoE-type CNNs anymore.\""
+   },
+   "s2": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "CNNs are notoriously vulnerable to imperceptible adversarial samples [22, 23, 44] and thus training adversarially robust models [21, 24, 45] has become a main research focus in many areas.",
+     "Architecture-wise, sparse MoE has been used for both CNNs [8, 16] and vision transformers (ViTs) [7, 9–15 , It is known that a main weakness of DL is the lack of adversarial robustness [21–23].",
+     "Thus, we ask: (Q) What will be the new insights into adversarial robustness of sparse MoE-integrated CNNs?",
+     "We remark that although the usefulness of AT (MoE) was exploited in [30] for the MoE-type ViT, it is not effective for training MoE-type CNNs anymore."
+    ],
+    "isInfluential": true
+   },
+   "context_llm_answer": {
+    "refers_to_cited": false,
+    "relation": "background",
+    "contrast": false,
+    "confidence": 0.7,
+    "rationale": "Hard Mixtures of Experts for La…を背景として言及"
+   },
+   "gold": {
+    "strong": false,
+    "relation": "baseline_only",
+    "quote_backed": false,
+    "quote": null,
+    "source": "r2-22",
+    "note": "weak rule; sentence is about another work [30]"
+   }
+  },
+  {
+   "theme": "mixture-of-experts",
+   "src": "openalex:W2966327190",
+   "dst": "openalex:W3215427016",
+   "cited": {
+    "title": "Deep Mixture of Experts via Shallow Embedding",
+    "authors": [
+     "Xin Wang",
+     "Fisher Yu",
+     "Lisa Dunlap",
+     "Yi-An Ma",
+     "Ruth Wang"
+    ],
+    "year": 2018
+   },
+   "citing": {
+    "title": "Speechmoe2: Mixture-of-Experts Model with Improved Routing",
+    "authors": [
+     "Zhao You",
+     "Shulin Feng",
+     "Dan Su",
+     "Dong Yu"
+    ],
+    "year": 2022,
+    "abstract": "Mixture-of-experts based acoustic models with dynamic routing mechanisms have proved promising results for speech recognition. The design principle of router architecture is important for the large model capacity and high computational efficiency. Our previous work SpeechMoE only uses local grapheme embedding to help routers to make route decisions. To further improve speech recognition performance against varying domains and accents, we propose a new router architecture which integrates additional global domain and accent embedding into router input to promote adaptability. Experimental resul"
+   },
+   "published": {
+    "relation": "extends",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4",
+    "confidence": 0.85,
+    "rationale": "SpeechMoE2 は DeepMoE の Mixture-of-Experts アーキテクチャに、グローバルなドメイン・アクセント埋め込みをルータ入力として組み込み、音声認識タスクへ拡張している。"
+   },
+   "s2": {
+    "found": true,
+    "intents": [],
+    "contexts": [],
+    "isInfluential": false
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": false,
+    "relation": "baseline_only",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "SpeechMoE2 は SpeechMoE（グラフ外）の後継で、DeepMoE（画像の浅い埋め込みによるゲーティング）を土台にした証拠はない。引用文なし・要旨だけの LLM 判定"
+   }
+  },
+  {
+   "theme": "mixture-of-experts",
+   "src": "openalex:W2966327190",
+   "dst": "openalex:W4393160139",
+   "cited": {
+    "title": "Deep Mixture of Experts via Shallow Embedding",
+    "authors": [
+     "Xin Wang",
+     "Fisher Yu",
+     "Lisa Dunlap",
+     "Yi-An Ma",
+     "Ruth Wang"
+    ],
+    "year": 2018
+   },
+   "citing": {
+    "title": "Efficient Deweahter Mixture-of-Experts with Uncertainty-Aware Feature-Wise Linear Modulation",
+    "authors": [
+     "Rongyu Zhang",
+     "Yulin Luo",
+     "Jiaming Liu",
+     "Huanrui Yang",
+     "Zhen Dong"
+    ],
+    "year": 2024,
+    "abstract": "The Mixture-of-Experts (MoE) approach has demonstrated outstanding scalability in multi-task learning including low-level upstream tasks such as concurrent removal of multiple adverse weather effects. However, the conventional MoE architecture with parallel Feed Forward Network (FFN) experts leads to significant parameter and computational overheads that hinder its efficient deployment. In addition, the naive MoE linear router is suboptimal in assigning task-specific features to multiple experts which limits its further scalability. In this work, we propose an efficient MoE architecture with w"
+   },
+   "published": {
+    "relation": "successor",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4",
+    "confidence": 0.85,
+    "rationale": "Efficient Deweahter MoE は Uncertainty-Aware Feature-Wise Linear Modulation を導入し、DeepMoE の動的ルーティングを効率化している"
+   },
+   "s2": {
+    "found": false,
+    "intents": [],
+    "contexts": [],
+    "isInfluential": null
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": false,
+    "relation": "baseline_only",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "悪天候除去の MoE が DeepMoE の直接の後継という根拠はない（著者・系列とも別）。引用文なし・要旨だけの LLM 判定"
+   }
+  },
+  {
+   "theme": "mixture-of-experts",
+   "src": "openalex:W3119866685",
+   "dst": "openalex:W3147874613",
+   "cited": {
+    "title": "Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity",
+    "authors": [
+     "William Fedus",
+     "Barret Zoph",
+     "Noam Shazeer"
+    ],
+    "year": 2021
+   },
+   "citing": {
+    "title": "BASE Layers: Simplifying Training of Large, Sparse Models",
+    "authors": [
+     "Mike Lewis",
+     "Shruti Bhosale",
+     "Tim Dettmers",
+     "Naman Goyal",
+     "Luke Zettlemoyer"
+    ],
+    "year": 2021,
+    "abstract": "We introduce a new balanced assignment of experts (BASE) layer for large language models that greatly simplifies existing high capacity sparse layers. Sparse layers can dramatically improve the efficiency of training and inference by routing each token to specialized expert modules that contain only a small fraction of the model parameters. However, it can be difficult to learn balanced routing functions that make full use of the available experts; existing approaches typically use routing heuristics or auxiliary expert-balancing loss functions. In contrast, we formulate token-to-expert alloca"
+   },
+   "published": {
+    "relation": "extends",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4-context",
+    "confidence": 0.9,
+    "rationale": "Switch Transformersのルーティングを拡張してBASE Layersを構築 引用文: \"Fedus et al. (2021) show the design can be simpliﬁed by routing tokens Table 1.\""
+   },
+   "s2": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background",
+     "result"
+    ],
+    "contexts": [
+     "Fedus et al. (2021) show the design can be simpliﬁed by routing tokens Table 1.",
+     "Sparse expert models enable sparse computation by spreading model capacity across a set of experts, while ensuring that only a small subset of the experts are used for each input (Shazeer et al., 2017; Lepikhin et al., 2020; Fedus et al., 2021).",
+     "Recently, the Switch transformer (Fedus et al., 2021) simpliﬁed the framework by routing tokens to only a single expert, improving stability and efﬁciency overall but again using custom auxiliary losses that require tuning, and requiring capacity factors to prevent too many tokens being assigned to a single expert.",
+     "Recently, the Switch transformer (Fedus et al., 2021) simpliﬁed the framework by routing tokens to only a single expert, improving stability and efﬁciency overall but again using custom auxiliary losses that require tuning, and requiring capacity factors to prevent too many tokens being assigned to…"
+    ],
+    "isInfluential": true
+   },
+   "context_llm_answer": {
+    "refers_to_cited": true,
+    "relation": "builds_on",
+    "contrast": false,
+    "confidence": 0.9,
+    "rationale": "Switch Transformersのルーティングを拡張してBASE Layersを構築"
+   },
+   "gold": {
+    "strong": false,
+    "relation": "baseline_only",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "BASE Layers は補助損失を使わない線形割り当てという別のルーティングを提案しており、Switch の拡張ではなく比較対象。引用文も Switch の設計を紹介する背景の文"
+   }
+  },
+  {
+   "theme": "mixture-of-experts",
+   "src": "openalex:W3122317902",
+   "dst": "openalex:W3119866685",
+   "cited": {
+    "title": "GShard: Scaling Giant Models with Conditional Computation and Automatic Sharding",
+    "authors": [
+     "Dmitry Lepikhin",
+     "HyoukJoong Lee",
+     "Yuanzhong Xu",
+     "Dehao Chen",
+     "Orhan Fırat"
+    ],
+    "year": 2021
+   },
+   "citing": {
+    "title": "Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity",
+    "authors": [
+     "William Fedus",
+     "Barret Zoph",
+     "Noam Shazeer"
+    ],
+    "year": 2021,
+    "abstract": "In deep learning, models typically reuse the same parameters for all inputs. Mixture of Experts (MoE) defies this and instead selects different parameters for each incoming example. The result is a sparsely-activated model -- with outrageous numbers of parameters -- but a constant computational cost. However, despite several notable successes of MoE, widespread adoption has been hindered by complexity, communication costs and training instability -- we address these with the Switch Transformer. We simplify the MoE routing algorithm and design intuitive improved models with reduced communicatio"
+   },
+   "published": {
+    "relation": "successor",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4",
+    "confidence": 0.85,
+    "rationale": "Switch Transformer は GShard の条件付き計算と MoE を簡素化したルーティングで拡張し、通信コストを削減した研究ラインの自然な発展である。"
+   },
+   "s2": {
+    "found": true,
+    "intents": [],
+    "contexts": [],
+    "isInfluential": false
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": true,
+    "relation": "successor",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "Switch は GShard／Shazeer の MoE を top-1 ルーティングに簡素化した同じ研究系列（Google）の次の段階。successor で妥当（extends でも可）"
+   }
+  },
+  {
+   "theme": "mixture-of-experts",
+   "src": "openalex:W3122317902",
+   "dst": "openalex:W3170943566",
+   "cited": {
+    "title": "GShard: Scaling Giant Models with Conditional Computation and Automatic Sharding",
+    "authors": [
+     "Dmitry Lepikhin",
+     "HyoukJoong Lee",
+     "Yuanzhong Xu",
+     "Dehao Chen",
+     "Orhan Fırat"
+    ],
+    "year": 2021
+   },
+   "citing": {
+    "title": "Scaling Vision with Sparse Mixture of Experts",
+    "authors": [
+     "Carlos Riquelme",
+     "Joan Puigcerver",
+     "Basil Mustafa",
+     "Maxim Neumann",
+     "Rodolphe Jenatton"
+    ],
+    "year": 2021,
+    "abstract": "Sparsely-gated Mixture of Experts networks (MoEs) have demonstrated excellent scalability in Natural Language Processing. In Computer Vision, however, almost all performant networks are \"dense\", that is, every input is processed by every parameter. We present a Vision MoE (V-MoE), a sparse version of the Vision Transformer, that is scalable and competitive with the largest dense networks. When applied to image recognition, V-MoE matches the performance of state-of-the-art networks, while requiring as little as half of the compute at inference time. Further, we propose an extension to the routi"
+   },
+   "published": {
+    "relation": "extends",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4-context",
+    "confidence": 0.85,
+    "rationale": "GShardの設計を採用してV-MoEを構築 引用文: \"Following [39], we place the MoEs on every other layer (we refer to these as V-MoE Every-2).\""
+   },
+   "s2": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background",
+     "result"
+    ],
+    "contexts": [
+     "Following [39], we place the MoEs on every other layer (we refer to these as V-MoE Every-2).",
+     "This follows a similar design pattern as the M4 machine translation model [39].",
+     "The difference between previous formulations [54] is that we apply TOPk after the softmax over experts weights [39], instead of before.",
+     "This is essentially the same approach as followed by [54, 39, 22]."
+    ],
+    "isInfluential": true
+   },
+   "context_llm_answer": {
+    "refers_to_cited": true,
+    "relation": "builds_on",
+    "contrast": false,
+    "confidence": 0.85,
+    "rationale": "GShardの設計を採用してV-MoEを構築"
+   },
+   "gold": {
+    "strong": true,
+    "relation": "extends",
+    "quote_backed": true,
+    "quote": "Following [39], we place the MoEs on every other layer (we refer to these as V-MoE Every-2).",
+    "source": "audit-draft-r2-8",
+    "note": "引用文「Following [39], we place the MoEs on every other layer」は GShard の配置設計の採用。設計の継承なので extends で許容"
+   }
+  },
+  {
+   "theme": "mixture-of-experts",
+   "src": "openalex:W3122317902",
+   "dst": "openalex:W4226079124",
+   "cited": {
+    "title": "GShard: Scaling Giant Models with Conditional Computation and Automatic Sharding",
+    "authors": [
+     "Dmitry Lepikhin",
+     "HyoukJoong Lee",
+     "Yuanzhong Xu",
+     "Dehao Chen",
+     "Orhan Fırat"
+    ],
+    "year": 2021
+   },
+   "citing": {
+    "title": "Mixture-of-Experts with Expert Choice Routing",
+    "authors": [
+     "Yanqi Zhou",
+     "Tao Lei",
+     "Hanxiao Liu",
+     "Nan Du",
+     "Yanping Huang"
+    ],
+    "year": 2022,
+    "abstract": "Sparsely-activated Mixture-of-experts (MoE) models allow the number of parameters to greatly increase while keeping the amount of computation for a given token or a given sample unchanged. However, a poor expert routing strategy (e.g. one resulting in load imbalance) can cause certain experts to be under-trained, leading to an expert being under or over-specialized. Prior work allocates a fixed number of experts to each token using a top-k function regardless of the relative importance of different tokens. To address this, we propose a heterogeneous mixture-of-experts employing an expert choic"
+   },
+   "published": {
+    "relation": "contrasts",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4-context",
+    "confidence": 0.94,
+    "rationale": "GShardはロードバランス損失を課すが、Bは課さず対照的に示す。 引用文: \"Unlike most related works, we do not impose any auxiliary loss for load balance, such as described in Switch Transformer [10] and GShard [21].\""
+   },
+   "s2": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "This distribution denotes the preference over experts of each incoming token, which is computed similarly in a conventional gating network [10, 21, 31].",
+     "• We show our method provides over 2 × faster training convergence in a 8B/64E (8 billion activated parameters, 64 experts) model, compared to the top-1 and top-2 gating counterparts in Switch Transformer [10] and GShard [21].",
+     "Conventional MoE models employ token-choice routing which independently selects the top-k experts for each token [10, 21, 31].",
+     "Unlike most related works, we do not impose any auxiliary loss for load balance, such as described in Switch Transformer [10] and GShard [21]."
+    ],
+    "isInfluential": true
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": true,
+    "relation": "contrasts",
+    "quote_backed": true,
+    "quote": "Unlike most related works, we do not impose any auxiliary loss for load balance, such as described in Switch Transformer [10] and GShard [21].",
+    "source": "audit-draft-r2-8",
+    "note": "引用文「Unlike most related works, we do not impose any auxiliary loss … such as … GShard」が GShard を名指しして違いを述べる。負荷分散の扱いの対比として contrasts で妥当"
+   }
+  },
+  {
+   "theme": "mixture-of-experts",
+   "src": "openalex:W3147874613",
+   "dst": "openalex:W3212449162",
+   "cited": {
+    "title": "BASE Layers: Simplifying Training of Large, Sparse Models",
+    "authors": [
+     "Mike Lewis",
+     "Shruti Bhosale",
+     "Tim Dettmers",
+     "Naman Goyal",
+     "Luke Zettlemoyer"
+    ],
+    "year": 2021
+   },
+   "citing": {
+    "title": "Hash Layers For Large Sparse Models",
+    "authors": [
+     "Stephen Roller",
+     "Sainbayar Sukhbaatar",
+     "Arthur D. Szlam",
+     "Jason Weston"
+    ],
+    "year": 2021,
+    "abstract": "We investigate the training of sparse layers that use different parameters for different inputs based on hashing in large Transformer models. Specifically, we modify the feedforward layer to hash to different sets of weights depending on the current token, over all tokens in the sequence. We show that this procedure either outperforms or is competitive with learning-to-route mixture-of-expert methods such as Switch Transformers and BASE Layers, while requiring no routing parameters or extra terms in the objective function such as a load balancing loss, and no sophisticated assignment algorithm"
+   },
+   "published": {
+    "relation": "baseline_only",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4-context",
+    "confidence": 0.93,
+    "rationale": "BASE Layersのアーキテクチャとハイパーパラメータをそのまま使用 引用文: \"We use the architecture, data (RoBERTa+cc100en), and hyperparameters directly from [10], using either a single sparse routing layer consisting of 3 stacked FFNs (D = 8192) on the middle layer of a 25 layer network, or 3 routing layers even…\""
+   },
+   "s2": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background",
+     "result"
+    ],
+    "contexts": [
+     "We use the architecture, data (RoBERTa+cc100en), and hyperparameters directly from [10], using either a single sparse routing layer consisting of 3 stacked FFNs (D = 8192) on the middle layer of a 25 layer network, or 3 routing layers evenly spaced in the network.",
+     "As balancing has been previously shown to be important for training MoE models [8, 10], we also consider Balanced assignment.",
+     "28B parameters, to test our methods at scale on larger sparse models, we adopt the BASE Layer setup [10] and code base2 instead where we compare 4.",
+     "Another such approach for Transformers, where the routing is learned via solving a linear assignment problem, is studied in [10]."
+    ],
+    "isInfluential": true
+   },
+   "context_llm_answer": {
+    "refers_to_cited": true,
+    "relation": "uses_resource",
+    "contrast": false,
+    "confidence": 0.93,
+    "rationale": "BASE Layersのアーキテクチャとハイパーパラメータをそのまま使用"
+   },
+   "gold": {
+    "strong": false,
+    "relation": "baseline_only",
+    "quote_backed": false,
+    "quote": null,
+    "source": "r2-22",
+    "note": "'We use the architecture, data and hyperparameters directly from [10]' — setup reuse"
+   }
+  },
+  {
+   "theme": "mixture-of-experts",
+   "src": "openalex:W4226079124",
+   "dst": "openalex:W4390873360",
+   "cited": {
+    "title": "Mixture-of-Experts with Expert Choice Routing",
+    "authors": [
+     "Yanqi Zhou",
+     "Tao Lei",
+     "Hanxiao Liu",
+     "Nan Du",
+     "Yanping Huang"
+    ],
+    "year": 2022
+   },
+   "citing": {
+    "title": "AdaMV-MoE: Adaptive Multi-Task Vision Mixture-of-Experts",
+    "authors": [
+     "Tianlong Chen",
+     "Xuxi Chen",
+     "Xianzhi Du",
+     "Abdullah M. Rashwan",
+     "Fan Yang"
+    ],
+    "year": 2023,
+    "abstract": "Sparsely activated Mixture-of-Experts (MoE) is becoming a promising paradigm for multi-task learning (MTL). Instead of compressing multiple tasks’ knowledge into a single model, MoE separates the parameter space and only utilizes the relevant model pieces given task type and its input, which provides stabilized MTL training and ultra-efficient inference. However, current MoE approaches adopt a fixed network capacity (e.g., two experts in usual) for all tasks. It potentially results in the over-fitting of simple tasks or the under-fitting of challenging scenarios, especially when tasks are sign"
+   },
+   "published": {
+    "relation": "extends",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4",
+    "confidence": 0.85,
+    "rationale": "AdaMV-MoE は Expert Choice Routing が提案した MoE のルーティングに加えて、タスクごとに expert 数を適応的に変える adaptive capacity を導入し、マルチタスク視覚領域へ拡張している。"
+   },
+   "s2": {
+    "found": false,
+    "intents": [],
+    "contexts": [],
+    "isInfluential": null
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": true,
+    "relation": "extends",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "AdaMV-MoE の適応的な専門家数は Expert Choice の容量の考え方に近く、もっともらしい。ただし引用文がなく要旨だけの LLM 判定"
+   }
+  },
+  {
+   "theme": "mixture-of-experts",
+   "src": "openalex:W4226079124",
+   "dst": "openalex:W4394923534",
+   "cited": {
+    "title": "Mixture-of-Experts with Expert Choice Routing",
+    "authors": [
+     "Yanqi Zhou",
+     "Tao Lei",
+     "Hanxiao Liu",
+     "Nan Du",
+     "Yanping Huang"
+    ],
+    "year": 2022
+   },
+   "citing": {
+    "title": "ScheMoE: An Extensible Mixture-of-Experts Distributed Training System with Tasks Scheduling",
+    "authors": [
+     "Shaohuai Shi",
+     "Xinglin Pan",
+     "Qiang Wang",
+     "Chengjian Liu",
+     "Xiaozhe Ren"
+    ],
+    "year": 2024,
+    "abstract": "In recent years, large-scale models can be easily scaled to trillions of parameters with sparsely activated mixture-of-experts (MoE), which significantly improves the model quality while only requiring a sub-linear increase in computational costs. However, MoE layers require the input data to be dynamically routed to a particular GPU for computing during distributed training. The highly dynamic property of data routing and high communication costs in MoE make the training system low scaling efficiency on GPU clusters. In this work, we propose an extensible and efficient MoE training system, Sc"
+   },
+   "published": {
+    "relation": "extends",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4",
+    "confidence": 0.78,
+    "rationale": "ScheMoE はタスクスケジューリングを備えた分散学習システムを提案し、Expert Choice Routing を含む MoE 手法を大規模 GPU クラスタで拡張している。"
+   },
+   "s2": {
+    "found": false,
+    "intents": [],
+    "contexts": [],
+    "isInfluential": null
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": false,
+    "relation": "baseline_only",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "ScheMoE は分散学習のスケジューリングのシステム論文で、Expert Choice のルーティングを拡張していない。対象手法の一つとして引くだけ"
+   }
+  },
+  {
+   "theme": "vision-transformer",
+   "src": "openalex:W3094502228",
+   "dst": "openalex:W3127751679",
+   "cited": {
+    "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+    "authors": [
+     "Alexey Dosovitskiy",
+     "Lucas Beyer",
+     "Alexander Kolesnikov",
+     "Dirk Weissenborn",
+     "Xiaohua Zhai"
+    ],
+    "year": 2020
+   },
+   "citing": {
+    "title": "TransUNet: Transformers Make Strong Encoders for Medical Image Segmentation",
+    "authors": [
+     "Jieneng Chen",
+     "Yongyi Lu",
+     "Qihang Yu",
+     "Xiangde Luo",
+     "Ehsan Adeli"
+    ],
+    "year": 2021,
+    "abstract": "Medical image segmentation is an essential prerequisite for developing healthcare systems, especially for disease diagnosis and treatment planning. On various medical image segmentation tasks, the u-shaped architecture, also known as U-Net, has become the de-facto standard and achieved tremendous success. However, due to the intrinsic locality of convolution operations, U-Net generally demonstrates limitations in explicitly modeling long-range dependency. Transformers, designed for sequence-to-sequence prediction, have emerged as alternative architectures with innate global self-attention mech"
+   },
+   "published": {
+    "relation": "extends",
+    "method": "s2_context_rule",
+    "prompt_version": null,
+    "confidence": 0.8,
+    "rationale": "「TransUNet」(2021) は 「An Image is Worth 16x16 Words: …」(2021) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"To demonstrate the effectiveness of our CUP decoder, we use ViT [4] as the encoder, and compare results using naive upsampling (“None”) and CUP as the decoder, respectively; To demonstrate the effectiveness of our hybrid encoder design, we…\""
+   },
+   "s2": {
+    "found": true,
+    "intents": [
+     "background",
+     "methodology"
+    ],
+    "contexts": [
+     "Following [4], we first perform tokenization by re-",
+     "For pure Transformer-based encoder, we simply adopt ViT [4] with 12 Transformer layers.",
+     "More recently, attempts have also matched or even exceeded stateof-the-art performances for various image recognition tasks [4, 19].",
+     "To demonstrate the effectiveness of our CUP decoder, we use ViT [4] as the encoder, and compare results using naive upsampling (“None”) and CUP as the decoder, respectively; To demonstrate the effectiveness of our hybrid encoder design, we use CUP as the decoder, and compare results using ViT and R50ViT as the encoder, respectively."
+    ],
+    "isInfluential": true
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": true,
+    "relation": "extends",
+    "quote_backed": true,
+    "quote": "To demonstrate the effectiveness of our CUP decoder, we use ViT [4] as the encoder, and compare results using naive upsampling (“None”) and CUP as the decoder, respectively; To demonstrate the effectiveness of our hybrid encoder design, we use CUP as the decoder, and compare results using ViT and R50ViT as the encoder, respectively.",
+    "source": "audit-draft-r2-8",
+    "note": "TransUNet は ViT をエンコーダに使って拡張している。引用文も ViT をエンコーダとして使うと述べる"
+   }
+  },
+  {
+   "theme": "vision-transformer",
+   "src": "openalex:W3094502228",
+   "dst": "openalex:W3131500599",
+   "cited": {
+    "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+    "authors": [
+     "Alexey Dosovitskiy",
+     "Lucas Beyer",
+     "Alexander Kolesnikov",
+     "Dirk Weissenborn",
+     "Xiaohua Zhai"
+    ],
+    "year": 2020
+   },
+   "citing": {
+    "title": "Pyramid Vision Transformer: A Versatile Backbone for Dense Prediction without Convolutions",
+    "authors": [
+     "Wenhai Wang",
+     "Enze Xie",
+     "Xiang Li",
+     "Deng-Ping Fan",
+     "Kaitao Song"
+    ],
+    "year": 2021,
+    "abstract": "Although convolutional neural networks (CNNs) have achieved great success in computer vision, this work investigates a simpler, convolution-free backbone network use-fid for many dense prediction tasks. Unlike the recently-proposed Vision Transformer (ViT) that was designed for image classification specifically, we introduce the Pyramid Vision Transformer (PVT), which overcomes the difficulties of porting Transformer to various dense prediction tasks. PVT has several merits compared to current state of the arts. (1) Different from ViT that typically yields low-resolution outputs and incurs hig"
+   },
+   "published": {
+    "relation": "extends",
+    "method": "foundational_allowlist",
+    "prompt_version": null,
+    "confidence": 0.65,
+    "rationale": "「Pyramid Vision Transformer: A Versatile Backbone for Dense …」(2021) は分野の基礎文献「An Image is Worth 16x16 Words: Transformers for Image Recog…」(2020)を引用しており、その系譜に連なるものとして拡張関係で残している（基礎文献リストに基づく規則）。"
+   },
+   "s2": null,
+   "context_llm_answer": null,
+   "gold": {
+    "strong": true,
+    "relation": "extends",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "PVT は ViT に階層（ピラミッド）構造を足した拡張。引用文はないが関係は定説どおり"
+   }
+  },
+  {
+   "theme": "vision-transformer",
+   "src": "openalex:W3094502228",
+   "dst": "openalex:W3138516171",
+   "cited": {
+    "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+    "authors": [
+     "Alexey Dosovitskiy",
+     "Lucas Beyer",
+     "Alexander Kolesnikov",
+     "Dirk Weissenborn",
+     "Xiaohua Zhai"
+    ],
+    "year": 2020
+   },
+   "citing": {
+    "title": "Swin Transformer: Hierarchical Vision Transformer using Shifted Windows",
+    "authors": [
+     "Ze Liu",
+     "Yutong Lin",
+     "Yue Cao",
+     "Han Hu",
+     "Yixuan Wei"
+    ],
+    "year": 2021,
+    "abstract": "This paper presents a new vision Transformer, called Swin Transformer, that capably serves as a general-purpose backbone for computer vision. Challenges in adapting Transformer from language to vision arise from differences between the two domains, such as large variations in the scale of visual entities and the high resolution of pixels in images compared to words in text. To address these differences, we propose a hierarchical Transformer whose representation is computed with Shifted windows. The shifted windowing scheme brings greater efficiency by limiting self-attention computation to non"
+   },
+   "published": {
+    "relation": "extends",
+    "method": "s2_context_rule",
+    "prompt_version": null,
+    "confidence": 0.5,
+    "rationale": "「Swin Transformer」(2021) は 「An Image is Worth 16x16 Words: …」(2020) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"(b) In contrast, previous vision Transformers [19] produce feature maps of a single low resolution and have quadratic computation complexity to input image size due to computation of selfattention globally.\""
+   },
+   "s2": {
+    "found": true,
+    "intents": [
+     "background",
+     "methodology"
+    ],
+    "contexts": [
+     "Transformer based vision backbones Most related to our work is the Vision Transformer (ViT) [19] and its follow-ups [57, 66, 15, 25, 60].",
+     "The standard Transformer architecture [58] and its adaptation for image classification [19] both conduct global selfattention, where the relationships between a token and all other tokens are computed.",
+     "Its tremendous success in the language domain has led researchers to investigate its adaptation to computer vision, where it has recently demonstrated promising results on certain tasks, specifically image classification [19] and joint vision-language modeling [43].",
+     "(b) In contrast, previous vision Transformers [19] produce feature maps of a single low resolution and have quadratic computation complexity to input image size due to computation of selfattention globally."
+    ],
+    "isInfluential": true
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": true,
+    "relation": "extends",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "Swin が ViT の拡張（階層化・窓注意）なのは定説だが、引用文は「対して従来の ViT は…」という対比の文で extends の根拠になっていない"
+   }
+  },
+  {
+   "theme": "vision-transformer",
+   "src": "openalex:W3094502228",
+   "dst": "openalex:W3145450063",
+   "cited": {
+    "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+    "authors": [
+     "Alexey Dosovitskiy",
+     "Lucas Beyer",
+     "Alexander Kolesnikov",
+     "Dirk Weissenborn",
+     "Xiaohua Zhai"
+    ],
+    "year": 2020
+   },
+   "citing": {
+    "title": "An Empirical Study of Training Self-Supervised Vision Transformers",
+    "authors": [
+     "Xinlei Chen",
+     "Saining Xie",
+     "Kaiming He"
+    ],
+    "year": 2021,
+    "abstract": "This paper does not describe a novel method. Instead, it studies a straightforward, incremental, yet must-know baseline given the recent progress in computer vision: self-supervised learning for Vision Transformers (ViT). While the training recipes for standard convolutional networks have been highly mature and robust, the recipes for ViT are yet to be built, especially in the self-supervised scenarios where training becomes more challenging. In this work, we go back to basics and investigate the effects of several fundamental components for training self-supervised ViT. We observe that instab"
+   },
+   "published": {
+    "relation": "extends",
+    "method": "s2_context_rule",
+    "prompt_version": null,
+    "confidence": 0.8,
+    "rationale": "「An Empirical Study of Training …」(2021) は 「An Image is Worth 16x16 Words: …」(2021) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"prior works [8, 15] that train self-supervised Transformers with masked auto-encoding, we study the frameworks that are based on Siamese networks, including MoCo [19] and others [9, 17, 7].\""
+   },
+   "s2": {
+    "found": true,
+    "intents": [
+     "background",
+     "methodology",
+     "result"
+    ],
+    "contexts": [
+     "On one hand, this comparison shows the potential of ViT, especially considering that it achieves these results using relatively “fewer inductive biases” [15].",
+     "prior works [8, 15] that train self-supervised Transformers with masked auto-encoding, we study the frameworks that are based on Siamese networks, including MoCo [19] and others [9, 17, 7].",
+     "This investigation is a straightforward extension given the recent progress on Vision Transformers (ViT) [15].",
+     "There have been continuous efforts on generalizing Transformers to computer vision [43, 5, 38, 48, 6, 15]."
+    ],
+    "isInfluential": true
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": true,
+    "relation": "extends",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "MoCo v3 は ViT の自己教師あり学習の研究で ViT を土台にしている。ただし引用文の [8, 15] は masked auto-encoding の先行研究で、ViT を指していない（根拠の文が不適切）"
+   }
+  },
+  {
+   "theme": "vision-transformer",
+   "src": "openalex:W3094502228",
+   "dst": "openalex:W3147387781",
+   "cited": {
+    "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+    "authors": [
+     "Alexey Dosovitskiy",
+     "Lucas Beyer",
+     "Alexander Kolesnikov",
+     "Dirk Weissenborn",
+     "Xiaohua Zhai"
+    ],
+    "year": 2020
+   },
+   "citing": {
+    "title": "ViViT: A Video Vision Transformer",
+    "authors": [
+     "Anurag Arnab",
+     "Mostafa Dehghani",
+     "Georg Heigold",
+     "Chen Sun",
+     "Mario Lučić"
+    ],
+    "year": 2021,
+    "abstract": "We present pure-transformer based models for video classification, drawing upon the recent success of such models in image classification. Our model extracts spatiotemporal tokens from the input video, which are then encoded by a series of transformer layers. In order to handle the long sequences of tokens encountered in video, we propose several, efficient variants of our model which factorise the spatial- and temporal-dimensions of the input. Although transformer-based models are known to only be effective when large training datasets are available, we show how we can effectively regularise "
+   },
+   "published": {
+    "relation": "extends",
+    "method": "s2_context_rule",
+    "prompt_version": null,
+    "confidence": 0.5,
+    "rationale": "「ViViT」(2021) は 「An Image is Worth 16x16 Words: …」(2021) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Con-cretely, if n h · n w non-overlapping image patches are extracted from each frame, as in [18], then a total of n t · n h · n w tokens will be forwarded through the transformer encoder.\""
+   },
+   "s2": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "…followed the original transformer architecture of [68], and noticed that its main beneﬁts were observed at large scale – as transformers lack some of the inductive biases of convolutions (such as translational equivariance), they seem to require more data [18] or stronger regularisation [64].",
+     "As the transformer [68], which forms the basis of ViT [18], is a ﬂexible architecture that can operate on any sequence of input tokens z ∈ R N × d , we describe strategies for tokenising videos next.",
+     "[18] closely followed the original transformer architecture of [68], and noticed that its main beneﬁts were observed at large scale – as transformers lack some of the inductive biases of convolutions (such as translational equivariance), they seem to require more data [18] or stronger…",
+     "Con-cretely, if n h · n w non-overlapping image patches are extracted from each frame, as in [18], then a total of n t · n h · n w tokens will be forwarded through the transformer encoder."
+    ],
+    "isInfluential": true
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": true,
+    "relation": "extends",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "ViViT は ViT を動画に拡張。引用文も ViT と同じパッチ抽出を述べる"
+   }
+  },
+  {
+   "theme": "vision-transformer",
+   "src": "openalex:W3094502228",
+   "dst": "openalex:W3161838454",
+   "cited": {
+    "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+    "authors": [
+     "Alexey Dosovitskiy",
+     "Lucas Beyer",
+     "Alexander Kolesnikov",
+     "Dirk Weissenborn",
+     "Xiaohua Zhai"
+    ],
+    "year": 2020
+   },
+   "citing": {
+    "title": "Segmenter: Transformer for Semantic Segmentation",
+    "authors": [
+     "Robin Strudel",
+     "Ricardo Alexandrino Garcia",
+     "Ivan Laptev",
+     "Cordelia Schmid"
+    ],
+    "year": 2021,
+    "abstract": "Image segmentation is often ambiguous at the level of individual image patches and requires contextual information to reach label consensus. In this paper we introduce Segmenter, a transformer model for semantic segmentation. In contrast to convolution-based methods, our approach allows to model global context already at the first layer and throughout the network. We build on the recent Vision Transformer (ViT) and extend it to semantic segmentation. To do so, we rely on the output embeddings corresponding to image patches and obtain class labels from these embed-dings with a point-wise linear"
+   },
+   "published": {
+    "relation": "extends",
+    "method": "foundational_allowlist",
+    "prompt_version": null,
+    "confidence": 0.65,
+    "rationale": "「Segmenter: Transformer for Semantic Segmentation」(2021) は分野の基礎文献「An Image is Worth 16x16 Words: Transformers for Image Recog…」(2021)を引用しており、その系譜に連なるものとして拡張関係で残している（基礎文献リストに基づく規則）。"
+   },
+   "s2": null,
+   "context_llm_answer": null,
+   "gold": {
+    "strong": true,
+    "relation": "extends",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "Segmenter は ViT を分割に拡張。引用文はないが関係は定説どおり"
+   }
+  },
+  {
+   "theme": "vision-transformer",
+   "src": "openalex:W3094502228",
+   "dst": "openalex:W4226028923",
+   "cited": {
+    "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+    "authors": [
+     "Alexey Dosovitskiy",
+     "Lucas Beyer",
+     "Alexander Kolesnikov",
+     "Dirk Weissenborn",
+     "Xiaohua Zhai"
+    ],
+    "year": 2020
+   },
+   "citing": {
+    "title": "When Shift Operation Meets Vision Transformer: An Extremely Simple Alternative to Attention Mechanism",
+    "authors": [
+     "Guangting Wang",
+     "Yucheng Zhao",
+     "Chuanxin Tang",
+     "Chong Luo",
+     "Wenjun Zeng"
+    ],
+    "year": 2022,
+    "abstract": "Attention mechanism has been widely believed as the key to success of vision transformers (ViTs), since it provides a flexible and powerful way to model spatial relationships. However, is the attention mechanism truly an indispensable part of ViT? Can it be replaced by some other alternatives? To demystify the role of attention mechanism, we simplify it into an extremely simple case: ZERO FLOP and ZERO parameter. Concretely, we revisit the shift operation. It does not contain any parameter or arithmetic calculation. The only operation is to exchange a small portion of the channels between neig"
+   },
+   "published": {
+    "relation": "extends",
+    "method": "foundational_allowlist",
+    "prompt_version": null,
+    "confidence": 0.65,
+    "rationale": "「When Shift Operation Meets Vision Transformer: An Extremely…」(2022) は分野の基礎文献「An Image is Worth 16x16 Words: Transformers for Image Recog…」(2020)を引用しており、その系譜に連なるものとして拡張関係で残している（基礎文献リストに基づく規則）。"
+   },
+   "s2": null,
+   "context_llm_answer": null,
+   "gold": {
+    "strong": true,
+    "relation": "extends",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "ShiftViT は ViT（と Swin）の注意を shift 演算に置き換える変種。extends で妥当"
+   }
+  },
+  {
+   "theme": "vision-transformer",
+   "src": "openalex:W3094502228",
+   "dst": "openalex:W4312349930",
+   "cited": {
+    "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+    "authors": [
+     "Alexey Dosovitskiy",
+     "Lucas Beyer",
+     "Alexander Kolesnikov",
+     "Dirk Weissenborn",
+     "Xiaohua Zhai"
+    ],
+    "year": 2020
+   },
+   "citing": {
+    "title": "Swin Transformer V2: Scaling Up Capacity and Resolution",
+    "authors": [
+     "Ze Liu",
+     "Han Hu",
+     "Yutong Lin",
+     "Zhuliang Yao",
+     "Zhenda Xie"
+    ],
+    "year": 2022,
+    "abstract": "We present techniques for scaling Swin Transformer [35] up to 3 billion parameters and making it capable of training with images of up to 1,536x1,536 resolution. By scaling up capacity and resolution, Swin Transformer sets new records on four representative vision benchmarks: 84.0% top-1 accuracy on ImageNet- V2 image classification, 63.1 / 54.4 box / mask mAP on COCO object detection, 59.9 mIoU on ADE20K semantic segmentation, and 86.8% top-1 accuracy on Kinetics-400 video action classification. We tackle issues of training instability, and study how to effectively transfer models pre-trained"
+   },
+   "published": {
+    "relation": "extends",
+    "method": "foundational_allowlist",
+    "prompt_version": null,
+    "confidence": 0.65,
+    "rationale": "「Swin Transformer V2: Scaling Up Capacity and Resolution」(2022) は分野の基礎文献「An Image is Worth 16x16 Words: Transformers for Image Recog…」(2020)を引用しており、その系譜に連なるものとして拡張関係で残している（基礎文献リストに基づく規則）。"
+   },
+   "s2": null,
+   "context_llm_answer": null,
+   "gold": {
+    "strong": true,
+    "relation": "extends",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "Swin V2 は直接には Swin の後継だが、ViT 系の拡張でもある。extends で許容"
+   }
+  },
+  {
+   "theme": "vision-transformer",
+   "src": "openalex:W3094502228",
+   "dst": "openalex:W4312777001",
+   "cited": {
+    "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+    "authors": [
+     "Alexey Dosovitskiy",
+     "Lucas Beyer",
+     "Alexander Kolesnikov",
+     "Dirk Weissenborn",
+     "Xiaohua Zhai"
+    ],
+    "year": 2020
+   },
+   "citing": {
+    "title": "Reversible Vision Transformers",
+    "authors": [
+     "Karttikeya Mangalam",
+     "Haoqi Fan",
+     "Yanghao Li",
+     "Chao-Yuan Wu",
+     "Bo Xiong"
+    ],
+    "year": 2022,
+    "abstract": "We present Reversible Vision Transformers, a memory efficient architecture design for visual recognition. By decoupling the GPU memory footprint from the depth of the model, Reversible Vision Transformers enable memory efficient scaling of transformer architectures. We adapt two popular models, namely Vision Transformer and Multiscale Vision Transformers, to reversible variants and benchmark extensively across both model sizes and tasks of image classification, object detection and video classification. Reversible Vision Transformers achieve a reduced memory footprint of up to 15.5× at identic"
+   },
+   "published": {
+    "relation": "extends",
+    "method": "foundational_allowlist",
+    "prompt_version": null,
+    "confidence": 0.65,
+    "rationale": "「Reversible Vision Transformers」(2022) は分野の基礎文献「An Image is Worth 16x16 Words: Transformers for Image Recog…」(2020)を引用しており、その系譜に連なるものとして拡張関係で残している（基礎文献リストに基づく規則）。"
+   },
+   "s2": null,
+   "context_llm_answer": null,
+   "gold": {
+    "strong": true,
+    "relation": "extends",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "Reversible ViT は ViT を可逆構造に拡張"
+   }
+  },
+  {
+   "theme": "vision-transformer",
+   "src": "openalex:W3138516171",
+   "dst": "openalex:W3207918547",
+   "cited": {
+    "title": "Swin Transformer: Hierarchical Vision Transformer using Shifted Windows",
+    "authors": [
+     "Ze Liu",
+     "Yutong Lin",
+     "Yue Cao",
+     "Han Hu",
+     "Yixuan Wei"
+    ],
+    "year": 2021
+   },
+   "citing": {
+    "title": "SwinIR: Image Restoration Using Swin Transformer",
+    "authors": [
+     "Jingyun Liang",
+     "Jiezhang Cao",
+     "Guolei Sun",
+     "Kai Zhang",
+     "Luc Van Gool"
+    ],
+    "year": 2021,
+    "abstract": "Image restoration is a long-standing low-level vision problem that aims to restore high-quality images from low-quality images (e.g., downscaled, noisy and compressed images). While state-of-the-art image restoration methods are based on convolutional neural networks, few attempts have been made with Transformers which show impressive performance on high-level vision tasks. In this paper, we propose a strong baseline model SwinIR for image restoration based on the Swin Transformer. SwinIR consists of three parts: shallow feature extraction, deep feature extraction and high-quality image recons"
+   },
+   "published": {
+    "relation": "extends",
+    "method": "s2_context_rule",
+    "prompt_version": null,
+    "confidence": 0.5,
+    "rationale": "「SwinIR」(2021) は 「Swin Transformer」(2021) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Swin Transformer layer (STL) [56] is based on the standard multi-head selfattention of the original Transformer layer [76].\""
+   },
+   "s2": {
+    "found": true,
+    "intents": [
+     "background",
+     "methodology"
+    ],
+    "contexts": [
+     "We show the effects of channel number, RSTB number and STL number in a RSTB on model performance in Figs.",
+     "A concurrent work [82] proposed a U-shaped architecture based on the Swin Transformer [56].",
+     "As an alternative to CNN, Transformer [76] designs a self-attention mechanism to capture global interactions between contexts and has shown promising performance in several vision problems [6, 74, 19, 56].",
+     "Swin Transformer layer (STL) [56] is based on the standard multi-head selfattention of the original Transformer layer [76]."
+    ],
+    "isInfluential": true
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": true,
+    "relation": "extends",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "SwinIR は Swin の層を使って画像復元に拡張"
+   }
+  },
+  {
+   "theme": "vision-transformer",
+   "src": "openalex:W3138516171",
+   "dst": "openalex:W4312349930",
+   "cited": {
+    "title": "Swin Transformer: Hierarchical Vision Transformer using Shifted Windows",
+    "authors": [
+     "Ze Liu",
+     "Yutong Lin",
+     "Yue Cao",
+     "Han Hu",
+     "Yixuan Wei"
+    ],
+    "year": 2021
+   },
+   "citing": {
+    "title": "Swin Transformer V2: Scaling Up Capacity and Resolution",
+    "authors": [
+     "Ze Liu",
+     "Han Hu",
+     "Yutong Lin",
+     "Zhuliang Yao",
+     "Zhenda Xie"
+    ],
+    "year": 2022,
+    "abstract": "We present techniques for scaling Swin Transformer [35] up to 3 billion parameters and making it capable of training with images of up to 1,536x1,536 resolution. By scaling up capacity and resolution, Swin Transformer sets new records on four representative vision benchmarks: 84.0% top-1 accuracy on ImageNet- V2 image classification, 63.1 / 54.4 box / mask mAP on COCO object detection, 59.9 mIoU on ADE20K semantic segmentation, and 86.8% top-1 accuracy on Kinetics-400 video action classification. We tackle issues of training instability, and study how to effectively transfer models pre-trained"
+   },
+   "published": {
+    "relation": "supersedes",
+    "method": "title_version",
+    "prompt_version": null,
+    "confidence": 0.7,
+    "rationale": "「Swin Transformer V2: Scaling Up Capacity and Resolution」(2022) は「Swin Transformer: Hierarchical Vision Transformer using Shi…」(2021) のバージョンアップ版にあたり、命名パターンから置き換え (supersedes) と推定される。"
+   },
+   "s2": null,
+   "context_llm_answer": null,
+   "gold": {
+    "strong": true,
+    "relation": "supersedes",
+    "quote_backed": true,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "同じ著者による Swin の V2。supersedes で妥当"
+   }
+  },
+  {
+   "theme": "vision-transformer",
+   "src": "openalex:W3138516171",
+   "dst": "openalex:W4312560592",
+   "cited": {
+    "title": "Swin Transformer: Hierarchical Vision Transformer using Shifted Windows",
+    "authors": [
+     "Ze Liu",
+     "Yutong Lin",
+     "Yue Cao",
+     "Han Hu",
+     "Yixuan Wei"
+    ],
+    "year": 2021
+   },
+   "citing": {
+    "title": "Video Swin Transformer",
+    "authors": [
+     "Ze Liu",
+     "Jia Ning",
+     "Yue Cao",
+     "Yixuan Wei",
+     "Zheng Zhang"
+    ],
+    "year": 2022,
+    "abstract": "The vision community is witnessing a modeling shift from CNNs to Transformers, where pure Transformer architectures have attained top accuracy on the major video recognition benchmarks. These video models are all built on Transformer layers that globally connect patches across the spatial and temporal dimensions. In this paper, we instead advocate an inductive bias of locality in video Transformers, which leads to a better speed-accuracy trade-off compared to previous approaches which compute self-attention globally even with spatial-temporal factorization. The locality of the proposed video a"
+   },
+   "published": {
+    "relation": "extends",
+    "method": "s2_context_rule",
+    "prompt_version": null,
+    "confidence": 0.8,
+    "rationale": "「Video Swin Transformer」(2022) は 「Swin Transformer」(2021) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"As our architecture is adapted from Swin Transformer [28], our model can be initialized by its strong pre-trained model on a large-scale dataset.\""
+   },
+   "s2": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "As our architecture is adapted from Swin Transformer [28], our model can be initialized by its strong pre-trained model on a large-scale dataset.",
+     "Similar to image recognition [28], this 3D shifted window design introduces connections between neighboring non-overlapping 3D windows in the previous layer.",
+     "We implement this approach through a spatiotemporal adaptation of Swin Transformer [28], which was recently introduced as a general-purpose vision backbone for image understanding.",
+     "Swin Transformer [28] further introduces the inductive biases of locality, hierarchy and translation invariance, which enable it to serve as a general-purpose backbone for various image recognition tasks."
+    ],
+    "isInfluential": true
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": true,
+    "relation": "extends",
+    "quote_backed": true,
+    "quote": "As our architecture is adapted from Swin Transformer [28], our model can be initialized by its strong pre-trained model on a large-scale dataset.",
+    "source": "audit-draft-r2-8",
+    "note": "引用文「our architecture is adapted from Swin Transformer」がそのまま根拠"
+   }
+  },
+  {
+   "theme": "vision-transformer",
+   "src": "openalex:W3138516171",
+   "dst": "openalex:W4321232185",
+   "cited": {
+    "title": "Swin Transformer: Hierarchical Vision Transformer using Shifted Windows",
+    "authors": [
+     "Ze Liu",
+     "Yutong Lin",
+     "Yue Cao",
+     "Han Hu",
+     "Yixuan Wei"
+    ],
+    "year": 2021
+   },
+   "citing": {
+    "title": "Swin-Unet: Unet-Like Pure Transformer for Medical Image Segmentation",
+    "authors": [
+     "Hu Cao",
+     "Yueyue Wang",
+     "Joy Chen",
+     "Dongsheng Jiang",
+     "Xiaopeng Zhang"
+    ],
+    "year": 2023,
+    "abstract": "In the past few years, convolutional neural networks (CNNs) have achieved milestones in medical image analysis. Especially, the deep neural networks based on U-shaped architecture and skip-connections have been widely applied in a variety of medical image tasks. However, although CNN has achieved excellent performance, it cannot learn global and long-range semantic information interaction well due to the locality of the convolution operation. In this paper, we propose Swin-Unet, which is an Unet-like pure Transformer for medical image segmentation. The tokenized image patches are fed into the "
+   },
+   "published": {
+    "relation": "extends",
+    "method": "s2_context_rule",
+    "prompt_version": null,
+    "confidence": 0.5,
+    "rationale": "「Swin-Unet」(2023) は 「Swin Transformer」(2021) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Motivated by the Swin Transformer’s [19] success, we propose Swin-Unet to leverage the power of Transformer for 2D medical image segmentation in this work.\""
+   },
+   "s2": {
+    "found": true,
+    "intents": [
+     "background",
+     "methodology"
+    ],
+    "contexts": [
+     "It is worth mentioning that an eﬃcient and eﬀective hierarchical vision Transformer, called Swin Transformer, is proposed as a vision backbone in [19].",
+     "Motivated by the Swin Transformer’s [19] success, we propose Swin-Unet to leverage the power of Transformer for 2D medical image segmentation in this work.",
+     "In this work, we directly use the training weight of Swin transformer [19] on ImageNet to initialize the network encoder and decoder, which may be a suboptimal scheme.",
+     "Eﬀect of model scale: Similar to [19], we discuss the eﬀect of network deep-ening on model performance."
+    ],
+    "isInfluential": true
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": true,
+    "relation": "extends",
+    "quote_backed": true,
+    "quote": "Motivated by the Swin Transformer’s [19] success, we propose Swin-Unet to leverage the power of Transformer for 2D medical image segmentation in this work.",
+    "source": "audit-draft-r2-8",
+    "note": "引用文「Motivated by the Swin Transformer’s success, we propose Swin-Unet」。Swin のブロックで U-Net を作っており extends で妥当"
+   }
+  }
+ ]
+}
