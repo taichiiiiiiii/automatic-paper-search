@@ -364,7 +364,66 @@ describe("relation guard", () => {
     const vit = { title: "An Image is Worth 16x16 Words" };
     expect(guardRelation(contrasts, resnet, vit)).toBe(contrasts);
     const ext = { ...contrasts, relation: "extends" as const };
-    expect(guardRelation(ext, resnet, { title: "A Survey of X" })).toBe(ext);
+    expect(guardRelation(ext, resnet, vit)).toBe(ext);
+    // R2-15: a survey as the CITED (parent) side may still be extended.
+    expect(guardRelation(ext, { title: "A Survey of X" }, vit)).toBe(ext);
+  });
+
+  it("R2-15: a survey/review CITING paper never extends/succeeds/supersedes/contrasts", () => {
+    const gnn2008 = { title: "The Graph Neural Network Model", year: 2008 };
+    // The published GNN case: no survey word in the title, review in the abstract.
+    const materials = {
+      title: "Graph neural networks for materials science and chemistry",
+      year: 2022,
+      short_abstract:
+        "Graph neural networks (GNNs) are one of the fastest growing classes of machine learning " +
+        "models. In this Review, we provide an overview of the basic principles of GNNs.",
+    };
+    for (const relation of ["extends", "successor", "supersedes", "contrasts"] as const) {
+      const cls: DerivedEdge = {
+        relation,
+        confidence: 0.9,
+        rationale: "B は A の GNN を材料科学に応用している。",
+        provenance: relation === "contrasts" ? "llm" : "s2_context_rule",
+      };
+      const g = guardRelation(cls, gnn2008, materials);
+      expect(g.relation).toBe("baseline_only");
+      expect(g.confidence).toBe(GUARDED_RELATION_MAX_CONFIDENCE);
+      expect(g.provenance).toBe(cls.provenance);
+      expect(g.rationale).toContain("引用側の論文がサーベイ/レビュー");
+      expect(g.rationale).toContain(`${relation} を baseline_only に補正`);
+      expect(g.rationale).toContain("材料科学");
+    }
+    // Lower confidences are kept, not raised.
+    const low: DerivedEdge = {
+      relation: "extends",
+      confidence: 0.4,
+      rationale: "",
+      provenance: "llm",
+    };
+    expect(guardRelation(low, gnn2008, materials).confidence).toBe(0.4);
+    // Publication type alone is enough (OpenAlex `type: review` / S2 `Review`).
+    const typed = { title: "Graph learning for drug discovery", publicationType: "review" };
+    expect(guardRelation(low, gnn2008, typed).relation).toBe("baseline_only");
+    const s2Typed = { title: "Graph learning for drug discovery", publicationTypes: ["Review"] };
+    expect(guardRelation(low, gnn2008, s2Typed).relation).toBe("baseline_only");
+  });
+
+  it("R2-15: keeps title_version supersedes and non-inheritance relations of a survey", () => {
+    const parent = { title: "Graph Neural Networks: A Review of Methods" };
+    const child = { title: "Graph Neural Networks: A Review of Methods v2" };
+    const tv: DerivedEdge = {
+      relation: "supersedes",
+      confidence: 0.7,
+      rationale: "版番号",
+      provenance: "title_version",
+    };
+    expect(guardRelation(tv, parent, child)).toBe(tv);
+    const survey = { title: "A Survey of X" };
+    for (const relation of ["baseline_only", "ablation", "unrelated"] as const) {
+      const cls: DerivedEdge = { relation, confidence: 0.8, rationale: "r", provenance: "llm" };
+      expect(guardRelation(cls, { title: "Method" }, survey)).toBe(cls);
+    }
   });
 
   it("applies to LLM edges built by the BFS", async () => {

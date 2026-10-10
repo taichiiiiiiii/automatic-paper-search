@@ -25,6 +25,8 @@
  * See docs/design/43-api-based-relation-evaluation.md.
  */
 
+import { isSurveyLikeTitle } from "../shared/surveyLike.js";
+
 export const API_RELATIONS = [
   "builds_on",
   "compares_with",
@@ -46,6 +48,10 @@ export interface PairSignals {
   sharedAuthors?: boolean;
   /** Title of the citing paper (v2: surveys only ever give background). */
   citingTitle?: string;
+  /** R2-15: the citing paper is a survey/review per the full
+   * `isSurveyLike` test (publication type, title, abstract). When
+   * omitted, the title-only test on `citingTitle` decides. */
+  citingSurvey?: boolean;
 }
 
 export interface ApiClassification {
@@ -245,7 +251,6 @@ export function classifyApiRelation(s: PairSignals): ApiClassification {
 // survey citing papers as background-only, and checks resource use
 // within one clause. v2 was validated on a separate hold-out sample.
 
-const SURVEY_TITLE = /\b(survey|review|overview|tutorial|primer|introduction\s+to)\b/i;
 const FIRST_PERSON = /\b(we|our|ours|this\s+(paper|work))\b/i;
 const RESOURCE_CLAUSE: readonly RegExp[] = [
   /\b(use|uses|used|using|adopt|adopts|adopted|employ|employs|employed|utili[sz]e[sd]?|train(ed)?\s+on|evaluat\w*\s+(on|with)|pre-?trained\s+on|initiali[sz]ed\s+(with|from|by)|transfer\w*\s+\w+\s+to|regulari[sz]e\w*\s+\w+\s+with)\b[^.;:]{0,70}\b(datasets?|benchmarks?|corpus|corpora|code|codebase|implementation|library|toolkit|optimi[sz]er|framework|weights|splits?|initiali[sz]ation|smoothing|augmentation|regulari[sz]ation)\b/i,
@@ -289,7 +294,7 @@ export function classifyApiRelationV2(s: PairSignals): ApiClassification {
   const intents = new Set(s.intents.map((i) => i.toLowerCase()));
   const first = contexts[0]?.trim() ?? null;
 
-  if (s.citingTitle && SURVEY_TITLE.test(s.citingTitle)) {
+  if (s.citingSurvey ?? isSurveyLikeTitle(s.citingTitle)) {
     return mk("background", "citing_survey", 0.8, first);
   }
   const build = firstMatch(contexts, BUILD_PATTERNS);
