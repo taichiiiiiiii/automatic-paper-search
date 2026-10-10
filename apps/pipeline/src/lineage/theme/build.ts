@@ -619,10 +619,23 @@ export async function buildThemeLineage(
     orderedEdges,
   );
 
-  const rootId = pickRootSeed([...focusIdSet].sort(codepointCompare), orderedEdges, {
+  const sortedFocus = [...focusIdSet].sort(codepointCompare);
+  const topicalRoot = pickRootSeed(sortedFocus, orderedEdges, {
     scope: topicScope,
     papers: nodes as ReadonlyMap<string, TopicPaperLike>,
   });
+  // R2-13: the artifact contract (`contract/v1.ts` root_deterministic, and
+  // the web parser) requires the highest-degree focus node as root. The
+  // R2-2b topical rule can pick another seed (a foundational seed ranks
+  // first: FlashAttention over the better-connected FlashAttention-2 once
+  // the versions are linked), which made the build throw. Keep the
+  // contract's root and log the disagreement.
+  const rootId = pickRootSeed(sortedFocus, orderedEdges);
+  if (topicalRoot !== rootId) {
+    logger.warn(
+      `root: topical choice ${topicalRoot} differs from the contract's highest-degree focus ${rootId}; using ${rootId}`,
+    );
+  }
 
   const provenanceBreakdown: Record<string, number> = {};
   for (const e of orderedEdges) {
