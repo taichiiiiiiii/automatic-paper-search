@@ -28,7 +28,7 @@ import { toThemeNode } from "./node.js";
 import type { ThemePaper } from "./openalexWork.js";
 import { guardRelation } from "./relationGuard.js";
 import type { S2Expansion } from "./s2Expansion.js";
-import { deriveS2Relation, type S2RelationContext } from "./s2Relations.js";
+import { deriveS2Relation, resolvePendingContext, type S2RelationContext } from "./s2Relations.js";
 import { filterOffTopicRefs } from "./seedFilters.js";
 import { prepareTopicGate, type TopicEmbedder, type TopicGateMeta } from "./topicEmbedding.js";
 import type { TopicScope } from "./topicScope.js";
@@ -181,6 +181,62 @@ async function classifyPair(
   return cls === null
     ? null
     : guardRelation(demoteLowInformationEdge(cls, parent, child), parent, child);
+}
+
+/** The edges in `edges` that still carry `pair`'s deferred rule result. */
+function deferredEdgeIndices(
+  edges: readonly ThemeEdge[],
+  pair: { srcId: string; dstId: string; ruleEdge: DerivedEdge },
+): number[] {
+  const sha = pair.ruleEdge.evidence?.sha256;
+  const out: number[] = [];
+  edges.forEach((e, i) => {
+    if (e.src !== pair.srcId || e.dst !== pair.dstId) return;
+    const prov = e.provenance as {
+      evidence?: { sha256?: unknown };
+      classification?: { method?: unknown };
+    };
+    if (prov.classification?.method !== "s2_context_rule") return;
+    if (prov.evidence?.sha256 !== sha) return;
+    out.push(i);
+  });
+  return out;
+}
+
+/**
+ * R2-20: resolve the context-LLM pairs deferred during the BFS / cross-node
+ * pass (`S2RelationContext.batchSize > 1`) with batched requests, and
+ * replace each pair's provisional rule edge in `edges` (in place) by the
+ * final one, through the same relation guard as `classifyPair`. Pairs
+ * whose edge is gone are not asked. Returns how many edges changed.
+ */
+export async function applyDeferredS2Relations(
+  edges: ThemeEdge[],
+  s2: S2RelationContext | null,
+  provider: LLMProvider | null,
+): Promise<number> {
+  if (s2 === null || (s2.pending?.length ?? 0) === 0) return 0;
+  const results = await resolvePendingContext(
+    s2,
+    (pair) => deferredEdgeIndices(edges, pair).length > 0,
+  );
+  let changed = 0;
+  for (const { pair, edge } of results) {
+    if (edge === pair.ruleEdge) continue;
+    const guarded = guardRelation(edge, pair.parent, pair.child);
+    for (const i of deferredEdgeIndices(edges, pair)) {
+      edges[i] = makeEdge(guarded, {
+        srcId: pair.srcId,
+        dstId: pair.dstId,
+        parent: pair.parent,
+        child: pair.child,
+        intentRecord: pair.parent,
+        provider,
+      });
+      changed += 1;
+    }
+  }
+  return changed;
 }
 
 /** A candidate the topic gate turned away, with every on-topic admitted

@@ -12,7 +12,12 @@ import type {
 } from "../../../src/collect/llm/provider.js";
 import type { ClassificationCache } from "../../../src/lineage/classify/cache.js";
 import { canonicalJsonSha256, makeProvenance } from "../../../src/lineage/contract/v1.js";
-import { buildClassifyPrompt } from "../../../src/lineage/llm/base.js";
+import { buildClassifyPrompt, CLASSIFY_SEMANTIC_VERSION } from "../../../src/lineage/llm/base.js";
+import {
+  CONTEXT_PROMPT_VERSION,
+  CONTEXT_SEMANTIC_VERSION,
+  parseContextAnswer,
+} from "../../../src/lineage/llm/contextPrompt.js";
 import {
   ThemeCachedClassifyProvider,
   type ThemeProducerIdentity,
@@ -89,7 +94,8 @@ describe("ThemeCachedClassifyProvider (cache v3, provider-agnostic)", () => {
     expect(first.calls).toBe(1);
 
     const key = Object.keys(cache)[0];
-    expect(key?.startsWith("v3:")).toBe(true);
+    // R2-20: written under the semantic (v4) key.
+    expect(key?.startsWith("v4:")).toBe(true);
     const entry = cache[key as string] as Record<string, any>;
     expect(new Set(Object.keys(entry))).toEqual(
       new Set(["status", "expires_at", "cache_identity", "classification", "provenance"]),
@@ -97,6 +103,9 @@ describe("ThemeCachedClassifyProvider (cache v3, provider-agnostic)", () => {
     // The key identity carries no provider/model; the provenance names the producer.
     expect(entry.cache_identity.provider).toBeUndefined();
     expect(entry.cache_identity.model).toBeUndefined();
+    expect(entry.cache_identity.version).toBe("lineage-classification-cache-v4");
+    expect(entry.cache_identity.semantic_version).toBe(CLASSIFY_SEMANTIC_VERSION);
+    expect(entry.cache_identity.evidence_sha256).toBeUndefined();
     expect(entry.provenance.classification.provider).toBe("test-provider");
     expect(entry.provenance.classification.model).toBe("test-provider:test-model");
 
@@ -120,22 +129,16 @@ describe("ThemeCachedClassifyProvider (cache v3, provider-agnostic)", () => {
       "provenance method not llm",
       (entry) => (entry.provenance.classification.method = "intent_map"),
     ],
+    ["semantic_version mismatch", (entry) => (entry.cache_identity.semantic_version = "old")],
     [
-      "provenance prompt_version mismatch",
-      (entry) => (entry.provenance.classification.prompt_version = "old"),
+      "provenance schema_version mismatch",
+      (entry) => (entry.provenance.classification.schema_version = "old"),
     ],
-    ["prompt_version mismatch", (entry) => (entry.cache_identity.prompt_version = "old")],
+    ["provenance producer mismatch", (entry) => (entry.provenance.producer.name = "other")],
     ["schema_version mismatch", (entry) => (entry.cache_identity.schema_version = "old")],
     ["producer version mismatch", (entry) => (entry.cache_identity.producer.version = "old")],
-    [
-      "evidence_sha256 mismatch",
-      (entry) => (entry.cache_identity.evidence_sha256 = "0".repeat(64)),
-    ],
+    ["inputs_sha256 mismatch", (entry) => (entry.cache_identity.inputs_sha256 = "0".repeat(64))],
     ["src mismatch", (entry) => (entry.cache_identity.src = "other")],
-    [
-      "provenance evidence sha256 mismatch",
-      (entry) => (entry.provenance.evidence.sha256 = "0".repeat(64)),
-    ],
   ])("treats a mismatched/expired/failed cache entry as a miss (%s)", async (_label, mutate) => {
     const cache: ClassificationCache = {};
     const a = paper("a", "2301.00001");
@@ -274,5 +277,108 @@ describe("ThemeCachedClassifyProvider (cache v3, provider-agnostic)", () => {
     await wrapped.classifyRelation(paper("a", null), paper("b", null));
     await wrapped.classifyRelation(paper("a", null), paper("c", null));
     expect(persisted).toEqual([1, 2]);
+  });
+
+  it("R2-20: a v4 hit survives a wording-only prompt change (provenance text hash / prompt version not compared)", async () => {
+    const cache: ClassificationCache = {};
+    const a = paper("a", "2301.00001");
+    const b = paper("b", "2401.00001");
+    await wrap(new StubProvider(classification()), cache).classifyRelation(a, b);
+    const entry = Object.values(cache)[0] as Record<string, any>;
+    // What a later copy edit of the system prompt / a provenance version
+    // bump changes in the stored entry relative to the current run.
+    entry.provenance.evidence.sha256 = "0".repeat(64);
+    entry.provenance.classification.prompt_version = "relation-prompt-v3";
+    const inner = new StubProvider(null);
+    const r = await wrap(inner, cache).classifyRelation(a, b);
+    expect(inner.calls).toBe(0);
+    expect(r?.relation).toBe("extends");
+  });
+
+  it("R2-20: changed input data (abstract) is a miss", async () => {
+    const cache: ClassificationCache = {};
+    const a = paper("a", "2301.00001");
+    const b = paper("b", "2401.00001");
+    await wrap(new StubProvider(classification()), cache).classifyRelation(a, b);
+    const inner = new StubProvider(null);
+    await wrap(inner, cache).classifyRelation(a, { ...b, abstract: "Another abstract entirely." });
+    expect(inner.calls).toBe(1);
+  });
+
+  it("R2-20: a fresh v3 (prompt-text) entry still hits and is copied to its v4 key", async () => {
+    const a = paper("a", "2301.00001");
+    const b = paper("b", "2401.00001");
+    const [system, user] = buildClassifyPrompt(a, b);
+    const evidence = canonicalJsonSha256({ src: "a", dst: "b", system, user });
+    const identity = {
+      version: "lineage-classification-cache-v3",
+      src: "a",
+      dst: "b",
+      evidence_sha256: evidence,
+      producer: { name: IDENTITY.producerName, version: IDENTITY.producerVersion },
+      prompt_version: IDENTITY.promptVersion,
+      schema_version: IDENTITY.classificationSchemaVersion,
+    };
+    const cache: ClassificationCache = {
+      [`v3:${canonicalJsonSha256(identity)}`]: {
+        status: "success",
+        expires_at: "2999-01-01T00:00:00Z",
+        cache_identity: identity,
+        classification: classification(),
+        provenance: makeProvenance({
+          producerName: IDENTITY.producerName,
+          producerVersion: IDENTITY.producerVersion,
+          evidenceSource: "semantic_scholar",
+          evidenceKind: "relation-input",
+          evidenceSha256: evidence,
+          method: "llm",
+          provider: "groq",
+          model: "groq:openai/gpt-oss-120b",
+          promptVersion: IDENTITY.promptVersion,
+          classificationSchemaVersion: IDENTITY.classificationSchemaVersion,
+        }),
+      },
+    };
+    const inner = new StubProvider(null);
+    const r = await wrap(inner, cache).classifyRelation(a, b);
+    expect(inner.calls).toBe(0);
+    expect(r?.producedBy).toEqual({ provider: "groq", model: "groq:openai/gpt-oss-120b" });
+    expect(Object.keys(cache).some((k) => k.startsWith("v4:"))).toBe(true);
+  });
+
+  it("R2-20: context answers — semantic key, lookup/store without a call, wording-proof", async () => {
+    const cache: ClassificationCache = {};
+    const answer = {
+      refers_to_cited: true,
+      relation: "builds_on",
+      contrast: false,
+      confidence: 0.8,
+      rationale: "GraphSAGE は GCN の近傍集約を土台にしている。",
+    };
+    const inner = new StubProvider(null);
+    const w = wrap(inner, cache);
+    const inputs = { cited: { title: "GCN" }, citing: { title: "GraphSAGE" }, sentences: ["s"] };
+    const req = (system: string) => ({
+      src: "a",
+      dst: "b",
+      system,
+      user: "u",
+      promptVersion: CONTEXT_PROMPT_VERSION,
+      semantic: { version: CONTEXT_SEMANTIC_VERSION, inputs },
+    });
+    expect(w.lookupJsonAnswer(req("sys v1"), parseContextAnswer)).toBeNull();
+    await w.storeJsonAnswer(req("sys v1"), answer, { provider: "groq", model: "groq:m" });
+    // A reworded system prompt with the same semantic version and inputs hits.
+    const hit = w.lookupJsonAnswer(req("sys v1, reworded"), parseContextAnswer);
+    expect(hit?.value.relation).toBe("builds_on");
+    expect(hit?.producedBy).toEqual({ provider: "groq", model: "groq:m" });
+    // A new semantic version misses.
+    expect(
+      w.lookupJsonAnswer(
+        { ...req("sys v1"), semantic: { version: "context-semantic-v2", inputs } },
+        parseContextAnswer,
+      ),
+    ).toBeNull();
+    expect(inner.calls).toBe(0);
   });
 });

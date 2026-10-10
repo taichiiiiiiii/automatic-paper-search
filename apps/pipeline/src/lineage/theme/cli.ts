@@ -50,6 +50,12 @@ import { CachedTopicEmbedder, createTransformersEmbedder } from "./topicEmbeddin
 import { DEFAULT_TOPIC_SCOPE_OPTIONS } from "./topicScope.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
+
+/** R2-20: `PAPERPILOT_CONTEXT_BATCH_SIZE` (pairs per context-LLM request, 1-20); unset/invalid -> build default. */
+export function contextBatchSizeFromEnv(raw: string | undefined): number | undefined {
+  const n = raw === undefined || raw.trim() === "" ? Number.NaN : Number(raw);
+  return Number.isInteger(n) && n >= 1 && n <= 20 ? n : undefined;
+}
 // apps/pipeline/src/lineage/theme -> repo root (5 levels up).
 const DEFAULT_REPO_ROOT = resolve(HERE, "..", "..", "..", "..", "..");
 
@@ -335,7 +341,9 @@ export function defaultDeps(repoRoot: string = DEFAULT_REPO_ROOT): BuildThemeLin
         },
         // R2-6 (design 41 D2): Groq first, Gemini when Groq latches or
         // returns nothing for a pair — whichever keys are configured.
-        { fallback: true },
+        // R2-20: the citation-context prompt asks the cheaper Groq context
+        // model first (PAPERPILOT_GROQ_CONTEXT_MODEL, default gpt-oss-20b).
+        { fallback: true, contextModelRouting: true },
       ),
     logger: {
       warn: (msg) => process.stderr.write(`${msg}\n`),
@@ -448,6 +456,7 @@ export async function runThemeCli(
         topicScope: { gate: args.topicGate, minSupport: args.topicMinSupport },
         topicEmbedding: args.topicEmbedding,
         minClassifiedRate,
+        contextBatchSize: contextBatchSizeFromEnv(process.env.PAPERPILOT_CONTEXT_BATCH_SIZE),
       },
       deps,
     );

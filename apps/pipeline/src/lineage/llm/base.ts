@@ -390,6 +390,40 @@ Examples (each names both papers and a concrete concept):
 
 /** TS port of `build_classify_prompt`. `a` = older/target, `b` = newer/candidate. */
 export function buildClassifyPrompt(a: ClassifyPaperLike, b: ClassifyPaperLike): [string, string] {
+  const inp = classifyPromptInputs(a, b);
+  const user =
+    `PAPER A (older / target):\n` +
+    `Title: ${inp.a.title}\n` +
+    `Year: ${inp.a.year}\n` +
+    `Abstract: ${inp.a.abstract}\n\n` +
+    `PAPER B (newer / candidate):\n` +
+    `Title: ${inp.b.title}\n` +
+    `Year: ${inp.b.year}\n` +
+    `Abstract: ${inp.b.abstract}\n\n` +
+    `How does Paper B relate to Paper A?\n`;
+  return [CLASSIFY_SYSTEM_PROMPT, user];
+}
+
+/**
+ * R2-20: SEMANTIC version of the abstract prompt — the theme cache (v4)
+ * keys an answer on this plus {@link classifyPromptInputs}, not on the
+ * prompt text, so answers survive wording-only edits of
+ * `CLASSIFY_SYSTEM_PROMPT`. Bump it ONLY when an answer's meaning changes:
+ * the question, the relation labels or their definitions, the answer
+ * fields, or the input data shown (e.g. a longer abstract trim). Bump the
+ * provenance `relation-prompt-vN` (theme/edges.ts etc.) for rationale
+ * style changes as before; it no longer invalidates the theme cache.
+ */
+export const CLASSIFY_SEMANTIC_VERSION = "abstract-semantic-v1";
+
+/** The data the abstract prompt shows about a pair (what the semantic cache key hashes). */
+export function classifyPromptInputs(
+  a: ClassifyPaperLike,
+  b: ClassifyPaperLike,
+): {
+  a: { title: string; year: string; abstract: string };
+  b: { title: string; year: string; abstract: string };
+} {
   // SECURITY (#300): only title/year/abstract are interpolated — NEVER a
   // prior `rationale` string (prompt-injection vector via a slot-filled
   // heuristic rationale that embeds an attacker-controlled title).
@@ -406,17 +440,12 @@ export function buildClassifyPrompt(a: ClassifyPaperLike, b: ClassifyPaperLike):
     const s = v === null || v === undefined || v === "" ? "" : String(v);
     return codePointSlice(s, CLASSIFY_ABSTRACT_TRIM);
   };
-  const user =
-    `PAPER A (older / target):\n` +
-    `Title: ${getOrDefault(a, "title", "")}\n` +
-    `Year: ${getOrDefault(a, "year", "?")}\n` +
-    `Abstract: ${abstractField(a, "abstract")}\n\n` +
-    `PAPER B (newer / candidate):\n` +
-    `Title: ${getOrDefault(b, "title", "")}\n` +
-    `Year: ${getOrDefault(b, "year", "?")}\n` +
-    `Abstract: ${abstractField(b, "abstract")}\n\n` +
-    `How does Paper B relate to Paper A?\n`;
-  return [CLASSIFY_SYSTEM_PROMPT, user];
+  const side = (p: ClassifyPaperLike) => ({
+    title: getOrDefault(p, "title", ""),
+    year: getOrDefault(p, "year", "?"),
+    abstract: abstractField(p, "abstract"),
+  });
+  return { a: side(a), b: side(b) };
 }
 
 // ---------------------------------------------------------------------------
