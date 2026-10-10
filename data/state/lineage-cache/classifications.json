@@ -9273,5 +9273,44 @@
         "schema_version": "relation-classification-v1"
       }
     }
+  },
+  "v3:61dd8e51494726465c0da8b86107b32c05188ee658a322c603748eb9ee88239a": {
+    "status": "success",
+    "expires_at": "2027-04-08T13:58:36.841000Z",
+    "cache_identity": {
+      "version": "lineage-classification-cache-v3",
+      "src": "openalex:W3159481202",
+      "dst": "openalex:W4226002507",
+      "evidence_sha256": "c3bbcc46807db3ebe59fb1c2be0e033e8bdb0d5e12ee89d04782d74204b84b32",
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "prompt_version": "relation-prompt-v4",
+      "schema_version": "relation-classification-v1"
+    },
+    "classification": {
+      "relation": "baseline_only",
+      "confidence": 0.92,
+      "rationale": "Masked Autoencoders は自己教師あり ViT の学習手法を提案しており、Emerging Properties の分析結果を直接継承せず、単なる比較対象としてのみ利用している。"
+    },
+    "provenance": {
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "evidence": {
+        "source": "semantic_scholar",
+        "kind": "relation-input",
+        "sha256": "c3bbcc46807db3ebe59fb1c2be0e033e8bdb0d5e12ee89d04782d74204b84b32"
+      },
+      "classification": {
+        "method": "llm",
+        "provider": "groq",
+        "model": "groq:openai/gpt-oss-120b",
+        "prompt_version": "relation-prompt-v4",
+        "schema_version": "relation-classification-v1"
+      }
+    }
   }
 }

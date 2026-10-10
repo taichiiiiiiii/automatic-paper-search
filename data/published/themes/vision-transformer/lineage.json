@@ -17,7 +17,7 @@
       ],
       "kinds": [],
       "citation_count": 21502,
-      "github_stars": 12738,
+      "github_stars": 0,
       "tldr": "While the Transformer architecture has become the de-facto standard for natural language processing tasks, its applications to computer…",
       "short_abstract": "While the Transformer architecture has become the de-facto standard for natural language processing tasks, its applications to computer vision remain limited. In vision, attention is either applied in conjunction with convolutional networks, or used to replace certain components of convolutional networks while keeping their overall structure in place. We show that this reliance on CNNs is not necessary and a pure transformer applied directly to sequences of image patches can perform very well on image classification tasks. When pre-trained on large amounts of data and transferred to multiple mid-sized or small image recognition benchmarks (ImageNet, CIFAR-100, VTAB, etc.), Vision Transformer (ViT) attains excellent results compared to state-of-the-art convolutional networks while requiring substantially fewer computational resources to train.",
       "arxiv_id": "2010.11929",
@@ -33,7 +33,6 @@
           "10.48550/arxiv.2010.11929"
         ]
       ],
-      "github_url": "https://github.com/google-research/vision_transformer",
       "seed_paper_id": "f372409f0c9ce8f4ac6cfd9df50d60079243a7e4"
     },
     {
@@ -69,28 +68,33 @@
       "is_focus": false
     },
     {
-      "id": "openalex:W3121523901",
-      "title": "Tokens-to-Token ViT: Training Vision Transformers from Scratch on ImageNet",
+      "id": "openalex:W3127751679",
+      "title": "TransUNet: Transformers Make Strong Encoders for Medical Image Segmentation",
       "year": 2021,
-      "venue": "IEEE/CVF International Conference on Computer Vision (ICCV)",
-      "venue_tier": "A+",
+      "venue": "arXiv (Cornell University)",
+      "venue_tier": "preprint",
       "authors": [
-        "Li Yuan",
-        "Yunpeng Chen",
-        "Tao Wang",
-        "Weihao Yu",
-        "Yujun Shi"
+        "Jieneng Chen",
+        "Yongyi Lu",
+        "Qihang Yu",
+        "Xiangde Luo",
+        "Ehsan Adeli"
       ],
       "kinds": [],
-      "citation_count": 2320,
+      "citation_count": 3899,
       "github_stars": 0,
-      "tldr": "Transformers, which are popular for language modeling, have been explored for solving vision tasks recently, e.g., the Vision Transformer…",
-      "short_abstract": "Transformers, which are popular for language modeling, have been explored for solving vision tasks recently, e.g., the Vision Transformer (ViT) for image classification. The ViT model splits each image into a sequence of tokens with fixed length and then applies multiple Transformer layers to model their global relation for classification. However, ViT achieves inferior performance to CNNs when trained from scratch on a midsize dataset like ImageNet. We find it is because: 1) the simple tokenization of input images fails to model the important local structure such as edges and lines among neighboring pixels, leading to low training sample efficiency; 2) the redundant attention backbone design of ViT leads to limited feature richness for fixed computation budgets and limited training samples. To overcome such limitations, we propose a new Tokens-To-Token Vision Transformer (T2T-VTT), which incorporates 1) a layer-wise Tokens-to-Token (T2T) transformation to progressively structurize…",
-      "doi": "10.1109/iccv48922.2021.00060",
+      "tldr": "Medical image segmentation is an essential prerequisite for developing healthcare systems, especially for disease diagnosis and treatment…",
+      "short_abstract": "Medical image segmentation is an essential prerequisite for developing healthcare systems, especially for disease diagnosis and treatment planning. On various medical image segmentation tasks, the u-shaped architecture, also known as U-Net, has become the de-facto standard and achieved tremendous success. However, due to the intrinsic locality of convolution operations, U-Net generally demonstrates limitations in explicitly modeling long-range dependency. Transformers, designed for sequence-to-sequence prediction, have emerged as alternative architectures with innate global self-attention mechanisms, but can result in limited localization abilities due to insufficient low-level details. In this paper, we propose TransUNet, which merits both Transformers and U-Net, as a strong alternative for medical image segmentation. On one hand, the Transformer encodes tokenized image patches from a convolution neural network (CNN) feature map as the input sequence for extracting global contexts.…",
+      "arxiv_id": "2102.04306",
+      "doi": "10.48550/arxiv.2102.04306",
       "aliases": [
         [
+          "arxiv",
+          "2102.04306"
+        ],
+        [
           "doi",
-          "10.1109/iccv48922.2021.00060"
+          "10.48550/arxiv.2102.04306"
         ]
       ],
       "is_focus": false
@@ -123,37 +127,6 @@
       "is_focus": false
     },
     {
-      "id": "openalex:W3136635488",
-      "title": "Vision Transformers for Dense Prediction",
-      "year": 2021,
-      "venue": "IEEE/CVF International Conference on Computer Vision (ICCV)",
-      "venue_tier": "A+",
-      "authors": [
-        "René Ranftl",
-        "Alexey Bochkovskiy",
-        "Vladlen Koltun"
-      ],
-      "kinds": [],
-      "citation_count": 2242,
-      "github_stars": 0,
-      "tldr": "We introduce dense prediction transformers, an architecture that leverages vision transformers in place of convolutional networks as a…",
-      "short_abstract": "We introduce dense prediction transformers, an architecture that leverages vision transformers in place of convolutional networks as a backbone for dense prediction tasks. We assemble tokens from various stages of the vision transformer into image-like representations at various resolutions and progressively combine them into full-resolution predictions using a convolutional decoder. The transformer backbone processes representations at a constant and relatively high resolution and has a global receptive field at every stage. These properties allow the dense prediction transformer to provide finer-grained and more globally coherent predictions when compared to fully-convolutional networks. Our experiments show that this architecture yields substantial improvements on dense prediction tasks, especially when a large amount of training data is available. For monocular depth estimation, we observe an improvement of up to 28% in relative performance when compared to a state-of-the-art…",
-      "arxiv_id": "2103.13413",
-      "doi": "10.1109/iccv48922.2021.01196",
-      "is_focus": true,
-      "aliases": [
-        [
-          "arxiv",
-          "2103.13413"
-        ],
-        [
-          "doi",
-          "10.1109/iccv48922.2021.01196"
-        ]
-      ],
-      "seed_paper_id": "8858cb343f7e8751d07e588feec263e3a7a9e448"
-    },
-    {
       "id": "openalex:W3138516171",
       "title": "Swin Transformer: Hierarchical Vision Transformer using Shifted Windows",
       "year": 2021,
@@ -181,6 +154,63 @@
       "is_focus": false
     },
     {
+      "id": "openalex:W3145450063",
+      "title": "An Empirical Study of Training Self-Supervised Vision Transformers",
+      "year": 2021,
+      "venue": "IEEE/CVF International Conference on Computer Vision (ICCV)",
+      "venue_tier": "A+",
+      "authors": [
+        "Xinlei Chen",
+        "Saining Xie",
+        "Kaiming He"
+      ],
+      "kinds": [],
+      "citation_count": 1556,
+      "github_stars": 0,
+      "tldr": "This paper does not describe a novel method. Instead, it studies a straightforward, incremental, yet must-know baseline given the recent…",
+      "short_abstract": "This paper does not describe a novel method. Instead, it studies a straightforward, incremental, yet must-know baseline given the recent progress in computer vision: self-supervised learning for Vision Transformers (ViT). While the training recipes for standard convolutional networks have been highly mature and robust, the recipes for ViT are yet to be built, especially in the self-supervised scenarios where training becomes more challenging. In this work, we go back to basics and investigate the effects of several fundamental components for training self-supervised ViT. We observe that instability is a major issue that degrades accuracy, and it can be hidden by apparently good results. We reveal that these results are indeed partial failure, and they can be improved when training is made more stable. We benchmark ViT results in MoCo v3 and several other self-supervised frameworks, with ablations in various aspects. We discuss the currently positive evidence as well as challenges and…",
+      "doi": "10.1109/iccv48922.2021.00950",
+      "aliases": [
+        [
+          "doi",
+          "10.1109/iccv48922.2021.00950"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W3146097248",
+      "title": "Going deeper with Image Transformers",
+      "year": 2021,
+      "venue": "IEEE/CVF International Conference on Computer Vision (ICCV)",
+      "venue_tier": "A+",
+      "authors": [
+        "Hugo Touvron",
+        "Matthieu Cord",
+        "Alexandre Sablayrolles",
+        "Gabriel Synnaeve",
+        "Hervé Jeǵou"
+      ],
+      "kinds": [],
+      "citation_count": 1151,
+      "github_stars": 0,
+      "tldr": "Transformers have been recently adapted for large scale image classification, achieving high scores shaking up the long supremacy of…",
+      "short_abstract": "Transformers have been recently adapted for large scale image classification, achieving high scores shaking up the long supremacy of convolutional neural networks. However the optimization of vision transformers has been little studied so far. In this work, we build and optimize deeper transformer networks for image classification. In particular, we investigate the interplay of architecture and optimization of such dedicated transformers. We make two architecture changes that significantly improve the accuracy of deep transformers. This leads us to produce models whose performance does not saturate early with more depth, for in-stance we obtain 86.5% top-1 accuracy on Imagenet when training with no external data, we thus attain the current sate of the art with less floating-point operations and parameters. Our best model establishes the new state of the art on Imagenet with Reassessed labels and Imagenet-V2 / match frequency, in the setting with no additional training data. We share…",
+      "arxiv_id": "2103.17239",
+      "doi": "10.1109/iccv48922.2021.00010",
+      "aliases": [
+        [
+          "arxiv",
+          "2103.17239"
+        ],
+        [
+          "doi",
+          "10.1109/iccv48922.2021.00010"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
       "id": "openalex:W3147387781",
       "title": "ViViT: A Video Vision Transformer",
       "year": 2021,
@@ -195,7 +225,7 @@
       ],
       "kinds": [],
       "citation_count": 2615,
-      "github_stars": 560,
+      "github_stars": 0,
       "tldr": "We present pure-transformer based models for video classification, drawing upon the recent success of such models in image classification.…",
       "short_abstract": "We present pure-transformer based models for video classification, drawing upon the recent success of such models in image classification. Our model extracts spatiotemporal tokens from the input video, which are then encoded by a series of transformer layers. In order to handle the long sequences of tokens encountered in video, we propose several, efficient variants of our model which factorise the spatial- and temporal-dimensions of the input. Although transformer-based models are known to only be effective when large training datasets are available, we show how we can effectively regularise the model during training and leverage pretrained image models to be able to train on comparatively small datasets. We conduct thorough ablation studies, and achieve state-of-the-art results on multiple video classification benchmarks including Kinetics 400 and 600, Epic Kitchens, Something-Something v2 and Moments in Time, outperforming prior methods based on deep 3D convolutional networks.",
       "arxiv_id": "2103.15691",
@@ -211,7 +241,6 @@
           "10.1109/iccv48922.2021.00676"
         ]
       ],
-      "github_url": "https://github.com/rishikksh20/ViViT-pytorch",
       "seed_paper_id": "e5822cf6309aafa65062dc7a0540bd0952c46942"
     },
     {
@@ -229,7 +258,7 @@
       ],
       "kinds": [],
       "citation_count": 5647,
-      "github_stars": 10,
+      "github_stars": 0,
       "tldr": "In this paper, we question if self-supervised learning provides new properties to Vision Transformer (ViT) [16] that stand out compared to…",
       "short_abstract": "In this paper, we question if self-supervised learning provides new properties to Vision Transformer (ViT) [16] that stand out compared to convolutional networks (convnets). Beyond the fact that adapting self-supervised methods to this architecture works particularly well, we make the following observations: first, self-supervised ViT features contain explicit information about the semantic segmentation of an image, which does not emerge as clearly with supervised ViTs, nor with convnets. Second, these features are also excellent k-NN classifiers, reaching 78.3% top-1 on ImageNet with a small ViT. Our study also underlines the importance of momentum encoder [26], multi-crop training [9], and the use of small patches with ViTs. We implement our findings into a simple self-supervised method, called DINO, which we interpret as a form of self-distillation with no labels. We show the synergy between DINO and ViTs by achieving 80.1% top-1 on ImageNet in linear evaluation with ViT-Base.",
       "arxiv_id": "2104.14294",
@@ -244,7 +273,6 @@
           "10.1109/iccv48922.2021.00951"
         ]
       ],
-      "github_url": "https://github.com/YeongHyeon/DINO_MNIST-PyTorch",
       "is_focus": false
     },
     {
@@ -261,7 +289,7 @@
       ],
       "kinds": [],
       "citation_count": 2052,
-      "github_stars": 906,
+      "github_stars": 0,
       "tldr": "Image segmentation is often ambiguous at the level of individual image patches and requires contextual information to reach label…",
       "short_abstract": "Image segmentation is often ambiguous at the level of individual image patches and requires contextual information to reach label consensus. In this paper we introduce Segmenter, a transformer model for semantic segmentation. In contrast to convolution-based methods, our approach allows to model global context already at the first layer and throughout the network. We build on the recent Vision Transformer (ViT) and extend it to semantic segmentation. To do so, we rely on the output embeddings corresponding to image patches and obtain class labels from these embed-dings with a point-wise linear decoder or a mask trans-former decoder. We leverage models pre-trained for image classification and show that we can fine-tune them on moderate sized datasets available for semantic segmentation. The linear decoder allows to obtain excellent results already, but the performance can be further improved by a mask transformer generating class masks. We conduct an extensive ablation study to show…",
       "arxiv_id": "2105.05633",
@@ -276,74 +304,7 @@
           "10.1109/iccv48922.2021.00717"
         ]
       ],
-      "github_url": "https://github.com/rstrudel/segmenter",
       "is_focus": false
-    },
-    {
-      "id": "openalex:W3175515048",
-      "title": "PVT v2: Improved baselines with pyramid vision transformer",
-      "year": 2022,
-      "venue": "Computational Visual Media",
-      "venue_tier": "preprint",
-      "authors": [
-        "Wenhai Wang",
-        "Enze Xie",
-        "Xiang Li",
-        "Deng-Ping Fan",
-        "Kaitao Song"
-      ],
-      "kinds": [],
-      "citation_count": 2413,
-      "github_stars": 0,
-      "tldr": "Transformers have recently lead to encouraging progress in computer vision. In this work, we present new baselines by improving the…",
-      "short_abstract": "Transformers have recently lead to encouraging progress in computer vision. In this work, we present new baselines by improving the original Pyramid Vision Transformer (PVT v1) by adding three designs: (i) a linear complexity attention layer, (ii) an overlapping patch embedding, and (iii) a convolutional feed-forward network. With these modifications, PVT v2 reduces the computational complexity of PVT v1 to linearity and provides significant improvements on fundamental vision tasks such as classification, detection, and segmentation. In particular, PVT v2 achieves comparable or better performance than recent work such as the Swin transformer. We hope this work will facilitate state-of-the-art transformer research in computer vision. Code is available at https://github.com/whai362/PVT .",
-      "arxiv_id": "2106.13797",
-      "doi": "10.1007/s41095-022-0274-8",
-      "aliases": [
-        [
-          "arxiv",
-          "2106.13797"
-        ],
-        [
-          "doi",
-          "10.1007/s41095-022-0274-8"
-        ]
-      ],
-      "is_focus": false
-    },
-    {
-      "id": "openalex:W3204076343",
-      "title": "CvT: Introducing Convolutions to Vision Transformers",
-      "year": 2021,
-      "venue": "IEEE/CVF International Conference on Computer Vision (ICCV)",
-      "venue_tier": "A+",
-      "authors": [
-        "Haiping Wu",
-        "Bin Xiao",
-        "Noel Codella",
-        "Mengchen Liu",
-        "Xiyang Dai"
-      ],
-      "kinds": [],
-      "citation_count": 2342,
-      "github_stars": 606,
-      "tldr": "We present in this paper a new architecture, named Convolutional vision Transformer (CvT), that improves Vision Transformer (ViT) in…",
-      "short_abstract": "We present in this paper a new architecture, named Convolutional vision Transformer (CvT), that improves Vision Transformer (ViT) in performance and efficiency by introducing convolutions into ViT to yield the best of both de-signs. This is accomplished through two primary modifications: a hierarchy of Transformers containing a new convolutional token embedding, and a convolutional Transformer block leveraging a convolutional projection. These changes introduce desirable properties of convolutional neural networks (CNNs) to the ViT architecture (i.e. shift, scale, and distortion invariance) while maintaining the merits of Transformers (i.e. dynamic attention, global context, and better generalization). We validate CvT by conducting extensive experiments, showing that this approach achieves state-of-the-art performance over other Vision Transformers and ResNets on ImageNet-1k, with fewer parameters and lower FLOPs. In addition, performance gains are maintained when pretrained on…",
-      "arxiv_id": "2103.15808",
-      "doi": "10.1109/iccv48922.2021.00009",
-      "is_focus": true,
-      "aliases": [
-        [
-          "arxiv",
-          "2103.15808"
-        ],
-        [
-          "doi",
-          "10.1109/iccv48922.2021.00009"
-        ]
-      ],
-      "github_url": "https://github.com/microsoft/CvT",
-      "seed_paper_id": "6cb10e46232b4c44aa0bb5ec3786f4c98f19acac"
     },
     {
       "id": "openalex:W3207918547",
@@ -373,32 +334,61 @@
       "is_focus": false
     },
     {
-      "id": "openalex:W3212645988",
-      "title": "SwinNet: Swin Transformer Drives Edge-Aware RGB-D and RGB-T Salient Object Detection",
-      "year": 2021,
-      "venue": "IEEE Transactions on Circuits and Systems for Video Technology",
-      "venue_tier": "preprint",
+      "id": "openalex:W4226002507",
+      "title": "Masked Autoencoders Are Scalable Vision Learners",
+      "year": 2022,
+      "venue": "IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings",
+      "venue_tier": "A+",
       "authors": [
-        "Zhengyi Liu",
-        "Yacheng Tan",
-        "Qian He",
-        "Yun Xiao"
+        "Kaiming He",
+        "Xinlei Chen",
+        "Saining Xie",
+        "Yanghao Li",
+        "Piotr Dollár"
       ],
       "kinds": [],
-      "citation_count": 388,
+      "citation_count": 7958,
       "github_stars": 0,
-      "tldr": "Convolutional neural networks (CNNs) are good at extracting contexture features within certain receptive fields, while transformers can…",
-      "short_abstract": "Convolutional neural networks (CNNs) are good at extracting contexture features within certain receptive fields, while transformers can model the global long-range dependency features. By absorbing the advantage of transformer and the merit of CNN, Swin Transformer shows strong feature representation ability. Based on it, we propose a cross-modality fusion model,SwinNet, for RGB-D and RGB-T salient object detection. It is driven by Swin Transformer to extract the hierarchical features, boosted by attention mechanism to bridge the gap between two modalities, and guided by edge information to sharp the contour of salient object. To be specific, two-stream Swin Transformer encoder first extracts multi-modality features, and then spatial alignment and channel re-calibration module is presented to optimize intra-level cross-modality features. To clarify the fuzzy boundary, edge-guided decoder achieves inter-level cross-modality fusion under the guidance of edge features. The proposed…",
-      "arxiv_id": "2204.05585",
-      "doi": "10.1109/tcsvt.2021.3127149",
+      "tldr": "This paper shows that masked autoencoders (MAE) are scalable self-supervised learners for computer vision. Our MAE approach is simple: we…",
+      "short_abstract": "This paper shows that masked autoencoders (MAE) are scalable self-supervised learners for computer vision. Our MAE approach is simple: we mask random patches of the input image and reconstruct the missing pixels. It is based on two core designs. First, we develop an asymmetric encoder-decoder architecture, with an encoder that operates only on the visible subset of patches (without mask tokens), along with a lightweight decoder that reconstructs the original image from the latent representation and mask tokens. Second, we find that masking a high proportion of the input image, e.g., 75%, yields a nontrivial and meaningful self-supervisory task. Coupling these two designs enables us to train large models efficiently and effectively: we accelerate training (by 3× or more) and improve accuracy. Our scalable approach allows for learning high-capacity models that generalize well: e.g., a vanilla ViT-Huge model achieves the best accuracy (87.8%) among methods that use only ImageNet-1K…",
+      "arxiv_id": "2111.06377",
+      "doi": "10.1109/cvpr52688.2022.01553",
+      "is_focus": true,
       "aliases": [
         [
           "arxiv",
-          "2204.05585"
+          "2111.06377"
         ],
         [
           "doi",
-          "10.1109/tcsvt.2021.3127149"
+          "10.1109/cvpr52688.2022.01553"
+        ]
+      ],
+      "seed_paper_id": "37c62643ec8054df7223de09ef2584c0a0ed1ae5"
+    },
+    {
+      "id": "openalex:W4226028923",
+      "title": "When Shift Operation Meets Vision Transformer: An Extremely Simple Alternative to Attention Mechanism",
+      "year": 2022,
+      "venue": "Proceedings of the AAAI Conference on Artificial Intelligence",
+      "venue_tier": "A",
+      "authors": [
+        "Guangting Wang",
+        "Yucheng Zhao",
+        "Chuanxin Tang",
+        "Chong Luo",
+        "Wenjun Zeng"
+      ],
+      "kinds": [],
+      "citation_count": 84,
+      "github_stars": 0,
+      "tldr": "Attention mechanism has been widely believed as the key to success of vision transformers (ViTs), since it provides a flexible and…",
+      "short_abstract": "Attention mechanism has been widely believed as the key to success of vision transformers (ViTs), since it provides a flexible and powerful way to model spatial relationships. However, is the attention mechanism truly an indispensable part of ViT? Can it be replaced by some other alternatives? To demystify the role of attention mechanism, we simplify it into an extremely simple case: ZERO FLOP and ZERO parameter. Concretely, we revisit the shift operation. It does not contain any parameter or arithmetic calculation. The only operation is to exchange a small portion of the channels between neighboring features. Based on this simple operation, we construct a new backbone network, namely ShiftViT, where the attention layers in ViT are substituted by shift operations. Surprisingly, ShiftViT works quite well in several mainstream tasks, e.g., classification, detection, and segmentation. The performance is on par with or even better than the strong baseline Swin Transformer. These results…",
+      "doi": "10.1609/aaai.v36i2.20142",
+      "aliases": [
+        [
+          "doi",
+          "10.1609/aaai.v36i2.20142"
         ]
       ],
       "is_focus": false
@@ -485,69 +475,168 @@
       "is_focus": false
     },
     {
-      "id": "openalex:W4312960790",
-      "title": "Vision Transformer with Deformable Attention",
+      "id": "openalex:W4312777001",
+      "title": "Reversible Vision Transformers",
       "year": 2022,
       "venue": "IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings",
       "venue_tier": "A+",
       "authors": [
-        "Zhuofan Xia",
-        "Xuran Pan",
-        "Shiji Song",
-        "Li Erran Li",
-        "Gao Ming Huang"
+        "Karttikeya Mangalam",
+        "Haoqi Fan",
+        "Yanghao Li",
+        "Chao-Yuan Wu",
+        "Bo Xiong"
       ],
       "kinds": [],
-      "citation_count": 957,
+      "citation_count": 55,
       "github_stars": 0,
-      "tldr": "Transformers have recently shown superior performances on various vision tasks. The large, sometimes even global, receptive field endows…",
-      "short_abstract": "Transformers have recently shown superior performances on various vision tasks. The large, sometimes even global, receptive field endows Transformer models with higher representation power over their CNN counterparts. Nevertheless, simply enlarging receptive field also gives rise to several concerns. On the one hand, using dense attention e.g., in ViT, leads to excessive memory and computational cost, and features can be influenced by irrelevant parts which are beyond the region of interests. On the other hand, the sparse attention adopted in PVT or Swin Transformer is data agnostic and may limit the ability to model long range relations. To mitigate these issues, we propose a novel deformable selfattention module, where the positions of key and value pairs in selfattention are selected in a data-dependent way. This flexible scheme enables the self-attention module to focus on relevant re-gions and capture more informative features. On this basis, we present Deformable Attention…",
-      "doi": "10.1109/cvpr52688.2022.00475",
+      "tldr": "We present Reversible Vision Transformers, a memory efficient architecture design for visual recognition. By decoupling the GPU memory…",
+      "short_abstract": "We present Reversible Vision Transformers, a memory efficient architecture design for visual recognition. By decoupling the GPU memory footprint from the depth of the model, Reversible Vision Transformers enable memory efficient scaling of transformer architectures. We adapt two popular models, namely Vision Transformer and Multiscale Vision Transformers, to reversible variants and benchmark extensively across both model sizes and tasks of image classification, object detection and video classification. Reversible Vision Transformers achieve a reduced memory footprint of up to 15.5× at identical model complexity, parameters and accuracy, demonstrating the promise of reversible vision transformers as an efficient backbone for resource limited training regimes. Finally, we find that the additional computational burden of recomputing activations is more than overcome for deeper models, where throughput can increase up to 3.9 × over their non-reversible counterparts. Code and models are…",
+      "doi": "10.1109/cvpr52688.2022.01056",
       "aliases": [
         [
           "doi",
-          "10.1109/cvpr52688.2022.00475"
+          "10.1109/cvpr52688.2022.01056"
         ]
       ],
       "is_focus": false
     },
     {
-      "id": "openalex:W4313007769",
-      "title": "CSWin Transformer: A General Vision Transformer Backbone with Cross-Shaped Windows",
-      "year": 2022,
-      "venue": "IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings",
-      "venue_tier": "A+",
+      "id": "openalex:W4321232185",
+      "title": "Swin-Unet: Unet-Like Pure Transformer for Medical Image Segmentation",
+      "year": 2023,
+      "venue": "Lecture notes in computer science",
+      "venue_tier": "preprint",
       "authors": [
-        "Xiaoyi Dong",
-        "Jianmin Bao",
-        "Dongdong Chen",
-        "Weiming Zhang",
-        "Nenghai Yu"
+        "Hu Cao",
+        "Yueyue Wang",
+        "Joy Chen",
+        "Dongsheng Jiang",
+        "Xiaopeng Zhang"
       ],
       "kinds": [],
-      "citation_count": 1323,
+      "citation_count": 4087,
       "github_stars": 0,
-      "tldr": "We present CSWin Transformer, an efficient and effective Transformer-based backbone for general-purpose vision tasks. A challenging issue…",
-      "short_abstract": "We present CSWin Transformer, an efficient and effective Transformer-based backbone for general-purpose vision tasks. A challenging issue in Transformer design is that global self-attention is very expensive to compute whereas local self-attention often limits the field of interactions of each token. To address this issue, we develop the Cross-Shaped Window self-attention mechanism for computing self-attention in the horizontal and vertical stripes in parallel that form a cross-shaped window, with each stripe obtained by splitting the input feature into stripes of equal width. We provide a mathematical analysis of the effect of the stripe width and vary the stripe width for different layers of the Transformer network which achieves strong modeling capability while limiting the computation cost. We also introduce Locally-enhanced Positional Encoding (LePE), which handles the local positional information better than existing encoding schemes. LePE naturally supports arbitrary input…",
-      "doi": "10.1109/cvpr52688.2022.01181",
+      "tldr": "In the past few years, convolutional neural networks (CNNs) have achieved milestones in medical image analysis. Especially, the deep…",
+      "short_abstract": "In the past few years, convolutional neural networks (CNNs) have achieved milestones in medical image analysis. Especially, the deep neural networks based on U-shaped architecture and skip-connections have been widely applied in a variety of medical image tasks. However, although CNN has achieved excellent performance, it cannot learn global and long-range semantic information interaction well due to the locality of the convolution operation. In this paper, we propose Swin-Unet, which is an Unet-like pure Transformer for medical image segmentation. The tokenized image patches are fed into the Transformer-based U-shaped Encoder-Decoder architecture with skip-connections for local-global semantic feature learning. Specifically, we use hierarchical Swin Transformer with shifted windows as the encoder to extract context features. And a symmetric Swin Transformer-based decoder with patch expanding layer is designed to perform the up-sampling operation to restore the spatial resolution of…",
+      "arxiv_id": "2105.05537",
+      "doi": "10.1007/978-3-031-25066-8_9",
+      "is_focus": true,
+      "is_trending": true,
       "aliases": [
         [
+          "arxiv",
+          "2105.05537"
+        ],
+        [
           "doi",
-          "10.1109/cvpr52688.2022.01181"
+          "10.1007/978-3-031-25066-8_9"
+        ]
+      ],
+      "seed_paper_id": "e90473c7889852c23254c4dbc8cda0168ddc0025"
+    },
+    {
+      "id": "openalex:W4385187240",
+      "title": "ViTA: A Vision Transformer Inference Accelerator for Edge Applications",
+      "year": 2023,
+      "venue": "IEEE International Symposium on Circuits and Systems proceedings",
+      "venue_tier": "preprint",
+      "authors": [
+        "Shashank Nag",
+        "Gourav Datta",
+        "Souvik Kundu",
+        "Nitin Chandrachoodan",
+        "Peter A. Beerel"
+      ],
+      "kinds": [],
+      "citation_count": 66,
+      "github_stars": 0,
+      "tldr": "Vision Transformer models, such as ViT, Swin Transformer, and Transformer-in-Transformer, have recently gained significant traction in…",
+      "short_abstract": "Vision Transformer models, such as ViT, Swin Transformer, and Transformer-in-Transformer, have recently gained significant traction in computer vision tasks due to their ability to capture the global relation between features which leads to superior performance. However, they are compute-heavy and difficult to deploy in resource-constrained edge devices. Existing hardware accelerators, including those for the closely-related BERT transformer models, do not target highly resource-constrained environments. In this paper, we address this gap and propose ViTA - a configurable hardware accelerator for inference of vision transformer models, targeting resource-constrained edge computing devices and avoiding repeated off-chip memory accesses. We employ a head-level pipeline and inter-layer MLP optimizations, and can support several commonly used vision transformer models with changes solely in our control logic. We achieve nearly 90% hardware utilization efficiency on most vision…",
+      "arxiv_id": "2302.09108",
+      "doi": "10.1109/iscas46773.2023.10181988",
+      "aliases": [
+        [
+          "arxiv",
+          "2302.09108"
+        ],
+        [
+          "doi",
+          "10.1109/iscas46773.2023.10181988"
         ]
       ],
       "is_focus": false
+    },
+    {
+      "id": "openalex:W4387845821",
+      "title": "A lightweight hybrid vision transformer network for radar-based human activity recognition",
+      "year": 2023,
+      "venue": "Scientific Reports",
+      "venue_tier": "preprint",
+      "authors": [
+        "Sha Huan",
+        "Zhaoyue Wang",
+        "Xiaoqiang Wang",
+        "Limei Wu",
+        "Xiaoxuan Yang"
+      ],
+      "kinds": [],
+      "citation_count": 52,
+      "github_stars": 0,
+      "tldr": "Radar-based human activity recognition (HAR) offers a non-contact technique with privacy protection and lighting robustness for many…",
+      "short_abstract": "Radar-based human activity recognition (HAR) offers a non-contact technique with privacy protection and lighting robustness for many advanced applications. Complex deep neural networks demonstrate significant performance advantages when classifying the radar micro-Doppler signals that have unique correspondences with human behavior. However, in embedded applications, the demand for lightweight and low latency poses challenges to the radar-based HAR network construction. In this paper, an efficient network based on a lightweight hybrid Vision Transformer (LH-ViT) is proposed to address the HAR accuracy and network lightweight simultaneously. This network combines the efficient convolution operations with the strength of the self-attention mechanism in ViT. Feature Pyramid architecture is applied for the multi-scale feature extraction for the micro-Doppler map. Feature enhancement is executed by the stacked Radar-ViT subsequently, in which the fold and unfold operations are added to…",
+      "doi": "10.1038/s41598-023-45149-5",
+      "aliases": [
+        [
+          "doi",
+          "10.1038/s41598-023-45149-5"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4394668313",
+      "title": "Training data-efficient image transformers & distillation through attention",
+      "year": 2020,
+      "venue": "arXiv (Cornell University)",
+      "venue_tier": "preprint",
+      "authors": [
+        "Hugo Touvron",
+        "Matthieu Cord",
+        "Matthijs Douze",
+        "Francisco Massa",
+        "Alexandre Sablayrolles"
+      ],
+      "kinds": [],
+      "citation_count": 151,
+      "github_stars": 0,
+      "tldr": "Recently, neural networks purely based on attention were shown to address image understanding tasks such as image classification. However,…",
+      "short_abstract": "Recently, neural networks purely based on attention were shown to address image understanding tasks such as image classification. However, these visual transformers are pre-trained with hundreds of millions of images using an expensive infrastructure, thereby limiting their adoption. In this work, we produce a competitive convolution-free transformer by training on Imagenet only. We train them on a single computer in less than 3 days. Our reference vision transformer (86M parameters) achieves top-1 accuracy of 83.1% (single-crop evaluation) on ImageNet with no external data. More importantly, we introduce a teacher-student strategy specific to transformers. It relies on a distillation token ensuring that the student learns from the teacher through attention. We show the interest of this token-based distillation, especially when using a convnet as a teacher. This leads us to report results competitive with convnets for both Imagenet (where we obtain up to 85.2% accuracy) and when…",
+      "arxiv_id": "2012.12877",
+      "doi": "10.48550/arxiv.2012.12877",
+      "is_focus": true,
+      "aliases": [
+        [
+          "arxiv",
+          "2012.12877"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2012.12877"
+        ]
+      ],
+      "seed_paper_id": "ae74f39639524ecab8cf9525a0912a47002c5417"
     }
   ],
   "edges": [
     {
       "src": "openalex:W3094502228",
       "dst": "openalex:W3119997354",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.65,
-      "confidence": 0.65,
-      "rationale": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Transformers in Vision」(2022) は 「An Image is Worth 16x16 Words: …」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -555,11 +644,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "7de92dbfc132036a8113f50a813f264ef3b18c81dab47096801d9b1cefae14e5"
+          "kind": "citation-context",
+          "sha256": "0a04ac4faaea4d19d71c9c19de1fe0547004f6469bc11327aedd3962b5ca5d45"
         },
         "classification": {
-          "method": "foundational_allowlist",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -569,12 +658,12 @@
     },
     {
       "src": "openalex:W3094502228",
-      "dst": "openalex:W3121523901",
+      "dst": "openalex:W3127751679",
       "rel": "extends",
       "relation": "extends",
-      "conf": 0.65,
-      "confidence": 0.65,
-      "rationale": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「TransUNet」(2021) は 「An Image is Worth 16x16 Words: …」(2021) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"To demonstrate the effectiveness of our CUP decoder, we use ViT [4] as the encoder, and compare results using naive upsampling (“None”) and CUP as the decoder, respectively; To demonstrate the effectiveness of our hybrid encoder design, we…\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -582,11 +671,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "68cbe100fbe921db2fe94a2fa48fc54892c3553df23a11b5d66f672639c542cb"
+          "kind": "citation-context",
+          "sha256": "8b0bf7624f936845cb1b7f07dced63d58012cbbd331d81f7090706baecf551e2"
         },
         "classification": {
-          "method": "foundational_allowlist",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -601,7 +690,7 @@
       "relation": "extends",
       "conf": 0.65,
       "confidence": 0.65,
-      "rationale": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "rationale": "「Pyramid Vision Transformer: A Versatile Backbone for Dense …」(2021) は分野の基礎文献「An Image is Worth 16x16 Words: Transformers for Image Recog…」(2020)を引用しており、その系譜に連なるものとして拡張関係で残している（基礎文献リストに基づく規則）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -623,12 +712,12 @@
     },
     {
       "src": "openalex:W3094502228",
-      "dst": "openalex:W3136635488",
+      "dst": "openalex:W3138516171",
       "rel": "extends",
       "relation": "extends",
-      "conf": 0.65,
-      "confidence": 0.65,
-      "rationale": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Swin Transformer」(2021) は 「An Image is Worth 16x16 Words: …」(2020) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"(b) In contrast, previous vision Transformers [19] produce feature maps of a single low resolution and have quadratic computation complexity to input image size due to computation of selfattention globally.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -636,11 +725,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "5378be5c2a3dcf43ce76f706d0b00ae0a7811fca18b7442520717504f76ed551"
+          "kind": "citation-context",
+          "sha256": "ec6ef98dd0ddc1b07c311bfc06bf9fdffc27971017b32dd77708ce8fadaab670"
         },
         "classification": {
-          "method": "foundational_allowlist",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -650,12 +739,12 @@
     },
     {
       "src": "openalex:W3094502228",
-      "dst": "openalex:W3138516171",
+      "dst": "openalex:W3145450063",
       "rel": "extends",
       "relation": "extends",
-      "conf": 0.65,
-      "confidence": 0.65,
-      "rationale": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「An Empirical Study of Training …」(2021) は 「An Image is Worth 16x16 Words: …」(2021) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"prior works [8, 15] that train self-supervised Transformers with masked auto-encoding, we study the frameworks that are based on Siamese networks, including MoCo [19] and others [9, 17, 7].\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -663,11 +752,38 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "be9ff53800b33cdbd46eca86ae6cfd724f5549606b0ba4ac08d4ec322e1923ae"
+          "kind": "citation-context",
+          "sha256": "df66b3aae73d9abcd638499badd04f25d4aa2224c38935db292d5538d49a0293"
         },
         "classification": {
-          "method": "foundational_allowlist",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3094502228",
+      "dst": "openalex:W3146097248",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Going deeper with Image Transfo…」(2021) は 「An Image is Worth 16x16 Words: …」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"On ImageNet1k-val [55], our model is on par with the state of the art (86.5\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "94073a6fd98f76082efe2e652da2192e9ef7cce7910a301ca0c6f2e83b9fba6d"
+        },
+        "classification": {
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -680,9 +796,9 @@
       "dst": "openalex:W3147387781",
       "rel": "extends",
       "relation": "extends",
-      "conf": 0.65,
-      "confidence": 0.65,
-      "rationale": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「ViViT」(2021) は 「An Image is Worth 16x16 Words: …」(2021) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Con-cretely, if n h · n w non-overlapping image patches are extracted from each frame, as in [18], then a total of n t · n h · n w tokens will be forwarded through the transformer encoder.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -690,11 +806,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "5f6b8241a45d1df8b604a0d5b11c036cf3e4b4c17139139eef792b2447807748"
+          "kind": "citation-context",
+          "sha256": "ae0a9305ace7709a8981c8741bcdd1edbbeea42453a2acf47de71299de03b2b6"
         },
         "classification": {
-          "method": "foundational_allowlist",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -705,11 +821,11 @@
     {
       "src": "openalex:W3094502228",
       "dst": "openalex:W3159481202",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.65,
-      "confidence": 0.65,
-      "rationale": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Emerging Properties in Self-Sup…」(2021) は 「An Image is Worth 16x16 Words: …」(2020) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"The resulting Vision Transformers (ViT) [19] are competitive with convnets but, they have not yet delivered clear beneﬁts over them: they are computationally more demanding, require more training data, and their features do not exhibit uni…\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -717,11 +833,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "ac5cd0e07373c8bd7026ba24983f31f235a6aa871b46e82a08d4e381d63e401c"
+          "kind": "citation-context",
+          "sha256": "9d2cc0b90cd2e03fa3cc7d71c3a3312b8b84e613b0ea703e3ccc68062cbdbcf6"
         },
         "classification": {
-          "method": "foundational_allowlist",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -736,7 +852,7 @@
       "relation": "extends",
       "conf": 0.65,
       "confidence": 0.65,
-      "rationale": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "rationale": "「Segmenter: Transformer for Semantic Segmentation」(2021) は分野の基礎文献「An Image is Worth 16x16 Words: Transformers for Image Recog…」(2021)を引用しており、その系譜に連なるものとして拡張関係で残している（基礎文献リストに基づく規則）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -758,12 +874,12 @@
     },
     {
       "src": "openalex:W3094502228",
-      "dst": "openalex:W3175515048",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.65,
-      "confidence": 0.65,
-      "rationale": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "dst": "openalex:W3207918547",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「SwinIR」(2021) は 「An Image is Worth 16x16 Words: …」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -771,11 +887,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "afb06977972414c710cf87cdd49cdcb6c1b2aaff265dc4345a6c3652027ee2d4"
+          "kind": "citation-context",
+          "sha256": "199e61cfd9f4377c5c4023e6f48841e7c2b8f89e8bd192f1c553917fbf896a9d"
         },
         "classification": {
-          "method": "foundational_allowlist",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -785,12 +901,12 @@
     },
     {
       "src": "openalex:W3094502228",
-      "dst": "openalex:W3207918547",
+      "dst": "openalex:W4226028923",
       "rel": "extends",
       "relation": "extends",
       "conf": 0.65,
       "confidence": 0.65,
-      "rationale": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "rationale": "「When Shift Operation Meets Vision Transformer: An Extremely…」(2022) は分野の基礎文献「An Image is Worth 16x16 Words: Transformers for Image Recog…」(2020)を引用しており、その系譜に連なるものとして拡張関係で残している（基礎文献リストに基づく規則）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -799,7 +915,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-metadata",
-          "sha256": "4605f045c3ad5e6e53b7d51f8639538f59c2936d274ef8ce59f8326c65ec4527"
+          "sha256": "1def6993ef1f99658d9a6368e9c68e10b906113563e35bfb5ecce2ae43a9eb40"
         },
         "classification": {
           "method": "foundational_allowlist",
@@ -817,7 +933,7 @@
       "relation": "extends",
       "conf": 0.65,
       "confidence": 0.65,
-      "rationale": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "rationale": "「Swin Transformer V2: Scaling Up Capacity and Resolution」(2022) は分野の基礎文献「An Image is Worth 16x16 Words: Transformers for Image Recog…」(2020)を引用しており、その系譜に連なるものとして拡張関係で残している（基礎文献リストに基づく規則）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -840,146 +956,11 @@
     {
       "src": "openalex:W3094502228",
       "dst": "openalex:W4312560592",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.65,
-      "confidence": 0.65,
-      "rationale": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "ee4fb3663821a1f859c2904ef0b6e0cad1ed7484c4ce0c95ff6aa156caf5f67a"
-        },
-        "classification": {
-          "method": "foundational_allowlist",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3094502228",
-      "dst": "openalex:W4312960790",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.65,
-      "confidence": 0.65,
-      "rationale": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "d4910ea06fe115e47b2deb1459f52350653c15d671734023b0521bb36c9fb4a0"
-        },
-        "classification": {
-          "method": "foundational_allowlist",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3094502228",
-      "dst": "openalex:W4313007769",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.65,
-      "confidence": 0.65,
-      "rationale": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "9988b459b166e42e9e71c06c114622354212636dbddd1d8163b0ada9a44ead26"
-        },
-        "classification": {
-          "method": "foundational_allowlist",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3121523901",
-      "dst": "openalex:W3131500599",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.85,
-      "confidence": 0.85,
-      "rationale": "B のピラミッド構造と空間縮小注意機構は、A のトークン化手法をベースに階層的特徴抽出を導入し、密な予測タスクへ拡張している。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "f3296d6859e29c20bdecd0eae7a4fb01c9e91fe9c60927f700038c84588a93d3"
-        },
-        "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v2",
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3121523901",
-      "dst": "openalex:W3138516171",
-      "rel": "contrasts",
-      "relation": "contrasts",
-      "conf": 0.75,
-      "confidence": 0.75,
-      "rationale": "B の階層的なシフトウィンドウ構造は、A のトークン化改善とは別のアプローチで ViT の性能を向上させている。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "6492b6dbd051e3cbc53e29a6b7045f75d405f35974817a374ceb734659ced3b8"
-        },
-        "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v2",
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3121523901",
-      "dst": "openalex:W3175515048",
       "rel": "baseline_only",
       "relation": "baseline_only",
       "conf": 0.6,
       "confidence": 0.6,
-      "rationale": "「PVT v2: Improved baselines with pyramid vision tr…」(2022) は 「Tokens-to-Token ViT: Training Vision Transformers…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"T2T ViT [37] con-catenates tokens within an overlapping sliding window into one token progressively.\"",
+      "rationale": "「Video Swin Transformer」(2022) は 「An Image is Worth 16x16 Words: …」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Compared to the original Swin Transformer, only two building blocks in Video Swin Transformers have different shapes, the linear embedding layer in the ﬁrst stage and the relative position biases in the Video Swin Transformer block.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -988,7 +969,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "7d6db19a71e27526356092fa2a1e3b4eff3f726973cc5036f8f05d1eb62616e1"
+          "sha256": "ffb7774a4d299cf57283c74ac48259a18c23b0bef977c08de335ba7af3edea76"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -1000,40 +981,13 @@
       }
     },
     {
-      "src": "openalex:W3121523901",
-      "dst": "openalex:W3204076343",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.92,
-      "confidence": 0.92,
-      "rationale": "AのTokens-to-Token ViTはトークン化手法を提示し、Bは精度面で比較し上回っていることを示す 引用文: \"With fewer paramerters, CvT-13 achieves a 81.6% ImageNet Top-1 accuracy, outperforming PVT-Small [34], T2T-ViT t -14 [41], TNT-S [14] by 1.7%, 0.8%, 0.2% respectively.\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "8fba327a0cbdf7584b0bdcc973826ca9b710f2c5db3a886b225d218d0033e01b"
-        },
-        "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v3-context",
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3121523901",
-      "dst": "openalex:W3212645988",
+      "src": "openalex:W3094502228",
+      "dst": "openalex:W4312777001",
       "rel": "extends",
       "relation": "extends",
-      "conf": 0.8,
-      "confidence": 0.8,
-      "rationale": "「SwinNet: Swin Transformer Drives Edge-Aware RGB-D…」(2021) は 「Tokens-to-Token ViT: Training Vision Transformers…」(2021) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Recently, inspired by successful ViT [66], transformer variants emerge explosively.\"",
+      "conf": 0.65,
+      "confidence": 0.65,
+      "rationale": "「Reversible Vision Transformers」(2022) は分野の基礎文献「An Image is Worth 16x16 Words: Transformers for Image Recog…」(2020)を引用しており、その系譜に連なるものとして拡張関係で残している（基礎文献リストに基づく規則）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1041,11 +995,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "8a61d47c37386fc40a351dcdd87a5eefba34e61cd2a8a222cfc7ec6a08844f44"
+          "kind": "citation-metadata",
+          "sha256": "1d5dd2d989935da2319e08e6666d2b200c41911b80ca4bedb8a604b2705aa7e7"
         },
         "classification": {
-          "method": "s2_context_rule",
+          "method": "foundational_allowlist",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -1054,13 +1008,13 @@
       }
     },
     {
-      "src": "openalex:W3121523901",
-      "dst": "openalex:W4313007769",
+      "src": "openalex:W3094502228",
+      "dst": "openalex:W4394668313",
       "rel": "baseline_only",
       "relation": "baseline_only",
       "conf": 0.75,
       "confidence": 0.75,
-      "rationale": "「CSWin Transformer: A General Vision Transformer B…」(2022) は 「Tokens-to-Token ViT: Training Vision Transformers…」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"It shows that our CSWin Transformers outperform previous state-of-the-art vision Transformers by large margins.\"",
+      "rationale": "「Training data-efficient image t…」(2020) は 「An Image is Worth 16x16 Words: …」(2020) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Recently Visual transformers (ViT) [15] closed the gap with the state of the art on ImageNet, without using any convolution.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1069,7 +1023,34 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "a0d3682e556cd80b3fce4c4f746837600590663eb2112bac246359dc2295604e"
+          "sha256": "79517b99d3340ea3a4e2446e84ad3527b1a932e7c732a5237f4f39044eb1dff1"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3127751679",
+      "dst": "openalex:W4321232185",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Swin-Unet」(2023) は 「TransUNet」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Compared with Att-Unet [37] and the recently method TransUnet [2], although our algorithm did not improve much on the DSC evaluation metric, we achieved accuracy improvement of about 4% and 10% on the HD evaluation metric, which indicates …\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "efe42a711ea6032b01642da8ddada7602903a5e02a01c316979e4c11d1949e71"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -1087,7 +1068,7 @@
       "relation": "baseline_only",
       "conf": 0.6,
       "confidence": 0.6,
-      "rationale": "「Swin Transformer: Hierarchical Vision Transformer…」(2021) は 「Pyramid Vision Transformer: A Versatile Backbone …」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Another concurrent work [60] explores a similar line of thinking to build multi-resolution feature maps on Transformers.\"",
+      "rationale": "「Swin Transformer」(2021) は 「Pyramid Vision Transformer」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Another concurrent work [60] explores a similar line of thinking to build multi-resolution feature maps on Transformers.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1109,66 +1090,12 @@
     },
     {
       "src": "openalex:W3131500599",
-      "dst": "openalex:W3175515048",
-      "rel": "successor",
-      "relation": "successor",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「PVT v2: Improved baselines with pyramid vision transformer」(2022) は「Pyramid Vision Transformer: A Versatile Backbone for Dense …」(2021) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "6ef9e34d81ec360ebdd1c8694fa07a5d88a0af1091fa760d98891a8c852895a4"
-        },
-        "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3131500599",
-      "dst": "openalex:W3204076343",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「CvT: Introducing Convolutions to Vision Transform…」(2021) は 「Pyramid Vision Transformer: A Versatile Backbone …」(2021) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"With fewer paramerters, CvT-13 achieves a 81.6% ImageNet Top-1 accuracy, outperforming PVT-Small [34], T2T-ViT t -14 [41], TNT-S [14] by 1.7%, 0.8%, 0.2% respectively.\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "f1bf620dee8a7bb4753e7ee7cacc598ada1c67ccbe4a1b9c6cb49ec9a3baaf74"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3131500599",
-      "dst": "openalex:W3212645988",
+      "dst": "openalex:W3147387781",
       "rel": "baseline_only",
       "relation": "baseline_only",
       "conf": 0.6,
       "confidence": 0.6,
-      "rationale": "「SwinNet: Swin Transformer Drives Edge-Aware RGB-D…」(2021) は 「Pyramid Vision Transformer: A Versatile Backbone …」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"1) The Effectiveness of Swin Transformer Backbone: We replaces Swin Transformer backbone with some CNN backbones (e.g., ResNet-50 [96], Res2Net-50 [97], ResNet-101 [96], Res50+ViT16 [98]) and transformer backbones (e.g., T2T-14 [66] and PV…\"",
+      "rationale": "「ViViT」(2021) は 「Pyramid Vision Transformer」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1177,7 +1104,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "d2b60eb691666046717caff66f8b266f8906c8dac6da8f1de4a2cd27b9c954d9"
+          "sha256": "4ed1b01df4141471f4adfbb299efdbce9cbdc52feb5542f6340aacc1e6a47263"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -1195,7 +1122,7 @@
       "relation": "baseline_only",
       "conf": 0.6,
       "confidence": 0.6,
-      "rationale": "「Swin Transformer V2: Scaling Up Capacity and Reso…」(2022) は 「Pyramid Vision Transformer: A Versatile Backbone …」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Since these works, numerous vision Transformer variants have been proposed to improve the accuracy at relatively small scale [14,21,34,42,63,68,71,75,77,78,82].\"",
+      "rationale": "「Swin Transformer V2」(2022) は 「Pyramid Vision Transformer」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1217,12 +1144,12 @@
     },
     {
       "src": "openalex:W3131500599",
-      "dst": "openalex:W4312960790",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.8,
-      "confidence": 0.8,
-      "rationale": "「Vision Transformer with Deformable Attention」(2022) は 「Pyramid Vision Transformer: A Versatile Backbone …」(2021) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"To make a fair comparison to PVT [36] and Swin Transformer [26], we follow the learning rate schedules and training epochs, except for the degree of stochastic depth, which is a key hyper-parameter affecting the ﬁnal performance.\"",
+      "dst": "openalex:W4312777001",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Reversible Vision Transformers」(2022) は 「Pyramid Vision Transformer」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1231,7 +1158,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "830f6e677006590c9e071c505a45a7d3dba2b01ff132541a80f7e42ed37c0750"
+          "sha256": "dd3f114d0c8350a2a2a16b26404b8dc6c2de380b9846a56be2aa58f36657883d"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -1244,39 +1171,12 @@
     },
     {
       "src": "openalex:W3131500599",
-      "dst": "openalex:W4313007769",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.8,
-      "confidence": 0.8,
-      "rationale": "「CSWin Transformer: A General Vision Transformer B…」(2022) は 「Pyramid Vision Transformer: A Versatile Backbone …」(2021) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"For fair comparison, we follow previous works [30, 47] and train Semantic FPN 80k iterations with batch size as 16, and Upernet 160k iterations with batch size as 16, more details are provided in the supplementary material.\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "9237de65fc62590da9f92440039d79be202ca1898ef76aba2543e75329fe034d"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3136635488",
-      "dst": "openalex:W3212645988",
+      "dst": "openalex:W4321232185",
       "rel": "baseline_only",
       "relation": "baseline_only",
       "conf": 0.6,
       "confidence": 0.6,
-      "rationale": "「SwinNet: Swin Transformer Drives Edge-Aware RGB-D…」(2021) は 「Vision Transformers for Dense Prediction」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"DPT [69] assembles tokens from multiple stages of the vision transformer and progressively combines them into full-resolution predictions using a convolutional decoder.\"",
+      "rationale": "「Swin-Unet」(2023) は 「Pyramid Vision Transformer」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1285,7 +1185,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "cbe578c62db708ad735b775906d1f2c099210e1db74512178db05bd13400a080"
+          "sha256": "b76de6278a3da9f7f87696cd72185c94a1c3bf617ff8913984d13dcd546c6517"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -1299,11 +1199,11 @@
     {
       "src": "openalex:W3138516171",
       "dst": "openalex:W3161838454",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.8,
-      "confidence": 0.8,
-      "rationale": "「Segmenter: Transformer for Semantic Segmentation」(2021) は 「Swin Transformer: Hierarchical Vision Transformer…」(2021) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Swin Transformer [35] uses a variant of ViT, composed of local windows, shifted between layers and UpperNet as a pyramid FCN decoder.\"",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「Segmenter」(2021) は 「Swin Transformer」(2021) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"On ADE20K, we train our largest model Seg-L-Mask/16 with a resolution of 640×640, matching the resolution used by the Swin Transformer [35].\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1325,39 +1225,12 @@
     },
     {
       "src": "openalex:W3138516171",
-      "dst": "openalex:W3175515048",
-      "rel": "successor",
-      "relation": "successor",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「PVT v2: Improved baselines with pyramid vision transformer」(2022) は「Swin Transformer: Hierarchical Vision Transformer using Shi…」(2021) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "caaa5d348343d9ed6fd7015064207d385535156eca88561372fdf69093512afb"
-        },
-        "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3138516171",
       "dst": "openalex:W3207918547",
       "rel": "extends",
       "relation": "extends",
       "conf": 0.5,
       "confidence": 0.5,
-      "rationale": "「SwinIR: Image Restoration Using Swin Transformer」(2021) は 「Swin Transformer: Hierarchical Vision Transformer…」(2021) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We show the effects of channel number, RSTB number and STL number in a RSTB on model performance in Figs.\"",
+      "rationale": "「SwinIR」(2021) は 「Swin Transformer」(2021) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Swin Transformer layer (STL) [56] is based on the standard multi-head selfattention of the original Transformer layer [76].\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1379,12 +1252,12 @@
     },
     {
       "src": "openalex:W3138516171",
-      "dst": "openalex:W3212645988",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「SwinNet: Swin Transformer Drives Edge-Aware RGB-D…」(2021) は 「Swin Transformer: Hierarchical Vision Transformer…」(2021) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Considering the complexity and efficiency, Swin-B version [34] is adopted.\"",
+      "dst": "openalex:W4226028923",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「When Shift Operation Meets Visi…」(2022) は 「Swin Transformer」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"For a fair comparison, we follow the architecture of Swin Transformer (Liu et al. 2021b).\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1393,7 +1266,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "c20422c4ae7baf4ec2f71dca2f95eebcd41366947d4d1a3bf2791916abf94e9f"
+          "sha256": "57cc966659958dd2dff57df22ca63b1149f57538e40287682e1e9e83fb8a5014"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -1434,8 +1307,8 @@
     {
       "src": "openalex:W3138516171",
       "dst": "openalex:W4312443924",
-      "rel": "successor",
-      "relation": "successor",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
       "conf": 0.4,
       "confidence": 0.4,
       "rationale": "「A ConvNet for the 2020s」(2022) は「Swin Transformer: Hierarchical Vision Transformer using Shi…」(2021) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
@@ -1461,11 +1334,11 @@
     {
       "src": "openalex:W3138516171",
       "dst": "openalex:W4312560592",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.7,
-      "confidence": 0.7,
-      "rationale": "「Video Swin Transformer」(2022) は 「Swin Transformer: Hierarchical Vision Transformer…」(2021) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"As our architecture is adapted from Swin Transformer [28], our model can be initialized by its strong pre-trained model on a large-scale dataset.\"",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Video Swin Transformer」(2022) は 「Swin Transformer」(2021) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"As our architecture is adapted from Swin Transformer [28], our model can be initialized by its strong pre-trained model on a large-scale dataset.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1487,12 +1360,39 @@
     },
     {
       "src": "openalex:W3138516171",
-      "dst": "openalex:W4312960790",
+      "dst": "openalex:W4312777001",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.4,
+      "confidence": 0.4,
+      "rationale": "「Reversible Vision Transformers」(2022) は「Swin Transformer: Hierarchical Vision Transformer using Shi…」(2021) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-metadata",
+          "sha256": "b23200b9bb0412b48db325ed5a28207c344a8d747fc8c1649a53816295c6891c"
+        },
+        "classification": {
+          "method": "citation_heuristic",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3138516171",
+      "dst": "openalex:W4321232185",
       "rel": "extends",
       "relation": "extends",
       "conf": 0.5,
       "confidence": 0.5,
-      "rationale": "「Vision Transformer with Deformable Attention」(2022) は 「Swin Transformer: Hierarchical Vision Transformer…」(2021) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"The output of an attention head is formulated as: where φ ( ˆ B ; R ) ∈ R HW × H G W G correspond to the position embedding following previous work [26] while with several adaptations.\"",
+      "rationale": "「Swin-Unet」(2023) は 「Swin Transformer」(2021) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Motivated by the Swin Transformer’s [19] success, we propose Swin-Unet to leverage the power of Transformer for 2D medical image segmentation in this work.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1501,7 +1401,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "f527c2a6f63c2f75a7a1cb2978dec725b15e9b24b46c06b53ab69784f27f39d2"
+          "sha256": "a18724ea267fa07329b661c793be618fd1d0e641a04ad9b55aa84e12ef6e74ac"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -1514,12 +1414,12 @@
     },
     {
       "src": "openalex:W3138516171",
-      "dst": "openalex:W4313007769",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「CSWin Transformer: A General Vision Transformer B…」(2022) は 「Swin Transformer: Hierarchical Vision Transformer…」(2021) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Meanwhile, we notice that RPE introduces bias in a per head manner, while our LePE is a per-channel bias, which may show more potential to serve as positional embeddings.\"",
+      "dst": "openalex:W4385187240",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「ViTA」(2023) は 「Swin Transformer」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Its success motivated the development of other transformer-based models, such as the Swin Transformer [2], Data-efﬁcient image Transformers [4], and Transformer-in-Transformer [3].\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1528,7 +1428,115 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "ced21da10e2ffa7e4f5207bdea19eb806cb9420c9db6756f4d5300805bc1f59a"
+          "sha256": "07eeef1485bbec59cfa46b6d5e971b8a9460f925a15dcc61613993fafcfc859a"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3145450063",
+      "dst": "openalex:W4226002507",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Masked Autoencoders Are Scalabl…」(2022) は 「An Empirical Study of Training …」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"In Figure 9 we also compare with MoCo v3 [9], a contrastive method with ViT-L results available.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "fe76274e114390085678617e62cd3cee1547307d22e7e5f893e2d3775165685c"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3146097248",
+      "dst": "openalex:W4312443924",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「A ConvNet for the 2020s」(2022) は 「Going deeper with Image Transfo…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Layer Scale [74] of initial value 1e-6 is applied.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "73c80b6943e1f13c096fa1a44b688a4d16dcf48d08d46311475182250300109a"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3146097248",
+      "dst": "openalex:W4312777001",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Reversible Vision Transformers」(2022) は 「Going deeper with Image Transfo…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "2c9ea1069edebd7389e171e7e30974c97f73a260abfc18e5caec497e39c6a802"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3146097248",
+      "dst": "openalex:W4321232185",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Swin-Unet」(2023) は 「Going deeper with Image Transfo…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Since Transformer is too deep to be converged [33], only two successive Swin Transformer blocks are used to constructed the bottleneck to learn the deep feature representation.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "fa2f6edc10518bec35f54e74a0592b13c694548519a4a2bc669a52812bfbd735"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -1546,7 +1554,7 @@
       "relation": "baseline_only",
       "conf": 0.8,
       "confidence": 0.8,
-      "rationale": "「Transformers in Vision: A Survey」(2022) は 「ViViT: A Video Vision Transformer」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"A few exceptions include [10, 18, 147, 215] which obtain frame-level features also using the ViT based backbones.\"",
+      "rationale": "「Transformers in Vision」(2022) は 「ViViT」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Another notable pure-transformer based model is the Video Vision Transformer (ViViT) [10].\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1573,7 +1581,7 @@
       "relation": "baseline_only",
       "conf": 0.6,
       "confidence": 0.6,
-      "rationale": "「Segmenter: Transformer for Semantic Segmentation」(2021) は 「ViViT: A Video Vision Transformer」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Concurrent work extends this work to video classi-ﬁcation [2, 6] and semantic segmentation [35, 67].\"",
+      "rationale": "「Segmenter」(2021) は 「ViViT」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1596,11 +1604,11 @@
     {
       "src": "openalex:W3147387781",
       "dst": "openalex:W4312349930",
-      "rel": "contrasts",
-      "relation": "contrasts",
-      "conf": 0.85,
-      "confidence": 0.85,
-      "rationale": "B の階層的ウィンドウ注意を用いた Swin Transformer V2 は、A の純粋なトランスフォーマーによる ViViT と同じ Kinetics-400 動画分類タスクで、ウィンドウ分割という根本的に異なるアプローチで競合している。",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.4,
+      "confidence": 0.4,
+      "rationale": "「Swin Transformer V2: Scaling Up Capacity and Resolution」(2022) は「ViViT: A Video Vision Transformer」(2021) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1608,14 +1616,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "7103535839c4ee9e85b92b263196e9f02cd0e82b5ddd4bafb8979237288caef7"
+          "kind": "citation-metadata",
+          "sha256": "b912fa2a6d96855a1e7ca62de58b1577262d65260338fa44162f5d1472e192f0"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v2",
+          "method": "citation_heuristic",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -1623,11 +1631,11 @@
     {
       "src": "openalex:W3147387781",
       "dst": "openalex:W4312560592",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.8,
-      "confidence": 0.8,
-      "rationale": "「Video Swin Transformer」(2022) は 「ViViT: A Video Vision Transformer」(2021) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"For inference, we follow [1] by using 4 × 3 views, where a video is uniformly sampled in the temporal dimension as 4 clips, and for each clip, the shorter spatial side is scaled to 224 pixels and we take 3 crops of size 224 × 224 that cove…\"",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Video Swin Transformer」(2022) は 「ViViT」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Initialization on linear embedding layer and 3D relative position bias matrix In ViViT [1], center initialization of the linear embedding layer outperforms inﬂate initialization by a large margin.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1648,40 +1656,13 @@
       }
     },
     {
-      "src": "openalex:W3161838454",
-      "dst": "openalex:W4313007769",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.8,
-      "confidence": 0.8,
-      "rationale": "「CSWin Transformer: A General Vision Transformer B…」(2022) は 「Segmenter: Transformer for Semantic Segmentation」(2021) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Built upon the success of ViT, many efforts have been devoted to designing better Transformer based architectures for various vision tasks, including low-level image processing [4, 46], image classification [8,8,10,13,14,17,24,42,43,47,49,…\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "dc51ac6f209e7eb8b23b92c912c0212c6cc91bd54947a2045c74499339853717"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3175515048",
-      "dst": "openalex:W3131500599",
+      "src": "openalex:W3147387781",
+      "dst": "openalex:W4312777001",
       "rel": "baseline_only",
       "relation": "baseline_only",
       "conf": 0.6,
       "confidence": 0.6,
-      "rationale": "「Pyramid Vision Transformer: A Versatile Backbone …」(2021) は 「PVT v2: Improved baselines with pyramid vision tr…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"This is a worth exploring direction, we recently propose a solu-tion PVTv2 [67].\"",
+      "rationale": "「Reversible Vision Transformers」(2022) は 「ViViT」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1690,7 +1671,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "a4cb726697cb373cb1409ec8a800d248edf9ff376a1f4e0b5e8a5774d4bac532"
+          "sha256": "ea03328e8976a16f835f6b634d848c1595a70e01a717f00b016f5891168a445d"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -1702,13 +1683,13 @@
       }
     },
     {
-      "src": "openalex:W3175515048",
-      "dst": "openalex:W4312960790",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Vision Transformer with Deformable Attention」(2022) は 「PVT v2: Improved baselines with pyramid vision tr…」(2022) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Recent works [6, 11, 35, 39] have proved that adopting convolution layers in the Vision Transformer architecture can further improve model performances.\"",
+      "src": "openalex:W3159481202",
+      "dst": "openalex:W3145450063",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「An Empirical Study of Training …」(2021) は 「Emerging Properties in Self-Sup…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"The gain of using small patches is also observed in [8].\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1717,7 +1698,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "b948a529dbd70db217b314506f51b0e6a6b345e9b66e404afdd5ca62cd3a0b29"
+          "sha256": "77bff7ff27c47846da661a4ffaddab557fb167ad49fed153a97a54dc56b7f080"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -1729,13 +1710,13 @@
       }
     },
     {
-      "src": "openalex:W3204076343",
-      "dst": "openalex:W3175515048",
+      "src": "openalex:W3159481202",
+      "dst": "openalex:W4226002507",
       "rel": "baseline_only",
       "relation": "baseline_only",
       "conf": 0.92,
       "confidence": 0.92,
-      "rationale": "CvTは畳み込みを導入したVision Transformerであり、Bはそれを関連研究として紹介している。 引用文: \"Recent studies on vision Transformer are converging on the backbone network [7, 29, 31, 32, 21, 34, 9, 4] designed for downstream vision tasks, such as image classification, object detection, instance and semantic segmentation.\"",
+      "rationale": "Masked Autoencoders は自己教師あり ViT の学習手法を提案しており、Emerging Properties の分析結果を直接継承せず、単なる比較対象としてのみ利用している。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1744,79 +1725,25 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "relation-input",
-          "sha256": "c3c85421e7f47c4d54f923b8a67fd7c7d02f16aa79c20775cafb3183ee42b6ea"
+          "sha256": "c3bbcc46807db3ebe59fb1c2be0e033e8bdb0d5e12ee89d04782d74204b84b32"
         },
         "classification": {
           "method": "llm",
           "provider": "groq",
           "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v3-context",
+          "prompt_version": "relation-prompt-v4",
           "schema_version": "relation-classification-v1"
         }
       }
     },
     {
-      "src": "openalex:W3204076343",
-      "dst": "openalex:W3212645988",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「SwinNet: Swin Transformer Drives Edge-Aware RGB-D…」(2021) は 「CvT: Introducing Convolutions to Vision Transform…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"CvT [67] adds convolutional layers into the multi-head self-attention.\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "226ebc3022cecdcf5d55781931ceb117efe1e60344e6cd7e77b271539ed05afb"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3204076343",
+      "src": "openalex:W4226002507",
       "dst": "openalex:W4312443924",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.78,
-      "confidence": 0.78,
-      "rationale": "B のタイトル『A ConvNet for the 2020s』は、A の CvT が提案した畳み込みトークン埋め込みを背景に、従来の ConvNet アーキテクチャの重要性を論じるだけで、直接的な手法の継承はない。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "636c4a452473ea07b259a9bef1256ba10307c25470ae251ff7ead8d09b7717d8"
-        },
-        "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v2",
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3204076343",
-      "dst": "openalex:W4312960790",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
       "conf": 0.6,
       "confidence": 0.6,
-      "rationale": "「Vision Transformer with Deformable Attention」(2022) は 「CvT: Introducing Convolutions to Vision Transform…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"CvT [39] adopts convolution in the tokenization process and utilizes stride convolution to reduce the computation complexity of selfattention.\"",
+      "rationale": "「A ConvNet for the 2020s」(2022) は 「Masked Autoencoders Are Scalabl…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1825,34 +1752,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "2f46ca7003e4fddafffb80a925f264c87fa41e327395a952aa8c49414fe5db57"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3204076343",
-      "dst": "openalex:W4313007769",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.8,
-      "confidence": 0.8,
-      "rationale": "「CSWin Transformer: A General Vision Transformer B…」(2022) は 「CvT: Introducing Convolutions to Vision Transform…」(2021) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"For an input image with size of H×W×3, we follow [49] and leverage the overlapped convolutional token embedding (7 × 7 convolution layer with stride 4) ) to obtain H4 × W4 patch tokens, and the dimension of each token is C.\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "c214005edd734ec0c857fc740590c4dca35d96ee6287479612994d0dd2c0b24a"
+          "sha256": "3a22059c56e5d8657dcdc154e1de0abf24d38fdb0fb6c2dd26b75aad8d52eff6"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -1866,8 +1766,8 @@
     {
       "src": "openalex:W4312560592",
       "dst": "openalex:W4312349930",
-      "rel": "successor",
-      "relation": "successor",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
       "conf": 0.4,
       "confidence": 0.4,
       "rationale": "「Swin Transformer V2: Scaling Up Capacity and Resolution」(2022) は「Video Swin Transformer」(2022) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
@@ -1891,13 +1791,13 @@
       }
     },
     {
-      "src": "openalex:W4313007769",
-      "dst": "openalex:W4312349930",
+      "src": "openalex:W4321232185",
+      "dst": "openalex:W3207918547",
       "rel": "baseline_only",
       "relation": "baseline_only",
       "conf": 0.6,
       "confidence": 0.6,
-      "rationale": "「Swin Transformer V2: Scaling Up Capacity and Reso…」(2022) は 「CSWin Transformer: A General Vision Transformer B…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Since these works, numerous vision Transformer variants have been proposed to improve the accuracy at relatively small scale [14,21,34,42,63,68,71,75,77,78,82].\"",
+      "rationale": "「SwinIR」(2021) は 「Swin-Unet」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1906,7 +1806,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "652969ab64ca057fd0c4af2c43677b6529245344d8fc56fec64a3607d4d75ae0"
+          "sha256": "dff9b722f43f4f03c4971bd43628ccc8d8739cc21a3f8df57d75de49cd8a603e"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -1918,13 +1818,13 @@
       }
     },
     {
-      "src": "openalex:W4313007769",
-      "dst": "openalex:W4312960790",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Vision Transformer with Deformable Attention」(2022) は 「CSWin Transformer: A General Vision Transformer B…」(2022) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We also try other types of position embeddings, including a fixed learnable position bias and a depthwise convolution in [11].\"",
+      "src": "openalex:W4394668313",
+      "dst": "openalex:W3146097248",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Going deeper with Image Transfo…」(2021) は 「Training data-efficient image t…」(2020) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We compare CaiT with DeiT [64], Vit-B [19], TNT [26], T2T [75] and to several state-of-the-art convnets: Regnet [51] improved by Touvron et al.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1933,10 +1833,118 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "cb2974d21fd0f89234f6c1334e6ae3a85b5269c5b26e6a4e97b35d7be524abd4"
+          "sha256": "fd1df9c50c338236f3b6d406538e08ebe9b42d83c003ee903030ebe09c43728a"
         },
         "classification": {
           "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4394668313",
+      "dst": "openalex:W4226028923",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「When Shift Operation Meets Visi…」(2022) は 「Training data-efficient image t…」(2020) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Speciﬁcally, most existing ViT variants follow the setting as in DeiT (Touvron et al. 2020), which is quite different from the standard pipeline of training CNNs.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "81e94a90a15b65acdb63a36048a0e8141ec37a89a181bf4c1c6a3c4dd0a1b425"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4394668313",
+      "dst": "openalex:W4312777001",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.4,
+      "confidence": 0.4,
+      "rationale": "「Reversible Vision Transformers」(2022) は「Training data-efficient image transformers & distillation t…」(2020) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-metadata",
+          "sha256": "2247a172b1fd7da3253606b4244acbd5fb39c01d144ed1681e860bf018dcc25a"
+        },
+        "classification": {
+          "method": "citation_heuristic",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4394668313",
+      "dst": "openalex:W4385187240",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「ViTA」(2023) は 「Training data-efficient image t…」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "850852e07816138b1d8f1821b445da8f02e8e04b3c7638e265ddd44ffa023516"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4394668313",
+      "dst": "openalex:W4387845821",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.4,
+      "confidence": 0.4,
+      "rationale": "「A lightweight hybrid vision transformer network for radar-b…」(2023) は「Training data-efficient image transformers & distillation t…」(2020) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-metadata",
+          "sha256": "3cb025a2266737e3f918c1d6a5a869807fe11313c0da941fa5cd5cf0c6eeba18"
+        },
+        "classification": {
+          "method": "citation_heuristic",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -1957,23 +1965,24 @@
     ],
     "seeds": [
       "openalex:W3094502228",
+      "openalex:W4226002507",
+      "openalex:W4321232185",
       "openalex:W3147387781",
-      "openalex:W3204076343",
-      "openalex:W3136635488"
+      "openalex:W4394668313"
     ],
     "depth": 1,
     "since_year": 2018,
-    "generated_at": "2026-10-10T10:44:48.805000Z",
+    "generated_at": "2026-10-10T13:59:09.458000Z",
     "provenance_breakdown": {
-      "foundational_allowlist": 14,
-      "llm": 6,
-      "s2_context_rule": 27,
-      "citation_heuristic": 4,
-      "title_version": 1
+      "s2_context_rule": 36,
+      "foundational_allowlist": 5,
+      "title_version": 1,
+      "citation_heuristic": 6,
+      "llm": 1
     },
     "completeness": {
       "complete": true,
-      "expansions_attempted": 14,
+      "expansions_attempted": 16,
       "expansions_failed": 0,
       "supplement_failures": []
     },
@@ -1985,7 +1994,12 @@
         "z_lo": 0,
         "z_hi": 1
       },
-      "pool_size": 118
-    }
+      "pool_size": 153
+    },
+    "canonical_seeds": [
+      "openalex:W4226002507",
+      "openalex:W4321232185",
+      "openalex:W4394668313"
+    ]
   }
 }
