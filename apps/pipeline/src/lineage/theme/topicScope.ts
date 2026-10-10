@@ -66,7 +66,18 @@ export interface TopicScopeOptions {
   componentSeedWeight: number;
   /** Seed-ranking multiplier for a seed that matches only in its abstract. */
   abstractOnlySeedWeight: number;
+  /** R2-17 (ERROR_PATTERNS 11): a candidate admitted WITHOUT a title about
+   * the theme — on the embedding alone, or with the theme only as a tool
+   * in its title ("SwinNet: Swin Transformer drives … detection") — must
+   * also have the theme as a subject of its abstract
+   * ({@link TopicScope.abstractIsAboutTheme}). */
+  requireAbstractSubject: boolean;
 }
+
+/** R2-17: an embedding score this far above `zHi` still admits a paper
+ * whose abstract is not about the theme (an exceptionally close paper the
+ * term list misses). */
+export const ABSTRACTLESS_Z_MARGIN = 0.25;
 
 export const DEFAULT_TOPIC_SCOPE_OPTIONS: Readonly<TopicScopeOptions> = Object.freeze({
   gate: true,
@@ -76,6 +87,7 @@ export const DEFAULT_TOPIC_SCOPE_OPTIONS: Readonly<TopicScopeOptions> = Object.f
   zHi: 1.0,
   componentSeedWeight: 0.25,
   abstractOnlySeedWeight: 0.5,
+  requireAbstractSubject: true,
 });
 
 /** How a paper relates to the theme, judged from its title first. */
@@ -114,6 +126,16 @@ export function normalizeTopicText(text: string): string {
  * connector and the theme ("... Using Regularized Graph Neural Networks"). */
 const COMPONENT_CONNECTOR_RE =
   /\b(?:with|using|via|by|through|leveraging|utili[sz]ing|employing|based\s+on|powered\s+by|equipped\s+with)(?:\s+[\p{L}\p{N}-]+)?\s*$/iu;
+
+/** R2-17 (ERROR_PATTERNS 11): an APPLICATION title — the theme followed
+ * by a connector to the task it is applied to: "Swin Transformer drives
+ * edge-aware RGB-D … detection", "Graph Neural Networks for Social
+ * Recommendation", "Mixture of Experts for Decentralized Generative AI",
+ * "A Graph Neural Network based Intrusion Detection System".
+ * The theme is then a tool (role `component`), unless the rest of the
+ * clause names the theme again ("GNNs for Pre-training GNNs"). */
+const APPLICATION_CONNECTOR_RE =
+  /^[\s-]*(?:for|in|drives?|driven|meets?|empowered|enabled|powered|based|applied\s+to)\s+\S/iu;
 
 function str(value: unknown): string {
   return typeof value === "string" ? value : "";
@@ -301,10 +323,52 @@ export class TopicScope {
         const clause = before.slice(Math.max(before.lastIndexOf(":"), before.lastIndexOf("—")) + 1);
         if (COMPONENT_CONNECTOR_RE.test(clause.replace(/[^\p{L}\p{N}]+$/u, ""))) return "component";
       }
+      if (this.isApplicationTitle(title)) return "component";
       return "subject";
     }
     if (this.isOnTopic(paper)) return "abstract";
     return "none";
+  }
+
+  /** R2-17: the title's first theme mention is followed by an application
+   * connector ("<theme> for/in/drives <task>") and the rest of that clause
+   * does not mention the theme again. Survey titles never count ("Graph
+   * Neural Networks in Recommender Systems: A Survey" stays `subject`). */
+  private isApplicationTitle(title: string): boolean {
+    const t = title.normalize("NFKC");
+    if (/\b(?:surveys?|reviews?|overview|tutorial)\b/i.test(t)) return false;
+    let end = -1;
+    let start = Number.POSITIVE_INFINITY;
+    for (const re of this.regexes) {
+      const m = re.exec(t);
+      if (m && (m.index < start || (m.index === start && m.index + m[0].length > end))) {
+        start = m.index;
+        end = m.index + m[0].length;
+      }
+    }
+    if (end < 0) return false;
+    const colon = t.indexOf(":", end);
+    const rest = t.slice(end, colon === -1 ? undefined : colon);
+    if (!APPLICATION_CONNECTOR_RE.test(rest)) return false;
+    return firstMatch(rest, this.regexes) === -1;
+  }
+
+  /** R2-17 (ERROR_PATTERNS 11): the abstract (or TL;DR) is about the
+   * theme, not just citing it: a theme term in its first sentence, or at
+   * least two theme-term mentions overall. "SwinNet … uses Swin Transformer
+   * as the backbone" mentions the theme once, in passing. */
+  abstractIsAboutTheme(paper: TopicPaperLike): boolean {
+    const body = bodyText(paper).normalize("NFKC").trim();
+    if (!body) return false;
+    const first = body.split(/(?<=[.!?])\s+/, 1)[0] ?? "";
+    if (firstMatch(first, this.regexes) !== -1) return true;
+    let count = 0;
+    for (const re of this.regexes) {
+      const g = new RegExp(re.source, re.flags.includes("g") ? re.flags : `${re.flags}g`);
+      count += (body.match(g) ?? []).length;
+      if (count >= 2) return true;
+    }
+    return false;
   }
 
   /** Seed-ranking multiplier for {@link role}. */
@@ -363,9 +427,34 @@ export class TopicScope {
     relevance?: number | null,
   ): "topic" | "foundational" | "support" | "embedding" | null {
     if (!this.options.gate) return "topic";
-    const match = this.isOnTopic(paper);
+    let match = this.isOnTopic(paper);
     const foundational = isFoundationalAncestor(paper as Record<string, unknown>);
     if (typeof relevance === "number") {
+      // R2-17: a reference whose title uses the theme as a tool ("3D Graph
+      // Neural Networks for RGBD Semantic Segmentation") needs an abstract
+      // about the theme, else a clearly higher z. References with no theme
+      // in the title keep the doc-42 rule: predecessors (DeepWalk) often
+      // never name the theme.
+      const needsAbstract =
+        this.options.requireAbstractSubject &&
+        !foundational &&
+        this.role(paper) === "component" &&
+        !this.abstractIsAboutTheme(paper);
+      if (needsAbstract) match = false;
+      if (
+        needsAbstract &&
+        match === false &&
+        relevance < this.options.zHi + ABSTRACTLESS_Z_MARGIN
+      ) {
+        if (
+          relevance >= this.options.zLo &&
+          this.supportSuffices(support) &&
+          !looksLikeDataset(paper)
+        ) {
+          return "support";
+        }
+        return null;
+      }
       if (this.relevant(match, relevance)) {
         if (foundational) return "foundational";
         return match ? "topic" : "embedding";
@@ -406,6 +495,14 @@ export class TopicScope {
     if (!this.options.gate) return "topic";
     const role = this.role(paper);
     if (typeof relevance === "number") {
+      if (
+        role !== "subject" &&
+        this.options.requireAbstractSubject &&
+        !this.abstractIsAboutTheme(paper) &&
+        relevance < this.options.zHi + ABSTRACTLESS_Z_MARGIN
+      ) {
+        return null;
+      }
       if (this.relevant(role === "subject", relevance)) return "topic";
       if (this.options.minSupport > 0 && role !== "none" && relevance >= this.options.zLo) {
         return "provisional";

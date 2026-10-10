@@ -106,7 +106,12 @@ describe("enrichGithubStars", () => {
 
   it("falls back to search when the arxiv_id is not curated", async () => {
     const nodes = new Map([
-      ["p1", node("p1", { arxiv_id: "9999.99999", title: "Some Niche Paper" })],
+      // R2-17: a low-star title-search hit is kept only when the repo
+      // owner is one of the authors.
+      [
+        "p1",
+        node("p1", { arxiv_id: "9999.99999", title: "Some Niche Paper", authors: ["Ann Owner"] }),
+      ],
     ]);
     const { curated, search, fetch } = makeFakeResolvers({
       reposByTitle: { "some niche paper": "owner/some-niche-paper" },
