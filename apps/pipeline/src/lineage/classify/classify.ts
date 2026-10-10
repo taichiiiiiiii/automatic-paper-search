@@ -347,7 +347,110 @@ export function isVersionIncrement(
   }
 
   const m = IMPROVE_PREFIX_RE.exec(ct);
-  return Boolean(m && (m[1] as string).trim() === pt);
+  if (m && (m[1] as string).trim() === pt) return true;
+  return isAcronymVersionIncrement(parent, child);
+}
+
+// ---- R2-17: acronym versions ("Pyramid Vision Transformer" -> "PVT v2") ----
+
+/** "PVT v2", "PVTv2", "PVT-2", "PVT V2", "PVT++" (the short title before
+ * the colon, original case). Group 1 = the acronym; the acronym needs at
+ * least two upper-case letters so ordinary words are never read as one. */
+const ACRONYM_VERSION_RE =
+  /^([\p{Lu}][\p{L}\p{N}]*?)(?:[\s-]*[vV](\d{1,2})|[\s-]+(\d{1,2})|\s*(\+\+))$/u;
+const INITIALISM_STOPWORDS = new Set([
+  "a",
+  "an",
+  "the",
+  "of",
+  "for",
+  "and",
+  "with",
+  "in",
+  "on",
+  "to",
+  "via",
+]);
+
+function rawShortTitle(paper: LineagePaperLike | null | undefined): string {
+  const raw =
+    paper && typeof paper === "object" && typeof paper.title === "string" ? paper.title : "";
+  return (raw.split(":", 1)[0] ?? "").normalize("NFKC").replace(/\s+/g, " ").trim();
+}
+
+/** Upper-cased initialisms of a full name: every word, content words
+ * only, and with hyphenated parts split ("Pre-trained" -> "PT"). */
+function initialismsOf(name: string): Set<string> {
+  const out = new Set<string>();
+  for (const splitter of [/\s+/, /[\s-]+/]) {
+    const words = name.split(splitter).filter((w) => /\p{L}/u.test(w));
+    if (words.length < 2) continue;
+    out.add(words.map((w) => w[0]!.toUpperCase()).join(""));
+    const content = words.filter((w) => !INITIALISM_STOPWORDS.has(w.toLowerCase()));
+    if (content.length >= 2) out.add(content.map((w) => w[0]!.toUpperCase()).join(""));
+  }
+  return out;
+}
+
+function authorKeys(paper: LineagePaperLike | null | undefined): Set<string> {
+  const out = new Set<string>();
+  const list =
+    paper && typeof paper === "object" ? (paper as Record<string, unknown>).authors : null;
+  if (!Array.isArray(list)) return out;
+  for (const a of list) {
+    const name =
+      typeof a === "string"
+        ? a
+        : a && typeof a === "object" && typeof (a as Record<string, unknown>).name === "string"
+          ? ((a as Record<string, unknown>).name as string)
+          : "";
+    const parts = name
+      .normalize("NFKC")
+      .toLowerCase()
+      .replace(/[^\p{L}\s-]/gu, " ")
+      .trim()
+      .split(/\s+/);
+    const last = parts[parts.length - 1];
+    if (last && last.length >= 2) out.add(`${parts[0]![0] ?? ""}.${last}`);
+  }
+  return out;
+}
+
+/**
+ * R2-17 (ERROR_PATTERNS 5): `child` is a new version of `parent` written
+ * with the ACRONYM of its name — "PVT v2: Improved Baselines…" of
+ * "Pyramid Vision Transformer: A Versatile Backbone…", or "PVTv2" of
+ * "PVT: …". The acronym (2+ upper-case letters) must equal the parent's
+ * short title or the initialism of it, and the child carries an explicit
+ * version token (`v2`, ` 2`, `-2`, `++`). When both papers list authors
+ * they must share at least two (one when either side has a single
+ * author): an acronym alone is a weaker identity than a shared full name.
+ */
+export function isAcronymVersionIncrement(
+  parent: LineagePaperLike | null | undefined,
+  child: LineagePaperLike | null | undefined,
+): boolean {
+  const cm = ACRONYM_VERSION_RE.exec(rawShortTitle(child));
+  if (!cm) return false;
+  const acronym = (cm[1] as string).toUpperCase();
+  if ((cm[1]!.match(/\p{Lu}/gu) ?? []).length < 2 || acronym.length > 8) return false;
+  const version = cm[2] ?? cm[3];
+  if (version !== undefined && (Number(version) < 2 || Number(version) > MAX_VERSION_TOKEN)) {
+    return false;
+  }
+  const pshort = rawShortTitle(parent);
+  if (!pshort) return false;
+  // The parent must be the unversioned work itself.
+  if (ACRONYM_VERSION_RE.test(pshort)) return false;
+  const pAcronym = pshort.replace(/[^\p{L}\p{N}]/gu, "").toUpperCase();
+  const named = pAcronym === acronym || initialismsOf(pshort).has(acronym);
+  if (!named) return false;
+  const pa = authorKeys(parent);
+  const ca = authorKeys(child);
+  if (pa.size === 0 || ca.size === 0) return true;
+  let shared = 0;
+  for (const k of ca) if (pa.has(k)) shared += 1;
+  return shared >= Math.min(2, pa.size, ca.size);
 }
 
 // ===== Heuristic (LLM-free) classifier =====

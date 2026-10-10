@@ -4,6 +4,7 @@
  * `_run_bfs_and_descendants`, `_add_cross_node_edges`.
  */
 
+import { codepointCompare } from "@paperpilot/core";
 import type {
   ClassifyPaperLike,
   LLMProvider,
@@ -12,6 +13,7 @@ import type {
 import {
   type DerivedEdge,
   deriveRelation,
+  isAcronymVersionIncrement,
   isFoundationalAncestor,
   isVersionIncrement,
   titleVersionEdge,
@@ -836,5 +838,138 @@ export function addVersionFamilyEdges(
     linked.add(`${childId}\u0000${best}`);
     added += 1;
   }
+  // R2-17: acronym versions ("Pyramid Vision Transformer" -> "PVT v2"),
+  // which share no title stem with their predecessor.
+  const ids = [...nodes.keys()].sort(codepointCompare);
+  for (const childId of ids) {
+    const childNode = nodes.get(childId);
+    const childYear = yearOf(childNode);
+    if (childYear === null) continue;
+    for (const parentId of ids) {
+      if (parentId === childId || linked.has(`${parentId}\u0000${childId}`)) continue;
+      const parentNode = nodes.get(parentId);
+      const parentYear = yearOf(parentNode);
+      if (parentYear === null || parentYear > childYear) continue;
+      if (
+        !isAcronymVersionIncrement(
+          parentNode as unknown as ClassifyPaperLike,
+          childNode as unknown as ClassifyPaperLike,
+        )
+      ) {
+        continue;
+      }
+      const parent = nodeAsPaper(parentId, parentNode);
+      const childPaper = nodeAsPaper(childId, childNode);
+      edges.push(
+        makeEdge(
+          titleVersionEdge(
+            parent as unknown as ClassifyPaperLike,
+            childPaper as unknown as ClassifyPaperLike,
+            { citationBacked: false },
+          ),
+          {
+            srcId: parentId,
+            dstId: childId,
+            parent,
+            child: childPaper,
+            intentRecord: parent,
+            provider: null,
+          },
+        ),
+      );
+      linked.add(`${parentId}\u0000${childId}`);
+      linked.add(`${childId}\u0000${parentId}`);
+      added += 1;
+      break;
+    }
+  }
   return added;
+}
+
+/** One edge removed by {@link dropReversedEdges}. */
+export interface DroppedReverseEdge {
+  src: string;
+  dst: string;
+  relation: string;
+  reason: "two_cycle_year_inverted" | "two_cycle_tie";
+}
+
+function isTitleVersion(e: ThemeEdge): boolean {
+  const cls = (e.provenance as { classification?: { method?: unknown } } | null)?.classification;
+  return cls?.method === "title_version";
+}
+
+/**
+ * R2-17 (ERROR_PATTERNS 6): resolve 2-cycles A -> B and B -> A. They come
+ * from revised preprints: S2's record of PVT is a later arXiv revision
+ * that cites PVTv2 ("we recently propose PVTv2"), so PVT v2 -> PVT
+ * (baseline_only) sits next to PVT -> PVT v2. Edges point cited -> citing,
+ * so the direction consistent with the years is src.year <= dst.year.
+ * For each pair:
+ *  - a `title_version` edge wins (it is the explicit version order);
+ *  - else the edge whose citing side is older than its cited side by at
+ *    least a year is dropped (the older paper cannot really cite the newer);
+ *  - else (same year / unknown years) the higher-confidence edge stays,
+ *    then the one whose src sorts first — deterministic.
+ * A lone year-inverted edge (no reverse) is kept — usually the arXiv
+ * version of the cited paper predates its venue year (a 2019 review citing
+ * the arXiv version of a 2020 survey) — and only counted for the log.
+ * Returns the remaining edges (input order) and what was dropped.
+ */
+export function dropReversedEdges(
+  nodes: ReadonlyMap<string, { year?: unknown }>,
+  edges: readonly ThemeEdge[],
+): { edges: ThemeEdge[]; dropped: DroppedReverseEdge[]; loneInverted: number } {
+  const year = (id: string): number | null => {
+    const y = nodes.get(id)?.year;
+    return typeof y === "number" && Number.isInteger(y) ? y : null;
+  };
+  const inverted = (e: ThemeEdge): boolean => {
+    const ys = year(e.src);
+    const yd = year(e.dst);
+    return ys !== null && yd !== null && yd < ys;
+  };
+  const byPair = new Map<string, ThemeEdge[]>();
+  for (const e of edges) {
+    const key = `${e.src}\u0000${e.dst}`;
+    const list = byPair.get(key);
+    if (list) list.push(e);
+    else byPair.set(key, [e]);
+  }
+  const drop = new Set<ThemeEdge>();
+  const dropped: DroppedReverseEdge[] = [];
+  const seen = new Set<string>();
+  let loneInverted = 0;
+  for (const [key, forward] of byPair) {
+    if (seen.has(key)) continue;
+    seen.add(key);
+    const [a, b] = key.split("\u0000") as [string, string];
+    const reverseKey = `${b}\u0000${a}`;
+    const backward = byPair.get(reverseKey);
+    if (!backward || a === b) {
+      if (forward.some(inverted)) loneInverted += 1;
+      continue;
+    }
+    seen.add(reverseKey);
+    const fwd = forward[0]!;
+    const bwd = backward[0]!;
+    let loser: ThemeEdge[];
+    let reason: DroppedReverseEdge["reason"] = "two_cycle_year_inverted";
+    if (forward.some(isTitleVersion) !== backward.some(isTitleVersion)) {
+      loser = forward.some(isTitleVersion) ? backward : forward;
+    } else if (inverted(fwd) !== inverted(bwd)) {
+      loser = inverted(fwd) ? forward : backward;
+    } else {
+      reason = "two_cycle_tie";
+      const cf = Math.max(...forward.map((e) => Number(e.confidence) || 0));
+      const cb = Math.max(...backward.map((e) => Number(e.confidence) || 0));
+      if (cf !== cb) loser = cf > cb ? backward : forward;
+      else loser = codepointCompare(a, b) <= 0 ? backward : forward;
+    }
+    for (const e of loser) {
+      drop.add(e);
+      dropped.push({ src: e.src, dst: e.dst, relation: String(e.relation), reason });
+    }
+  }
+  return { edges: edges.filter((e) => !drop.has(e)), dropped, loneInverted };
 }

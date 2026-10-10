@@ -36,10 +36,12 @@ import {
   IncompleteBuildError,
 } from "../fetch-state/completeness.js";
 import { usageOf } from "../llm/fallback.js";
+import { fetchRelated } from "../shared/fetchRelated.js";
 import {
   addCrossNodeEdges,
   addVersionFamilyEdges,
   confirmSupportAdmissions,
+  dropReversedEdges,
   runBfsAndDescendants,
 } from "./bfs.js";
 import {
@@ -49,7 +51,15 @@ import {
 } from "./cachedClassifyProvider.js";
 import { DegradedClassificationError, evidenceClassifiedRate } from "./classificationGate.js";
 import { dedupNodesByStrongAlias, remapEdgeEndpoints } from "./dedup.js";
-import { type DiscoverSeedsCompleteness, discoverSeeds } from "./discoverSeeds.js";
+import {
+  CANONICAL_SEED_REFERENCE_LIMIT,
+  CANONICAL_SEED_SURVEY_SOURCES,
+  type DiscoverSeedsCompleteness,
+  discoverSeeds,
+  isSurvey,
+  rankCanonicalMethodSeeds,
+  selectThemeSeeds,
+} from "./discoverSeeds.js";
 import type { ThemeEdge } from "./edges.js";
 import {
   CLASSIFICATION_SCHEMA_VERSION,
@@ -59,7 +69,12 @@ import {
   PROMPT_VERSION,
 } from "./edges.js";
 import { enrichGithubStars } from "./github.js";
-import { type IdentityAliasIndex, loadIdentityAliases, resolveAndDedupSeeds } from "./identity.js";
+import {
+  type IdentityAliasIndex,
+  loadIdentityAliases,
+  resolveAndDedupSeeds,
+  resolveSeedPaperId,
+} from "./identity.js";
 import type { ThemePaper } from "./openalexWork.js";
 import { S2CitationSource } from "./s2Citations.js";
 import { S2Expansion } from "./s2Expansion.js";
@@ -73,6 +88,9 @@ import {
   TopicScope,
   type TopicScopeOptions,
 } from "./topicScope.js";
+
+/** R2-17: candidates ranked per requested seed before the final pick. */
+export const SEED_POOL_FACTOR = 4;
 
 /** Every full-method logger this pipeline's sub-modules ask for, built
  * once from whatever subset the caller supplies (missing methods
@@ -366,6 +384,9 @@ export async function buildThemeLineage(
   const completeness: DiscoverSeedsCompleteness & BuildCompleteness =
     new BuildCompleteness() as unknown as DiscoverSeedsCompleteness & BuildCompleteness;
 
+  // R2-17: rank a wider pool, then pick the seeds (identity, survey cap,
+  // canonical method papers from the surveys' references) below.
+  const seedPool = seedsCount * SEED_POOL_FACTOR;
   let seeds = await discoverSeeds(
     {
       keywords,
@@ -375,6 +396,7 @@ export async function buildThemeLineage(
       theme: sanitised,
       primarySource,
       topicScope,
+      rankLimit: seedPool,
     },
     netDeps,
     completeness,
@@ -395,6 +417,7 @@ export async function buildThemeLineage(
           theme: sanitised,
           primarySource,
           topicScope,
+          rankLimit: seedPool,
         },
         netDeps,
         aliasLedger as unknown as DiscoverSeedsCompleteness,
@@ -415,14 +438,10 @@ export async function buildThemeLineage(
     const weighted = (p: ThemePaper): number =>
       (Number(p.citationCount) || 0) * topicScope.seedWeight(p);
     const ranked = [...mergedById.values()].sort((a, b) => weighted(b) - weighted(a));
-    seeds = ranked.slice(0, seedsCount);
+    seeds = ranked.slice(0, seedPool);
   }
 
   const aliasIndex: IdentityAliasIndex = loadIdentityAliases(deps.identityAliasesPath);
-  const [resolvedSeeds, seedByGraphId] = resolveAndDedupSeeds(seeds, aliasIndex);
-  seeds = resolvedSeeds;
-
-  const maxSeedCite = seeds.reduce((max, s) => Math.max(max, Number(s.citationCount) || 0), 0);
 
   // R2-10: Semantic Scholar citation evidence first (design 41 D6).
   const s2Source =
@@ -450,6 +469,75 @@ export async function buildThemeLineage(
           cacheDir: deps.cacheDir,
           logger,
         });
+
+  // R2-17 (ERROR_PATTERNS 10): seeds = canonical method papers cited by
+  // the theme's surveys + non-survey search hits; a survey only when no
+  // method paper exists. Only candidates with a canonical identity can be
+  // focus nodes (`resolveAndDedupSeeds`), so the pick tests each one.
+  const resolvable = (p: ThemePaper): boolean => {
+    try {
+      return resolveSeedPaperId(p, aliasIndex)[0] !== null;
+    } catch {
+      return false;
+    }
+  };
+  const acceptSeed = (selected: readonly ThemePaper[], candidate: ThemePaper): boolean => {
+    if (!resolvable(candidate)) return false;
+    try {
+      return resolveAndDedupSeeds([...selected, candidate], aliasIndex)[0].length > selected.length;
+    } catch {
+      return false;
+    }
+  };
+  const surveySources = seeds.filter((p) => isSurvey(p)).slice(0, CANONICAL_SEED_SURVEY_SOURCES);
+  const refLists: ThemePaper[][] = [];
+  for (const survey of surveySources) {
+    const lists: ThemePaper[] = [];
+    if (s2Expansion !== null) {
+      lists.push(
+        ...((await s2Expansion.referencesForSeeding(survey, CANONICAL_SEED_REFERENCE_LIMIT)) ?? []),
+      );
+    }
+    if (survey.paperId.startsWith("openalex:")) {
+      try {
+        // Same limit as the BFS, which shares this (limit-agnostic) cache.
+        lists.push(...(await fetchRelated(survey.paperId, "references", width * 4, netDeps, null)));
+      } catch (exc) {
+        logger.warn(`canonical seeds: references of ${survey.paperId} unavailable: ${String(exc)}`);
+      }
+    }
+    refLists.push(lists);
+  }
+  const seedIdsSoFar = new Set(seeds.map((p) => p.paperId));
+  const canonical = rankCanonicalMethodSeeds(refLists, {
+    scope: topicScope,
+    limit: seedsCount,
+    // BFS-expandable OpenAlex ids only (an S2-id seed would expand through
+    // the slow S2 path), with a canonical identity.
+    accept: (p) =>
+      p.paperId.startsWith("openalex:") && !seedIdsSoFar.has(p.paperId) && resolvable(p),
+  });
+  const pickedSeeds = selectThemeSeeds(seeds, canonical, {
+    topN: seedsCount,
+    canonicalSlots: Math.ceil(seedsCount / 2),
+    accept: acceptSeed,
+    preferred: (p) => topicScope.role(p) === "subject",
+  });
+  const canonicalIds = new Set(canonical.map((p) => p.paperId));
+  logger.warn(
+    `seeds: picked ${pickedSeeds.length}/${seedsCount} from ${seeds.length} ranked candidate(s) and ` +
+      `${canonical.length} canonical method paper(s) cited by ${surveySources.length} survey(s): ` +
+      pickedSeeds
+        .map(
+          (p) =>
+            `${canonicalIds.has(p.paperId) ? "canonical" : isSurvey(p) ? "survey" : "search"}:${p.paperId}`,
+        )
+        .join(", "),
+  );
+  const [resolvedSeeds, seedByGraphId] = resolveAndDedupSeeds(pickedSeeds, aliasIndex);
+  seeds = resolvedSeeds;
+
+  const maxSeedCite = seeds.reduce((max, s) => Math.max(max, Number(s.citationCount) || 0), 0);
 
   const bfsResult = await runBfsAndDescendants(
     seeds,
@@ -550,6 +638,19 @@ export async function buildThemeLineage(
   if (nodeRemap.size > 0) {
     edges = remapEdgeEndpoints(edges, nodeRemap);
     seedIds = [...new Set(seedIds.map((sid) => nodeRemap.get(sid) ?? sid))].sort(codepointCompare);
+  }
+
+  // R2-17: 2-cycles from revised preprints (PVT <-> PVT v2) keep only the
+  // direction consistent with the years.
+  const reversed = dropReversedEdges(nodes, edges);
+  edges = reversed.edges;
+  for (const d of reversed.dropped) {
+    logger.warn(`reversed edge: dropped ${d.src} -> ${d.dst} (${d.relation}; ${d.reason})`);
+  }
+  if (reversed.loneInverted > 0) {
+    logger.info(
+      `reversed edge: kept ${reversed.loneInverted} year-inverted edge(s) with no reverse edge (preprint vs venue year)`,
+    );
   }
 
   const cleanedEdges = filterEdgesByRationale(edges);

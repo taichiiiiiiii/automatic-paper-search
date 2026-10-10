@@ -246,6 +246,9 @@ function mergeMapped(oa: ThemePaper, s2: ThemePaper): ThemePaper {
     abstract: oa.abstract || s2.abstract,
     authors: oa.authors.length > 0 ? oa.authors : s2.authors,
     externalIds: { ...s2.externalIds, ...oa.externalIds },
+    // R2-17: OpenAlex undercounts arXiv-only works (Shazeer 2017: 260 vs
+    // thousands on S2); canonical seed ranking reads the larger count.
+    ...(s2.citationCount > oa.citationCount ? { _s2_citation_count: s2.citationCount } : {}),
     _intents: s2._intents ?? null,
     _is_influential: s2._is_influential ?? null,
     _contexts: [],
@@ -382,8 +385,9 @@ export class S2Expansion {
     paper: ThemePaper,
     kind: ExpansionKind,
     limit: number,
+    cacheTag = "s2expand",
   ): Promise<ThemePaper[] | null> {
-    const cachePath = this.cachePath(paper.paperId, kind);
+    const cachePath = this.cachePath(paper.paperId, kind, cacheTag);
     if (cachePath !== null) {
       const cached = readVersionedCache(cachePath, S2_EXPANSION_CACHE_VERSION);
       if (isUsableCached(cached)) {
@@ -428,10 +432,22 @@ export class S2Expansion {
     return out;
   }
 
-  private cachePath(id: string, kind: ExpansionKind): string | null {
+  /**
+   * R2-17: the S2 reference list of a survey, for canonical method-seed
+   * mining (`discoverSeeds.ts::rankCanonicalMethodSeeds`). Same shape as
+   * {@link related} (influential / most-cited first, mapped to OpenAlex ids
+   * where possible) but up to `limit` entries and cached in its own file,
+   * so the BFS expansion cache (capped at the BFS width) is untouched.
+   * `null` when S2 has nothing / could not be reached.
+   */
+  referencesForSeeding(paper: ThemePaper, limit: number): Promise<ThemePaper[] | null> {
+    return this.related(paper, "references", limit, "s2seedrefs");
+  }
+
+  private cachePath(id: string, kind: ExpansionKind, tag = "s2expand"): string | null {
     const dir = this.opts.cacheDir ?? null;
     if (dir === null) return null;
-    return `${dir}/s2expand_${kind}_${id.replace(/[^A-Za-z0-9._-]/g, "_")}.json`;
+    return `${dir}/${tag}_${kind}_${id.replace(/[^A-Za-z0-9._-]/g, "_")}.json`;
   }
 
   /** `expansion sources: openalex=N s2=M …` (one line for the CI log). */
