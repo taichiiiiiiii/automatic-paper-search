@@ -18,7 +18,10 @@
 import { createHash } from "node:crypto";
 import { existsSync } from "node:fs";
 import type { FetchLike } from "../../collect/http/requestWithRetry.js";
-import { requestWithRetry } from "../../collect/http/requestWithRetry.js";
+import {
+  type RequestWithRetryOptions,
+  requestWithRetry,
+} from "../../collect/http/requestWithRetry.js";
 import { firstUnusable } from "../../collect/signals/payload.js";
 import {
   type BuildCompletenessLike,
@@ -27,6 +30,7 @@ import {
 } from "./openalexFetch.js";
 import { extractDoi, openalexShortId, type ThemePaper, workToPaperDict } from "./openalexWork.js";
 import { s2PaperShape } from "./payloadShape.js";
+import { mapS2PapersToOpenalex, S2_KEPT_EXTERNAL_IDS } from "./s2Expansion.js";
 import {
   filterDenylistedSeeds,
   filterThemeBlacklist,
@@ -56,7 +60,17 @@ export const SEARCH_CACHE_VERSION = "s2-search-cache-v1";
 export interface DiscoverSeedsDeps extends OpenAlexDeps {
   fetchImpl: FetchLike;
   cacheDir: string;
+  /** R2-14: S2 key (`x-api-key`) for the seed search, when configured. */
+  s2ApiKey?: string | null;
 }
+
+/** R2-14: retry budget of the S2 search when it stands in for a failed
+ * OpenAlex search — the keyless pool 429s in bursts, so wait longer than
+ * the default ~60 s (backoff 2..30 s, 6 retries, 150 s overall). */
+const S2_FALLBACK_SEARCH_BUDGET = {
+  overallDeadlineMs: 150_000,
+  retry429: { maxRetries: 6, maxWaitMs: 30_000, giveUpIfHintAboveMs: 120_000 },
+} as const;
 
 interface HttpResponseLike {
   status: number;
@@ -66,17 +80,25 @@ interface HttpResponseLike {
 async function s2Get(
   method: "GET" | "POST",
   url: string,
-  options: { params?: Record<string, string | number>; jsonBody?: unknown; timeoutMs: number },
+  options: {
+    params?: Record<string, string | number>;
+    jsonBody?: unknown;
+    timeoutMs: number;
+    budget?: Pick<RequestWithRetryOptions, "overallDeadlineMs" | "retry429">;
+  },
   deps: DiscoverSeedsDeps,
 ): Promise<HttpResponseLike | null> {
+  const headers: Record<string, string> = { "User-Agent": "PaperPilot/0.1" };
+  if (deps.s2ApiKey) headers["x-api-key"] = deps.s2ApiKey;
   return (await requestWithRetry(
     {
       method,
       url,
       params: options.params,
       jsonBody: options.jsonBody,
-      headers: { "User-Agent": "PaperPilot/0.1" },
+      headers,
       timeoutMs: options.timeoutMs,
+      ...options.budget,
     },
     deps,
   )) as HttpResponseLike | null;
@@ -286,6 +308,60 @@ export async function openalexSearchPerKeyword(
   return [...byId.values()];
 }
 
+/**
+ * R2-14: S2 `/paper/search` for a keyword whose OpenAlex search failed
+ * (429 past the retry budget, deadline, 5xx, malformed page), with the
+ * same filters: Computer Science field (`fieldsOfStudy`), `year=<since>-`,
+ * then the usual seed filters. Each hit is mapped to its OpenAlex Work
+ * (one batched DOI lookup) so seeds keep their usual `openalex:W…` ids;
+ * hits OpenAlex cannot map (or all of them, when OpenAlex is still
+ * refusing) keep their S2 ids. Returns `null` when S2 failed too.
+ */
+async function s2SeedFallback(
+  keyword: string,
+  sinceYear: number | null,
+  deps: DiscoverSeedsDeps,
+): Promise<ThemePaper[] | null> {
+  const failures: string[] = [];
+  const papers = await searchOneKeywordViaS2(
+    { keyword, sinceYear, budget: S2_FALLBACK_SEARCH_BUDGET },
+    deps,
+    {
+      subjectFailed: (r) => failures.push(r),
+    },
+  );
+  if (failures.length > 0) return null;
+  const usable = papers.filter(
+    (p) => typeof p.paperId === "string" && /^[0-9a-f]{40}$/.test(p.paperId),
+  );
+  const normalised: ThemePaper[] = usable.map((p) => ({
+    ...p,
+    venue: typeof p.venue === "string" ? p.venue : "",
+    abstract: typeof p.abstract === "string" ? p.abstract : "",
+    citationCount: Number(p.citationCount) || 0,
+    authors: Array.isArray(p.authors) ? p.authors : [],
+    externalIds: Object.fromEntries(
+      Object.entries((p.externalIds ?? {}) as Record<string, unknown>)
+        .filter(
+          ([k, v]) =>
+            S2_KEPT_EXTERNAL_IDS.includes(k) && (typeof v === "string" || typeof v === "number"),
+        )
+        .map(([k, v]) => [k, String(v)]),
+    ),
+  }));
+  const mapped = normalised.length > 0 ? await mapS2PapersToOpenalex(normalised, deps) : null;
+  return normalised.map((p) => {
+    const oa = mapped?.get(p.paperId);
+    if (!oa) return p;
+    return {
+      ...oa,
+      year: oa.year ?? p.year,
+      abstract: oa.abstract || p.abstract,
+      externalIds: { ...p.externalIds, ...oa.externalIds },
+    };
+  });
+}
+
 export async function discoverSeedsOpenalexPrimary(
   options: {
     keywords: readonly string[];
@@ -293,16 +369,46 @@ export async function discoverSeedsOpenalexPrimary(
     sinceYear: number | null;
     theme: string | null;
     topicScope?: TopicScope | null;
+    /** R2-14: S2 search when an OpenAlex search fails (default true;
+     * needs `deps.cacheDir`). */
+    s2SearchFallback?: boolean;
   },
-  deps: OpenAlexDeps,
+  deps: OpenAlexDeps & { cacheDir?: string },
   completeness?: BuildCompletenessLike | null,
 ): Promise<ThemePaper[]> {
-  const works = await openalexSearchPerKeyword(options.keywords, options, deps, completeness);
   const byId = new Map<string, ThemePaper>();
-  for (const work of works) {
-    const paper = workToPaperDict(work);
-    if (paper === null) continue;
-    if (!byId.has(paper.paperId)) byId.set(paper.paperId, paper);
+  const add = (paper: ThemePaper | null) => {
+    if (paper !== null && !byId.has(paper.paperId)) byId.set(paper.paperId, paper);
+  };
+  const fallback = (options.s2SearchFallback ?? true) && typeof deps.cacheDir === "string";
+  for (const kw of options.keywords) {
+    if (!kw || !kw.trim()) continue;
+    // The OpenAlex failure is held back: an S2 answer recovers the subject.
+    const failures: string[] = [];
+    const works = await discoverSeedsViaOpenalex(
+      {
+        query: kw,
+        topN: options.topN,
+        sinceYear: options.sinceYear,
+        completeness: { subjectFailed: (r) => failures.push(r) },
+      },
+      deps,
+    );
+    for (const work of works) add(workToPaperDict(work));
+    if (failures.length === 0) continue;
+    const recovered = fallback
+      ? await s2SeedFallback(kw, options.sinceYear, deps as DiscoverSeedsDeps)
+      : null;
+    if (recovered !== null) {
+      deps.logger?.warn(
+        `openalex seed search failed for ${JSON.stringify(kw)} (${failures.join("; ")}); ` +
+          `using Semantic Scholar search instead: ${recovered.length} candidate(s), ` +
+          `${recovered.filter((p) => p.paperId.startsWith("openalex:")).length} mapped to OpenAlex ids`,
+      );
+      for (const paper of recovered) add(paper);
+      continue;
+    }
+    for (const reason of failures) completeness?.subjectFailed(reason);
   }
   return applySeedFilters(byId, {
     theme: options.theme,
@@ -324,7 +430,12 @@ function seedCachePath(keyword: string, sinceYear: number | null, cacheDir: stri
 }
 
 export async function searchOneKeywordViaS2(
-  options: { keyword: string; sinceYear: number | null },
+  options: {
+    keyword: string;
+    sinceYear: number | null;
+    /** R2-14: retry budget override (the fallback waits longer). */
+    budget?: Pick<RequestWithRetryOptions, "overallDeadlineMs" | "retry429">;
+  },
   deps: DiscoverSeedsDeps,
   completeness?: BuildCompletenessLike | null,
 ): Promise<ThemePaper[]> {
@@ -359,8 +470,12 @@ export async function searchOneKeywordViaS2(
         fields: S2_FIELDS_SEARCH,
         limit: S2_SEARCH_LIMIT,
         fieldsOfStudy: S2_FIELDS_OF_STUDY,
+        // R2-14: the same year window the OpenAlex search applies (the
+        // cache path already keys on it; ranking filters it again).
+        ...(sinceYear !== null ? { year: `${sinceYear}-` } : {}),
       },
       timeoutMs: 20_000,
+      budget: options.budget,
     },
     deps,
   );

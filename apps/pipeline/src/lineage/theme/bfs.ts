@@ -25,6 +25,7 @@ import { demoteLowInformationEdge, isTrending, makeEdge, type ThemeEdge } from "
 import { toThemeNode } from "./node.js";
 import type { ThemePaper } from "./openalexWork.js";
 import { guardRelation } from "./relationGuard.js";
+import type { S2Expansion } from "./s2Expansion.js";
 import { deriveS2Relation, type S2RelationContext } from "./s2Relations.js";
 import { filterOffTopicRefs } from "./seedFilters.js";
 import { prepareTopicGate, type TopicEmbedder, type TopicGateMeta } from "./topicEmbedding.js";
@@ -105,6 +106,10 @@ export interface RunBfsOptions {
    * the z-score pool; on any failure the term-only rule applies.
    * `null`/omitted = term-only rule. */
   topicEmbedder?: TopicEmbedder | null;
+  /** R2-14: Semantic Scholar fallback for expansion when OpenAlex has
+   * (almost) no references / no citing papers (`s2Expansion.ts`).
+   * `null`/omitted = OpenAlex (`fetchRelated`) only. */
+  s2Expansion?: S2Expansion | null;
 }
 
 /** Counts LLM calls / unusable answers around a provider. */
@@ -226,6 +231,23 @@ export async function runBfsAndDescendants(
   const scope = options.topicScope ?? null;
   const currentYear = options.currentYear ?? new Date().getUTCFullYear();
   const counter = llmCounter(provider);
+  const expansion = options.s2Expansion ?? null;
+  /** `fetchRelated`, with the R2-14 S2 fallback when configured. */
+  const related = (
+    paper: Paper,
+    kind: "references" | "citations",
+    limit: number,
+    ledger: BuildCompletenessForExpansion | null | undefined,
+  ): Promise<Paper[]> =>
+    expansion === null
+      ? fetchRelated(paper.paperId, kind, limit, deps, ledger)
+      : expansion.expand(
+          paper,
+          kind,
+          limit,
+          (l) => fetchRelated(paper.paperId, kind, limit, deps, l),
+          ledger,
+        );
 
   const nodes = new Map<string, ThemeGraphNode>();
   const edges: ThemeEdge[] = [];
@@ -262,7 +284,7 @@ export async function runBfsAndDescendants(
         ] as const) {
           try {
             // No completeness ledger here: the BFS call below records it.
-            const got = await fetchRelated(seed.paperId, kind, limit, deps, null);
+            const got = await related(seed, kind, limit, null);
             pool.push(...got.filter((p) => p.abstract));
           } catch {
             // The BFS fetch below retries and records the failure.
@@ -358,13 +380,7 @@ export async function runBfsAndDescendants(
     const [current, currentDepth] = frontier.shift()!;
     if (currentDepth >= depth) continue;
 
-    let allParents = await fetchRelated(
-      current.paperId,
-      "references",
-      width * 4,
-      deps,
-      completeness,
-    );
+    let allParents = await related(current, "references", width * 4, completeness);
     allParents = allParents.filter((p) => p.abstract);
     allParents = filterOffTopicRefs(allParents, { maxSeedCite });
     allParents = canonicalise(allParents, current.paperId);
@@ -414,7 +430,7 @@ export async function runBfsAndDescendants(
   let descAdded = 0;
   for (const seed of seeds) {
     const sid = seed.paperId;
-    let allChildren = await fetchRelated(sid, "citations", descWidth * 4, deps, completeness);
+    let allChildren = await related(seed, "citations", descWidth * 4, completeness);
     allChildren = allChildren.filter((c) => c.abstract);
     allChildren = filterOffTopicRefs(allChildren, { maxSeedCite });
     allChildren = canonicalise(allChildren, sid);
@@ -619,6 +635,22 @@ export async function addCrossNodeEdges(
   };
 
   for (const citingId of [...nodeIds]) {
+    // R2-14: a node kept under its S2 id (S2 expansion fallback) is
+    // checked against its S2 reference list, like an OpenAlex node with
+    // no references — never through `fetchRelated`'s slow S2 path.
+    if (options.s2Relations && !citingId.startsWith("openalex:")) {
+      added += await addS2ReferenceEdges(citingId, {
+        nodes,
+        edges,
+        existing,
+        isAnchor,
+        counter,
+        strictMode,
+        provider,
+        s2: options.s2Relations,
+      });
+      continue;
+    }
     let refs: Paper[];
     try {
       refs = await fetchRelated(citingId, "references", CROSS_NODE_LIMIT, deps, completeness);

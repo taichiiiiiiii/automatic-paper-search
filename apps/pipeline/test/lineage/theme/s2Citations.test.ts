@@ -129,7 +129,7 @@ describe("S2CitationSource.lookup", () => {
     expect(h.calls).toHaveLength(1);
     expect(h.calls[0]?.url).toBe(
       "https://api.semanticscholar.org/graph/v1/paper/ARXIV:1710.10903/references" +
-        "?fields=contexts,intents,isInfluential,externalIds,title,year&limit=1000&offset=0",
+        "?fields=contexts,intents,isInfluential,externalIds,title,year,abstract,venue,citationCount,authors&limit=1000&offset=0",
     );
     expect(h.calls[0]?.init.headers?.["x-api-key"]).toBeUndefined();
     expect(a).toEqual({
