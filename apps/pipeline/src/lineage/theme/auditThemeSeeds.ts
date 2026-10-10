@@ -192,7 +192,14 @@ export function auditThemeSeeds(themesDir: string, logger?: AuditThemeSeedsLogge
     const seeds = (nodes as AuditablePaper[]).filter((n) => isPlainObject(n) && n.is_focus);
     if (!theme || seeds.length === 0) continue;
     seenThemes += 1;
-    const off = seeds.filter((s) => !isOnTopic(theme, s));
+    // R2-17: canonical method seeds (from the theme surveys' references)
+    // are on topic by provenance even when the title omits the theme words.
+    const canonical = new Set(
+      Array.isArray(meta.canonical_seeds)
+        ? meta.canonical_seeds.filter((v): v is string => typeof v === "string")
+        : [],
+    );
+    const off = seeds.filter((s) => !canonical.has(String(s.id ?? "")) && !isOnTopic(theme, s));
     if (off.length > 0) {
       problems.push({
         slug: name,

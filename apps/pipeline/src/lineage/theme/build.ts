@@ -761,6 +761,7 @@ export async function buildThemeLineage(
     provenanceBreakdown[method] = (provenanceBreakdown[method] ?? 0) + 1;
   }
 
+  const canonicalSeedIds = seedIds.filter((id) => canonicalIds.has(id)).sort(codepointCompare);
   const payload = {
     schema_version: LINEAGE_ARTIFACT_VERSION,
     root: rootId,
@@ -785,6 +786,11 @@ export async function buildThemeLineage(
       completeness: completeness.asMeta(),
       // R2-11 (design 41 D7): which topic rule admitted the nodes.
       ...(bfsResult.topicGate !== null ? { topic_gate: bfsResult.topicGate } : {}),
+      // R2-17: seeds taken from the theme surveys' reference lists (canonical
+      // method papers). Their titles often omit the theme words (GraphSAGE:
+      // "Inductive Representation Learning on Large Graphs"), so the
+      // seed-topic audit accepts them on this provenance instead.
+      ...(canonicalSeedIds.length > 0 ? { canonical_seeds: canonicalSeedIds } : {}),
     },
   };
 
