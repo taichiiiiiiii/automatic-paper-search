@@ -35,7 +35,7 @@ import {
   focusIds,
   IncompleteBuildError,
 } from "../fetch-state/completeness.js";
-import { addCrossNodeEdges, runBfsAndDescendants } from "./bfs.js";
+import { addCrossNodeEdges, confirmSupportAdmissions, runBfsAndDescendants } from "./bfs.js";
 import {
   type CachedClassifyProviderDeps,
   type ThemeProducerIdentity,
@@ -416,6 +416,24 @@ export async function buildThemeLineage(
   );
   if (crossAdded > 0) {
     logger.warn(`cross-node pass added ${crossAdded} edges (in-graph citations not seen by BFS)`);
+  }
+
+  // R2-2d: provisional admissions (co-citation support, abstract-only
+  // citing papers) need on-topic NON-seed papers linking to them, which
+  // only the cross-node pass can reveal at depth 1.
+  if (topicScope.options.gate && bfsResult.provisional.size > 0) {
+    const confirmed = confirmSupportAdmissions(nodes, edges, {
+      seedIds: new Set(seedIds),
+      provisional: bfsResult.provisional,
+      onTopicIds: bfsResult.onTopicIds,
+      minSupport: topicScope.options.minSupport,
+    });
+    edges = confirmed.edges;
+    if (confirmed.dropped.length > 0) {
+      logger.warn(
+        `topic gate: dropped ${confirmed.dropped.length}/${bfsResult.provisional.size} provisional node(s) with < ${topicScope.options.minSupport} on-topic non-seed links after the cross-node pass`,
+      );
+    }
   }
 
   await enrichGithubStars(nodes, {

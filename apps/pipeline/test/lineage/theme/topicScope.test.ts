@@ -77,7 +77,7 @@ describe("themeTerms", () => {
   it("covers plural, space-less form and a 3+ letter initialism", () => {
     const terms = themeTerms(GNN);
     expect(terms).toEqual(
-      expect.arrayContaining(["graph neural network", "graph neural networks", "gnn", "gnns"]),
+      expect.arrayContaining(["graph neural network", "graph neural networks", "GNN", "GNNs"]),
     );
     expect(themeTerms("Flash Attention")).toContain("flashattention");
     // Two-letter initialisms ("FA", "VT") are too ambiguous.
@@ -87,7 +87,9 @@ describe("themeTerms", () => {
 
   it("takes CamelCase / upper-case names out of search aliases and adds extra terms", () => {
     const terms = themeTerms("Vision Transformer", ["ViT image patches"], ["swin transformer"]);
-    expect(terms).toContain("vit");
+    // Short acronyms keep their case (matched case-sensitively, R2-2d).
+    expect(terms).toContain("ViT");
+    expect(terms).not.toContain("vit");
     expect(terms).toContain("swin transformer");
   });
 });
@@ -362,7 +364,8 @@ describe("low-information relations", () => {
   });
 
   it("a real LLM 'contrasts' classification is kept as such", async () => {
-    const seed = paper("seedA", "Graph Neural Network Benchmarks", { year: 2021, cites: 300 });
+    // Not a survey/benchmark title: the R2-2d relation guard leaves it alone.
+    const seed = paper("seedA", "Spatial Graph Neural Networks", { year: 2021, cites: 300 });
     const deps = bfsDeps({ seedA: [ref(parent)] });
     const result = await runBfsAndDescendants(
       [seed],
@@ -465,6 +468,7 @@ describe("offline admission re-application", () => {
         tldr: "GNN review",
       },
       { id: "aug", title: "Text Data Augmentation for Deep Learning" },
+      { id: "gat", title: "Graph Attention Networks", tldr: "a GNN with masked self-attention" },
     ],
     edges: [
       { src: "slam", dst: "superglue" },
@@ -473,14 +477,27 @@ describe("offline admission re-application", () => {
       { src: "deepwalk", dst: "gcn" },
       { src: "gcn", dst: "survey" },
       { src: "survey", dst: "aug" },
+      { src: "deepwalk", dst: "gat" },
+      { src: "gat", dst: "survey" },
     ],
   };
 
   it("drops the off-topic neighbourhood and moves the root to the subject seed", () => {
     const r = reapplyAdmission(artifact, gnn());
-    expect(r.kept.map((k) => k.id).sort()).toEqual(["deepwalk", "gcn", "superglue", "survey"]);
+    expect(r.kept.map((k) => k.id).sort()).toEqual([
+      "deepwalk",
+      "gat",
+      "gcn",
+      "superglue",
+      "survey",
+    ]);
     expect(r.dropped.map((d) => d.id).sort()).toEqual(["aug", "loftr", "slam"]);
+    // Two on-topic NON-focus nodes (gcn, gat) cite DeepWalk; the focus
+    // survey does not count as support (R2-2d).
     expect(r.kept.find((k) => k.id === "deepwalk")?.reason).toBe("support");
+    // Newer papers citing a seed need a title about the theme.
+    expect(r.dropped.find((d) => d.id === "loftr")?.rule).toBe("descendant(none)");
+    expect(r.dropped.find((d) => d.id === "aug")?.rule).toBe("descendant(none)");
     expect(r.previousRoot).toBe("superglue");
     expect(r.root).toBe("survey");
   });
@@ -490,8 +507,8 @@ describe("offline admission re-application", () => {
     const path = join(dir, "lineage.json");
     writeFileSync(path, JSON.stringify(artifact));
     const report = evaluateArtifact(path);
-    expect(report.nodeCountBefore).toBe(7);
-    expect(report.nodeCountAfter).toBe(4);
+    expect(report.nodeCountBefore).toBe(8);
+    expect(report.nodeCountAfter).toBe(5);
     expect(runEvalCli([path, "--json"])).toBe(0);
     expect(runEvalCli([])).toBe(2);
     expect(runEvalCli([path, "--min-support", "0"])).toBe(2);

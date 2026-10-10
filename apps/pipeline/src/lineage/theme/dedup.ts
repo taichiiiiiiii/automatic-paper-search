@@ -321,3 +321,140 @@ export function dedupNodesByStrongAlias<T extends AliasablePaper & Record<string
   }
   return [survivors, remap, survivorSeed];
 }
+
+// ---- R2-2d: same-work identity by title (graph nodes) ----
+
+/** A normalised title shorter than this many words / characters is too
+ * generic to identify a work ("Introduction", "Cats and dogs"). */
+const TITLE_IDENTITY_MIN_WORDS = 4;
+const TITLE_IDENTITY_MIN_CHARS = 20;
+
+/** Identity key of a title, or `null` when the title is too generic to
+ * identify one work. */
+export function titleIdentityKey(title: unknown): string | null {
+  if (typeof title !== "string") return null;
+  const norm = normalizeDedupTitle(title);
+  if (norm.length < TITLE_IDENTITY_MIN_CHARS) return null;
+  if (norm.split(" ").length < TITLE_IDENTITY_MIN_WORDS) return null;
+  return norm;
+}
+
+function yearsCompatible(a: unknown, b: unknown): boolean {
+  if (typeof a !== "number" || typeof b !== "number") return true;
+  return Math.abs(a - b) <= DEDUP_YEAR_WINDOW;
+}
+
+/**
+ * Same-work index for graph nodes. The same paper often has two IDs —
+ * the arXiv preprint and the venue version ("An Image is Worth 16x16
+ * Words", 2020 arXiv vs 2021 ICLR) carry different OpenAlex/S2 IDs and
+ * no shared strong alias, so `dedupNodesByStrongAlias` cannot join them.
+ * The BFS registers every node it admits (seeds first) and resolves each
+ * new candidate through {@link resolve}; a hit makes the candidate BE the
+ * registered node, so edges are created with the survivor's ID directly
+ * (no endpoint rewrite of provenance-bound edges afterwards).
+ */
+export class TitleIdentity {
+  private readonly byKey = new Map<string, { id: string; year: unknown }[]>();
+
+  register(id: string, paper: { title?: unknown; year?: unknown }): void {
+    const key = titleIdentityKey(paper.title);
+    if (key === null) return;
+    const list = this.byKey.get(key) ?? [];
+    if (!list.some((e) => e.id === id)) list.push({ id, year: paper.year });
+    this.byKey.set(key, list);
+  }
+
+  /** The registered node that is the same work as `paper` (same
+   * normalised title, years within the preprint window), other than
+   * `paper` itself; `null` when there is none. */
+  resolve(paper: { paperId?: unknown; title?: unknown; year?: unknown }): string | null {
+    const key = titleIdentityKey(paper.title);
+    if (key === null) return null;
+    for (const e of this.byKey.get(key) ?? []) {
+      if (e.id !== paper.paperId && yearsCompatible(e.year, paper.year)) return e.id;
+    }
+    return null;
+  }
+}
+
+export interface TitleMergeNode {
+  id: string;
+  title?: unknown;
+  year?: unknown;
+  is_focus?: boolean;
+}
+
+export interface TitleMergeResult<
+  N extends TitleMergeNode,
+  E extends { src: string; dst: string },
+> {
+  nodes: N[];
+  edges: E[];
+  merged: { survivor: string; dropped: string; title: string }[];
+}
+
+/**
+ * Offline counterpart of {@link TitleIdentity} for an already-built
+ * artifact (eval only): collapse same-title works, keeping the focus node,
+ * else the earliest year, else the smallest ID; remap edges onto the
+ * survivor, drop self-loops and keep one edge per (src, dst) — the
+ * survivor's own edge wins over a remapped one. The live build never
+ * needs this because the BFS resolves duplicates before creating edges.
+ */
+export function mergeDuplicateTitleNodes<
+  N extends TitleMergeNode,
+  E extends { src: string; dst: string },
+>(nodes: readonly N[], edges: readonly E[]): TitleMergeResult<N, E> {
+  const rank = (n: N): [number, number, string] => [
+    n.is_focus === true ? 0 : 1,
+    typeof n.year === "number" ? n.year : Number.MAX_SAFE_INTEGER,
+    n.id,
+  ];
+  const better = (a: N, b: N): boolean => {
+    const [ra, rb] = [rank(a), rank(b)];
+    if (ra[0] !== rb[0]) return ra[0] < rb[0];
+    if (ra[1] !== rb[1]) return ra[1] < rb[1];
+    return codepointCompare(ra[2], rb[2]) < 0;
+  };
+  const groups = new Map<string, N[]>();
+  for (const n of nodes) {
+    const key = titleIdentityKey(n.title);
+    if (key === null) continue;
+    const list = groups.get(key) ?? [];
+    list.push(n);
+    groups.set(key, list);
+  }
+  const remap = new Map<string, string>();
+  const merged: TitleMergeResult<N, E>["merged"] = [];
+  for (const members of groups.values()) {
+    if (members.length < 2) continue;
+    let survivor = members[0]!;
+    for (const m of members.slice(1)) if (better(m, survivor)) survivor = m;
+    for (const m of members) {
+      if (m === survivor || !yearsCompatible(m.year, survivor.year)) continue;
+      remap.set(m.id, survivor.id);
+      merged.push({ survivor: survivor.id, dropped: m.id, title: String(m.title ?? "") });
+    }
+  }
+  if (remap.size === 0) return { nodes: [...nodes], edges: [...edges], merged };
+  const keptNodes = nodes.filter((n) => !remap.has(n.id));
+  const own: E[] = [];
+  const moved: E[] = [];
+  for (const e of edges) {
+    const src = remap.get(e.src) ?? e.src;
+    const dst = remap.get(e.dst) ?? e.dst;
+    if (src === dst) continue;
+    if (src === e.src && dst === e.dst) own.push(e);
+    else moved.push({ ...e, src, dst });
+  }
+  const seen = new Set<string>();
+  const out: E[] = [];
+  for (const e of [...own, ...moved]) {
+    const k = `${e.src}\u0000${e.dst}`;
+    if (seen.has(k)) continue;
+    seen.add(k);
+    out.push(e);
+  }
+  return { nodes: keptNodes, edges: out, merged };
+}

@@ -13,9 +13,11 @@ import { type DerivedEdge, deriveRelation, isFoundationalAncestor } from "../cla
 import type { BuildCompletenessForExpansion } from "../shared/fetchRelated.js";
 import { type FetchRelatedDeps, fetchRelated } from "../shared/fetchRelated.js";
 import type { ThemeGraphNode } from "../shared/node.js";
+import { TitleIdentity } from "./dedup.js";
 import { demoteLowInformationEdge, isTrending, makeEdge, type ThemeEdge } from "./edges.js";
 import { toThemeNode } from "./node.js";
 import type { ThemePaper } from "./openalexWork.js";
+import { guardRelation } from "./relationGuard.js";
 import { filterOffTopicRefs } from "./seedFilters.js";
 import type { TopicScope } from "./topicScope.js";
 
@@ -58,6 +60,17 @@ export interface BFSResult {
    * them (deferred pass). Both 0 when no `topicScope` is given. */
   topicRejected: number;
   topicAdmittedBySupport: number;
+  /** R2-2d: provisional admissions, to be confirmed by
+   * {@link confirmSupportAdmissions} after the cross-node pass — nodes
+   * admitted by support in the deferred pass, and citing papers whose
+   * title is not about the theme but that mention it elsewhere. Plus the
+   * IDs admitted because they match the theme (seeds included): the
+   * nodes that may lend support. */
+  provisional: Set<string>;
+  onTopicIds: Set<string>;
+  /** R2-2d: candidates the BFS identified as another ID of a node already
+   * in the graph (same title, preprint vs venue version) and folded into it. */
+  titleMerged: number;
 }
 
 export interface RunBfsOptions {
@@ -93,7 +106,8 @@ function llmCounter(provider: LLMProvider | null): LlmCounter {
   return counter;
 }
 
-/** `deriveRelation` + the R2-2b demotion of `year_cite` guesses. */
+/** `deriveRelation` + the R2-2b demotion of `year_cite` guesses + the
+ * R2-2d survey/dataset `contrasts` guard. */
 async function classifyPair(
   intentRecord: Record<string, unknown>,
   parent: Record<string, unknown>,
@@ -107,7 +121,9 @@ async function classifyPair(
     classifyRelation: counter.classify,
     strictMode: llmStrict as "off" | "ambiguous" | "all",
   });
-  return cls === null ? null : demoteLowInformationEdge(cls, parent, child);
+  return cls === null
+    ? null
+    : guardRelation(demoteLowInformationEdge(cls, parent, child), parent, child);
 }
 
 /** A candidate the topic gate turned away, with every on-topic admitted
@@ -133,6 +149,15 @@ interface PendingCandidate {
  * it. Support-admitted nodes get their edges but are not expanded
  * further, so they cannot open a new off-topic neighbourhood. The gate
  * runs before the width cut, so on-topic candidates fill the width.
+ *
+ * R2-2d: a newer paper citing a seed (descendants pass) joins when its
+ * title is about the theme, provisionally when it mentions the theme only
+ * in its abstract or as a tool, and never otherwise
+ * (`TopicScope.admitsDescendant`; no co-citation support, no allowlist).
+ * Provisional and support admissions are confirmed by
+ * {@link confirmSupportAdmissions} after the cross-node pass. A candidate with the same title as a
+ * node already in (or pending for) the graph is folded into that node
+ * (`TitleIdentity`), so one work never appears twice.
  */
 export async function runBfsAndDescendants(
   seeds: readonly Paper[],
@@ -150,6 +175,8 @@ export async function runBfsAndDescendants(
 
   const seedIds: string[] = [];
   const frontier: [Paper, number][] = [];
+  const titles = new TitleIdentity();
+  let titleMerged = 0;
   /** Admitted nodes that may lend support (on-topic seeds + nodes
    * admitted because they match the theme). */
   const onTopic = new Set<string>();
@@ -157,6 +184,7 @@ export async function runBfsAndDescendants(
     const sid = seed.paperId;
     nodes.set(sid, toThemeNode(seed, { focus: true, trending: isTrending(seed, currentYear) }));
     seedIds.push(sid);
+    titles.register(sid, seed);
     frontier.push([seed, 0]);
     if (scope === null || scope.isOnTopic(seed)) onTopic.add(sid);
   }
@@ -164,6 +192,28 @@ export async function runBfsAndDescendants(
   let classifyAttempted = 0;
   let classifySucceeded = 0;
   const pending = new Map<string, PendingCandidate>();
+  const provisional = new Set<string>();
+
+  /** Fold a candidate that is another ID of a node already in (or pending
+   * for) the graph into that node, and drop repeats within one list. */
+  const canonicalise = (list: Paper[], selfId: string): Paper[] => {
+    const out: Paper[] = [];
+    const seen = new Set<string>();
+    for (const p of list) {
+      let paper = p;
+      if (p.paperId && !nodes.has(p.paperId) && !pending.has(p.paperId)) {
+        const hit = titles.resolve(p);
+        if (hit !== null && (nodes.has(hit) || pending.has(hit))) {
+          paper = { ...p, paperId: hit };
+          titleMerged += 1;
+        }
+      }
+      if (!paper.paperId || paper.paperId === selfId || seen.has(paper.paperId)) continue;
+      seen.add(paper.paperId);
+      out.push(paper);
+    }
+    return out;
+  };
 
   /** Gate one candidate seen from `anchor`. Returns true when it may be
    * used now (already in the graph, or admitted). */
@@ -175,6 +225,7 @@ export async function runBfsAndDescendants(
       if (!entry) {
         entry = { paper: candidate, links: new Map() };
         pending.set(cid, entry);
+        titles.register(cid, candidate);
       }
       if (!entry.links.has(anchor.paperId)) {
         entry.links.set(anchor.paperId, { direction, anchor });
@@ -185,7 +236,26 @@ export async function runBfsAndDescendants(
     const why = scope.admits(candidate, 0);
     if (why === null) return false;
     pending.delete(cid);
+    titles.register(cid, candidate);
     if (why === "topic") onTopic.add(cid);
+    return true;
+  };
+
+  let descendantsRejected = 0;
+  /** Descendants pass (R2-2d): a theme title admits; a theme mention
+   * only in the abstract / as a tool admits provisionally. */
+  const gateDescendant = (candidate: Paper): boolean => {
+    const cid = candidate.paperId;
+    if (scope === null || nodes.has(cid)) return true;
+    const why = scope.admitsDescendant(candidate);
+    if (why === null) {
+      descendantsRejected += 1;
+      return false;
+    }
+    pending.delete(cid);
+    titles.register(cid, candidate);
+    if (why === "topic") onTopic.add(cid);
+    else provisional.add(cid);
     return true;
   };
 
@@ -203,6 +273,7 @@ export async function runBfsAndDescendants(
     );
     allParents = allParents.filter((p) => p.abstract);
     allParents = filterOffTopicRefs(allParents, { maxSeedCite });
+    allParents = canonicalise(allParents, current.paperId);
     if (scope !== null) allParents = allParents.filter((p) => gate(p, current, "parent"));
 
     const influential = allParents.filter((p) => p._is_influential !== false);
@@ -220,6 +291,7 @@ export async function runBfsAndDescendants(
       if (!pid) continue;
       if (!nodes.has(pid)) {
         nodes.set(pid, toThemeNode(parent, { trending: isTrending(parent, currentYear) }));
+        titles.register(pid, parent);
       }
       classifyAttempted += 1;
       const cls = await classifyPair(parent, parent, current, counter, llmStrict);
@@ -251,8 +323,9 @@ export async function runBfsAndDescendants(
     let allChildren = await fetchRelated(sid, "citations", descWidth * 4, deps, completeness);
     allChildren = allChildren.filter((c) => c.abstract);
     allChildren = filterOffTopicRefs(allChildren, { maxSeedCite });
+    allChildren = canonicalise(allChildren, sid);
     if (scope !== null) {
-      allChildren = allChildren.filter((c) => c.paperId === sid || gate(c, seed, "child"));
+      allChildren = allChildren.filter((c) => c.paperId === sid || gateDescendant(c));
     }
     const influential = allChildren.filter((c) => c._is_influential !== false);
     const nonInfluential = allChildren.filter((c) => c._is_influential === false);
@@ -266,6 +339,7 @@ export async function runBfsAndDescendants(
       if (!cid || cid === sid) continue;
       if (!nodes.has(cid)) {
         nodes.set(cid, toThemeNode(child, { trending: isTrending(child, currentYear) }));
+        titles.register(cid, child);
       }
       const cls = await classifyPair(child, seed, child, counter, llmStrict);
       if (cls === null) continue;
@@ -299,6 +373,7 @@ export async function runBfsAndDescendants(
         continue;
       }
       nodes.set(cid, toThemeNode(entry.paper, { trending: isTrending(entry.paper, currentYear) }));
+      provisional.add(cid);
       topicAdmittedBySupport += 1;
       for (const { direction, anchor } of entry.links.values()) {
         const [parent, child] =
@@ -320,8 +395,14 @@ export async function runBfsAndDescendants(
         );
       }
     }
+    topicRejected += descendantsRejected;
     deps.logger?.warn(
-      `topic gate: kept ${topicRejected} off-topic candidate(s) out; admitted ${topicAdmittedBySupport} by support (>= ${scope.options.minSupport} on-topic links)`,
+      `topic gate: kept ${topicRejected} off-topic candidate(s) out (${descendantsRejected} citing paper(s) whose title is not about the theme); admitted ${topicAdmittedBySupport} by support (>= ${scope.options.minSupport} on-topic links, confirmed after the cross-node pass)`,
+    );
+  }
+  if (titleMerged > 0) {
+    deps.logger?.warn(
+      `title identity: folded ${titleMerged} duplicate-ID candidate(s) into existing nodes`,
     );
   }
 
@@ -335,7 +416,52 @@ export async function runBfsAndDescendants(
     llmUnusable: counter.unusable,
     topicRejected,
     topicAdmittedBySupport,
+    provisional,
+    onTopicIds: onTopic,
+    titleMerged,
   };
+}
+
+/**
+ * R2-2d second stage of support admission, run after the cross-node pass
+ * has linked in-graph citations: a provisional node (support-admitted
+ * reference, or a citing paper that names the theme only in its abstract)
+ * stays only if at least `minSupport` distinct on-topic NON-seed nodes
+ * link to it.
+ * At the CI depth of 1 the deferred pass only ever sees seeds citing a
+ * candidate, and two seeds citing the same generic paper (an init
+ * scheme, a dataset) says nothing about the theme; on-topic papers
+ * beyond the seeds citing it does. Mutates `nodes`; returns the
+ * remaining edges and the dropped IDs.
+ */
+export function confirmSupportAdmissions(
+  nodes: Map<string, ThemeGraphNode>,
+  edges: readonly ThemeEdge[],
+  options: {
+    seedIds: ReadonlySet<string>;
+    provisional: ReadonlySet<string>;
+    onTopicIds: ReadonlySet<string>;
+    minSupport: number;
+  },
+): { edges: ThemeEdge[]; dropped: string[] } {
+  const { seedIds, provisional, onTopicIds, minSupport } = options;
+  const lenders = (id: string): number => {
+    const set = new Set<string>();
+    for (const e of edges) {
+      const other = e.src === id ? e.dst : e.dst === id ? e.src : null;
+      if (other === null || other === id) continue;
+      if (seedIds.has(other) || provisional.has(other) || !onTopicIds.has(other)) continue;
+      set.add(other);
+    }
+    return set.size;
+  };
+  const dropped = [...provisional].filter(
+    (id) => nodes.has(id) && !seedIds.has(id) && lenders(id) < minSupport,
+  );
+  if (dropped.length === 0) return { edges: [...edges], dropped };
+  const gone = new Set(dropped);
+  for (const id of dropped) nodes.delete(id);
+  return { edges: edges.filter((e) => !gone.has(e.src) && !gone.has(e.dst)), dropped };
 }
 
 export interface AddCrossNodeEdgesOptions {
@@ -359,6 +485,8 @@ export async function addCrossNodeEdges(
   const seedIds = options.seedIds ?? new Set<string>();
   const existing = new Set(edges.map((e) => `${e.src}\u0000${e.dst}`));
   const nodeIds = new Set(nodes.keys());
+  const titles = new TitleIdentity();
+  for (const [id, node] of nodes) titles.register(id, node as unknown as Record<string, unknown>);
   let added = 0;
 
   const isAnchor = (nid: string): boolean => {
@@ -376,7 +504,10 @@ export async function addCrossNodeEdges(
       deps.logger?.warn(`cross-node: fetch_related failed for ${citingId}: ${String(exc)}`);
       continue;
     }
-    for (const ref of refs) {
+    for (const rawRef of refs) {
+      // R2-2d: another ID of an in-graph work (preprint vs venue version).
+      const alias = nodeIds.has(rawRef.paperId) ? null : titles.resolve(rawRef);
+      const ref = alias === null ? rawRef : { ...rawRef, paperId: alias };
       const refId = ref.paperId;
       if (!nodeIds.has(refId)) continue;
       if (refId === citingId) continue; // S2 self-loop anomaly
