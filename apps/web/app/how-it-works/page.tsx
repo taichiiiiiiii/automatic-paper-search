@@ -22,7 +22,7 @@ export const metadata: Metadata = buildMetadata({
   path: "/how-it-works/",
   title: "仕組み — 線の色が示す《関係》 | PaperPilot",
   description:
-    "PaperPilot の家系図で、色のついた線は論文どうしの「関係」を表します。置換・後継・拡張・成分分析・比較・対立の6種を、実際のエッジ色と意味で解説。",
+    "PaperPilot の家系図で、色のついた線は論文どうしの「関係」を表します。置換・後継・拡張・成分分析・参照（背景）・対立の6種を、実際のエッジ色と意味で解説。関係の根拠と出典・ライセンスも案内します。",
   ogImage: {
     path: "/assets/og-image.png",
     width: 1200,
@@ -95,10 +95,10 @@ const RELATIONS: readonly RelationSpecimen[] = [
     stroke: "var(--rel-baseline)",
     strokeWidth: "1.6",
     strokeDasharray: "2 4",
-    ja: "比較",
-    en: "baseline",
+    ja: "参照（背景）",
+    en: "baseline_only",
     meaning:
-      "性能比較の「物差し」として引かれる対照。新手法が旧手法をベースラインとして引用するケース。最も弱い結びつき。",
+      "背景・関連研究として、または性能比較の物差し（ベースライン）として引用している関係。手法を受け継いだとまでは言えない、最も弱い結びつき。Semantic Scholar の引用文で「背景」「利用」「比較」と分類された引用の多くがここに入ります。",
   },
   {
     rowStyle: styles.relRowContrasts,
@@ -120,6 +120,11 @@ interface SeeAlsoLink {
 }
 
 const SEEALSO_LINKS: readonly SeeAlsoLink[] = [
+  {
+    icon: "🧭",
+    href: "https://github.com/taichiiiiiiii/automatic-paper-search/blob/develop/docs/design/41-lineage-publication-and-reliability.md",
+    label: "系譜の公開段階と関係の根拠（設計書 41）",
+  },
   {
     icon: "📐",
     href: "https://github.com/taichiiiiiiii/automatic-paper-search/blob/develop/docs/design/39-typescript-cloudflare-migration.md",
@@ -211,11 +216,19 @@ export default function HowItWorksPage() {
         <p className={styles.howBody}>
           論文を <strong>arXiv・Semantic Scholar・OpenAlex</strong>{" "}
           から収集し、品質シグナルで絞り込んだうえで、
-          引用グラフ（どの論文がどれを引いているか）をたどります。各エッジの関係種別は、
-          <strong>引用文脈や引用の意図、年代・引用数の関係を手がかりに自動判定</strong>し、
-          曖昧なものは <strong>LLM</strong> が補助します（LLM
-          が使えないときは決定的なヒューリスティックにフォールバック）。
-          詳しい段階構成・スコアリングの正式な定義は、下記の設計ドキュメントを参照してください。
+          引用グラフ（どの論文がどれを引いているか）をたどります。各エッジの関係の種類は、主に
+          <strong>
+            Semantic Scholar が提供する引用文（本文で相手の論文に触れている 1
+            文）と引用の意図（背景・手法の利用・結果の比較）、重要な引用かどうかの印
+          </strong>
+          から規則で判定します。引用文に「拡張する」「置き換える」などの手がかり語があるときだけ{" "}
+          <strong>LLM</strong>{" "}
+          が関係の種類を補助します。題名の版（「V2」など）や基礎文献リスト、引用と年からの推測で補う関係もあります。
+        </p>
+        <p className={styles.howBody}>
+          家系図の線をクリック（タップ、またはキーボードで選んで Enter）すると、
+          <strong>判定の根拠・判定方法・確信度と、根拠になった引用文そのもの</strong>
+          を表示します。グラフの下の「関係の一覧」でも同じ内容を確認できます。
         </p>
         <p className={styles.howBody}>
           公開するのは、<strong>自動検査（形式・識別子・関係の根拠）に合格した系譜</strong>
@@ -236,8 +249,8 @@ export default function HowItWorksPage() {
             さらに詳しく
           </h2>
           <p className={styles.seealsoNote}>
-            実装の詳細は GitHub のドキュメントへ。<strong>いまの構成と今後の計画</strong>
-            は設計書 39 番、切替と運用の経過は移行の記録にあります。
+            実装の詳細は GitHub のドキュメントへ。<strong>公開段階と関係の根拠</strong>
+            は設計書 41 番、いまの構成は設計書 39 番、切替と運用の経過は移行の記録にあります。
           </p>
         </div>
         <ul className={styles.seealsoLinks}>
@@ -251,9 +264,63 @@ export default function HowItWorksPage() {
         </ul>
         <p>
           <Link href="/themes/" className={styles.guideCta}>
-            系譜の公開準備状況を見る <span aria-hidden="true">→</span>
+            公開中の系譜を見る <span aria-hidden="true">→</span>
           </Link>
         </p>
+      </section>
+
+      <section id="credits" className={styles.credits} aria-labelledby="credits-heading">
+        <div className={`${styles.sectionHead} ${styles.sectionHeadBare}`}>
+          <h2 className={styles.sectionHeadTitle} id="credits-heading">
+            出典とライセンス
+          </h2>
+        </div>
+        <ul className={styles.creditsList}>
+          <li>
+            参考文献・引用文脈（引用文）・引用の意図・重要な引用の印は{" "}
+            <a href="https://www.semanticscholar.org/" rel="noopener">
+              Semantic Scholar
+            </a>{" "}
+            のデータで、{" "}
+            <a href="https://opendatacommons.org/licenses/by/1-0/" rel="noopener">
+              ODC-BY 1.0
+            </a>{" "}
+            に基づいて利用しています。出典: Kinney et al., “The Semantic Scholar Open Data
+            Platform”, 2023（
+            <a href="https://arxiv.org/abs/2301.10140" rel="noopener">
+              arXiv:2301.10140
+            </a>
+            ）。引用の意図の分類は Cohan et al., “Structural Scaffolds for Citation Intent
+            Classification in Scientific Publications”, NAACL 2019 によります。
+          </li>
+          <li>
+            根拠として表示する引用文は論文本文からの短い引用です。1 文・約 300
+            字までにとどめ、引用符で囲み、出典「Semantic
+            Scholar」と論文へのリンクを添えて表示します。本文や PDF の再配布はしません。
+          </li>
+          <li>
+            論文の書誌情報の一部は{" "}
+            <a href="https://openalex.org/" rel="noopener">
+              OpenAlex
+            </a>
+            （CC0）を利用しています。OpenAlex に感謝します。
+          </li>
+          <li>
+            Thank you to{" "}
+            <a href="https://arxiv.org/" rel="noopener">
+              arXiv
+            </a>{" "}
+            for use of its open access interoperability. 本サイトは arXiv・Semantic
+            Scholar・OpenAlex の公式サービスではなく、各団体の推奨・承認を受けたものでもありません。
+          </li>
+          <li>
+            引用文の削除依頼・誤りの報告・お問い合わせは{" "}
+            <a href="https://github.com/taichiiiiiiii/automatic-paper-search/issues" rel="noopener">
+              GitHub の Issue
+            </a>{" "}
+            で受け付けています。
+          </li>
+        </ul>
       </section>
     </main>
   );

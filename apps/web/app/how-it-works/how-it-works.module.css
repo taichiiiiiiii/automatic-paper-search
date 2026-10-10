@@ -394,6 +394,27 @@
   border-radius: 7px;
 }
 
+/* ---------- 出典とライセンス ---------- */
+.credits {
+  padding: var(--space-section) var(--space-edge) 0;
+  border-top: 1px solid var(--color-rule);
+  margin-top: var(--space-section);
+}
+.creditsList {
+  max-width: 64ch;
+  margin: 0.8rem 0 0;
+  padding-left: 1.2rem;
+  font-size: var(--text-body);
+  line-height: 1.75;
+  color: var(--color-ink-muted);
+}
+.creditsList li + li {
+  margin-top: 0.5rem;
+}
+.creditsList a {
+  color: var(--color-accent-strong);
+}
+
 /* Phones: the specimen line moves above its label instead of sharing a
    64px column, so nothing overflows at 320px. */
 @media (max-width: 480px) {
