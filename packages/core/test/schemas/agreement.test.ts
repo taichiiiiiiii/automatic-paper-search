@@ -164,3 +164,113 @@ describe("validateArtifact basics", () => {
     expect(a.ok).toBe(b.ok);
   });
 });
+
+// Design doc 41 D1/D5 additions (no frozen Python verdict exists for them:
+// Python is gone, so they are pinned here against ajv directly).
+describe("lineage publication tiers and edge labels (design doc 41)", () => {
+  const SHA = "a".repeat(64);
+  function check(name: string, status: string) {
+    return { name, status, observed: 0, expected: 0, evidence: [] };
+  }
+  function qualityRow(overrides: Record<string, unknown>) {
+    return {
+      collection_id: "theme:t",
+      kind: "theme",
+      slug: "t",
+      label: "T",
+      path: "themes/t/lineage.json",
+      availability: "ready",
+      audit_status: "unknown",
+      publication_tier: "unaudited",
+      freshness: "fresh",
+      generated_at: null,
+      snapshot_date: null,
+      node_count: 2,
+      edge_count: 1,
+      artifact_schema_version: "lineage-artifact-v1",
+      input_sha256: SHA,
+      audit: {
+        fixture_sha256: null,
+        evaluated_at: "2026-10-10T00:00:00Z",
+        actor: "ci:audit-v1",
+        checks: [check("artifact_contract_v1", "passed"), check("golden_fixture", "unknown")],
+      },
+      ...overrides,
+    };
+  }
+  function quality(row: Record<string, unknown>) {
+    return {
+      schema_version: "lineage-quality-v1",
+      as_of: "2026-10-10T00:00:00Z",
+      audit_version: "audit-v1",
+      collections: [row],
+    };
+  }
+
+  it("accepts an unaudited row and rejects one whose automatic checks did not all pass", () => {
+    expect(validateArtifact("lineage-quality-v1", quality(qualityRow({}))).ok).toBe(true);
+    const failing = qualityRow({
+      audit: {
+        fixture_sha256: null,
+        evaluated_at: "2026-10-10T00:00:00Z",
+        actor: "ci:audit-v1",
+        checks: [check("artifact_contract_v1", "unknown"), check("golden_fixture", "unknown")],
+      },
+    });
+    expect(validateArtifact("lineage-quality-v1", quality(failing)).ok).toBe(false);
+  });
+
+  it("rejects 'audited' unless the row is ready+passed, and ready+passed unless 'audited'", () => {
+    expect(
+      validateArtifact("lineage-quality-v1", quality(qualityRow({ publication_tier: "audited" })))
+        .ok,
+    ).toBe(false);
+    const passed = qualityRow({
+      audit_status: "passed",
+      publication_tier: "unaudited",
+      audit: {
+        fixture_sha256: SHA,
+        evaluated_at: "2026-10-10T00:00:00Z",
+        actor: "ci:audit-v1",
+        checks: [check("artifact_contract_v1", "passed"), check("golden_fixture", "passed")],
+      },
+    });
+    expect(validateArtifact("lineage-quality-v1", quality(passed)).ok).toBe(false);
+    expect(
+      validateArtifact("lineage-quality-v1", quality({ ...passed, publication_tier: "audited" }))
+        .ok,
+    ).toBe(true);
+  });
+
+  it("accepts edge_labels in audit fixtures and forbids corrected_relation on a 'correct' verdict", () => {
+    const fixture = (edgeLabel: Record<string, unknown>) => ({
+      schema_version: "lineage-audit-fixtures-v1",
+      collections: [
+        {
+          collection_id: "theme:t",
+          input_sha256: SHA,
+          reviewer: "r",
+          reviewed_at: "2026-10-10T00:00:00Z",
+          focus_labels: [],
+          sample_labels: [],
+          edge_labels: [edgeLabel],
+        },
+      ],
+    });
+    const base = { src: "a", dst: "b", relation: "contrasts", verdict: "correct" };
+    expect(validateArtifact("lineage-audit-fixtures-v1", fixture(base)).ok).toBe(true);
+    expect(
+      validateArtifact(
+        "lineage-audit-fixtures-v1",
+        fixture({ ...base, verdict: "wrong", corrected_relation: "extends", note: "n" }),
+      ).ok,
+    ).toBe(true);
+    expect(
+      validateArtifact("lineage-audit-fixtures-v1", fixture({ ...base, corrected_relation: "x" }))
+        .ok,
+    ).toBe(false);
+    expect(
+      validateArtifact("lineage-audit-fixtures-v1", fixture({ ...base, verdict: "maybe" })).ok,
+    ).toBe(false);
+  });
+});

@@ -34,9 +34,11 @@ import {
   lineageShelfHref,
   lineageShelfMeta,
   lineageShelfStaleNote,
+  lineageShelfTier,
   selectLineageShelfRows,
 } from "../../lib/landing-lineage";
 import type { QualityRow } from "../../lib/lineage/core";
+import { PublicationBadge } from "../lineage/publication-badge";
 import { SearchArea, type SearchAreaHandle } from "../search/search-area";
 import { SearchDetailDialog } from "../search/search-detail-dialog";
 import styles from "./landing.module.css";
@@ -117,7 +119,7 @@ export function Landing() {
         本から探す。
         <span id="s0-lineage-note">
           {lineageShelf.kind === "open"
-            ? "監査済みの系譜を公開しています。"
+            ? "自動検査に合格した系譜を公開しています（未監査のものは印付き）。"
             : "系譜データは現在公開準備中です。"}
         </span>
       </p>
@@ -193,18 +195,20 @@ export function Landing() {
           {lineageShelf.kind === "failed"
             ? "系譜一覧を読み込めませんでした。"
             : lineageShelf.kind === "open"
-              ? `${lineageShelf.rows.length} 件の監査済み系譜を表示しています。`
+              ? `${lineageShelf.rows.length} 件の系譜を表示しています。`
               : "公開条件を満たす系譜は現在ありません。"}
         </p>
         <ul className={styles.lineagesList} id="s0-lineages-list">
           {lineageShelf.kind === "open" ? (
             lineageShelf.rows.map((row) => {
               const stale = lineageShelfStaleNote(row);
+              const tier = lineageShelfTier(row);
               return (
                 <li key={row.collection_id} className={styles.lineageItem}>
                   <a className={styles.lineageLink} href={lineageShelfHref(row)}>
                     {row.label}
                   </a>
+                  {tier !== null ? <PublicationBadge tier={tier} /> : null}
                   <span className={styles.lineageMeta}>{lineageShelfMeta(row)}</span>
                   {stale !== null ? <span className={styles.lineageStale}>{stale}</span> : null}
                 </li>
@@ -214,7 +218,7 @@ export function Landing() {
             <li className={styles.lineageEmpty}>
               {lineageShelf.kind === "failed"
                 ? "系譜一覧を読み込めませんでした。学会カタログから論文を探せます。"
-                : "監査済みの系譜は準備中です。学会カタログは通常どおり利用できます。"}
+                : "公開できる系譜は準備中です。学会カタログは通常どおり利用できます。"}
             </li>
           )}
         </ul>

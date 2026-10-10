@@ -106,4 +106,28 @@ describe("GET /api/health", () => {
     expect(response.headers.get("cache-control")).toBe("no-store");
     expect(response.headers.get("content-type")).toBe("application/json; charset=utf-8");
   });
+
+  it("adds Access-Control-Allow-Origin only for an allowlisted Origin", async () => {
+    const handler = createHealthHandler();
+    const env = makeEnv({
+      CONFIG_KV: fakeKv({
+        accepting: "true",
+        origin_allowlist: JSON.stringify(["https://site.test"]),
+      }),
+    });
+    const allowed = await handler(
+      new Request("https://worker.test/api/health", { headers: { origin: "https://site.test" } }),
+      env,
+    );
+    expect(allowed.headers.get("access-control-allow-origin")).toBe("https://site.test");
+    expect(allowed.headers.get("vary")).toBe("Origin");
+    const other = await handler(
+      new Request("https://worker.test/api/health", { headers: { origin: "https://evil.test" } }),
+      env,
+    );
+    expect(other.headers.get("access-control-allow-origin")).toBeNull();
+    const none = await handler(new Request("https://worker.test/api/health"), env);
+    expect(none.headers.get("access-control-allow-origin")).toBeNull();
+    expect((await readHealth(none)).accepting).toBe(true);
+  });
 });

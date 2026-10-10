@@ -32,6 +32,10 @@
         "path": {"type": "string", "minLength": 1},
         "availability": {"enum": ["unavailable", "sparse", "ready", "failed"]},
         "audit_status": {"enum": ["unknown", "passed", "failed"]},
+        "publication_tier": {
+          "enum": ["audited", "unaudited", "blocked"],
+          "description": "Design doc 41 D1. audited = ready + every check passed (golden_fixture included); unaudited = ready + every automatic check passed and golden_fixture unknown; blocked = everything else. Optional only so pre-tier manifests still validate; the builder always writes it."
+        },
         "freshness": {"enum": ["fresh", "stale"]},
         "generated_at": {
           "anyOf": [{"type": "null"}, {"type": "string", "format": "date-time"}]
@@ -161,6 +165,58 @@
               }
             }
           }
+        },
+        {
+          "if": {
+            "properties": {"publication_tier": {"const": "audited"}},
+            "required": ["publication_tier"]
+          },
+          "then": {
+            "properties": {
+              "availability": {"const": "ready"},
+              "audit_status": {"const": "passed"}
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {"publication_tier": {"const": "unaudited"}},
+            "required": ["publication_tier"]
+          },
+          "then": {
+            "properties": {
+              "availability": {"const": "ready"},
+              "audit_status": {"const": "unknown"},
+              "artifact_schema_version": {"const": "lineage-artifact-v1"},
+              "input_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+              "audit": {
+                "properties": {
+                  "checks": {
+                    "minItems": 1,
+                    "items": {
+                      "if": {"properties": {"name": {"not": {"const": "golden_fixture"}}}},
+                      "then": {"properties": {"status": {"const": "passed"}}},
+                      "else": {"properties": {"status": {"const": "unknown"}}}
+                    },
+                    "contains": {
+                      "properties": {"name": {"const": "golden_fixture"}},
+                      "required": ["name"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "availability": {"const": "ready"},
+              "audit_status": {"const": "passed"}
+            },
+            "required": ["availability", "audit_status", "publication_tier"]
+          },
+          "then": {"properties": {"publication_tier": {"const": "audited"}}}
         },
         {
           "if": {

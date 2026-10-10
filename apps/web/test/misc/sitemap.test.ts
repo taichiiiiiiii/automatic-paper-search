@@ -445,10 +445,17 @@ describe("built out/sitemap.xml", () => {
             conference?: string;
             availability: string;
             audit_status: string;
+            publication_tier?: string;
           }[];
         };
         for (const row of manifest.collections ?? []) {
-          if (row.availability !== "ready" || row.audit_status !== "passed") continue;
+          // Design doc 41 D1: audited and unaudited rows are published;
+          // pre-tier manifests fall back to the original ready+passed rule.
+          const published =
+            row.publication_tier !== undefined
+              ? row.publication_tier === "audited" || row.publication_tier === "unaudited"
+              : row.availability === "ready" && row.audit_status === "passed";
+          if (!published) continue;
           if (row.kind === "conference" && row.slug) eligible.add(`/${row.slug}/lineage/`);
           else if (row.kind === "theme") eligible.add("/themes/");
           else if (row.kind === "deep" && row.conference) eligible.add(`/${row.conference}/deep/`);

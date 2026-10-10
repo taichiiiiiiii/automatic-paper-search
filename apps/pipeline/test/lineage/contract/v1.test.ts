@@ -443,6 +443,41 @@ describe("validateLineageQualityManifest", () => {
     expect(validateLineageQualityManifest(manifest([row()]))).toEqual([]);
   });
 
+  it("accepts a publication_tier consistent with availability/checks and rejects a mismatch", () => {
+    expect(
+      validateLineageQualityManifest(manifest([row({ publication_tier: "blocked" })])),
+    ).toEqual([]);
+    const unaudited = row({
+      availability: "ready",
+      publication_tier: "unaudited",
+      audit: auditBlock({
+        checks: [
+          {
+            name: "artifact_contract_v1",
+            status: "passed",
+            observed: 0,
+            expected: 0,
+            evidence: [],
+          },
+          {
+            name: "golden_fixture",
+            status: "unknown",
+            observed: null,
+            expected: "x",
+            evidence: [],
+          },
+        ],
+      }),
+    });
+    expect(validateLineageQualityManifest(manifest([unaudited]))).toEqual([]);
+    expect(
+      codes(validateLineageQualityManifest(manifest([row({ publication_tier: "unaudited" })]))),
+    ).toContain("quality_publication_tier");
+    expect(
+      codes(validateLineageQualityManifest(manifest([row({ publication_tier: "public" })]))),
+    ).toContain("quality_publication_tier");
+  });
+
   it("requires conference identity (collection_id/path match slug)", () => {
     expect(
       codes(validateLineageQualityManifest(manifest([row({ collection_id: "conference:wrong" })]))),

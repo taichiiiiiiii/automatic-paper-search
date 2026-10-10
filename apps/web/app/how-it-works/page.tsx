@@ -217,6 +217,12 @@ export default function HowItWorksPage() {
           が使えないときは決定的なヒューリスティックにフォールバック）。
           詳しい段階構成・スコアリングの正式な定義は、下記の設計ドキュメントを参照してください。
         </p>
+        <p className={styles.howBody}>
+          公開するのは、<strong>自動検査（形式・識別子・関係の根拠）に合格した系譜</strong>
+          だけです。人がテーマとの適合と強い主張の関係（置換・対立）を確認したものには
+          <strong>「監査済み」</strong>、まだ確認していないものには
+          <strong>「未監査（自動生成）」</strong>と表示します。
+        </p>
         <ul className={styles.howSteps} aria-label="処理の流れ">
           {PIPELINE_STEPS.map((step, index) => (
             <PipelineStep key={step} label={step} arrow={index < PIPELINE_STEPS.length - 1} />

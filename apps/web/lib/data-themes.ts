@@ -178,3 +178,22 @@ export async function fetchThemeRunStatus(
     return null;
   }
 }
+
+/**
+ * Whether the theme-request Worker is accepting requests right now
+ * (`GET <apiBase>/api/health` -> `accepting`, the same KV switch the POST
+ * route enforces). Fail closed: no API base, a network/CORS error, a
+ * non-OK response, or anything but `accepting === true` all return
+ * `false`, and the caller hides the request form (design doc 41 D1).
+ */
+export async function fetchThemeApiAccepting(apiBase: string | null | undefined): Promise<boolean> {
+  if (!apiBase) return false;
+  try {
+    const res = await fetch(`${apiBase}/api/health`, { credentials: "omit", cache: "no-store" });
+    if (!res.ok) return false;
+    const data: unknown = await res.json();
+    return (data as { accepting?: unknown } | null)?.accepting === true;
+  } catch {
+    return false;
+  }
+}

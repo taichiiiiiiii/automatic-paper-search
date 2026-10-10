@@ -16,6 +16,7 @@ import {
   collectionRow,
   type GoldenFixture,
   parseTime,
+  publicationTier,
 } from "../../../src/lineage/quality/buildLineageQuality.js";
 
 const PAPER_ID = "1".repeat(40);
@@ -465,5 +466,170 @@ describe("collectionRow (LIN-50): an empty-stub artifact is availability 'unavai
       catalogIds: null,
     });
     expect(row.availability).toBe("unavailable");
+  });
+});
+
+// Design doc 41 D1: publication tiers derived from the checks.
+describe("publication_tier (design doc 41 D1)", () => {
+  function rowFor(fixture: GoldenFixture | null, artifactFn = artifact) {
+    const docsRoot = tmpDocsDir();
+    const text = JSON.stringify(artifactFn());
+    writeFileSync(join(docsRoot, "lineage.json"), text);
+    const sha = createHash("sha256").update(text, "utf8").digest("hex");
+    return {
+      sha,
+      build: (f: ((sha: string) => GoldenFixture) | null, strongRelations?: string[]) =>
+        collectionRow({
+          docsRoot,
+          kind: "theme",
+          slug: "t",
+          label: "T",
+          relativePath: "lineage.json",
+          snapshotDate: null,
+          generatedHint: null,
+          fixture: f ? f(sha) : fixture,
+          asOfText: "2026-09-01T00:00:00Z",
+          maxAgeDays: 365,
+          catalogIds: null,
+          ...(strongRelations ? { strongRelations } : {}),
+        }),
+    };
+  }
+
+  it("is 'unaudited' when every automatic check passes and there is no human record", () => {
+    const row = rowFor(null).build(null);
+    expect(row.audit_status).toBe("unknown");
+    expect(row.publication_tier).toBe("unaudited");
+  });
+
+  it("is 'audited' when the golden fixture also passes", () => {
+    const row = rowFor(null).build(goodFixture);
+    expect(row.audit_status).toBe("passed");
+    expect(row.publication_tier).toBe("audited");
+  });
+
+  it("is 'blocked' when the golden fixture fails, even with clean automatic checks", () => {
+    const row = rowFor(null).build((sha) => ({
+      ...goodFixture(sha),
+      input_sha256: "f".repeat(64),
+    }));
+    expect(row.publication_tier).toBe("blocked");
+  });
+
+  it("is 'blocked' when any automatic check fails (orphan node), with or without a fixture", () => {
+    const withOrphan = () => {
+      const a = artifact();
+      (a.nodes as unknown[]).push({ id: "orphan", title: "Orphan", is_focus: false });
+      return a;
+    };
+    const row = rowFor(null, withOrphan).build(null);
+    expect(row.audit.checks.find((c) => c.name === "orphan_node_count")?.status).toBe("failed");
+    expect(row.publication_tier).toBe("blocked");
+  });
+
+  it("is 'blocked' for an unavailable (missing) artifact", () => {
+    const row = collectionRow({
+      docsRoot: tmpDocsDir(),
+      kind: "theme",
+      slug: "t",
+      label: "T",
+      relativePath: "missing.json",
+      snapshotDate: null,
+      generatedHint: null,
+      fixture: null,
+      asOfText: "2026-09-01T00:00:00Z",
+      maxAgeDays: 365,
+      catalogIds: null,
+    });
+    expect(row.publication_tier).toBe("blocked");
+  });
+
+  it("publicationTier treats any non-passed non-golden check as blocking", () => {
+    const base = [
+      { name: "artifact_contract_v1", status: "passed" },
+      { name: "golden_fixture", status: "unknown" },
+    ];
+    expect(publicationTier("ready", base)).toBe("unaudited");
+    expect(publicationTier("ready", [...base, { name: "x", status: "unknown" }])).toBe("blocked");
+    expect(publicationTier("sparse", base)).toBe("blocked");
+    expect(publicationTier("ready", [{ name: "golden_fixture", status: "passed" }])).toBe(
+      "blocked",
+    );
+  });
+});
+
+// Design doc 41 D5: strong-claim edges need a human edge label.
+describe("golden_fixture edge_labels (design doc 41 D5)", () => {
+  function contrastsArtifact(): Record<string, unknown> {
+    const a = artifact();
+    const edge = (a.edges as Record<string, unknown>[])[0]!;
+    edge.rel = "contrasts";
+    edge.relation = "contrasts";
+    return a;
+  }
+
+  function build(
+    edgeLabels: unknown,
+    options: { strongRelations?: string[]; omit?: boolean } = {},
+  ) {
+    const docsRoot = tmpDocsDir();
+    const text = JSON.stringify(contrastsArtifact());
+    writeFileSync(join(docsRoot, "lineage.json"), text);
+    const sha = createHash("sha256").update(text, "utf8").digest("hex");
+    const fixture: GoldenFixture = goodFixture(sha);
+    if (!options.omit) fixture.edge_labels = edgeLabels;
+    const row = collectionRow({
+      docsRoot,
+      kind: "theme",
+      slug: "t",
+      label: "T",
+      relativePath: "lineage.json",
+      snapshotDate: null,
+      generatedHint: null,
+      fixture,
+      asOfText: "2026-09-01T00:00:00Z",
+      maxAgeDays: 365,
+      catalogIds: null,
+      ...(options.strongRelations ? { strongRelations: options.strongRelations } : {}),
+    });
+    return { row, golden: row.audit.checks.find((c) => c.name === "golden_fixture")! };
+  }
+
+  const correct = { src: "focus", dst: "related", relation: "contrasts", verdict: "correct" };
+
+  it("passes when every strong edge has a 'correct' label", () => {
+    const { row, golden } = build([correct]);
+    expect(golden.status).toBe("passed");
+    expect(row.publication_tier).toBe("audited");
+  });
+
+  it("FAILs when a strong edge is not labelled (edge_labels omitted)", () => {
+    const { row, golden } = build(undefined, { omit: true });
+    expect(golden.status).toBe("failed");
+    expect(golden.evidence).toContain("edge-unlabelled:focus->related:contrasts");
+    expect(row.publication_tier).toBe("blocked");
+  });
+
+  it("FAILs a 'wrong' verdict even when it carries a corrected_relation", () => {
+    const { golden } = build([{ ...correct, verdict: "wrong", corrected_relation: "extends" }]);
+    expect(golden.status).toBe("failed");
+    expect(golden.evidence).toContain("edge-wrong:focus->related:contrasts");
+  });
+
+  it("FAILs a label that names no existing edge (stale relation)", () => {
+    const { golden } = build([correct, { ...correct, relation: "supersedes" }]);
+    expect(golden.status).toBe("failed");
+    expect(golden.evidence).toContain("edge-label-unknown:focus->related:supersedes");
+  });
+
+  it("FAILs duplicate and malformed labels", () => {
+    const { golden } = build([correct, correct, { src: "focus" }]);
+    expect(golden.evidence).toContain("edge-label-duplicate:focus->related:contrasts");
+    expect(golden.evidence).toContain("edge-label-invalid:2");
+  });
+
+  it("does not require labels for relations outside the configured strong set", () => {
+    const { golden } = build(undefined, { omit: true, strongRelations: ["supersedes"] });
+    expect(golden.status).toBe("passed");
   });
 });

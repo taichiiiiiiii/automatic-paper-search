@@ -3,9 +3,13 @@
 // replace the dormant /api/themes/status once a real D1 progress API
 // exists (§5). No origin gate: an operator (or an uptime check without an
 // Origin header) must be able to read this without being allowlisted.
+// An allowlisted Origin additionally gets Access-Control-Allow-Origin, so
+// the site can read `accepting` and show the theme request form only
+// while the Worker accepts requests (design doc 41 D1). Any other origin
+// gets no CORS header, and the browser refuses to read the body.
 
 import { KV_KEY_NAMESPACE_TAG } from "../config.js";
-import { isAccepting } from "../lib/kv-flags.js";
+import { isAccepting, resolveOrigin } from "../lib/kv-flags.js";
 import type { Env } from "../types.js";
 
 export interface HealthBody {
@@ -28,7 +32,7 @@ async function readNamespaceTag(kv: Env["CONFIG_KV"]): Promise<string | null> {
 }
 
 export function createHealthHandler(): (request: Request, env: Env) => Promise<Response> {
-  return async function handleHealth(_request: Request, env: Env): Promise<Response> {
+  return async function handleHealth(request: Request, env: Env): Promise<Response> {
     const accepting = await isAccepting(env.CONFIG_KV);
     const kvNamespaceTag = await readNamespaceTag(env.CONFIG_KV);
     const body: HealthBody = {
@@ -40,12 +44,13 @@ export function createHealthHandler(): (request: Request, env: Env) => Promise<R
       pat_configured: Boolean(env.GH_DISPATCH_PAT?.trim()),
       kv_namespace_tag: kvNamespaceTag,
     };
-    return new Response(JSON.stringify(body), {
-      status: 200,
-      headers: {
-        "content-type": "application/json; charset=utf-8",
-        "cache-control": "no-store",
-      },
-    });
+    const headers: Record<string, string> = {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "no-store",
+      vary: "Origin",
+    };
+    const origin = await resolveOrigin(request, env.CONFIG_KV);
+    if (origin.ok) headers["access-control-allow-origin"] = origin.origin;
+    return new Response(JSON.stringify(body), { status: 200, headers });
   };
 }

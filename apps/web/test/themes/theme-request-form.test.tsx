@@ -393,6 +393,7 @@ describe("ThemesClient: onReady redirect target (M4 review2 MEDIUM-1: relative ?
     vi.spyOn(dataThemes, "fetchThemeArtifact").mockResolvedValue(EMPTY_ARTIFACT);
     vi.spyOn(dataThemes, "fetchThemeRunStatus").mockResolvedValue(null);
     vi.spyOn(dataThemes, "pollThemeQualityOutcome").mockResolvedValue("ready");
+    vi.spyOn(dataThemes, "fetchThemeApiAccepting").mockResolvedValue(true);
     vi.stubGlobal(
       "fetch",
       vi.fn(() => Promise.resolve(queuedResponse("theme-new", REQUEST_ID_A))),
@@ -416,6 +417,8 @@ describe("ThemesClient: onReady redirect target (M4 review2 MEDIUM-1: relative ?
     // about/new-theme panel, which is the only place ThemeRequestForm
     // (and its onReady prop) ever mounts.
     fireEvent.click(screen.getByRole("button", { name: /について/ }));
+    // The form mounts once /api/health says the Worker is accepting.
+    await screen.findByLabelText(/テーマを自分で生成/);
     fireEvent.change(screen.getByLabelText(/テーマを自分で生成/), {
       target: { value: "New Theme" },
     });
@@ -432,5 +435,117 @@ describe("ThemesClient: onReady redirect target (M4 review2 MEDIUM-1: relative ?
     // this build, but the mutant this guards against drops the whole
     // `/themes/` segment, not just BASE_PATH).
     expect(locationStub.href).toContain("/themes/?theme=theme-new");
+  });
+});
+
+// ---- Design doc 41 D1: form visibility and the unaudited badge ----
+
+const UNAUDITED_ROW: QualityRow = {
+  ...THEME_ROW,
+  audit_status: "unknown",
+  publication_tier: "unaudited",
+  node_count: 2,
+  edge_count: 1,
+  audit: {
+    fixture_sha256: null,
+    evaluated_at: "2026-08-30T00:00:00Z",
+    actor: "ci:audit-v1",
+    checks: [
+      { name: "artifact_contract_v1", status: "passed", observed: 0, expected: 0, evidence: [] },
+      {
+        name: "golden_fixture",
+        status: "unknown",
+        observed: null,
+        expected: "matching frozen fixture",
+        evidence: [],
+      },
+    ],
+  },
+};
+
+function mockThemeData(rows: QualityRow[]) {
+  vi.spyOn(dataThemes, "fetchThemesManifest").mockResolvedValue({
+    status: "ok",
+    data: [
+      { slug: "theme-existing", theme: "Existing Theme", paper_count: 5, year_range: [2023, 2024] },
+    ],
+  });
+  vi.spyOn(dataThemes, "fetchThemeQualityRollup").mockResolvedValue({});
+  vi.spyOn(dataThemes, "fetchLineageQualityManifest").mockResolvedValue({
+    schema_version: QUALITY_VERSION,
+    as_of: "2026-08-30T00:00:00Z",
+    audit_version: "audit-v1",
+    collections: rows,
+  });
+  vi.spyOn(dataThemes, "fetchThemeArtifact").mockResolvedValue(EMPTY_ARTIFACT);
+}
+
+describe("ThemesClient: theme request form visibility (design doc 41 D1)", () => {
+  it("shows the form with zero eligible lineages when the Worker is accepting", async () => {
+    mockThemeData([]);
+    const accepting = vi.spyOn(dataThemes, "fetchThemeApiAccepting").mockResolvedValue(true);
+    render(<ThemesClient />);
+    expect(await screen.findByText("系譜は品質監査中です")).toBeTruthy();
+    expect(await screen.findByLabelText(/テーマを自分で生成/)).toBeTruthy();
+    expect(accepting).toHaveBeenCalled();
+  });
+
+  it("keeps the form hidden (fail closed) when the Worker is not accepting", async () => {
+    mockThemeData([]);
+    vi.spyOn(dataThemes, "fetchThemeApiAccepting").mockResolvedValue(false);
+    render(<ThemesClient />);
+    expect(await screen.findByText("現在、新しいテーマの受付を停止しています。")).toBeTruthy();
+    expect(screen.queryByLabelText(/テーマを自分で生成/)).toBeNull();
+  });
+
+  it("publishes an unaudited theme with the 未監査（自動生成） badge and its explanation", async () => {
+    mockThemeData([UNAUDITED_ROW]);
+    vi.spyOn(dataThemes, "fetchThemeApiAccepting").mockResolvedValue(false);
+    render(<ThemesClient />);
+    const notice = await screen.findByText(/人による内容確認はまだです/);
+    expect(notice).toBeTruthy();
+    const badges = document.querySelectorAll('[data-publication-tier="unaudited"]');
+    // One in the gallery card, one next to the explanation.
+    expect(badges.length).toBe(2);
+    expect(badges[0]?.textContent).toBe("未監査（自動生成）");
+    expect(document.querySelector('[data-publication-tier="audited"]')).toBeNull();
+  });
+
+  it("labels an audited theme 監査済み", async () => {
+    mockThemeData([THEME_ROW]);
+    vi.spyOn(dataThemes, "fetchThemeApiAccepting").mockResolvedValue(false);
+    render(<ThemesClient />);
+    await screen.findByText(/人が論文のテーマ適合/);
+    expect(document.querySelector('[data-publication-tier="audited"]')?.textContent).toBe(
+      "監査済み",
+    );
+  });
+});
+
+describe("fetchThemeApiAccepting", () => {
+  it("is true only for an OK health body with accepting === true", async () => {
+    const respond = (status: number, body: unknown) =>
+      vi.fn(() =>
+        Promise.resolve(
+          new Response(JSON.stringify(body), {
+            status,
+            headers: { "content-type": "application/json" },
+          }),
+        ),
+      );
+    vi.stubGlobal("fetch", respond(200, { accepting: true }));
+    expect(await dataThemes.fetchThemeApiAccepting("https://api.example.test")).toBe(true);
+    vi.stubGlobal("fetch", respond(200, { accepting: false }));
+    expect(await dataThemes.fetchThemeApiAccepting("https://api.example.test")).toBe(false);
+    vi.stubGlobal("fetch", respond(200, { accepting: "true" }));
+    expect(await dataThemes.fetchThemeApiAccepting("https://api.example.test")).toBe(false);
+    vi.stubGlobal("fetch", respond(503, { accepting: true }));
+    expect(await dataThemes.fetchThemeApiAccepting("https://api.example.test")).toBe(false);
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() => Promise.reject(new TypeError("CORS"))),
+    );
+    expect(await dataThemes.fetchThemeApiAccepting("https://api.example.test")).toBe(false);
+    expect(await dataThemes.fetchThemeApiAccepting("")).toBe(false);
   });
 });

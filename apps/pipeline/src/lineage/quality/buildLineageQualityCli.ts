@@ -106,7 +106,10 @@ export function runBuildLineageQualityCli(
     .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
     .map(([key, value]) => `${key}=${value}`)
     .join(", ")}`;
-  return { exitCode: 0, summary };
+  const tiers = { audited: 0, unaudited: 0, blocked: 0 };
+  for (const row of manifest.collections) tiers[row.publication_tier] += 1;
+  const tierSummary = `; tiers: audited=${tiers.audited}, unaudited=${tiers.unaudited}, blocked=${tiers.blocked}`;
+  return { exitCode: 0, summary: summary + tierSummary };
 }
 
 export function runCli(argv: readonly string[]): number {

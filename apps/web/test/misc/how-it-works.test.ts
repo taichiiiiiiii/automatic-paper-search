@@ -190,6 +190,16 @@ describe("built /how-it-works/ page parity with docs/how-it-works/index.html", (
     expect(built).not.toMatch(/docs\/design\/(0[1-9]|[12][0-9]|3[0-8])-|docs\/research/);
   });
 
+  it.skipIf(!existsSync(BUILT_PAGE))(
+    "explains the publication tiers (design doc 41 D1: audited / unaudited)",
+    () => {
+      const built = plainText(read(BUILT_PAGE));
+      expect(built).toContain("「監査済み」");
+      expect(built).toContain("「未監査（自動生成）」");
+      expect(built).toContain("自動検査（形式・識別子・関係の根拠）に合格した系譜");
+    },
+  );
+
   it.skipIf(!existsSync(BUILT_PAGE))("emits no inline style for the CSP contract", () => {
     const built = read(BUILT_PAGE);
     expect(built).not.toMatch(/<[a-z][^>]*\sstyle\s*=\s*"/i);

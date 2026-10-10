@@ -14,6 +14,7 @@ import {
   safeDisplayCount,
   sortGalleryManifest,
 } from "../../lib/themes-gallery";
+import { PublicationBadge } from "../lineage/publication-badge";
 
 export function ThemeGallery({
   manifest,
@@ -74,6 +75,11 @@ export function ThemeGallery({
             }`}
           >
             <div className="truncate font-medium text-ink">{displayTheme}</div>
+            {entry.publication_tier && (
+              <div>
+                <PublicationBadge tier={entry.publication_tier} />
+              </div>
+            )}
             <div className="text-xs text-ink-muted">
               {safeDisplayCount(entry.paper_count)} papers · {yearRange}
             </div>
