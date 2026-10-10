@@ -191,6 +191,8 @@ export function defaultDeps(repoRoot: string = DEFAULT_REPO_ROOT): BuildThemeLin
     // not before the caller even gets a chance to call it.
     return {
       status: resp.status,
+      // Exposed so 429 handling can honour Retry-After / x-ratelimit-reset-*.
+      headers: resp.headers,
       json: async () => {
         try {
           return await resp.json();

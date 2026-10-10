@@ -447,6 +447,53 @@ describe("pyFloat write-site (p4-followups #24, build.ts:535 edgeForJson)", () =
   });
 });
 
+describe("provider usage summary (Groq rate-limit accounting)", () => {
+  it("logs the inner provider's usageSummary() after the classify summary", async () => {
+    const seed = s2Paper("seed3", { title: "Usage Summary Theme Seed", cites: 100 });
+    const parent = s2Paper("parent3", {
+      title: "An Earlier Usage Summary Theme Parent Paper",
+      year: 2015,
+      cites: 50,
+      arxivId: "2015.00004",
+    });
+    const deps = depsFor(async (url) => {
+      if (url.includes("/references")) {
+        return jsonResp(200, {
+          data: [{ citedPaper: parent, isInfluential: true, intents: [] }],
+        });
+      }
+      if (url.includes("/citations")) return jsonResp(200, { data: [] });
+      return mkSearchResponse([seed]);
+    });
+    const provider = Object.assign(
+      new FixedClassificationProvider({
+        relation: "extends",
+        confidence: 0.9,
+        rationale: "a sufficiently long rationale for this specific pair",
+      }),
+      { usageSummary: () => "groq summary: calls=1, latched=no" },
+    );
+    deps.buildProvider = () => ({ provider, rateDelay: 0 });
+    const infos: string[] = [];
+    deps.logger = { info: (m: string) => infos.push(m), warn: () => {} };
+    await buildThemeLineage(
+      {
+        theme: "Usage Summary Theme",
+        depth: 1,
+        seedsCount: 3,
+        width: 4,
+        sinceYear: null,
+        llmStrict: "all",
+      },
+      deps,
+    );
+    const iClassify = infos.findIndex((m) => m.startsWith("classify summary:"));
+    const iUsage = infos.indexOf("groq summary: calls=1, latched=no");
+    expect(iClassify).toBeGreaterThanOrEqual(0);
+    expect(iUsage).toBeGreaterThan(iClassify);
+  });
+});
+
 describe("pruneEdgelessNodes (R2: orphan_node_count must be 0)", () => {
   const nodes = [
     { id: "a", is_focus: true },

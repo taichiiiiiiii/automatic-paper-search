@@ -17,6 +17,9 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   type HttpResponseLike,
+  parseDurationMs,
+  type RetryEvent,
+  rateLimitHintMs,
   requestWithRetry,
   safeUrlForLog,
   TimeoutError,
@@ -262,5 +265,125 @@ describe("request failure logging never leaks a secret URL", () => {
     const joined = warnings.join("\n");
     expect(joined).not.toContain("SUPERSECRETTOKEN");
     expect(joined).not.toContain("T000");
+  });
+});
+
+function resp429(headers: Record<string, string>): HttpResponseLike {
+  return { status: 429, headers: new Headers(headers), json: async () => ({}) };
+}
+
+describe("parseDurationMs", () => {
+  it.each([
+    ["2s", 2000],
+    ["1m30s", 90_000],
+    ["250ms", 250],
+    ["7m12.5s", 432_500],
+    ["1h2m", 3_720_000],
+    ["2", 2000],
+    ["2.5", 2500],
+    [" 3S ", 3000],
+  ])("parses %s", (v, ms) => {
+    expect(parseDurationMs(v)).toBe(ms);
+  });
+  it.each(["", "abc", "s", "1x", "-2s"])("rejects %j", (v) => {
+    expect(parseDurationMs(v)).toBeNull();
+  });
+  it("rejects null/undefined", () => {
+    expect(parseDurationMs(null)).toBeNull();
+    expect(parseDurationMs(undefined)).toBeNull();
+  });
+});
+
+describe("rateLimitHintMs", () => {
+  it("prefers Retry-After seconds", () => {
+    const h = new Headers({ "retry-after": "7", "x-ratelimit-reset-tokens": "1m" });
+    expect(rateLimitHintMs(h)).toBe(7000);
+  });
+  it("accepts an HTTP-date Retry-After", () => {
+    const h = new Headers({ "retry-after": new Date(10_000).toUTCString() });
+    expect(rateLimitHintMs(h, () => 4_000)).toBe(6000);
+  });
+  it("uses the reset of the exhausted bucket", () => {
+    const h = new Headers({
+      "x-ratelimit-remaining-requests": "900",
+      "x-ratelimit-reset-requests": "2m59.5s",
+      "x-ratelimit-remaining-tokens": "0",
+      "x-ratelimit-reset-tokens": "7.66s",
+    });
+    expect(rateLimitHintMs(h)).toBe(7660);
+  });
+  it("falls back to the smallest reset when no bucket reports exhaustion", () => {
+    const h = new Headers({
+      "x-ratelimit-remaining-requests": "5",
+      "x-ratelimit-reset-requests": "30s",
+      "x-ratelimit-remaining-tokens": "120",
+      "x-ratelimit-reset-tokens": "1.5s",
+    });
+    expect(rateLimitHintMs(h)).toBe(1500);
+  });
+  it("returns null without headers", () => {
+    expect(rateLimitHintMs(undefined)).toBeNull();
+    expect(rateLimitHintMs(new Headers())).toBeNull();
+  });
+});
+
+describe("requestWithRetry — 429 server hints", () => {
+  it("sleeps for Retry-After instead of the backoff and reports it via onRetry", async () => {
+    const responses = [resp429({ "retry-after": "5" }), resp429({ "retry-after": "1" }), resp(200)];
+    const fetchImpl = vi.fn(async () => responses.shift() as HttpResponseLike);
+    const sleeps: number[] = [];
+    const events: RetryEvent[] = [];
+    const r = await requestWithRetry(
+      { method: "GET", url: "http://x", overallDeadlineMs: 600_000 },
+      { fetchImpl, sleep: async (ms) => void sleeps.push(ms), onRetry: (e) => events.push(e) },
+    );
+    expect(r?.status).toBe(200);
+    expect(sleeps).toEqual([5000, 1000]);
+    expect(events.map((e) => [e.status, e.attempt, e.waitMs, e.hintMs])).toEqual([
+      [429, 1, 5000, 5000],
+      [429, 2, 1000, 1000],
+    ]);
+  });
+
+  it("caps a hinted wait at retry429.maxWaitMs and adds the margin", async () => {
+    const responses = [
+      resp429({ "x-ratelimit-reset-tokens": "5m", "x-ratelimit-remaining-tokens": "0" }),
+      resp429({ "retry-after": "2" }),
+      resp(200),
+    ];
+    const fetchImpl = vi.fn(async () => responses.shift() as HttpResponseLike);
+    const sleeps: number[] = [];
+    await requestWithRetry(
+      {
+        method: "GET",
+        url: "http://x",
+        overallDeadlineMs: 600_000,
+        retry429: { maxWaitMs: 90_000, hintMarginMs: 250 },
+      },
+      { fetchImpl, sleep: async (ms) => void sleeps.push(ms) },
+    );
+    expect(sleeps).toEqual([90_000, 2250]);
+  });
+
+  it("returns the 429 immediately when the hint exceeds giveUpIfHintAboveMs", async () => {
+    const fetchImpl = vi.fn(async () => resp429({ "retry-after": "3600" }));
+    const sleeps: number[] = [];
+    const r = await requestWithRetry(
+      { method: "GET", url: "http://x", retry429: { giveUpIfHintAboveMs: 600_000 } },
+      { fetchImpl, sleep: async (ms) => void sleeps.push(ms) },
+    );
+    expect(r?.status).toBe(429);
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(sleeps).toEqual([]);
+  });
+
+  it("honours retry429.maxRetries", async () => {
+    const fetchImpl = vi.fn(async () => resp429({ "retry-after": "1" }));
+    const r = await requestWithRetry(
+      { method: "GET", url: "http://x", overallDeadlineMs: 600_000, retry429: { maxRetries: 6 } },
+      { fetchImpl, sleep: async () => {} },
+    );
+    expect(r?.status).toBe(429);
+    expect(fetchImpl).toHaveBeenCalledTimes(7);
   });
 });

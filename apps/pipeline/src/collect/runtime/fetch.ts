@@ -76,7 +76,7 @@ export function createRealFetchImpl(fetchFn: typeof fetch = fetch): FetchLike {
       body: init.body,
       signal: AbortSignal.timeout(init.timeoutMs),
     });
-    return { status: resp.status, json: () => resp.json() };
+    return { status: resp.status, headers: resp.headers, json: () => resp.json() };
   };
 }
 

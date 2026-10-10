@@ -100,4 +100,9 @@ export interface LLMProvider {
    * classifying nothing.
    */
   completeJson(system: string, user: string): Promise<string | null>;
+  /**
+   * Optional one-line end-of-run usage summary (calls, rate-limit waits,
+   * breaker state) for CI logs. Providers without counters omit it.
+   */
+  usageSummary?(): string;
 }

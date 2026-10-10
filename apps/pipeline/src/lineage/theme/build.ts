@@ -293,11 +293,13 @@ export async function buildThemeLineage(
   };
 
   let provider: LLMProvider | null = null;
+  let innerProviderForSummary: LLMProvider | null = null;
   if (llmStrict !== "off") {
     if (!deps.buildProvider) {
       throw new Error("buildThemeLineage: deps.buildProvider is required when llmStrict !== 'off'");
     }
     const { provider: innerProvider } = deps.buildProvider();
+    innerProviderForSummary = innerProvider;
     const identityInfo: ThemeProducerIdentity = {
       producerName: PRODUCER_NAME,
       producerVersion: PRODUCER_VERSION,
@@ -464,6 +466,10 @@ export async function buildThemeLineage(
     { hasExtraNodes: nodes.size > seedIds.length, hasEdges: cleanedEdges.length > 0 },
     { logger },
   );
+  // No LLM calls happen after this point: report the provider's own
+  // rate-limit accounting (calls / 429s / waits / breaker) next to it.
+  const usage = innerProviderForSummary?.usageSummary?.();
+  if (usage) logger.info?.(usage);
 
   // Wire aliases + deterministic duplicate elimination/order.
   const edgeGroups = new Map<string, ThemeEdge[]>();

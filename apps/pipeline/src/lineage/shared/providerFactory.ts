@@ -27,6 +27,15 @@ const LLM_RATE_DELAY: Readonly<Record<"groq" | "gemini", number>> = {
   gemini: 7.0, // ~8 RPM (Gemini 2.5-flash free tier: 10 RPM)
 };
 
+function positiveNumber(raw: string | undefined): number | undefined {
+  const n = raw === undefined || raw.trim() === "" ? Number.NaN : Number(raw);
+  return Number.isFinite(n) && n > 0 ? n : undefined;
+}
+function nonNegativeNumber(raw: string | undefined): number | undefined {
+  const n = raw === undefined || raw.trim() === "" ? Number.NaN : Number(raw);
+  return Number.isFinite(n) && n >= 0 ? n : undefined;
+}
+
 export interface BuildProviderDeps {
   /** From `loadEnv()` (`apps/pipeline/src/collect/config/env.ts`, the
    * TS port of `paperpilot/utils/config_loader.py::load_env`). */
@@ -64,7 +73,16 @@ export function buildProvider(deps: BuildProviderDeps): {
   const makeGroq = (): { provider: LLMProvider; rateDelay: number } => {
     const model = env.groqModel || "openai/gpt-oss-120b";
     const provider = new GroqProvider(
-      { enabled: true, model, temperature: 0.1, timeoutSeconds: 30 },
+      {
+        enabled: true,
+        model,
+        temperature: 0.1,
+        timeoutSeconds: 30,
+        // Free-tier pacing overrides; unset → the model's defaults in groq.ts.
+        rateLimitRpm: positiveNumber(ambientEnv.PAPERPILOT_GROQ_RPM),
+        rateLimitTpm: nonNegativeNumber(ambientEnv.PAPERPILOT_GROQ_TPM),
+        maxThrottleWaitSeconds: positiveNumber(ambientEnv.PAPERPILOT_GROQ_MAX_THROTTLE_WAIT_S),
+      },
       groqKey,
       { fetchImpl: deps.fetchImpl, now: deps.now, sleep: deps.sleep, logger: deps.logger },
     );
