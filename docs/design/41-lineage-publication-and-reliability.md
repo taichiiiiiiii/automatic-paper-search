@@ -51,6 +51,8 @@
 - ノードは今どおり全件（20 件まで）テーマ内か判定する
 - 関係は、`contrasts`・`supersedes` など強い主張のものを全件確認し、誤りがあれば不合格または修正
 - 監査記録（`lineage-audit-fixtures-v1`）に関係の判定を加える
+- **実装（R2-8）**: 強い主張は方針の `strong_relations`＝`contrasts`・`supersedes`・`extends`・`successor`（画面で系譜の線として見える 4 種類）。ノードの判定には `metadata_ok`（題名・年・著者・識別子が正しいか）と `note` を付けられ、`metadata_ok: false` は不合格。関係の `wrong` は `corrected_relation` があっても不合格（修正は反映しないので、作り直して監査し直す）
+  - 監査の下書きは `apps/pipeline/src/lineage/quality/auditDraftCli.ts`。`draft --theme <slug> --out-dir <dir>` で日本語の監査シート（`.audit.md`）と判定欄が空の JSON（`.audit-pending.json`）を作る。監査者は JSON の `on_topic`・`metadata_ok`・`verdict`・`auditor`・`audited_at` を埋め、`import --draft <json>` で監査記録の 1 件に変換する（品質表の判定を試算して表示。`--write` で `lineage-audit-fixtures-v1.json` に追記）。第二審査の見立ては `suggestion` 欄にあり、監査者が `accept_suggestions_for_unset: true` にしたときだけ未記入の欄に使う
 
 ### D6. 関係の分類: API 中心、LLM は補助（2026-10-10 追加決定、根拠は [43](43-api-based-relation-evaluation.md)）
 
