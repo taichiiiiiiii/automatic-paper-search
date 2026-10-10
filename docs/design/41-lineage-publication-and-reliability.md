@@ -47,8 +47,17 @@
 
 | # | 作業 | 状態 |
 |---|---|---|
-| R2-4 | テーマ外の判定方法の調査と比較（D4） | 着手 |
-| R2-5 | 公開の区分（D1）と監査範囲（D5）: 品質表・core の判定・web の表示・監査記録の形式 | 実装済み（`roadmap/r2-5-publication-tiers`。依頼フォームの表示には Worker の `/api/health` CORS 対応のデプロイが要る） |
-| R2-6 | LLM の信頼性（D2・D3）: 予備の提供元、分類率の検査、失敗時の自動再実行、見張りへの追加 | 着手（Gemini のキー登録はユーザー） |
+| R2-4 | テーマ外の判定方法の調査と比較（D4） | 調査済み（[42](42-topic-relevance-evaluation.md)。推奨は小さな埋め込みモデルと語の一致の併用。採否は 43 の結果と合わせて決める） |
+| R2-5 | 公開の区分（D1）と監査範囲（D5）: 品質表・core の判定・web の表示・監査記録の形式 | 済み（2026-10-10 develop。Worker の `/api/health` に CORS を追加） |
+| R2-6 | LLM の信頼性（D2・D3）: 予備の提供元、分類率の検査、失敗時の自動再実行、見張りへの追加 | 済み（2026-10-10 develop。Gemini のキーは未登録＝予備なしで動作） |
+| R2-9 | 関係の種類分けを API（Semantic Scholar の引用意図・引用文など）で行えるかの調査 | 調査中（43） |
 | R2-7 | 依頼フォームの公開と、本番での依頼→未監査公開の通し確認 | R2-5・R2-6 の後 |
 | R2-8 | 厳選テーマ（GNN から）の人手監査と「監査済み」公開 | R2-5 の後 |
+
+## 実装メモ（2026-10-10）
+
+- **分類率（D3）の定義**: 関係のうち、根拠のある分類（LLM・Semantic Scholar の引用意図・引用文のパターン・題名の版・基礎論文の一覧）の割合。年と引用だけからの推測（`citation_heuristic`・`year_cite`）だけを「未分類」と数える。根拠の出どころを問わないので、関係の分類を API に切り替えてもそのまま使える
+  - 生成時: 8 割未満なら書き出さず、終了コード 5 で失敗（`--min-classified-rate`、方針の `theme_min_evidence_classified_rate`）。上限切れが原因なら `regen-pending.json` に記録し、`regen-retry.yml` が毎日 09:17 UTC に作り直す（最大 5 回）
+  - 品質表でも同じ値を `evidence_classified_rate` として検査する（公開済みの古い成果物にも効かせるため）
+- **`generator_current`**: 方針の `theme_min_generated_at`（いまは 2026-10-10T05:00:00Z、R2-2d の規則が入った時刻）より前に作られたテーマは公開しない。生成の規則を大きく変えたら、この時刻を進める
+- **初回の結果**: 未監査で公開 2（graph-neural-network・mixture-of-experts）、非公開 2（vision-transformer は分類率 45%、flash-attention は古い規則での生成）。監査済みは 0（R2-8 で GNN から）

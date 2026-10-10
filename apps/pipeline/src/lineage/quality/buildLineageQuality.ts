@@ -23,6 +23,10 @@ import {
   validateDeepManifest,
   validateLineageArtifact,
 } from "../contract/v1.js";
+import {
+  DEFAULT_MIN_CLASSIFIED_RATE,
+  evidenceClassifiedRate,
+} from "../theme/classificationGate.js";
 
 function sortedUnique(values: Iterable<string>): string[] {
   return Array.from(new Set(values)).sort(codepointCompare);
@@ -304,6 +308,7 @@ function artifactChecks(
     catalogIds: ReadonlySet<string> | null;
     expectedSeedPaperId?: string | null;
     strongRelations?: readonly string[];
+    themeGate?: ThemeGate | null;
   },
 ): { checks: QualityCheck[]; fixtureSha256: string | null } {
   const {
@@ -315,6 +320,7 @@ function artifactChecks(
     catalogIds,
     expectedSeedPaperId = null,
     strongRelations = DEFAULT_STRONG_RELATIONS,
+    themeGate = null,
   } = options;
   const checks: QualityCheck[] = [];
   const nodes = data.nodes;
@@ -518,6 +524,10 @@ function artifactChecks(
     ),
   );
 
+  if (kind === "theme" && themeGate !== null) {
+    checks.push(...themeGateChecks(data, generatedAt, themeGate));
+  }
+
   let fixtureSha256: string | null = null;
   if (fixture === null) {
     checks.push(check("golden_fixture", "unknown", null, "matching frozen fixture"));
@@ -673,6 +683,7 @@ export function collectionRow(options: {
   collectionId?: string | null;
   expectedSeedPaperId?: string | null;
   strongRelations?: readonly string[];
+  themeGate?: ThemeGate | null;
 }): CollectionRow {
   const {
     docsRoot,
@@ -689,6 +700,7 @@ export function collectionRow(options: {
     collectionId = null,
     expectedSeedPaperId = null,
     strongRelations = DEFAULT_STRONG_RELATIONS,
+    themeGate = null,
   } = options;
   const path = join(docsRoot, relativePath);
   const asOf = parseTime(asOfText);
@@ -777,6 +789,7 @@ export function collectionRow(options: {
     catalogIds,
     expectedSeedPaperId,
     strongRelations,
+    themeGate,
   });
   let auditStatus: CollectionRow["audit_status"];
   if (availability !== "ready" && availability !== "failed") {
@@ -1044,6 +1057,10 @@ export interface QualityPolicy {
   deep_max_age_days?: number;
   /** Relations whose every edge needs a human `edge_labels` row (D5). */
   strong_relations?: string[];
+  /** Minimum share of evidence-classified theme edges (design 41 D3). */
+  theme_min_evidence_classified_rate?: number;
+  /** Theme artifacts generated before this instant predate the current generator rules (design 41 D1). */
+  theme_min_generated_at?: string;
   [key: string]: unknown;
 }
 
@@ -1066,6 +1083,7 @@ export function buildManifest(options: {
   const strongRelations = Array.isArray(policy.strong_relations)
     ? policy.strong_relations.filter((r): r is string => typeof r === "string")
     : DEFAULT_STRONG_RELATIONS;
+  const themeGate = themeGateFromPolicy(policy);
   const fixtureMap = new Map<string, GoldenFixture>();
   if (Array.isArray(fixtures.collections)) {
     for (const row of fixtures.collections) {
@@ -1143,6 +1161,7 @@ export function buildManifest(options: {
         maxAgeDays: Number(policy.theme_max_age_days),
         catalogIds: null,
         strongRelations,
+        themeGate,
       }),
     );
   }
@@ -1157,4 +1176,78 @@ export function buildManifest(options: {
 /** Matches Python's `json.dumps(manifest, ensure_ascii=False, indent=2) + "\n"`. */
 export function manifestPayload(manifest: QualityManifest): Buffer {
   return Buffer.from(`${pyJsonDumps(manifest, { ensureAscii: false, indent: 2 })}\n`, "utf8");
+}
+
+/**
+ * Automatic theme checks added by design 41 (D1 + D3): a theme is only
+ * publishable (even as `unaudited`) when
+ *  - `evidence_classified_rate`: at least `minClassifiedRate` of its edges
+ *    carry an evidence-backed relation (year/citation guesses do not count;
+ *    same rule as the generator's exit-5 gate, `classificationGate.ts`), and
+ *  - `generator_current`: it was generated at or after `minGeneratedAt`,
+ *    i.e. by the generator with the current topic/relation rules. Bump the
+ *    policy instant whenever those rules change materially.
+ */
+export interface ThemeGate {
+  minClassifiedRate: number;
+  minGeneratedAt: string | null;
+}
+
+export function themeGateFromPolicy(policy: QualityPolicy): ThemeGate | null {
+  const rate = policy.theme_min_evidence_classified_rate;
+  const at = policy.theme_min_generated_at;
+  if (typeof rate !== "number" && typeof at !== "string") return null;
+  return {
+    minClassifiedRate: typeof rate === "number" ? rate : DEFAULT_MIN_CLASSIFIED_RATE,
+    minGeneratedAt: typeof at === "string" ? at : null,
+  };
+}
+
+export function themeGateChecks(
+  data: Record<string, unknown>,
+  generatedAt: string | null,
+  gate: ThemeGate,
+): QualityCheck[] {
+  const out: QualityCheck[] = [];
+  const meta = isMapping(data.meta) ? data.meta : {};
+  const breakdown = isMapping(meta.provenance_breakdown) ? meta.provenance_breakdown : null;
+  if (breakdown === null) {
+    out.push(
+      check("evidence_classified_rate", "failed", null, gate.minClassifiedRate, [
+        "provenance-breakdown-missing",
+      ]),
+    );
+  } else {
+    const rate = evidenceClassifiedRate(breakdown as Record<string, number>);
+    const ratio = rate.ratio === null ? 1 : rate.ratio;
+    out.push(
+      check(
+        "evidence_classified_rate",
+        ratio >= gate.minClassifiedRate ? "passed" : "failed",
+        Math.round(ratio * 1000) / 1000,
+        gate.minClassifiedRate,
+        ratio >= gate.minClassifiedRate ? [] : [`guessed:${rate.guessed}/${rate.total}`],
+      ),
+    );
+  }
+  if (gate.minGeneratedAt !== null) {
+    let ok = false;
+    if (generatedAt !== null) {
+      try {
+        ok = parseTime(generatedAt).getTime() >= parseTime(gate.minGeneratedAt).getTime();
+      } catch {
+        ok = false;
+      }
+    }
+    out.push(
+      check(
+        "generator_current",
+        ok ? "passed" : "failed",
+        generatedAt,
+        gate.minGeneratedAt,
+        ok ? [] : [`generated-before:${gate.minGeneratedAt}`],
+      ),
+    );
+  }
+  return out;
 }
