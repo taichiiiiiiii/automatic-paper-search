@@ -195,5 +195,7 @@ export function buildFixtureRepo(): FixtureRepo {
 }
 
 export function cleanupFixtureRepo(fixture: FixtureRepo): void {
-  rmSync(fixture.base, { recursive: true, force: true });
+  // maxRetries: a git child (gc/maintenance) may still be writing into
+  // .git/objects at teardown, which made rmdir fail with ENOTEMPTY on CI.
+  rmSync(fixture.base, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
 }
