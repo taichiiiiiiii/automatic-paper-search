@@ -12,7 +12,7 @@ import type {
   RequestWithRetryOptions,
 } from "../../../src/collect/http/requestWithRetry.js";
 import { createPaper, type Paper } from "../../../src/collect/model/paper.js";
-import { GroqProvider } from "../../../src/lineage/llm/groq.js";
+import { GroqProvider, isDailyLimit429 } from "../../../src/lineage/llm/groq.js";
 
 function resp(status: number, body: unknown = {}): HttpResponseLike {
   return { status, json: async () => body };
@@ -300,6 +300,10 @@ describe("GroqProvider — rate limiter (#129)", () => {
 });
 
 describe("GroqProvider — quota-exhausted circuit breaker (#30)", () => {
+  // `requestWithRetryFn` is mocked here, so each scripted 429 is a call
+  // whose FINAL response is 429 (all retries already spent): three in a
+  // row still latch (PERSISTENT_429_THRESHOLD). Retried-then-successful
+  // 429s never latch — see "rate-limit resilience" below.
   it("test_groq_provider_short_circuits_after_consecutive_429", async () => {
     let callCount = 0;
     const p = new GroqProvider({ enabled: true }, "k", {
@@ -394,5 +398,232 @@ describe("GroqProvider — quota-exhausted circuit breaker (#30)", () => {
     expect(await p.chat("s", "u")).toBeNull();
     expect(await p.chat("s", "u")).toBeNull();
     expect(rwr.mock.calls.length).toBe(3);
+  });
+});
+
+/**
+ * End-to-end through the REAL `requestWithRetry` (no `requestWithRetryFn`
+ * seam) with a fake clock: `sleep` advances `now`, `fetchImpl` replays
+ * scripted responses carrying Groq-style headers/bodies.
+ */
+function fakeClock() {
+  let t = 1_000;
+  const sleeps: number[] = [];
+  return {
+    now: () => t,
+    sleep: async (ms: number) => {
+      sleeps.push(ms);
+      t += ms;
+    },
+    sleeps,
+  };
+}
+
+function hresp(
+  status: number,
+  body: unknown,
+  headers: Record<string, string> = {},
+): HttpResponseLike {
+  return { status, headers: new Headers(headers), json: async () => body };
+}
+
+const OK = (text = "ok", totalTokens?: number) =>
+  hresp(200, {
+    choices: [{ message: { content: text } }],
+    ...(totalTokens !== undefined ? { usage: { total_tokens: totalTokens } } : {}),
+  });
+const TPM_429 = (retryAfter: string) =>
+  hresp(
+    429,
+    {
+      error: {
+        message:
+          "Rate limit reached for model `openai/gpt-oss-120b` on tokens per minute (TPM): Limit 8000, Used 7900, Requested 900. Please try again in 6.5s.",
+        type: "tokens",
+        code: "rate_limit_exceeded",
+      },
+    },
+    {
+      "retry-after": retryAfter,
+      "x-ratelimit-remaining-tokens": "0",
+      "x-ratelimit-reset-tokens": "6.5s",
+    },
+  );
+const TPD_429 = hresp(
+  429,
+  {
+    error: {
+      message:
+        "Rate limit reached for model `openai/gpt-oss-120b` on tokens per day (TPD): Limit 200000, Used 199500, Requested 1200. Please try again in 4m12s.",
+      type: "tokens",
+      code: "rate_limit_exceeded",
+    },
+  },
+  { "retry-after": "252" },
+);
+
+function scripted(responses: HttpResponseLike[]) {
+  const fetchImpl = vi.fn(async () => {
+    const next = responses.shift();
+    if (next === undefined) throw new Error("unexpected extra network call");
+    return next;
+  });
+  return fetchImpl;
+}
+
+function mkProvider(fetchImpl: ReturnType<typeof scripted>, extra: Record<string, unknown> = {}) {
+  const clock = fakeClock();
+  const warns: string[] = [];
+  const p = new GroqProvider({ enabled: true, rateLimitTpm: 0, ...extra }, "k", {
+    fetchImpl,
+    now: clock.now,
+    sleep: clock.sleep,
+    logger: { warn: (m) => warns.push(m) },
+  });
+  return { p, clock, warns };
+}
+
+describe("GroqProvider — rate-limit resilience (real requestWithRetry, fake clock)", () => {
+  it("honours Retry-After (+250ms margin) and completes the call", async () => {
+    const fetchImpl = scripted([TPM_429("7"), TPM_429("3"), OK("done")]);
+    const { p, clock } = mkProvider(fetchImpl);
+    expect(await p.chat("s", "u")).toBe("done");
+    expect(clock.sleeps).toEqual([7250, 3250]);
+    expect(fetchImpl).toHaveBeenCalledTimes(3);
+    const st = p.usageStats();
+    expect(st.rateLimited).toBe(2);
+    expect(st.finalRateLimited).toBe(0);
+    expect(st.throttleWaitMs).toBe(10_500);
+    expect(st.latched).toBe(false);
+  });
+
+  it("transient 429s (retried successfully) never latch, however many calls see them", async () => {
+    const script: HttpResponseLike[] = [];
+    for (let i = 0; i < 8; i++) script.push(TPM_429("2"), TPM_429("2"), OK(`r${i}`));
+    const fetchImpl = scripted(script);
+    const { p, warns } = mkProvider(fetchImpl);
+    for (let i = 0; i < 8; i++) expect(await p.chat("s", "u")).toBe(`r${i}`);
+    expect(fetchImpl).toHaveBeenCalledTimes(24);
+    expect(p.usageStats().latched).toBe(false);
+    expect(warns.some((w) => w.includes("latching"))).toBe(false);
+  });
+
+  it("retries a 429 up to 6 times, capping each wait at 90s", async () => {
+    const fetchImpl = scripted([
+      hresp(429, {}, { "x-ratelimit-remaining-tokens": "0", "x-ratelimit-reset-tokens": "5m" }),
+      TPM_429("1"),
+      TPM_429("1"),
+      TPM_429("1"),
+      TPM_429("1"),
+      TPM_429("1"),
+      OK("late"),
+    ]);
+    const { p, clock } = mkProvider(fetchImpl);
+    expect(await p.chat("s", "u")).toBe("late");
+    expect(clock.sleeps[0]).toBe(90_000);
+    expect(fetchImpl).toHaveBeenCalledTimes(7);
+  });
+
+  it("a daily-limit 429 (TPD message) latches immediately", async () => {
+    const fetchImpl = scripted([TPD_429]);
+    const { p, warns, clock } = mkProvider(fetchImpl);
+    expect(await p.chat("s", "u")).toBeNull();
+    expect(await p.chat("s", "u")).toBeNull();
+    // Retry-After is only 252s (< 10 min), but the body names the daily
+    // quota, so requestWithRetry stops without sleeping.
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(clock.sleeps).toEqual([]);
+    expect(p.usageStats().latched).toBe(true);
+    expect(p.usageStats().latchReason).toMatch(/daily rate limit/);
+    expect(warns.some((w) => w.includes("tokens per day"))).toBe(true);
+  });
+
+  it("a 429 whose reset is > 10 minutes is a daily limit: no retry, latch", async () => {
+    const fetchImpl = scripted([hresp(429, {}, { "retry-after": "3600" })]);
+    const { p, clock } = mkProvider(fetchImpl);
+    expect(await p.chat("s", "u")).toBeNull();
+    expect(await p.chat("s", "u")).toBeNull();
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(clock.sleeps).toEqual([]);
+    expect(p.usageStats().latched).toBe(true);
+  });
+
+  it("non-429 failures still latch after 3 consecutive calls", async () => {
+    const bad = () => hresp(400, { error: { message: "bad request" } });
+    const fetchImpl = scripted([bad(), bad(), bad()]);
+    const { p } = mkProvider(fetchImpl);
+    for (let i = 0; i < 5; i++) expect(await p.chat("s", "u")).toBeNull();
+    expect(fetchImpl).toHaveBeenCalledTimes(3);
+    expect(p.usageStats().latched).toBe(true);
+    expect(p.usageStats().latchReason).toMatch(/3 consecutive unusable/);
+  });
+
+  it("a final 429 between non-429 failures does not reset or advance the non-429 counter", async () => {
+    const bad = () => hresp(400, {});
+    const fetchImpl = scripted([bad(), bad(), ...Array(7).fill(TPM_429("1")), bad()]);
+    const { p } = mkProvider(fetchImpl);
+    for (let i = 0; i < 4; i++) expect(await p.chat("s", "u")).toBeNull();
+    expect(fetchImpl).toHaveBeenCalledTimes(10);
+    expect(p.usageStats().latchReason).toMatch(/3 consecutive unusable/);
+  });
+
+  it("latches once the total 429 back-off budget is spent", async () => {
+    const fetchImpl = scripted([TPM_429("60"), OK("a"), TPM_429("60"), OK("b")]);
+    const { p } = mkProvider(fetchImpl, { maxThrottleWaitSeconds: 100 });
+    expect(await p.chat("s", "u")).toBe("a");
+    expect(await p.chat("s", "u")).toBe("b");
+    expect(await p.chat("s", "u")).toBeNull();
+    expect(p.usageStats().latchReason).toMatch(/back-off budget/);
+  });
+
+  it("logs a concise usage summary", async () => {
+    const fetchImpl = scripted([TPM_429("2"), OK("a", 900), OK("b", 1100)]);
+    const { p } = mkProvider(fetchImpl);
+    await p.chat("s", "u");
+    await p.chat("s", "u");
+    expect(p.usageSummary()).toBe(
+      "groq summary: model=openai/gpt-oss-120b, calls=2 (ok=2, failed=0), 429s=1 (final=0), " +
+        "throttle_wait=2.3s, pacing_wait=0.8s, tokens=2000, latched=no",
+    );
+  });
+
+  it("summary reports the latch reason", async () => {
+    const fetchImpl = scripted([TPD_429]);
+    const { p } = mkProvider(fetchImpl);
+    await p.chat("s", "u");
+    expect(p.usageSummary()).toContain("429s=1 (final=1)");
+    expect(p.usageSummary()).toMatch(/latched=yes \(daily rate limit exhausted/);
+  });
+});
+
+describe("GroqProvider — free-tier pacing", () => {
+  it("defaults gpt-oss-120b to 20 RPM (3s spacing)", async () => {
+    const fetchImpl = scripted([OK(), OK()]);
+    const { p, clock } = mkProvider(fetchImpl);
+    await p.chat("s", "u");
+    await p.chat("s", "u");
+    expect(clock.sleeps).toEqual([3000]);
+  });
+
+  it("token-aware pacing waits for the 60s window when the TPM budget would be exceeded", async () => {
+    const fetchImpl = scripted([OK("a", 3000), OK("b", 2500), OK("c", 100)]);
+    const { p, clock } = mkProvider(fetchImpl, { rateLimitTpm: 6000, rateLimitRpm: 60 });
+    await p.chat("s", "u"); // t=1000, 3000 tokens
+    await p.chat("s", "u"); // t=2000, 2500 tokens (5500 in window)
+    await p.chat("s", "u"); // est 601 → 6101 > 6000: wait until t=61000
+    expect(clock.sleeps).toEqual([1000, 1000, 58_000]);
+    expect(p.usageStats().pacingWaitMs).toBe(60_000);
+  });
+});
+
+describe("isDailyLimit429", () => {
+  it.each([
+    ["Rate limit reached ... on requests per day (RPD): Limit 1000", null, true],
+    ["... tokens per day (TPD) ...", null, true],
+    ["... tokens per minute (TPM) ...", 6_000, false],
+    ["", 11 * 60_000, true],
+    ["", 9 * 60_000, false],
+  ])("%j / %j → %j", (msg, hint, want) => {
+    expect(isDailyLimit429(msg, hint)).toBe(want);
   });
 });

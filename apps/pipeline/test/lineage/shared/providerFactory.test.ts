@@ -119,3 +119,39 @@ describe("buildProvider", () => {
     expect(provider.name).toBe("groq");
   });
 });
+
+describe("buildProvider — Groq pacing env overrides", () => {
+  async function sleepsFor(ambientEnv: Record<string, string>): Promise<number[]> {
+    let t = 0;
+    const sleeps: number[] = [];
+    const { provider } = buildProvider({
+      env: mkEnv({ groqApiKey: "gsk_fake_for_test" }),
+      ambientEnv,
+      fetchImpl: async () => ({
+        status: 200,
+        json: async () => ({ choices: [{ message: { content: "ok" } }] }),
+      }),
+      now: () => t,
+      sleep: async (ms) => {
+        sleeps.push(ms);
+        t += ms;
+      },
+    });
+    await provider.chat("s", "u");
+    await provider.chat("s", "u");
+    return sleeps;
+  }
+
+  it("defaults gpt-oss-120b to 20 RPM", async () => {
+    expect(await sleepsFor({})).toEqual([3000]);
+  });
+
+  it("PAPERPILOT_GROQ_RPM overrides the RPM", async () => {
+    expect(await sleepsFor({ PAPERPILOT_GROQ_RPM: "10" })).toEqual([6000]);
+  });
+
+  it("ignores a non-numeric / non-positive PAPERPILOT_GROQ_RPM", async () => {
+    expect(await sleepsFor({ PAPERPILOT_GROQ_RPM: "abc" })).toEqual([3000]);
+    expect(await sleepsFor({ PAPERPILOT_GROQ_RPM: "0" })).toEqual([3000]);
+  });
+});
