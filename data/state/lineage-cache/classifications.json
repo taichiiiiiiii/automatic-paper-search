@@ -8102,5 +8102,128 @@
         "schema_version": "relation-classification-v1"
       }
     }
+  },
+  "v2:1b8e0616704e5ec7dc3520aae8a62450a34ca3f928aa13d5cd7fe4c281713583": {
+    "status": "success",
+    "expires_at": "2026-11-09T05:45:09.848000Z",
+    "cache_identity": {
+      "version": "lineage-classification-cache-v2",
+      "src": "openalex:W4220967350",
+      "dst": "openalex:W4408858386",
+      "evidence_sha256": "11c323183b0068b5729e376afdaac7122b558b46bd208bca746805c9daca4d34",
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "provider": "groq",
+      "model": "groq:openai/gpt-oss-120b",
+      "prompt_version": "relation-prompt-v2",
+      "schema_version": "relation-classification-v1"
+    },
+    "classification": {
+      "relation": "baseline_only",
+      "confidence": 0.92,
+      "rationale": "B のサーベイは Mixture of Experts 手法全般を整理し、A の FasterMoE を背景論文として紹介しているだけで、直接的な拡張や比較は行っていない。"
+    },
+    "provenance": {
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "evidence": {
+        "source": "semantic_scholar",
+        "kind": "relation-input",
+        "sha256": "11c323183b0068b5729e376afdaac7122b558b46bd208bca746805c9daca4d34"
+      },
+      "classification": {
+        "method": "llm",
+        "provider": "groq",
+        "model": "groq:openai/gpt-oss-120b",
+        "prompt_version": "relation-prompt-v2",
+        "schema_version": "relation-classification-v1"
+      }
+    }
+  },
+  "v2:cf7674f2c7fbec1607a0a1fb7879852bed69c06cfc44637b2528f32a47e68190": {
+    "status": "success",
+    "expires_at": "2026-11-09T05:45:13.232000Z",
+    "cache_identity": {
+      "version": "lineage-classification-cache-v2",
+      "src": "openalex:W4283815817",
+      "dst": "openalex:W4408858386",
+      "evidence_sha256": "edf29a9863389996597e0351c07b3502b49d1a508f4233958568ab29ec1dd1e3",
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "provider": "groq",
+      "model": "groq:openai/gpt-oss-120b",
+      "prompt_version": "relation-prompt-v2",
+      "schema_version": "relation-classification-v1"
+    },
+    "classification": {
+      "relation": "baseline_only",
+      "confidence": 0.7,
+      "rationale": "B の調査は Mixture of Experts によるモデル容量拡張を扱い、A の「幅を広げる」アプローチを背景として言及するだけで、直接的な手法の継承はない。"
+    },
+    "provenance": {
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "evidence": {
+        "source": "semantic_scholar",
+        "kind": "relation-input",
+        "sha256": "edf29a9863389996597e0351c07b3502b49d1a508f4233958568ab29ec1dd1e3"
+      },
+      "classification": {
+        "method": "llm",
+        "provider": "groq",
+        "model": "groq:openai/gpt-oss-120b",
+        "prompt_version": "relation-prompt-v2",
+        "schema_version": "relation-classification-v1"
+      }
+    }
+  },
+  "v2:14300dd1e12191a960a8c4886e4d9345f0bde7b0394711f5916b2cfaff6c7e12": {
+    "status": "success",
+    "expires_at": "2026-11-09T05:45:15.862000Z",
+    "cache_identity": {
+      "version": "lineage-classification-cache-v2",
+      "src": "openalex:W4389520274",
+      "dst": "openalex:W4408858386",
+      "evidence_sha256": "4614cc37f99582867a6acfdc07163c36b8f5750c2d8659f6c7994c62f4b2406d",
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "provider": "groq",
+      "model": "groq:openai/gpt-oss-120b",
+      "prompt_version": "relation-prompt-v2",
+      "schema_version": "relation-classification-v1"
+    },
+    "classification": {
+      "relation": "baseline_only",
+      "confidence": 0.85,
+      "rationale": "B のサーベイは LLM における MoE 手法を整理しており、A の Vision-Language MoE を背景としてのみ参照している。"
+    },
+    "provenance": {
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "evidence": {
+        "source": "semantic_scholar",
+        "kind": "relation-input",
+        "sha256": "4614cc37f99582867a6acfdc07163c36b8f5750c2d8659f6c7994c62f4b2406d"
+      },
+      "classification": {
+        "method": "llm",
+        "provider": "groq",
+        "model": "groq:openai/gpt-oss-120b",
+        "prompt_version": "relation-prompt-v2",
+        "schema_version": "relation-classification-v1"
+      }
+    }
   }
 }

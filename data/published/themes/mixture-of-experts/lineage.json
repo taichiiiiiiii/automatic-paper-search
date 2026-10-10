@@ -321,11 +321,11 @@
     {
       "src": "openalex:W4220967350",
       "dst": "openalex:W4408858386",
-      "rel": "successor",
-      "relation": "successor",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「A Survey on Mixture of Experts in Large Language Models」(2025) は「FasterMoE」(2022) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.92,
+      "confidence": 0.92,
+      "rationale": "B のサーベイは Mixture of Experts 手法全般を整理し、A の FasterMoE を背景論文として紹介しているだけで、直接的な拡張や比較は行っていない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -333,14 +333,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "8fde2246b8f32eae915830727c6daaf4c6f394f9b1240be5a09e757125af60dc"
+          "kind": "relation-input",
+          "sha256": "11c323183b0068b5729e376afdaac7122b558b46bd208bca746805c9daca4d34"
         },
         "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v2",
           "schema_version": "relation-classification-v1"
         }
       }
@@ -429,11 +429,11 @@
     {
       "src": "openalex:W4283815817",
       "dst": "openalex:W4408858386",
-      "rel": "successor",
-      "relation": "successor",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「A Survey on Mixture of Experts in Large Language Models」(2025) は「Go Wider Instead of Deeper」(2022) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "B の調査は Mixture of Experts によるモデル容量拡張を扱い、A の「幅を広げる」アプローチを背景として言及するだけで、直接的な手法の継承はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -441,14 +441,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "482b10899c99e44144626ec8bc02aa8643157fcf7ba1362cbd82f33055a5730c"
+          "kind": "relation-input",
+          "sha256": "edf29a9863389996597e0351c07b3502b49d1a508f4233958568ab29ec1dd1e3"
         },
         "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v2",
           "schema_version": "relation-classification-v1"
         }
       }
@@ -564,11 +564,11 @@
     {
       "src": "openalex:W4389520274",
       "dst": "openalex:W4408858386",
-      "rel": "successor",
-      "relation": "successor",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「A Survey on Mixture of Experts in Large Language Models」(2025) は「Scaling Vision-Language Models with Sparse Mixture of Exper…」(2023) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.85,
+      "confidence": 0.85,
+      "rationale": "B のサーベイは LLM における MoE 手法を整理しており、A の Vision-Language MoE を背景としてのみ参照している。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -576,14 +576,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "6d4df6033eb2ef732d716ee1e0bc75a6aa69438b98224293ad1182e7c9ab8f44"
+          "kind": "relation-input",
+          "sha256": "4614cc37f99582867a6acfdc07163c36b8f5750c2d8659f6c7994c62f4b2406d"
         },
         "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v2",
           "schema_version": "relation-classification-v1"
         }
       }
@@ -631,10 +631,10 @@
     ],
     "depth": 1,
     "since_year": 2018,
-    "generated_at": "2026-10-10T05:23:45.064000Z",
+    "generated_at": "2026-10-10T05:45:31.156000Z",
     "provenance_breakdown": {
-      "citation_heuristic": 11,
-      "llm": 1
+      "citation_heuristic": 8,
+      "llm": 4
     },
     "completeness": {
       "complete": true,
