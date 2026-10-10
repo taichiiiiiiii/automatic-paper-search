@@ -8553,5 +8553,87 @@
         "schema_version": "relation-classification-v1"
       }
     }
+  },
+  "v2:816f166cb3765022b007edf85d5cd672bb73ac016d957839a4a40a91a20804dc": {
+    "status": "success",
+    "expires_at": "2026-11-09T07:38:03.610000Z",
+    "cache_identity": {
+      "version": "lineage-classification-cache-v2",
+      "src": "openalex:W3131500599",
+      "dst": "openalex:W3204076343",
+      "evidence_sha256": "c35b79b52f600209a3455c29f439e3e1a050e7e92d8382ff614cdca6ba88ef61",
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "provider": "groq",
+      "model": "groq:openai/gpt-oss-120b",
+      "prompt_version": "relation-prompt-v2",
+      "schema_version": "relation-classification-v1"
+    },
+    "classification": {
+      "relation": "contrasts",
+      "confidence": 0.85,
+      "rationale": "B の convolutional token embedding と convolutional projection は、A の畳み込みなしの Pyramid Vision Transformer と根本的に異なる設計で競合する。"
+    },
+    "provenance": {
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "evidence": {
+        "source": "semantic_scholar",
+        "kind": "relation-input",
+        "sha256": "c35b79b52f600209a3455c29f439e3e1a050e7e92d8382ff614cdca6ba88ef61"
+      },
+      "classification": {
+        "method": "llm",
+        "provider": "groq",
+        "model": "groq:openai/gpt-oss-120b",
+        "prompt_version": "relation-prompt-v2",
+        "schema_version": "relation-classification-v1"
+      }
+    }
+  },
+  "v2:dac2cc672e04910dab447cc9da8b3317009dd6928eea1e574e5d885534515941": {
+    "status": "success",
+    "expires_at": "2026-11-09T07:38:06.395000Z",
+    "cache_identity": {
+      "version": "lineage-classification-cache-v2",
+      "src": "openalex:W3121523901",
+      "dst": "openalex:W3204076343",
+      "evidence_sha256": "adbe8ed11b05e0de524263187ea875cea94cee13f8c2da3956f8f34c6241721f",
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "provider": "groq",
+      "model": "groq:openai/gpt-oss-120b",
+      "prompt_version": "relation-prompt-v2",
+      "schema_version": "relation-classification-v1"
+    },
+    "classification": {
+      "relation": "contrasts",
+      "confidence": 0.78,
+      "rationale": "B の畳み込みトークン埋め込みと畳み込みTransformerブロックは、A のトークン間逐次集約による局所構造モデリングとは根本的に異なる手法でViTを改良している。"
+    },
+    "provenance": {
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "evidence": {
+        "source": "semantic_scholar",
+        "kind": "relation-input",
+        "sha256": "adbe8ed11b05e0de524263187ea875cea94cee13f8c2da3956f8f34c6241721f"
+      },
+      "classification": {
+        "method": "llm",
+        "provider": "groq",
+        "model": "groq:openai/gpt-oss-120b",
+        "prompt_version": "relation-prompt-v2",
+        "schema_version": "relation-classification-v1"
+      }
+    }
   }
 }

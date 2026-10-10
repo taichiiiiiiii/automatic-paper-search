@@ -17,7 +17,7 @@
       ],
       "kinds": [],
       "citation_count": 26900,
-      "github_stars": 17477,
+      "github_stars": 17476,
       "tldr": "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks in an encoder-decoder…",
       "short_abstract": "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks in an encoder-decoder configuration. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our model achieves 28.4 BLEU on the WMT 2014 English-to-German translation task, improving over the existing best results, including ensembles by over 2 BLEU. On the WMT 2014 English-to-French translation task, our model establishes a new single-model state-of-the-art BLEU score of 41.8 after training for 3.5 days on eight GPUs, a small fraction of the training costs of the best models from the literature. We show that the…",
       "arxiv_id": "1706.03762",
@@ -75,7 +75,7 @@
       ],
       "kinds": [],
       "citation_count": 1244,
-      "github_stars": 653,
+      "github_stars": 0,
       "tldr": "Convolutional networks have enjoyed much success in many computer vision applications. The convolution operation however has a significant…",
       "short_abstract": "Convolutional networks have enjoyed much success in many computer vision applications. The convolution operation however has a significant weakness in that it only operates on a local neighbourhood, thus missing global information. Self-attention, on the other hand, has emerged as a recent advance to capture long range interactions, but has mostly been applied to sequence modeling and generative modeling tasks. In this paper, we propose to augment convolutional networks with self-attention by concatenating convolutional feature maps with a set of feature maps produced via a novel relative self-attention mechanism. In particular, we extend previous work on relative self-attention over sequences to images and discuss a memory efficient implementation. Unlike Squeeze-and-Excitation, which performs attention over the channels and ignores spatial information, our self-attention mechanism attends jointly to both features and spatial locations while preserving translation equivariance. We…",
       "arxiv_id": "1904.09925",
@@ -90,7 +90,6 @@
           "10.1109/iccv.2019.00338"
         ]
       ],
-      "github_url": "https://github.com/leaderj1001/Attention-Augmented-Conv2d",
       "is_focus": false
     },
     {
@@ -2978,11 +2977,11 @@
     {
       "src": "openalex:W3121523901",
       "dst": "openalex:W3204076343",
-      "rel": "successor",
-      "relation": "successor",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「CvT: Introducing Convolutions to Vision Transformers」(2021) は「Tokens-to-Token ViT: Training Vision Transformers from Scra…」(2021) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "rel": "contrasts",
+      "relation": "contrasts",
+      "conf": 0.78,
+      "confidence": 0.78,
+      "rationale": "B の畳み込みトークン埋め込みと畳み込みTransformerブロックは、A のトークン間逐次集約による局所構造モデリングとは根本的に異なる手法でViTを改良している。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -2990,14 +2989,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "964b9f60f6a35c6b9f2fbfaa425208a58dcf3f0045931eae325976a2e36eefc4"
+          "kind": "relation-input",
+          "sha256": "adbe8ed11b05e0de524263187ea875cea94cee13f8c2da3956f8f34c6241721f"
         },
         "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v2",
           "schema_version": "relation-classification-v1"
         }
       }
@@ -3052,6 +3051,33 @@
           "provider": null,
           "model": null,
           "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3131500599",
+      "dst": "openalex:W3204076343",
+      "rel": "contrasts",
+      "relation": "contrasts",
+      "conf": 0.85,
+      "confidence": 0.85,
+      "rationale": "B の convolutional token embedding と convolutional projection は、A の畳み込みなしの Pyramid Vision Transformer と根本的に異なる設計で競合する。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "c35b79b52f600209a3455c29f439e3e1a050e7e92d8382ff614cdca6ba88ef61"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v2",
           "schema_version": "relation-classification-v1"
         }
       }
@@ -3615,10 +3641,11 @@
     ],
     "depth": 1,
     "since_year": 2018,
-    "generated_at": "2026-10-10T05:25:36.859000Z",
+    "generated_at": "2026-10-10T07:38:27.480000Z",
     "provenance_breakdown": {
       "foundational_allowlist": 46,
-      "citation_heuristic": 61,
+      "citation_heuristic": 60,
+      "llm": 2,
       "title_version": 1
     },
     "completeness": {
