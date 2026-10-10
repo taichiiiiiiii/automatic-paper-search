@@ -5,6 +5,14 @@
  * no LLM, writes nothing; deterministic.
  *
  *   pnpm exec tsx apps/pipeline/src/lineage/theme/eval/evalRelevanceCli.ts [--json] [--failures]
+ *     [--embed [--model-cache <dir>] [--vector-cache <dir>]]
+ *
+ * `--embed` (R2-11) re-runs the PRODUCTION gate on the labelled set:
+ * `TopicScope` defaults + `topicEmbedding.ts` (bge-small q8, pinned
+ * revision, 4-decimal vector cache) with the whole labelled theme pool
+ * as the z pool. Needs `@huggingface/transformers` (optionalDependency)
+ * and downloads the model (~34 MB) on first use; everything else stays
+ * offline.
  *
  * Methods (see doc 42 for the definitions):
  *  - rules: the live `TopicScope` gate, strict (term match / allowlist /
@@ -20,6 +28,13 @@
 
 import { readFileSync } from "node:fs";
 import { isMain } from "../../../shared/cli/isMain.js";
+import type { ThemePaper } from "../openalexWork.js";
+import {
+  buildTopicRelevance,
+  CachedTopicEmbedder,
+  createTransformersEmbedder,
+  type TopicEmbedder,
+} from "../topicEmbedding.js";
 import { looksLikeDataset, TopicScope } from "../topicScope.js";
 
 const FIXTURE = "apps/pipeline/test/lineage/theme/fixtures/relevance-eval-v1.json";
@@ -68,8 +83,14 @@ type Method = (slug: string, c: Cand) => boolean;
 interface Ctx {
   fx: Fixture;
   scores: Scores;
+  /** Live defaults (R2-11: term match only). */
   scopes: Map<string, TopicScope>;
+  /** Pre-R2-11 rules: foundational allowlist + co-citation support (2). */
+  legacyScopes: Map<string, TopicScope>;
 }
+
+/** The pre-R2-11 production options, for the "rules (今)" rows of doc 42. */
+const LEGACY_SCOPE = { minSupport: 2, admitFoundational: true } as const;
 
 const isSeed = (c: Cand) => c.sources.includes("seed");
 const isDescendant = (c: Cand) =>
@@ -118,7 +139,7 @@ function rulesTitle(ctx: Ctx): Method {
 
 function rulesStrict(ctx: Ctx): Method {
   return (slug, c) => {
-    const scope = ctx.scopes.get(slug)!;
+    const scope = ctx.legacyScopes.get(slug)!;
     if (isDescendant(c)) return scope.admitsDescendant(c) === "topic";
     return scope.admits(c, 0) !== null;
   };
@@ -148,7 +169,7 @@ function rulesSupport(ctx: Ctx): Method {
     return ok;
   };
   return (slug, c) => {
-    const scope = ctx.scopes.get(slug)!;
+    const scope = ctx.legacyScopes.get(slug)!;
     const support = c.pool_neighbours.filter((n) => n !== c.id && lender(slug, n)).length;
     if (isDescendant(c)) {
       const why = scope.admitsDescendant(c);
@@ -156,6 +177,48 @@ function rulesSupport(ctx: Ctx): Method {
     }
     return scope.admits(c, support) !== null;
   };
+}
+
+/** The live gate as the BFS calls it: `admits(c, 0, z)` for references,
+ * `admitsDescendant(c, z)` for citing papers; `z` from `zOf` (undefined
+ * = term-only rule). */
+function production(ctx: Ctx, zOf?: (slug: string, c: Cand) => number | undefined): Method {
+  return (slug, c) => {
+    const scope = ctx.scopes.get(slug)!;
+    const z = zOf?.(slug, c);
+    if (isDescendant(c)) return scope.admitsDescendant(c, z) === "topic";
+    return scope.admits(c, 0, z) !== null;
+  };
+}
+
+/** R2-11: z-scores from the production embedding path, per theme. */
+export async function productionZ(
+  fx: Fixture,
+  embedder: TopicEmbedder,
+): Promise<Map<string, Map<string, number>>> {
+  const out = new Map<string, Map<string, number>>();
+  for (const [slug, t] of Object.entries(fx.themes)) {
+    const scope = TopicScope.forTheme(t.theme);
+    const byId = candIndex(t);
+    const seeds = t.seeds.map((id) => byId.get(id)).filter((c) => c !== undefined);
+    const rel = await buildTopicRelevance({
+      scope,
+      seeds: seeds as unknown as ThemePaper[],
+      pool: t.candidates as unknown as ThemePaper[],
+      embedder,
+    });
+    out.set(slug, new Map(t.candidates.map((c) => [c.id, rel.z(c.id)!])));
+  }
+  return out;
+}
+
+function productionRow(ctx: Ctx, zs: Map<string, Map<string, number>>): Row {
+  return rowFixed(
+    ctx,
+    "e combo",
+    "PRODUCTION embedding+terms (TopicScope + topicEmbedding.ts, bge-small q8)",
+    production(ctx, (s, c) => zs.get(s)?.get(c.id)),
+  );
 }
 
 // ---------- OpenAlex ----------
@@ -381,7 +444,10 @@ export function runEval(fx: Fixture, scores: Scores): { rows: Row[]; ctx: Ctx } 
   const scopes = new Map(
     Object.entries(fx.themes).map(([s, t]) => [s, TopicScope.forTheme(t.theme)]),
   );
-  const ctx: Ctx = { fx, scores, scopes };
+  const legacyScopes = new Map(
+    Object.entries(fx.themes).map(([s, t]) => [s, TopicScope.forTheme(t.theme, LEGACY_SCOPE)]),
+  );
+  const ctx: Ctx = { fx, scores, scopes, legacyScopes };
   const rows: Row[] = [];
   const strict = memo(rulesStrict(ctx));
   const support = memo(rulesSupport(ctx));
@@ -391,6 +457,9 @@ export function runEval(fx: Fixture, scores: Scores): { rows: Row[]; ctx: Ctx } 
   rows.push(rowFixed(ctx, "a rules", "theme-term match only (no allowlist)", terms));
   rows.push(rowFixed(ctx, "a rules", "rules strict (term/allowlist/descendant title)", strict));
   rows.push(rowFixed(ctx, "a rules", "rules + pool support>=2 (live upper bound)", support));
+  rows.push(
+    rowFixed(ctx, "a rules", "production stage 1 (TopicScope defaults, no z)", production(ctx)),
+  );
   rows.push(rowFixed(ctx, "b openalex", "OA search topic (top-1)", oaSearchTopic(ctx)));
   rows.push(
     rowFixed(ctx, "b openalex", "OA primary topic = subject-seed primary", oaSeedPrimaryTopic(ctx)),
@@ -624,10 +693,27 @@ function failures(ctx: Ctx, name: string, m: Method, limit = 12): string {
   return lines.join("\n");
 }
 
-function main(argv: string[]): number {
+function argValue(argv: string[], flag: string): string | null {
+  const i = argv.indexOf(flag);
+  return i >= 0 ? (argv[i + 1] ?? null) : null;
+}
+
+async function main(argv: string[]): Promise<number> {
   const fx = JSON.parse(readFileSync(FIXTURE, "utf8")) as Fixture;
   const scores = JSON.parse(readFileSync(SCORES, "utf8")) as Scores;
   const { rows, ctx } = runEval(fx, scores);
+  if (argv.includes("--embed")) {
+    const t0 = Date.now();
+    const embedder = new CachedTopicEmbedder(
+      createTransformersEmbedder({ modelCacheDir: argValue(argv, "--model-cache") }),
+      argValue(argv, "--vector-cache"),
+    );
+    const zs = await productionZ(fx, embedder);
+    rows.push(productionRow(ctx, zs));
+    process.stderr.write(
+      `production embedder: ${embedder.misses} embedded, ${embedder.hits} cached, ${((Date.now() - t0) / 1000).toFixed(1)} s\n`,
+    );
+  }
   if (argv.includes("--json")) {
     process.stdout.write(`${JSON.stringify(rows, null, 1)}\n`);
     return 0;
@@ -661,4 +747,16 @@ function main(argv: string[]): number {
   return 0;
 }
 
-if (isMain(import.meta.url)) process.exit(main(process.argv.slice(2)));
+if (isMain(import.meta.url)) {
+  // exitCode, not process.exit(): exiting while onnxruntime-node's
+  // threads are alive aborts the process (rc 134) on macOS.
+  main(process.argv.slice(2)).then(
+    (code) => {
+      process.exitCode = code;
+    },
+    (e) => {
+      process.stderr.write(`${String(e)}\n`);
+      process.exitCode = 1;
+    },
+  );
+}
