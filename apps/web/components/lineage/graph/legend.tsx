@@ -20,7 +20,7 @@ const RELATION_JA_PAREN: Record<Relation, string> = {
   successor: "後継",
   extends: "拡張",
   ablation: "成分分析",
-  baseline_only: "比較",
+  baseline_only: "参照（背景）",
   contrasts: "対立",
 };
 

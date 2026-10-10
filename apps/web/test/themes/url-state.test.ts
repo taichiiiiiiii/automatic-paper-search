@@ -87,7 +87,13 @@ describe("writeTreeUrlParams", () => {
     yearRange: dataYearExtents,
     dataYearExtents,
     searchQuery: "",
-    visibleRelations: new Set(["supersedes", "successor", "extends", "ablation"] as const),
+    visibleRelations: new Set([
+      "supersedes",
+      "successor",
+      "extends",
+      "ablation",
+      "baseline_only",
+    ] as const),
     hideOrphans: true,
   };
 
@@ -135,7 +141,13 @@ describe("writeTreeUrlParams", () => {
     const params = new URLSearchParams("?rels=stale");
     writeTreeUrlParams(params, {
       ...base,
-      visibleRelations: new Set(["ablation", "supersedes", "successor", "extends"]),
+      visibleRelations: new Set([
+        "baseline_only",
+        "ablation",
+        "supersedes",
+        "successor",
+        "extends",
+      ]),
     });
     expect(params.get("rels")).toBeNull();
   });
@@ -208,6 +220,7 @@ describe("loadThemePrefs / saveThemePrefs", () => {
       "successor",
       "extends",
       "ablation",
+      "baseline_only",
     ]);
   });
 
@@ -225,5 +238,16 @@ describe("loadThemePrefs / saveThemePrefs", () => {
     expect(() =>
       saveThemePrefs(throwing, { xAxisMode: "rank", visibleRelations: [] }),
     ).not.toThrow();
+  });
+});
+
+describe("prefs storage key", () => {
+  it("is versioned so prefs saved with the old defaults (baseline_only hidden) are ignored", () => {
+    expect(THEME_PREFS_STORAGE_KEY).toBe("pp.theme.prefs.v2");
+    const old: Record<string, string> = {
+      "pp.theme.prefs": JSON.stringify({ xAxisMode: "venue", visibleRelations: ["extends"] }),
+    };
+    const storage = { getItem: (k: string) => old[k] ?? null, setItem: () => {} };
+    expect(loadThemePrefs(storage)).toBeNull();
   });
 });

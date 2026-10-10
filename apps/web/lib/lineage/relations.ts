@@ -31,7 +31,9 @@ export const RELATION_LABEL_JA: Record<Relation, string> = {
   successor: "後継",
   extends: "拡張",
   ablation: "分析",
-  baseline_only: "比較",
+  // R2 UX P1-6: most baseline_only edges are S2 "background" citations
+  // (design doc 41 D6), not performance baselines -- "比較" misled.
+  baseline_only: "参照（背景）",
   contrasts: "対立",
 };
 
@@ -40,7 +42,7 @@ export const RELATION_LABEL_EN: Record<Relation, string> = {
   successor: "Successor",
   extends: "Extends",
   ablation: "Ablation",
-  baseline_only: "Baseline",
+  baseline_only: "Background",
   contrasts: "Contrasts",
 };
 
