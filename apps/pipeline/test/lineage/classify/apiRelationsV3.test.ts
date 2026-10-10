@@ -125,7 +125,7 @@ describe("target matching", () => {
     expect(r).toMatchObject({ relation: "builds_on", rule: "phrase_build" });
   });
 
-  it("the weak methodology+influential rule needs a sentence about the cited paper", () => {
+  it("the weak methodology+influential rule is background, never builds_on (R2-22)", () => {
     const multiOnly = sig({ title: "PVT v2: Improved baselines with pyramid vision transformer" }, [
       "Recent works [6, 11, 35, 39] have proved that adopting convolution layers in the Vision Transformer architecture can further improve model performances.",
     ]);
@@ -133,8 +133,10 @@ describe("target matching", () => {
     const named = sig(swin, [
       "Swin Transformer layer (STL) [56] is based on the standard multi-head self-attention of the original Transformer layer.",
     ]);
+    // R2-22: intent + influential + a named sentence without a build cue
+    // is not an inheritance claim (design 41 D5).
     expect(classifyApiRelationV3(named)).toMatchObject({
-      relation: "builds_on",
+      relation: "background",
       rule: "intent_methodology_influential",
     });
   });

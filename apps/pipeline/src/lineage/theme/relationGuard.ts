@@ -26,6 +26,15 @@
  *     paper. When EITHER endpoint is a survey/review or a
  *     dataset/benchmark paper, `contrasts` becomes `baseline_only`.
  *
+ *  3. R2-22 (design 41 D5) — an `extends`/`successor`/`supersedes`/
+ *     `ablation` must rest on quoted evidence: an S2 citation-sentence
+ *     build cue (`s2_context_rule`, or the citation-context LLM confirming
+ *     one), an explicit version in the titles (`title_version`) or the
+ *     curated ancestor list (`foundational_allowlist`, only used when the
+ *     pair has no citation evidence). The abstract-only LLM, S2 intents
+ *     alone (`intent_map`), unarXive patterns and heuristics become
+ *     `baseline_only`; the rationale keeps the original label as a hint.
+ *
  * Every other classification passes through unchanged. The edge keeps its
  * classification provenance (`llm`, prompt version, evidence hash of the
  * prompt actually sent); the rationale says that the relation was
@@ -82,6 +91,41 @@ export function hasContextContrastEvidence(classification: DerivedEdge): boolean
   );
 }
 
+/** Lineage claims other than `contrasts` (rule 0 handles that one). */
+const BUILD_CLAIMS: ReadonlySet<string> = new Set([
+  "extends",
+  "successor",
+  "supersedes",
+  "ablation",
+]);
+
+/**
+ * R2-22 (design 41 D5): whether a build/replace claim rests on evidence
+ * that can back it in public:
+ *  - `s2_context_rule`: a build cue in a citing sentence that names the
+ *    cited paper (rule set v3);
+ *  - the citation-context LLM, which since R2-22 can only CONFIRM such a
+ *    rule claim (`s2Relations.ts::mergeContextAnswer`);
+ *  - `title_version`: an explicit new version in the titles;
+ *  - `foundational_allowlist`: the curated ancestor list, used only when
+ *    the pair has no citation evidence at all (R2-16).
+ * The abstract-only LLM prompt, S2 intents alone (`intent_map`), unarXive
+ * context patterns (no check that the sentence is about the cited paper)
+ * and heuristics are not quoted evidence.
+ */
+export function hasQuotedBuildEvidence(classification: DerivedEdge): boolean {
+  switch (classification.provenance) {
+    case "s2_context_rule":
+    case "title_version":
+    case "foundational_allowlist":
+      return true;
+    case "llm":
+      return classification.promptVersion === CONTEXT_PROMPT_VERSION;
+    default:
+      return false;
+  }
+}
+
 /** `parent` = cited (older), `child` = citing (newer). Rewrite to
  * `baseline_only`: (1) an extends/successor/supersedes/contrasts whose
  * citing paper is a survey/review (except a `title_version` supersedes);
@@ -101,6 +145,16 @@ export function guardRelation(
     return corrected(
       classification,
       `引用側の論文がサーベイ/レビューのため ${classification.relation} を baseline_only に補正（レビューは引用先を整理するだけで、手法を継承・置換・対比しない）。`,
+    );
+  }
+  if (BUILD_CLAIMS.has(classification.relation) && !hasQuotedBuildEvidence(classification)) {
+    const by =
+      classification.provenance === "llm"
+        ? "要旨だけの LLM"
+        : `規則（${classification.provenance}）`;
+    return corrected(
+      classification,
+      `引用文の裏付けがないため ${classification.relation} を baseline_only に補正（${by}の判定は参考として残す）。`,
     );
   }
   if (classification.relation !== "contrasts") return classification;

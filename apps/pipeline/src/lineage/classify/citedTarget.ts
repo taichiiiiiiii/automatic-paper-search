@@ -499,6 +499,38 @@ export function sentenceTarget(sentence: string, id: CitedIdentity): SentenceTar
   return "multi";
 }
 
+/** R2-22: the sentence names the cited paper in words (title stem, acronym,
+ * author, method name), not only through a reference marker. */
+export function namesCitedPaper(sentence: string | null, id: CitedIdentity): boolean {
+  return sentence !== null && id.aliases.some((a) => mentions(sentence, a));
+}
+
+/**
+ * R2-22: the sentence identifies the cited paper ONLY through its reference
+ * marker, and every marker group carrying it cites other works too ("prior
+ * works [8, 15] that …, we study frameworks based on Siamese networks").
+ * Such a sentence lumps the cited paper with others, so a build cue in it
+ * cannot be attributed to the cited paper alone.
+ */
+export function namedOnlyInMarkerGroup(sentence: string, id: CitedIdentity): boolean {
+  if (id.marker === null) return false;
+  if (id.aliases.some((a) => mentions(sentence, a))) return false;
+  // The version family's name ("We follow the FlashAttention algorithms …
+  // [2, 3, 4]" for FlashAttention-2 = [2]) singles the family out.
+  const family = id.aliases
+    .map((a) => a.replace(/[-\s]?(v\d+|\d+|\+\+)$/i, ""))
+    .filter((f, i) => f.length >= 4 && f !== id.aliases[i]);
+  if (family.some((f) => mentions(sentence, f))) return false;
+  let carrying = 0;
+  for (const m of sentence.matchAll(/\[([^\]]{1,80})\]/g)) {
+    const ms = numericMarkers(m[0]);
+    if (!ms.includes(id.marker)) continue;
+    carrying += 1;
+    if (ms.length === 1) return false;
+  }
+  return carrying > 0;
+}
+
 /** The sentence points at the cited paper unambiguously. */
 export function isStrongTarget(t: SentenceTarget): boolean {
   return t === "named" || t === "single";
@@ -592,11 +624,15 @@ export function titleizeRationale(
   b: ClassifyPaperLike | null | undefined,
 ): string {
   const names: Record<string, string> = { A: shortPaperName(a), B: shortPaperName(b) };
-  // "論文 A", or a bare A/B not glued to another letter/digit/hyphen.
-  const letter = "(?:論文\\s*([AB])|(?<![\\p{L}\\p{N}_-])([AB]))";
-  // Not followed by another letter/digit, nor by a space and an English
-  // word ("A ConvNet for the 2020s" is a title, not paper A).
-  const tail = "(?![\\p{L}\\p{N}_-])(?!\\s+[A-Za-z])";
+  // "論文 A", or a bare A/B not glued to another Latin letter/digit/hyphen.
+  // R2-22: Japanese text may touch the letter ("Bは", "のAを"): kana/kanji
+  // are letters (\p{L}) but do not make A/B part of a word, so only Latin
+  // letters, digits, "_" and "-" count as glue.
+  const glue = "[\\p{Script=Latin}\\p{N}_-]";
+  const letter = `(?:論文\\s*([AB])|(?<!${glue})([AB]))`;
+  // Not followed by another Latin letter/digit, nor by a space and an
+  // English word ("A ConvNet for the 2020s" is a title, not paper A).
+  const tail = `(?!${glue})(?!\\s+[A-Za-z])`;
   let out = rationale.replace(
     new RegExp(`${letter}\\s*[(（]([^)）]{1,40})[)）]`, "gu"),
     (_m, _l1: string, _l2: string, inner: string) => `「${inner.trim()}」`,

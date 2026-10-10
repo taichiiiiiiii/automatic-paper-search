@@ -37,6 +37,8 @@ import {
   isQuotable,
   isStrongTarget,
   isUsableContext,
+  namedOnlyInMarkerGroup,
+  namesCitedPaper,
   pickQuote,
   type SentenceTarget,
   sentenceTarget,
@@ -366,7 +368,8 @@ export function classifyApiRelationV2(s: PairSignals): ApiClassification {
 //  - a contrast cue gives `contrast: true` only when the sentence targets
 //    the cited paper unambiguously (named, or the only work it cites);
 //  - the weak "methodology intent + influential" rule needs a sentence
-//    that names / singles out the cited paper;
+//    that names / singles out the cited paper (R2-22: and gives background
+//    only — intent + influential + a name is not a build claim);
 //  - the evidence of every rule is the sentence that triggered it; the
 //    intent / background rules quote the best sentence about the cited
 //    paper (`pickQuote`) or none.
@@ -396,14 +399,29 @@ const ADAPT_PATTERNS: readonly RegExp[] = [
   // R2-21: "we use the “mean” variant of GraphSAGE [16]" (quoted words
   // allowed between the verb and variant/version).
   /\b(we|our\s+\w+)\s+(use|uses|employ|employs|adopt|adopts)\s+(the\s+|a\s+)?([\w"“”'‘’-]+\s+){0,3}(variant|version)\s+of\b/i,
+  // R2-22: "Motivated by the Swin Transformer's [19] success, we propose
+  // Swin-Unet" (with the first-person subject `classifySentence` requires).
+  /\bmotivated\s+by\s+(the\s+)?[^.;,]{0,40}\b(success|design|idea)\b/i,
+  // R2-22: "Following [39], we place the MoEs on every other layer" (V-MoE
+  // <- GShard). BUILD_PATTERNS' "follow(ing) [x]" is case-sensitive, so a
+  // sentence-initial "Following [x], we …" never matched; protocol
+  // sentences ("Following [1], we use 4x3 views") are caught first.
+  /^\s*following\s+(\[\d|\(?[A-Z][\w-]+(\s+et\s+al\.?|\s*\[\d))[^,]{0,60},\s*(we|our)\b/i,
 ];
 
 const PROTOCOL_PATTERNS: readonly RegExp[] = [
-  /\bfollow(s|ed|ing)?\b[^.;]{0,80}\b(train(ing)?|schedul\w*|settings?|setup|protocols?|iterations?|epochs?|batch(\s+size)?|views?|crops?|evaluat\w*|learning\s+rate|lr|optimi[sz]\w*|augmentations?|hyper-?parameters?|recipes?|implementation\s+details?|inference|pre-?process\w*|splits?|metrics?|resolution)\b/i,
+  /\bfollow(s|ed|ing)?\b[^.;]{0,80}\b(train(ing)?|schedul\w*|settings?|setup|protocols?|iterations?|epochs?|batch(\s+size)?|views?|crops?|evaluat\w*|learning\s+rate|lr|optimi[sz]\w*|augmentations?|hyper-?parameters?|recipes?|implementation\s+details?|inference|pre-?process\w*|splits?|metrics?|resolution|report\w*|results?|accuracy)\b/i,
   /\b(train(ing|ed)?|evaluat\w*|inference|schedul\w*|settings?|protocols?|test(ing|ed)?)\b[^.;]{0,60}\bfollow(s|ed|ing)?\b/i,
   /\b(same|identical|similar)\s+(training\s+|experimental\s+|evaluation\s+)?(settings?|setup|protocols?|configurations?|recipes?|hyper-?parameters?)\s+(as|to|with|of)\b/i,
   /\bmatching\s+the\s+[\w-]+\s+used\s+(by|in)\b/i,
   /\bresults?\s+(are|is|were)\s+(copied|taken|borrowed|reported)\s+from\b/i,
+  // R2-22: copying a model size / configuration (Longformer: "a large (30
+  // layers, 512 hidden size) model as in Child et al. (2019)").
+  /\b(models?|sizes?|layers?|hidden|dimensions?|heads?|configurations?|depth|width)\b[^.;]{0,60}\bas\s+in\s+(\[|\(|[A-Z])/,
+  // R2-22: taking the setup wholesale (Hash Layers: "We use the
+  // architecture, data …, and hyperparameters directly from [10]").
+  /\bhyper-?parameters?\b[^.;]{0,40}\b(directly\s+)?from\b/i,
+  /\b(sampl\w*|subsampl\w*)\b[^.;]{0,80}\bfollow(s|ed|ing)?\b/i,
 ];
 const FAIR_COMPARISON =
   /\b(for|to\s+make)\s+(a\s+)?fair(er)?\s+comparisons?\b|\bfair(ly)?\s+compar\w*/i;
@@ -458,6 +476,9 @@ function classifySentence(raw: string, id: CitedIdentity): SentenceCandidate | n
     !compare &&
     fpBuild &&
     target !== "pair" &&
+    // R2-22: a marker shared with other works ("[8, 15]") does not single
+    // the cited paper out as what is built on.
+    !namedOnlyInMarkerGroup(sentence, id) &&
     (anyMatch(ADAPT_PATTERNS, sentence) || anyMatch(BUILD_PATTERNS, sentence))
   ) {
     return mk("builds_on", "phrase_build", 0.8);
@@ -487,8 +508,14 @@ function candidateRank(c: SentenceCandidate): number {
  *      builds_on > contrast > comparison > resource / protocol
  *   3. S2 result intent -> compares_with
  *   4. S2 methodology intent AND isInfluential AND a sentence that names /
- *      singles out the cited paper -> builds_on (weak)
+ *      singles out the cited paper -> background (rule id
+ *      `intent_methodology_influential`; builds_on until R2-22)
  *   5. any context -> background; no context -> cites_unspecified
+ * R2-22: builds_on comes only from a build cue in a sentence about the
+ * cited paper (design 41 D5) — not from S2's intent/influential flags, not
+ * from a marker shared with other works ("[8, 15]"), and never from a
+ * copied setup ("model as in Child et al.", "hyperparameters directly
+ * from [10]", "subsample … following Hamilton et al.").
  */
 export function classifyApiRelationV3(s: PairSignals): ApiClassification {
   const id = citedIdentity(s.cited, s.contexts);
@@ -526,10 +553,17 @@ export function classifyApiRelationV3(s: PairSignals): ApiClassification {
     );
   }
   if (intents.has("result")) return mk("compares_with", "intent_result", 0.6, quote());
+  // R2-22: S2's methodology intent + isInfluential on a sentence that names
+  // the cited paper is NOT builds_on any more. On the published lineages it
+  // fired on related-work lists, limitation remarks and copied setups
+  // (Performer <- Sparse Transformer / Reformer / Longformer, FlashAttention
+  // <- Longformer / SMYRF); a build claim needs a build cue in the sentence
+  // (design 41 D5), which the per-sentence rules above already look for.
+  // The rule id stays so reports and the LLM routing still see the signal.
   if (intents.has("methodology") && s.isInfluential === true) {
     const q = quote();
     if (q.target !== null && isStrongTarget(q.target)) {
-      return mk("builds_on", "intent_methodology_influential", 0.5, q);
+      return mk("background", "intent_methodology_influential", 0.6, q);
     }
   }
   if (contexts.length > 0) return mk("background", "context_no_cue", 0.6, quote());
@@ -574,6 +608,9 @@ export interface S2RuleResult extends ApiClassification {
   /** The evidence sentence may be shown as the quote: usable evidence
    * that identifies the cited paper (`citedTarget.ts::isQuotable`). */
   quotable: boolean;
+  /** R2-22: the evidence sentence names the cited paper in words (title
+   * stem, acronym, author, method name), not only by a reference marker. */
+  namedInWords: boolean;
 }
 
 /** Rule set v3 plus the routing facts production needs. */
@@ -586,6 +623,7 @@ export function classifyS2Pair(s: PairSignals): S2RuleResult {
     influential: s.isInfluential === true,
     singleTarget: base.target != null && isStrongTarget(base.target),
     quotable: isQuotable(base.evidence, id),
+    namedInWords: namesCitedPaper(base.evidence, id),
   };
 }
 

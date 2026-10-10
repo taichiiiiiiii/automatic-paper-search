@@ -39,6 +39,11 @@
  *    entry and its edge provenance hashes its own single-pair prompt (the
  *    relation input), not the batch request.
  *
+ * R2-22 (design 41 D5): the LLM may only CONFIRM or DOWNGRADE a strong
+ * rule claim (`mergeContextAnswer`); it is not asked when the rule result
+ * is not strong (skip reason `no_strong_claim`), and a strong label without
+ * the rule's cue is kept only as a hint in the rationale.
+ *
  * R2-16 quote rule: the quote is the sentence that triggered the rule and
  * that identifies the cited paper (its name or reference marker, or the
  * only work the sentence cites). Bibliography lines, bare marker lists and
@@ -275,18 +280,18 @@ const NEGATIVE_CUE_RULES: ReadonlySet<string> = new Set(["phrase_protocol", "phr
 
 /**
  * R2-20: a reason to keep the rule result without asking the LLM, for a
- * pair {@link needsContextLlm} would send, or `null`. The context answer
- * can only change the published relation to `extends` (builds_on) or,
- * when the rule itself found a contrast cue on a sentence that targets
- * the cited paper, to `contrasts`; everything else maps to
- * `baseline_only` like the rule. So the LLM is skipped when it cannot
- * change the relation:
+ * pair {@link needsContextLlm} would send, or `null`. Since R2-22 the
+ * context answer can only confirm or downgrade the rule's own `extends` /
+ * `contrasts` ({@link mergeContextAnswer}). So the LLM is skipped when it
+ * cannot change the relation:
  *  - `negative_cue`: the cue is a protocol / ablation sentence — never
  *    builds_on by construction — and carries no contrast;
  *  - `multi_citation`: no cue fired (S2 only marks the citation
  *    influential) and every usable sentence cites three or more works
  *    without naming the cited paper, or only other works — the prompt
- *    tells the model to answer `background` then.
+ *    tells the model to answer `background` then;
+ *  - `no_strong_claim` (R2-22): the rule result is not extends/contrasts,
+ *    and the answer may not create a strong claim.
  * (A survey-like citing paper never reaches here: `citing_survey`.)
  */
 export function contextLlmSkipReason(r: S2RuleResult, signals: PairSignals): string | null {
@@ -304,7 +309,72 @@ export function contextLlmSkipReason(r: S2RuleResult, signals: PairSignals): str
       return "multi_citation";
     }
   }
+  // R2-22: the LLM may only confirm or downgrade a strong rule claim
+  // (`mergeContextAnswer`), so a pair whose rule result is not strong
+  // cannot change — asking would only spend tokens.
+  const mapped = v1RelationFor(r.relation, { contrast: r.contrast, targetsCited: r.singleTarget });
+  if (mapped === null || !STRONG_V1.has(mapped)) return "no_strong_claim";
   return null;
+}
+
+/** Strong (lineage) relations in the v1 enum: what the graph draws as a
+ * lineage claim (design 41 D5). */
+const STRONG_V1: ReadonlySet<string> = new Set(["extends", "successor", "supersedes", "contrasts"]);
+
+/**
+ * R2-22: how a context-LLM answer may change the rule edge (design 41 D5:
+ * a strong claim needs a quoted citing sentence that names the cited paper
+ * and carries a build/contrast cue — i.e. the RULE's cue). The LLM can
+ * confirm or downgrade a strong rule claim, never create one:
+ *  - `llm`: use the LLM edge — it confirms the rule's strong relation, or
+ *    downgrades it to baseline_only, or both are baseline_only;
+ *  - `rule`: keep the rule edge;
+ *  - `rule_with_hint`: keep the rule edge (no strong claim) and note the
+ *    LLM's strong label in the rationale as a hint only.
+ *
+ * Downgrades: on the published lineages the LLM's downgrades of a rule
+ * `extends` were right when the model read the named sentence as about the
+ * cited paper and as use/comparison (Hash Layers <- BASE "we use the
+ * architecture, data and hyperparameters directly from [10]"; VR-GCN <-
+ * GraphSAGE "subsample … following Hamilton et al."), and wrong when it
+ * claimed the sentence was not about the cited paper although the
+ * sentence names it (DiffPool <- GraphSAGE "We use the “mean” variant of
+ * GRAPHSAGE [16]", answered refers_to_cited=false). So a downgrade with
+ * refers_to_cited=false is ignored when the rule's sentence names the cited
+ * paper in words (title stem, acronym, author, method name); it is
+ * accepted when the sentence identifies it only by a reference marker
+ * (inferred, so the model may be right that S2 attached it wrongly).
+ */
+export function mergeContextAnswer(
+  ruleRelation: string,
+  llmRelation: string,
+  a: Pick<ContextAnswer, "refers_to_cited">,
+  r: Pick<S2RuleResult, "namedInWords">,
+): "llm" | "rule" | "rule_with_hint" | "baseline_with_hint" {
+  const ruleStrong = STRONG_V1.has(ruleRelation);
+  const llmStrong = STRONG_V1.has(llmRelation);
+  if (llmStrong) {
+    if (llmRelation === ruleRelation) return "llm";
+    // A strong label the rule has no cue for is never created by the LLM;
+    // a different strong label than the rule's does not confirm it either.
+    return ruleStrong ? "baseline_with_hint" : "rule_with_hint";
+  }
+  if (!ruleStrong) return "llm";
+  if (!a.refers_to_cited && r.namedInWords) return "rule";
+  return "llm";
+}
+
+/** The rationale note for an LLM strong label that is not published. */
+export function llmHint(llmRelation: string): string {
+  return `（引用文の LLM は ${llmRelation} と判定したが、規則の手がかり（引用文中の継承・対比の語）がないため強い関係としては採らない）`;
+}
+
+/** R2-22: an LLM rationale that argues against the relation it labels
+ * (an `extends` described as "対照的", a `contrasts` described as "拡張"). */
+export function contradictsRelation(rationale: string, relation: string): boolean {
+  if (relation === "extends") return /対照的|対比し|対比する|と異なり|とは異なる/u.test(rationale);
+  if (relation === "contrasts") return /拡張し|拡張する|土台に|基に構築|踏襲/u.test(rationale);
+  return false;
 }
 
 /** One context-prompt cache request (theme cache `JsonAnswerRequest`). */
@@ -435,17 +505,39 @@ export async function deriveS2Relation(
     const a = answer.value;
     // R2-16: `contrasts` needs the rule's own contrast cue on a sentence
     // that targets the cited paper, not only the model's say-so.
-    const mapped = v1RelationFor(a.relation, {
+    const llmMapped = v1RelationFor(a.relation, {
       contrast: a.contrast && r.contrast,
       targetsCited: a.refers_to_cited && r.singleTarget,
     }) as DerivedEdge["relation"];
+    const decision = mergeContextAnswer(rule.relation, llmMapped, a, r);
+    if (decision === "rule") return rule;
+    if (decision === "rule_with_hint" || decision === "baseline_with_hint") {
+      const base =
+        decision === "rule_with_hint"
+          ? rule
+          : (ruleEdge(
+              { ...r, relation: "compares_with", contrast: false },
+              signals,
+              { srcId, dstId },
+              parent,
+              child,
+            ) as DerivedEdge);
+      return { ...base, rationale: `${base.rationale}${llmHint(llmMapped)}` };
+    }
     const evidenceSentence = r.quotable
       ? r.evidence
       : pickQuote(signals.contexts, citedIdentity(parent, signals.contexts));
+    // R2-22: a confirming answer whose own sentence argues the opposite
+    // ("…を拡張し、Bは…して対照的にする" on an extends) is shown with the
+    // rule's sentence instead; the relation and provenance stay the LLM's.
+    const llmText = titleizeRationale(a.rationale, parent, child);
+    const lead = contradictsRelation(llmText, llmMapped)
+      ? rule.rationale.replace(/（Semantic Scholar[^）]*）。.*$/u, "。")
+      : llmText;
     return {
-      relation: mapped,
+      relation: llmMapped,
       confidence: a.confidence,
-      rationale: `${titleizeRationale(a.rationale, parent, child)}${quote(evidenceSentence)}`,
+      rationale: `${lead}${quote(evidenceSentence)}`,
       provenance: "llm",
       producedBy: answer.producedBy,
       promptVersion: CONTEXT_PROMPT_VERSION,
