@@ -9234,5 +9234,44 @@
         "schema_version": "relation-classification-v1"
       }
     }
+  },
+  "v3:66bef0b5caaa9efe3511c163723d64e22708fc4ac936e38967a16b836a7585b5": {
+    "status": "success",
+    "expires_at": "2027-04-08T13:47:22.678000Z",
+    "cache_identity": {
+      "version": "lineage-classification-cache-v3",
+      "src": "openalex:W2964321699",
+      "dst": "openalex:W2766453196",
+      "evidence_sha256": "86d83e2a4376bd521e207da81725426d5551582adce5916d5f84b5e9508d1443",
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "prompt_version": "relation-prompt-v4",
+      "schema_version": "relation-classification-v1"
+    },
+    "classification": {
+      "relation": "baseline_only",
+      "confidence": 0.92,
+      "rationale": "Graph Attention Networks は masked self‑attentional layers を導入した手法で、Advances In Deep Learning On Graphs は講義資料であり手法継承がなく、単なる背景として引用される。"
+    },
+    "provenance": {
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "evidence": {
+        "source": "semantic_scholar",
+        "kind": "relation-input",
+        "sha256": "86d83e2a4376bd521e207da81725426d5551582adce5916d5f84b5e9508d1443"
+      },
+      "classification": {
+        "method": "llm",
+        "provider": "groq",
+        "model": "groq:openai/gpt-oss-120b",
+        "prompt_version": "relation-prompt-v4",
+        "schema_version": "relation-classification-v1"
+      }
+    }
   }
 }
