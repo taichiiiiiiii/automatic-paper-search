@@ -22,6 +22,14 @@
  * of 3+ letters ("GNN", "MoE") and CamelCase/upper-case tokens taken from
  * the aliases ("ViT").
  *
+ * R2-11 (design 41 D7 / doc 42): admission is "theme-term match only"
+ * by default — the foundational allowlist and co-citation support no
+ * longer admit on their own (they let ResNet/BERT/Adam into every theme);
+ * both stay available as opt-in options, and the allowlist still drives
+ * relation classification. When the BFS has an embedding relevance
+ * score z for a candidate (`topicEmbedding.ts`), admission becomes
+ * `(term match AND z >= zLo) OR z >= zHi`.
+ *
  * R2-2d: short acronyms ("GNN", "MoE", "ViT") are matched CASE-SENSITIVELY
  * and kept in their written case in {@link themeTerms}: lower-case "moe" or
  * the funding-statement "MOE" (Ministry of Education) is not the theme. An
@@ -41,11 +49,18 @@ export interface TopicScopeOptions {
   gate: boolean;
   /** A neighbour with no theme-term match is still admitted when at least
    * this many already-admitted on-topic nodes link to it (cite it or are
-   * cited by it). */
+   * cited by it). `0` = support admission OFF (the R2-11 default): no
+   * deferred support pass and no provisional citing papers. */
   minSupport: number;
-  /** Admit foundational-allowlist papers regardless of topic (they are
-   * the canonical ancestors the allowlist exists for). */
+  /** Admit foundational-allowlist papers regardless of topic. Off by
+   * default since R2-11 (doc 42: it admitted off-topic classics); the
+   * allowlist still drives relation classification. */
   admitFoundational: boolean;
+  /** R2-11 embedding gate: a term-matching candidate needs z >= zLo, a
+   * candidate without a term match needs z >= zHi (z = within-pool
+   * standardised cosine to the theme query, `topicEmbedding.ts`). */
+  zLo: number;
+  zHi: number;
   /** Seed-ranking multiplier for a seed whose title uses the theme only
    * as a method component ("... with Graph Neural Networks"). */
   componentSeedWeight: number;
@@ -55,8 +70,10 @@ export interface TopicScopeOptions {
 
 export const DEFAULT_TOPIC_SCOPE_OPTIONS: Readonly<TopicScopeOptions> = Object.freeze({
   gate: true,
-  minSupport: 2,
-  admitFoundational: true,
+  minSupport: 0,
+  admitFoundational: false,
+  zLo: 0,
+  zHi: 1.0,
   componentSeedWeight: 0.25,
   abstractOnlySeedWeight: 0.5,
 });
@@ -226,6 +243,9 @@ export function looksLikeDataset(paper: TopicPaperLike): boolean {
 export class TopicScope {
   readonly theme: string;
   readonly terms: readonly string[];
+  /** Theme name, aliases and `_topic_terms` as written (deduplicated):
+   * the text of the embedding query (`topicEmbedding.ts`). */
+  readonly queryTerms: readonly string[];
   readonly options: Readonly<TopicScopeOptions>;
   private readonly regexes: readonly RegExp[];
 
@@ -237,6 +257,7 @@ export class TopicScope {
   ) {
     this.theme = theme;
     this.terms = themeTerms(theme, aliases, extraTerms);
+    this.queryTerms = [...new Set([theme, ...aliases, ...extraTerms])];
     this.regexes = this.terms.map(termRegex);
     this.options = { ...DEFAULT_TOPIC_SCOPE_OPTIONS, ...stripUndefined(options) };
   }
@@ -313,20 +334,54 @@ export class TopicScope {
     return 0;
   }
 
+  /** True when co-citation support may admit with `support` links
+   * (support admission is off when `minSupport` is 0). */
+  supportSuffices(support: number): boolean {
+    return this.options.minSupport > 0 && support >= this.options.minSupport;
+  }
+
+  /** Embedding rule (R2-11): `(match AND z >= zLo) OR z >= zHi`. */
+  private relevant(match: boolean, z: number): boolean {
+    return (match && z >= this.options.zLo) || z >= this.options.zHi;
+  }
+
   /** Why `paper` may join the graph, or `null` when it may not.
    * `support` = number of distinct already-admitted on-topic nodes that
    * link to it. A dataset/benchmark paper ({@link looksLikeDataset}) is
-   * never admitted by support. */
-  admits(paper: TopicPaperLike, support: number): "topic" | "foundational" | "support" | null {
+   * never admitted by support.
+   *
+   * `relevance` = the candidate's embedding z-score, when the embedding
+   * gate is active. Then `(term match AND z >= zLo) OR z >= zHi` decides
+   * (`"embedding"` = admitted on z alone; an allowlisted paper admitted
+   * by the rule is reported as `"foundational"`), and support (if
+   * enabled) additionally needs z >= zLo. Without it (Stage 1 / fallback)
+   * a theme-term match admits; the allowlist and support only when
+   * explicitly enabled (`admitFoundational`, `minSupport > 0`). */
+  admits(
+    paper: TopicPaperLike,
+    support: number,
+    relevance?: number | null,
+  ): "topic" | "foundational" | "support" | "embedding" | null {
     if (!this.options.gate) return "topic";
-    if (this.isOnTopic(paper)) return "topic";
-    if (
-      this.options.admitFoundational &&
-      isFoundationalAncestor(paper as Record<string, unknown>)
-    ) {
-      return "foundational";
+    const match = this.isOnTopic(paper);
+    const foundational = isFoundationalAncestor(paper as Record<string, unknown>);
+    if (typeof relevance === "number") {
+      if (this.relevant(match, relevance)) {
+        if (foundational) return "foundational";
+        return match ? "topic" : "embedding";
+      }
+      if (
+        relevance >= this.options.zLo &&
+        this.supportSuffices(support) &&
+        !looksLikeDataset(paper)
+      ) {
+        return "support";
+      }
+      return null;
     }
-    if (support >= this.options.minSupport && !looksLikeDataset(paper)) return "support";
+    if (match) return "topic";
+    if (this.options.admitFoundational && foundational) return "foundational";
+    if (this.supportSuffices(support) && !looksLikeDataset(paper)) return "support";
     return null;
   }
 
@@ -336,16 +391,29 @@ export class TopicScope {
    * abstract does not make a channel-estimation paper about MoE. So:
    *  - title about the theme ("subject") -> `"topic"`;
    *  - theme only as a tool in the title or only in the abstract ->
-   *    `"provisional"`: kept only if, after the cross-node pass, at
-   *    least `minSupport` on-topic NON-seed nodes link to it
-   *    (`bfs.ts::confirmSupportAdmissions`);
+   *    `null` by default (R2-11). Only with support admission enabled
+   *    (`minSupport > 0`) is it `"provisional"`: kept only if, after the
+   *    cross-node pass, at least `minSupport` on-topic NON-seed nodes
+   *    link to it (`bfs.ts::confirmSupportAdmissions`);
    *  - no theme term at all -> `null`. Neither co-citation support nor
-   *    the foundational allowlist (canonical ANCESTORS) applies. */
-  admitsDescendant(paper: TopicPaperLike): "topic" | "provisional" | null {
+   *    the foundational allowlist (canonical ANCESTORS) applies.
+   * With an embedding z-score (`relevance`): `(title about the theme AND
+   * z >= zLo) OR z >= zHi` -> `"topic"`. */
+  admitsDescendant(
+    paper: TopicPaperLike,
+    relevance?: number | null,
+  ): "topic" | "provisional" | null {
     if (!this.options.gate) return "topic";
     const role = this.role(paper);
+    if (typeof relevance === "number") {
+      if (this.relevant(role === "subject", relevance)) return "topic";
+      if (this.options.minSupport > 0 && role !== "none" && relevance >= this.options.zLo) {
+        return "provisional";
+      }
+      return null;
+    }
     if (role === "subject") return "topic";
-    if (role === "none") return null;
+    if (role === "none" || this.options.minSupport <= 0) return null;
     return "provisional";
   }
 }
@@ -451,7 +519,7 @@ export function reapplyAdmission(
   for (const n of artifact.nodes) {
     if (reason.has(n.id) || rule.has(n.id)) continue;
     if (provisional.has(n.id)) {
-      if (supportOf(n.id) >= scope.options.minSupport) reason.set(n.id, "support(descendant)");
+      if (scope.supportSuffices(supportOf(n.id))) reason.set(n.id, "support(descendant)");
       else rule.set(n.id, `descendant(${scope.role(n)})`);
       continue;
     }

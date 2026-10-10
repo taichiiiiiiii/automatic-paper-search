@@ -44,6 +44,7 @@ import {
   EXIT_DEGRADED_CLASSIFICATION,
 } from "./classificationGate.js";
 import { sanitizeTheme } from "./slug.js";
+import { CachedTopicEmbedder, createTransformersEmbedder } from "./topicEmbedding.js";
 import { DEFAULT_TOPIC_SCOPE_OPTIONS } from "./topicScope.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -65,8 +66,11 @@ export interface ThemeCliArgs {
   /** R2-2b: BFS admission gate on/off (`--no-topic-gate`). */
   topicGate: boolean;
   /** R2-2b: on-topic links needed to admit a candidate without a theme
-   * match (`--topic-min-support`, default 2). */
+   * match (`--topic-min-support`; default 0 = support admission off,
+   * R2-11). */
   topicMinSupport: number;
+  /** R2-11: embedding topic gate on/off (`--no-topic-embedding`). */
+  topicEmbedding: boolean;
   /** R2-6: `--min-classified-rate` (0..1); `null` = take the policy/default. */
   minClassifiedRate: number | null;
   /** R2-6: `--result-json` path for the machine-readable outcome. */
@@ -96,6 +100,7 @@ const THEME_CLI_SPEC = {
   "allow-incomplete": { type: "boolean" as const },
   "auto-expand": { type: "boolean" as const },
   "no-topic-gate": { type: "boolean" as const },
+  "no-topic-embedding": { type: "boolean" as const },
   "topic-min-support": { type: "int" as const, default: DEFAULT_TOPIC_SCOPE_OPTIONS.minSupport },
   "min-classified-rate": { type: "float" as const },
   "result-json": { type: "string" as const },
@@ -132,6 +137,7 @@ export function parseArgs(argv: readonly string[]): ThemeCliArgs {
     autoExpand: parsed["auto-expand"] as boolean,
     topicGate: !(parsed["no-topic-gate"] as boolean),
     topicMinSupport: parsed["topic-min-support"] as number,
+    topicEmbedding: !(parsed["no-topic-embedding"] as boolean),
     minClassifiedRate: (parsed["min-classified-rate"] as number | undefined) ?? null,
     resultJson: (parsed["result-json"] as string | undefined) ?? null,
   };
@@ -294,6 +300,15 @@ export function defaultDeps(repoRoot: string = DEFAULT_REPO_ROOT): BuildThemeLin
     githubToken: env.githubToken,
     classificationCachePath: classificationsCache(layout),
     githubApiDeps: { fetchImpl },
+    // R2-11: vectors and model files live under the (git-ignored) lineage
+    // cache; CI keeps both in the Actions cache (regen-themes.yml,
+    // theme-on-demand.yml).
+    topicEmbedder: new CachedTopicEmbedder(
+      createTransformersEmbedder({
+        modelCacheDir: join(lineageCacheDir(layout), "models"),
+      }),
+      join(lineageCacheDir(layout), "embeddings"),
+    ),
     buildProvider: () =>
       buildProvider(
         {
@@ -347,8 +362,8 @@ export async function runThemeCli(
     throw e;
   }
 
-  if (args.topicMinSupport < 1) {
-    process.stderr.write("error: --topic-min-support must be >= 1\n");
+  if (args.topicMinSupport < 0) {
+    process.stderr.write("error: --topic-min-support must be >= 0 (0 = support admission off)\n");
     return 2;
   }
 
@@ -418,6 +433,7 @@ export async function runThemeCli(
         // The CLI is the one caller that treats 0 edges as a failure.
         allowEdgeless: false,
         topicScope: { gate: args.topicGate, minSupport: args.topicMinSupport },
+        topicEmbedding: args.topicEmbedding,
         minClassifiedRate,
       },
       deps,

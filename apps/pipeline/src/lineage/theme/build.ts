@@ -58,6 +58,7 @@ import { type IdentityAliasIndex, loadIdentityAliases, resolveAndDedupSeeds } fr
 import type { ThemePaper } from "./openalexWork.js";
 import { aliasesFor } from "./seedFilters.js";
 import { sanitizeTheme, themeLineagePath, themeSlug } from "./slug.js";
+import type { TopicEmbedder } from "./topicEmbedding.js";
 import {
   pickTopicalRoot,
   type TopicPaperLike,
@@ -211,6 +212,10 @@ export interface BuildThemeLineageOptions {
    * admission gate); omitted fields take `DEFAULT_TOPIC_SCOPE_OPTIONS`.
    * `{ gate: false }` turns the BFS admission gate off. */
   topicScope?: Partial<TopicScopeOptions>;
+  /** R2-11 (design 41 D7): use `deps.topicEmbedder` for the embedding
+   * topic gate (default true; false = term-only rule). Ignored when the
+   * gate is off or no embedder is injected. */
+  topicEmbedding?: boolean;
   /**
    * R2-6 (design 41 D3): minimum share of edges whose relation is backed
    * by real evidence — LLM, S2 intents, citation context, … (see
@@ -256,6 +261,9 @@ export interface BuildThemeLineageDeps {
   githubToken?: string | null;
   curatedGithubMap?: Record<string, string>;
   githubApiDeps?: GitHubApiDeps;
+  /** R2-11: embedder for the topic gate (`topicEmbedding.ts`); omitted =
+   * term-only rule (library callers and tests). */
+  topicEmbedder?: TopicEmbedder | null;
 }
 
 function fullLogger(partial?: BuildThemeLineageDeps["logger"]): FullLogger {
@@ -284,6 +292,7 @@ export async function buildThemeLineage(
     allowIncomplete = false,
     allowEdgeless = true,
     topicScope: topicScopeOptions = {},
+    topicEmbedding = true,
     minClassifiedRate = null,
   } = options;
 
@@ -406,6 +415,7 @@ export async function buildThemeLineage(
       llmStrict,
       currentYear: wallClockNow().getUTCFullYear(),
       topicScope,
+      topicEmbedder: topicEmbedding ? (deps.topicEmbedder ?? null) : null,
     },
     netDeps,
     completeness,
@@ -588,6 +598,8 @@ export async function buildThemeLineage(
       generated_at: pyIsoformat(wallClockNow()).replace("+00:00", "Z"),
       provenance_breakdown: provenanceBreakdown,
       completeness: completeness.asMeta(),
+      // R2-11 (design 41 D7): which topic rule admitted the nodes.
+      ...(bfsResult.topicGate !== null ? { topic_gate: bfsResult.topicGate } : {}),
     },
   };
 
