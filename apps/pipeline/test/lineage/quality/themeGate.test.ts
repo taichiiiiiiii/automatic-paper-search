@@ -11,15 +11,27 @@ const policy = {
   theme_min_generated_at: "2026-10-10T05:00:00Z",
 };
 
-function artifact(breakdown: Record<string, number> | undefined): Record<string, unknown> {
-  return { nodes: [], edges: [], meta: breakdown ? { provenance_breakdown: breakdown } : {} };
+function artifact(
+  breakdown: Record<string, number> | undefined,
+  edgeCount = 5,
+  nodeCount = 6,
+): Record<string, unknown> {
+  return {
+    nodes: Array.from({ length: nodeCount }, (_, i) => ({ id: `n${i}` })),
+    edges: Array.from({ length: edgeCount }, (_, i) => ({ src: `n${i}`, dst: `n${i + 1}` })),
+    meta: breakdown ? { provenance_breakdown: breakdown } : {},
+  };
 }
 
 describe("design 41 theme gate checks", () => {
   const gate = themeGateFromPolicy(policy);
 
   it("reads both thresholds from the policy, and is off without them", () => {
-    expect(gate).toEqual({ minClassifiedRate: 0.8, minGeneratedAt: "2026-10-10T05:00:00Z" });
+    expect(gate).toEqual({
+      minClassifiedRate: 0.8,
+      minGeneratedAt: "2026-10-10T05:00:00Z",
+      minEdges: 3,
+    });
     expect(themeGateFromPolicy({ conference_max_age_days: 30, theme_max_age_days: 90 })).toBeNull();
   });
 
@@ -31,6 +43,7 @@ describe("design 41 theme gate checks", () => {
     );
     expect(checks.map((c) => [c.name, c.status])).toEqual([
       ["evidence_classified_rate", "passed"],
+      ["edge_density", "passed"],
       ["generator_current", "passed"],
     ]);
   });
@@ -53,6 +66,52 @@ describe("design 41 theme gate checks", () => {
 
   it("fails closed without a provenance breakdown or a generated_at", () => {
     const checks = themeGateChecks(artifact(undefined), null, gate!);
-    expect(checks.map((c) => c.status)).toEqual(["failed", "failed"]);
+    expect(checks.map((c) => [c.name, c.status])).toEqual([
+      ["evidence_classified_rate", "failed"],
+      ["edge_density", "passed"],
+      ["generator_current", "failed"],
+    ]);
+  });
+});
+
+describe("R2-13 edge_density theme check", () => {
+  const gate = themeGateFromPolicy(policy)!;
+
+  it("fails a theme with fewer edges than theme_min_edges (Flash Attention run 38041334727: 4 nodes, 1 edge)", () => {
+    const checks = themeGateChecks(
+      artifact({ foundational_allowlist: 1 }, 1, 4),
+      "2026-10-10T09:26:08Z",
+      gate,
+    );
+    const density = checks.find((c) => c.name === "edge_density");
+    expect(density).toEqual({
+      name: "edge_density",
+      status: "failed",
+      observed: 1,
+      expected: 3,
+      evidence: ["edges:1<3", "nodes:4"],
+    });
+  });
+
+  it("passes at exactly the minimum, and fails an artifact without an edges list", () => {
+    const at = themeGateChecks(artifact({ llm: 3 }, 3, 4), "2026-10-10T09:26:08Z", gate);
+    expect(at.find((c) => c.name === "edge_density")?.status).toBe("passed");
+    const none = themeGateChecks({ meta: { provenance_breakdown: {} } }, null, gate);
+    expect(none.find((c) => c.name === "edge_density")?.status).toBe("failed");
+  });
+
+  it("reads theme_min_edges from the policy, defaulting to 3", () => {
+    expect(themeGateFromPolicy({ ...policy, theme_min_edges: 10 })?.minEdges).toBe(10);
+    expect(themeGateFromPolicy({ ...policy, theme_min_edges: -1 })?.minEdges).toBe(3);
+    expect(
+      themeGateFromPolicy({
+        conference_max_age_days: 30,
+        theme_max_age_days: 90,
+        theme_min_edges: 5,
+      }),
+    ).toEqual({ minClassifiedRate: 0.8, minGeneratedAt: null, minEdges: 5 });
+    const strict = themeGateFromPolicy({ ...policy, theme_min_edges: 10 })!;
+    const [, density] = themeGateChecks(artifact({ llm: 5 }, 5, 6), "2026-10-10T09:26:08Z", strict);
+    expect(density).toMatchObject({ name: "edge_density", status: "failed", expected: 10 });
   });
 });
