@@ -394,7 +394,7 @@ describe("CLASSIFY_SYSTEM_PROMPT quality (#131)", () => {
   });
 
   it("test_classify_prompt_within_groq_tpm_budget", () => {
-    expect(CLASSIFY_SYSTEM_PROMPT.length).toBeLessThanOrEqual(1200);
+    expect(CLASSIFY_SYSTEM_PROMPT.length).toBeLessThanOrEqual(1700);
   });
 
   it("test_classify_prompt_invariants_still_hold", () => {

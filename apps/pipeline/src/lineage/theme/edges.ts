@@ -19,7 +19,7 @@ export { filterEdgesByRationale, isDegenerateRationale } from "../shared/rationa
 
 export const PRODUCER_NAME = "paperpilot.scripts.build_theme_lineage";
 export const PRODUCER_VERSION = "p2t-v1";
-export const PROMPT_VERSION = "relation-prompt-v1";
+export const PROMPT_VERSION = "relation-prompt-v2";
 export const CLASSIFICATION_SCHEMA_VERSION = "relation-classification-v1";
 
 type PaperLike = Record<string, unknown>;

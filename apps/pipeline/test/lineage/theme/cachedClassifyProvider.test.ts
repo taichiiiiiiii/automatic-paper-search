@@ -65,7 +65,7 @@ function classification(): RelationClassification {
 const IDENTITY: ThemeProducerIdentity = {
   producerName: "paperpilot.scripts.build_theme_lineage",
   producerVersion: "p2t-v1",
-  promptVersion: "relation-prompt-v1",
+  promptVersion: "relation-prompt-v2",
   classificationSchemaVersion: "relation-classification-v1",
 };
 
