@@ -21,9 +21,16 @@
  *
  * Edge provenance: rule results use method `s2_context_rule` with the
  * hash of the S2 signals; context-LLM answers use method `llm` with
- * `prompt_version: relation-prompt-v3-context` and the hash of that
- * prompt. Rationales are a short Japanese sentence plus the quoted
- * English context sentence, so the web shows the evidence.
+ * `prompt_version: relation-prompt-v4-context` and the hash of that
+ * prompt. Rationales are a short Japanese sentence naming both papers by
+ * their short titles plus the quoted English context sentence, so the web
+ * shows the evidence.
+ *
+ * R2-16 quote rule: the quote is the sentence that triggered the rule and
+ * that identifies the cited paper (its name or reference marker, or the
+ * only work the sentence cites). Bibliography lines, bare marker lists and
+ * very short fragments are never quoted; when no sentence qualifies the
+ * rationale says so instead of quoting an unrelated sentence.
  */
 
 import type { LLMProvider } from "../../collect/llm/provider.js";
@@ -34,6 +41,13 @@ import {
   type S2RuleResult,
   v1RelationFor,
 } from "../classify/apiRelations.js";
+import {
+  citedIdentity,
+  isUsableContext,
+  pickQuote,
+  shortPaperName,
+  titleizeRationale,
+} from "../classify/citedTarget.js";
 import type { DerivedEdge } from "../classify/classify.js";
 import { canonicalJsonSha256 } from "../contract/v1.js";
 import {
@@ -51,7 +65,6 @@ type PaperLike = Record<string, unknown>;
 
 /** Max characters of the quoted context sentence in a rationale. */
 export const QUOTE_MAX_CHARS = 240;
-const TITLE_TRIM = 50;
 /** Same floor as `applyLlmClassification`: below it the model itself says
  * the relation is weak, so the rule result is kept instead. */
 const MIN_LLM_CONFIDENCE = 0.4;
@@ -78,20 +91,17 @@ export interface S2RelationContext {
   stats: S2RelationStats;
 }
 
-function trimTitle(paper: PaperLike): string {
-  const raw = typeof paper.title === "string" ? paper.title.trim() : "";
-  const cps = Array.from(raw.replaceAll("「", "").replaceAll("」", ""));
-  if (cps.length === 0) return "引用元の論文";
-  return cps.length > TITLE_TRIM ? `${cps.slice(0, TITLE_TRIM - 1).join("")}…` : cps.join("");
-}
-
 function yearOf(paper: PaperLike): string {
   return typeof paper.year === "number" && Number.isInteger(paper.year) ? String(paper.year) : "?";
 }
 
-/** The quoted evidence sentence, truncated to {@link QUOTE_MAX_CHARS}. */
+/** Said instead of a quote when no context sentence identifies the cited paper. */
+export const NO_SPECIFIC_QUOTE = " 被引用論文を特定できる引用文はない。";
+
+/** The quoted evidence sentence, truncated to {@link QUOTE_MAX_CHARS}, or
+ * {@link NO_SPECIFIC_QUOTE} when there is none. */
 export function quote(sentence: string | null): string {
-  if (!sentence) return "";
+  if (!sentence) return NO_SPECIFIC_QUOTE;
   const cps = Array.from(sentence.replace(/\s+/g, " ").trim());
   const text =
     cps.length > QUOTE_MAX_CHARS ? `${cps.slice(0, QUOTE_MAX_CHARS - 1).join("")}…` : cps.join("");
@@ -104,8 +114,8 @@ function ruleSentence(
   parent: PaperLike,
   child: PaperLike,
 ): string {
-  const b = `「${trimTitle(child)}」(${yearOf(child)})`;
-  const a = `「${trimTitle(parent)}」(${yearOf(parent)})`;
+  const b = `「${shortPaperName(child)}」(${yearOf(child)})`;
+  const a = `「${shortPaperName(parent)}」(${yearOf(parent)})`;
   switch (rel) {
     case "builds_on":
       return `${b} は ${a} を土台にしている`;
@@ -155,7 +165,7 @@ export function ruleEdge(
     confidence: r.confidence,
     rationale:
       `${ruleSentence(r.relation, mapped, parent, child)}` +
-      `（Semantic Scholar の引用文・引用の意図から規則で判定）。${quote(r.evidence).trimStart()}`,
+      `（Semantic Scholar の引用文・引用の意図から規則で判定）。${quote(r.quotable ? r.evidence : null).trimStart()}`,
     provenance: "s2_context_rule",
     evidence: {
       source: "semantic_scholar",
@@ -168,7 +178,7 @@ export function ruleEdge(
 /** Whether the context LLM is asked about this pair (design 43 §8). */
 export function needsContextLlm(r: S2RuleResult, signals: PairSignals): boolean {
   if (r.relation === "cites_unspecified" || r.rule === "citing_survey") return false;
-  if (signals.contexts.length === 0) return false;
+  if (!signals.contexts.some(isUsableContext)) return false;
   return r.cue || r.influential;
 }
 
@@ -222,6 +232,7 @@ export async function deriveS2Relation(
     ...lookup.signals,
     citingTitle,
     citingSurvey: isSurveyLike(child),
+    cited: parent,
   };
   const r = classifyS2Pair(signals);
   const rule = ruleEdge(r, signals, { srcId, dstId }, parent, child);
@@ -234,7 +245,10 @@ export async function deriveS2Relation(
     return rule;
   }
   ctx.stats.llmAsked += 1;
-  const [system, user] = buildContextPrompt(parent, child, signals.contexts);
+  // Only usable sentences go to the model (no bibliography lines / bare
+  // marker lists); `needsContextLlm` guarantees at least one.
+  const usable = signals.contexts.filter(isUsableContext);
+  const [system, user] = buildContextPrompt(parent, child, usable);
   const answer = await askContext(ctx.provider, { src: srcId, dst: dstId, system, user });
   onLlm?.(answer !== null);
   if (answer === null || answer.value.confidence < MIN_LLM_CONFIDENCE) {
@@ -243,15 +257,19 @@ export async function deriveS2Relation(
   }
   ctx.stats.llmAnswered += 1;
   const a = answer.value;
+  // R2-16: `contrasts` needs the rule's own contrast cue on a sentence
+  // that targets the cited paper, not only the model's say-so.
   const mapped = v1RelationFor(a.relation, {
-    contrast: a.contrast,
-    targetsCited: a.refers_to_cited,
+    contrast: a.contrast && r.contrast,
+    targetsCited: a.refers_to_cited && r.singleTarget,
   }) as DerivedEdge["relation"];
-  const evidenceSentence = r.evidence ?? signals.contexts[0] ?? null;
+  const evidenceSentence = r.quotable
+    ? r.evidence
+    : pickQuote(signals.contexts, citedIdentity(parent, signals.contexts));
   return {
     relation: mapped,
     confidence: a.confidence,
-    rationale: `${a.rationale}${quote(evidenceSentence)}`,
+    rationale: `${titleizeRationale(a.rationale, parent, child)}${quote(evidenceSentence)}`,
     provenance: "llm",
     producedBy: answer.producedBy,
     promptVersion: CONTEXT_PROMPT_VERSION,

@@ -33,11 +33,11 @@ describe("citationTargetCount", () => {
 });
 
 describe("classifyS2Pair", () => {
-  it("is v2 plus cue / influential / single-target facts", () => {
+  it("is the rule set (v3) plus cue / influential / single-target facts", () => {
     const r = classifyS2Pair({
       ...base,
       isInfluential: true,
-      contexts: ["Unlike [5], we use no convolutions."],
+      contexts: ["Unlike [5], we use no convolutions anywhere in the network."],
     });
     expect(r).toMatchObject({
       relation: "compares_with",
@@ -47,8 +47,12 @@ describe("classifyS2Pair", () => {
       influential: true,
       singleTarget: true,
     });
-    const multi = classifyS2Pair({ ...base, contexts: ["Unlike [3, 5], we use no convolutions."] });
+    const multi = classifyS2Pair({
+      ...base,
+      contexts: ["Unlike [3, 5], we use no convolutions anywhere in the network."],
+    });
     expect(multi.singleTarget).toBe(false);
+    expect(multi.contrast).toBe(false);
     const bg = classifyS2Pair({ ...base, contexts: ["GNNs are popular [2]."] });
     expect(bg).toMatchObject({ relation: "background", cue: false, influential: false });
     expect(classifyS2Pair({ ...base, found: false }).relation).toBe("cites_unspecified");
@@ -56,7 +60,15 @@ describe("classifyS2Pair", () => {
 
   it("treats phrase rules and table rows as cues, intents and defaults as not", () => {
     expect([...CUE_RULES].sort()).toEqual(
-      ["phrase_build", "phrase_compare", "phrase_contrast", "phrase_resource", "table_row"].sort(),
+      [
+        "phrase_ablation",
+        "phrase_build",
+        "phrase_compare",
+        "phrase_contrast",
+        "phrase_protocol",
+        "phrase_resource",
+        "table_row",
+      ].sort(),
     );
     expect(classifyS2Pair({ ...base, intents: ["result"], contexts: ["x [1]."] }).cue).toBe(false);
   });
@@ -106,7 +118,12 @@ describe("v1RelationFor (design 43 §9 案 A)", () => {
         targetsCited: r.singleTarget,
       });
       counts[String(mapped)] = (counts[String(mapped)] ?? 0) + 1;
-      if (mapped === "contrasts") expect(citationTargetCount(r.evidence ?? "")).toBe(1);
+      // contrasts only from a contrast cue on a sentence that targets the
+      // cited paper unambiguously (R2-16: named, or the only work cited).
+      if (mapped === "contrasts") {
+        expect(r.singleTarget).toBe(true);
+        expect(citationTargetCount(r.evidence ?? "")).toBeLessThanOrEqual(1);
+      }
       // Every inheriting rule result is extends, and nothing else is.
       expect(mapped === "extends").toBe(r.relation === "builds_on");
     }

@@ -22,6 +22,7 @@ import type {
 } from "../../collect/llm/provider.js";
 import { truthy } from "../../collect/pyish.js";
 import { TEMPLATE_RATIONALES } from "../llm/base.js";
+import { titleizeRationale } from "./citedTarget.js";
 
 export type LineagePaperLike = ClassifyPaperLike;
 
@@ -40,7 +41,7 @@ export interface DerivedEdge {
    * edge. Edge provenance hashes it instead of the default input. */
   evidence?: { source: string; kind: string; sha256: string };
   /** For `provenance: "llm"` answers to a prompt other than the abstract
-   * prompt (e.g. `relation-prompt-v3-context`). */
+   * prompt (e.g. `relation-prompt-v4-context`). */
   promptVersion?: string;
 }
 
@@ -609,20 +610,37 @@ export async function deriveRelation(
   const heuristic = deriveRelationHeuristic(intentRecord, parent, child);
 
   // #277: foundational ancestor short-circuit, takes priority over the
-  // heuristic (see Python's docstring for the two reasons).
-  if (isFoundationalAncestor(parent)) {
+  // heuristic (see Python's docstring for the two reasons). R2-16: only
+  // when the record carries no citation evidence for the pair (no S2
+  // intents, no contexts) — the allowlist admits a canonical ancestor, it
+  // must not overwrite what the citing paper says about it.
+  if (isFoundationalAncestor(parent) && !hasCitationEvidence(intentRecord)) {
     return foundationalAncestorEdge(parent, child);
   }
+
+  // R2-16: LLM rationales name the papers by short title, not "A"/"B".
+  const named = (edge: DerivedEdge | null): DerivedEdge | null =>
+    edge !== null && edge.provenance === "llm"
+      ? { ...edge, rationale: titleizeRationale(edge.rationale, parent, child) }
+      : edge;
 
   if (heuristic === null) {
     if (strictMode === "off" || !classifyRelation) return null;
     const llmResult = await classifyRelation(parent ?? {}, child ?? {});
-    return buildEdgeFromLlm(llmResult);
+    return named(buildEdgeFromLlm(llmResult));
   }
 
   if (strictMode === "off" || !classifyRelation) return heuristic;
   if (strictMode === "ambiguous" && !isAmbiguous(intentRecord)) return heuristic;
   const llmResult = await classifyRelation(parent ?? {}, child ?? {});
-  return applyLlmClassification(heuristic, llmResult);
+  return named(applyLlmClassification(heuristic, llmResult));
+}
+
+/** True when an intent record carries citation evidence for the pair:
+ * S2 intents or citation-context sentences (R2-16, allowlist rule). */
+export function hasCitationEvidence(intentRecord: Record<string, unknown>): boolean {
+  const nonEmpty = (v: unknown) =>
+    Array.isArray(v) && v.some((x) => typeof x === "string" && x.trim().length > 0);
+  return nonEmpty(intentRecord._intents) || nonEmpty(intentRecord._contexts);
 }
 export { deriveRelation as derive_relation };

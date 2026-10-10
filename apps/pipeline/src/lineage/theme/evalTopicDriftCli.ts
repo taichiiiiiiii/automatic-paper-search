@@ -72,6 +72,14 @@ export function classificationMethodOf(e: { provenance?: unknown }): string {
   return typeof method === "string" && method ? method : "llm";
 }
 
+/** The `prompt_version` an artifact edge's provenance records, if any
+ * (R2-16: the relation guard tells citation-context answers apart). */
+export function promptVersionOf(e: { provenance?: unknown }): string | undefined {
+  const prov = e.provenance as { classification?: { prompt_version?: unknown } } | undefined;
+  const v = prov?.classification?.prompt_version;
+  return typeof v === "string" && v ? v : undefined;
+}
+
 function relationOf(e: ArtifactEdgeLike): string {
   return String(e.relation ?? e.rel ?? "?");
 }
@@ -117,6 +125,8 @@ export function evaluateArtifact(
         rationale: String(e.rationale ?? ""),
         provenance: classificationMethodOf(e),
       };
+      const pv = promptVersionOf(e);
+      if (pv !== undefined) cls.promptVersion = pv;
       const guarded = guardRelation(cls, byId.get(e.src) ?? {}, byId.get(e.dst) ?? {});
       if (guarded === cls) return e;
       contrastsGuarded.push({ src: e.src, dst: e.dst });

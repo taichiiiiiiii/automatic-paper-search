@@ -384,13 +384,14 @@ describe("low-information relations", () => {
   const parent = paper("p", "Graph Neural Network Baselines", { year: 2020, cites: 400 });
   const child = paper("c", "Graph Neural Network Benchmarks", { year: 2021, cites: 300 });
 
-  it("demotes a year_cite contrasts guess to a 0.4 citation_heuristic successor", () => {
+  it("demotes a year_cite contrasts guess to a 0.4 citation_heuristic baseline_only", () => {
     const guess = deriveRelationHeuristic({}, parent, child);
     expect(guess?.relation).toBe("contrasts");
     expect(guess?.provenance).toBe("year_cite");
     const demoted = demoteLowInformationEdge(guess!, parent, child);
     expect(demoted).toMatchObject({
-      relation: "successor",
+      // R2-16: never a lineage claim (was successor).
+      relation: "baseline_only",
       confidence: CITATION_HEURISTIC_CONFIDENCE,
       provenance: "citation_heuristic",
     });
@@ -417,14 +418,14 @@ describe("low-information relations", () => {
     expect(result.llmUnusable).toBe(1);
     expect(result.edges).toHaveLength(1);
     const edge = result.edges[0]!;
-    expect(edge.relation).toBe("successor");
+    expect(edge.relation).toBe("baseline_only");
     expect(edge.confidence).toBe(CITATION_HEURISTIC_CONFIDENCE);
     expect((edge.provenance.classification as Record<string, unknown>).method).toBe(
       "citation_heuristic",
     );
   });
 
-  it("a real LLM 'contrasts' classification is kept as such", async () => {
+  it("an abstract-only LLM 'contrasts' becomes baseline_only (R2-16: no citation-sentence cue)", async () => {
     // Not a survey/benchmark title: the R2-2d relation guard leaves it alone.
     const seed = paper("seedA", "Spatial Graph Neural Networks", { year: 2021, cites: 300 });
     const deps = bfsDeps({ seedA: [ref(parent)] });
@@ -443,7 +444,8 @@ describe("low-information relations", () => {
       deps,
     );
     const edge = result.edges[0]!;
-    expect(edge.relation).toBe("contrasts");
+    expect(edge.relation).toBe("baseline_only");
+    expect(edge.rationale).toContain("引用文に被引用論文との対比を示す記述がない");
     expect((edge.provenance.classification as Record<string, unknown>).method).toBe("llm");
     expect(result.llmUnusable).toBe(0);
   });

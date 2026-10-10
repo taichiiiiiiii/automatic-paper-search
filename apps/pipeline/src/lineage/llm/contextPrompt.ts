@@ -16,12 +16,16 @@
  */
 
 import type { ClassifyPaperLike } from "../../collect/llm/provider.js";
+import { shortPaperName } from "../classify/citedTarget.js";
 import { codePointLength, codePointSlice, MIN_RATIONALE_LEN } from "./base.js";
 
-/** Provenance `prompt_version` of context-prompt answers. The abstract
- * prompt keeps `relation-prompt-v2` (its text is unchanged, and its
- * cached answers stay valid). */
-export const CONTEXT_PROMPT_VERSION = "relation-prompt-v3-context";
+/** Provenance `prompt_version` of context-prompt answers. R2-16 bumped
+ * v3 -> v4 together with the abstract prompt (`relation-prompt-v4`):
+ * rationales name the papers by short title instead of "A"/"B", both
+ * papers' short names are in the user message, and only usable context
+ * sentences are sent. The theme cache key hashes the exact prompt text and
+ * carries this version, so v3 answers are never reused. */
+export const CONTEXT_PROMPT_VERSION = "relation-prompt-v4-context";
 
 export const CONTEXT_RELATIONS = [
   "builds_on",
@@ -48,7 +52,7 @@ relation — what B does with A (answer background when refers_to_cited is false
 - background: A is only mentioned as related work or context
 contrast: true only if B explicitly says its approach differs from A's on the same task ("unlike A", "in contrast to A").
 
-rationale: 30-150 chars, one Japanese sentence naming A's concept and what B does with it. Do not copy the English sentence.
+rationale: 30-150 chars, one Japanese sentence naming A's concept and what B does with it. Call the papers by their short names (given below), never "A" or "B". Do not copy the English sentence.
 `;
 
 function str(v: unknown): string {
@@ -76,6 +80,7 @@ function bibLine(paper: ClassifyPaperLike): string {
   const year = typeof paper.year === "number" ? String(paper.year) : "?";
   return (
     `Title: ${str(paper.title)}\n` +
+    `Short name: ${shortPaperName(paper)}\n` +
     `Authors: ${shown ? `${shown}${more}` : "?"}\n` +
     `Year: ${year}`
   );
@@ -96,6 +101,7 @@ export function buildContextPrompt(
   const user =
     `PAPER A (older, cited):\n${bibLine(cited)}\n\n` +
     `PAPER B (newer, citing):\nTitle: ${str(citing.title)}\n` +
+    `Short name: ${shortPaperName(citing)}\n` +
     `Year: ${typeof citing.year === "number" ? String(citing.year) : "?"}\n\n` +
     `Sentences in B that cite A:\n${sentences.join("\n")}\n\n` +
     "Is the cue about A, and what does B do with A?\n";

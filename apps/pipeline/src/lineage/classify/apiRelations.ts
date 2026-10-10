@@ -1,8 +1,10 @@
 /**
  * API-based relation classification (design 41 D6, design 43). Written
- * for the R2-9 evaluation (rule sets v1/v2); since R2-10 rule set v2 is
- * also the production classifier of theme lineages (`classifyS2Pair`,
- * `v1RelationFor` below, used by `../theme/s2Relations.ts`). The
+ * for the R2-9 evaluation (rule sets v1/v2); R2-10 made rule set v2 the
+ * production classifier of theme lineages, and since R2-16 production
+ * uses rule set v3 (per-sentence target matching, negative cues; see the
+ * v3 section) through `classifyS2Pair` / `v1RelationFor` below, used by
+ * `../theme/s2Relations.ts`. v1/v2 stay unchanged for the evaluation. The
  * evaluation entry point `../eval/apiRelations.ts` re-exports this module.
  * Maps the public citation signals Semantic Scholar exposes
  * for one citing->cited pair — `intents`, `contexts` (the citing paper's
@@ -25,7 +27,22 @@
  * See docs/design/43-api-based-relation-evaluation.md.
  */
 
+import type { ClassifyPaperLike } from "../../collect/llm/provider.js";
 import { isSurveyLikeTitle } from "../shared/surveyLike.js";
+import { citationTargetCount } from "./citationCount.js";
+import {
+  type CitedIdentity,
+  citedIdentity,
+  isCueTarget,
+  isQuotable,
+  isStrongTarget,
+  isUsableContext,
+  pickQuote,
+  type SentenceTarget,
+  sentenceTarget,
+} from "./citedTarget.js";
+
+export { citationTargetCount };
 
 export const API_RELATIONS = [
   "builds_on",
@@ -52,6 +69,10 @@ export interface PairSignals {
    * `isSurveyLike` test (publication type, title, abstract). When
    * omitted, the title-only test on `citingTitle` decides. */
   citingSurvey?: boolean;
+  /** R2-16: the cited paper (title / authors / year), used to tell which
+   * context sentences are about it (`citedTarget.ts`). Omitted = every
+   * sentence is judged by its citation-marker count alone. */
+  cited?: ClassifyPaperLike;
 }
 
 export interface ApiClassification {
@@ -64,6 +85,9 @@ export interface ApiClassification {
   evidence: string | null;
   /** True when the phrase rule found a contrast cue ("unlike", "in contrast"). */
   contrast: boolean;
+  /** R2-16 (rule set v3): how the evidence sentence refers to the cited
+   * paper; `null` when there is no evidence sentence. */
+  target?: SentenceTarget | null;
 }
 
 // Phrase rules are applied per context sentence. A sentence often cites
@@ -316,83 +340,243 @@ export function classifyApiRelationV2(s: PairSignals): ApiClassification {
   return mk("cites_unspecified", "s2_no_context", 0.3, null);
 }
 
-export const RULESETS = { v1: classifyApiRelation, v2: classifyApiRelationV2 } as const;
+// ---------------------------------------------------------------- v3 (R2-16)
+
+// v3 = v2 revised after the second review of the published lineages
+// (ERROR_PATTERNS 2/3/4/7). Changes, all per context sentence:
+//  - a sentence counts only when it is usable evidence (not a bibliography
+//    line, not a bare marker list, >= 40 chars) and its cue can be about
+//    the cited paper (`citedTarget.ts`): it names the cited paper (short
+//    title, acronym, first-author "et al.", or the inferred reference
+//    marker) or cites at most two works; a sentence citing three or more
+//    works without singling out the cited one is background at most;
+//  - a build cue needs a first-person subject ("our architecture is
+//    adapted from Swin Transformer [28]", "we build on [16]"), so "Built
+//    upon the success of ViT, many efforts…" or "a concurrent work [82]
+//    proposed … based on [56]" do not make an extends edge; "adapted from
+//    / built upon / based on / extends" is now recognised in the passive
+//    too, and outranks the S2 intents (Swin -> Video Swin);
+//  - negative cues: an experimental protocol ("we follow [30, 47] and
+//    train … 80k iterations", "following [1], we use 4x3 views", "same
+//    setting as"), "for (a) fair comparison", an ablation ("we also try …
+//    in [11]") and comparison words (outperform / surpass / compared with)
+//    make the sentence a comparison / resource use, never builds_on;
+//  - a comparison cue counts without a first-person subject when the
+//    sentence names the cited paper ("outperforming PVT-Small [34]");
+//  - a contrast cue gives `contrast: true` only when the sentence targets
+//    the cited paper unambiguously (named, or the only work it cites);
+//  - the weak "methodology intent + influential" rule needs a sentence
+//    that names / singles out the cited paper;
+//  - the evidence of every rule is the sentence that triggered it; the
+//    intent / background rules quote the best sentence about the cited
+//    paper (`pickQuote`) or none.
+
+/** The citing paper as the subject of a build cue: we / our / us, a
+ * sentence opening with "(In) this paper/work", or "this/the proposed
+ * model/method/…". Not "this work" as an object ("Concurrent work extends
+ * this work to …" is about other papers). */
+const FIRST_PERSON_BUILD: readonly RegExp[] = [
+  /\b(we|our|ours|us)\b/i,
+  /^(in\s+)?this\s+(paper|work)\b/i,
+  /\b(this|the\s+proposed)\s+(model|method|approach|architecture|design|framework)\b/i,
+];
+
+const ADAPT_PATTERNS: readonly RegExp[] = [
+  /\b(is|are|was|were)\s+(largely\s+|mainly\s+|directly\s+|partly\s+)?(adapted|derived|built|extended|developed|modified)\s+(from|upon|on)\b/i,
+  /\badapt(s|ed|ing)?\s+from\b/i,
+  /\b(spatiotemporal\s+|temporal\s+)?adaptation\s+of\b/i,
+  /\bbased\s+on\b/i,
+  /\bextend(s|ed|ing)?\b/i,
+];
+
+const PROTOCOL_PATTERNS: readonly RegExp[] = [
+  /\bfollow(s|ed|ing)?\b[^.;]{0,80}\b(train(ing)?|schedul\w*|settings?|setup|protocols?|iterations?|epochs?|batch(\s+size)?|views?|crops?|evaluat\w*|learning\s+rate|lr|optimi[sz]\w*|augmentations?|hyper-?parameters?|recipes?|implementation\s+details?|inference|pre-?process\w*|splits?|metrics?|resolution)\b/i,
+  /\b(train(ing|ed)?|evaluat\w*|inference|schedul\w*|settings?|protocols?|test(ing|ed)?)\b[^.;]{0,60}\bfollow(s|ed|ing)?\b/i,
+  /\b(same|identical|similar)\s+(training\s+|experimental\s+|evaluation\s+)?(settings?|setup|protocols?|configurations?|recipes?|hyper-?parameters?)\s+(as|to|with|of)\b/i,
+  /\bmatching\s+the\s+[\w-]+\s+used\s+(by|in)\b/i,
+  /\bresults?\s+(are|is|were)\s+(copied|taken|borrowed|reported)\s+from\b/i,
+];
+const FAIR_COMPARISON =
+  /\b(for|to\s+make)\s+(a\s+)?fair(er)?\s+comparisons?\b|\bfair(ly)?\s+compar\w*/i;
+const ABLATION_PATTERNS: readonly RegExp[] = [
+  /\b(we|also)\s+(also\s+)?(try|tried|experiment(ed)?\s+with|test(ed)?|replace[ds]?)\b/i,
+  /\bablat\w*/i,
+];
+
+/** Classification of one context sentence (null = no cue about the cited paper). */
+interface SentenceCandidate {
+  relation: ApiRelation;
+  rule: string;
+  confidence: number;
+  contrast: boolean;
+  sentence: string;
+  target: SentenceTarget;
+}
+
+const anyMatch = (patterns: readonly RegExp[], s: string) => patterns.some((p) => p.test(s));
+
+function classifySentence(raw: string, id: CitedIdentity): SentenceCandidate | null {
+  const sentence = raw.replace(/\s+/g, " ").trim();
+  const target = sentenceTarget(sentence, id);
+  if (!isCueTarget(target)) return null;
+  const strong = isStrongTarget(target);
+  const mk = (
+    relation: ApiRelation,
+    rule: string,
+    confidence: number,
+    contrast = false,
+  ): SentenceCandidate => ({ relation, rule, confidence, contrast, sentence, target });
+  if (!isUsableContext(sentence)) {
+    // A flattened results-table row naming the cited paper is still a
+    // comparison; it is never quoted (see `isQuotable`).
+    return strong && TABLE_ROW.test(sentence) ? mk("compares_with", "table_row", 0.65) : null;
+  }
+  const fp = FIRST_PERSON.test(sentence);
+  const fpBuild = anyMatch(FIRST_PERSON_BUILD, sentence);
+  // Negative cues first: a protocol / fair-comparison / ablation sentence
+  // is never builds_on, whatever build word it also contains.
+  if (anyMatch(PROTOCOL_PATTERNS, sentence)) {
+    return FAIR_COMPARISON.test(sentence) || anyMatch(COMPARE_PATTERNS, sentence)
+      ? mk("compares_with", "phrase_protocol", 0.7)
+      : mk("uses_resource", "phrase_protocol", 0.7);
+  }
+  if (FAIR_COMPARISON.test(sentence)) return mk("compares_with", "phrase_compare", 0.7);
+  if (fp && anyMatch(ABLATION_PATTERNS, sentence)) {
+    return mk("compares_with", "phrase_ablation", 0.65);
+  }
+  const compare = anyMatch(COMPARE_PATTERNS, sentence) && (fp || strong);
+  if (
+    !compare &&
+    fpBuild &&
+    target !== "pair" &&
+    (anyMatch(ADAPT_PATTERNS, sentence) || anyMatch(BUILD_PATTERNS, sentence))
+  ) {
+    return mk("builds_on", "phrase_build", 0.8);
+  }
+  if (anyMatch(RESOURCE_CLAUSE, sentence)) return mk("uses_resource", "phrase_resource", 0.7);
+  if (fp && anyMatch(CONTRAST_PATTERNS, sentence)) {
+    return mk("compares_with", "phrase_contrast", 0.7, strong);
+  }
+  if (compare) return mk("compares_with", "phrase_compare", 0.75);
+  if (strong && TABLE_ROW.test(sentence)) return mk("compares_with", "table_row", 0.65);
+  return null;
+}
+
+/** Rank of a sentence candidate across the pair's sentences. */
+function candidateRank(c: SentenceCandidate): number {
+  if (c.relation === "builds_on") return 4;
+  if (c.contrast) return 3;
+  if (c.relation === "compares_with") return 2;
+  return 1;
+}
+
+/**
+ * v3 rule set (production since R2-16). Priority:
+ *   0. S2 has no record of the pair -> cites_unspecified
+ *   1. citing paper is a survey/review -> background
+ *   2. per-sentence cues on sentences about the cited paper (see above):
+ *      builds_on > contrast > comparison > resource / protocol
+ *   3. S2 result intent -> compares_with
+ *   4. S2 methodology intent AND isInfluential AND a sentence that names /
+ *      singles out the cited paper -> builds_on (weak)
+ *   5. any context -> background; no context -> cites_unspecified
+ */
+export function classifyApiRelationV3(s: PairSignals): ApiClassification {
+  const id = citedIdentity(s.cited, s.contexts);
+  const quote = (): { evidence: string | null; target: SentenceTarget | null } => {
+    const q = pickQuote(s.contexts, id);
+    return { evidence: q, target: q === null ? null : sentenceTarget(q, id) };
+  };
+  const mk = (
+    relation: ApiRelation,
+    rule: string,
+    confidence: number,
+    ev: { evidence: string | null; target: SentenceTarget | null },
+    contrast = false,
+  ): ApiClassification => ({ relation, rule, confidence, contrast, ...ev });
+  if (!s.found)
+    return mk("cites_unspecified", "s2_pair_missing", 0.3, { evidence: null, target: null });
+  const contexts = cleanContexts(s.contexts);
+  const intents = new Set(s.intents.map((i) => i.toLowerCase()));
+
+  if (s.citingSurvey ?? isSurveyLikeTitle(s.citingTitle)) {
+    return mk("background", "citing_survey", 0.8, quote());
+  }
+  let best: SentenceCandidate | null = null;
+  for (const c of contexts) {
+    const cand = classifySentence(c, id);
+    if (cand !== null && (best === null || candidateRank(cand) > candidateRank(best))) best = cand;
+  }
+  if (best !== null) {
+    return mk(
+      best.relation,
+      best.rule,
+      best.confidence,
+      { evidence: best.sentence, target: best.target },
+      best.contrast,
+    );
+  }
+  if (intents.has("result")) return mk("compares_with", "intent_result", 0.6, quote());
+  if (intents.has("methodology") && s.isInfluential === true) {
+    const q = quote();
+    if (q.target !== null && isStrongTarget(q.target)) {
+      return mk("builds_on", "intent_methodology_influential", 0.5, q);
+    }
+  }
+  if (contexts.length > 0) return mk("background", "context_no_cue", 0.6, quote());
+  return mk("cites_unspecified", "s2_no_context", 0.3, { evidence: null, target: null });
+}
+
+export const RULESETS = {
+  v1: classifyApiRelation,
+  v2: classifyApiRelationV2,
+  v3: classifyApiRelationV3,
+} as const;
 
 // ---------------------------------------------------------------- production (R2-10)
 
-/** v2 rules whose evidence is a cue phrase (or a flattened results-table
+/** Rules whose evidence is a cue phrase (or a flattened results-table
  * row) in one context sentence. Such a sentence often cites several works
  * at once ("[3, 7, 12]"), so whether the cue is about THIS cited paper is
- * the main error source of v2 (design 43 §4.3) — these edges are the ones
- * the context LLM is asked about. */
+ * the main error source of the rules (design 43 §4.3) — these edges are
+ * the ones the context LLM is asked about. */
 export const CUE_RULES: ReadonlySet<string> = new Set([
   "phrase_build",
   "phrase_resource",
   "phrase_contrast",
   "phrase_compare",
+  "phrase_protocol",
+  "phrase_ablation",
   "table_row",
 ]);
 
-/** Production view of one v2 classification (design 41 D6). */
+/** Production view of one classification (design 41 D6; rule set v3
+ * since R2-16). */
 export interface S2RuleResult extends ApiClassification {
   /** A cue phrase / table row fired (see {@link CUE_RULES}). */
   cue: boolean;
   /** S2 marked the citation as influential. */
   influential: boolean;
-  /** The evidence sentence cites exactly one work, so its cue can only be
-   * about the cited paper (see {@link citationTargetCount}). */
+  /** The evidence sentence refers to the cited paper unambiguously — it
+   * names it (title stem, acronym, first author, inferred reference
+   * marker) or cites exactly one work — so its cue can only be about the
+   * cited paper. Gate for `contrasts`. */
   singleTarget: boolean;
+  /** The evidence sentence may be shown as the quote: usable evidence
+   * that identifies the cited paper (`citedTarget.ts::isQuotable`). */
+  quotable: boolean;
 }
 
-const NUMERIC_GROUP = /\[([^\]]{1,80})\]/g;
-const BRACKET_RANGE = /\[(\d{1,4})\]\s*[-–—]\s*\[(\d{1,4})\]/g;
-const NUMERIC_ITEM = /^\s*\d{1,4}\s*$/;
-const NUMERIC_RANGE = /^\s*(\d{1,4})\s*[-–—]\s*(\d{1,4})\s*$/;
-const AUTHOR_YEAR_GROUP = /\(([^()]{0,200}\b(?:1[89]|20)\d{2}[a-z]?\b[^()]{0,200})\)/g;
-const NARRATIVE_CITATION =
-  /\b[A-Z][\w'-]+(?:\s+(?:et\s+al\.?|and\s+[A-Z][\w'-]+))?\s*\((?:1[89]|20)\d{2}[a-z]?\)/g;
-
-/**
- * Number of works a context sentence cites, counted from its citation
- * markers: numeric groups (`[3]`, `[3, 7]`, `[3-5]` counts 3), author-year
- * groups (`(Smith et al., 2020; Lee, 2021)` counts 2) and narrative
- * citations (`Smith et al. (2020)`). Returns 0 when no marker is
- * recognised (S2 sometimes strips them) — callers must treat 0 as
- * "unknown", not as "one".
- */
-export function citationTargetCount(sentence: string): number {
-  let count = 0;
-  // "[3]-[5]": a range written across two bracket groups.
-  const rest = sentence.replace(BRACKET_RANGE, (_m, a: string, b: string) => {
-    count += Math.max(1, Number(b) - Number(a) + 1);
-    return " ";
-  });
-  for (const m of rest.matchAll(NUMERIC_GROUP)) {
-    const items = (m[1] as string).split(/[,;]/);
-    if (!items.every((it) => NUMERIC_ITEM.test(it) || NUMERIC_RANGE.test(it))) continue;
-    for (const it of items) {
-      const r = NUMERIC_RANGE.exec(it);
-      count += r ? Math.max(1, Number(r[2]) - Number(r[1]) + 1) : 1;
-    }
-  }
-  const withoutNarrative = rest.replace(NARRATIVE_CITATION, () => {
-    count += 1;
-    return " ";
-  });
-  for (const m of withoutNarrative.matchAll(AUTHOR_YEAR_GROUP)) {
-    count += (m[1] as string).split(";").filter((s) => /\b(?:1[89]|20)\d{2}/.test(s)).length;
-  }
-  return count;
-}
-
-/** Rule set v2 plus the routing facts production needs. */
+/** Rule set v3 plus the routing facts production needs. */
 export function classifyS2Pair(s: PairSignals): S2RuleResult {
-  const base = classifyApiRelationV2(s);
+  const base = classifyApiRelationV3(s);
+  const id = citedIdentity(s.cited, s.contexts);
   return {
     ...base,
     cue: CUE_RULES.has(base.rule),
     influential: s.isInfluential === true,
-    singleTarget: base.evidence !== null && citationTargetCount(base.evidence) === 1,
+    singleTarget: base.target != null && isStrongTarget(base.target),
+    quotable: isQuotable(base.evidence, id),
   };
 }
 

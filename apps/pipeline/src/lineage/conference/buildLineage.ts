@@ -81,7 +81,7 @@ export { S2TransientError };
 
 const PRODUCER_NAME = "paperpilot.scripts.build_lineage";
 const PRODUCER_VERSION = "p2-v1";
-const PROMPT_VERSION = "relation-prompt-v2";
+const PROMPT_VERSION = "relation-prompt-v4";
 const CLASSIFICATION_SCHEMA_VERSION = "relation-classification-v1";
 const CACHE_VERSION = "lineage-classification-cache-v2";
 const CACHE_TTL_MS = 30 * 24 * 60 * 60 * 1000;

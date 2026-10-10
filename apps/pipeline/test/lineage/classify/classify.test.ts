@@ -88,6 +88,38 @@ describe("provenance", () => {
     expect(result?.provenance).toBe("context_pattern");
   });
 
+  it("R2-16: the foundational allowlist only applies when the pair has no citation evidence", async () => {
+    const vit = { title: "Attention Is All You Need", year: 2017 };
+    const child = { title: "Some Later Transformer Paper", year: 2020 };
+    const bare = await deriveRelation({}, { parent: vit, child });
+    expect(bare?.provenance).toBe("foundational_allowlist");
+    expect(bare?.rationale).not.toMatch(/allowlist|\.json|canonical/);
+    const withEvidence = await deriveRelation(
+      { _intents: ["background"], _contexts: ["Transformers [30] are widely used in NLP tasks."] },
+      { parent: vit, child },
+    );
+    expect(withEvidence?.provenance).not.toBe("foundational_allowlist");
+  });
+
+  it("R2-16: abstract-LLM rationales name the papers instead of A / B", async () => {
+    const parent = { title: "Sparse Routing Networks: A Study of Experts", year: 2022 };
+    const child = { title: "Dense Routing Networks: Another Study", year: 2023 };
+    const result = await deriveRelation(
+      {},
+      {
+        parent,
+        child,
+        strictMode: "all",
+        classifyRelation: async () =>
+          rc("supersedes", 0.9, "B は A と同じ専門家構成のまま経路選択を改良し A を置き換える。"),
+      },
+    );
+    expect(result?.provenance).toBe("llm");
+    expect(result?.rationale).toBe(
+      "「Dense Routing Networks」 は 「Sparse Routing Networks」 と同じ専門家構成のまま経路選択を改良し 「Sparse Routing Networks」 を置き換える。",
+    );
+  });
+
   it("test_derive_relation_end_to_end_persists_provenance", async () => {
     const result = await deriveRelation({ _intents: ["methodology"] });
     expect(result).not.toBeNull();

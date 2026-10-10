@@ -1,8 +1,17 @@
 /**
  * Post-classification relation guard (R2-2d, R2-15; design doc 40).
  *
- * Two rules, applied to every classification the theme BFS produces (LLM,
- * Semantic Scholar context rules, heuristics):
+ * Three rules, applied to every classification the theme BFS produces
+ * (LLM, Semantic Scholar context rules, heuristics):
+ *
+ *  0. R2-16 — `contrasts` needs a contrast cue in a Semantic Scholar
+ *     citation sentence that targets the cited paper: only the
+ *     `s2_context_rule` path (contrast cue on a sentence naming / singling
+ *     out the cited paper) and the citation-context LLM (which is mapped to
+ *     contrasts only on top of that rule cue) may emit it. The
+ *     abstract-only LLM prompt, unarXive context patterns and heuristics
+ *     cannot see such a sentence, so their `contrasts` becomes
+ *     `baseline_only` (second review: T2T-ViT -> Swin, ViViT -> Swin V2).
  *
  *  1. R2-15 — the CITING (child, newer) paper is a survey/review
  *     ({@link isSurveyLike}: publication type, title or abstract). A
@@ -24,6 +33,7 @@
  */
 
 import type { DerivedEdge } from "../classify/classify.js";
+import { CONTEXT_PROMPT_VERSION } from "../llm/contextPrompt.js";
 import { isSurveyLike } from "../shared/surveyLike.js";
 import { looksLikeDataset, type TopicPaperLike } from "./topicScope.js";
 
@@ -63,11 +73,21 @@ function corrected(classification: DerivedEdge, note: string): DerivedEdge {
   };
 }
 
+/** Whether a `contrasts` classification rests on an S2 citation-context
+ * contrast cue (rule 0). */
+export function hasContextContrastEvidence(classification: DerivedEdge): boolean {
+  if (classification.provenance === "s2_context_rule") return true;
+  return (
+    classification.provenance === "llm" && classification.promptVersion === CONTEXT_PROMPT_VERSION
+  );
+}
+
 /** `parent` = cited (older), `child` = citing (newer). Rewrite to
  * `baseline_only`: (1) an extends/successor/supersedes/contrasts whose
  * citing paper is a survey/review (except a `title_version` supersedes);
- * (2) a `contrasts` whose endpoint is a survey/review or a
- * dataset/benchmark paper. Pass everything else. */
+ * (0) a `contrasts` without S2 citation-context evidence; (2) a
+ * `contrasts` whose endpoint is a survey/review or a dataset/benchmark
+ * paper. Pass everything else. */
 export function guardRelation(
   classification: DerivedEdge,
   parent: TopicPaperLike,
@@ -85,9 +105,17 @@ export function guardRelation(
   }
   if (classification.relation !== "contrasts") return classification;
   const kind = why(parent, child);
-  if (kind === null) return classification;
-  return corrected(
-    classification,
-    `${kind}が端点のため contrasts を baseline_only に補正（競合手法の対比ではない）。`,
-  );
+  if (kind !== null) {
+    return corrected(
+      classification,
+      `${kind}が端点のため contrasts を baseline_only に補正（競合手法の対比ではない）。`,
+    );
+  }
+  if (!hasContextContrastEvidence(classification)) {
+    return corrected(
+      classification,
+      "引用文に被引用論文との対比を示す記述がないため contrasts を baseline_only に補正（要旨だけでは競合手法かどうか判断できない）。",
+    );
+  }
+  return classification;
 }
