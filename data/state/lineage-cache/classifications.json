@@ -8717,5 +8717,46 @@
         "schema_version": "relation-classification-v1"
       }
     }
+  },
+  "v3:fe8c147bd7263808b7eb5b0216478ca522bfaa437e49cae2d45481d66bd70094": {
+    "status": "success",
+    "expires_at": "2027-04-08T09:07:28.289000Z",
+    "cache_identity": {
+      "version": "lineage-classification-cache-v3",
+      "src": "openalex:W4220967350",
+      "dst": "openalex:W4364382874",
+      "evidence_sha256": "bd40a6ef89b2827ff5ae4e7f7630d73b2e0248dbe833be3a9012362d480f0c05",
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "prompt_version": "relation-prompt-v3-context",
+      "schema_version": "relation-classification-v1"
+    },
+    "classification": {
+      "refers_to_cited": true,
+      "relation": "background",
+      "contrast": false,
+      "confidence": 0.93,
+      "rationale": "FasterMoEはGPU上でホットエキスパートを複製し、トークン落ちを防ぐ手法として紹介されている。"
+    },
+    "provenance": {
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "evidence": {
+        "source": "semantic_scholar",
+        "kind": "relation-input",
+        "sha256": "bd40a6ef89b2827ff5ae4e7f7630d73b2e0248dbe833be3a9012362d480f0c05"
+      },
+      "classification": {
+        "method": "llm",
+        "provider": "groq",
+        "model": "groq:openai/gpt-oss-120b",
+        "prompt_version": "relation-prompt-v3-context",
+        "schema_version": "relation-classification-v1"
+      }
+    }
   }
 }

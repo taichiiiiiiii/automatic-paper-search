@@ -263,28 +263,33 @@
       "seed_paper_id": "cf71b221c545e3a8e9be71b6f2c5842765c70a65"
     },
     {
-      "id": "openalex:W7148553398",
-      "title": "Region-Aware MoE Network for Hyperspectral and Multispectral Image Fusion",
-      "year": 2026,
-      "venue": "IEEE Transactions on Geoscience and Remote Sensing",
+      "id": "openalex:W4417130747",
+      "title": "Mixture of Experts for Decentralized Generative AI and Reinforcement Learning in Wireless Networks: A Comprehensive Survey",
+      "year": 2025,
+      "venue": "IEEE Communications Surveys & Tutorials",
       "venue_tier": "preprint",
       "authors": [
-        "Nan Xiao",
-        "Xiyou Fu",
-        "Qi Ren",
-        "Wangquan He",
-        "Siqi Wei"
+        "Yunting Xu",
+        "Jiacheng Wang",
+        "Ruichen Zhang",
+        "Changyuan Zhao",
+        "Dusit Tao Niyato"
       ],
       "kinds": [],
       "citation_count": 8,
       "github_stars": 0,
-      "tldr": "Existing transformer-based hyperspectral image (HSI) and multispectral image (MSI) fusion methods often suffer from limited cross-modal…",
-      "short_abstract": "Existing transformer-based hyperspectral image (HSI) and multispectral image (MSI) fusion methods often suffer from limited cross-modal interaction and insufficient capability to model heterogeneous spatial and spectral patterns across different regions, which restricts their ability to fully exploit modality complementarity. To address these issues, we propose a Region-Aware Mixture of Experts network for HSI and MSI fusion. The proposed framework consists of three key components. First, an attention sharing module (ASM) is designed to explicitly propagate attention information between modalities, enabling more balanced interaction between spatial and spectral representations. Second, the region-aware MoE (RAMoE) is introduced, where multiple region-aware experts (RAEs) capture region-specific feature variations, while an invariant-weight expert (IWE) provides global contextual guidance, improving robustness and generalization. Third, a spatial and spectral reconstruction module…",
-      "doi": "10.1109/tgrs.2026.3680287",
+      "tldr": "Mixture of Experts (MoE) has emerged as a promising paradigm for scaling model capacity while preserving computational efficiency,…",
+      "short_abstract": "Mixture of Experts (MoE) has emerged as a promising paradigm for scaling model capacity while preserving computational efficiency, particularly in large-scale machine learning architectures such as large language models (LLMs). Recent advances in MoE have facilitated its adoption in wireless networks to address the increasing complexity and heterogeneity of modern communication systems. This paper presents a comprehensive survey of the MoE framework in wireless networks, highlighting its potential in optimizing resource efficiency, improving scalability, and enhancing adaptability across diverse network tasks. We first introduce the fundamental concepts of MoE, including various gating mechanisms and the integration with generative AI (GenAI) and reinforcement learning (RL). Subsequently, we discuss the extensive applications of MoE across critical wireless communication scenarios, such as vehicular networks, unmanned aerial vehicles (UAVs), satellite communications, heterogeneous…",
+      "arxiv_id": "2504.19660",
+      "doi": "10.1109/comst.2025.3641591",
       "aliases": [
         [
+          "arxiv",
+          "2504.19660"
+        ],
+        [
           "doi",
-          "10.1109/tgrs.2026.3680287"
+          "10.1109/comst.2025.3641591"
         ]
       ],
       "is_focus": false
@@ -294,11 +299,11 @@
     {
       "src": "openalex:W4220967350",
       "dst": "openalex:W4364382874",
-      "rel": "successor",
-      "relation": "successor",
-      "conf": 0.78,
-      "confidence": 0.78,
-      "rationale": "B の Dynamic Device Placement によるデバイス配置最適化は、A の MoE 訓練効率課題を改良し、FasterMoE の手法を継承した自然な発展である。",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.93,
+      "confidence": 0.93,
+      "rationale": "FasterMoEはGPU上でホットエキスパートを複製し、トークン落ちを防ぐ手法として紹介されている。 引用文: \"FasterMoE [17] replicates hot experts on each GPU and guarantees no tokens dropping in the implementation.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -307,13 +312,13 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "relation-input",
-          "sha256": "61ef514fba8f2ff563de7d57ba86c6885274669db97a83d550b2d9fb4096ec73"
+          "sha256": "bd40a6ef89b2827ff5ae4e7f7630d73b2e0248dbe833be3a9012362d480f0c05"
         },
         "classification": {
           "method": "llm",
           "provider": "groq",
           "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v2",
+          "prompt_version": "relation-prompt-v3-context",
           "schema_version": "relation-classification-v1"
         }
       }
@@ -323,9 +328,9 @@
       "dst": "openalex:W4408858386",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.92,
-      "confidence": 0.92,
-      "rationale": "B のサーベイは Mixture of Experts 手法全般を整理し、A の FasterMoE を背景論文として紹介しているだけで、直接的な拡張や比較は行っていない。",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「A Survey on Mixture of Experts in Large Language …」(2025) は 「FasterMoE」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -333,14 +338,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "11c323183b0068b5729e376afdaac7122b558b46bd208bca746805c9daca4d34"
+          "kind": "citation-context",
+          "sha256": "83e04948da5f0aa621ccc82676bbc24cdda1eee874c7b5d098fa0ba74c6579a8"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v2",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -350,9 +355,9 @@
       "dst": "openalex:W4364382874",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.78,
-      "confidence": 0.78,
-      "rationale": "B の FlexMoE は動的デバイス配置で大規模スパース学習をスケールさせる手法を提案しており、A の StableMoE のルーティング安定化手法を背景として引用するだけで、根本的な手法の継承はない。",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「FlexMoE: Scaling Large-scale Sparse Pre-trained M…」(2023) は 「StableMoE: Stable Routing Strategy for Mixture of…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"The training of gate networks is highly unstable [7] because gradient-based optimization algorithms will reinforce the previous routing determination until it reaches a certain point and escapes from the wrong learning direction.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -360,14 +365,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "d47951a68bfb42f7412d72368ff3af434b8ac6dfc3367e93f1206c1f9afb48e8"
+          "kind": "citation-context",
+          "sha256": "3f3b7dfaf53ee7530ee13d565aac8d202a5d3b4f8c3c3bc91aa0ac15a531edcc"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v2",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -375,11 +380,11 @@
     {
       "src": "openalex:W4224299101",
       "dst": "openalex:W4376652719",
-      "rel": "successor",
-      "relation": "successor",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「A Hybrid Tensor-Expert-Data Parallelism Approach to Optimiz…」(2023) は「StableMoE: Stable Routing Strategy for Mixture of Experts」(2022) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「A Hybrid Tensor-Expert-Data Parallelism Approach …」(2023) は 「StableMoE: Stable Routing Strategy for Mixture of…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Although Shazeer et al. used LSTMs [12] as their base models, contemporary work on MoEs largely employ the transformer architecture [37] as the base models [1, 6, 9, 10, 17, 18, 29, 40, 43].\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -387,11 +392,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "f1d562919d5e206e8a5fc029c5200558768f06521ae143c60d7e6f0fb7d00959"
+          "kind": "citation-context",
+          "sha256": "e89e5c98b4085554005b207e0046268ff53699c46fcb2a41ef3fb46d670acba0"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -404,9 +409,9 @@
       "dst": "openalex:W4408858386",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.92,
-      "confidence": 0.92,
-      "rationale": "B のサーベイは MoE の全体像を整理し、A の StableMoE を背景として紹介するだけで、手法の継承や拡張は行っていない。",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「A Survey on Mixture of Experts in Large Language …」(2025) は 「StableMoE: Stable Routing Strategy for Mixture of…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Additionally, STABLEMOE [79] employs a two-stage training process, with a freezed gate in the second stage.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -414,14 +419,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "7274e9192dc2623dd472008d2fd35639cc59c4012741c2204bccbbd1f938d28e"
+          "kind": "citation-context",
+          "sha256": "59e89e50b942377eaac93fb9061fce1b4156db1964acd6d546529e2eaa77663b"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v2",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -431,9 +436,9 @@
       "dst": "openalex:W4408858386",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.7,
-      "confidence": 0.7,
-      "rationale": "B の調査は Mixture of Experts によるモデル容量拡張を扱い、A の「幅を広げる」アプローチを背景として言及するだけで、直接的な手法の継承はない。",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「A Survey on Mixture of Experts in Large Language …」(2025) は 「Go Wider Instead of Deeper」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"…merging [37], [38], [39], [40], [41], mixture of parameter-efﬁcient experts (MoPEs) [40], [42], [43], [44], [45], [46], training and inference schemes with model transition between dense and sparse [47], [48], [49], [50], [51], [52], and …\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -441,14 +446,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "edf29a9863389996597e0351c07b3502b49d1a508f4233958568ab29ec1dd1e3"
+          "kind": "citation-context",
+          "sha256": "7eae1f06d2662f996221e2895671278beaf3e3932a0aef5c54cff8d30f33f2a7"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v2",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -458,9 +463,9 @@
       "dst": "openalex:W4408858386",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.92,
-      "confidence": 0.92,
-      "rationale": "B の『Mixture of Experts in Large Language Models』サーベイは、A の FFN の MoE 化という知見を背景として整理し、比較対象としてのみ引用している。",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「A Survey on Mixture of Experts in Large Language …」(2025) は 「MoEfication: Transformer Feed-forward Layers are …」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -468,14 +473,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "d3a4154c17ad11da4064d50fe5797e81fa970ceddcf65beb2f21badc180a1e80"
+          "kind": "citation-context",
+          "sha256": "254d86d571c128325d96a0c5d586500cb525b513962711ca755b603b1afa6206"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v2",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -485,9 +490,9 @@
       "dst": "openalex:W4408858386",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.92,
-      "confidence": 0.92,
-      "rationale": "B のサーベイは Mixture of Experts 手法全般を概観し、A の FlexMoE の動的デバイス配置は具体例として紹介されるだけで、継承や拡張は行っていない。",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「A Survey on Mixture of Experts in Large Language …」(2025) は 「FlexMoE: Scaling Large-scale Sparse Pre-trained M…」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Besides, solutions like SE-MoE [106], Tu-tel [105], FlexMoE [110] and SmartMoE [111] have introduced dynamic expert placement strategies to distribute the workload as equally as possible among devices.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -495,14 +500,41 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "a62cfd29d91e8345d424859ceb89205ef2b8123f311d1f835fbf812c205f3757"
+          "kind": "citation-context",
+          "sha256": "4a67ce55d82d23d9563f263c5416a33174a1a57ac24ad5eb6dc1e502036495cc"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v2",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4364382874",
+      "dst": "openalex:W4417130747",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Mixture of Experts for Decentralized Generative A…」(2025) は 「FlexMoE: Scaling Large-scale Sparse Pre-trained M…」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"For instance, FlexMoE [236], a distributed MoE training framework illustrated in Figure 9(b), supports expert parallelism across multiple GPUs of heterogeneous devices based on workload distribution, demonstrating significant scalability o…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "3140aa8fe682e2c483dffe823104acbc97414a28ce806397bec2376d4b053f19"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -512,9 +544,9 @@
       "dst": "openalex:W4408858386",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.92,
-      "confidence": 0.92,
-      "rationale": "B のサーベイは MoE を LLM のスケーリング手法として概観し、A の DeepSpeed‑TED のハイブリッド並列手法を背景として紹介するだけで、直接的な拡張や比較は行っていない。",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「A Survey on Mixture of Experts in Large Language …」(2025) は 「A Hybrid Tensor-Expert-Data Parallelism Approach …」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"7, we illustrate several examples of hybrid parallelism, encompassing (b) data + expert + tensor parallelism [34], [64], [105], [108], [111], (c) data + expert + pipeline parallelism [105], [107], [111], and (d) expert + tensor parallelism…\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -522,14 +554,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "034134dc0d498c589d11dab1ce0756186f573c28b875597fbb11c643c6333f43"
+          "kind": "citation-context",
+          "sha256": "61c596cc7b7efae92961bcf8bacd6d7544e04d870c43439d1d27a44663995536"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v2",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -539,9 +571,9 @@
       "dst": "openalex:W4408858386",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.9,
-      "confidence": 0.9,
-      "rationale": "B の『Mixture of Experts』に関するサーベイは、A の Mod‑Squad を背景として紹介しているだけで、手法の継承はない。",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「A Survey on Mixture of Experts in Large Language …」(2025) は 「Mod-Squad: Designing Mixtures of Experts As Modul…」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Additionally, Mod-Squad [69] posits the difﬁculty of training multi-task models under such an expert-balancing loss, which may inadvertently force experts to set parameters on conﬂicting tasks or hinder the potential synergies from paramet…\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -549,14 +581,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "b2fdacd82fba06806d1f52102c382607036642ebc4c3f13126aa49f0de2a95e7"
+          "kind": "citation-context",
+          "sha256": "c5a8dba30b86d6e3067fece28789436b941bff3ace343822b03f0dd24d3b6852"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v2",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -566,9 +598,9 @@
       "dst": "openalex:W4408858386",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.85,
-      "confidence": 0.85,
-      "rationale": "B のサーベイは LLM における MoE 手法を整理しており、A の Vision-Language MoE を背景としてのみ参照している。",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「A Survey on Mixture of Experts in Large Language …」(2025) は 「Scaling Vision-Language Models with Sparse Mixtur…」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Subsequently, Shen et al. [127] and Lin et al. [91] have further investigated the potential of MoE for scaling vision-language models, offering valuable insights that contribute to the development of more efﬁcient and effective multimodal …\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -576,26 +608,26 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "4614cc37f99582867a6acfdc07163c36b8f5750c2d8659f6c7994c62f4b2406d"
+          "kind": "citation-context",
+          "sha256": "7c9d2eaeb8ad73eec4bc298c876dd9cee1266bfed34e310412bab61173120a94"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v2",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
     },
     {
       "src": "openalex:W4408858386",
-      "dst": "openalex:W7148553398",
+      "dst": "openalex:W4417130747",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.85,
-      "confidence": 0.85,
-      "rationale": "B の Region-Aware Mixture of Experts ネットワークは、A の MoE に関するサーベイを背景として参照するだけで、LLM 向け手法の直接的な拡張ではない。",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Mixture of Experts for Decentralized Generative A…」(2025) は 「A Survey on Mixture of Experts in Large Language …」(2025) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -603,14 +635,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "48eb80baf6e26ede053a0d9ea4d4006b984755b871dc123a53fb217fc1694215"
+          "kind": "citation-context",
+          "sha256": "8f6deec49c332200b5a3100b37fb5fcc317c7b681be21f250240ad7279ccf1bd"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v2",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -631,16 +663,26 @@
     ],
     "depth": 1,
     "since_year": 2018,
-    "generated_at": "2026-10-10T07:28:23.460000Z",
+    "generated_at": "2026-10-10T09:07:35.323000Z",
     "provenance_breakdown": {
-      "llm": 11,
-      "citation_heuristic": 1
+      "llm": 1,
+      "s2_context_rule": 12
     },
     "completeness": {
       "complete": true,
-      "expansions_attempted": 14,
+      "expansions_attempted": 9,
       "expansions_failed": 0,
       "supplement_failures": []
+    },
+    "topic_gate": {
+      "method": "embedding+terms",
+      "model": "Xenova/bge-small-en-v1.5",
+      "revision": "ea104dacec62c0de699686887e3f920caeb4f3e3",
+      "thresholds": {
+        "z_lo": 0,
+        "z_hi": 1
+      },
+      "pool_size": 45
     }
   }
 }
