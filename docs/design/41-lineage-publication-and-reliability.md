@@ -122,3 +122,29 @@
 - **引用と年代だけの推定（`citation_heuristic`）**: 関係を `successor` から `baseline_only` に変えた。契約の関係には「未分類」がなく、`successor` は研究の流れの継承を主張してしまう（Swin → ConvNeXt は競合なのに後継と表示された）。`baseline_only` は「引用しているが継承は主張しない」最も弱い値で、理由欄は「関係の種類は未分類」と書く。分類率（D3）は方式で数えるので変わらない
 - **総説の判定**: 掲載誌でも判定する（ACM Computing Surveys、IEEE Communications Surveys & Tutorials、IEEE Signal Processing Magazine、Foundations and Trends、Annual Review of、Nature Reviews など）
 - **公開中の 4 テーマでの試算**（S2 キャッシュのみ、LLM なし。`data/published` は書き換えない）: 第二審査で指摘された関係のうち、この作業の範囲の 31 本で正しいものが 5 本 → 31 本。範囲外の 3 本（PVT v2 の版検出、改訂版による逆向き 2 本）は別の作業。contrasts 2 → 0、successor 6 → 1（残りは要旨 LLM の LINE → SDNE）、英語の基礎文献の理由 14 → 0、A/B だけの理由 11 → 0、番号だけの引用文 2 → 0。R2-9 の手作業ラベル 79 本では、builds_on の適合率 6/12 → 4/6、完全一致 60 → 61
+
+## 実装メモ（R2-21、GNN の発展系の関係の取りこぼし）
+
+GNN の系譜（36 ノード・143 辺）が `lineage_relation_share` 0.063（基準 0.10）で止まった。辺を 1 本ずつ見て、規則の取りこぼしを直した。基準は緩めていない。
+
+- **原因の内訳**（143 辺）
+  - 総説が引用する側の辺が 43 本ある。`citing_survey` の規則で必ず `baseline_only` になる
+  - S2 の組がない辺が 25 本ある。うち 14 本は OpenAlex の誤ったレコード「Advances In Deep Learning On Graphs (GSP'18 Workshop)」(W2964321699) につながる。これは Defferrard の講義資料に ChebNet の被引用 4,973 件が誤って統合されたもので、S2 では引けない。「Identifying Resilient Communities in Road Networks」(2025, 被引用 1,570) も同じく怪しい
+  - 正規の起点どうしの辺が欠けている。GAT → GCN と GraphSAGE → GCN がない。OpenAlex の GAT（W2766453196、Cambridge のリポジトリ版）の `referenced_works` に GCN が入っておらず、S2 の参考文献を見るのは OpenAlex の参考文献が空のときだけ（R2-13）だから
+  - 引用文が S2 の側で別の文献に付いている例が多い（GCN ← GNN 2009 の「we consider a two-layer GCN」など）。S2 の methodology 意図だけでは、GNN では手作業の 8 本中 0 本が継承だった。v2 で弱い規則を外した判断はそのまま正しい
+  - 公開中の発展系の関係 9 本のうち、手作業で正しいと見たのは VGAE ← GCN の 1 本（ARMA ← CayleyNets は判断保留）。誤りは、引用文の LLM が背景・比較・利用の組を extends にしたもの（過平滑化 ← GCN、GAT ← MoNet、GraphLIME ← GraphSAGE、DGCNN ← DCNN）と、要旨の LLM の 2 本（GAT ← PATCHY-SAN、ARMA ← MoNet の successor）
+- **規則の修正**（`classify/citedTarget.ts`、`classify/apiRelations.ts`。v3 の中だけで、v1・v2 は変えない）
+  - 著者名の書き方を別名に足した。2 人なら「Kipf and Welling」「Kipf & Welling」、3 人なら「Hamilton, Ying, and Leskovec」。「Hamilton, William L.」のような「姓, 名」の形も読む。前は第一著者を「L.」と読み、別名が空になっていた
+  - PDF の取り出しで分かれたアクセントをたたむ（「Veliˇckovi´c」→「Velickovic」）
+  - 手法名を引用文から読む。被引用論文自身の引用の直前に書かれた名前の形の語を、その組の別名にする。例は「GCN (Kipf and Welling 2017)」「GraphSAGE (Hamilton, Ying, and Leskovec 2017)」、推定番号が 16 のときの「GRAPHSAGE [16]」、「network (GCN) [4]」。題名に手法名のない手法論文（GCN・GraphSAGE・GAT・DiffPool）が多いため。GNN・CNN・MoE などの総称は使わない
+  - 適合率のための歯止めを入れた。著者の引用に a/b 付きの年（「Hamilton et al. (2017b)」）があるとき、同じ文に同じ著者が別の年で出るとき（「Kipf & Welling, 2017 … 2016」）は名指しとみなさない。文が引く 1 本が別の著者の著者年引用（S2 が別の文献に付けた文）なら「single」でなく「other」にする
+  - 継承の手がかりを足した。「… GCN [21] and DCNN [3] … as particular instances of our approach」（MoNet が先行手法を一般化する）、「our framework subsumes …」、「we use the “mean” variant of GraphSAGE [16]」。「our work … a particular instance of MoNet」は向きが逆なので拾わない
+- **試算**（S2 キャッシュと引用文 LLM のキャッシュのみ。新しい LLM 呼び出しなし、`data/published` は書き換えない。公開中の各辺を `deriveS2Relation` に通し直す使い捨てのスクリプトで計算）
+  - 4 テーマのうち変わったのは GNN の 1 本だけ。MoNet ← GCN が baseline_only から extends になった（規則 `phrase_build`、引用文は「Such a construction allows to formulate previously proposed … GCN [21] and DCNN [3] on graphs as particular instances of our approach.」）。本番では手がかりのある組なので引用文の LLM にも聞く
+  - 割合は GNN 0.063 → 0.070、MoE 0.267、ViT 0.265、FA 0.204（3 テーマは変わらない）。規則の builds_on は GNN 8 → 9 で、ほかのテーマは同数
+  - GNN の手作業 30 本（継承 5、継承でない 25）での結果。公開の関係: 適合率 1/7 → 2/8、再現率 1/5 → 2/5。規則だけ: 適合率 2/6 → 3/7、再現率 2/5 → 3/5。増えた誤りはない
+- **残る課題**（この作業の範囲外）
+  - GNN が 0.10 に届かないのは本当に根拠がないため。数え方を変えて通すことはしなかった。総説が引用する側の 43 本を分母から外すと、ちょうど 10/100 = 0.100 で通る。ただしこの 43 本は規則上いつも `baseline_only` になるので、外すこと自体は筋が通る。それでも、今の発展系の関係はほとんどが LLM の誤りで、外せば誤りの多い系譜が公開されてしまう。変えるなら利用者が決める
+  - DiffPool ← GraphSAGE は規則では extends。しかしキャッシュにある引用文 LLM の答え（gpt-oss-20b、「GraphSAGE 実装をベースに利用」）が baseline_only に上書きしている。LLM が誤って extends にする組も 4 本ある
+  - 弱い規則（methodology 意図 + influential + 名指し）は FA で誤りが多い（Performer ← Sparse Transformer・Reformer・Longformer、FlashAttention ← Longformer・SMYRF）。FA の 0.204 は、この誤り 5 本を除くと約 0.11 になる
+  - 起点どうしの辺の欠けは、OpenAlex の参考文献が空でなくても S2 の参考文献で補えば直る（S2 への問い合わせは増える）。OpenAlex の誤ったレコードは、同一性の検査で落とせば直る
