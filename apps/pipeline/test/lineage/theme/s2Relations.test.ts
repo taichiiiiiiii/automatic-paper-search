@@ -4,7 +4,7 @@
  * citation influential; the context LLM's answer is mapped onto the v1
  * enum; an unavailable LLM keeps the rule result; edges without S2 data
  * fall through to the existing path; provenance (`s2_context_rule`,
- * `relation-prompt-v3-context`) is accepted by the artifact contract and
+ * `relation-prompt-v4-context`) is accepted by the artifact contract and
  * counted as classified by the D3 gate. Fake fetch / fake LLM only.
  */
 import { mkdtempSync } from "node:fs";
@@ -23,7 +23,7 @@ import { completeJsonAttributed, FallbackProvider } from "../../../src/lineage/l
 import { runBfsAndDescendants } from "../../../src/lineage/theme/bfs.js";
 import { ThemeCachedClassifyProvider } from "../../../src/lineage/theme/cachedClassifyProvider.js";
 import { evidenceClassifiedRate } from "../../../src/lineage/theme/classificationGate.js";
-import { makeEdge } from "../../../src/lineage/theme/edges.js";
+import { makeEdge, PROMPT_VERSION } from "../../../src/lineage/theme/edges.js";
 import type { ThemePaper } from "../../../src/lineage/theme/openalexWork.js";
 import { S2CitationSource } from "../../../src/lineage/theme/s2Citations.js";
 import {
@@ -53,12 +53,15 @@ function paper(id: string, title: string, year: number, arxiv?: string): ThemePa
 const A = paper("openalex:WA", "Graph Convolutional Networks for Things", 2017);
 const B = paper("openalex:WB", "Attention on Graphs for Other Things", 2019, "1900.00001");
 
-function ref(contexts: string[], opts: { intents?: string[]; influential?: boolean } = {}) {
+function ref(
+  contexts: string[],
+  opts: { intents?: string[]; influential?: boolean; title?: string } = {},
+) {
   return {
     contexts,
     intents: opts.intents ?? [],
     isInfluential: opts.influential ?? false,
-    citedPaper: { paperId: "e".repeat(40), title: A.title, externalIds: {} },
+    citedPaper: { paperId: "e".repeat(40), title: opts.title ?? A.title, externalIds: {} },
   };
 }
 
@@ -89,6 +92,8 @@ function ctx(source: S2CitationSource, provider: LLMProvider | null): S2Relation
   return { source, provider, stats: newS2RelationStats() };
 }
 
+const BUILD_SENTENCE = "We build on the graph convolution of [3] for our attention layer.";
+
 const ANSWER = (o: Record<string, unknown>) =>
   JSON.stringify({
     refers_to_cited: true,
@@ -102,17 +107,25 @@ const ANSWER = (o: Record<string, unknown>) =>
 describe("deriveS2Relation routing", () => {
   it("background without a cue: rule result, no LLM call", async () => {
     const llm = fakeProvider(ANSWER({}));
-    const c = ctx(sourceWith([ref(["Graph networks are popular [3]."])]), llm);
+    const c = ctx(
+      sourceWith([ref(["Graph networks have become popular for relational data [3]."])]),
+      llm,
+    );
     const e = await deriveS2Relation(A, B, c);
     expect(e).toMatchObject({ relation: "baseline_only", provenance: "s2_context_rule" });
-    expect(e?.rationale).toContain('引用文: "Graph networks are popular [3]."');
+    expect(e?.rationale).toContain(
+      '引用文: "Graph networks have become popular for relational data [3]."',
+    );
     expect(llm.completeJson).not.toHaveBeenCalled();
     expect(c.stats).toMatchObject({ rule: 1, llmAsked: 0 });
   });
 
   it("a cue phrase goes to the context LLM, whose answer wins", async () => {
     const llm = fakeProvider(ANSWER({}));
-    const c = ctx(sourceWith([ref(["We build on the convolution of [3, 4, 9]."])]), llm);
+    const c = ctx(
+      sourceWith([ref(["We build on the graph convolution of [3] for our attention layer."])]),
+      llm,
+    );
     const onLlm = vi.fn();
     const e = await deriveS2Relation(A, B, c, onLlm);
     expect(llm.completeJson).toHaveBeenCalledTimes(1);
@@ -120,7 +133,8 @@ describe("deriveS2Relation routing", () => {
     expect(system).toContain("refers_to_cited");
     expect(user).toContain("Title: Graph Convolutional Networks for Things");
     expect(user).toContain("Authors: Ada Lovelace, Alan Turing");
-    expect(user).toContain("1. We build on the convolution of [3, 4, 9].");
+    expect(user).toContain("1. We build on the graph convolution of [3] for our attention layer.");
+    expect(user).toContain("Short name: Graph Convolutional Networks fo…");
     expect(llm.classifyRelation).not.toHaveBeenCalled();
     expect(onLlm).toHaveBeenCalledWith(true);
     expect(e).toMatchObject({
@@ -134,36 +148,59 @@ describe("deriveS2Relation routing", () => {
 
   it("the LLM saying the cue is about another work demotes it to baseline_only", async () => {
     const llm = fakeProvider(ANSWER({ refers_to_cited: false, relation: "builds_on" }));
-    const c = ctx(sourceWith([ref(["We build on [3, 4, 9]."])]), llm);
+    const c = ctx(
+      sourceWith([ref(["We build on the graph convolution of [3] for our attention layer."])]),
+      llm,
+    );
     expect((await deriveS2Relation(A, B, c))?.relation).toBe("baseline_only");
   });
 
   it("maps an LLM contrast about A to contrasts and a plain comparison to baseline_only", async () => {
     const contrast = fakeProvider(ANSWER({ relation: "compares_with", contrast: true }));
-    const c1 = ctx(sourceWith([ref(["Unlike [3, 4], we sample neighbours."])]), contrast);
+    const c1 = ctx(
+      sourceWith([ref(["Unlike [3], we sample a fixed number of neighbours per node."])]),
+      contrast,
+    );
     expect((await deriveS2Relation(A, B, c1))?.relation).toBe("contrasts");
     const compare = fakeProvider(ANSWER({ relation: "compares_with", contrast: false }));
-    const c2 = ctx(sourceWith([ref(["Our model outperforms [3]."])]), compare);
+    const c2 = ctx(
+      sourceWith([ref(["Our model clearly outperforms [3] on all three benchmarks."])]),
+      compare,
+    );
     expect((await deriveS2Relation(A, B, c2))?.relation).toBe("baseline_only");
   });
 
   it("influential without a cue is asked; not influential and no cue is not", async () => {
     const llm = fakeProvider(ANSWER({ relation: "uses_resource" }));
-    const c = ctx(sourceWith([ref(["GCN [3] is a graph model."], { influential: true })]), llm);
+    const c = ctx(
+      sourceWith([
+        ref(["GCN [3] is a widely used spectral graph convolution model."], { influential: true }),
+      ]),
+      llm,
+    );
     expect((await deriveS2Relation(A, B, c))?.relation).toBe("baseline_only");
     expect(llm.completeJson).toHaveBeenCalledTimes(1);
   });
 
   it("an unavailable LLM keeps the rule result (contrasts only for a single-target cue)", async () => {
     const dead = fakeProvider(null);
-    const single = ctx(sourceWith([ref(["Unlike [3], we sample neighbours."])]), dead);
+    const single = ctx(
+      sourceWith([ref(["Unlike [3], we sample a fixed number of neighbours per node."])]),
+      dead,
+    );
     const onLlm = vi.fn();
     const e1 = await deriveS2Relation(A, B, single, onLlm);
     expect(e1).toMatchObject({ relation: "contrasts", provenance: "s2_context_rule" });
     expect(onLlm).toHaveBeenCalledWith(false);
-    const multi = ctx(sourceWith([ref(["Unlike [3, 5], we sample neighbours."])]), dead);
+    const multi = ctx(
+      sourceWith([ref(["Unlike [3, 5], we sample a fixed number of neighbours per node."])]),
+      dead,
+    );
     expect((await deriveS2Relation(A, B, multi))?.relation).toBe("baseline_only");
-    const noLlm = ctx(sourceWith([ref(["We build on [3, 4]."])]), null);
+    const noLlm = ctx(
+      sourceWith([ref(["We build on the graph convolution of [3] for our attention layer."])]),
+      null,
+    );
     expect(await deriveS2Relation(A, B, noLlm)).toMatchObject({
       relation: "extends",
       provenance: "s2_context_rule",
@@ -195,6 +232,85 @@ describe("deriveS2Relation routing", () => {
     const quoted = /引用文: "(.*)"$/.exec(e?.rationale ?? "")?.[1] ?? "";
     expect(Array.from(quoted)).toHaveLength(QUOTE_MAX_CHARS);
     expect(quoted.endsWith("…")).toBe(true);
+  });
+});
+
+describe("R2-16 quote and contrast rules", () => {
+  const NO_QUOTE = "被引用論文を特定できる引用文はない";
+
+  it("never quotes a bare marker list, a bibliography line or a short fragment", async () => {
+    for (const junk of [
+      "[19, 41].",
+      "[17] Tri Dao, Daniel Y. Fu, Stefano Ermon, Atri Rudra. FlashAttention. In NeurIPS, 2022.",
+      "See [3].",
+    ]) {
+      const e = await deriveS2Relation(A, B, ctx(sourceWith([ref([junk])]), null));
+      expect(e).toMatchObject({ relation: "baseline_only", provenance: "s2_context_rule" });
+      expect(e?.rationale).not.toContain("引用文:");
+      expect(e?.rationale).toContain(NO_QUOTE);
+    }
+  });
+
+  it("quotes the sentence that names the cited paper, not the first context", async () => {
+    const swin = paper("openalex:WS", "Swin Transformer: Hierarchical Vision Transformer", 2021);
+    const ir = paper(
+      "openalex:WI",
+      "SwinIR: Image Restoration Using Swin Transformer",
+      2021,
+      "2108.10257",
+    );
+    const e = await deriveS2Relation(
+      swin,
+      ir,
+      ctx(
+        sourceWith([
+          ref(
+            [
+              "We show the effects of channel number and block number on model performance in Figs.",
+              "Swin Transformer layer (STL) [56] is based on the standard multi-head self-attention.",
+            ],
+            { title: swin.title },
+          ),
+        ]),
+        null,
+      ),
+    );
+    expect(e?.rationale).toContain('引用文: "Swin Transformer layer (STL) [56]');
+    expect(e?.rationale).toContain("「SwinIR」(2021) は 「Swin Transformer」(2021)");
+  });
+
+  it("drops the quote when no sentence identifies the cited paper", async () => {
+    const e = await deriveS2Relation(
+      A,
+      B,
+      ctx(
+        sourceWith([
+          ref([
+            "Memory access overhead is a critical factor affecting model speed [15, 28, 31, 65].",
+          ]),
+        ]),
+        null,
+      ),
+    );
+    expect(e?.relation).toBe("baseline_only");
+    expect(e?.rationale).toContain(NO_QUOTE);
+  });
+
+  it("an LLM contrast without a rule contrast cue on the cited paper is baseline_only", async () => {
+    const contrast = fakeProvider(ANSWER({ relation: "compares_with", contrast: true }));
+    const c = ctx(
+      sourceWith([ref(["Our model clearly outperforms [3] on all three benchmarks."])]),
+      contrast,
+    );
+    expect((await deriveS2Relation(A, B, c))?.relation).toBe("baseline_only");
+  });
+
+  it("names both papers by short title instead of A / B in context-LLM rationales", async () => {
+    const llm = fakeProvider(ANSWER({}));
+    const e = await deriveS2Relation(A, B, ctx(sourceWith([ref([BUILD_SENTENCE])]), llm));
+    const head = (e?.rationale ?? "").split("引用文:")[0] as string;
+    expect(head).toContain("「Graph Convolutional Networks fo…」");
+    expect(head).not.toMatch(/(?<![\p{L}\p{N}_-])[AB](?![\p{L}\p{N}_-])/u);
   });
 });
 
@@ -256,7 +372,7 @@ describe("cached context answers (classifications.json v3)", () => {
         now: () => new Date("2026-10-10T00:00:00Z"),
       },
     );
-    const refs = [ref(["We build on [3, 4]."])];
+    const refs = [ref(["We build on the graph convolution of [3] for our attention layer."])];
     const e1 = await deriveS2Relation(A, B, ctx(sourceWith(refs), cached));
     const e2 = await deriveS2Relation(A, B, ctx(sourceWith(refs), cached));
     expect(inner.completeJson).toHaveBeenCalledTimes(1);
@@ -271,7 +387,10 @@ describe("provenance through the contract and the D3 gate", () => {
     const llmCls = await deriveS2Relation(
       A,
       B,
-      ctx(sourceWith([ref(["We build on [3]."])]), fakeProvider(ANSWER({}))),
+      ctx(
+        sourceWith([ref(["We build on the graph convolution of [3] for our attention layer."])]),
+        fakeProvider(ANSWER({})),
+      ),
     );
     const C = paper("openalex:WC", "Third", 2020);
     const opts = (dst: ThemePaper) => ({
@@ -349,7 +468,7 @@ describe("BFS wiring", () => {
               citedPaper: { title: "Background Paper" },
             },
             {
-              contexts: ["We build on [2, 5]."],
+              contexts: ["We build on the message passing scheme of [2] in our encoder."],
               intents: [],
               isInfluential: false,
               citedPaper: { title: "Cue Paper" },
@@ -394,7 +513,7 @@ describe("BFS wiring", () => {
       classification: { method: "llm", prompt_version: CONTEXT_PROMPT_VERSION },
     });
     expect(byParent.p_none?.provenance).toMatchObject({
-      classification: { method: "llm", prompt_version: "relation-prompt-v2" },
+      classification: { method: "llm", prompt_version: PROMPT_VERSION },
     });
     expect(llm.completeJson).toHaveBeenCalledTimes(1);
     expect(llm.classifyRelation).toHaveBeenCalledTimes(1);

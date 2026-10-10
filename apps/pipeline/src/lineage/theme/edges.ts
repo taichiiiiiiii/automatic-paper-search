@@ -19,11 +19,14 @@ export { filterEdgesByRationale, isDegenerateRationale } from "../shared/rationa
 
 export const PRODUCER_NAME = "paperpilot.scripts.build_theme_lineage";
 export const PRODUCER_VERSION = "p2t-v1";
-/** Abstract prompt (`buildClassifyPrompt`). Unchanged by R2-10: pairs
- * without Semantic Scholar data still use it, and its cached answers stay
- * valid. Citation-context answers carry `CONTEXT_PROMPT_VERSION`
- * (`../llm/contextPrompt.ts`, `relation-prompt-v3-context`). */
-export const PROMPT_VERSION = "relation-prompt-v2";
+/** Abstract prompt (`buildClassifyPrompt`). R2-16 changed its text
+ * (no contrasts, surveys baseline_only only, title-based rationales) and
+ * bumped v2 -> v4 (v3 is taken by the context prompt's history), in step
+ * with the conference / deep builders that share the prompt. The theme
+ * cache key hashes the prompt text, so v2 answers are not reused.
+ * Citation-context answers carry `CONTEXT_PROMPT_VERSION`
+ * (`../llm/contextPrompt.ts`, `relation-prompt-v4-context`). */
+export const PROMPT_VERSION = "relation-prompt-v4";
 export const CLASSIFICATION_SCHEMA_VERSION = "relation-classification-v1";
 
 type PaperLike = Record<string, unknown>;
@@ -164,13 +167,22 @@ function yearOf(paper: PaperLike): string {
  * malformed JSON) `applyLlmClassification` keeps the heuristic verbatim.
  * That is how a whole lineage ended up as 0.7 successor/contrasts.
  *
- * Here such an edge becomes `successor` at
+ * Here such an edge becomes `baseline_only` at
  * {@link CITATION_HEURISTIC_CONFIDENCE} with provenance method
  * `citation_heuristic` (already in the v1 contract's closed set, and what
  * the conference builder emits for the same evidence), so `contrasts`
- * only ever comes from a real classification (LLM or citation-context
- * pattern) and the quality audit can count these edges through
- * `meta.provenance_breakdown`. Every other classification passes through.
+ * only ever comes from a real classification and the quality audit can
+ * count these edges through `meta.provenance_breakdown`. Every other
+ * classification passes through.
+ *
+ * R2-16: the relation used to be `successor`. The v1 contract has no
+ * "unclassified" value, and `successor` claims a research-line
+ * continuation the evidence does not show — the second review found
+ * Swin -> ConvNeXt (a competitor) drawn as a successor. `baseline_only`
+ * ("cited, no inheritance claimed"; shown as 参照/背景 on the web) is the
+ * weakest claim the enum has, and the rationale says the kind is
+ * unclassified. The D3 gate counts these edges as unclassified by their
+ * method, whatever the relation.
  */
 export function demoteLowInformationEdge(
   classification: DerivedEdge,
@@ -179,7 +191,7 @@ export function demoteLowInformationEdge(
 ): DerivedEdge {
   if (classification.provenance !== "year_cite") return classification;
   return {
-    relation: "successor",
+    relation: "baseline_only",
     confidence: CITATION_HEURISTIC_CONFIDENCE,
     rationale:
       `「${trimTitle(child)}」(${yearOf(child)}) は「${trimTitle(parent)}」(${yearOf(parent)}) を引用している` +

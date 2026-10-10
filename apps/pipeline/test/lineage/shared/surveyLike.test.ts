@@ -124,6 +124,24 @@ describe("isSurveyLike", () => {
   });
 });
 
+describe("review venues (R2-16)", () => {
+  it("treats survey / magazine / review-series venues as reviews", () => {
+    const gdl = {
+      title: "Geometric Deep Learning: Going beyond Euclidean data",
+      venue: "IEEE Signal Processing Magazine",
+    };
+    expect(isSurveyLike(gdl)).toBe(true);
+    expect(isSurveyLike({ title: "X", venue: "ACM Computing Surveys" })).toBe(true);
+    expect(isSurveyLike({ title: "X", venue: "IEEE Communications Surveys & Tutorials" })).toBe(
+      true,
+    );
+    expect(isSurveyLike({ title: "X", venue: "IEEE Transactions on Signal Processing" })).toBe(
+      false,
+    );
+    expect(isSurveyLike({ title: "X", venue: "NeurIPS" })).toBe(false);
+  });
+});
+
 describe("S2 rule set v2 uses the full survey test", () => {
   const base = {
     found: true,

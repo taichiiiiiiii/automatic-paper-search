@@ -19,6 +19,10 @@ import type {
 } from "../../../src/collect/llm/provider.js";
 import type { DerivedEdge } from "../../../src/lineage/classify/classify.js";
 import { CLASSIFY_SYSTEM_PROMPT } from "../../../src/lineage/llm/base.js";
+import {
+  CONTEXT_PROMPT_VERSION,
+  CONTEXT_SYSTEM_PROMPT,
+} from "../../../src/lineage/llm/contextPrompt.js";
 import type { FetchRelatedDeps } from "../../../src/lineage/shared/fetchRelated.js";
 import type { ThemeGraphNode } from "../../../src/lineage/shared/node.js";
 import { confirmSupportAdmissions, runBfsAndDescendants } from "../../../src/lineage/theme/bfs.js";
@@ -27,12 +31,13 @@ import {
   TitleIdentity,
   titleIdentityKey,
 } from "../../../src/lineage/theme/dedup.js";
-import type { ThemeEdge } from "../../../src/lineage/theme/edges.js";
+import { PROMPT_VERSION, type ThemeEdge } from "../../../src/lineage/theme/edges.js";
 import { evaluateArtifact, formatReport } from "../../../src/lineage/theme/evalTopicDriftCli.js";
 import type { ThemePaper } from "../../../src/lineage/theme/openalexWork.js";
 import {
   GUARDED_RELATION_MAX_CONFIDENCE,
   guardRelation,
+  hasContextContrastEvidence,
   isSurveyLike,
 } from "../../../src/lineage/theme/relationGuard.js";
 import { looksLikeDataset, TopicScope, themeTerms } from "../../../src/lineage/theme/topicScope.js";
@@ -359,14 +364,36 @@ describe("relation guard", () => {
     expect(guardRelation(contrasts, pets, { title: "CvT" }).relation).toBe("baseline_only");
   });
 
-  it("leaves method-vs-method contrasts and every other relation alone", () => {
+  it("leaves method-vs-method contrasts with citation-sentence evidence and every other relation alone", () => {
     const resnet = { title: "Deep Residual Learning for Image Recognition" };
     const vit = { title: "An Image is Worth 16x16 Words" };
-    expect(guardRelation(contrasts, resnet, vit)).toBe(contrasts);
+    const s2Contrast = { ...contrasts, provenance: "s2_context_rule" };
+    expect(guardRelation(s2Contrast, resnet, vit)).toBe(s2Contrast);
+    const ctxLlm = { ...contrasts, promptVersion: CONTEXT_PROMPT_VERSION };
+    expect(guardRelation(ctxLlm, resnet, vit)).toBe(ctxLlm);
     const ext = { ...contrasts, relation: "extends" as const };
     expect(guardRelation(ext, resnet, vit)).toBe(ext);
     // R2-15: a survey as the CITED (parent) side may still be extended.
     expect(guardRelation(ext, { title: "A Survey of X" }, vit)).toBe(ext);
+  });
+
+  it("R2-16: contrasts without an S2 citation-context cue becomes baseline_only", () => {
+    const resnet = { title: "Deep Residual Learning for Image Recognition" };
+    const vit = { title: "An Image is Worth 16x16 Words" };
+    // Abstract-only LLM (no prompt version / the abstract prompt), unarXive
+    // context pattern, heuristics: none saw a sentence that targets A.
+    for (const c of [
+      contrasts,
+      { ...contrasts, promptVersion: "relation-prompt-v4" },
+      { ...contrasts, provenance: "context_pattern" },
+      { ...contrasts, provenance: "year_cite" },
+    ]) {
+      const g = guardRelation(c, resnet, vit);
+      expect(g.relation).toBe("baseline_only");
+      expect(g.confidence).toBeLessThanOrEqual(GUARDED_RELATION_MAX_CONFIDENCE);
+      expect(g.rationale).toContain("引用文に被引用論文との対比を示す記述がない");
+    }
+    expect(hasContextContrastEvidence({ ...contrasts, provenance: "s2_context_rule" })).toBe(true);
   });
 
   it("R2-15: a survey/review CITING paper never extends/succeeds/supersedes/contrasts", () => {
@@ -473,15 +500,27 @@ describe("relation guard", () => {
 
 // ---- prompt ----
 
-describe("relation-prompt-v2 contrasts rules", () => {
-  it("restricts contrasts to competing methods for the same task, with survey/dataset rules", () => {
-    expect(CLASSIFY_SYSTEM_PROMPT).toContain("同じタスクに競合する手法を提案");
-    expect(CLASSIFY_SYSTEM_PROMPT).toContain("サーベイ/レビューなら baseline_only か extends");
+describe("relation-prompt-v4 rules (R2-16)", () => {
+  it("drops contrasts from the abstract prompt and gives surveys baseline_only only", () => {
+    expect(CLASSIFY_SYSTEM_PROMPT).toContain(
+      "contrasts (根本的に異なる競合手法) は要旨だけでは判定できないので使わない",
+    );
+    expect(CLASSIFY_SYSTEM_PROMPT).toContain("サーベイ/レビューなら baseline_only のみ");
+    expect(CLASSIFY_SYSTEM_PROMPT).not.toContain("baseline_only か extends");
     expect(CLASSIFY_SYSTEM_PROMPT).toContain("データセット");
-    expect(CLASSIFY_SYSTEM_PROMPT).toContain("迷ったら contrasts を選ばない");
-    // A positive and a negative few-shot example for the confusable pair.
-    expect(CLASSIFY_SYSTEM_PROMPT).toMatch(/- contrasts: "B \(ViT\)/);
-    expect(CLASSIFY_SYSTEM_PROMPT).toMatch(/- baseline_only: "B \(GNN サーベイ\)/);
+    expect(CLASSIFY_SYSTEM_PROMPT).toMatch(/relation values \(pick one\): [^\n]*/);
+    expect(
+      /relation values \(pick one\): ([^\n]*)/.exec(CLASSIFY_SYSTEM_PROMPT)?.[1],
+    ).not.toContain("contrasts");
+  });
+
+  it("asks for short titles instead of A / B, with examples that name both papers", () => {
+    expect(CLASSIFY_SYSTEM_PROMPT).toContain("論文を「A」「B」と書かず、題名の短い名前");
+    expect(CLASSIFY_SYSTEM_PROMPT).toMatch(/- supersedes: "FlashAttention-2 は FlashAttention と/);
+    expect(CLASSIFY_SYSTEM_PROMPT).toMatch(/- baseline_only: "GNN サーベイは/);
+    expect(PROMPT_VERSION).toBe("relation-prompt-v4");
+    expect(CONTEXT_PROMPT_VERSION).toBe("relation-prompt-v4-context");
+    expect(CONTEXT_SYSTEM_PROMPT).toContain('never "A" or "B"');
   });
 });
 

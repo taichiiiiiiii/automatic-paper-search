@@ -17,7 +17,13 @@
  *     phrases "a comprehensive", "recent advances", "challenges and
  *     opportunities", "state of the art" in a survey position);
  *  3. the abstract / short abstract / TL;DR ("we review", "in this
- *     survey", "we provide an overview", "comprehensive overview", …).
+ *     survey", "we provide an overview", "comprehensive overview", …);
+ *  4. (R2-16) the venue, for venues that publish only surveys / reviews /
+ *     tutorial overviews (ACM Computing Surveys, IEEE Communications
+ *     Surveys & Tutorials, IEEE Signal Processing Magazine, Foundations
+ *     and Trends, Annual Review of …, Nature Reviews …). The second review
+ *     found "Geometric Deep Learning: Going beyond Euclidean data" (IEEE
+ *     SPM) as the citing side of an `extends` edge.
  *
  * Whole words only, so "reviewer", "surveillance" or "review-based
  * recommendation" do not match.
@@ -34,6 +40,18 @@ export interface SurveyPaperLike {
   type?: unknown;
   /** Semantic Scholar `publicationTypes` ("Review", "JournalArticle", …). */
   publicationTypes?: unknown;
+  /** Venue / journal name (theme node `venue`). */
+  venue?: unknown;
+}
+
+/** Venues whose articles are surveys / reviews / tutorial overviews. */
+const REVIEW_VENUE_RE =
+  /\b(?:computing\s+surveys|surveys\s+(?:and|&)\s+tutorials|signal\s+processing\s+magazine|foundations\s+and\s+trends|annual\s+reviews?\s+of|nature\s+reviews|physics\s+reports|artificial\s+intelligence\s+review)\b/i;
+
+/** The venue only publishes surveys / reviews / tutorial overviews. */
+export function isReviewVenue(paper: SurveyPaperLike): boolean {
+  const v = paper.venue;
+  return typeof v === "string" && REVIEW_VENUE_RE.test(v.normalize("NFKC"));
 }
 
 /** Survey words anywhere in the title (whole words). `review` must not be
@@ -104,6 +122,9 @@ export function isSurveyLikeAbstract(paper: SurveyPaperLike): boolean {
 export function isSurveyLike(paper: SurveyPaperLike | null | undefined): boolean {
   if (!paper || typeof paper !== "object") return false;
   return (
-    hasReviewPublicationType(paper) || isSurveyLikeTitle(paper.title) || isSurveyLikeAbstract(paper)
+    hasReviewPublicationType(paper) ||
+    isSurveyLikeTitle(paper.title) ||
+    isSurveyLikeAbstract(paper) ||
+    isReviewVenue(paper)
   );
 }

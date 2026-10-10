@@ -21,7 +21,7 @@ import { basename, dirname, join, resolve, sep } from "node:path";
 import { isMain } from "../../shared/cli/isMain.js";
 import type { DerivedEdge } from "../classify/classify.js";
 import { isSurveyLike } from "../shared/surveyLike.js";
-import { classificationMethodOf } from "./evalTopicDriftCli.js";
+import { classificationMethodOf, promptVersionOf } from "./evalTopicDriftCli.js";
 import { guardRelation } from "./relationGuard.js";
 
 interface NodeLike {
@@ -52,7 +52,7 @@ export interface SurveyGuardChange {
   before: { relation: string; confidence: number };
   after: { relation: string; confidence: number };
   /** Why: the citing paper is survey-like, or a survey/dataset endpoint of a contrasts. */
-  reason: "citing_survey" | "contrasts_endpoint";
+  reason: "citing_survey" | "contrasts_endpoint" | "contrasts_no_context";
   rationale: string;
 }
 
@@ -87,6 +87,8 @@ export function guardArtifact(
       rationale: String(e.rationale ?? ""),
       provenance: classificationMethodOf(e),
     };
+    const pv = promptVersionOf(e);
+    if (pv !== undefined) cls.promptVersion = pv;
     const g = guardRelation(cls, parent, child);
     if (g === cls) return e;
     changes.push({
@@ -97,7 +99,11 @@ export function guardArtifact(
       method: cls.provenance,
       before: { relation: cls.relation, confidence: cls.confidence },
       after: { relation: g.relation, confidence: g.confidence },
-      reason: g.rationale.startsWith("引用側") ? "citing_survey" : "contrasts_endpoint",
+      reason: g.rationale.startsWith("引用側")
+        ? "citing_survey"
+        : g.rationale.startsWith("引用文に")
+          ? "contrasts_no_context"
+          : "contrasts_endpoint",
       rationale: g.rationale,
     });
     return {

@@ -351,37 +351,41 @@ export function relationClassificationFromDict(d: unknown): RelationClassificati
 // (test-pinned at <=1700 chars) is still well under the Groq free-tier
 // TPM with two trimmed abstracts per call; the post-classification guard
 // in `lineage/theme/relationGuard.ts` backs the survey/dataset rule up.
+//
+// R2-16 (relation-prompt-v4): the abstract prompt no longer offers
+// `contrasts` (the guard maps any abstract-only contrasts to baseline_only:
+// a contrast needs a citation sentence, second review pattern 2), surveys
+// get baseline_only only (the "or extends" escape is gone, pattern 1), and
+// rationales name the papers by short title instead of "A"/"B" (UX P1-4).
 export const CLASSIFY_SYSTEM_PROMPT = `Compare two AI/ML papers (A older, B newer). Output ONLY JSON:
 {"relation":"<one>","confidence":<0.0-1.0>,"rationale":"<one Japanese sentence>"}
 
-relation values (pick one): supersedes / successor / extends / ablation / baseline_only / contrasts / unrelated
+relation values (pick one): supersedes / successor / extends / ablation / baseline_only / unrelated
 - supersedes: 同じアプローチで明確に性能を凌駕、基準論文を置き換える
 - successor: 研究ラインの自然な発展、漸進的な改良
 - extends: 同じ手法を別ドメイン・別タスク・別規模に応用
 - ablation: 構成要素の寄与を分解測定する解析論文
 - baseline_only: 比較対象・背景・データセットとして引用するだけで、知的な継承はない
-- contrasts: A と B の両方が同じタスクに競合する手法を提案し、根本的に異なるアプローチを取る場合のみ
 
-contrasts rules — the most over-used label:
-- 分野・タスクが違うだけ、内容が異なるだけなら contrasts ではない (baseline_only か unrelated)
-- A か B がサーベイ/レビューなら baseline_only か extends、contrasts は禁止
+Rules:
+- contrasts (根本的に異なる競合手法) は要旨だけでは判定できないので使わない。違うアプローチの比較なら baseline_only
+- A か B がサーベイ/レビューなら baseline_only のみ
 - A がデータセット・初期化・最適化など手法提案でない論文なら baseline_only
-- 迷ったら contrasts を選ばない
 
 rationale rules — read carefully, most errors are here:
 - 30-200 chars, one Japanese sentence
-- MUST mention a concrete concept from B's title or abstract (a method name, dataset, metric, or architectural choice), so the reader knows which two papers are compared.
+- 論文を「A」「B」と書かず、題名の短い名前 (例: Swin Transformer, FlashAttention-2) で呼ぶ
+- MUST mention a concrete concept from B's title or abstract (a method name, dataset, metric, or architectural choice).
 - NEVER output these heuristic templates (emitting them wastes an LLM call):
   - "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している"
   - "論文 B は論文 A の研究ラインを継承し自然に発展させている"
   - "論文 B は論文 A をベースライン比較にのみ用いている"
 
-Examples (each names a concrete concept):
-- extends: "B のグラフ畳み込み層は、A のスペクトル法を空間領域に再定式化し計算量を O(E) に落としている。"
-- supersedes: "B (FlashAttention-2) は A と同じ exact attention のまま work partitioning を改良し2倍高速化、A を置き換える。"
-- ablation: "B は A の各構成要素を取り除いて精度への寄与を分解測定している。"
-- contrasts: "B (ViT) は A (ResNet) と同じ画像分類で、畳み込みを使わず純 Transformer で競合する。"
-- baseline_only: "B (GNN サーベイ) は A のグラフ信号処理を背景として整理するだけで、競合手法ではない。"
+Examples (each names both papers and a concrete concept):
+- extends: "GraphSAGE はスペクトル GCN の畳み込みを空間領域の近傍サンプリングに再定式化し、大規模グラフに広げている。"
+- supersedes: "FlashAttention-2 は FlashAttention と同じ exact attention のまま work partitioning を改良し2倍高速化、置き換える。"
+- ablation: "この解析論文は BERT の各構成要素を取り除いて精度への寄与を分解測定している。"
+- baseline_only: "GNN サーベイはグラフ信号処理を背景として整理するだけで、手法を継承していない。"
 `;
 
 /** TS port of `build_classify_prompt`. `a` = older/target, `b` = newer/candidate. */
