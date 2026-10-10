@@ -87,8 +87,12 @@ export function classificationProvenance(
       evidenceKind: "relation-input",
       evidenceSha256,
       method: "llm",
-      provider: provider ? String(provider.name ?? "unknown") : "unknown",
-      model: providerModelTag(provider),
+      // R2-6: the answering provider when the fallback chain / cache knows
+      // it (a Gemini answer behind a Groq-primary chain says "gemini").
+      provider:
+        classification.producedBy?.provider ??
+        (provider ? String(provider.name ?? "unknown") : "unknown"),
+      model: classification.producedBy?.model ?? providerModelTag(provider),
       promptVersion: PROMPT_VERSION,
       classificationSchemaVersion: CLASSIFICATION_SCHEMA_VERSION,
     });

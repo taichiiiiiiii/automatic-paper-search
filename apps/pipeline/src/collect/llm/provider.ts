@@ -61,6 +61,32 @@ export interface RelationClassification {
   confidence: number;
   /** One short Japanese sentence (never empty — see `RelationClassification.from_dict`). */
   rationale: string;
+  /**
+   * Which concrete LLM answered (`provider` name + `providerModelTag`
+   * model, e.g. `gemini` / `gemini:gemini-2.5-flash`). Set by the
+   * provider fallback chain and by the provider-agnostic classification
+   * cache, so edge provenance names the model that actually produced the
+   * relation rather than the chain's primary. Absent from a bare
+   * provider's own answer (the caller's provider is the producer then).
+   */
+  producedBy?: { provider: string; model: string };
+}
+
+/**
+ * Per-provider counters every lineage LLM provider exposes through
+ * `usageStats()` (Groq adds its own pacing fields on top). Read by the
+ * theme CLI's LLM-classification-rate gate to say whether a degraded
+ * build was caused by a daily quota (auto-retried the next day) or by
+ * something else (key, model, outage).
+ */
+export interface LlmUsageStats {
+  calls: number;
+  ok: number;
+  failed: number;
+  latched: boolean;
+  latchReason: string | null;
+  /** A response said the provider's DAILY quota is exhausted. */
+  dailyLimitHit: boolean;
 }
 
 /**
@@ -105,4 +131,13 @@ export interface LLMProvider {
    * breaker state) for CI logs. Providers without counters omit it.
    */
   usageSummary?(): string;
+  /** Optional counters behind `usageSummary()` (see {@link LlmUsageStats}). */
+  usageStats?(): LlmUsageStats;
+  /**
+   * Optional: true once the provider's circuit breaker has latched (quota
+   * exhausted, persistent failures) and every further call would return
+   * `null` without touching the API. The fallback chain skips such
+   * providers.
+   */
+  isExhausted?(): boolean;
 }

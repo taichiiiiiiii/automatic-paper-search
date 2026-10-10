@@ -27,6 +27,7 @@ import { parseLlmResponse } from "../../collect/jsonParser.js";
 import type {
   ClassifyPaperLike,
   LLMProvider,
+  LlmUsageStats,
   PaperEvaluation,
   RelationClassification,
 } from "../../collect/llm/provider.js";
@@ -106,10 +107,7 @@ export interface GroqConfig {
 }
 
 /** Counters behind `usageSummary()`. */
-export interface GroqUsageStats {
-  calls: number;
-  ok: number;
-  failed: number;
+export interface GroqUsageStats extends LlmUsageStats {
   /** 429 responses seen (retried ones + calls that ended in 429). */
   rateLimited: number;
   /** Calls whose final response was still 429. */
@@ -117,8 +115,6 @@ export interface GroqUsageStats {
   throttleWaitMs: number;
   pacingWaitMs: number;
   tokens: number;
-  latched: boolean;
-  latchReason: string | null;
 }
 
 export interface GroqDeps {
@@ -170,6 +166,7 @@ export class GroqProvider implements LLMProvider {
     tokens: 0,
     latched: false,
     latchReason: null,
+    dailyLimitHit: false,
   };
   private readonly deps: GroqDeps;
 
@@ -342,6 +339,11 @@ export class GroqProvider implements LLMProvider {
     return { ...this.stats };
   }
 
+  /** True once the breaker latched: every further call returns null without an API call. */
+  isExhausted(): boolean {
+    return this.quotaExhausted;
+  }
+
   /**
    * Increment the consecutive-failure counter and latch the
    * quota-exhausted circuit breaker once it crosses the threshold. Every
@@ -382,6 +384,7 @@ export class GroqProvider implements LLMProvider {
       `groq: chat/completions failed (status=429${hintTxt}${message ? `: ${message.slice(0, 200)}` : ""})`,
     );
     if (isDailyLimit429(message, hint)) {
+      this.stats.dailyLimitHit = true;
       this.latch(`daily rate limit exhausted (429${hintTxt})`);
       return;
     }
