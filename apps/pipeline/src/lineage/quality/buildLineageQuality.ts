@@ -218,7 +218,12 @@ export const SAMPLE_LIMIT = 20;
  * `edge_labels` row before `golden_fixture` can pass. The policy file's
  * `strong_relations` overrides this default.
  */
-export const DEFAULT_STRONG_RELATIONS: readonly string[] = ["contrasts", "supersedes"];
+export const DEFAULT_STRONG_RELATIONS: readonly string[] = [
+  "contrasts",
+  "supersedes",
+  "extends",
+  "successor",
+];
 
 export type { PublicationTier } from "../contract/v1.js";
 export { publicationTier };
@@ -592,6 +597,20 @@ function artifactChecks(
     if (labelledSamples.length > 0 && offTopic / labelledSamples.length > 0.1) {
       fixtureFailures.push("sample-off-topic-rate");
     }
+    // Design doc 41 D5: a node label may also judge the node's metadata
+    // (title/year/authors/identifier). `metadata_ok: false` fails the
+    // fixture like an off-topic focus node: the published card would be
+    // wrong, and nothing applies metadata corrections.
+    const badMetadata = new Set<string>();
+    for (const row of [...(focusLabels as unknown[]), ...(sampleLabels as unknown[])]) {
+      if (!isMapping(row)) continue;
+      if (row.metadata_ok !== undefined && typeof row.metadata_ok !== "boolean") {
+        badMetadata.add(`node-metadata-invalid:${String(row.node_id)}`);
+      } else if (row.metadata_ok === false) {
+        badMetadata.add(`node-metadata-wrong:${String(row.node_id)}`);
+      }
+    }
+    fixtureFailures.push(...Array.from(badMetadata).sort(codepointCompare));
     fixtureFailures.push(
       ...edgeLabelFailures(edges, fixture.edge_labels, new Set(strongRelations)),
     );

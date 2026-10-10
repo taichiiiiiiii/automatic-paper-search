@@ -14,6 +14,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   collectionRow,
+  DEFAULT_STRONG_RELATIONS,
   type GoldenFixture,
   parseTime,
   publicationTier,
@@ -78,6 +79,8 @@ function goodFixture(inputSha256: string): GoldenFixture {
       { node_id: "focus", on_topic: true },
       { node_id: "related", on_topic: true },
     ],
+    // Design doc 41 D5: `extends` is a strong claim, so the one edge needs a verdict.
+    edge_labels: [{ src: "focus", dst: "related", relation: "extends", verdict: "correct" }],
   };
 }
 
@@ -302,6 +305,8 @@ function rowFor(text: string, sampleLabels: unknown): ReturnType<typeof collecti
     asOfText: "2026-09-01T00:00:00Z",
     maxAgeDays: 365,
     catalogIds: null,
+    // Isolates the sample rules from the D5 strong-edge labels.
+    strongRelations: [],
   });
 }
 
@@ -577,7 +582,8 @@ describe("golden_fixture edge_labels (design doc 41 D5)", () => {
     writeFileSync(join(docsRoot, "lineage.json"), text);
     const sha = createHash("sha256").update(text, "utf8").digest("hex");
     const fixture: GoldenFixture = goodFixture(sha);
-    if (!options.omit) fixture.edge_labels = edgeLabels;
+    if (options.omit) delete fixture.edge_labels;
+    else fixture.edge_labels = edgeLabels;
     const row = collectionRow({
       docsRoot,
       kind: "theme",
@@ -628,8 +634,87 @@ describe("golden_fixture edge_labels (design doc 41 D5)", () => {
     expect(golden.evidence).toContain("edge-label-invalid:2");
   });
 
+  it("treats extends/successor as strong by default (design doc 41 D5)", () => {
+    expect(DEFAULT_STRONG_RELATIONS).toEqual(["contrasts", "supersedes", "extends", "successor"]);
+    const docsRoot = tmpDocsDir();
+    const sha = writeArtifact(docsRoot, "lineage.json");
+    const fixture = goodFixture(sha);
+    delete fixture.edge_labels;
+    const row = collectionRow({
+      docsRoot,
+      kind: "theme",
+      slug: "t",
+      label: "T",
+      relativePath: "lineage.json",
+      snapshotDate: null,
+      generatedHint: null,
+      fixture,
+      asOfText: "2026-09-01T00:00:00Z",
+      maxAgeDays: 365,
+      catalogIds: null,
+    });
+    const golden = row.audit.checks.find((c) => c.name === "golden_fixture")!;
+    expect(golden.status).toBe("failed");
+    expect(golden.evidence).toContain("edge-unlabelled:focus->related:extends");
+    expect(row.publication_tier).toBe("blocked");
+  });
+
   it("does not require labels for relations outside the configured strong set", () => {
     const { golden } = build(undefined, { omit: true, strongRelations: ["supersedes"] });
     expect(golden.status).toBe("passed");
+  });
+});
+
+// Design doc 41 D5: node labels may carry a metadata verdict.
+describe("golden_fixture node metadata verdicts (design doc 41 D5)", () => {
+  function build(mutate: (f: GoldenFixture) => void) {
+    const docsRoot = tmpDocsDir();
+    const sha = writeArtifact(docsRoot, "lineage.json");
+    const fixture = goodFixture(sha);
+    mutate(fixture);
+    const row = collectionRow({
+      docsRoot,
+      kind: "theme",
+      slug: "t",
+      label: "T",
+      relativePath: "lineage.json",
+      snapshotDate: null,
+      generatedHint: null,
+      fixture,
+      asOfText: "2026-09-01T00:00:00Z",
+      maxAgeDays: 365,
+      catalogIds: null,
+    });
+    return { row, golden: row.audit.checks.find((c) => c.name === "golden_fixture")! };
+  }
+
+  it("passes with metadata_ok=true and a note on every label", () => {
+    const { row, golden } = build((f) => {
+      f.sample_labels = [
+        { node_id: "focus", on_topic: true, metadata_ok: true, note: "ok" },
+        { node_id: "related", on_topic: true, metadata_ok: true },
+      ];
+    });
+    expect(golden.status).toBe("passed");
+    expect(row.publication_tier).toBe("audited");
+  });
+
+  it("FAILs when a sampled node's metadata is judged wrong", () => {
+    const { row, golden } = build((f) => {
+      f.sample_labels = [
+        { node_id: "focus", on_topic: true },
+        { node_id: "related", on_topic: true, metadata_ok: false, note: "year wrong" },
+      ];
+    });
+    expect(golden.status).toBe("failed");
+    expect(golden.evidence).toContain("node-metadata-wrong:related");
+    expect(row.publication_tier).toBe("blocked");
+  });
+
+  it("FAILs a non-boolean metadata_ok", () => {
+    const { golden } = build((f) => {
+      f.focus_labels = [{ node_id: "focus", on_topic: true, metadata_ok: "yes" }];
+    });
+    expect(golden.evidence).toContain("node-metadata-invalid:focus");
   });
 });
