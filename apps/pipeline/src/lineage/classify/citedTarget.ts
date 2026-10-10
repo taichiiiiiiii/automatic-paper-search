@@ -455,7 +455,131 @@ export function inferCitedMarker(
       bestVotes = v;
     }
   }
-  return best;
+  return best ?? commonMarker(contexts);
+}
+
+/**
+ * R2-23: the one numeric marker every marker-carrying context shares.
+ * S2 attaches a context to the pair because it carries the cited paper's
+ * marker, so when no sentence cites it alone or by name, the marker common
+ * to all of them is the cited one (V-MoE: "[54] … [39]", "[54, 39, 22]",
+ * "inspired by [54] who … [26]" -> 54). Needs two or more such contexts
+ * and exactly one shared marker; author-year contexts give nothing.
+ */
+export function commonMarker(contexts: readonly string[]): number | null {
+  let common: number[] | null = null;
+  let seen = 0;
+  for (const c of contexts) {
+    if (typeof c !== "string" || isBibliographyLine(c)) continue;
+    const ms = numericMarkers(c);
+    if (ms.length === 0) continue;
+    seen += 1;
+    common = common === null ? [...new Set(ms)] : common.filter((n: number) => ms.includes(n));
+  }
+  if (common === null || seen < 2 || common.length !== 1) return null;
+  return common[0] ?? null;
+}
+
+/**
+ * R2-23: attribution of a cue to the cited paper. A sentence often names
+ * several works, and a cue word is about the work it governs: the cited
+ * paper must appear in the cue's own span — from the cue to the end of
+ * its clause (next "." / ";") — by name, version-family name or reference
+ * marker:
+ *   - "Our approach is inspired by [54] who proposed …, with … [26]" and
+ *     "As our architecture is adapted from Swin Transformer [28]" are
+ *     about the cited paper;
+ *   - "in ChebNet and MoNet we used three convolutional layers, …
+ *     pooling layers based on the Graclus method [16]" is not about
+ *     ChebNet; "prior works [8, 15] that …, we study the frameworks that
+ *     are based on Siamese networks, including MoCo [19]" is not about
+ *     [15].
+ * When the sentence names the cited paper only by its marker and cites
+ * several works, the FIRST marker group of the span must carry it.
+ * `exempt` patterns put the cited paper before the cue by construction
+ * ("GCN [26] … as particular instances of our approach") and always pass;
+ * so does a sentence without any recognisable citation (S2 stripped the
+ * markers, nothing to attribute).
+ */
+export function cueTargetsCited(
+  sentence: string,
+  id: CitedIdentity,
+  cues: readonly RegExp[],
+  exempt: readonly RegExp[] = [],
+  /** "clause" (default): up to the next "." / ";"; "phrase": up to the next
+   * "," too — for abstract sentences, where nothing but the name ties the
+   * cue to the cited paper ("Unlike the recently-proposed Vision
+   * Transformer (ViT) …, we introduce the Pyramid Vision Transformer
+   * (PVT)" is about ViT, not about a "PVT …" paper). */
+  scope: "clause" | "phrase" = "clause",
+): boolean {
+  if (exempt.some((p) => p.test(sentence))) return true;
+  if (sentenceTarget(sentence, id) === "unmarked") return true;
+  const byName = (span: string) =>
+    id.aliases.some((a) => mentions(span, a)) || namesVersionFamily(span, id);
+  const namedInWords = byName(sentence);
+  const multi = citationTargetCount(sentence) > 1;
+  for (const p of cues) {
+    const re = new RegExp(p.source, p.flags.includes("g") ? p.flags : `${p.flags}g`);
+    for (const m of sentence.matchAll(re)) {
+      const tail = sentence.slice(m.index ?? 0);
+      const stop = tail.search(scope === "phrase" ? /[.;,](?:\s|$)/ : /[.;](?:\s|$)/);
+      const span = (stop >= 0 ? tail.slice(0, stop) : tail).slice(0, 300);
+      if (byName(span)) return true;
+      if (id.marker !== null) {
+        if (namedInWords || !multi) {
+          if (numericMarkers(span).includes(id.marker)) return true;
+        } else {
+          const group = /\[[^\]]{1,80}\]/.exec(span);
+          if (group && numericMarkers(group[0]).includes(id.marker)) return true;
+        }
+      } else if (!namedInWords && !multi && citationTargetCount(span) >= 1) {
+        // The only work the sentence cites, cited inside the cue's span.
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+/**
+ * R2-23: names under which the CITING paper refers to itself — its title
+ * stem ("Swin Transformer", "ViViT", "SwinIR"). A sentence whose subject is
+ * the citing method's own name is first-person in effect ("These merits
+ * make Swin Transformer suitable …, in contrast to previous Transformer
+ * based architectures [19]"). Stems that are also a name of the cited
+ * paper, or generic words, are dropped.
+ */
+export function citingSelfNames(
+  citingTitle: string | null | undefined,
+  cited: CitedIdentity,
+): string[] {
+  const stem = titleStem(str(citingTitle));
+  if (stem === null) return [];
+  const low = stem.toLowerCase();
+  if (low.length < 3 || GENERIC_WORDS.has(low) || GENERIC_NAMES.has(low)) return [];
+  if (cited.aliases.includes(low)) return [];
+  return [low];
+}
+
+/** Whether `sentence` mentions one of `names` (word-bounded, case-insensitive). */
+export function mentionsAny(sentence: string, names: readonly string[]): boolean {
+  return names.some((n) => mentions(sentence, n));
+}
+
+/**
+ * R2-23: the citing paper calls its model a modified / extended version of
+ * the cited one by name: "ViT-BN is our modified ViT that has BatchNorm"
+ * (MoCo v3 <- ViT). The cited paper's name must follow directly.
+ */
+export function ownVariantOf(sentence: string, id: CitedIdentity): boolean {
+  const text = foldText(sentence);
+  return id.aliases.some((a) =>
+    new RegExp(
+      `\\bour\\s+(?:own\\s+)?(?:modified|extended|adapted|customi[sz]ed)\\s+(?:version\\s+of\\s+(?:the\\s+)?)?${escapeRe(foldText(a))}(?![\\p{L}])`,
+      "iu",
+    ).test(text),
+  );
 }
 
 /** Identity of the cited paper for one pair's contexts. */
@@ -505,6 +629,15 @@ export function namesCitedPaper(sentence: string | null, id: CitedIdentity): boo
   return sentence !== null && id.aliases.some((a) => mentions(sentence, a));
 }
 
+/** The version family's name ("We follow the FlashAttention algorithms …
+ * [2, 3, 4]" for FlashAttention-2 = [2]) singles the family out. */
+function namesVersionFamily(sentence: string, id: CitedIdentity): boolean {
+  const family = id.aliases
+    .map((a) => a.replace(/[-\s]?(v\d+|\d+|\+\+)$/i, ""))
+    .filter((f, i) => f.length >= 4 && f !== id.aliases[i]);
+  return family.some((f) => mentions(sentence, f));
+}
+
 /**
  * R2-22: the sentence identifies the cited paper ONLY through its reference
  * marker, and every marker group carrying it cites other works too ("prior
@@ -515,12 +648,7 @@ export function namesCitedPaper(sentence: string | null, id: CitedIdentity): boo
 export function namedOnlyInMarkerGroup(sentence: string, id: CitedIdentity): boolean {
   if (id.marker === null) return false;
   if (id.aliases.some((a) => mentions(sentence, a))) return false;
-  // The version family's name ("We follow the FlashAttention algorithms …
-  // [2, 3, 4]" for FlashAttention-2 = [2]) singles the family out.
-  const family = id.aliases
-    .map((a) => a.replace(/[-\s]?(v\d+|\d+|\+\+)$/i, ""))
-    .filter((f, i) => f.length >= 4 && f !== id.aliases[i]);
-  if (family.some((f) => mentions(sentence, f))) return false;
+  if (namesVersionFamily(sentence, id)) return false;
   let carrying = 0;
   for (const m of sentence.matchAll(/\[([^\]]{1,80})\]/g)) {
     const ms = numericMarkers(m[0]);

@@ -27,7 +27,9 @@ import { makeEdge, PROMPT_VERSION } from "../../../src/lineage/theme/edges.js";
 import type { ThemePaper } from "../../../src/lineage/theme/openalexWork.js";
 import { S2CitationSource } from "../../../src/lineage/theme/s2Citations.js";
 import {
+  citingAbstractOf,
   deriveS2Relation,
+  llmHint,
   newS2RelationStats,
   QUOTE_MAX_CHARS,
   type S2RelationContext,
@@ -547,5 +549,57 @@ describe("BFS wiring", () => {
     expect(llm.classifyRelation).toHaveBeenCalledTimes(1);
     expect(res.llmCalls).toBe(2);
     expect(s2.stats).toMatchObject({ rule: 1, llmAsked: 1, llmAnswered: 1, unspecified: 1 });
+  });
+});
+
+describe("R2-23 abstract evidence and LLM hints", () => {
+  const SWIN = paper(
+    "openalex:WS",
+    "Swin Transformer: Hierarchical Vision Transformer using Shifted Windows",
+    2021,
+  );
+  const SWINIR = {
+    ...paper("openalex:WI", "SwinIR: Image Restoration Using Swin Transformer", 2021, "2108.10257"),
+    abstract:
+      "Image restoration is a long-standing low-level vision problem. In this paper, we propose a strong baseline model SwinIR for image restoration based on the Swin Transformer. SwinIR consists of three parts.",
+  };
+
+  it("a build cue in the citing abstract makes an extends edge, quoted as 要旨, without asking the LLM", async () => {
+    const llm = fakeProvider(ANSWER({ relation: "background", refers_to_cited: false }));
+    const c = ctx(
+      sourceWith([
+        ref(
+          [
+            "Recently, Swin Transformer [56] has shown great promise as it integrates the advantages of both CNN and Transformer.",
+          ],
+          {
+            title: SWIN.title,
+            influential: true,
+            intents: ["methodology"],
+          },
+        ),
+      ]),
+      llm,
+    );
+    const e = await deriveS2Relation(SWIN, SWINIR, c);
+    expect(e).toMatchObject({ relation: "extends", provenance: "s2_context_rule" });
+    expect(e?.rationale).toContain("引用元の論文の要旨から規則で判定");
+    expect(e?.rationale).toContain(
+      '要旨: "In this paper, we propose a strong baseline model SwinIR',
+    );
+    expect(llm.completeJson).not.toHaveBeenCalled();
+    expect(c.stats.skipped.abstract_evidence).toBe(1);
+  });
+
+  it("reads the abstract (or the node's short abstract)", () => {
+    expect(citingAbstractOf({ abstract: "x".repeat(50) })).toHaveLength(50);
+    expect(citingAbstractOf({ short_abstract: "y".repeat(45) })).toHaveLength(45);
+    expect(citingAbstractOf({ abstract: "short" })).toBeNull();
+  });
+
+  it("says rule and LLM disagree when the rule made a different strong claim", () => {
+    expect(llmHint("extends", "contrasts")).toContain("食い違う");
+    expect(llmHint("extends")).toContain("手がかり");
+    expect(llmHint("extends", "baseline_only")).not.toContain("食い違う");
   });
 });

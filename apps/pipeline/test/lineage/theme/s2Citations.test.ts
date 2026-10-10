@@ -12,6 +12,7 @@ import type { FetchInit, HttpResponseLike } from "../../../src/collect/http/requ
 import {
   findReference,
   lookupIdsOf,
+  maybeTruncated,
   readS2ReferencesCache,
   S2_KEYED_INTERVAL_MS,
   S2_KEYLESS_INTERVAL_MS,
@@ -240,7 +241,13 @@ describe("persistent cache", () => {
     const h = harness(
       () =>
         resp(200, {
-          data: [{ ...GCN_REF, contexts: [longCtx, "b", "c", "d", "e"] }, OTHER_REF],
+          data: [
+            {
+              ...GCN_REF,
+              contexts: [longCtx, ..."bcdefghijklmn".split("")],
+            },
+            OTHER_REF,
+          ],
         }),
       { cachePath },
     );
@@ -252,8 +259,10 @@ describe("persistent cache", () => {
     expect(entry.s2).toBe("ARXIV:1710.10903");
     expect(entry.fetched_at).toBe("2026-10-10T00:00:00Z");
     expect(Object.keys(entry.pairs)).toEqual(["openalex:W1"]);
-    expect(entry.pairs["openalex:W1"].c).toHaveLength(4);
+    // R2-23: up to 12 contexts (4 before), marked as stored under the new cap.
+    expect(entry.pairs["openalex:W1"].c).toHaveLength(12);
     expect(entry.pairs["openalex:W1"].c[0]).toHaveLength(400);
+    expect(entry.pairs["openalex:W1"].x).toBe(1);
 
     const again = harness(() => resp(500, null), { cachePath });
     const hit = await again.source.lookup(CITING, CITED);
@@ -303,5 +312,62 @@ describe("persistent cache", () => {
     expect(late.calls).toHaveLength(1);
     writeFileSync(cachePath, JSON.stringify({ schema_version: "other", entries: { x: {} } }));
     expect(readS2ReferencesCache(cachePath)).toEqual({});
+  });
+});
+
+describe("R2-23: pairs stored under the old 4-context cap", () => {
+  const legacyFile = (pair: Record<string, unknown>) => ({
+    schema_version: S2_REFERENCES_SCHEMA,
+    entries: {
+      "openalex:W2": {
+        s2: "ARXIV:1710.10903",
+        fetched_at: "2026-10-09T00:00:00Z",
+        pairs: { "openalex:W1": pair },
+      },
+    },
+  });
+  const four = { i: ["methodology"], c: ["a [4].", "b [4].", "c [4].", "d [4]."], f: true };
+  const sixRef = {
+    ...GCN_REF,
+    contexts: ["a [4].", "b [4].", "c [4].", "d [4].", "e [4].", "f [4]."],
+  };
+
+  it("flags only 4-context pairs without the R2-23 mark", () => {
+    expect(maybeTruncated(four)).toBe(true);
+    expect(maybeTruncated({ ...four, x: 1 })).toBe(false);
+    expect(maybeTruncated({ ...four, c: ["a", "b", "c"] })).toBe(false);
+    expect(maybeTruncated(null)).toBe(false);
+  });
+
+  it("refetches the citing paper once and stores the full contexts", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "s2c-"));
+    const cachePath = join(dir, "s2_references.json");
+    writeFileSync(cachePath, JSON.stringify(legacyFile(four)));
+    const h = harness(() => resp(200, { data: [sixRef, OTHER_REF] }), { cachePath });
+    const r = await h.source.lookup(CITING, CITED);
+    expect(h.calls).toHaveLength(1);
+    expect(r).toMatchObject({ kind: "pair", signals: { found: true } });
+    expect(r.kind === "pair" ? r.signals.contexts : []).toHaveLength(6);
+    expect(h.source.stats.contextRefreshes).toBe(1);
+    h.source.flush();
+    const stored = JSON.parse(readFileSync(cachePath, "utf-8")).entries["openalex:W2"].pairs[
+      "openalex:W1"
+    ];
+    expect(stored.c).toHaveLength(6);
+    expect(stored.x).toBe(1);
+    // The next run serves it from the cache.
+    const again = harness(() => resp(500, null), { cachePath });
+    await again.source.lookup(CITING, CITED);
+    expect(again.calls).toHaveLength(0);
+  });
+
+  it("keeps the stored contexts when S2 cannot be reached", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "s2c-"));
+    const cachePath = join(dir, "s2_references.json");
+    writeFileSync(cachePath, JSON.stringify(legacyFile(four)));
+    const h = harness(() => resp(500, null), { cachePath });
+    const r = await h.source.lookup(CITING, CITED);
+    expect(r).toMatchObject({ kind: "pair", signals: { found: true, contexts: four.c } });
+    expect(h.source.stats.contextRefreshes).toBe(0);
   });
 });

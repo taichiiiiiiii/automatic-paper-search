@@ -15,6 +15,7 @@
  */
 import { forwardRef } from "react";
 import {
+  ABSTRACT_SOURCE_LABEL,
   methodLabelJa,
   paperLink,
   parseEdgeEvidence,
@@ -66,7 +67,7 @@ function EvidenceBody({
   edge: LineageEdge;
   nodeById: ReadonlyMap<string, LineageNode>;
 }) {
-  const { summary, quote } = parseEdgeEvidence(edge.rationale);
+  const { summary, quote, quoteSource } = parseEdgeEvidence(edge.rationale);
   const src = nodeById.get(edge.src);
   const dst = nodeById.get(edge.dst);
   const method = edge.provenance?.classification?.method;
@@ -101,18 +102,33 @@ function EvidenceBody({
           >
             “{quote}”
           </blockquote>
-          <figcaption className="mt-1 text-xs text-ink-subtle">
-            出典: {QUOTE_SOURCE_LABEL}（引用文脈、
-            <a
-              href={dst ? semanticScholarUrl(dst) : "https://www.semanticscholar.org/"}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-accent underline"
-            >
-              {titleOf(dst, edge.dst)}
-            </a>
-            より 1 文を引用）
-          </figcaption>
+          {quoteSource === "abstract" ? (
+            <figcaption className="mt-1 text-xs text-ink-subtle" data-quote-source="abstract">
+              出典: {ABSTRACT_SOURCE_LABEL}（
+              <a
+                href={dst ? paperLink(dst).url : "https://www.semanticscholar.org/"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-accent underline"
+              >
+                {titleOf(dst, edge.dst)}
+              </a>
+              の要旨より 1 文を引用）
+            </figcaption>
+          ) : (
+            <figcaption className="mt-1 text-xs text-ink-subtle">
+              出典: {QUOTE_SOURCE_LABEL}（引用文脈、
+              <a
+                href={dst ? semanticScholarUrl(dst) : "https://www.semanticscholar.org/"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-accent underline"
+              >
+                {titleOf(dst, edge.dst)}
+              </a>
+              より 1 文を引用）
+            </figcaption>
+          )}
         </figure>
       )}
     </>

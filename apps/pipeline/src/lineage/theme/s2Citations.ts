@@ -34,8 +34,9 @@
  *         } } } }
  *
  * Only pairs the generator actually asked about are stored (a full
- * reference list is ~40 KB per paper), contexts are capped at 4 x 400
- * characters, and entries expire after 90 days (14 days for "S2 has no
+ * reference list is ~40 KB per paper), contexts are capped at 12 x 400
+ * characters (4 before R2-23: a pair stored with 4 contexts and no `x: 1`
+ * flag is refetched once, see `maybeTruncated`), and entries expire after 90 days (14 days for "S2 has no
  * such paper"). A lookup for a pair the entry does not hold refetches the
  * citing paper once per run and adds the pair.
  */
@@ -62,7 +63,10 @@ const PAGE_LIMIT = 1000;
 const MAX_PAGES = 10;
 /** Citing papers are fetched for expansion only: one page is plenty. */
 const CITATION_PAGES = 1;
-const MAX_CONTEXTS = 4;
+const MAX_CONTEXTS = 12;
+/** R2-23: the cap before R2-23. A stored pair with this many contexts and
+ * no `x` flag may have been cut short and is refetched once. */
+const LEGACY_MAX_CONTEXTS = 4;
 const MAX_CONTEXT_CHARS = 400;
 export const S2_KEYLESS_INTERVAL_MS = 1100;
 export const S2_KEYED_INTERVAL_MS = 1000;
@@ -71,11 +75,14 @@ const BACKOFF_BASE_MS = 2000;
 const BACKOFF_MAX_MS = 60_000;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-/** One stored pair: intents, contexts, isInfluential. */
+/** One stored pair: intents, contexts, isInfluential. `x: 1` (R2-23) marks
+ * a pair with {@link LEGACY_MAX_CONTEXTS} or more contexts stored under
+ * the R2-23 cap ({@link MAX_CONTEXTS}), i.e. not cut at the old cap. */
 export interface StoredPair {
   i: string[];
   c: string[];
   f: boolean | null;
+  x?: 1;
 }
 
 export interface CitingEntry {
@@ -123,6 +130,9 @@ export interface S2CitationStats {
   /** R2-14: `/citations` lists fetched / failed for expansion. */
   citationListsFetched: number;
   citationListsFailed: number;
+  /** R2-23: stored pairs refetched because the old 4-context cap may have
+   * cut them short. */
+  contextRefreshes: number;
 }
 
 type PaperLike = Record<string, unknown>;
@@ -230,15 +240,24 @@ export function findReference(refs: readonly RawRef[], cited: PaperLike): RawRef
 function compact(ref: RawRef): StoredPair {
   const strings = (v: unknown): string[] =>
     Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : [];
+  const c = strings(ref.contexts)
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .slice(0, MAX_CONTEXTS)
+    .map((s) => Array.from(s).slice(0, MAX_CONTEXT_CHARS).join(""));
   return {
     i: strings(ref.intents),
-    c: strings(ref.contexts)
-      .map((c) => c.trim())
-      .filter(Boolean)
-      .slice(0, MAX_CONTEXTS)
-      .map((c) => Array.from(c).slice(0, MAX_CONTEXT_CHARS).join("")),
+    c,
     f: typeof ref.isInfluential === "boolean" ? ref.isInfluential : null,
+    ...(c.length >= LEGACY_MAX_CONTEXTS ? { x: 1 as const } : {}),
   };
+}
+
+/** R2-23: a stored pair that may have been cut at the pre-R2-23 cap of
+ * {@link LEGACY_MAX_CONTEXTS} contexts (S2 often has 5–20 per pair; the
+ * build / contrast sentence was often among the dropped ones). */
+export function maybeTruncated(pair: StoredPair | null | undefined): boolean {
+  return pair != null && pair.c.length >= LEGACY_MAX_CONTEXTS && pair.x !== 1;
 }
 
 function signalsOf(pair: StoredPair | null): PairSignals {
@@ -321,6 +340,7 @@ export class S2CitationSource {
     pairsMissing: 0,
     citationListsFetched: 0,
     citationListsFailed: 0,
+    contextRefreshes: 0,
   };
 
   constructor(cachePath: string | null, deps: S2CitationDeps) {
@@ -353,8 +373,27 @@ export class S2CitationSource {
     if (entry) {
       if (entry.s2 === null) return { kind: "no_s2_data", reason: "citing-not-in-s2" };
       if (Object.hasOwn(entry.pairs, dk)) {
-        this.stats.cacheHits += 1;
-        return { kind: "pair", signals: signalsOf(entry.pairs[dk] ?? null) };
+        const stored = entry.pairs[dk] ?? null;
+        if (!maybeTruncated(stored)) {
+          this.stats.cacheHits += 1;
+          return { kind: "pair", signals: signalsOf(stored) };
+        }
+        // R2-23: stored under the old 4-context cap — refetch the citing
+        // paper once (shared by its other pairs this run); keep the stored
+        // contexts if S2 cannot be reached.
+        const refreshed = await this.refsFor(ck, citing, entry);
+        if (typeof refreshed === "string") {
+          this.stats.cacheHits += 1;
+          return { kind: "pair", signals: signalsOf(stored) };
+        }
+        const ref = findReference(refreshed.refs, cited);
+        // Not found again: keep the stored contexts, marked as checked so
+        // later runs do not refetch for it.
+        const pair = ref === null ? { ...(stored as StoredPair), x: 1 as const } : compact(ref);
+        refreshed.entry.pairs[dk] = pair;
+        this.dirty.add(ck);
+        this.stats.contextRefreshes += 1;
+        return { kind: "pair", signals: signalsOf(pair) };
       }
     }
     const loaded = await this.refsFor(ck, citing, entry);
@@ -613,7 +652,8 @@ export class S2CitationSource {
     const s = this.stats;
     return (
       `s2 citations summary: lookups=${s.lookups} (cache hits ${s.cacheHits}), ` +
-      `pairs found=${s.pairsFound} missing=${s.pairsMissing}, citing fetched=${s.citingFetched} ` +
+      `pairs found=${s.pairsFound} missing=${s.pairsMissing}, context refreshes=${s.contextRefreshes}, ` +
+      `citing fetched=${s.citingFetched} ` +
       `not-in-s2=${s.citingNotInS2} failed=${s.citingFailed}, requests=${s.requests} ` +
       `429=${s.rateLimited} retries=${s.retries}, key=${this.deps.apiKey ? "yes" : "no"}`
     );

@@ -227,6 +227,7 @@ function s2EvidenceSha(
   dstId: string,
   signals: PairSignals,
   citingTitle: string | null,
+  abstractSentence: string | null = null,
 ): string {
   return canonicalJsonSha256({
     src: srcId,
@@ -238,6 +239,9 @@ function s2EvidenceSha(
       is_influential: signals.isInfluential,
       citing_title: citingTitle,
     },
+    // R2-23: only when the claim rests on an abstract sentence (keeps the
+    // hash of every other edge unchanged).
+    ...(abstractSentence !== null ? { abstract_sentence: abstractSentence } : {}),
   });
 }
 
@@ -252,19 +256,39 @@ export function ruleEdge(
   const mapped = v1RelationFor(r.relation, { contrast: r.contrast, targetsCited: r.singleTarget });
   if (mapped === null) return null;
   const citingTitle = typeof child.title === "string" ? child.title : null;
+  // R2-23: a claim read from the citing paper's own abstract says so and
+  // quotes the abstract sentence as `要旨: "…"` (the site labels its source).
+  const how = r.fromAbstract
+    ? "（引用元の論文の要旨から規則で判定）。"
+    : "（Semantic Scholar の引用文・引用の意図から規則で判定）。";
+  const q = r.fromAbstract
+    ? abstractQuote(r.evidence)
+    : quote(r.quotable ? r.evidence : null).trimStart();
   return {
     relation: mapped,
     confidence: r.confidence,
-    rationale:
-      `${ruleSentence(r.relation, mapped, parent, child)}` +
-      `（Semantic Scholar の引用文・引用の意図から規則で判定）。${quote(r.quotable ? r.evidence : null).trimStart()}`,
+    rationale: `${ruleSentence(r.relation, mapped, parent, child)}${how}${q}`,
     provenance: "s2_context_rule",
     evidence: {
       source: "semantic_scholar",
       kind: "citation-context",
-      sha256: s2EvidenceSha(ids.srcId, ids.dstId, signals, citingTitle),
+      sha256: s2EvidenceSha(
+        ids.srcId,
+        ids.dstId,
+        signals,
+        citingTitle,
+        r.fromAbstract ? r.evidence : null,
+      ),
     },
   };
+}
+
+/** R2-23: the abstract sentence a rule edge rests on, as `要旨: "…"`. */
+export function abstractQuote(sentence: string | null): string {
+  if (!sentence) return NO_SPECIFIC_QUOTE.trimStart();
+  return quote(sentence)
+    .trimStart()
+    .replace(/^引用文:/, "要旨:");
 }
 
 /** Whether the context LLM is asked about this pair (design 43 §8). */
@@ -295,6 +319,9 @@ const NEGATIVE_CUE_RULES: ReadonlySet<string> = new Set(["phrase_protocol", "phr
  * (A survey-like citing paper never reaches here: `citing_survey`.)
  */
 export function contextLlmSkipReason(r: S2RuleResult, signals: PairSignals): string | null {
+  // R2-23: an abstract sentence is the citing authors' own statement; the
+  // context prompt only sees citation contexts, so it cannot judge it.
+  if (r.fromAbstract) return "abstract_evidence";
   if (NEGATIVE_CUE_RULES.has(r.rule) && !r.contrast) return "negative_cue";
   if (!r.cue) {
     const id = citedIdentity(signals.cited, signals.contexts);
@@ -365,7 +392,12 @@ export function mergeContextAnswer(
 }
 
 /** The rationale note for an LLM strong label that is not published. */
-export function llmHint(llmRelation: string): string {
+export function llmHint(llmRelation: string, ruleRelation: string | null = null): string {
+  // R2-23: when the rule did make a (different) strong claim, say that the
+  // two disagree instead of "no cue".
+  if (ruleRelation !== null && STRONG_V1.has(ruleRelation)) {
+    return `（引用文の LLM は ${llmRelation}、規則の手がかりは ${ruleRelation} と食い違うため強い関係としては採らない）`;
+  }
   return `（引用文の LLM は ${llmRelation} と判定したが、規則の手がかり（引用文中の継承・対比の語）がないため強い関係としては採らない）`;
 }
 
@@ -435,6 +467,19 @@ async function askContext(
 }
 
 /**
+ * R2-23: the citing paper's abstract as the generator holds it (OpenAlex
+ * inverted index / S2 abstract on the BFS paper dict, `short_abstract` on
+ * a graph node), or `null`.
+ */
+export function citingAbstractOf(child: PaperLike): string | null {
+  for (const k of ["abstract", "short_abstract"] as const) {
+    const v = child[k];
+    if (typeof v === "string" && v.trim().length >= 40) return v;
+  }
+  return null;
+}
+
+/**
  * Classify one pair from Semantic Scholar evidence. `parent` = cited
  * (older), `child` = citing (newer). Returns `null` when S2 has nothing to
  * say about the pair — the caller then uses its existing path.
@@ -462,6 +507,7 @@ export async function deriveS2Relation(
     citingTitle,
     citingSurvey: isSurveyLike(child),
     cited: parent,
+    citingAbstract: citingAbstractOf(child),
   };
   const r = classifyS2Pair(signals);
   const rule = ruleEdge(r, signals, { srcId, dstId }, parent, child);
@@ -522,7 +568,9 @@ export async function deriveS2Relation(
               parent,
               child,
             ) as DerivedEdge);
-      return { ...base, rationale: `${base.rationale}${llmHint(llmMapped)}` };
+      const hint =
+        decision === "baseline_with_hint" ? llmHint(llmMapped, rule.relation) : llmHint(llmMapped);
+      return { ...base, rationale: `${base.rationale}${hint}` };
     }
     const evidenceSentence = r.quotable
       ? r.evidence

@@ -36,9 +36,14 @@ export const MAX_QUOTE_CHARS = 300;
 /** Source label shown next to every quoted sentence. */
 export const QUOTE_SOURCE_LABEL = "Semantic Scholar";
 
+/** R2-23: source label of a sentence quoted from the citing paper's own
+ * abstract (`要旨: "…"`) rather than a Semantic Scholar citation context. */
+export const ABSTRACT_SOURCE_LABEL = "新しい論文の要旨";
+
 // The pipeline writes the quote as `引用文: "…"` (ASCII or curly quotes)
-// at the end of the rationale (apps/pipeline lineage/theme s2Relations).
-const QUOTE_RE = /\s*引用文\s*[:：]\s*["“「]([\s\S]+?)["”」]\s*[。.]?\s*$/;
+// at the end of the rationale (apps/pipeline lineage/theme s2Relations),
+// or `要旨: "…"` when the sentence is from the citing paper's abstract.
+const QUOTE_RE = /\s*(引用文|要旨)\s*[:：]\s*["“「]([\s\S]+?)["”」]\s*[。.]?\s*$/;
 
 export interface EdgeEvidence {
   /** Rationale with the quoted part removed (never empty if the
@@ -46,6 +51,9 @@ export interface EdgeEvidence {
   summary: string;
   /** The quoted citation sentence, clipped to MAX_QUOTE_CHARS, or null. */
   quote: string | null;
+  /** Where the quote comes from: a citation context or the citing
+   * paper's abstract (absent when there is no quote). */
+  quoteSource?: "citation-context" | "abstract";
 }
 
 export function clipQuote(text: string, max: number = MAX_QUOTE_CHARS): string {
@@ -58,9 +66,14 @@ export function parseEdgeEvidence(rationale: string | null | undefined): EdgeEvi
   const text = typeof rationale === "string" ? rationale.trim() : "";
   const m = QUOTE_RE.exec(text);
   if (!m || m.index === undefined) return { summary: text, quote: null };
-  const quote = clipQuote(m[1] ?? "");
+  const quote = clipQuote(m[2] ?? "");
   const summary = text.slice(0, m.index).trim();
-  return { summary: summary || text, quote: quote || null };
+  if (!quote) return { summary: summary || text, quote: null };
+  return {
+    summary: summary || text,
+    quote,
+    quoteSource: m[1] === "要旨" ? "abstract" : "citation-context",
+  };
 }
 
 const ARXIV_RE = /^\d{4}\.\d{4,5}(v\d+)?$/;
