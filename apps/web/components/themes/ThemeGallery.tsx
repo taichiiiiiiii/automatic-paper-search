@@ -10,6 +10,7 @@ import Link from "next/link";
 import type { ThemeManifestEntry, ThemeQualityRollup } from "../../lib/themes-gallery";
 import {
   formatThemeAge,
+  QUALITY_TIERS,
   qualityTierFor,
   safeDisplayCount,
   sortGalleryManifest,
@@ -43,14 +44,19 @@ export function ThemeGallery({
     >
       {sorted.map((entry) => {
         const tier = qualityTierFor(qualityRollup[entry.slug]);
+        // R2 UX P1-3: the rationale-style hint is telemetry, not a quality
+        // verdict; show it only for human-audited themes so it never sits
+        // under the 未監査 badge looking like an endorsement.
+        const showRationaleStyle = entry.publication_tier === "audited" && tier !== "unknown";
         const q = qualityRollup[entry.slug];
         const isCurrent = entry.slug === currentSlug;
         const yearRange =
           Array.isArray(entry.year_range) && entry.year_range.length === 2
             ? `${entry.year_range[0]}–${entry.year_range[1]}`
             : "";
-        const borderClass =
-          tier === "high"
+        const borderClass = !showRationaleStyle
+          ? "border-l-4 border-l-transparent"
+          : tier === "high"
             ? "border-l-4 border-l-[var(--rel-extends)]"
             : tier === "mixed"
               ? "border-l-4 border-l-[var(--color-oral)]"
@@ -81,15 +87,15 @@ export function ThemeGallery({
               </div>
             )}
             <div className="text-xs text-ink-muted">
-              {safeDisplayCount(entry.paper_count)} papers · {yearRange}
+              {safeDisplayCount(entry.paper_count)} 論文 · {yearRange}
             </div>
             <div className="text-xs text-ink-subtle">{formatThemeAge(entry.generated_at, now)}</div>
-            {tier !== "unknown" && q && typeof q.template_ratio === "number" && (
+            {showRationaleStyle && q && typeof q.template_ratio === "number" && (
               <div
-                className="text-xs text-ink-muted"
-                title={`template_ratio=${Math.round(q.template_ratio * 100)}% · ${q.template_count ?? 0}/${q.edge_count ?? 0} edges`}
+                className="text-xs text-ink-subtle"
+                title={`${QUALITY_TIERS[tier].desc}（定型文の割合 ${Math.round(q.template_ratio * 100)}%・${q.template_count ?? 0}/${q.edge_count ?? 0} 関係）`}
               >
-                {tier === "high" ? "🟢 高品質" : tier === "mixed" ? "🟡 混在" : "🔴 汎用"}
+                {QUALITY_TIERS[tier].label}
               </div>
             )}
           </Link>

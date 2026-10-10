@@ -416,7 +416,7 @@ describe("ThemesClient: onReady redirect target (M4 review2 MEDIUM-1: relative ?
     // Reached the "ready" phase (gallery + picker visible) -- open the
     // about/new-theme panel, which is the only place ThemeRequestForm
     // (and its onReady prop) ever mounts.
-    fireEvent.click(screen.getByRole("button", { name: /について/ }));
+    fireEvent.click(screen.getByRole("button", { name: /新しいテーマを依頼/ }));
     // The form mounts once /api/health says the Worker is accepting.
     await screen.findByLabelText(/テーマを自分で生成/);
     fireEvent.change(screen.getByLabelText(/テーマを自分で生成/), {

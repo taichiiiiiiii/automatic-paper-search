@@ -28,21 +28,58 @@ export type ProgressStep = (typeof PROGRESS_STEPS)[number];
  * HTML attribute list) for ~5 days unnoticed; keeping the labels here
  * instead of inline JSX literals removes that second copy entirely —
  * the step list has exactly one definition. */
+// R2 UX P2-10: user terms only -- no internal stack names (Actions,
+// develop, commit, Groq/LLM). The `commit` key is kept for step-order
+// stability; it now covers the automatic checks + publication.
 export const PROGRESS_STEP_LABELS: Record<ProgressStep, string> = {
-  dispatch: "📨 ジョブを送信",
-  queue: "⏳ Actions キュー待ち",
-  generate: "🔍 論文収集 + LLM 関係分類",
-  commit: "📦 develop に commit",
-  ready: "✅ 完了 → 自動で表示します",
+  dispatch: "📨 受付",
+  queue: "⏳ 処理の順番待ち",
+  generate: "🔍 論文収集と関係の判定",
+  commit: "🧪 自動検査",
+  ready: "✅ 公開（未監査）→ 自動で表示します",
 };
+
+/** Words that must never appear in user-facing progress/failure copy
+ * (internal stack names; the Python pipeline no longer exists). */
+export const INTERNAL_TERMS_RE =
+  /develop|commit|Groq|GitHub Actions|Actions|build_theme_lineage|\.py\b|workflow|ワークフロー/i;
 
 // 5 s feels responsive while staying well under the GH API rate limit
 // even with several concurrent users.
 export const POLL_INTERVAL_MS = 5_000;
-// 12 min hard cap: the theme-on-demand workflow times out at 15 min; we
-// surface "taking too long" before that so the user isn't left staring
-// at a manifest that will never update.
-export const POLL_TIMEOUT_MS = 12 * 60 * 1_000;
+// 15 min hard cap, matching the copy ("最大 15 分ほど") and the
+// generation job's own timeout; a run that times out earlier is caught
+// by the periodic status check (failureFromRun "timed_out") first.
+export const POLL_TIMEOUT_MINUTES = 15;
+export const POLL_TIMEOUT_MS = POLL_TIMEOUT_MINUTES * 60 * 1_000;
+
+/** Copy shared by the request form (hint, success, timeout). */
+export const THEME_REQUEST_HINT =
+  "英語で 2〜80 文字（英数字・スペース・ハイフン「-」・アンダースコア「_」）。完了まで通常 5〜15 分かかります。";
+export const THEME_INPUT_INVALID_MESSAGE =
+  "テーマ名は英語で、2〜80 文字の英数字・スペース・ハイフン「-」・アンダースコア「_」で入力してください（例: Vision Transformer）。";
+export const THEME_INPUT_JAPANESE_MESSAGE =
+  "テーマ名は英語で入力してください（例: 「視覚トランスフォーマー」ではなく Vision Transformer）。";
+export const THEME_QUEUED_MESSAGE =
+  "🚀 受け付けました。最大 15 分ほどで「未監査（自動生成）」として公開されます。完了後にこのページを再読み込みしてください。";
+export const POLL_TIMEOUT_FAILURE = {
+  title: `生成がタイムアウトしました（${POLL_TIMEOUT_MINUTES} 分経過）`,
+  message:
+    "論文データの取得先が混み合っているか、一時的な不調の可能性があります。しばらく待ってから再試行するか、公開中のテーマをご覧ください。",
+} as const;
+export const QUALITY_FAILED_FAILURE = {
+  title: "生成されましたが自動検査に合格しませんでした",
+  message:
+    "系譜は作成されましたが、自動検査（形式・識別子・関係の根拠）に合格しなかったため公開していません。別のテーマ名で試すか、しばらく時間をおいて再度お試しください。",
+} as const;
+
+/** Validation message for a raw theme input, or null when valid. */
+export function themeInputProblem(raw: string, pattern: RegExp): string | null {
+  const t = raw.trim();
+  if (JAPANESE_CHAR_RE.test(t)) return THEME_INPUT_JAPANESE_MESSAGE;
+  if (!pattern.test(t)) return THEME_INPUT_INVALID_MESSAGE;
+  return null;
+}
 // 4 failures x 5s ~= 20s of trouble before a soft "retrying" warning.
 export const POLL_FAILURE_THRESHOLD = 4;
 // 1 status check per 6 manifest polls ~= once every 30s.
@@ -94,24 +131,23 @@ export function failureFromRun(run: GithubActionsRun | null | undefined): RunFai
   const url = typeof run.html_url === "string" ? run.html_url : "";
   if (conclusion === "failure") {
     return {
-      title: "ワークフロー実行が失敗しました",
+      title: "生成に失敗しました",
       message:
-        "GitHub Actions の theme-on-demand ジョブが failure で完了しました。S2 のレート制限、Groq LLM の TPM 上限、または build_theme_lineage.py の内部エラーの可能性があります。ログから原因を特定してください。",
+        "系譜の生成処理がエラーで終了しました。論文データの取得先の混雑や一時的な不調の可能性があります。時間をおいて再試行してください。",
       runUrl: url,
     };
   }
   if (conclusion === "cancelled") {
     return {
-      title: "ワークフローがキャンセルされました",
-      message: "GitHub Actions のジョブが外部からキャンセルされました。再試行してください。",
+      title: "生成が中止されました",
+      message: "生成処理が途中で中止されました。再試行してください。",
       runUrl: url,
     };
   }
   if (conclusion === "timed_out") {
     return {
-      title: "ワークフローがタイムアウトしました",
-      message:
-        "ジョブが GitHub Actions 側で時間切れになりました (workflow timeout-minutes 超過)。数分待ってから再試行してください。",
+      title: "生成がタイムアウトしました",
+      message: "生成処理が制限時間内に終わりませんでした。数分待ってから再試行してください。",
       runUrl: url,
     };
   }

@@ -3,13 +3,12 @@ import { buildMetadata } from "../../lib/metadata";
 
 // app/themes/page.tsx is a Client Component (useSearchParams + the
 // theme-request form), so metadata lives in this small server-component
-// layout alongside it, matching docs/themes/index.html's <title> /
-// <meta name="description"> exactly.
+// layout alongside it.
 export const metadata = buildMetadata({
   path: "/themes/",
-  title: "系譜の公開準備状況 | PaperPilot",
+  title: "テーマ別の系譜 | PaperPilot",
   description:
-    "PaperPilot の論文系譜について、品質監査を通過した公開対象の準備状況を案内します。未合格のデータは表示しません。",
+    "テーマごとに論文の系譜（家系図）を時系列で表示します。各関係の根拠と Semantic Scholar の引用文を確認できます。自動検査に合格した系譜だけを公開します。",
 });
 
 export default function ThemesLayout({ children }: { children: ReactNode }) {
