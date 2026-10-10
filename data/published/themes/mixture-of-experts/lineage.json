@@ -1,295 +1,651 @@
 {
   "schema_version": "lineage-artifact-v1",
-  "root": "openalex:W4408858386",
+  "root": "openalex:W4226079124",
   "nodes": [
     {
-      "id": "openalex:W4220967350",
-      "title": "FasterMoE",
-      "year": 2022,
-      "venue": "ACM SIGPLAN Symposium on Principles and Practice of Parallel Programming",
+      "id": "openalex:W1593114658",
+      "title": "Learning Factored Representations in a Deep Mixture of Experts",
+      "year": 2013,
+      "venue": "arXiv (Cornell University)",
       "venue_tier": "preprint",
       "authors": [
-        "Jiaao He",
-        "Jidong Zhai",
-        "Tiago Antunes",
-        "Haojie Wang",
-        "Fuwen Luo"
+        "David Eigen",
+        "Marc’Aurelio Ranzato",
+        "Ilya Sutskever"
       ],
       "kinds": [],
-      "citation_count": 98,
+      "citation_count": 134,
       "github_stars": 0,
-      "tldr": "The current trend in deep learning is to scale models to extremely large sizes with the objective of increasing their accuracy.…",
-      "short_abstract": "The current trend in deep learning is to scale models to extremely large sizes with the objective of increasing their accuracy. Mixture-of-Expert (MoE) is the most popular pre-trained model that makes feasible the training of models with parameters beyond trillion-scale. Thanks to the dynamic activation of experts, i.e., shallow layers specialized in certain domains, it allows for sparse training of bigger models, removing the linearity between model size and computation. However, different from traditional deep learning models, it draws huge challenges to the efficiency of these training systems, including dynamic load imbalance, inefficient synchronous execution mode, and congested all-to-all communication.",
-      "doi": "10.1145/3503221.3508418",
-      "aliases": [
-        [
-          "doi",
-          "10.1145/3503221.3508418"
-        ]
-      ],
-      "is_focus": false
-    },
-    {
-      "id": "openalex:W4224299101",
-      "title": "StableMoE: Stable Routing Strategy for Mixture of Experts",
-      "year": 2022,
-      "venue": "Annual Meeting of the Association for Computational Linguistics (ACL)",
-      "venue_tier": "A+",
-      "authors": [
-        "Damai Dai",
-        "Li Dong",
-        "Shuming Ma",
-        "Bo Zheng",
-        "Zhifang Sui"
-      ],
-      "kinds": [],
-      "citation_count": 37,
-      "github_stars": 0,
-      "tldr": "The Mixture-of-Experts (MoE) technique can scale up the model size of Transformers with an affordable computational overhead.We point out…",
-      "short_abstract": "The Mixture-of-Experts (MoE) technique can scale up the model size of Transformers with an affordable computational overhead.We point out that existing learning-to-route MoE methods suffer from the routing fluctuation issue, i.e., the target expert of the same input may change along with training, but only one expert will be activated for the input during inference.The routing fluctuation tends to harm sample efficiency because the same input updates different experts but only one is finally used.In this paper, we propose STABLEMOE with two training stages to address the routing fluctuation problem.In the first training stage, we learn a balanced and cohesive routing strategy and distill it into a lightweight router decoupled from the backbone model.In the second training stage, we utilize the distilled router to determine the token-to-expert assignment and freeze it for a stable routing strategy.We validate our method on language modeling and multilingual machine translation.The…",
-      "doi": "10.18653/v1/2022.acl-long.489",
-      "aliases": [
-        [
-          "doi",
-          "10.18653/v1/2022.acl-long.489"
-        ]
-      ],
-      "is_focus": false
-    },
-    {
-      "id": "openalex:W4283815817",
-      "title": "Go Wider Instead of Deeper",
-      "year": 2022,
-      "venue": "Proceedings of the AAAI Conference on Artificial Intelligence",
-      "venue_tier": "A",
-      "authors": [
-        "Fuzhao Xue",
-        "Ziji Shi",
-        "Futao Wei",
-        "Yuxuan Lou",
-        "Yong Liu"
-      ],
-      "kinds": [],
-      "citation_count": 53,
-      "github_stars": 0,
-      "tldr": "More transformer blocks with residual connections have recently achieved impressive results on various tasks. To achieve better…",
-      "short_abstract": "More transformer blocks with residual connections have recently achieved impressive results on various tasks. To achieve better performance with fewer trainable parameters, recent methods are proposed to go shallower by parameter sharing or model compressing along with the depth. However, weak modeling capacity limits their performance. Contrastively, going wider by inducing more trainable matrixes and parameters would produce a huge model requiring advanced parallelism to train and inference. In this paper, we propose a parameter-efficient framework, going wider instead of deeper. Specially, following existing works, we adapt parameter sharing to compress along depth. But, such deployment would limit the performance. To maximize modeling capacity, we scale along model width by replacing feed-forward network (FFN) with mixture-of-experts (MoE). Across transformer blocks, instead of sharing normalization layers, we propose to use individual layernorms to transform various semantic…",
-      "doi": "10.1609/aaai.v36i8.20858",
-      "aliases": [
-        [
-          "doi",
-          "10.1609/aaai.v36i8.20858"
-        ]
-      ],
-      "is_focus": false
-    },
-    {
-      "id": "openalex:W4285134706",
-      "title": "MoEfication: Transformer Feed-forward Layers are Mixtures of Experts",
-      "year": 2022,
-      "venue": "Findings of the Association for Computational Linguistics: ACL 2022",
-      "venue_tier": "A+",
-      "authors": [
-        "Zhengyan Zhang",
-        "Yankai Lin",
-        "Zhiyuan Liu",
-        "Peng Li",
-        "Maosong Sun"
-      ],
-      "kinds": [],
-      "citation_count": 47,
-      "github_stars": 0,
-      "tldr": "Recent work has shown that feed-forward networks (FFNs) in pre-trained Transformers are a key component, storing various linguistic and…",
-      "short_abstract": "Recent work has shown that feed-forward networks (FFNs) in pre-trained Transformers are a key component, storing various linguistic and factual knowledge.However, the computational patterns of FFNs are still unclear.In this work, we study the computational patterns of FFNs and observe that most inputs only activate a tiny ratio of neurons of FFNs.This phenomenon is similar to the sparsity of the human brain, which drives research on functional partitions of the human brain.To verify whether functional partitions also emerge in FFNs, we propose to convert a model into its MoE version with the same parameters, namely MoEfication.Specifically, MoEfication consists of two phases: (1) splitting the parameters of FFNs into multiple functional partitions as experts, and (2) building expert routers to decide which experts will be used for each input.Experimental results show that MoEfication can conditionally use 10% to 30% of FFN parameters while maintaining over 95% original performance…",
-      "doi": "10.18653/v1/2022.findings-acl.71",
-      "aliases": [
-        [
-          "doi",
-          "10.18653/v1/2022.findings-acl.71"
-        ]
-      ],
-      "is_focus": false
-    },
-    {
-      "id": "openalex:W4364382874",
-      "title": "FlexMoE: Scaling Large-scale Sparse Pre-trained Model Training via Dynamic Device Placement",
-      "year": 2023,
-      "venue": "Proceedings of the ACM on Management of Data",
-      "venue_tier": "preprint",
-      "authors": [
-        "Xiaonan Nie",
-        "Xupeng Miao",
-        "Zilong Wang",
-        "Zichao Yang",
-        "Jilong Xue"
-      ],
-      "kinds": [],
-      "citation_count": 41,
-      "github_stars": 0,
-      "tldr": "With the increasing data volume, there is a trend of using large-scale pre-trained models to store the knowledge into an enormous number…",
-      "short_abstract": "With the increasing data volume, there is a trend of using large-scale pre-trained models to store the knowledge into an enormous number of model parameters. The training of these models is composed of lots of dense algebras, requiring a huge amount of hardware resources. Recently, sparsely-gated Mixture-of-Experts (MoEs) are becoming more popular and have demonstrated impressive pretraining scalability in various downstream tasks. However, such a sparse conditional computation may not be effective as expected in practical systems due to the routing imbalance and fluctuation problems. Generally, MoEs are becoming a new data analytics paradigm in the data life cycle and suffering from unique challenges at scales, complexities, and granularities never before possible. In this paper, we propose a novel DNN training framework, FlexMoE, which systematically and transparently address the inefficiency caused by dynamic dataflow. We first present an empirical analysis on the problems and…",
-      "arxiv_id": "2304.03946",
-      "doi": "10.1145/3588964",
+      "tldr": "Mixtures of Experts combine the outputs of several \"expert\" networks, each of which specializes in a different part of the input space.…",
+      "short_abstract": "Mixtures of Experts combine the outputs of several \"expert\" networks, each of which specializes in a different part of the input space. This is achieved by training a \"gating\" network that maps each input to a distribution over the experts. Such models show promise for building larger networks that are still cheap to compute at test time, and more parallelizable at training time. In this this work, we extend the Mixture of Experts to a stacked model, the Deep Mixture of Experts, with multiple sets of gating and experts. This exponentially increases the number of effective experts by associating each input with a combination of experts at each layer, yet maintains a modest model size. On a randomly translated version of the MNIST dataset, we find that the Deep Mixture of Experts automatically learns to develop location-dependent (\"where\") experts at the first layer, and class-specific (\"what\") experts at the second layer. In addition, we see that the different combinations are in use…",
+      "arxiv_id": "1312.4314",
+      "doi": "10.48550/arxiv.1312.4314",
       "aliases": [
         [
           "arxiv",
-          "2304.03946"
+          "1312.4314"
         ],
         [
           "doi",
-          "10.1145/3588964"
+          "10.48550/arxiv.1312.4314"
         ]
       ],
       "is_focus": false
     },
     {
-      "id": "openalex:W4376652719",
-      "title": "A Hybrid Tensor-Expert-Data Parallelism Approach to Optimize Mixture-of-Experts Training",
-      "year": 2023,
-      "venue": "International Conference on Supercomputing",
+      "id": "openalex:W2179423374",
+      "title": "Conditional Computation in Neural Networks for faster models",
+      "year": 2015,
+      "venue": "arXiv (Cornell University)",
       "venue_tier": "preprint",
       "authors": [
-        "Siddharth Singh",
-        "Olatunji Ruwase",
-        "Ammar Ahmad Awan",
-        "Samyam Rajbhandari",
-        "Yuxiong He"
+        "Emmanuel Bengio",
+        "Pierre‐Luc Bacon",
+        "Joëlle Pineau",
+        "Doina Precup"
       ],
       "kinds": [],
-      "citation_count": 41,
+      "citation_count": 143,
       "github_stars": 0,
-      "tldr": "Mixture-of-Experts (MoE) is a neural network architecture that adds sparsely activated expert blocks to a base model, increasing the…",
-      "short_abstract": "Mixture-of-Experts (MoE) is a neural network architecture that adds sparsely activated expert blocks to a base model, increasing the number of parameters without impacting computational costs. However, current distributed deep learning frameworks are limited in their ability to train high-quality MoE models with large base models. In this work, we present DeepSpeed-TED, a novel, three-dimensional, hybrid parallel algorithm that combines data, tensor, and expert parallelism to enable the training of MoE models with 4--8× larger base models than the current state-of-the-art. We also describe memory optimizations in the optimizer step, and communication optimizations that eliminate unnecessary data movement. We implement our approach in DeepSpeed and achieve speedups of 26% over a baseline (i.e. without our communication optimizations) when training a 40 billion parameter MoE model (6.7 billion base model with 16 experts) on 128 V100 GPUs.",
-      "arxiv_id": "2303.06318",
-      "doi": "10.1145/3577193.3593704",
+      "tldr": "Deep learning has become the state-of-art tool in many applications, but the evaluation and training of deep models can be time-consuming…",
+      "short_abstract": "Deep learning has become the state-of-art tool in many applications, but the evaluation and training of deep models can be time-consuming and computationally expensive. The conditional computation approach has been proposed to tackle this problem (Bengio et al., 2013; Davis & Arel, 2013). It operates by selectively activating only parts of the network at a time. In this paper, we use reinforcement learning as a tool to optimize conditional computation policies. More specifically, we cast the problem of learning activation-dependent policies for dropping out blocks of units as a reinforcement learning problem. We propose a learning scheme motivated by computation speed, capturing the idea of wanting to have parsimonious activations while maintaining prediction accuracy. We apply a policy gradient algorithm for learning policies that optimize this loss function and propose a regularization mechanism that encourages diversification of the dropout policy. We present encouraging empirical…",
+      "arxiv_id": "1511.06297",
+      "doi": "10.48550/arxiv.1511.06297",
       "aliases": [
         [
           "arxiv",
-          "2303.06318"
+          "1511.06297"
         ],
         [
           "doi",
-          "10.1145/3577193.3593704"
+          "10.48550/arxiv.1511.06297"
         ]
       ],
       "is_focus": false
     },
     {
-      "id": "openalex:W4386076670",
-      "title": "Mod-Squad: Designing Mixtures of Experts As Modular Multi-Task Learners",
-      "year": 2023,
-      "venue": "IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings",
-      "venue_tier": "A+",
-      "authors": [
-        "Zitian Chen",
-        "Yikang Shen",
-        "Mingyu Ding",
-        "Zhenfang Chen",
-        "Hengshuang Zhao"
-      ],
-      "kinds": [],
-      "citation_count": 92,
-      "github_stars": 0,
-      "tldr": "Optimization in multi-task learning (MTL) is more challenging than single-task learning (STL), as the gradient from different tasks can be…",
-      "short_abstract": "Optimization in multi-task learning (MTL) is more challenging than single-task learning (STL), as the gradient from different tasks can be contradictory. When tasks are related, it can be beneficial to share some parameters among them (cooperation). However, some tasks require additional parameters with expertise in a specific type of data or discrimination (specialization). To address the MTL challenge, we propose Mod-Squad, a new model that is Modularized into groups of experts (a ‘Squad’). This structure allows us to formalize cooperation and specialization as the process of matching experts and tasks. We optimize this matching process during the training of a single model. Specifically, we incorporate mixture of experts (MoE) layers into a transformer model, with a new loss that incorporates the mutual dependence between tasks and experts. As a result, only a small set of experts are activated for each task. This prevents the sharing of the entire backbone model between all…",
-      "doi": "10.1109/cvpr52729.2023.01138",
-      "aliases": [
-        [
-          "doi",
-          "10.1109/cvpr52729.2023.01138"
-        ]
-      ],
-      "is_focus": false
-    },
-    {
-      "id": "openalex:W4389520274",
-      "title": "Scaling Vision-Language Models with Sparse Mixture of Experts",
-      "year": 2023,
-      "venue": "arXiv",
+      "id": "openalex:W2242818861",
+      "title": "Estimating or Propagating Gradients Through Stochastic Neurons for Conditional Computation",
+      "year": 2013,
+      "venue": "arXiv (Cornell University)",
       "venue_tier": "preprint",
       "authors": [
-        "Sheng Shen",
-        "Zhewei Yao",
-        "Chunyuan Li",
-        "Trevor J. Darrell",
-        "Kurt Keutzer"
+        "Yoshua Bengio",
+        "Nicholas Léonard",
+        "Aaron C. Courville"
       ],
       "kinds": [],
-      "citation_count": 53,
+      "citation_count": 1908,
       "github_stars": 0,
-      "tldr": "The field of natural language processing (NLP) has made significant strides in recent years, particularly in the development of…",
-      "short_abstract": "The field of natural language processing (NLP) has made significant strides in recent years, particularly in the development of large-scale vision-language models (VLMs).These models aim to bridge the gap between text and visual information, enabling a more comprehensive understanding of multimedia data.However, as these models become larger and more complex, they also become more challenging to train and deploy.One approach to addressing this challenge is the use of sparsely-gated mixture-of-experts (MoE) techniques, which divide the model into smaller, specialized submodels that can jointly solve a task.In this paper, we explore the effectiveness of MoE in scaling vision-language models, demonstrating its potential to achieve state-of-the-art performance on a range of benchmarks over dense models of equivalent computational cost.Our research offers valuable insights into stabilizing the training of MoE models, understanding the impact of MoE on model interpretability, and balancing…",
-      "doi": "10.18653/v1/2023.findings-emnlp.758",
-      "aliases": [
-        [
-          "doi",
-          "10.18653/v1/2023.findings-emnlp.758"
-        ]
-      ],
-      "is_focus": false
-    },
-    {
-      "id": "openalex:W4408858386",
-      "title": "A Survey on Mixture of Experts in Large Language Models",
-      "year": 2025,
-      "venue": "IEEE Transactions on Knowledge and Data Engineering",
-      "venue_tier": "preprint",
-      "authors": [
-        "Weilin Cai",
-        "Juyong Jiang",
-        "Fan Wang",
-        "Jing Tang",
-        "Sunghun Kim"
-      ],
-      "kinds": [],
-      "citation_count": 159,
-      "github_stars": 511,
-      "tldr": "Large language models (LLMs) have garnered unprecedented advancements across diverse fields, ranging from natural language processing to…",
-      "short_abstract": "Large language models (LLMs) have garnered unprecedented advancements across diverse fields, ranging from natural language processing to computer vision and beyond. The prowess of LLMs is underpinned by their substantial model size, extensive and diverse datasets, and the vast computational power harnessed during training, all of which contribute to the emergent abilities of LLMs (e.g., in-context learning) that are not present in small models. Within this context, the mixture of experts (MoE) has emerged as an effective method for substantially scaling up model capacity with minimal computation overhead, gaining significant attention from academia and industry. Despite its growing prevalence, there lacks a systematic and comprehensive review of the literature on MoE. This survey seeks to bridge that gap, serving as an essential resource for researchers delving into the intricacies of MoE. We first briefly introduce the structure of the MoE layer, followed by proposing a new taxonomy…",
-      "arxiv_id": "2407.06204",
-      "doi": "10.1109/tkde.2025.3554028",
+      "tldr": "Stochastic neurons and hard non-linearities can be useful for a number of reasons in deep learning models, but in many cases they pose a…",
+      "short_abstract": "Stochastic neurons and hard non-linearities can be useful for a number of reasons in deep learning models, but in many cases they pose a challenging problem: how to estimate the gradient of a loss function with respect to the input of such stochastic or non-smooth neurons? I.e., can we \"back-propagate\" through these stochastic neurons? We examine this question, existing approaches, and compare four families of solutions, applicable in different settings. One of them is the minimum variance unbiased gradient estimator for stochatic binary neurons (a special case of the REINFORCE algorithm). A second approach, introduced here, decomposes the operation of a binary stochastic neuron into a stochastic binary part and a smooth differentiable part, which approximates the expected effect of the pure stochatic binary neuron to first order. A third approach involves the injection of additive or multiplicative noise in a computational graph that is otherwise differentiable. A fourth approach…",
+      "arxiv_id": "1308.3432",
+      "doi": "10.48550/arxiv.1308.3432",
       "is_focus": true,
       "aliases": [
         [
           "arxiv",
-          "2407.06204"
+          "1308.3432"
         ],
         [
           "doi",
-          "10.1109/tkde.2025.3554028"
+          "10.48550/arxiv.1308.3432"
         ]
       ],
-      "github_url": "https://github.com/withinmiaov/A-Survey-on-Mixture-of-Experts-in-LLMs",
-      "seed_paper_id": "cf71b221c545e3a8e9be71b6f2c5842765c70a65"
+      "seed_paper_id": "670ebdd3ebf1c9b43680e8d75e2102cf2a634f41"
     },
     {
-      "id": "openalex:W4417130747",
-      "title": "Mixture of Experts for Decentralized Generative AI and Reinforcement Learning in Wireless Networks: A Comprehensive Survey",
-      "year": 2025,
-      "venue": "IEEE Communications Surveys & Tutorials",
-      "venue_tier": "preprint",
+      "id": "openalex:W2554616628",
+      "title": "Expert Gate: Lifelong Learning with a Network of Experts",
+      "year": 2017,
+      "venue": "IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings",
+      "venue_tier": "A+",
       "authors": [
-        "Yunting Xu",
-        "Jiacheng Wang",
-        "Ruichen Zhang",
-        "Changyuan Zhao",
-        "Dusit Tao Niyato"
+        "Rahaf Aljundi",
+        "Punarjay Chakravarty",
+        "Tinne Tuytelaars"
       ],
       "kinds": [],
-      "citation_count": 8,
+      "citation_count": 612,
       "github_stars": 0,
-      "tldr": "Mixture of Experts (MoE) has emerged as a promising paradigm for scaling model capacity while preserving computational efficiency,…",
-      "short_abstract": "Mixture of Experts (MoE) has emerged as a promising paradigm for scaling model capacity while preserving computational efficiency, particularly in large-scale machine learning architectures such as large language models (LLMs). Recent advances in MoE have facilitated its adoption in wireless networks to address the increasing complexity and heterogeneity of modern communication systems. This paper presents a comprehensive survey of the MoE framework in wireless networks, highlighting its potential in optimizing resource efficiency, improving scalability, and enhancing adaptability across diverse network tasks. We first introduce the fundamental concepts of MoE, including various gating mechanisms and the integration with generative AI (GenAI) and reinforcement learning (RL). Subsequently, we discuss the extensive applications of MoE across critical wireless communication scenarios, such as vehicular networks, unmanned aerial vehicles (UAVs), satellite communications, heterogeneous…",
-      "arxiv_id": "2504.19660",
-      "doi": "10.1109/comst.2025.3641591",
+      "tldr": "In this paper we introduce a model of lifelong learning, based on a Network of Experts. New tasks / experts are learned and added to the…",
+      "short_abstract": "In this paper we introduce a model of lifelong learning, based on a Network of Experts. New tasks / experts are learned and added to the model sequentially, building on what was learned before. To ensure scalability of this process, data from previous tasks cannot be stored and hence is not available when learning a new task. A critical issue in such context, not addressed in the literature so far, relates to the decision which expert to deploy at test time. We introduce a set of gating autoencoders that learn a representation for the task at hand, and, at test time, automatically forward the test sample to the relevant expert. This also brings memory efficiency as only one expert network has to be loaded into memory at any given time. Further, the autoencoders inherently capture the relatedness of one task to another, based on which the most relevant prior model to be used for training a new expert, with fine-tuning or learning-without-forgetting, can be selected. We evaluate our…",
+      "arxiv_id": "1611.06194",
+      "doi": "10.1109/cvpr.2017.753",
       "aliases": [
         [
           "arxiv",
-          "2504.19660"
+          "1611.06194"
         ],
         [
           "doi",
-          "10.1109/comst.2025.3641591"
+          "10.1109/cvpr.2017.753"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W2581624817",
+      "title": "Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer",
+      "year": 2017,
+      "venue": "arXiv (Cornell University)",
+      "venue_tier": "preprint",
+      "authors": [
+        "Noam Shazeer",
+        "Azalia Mirhoseini",
+        "Krzysztof Maziarz",
+        "Andy Davis",
+        "Quoc Viet Le"
+      ],
+      "kinds": [],
+      "citation_count": 260,
+      "github_stars": 0,
+      "tldr": "The capacity of a neural network to absorb information is limited by its number of parameters. Conditional computation, where parts of the…",
+      "short_abstract": "The capacity of a neural network to absorb information is limited by its number of parameters. Conditional computation, where parts of the network are active on a per-example basis, has been proposed in theory as a way of dramatically increasing model capacity without a proportional increase in computation. In practice, however, there are significant algorithmic and performance challenges. In this work, we address these challenges and finally realize the promise of conditional computation, achieving greater than 1000x improvements in model capacity with only minor losses in computational efficiency on modern GPU clusters. We introduce a Sparsely-Gated Mixture-of-Experts layer (MoE), consisting of up to thousands of feed-forward sub-networks. A trainable gating network determines a sparse combination of these experts to use for each example. We apply the MoE to the tasks of language modeling and machine translation, where model capacity is critical for absorbing the vast quantities of…",
+      "arxiv_id": "1701.06538",
+      "doi": "10.48550/arxiv.1701.06538",
+      "is_focus": true,
+      "aliases": [
+        [
+          "arxiv",
+          "1701.06538"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.1701.06538"
+        ]
+      ],
+      "seed_paper_id": "700812ba8457709d53da9704b9b3319de13dcd6c"
+    },
+    {
+      "id": "openalex:W2809290718",
+      "title": "Modeling Task Relationships in Multi-task Learning with Multi-gate Mixture-of-Experts",
+      "year": 2018,
+      "venue": "ACM SIGKDD International Conference on Knowledge Discovery & Data Mining (KDD)",
+      "venue_tier": "A",
+      "authors": [
+        "Jiaqi Ma",
+        "Zhe Zhao",
+        "Xinyang Yi",
+        "Jilin Chen",
+        "Lichan Hong"
+      ],
+      "kinds": [],
+      "citation_count": 1246,
+      "github_stars": 0,
+      "tldr": "Neural-based multi-task learning has been successfully used in many real-world large-scale applications such as recommendation systems.…",
+      "short_abstract": "Neural-based multi-task learning has been successfully used in many real-world large-scale applications such as recommendation systems. For example, in movie recommendations, beyond providing users movies which they tend to purchase and watch, the system might also optimize for users liking the movies afterwards. With multi-task learning, we aim to build a single model that learns these multiple goals and tasks simultaneously. However, the prediction quality of commonly used multi-task models is often sensitive to the relationships between tasks. It is therefore important to study the modeling tradeoffs between task-specific objectives and inter-task relationships. In this work, we propose a novel multi-task learning approach, Multi-gate Mixture-of-Experts (MMoE), which explicitly learns to model task relationships from data. We adapt the Mixture-of-Experts (MoE) structure to multi-task learning by sharing the expert submodels across all tasks, while also having a gating network…",
+      "doi": "10.1145/3219819.3220007",
+      "aliases": [
+        [
+          "doi",
+          "10.1145/3219819.3220007"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W2963254338",
+      "title": "Hard Mixtures of Experts for Large Scale Weakly Supervised Vision",
+      "year": 2017,
+      "venue": "IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings",
+      "venue_tier": "A+",
+      "authors": [
+        "Sam Gross",
+        "Marc’Aurelio Ranzato",
+        "Arthur D. Szlam"
+      ],
+      "kinds": [],
+      "citation_count": 74,
+      "github_stars": 0,
+      "tldr": "Training convolutional networks (CNNs) that fit on a single GPU with minibatch stochastic gradient descent has become effective in…",
+      "short_abstract": "Training convolutional networks (CNNs) that fit on a single GPU with minibatch stochastic gradient descent has become effective in practice. However, there is still no effective method for training large networks that do not fit in the memory of a few GPU cards, or for parallelizing CNN training. In this work we show that a simple hard mixture of experts model can be efficiently trained to good effect on large scale hashtag (multilabel) prediction tasks. Mixture of experts models are not new [7, 3], but in the past, researchers have had to devise sophisticated methods to deal with data fragmentation. We show empirically that modern weakly supervised data sets are large enough to support naive partitioning schemes where each data point is assigned to a single expert. Because the experts are independent, training them in parallel is easy, and evaluation is cheap for the size of the model. Furthermore, we show that we can use a single decoding layer for all the experts, allowing a…",
+      "arxiv_id": "1704.06363",
+      "doi": "10.1109/cvpr.2017.540",
+      "aliases": [
+        [
+          "arxiv",
+          "1704.06363"
+        ],
+        [
+          "doi",
+          "10.1109/cvpr.2017.540"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W2966327190",
+      "title": "Deep Mixture of Experts via Shallow Embedding",
+      "year": 2018,
+      "venue": "arXiv (Cornell University)",
+      "venue_tier": "preprint",
+      "authors": [
+        "Xin Wang",
+        "Fisher Yu",
+        "Lisa Dunlap",
+        "Yi-An Ma",
+        "Ruth Wang"
+      ],
+      "kinds": [],
+      "citation_count": 50,
+      "github_stars": 0,
+      "tldr": "Larger networks generally have greater representational power at the cost of increased computational complexity. Sparsifying such networks…",
+      "short_abstract": "Larger networks generally have greater representational power at the cost of increased computational complexity. Sparsifying such networks has been an active area of research but has been generally limited to static regularization or dynamic approaches using reinforcement learning. We explore a mixture of experts (MoE) approach to deep dynamic routing, which activates certain experts in the network on a per-example basis. Our novel DeepMoE architecture increases the representational power of standard convolutional networks by adaptively sparsifying and recalibrating channel-wise features in each convolutional layer. We employ a multi-headed sparse gating network to determine the selection and scaling of channels for each input, leveraging exponential combinations of experts within a single convolutional network. Our proposed architecture is evaluated on four benchmark datasets and tasks, and we show that Deep-MoEs are able to achieve higher accuracy with lower computation than…",
+      "arxiv_id": "1806.01531",
+      "doi": "10.48550/arxiv.1806.01531",
+      "is_focus": true,
+      "aliases": [
+        [
+          "arxiv",
+          "1806.01531"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.1806.01531"
+        ]
+      ],
+      "seed_paper_id": "cb5da8d1701d91bef1e371b807b23ad5d06176e0"
+    },
+    {
+      "id": "openalex:W3014879845",
+      "title": "Conditional Channel Gated Networks for Task-Aware Continual Learning",
+      "year": 2020,
+      "venue": "IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings",
+      "venue_tier": "A+",
+      "authors": [
+        "Davide Abati",
+        "Jakub M. Tomczak",
+        "Tijmen Blankevoort",
+        "Simone Calderara",
+        "Rita Cucchiara"
+      ],
+      "kinds": [],
+      "citation_count": 178,
+      "github_stars": 0,
+      "tldr": "Convolutional Neural Networks experience catastrophic forgetting when optimized on a sequence of learning problems: as they meet the…",
+      "short_abstract": "Convolutional Neural Networks experience catastrophic forgetting when optimized on a sequence of learning problems: as they meet the objective of the current training examples, their performance on previous tasks drops drastically. In this work, we introduce a novel framework to tackle this problem with conditional computation. We equip each convolutional layer with task-specific gating modules, selecting which filters to apply on the given input. This way, we achieve two appealing properties. Firstly, the execution patterns of the gates allow to identify and protect important filters, ensuring no loss in the performance of the model for previously learned tasks. Secondly, by using a sparsity objective, we can promote the selection of a limited set of kernels, allowing to retain sufficient model capacity to digest new tasks. Existing solutions require, at test time, awareness of the task to which each example belongs to. This knowledge, however, may not be available in many practical…",
+      "arxiv_id": "2004.00070",
+      "doi": "10.1109/cvpr42600.2020.00399",
+      "aliases": [
+        [
+          "arxiv",
+          "2004.00070"
+        ],
+        [
+          "doi",
+          "10.1109/cvpr42600.2020.00399"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W3119866685",
+      "title": "Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity",
+      "year": 2021,
+      "venue": "arXiv (Cornell University)",
+      "venue_tier": "preprint",
+      "authors": [
+        "William Fedus",
+        "Barret Zoph",
+        "Noam Shazeer"
+      ],
+      "kinds": [],
+      "citation_count": 362,
+      "github_stars": 0,
+      "tldr": "In deep learning, models typically reuse the same parameters for all inputs. Mixture of Experts (MoE) defies this and instead selects…",
+      "short_abstract": "In deep learning, models typically reuse the same parameters for all inputs. Mixture of Experts (MoE) defies this and instead selects different parameters for each incoming example. The result is a sparsely-activated model -- with outrageous numbers of parameters -- but a constant computational cost. However, despite several notable successes of MoE, widespread adoption has been hindered by complexity, communication costs and training instability -- we address these with the Switch Transformer. We simplify the MoE routing algorithm and design intuitive improved models with reduced communication and computational costs. Our proposed training techniques help wrangle the instabilities and we show large sparse models may be trained, for the first time, with lower precision (bfloat16) formats. We design models based off T5-Base and T5-Large to obtain up to 7x increases in pre-training speed with the same computational resources. These improvements extend into multilingual settings where…",
+      "arxiv_id": "2101.03961",
+      "doi": "10.48550/arxiv.2101.03961",
+      "is_focus": true,
+      "aliases": [
+        [
+          "arxiv",
+          "2101.03961"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2101.03961"
+        ]
+      ],
+      "seed_paper_id": "abc7af4517a1b60e4a42875aaed16e77139ef6b1"
+    },
+    {
+      "id": "openalex:W3122317902",
+      "title": "GShard: Scaling Giant Models with Conditional Computation and Automatic Sharding",
+      "year": 2021,
+      "venue": "International Conference on Learning Representations",
+      "venue_tier": "A+",
+      "authors": [
+        "Dmitry Lepikhin",
+        "HyoukJoong Lee",
+        "Yuanzhong Xu",
+        "Dehao Chen",
+        "Orhan Fırat"
+      ],
+      "kinds": [],
+      "citation_count": 44,
+      "github_stars": 0,
+      "tldr": "Neural network scaling has been critical for improving the model quality in many real-world machine learning applications with vast…",
+      "short_abstract": "Neural network scaling has been critical for improving the model quality in many real-world machine learning applications with vast amounts of training data and compute. Although this trend of scaling is affirmed to be a sure-fire approach for better model quality, there are challenges on the path such as the computation cost,ease of programming, and efficient implementation on parallel devices. In this paper we demonstrate conditional computation as a remedy to the above mentioned impediments, and demonstrate its efficacy and utility. We make extensive use of GShard, a module composed of a set of lightweight annotation APIs and an extension to the XLA compiler to enable large scale models with up to trillions of parameters. GShard and conditional computation enable us to scale up multilingual neural machine translation Transformer model with Sparsely-Gated Mixture-of-Experts. We demonstrate that such a giant model with 600 billion parameters can efficiently be trained on 2048 TPU v3…",
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W3147874613",
+      "title": "BASE Layers: Simplifying Training of Large, Sparse Models",
+      "year": 2021,
+      "venue": "arXiv (Cornell University)",
+      "venue_tier": "preprint",
+      "authors": [
+        "Mike Lewis",
+        "Shruti Bhosale",
+        "Tim Dettmers",
+        "Naman Goyal",
+        "Luke Zettlemoyer"
+      ],
+      "kinds": [],
+      "citation_count": 63,
+      "github_stars": 0,
+      "tldr": "We introduce a new balanced assignment of experts (BASE) layer for large language models that greatly simplifies existing high capacity…",
+      "short_abstract": "We introduce a new balanced assignment of experts (BASE) layer for large language models that greatly simplifies existing high capacity sparse layers. Sparse layers can dramatically improve the efficiency of training and inference by routing each token to specialized expert modules that contain only a small fraction of the model parameters. However, it can be difficult to learn balanced routing functions that make full use of the available experts; existing approaches typically use routing heuristics or auxiliary expert-balancing loss functions. In contrast, we formulate token-to-expert allocation as a linear assignment problem, allowing an optimal assignment in which each expert receives an equal number of tokens. This optimal assignment scheme improves efficiency by guaranteeing balanced compute loads, and also simplifies training by not requiring any new hyperparameters or auxiliary losses. Code is publicly released at https://github.com/pytorch/fairseq/",
+      "arxiv_id": "2103.16716",
+      "doi": "10.48550/arxiv.2103.16716",
+      "aliases": [
+        [
+          "arxiv",
+          "2103.16716"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2103.16716"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W3170943566",
+      "title": "Scaling Vision with Sparse Mixture of Experts",
+      "year": 2021,
+      "venue": "arXiv (Cornell University)",
+      "venue_tier": "preprint",
+      "authors": [
+        "Carlos Riquelme",
+        "Joan Puigcerver",
+        "Basil Mustafa",
+        "Maxim Neumann",
+        "Rodolphe Jenatton"
+      ],
+      "kinds": [],
+      "citation_count": 29,
+      "github_stars": 0,
+      "tldr": "Sparsely-gated Mixture of Experts networks (MoEs) have demonstrated excellent scalability in Natural Language Processing. In Computer…",
+      "short_abstract": "Sparsely-gated Mixture of Experts networks (MoEs) have demonstrated excellent scalability in Natural Language Processing. In Computer Vision, however, almost all performant networks are \"dense\", that is, every input is processed by every parameter. We present a Vision MoE (V-MoE), a sparse version of the Vision Transformer, that is scalable and competitive with the largest dense networks. When applied to image recognition, V-MoE matches the performance of state-of-the-art networks, while requiring as little as half of the compute at inference time. Further, we propose an extension to the routing algorithm that can prioritize subsets of each input across the entire batch, leading to adaptive per-image compute. This allows V-MoE to trade-off performance and compute smoothly at test-time. Finally, we demonstrate the potential of V-MoE to scale vision models, and train a 15B parameter model that attains 90.35% on ImageNet.",
+      "arxiv_id": "2106.05974",
+      "doi": "10.48550/arxiv.2106.05974",
+      "aliases": [
+        [
+          "arxiv",
+          "2106.05974"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2106.05974"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W3212449162",
+      "title": "Hash Layers For Large Sparse Models",
+      "year": 2021,
+      "venue": "arXiv (Cornell University)",
+      "venue_tier": "preprint",
+      "authors": [
+        "Stephen Roller",
+        "Sainbayar Sukhbaatar",
+        "Arthur D. Szlam",
+        "Jason Weston"
+      ],
+      "kinds": [],
+      "citation_count": 48,
+      "github_stars": 0,
+      "tldr": "We investigate the training of sparse layers that use different parameters for different inputs based on hashing in large Transformer…",
+      "short_abstract": "We investigate the training of sparse layers that use different parameters for different inputs based on hashing in large Transformer models. Specifically, we modify the feedforward layer to hash to different sets of weights depending on the current token, over all tokens in the sequence. We show that this procedure either outperforms or is competitive with learning-to-route mixture-of-expert methods such as Switch Transformers and BASE Layers, while requiring no routing parameters or extra terms in the objective function such as a load balancing loss, and no sophisticated assignment algorithm. We study the performance of different hashing techniques, hash sizes and input features, and show that balanced and random hashes focused on the most local features work best, compared to either learning clusters or using longer-range context. We show our approach works well both on large language modeling and dialogue tasks, and on downstream fine-tuning tasks.",
+      "arxiv_id": "2106.04426",
+      "doi": "10.48550/arxiv.2106.04426",
+      "aliases": [
+        [
+          "arxiv",
+          "2106.04426"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2106.04426"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W3215427016",
+      "title": "Speechmoe2: Mixture-of-Experts Model with Improved Routing",
+      "year": 2022,
+      "venue": "IEEE International Conference on Acoustics Speech and Signal Processing",
+      "venue_tier": "preprint",
+      "authors": [
+        "Zhao You",
+        "Shulin Feng",
+        "Dan Su",
+        "Dong Yu"
+      ],
+      "kinds": [],
+      "citation_count": 19,
+      "github_stars": 0,
+      "tldr": "Mixture-of-experts based acoustic models with dynamic routing mechanisms have proved promising results for speech recognition. The design…",
+      "short_abstract": "Mixture-of-experts based acoustic models with dynamic routing mechanisms have proved promising results for speech recognition. The design principle of router architecture is important for the large model capacity and high computational efficiency. Our previous work SpeechMoE only uses local grapheme embedding to help routers to make route decisions. To further improve speech recognition performance against varying domains and accents, we propose a new router architecture which integrates additional global domain and accent embedding into router input to promote adaptability. Experimental results show that the proposed SpeechMoE2 can achieve lower character error rate (CER) with comparable parameters than SpeechMoE on both multi-domain and multi-accent task. Primarily, the proposed method provides up to 1.6% ∼ 4.8% relative CER improvement for the multi-domain task and 1.9% ∼ 17.7% relative CER improvement for the multi-accent task respectively. Besides, increasing the number of…",
+      "doi": "10.1109/icassp43922.2022.9747065",
+      "aliases": [
+        [
+          "doi",
+          "10.1109/icassp43922.2022.9747065"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4200634402",
+      "title": "GLaM: Efficient Scaling of Language Models with Mixture-of-Experts",
+      "year": 2021,
+      "venue": "arXiv (Cornell University)",
+      "venue_tier": "preprint",
+      "authors": [
+        "Nan Du",
+        "Yanping Huang",
+        "Andrew M. Dai",
+        "Tong, Simon",
+        "Dmitry Lepikhin"
+      ],
+      "kinds": [],
+      "citation_count": 158,
+      "github_stars": 0,
+      "tldr": "Scaling language models with more data, compute and parameters has driven significant progress in natural language processing. For…",
+      "short_abstract": "Scaling language models with more data, compute and parameters has driven significant progress in natural language processing. For example, thanks to scaling, GPT-3 was able to achieve strong results on in-context learning tasks. However, training these large dense models requires significant amounts of computing resources. In this paper, we propose and develop a family of language models named GLaM (Generalist Language Model), which uses a sparsely activated mixture-of-experts architecture to scale the model capacity while also incurring substantially less training cost compared to dense variants. The largest GLaM has 1.2 trillion parameters, which is approximately 7x larger than GPT-3. It consumes only 1/3 of the energy used to train GPT-3 and requires half of the computation flops for inference, while still achieving better overall zero-shot and one-shot performance across 29 NLP tasks.",
+      "arxiv_id": "2112.06905",
+      "doi": "10.48550/arxiv.2112.06905",
+      "aliases": [
+        [
+          "arxiv",
+          "2112.06905"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2112.06905"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4226079124",
+      "title": "Mixture-of-Experts with Expert Choice Routing",
+      "year": 2022,
+      "venue": "arXiv (Cornell University)",
+      "venue_tier": "preprint",
+      "authors": [
+        "Yanqi Zhou",
+        "Tao Lei",
+        "Hanxiao Liu",
+        "Nan Du",
+        "Yanping Huang"
+      ],
+      "kinds": [],
+      "citation_count": 59,
+      "github_stars": 0,
+      "tldr": "Sparsely-activated Mixture-of-experts (MoE) models allow the number of parameters to greatly increase while keeping the amount of…",
+      "short_abstract": "Sparsely-activated Mixture-of-experts (MoE) models allow the number of parameters to greatly increase while keeping the amount of computation for a given token or a given sample unchanged. However, a poor expert routing strategy (e.g. one resulting in load imbalance) can cause certain experts to be under-trained, leading to an expert being under or over-specialized. Prior work allocates a fixed number of experts to each token using a top-k function regardless of the relative importance of different tokens. To address this, we propose a heterogeneous mixture-of-experts employing an expert choice method. Instead of letting tokens select the top-k experts, we have experts selecting the top-k tokens. As a result, each token can be routed to a variable number of experts and each expert can have a fixed bucket size. We systematically study pre-training speedups using the same computational resources of the Switch Transformer top-1 and GShard top-2 gating of prior work and find that our…",
+      "arxiv_id": "2202.09368",
+      "doi": "10.48550/arxiv.2202.09368",
+      "is_focus": true,
+      "aliases": [
+        [
+          "arxiv",
+          "2202.09368"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2202.09368"
+        ]
+      ],
+      "seed_paper_id": "90d12332523f3108492552ded799468c8827be5a"
+    },
+    {
+      "id": "openalex:W4386260498",
+      "title": "PipeMoE: Accelerating Mixture-of-Experts through Adaptive Pipelining",
+      "year": 2023,
+      "venue": "arXiv",
+      "venue_tier": "preprint",
+      "authors": [
+        "Shaohuai Shi",
+        "Xinglin Pan",
+        "Xiaowen Chu",
+        "Bo Li"
+      ],
+      "kinds": [],
+      "citation_count": 23,
+      "github_stars": 0,
+      "tldr": "Large models have attracted much attention in the AI area. The sparsely activated mixture-of-experts (MoE) technique pushes the model size…",
+      "short_abstract": "Large models have attracted much attention in the AI area. The sparsely activated mixture-of-experts (MoE) technique pushes the model size to a trillion-level with a sub-linear increase of computations as an MoE layer can be equipped with many separate experts, but only one or two experts need to be trained for each input data. However, the feature of dynamically activating experts of MoE introduces extensive communications in distributed training. In this work, we propose PipeMoE to adaptively pipeline the communications and computations in MoE to maximally hide the communication time. Specifically, we first identify the root reason why a higher pipeline degree does not always achieve better performance in training MoE models. Then we formulate an optimization problem that aims to minimize the training iteration time. To solve this problem, we build performance models for computation and communication tasks in MoE and develop an optimal solution to determine the pipeline degree such…",
+      "doi": "10.1109/infocom53939.2023.10228874",
+      "aliases": [
+        [
+          "doi",
+          "10.1109/infocom53939.2023.10228874"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4390873360",
+      "title": "AdaMV-MoE: Adaptive Multi-Task Vision Mixture-of-Experts",
+      "year": 2023,
+      "venue": "IEEE/CVF International Conference on Computer Vision (ICCV)",
+      "venue_tier": "A+",
+      "authors": [
+        "Tianlong Chen",
+        "Xuxi Chen",
+        "Xianzhi Du",
+        "Abdullah M. Rashwan",
+        "Fan Yang"
+      ],
+      "kinds": [],
+      "citation_count": 81,
+      "github_stars": 0,
+      "tldr": "Sparsely activated Mixture-of-Experts (MoE) is becoming a promising paradigm for multi-task learning (MTL). Instead of compressing…",
+      "short_abstract": "Sparsely activated Mixture-of-Experts (MoE) is becoming a promising paradigm for multi-task learning (MTL). Instead of compressing multiple tasks’ knowledge into a single model, MoE separates the parameter space and only utilizes the relevant model pieces given task type and its input, which provides stabilized MTL training and ultra-efficient inference. However, current MoE approaches adopt a fixed network capacity (e.g., two experts in usual) for all tasks. It potentially results in the over-fitting of simple tasks or the under-fitting of challenging scenarios, especially when tasks are significantly distinctive in their complexity. In this paper, we propose an adaptive MoE framework for multi-task vision recognition, dubbed AdaMV-MoE. Based on the training dynamics, it automatically determines the number of activated experts for each task, avoiding the laborious manual tuning of optimal model size. To validate our proposal, we benchmark it on ImageNet classification and COCO…",
+      "doi": "10.1109/iccv51070.2023.01591",
+      "aliases": [
+        [
+          "doi",
+          "10.1109/iccv51070.2023.01591"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4390874353",
+      "title": "Robust Mixture-of-Expert Training for Convolutional Neural Networks",
+      "year": 2023,
+      "venue": "IEEE/CVF International Conference on Computer Vision (ICCV)",
+      "venue_tier": "A+",
+      "authors": [
+        "Yihua Zhang",
+        "Ruisi Cai",
+        "Tianlong Chen",
+        "Guanhua Zhang",
+        "Huan Zhang"
+      ],
+      "kinds": [],
+      "citation_count": 32,
+      "github_stars": 0,
+      "tldr": "Sparsely-gated Mixture of Expert (MoE), an emerging deep model architecture, has demonstrated a great promise to enable high-accuracy and…",
+      "short_abstract": "Sparsely-gated Mixture of Expert (MoE), an emerging deep model architecture, has demonstrated a great promise to enable high-accuracy and ultra-efficient model inference. Despite the growing popularity of MoE, little work investigated its potential to advance convolutional neural networks (CNNs), especially in the plane of adversarial robustness. Since the lack of robustness has become one of the main hurdles for CNNs, in this paper we ask: How to adversarially robustify a CNN-based MoE model? Can we robustly train it like an ordinary CNN model? Our pilot study shows that the conventional adversarial training (AT) mechanism (developed for vanilla CNNs) no longer remains effective to robustify an MoE-CNN. To better understand this phenomenon, we dissect the robustness of an MoE-CNN into two dimensions: Robustness of routers (i.e., gating functions to select data-specific experts) and robustness of experts (i.e., the router-guided pathways defined by the subnetworks of the backbone…",
+      "doi": "10.1109/iccv51070.2023.00015",
+      "aliases": [
+        [
+          "doi",
+          "10.1109/iccv51070.2023.00015"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4393160139",
+      "title": "Efficient Deweahter Mixture-of-Experts with Uncertainty-Aware Feature-Wise Linear Modulation",
+      "year": 2024,
+      "venue": "Proceedings of the AAAI Conference on Artificial Intelligence",
+      "venue_tier": "A",
+      "authors": [
+        "Rongyu Zhang",
+        "Yulin Luo",
+        "Jiaming Liu",
+        "Huanrui Yang",
+        "Zhen Dong"
+      ],
+      "kinds": [],
+      "citation_count": 19,
+      "github_stars": 0,
+      "tldr": "The Mixture-of-Experts (MoE) approach has demonstrated outstanding scalability in multi-task learning including low-level upstream tasks…",
+      "short_abstract": "The Mixture-of-Experts (MoE) approach has demonstrated outstanding scalability in multi-task learning including low-level upstream tasks such as concurrent removal of multiple adverse weather effects. However, the conventional MoE architecture with parallel Feed Forward Network (FFN) experts leads to significant parameter and computational overheads that hinder its efficient deployment. In addition, the naive MoE linear router is suboptimal in assigning task-specific features to multiple experts which limits its further scalability. In this work, we propose an efficient MoE architecture with weight sharing across the experts. Inspired by the idea of linear feature modulation (FM), our architecture implicitly instantiates multiple experts via learnable activation modulations on a single shared expert block. The proposed Feature Modulated Expert (FME) serves as a building block for the novel Mixture-of-Feature-Modulation-Experts (MoFME) architecture, which can scale up the number of…",
+      "doi": "10.1609/aaai.v38i15.29622",
+      "aliases": [
+        [
+          "doi",
+          "10.1609/aaai.v38i15.29622"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4394923534",
+      "title": "ScheMoE: An Extensible Mixture-of-Experts Distributed Training System with Tasks Scheduling",
+      "year": 2024,
+      "venue": "arXiv",
+      "venue_tier": "preprint",
+      "authors": [
+        "Shaohuai Shi",
+        "Xinglin Pan",
+        "Qiang Wang",
+        "Chengjian Liu",
+        "Xiaozhe Ren"
+      ],
+      "kinds": [],
+      "citation_count": 26,
+      "github_stars": 0,
+      "tldr": "In recent years, large-scale models can be easily scaled to trillions of parameters with sparsely activated mixture-of-experts (MoE),…",
+      "short_abstract": "In recent years, large-scale models can be easily scaled to trillions of parameters with sparsely activated mixture-of-experts (MoE), which significantly improves the model quality while only requiring a sub-linear increase in computational costs. However, MoE layers require the input data to be dynamically routed to a particular GPU for computing during distributed training. The highly dynamic property of data routing and high communication costs in MoE make the training system low scaling efficiency on GPU clusters. In this work, we propose an extensible and efficient MoE training system, ScheMoE, which is equipped with several features. 1) ScheMoE provides a generic scheduling framework that allows the communication and computation tasks in training MoE models to be scheduled in an optimal way. 2) ScheMoE integrates our proposed novel all-to-all collective which better utilizes intra- and inter-connect bandwidths. 3) ScheMoE supports easy extensions of customized all-to-all…",
+      "doi": "10.1145/3627703.3650083",
+      "aliases": [
+        [
+          "doi",
+          "10.1145/3627703.3650083"
         ]
       ],
       "is_focus": false
@@ -297,13 +653,13 @@
   ],
   "edges": [
     {
-      "src": "openalex:W4220967350",
-      "dst": "openalex:W4364382874",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.93,
-      "confidence": 0.93,
-      "rationale": "FasterMoEはGPU上でホットエキスパートを複製し、トークン落ちを防ぐ手法として紹介されている。 引用文: \"FasterMoE [17] replicates hot experts on each GPU and guarantees no tokens dropping in the implementation.\"",
+      "src": "openalex:W1593114658",
+      "dst": "openalex:W2581624817",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.92,
+      "confidence": 0.92,
+      "rationale": "Learning Factored Representatio…はMoEのアイデアを拡張し、Bは位置ごとに異なるゲーティングを導入して対照的にする。 引用文: \"Eigen et al. (2013) introduce the idea of using multiple MoEs with their own gating networks as parts of a deep model.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -312,52 +668,52 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "relation-input",
-          "sha256": "bd40a6ef89b2827ff5ae4e7f7630d73b2e0248dbe833be3a9012362d480f0c05"
+          "sha256": "b948a2bd43cd2a19d6ba0dc46d4d4e9b67826e209f58b0359529722dafaae76b"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-20b",
+          "prompt_version": "relation-prompt-v4-context",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W1593114658",
+      "dst": "openalex:W2809290718",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.85,
+      "confidence": 0.85,
+      "rationale": "Multi-gate Mixture-of-Experts は Deep Mixture of Experts の MoE 構造をマルチタスク向けに複数ゲートで拡張し、タスク間関係をモデル化している。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "cd8bfd492d57341be365a0a371c3b2cc8648c494f559754dc2c60dd6dc4ca049"
         },
         "classification": {
           "method": "llm",
           "provider": "groq",
           "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v3-context",
+          "prompt_version": "relation-prompt-v4",
           "schema_version": "relation-classification-v1"
         }
       }
     },
     {
-      "src": "openalex:W4220967350",
-      "dst": "openalex:W4408858386",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.8,
-      "confidence": 0.8,
-      "rationale": "「A Survey on Mixture of Experts in Large Language …」(2025) は 「FasterMoE」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "83e04948da5f0aa621ccc82676bbc24cdda1eee874c7b5d098fa0ba74c6579a8"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4224299101",
-      "dst": "openalex:W4364382874",
+      "src": "openalex:W1593114658",
+      "dst": "openalex:W3170943566",
       "rel": "baseline_only",
       "relation": "baseline_only",
       "conf": 0.6,
       "confidence": 0.6,
-      "rationale": "「FlexMoE: Scaling Large-scale Sparse Pre-trained M…」(2023) は 「StableMoE: Stable Routing Strategy for Mixture of…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"The training of gate networks is highly unstable [7] because gradient-based optimization algorithms will reinforce the previous routing determination until it reaches a certain point and escapes from the wrong learning direction.\"",
+      "rationale": "「Scaling Vision with Sparse Mixt…」(2021) は 「Learning Factored Representatio…」(2013) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -366,7 +722,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "3f3b7dfaf53ee7530ee13d565aac8d202a5d3b4f8c3c3bc91aa0ac15a531edcc"
+          "sha256": "6e654e23ddee0d9332ca527bcf370e1c386c21d181a7b01ab65e3c6049352830"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -378,13 +734,13 @@
       }
     },
     {
-      "src": "openalex:W4224299101",
-      "dst": "openalex:W4376652719",
+      "src": "openalex:W1593114658",
+      "dst": "openalex:W3212449162",
       "rel": "baseline_only",
       "relation": "baseline_only",
       "conf": 0.6,
       "confidence": 0.6,
-      "rationale": "「A Hybrid Tensor-Expert-Data Parallelism Approach …」(2023) は 「StableMoE: Stable Routing Strategy for Mixture of…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Although Shazeer et al. used LSTMs [12] as their base models, contemporary work on MoEs largely employ the transformer architecture [37] as the base models [1, 6, 9, 10, 17, 18, 29, 40, 43].\"",
+      "rationale": "「Hash Layers For Large Sparse Mo…」(2021) は 「Learning Factored Representatio…」(2013) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -393,7 +749,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "e89e5c98b4085554005b207e0046268ff53699c46fcb2a41ef3fb46d670acba0"
+          "sha256": "ac5b725f66664fe8a39e705e23e20d639df20ca40fad747e7dc92578ef27e307"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -405,13 +761,40 @@
       }
     },
     {
-      "src": "openalex:W4224299101",
-      "dst": "openalex:W4408858386",
+      "src": "openalex:W2179423374",
+      "dst": "openalex:W2581624817",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.8,
-      "confidence": 0.8,
-      "rationale": "「A Survey on Mixture of Experts in Large Language …」(2025) は 「StableMoE: Stable Routing Strategy for Mixture of…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Additionally, STABLEMOE [79] employs a two-stage training process, with a freezed gate in the second stage.\"",
+      "conf": 0.95,
+      "confidence": 0.95,
+      "rationale": "Conditional Computation in Neur…はMoEとブロックワイズドロップアウトを比較し、Bはそれを対照的に扱う。 引用文: \"Bengio et al. (2015) use three such terms.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "67e879d388057fc8ccf9c10ded49c5c256805d4b666dac8c00a9b9f6ed00f111"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-20b",
+          "prompt_version": "relation-prompt-v4-context",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2242818861",
+      "dst": "openalex:W1593114658",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Learning Factored Representatio…」(2013) は 「Estimating or Propagating Gradi…」(2013) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"By conditioning our gating and expert networks on the output of the previous layer, our model can express an exponentially large number of effective experts.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -420,7 +803,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "59e89e50b942377eaac93fb9061fce1b4156db1964acd6d546529e2eaa77663b"
+          "sha256": "b306d8c86d46280f6bc2d3b031de333648177754c93a53abcad27f60070c15f8"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -432,13 +815,13 @@
       }
     },
     {
-      "src": "openalex:W4283815817",
-      "dst": "openalex:W4408858386",
+      "src": "openalex:W2242818861",
+      "dst": "openalex:W2179423374",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.8,
-      "confidence": 0.8,
-      "rationale": "「A Survey on Mixture of Experts in Large Language …」(2025) は 「Go Wider Instead of Deeper」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"…merging [37], [38], [39], [40], [41], mixture of parameter-efﬁcient experts (MoPEs) [40], [42], [43], [44], [45], [46], training and inference schemes with model transition between dense and sparse [47], [48], [49], [50], [51], [52], and …\"",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Conditional Computation in Neur…」(2015) は 「Estimating or Propagating Gradi…」(2013) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Bengio et al. (2013) introduced Stochastic Times Smooth neurons as gaters for conditional computation within a deep neural network.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -447,7 +830,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "7eae1f06d2662f996221e2895671278beaf3e3932a0aef5c54cff8d30f33f2a7"
+          "sha256": "85c3fd6e22a35144d27e2c7fddb104a2e824c52ccbaa827ae8107984e593e07c"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -459,13 +842,13 @@
       }
     },
     {
-      "src": "openalex:W4285134706",
-      "dst": "openalex:W4408858386",
+      "src": "openalex:W2242818861",
+      "dst": "openalex:W2581624817",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.8,
-      "confidence": 0.8,
-      "rationale": "「A Survey on Mixture of Experts in Large Language …」(2025) は 「MoEfication: Transformer Feed-forward Layers are …」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Outrageously Large Neural Netwo…」(2017) は 「Estimating or Propagating Gradi…」(2013) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"This type of occasionally-sensitive behavior is described in (Bengio et al., 2013) with respect to noisy rectiﬁers.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -474,7 +857,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "254d86d571c128325d96a0c5d586500cb525b513962711ca755b603b1afa6206"
+          "sha256": "667f153cabd6f263b0ed917a99e7013d4d9babedc54896fd41a710cffb9e644a"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -486,13 +869,40 @@
       }
     },
     {
-      "src": "openalex:W4364382874",
-      "dst": "openalex:W4408858386",
+      "src": "openalex:W2242818861",
+      "dst": "openalex:W3014879845",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.73,
+      "confidence": 0.73,
+      "rationale": "Conditional Channel Gated Networks は確率的ニューロンによる条件計算の概念をタスク認識型継続学習に拡張し、チャネルゲーティングで動的に計算を制御している。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "259ca40c2cacb1674b608b00f387fee786cdb3d86d3a93042dd36e2957d8671a"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v4",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2242818861",
+      "dst": "openalex:W3122317902",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.8,
-      "confidence": 0.8,
-      "rationale": "「A Survey on Mixture of Experts in Large Language …」(2025) は 「FlexMoE: Scaling Large-scale Sparse Pre-trained M…」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Besides, solutions like SE-MoE [106], Tu-tel [105], FlexMoE [110] and SmartMoE [111] have introduced dynamic expert placement strategies to distribute the workload as equally as possible among devices.\"",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「GShard」(2021) は 「Estimating or Propagating Gradi…」(2013) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"In this section, we advocate how conditional computation (Bengio et al., 2013; Davis & Arel, 2013) with sparsely gated mixture of experts ﬁts into the above detailed desiderata and show its efﬁcacy by scaling neural machine translation mod…\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -501,7 +911,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "4a67ce55d82d23d9563f263c5416a33174a1a57ac24ad5eb6dc1e502036495cc"
+          "sha256": "fd44da6043580c0a4320580efbee7311704971f07ed61eb55724c971cfd8f4f1"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -513,13 +923,13 @@
       }
     },
     {
-      "src": "openalex:W4364382874",
-      "dst": "openalex:W4417130747",
+      "src": "openalex:W2242818861",
+      "dst": "openalex:W3170943566",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.8,
-      "confidence": 0.8,
-      "rationale": "「Mixture of Experts for Decentralized Generative A…」(2025) は 「FlexMoE: Scaling Large-scale Sparse Pre-trained M…」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"For instance, FlexMoE [236], a distributed MoE training framework illustrated in Figure 9(b), supports expert parallelism across multiple GPUs of heterogeneous devices based on workload distribution, demonstrating significant scalability o…\"",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Scaling Vision with Sparse Mixt…」(2021) は 「Estimating or Propagating Gradi…」(2013) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -528,7 +938,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "3140aa8fe682e2c483dffe823104acbc97414a28ce806397bec2376d4b053f19"
+          "sha256": "b2329d774ae03b8117eb3e55b988bd4bf1d9038d0b4fa092342ef871edb75425"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -540,13 +950,13 @@
       }
     },
     {
-      "src": "openalex:W4376652719",
-      "dst": "openalex:W4408858386",
+      "src": "openalex:W2554616628",
+      "dst": "openalex:W2581624817",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.8,
-      "confidence": 0.8,
-      "rationale": "「A Survey on Mixture of Experts in Large Language …」(2025) は 「A Hybrid Tensor-Expert-Data Parallelism Approach …」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"7, we illustrate several examples of hybrid parallelism, encompassing (b) data + expert + tensor parallelism [34], [64], [105], [108], [111], (c) data + expert + pipeline parallelism [105], [107], [111], and (d) expert + tensor parallelism…\"",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Outrageously Large Neural Netwo…」(2017) は 「Expert Gate」(2017) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Other work has focused on different expert conﬁgurations such as a hierarchical structure (Yao et al., 2009), inﬁnite numbers of experts (Rasmussen & Ghahramani, 2002), and adding experts sequentially (Aljundi et al., 2016).\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -555,7 +965,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "61c596cc7b7efae92961bcf8bacd6d7544e04d870c43439d1d27a44663995536"
+          "sha256": "41e79ead0416539cacc163eb60fe5e1dc06fb215d2e1f8215b535711282e532a"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -567,13 +977,40 @@
       }
     },
     {
-      "src": "openalex:W4386076670",
-      "dst": "openalex:W4408858386",
+      "src": "openalex:W2581624817",
+      "dst": "openalex:W2809290718",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.85,
+      "confidence": 0.85,
+      "rationale": "Multi-gate Mixture-of-Experts は Sparsely-Gated Mixture-of-Experts の単一ゲート構造を拡張し、タスク間関係をモデリングすることでマルチタスク学習に適用している。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "6a4309ae21c0e57a4e16399435653b6afdf2c7bc50e3fc8fd87676adf4a090ad"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v4",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2581624817",
+      "dst": "openalex:W2963254338",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.8,
-      "confidence": 0.8,
-      "rationale": "「A Survey on Mixture of Experts in Large Language …」(2025) は 「Mod-Squad: Designing Mixtures of Experts As Modul…」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Additionally, Mod-Squad [69] posits the difﬁculty of training multi-task models under such an expert-balancing loss, which may inadvertently force experts to set parameters on conﬂicting tasks or hinder the potential synergies from paramet…\"",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Hard Mixtures of Experts for La…」(2017) は 「Outrageously Large Neural Netwo…」(2017) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Concurrent with this work is [14], which also puts a hard mixture model as a component in a deep learning architecture for large scale language modeling.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -582,7 +1019,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "c5a8dba30b86d6e3067fece28789436b941bff3ace343822b03f0dd24d3b6852"
+          "sha256": "eafa27e7d22b2f312e10d85ac202b52c8e94973517fe3880474eb1d7ee9b783e"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -594,13 +1031,40 @@
       }
     },
     {
-      "src": "openalex:W4389520274",
-      "dst": "openalex:W4408858386",
+      "src": "openalex:W2581624817",
+      "dst": "openalex:W3170943566",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.9,
+      "confidence": 0.9,
+      "rationale": "Outrageously Large Neural NetworksのTOP-kゲーティングを採用 被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "21572c722783e0d521625424a47550e50ac7d9b00b6f1f9d3fa88165d9ca2bd6"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-20b",
+          "prompt_version": "relation-prompt-v4-context",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2581624817",
+      "dst": "openalex:W3212449162",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.8,
-      "confidence": 0.8,
-      "rationale": "「A Survey on Mixture of Experts in Large Language …」(2025) は 「Scaling Vision-Language Models with Sparse Mixtur…」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Subsequently, Shen et al. [127] and Lin et al. [91] have further investigated the potential of MoE for scaling vision-language models, offering valuable insights that contribute to the development of more efﬁcient and effective multimodal …\"",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Hash Layers For Large Sparse Mo…」(2021) は 「Outrageously Large Neural Netwo…」(2017) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -609,7 +1073,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "7c9d2eaeb8ad73eec4bc298c876dd9cee1266bfed34e310412bab61173120a94"
+          "sha256": "ecd4b6174ea52de9fa44a5664511791152012b3c93d68e53ee75c36c9587baa0"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -621,13 +1085,94 @@
       }
     },
     {
-      "src": "openalex:W4408858386",
-      "dst": "openalex:W4417130747",
+      "src": "openalex:W2581624817",
+      "dst": "openalex:W4200634402",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.8,
-      "confidence": 0.8,
-      "rationale": "「Mixture of Experts for Decentralized Generative A…」(2025) は 「A Survey on Mixture of Experts in Large Language …」(2025) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。",
+      "conf": 0.95,
+      "confidence": 0.95,
+      "rationale": "Outrageously Large Neural Networksの大規模MoE設計を背景として参照 引用文: \"For language modeling and machine translation, Shazeer et al. (2017) showed that they could effectively use a very large number of weights while only needing to compute a small subset of the computation graph at inference time.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "337b90e04fd065ca27d4792e6a8315114c612745bd9498802db82dcfb3184caf"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-20b",
+          "prompt_version": "relation-prompt-v4-context",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2581624817",
+      "dst": "openalex:W4226079124",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.9,
+      "confidence": 0.9,
+      "rationale": "Outrageously Large Neural NetworksはスパースMoEを導入し、Bはそのアイデアを採用する。 引用文: \"At the high level, we adopt the idea of sparsely activated Mixture-of-Experts (MoE) [31].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "9f117bc451345189a5e70fa6cb260b5795c307dd6370c9e4b755c99a976138e7"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-20b",
+          "prompt_version": "relation-prompt-v4-context",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2809290718",
+      "dst": "openalex:W4390873360",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.85,
+      "confidence": 0.85,
+      "rationale": "AdaMV-MoE は Multi-gate Mixture-of-Experts のマルチタスク MoE を視覚タスク向けに適応させ、画像領域でのタスク関係モデリングを拡張している。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "27cc784e38bedaba3fafecbc1a716aa5d5cb0f2c81425002f47527934eb044f5"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v4",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2963254338",
+      "dst": "openalex:W3170943566",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Scaling Vision with Sparse Mixt…」(2021) は 「Hard Mixtures of Experts for La…」(2017) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -636,10 +1181,1090 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "8f6deec49c332200b5a3100b37fb5fcc317c7b681be21f250240ad7279ccf1bd"
+          "sha256": "7d2a1da86f521f3c699ccee4d080d7c7fee6841082ceb40207e5ad28491b37af"
         },
         "classification": {
           "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2963254338",
+      "dst": "openalex:W3212449162",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Hash Layers For Large Sparse Mo…」(2021) は 「Hard Mixtures of Experts for La…」(2017) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "03d1fea2997fd449e311dc01d889db8a4f6b0b88cf7cdcbe0955d41628f4f2dc"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2963254338",
+      "dst": "openalex:W3215427016",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Speechmoe2」(2022) は 「Hard Mixtures of Experts for La…」(2017) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "97ff685c789110a905c3c67b74f3ac49e4e024d8576cfbe1931f61513a3d432c"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2963254338",
+      "dst": "openalex:W4200634402",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「GLaM」(2021) は 「Hard Mixtures of Experts for La…」(2017) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Various routing strategies (Gross et al., 2017; Lewis et al., 2021; Dua et al., 2021) have been investigated such that transfer learning can be achieved with task dependencies.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "e3e4795c5491d88dbc70cee9f8226c67092600d055c5e21bd2106061e20fe791"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2963254338",
+      "dst": "openalex:W4226079124",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Mixture-of-Experts with Expert …」(2022) は 「Hard Mixtures of Experts for La…」(2017) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Hard MoE [12] with a single decoding layer can be efﬁciently trained to good effect on large scale hashtag prediction tasks.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "1bd9c5d0570b9deee71e7467822b35ae2f8a84cd28aa8e946910308eacbe6065"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2963254338",
+      "dst": "openalex:W4390873360",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.85,
+      "confidence": 0.85,
+      "rationale": "AdaMV-MoE は Hard Mixtures of Experts のハード MoE 構造に適応的マルチタスク機構を加え、視覚タスクへ拡張している。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "29a71290f39927e98d8d724fff753ecfb802ce912a4e949876c1cac6ed999d75"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v4",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2963254338",
+      "dst": "openalex:W4390874353",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "Hard Mixtures of Experts for La…を背景として言及 引用文: \"We remark that although the usefulness of AT (MoE) was exploited in [30] for the MoE-type ViT, it is not effective for training MoE-type CNNs anymore.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "45b8c645796d0c852dec7dd8c335e298949d1465e70ed6c940fd25a1441fd782"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-20b",
+          "prompt_version": "relation-prompt-v4-context",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2966327190",
+      "dst": "openalex:W3170943566",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Scaling Vision with Sparse Mixt…」(2021) は 「Deep Mixture of Experts via Sha…」(2018) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"In DeepMoE [63], the “experts” are the channels of convolutional layers that are adaptively selected by a multi-headed sparse gate.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "1de0b72352211984da04d35aef7f46b0f7cfcd130fb4d21c19950af1907cbcd7"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2966327190",
+      "dst": "openalex:W3215427016",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.85,
+      "confidence": 0.85,
+      "rationale": "SpeechMoE2 は DeepMoE の Mixture-of-Experts アーキテクチャに、グローバルなドメイン・アクセント埋め込みをルータ入力として組み込み、音声認識タスクへ拡張している。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "6db92db871aa6582e382163aec2126ac0e7ff697a16444197ff025e0f5ff72f5"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v4",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2966327190",
+      "dst": "openalex:W4393160139",
+      "rel": "successor",
+      "relation": "successor",
+      "conf": 0.85,
+      "confidence": 0.85,
+      "rationale": "Efficient Deweahter MoE は Uncertainty-Aware Feature-Wise Linear Modulation を導入し、DeepMoE の動的ルーティングを効率化している",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "91a51c5e1eca7d4fdc5cfa163204bfd42ded35d37de70489886af693dbcf213b"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v4",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3014879845",
+      "dst": "openalex:W4226079124",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Mixture-of-Experts with Expert …」(2022) は 「Conditional Channel Gated Netwo…」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Conditional convolution layers [1] with task-speciﬁc gating has been used to combat catastrophic forgetting when a sequence of learning problems are optimized.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "52f69cacf2a6a271ba56afbfa86f5cbbbe6b3c477799a51d2cd86e7e71286372"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3119866685",
+      "dst": "openalex:W3147874613",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.9,
+      "confidence": 0.9,
+      "rationale": "Switch Transformersのルーティングを拡張してBASE Layersを構築 引用文: \"Fedus et al. (2021) show the design can be simpliﬁed by routing tokens Table 1.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "b75c6972aeb7ebf6f2fa015481040e612d224b3a1cf77c5c5482fad3ab05c054"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-20b",
+          "prompt_version": "relation-prompt-v4-context",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3119866685",
+      "dst": "openalex:W3212449162",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.9,
+      "confidence": 0.9,
+      "rationale": "Switch Transformersのバランシング手法を背景として言及 引用文: \"Specifically in the setting of Transformers for Natural Language Processing (NLP), recent approaches have led to state of the art performance in language modeling [8].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "bd13be68af783a60ba89c26ae516ba91146835afe721fe104c6d37eb112e3517"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-20b",
+          "prompt_version": "relation-prompt-v4-context",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3119866685",
+      "dst": "openalex:W3215427016",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Speechmoe2」(2022) は 「Switch Transformers」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "6bc479b4c0e2fbceec2116155a68b4bd96a93a26b2c78df4a65d28b1f7da6861"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3119866685",
+      "dst": "openalex:W4200634402",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.95,
+      "confidence": 0.95,
+      "rationale": "Switch Transformersのスパース性を利用し、MoEモデルの性能向上を背景として言及 引用文: \"A sample of related models (Devlin et al., 2019; Raffel et al., 2020; Brown et al., 2020; Lieber et al., 2021; Shoeybi et al., 2019; Lepikhin et al., 2021; Fedus et al., 2021) pre-trained on text corpora.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "99778cc39d1385522b5d7beed56f4a242df6494783c238048f3186250d7f8ffb"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-20b",
+          "prompt_version": "relation-prompt-v4-context",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3119866685",
+      "dst": "openalex:W4226079124",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.93,
+      "confidence": 0.93,
+      "rationale": "Switch Transformersはトークン選択を単純化し、Bは高速収束を示し対照的に比較する。 引用文: \"• We show our method provides over 2 × faster training convergence in a 8B/64E (8 billion activated parameters, 64 experts) model, compared to the top-1 and top-2 gating counterparts in Switch Transformer [10] and GShard [21].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "61186f73a977e21e019f10eff8cf1f1ae30a2143548e49273f0b67dfff2c631c"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-20b",
+          "prompt_version": "relation-prompt-v4-context",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3119866685",
+      "dst": "openalex:W4393160139",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.4,
+      "confidence": 0.4,
+      "rationale": "「Efficient Deweahter Mixture-of-Experts with Uncertainty-Awa…」(2024) は「Switch Transformers: Scaling to Trillion Parameter Models w…」(2021) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-metadata",
+          "sha256": "0d1f047dff89df86073fc1330f1094e0167a8f41a3c3f9cd7c34f70d2192b515"
+        },
+        "classification": {
+          "method": "citation_heuristic",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3119866685",
+      "dst": "openalex:W4394923534",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.4,
+      "confidence": 0.4,
+      "rationale": "「ScheMoE: An Extensible Mixture-of-Experts Distributed Train…」(2024) は「Switch Transformers: Scaling to Trillion Parameter Models w…」(2021) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-metadata",
+          "sha256": "b882af3428ec3d14045fbdbc7d9a7eaf06a2696c17be34f943dd94b2fe7eb6fb"
+        },
+        "classification": {
+          "method": "citation_heuristic",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3122317902",
+      "dst": "openalex:W3119866685",
+      "rel": "successor",
+      "relation": "successor",
+      "conf": 0.85,
+      "confidence": 0.85,
+      "rationale": "Switch Transformer は GShard の条件付き計算と MoE を簡素化したルーティングで拡張し、通信コストを削減した研究ラインの自然な発展である。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "0f4ceae8c4e3a451c8e6776173c6346d2695dc082eee31e066dbda0e1994ed7c"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v4",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3122317902",
+      "dst": "openalex:W3147874613",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "GShardの条件付き計算を背景として言及 引用文: \"Shazeer et al. (2017); Lepikhin et al. (2020) introduce sparsely gated mixtures of experts layers, demonstrating how large sparse models can be trained efﬁciently by routing inputs to appropriate specialist workers.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "cb5837c4c3a55844500542f2f51caa41d287152dd1527164953a8cc391f5407f"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-20b",
+          "prompt_version": "relation-prompt-v4-context",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3122317902",
+      "dst": "openalex:W3170943566",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.85,
+      "confidence": 0.85,
+      "rationale": "GShardの設計を採用してV-MoEを構築 引用文: \"Following [39], we place the MoEs on every other layer (we refer to these as V-MoE Every-2).\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "7b62dd9c4fb43abfc7021de480c6b89ab4129ef9294b4222ba94968132f1be63"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-20b",
+          "prompt_version": "relation-prompt-v4-context",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3122317902",
+      "dst": "openalex:W3212449162",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.92,
+      "confidence": 0.92,
+      "rationale": "GShardの設定をそのまま採用し、同手法を利用 被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "fa6edbf09d44d459e8c296b0b2e748d3e0b6be5fdbc19ecbdf7df15fc5647cf4"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-20b",
+          "prompt_version": "relation-prompt-v4-context",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3122317902",
+      "dst": "openalex:W3215427016",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Speechmoe2」(2022) は 「GShard」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "771b9564a3f9fd5236af89a5582fdebccb86863cfe3cbbeeebcb455a2b2dcab5"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3122317902",
+      "dst": "openalex:W4200634402",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.92,
+      "confidence": 0.92,
+      "rationale": "GShardのMoE補助損失を採用し、同手法を利用 引用文: \"In particular, Lepikhin et al. (2021) showed that a 600B parameter MoE model achieved +6.1 average BLEU across 100 language pairs compared to the best dense prior-art with 10.7× saving in computation cost.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "aff4d723b9b3d7f3d718ea70892406155e94b765a7fe2d2f3e9c6df85893d6e0"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-20b",
+          "prompt_version": "relation-prompt-v4-context",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3122317902",
+      "dst": "openalex:W4226079124",
+      "rel": "contrasts",
+      "relation": "contrasts",
+      "conf": 0.94,
+      "confidence": 0.94,
+      "rationale": "GShardはロードバランス損失を課すが、Bは課さず対照的に示す。 引用文: \"Unlike most related works, we do not impose any auxiliary loss for load balance, such as described in Switch Transformer [10] and GShard [21].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "fabb05b8abc5b612f20145389e5da6ba9ff593ead26428c0cbb97522dc455c6f"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-20b",
+          "prompt_version": "relation-prompt-v4-context",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3122317902",
+      "dst": "openalex:W4386260498",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.4,
+      "confidence": 0.4,
+      "rationale": "「PipeMoE: Accelerating Mixture-of-Experts through Adaptive P…」(2023) は「GShard: Scaling Giant Models with Conditional Computation a…」(2020) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-metadata",
+          "sha256": "2cafc95ef3e062934e7d52026a0a7bdb5e13ac9092e68c558471126ad46d85df"
+        },
+        "classification": {
+          "method": "citation_heuristic",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3122317902",
+      "dst": "openalex:W4390873360",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.4,
+      "confidence": 0.4,
+      "rationale": "「AdaMV-MoE: Adaptive Multi-Task Vision Mixture-of-Experts」(2023) は「GShard: Scaling Giant Models with Conditional Computation a…」(2020) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-metadata",
+          "sha256": "95f88d9d7e74b8c7b098ad28235265538f51a142eb346f05e95f6d734d2098d7"
+        },
+        "classification": {
+          "method": "citation_heuristic",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3122317902",
+      "dst": "openalex:W4390874353",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.4,
+      "confidence": 0.4,
+      "rationale": "「Robust Mixture-of-Expert Training for Convolutional Neural …」(2023) は「GShard: Scaling Giant Models with Conditional Computation a…」(2020) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-metadata",
+          "sha256": "5121f19fa7a50c0746ea23f5f23a552361dc2f4827a827a353c72b5c722eef8c"
+        },
+        "classification": {
+          "method": "citation_heuristic",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3122317902",
+      "dst": "openalex:W4393160139",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.4,
+      "confidence": 0.4,
+      "rationale": "「Efficient Deweahter Mixture-of-Experts with Uncertainty-Awa…」(2024) は「GShard: Scaling Giant Models with Conditional Computation a…」(2020) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-metadata",
+          "sha256": "6252803e41cc192de24cfe6d2b42a9dd3161686e28ac7b231831017fb96d055c"
+        },
+        "classification": {
+          "method": "citation_heuristic",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3147874613",
+      "dst": "openalex:W3212449162",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.93,
+      "confidence": 0.93,
+      "rationale": "BASE Layersのアーキテクチャとハイパーパラメータをそのまま使用 引用文: \"We use the architecture, data (RoBERTa+cc100en), and hyperparameters directly from [10], using either a single sparse routing layer consisting of 3 stacked FFNs (D = 8192) on the middle layer of a 25 layer network, or 3 routing layers even…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "e41767f1e05046cb3ea540ed20046649aacc09e20f93f527d456a4f8cf0a8854"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-20b",
+          "prompt_version": "relation-prompt-v4-context",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3147874613",
+      "dst": "openalex:W4200634402",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「GLaM」(2021) は 「BASE Layers」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Various routing strategies (Gross et al., 2017; Lewis et al., 2021; Dua et al., 2021) have been investigated such that transfer learning can be achieved with task dependencies.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "28ef25756963e0c918167398fd81d4208896eda27f9e45c314da22bf96d0440f"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3147874613",
+      "dst": "openalex:W4226079124",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Mixture-of-Experts with Expert …」(2022) は 「BASE Layers」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Base Layers [22] formulate a linear assignment that maximizes token-expert afﬁnities while ensuring each expert receives an equal number of tokens.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "fd3424628262a1be809d692182dce851467a8e9d92cbcdd7e4523f206bd912cc"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3147874613",
+      "dst": "openalex:W4386260498",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.4,
+      "confidence": 0.4,
+      "rationale": "「PipeMoE: Accelerating Mixture-of-Experts through Adaptive P…」(2023) は「BASE Layers: Simplifying Training of Large, Sparse Models」(2021) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-metadata",
+          "sha256": "834b0864d0e3687d3ffc496ac6ebab72b6ad4862d2d4f2c6004243cd0ee96bba"
+        },
+        "classification": {
+          "method": "citation_heuristic",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3212449162",
+      "dst": "openalex:W4226079124",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.88,
+      "confidence": 0.88,
+      "rationale": "Hash Layersはハッシュベースのルーティングを提案し、Bはそれと比較する。 引用文: \"In this section, we compare our method with Hash Layers [28].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "1b8017d81c1f829798026d907d8b952a32000cf32c1e1101e24cb24732a475af"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-20b",
+          "prompt_version": "relation-prompt-v4-context",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3212449162",
+      "dst": "openalex:W4390873360",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.4,
+      "confidence": 0.4,
+      "rationale": "「AdaMV-MoE: Adaptive Multi-Task Vision Mixture-of-Experts」(2023) は「Hash Layers For Large Sparse Models」(2021) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-metadata",
+          "sha256": "ecd9427350842f388d7d3caf4836cab9b79198e2003e6a91e9e7685593799f80"
+        },
+        "classification": {
+          "method": "citation_heuristic",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4200634402",
+      "dst": "openalex:W4226079124",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「Mixture-of-Experts with Expert …」(2022) は 「GLaM」(2021) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Model Training: Our model training follows the setups of GLaM [7] where a maximum sequence length of 1024 tokens is adopted.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "0ac046b72707207cef14e4319d962afbe1ecdb581f623e6d454abe7ca6de2c44"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4226079124",
+      "dst": "openalex:W4386260498",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.78,
+      "confidence": 0.78,
+      "rationale": "PipeMoE は adaptive pipelining によって MoE の通信を隠蔽し、Expert Choice Routing の手法を継承せずに背景としてのみ利用している。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "aabdd4e2842cb51ca7e2b72f667fa4cf1e0a8585595f9d3d7adadb92a1a782a2"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v4",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4226079124",
+      "dst": "openalex:W4390873360",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.85,
+      "confidence": 0.85,
+      "rationale": "AdaMV-MoE は Expert Choice Routing が提案した MoE のルーティングに加えて、タスクごとに expert 数を適応的に変える adaptive capacity を導入し、マルチタスク視覚領域へ拡張している。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "09cbee17945bba6b6283899edcf408008b205943098e5218d597679461623396"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v4",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4226079124",
+      "dst": "openalex:W4390874353",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.78,
+      "confidence": 0.78,
+      "rationale": "Robust Mixture-of-Expert Training は CNN の敵対的ロバスト性を追求し、Expert Choice Routing のルーティング手法には言及せず、単に MoE をベースラインとして利用している。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "88792af5f55b1c898a5e0eb3c8c73437e3aa3117cb6b8d4004e19872d136008e"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v4",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4226079124",
+      "dst": "openalex:W4394923534",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.78,
+      "confidence": 0.78,
+      "rationale": "ScheMoE はタスクスケジューリングを備えた分散学習システムを提案し、Expert Choice Routing を含む MoE 手法を大規模 GPU クラスタで拡張している。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "f41b7d8f3958ef3e14f47416bce08cfc5f11623f629edbae927df47b40a71067"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v4",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4386260498",
+      "dst": "openalex:W4394923534",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.4,
+      "confidence": 0.4,
+      "rationale": "「ScheMoE: An Extensible Mixture-of-Experts Distributed Train…」(2024) は「PipeMoE: Accelerating Mixture-of-Experts through Adaptive P…」(2023) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-metadata",
+          "sha256": "a7822438987a8407868bcb1ba80397336a62dbdfa8aeb7a37fa55a9cfe28017a"
+        },
+        "classification": {
+          "method": "citation_heuristic",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -659,18 +2284,23 @@
       "Mixture of Experts"
     ],
     "seeds": [
-      "openalex:W4408858386"
+      "openalex:W2242818861",
+      "openalex:W3119866685",
+      "openalex:W2581624817",
+      "openalex:W4226079124",
+      "openalex:W2966327190"
     ],
     "depth": 1,
     "since_year": 2018,
-    "generated_at": "2026-10-10T09:07:35.323000Z",
+    "generated_at": "2026-10-10T15:36:33.095000Z",
     "provenance_breakdown": {
-      "llm": 1,
-      "s2_context_rule": 12
+      "llm": 29,
+      "s2_context_rule": 22,
+      "citation_heuristic": 9
     },
     "completeness": {
       "complete": true,
-      "expansions_attempted": 9,
+      "expansions_attempted": 17,
       "expansions_failed": 0,
       "supplement_failures": []
     },
@@ -682,7 +2312,12 @@
         "z_lo": 0,
         "z_hi": 1
       },
-      "pool_size": 45
-    }
+      "pool_size": 183
+    },
+    "canonical_seeds": [
+      "openalex:W2242818861",
+      "openalex:W2581624817",
+      "openalex:W3119866685"
+    ]
   }
 }
