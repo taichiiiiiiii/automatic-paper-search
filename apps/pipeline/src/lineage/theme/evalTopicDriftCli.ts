@@ -47,7 +47,9 @@ export interface ThemeDriftReport extends OfflineAdmission {
    * survive the merge + gate, after the relation guard. */
   relationsBefore: Record<string, number>;
   relationsAfter: Record<string, number>;
-  /** Surviving `contrasts` edges the guard rewrote to `baseline_only`. */
+  /** Surviving edges the relation guard rewrote to `baseline_only`
+   * (survey/dataset `contrasts`, and since R2-15 any inheritance relation
+   * whose citing paper is a survey/review). */
   contrastsGuarded: { src: string; dst: string }[];
 }
 
@@ -59,6 +61,15 @@ interface ArtifactEdgeLike {
   conf?: unknown;
   confidence?: unknown;
   rationale?: unknown;
+  provenance?: unknown;
+}
+
+/** The classification method recorded in the edge provenance
+ * (`title_version` edges are exempt from the survey guard). */
+export function classificationMethodOf(e: { provenance?: unknown }): string {
+  const prov = e.provenance as { classification?: { method?: unknown } } | undefined;
+  const method = prov?.classification?.method;
+  return typeof method === "string" && method ? method : "llm";
 }
 
 function relationOf(e: ArtifactEdgeLike): string {
@@ -104,7 +115,7 @@ export function evaluateArtifact(
         relation: relationOf(e) as DerivedEdge["relation"],
         confidence: Number(e.confidence ?? e.conf ?? 0),
         rationale: String(e.rationale ?? ""),
-        provenance: "llm",
+        provenance: classificationMethodOf(e),
       };
       const guarded = guardRelation(cls, byId.get(e.src) ?? {}, byId.get(e.dst) ?? {});
       if (guarded === cls) return e;
