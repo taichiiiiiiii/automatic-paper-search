@@ -30,6 +30,21 @@ export interface DerivedEdge {
   confidence: number;
   rationale: string;
   provenance: string;
+  /** For `provenance: "llm"`: the provider/model that actually answered,
+   * when known (fallback chain / provider-agnostic cache). */
+  producedBy?: { provider: string; model: string };
+}
+
+/** The LLM-branch DerivedEdge for a usable classification (shared by both LLM paths). */
+function llmDerived(llmResult: RelationClassification): DerivedEdge {
+  const edge: DerivedEdge = {
+    relation: llmResult.relation,
+    confidence: Number(llmResult.confidence),
+    rationale: llmResult.rationale,
+    provenance: "llm",
+  };
+  if (llmResult.producedBy) edge.producedBy = { ...llmResult.producedBy };
+  return edge;
 }
 
 // ===== Constants =====
@@ -409,12 +424,7 @@ export function applyLlmClassification(
   }
   if (llmResult.relation === "unrelated") return null;
   if (Number(llmResult.confidence) < MIN_LLM_CONFIDENCE) return null;
-  return {
-    relation: llmResult.relation,
-    confidence: Number(llmResult.confidence),
-    rationale: llmResult.rationale,
-    provenance: "llm",
-  };
+  return llmDerived(llmResult);
 }
 export { applyLlmClassification as _apply_llm_classification };
 
@@ -427,12 +437,7 @@ export function buildEdgeFromLlm(llmResult: RelationClassification | null): Deri
   if (llmResult === null) return null;
   if (llmResult.relation === "unrelated") return null;
   if (Number(llmResult.confidence) < MIN_LLM_CONFIDENCE) return null;
-  return {
-    relation: llmResult.relation,
-    confidence: Number(llmResult.confidence),
-    rationale: llmResult.rationale,
-    provenance: "llm",
-  };
+  return llmDerived(llmResult);
 }
 export { buildEdgeFromLlm as _build_edge_from_llm };
 

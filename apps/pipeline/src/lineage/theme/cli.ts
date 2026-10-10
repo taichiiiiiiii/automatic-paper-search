@@ -8,9 +8,19 @@
  * just-written file, exit 3 for zero edges — decided here from the same
  * condition the builder's write-order gate already enforced BEFORE any
  * write, per `ZeroEdgeBuildError`'s doc comment).
+ *
+ * R2-6 (design 41 D3): exit 5 ({@link EXIT_DEGRADED_CLASSIFICATION}) when
+ * fewer than `--min-classified-rate` (default:
+ * `theme_min_evidence_classified_rate` in `lineage-quality-policy-v1.json`,
+ * else 0.8) of the edges carry an evidence-backed relation (LLM, S2
+ * intents, citation context, …; only year/citation guesses are
+ * unclassified) — nothing is written and a `::error::` line names the
+ * rate, the evidence mix, every LLM provider's usage and whether a daily
+ * quota was hit. `--result-json <path>` records the outcome of every run for the
+ * regen workflow's pending-retry state (`regenPending.ts`).
  */
 
-import { readFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -19,6 +29,7 @@ import {
   type LayoutMode,
   layoutFor,
   lineageCacheDir,
+  qualityPolicy,
 } from "@paperpilot/core/layout";
 import { loadEnv } from "../../collect/config/env.js";
 import type { FetchInit, HttpResponseLike } from "../../collect/http/requestWithRetry.js";
@@ -27,6 +38,11 @@ import { isMain } from "../../shared/cli/isMain.js";
 import { IncompleteBuildError } from "../fetch-state/completeness.js";
 import { buildProvider } from "../shared/providerFactory.js";
 import { type BuildThemeLineageDeps, buildThemeLineage, ZeroEdgeBuildError } from "./build.js";
+import {
+  DEFAULT_MIN_CLASSIFIED_RATE,
+  DegradedClassificationError,
+  EXIT_DEGRADED_CLASSIFICATION,
+} from "./classificationGate.js";
 import { sanitizeTheme } from "./slug.js";
 import { DEFAULT_TOPIC_SCOPE_OPTIONS } from "./topicScope.js";
 
@@ -51,6 +67,10 @@ export interface ThemeCliArgs {
   /** R2-2b: on-topic links needed to admit a candidate without a theme
    * match (`--topic-min-support`, default 2). */
   topicMinSupport: number;
+  /** R2-6: `--min-classified-rate` (0..1); `null` = take the policy/default. */
+  minClassifiedRate: number | null;
+  /** R2-6: `--result-json` path for the machine-readable outcome. */
+  resultJson: string | null;
 }
 
 export class CliArgError extends Error {}
@@ -77,6 +97,8 @@ const THEME_CLI_SPEC = {
   "auto-expand": { type: "boolean" as const },
   "no-topic-gate": { type: "boolean" as const },
   "topic-min-support": { type: "int" as const, default: DEFAULT_TOPIC_SCOPE_OPTIONS.minSupport },
+  "min-classified-rate": { type: "float" as const },
+  "result-json": { type: "string" as const },
 };
 
 /**
@@ -110,7 +132,66 @@ export function parseArgs(argv: readonly string[]): ThemeCliArgs {
     autoExpand: parsed["auto-expand"] as boolean,
     topicGate: !(parsed["no-topic-gate"] as boolean),
     topicMinSupport: parsed["topic-min-support"] as number,
+    minClassifiedRate: (parsed["min-classified-rate"] as number | undefined) ?? null,
+    resultJson: (parsed["result-json"] as string | undefined) ?? null,
   };
+}
+
+/** Policy key holding the default `--min-classified-rate`. */
+export const POLICY_MIN_CLASSIFIED_RATE_KEY = "theme_min_evidence_classified_rate";
+
+/**
+ * The classification-rate threshold: the flag, else the policy file's
+ * {@link POLICY_MIN_CLASSIFIED_RATE_KEY}, else 0.8. A missing/unreadable policy
+ * falls back to the default; a present but out-of-range value is an error
+ * (a typo must not silently disable the gate).
+ */
+export function resolveMinClassifiedRate(flag: number | null, policyPath: string | null): number {
+  const check = (v: number, where: string): number => {
+    if (!(Number.isFinite(v) && v >= 0 && v <= 1)) {
+      throw new CliArgError(`${where} must be a number in [0, 1], got ${v}`);
+    }
+    return v;
+  };
+  if (flag !== null) return check(flag, "--min-classified-rate");
+  if (policyPath !== null) {
+    let policy: unknown;
+    try {
+      policy = JSON.parse(readFileSync(policyPath, "utf-8"));
+    } catch {
+      policy = null;
+    }
+    if (policy !== null && typeof policy === "object" && POLICY_MIN_CLASSIFIED_RATE_KEY in policy) {
+      const raw = (policy as Record<string, unknown>)[POLICY_MIN_CLASSIFIED_RATE_KEY];
+      return check(typeof raw === "number" ? raw : Number.NaN, `${POLICY_MIN_CLASSIFIED_RATE_KEY}`);
+    }
+  }
+  return DEFAULT_MIN_CLASSIFIED_RATE;
+}
+
+/** Machine-readable outcome of one CLI run (`--result-json`). */
+export interface ThemeRunResult {
+  schema_version: "theme-run-result-v1";
+  theme: string;
+  exit_code: number;
+  status: "ok" | "degraded_classification" | "zero_edges" | "incomplete" | "error";
+  /** Degraded runs only: did any LLM provider report its daily quota exhausted? */
+  daily_limit_hit: boolean;
+  classified_rate: number | null;
+  classified_edges: number | null;
+  total_edges: number | null;
+  threshold: number | null;
+  message: string;
+}
+
+function writeResult(path: string | null, result: ThemeRunResult): void {
+  if (path === null) return;
+  try {
+    mkdirSync(dirname(path), { recursive: true });
+    writeFileSync(path, `${JSON.stringify(result, null, 2)}\n`, "utf-8");
+  } catch (e) {
+    process.stderr.write(`warning: cannot write --result-json ${path}: ${(e as Error).message}\n`);
+  }
 }
 
 /** `--auto-expand` thresholds: fewer than `SPARSE_NODES` nodes OR fewer
@@ -214,15 +295,20 @@ export function defaultDeps(repoRoot: string = DEFAULT_REPO_ROOT): BuildThemeLin
     classificationCachePath: classificationsCache(layout),
     githubApiDeps: { fetchImpl },
     buildProvider: () =>
-      buildProvider({
-        env,
-        ambientEnv: process.env,
-        fetchImpl,
-        sleep: (ms) => new Promise((r) => setTimeout(r, ms)),
-        // Surface why an LLM call failed (status code) in the CI log;
-        // without it every failure silently falls back to the heuristic.
-        logger: { warn: (msg) => process.stderr.write(`${msg}\n`) },
-      }),
+      buildProvider(
+        {
+          env,
+          ambientEnv: process.env,
+          fetchImpl,
+          sleep: (ms) => new Promise((r) => setTimeout(r, ms)),
+          // Surface why an LLM call failed (status code) in the CI log;
+          // without it every failure silently falls back to the heuristic.
+          logger: { warn: (msg) => process.stderr.write(`${msg}\n`) },
+        },
+        // R2-6 (design 41 D2): Groq first, Gemini when Groq latches or
+        // returns nothing for a pair — whichever keys are configured.
+        { fallback: true },
+      ),
     logger: {
       warn: (msg) => process.stderr.write(`${msg}\n`),
       info: (msg) => process.stderr.write(`${msg}\n`),
@@ -239,6 +325,8 @@ export interface RunThemeCliOptions {
    * returns/throws without driving the full pipeline through fake
    * network fixtures). Defaults to the real `buildThemeLineage`. */
   buildFn?: typeof buildThemeLineage;
+  /** Policy file holding the default `--min-classified-rate`; `null` = built-in default. Defaults to the repo's `lineage-quality-policy-v1.json`. */
+  policyPath?: string | null;
 }
 
 /** Run the theme-lineage CLI; returns the process exit code. Never
@@ -271,6 +359,46 @@ export async function runThemeCli(
     return 2;
   }
 
+  let minClassifiedRate: number;
+  try {
+    minClassifiedRate = resolveMinClassifiedRate(
+      args.minClassifiedRate,
+      options.policyPath === undefined
+        ? qualityPolicy(layoutFor(DEFAULT_REPO_ROOT))
+        : options.policyPath,
+    );
+  } catch (e) {
+    process.stderr.write(`error: ${(e as Error).message}\n`);
+    return 2;
+  }
+
+  const result = (
+    exitCode: number,
+    status: ThemeRunResult["status"],
+    message: string,
+    degraded?: DegradedClassificationError,
+  ): number => {
+    writeResult(args.resultJson, {
+      schema_version: "theme-run-result-v1",
+      theme: args.theme,
+      exit_code: exitCode,
+      status,
+      daily_limit_hit: degraded?.dailyLimitHit ?? false,
+      classified_rate: degraded?.rate.ratio ?? null,
+      classified_edges: degraded?.rate.classified ?? null,
+      total_edges: degraded?.rate.total ?? null,
+      threshold: degraded ? degraded.threshold : null,
+      message: message.slice(0, 500),
+    });
+    return exitCode;
+  };
+  const degradedExit = (exc: DegradedClassificationError): number => {
+    // stdout so the `::error::` annotation reaches the Actions log as a
+    // workflow command; the detail lines follow it.
+    process.stdout.write(`${exc.report()}\n`);
+    return result(EXIT_DEGRADED_CLASSIFICATION, "degraded_classification", exc.message, exc);
+  };
+
   const deps = options.deps ?? defaultDeps();
   const build = options.buildFn ?? buildThemeLineage;
 
@@ -290,6 +418,7 @@ export async function runThemeCli(
         // The CLI is the one caller that treats 0 edges as a failure.
         allowEdgeless: false,
         topicScope: { gate: args.topicGate, minSupport: args.topicMinSupport },
+        minClassifiedRate,
       },
       deps,
     );
@@ -299,12 +428,17 @@ export async function runThemeCli(
   try {
     outPath = await attempt(args.depth, args.seedsCount, args.width);
   } catch (exc) {
+    if (exc instanceof DegradedClassificationError) {
+      // No auto-expand retry: a bigger graph needs MORE classifications
+      // from the evidence source that just failed.
+      return degradedExit(exc);
+    }
     if (exc instanceof ZeroEdgeBuildError) {
       if (!args.autoExpand) {
         process.stderr.write(
           `0 edges produced; published artifact left untouched: ${exc.message}\n`,
         );
-        return 3;
+        return result(3, "zero_edges", exc.message);
       }
       usedZeroEdgeRetry = true;
       const [d2, s2, w2] = expandParams(args.depth, args.seedsCount, args.width);
@@ -314,29 +448,30 @@ export async function runThemeCli(
       try {
         outPath = await attempt(d2, s2, w2);
       } catch (exc2) {
+        if (exc2 instanceof DegradedClassificationError) return degradedExit(exc2);
         if (exc2 instanceof ZeroEdgeBuildError) {
           process.stderr.write(
             `auto-expand retry also produced 0 edges; published artifact left untouched: ${(exc2 as Error).message}\n`,
           );
-          return 3;
+          return result(3, "zero_edges", (exc2 as Error).message);
         }
         if (exc2 instanceof IncompleteBuildError) {
           process.stderr.write(
             `incomplete build; published artifact left untouched: ${(exc2 as Error).message}\n`,
           );
-          return 4;
+          return result(4, "incomplete", (exc2 as Error).message);
         }
         process.stderr.write(`error: ${(exc2 as Error).message}\n`);
-        return 2;
+        return result(2, "error", (exc2 as Error).message);
       }
     } else if (exc instanceof IncompleteBuildError) {
       process.stderr.write(
         `incomplete build; published artifact left untouched: ${(exc as Error).message}\n`,
       );
-      return 4;
+      return result(4, "incomplete", (exc as Error).message);
     } else {
       process.stderr.write(`error: ${(exc as Error).message}\n`);
-      return 2;
+      return result(2, "error", (exc as Error).message);
     }
   }
 
@@ -360,7 +495,11 @@ export async function runThemeCli(
       try {
         outPath = await attempt(d2, s2, w2);
       } catch (exc) {
-        if (exc instanceof ZeroEdgeBuildError) {
+        if (exc instanceof DegradedClassificationError) {
+          process.stderr.write(
+            `auto-expand retry was classification-degraded; keeping the initial lineage: ${exc.message}\n`,
+          );
+        } else if (exc instanceof ZeroEdgeBuildError) {
           process.stderr.write(
             `auto-expand retry produced 0 edges; keeping the initial lineage: ${(exc as Error).message}\n`,
           );
@@ -384,15 +523,15 @@ export async function runThemeCli(
     process.stderr.write(
       `error: cannot re-read just-written ${outPath}: ${(exc as Error).message}\n`,
     );
-    return 2;
+    return result(2, "error", `cannot re-read just-written ${outPath}`);
   }
   if (!payload.edges || payload.edges.length === 0) {
     process.stderr.write(
       "warning: 0 edges produced; published artifact left untouched. Re-run after LLM quota resets (see issue #45).\n",
     );
-    return 3;
+    return result(3, "zero_edges", "0 edges produced");
   }
-  return 0;
+  return result(0, "ok", `wrote ${outPath}`);
 }
 
 if (isMain(import.meta.url)) {

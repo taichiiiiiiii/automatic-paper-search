@@ -19,13 +19,16 @@
 import type { Env } from "../../collect/config/env.js";
 import type { FetchLike } from "../../collect/http/requestWithRetry.js";
 import type { LLMProvider } from "../../collect/llm/provider.js";
-import { GeminiProvider } from "../llm/gemini.js";
+import { FallbackProvider } from "../llm/fallback.js";
+import { GEMINI_DEFAULT_MODEL, GeminiProvider } from "../llm/gemini.js";
 import { GroqProvider } from "../llm/groq.js";
 
 const LLM_RATE_DELAY: Readonly<Record<"groq" | "gemini", number>> = {
   groq: 2.2, // ~27 RPM (Groq free tier: 30 RPM)
   gemini: 7.0, // ~8 RPM (Gemini 2.5-flash free tier: 10 RPM)
 };
+/** Gemini's own pacing default (the rateDelay above is not applied by every builder). */
+const GEMINI_DEFAULT_RPM = 8;
 
 function positiveNumber(raw: string | undefined): number | undefined {
   const n = raw === undefined || raw.trim() === "" ? Number.NaN : Number(raw);
@@ -50,6 +53,19 @@ export interface BuildProviderDeps {
   logger?: { warn: (msg: string) => void };
 }
 
+export interface BuildProviderOptions {
+  /**
+   * R2-6 (design 41 D2): in `auto` mode, chain EVERY provider that has a
+   * key — Groq first, then Gemini — in a {@link FallbackProvider} instead
+   * of returning only the first. A forced `PAPERPILOT_LLM_PROVIDER` still
+   * returns that one provider alone. Opt-in: the theme builder records
+   * the answering provider per edge (`producedBy`); the conference/deep
+   * builders stamp one provider per run and keep the single-provider
+   * behaviour.
+   */
+  fallback?: boolean;
+}
+
 /** Pick the first available LLM provider and return `{provider, rateDelay}`.
  *
  * Groq takes precedence (most generous free tier for the
@@ -62,7 +78,10 @@ export interface BuildProviderDeps {
  * must catch this and map it to exit code 3, never let it propagate as
  * an uncaught process exit (LLM-44).
  */
-export function buildProvider(deps: BuildProviderDeps): {
+export function buildProvider(
+  deps: BuildProviderDeps,
+  options: BuildProviderOptions = {},
+): {
   provider: LLMProvider;
   rateDelay: number;
 } {
@@ -89,9 +108,15 @@ export function buildProvider(deps: BuildProviderDeps): {
     return { provider, rateDelay: LLM_RATE_DELAY.groq };
   };
   const makeGemini = (): { provider: LLMProvider; rateDelay: number } => {
-    const model = env.geminiModel || "gemini-2.5-flash";
+    const model = env.geminiModel || GEMINI_DEFAULT_MODEL;
     const provider = new GeminiProvider(
-      { enabled: true, model, temperature: 0.1, timeoutSeconds: 30 },
+      {
+        enabled: true,
+        model,
+        temperature: 0.1,
+        timeoutSeconds: 30,
+        rateLimitRpm: positiveNumber(ambientEnv.PAPERPILOT_GEMINI_RPM) ?? GEMINI_DEFAULT_RPM,
+      },
       geminiKey,
       { fetchImpl: deps.fetchImpl, now: deps.now, sleep: deps.sleep, logger: deps.logger },
     );
@@ -121,6 +146,14 @@ export function buildProvider(deps: BuildProviderDeps): {
     );
   }
 
+  if (options.fallback && groqKey && geminiKey) {
+    const groq = makeGroq();
+    const gemini = makeGemini();
+    return {
+      provider: new FallbackProvider([groq.provider, gemini.provider], { logger: deps.logger }),
+      rateDelay: groq.rateDelay,
+    };
+  }
   if (groqKey) return makeGroq();
   if (geminiKey) return makeGemini();
 

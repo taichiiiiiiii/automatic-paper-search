@@ -1,0 +1,61 @@
+name: regen-retry
+
+# R2-6 (design 41 D3): re-run theme regeneration for themes whose last
+# attempt was degraded by an LLM daily quota. regen-themes.yml records
+# them in data/state/lineage-cache/regen-pending.json (promoted to
+# develop); this daily job reads that list and dispatches regen-themes.yml
+# for it. Nothing pending -> no dispatch. A theme drops out after 5
+# quota-degraded attempts and stays listed for a human (watchdog).
+#
+# 09:17 UTC: after the Gemini free-tier daily reset (midnight Pacific),
+# outside the collect/release hours.
+
+on:
+  schedule:
+    - cron: "17 9 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+# Shared with regen-themes.yml (no overlap with a running regeneration).
+concurrency:
+  group: regen-themes
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: write
+    steps:
+      - name: Checkout develop
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: develop
+          persist-credentials: false
+
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+
+      - name: Read pending themes
+        id: pending
+        run: |
+          set -euo pipefail
+          themes="$(pnpm exec tsx apps/pipeline/src/lineage/theme/regenPendingCli.ts list \
+            --pending data/state/lineage-cache/regen-pending.json)"
+          echo "themes=$themes" >> "$GITHUB_OUTPUT"
+          echo "pending: ${themes:-none}"
+
+      - name: Dispatch regen-themes for pending themes
+        if: steps.pending.outputs.themes != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          THEMES: ${{ steps.pending.outputs.themes }}
+        run: |
+          set -euo pipefail
+          gh workflow run regen-themes.yml -R "$GITHUB_REPOSITORY" --ref develop -f themes="$THEMES"
+          echo "### Regen retry" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Dispatched regen-themes for: $THEMES" >> "$GITHUB_STEP_SUMMARY"

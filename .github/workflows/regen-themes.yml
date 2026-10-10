@@ -3,6 +3,15 @@ name: regen-themes
 # Operator-only bulk regeneration of existing theme family trees
 # (docs/migration/p5-plan.md §4.1). The unarXive DuckDB download step
 # from the pre-P5 workflow is removed (decision: no DuckDB).
+#
+# R2-6 (design 41 D2/D3): Groq is the primary classifier, Gemini the
+# fallback (PAPERPILOT_GEMINI_API_KEY). A theme whose edges are less than
+# 80% evidence-classified exits 5 and counts as failed (previous build
+# retained). Quota-degraded themes are recorded in
+# data/state/lineage-cache/regen-pending.json, which — with the
+# classification cache — is promoted even when every theme failed, so
+# regen-retry.yml can re-dispatch them the next day; the `verdict` job
+# then still fails the run.
 
 on:
   workflow_dispatch:
@@ -15,6 +24,12 @@ on:
 
 permissions: {}
 
+# Shared with regen-retry.yml: one regeneration (or retry dispatch) at a
+# time, so two runs never race on the same theme / pending-state paths.
+concurrency:
+  group: regen-themes
+  cancel-in-progress: false
+
 jobs:
   generate:
     runs-on: ubuntu-latest
@@ -25,6 +40,9 @@ jobs:
       as_of: ${{ steps.candidate.outputs.as_of }}
       base_sha: ${{ steps.candidate.outputs.base_sha }}
       candidate_name: ${{ steps.candidate.outputs.candidate_name }}
+      attempted: ${{ steps.regen.outputs.attempted }}
+      succeeded: ${{ steps.regen.outputs.succeeded }}
+      degraded: ${{ steps.regen.outputs.degraded }}
     steps:
       - name: Checkout develop
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -36,16 +54,20 @@ jobs:
         uses: ./.github/actions/setup-pnpm
 
       - name: Regenerate requested themes
+        id: regen
         # PAPERPILOT_GROQ_API_KEY / PAPERPILOT_S2_API_KEY (H3 of the P5
         # tier-A review): without these, buildProvider() throws "No LLM
         # key found" and every regeneration fails; S2 also runs
         # unauthenticated without its key. Same secret names as the live
         # regen-themes.yml step this one replaces.
+        # PAPERPILOT_GEMINI_API_KEY (R2-6): fallback classifier; optional.
         env:
           PAPERPILOT_GROQ_API_KEY: ${{ secrets.PAPERPILOT_GROQ_API_KEY }}
+          PAPERPILOT_GEMINI_API_KEY: ${{ secrets.PAPERPILOT_GEMINI_API_KEY }}
           PAPERPILOT_S2_API_KEY: ${{ secrets.PAPERPILOT_S2_API_KEY }}
           THEMES_INPUT: ${{ inputs.themes }}
           THEME_RE: '^[A-Za-z0-9 _-]{2,80}$'
+          PENDING_FILE: data/state/lineage-cache/regen-pending.json
         run: |
           set -euo pipefail
           # `IFS=',' read -ra <<<` reads one line only, so a value
@@ -68,8 +90,11 @@ jobs:
             exit 1
           fi
 
+          results_dir="$RUNNER_TEMP/regen-results"
+          mkdir -p "$results_dir"
           failed=0
           attempted=0
+          degraded=()
           for raw_theme in "${THEMES[@]}"; do
             theme="$(printf '%s' "$raw_theme" | sed -E 's/^[[:space:]]+|[[:space:]]+$//g')"
             if ! [[ "$theme" =~ $THEME_RE ]]; then
@@ -80,17 +105,25 @@ jobs:
             fi
             attempted=$((attempted + 1))
             echo "::group::regen $theme"
-            if pnpm exec tsx apps/pipeline/src/lineage/theme/cli.ts \
+            rc=0
+            pnpm exec tsx apps/pipeline/src/lineage/theme/cli.ts \
                 --theme "$theme" \
                 --depth 1 --seeds 5 --width 8 --since-year 2018 \
                 --llm-strict ambiguous \
-                --primary-source openalex; then
+                --primary-source openalex \
+                --result-json "$results_dir/$attempted.json" || rc=$?
+            echo "::endgroup::"
+            if [ "$rc" -eq 0 ]; then
               echo "regenerated: $theme"
             else
               failed=$((failed + 1))
-              echo "::warning::regen failed for $theme; previous build retained"
+              if [ "$rc" -eq 5 ]; then
+                degraded+=("$theme")
+                echo "::warning::regen degraded (evidence-classified rate below threshold) for $theme; previous build retained"
+              else
+                echo "::warning::regen failed (exit $rc) for $theme; previous build retained"
+              fi
             fi
-            echo "::endgroup::"
           done
 
           succeeded=$((attempted - failed))
@@ -98,11 +131,23 @@ jobs:
             echo "### Theme regeneration"
             echo "- Attempted: $attempted"
             echo "- Succeeded: $succeeded"
-            echo "- Failed: $failed"
+            echo "- Failed: $failed (degraded classification: ${#degraded[@]})"
+            echo ""
           } >> "$GITHUB_STEP_SUMMARY"
+          # Pending-retry state is recorded (and promoted below) even when
+          # every theme failed; the verdict job fails such a run.
+          pnpm exec tsx apps/pipeline/src/lineage/theme/regenPendingCli.ts record \
+            --pending "$PENDING_FILE" \
+            --results-dir "$results_dir" \
+            --at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --summary "$GITHUB_STEP_SUMMARY"
+          {
+            echo "attempted=$attempted"
+            echo "succeeded=$succeeded"
+            echo "degraded=${#degraded[@]}"
+          } >> "$GITHUB_OUTPUT"
           if [ "$succeeded" -eq 0 ]; then
-            echo "::error::all theme regenerations failed"
-            exit 1
+            echo "::error::all theme regenerations failed (state is still promoted; the verdict job fails this run)"
           fi
 
       - name: Refresh candidate projections
@@ -133,7 +178,8 @@ jobs:
         run: |
           set -euo pipefail
           pnpm exec tsx apps/pipeline/src/release/cli.ts package "$RUNNER_TEMP/candidate" \
-            data/published/themes data/state/lineage-cache/classifications.json
+            data/published/themes data/state/lineage-cache/classifications.json \
+            data/state/lineage-cache/regen-pending.json
 
       - name: Upload generated candidate
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
@@ -178,11 +224,13 @@ jobs:
           msg="data(themes): manual bulk regeneration"
           pnpm exec tsx apps/pipeline/src/release/cli.ts promote themes \
             "$RUNNER_TEMP/candidate" "$msg" \
-            data/published/themes data/state/lineage-cache/classifications.json
+            data/published/themes data/state/lineage-cache/classifications.json \
+            data/state/lineage-cache/regen-pending.json
 
   release:
-    needs: promote
-    if: needs.promote.outputs.changed == 'true'
+    needs: [generate, promote]
+    # No release when no theme regenerated (only cache/pending state moved).
+    if: needs.promote.outputs.changed == 'true' && needs.generate.outputs.succeeded != '0'
     permissions:
       contents: read
       deployments: write
@@ -195,3 +243,31 @@ jobs:
       source_sha: ${{ needs.promote.outputs.source_sha }}
       release_kind: normal
       request_id: themes-${{ github.run_id }}-${{ github.run_attempt }}
+
+  verdict:
+    # R2-6: the run fails when every theme failed (e.g. degraded by an LLM
+    # quota), AFTER promote has saved the classification cache and the
+    # pending-retry state.
+    needs: [generate, promote]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+    steps:
+      - name: Fail when no theme regenerated
+        env:
+          GENERATE_RESULT: ${{ needs.generate.result }}
+          PROMOTE_RESULT: ${{ needs.promote.result }}
+          SUCCEEDED: ${{ needs.generate.outputs.succeeded }}
+          DEGRADED: ${{ needs.generate.outputs.degraded }}
+        run: |
+          set -euo pipefail
+          if [ "$GENERATE_RESULT" != success ] || [ "$PROMOTE_RESULT" != success ]; then
+            echo "::error::generate=$GENERATE_RESULT promote=$PROMOTE_RESULT"
+            exit 1
+          fi
+          if [ "${SUCCEEDED:-0}" = 0 ]; then
+            echo "::error::all theme regenerations failed (degraded classification: ${DEGRADED:-0}); previous builds retained"
+            exit 1
+          fi
+          echo "regenerated ${SUCCEEDED} theme(s)"

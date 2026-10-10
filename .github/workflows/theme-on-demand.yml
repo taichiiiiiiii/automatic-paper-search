@@ -87,8 +87,16 @@ jobs:
         # key found" and every on-demand theme request fails; S2 also
         # runs unauthenticated without its key. Same secret names as the
         # live theme-on-demand.yml step this one replaces.
+        #
+        # R2-6 (design 41 D2/D3): PAPERPILOT_GEMINI_API_KEY is the optional
+        # fallback classifier. The CLI exits 5 (step fails, nothing is
+        # promoted) when under 80% of the edges are evidence-classified.
+        # The classification cache is deliberately NOT promoted from here:
+        # its path would join this run's promote CAS set, so a concurrent
+        # request or bulk regen would make one of them fail.
         env:
           PAPERPILOT_GROQ_API_KEY: ${{ secrets.PAPERPILOT_GROQ_API_KEY }}
+          PAPERPILOT_GEMINI_API_KEY: ${{ secrets.PAPERPILOT_GEMINI_API_KEY }}
           PAPERPILOT_S2_API_KEY: ${{ secrets.PAPERPILOT_S2_API_KEY }}
           THEME_INPUT: ${{ inputs.theme }}
         run: |
