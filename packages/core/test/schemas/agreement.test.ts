@@ -273,6 +273,36 @@ describe("lineage publication tiers and edge labels (design doc 41)", () => {
       validateArtifact("lineage-audit-fixtures-v1", fixture({ ...base, verdict: "maybe" })).ok,
     ).toBe(false);
   });
+
+  it("accepts metadata_ok/note on node labels and draft_sha256 on entries (design doc 41 D5)", () => {
+    const fixture = (label: Record<string, unknown>) => ({
+      schema_version: "lineage-audit-fixtures-v1",
+      collections: [
+        {
+          collection_id: "theme:t",
+          input_sha256: SHA,
+          draft_sha256: SHA,
+          reviewer: "r",
+          reviewed_at: "2026-10-10T00:00:00Z",
+          focus_labels: [label],
+          sample_labels: [label],
+        },
+      ],
+    });
+    const base = { node_id: "a", on_topic: true };
+    expect(
+      validateArtifact(
+        "lineage-audit-fixtures-v1",
+        fixture({ ...base, metadata_ok: false, note: "n" }),
+      ).ok,
+    ).toBe(true);
+    expect(
+      validateArtifact("lineage-audit-fixtures-v1", fixture({ ...base, metadata_ok: "yes" })).ok,
+    ).toBe(false);
+    expect(validateArtifact("lineage-audit-fixtures-v1", fixture({ ...base, extra: 1 })).ok).toBe(
+      false,
+    );
+  });
 });
 
 // R2-10 (design 41 D6): the Semantic Scholar context-rule classification
