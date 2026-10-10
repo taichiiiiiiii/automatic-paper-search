@@ -1,0 +1,3324 @@
+{
+ "description": "R2-9 hand-checked lineage edges: S2 signals, API rule output (v2=api, v1=apiV1), newest LLM label, and a human gold label in the simplified taxonomy. dev = stratified by (LLM label, v1 relation) and used to revise v1 into v2; holdout = random, labelled before v2 output was inspected. See docs/design/43-api-based-relation-evaluation.md.",
+ "taxonomy": [
+  "builds_on",
+  "compares_with",
+  "uses_resource",
+  "background",
+  "cites_unspecified"
+ ],
+ "stats": {
+  "dev": {
+   "n": 49,
+   "v1": 25,
+   "v2": 40,
+   "v1c": 35,
+   "v2c": 43,
+   "nllm": 39,
+   "llm": 14,
+   "llmc": 24,
+   "v2_on_llm": 32,
+   "v2c_on_llm": 35,
+   "v1_on_llm": 20
+  },
+  "holdout": {
+   "n": 30,
+   "v1": 12,
+   "v2": 20,
+   "v1c": 18,
+   "v2c": 24,
+   "nllm": 15,
+   "llm": 4,
+   "llmc": 11,
+   "v2_on_llm": 10,
+   "v2c_on_llm": 11,
+   "v1_on_llm": 7
+  }
+ },
+ "edges": [
+  {
+   "split": "dev",
+   "idx": 0,
+   "theme": "mixture-of-experts",
+   "src": "openalex:W4224299101",
+   "dst": "openalex:W4408858386",
+   "srcTitle": "StableMoE: Stable Routing Strategy for Mixture of Experts",
+   "srcYear": 2022,
+   "dstTitle": "A Survey on Mixture of Experts in Large Language Models",
+   "dstYear": 2025,
+   "signals": {
+    "found": true,
+    "intents": [],
+    "contexts": [
+     "Additionally, STABLEMOE [79] employs a two-stage training process, with a freezed gate in the second stage."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "A Survey on Mixture of Experts in Large Language Models"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "citing_survey"
+   },
+   "apiV1": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "llm": "baseline_only",
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": true,
+   "llmCoarseCorrect": true
+  },
+  {
+   "split": "dev",
+   "idx": 1,
+   "theme": "mixture-of-experts",
+   "src": "openalex:W4224299101",
+   "dst": "openalex:W4364382874",
+   "srcTitle": "StableMoE: Stable Routing Strategy for Mixture of Experts",
+   "srcYear": 2022,
+   "dstTitle": "FlexMoE: Scaling Large-scale Sparse Pre-trained Model Training via Dynamic Device Placement",
+   "dstYear": 2023,
+   "signals": {
+    "found": true,
+    "intents": [
+     "background"
+    ],
+    "contexts": [
+     "The training of gate networks is highly unstable [7] because gradient-based optimization algorithms will reinforce the previous routing determination until it reaches a certain point and escapes from the wrong learning direction."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "FlexMoE: Scaling Large-scale Sparse Pre-trained Model Training via Dynamic Device Placement"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "apiV1": {
+    "relation": "background",
+    "rule": "intent_background"
+   },
+   "llm": "baseline_only",
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": true,
+   "llmCoarseCorrect": true
+  },
+  {
+   "split": "dev",
+   "idx": 2,
+   "theme": "mixture-of-experts",
+   "src": "openalex:W4386076670",
+   "dst": "openalex:W4408858386",
+   "srcTitle": "Mod-Squad: Designing Mixtures of Experts As Modular Multi-Task Learners",
+   "srcYear": 2023,
+   "dstTitle": "A Survey on Mixture of Experts in Large Language Models",
+   "dstYear": 2025,
+   "signals": {
+    "found": true,
+    "intents": [],
+    "contexts": [
+     "Additionally, Mod-Squad [69] posits the difﬁculty of training multi-task models under such an expert-balancing loss, which may inadvertently force experts to set parameters on conﬂicting tasks or hinder the potential synergies from parameter sharing across complementary tasks."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "A Survey on Mixture of Experts in Large Language Models"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "citing_survey"
+   },
+   "apiV1": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "llm": "baseline_only",
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": true,
+   "llmCoarseCorrect": true
+  },
+  {
+   "split": "dev",
+   "idx": 3,
+   "theme": "graph-neural-network",
+   "src": "openalex:W2101491865",
+   "dst": "openalex:W2558748708",
+   "srcTitle": "The emerging field of signal processing on graphs: Extending high-dimensional data analysis to networks and other irregular domains",
+   "srcYear": 2013,
+   "dstTitle": "Geometric Deep Learning: Going beyond Euclidean data",
+   "dstYear": 2017,
+   "signals": {
+    "found": true,
+    "intents": [
+     "methodology"
+    ],
+    "contexts": [
+     "…problem, the domain (social graph) is assumed to be ﬁxed; methods of signal processing on graphs , which have previously been reviewed in Signal Processing Magazine [51], can be applied to this setting, in particular, in order to deﬁne an operation similar to convolution in the spectral domain."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": true,
+    "citingTitle": "Geometric Deep Learning: Going beyond Euclidean data"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "apiV1": {
+    "relation": "builds_on",
+    "rule": "intent_methodology"
+   },
+   "llm": "baseline_only",
+   "gold": "background",
+   "note": "survey-like overview; GSP as background",
+   "apiCorrect": true,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": false,
+   "llmCorrect": true,
+   "llmCoarseCorrect": true
+  },
+  {
+   "split": "dev",
+   "idx": 4,
+   "theme": "vision-transformer",
+   "src": "openalex:W3121523901",
+   "dst": "openalex:W3175515048",
+   "srcTitle": "Tokens-to-Token ViT: Training Vision Transformers from Scratch on ImageNet",
+   "srcYear": 2021,
+   "dstTitle": "PVT v2: Improved baselines with pyramid vision transformer",
+   "dstYear": 2022,
+   "signals": {
+    "found": true,
+    "intents": [
+     "background"
+    ],
+    "contexts": [
+     "T2T ViT [37] con-catenates tokens within an overlapping sliding window into one token progressively.",
+     "…83.8% ImageNet top-1 accuracy, which is 0.5% higher than Swin [35] 25.0 4.3 77.6 RegNetY-4G [26] 21.0 4.0 80.0 DeiT-Small/16 [31] 22.1 4.6 79.9 T2T-ViT t -14 [37] 22.0 6.1 80.7 PVTv1-Small [33] 24.5 3.8 79.8 TNT-S [11] 23 Transformer [23] and Twins [5], while our parameters and FLOPS are fewer."
+    ],
+    "isInfluential": true,
+    "sharedAuthors": false,
+    "citingTitle": "PVT v2: Improved baselines with pyramid vision transformer"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "apiV1": {
+    "relation": "builds_on",
+    "rule": "influential"
+   },
+   "llm": "baseline_only",
+   "gold": "compares_with",
+   "note": "PVTv2 table row compares T2T",
+   "apiCorrect": false,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": false,
+   "llmCorrect": true,
+   "llmCoarseCorrect": true
+  },
+  {
+   "split": "dev",
+   "idx": 5,
+   "theme": "graph-neural-network",
+   "src": "openalex:W2393319904",
+   "dst": "openalex:W3011667710",
+   "srcTitle": "Structural Deep Network Embedding",
+   "srcYear": 2016,
+   "dstTitle": "Deep Learning on Graphs: A Survey",
+   "dstYear": 2020,
+   "signals": {
+    "found": true,
+    "intents": [],
+    "contexts": [
+     "Structure deep network embedding (SDNE) [97] ﬁlled in the puzzle by showing that the L2-reconstruction loss in Eq.",
+     "The framework of SDNE [97]."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": true,
+    "citingTitle": "Deep Learning on Graphs: A Survey"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "citing_survey"
+   },
+   "apiV1": {
+    "relation": "builds_on",
+    "rule": "shared_authors"
+   },
+   "llm": "baseline_only",
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": false,
+   "llmCorrect": true,
+   "llmCoarseCorrect": true
+  },
+  {
+   "split": "dev",
+   "idx": 6,
+   "theme": "vision-transformer",
+   "src": "openalex:W3175515048",
+   "dst": "openalex:W3119997354",
+   "srcTitle": "PVT v2: Improved baselines with pyramid vision transformer",
+   "srcYear": 2022,
+   "dstTitle": "Transformers in Vision: A Survey",
+   "dstYear": 2022,
+   "signals": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "Numerous methods have been proposed that make special design choices to perform self-attention more ‘eiciently’, for instance employing pooling/downsampling in self-attention [61, 209, 221], local window-based attention [138, 201], axial-attention [55, 83], low-rank projection attention [192, 208, 225], kernelizable attention [41, 157], and similarity-clustering based methods [104, 193].",
+     "PVTv2 [209] and SegFormer [222] improve original PVT [210] by introducing overlapping patch embedding, depth-wise convolution, and eicient attention.",
+     "Examples of multi-stage ViTs include Pyramid ViT [209, 210], Twins [42], CoaT [227], Swin Transformer [138], Convolutional vision Transformer (CvT) [219], Shule Transformer [87], CrossFormer [211], RegionViT [29] and Focal Transformer models [229].",
+     "This simple scheme performs favorably compared with more sophisticated designs [138, 209], and enables training NesT on smaller datasets (e."
+    ],
+    "isInfluential": true,
+    "sharedAuthors": false,
+    "citingTitle": "Transformers in Vision: A Survey"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "citing_survey"
+   },
+   "apiV1": {
+    "relation": "compares_with",
+    "rule": "phrase_compare"
+   },
+   "llm": "baseline_only",
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": true,
+   "llmCoarseCorrect": true
+  },
+  {
+   "split": "dev",
+   "idx": 7,
+   "theme": "graph-neural-network",
+   "src": "openalex:W2101491865",
+   "dst": "openalex:W3011667710",
+   "srcTitle": "The emerging field of signal processing on graphs: Extending high-dimensional data analysis to networks and other irregular domains",
+   "srcYear": 2013,
+   "dstTitle": "Deep Learning on Graphs: A Survey",
+   "dstYear": 2020,
+   "signals": {
+    "found": true,
+    "intents": [],
+    "contexts": [
+     "Unlike images, audio, and text, which have a clear grid structure, graphs have irregular structures, making it hard to generalize some of the basic mathematical operations to graphs [6].",
+     "However, the standard convolution operation used for images or text cannot be directly applied to graphs because graphs lack a grid structure [6].",
+     "[40] first introduced convolution for graph data from the spectral domain using the graph Laplacian matrix L [75], which plays a similar role as the Fourier basis in signal processing [6]."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "Deep Learning on Graphs: A Survey"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "citing_survey"
+   },
+   "apiV1": {
+    "relation": "compares_with",
+    "rule": "phrase_contrast"
+   },
+   "llm": "baseline_only",
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": true,
+   "llmCoarseCorrect": true
+  },
+  {
+   "split": "dev",
+   "idx": 8,
+   "theme": "vision-transformer",
+   "src": "openalex:W2942489928",
+   "dst": "openalex:W3094502228",
+   "srcTitle": "Local Relation Networks for Image Recognition",
+   "srcYear": 2019,
+   "dstTitle": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+   "dstYear": 2020,
+   "signals": {
+    "found": true,
+    "intents": [],
+    "contexts": [
+     "Such local multi-head dot-product self attention blocks can completely replace convolutions (Hu et al., 2019; Ramachandran et al., 2019; Zhao et al., 2020)."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "apiV1": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "llm": "contrasts",
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": false,
+   "llmCoarseCorrect": true
+  },
+  {
+   "split": "dev",
+   "idx": 9,
+   "theme": "vision-transformer",
+   "src": "openalex:W3152694111",
+   "dst": "openalex:W4312443924",
+   "srcTitle": "Co-Scale Conv-Attentional Image Transformers",
+   "srcYear": 2021,
+   "dstTitle": "A ConvNet for the 2020s",
+   "dstYear": 2022,
+   "signals": {
+    "found": true,
+    "intents": [
+     "background"
+    ],
+    "contexts": [
+     "The original ViT [20] ﬁrst studied a hybrid conﬁg-uration, and a large body of follow-up works focused on reintroducing convolutional priors to ViT, either in an explicit [15,16,21,82,86,88] or implicit [45] fashion."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "A ConvNet for the 2020s"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "apiV1": {
+    "relation": "background",
+    "rule": "intent_background"
+   },
+   "llm": "contrasts",
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": false,
+   "llmCoarseCorrect": true
+  },
+  {
+   "split": "dev",
+   "idx": 10,
+   "theme": "vision-transformer",
+   "src": "openalex:W2937843571",
+   "dst": "openalex:W3151130473",
+   "srcTitle": "Attention Augmented Convolutional Networks",
+   "srcYear": 2019,
+   "dstTitle": "CrossViT: Cross-Attention Multi-Scale Vision Transformer for Image Classification",
+   "dstYear": 2021,
+   "signals": {
+    "found": true,
+    "intents": [
+     "background"
+    ],
+    "contexts": [
+     "There has also been a lot of interest in combining CNNs with different forms of self-attention [2, 32, 48, 31, 3, 17, 39].",
+     "search efforts on transformers in vision have, until very recently, been largely focused on combining CNNs with selfattention [3, 48, 31, 32]."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "CrossViT: Cross-Attention Multi-Scale Vision Transformer for Image Classification"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "apiV1": {
+    "relation": "background",
+    "rule": "intent_background"
+   },
+   "llm": "contrasts",
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": false,
+   "llmCoarseCorrect": true
+  },
+  {
+   "split": "dev",
+   "idx": 11,
+   "theme": "vision-transformer",
+   "src": "openalex:W2183341477",
+   "dst": "openalex:W2612445135",
+   "srcTitle": "Rethinking the Inception Architecture for Computer Vision",
+   "srcYear": 2016,
+   "dstTitle": "MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications",
+   "dstYear": 2017,
+   "signals": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "For the ImageNet benchmarks in the next section all models were trained with same training parameters regardless of the size of the model.",
+     "The general trend has been to make deeper and more complicated networks in order to achieve higher accuracy [27, 31, 29, 8]."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "apiV1": {
+    "relation": "builds_on",
+    "rule": "intent_methodology"
+   },
+   "llm": "contrasts",
+   "gold": "background",
+   "note": "contexts are generic trend sentences",
+   "apiCorrect": true,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": false,
+   "llmCorrect": false,
+   "llmCoarseCorrect": true
+  },
+  {
+   "split": "dev",
+   "idx": 12,
+   "theme": "vision-transformer",
+   "src": "openalex:W2102605133",
+   "dst": "openalex:W4312443924",
+   "srcTitle": "Rich Feature Hierarchies for Accurate Object Detection and Semantic Segmentation",
+   "srcYear": 2014,
+   "dstTitle": "A ConvNet for the 2020s",
+   "dstYear": 2022,
+   "signals": {
+    "found": true,
+    "intents": [
+     "background"
+    ],
+    "contexts": [
+     "the region-based detectors [23, 24, 27, 57] further elevated ConvNets to the position of being the fundamental building block in a visual recognition system."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": true,
+    "citingTitle": "A ConvNet for the 2020s"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "apiV1": {
+    "relation": "builds_on",
+    "rule": "shared_authors"
+   },
+   "llm": "contrasts",
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": false,
+   "llmCorrect": false,
+   "llmCoarseCorrect": true
+  },
+  {
+   "split": "dev",
+   "idx": 13,
+   "theme": "vision-transformer",
+   "src": "openalex:W2942489928",
+   "dst": "openalex:W4312560592",
+   "srcTitle": "Local Relation Networks for Image Recognition",
+   "srcYear": 2019,
+   "dstTitle": "Video Swin Transformer",
+   "dstYear": 2022,
+   "signals": {
+    "found": true,
+    "intents": [
+     "background"
+    ],
+    "contexts": [
+     "3D Relative Position Bias Numerous previous works [2, 16,17,31] have shown that it can be advantageous to include a relative position bias to each head in self-attention computation."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": true,
+    "citingTitle": "Video Swin Transformer"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "apiV1": {
+    "relation": "builds_on",
+    "rule": "shared_authors"
+   },
+   "llm": "contrasts",
+   "gold": "background",
+   "note": "relative position bias list; arguably adopts a technique",
+   "apiCorrect": true,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": false,
+   "llmCorrect": false,
+   "llmCoarseCorrect": true
+  },
+  {
+   "split": "dev",
+   "idx": 14,
+   "theme": "vision-transformer",
+   "src": "openalex:W2183341477",
+   "dst": "openalex:W3119997354",
+   "srcTitle": "Rethinking the Inception Architecture for Computer Vision",
+   "srcYear": 2016,
+   "dstTitle": "Transformers in Vision: A Survey",
+   "dstYear": 2022,
+   "signals": {
+    "found": true,
+    "intents": [
+     "result"
+    ],
+    "contexts": [
+     "The authors show that by smoothing the local loss surface using sharpness-aware minimizer (SAM) [64], ViTs can be trained with simple data augmentation (random crop, and horizontal lip) [186], instead of employing compute intensive augmentation strategies, and can outperform their counterpart ResNet models."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "Transformers in Vision: A Survey"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "citing_survey"
+   },
+   "apiV1": {
+    "relation": "compares_with",
+    "rule": "phrase_compare"
+   },
+   "llm": "contrasts",
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": false,
+   "llmCoarseCorrect": true
+  },
+  {
+   "split": "dev",
+   "idx": 15,
+   "theme": "vision-transformer",
+   "src": "openalex:W3121523901",
+   "dst": "openalex:W3204076343",
+   "srcTitle": "Tokens-to-Token ViT: Training Vision Transformers from Scratch on ImageNet",
+   "srcYear": 2021,
+   "dstTitle": "CvT: Introducing Convolutions to Vision Transformers",
+   "dstYear": 2021,
+   "signals": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "With fewer paramerters, CvT-13 achieves a 81.6% ImageNet Top-1 accuracy, outperforming PVT-Small [34], T2T-ViT t -14 [41], TNT-S [14] by 1.7%, 0.8%, 0.2% respectively.",
+     "Tokens-to-Token ViT [41] implements a progressive tokenization, and then uses a Transformer-based backbone in which the length of tokens is ﬁxed.",
+     "…[30] yes non-overlapping linear no CPVT [6] no (w/ PE Generator) non-overlapping linear no TNT [14] yes non-overlapping (patch+pixel) linear no T2T [41] yes overlapping (concatenate) linear partial (tokenization) PVT [34] yes non-overlapping spatial reduction yes CvT (ours) no overlapping…",
+     "Tokens-to-Token (T2T) [41] mainly improves tokenization in ViT by concatenating multiple tokens within a sliding window into one token.",
+     "Different from other prior Transformer-based architectures [11, 30, 41, 34], we do not sum the ad-hod position embedding to the tokens.",
+     "(b) Comparison to concurrent works: DeiT [30], T2T [41], PVT [34], TNT [14] when pretrained on ImageNet-1k. architectures [10] from language understanding with minimal modiﬁcations."
+    ],
+    "isInfluential": true,
+    "sharedAuthors": false,
+    "citingTitle": "CvT: Introducing Convolutions to Vision Transformers"
+   },
+   "api": {
+    "relation": "compares_with",
+    "rule": "phrase_contrast"
+   },
+   "apiV1": {
+    "relation": "compares_with",
+    "rule": "phrase_contrast"
+   },
+   "llm": "contrasts",
+   "gold": "compares_with",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": true,
+   "llmCoarseCorrect": true
+  },
+  {
+   "split": "dev",
+   "idx": 16,
+   "theme": "vision-transformer",
+   "src": "openalex:W2942489928",
+   "dst": "openalex:W3204076343",
+   "srcTitle": "Local Relation Networks for Image Recognition",
+   "srcYear": 2019,
+   "dstTitle": "CvT: Introducing Convolutions to Vision Transformers",
+   "dstYear": 2021,
+   "signals": {
+    "found": true,
+    "intents": [
+     "background"
+    ],
+    "contexts": [
+     "The local relation networks [17] adapts its weight aggregation based on the compositional relations (similarity) between pixels/features within a local window, in contrast to convolution layers which employ ﬁxed aggregation weights over spatially neighboring input feature."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "CvT: Introducing Convolutions to Vision Transformers"
+   },
+   "api": {
+    "relation": "uses_resource",
+    "rule": "phrase_resource"
+   },
+   "apiV1": {
+    "relation": "compares_with",
+    "rule": "phrase_contrast"
+   },
+   "llm": "contrasts",
+   "gold": "background",
+   "note": null,
+   "apiCorrect": false,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": false,
+   "llmCoarseCorrect": true
+  },
+  {
+   "split": "dev",
+   "idx": 17,
+   "theme": "vision-transformer",
+   "src": "openalex:W1533861849",
+   "dst": "openalex:W3131500599",
+   "srcTitle": "Understanding the difficulty of training deep feedforward neural networks",
+   "srcYear": 2010,
+   "dstTitle": "Pyramid Vision Transformer: A Versatile Backbone for Dense Prediction without Convolutions",
+   "dstYear": 2021,
+   "signals": {
+    "found": true,
+    "intents": [
+     "methodology"
+    ],
+    "contexts": [
+     "In the training phase, the backbone is initialized with the weights pre-trained on ImageNet [12], and other newly added layers are initialized with Xavier [18].",
+     "In the training phase, the backbone is initialized with the weights pre-trained on ImageNet [11], and other newly added layers are initialized with Xavier [17].",
+     "Before training, we use the weights pre-trained on ImageNet to initialize the backbone and Xavier [18] to initialize the newly added layers.",
+     "Before training, we use the weights pre-trained on ImageNet to initialize the backbone and Xavier [17] to initialize the newly added layers."
+    ],
+    "isInfluential": true,
+    "sharedAuthors": false,
+    "citingTitle": "Pyramid Vision Transformer: A Versatile Backbone for Dense Prediction without Convolutions"
+   },
+   "api": {
+    "relation": "uses_resource",
+    "rule": "phrase_resource"
+   },
+   "apiV1": {
+    "relation": "uses_resource",
+    "rule": "phrase_resource"
+   },
+   "llm": "contrasts",
+   "gold": "uses_resource",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": false,
+   "llmCoarseCorrect": true
+  },
+  {
+   "split": "dev",
+   "idx": 18,
+   "theme": "vision-transformer",
+   "src": "openalex:W1533861849",
+   "dst": "openalex:W3175515048",
+   "srcTitle": "Understanding the difficulty of training deep feedforward neural networks",
+   "srcYear": 2010,
+   "dstTitle": "PVT v2: Improved baselines with pyramid vision transformer",
+   "dstYear": 2022,
+   "signals": {
+    "found": true,
+    "intents": [
+     "methodology"
+    ],
+    "contexts": [
+     "In the training phase, the backbone was initialized with weights pretrained on ImageNet [14], and the newly added layers were initialized with Xavier [39].",
+     "In the training phase, the backbone is initialized with the weights pre-trained on ImageNet [7], and the newly added layers are initialized with Xavier [9].",
+     "Before training, we use the weights pre-trained on Ima-geNet to initialize the backbone and Xavier [9] to initialize the newly added layers.",
+     "Before training, we used weights pre-trained on ImageNet to initialize the backbone and Xavier [39] to initialize the newly added layers."
+    ],
+    "isInfluential": true,
+    "sharedAuthors": false,
+    "citingTitle": "PVT v2: Improved baselines with pyramid vision transformer"
+   },
+   "api": {
+    "relation": "uses_resource",
+    "rule": "phrase_resource"
+   },
+   "apiV1": {
+    "relation": "uses_resource",
+    "rule": "phrase_resource"
+   },
+   "llm": "contrasts",
+   "gold": "uses_resource",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": false,
+   "llmCoarseCorrect": true
+  },
+  {
+   "split": "dev",
+   "idx": 19,
+   "theme": "vision-transformer",
+   "src": "openalex:W3147387781",
+   "dst": "openalex:W3202698164",
+   "srcTitle": "ViViT: A Video Vision Transformer",
+   "srcYear": 2021,
+   "dstTitle": "Multiscale Vision Transformers",
+   "dstYear": 2021,
+   "signals": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "Concurrent vision-transformer based methods [78,6,1] require over 5× more computation and large-scale external pre-training on ImageNet-21K (IN-21K), to achieve equivalent MViT accuracy.",
+     "Three concurrent works propose a ViT-based architecture for video [78, 6, 1].",
+     "The vertical axis shows the top-1 accuracy on K400-val and the horizontal axis the overall inference cost in FLOPs for different model families: MViT, X3D [29], SlowFast [30], and concurrent ViT models, VTN [78] ViT-B-TimeSformer [6] ViT-L-ViViT [1], pre-trained on ImageNet-21K.",
+     "MViT-B 16x4 MViT-B 32x2 [1] ViViT-L ImageNet-21K [6] TimeSformer ImageNet-21K [78] VTN ImageNet-1K / 21K",
+     "4× fewer parameters than ViT-L-ViViT [1] which relies on large-scale ImageNet-21K pre-training.",
+     "The vertical axis shows accuracy on Kinetics-400 and the horizontal axis the overall inference cost in FLOPs for different models, MViT and concurrent ViT [25] video variants: VTN [78], TimeSformer [6], ViViT [1].",
+     "5× lower parameters), than concurrent ViViT-L [1].",
+     "MViT provides a significant performance gain over concurrent video transformers [78, 6, 1], without any external pre-training data.",
+     "All these methods, VTN [78], TimeSformer [6] and ViViT [1], pre-train on ImageNet-21K and use the ViT [25] model with modifications on top of it.",
+     "The inference FLOPs of these methods are around 5-10×higher than MViT models with equivalent performance; for example, ViT-L-ViViT [1] uses 4 clips of 1446G FLOPs (i."
+    ],
+    "isInfluential": true,
+    "sharedAuthors": false,
+    "citingTitle": "Multiscale Vision Transformers"
+   },
+   "api": {
+    "relation": "builds_on",
+    "rule": "intent_methodology_influential"
+   },
+   "apiV1": {
+    "relation": "uses_resource",
+    "rule": "phrase_resource"
+   },
+   "llm": "contrasts",
+   "gold": "compares_with",
+   "note": null,
+   "apiCorrect": false,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": false,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": true,
+   "llmCoarseCorrect": true
+  },
+  {
+   "split": "dev",
+   "idx": 20,
+   "theme": "mixture-of-experts",
+   "src": "openalex:W2554616628",
+   "dst": "openalex:W4409261973",
+   "srcTitle": "Expert Gate: Lifelong Learning with a Network of Experts",
+   "srcYear": 2017,
+   "dstTitle": "One VLM to Keep it Learning: Generation and Balancing for Data-free Continual Visual Question Answering",
+   "dstYear": 2025,
+   "signals": {
+    "found": true,
+    "intents": [],
+    "contexts": [
+     "Architecture-based methods [3, 21, 24, 33, 34, 49, 50, 53] allocate different model parameters for different tasks."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "One VLM to Keep it Learning: Generation and Balancing for Data-free Continual Visual Question Answering"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "apiV1": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "llm": "extends",
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": false,
+   "llmCoarseCorrect": false
+  },
+  {
+   "split": "dev",
+   "idx": 21,
+   "theme": "graph-neural-network",
+   "src": "openalex:W1501856433",
+   "dst": "openalex:W2558460151",
+   "srcTitle": "A new model for learning in graph domains",
+   "srcYear": 2006,
+   "dstTitle": "Geometric Deep Learning on Graphs and Manifolds Using Mixture Model CNNs",
+   "dstYear": 2017,
+   "signals": {
+    "found": true,
+    "intents": [],
+    "contexts": [
+     "[19, 41]."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "Geometric Deep Learning on Graphs and Manifolds Using Mixture Model CNNs"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "apiV1": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "llm": "extends",
+   "gold": "background",
+   "note": "context is just \"[19, 41].\"",
+   "apiCorrect": true,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": false,
+   "llmCoarseCorrect": false
+  },
+  {
+   "split": "dev",
+   "idx": 22,
+   "theme": "mixture-of-experts",
+   "src": "openalex:W2809290718",
+   "dst": "openalex:W4408858386",
+   "srcTitle": "Modeling Task Relationships in Multi-task Learning with Multi-gate Mixture-of-Experts",
+   "srcYear": 2018,
+   "dstTitle": "A Survey on Mixture of Experts in Large Language Models",
+   "dstYear": 2025,
+   "signals": {
+    "found": true,
+    "intents": [],
+    "contexts": [
+     "Restrictions apply. been extensively employed in a range of early proposals [15], [16], [17], [18], [19], [20], [21], [22], [23], [59].",
+     "Ma et al. [59] introduce the multi-gate mixture-of-experts (MMOE) approach, which capitalizes on the concept of shared expert submodels across all tasks, guided by a gating network tailored to each individualtask.",
+     "A prime example is in the domain of movie recommendations, where the aim is not only to suggest movie that align with users’ immediate preferences but also to ensure subsequent user satisfaction for the selected movies [59]."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "A Survey on Mixture of Experts in Large Language Models"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "citing_survey"
+   },
+   "apiV1": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "llm": "extends",
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": false,
+   "llmCoarseCorrect": false
+  },
+  {
+   "split": "dev",
+   "idx": 23,
+   "theme": "vision-transformer",
+   "src": "openalex:W3204076343",
+   "dst": "openalex:W3175515048",
+   "srcTitle": "CvT: Introducing Convolutions to Vision Transformers",
+   "srcYear": 2021,
+   "dstTitle": "PVT v2: Improved baselines with pyramid vision transformer",
+   "dstYear": 2022,
+   "signals": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "Recent studies on vision Transformer are converging on the backbone network [7, 29, 31, 32, 21, 34, 9, 4] designed for downstream vision tasks, such as image classification, object detection, instance and semantic segmentation.",
+     "To adapt to dense prediction tasks such as object detection, instance and semantic segmentation, there are also some methods [31, 21, 32, 34, 9, 4] to introduce the pyramid structure in CNNs to the design of Transformer backbones.",
+     "After that, some improvements [21, 32, 34, 9, 4] are made to enhance the local continuity of features and to remove fixed size position embedding.",
+     "CvT [32], CoaT [34], and LeViT [9] introduce convolution-like operations into vision Transformers."
+    ],
+    "isInfluential": true,
+    "sharedAuthors": false,
+    "citingTitle": "PVT v2: Improved baselines with pyramid vision transformer"
+   },
+   "api": {
+    "relation": "builds_on",
+    "rule": "intent_methodology_influential"
+   },
+   "apiV1": {
+    "relation": "builds_on",
+    "rule": "intent_methodology"
+   },
+   "llm": "extends",
+   "gold": "background",
+   "note": null,
+   "apiCorrect": false,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": false,
+   "apiV1CoarseCorrect": false,
+   "llmCorrect": false,
+   "llmCoarseCorrect": false
+  },
+  {
+   "split": "dev",
+   "idx": 24,
+   "theme": "mixture-of-experts",
+   "src": "openalex:W2809290718",
+   "dst": "openalex:W3085046840",
+   "srcTitle": "Modeling Task Relationships in Multi-task Learning with Multi-gate Mixture-of-Experts",
+   "srcYear": 2018,
+   "dstTitle": "Multi-Task Learning for Dense Prediction Tasks: A Survey",
+   "dstYear": 2021,
+   "signals": {
+    "found": true,
+    "intents": [
+     "methodology"
+    ],
+    "contexts": [
+     "[85] modeled the task relationships in a MTL network through a Multi-gate Mixture-of-Experts model."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "Multi-Task Learning for Dense Prediction Tasks: A Survey"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "citing_survey"
+   },
+   "apiV1": {
+    "relation": "builds_on",
+    "rule": "intent_methodology"
+   },
+   "llm": "extends",
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": false,
+   "llmCorrect": false,
+   "llmCoarseCorrect": false
+  },
+  {
+   "split": "dev",
+   "idx": 25,
+   "theme": "vision-transformer",
+   "src": "openalex:W2963091558",
+   "dst": "openalex:W3161838454",
+   "srcTitle": "Non-local Neural Networks",
+   "srcYear": 2018,
+   "dstTitle": "Segmenter: Transformer for Semantic Segmentation",
+   "dstYear": 2021,
+   "signals": {
+    "found": true,
+    "intents": [
+     "methodology"
+    ],
+    "contexts": [
+     "The success of transformers in NLP has inspired several methods in computer vision combining CNNs with forms of selfattention to address object detection [6], semantic segmentation [49], panoptic segmentation [48], video processing [50] and few-shot classification [16]."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "Segmenter: Transformer for Semantic Segmentation"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "apiV1": {
+    "relation": "builds_on",
+    "rule": "intent_methodology"
+   },
+   "llm": "extends",
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": false,
+   "llmCorrect": false,
+   "llmCoarseCorrect": false
+  },
+  {
+   "split": "dev",
+   "idx": 26,
+   "theme": "mixture-of-experts",
+   "src": "openalex:W2914746235",
+   "dst": "openalex:W2583761661",
+   "srcTitle": "Multitask learning",
+   "srcYear": 1998,
+   "dstTitle": "PathNet: Evolution Channels Gradient Descent in Super Neural Networks",
+   "dstYear": 2017,
+   "signals": {
+    "found": true,
+    "intents": [
+     "methodology"
+    ],
+    "contexts": [
+     "The framework for AGI described above includes aspects of transfer learning [22], continual learning [16] and multitask learning [2].",
+     "…to melon is compared with ﬁxed maximum-size-path de novo training and ﬁne-tuning controls for which a hyperparameter sweep was conducted involving mutation rates [ 0.1, 0.01, 0.001], module duplication rate [ 0.0, 0.05, 0.1, 0.5] (per episode completed by worker 0) and tournament size B [2, 10].",
+     "The following hyperparameters were investigated for PathNet: evaluation time T [1,10,50], mutation rate [0.1, 0.01, 0.001] and tournament size B [2, 10, 20]."
+    ],
+    "isInfluential": true,
+    "sharedAuthors": false,
+    "citingTitle": "PathNet: Evolution Channels Gradient Descent in Super Neural Networks"
+   },
+   "api": {
+    "relation": "compares_with",
+    "rule": "table_row"
+   },
+   "apiV1": {
+    "relation": "compares_with",
+    "rule": "phrase_compare"
+   },
+   "llm": "extends",
+   "gold": "background",
+   "note": null,
+   "apiCorrect": false,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": false,
+   "llmCoarseCorrect": false
+  },
+  {
+   "split": "dev",
+   "idx": 27,
+   "theme": "vision-transformer",
+   "src": "openalex:W2963091558",
+   "dst": "openalex:W3121523901",
+   "srcTitle": "Non-local Neural Networks",
+   "srcYear": 2018,
+   "dstTitle": "Tokens-to-Token ViT: Training Vision Transformers from Scratch on ImageNet",
+   "dstYear": 2021,
+   "signals": {
+    "found": true,
+    "intents": [
+     "background",
+     "methodology"
+    ],
+    "contexts": [
+     "Among these works, the SE block [20] applies attention to channel dimensions and non-local networks [39] are designed for capturing longrange dependencies via global attention.",
+     "Compared with most of the work exploring the global attention on images [1, 42, 13, 39], some works [18, 31] also explore the self-attention in a local patch to reduce the memory and computation cost.",
+     "Self-attention in CNN Self-attention mechanism has been widely applied to CNN in vision task [38, 55, 19, 47, 20, 39, 1, 6, 18, 31, 42, 13]."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "Tokens-to-Token ViT: Training Vision Transformers from Scratch on ImageNet"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "apiV1": {
+    "relation": "compares_with",
+    "rule": "phrase_compare"
+   },
+   "llm": "extends",
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": false,
+   "llmCoarseCorrect": false
+  },
+  {
+   "split": "dev",
+   "idx": 28,
+   "theme": "mixture-of-experts",
+   "src": "openalex:W2554616628",
+   "dst": "openalex:W4402702936",
+   "srcTitle": "Expert Gate: Lifelong Learning with a Network of Experts",
+   "srcYear": 2017,
+   "dstTitle": "Boosting Continual Learning of Vision-Language Models via Mixture-of-Experts Adapters",
+   "dstYear": 2024,
+   "signals": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "To remedy this issue, one of the popular solutions in current CL methods [1, 16, 23, 42] is to develop dynamic expansion frameworks by incrementally adding task-specific components to a shared base model (see Figure 1 (a)).",
+     "Dynamic meth-ods [1, 19, 29, 70–72] address continual learning by incrementally adding new parameters on the baseline, such as neurons, branches or prediction heads.",
+     "For example, Aljundi et al. [1] propose to train multiple backbones as experts and automatically feed the test samples to a relevant expert."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "Boosting Continual Learning of Vision-Language Models via Mixture-of-Experts Adapters"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "apiV1": {
+    "relation": "compares_with",
+    "rule": "phrase_compare"
+   },
+   "llm": "extends",
+   "gold": "background",
+   "note": "related-work description of expert networks",
+   "apiCorrect": true,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": false,
+   "llmCoarseCorrect": false
+  },
+  {
+   "split": "dev",
+   "idx": 29,
+   "theme": "vision-transformer",
+   "src": "openalex:W4312443924",
+   "dst": "openalex:W4226334005",
+   "srcTitle": "A ConvNet for the 2020s",
+   "srcYear": 2022,
+   "dstTitle": "Scaling Up Your Kernels to 31×31: Revisiting Large Kernel Design in CNNs",
+   "dstYear": 2022,
+   "signals": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "ConvNeXt [62] employs 7 × 7 depth-wise convolutions to design strong architectures, pushing the limit of CNN performances.",
+     "Replacing the 7 × 7 convolutions in ConvNeXt [62] by kernels as large as 31 × 31 brings signiﬁcant improvements, e.g ., ConNeXt-Tiny + large kernel > ConNeXt-Small , and ConNeXt-Small + large kernel > ConNeXt-Base.",
+     "We use the recently proposed ConvNeXt [62] as the benchmark architecture to evaluate large kernel as a generic design element .",
+     "The results of 22K-pretrained Swin (without HTC++ [61]) are reported by [62] by a series of small convolutions [79], e.g ., a 7 × 7 convolution can be decomposed into a stack of three 3 × 3 kernels without information loss (more channels are required after the decomposition to maintain the degree…",
+     "We simply replace the 7 × 7 convolu-tions in ConvNeXt [62] by kernels as large as 31 × 31.",
+     "On ImageNet, we train for 120 epochs with AdamW [64] optimizer, RandAugment [23], mixup [111], CutMix [110], Rand Erasing [118] and Stochastic Depth [50], following the recent works [4, 61, 62, 89]."
+    ],
+    "isInfluential": true,
+    "sharedAuthors": false,
+    "citingTitle": "Scaling Up Your Kernels to 31×31: Revisiting Large Kernel Design in CNNs"
+   },
+   "api": {
+    "relation": "uses_resource",
+    "rule": "phrase_resource"
+   },
+   "apiV1": {
+    "relation": "uses_resource",
+    "rule": "phrase_resource"
+   },
+   "llm": "extends",
+   "gold": "builds_on",
+   "note": null,
+   "apiCorrect": false,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": false,
+   "apiV1CoarseCorrect": false,
+   "llmCorrect": true,
+   "llmCoarseCorrect": true
+  },
+  {
+   "split": "dev",
+   "idx": 30,
+   "theme": "vision-transformer",
+   "src": "openalex:W3131500599",
+   "dst": "openalex:W4312349930",
+   "srcTitle": "Pyramid Vision Transformer: A Versatile Backbone for Dense Prediction without Convolutions",
+   "srcYear": 2021,
+   "dstTitle": "Swin Transformer V2: Scaling Up Capacity and Resolution",
+   "dstYear": 2022,
+   "signals": {
+    "found": true,
+    "intents": [
+     "background"
+    ],
+    "contexts": [
+     "Since these works, numerous vision Transformer variants have been proposed to improve the accuracy at relatively small scale [14,21,34,42,63,68,71,75,77,78,82]."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "Swin Transformer V2: Scaling Up Capacity and Resolution"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "apiV1": {
+    "relation": "background",
+    "rule": "intent_background"
+   },
+   "llm": "successor",
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": false,
+   "llmCoarseCorrect": false
+  },
+  {
+   "split": "dev",
+   "idx": 31,
+   "theme": "vision-transformer",
+   "src": "openalex:W2963091558",
+   "dst": "openalex:W4385346076",
+   "srcTitle": "Non-local Neural Networks",
+   "srcYear": 2018,
+   "dstTitle": "Visual attention network",
+   "dstYear": 2023,
+   "signals": {
+    "found": true,
+    "intents": [
+     "background"
+    ],
+    "contexts": [
+     "The first one is adopting self-attention mechanism [83,96,98,16] to capture long-range dependence.",
+     "Due to its effectiveness of capturing the long range dependence and adaptability, it is playing an increasingly important role in computer vision [83,17,61,96,98,90]."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "Visual attention network"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "apiV1": {
+    "relation": "background",
+    "rule": "intent_background"
+   },
+   "llm": "successor",
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": false,
+   "llmCoarseCorrect": false
+  },
+  {
+   "split": "dev",
+   "idx": 32,
+   "theme": "vision-transformer",
+   "src": "openalex:W2937843571",
+   "dst": "openalex:W4312443924",
+   "srcTitle": "Attention Augmented Convolutional Networks",
+   "srcYear": 2019,
+   "dstTitle": "A ConvNet for the 2020s",
+   "dstYear": 2022,
+   "signals": {
+    "found": true,
+    "intents": [
+     "methodology"
+    ],
+    "contexts": [
+     "Prior to ViT, the focus was on augmenting a ConvNet with self-attention/non-local modules [8, 55, 66, 79] to capture long-range dependencies."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "A ConvNet for the 2020s"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "apiV1": {
+    "relation": "builds_on",
+    "rule": "intent_methodology"
+   },
+   "llm": "successor",
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": false,
+   "llmCorrect": false,
+   "llmCoarseCorrect": false
+  },
+  {
+   "split": "dev",
+   "idx": 33,
+   "theme": "vision-transformer",
+   "src": "openalex:W3138516171",
+   "dst": "openalex:W4312349930",
+   "srcTitle": "Swin Transformer: Hierarchical Vision Transformer using Shifted Windows",
+   "srcYear": 2021,
+   "dstTitle": "Swin Transformer V2: Scaling Up Capacity and Resolution",
+   "dstYear": 2022,
+   "signals": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "We adopt HTC++ [10, 46] for experiments.",
+     "Following [46], we employ an AdamW [48] optimizer for 300 epochs using a co-sine decay learning rate scheduler with 20 epochs of linear warm-up.",
+     "…taking over one representative visual benchmark after another, including ImageNet-1K image-level classiﬁcation benchmarks [22], COCO region-level object detection benchmark [46], ADE20K pixel-level semantic segmentation benchmark [46, 83], Kinetics-400 video action classiﬁcation benchmark [2], etc.",
+     "…segmentation, and 86.8% top-1 accuracy on Kinetics-400 video action classiﬁcation, which are +NA%, +4.4/+3.3, +6.3 and +1.9 higher than the best numbers in the original Swin Transformers [46,47], and surpass previous best records by +0.8% ( [80]), +1.8/+1.4 ( [74]), +1.5 ( [4]) and +1.4% ( [57]).",
+     "The current common practice is to perform a bi-cubic interpolation of the position bias maps [22, 46].",
+     "In computer vision, the relative positional bias method is more commonly used [31,46,75], probably because the spatial relationships of visual signals play a more important role in visual modeling.",
+     "In this stage, we remove the mask branch of the HTC++ framework [10, 46] because there are no mask annotations.",
+     "To handle the variable window sizes between pre-training and ﬁne-tuning, bi-cubic interpolation was the previous common practice [22, 46].",
+     "For local vision Trans-former architectures, such as Swin Transformer [46], the window size can be either ﬁxed or changed during ﬁne-tuning."
+    ],
+    "isInfluential": true,
+    "sharedAuthors": true,
+    "citingTitle": "Swin Transformer V2: Scaling Up Capacity and Resolution"
+   },
+   "api": {
+    "relation": "builds_on",
+    "rule": "phrase_build"
+   },
+   "apiV1": {
+    "relation": "builds_on",
+    "rule": "phrase_build"
+   },
+   "llm": "successor",
+   "gold": "builds_on",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": true,
+   "llmCoarseCorrect": true
+  },
+  {
+   "split": "dev",
+   "idx": 34,
+   "theme": "vision-transformer",
+   "src": "openalex:W2963091558",
+   "dst": "openalex:W2981689412",
+   "srcTitle": "Non-local Neural Networks",
+   "srcYear": 2018,
+   "dstTitle": "CCNet: Criss-Cross Attention for Semantic Segmentation",
+   "dstYear": 2019,
+   "signals": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "Speciﬁcally, current state-of-the-art semantic segmentation approaches based on [31] generates a dense attention map which has H × W weights (in green).",
+     "OCNet [38] and DANet [15] utilized Non-local module [31] to harvest the contextual information.",
+     "Moreover, CCNet is proposed to mimic Non-local Network [31] for obtaining dense contextual information through a more effective and efﬁcient recurrent criss-cross attention module, in which dissimilar features get low attention weights and features with high attention weights are similar ones.",
+     "In contrast, Non-local Network [31] and CCNet guarantee that a pixel at any position perceives contextual information from all pixels.",
+     "[31] proposed the non-local module to generate the huge attention map by calculating the correlation matrix between each spatial point in the feature maps, then the attention guided dense contextual information aggregation.",
+     "We compare the differences between the non-local module [31] and our criss-cross attention module in Fig.",
+     "[31] introduced non-local network for context aggregation, donated as “+NL”.",
+     "Non-local Networks [31] utilizes a self-attention mechanism [9, 29], which enables a single feature from any position to perceive features of all the other positions, thus harvesting full-image contextual information, see Fig.",
+     "Following [31], we modify the Mask R-CNN backbone by adding the RCCA module right before the last convolutional residual block of res4.",
+     "CCNet vs. Non-Local vs. GCN Here, we speciﬁcally discusses the differences among GCN [27], Non-local Network [31] and CCNet."
+    ],
+    "isInfluential": true,
+    "sharedAuthors": false,
+    "citingTitle": "CCNet: Criss-Cross Attention for Semantic Segmentation"
+   },
+   "api": {
+    "relation": "builds_on",
+    "rule": "phrase_build"
+   },
+   "apiV1": {
+    "relation": "builds_on",
+    "rule": "phrase_build"
+   },
+   "llm": "successor",
+   "gold": "builds_on",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": true,
+   "llmCoarseCorrect": true
+  },
+  {
+   "split": "dev",
+   "idx": 35,
+   "theme": "vision-transformer",
+   "src": "openalex:W4312443924",
+   "dst": "openalex:W4385346076",
+   "srcTitle": "A ConvNet for the 2020s",
+   "srcYear": 2022,
+   "dstTitle": "Visual attention network",
+   "dstYear": 2023,
+   "signals": {
+    "found": true,
+    "intents": [
+     "result",
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "ConvNeXt [21] is a special CNN which absorbs the some advantages of ViTs such as large receptive field (7×7 convolution) and advanced training strategy (300 epochs, data augmentation, etc).",
+     "7 Comparing with similar level PVT [20], Swin Transformer [15], and ConvNeXt [21] on various tasks, including image classification, object detection, semantic segmentation, instance segmentation, and pose estimation.",
+     "It clearly shows VAN-B2 has a larger ERF than Swin-T [15] and ConvNeXt [21].",
+     "We compare different CAMs produced by Swin-T [15], ConvNeXt-T [21], and VAN-B2.",
+     "1 Results of different models on ImageNet-1K validation set, comparing the performance of recent models DeiT [19], PVT [20], Swin Transformer [15], ConvNeXt [21], Focal Transformer [22], and our VAN.",
+     "We notice some parallel works, which also adopt large kernel convolution such as ConvNeXt [21], and RepLKNet [39].",
+     "Comparing VAN with ConvNeXt [21], VAN-B2 surpasses ConvNeXtT by 0.",
+     "VAN outperforms common CNNs (ResNet [5], ConvNeXt [21], etc.",
+     "Furthermore, we also compare different CAM produced by Swin-T [15], ConvNeXt-T [21], and VAN-B2.",
+     "8, we compare the ERF of different methods, including ResNet [5], Swin Transformer [15], ConvNeXt [21], DeiT [19], and our VAN."
+    ],
+    "isInfluential": true,
+    "sharedAuthors": false,
+    "citingTitle": "Visual attention network"
+   },
+   "api": {
+    "relation": "compares_with",
+    "rule": "intent_result"
+   },
+   "apiV1": {
+    "relation": "compares_with",
+    "rule": "phrase_compare"
+   },
+   "llm": "successor",
+   "gold": "compares_with",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": false,
+   "llmCoarseCorrect": false
+  },
+  {
+   "split": "dev",
+   "idx": 36,
+   "theme": "mixture-of-experts",
+   "src": "openalex:W4220967350",
+   "dst": "openalex:W4364382874",
+   "srcTitle": "FasterMoE",
+   "srcYear": 2022,
+   "dstTitle": "FlexMoE: Scaling Large-scale Sparse Pre-trained Model Training via Dynamic Device Placement",
+   "dstYear": 2023,
+   "signals": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "FasterMoE [17] replicates hot experts on each GPU and guarantees no tokens dropping in the implementation.",
+     "FasterMoE proposed the shadowing strategy to replicate the popular expert among all GPUs.",
+     "As the number of GPUs increases, FasterMoE suffers from the global synchronization of expert replicas.",
+     "10 × , and FasterMoE by 1 .",
+     "FasterMoE proposes the dynamic shadowing strategy for loading balance, which replicates the popular expert on all GPUs.",
+     "As reported by [17, 22, 26] and verified by our empirical studies, such workload imbalance could lead to significantly efficiency slowdown and severe resource under-utilization.",
+     "We compare FlexMoE with other popular frameworks, including DeepSpeed [42] and FasterMoE [17].",
+     "To evaluate the end-to-end efficiency of FlexMoE, we compare it with DeepSpeed and FasterMoE.",
+     "10 × , while also surpassing FasterMoE by an average of 1 ."
+    ],
+    "isInfluential": true,
+    "sharedAuthors": false,
+    "citingTitle": "FlexMoE: Scaling Large-scale Sparse Pre-trained Model Training via Dynamic Device Placement"
+   },
+   "api": {
+    "relation": "compares_with",
+    "rule": "phrase_compare"
+   },
+   "apiV1": {
+    "relation": "compares_with",
+    "rule": "phrase_compare"
+   },
+   "llm": "successor",
+   "gold": "compares_with",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": false,
+   "llmCoarseCorrect": false
+  },
+  {
+   "split": "dev",
+   "idx": 37,
+   "theme": "vision-transformer",
+   "src": "openalex:W2183341477",
+   "dst": "openalex:W4312443924",
+   "srcTitle": "Rethinking the Inception Architecture for Computer Vision",
+   "srcYear": 2016,
+   "dstTitle": "A ConvNet for the 2020s",
+   "dstYear": 2022,
+   "signals": {
+    "found": true,
+    "intents": [
+     "methodology"
+    ],
+    "contexts": [
+     "We use the AdamW optimizer [46], data augmentation techniques such as Mixup [90], Cutmix [89], RandAugment [14], Random Erasing [91], and regularization schemes including Stochastic Depth [36] and Label Smoothing [69]."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "A ConvNet for the 2020s"
+   },
+   "api": {
+    "relation": "uses_resource",
+    "rule": "phrase_resource"
+   },
+   "apiV1": {
+    "relation": "uses_resource",
+    "rule": "phrase_resource"
+   },
+   "llm": "successor",
+   "gold": "uses_resource",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": false,
+   "llmCoarseCorrect": false
+  },
+  {
+   "split": "dev",
+   "idx": 38,
+   "theme": "vision-transformer",
+   "src": "openalex:W3175515048",
+   "dst": "openalex:W3131500599",
+   "srcTitle": "PVT v2: Improved baselines with pyramid vision transformer",
+   "srcYear": 2022,
+   "dstTitle": "Pyramid Vision Transformer: A Versatile Backbone for Dense Prediction without Convolutions",
+   "dstYear": 2021,
+   "signals": {
+    "found": true,
+    "intents": [
+     "background"
+    ],
+    "contexts": [
+     "This is a worth exploring direction, we recently propose a solu-tion PVTv2 [67].",
+     "This is a worth exploring direction, we recently propose a solution PVTv2 [66]."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": true,
+    "citingTitle": "Pyramid Vision Transformer: A Versatile Backbone for Dense Prediction without Convolutions"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "apiV1": {
+    "relation": "builds_on",
+    "rule": "shared_authors"
+   },
+   "llm": "supersedes",
+   "gold": "builds_on",
+   "note": "edge direction reversed in data (PVT cites its own successor PVTv2); same line",
+   "apiCorrect": false,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": false,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": true,
+   "llmCoarseCorrect": true
+  },
+  {
+   "split": "dev",
+   "idx": 39,
+   "theme": "vision-transformer",
+   "src": "openalex:W2942489928",
+   "dst": "openalex:W3034885317",
+   "srcTitle": "Local Relation Networks for Image Recognition",
+   "srcYear": 2019,
+   "dstTitle": "Exploring Self-Attention for Image Recognition",
+   "dstYear": 2020,
+   "signals": {
+    "found": true,
+    "intents": [
+     "background"
+    ],
+    "contexts": [
+     "[13] explored alternatives to the dot product, but these alternatives operated on scalar weights that were likewise shared across channels.",
+     "We also explore a family of patchwise attention operators that are structurally different from the forms used in [13, 27] and constitute strict generalizations of convolution.",
+     "Is it possible that networks based on the discrete convolution are a local optimum in the design space of image recognition models? Could other parts of the design space yield models with interesting new capabilities? Recent work has shown that self-attention may constitute a viable alternative for building image recognition models [13, 27].",
+     "Scalar attention, as used in the transformer [33] and related constructions in computer vision [35, 27, 13], typically has the following form:",
+     "This has inspired applications of self-attention and related ideas to image recognition [5, 34, 15, 14, 45, 46, 13, 1, 27], image synthesis [43, 26, 2], image captioning [39, 41, 4], and video prediction [17, 35].",
+     "In this section, we relate the family of self-attention operators presented in Section 3 to other constructions, including convolution [19] and scalar attention [33, 35, 27, 13].",
+     "Convolution [19] 7 3 Scalar attention [33, 35, 27, 13] 3 7 Vector attention (ours) 3 3"
+    ],
+    "isInfluential": true,
+    "sharedAuthors": false,
+    "citingTitle": "Exploring Self-Attention for Image Recognition"
+   },
+   "api": {
+    "relation": "compares_with",
+    "rule": "phrase_contrast"
+   },
+   "apiV1": {
+    "relation": "compares_with",
+    "rule": "phrase_contrast"
+   },
+   "llm": null,
+   "gold": "compares_with",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true
+  },
+  {
+   "split": "dev",
+   "idx": 40,
+   "theme": "vision-transformer",
+   "src": "openalex:W2097117768",
+   "dst": "openalex:W2531409750",
+   "srcTitle": "Going deeper with convolutions",
+   "srcYear": 2025,
+   "dstTitle": "Xception: Deep Learning with Depthwise Separable Convolutions",
+   "dstYear": 2025,
+   "signals": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "in 2014 [20] as GoogLeNet (Inception V1), later refined as Inception V2 [7], Inception V3 [21], and most recently Inception-ResNet [19].",
+     "• The Inception architecture family of convolutional neural networks [20, 7, 21, 19], which first demonstrated the advantages of factoring convolutions into multiple branches operating successively on channels and then on space.",
+     "Later, a depthwise separable convolution was used as the first layer of Inception V1 and Inception V2 [20, 7]."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "Xception: Deep Learning with Depthwise Separable Convolutions"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "apiV1": {
+    "relation": "builds_on",
+    "rule": "intent_methodology"
+   },
+   "llm": null,
+   "gold": "builds_on",
+   "note": null,
+   "apiCorrect": false,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": false,
+   "apiV1CoarseCorrect": true
+  },
+  {
+   "split": "dev",
+   "idx": 41,
+   "theme": "variational-autoencoder",
+   "src": "openalex:W2026799324",
+   "dst": "openalex:W3162926177",
+   "srcTitle": "The Helmholtz Machine",
+   "srcYear": 1995,
+   "dstTitle": "Diffusion Models Beat GANs on Image Synthesis",
+   "dstYear": 2021,
+   "signals": {
+    "found": true,
+    "intents": [
+     "background"
+    ],
+    "contexts": [
+     "Energy-based models are another class of likelihood-based models with a rich history [1, 13, 30]."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "Diffusion Models Beat GANs on Image Synthesis"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "apiV1": {
+    "relation": "background",
+    "rule": "intent_background"
+   },
+   "llm": null,
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true
+  },
+  {
+   "split": "dev",
+   "idx": 42,
+   "theme": "speculative-decoding",
+   "src": "d8e9f8c8a37cb4cd26b92ad0d942d641cd512644",
+   "dst": "9c2db91ea3795306d2a404b8f040a10ddea8b09a",
+   "srcTitle": "Fast Inference from Transformers via Speculative Decoding",
+   "srcYear": 2022,
+   "dstTitle": "AutoJudge: Judge Decoding Without Manual Annotation",
+   "dstYear": 2025,
+   "signals": {
+    "found": true,
+    "intents": [],
+    "contexts": [
+     "This results in approximately 2 × increase over traditional speculative decoding Leviathan et al. [2023].",
+     "We run AutoJudge on top of standard speculative decoding algorithm Leviathan et al. [2023] with an extended draft size of 64 tokens.",
+     "Our work builds on top of speculative decoding [Stern et al., 2018, Leviathan et al., 2023, Chen et al., 2023], a family of inference algorithms that accelerate token generation by improving hardware utilization.",
+     "A popular way to speed up LLM inference is through speculative decoding [Leviathan et al., 2023, Chen et al., 2023] that uses a small “draft” model to propose the likely next tokens, then verifies these tokens with the main model in parallel.",
+     "In our initial experiments, we focus on traditional speculative decoding [Leviathan et al., 2023, Chen et al., 2023] for simplicity."
+    ],
+    "isInfluential": true,
+    "sharedAuthors": false,
+    "citingTitle": "AutoJudge: Judge Decoding Without Manual Annotation"
+   },
+   "api": {
+    "relation": "builds_on",
+    "rule": "phrase_build"
+   },
+   "apiV1": {
+    "relation": "builds_on",
+    "rule": "phrase_build"
+   },
+   "llm": null,
+   "gold": "builds_on",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true
+  },
+  {
+   "split": "dev",
+   "idx": 43,
+   "theme": "generative-adversarial-network",
+   "src": "062cefd026a66de1a7abdfb0e6c8fc5d34fc3b01",
+   "dst": "3009807383d99aeae77cff2cd1487e28a60a543c",
+   "srcTitle": "Retrospective Correction Of Rigid And Non-Rigid MR Motion Artifacts Using Gans",
+   "srcYear": 2018,
+   "dstTitle": "Generative Adversarial Network in Medical Imaging: A Review",
+   "dstYear": 2018,
+   "signals": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "It has been adopted in MedGAN (Armanious et al., 2018c) for evaluation of the generated image quality but it would be interesting to see its e ﬀ ective-ness for di ﬀ erent types of medical images as compared to subjective measures from experienced human observers in a more extensive study.",
+     "A pre-trained VGG-net (Simonyan and Zisserman, 2014) was further incorporated into the optimization framework to ensure perceptual similarity (Yang et al., 2017b; Yu et al., 2017; Yang et al., 2018a; Armanious et al., 2018c; Mahapatra, 2017).",
+     "(2018b) CycleGAN* L1, 2, 12 D2 M12, 13, 16 [Ë] Superresolution, denoising GANs (2018) pix2pix* L1, 2 – M11, 12 [Ë] Sparse view CT reconstruction Armanious et al. (2018b) pix2pix* L1, 2, 8, 11 – M11, 12, 13, 15, [Ë] Inpainting",
+     "(2018b) cascade cGAN L1, 2 – M11, 12, 27 [Ë] [3D] Armanious et al. (2018c) pix2pix* L1, 2, 8, 11 – M1, 11, 12, 13, 14, 15, 18 [Ë]",
+     ", 2018a; Armanious et al., 2018c; Mahapatra, 2017). Yi and Babyn (2018) introduced a pretrained sharpness detection network to explicitly constrain the sharpness of the denoised CT especially for low contrast regions.",
+     "Losses of other kinds have been used to highlight local image structures in the reconstruction, such as the saliency loss to reweight each pixel’s importance based on its perceptual relevance (Mahapatra, 2017) and the style-content loss in PET denoising (Armanious et al., 2018c)."
+    ],
+    "isInfluential": true,
+    "sharedAuthors": false,
+    "citingTitle": "Generative Adversarial Network in Medical Imaging: A Review"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "citing_survey"
+   },
+   "apiV1": {
+    "relation": "compares_with",
+    "rule": "phrase_compare"
+   },
+   "llm": null,
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true
+  },
+  {
+   "split": "dev",
+   "idx": 44,
+   "theme": "generative-adversarial-network",
+   "src": "openalex:W1959608418",
+   "dst": "openalex:W2593414223",
+   "srcTitle": "Auto-Encoding Variational Bayes",
+   "srcYear": 2013,
+   "dstTitle": "Least Squares Generative Adversarial Networks",
+   "dstYear": 2017,
+   "signals": {
+    "found": true,
+    "intents": [
+     "background"
+    ],
+    "contexts": [
+     "RBM [8], DBM [28] and VAE [14], have been proposed, these models face the difficulty of intractable functions or the difficulty of intractable inference, which in turn restricts the effectiveness of these models.",
+     "But VAEs are trained by maximizing the variational lower bound, which may lead to the blurry problem of generated images.",
+     "Although some deep generative models, e.g. RBM [4], DBM [5] and VAE [6], have been proposed, these models have the difficulty of intractable functions or the difficulty of intractable inference, which in turn restricts the effectiveness of these models.",
+     "Like VAEs, GANs also can be trained through differentiable networks.",
+     "Another important deep generative model is Variational Autoencoders (VAE) [6], a directed model, which can be trained with gradient-based optimization methods."
+    ],
+    "isInfluential": true,
+    "sharedAuthors": false,
+    "citingTitle": "Least Squares Generative Adversarial Networks"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "apiV1": {
+    "relation": "builds_on",
+    "rule": "influential"
+   },
+   "llm": null,
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": false
+  },
+  {
+   "split": "dev",
+   "idx": 45,
+   "theme": "vision-transformer",
+   "src": "openalex:W2102605133",
+   "dst": "openalex:W2549139847",
+   "srcTitle": "Rich Feature Hierarchies for Accurate Object Detection and Semantic Segmentation",
+   "srcYear": 2014,
+   "dstTitle": "Aggregated Residual Transformations for Deep Neural Networks",
+   "dstYear": 2017,
+   "signals": {
+    "found": true,
+    "intents": [
+     "background"
+    ],
+    "contexts": [
+     ", SIFT [29] and HOG [5]), features learned by neural networks from large-scale data [33] require minimal human involvement during training, and can be transferred to a variety of recognition tasks [7, 10, 28].",
+     "The robustness of VGGnets and ResNets has been proven by various visual recognition tasks [7, 10, 9, 28, 31, 14] and by non-visual tasks involving speech [42, 30] and language [4, 41, 20]."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": true,
+    "citingTitle": "Aggregated Residual Transformations for Deep Neural Networks"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "apiV1": {
+    "relation": "builds_on",
+    "rule": "shared_authors"
+   },
+   "llm": null,
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": false
+  },
+  {
+   "split": "dev",
+   "idx": 46,
+   "theme": "flash-attention",
+   "src": "openalex:W4385966019",
+   "dst": "openalex:W4392136979",
+   "srcTitle": "Improving Audio-Visual Speech Recognition by Lip-Subword Correlation Based Visual Pre-training and Cross-Modal Fusion Encoder",
+   "srcYear": 2023,
+   "dstTitle": "Integrated visual transformer and flash attention for lip-to-speech generation GAN",
+   "dstYear": 2024,
+   "signals": {
+    "found": true,
+    "intents": [],
+    "contexts": [
+     "Yusheng Dai et al. 24 proposed an audio-guided, cross-modal fusion encoder (CMFE) neural network that utilizes the main training parameters of multiple cross-modal attention layers to fully utilize modal complementarity."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "Integrated visual transformer and flash attention for lip-to-speech generation GAN"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "apiV1": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "llm": null,
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true
+  },
+  {
+   "split": "dev",
+   "idx": 47,
+   "theme": "world-model",
+   "src": "e7028cd7ea838ab8294ecf26d5a2c0dbb8cfa81a",
+   "dst": "db4ab91d5675c37795e719e997a2827d3d83cd45",
+   "srcTitle": "Language Models Are Greedy Reasoners: A Systematic Formal Analysis of Chain-of-Thought",
+   "srcYear": 2022,
+   "dstTitle": "Towards Reasoning in Large Language Models: A Survey",
+   "dstYear": 2022,
+   "signals": {
+    "found": true,
+    "intents": [
+     "background"
+    ],
+    "contexts": [
+     "Saparov and He (2022) create a synthetic dataset called PrOntoQA that is generated from real or fictional ontologies.",
+     "Additionally, Saparov and He (2022) (§4.2) find that, when us-ing CoT prompts, LLMs are able to produce valid individual proof steps, even when the synthetic ontology is fictional or counterfactual."
+    ],
+    "isInfluential": true,
+    "sharedAuthors": false,
+    "citingTitle": "Towards Reasoning in Large Language Models: A Survey"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "citing_survey"
+   },
+   "apiV1": {
+    "relation": "uses_resource",
+    "rule": "phrase_resource"
+   },
+   "llm": null,
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true
+  },
+  {
+   "split": "dev",
+   "idx": 48,
+   "theme": "chain-of-thought",
+   "src": "e7ad08848d5d7c5c47673ffe0da06af443643bda",
+   "dst": "5f19ae1135a9500940978104ec15a5b8751bc7d2",
+   "srcTitle": "Large Language Models are Zero-Shot Reasoners",
+   "srcYear": 2022,
+   "dstTitle": "Self-Consistency Improves Chain of Thought Reasoning in Language Models",
+   "dstYear": 2022,
+   "signals": {
+    "found": true,
+    "intents": [
+     "result"
+    ],
+    "contexts": [
+     "Prompt with correct chain-of-thought 17.1 Prompt with imperfect chain-of-thought 14.9 + Self-consistency (40 paths) 23.4 Prompt with equations 5.0 + Self-consistency (40 paths) 6.5 PaLM-540B Zero-shot CoT (Kojima et al., 2022) 43.0 + Self-consistency (40 paths) 69.2 Table 8: Self-consistency works under imperfect prompts, equation prompts and zero-shot chain-of-thought for GSM8K.",
+     "…chain-of-thought 14.9 + Self-consistency (40 paths) 23.4 Prompt with equations 5.0 + Self-consistency (40 paths) 6.5 PaLM-540B Zero-shot CoT (Kojima et al., 2022) 43.0 + Self-consistency (40 paths) 69.2 Table 8: Self-consistency works under imperfect prompts, equation prompts and zero-shot…",
+     "In addition, we tested self-consistency with zero-shot chain-of-thought (Kojima et al., 2022) and show that self-consistency works for zero-shot CoT as well and improves the results signiﬁcantly (+26.2"
+    ],
+    "isInfluential": true,
+    "sharedAuthors": false,
+    "citingTitle": "Self-Consistency Improves Chain of Thought Reasoning in Language Models"
+   },
+   "api": {
+    "relation": "compares_with",
+    "rule": "intent_result"
+   },
+   "apiV1": {
+    "relation": "compares_with",
+    "rule": "intent_result"
+   },
+   "llm": null,
+   "gold": "builds_on",
+   "note": "SC applied on top of zero-shot CoT; also compared in table (ambiguous)",
+   "apiCorrect": false,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": false,
+   "apiV1CoarseCorrect": false
+  },
+  {
+   "split": "holdout",
+   "idx": 0,
+   "theme": "vision-transformer",
+   "src": "openalex:W2963446712",
+   "dst": "openalex:W4312443924",
+   "srcTitle": "Densely Connected Convolutional Networks",
+   "srcYear": 2017,
+   "dstTitle": "A ConvNet for the 2020s",
+   "dstYear": 2022,
+   "signals": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "We regularize the networks with Stochastic Depth [37] and Label Smooth-ing [69].",
+     "We use the AdamW optimizer [46], data augmentation techniques such as Mixup [90], Cutmix [89], RandAugment [14], Random Erasing [91], and regularization schemes including Stochastic Depth [36] and Label Smoothing [69].",
+     "Representative ConvNets like VGGNet [64], Inceptions [68], ResNe(X)t [28, 87], DenseNet [36], MobileNet [34], EfficientNet [71] and RegNet [54] focused on different aspects of accuracy, efficiency and scalability, and popularized many useful design principles.",
+     "Representative ConvNets like VGGNet [64], Inceptions [68], ResNe(X)t [28, 87], DenseNet [36], Mo-bileNet [34], EfﬁcientNet [71] and RegNet [54] focused on different aspects of accuracy, efﬁciency and scalability, and popularized many useful design principles."
+    ],
+    "isInfluential": true,
+    "sharedAuthors": true,
+    "citingTitle": "A ConvNet for the 2020s"
+   },
+   "api": {
+    "relation": "uses_resource",
+    "rule": "phrase_resource"
+   },
+   "apiV1": {
+    "relation": "uses_resource",
+    "rule": "phrase_resource"
+   },
+   "llm": "contrasts",
+   "gold": "background",
+   "note": null,
+   "apiCorrect": false,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": false,
+   "llmCoarseCorrect": true
+  },
+  {
+   "split": "holdout",
+   "idx": 1,
+   "theme": "vision-transformer",
+   "src": "openalex:W3161838454",
+   "dst": "openalex:W4313007769",
+   "srcTitle": "Segmenter: Transformer for Semantic Segmentation",
+   "srcYear": 2021,
+   "dstTitle": "CSWin Transformer: A General Vision Transformer Backbone with Cross-Shaped Windows",
+   "dstYear": 2022,
+   "signals": {
+    "found": true,
+    "intents": [
+     "methodology"
+    ],
+    "contexts": [
+     "Built upon the success of ViT, many efforts have been devoted to designing better Transformer based architectures for various vision tasks, including low-level image processing [4, 46], image classification [8,8,10,13,14,17,24,42,43,47,49,53–55], object detection [3, 59] and semantic segmentation [37, 48, 57]."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "CSWin Transformer: A General Vision Transformer Backbone with Cross-Shaped Windows"
+   },
+   "api": {
+    "relation": "builds_on",
+    "rule": "phrase_build"
+   },
+   "apiV1": {
+    "relation": "builds_on",
+    "rule": "phrase_build"
+   },
+   "llm": "contrasts",
+   "gold": "background",
+   "note": null,
+   "apiCorrect": false,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": false,
+   "apiV1CoarseCorrect": false,
+   "llmCorrect": false,
+   "llmCoarseCorrect": true
+  },
+  {
+   "split": "holdout",
+   "idx": 2,
+   "theme": "vision-transformer",
+   "src": "openalex:W3147387781",
+   "dst": "openalex:W3119997354",
+   "srcTitle": "ViViT: A Video Vision Transformer",
+   "srcYear": 2021,
+   "dstTitle": "Transformers in Vision: A Survey",
+   "dstYear": 2022,
+   "signals": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "A few exceptions include [10, 18, 147, 215] which obtain frame-level features also using the ViT based backbones.",
+     "Another notable pure-transformer based model is the Video Vision Transformer (ViViT) [10]."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "Transformers in Vision: A Survey"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "citing_survey"
+   },
+   "apiV1": {
+    "relation": "builds_on",
+    "rule": "intent_methodology"
+   },
+   "llm": "baseline_only",
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": false,
+   "llmCorrect": true,
+   "llmCoarseCorrect": true
+  },
+  {
+   "split": "holdout",
+   "idx": 3,
+   "theme": "mixture-of-experts",
+   "src": "openalex:W2554616628",
+   "dst": "openalex:W4408858386",
+   "srcTitle": "Expert Gate: Lifelong Learning with a Network of Experts",
+   "srcYear": 2017,
+   "dstTitle": "A Survey on Mixture of Experts in Large Language Models",
+   "dstYear": 2025,
+   "signals": {
+    "found": true,
+    "intents": [],
+    "contexts": [
+     "Restrictions apply. been extensively employed in a range of early proposals [15], [16], [17], [18], [19], [20], [21], [22], [23], [59].",
+     "The concept of mixture of experts (MoE), initially introduced in [15], [16], has undergone extensive exploration and advancement as evidenced by subsequent studies [17], [18], [19], [20], [21], [22], [23]."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "A Survey on Mixture of Experts in Large Language Models"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "citing_survey"
+   },
+   "apiV1": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "llm": "extends",
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": false,
+   "llmCoarseCorrect": false
+  },
+  {
+   "split": "holdout",
+   "idx": 4,
+   "theme": "vision-transformer",
+   "src": "openalex:W4313007769",
+   "dst": "openalex:W4312349930",
+   "srcTitle": "CSWin Transformer: A General Vision Transformer Backbone with Cross-Shaped Windows",
+   "srcYear": 2022,
+   "dstTitle": "Swin Transformer V2: Scaling Up Capacity and Resolution",
+   "dstYear": 2022,
+   "signals": {
+    "found": true,
+    "intents": [
+     "background"
+    ],
+    "contexts": [
+     "Since these works, numerous vision Transformer variants have been proposed to improve the accuracy at relatively small scale [14,21,34,42,63,68,71,75,77,78,82]."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": true,
+    "citingTitle": "Swin Transformer V2: Scaling Up Capacity and Resolution"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "apiV1": {
+    "relation": "builds_on",
+    "rule": "shared_authors"
+   },
+   "llm": "contrasts",
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": false,
+   "llmCorrect": false,
+   "llmCoarseCorrect": true
+  },
+  {
+   "split": "holdout",
+   "idx": 5,
+   "theme": "vision-transformer",
+   "src": "openalex:W3005680577",
+   "dst": "openalex:W3159481202",
+   "srcTitle": "A Simple Framework for Contrastive Learning of Visual Representations",
+   "srcYear": 2020,
+   "dstTitle": "Emerging Properties in Self-Supervised Vision Transformers",
+   "dstYear": 2021,
+   "signals": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "A large body of work on self-supervised learning focuses on discriminative approaches coined instance classiﬁcation [12, 20, 33, 73], which considers each image a different class and trains the model by discriminating them up to data augmentations.",
+     "The framework used for this work, DINO, shares the same overall structure as recent self-supervised approaches [10, 16, 12, 30, 33].",
+     "Similarly to other self-supervised frameworks, using a projection head [12] improves greatly the accuracy of our method.",
+     "While the self-supervised pretext tasks used in NLP are 1 text speciﬁc, many existing self-supervised methods have shown their potential on images with convnets [10, 12, 30, 33].",
+     "In practice, this requires large batches [12] or memory banks [33, 73]."
+    ],
+    "isInfluential": true,
+    "sharedAuthors": false,
+    "citingTitle": "Emerging Properties in Self-Supervised Vision Transformers"
+   },
+   "api": {
+    "relation": "builds_on",
+    "rule": "intent_methodology_influential"
+   },
+   "apiV1": {
+    "relation": "builds_on",
+    "rule": "intent_methodology"
+   },
+   "llm": "extends",
+   "gold": "builds_on",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": true,
+   "llmCoarseCorrect": true
+  },
+  {
+   "split": "holdout",
+   "idx": 6,
+   "theme": "vision-transformer",
+   "src": "openalex:W4312349930",
+   "dst": "openalex:W4226334005",
+   "srcTitle": "Swin Transformer V2: Scaling Up Capacity and Resolution",
+   "srcYear": 2022,
+   "dstTitle": "Scaling Up Your Kernels to 31×31: Revisiting Large Kernel Design in CNNs",
+   "dstYear": 2022,
+   "signals": {
+    "found": true,
+    "intents": [],
+    "contexts": [
+     "The follow-ups [32, 58] employ even larger window sizes."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "Scaling Up Your Kernels to 31×31: Revisiting Large Kernel Design in CNNs"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "apiV1": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "llm": "contrasts",
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": false,
+   "llmCoarseCorrect": true
+  },
+  {
+   "split": "holdout",
+   "idx": 7,
+   "theme": "vision-transformer",
+   "src": "openalex:W2942489928",
+   "dst": "openalex:W4226334005",
+   "srcTitle": "Local Relation Networks for Image Recognition",
+   "srcYear": 2019,
+   "dstTitle": "Scaling Up Your Kernels to 31×31: Revisiting Large Kernel Design in CNNs",
+   "dstYear": 2022,
+   "signals": {
+    "found": true,
+    "intents": [
+     "background"
+    ],
+    "contexts": [
+     "Local Relation Networks (LR-Net) [47] proposes a spatial aggregation operator (LR-Layer) to replace standard convolutions, which can be viewed as a dynamic convolution."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "Scaling Up Your Kernels to 31×31: Revisiting Large Kernel Design in CNNs"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "apiV1": {
+    "relation": "background",
+    "rule": "intent_background"
+   },
+   "llm": "contrasts",
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": false,
+   "llmCoarseCorrect": true
+  },
+  {
+   "split": "holdout",
+   "idx": 8,
+   "theme": "vision-transformer",
+   "src": "openalex:W2533598788",
+   "dst": "openalex:W3094502228",
+   "srcTitle": "Automated Flower Classification over a Large Number of Classes",
+   "srcYear": 2008,
+   "dstTitle": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+   "dstYear": 2020,
+   "signals": {
+    "found": true,
+    "intents": [
+     "methodology"
+    ],
+    "contexts": [
+     "We transfer the models trained on these dataset to several benchmark tasks: ImageNet on the original validation labels and the cleaned-up ReaL labels (Beyer et al., 2020), CIFAR-10/100 (Krizhevsky, 2009), Oxford-IIIT Pets (Parkhi et al., 2012), and Oxford Flowers-102 (Nilsback & Zisserman, 2008)."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale"
+   },
+   "api": {
+    "relation": "uses_resource",
+    "rule": "phrase_resource"
+   },
+   "apiV1": {
+    "relation": "uses_resource",
+    "rule": "phrase_resource"
+   },
+   "llm": "contrasts",
+   "gold": "uses_resource",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": false,
+   "llmCoarseCorrect": true
+  },
+  {
+   "split": "holdout",
+   "idx": 9,
+   "theme": "graph-neural-network",
+   "src": "openalex:W2116341502",
+   "dst": "openalex:W2985331920",
+   "srcTitle": "The Graph Neural Network Model",
+   "srcYear": 2008,
+   "dstTitle": "Graph convolutional networks: a comprehensive review",
+   "dstYear": 2019,
+   "signals": {
+    "found": true,
+    "intents": [
+     "background"
+    ],
+    "contexts": [
+     "One of the earliest graph neural networks is [66] which defines the parametric local transition function f and local output function g."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "Graph convolutional networks: a comprehensive review"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "citing_survey"
+   },
+   "apiV1": {
+    "relation": "background",
+    "rule": "intent_background"
+   },
+   "llm": "baseline_only",
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": true,
+   "llmCoarseCorrect": true
+  },
+  {
+   "split": "holdout",
+   "idx": 10,
+   "theme": "graph-neural-network",
+   "src": "openalex:W2116341502",
+   "dst": "openalex:W3024961463",
+   "srcTitle": "The Graph Neural Network Model",
+   "srcYear": 2008,
+   "dstTitle": "EEG-Based Emotion Recognition Using Regularized Graph Neural Networks",
+   "dstYear": 2020,
+   "signals": {
+    "found": true,
+    "intents": [
+     "background"
+    ],
+    "contexts": [
+     "One early work on GNN [40] aimed to learn a converged static state embedding for each node in the graph using a transition function applied to its neighborhood."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "EEG-Based Emotion Recognition Using Regularized Graph Neural Networks"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "apiV1": {
+    "relation": "background",
+    "rule": "intent_background"
+   },
+   "llm": "extends",
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true,
+   "llmCorrect": false,
+   "llmCoarseCorrect": false
+  },
+  {
+   "split": "holdout",
+   "idx": 11,
+   "theme": "vision-transformer",
+   "src": "openalex:W2963091558",
+   "dst": "openalex:W4312560592",
+   "srcTitle": "Non-local Neural Networks",
+   "srcYear": 2018,
+   "dstTitle": "Video Swin Transformer",
+   "dstYear": 2022,
+   "signals": {
+    "found": true,
+    "intents": [
+     "methodology"
+    ],
+    "contexts": [
+     "Self-attention/Transformers to complement CNNs NLNet [40] is the ﬁrst work to adopt self-attention to model pixel-level long-range dependency for visual recognition tasks.",
+     "Self-attention/Transformers to complement CNNs NLNet [40] is the first work to adopt self-attention to model pixel-level long-range dependency for visual recognition tasks."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "Video Swin Transformer"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "apiV1": {
+    "relation": "builds_on",
+    "rule": "intent_methodology"
+   },
+   "llm": "successor",
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": false,
+   "llmCorrect": false,
+   "llmCoarseCorrect": false
+  },
+  {
+   "split": "holdout",
+   "idx": 12,
+   "theme": "vision-transformer",
+   "src": "openalex:W2183341477",
+   "dst": "openalex:W3131500599",
+   "srcTitle": "Rethinking the Inception Architecture for Computer Vision",
+   "srcYear": 2016,
+   "dstTitle": "Pyramid Vision Transformer: A Versatile Backbone for Dense Prediction without Convolutions",
+   "dstYear": 2021,
+   "signals": {
+    "found": true,
+    "intents": [
+     "methodology"
+    ],
+    "contexts": [
+     "The effectiveness of a multi-path convolutional block was further validated in Inception series [59, 57], ResNeXt [72], DPN [9], MixNet [64] and SKNet [35].",
+     "We follow DeiT [62] and apply random cropping, random horizontal flipping [58], label-smoothing regularization [59], mixup [76], CutMix [75], and random erasing [80] as data augmentations."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "Pyramid Vision Transformer: A Versatile Backbone for Dense Prediction without Convolutions"
+   },
+   "api": {
+    "relation": "builds_on",
+    "rule": "phrase_build"
+   },
+   "apiV1": {
+    "relation": "builds_on",
+    "rule": "phrase_build"
+   },
+   "llm": "contrasts",
+   "gold": "uses_resource",
+   "note": null,
+   "apiCorrect": false,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": false,
+   "apiV1CoarseCorrect": false,
+   "llmCorrect": false,
+   "llmCoarseCorrect": true
+  },
+  {
+   "split": "holdout",
+   "idx": 13,
+   "theme": "vision-transformer",
+   "src": "openalex:W3138516171",
+   "dst": "openalex:W4313007769",
+   "srcTitle": "Swin Transformer: Hierarchical Vision Transformer using Shifted Windows",
+   "srcYear": 2021,
+   "dstTitle": "CSWin Transformer: A General Vision Transformer Backbone with Cross-Shaped Windows",
+   "dstYear": 2022,
+   "signals": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "Meanwhile, we notice that RPE introduces bias in a per head manner, while our LePE is a per-channel bias, which may show more potential to serve as positional embeddings.",
+     "6 —- —- —- —- —- —- —- —Swin-B [30] 107 496 46.",
+     "Typical positional encoding mechanisms include absolute positional encoding (APE) [45], relative positional encoding (RPE) [30, 35] and conditional positional encoding (CPE) [9].",
+     "This strategy is fundamentally different from existing selfattention mechanisms [18, 30, 45, 56] that apply the same attention operation across multi-heads((Figure 1 b,c,d,e), and perform different attention operations sequentially(Figure 1 c,e).",
+     "For fair comparison, we follow the training strategy in DeiT [42] as other baseline Transformer architectures [30, 49].",
+     "cally, we pretrain the backbones on the ImageNet-1K dataset and follow the finetuning strategy used in Swin Transformer [30] on the COCO training set.",
+     "In Table 10, we compare our LePE with other recent positional encoding mechanisms(APE [12], CPE [9], and RPE [35]) for image classification, object detection and image segmentation.",
+     "In detail, we use 2, 2, 6, 2 blocks for the four stages with the 96 base channel, non-overlapped token embedding [12], and RPE [30].",
+     "In details, APE [45] and CPE [9] add the positional information into the input token before feeding into the Transformer blocks, while RPE [35] and our LePE incorporate the positional information within each Transformer block.",
+     "According to the comparison results, we see that: 1) Positional encoding can bring performance gain by introducing the local inductive bias; 2) Though RPE achieves similar performance on the classification task with fixed input resolution, our LePE performs better (+1.2 box AP and +0.9 mask AP on COCO, +0.9 mIoU on ADE20K) on downstream\ntasks where the input resolution varies; 3) Compared to APE and CPE, our LePE also achieves better performance.",
+     "But different from RPE that adds the positional information within the attention calculation (i.e., Softmax(QKT )), we consider a more straightforward manner and impose the positional information upon the linearly projected values.",
+     "Transformer-based architectures [12, 30, 42, 49] have recently achieved competitive performances compared to their CNN counterparts in various vision tasks.",
+     "To alleviate this issue, existing works [30, 44] suggest to perform self-attention in a local attention window and apply halo or shifted window to enlarge the receptive filed.",
+     "To improve the efficiency, one typical way is to limit the attention region of each token from full-attention to local/windowed attention [30, 44].",
+     "APE and RPE are often defined as the sinusoidal functions of a series of frequencies or the learnable parameters, which are designed for a specific input size and are not friendly to varying input resolutions.",
+     "Rather than concentrating on one special task, some recent works [30, 47, 56] try to design a general vision Transformer backbone for general-purpose vision tasks.",
+     "To reduce the complexity, the recent vision Transformers [30, 44] adopt the local self-attention mechanism [32] and its shifted/haloed version to add the interaction across different local windows."
+    ],
+    "isInfluential": true,
+    "sharedAuthors": true,
+    "citingTitle": "CSWin Transformer: A General Vision Transformer Backbone with Cross-Shaped Windows"
+   },
+   "api": {
+    "relation": "builds_on",
+    "rule": "phrase_build"
+   },
+   "apiV1": {
+    "relation": "builds_on",
+    "rule": "phrase_build"
+   },
+   "llm": "successor",
+   "gold": "compares_with",
+   "note": null,
+   "apiCorrect": false,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": false,
+   "apiV1CoarseCorrect": false,
+   "llmCorrect": false,
+   "llmCoarseCorrect": false
+  },
+  {
+   "split": "holdout",
+   "idx": 14,
+   "theme": "vision-transformer",
+   "src": "openalex:W3121523901",
+   "dst": "openalex:W4313007769",
+   "srcTitle": "Tokens-to-Token ViT: Training Vision Transformers from Scratch on ImageNet",
+   "srcYear": 2021,
+   "dstTitle": "CSWin Transformer: A General Vision Transformer Backbone with Cross-Shaped Windows",
+   "dstYear": 2022,
+   "signals": {
+    "found": true,
+    "intents": [
+     "background"
+    ],
+    "contexts": [
+     "Vision Transformers.",
+     "It shows that our CSWin Transformers outperform previous state-of-the-art vision Transformers by large margins.",
+     "However, many existing vision Transformers [12, 42, 49, 55] still adopt the original full self-attention, whose computation complexity is quadratic to the image size.",
+     "For a fair comparison with other vision Transformers under similar settings, we build four different variants of CSWin Transformer as shown in Table 1: CSWin-T (Tiny), CSWin-S (Small), CSWin-B (Base), CSWin-L (Large).",
+     "It can be seen that, our CSWin Transformers significantly outperform previous state-of-the-arts under different configurations.",
+     "Compared to the CNN counterparts, the performance gain is very promising and demonstrates the potential of vision Transformers again.",
+     "To add such information back, different positional encoding mechanisms have been utilized in existing vision Transformers.",
+     "Under the similar FLOPs and model size, CSWin Transformer variants significantly outperforms previous state-\nof-the-art (SOTA) vision Transformers.",
+     "Though Cascade Mask R-CNN is overall stronger than Mask R-CNN, we observe CSWin Transformers still surpass the counterparts by promising margins under\ndifferent model configurations.",
+     "When finetuned on the 384 × 384 input, a similar trend is observed, which well demonstrates the powerful learning capacity of our CSWin Transformers.",
+     "To better understand CSWin Transformers, we compare each key component with the previous works under a completely fair setting that we use the same architecture and hyper-parameter for the following experiments, and only vary one component for each ablation.",
+     "Since self-attention is permutationinvariant and ignores the token positional information, positional encoding is widely used in Transformers to add such positional information back.",
+     "To reduce the complexity, the recent vision Transformers [30, 44] adopt the local self-attention mechanism [32] and its shifted/haloed version to add the interaction across different local windows.",
+     "By leveraging the multi-head self-attention mechanism, these vision Transformers demonstrate a high capability in modeling the longrange dependencies, which is especially helpful for handling high-resolution inputs in downstream tasks, e.g., object detection and segmentation."
+    ],
+    "isInfluential": true,
+    "sharedAuthors": false,
+    "citingTitle": "CSWin Transformer: A General Vision Transformer Backbone with Cross-Shaped Windows"
+   },
+   "api": {
+    "relation": "builds_on",
+    "rule": "phrase_build"
+   },
+   "apiV1": {
+    "relation": "builds_on",
+    "rule": "phrase_build"
+   },
+   "llm": "contrasts",
+   "gold": "compares_with",
+   "note": null,
+   "apiCorrect": false,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": false,
+   "apiV1CoarseCorrect": false,
+   "llmCorrect": true,
+   "llmCoarseCorrect": true
+  },
+  {
+   "split": "holdout",
+   "idx": 15,
+   "theme": "flash-attention",
+   "src": "abdd2f05f5822aeb73759a0339f5fc5d803f1f57",
+   "dst": "a27502650c1c669610197ce5b791915b6927636b",
+   "srcTitle": "Reactive oxygen species, toxicity, oxidative stress, and antioxidants: chronic diseases and aging",
+   "srcYear": 2023,
+   "dstTitle": "Dietary Polyphenols in Brain Aging: Molecular Mechanisms and Implications for Neurodegeneration",
+   "dstYear": 2026,
+   "signals": {
+    "found": true,
+    "intents": [],
+    "contexts": [
+     "ROS are primarily generated during mitochondrial https://doi.org/10.3390/nu18091470 oxidative phosphorylation, although additional sources include enzymatic systems such as nicotinamide adenine dinucleotide phosphate (NADPH) oxidases [52,53].",
+     "The brain is particularly susceptible to oxidative damage due to its high oxygen consumption, the abundance of polyunsaturated fatty acids prone to lipid peroxidation, and a relatively limited antioxidant capacity, especially within glutathione-based systems [53–56]."
+    ],
+    "isInfluential": true,
+    "sharedAuthors": false,
+    "citingTitle": "Dietary Polyphenols in Brain Aging: Molecular Mechanisms and Implications for Neurodegeneration"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "apiV1": {
+    "relation": "builds_on",
+    "rule": "influential"
+   },
+   "llm": null,
+   "gold": "background",
+   "note": "off-topic biology pair (topic drift, not a relation problem)",
+   "apiCorrect": true,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": false
+  },
+  {
+   "split": "holdout",
+   "idx": 16,
+   "theme": "world-model",
+   "src": "90abbc2cf38462b954ae1b772fac9532e2ccd8b0",
+   "dst": "d62c4d00b277e948956b6610ce2644e88fe1577b",
+   "srcTitle": "Language Models are Few-Shot Learners",
+   "srcYear": 2020,
+   "dstTitle": "Large Language Models",
+   "dstYear": 2023,
+   "signals": {
+    "found": true,
+    "intents": [
+     "background"
+    ],
+    "contexts": [
+     "Let us summarize by listing the hyperparameters(34) and their values for the largest (175B) GPT-3 [22].",
+     "One of the most interesting LLM phenomena is in-context learning, first discussed in the original GPT-3 paper [22].",
+     "While the precise cost figures for the GPT series are not public, it is estimated that a single training run of the largest GPT-3 models cost tens of millions of dollars.",
+     "But it appears that this is what happened: GPT-3 and its fine-tuned cousins (such as Codex) were able to do tasks, such as write computer code from a natural language description, for which smaller models were almost worthless.",
+     "1A few of the many other milestones in LLM development are [22, 32, 39, 113, 114].",
+     "Let us summarize by listing the hyperparameters 36 and their values for the largest (175B) GPT-3 [22]."
+    ],
+    "isInfluential": true,
+    "sharedAuthors": false,
+    "citingTitle": "Large Language Models"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "apiV1": {
+    "relation": "uses_resource",
+    "rule": "phrase_resource"
+   },
+   "llm": null,
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true
+  },
+  {
+   "split": "holdout",
+   "idx": 17,
+   "theme": "vision-transformer",
+   "src": "openalex:W2896457183",
+   "dst": "openalex:W3035524453",
+   "srcTitle": "AI-Assisted Pipeline for Dynamic Generation of Trustworthy Health Supplement Content at Scale",
+   "srcYear": 2018,
+   "dstTitle": "Momentum Contrast for Unsupervised Visual Representation Learning",
+   "dstYear": 2020,
+   "signals": {
+    "found": true,
+    "intents": [
+     "background",
+     "methodology"
+    ],
+    "contexts": [
+     "Unsupervised representation learning is highly successful in natural language processing, e.g ., as shown by GPT [50, 51] and BERT [12].",
+     "Beyond the simple instance discrimination task [61], it is possible to adopt MoCo for pretext tasks like masked auto-encoding, e.g ., in language [12] and in vision [46]."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "Momentum Contrast for Unsupervised Visual Representation Learning"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "apiV1": {
+    "relation": "builds_on",
+    "rule": "intent_methodology"
+   },
+   "llm": null,
+   "gold": "background",
+   "note": "node identity mismatch in old artifact (context is about GPT)",
+   "apiCorrect": true,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": false
+  },
+  {
+   "split": "holdout",
+   "idx": 18,
+   "theme": "variational-autoencoder",
+   "src": "openalex:W2948978827",
+   "dst": "openalex:W3089028909",
+   "srcTitle": "An Introduction to Variational Autoencoders",
+   "srcYear": 2019,
+   "dstTitle": "A Unifying Review of Deep and Shallow Anomaly Detection",
+   "dstYear": 2021,
+   "signals": {
+    "found": true,
+    "intents": [
+     "background"
+    ],
+    "contexts": [
+     "The most explored class of probabilistic AEs are VAEs [272]–[274], as introduced in Section III-C1, through the lens of neural generative models, which approximately maximizes the data likelihood (or evidence) by maximizing the ELBO.",
+     "The two most established neural generative models are VAEs [272]–[274] and GANs [275]."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "A Unifying Review of Deep and Shallow Anomaly Detection"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "citing_survey"
+   },
+   "apiV1": {
+    "relation": "background",
+    "rule": "intent_background"
+   },
+   "llm": null,
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true
+  },
+  {
+   "split": "holdout",
+   "idx": 19,
+   "theme": "vision-transformer",
+   "src": "204e3073870fae3d05bcbc2f6a8e263d9b72e776",
+   "dst": "2cd605106b88c85d7d8b865b1ef0f8c8293debf1",
+   "srcTitle": "Attention is All you Need",
+   "srcYear": 2017,
+   "dstTitle": "Zero-Shot Text-to-Image Generation",
+   "dstYear": 2021,
+   "signals": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "Our goal is to train a transformer (Vaswani et al., 2017) to autoregressively model the text and image tokens as a single stream of data.",
+     "Specifically, when compute, model size, and data are scaled carefully, autoregressive transformers (Vaswani et al., 2017) have achieved impressive results in several domains such as text (Radford et al.",
+     "Specifically, when compute, model size, and data are scaled carefully, autoregressive transformers (Vaswani et al., 2017) have achieved impressive results in several domains such as text (Radford et al., 2019), images (Chen et al., 2020), and audio (Dhariwal et al., 2020)."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "Zero-Shot Text-to-Image Generation"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "apiV1": {
+    "relation": "builds_on",
+    "rule": "intent_methodology"
+   },
+   "llm": null,
+   "gold": "builds_on",
+   "note": null,
+   "apiCorrect": false,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": false,
+   "apiV1CoarseCorrect": true
+  },
+  {
+   "split": "holdout",
+   "idx": 20,
+   "theme": "semantic-segmentation",
+   "src": "8fb1c04dab87ca6c116495e4d03c46c9547e4ec3",
+   "dst": "c8b25fab5608c3e033d34b4483ec47e68ba109b7",
+   "srcTitle": "Pyramid Vision Transformer: A Versatile Backbone for Dense Prediction without Convolutions",
+   "srcYear": 2021,
+   "dstTitle": "Swin Transformer: Hierarchical Vision Transformer using Shifted Windows",
+   "dstYear": 2021,
+   "signals": {
+    "found": true,
+    "intents": [
+     "background",
+     "methodology"
+    ],
+    "contexts": [
+     "Another concurrent work [60] explores a similar line of thinking to build multi-resolution feature maps on Transformers.",
+     "Transformer based vision backbones Most related to our work is the Vision Transformer (ViT) [19] and its follow-ups [57, 66, 15, 25, 60]."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "Swin Transformer: Hierarchical Vision Transformer using Shifted Windows"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "apiV1": {
+    "relation": "builds_on",
+    "rule": "intent_methodology"
+   },
+   "llm": null,
+   "gold": "background",
+   "note": "concurrent work; Swin compares to PVT in tables but contexts only position it",
+   "apiCorrect": true,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": false
+  },
+  {
+   "split": "holdout",
+   "idx": 21,
+   "theme": "direct-preference-optimization",
+   "src": "2dcef55a07f8607a819c21fe84131ea269cc2e3c",
+   "dst": "014576b866078524286802b1d0e18628520aa886",
+   "srcTitle": "Deep Unsupervised Learning using Nonequilibrium Thermodynamics",
+   "srcYear": 2015,
+   "dstTitle": "Denoising Diffusion Implicit Models",
+   "dstYear": 2020,
+   "signals": {
+    "found": true,
+    "intents": [
+     "background",
+     "methodology"
+    ],
+    "contexts": [
+     "With L 1 as the objective, we are not only learning a generative process for the Markovian inference process considered in Sohl-Dickstein et al. (2015) and Ho et al. (2020), but also generative processes for many non-Markovian forward processes parametrized by σ that we have described.",
+     "From a variational perspective, a large T allows the reverse process to be close to a Gaussian (Sohl-Dickstein et al., 2015), so that the generative process modeled with Gaussian conditional distributions becomes a good approximation; this motivates the choice of large T values, such as T = 1000 in…",
+     "From a variational perspective, a large T allows the reverse process to be close to a Gaussian (Sohl-Dickstein et al., 2015), so that the generative process modeled with Gaussian conditional distributions becomes a good approximation; this motivates the choice of large T values, such as T = 1000 in Ho et al.",
+     "This generative Markov Chain process is either based on Langevin dynamics (Song & Ermon, 2019) or obtained by reversing a forward diffusion process that progressively turns an image into noise (Sohl-Dickstein et al., 2015).",
+     "Our work is based on a large family of existing methods on learning generative models as transition operators of Markov chains (Sohl-Dickstein et al., 2015; Bengio et al., 2014; Salimans et al., 2014; Song et al., 2017; Goyal et al., 2017; Levy et al., 2017).",
+     "Denoising diffusion probabilistic models (DDPMs, Sohl-Dickstein et al. (2015); Ho et al. (2020)) are latent variable models of the form p θ ( x 0 ) = p θ ( x 0: T )d x 1: T , where p θ ( x 0: T ) := p θ ( x T ) where x 1 , . . . , x T are latent variables in the same sample space as x 0 (denoted as…"
+    ],
+    "isInfluential": true,
+    "sharedAuthors": false,
+    "citingTitle": "Denoising Diffusion Implicit Models"
+   },
+   "api": {
+    "relation": "builds_on",
+    "rule": "phrase_build"
+   },
+   "apiV1": {
+    "relation": "builds_on",
+    "rule": "phrase_build"
+   },
+   "llm": null,
+   "gold": "builds_on",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true
+  },
+  {
+   "split": "holdout",
+   "idx": 22,
+   "theme": "knowledge-distillation",
+   "src": "750274c61a0936c9c9db32da659cddbcb227cf32",
+   "dst": "677f89b61eff0f5ad3ae10c2b9208aaa16aa4239",
+   "srcTitle": "MKQA: A Linguistically Diverse Benchmark for Multilingual Open Domain Question Answering",
+   "srcYear": 2020,
+   "dstTitle": "M3-Embedding: Multi-Linguality, Multi-Functionality, Multi-Granularity Text Embeddings Through Self-Knowledge Distillation",
+   "dstYear": 2024,
+   "signals": {
+    "found": true,
+    "intents": [],
+    "contexts": [
+     "We make evaluation for the cross-lingual retrieval performance with the MKQA benchmark (Longpre et al., 2021), which includes queries in 25 non-English languages.",
+     "• The sparse retrieval of M3 outperforms BM25 on MIRACL and MKQA datasets.",
+     "Another one is the curation of training and evaluation data for multi-lingual text embeddings, e.g., MIRACL (Zhang et al., 2023c), mMARCO (Bonifacio et al., 2021), Mr. TyDi (Zhang et al., 2021b), MKQA (Longpre et al., 2021).",
+     "In this section, we present additional evaluation results on the MIRACL and MKQA benchmarks.",
+     "First of all, while our proposed M3-Embedding model achieves state-of-the-art performance on popular multi-lingual and cross-lingual benchmarks such as MIRACL and MKQA, it is important to acknowledge that the generalizability of our approach to diverse datasets and real-world scenarios needs to be further investigated.",
+     "It achieves superior retrieval quality for a variety of languages, leading to state-of-the-art performances on popular multi-lingual and cross-lingual benchmarks like MIR-ACL (Zhang et al., 2023c) and MKQA (Longpre et al., 2021)."
+    ],
+    "isInfluential": true,
+    "sharedAuthors": false,
+    "citingTitle": "M3-Embedding: Multi-Linguality, Multi-Functionality, Multi-Granularity Text Embeddings Through Self-Knowledge Distillation"
+   },
+   "api": {
+    "relation": "compares_with",
+    "rule": "phrase_compare"
+   },
+   "apiV1": {
+    "relation": "compares_with",
+    "rule": "phrase_compare"
+   },
+   "llm": null,
+   "gold": "uses_resource",
+   "note": null,
+   "apiCorrect": false,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true
+  },
+  {
+   "split": "holdout",
+   "idx": 23,
+   "theme": "reinforcement-learning-from-human-feedback",
+   "src": "104b0bb1da562d53cbda87aec79ef6a2827d191a",
+   "dst": "0f7308fbcae43d22813f70c334c2425df0b1cce1",
+   "srcTitle": "Llama 2: Open Foundation and Fine-Tuned Chat Models",
+   "srcYear": 2023,
+   "dstTitle": "Safe RLHF: Safe Reinforcement Learning from Human Feedback",
+   "dstYear": 2023,
+   "signals": {
+    "found": true,
+    "intents": [],
+    "contexts": [
+     "Ultimately, our research was conducted using data from Llama-1 (Touvron et al., 2023a) and Alpaca (Taori et al., 2023) models which were considering predate Llama-2 (Touvron et al., 2023b).",
+     "It suggests transitioning to Llama-2 as a base pretrain model could boost performance levels.",
+     "However, this approach requires manual adjustment of the weights between rewards and costs (similar to Reward Shaping ) (Touvron et al., 2023b), making it challenging to deploy in different application scenarios rapidly."
+    ],
+    "isInfluential": false,
+    "sharedAuthors": false,
+    "citingTitle": "Safe RLHF: Safe Reinforcement Learning from Human Feedback"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "apiV1": {
+    "relation": "background",
+    "rule": "context_no_cue"
+   },
+   "llm": null,
+   "gold": "compares_with",
+   "note": "Safe RLHF positions against Llama-2 reward weighting (ambiguous)",
+   "apiCorrect": false,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true
+  },
+  {
+   "split": "holdout",
+   "idx": 24,
+   "theme": "chain-of-thought",
+   "src": "2d7f3a99e916fc80ff890d109699f9682253e66d",
+   "dst": "5a5fc5beee7aed128880f28b73a5aeefc3f8bbf7",
+   "srcTitle": "CoT-VLA: Visual Chain-of-Thought Reasoning for Vision-Language-Action Models",
+   "srcYear": 2025,
+   "dstTitle": "Failing Forward: Adaptive Failure-Informed Learning for Vision-Language-Action Models",
+   "dstYear": 2026,
+   "signals": {
+    "found": true,
+    "intents": [],
+    "contexts": [
+     "…72.4 ± 0.7 Octo fine-tuned [Octo Model Team et al., 2024] 78.9 ± 1.0 85.7 ± 0.9 84.6 ± 0.9 51.1 ± 1.3 75.1 ± 0.6 OpenVLA fine-tuned [Kim et al., 2024] 84.7 ± 0.9 88.4 ± 0.8 79.2 ± 1.0 53.7 ± 1.3 76.5 ± 0.6 CoT-VLA-7B [Zhao et al., 2025] 87.5 ± 1.4 91.6 ± 0.5 87.6 ± 0.6 69.0 ± 0.8 81.1 ± 0.6 π 0 .",
+     "…in robotics [Pertsch et al., 2025, Black et al., 2024, Intelligence et al., 2025, Liu et al., 2025, Chi et al., 2025, Zitkovich et al., 2023, Zhao et al., 2025], particularly following the release of OpenVLA [Kim et al., 2024], which demonstrated the feasibility of leveraging large-scale…",
+     "CoT-VLA [Zhao et al., 2025] and Embodied CoT [Zawalski et al., 2024] incorporate Chain-of-Thought (CoT) reasoning and demonstrate that generating intermediate reasoning steps prior to action can improve task success and transparency."
+    ],
+    "isInfluential": true,
+    "sharedAuthors": false,
+    "citingTitle": "Failing Forward: Adaptive Failure-Informed Learning for Vision-Language-Action Models"
+   },
+   "api": {
+    "relation": "compares_with",
+    "rule": "table_row"
+   },
+   "apiV1": {
+    "relation": "builds_on",
+    "rule": "influential"
+   },
+   "llm": null,
+   "gold": "compares_with",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": false
+  },
+  {
+   "split": "holdout",
+   "idx": 25,
+   "theme": "diffusion-models",
+   "src": "204e3073870fae3d05bcbc2f6a8e263d9b72e776",
+   "dst": "6c4b76232bb72897685d19b3d264c6ee3005bc2b",
+   "srcTitle": "Attention is All you Need",
+   "srcYear": 2017,
+   "dstTitle": "Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer",
+   "dstYear": 2019,
+   "signals": {
+    "found": true,
+    "intents": [
+     "methodology"
+    ],
+    "contexts": [
+     "Early results on transfer learning for NLP leveraged recurrent neural networks [Peters et al., 2018; Howard and Ruder, 2018], but it has recently become more common to use models based on the “Transformer” architecture [Vaswani et al., 2017].",
+     "For WMT English to German, we use the same training data as [Vaswani et al., 2017] (i.e. News Commentary v13, Common Crawl, Europarl v7) and newstest2013 as a validation set [Bojar et al., 2014].",
+     "For WMT English to German, we use the same training data as [Vaswani et al., 2017] (i.",
+     ", 2018; Howard and Ruder, 2018], but it has recently become more common to use models based on the “Transformer” architecture [Vaswani et al., 2017].",
+     "Instead of providing a comprehensive definition of this model, we refer the interested reader to the original paper [Vaswani et al., 2017] or follow-up tutorials3,4 for a more detailed introduction.",
+     "Overall, our encoder-decoder Transformer implementation closely follows its originally-proposed form [Vaswani et al., 2017].",
+     "3http://nlp.seas.harvard.edu/2018/04/03/attention.html 4http://jalammar.github.io/illustrated-transformer/\nOverall, our encoder-decoder Transformer implementation closely follows its originally-proposed form [Vaswani et al., 2017]."
+    ],
+    "isInfluential": true,
+    "sharedAuthors": true,
+    "citingTitle": "Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer"
+   },
+   "api": {
+    "relation": "builds_on",
+    "rule": "intent_methodology_influential"
+   },
+   "apiV1": {
+    "relation": "builds_on",
+    "rule": "intent_methodology"
+   },
+   "llm": null,
+   "gold": "builds_on",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true
+  },
+  {
+   "split": "holdout",
+   "idx": 26,
+   "theme": "diffusion-models",
+   "src": "e74f9b7f8eec6ba4704c206b93bc8079af3da4bd",
+   "dst": "8899094797e82c5c185a0893896320ef77f60e64",
+   "srcTitle": "ImageNet Large Scale Visual Recognition Challenge",
+   "srcYear": 2014,
+   "dstTitle": "Non-local Neural Networks",
+   "dstYear": 2017,
+   "signals": {
+    "found": true,
+    "intents": [],
+    "contexts": [
+     "This model can be directly initialized from the ResNet weights pre-trained on ImageNet.",
+     "This kernel can be initialized from 2D models (pretrained on ImageNet): each of the t planes in the t×k×k kernel is initialized by the pre-trained k×k weights, rescaled by 1/t.",
+     "Our models are pre-trained on ImageNet [39].",
+     "All models are fine-tuned from ImageNet pre-training."
+    ],
+    "isInfluential": true,
+    "sharedAuthors": false,
+    "citingTitle": "Non-local Neural Networks"
+   },
+   "api": {
+    "relation": "uses_resource",
+    "rule": "phrase_resource"
+   },
+   "apiV1": {
+    "relation": "uses_resource",
+    "rule": "phrase_resource"
+   },
+   "llm": null,
+   "gold": "uses_resource",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": true,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true
+  },
+  {
+   "split": "holdout",
+   "idx": 27,
+   "theme": "vision-transformer",
+   "src": "5694e46284460a648fe29117cbc55f6c9be3fa3c",
+   "dst": "177e957f5cd93229c9794ea652c646d2557b4a69",
+   "srcTitle": "Densely Connected Convolutional Networks",
+   "srcYear": 2016,
+   "dstTitle": "A ConvNet for the 2020s",
+   "dstYear": 2022,
+   "signals": {
+    "found": true,
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "contexts": [
+     "We regularize the networks with Stochastic Depth [37] and Label Smooth-ing [69].",
+     "We use the AdamW optimizer [46], data augmentation techniques such as Mixup [90], Cutmix [89], RandAugment [14], Random Erasing [91], and regularization schemes including Stochastic Depth [36] and Label Smoothing [69].",
+     "Representative ConvNets like VGGNet [64], Inceptions [68], ResNe(X)t [28, 87], DenseNet [36], MobileNet [34], EfficientNet [71] and RegNet [54] focused on different aspects of accuracy, efficiency and scalability, and popularized many useful design principles.",
+     "Representative ConvNets like VGGNet [64], Inceptions [68], ResNe(X)t [28, 87], DenseNet [36], Mo-bileNet [34], EfﬁcientNet [71] and RegNet [54] focused on different aspects of accuracy, efﬁciency and scalability, and popularized many useful design principles."
+    ],
+    "isInfluential": true,
+    "sharedAuthors": true,
+    "citingTitle": "A ConvNet for the 2020s"
+   },
+   "api": {
+    "relation": "uses_resource",
+    "rule": "phrase_resource"
+   },
+   "apiV1": {
+    "relation": "uses_resource",
+    "rule": "phrase_resource"
+   },
+   "llm": null,
+   "gold": "background",
+   "note": "duplicate DenseNet node (preprint vs venue id)",
+   "apiCorrect": false,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true
+  },
+  {
+   "split": "holdout",
+   "idx": 28,
+   "theme": "semantic-segmentation",
+   "src": "f28e387d4229c5f690ce4570a391c0f47e7155c7",
+   "dst": "b40955daca5094540a9d4e689a36d94f9922ac1e",
+   "srcTitle": "nnU-Net: a self-configuring method for deep learning-based biomedical image segmentation",
+   "srcYear": 2020,
+   "dstTitle": "One Sequence to Segment Them All: Efficient Data Augmentation for CT and MRI Cross-Domain 3D Spine Segmentation",
+   "dstYear": 2026,
+   "signals": {
+    "found": true,
+    "intents": [],
+    "contexts": [
+     "We use the nnUNet framework [10], a widely adopted framework for medical image segmentation.",
+     "We trained for 1,000 epochs with the default nnUNetPlans, corresponding to the PlainConvUNet architecture [10].",
+     "In this work, we investigate a combination of data augmentations for 3D spine segmentation using nnUNet as a standardized baseline [10].",
+     "While traditional frameworks rely on CPU for data augmentation, we present a software solution that performs data augmentation on GPU for nnUNet [10] and MONAI [2] frameworks."
+    ],
+    "isInfluential": true,
+    "sharedAuthors": false,
+    "citingTitle": "One Sequence to Segment Them All: Efficient Data Augmentation for CT and MRI Cross-Domain 3D Spine Segmentation"
+   },
+   "api": {
+    "relation": "uses_resource",
+    "rule": "phrase_resource"
+   },
+   "apiV1": {
+    "relation": "compares_with",
+    "rule": "phrase_compare"
+   },
+   "llm": null,
+   "gold": "builds_on",
+   "note": "uses nnU-Net framework and builds GPU augmentation for it",
+   "apiCorrect": false,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": false,
+   "apiV1CoarseCorrect": false
+  },
+  {
+   "split": "holdout",
+   "idx": 29,
+   "theme": "retrieval-augmented-generation",
+   "src": "openalex:W2950681488",
+   "dst": "openalex:W4411403346",
+   "srcTitle": "ELI5: Long Form Question Answering",
+   "srcYear": 2019,
+   "dstTitle": "A Comprehensive Overview of Large Language Models",
+   "dstYear": 2025,
+   "signals": {
+    "found": true,
+    "intents": [],
+    "contexts": [
+     "WebGPT ELI5 [118], ELI5 fact-check [116], TriviaQA [153], ARC-Challenge [143], ARC-Easy [143], Hand-written data, Demonstrations of humans, Comparisons between model-generated answers ELI5 [118], TruthfulQA [119], TriviaQA [153]",
+     "In addition to the Q&A data in the ELI5 dataset [118], two more types of data, demonstrations of humans and comparisons between two model-generated",
+     "To evaluate the performance of the WebGPT model, the model’s answers are compared with the human demonstrators’ written ones, the highest-voted answers in ELI5 [118], and the adversarial shortform questions and answers in the TruthfulQA [119] dataset."
+    ],
+    "isInfluential": true,
+    "sharedAuthors": false,
+    "citingTitle": "A Comprehensive Overview of Large Language Models"
+   },
+   "api": {
+    "relation": "background",
+    "rule": "citing_survey"
+   },
+   "apiV1": {
+    "relation": "compares_with",
+    "rule": "phrase_compare"
+   },
+   "llm": null,
+   "gold": "background",
+   "note": null,
+   "apiCorrect": true,
+   "apiV1Correct": false,
+   "apiCoarseCorrect": true,
+   "apiV1CoarseCorrect": true
+  }
+ ]
+}
