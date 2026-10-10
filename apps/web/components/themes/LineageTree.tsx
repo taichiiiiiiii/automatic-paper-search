@@ -24,9 +24,10 @@
  */
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { paperLink } from "../../lib/lineage/evidence";
 import { exportPng, exportSvg } from "../../lib/themes-export";
 import { formatStars, formatVenue } from "../../lib/themes-format";
-import type { LineageArtifact, LineageEdge, LineageNode } from "../../lib/themes-quality";
+import type { LineageArtifact } from "../../lib/themes-quality";
 import { resolveFocus } from "../../lib/themes-quality";
 import {
   ALL_RELATIONS,
@@ -36,6 +37,7 @@ import {
   DEFAULT_RELATIONS,
   DEFAULT_X_AXIS_MODE,
   heatBucket,
+  hiddenEdgeCount,
   isSparseLineage,
   layoutChronological,
   matchesSearch,
@@ -53,6 +55,7 @@ import {
   saveThemePrefs,
   writeTreeUrlParams,
 } from "../../lib/themes-url-state";
+import { EdgeEvidencePanel, EdgeRelationList, edgeKey, relationLabelJa } from "./EdgeEvidence";
 import styles from "./LineageTree.module.css";
 
 const X_AXIS_BUTTON: Record<XAxisMode, { icon: string; label: string; title: string }> = {
@@ -86,37 +89,6 @@ const RELATION_STROKE_CLASS: Record<string, string> = {
   contrasts: "stroke-[var(--rel-contrasts)]",
 };
 const DEFAULT_STROKE_CLASS = "stroke-[var(--rel-baseline)]";
-
-const RELATION_LABEL_JA: Record<string, string> = {
-  supersedes: "置換",
-  successor: "後継",
-  extends: "拡張",
-  ablation: "分析",
-  baseline_only: "比較",
-  contrasts: "対立",
-};
-
-const ARXIV_RE = /^\d{4}\.\d{4,5}(v\d+)?$/;
-const DOI_RE = /^10\.\d{4,9}\/[A-Za-z0-9._;()/:-]+$/;
-
-/** arXiv > DOI > Semantic Scholar fallback -- both regexes are strict
- * shape checks so the id is well-formed before encodeURIComponent. */
-function resolvePaperLink(node: LineageNode): { url: string; label: string } {
-  if (typeof node.arxiv_id === "string" && ARXIV_RE.test(node.arxiv_id)) {
-    return { url: `https://arxiv.org/abs/${encodeURIComponent(node.arxiv_id)}`, label: "arXiv" };
-  }
-  if (typeof node.doi === "string" && DOI_RE.test(node.doi)) {
-    return { url: `https://doi.org/${encodeURIComponent(node.doi)}`, label: "DOI" };
-  }
-  return {
-    url: `https://www.semanticscholar.org/paper/${encodeURIComponent(node.id)}`,
-    label: "Semantic Scholar",
-  };
-}
-
-function edgeKey(e: LineageEdge): string {
-  return `${e.src}\u0000${e.dst}\u0000${e.relation}`;
-}
 
 function isEditableTarget(el: Element | null): boolean {
   if (!el) return false;
@@ -312,6 +284,9 @@ export function LineageTree({
     else if (kind === "relations") setVisibleRelations(new Set(DEFAULT_RELATIONS));
     else setHideOrphans(false);
   }
+  function showAllRelations() {
+    setVisibleRelations(new Set(ALL_RELATIONS));
+  }
   function clearAllFilters() {
     setSearchQuery("");
     setYearRange(dataYearExtents);
@@ -330,7 +305,11 @@ export function LineageTree({
   if (!relationsAreDefault) {
     activeFilterChips.push({
       kind: "relations",
-      label: `🔗 関係: ${[...visibleRelations].sort().join(", ") || "なし"}`,
+      label: `🔗 関係: ${
+        ALL_RELATIONS.filter((r) => visibleRelations.has(r))
+          .map(relationLabelJa)
+          .join("・") || "なし"
+      }`,
     });
   }
   if (effectiveHideOrphans) {
@@ -339,6 +318,27 @@ export function LineageTree({
       label: `🔗 孤立論文 ${orphanSet.size} 件を非表示`,
     });
   }
+
+  // ---- Pinned evidence panel (click / tap / Enter on an edge) -----------
+  const [selectedEdgeKey, setSelectedEdgeKey] = useState<string | null>(null);
+  const evidenceHeadingRef = useRef<HTMLHeadingElement>(null);
+  const focusPanelOnOpenRef = useRef(false);
+  const selectEdge = useCallback((key: string) => {
+    focusPanelOnOpenRef.current = true;
+    setSelectedEdgeKey(key);
+  }, []);
+  const selectedEdge = useMemo(
+    () =>
+      selectedEdgeKey ? (artifact.edges.find((e) => edgeKey(e) === selectedEdgeKey) ?? null) : null,
+    [artifact.edges, selectedEdgeKey],
+  );
+  useEffect(() => {
+    if (!selectedEdge || !focusPanelOnOpenRef.current) return;
+    focusPanelOnOpenRef.current = false;
+    const heading = evidenceHeadingRef.current;
+    heading?.focus({ preventScroll: true });
+    heading?.scrollIntoView({ block: "nearest" });
+  }, [selectedEdge]);
 
   // ---- Keyboard-help + onboarding ---------------------------------------
   const [kbdHelpOpen, setKbdHelpOpen] = useState(false);
@@ -366,6 +366,11 @@ export function LineageTree({
       if (e.key === "Escape") {
         if (kbdHelpOpen) {
           setKbdHelpOpen(false);
+          e.preventDefault();
+          return;
+        }
+        if (selectedEdgeKey) {
+          setSelectedEdgeKey(null);
           e.preventDefault();
           return;
         }
@@ -406,7 +411,7 @@ export function LineageTree({
     }
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, [kbdHelpOpen, onboardingDismissed, dismissOnboarding]);
+  }, [kbdHelpOpen, onboardingDismissed, dismissOnboarding, selectedEdgeKey]);
 
   // ---- Layout + per-mode visual hooks -----------------------------------
   // Both take nodesForLayout (orphans already dropped when hidden) --
@@ -442,7 +447,9 @@ export function LineageTree({
     );
   }, [nodesForLayout, activeSearch, isYearFiltered, yearRange]);
 
+  const hiddenCount = hiddenEdgeCount(artifact.edges, visibleRelations);
   const sparse = isSparseLineage(artifact.nodes.length, artifact.edges.length);
+  const nodeById = useMemo(() => new Map(artifact.nodes.map((n) => [n.id, n])), [artifact.nodes]);
 
   // ---- Card popover (delayed show, instant hide) ------------------------
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
@@ -617,7 +624,7 @@ export function LineageTree({
     <div className="mt-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <fieldset className="flex flex-wrap items-center gap-2 border-0 p-0">
-          <legend className="text-xs text-ink-subtle">📐 横軸 (X-axis encoding)</legend>
+          <legend className="text-xs text-ink-subtle">📐 横軸</legend>
           {X_AXIS_MODES.map((m) => (
             <button
               key={m}
@@ -656,7 +663,7 @@ export function LineageTree({
             )}
           </button>
           <fieldset className="flex items-center gap-1 border-0 p-0">
-            <legend className="sr-only">Export</legend>
+            <legend className="sr-only">書き出し</legend>
             <button
               type="button"
               title="SVG をダウンロード"
@@ -693,7 +700,7 @@ export function LineageTree({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="タイトル / 著者で検索"
-            aria-label="Search papers by title or author"
+            aria-label="タイトル・著者で論文を検索"
             autoComplete="off"
             className="rounded-md border border-rule px-2 py-1 text-xs"
           />
@@ -701,7 +708,7 @@ export function LineageTree({
 
         {dataYearExtents && yearRange && (
           <fieldset className="flex items-center gap-1 border-0 p-0 text-xs text-ink-muted">
-            <legend className="sr-only">Year range filter</legend>
+            <legend className="sr-only">年の範囲</legend>
             <span aria-hidden="true">📅</span>
             <span>{yearRange.min}</span>
             <input
@@ -709,7 +716,7 @@ export function LineageTree({
               min={dataYearExtents.min}
               max={dataYearExtents.max}
               value={yearRange.min}
-              aria-label="Minimum year"
+              aria-label="開始年"
               onChange={(e) => {
                 const lo = Math.min(Number(e.target.value), yearRange.max);
                 setYearRange({ min: lo, max: yearRange.max });
@@ -720,7 +727,7 @@ export function LineageTree({
               min={dataYearExtents.min}
               max={dataYearExtents.max}
               value={yearRange.max}
-              aria-label="Maximum year"
+              aria-label="終了年"
               onChange={(e) => {
                 const hi = Math.max(Number(e.target.value), yearRange.min);
                 setYearRange({ min: yearRange.min, max: hi });
@@ -731,7 +738,7 @@ export function LineageTree({
         )}
 
         <fieldset className="flex flex-wrap gap-1 border-0 p-0">
-          <legend className="sr-only">Relation filter</legend>
+          <legend className="sr-only">関係の種類</legend>
           {ALL_RELATIONS.map((r) => {
             const on = visibleRelations.has(r);
             const count = artifact.edges.filter((e) => e.relation === r).length;
@@ -747,7 +754,7 @@ export function LineageTree({
                     : "border-rule text-ink-muted hover:border-rule-strong"
                 }`}
               >
-                {RELATION_LABEL_JA[r] ?? r} <span className="text-ink-subtle">{count}</span>
+                {relationLabelJa(r)} <span className="text-ink-subtle">{count}</span>
               </button>
             );
           })}
@@ -807,6 +814,21 @@ export function LineageTree({
         </div>
       )}
 
+      {hiddenCount > 0 && (
+        <p
+          role="status"
+          data-testid="hidden-edges-notice"
+          className="mt-2 flex flex-wrap items-center gap-2 rounded-md border border-rule bg-surface-2 px-3 py-2 text-xs text-ink-muted"
+        >
+          <span>
+            {hiddenCount} 件の関係を非表示中（全 {artifact.edges.length} 件）。
+          </span>
+          <button type="button" onClick={showAllRelations} className="text-accent underline">
+            すべての関係を表示
+          </button>
+        </p>
+      )}
+
       {sparse && (
         <p
           role="status"
@@ -849,7 +871,7 @@ export function LineageTree({
           <svg
             ref={svgRef}
             role="img"
-            aria-label="Theme chronological lineage graph"
+            aria-label="テーマの時系列家系図（関係の線を選ぶと根拠を表示）"
             width={svgW}
             height={svgH}
             viewBox={`0 0 ${svgW} ${svgH}`}
@@ -902,9 +924,10 @@ export function LineageTree({
                       x2={x2}
                       y2={y2}
                       className={strokeClass}
-                      strokeWidth={Math.max(1, e.confidence * 2)}
-                      strokeOpacity={0.7}
+                      strokeWidth={selectedEdgeKey === key ? 4 : Math.max(1, e.confidence * 2)}
+                      strokeOpacity={selectedEdgeKey === key ? 1 : 0.7}
                     />
+                    {/* biome-ignore lint/a11y/useSemanticElements: an SVG <line> hit area cannot be an HTML <button>; role="button" + tabIndex + Enter/Space handling give it button semantics inside the graph. */}
                     <line
                       x1={x1}
                       y1={y1}
@@ -912,14 +935,23 @@ export function LineageTree({
                       y2={y2}
                       className={styles.edgeHit}
                       tabIndex={0}
-                      aria-label={`${RELATION_LABEL_JA[e.relation] ?? e.relation}: ${e.rationale}`}
+                      role="button"
+                      aria-pressed={selectedEdgeKey === key}
+                      aria-label={`${relationLabelJa(e.relation)}: ${e.rationale}（Enter で根拠を表示）`}
+                      onClick={() => selectEdge(key)}
+                      onKeyDown={(ev) => {
+                        if (ev.key === "Enter" || ev.key === " ") {
+                          ev.preventDefault();
+                          selectEdge(key);
+                        }
+                      }}
                     />
                   </g>
                 );
               })}
 
             {positioned.map((p) => {
-              const link = resolvePaperLink(p);
+              const link = paperLink(p);
               const authors = (p.authors ?? []).slice(0, 3).join(", ");
               const extra = (p.authors ?? []).length > 3 ? ` +${(p.authors ?? []).length - 3}` : "";
               const accentClass = modeAccentClass(modeData, p.id);
@@ -980,7 +1012,7 @@ export function LineageTree({
                           <span
                             role="img"
                             aria-label="ハブ論文: 接続数が多い"
-                            title="hub paper: high connectivity"
+                            title="ハブ論文: 他の論文との関係が多い"
                             className={`${styles.badge} ${styles.badgeHub}`}
                           >
                             HUB
@@ -990,7 +1022,7 @@ export function LineageTree({
                           <span
                             role="img"
                             aria-label="注目: 引用が伸びている"
-                            title="citation velocity: trending"
+                            title="注目: 最近の引用の伸びが大きい"
                             className={`${styles.badge} ${styles.badgeTrend}`}
                           >
                             TREND
@@ -1090,12 +1122,10 @@ export function LineageTree({
                       role="tooltip"
                       className={`${styles.tooltipPanel} ${styles.tooltipVisible} rounded-md border border-rule bg-surface-elevated p-2 text-xs`}
                     >
-                      <div className="font-medium text-ink">
-                        {RELATION_LABEL_JA[e.relation] ?? e.relation}
-                      </div>
+                      <div className="font-medium text-ink">{relationLabelJa(e.relation)}</div>
                       <div className="mt-1 line-clamp-3 text-ink-muted">{e.rationale}</div>
                       <div className="mt-1 text-ink-subtle">
-                        confidence {e.confidence.toFixed(2)}
+                        確信度 {e.confidence.toFixed(2)} ・ クリックで根拠を表示
                       </div>
                     </div>
                   </foreignObject>
@@ -1107,7 +1137,7 @@ export function LineageTree({
         {minimapVisible && (
           <div
             role="img"
-            aria-label="Graph minimap"
+            aria-label="家系図の縮小表示"
             className="pointer-events-none absolute bottom-2 right-2 rounded-md border border-rule bg-surface-elevated p-1 shadow"
           >
             <canvas
@@ -1126,6 +1156,26 @@ export function LineageTree({
           </div>
         )}
       </div>
+
+      <p className="mt-2 text-xs text-ink-subtle">
+        線をクリック（タップ、または Tab で選んで Enter）すると、関係の根拠と引用文を表示します。
+      </p>
+
+      {selectedEdge && (
+        <EdgeEvidencePanel
+          ref={evidenceHeadingRef}
+          edge={selectedEdge}
+          nodeById={nodeById}
+          onClose={() => setSelectedEdgeKey(null)}
+        />
+      )}
+
+      <EdgeRelationList
+        edges={visibleEdges}
+        nodeById={nodeById}
+        selectedKey={selectedEdgeKey}
+        onSelect={selectEdge}
+      />
 
       {kbdHelpOpen && (
         <div
@@ -1181,6 +1231,10 @@ export function LineageTree({
                 <tr>
                   <td className="pr-2 font-mono text-ink">?</td>
                   <td>このヘルプ表示</td>
+                </tr>
+                <tr>
+                  <td className="pr-2 font-mono text-ink">Enter</td>
+                  <td>選んだ線の根拠を表示</td>
                 </tr>
                 <tr>
                   <td className="pr-2 font-mono text-ink">Esc</td>

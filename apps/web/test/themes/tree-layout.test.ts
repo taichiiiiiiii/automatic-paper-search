@@ -20,13 +20,14 @@ import {
   DEFAULT_RELATIONS,
   HEAT_BUCKET_COUNT,
   heatBucket,
+  hiddenEdgeCount,
   isSparseLineage,
   layoutChronological,
   MAX_PLAUSIBLE_YEAR,
   matchesSearch,
   matchesYear,
   SPARSE_EDGE_THRESHOLD,
-  SPARSE_NODE_THRESHOLD,
+  SPARSE_EDGES_PER_NODE,
   sparseLineageNotice,
   UNKNOWN_YEAR,
   venueTierBucket,
@@ -251,6 +252,18 @@ describe("ALL_RELATIONS / DEFAULT_RELATIONS", () => {
     expect(DEFAULT_RELATIONS).not.toContain("contrasts");
     expect(ALL_RELATIONS).toContain("contrasts");
   });
+  it("shows baseline_only (S2 background citations) by default (R2 UX P0-1)", () => {
+    expect(DEFAULT_RELATIONS).toContain("baseline_only");
+  });
+});
+
+describe("hiddenEdgeCount", () => {
+  it("counts edges whose relation is filtered out", () => {
+    const es = [{ relation: "extends" }, { relation: "contrasts" }, { relation: "contrasts" }];
+    expect(hiddenEdgeCount(es, new Set(DEFAULT_RELATIONS))).toBe(2);
+    expect(hiddenEdgeCount(es, new Set(ALL_RELATIONS))).toBe(0);
+    expect(hiddenEdgeCount([], new Set())).toBe(0);
+  });
 });
 
 describe("computeModeData", () => {
@@ -297,19 +310,30 @@ describe("computeModeData", () => {
 });
 
 describe("isSparseLineage", () => {
-  it("below either threshold is sparse", () => {
-    expect(isSparseLineage(SPARSE_NODE_THRESHOLD - 1, SPARSE_EDGE_THRESHOLD + 10)).toBe(true);
-    expect(isSparseLineage(SPARSE_NODE_THRESHOLD + 10, SPARSE_EDGE_THRESHOLD - 1)).toBe(true);
+  it("is sparse with few relations or fewer relations than papers", () => {
+    expect(isSparseLineage(4, 4)).toBe(true); // Flash Attention shape
+    expect(isSparseLineage(30, SPARSE_EDGE_THRESHOLD - 1)).toBe(true);
+    expect(isSparseLineage(20, 12)).toBe(true);
   });
-  it("at or above both thresholds is not sparse", () => {
-    expect(isSparseLineage(SPARSE_NODE_THRESHOLD, SPARSE_EDGE_THRESHOLD)).toBe(false);
+  it("is not sparse when relations per paper reach the threshold", () => {
+    // Graph Neural Network shape: 13 papers / 40 relations (was flagged
+    // by the old 15-paper threshold).
+    expect(isSparseLineage(13, 40)).toBe(false);
+    expect(isSparseLineage(10, 13)).toBe(false);
+    expect(
+      isSparseLineage(SPARSE_EDGE_THRESHOLD, SPARSE_EDGE_THRESHOLD * SPARSE_EDGES_PER_NODE),
+    ).toBe(false);
+  });
+  it("an empty theme is not flagged as thin", () => {
+    expect(isSparseLineage(0, 0)).toBe(false);
   });
 });
 
 describe("sparseLineageNotice", () => {
-  it("states the counts and does not promise a scheduled regeneration", () => {
+  it("states the counts in Japanese and does not promise a scheduled regeneration", () => {
     const text = sparseLineageNotice(7, 3);
-    expect(text).toContain("(7 件 / 3 edges)");
+    expect(text).toContain("（7 論文 / 3 関係）");
+    expect(text).not.toMatch(/edges|件/);
     expect(text).toContain(
       "論文が少ないうちは家系図が薄くなります。作り直しで密になることがあります。",
     );

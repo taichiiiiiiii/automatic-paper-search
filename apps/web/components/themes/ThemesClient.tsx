@@ -164,9 +164,9 @@ export function ThemesClient() {
     if (state.phase !== "ready") return;
     const theme =
       typeof state.artifact.meta.theme === "string" ? state.artifact.meta.theme : "Theme";
-    document.title = `${theme} — Theme Lineage — PaperPilot`;
+    document.title = `${theme} — テーマ別の系譜 | PaperPilot`;
     return () => {
-      document.title = "系譜の公開準備状況 | PaperPilot";
+      document.title = "テーマ別の系譜 | PaperPilot";
     };
   }, [state]);
 
@@ -241,20 +241,25 @@ export function ThemesClient() {
         <div className="flex flex-wrap items-center gap-2 text-sm text-ink-subtle">
           <a href="/">PaperPilot</a>
           <span>/</span>
-          <span>Theme Lineage</span>
+          <span>テーマ別の系譜</span>
+        </div>
+        <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
+          <h1 className="font-serif text-2xl font-bold text-ink">
+            テーマ別の系譜（時系列の家系図）
+          </h1>
+          {/* R2 UX P2-10: the request form used to hide behind a small
+              "ⓘ について / ✨ 新規テーマ" toggle; it is now a visible
+              primary action. */}
           <button
             type="button"
             aria-expanded={aboutOpen}
             aria-controls="hero-details"
             onClick={() => setAboutOpen((v) => !v)}
-            className="rounded-md border border-rule px-2 py-1 text-xs text-ink-muted hover:border-rule-strong"
+            className="rounded-md border border-accent bg-accent/10 px-3 py-1.5 text-sm font-medium text-accent-strong hover:bg-accent/20"
           >
-            {aboutOpen ? "✕ 閉じる" : "ⓘ について / ✨ 新規テーマ"}
+            {aboutOpen ? "✕ 閉じる" : "✨ 新しいテーマを依頼する"}
           </button>
         </div>
-        <h1 className="mt-2 font-serif text-2xl font-bold text-ink">
-          <em>Lineage</em> — Theme Lineage: テーマで時系列家系図
-        </h1>
         {aboutOpen && (
           <div id="hero-details" className="mt-3 rounded-md border border-rule bg-surface p-4">
             <p className="text-sm text-ink-muted">
@@ -307,10 +312,13 @@ export function ThemesClient() {
 
       <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-ink-muted">
         <span className="rounded-full bg-surface-2 px-2 py-1">📅 {yearRange}</span>
-        <span className="rounded-full bg-surface-2 px-2 py-1">📄 {count} papers</span>
+        <span className="rounded-full bg-surface-2 px-2 py-1">📄 {count} 論文</span>
+        <span className="rounded-full bg-surface-2 px-2 py-1">
+          🔗 {safeDisplayCount(artifact.edges.length)} 関係
+        </span>
         {keywords.length > 0 && (
           <span className="rounded-full bg-surface-2 px-2 py-1" title={keywords.join(", ")}>
-            🔍 {keywords.length} keywords
+            🔍 キーワード {keywords.length} 件
           </span>
         )}
       </div>

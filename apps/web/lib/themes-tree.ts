@@ -26,7 +26,7 @@ export type XAxisMode = (typeof X_AXIS_MODES)[number];
 export const DEFAULT_X_AXIS_MODE: XAxisMode = "rank";
 
 /** The 6 LLM-classified relation types (docs/assets/theme.js's
- * `ALL_RELATIONS`). `unrelated` is excluded -- build_theme_lineage.py
+ * `ALL_RELATIONS`). `unrelated` is excluded -- the theme pipeline
  * drops it from the artifact entirely, so it never reaches the UI. */
 export const ALL_RELATIONS = [
   "supersedes",
@@ -38,15 +38,30 @@ export const ALL_RELATIONS = [
 ] as const;
 export type Relation = (typeof ALL_RELATIONS)[number];
 
-/** Relation chips visible on first load (docs/assets/theme.js's
- * `DEFAULT_RELATIONS`) -- `contrasts` starts hidden since it's the
- * noisiest/least common relation in most themes. */
+/** Relation chips visible on first load. `baseline_only` is ON (R2 UX
+ * review P0-1): under design doc 41 D6 every Semantic Scholar
+ * background/uses/compares citation maps to it, so hiding it hid most of
+ * the quoted-sentence evidence (e.g. all 13 Mixture-of-Experts edges).
+ * `contrasts` still starts hidden (rare, noisiest); the viewer shows a
+ * "N 件の関係を非表示中" notice whenever a filter hides edges. */
 export const DEFAULT_RELATIONS: readonly Relation[] = [
   "supersedes",
   "successor",
   "extends",
   "ablation",
+  "baseline_only",
 ];
+
+/** Number of edges whose relation is not in `visible` (the count behind
+ * the "N 件の関係を非表示中" notice). */
+export function hiddenEdgeCount(
+  edges: readonly { relation: string }[],
+  visible: ReadonlySet<string>,
+): number {
+  let n = 0;
+  for (const e of edges) if (!visible.has(e.relation)) n++;
+  return n;
+}
 
 export const NODE_W = 260;
 export const NODE_H = 200;
@@ -475,15 +490,16 @@ export function computeModeData(
   return meta;
 }
 
-/** Sparse-lineage thresholds mirroring build_theme_lineage.py's
- * SPARSE_NODES / SPARSE_EDGES -- below either, the viewer shows a
- * one-line hint explaining the thin graph is a data limit (the theme
- * hasn't accumulated enough citation-graph density yet), not a bug. */
-export const SPARSE_NODE_THRESHOLD = 15;
+/** Thin-lineage thresholds (R2 UX review P2-8). A theme is "thin" when
+ * it has very few relations, or fewer relations than papers (most papers
+ * then hang off at most one line). Paper count alone is not a signal: a
+ * 13-paper theme with 40 relations is dense. */
 export const SPARSE_EDGE_THRESHOLD = 5;
+export const SPARSE_EDGES_PER_NODE = 1;
 
 export function isSparseLineage(nodeCount: number, edgeCount: number): boolean {
-  return nodeCount < SPARSE_NODE_THRESHOLD || edgeCount < SPARSE_EDGE_THRESHOLD;
+  if (nodeCount <= 0) return false;
+  return edgeCount < SPARSE_EDGE_THRESHOLD || edgeCount / nodeCount < SPARSE_EDGES_PER_NODE;
 }
 
 /** One-line hint shown under a sparse lineage. There is no scheduled
@@ -491,5 +507,5 @@ export function isSparseLineage(nodeCount: number, edgeCount: number): boolean {
  * the copy must not promise one (the old text claimed a weekly Sunday
  * rebuild). */
 export function sparseLineageNotice(nodeCount: number, edgeCount: number): string {
-  return `🌱 このテーマは家系図がまだ薄いです (${nodeCount} 件 / ${edgeCount} edges)。論文が少ないうちは家系図が薄くなります。作り直しで密になることがあります。`;
+  return `🌱 このテーマは家系図がまだ薄いです（${nodeCount} 論文 / ${edgeCount} 関係）。論文が少ないうちは家系図が薄くなります。作り直しで密になることがあります。`;
 }

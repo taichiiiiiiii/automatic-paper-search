@@ -25,7 +25,7 @@
  *     is ever shown as a failure.
  *   - SCR-39/40: redirect-on-ready re-checks the quality gate (never
  *     redirects into a page that will render nothing for an
- *     audit-failed theme) and the whole loop gives up after 12 minutes.
+ *     audit-failed theme) and the whole loop gives up after 15 minutes.
  *   - SCR-41/42 (run-link href): `safeRunUrl` gates the only external
  *     href this component ever renders from server-controlled data.
  */
@@ -43,13 +43,18 @@ import {
   issueUrlFor,
   POLL_FAILURE_THRESHOLD,
   POLL_INTERVAL_MS,
+  POLL_TIMEOUT_FAILURE,
   POLL_TIMEOUT_MS,
   PROGRESS_STEP_LABELS,
   PROGRESS_STEPS,
   type ProgressStep,
   progressPercentFor,
+  QUALITY_FAILED_FAILURE,
   STATUS_CHECK_INTERVAL_POLLS,
   safeRunUrl,
+  THEME_QUEUED_MESSAGE,
+  THEME_REQUEST_HINT,
+  themeInputProblem,
 } from "../../lib/themes-request";
 import { THEME_INPUT_PATTERN } from "../../lib/themes-slug";
 
@@ -145,11 +150,7 @@ export function ThemeRequestForm({ onReady }: { onReady: (slug: string) => void 
       let pollIter = 0;
       while (runTokenRef.current === token) {
         if (Date.now() - startedAt > POLL_TIMEOUT_MS) {
-          setFailure(token, {
-            title: "生成がタイムアウトしました (12 分経過)",
-            message:
-              "S2 / Groq LLM のレート制限、または GitHub Actions の内部エラーの可能性があります。数分後に再試行するか、既存テーマを確認してください。",
-          });
+          setFailure(token, { ...POLL_TIMEOUT_FAILURE });
           return;
         }
         try {
@@ -167,11 +168,7 @@ export function ThemeRequestForm({ onReady }: { onReady: (slug: string) => void 
                 return;
               }
               if (outcome === "failed") {
-                setFailure(token, {
-                  title: "生成されましたが品質監査を通過しませんでした",
-                  message:
-                    "テーマの系譜データは生成されましたが、品質監査を通過しなかったため表示できません。別のテーマ名で試すか、しばらく時間をおいて再度お試しください。",
-                });
+                setFailure(token, { ...QUALITY_FAILED_FAILURE });
                 return;
               }
               // "pending" -- quality row not published yet; keep polling.
@@ -247,11 +244,9 @@ export function ThemeRequestForm({ onReady }: { onReady: (slug: string) => void 
     // guard, mirrored by disabling the input/button below while pending.
     if (status.kind === "pending") return;
     const raw = rawInput.trim();
-    if (!THEME_INPUT_PATTERN.test(raw)) {
-      setStatus({
-        kind: "err",
-        node: "⚠️ 2〜80 文字、英数字・スペース・ハイフン・アンダースコアのみ使用可能です。",
-      });
+    const problem = themeInputProblem(raw, THEME_INPUT_PATTERN);
+    if (problem) {
+      setStatus({ kind: "err", node: `⚠️ ${problem}` });
       return;
     }
     if (!API_BASE) {
@@ -325,7 +320,7 @@ export function ThemeRequestForm({ onReady }: { onReady: (slug: string) => void 
         case "queued_unusable":
           setStatus({
             kind: "ok",
-            node: "🚀 受付完了。生成は数分かかります。完了後にこのページを再読み込みしてください。",
+            node: THEME_QUEUED_MESSAGE,
           });
           setRawInput("");
           return;
@@ -400,7 +395,7 @@ export function ThemeRequestForm({ onReady }: { onReady: (slug: string) => void 
           <strong className="text-sm text-ink">
             {progress.failure
               ? progress.failure.title
-              : `「${progress.themeLabel}」を生成中...${progress.networkWarning ? " (マニフェスト取得に再試行中)" : ""}`}
+              : `「${progress.themeLabel}」を生成中…${progress.networkWarning ? "（状況の確認を再試行中）" : ""}`}
           </strong>
           {!progress.failure && (
             <span className="text-xs text-ink-subtle">
@@ -454,7 +449,7 @@ export function ThemeRequestForm({ onReady }: { onReady: (slug: string) => void 
                 <>
                   {" "}
                   <a href={safeUrl} target="_blank" rel="noopener noreferrer">
-                    GitHub Actions のログを開く →
+                    処理ログを開く →
                   </a>
                 </>
               )}
@@ -482,7 +477,12 @@ export function ThemeRequestForm({ onReady }: { onReady: (slug: string) => void 
   }
 
   return (
-    <form className="mt-4 flex flex-col gap-2" autoComplete="off" onSubmit={handleSubmit}>
+    <form
+      className="mt-4 flex flex-col gap-2"
+      autoComplete="off"
+      noValidate
+      onSubmit={handleSubmit}
+    >
       <label className="text-sm font-medium text-ink" htmlFor="theme-request-input">
         <span aria-hidden="true">✨</span> テーマを自分で生成:
       </label>
@@ -495,14 +495,22 @@ export function ThemeRequestForm({ onReady }: { onReady: (slug: string) => void 
           minLength={2}
           maxLength={80}
           pattern="[A-Za-z0-9 _\-]+"
+          lang="en"
           placeholder="例: Vision Transformer / Graph Neural Network"
           aria-describedby="theme-request-hint"
+          aria-invalid={status.kind === "err" ? true : undefined}
           autoComplete="off"
           value={rawInput}
           disabled={status.kind === "pending"}
           onChange={(e) => {
             setRawInput(e.target.value);
             setStatus({ kind: "idle" });
+            // Custom (not the browser's generic) validity message, so any
+            // native bubble also says "use English" (R2 UX P2-10).
+            const problem = e.target.value.trim()
+              ? themeInputProblem(e.target.value, THEME_INPUT_PATTERN)
+              : null;
+            e.target.setCustomValidity(problem ?? "");
           }}
         />
         <button
@@ -514,7 +522,7 @@ export function ThemeRequestForm({ onReady }: { onReady: (slug: string) => void 
         </button>
       </div>
       <span id="theme-request-hint" className="text-xs text-ink-subtle">
-        2〜80 文字 / 英数字・スペース・ハイフン / 生成完了まで数分
+        {THEME_REQUEST_HINT}
       </span>
       {status.kind === "pending" && (
         <p role="status" className="text-sm text-ink-subtle">

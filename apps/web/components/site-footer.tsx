@@ -1,7 +1,8 @@
 /**
  * Global site footer, matching the copy of the current docs/index.html
  * `<footer class="s0-footer">` (built-by credit, 仕組み / GitHub links,
- * data-source line). Styled with Tailwind utilities from the ported
+ * data-source line), plus linked data sources and the 出典とライセンス
+ * section link (R2 compliance: Semantic Scholar attribution). Styled with Tailwind utilities from the ported
  * design tokens rather than the original `.s0-footer` CSS (see
  * site-header.tsx for why).
  */
@@ -31,7 +32,23 @@ export function SiteFooter() {
         >
           GitHub
         </a>
-        <span>データ: arXiv / Semantic Scholar / OpenAlex</span>
+        <Link href="/how-it-works/#credits" className="text-accent">
+          出典とライセンス
+        </Link>
+        <span>
+          データ:{" "}
+          <a href="https://arxiv.org/" rel="noopener" className="text-accent">
+            arXiv
+          </a>{" "}
+          /{" "}
+          <a href="https://www.semanticscholar.org/" rel="noopener" className="text-accent">
+            Semantic Scholar
+          </a>{" "}
+          /{" "}
+          <a href="https://openalex.org/" rel="noopener" className="text-accent">
+            OpenAlex
+          </a>
+        </span>
       </nav>
     </footer>
   );

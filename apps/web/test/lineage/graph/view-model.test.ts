@@ -198,7 +198,7 @@ describe("buildLineageViewModel: tree graph view", () => {
     // endpoints positioned (both reachable from root via genealogy).
     expect(model.graph?.edges).toHaveLength(1);
     expect(model.graph?.edges[0]?.markerClass).toBe("baseline");
-    expect(model.graph?.edges[0]?.label).toBe("比較");
+    expect(model.graph?.edges[0]?.label).toBe("参照（背景）");
   });
 
   it("drops the crumb's cluster when currentCluster does not exist", () => {

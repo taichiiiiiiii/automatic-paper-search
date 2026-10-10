@@ -29,6 +29,13 @@
  */
 import { BASE_PATH, z } from "@paperpilot/core/site";
 
+// R2 UX P3-13: zod v4 probes `new Function("")` to decide whether its
+// JIT fast path is available; under this site's CSP (no 'unsafe-eval')
+// that probe is blocked and reported as a CSP violation on every page
+// that parses data. Jitless mode skips the probe entirely. Must run
+// before any schema below is constructed.
+z.config({ jitless: true });
+
 export type DataResult<T> = { status: "ok"; data: T } | { status: "error"; error: string };
 
 function publicPath(path: string): string {

@@ -159,9 +159,13 @@ export function writeTreeUrlParams(params: URLSearchParams, s: TreeUrlWriteState
   }
 }
 
-// ---- localStorage prefs (`pp.theme.prefs`) --------------------------------
+// ---- localStorage prefs (`pp.theme.prefs.v2`) -----------------------------
 
-export const THEME_PREFS_STORAGE_KEY = "pp.theme.prefs";
+/** `.v2` since baseline_only joined DEFAULT_RELATIONS (R2 UX P0-1): every
+ * earlier visitor had the OLD defaults auto-saved under `pp.theme.prefs`
+ * (the prefs effect persists on mount), which would keep hiding the
+ * background-citation evidence for them. Bumping the key drops that. */
+export const THEME_PREFS_STORAGE_KEY = "pp.theme.prefs.v2";
 
 export interface ThemePrefs {
   xAxisMode: XAxisMode;

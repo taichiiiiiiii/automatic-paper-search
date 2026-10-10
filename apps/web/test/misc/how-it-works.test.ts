@@ -29,13 +29,29 @@ const COPY_REGIONS = [
   "rel-row__meaning",
   "rel-row__eg",
   "how__steps",
-  "how__body",
+  // how__body and guide-cta diverge on purpose since R2 (UX review P2-11):
+  // the body now explains Semantic Scholar citation sentences/intents as
+  // the main evidence, and the CTA no longer calls /themes/ a "公開準備状況"
+  // page. See the dedicated tests below.
   // seealso__note / seealso__links diverge on purpose since the cutover: the
   // legacy page linked to design docs 01-38 and docs/research, which were
   // removed (b7d1be4). The built page links to design doc 39 and
   // docs/migration instead; see the dedicated test below.
-  "guide-cta",
 ] as const;
+
+/** Legacy copy replaced on purpose (R2 UX P1-6: baseline_only is
+ * 参照（背景）, not 比較, since most such edges are S2 background
+ * citations). Keyed by the squashed legacy text. */
+const INTENTIONAL_CHANGES: ReadonlyMap<string, string> = new Map([
+  ["比較", "参照（背景）"],
+  ["baseline", "baseline_only"],
+]);
+const LEGACY_BASELINE_MEANING_PREFIX = "性能比較の「物差し」";
+
+function expectedBuiltText(legacyText: string): string | null {
+  if (legacyText.startsWith(LEGACY_BASELINE_MEANING_PREFIX)) return null;
+  return INTENTIONAL_CHANGES.get(legacyText) ?? legacyText;
+}
 
 const HTML_COMMENT_RE = /<!--[\s\S]*?-->/g;
 const SCRIPT_BLOCK_RE = /<script\b[\s\S]*?<\/script>/gi;
@@ -148,9 +164,12 @@ describe("how-it-works page source", () => {
 describe("built /how-it-works/ page parity with docs/how-it-works/index.html", () => {
   const legacy = read(LEGACY_PAGE);
 
-  it.skipIf(!existsSync(BUILT_PAGE))("renders the same headings in the same order", () => {
-    expect(headings(read(BUILT_PAGE))).toEqual(headings(legacy));
-  });
+  it.skipIf(!existsSync(BUILT_PAGE))(
+    "renders the same headings in the same order, plus 出典とライセンス last",
+    () => {
+      expect(headings(read(BUILT_PAGE))).toEqual([...headings(legacy), "出典とライセンス"]);
+    },
+  );
 
   it.skipIf(!existsSync(BUILT_PAGE))("renders every copy region of the current page", () => {
     const built = plainText(read(BUILT_PAGE));
@@ -159,7 +178,9 @@ describe("built /how-it-works/ page parity with docs/how-it-works/index.html", (
       const texts = regionTexts(legacy, region);
       expect(texts.length, `no .${region} found in the current page`).toBeGreaterThan(0);
       for (const text of texts) {
-        expect(built, `.${region} copy is missing from the built page`).toContain(text);
+        const expected = expectedBuiltText(text);
+        if (expected === null) continue;
+        expect(built, `.${region} copy is missing from the built page`).toContain(expected);
       }
       if (region === "rel-row__ja") {
         labels.push(...texts);
@@ -172,7 +193,7 @@ describe("built /how-it-works/ page parity with docs/how-it-works/index.html", (
     "keeps the six relations in the current order (置換 … 対立)",
     () => {
       const built = plainText(read(BUILT_PAGE));
-      const order = regionTexts(legacy, "rel-row__ja");
+      const order = regionTexts(legacy, "rel-row__ja").map((t) => expectedBuiltText(t) ?? t);
       let previous = -1;
       for (const label of order) {
         const at = built.indexOf(label);
@@ -186,6 +207,7 @@ describe("built /how-it-works/ page parity with docs/how-it-works/index.html", (
   it.skipIf(!existsSync(BUILT_PAGE))("links only to design docs that still exist", () => {
     const built = readFileSync(BUILT_PAGE, "utf8");
     expect(built).toContain("docs/design/39-typescript-cloudflare-migration.md");
+    expect(built).toContain("docs/design/41-lineage-publication-and-reliability.md");
     expect(built).toContain("tree/develop/docs/migration");
     expect(built).not.toMatch(/docs\/design\/(0[1-9]|[12][0-9]|3[0-8])-|docs\/research/);
   });
@@ -197,6 +219,39 @@ describe("built /how-it-works/ page parity with docs/how-it-works/index.html", (
       expect(built).toContain("「監査済み」");
       expect(built).toContain("「未監査（自動生成）」");
       expect(built).toContain("自動検査（形式・識別子・関係の根拠）に合格した系譜");
+    },
+  );
+
+  it.skipIf(!existsSync(BUILT_PAGE))(
+    "describes S2 citation sentences as the main evidence and relabels baseline (R2 UX P2-11 / P1-6)",
+    () => {
+      const built = plainText(read(BUILT_PAGE));
+      expect(built).toContain("SemanticScholarが提供する引用文");
+      expect(built).toContain("根拠になった引用文そのもの");
+      expect(built).toContain("参照（背景）");
+      expect(built).not.toContain("性能比較の「物差し」として引かれる対照");
+      expect(built).not.toContain("ヒューリスティックにフォールバック");
+      expect(built).toContain("公開中の系譜を見る");
+      expect(built).not.toContain("系譜の公開準備状況を見る");
+    },
+  );
+
+  it.skipIf(!existsSync(BUILT_PAGE))(
+    "has a 出典とライセンス section with the S2 / OpenAlex / arXiv terms (R2 compliance)",
+    () => {
+      const html = read(BUILT_PAGE);
+      expect(html).toContain('id="credits"');
+      const built = plainText(html);
+      expect(built).toContain("ODC-BY1.0");
+      expect(built).toContain("Kinneyetal.");
+      expect(built).toContain("arXiv:2301.10140");
+      expect(built).toContain("Cohanetal.");
+      expect(built).toContain("NAACL2019");
+      expect(built).toContain("（CC0）");
+      expect(built).toContain("ThankyoutoarXivforuseofitsopenaccessinteroperability.");
+      expect(built).toContain("推奨・承認を受けたものでもありません");
+      expect(built).toContain("約300字");
+      expect(html).toContain("https://github.com/taichiiiiiiii/automatic-paper-search/issues");
     },
   );
 

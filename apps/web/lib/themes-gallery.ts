@@ -53,14 +53,18 @@ export interface QualityTier {
 
 /** Lower template_ratio = more paper-specific classification rationale
  * = higher tier. "unknown" (no _quality.json entry yet) sorts last. */
+// R2 UX P1-3: this is template_ratio telemetry (how many rationales are
+// paper-specific), NOT a quality verdict -- the old "🟢 高品質" label sat
+// under the 未監査 badge and read as an endorsement. Labels describe the
+// rationale style only, and the gallery shows them for audited themes only.
 export const QUALITY_TIERS: Record<QualityTierName, QualityTier> = {
-  high: { rank: 0, icon: "🟢", label: "高品質", desc: "論文ごとに特化した分類根拠が中心" },
-  mixed: { rank: 1, icon: "🟡", label: "混在", desc: "特化根拠と汎用テンプレートが半々" },
+  high: { rank: 0, icon: "", label: "根拠: 論文ごと", desc: "論文ごとに書かれた根拠が中心" },
+  mixed: { rank: 1, icon: "", label: "根拠: 一部定型", desc: "論文ごとの根拠と定型文が半々" },
   generic: {
     rank: 2,
-    icon: "🔴",
-    label: "汎用",
-    desc: "テンプレート根拠が中心。再生成で改善見込み",
+    icon: "",
+    label: "根拠: 定型が中心",
+    desc: "定型文の根拠が中心。作り直しで改善する見込み",
   },
   unknown: { rank: 3, icon: "", label: "", desc: "" },
 };
@@ -136,10 +140,20 @@ export function sortGalleryManifest(
   });
 }
 
+/** Number of relations in a theme for default-picking: the
+ * `_quality.json` rollup's `edge_count` (telemetry, safe-integer only),
+ * else 0. */
+export function themeEdgeCount(qualityRollup: ThemeQualityRollup, slug: string): number {
+  const n = qualityRollup[slug]?.edge_count;
+  return Number.isSafeInteger(n) && (n as number) > 0 ? (n as number) : 0;
+}
+
 /** Default landing slug when the URL has no `?theme=` or the requested
- * slug isn't eligible: the theme most likely to look impressive on a
- * first visit (audited first, then highest quality tier, then freshest). `manifest` must
- * already be the eligible subset (see `eligibleThemeManifest`). */
+ * slug isn't eligible (R2 UX P1-7): an audited theme first; otherwise
+ * the theme with the most relations (the richest graph -- the old
+ * "freshest high-tier" rule opened a 4-paper theme), then freshest.
+ * `manifest` must already be the eligible subset (see
+ * `eligibleThemeManifest`). */
 export function pickDefaultSlug(
   manifest: ThemeManifestEntry[],
   qualityRollup: ThemeQualityRollup,
@@ -152,9 +166,12 @@ export function pickDefaultSlug(
       const pubA = publicationRank(a);
       const pubB = publicationRank(b);
       if (pubA !== pubB) return pubA - pubB;
-      const tierA = QUALITY_TIERS[qualityTierFor(qualityRollup[a.slug])].rank;
-      const tierB = QUALITY_TIERS[qualityTierFor(qualityRollup[b.slug])].rank;
-      if (tierA !== tierB) return tierA - tierB;
+      const edgesA = themeEdgeCount(qualityRollup, a.slug);
+      const edgesB = themeEdgeCount(qualityRollup, b.slug);
+      if (edgesA !== edgesB) return edgesB - edgesA;
+      const papersA = safeDisplayCount(a.paper_count);
+      const papersB = safeDisplayCount(b.paper_count);
+      if (papersA !== papersB) return papersB - papersA;
       const tA = Date.parse(a.generated_at || "") || 0;
       const tB = Date.parse(b.generated_at || "") || 0;
       return tB - tA;
@@ -173,17 +190,17 @@ export function safeDisplayCount(value: unknown): number {
   return Number.isSafeInteger(value) && (value as number) >= 0 ? (value as number) : 0;
 }
 
-/** Relative "N days ago" age hint. Empty string on a missing/invalid
- * timestamp (never renders a bogus age). */
+/** Relative age hint in Japanese ("今日" / "3 日前" / "2 か月前" /
+ * "1 年前"). Empty string on a missing/invalid timestamp (never renders
+ * a bogus age). */
 export function formatThemeAge(iso: string | null | undefined, now: number = Date.now()): string {
   if (!iso) return "";
   const t = Date.parse(iso);
   if (Number.isNaN(t)) return "";
   const days = Math.max(0, Math.floor((now - t) / 86_400_000));
-  if (days === 0) return "today";
-  if (days === 1) return "1 day ago";
-  if (days < 30) return `${days} days ago`;
+  if (days === 0) return "今日";
+  if (days < 30) return `${days} 日前`;
   const months = Math.floor(days / 30);
-  if (months < 12) return `${months}mo ago`;
-  return `${Math.floor(days / 365)}y ago`;
+  if (months < 12) return `${months} か月前`;
+  return `${Math.floor(days / 365)} 年前`;
 }
