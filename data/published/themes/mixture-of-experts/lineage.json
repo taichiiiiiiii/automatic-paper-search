@@ -296,9 +296,9 @@
       "dst": "openalex:W4364382874",
       "rel": "successor",
       "relation": "successor",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「FlexMoE: Scaling Large-scale Sparse Pre-trained Model Train…」(2023) は「FasterMoE」(2022) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.78,
+      "confidence": 0.78,
+      "rationale": "B の Dynamic Device Placement によるデバイス配置最適化は、A の MoE 訓練効率課題を改良し、FasterMoE の手法を継承した自然な発展である。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -306,14 +306,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "9554125b097bbd285d2e421d712a421d2575eca973b2ddcfc43ce1ccdac7a44c"
+          "kind": "relation-input",
+          "sha256": "61ef514fba8f2ff563de7d57ba86c6885274669db97a83d550b2d9fb4096ec73"
         },
         "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v2",
           "schema_version": "relation-classification-v1"
         }
       }
@@ -348,11 +348,11 @@
     {
       "src": "openalex:W4224299101",
       "dst": "openalex:W4364382874",
-      "rel": "successor",
-      "relation": "successor",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「FlexMoE: Scaling Large-scale Sparse Pre-trained Model Train…」(2023) は「StableMoE: Stable Routing Strategy for Mixture of Experts」(2022) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.78,
+      "confidence": 0.78,
+      "rationale": "B の FlexMoE は動的デバイス配置で大規模スパース学習をスケールさせる手法を提案しており、A の StableMoE のルーティング安定化手法を背景として引用するだけで、根本的な手法の継承はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -360,14 +360,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "4302a72222065033039203853a95d4aa680844e1b8b69ad820d8d220a8acdcd3"
+          "kind": "relation-input",
+          "sha256": "d47951a68bfb42f7412d72368ff3af434b8ac6dfc3367e93f1206c1f9afb48e8"
         },
         "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v2",
           "schema_version": "relation-classification-v1"
         }
       }
@@ -402,11 +402,11 @@
     {
       "src": "openalex:W4224299101",
       "dst": "openalex:W4408858386",
-      "rel": "successor",
-      "relation": "successor",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「A Survey on Mixture of Experts in Large Language Models」(2025) は「StableMoE: Stable Routing Strategy for Mixture of Experts」(2022) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.92,
+      "confidence": 0.92,
+      "rationale": "B のサーベイは MoE の全体像を整理し、A の StableMoE を背景として紹介するだけで、手法の継承や拡張は行っていない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -414,14 +414,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "88a0b9d48c877429afe1d2540ac536d2aced89bb503cabcfcac758b56c9ac1df"
+          "kind": "relation-input",
+          "sha256": "7274e9192dc2623dd472008d2fd35639cc59c4012741c2204bccbbd1f938d28e"
         },
         "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v2",
           "schema_version": "relation-classification-v1"
         }
       }
@@ -456,11 +456,11 @@
     {
       "src": "openalex:W4285134706",
       "dst": "openalex:W4408858386",
-      "rel": "successor",
-      "relation": "successor",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「A Survey on Mixture of Experts in Large Language Models」(2025) は「MoEfication: Transformer Feed-forward Layers are Mixtures o…」(2022) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.92,
+      "confidence": 0.92,
+      "rationale": "B の『Mixture of Experts in Large Language Models』サーベイは、A の FFN の MoE 化という知見を背景として整理し、比較対象としてのみ引用している。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -468,14 +468,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "8b76c51f9e895b3903f2d32ccb78dcaa098de195bf2dedc200d5b4ff5df39f79"
+          "kind": "relation-input",
+          "sha256": "d3a4154c17ad11da4064d50fe5797e81fa970ceddcf65beb2f21badc180a1e80"
         },
         "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v2",
           "schema_version": "relation-classification-v1"
         }
       }
@@ -483,11 +483,11 @@
     {
       "src": "openalex:W4364382874",
       "dst": "openalex:W4408858386",
-      "rel": "successor",
-      "relation": "successor",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「A Survey on Mixture of Experts in Large Language Models」(2025) は「FlexMoE: Scaling Large-scale Sparse Pre-trained Model Train…」(2023) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.92,
+      "confidence": 0.92,
+      "rationale": "B のサーベイは Mixture of Experts 手法全般を概観し、A の FlexMoE の動的デバイス配置は具体例として紹介されるだけで、継承や拡張は行っていない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -495,14 +495,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "4bf63bf708878f6584968581e75869293374d9e01c57d0980b1a712efd2f6c33"
+          "kind": "relation-input",
+          "sha256": "a62cfd29d91e8345d424859ceb89205ef2b8123f311d1f835fbf812c205f3757"
         },
         "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v2",
           "schema_version": "relation-classification-v1"
         }
       }
@@ -510,11 +510,11 @@
     {
       "src": "openalex:W4376652719",
       "dst": "openalex:W4408858386",
-      "rel": "successor",
-      "relation": "successor",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「A Survey on Mixture of Experts in Large Language Models」(2025) は「A Hybrid Tensor-Expert-Data Parallelism Approach to Optimiz…」(2023) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.92,
+      "confidence": 0.92,
+      "rationale": "B のサーベイは MoE を LLM のスケーリング手法として概観し、A の DeepSpeed‑TED のハイブリッド並列手法を背景として紹介するだけで、直接的な拡張や比較は行っていない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -522,14 +522,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "8c344a6bb5d68db2be4d6009ea1fbeabf506dcc89d81aa93218864df2d76ff17"
+          "kind": "relation-input",
+          "sha256": "034134dc0d498c589d11dab1ce0756186f573c28b875597fbb11c643c6333f43"
         },
         "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v2",
           "schema_version": "relation-classification-v1"
         }
       }
@@ -591,11 +591,11 @@
     {
       "src": "openalex:W4408858386",
       "dst": "openalex:W7148553398",
-      "rel": "successor",
-      "relation": "successor",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Region-Aware MoE Network for Hyperspectral and Multispectra…」(2026) は「A Survey on Mixture of Experts in Large Language Models」(2025) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.85,
+      "confidence": 0.85,
+      "rationale": "B の Region-Aware Mixture of Experts ネットワークは、A の MoE に関するサーベイを背景として参照するだけで、LLM 向け手法の直接的な拡張ではない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -603,14 +603,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "e3f89833fd4546fbcdea815692f5140aa70a608d59b5571016aa36fa56e1cd2f"
+          "kind": "relation-input",
+          "sha256": "48eb80baf6e26ede053a0d9ea4d4006b984755b871dc123a53fb217fc1694215"
         },
         "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v2",
           "schema_version": "relation-classification-v1"
         }
       }
@@ -631,10 +631,10 @@
     ],
     "depth": 1,
     "since_year": 2018,
-    "generated_at": "2026-10-10T05:45:31.156000Z",
+    "generated_at": "2026-10-10T07:28:23.460000Z",
     "provenance_breakdown": {
-      "citation_heuristic": 8,
-      "llm": 4
+      "llm": 11,
+      "citation_heuristic": 1
     },
     "completeness": {
       "complete": true,
