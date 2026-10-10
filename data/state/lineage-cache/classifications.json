@@ -8635,5 +8635,87 @@
         "schema_version": "relation-classification-v1"
       }
     }
+  },
+  "v3:e4ee81efbb1456ddfef79e77bae0ac8dca756917648541f784bd282ef23e10ed": {
+    "status": "success",
+    "expires_at": "2027-04-08T08:55:10.969000Z",
+    "cache_identity": {
+      "version": "lineage-classification-cache-v3",
+      "src": "openalex:W2116341502",
+      "dst": "openalex:W2558748708",
+      "evidence_sha256": "207ee8f2d87d90473292e5c4dc75848765e89b8af3db5b709e231190329e4f09",
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "prompt_version": "relation-prompt-v3-context",
+      "schema_version": "relation-classification-v1"
+    },
+    "classification": {
+      "refers_to_cited": true,
+      "relation": "builds_on",
+      "contrast": false,
+      "confidence": 0.97,
+      "rationale": "AのGraph Neural Networkモデルを基に、Bは手法を一般化・拡張している"
+    },
+    "provenance": {
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "evidence": {
+        "source": "semantic_scholar",
+        "kind": "relation-input",
+        "sha256": "207ee8f2d87d90473292e5c4dc75848765e89b8af3db5b709e231190329e4f09"
+      },
+      "classification": {
+        "method": "llm",
+        "provider": "groq",
+        "model": "groq:openai/gpt-oss-120b",
+        "prompt_version": "relation-prompt-v3-context",
+        "schema_version": "relation-classification-v1"
+      }
+    }
+  },
+  "v3:cfdddbf3f1818bd008ba50cbe9df64a0b3db54cbeee4739b39bc25974da5204b": {
+    "status": "success",
+    "expires_at": "2027-04-08T08:55:16.955000Z",
+    "cache_identity": {
+      "version": "lineage-classification-cache-v3",
+      "src": "openalex:W1888005072",
+      "dst": "openalex:W2558460151",
+      "evidence_sha256": "3f8ab9a75f84270b15c34899247d0457d5026e26f010feeabcb9a88ff7ae890b",
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "prompt_version": "relation-prompt-v3-context",
+      "schema_version": "relation-classification-v1"
+    },
+    "classification": {
+      "refers_to_cited": false,
+      "relation": "background",
+      "contrast": false,
+      "confidence": 0.85,
+      "rationale": "LINEはグラフ埋め込みの例として背景で言及され、Bは手法の概要を紹介しているだけです。"
+    },
+    "provenance": {
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "evidence": {
+        "source": "semantic_scholar",
+        "kind": "relation-input",
+        "sha256": "3f8ab9a75f84270b15c34899247d0457d5026e26f010feeabcb9a88ff7ae890b"
+      },
+      "classification": {
+        "method": "llm",
+        "provider": "groq",
+        "model": "groq:openai/gpt-oss-120b",
+        "prompt_version": "relation-prompt-v3-context",
+        "schema_version": "relation-classification-v1"
+      }
+    }
   }
 }
