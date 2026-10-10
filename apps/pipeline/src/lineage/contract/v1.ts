@@ -51,6 +51,8 @@ export const CLASSIFICATION_METHODS = new Set([
   "year_cite",
   "title_version",
   "foundational_allowlist",
+  // R2-10 (design 41 D6): Semantic Scholar citation contexts, rule set v2.
+  "s2_context_rule",
 ]);
 const NODE_ALIAS_NAMESPACES = new Set(["arxiv", "openreview", "acl_anthology", "cvf", "doi"]);
 const LEGACY_NODE_ALIAS_NAMESPACES = new Set(["semantic_scholar"]);

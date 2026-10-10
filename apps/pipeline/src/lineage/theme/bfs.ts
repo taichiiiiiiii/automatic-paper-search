@@ -9,7 +9,12 @@ import type {
   LLMProvider,
   RelationClassification,
 } from "../../collect/llm/provider.js";
-import { type DerivedEdge, deriveRelation, isFoundationalAncestor } from "../classify/classify.js";
+import {
+  type DerivedEdge,
+  deriveRelation,
+  isFoundationalAncestor,
+  isVersionIncrement,
+} from "../classify/classify.js";
 import type { BuildCompletenessForExpansion } from "../shared/fetchRelated.js";
 import { type FetchRelatedDeps, fetchRelated } from "../shared/fetchRelated.js";
 import type { ThemeGraphNode } from "../shared/node.js";
@@ -18,6 +23,7 @@ import { demoteLowInformationEdge, isTrending, makeEdge, type ThemeEdge } from "
 import { toThemeNode } from "./node.js";
 import type { ThemePaper } from "./openalexWork.js";
 import { guardRelation } from "./relationGuard.js";
+import { deriveS2Relation, type S2RelationContext } from "./s2Relations.js";
 import { filterOffTopicRefs } from "./seedFilters.js";
 import type { TopicScope } from "./topicScope.js";
 
@@ -84,6 +90,9 @@ export interface RunBfsOptions {
   /** R2-2b admission gate. `null`/omitted = admit every candidate (the
    * pre-R2-2b behaviour, kept for library callers and old tests). */
   topicScope?: TopicScope | null;
+  /** R2-10 (design 41 D6): classify edges from Semantic Scholar citation
+   * evidence first. `null`/omitted = the pre-R2-10 path only. */
+  s2Relations?: S2RelationContext | null;
 }
 
 /** Counts LLM calls / unusable answers around a provider. */
@@ -107,14 +116,28 @@ function llmCounter(provider: LLMProvider | null): LlmCounter {
 }
 
 /** `deriveRelation` + the R2-2b demotion of `year_cite` guesses + the
- * R2-2d survey/dataset `contrasts` guard. */
+ * R2-2d survey/dataset `contrasts` guard. R2-10: with `s2`, Semantic
+ * Scholar evidence decides first (foundational allowlist and title-version
+ * pairs keep their own rules); pairs S2 has nothing on fall through. */
 async function classifyPair(
   intentRecord: Record<string, unknown>,
   parent: Record<string, unknown>,
   child: Record<string, unknown>,
   counter: LlmCounter,
   llmStrict: string,
+  s2: S2RelationContext | null = null,
 ): Promise<DerivedEdge | null> {
+  if (
+    s2 !== null &&
+    !isFoundationalAncestor(parent as ClassifyPaperLike) &&
+    !isVersionIncrement(parent as ClassifyPaperLike, child as ClassifyPaperLike)
+  ) {
+    const fromS2 = await deriveS2Relation(parent, child, s2, (usable) => {
+      counter.calls += 1;
+      if (!usable) counter.unusable += 1;
+    });
+    if (fromS2 !== null) return guardRelation(fromS2, parent, child);
+  }
   const cls = await deriveRelation(intentRecord as ClassifyPaperLike, {
     parent: parent as ClassifyPaperLike,
     child: child as ClassifyPaperLike,
@@ -166,6 +189,7 @@ export async function runBfsAndDescendants(
   completeness?: BuildCompletenessForExpansion | null,
 ): Promise<BFSResult> {
   const { depth, width, maxSeedCite, provider, llmStrict } = options;
+  const s2 = options.s2Relations ?? null;
   const scope = options.topicScope ?? null;
   const currentYear = options.currentYear ?? new Date().getUTCFullYear();
   const counter = llmCounter(provider);
@@ -294,7 +318,7 @@ export async function runBfsAndDescendants(
         titles.register(pid, parent);
       }
       classifyAttempted += 1;
-      const cls = await classifyPair(parent, parent, current, counter, llmStrict);
+      const cls = await classifyPair(parent, parent, current, counter, llmStrict, s2);
       if (cls !== null) {
         classifySucceeded += 1;
         edges.push(
@@ -341,7 +365,7 @@ export async function runBfsAndDescendants(
         nodes.set(cid, toThemeNode(child, { trending: isTrending(child, currentYear) }));
         titles.register(cid, child);
       }
-      const cls = await classifyPair(child, seed, child, counter, llmStrict);
+      const cls = await classifyPair(child, seed, child, counter, llmStrict, s2);
       if (cls === null) continue;
       if (edges.some((e) => e.src === sid && e.dst === cid)) continue;
       edges.push(
@@ -379,7 +403,7 @@ export async function runBfsAndDescendants(
         const [parent, child] =
           direction === "parent" ? [entry.paper, anchor] : [anchor, entry.paper];
         if (direction === "parent") classifyAttempted += 1;
-        const cls = await classifyPair(entry.paper, parent, child, counter, llmStrict);
+        const cls = await classifyPair(entry.paper, parent, child, counter, llmStrict, s2);
         if (cls === null) continue;
         if (direction === "parent") classifySucceeded += 1;
         if (edges.some((e) => e.src === parent.paperId && e.dst === child.paperId)) continue;
@@ -469,6 +493,8 @@ export interface AddCrossNodeEdgesOptions {
   cohortMinYear?: number | null;
   provider: LLMProvider | null;
   strictMode: string;
+  /** R2-10: see {@link RunBfsOptions.s2Relations}. */
+  s2Relations?: S2RelationContext | null;
 }
 
 /** Find citation links between nodes already in the graph (#54/#55).
@@ -521,6 +547,7 @@ export async function addCrossNodeEdges(
         citingNode as unknown as Record<string, unknown>,
         counter,
         strictMode,
+        options.s2Relations ?? null,
       );
       if (cls === null) continue;
       edges.push(

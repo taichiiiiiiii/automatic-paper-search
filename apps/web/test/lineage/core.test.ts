@@ -120,6 +120,17 @@ describe("artifact parsing", () => {
     expect(parseArtifact(stringProvenance, { kind: "conference" })).toBeNull();
   });
 
+  it("accepts the R2-10 s2_context_rule classification method and rejects unknown ones", () => {
+    const s2 = artifact();
+    s2.edges[0].provenance = {
+      ...provenance,
+      classification: { ...provenance.classification, method: "s2_context_rule" },
+    };
+    expect(parseArtifact(s2, { kind: "conference" })).not.toBeNull();
+    s2.edges[0].provenance.classification.method = "s2_magic";
+    expect(parseArtifact(s2, { kind: "conference" })).toBeNull();
+  });
+
   it("rejects an empty rationale", () => {
     const missingRationale = artifact();
     missingRationale.edges[0].rationale = "";

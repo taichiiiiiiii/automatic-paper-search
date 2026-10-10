@@ -140,6 +140,27 @@ export class FallbackProvider implements LLMProvider {
     return null;
   }
 
+  /**
+   * `completeJson` that also says which member answered (R2-10: the
+   * citation-context prompt goes through `completeJson`, and its edge
+   * provenance must name the real model, like `classifyRelation`'s
+   * `producedBy`). Counts the answer in the chain summary.
+   */
+  async completeJsonAttributed(
+    system: string,
+    user: string,
+  ): Promise<{ text: string; producedBy: { provider: string; model: string } } | null> {
+    for (const m of this.live()) {
+      const text = await m.completeJson(system, user);
+      if (text !== null) {
+        this.answered.set(m.name, (this.answered.get(m.name) ?? 0) + 1);
+        return { text, producedBy: { provider: m.name, model: providerModelTag(m) } };
+      }
+    }
+    this.unanswered += 1;
+    return null;
+  }
+
   /** Per-member usage, primary first. */
   memberUsage(): LabelledUsage[] {
     return this.members.map((m) => ({
@@ -162,6 +183,29 @@ export class FallbackProvider implements LLMProvider {
     );
     return lines.join("\n");
   }
+}
+
+/**
+ * `completeJson` on any provider, with the answering provider/model:
+ * a chain reports its answering member, a bare provider itself. A
+ * provider without JSON-mode completion (it throws, LLM-02) answers
+ * nothing.
+ */
+export async function completeJsonAttributed(
+  provider: LLMProvider,
+  system: string,
+  user: string,
+): Promise<{ text: string; producedBy: { provider: string; model: string } } | null> {
+  if (provider instanceof FallbackProvider) return provider.completeJsonAttributed(system, user);
+  let text: string | null;
+  try {
+    text = await provider.completeJson(system, user);
+  } catch {
+    return null;
+  }
+  return text === null
+    ? null
+    : { text, producedBy: { provider: provider.name, model: providerModelTag(provider) } };
 }
 
 /**

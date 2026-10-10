@@ -56,6 +56,8 @@ import {
 import { enrichGithubStars } from "./github.js";
 import { type IdentityAliasIndex, loadIdentityAliases, resolveAndDedupSeeds } from "./identity.js";
 import type { ThemePaper } from "./openalexWork.js";
+import { S2CitationSource } from "./s2Citations.js";
+import { newS2RelationStats, type S2RelationContext } from "./s2Relations.js";
 import { aliasesFor } from "./seedFilters.js";
 import { sanitizeTheme, themeLineagePath, themeSlug } from "./slug.js";
 import {
@@ -256,6 +258,19 @@ export interface BuildThemeLineageDeps {
   githubToken?: string | null;
   curatedGithubMap?: Record<string, string>;
   githubApiDeps?: GitHubApiDeps;
+  /**
+   * R2-10 (design 41 D6): classify edges from Semantic Scholar citation
+   * contexts first. Omitted/null = the pre-R2-10 path (library callers and
+   * offline fixtures); the CLI enables it. `cachePath` is
+   * `lineage-cache/s2_references.json`.
+   */
+  s2Citations?: {
+    cachePath: string | null;
+    apiKey?: string | null;
+    minIntervalMs?: number | null;
+    /** Defaults to `fetchImpl` / `sleep` above. */
+    fetchImpl?: FetchLike;
+  } | null;
 }
 
 function fullLogger(partial?: BuildThemeLineageDeps["logger"]): FullLogger {
@@ -392,6 +407,22 @@ export async function buildThemeLineage(
 
   const maxSeedCite = seeds.reduce((max, s) => Math.max(max, Number(s.citationCount) || 0), 0);
 
+  // R2-10: Semantic Scholar citation evidence first (design 41 D6).
+  const s2Source =
+    deps.s2Citations == null
+      ? null
+      : new S2CitationSource(deps.s2Citations.cachePath, {
+          fetchImpl: deps.s2Citations.fetchImpl ?? deps.fetchImpl,
+          sleep: deps.sleep,
+          now: wallClockNow,
+          monotonicNow: deps.monotonicNow,
+          apiKey: deps.s2Citations.apiKey ?? null,
+          minIntervalMs: deps.s2Citations.minIntervalMs ?? null,
+          logger,
+        });
+  const s2Relations: S2RelationContext | null =
+    s2Source === null ? null : { source: s2Source, provider, stats: newS2RelationStats() };
+
   const bfsResult = await runBfsAndDescendants(
     seeds,
     // Python's `_run_bfs_and_descendants` stamps `datetime.now(timezone.utc).year`
@@ -406,6 +437,7 @@ export async function buildThemeLineage(
       llmStrict,
       currentYear: wallClockNow().getUTCFullYear(),
       topicScope,
+      s2Relations,
     },
     netDeps,
     completeness,
@@ -425,12 +457,22 @@ export async function buildThemeLineage(
   const crossAdded = await addCrossNodeEdges(
     nodes,
     edges,
-    { provider, strictMode: llmStrict },
+    { provider, strictMode: llmStrict, s2Relations },
     netDeps,
     completeness,
   );
   if (crossAdded > 0) {
     logger.warn(`cross-node pass added ${crossAdded} edges (in-graph citations not seen by BFS)`);
+  }
+  if (s2Source !== null && s2Relations !== null) {
+    // Persist before any gate can fail the build: the next run reuses it.
+    s2Source.flush();
+    const st = s2Relations.stats;
+    logger.info?.(s2Source.summary());
+    logger.info?.(
+      `s2 relations summary: rule=${st.rule}, context-llm asked=${st.llmAsked} answered=${st.llmAnswered}, ` +
+        `left to the abstract/heuristic path: cites_unspecified=${st.unspecified} no-s2-data=${st.noS2Data}`,
+    );
   }
 
   // R2-2d: provisional admissions (co-citation support, abstract-only
