@@ -22,6 +22,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { IdentityError, identityFromUrl, normalizeAlias } from "@paperpilot/core/identity";
 import { validateConferenceSlug } from "@paperpilot/core/slug";
+import { OPENALEX_MAX_OR_VALUES } from "../../collect/http/openalexGate.js";
 import type { FetchLike } from "../../collect/http/requestWithRetry.js";
 import { requestWithRetry } from "../../collect/http/requestWithRetry.js";
 import { firstUnusable } from "../../collect/signals/payload.js";
@@ -353,22 +354,23 @@ export interface BuildCompletenessLike {
   expansionFailed(): void;
 }
 
-/** Batch-fetch title/year/authors for OpenAlex work ids (50 per request). Expansion, not subject resolution. */
+/** Batch-fetch title/year/authors for OpenAlex work ids (100 per request —
+ * OpenAlex's OR-filter maximum, one list credit each; R2-19). Expansion, not subject resolution. */
 export async function fetchMeta(
   ids: readonly string[],
   options: { email?: string | null; completeness?: BuildCompletenessLike | null },
   deps: OpenAlexDeps,
 ): Promise<Map<string, Record<string, unknown>>> {
   const out = new Map<string, Record<string, unknown>>();
-  for (let i = 0; i < ids.length; i += 50) {
-    const chunk = ids.slice(i, i + 50);
+  for (let i = 0; i < ids.length; i += OPENALEX_MAX_OR_VALUES) {
+    const chunk = ids.slice(i, i + OPENALEX_MAX_OR_VALUES);
     options.completeness?.expansionAttempted();
     let data: Record<string, unknown>;
     try {
       data = await get(
         {
           filter: `ids.openalex:${chunk.join("|")}`,
-          "per-page": 50,
+          "per-page": chunk.length,
           select: "id,title,publication_year,authorships,primary_location",
         },
         options,

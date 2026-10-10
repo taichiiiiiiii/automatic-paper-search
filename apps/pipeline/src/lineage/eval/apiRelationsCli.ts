@@ -21,6 +21,7 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { resolveOpenAlexApiKey } from "../../collect/http/openalexGate.js";
 import { isMain } from "../../shared/cli/isMain.js";
 import {
   type ApiClassification,
@@ -40,6 +41,7 @@ const FOCUS_THEMES = [
 ];
 const S2 = "https://api.semanticscholar.org/graph/v1";
 const OA = "https://api.openalex.org";
+const oaKey = resolveOpenAlexApiKey(process.env);
 
 interface NodeLite {
   id: string;
@@ -203,6 +205,8 @@ async function cachedJson(
       headers: {
         "content-type": "application/json",
         "user-agent": `paperpilot-r2-9-eval (mailto:${init.mailto ?? "paperpilot@example.com"})`,
+        // R2-19: OpenAlex key as a bearer header (never in the URL / cache key).
+        ...(url.startsWith(OA) && oaKey ? { Authorization: `Bearer ${oaKey}` } : {}),
       },
       body: init.body,
     });

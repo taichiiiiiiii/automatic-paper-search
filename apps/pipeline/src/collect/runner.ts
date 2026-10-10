@@ -12,6 +12,7 @@ import { EmailExporter, type SmtpClientFactory } from "./exporters/email.js";
 import type { Exporter } from "./exporters/exporter.js";
 import { JSONExporter } from "./exporters/json.js";
 import { SlackExporter } from "./exporters/slack.js";
+import { OpenAlexGate } from "./http/openalexGate.js";
 import type { FetchLike } from "./http/requestWithRetry.js";
 import type { LLMProvider } from "./llm/provider.js";
 import type { Logger } from "./logger.js";
@@ -151,6 +152,11 @@ export class PipelineRunner {
           { enabled: srcsCfg.openalex.enabled, delaySeconds: srcsCfg.openalex.delay_seconds },
           {
             fetchImpl: this.deps.fetchImpl,
+            // R2-19: key + daily-budget breaker for this run's OpenAlex calls.
+            budgetGate: new OpenAlexGate({
+              apiKey: env.openalexApiKey ?? null,
+              logger: this.deps.logger,
+            }),
             email: env.openalexEmail,
             sleep: this.deps.sleep,
             now: this.deps.now,

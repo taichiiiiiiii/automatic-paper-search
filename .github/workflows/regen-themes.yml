@@ -88,6 +88,9 @@ jobs:
           PAPERPILOT_GROQ_API_KEY: ${{ secrets.PAPERPILOT_GROQ_API_KEY }}
           PAPERPILOT_GEMINI_API_KEY: ${{ secrets.PAPERPILOT_GEMINI_API_KEY }}
           PAPERPILOT_S2_API_KEY: ${{ secrets.PAPERPILOT_S2_API_KEY }}
+          # R2-19: OpenAlex free key ($1/day vs $0.10/day keyless shared by
+          # every Actions run on the egress IP); optional, keyless still works.
+          PAPERPILOT_OPENALEX_API_KEY: ${{ secrets.PAPERPILOT_OPENALEX_API_KEY }}
           THEMES_INPUT: ${{ inputs.themes }}
           THEME_RE: '^[A-Za-z0-9 _-]{2,80}$'
           PENDING_FILE: data/state/lineage-cache/regen-pending.json

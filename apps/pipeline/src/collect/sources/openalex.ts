@@ -3,6 +3,7 @@
  * Covers COL-10..14 (docs/migration/safety-contracts.md).
  */
 
+import type { OpenAlexGate } from "../http/openalexGate.js";
 import { RateLimiter } from "../http/rateLimiter.js";
 import { type FetchLike, requestWithRetry } from "../http/requestWithRetry.js";
 import { createPaper, type Paper } from "../model/paper.js";
@@ -45,6 +46,10 @@ export interface OpenAlexSourceConfig {
 
 export interface OpenAlexSourceDeps {
   fetchImpl: FetchLike;
+  /** R2-19: API key + daily-budget breaker. Requests go through
+   * `budgetGate.wrap(fetchImpl)`; its summary line is logged after each
+   * `fetch()`. Omitted = keyless, unmetered (tests, library callers). */
+  budgetGate?: OpenAlexGate | null;
   email?: string | null;
   sleep?: (ms: number) => Promise<void>;
   now?: () => number;
@@ -62,12 +67,15 @@ export class OpenAlexSource implements Source {
   private readonly limiter: RateLimiter;
   private readonly email: string | null;
   private readonly httpDeps: OpenAlexSourceDeps;
+  private readonly gate: OpenAlexGate | null;
 
   constructor(config: OpenAlexSourceConfig, deps: OpenAlexSourceDeps) {
     const delay = config.delaySeconds ?? 1.0;
     this.limiter = new RateLimiter(delay, { now: deps.now, sleep: deps.sleep });
     this.email = deps.email ?? null;
-    this.httpDeps = deps;
+    this.gate = deps.budgetGate ?? null;
+    this.httpDeps =
+      this.gate === null ? deps : { ...deps, fetchImpl: this.gate.wrap(deps.fetchImpl) };
   }
 
   async fetch(params: FetchParams): Promise<FetchResult> {
@@ -91,6 +99,7 @@ export class OpenAlexSource implements Source {
       if (outcome.pageIsFull) truncated.push(kw);
       papers.push(...outcome.papers);
     }
+    if (this.gate?.used) this.httpDeps.logger?.warn(this.gate.summary());
 
     if (keywords.length > 0 && failures.length === keywords.length) {
       throw new AllKeywordsFailedError(

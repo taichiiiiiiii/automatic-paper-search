@@ -26,6 +26,13 @@ import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { resolveOpenAlexApiKey } from "../../../collect/http/openalexGate.js";
+
+/** R2-19: the OpenAlex key, when set, as a bearer header (never in the URL). */
+function openalexAuthHeader(): Record<string, string> {
+  const key = resolveOpenAlexApiKey(process.env);
+  return key ? { Authorization: `Bearer ${key}` } : {};
+}
 
 export const EVAL_THEMES = [
   { slug: "graph-neural-network", theme: "Graph Neural Network" },
@@ -86,7 +93,9 @@ async function cachedGet(url: string, args: Args): Promise<unknown> {
   for (let attempt = 0; attempt < 5; attempt++) {
     await sleep(150); // polite: < 10 req/s
     calls += 1;
-    const resp = await fetch(full, { headers: { "User-Agent": "PaperPilot-eval/0.1" } });
+    const resp = await fetch(full, {
+      headers: { "User-Agent": "PaperPilot-eval/0.1", ...openalexAuthHeader() },
+    });
     if (resp.status === 200) {
       const body = await resp.json();
       writeFileSync(file, JSON.stringify(body));

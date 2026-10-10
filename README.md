@@ -190,7 +190,8 @@ Stage 4 を有効にすると、さらに `llm_relevance`（1..5）で並べ替�
 | 名前 | 用途 |
 |---|---|
 | `GH_PAT` | daily-watch の push（無ければ `github.token`） |
-| `OPENALEX_EMAIL` | OpenAlex polite pool |
+| `OPENALEX_EMAIL` | OpenAlex polite pool（2026-02 に廃止。現在は効果なし） |
+| `PAPERPILOT_OPENALEX_API_KEY` | OpenAlex の無料 API キー（https://openalex.org/settings/api）。1 日の予算がキーなし $0.10 から $1 に増える。テーマ家系図・週次/日次収集・会議家系図で使う。キーなしでも動くが、予算が尽きると OpenAlex をその実行中は止め、Semantic Scholar に切り替える（ログ行 `openalex budget: …`） |
 | `PAPERPILOT_S2_API_KEY`（旧名 `S2_API_KEY` も可）/ `GEMINI_API_KEY` / `CLAUDE_API_KEY` / `GROQ_API_KEY` | 週次収集の取得元・LLM |
 | `PAPERPILOT_GROQ_API_KEY` / `PAPERPILOT_S2_API_KEY` | テーマ家系図（`PAPERPILOT_S2_API_KEY` は週次収集と共通） |
 | `SLACK_WEBHOOK_URL` | 通知と失敗通知 |

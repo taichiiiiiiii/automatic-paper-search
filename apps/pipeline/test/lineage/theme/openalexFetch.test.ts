@@ -8,6 +8,7 @@
 
 import { pyJsonDumps } from "@paperpilot/core";
 import { describe, expect, it, vi } from "vitest";
+import { OpenAlexGate } from "../../../src/collect/http/openalexGate.js";
 import type { FetchInit, HttpResponseLike } from "../../../src/collect/http/requestWithRetry.js";
 import type { OpenAlexDeps } from "../../../src/lineage/theme/openalexFetch.js";
 import {
@@ -15,6 +16,8 @@ import {
   discoverSeedsViaOpenalex,
   fetchOpenAlexWorksByIds,
   fetchRelatedViaOpenalex,
+  OPENALEX_IDS_PER_BATCH,
+  OPENALEX_WORK_SELECT,
   OpenAlexTransientError,
 } from "../../../src/lineage/theme/openalexFetch.js";
 import type { ThemePaper } from "../../../src/lineage/theme/openalexWork.js";
@@ -217,6 +220,34 @@ describe("fetchRelatedViaOpenalex", () => {
   });
 });
 
+describe("discoverSeedsViaOpenalex — R2-19 budget breaker", () => {
+  it("records a subject failure (so the S2 search fallback runs) when searches are blocked", async () => {
+    let sent = 0;
+    const gate = new OpenAlexGate({});
+    gate.observe({ get: (n: string) => (n === "x-ratelimit-remaining" ? "3" : null) });
+    const failures: string[] = [];
+    const deps = depsFor(
+      gate.wrap(async () => {
+        sent += 1;
+        return jsonResp(200, { results: [] });
+      }),
+    );
+    const out = await discoverSeedsViaOpenalex(
+      {
+        query: "diffusion",
+        topN: 5,
+        sinceYear: null,
+        completeness: { subjectFailed: (r) => failures.push(r) },
+      },
+      deps,
+    );
+    expect(out).toEqual([]);
+    expect(sent).toBe(0);
+    expect(failures).toHaveLength(1);
+    expect(gate.breaker).toBe("searches-blocked");
+  });
+});
+
 describe("fetchOpenAlexWorksByIds", () => {
   it("raises when every chunk fails (never returns [] silently)", async () => {
     const deps = depsFor(async () => {
@@ -228,7 +259,7 @@ describe("fetchOpenAlexWorksByIds", () => {
   });
 
   it("reports a partial chunk failure via .partial, not as a complete answer", async () => {
-    const ids = Array.from({ length: 79 }, (_, i) => `W${i + 1}`); // 2 chunks at chunkSize=50
+    const ids = Array.from({ length: 179 }, (_, i) => `W${i + 1}`); // 2 chunks at chunkSize=100
     let calls = 0;
     const deps = depsFor(async () => {
       calls += 1;
@@ -261,6 +292,42 @@ describe("fetchOpenAlexWorksByIds", () => {
   it("accepts a genuinely empty page", async () => {
     const deps = depsFor(async () => jsonResp(200, { results: [] }));
     expect(await fetchOpenAlexWorksByIds(["W1"], deps)).toEqual([]);
+  });
+
+  it("R2-19: batches up to 100 ids per OR filter and trims fields with select=", async () => {
+    const seen: URLSearchParams[] = [];
+    const deps = depsFor(async (url) => {
+      seen.push(new URL(url).searchParams);
+      return jsonResp(200, { results: [] });
+    });
+    const ids = Array.from({ length: 200 }, (_, i) => `W${i + 1}`);
+    await fetchOpenAlexWorksByIds(ids, deps);
+    expect(seen).toHaveLength(2);
+    for (const params of seen) {
+      const filter = params.get("filter") ?? "";
+      expect(filter.startsWith("openalex:")).toBe(true);
+      expect(filter.slice("openalex:".length).split("|")).toHaveLength(OPENALEX_IDS_PER_BATCH);
+      expect(params.get("per-page")).toBe("100");
+      expect(params.get("select")).toBe(OPENALEX_WORK_SELECT);
+    }
+    expect(OPENALEX_IDS_PER_BATCH).toBe(100);
+  });
+
+  it("R2-19: with an exhausted OpenAlex budget the batch is refused and reported as lost (fallback path)", async () => {
+    let sent = 0;
+    const gate = new OpenAlexGate({ apiKey: "k" });
+    gate.observe({ get: (n: string) => (n === "x-ratelimit-remaining" ? "0" : null) });
+    const deps = depsFor(
+      gate.wrap(async () => {
+        sent += 1;
+        return jsonResp(200, { results: [] });
+      }),
+    );
+    await expect(fetchOpenAlexWorksByIds(["W1", "W2"], deps)).rejects.toBeInstanceOf(
+      OpenAlexTransientError,
+    );
+    expect(sent).toBe(0);
+    expect(gate.stats.blocked).toBe(1);
   });
 
   it("normalizes the ids it sends (strips a URL form down to the short id)", async () => {
