@@ -65,7 +65,7 @@
 | R2-5 | 公開の区分（D1）と監査範囲（D5）: 品質表・core の判定・web の表示・監査記録の形式 | 済み（2026-10-10 develop。Worker の `/api/health` に CORS を追加） |
 | R2-6 | LLM の信頼性（D2・D3）: 予備の提供元、分類率の検査、失敗時の自動再実行、見張りへの追加 | 済み（2026-10-10 develop。Gemini のキーは未登録＝予備なしで動作） |
 | R2-9 | 関係の種類分けを API（Semantic Scholar の引用意図・引用文など）で行えるかの調査 | 済み（43） |
-| R2-10 | D6 の実装（API 中心の関係分類、表示は今の種類名＋引用文） | 着手 |
+| R2-10 | D6 の実装（API 中心の関係分類、表示は今の種類名＋引用文） | 実装済み（branch `roadmap/r2-10-api-relations`、未マージ。下の実装メモ） |
 | R2-11 | D7 の実装（埋め込みによるテーマ外の判定） | 着手 |
 | R2-12 | `lineage-artifact-v2`（5 種類＋根拠欄）と web の表示 | R2-10 の後 |
 | R2-7 | 依頼フォームの公開と、本番での依頼→未監査公開の通し確認 | R2-5・R2-6 の後 |
@@ -78,3 +78,19 @@
   - 品質表でも同じ値を `evidence_classified_rate` として検査する（公開済みの古い成果物にも効かせるため）
 - **`generator_current`**: 方針の `theme_min_generated_at`（いまは 2026-10-10T05:00:00Z、R2-2d の規則が入った時刻）より前に作られたテーマは公開しない。生成の規則を大きく変えたら、この時刻を進める
 - **初回の結果**: 未監査で公開 2（graph-neural-network・mixture-of-experts）、非公開 2（vision-transformer は分類率 45%、flash-attention は古い規則での生成）。監査済みは 0（R2-8 で GNN から）
+
+## 実装メモ（R2-10、D6 の段階 1）
+
+- **流れ**（`apps/pipeline/src/lineage/theme/s2Relations.ts`）: 関係ごとに、引用する側の論文の Semantic Scholar 参考文献（`/paper/{id}/references`、`contexts,intents,isInfluential`）を引き、規則 v2（`classify/apiRelations.ts`。評価と同じコード）で分類する。基礎論文の一覧と題名の版（`foundational_allowlist`・`title_version`）は今までどおり先に決まる
+  - 手がかりの語（〜を基に・〜と違い・〜より良い・データを使う、結果表の行）があるか、`isInfluential` で文脈がある関係だけ LLM に聞く。渡すのは引用文（最大 4 文）と被引用側の題名・著者・年（`llm/contextPrompt.ts`、`relation-prompt-v3-context`）。要旨の prompt（`relation-prompt-v2`）は文面を変えていないので、キャッシュ済みの答えはそのまま使える
+  - 種類名への対応: builds_on→`extends`、compares_with は「〜と違い」の語が被引用側だけを指す（引用文が 1 本だけを引いている）ときか LLM が対比と答えたときだけ `contrasts`、それ以外の compares_with・uses_resource・background→`baseline_only`
+  - S2 に引用文も意図もない関係（`cites_unspecified`）と、S2 が引用側を知らない関係は今までの道（`--llm-strict` なら要旨の LLM、使えなければ年と引用の推測＝未分類）
+  - LLM が使えないときは規則の結果が残る。来歴の方式は `s2_context_rule`（契約・JSON Schema・web の閉じた集合に追加。分類率では「分類済み」）。理由欄は日本語の一文＋引用文（240 字まで）
+  - 無効にするときは `PAPERPILOT_S2_RELATIONS=off`
+- **S2 のキャッシュ** `data/state/lineage-cache/s2_references.json`（regen-themes.yml が classifications.json と一緒に昇格。theme-on-demand は昇格しない）
+  - 形: `entries[<引用側のグラフ id>] = { s2: <S2 に問い合わせた id（ARXIV:… / DOI:… / S2 id）。null は S2 にない論文>, fetched_at, pairs: { <被引用側のグラフ id>: { i: intents, c: 引用文（最大 4 文×400 字）, f: isInfluential } | null（S2 の参考文献に無い） } }`
+  - 生成で実際に聞いた組だけを残す（参考文献を全部残すと 1 本約 40 KB になるため）。90 日（S2 にない論文は 14 日）で期限切れ。ほかの組が必要になったら、その回に 1 度だけ取り直して足す
+  - 読み方の例: `jq '.entries["openalex:W…"].pairs' data/state/lineage-cache/s2_references.json`
+  - 速さ: 鍵なし 1.1 秒に 1 回、鍵（`PAPERPILOT_S2_API_KEY`、`x-api-key`）あり 1 秒に 1 回。429 は `Retry-After` か 2〜60 秒の指数で待ち、6 回で諦める（その回は「S2 データなし」扱い、キャッシュしない）
+- **見積もり**（R2-9 のキャッシュで今の 4 テーマの関係を置き換えた場合）: LLM が動けば分類率はどれも 100%。LLM が止まっても flash-attention 80%（4/5）、graph-neural-network 83%（29/35）、mixture-of-experts 92%（11/12）、vision-transformer 91%（99/109）で、D3 の 8 割を満たす。LLM の呼び出しは 1 テーマあたり 2〜31 回（引用文の prompt 1〜21、要旨の prompt 1〜10）
+
