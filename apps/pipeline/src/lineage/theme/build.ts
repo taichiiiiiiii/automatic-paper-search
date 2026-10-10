@@ -36,7 +36,12 @@ import {
   IncompleteBuildError,
 } from "../fetch-state/completeness.js";
 import { usageOf } from "../llm/fallback.js";
-import { addCrossNodeEdges, confirmSupportAdmissions, runBfsAndDescendants } from "./bfs.js";
+import {
+  addCrossNodeEdges,
+  addVersionFamilyEdges,
+  confirmSupportAdmissions,
+  runBfsAndDescendants,
+} from "./bfs.js";
 import {
   type CachedClassifyProviderDeps,
   type ThemeProducerIdentity,
@@ -473,6 +478,14 @@ export async function buildThemeLineage(
   );
   if (crossAdded > 0) {
     logger.warn(`cross-node pass added ${crossAdded} edges (in-graph citations not seen by BFS)`);
+  }
+  // R2-13: explicit versions of one work (FlashAttention -> -2 -> -3)
+  // that no citation in the data connects.
+  const versionAdded = addVersionFamilyEdges(nodes, edges);
+  if (versionAdded > 0) {
+    logger.warn(
+      `version-family pass added ${versionAdded} title_version edge(s) between explicit versions with no citation in the data`,
+    );
   }
   if (s2Source !== null && s2Relations !== null) {
     // Persist before any gate can fail the build: the next run reuses it.

@@ -80,7 +80,12 @@ export function classifyEdgeProvenance(
     return field;
   }
   const rationale = typeof edge.rationale === "string" ? edge.rationale : "";
-  if (rationale.includes("canonical research-lineage")) return "foundational_allowlist";
+  if (
+    rationale.includes("canonical research-lineage") ||
+    rationale.includes("基礎文献リストに基づく規則")
+  ) {
+    return "foundational_allowlist";
+  }
   const mapped = LEGACY_TEMPLATE_TO_ENUM.get(rationale);
   if (mapped !== undefined) return mapped;
   return "llm";
