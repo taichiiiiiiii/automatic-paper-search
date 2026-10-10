@@ -21,6 +21,12 @@
  * plural/singular and space-less forms ("FlashAttention"), an initialism
  * of 3+ letters ("GNN", "MoE") and CamelCase/upper-case tokens taken from
  * the aliases ("ViT").
+ *
+ * R2-2d: short acronyms ("GNN", "MoE", "ViT") are matched CASE-SENSITIVELY
+ * and kept in their written case in {@link themeTerms}: lower-case "moe" or
+ * the funding-statement "MOE" (Ministry of Education) is not the theme. An
+ * acronym may close a CamelCase name ("FasterMoE", "FlexMoE") but never
+ * open a longer word ("MoEfication", "ViTamin", "GNNExplainer").
  */
 
 import { codepointCompare } from "@paperpilot/core";
@@ -87,9 +93,10 @@ export function normalizeTopicText(text: string): string {
 /** Connectors that make the following theme mention a method component
  * of a paper whose subject is something else. "for"/"in"/"of" are not
  * here: "Pre-training for GNNs" and "Expert Specialization in MoE
- * Language Models" are about the theme. */
+ * Language Models" are about the theme. One modifier may sit between the
+ * connector and the theme ("... Using Regularized Graph Neural Networks"). */
 const COMPONENT_CONNECTOR_RE =
-  /\b(?:with|using|via|by|through|leveraging|utili[sz]ing|employing|based\s+on|powered\s+by|equipped\s+with)\s*$/i;
+  /\b(?:with|using|via|by|through|leveraging|utili[sz]ing|employing|based\s+on|powered\s+by|equipped\s+with)(?:\s+[\p{L}\p{N}-]+)?\s*$/iu;
 
 function str(value: unknown): string {
   return typeof value === "string" ? value : "";
@@ -113,9 +120,30 @@ function addPhrase(out: Set<string>, phrase: string): void {
   }
 }
 
-const STOP_FOR_INITIALISM = new Set(["a", "an", "the"]);
+/** Longest token treated as a case-sensitive acronym ("GNN", "MoE",
+ * "ViT", "DeiT"). Longer CamelCase names ("FlashAttention") are
+ * distinctive enough to match case-insensitively. */
+const MAX_ACRONYM_LEN = 5;
 
-/** Every normalised term that counts as "this paper mentions the theme". */
+/** An acronym term keeps its written case and its plural. */
+function addAcronym(out: Set<string>, acronym: string): void {
+  out.add(acronym);
+  out.add(`${acronym}s`);
+}
+
+/** True for a term that is matched case-sensitively (an acronym). */
+export function isAcronymTerm(term: string): boolean {
+  return /\p{Lu}/u.test(term);
+}
+
+const STOP_FOR_INITIALISM = new Set(["a", "an", "the"]);
+/** Function words that stay lower-case inside an initialism ("MoE"). */
+const LOWER_IN_INITIALISM = new Set(["of", "for", "in", "on", "and", "to", "with", "by"]);
+
+/** Every term that counts as "this paper mentions the theme". Phrase
+ * terms are normalised lower-case and matched case-insensitively;
+ * acronym terms (they contain an upper-case letter) are matched
+ * case-sensitively — see {@link isAcronymTerm}. */
 export function themeTerms(
   theme: string,
   aliases: readonly string[] = [],
@@ -131,35 +159,75 @@ export function themeTerms(
     for (const tok of alias.split(/[\s/]+/)) {
       const bare = tok.replace(/[^\p{L}\p{N}]/gu, "");
       const uppers = (bare.match(/\p{Lu}/gu) ?? []).length;
-      if (bare.length >= 3 && uppers >= 2) addPhrase(out, bare);
+      if (bare.length < 3 || uppers < 2) continue;
+      if (bare.length <= MAX_ACRONYM_LEN) addAcronym(out, bare);
+      else addPhrase(out, bare);
     }
   }
-  // Initialism of 3+ letters ("Graph Neural Network" -> "gnn", "Mixture
-  // of Experts" -> "moe"). Two-letter initialisms ("VT", "FA") are too
+  // Initialism of 3+ letters ("Graph Neural Network" -> "GNN", "Mixture
+  // of Experts" -> "MoE"). Two-letter initialisms ("VT", "FA") are too
   // ambiguous to use.
   const words = normalizeTopicText(theme)
     .trim()
     .split(" ")
     .filter((w) => w && !STOP_FOR_INITIALISM.has(w));
-  if (words.length >= 3) addPhrase(out, words.map((w) => w[0]).join(""));
+  if (words.length >= 3) {
+    addAcronym(
+      out,
+      words.map((w) => (LOWER_IN_INITIALISM.has(w) ? w[0]! : w[0]!.toUpperCase())).join(""),
+    );
+  }
   return [...out].sort();
 }
 
-/** Index of the first term occurrence in `normText` (a
- * {@link normalizeTopicText} result), or -1. */
-function firstMatch(normText: string, terms: readonly string[]): number {
+function escapeRegExp(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/** Compile one term. Phrase terms: whole words, any non-alphanumeric run
+ * between words, case-insensitive (same as matching inside
+ * {@link normalizeTopicText}). Acronyms: case-sensitive; may follow a
+ * lower-case letter (closing a CamelCase name) but not start a longer
+ * word. */
+export function termRegex(term: string): RegExp {
+  if (isAcronymTerm(term)) {
+    return new RegExp(`(?<![\\p{Lu}\\p{N}])${escapeRegExp(term)}(?![\\p{L}\\p{N}])`, "u");
+  }
+  const body = term.split(" ").map(escapeRegExp).join("[^\\p{L}\\p{N}]+");
+  return new RegExp(`(?<![\\p{L}\\p{N}])${body}(?![\\p{L}\\p{N}])`, "iu");
+}
+
+/** Index of the first term occurrence in `text`, or -1. */
+function firstMatch(text: string, regexes: readonly RegExp[]): number {
+  const t = text.normalize("NFKC");
   let best = -1;
-  for (const term of terms) {
-    const at = normText.indexOf(` ${term} `);
-    if (at !== -1 && (best === -1 || at < best)) best = at;
+  for (const re of regexes) {
+    const m = re.exec(t);
+    if (m && (best === -1 || m.index < best)) best = m.index;
   }
   return best;
+}
+
+/** Title words that mark a dataset / benchmark paper ("Cats and dogs"
+ * introduces the Oxford-IIIT Pets dataset). Such papers are cited by
+ * every paper that evaluates on them, so co-citation support says
+ * nothing about the theme: they may only enter through a theme-term
+ * match or the foundational allowlist. */
+const DATASET_TITLE_RE =
+  /\b(?:data\s*sets?|benchmarks?|database|corpus|corpora)\b|\b(?:dataset|benchmark)\s+for\b/i;
+const DATASET_ABSTRACT_RE =
+  /\b(?:introduce|introduces|introducing|present|presents|release|releases|collect|collected|construct|constructed|build|built|propose|proposes)\b[^.]{0,80}?\b(?:(?:new|novel|large|annotated)\b[^.]{0,40}?)?\b(?:data\s*set|dataset|benchmark|database|corpus)\b/i;
+
+export function looksLikeDataset(paper: TopicPaperLike): boolean {
+  if (DATASET_TITLE_RE.test(str(paper.title))) return true;
+  return DATASET_ABSTRACT_RE.test(bodyText(paper));
 }
 
 export class TopicScope {
   readonly theme: string;
   readonly terms: readonly string[];
   readonly options: Readonly<TopicScopeOptions>;
+  private readonly regexes: readonly RegExp[];
 
   constructor(
     theme: string,
@@ -169,6 +237,7 @@ export class TopicScope {
   ) {
     this.theme = theme;
     this.terms = themeTerms(theme, aliases, extraTerms);
+    this.regexes = this.terms.map(termRegex);
     this.options = { ...DEFAULT_TOPIC_SCOPE_OPTIONS, ...stripUndefined(options) };
   }
 
@@ -189,34 +258,25 @@ export class TopicScope {
 
   /** Title mentions a theme term. */
   matchesTitle(paper: TopicPaperLike): boolean {
-    return firstMatch(normalizeTopicText(str(paper.title)), this.terms) !== -1;
+    return firstMatch(str(paper.title), this.regexes) !== -1;
   }
 
   /** Title, abstract, short abstract or TL;DR mentions a theme term. */
   isOnTopic(paper: TopicPaperLike): boolean {
     if (this.matchesTitle(paper)) return true;
-    return firstMatch(normalizeTopicText(bodyText(paper)), this.terms) !== -1;
+    return firstMatch(bodyText(paper), this.regexes) !== -1;
   }
 
   /** Subject / component / abstract-only / none — see {@link TopicRole}. */
   role(paper: TopicPaperLike): TopicRole {
     const title = str(paper.title);
     if (this.matchesTitle(paper)) {
-      // Find where the first term starts in the ORIGINAL title so the
+      // Where the first term starts in the ORIGINAL title, so the
       // connector test sees the real preceding words.
-      const lower = title.toLowerCase();
-      let cut = -1;
-      for (const term of this.terms) {
-        const re = new RegExp(
-          `(?:^|[^\\p{L}\\p{N}])${term.split(" ").join("[^\\p{L}\\p{N}]+")}(?![\\p{L}\\p{N}])`,
-          "iu",
-        );
-        const m = re.exec(lower);
-        if (m && (cut === -1 || m.index < cut)) cut = m.index;
-      }
+      const cut = firstMatch(title, this.regexes);
       if (cut > 0) {
         // Only the clause the term sits in: "SuperGlue: Learning ... With GNNs".
-        const before = title.slice(0, cut + 1);
+        const before = title.normalize("NFKC").slice(0, cut);
         const clause = before.slice(Math.max(before.lastIndexOf(":"), before.lastIndexOf("—")) + 1);
         if (COMPONENT_CONNECTOR_RE.test(clause.replace(/[^\p{L}\p{N}]+$/u, ""))) return "component";
       }
@@ -255,7 +315,8 @@ export class TopicScope {
 
   /** Why `paper` may join the graph, or `null` when it may not.
    * `support` = number of distinct already-admitted on-topic nodes that
-   * link to it. */
+   * link to it. A dataset/benchmark paper ({@link looksLikeDataset}) is
+   * never admitted by support. */
   admits(paper: TopicPaperLike, support: number): "topic" | "foundational" | "support" | null {
     if (!this.options.gate) return "topic";
     if (this.isOnTopic(paper)) return "topic";
@@ -265,8 +326,27 @@ export class TopicScope {
     ) {
       return "foundational";
     }
-    if (support >= this.options.minSupport) return "support";
+    if (support >= this.options.minSupport && !looksLikeDataset(paper)) return "support";
     return null;
+  }
+
+  /** Admission for a NEWER paper citing a seed (descendants pass).
+   * Citing a FlashAttention paper makes a paper a user of the theme, not
+   * part of its lineage (Point Transformer V3), and one MoE mention in an
+   * abstract does not make a channel-estimation paper about MoE. So:
+   *  - title about the theme ("subject") -> `"topic"`;
+   *  - theme only as a tool in the title or only in the abstract ->
+   *    `"provisional"`: kept only if, after the cross-node pass, at
+   *    least `minSupport` on-topic NON-seed nodes link to it
+   *    (`bfs.ts::confirmSupportAdmissions`);
+   *  - no theme term at all -> `null`. Neither co-citation support nor
+   *    the foundational allowlist (canonical ANCESTORS) applies. */
+  admitsDescendant(paper: TopicPaperLike): "topic" | "provisional" | null {
+    if (!this.options.gate) return "topic";
+    const role = this.role(paper);
+    if (role === "subject") return "topic";
+    if (role === "none") return null;
+    return "provisional";
   }
 }
 
@@ -283,7 +363,9 @@ export interface ArtifactNodeLike extends TopicPaperLike {
 
 export interface OfflineAdmission {
   kept: { id: string; title: string; reason: string }[];
-  dropped: { id: string; title: string; support: number }[];
+  /** `support` = distinct on-topic NON-focus neighbours; `rule` says
+   * which gate turned the node away. */
+  dropped: { id: string; title: string; support: number; rule: string }[];
   /** Root the new rule would pick among the surviving focus nodes. */
   root: string | null;
   previousRoot: string | null;
@@ -291,56 +373,100 @@ export interface OfflineAdmission {
 
 /**
  * Re-apply the admission gate to an already-built lineage (eval only —
- * the real graph is rebuilt in CI). Focus nodes are kept but must
- * themselves be on-topic to lend support. Support is counted over the
- * artifact's own edges only (the live BFS also sees citations that never
- * became edges, so it can find more support), and the artifact carries
- * only a TL;DR/short abstract (the live BFS matches the full abstract),
- * so this under-estimates what a rebuild keeps. Nodes left with no edge
- * to a kept node are dropped too, mirroring `pruneEdgelessNodes`.
+ * the real graph is rebuilt in CI). Mirrors the live rules:
+ *  - a node that cites a focus node but is not cited by one (a
+ *    descendant: a newer paper citing a seed) needs a title about the
+ *    theme, or a theme mention elsewhere plus non-focus support
+ *    ({@link TopicScope.admitsDescendant});
+ *  - any other node is admitted by a theme-term match or the
+ *    foundational allowlist, or else by support: at least `minSupport`
+ *    distinct on-topic NON-focus neighbours (the live build confirms
+ *    support after the cross-node pass the same way — two seeds citing
+ *    the same generic paper is not enough);
+ *  - focus nodes are kept; non-focus nodes left with no edge to a kept
+ *    node are dropped, mirroring `pruneEdgelessNodes`.
+ * The artifact carries only a TL;DR/short abstract (the live BFS matches
+ * the full abstract), so this under-estimates topic matches.
  */
 export function reapplyAdmission(
   artifact: { root?: unknown; nodes: ArtifactNodeLike[]; edges: { src: string; dst: string }[] },
   scope: TopicScope,
 ): OfflineAdmission {
   const byId = new Map(artifact.nodes.map((n) => [n.id, n]));
+  const isFocus = (id: string): boolean => byId.get(id)?.is_focus === true;
   const neighbours = new Map<string, Set<string>>();
+  const incident = new Map<string, { src: string; dst: string }[]>();
   for (const e of artifact.edges) {
-    if (!neighbours.has(e.src)) neighbours.set(e.src, new Set());
-    if (!neighbours.has(e.dst)) neighbours.set(e.dst, new Set());
+    for (const id of [e.src, e.dst]) {
+      if (!neighbours.has(id)) neighbours.set(id, new Set());
+      if (!incident.has(id)) incident.set(id, []);
+    }
     neighbours.get(e.src)!.add(e.dst);
     neighbours.get(e.dst)!.add(e.src);
+    incident.get(e.src)!.push(e);
+    if (e.dst !== e.src) incident.get(e.dst)!.push(e);
   }
+  // At the CI depth of 1 a non-focus node entered either as a reference
+  // of a seed (edge node -> focus) or as a paper citing a seed (edge
+  // focus -> node); cross-node edges among non-focus nodes do not change
+  // how it entered.
+  const isDescendantOnly = (id: string): boolean => {
+    const es = incident.get(id) ?? [];
+    const citesSeed = es.some((e) => e.dst === id && isFocus(e.src));
+    const citedBySeed = es.some((e) => e.src === id && isFocus(e.dst));
+    return citesSeed && !citedBySeed;
+  };
   const reason = new Map<string, string>();
-  const onTopicAdmitted = new Set<string>();
+  const rule = new Map<string, string>();
+  const onTopicNonFocus = new Set<string>();
+  /** Descendants with the theme only in the abstract / as a tool. */
+  const provisional = new Set<string>();
   for (const n of artifact.nodes) {
     if (n.is_focus === true) {
       reason.set(n.id, `focus(${scope.role(n)})`);
-      if (scope.isOnTopic(n)) onTopicAdmitted.add(n.id);
+      continue;
+    }
+    if (isDescendantOnly(n.id)) {
+      const why = scope.admitsDescendant(n);
+      if (why === "topic") {
+        reason.set(n.id, "topic(descendant)");
+        onTopicNonFocus.add(n.id);
+      } else if (why === "provisional") {
+        provisional.add(n.id);
+      } else {
+        rule.set(n.id, `descendant(${scope.role(n)})`);
+      }
       continue;
     }
     const why = scope.admits(n, 0);
     if (why !== null) {
       reason.set(n.id, why);
-      if (why === "topic") onTopicAdmitted.add(n.id);
+      if (why === "topic") onTopicNonFocus.add(n.id);
     }
   }
-  // One pass, like the live BFS: only on-topic nodes lend support, and a
-  // node admitted by support does not lend support in turn.
+  // One pass, like the live build: only on-topic NON-focus nodes lend
+  // support, and a node admitted by support does not lend support.
   const supportOf = (id: string): number =>
-    [...(neighbours.get(id) ?? [])].filter((x) => onTopicAdmitted.has(x)).length;
+    [...(neighbours.get(id) ?? [])].filter((x) => onTopicNonFocus.has(x)).length;
   for (const n of artifact.nodes) {
-    if (reason.has(n.id)) continue;
+    if (reason.has(n.id) || rule.has(n.id)) continue;
+    if (provisional.has(n.id)) {
+      if (supportOf(n.id) >= scope.options.minSupport) reason.set(n.id, "support(descendant)");
+      else rule.set(n.id, `descendant(${scope.role(n)})`);
+      continue;
+    }
     if (scope.admits(n, supportOf(n.id)) !== null) reason.set(n.id, "support");
+    else rule.set(n.id, looksLikeDataset(n) ? "support(dataset)" : "support");
   }
   // Prune non-focus nodes with no edge to another kept node.
   for (let changed = true; changed; ) {
     changed = false;
     for (const [id] of reason) {
-      if (byId.get(id)?.is_focus === true) continue;
-      const linked = [...(neighbours.get(id) ?? [])].some((x) => reason.has(x));
+      if (isFocus(id)) continue;
+      const linked = [...(neighbours.get(id) ?? [])].some((x) => x !== id && reason.has(x));
       if (!linked) {
         reason.delete(id);
+        rule.set(id, "edgeless");
         changed = true;
       }
     }
@@ -350,7 +476,12 @@ export function reapplyAdmission(
     .map((n) => ({ id: n.id, title: str(n.title), reason: reason.get(n.id)! }));
   const dropped = artifact.nodes
     .filter((n) => !reason.has(n.id))
-    .map((n) => ({ id: n.id, title: str(n.title), support: supportOf(n.id) }));
+    .map((n) => ({
+      id: n.id,
+      title: str(n.title),
+      support: supportOf(n.id),
+      rule: rule.get(n.id) ?? "support",
+    }));
   const keptIds = new Set(kept.map((k) => k.id));
   const keptEdges = artifact.edges.filter((e) => keptIds.has(e.src) && keptIds.has(e.dst));
   const focus = artifact.nodes.filter((n) => n.is_focus === true).map((n) => n.id);

@@ -339,11 +339,18 @@ export function relationClassificationFromDict(d: unknown): RelationClassificati
 // English enum definitions into Japanese rather than reading the
 // abstracts, producing byte-for-byte heuristic templates. This prompt (a)
 // shortens the enum text so it can't be translated wholesale, (b)
-// explicitly forbids the template phrasings as outputs, (c) shows one good
-// example anchoring paper-specific style. Token budget kept under ~330
-// tokens (1,191 chars, test-pinned at <=1200) because Groq's free tier caps
-// at ~12,000 TPM. VERBATIM port of `llm/base.py::CLASSIFY_SYSTEM_PROMPT` —
-// parity-tested byte-for-byte against the Python string.
+// explicitly forbids the template phrasings as outputs, (c) shows good
+// examples anchoring paper-specific style. Originally a verbatim port of
+// the (since deleted) Python `llm/base.py::CLASSIFY_SYSTEM_PROMPT`.
+//
+// R2-2d (relation-prompt-v2): the LLM assigned `contrasts` to any pair
+// that merely looked different (98/204 edges in vision-transformer, a
+// survey "contrasting" the works it cites). `contrasts` now requires both
+// papers to propose competing methods for the same task, with explicit
+// survey/dataset rules and a contrasts + baseline_only example. Budget
+// (test-pinned at <=1700 chars) is still well under the Groq free-tier
+// TPM with two trimmed abstracts per call; the post-classification guard
+// in `lineage/theme/relationGuard.ts` backs the survey/dataset rule up.
 export const CLASSIFY_SYSTEM_PROMPT = `Compare two AI/ML papers (A older, B newer). Output ONLY JSON:
 {"relation":"<one>","confidence":<0.0-1.0>,"rationale":"<one Japanese sentence>"}
 
@@ -352,8 +359,14 @@ relation values (pick one): supersedes / successor / extends / ablation / baseli
 - successor: 研究ラインの自然な発展、漸進的な改良
 - extends: 同じ手法を別ドメイン・別タスク・別規模に応用
 - ablation: 構成要素の寄与を分解測定する解析論文
-- baseline_only: 比較対象として引用するだけで、知的な継承はない
-- contrasts: 同じ問題に対する根本的に異なるアプローチ
+- baseline_only: 比較対象・背景・データセットとして引用するだけで、知的な継承はない
+- contrasts: A と B の両方が同じタスクに競合する手法を提案し、根本的に異なるアプローチを取る場合のみ
+
+contrasts rules — the most over-used label:
+- 分野・タスクが違うだけ、内容が異なるだけなら contrasts ではない (baseline_only か unrelated)
+- A か B がサーベイ/レビューなら baseline_only か extends、contrasts は禁止
+- A がデータセット・初期化・最適化など手法提案でない論文なら baseline_only
+- 迷ったら contrasts を選ばない
 
 rationale rules — read carefully, most errors are here:
 - 30-200 chars, one Japanese sentence
@@ -367,6 +380,8 @@ Examples (each names a concrete concept):
 - extends: "B のグラフ畳み込み層は、A のスペクトル法を空間領域に再定式化し計算量を O(E) に落としている。"
 - supersedes: "B (FlashAttention-2) は A と同じ exact attention のまま work partitioning を改良し2倍高速化、A を置き換える。"
 - ablation: "B は A の各構成要素を取り除いて精度への寄与を分解測定している。"
+- contrasts: "B (ViT) は A (ResNet) と同じ画像分類で、畳み込みを使わず純 Transformer で競合する。"
+- baseline_only: "B (GNN サーベイ) は A のグラフ信号処理を背景として整理するだけで、競合手法ではない。"
 `;
 
 /** TS port of `build_classify_prompt`. `a` = older/target, `b` = newer/candidate. */
