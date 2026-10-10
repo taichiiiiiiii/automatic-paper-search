@@ -150,3 +150,40 @@ GNN の系譜（36 ノード・143 辺）が `lineage_relation_share` 0.063（�
   - DiffPool ← GraphSAGE は規則では extends。しかしキャッシュにある引用文 LLM の答え（gpt-oss-20b、「GraphSAGE 実装をベースに利用」）が baseline_only に上書きしている。LLM が誤って extends にする組も 4 本ある
   - 弱い規則（methodology 意図 + influential + 名指し）は FA で誤りが多い（Performer ← Sparse Transformer・Reformer・Longformer、FlashAttention ← Longformer・SMYRF）。FA の 0.204 は、この誤り 5 本を除くと約 0.11 になる
   - 起点どうしの辺の欠けは、OpenAlex の参考文献が空でなくても S2 の参考文献で補えば直る（S2 への問い合わせは増える）。OpenAlex の誤ったレコードは、同一性の検査で落とせば直る
+
+## 実装メモ（R2-22、強い関係の適合率）
+
+D5 の原則を生成側で守るようにした。**強い関係（extends・successor・supersedes・contrasts）は、被引用論文を名指しし、継承・置換・対比の手がかりの語を含む引用文で裏付けられるときだけ出す。それ以外は `baseline_only`（参照（背景））にする。** 公開の基準（`theme_min_lineage_share` 0.10 など）は変えていない。
+
+- **評価用の手作業ラベル**（`apps/pipeline/test/fixtures/lineage-eval/relation-precision-r222.json`、58 本）: 4 テーマで公開中の強い関係すべて（R2-8 の監査の下書きの判定と R2-21 の GNN の手作業）と、規則の難しい例。各辺に S2 の引用文・意図、キャッシュにある引用文 LLM の答え、正解（強い関係として正しいか・引用文で裏付けられるか・引用文）を持つ。`relationPrecisionR222.test.ts` が本番の経路（`deriveS2Relation`＋`guardRelation`）で全件を再判定する
+- **規則 v3 の変更**（`classify/apiRelations.ts`・`classify/citedTarget.ts`）
+  - 弱い規則（S2 の methodology 意図 + influential + 名指し）は `builds_on` にしない（`background`、規則名 `intent_methodology_influential` は残す）。FA で関連研究の列挙・限界の指摘・実験設定の踏襲を extends にしていた（Performer ← Sparse Transformer・Routing Transformer・Longformer、FlashAttention ← Longformer・SMYRF）
+  - 実験設定の踏襲を否定の手がかりに足した: 「model as in Child et al.」（モデルの大きさ・層数の写し）、「hyperparameters directly from [10]」、「subsample … following Hamilton et al.」。「Following [x], we report/accuracy/results」も踏襲
+  - 被引用論文が「[8, 15]」のように他の文献と同じ番号の組でしか示されない文の継承の語は数えない（MoCo v3 ← ViT の「based on Siamese networks」）。版の系列名（「FlashAttention algorithms … [2, 3, 4]」で FlashAttention-2）は名指しとみなす
+  - 継承の手がかりを 2 つ足した: 文頭の「Following [39], we place the MoEs …」（V-MoE ← GShard。元の規則は大文字の F を拾えなかった）、「Motivated by the Swin Transformer’s [19] success, we propose …」
+- **LLM は確認か格下げだけ**（`theme/s2Relations.ts::mergeContextAnswer`）
+  - 引用文の LLM は、規則が出した extends / contrasts を確認する（LLM の答えを使う）か、`baseline_only` に下げることしかできない。規則に手がかりがない組の extends は出さず、規則の辺の理由欄に「引用文の LLM は extends と判定したが…採らない」と書き残す。規則の結果が強い関係でない組は LLM に聞かない（省略の理由 `no_strong_claim`。オフラインの再実行で、キャッシュにない問い合わせが 40 → 6 に減る）
+  - 規則の extends を LLM が下げてよいか: データで決めた。公開中の 3 例のうち、LLM が「被引用論文の話で、利用・比較だ」と読んだ 2 例（Hash Layers ← BASE「architecture … and hyperparameters directly from [10]」、VR-GCN ← GraphSAGE「subsample … following Hamilton et al.」）は下げて正しく、「被引用論文の話ではない」と答えた 1 例（DiffPool ← GraphSAGE「We use the “mean” variant of GRAPHSAGE [16]」）は誤り。そこで、`refers_to_cited=false` の格下げは、引用文が被引用論文を語（題名・頭字語・著者・手法名）で名指ししているときは無視する。番号だけで示しているときは受け入れる（S2 の付け違いがありうるため）
+  - LLM の理由が自分の関係と矛盾する文（extends なのに「対照的にする」）のときは、関係は LLM のまま、理由は規則の文に置き換える
+- **要旨だけの LLM などの強い関係**（`theme/relationGuard.ts` 規則 3）: extends・successor・supersedes・ablation は、`s2_context_rule`、引用文の LLM、`title_version`、`foundational_allowlist` のときだけ残す。要旨だけの LLM・`intent_map`・unarXive の文型・推定は `baseline_only` にし、理由欄に元の判定を残す（「引用文の裏付けがないため extends を baseline_only に補正（要旨だけの LLM の判定は参考として残す）。元の判定: …」）。基礎文献リストは引用の記録がない組にしか使われず、ViT の 5 本は監査の下書きですべて正しかったので例外として残した
+- **A/B の残り**（`citedTarget.ts::titleizeRationale`）: 「Bは」「のAを」のように仮名・漢字に接した A/B を置き換えていなかった（仮名も Unicode の文字なので「語の一部」と判定していた）。ラテン文字・数字・「_」「-」に接するときだけ語の一部とみなす
+- **誤って統合されたレコード**（`theme/nodeIdentityGuard.ts`、`build.ts` で辺の確定後に適用、結果は `meta.suspect_records`）
+  - 落とす: 題名が催し・資料（workshop・tutorial・lecture・slides・talk など）か、置き場が Zenodo / Figshare で、かつ被引用が 500 以上。または S2 の被引用数が分かっていて OpenAlex がその 5 倍超かつ 300 超多い。起点（focus）は落とさず印だけ
+  - 印だけ: 出版から 2 年以内で年 1,000 件以上引用されている論文
+  - GNN では「Advances In Deep Learning On Graphs (GSP'18 Workshop)」（W2964321699、ChebNet の 4,973 件）を落とし、その 14 本の辺も消える。「Identifying Resilient Communities in Road Networks」（2025、1,570 件）は印だけ。S2 の被引用数はまだ生成に渡していない（下の残る課題）
+- **試算**（S2 キャッシュと引用文 LLM のキャッシュのみ、新しい LLM 呼び出しなし、`data/published` は書き換えない。使い捨てのスクリプトで公開中の各辺を通し直し、品質表と同じ `themeGateChecks` で判定）
+
+| テーマ | 強い関係 公開中 → 後 | lineage_relation_share 公開中 → 後 | 分類率 | 今の基準での公開 |
+|---|---|---|---|---|
+| graph-neural-network | 9 → 3（143 → 129 辺） | 0.063 → 0.023 | 0.888 → 0.953 | 非公開のまま |
+| mixture-of-experts | 16 → 3 | 0.267 → 0.050 | 0.850 → 0.850 | 未監査で公開 → 非公開 |
+| vision-transformer | 13 → 9 | 0.265 → 0.184 | 0.878 → 0.878 | 未監査で公開のまま |
+| flash-attention | 11 → 4 | 0.204 → 0.074 | 0.944 → 0.944 | 未監査で公開 → 非公開 |
+
+  - 残る強い関係は 19 本すべて手作業で正しい: GNN は VGAE ← GCN・MoNet ← GCN・DiffPool ← GraphSAGE、MoE は Expert Choice ← Shazeer・V-MoE ← GShard・GShard → Expert Choice（contrasts）、ViT は TransUNet・Video Swin・Swin-Unet・Swin V2（supersedes）と基礎文献リストの 5 本、FA は版の 3 本と Blackwell ← FlashAttention-2
+  - 手作業ラベルでの適合率（判断保留 1 本を除く）: 公開中 29/48 = 0.60 → 19/19 = 1.00。正しい強い関係 31 本のうち残るのは 19 本（引用文で裏付けられる 14 本はすべて残る。消えた 12 本は引用文の手がかりがない、引用文がない、または S2 にない組: Eigen → Shazeer、MMoE 系 4 本、GShard → Switch、Shazeer → V-MoE、Swin ← ViT、ViViT ← ViT、MoCo v3 ← ViT、SwinIR ← Swin、FlashDecoding++ ← FlashAttention）
+  - **分類率（D3）は下がらない**: `classificationGate.ts` は方式で数え、`citation_heuristic`・`year_cite` だけを未分類とする。規則の `baseline_only`（`s2_context_rule`）も、補正した要旨の LLM（方式 `llm` のまま）も分類済み。GNN が上がるのは、落としたレコードの 14 本のうち 10 本が推定の辺だったため
+- **残る課題**
+  - MoE と FA は作り直すと `lineage_relation_share` で非公開になる（基準は変えていない）。D5 の原則どおりの結果で、裏付けのない強い関係を基準を通すために残すことはしなかった。公開に戻すには、引用文の取りこぼし（MoE で S2 に引用文がない組、「inspired by [54] … [26]」のように 2 本を引く文）を減らすか、基準そのものを利用者が見直す
+  - 生成の規則が変わったので、作り直してから `theme_min_generated_at` を進める（skill の手順どおり。この作業では進めていない）
+  - S2 の被引用数を同一性の検査に渡していない（S2 の参考文献の取得は被引用側の `citationCount` も返すが、キャッシュに残していない）。テーマ外のノード（FA の DeepSeek-V3.2、ViT のレーダーの論文、MoE の Conditional Channel Gated Networks）はこの検査の対象外で、話題の判定（D7）の課題
