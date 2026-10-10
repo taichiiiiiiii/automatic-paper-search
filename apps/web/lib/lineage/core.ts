@@ -16,6 +16,12 @@
  * exist to prevent. `test/lineage/core.test.ts` ports
  * paperpilot/tests/viewer/test_lineage_core.mjs's cases 1:1 against
  * this file, not the JS.
+ *
+ * Deliberate divergence (design doc 41 D1): the quality gate now
+ * publishes two tiers -- `audited` (the original ready+passed contract)
+ * and `unaudited` (every automatic check passed, golden fixture
+ * `unknown`) -- see `qualityRowPublishedTier`. The legacy JS only ever
+ * knew the first.
  */
 
 export const ARTIFACT_VERSION = "lineage-artifact-v1" as const;
@@ -136,6 +142,12 @@ export interface QualityAudit {
   checks: QualityCheck[];
 }
 
+/** Design doc 41 D1. `audited` and `unaudited` rows are published (the
+ * latter with a visible 未監査 badge); `blocked` rows never are. */
+export type PublicationTier = "audited" | "unaudited" | "blocked";
+/** The two tiers a page may render. */
+export type PublishedTier = Exclude<PublicationTier, "blocked">;
+
 export interface QualityRow {
   collection_id: string;
   kind: "conference" | "theme" | "deep";
@@ -144,6 +156,9 @@ export interface QualityRow {
   path: string;
   availability: "unavailable" | "sparse" | "ready" | "failed";
   audit_status: "unknown" | "passed" | "failed";
+  /** Written by the quality builder since design doc 41; derived from the
+   * checks when absent (older manifests). */
+  publication_tier?: PublicationTier;
   freshness: "fresh" | "stale";
   generated_at: string | null;
   snapshot_date: string | null;
@@ -619,6 +634,43 @@ function rowHasPassedAuditContract(row: QualityRow): boolean {
   return passedNames.has("artifact_contract_v1") && passedNames.has("golden_fixture");
 }
 
+const PUBLICATION_TIERS: readonly string[] = ["audited", "unaudited", "blocked"];
+
+/**
+ * Tier from availability + checks alone, mirroring the pipeline's
+ * `publicationTier` (apps/pipeline/src/lineage/contract/v1.ts): every
+ * check other than `golden_fixture` must have passed (including
+ * `artifact_contract_v1`, which must be present); `golden_fixture`
+ * passed -> audited, unknown -> unaudited, anything else -> blocked.
+ */
+function derivedPublicationTier(row: QualityRow): PublicationTier {
+  if (row.availability !== "ready") return "blocked";
+  const checks = row.audit.checks;
+  if (!checks.some((c) => c.name === "artifact_contract_v1" && c.status === "passed")) {
+    return "blocked";
+  }
+  let golden: string | null = null;
+  for (const c of checks) {
+    if (c.name === "golden_fixture") golden = c.status;
+    else if (c.status !== "passed") return "blocked";
+  }
+  if (golden === "passed") return "audited";
+  if (golden === "unknown") return "unaudited";
+  return "blocked";
+}
+
+/** Unaudited rows need everything an audited row needs except the human
+ * fixture: the v1 artifact contract and a bound input hash. */
+function rowHasUnauditedContract(row: QualityRow): boolean {
+  return (
+    row.audit_status === "unknown" &&
+    row.artifact_schema_version === ARTIFACT_VERSION &&
+    typeof row.input_sha256 === "string" &&
+    SHA256_RE.test(row.input_sha256) &&
+    auditStatusIsConsistent(row)
+  );
+}
+
 export function parseQualityManifest(data: unknown): QualityManifest | null {
   if (
     !exactKeys(data, ["schema_version", "as_of", "audit_version", "collections"]) ||
@@ -637,8 +689,12 @@ export function parseQualityManifest(data: unknown): QualityManifest | null {
       !record(row) ||
       !exactKeys(
         row,
-        row.kind === "deep" ? QUALITY_ROW_KEYS.concat(QUALITY_DEEP_KEYS) : QUALITY_ROW_KEYS,
+        (row.kind === "deep"
+          ? QUALITY_ROW_KEYS.concat(QUALITY_DEEP_KEYS)
+          : QUALITY_ROW_KEYS
+        ).concat("publication_tier" in row ? ["publication_tier"] : []),
       ) ||
+      ("publication_tier" in row && !PUBLICATION_TIERS.includes(String(row.publication_tier))) ||
       !nonempty(row.collection_id) ||
       !["conference", "theme", "deep"].includes(String(row.kind)) ||
       typeof row.slug !== "string" ||
@@ -702,6 +758,13 @@ export function parseQualityManifest(data: unknown): QualityManifest | null {
         return null;
     }
     if (!validQualityAudit(typedRow.audit) || !auditStatusIsConsistent(typedRow)) return null;
+    // A written tier that disagrees with the row's own checks means the
+    // producer and this reader disagree: reject the whole manifest.
+    if (
+      typedRow.publication_tier !== undefined &&
+      typedRow.publication_tier !== derivedPublicationTier(typedRow)
+    )
+      return null;
     if (
       typedRow.availability === "ready" &&
       typedRow.audit_status === "passed" &&
@@ -757,23 +820,62 @@ export function resolveQualityCollection(
   return uniqueMatch(matches);
 }
 
-export function qualityRowIsEligible(
+/**
+ * The tier a page may publish this row under, or `null` (blocked /
+ * malformed / deep manifest hash mismatch). `audited` keeps the original
+ * ready+passed contract unchanged; `unaudited` (design doc 41 D1) is a
+ * ready row whose every automatic check passed and whose only
+ * non-passed check is an `unknown` golden fixture.
+ */
+export function qualityRowPublishedTier(
   row: QualityRow | null,
   { manifestSha256 = null }: { manifestSha256?: string | null } = {},
-): boolean {
+): PublishedTier | null {
+  if (row?.availability !== "ready" || !validQualityAudit(row.audit)) return null;
+  const derived = derivedPublicationTier(row);
+  if (row.publication_tier !== undefined && row.publication_tier !== derived) return null;
+  let tier: PublishedTier | null = null;
+  if (derived === "audited" && row.audit_status === "passed" && rowHasPassedAuditContract(row)) {
+    tier = "audited";
+  } else if (derived === "unaudited" && rowHasUnauditedContract(row)) {
+    tier = "unaudited";
+  }
+  if (tier === null) return null;
   if (
-    row?.availability !== "ready" ||
-    row.audit_status !== "passed" ||
-    !validQualityAudit(row.audit) ||
-    !rowHasPassedAuditContract(row)
-  )
-    return false;
-  return (
-    row.kind !== "deep" ||
-    (typeof row.manifest_input_sha256 === "string" &&
+    row.kind === "deep" &&
+    !(
+      typeof row.manifest_input_sha256 === "string" &&
       SHA256_RE.test(row.manifest_input_sha256) &&
-      row.manifest_input_sha256 === manifestSha256)
-  );
+      row.manifest_input_sha256 === manifestSha256 &&
+      PAPER_ID_RE.test(String(row.paper_id)) &&
+      ARXIV_RE.test(String(row.arxiv_id))
+    )
+  )
+    return null;
+  return tier;
+}
+
+/** Publication gate: true for `audited` and `unaudited` rows (design doc
+ * 41 D1), never for `blocked`. Use `qualityRowPublishedTier` to know
+ * which badge to show. */
+export function qualityRowIsEligible(
+  row: QualityRow | null,
+  options: { manifestSha256?: string | null } = {},
+): boolean {
+  return qualityRowPublishedTier(row, options) !== null;
+}
+
+/** Strict pre-41 gate: ready + passed + human golden fixture. */
+export function qualityRowIsAudited(
+  row: QualityRow | null,
+  options: { manifestSha256?: string | null } = {},
+): boolean {
+  return qualityRowPublishedTier(row, options) === "audited";
+}
+
+/** Sort key: audited before unaudited (stable otherwise). */
+export function publishedTierRank(tier: PublishedTier | null): number {
+  return tier === "audited" ? 0 : tier === "unaudited" ? 1 : 2;
 }
 
 export function qualityRowIsPublishable(

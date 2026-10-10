@@ -4,13 +4,19 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AuditStatus } from "../../../components/lineage/audit-status";
 import { LineageGraph } from "../../../components/lineage/graph/lineage-graph-app";
+import {
+  PUBLICATION_TIER_LABEL,
+  PublicationNotice,
+} from "../../../components/lineage/publication-badge";
 import { fetchLineageArtifactBytes, fetchLineageQualityManifest } from "../../../lib/data-lineage";
 import { conferenceDisplayName } from "../../../lib/lineage/conference-name";
 import {
   type LineageArtifact,
+  type PublishedTier,
   parseArtifact,
   qualityRowIsEligible,
   qualityRowIsPublishable,
+  qualityRowPublishedTier,
   resolveLineageFocusGate,
   resolveQualityCollection,
 } from "../../../lib/lineage/core";
@@ -43,7 +49,7 @@ import {
 type GateState =
   | { phase: "loading" }
   | { phase: "pending" }
-  | { phase: "ready"; artifact: LineageArtifact };
+  | { phase: "ready"; artifact: LineageArtifact; tier: PublishedTier };
 
 // Shared loading copy with app/lineage/page.tsx's Focus View (same
 // "verifying the index matches the audit" wait state) -- pinned by
@@ -92,7 +98,8 @@ export default function ConferenceLineagePage() {
         return;
       }
       const artifact = parseArtifact(fetched.data.raw, { kind: "conference" });
-      if (!artifact) {
+      const tier = qualityRowPublishedTier(row);
+      if (!artifact || tier === null) {
         setState({ phase: "pending" });
         return;
       }
@@ -116,7 +123,7 @@ export default function ConferenceLineagePage() {
       const gate = resolveLineageFocusGate(artifact, requested);
       setFocusMount(gate.mount);
       setFocusId(gate.focusId);
-      setState({ phase: "ready", artifact });
+      setState({ phase: "ready", artifact, tier });
     }
     run();
     return () => {
@@ -139,17 +146,20 @@ export default function ConferenceLineagePage() {
         </nav>
         <h1 className="font-serif text-2xl font-bold text-ink">
           <em>Lineage</em> —{" "}
-          {state.phase === "ready" ? `${display}（監査済み）` : `${display} 監査待ち`}
+          {state.phase === "ready"
+            ? `${display}（${PUBLICATION_TIER_LABEL[state.tier]}）`
+            : `${display} 監査待ち`}
         </h1>
         <p className="text-sm text-ink-muted">
           {state.phase === "ready"
-            ? "品質監査に合格した論文間の関係を表示しています。"
+            ? "自動検査に合格した論文間の関係を表示しています。"
             : `${display} の系譜データは品質監査中です。合格するまで内容は公開しません。`}
         </p>
+        {state.phase === "ready" && <PublicationNotice tier={state.tier} />}
         <p className="text-xs text-ink-subtle">
           {state.phase === "ready"
             ? "表示中のデータは構造・識別子・関係根拠と入力ハッシュを検証済みです。"
-            : "構造・識別子・関係根拠と入力ハッシュの検証が完了するまで、未監査データは読み込みません。"}
+            : "構造・識別子・関係根拠と入力ハッシュの検証が完了するまで、系譜データは読み込みません。"}
         </p>
       </header>
 
@@ -172,7 +182,9 @@ export default function ConferenceLineagePage() {
             <LineageGraph artifact={state.artifact} initialFocusId={focusId} />
           ) : (
             <p role="alert" className="mb-4 text-sm text-accent-strong">
-              指定された論文IDはこの監査済み系譜にありません。
+              {state.tier === "audited"
+                ? "指定された論文IDはこの監査済み系譜にありません。"
+                : "指定された論文IDはこの系譜にありません。"}
             </p>
           )}
         </article>

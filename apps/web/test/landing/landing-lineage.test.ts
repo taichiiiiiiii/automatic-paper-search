@@ -4,6 +4,7 @@ import {
   lineageShelfHref,
   lineageShelfMeta,
   lineageShelfStaleNote,
+  lineageShelfTier,
   selectLineageShelfRows,
 } from "../../lib/landing-lineage";
 import {
@@ -144,7 +145,32 @@ describe("selectLineageShelfRows", () => {
     expect(rows.map((row) => row.kind).sort()).toEqual(["conference", "theme"]);
   });
 
-  it("does not re-sort rows (preserves the manifest's own collection_id order)", () => {
+  it("lists audited rows before unaudited ones (design doc 41 D1)", () => {
+    const unauditedAudit = {
+      fixture_sha256: null,
+      evaluated_at: "2026-08-30T00:00:00Z",
+      actor: "ci:audit-v1",
+      checks: [
+        { name: "artifact_contract_v1", status: "passed", observed: 0, expected: 0, evidence: [] },
+        { name: "golden_fixture", status: "unknown", observed: null, expected: "x", evidence: [] },
+      ],
+    };
+    const quality = parse([
+      themeRow({
+        collection_id: "theme:a-theme",
+        slug: "a-theme",
+        path: "themes/a-theme/lineage.json",
+        audit_status: "unknown",
+        audit: unauditedAudit,
+      }),
+      themeRow(),
+    ]);
+    const rows = selectLineageShelfRows(quality);
+    expect(rows.map((row) => row.slug)).toEqual(["test-theme", "a-theme"]);
+    expect(rows.map((row) => lineageShelfTier(row))).toEqual(["audited", "unaudited"]);
+  });
+
+  it("does not re-sort rows within a tier (preserves the manifest's own collection_id order)", () => {
     // parseQualityManifest itself enforces collection_id ascending order
     // (rejects anything else), so "conference:" before "theme:" is the
     // only order a parsed manifest can ever have here; this just pins

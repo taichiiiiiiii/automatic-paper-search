@@ -5,6 +5,10 @@ import { useEffect, useMemo, useState } from "react";
 import { AuditStatus } from "../../../components/lineage/audit-status";
 import { DeepLineageApp, type DeepView } from "../../../components/lineage/graph/deep-lineage-app";
 import {
+  PUBLICATION_TIER_LABEL,
+  PublicationNotice,
+} from "../../../components/lineage/publication-badge";
+import {
   fetchDeepManifestBytes,
   fetchLineageArtifactBytes,
   fetchLineageQualityManifest,
@@ -14,12 +18,15 @@ import {
   type DeepManifest,
   type DeepManifestEntry,
   type LineageArtifact,
+  type PublishedTier,
   parseArtifact,
   parseDeepManifest,
+  publishedTierRank,
   type QualityManifest,
   type QualityRow,
   qualityRowIsEligible,
   qualityRowIsPublishable,
+  qualityRowPublishedTier,
   type Relation,
   resolveDeepFocusGate,
   resolveFocus,
@@ -129,8 +136,10 @@ const LOADING_MESSAGE = "公開索引と監査情報の一致を確認してい�
 
 // Ready-state hero/footer copy, ported verbatim from deep.js `init`'s
 // post-gate DOM writes (`heroTitle`/`heroLede`/`heroNote` textContent).
-const READY_TITLE = "1 本を深掘り（監査済み）";
-const READY_LEDE = "品質監査に合格した論文の深掘り系譜を表示しています。";
+function readyTitle(tier: PublishedTier): string {
+  return `1 本を深掘り（${PUBLICATION_TIER_LABEL[tier]}）`;
+}
+const READY_LEDE = "自動検査に合格した論文の深掘り系譜を表示しています。";
 const READY_NOTE = "表示中のデータは構造・識別子・関係根拠と入力ハッシュを検証済みです。";
 
 const VIEW_BUTTONS: readonly [DeepView, string][] = [
@@ -206,7 +215,7 @@ export default function ConferenceDeepPage() {
   const eligibleEntries = useMemo(() => {
     if (state.phase !== "ready") return [];
     const seenPaperIds = new Set<string>();
-    const pairs: { row: QualityRow; entry: DeepManifestEntry }[] = [];
+    const pairs: { row: QualityRow; entry: DeepManifestEntry; tier: PublishedTier }[] = [];
     for (const entry of state.manifest.entries) {
       if (seenPaperIds.has(entry.paper_id)) continue;
       const row = resolveQualityCollection(state.quality, {
@@ -215,11 +224,16 @@ export default function ConferenceDeepPage() {
         paperId: entry.paper_id,
         path: `${slug}/${entry.filename}`,
       });
-      if (!row || !qualityRowIsEligible(row, { manifestSha256: state.manifestSha256 })) continue;
+      const tier = row
+        ? qualityRowPublishedTier(row, { manifestSha256: state.manifestSha256 })
+        : null;
+      if (!row || tier === null) continue;
       seenPaperIds.add(entry.paper_id);
-      pairs.push({ row, entry });
+      pairs.push({ row, entry, tier });
     }
-    return pairs;
+    // Design doc 41 D1: audited papers first, manifest order otherwise
+    // (Array.prototype.sort is stable).
+    return pairs.sort((a, b) => publishedTierRank(a.tier) - publishedTierRank(b.tier));
   }, [state, slug]);
 
   useEffect(() => {
@@ -340,6 +354,8 @@ export default function ConferenceDeepPage() {
   // "監査待ち", matching deep.js `init`'s own early return before it
   // writes the ready hero text.
   const heroReady = uiReady && artifact !== null && artifactIssue === null;
+  const selectedTier =
+    eligibleEntries.find((pair) => pair.row.paper_id === selectedPaperId)?.tier ?? null;
 
   return (
     <main id="main-content" className="mx-auto flex max-w-4xl flex-col gap-8 px-4 py-12 sm:px-6">
@@ -355,7 +371,8 @@ export default function ConferenceDeepPage() {
           / Deep Lineage
         </nav>
         <h1 className="font-serif text-2xl font-bold text-ink">
-          <em>Deep Lineage</em> — {heroReady ? READY_TITLE : `${display} 監査待ち`}
+          <em>Deep Lineage</em> —{" "}
+          {heroReady && selectedTier ? readyTitle(selectedTier) : `${display} 監査待ち`}
         </h1>
         <p className="text-sm text-ink-muted">
           {heroReady
@@ -365,8 +382,9 @@ export default function ConferenceDeepPage() {
         <p className="text-xs text-ink-subtle">
           {heroReady
             ? READY_NOTE
-            : "構造・識別子・関係根拠と入力ハッシュの検証が完了するまで、未監査データは読み込みません。"}
+            : "構造・識別子・関係根拠と入力ハッシュの検証が完了するまで、系譜データは読み込みません。"}
         </p>
+        {heroReady && selectedTier && <PublicationNotice tier={selectedTier} />}
       </header>
 
       {!uiReady && (
@@ -413,7 +431,7 @@ export default function ConferenceDeepPage() {
               >
                 {eligibleEntries.map((pair) => (
                   <option key={pair.row.paper_id} value={pair.row.paper_id ?? ""}>
-                    {pair.entry.title}
+                    {pair.tier === "unaudited" ? `${pair.entry.title}（未監査）` : pair.entry.title}
                   </option>
                 ))}
               </select>

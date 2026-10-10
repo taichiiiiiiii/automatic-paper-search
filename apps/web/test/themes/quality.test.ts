@@ -10,7 +10,11 @@
 // same way docs/assets/theme.js's loadThemeArtifact() did).
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { fetchLineageQualityManifest, fetchThemeArtifact } from "../../lib/data-themes";
-import { eligibleThemeManifest } from "../../lib/themes-gallery";
+import {
+  eligibleThemeManifest,
+  pickDefaultSlug,
+  sortGalleryManifest,
+} from "../../lib/themes-gallery";
 import type {
   LineageProvenance,
   QualityAudit,
@@ -384,5 +388,63 @@ describe("quality gate behaviour (lib/themes-quality.ts + lib/data-themes.ts)", 
     expect(qualityRowIsEligible(resolved)).toBe(true);
     expect(qualityRowIsPublishable(resolved, { artifactSha256: "f".repeat(64) })).toBe(true);
     expect(qualityRowIsPublishable(resolved, { artifactSha256: "0".repeat(64) })).toBe(false);
+  });
+});
+
+describe("publication tiers in the theme gallery (design doc 41 D1)", () => {
+  const unauditedAudit: QualityAudit = {
+    fixture_sha256: null,
+    evaluated_at: "2026-08-30T00:00:00Z",
+    actor: "ci:audit-v1",
+    checks: [
+      { name: "artifact_contract_v1", status: "passed", observed: 0, expected: 0, evidence: [] },
+      { name: "golden_fixture", status: "unknown", observed: null, expected: "x", evidence: [] },
+    ],
+  };
+
+  it("admits unaudited themes, tags each entry with its tier, and orders audited first", () => {
+    const audited = themeQualityRow({
+      collection_id: "theme:z-audited",
+      slug: "z-audited",
+      label: "Z",
+      path: "themes/z-audited/lineage.json",
+      input_sha256: "f".repeat(64),
+    });
+    const unaudited = themeQualityRow({
+      collection_id: "theme:a-unaudited",
+      slug: "a-unaudited",
+      label: "A",
+      path: "themes/a-unaudited/lineage.json",
+      input_sha256: "e".repeat(64),
+      audit_status: "unknown",
+      audit: unauditedAudit,
+    });
+    const quality = parseQualityManifest({
+      ...qualityManifestFixture(unaudited),
+      collections: [unaudited, audited],
+    });
+    expect(quality).not.toBeNull();
+    const manifest = [
+      { slug: "a-unaudited", theme: "A", paper_count: 3, generated_at: "2026-09-02T00:00:00Z" },
+      { slug: "z-audited", theme: "Z", paper_count: 3, generated_at: "2026-08-01T00:00:00Z" },
+    ];
+    const eligible = eligibleThemeManifest(manifest, quality);
+    expect(eligible.map((e) => [e.slug, e.publication_tier])).toEqual([
+      ["a-unaudited", "unaudited"],
+      ["z-audited", "audited"],
+    ]);
+    // Audited first even though the unaudited theme is fresher.
+    expect(sortGalleryManifest(eligible, {}, null).map((e) => e.slug)).toEqual([
+      "z-audited",
+      "a-unaudited",
+    ]);
+    expect(pickDefaultSlug(eligible, {})).toBe("z-audited");
+  });
+
+  it("never takes publication_tier from the raw themes-manifest.json", () => {
+    const blocked = themeQualityRow({ availability: "sparse" });
+    const quality = parseQualityManifest(qualityManifestFixture(blocked));
+    const manifest = [{ slug: "test-theme", paper_count: 3, publication_tier: "audited" }];
+    expect(eligibleThemeManifest(manifest, quality)).toEqual([]);
   });
 });

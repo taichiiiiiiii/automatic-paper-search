@@ -23,8 +23,11 @@ import {
   parseArtifact,
   parseDeepManifest,
   parseQualityManifest,
+  publishedTierRank,
+  qualityRowIsAudited,
   qualityRowIsEligible,
   qualityRowIsPublishable,
+  qualityRowPublishedTier,
   resolveDeepFocusGate,
   resolveFocus,
   resolveLineageFocusGate,
@@ -561,6 +564,100 @@ describe("quality gate", () => {
     expect(qualityRowIsEligible(themeRow({ availability: "sparse" }) as never)).toBe(false);
   });
 
+  // Design doc 41 D1: publication tiers.
+  function unauditedChecks(overrides: Record<string, unknown> = {}) {
+    return {
+      fixture_sha256: null,
+      evaluated_at: "2026-08-30T00:00:00Z",
+      actor: "ci:audit-v1",
+      checks: [
+        { name: "artifact_contract_v1", status: "passed", observed: 0, expected: 0, evidence: [] },
+        {
+          name: "golden_fixture",
+          status: "unknown",
+          observed: null,
+          expected: "matching frozen fixture",
+          evidence: [],
+        },
+        { name: "orphan_node_count", status: "passed", observed: 0, expected: 0, evidence: [] },
+      ],
+      ...overrides,
+    };
+  }
+
+  it("a ready row with only an unknown golden fixture is published as 'unaudited'", () => {
+    const row = themeRow({ audit_status: "unknown", audit: unauditedChecks() });
+    const quality = parseQualityManifest(qualityManifest([row]));
+    const parsed = resolveQualityCollection(quality, { kind: "theme", slug: "test-theme" });
+    expect(qualityRowPublishedTier(parsed)).toBe("unaudited");
+    expect(qualityRowIsEligible(parsed)).toBe(true);
+    expect(qualityRowIsAudited(parsed)).toBe(false);
+    expect(qualityRowIsPublishable(parsed, { artifactSha256: "f".repeat(64) })).toBe(true);
+    expect(qualityRowIsPublishable(parsed, { artifactSha256: "e".repeat(64) })).toBe(false);
+    // The explicit field, when present, must agree.
+    const explicit = parseQualityManifest(
+      qualityManifest([{ ...row, publication_tier: "unaudited" }]),
+    );
+    expect(qualityRowPublishedTier(explicit?.collections[0] ?? null)).toBe("unaudited");
+  });
+
+  it("ready+passed rows are 'audited' and sort before unaudited ones", () => {
+    const quality = parseQualityManifest(
+      qualityManifest([{ ...themeRow(), publication_tier: "audited" }]),
+    );
+    const tier = qualityRowPublishedTier(quality?.collections[0] ?? null);
+    expect(tier).toBe("audited");
+    expect(publishedTierRank(tier)).toBeLessThan(publishedTierRank("unaudited"));
+  });
+
+  it("a failed or unknown automatic check blocks the row even when golden is unknown", () => {
+    const failed = unauditedChecks();
+    (failed.checks as Array<Record<string, unknown>>)[2]!.status = "failed";
+    expect(qualityRowIsEligible(themeRow({ audit_status: "failed", audit: failed }) as never)).toBe(
+      false,
+    );
+    const unknown = unauditedChecks();
+    (unknown.checks as Array<Record<string, unknown>>)[2]!.status = "unknown";
+    expect(
+      qualityRowIsEligible(themeRow({ audit_status: "unknown", audit: unknown }) as never),
+    ).toBe(false);
+    // A failed golden fixture blocks too.
+    const goldenFailed = unauditedChecks();
+    (goldenFailed.checks as Array<Record<string, unknown>>)[1]!.status = "failed";
+    expect(
+      qualityRowIsEligible(themeRow({ audit_status: "failed", audit: goldenFailed }) as never),
+    ).toBe(false);
+  });
+
+  it("an unaudited row still needs the v1 artifact contract and an input hash", () => {
+    const base = { audit_status: "unknown", audit: unauditedChecks() };
+    expect(
+      qualityRowIsEligible(themeRow({ ...base, artifact_schema_version: null }) as never),
+    ).toBe(false);
+    expect(qualityRowIsEligible(themeRow({ ...base, input_sha256: null }) as never)).toBe(false);
+  });
+
+  it("rejects the manifest when a written publication_tier disagrees with the checks", () => {
+    expect(
+      parseQualityManifest(qualityManifest([{ ...themeRow(), publication_tier: "unaudited" }])),
+    ).toBeNull();
+    expect(
+      parseQualityManifest(qualityManifest([{ ...themeRow(), publication_tier: "public" }])),
+    ).toBeNull();
+    const blocked = themeRow({ audit_status: "unknown", audit: unauditedChecks() });
+    expect(
+      parseQualityManifest(qualityManifest([{ ...blocked, publication_tier: "blocked" }])),
+    ).toBeNull();
+  });
+
+  it("an unaudited deep row still requires the exact manifest hash", () => {
+    const row = deepRow({ audit_status: "unknown", audit: unauditedChecks() });
+    expect(qualityRowPublishedTier(row as never, { manifestSha256: "c".repeat(64) })).toBe(
+      "unaudited",
+    );
+    expect(qualityRowIsEligible(row as never, { manifestSha256: "0".repeat(64) })).toBe(false);
+  });
+
   it.each([
     [
       "malformed quality manifest fails closed",
@@ -846,10 +943,18 @@ describe("the real published quality manifest stays fail-closed", () => {
     expect(rows.every((row) => !qualityRowIsEligible(row))).toBe(true);
   });
 
-  it("all theme artifacts (at least the 3 legacy ones) remain fail closed until human-reviewed fixtures", () => {
+  // Design doc 41 D1: themes that pass every automatic check are published
+  // as unaudited; none can be audited without a human fixture, and every
+  // row's eligibility must agree with the builder's written tier.
+  it("theme artifacts are audited only with a human fixture, and eligibility matches the written tier", () => {
     const rows = publicQuality?.collections.filter((row) => row.kind === "theme") ?? [];
     expect(rows.length).toBeGreaterThanOrEqual(3);
-    expect(rows.every((row) => !qualityRowIsEligible(row))).toBe(true);
+    for (const row of rows) {
+      expect(row.publication_tier).toBeDefined();
+      const tier = qualityRowPublishedTier(row);
+      expect(tier ?? "blocked").toBe(row.publication_tier);
+      if (tier === "audited") expect(row.audit.fixture_sha256).toMatch(/^[0-9a-f]{64}$/);
+    }
   });
 });
 

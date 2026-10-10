@@ -18,7 +18,14 @@
  * components/landing/landing.tsx. `test/landing/landing-lineage.test.ts`
  * covers this file.
  */
-import { type QualityManifest, type QualityRow, qualityRowIsEligible } from "./lineage/core";
+import {
+  type PublishedTier,
+  publishedTierRank,
+  type QualityManifest,
+  type QualityRow,
+  qualityRowIsEligible,
+  qualityRowPublishedTier,
+} from "./lineage/core";
 
 const SLUG_RE = /^[a-z0-9][a-z0-9-]*$/;
 
@@ -49,14 +56,23 @@ function isShelfCandidate(row: QualityRow): boolean {
 }
 
 /**
- * Rows the shelf may show, in manifest order (already sorted by
- * `collection_id` -- `parseQualityManifest` enforces that order and
- * rejects anything else). landing.js never re-sorts this list, so
- * neither does this port.
+ * Rows the shelf may show: audited rows first, then unaudited ones
+ * (design doc 41 D1), each group in manifest order (already sorted by
+ * `collection_id` -- `parseQualityManifest` enforces that order).
  */
 export function selectLineageShelfRows(quality: QualityManifest | null): QualityRow[] {
   if (!quality || !Array.isArray(quality.collections)) return [];
-  return quality.collections.filter(isShelfCandidate);
+  const rows = quality.collections.filter(isShelfCandidate);
+  return rows
+    .map((row, index) => ({ row, index, rank: publishedTierRank(qualityRowPublishedTier(row)) }))
+    .sort((a, b) => a.rank - b.rank || a.index - b.index)
+    .map(({ row }) => row);
+}
+
+/** The badge tier for a shelf row (always non-null for rows returned by
+ * `selectLineageShelfRows`). */
+export function lineageShelfTier(row: QualityRow): PublishedTier | null {
+  return qualityRowPublishedTier(row);
 }
 
 /**

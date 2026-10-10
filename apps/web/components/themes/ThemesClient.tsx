@@ -13,9 +13,10 @@
  */
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { BASE_PATH } from "../../lib/config";
+import { API_BASE, BASE_PATH } from "../../lib/config";
 import {
   fetchLineageQualityManifest,
+  fetchThemeApiAccepting,
   fetchThemeArtifact,
   fetchThemeQualityRollup,
   fetchThemesManifest,
@@ -24,6 +25,7 @@ import type { ThemeManifestEntry, ThemeQualityRollup } from "../../lib/themes-ga
 import { eligibleThemeManifest, pickDefaultSlug, safeDisplayCount } from "../../lib/themes-gallery";
 import type { LineageArtifact } from "../../lib/themes-quality";
 import { SLUG_RE } from "../../lib/themes-slug";
+import { PublicationNotice } from "../lineage/publication-badge";
 import { LineageTree } from "./LineageTree";
 import { ThemeGallery } from "./ThemeGallery";
 import { ThemeRequestForm } from "./ThemeRequestForm";
@@ -38,7 +40,7 @@ type ViewState =
   // state. Per CLAUDE.md's "always render a distinct error state,
   // never empty-as-error", a fetch failure gets its own phase.
   | { phase: "error" }
-  // No theme has an eligible (ready+passed) quality row at all, OR the
+  // No theme has a published (audited/unaudited) quality row at all, OR the
   // slug this render landed on failed its own gate at fetch time (a row
   // can go stale between audit publication and artifact fetch) --
   // either way, the whole interactive surface stays closed (SCR-22).
@@ -54,6 +56,44 @@ type ViewState =
 
 function entryTheme(manifest: ThemeManifestEntry[], slug: string): string {
   return manifest.find((e) => e.slug === slug)?.theme || slug;
+}
+
+// M4 fix: a relative `?theme=...` resolved against whatever the
+// browser's current URL happened to be -- after a next/link client-side
+// nav elsewhere and back, or any path that isn't exactly `/themes/`,
+// that landed on the wrong page (e.g. `/?theme=...`) instead of the
+// theme lineage view. Always target the absolute `/themes/` path.
+function redirectToTheme(slug: string): void {
+  window.location.href = `${BASE_PATH}/themes/?theme=${encodeURIComponent(slug)}`;
+}
+
+/**
+ * The theme request form, shown only while the Worker reports
+ * `accepting: true` on /api/health (design doc 41 D1: requested themes
+ * are published as unaudited right away, so the form no longer waits for
+ * an eligible lineage). Fail closed: while checking nothing is shown, and
+ * a paused/unreachable Worker shows a short notice instead of the form.
+ */
+function ThemeRequestGate() {
+  const [accepting, setAccepting] = useState<boolean | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    fetchThemeApiAccepting(API_BASE).then((ok) => {
+      if (!cancelled) setAccepting(ok);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+  if (accepting === null) return null;
+  if (!accepting) {
+    return (
+      <p className="mt-4 text-sm text-ink-subtle" data-theme-request="closed">
+        現在、新しいテーマの受付を停止しています。
+      </p>
+    );
+  }
+  return <ThemeRequestForm onReady={redirectToTheme} />;
 }
 
 export function ThemesClient() {
@@ -80,7 +120,7 @@ export function ThemesClient() {
         return;
       }
       const rawManifest = manifestResult.data;
-      // Only strict quality-manifest rows that are ready+passed may
+      // Only strict quality-manifest rows with a published tier may
       // enter the picker/gallery or become a default selection -- the
       // legacy manifest and _quality.json rollup are discovery/
       // telemetry inputs, never publication gates (SCR-32).
@@ -173,8 +213,11 @@ export function ThemesClient() {
       >
         <h2 className="font-serif text-xl font-semibold text-ink">系譜は品質監査中です</h2>
         <p className="mt-2 text-sm text-ink-muted">
-          公開基準を満たしたコレクションはまだありません。監査に合格するまでテーマ名・件数・グラフ・操作は公開しません。
+          公開基準を満たしたコレクションはまだありません。自動検査に合格するまでテーマ名・件数・グラフ・操作は公開しません。
         </p>
+        <div className="mx-auto mt-4 max-w-md text-left">
+          <ThemeRequestGate />
+        </div>
         <p className="mt-4 text-sm">
           <a href="/" className="text-accent underline">
             論文カタログへ戻る
@@ -215,23 +258,12 @@ export function ThemesClient() {
         {aboutOpen && (
           <div id="hero-details" className="mt-3 rounded-md border border-rule bg-surface p-4">
             <p className="text-sm text-ink-muted">
-              系譜データは、構造・識別子・関係根拠を検査する品質監査を通過したものだけ公開します。
+              系譜データは、構造・識別子・関係根拠を検査する自動検査に合格したものだけ公開します。
             </p>
             <p className="mt-1 text-sm text-ink-subtle">
-              現在の監査に合格したコレクションがない場合、テーマ名・件数・フィルタ・ダウンロード操作は表示されません。
+              人が内容を確認した系譜は「監査済み」、まだ確認していない系譜は「未監査（自動生成）」と表示します。依頼したテーマは、自動検査に合格するとまず未監査として公開されます。
             </p>
-            <ThemeRequestForm
-              onReady={(slug) => {
-                // M4 fix: a relative `?theme=...` resolved against
-                // whatever the browser's current URL happened to be --
-                // after a next/link client-side nav elsewhere and back,
-                // or any path that isn't exactly `/themes/`, that
-                // landed on the wrong page (e.g. `/?theme=...`) instead
-                // of the theme lineage view. Always target the
-                // absolute `/themes/` path.
-                window.location.href = `${BASE_PATH}/themes/?theme=${encodeURIComponent(slug)}`;
-              }}
-            />
+            <ThemeRequestGate />
           </div>
         )}
       </header>
@@ -267,6 +299,12 @@ export function ThemesClient() {
 
       <ThemeGallery manifest={manifest} qualityRollup={qualityRollup} currentSlug={currentSlug} />
 
+      {entry?.publication_tier && (
+        <div className="mt-4">
+          <PublicationNotice tier={entry.publication_tier} />
+        </div>
+      )}
+
       <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-ink-muted">
         <span className="rounded-full bg-surface-2 px-2 py-1">📅 {yearRange}</span>
         <span className="rounded-full bg-surface-2 px-2 py-1">📄 {count} papers</span>
@@ -290,7 +328,7 @@ export function ThemesClient() {
       )}
 
       <footer className="mt-10 text-xs text-ink-subtle">
-        品質監査に合格した系譜のみ公開します
+        自動検査に合格した系譜のみ公開します（人が確認したものは「監査済み」、未確認のものは「未監査（自動生成）」）
       </footer>
     </div>
   );

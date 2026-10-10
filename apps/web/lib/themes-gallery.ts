@@ -6,8 +6,9 @@
  * helpers themselves live in lib/data-themes.ts.
  */
 
+import { type PublishedTier, publishedTierRank, qualityRowPublishedTier } from "./lineage/core";
 import type { QualityManifest } from "./themes-quality";
-import { qualityRowIsEligible, resolveQualityCollection } from "./themes-quality";
+import { resolveQualityCollection } from "./themes-quality";
 import { SLUG_RE } from "./themes-slug";
 
 export interface ThemeManifestEntry {
@@ -16,6 +17,9 @@ export interface ThemeManifestEntry {
   generated_at?: string | null;
   paper_count?: number;
   year_range?: [number, number];
+  /** Set by `eligibleThemeManifest` from the quality row (design doc 41
+   * D1); never read from the raw themes-manifest.json. */
+  publication_tier?: PublishedTier;
   [key: string]: unknown;
 }
 
@@ -69,8 +73,10 @@ export function qualityTierFor(quality: ThemeQualityEntry | null | undefined): Q
 }
 
 /**
- * Only strict quality-manifest rows that are ready+passed may enter the
- * picker/gallery or become a default selection (SCR-32). The legacy
+ * Only strict quality-manifest rows with a published tier (audited, or
+ * unaudited = every automatic check passed; design doc 41 D1) may enter
+ * the picker/gallery or become a default selection (SCR-32). Each
+ * returned entry carries that tier in `publication_tier`. The legacy
  * `themes-manifest.json` and `_quality.json` are discovery/telemetry
  * inputs, never publication gates -- this is the ONLY function that
  * decides what the user-facing gallery/picker shows.
@@ -80,25 +86,34 @@ export function eligibleThemeManifest(
   quality: QualityManifest | null,
 ): ThemeManifestEntry[] {
   if (!Array.isArray(manifest) || !quality) return [];
-  return manifest.filter((entry: unknown): entry is ThemeManifestEntry => {
+  const eligible: ThemeManifestEntry[] = [];
+  for (const entry of manifest as unknown[]) {
     if (
       !entry ||
       typeof entry !== "object" ||
       typeof (entry as { slug?: unknown }).slug !== "string" ||
       !SLUG_RE.test((entry as { slug: string }).slug)
     ) {
-      return false;
+      continue;
     }
     const row = resolveQualityCollection(quality, {
       kind: "theme",
       slug: (entry as { slug: string }).slug,
     });
-    return qualityRowIsEligible(row);
-  });
+    const tier = qualityRowPublishedTier(row);
+    if (tier === null) continue;
+    eligible.push({ ...(entry as ThemeManifestEntry), publication_tier: tier });
+  }
+  return eligible;
+}
+
+function publicationRank(entry: ThemeManifestEntry): number {
+  return publishedTierRank(entry.publication_tier ?? null);
 }
 
 /** Sort order shared by the gallery render and `pickDefaultSlug`: the
- * currently-selected theme (if any) pinned first, then quality tier
+ * currently-selected theme (if any) pinned first, then audited before
+ * unaudited (design doc 41 D1), then quality tier
  * (high -> mixed -> generic -> unknown), then freshest `generated_at`
  * first. Returns a new array; never mutates its input. */
 export function sortGalleryManifest(
@@ -109,6 +124,9 @@ export function sortGalleryManifest(
   return [...manifest].sort((a, b) => {
     if (a.slug === currentSlug) return -1;
     if (b.slug === currentSlug) return 1;
+    const pubA = publicationRank(a);
+    const pubB = publicationRank(b);
+    if (pubA !== pubB) return pubA - pubB;
     const tierA = QUALITY_TIERS[qualityTierFor(qualityRollup[a.slug])].rank;
     const tierB = QUALITY_TIERS[qualityTierFor(qualityRollup[b.slug])].rank;
     if (tierA !== tierB) return tierA - tierB;
@@ -120,7 +138,7 @@ export function sortGalleryManifest(
 
 /** Default landing slug when the URL has no `?theme=` or the requested
  * slug isn't eligible: the theme most likely to look impressive on a
- * first visit (highest quality tier, then freshest). `manifest` must
+ * first visit (audited first, then highest quality tier, then freshest). `manifest` must
  * already be the eligible subset (see `eligibleThemeManifest`). */
 export function pickDefaultSlug(
   manifest: ThemeManifestEntry[],
@@ -131,6 +149,9 @@ export function pickDefaultSlug(
     .filter((e) => typeof e.slug === "string" && SLUG_RE.test(e.slug))
     .filter((e) => (e.paper_count || 0) > 0)
     .sort((a, b) => {
+      const pubA = publicationRank(a);
+      const pubB = publicationRank(b);
+      if (pubA !== pubB) return pubA - pubB;
       const tierA = QUALITY_TIERS[qualityTierFor(qualityRollup[a.slug])].rank;
       const tierB = QUALITY_TIERS[qualityTierFor(qualityRollup[b.slug])].rank;
       if (tierA !== tierB) return tierA - tierB;
