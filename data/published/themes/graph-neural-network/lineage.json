@@ -60,6 +60,35 @@
       "is_focus": false
     },
     {
+      "id": "openalex:W1991252559",
+      "title": "Discrete Signal Processing on Graphs",
+      "year": 2013,
+      "venue": "IEEE Transactions on Signal Processing",
+      "venue_tier": "preprint",
+      "authors": [
+        "Aliaksei Sandryhaila",
+        "José M. F. Moura"
+      ],
+      "kinds": [],
+      "citation_count": 1566,
+      "github_stars": 0,
+      "tldr": "In social settings, individuals interact through webs of relationships. Each individual is a node in a complex network (or graph) of…",
+      "short_abstract": "In social settings, individuals interact through webs of relationships. Each individual is a node in a complex network (or graph) of interdependencies and generates data, lots of data. We label the data by its source, or formally stated, we index the data by the nodes of the graph. The resulting signals (data indexed by the nodes) are far removed from time or image signals indexed by well ordered time samples or pixels. DSP, discrete signal processing, provides a comprehensive, elegant, and efficient methodology to describe, represent, transform, analyze, process, or synthesize these well ordered time or image signals. This paper extends to signals on graphs DSP and its basic tenets, including filters, convolution,z-transform, impulse response, spectral representation, Fourier transform, frequency response, and illustrates DSP on graphs by classifying blogs, linear predicting and compressing data from irregularly located weather stations, or predicting behavior of customers of a…",
+      "arxiv_id": "1210.4752",
+      "doi": "10.1109/tsp.2013.2238935",
+      "aliases": [
+        [
+          "arxiv",
+          "1210.4752"
+        ],
+        [
+          "doi",
+          "10.1109/tsp.2013.2238935"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
       "id": "openalex:W2101491865",
       "title": "The emerging field of signal processing on graphs: Extending high-dimensional data analysis to networks and other irregular domains",
       "year": 2013,
@@ -287,6 +316,31 @@
       "is_focus": false
     },
     {
+      "id": "openalex:W3024961463",
+      "title": "EEG-Based Emotion Recognition Using Regularized Graph Neural Networks",
+      "year": 2020,
+      "venue": "IEEE Transactions on Affective Computing",
+      "venue_tier": "preprint",
+      "authors": [
+        "Peixiang Zhong",
+        "Di Wang",
+        "Chunyan Miao"
+      ],
+      "kinds": [],
+      "citation_count": 907,
+      "github_stars": 0,
+      "tldr": "Electroencephalography (EEG) measures the neuronal activities in different brain regions via electrodes. Many existing studies on…",
+      "short_abstract": "Electroencephalography (EEG) measures the neuronal activities in different brain regions via electrodes. Many existing studies on EEG-based emotion recognition do not fully exploit the topology of EEG channels. In this article, we propose a regularized graph neural network (RGNN) for EEG-based emotion recognition. RGNN considers the biological topology among different brain regions to capture both local and global relations among different EEG channels. Specifically, we model the inter-channel relations in EEG signals via an adjacency matrix in a graph neural network where the connection and sparseness of the adjacency matrix are inspired by neuroscience theories of human brain organization. In addition, we propose two regularizers, namely node-wise domain adversarial training (NodeDAT) and emotion-aware distribution learning (EmotionDL), to better handle cross-subject EEG variations and noisy labels, respectively. Extensive experiments on two public datasets, SEED, and SEED-IV,…",
+      "doi": "10.1109/taffc.2020.2994159",
+      "aliases": [
+        [
+          "doi",
+          "10.1109/taffc.2020.2994159"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
       "id": "openalex:W4295122555",
       "title": "Deep Residual Learning for Image Recognition: A Survey",
       "year": 2022,
@@ -317,9 +371,9 @@
       "dst": "openalex:W2116341502",
       "rel": "successor",
       "relation": "successor",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「The Graph Neural Network Model」(2008) は「A new model for learning in graph domains」(2006) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.78,
+      "confidence": 0.78,
+      "rationale": "B の『Graph Neural Network Model』は、A の GNN を基にアルゴリズムの詳細と理論解析を追加し、研究の次段階として位置付けられる。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -327,14 +381,122 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "eb79ba4949f413018a69e4b84f36b0ea12dab8fbde2e2c623336126469450df0"
+          "kind": "relation-input",
+          "sha256": "f800e48a68faa221e3a4be559c32570f9d62aee240db29ecb53d1fb6ae494b66"
         },
         "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W1501856433",
+      "dst": "openalex:W2558460151",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.85,
+      "confidence": 0.85,
+      "rationale": "B の Mixture Model CNN は、A の GNN のグラフ直接処理を拡張し、グラフと多様体上で畳み込みを実現している。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "5fae2238b47250bb0b57ed466a30a9e3b771b2df91e688910f7a5f373fb2da04"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W1501856433",
+      "dst": "openalex:W2558748708",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.9,
+      "confidence": 0.9,
+      "rationale": "B の Geometric Deep Learning フレームワークは、A の GNN を一般化し、グラフだけでなく多様な非ユークリッド構造へ適用可能にしている。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "060f10662bf9187a2056624442d394ceb0be60c726ad545ed5516ca0d20dc007"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W1501856433",
+      "dst": "openalex:W2907492528",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.9,
+      "confidence": 0.9,
+      "rationale": "B の『Graph Neural Networks に関する包括的サーベイ』は、A の GNN 手法を文献紹介の一例としてのみ取り上げ、独自の手法開発は行っていない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "18695b2bb51ac78f672f3860f9fe7467adb0da91f9e5385c05aef47887dfe6d9"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W1501856433",
+      "dst": "openalex:W3011667710",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.85,
+      "confidence": 0.85,
+      "rationale": "B のサーベイ『Deep Learning on Graphs』は A の GNN を手法紹介の一例として引用し、直接的な拡張や改良は行っていない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "6cadc95eb8fb1565150625a5b16d82c2cce16bd2ad2fe6a4f78e133b476ae2d5"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
           "schema_version": "relation-classification-v1"
         }
       }
@@ -342,11 +504,11 @@
     {
       "src": "openalex:W1888005072",
       "dst": "openalex:W2393319904",
-      "rel": "successor",
-      "relation": "successor",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Structural Deep Network Embedding」(2016) は「LINE」(2015) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.85,
+      "confidence": 0.85,
+      "rationale": "SDNE の深層オートエンコーダは、LINE の一次・二次近接性を保持しつつ非線形表現を学習し、埋め込み手法を拡張している。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -354,14 +516,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "ede9f67488127c8c77d699bdf8e7be374064c98377b089622c5e7d86a13d173a"
+          "kind": "relation-input",
+          "sha256": "bbb94a1363e6b3c8218c824f29993b7125bb954767e805cfc3c69172910c5678"
         },
         "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
           "schema_version": "relation-classification-v1"
         }
       }
@@ -369,11 +531,11 @@
     {
       "src": "openalex:W1888005072",
       "dst": "openalex:W2558460151",
-      "rel": "successor",
-      "relation": "successor",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Geometric Deep Learning on Graphs and Manifolds Using Mixtu…」(2017) は「LINE」(2015) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "rel": "contrasts",
+      "relation": "contrasts",
+      "conf": 0.85,
+      "confidence": 0.85,
+      "rationale": "B の Mixture Model CNN は、グラフ上でガウス混合カーネルを用いた畳み込みを提案し、A の一次・二次近接を最適化する shallow 埋め込み手法とは根本的に異なるアプローチである。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -381,14 +543,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "95aa00fc64b4c0339ed6b3cfdce52b1781d46e45511c251d66d51594bf693d6a"
+          "kind": "relation-input",
+          "sha256": "b1d0482ea6101996520ad5d930fbe90b6bf2ee6a0cda59e10979565dd7c3b3b4"
         },
         "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
           "schema_version": "relation-classification-v1"
         }
       }
@@ -396,11 +558,11 @@
     {
       "src": "openalex:W1888005072",
       "dst": "openalex:W2558748708",
-      "rel": "successor",
-      "relation": "successor",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Geometric Deep Learning: Going beyond Euclidean data」(2017) は「LINE」(2015) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.85,
+      "confidence": 0.85,
+      "rationale": "B は Geometric Deep Learning の調査で、LINE を単に例として引用し、手法の継承はしていない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -408,14 +570,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "a42a0affe4b4edab67fbfd8e5eab5f6e3da0efde0593d2f373dd016f139a34f1"
+          "kind": "relation-input",
+          "sha256": "07a8907f8b0ab1bc0fa7ff376237532a2233da7e7446705c255a52d9f86c5ad6"
         },
         "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
           "schema_version": "relation-classification-v1"
         }
       }
@@ -423,11 +585,11 @@
     {
       "src": "openalex:W1888005072",
       "dst": "openalex:W2907492528",
-      "rel": "successor",
-      "relation": "successor",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「A Comprehensive Survey on Graph Neural Networks」(2020) は「LINE」(2015) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.86,
+      "confidence": 0.86,
+      "rationale": "B のサーベイは GNN 手法全般を概観し、LINE を単なる既存埋め込み手法として比較対象に挙げている。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -435,14 +597,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "4bb51305a1052cabc8dab24bc9b289c4fe3e4b98919ff518bff7e4a274a4b422"
+          "kind": "relation-input",
+          "sha256": "6b09e415f7aad4064aa0a3c5108d4ff11e573c541f39d5f7738f4f1842a6b9c1"
         },
         "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
           "schema_version": "relation-classification-v1"
         }
       }
@@ -450,11 +612,11 @@
     {
       "src": "openalex:W1888005072",
       "dst": "openalex:W3011667710",
-      "rel": "successor",
-      "relation": "successor",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Deep Learning on Graphs: A Survey」(2020) は「LINE」(2015) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.9,
+      "confidence": 0.9,
+      "rationale": "B のサーベイは、A の LINE をグラフ埋め込み手法の一例として紹介しているだけで、直接的な手法の継承はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -462,14 +624,41 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "23bfde8d75985da715bc1e46b70326f42e0883784e0d210a5da3e9824dc5bb52"
+          "kind": "relation-input",
+          "sha256": "fc4a76a7a7c14aa83e902844676d43c677ab8f59aa5348b1725b84325a494514"
         },
         "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W1991252559",
+      "dst": "openalex:W2907492528",
+      "rel": "contrasts",
+      "relation": "contrasts",
+      "conf": 0.85,
+      "confidence": 0.85,
+      "rationale": "B は深層学習に基づく Graph Neural Networks を中心に議論し、A の離散信号処理的枠組みとは根本的に異なるアプローチを取っている。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "e79b0fe311c080d15d6c4e79fdafbe031d437f5c84473ff66f96230750dcf294"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
           "schema_version": "relation-classification-v1"
         }
       }
@@ -477,11 +666,11 @@
     {
       "src": "openalex:W2101491865",
       "dst": "openalex:W2558460151",
-      "rel": "successor",
-      "relation": "successor",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Geometric Deep Learning on Graphs and Manifolds Using Mixtu…」(2017) は「The emerging field of signal processing on graphs: Extendin…」(2013) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.92,
+      "confidence": 0.92,
+      "rationale": "B の Mixture Model CNN (MoNet) は、A が概説したグラフ信号処理のスペクトル手法を拡張し、グラフ上で学習可能な畳み込みを実現している。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -489,14 +678,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "cf1904163e92b628b2984ddacfbe8b9cddc7fc82ed150ae40c5875d38768b88c"
+          "kind": "relation-input",
+          "sha256": "1f4dad2f8bc8cd74da5ad9bae46798611466c33c7d40daf7e4f7eba5c14e62f2"
         },
         "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
           "schema_version": "relation-classification-v1"
         }
       }
@@ -504,11 +693,11 @@
     {
       "src": "openalex:W2101491865",
       "dst": "openalex:W2558748708",
-      "rel": "successor",
-      "relation": "successor",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Geometric Deep Learning: Going beyond Euclidean data」(2017) は「The emerging field of signal processing on graphs: Extendin…」(2013) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.86,
+      "confidence": 0.86,
+      "rationale": "B の Geometric Deep Learning は、A のグラフ信号処理の概念をニューラルネットワークに拡張し、非ユークリッドデータ上での学習を可能にしている。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -516,14 +705,257 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "50e66dbdd17b55b0b297b8191e21f9265b117b67fd90d274e7015e4e9d11e3c9"
+          "kind": "relation-input",
+          "sha256": "453ac501f020629624f27cad9dcf4e19917ea1f861c70a776dc60c549479d2ad"
         },
         "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2101491865",
+      "dst": "openalex:W2907492528",
+      "rel": "contrasts",
+      "relation": "contrasts",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "B のサーベイは Graph Neural Networks を中心に扱い、A のグラフ信号処理とは非ユークリッド領域上の深層学習という根本的に異なるアプローチを提示している。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "744cf34c2c9af7ac858c5f872dbd218aec7cc2a76000f0fb3f015a51e2c23c82"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2101491865",
+      "dst": "openalex:W2985331920",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.78,
+      "confidence": 0.78,
+      "rationale": "B のグラフ畳み込みネットワークは、A のグラフ信号処理の概念をニューラルネットワークに拡張している。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "951e6184a279d1df9124bf1636218c9c9656cd71de046439ba69ec5f2a53a6f2"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2101491865",
+      "dst": "openalex:W3011667710",
+      "rel": "contrasts",
+      "relation": "contrasts",
+      "conf": 0.85,
+      "confidence": 0.85,
+      "rationale": "B の『Deep Learning on Graphs』は、A のグラフ信号処理のスペクトル手法とは根本的に異なる深層学習アプローチを中心に解説している。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "4693563f2f15a3ab52e92ee121c711069ee56aa2384153ee5b48f57994959cd0"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2116341502",
+      "dst": "openalex:W2558460151",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.85,
+      "confidence": 0.85,
+      "rationale": "B の Mixture Model CNN は、A の GNN のグラフ表現を拡張し、グラフと多様体上で局所的な畳み込みを学習可能なカーネルで実現している。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "1d800445aa25b3cbf3d074981999b704530d5427d313242248b1571b1869ff8e"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2116341502",
+      "dst": "openalex:W2558748708",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.9,
+      "confidence": 0.9,
+      "rationale": "B の Geometric Deep Learning フレームワークは、A の GNN モデルを一般化し、非ユークリッド構造全般に適用可能にしている。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "5fb4d7904790c2ab25e8c7847c05e168f0bfd6029c9cb3925224c57b914ee31e"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2116341502",
+      "dst": "openalex:W2907492528",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.92,
+      "confidence": 0.92,
+      "rationale": "B の包括的サーベイは、A の GNN モデルを単に過去の手法として引用し、継承や改良は行っていない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "ac43ad49c2c1ee6326217ba62e60487363bbaac54a00837bbe67000ceb25f41a"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2116341502",
+      "dst": "openalex:W2985331920",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.85,
+      "confidence": 0.85,
+      "rationale": "B の包括的レビューは Graph convolutional networks を取り上げ、A の GNN モデルを参照するだけで、独自の手法や改良は示さず、単に先行研究として引用している。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "9fa1e37dbb583b3ccdf16c67849b15133c5897a8419cd2e5f756c35a2d028bd5"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2116341502",
+      "dst": "openalex:W3011667710",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.92,
+      "confidence": 0.92,
+      "rationale": "B のサーベイ『Deep Learning on Graphs: A Survey』は A の GNN モデルを引用するだけで、手法の継承や拡張は行っていない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "185b4346bd9d73e8278fa7702630f3464cda1fcbf6d9c92f2a58ccc832608c14"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2116341502",
+      "dst": "openalex:W3024961463",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.92,
+      "confidence": 0.92,
+      "rationale": "B の正則化グラフニューラルネットワークは、A が提案した汎用 GNN を EEG の感情認識タスクに適用し、ドメインを拡張している。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "2f755d718fd41d692c0093b2deacf06d705eec0bdbd9d5b7423eb04cf13d7fca"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
           "schema_version": "relation-classification-v1"
         }
       }
@@ -531,11 +963,11 @@
     {
       "src": "openalex:W2393319904",
       "dst": "openalex:W2907492528",
-      "rel": "successor",
-      "relation": "successor",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「A Comprehensive Survey on Graph Neural Networks」(2020) は「Structural Deep Network Embedding」(2016) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.9,
+      "confidence": 0.9,
+      "rationale": "B のサーベイは graph neural networks の既存手法として A の深層ネットワーク埋め込みを紹介するだけで、直接的な拡張や改良は行っていない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -543,14 +975,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "d0d1e79e60c735fbed125b9db148f3930a734df6393c0e034b150fbcb8da49bb"
+          "kind": "relation-input",
+          "sha256": "3b23251b8d4636e81ff7f8e93625b62db8ee494717c3468cd36445e00a2e62bd"
         },
         "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
           "schema_version": "relation-classification-v1"
         }
       }
@@ -558,11 +990,11 @@
     {
       "src": "openalex:W2393319904",
       "dst": "openalex:W3011667710",
-      "rel": "successor",
-      "relation": "successor",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Deep Learning on Graphs: A Survey」(2020) は「Structural Deep Network Embedding」(2016) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.92,
+      "confidence": 0.92,
+      "rationale": "B は『Deep Learning on Graphs: A Survey』として、A の手法を紹介するだけで新たな手法は提案していない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -570,14 +1002,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "a341a6e022d5748803c4bf2fb347fc73c39b40755cfef86e3f5422086c6657a7"
+          "kind": "relation-input",
+          "sha256": "a0fd0ad9de833f1b4fb156fd19b56a299112860adae23d24701fbdee65978442"
         },
         "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
           "schema_version": "relation-classification-v1"
         }
       }
@@ -585,11 +1017,11 @@
     {
       "src": "openalex:W2558460151",
       "dst": "openalex:W2907492528",
-      "rel": "successor",
-      "relation": "successor",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「A Comprehensive Survey on Graph Neural Networks」(2020) は「Geometric Deep Learning on Graphs and Manifolds Using Mixtu…」(2017) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.92,
+      "confidence": 0.92,
+      "rationale": "B の『Graph Neural Networks に関する包括的サーベイ』は、A の Mixture Model CNN 手法を既存研究として列挙するだけで、手法の継承や拡張は行っていない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -597,14 +1029,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "1467b1702b56e377286f193b5559e994fb001d4c0de87d04b9140a1f6109bac5"
+          "kind": "relation-input",
+          "sha256": "95cbfdbb70369ac268fb91d0ccabe65367e1e9b049eedbf1d083d5d7e7bf82e4"
         },
         "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
           "schema_version": "relation-classification-v1"
         }
       }
@@ -612,11 +1044,11 @@
     {
       "src": "openalex:W2558460151",
       "dst": "openalex:W2985331920",
-      "rel": "successor",
-      "relation": "successor",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Graph convolutional networks: a comprehensive review」(2019) は「Geometric Deep Learning on Graphs and Manifolds Using Mixtu…」(2017) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.85,
+      "confidence": 0.85,
+      "rationale": "B の総説は A の Mixture Model CNN を GCN 手法の一例として紹介し、継承よりも比較対象として扱っている。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -624,14 +1056,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "94993474744492b49b7b4e02b3a61845b7aee52df842084299e5cb537d321c4e"
+          "kind": "relation-input",
+          "sha256": "cd7834aa59b20b82fe317145447730ca4c10a4b68311e053fd2577dc3f46b838"
         },
         "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
           "schema_version": "relation-classification-v1"
         }
       }
@@ -639,11 +1071,11 @@
     {
       "src": "openalex:W2558460151",
       "dst": "openalex:W3011667710",
-      "rel": "successor",
-      "relation": "successor",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Deep Learning on Graphs: A Survey」(2020) は「Geometric Deep Learning on Graphs and Manifolds Using Mixtu…」(2017) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.92,
+      "confidence": 0.92,
+      "rationale": "B のサーベイは、Deep Learning on Graphs の文献として A の Mixture Model CNN を紹介しているが、直接的な拡張や比較は行っていない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -651,14 +1083,41 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "02378e32a14cb521ef8065c3cb2fdf4d1e693dd440d96b797b16a4cd38f85a12"
+          "kind": "relation-input",
+          "sha256": "785ff8cae3a95cb9d6fbe987077676d64d92c1c2b75f7fa55bbf1d8427b5ab25"
         },
         "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2558748708",
+      "dst": "openalex:W2558460151",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.85,
+      "confidence": 0.85,
+      "rationale": "B の Mixture Model CNN は、A が概観した幾何学的深層学習の枠組みを具体的にグラフと多様体上で実装している。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "873773e4f671ee2113dd5fe1f08aa27a397835eebc0abd8db5af1d0e7e0b6114"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
           "schema_version": "relation-classification-v1"
         }
       }
@@ -668,9 +1127,9 @@
       "dst": "openalex:W2907492528",
       "rel": "successor",
       "relation": "successor",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「A Comprehensive Survey on Graph Neural Networks」(2020) は「Geometric Deep Learning: Going beyond Euclidean data」(2017) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.85,
+      "confidence": 0.85,
+      "rationale": "B の『Graph Neural Networks』に関する包括的調査は、A の幾何学的深層学習の概観を受けて、グラフ領域に特化した最新手法を体系化し、研究ラインを継続的に発展させている。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -678,14 +1137,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "94a6961c74c4ead8a15cebab4c4a4fd4c1293284271be627e99abb719a98e955"
+          "kind": "relation-input",
+          "sha256": "bcae6eb511e2bf1d0a9c883643df6900a03a35ebac0a6dcd522817d5d0447833"
         },
         "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
           "schema_version": "relation-classification-v1"
         }
       }
@@ -693,11 +1152,11 @@
     {
       "src": "openalex:W2558748708",
       "dst": "openalex:W2985331920",
-      "rel": "successor",
-      "relation": "successor",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Graph convolutional networks: a comprehensive review」(2019) は「Geometric Deep Learning: Going beyond Euclidean data」(2017) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.78,
+      "confidence": 0.78,
+      "rationale": "B の包括的レビューは、A が概観した幾何学的深層学習の中で特に Graph Convolutional Networks に焦点を当て、対象を絞って拡張している。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -705,14 +1164,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "59faf826bb5e5ebc9c0a8bbec3e4f89278255960ef095f0771959bff3480af9a"
+          "kind": "relation-input",
+          "sha256": "a442f1a336cc71cff0dac43d6bea6b947dea16e4f7b6fe80746be6d58a0941eb"
         },
         "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
           "schema_version": "relation-classification-v1"
         }
       }
@@ -722,9 +1181,9 @@
       "dst": "openalex:W3011667710",
       "rel": "successor",
       "relation": "successor",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Deep Learning on Graphs: A Survey」(2020) は「Geometric Deep Learning: Going beyond Euclidean data」(2017) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.85,
+      "confidence": 0.85,
+      "rationale": "B の『Deep Learning on Graphs』というタイトルは、A が扱った幾何学的深層学習のグラフ領域を最新の手法で体系化し、A の調査を継承した後続のサーベイである。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -732,14 +1191,95 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "e61d634afdbfc79b7d800a45087c791c1012e8ecf591b7aa4fb8f02fe1e7ed1c"
+          "kind": "relation-input",
+          "sha256": "6af32d73f4836690dbccc948c7a81fdbb19d4edbef7d3355d8eec24b8f0e8ac5"
         },
         "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2907492528",
+      "dst": "openalex:W2985331920",
+      "rel": "successor",
+      "relation": "successor",
+      "conf": 0.86,
+      "confidence": 0.86,
+      "rationale": "B の『graph convolutional networks』に関するレビューは、A の包括的な GNN サーベイに取って代わられ、最新の手法やデータセットを網羅している。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "a53f72f90ce640b0aace8491f77b73b23e0c0a21c88215d68b5be3913677c3b0"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2907492528",
+      "dst": "openalex:W3011667710",
+      "rel": "contrasts",
+      "relation": "contrasts",
+      "conf": 0.73,
+      "confidence": 0.73,
+      "rationale": "B の5つのカテゴリ分類は、A が主にスペクトル手法に焦点を当てた分類と根本的に異なるアプローチを取っている。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "5e34b12a37219a140106c3040f271ca7ca5da82b2a637dc27a2c35214dd51962"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2907492528",
+      "dst": "openalex:W3024961463",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.85,
+      "confidence": 0.85,
+      "rationale": "B の正則化グラフニューラルネットワーク (RGNN) は、A が概観した GNN 手法を EEG チャネルのトポロジーに適用し、感情認識タスクに拡張している。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "247277920b3b7d21e02725b39a8d8e412226902543a2719709bceaf53720d306"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
           "schema_version": "relation-classification-v1"
         }
       }
@@ -747,11 +1287,11 @@
     {
       "src": "openalex:W2907492528",
       "dst": "openalex:W4295122555",
-      "rel": "successor",
-      "relation": "successor",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Deep Residual Learning for Image Recognition: A Survey」(2022) は「A Comprehensive Survey on Graph Neural Networks」(2020) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "rel": "contrasts",
+      "relation": "contrasts",
+      "conf": 0.92,
+      "confidence": 0.92,
+      "rationale": "B の Deep Residual Learning は画像認識に焦点を当て、A のグラフニューラルネットワークの非ユークリッドデータ処理とは根本的に異なるアプローチである。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -759,14 +1299,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "946d313567c621705274f454af8d2ca84c1bb594e7e555b1703891994597dd93"
+          "kind": "relation-input",
+          "sha256": "191891c6c9721c8966486724c961b14da3469fac256a1b40739d417561c0e616"
         },
         "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v1",
           "schema_version": "relation-classification-v1"
         }
       }
@@ -787,9 +1327,9 @@
     ],
     "depth": 1,
     "since_year": 2018,
-    "generated_at": "2026-10-10T04:13:36.177000Z",
+    "generated_at": "2026-10-10T04:26:50.028000Z",
     "provenance_breakdown": {
-      "citation_heuristic": 17
+      "llm": 35
     },
     "completeness": {
       "complete": true,
