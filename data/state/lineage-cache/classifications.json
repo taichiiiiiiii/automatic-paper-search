@@ -8918,5 +8918,46 @@
         "schema_version": "relation-classification-v1"
       }
     }
+  },
+  "v3:cdf99e8b02008ef9ebf65e8df49118c2e8e3c266c65dd9d9f1688960000ad325": {
+    "status": "success",
+    "expires_at": "2027-04-08T11:29:01.164000Z",
+    "cache_identity": {
+      "version": "lineage-classification-cache-v3",
+      "src": "openalex:W4281758439",
+      "dst": "openalex:W4386076539",
+      "evidence_sha256": "12c5954362ef96453302c8e7ac29c68d00ae909183f736e6ca96df631f985c55",
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "prompt_version": "relation-prompt-v3-context",
+      "schema_version": "relation-classification-v1"
+    },
+    "classification": {
+      "refers_to_cited": true,
+      "relation": "background",
+      "contrast": false,
+      "confidence": 0.73,
+      "rationale": "FlashAttentionが提案したIO感度のメモリアクセス最適化を、Bはメモリ遅延がTransformer速度に与える問題点の例として言及しています。"
+    },
+    "provenance": {
+      "producer": {
+        "name": "paperpilot.scripts.build_theme_lineage",
+        "version": "p2t-v1"
+      },
+      "evidence": {
+        "source": "semantic_scholar",
+        "kind": "relation-input",
+        "sha256": "12c5954362ef96453302c8e7ac29c68d00ae909183f736e6ca96df631f985c55"
+      },
+      "classification": {
+        "method": "llm",
+        "provider": "groq",
+        "model": "groq:openai/gpt-oss-120b",
+        "prompt_version": "relation-prompt-v3-context",
+        "schema_version": "relation-classification-v1"
+      }
+    }
   }
 }

@@ -130,12 +130,12 @@
   "edges": [
     {
       "src": "openalex:W4281758439",
-      "dst": "openalex:W4386076539",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.65,
-      "confidence": 0.65,
-      "rationale": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json.",
+      "dst": "openalex:W4384648639",
+      "rel": "supersedes",
+      "relation": "supersedes",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「FlashAttention-2: Faster Attention with Better Parallelism …」(2023) は「FlashAttention: Fast and Memory-Efficient Exact Attention w…」(2022) のバージョンアップ版にあたり、命名パターンから置き換え (supersedes) と推定される。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -144,10 +144,91 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-metadata",
-          "sha256": "72c72edfefa9c532417277262793246ee8e11e8c1e783b48961740c2e73d20a4"
+          "sha256": "80137e29a58da2cc52ddaef890fc0936dbced33cdd69a1f25c223966085eedfc"
         },
         "classification": {
-          "method": "foundational_allowlist",
+          "method": "title_version",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4281758439",
+      "dst": "openalex:W4386076539",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.73,
+      "confidence": 0.73,
+      "rationale": "FlashAttentionが提案したIO感度のメモリアクセス最適化を、Bはメモリ遅延がTransformer速度に与える問題点の例として言及しています。 引用文: \"Moreover, EfficientViT-M2 gets 70.8% accuracy, surpassing MobileViT-XXS [50] by 1.8%, while running 5.8 × /3.7 × faster on the GPU/CPU, and 7.4 × faster when converted to ONNX [3] format.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "relation-input",
+          "sha256": "12c5954362ef96453302c8e7ac29c68d00ae909183f736e6ca96df631f985c55"
+        },
+        "classification": {
+          "method": "llm",
+          "provider": "groq",
+          "model": "groq:openai/gpt-oss-120b",
+          "prompt_version": "relation-prompt-v3-context",
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4281758439",
+      "dst": "openalex:W4400611982",
+      "rel": "supersedes",
+      "relation": "supersedes",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「FlashAttention-3: Fast and Accurate Attention with Asynchro…」(2024) は「FlashAttention: Fast and Memory-Efficient Exact Attention w…」(2022) のバージョンアップ版にあたり、命名パターンから置き換え (supersedes) と推定される。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-metadata",
+          "sha256": "4b986bf87266efd26f30134aa720141c6805bb8f0e8ce9b283388cd6a182e408"
+        },
+        "classification": {
+          "method": "title_version",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4384648639",
+      "dst": "openalex:W4400611982",
+      "rel": "supersedes",
+      "relation": "supersedes",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「FlashAttention-3: Fast and Accurate Attention with Asynchro…」(2024) は「FlashAttention-2: Faster Attention with Better Parallelism …」(2023) のバージョンアップ版にあたり、命名パターンから置き換え (supersedes) と推定される。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-metadata",
+          "sha256": "d3711e2ff62bdf2aedc1a26c67822d82b3cb1e0995b1a0ed16c0b90741262823"
+        },
+        "classification": {
+          "method": "title_version",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -173,9 +254,10 @@
     ],
     "depth": 1,
     "since_year": 2018,
-    "generated_at": "2026-10-10T09:26:08.978000Z",
+    "generated_at": "2026-10-10T11:29:05.871000Z",
     "provenance_breakdown": {
-      "foundational_allowlist": 1
+      "title_version": 3,
+      "llm": 1
     },
     "completeness": {
       "complete": true,
