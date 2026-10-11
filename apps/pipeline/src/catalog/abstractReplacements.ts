@@ -81,12 +81,71 @@ function titleTokens(title: string): Set<string> {
   return new Set(normalizeTitle(title).split(" ").filter(Boolean));
 }
 
-/** 1 for equal normalised titles, otherwise the token Jaccard similarity. */
+/** Greek letters and symbols that LaTeX titles spell as commands. */
+const SYMBOL_NAMES: Record<string, string> = {
+  α: "alpha",
+  β: "beta",
+  γ: "gamma",
+  δ: "delta",
+  ε: "epsilon",
+  ϵ: "epsilon",
+  ζ: "zeta",
+  η: "eta",
+  θ: "theta",
+  ι: "iota",
+  κ: "kappa",
+  λ: "lambda",
+  μ: "mu",
+  ν: "nu",
+  ξ: "xi",
+  π: "pi",
+  ρ: "rho",
+  σ: "sigma",
+  τ: "tau",
+  υ: "upsilon",
+  φ: "phi",
+  ϕ: "phi",
+  χ: "chi",
+  ψ: "psi",
+  ω: "omega",
+  ℓ: "ell",
+  "∞": "infty",
+  "∇": "nabla",
+  "∂": "partial",
+};
+/** LaTeX commands that only format their argument (dropped, argument kept). */
+const LATEX_FORMAT_RE =
+  /\\(?:text|textit|textbf|textsc|texttt|emph|underline|mathbf|mathrm|mathit|mathsf|mathtt|mathbb|mathcal|mathfrak|boldsymbol|bm|operatorname)\b/g;
+
+/**
+ * R3-5: title key that ignores LaTeX markup, so `$\gamma-$MoD` (proceedings)
+ * equals `γ-MoD` (DBLP / arXiv) and `$\ell_p$` equals `ℓp`: formatting
+ * commands are dropped, other commands keep their name (`\Delta` ->
+ * `delta`), Greek letters are spelled out, and every non-alphanumeric
+ * character (incl. spaces, `$`, `^`, `_`, braces) is removed.
+ */
+export function compactTitleKey(title: string): string {
+  let s = title.replace(LATEX_FORMAT_RE, "").replace(/\\([A-Za-z]+)/g, " $1 ");
+  // Spell symbols out before NFKC, which would fold `ℓ` to `l`.
+  s = [...s.toLowerCase()].map((ch) => SYMBOL_NAMES[ch] ?? ch).join("");
+  return s
+    .normalize("NFKC")
+    .normalize("NFKD")
+    .replace(/\p{M}+/gu, "")
+    .replace(/[^\p{L}\p{N}]+/gu, "");
+}
+
+/**
+ * 1 for equal normalised titles (or titles equal once LaTeX markup is
+ * ignored), otherwise the token Jaccard similarity.
+ */
 export function titleScore(a: string, b: string): number {
   const na = normalizeTitle(a);
   const nb = normalizeTitle(b);
   if (!na || !nb) return 0;
   if (na === nb) return 1;
+  const ca = compactTitleKey(a);
+  if (ca.length >= 8 && ca === compactTitleKey(b)) return 1;
   const ta = titleTokens(a);
   const tb = titleTokens(b);
   let inter = 0;
