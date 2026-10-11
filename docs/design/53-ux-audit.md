@@ -46,6 +46,7 @@
 - 「+N タグ」で開いたタグを閉じるボタンがない。タグ候補は上位 18 個だけで、それ以外のタグはカードのタグから選ぶしかない。
 - トラック（分野）や「コードあり」の絞り込みは、`papers.json` にその列がない（`github_stars` はすべて 0）ので入れていない。
 - JS なしの一覧は 1 ページ約 0.9MB（3,000 行）で、スマホでは重い。`NOJS_ROWS_PER_PAGE` を下げるときは pipeline の `paperLinksGate.ts` と同時に変える。
+- acl-2026 は `CATALOG_COPY` に表示名がなく、見出しと切り替えに slug（`acl-2026`）のまま出る。`lib/catalog-copy.ts` に 1 行足す。
 - 検索は今も部分一致だけで、語形の違い（"transformer" と "transformers"）や表記ゆれは吸収しない。
 
 ### テスト
