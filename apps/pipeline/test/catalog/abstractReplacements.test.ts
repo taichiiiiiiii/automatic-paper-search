@@ -542,7 +542,95 @@ describe("resolver (offline, mocked HTTP)", () => {
     expect(calls).toEqual([]);
   });
 
+  it("R3-5: --s2-match resolves each chunk's hits (TLDR) before marking them", async () => {
+    const tmp = mkdtempSync(join(tmpdir(), "abs-match-"));
+    const row = {
+      title: "Retitled Paper On Widgets",
+      authors: "Ann Lee; Bo Chen",
+      arxiv_url: "https://openaccess.thecvf.com/content/CVPR2025/html/Lee_W_CVPR_2025_paper.html",
+      abstract: CVF_TEXT,
+    };
+    writeSummary(join(tmp, "cvpr-2025"), [row]);
+    const emptyFeed = `<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/">
+<opensearch:totalResults>0</opensearch:totalResults><opensearch:startIndex>0</opensearch:startIndex><opensearch:itemsPerPage>100</opensearch:itemsPerPage></feed>`;
+    const calls: string[] = [];
+    const fetchFn = (async (url: string | URL | Request) => {
+      const u = String(url);
+      calls.push(u.split("?")[0] as string);
+      if (u.startsWith("https://export.arxiv.org")) return new Response(emptyFeed, { status: 200 });
+      if (u.includes("/paper/search/bulk"))
+        return Response.json({ total: 0, token: null, data: [] });
+      if (u.includes("/paper/search/match")) {
+        return Response.json({
+          data: [
+            {
+              paperId: "s2w",
+              title: row.title,
+              authors: [{ name: "Ann Lee" }, { name: "Bo Chen" }],
+              externalIds: {},
+            },
+          ],
+        });
+      }
+      if (u.includes("/paper/batch"))
+        return Response.json([{ tldr: { text: "Widgets, briefly." } }]);
+      return new Response("", { status: 404 });
+    }) as typeof fetch;
+    const opts = {
+      conference: "cvpr-2025",
+      inputsRoot: tmp,
+      s2Venue: "Computer Vision and Pattern Recognition",
+      year: 2025,
+      retryNone: false,
+      s2Match: true,
+      limit: null,
+      client: new PacedClient(fetchFn, async () => {}),
+      log: () => {},
+      now: () => new Date("2026-10-11T00:00:00Z"),
+    };
+    const res = await resolveAbstractReplacements(opts);
+    expect(res.counts).toEqual({ arxiv: 0, s2_tldr: 1, none: 0 });
+    calls.length = 0;
+    await resolveAbstractReplacements(opts);
+    expect(calls).toEqual([]);
+  });
+
   it("parses an unusable arXiv page as null", () => {
     expect(arxivRecordsFromFeed("not xml")).toBeNull();
+  });
+
+  it("R3-5: stops calling arXiv (and S2) after consecutive failed batches", async () => {
+    const tmp = mkdtempSync(join(tmpdir(), "abs-429-"));
+    const rows = Array.from({ length: 60 }, (_, i) => ({
+      title: `Paper Number ${i} About Things`,
+      authors: "Ann Lee",
+      arxiv_url: `https://openaccess.thecvf.com/content/CVPR2025/html/P${i}_CVPR_2025_paper.html`,
+      abstract: CVF_TEXT,
+    }));
+    writeSummary(join(tmp, "cvpr-2025"), rows);
+    const calls: string[] = [];
+    const fetchFn = (async (url: string | URL | Request) => {
+      const u = String(url);
+      calls.push(u.startsWith("https://export.arxiv.org") ? "arxiv" : "s2");
+      return u.startsWith("https://export.arxiv.org")
+        ? new Response("", { status: 429 })
+        : Response.json({ total: 0, token: null, data: [] });
+    }) as typeof fetch;
+    const res = await resolveAbstractReplacements({
+      conference: "cvpr-2025",
+      inputsRoot: tmp,
+      s2Venue: "Computer Vision and Pattern Recognition",
+      year: 2025,
+      retryNone: false,
+      s2Match: true,
+      limit: null,
+      client: new PacedClient(fetchFn, async () => {}),
+      log: () => {},
+      now: () => new Date("2026-10-11T00:00:00Z"),
+    });
+    // 2 batches x 6 attempts, then nothing more; no row is marked searched.
+    expect(calls).toEqual(Array(12).fill("arxiv"));
+    expect(res.counts).toEqual({ arxiv: 0, s2_tldr: 0, none: 0 });
   });
 });
