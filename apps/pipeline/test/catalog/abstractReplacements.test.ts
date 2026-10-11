@@ -9,6 +9,7 @@ import {
   type AbstractReplacement,
   applyAbstractPolicy,
   authorOverlap,
+  collectionAbstractPolicy,
   judgeArxivMatch,
   normalizeTitle,
   parseAbstractReplacements,
@@ -29,6 +30,10 @@ import {
   pairWithS2,
   resolveAbstractReplacements,
 } from "../../src/catalog/resolveAbstractReplacementsCli.js";
+import {
+  parseSourceLicense,
+  type SourceLicense,
+} from "../../src/conference/proceedings/sourceLicense.js";
 
 const CVF_URL =
   "https://openaccess.thecvf.com/content/CVPR2025/html/Held_3D_Convex_Splatting_CVPR_2025_paper.html";
@@ -297,6 +302,157 @@ describe("catalog build with the licence policy", () => {
       ]),
     );
     expect(() => buildConference("iclr-2026", roots)).toThrow(/lost their 'abstract'/);
+  });
+});
+
+// R3-3: the collector's source_license.json, not the row URL, names the
+// abstract's source and licence (PMLR rows carry an OpenReview URL).
+const OR_ID = "0COq6zy5kN";
+const OR_PAPER_ID = makePaperId("openreview", OR_ID);
+const PMLR_PAGE = "https://proceedings.mlr.press/v306/ghiglino26a.html";
+
+function sourceLicense(overrides: Partial<SourceLicense> = {}): SourceLicense {
+  return {
+    schema_version: "conference-source-license-v1",
+    conference: "icml-2026",
+    source: "pmlr",
+    collection: "PMLR Volume 306",
+    collection_url: "https://proceedings.mlr.press/v306/",
+    license: "CC-BY-4.0",
+    license_url: "https://creativecommons.org/licenses/by/4.0/",
+    attribution: "© the authors, PMLR v306, CC BY 4.0",
+    abstracts: "included",
+    abstract_basis: "PMLR license agreement",
+    paper_count: 1,
+    landing_urls: { [OR_ID]: PMLR_PAGE },
+    ...overrides,
+  };
+}
+
+function pmlrRow(): Record<string, string> {
+  return {
+    title: "Do Diffusion Models Dream of Electric Planes?",
+    authors: "Aurelien Ghiglino; Daniel Elenius",
+    arxiv_url: `https://openreview.net/forum?id=${OR_ID}`,
+    abstract: "The PMLR abstract.",
+    source: "openreview",
+    source_id: OR_ID,
+  };
+}
+
+describe("R3-3 collection licence from source_license.json", () => {
+  let tmp: string;
+  let roots: CatalogRoots;
+  beforeEach(() => {
+    tmp = mkdtempSync(join(tmpdir(), "abs-coll-"));
+    roots = { outputRoot: join(tmp, "inputs"), docsRoot: join(tmp, "published") };
+  });
+  const writeLicense = (dir: string, lic: unknown) =>
+    writeFileSync(join(dir, "source_license.json"), JSON.stringify(lic));
+
+  it("labels PMLR rows PMLR / CC BY 4.0 with their PMLR page, not OpenReview / CC0", () => {
+    const conf = join(roots.outputRoot, "icml-2026");
+    writeSummary(conf, [pmlrRow()]);
+    writeLicense(conf, sourceLicense());
+    buildConference("icml-2026", roots);
+    const [row] = JSON.parse(
+      readFileSync(join(roots.docsRoot, "icml-2026", "papers.json"), "utf-8"),
+    );
+    expect(row).toMatchObject({
+      source: "openreview",
+      paper_id: OR_PAPER_ID,
+      abstract: "The PMLR abstract.",
+      abstract_source: "pmlr",
+      abstract_license: "CC-BY-4.0",
+      abstract_url: PMLR_PAGE,
+    });
+  });
+
+  it("keeps the URL-inferred label when there is no sidecar (OpenReview ICML editions)", () => {
+    const conf = join(roots.outputRoot, "icml-2025");
+    writeSummary(conf, [pmlrRow()]);
+    const { papers } = loadSummaryWithDetails(join(conf, "summary.csv"));
+    expect(papers[0]).toMatchObject({ abstract_source: "openreview", abstract_license: "CC0-1.0" });
+    expect(papers[0]).not.toHaveProperty("abstract_url");
+  });
+
+  it("ACL sidecar keeps acl_anthology / CC BY 4.0 and adds no abstract_url", () => {
+    const conf = join(roots.outputRoot, "acl-2026");
+    writeSummary(conf, [
+      {
+        title: "Good NLP",
+        authors: "Ann Lee",
+        arxiv_url: "https://aclanthology.org/2026.acl-long.1/",
+        abstract: "ACL text.",
+      },
+    ]);
+    writeLicense(
+      conf,
+      sourceLicense({ conference: "acl-2026", source: "acl_anthology", landing_urls: undefined }),
+    );
+    const { papers } = loadSummaryWithDetails(join(conf, "summary.csv"));
+    expect(papers[0]).toMatchObject({
+      abstract_source: "acl_anthology",
+      abstract_license: "CC-BY-4.0",
+    });
+    expect(papers[0]).not.toHaveProperty("abstract_url");
+  });
+
+  it("fails closed: a collector without a licence withholds even URL-licensed text", () => {
+    const conf = join(roots.outputRoot, "icml-2026");
+    writeSummary(conf, [pmlrRow()]);
+    writeLicense(conf, sourceLicense({ license: null, license_url: null }));
+    const { papers, details } = loadSummaryWithDetails(join(conf, "summary.csv"));
+    expect(papers[0]).toMatchObject({
+      abstract: "",
+      abstract_source: "none",
+      abstract_license: "",
+    });
+    expect(details.get(OR_PAPER_ID)).toBe("");
+  });
+
+  it("ignores a sidecar that kept no abstracts (CVF --listing-only)", () => {
+    expect(collectionAbstractPolicy(sourceLicense({ abstracts: "omitted" }))).toBeNull();
+    expect(collectionAbstractPolicy(null)).toBeNull();
+  });
+
+  it("refuses unknown licensed collectors, licence mismatches and the wrong conference", () => {
+    expect(() =>
+      collectionAbstractPolicy(sourceLicense({ source: "neurips_proceedings" })),
+    ).toThrow(/no abstract source/);
+    expect(() => collectionAbstractPolicy(sourceLicense({ license: "CC0-1.0" }))).toThrow(
+      /expects CC-BY-4.0/,
+    );
+    const conf = join(roots.outputRoot, "icml-2026");
+    writeSummary(conf, [pmlrRow()]);
+    writeLicense(conf, sourceLicense({ conference: "icml-2025" }));
+    expect(() => loadSummaryWithDetails(join(conf, "summary.csv"))).toThrow(
+      /for conference icml-2025/,
+    );
+  });
+
+  it("rejects a malformed sidecar instead of guessing from the URL", () => {
+    expect(() => parseSourceLicense({ ...sourceLicense(), schema_version: "x" })).toThrow(
+      /schema_version/,
+    );
+    expect(() => parseSourceLicense({ ...sourceLicense(), source: "somewhere" })).toThrow(
+      /unknown source/,
+    );
+    expect(() =>
+      parseSourceLicense({ ...sourceLicense(), landing_urls: { [OR_ID]: "javascript:x" } }),
+    ).toThrow(/https/);
+    expect(parseSourceLicense(sourceLicense()).source).toBe("pmlr");
+  });
+
+  it("applyAbstractPolicy: collection overrides the URL-inferred source", () => {
+    const pmlr = collectionAbstractPolicy(sourceLicense());
+    expect(applyAbstractPolicy("openreview", "t", undefined, pmlr)).toEqual({
+      abstract: "t",
+      abstract_source: "pmlr",
+      abstract_license: "CC-BY-4.0",
+    });
+    // CVF rows stay on the replacement path whatever the sidecar says.
+    expect(applyAbstractPolicy("cvf", CVF_TEXT, undefined, pmlr).abstract_source).toBe("none");
   });
 });
 

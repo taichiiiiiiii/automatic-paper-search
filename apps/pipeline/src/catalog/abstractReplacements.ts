@@ -23,7 +23,9 @@ import {
   ABSTRACT_LICENSE,
   type AbstractSource,
   nativeAbstractSource,
+  proceedingsAbstractSource,
 } from "@paperpilot/core/licensing";
+import type { SourceLicense } from "../conference/proceedings/sourceLicense.js";
 
 export const ABSTRACT_REPLACEMENTS_SCHEMA = "abstract-replacements-v1";
 export const ABSTRACT_REPLACEMENTS_FILENAME = "abstract_replacements.json";
@@ -165,17 +167,61 @@ export interface PublishedAbstract {
 }
 
 /**
+ * What a conference's `source_license.json` says about its abstracts
+ * (R3-3). `abstract_source: null` = the collector records no licence
+ * (rights reserved), so even rows whose URL looks licensed fail closed.
+ */
+export interface CollectionAbstractPolicy {
+  abstract_source: AbstractSource | null;
+  /** `source_id` -> per-paper proceedings page (PMLR), for attribution. */
+  landing_urls: Readonly<Record<string, string>>;
+}
+
+/**
+ * Turn a collector's sidecar into the abstract policy for its rows, or
+ * `null` when it says nothing about abstract text (`abstracts: "omitted"`,
+ * e.g. CVF `--listing-only`). Throws when it declares a licence the
+ * catalog has no source for, or one that disagrees with
+ * `@paperpilot/core/licensing` — fail closed instead of mislabelling.
+ */
+export function collectionAbstractPolicy(
+  license: SourceLicense | null,
+): CollectionAbstractPolicy | null {
+  if (license === null || license.abstracts !== "included") return null;
+  const landing_urls = license.landing_urls ?? {};
+  if (license.license === null) return { abstract_source: null, landing_urls };
+  const source = proceedingsAbstractSource(license.source);
+  if (source === null) {
+    throw new Error(
+      `source_license.json (${license.conference}): no abstract source for licensed collector "${license.source}"`,
+    );
+  }
+  const expected = ABSTRACT_LICENSE[source]?.id;
+  if (expected !== license.license) {
+    throw new Error(
+      `source_license.json (${license.conference}): ${license.source} declares ${license.license}, the catalog expects ${expected}`,
+    );
+  }
+  return { abstract_source: source, landing_urls };
+}
+
+/**
  * Decide which abstract text a catalog row may publish. Rows whose native
  * source licenses its abstract (arXiv / OpenReview: CC0, ACL Anthology:
  * CC BY 4.0) keep it; any other source (CVF, unknown) takes the cached
- * replacement or publishes none.
+ * replacement or publishes none. When the conference was collected from
+ * official proceedings, `collection` (its `source_license.json`) names
+ * the real source and licence of that text instead of the row URL (R3-3:
+ * PMLR rows carry an OpenReview URL but PMLR's CC BY 4.0 abstract).
  */
 export function applyAbstractPolicy(
   source: string,
   nativeAbstract: string,
   replacement: AbstractReplacement | undefined,
+  collection: CollectionAbstractPolicy | null = null,
 ): PublishedAbstract {
-  const native = nativeAbstractSource(source);
+  let native = nativeAbstractSource(source);
+  if (native !== null && collection !== null) native = collection.abstract_source;
   if (native !== null) {
     return {
       abstract: nativeAbstract,

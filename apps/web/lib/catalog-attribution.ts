@@ -8,6 +8,9 @@
  *  - Every shown abstract carries its source and licence; ACL Anthology
  *    abstracts (CC BY 4.0) also name the authors, the title, the licence
  *    and that the list view shortens them.
+ *  - R3-3: PMLR abstracts (CC BY 4.0, rows keyed by their OpenReview
+ *    forum) name the authors, the title and the PMLR volume, and the row
+ *    gets a "PMLR" link to the paper's PMLR page (`abstract_url`).
  *  - A withheld abstract (`abstract_source: "none"`, a CVF abstract
  *    without a licensed replacement) is explained instead of shown.
  *
@@ -19,6 +22,7 @@ import {
   authorCredit,
   isAbstractSource,
   isCatalogSource,
+  pmlrVolumeFromUrl,
   SOURCE_LABEL,
 } from "@paperpilot/core/licensing";
 import type { CatalogPaper } from "./catalog-core";
@@ -51,8 +55,17 @@ export function catalogLinks(paper: CatalogPaper): CatalogLink[] {
   if (source !== "arxiv" && ARXIV_ID_RE.test(arxivId)) {
     links.push({ label: "arXiv", url: `https://arxiv.org/abs/${arxivId}` });
   }
+  const pmlrUrl = pmlrPageUrl(paper);
+  if (pmlrUrl && pmlrUrl !== pageUrl) links.push({ label: "PMLR", url: pmlrUrl });
   if (pdfUrl) links.push({ label: "PDF", url: pdfUrl });
   return links;
+}
+
+/** The row's PMLR page (`abstract_url` of a PMLR abstract), or "". */
+function pmlrPageUrl(paper: CatalogPaper): string {
+  if (paper.abstract_source !== "pmlr") return "";
+  const url = typeof paper.abstract_url === "string" ? paper.abstract_url : "";
+  return pmlrVolumeFromUrl(url) === null ? "" : url;
 }
 
 export interface AbstractAttribution {
@@ -95,6 +108,16 @@ export function abstractAttribution(
       ...base,
       kind: "要旨",
       source: `出典: ${credit ? `${credit}, ` : ""}“${paper.title}”, ACL Anthology`,
+      note: "（一覧では冒頭のみ表示）",
+    };
+  }
+  if (src === "pmlr") {
+    const credit = authorCredit(paper.authors);
+    const volume = pmlrVolumeFromUrl(pmlrPageUrl(paper)) ?? "PMLR";
+    return {
+      ...base,
+      kind: "要旨",
+      source: `出典: ${credit ? `${credit}, ` : ""}“${paper.title}”, ${volume}`,
       note: "（一覧では冒頭のみ表示）",
     };
   }
