@@ -48,7 +48,7 @@ describe("newestAvailability", () => {
     const undated = [row("a", ""), row("b", undefined), row("c", "")];
     const availability = newestAvailability(undated);
     expect(availability.usable).toBe(false);
-    expect(availability.label).toBe("新着順（arXiv ID がない学会では使えません）");
+    expect(availability.label).toBe("新着順（arXiv ID なし）");
   });
 
   it("is usable when at least one loaded row has an arXiv id", () => {

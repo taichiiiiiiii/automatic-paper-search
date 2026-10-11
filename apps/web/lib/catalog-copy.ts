@@ -50,6 +50,14 @@ export const CATALOG_COPY: Record<string, CatalogCopy> = {
     lede: "ACL Anthology の本会議採択論文を全件収録した一覧です。キーワード検索・トピックタグ・並び替えで気になる論文をすぐに見つけられます。",
     source: "ACL Anthology · Auto-tagged · MIT License",
   },
+  "acl-2026": {
+    display: "ACL 2026",
+    description:
+      "ACL 2026 採択論文のフィルタブル一覧。タイトル・著者・要旨での検索、トピックタグ、採択形式（Oral / Poster）、並び替えで絞り込めます。",
+    tagline: "Annual Meeting of the Association for Computational Linguistics。",
+    lede: "ACL Anthology に掲載された ACL 2026 の採択論文の一覧です。キーワード検索・トピックタグ・並び替えで気になる論文をすぐに見つけられます。",
+    source: "ACL Anthology · Auto-tagged · MIT License",
+  },
   "cvpr-2025": {
     display: "CVPR 2025",
     description:

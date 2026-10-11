@@ -7,6 +7,7 @@
 import { BASE_PATH } from "../../lib/config";
 import { RELATION_LABEL_JA } from "../../lib/lineage/relations";
 import { type ThemePosition, themeFocusPath } from "../../lib/lineage/theme-position";
+import styles from "./catalog.module.css";
 
 const ORDER = ["supersedes", "successor", "extends", "ablation", "contrasts", "baseline_only"];
 
@@ -35,7 +36,7 @@ export function ThemePositionSection({ positions }: { positions: readonly ThemeP
           <li key={`${p.slug}:${p.nodeId}`} className="text-ink-muted">
             <a
               href={`${BASE_PATH}${themeFocusPath(p.slug, p.nodeId)}`}
-              className="font-medium text-accent hover:text-accent-strong"
+              className={`font-medium ${styles.strongLink}`}
               data-theme-position-link
             >
               {p.theme} の系譜で見る →

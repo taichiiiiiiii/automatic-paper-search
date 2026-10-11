@@ -26,6 +26,7 @@ import { assertConferenceHasPapersJson } from "./paper-links/build-guard";
 interface ConferencesRow {
   name: string;
   generated: string | null;
+  papers: number;
 }
 
 function readConferencesJson(): ConferencesRow[] {
@@ -83,5 +84,17 @@ export default async function ConferenceCatalogPage({
   const row = findConferenceRow(conf);
   if (!row) notFound();
   const copy = getCatalogCopy(row.name);
-  return <CatalogApp conf={row.name} generated={row.generated ?? ""} copy={copy} />;
+  const conferences = readConferencesJson().map((r) => ({
+    slug: r.name,
+    display: getCatalogCopy(r.name).display,
+  }));
+  return (
+    <CatalogApp
+      conf={row.name}
+      generated={row.generated ?? ""}
+      copy={copy}
+      conferences={conferences}
+      expectedTotal={row.papers}
+    />
+  );
 }

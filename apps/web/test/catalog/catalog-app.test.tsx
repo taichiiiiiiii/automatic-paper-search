@@ -4,7 +4,7 @@
 // owns in components/catalog/catalog-app.tsx:
 //   M8b -- Back navigation from a selected paper to the plain list must
 //          restore the scroll position captured at selection time and
-//          move keyboard focus back to that paper's "内容を見る" button
+//          move keyboard focus back to that paper's "詳細を開く" button
 //          (falling back to the search input if the button is no
 //          longer rendered) -- ported from docs/assets/app.js's
 //          popstate handler's `else if (historyRestore)` branch

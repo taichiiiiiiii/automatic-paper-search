@@ -61,7 +61,23 @@ export function buildTypeChips(papers: readonly CatalogPaper[]): TypeChip[] {
   for (const p of papers) counts.set(p.type, (counts.get(p.type) ?? 0) + 1);
   return ACCEPTANCE_TYPES.filter((value) => value === "all" || counts.has(value)).map((value) => ({
     value,
-    label: value,
+    // The UI is Japanese; "Oral"/"Poster" are the venues' own terms and
+    // stay as-is, but the catch-all chip reads "すべて" (design doc 53).
+    label: value === "all" ? "すべて" : value,
     count: counts.get(value) ?? 0,
   }));
+}
+
+/** The acceptance-type chips are only worth showing when they can
+ * actually narrow the list: a conference whose rows are all one type
+ * (ICML 2026: 6,552 Poster) would otherwise show two chips with the same
+ * count, both of which mean "everything" (design doc 53). An active
+ * non-default type (from the URL) always keeps the chips visible so the
+ * filter can be seen and cleared. */
+export function typeChipsAreUseful(
+  chips: readonly TypeChip[],
+  activeType: AcceptanceType,
+): boolean {
+  if (activeType !== "all") return true;
+  return chips.filter((c) => c.value !== "all" && c.count > 0).length > 1;
 }

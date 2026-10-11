@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildTagChipGroups, buildTypeChips } from "../../lib/catalog-chips";
+import { buildTagChipGroups, buildTypeChips, typeChipsAreUseful } from "../../lib/catalog-chips";
 import type { CatalogPaper } from "../../lib/catalog-core";
 
 function paper(tags: string[], type: "Oral" | "Poster" = "Poster"): CatalogPaper {
@@ -7,16 +7,17 @@ function paper(tags: string[], type: "Oral" | "Poster" = "Poster"): CatalogPaper
 }
 
 describe("buildTagChipGroups", () => {
-  it("keeps only the top 18 tags, by descending count", () => {
+  it("offers every tag (design doc 53; was top 18), by descending count", () => {
     // tag0 has 20 occurrences, tag1 has 19, ... tag19 has 1.
     const papers: CatalogPaper[] = [];
     for (let i = 0; i < 20; i++) {
       for (let n = 0; n < 20 - i; n++) papers.push(paper([`tag${i}`]));
     }
     const groups = buildTagChipGroups(papers, new Set());
-    expect(groups.head.length + groups.tail.length).toBe(18);
+    expect(groups.head.length + groups.tail.length).toBe(20);
     expect(groups.head).toHaveLength(8);
-    expect(groups.tail).toHaveLength(10);
+    expect(groups.tail).toHaveLength(12);
+    expect(groups.tail.at(-1)?.tag).toBe("tag19");
     // tag0 has the most occurrences (20), so it must lead the head.
     expect(groups.head[0]?.tag).toBe("tag0");
   });
@@ -39,7 +40,7 @@ describe("buildTypeChips", () => {
   it("always includes All, plus any type present in the loaded rows", () => {
     const chips = buildTypeChips([paper([], "Oral"), paper([], "Poster"), paper([], "Poster")]);
     expect(chips).toEqual([
-      { value: "all", label: "all", count: 3 },
+      { value: "all", label: "すべて", count: 3 },
       { value: "Oral", label: "Oral", count: 1 },
       { value: "Poster", label: "Poster", count: 2 },
     ]);
@@ -48,5 +49,22 @@ describe("buildTypeChips", () => {
   it("omits Oral when no loaded row is Oral", () => {
     const chips = buildTypeChips([paper([], "Poster")]);
     expect(chips.map((c) => c.value)).toEqual(["all", "Poster"]);
+  });
+});
+
+describe("typeChipsAreUseful", () => {
+  it("hides the chips when every row has the same type (ICML 2026: all Poster)", () => {
+    const chips = buildTypeChips([paper([], "Poster"), paper([], "Poster")]);
+    expect(typeChipsAreUseful(chips, "all")).toBe(false);
+  });
+
+  it("shows them when at least two types can be told apart", () => {
+    const chips = buildTypeChips([paper([], "Oral"), paper([], "Poster")]);
+    expect(typeChipsAreUseful(chips, "all")).toBe(true);
+  });
+
+  it("keeps them visible while a non-default type is active, so it can be cleared", () => {
+    const chips = buildTypeChips([paper([], "Poster")]);
+    expect(typeChipsAreUseful(chips, "Oral")).toBe(true);
   });
 });

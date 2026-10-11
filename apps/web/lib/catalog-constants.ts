@@ -8,8 +8,10 @@
  * PAGE_SIZE per "show more" click (docs/assets/app.js `PAGE_SIZE`). */
 export const PAGE_SIZE = 30;
 
-/** Top-N topic tags shown as chips (docs/assets/app.js `buildTagChips`). */
-export const TAG_CHIP_LIMIT = 18;
+/** Topic tags offered as chips. Was the top 18 (docs/assets/app.js
+ * `buildTagChips`), which left ~40 tags reachable only from a card;
+ * design doc 53 offers every tag behind the "+N タグ" expander. */
+export const TAG_CHIP_LIMIT = 200;
 
 /** Of the top TAG_CHIP_LIMIT tags, this many are shown up front; the rest
  * sit behind a "+N タグ" expander (docs/assets/app.js `HEAD_COUNT`). */
@@ -30,7 +32,10 @@ export const ACCEPTANCE_TYPES = ["all", "Oral", "Poster"] as const;
 export type AcceptanceType = (typeof ACCEPTANCE_TYPES)[number];
 
 export const NEWEST_LABEL = "新着順";
-export const NEWEST_UNAVAILABLE_LABEL = "新着順（arXiv ID がない学会では使えません）";
+// Kept short: a <select> is as wide as its longest option, and the old
+// "新着順（arXiv ID がない学会では使えません）" pushed the toolbar 37px past
+// a 375px screen (design doc 53). The reason is in the select's title.
+export const NEWEST_UNAVAILABLE_LABEL = "新着順（arXiv ID なし）";
 
 export const CATALOG_LOAD_ERROR = "論文一覧を読み込めませんでした。";
 
