@@ -1,0 +1,65 @@
+name: 系譜の関係の誤り
+description: テーマ別の系譜で、関係（線）の種類や根拠が誤っているときに報告します
+title: "[系譜の誤り] "
+labels: ["lineage-feedback"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        系譜ページの「誤りを報告」から開くと、下の欄は自動で入ります。どこが誤りかを「内容」に書いてください。
+        個人情報や削除の依頼は、公開の Issue ではなくリポジトリの非公開の報告窓口（Security → Report a vulnerability）を使ってください。
+  - type: input
+    id: theme
+    attributes:
+      label: テーマ
+      description: テーマ名とスラッグ
+    validations:
+      required: true
+  - type: input
+    id: relation
+    attributes:
+      label: 表示されている関係
+      description: 例 拡張（extends）
+    validations:
+      required: true
+  - type: textarea
+    id: older
+    attributes:
+      label: 古い論文（引用される側）
+      description: ID と題名
+    validations:
+      required: true
+  - type: textarea
+    id: newer
+    attributes:
+      label: 新しい論文（引用する側）
+      description: ID と題名
+    validations:
+      required: true
+  - type: input
+    id: method
+    attributes:
+      label: 判定方法と確信度
+  - type: input
+    id: page
+    attributes:
+      label: ページの URL
+  - type: dropdown
+    id: kind
+    attributes:
+      label: 誤りの種類
+      options:
+        - 関係の種類が違う
+        - この 2 本に関係はない
+        - 向き（古い・新しい）が逆
+        - テーマと関係のない論文が入っている
+        - その他
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: 内容
+      description: 正しいと思う関係と、その根拠（論文の該当箇所など）
+    validations:
+      required: true

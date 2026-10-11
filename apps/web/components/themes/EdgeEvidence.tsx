@@ -14,6 +14,7 @@
  * All text goes through React's escaping; no inline styles (CSP).
  */
 import { forwardRef } from "react";
+import { BASE_PATH } from "../../lib/config";
 import {
   ABSTRACT_SOURCE_LABEL,
   ARXIV_HTML_SOURCE_LABEL,
@@ -25,8 +26,54 @@ import {
   quoteAuthorCredit,
   semanticScholarUrl,
 } from "../../lib/lineage/evidence";
+import { lineageFeedbackIssueUrl } from "../../lib/lineage/feedback";
 import { RELATION_LABEL_JA } from "../../lib/lineage/relations";
 import type { LineageEdge, LineageNode } from "../../lib/themes-quality";
+
+/** Theme identity for the "誤りを報告" link (design doc 48 P0-2). */
+export interface FeedbackTheme {
+  name: string;
+  slug: string;
+}
+
+function themePageUrl(slug: string, nodeId: string): string | null {
+  if (typeof window === "undefined") return null;
+  const params = new URLSearchParams({ theme: slug, node: nodeId });
+  return `${window.location.origin}${BASE_PATH}/themes/?${params.toString()}`;
+}
+
+/** Opens a prefilled GitHub issue for this one relation. */
+export function ReportEdgeLink({
+  edge,
+  nodeById,
+  theme,
+}: {
+  edge: LineageEdge;
+  nodeById: ReadonlyMap<string, LineageNode>;
+  theme: FeedbackTheme;
+}) {
+  const src = nodeById.get(edge.src);
+  const dst = nodeById.get(edge.dst);
+  const href = lineageFeedbackIssueUrl({
+    theme,
+    edge,
+    older: { id: edge.src, title: src?.title, year: src?.year },
+    newer: { id: edge.dst, title: dst?.title, year: dst?.year },
+    pageUrl: themePageUrl(theme.slug, edge.dst),
+  });
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      data-report-edge
+      title="GitHub の Issue を開きます（GitHub のアカウントが必要です）"
+      className="text-accent underline"
+    >
+      誤りを報告
+    </a>
+  );
+}
 
 export function relationLabelJa(relation: string): string {
   return (RELATION_LABEL_JA as Record<string, string>)[relation] ?? "関係";
@@ -167,8 +214,10 @@ export const EdgeEvidencePanel = forwardRef<
     edge: LineageEdge;
     nodeById: ReadonlyMap<string, LineageNode>;
     onClose: () => void;
+    theme?: FeedbackTheme | null;
+    onMainPath?: boolean;
   }
->(function EdgeEvidencePanel({ edge, nodeById, onClose }, ref) {
+>(function EdgeEvidencePanel({ edge, nodeById, onClose, theme, onMainPath }, ref) {
   return (
     <section
       aria-labelledby="edge-evidence-title"
@@ -199,7 +248,18 @@ export const EdgeEvidencePanel = forwardRef<
           閉じる ✕
         </button>
       </div>
+      {onMainPath && (
+        <p className="mt-1 text-xs text-ink-subtle" data-main-path-edge>
+          この関係は本流（主経路）に入っています。
+        </p>
+      )}
       <EvidenceBody edge={edge} nodeById={nodeById} />
+      {theme && (
+        <p className="mt-2 text-xs text-ink-subtle">
+          関係や根拠が誤っていたら <ReportEdgeLink edge={edge} nodeById={nodeById} theme={theme} />
+          してください。
+        </p>
+      )}
     </section>
   );
 });
@@ -210,11 +270,15 @@ export function EdgeRelationList({
   nodeById,
   selectedKey,
   onSelect,
+  theme,
+  mainPathKeys,
 }: {
   edges: readonly LineageEdge[];
   nodeById: ReadonlyMap<string, LineageNode>;
   selectedKey: string | null;
   onSelect: (key: string) => void;
+  theme?: FeedbackTheme | null;
+  mainPathKeys?: ReadonlySet<string>;
 }) {
   const yearOf = (id: string) => {
     const y = nodeById.get(id)?.year;
@@ -247,6 +311,14 @@ export function EdgeRelationList({
                   <span className="min-w-0 break-words font-medium text-ink">
                     {titleOf(nodeById.get(e.dst), e.dst)}
                   </span>
+                  {mainPathKeys?.has(key) && (
+                    <span
+                      className="rounded bg-accent/10 px-1.5 py-0.5 text-xs font-semibold text-accent-strong"
+                      data-main-path-edge
+                    >
+                      本流
+                    </span>
+                  )}
                 </div>
                 <p className="break-words text-xs text-ink-muted">
                   {summary}
@@ -265,6 +337,7 @@ export function EdgeRelationList({
                   >
                     根拠を表示
                   </button>
+                  {theme && <ReportEdgeLink edge={e} nodeById={nodeById} theme={theme} />}
                 </div>
               </li>
             );

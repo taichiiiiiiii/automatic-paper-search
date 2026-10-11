@@ -103,3 +103,28 @@ export function lineageShelfStaleNote(row: QualityRow): string | null {
   const date = row.snapshot_date ?? row.generated_at ?? "日付不明";
   return `更新確認が必要 · ${String(date).slice(0, 10)}`;
 }
+
+/**
+ * Shelf copy per state (design doc 48 P0-4). `loading` is also what the
+ * static HTML ships, so it must not claim that nothing is published.
+ */
+export type LineageShelfKind = "loading" | "closed" | "failed" | "open";
+
+export function lineageShelfLede(kind: LineageShelfKind): string {
+  if (kind === "open") return "自動検査に合格した系譜を公開しています（未監査のものは印付き）。";
+  if (kind === "closed") return "系譜データは現在公開準備中です。";
+  return "";
+}
+
+export function lineageShelfStatus(kind: Exclude<LineageShelfKind, "open">): string {
+  if (kind === "failed") return "系譜一覧を読み込めませんでした。";
+  if (kind === "closed") return "公開条件を満たす系譜は現在ありません。";
+  return "系譜一覧を読み込んでいます。";
+}
+
+export function lineageShelfEmptyText(kind: Exclude<LineageShelfKind, "open">): string {
+  if (kind === "failed") return "系譜一覧を読み込めませんでした。学会カタログから論文を探せます。";
+  if (kind === "closed")
+    return "公開できる系譜は準備中です。学会カタログは通常どおり利用できます。";
+  return "系譜一覧を読み込んでいます…（JavaScript が必要です）";
+}

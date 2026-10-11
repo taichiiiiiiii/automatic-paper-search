@@ -1,7 +1,7 @@
 // Unit tests for lib/themes-format.ts, a scoped port of docs/assets/
 // utils.js's window.PP.shortVenue / formatVenue / formatStars.
 import { describe, expect, it } from "vitest";
-import { formatStars, formatVenue, shortVenue } from "../../lib/themes-format";
+import { dataDateOf, formatStars, formatVenue, shortVenue } from "../../lib/themes-format";
 
 describe("shortVenue", () => {
   it("maps known full names to their acronym", () => {
@@ -52,5 +52,18 @@ describe("formatStars", () => {
   it("compacts to a whole 'k' at/above 10000", () => {
     expect(formatStars(12345)).toBe("12k");
     expect(formatStars(226000)).toBe("226k");
+  });
+});
+
+describe("dataDateOf (roadmap R1-3)", () => {
+  it("takes the date part of meta.generated_at", () => {
+    expect(dataDateOf("2026-10-11T07:56:59.384000Z")).toBe("2026-10-11");
+    expect(dataDateOf("2026-06-28")).toBe("2026-06-28");
+  });
+  it("returns null for anything else", () => {
+    expect(dataDateOf(undefined)).toBeNull();
+    expect(dataDateOf(20261011)).toBeNull();
+    expect(dataDateOf("2026-10-11junk")).toBeNull();
+    expect(dataDateOf("yesterday")).toBeNull();
   });
 });

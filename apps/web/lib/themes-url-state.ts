@@ -40,7 +40,13 @@ export interface TreeUrlState {
   /** Permalink focus (`?node=`), resolved against the artifact by the
    * caller via `resolveFocus` -- this module only extracts the raw value. */
   node: string | null;
+  /** `null` = param absent; `?main=off|only` (design doc 48 P0-1). */
+  mainPath: MainPathMode | null;
 }
+
+/** Main path (本流) display: emphasise it (default), show only it, or off. */
+export type MainPathMode = "highlight" | "only" | "off";
+export const DEFAULT_MAIN_PATH_MODE: MainPathMode = "highlight";
 
 /** Parses `search` (e.g. `window.location.search` or a `URLSearchParams`
  * query string) into the whitelisted tree filter state. Never throws --
@@ -79,7 +85,20 @@ export function readTreeUrlState(search: string): TreeUrlState {
   const nodeRaw = params.get("node");
   const node = typeof nodeRaw === "string" && nodeRaw.length > 0 ? nodeRaw : null;
 
-  return { xAxisMode, yearMin, yearMax, searchQuery, visibleRelations, hideOrphans, node };
+  const mainRaw = params.get("main");
+  const mainPath: MainPathMode | null =
+    mainRaw === "off" || mainRaw === "only" || mainRaw === "highlight" ? mainRaw : null;
+
+  return {
+    xAxisMode,
+    yearMin,
+    yearMax,
+    searchQuery,
+    visibleRelations,
+    hideOrphans,
+    node,
+    mainPath,
+  };
 }
 
 export interface TreeUrlWriteState {
@@ -96,6 +115,8 @@ export interface TreeUrlWriteState {
    * effective value) -- matches `state.hideOrphans` in the original,
    * which the disabled-toggle UI affordance never mutates. */
   hideOrphans: boolean;
+  /** Optional so older callers keep compiling; absent = default. */
+  mainPath?: MainPathMode;
 }
 
 /**
@@ -156,6 +177,12 @@ export function writeTreeUrlParams(params: URLSearchParams, s: TreeUrlWriteState
     params.set("orphan", "show");
   } else {
     params.delete("orphan");
+  }
+
+  if (s.mainPath && s.mainPath !== DEFAULT_MAIN_PATH_MODE) {
+    params.set("main", s.mainPath);
+  } else {
+    params.delete("main");
   }
 }
 

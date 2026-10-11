@@ -57,7 +57,12 @@ export function CatalogHero({
         <span aria-hidden="true">·</span>
         <span className="font-mono text-base text-ink">{stat(tagCount)}</span> タグ
         <span aria-hidden="true">·</span>
-        更新 <span className="font-mono text-base text-ink">{generated || "—"}</span>
+        <span title="一覧を取得した日（スナップショット）。この日より後の変更は入っていません">
+          データの日付
+        </span>{" "}
+        <span className="font-mono text-base text-ink" data-data-date={generated || ""}>
+          {generated || "—"}
+        </span>
       </p>
       {copy.tagline && <p className="mt-2 text-sm text-ink-muted">{copy.tagline}</p>}
       <div id={detailsId} hidden={!open} className="mt-3">

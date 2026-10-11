@@ -31,9 +31,12 @@ import {
   venueLabel,
 } from "../../lib/landing";
 import {
+  lineageShelfEmptyText,
   lineageShelfHref,
+  lineageShelfLede,
   lineageShelfMeta,
   lineageShelfStaleNote,
+  lineageShelfStatus,
   lineageShelfTier,
   selectLineageShelfRows,
 } from "../../lib/landing-lineage";
@@ -43,7 +46,13 @@ import { SearchArea, type SearchAreaHandle } from "../search/search-area";
 import { SearchDetailDialog } from "../search/search-detail-dialog";
 import styles from "./landing.module.css";
 
+// "loading" is the pre-hydration / in-flight state. It used to be "closed",
+// so the static HTML (what crawlers, no-JS readers and the first paint
+// see) claimed "公開条件を満たす系譜は現在ありません" even while themes
+// were published (design doc 48 P0-4). "closed" now means the manifest
+// really resolved with no eligible row.
 type LineageShelfState =
+  | { kind: "loading" }
   | { kind: "closed" }
   | { kind: "failed" }
   | { kind: "open"; rows: QualityRow[] };
@@ -55,7 +64,7 @@ export function Landing() {
   const [confList, setConfList] = useState<Array<{ name: string; papers: number }>>([]);
   const [confLabel, setConfLabel] = useState("学会から探す");
   const [confsExpanded, setConfsExpanded] = useState(false);
-  const [lineageShelf, setLineageShelf] = useState<LineageShelfState>({ kind: "closed" });
+  const [lineageShelf, setLineageShelf] = useState<LineageShelfState>({ kind: "loading" });
 
   const searchAreaRef = useRef<SearchAreaHandle>(null);
 
@@ -117,11 +126,7 @@ export function Landing() {
           {counts.m}
         </span>{" "}
         本から探す。
-        <span id="s0-lineage-note">
-          {lineageShelf.kind === "open"
-            ? "自動検査に合格した系譜を公開しています（未監査のものは印付き）。"
-            : "系譜データは現在公開準備中です。"}
-        </span>
+        <span id="s0-lineage-note">{lineageShelfLede(lineageShelf.kind)}</span>
       </p>
 
       <SearchArea handleRef={searchAreaRef} />
@@ -145,8 +150,10 @@ export function Landing() {
         <summary>検索した後は？</summary>
         <ol>
           <li>検索結果のタイトルを選び、学会カタログで論文の詳細を確認します。</li>
-          <li>家系図・スライドは、その論文の詳細から公開済みの場合のみ開けます。</li>
-          <li>監査済み家系図とスライドの一般向け自動生成は公開準備中です。</li>
+          <li>家系図は、その論文の詳細から、公開済みの場合だけ開けます。</li>
+          <li>
+            テーマ別の系譜は、自動検査に合格したものを公開しています。人がまだ確認していないものは「未監査」と表示します。
+          </li>
         </ol>
       </details>
 
@@ -192,11 +199,9 @@ export function Landing() {
           系譜の公開状況
         </h2>
         <p className="visually-hidden" id="s0-lineages-status" role="status">
-          {lineageShelf.kind === "failed"
-            ? "系譜一覧を読み込めませんでした。"
-            : lineageShelf.kind === "open"
-              ? `${lineageShelf.rows.length} 件の系譜を表示しています。`
-              : "公開条件を満たす系譜は現在ありません。"}
+          {lineageShelf.kind === "open"
+            ? `${lineageShelf.rows.length} 件の系譜を表示しています。`
+            : lineageShelfStatus(lineageShelf.kind)}
         </p>
         <ul className={styles.lineagesList} id="s0-lineages-list">
           {lineageShelf.kind === "open" ? (
@@ -215,11 +220,7 @@ export function Landing() {
               );
             })
           ) : (
-            <li className={styles.lineageEmpty}>
-              {lineageShelf.kind === "failed"
-                ? "系譜一覧を読み込めませんでした。学会カタログから論文を探せます。"
-                : "公開できる系譜は準備中です。学会カタログは通常どおり利用できます。"}
-            </li>
+            <li className={styles.lineageEmpty}>{lineageShelfEmptyText(lineageShelf.kind)}</li>
           )}
         </ul>
       </section>
