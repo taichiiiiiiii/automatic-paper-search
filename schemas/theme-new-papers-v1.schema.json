@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paperpilot.local/schemas/theme-new-papers-v1.schema.json",
+  "title": "PaperPilot theme new-papers feed v1 (R4-3, design 48 P1-1)",
+  "description": "Recent works (OpenAlex) that cite at least `min_lineage_cites` papers of a published theme lineage and pass the theme topic gate. Not part of the lineage graph: a separate '新着' list and the source of themes/<slug>/feed.xml.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "kind", "theme", "slug", "generated_at", "source", "window",
+    "lineage_generated_at", "anchor_count", "min_lineage_cites", "topic_gate", "stats", "items"
+  ],
+  "properties": {
+    "schema_version": {"const": "theme-new-papers-v1"},
+    "kind": {"const": "theme-new-papers"},
+    "theme": {"type": "string", "minLength": 1, "maxLength": 200},
+    "slug": {"type": "string", "pattern": "^[a-z0-9](?:[a-z0-9-]{0,78}[a-z0-9])?$"},
+    "generated_at": {"type": "string", "format": "date-time", "pattern": "Z$"},
+    "source": {"const": "openalex"},
+    "window": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["from", "to", "days"],
+      "properties": {
+        "from": {"type": "string", "format": "date"},
+        "to": {"type": "string", "format": "date"},
+        "days": {"type": "integer", "minimum": 1, "maximum": 366}
+      }
+    },
+    "lineage_generated_at": {"type": ["string", "null"]},
+    "anchor_count": {"type": "integer", "minimum": 0, "maximum": 1000},
+    "min_lineage_cites": {"type": "integer", "minimum": 1, "maximum": 100},
+    "topic_gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method", "model", "revision", "thresholds", "pool_size"],
+      "properties": {
+        "method": {"enum": ["embedding+terms", "terms"]},
+        "model": {"type": ["string", "null"]},
+        "revision": {"type": ["string", "null"]},
+        "thresholds": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["z_lo", "z_hi"],
+              "properties": {"z_lo": {"type": "number"}, "z_hi": {"type": "number"}}
+            },
+            {"type": "null"}
+          ]
+        },
+        "pool_size": {"type": "integer", "minimum": 0},
+        "fallback_reason": {"type": "string", "maxLength": 300},
+        "unscored": {"type": "integer", "minimum": 0}
+      }
+    },
+    "stats": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fetched", "pages", "truncated", "in_lineage", "excluded_type", "below_min_cites", "off_topic", "kept", "capped"],
+      "properties": {
+        "fetched": {"type": "integer", "minimum": 0},
+        "pages": {"type": "integer", "minimum": 0},
+        "truncated": {"type": "boolean"},
+        "in_lineage": {"type": "integer", "minimum": 0},
+        "excluded_type": {"type": "integer", "minimum": 0},
+        "below_min_cites": {"type": "integer", "minimum": 0},
+        "off_topic": {"type": "integer", "minimum": 0},
+        "kept": {"type": "integer", "minimum": 0},
+        "capped": {"type": "integer", "minimum": 0}
+      }
+    },
+    "items": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id", "title", "publication_date", "year", "authors", "authors_truncated", "venue",
+          "type", "doi", "arxiv_id", "url", "cites_lineage", "topic"
+        ],
+        "properties": {
+          "id": {"type": "string", "pattern": "^openalex:W[0-9]+$"},
+          "title": {"type": "string", "minLength": 1, "maxLength": 1000},
+          "publication_date": {"type": "string", "format": "date"},
+          "year": {"type": ["integer", "null"]},
+          "authors": {"type": "array", "maxItems": 10, "items": {"type": "string", "maxLength": 300}},
+          "authors_truncated": {"type": "boolean"},
+          "venue": {"type": "string", "maxLength": 500},
+          "type": {"type": ["string", "null"], "maxLength": 64},
+          "doi": {"type": ["string", "null"], "maxLength": 300},
+          "arxiv_id": {"type": ["string", "null"], "maxLength": 64},
+          "url": {"type": "string", "pattern": "^https://"},
+          "cites_lineage": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {"type": "string", "pattern": "^openalex:W[0-9]+$"}
+          },
+          "topic": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["admitted_by", "z"],
+            "properties": {
+              "admitted_by": {"enum": ["topic", "gate_off"]},
+              "z": {"type": ["number", "null"]}
+            }
+          }
+        }
+      }
+    }
+  }
+}

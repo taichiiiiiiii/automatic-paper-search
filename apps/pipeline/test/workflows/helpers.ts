@@ -28,6 +28,7 @@ export const EXPECTED_WORKFLOW_FILES = [
   "regen-retry.yml",
   "regen-themes.yml",
   "tests.yml",
+  "theme-feeds.yml",
   "theme-on-demand.yml",
 ].sort();
 

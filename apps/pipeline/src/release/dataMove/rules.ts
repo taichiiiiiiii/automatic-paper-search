@@ -150,6 +150,11 @@ function classifyDocs(p: readonly string[], full: string): RuleEntry | undefined
   if (p.length === 4 && p[1] === "themes" && p[3] === "lineage.json") {
     return { path: full, class: "move", dest: `${rel.published}/themes/${p[2]}/lineage.json` };
   }
+  // R4-3: per-theme side files written by theme-feeds.yml (born post-move;
+  // mapped only so an R-B carry-back can map them back instead of refusing).
+  if (p.length === 4 && p[1] === "themes" && THEME_SIDE_FILES.has(p[3] as string)) {
+    return { path: full, class: "move", dest: `${rel.published}/themes/${p[2]}/${p[3]}` };
+  }
   if (p.length === 2 && TOP_LEVEL_PUBLISHED_FILES.has(p[1] as string)) {
     return { path: full, class: "move", dest: `${rel.published}/${p[1]}` };
   }
@@ -183,6 +188,9 @@ function classifyDocs(p: readonly string[], full: string): RuleEntry | undefined
 // ---------------------------------------------------------------------------
 // paperpilot/data/
 // ---------------------------------------------------------------------------
+
+/** R4-3: theme side files next to `lineage.json` (new-paper feed, code links). */
+const THEME_SIDE_FILES = new Set(["new-papers.json", "feed.xml", "code-links.json"]);
 
 const DATA_STAY_FILES = new Set([
   "paperpilot/data/.gitkeep",
@@ -219,6 +227,14 @@ function classifyPaperpilotData(p: readonly string[], full: string): RuleEntry |
       path: full,
       class: "move",
       dest: `${rel.state}/lineage-cache/${p.slice(3).join("/")}`,
+    };
+  }
+  // R4-3: Hugging Face Papers answer cache (theme-feeds.yml), born post-move.
+  if (p.length >= 4 && p[2] === "hf-papers") {
+    return {
+      path: full,
+      class: "move",
+      dest: `${rel.state}/hf-papers/${p.slice(3).join("/")}`,
     };
   }
   // R1-6: the R3 new-edition watcher state (committed weekly by

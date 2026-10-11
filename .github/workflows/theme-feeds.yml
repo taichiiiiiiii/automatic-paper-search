@@ -1,0 +1,103 @@
+name: theme-feeds
+
+# R4-3 (design 48 P1-1 / P1-2): per-theme "new papers" feed and code / HF
+# badges. NOT scheduled: there is deliberately no `schedule:` — the
+# Cloudflare Worker cron (R1-6, apps/api/src/watchdog/scheduled.ts) is
+# meant to dispatch it weekly once the user enables it (design 40 §5,
+# data writers have no cron until then). Manual `workflow_dispatch` works.
+#
+# Runs apps/pipeline/src/lineage/theme/feed/themeFeedsCli.ts for every
+# published theme: OpenAlex `cites:` OR query for works of the last N days
+# citing >= 2 lineage papers (key: PAPERPILOT_OPENALEX_API_KEY; one list
+# credit per page, at most --max-credits pages per run) + the theme topic
+# gate, and the Hugging Face Papers API (no key) for code / HF badges.
+# No LLM. Commits only the side files (never lineage.json, whose sha256 is
+# bound to the audit) to develop with the bot commit-push pattern.
+
+on:
+  workflow_dispatch:
+    inputs:
+      days:
+        description: "Window in days (1-366)"
+        required: false
+        default: "30"
+        type: string
+
+permissions: {}
+
+concurrency:
+  group: theme-feeds
+  cancel-in-progress: false
+
+jobs:
+  feeds:
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          # commit-push rebases HEAD onto origin/develop and pushes HEAD:develop;
+          # pin develop so a dispatch from another branch cannot push its commits.
+          ref: develop
+
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+
+      # Same caches as the theme generators (R2-11): the bge-small model and
+      # the vectors, both in the git-ignored lineage cache.
+      - name: Restore topic-embedding model
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: data/state/lineage-cache/models
+          key: topic-embedding-model-Xenova-bge-small-en-v1.5-ea104dacec62c0de699686887e3f920caeb4f3e3
+
+      - name: Restore topic-embedding vectors
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: data/state/lineage-cache/embeddings
+          key: topic-embedding-vectors-ea104dacec62-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            topic-embedding-vectors-ea104dacec62-
+
+      - name: Build new-paper feeds and code / HF badges
+        id: feeds
+        env:
+          PAPERPILOT_OPENALEX_API_KEY: ${{ secrets.PAPERPILOT_OPENALEX_API_KEY }}
+          DAYS: ${{ inputs.days }}
+        run: |
+          set -euo pipefail
+          if ! [[ "${DAYS:-30}" =~ ^[0-9]{1,3}$ ]]; then
+            echo "::error::days must be an integer 1-366"
+            exit 1
+          fi
+          rc=0
+          pnpm exec tsx apps/pipeline/src/lineage/theme/feed/themeFeedsCli.ts \
+            --days "${DAYS:-30}" --max-credits 40 || rc=$?
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          case "$rc" in
+            0) ;;
+            4) echo "::warning::some themes kept their previous feed (see the log above)" ;;
+            *) echo "::error::themeFeedsCli exited $rc"; exit "$rc" ;;
+          esac
+
+      - name: Commit feeds to develop
+        env:
+          GIT_AUTHOR_NAME: "PaperPilot Bot"
+          GIT_AUTHOR_EMAIL: "bot@paperpilot.dev"
+          GIT_COMMITTER_NAME: "PaperPilot Bot"
+          GIT_COMMITTER_EMAIL: "bot@paperpilot.dev"
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          files=(data/published/themes/*/new-papers.json data/published/themes/*/feed.xml \
+            data/published/themes/*/code-links.json data/state/hf-papers/papers.json)
+          if [ "${#files[@]}" -eq 0 ] || [ -z "$(git status --porcelain -- "${files[@]}")" ]; then
+            echo "no change"
+            exit 0
+          fi
+          msg="chore(theme-feeds): new papers and code links $(date -u +%Y-%m-%d)"
+          pnpm exec tsx apps/pipeline/src/release/cli.ts commit-push "$msg" "${files[@]}"
