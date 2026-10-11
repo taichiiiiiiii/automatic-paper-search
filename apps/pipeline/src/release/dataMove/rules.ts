@@ -220,6 +220,16 @@ function classifyPaperpilotData(p: readonly string[], full: string): RuleEntry |
       dest: `${rel.state}/lineage-cache/${p.slice(3).join("/")}`,
     };
   }
+  // R1-6: the R3 new-edition watcher state (committed weekly by
+  // conference-watch.yml) is born post-move; this mapping exists only so
+  // an R-B carry-back can map it back instead of refusing.
+  if (p.length >= 4 && p[2] === "conference-watch") {
+    return {
+      path: full,
+      class: "move",
+      dest: `${rel.state}/conference-watch/${p.slice(3).join("/")}`,
+    };
+  }
   if (p.length === 3 && DATA_STATE_FILES.has(p[2] as string)) {
     return { path: full, class: "move", dest: `${rel.state}/${p[2]}` };
   }

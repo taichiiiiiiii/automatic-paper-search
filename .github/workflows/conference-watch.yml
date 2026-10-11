@@ -1,0 +1,150 @@
+name: conference-watch
+
+# R1-6 / R3 (design 52 §8, design 50 P1-4): weekly new-edition watcher.
+# Dispatched by the Cloudflare Worker's Cron Trigger every Monday
+# (apps/api/src/watchdog/scheduled.ts) — GitHub's own `schedule:` runs
+# hours late and stops after 60 idle days, so there is deliberately no
+# `schedule:` here. Manual `workflow_dispatch` works too.
+#
+# Runs apps/pipeline/src/conference/watch/groupsCli.ts --write (OpenReview
+# `/groups` only; 1 + at most 10 requests), commits
+# data/state/conference-watch/pending-editions-v1.json to develop with the
+# bot commit-push pattern when it changed materially (editions or check
+# status — not just the timestamps), and when a NEW pending edition
+# appears, opens or comments on ONE open issue labelled `conference-watch`
+# listing every pending edition with its approval command. Never publishes
+# anything: editions stay `pending_approval` / `auto_publish: false` until
+# a human approves (design 52 §8.1).
+
+on:
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: conference-watch
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      issues: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          # commit-push rebases HEAD onto origin/develop and pushes HEAD:develop;
+          # pin develop so a dispatch from another branch cannot push its commits.
+          ref: develop
+
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+
+      - name: Snapshot pending editions
+        env:
+          STATE: data/state/conference-watch/pending-editions-v1.json
+        run: |
+          set -euo pipefail
+          if [ -f "$STATE" ]; then
+            cp "$STATE" "$RUNNER_TEMP/before.json"
+          else
+            echo '{"editions":[]}' > "$RUNNER_TEMP/before.json"
+          fi
+
+      - name: Run the new-edition watcher (OpenReview /groups)
+        id: watch
+        run: |
+          set -euo pipefail
+          rc=0
+          pnpm exec tsx apps/pipeline/src/conference/watch/groupsCli.ts --write || rc=$?
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          case "$rc" in
+            0) ;;
+            3) echo "::warning::OpenReview /groups is source_blocked; pending editions left unchanged" ;;
+            *) echo "::error::groupsCli exited $rc (the failed check is recorded; this run fails after committing it)" ;;
+          esac
+
+      - name: Diff pending editions
+        id: diff
+        env:
+          STATE: data/state/conference-watch/pending-editions-v1.json
+        run: |
+          set -euo pipefail
+          material='{status: (.last_check.status // null), editions: [(.editions // [])[] | del(.last_seen_at)]}'
+          jq -S "$material" "$RUNNER_TEMP/before.json" > "$RUNNER_TEMP/before.material.json"
+          jq -S "$material" "$STATE" > "$RUNNER_TEMP/after.material.json"
+          if cmp -s "$RUNNER_TEMP/before.material.json" "$RUNNER_TEMP/after.material.json"; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+          new_ids="$(jq -rn --slurpfile b "$RUNNER_TEMP/before.json" --slurpfile a "$STATE" \
+            '[$a[0].editions[] | select(.status == "pending_approval") | .edition_id]
+             - [$b[0].editions[].edition_id] | join(" ")')"
+          echo "new_ids=$new_ids" >> "$GITHUB_OUTPUT"
+          {
+            echo "### Conference watch"
+            echo "- Last check: $(jq -r '.last_check.status // "?"' "$STATE")"
+            echo "- Pending: $(jq -r '[.editions[].edition_id] | join(", ")' "$STATE")"
+            echo "- New: ${new_ids:-none}"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit pending editions to develop
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          GIT_AUTHOR_NAME: "PaperPilot Bot"
+          GIT_AUTHOR_EMAIL: "bot@paperpilot.dev"
+          GIT_COMMITTER_NAME: "PaperPilot Bot"
+          GIT_COMMITTER_EMAIL: "bot@paperpilot.dev"
+        run: |
+          set -euo pipefail
+          msg="chore(conference-watch): pending editions $(date -u +%Y-%m-%d)"
+          pnpm exec tsx apps/pipeline/src/release/cli.ts commit-push "$msg" \
+            data/state/conference-watch/pending-editions-v1.json
+
+      - name: Open or update the approval issue
+        if: steps.diff.outputs.new_ids != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          OWNER: ${{ github.repository_owner }}
+          NEW_IDS: ${{ steps.diff.outputs.new_ids }}
+          STATE: data/state/conference-watch/pending-editions-v1.json
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          label=conference-watch
+          body="$RUNNER_TEMP/conference-watch-body.md"
+          {
+            printf '@%s — 学会の新しい回を検知しました（新規: %s）。**自動では公開しません**（`auto_publish: false`）。\n\n' "$OWNER" "$NEW_IDS"
+            printf '承認するときは、回ごとの下のコマンドを実行してください（arXiv 経由の一覧を conference-on-demand.yml で作り、promote の検査を通ったものだけが公開されます）。公式 proceedings のアダプタ（pmlr / acl-anthology / cvf-listing）で作る場合は design 52 §8.3 の手順で。\n\n'
+            jq -r --arg new " $NEW_IDS " '
+              .editions[] | select(.status == "pending_approval") |
+              (" " + .edition_id + " ") as $needle |
+              "### \(.display_name) (`\(.edition_id)`)\(if ($new | contains($needle)) then " 🆕" else "" end)\n" +
+              "- 開催: \(.start_date // "?") / \(.location // "?")、OpenReview: `\(.openreview_group_id)`\n" +
+              "- 公式の一覧: `\(.proceedings_adapter)` — \(.proceedings_hint // "")\n" +
+              "- 承認（arXiv 経由）:\n\n```sh\ngh workflow run conference-on-demand.yml --ref develop -f conference=\(.edition_id) -f venue=\(.venue_key | ascii_upcase) -f query='"'"'co:\"\(.display_name)\"'"'"' -f display='"'"'\(.display_name)'"'"' -f lede='"'"'\(.display_name) の論文一覧。'"'"'\n```\n"
+            ' "$STATE"
+            printf -- '---\n記録: `%s`（develop）。実行: %s\n' "$STATE" "$RUN_URL"
+          } > "$body"
+          num="$(gh issue list --label "$label" --state open --limit 1 --json number --jq '.[0].number // empty')"
+          if [ -n "$num" ]; then
+            gh issue comment "$num" --body-file "$body"
+          else
+            gh label create "$label" --color 0E8A16 \
+              --description "New conference editions waiting for approval (R3)" --force
+            gh issue create --title "学会の新しい回: 承認待ち" --label "$label" --body-file "$body"
+          fi
+
+      - name: Fail on watcher error
+        if: steps.watch.outputs.rc != '0' && steps.watch.outputs.rc != '3'
+        env:
+          RC: ${{ steps.watch.outputs.rc }}
+        run: |
+          echo "::error::groupsCli exited $RC"
+          exit 1
