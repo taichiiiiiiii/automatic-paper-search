@@ -79,11 +79,10 @@
   gap: 0.6rem;
   flex-wrap: wrap;
   margin-bottom: 0.7rem;
-  font-family: var(--font-mono);
-  font-size: var(--text-tag);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-ink-subtle);
+  /* Was 0.72rem uppercase mono (UX audit, design 53). */
+  font-family: var(--font-ja);
+  font-size: var(--text-meta);
+  color: var(--color-ink-muted);
 }
 .breadcrumb a {
   color: inherit;
@@ -443,4 +442,25 @@
   .relRowEg {
     grid-column: 1;
   }
+}
+
+/* Site overview right under the hero (UX audit, design 53). Kept last so
+   its `li + li` rule does not precede the lower-specificity `li` rules. */
+.overview {
+  padding: calc(var(--space-section) * 0.6) var(--space-edge) calc(var(--space-section) * 0.5);
+}
+.overviewList {
+  max-width: 64ch;
+  margin: 0.8rem 0 0;
+  padding-left: 1.2rem;
+  font-size: var(--text-body);
+  line-height: 1.8;
+  color: var(--color-ink-muted);
+}
+.overviewList li + li {
+  margin-top: 0.35rem;
+}
+.overviewList a {
+  color: var(--color-accent-strong);
+  font-weight: 600;
 }

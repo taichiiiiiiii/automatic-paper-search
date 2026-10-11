@@ -181,8 +181,11 @@ describe("built /how-it-works/ page parity with docs/how-it-works/index.html", (
       const legacyHeadings = headings(legacy);
       const how = legacyHeadings.indexOf("どう判定しているか");
       expect(how).toBeGreaterThan(-1);
+      // ...and a short site overview (h2) right after the hero h1.
       expect(headings(read(BUILT_PAGE))).toEqual([
-        ...legacyHeadings.slice(0, how + 1),
+        ...legacyHeadings.slice(0, 1),
+        "PaperPilotでできること",
+        ...legacyHeadings.slice(1, how + 1),
         ...HOW_SUBHEADS,
         ...legacyHeadings.slice(how + 1),
         "出典とライセンス",

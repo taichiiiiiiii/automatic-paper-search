@@ -149,7 +149,7 @@ export default function HowItWorksPage() {
   return (
     <main id="main-content" tabIndex={-1} className={styles.page}>
       <header className={styles.hero}>
-        <nav className={styles.breadcrumb} aria-label="breadcrumb">
+        <nav className={styles.breadcrumb} aria-label="パンくずリスト">
           <Link href="/">PaperPilot</Link> &nbsp;/&nbsp; 仕組み
         </nav>
         <h1 className={styles.heroTitle}>
@@ -165,6 +165,28 @@ export default function HowItWorksPage() {
           を、 色と線種で表しています。全6種の意味を、ビューアで実際に出る線そのもので解説します。
         </p>
       </header>
+
+      <section className={styles.overview} aria-labelledby="overview-heading">
+        <div className={`${styles.sectionHead} ${styles.sectionHeadBare}`}>
+          <h2 className={styles.sectionHeadTitle} id="overview-heading">
+            PaperPilot でできること
+          </h2>
+        </div>
+        <ul className={styles.overviewList}>
+          <li>
+            <Link href="/">論文を探す</Link>
+            ：AI トップ会議の採択論文を、タイトル・著者・タグから横断検索できます。
+          </li>
+          <li>
+            <a href="/#s0-confs">学会カタログ</a>
+            ：学会ごとの採択論文の一覧です。絞り込みと書き出しができます。
+          </li>
+          <li>
+            <Link href="/themes/">テーマ別の系譜</Link>
+            ：研究テーマごとに、論文どうしの関係を家系図で示します。このページでは、その線の読み方と判定の方法を説明します。
+          </li>
+        </ul>
+      </section>
 
       <section aria-labelledby="rel-heading">
         <div className={styles.sectionHead}>
