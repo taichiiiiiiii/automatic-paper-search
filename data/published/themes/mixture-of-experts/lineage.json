@@ -655,11 +655,11 @@
     {
       "src": "openalex:W1593114658",
       "dst": "openalex:W2581624817",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.92,
-      "confidence": 0.92,
-      "rationale": "Learning Factored Representatio…はMoEのアイデアを拡張し、Bは位置ごとに異なるゲーティングを導入して対照的にする。 引用文: \"Eigen et al. (2013) introduce the idea of using multiple MoEs with their own gating networks as parts of a deep model.\"",
+      "rel": "contrasts",
+      "relation": "contrasts",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「Outrageously Large Neural Netwo…」(2017) は 「Learning Factored Representatio…」(2013) と異なる手法を取ると述べている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"While Eigen et al. (2013) uses two stacked MoEs allowing for two sets of gating decisions, our convolutional application of the MoE allows for different gating decisions at each position in the text.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -667,14 +667,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "b948a2bd43cd2a19d6ba0dc46d4d4e9b67826e209f58b0359529722dafaae76b"
+          "kind": "citation-context",
+          "sha256": "d520f202fce3dee5644d8d2ec982478c9d5374de8b5211fcdf764e64316e97c4"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -682,26 +682,26 @@
     {
       "src": "openalex:W1593114658",
       "dst": "openalex:W2809290718",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.85,
-      "confidence": 0.85,
-      "rationale": "Multi-gate Mixture-of-Experts は Deep Mixture of Experts の MoE 構造をマルチタスク向けに複数ゲートで拡張し、タスク間関係をモデル化している。",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Modeling Task Relationships in Multi-task Learning with Mul…」(2018) は「Learning Factored Representations in a Deep Mixture of Expe…」(2013) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
           "version": "p2t-v1"
         },
         "evidence": {
-          "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "cd8bfd492d57341be365a0a371c3b2cc8648c494f559754dc2c60dd6dc4ca049"
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "4106dfeba4a6d17f59bd8fe8ac0e868ff51cd17beea9d51a50bdaaf6d2314f59"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v4",
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -713,7 +713,7 @@
       "relation": "baseline_only",
       "conf": 0.6,
       "confidence": 0.6,
-      "rationale": "「Scaling Vision with Sparse Mixt…」(2021) は 「Learning Factored Representatio…」(2013) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "rationale": "「Scaling Vision with Sparse Mixt…」(2021) は 「Learning Factored Representatio…」(2013) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"For computer vision, previous work on MoEs [21, 2, 25, 1, 63, 47, 64] focused on architectures whose scale is considerably smaller than that of both language models and our model.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -761,13 +761,40 @@
       }
     },
     {
-      "src": "openalex:W2179423374",
-      "dst": "openalex:W2581624817",
+      "src": "openalex:W1593114658",
+      "dst": "openalex:W4390873360",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.95,
-      "confidence": 0.95,
-      "rationale": "Conditional Computation in Neur…はMoEとブロックワイズドロップアウトを比較し、Bはそれを対照的に扱う。 引用文: \"Bengio et al. (2015) use three such terms.\"",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「AdaMV-MoE: Adaptive Multi-Task Vision Mixture-of-Experts」(2023) は「Learning Factored Representations in a Deep Mixture of Expe…」(2013) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "6b3d17a9503bcfdffd0bf6ba06bcbbb81b53e42d0caa57bdc5b38a9a65d8a5a4"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W1593114658",
+      "dst": "openalex:W4390874353",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Robust Mixture-of-Expert Training for Convolutional Neural …」(2023) は「Learning Factored Representations in a Deep Mixture of Expe…」(2013) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -775,14 +802,95 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "67e879d388057fc8ccf9c10ded49c5c256805d4b666dac8c00a9b9f6ed00f111"
+          "kind": "citation-list",
+          "sha256": "513fdd521f74b30e3201a590e6139f689fac9d5dc0919bbda7ffd53d398218de"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W1593114658",
+      "dst": "openalex:W4393160139",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Efficient Deweahter Mixture-of-Experts with Uncertainty-Awa…」(2024) は「Learning Factored Representations in a Deep Mixture of Expe…」(2013) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "a0a8bdcef65d4a779d3ee30026a523d09afbe9f112b60fc875b9f46ecdd03344"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2179423374",
+      "dst": "openalex:W2581624817",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Outrageously Large Neural Netwo…」(2017) は 「Conditional Computation in Neur…」(2015) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Bengio et al. (2015) use three such terms.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "6f1c201ed44982c3e9319abca2db10e7afdffb6264b9e6ee4341be90f9201a21"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2179423374",
+      "dst": "openalex:W3170943566",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Scaling Vision with Sparse Mixture of Experts」(2021) は「Conditional Computation in Neural Networks for faster models」(2015) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "80b35f92ef327863c06fae0744fcca4e38a0004e8a1b9128760f82eb7d760b19"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -871,11 +979,11 @@
     {
       "src": "openalex:W2242818861",
       "dst": "openalex:W3014879845",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.73,
-      "confidence": 0.73,
-      "rationale": "Conditional Channel Gated Networks は確率的ニューロンによる条件計算の概念をタスク認識型継続学習に拡張し、チャネルゲーティングで動的に計算を制御している。",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Conditional Channel Gated Networks for Task-Aware Continual…」(2020) は「Estimating or Propagating Gradients Through Stochastic Neur…」(2013) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -883,14 +991,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "259ca40c2cacb1674b608b00f387fee786cdb3d86d3a93042dd36e2957d8671a"
+          "kind": "citation-list",
+          "sha256": "585d88e5ce09b0d9545e30594639e7f0b2813b46c2f2e2867a5e07ed4858c126"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v4",
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -979,26 +1087,26 @@
     {
       "src": "openalex:W2581624817",
       "dst": "openalex:W2809290718",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.85,
-      "confidence": 0.85,
-      "rationale": "Multi-gate Mixture-of-Experts は Sparsely-Gated Mixture-of-Experts の単一ゲート構造を拡張し、タスク間関係をモデリングすることでマルチタスク学習に適用している。",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Modeling Task Relationships in Multi-task Learning with Mul…」(2018) は「Outrageously Large Neural Networks: The Sparsely-Gated Mixt…」(2017) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
           "version": "p2t-v1"
         },
         "evidence": {
-          "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "6a4309ae21c0e57a4e16399435653b6afdf2c7bc50e3fc8fd87676adf4a090ad"
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "031be2d39dc187507507f621b65fbcf020f1391f8564f65909ac6f0d473b6ed0"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v4",
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -1035,9 +1143,9 @@
       "dst": "openalex:W3170943566",
       "rel": "extends",
       "relation": "extends",
-      "conf": 0.9,
-      "confidence": 0.9,
-      "rationale": "Outrageously Large Neural NetworksのTOP-kゲーティングを採用 被引用論文を特定できる引用文はない。",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Scaling Vision with Sparse Mixt…」(2021) は 「Outrageously Large Neural Netwo…」(2017) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Our approach is inspired by [54] who proposed a top-k gating in LSTMs, with auxiliary losses ensuring the expert balance [26].\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1045,14 +1153,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "21572c722783e0d521625424a47550e50ac7d9b00b6f1f9d3fa88165d9ca2bd6"
+          "kind": "citation-context",
+          "sha256": "32ea6b1bbf519641a54fc9c5883cb320872eac60c3f0692ff2ddef43824fc703"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -1064,7 +1172,7 @@
       "relation": "baseline_only",
       "conf": 0.6,
       "confidence": 0.6,
-      "rationale": "「Hash Layers For Large Sparse Mo…」(2021) は 「Outrageously Large Neural Netwo…」(2017) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "rationale": "「Hash Layers For Large Sparse Mo…」(2021) は 「Outrageously Large Neural Netwo…」(2017) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Sparse MoE models, where only a few expert modules are active for any input, in particular in the context of NLP, have been studied recently in [6, 11].\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1089,9 +1197,9 @@
       "dst": "openalex:W4200634402",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.95,
-      "confidence": 0.95,
-      "rationale": "Outrageously Large Neural Networksの大規模MoE設計を背景として参照 引用文: \"For language modeling and machine translation, Shazeer et al. (2017) showed that they could effectively use a very large number of weights while only needing to compute a small subset of the computation graph at inference time.\"",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「GLaM」(2021) は 「Outrageously Large Neural Netwo…」(2017) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"For language modeling and machine translation, Shazeer et al. (2017) showed that they could effectively use a very large number of weights while only needing to compute a small subset of the computation graph at inference time.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1099,14 +1207,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "337b90e04fd065ca27d4792e6a8315114c612745bd9498802db82dcfb3184caf"
+          "kind": "citation-context",
+          "sha256": "813e5734790b48d8163d7b1816a3193d4a513d85315fae7556a9af96fa0e8e02"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -1116,9 +1224,9 @@
       "dst": "openalex:W4226079124",
       "rel": "extends",
       "relation": "extends",
-      "conf": 0.9,
-      "confidence": 0.9,
-      "rationale": "Outrageously Large Neural NetworksはスパースMoEを導入し、Bはそのアイデアを採用する。 引用文: \"At the high level, we adopt the idea of sparsely activated Mixture-of-Experts (MoE) [31].\"",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Mixture-of-Experts with Expert …」(2022) は 「Outrageously Large Neural Netwo…」(2017) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"At the high level, we adopt the idea of sparsely activated Mixture-of-Experts (MoE) [31].\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1126,14 +1234,41 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "9f117bc451345189a5e70fa6cb260b5795c307dd6370c9e4b755c99a976138e7"
+          "kind": "citation-context",
+          "sha256": "5cd8ab0a0ba5228e1bc1cf14b2a21af0be71a508af03c9e220ca5b43e90ef23a"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2581624817",
+      "dst": "openalex:W4393160139",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Efficient Deweahter Mixture-of-Experts with Uncertainty-Awa…」(2024) は「Outrageously Large Neural Networks: The Sparsely-Gated Mixt…」(2017) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "74bbc85c17c4b85deb803ec69f917a329c39f005fa7213f1a67a3f21915646b2"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -1141,26 +1276,53 @@
     {
       "src": "openalex:W2809290718",
       "dst": "openalex:W4390873360",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.85,
-      "confidence": 0.85,
-      "rationale": "AdaMV-MoE は Multi-gate Mixture-of-Experts のマルチタスク MoE を視覚タスク向けに適応させ、画像領域でのタスク関係モデリングを拡張している。",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「AdaMV-MoE: Adaptive Multi-Task Vision Mixture-of-Experts」(2023) は「Modeling Task Relationships in Multi-task Learning with Mul…」(2018) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
           "version": "p2t-v1"
         },
         "evidence": {
-          "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "27cc784e38bedaba3fafecbc1a716aa5d5cb0f2c81425002f47527934eb044f5"
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "77ff96bc75a07f79619f5f9dc194dde6c4237784558dbf15a713c4e2dc383f22"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v4",
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2809290718",
+      "dst": "openalex:W4393160139",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Efficient Deweahter Mixture-of-Experts with Uncertainty-Awa…」(2024) は「Modeling Task Relationships in Multi-task Learning with Mul…」(2018) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "f52d3bf758142c4f8416d8b238fce48e374ae252a66a3dc2818f083e6bb30264"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -1303,26 +1465,26 @@
     {
       "src": "openalex:W2963254338",
       "dst": "openalex:W4390873360",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.85,
-      "confidence": 0.85,
-      "rationale": "AdaMV-MoE は Hard Mixtures of Experts のハード MoE 構造に適応的マルチタスク機構を加え、視覚タスクへ拡張している。",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「AdaMV-MoE: Adaptive Multi-Task Vision Mixture-of-Experts」(2023) は「Hard Mixtures of Experts for Large Scale Weakly Supervised …」(2017) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
           "version": "p2t-v1"
         },
         "evidence": {
-          "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "29a71290f39927e98d8d724fff753ecfb802ce912a4e949876c1cac6ed999d75"
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "aedde24e1d97cb76958d67405fb3c4befd7e6577a0b70b40f343964f3507e1f7"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v4",
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -1332,9 +1494,9 @@
       "dst": "openalex:W4390874353",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.7,
-      "confidence": 0.7,
-      "rationale": "Hard Mixtures of Experts for La…を背景として言及 引用文: \"We remark that although the usefulness of AT (MoE) was exploited in [30] for the MoE-type ViT, it is not effective for training MoE-type CNNs anymore.\"",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Robust Mixture-of-Expert Traini…」(2023) は 「Hard Mixtures of Experts for La…」(2017) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We remark that although the usefulness of AT (MoE) was exploited in [30] for the MoE-type ViT, it is not effective for training MoE-type CNNs anymore.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1342,14 +1504,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "45b8c645796d0c852dec7dd8c335e298949d1465e70ed6c940fd25a1441fd782"
+          "kind": "citation-context",
+          "sha256": "02347cf0abd453d62e22bae5125a32744bbfb3dd8f9cff02f1a0fa38e60b5db8"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -1384,11 +1546,11 @@
     {
       "src": "openalex:W2966327190",
       "dst": "openalex:W3215427016",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.85,
-      "confidence": 0.85,
-      "rationale": "SpeechMoE2 は DeepMoE の Mixture-of-Experts アーキテクチャに、グローバルなドメイン・アクセント埋め込みをルータ入力として組み込み、音声認識タスクへ拡張している。",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Speechmoe2: Mixture-of-Experts Model with Improved Routing」(2022) は「Deep Mixture of Experts via Shallow Embedding」(2018) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1396,14 +1558,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "6db92db871aa6582e382163aec2126ac0e7ff697a16444197ff025e0f5ff72f5"
+          "kind": "citation-list",
+          "sha256": "adca964aebf3abc0b3a4a3dc34e14cac0cc66b027fdd369e967e613b60e6ae25"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v4",
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -1411,26 +1573,26 @@
     {
       "src": "openalex:W2966327190",
       "dst": "openalex:W4393160139",
-      "rel": "successor",
-      "relation": "successor",
-      "conf": 0.85,
-      "confidence": 0.85,
-      "rationale": "Efficient Deweahter MoE は Uncertainty-Aware Feature-Wise Linear Modulation を導入し、DeepMoE の動的ルーティングを効率化している",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Efficient Deweahter Mixture-of-Experts with Uncertainty-Awa…」(2024) は「Deep Mixture of Experts via Shallow Embedding」(2018) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
           "version": "p2t-v1"
         },
         "evidence": {
-          "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "91a51c5e1eca7d4fdc5cfa163204bfd42ded35d37de70489886af693dbcf213b"
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "b7a240f610beca0bc88326ce6f87335f6f053e8261e7402dd89a01284c26a311"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v4",
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -1465,11 +1627,11 @@
     {
       "src": "openalex:W3119866685",
       "dst": "openalex:W3147874613",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.9,
-      "confidence": 0.9,
-      "rationale": "Switch Transformersのルーティングを拡張してBASE Layersを構築 引用文: \"Fedus et al. (2021) show the design can be simpliﬁed by routing tokens Table 1.\"",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「BASE Layers」(2021) は 「Switch Transformers」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We also compare performance with our re-implementations of two recent sparse layer methods: Sparsely Gated Mix-tures of Experts (Shazeer et al., 2017; Lepikhin et al., 2020) and Switch (Fedus et al., 2021).\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1477,14 +1639,41 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "b75c6972aeb7ebf6f2fa015481040e612d224b3a1cf77c5c5482fad3ab05c054"
+          "kind": "citation-context",
+          "sha256": "c4220922be2bf0b9fddf87b048df6321088880ebbbfa86e30017034d19813c74"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3119866685",
+      "dst": "openalex:W3170943566",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Scaling Vision with Sparse Mixture of Experts」(2021) は「Switch Transformers: Scaling to Trillion Parameter Models w…」(2021) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "c8909623c0801fb95c95e46290d052fa89663708b212f872a9305ee09b42624d"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -1494,9 +1683,9 @@
       "dst": "openalex:W3212449162",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.9,
-      "confidence": 0.9,
-      "rationale": "Switch Transformersのバランシング手法を背景として言及 引用文: \"Specifically in the setting of Transformers for Natural Language Processing (NLP), recent approaches have led to state of the art performance in language modeling [8].\"",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Hash Layers For Large Sparse Mo…」(2021) は 「Switch Transformers」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Specifically in the setting of Transformers for Natural Language Processing (NLP), recent approaches have led to state of the art performance in language modeling [8].\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1504,14 +1693,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "bd13be68af783a60ba89c26ae516ba91146835afe721fe104c6d37eb112e3517"
+          "kind": "citation-context",
+          "sha256": "3cf97b648dedc078d34178e4070f301e7a5e1f098f49376738ea40750cf5515b"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -1548,9 +1737,9 @@
       "dst": "openalex:W4200634402",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.95,
-      "confidence": 0.95,
-      "rationale": "Switch Transformersのスパース性を利用し、MoEモデルの性能向上を背景として言及 引用文: \"A sample of related models (Devlin et al., 2019; Raffel et al., 2020; Brown et al., 2020; Lieber et al., 2021; Shoeybi et al., 2019; Lepikhin et al., 2021; Fedus et al., 2021) pre-trained on text corpora.\"",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「GLaM」(2021) は 「Switch Transformers」(2021) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"A sample of related models (Devlin et al., 2019; Raffel et al., 2020; Brown et al., 2020; Lieber et al., 2021; Shoeybi et al., 2019; Lepikhin et al., 2021; Fedus et al., 2021) pre-trained on text corpora.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1558,14 +1747,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "99778cc39d1385522b5d7beed56f4a242df6494783c238048f3186250d7f8ffb"
+          "kind": "citation-context",
+          "sha256": "ca15c334a2e07340d271147fc2c0dd7f934d0a6d25bc48c3ad48d78ee82f9d88"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -1573,11 +1762,11 @@
     {
       "src": "openalex:W3119866685",
       "dst": "openalex:W4226079124",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.93,
-      "confidence": 0.93,
-      "rationale": "Switch Transformersはトークン選択を単純化し、Bは高速収束を示し対照的に比較する。 引用文: \"• We show our method provides over 2 × faster training convergence in a 8B/64E (8 billion activated parameters, 64 experts) model, compared to the top-1 and top-2 gating counterparts in Switch Transformer [10] and GShard [21].\"",
+      "rel": "contrasts",
+      "relation": "contrasts",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「Mixture-of-Experts with Expert …」(2022) は 「Switch Transformers」(2021) と異なる手法を取ると述べている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Unlike most related works, we do not impose any auxiliary loss for load balance, such as described in Switch Transformer [10] and GShard [21].\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1585,14 +1774,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "61186f73a977e21e019f10eff8cf1f1ae30a2143548e49273f0b67dfff2c631c"
+          "kind": "citation-context",
+          "sha256": "fe8b315b4590d93d7bc3ad0754eb42beb651b8c833e935f6e1591c8c43453b5d"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -1602,21 +1791,21 @@
       "dst": "openalex:W4393160139",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Efficient Deweahter Mixture-of-Experts with Uncertainty-Awa…」(2024) は「Switch Transformers: Scaling to Trillion Parameter Models w…」(2021) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Efficient Deweahter Mixture-of-Experts with Uncertainty-Awa…」(2024) は「Switch Transformers: Scaling to Trillion Parameter Models w…」(2021) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
           "version": "p2t-v1"
         },
         "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "0d1f047dff89df86073fc1330f1094e0167a8f41a3c3f9cd7c34f70d2192b515"
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "34dbe9acc99ca9dc128bd742d4e44070c1874b27c47f1dc0a46b0bbf3b9df185"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -1629,21 +1818,21 @@
       "dst": "openalex:W4394923534",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「ScheMoE: An Extensible Mixture-of-Experts Distributed Train…」(2024) は「Switch Transformers: Scaling to Trillion Parameter Models w…」(2021) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「ScheMoE: An Extensible Mixture-of-Experts Distributed Train…」(2024) は「Switch Transformers: Scaling to Trillion Parameter Models w…」(2021) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
           "version": "p2t-v1"
         },
         "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "b882af3428ec3d14045fbdbc7d9a7eaf06a2696c17be34f943dd94b2fe7eb6fb"
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "bc808d1fc48add2f6f09201ea042f316be6294da940c2344ec86004c394f1838"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -1654,11 +1843,11 @@
     {
       "src": "openalex:W3122317902",
       "dst": "openalex:W3119866685",
-      "rel": "successor",
-      "relation": "successor",
-      "conf": 0.85,
-      "confidence": 0.85,
-      "rationale": "Switch Transformer は GShard の条件付き計算と MoE を簡素化したルーティングで拡張し、通信コストを削減した研究ラインの自然な発展である。",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Switch Transformers: Scaling to Trillion Parameter Models w…」(2021) は「GShard: Scaling Giant Models with Conditional Computation a…」(2021) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1666,14 +1855,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "0f4ceae8c4e3a451c8e6776173c6346d2695dc082eee31e066dbda0e1994ed7c"
+          "kind": "citation-list",
+          "sha256": "90939d8aee07b06cb0e857a57178982843156b9870c9590fe0fb94e048149876"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v4",
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -1683,9 +1872,9 @@
       "dst": "openalex:W3147874613",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.8,
-      "confidence": 0.8,
-      "rationale": "GShardの条件付き計算を背景として言及 引用文: \"Shazeer et al. (2017); Lepikhin et al. (2020) introduce sparsely gated mixtures of experts layers, demonstrating how large sparse models can be trained efﬁciently by routing inputs to appropriate specialist workers.\"",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「BASE Layers」(2021) は 「GShard」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We also compare performance with our re-implementations of two recent sparse layer methods: Sparsely Gated Mix-tures of Experts (Shazeer et al., 2017; Lepikhin et al., 2020) and Switch (Fedus et al., 2021).\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1693,14 +1882,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "cb5837c4c3a55844500542f2f51caa41d287152dd1527164953a8cc391f5407f"
+          "kind": "citation-context",
+          "sha256": "870f53632ee6ecd44603335205b518ca6b50d9a56ba505d031bb0d07ee0bf2f5"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -1710,9 +1899,9 @@
       "dst": "openalex:W3170943566",
       "rel": "extends",
       "relation": "extends",
-      "conf": 0.85,
-      "confidence": 0.85,
-      "rationale": "GShardの設計を採用してV-MoEを構築 引用文: \"Following [39], we place the MoEs on every other layer (we refer to these as V-MoE Every-2).\"",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Scaling Vision with Sparse Mixt…」(2021) は 「GShard」(2021) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Following [39], we place the MoEs on every other layer (we refer to these as V-MoE Every-2).\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1720,14 +1909,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "7b62dd9c4fb43abfc7021de480c6b89ab4129ef9294b4222ba94968132f1be63"
+          "kind": "citation-context",
+          "sha256": "bbbf7c3b75be6eae869a04f8f3f5fa31b5ac192e0b51d4ad1aa78cbe22e39076"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -1737,9 +1926,9 @@
       "dst": "openalex:W3212449162",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.92,
-      "confidence": 0.92,
-      "rationale": "GShardの設定をそのまま採用し、同手法を利用 被引用論文を特定できる引用文はない。",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「Hash Layers For Large Sparse Mo…」(2021) は 「GShard」(2021) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We use the same setting as [11, 8, 10] where a feedforward network (FFN) in a Transformer is replaced by its MoE version.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1747,14 +1936,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "fa6edbf09d44d459e8c296b0b2e748d3e0b6be5fdbc19ecbdf7df15fc5647cf4"
+          "kind": "citation-context",
+          "sha256": "7ca4d3e594576bb6e3deb6ad1dd2bced3c3f26c2d87dfa12a2224d256a3dffb4"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -1791,9 +1980,9 @@
       "dst": "openalex:W4200634402",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.92,
-      "confidence": 0.92,
-      "rationale": "GShardのMoE補助損失を採用し、同手法を利用 引用文: \"In particular, Lepikhin et al. (2021) showed that a 600B parameter MoE model achieved +6.1 average BLEU across 100 language pairs compared to the best dense prior-art with 10.7× saving in computation cost.\"",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「GLaM」(2021) は 「GShard」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"In particular, Lepikhin et al. (2021) showed that a 600B parameter MoE model achieved +6.1 average BLEU across 100 language pairs compared to the best dense prior-art with 10.7× saving in computation cost.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1801,14 +1990,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "aff4d723b9b3d7f3d718ea70892406155e94b765a7fe2d2f3e9c6df85893d6e0"
+          "kind": "citation-context",
+          "sha256": "c747fc36c98faf6d0faef20f28e374e6b9c9bbe4e266ec19bf744e0a20f8fd2d"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -1818,9 +2007,9 @@
       "dst": "openalex:W4226079124",
       "rel": "contrasts",
       "relation": "contrasts",
-      "conf": 0.94,
-      "confidence": 0.94,
-      "rationale": "GShardはロードバランス損失を課すが、Bは課さず対照的に示す。 引用文: \"Unlike most related works, we do not impose any auxiliary loss for load balance, such as described in Switch Transformer [10] and GShard [21].\"",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「Mixture-of-Experts with Expert …」(2022) は 「GShard」(2020) と異なる手法を取ると述べている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Unlike most related works, we do not impose any auxiliary loss for load balance, such as described in Switch Transformer [10] and GShard [21].\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1828,14 +2017,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "fabb05b8abc5b612f20145389e5da6ba9ff593ead26428c0cbb97522dc455c6f"
+          "kind": "citation-context",
+          "sha256": "148e12259ec5116e9215273fef189615321435f52b79c0c2ee56908cf3dc7e52"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -1845,21 +2034,21 @@
       "dst": "openalex:W4386260498",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「PipeMoE: Accelerating Mixture-of-Experts through Adaptive P…」(2023) は「GShard: Scaling Giant Models with Conditional Computation a…」(2020) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「PipeMoE: Accelerating Mixture-of-Experts through Adaptive P…」(2023) は「GShard: Scaling Giant Models with Conditional Computation a…」(2020) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
           "version": "p2t-v1"
         },
         "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "2cafc95ef3e062934e7d52026a0a7bdb5e13ac9092e68c558471126ad46d85df"
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "c66be3cbb4b7a5d80b1062e677baaeb4307369aea5b7956c7c984591ab3eb0cb"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -1872,21 +2061,21 @@
       "dst": "openalex:W4390873360",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「AdaMV-MoE: Adaptive Multi-Task Vision Mixture-of-Experts」(2023) は「GShard: Scaling Giant Models with Conditional Computation a…」(2020) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「AdaMV-MoE: Adaptive Multi-Task Vision Mixture-of-Experts」(2023) は「GShard: Scaling Giant Models with Conditional Computation a…」(2020) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
           "version": "p2t-v1"
         },
         "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "95f88d9d7e74b8c7b098ad28235265538f51a142eb346f05e95f6d734d2098d7"
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "0ecf34d18324b0d9c0dd2c18099541b5d960c6179a05bfc84267138e80308506"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -1899,9 +2088,9 @@
       "dst": "openalex:W4390874353",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Robust Mixture-of-Expert Training for Convolutional Neural …」(2023) は「GShard: Scaling Giant Models with Conditional Computation a…」(2020) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Robust Mixture-of-Expert Training for Convolutional Neural …」(2023) は「GShard: Scaling Giant Models with Conditional Computation a…」(2020) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1909,11 +2098,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "5121f19fa7a50c0746ea23f5f23a552361dc2f4827a827a353c72b5c722eef8c"
+          "kind": "citation-list",
+          "sha256": "3d9739069c08128b23f1bea4fc81aefb7f6adfc2357da5bd5e0a0bc6ba7aea7c"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -1926,21 +2115,21 @@
       "dst": "openalex:W4393160139",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Efficient Deweahter Mixture-of-Experts with Uncertainty-Awa…」(2024) は「GShard: Scaling Giant Models with Conditional Computation a…」(2020) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Efficient Deweahter Mixture-of-Experts with Uncertainty-Awa…」(2024) は「GShard: Scaling Giant Models with Conditional Computation a…」(2020) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
           "version": "p2t-v1"
         },
         "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "6252803e41cc192de24cfe6d2b42a9dd3161686e28ac7b231831017fb96d055c"
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "03af22f834bc67df21f91765f21444dee82200557766a891caa92ef38cf6c403"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -1953,9 +2142,9 @@
       "dst": "openalex:W3212449162",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.93,
-      "confidence": 0.93,
-      "rationale": "BASE Layersのアーキテクチャとハイパーパラメータをそのまま使用 引用文: \"We use the architecture, data (RoBERTa+cc100en), and hyperparameters directly from [10], using either a single sparse routing layer consisting of 3 stacked FFNs (D = 8192) on the middle layer of a 25 layer network, or 3 routing layers even…\"",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Hash Layers For Large Sparse Mo…」(2021) は 「BASE Layers」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We consider it as the originally intended language modeling task in our experiments comparing with BASE [10].\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1963,14 +2152,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "e41767f1e05046cb3ea540ed20046649aacc09e20f93f527d456a4f8cf0a8854"
+          "kind": "citation-context",
+          "sha256": "2175b74e7026c8ae43d2ea09e15a48d0716d4216e6203deecd4bdc0bfe55793c"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -2034,21 +2223,21 @@
       "dst": "openalex:W4386260498",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「PipeMoE: Accelerating Mixture-of-Experts through Adaptive P…」(2023) は「BASE Layers: Simplifying Training of Large, Sparse Models」(2021) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「PipeMoE: Accelerating Mixture-of-Experts through Adaptive P…」(2023) は「BASE Layers: Simplifying Training of Large, Sparse Models」(2021) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
           "version": "p2t-v1"
         },
         "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "834b0864d0e3687d3ffc496ac6ebab72b6ad4862d2d4f2c6004243cd0ee96bba"
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "eb914381b8b1f2623efa0d601f2e74f4990e897b0aafc9c872c40b7675b3d819"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -2061,9 +2250,9 @@
       "dst": "openalex:W4226079124",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.88,
-      "confidence": 0.88,
-      "rationale": "Hash Layersはハッシュベースのルーティングを提案し、Bはそれと比較する。 引用文: \"In this section, we compare our method with Hash Layers [28].\"",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Mixture-of-Experts with Expert …」(2022) は 「Hash Layers For Large Sparse Mo…」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"In this section, we compare our method with Hash Layers [28].\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -2071,14 +2260,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "1b8017d81c1f829798026d907d8b952a32000cf32c1e1101e24cb24732a475af"
+          "kind": "citation-context",
+          "sha256": "344c6ed11e92924529c36d33b352a223f6995607d4eecadc0048191b4a925e33"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -2088,21 +2277,21 @@
       "dst": "openalex:W4390873360",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「AdaMV-MoE: Adaptive Multi-Task Vision Mixture-of-Experts」(2023) は「Hash Layers For Large Sparse Models」(2021) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「AdaMV-MoE: Adaptive Multi-Task Vision Mixture-of-Experts」(2023) は「Hash Layers For Large Sparse Models」(2021) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
           "version": "p2t-v1"
         },
         "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "ecd9427350842f388d7d3caf4836cab9b79198e2003e6a91e9e7685593799f80"
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "e1434f90347b5a777d75f2a31a7753d66ebef9d3defd773c483b9a5435509435"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -2142,24 +2331,24 @@
       "dst": "openalex:W4386260498",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.78,
-      "confidence": 0.78,
-      "rationale": "PipeMoE は adaptive pipelining によって MoE の通信を隠蔽し、Expert Choice Routing の手法を継承せずに背景としてのみ利用している。",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「PipeMoE: Accelerating Mixture-of-Experts through Adaptive P…」(2023) は「Mixture-of-Experts with Expert Choice Routing」(2022) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
           "version": "p2t-v1"
         },
         "evidence": {
-          "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "aabdd4e2842cb51ca7e2b72f667fa4cf1e0a8585595f9d3d7adadb92a1a782a2"
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "2a37b1f20453c1dd99e885403905ec71b8a513e267e6d4bd934e555697cc3894"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v4",
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -2167,26 +2356,26 @@
     {
       "src": "openalex:W4226079124",
       "dst": "openalex:W4390873360",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.85,
-      "confidence": 0.85,
-      "rationale": "AdaMV-MoE は Expert Choice Routing が提案した MoE のルーティングに加えて、タスクごとに expert 数を適応的に変える adaptive capacity を導入し、マルチタスク視覚領域へ拡張している。",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「AdaMV-MoE: Adaptive Multi-Task Vision Mixture-of-Experts」(2023) は「Mixture-of-Experts with Expert Choice Routing」(2022) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
           "version": "p2t-v1"
         },
         "evidence": {
-          "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "09cbee17945bba6b6283899edcf408008b205943098e5218d597679461623396"
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "44b45023e593ce7dd5224deb97d4846e686ce097702068a3d0098985f8c99094"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v4",
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -2196,9 +2385,9 @@
       "dst": "openalex:W4390874353",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.78,
-      "confidence": 0.78,
-      "rationale": "Robust Mixture-of-Expert Training は CNN の敵対的ロバスト性を追求し、Expert Choice Routing のルーティング手法には言及せず、単に MoE をベースラインとして利用している。",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Robust Mixture-of-Expert Training for Convolutional Neural …」(2023) は「Mixture-of-Experts with Expert Choice Routing」(2022) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -2206,14 +2395,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "88792af5f55b1c898a5e0eb3c8c73437e3aa3117cb6b8d4004e19872d136008e"
+          "kind": "citation-list",
+          "sha256": "19f7733755f0177b95914d07026e960fdb484f082b710087006ff3c633cc2fc0"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v4",
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -2221,26 +2410,26 @@
     {
       "src": "openalex:W4226079124",
       "dst": "openalex:W4394923534",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.78,
-      "confidence": 0.78,
-      "rationale": "ScheMoE はタスクスケジューリングを備えた分散学習システムを提案し、Expert Choice Routing を含む MoE 手法を大規模 GPU クラスタで拡張している。",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「ScheMoE: An Extensible Mixture-of-Experts Distributed Train…」(2024) は「Mixture-of-Experts with Expert Choice Routing」(2022) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
           "version": "p2t-v1"
         },
         "evidence": {
-          "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "f41b7d8f3958ef3e14f47416bce08cfc5f11623f629edbae927df47b40a71067"
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "12deaaec57fe7cc8b1c84d110960214665f8225a001047adaf7e27c493421a76"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v4",
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -2250,21 +2439,21 @@
       "dst": "openalex:W4394923534",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「ScheMoE: An Extensible Mixture-of-Experts Distributed Train…」(2024) は「PipeMoE: Accelerating Mixture-of-Experts through Adaptive P…」(2023) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「ScheMoE: An Extensible Mixture-of-Experts Distributed Train…」(2024) は「PipeMoE: Accelerating Mixture-of-Experts through Adaptive P…」(2023) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
           "version": "p2t-v1"
         },
         "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "a7822438987a8407868bcb1ba80397336a62dbdfa8aeb7a37fa55a9cfe28017a"
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "cc6ed40f753be5092837c34156926916ce2519132b399b57bbca38da184ffd30"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -2292,11 +2481,10 @@
     ],
     "depth": 1,
     "since_year": 2018,
-    "generated_at": "2026-10-10T15:36:33.095000Z",
+    "generated_at": "2026-10-11T02:33:47.692000Z",
     "provenance_breakdown": {
-      "llm": 29,
-      "s2_context_rule": 22,
-      "citation_heuristic": 9
+      "s2_context_rule": 39,
+      "api_citation": 28
     },
     "completeness": {
       "complete": true,
@@ -2318,6 +2506,7 @@
       "openalex:W2242818861",
       "openalex:W2581624817",
       "openalex:W3119866685"
-    ]
+    ],
+    "lineage_llm": "off"
   }
 }
