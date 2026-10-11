@@ -4,10 +4,17 @@ name: regen-themes
 # (docs/migration/p5-plan.md §4.1). The unarXive DuckDB download step
 # from the pre-P5 workflow is removed (decision: no DuckDB).
 #
+# R2-24 (design 41): themes are built WITHOUT an LLM by default
+# (PAPERPILOT_LINEAGE_LLM=off, repo variable PAPERPILOT_LINEAGE_LLM to
+# override): relations come from Semantic Scholar citation contexts,
+# OpenAlex/S2 reference lists, title versions and the allowlist, so the
+# Groq/Gemini secrets are not needed and a run never hits an LLM quota.
+# With PAPERPILOT_LINEAGE_LLM=on the LLM path below applies.
+#
 # R2-6 (design 41 D2/D3): Groq is the primary classifier, Gemini the
 # fallback (PAPERPILOT_GEMINI_API_KEY). A theme whose edges are less than
 # 80% evidence-classified exits 5 and counts as failed (previous build
-# retained). Quota-degraded themes are recorded in
+# retained). Quota-degraded themes (LLM mode only) are recorded in
 # data/state/lineage-cache/regen-pending.json, which — with the
 # classification cache — is promoted even when every theme failed, so
 # regen-retry.yml can re-dispatch them the next day; the `verdict` job
@@ -84,7 +91,10 @@ jobs:
         # unauthenticated without its key. Same secret names as the live
         # regen-themes.yml step this one replaces.
         # PAPERPILOT_GEMINI_API_KEY (R2-6): fallback classifier; optional.
+        # R2-24: both LLM keys are read only when PAPERPILOT_LINEAGE_LLM=on;
+        # the default (off) builds from API evidence and needs neither.
         env:
+          PAPERPILOT_LINEAGE_LLM: ${{ vars.PAPERPILOT_LINEAGE_LLM || 'off' }}
           PAPERPILOT_GROQ_API_KEY: ${{ secrets.PAPERPILOT_GROQ_API_KEY }}
           PAPERPILOT_GEMINI_API_KEY: ${{ secrets.PAPERPILOT_GEMINI_API_KEY }}
           PAPERPILOT_S2_API_KEY: ${{ secrets.PAPERPILOT_S2_API_KEY }}

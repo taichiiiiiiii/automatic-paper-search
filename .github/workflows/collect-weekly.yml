@@ -108,7 +108,14 @@ jobs:
         # so the catalog refresh never promotes. Same secret names as the
         # live collect-weekly.yml step this one replaces; the no-key
         # retain-and-exit-0 guard below is restored from that same step.
+        #
+        # R2-24 (design 41): repo variable PAPERPILOT_CONFERENCE_LINEAGE_LLM=off
+        # builds the conference lineages without an LLM (S2 citation
+        # contexts + reference lists; the S2 key paces those lookups); the
+        # LLM-key guard below then does not apply. Default `on` (unchanged).
         env:
+          PAPERPILOT_LINEAGE_LLM: ${{ vars.PAPERPILOT_CONFERENCE_LINEAGE_LLM || 'on' }}
+          PAPERPILOT_S2_API_KEY: ${{ secrets.PAPERPILOT_S2_API_KEY || secrets.S2_API_KEY }}
           PAPERPILOT_GROQ_API_KEY: ${{ secrets.PAPERPILOT_GROQ_API_KEY || secrets.GROQ_API_KEY }}
           PAPERPILOT_GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           # R2-19: OpenAlex free key ($1/day vs $0.10/day keyless shared by
@@ -126,7 +133,7 @@ jobs:
             echo "|---|---|---|"
           } >> "$GITHUB_STEP_SUMMARY"
 
-          if [ -z "${PAPERPILOT_GROQ_API_KEY:-}" ] && [ -z "${PAPERPILOT_GEMINI_API_KEY:-}" ]; then
+          if [ "${PAPERPILOT_LINEAGE_LLM:-on}" != "off" ] && [ -z "${PAPERPILOT_GROQ_API_KEY:-}" ] && [ -z "${PAPERPILOT_GEMINI_API_KEY:-}" ]; then
             echo "| all | no LLM key | previous lineages retained |" >> "$GITHUB_STEP_SUMMARY"
             echo "::notice::no lineage LLM key configured; retaining published lineages"
             exit 0

@@ -4,7 +4,10 @@ name: regen-retry
 # attempt was degraded by an LLM daily quota. regen-themes.yml records
 # them in data/state/lineage-cache/regen-pending.json (promoted to
 # develop); this daily job reads that list and dispatches regen-themes.yml
-# for it. Nothing pending -> no dispatch. A theme drops out after 5
+# for it. Nothing pending -> no dispatch. R2-24: runs built without an
+# LLM (PAPERPILOT_LINEAGE_LLM=off, the default) are never recorded as
+# quota-degraded (`regenPending.ts`), so with the default this job finds
+# nothing to retry. A theme drops out after 5
 # quota-degraded attempts and stays listed for a human (watchdog).
 #
 # 09:17 UTC: after the Gemini free-tier daily reset (midnight Pacific),

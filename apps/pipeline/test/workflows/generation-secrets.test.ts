@@ -106,9 +106,11 @@ describe("H3: generation steps carry the exact LLM/S2 secrets the live workflows
       "Regenerate eligible conference lineages",
     );
     const run: string = step.run;
+    // R2-24: the guard applies only when the conference builder uses an
+    // LLM (PAPERPILOT_LINEAGE_LLM != off).
     expect(run).toContain(
       // biome-ignore lint/suspicious/noTemplateCurlyInString: literal bash `${VAR:-}` expansion from the workflow's run: script, not a JS template literal.
-      'if [ -z "${PAPERPILOT_GROQ_API_KEY:-}" ] && [ -z "${PAPERPILOT_GEMINI_API_KEY:-}" ]',
+      'if [ "${PAPERPILOT_LINEAGE_LLM:-on}" != "off" ] && [ -z "${PAPERPILOT_GROQ_API_KEY:-}" ] && [ -z "${PAPERPILOT_GEMINI_API_KEY:-}" ]',
     );
     expect(run).toContain("no lineage LLM key configured; retaining published lineages");
     expect(run).toMatch(
@@ -158,5 +160,29 @@ describe("R2-19: every step that runs an OpenAlex-calling CLI carries the OpenAl
     }
     expect(found).toBeGreaterThanOrEqual(5);
     expect(missing).toEqual([]);
+  });
+});
+
+describe("R2-24: theme generation runs without an LLM by default", () => {
+  for (const [file, job, stepName] of [
+    ["regen-themes.yml", "generate", "Regenerate requested themes"],
+    ["theme-on-demand.yml", "generate", "Generate theme lineage"],
+  ] as const) {
+    it(`${file}: PAPERPILOT_LINEAGE_LLM defaults to off (repo variable overrides)`, () => {
+      const step = stepNamed(jobNamed(readWorkflow(file), job), stepName);
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: literal GitHub Actions expression (YAML env value), not a JS template literal.
+      expect(step.env?.PAPERPILOT_LINEAGE_LLM).toBe("${{ vars.PAPERPILOT_LINEAGE_LLM || 'off' }}");
+    });
+  }
+
+  it("collect-weekly.yml: conference lineages keep the LLM by default, switchable to off", () => {
+    const step = stepNamed(
+      jobNamed(readWorkflow("collect-weekly.yml"), "generate"),
+      "Regenerate eligible conference lineages",
+    );
+    expect(step.env?.PAPERPILOT_LINEAGE_LLM).toBe(
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: literal GitHub Actions expression (YAML env value), not a JS template literal.
+      "${{ vars.PAPERPILOT_CONFERENCE_LINEAGE_LLM || 'on' }}",
+    );
   });
 });
