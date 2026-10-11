@@ -1,10 +1,6 @@
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { selectCatalogConferences } from "../../../lib/catalog-conferences";
 import { buildMetadata } from "../../../lib/metadata";
-import { assertConferenceHasPapersJson } from "./build-guard";
 
 /**
  * The no-JS link-list route (`docs/<conf>/paper-links.html` today, design
@@ -16,7 +12,14 @@ import { assertConferenceHasPapersJson } from "./build-guard";
  *
  * One route per catalog conference -- every one of today's 10
  * `docs/<conf>/paper-links.html` files exists because `build_pages.py`
- * writes it for every conference it builds a catalog for.
+ * writes it for every conference it builds a catalog for. R3-2:
+ * `generateStaticParams` moved from here to `page.tsx`. A layout-level
+ * `generateStaticParams` would feed `{conf}` into `[page]/page.tsx` as
+ * parent params, and Next 15's static export rejects the whole
+ * `[page]` route ("missing generateStaticParams()") as soon as one
+ * conference yields no page 2 (a partially-known route counts as a
+ * fallback). With no parent here, `[page]/page.tsx` enumerates its
+ * own `{conf, page}` pairs.
  *
  * `robots: { index: false, follow: true }` matches the original page's
  * `<meta name="robots" content="noindex" />` -- this is a duplicate
@@ -24,24 +27,6 @@ import { assertConferenceHasPapersJson } from "./build-guard";
  * engines should index separately. `scripts/sitemap.ts` relies on exactly
  * this meta to keep it out of `out/sitemap.xml`.
  */
-
-function readConferenceSlugs(): string[] {
-  const path = join(process.cwd(), "public", "conferences.json");
-  const raw = JSON.parse(readFileSync(path, "utf8"));
-  return selectCatalogConferences(raw).map((row) => row.name);
-}
-
-export function generateStaticParams(): Array<{ conf: string }> {
-  const slugs = readConferenceSlugs();
-  // See build-guard.ts: a static export has no server to 404 a missing
-  // papers.json at request time, so this must fail the build here.
-  for (const conf of slugs) {
-    assertConferenceHasPapersJson(conf);
-  }
-  return slugs.map((conf) => ({ conf }));
-}
-
-export const dynamicParams = false;
 
 export async function generateMetadata({
   params,

@@ -3,7 +3,7 @@ import { join } from "node:path";
 
 /**
  * Build-time guard shared by `generateStaticParams` in
- * `app/[conf]/page.tsx` and `app/[conf]/paper-links/layout.tsx`.
+ * `app/[conf]/page.tsx` and `app/[conf]/paper-links/page.tsx` (+ `[page]/page.tsx`).
  *
  * A static export (`output: "export"`) has no server to 404 a missing
  * file at request time: every statically-generated route is written to

@@ -1,6 +1,14 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { selectCatalogConferences } from "../../../lib/catalog-conferences";
 import type { PaperLinksSourcePaper } from "./logic";
+
+/** Catalog conference slugs from `public/conferences.json` (build time). */
+export function readCatalogConferenceSlugs(): string[] {
+  const path = join(process.cwd(), "public", "conferences.json");
+  const raw = JSON.parse(readFileSync(path, "utf8"));
+  return selectCatalogConferences(raw).map((row) => row.name);
+}
 
 /**
  * Reads `public/<conf>/papers.json` with `node:fs` at build time for the

@@ -1,5 +1,6 @@
+import { assertConferenceHasPapersJson } from "./build-guard";
 import { buildPaperLinkPages } from "./logic";
-import { readPapers } from "./read-papers";
+import { readCatalogConferenceSlugs, readPapers } from "./read-papers";
 import { PaperLinksView } from "./view";
 
 /**
@@ -27,6 +28,18 @@ import { PaperLinksView } from "./view";
  * convention); the original's own `<nav>`/`<footer>` markup is not
  * duplicated here.
  */
+
+export function generateStaticParams(): Array<{ conf: string }> {
+  const slugs = readCatalogConferenceSlugs();
+  // See build-guard.ts: a static export has no server to 404 a missing
+  // papers.json at request time, so this must fail the build here.
+  for (const conf of slugs) {
+    assertConferenceHasPapersJson(conf);
+  }
+  return slugs.map((conf) => ({ conf }));
+}
+
+export const dynamicParams = false;
 
 export default async function PaperLinksPage({ params }: { params: Promise<{ conf: string }> }) {
   const { conf } = await params;

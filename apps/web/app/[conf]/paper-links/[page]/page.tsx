@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { buildMetadata } from "../../../../lib/metadata";
+import { assertConferenceHasPapersJson } from "../build-guard";
 import { buildPaperLinkPages, paperLinksPageCount, paperLinksPagePath } from "../logic";
-import { readPapers } from "../read-papers";
+import { readCatalogConferenceSlugs, readPapers } from "../read-papers";
 import { PaperLinksView } from "../view";
 
 /**
@@ -14,14 +15,14 @@ import { PaperLinksView } from "../view";
  * and `scripts/sitemap.ts` keeps them out of the sitemap by that meta.
  */
 
-export function generateStaticParams({
-  params,
-}: {
-  params: { conf: string };
-}): Array<{ page: string }> {
-  const count = paperLinksPageCount(readPapers(params.conf).length);
-  const out: Array<{ page: string }> = [];
-  for (let page = 2; page <= count; page++) out.push({ page: String(page) });
+export function generateStaticParams(): Array<{ conf: string; page: string }> {
+  const out: Array<{ conf: string; page: string }> = [];
+  for (const conf of readCatalogConferenceSlugs()) {
+    // Same build-time guard as page 1 (see ../build-guard.ts).
+    assertConferenceHasPapersJson(conf);
+    const count = paperLinksPageCount(readPapers(conf).length);
+    for (let page = 2; page <= count; page++) out.push({ conf, page: String(page) });
+  }
   return out;
 }
 
