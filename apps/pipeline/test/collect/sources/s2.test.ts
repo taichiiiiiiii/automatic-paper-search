@@ -2,7 +2,7 @@
  * Port of `paperpilot/tests/test_s2_source.py`.
  */
 import { describe, expect, it, vi } from "vitest";
-import type { HttpResponseLike } from "../../../src/collect/http/requestWithRetry.js";
+import type { FetchLike, HttpResponseLike } from "../../../src/collect/http/requestWithRetry.js";
 import { S2Source } from "../../../src/collect/sources/s2.js";
 import { AllKeywordsFailedError } from "../../../src/collect/sources/source.js";
 
@@ -38,7 +38,7 @@ function item(overrides: Record<string, unknown> = {}): Record<string, unknown> 
   };
 }
 
-function src(fetchImpl: ReturnType<typeof vi.fn>, apiKey: string | null = null): S2Source {
+function src(fetchImpl: FetchLike, apiKey: string | null = null): S2Source {
   return new S2Source({ delaySeconds: 0 }, { fetchImpl, apiKey, sleep: async () => {} });
 }
 

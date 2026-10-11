@@ -10,7 +10,7 @@
 import { mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { expect, it, vi } from "vitest";
+import { afterEach, expect, it, vi } from "vitest";
 import { createPaper } from "../../../src/collect/model/paper.js";
 import { GitHubSignal, MAX_STARS, starsToScore } from "../../../src/collect/signals/github.js";
 import * as githubApi from "../../../src/collect/signals/githubApi.js";
@@ -19,6 +19,13 @@ import { GitHubUnavailableError } from "../../../src/collect/signals/githubApi.j
 vi.mock("../../../src/collect/signals/githubApi.js", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../../../src/collect/signals/githubApi.js")>();
   return { ...actual };
+});
+
+// Since Vitest 4, `vi.spyOn` on an already-spied method returns the same
+// mock with its call history and implementation intact, so spies would leak
+// between tests here without an explicit restore.
+afterEach(() => {
+  vi.restoreAllMocks();
 });
 
 function mkPaper(arxivId: string | null, title = "Some Title", suffix = "1") {

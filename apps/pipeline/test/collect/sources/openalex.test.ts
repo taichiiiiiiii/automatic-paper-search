@@ -3,7 +3,11 @@
  */
 import { describe, expect, it, vi } from "vitest";
 import { OpenAlexGate } from "../../../src/collect/http/openalexGate.js";
-import type { FetchInit, HttpResponseLike } from "../../../src/collect/http/requestWithRetry.js";
+import type {
+  FetchInit,
+  FetchLike,
+  HttpResponseLike,
+} from "../../../src/collect/http/requestWithRetry.js";
 import { OpenAlexSource } from "../../../src/collect/sources/openalex.js";
 import { AllKeywordsFailedError } from "../../../src/collect/sources/source.js";
 
@@ -52,7 +56,7 @@ function work(overrides: Record<string, unknown> = {}): Record<string, unknown> 
   };
 }
 
-function src(fetchImpl: ReturnType<typeof vi.fn>, email: string | null = null): OpenAlexSource {
+function src(fetchImpl: FetchLike, email: string | null = null): OpenAlexSource {
   return new OpenAlexSource({ delaySeconds: 0 }, { fetchImpl, email, sleep: async () => {} });
 }
 
