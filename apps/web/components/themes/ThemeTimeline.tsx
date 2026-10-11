@@ -75,9 +75,10 @@ export const ThemeTimeline = forwardRef<
 
   return (
     <div className="mt-3 max-h-[70vh] overflow-auto rounded-md border border-rule bg-surface">
+      {/* biome-ignore lint/a11y/useSemanticElements: role="img" made every point inside presentational (axe nested-interactive: an img must not contain focusable buttons); an <svg> cannot be a <fieldset>, so it is a labelled group, like the family tree. */}
       <svg
         ref={ref}
-        role="img"
+        role="group"
         aria-label="年（横）と被引用数（縦、対数）で並べた論文の分布"
         width={layout.width}
         height={layout.height}
@@ -182,6 +183,16 @@ export const ThemeTimeline = forwardRef<
           const label = selected || onPath;
           return (
             <g key={p.id} data-timeline-node={p.id} opacity={dim ? 0.3 : 1}>
+              {/* Invisible 28 px tap area around the small dot (touch). The
+                  focusable circle below carries the keyboard handling. */}
+              {/* biome-ignore lint/a11y/noStaticElementInteractions: pointer-only enlargement of the dot below, which is the focusable control with Enter/Space handling. */}
+              <circle
+                cx={p.x}
+                cy={p.y}
+                r={14}
+                className="cursor-pointer fill-transparent"
+                onClick={() => onSelectPaper(p.id)}
+              />
               {/* biome-ignore lint/a11y/useSemanticElements: an SVG <circle> cannot be an HTML <button>; role="button" + tabIndex + Enter/Space give it button semantics inside the chart. */}
               <circle
                 cx={p.x}

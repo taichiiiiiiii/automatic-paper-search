@@ -80,6 +80,41 @@
   }
 }
 
+/*
+ * Link colours. globals.css styles every <a> with an UNLAYERED rule
+ * (`a { color: var(--color-accent) }`), which beats Tailwind's layered
+ * `text-*` utilities -- `className="text-ink"` on an <a> is silently
+ * ignored. These module classes are unlayered too and more specific than
+ * the bare `a` selector (design doc 53).
+ */
+.titleLink {
+  color: var(--color-ink);
+}
+.titleLink:hover {
+  color: var(--color-accent-strong);
+}
+
+/* accent-strong: 7:1 on paper and on the selected card's surface-2
+ * (accent there is 4.17:1, below 4.5:1 for 12px text). */
+.strongLink {
+  color: var(--color-accent-strong);
+  /* No colour transition from the global `a` rule: when a card becomes
+   * selected its links switch to this class, and a mid-transition colour
+   * (accent -> accent-strong) is what an a11y scan right after opening
+   * the detail would measure. */
+  transition: none;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.mutedLink {
+  color: var(--color-ink-muted);
+}
+.mutedLink:hover {
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
 .backToTop {
   position: fixed;
   right: 1rem;

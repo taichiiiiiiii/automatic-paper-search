@@ -49,7 +49,7 @@
 import { canonicalUrl } from "../lib/config";
 
 const DESCRIPTION =
-  "お探しのページは見つかりませんでした。トップページから論文カタログへ戻ってください。";
+  "お探しのページは見つかりませんでした。URL が変わったか、削除された可能性があります。トップページから論文を検索するか、学会カタログ・テーマ別の系譜を開いてください。";
 
 // Keep the original docs/404.html preview card (og:type website + the
 // site OG image, fully qualified) while still dropping og:url: Next
@@ -69,12 +69,39 @@ export const metadata = {
 };
 
 export default function NotFound() {
+  // UX audit (design 53): the page used to tell visitors to go back to
+  // the top page without linking anywhere. Plain <a> (not next/link):
+  // this page is also served for arbitrary unknown paths.
   return (
     <main id="main-content" className="mx-auto flex max-w-2xl flex-col gap-4 px-4 py-16 sm:px-6">
       <h1 className="font-serif text-2xl font-bold text-ink">404 — このページは見つかりません</h1>
       <p className="text-base text-ink-muted">
-        お探しのページは見つかりませんでした。トップページから論文カタログへ戻ってください。
+        お探しのページは見つかりませんでした。URL
+        が変わったか、削除された可能性があります。次のページから探せます。
       </p>
+      <ul className="m-0 flex list-none flex-col gap-1 p-0 text-base">
+        <li>
+          <a href="/" className="inline-flex min-h-11 items-center text-accent-strong underline">
+            トップページ（論文を検索）
+          </a>
+        </li>
+        <li>
+          <a
+            href="/#s0-confs"
+            className="inline-flex min-h-11 items-center text-accent-strong underline"
+          >
+            学会カタログの一覧
+          </a>
+        </li>
+        <li>
+          <a
+            href="/themes/"
+            className="inline-flex min-h-11 items-center text-accent-strong underline"
+          >
+            テーマ別の系譜
+          </a>
+        </li>
+      </ul>
     </main>
   );
 }

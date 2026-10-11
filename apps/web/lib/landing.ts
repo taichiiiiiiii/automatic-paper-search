@@ -26,6 +26,9 @@ export const PLACEHOLDER_COUNTS: ConferenceCounts = Object.freeze({ n: "10", m: 
  * static number must never be left on screen looking like live data. */
 export const UNKNOWN_COUNTS: ConferenceCounts = Object.freeze({ n: "複数", m: "多数" });
 
+/** Heading of the top page's conference-catalog section. */
+export const CONFERENCE_SECTION_LABEL = "学会カタログ";
+
 export interface ConferenceCounts {
   n: string;
   m: string;
@@ -69,6 +72,28 @@ export type LandingConferenceState =
       label: string;
     };
 
+/** Title/description for the top page, from the build-time counts.
+ * The counts used to be hard-coded ("10 学会・28,000 本") and went stale
+ * as catalogs were added; `app/page.tsx` now reads conferences.json at
+ * build time and passes the derived state here. `unknown` (unreadable
+ * file) falls back to count-free copy rather than a stale number. */
+export function landingMetaCopy(state: LandingConferenceState): {
+  title: string;
+  description: string;
+} {
+  if (state.kind === "unknown") {
+    return {
+      title: "PaperPilot — AI トップ会議の採択論文を横断検索",
+      description:
+        "AI/ML トップ会議の採択論文を、タイトル・著者・タグから横断検索できます。研究テーマごとの論文の系譜（家系図）も公開しています。",
+    };
+  }
+  return {
+    title: `PaperPilot — AI トップ会議 ${state.n} 学会・${state.m} 本の論文を横断検索`,
+    description: `AI/ML トップ会議 ${state.n} 学会・${state.m} 本の採択論文を、タイトル・著者・タグから横断検索できます。研究テーマごとの論文の系譜（家系図）も公開しています。`,
+  };
+}
+
 /**
  * Mirrors landing.js's `.then` handler exactly:
  *   - non-array or empty-array response -> `{ kind: "unknown" }` (the
@@ -91,6 +116,6 @@ export function deriveLandingConferenceState(conferences: unknown): LandingConfe
     n: String(valid.length),
     m: total.toLocaleString("en-US"),
     list: valid,
-    label: `学会から探す (${valid.length})`,
+    label: `${CONFERENCE_SECTION_LABEL} (${valid.length})`,
   };
 }

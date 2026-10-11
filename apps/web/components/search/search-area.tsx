@@ -552,17 +552,29 @@ export function SearchArea({ handleRef }: { handleRef?: Ref<SearchAreaHandle> })
             hidden={!suggestions || suggestions.length === 0}
           >
             {(suggestions ?? []).map((hit, index) => (
+              // The option is not a link: an <a> inside role="option" is a
+              // nested interactive control (axe, design 53 integration).
+              // Mouse-down keeps focus on the combobox (so the blur handler
+              // does not close the list first); a click opens the result,
+              // like Enter on the active option.
               // biome-ignore lint/a11y/useFocusableInteractive: this pattern keeps focus on the combobox <input> (aria-activedescendant), never on the option itself -- the option is deliberately not in the tab order, matching docs/assets/search.js.
+              // biome-ignore lint/a11y/useKeyWithClickEvents: keyboard users choose with ArrowUp/Down + Enter on the combobox input (aria-activedescendant), never on the option itself.
               <li
                 key={`${hit.row[1]}-${hit.row[2]}`}
                 id={`site-search-opt-${index}`}
                 role="option"
                 aria-selected={index === activeIndex}
+                data-href={resultUrl(hit.row, hit.paperId)}
+                className={styles.option}
                 ref={(node) => {
                   itemRefs.current[index] = node;
                 }}
+                onMouseDown={(event) => event.preventDefault()}
+                onClick={() => {
+                  window.location.href = resultUrl(hit.row, hit.paperId);
+                }}
               >
-                <a tabIndex={-1} href={resultUrl(hit.row, hit.paperId)}>
+                <span className={styles.optionBody}>
                   <span className={styles.title}>{hit.row[0]}</span>
                   <span className={styles.meta}>
                     {[
@@ -581,7 +593,7 @@ export function SearchArea({ handleRef }: { handleRef?: Ref<SearchAreaHandle> })
                         : hit.row[3].join(", ")}
                     </span>
                   )}
-                </a>
+                </span>
               </li>
             ))}
           </ul>

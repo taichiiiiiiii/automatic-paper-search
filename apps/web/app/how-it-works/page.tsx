@@ -149,7 +149,7 @@ export default function HowItWorksPage() {
   return (
     <main id="main-content" tabIndex={-1} className={styles.page}>
       <header className={styles.hero}>
-        <nav className={styles.breadcrumb} aria-label="breadcrumb">
+        <nav className={styles.breadcrumb} aria-label="パンくずリスト">
           <Link href="/">PaperPilot</Link> &nbsp;/&nbsp; 仕組み
         </nav>
         <h1 className={styles.heroTitle}>
@@ -165,6 +165,28 @@ export default function HowItWorksPage() {
           を、 色と線種で表しています。全6種の意味を、ビューアで実際に出る線そのもので解説します。
         </p>
       </header>
+
+      <section className={styles.overview} aria-labelledby="overview-heading">
+        <div className={`${styles.sectionHead} ${styles.sectionHeadBare}`}>
+          <h2 className={styles.sectionHeadTitle} id="overview-heading">
+            PaperPilot でできること
+          </h2>
+        </div>
+        <ul className={styles.overviewList}>
+          <li>
+            <Link href="/">論文を探す</Link>
+            ：AI トップ会議の採択論文を、タイトル・著者・タグから横断検索できます。
+          </li>
+          <li>
+            <a href="/#s0-confs">学会カタログ</a>
+            ：学会ごとの採択論文の一覧です。絞り込みと書き出しができます。
+          </li>
+          <li>
+            <Link href="/themes/">テーマ別の系譜</Link>
+            ：研究テーマごとに、論文どうしの関係を家系図で示します。このページでは、その線の読み方と判定の方法を説明します。
+          </li>
+        </ul>
+      </section>
 
       <section aria-labelledby="rel-heading">
         <div className={styles.sectionHead}>
@@ -236,11 +258,13 @@ export default function HowItWorksPage() {
           版の本文から引用文を取り、同じ規則で判定することがあります（出典は「arXiv
           HTML」と表示します）。
         </p>
+        <h3 className={styles.howSubhead}>根拠の見方</h3>
         <p className={styles.howBody}>
           家系図の線をクリック（タップ、またはキーボードで選んで Enter）すると、
           <strong>判定の根拠・判定方法・確信度と、根拠になった引用文そのもの</strong>
           を表示します。グラフの下の「関係の一覧」でも同じ内容を確認できます。
         </p>
+        <h3 className={styles.howSubhead}>本流（主経路）</h3>
         <p className={styles.howBody} id="main-path">
           テーマの家系図では、<strong>本流（主経路）</strong>
           を太い線で示します。線を古い論文から新しい論文への向きにそろえ、流れの始まり（それより古い線がない論文）から終わり（それより新しい線がない論文）までの道のうち、その線を通る道の数（SPC:
@@ -248,6 +272,7 @@ export default function HowItWorksPage() {
           2、対立は 1.5、参照（背景）は 1）と確信度を掛け、合計がいちばん大きくなる 1
           本の道を本流とします。計算はブラウザーの中で行い、公開データは変えません。「本流だけ」に切り替えると、ほかの線を隠せます。
         </p>
+        <h3 className={styles.howSubhead}>論文の土台と発展</h3>
         <p className={styles.howBody} id="paper-neighbors">
           論文を 1 本選ぶと、その系譜の中で<strong>土台</strong>
           （その論文が基にした論文）と<strong>発展</strong>
@@ -259,12 +284,14 @@ export default function HowItWorksPage() {
           （横軸に年、縦軸に被引用数の対数）を切り替えられます。学会カタログの論文が公開中の系譜に入っているときは、詳細に「系譜での位置」とその系譜へのリンクを出します（arXiv
           ID・DOI・識別子で照合）。系譜にない論文や関係は足しません。
         </p>
+        <h3 className={styles.howSubhead}>誤りの報告と書き出し</h3>
         <p className={styles.howBody}>
           関係や根拠が誤っていたら、根拠の欄と「関係の一覧」の<strong>「誤りを報告」</strong>
           から GitHub の Issue を開けます（テーマ・2
           本の論文・関係・判定方法は自動で入ります。GitHub のアカウントが必要です）。表示中の論文は
           BibTeX・CSV で書き出せます。学会カタログでも、絞り込んだ結果を書き出せます。
         </p>
+        <h3 className={styles.howSubhead}>公開の基準</h3>
         <p className={styles.howBody}>
           公開するのは、<strong>自動検査（形式・識別子・関係の根拠）に合格した系譜</strong>
           だけです。人がテーマとの適合と強い主張の関係（置換・対立）を確認したものには
@@ -285,7 +312,7 @@ export default function HowItWorksPage() {
           </h2>
           <p className={styles.seealsoNote}>
             実装の詳細は GitHub のドキュメントへ。<strong>公開段階と関係の根拠</strong>
-            は設計書 41 番、いまの構成は設計書 39 番、切替と運用の経過は移行の記録にあります。
+            は設計書 41 番、今後の計画は設計書 40 番、運用の手順は運用の記録にあります。
           </p>
         </div>
         <ul className={styles.seealsoLinks}>

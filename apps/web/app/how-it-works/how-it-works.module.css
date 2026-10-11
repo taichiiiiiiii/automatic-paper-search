@@ -79,11 +79,10 @@
   gap: 0.6rem;
   flex-wrap: wrap;
   margin-bottom: 0.7rem;
-  font-family: var(--font-mono);
-  font-size: var(--text-tag);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-ink-subtle);
+  /* Was 0.72rem uppercase mono (UX audit, design 53). */
+  font-family: var(--font-ja);
+  font-size: var(--text-meta);
+  color: var(--color-ink-muted);
 }
 .breadcrumb a {
   color: inherit;
@@ -175,18 +174,21 @@
   padding: 0;
   border-top: 0;
 }
+/* Section titles were a 0.72rem uppercase mono label, smaller than the
+   body text under them; a real heading size restores the hierarchy (UX
+   audit, design 53). */
 .sectionHeadTitle {
-  font-family: var(--font-mono);
-  font-size: var(--text-tag);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-ink-muted);
+  font-family: var(--font-ja);
+  font-size: clamp(1.2rem, 1rem + 0.8vw, 1.6rem);
+  line-height: 1.4;
+  color: var(--color-ink);
   margin: 0;
   font-weight: 600;
 }
 .sectionHeadNote {
-  font-family: var(--font-mono);
-  font-size: var(--text-tag);
+  font-family: var(--font-ja);
+  font-size: var(--text-meta);
+  line-height: 1.7;
   color: var(--color-ink-subtle);
   margin: 0;
 }
@@ -303,9 +305,19 @@
 }
 .howBody {
   max-width: 64ch;
+  margin: 0.6rem 0 0;
   font-size: var(--text-body);
-  line-height: 1.75;
+  line-height: 1.8;
   color: var(--color-ink-muted);
+}
+.howSubhead {
+  max-width: 64ch;
+  margin: 1.8rem 0 0;
+  font-family: var(--font-ja);
+  font-size: 1.02rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--color-ink);
 }
 .howBody strong {
   color: var(--color-ink);
@@ -357,8 +369,9 @@
   color: var(--color-accent-strong);
 }
 .seealsoNote {
-  font-family: var(--font-mono);
-  font-size: var(--text-tag);
+  font-family: var(--font-ja);
+  font-size: var(--text-meta);
+  line-height: 1.7;
   color: var(--color-ink-subtle);
   margin: 0;
 }
@@ -413,6 +426,10 @@
 }
 .creditsList a {
   color: var(--color-accent-strong);
+  /* Links inside running text need more than colour (WCAG 1.4.1, axe
+     link-in-text-block): the global `a` rule removes the underline. */
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 /* Phones: the specimen line moves above its label instead of sharing a
@@ -429,4 +446,25 @@
   .relRowEg {
     grid-column: 1;
   }
+}
+
+/* Site overview right under the hero (UX audit, design 53). Kept last so
+   its `li + li` rule does not precede the lower-specificity `li` rules. */
+.overview {
+  padding: calc(var(--space-section) * 0.6) var(--space-edge) calc(var(--space-section) * 0.5);
+}
+.overviewList {
+  max-width: 64ch;
+  margin: 0.8rem 0 0;
+  padding-left: 1.2rem;
+  font-size: var(--text-body);
+  line-height: 1.8;
+  color: var(--color-ink-muted);
+}
+.overviewList li + li {
+  margin-top: 0.35rem;
+}
+.overviewList a {
+  color: var(--color-accent-strong);
+  font-weight: 600;
 }

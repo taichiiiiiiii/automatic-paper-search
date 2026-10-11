@@ -12,7 +12,7 @@
  * original docs/themes/index.html.
  */
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { API_BASE, BASE_PATH } from "../../lib/config";
 import {
   fetchLineageQualityManifest,
@@ -36,7 +36,13 @@ import { PublicationNotice } from "../lineage/publication-badge";
 import { LineageTree } from "./LineageTree";
 import { ThemeCodeLinksSection, ThemeNewPapersSection } from "./ThemeFeedSections";
 import { ThemeGallery } from "./ThemeGallery";
-import { ThemeRequestForm } from "./ThemeRequestForm";
+
+// The request form (~550 lines with its polling logic) is only needed
+// once the reader opens 「新しいテーマを依頼」 or no theme is published, so
+// it is split out of the theme page's first-load chunk.
+const ThemeRequestForm = lazy(() =>
+  import("./ThemeRequestForm").then((m) => ({ default: m.ThemeRequestForm })),
+);
 
 type ViewState =
   | { phase: "loading" }
@@ -101,7 +107,17 @@ function ThemeRequestGate() {
       </p>
     );
   }
-  return <ThemeRequestForm onReady={redirectToTheme} />;
+  return (
+    <Suspense
+      fallback={
+        <p role="status" className="mt-4 text-sm text-ink-subtle">
+          依頼フォームを読み込み中…
+        </p>
+      }
+    >
+      <ThemeRequestForm onReady={redirectToTheme} />
+    </Suspense>
+  );
 }
 
 export function ThemesClient() {
@@ -202,7 +218,13 @@ export function ThemesClient() {
 
   if (state.phase === "loading") {
     return (
-      <section role="status" aria-live="polite" className="px-4 py-16 text-center sm:px-6">
+      // min-h reserves roughly the header + toolbar + tree height, so the
+      // footer does not jump when the lineage arrives (CLS).
+      <section
+        role="status"
+        aria-live="polite"
+        className="min-h-[80vh] px-4 py-16 text-center sm:px-6"
+      >
         <div
           className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-rule border-t-accent"
           aria-hidden="true"
@@ -226,7 +248,7 @@ export function ThemesClient() {
           通信エラー、または一時的な不調の可能性があります。時間をおいて再度お試しください。
         </p>
         <p className="mt-4 text-sm">
-          <a href="/" className="text-accent underline">
+          <a href="/" className="text-accent-strong underline">
             論文カタログへ戻る
           </a>
         </p>
@@ -249,7 +271,7 @@ export function ThemesClient() {
           <ThemeRequestGate />
         </div>
         <p className="mt-4 text-sm">
-          <a href="/" className="text-accent underline">
+          <a href="/" className="text-accent-strong underline">
             論文カタログへ戻る
           </a>
         </p>
@@ -267,31 +289,69 @@ export function ThemesClient() {
     ? (artifact.meta.keywords as unknown[])
     : [];
 
+  const themeName = entry?.theme || entryTheme(manifest, currentSlug);
+  // The keywords themselves (they used to show only as「キーワード 1 件」).
+  const keywordList = keywords.filter((k): k is string => typeof k === "string" && k.length > 0);
+  const keywordText =
+    keywordList.slice(0, 5).join(", ") +
+    (keywordList.length > 5 ? ` ほか ${keywordList.length - 5} 件` : "");
+  const stats = [yearRange, `${count} 論文`, `${safeDisplayCount(artifact.edges.length)} 関係`];
+
   return (
-    <div className="px-4 py-10 sm:px-6">
-      <header className="mb-6">
-        <div className="flex flex-wrap items-center gap-2 text-sm text-ink-subtle">
-          <a href="/">PaperPilot</a>
-          <span>/</span>
-          <span>テーマ別の系譜</span>
-        </div>
-        <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
-          <h1 className="font-serif text-2xl font-bold text-ink">
-            テーマ別の系譜（時系列の家系図）
-          </h1>
+    <div className="px-4 py-6 sm:px-6 sm:py-10">
+      {/* UX audit (design 53 §系譜ページ): the theme name is the page's
+          h1 (it used to be only on a gallery card under a generic title),
+          followed by the tier and a one-line summary; the theme picker
+          comes next, then the graph. */}
+      <header className="mb-4">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <nav
+            aria-label="パンくずリスト"
+            className="flex flex-wrap items-center gap-2 text-sm text-ink-subtle"
+          >
+            <a href="/">PaperPilot</a>
+            <span aria-hidden="true">/</span>
+            <span>テーマ別の系譜</span>
+          </nav>
           {/* R2 UX P2-10: the request form used to hide behind a small
-              "ⓘ について / ✨ 新規テーマ" toggle; it is now a visible
-              primary action. */}
+              "ⓘ について / ✨ 新規テーマ" toggle; it stays a visible action
+              but is secondary to reading the lineage. */}
           <button
             type="button"
             aria-expanded={aboutOpen}
             aria-controls="hero-details"
             onClick={() => setAboutOpen((v) => !v)}
-            className="rounded-md border border-accent bg-accent/10 px-3 py-1.5 text-sm font-medium text-accent-strong hover:bg-accent/20"
+            className="inline-flex min-h-9 items-center rounded-md border border-accent px-3 py-1 text-xs font-medium text-accent-strong hover:bg-accent/10 sm:text-sm"
           >
-            {aboutOpen ? "✕ 閉じる" : "✨ 新しいテーマを依頼する"}
+            {aboutOpen ? "✕ 閉じる" : "＋ 新しいテーマを依頼"}
           </button>
         </div>
+        <h1 className="mt-2 font-serif text-2xl font-bold text-ink" data-theme-title>
+          {themeName} <span className="text-lg font-semibold text-ink-muted">の系譜</span>
+          <span className="sr-only">（時系列の家系図）</span>
+        </h1>
+        {entry?.publication_tier && (
+          <div className="mt-2">
+            <PublicationNotice tier={entry.publication_tier} />
+          </div>
+        )}
+        <p className="mt-2 text-sm text-ink-muted" data-theme-stats>
+          {stats.join("・")}
+          <span
+            className="ml-2 text-ink-subtle"
+            data-data-date={dataDate ?? ""}
+            title="この系譜を生成した日（引用数などはこの日の値）"
+          >
+            （データの日付 {dataDate ?? "不明"}
+            {keywordText ? `・検索キーワード: ${keywordText}` : ""}）
+          </span>
+        </p>
+        <p className="mt-1 text-xs text-ink-subtle" data-node-selection>
+          論文は、テーマの代表的な論文から引用をたどって集め、テーマから外れるものは除いています。
+          <a href="/how-it-works/" className="ml-1 text-accent-strong underline">
+            仕組み
+          </a>
+        </p>
         {aboutOpen && (
           <div id="hero-details" className="mt-3 rounded-md border border-rule bg-surface p-4">
             <p className="text-sm text-ink-muted">
@@ -319,7 +379,7 @@ export function ThemesClient() {
             href={`https://github.com/taichiiiiiiii/automatic-paper-search/issues/new?labels=theme-request&title=${encodeURIComponent(`[theme request] ${slugFallback.requested}`)}`}
             target="_blank"
             rel="noopener"
-            className="whitespace-nowrap text-accent underline"
+            className="whitespace-nowrap text-accent-strong underline"
           >
             ✨ Issue でリクエスト
           </a>
@@ -327,47 +387,20 @@ export function ThemesClient() {
             type="button"
             aria-label="閉じる"
             onClick={() => setDismissedFallback(true)}
-            className="text-ink-subtle"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center text-ink-subtle"
           >
             ✕
           </button>
         </div>
       )}
 
-      <ThemeGallery manifest={manifest} qualityRollup={qualityRollup} currentSlug={currentSlug} />
-
-      {entry?.publication_tier && (
-        <div className="mt-4">
-          <PublicationNotice tier={entry.publication_tier} />
-        </div>
-      )}
-
-      <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-ink-muted">
-        <span className="rounded-full bg-surface-2 px-2 py-1">📅 {yearRange}</span>
-        <span className="rounded-full bg-surface-2 px-2 py-1">📄 {count} 論文</span>
-        <span className="rounded-full bg-surface-2 px-2 py-1">
-          🔗 {safeDisplayCount(artifact.edges.length)} 関係
-        </span>
-        <span
-          className="rounded-full bg-surface-2 px-2 py-1"
-          data-data-date={dataDate ?? ""}
-          title="この系譜を生成した日（引用数などはこの日の値）"
-        >
-          🗓 データの日付 {dataDate ?? "不明"}
-        </span>
-        {keywords.length > 0 && (
-          <span className="rounded-full bg-surface-2 px-2 py-1" title={keywords.join(", ")}>
-            🔍 キーワード {keywords.length} 件
-          </span>
+      <h2 className="text-xs font-semibold text-ink-subtle" id="theme-gallery-heading">
+        テーマを切り替える（全 {manifest.length} 件）
+        {manifest.length > 1 && (
+          <span className="ml-2 font-normal sm:hidden">横にスクロールできます →</span>
         )}
-      </div>
-
-      <p className="mt-2 text-xs text-ink-subtle" data-node-selection>
-        論文は、テーマの代表的な論文から引用をたどって集め、テーマから外れるものは除いています。
-        <a href="/how-it-works/" className="ml-1 text-accent underline">
-          仕組み
-        </a>
-      </p>
+      </h2>
+      <ThemeGallery manifest={manifest} qualityRollup={qualityRollup} currentSlug={currentSlug} />
 
       {artifact.nodes.length === 0 ? (
         <p className="mt-8 text-sm text-ink-muted">
@@ -382,17 +415,20 @@ export function ThemesClient() {
           key={currentSlug}
           artifact={artifact}
           slug={currentSlug}
-          themeName={entry?.theme || entryTheme(manifest, currentSlug)}
+          themeName={themeName}
           codeLinks={shownExtras?.codeLinks ?? null}
         />
       )}
 
-      <ThemeNewPapersSection
-        slug={currentSlug}
-        data={shownExtras?.newPapers ?? null}
-        nodes={artifact.nodes}
-      />
-      <ThemeCodeLinksSection links={shownExtras?.codeLinks ?? null} nodes={artifact.nodes} />
+      {/* Secondary material folds into disclosures under the graph. */}
+      <div className="mt-8 space-y-3" data-theme-extras>
+        <ThemeNewPapersSection
+          slug={currentSlug}
+          data={shownExtras?.newPapers ?? null}
+          nodes={artifact.nodes}
+        />
+        <ThemeCodeLinksSection links={shownExtras?.codeLinks ?? null} nodes={artifact.nodes} />
+      </div>
 
       <footer className="mt-10 text-xs text-ink-subtle">
         自動検査に合格した系譜のみ公開します（人が確認したものは「監査済み」、未確認のものは「未監査（自動生成）」）

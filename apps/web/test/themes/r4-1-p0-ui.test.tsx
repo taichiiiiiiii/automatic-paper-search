@@ -97,7 +97,7 @@ describe("main path (P0-1)", () => {
     expect(toggle.textContent).toContain("2 本の線");
     fireEvent.click(within(toggle).getByRole("button", { name: "本流だけ" }));
     expect(edgeButtons()).toHaveLength(2);
-    fireEvent.click(within(toggle).getByRole("button", { name: "切" }));
+    fireEvent.click(within(toggle).getByRole("button", { name: "オフ" }));
     expect(edgeButtons()).toHaveLength(4);
     expect(mainPathGroups()).toHaveLength(0);
     expect(window.location.search).toContain("main=off");

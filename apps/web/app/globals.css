@@ -37,7 +37,10 @@
   --color-ink-muted: oklch(42% 0.015 270);
   --color-ink-subtle: oklch(48% 0.012 270);
 
-  --color-accent: oklch(58% 0.18 30);
+  /* 54% (was 58%): text in --color-accent was 4.54:1 on --color-bg and
+     4.16:1 on --color-surface-2, under WCAG AA; now 5.4:1 / 4.9:1
+     (UX audit, design 53). */
+  --color-accent: oklch(54% 0.18 30);
   --color-accent-strong: oklch(45% 0.2 30);
   --color-oral: oklch(72% 0.16 75);
   --color-oral-bg: oklch(95% 0.07 80);
@@ -168,7 +171,9 @@ body {
   top: 0.5rem;
   left: 0.5rem;
   padding: 0.5rem 1rem;
-  background: var(--color-accent);
+  /* accent-strong, not accent: light text on --color-accent was 4.4:1,
+     under WCAG AA for this 0.85rem label. */
+  background: var(--color-accent-strong);
   color: var(--color-surface);
   font-family: var(--font-mono);
   font-size: 0.85rem;
@@ -186,15 +191,28 @@ body {
   outline-offset: 2px;
 }
 
-a {
-  color: var(--color-accent);
-  text-decoration: none;
-  transition: color var(--duration-fast);
-}
-a:hover {
-  color: oklch(45% 0.2 30);
-  text-decoration: underline;
-  text-underline-offset: 3px;
+/* Link + heading defaults live in the base layer so Tailwind utilities
+   (`text-ink`, `hover:text-accent-strong`, ...) on a link can override
+   them. Unlayered, this rule beat every utility, so e.g. the header's
+   current-page colour never applied (UX audit, design 53). CSS-module
+   rules are unlayered and still win over both. */
+@layer base {
+  a {
+    color: var(--color-accent);
+    text-decoration: none;
+    transition: color var(--duration-fast);
+  }
+  a:hover {
+    color: var(--color-accent-strong);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  /* Japanese headings break at phrase boundaries (Chromium; others
+     ignore it) instead of leaving one kana on the next line. */
+  h1,
+  h2 {
+    word-break: auto-phrase;
+  }
 }
 
 /* Keyboard focus ring for every interactive control, so Tab navigation

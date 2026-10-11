@@ -93,6 +93,14 @@
   cursor: pointer;
 }
 
+/* Touch: a wider invisible hit area so a finger can pick a thin line
+ * (design 53 §系譜ページ). Still in viewBox units, so it shrinks with zoom. */
+@media (pointer: coarse) {
+  .edgeHit {
+    stroke-width: 26;
+  }
+}
+
 /* Keyboard users see which edge Enter will open (R2 UX P0-2). */
 .edgeHit:focus-visible {
   stroke: var(--color-accent);
@@ -110,16 +118,6 @@
 .tooltipPanel.tooltipVisible {
   opacity: 1;
   visibility: visible;
-}
-
-/* ---- Onboarding coach-mark ------------------------------------------- */
-
-.onboardingArrow {
-  width: 0;
-  height: 0;
-  border-left: 7px solid transparent;
-  border-right: 7px solid transparent;
-  border-bottom: 7px solid var(--color-accent);
 }
 
 /* ---- Minimap ---------------------------------------------------------- */

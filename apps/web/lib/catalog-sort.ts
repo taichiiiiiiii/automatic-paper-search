@@ -11,16 +11,78 @@ export interface CatalogFilterState {
   search: string;
   type: AcceptanceType;
   activeTags: ReadonlySet<string>;
+  /** UX audit (design doc 53): keep only rows whose papers.json row
+   * carries an abstract preview (`abs=1`). Optional so existing callers
+   * keep the unfiltered behaviour. */
+  hasAbstract?: boolean;
+}
+
+/**
+ * Splits a search query into lowercase terms (ASCII and full-width
+ * whitespace both separate terms). A row matches when EVERY term occurs
+ * somewhere in its title/authors/abstract -- "video diffusion" finds
+ * "diffusion models for video", which the old single-substring match
+ * missed. A one-word query behaves exactly as before.
+ */
+export function searchTerms(search: string): string[] {
+  return normalizeSearchText(search)
+    .split(" ")
+    .filter((t) => t.length > 0);
+}
+
+/** Lowercases and folds hyphens/dashes/slashes and every kind of
+ * whitespace to one space, applied to both the query and the row text:
+ * "self-supervised" and "self supervised" then find each other. */
+export function normalizeSearchText(text: string): string {
+  // NFKC first: a Japanese IME types full-width Latin ("ｄｉｆｆｕｓｉｏｎ")
+  // and full-width spaces; the landing search already folds them.
+  return text
+    .normalize("NFKC")
+    .toLowerCase()
+    .replace(/[\s\u3000\-\u2010-\u2015/]+/g, " ");
+}
+
+/** A query term written in the plural ("transformers", "diffusions")
+ * also matches the singular in the text; a singular query already
+ * substring-matches the plural. Only simple "-s" / "-es" endings on
+ * terms of 5+ letters are folded, so short words ("gas", "loss") and
+ * acronyms stay exact. */
+export function termVariants(term: string): string[] {
+  if (term.length < 5 || !term.endsWith("s") || term.endsWith("ss")) return [term];
+  const out = [term, term.slice(0, -1)];
+  if (term.endsWith("es")) out.push(term.slice(0, -2));
+  return out;
+}
+
+// The lowercased title/authors/abstract string per row, built once per
+// row object (not once per keystroke): with 6-9k rows the old per-filter
+// rebuild dominated the cost of every debounced search.
+const HAYSTACKS = new WeakMap<CatalogPaper, string>();
+
+function haystack(p: CatalogPaper): string {
+  let hay = HAYSTACKS.get(p);
+  if (hay === undefined) {
+    hay = normalizeSearchText(`${p.title} ${p.authors.join(" ")} ${p.abstract}`);
+    HAYSTACKS.set(p, hay);
+  }
+  return hay;
+}
+
+export function paperHasAbstract(p: CatalogPaper): boolean {
+  return typeof p.abstract === "string" && p.abstract.trim().length > 0;
 }
 
 export function getFiltered<T extends CatalogPaper>(papers: T[], filters: CatalogFilterState): T[] {
-  const q = filters.search.toLowerCase().trim();
+  const terms = searchTerms(filters.search).map(termVariants);
   return papers.filter((p) => {
     if (filters.type !== "all" && p.type !== filters.type) return false;
     if (filters.activeTags.size > 0 && !p.tags.some((t) => filters.activeTags.has(t))) return false;
-    if (q) {
-      const hay = `${p.title} ${p.authors.join(" ")} ${p.abstract}`.toLowerCase();
-      if (!hay.includes(q)) return false;
+    if (filters.hasAbstract && !paperHasAbstract(p)) return false;
+    if (terms.length > 0) {
+      const hay = haystack(p);
+      for (const variants of terms) {
+        if (!variants.some((v) => hay.includes(v))) return false;
+      }
     }
     return true;
   });
@@ -51,10 +113,17 @@ export function getSorted<T extends CatalogPaper>(papers: T[], sort: SortValue):
     case "oral":
       return arr.sort((a, b) => (a.type === "Oral" ? 0 : 1) - (b.type === "Oral" ? 0 : 1));
     case "title":
-      return arr.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+      return arr.sort((a, b) => titleSortKey(a.title).localeCompare(titleSortKey(b.title)));
     default:
       return arr;
   }
+}
+
+/** "タイトル A→Z" ignores leading LaTeX/punctuation ("$\\texttt{Multi}^2$",
+ * '"Do Diffusion…"'), which used to put ~200 such titles before "A"
+ * (design doc 53). */
+export function titleSortKey(title: string | undefined): string {
+  return (title || "").replace(/^(?:[^\p{L}\p{N}\\]|\\[a-zA-Z]+\{?)+/u, "");
 }
 
 export interface NewestAvailability {
@@ -75,5 +144,17 @@ export function newestAvailability(papers: readonly CatalogPaper[]): NewestAvail
 }
 
 export function hasActiveFilters(filters: CatalogFilterState): boolean {
-  return filters.search.trim() !== "" || filters.type !== "all" || filters.activeTags.size > 0;
+  return (
+    filters.search.trim() !== "" ||
+    filters.type !== "all" ||
+    filters.activeTags.size > 0 ||
+    Boolean(filters.hasAbstract)
+  );
+}
+
+/** True when the query contains Japanese (kana/kanji) characters. Every
+ * catalog's titles and abstracts are English, so such a query can only
+ * match author names -- the empty state uses this to say so. */
+export function hasJapaneseText(search: string): boolean {
+  return /[\u3040-\u30ff\u3400-\u9fff\uff66-\uff9f]/.test(search);
 }

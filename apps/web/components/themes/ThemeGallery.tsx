@@ -76,7 +76,7 @@ export function ThemeGallery({
             href={{ pathname: "/themes/", query: { theme: entry.slug } }}
             aria-current={isCurrent ? "page" : undefined}
             title={displayTheme}
-            className={`flex w-48 shrink-0 flex-col gap-1 rounded-md border border-rule bg-surface px-3 py-2 text-sm hover:border-rule-strong ${borderClass} ${
+            className={`flex w-48 shrink-0 flex-col gap-0.5 rounded-md border border-rule bg-surface px-3 py-2 text-sm hover:border-rule-strong ${borderClass} ${
               isCurrent ? "ring-1 ring-accent" : ""
             }`}
           >
@@ -88,8 +88,8 @@ export function ThemeGallery({
             )}
             <div className="text-xs text-ink-muted">
               {safeDisplayCount(entry.paper_count)} 論文 · {yearRange}
+              <span className="text-ink-subtle"> · {formatThemeAge(entry.generated_at, now)}</span>
             </div>
-            <div className="text-xs text-ink-subtle">{formatThemeAge(entry.generated_at, now)}</div>
             {showRationaleStyle && q && typeof q.template_ratio === "number" && (
               <div
                 className="text-xs text-ink-subtle"

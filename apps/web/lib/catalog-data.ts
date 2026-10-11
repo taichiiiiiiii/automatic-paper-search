@@ -43,8 +43,11 @@ function errorMessage(err: unknown): string {
  * indistinguishable from a broken load, so it takes the same "distinct
  * error state" path as an HTTP failure -- never rendered as "0 papers").
  */
-export async function fetchCatalogPapers(slug: string): Promise<CatalogLoadResult> {
-  const result = await fetchConferencePapers(slug);
+export async function fetchCatalogPapers(
+  slug: string,
+  onProgress?: (bytes: number) => void,
+): Promise<CatalogLoadResult> {
+  const result = await fetchConferencePapers(slug, { onProgress });
   if (result.status === "error") return { status: "error", error: result.error };
   try {
     const byId = validateCatalog(result.data);
