@@ -102,10 +102,10 @@ export const CATALOG_COPY: Record<string, CatalogCopy> = {
   "iclr-2025": {
     display: "ICLR 2025",
     description:
-      "ICLR 2025 採択論文のフィルタブル一覧。タイトル・著者での検索、トピックタグ、並び替えで絞り込めます。",
+      "ICLR 2025 採択論文のフィルタブル一覧。タイトル・著者・要旨での検索、トピックタグ、並び替えで絞り込めます。",
     tagline:
       "The 13th International Conference on Learning Representations (Singapore, April 24–28, 2025).",
-    lede: "ICLR Proceedings（proceedings.iclr.cc）の採択論文を全件収録した一覧です。タイトル・著者・リンクを掲載し、要旨は出典がライセンスを示していないため載せていません（リンク先で読めます）。",
+    lede: "ICLR Proceedings（proceedings.iclr.cc）の採択論文を全件収録した一覧です。proceedings の要旨はライセンスが示されていないため転載せず、同じ論文の arXiv 版の要旨（CC0）か Semantic Scholar の TLDR が見つかった論文だけ、それを載せています。",
     source: "ICLR Proceedings · Auto-tagged · MIT License",
   },
   "icml-2025": {
