@@ -53,6 +53,7 @@
 - 監査記録（`lineage-audit-fixtures-v1`）に関係の判定を加える
 - **実装（R2-8）**: 強い主張は方針の `strong_relations`＝`contrasts`・`supersedes`・`extends`・`successor`（画面で系譜の線として見える 4 種類）。ノードの判定には `metadata_ok`（題名・年・著者・識別子が正しいか）と `note` を付けられ、`metadata_ok: false` は不合格。関係の `wrong` は `corrected_relation` があっても不合格（修正は反映しないので、作り直して監査し直す）
   - 監査の下書きは `apps/pipeline/src/lineage/quality/auditDraftCli.ts`。`draft --theme <slug> --out-dir <dir>` で日本語の監査シート（`.audit.md`）と判定欄が空の JSON（`.audit-pending.json`）を作る。監査者は JSON の `on_topic`・`metadata_ok`・`verdict`・`auditor`・`audited_at` を埋め、`import --draft <json>` で監査記録の 1 件に変換する（品質表の判定を試算して表示。`--write` で `lineage-audit-fixtures-v1.json` に追記）。第二審査の見立ては `suggestion` 欄にあり、監査者が `accept_suggestions_for_unset: true` にしたときだけ未記入の欄に使う
+    - R2-29（2026-10-11）: シートの冒頭に「まとめ」（ノード・強い関係の種類と根拠の内訳、要確認の数、見立てをすべて採用したときに監査記録が合格するかの試算）を置いた。強い関係ごとに根拠（Semantic Scholar の引用文・arXiv HTML 本文の引用文・引用側の要旨・基礎文献リスト・題名の版）と確認用のリンク（arXiv HTML のページなど）を出し、引用文を使わない規則（基礎文献リスト・題名の版）には「引用文なし」の注意を付けない。掲載先が DBLP の会場キャッシュ（`dblp_venues.json`、`--dblp-cache`）と一致するノードは「（DBLP）」とリンクを付ける。第二審査の見立ては `suggest --draft <json> --from <suggestions.json>` で `suggestion` 欄だけに入れる（判定欄は触らない。下書きにない項目を挙げたファイルは拒む）
 
 ### D6. 関係の分類: API 中心、LLM は補助（2026-10-10 追加決定、根拠は [43](43-api-based-relation-evaluation.md)）
 

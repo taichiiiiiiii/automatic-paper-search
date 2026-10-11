@@ -9,9 +9,12 @@ import { validateArtifact } from "@paperpilot/core";
 import { describe, expect, it } from "vitest";
 import {
   AuditImportError,
+  applySuggestions,
+  arxivHtmlIdFromRationale,
   buildAuditDraft,
   importAuditDraft,
   mergeFixtureEntry,
+  projectOutcome,
   quoteFromRationale,
   renderAuditSheet,
   sha256Hex,
@@ -121,6 +124,190 @@ describe("buildAuditDraft", () => {
   it("extracts the quote from a rationale", () => {
     expect(quoteFromRationale('理由。引用文: "a, b."')).toBe("a, b.");
     expect(quoteFromRationale("引用文はない。")).toBeNull();
+  });
+});
+
+function provEdge(
+  src: string,
+  dst: string,
+  relation: string,
+  method: string,
+  source: string,
+  rationale: string,
+) {
+  return {
+    ...edge(src, dst, relation, rationale),
+    provenance: {
+      evidence: { source, kind: "citation-context", sha256: "x" },
+      classification: { method, provider: null, model: null },
+    },
+  };
+}
+
+function evidenceLineage(): Record<string, unknown> {
+  const data = lineage(6);
+  const nodes = data.nodes as Record<string, unknown>[];
+  nodes[0]!.venue = "ICLR";
+  nodes[3]!.arxiv_id = "2102.12122";
+  data.edges = [
+    provEdge(
+      "openalex:W0",
+      "openalex:W1",
+      "extends",
+      "s2_context_rule",
+      "semantic_scholar",
+      '「P1」は…（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: "We build on [3]."',
+    ),
+    provEdge(
+      "openalex:W0",
+      "openalex:W3",
+      "extends",
+      "s2_context_rule",
+      "arxiv_html",
+      '「P3」は…（arXiv HTML（arXiv:2102.12122v2）の本文の引用文から規則で判定）。引用文: "We follow ViT [13]."',
+    ),
+    provEdge(
+      "openalex:W1",
+      "openalex:W4",
+      "extends",
+      "s2_context_rule",
+      "semantic_scholar",
+      '「P4」は…（引用元の論文の要旨から規則で判定）。要旨: "We propose P4 based on P1."',
+    ),
+    provEdge(
+      "openalex:W0",
+      "openalex:W5",
+      "extends",
+      "foundational_allowlist",
+      "semantic_scholar",
+      "基礎文献リストに基づく規則。",
+    ),
+    provEdge(
+      "openalex:W4",
+      "openalex:W5",
+      "supersedes",
+      "title_version",
+      "semantic_scholar",
+      "命名パターンから置き換え。",
+    ),
+    provEdge(
+      "openalex:W1",
+      "openalex:W5",
+      "baseline_only",
+      "api_citation",
+      "semantic_scholar",
+      "参考文献リストで確認。",
+    ),
+  ];
+  return data;
+}
+
+describe("evidence sources (R2-28: arXiv HTML, abstract, allowlist, title version, DBLP)", () => {
+  it("labels each strong edge with its basis, quote and a link to check it", () => {
+    const { draft } = draftFor(evidenceLineage());
+    const by = (dst: string, rel = "extends") =>
+      draft.relations.find((r) => r.dst === dst && r.relation === rel)!;
+    expect(draft.relations).toHaveLength(5);
+    const s2 = by("openalex:W1");
+    expect(s2.basis).toBe("s2_context");
+    expect(s2.source_url).toContain("api.semanticscholar.org");
+    const html = by("openalex:W3");
+    expect(html.basis).toBe("arxiv_html");
+    expect(html.source_url).toBe("https://arxiv.org/html/2102.12122v2");
+    expect(html.quote).toBe("We follow ViT [13].");
+    const abs = by("openalex:W4");
+    expect(abs.basis).toBe("citing_abstract");
+    expect(abs.quote).toBe("We propose P4 based on P1.");
+    expect(abs.flags).not.toContain("引用文なし");
+    const allow = by("openalex:W5");
+    expect(allow.basis).toBe("foundational_allowlist");
+    expect(allow.flags).not.toContain("引用文なし");
+    expect(by("openalex:W5", "supersedes").basis).toBe("title_version");
+    const md = renderAuditSheet(draft);
+    expect(md).toContain(
+      "根拠: arXiv HTML 本文の引用文（[確認](https://arxiv.org/html/2102.12122v2)）",
+    );
+    expect(md).toContain("- 要旨: “We propose P4 based on P1.”");
+    expect(md).toContain("| 強い関係の根拠 |");
+    expect(md).toContain("基礎文献リスト（引用文なし） 1");
+  });
+
+  it("parses the arXiv id of an arXiv HTML rationale", () => {
+    expect(arxivHtmlIdFromRationale("（arXiv HTML（arXiv:2101.03961v3）の本文）")).toBe(
+      "2101.03961v3",
+    );
+    expect(arxivHtmlIdFromRationale("Semantic Scholar の引用文")).toBeNull();
+  });
+
+  it("marks venues that match the DBLP venue cache", () => {
+    const data = evidenceLineage();
+    const bytes = Buffer.from(JSON.stringify(data));
+    const draft = buildAuditDraft({
+      lineage: data,
+      lineageBytes: bytes,
+      collectionId: "theme:t",
+      lineagePath: "x",
+      generatedAt: "2026-10-11T00:00:00Z",
+      dblpVenues: {
+        "openalex:W0": { venue: "ICLR", key: "conf/iclr/X21" },
+        // Stale entry: the node's venue is not DBLP's, so no mark.
+        "openalex:W1": { venue: "NeurIPS", key: "conf/nips/Y20" },
+        "openalex:W2": { venue: null, key: null },
+      },
+    });
+    const w0 = draft.nodes.find((n) => n.node_id === "openalex:W0")!;
+    expect(w0.venue_source).toBe("dblp");
+    expect(w0.links.dblp).toBe("https://dblp.org/rec/conf/iclr/X21");
+    expect(draft.nodes.filter((n) => n.venue_source === "dblp")).toHaveLength(1);
+    expect(renderAuditSheet(draft)).toContain("ICLR（DBLP）");
+  });
+});
+
+describe("suggestions and the projected outcome", () => {
+  it("copies suggestions without touching verdicts and projects the fixture result", () => {
+    const { draft } = draftFor(lineage());
+    const before = projectOutcome(draft);
+    expect(before.passes).toBe(false);
+    expect(before.unset).toBe(5);
+    const {
+      draft: next,
+      unknown,
+      missing,
+    } = applySuggestions(draft, {
+      nodes: {
+        "openalex:W0": { on_topic: true, metadata_ok: true, reason: "ok" },
+        "openalex:W1": { on_topic: true, metadata_ok: true },
+        "openalex:W2": { on_topic: false, metadata_ok: true, assessment: "doubtful", reason: "x" },
+        "openalex:W9": { on_topic: true, metadata_ok: true },
+      },
+      relations: {
+        "openalex:W0->openalex:W1:extends": { verdict: "correct", reason: "ok" },
+        "openalex:W0->openalex:W2:contrasts": {
+          verdict: "wrong",
+          corrected_relation: "baseline_only",
+          assessment: "doubtful",
+          reason: "survey",
+        },
+      },
+    });
+    expect(unknown).toEqual(["node:openalex:W9"]);
+    expect(missing).toEqual([]);
+    expect(next.nodes.every((n) => n.on_topic === null)).toBe(true);
+    expect(next.relations.every((r) => r.verdict === null)).toBe(true);
+    const outcome = projectOutcome(next);
+    expect(outcome.unset).toBe(0);
+    expect(outcome.off_topic).toEqual(["openalex:W2"]);
+    expect(outcome.wrong_relations).toEqual(["openalex:W0->openalex:W2:contrasts"]);
+    expect(outcome.passes).toBe(false);
+    expect(outcome.reasons.join(" ")).toContain("標本のテーマ外の割合 33.3%");
+    const md = renderAuditSheet(next);
+    expect(md).toContain("**不合格**");
+    expect(md).toContain("誤り → baseline_only");
+    // A verdict overrides the suggestion in the projection.
+    next.relations.find((r) => r.relation === "contrasts")!.verdict = "correct";
+    next.nodes.find((n) => n.node_id === "openalex:W2")!.on_topic = true;
+    expect(projectOutcome(next).passes).toBe(true);
+    expect(renderAuditSheet(next)).toContain("**合格**");
   });
 });
 
@@ -297,5 +484,54 @@ describe("auditDraftCli round trip", () => {
     expect(written.collections[0].reviewer).toBe("taichi");
     expect(out.join("")).toMatch(/dry-run: golden_fixture=(passed|failed)/);
     expect(runAuditDraftCli(["nope"], repo, io)).toBe(2);
+  });
+
+  it("suggest merges a suggestions file and refuses a stale one", async () => {
+    const { runAuditDraftCli } = await import("../../../src/lineage/quality/auditDraftCli.js");
+    const repo = mkdtempSync(join(tmpdir(), "audit-suggest-"));
+    const docs = join(repo, "docs");
+    mkdirSync(join(docs, "themes", "t"), { recursive: true });
+    writeFileSync(join(docs, "themes", "t", "lineage.json"), JSON.stringify(lineage()));
+    const policy = join(repo, "policy.json");
+    writeFileSync(policy, JSON.stringify({ strong_relations: ["contrasts", "extends"] }));
+    const dblp = join(repo, "dblp.json");
+    writeFileSync(dblp, JSON.stringify({ entries: { "openalex:W1": { venue: null, key: null } } }));
+    const io = { out: () => {}, err: () => {}, now: () => new Date("2026-10-12T00:00:00Z") };
+    const outDir = join(repo, "drafts");
+    expect(
+      runAuditDraftCli(
+        [
+          "draft",
+          "--theme",
+          "t",
+          "--out-dir",
+          outDir,
+          "--docs-root",
+          docs,
+          "--policy",
+          policy,
+        ].concat(["--dblp-cache", dblp]),
+        repo,
+        io,
+      ),
+    ).toBe(0);
+    const draftPath = join(outDir, "t.audit-pending.json");
+    const good = join(repo, "s.json");
+    writeFileSync(
+      good,
+      JSON.stringify({
+        nodes: { "openalex:W2": { on_topic: false, metadata_ok: true, assessment: "doubtful" } },
+        relations: { "openalex:W0->openalex:W1:extends": { verdict: "correct", reason: "ok" } },
+      }),
+    );
+    expect(runAuditDraftCli(["suggest", "--draft", draftPath, "--from", good], repo, io)).toBe(0);
+    const merged = JSON.parse(readFileSync(draftPath, "utf8"));
+    expect(
+      merged.nodes.find((n: { node_id: string }) => n.node_id === "openalex:W2").suggestion,
+    ).toMatchObject({ on_topic: false, assessment: "doubtful" });
+    expect(readFileSync(join(outDir, "t.audit.md"), "utf8")).toContain("## 要確認の一覧");
+    const stale = join(repo, "stale.json");
+    writeFileSync(stale, JSON.stringify({ nodes: { "openalex:W99": { on_topic: true } } }));
+    expect(runAuditDraftCli(["suggest", "--draft", draftPath, "--from", stale], repo, io)).toBe(1);
   });
 });

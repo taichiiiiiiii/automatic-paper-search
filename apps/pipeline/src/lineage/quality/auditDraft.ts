@@ -50,6 +50,8 @@ export interface DraftNode {
   doi: string | null;
   arxiv_id: string | null;
   links: Record<string, string>;
+  /** `"dblp"` when the venue matches the DBLP venue cache (R2-28). */
+  venue_source: "dblp" | null;
   citation_count: number | null;
   is_focus: boolean;
   is_root: boolean;
@@ -76,6 +78,10 @@ export interface DraftRelation {
   model: string | null;
   rationale: string;
   quote: string | null;
+  /** What backs the claim: the evidence the classifier used (see EVIDENCE_BASIS_JA). */
+  basis: EvidenceBasis;
+  /** Where the auditor can check the quote (arXiv HTML page, S2 page of the citing paper, …). */
+  source_url: string | null;
   flags: string[];
   /** Human verdict — `null` until the auditor fills it. */
   verdict: "correct" | "wrong" | null;
@@ -98,6 +104,67 @@ export interface AuditDraft {
   accept_suggestions_for_unset: boolean;
   nodes: DraftNode[];
   relations: DraftRelation[];
+}
+
+export type EvidenceBasis =
+  | "s2_context"
+  | "arxiv_html"
+  | "citing_abstract"
+  | "foundational_allowlist"
+  | "title_version"
+  | "api_citation"
+  | "llm"
+  | "other";
+
+export const EVIDENCE_BASIS_JA: Readonly<Record<EvidenceBasis, string>> = {
+  s2_context: "Semantic Scholar の引用文",
+  arxiv_html: "arXiv HTML 本文の引用文",
+  citing_abstract: "引用側の要旨",
+  foundational_allowlist: "基礎文献リスト（引用文なし）",
+  title_version: "題名の版（引用文なし）",
+  api_citation: "参考文献リストのみ",
+  llm: "LLM の判定",
+  other: "その他",
+};
+
+/** Bases whose claim rests on a quoted sentence (a missing quote is suspicious). */
+const QUOTE_BASES: ReadonlySet<EvidenceBasis> = new Set([
+  "s2_context",
+  "arxiv_html",
+  "citing_abstract",
+  "llm",
+  "other",
+]);
+
+/** Classifies what backs an edge from its provenance and rationale. */
+export function evidenceBasisOf(edge: Record<string, unknown>): EvidenceBasis {
+  const provenance = isMapping(edge.provenance) ? edge.provenance : {};
+  const classification = isMapping(provenance.classification) ? provenance.classification : {};
+  const evidence = isMapping(provenance.evidence) ? provenance.evidence : {};
+  const method = str(classification.method);
+  const source = str(evidence.source);
+  const rationale = str(edge.rationale) ?? "";
+  if (method === "title_version") return "title_version";
+  if (method === "foundational_allowlist") return "foundational_allowlist";
+  if (method === "api_citation") return "api_citation";
+  if (source === "arxiv_html") return "arxiv_html";
+  if (/要旨から|要旨:\s*"/.test(rationale)) return "citing_abstract";
+  if (method === "s2_context_rule" || method === "s2_intent") return "s2_context";
+  if (method && /llm|context_llm|abstract/.test(method)) return "llm";
+  return "other";
+}
+
+/** `arXiv HTML（arXiv:2101.03961v3）` in a rationale -> `2101.03961v3`. */
+export function arxivHtmlIdFromRationale(rationale: string): string | null {
+  const m = /arXiv HTML（arXiv:([0-9]{4}\.[0-9]{4,5}(?:v\d+)?|[a-z-]+\/\d{7}(?:v\d+)?)）/.exec(
+    rationale,
+  );
+  return m ? m[1]! : null;
+}
+
+export interface DblpVenueCacheEntry {
+  venue: string | null;
+  key: string | null;
 }
 
 export const RELATION_MEANING_JA: Readonly<Record<string, string>> = {
@@ -146,10 +213,15 @@ function nodeLinks(id: string, doi: string | null, arxivId: string | null): Reco
   return links;
 }
 
-/** Pulls the first quoted citation sentence (`引用文: "…"`) out of a rationale. */
+/**
+ * Pulls the quoted sentence out of a rationale: a citation sentence
+ * (`引用文: "…"`) or, for rules that read the citing paper's own abstract,
+ * the abstract sentence (`要旨: "…"`).
+ */
 export function quoteFromRationale(rationale: string): string | null {
   const m =
-    /引用文:\s*"([\s\S]*?)"\s*$/.exec(rationale) ?? /引用文:\s*"([\s\S]*?)"/.exec(rationale);
+    /(?:引用文|要旨):\s*"([\s\S]*?)"\s*$/.exec(rationale) ??
+    /(?:引用文|要旨):\s*"([\s\S]*?)"/.exec(rationale);
   return m ? m[1]!.trim() : null;
 }
 
@@ -168,6 +240,8 @@ export interface BuildAuditDraftOptions {
   lineagePath: string;
   generatedAt: string;
   strongRelations?: readonly string[];
+  /** Entries of `data/state/lineage-cache/dblp_venues.json` (node id -> venue/key). */
+  dblpVenues?: Readonly<Record<string, DblpVenueCacheEntry>>;
 }
 
 /** Builds a pending draft. Throws on an artifact without nodes/edges. */
@@ -219,6 +293,10 @@ export function buildAuditDraft(options: BuildAuditDraftOptions): AuditDraft {
   for (const [id, node] of nodeById) {
     const doi = str(node.doi);
     const arxivId = str(node.arxiv_id);
+    const dblp = options.dblpVenues?.[id];
+    const dblpKey = dblp && str(dblp.key) && str(dblp.venue) === str(node.venue) ? dblp.key : null;
+    const links = nodeLinks(id, doi, arxivId);
+    if (dblpKey) links.dblp = `https://dblp.org/rec/${dblpKey}`;
     const nb = neighbours.get(id) ?? { cites: new Set<string>(), citedBy: new Set<string>() };
     const degree = new Set([...nb.cites, ...nb.citedBy]).size;
     const reasons: string[] = [];
@@ -251,7 +329,8 @@ export function buildAuditDraft(options: BuildAuditDraftOptions): AuditDraft {
         : [],
       doi,
       arxiv_id: arxivId,
-      links: nodeLinks(id, doi, arxivId),
+      links,
+      venue_source: dblpKey ? "dblp" : null,
       citation_count: num(node.citation_count),
       is_focus: node.is_focus === true,
       is_root: id === root,
@@ -299,7 +378,19 @@ export function buildAuditDraft(options: BuildAuditDraftOptions): AuditDraft {
     const dy = yearOf(dst);
     if (sy !== null && dy !== null && dy < sy) flags.push("引用側の年が被引用側より前");
     if (pairKeys.has(`${dst}->${src}`)) flags.push("逆向きの辺もある（2 サイクル）");
-    if (!quoteFromRationale(rationale)) flags.push("引用文なし");
+    const basis = evidenceBasisOf(edge);
+    const quote = quoteFromRationale(rationale);
+    if (!quote && QUOTE_BASES.has(basis)) flags.push("引用文なし");
+    const dstLinks = nodeLinks(dst, str(dstNode?.doi), str(dstNode?.arxiv_id));
+    let sourceUrl: string | null = null;
+    if (basis === "arxiv_html") {
+      const ax = arxivHtmlIdFromRationale(rationale) ?? str(dstNode?.arxiv_id);
+      sourceUrl = ax ? `https://arxiv.org/html/${ax}` : null;
+    } else if (basis === "s2_context" || basis === "llm") {
+      sourceUrl = dstLinks.semantic_scholar ?? null;
+    } else if (basis === "citing_abstract") {
+      sourceUrl = dstLinks.arxiv ?? dstLinks.doi ?? dstLinks.openalex ?? null;
+    }
     relations.push({
       src,
       dst,
@@ -312,7 +403,9 @@ export function buildAuditDraft(options: BuildAuditDraftOptions): AuditDraft {
       method: str(classification.method),
       model: str(classification.model),
       rationale,
-      quote: quoteFromRationale(rationale),
+      quote,
+      basis,
+      source_url: sourceUrl,
       flags,
       verdict: null,
       corrected_relation: null,
@@ -363,12 +456,101 @@ function assessmentJa(a: Assessment | null): string {
   return a === "looks_right" ? "妥当" : a === "doubtful" ? "**要確認**" : "—";
 }
 
+export interface ProjectedOutcome {
+  /** Items with neither a verdict nor a suggestion. */
+  unset: number;
+  off_topic: string[];
+  focus_off_topic: string[];
+  metadata_wrong: string[];
+  wrong_relations: string[];
+  /** Off-topic share of the sample the import would write (negatives are always sampled). */
+  sample_off_topic_rate: number;
+  /** Would `golden_fixture` pass if the verdicts (or, where unset, the suggestions) were imported? */
+  passes: boolean;
+  reasons: string[];
+}
+
+/**
+ * Projects the fixture outcome from the draft: each item's verdict, or its
+ * suggestion when the verdict is unset. Mirrors the builder's fixture rules
+ * (focus on topic, sample off-topic share <= 10%, no metadata_ok=false, no
+ * wrong strong edge); the import's dry run stays the authority.
+ */
+export function projectOutcome(draft: AuditDraft): ProjectedOutcome {
+  let unset = 0;
+  const offTopic: string[] = [];
+  const focusOff: string[] = [];
+  const metaWrong: string[] = [];
+  for (const n of draft.nodes) {
+    const onTopic = n.on_topic ?? n.suggestion.on_topic;
+    const metaOk = n.metadata_ok ?? n.suggestion.metadata_ok;
+    if (onTopic === null || metaOk === null) unset += 1;
+    if (onTopic === false) {
+      offTopic.push(n.node_id);
+      if (n.is_focus) focusOff.push(n.node_id);
+    }
+    if (metaOk === false) metaWrong.push(n.node_id);
+  }
+  const wrong: string[] = [];
+  for (const r of draft.relations) {
+    const verdict = r.verdict ?? r.suggestion.verdict;
+    if (verdict === null) unset += 1;
+    if (verdict === "wrong") wrong.push(`${r.src}->${r.dst}:${r.relation}`);
+  }
+  const sampleSize = Math.min(SAMPLE_LIMIT, draft.nodes.length);
+  const rate = sampleSize > 0 ? Math.min(offTopic.length, sampleSize) / sampleSize : 0;
+  const reasons: string[] = [];
+  if (unset > 0) reasons.push(`未記入 ${unset} 件`);
+  if (focusOff.length > 0) reasons.push(`テーマ外のフォーカス論文 ${focusOff.length} 件`);
+  if (rate > 0.1) reasons.push(`標本のテーマ外の割合 ${(rate * 100).toFixed(1)}%（基準 10% 以下）`);
+  if (metaWrong.length > 0) reasons.push(`書誌の誤り ${metaWrong.length} 件`);
+  if (wrong.length > 0) reasons.push(`誤りの関係 ${wrong.length} 件`);
+  return {
+    unset,
+    off_topic: offTopic,
+    focus_off_topic: focusOff,
+    metadata_wrong: metaWrong,
+    wrong_relations: wrong,
+    sample_off_topic_rate: rate,
+    passes: reasons.length === 0,
+    reasons,
+  };
+}
+
+function countBy<T>(items: readonly T[], key: (item: T) => string): string {
+  const counts = new Map<string, number>();
+  for (const item of items) counts.set(key(item), (counts.get(key(item)) ?? 0) + 1);
+  return [...counts.entries()].map(([k, v]) => `${k} ${v}`).join("・") || "なし";
+}
+
 /** Renders a draft as the Japanese Markdown sheet the auditor reads. */
 export function renderAuditSheet(draft: AuditDraft): string {
   const lines: string[] = [];
   const doubtfulNodes = draft.nodes.filter((n) => n.suggestion.assessment === "doubtful");
   const doubtfulRels = draft.relations.filter((r) => r.suggestion.assessment === "doubtful");
+  const outcome = projectOutcome(draft);
   lines.push(`# 監査シート: ${draft.theme}（${draft.collection_id}）`);
+  lines.push("");
+  lines.push("## まとめ");
+  lines.push("");
+  lines.push("| 項目 | 件数 |");
+  lines.push("|---|---|");
+  lines.push(
+    `| ノード | ${draft.nodes.length}（フォーカス ${draft.nodes.filter((n) => n.is_focus).length}・サーベイらしい ${draft.nodes.filter((n) => n.survey_like).length}・掲載先を DBLP で補正 ${draft.nodes.filter((n) => n.venue_source === "dblp").length}） |`,
+  );
+  lines.push(
+    `| 強い関係 | ${draft.relations.length}（${countBy(draft.relations, (r) => r.relation)}） |`,
+  );
+  lines.push(
+    `| 強い関係の根拠 | ${countBy(draft.relations, (r) => EVIDENCE_BASIS_JA[r.basis] ?? r.basis)} |`,
+  );
+  lines.push(`| 第二審査で要確認 | ノード ${doubtfulNodes.length}・関係 ${doubtfulRels.length} |`);
+  lines.push(
+    `| 見立てでテーマ外 / 書誌の誤り / 関係の誤り | ${outcome.off_topic.length} / ${outcome.metadata_wrong.length} / ${outcome.wrong_relations.length} |`,
+  );
+  lines.push(
+    `| 見立てをすべて採用したときの監査記録 | ${outcome.passes ? `**合格**（監査済みになる見込み。標本のテーマ外の割合 ${(outcome.sample_off_topic_rate * 100).toFixed(1)}%）` : `**不合格**（${outcome.reasons.join("、")}）`} |`,
+  );
   lines.push("");
   lines.push(`- 対象: \`${draft.lineage_path}\``);
   lines.push(
@@ -402,7 +584,7 @@ export function renderAuditSheet(draft: AuditDraft): string {
           ? `誤り → ${r.suggestion.corrected_relation ?? "関係なし"}`
           : "種類は正しいが根拠が弱い";
       lines.push(
-        `- R${i + 1} \`${r.relation}\` 「${md(shortTitle(r.src_title))}」→「${md(shortTitle(r.dst_title))}」: ${fix}`,
+        `- R${i + 1} \`${r.relation}\` 「${md(shortTitle(r.src_title))}」→「${md(shortTitle(r.dst_title))}」（${EVIDENCE_BASIS_JA[r.basis] ?? r.basis}）: ${fix}。${md(r.suggestion.reason)}`,
       );
     });
   }
@@ -433,7 +615,7 @@ export function renderAuditSheet(draft: AuditDraft): string {
     const links = Object.entries(n.links)
       .map(
         ([k, v]) =>
-          `[${k === "semantic_scholar" ? "S2" : k === "openalex" ? "OpenAlex" : k === "doi" ? "DOI" : "arXiv"}](${v})`,
+          `[${k === "semantic_scholar" ? "S2" : k === "openalex" ? "OpenAlex" : k === "doi" ? "DOI" : k === "dblp" ? "DBLP" : "arXiv"}](${v})`,
       )
       .join(" ");
     const suggested =
@@ -441,7 +623,7 @@ export function renderAuditSheet(draft: AuditDraft): string {
         ? "—"
         : `${assessmentJa(n.suggestion.assessment)}（テーマ内: ${yesNo(n.suggestion.on_topic)}、書誌: ${yesNo(n.suggestion.metadata_ok)}）`;
     lines.push(
-      `| ${i + 1} | ${md(n.title)}${marks ? ` 〔${marks}〕` : ""}<br>\`${n.node_id}\` | ${n.year ?? "—"} | ${md(authors || "—")} / ${md(n.venue ?? "—")} | ${links || "—"} | ${md(n.why_included)} | ${suggested} | ${md(n.suggestion.reason || "")} |`,
+      `| ${i + 1} | ${md(n.title)}${marks ? ` 〔${marks}〕` : ""}<br>\`${n.node_id}\` | ${n.year ?? "—"} | ${md(authors || "—")} / ${md(n.venue ?? "—")}${n.venue_source === "dblp" ? "（DBLP）" : ""} | ${links || "—"} | ${md(n.why_included)} | ${suggested} | ${md(n.suggestion.reason || "")} |`,
     );
   });
   lines.push("");
@@ -457,7 +639,10 @@ export function renderAuditSheet(draft: AuditDraft): string {
     lines.push(
       `- 分類: ${r.method ?? "—"}${r.model ? `（${r.model}）` : ""}、確信度 ${r.confidence ?? "—"}`,
     );
-    if (r.quote) lines.push(`- 引用文（Semantic Scholar）: “${md(r.quote)}”`);
+    const basisJa = EVIDENCE_BASIS_JA[r.basis] ?? r.basis;
+    lines.push(`- 根拠: ${basisJa}${r.source_url ? `（[確認](${r.source_url})）` : ""}`);
+    if (r.quote)
+      lines.push(`- ${r.basis === "citing_abstract" ? "要旨" : "引用文"}: “${md(r.quote)}”`);
     lines.push(`- 理由欄: ${md(r.rationale || "—")}`);
     if (r.flags.length > 0) lines.push(`- 自動の注意: ${r.flags.join("・")}`);
     if (r.suggestion.assessment !== null) {
@@ -472,6 +657,76 @@ export function renderAuditSheet(draft: AuditDraft): string {
     lines.push("");
   });
   return `${lines.join("\n")}\n`;
+}
+
+// ---------------------------------------------------------------------------
+// Suggestions: a second reviewer's preliminary calls, merged into a draft
+// ---------------------------------------------------------------------------
+
+export interface SuggestionsFile {
+  nodes?: Record<string, Partial<NodeSuggestion>>;
+  /** Keyed by `<src>-><dst>:<relation>`. */
+  relations?: Record<string, Partial<RelationSuggestion>>;
+}
+
+export function relationKey(r: { src: string; dst: string; relation: string }): string {
+  return `${r.src}->${r.dst}:${r.relation}`;
+}
+
+/**
+ * Copies suggestions into a draft (never into verdict fields). Keys that
+ * match no node/relation of the draft are returned in `unknown` (a stale
+ * suggestions file); items without a suggestion are listed in `missing`.
+ */
+export function applySuggestions(
+  draft: AuditDraft,
+  suggestions: SuggestionsFile,
+): { draft: AuditDraft; unknown: string[]; missing: string[] } {
+  const nodeRows = suggestions.nodes ?? {};
+  const relRows = suggestions.relations ?? {};
+  const unknown: string[] = [];
+  const missing: string[] = [];
+  const nodeIds = new Set(draft.nodes.map((n) => n.node_id));
+  const relKeys = new Set(draft.relations.map(relationKey));
+  for (const id of Object.keys(nodeRows)) if (!nodeIds.has(id)) unknown.push(`node:${id}`);
+  for (const key of Object.keys(relRows)) if (!relKeys.has(key)) unknown.push(`relation:${key}`);
+  const nodes = draft.nodes.map((n) => {
+    const row = nodeRows[n.node_id];
+    if (!row) {
+      missing.push(`node:${n.node_id}`);
+      return n;
+    }
+    return {
+      ...n,
+      suggestion: {
+        on_topic: typeof row.on_topic === "boolean" ? row.on_topic : null,
+        metadata_ok: typeof row.metadata_ok === "boolean" ? row.metadata_ok : null,
+        assessment: row.assessment === "doubtful" ? "doubtful" : "looks_right",
+        reason: typeof row.reason === "string" ? row.reason : "",
+      } satisfies NodeSuggestion,
+    };
+  });
+  const relations = draft.relations.map((r) => {
+    const row = relRows[relationKey(r)];
+    if (!row) {
+      missing.push(`relation:${relationKey(r)}`);
+      return r;
+    }
+    const verdict = row.verdict === "correct" || row.verdict === "wrong" ? row.verdict : null;
+    return {
+      ...r,
+      suggestion: {
+        verdict,
+        corrected_relation:
+          verdict === "wrong" && typeof row.corrected_relation === "string"
+            ? row.corrected_relation
+            : null,
+        assessment: row.assessment === "doubtful" ? "doubtful" : "looks_right",
+        reason: typeof row.reason === "string" ? row.reason : "",
+      } satisfies RelationSuggestion,
+    };
+  });
+  return { draft: { ...draft, nodes, relations }, unknown, missing };
 }
 
 // ---------------------------------------------------------------------------
