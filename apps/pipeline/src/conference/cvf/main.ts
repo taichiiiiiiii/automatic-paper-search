@@ -4,6 +4,7 @@
  * CNF-16 of docs/migration/safety-contracts.md).
  */
 
+import { writeSourceLicense } from "../proceedings/sourceLicense.js";
 import {
   type ArxivFetchDeps,
   ORAL_MALFORMED_FEED,
@@ -13,7 +14,13 @@ import {
 } from "../shared/arxivOral.js";
 import { parseCliArgs } from "../shared/cliArgs.js";
 import { type WriteOutputsDeps, writeOutputs } from "../shared/writeOutputs.js";
-import { type CvfFetchDeps, type CvfLogger, collect } from "./fetch.js";
+import {
+  CVF_BASE,
+  type CvfFetchDeps,
+  type CvfLogger,
+  collect,
+  collectListingOnly,
+} from "./fetch.js";
 
 export interface CvfMainDeps {
   cvf: CvfFetchDeps;
@@ -35,6 +42,13 @@ const ARG_SPEC = {
   "oral-arxiv-query": { type: "string" } as const,
   "oral-max": { type: "int", default: ORAL_MAX_RESULTS_DEFAULT } as const,
   "clear-oral": { type: "boolean" } as const,
+  /**
+   * D5=A / design 51 B5: titles, authors and links from the year listing
+   * only (one request, no abstracts — CVF grants no licence). Also writes
+   * `source_license.json`. The default (detail pages + abstracts) is kept
+   * for the frozen Python-parity contract only.
+   */
+  "listing-only": { type: "boolean" } as const,
 };
 
 /**
@@ -55,11 +69,14 @@ export async function runCvfMain(argv: readonly string[], deps: CvfMainDeps): Pr
   const clearOral = Boolean(args["clear-oral"]);
   const print = deps.print ?? ((line: string) => console.log(line));
 
-  const { rows, complete } = await collect(cvfId, venue, deps.cvf, {
-    maxWorkers,
-    delaySeconds,
-    logger: deps.logger,
-  });
+  const listingOnly = Boolean(args["listing-only"]);
+  const { rows, complete } = listingOnly
+    ? await collectListingOnly(cvfId, venue, deps.cvf, { logger: deps.logger })
+    : await collect(cvfId, venue, deps.cvf, {
+        maxWorkers,
+        delaySeconds,
+        logger: deps.logger,
+      });
   print(`collected ${rows.length} ${venue.toUpperCase()} papers from CVF ${cvfId}`);
 
   if (!complete) {
@@ -113,6 +130,24 @@ export async function runCvfMain(argv: readonly string[], deps: CvfMainDeps): Pr
     { outputRoot: deps.outputRoot, clearOral: clearOral && overlayIsKnown },
     { now: deps.now },
   );
+  if (listingOnly) {
+    writeSourceLicense(deps.outputRoot, {
+      schema_version: "conference-source-license-v1",
+      conference,
+      source: "cvf_open_access",
+      collection: `CVF Open Access ${cvfId}`,
+      collection_url: `${CVF_BASE}/${cvfId}?day=all`,
+      license: null,
+      license_url: null,
+      attribution:
+        "Titles and authors from the CVF Open Access repository; copyright retained by the authors. " +
+        "Abstracts are not reproduced — follow the link to read them.",
+      abstracts: "omitted",
+      abstract_basis:
+        'CVF Open Access grants no licence ("Copyright and all rights therein are retained by authors"); design 51 B5.',
+      paper_count: rows.length,
+    });
+  }
   print(
     `✅ ${rows.length} accepted ${venue.toUpperCase()} papers (${orals.length} oral via arXiv) -> ${csvPath}`,
   );

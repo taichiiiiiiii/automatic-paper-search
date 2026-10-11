@@ -23,6 +23,39 @@ export interface OpenReviewNote {
   [key: string]: unknown;
 }
 
+/**
+ * Why a fetch stopped. `source_blocked` is OpenReview refusing automated
+ * clients outright (403, typically `ChallengeRequiredError` — observed for
+ * every `/notes` call since 2026-10, design 52 §2): it is NOT an empty
+ * venue and NOT a short page, so callers must surface it as its own
+ * status and never write (or shrink) a catalog from it.
+ */
+export type FetchNotesOutcome = "complete" | "incomplete" | "source_blocked";
+
+export interface SourceBlocked {
+  status: number;
+  /** The OpenReview error `name` when the body carried one (e.g. `ChallengeRequiredError`). */
+  errorName: string | null;
+}
+
+export interface FetchNotesResult {
+  notes: OpenReviewNote[];
+  complete: boolean;
+  outcome: FetchNotesOutcome;
+  blocked: SourceBlocked | null;
+}
+
+/** Extract the OpenReview error `name` from a 403 body, tolerating any shape. */
+export async function blockedErrorName(resp: { json(): Promise<unknown> }): Promise<string | null> {
+  try {
+    const body = (await resp.json()) as Record<string, unknown> | null;
+    if (body && typeof body === "object" && typeof body.name === "string") return body.name;
+  } catch {
+    // non-JSON 403 (a CDN challenge page): still blocked, just unnamed
+  }
+  return null;
+}
+
 export interface FetchNotesOptions {
   pageSize?: number;
   maxPages?: number;
@@ -45,7 +78,7 @@ export async function fetchNotes(
   venueid: string,
   deps: RequestWithRetryDeps,
   options: FetchNotesOptions = {},
-): Promise<{ notes: OpenReviewNote[]; complete: boolean }> {
+): Promise<FetchNotesResult> {
   const pageSize = options.pageSize ?? PAGE_SIZE_DEFAULT;
   const maxPages = options.maxPages ?? MAX_PAGES_DEFAULT;
   const timeoutMs = options.timeoutMs ?? TIMEOUT_MS_DEFAULT;
@@ -65,8 +98,17 @@ export async function fetchNotes(
       },
       deps,
     );
+    if (resp !== null && resp.status === 403) {
+      // Never a partial catalog: drop whatever earlier pages returned.
+      return {
+        notes: [],
+        complete: false,
+        outcome: "source_blocked",
+        blocked: { status: 403, errorName: await blockedErrorName(resp) },
+      };
+    }
     if (resp === null || resp.status !== 200) {
-      return { notes, complete: false };
+      return incomplete(notes);
     }
     let body: unknown;
     try {
@@ -74,7 +116,7 @@ export async function fetchNotes(
     } catch {
       // 200 with a non-JSON body (maintenance page / proxy error): a
       // genuine mid-run failure, not end-of-results.
-      return { notes, complete: false };
+      return incomplete(notes);
     }
     const bodyObj = body as { notes?: unknown } | null;
     if (
@@ -83,14 +125,18 @@ export async function fetchNotes(
       Array.isArray(bodyObj) ||
       !Array.isArray(bodyObj.notes)
     ) {
-      return { notes, complete: false };
+      return incomplete(notes);
     }
     const batch = bodyObj.notes as OpenReviewNote[];
     notes.push(...batch);
     if (batch.length < pageSize) {
-      return { notes, complete: true };
+      return { notes, complete: true, outcome: "complete", blocked: null };
     }
   }
   // Ran out of maxPages iterations without a short final page.
-  return { notes, complete: false };
+  return incomplete(notes);
+}
+
+function incomplete(notes: OpenReviewNote[]): FetchNotesResult {
+  return { notes, complete: false, outcome: "incomplete", blocked: null };
 }

@@ -177,6 +177,11 @@ export class OpenReviewV2Adapter {
       requestsMade += response.requestCount;
       pagesFetched += 1;
       if (response.statusCode === 404) return errorResult("unavailable", "CONF_SOURCE_UNAVAILABLE");
+      // 403 = OpenReview refuses this client (ChallengeRequiredError since
+      // 2026-10; design 52 §2). `error`, not `unavailable`: the venue may
+      // well exist, and the readiness reducer must keep its state instead
+      // of resetting to "no papers".
+      if (response.statusCode === 403) return errorResult("error", "CONF_SOURCE_BLOCKED");
       if (response.statusCode === 429) return errorResult("error", "CONF_SOURCE_RATE_LIMITED");
       if (response.statusCode !== 200) return errorResult("error", "CONF_SOURCE_HTTP_ERROR");
 
