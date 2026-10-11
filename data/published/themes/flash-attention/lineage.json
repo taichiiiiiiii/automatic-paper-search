@@ -16,7 +16,7 @@
       ],
       "kinds": [],
       "citation_count": 461,
-      "github_stars": 0,
+      "github_stars": 1612,
       "tldr": "Transformers are powerful sequence models, but require time and memory that grows quadratically with the sequence length. In this paper we…",
       "short_abstract": "Transformers are powerful sequence models, but require time and memory that grows quadratically with the sequence length. In this paper we introduce sparse factorizations of the attention matrix which reduce this to $O(n \\sqrt{n})$. We also introduce a) a variation on architecture and initialization to train deeper networks, b) the recomputation of attention matrices to save memory, and c) fast attention kernels for training. We call networks with these changes Sparse Transformers, and show they can model sequences tens of thousands of timesteps long using hundreds of layers. We use the same architecture to model images, audio, and text from raw bytes, setting a new state of the art for density modeling of Enwik8, CIFAR-10, and ImageNet-64. We generate unconditional samples that demonstrate global coherence and great diversity, and show it is possible in principle to use self-attention to model sequences of length one million or more.",
       "arxiv_id": "1904.10509",
@@ -31,6 +31,7 @@
           "10.48550/arxiv.1904.10509"
         ]
       ],
+      "github_url": "https://github.com/openai/sparse_attention",
       "is_focus": false
     },
     {
@@ -65,42 +66,11 @@
       "is_focus": false
     },
     {
-      "id": "openalex:W3015468748",
-      "title": "Longformer: The Long-Document Transformer",
-      "year": 2020,
-      "venue": "arXiv (Cornell University)",
-      "venue_tier": "preprint",
-      "authors": [
-        "Iz Beltagy",
-        "Matthew E. Peters",
-        "Arman Cohan"
-      ],
-      "kinds": [],
-      "citation_count": 2154,
-      "github_stars": 2208,
-      "tldr": "The quadratic complexity of standard attention (O(N²)) remains the dominant bottleneck for training and deploying large language models on…",
-      "short_abstract": "The quadratic complexity of standard attention (O(N²)) remains the dominant bottleneck for training and deploying large language models on long sequences. We introduce Murmurative Attention, a novel attention mechanism that replaces pairwise token-token interactions with token-to-slot interactions over a fixed-size learnable memory pool of M slots, achieving O(N·M) complexity with M ≪ N. The mechanism operates in four phases per round: (1) select — each token hard-selects the top-k relevant slots via dot-product similarity; (2) attend — tokens compute a standard softmax over their selected slots and aggregate their value vectors; (3) update — tokens write back to slots via an exponential moving average; and (4) diffuse — slots exchange information with their neighbors through a tridiagonal discrete Laplace stencil, enabling global information propagation across rounds. We prove that with M = 256 slots and R = 3 rounds, Murmurative Attention achieves identical language modeling…",
-      "arxiv_id": "2004.05150",
-      "doi": "10.48550/arxiv.2004.05150",
-      "aliases": [
-        [
-          "arxiv",
-          "2004.05150"
-        ],
-        [
-          "doi",
-          "10.48550/arxiv.2004.05150"
-        ]
-      ],
-      "github_url": "https://github.com/allenai/longformer",
-      "is_focus": false
-    },
-    {
       "id": "openalex:W3091156754",
       "title": "Rethinking Attention with Performers",
       "year": 2020,
-      "venue": "arXiv (Cornell University)",
-      "venue_tier": "preprint",
+      "venue": "ICLR",
+      "venue_tier": "A+",
       "authors": [
         "Krzysztof Choromański",
         "Valerii Likhosherstov",
@@ -192,8 +162,8 @@
       "id": "openalex:W4281758439",
       "title": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness",
       "year": 2022,
-      "venue": "arXiv (Cornell University)",
-      "venue_tier": "preprint",
+      "venue": "NeurIPS",
+      "venue_tier": "A+",
       "authors": [
         "Dao, Tri",
         "Daniel Y. Fu",
@@ -224,8 +194,8 @@
       "id": "openalex:W4384648639",
       "title": "FlashAttention-2: Faster Attention with Better Parallelism and Work Partitioning",
       "year": 2023,
-      "venue": "arXiv (Cornell University)",
-      "venue_tier": "preprint",
+      "venue": "ICLR",
+      "venue_tier": "A+",
       "authors": [
         "Tri Dao"
       ],
@@ -314,8 +284,8 @@
       "id": "openalex:W4400611982",
       "title": "FlashAttention-3: Fast and Accurate Attention with Asynchrony and Low-precision",
       "year": 2024,
-      "venue": "arXiv (Cornell University)",
-      "venue_tier": "preprint",
+      "venue": "NeurIPS",
+      "venue_tier": "A+",
       "authors": [
         "Shah, Jay",
         "Ganesh Bikshandi",
@@ -347,8 +317,8 @@
       "id": "openalex:W4405090274",
       "title": "FlashAttention on a Napkin: A Diagrammatic Approach to Deep Learning IO-Awareness",
       "year": 2024,
-      "venue": "arXiv (Cornell University)",
-      "venue_tier": "preprint",
+      "venue": "Trans. Mach. Learn. Res.",
+      "venue_tier": "A",
       "authors": [
         "Vincent Abbott",
         "Gioele Zardini"
@@ -531,33 +501,6 @@
     },
     {
       "src": "openalex:W2940744433",
-      "dst": "openalex:W3015468748",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.7,
-      "confidence": 0.7,
-      "rationale": "「Longformer」(2020) は 「Generating Long Sequences with …」(2019) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We use two different model sizes, a small (12 layers, 512 hidden size) model as in Dai et al. (2019), and a large (30 layers, 512 hidden size) model as in Child et al. (2019).\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "d24bd067fd0ab8de9d4da14b8e39ed4d975ffb4616ca5a73959418307ca96a11"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W2940744433",
       "dst": "openalex:W3091156754",
       "rel": "baseline_only",
       "relation": "baseline_only",
@@ -711,33 +654,6 @@
         },
         "classification": {
           "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W2997517014",
-      "dst": "openalex:W3015468748",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Longformer: The Long-Document Transformer」(2020) は「Efficient Content-Based Sparse Attention with Routing Trans…」(2021) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-list",
-          "sha256": "dd814d1f63383542d83b515c102c2d9f58735f3d1a60fc77f01ca1fd6d9fd32c"
-        },
-        "classification": {
-          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -927,222 +843,6 @@
         },
         "classification": {
           "method": "api_citation",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3015468748",
-      "dst": "openalex:W3091156754",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「Rethinking Attention with Perfo…」(2020) は 「Longformer」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \", 2020), where locality sensitive hashing is used to group together tokens of similar embeddings), sliding windows (Beltagy et al., 2020), or truncated targeting (Chelba et al.\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "573a96d3a0f9acde536a41659cf3a3f15092a0a480ab340edbb1211378f53312"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3015468748",
-      "dst": "openalex:W3092852584",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.75,
-      "confidence": 0.75,
-      "rationale": "「SMYRF」(2020) は 「Longformer」(2020) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"istance and angular distance respectively, which is not the best objective when dealing with queries and keys with different vector representations and arbitrary norms. To compare with the Longformer [28], we evaluate SMYRF on the Hyperpar…\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "6eddc31d6f39806941f3173dc7b0e6b68292a3a0c69f26e972ce12f8adb85d87"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3015468748",
-      "dst": "openalex:W4281758439",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.75,
-      "confidence": 0.75,
-      "rationale": "「FlashAttention」(2022) は 「Longformer」(2020) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"For sparse attention, we compare against reference implementations of Block-Sparse Attention form OpenAI [12], Longformer[3], and BigBird Attention [96].\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "307f55895378e88be1bb385f36c3a0fe7947d3b5f8890251978e0b5f862a27f0"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3015468748",
-      "dst": "openalex:W4384648639",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「FlashAttention-2」(2023) は 「Longformer」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "884f015a3059bb51d7b661f4e068d051efd3dbc68f97d6f95ec44752e199d05c"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3015468748",
-      "dst": "openalex:W4400611982",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「FlashAttention-3」(2024) は 「Longformer」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "0412a2cbecbde51517d52b6928e3ddbc7460b315696c08953fb1d7529fcb5d44"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3015468748",
-      "dst": "openalex:W4405090274",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「FlashAttention on a Napkin」(2024) は 「Longformer」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Convolution and sliding window attention (Beltagy et al., 2020) use reindexings on weavings.\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "78beb3281e63d924186ce15231adc0820007b66483fe3892c8ad8e479a847249"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3015468748",
-      "dst": "openalex:W4417447635",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「BLASST」(2025) は 「Longformer」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Beyond the above methods, alternative mechanisms include Sliding Window Attention (Beltagy et al., 2020), Linear or Gated Attention (Qiu et al., 2025), and State-Space Models (SSM) (Gu & Dao, 2024).\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "55a3ed540d41283fc253c1a893ba10365c364ac00cde69585a582b91adf86265"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3015468748",
-      "dst": "openalex:W7154502343",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「VFA」(2026) は 「Longformer」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Longformer combines local windowed attention with task-motivated global attention, providing a drop-in sparse replacement for full attention [4].\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "ab54d630c8e04f63ad450db84a34ec4a6ca6ce7e3072f551e6fab3528799c599"
-        },
-        "classification": {
-          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -2061,15 +1761,15 @@
     ],
     "depth": 1,
     "since_year": 2018,
-    "generated_at": "2026-10-11T02:44:46.236000Z",
+    "generated_at": "2026-10-11T08:11:23.564000Z",
     "provenance_breakdown": {
-      "s2_context_rule": 48,
-      "api_citation": 6,
+      "s2_context_rule": 39,
+      "api_citation": 5,
       "title_version": 3
     },
     "completeness": {
       "complete": true,
-      "expansions_attempted": 11,
+      "expansions_attempted": 10,
       "expansions_failed": 0,
       "supplement_failures": []
     },
