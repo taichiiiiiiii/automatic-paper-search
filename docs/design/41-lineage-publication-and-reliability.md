@@ -84,6 +84,7 @@
 | R2-7 | 依頼フォームの公開と、本番での依頼→未監査公開の通し確認 | R2-5・R2-6 の後 |
 | R2-8 | 厳選テーマ（GNN から）の人手監査と「監査済み」公開 | R2-5 の後 |
 | R2-28 | 引用文の追加の出どころ（arXiv HTML）、Crossref の参考文献、DBLP の会場（[47](47-apis-and-oss.md) 推奨 1〜3） | 実装（2026-10-11、ブランチ。既定は off。下の実装メモ） |
+| R2-31 | 第二審査（R2-29）の指摘: Shazeer ← Eigen の contrasts → extends、混ざった OpenAlex 記録（引用の年の逆転）と会議論文の年のずれ | 実装（2026-10-11、ブランチ `roadmap/r2-31-contrast-cue`。下の実装メモ） |
 
 ## 実装メモ（2026-10-10）
 
@@ -340,6 +341,38 @@ R2-22 の後、手作業ラベルで正しい強い関係 31 本のうち残る�
   - 取りこぼしの残り 5 本（LLM なし）: FlashDecoding++ ← FlashAttention（手がかりの文がない）、MMoE ← Eigen・MMoE ← Shazeer（KDD 版のみで arXiv HTML がない）、AdaMV-MoE ← MMoE・AdaMV-MoE ← Expert Choice（引用元の arXiv ID が解決できず HTML を引けない。47 では CVF の PDF の文も背景だけ）。LLM ありではこれに Shazeer ← Eigen（規則と LLM の食い違い）が加わる。MMoE 系は OpenAlex の GROBID XML（鍵と費用が要る、47 §2.2）でしか取れない
   - 「As in Shazeer et al. (2018); Lepikhin et al. (2020), Switch Transformers simplifies …」のような「As in X, 我々の手法は」の型は手がかりにしていない（複数の文献を引くため）
   - DBLP の会場は会議・論文誌の略称（`INFOCOM`・`EuroSys`）で表示される。`venue_tier` の表にない会場は preprint 扱いのまま
+
+## 実装メモ（R2-31、範囲の対比より継承・引用の年の逆転・会議論文の年）
+
+R2-29 の監査の下書き（第二審査）が挙げた生成側の誤り 2 つを直した。D5 と公開の基準は変えていない。LLM は使っていない。
+
+- **「While X …, our <X の使い方> of …」は継承**（`classify/apiRelations.ts`）
+  - 誤り: MoE の Shazeer ← Eigen が contrasts で公開されていた。引用文「While Eigen et al. (2013) uses two stacked MoEs …, our convolutional application of the MoE allows …」を R2-23 の対比の型（「While X …, our …」）で読んでいた。Shazeer らは本文で「Our work builds on this use of MoEs」と書いており、R2-23 のラベルも extends。ただしこの文は Eigen を名指ししない（前の文の「this use」を指す）ため S2 の引用文に入っておらず、規則からは見えない
+  - 規則: 被引用論文を特定できる「While/Whereas X …, 」の文で、主節が「our ＋（2 語まで）＋ application / use / usage / version / variant / instantiation / extension / generalization / adaptation of」（引用元が X と同じものを自分の形で使う）なら、範囲の違いを述べる文として**継承（extends）**にする。次のときは対比のまま: 同じ文に明示の対比（unlike・in contrast to/with・differ(s/ent) from・as opposed to）か置き換え（instead of・rather than・replace）がある、または同じ組の別の文が被引用論文を明示的に対比している（`contrast` が立つ文）か比較を主張している（outperform・compared with・fair comparison などの `phrase_compare`）。理由欄の引用文はその「While …」の文のまま、確信度は対比と同じ 0.7
+  - 「While in BERT the decoder can be trivial …, we found that …」（MAE ← BERT、ラベル contrasts）は主節が「we found」なので対比のまま
+  - **手作業ラベル**: R2-22 の 58 本・R2-23 の 59 本・R2-23 の rule_cases 19 本・R2-28 の 10 組で、LLM なしの適合率 1.00 と強い関係の本数は不変（R2-22 22/31、R2-23 26/32、rule_cases 7/8）。Shazeer ← Eigen の種類がラベル（extends）と一致するようになった。LLM あり（キャッシュの答え）では、規則とキャッシュの答え（builds_on）が一致して強い関係として残るので R2-22 21 → **22**/31、R2-23 25 → **26**/32 に増え、R2-24 の「LLM あり・なしの食い違い 1 本」がなくなった
+  - **広い範囲の確認**（R2-23 で取り直した 97 本の参考文献 5,122 組、規則だけ）: 変わるのは 1 組だけ（Shazeer ← Eigen、contrasts → extends。手作業で正しい）。5,122 組のうち「While/Whereas」の文で contrasts になるのは 2 組（この組と MAE ← BERT）
+  - テスト: `scopeContrastR231.test.ts`（新規。明示の対比・比較・置き換えが勝つこと、MAE ← BERT が変わらないこと）、`cueRecallR223`・`relationPrecisionR222/R223/R224` の期待値を更新
+- **引用の年の逆転と会議論文の年**（`theme/recordChronology.ts`、`build.ts`）
+  - 引用の年の逆転: グラフ内でそのノードを引く論文の年が、ノードの最も早い年（年、または arXiv ID の年が早ければそれ）より 2 年以上前なら「逆転」とする。焦点でないノードは、引く論文の半分以上が逆転し、かつ逆転が 2 本以上か 3 年以上の差のときに**落とす**（辺も落ちる）。それ以外の逆転は印を付けるだけ。焦点のノードは印だけ。`meta.suspect_records` に `chronology_inversion:<逆転数>/<引く論文数>@<最大の差>` として R2-22 の記録と同じ形で入る（同じノードは 1 件にまとめる）。GNN の W4322614756（題名・DOI は 2025 年の GIScience の道路網の論文だが、OpenAlex では 2019〜2021 年の GNN 論文が引く混ざった記録。グラフ内では ARMA（2021）が引く）は `young_high_citations` の印に加えてこれで落ちる。ARMA（TPAMI 2021、arXiv 2019）のように雑誌版の年が遅いノードは arXiv の年で見るので逆転にならない
+  - 会議論文の年: OpenAlex の年が独立した年と**ちょうど 1 年**ずれる会議論文は、その年に直す。出どころは (1) R2-28 の DBLP のキャッシュ（`conf/…` の記録で年があるとき。DBLP を on にした実行だけ）、(2) IEEE の会議論文の DOI が持つ開催年（`10.1109/<会議>.<年>.<番号>`、会場の名前が conference/proceedings/symposium/IJCNN など）。arXiv ID の年がノードの年以前のノード（arXiv が先の論文。GCN: arXiv 2016、ICLR 2017）は直さない。2 年以上のずれは別の版・別の記録なので直さない。直したノードに触れる辺の理由欄の「「題名」(旧年)」も新しい年に書き換え、`meta.year_corrections`（`{id, title, from, to, source}`）に残す。Gori ら「A new model for learning in graph domains」は 2006 → **2005**（DOI `10.1109/ijcnn.2005.1555942`）
+  - DBLP の問い合わせは増やしていない（R2-28 と同じく会場が arXiv などのノードだけ）。会議論文の年を DBLP で確かめるには対象を広げる必要がある（残る課題）
+  - テスト: `recordChronologyR231.test.ts`（公開中の GNN の該当ノード 29 本・辺 35 本を記録した `fixtures/record-chronology-r231.json` から作った写しで確かめる。公開中のファイルそのものは見ない）
+- **4 テーマの試算**（公開中の各辺を本番の LLM なしの経路で通し直し、S2・arXiv HTML はキャッシュから。ネットワークなし。その後でノードの検査と品質表と同じ `themeGateChecks`。作り直す前の版は公開中と完全に一致＝再現の食い違い 0）
+
+| テーマ | ノード 前 → 後 | 辺 前 → 後 | 強い関係 前 → 後 | 自動検査 |
+|---|---|---|---|---|
+| graph-neural-network | 35 → **34**（W4322614756 を落とす。Gori の年 2006 → 2005） | 131 → 130 | 4（extends 4）→ 4 | 合格のまま |
+| mixture-of-experts | 22 → 22 | 67 → 67 | 7（extends 4・contrasts 3）→ 7（**extends 5・contrasts 2**） | 合格のまま |
+| vision-transformer | 21 → 21 | 49 → 49 | 13 → 13 | 合格のまま |
+| flash-attention | 15 → 15 | 47 → 47 | 4 → 4 | 合格のまま |
+
+  - 公開中の 4 テーマに 2 つのノードの検査をかけて引っかかるのは、上の 2 本（W4322614756 を落とす、Gori の年）だけ
+  - OpenAlex からの作り直し（R2-30 の手順、depth 1・seeds 5）は前の版では 4 テーマとも完了したが、後の版は OpenAlex の鍵なしの 1 日の予算が尽きて（`daily budget exhausted`、00:00 UTC に戻る）比べられなかった。CI では鍵があるので影響しない
+- **残る課題**
+  - MoE・GNN を作り直して監査の下書きを作り直す（GNN はテーマ外の M-NMF・ConvE が残る。標本のテーマ外の割合は別に確かめる）
+  - 「Our work builds on this use of MoEs」のように被引用論文を名指ししない継承の文は、S2 の引用文にも arXiv HTML の引用文にも入らない（前後の文が要る）
+  - 会議論文の年の確認を DBLP で広げるか（会場が arXiv 以外のノードも問い合わせる。1 実行の問い合わせの上限内）
 
 ### R2-26 要旨の出典・ライセンスと別論文の要旨（2026-10-11）
 
