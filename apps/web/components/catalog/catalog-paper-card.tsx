@@ -181,7 +181,7 @@ export function CatalogPaperCard({
                   aria-expanded={expanded}
                   aria-controls={abstractId}
                   onClick={() => setExpanded((prev) => !prev)}
-                  className="text-xs font-medium text-accent-strong underline-offset-2 hover:underline"
+                  className="min-h-6 text-xs font-medium text-accent-strong underline-offset-2 hover:underline"
                 >
                   {expanded ? "要旨をたたむ" : "要旨をもっと見る"}
                 </button>
@@ -249,7 +249,8 @@ export function CatalogPaperCard({
                 data-tag={tag}
                 title={`タグ「${tag}」で絞り込む`}
                 onClick={() => onAddTagFromCard(tag)}
-                className={`rounded-full border px-2 py-0.5 text-xs ${
+                // min-h-6: WCAG 2.5.8 target size (24px); was 22px.
+                className={`inline-flex min-h-6 items-center rounded-full border px-2 py-0.5 text-xs ${
                   activeTags.has(tag)
                     ? "border-accent bg-accent/10 text-accent-strong"
                     : "border-rule text-ink-subtle hover:border-rule-strong"
@@ -262,16 +263,18 @@ export function CatalogPaperCard({
         )}
 
         {links.length > 0 && (
-          <div className="mt-2 flex gap-3 text-xs">
+          <div className="mt-2 flex flex-wrap gap-x-3 text-xs">
             {links.map((link) => (
               <a
+                // 24px tall targets (WCAG 2.5.8); the text line is 16px.
+                data-paper-link
                 key={`${link.label}:${link.url}`}
                 href={safeHref(link.url)}
                 target="_blank"
                 rel="noopener"
                 // accent on the selected card's surface-2 background is
                 // 4.17:1 (< 4.5:1 for this 12px text); accent-strong is 7:1+.
-                className={isSelected ? styles.strongLink : undefined}
+                className={`inline-flex min-h-6 items-center ${isSelected ? styles.strongLink : ""}`}
               >
                 {link.label}
               </a>

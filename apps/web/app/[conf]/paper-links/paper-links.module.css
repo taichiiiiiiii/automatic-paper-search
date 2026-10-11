@@ -47,6 +47,15 @@
   color: var(--color-accent);
 }
 
+/* A link inside running text: globals.css's unlayered
+ * `a { text-decoration: none }` beats Tailwind's `underline`, so the
+ * underline (WCAG 1.4.1, axe link-in-text-block) is set here. */
+.inlineLink {
+  color: var(--color-accent-strong);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .status {
   margin: 0.25rem 0 0;
   font-size: 0.75rem;

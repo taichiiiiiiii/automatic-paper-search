@@ -284,7 +284,7 @@ describe("CatalogPaperCard", () => {
     fireEvent.click(close);
     expect(props.onClose).toHaveBeenCalled();
     // Links on the selected (surface-2) card use the 7:1 accent-strong.
-    expect(screen.getByRole("link", { name: "PDF" }).className).toBe(styles.strongLink);
+    expect(screen.getByRole("link", { name: "PDF" }).className).toContain(styles.strongLink);
   });
 
   it("selected + in a published theme: 系譜での位置 links to the focused theme node", () => {

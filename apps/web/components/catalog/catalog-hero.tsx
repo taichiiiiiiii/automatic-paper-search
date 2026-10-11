@@ -40,7 +40,8 @@ export function CatalogHero({
   return (
     <header className="border-b border-rule bg-surface px-4 py-6 sm:px-6">
       <nav aria-label="breadcrumb" className="flex items-center gap-2 text-sm text-ink-muted">
-        <a href={`${BASE_PATH}/`} className="hover:text-accent">
+        {/* accent on the hero's surface background is 4.42:1 (axe). */}
+        <a href={`${BASE_PATH}/`} className={styles.strongLink}>
           PaperPilot
         </a>
         <span aria-hidden="true">/</span>

@@ -53,6 +53,7 @@ import {
   exportFilename,
 } from "../../lib/export-formats";
 import { lookupThemePositions, type ThemePositionIndex } from "../../lib/lineage/theme-position";
+import styles from "./catalog.module.css";
 import { CatalogBackToTop } from "./catalog-back-to-top";
 import { CatalogFilters } from "./catalog-filters";
 import { CatalogHero } from "./catalog-hero";
@@ -715,7 +716,7 @@ export function CatalogApp({
         <div role="alert" className="border-b border-rule bg-oral-bg px-4 py-3 text-sm text-ink">
           <strong>JavaScript が必要です。</strong> 論文一覧の検索 / フィルタは JavaScript
           で動作します。{" "}
-          <a href={paperLinksHref} className="underline">
+          <a href={paperLinksHref} className={styles.strongLink}>
             JavaScript なしの論文リンク一覧
           </a>
           も利用できます。
@@ -867,7 +868,7 @@ export function CatalogApp({
           <li className="flex flex-col items-start gap-2 px-4 py-10 text-sm text-ink-muted sm:px-6">
             <span>{CATALOG_LOAD_ERROR}</span>
             <span className="flex flex-wrap items-center gap-2">
-              <a href={paperLinksHref} className="text-accent hover:text-accent-strong">
+              <a href={paperLinksHref} className={styles.strongLink}>
                 JavaScript なしの論文リンク一覧
               </a>
               から探すか、

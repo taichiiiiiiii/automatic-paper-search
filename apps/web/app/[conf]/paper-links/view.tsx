@@ -96,7 +96,7 @@ export function PaperLinksView({
         </h1>
         <p className="mt-2 text-sm text-ink-muted">
           JavaScript なしで利用できる簡易一覧です。検索・絞り込み・要旨の表示は
-          <Link href={`/${conf}/`} className="text-accent underline hover:text-accent-strong">
+          <Link href={`/${conf}/`} className={styles.inlineLink}>
             {display} の通常版
           </Link>
           で利用できます。
