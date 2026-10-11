@@ -426,6 +426,10 @@
 }
 .creditsList a {
   color: var(--color-accent-strong);
+  /* Links inside running text need more than colour (WCAG 1.4.1, axe
+     link-in-text-block): the global `a` rule removes the underline. */
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 /* Phones: the specimen line moves above its label instead of sharing a
