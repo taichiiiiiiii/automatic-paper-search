@@ -10,7 +10,9 @@ import {
   safeHref,
   type TextSegment,
 } from "../../lib/catalog-text";
+import type { ThemePosition } from "../../lib/lineage/theme-position";
 import styles from "./catalog.module.css";
+import { ThemePositionSection } from "./catalog-theme-position";
 
 export interface FullAbstractState {
   status: "loading" | "ready" | "failed";
@@ -59,6 +61,7 @@ export function CatalogPaperCard({
   fullAbstract,
   pilotLineage,
   pilotLineageHref,
+  themePositions,
   revealIndex,
 }: {
   paper: CatalogPaper;
@@ -71,6 +74,9 @@ export function CatalogPaperCard({
   fullAbstract: FullAbstractState | undefined;
   pilotLineage: PilotLineageStatus | undefined;
   pilotLineageHref: string;
+  /** Design doc 48 P1-3: where this paper sits in published theme
+   * lineages (selected card only; `undefined` while unknown). */
+  themePositions?: readonly ThemePosition[];
   revealIndex: number | null;
 }) {
   const [expanded, setExpanded] = useState(false);
@@ -250,6 +256,9 @@ export function CatalogPaperCard({
           </div>
         )}
 
+        {isSelected && themePositions && themePositions.length > 0 && (
+          <ThemePositionSection positions={themePositions} />
+        )}
         {isSelected && (
           <div className="mt-2 text-xs text-ink-subtle" data-pilot-lineage>
             {pilotLineage === "ready" ? (

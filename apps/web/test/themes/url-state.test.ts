@@ -2,6 +2,7 @@
 // docs/assets/theme.js's readUrlState()/syncUrlState()/loadPrefs()/
 // savePrefs(). All pure (injectable storage) -- no jsdom needed.
 import { describe, expect, it } from "vitest";
+import { DEFAULT_RELATIONS } from "../../lib/themes-tree";
 import {
   loadThemePrefs,
   readTreeUrlState,
@@ -22,7 +23,46 @@ describe("readTreeUrlState", () => {
       hideOrphans: null,
       node: null,
       mainPath: null,
+      focus: null,
+      pathTo: null,
+      view: null,
     });
+  });
+
+  it("reads ?focus= / ?to= / ?view= (design 48 P0-5, P1-3, P1-5)", () => {
+    const s = readTreeUrlState("?focus=openalex%3AW1&to=openalex%3AW2&view=timeline");
+    expect(s.focus).toBe("openalex:W1");
+    expect(s.pathTo).toBe("openalex:W2");
+    expect(s.view).toBe("timeline");
+    expect(readTreeUrlState("?view=bogus").view).toBeNull();
+    expect(readTreeUrlState("?focus=").focus).toBeNull();
+    expect(readTreeUrlState(`?focus=${"x".repeat(301)}`).focus).toBeNull();
+  });
+
+  it("writes focus / to / view only when given, and drops the defaults", () => {
+    const base = {
+      xAxisMode: "rank" as const,
+      yearRange: null,
+      dataYearExtents: null,
+      searchQuery: "",
+      visibleRelations: new Set(DEFAULT_RELATIONS),
+      hideOrphans: true,
+    };
+    const params = new URLSearchParams("theme=gnn&focus=old&to=old2&view=timeline");
+    writeTreeUrlParams(params, base);
+    // Keys absent from the write state leave the params alone.
+    expect(params.get("focus")).toBe("old");
+    expect(params.get("to")).toBe("old2");
+    expect(params.get("view")).toBe("timeline");
+    writeTreeUrlParams(params, { ...base, focus: "a", pathTo: null, view: "tree" });
+    expect(params.get("focus")).toBe("a");
+    expect(params.has("to")).toBe(false);
+    expect(params.has("view")).toBe(false);
+    expect(params.get("theme")).toBe("gnn");
+    writeTreeUrlParams(params, { ...base, focus: null, pathTo: "b", view: "timeline" });
+    expect(params.has("focus")).toBe(false);
+    expect(params.get("to")).toBe("b");
+    expect(params.get("view")).toBe("timeline");
   });
 
   it("accepts ?main=only|off|highlight and ignores anything else (design 48 P0-1)", () => {
