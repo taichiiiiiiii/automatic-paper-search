@@ -19,6 +19,8 @@ import {
   parseState,
   REMINDER_INTERVAL_MS,
   runScheduled,
+  THEME_FEEDS_DAYS,
+  THEME_FEEDS_WORKFLOW_FILE,
   type WatchdogKv,
 } from "../../src/watchdog/scheduled.js";
 
@@ -283,11 +285,16 @@ describe("runScheduled", () => {
     }
   });
 
-  it("dispatches conference-watch.yml on Mondays only", async () => {
+  it("dispatches conference-watch.yml and theme-feeds.yml on Mondays only", async () => {
     const mon = await run({}, { at: MONDAY });
-    expect(dispatches(mon.calls).map((d) => d.workflow)).toEqual([CONFERENCE_WATCH_WORKFLOW_FILE]);
+    expect(dispatches(mon.calls).map((d) => d.workflow)).toEqual([
+      CONFERENCE_WATCH_WORKFLOW_FILE,
+      THEME_FEEDS_WORKFLOW_FILE,
+    ]);
     expect(dispatches(mon.calls)[0]!.body.ref).toBe("develop");
+    expect(dispatches(mon.calls)[1]!.body.inputs).toEqual({ days: THEME_FEEDS_DAYS });
     expect(mon.result.conferenceWatchDispatched).toBe(true);
+    expect(mon.result.themeFeedsDispatched).toBe(true);
   });
 
   it("a page failure dispatches alert.yml once with status=problem; the next run with the same problem is silent", async () => {

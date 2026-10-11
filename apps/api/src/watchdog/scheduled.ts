@@ -36,6 +36,10 @@ export const ALERT_WORKFLOW_FILE = "alert.yml";
 export const CONFERENCE_WATCH_WORKFLOW_FILE = "conference-watch.yml";
 /** UTC weekday (0 = Sunday) on which conference-watch.yml is dispatched. */
 export const CONFERENCE_WATCH_WEEKDAY = 1;
+/** R4-3 per-theme new-paper feeds, dispatched on the same weekday. */
+export const THEME_FEEDS_WORKFLOW_FILE = "theme-feeds.yml";
+/** Window passed to theme-feeds.yml: a week of runs plus OpenAlex's indexing lag. */
+export const THEME_FEEDS_DAYS = "45";
 /** KV key (CONFIG_KV) holding {@link WatchdogState} as JSON. */
 export const KV_KEY_WATCHDOG_STATE = "watchdog_state";
 /** Re-send an unchanged, still-open problem set after this long. */
@@ -164,6 +168,7 @@ export interface ScheduledResult {
   decision: AlertDecision;
   alertDispatched: boolean;
   conferenceWatchDispatched: boolean;
+  themeFeedsDispatched: boolean;
   state: WatchdogState;
 }
 
@@ -219,6 +224,22 @@ export async function runScheduled(
     }
   }
 
+  // R4-3: weekly new-paper feeds (OpenAlex citing works; ~$0.01 a run).
+  let themeFeedsDispatched = false;
+  if (live && new Date(scheduledTime).getUTCDay() === CONFERENCE_WATCH_WEEKDAY) {
+    const r = await dispatchWorkflowFile(deps.fetch, env, THEME_FEEDS_WORKFLOW_FILE, {
+      days: THEME_FEEDS_DAYS,
+    });
+    if (r.ok) {
+      themeFeedsDispatched = true;
+    } else {
+      problems.push({
+        key: "dispatch:theme-feeds",
+        message: `theme-feeds.yml を起動できなかった（${r.detail}）`,
+      });
+    }
+  }
+
   const decision = decideAlert(problems, state, now);
   const next: WatchdogState = {
     ...state,
@@ -245,7 +266,8 @@ export async function runScheduled(
 
   log(
     `watchdog: ${problems.length} problem(s); decision=${decision.action}; ` +
-      `alert=${alertDispatched}; conference-watch=${conferenceWatchDispatched}` +
+      `alert=${alertDispatched}; conference-watch=${conferenceWatchDispatched}; ` +
+      `theme-feeds=${themeFeedsDispatched}` +
       (problems.length ? `\n${problems.map((p) => `  - ${p.key}`).join("\n")}` : ""),
   );
   try {
@@ -253,5 +275,12 @@ export async function runScheduled(
   } catch (error) {
     log(`watchdog: KV write failed: ${String(error)}`);
   }
-  return { problems, decision, alertDispatched, conferenceWatchDispatched, state: next };
+  return {
+    problems,
+    decision,
+    alertDispatched,
+    conferenceWatchDispatched,
+    themeFeedsDispatched,
+    state: next,
+  };
 }

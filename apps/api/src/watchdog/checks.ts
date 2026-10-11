@@ -37,6 +37,7 @@ export const WATCHDOG_WORKFLOWS: readonly string[] = [
   "theme-on-demand.yml",
   "regen-retry.yml",
   "conference-watch.yml",
+  "theme-feeds.yml",
 ];
 
 /** Conclusions of a completed run that are not a problem. */
