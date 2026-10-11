@@ -61,6 +61,7 @@
 - LLM が使えなくても規則の分類が残るので、D3 の分類率は保たれる
 - 表示は段階的に進める。まず今の種類名（extends・contrasts・baseline_only 等）に対応づけ、理由欄に引用文を出す（形式は変えない）。その後 `lineage-artifact-v2` で 5 種類（builds_on・compares_with・uses_resource・background・cites_unspecified）に切り替える
 - Semantic Scholar の無料 API キーはユーザーが申請中（`PAPERPILOT_S2_API_KEY`）。キーがなくても同じデータが取れるが、共有枠で 429 になりやすい
+- R2-24（2026-10-11）: テーマの生成は既定で LLM を使わない（`PAPERPILOT_LINEAGE_LLM=off`）。手がかりのない組は参考文献リストで確認した引用（`api_citation`、baseline_only）になる。下の「実装メモ（R2-24）」
 
 ### D7. テーマ外の判定: 埋め込みと語の一致の併用（根拠は [42](42-topic-relevance-evaluation.md)）
 
@@ -229,3 +230,54 @@ R2-22 の後、手作業ラベルで正しい強い関係 31 本のうち残る�
   - MoE（0.083）・FA（0.074）・GNN（0.023）はまだ基準に届かない。MoE は参考文献が伏せられた論文（MMoE・AdaMV-MoE）と引用文のない組（Switch ← GShard）、FA は版の系列（FA-2/3）以外の辺に継承の文がないことが原因で、規則で拾える裏付けの文は残っていない。基準を下げるか、引用元の本文（arXiv の LaTeX、design 44 §3）から文を取るかは利用者の判断
   - 生成の規則と S2 キャッシュの形が変わったので、テーマを 1 本ずつ作り直してから `theme_min_generated_at` を進める（この作業では進めていない）
   - 文脈から読む手法名が部品の略称を拾うことがある（SwinIR の「Swin Transformer layer (STL) [56]」から「STL」を Swin の名前とみなし、「We show the effects of … STL number」を引用文に選ぶ）。強い関係には影響しないが、背景の辺の引用文の選び方の課題
+
+## 実装メモ（R2-24、LLM なしの系譜生成）
+
+利用者の方針「系譜は LLM なしで、API（Semantic Scholar の引用文・意図・isInfluential、OpenAlex の参考文献、題名の版、基礎文献リスト）で作る」を、テーマ・会議・深掘りの 3 つの生成で選べるようにし、**テーマの既定を LLM なしにした**。D5（強い関係は被引用論文を名指しする手がかりの文が要る）と公開の基準（分類率 0.8、`theme_min_lineage_share` 0.10）は変えていない。新しい LLM 呼び出しはしていない。S2・OpenAlex への新しい問い合わせもしていない（R2-23 で取った作業用キャッシュで試算）。
+
+- **LLM を呼んでいた所**（2026-10-11 の develop）
+
+| 生成 | 呼び出し | 決めていたこと | 前の「LLM なし」の扱い |
+|---|---|---|---|
+| テーマ | 引用文の prompt（`theme/s2Relations.ts`、`relation-prompt-v4-context`、gpt-oss-20b、6 組ずつ）。BFS・被引用側・遅延分・ノード間の辺のすべての組（`bfs.ts::classifyPair`、`applyDeferredS2Relations`） | 規則の extends / contrasts を確かめるか baseline_only に下げるだけ（`mergeContextAnswer`、R2-22 から作ることはできない） | 規則の結果がそのまま残る |
+| テーマ | 要旨の prompt（`llm/base.ts` の `classifyRelation`、`classify.ts::deriveRelation`、`--llm-strict ambiguous` のとき）。S2 に組がない・引用文も意図もない組 | 関係の種類。ただし強い関係は `relationGuard` の規則 0・3 で baseline_only に直るので、実質は「辺を残すか（unrelated・低い確信度なら捨てる）」と、分類率で未分類に数えられないこと | 年と引用の推測 → `citation_heuristic`（未分類）。年が 6 年以上離れた組は辺なし |
+| 会議（`conference/buildLineage.ts`、collect-weekly） | 要旨の prompt（`classifyCachedV2`） | 関係の種類 | 失敗時は `deriveRelation` の推測。鍵がなければ workflow が生成をやめて前回を残す |
+| 深掘り（`deep/buildDeepLineage.ts`） | 要旨の prompt（`completeJson`） | 関係の種類 | 失敗した組は辺なし。鍵がなければ `buildProvider` が投げて生成できない |
+| 会議（OpenAlex 版、`buildConferenceLineage.ts`） | なし | — | すべて `citation_heuristic` の successor 0.4（下の残る課題） |
+
+- **切り替え**: `PAPERPILOT_LINEAGE_LLM=on|off`（`lineage/shared/lineageLlm.ts`、on/off 以外は誤りとして止める）。テーマの CLI は `--lineage-llm on|off` が優先で、無指定は **off**。off のときは `--llm-strict` を無視して（標準エラーに書く）プロバイダを作らない（LLM の鍵が要らない）。会議・深掘りは無指定なら on のまま（評価していないため）で、off のときはプロバイダを作らず S2 の引用文（`s2_references.json` のキャッシュを共有）で分類する。成果物の `meta.lineage_llm` に `off` を記録する
+- **LLM なしの分類**（`theme/noLlmRelation.ts`、テーマの BFS と会議・深掘りで共通）: 題名の版 → S2 の引用文・意図の規則（`deriveS2Relation`、LLM なしなので規則の結果が確定）→ LLM を使わない規則（`deriveRelation`: unarXive の文型・S2 の意図・基礎文献リスト）→ 残りは新しい方式 **`api_citation`**
+  - `api_citation` は「参考文献リストで引用を確認した。関係の種類を述べる引用文はない」という辺で、関係はいつも `baseline_only`（参照/背景）、確信度 0.5、理由欄は「〜は〜を引用している（OpenAlex / Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。」。前の推測（`year_cite` → `citation_heuristic`）と、年が離れていて推測もなかった組（LLM ありなら要旨の prompt に聞いていた組）がこれになる。S2 が影響の小さい引用（`isInfluential: false`）とした組は前と同じく捨てる
+  - 出すのは S2 の問い合わせが答えた組だけ（`citationListSource`）: S2 の参考文献にある組（出どころ Semantic Scholar）、S2 が引用側の参考文献を持つがこの組がない・S2 に引用側がない組（出どころは BFS が取ったリスト、ふつうは OpenAlex）。**S2 にその回つながらなかった組（`fetch-failed`）と、S2 の関係分類を切っているとき（`PAPERPILOT_S2_RELATIONS=off`）は前のまま `citation_heuristic`**。引用文を読んでいないのに読んだように見せないため
+  - 契約・JSON Schema（v1・v2）・web の閉じた集合・監査の内訳に `api_citation` を足した。web の表示名は「参考文献リスト（引用の事実のみ）」
+- **分類率（D3）の数え方**: `api_citation` は「分類済み」に数える。主張は「引用している」だけで、それは参考文献リストという API の記録で裏付けられているので、主張と根拠が合っている。未分類（`citation_heuristic`・`year_cite`）として残るのは、LLM ありで LLM が答えなかった組と、LLM なしで S2 に届かなかった組で、どちらも本当に「読むべき根拠を読めなかった」組。S2 が落ちた回は分類率が下がって生成が止まり（終了コード 5）、前の版が残る。生成時のログに `citation-only (api_citation)=N` と `lineage-llm: off — api_citation=…, s2_unreachable=…` を出す（`ClassifiedRate.referenceOnly`）。系譜として意味のある関係が少ないグラフは、これまでどおり `lineage_relation_share` が止める
+- **引用文の LLM の下げを規則で置き換え**: R2-22 で LLM の下げが正しかった 2 本のうち、VR-GCN ← GraphSAGE は R2-23 の規則（「subsample … following Hamilton et al.」などの設定の踏襲）で既に baseline_only。Hash Layers ← BASE Layers は「we adopt the BASE Layer setup [10] and code base」が `we … adopt` の継承の手がかりに当たっていたので、**他の研究の実験設定・コードベースを使う文**（`adopt/use/reuse/borrow … setup / code base / experimental setting`）を否定の手がかり（`phrase_protocol`）に足した。再取得した参考文献 5,122 組で規則だけを比べると、変わるのはこの 1 組だけ
+- **手作業ラベルでの比較**（`relationPrecisionR224.test.ts`。強い関係の適合率・再現率。「LLM あり」はキャッシュの引用文 LLM の答えを使う本番の経路）
+
+| ラベル | LLM あり | LLM なし（R2-24 の規則） | LLM なし（規則の追加前） |
+|---|---|---|---|
+| R2-22 の 58 本 | 21/21（1.00）、再現率 21/31 | 22/22（1.00）、22/31 | 22/23（0.96、Hash Layers が誤り） |
+| R2-23 の 59 本 | 25/25（1.00）、25/32 | 26/26（1.00）、26/32 | 26/27（0.96） |
+| R2-23 の rule_cases 19 本 | 7/8（MAE の 1 本が誤り）、7/7 | 同じ | 同じ |
+
+  - 違いは Shazeer ← Eigen の 1 本だけ: 規則は「While Eigen et al. (2013) uses two stacked MoEs …, our convolutional application of the MoE allows …」を名指しの対比として contrasts にする。LLM ありではキャッシュの答え（extends）と食い違うので baseline_only だった。手作業ラベルは強い関係（種類は extends）なので強い関係としては正しいが、**種類は一致しない**（種類まで合う数は LLM あり・なしとも 24）。監査では種類の違いとして見つかる
+- **4 テーマの試算**（公開中の各辺を通し直し、品質表と同じ `themeGateChecks`。R2-23 で 12 本に取り直した S2 キャッシュと要旨、落とすレコードを除く。「LLM あり」は今の develop の規則＋キャッシュの答え、R2-24 の規則でも同じ数）
+
+| テーマ | 強い関係 LLM あり → なし | lineage_relation_share | 分類率 | 今の基準での公開（LLM なし） |
+|---|---|---|---|---|
+| graph-neural-network（129 辺） | 3 → 4 | 0.023 → 0.031 | 0.953 → 1.00 | 非公開のまま（関係の割合） |
+| mixture-of-experts（60 辺） | 5 → 6 | 0.083 → 0.100 | 0.850 → 1.00 | 未監査で公開（ちょうど基準） |
+| vision-transformer（49 辺） | 13 → 13 | 0.265 → 0.265 | 0.878 → 1.00 | 未監査で公開（変わらず） |
+| flash-attention（54 辺） | 4 → 4 | 0.074 → 0.074 | 0.944 → 1.00 | 非公開のまま（関係の割合） |
+
+  - 強い関係の違いは 2 本: GNN の MoNet ← DCNN（規則の extends「… GCN [26] and DCNN [2] on graphs as particular instances of our approach」。キャッシュの LLM が「利用している」として下げていたが、手作業ラベルは extends で正しい）と、MoE の Shazeer ← Eigen（上の contrasts。種類は手作業ラベルと違う）。MoE が基準ちょうどに届くのはこの 1 本による
+  - 方式の内訳（LLM なし）: GNN は `s2_context_rule` 117・`api_citation` 26（S2 にある組 8、S2 の参考文献に無い組 18）、MoE は 39・21、ViT は 36・7（ほかに基礎文献 5・題名の版 1）、FA は 48・3（題名の版 3）。LLM ありで要旨の LLM の答えだった辺と `citation_heuristic`（GNN 16・MoE 9・ViT 6・FA 3）はすべて `api_citation` に、引用文 LLM の答えだった辺は規則の結果になった（LLM ありの `llm` は GNN 11・MoE 16・ViT 1）
+  - 試算は公開中の辺の集合のまま。本番の LLM なしの生成では、LLM ありなら要旨の LLM が捨てていた組（unrelated と答えた組）も `api_citation` として残るので、辺は少し増えうる（試算できない）。試算では S2 に届かない組がないので分類率は 1.00 だが、本番で S2 が 429 で落ちた組は `citation_heuristic` のままになる
+- **workflow**: regen-themes.yml と theme-on-demand.yml の生成の段に `PAPERPILOT_LINEAGE_LLM: ${{ vars.PAPERPILOT_LINEAGE_LLM || 'off' }}` を置いた。LLM の鍵（Groq・Gemini）は env に残るが、off では読まれないので登録がなくても動く。リポジトリ変数を `on` にすれば前の LLM の経路に戻る。`--result-json` に `lineage_llm` を足し、`regenPending.ts` は `lineage_llm: off` の回を上限切れとして記録しない（off では LLM の上限に当たらないので、regen-retry.yml は何も再実行しない）。collect-weekly.yml の会議の系譜は `vars.PAPERPILOT_CONFERENCE_LINEAGE_LLM || 'on'`（既定は今まで通り）で、off のときは「LLM の鍵がなければ生成しない」見張りを飛ばし、S2 の鍵を渡す
+- **テスト**: `noLlmRelation.test.ts`（`api_citation` の形・契約・分類率、出してよい条件、BFS での振る舞い）、`noLlmBuilders.test.ts`（会議・深掘りでプロバイダを作らない、引用文の規則と `api_citation`）、`relationPrecisionR224.test.ts`（上の表、Hash Layers の規則）、`classificationGate.test.ts`（CLI の既定・環境変数・誤記、regen-pending）、`build.test.ts`（off でプロバイダを作らない、S2 なしなら分類率で止まる）、workflow の env
+- **残る課題**
+  - 生成の規則が変わったので、テーマを 1 本ずつ LLM なしで作り直して確かめ、そのあと `theme_min_generated_at` を進める（この作業では作り直しも時刻の変更もしていない）
+  - MoE が基準に届くのは種類の食い違う Shazeer ← Eigen の contrasts による。監査で種類が違うと判定されれば監査は通らない（作り直しが要る）
+  - 会議・深掘りの既定は LLM ありのまま。LLM なしにするには会議の系譜を 1 つ作り直して比べる（S2 の参考文献を引用側ごとに 1 回引くので、鍵なしでは時間がかかる）
+  - OpenAlex 版の会議の系譜（`buildConferenceLineage.ts`）は根拠なしに successor 0.4 を出している。`api_citation`（baseline_only）に変えるのが筋だが、公開中の会議の成果物が変わるので別の作業にする
+
