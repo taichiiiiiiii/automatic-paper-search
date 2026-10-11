@@ -37,6 +37,7 @@ import {
   fetchThemesManifest,
   pollThemeQualityOutcome,
 } from "../../lib/data-themes";
+import { PRIVACY_PATH } from "../../lib/site-links";
 import {
   failureFromRun,
   interpretThemesPostResponse,
@@ -54,6 +55,7 @@ import {
   safeRunUrl,
   THEME_QUEUED_MESSAGE,
   THEME_REQUEST_HINT,
+  THEME_REQUEST_PUBLIC_NOTICE,
   themeInputProblem,
 } from "../../lib/themes-request";
 import { THEME_INPUT_PATTERN } from "../../lib/themes-slug";
@@ -497,7 +499,7 @@ export function ThemeRequestForm({ onReady }: { onReady: (slug: string) => void 
           pattern="[A-Za-z0-9 _\-]+"
           lang="en"
           placeholder="例: Vision Transformer / Graph Neural Network"
-          aria-describedby="theme-request-hint"
+          aria-describedby="theme-request-hint theme-request-public-notice"
           aria-invalid={status.kind === "err" ? true : undefined}
           autoComplete="off"
           value={rawInput}
@@ -523,6 +525,12 @@ export function ThemeRequestForm({ onReady }: { onReady: (slug: string) => void 
       </div>
       <span id="theme-request-hint" className="text-xs text-ink-subtle">
         {THEME_REQUEST_HINT}
+      </span>
+      <span id="theme-request-public-notice" className="text-xs text-ink-subtle">
+        {THEME_REQUEST_PUBLIC_NOTICE}{" "}
+        {/* Plain <a>, not next/link: a Link here schedules a prefetch timer on
+            every re-render, which the M4 "no stale timer" contract forbids. */}
+        <a href={PRIVACY_PATH}>プライバシー</a>
       </span>
       {status.kind === "pending" && (
         <p role="status" className="text-sm text-ink-subtle">

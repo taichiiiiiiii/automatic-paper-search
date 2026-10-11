@@ -165,9 +165,13 @@ describe("built /how-it-works/ page parity with docs/how-it-works/index.html", (
   const legacy = read(LEGACY_PAGE);
 
   it.skipIf(!existsSync(BUILT_PAGE))(
-    "renders the same headings in the same order, plus 出典とライセンス last",
+    "renders the same headings in the same order, plus 出典とライセンス and プライバシーと削除依頼 last",
     () => {
-      expect(headings(read(BUILT_PAGE))).toEqual([...headings(legacy), "出典とライセンス"]);
+      expect(headings(read(BUILT_PAGE))).toEqual([
+        ...headings(legacy),
+        "出典とライセンス",
+        "プライバシーと削除依頼",
+      ]);
     },
   );
 
@@ -253,6 +257,48 @@ describe("built /how-it-works/ page parity with docs/how-it-works/index.html", (
       expect(built).toContain("推奨・承認を受けたものでもありません");
       expect(built).toContain("約300字");
       expect(html).toContain("https://github.com/taichiiiiiiii/automatic-paper-search/issues");
+    },
+  );
+
+  it.skipIf(!existsSync(BUILT_PAGE))(
+    "lists the catalog sources, the code/data licenses and the private removal route (R2-27)",
+    () => {
+      const html = read(BUILT_PAGE);
+      const built = plainText(html);
+      expect(built).toContain("OpenReview");
+      expect(built).toContain("CCBY4.0");
+      expect(built).toContain("CVFOpenAccess");
+      expect(built).toContain("著作権が著者に留保されています");
+      expect(built).toContain("MITライセンスです");
+      expect(html).toContain(
+        "https://github.com/taichiiiiiiii/automatic-paper-search/blob/develop/NOTICE.md",
+      );
+      expect(html).toContain(
+        "https://github.com/taichiiiiiiii/automatic-paper-search/security/advisories/new",
+      );
+    },
+  );
+
+  it.skipIf(!existsSync(BUILT_PAGE))(
+    "has a プライバシー section matching what the code collects (R2-27, design 51 §6)",
+    () => {
+      const html = read(BUILT_PAGE);
+      expect(html).toContain('id="privacy"');
+      const built = plainText(html);
+      // Theme text is public (workflow input + committed artifact).
+      expect(built).toContain("入力したテーマ名は");
+      expect(built).toContain("公開リポジトリに残ります");
+      // apps/api QuotaLedger.sweepExpired deletes per-IP buckets after 1 h.
+      expect(built).toContain("約1時間で削除します");
+      expect(built).toContain("Cloudflare（米国）");
+      expect(built).toContain("最大7日");
+      expect(built).toContain("Cookie、アクセス解析、広告のタグは使っていません");
+      expect(built).toContain("localStorage");
+      expect(built).toContain("公開されている書誌データ");
+      expect(built).toContain("3営業日以内");
+      expect(html).toContain(
+        "https://github.com/taichiiiiiiii/automatic-paper-search/blob/develop/docs/policy/takedown.md",
+      );
     },
   );
 
