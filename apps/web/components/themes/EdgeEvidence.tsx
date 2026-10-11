@@ -16,7 +16,9 @@
 import { forwardRef } from "react";
 import {
   ABSTRACT_SOURCE_LABEL,
-  methodLabelJa,
+  ARXIV_HTML_SOURCE_LABEL,
+  arxivHtmlSourceOf,
+  edgeMethodLabelJa,
   paperLink,
   parseEdgeEvidence,
   QUOTE_SOURCE_LABEL,
@@ -88,7 +90,7 @@ function EvidenceBody({
         </dd>
         <dt className="text-ink-subtle">判定方法</dt>
         <dd className="text-ink-muted" data-evidence-method={method ?? ""}>
-          {methodLabelJa(method)}
+          {edgeMethodLabelJa(method, edge.rationale)}
         </dd>
         <dt className="text-ink-subtle">確信度</dt>
         <dd className="font-mono text-ink-muted">{edge.confidence.toFixed(2)}</dd>
@@ -114,6 +116,19 @@ function EvidenceBody({
                 {titleOf(dst, edge.dst)}
               </a>
               の要旨より 1 文を引用）
+            </figcaption>
+          ) : quoteSource === "arxiv-html" ? (
+            <figcaption className="mt-1 text-xs text-ink-subtle" data-quote-source="arxiv-html">
+              出典: {ARXIV_HTML_SOURCE_LABEL}（
+              <a
+                href={`https://arxiv.org/html/${arxivHtmlSourceOf(edge.rationale)?.id ?? ""}${arxivHtmlSourceOf(edge.rationale)?.version ?? ""}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-accent underline"
+              >
+                {titleOf(dst, edge.dst)}
+              </a>
+              の本文より 1 文を引用）
             </figcaption>
           ) : (
             <figcaption className="mt-1 text-xs text-ink-subtle">
@@ -229,7 +244,9 @@ export function EdgeRelationList({
                   {quote ? "（引用文あり）" : ""}
                 </p>
                 <div className="flex flex-wrap items-center gap-3 text-xs text-ink-subtle">
-                  <span>判定方法: {methodLabelJa(e.provenance?.classification?.method)}</span>
+                  <span>
+                    判定方法: {edgeMethodLabelJa(e.provenance?.classification?.method, e.rationale)}
+                  </span>
                   <span>確信度 {e.confidence.toFixed(2)}</span>
                   <button
                     type="button"

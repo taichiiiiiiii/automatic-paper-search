@@ -1,7 +1,10 @@
 // R2 UX P0-2: pure helpers behind the theme evidence panel / relation list.
 import { describe, expect, it } from "vitest";
 import {
+  ARXIV_HTML_METHOD_LABEL,
+  arxivHtmlSourceOf,
   clipQuote,
+  edgeMethodLabelJa,
   MAX_QUOTE_CHARS,
   METHOD_LABEL_FALLBACK,
   methodLabelJa,
@@ -15,6 +18,18 @@ const S2_RATIONALE =
   '「PVT v2: Improved baselines with pyramid vision tr…」(2022) は 「Tokens-to-Token ViT: Training Vision Transformers…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: "T2T ViT [37] con-catenates tokens within an overlapping sliding window into one token progressively."';
 
 describe("parseEdgeEvidence", () => {
+  it("R2-28: labels a quote taken from the citing paper's arXiv HTML", () => {
+    const r =
+      '「Switch Transformers」(2021) は 「GShard」(2020) を土台にしている（arXiv HTML（arXiv:2101.03961v3）の本文の引用文から規則で判定）。引用文: "Lepikhin et al. (2020) adapts a Mixture-of-Expert model … which we also follow."';
+    const ev = parseEdgeEvidence(r);
+    expect(ev.quoteSource).toBe("arxiv-html");
+    expect(ev.quote).toContain("which we also follow");
+    expect(arxivHtmlSourceOf(r)).toEqual({ id: "2101.03961", version: "v3" });
+    expect(edgeMethodLabelJa("s2_context_rule", r)).toBe(ARXIV_HTML_METHOD_LABEL);
+    expect(edgeMethodLabelJa("s2_context_rule", S2_RATIONALE)).toBe("Semantic Scholar の引用文");
+    expect(arxivHtmlSourceOf(S2_RATIONALE)).toBeNull();
+  });
+
   it("R2-23: tells a citation-context quote from a citing-abstract quote (要旨)", () => {
     expect(parseEdgeEvidence(S2_RATIONALE).quoteSource).toBe("citation-context");
     const abs = parseEdgeEvidence(
