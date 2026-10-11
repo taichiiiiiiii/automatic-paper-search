@@ -117,9 +117,10 @@ describe("Prior / Derivative panel (P0-5)", () => {
     expect(
       panel().querySelector("[data-neighbor-selected]")?.getAttribute("data-neighbor-selected"),
     ).toBe("b");
-    // The selected card gets a ring.
-    const card = document.querySelector('g[data-node-id="b"] a') as HTMLElement;
+    // The selected card gets a ring (the card is a button since the UX audit).
+    const card = document.querySelector('g[data-node-id="b"] [data-node-card]') as HTMLElement;
     expect(card.className).toContain("ring-2");
+    expect(card.getAttribute("aria-pressed")).toBe("true");
 
     const evidence = side("derivative").querySelector("[data-neighbor-evidence]") as HTMLElement;
     fireEvent.click(evidence);
@@ -182,7 +183,9 @@ describe("year × citation timeline (P1-5)", () => {
     expect(svg.getAttribute("style")).toBeNull();
     expect(window.location.search).toContain("view=timeline");
 
-    const dot = svg.querySelector('[data-timeline-node="d"] circle') as SVGCircleElement;
+    const dot = svg.querySelector(
+      '[data-timeline-node="d"] circle[role="button"]',
+    ) as SVGCircleElement;
     fireEvent.click(dot);
     expect(
       panel().querySelector("[data-neighbor-selected]")?.getAttribute("data-neighbor-selected"),

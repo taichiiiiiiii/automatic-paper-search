@@ -68,7 +68,7 @@ export function ReportEdgeLink({
       rel="noopener noreferrer"
       data-report-edge
       title="GitHub の Issue を開きます（GitHub のアカウントが必要です）"
-      className="text-accent underline"
+      className="text-accent-strong underline"
     >
       誤りを報告
     </a>
@@ -97,12 +97,17 @@ function PaperLinks({ node, id }: { node: LineageNode | undefined; id: string })
         href={primary.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-accent underline"
+        className="text-accent-strong underline"
       >
         {primary.label}
       </a>
       {primary.label !== "Semantic Scholar" && (
-        <a href={s2} target="_blank" rel="noopener noreferrer" className="text-accent underline">
+        <a
+          href={s2}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-accent-strong underline"
+        >
           Semantic Scholar
         </a>
       )}
@@ -167,7 +172,7 @@ function EvidenceBody({
                 href={dst ? paperLink(dst).url : "https://www.semanticscholar.org/"}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-accent underline"
+                className="text-accent-strong underline"
               >
                 {titleOf(dst, edge.dst)}
               </a>
@@ -180,7 +185,7 @@ function EvidenceBody({
                 href={`https://arxiv.org/html/${arxivHtmlSourceOf(edge.rationale)?.id ?? ""}${arxivHtmlSourceOf(edge.rationale)?.version ?? ""}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-accent underline"
+                className="text-accent-strong underline"
               >
                 {titleOf(dst, edge.dst)}
               </a>
@@ -193,7 +198,7 @@ function EvidenceBody({
                 href={dst ? semanticScholarUrl(dst) : "https://www.semanticscholar.org/"}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-accent underline"
+                className="text-accent-strong underline"
               >
                 {titleOf(dst, edge.dst)}
               </a>
@@ -219,10 +224,14 @@ export const EdgeEvidencePanel = forwardRef<
   }
 >(function EdgeEvidencePanel({ edge, nodeById, onClose, theme, onMainPath }, ref) {
   return (
+    // On a phone the panel is a bottom sheet over the tree (the reader
+    // keeps the graph in view and closes it with ✕ / Esc); from `sm` up it
+    // sits inline right under the graph. Non-modal, so no focus trap: focus
+    // moves to the heading on open and back to the opener on close.
     <section
       aria-labelledby="edge-evidence-title"
       data-testid="edge-evidence-panel"
-      className="mt-3 rounded-md border border-accent bg-surface-elevated p-3"
+      className="fixed inset-x-0 bottom-0 z-40 max-h-[65vh] overflow-y-auto rounded-t-lg border-t-2 border-accent bg-surface-elevated p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-8px_24px_rgba(20,15,10,0.18)] sm:static sm:z-auto sm:mt-3 sm:max-h-none sm:overflow-visible sm:rounded-md sm:border-2 sm:pb-3 sm:shadow-none"
       onKeyDown={(e) => {
         if (e.key === "Escape") {
           e.stopPropagation();
@@ -243,7 +252,7 @@ export const EdgeEvidencePanel = forwardRef<
           type="button"
           onClick={onClose}
           aria-label="根拠パネルを閉じる"
-          className="rounded-md border border-rule px-2 py-1 text-xs text-ink-muted hover:border-rule-strong"
+          className="inline-flex min-h-9 shrink-0 items-center rounded-md border border-rule px-3 py-1 text-xs text-ink-muted hover:border-rule-strong"
         >
           閉じる ✕
         </button>
@@ -333,7 +342,7 @@ export function EdgeRelationList({
                     type="button"
                     aria-pressed={selectedKey === key}
                     onClick={() => onSelect(key)}
-                    className="text-accent underline"
+                    className="-my-1 py-1 text-accent-strong underline"
                   >
                     根拠を表示
                   </button>

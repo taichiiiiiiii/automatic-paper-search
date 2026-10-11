@@ -132,7 +132,7 @@ function NeighborList({
                     type="button"
                     onClick={() => onShowEvidence(edgeKey(item.edge))}
                     data-neighbor-evidence
-                    className="text-accent underline"
+                    className="-my-1 py-1 text-accent-strong underline"
                   >
                     根拠
                   </button>
@@ -140,7 +140,7 @@ function NeighborList({
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-accent underline"
+                    className="text-accent-strong underline"
                   >
                     {link.label}
                   </a>
@@ -154,7 +154,7 @@ function NeighborList({
         <button
           type="button"
           onClick={() => setShowAll((v) => !v)}
-          className="mt-1 text-xs text-accent underline"
+          className="mt-1 text-xs text-accent-strong underline"
         >
           {showAll ? "少なく表示" : `すべて表示（${items.length} 本）`}
         </button>
@@ -196,7 +196,7 @@ function PathView({
                   <button
                     type="button"
                     onClick={() => onShowEvidence(edgeKey(step.edge))}
-                    className="text-accent underline"
+                    className="text-accent-strong underline"
                   >
                     根拠
                   </button>
@@ -254,7 +254,7 @@ export function PaperNeighborsPanel({
         論文ごとの土台と発展
       </h3>
       <p className="text-xs text-ink-subtle">
-        論文を選ぶと、この系譜の中でその論文が基にした論文（土台）と、その論文を基にした論文（発展）を出します。強い関係（置換・後継・拡張・分析・対立）を先に、参照（背景）を後に並べます。
+        家系図のカードか下の一覧で論文を選ぶと、その論文の土台と発展を出します（強い関係が先、参照（背景）は後）。
       </p>
       <label className="mt-2 flex flex-wrap items-center gap-2 text-xs text-ink-muted">
         <span>論文</span>
@@ -262,7 +262,7 @@ export function PaperNeighborsPanel({
           value={selectedId ?? ""}
           onChange={(e) => onSelectPaper(e.target.value || null)}
           data-neighbor-select
-          className="max-w-full rounded-md border border-rule bg-surface px-2 py-1 text-xs"
+          className="min-h-9 max-w-full rounded-md border border-rule bg-surface px-2 py-1 text-xs"
         >
           <option value="">— 論文を選ぶ —</option>
           {options.map((n) => (
@@ -275,7 +275,7 @@ export function PaperNeighborsPanel({
           <button
             type="button"
             onClick={() => onSelectPaper(null)}
-            className="text-accent underline"
+            className="text-accent-strong underline"
           >
             選択を解除
           </button>
@@ -299,7 +299,7 @@ export function PaperNeighborsPanel({
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="ml-2 text-xs text-accent underline"
+                className="ml-2 text-xs text-accent-strong underline"
               >
                 {link.label}
               </a>
@@ -336,7 +336,7 @@ export function PaperNeighborsPanel({
                 value={pathToId ?? ""}
                 onChange={(e) => onPathTo(e.target.value || null)}
                 data-path-select
-                className="max-w-full rounded-md border border-rule bg-surface px-2 py-1 text-xs"
+                className="min-h-9 max-w-full rounded-md border border-rule bg-surface px-2 py-1 text-xs"
               >
                 <option value="">— 論文を選ぶ —</option>
                 {options

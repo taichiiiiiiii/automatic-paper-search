@@ -23,6 +23,7 @@
  * tooltip visibility, the onboarding arrow).
  */
 import { useSearchParams } from "next/navigation";
+import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   copyText,
@@ -32,7 +33,7 @@ import {
   themeNodesToBibtex,
   themeNodesToCsv,
 } from "../../lib/export-formats";
-import { abstractExcerptSourceLabel, paperLink } from "../../lib/lineage/evidence";
+import { abstractExcerptSourceLabel } from "../../lib/lineage/evidence";
 import { computeMainPath } from "../../lib/lineage/main-path";
 import { priorDerivative, shortestLineagePath } from "../../lib/lineage/paper-neighbors";
 import { exportPng, exportSvg } from "../../lib/themes-export";
@@ -72,25 +73,43 @@ import {
 import { EdgeEvidencePanel, EdgeRelationList, edgeKey, relationLabelJa } from "./EdgeEvidence";
 import styles from "./LineageTree.module.css";
 import { PaperNeighborsPanel } from "./PaperNeighborsPanel";
+import { ReadingGuide } from "./ReadingGuide";
 import { CodeBadges } from "./ThemeFeedSections";
 import { ThemeTimeline } from "./ThemeTimeline";
 
-const X_AXIS_BUTTON: Record<XAxisMode, { icon: string; label: string; title: string }> = {
-  rank: { icon: "📊", label: "順位", title: "年内の引用数ランキング (既定): 左ほど高被引用" },
-  citation_log: { icon: "📈", label: "log", title: "log(引用数+1) — 連続軸で影響度を比較" },
-  genealogy: {
-    icon: "🌳",
-    label: "系譜",
-    title: "親論文の平均 X 位置に寄せる: 同じ研究ラインが縦に並ぶ",
+// UX audit (design 53 §系譜ページ): the six X-axis modes used to be six
+// emoji buttons with one-word labels (「log」「中心」) that a first-time
+// reader could not decode. They are now one <select> whose options say
+// what the ordering means; `title` is shown as the hint under it.
+const X_AXIS_OPTION: Record<XAxisMode, { label: string; title: string }> = {
+  rank: { label: "被引用の多い順（年ごと）", title: "同じ年の中で、被引用数の多い論文ほど左" },
+  citation_log: {
+    label: "被引用数（対数の目盛り）",
+    title: "被引用数の対数で左右に並べ、年をまたいで影響の大きさを比べる",
   },
-  centrality: { icon: "⭐", label: "中心", title: "PageRank: テーマのハブ論文ほど左に" },
-  venue: { icon: "🏛", label: "会議", title: "会議格 Tier1 → Tier2 → Tier3 → 未査読" },
+  genealogy: {
+    label: "研究の流れでまとめる",
+    title: "基にした論文の近くに並べ、同じ研究の流れが縦にそろう（左端の色 = 流れ）",
+  },
+  centrality: {
+    label: "中心性（つながりの中心ほど左）",
+    title: "PageRank で、つながりの中心にある論文ほど左",
+  },
+  venue: {
+    label: "会議の格",
+    title: "会議の格の順（左端の色: 金 = Tier1、青 = Tier2、灰 = Tier3）、査読前は右",
+  },
   novelty: {
-    icon: "💥",
-    label: "新規",
-    title: "新規性: supersedes/contrasts = 破壊的革新、extends/successor = 漸進的改良",
+    label: "新しさの種類",
+    title: "左端の色: 赤 = 置き換え・対立（破壊的）、緑 = 拡張・後継（漸進的）",
   },
 };
+
+/** Zoom steps for the family tree (1 = cards at their natural size). */
+const ZOOM_STEPS: readonly number[] = [0.35, 0.5, 0.65, 0.8, 1, 1.25];
+const ZOOM_MIN = 0.1;
+const ZOOM_MAX = 1.25;
+const MOBILE_ZOOM = 0.65;
 
 // Tailwind's build-time scanner only picks up class names it can see as
 // complete literal strings in the source -- a template-interpolated
@@ -112,6 +131,17 @@ function isEditableTarget(el: Element | null): boolean {
   const tag = el.tagName.toLowerCase();
   if (tag === "input" || tag === "textarea" || tag === "select") return true;
   return (el as HTMLElement).isContentEditable === true;
+}
+
+/** True for keyboard focus (`:focus-visible`); a tap or click also
+ * focuses the card/edge, and must not pop a hover box up on a phone. */
+function isKeyboardFocus(target: EventTarget | null): boolean {
+  if (!(target instanceof Element)) return false;
+  try {
+    return target.matches(":focus-visible");
+  } catch {
+    return true; // selector unsupported: keep the old behaviour
+  }
 }
 
 /** Per-node CSS class for computeModeData's visual hook, or `null` for
@@ -140,13 +170,13 @@ const POPOVER_HOVER_DELAY_MS = 700;
 const MAIN_PATH_BUTTON: Record<MainPathMode, { label: string; title: string }> = {
   highlight: { label: "強調", title: "本流（主経路）の線を太くして、ほかの線を薄くする" },
   only: { label: "本流だけ", title: "本流（主経路）の線だけを表示する" },
-  off: { label: "切", title: "本流を強調しない" },
+  off: { label: "オフ", title: "本流を強調しない" },
 };
 const MAIN_PATH_MODES: readonly MainPathMode[] = ["highlight", "only", "off"];
 
 const VIEW_BUTTON: Record<ThemeView, { label: string; title: string }> = {
-  tree: { label: "🌳 家系図", title: "年ごとの家系図" },
-  timeline: { label: "📈 年×被引用", title: "横軸に年、縦軸に被引用数（対数）で並べる" },
+  tree: { label: "家系図", title: "年ごとの家系図" },
+  timeline: { label: "年×被引用", title: "横軸に年、縦軸に被引用数（対数）で並べる" },
 };
 const VIEWS: readonly ThemeView[] = ["tree", "timeline"];
 
@@ -425,9 +455,22 @@ export function LineageTree({
   const [selectedEdgeKey, setSelectedEdgeKey] = useState<string | null>(null);
   const evidenceHeadingRef = useRef<HTMLHeadingElement>(null);
   const focusPanelOnOpenRef = useRef(false);
+  // Focus returns to whatever opened the panel (an edge, a 根拠 button)
+  // when it closes, so keyboard / screen-reader users keep their place.
+  const evidenceOpenerRef = useRef<HTMLElement | null>(null);
   const selectEdge = useCallback((key: string) => {
     focusPanelOnOpenRef.current = true;
+    const active = typeof document !== "undefined" ? document.activeElement : null;
+    if (active instanceof HTMLElement || active instanceof SVGElement) {
+      evidenceOpenerRef.current = active as HTMLElement;
+    }
     setSelectedEdgeKey(key);
+  }, []);
+  const closeEvidence = useCallback(() => {
+    setSelectedEdgeKey(null);
+    const opener = evidenceOpenerRef.current;
+    evidenceOpenerRef.current = null;
+    if (opener?.isConnected) opener.focus({ preventScroll: true });
   }, []);
   const selectedEdge = useMemo(
     () =>
@@ -442,9 +485,26 @@ export function LineageTree({
     heading?.scrollIntoView({ block: "nearest" });
   }, [selectedEdge]);
 
-  // ---- Keyboard-help + onboarding ---------------------------------------
+  // ---- Keyboard-help + reading guide ------------------------------------
+  // The reading guide (「この図の読み方」: terms, line colours, card
+  // badges) replaced the old 横軸 coach-mark. It starts open on a first
+  // visit and stays closed once the reader has closed it (same storage
+  // key as the old coach-mark, so returning readers are not re-shown it).
   const [kbdHelpOpen, setKbdHelpOpen] = useState(false);
-  const [onboardingDismissed, setOnboardingDismissed] = useState<boolean | null>(null);
+  const kbdCloseRef = useRef<HTMLButtonElement>(null);
+  const kbdOpenerRef = useRef<HTMLElement | null>(null);
+  useEffect(() => {
+    if (kbdHelpOpen) {
+      const active = document.activeElement;
+      kbdOpenerRef.current = active instanceof HTMLElement ? active : null;
+      kbdCloseRef.current?.focus();
+      return;
+    }
+    const opener = kbdOpenerRef.current;
+    kbdOpenerRef.current = null;
+    if (opener?.isConnected) opener.focus({ preventScroll: true });
+  }, [kbdHelpOpen]);
+  const [guideOpen, setGuideOpen] = useState(false);
   useEffect(() => {
     let dismissed = false;
     try {
@@ -452,14 +512,15 @@ export function LineageTree({
     } catch {
       dismissed = false;
     }
-    setOnboardingDismissed(dismissed);
+    if (!dismissed) setGuideOpen(true);
   }, []);
-  const dismissOnboarding = useCallback(() => {
-    setOnboardingDismissed(true);
+  const onGuideToggle = useCallback((open: boolean) => {
+    setGuideOpen(open);
+    if (open) return;
     try {
       localStorage.setItem(ONBOARDING_KEY, "1");
     } catch {
-      /* ignore -- private mode / blocked storage: just stop pestering this session */
+      /* ignore -- private mode / blocked storage */
     }
   }, []);
 
@@ -472,12 +533,7 @@ export function LineageTree({
           return;
         }
         if (selectedEdgeKey) {
-          setSelectedEdgeKey(null);
-          e.preventDefault();
-          return;
-        }
-        if (onboardingDismissed === false) {
-          dismissOnboarding();
+          closeEvidence();
           e.preventDefault();
           return;
         }
@@ -490,7 +546,6 @@ export function LineageTree({
         const target = X_AXIS_MODES[Number.parseInt(e.key, 10) - 1];
         if (target) {
           setMode(target);
-          dismissOnboarding();
           e.preventDefault();
         }
         return;
@@ -513,7 +568,7 @@ export function LineageTree({
     }
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, [kbdHelpOpen, onboardingDismissed, dismissOnboarding, selectedEdgeKey]);
+  }, [kbdHelpOpen, selectedEdgeKey, closeEvidence]);
 
   // ---- Layout + per-mode visual hooks -----------------------------------
   // Both take nodesForLayout (orphans already dropped when hidden) --
@@ -596,6 +651,85 @@ export function LineageTree({
   const [minimapVisible, setMinimapVisible] = useState(false);
   const draggingRef = useRef(false);
 
+  // ---- Zoom ---------------------------------------------------------------
+  // The SVG keeps its viewBox and only its rendered width/height change,
+  // so every position inside stays in layout units (no inline style; CSP).
+  // On a phone the cards start at MOBILE_ZOOM so more than one card fits.
+  const [zoom, setZoom] = useState(1);
+  const zoomRef = useRef(zoom);
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 640) {
+      zoomRef.current = MOBILE_ZOOM;
+      setZoom(MOBILE_ZOOM);
+    }
+  }, []);
+  const changeZoom = useCallback((next: number) => {
+    const container = scrollRef.current;
+    const prev = zoomRef.current;
+    const z = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, next));
+    if (z === prev) return;
+    zoomRef.current = z;
+    setZoom(z);
+    if (!container) return;
+    // Keep the point at the centre of the viewport where it was.
+    const cx = (container.scrollLeft + container.clientWidth / 2) / prev;
+    const cy = (container.scrollTop + container.clientHeight / 2) / prev;
+    requestAnimationFrame(() => {
+      container.scrollLeft = Math.max(0, cx * z - container.clientWidth / 2);
+      container.scrollTop = Math.max(0, cy * z - container.clientHeight / 2);
+    });
+  }, []);
+  useEffect(() => {
+    zoomRef.current = zoom;
+  }, [zoom]);
+  function zoomStep(dir: 1 | -1) {
+    const cur = zoomRef.current;
+    const steps =
+      dir > 0
+        ? ZOOM_STEPS.filter((z) => z > cur + 1e-6)
+        : [...ZOOM_STEPS].reverse().filter((z) => z < cur - 1e-6);
+    const target = steps[0];
+    if (target !== undefined) changeZoom(target);
+  }
+  const yearRailRef = useRef<SVGGElement>(null);
+  useEffect(() => {
+    const container = scrollRef.current;
+    const rail = yearRailRef.current;
+    if (!container || !rail) return;
+    const update = () => {
+      rail.setAttribute("transform", `translate(0 ${-container.scrollTop}) scale(${zoom})`);
+    };
+    update();
+    container.addEventListener("scroll", update, { passive: true });
+    return () => container.removeEventListener("scroll", update);
+  }, [zoom]);
+
+  // Mouse drag-to-pan on the tree background (touch scrolls natively).
+  const panRef = useRef<{ x: number; y: number; left: number; top: number } | null>(null);
+  function onPanStart(ev: React.PointerEvent<HTMLDivElement>) {
+    if (ev.pointerType !== "mouse" || ev.button !== 0) return;
+    const target = ev.target as Element;
+    if (target.closest("button, a, [role='button'], input, select")) return;
+    const c = scrollRef.current;
+    if (!c) return;
+    panRef.current = { x: ev.clientX, y: ev.clientY, left: c.scrollLeft, top: c.scrollTop };
+  }
+  function onPanMove(ev: React.PointerEvent<HTMLDivElement>) {
+    const start = panRef.current;
+    const c = scrollRef.current;
+    if (!start || !c) return;
+    c.scrollLeft = start.left - (ev.clientX - start.x);
+    c.scrollTop = start.top - (ev.clientY - start.y);
+  }
+  function onPanEnd() {
+    panRef.current = null;
+  }
+  function zoomToFit() {
+    const container = scrollRef.current;
+    if (!container) return;
+    changeZoom(Math.min(1, (container.clientWidth - 8) / Math.max(totalW, 1)));
+  }
+
   useEffect(() => {
     function onUp() {
       draggingRef.current = false;
@@ -631,14 +765,15 @@ export function LineageTree({
     // clearing the filter that hid it) can still complete the scroll.
     if (!container || !pos) return;
     scrolledToPermalinkRef.current = true;
+    const z = zoomRef.current;
     container.scrollTo({
-      left: Math.max(0, pos.x - container.clientWidth / 2 + NODE_W / 2),
-      top: Math.max(0, pos.y - container.clientHeight / 2 + NODE_H / 2),
+      left: Math.max(0, (pos.x + NODE_W / 2) * z - container.clientWidth / 2),
+      top: Math.max(0, (pos.y + NODE_H / 2) * z - container.clientHeight / 2),
       behavior: "auto",
     });
   }, [permalinkRaw, permalinkFocus, positionById]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: `view` is not read in the body -- switching back from the timeline must re-run the paint so the minimap visibility is recomputed for the tree.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `view` / `zoom` are not read in the body (zoom via zoomRef) -- switching back from the timeline or zooming must re-run the paint so the minimap is recomputed.
   useEffect(() => {
     const container = scrollRef.current;
     const canvas = minimapCanvasRef.current;
@@ -647,7 +782,9 @@ export function LineageTree({
     if (!ctx) return;
 
     function paint() {
-      const needs = totalW > container!.clientWidth + 40 || totalH > container!.clientHeight + 40;
+      const z = zoomRef.current;
+      const needs =
+        totalW * z > container!.clientWidth + 40 || totalH * z > container!.clientHeight + 40;
       setMinimapVisible(needs);
       if (!needs) return;
       const cw = canvas!.width;
@@ -664,10 +801,10 @@ export function LineageTree({
         const y = oy + (n._y + NODE_H / 2) * s;
         ctx!.fillRect(x - 1.5, y - 1.5, 3, 3);
       }
-      const vx = ox + container!.scrollLeft * s;
-      const vy = oy + container!.scrollTop * s;
-      const vw = container!.clientWidth * s;
-      const vh = container!.clientHeight * s;
+      const vx = ox + (container!.scrollLeft / z) * s;
+      const vy = oy + (container!.scrollTop / z) * s;
+      const vw = (container!.clientWidth / z) * s;
+      const vh = (container!.clientHeight / z) * s;
       const rx = Math.max(0, Math.min(cw, vx));
       const ry = Math.max(0, Math.min(ch, vy));
       const rw = Math.max(0, Math.min(cw - rx, vw));
@@ -695,7 +832,7 @@ export function LineageTree({
       window.removeEventListener("resize", paint);
       if (raf) cancelAnimationFrame(raf);
     };
-  }, [positioned, totalW, totalH, view]);
+  }, [positioned, totalW, totalH, view, zoom]);
 
   function panToMinimapPoint(ev: { clientX: number; clientY: number }) {
     const canvas = minimapCanvasRef.current;
@@ -709,8 +846,9 @@ export function LineageTree({
     const s = Math.min(canvas.width / totalW, canvas.height / totalH);
     const ox = (canvas.width - totalW * s) / 2;
     const oy = (canvas.height - totalH * s) / 2;
-    const targetX = (px - ox) / s - container.clientWidth / 2;
-    const targetY = (py - oy) / s - container.clientHeight / 2;
+    const z = zoomRef.current;
+    const targetX = ((px - ox) / s) * z - container.clientWidth / 2;
+    const targetY = ((py - oy) / s) * z - container.clientHeight / 2;
     container.scrollTo({
       left: Math.max(0, targetX),
       top: Math.max(0, targetY),
@@ -780,144 +918,42 @@ export function LineageTree({
   const svgW = Math.max(totalW, 320);
   const svgH = Math.max(totalH, 200);
 
+  const btnBase = "inline-flex min-h-9 items-center rounded-md border px-2.5 py-1 text-xs";
+  const btnOff = "border-rule text-ink-muted hover:border-rule-strong";
+  const btnOn = "border-accent bg-accent/10 text-accent-strong";
+  const zoomPct = Math.round(zoom * 100);
+
   return (
     <div className="mt-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <fieldset className="flex flex-wrap items-center gap-2 border-0 p-0">
-          <legend className="text-xs text-ink-subtle">📐 横軸</legend>
-          {X_AXIS_MODES.map((m) => (
+      {/* ---- Toolbar: what to show (view / 本流 / ordering) + filter, then
+          export & share folded into one disclosure (design 53 §系譜ページ). */}
+      <div className="flex flex-wrap items-end gap-x-3 gap-y-2" data-theme-toolbar>
+        <fieldset
+          className="flex flex-wrap items-center gap-1 border-0 p-0 text-xs"
+          data-view-toggle
+        >
+          <legend className="mb-0.5 text-ink-subtle">表示</legend>
+          {VIEWS.map((v) => (
             <button
-              key={m}
+              key={v}
               type="button"
-              title={X_AXIS_BUTTON[m].title}
-              aria-pressed={mode === m}
-              onClick={() => {
-                setMode(m);
-                dismissOnboarding();
-              }}
-              className={`rounded-md border px-2 py-1 text-xs ${
-                mode === m
-                  ? "border-accent bg-accent/10 text-accent-strong"
-                  : "border-rule text-ink-muted hover:border-rule-strong"
-              }`}
+              title={VIEW_BUTTON[v].title}
+              aria-pressed={view === v}
+              onClick={() => setView(v)}
+              className={`${btnBase} ${view === v ? btnOn : btnOff}`}
             >
-              {X_AXIS_BUTTON[m].icon} {X_AXIS_BUTTON[m].label}
+              {VIEW_BUTTON[v].label}
             </button>
           ))}
         </fieldset>
 
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            aria-expanded={filtersOpen}
-            aria-controls="theme-filters-panel"
-            onClick={() => setFiltersOpen((v) => !v)}
-            title="検索 / 年範囲 / 関係フィルタを開く"
-            className="rounded-md border border-rule px-2 py-1 text-xs text-ink-muted hover:border-rule-strong"
-          >
-            🔍 絞り込み
-            {activeFilterChips.length > 0 && (
-              <span className="ml-1 rounded-full bg-accent/10 px-1.5 text-accent-strong">
-                {activeFilterChips.length}
-              </span>
-            )}
-          </button>
-          <fieldset className="flex items-center gap-1 border-0 p-0">
-            <legend className="sr-only">書き出し</legend>
-            <button
-              type="button"
-              title="SVG をダウンロード"
-              onClick={handleExportSvg}
-              className="rounded-md border border-rule px-2 py-1 text-xs text-ink-muted hover:border-rule-strong"
-            >
-              📥 SVG
-            </button>
-            <button
-              type="button"
-              title="PNG をダウンロード"
-              onClick={handleExportPng}
-              className="rounded-md border border-rule px-2 py-1 text-xs text-ink-muted hover:border-rule-strong"
-            >
-              📥 PNG
-            </button>
-            <button
-              type="button"
-              title="表示中の論文を BibTeX で書き出す"
-              onClick={handleExportBibtex}
-              data-export="bibtex"
-              className="rounded-md border border-rule px-2 py-1 text-xs text-ink-muted hover:border-rule-strong"
-            >
-              📥 BibTeX
-            </button>
-            <button
-              type="button"
-              title="表示中の論文を CSV で書き出す"
-              onClick={handleExportNodesCsv}
-              data-export="nodes-csv"
-              className="rounded-md border border-rule px-2 py-1 text-xs text-ink-muted hover:border-rule-strong"
-            >
-              📥 CSV（論文）
-            </button>
-            <button
-              type="button"
-              title="表示中の関係と根拠を CSV で書き出す"
-              onClick={handleExportEdgesCsv}
-              data-export="edges-csv"
-              className="rounded-md border border-rule px-2 py-1 text-xs text-ink-muted hover:border-rule-strong"
-            >
-              📥 CSV（関係）
-            </button>
-            <button
-              type="button"
-              title="今の表示（絞り込みを含む）の URL をコピーする"
-              onClick={handleCopyUrl}
-              data-share-url
-              className="rounded-md border border-rule px-2 py-1 text-xs text-ink-muted hover:border-rule-strong"
-            >
-              🔗 URLをコピー
-            </button>
-          </fieldset>
-        </div>
-      </div>
-      <p
-        role="status"
-        aria-live="polite"
-        className="mt-1 min-h-4 text-right text-xs text-ink-subtle"
-      >
-        {shareStatus}
-      </p>
-
-      <fieldset
-        className="mt-2 flex flex-wrap items-center gap-1 border-0 p-0 text-xs"
-        data-view-toggle
-      >
-        <legend className="mr-1 inline text-ink-subtle">表示</legend>
-        {VIEWS.map((v) => (
-          <button
-            key={v}
-            type="button"
-            title={VIEW_BUTTON[v].title}
-            aria-pressed={view === v}
-            onClick={() => setView(v)}
-            className={`rounded-md border px-2 py-1 ${
-              view === v
-                ? "border-accent bg-accent/10 text-accent-strong"
-                : "border-rule text-ink-muted hover:border-rule-strong"
-            }`}
-          >
-            {VIEW_BUTTON[v].label}
-          </button>
-        ))}
-      </fieldset>
-
-      {mainPathKeys.size > 0 && (
-        <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-ink-muted">
+        {mainPathKeys.size > 0 && (
           <fieldset
-            className="flex flex-wrap items-center gap-1 border-0 p-0"
+            className="flex flex-wrap items-center gap-1 border-0 p-0 text-xs"
             data-main-path-toggle
           >
-            <legend className="mr-1 inline text-ink-subtle">
-              🧭 本流（{mainPathKeys.size} 本の線）
+            <legend className="mb-0.5 text-ink-subtle">
+              本流<span className="sr-only">（{mainPathKeys.size} 本の線）</span>
             </legend>
             {MAIN_PATH_MODES.map((m) => (
               <button
@@ -926,30 +962,136 @@ export function LineageTree({
                 title={MAIN_PATH_BUTTON[m].title}
                 aria-pressed={mainPathMode === m}
                 onClick={() => setMainPathMode(m)}
-                className={`rounded-md border px-2 py-1 ${
-                  mainPathMode === m
-                    ? "border-accent bg-accent/10 text-accent-strong"
-                    : "border-rule text-ink-muted hover:border-rule-strong"
-                }`}
+                className={`${btnBase} ${mainPathMode === m ? btnOn : btnOff}`}
               >
                 {MAIN_PATH_BUTTON[m].label}
               </button>
             ))}
           </fieldset>
-          <span className="text-ink-subtle">
-            引用の流れがいちばん多く通る経路です（強い関係を重く数えます）。
-            <a href="/how-it-works/#main-path" className="ml-1 text-accent underline">
-              計算のしかた
-            </a>
+        )}
+
+        {view === "tree" && (
+          <label className="flex flex-col gap-0.5 text-xs text-ink-subtle" data-xaxis-select>
+            <span>並べ方</span>
+            <select
+              value={mode}
+              onChange={(e) => setMode(e.target.value as XAxisMode)}
+              aria-describedby="theme-xaxis-hint"
+              className="min-h-9 max-w-[16rem] rounded-md border border-rule bg-surface px-2 py-1 text-xs text-ink"
+            >
+              {X_AXIS_MODES.map((m) => (
+                <option key={m} value={m}>
+                  {X_AXIS_OPTION[m].label}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+
+        <div className="ml-auto flex flex-wrap items-center gap-1">
+          <button
+            type="button"
+            aria-expanded={filtersOpen}
+            aria-controls="theme-filters-panel"
+            onClick={() => setFiltersOpen((v) => !v)}
+            title="検索・年の範囲・関係の種類で絞り込む（F キー）"
+            className={`${btnBase} ${btnOff}`}
+          >
+            絞り込み
+            {activeFilterChips.length > 0 && (
+              <span className="ml-1 rounded-full bg-accent/10 px-1.5 text-accent-strong">
+                {activeFilterChips.length}
+              </span>
+            )}
+          </button>
+          <details className="relative" data-export-menu>
+            <summary className={`${btnBase} ${btnOff} cursor-pointer list-none`}>
+              書き出し・共有{" "}
+              <span aria-hidden="true" className="ml-1">
+                ▾
+              </span>
+            </summary>
+            <div className="absolute right-0 z-30 mt-1 flex w-56 flex-col gap-1 rounded-md border border-rule bg-surface-elevated p-2 shadow-lg">
+              <button
+                type="button"
+                title="今の表示（絞り込みを含む）の URL をコピーする"
+                onClick={handleCopyUrl}
+                data-share-url
+                className={`${btnBase} ${btnOff} justify-start`}
+              >
+                URL をコピー
+              </button>
+              <p className="mt-1 text-[0.68rem] text-ink-subtle">表示中の論文・関係を書き出す</p>
+              <button
+                type="button"
+                onClick={handleExportBibtex}
+                data-export="bibtex"
+                className={`${btnBase} ${btnOff} justify-start`}
+              >
+                BibTeX（論文）
+              </button>
+              <button
+                type="button"
+                onClick={handleExportNodesCsv}
+                data-export="nodes-csv"
+                className={`${btnBase} ${btnOff} justify-start`}
+              >
+                CSV（論文）
+              </button>
+              <button
+                type="button"
+                onClick={handleExportEdgesCsv}
+                data-export="edges-csv"
+                className={`${btnBase} ${btnOff} justify-start`}
+              >
+                CSV（関係と根拠）
+              </button>
+              <button
+                type="button"
+                onClick={handleExportSvg}
+                className={`${btnBase} ${btnOff} justify-start`}
+              >
+                画像（SVG）
+              </button>
+              <button
+                type="button"
+                onClick={handleExportPng}
+                className={`${btnBase} ${btnOff} justify-start`}
+              >
+                画像（PNG）
+              </button>
+            </div>
+          </details>
+          <span
+            role="status"
+            aria-live="polite"
+            className="text-xs text-ink-subtle"
+            data-share-status
+          >
+            {shareStatus}
           </span>
+          <button
+            type="button"
+            onClick={() => setKbdHelpOpen(true)}
+            title="キーボード操作の一覧（? キー）"
+            aria-label="キーボード操作の一覧"
+            className={`hidden min-h-9 items-center rounded-md border px-2.5 py-1 text-xs sm:inline-flex ${btnOff}`}
+          >
+            ⌨
+          </button>
         </div>
+      </div>
+      {view === "tree" && (
+        <p id="theme-xaxis-hint" className="mt-1 text-xs text-ink-subtle">
+          並べ方: {X_AXIS_OPTION[mode].title}
+        </p>
       )}
 
       <div
         id="theme-filters-panel"
         className={
           filtersOpen
-            ? "mt-3 flex flex-wrap items-center gap-4 rounded-md border border-rule bg-surface p-3"
+            ? "mt-2 flex flex-wrap items-center gap-4 rounded-md border border-rule bg-surface p-3"
             : "hidden"
         }
       >
@@ -963,7 +1105,7 @@ export function LineageTree({
             placeholder="タイトル / 著者で検索"
             aria-label="タイトル・著者で論文を検索"
             autoComplete="off"
-            className="rounded-md border border-rule px-2 py-1 text-xs"
+            className="min-h-9 rounded-md border border-rule px-2 py-1 text-sm"
           />
         </label>
 
@@ -1009,13 +1151,9 @@ export function LineageTree({
                 type="button"
                 aria-pressed={on}
                 onClick={() => toggleRelation(r)}
-                className={`rounded-md border px-2 py-1 text-xs ${
-                  on
-                    ? "border-accent text-accent-strong"
-                    : "border-rule text-ink-muted hover:border-rule-strong"
-                }`}
+                className={`${btnBase} ${on ? "border-accent text-accent-strong" : btnOff}`}
               >
-                {relationLabelJa(r)} <span className="text-ink-subtle">{count}</span>
+                {relationLabelJa(r)} <span className="ml-1 text-ink-subtle">{count}</span>
               </button>
             );
           })}
@@ -1026,7 +1164,7 @@ export function LineageTree({
             it disables itself instead of vanishing. */}
         <label
           title="孤立論文 = 他の論文との分類関係が見つからず、家系図のどのエッジにも乗らなかった論文"
-          className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs text-ink-muted ${
+          className={`inline-flex min-h-9 items-center gap-1 rounded-full border px-3 py-1 text-xs text-ink-muted ${
             orphanToggleDisabled
               ? "cursor-help border-rule opacity-65"
               : "cursor-pointer border-rule hover:border-rule-strong"
@@ -1039,7 +1177,6 @@ export function LineageTree({
             onChange={(e) => setHideOrphans(e.target.checked)}
             aria-label="孤立論文を非表示"
           />
-          <span aria-hidden="true">🔗</span>
           <span>
             孤立論文 (<span>{orphanSet.size}</span>) を非表示
           </span>
@@ -1056,7 +1193,7 @@ export function LineageTree({
           {activeFilterChips.map((c) => (
             <span
               key={c.kind}
-              className="inline-flex items-center gap-1 rounded-full bg-surface-2 px-2 py-1"
+              className="inline-flex items-center gap-1 rounded-full bg-surface-2 py-0.5 pl-2 pr-0.5"
             >
               {c.label}
               <button
@@ -1064,12 +1201,13 @@ export function LineageTree({
                 aria-label="この絞り込みを解除"
                 title="この絞り込みを解除"
                 onClick={() => clearFilter(c.kind)}
+                className="inline-flex h-7 w-7 items-center justify-center rounded-full hover:bg-surface"
               >
                 ×
               </button>
             </span>
           ))}
-          <button type="button" onClick={clearAllFilters} className="text-accent underline">
+          <button type="button" onClick={clearAllFilters} className="text-accent-strong underline">
             すべて解除
           </button>
         </div>
@@ -1084,7 +1222,7 @@ export function LineageTree({
           <span>
             {hiddenCount} 件の関係を非表示中（全 {artifact.edges.length} 件）。
           </span>
-          <button type="button" onClick={showAllRelations} className="text-accent underline">
+          <button type="button" onClick={showAllRelations} className="text-accent-strong underline">
             すべての関係を表示
           </button>
         </p>
@@ -1099,30 +1237,12 @@ export function LineageTree({
         </p>
       )}
 
-      {onboardingDismissed === false && (
-        <div
-          role="dialog"
-          aria-labelledby="theme-onboarding-title"
-          className="mt-2 inline-flex max-w-sm flex-col items-start gap-1 rounded-md border border-accent bg-surface-elevated p-3"
-        >
-          <span className={styles.onboardingArrow} aria-hidden="true" />
-          <strong id="theme-onboarding-title" className="text-sm text-ink">
-            📐 横軸を切り替えてみよう
-          </strong>
-          <p className="text-xs text-ink-muted">
-            論文の並び方が変わります。
-            <br />
-            <em>順位 / log / 系譜 / 中心 / 会議 / 新規</em> の 6 種類。
-          </p>
-          <button
-            type="button"
-            onClick={dismissOnboarding}
-            className="self-end rounded-md border border-rule px-2 py-1 text-xs text-ink-muted"
-          >
-            わかった ✓
-          </button>
-        </div>
-      )}
+      <ReadingGuide
+        open={guideOpen}
+        onToggle={onGuideToggle}
+        mainPathCount={mainPathKeys.size}
+        hasCodeLinks={Boolean(codeLinks && Object.keys(codeLinks).length > 0)}
+      />
 
       {view === "timeline" && (
         <ThemeTimeline
@@ -1139,327 +1259,423 @@ export function LineageTree({
         />
       )}
 
-      <div className={view === "tree" ? "relative mt-3" : "hidden"}>
-        <div
-          ref={scrollRef}
-          className="max-h-[70vh] overflow-auto rounded-md border border-rule bg-surface"
+      <div className={view === "tree" ? "relative mt-3" : "hidden"} data-tree-frame>
+        <a
+          href="#theme-after-tree"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-30 focus:rounded-md focus:bg-surface-elevated focus:px-2 focus:py-1 focus:text-xs"
         >
-          <svg
-            ref={view === "tree" ? svgRef : undefined}
-            role="img"
-            aria-label="テーマの時系列家系図（関係の線を選ぶと根拠を表示）"
-            width={svgW}
-            height={svgH}
-            viewBox={`0 0 ${svgW} ${svgH}`}
+          家系図を飛ばして一覧へ
+        </a>
+        <div className="mb-1 flex items-center justify-end gap-1 text-ink-muted" data-zoom-controls>
+          <span className="mr-auto text-xs text-ink-subtle">ドラッグ・スワイプで移動</span>
+          <button
+            type="button"
+            onClick={() => zoomStep(-1)}
+            disabled={zoom <= (ZOOM_STEPS[0] ?? ZOOM_MIN) + 1e-6}
+            aria-label="縮小"
+            title="縮小"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-rule bg-surface text-base text-ink disabled:opacity-40"
           >
-            {yearLabels.map((yl) => (
-              <text
-                key={yl.label}
-                x={12}
-                y={yl.y}
-                className={
-                  yl.importance === "decade-major"
-                    ? "fill-ink text-xs font-semibold"
-                    : yl.importance === "decade"
-                      ? "fill-ink-muted text-xs font-medium"
-                      : "fill-ink-subtle text-xs"
-                }
-              >
-                {yl.label}
-              </text>
-            ))}
+            −
+          </button>
+          <span
+            className="w-10 text-center font-mono text-[0.68rem] text-ink-subtle"
+            aria-live="polite"
+          >
+            {zoomPct}%
+          </span>
+          <button
+            type="button"
+            onClick={() => zoomStep(1)}
+            disabled={zoom >= ZOOM_MAX - 1e-6}
+            aria-label="拡大"
+            title="拡大"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-rule bg-surface text-base text-ink disabled:opacity-40"
+          >
+            ＋
+          </button>
+          <button
+            type="button"
+            onClick={zoomToFit}
+            title="横幅に合わせて全体を表示"
+            className="inline-flex h-9 items-center justify-center rounded-md border border-rule bg-surface px-2 text-xs text-ink-muted"
+          >
+            全体
+          </button>
+        </div>
+        <div className="relative">
+          {/* Year labels pinned to the left edge: the in-graph labels scroll
+            away when the tree is panned sideways (mobile). Moved with an SVG
+            `transform` attribute, never an inline style (CSP). */}
+          <svg
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-px left-px z-10 h-[calc(100%-2px)] w-12"
+            data-year-rail
+          >
+            <g ref={yearRailRef}>
+              <rect x={0} y={0} width={46} height={svgH} className="fill-surface opacity-90" />
+              {yearLabels.map((yl) => (
+                <text
+                  key={yl.label}
+                  x={8}
+                  y={yl.y}
+                  className={
+                    yl.importance === "decade-major"
+                      ? "fill-ink text-xs font-semibold"
+                      : yl.importance === "decade"
+                        ? "fill-ink-muted text-xs font-medium"
+                        : "fill-ink-subtle text-xs"
+                  }
+                >
+                  {yl.label}
+                </text>
+              ))}
+            </g>
+          </svg>
+          {/* Mouse drag-to-pan on the scroll area; keyboard and touch users scroll it natively. */}
+          <div
+            ref={scrollRef}
+            className="max-h-[70vh] cursor-grab select-none overflow-auto overscroll-contain rounded-md border border-rule bg-surface active:cursor-grabbing"
+            onPointerDown={onPanStart}
+            onPointerMove={onPanMove}
+            onPointerUp={onPanEnd}
+            onPointerCancel={onPanEnd}
+          >
+            {/* biome-ignore lint/a11y/useSemanticElements: role="img" made every card and edge inside presentational (hidden from screen readers); an <svg> cannot be a <fieldset>, so it is a labelled group. */}
+            <svg
+              ref={view === "tree" ? svgRef : undefined}
+              role="group"
+              aria-label="テーマの時系列家系図。カードを選ぶと土台と発展、線を選ぶと根拠を表示"
+              width={Math.round(svgW * zoom)}
+              height={Math.round(svgH * zoom)}
+              viewBox={`0 0 ${svgW} ${svgH}`}
+              data-zoom={zoom}
+            >
+              {yearLabels.map((yl) => (
+                <text
+                  key={yl.label}
+                  x={12}
+                  y={yl.y}
+                  className={
+                    yl.importance === "decade-major"
+                      ? "fill-ink text-xs font-semibold"
+                      : yl.importance === "decade"
+                        ? "fill-ink-muted text-xs font-medium"
+                        : "fill-ink-subtle text-xs"
+                  }
+                >
+                  {yl.label}
+                </text>
+              ))}
 
-            {drawnEdges
-              .filter((e) => positionById.has(e.src) && positionById.has(e.dst))
-              .map((e) => {
-                const src = positionById.get(e.src);
-                const dst = positionById.get(e.dst);
-                if (!src || !dst) return null;
-                const x1 = src.x + NODE_W / 2;
-                const y1 = src.y + NODE_H;
-                const x2 = dst.x + NODE_W / 2;
-                const y2 = dst.y;
-                const key = edgeKey(e);
-                const strokeClass = RELATION_STROKE_CLASS[e.relation] ?? DEFAULT_STROKE_CLASS;
-                const onMain = showMainPath && mainPathKeys.has(key);
-                const onPath = pathKeys.has(key);
-                const baseWidth = Math.max(1, e.confidence * 2);
-                const strokeWidth =
-                  selectedEdgeKey === key
-                    ? onMain || onPath
-                      ? 7
-                      : 4
-                    : onPath
-                      ? 6
-                      : onMain
-                        ? 5
-                        : baseWidth;
-                const strokeOpacity =
-                  selectedEdgeKey === key || onMain || onPath ? 1 : showMainPath ? 0.3 : 0.7;
-                return (
-                  // biome-ignore lint/a11y/noStaticElementInteractions: mirrors hover/focus bubbling from the focusable hit-area <line> below (tabIndex + aria-label) to show the tooltip; no WAI-ARIA role Biome suggests (group/fieldset) applies to a non-form SVG grouping element.
-                  <g
-                    key={key}
-                    data-main-path={onMain ? "1" : undefined}
-                    data-lineage-path={onPath ? "1" : undefined}
-                    onMouseEnter={() => setHoveredEdgeKey(key)}
-                    onMouseLeave={() =>
-                      setHoveredEdgeKey((current) => (current === key ? null : current))
-                    }
-                    onFocus={() => setHoveredEdgeKey(key)}
-                    onBlur={() =>
-                      setHoveredEdgeKey((current) => (current === key ? null : current))
-                    }
-                  >
-                    <line
-                      x1={x1}
-                      y1={y1}
-                      x2={x2}
-                      y2={y2}
-                      className={strokeClass}
-                      strokeWidth={strokeWidth}
-                      strokeOpacity={strokeOpacity}
-                      strokeLinecap="round"
-                    />
-                    {/* biome-ignore lint/a11y/useSemanticElements: an SVG <line> hit area cannot be an HTML <button>; role="button" + tabIndex + Enter/Space handling give it button semantics inside the graph. */}
-                    <line
-                      x1={x1}
-                      y1={y1}
-                      x2={x2}
-                      y2={y2}
-                      className={styles.edgeHit}
-                      tabIndex={0}
-                      role="button"
-                      aria-pressed={selectedEdgeKey === key}
-                      aria-label={`${onMain ? "本流・" : ""}${relationLabelJa(e.relation)}: ${e.rationale}（Enter で根拠を表示）`}
-                      onClick={() => selectEdge(key)}
-                      onKeyDown={(ev) => {
-                        if (ev.key === "Enter" || ev.key === " ") {
-                          ev.preventDefault();
-                          selectEdge(key);
-                        }
+              {drawnEdges
+                .filter((e) => positionById.has(e.src) && positionById.has(e.dst))
+                .map((e) => {
+                  const src = positionById.get(e.src);
+                  const dst = positionById.get(e.dst);
+                  if (!src || !dst) return null;
+                  const x1 = src.x + NODE_W / 2;
+                  const y1 = src.y + NODE_H;
+                  const x2 = dst.x + NODE_W / 2;
+                  const y2 = dst.y;
+                  const key = edgeKey(e);
+                  const strokeClass = RELATION_STROKE_CLASS[e.relation] ?? DEFAULT_STROKE_CLASS;
+                  const onMain = showMainPath && mainPathKeys.has(key);
+                  const onPath = pathKeys.has(key);
+                  const baseWidth = Math.max(1, e.confidence * 2);
+                  const strokeWidth =
+                    selectedEdgeKey === key
+                      ? onMain || onPath
+                        ? 7
+                        : 4
+                      : onPath
+                        ? 6
+                        : onMain
+                          ? 5
+                          : baseWidth;
+                  const strokeOpacity =
+                    selectedEdgeKey === key || onMain || onPath ? 1 : showMainPath ? 0.45 : 0.75;
+                  return (
+                    // biome-ignore lint/a11y/noStaticElementInteractions: mirrors hover/focus bubbling from the focusable hit-area <line> below (tabIndex + aria-label) to show the tooltip; no WAI-ARIA role Biome suggests (group/fieldset) applies to a non-form SVG grouping element.
+                    <g
+                      key={key}
+                      data-main-path={onMain ? "1" : undefined}
+                      data-lineage-path={onPath ? "1" : undefined}
+                      onPointerEnter={(ev) => {
+                        if (ev.pointerType === "mouse") setHoveredEdgeKey(key);
                       }}
-                    />
+                      onPointerLeave={() =>
+                        setHoveredEdgeKey((current) => (current === key ? null : current))
+                      }
+                      onFocus={(ev) => {
+                        if (isKeyboardFocus(ev.target)) setHoveredEdgeKey(key);
+                      }}
+                      onBlur={() =>
+                        setHoveredEdgeKey((current) => (current === key ? null : current))
+                      }
+                    >
+                      <line
+                        x1={x1}
+                        y1={y1}
+                        x2={x2}
+                        y2={y2}
+                        className={strokeClass}
+                        strokeWidth={strokeWidth}
+                        strokeOpacity={strokeOpacity}
+                        strokeLinecap="round"
+                      />
+                      {/* biome-ignore lint/a11y/useSemanticElements: an SVG <line> hit area cannot be an HTML <button>; role="button" + tabIndex + Enter/Space handling give it button semantics inside the graph. */}
+                      <line
+                        x1={x1}
+                        y1={y1}
+                        x2={x2}
+                        y2={y2}
+                        className={styles.edgeHit}
+                        tabIndex={0}
+                        role="button"
+                        aria-pressed={selectedEdgeKey === key}
+                        aria-label={`${onMain ? "本流・" : ""}${relationLabelJa(e.relation)}: ${e.rationale}（Enter で根拠を表示）`}
+                        onClick={() => selectEdge(key)}
+                        onKeyDown={(ev) => {
+                          if (ev.key === "Enter" || ev.key === " ") {
+                            ev.preventDefault();
+                            selectEdge(key);
+                          }
+                        }}
+                      />
+                    </g>
+                  );
+                })}
+
+              {positioned.map((p) => {
+                const authors = (p.authors ?? []).slice(0, 3).join(", ");
+                const extra =
+                  (p.authors ?? []).length > 3 ? ` +${(p.authors ?? []).length - 3}` : "";
+                const accentClass = modeAccentClass(modeData, p.id);
+                const filteredClass = matchSet && !matchSet.has(p.id) ? "opacity-40" : "";
+                // #83: hub -- degree above the 90th percentile across the
+                // theme. #68: trending -- citation velocity, sourced
+                // directly from the artifact's is_trending flag. Orphan --
+                // no incident edge (dropped upstream entirely when
+                // effectiveHideOrphans, so this path never runs for them
+                // in that mode). Hub's halo REPLACES the citation-heat
+                // halo below (not additive -- mirrors docs/assets/
+                // theme.js's CSS specificity override).
+                const isHub = hubSet.has(p.id);
+                const isOrphan = orphanSet.has(p.id);
+                const isTrending = p.is_trending === true;
+                const shadowClass = isHub
+                  ? styles.hubCard
+                  : styles[`heat${heatBucket(p.citation_count)}`];
+                const orphanClass = isOrphan ? styles.orphanCard : "";
+                // M8a: ?node= permalink highlight -- a visible ring on
+                // the card the URL asked to focus, separate from
+                // `p.is_focus` (which marks the theme's own seed papers,
+                // not an arbitrary shared-link target).
+                const permalinkClass =
+                  (permalinkFocus && p.id === permalinkFocus.id) ||
+                  p.id === selectedPaperId ||
+                  pathNodeIds.has(p.id)
+                    ? "ring-2 ring-accent"
+                    : "";
+                return (
+                  // biome-ignore lint/a11y/noStaticElementInteractions: same rationale as the edge <g> above -- mirrors hover/focus bubbling from the focusable card <a> inside the foreignObject to show the popover.
+                  <g
+                    key={p.id}
+                    data-node-id={p.id}
+                    onPointerEnter={(ev) => {
+                      // Touch taps fire enter events too; on a phone the
+                      // popover would cover the tree, so mouse only.
+                      if (ev.pointerType === "mouse") scheduleShowPopover(p.id);
+                    }}
+                    onPointerLeave={hidePopover}
+                    onFocus={(ev) => {
+                      if (isKeyboardFocus(ev.target)) scheduleShowPopover(p.id);
+                    }}
+                    onBlur={hidePopover}
+                  >
+                    <foreignObject
+                      x={p._x}
+                      y={p._y}
+                      width={NODE_W}
+                      height={NODE_H}
+                      overflow="visible"
+                    >
+                      <button
+                        type="button"
+                        data-node-card
+                        aria-pressed={p.id === selectedPaperId}
+                        onClick={() => selectPaper(p.id === selectedPaperId ? null : p.id)}
+                        title="選ぶと、この論文の土台と発展を下に表示"
+                        aria-label={`${p.title ?? p.id}（${typeof p.year === "number" ? p.year : "年不明"}）: 選ぶと土台と発展を表示`}
+                        className={`flex h-full w-full flex-col justify-start overflow-hidden rounded-md border px-3 py-2 text-left text-xs ${
+                          p.is_focus
+                            ? "border-accent bg-accent/5"
+                            : "border-rule bg-surface-elevated"
+                        } ${accentClass ?? ""} ${filteredClass} ${shadowClass ?? ""} ${orphanClass} ${permalinkClass}`}
+                      >
+                        <span className="flex items-center justify-between gap-1">
+                          <span className="min-w-0 truncate text-[0.68rem] text-ink-subtle">
+                            {p.venue || "—"}
+                          </span>
+                          {isHub && (
+                            <span
+                              role="img"
+                              aria-label="ハブ論文: 接続数が多い"
+                              title="ハブ論文: 他の論文との関係が多い"
+                              className={`${styles.badge} ${styles.badgeHub}`}
+                            >
+                              HUB
+                            </span>
+                          )}
+                          {showMainPath && mainPathNodeIds.has(p.id) && (
+                            <span
+                              role="img"
+                              aria-label="本流（主経路）上の論文"
+                              title="本流（主経路）上の論文"
+                              className={`${styles.badge} ${styles.badgeMain}`}
+                            >
+                              本流
+                            </span>
+                          )}
+                          <CodeBadges link={codeLinks?.[p.id]} />
+                          {isTrending && (
+                            <span
+                              role="img"
+                              aria-label="注目: 引用が伸びている"
+                              title="注目: 最近の引用の伸びが大きい"
+                              className={`${styles.badge} ${styles.badgeTrend}`}
+                            >
+                              TREND
+                            </span>
+                          )}
+                          {isOrphan && (
+                            <span
+                              role="img"
+                              aria-label="孤立: この家系図では他論文との関係がありません"
+                              title="他の論文との分類関係がないため、この家系図では孤立しています"
+                              className={`${styles.badge} ${styles.badgeOrphan}`}
+                            >
+                              孤立
+                            </span>
+                          )}
+                        </span>
+                        <span className="mt-1 line-clamp-2 font-medium text-ink">
+                          {p.title || p.id}
+                        </span>
+                        {p.tldr && (
+                          <span className="mt-1 line-clamp-2 text-ink-muted">{p.tldr}</span>
+                        )}
+                        <span className="mt-1 block truncate text-ink-subtle">
+                          {authors}
+                          {extra}
+                        </span>
+                        {typeof p.citation_count === "number" && p.citation_count > 0 && (
+                          <span className="mt-1 block text-ink-subtle">
+                            📖 {p.citation_count.toLocaleString()}
+                          </span>
+                        )}
+                      </button>
+                    </foreignObject>
                   </g>
                 );
               })}
 
-            {positioned.map((p) => {
-              const link = paperLink(p);
-              const authors = (p.authors ?? []).slice(0, 3).join(", ");
-              const extra = (p.authors ?? []).length > 3 ? ` +${(p.authors ?? []).length - 3}` : "";
-              const accentClass = modeAccentClass(modeData, p.id);
-              const filteredClass = matchSet && !matchSet.has(p.id) ? "opacity-40" : "";
-              // #83: hub -- degree above the 90th percentile across the
-              // theme. #68: trending -- citation velocity, sourced
-              // directly from the artifact's is_trending flag. Orphan --
-              // no incident edge (dropped upstream entirely when
-              // effectiveHideOrphans, so this path never runs for them
-              // in that mode). Hub's halo REPLACES the citation-heat
-              // halo below (not additive -- mirrors docs/assets/
-              // theme.js's CSS specificity override).
-              const isHub = hubSet.has(p.id);
-              const isOrphan = orphanSet.has(p.id);
-              const isTrending = p.is_trending === true;
-              const shadowClass = isHub
-                ? styles.hubCard
-                : styles[`heat${heatBucket(p.citation_count)}`];
-              const orphanClass = isOrphan ? styles.orphanCard : "";
-              // M8a: ?node= permalink highlight -- a visible ring on
-              // the card the URL asked to focus, separate from
-              // `p.is_focus` (which marks the theme's own seed papers,
-              // not an arbitrary shared-link target).
-              const permalinkClass =
-                (permalinkFocus && p.id === permalinkFocus.id) ||
-                p.id === selectedPaperId ||
-                pathNodeIds.has(p.id)
-                  ? "ring-2 ring-accent"
-                  : "";
-              return (
-                // biome-ignore lint/a11y/noStaticElementInteractions: same rationale as the edge <g> above -- mirrors hover/focus bubbling from the focusable card <a> inside the foreignObject to show the popover.
-                <g
-                  key={p.id}
-                  data-node-id={p.id}
-                  onMouseEnter={() => scheduleShowPopover(p.id)}
-                  onMouseLeave={hidePopover}
-                  onFocus={() => scheduleShowPopover(p.id)}
-                  onBlur={hidePopover}
-                >
-                  <foreignObject
-                    x={p._x}
-                    y={p._y}
-                    width={NODE_W}
-                    height={NODE_H}
-                    overflow="visible"
-                  >
-                    <a
-                      href={link.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title={`クリックで ${link.label} に開く`}
-                      aria-label={`論文を新しいタブで開く: ${link.label} — ${p.title ?? p.id}`}
-                      className={`block h-full w-full overflow-hidden rounded-md border px-3 py-2 text-xs ${
-                        p.is_focus ? "border-accent bg-accent/5" : "border-rule bg-surface-elevated"
-                      } ${accentClass ?? ""} ${filteredClass} ${shadowClass ?? ""} ${orphanClass} ${permalinkClass}`}
-                    >
-                      <div className="flex items-center justify-between gap-1">
-                        <span className="min-w-0 truncate text-[0.68rem] text-ink-subtle">
-                          {p.venue || "—"}
-                        </span>
-                        {isHub && (
-                          <span
-                            role="img"
-                            aria-label="ハブ論文: 接続数が多い"
-                            title="ハブ論文: 他の論文との関係が多い"
-                            className={`${styles.badge} ${styles.badgeHub}`}
-                          >
-                            HUB
-                          </span>
-                        )}
-                        {showMainPath && mainPathNodeIds.has(p.id) && (
-                          <span
-                            role="img"
-                            aria-label="本流（主経路）上の論文"
-                            title="本流（主経路）上の論文"
-                            className={`${styles.badge} ${styles.badgeMain}`}
-                          >
-                            本流
-                          </span>
-                        )}
-                        <CodeBadges link={codeLinks?.[p.id]} />
-                        {isTrending && (
-                          <span
-                            role="img"
-                            aria-label="注目: 引用が伸びている"
-                            title="注目: 最近の引用の伸びが大きい"
-                            className={`${styles.badge} ${styles.badgeTrend}`}
-                          >
-                            TREND
-                          </span>
-                        )}
-                        {isOrphan && (
-                          <span
-                            role="img"
-                            aria-label="孤立: この家系図では他論文との関係がありません"
-                            title="他の論文との分類関係がないため、この家系図では孤立しています"
-                            className={`${styles.badge} ${styles.badgeOrphan}`}
-                          >
-                            孤立
-                          </span>
-                        )}
-                      </div>
-                      <div className="mt-1 line-clamp-2 font-medium text-ink">
-                        {p.title || p.id}
-                      </div>
-                      {p.tldr && <div className="mt-1 line-clamp-2 text-ink-muted">{p.tldr}</div>}
-                      <div className="mt-1 truncate text-ink-subtle">
-                        {authors}
-                        {extra}
-                      </div>
-                      {typeof p.citation_count === "number" && p.citation_count > 0 && (
-                        <div className="mt-1 text-ink-subtle">
-                          📖 {p.citation_count.toLocaleString()}
-                        </div>
-                      )}
-                    </a>
-                  </foreignObject>
-                </g>
-              );
-            })}
-
-            {hoveredNodeId &&
-              (() => {
-                const p = positioned.find((n) => n.id === hoveredNodeId);
-                if (!p) return null;
-                const popW = 300;
-                const popH = 200;
-                const gap = 12;
-                const flip = p._x + NODE_W + gap + popW > totalW;
-                const px = Math.max(0, flip ? p._x - popW - gap : p._x + NODE_W + gap);
-                const py = Math.max(0, Math.min(p._y, totalH - popH));
-                const metaParts = [
-                  typeof p.citation_count === "number" && p.citation_count > 0
-                    ? `📖 ${p.citation_count.toLocaleString()}`
-                    : null,
-                  formatStars(typeof p.github_stars === "number" ? p.github_stars : null)
-                    ? `⭐${formatStars(p.github_stars as number)}`
-                    : null,
-                  typeof p.arxiv_id === "string" && p.arxiv_id
-                    ? `arXiv:${p.arxiv_id}`
-                    : typeof p.doi === "string" && p.doi
-                      ? `DOI:${p.doi}`
+              {hoveredNodeId &&
+                (() => {
+                  const p = positioned.find((n) => n.id === hoveredNodeId);
+                  if (!p) return null;
+                  const popW = 300;
+                  const popH = 200;
+                  const gap = 12;
+                  const flip = p._x + NODE_W + gap + popW > totalW;
+                  const px = Math.max(0, flip ? p._x - popW - gap : p._x + NODE_W + gap);
+                  const py = Math.max(0, Math.min(p._y, totalH - popH));
+                  const metaParts = [
+                    typeof p.citation_count === "number" && p.citation_count > 0
+                      ? `📖 ${p.citation_count.toLocaleString()}`
                       : null,
-                ].filter((part): part is string => Boolean(part));
-                const authors = Array.isArray(p.authors) ? p.authors.join(", ") : "";
-                return (
-                  <foreignObject x={px} y={py} width={popW} height={popH} overflow="visible">
-                    <div
-                      role="dialog"
-                      aria-label={`${p.title ?? p.id} の詳細`}
-                      className={`${styles.popoverPanel} ${styles.popoverVisible} w-full rounded-md border border-rule bg-surface-elevated p-3 text-xs`}
-                    >
-                      <div className="text-[0.68rem] text-ink-subtle">
-                        {formatVenue(p.venue, p.year) || "—"}
+                    formatStars(typeof p.github_stars === "number" ? p.github_stars : null)
+                      ? `⭐${formatStars(p.github_stars as number)}`
+                      : null,
+                    typeof p.arxiv_id === "string" && p.arxiv_id
+                      ? `arXiv:${p.arxiv_id}`
+                      : typeof p.doi === "string" && p.doi
+                        ? `DOI:${p.doi}`
+                        : null,
+                  ].filter((part): part is string => Boolean(part));
+                  const authors = Array.isArray(p.authors) ? p.authors.join(", ") : "";
+                  return (
+                    <foreignObject x={px} y={py} width={popW} height={popH} overflow="visible">
+                      <div
+                        role="tooltip"
+                        aria-label={`${p.title ?? p.id} の詳細`}
+                        className={`${styles.popoverPanel} ${styles.popoverVisible} w-full rounded-md border border-rule bg-surface-elevated p-3 text-xs`}
+                      >
+                        <div className="text-[0.68rem] text-ink-subtle">
+                          {formatVenue(p.venue, p.year) || "—"}
+                        </div>
+                        <h3 className="mt-1 font-medium text-ink">{p.title || p.id}</h3>
+                        {p.tldr && (
+                          <>
+                            <p lang="en" className="mt-1 text-ink-muted">
+                              {p.tldr}
+                            </p>
+                            <p
+                              className="mt-0.5 text-[0.62rem] text-ink-subtle"
+                              data-abstract-excerpt
+                            >
+                              要旨の冒頭（{abstractExcerptSourceLabel(p.id)}
+                              経由。著作権は著者に帰属）
+                            </p>
+                          </>
+                        )}
+                        {authors && <div className="mt-1 text-ink-subtle">{authors}</div>}
+                        {metaParts.length > 0 && (
+                          <div className="mt-1 text-ink-subtle">{metaParts.join("  ·  ")}</div>
+                        )}
                       </div>
-                      <h3 className="mt-1 font-medium text-ink">{p.title || p.id}</h3>
-                      {p.tldr && (
-                        <>
-                          <p lang="en" className="mt-1 text-ink-muted">
-                            {p.tldr}
-                          </p>
-                          <p
-                            className="mt-0.5 text-[0.62rem] text-ink-subtle"
-                            data-abstract-excerpt
-                          >
-                            要旨の冒頭（{abstractExcerptSourceLabel(p.id)}経由。著作権は著者に帰属）
-                          </p>
-                        </>
-                      )}
-                      {authors && <div className="mt-1 text-ink-subtle">{authors}</div>}
-                      {metaParts.length > 0 && (
-                        <div className="mt-1 text-ink-subtle">{metaParts.join("  ·  ")}</div>
-                      )}
-                    </div>
-                  </foreignObject>
-                );
-              })()}
+                    </foreignObject>
+                  );
+                })()}
 
-            {hoveredEdgeKey &&
-              (() => {
-                const e = visibleEdges.find((edge) => edgeKey(edge) === hoveredEdgeKey);
-                if (!e) return null;
-                const src = positionById.get(e.src);
-                const dst = positionById.get(e.dst);
-                if (!src || !dst) return null;
-                const midX = (src.x + NODE_W / 2 + (dst.x + NODE_W / 2)) / 2;
-                const midY = (src.y + NODE_H + dst.y) / 2;
-                const ttW = 260;
-                const ttH = 110;
-                const ttX = Math.max(0, Math.min(midX - ttW / 2, totalW - ttW));
-                const ttY = Math.max(0, midY - ttH - 8);
-                return (
-                  <foreignObject x={ttX} y={ttY} width={ttW} height={ttH} overflow="visible">
-                    <div
-                      role="tooltip"
-                      className={`${styles.tooltipPanel} ${styles.tooltipVisible} rounded-md border border-rule bg-surface-elevated p-2 text-xs`}
-                    >
-                      <div className="font-medium text-ink">{relationLabelJa(e.relation)}</div>
-                      <div className="mt-1 line-clamp-3 text-ink-muted">{e.rationale}</div>
-                      <div className="mt-1 text-ink-subtle">
-                        確信度 {e.confidence.toFixed(2)} ・ クリックで根拠を表示
+              {hoveredEdgeKey &&
+                (() => {
+                  const e = visibleEdges.find((edge) => edgeKey(edge) === hoveredEdgeKey);
+                  if (!e) return null;
+                  const src = positionById.get(e.src);
+                  const dst = positionById.get(e.dst);
+                  if (!src || !dst) return null;
+                  const midX = (src.x + NODE_W / 2 + (dst.x + NODE_W / 2)) / 2;
+                  const midY = (src.y + NODE_H + dst.y) / 2;
+                  const ttW = 260;
+                  const ttH = 110;
+                  const ttX = Math.max(0, Math.min(midX - ttW / 2, totalW - ttW));
+                  const ttY = Math.max(0, midY - ttH - 8);
+                  return (
+                    <foreignObject x={ttX} y={ttY} width={ttW} height={ttH} overflow="visible">
+                      <div
+                        role="tooltip"
+                        className={`${styles.tooltipPanel} ${styles.tooltipVisible} rounded-md border border-rule bg-surface-elevated p-2 text-xs`}
+                      >
+                        <div className="font-medium text-ink">{relationLabelJa(e.relation)}</div>
+                        <div className="mt-1 line-clamp-3 text-ink-muted">{e.rationale}</div>
+                        <div className="mt-1 text-ink-subtle">
+                          確信度 {e.confidence.toFixed(2)} ・ クリックで根拠を表示
+                        </div>
                       </div>
-                    </div>
-                  </foreignObject>
-                );
-              })()}
-          </svg>
+                    </foreignObject>
+                  );
+                })()}
+            </svg>
+          </div>
         </div>
 
         {minimapVisible && (
           <div
             role="img"
             aria-label="家系図の縮小表示"
-            className="pointer-events-none absolute bottom-2 right-2 rounded-md border border-rule bg-surface-elevated p-1 shadow"
+            className="pointer-events-none absolute bottom-2 right-2 hidden rounded-md border border-rule bg-surface-elevated p-1 shadow sm:block"
           >
             <canvas
               ref={minimapCanvasRef}
@@ -1478,11 +1694,41 @@ export function LineageTree({
         )}
       </div>
 
-      <p className="mt-2 text-xs text-ink-subtle">
+      {selectedPaperId && neighbors && nodeById.get(selectedPaperId) && (
+        <p
+          role="status"
+          className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-md border border-accent bg-accent/5 px-3 py-2 text-xs text-ink"
+          data-selected-paper-bar
+        >
+          <span className="text-ink-subtle">選択中:</span>
+          <strong className="min-w-0 break-words font-medium">
+            {String(nodeById.get(selectedPaperId)?.title || selectedPaperId)}
+          </strong>
+          <span className="text-ink-muted">
+            土台 {neighbors.prior.length} 本・発展 {neighbors.derivative.length} 本
+          </span>
+          <a href="#paper-neighbors-title" className="text-accent-strong underline">
+            一覧を見る
+          </a>
+        </p>
+      )}
+
+      <p id="theme-after-tree" tabIndex={-1} className="mt-2 text-xs text-ink-subtle">
         {view === "tree"
-          ? "線をクリック（タップ、または Tab で選んで Enter）すると、関係の根拠と引用文を表示します。"
+          ? "カードを選ぶと土台と発展、線を選ぶと関係の根拠を表示します（キーボードは Tab で選んで Enter）。"
           : "点を選ぶと、その論文の土台と発展を下に表示します。線の上に置くと関係が出ます。"}
       </p>
+
+      {selectedEdge && (
+        <EdgeEvidencePanel
+          ref={evidenceHeadingRef}
+          edge={selectedEdge}
+          nodeById={nodeById}
+          onClose={closeEvidence}
+          theme={feedbackTheme}
+          onMainPath={mainPathKeys.has(edgeKey(selectedEdge))}
+        />
+      )}
 
       <PaperNeighborsPanel
         nodes={artifact.nodes}
@@ -1496,17 +1742,6 @@ export function LineageTree({
         onShowEvidence={selectEdge}
         mainPathNodeIds={mainPathNodeIds}
       />
-
-      {selectedEdge && (
-        <EdgeEvidencePanel
-          ref={evidenceHeadingRef}
-          edge={selectedEdge}
-          nodeById={nodeById}
-          onClose={() => setSelectedEdgeKey(null)}
-          theme={feedbackTheme}
-          onMainPath={mainPathKeys.has(edgeKey(selectedEdge))}
-        />
-      )}
 
       <EdgeRelationList
         edges={visibleEdges}
@@ -1528,6 +1763,11 @@ export function LineageTree({
           }}
           onKeyDown={(e) => {
             if (e.key === "Escape") setKbdHelpOpen(false);
+            // Modal: Tab stays on the one control inside (the close button).
+            if (e.key === "Tab") {
+              e.preventDefault();
+              kbdCloseRef.current?.focus();
+            }
           }}
         >
           <div className="w-full max-w-sm rounded-md border border-rule bg-surface-elevated p-4">
@@ -1538,27 +1778,27 @@ export function LineageTree({
               <tbody>
                 <tr>
                   <td className="w-10 pr-2 font-mono text-ink">1</td>
-                  <td>📊 順位</td>
+                  <td>並べ方: 被引用の多い順</td>
                 </tr>
                 <tr>
                   <td className="pr-2 font-mono text-ink">2</td>
-                  <td>📈 log</td>
+                  <td>並べ方: 被引用数（対数）</td>
                 </tr>
                 <tr>
                   <td className="pr-2 font-mono text-ink">3</td>
-                  <td>🌳 系譜</td>
+                  <td>並べ方: 研究の流れ</td>
                 </tr>
                 <tr>
                   <td className="pr-2 font-mono text-ink">4</td>
-                  <td>⭐ 中心</td>
+                  <td>並べ方: 中心性</td>
                 </tr>
                 <tr>
                   <td className="pr-2 font-mono text-ink">5</td>
-                  <td>🏛 会議</td>
+                  <td>並べ方: 会議の格</td>
                 </tr>
                 <tr>
                   <td className="pr-2 font-mono text-ink">6</td>
-                  <td>💥 新規</td>
+                  <td>並べ方: 新しさの種類</td>
                 </tr>
                 <tr>
                   <td className="pr-2 font-mono text-ink">/</td>
@@ -1583,9 +1823,10 @@ export function LineageTree({
               </tbody>
             </table>
             <button
+              ref={kbdCloseRef}
               type="button"
               onClick={() => setKbdHelpOpen(false)}
-              className="mt-3 w-full rounded-md border border-rule px-2 py-1 text-xs text-ink-muted"
+              className="mt-3 min-h-9 w-full rounded-md border border-rule px-2 py-1 text-xs text-ink-muted"
             >
               閉じる
             </button>
