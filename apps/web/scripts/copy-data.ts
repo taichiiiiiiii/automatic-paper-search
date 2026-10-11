@@ -12,7 +12,7 @@
  * public/ is gitignored (apps/web/.gitignore) -- its contents are build
  * artifacts this script regenerates, not something to commit.
  *
- * Only *.json files are copied, plus a short list of head-metadata assets
+ * Only *.json files (and the per-theme Atom feeds `themes/<slug>/feed.xml`) are copied, plus a short list of head-metadata assets
  * (favicon/OG image -- see HEAD_ASSET_FILES), read from `layout.headAssets`
  * (legacy `docs/assets`; p5 `apps/web/static/assets`, since the A9 data
  * move relocates just those three tracked files there -- `public/` itself
@@ -51,6 +51,11 @@ const EXCLUDED_TOP_LEVEL_DIRS = new Set(["design", "research", "migration"]);
  * `/assets/<name>` path the current docs/ site serves them from. */
 const HEAD_ASSET_FILES = ["favicon.svg", "favicon-32.png", "og-image.png"];
 
+/** R4-3 (design 48 P1-1): the per-theme Atom feed
+ * (`themes/<slug>/feed.xml`) is the one non-JSON data file the site
+ * serves. Only that exact shape is copied. */
+const THEME_FEED_RE = /^themes\/[a-z0-9](?:[a-z0-9-]{0,78}[a-z0-9])?\/feed\.xml$/;
+
 /** Decides whether one docs/-relative path (POSIX-style, e.g.
  * "cvpr-2026/papers.json") should be copied into public/. */
 function shouldCopy(relPath: string): boolean {
@@ -63,6 +68,7 @@ function shouldCopy(relPath: string): boolean {
   if (basename.endsWith("_IMPLEMENTER.md")) {
     return false;
   }
+  if (THEME_FEED_RE.test(relPath)) return true;
   return basename.endsWith(".json");
 }
 

@@ -21,6 +21,12 @@ import {
   fetchThemeQualityRollup,
   fetchThemesManifest,
 } from "../../lib/data-themes";
+import {
+  fetchThemeCodeLinks,
+  fetchThemeNewPapers,
+  type ThemeCodeLinks,
+  type ThemeNewPapers,
+} from "../../lib/themes-feed";
 import { dataDateOf } from "../../lib/themes-format";
 import type { ThemeManifestEntry, ThemeQualityRollup } from "../../lib/themes-gallery";
 import { eligibleThemeManifest, pickDefaultSlug, safeDisplayCount } from "../../lib/themes-gallery";
@@ -28,6 +34,7 @@ import type { LineageArtifact } from "../../lib/themes-quality";
 import { SLUG_RE } from "../../lib/themes-slug";
 import { PublicationNotice } from "../lineage/publication-badge";
 import { LineageTree } from "./LineageTree";
+import { ThemeCodeLinksSection, ThemeNewPapersSection } from "./ThemeFeedSections";
 import { ThemeGallery } from "./ThemeGallery";
 import { ThemeRequestForm } from "./ThemeRequestForm";
 
@@ -105,6 +112,28 @@ export function ThemesClient() {
   const [state, setState] = useState<ViewState>({ phase: "loading" });
   const [aboutOpen, setAboutOpen] = useState(false);
   const [dismissedFallback, setDismissedFallback] = useState(false);
+  // R4-3: optional side files of the shown theme (never block the page).
+  const [extras, setExtras] = useState<{
+    slug: string;
+    newPapers: ThemeNewPapers | null;
+    codeLinks: ThemeCodeLinks | null;
+  } | null>(null);
+  const readySlug = state.phase === "ready" ? state.currentSlug : null;
+
+  useEffect(() => {
+    if (!readySlug) return;
+    let cancelled = false;
+    (async () => {
+      const [newPapers, codeLinks] = await Promise.all([
+        fetchThemeNewPapers(readySlug),
+        fetchThemeCodeLinks(readySlug),
+      ]);
+      if (!cancelled) setExtras({ slug: readySlug, newPapers, codeLinks });
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [readySlug]);
 
   useEffect(() => {
     let cancelled = false;
@@ -229,6 +258,7 @@ export function ThemesClient() {
   }
 
   const { manifest, qualityRollup, currentSlug, artifact, slugFallback } = state;
+  const shownExtras = extras && extras.slug === currentSlug ? extras : null;
   const entry = manifest.find((e) => e.slug === currentSlug);
   const yearRange = entry?.year_range ? `${entry.year_range[0]}–${entry.year_range[1]}` : "—";
   const count = safeDisplayCount(entry?.paper_count ?? artifact.nodes.length);
@@ -353,8 +383,16 @@ export function ThemesClient() {
           artifact={artifact}
           slug={currentSlug}
           themeName={entry?.theme || entryTheme(manifest, currentSlug)}
+          codeLinks={shownExtras?.codeLinks ?? null}
         />
       )}
+
+      <ThemeNewPapersSection
+        slug={currentSlug}
+        data={shownExtras?.newPapers ?? null}
+        nodes={artifact.nodes}
+      />
+      <ThemeCodeLinksSection links={shownExtras?.codeLinks ?? null} nodes={artifact.nodes} />
 
       <footer className="mt-10 text-xs text-ink-subtle">
         自動検査に合格した系譜のみ公開します（人が確認したものは「監査済み」、未確認のものは「未監査（自動生成）」）

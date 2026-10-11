@@ -345,7 +345,17 @@ export default function HowItWorksPage() {
             <a href="https://openalex.org/" rel="noopener">
               OpenAlex
             </a>
-            （CC0）を利用しています。OpenAlex に感謝します。
+            （CC0）を利用しています。OpenAlex に感謝します。テーマの「新着」と Atom
+            フィードも、OpenAlex の引用データ（CC0）から作っています。
+          </li>
+          <li>
+            テーマの系譜の「コード」「HF」の表示は{" "}
+            <a href="https://huggingface.co/papers" rel="noopener">
+              Hugging Face Papers
+            </a>{" "}
+            の API に登録された GitHub リポジトリ・★の数・関連するモデル／データセット／Space
+            の件数と、PaperPilot が手作業で確認した対応表によります。件数とリンクだけを使い、Hugging
+            Face の自動生成の要約やキーワードは使っていません。
           </li>
           <li>
             学会カタログの要旨は、各学会の公開データから取得しています。
@@ -397,7 +407,7 @@ export default function HowItWorksPage() {
               arXiv
             </a>{" "}
             for use of its open access interoperability. 本サイトは arXiv・Semantic
-            Scholar・OpenAlex・OpenReview・PMLR・ACL Anthology・CVF
+            Scholar・OpenAlex・OpenReview・PMLR・ACL Anthology・CVF・Hugging Face
             の公式サービスではなく、各団体の推奨・承認を受けたものでもありません。
           </li>
           <li>

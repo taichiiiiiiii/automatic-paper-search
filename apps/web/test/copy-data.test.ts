@@ -28,6 +28,7 @@ function shouldCopy(relPath: string): boolean {
   if (basename.endsWith("_IMPLEMENTER.md")) {
     return false;
   }
+  if (/^themes\/[a-z0-9](?:[a-z0-9-]{0,78}[a-z0-9])?\/feed\.xml$/.test(relPath)) return true;
   return basename.endsWith(".json");
 }
 
@@ -56,6 +57,17 @@ describe("copy-data shouldCopy", () => {
   it("copies theme lineage JSON and the themes manifest", () => {
     expect(shouldCopy("themes/flash-attention/lineage.json")).toBe(true);
     expect(shouldCopy("themes/themes-manifest.json")).toBe(true);
+  });
+
+  it("copies a theme's new-paper JSON, code links and Atom feed (R4-3), and no other XML", () => {
+    expect(shouldCopy("themes/flash-attention/new-papers.json")).toBe(true);
+    expect(shouldCopy("themes/flash-attention/code-links.json")).toBe(true);
+    expect(shouldCopy("themes/flash-attention/feed.xml")).toBe(true);
+    expect(shouldCopy("themes/feed.xml")).toBe(false);
+    expect(shouldCopy("themes/a/b/feed.xml")).toBe(false);
+    expect(shouldCopy("themes/Bad_Slug/feed.xml")).toBe(false);
+    expect(shouldCopy("cvpr-2026/feed.xml")).toBe(false);
+    expect(shouldCopy("sitemap.xml")).toBe(false);
   });
 
   it("excludes non-JSON files (HTML, CSS, JS, images)", () => {

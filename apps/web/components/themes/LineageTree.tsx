@@ -35,6 +35,7 @@ import {
 import { abstractExcerptSourceLabel, paperLink } from "../../lib/lineage/evidence";
 import { computeMainPath } from "../../lib/lineage/main-path";
 import { exportPng, exportSvg } from "../../lib/themes-export";
+import type { ThemeCodeLinks } from "../../lib/themes-feed";
 import { formatStars, formatVenue } from "../../lib/themes-format";
 import type { LineageArtifact } from "../../lib/themes-quality";
 import { resolveFocus } from "../../lib/themes-quality";
@@ -68,6 +69,7 @@ import {
 } from "../../lib/themes-url-state";
 import { EdgeEvidencePanel, EdgeRelationList, edgeKey, relationLabelJa } from "./EdgeEvidence";
 import styles from "./LineageTree.module.css";
+import { CodeBadges } from "./ThemeFeedSections";
 
 const X_AXIS_BUTTON: Record<XAxisMode, { icon: string; label: string; title: string }> = {
   rank: { icon: "📊", label: "順位", title: "年内の引用数ランキング (既定): 左ほど高被引用" },
@@ -142,10 +144,13 @@ export function LineageTree({
   artifact,
   slug,
   themeName,
+  codeLinks,
 }: {
   artifact: LineageArtifact;
   slug?: string | null;
   themeName?: string | null;
+  /** R4-3: "コード" / "HF" badges per node id (optional side file). */
+  codeLinks?: ThemeCodeLinks | null;
 }) {
   // ---- URL state (?xaxis=&ymin=&ymax=&q=&rels=&orphan=&node=) ----------
   // M8a port of docs/assets/theme.js's readUrlState(): read once per
@@ -1198,6 +1203,7 @@ export function LineageTree({
                             本流
                           </span>
                         )}
+                        <CodeBadges link={codeLinks?.[p.id]} />
                         {isTrending && (
                           <span
                             role="img"
