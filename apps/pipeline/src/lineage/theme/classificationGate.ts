@@ -43,7 +43,7 @@
  * degraded builds this gate exists to refuse. `ClassifiedRate.referenceOnly`
  * reports how many classified edges are citation-only (no relation kind
  * read from a sentence), so a mostly-`api_citation` graph is visible in
- * the log; the `lineage_relation_share` quality check is what blocks a
+ * the log; the `lineage_relation_count` quality check is what blocks a
  * graph with too few lineage claims.
  */
 

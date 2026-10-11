@@ -22,7 +22,7 @@ function artifact(
     edges: Array.from({ length: edgeCount }, (_, i) => ({
       src: `n${i}`,
       dst: `n${i + 1}`,
-      relation: i === 0 ? "extends" : "baseline_only",
+      relation: i < 3 ? "extends" : "baseline_only",
     })),
     meta: breakdown ? { provenance_breakdown: breakdown } : {},
   };
@@ -38,7 +38,8 @@ describe("design 41 theme gate checks", () => {
       minEdges: 3,
       minNodes: 8,
       maxReviewShare: 0.4,
-      minLineageShare: 0.1,
+      minLineageShare: null,
+      minLineageEdges: 3,
     });
     expect(themeGateFromPolicy({ conference_max_age_days: 30, theme_max_age_days: 90 })).toBeNull();
   });
@@ -54,7 +55,7 @@ describe("design 41 theme gate checks", () => {
       ["edge_density", "passed"],
       ["node_count", "passed"],
       ["review_share", "passed"],
-      ["lineage_relation_share", "passed"],
+      ["lineage_relation_count", "passed"],
       ["generator_current", "passed"],
     ]);
   });
@@ -82,7 +83,7 @@ describe("design 41 theme gate checks", () => {
       ["edge_density", "passed"],
       ["node_count", "passed"],
       ["review_share", "passed"],
-      ["lineage_relation_share", "passed"],
+      ["lineage_relation_count", "passed"],
       ["generator_current", "failed"],
     ]);
   });
@@ -129,7 +130,8 @@ describe("R2-13 edge_density theme check", () => {
       minEdges: 5,
       minNodes: 8,
       maxReviewShare: 0.4,
-      minLineageShare: 0.1,
+      minLineageShare: null,
+      minLineageEdges: 3,
     });
     const strict = themeGateFromPolicy({ ...policy, theme_min_edges: 10 })!;
     const [, density] = themeGateChecks(artifact({ llm: 5 }, 5, 6), "2026-10-10T09:26:08Z", strict);
@@ -137,7 +139,7 @@ describe("R2-13 edge_density theme check", () => {
   });
 });
 
-describe("R2-17 structure checks (node_count, review_share, lineage_relation_share)", () => {
+describe("structure checks (node_count, review_share, lineage_relation_count)", () => {
   const gate = themeGateFromPolicy(policy)!;
   const node = (id: string, title: string, extra: Record<string, unknown> = {}) => ({
     id,
@@ -166,7 +168,7 @@ describe("R2-17 structure checks (node_count, review_share, lineage_relation_sha
     expect(review?.evidence[0]).toBe("reviews:7/13");
   });
 
-  it("fails an all-baseline star (MoE shape) and passes at the minimum share", () => {
+  it("fails an all-baseline star (MoE shape) and passes at three lineage relations (R2-25)", () => {
     const nodes = Array.from({ length: 10 }, (_, i) => node(`n${i}`, `MoE method ${i}`));
     const star = Array.from({ length: 10 }, (_, i) => ({
       src: `n${i}`,
@@ -174,14 +176,52 @@ describe("R2-17 structure checks (node_count, review_share, lineage_relation_sha
       relation: "baseline_only",
     }));
     const failed = themeStructureChecks({ nodes, edges: star }, gate).find(
-      (c) => c.name === "lineage_relation_share",
+      (c) => c.name === "lineage_relation_count",
     );
-    expect(failed).toMatchObject({ status: "failed", observed: 0, evidence: ["lineage:0/10"] });
-    const one = [...star.slice(1), { src: "n1", dst: "n2", relation: "supersedes" }];
-    const passed = themeStructureChecks({ nodes, edges: one }, gate).find(
-      (c) => c.name === "lineage_relation_share",
-    );
-    expect(passed).toMatchObject({ status: "passed", observed: 0.1 });
+    expect(failed).toMatchObject({ status: "failed", observed: 0, evidence: ["lineage:0<3"] });
+    // Three quote-backed claims among many reference-only edges pass: a low
+    // share is honest once every strong claim needs a cue (R2-22).
+    const three = [
+      ...star,
+      ...Array.from({ length: 30 }, (_, i) => ({
+        src: `n${i % 10}`,
+        dst: "n1",
+        relation: "baseline_only",
+      })),
+      { src: "n1", dst: "n2", relation: "supersedes" },
+      { src: "n2", dst: "n3", relation: "extends" },
+      { src: "n3", dst: "n4", relation: "contrasts" },
+    ];
+    const checks = themeStructureChecks({ nodes, edges: three }, gate);
+    expect(checks.find((c) => c.name === "lineage_relation_count")).toMatchObject({
+      status: "passed",
+      observed: 3,
+      expected: 3,
+    });
+    expect(checks.find((c) => c.name === "lineage_relation_share")).toBeUndefined();
+  });
+
+  it("still runs the share check when the policy sets theme_min_lineage_share", () => {
+    const nodes = Array.from({ length: 10 }, (_, i) => node(`n${i}`, `MoE method ${i}`));
+    const edges = [
+      ...Array.from({ length: 9 }, (_, i) => ({
+        src: `n${i}`,
+        dst: "n9",
+        relation: "baseline_only",
+      })),
+      { src: "n1", dst: "n2", relation: "supersedes" },
+    ];
+    const share = themeGateFromPolicy({
+      ...policy,
+      theme_min_lineage_share: 0.1,
+      theme_min_lineage_edges: 1,
+    })!;
+    const checks = themeStructureChecks({ nodes, edges }, share);
+    expect(checks.find((c) => c.name === "lineage_relation_share")).toMatchObject({
+      status: "passed",
+      observed: 0.1,
+    });
+    expect(checks.find((c) => c.name === "lineage_relation_count")?.status).toBe("passed");
   });
 
   it("fails a graph below theme_min_nodes (Flash Attention: 4 nodes) and reads the policy", () => {

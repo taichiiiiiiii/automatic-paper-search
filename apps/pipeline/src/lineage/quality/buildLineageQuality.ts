@@ -1085,8 +1085,13 @@ export interface QualityPolicy {
   theme_min_edges?: number;
   /** Maximum share of survey/review nodes (`review_share`, R2-17; default 0.4). */
   theme_max_review_share?: number;
-  /** Minimum share of lineage (non-baseline) relations (`lineage_relation_share`, R2-17; default 0.1). */
+  /**
+   * Minimum share of lineage (non-baseline) relations (`lineage_relation_share`,
+   * R2-17). Optional since R2-25: when absent the share check is not run.
+   */
   theme_min_lineage_share?: number;
+  /** Minimum number of lineage relations (`lineage_relation_count`, R2-25; default 3). */
+  theme_min_lineage_edges?: number;
   /** Minimum node count (`node_count`, R2-17; default 8). */
   theme_min_nodes?: number;
   [key: string]: unknown;
@@ -1228,10 +1233,13 @@ export function manifestPayload(manifest: QualityManifest): Buffer {
  *    surveys/reviews (shared `isSurveyLike`: publication type, title,
  *    abstract/TL;DR). The GNN run with a single survey seed had 7/13 review
  *    nodes — a reading list, not a method lineage.
- *  - `lineage_relation_share` (R2-17): at least `minLineageShare` of the
- *    edges carry a lineage relation (extends / successor / supersedes /
- *    contrasts / ablation). The MoE run's 13 edges were all baseline_only in
- *    a star around one survey.
+ *  - `lineage_relation_count` (R2-25): at least `minLineageEdges` edges
+ *    carry a lineage relation (extends / successor / supersedes / contrasts /
+ *    ablation). The MoE run's 13 edges were all baseline_only in a star
+ *    around one survey. Since R2-22 every such relation needs a quoted cue,
+ *    so a share bar (R2-17, 10%) measured citation density rather than
+ *    quality: honest themes with many reference-only edges failed it. The
+ *    share check still runs when the policy sets `theme_min_lineage_share`.
  */
 export interface ThemeGate {
   minClassifiedRate: number;
@@ -1239,13 +1247,15 @@ export interface ThemeGate {
   minEdges: number;
   minNodes: number;
   maxReviewShare: number;
-  minLineageShare: number;
+  /** null = share check off (R2-25 default). */
+  minLineageShare: number | null;
+  minLineageEdges: number;
 }
 
 export const DEFAULT_THEME_MIN_EDGES = 3;
 export const DEFAULT_THEME_MIN_NODES = 8;
 export const DEFAULT_THEME_MAX_REVIEW_SHARE = 0.4;
-export const DEFAULT_THEME_MIN_LINEAGE_SHARE = 0.1;
+export const DEFAULT_THEME_MIN_LINEAGE_EDGES = 3;
 /** Relations that say something about lineage (everything but `baseline_only`). */
 export const LINEAGE_RELATIONS: ReadonlySet<string> = new Set([
   "extends",
@@ -1274,20 +1284,21 @@ export function themeGateFromPolicy(policy: QualityPolicy): ThemeGate | null {
     minEdges: nonNegative(minEdges, DEFAULT_THEME_MIN_EDGES),
     minNodes: nonNegative(policy.theme_min_nodes, DEFAULT_THEME_MIN_NODES),
     maxReviewShare: nonNegative(policy.theme_max_review_share, DEFAULT_THEME_MAX_REVIEW_SHARE, 1),
-    minLineageShare: nonNegative(
-      policy.theme_min_lineage_share,
-      DEFAULT_THEME_MIN_LINEAGE_SHARE,
-      1,
-    ),
+    minLineageShare:
+      typeof policy.theme_min_lineage_share === "number"
+        ? nonNegative(policy.theme_min_lineage_share, 0, 1)
+        : null,
+    minLineageEdges: nonNegative(policy.theme_min_lineage_edges, DEFAULT_THEME_MIN_LINEAGE_EDGES),
   };
 }
 
 const round3 = (x: number): number => Math.round(x * 1000) / 1000;
 
-/** R2-17 structure checks: node_count, review_share, lineage_relation_share. */
+/** Structure checks: node_count, review_share, lineage_relation_count (+ optional share). */
 export function themeStructureChecks(
   data: Record<string, unknown>,
-  gate: Pick<ThemeGate, "minNodes" | "maxReviewShare" | "minLineageShare">,
+  gate: Pick<ThemeGate, "minNodes" | "maxReviewShare" | "minLineageShare"> &
+    Partial<Pick<ThemeGate, "minLineageEdges">>,
 ): QualityCheck[] {
   const nodes = Array.isArray(data.nodes) ? data.nodes.filter(isMapping) : [];
   const edges = Array.isArray(data.edges) ? data.edges.filter(isMapping) : [];
@@ -1317,17 +1328,30 @@ export function themeStructureChecks(
   const lineage = edges.filter(
     (e) => typeof e.relation === "string" && LINEAGE_RELATIONS.has(e.relation),
   ).length;
-  const lineageShare = edges.length === 0 ? 0 : lineage / edges.length;
-  const enoughLineage = edges.length > 0 && lineageShare >= gate.minLineageShare;
+  const minEdges = gate.minLineageEdges ?? DEFAULT_THEME_MIN_LINEAGE_EDGES;
+  const enoughCount = lineage >= minEdges;
   out.push(
     check(
-      "lineage_relation_share",
-      enoughLineage ? "passed" : "failed",
-      round3(lineageShare),
-      gate.minLineageShare,
-      enoughLineage ? [] : [`lineage:${lineage}/${edges.length}`],
+      "lineage_relation_count",
+      enoughCount ? "passed" : "failed",
+      lineage,
+      minEdges,
+      enoughCount ? [] : [`lineage:${lineage}<${minEdges}`],
     ),
   );
+  if (gate.minLineageShare !== null) {
+    const lineageShare = edges.length === 0 ? 0 : lineage / edges.length;
+    const enoughLineage = edges.length > 0 && lineageShare >= gate.minLineageShare;
+    out.push(
+      check(
+        "lineage_relation_share",
+        enoughLineage ? "passed" : "failed",
+        round3(lineageShare),
+        gate.minLineageShare,
+        enoughLineage ? [] : [`lineage:${lineage}/${edges.length}`],
+      ),
+    );
+  }
   return out;
 }
 
