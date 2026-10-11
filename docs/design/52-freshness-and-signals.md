@@ -228,6 +228,57 @@ published ──(確定版の proceedings が出たら 1 回だけ照合し、�
 
 ---
 
+## 8. 実装の記録（R3-1、2026-10-11）
+
+ユーザー決定 **D5=A**（学会の一覧は公式の proceedings から作り、新しい回は OpenReview の `/groups` で検知する。§4.1 の案 A のうち virtual site を除いたもの。§7 の D5〔日本の学会〕とは別の番号）を実装した。virtual site の JSON は robots.txt で禁止されているので使っていない。
+
+### 8.1 やったこと
+
+| 項目 | 内容 | 場所 |
+|---|---|---|
+| OpenReview の 403 | `/notes` の 403（`ChallengeRequiredError`）を **`source_blocked`** として扱う。`fetchNotes` は `outcome: "source_blocked"` を返し、それまでのページも捨てる。`collect_openreview` は exit 3 で何も書かない。watch 側は `CONF_SOURCE_BLOCKED`（kind=`error`）で、公開済みの件数と ID は保たれる（「0 件」や「縮んだ」と判定しない） | `conference/openreview/{fetchNotes,main}.ts`、`conference/watch/{models,openreview}.ts` |
+| PMLR | 巻のページ（題名・著者・PMLR のページ・PDF・OpenReview の forum ID）と `bibliography.bib`（要旨）の **2 回の取得だけ**で作る。行の識別子は OpenReview の forum ID（`openreview:<id>`、これまでの ICML と同じ。系譜のコードは変えていない）。OpenReview のリンクが無い論文が 1 本でもあれば、ページの解析に失敗した論文があれば、書かない | `conference/pmlr/{volume,main,cli}.ts` |
+| ACL Anthology | **2026 年の XML から `<url>` 要素が無くなっていた**ため、今のアダプタは ACL 2026 を 0 本と解析していた（書かずに止まる側の失敗）。`<collection id>-<volume id>.<paper id>`（例 `2026.acl-long.1`）から ID を組み立てるようにした。古い形式（`<url>` あり）はそのまま | `conference/acl/anthology.ts` |
+| CVF | `--listing-only`：年の一覧 1 回だけで、題名・著者・リンクを取る。**要旨は取らない**（CVF はライセンスを与えていない。51 B5）。既定の動き（詳細ページと要旨）は、Python との一致テストのために残した | `conference/cvf/{listing,fetch,main}.ts` |
+| NeurIPS proceedings | `papers.nips.cc` の年の一覧（1 回）を解析し、公開中の一覧と題名で突き合わせる報告だけを出す。要旨は取らない（著者は NeurIPS にだけ許諾している）。一覧には OpenReview の ID が無く、新しい識別子の種類を足すと系譜のコードに手が入るので、**一覧の生成には使わない** | `conference/neurips/{listing,cli}.ts` |
+| 出所とライセンスの記録 | 各収集器が `papers_<date>.csv` の隣に `source_license.json` を書く（出典、ライセンス、帰属の文、要旨を載せたかとその根拠、PMLR は論文ごとの PMLR のページ）。画面への表示（51 A3・A6）はまだ | `conference/proceedings/sourceLicense.ts` |
+| 新しい回の検知 | `/groups?id=venues` に会場の group が出たら、未公開の回を **pending-edition**（`phase: announced`、`status: pending_approval`、`auto_publish: false`）として記録する。新しい回だけ `/groups?id=<会場>` で開催日と場所を取る（1 回の実行で最大 11 回、1 秒間隔）。取得の失敗や 403 では記録を変えない（`last_check.status` に `source_blocked`／`error`）。公開済みになった回は記録から外す。**公開は一切しない** | `conference/watch/{groups,groupsCli}.ts`、`data/config/conference-editions-v1.json` |
+| テスト | 2026-10-11 に取得した実物の抜粋（403 の本文、`/groups`、PMLR v306、2026.acl.xml、CVPR 2026 の一覧、NeurIPS 2024/2025 の一覧）で検証 | `apps/pipeline/test/conference/{proceedings,watch,openreview}/`、`fixtures/proceedings/README.md` |
+
+### 8.2 ライセンスの確認結果
+
+| 情報源 | 確認した文言 | 扱い |
+|---|---|---|
+| PMLR | 出版契約（`proceedings.mlr.press/pmlr-license-agreement.html`）：著者は論文を **CC BY 4.0** で一般に許諾する。帰属表示には proceedings の引用と PMLR のページへのリンクを含める | 要旨を載せる。`source_license.json` に CC BY 4.0、帰属の文、論文ごとの PMLR のページを記録 |
+| ACL Anthology | 2016 年以降の資料は CC BY 4.0（フッター） | 要旨を載せる。帰属を記録（2016 年より前の collection はライセンスを `null` にし、要確認と書く） |
+| CVF Open Access | 「Copyright and all rights therein are retained by authors」（ライセンスの付与なし） | `--listing-only` で題名・著者・リンクだけ |
+| NeurIPS proceedings | 著者は NeurIPS に非独占の許諾をするだけ（`nips.cc/FAQ/Copyright`） | 題名・著者・リンクだけ、突き合わせ専用 |
+| robots.txt | proceedings.mlr.press・papers.nips.cc・openaccess.thecvf.com・aclanthology.org はいずれも 404（制限なし） | 取得は 1 回の実行で 1〜2 回 |
+
+### 8.3 実際に作った一覧
+
+| 回 | 取得 | 結果 |
+|---|---|---|
+| **ACL 2026** | `acl/cli.ts --conference acl-2026 --venue acl --xml-id 2026.acl`（1 回、7.3 MB、約 2 秒）→ `buildSummaryCli` → `buildPagesCli`（全学会）→ `identityLiteCli`・`searchIndexCli`・`buildLineageQualityCli`（promote の再生成と同じ手順） | **2,296 本**（long＋short、全件に要旨）。`data/published/acl-2026/` と共有ファイルを更新。系譜は無し（`blocked`）。oral の情報は Anthology に無いので全件 Poster |
+| **ICML 2026** | `PAPERPILOT_OUTPUT_ROOT=data/inputs pnpm exec tsx apps/pipeline/src/conference/pmlr/cli.ts --conference icml-2026 --venue ICML --volume 306`（2 回、合計 21 MB、約 3 秒） | **6,552 本**を取得（全件に OpenReview の ID と要旨）。ただし **`buildPagesCli` が拒否した**：JS なしの一覧ページの上限 `NOJS_MAX_PAPERS = 6,000`（`catalog/paperLinksGate.ts` と `apps/web/app/[conf]/paper-links/logic.ts`）を超える。このため ICML 2026 はリポジトリに入れていない（`data/inputs/icml-2026/` に置くと、以後の全学会の再生成が毎回止まる） |
+
+ICML 2026 を載せるには、次のどちらかの判断が要る（公開範囲に関わるのでユーザーが決める）。
+
+1. 上限を上げる（例：10,000）。NeurIPS 2026（約 9,200 本）でも同じ問題が出る。上限は 3 MB の大きさの上限とあわせて、両方のファイルで同時に変える。
+2. JS なしのページを分割する（ページ送り）。
+
+決まったら、上の 1 行のコマンド → `buildSummaryCli --conference icml-2026` → 共有ファイルの再生成（ACL 2026 と同じ手順）で、数秒で作れる。
+
+新しい回の検知は `pnpm exec tsx apps/pipeline/src/conference/watch/groupsCli.ts [--write]`（既定は dry-run）。2026-10-11 の実行（10 回の取得）で、未公開の 9 回を記録した：colm-2025、colm-2026、cvpr-2027、eccv-2026、emnlp-2026、iclr-2025、iclr-2027、icml-2026（PMLR）、neurips-2026（`data/state/conference-watch/pending-editions-v1.json`）。acl-2026 は上で生成したので対象外。
+
+### 8.4 残り
+
+- 画面とデータへのライセンス・帰属の表示（51 A3・A6）。`source_license.json` はまだどこからも読まれていない。
+- PMLR と ACL の一覧には oral の区別が無い（全件 Poster）。必要なら arXiv のコメントで補う（ACL には `--oral-arxiv-query` がある）。
+- 新しい回の検知を定期実行にするか（cron）と、記録した pending-edition から「承認 1 回で公開」までの流れ（§4.2 の残り、R3 の完了条件）。
+- 既存の CVF 3 回分の要旨全文（51 §4）は手を付けていない。作り直すときは `--listing-only` を使う。
+- NeurIPS 2025 の main track はまだ papers.nips.cc に無い（2026-10-11 時点で Creative AI の 64 本だけ）。
+
 ## 付録 A：出典（2026-10-11 に確認）
 
 - arXiv API Terms of Use：https://info.arxiv.org/help/api/tou.html （旧来の API は 3 秒に 1 回、同時接続 1）
