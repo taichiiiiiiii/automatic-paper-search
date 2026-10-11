@@ -82,7 +82,7 @@
 | R2-11 | D7 の実装（埋め込みによるテーマ外の判定） | 済み（2026-10-10 develop。段階 1＋段階 2、`meta.topic_gate` を記録。評価セットで本番の経路が P 0.87 / R 0.77 を再現。`theme_min_generated_at` はマージ時に進める。詳細は [42](42-topic-relevance-evaluation.md) の「組み込み（R2-11）」） |
 | R2-12 | `lineage-artifact-v2`（5 種類＋根拠欄）と web の表示 | R2-10 の後 |
 | R2-7 | 依頼フォームの公開と、本番での依頼→未監査公開の通し確認 | R2-5・R2-6 の後 |
-| R2-8 | 厳選テーマ（GNN から）の人手監査と「監査済み」公開 | R2-5 の後 |
+| R2-8 | 厳選テーマ（GNN から）の人手監査と「監査済み」公開 | 済み（2026-10-11。4 テーマを Taichi Nakamura が監査し、本番で「監査済み」。シートは `docs/audit/`。作り直すと監査は無効） |
 | R2-28 | 引用文の追加の出どころ（arXiv HTML）、Crossref の参考文献、DBLP の会場（[47](47-apis-and-oss.md) 推奨 1〜3） | 実装（2026-10-11、ブランチ。既定は off。下の実装メモ） |
 | R2-31 | 第二審査（R2-29）の指摘: Shazeer ← Eigen の contrasts → extends、混ざった OpenAlex 記録（引用の年の逆転）と会議論文の年のずれ | 実装（2026-10-11、ブランチ `roadmap/r2-31-contrast-cue`。下の実装メモ） |
 
