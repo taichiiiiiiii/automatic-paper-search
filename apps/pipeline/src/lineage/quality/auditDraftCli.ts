@@ -4,6 +4,12 @@
  *   draft  --theme <slug> [--theme …] --out-dir <dir>
  *          Writes `<slug>.audit-pending.json` (verdicts null) and
  *          `<slug>.audit.md` (Japanese sheet) per theme.
+ *          `--dblp-cache` (default `data/state/lineage-cache/dblp_venues.json`,
+ *          ignored when absent) marks venues that came from DBLP (R2-28).
+ *   suggest --draft <file.audit-pending.json> --from <suggestions.json>
+ *          Copies a second reviewer's preliminary calls into the draft's
+ *          `suggestion` fields (never the verdicts) and re-renders the sheet.
+ *          Exit 1 when the file names nodes/relations the draft lacks.
  *   render --draft <file.audit-pending.json>
  *          Re-renders the Markdown sheet next to an edited draft.
  *   import --draft <file.audit-pending.json> [--fixtures <path>] [--write]
@@ -15,20 +21,23 @@
  * Exit codes: 0 ok, 1 draft not importable, 2 usage error.
  */
 
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { basename, dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { auditFixtures, layoutFor, qualityPolicy } from "@paperpilot/core/layout";
+import { auditFixtures, layoutFor, lineageCacheDir, qualityPolicy } from "@paperpilot/core/layout";
 import { atomicWriteText } from "../../collect/state/atomic.js";
 import { CliUsageError, parseArgs as parseFlags } from "../../shared/cli/argparse.js";
 import { isMain } from "../../shared/cli/isMain.js";
 import {
   type AuditDraft,
   AuditImportError,
+  applySuggestions,
   buildAuditDraft,
+  type DblpVenueCacheEntry,
   importAuditDraft,
   mergeFixtureEntry,
   renderAuditSheet,
+  type SuggestionsFile,
 } from "./auditDraft.js";
 import {
   buildManifest,
@@ -81,12 +90,21 @@ export function runAuditDraftCli(
         "out-dir": { type: "string", required: true },
         "docs-root": { type: "string", default: layout.published },
         policy: { type: "string", default: qualityPolicy(layout) },
+        "dblp-cache": {
+          type: "string",
+          default: join(lineageCacheDir(layout), "dblp_venues.json"),
+        },
       });
       if ((parsed.theme as string[] | undefined)?.length === 0 || !parsed.theme) {
         throw new CliUsageError("draft: at least one --theme is required");
       }
     } else if (command === "render") {
       parsed = parseFlags(rest, { draft: { type: "string", required: true } });
+    } else if (command === "suggest") {
+      parsed = parseFlags(rest, {
+        draft: { type: "string", required: true },
+        from: { type: "string", required: true },
+      });
     } else if (command === "import") {
       parsed = parseFlags(rest, {
         draft: { type: "string", required: true },
@@ -96,7 +114,7 @@ export function runAuditDraftCli(
         write: { type: "boolean" },
       });
     } else {
-      throw new CliUsageError("usage: auditDraftCli.ts <draft|render|import> [flags]");
+      throw new CliUsageError("usage: auditDraftCli.ts <draft|suggest|render|import> [flags]");
     }
   } catch (e) {
     if (e instanceof CliUsageError) {
@@ -110,6 +128,14 @@ export function runAuditDraftCli(
     const docsRoot = parsed["docs-root"] as string;
     const outDir = parsed["out-dir"] as string;
     const strong = strongRelations(parsed.policy as string);
+    const dblpPath = parsed["dblp-cache"] as string;
+    let dblpVenues: Record<string, DblpVenueCacheEntry> | undefined;
+    if (existsSync(dblpPath)) {
+      const doc = JSON.parse(readFileSync(dblpPath, "utf8")) as { entries?: unknown };
+      if (doc.entries && typeof doc.entries === "object") {
+        dblpVenues = doc.entries as Record<string, DblpVenueCacheEntry>;
+      }
+    }
     for (const slug of parsed.theme as string[]) {
       const lineagePath = join(docsRoot, "themes", slug, "lineage.json");
       const bytes = readFileSync(lineagePath);
@@ -120,6 +146,7 @@ export function runAuditDraftCli(
         lineagePath: relative(repoRoot, lineagePath) || lineagePath,
         generatedAt: io.now().toISOString(),
         strongRelations: strong,
+        dblpVenues,
       });
       const jsonPath = join(outDir, `${slug}.audit-pending.json`);
       atomicWriteText(jsonPath, `${JSON.stringify(draft, null, 2)}\n`);
@@ -128,6 +155,26 @@ export function runAuditDraftCli(
         `${slug}: nodes=${draft.nodes.length} strong_relations=${draft.relations.length} -> ${jsonPath}\n`,
       );
     }
+    return 0;
+  }
+
+  if (command === "suggest") {
+    const draftPath = parsed.draft as string;
+    const draft = JSON.parse(readFileSync(draftPath, "utf8")) as AuditDraft;
+    const file = JSON.parse(readFileSync(parsed.from as string, "utf8")) as SuggestionsFile;
+    const result = applySuggestions(draft, file);
+    if (result.unknown.length > 0) {
+      io.err(
+        `suggestions name items the draft lacks (stale file?):\n- ${result.unknown.join("\n- ")}\n`,
+      );
+      return 1;
+    }
+    atomicWriteText(draftPath, `${JSON.stringify(result.draft, null, 2)}\n`);
+    atomicWriteText(sheetPathFor(draftPath), renderAuditSheet(result.draft));
+    io.out(
+      `suggested ${draft.nodes.length + draft.relations.length - result.missing.length} items` +
+        `${result.missing.length > 0 ? ` (no suggestion: ${result.missing.length})` : ""} -> ${sheetPathFor(draftPath)}\n`,
+    );
     return 0;
   }
 
