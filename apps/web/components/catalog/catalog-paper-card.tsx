@@ -110,12 +110,16 @@ export function CatalogPaperCard({
       data-paper-id={paper.paper_id}
       data-reveal={dataReveal}
       id={`paper-${paper.paper_id}`}
-      className={`flex gap-3 border-b border-rule px-4 py-4 sm:px-6 ${isSelected ? "bg-surface-2" : ""} ${
+      // Design doc 53: on a phone the type badge sits above the title
+      // instead of in its own ~60px column, and it no longer stretches to
+      // the card's full height (flex items default to align-self:
+      // stretch, which drew a tall empty pill next to every card).
+      className={`flex flex-col gap-1 border-b border-rule px-4 py-4 sm:flex-row sm:gap-3 sm:px-6 ${isSelected ? "bg-surface-2" : ""} ${
         dataReveal === undefined ? "" : styles.revealRow
       }`}
     >
       <span
-        className={`mt-1 shrink-0 rounded-full border px-2 py-0.5 text-xs font-medium ${
+        className={`shrink-0 self-start rounded-full border px-2 py-0.5 text-xs font-medium sm:mt-1 ${
           isOral ? "border-oral-border bg-oral-bg text-oral-ink" : "border-rule text-ink-subtle"
         }`}
       >
@@ -131,7 +135,11 @@ export function CatalogPaperCard({
             <Highlighted segments={highlightSegments(paper.title, q)} />
           </a>
         </h2>
-        <p className="mt-1 truncate text-sm text-ink-muted">{authorPreview || "—"}</p>
+        {/* The selected (detail) card lists every author; the list view
+            keeps the one-line preview. */}
+        <p className={`mt-1 text-sm text-ink-muted ${isSelected ? "" : "truncate"}`}>
+          {(isSelected ? paper.authors.join(", ") : authorPreview) || "—"}
+        </p>
 
         {isSelected ? (
           <div className="mt-2 flex items-center gap-3">
@@ -150,10 +158,11 @@ export function CatalogPaperCard({
             type="button"
             data-select-paper={paper.paper_id}
             aria-expanded={false}
+            aria-describedby={headingId}
             onClick={() => onSelect(paper.paper_id)}
             className="mt-2 rounded-full border border-rule px-3 py-1 text-xs text-ink-muted hover:border-rule-strong hover:text-ink"
           >
-            内容を見る
+            詳細を開く
           </button>
         )}
 
@@ -227,6 +236,7 @@ export function CatalogPaperCard({
                 key={tag}
                 type="button"
                 data-tag={tag}
+                title={`タグ「${tag}」で絞り込む`}
                 onClick={() => onAddTagFromCard(tag)}
                 className={`rounded-full border px-2 py-0.5 text-xs ${
                   activeTags.has(tag)
@@ -248,7 +258,13 @@ export function CatalogPaperCard({
                 href={safeHref(link.url)}
                 target="_blank"
                 rel="noopener"
-                className="text-accent hover:text-accent-strong"
+                // accent on the selected card's surface-2 background is
+                // 4.17:1 (< 4.5:1 for this 12px text); accent-strong is 7:1+.
+                className={
+                  isSelected
+                    ? "text-accent-strong underline"
+                    : "text-accent hover:text-accent-strong"
+                }
               >
                 {link.label}
               </a>
@@ -262,7 +278,7 @@ export function CatalogPaperCard({
         {isSelected && (
           <div className="mt-2 text-xs text-ink-subtle" data-pilot-lineage>
             {pilotLineage === "ready" ? (
-              <a href={pilotLineageHref} className="text-accent hover:text-accent-strong">
+              <a href={pilotLineageHref} className="text-accent-strong underline">
                 監査済みの研究系譜を開く →
               </a>
             ) : pilotLineage === "loading" ? (

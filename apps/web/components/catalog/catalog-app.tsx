@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { buildTagChipGroups, buildTypeChips } from "../../lib/catalog-chips";
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import { buildTagChipGroups, buildTypeChips, typeChipsAreUseful } from "../../lib/catalog-chips";
 import {
   type AcceptanceType,
   CATALOG_LOAD_ERROR,
@@ -37,8 +37,11 @@ import {
   getFiltered,
   getSorted,
   hasActiveFilters,
+  hasJapaneseText,
   newestAvailability,
+  paperHasAbstract,
 } from "../../lib/catalog-sort";
+import { formatCount, resultSummary } from "../../lib/catalog-status";
 import { buildCatalogUrl, readCatalogUrlState } from "../../lib/catalog-url-state";
 import { BASE_PATH } from "../../lib/config";
 import { loadThemePositionIndex } from "../../lib/data-themes";
@@ -74,14 +77,22 @@ const SEARCH_DEBOUNCE_MS = 180;
  * and are unit-tested there (test/catalog/) -- this component is the
  * thin, hand-verified wiring around them.
  */
+export interface CatalogConferenceLink {
+  slug: string;
+  display: string;
+}
+
 export function CatalogApp({
   conf,
   generated,
   copy,
+  conferences = [],
 }: {
   conf: string;
   generated: string;
   copy: CatalogCopy;
+  /** Every published catalog (for the hero's conference switcher). */
+  conferences?: readonly CatalogConferenceLink[];
 }) {
   const [loadStatus, setLoadStatus] = useState<"loading" | "ok" | "error">("loading");
   const [loadError, setLoadError] = useState("");
@@ -96,6 +107,7 @@ export function CatalogApp({
   const [type, setType] = useState<AcceptanceType>("all");
   const [sort, setSort] = useState<SortValue>("default");
   const [activeTags, setActiveTags] = useState<Set<string>>(new Set());
+  const [hasAbstract, setHasAbstract] = useState(false);
   const [tagsManuallyExpanded, setTagsManuallyExpanded] = useState(false);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   // Which absolute positions in the displayed list currently animate in
@@ -187,6 +199,7 @@ export function CatalogApp({
       setType(urlState.type);
       setSort(urlState.sort);
       setActiveTags(urlState.activeTags);
+      setHasAbstract(urlState.hasAbstract);
 
       const { raw, paperId } = readPaperParam(window.location.search);
       let initialSelectedId: string | null = null;
@@ -220,6 +233,7 @@ export function CatalogApp({
         search: urlState.search,
         type: urlState.type,
         activeTags: urlState.activeTags,
+        hasAbstract: urlState.hasAbstract,
       });
       const initialSorted = getSorted(initialFiltered, urlState.sort);
       const initialSelectedPaper = initialSelectedId
@@ -252,13 +266,19 @@ export function CatalogApp({
   // pile up browser history (docs/assets/app.js `syncUrlState`).
   useEffect(() => {
     if (loadStatus !== "ok" || typeof window === "undefined") return;
-    const url = buildCatalogUrl(window.location.href, { search, type, sort, activeTags });
+    const url = buildCatalogUrl(window.location.href, {
+      search,
+      type,
+      sort,
+      activeTags,
+      hasAbstract,
+    });
     window.history.replaceState(window.history.state, "", url);
-  }, [loadStatus, search, type, sort, activeTags]);
+  }, [loadStatus, search, type, sort, activeTags, hasAbstract]);
 
   // "新着順" is only usable when at least one loaded row carries an
   // arXiv id (docs/assets/app.js `applySortAvailability`).
-  const newest = newestAvailability(papers);
+  const newest = useMemo(() => newestAvailability(papers), [papers]);
   useEffect(() => {
     if (sort === "newest" && !newest.usable && papers.length > 0) setSort("default");
   }, [papers, sort, newest.usable]);
@@ -278,6 +298,7 @@ export function CatalogApp({
       setType(urlState.type);
       setSort(urlState.sort);
       setActiveTags(urlState.activeTags);
+      setHasAbstract(urlState.hasAbstract);
 
       const { raw, paperId } = readPaperParam(window.location.search);
       const nextSelectedId = paperId && currentById.has(paperId) ? paperId : null;
@@ -509,6 +530,11 @@ export function CatalogApp({
     resetReveal();
   }
 
+  function toggleHasAbstract() {
+    setHasAbstract((prev) => !prev);
+    resetReveal();
+  }
+
   function addTagFromCard(tag: string) {
     setActiveTags((prev) => new Set(prev).add(tag));
     resetReveal();
@@ -521,6 +547,7 @@ export function CatalogApp({
     setSearch("");
     setType("all");
     setActiveTags(new Set());
+    setHasAbstract(false);
     resetReveal();
   }
 
@@ -569,7 +596,7 @@ export function CatalogApp({
   // so far), in the current sort order.
   const [shareStatus, setShareStatus] = useState("");
   function exportFiltered(kind: "bib" | "csv") {
-    const rows = getSorted(getFiltered(papers, { search, type, activeTags }), sort);
+    const rows = sorted;
     if (kind === "bib") {
       downloadText(
         exportFilename(`${conf}-papers`, "bib"),
@@ -590,23 +617,42 @@ export function CatalogApp({
   }
 
   // --- derived display list -------------------------------------------------
-  const filtered = getFiltered(papers, { search, type, activeTags });
-  const sorted = getSorted(filtered, sort);
+  // Design doc 53: every derived value is memoised on exactly its inputs.
+  // Before, each keystroke in the search box (which only updates
+  // `searchInputValue` until the debounce fires) re-filtered, re-sorted
+  // and re-counted all 6-9k rows; and the debounced search itself is
+  // rendered as a deferred (interruptible) update so typing stays
+  // responsive on slow phones.
+  const deferredSearch = useDeferredValue(search);
+  const filtered = useMemo(
+    () => getFiltered(papers, { search: deferredSearch, type, activeTags, hasAbstract }),
+    [papers, deferredSearch, type, activeTags, hasAbstract],
+  );
+  const sorted = useMemo(() => getSorted(filtered, sort), [filtered, sort]);
   const selectedPaper = selectedPaperId ? (byId.get(selectedPaperId) ?? null) : null;
-  const displayPapers = pinSelected(sorted, selectedPaper);
+  const displayPapers = useMemo(() => pinSelected(sorted, selectedPaper), [sorted, selectedPaper]);
   const shown = Math.min(visibleCount, displayPapers.length);
   const total = papers.length;
   const filteredLen = sorted.length;
-  const allTags = new Set<string>();
-  let oralCount = 0;
-  for (const p of papers) {
-    for (const t of p.tags) allTags.add(t);
-    if (p.type === "Oral") oralCount += 1;
-  }
-  const tagGroups = buildTagChipGroups(papers, activeTags);
-  const typeChips = buildTypeChips(papers);
+  const stats = useMemo(() => {
+    const allTags = new Set<string>();
+    let oral = 0;
+    let withAbstract = 0;
+    for (const p of papers) {
+      for (const t of p.tags) allTags.add(t);
+      if (p.type === "Oral") oral += 1;
+      if (paperHasAbstract(p)) withAbstract += 1;
+    }
+    return { tagCount: allTags.size, oral, withAbstract };
+  }, [papers]);
+  const tagGroups = useMemo(() => buildTagChipGroups(papers, activeTags), [papers, activeTags]);
+  const typeChips = useMemo(() => buildTypeChips(papers), [papers]);
   const tagsExpanded = tagsManuallyExpanded || tagGroups.tailActiveByDefault;
-  const activeFilters = hasActiveFilters({ search, type, activeTags });
+  const activeFilters = hasActiveFilters({ search, type, activeTags, hasAbstract });
+  // The "要旨あり" toggle only makes sense when some rows lack one
+  // (iclr-2025: 82% have an abstract; icml-2026: all do).
+  const abstractToggleUseful =
+    hasAbstract || (stats.withAbstract > 0 && stats.withAbstract < total);
   // Review LOW: this used to point at the pre-port `paper-links.html`
   // filename; the ported no-JS route is `/<conf>/paper-links/`
   // (app/[conf]/paper-links/page.tsx, trailingSlash static export).
@@ -630,15 +676,18 @@ export function CatalogApp({
         copy={copy}
         generated={generated}
         total={loadStatus === "ok" ? total : null}
-        oralCount={loadStatus === "ok" ? oralCount : null}
-        tagCount={loadStatus === "ok" ? allTags.size : null}
+        oralCount={loadStatus === "ok" ? stats.oral : null}
+        tagCount={loadStatus === "ok" ? stats.tagCount : null}
+        abstractCount={loadStatus === "ok" ? stats.withAbstract : null}
+        conf={conf}
+        conferences={conferences}
       />
 
       {loadStatus === "ok" && (
         <CatalogFilters
           search={searchInputValue}
           onSearchChange={onSearchInput}
-          typeChips={typeChips}
+          typeChips={typeChipsAreUseful(typeChips, type) ? typeChips : []}
           activeType={type}
           onTypeChange={onTypeChange}
           tagHead={tagGroups.head}
@@ -647,6 +696,11 @@ export function CatalogApp({
           onExpandTags={() => setTagsManuallyExpanded(true)}
           activeTags={activeTags}
           onToggleTag={toggleTag}
+          abstractToggle={
+            abstractToggleUseful
+              ? { active: hasAbstract, count: stats.withAbstract, onToggle: toggleHasAbstract }
+              : null
+          }
         />
       )}
 
@@ -661,11 +715,7 @@ export function CatalogApp({
                   «{search.trim()}»
                 </span>
               )}
-              {filteredLen === 0
-                ? "0 件"
-                : shown < filteredLen
-                  ? `${shown} / ${filteredLen} 件を表示${filteredLen < total ? `（全 ${total} 件）` : ""}`
-                  : `${filteredLen} / ${total} 件`}
+              {resultSummary({ matched: filteredLen, shown, total })}
               {selectionMessage && (
                 <span className="ml-2 text-accent-strong">{selectionMessage}</span>
               )}
@@ -673,13 +723,51 @@ export function CatalogApp({
           )}
         </p>
         <div className="flex flex-wrap items-center gap-3">
+          {loadStatus === "ok" && activeFilters && (
+            <button
+              type="button"
+              onClick={clearAllFilters}
+              className="rounded-full border border-rule px-3 py-1 text-xs text-ink-muted hover:border-rule-strong hover:text-ink"
+            >
+              フィルタ解除 <span aria-hidden="true">×</span>
+            </button>
+          )}
+          {loadStatus === "ok" && (
+            <div className="flex min-w-0 items-center gap-2 text-sm">
+              <label htmlFor="sort" className="whitespace-nowrap text-ink-muted">
+                並び替え
+              </label>
+              <select
+                id="sort"
+                value={sort}
+                onChange={(e) => onSortChange(e.target.value as SortValue)}
+                title={
+                  newest.usable
+                    ? undefined
+                    : "この学会の論文には arXiv ID がないため、新着順は使えません"
+                }
+                className="min-w-0 max-w-full rounded-md border border-rule bg-surface-elevated px-2 py-1 text-ink"
+              >
+                <option value="default">収録順</option>
+                <option value="newest" disabled={!newest.usable}>
+                  {newest.label}
+                </option>
+                <option value="oral">Oral 優先</option>
+                <option value="title">タイトル A→Z</option>
+              </select>
+            </div>
+          )}
           {loadStatus === "ok" && filteredLen > 0 && (
-            <fieldset className="flex items-center gap-1 border-0 p-0" data-catalog-export>
+            <fieldset
+              className="flex min-w-0 flex-wrap items-center gap-1 border-0 p-0"
+              data-catalog-export
+            >
               <legend className="sr-only">絞り込み結果の書き出しと共有</legend>
               <button
                 type="button"
                 onClick={() => exportFiltered("bib")}
                 title={`絞り込み結果 ${filteredLen} 件を BibTeX で書き出す`}
+                aria-label={`絞り込み結果 ${filteredLen} 件を BibTeX で書き出す`}
                 className="rounded-full border border-rule px-3 py-1 text-xs text-ink-muted hover:border-rule-strong hover:text-ink"
               >
                 BibTeX
@@ -688,6 +776,7 @@ export function CatalogApp({
                 type="button"
                 onClick={() => exportFiltered("csv")}
                 title={`絞り込み結果 ${filteredLen} 件を CSV で書き出す`}
+                aria-label={`絞り込み結果 ${filteredLen} 件を CSV で書き出す`}
                 className="rounded-full border border-rule px-3 py-1 text-xs text-ink-muted hover:border-rule-strong hover:text-ink"
               >
                 CSV
@@ -704,35 +793,6 @@ export function CatalogApp({
                 {shareStatus}
               </span>
             </fieldset>
-          )}
-          {loadStatus === "ok" && activeFilters && (
-            <button
-              type="button"
-              onClick={clearAllFilters}
-              className="rounded-full border border-rule px-3 py-1 text-xs text-ink-muted hover:border-rule-strong hover:text-ink"
-            >
-              フィルタ解除 <span aria-hidden="true">×</span>
-            </button>
-          )}
-          {loadStatus === "ok" && (
-            <div className="flex items-center gap-2 text-sm">
-              <label htmlFor="sort" className="text-ink-muted">
-                並び替え
-              </label>
-              <select
-                id="sort"
-                value={sort}
-                onChange={(e) => onSortChange(e.target.value as SortValue)}
-                className="rounded-md border border-rule bg-surface-elevated px-2 py-1 text-ink"
-              >
-                <option value="default">収録順</option>
-                <option value="newest" disabled={!newest.usable}>
-                  {newest.label}
-                </option>
-                <option value="oral">Oral 優先</option>
-                <option value="title">タイトル A→Z</option>
-              </select>
-            </div>
           )}
         </div>
       </div>
@@ -774,7 +834,25 @@ export function CatalogApp({
         <ul id="paper-list" className="list-none p-0">
           {filteredLen === 0 ? (
             <li className="flex flex-col items-start gap-2 px-4 py-10 text-sm text-ink-muted sm:px-6">
-              条件に一致する論文がありません。
+              <p className="text-ink">
+                {search.trim()
+                  ? `「${search.trim()}」に一致する論文はありません。`
+                  : "条件に一致する論文はありません。"}
+              </p>
+              {hasJapaneseText(search) && (
+                <p>
+                  タイトルと要旨は英語です。英語のキーワード（例: diffusion,
+                  retrieval）で検索してください。
+                </p>
+              )}
+              {search.trim() && /\s/.test(search.trim()) && (
+                <p>
+                  複数の語はすべて含む論文だけが表示されます。語を減らすと見つかることがあります。
+                </p>
+              )}
+              {(type !== "all" || activeTags.size > 0 || hasAbstract) && (
+                <p>採択形式・タグ・要旨ありの絞り込みも同時にかかっています。</p>
+              )}
               {activeFilters && (
                 <button
                   type="button"
@@ -824,7 +902,7 @@ export function CatalogApp({
                   >
                     さらに表示{" "}
                     <span className="font-mono text-ink-subtle">
-                      残り {displayPapers.length - shown} 件
+                      残り {formatCount(displayPapers.length - shown)} 件
                     </span>
                   </button>
                 </li>
