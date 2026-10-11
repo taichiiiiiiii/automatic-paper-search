@@ -132,6 +132,8 @@
 - 狭い画面での系譜表示（R2 で公開が始まってから）
 - **R4-1（2026-10-11、未マージ）**: 48 の P0-1〜P0-4 を実装。テーマの家系図に本流（SPC の主経路、web で計算）の強調と切り替え、関係ごとの「誤りを報告」（Issue フォーム `lineage-feedback`）、BibTeX・CSV の書き出しと「URLをコピー」（テーマと学会カタログの絞り込み結果）、各ページの「データの日付」（R1-3 も兼ねる）、トップの「系譜はありません」という静的 HTML の文言の修正。詳細は 48 §4「P0 の実装状況」。残り: P0-5（Prior / Derivative）、☐ ラベル `lineage-feedback` の作成
 
+- **R4-3（2026-10-11、未マージ）**: 48 の P1-1（テーマの新着フィード）と P1-2（コード・HF のバッジ）。OpenAlex の `cites:` の OR 検索で系譜の論文を 2 本以上引用する新しい論文を拾い、トピックゲートを通したものを `themes/<slug>/new-papers.json`（schema `theme-new-papers-v1`）と Atom の `feed.xml` に出し、テーマページに「新着」欄。HF Papers の API で系譜のノードの GitHub リポジトリ（人が登録したものだけ）と HF の件数を取り、`code-links.json`（`theme-code-links-v1`）とノードの「コード」「HF」の印・「コードとモデル」欄。CLI `apps/pipeline/src/lineage/theme/feed/themeFeedsCli.ts`、workflow `theme-feeds.yml`（dispatch のみ）。HF のバッジは 4 テーマ分を生成。新着は鍵なしの OpenAlex の予算がその日に尽きていて未生成。詳細は 48 §4・52 §8.7。残り: 新着の初回生成、☐ Worker の cron からの起動（データを書くので再開はユーザー判断）
+
 ### R5 拡張の判断（2027 年 1〜3 月）
 
 §5 の判断 3〜5 を、R2・R3 の結果を見て決める。

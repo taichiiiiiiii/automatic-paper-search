@@ -9,6 +9,8 @@
 | `published/<学会>/papers.json` | 学会カタログ（題名・著者・要旨・リンク）。各行の `source` が出典 | `arxiv`＝CC0、`openreview`＝CC0（メタデータ）、`acl_anthology`＝CC BY 4.0（帰属表示が必要）、`cvf`＝権利は著者に留保（要旨は R2-26 で除去予定） |
 | `published/themes/`、`published/paper-details-v1/`、`published/lineage-*.json` | テーマ・学会の系譜、論文の詳細 | Semantic Scholar（ODC-BY 1.0）、OpenAlex（CC0）、arXiv（CC0） |
 | `published/search-*`、`identity-aliases-v1.json`、`conferences.json` | 検索の索引、ID の対応表、学会一覧 | 上の各ソースから作った派生データ（各ソースのライセンスに従う） |
+| `published/themes/<slug>/new-papers.json`・`feed.xml` | テーマの「新着」（系譜の論文を 2 本以上引用する新しい論文）と Atom フィード（R4-3） | OpenAlex（CC0） |
+| `published/themes/<slug>/code-links.json`、`state/hf-papers/` | 「コード」「HF」のバッジ（リポジトリ・★・モデル等の件数）と、その取得キャッシュ（R4-3） | Hugging Face Papers の API（件数と URL のみ。HF の自動要約は保存しない）、`config/paper_repos.json` |
 | `state/lineage-cache/` | Semantic Scholar API の応答のキャッシュと分類のキャッシュ | Semantic Scholar（ODC-BY 1.0） |
 | `inputs/` | 収集した一覧（CSV・JSON・要約） | 取得元（arXiv・OpenReview・ACL Anthology・CVF など）に従う |
 | `config/` | PaperPilot の設定（別名、除外リストなど） | コードと同じ MIT |
