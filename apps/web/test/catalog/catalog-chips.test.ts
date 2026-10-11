@@ -7,16 +7,17 @@ function paper(tags: string[], type: "Oral" | "Poster" = "Poster"): CatalogPaper
 }
 
 describe("buildTagChipGroups", () => {
-  it("keeps only the top 18 tags, by descending count", () => {
+  it("offers every tag (design doc 53; was top 18), by descending count", () => {
     // tag0 has 20 occurrences, tag1 has 19, ... tag19 has 1.
     const papers: CatalogPaper[] = [];
     for (let i = 0; i < 20; i++) {
       for (let n = 0; n < 20 - i; n++) papers.push(paper([`tag${i}`]));
     }
     const groups = buildTagChipGroups(papers, new Set());
-    expect(groups.head.length + groups.tail.length).toBe(18);
+    expect(groups.head.length + groups.tail.length).toBe(20);
     expect(groups.head).toHaveLength(8);
-    expect(groups.tail).toHaveLength(10);
+    expect(groups.tail).toHaveLength(12);
+    expect(groups.tail.at(-1)?.tag).toBe("tag19");
     // tag0 has the most occurrences (20), so it must lead the head.
     expect(groups.head[0]?.tag).toBe("tag0");
   });

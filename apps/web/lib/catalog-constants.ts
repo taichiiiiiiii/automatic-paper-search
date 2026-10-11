@@ -8,8 +8,10 @@
  * PAGE_SIZE per "show more" click (docs/assets/app.js `PAGE_SIZE`). */
 export const PAGE_SIZE = 30;
 
-/** Top-N topic tags shown as chips (docs/assets/app.js `buildTagChips`). */
-export const TAG_CHIP_LIMIT = 18;
+/** Topic tags offered as chips. Was the top 18 (docs/assets/app.js
+ * `buildTagChips`), which left ~40 tags reachable only from a card;
+ * design doc 53 offers every tag behind the "+N タグ" expander. */
+export const TAG_CHIP_LIMIT = 200;
 
 /** Of the top TAG_CHIP_LIMIT tags, this many are shown up front; the rest
  * sit behind a "+N タグ" expander (docs/assets/app.js `HEAD_COUNT`). */

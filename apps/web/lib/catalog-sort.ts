@@ -25,10 +25,28 @@ export interface CatalogFilterState {
  * missed. A one-word query behaves exactly as before.
  */
 export function searchTerms(search: string): string[] {
-  return search
-    .toLowerCase()
-    .split(/[\s\u3000]+/)
+  return normalizeSearchText(search)
+    .split(" ")
     .filter((t) => t.length > 0);
+}
+
+/** Lowercases and folds hyphens/dashes/slashes and every kind of
+ * whitespace to one space, applied to both the query and the row text:
+ * "self-supervised" and "self supervised" then find each other. */
+export function normalizeSearchText(text: string): string {
+  return text.toLowerCase().replace(/[\s\u3000\-\u2010-\u2015/]+/g, " ");
+}
+
+/** A query term written in the plural ("transformers", "diffusions")
+ * also matches the singular in the text; a singular query already
+ * substring-matches the plural. Only simple "-s" / "-es" endings on
+ * terms of 5+ letters are folded, so short words ("gas", "loss") and
+ * acronyms stay exact. */
+export function termVariants(term: string): string[] {
+  if (term.length < 5 || !term.endsWith("s") || term.endsWith("ss")) return [term];
+  const out = [term, term.slice(0, -1)];
+  if (term.endsWith("es")) out.push(term.slice(0, -2));
+  return out;
 }
 
 // The lowercased title/authors/abstract string per row, built once per
@@ -39,7 +57,7 @@ const HAYSTACKS = new WeakMap<CatalogPaper, string>();
 function haystack(p: CatalogPaper): string {
   let hay = HAYSTACKS.get(p);
   if (hay === undefined) {
-    hay = `${p.title} ${p.authors.join(" ")} ${p.abstract}`.toLowerCase();
+    hay = normalizeSearchText(`${p.title} ${p.authors.join(" ")} ${p.abstract}`);
     HAYSTACKS.set(p, hay);
   }
   return hay;
@@ -50,14 +68,16 @@ export function paperHasAbstract(p: CatalogPaper): boolean {
 }
 
 export function getFiltered<T extends CatalogPaper>(papers: T[], filters: CatalogFilterState): T[] {
-  const terms = searchTerms(filters.search);
+  const terms = searchTerms(filters.search).map(termVariants);
   return papers.filter((p) => {
     if (filters.type !== "all" && p.type !== filters.type) return false;
     if (filters.activeTags.size > 0 && !p.tags.some((t) => filters.activeTags.has(t))) return false;
     if (filters.hasAbstract && !paperHasAbstract(p)) return false;
     if (terms.length > 0) {
       const hay = haystack(p);
-      for (const term of terms) if (!hay.includes(term)) return false;
+      for (const variants of terms) {
+        if (!variants.some((v) => hay.includes(v))) return false;
+      }
     }
     return true;
   });
@@ -88,10 +108,17 @@ export function getSorted<T extends CatalogPaper>(papers: T[], sort: SortValue):
     case "oral":
       return arr.sort((a, b) => (a.type === "Oral" ? 0 : 1) - (b.type === "Oral" ? 0 : 1));
     case "title":
-      return arr.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+      return arr.sort((a, b) => titleSortKey(a.title).localeCompare(titleSortKey(b.title)));
     default:
       return arr;
   }
+}
+
+/** "タイトル A→Z" ignores leading LaTeX/punctuation ("$\\texttt{Multi}^2$",
+ * '"Do Diffusion…"'), which used to put ~200 such titles before "A"
+ * (design doc 53). */
+export function titleSortKey(title: string | undefined): string {
+  return (title || "").replace(/^(?:[^\p{L}\p{N}\\]|\\[a-zA-Z]+\{?)+/u, "");
 }
 
 export interface NewestAvailability {

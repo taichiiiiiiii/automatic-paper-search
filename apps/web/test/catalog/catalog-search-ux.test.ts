@@ -7,10 +7,13 @@ import { describe, expect, it } from "vitest";
 import type { CatalogPaper } from "../../lib/catalog-core";
 import {
   getFiltered,
+  getSorted,
   hasActiveFilters,
   hasJapaneseText,
   paperHasAbstract,
   searchTerms,
+  termVariants,
+  titleSortKey,
 } from "../../lib/catalog-sort";
 import { resultSummary } from "../../lib/catalog-status";
 import { buildAbstractDek, highlightSegments } from "../../lib/catalog-text";
@@ -55,7 +58,22 @@ describe("getFiltered multi-word search", () => {
 
   it("caches the haystack per row without going stale across queries", () => {
     expect(getFiltered(ROWS, { ...NO_FILTER, search: "graph" })).toHaveLength(1);
-    expect(getFiltered(ROWS, { ...NO_FILTER, search: "videos" })).toHaveLength(1);
+    expect(getFiltered(ROWS, { ...NO_FILTER, search: "generation" })).toHaveLength(1);
+  });
+
+  it("folds hyphens and simple plurals in the query", () => {
+    const ids = (q: string) =>
+      getFiltered(ROWS, { ...NO_FILTER, search: q }).map((p) => p.paper_id[0]);
+    // "diffusion-free" in b's abstract is found by "diffusion free".
+    expect(ids("diffusion free")).toEqual(["b"]);
+    // ...and "Diffusion Models" in a's title by "diffusion-models".
+    expect(ids("diffusion-models")).toEqual(["a"]);
+    // A plural query finds the singular ("Video" in a and b).
+    expect(ids("videos")).toEqual(["a", "b"]);
+    // Short words and "-ss" endings are not folded.
+    expect(termVariants("loss")).toEqual(["loss"]);
+    expect(termVariants("gans")).toEqual(["gans"]);
+    expect(termVariants("transformers")).toEqual(["transformers", "transformer"]);
   });
 });
 
@@ -71,6 +89,19 @@ describe("has-abstract filter", () => {
 
   it("counts as an active filter (so フィルタ解除 appears)", () => {
     expect(hasActiveFilters({ ...NO_FILTER, search: "", hasAbstract: true })).toBe(true);
+  });
+});
+
+describe("title sort", () => {
+  it("ignores leading LaTeX and punctuation", () => {
+    expect(titleSortKey("$\\texttt{Multi}^2$: Hierarchical")).toBe("Multi}^2$: Hierarchical");
+    expect(titleSortKey('"Do Diffusion Models Dream"')).toBe('Do Diffusion Models Dream"');
+    const rows = [
+      row("a", "$\\mathcal{O}$ bounds", "x"),
+      row("b", "Attention", "x"),
+      row("c", '"Zebra"', "x"),
+    ];
+    expect(getSorted(rows, "title").map((p) => p.paper_id[0])).toEqual(["b", "a", "c"]);
   });
 });
 

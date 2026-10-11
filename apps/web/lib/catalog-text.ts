@@ -15,6 +15,7 @@
  * first match so the matched context is on screen without expanding.
  */
 import { CLAMP_MIN, SNIPPET_LEAD } from "./catalog-constants";
+import { searchTerms, termVariants } from "./catalog-sort";
 
 export interface TextSegment {
   text: string;
@@ -33,7 +34,7 @@ export function escapeRegExp(value: string): string {
  * is what gets highlighted.
  */
 export function termsRegExp(query: string, flags: string): RegExp | null {
-  const terms = [...new Set(query.split(/[\s\u3000]+/).filter((t) => t.length > 0))].sort(
+  const terms = [...new Set(searchTerms(query).flatMap(termVariants))].sort(
     (a, b) => b.length - a.length,
   );
   if (terms.length === 0) return null;
