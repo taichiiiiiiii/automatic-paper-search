@@ -28,6 +28,9 @@
 
 import { readFileSync } from "node:fs";
 import { isMain } from "../../../shared/cli/isMain.js";
+import type { ThemeGraphNode } from "../../shared/node.js";
+import { confirmWeakAdmissions, type NodeAdmission } from "../bfs.js";
+import type { ThemeEdge } from "../edges.js";
 import type { ThemePaper } from "../openalexWork.js";
 import {
   buildTopicRelevance,
@@ -219,6 +222,83 @@ function productionRow(ctx: Ctx, zs: Map<string, Map<string, number>>): Row {
     "PRODUCTION embedding+terms (TopicScope + topicEmbedding.ts, bge-small q8)",
     production(ctx, (s, c) => zs.get(s)?.get(c.id)),
   );
+}
+
+/** R2-30: the production gate followed by the weak-entry check
+ * (`bfs.ts::confirmWeakAdmissions`), run on a graph approximated from the
+ * labelled pool: nodes = seeds + gate-admitted candidates + unlabelled
+ * pool papers whose title is about the theme; links = `pool_neighbours`
+ * and the `ref_of:`/`cites:` anchors. No relation labels exist here, so
+ * every link counts as a citation without a cue, and there is no width
+ * cut: the live graph has fewer links, so this is an upper bound of what
+ * the check keeps. Returns the decision and the IDs it removed. */
+export function productionWeakEntry(
+  ctx: Ctx,
+  zs: Map<string, Map<string, number>>,
+): { method: Method; removed: Map<string, Set<string>> } {
+  const base = production(ctx, (s, c) => zs.get(s)?.get(c.id));
+  const removed = new Map<string, Set<string>>();
+  for (const [slug, t] of Object.entries(ctx.fx.themes)) {
+    const scope = ctx.scopes.get(slug)!;
+    const nodes = new Map<string, ThemeGraphNode>();
+    const admissions = new Map<string, NodeAdmission>();
+    const seedIds = new Set<string>();
+    const add = (id: string, p: { title?: string; abstract?: string }) =>
+      nodes.set(id, {
+        id,
+        title: p.title ?? "",
+        abstract: p.abstract ?? "",
+      } as unknown as ThemeGraphNode);
+    for (const c of t.candidates) {
+      if (isSeed(c)) {
+        seedIds.add(c.id);
+        add(c.id, c);
+      } else if (base(slug, c)) {
+        add(c.id, c);
+        admissions.set(c.id, {
+          path: isDescendant(c) ? "citing" : "reference",
+          why: "topic",
+          z: zs.get(slug)?.get(c.id) ?? null,
+          anchor: "",
+          aboutTheme: scope.role(c) === "subject" || scope.abstractIsAboutTheme(c),
+        });
+      }
+    }
+    for (const id of t.seeds) seedIds.add(id);
+    for (const [id, p] of Object.entries(t.neighbour_papers)) {
+      if (nodes.has(id)) continue;
+      if (p.seed) seedIds.add(id);
+      if (p.seed || scope.role(p) === "subject") add(id, p);
+    }
+    const edges: ThemeEdge[] = [];
+    const link = (a: string, b: string) =>
+      edges.push({
+        src: a,
+        dst: b,
+        rel: "baseline_only",
+        relation: "baseline_only",
+        conf: 0.5,
+        confidence: 0.5,
+        rationale: "",
+        provenance: { classification: { method: "api_citation" } },
+      });
+    for (const c of t.candidates) {
+      if (!nodes.has(c.id)) continue;
+      const anchors = c.sources
+        .filter((x) => x.startsWith("ref_of:") || x.startsWith("cites:"))
+        .map((x) => `openalex:${x.slice(x.indexOf(":") + 1)}`);
+      for (const n of new Set([...c.pool_neighbours, ...anchors])) {
+        if (n !== c.id && nodes.has(n)) link(c.id, n);
+      }
+    }
+    const before = new Set(nodes.keys());
+    confirmWeakAdmissions(nodes, edges, { seedIds, admissions, scope });
+    removed.set(slug, new Set([...before].filter((id) => !nodes.has(id))));
+  }
+  return {
+    method: (s, c) => base(s, c) && !(removed.get(s)?.has(c.id) ?? false),
+    removed,
+  };
 }
 
 // ---------- OpenAlex ----------
@@ -710,6 +790,25 @@ async function main(argv: string[]): Promise<number> {
     );
     const zs = await productionZ(fx, embedder);
     rows.push(productionRow(ctx, zs));
+    const weak = productionWeakEntry(ctx, zs);
+    rows.push(
+      rowFixed(
+        ctx,
+        "e combo",
+        "PRODUCTION + R2-30 weak-entry check (pool-approximated graph)",
+        weak.method,
+      ),
+    );
+    for (const [slug, ids] of weak.removed) {
+      const byId = candIndex(ctx.fx.themes[slug]!);
+      for (const id of [...ids].sort()) {
+        const c = byId.get(id);
+        if (!c) continue;
+        process.stderr.write(
+          `R2-30 removed [${slug}] ${c.on_topic ? "ON " : "off"} z=${(zs.get(slug)?.get(id) ?? Number.NaN).toFixed(2)} ${c.title.slice(0, 80)}\n`,
+        );
+      }
+    }
     process.stderr.write(
       `production embedder: ${embedder.misses} embedded, ${embedder.hits} cached, ${((Date.now() - t0) / 1000).toFixed(1)} s\n`,
     );

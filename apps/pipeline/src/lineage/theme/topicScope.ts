@@ -72,6 +72,10 @@ export interface TopicScopeOptions {
    * also have the theme as a subject of its abstract
    * ({@link TopicScope.abstractIsAboutTheme}). */
   requireAbstractSubject: boolean;
+  /** R2-30: after the cross-node pass, a node admitted on a weak match
+   * (term match with z < zHi) must be corroborated by more than the one
+   * citation that brought it in (`bfs.ts::confirmWeakAdmissions`). */
+  weakEntryCheck: boolean;
 }
 
 /** R2-17: an embedding score this far above `zHi` still admits a paper
@@ -88,6 +92,7 @@ export const DEFAULT_TOPIC_SCOPE_OPTIONS: Readonly<TopicScopeOptions> = Object.f
   componentSeedWeight: 0.25,
   abstractOnlySeedWeight: 0.5,
   requireAbstractSubject: true,
+  weakEntryCheck: true,
 });
 
 /** How a paper relates to the theme, judged from its title first. */
