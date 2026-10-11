@@ -260,14 +260,9 @@ published ──(確定版の proceedings が出たら 1 回だけ照合し、�
 | 回 | 取得 | 結果 |
 |---|---|---|
 | **ACL 2026** | `acl/cli.ts --conference acl-2026 --venue acl --xml-id 2026.acl`（1 回、7.3 MB、約 2 秒）→ `buildSummaryCli` → `buildPagesCli`（全学会）→ `identityLiteCli`・`searchIndexCli`・`buildLineageQualityCli`（promote の再生成と同じ手順） | **2,296 本**（long＋short、全件に要旨）。`data/published/acl-2026/` と共有ファイルを更新。系譜は無し（`blocked`）。oral の情報は Anthology に無いので全件 Poster |
-| **ICML 2026** | `PAPERPILOT_OUTPUT_ROOT=data/inputs pnpm exec tsx apps/pipeline/src/conference/pmlr/cli.ts --conference icml-2026 --venue ICML --volume 306`（2 回、合計 21 MB、約 3 秒） | **6,552 本**を取得（全件に OpenReview の ID と要旨）。ただし **`buildPagesCli` が拒否した**：JS なしの一覧ページの上限 `NOJS_MAX_PAPERS = 6,000`（`catalog/paperLinksGate.ts` と `apps/web/app/[conf]/paper-links/logic.ts`）を超える。このため ICML 2026 はリポジトリに入れていない（`data/inputs/icml-2026/` に置くと、以後の全学会の再生成が毎回止まる） |
+| **ICML 2026** | `PAPERPILOT_OUTPUT_ROOT=data/inputs pnpm exec tsx apps/pipeline/src/conference/pmlr/cli.ts --conference icml-2026 --venue ICML --volume 306`（2 回、合計 21 MB、約 3 秒）→ `buildSummaryCli --conference icml-2026` → 共有ファイルの再生成（ACL 2026 と同じ） | **6,552 本**（全件に OpenReview の ID と要旨）。最初は JS なしの一覧ページの上限 6,000 本で `buildPagesCli` が止まったが、R3-2（§8.5）でページを分けたあと `data/inputs/icml-2026/`・`data/published/icml-2026/` と共有ファイルを更新した（R3-2、2026-10-11）。全件 Poster |
 
-ICML 2026 を載せるには、次のどちらかの判断が要る（公開範囲に関わるのでユーザーが決める）。
-
-1. 上限を上げる（例：10,000）。NeurIPS 2026（約 9,200 本）でも同じ問題が出る。上限は 3 MB の大きさの上限とあわせて、両方のファイルで同時に変える。
-2. JS なしのページを分割する（ページ送り）。
-
-決まったら、上の 1 行のコマンド → `buildSummaryCli --conference icml-2026` → 共有ファイルの再生成（ACL 2026 と同じ手順）で、数秒で作れる。
+ICML 2026 の掲載に必要だった判断（上限を上げるか、ページを分けるか）は、ユーザーが「ページを分ける」に決めた。実装は §8.5。
 
 新しい回の検知は `pnpm exec tsx apps/pipeline/src/conference/watch/groupsCli.ts [--write]`（既定は dry-run）。2026-10-11 の実行（10 回の取得）で、未公開の 9 回を記録した：colm-2025、colm-2026、cvpr-2027、eccv-2026、emnlp-2026、iclr-2025、iclr-2027、icml-2026（PMLR）、neurips-2026（`data/state/conference-watch/pending-editions-v1.json`）。acl-2026 は上で生成したので対象外。
 
@@ -278,6 +273,26 @@ ICML 2026 を載せるには、次のどちらかの判断が要る（公開範�
 - 新しい回の検知を定期実行にするか（cron）と、記録した pending-edition から「承認 1 回で公開」までの流れ（§4.2 の残り、R3 の完了条件）。
 - 既存の CVF 3 回分の要旨全文（51 §4）は手を付けていない。作り直すときは `--listing-only` を使う。
 - NeurIPS 2025 の main track はまだ papers.nips.cc に無い（2026-10-11 時点で Creative AI の 64 本だけ）。
+
+### 8.5 JS なしの一覧ページの分割（R3-2、2026-10-11）
+
+ユーザー決定: JS なしの論文リンク一覧（`/<conf>/paper-links/`）を、上限を上げずに複数ページに分ける。
+
+| 項目 | 内容 |
+|---|---|
+| URL | 1 ページ目は今までどおり `/<conf>/paper-links/`（既存の URL・リンク・`.html` からの 301 はそのまま）。2 ページ目以降は `/<conf>/paper-links/<n>/`。`/<conf>/paper-links/1/` は作らない |
+| 1 ページの行数 | `NOJS_ROWS_PER_PAGE = 3,000`（タイトル順に並べて 3,000 行ずつ）。3,000 本以下の学会は 1 ページのままで、ページ送りも出ない（旧版との行の一致テストはそのまま通る） |
+| 上限 | 大きさの上限 3 MiB（`NOJS_MAX_RENDERED_BYTES`）は **1 ページごと**。全体の上限は `NOJS_MAX_PAGES = 20` × 3,000 = **60,000 本**（`NOJS_MAX_PAPERS`、暴走した一覧を止める CAT-18 の役目は残す） |
+| ページ送り | 各ページの上と下に、JS なしで動く番号のリンク（今のページは `aria-current="page"`）と「全 N 本中 a–b 本目」 |
+| 生成側の検査 | `apps/pipeline/src/catalog/paperLinksGate.ts` は Web の並び順を再実装せず、**大きい順に 3,000 行を 1 ページに集めた最悪の場合**で 3 MiB を確かめる（これが通れば、どの並びでもどのページも超えない） |
+| 検索エンジン | 2 ページ目以降も `noindex, follow`・canonical なし。sitemap には載らない（`robots` の meta で除外、今までと同じ） |
+| スクリプト除去 | `scripts/strip-nojs.ts` が番号つきのページも `<script>` と `index.txt` を消す |
+| 静的書き出しの注意 | `generateStaticParams` は `paper-links/layout.tsx` から `page.tsx` に移した。レイアウトに置くと `{conf}` が `[page]` に親の値として渡り、2 ページ目が無い学会が 1 つでもあると Next 15 の `output: export` が `[page]` 全体を「generateStaticParams が無い」として止める。`[page]/page.tsx` は `{conf, page}` の組を自分で全部返す |
+| Cloudflare Pages の上限 | ファイル数は 1 学会あたり最大 20 ページ（今は ICML 2026 で 3、ICLR 2026・NeurIPS 2025・CVPR 2026・ICML 2025 で 2）。1 ファイル 25 MiB に対し 1 ページは最大 3 MiB |
+
+変わったファイル: `apps/web/app/[conf]/paper-links/`（`logic.ts` に `paginatePaperLinkRows`・`buildPaperLinkPages`・`paperLinksPagePath`、表示を `view.tsx` に、読み込みを `read-papers.ts` に分け、`[page]/page.tsx` を追加）、`apps/web/scripts/strip-nojs.ts`、`apps/pipeline/src/catalog/paperLinksGate.ts`。テスト: `paper-links-logic`・`paper-links-pages`（ビルド結果で、全ページを合わせると `papers.json` の全件が 1 回ずつ同じ順に並ぶこと、ページ同士のリンク）・`strip-nojs`・`paper-links-build-safety`・`paperLinksGate`。
+
+この上で ICML 2026（6,552 本、3 ページ）をリポジトリに入れた（§8.3）。表示用の文言は `apps/web/lib/catalog-copy.ts` に追加（出典は PMLR Volume 306、CC BY 4.0）。NeurIPS 2026（約 9,200 本）は 4 ページになる見込みで、そのまま載せられる。
 
 ## 付録 A：出典（2026-10-11 に確認）
 
