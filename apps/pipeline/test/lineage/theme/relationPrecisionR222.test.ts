@@ -100,6 +100,9 @@ async function replay(it: Item): Promise<DerivedEdge> {
 const R223_BACKED = new Set([
   "openalex:W2581624817->openalex:W3170943566",
   "openalex:W3138516171->openalex:W3207918547",
+  // R2-31: Shazeer <- Eigen ("While Eigen et al. …, our convolutional
+  // application of the MoE …", quote_backed in relation-precision-r223).
+  "openalex:W1593114658->openalex:W2581624817",
 ]);
 
 function precision(rows: { predicted: string; it: Item }[]) {
@@ -138,8 +141,11 @@ describe("R2-22 strong-claim precision on the labelled set", () => {
     // 19 with the R2-22 rules; R2-23 adds V-MoE <- Shazeer (the marker
     // shared by all contexts, "inspired by [54]") and SwinIR <- Swin (its
     // own abstract) on these 4-context signals (relationPrecisionR223 has
-    // the refreshed 12-context signals).
-    expect(p.predicted).toBe(21);
+    // the refreshed 12-context signals). R2-31 adds Shazeer <- Eigen: the
+    // rule's "While Eigen et al. …, our convolutional application of the
+    // MoE …" is now a build-on, which the cached context-LLM answer
+    // (builds_on) confirms instead of vetoing.
+    expect(p.predicted).toBe(22);
     for (const r of rows.filter((x) => STRONG.has(x.predicted))) {
       const ok =
         r.it.gold.quote_backed ||

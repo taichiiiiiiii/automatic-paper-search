@@ -9,10 +9,10 @@
  * BASE Layer setup [10] and code base"), now a protocol rule (taking
  * another work's setup / code base is use, not a build). VR-GCN <-
  * GraphSAGE was already a protocol sentence under the R2-23 rules. The
- * one remaining difference is Shazeer <- Eigen: the rule's named "While
- * Eigen et al. … , our …" contrast stands (gold: a strong relation, kind
- * extends — the cached LLM's extends disagreed with the rule, which made
- * the edge baseline_only in LLM mode).
+ * one remaining R2-24 difference was Shazeer <- Eigen (the rule's named
+ * "While Eigen et al. … , our …" contrast vs the cached LLM's extends,
+ * which made the edge baseline_only in LLM mode); since R2-31 the rule
+ * reads that scope contrast as a build-on and both modes agree.
  */
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -120,28 +120,31 @@ async function score(items: Item[], llm: boolean) {
 const SHAZEER_EIGEN = "openalex:W1593114658->openalex:W2581624817";
 
 describe("R2-24: strong claims without any LLM (labelled sets)", () => {
-  it("R2-22 set: precision 1.0 in both modes; no LLM recalls 22/31 (LLM 21/31)", async () => {
+  it("R2-22 set: precision 1.0 in both modes; 22/31 either way (R2-31; LLM was 21/31)", async () => {
     const items = fixture("r222").edges as Item[];
     const withLlm = await score(items, true);
     const noLlm = await score(items, false);
     expect(withLlm.falsePositives).toEqual([]);
     expect(noLlm.falsePositives).toEqual([]);
-    expect([withLlm.correct, noLlm.correct, noLlm.goldStrong]).toEqual([21, 22, 31]);
+    expect([withLlm.correct, noLlm.correct, noLlm.goldStrong]).toEqual([22, 22, 31]);
   });
 
-  it("R2-23 set: precision 1.0 in both modes; no LLM recalls 26/32 (LLM 25/32)", async () => {
+  it("R2-23 set: precision 1.0 in both modes; 26/32 either way (R2-31; LLM was 25/32)", async () => {
     const items = fixture("r223").edges as Item[];
     const withLlm = await score(items, true);
     const noLlm = await score(items, false);
     expect(withLlm.falsePositives).toEqual([]);
     expect(noLlm.falsePositives).toEqual([]);
-    expect([withLlm.correct, noLlm.correct, noLlm.goldStrong]).toEqual([25, 26, 32]);
-    // The only difference: Shazeer <- Eigen, a strong claim either way in
-    // the gold labels, read as the rule's named contrast (gold kind: extends).
+    expect([withLlm.correct, noLlm.correct, noLlm.goldStrong]).toEqual([26, 26, 32]);
+    // R2-31: the one R2-24 difference (Shazeer <- Eigen, the rule's named
+    // "While Eigen et al. …, our …" contrast vs the cached LLM's extends)
+    // is gone — the rule now reads the scope contrast as a build-on, the
+    // gold kind. Both modes agree on every edge.
     const diff = noLlm.rows
       .filter((r, i) => r.e.relation !== withLlm.rows[i]?.e.relation)
       .map((r) => `${key(r.it)}:${r.e.relation}`);
-    expect(diff).toEqual([`${SHAZEER_EIGEN}:contrasts`]);
+    expect(diff).toEqual([]);
+    expect(noLlm.rows.find((r) => key(r.it) === SHAZEER_EIGEN)?.e.relation).toBe("extends");
     expect(noLlm.exactKind).toBe(withLlm.exactKind);
   });
 

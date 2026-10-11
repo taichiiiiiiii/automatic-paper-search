@@ -473,6 +473,9 @@ interface SentenceCandidate {
   contrast: boolean;
   sentence: string;
   target: SentenceTarget;
+  /** R2-31: a targeted scope contrast that reads as a build-on
+   * ({@link isScopeBuild}); resolved per pair. */
+  scopeBuild?: boolean;
 }
 
 const anyMatch = (patterns: readonly RegExp[], s: string) => patterns.some((p) => p.test(s));
@@ -487,6 +490,30 @@ const CONTRAST_PATTERNS_V3: readonly RegExp[] = [
   ...CONTRAST_PATTERNS,
   /^\s*(while|whereas)\b[^,;]{0,200},\s*(we|our)\b/i,
 ];
+
+/** R2-31: the scope-contrast form of {@link CONTRAST_PATTERNS_V3} ("While
+ * X …, our …"); group 1 = the first-person main clause. */
+const WHILE_OUR = /^\s*(?:while|whereas)\b[^,;]{0,200},\s*((?:we|our)\b.*)$/i;
+/** R2-31: the main clause presents the citing method as its own
+ * application / version of what the cited work does ("our convolutional
+ * application of the MoE allows …", Shazeer et al. <- Eigen et al.). */
+const OWN_APPLICATION =
+  /^our\s+(?:[\w-]+\s+){0,2}(?:application|use|usage|version|variant|instantiation|extension|generali[sz]ation|adaptation)\s+of\b/i;
+/** R2-31: a replacement cue keeps a scope contrast a contrast. */
+const REPLACE_CUE = /\binstead\s+of\b|\brather\s+than\b|\breplac(e|es|ed|ing)\b/i;
+
+/** R2-31: a "While X …, our <own application> of …" sentence: the only
+ * contrast cue is the concessive while/whereas (no unlike / in contrast /
+ * differ from / as opposed to, no replacement), and the first-person main
+ * clause applies the same thing the cited work uses. Such a sentence
+ * states a difference of scope inside a shared approach — a build-on, not
+ * a contrast — unless another sentence of the pair contrasts or compares
+ * explicitly (decided per pair in {@link classifyApiRelationV3}). */
+function isScopeBuild(sentence: string): boolean {
+  if (anyMatch(CONTRAST_PATTERNS, sentence) || REPLACE_CUE.test(sentence)) return false;
+  const m = WHILE_OUR.exec(sentence);
+  return m !== null && OWN_APPLICATION.test(m[1] ?? "");
+}
 
 /** R2-23: v3's first-person test; not inside a hyphenated word ("us-ing"). */
 const FIRST_PERSON_V3 = /(?<![\w-])(we|our|ours|this\s+(paper|work))(?![\w-])/i;
@@ -607,7 +634,8 @@ function classifySentence(
     if (opts.source === "abstract") {
       return targeted ? mk("compares_with", "abstract_contrast", 0.7, true) : null;
     }
-    return mk("compares_with", "phrase_contrast", 0.7, targeted);
+    const cand = mk("compares_with", "phrase_contrast", 0.7, targeted);
+    return targeted && isScopeBuild(sentence) ? { ...cand, scopeBuild: true } : cand;
   }
   if (compare) return mk("compares_with", "phrase_compare", 0.75);
   if (strong && TABLE_ROW.test(sentence)) return mk("compares_with", "table_row", 0.65);
@@ -675,9 +703,26 @@ export function classifyApiRelationV3(s: PairSignals): ApiClassification {
     source: "context",
   };
   let best: SentenceCandidate | null = null;
+  const cands: SentenceCandidate[] = [];
   for (const c of contexts) {
     const cand = classifySentence(c, id, sentenceOpts);
+    if (cand !== null) cands.push(cand);
     if (cand !== null && (best === null || candidateRank(cand) > candidateRank(best))) best = cand;
+  }
+  // R2-31: build-on beats a scope contrast. When the strongest sentence is
+  // a "While X …, our <application> of …" scope contrast, the pair builds
+  // on the cited work — unless another sentence about it contrasts
+  // explicitly (unlike / in contrast / differ from) or makes a comparison
+  // the claim (outperform / compared with / fair comparison).
+  if (
+    best?.scopeBuild === true &&
+    !cands.some(
+      (c) =>
+        c.scopeBuild !== true &&
+        ((c.relation === "compares_with" && c.contrast) || c.rule === "phrase_compare"),
+    )
+  ) {
+    best = { ...best, relation: "builds_on", rule: "phrase_build", contrast: false };
   }
   // R2-23: no strong cue in the citation contexts — the citing paper's own
   // abstract may state it ("we propose … SwinIR … based on the Swin

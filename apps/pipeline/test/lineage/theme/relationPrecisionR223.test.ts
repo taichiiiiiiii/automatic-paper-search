@@ -130,10 +130,11 @@ describe("R2-23 strong-claim recall on the refreshed labelled set", () => {
     }
   });
 
-  it("published edges: precision stays 1.0, recall 25/32 (R2-22 rules on the same signals: 23/32)", async () => {
+  it("published edges: precision stays 1.0, recall 26/32 (R2-22 rules on the same signals: 23/32)", async () => {
     const p = await run(fx.edges);
     expect(p.falsePositives).toEqual([]);
-    expect(p.correct).toBe(25);
+    // R2-31: 25 -> 26 (Shazeer <- Eigen, rule and cached LLM now agree).
+    expect(p.correct).toBe(26);
     expect(p.goldStrong).toBe(32);
     // Every strong claim is backed by a quote, the titles or the allowlist.
     for (const r of p.rows.filter((x) => x.strong)) {
@@ -144,12 +145,11 @@ describe("R2-23 strong-claim recall on the refreshed labelled set", () => {
       ).toBe(true);
     }
     // The remaining misses have no usable sentence (no context, publisher-
-    // elided references, multi-paper marker groups) — except Shazeer <-
-    // Eigen, whose rule contrast is vetoed by the cached LLM's extends.
+    // elided references, multi-paper marker groups). Shazeer <- Eigen left
+    // this list in R2-31 (the rule's scope contrast is now a build-on).
     expect(p.misses.sort()).toEqual(
       [
         "openalex:W4281758439->openalex:W4388327470", // FlashDecoding++ <- FlashAttention
-        "openalex:W1593114658->openalex:W2581624817", // Shazeer <- Eigen (rule/LLM disagree)
         "openalex:W1593114658->openalex:W2809290718", // MMoE <- Eigen (elided references)
         "openalex:W2581624817->openalex:W2809290718", // MMoE <- Shazeer (elided references)
         "openalex:W2809290718->openalex:W4390873360", // AdaMV-MoE <- MMoE (elided references)
