@@ -83,6 +83,12 @@ import {
 } from "./identity.js";
 import { suspectMergedRecords } from "./nodeIdentityGuard.js";
 import type { ThemePaper } from "./openalexWork.js";
+import {
+  chronologyInversions,
+  correctProceedingsYears,
+  type DblpYearEntry,
+  mergeSuspects,
+} from "./recordChronology.js";
 import { S2CitationSource } from "./s2Citations.js";
 import { S2Expansion } from "./s2Expansion.js";
 import { contextLlmSummary, newS2RelationStats, type S2RelationContext } from "./s2Relations.js";
@@ -787,6 +793,7 @@ export async function buildThemeLineage(
 
   // R2-28: preprint-venue nodes that DBLP has as a conference / journal
   // paper show that venue (opt-in).
+  const dblpYears: Record<string, DblpYearEntry | undefined> = {};
   if (deps.dblpVenues != null) {
     const dblp = new DblpVenueSource(deps.dblpVenues.cachePath, {
       fetchImpl: deps.dblpVenues.fetchImpl ?? deps.fetchImpl,
@@ -800,6 +807,20 @@ export async function buildThemeLineage(
     await dblp.correctVenues(nodes);
     dblp.flush();
     logger.info?.(dblp.summary());
+    for (const id of nodes.keys()) dblpYears[id] = dblp.entryFor(id);
+  }
+
+  // R2-31: a proceedings paper OpenAlex dates one year off (Gori et al.,
+  // IJCNN 2005 shown as 2006) takes the DBLP / IEEE-DOI conference year.
+  const yearCorrections = correctProceedingsYears(
+    nodes as unknown as Map<string, Record<string, unknown> & { id: string }>,
+    edges,
+    { dblp: dblpYears },
+  );
+  for (const c of yearCorrections) {
+    logger.warn(
+      `year correction: ${c.id} ${c.from} -> ${c.to} (${c.source}) ${JSON.stringify(c.title)}`,
+    );
   }
 
   await enrichGithubStars(nodes, {
@@ -838,12 +859,18 @@ export async function buildThemeLineage(
   // R2-22: mis-merged bibliographic records (an OpenAlex slide-deck record
   // carrying ChebNet's citations). Dropped non-focus nodes take their edges
   // with them; flagged ones stay and are listed in meta for the audit.
-  const suspects = suspectMergedRecords(
-    nodes.values() as Iterable<Record<string, unknown> & { id: string }>,
-    {
+  // R2-31: plus mixed records whose in-graph citers predate them
+  // (W4322614756: a 2025 title cited by 2021 GNN papers).
+  const suspects = mergeSuspects(
+    suspectMergedRecords(nodes.values() as Iterable<Record<string, unknown> & { id: string }>, {
       focusIds: new Set(seedIds),
       currentYear: wallClockNow().getUTCFullYear(),
-    },
+    }),
+    chronologyInversions(
+      nodes as unknown as Map<string, Record<string, unknown> & { id: string }>,
+      edges,
+      { focusIds: new Set(seedIds) },
+    ),
   );
   const droppedRecords = new Set(suspects.filter((s) => s.action === "dropped").map((s) => s.id));
   if (droppedRecords.size > 0) {
@@ -1018,6 +1045,8 @@ export async function buildThemeLineage(
       ...(canonicalSeedIds.length > 0 ? { canonical_seeds: canonicalSeedIds } : {}),
       // R2-22: records the identity guard dropped or flagged.
       ...(suspects.length > 0 ? { suspect_records: suspects } : {}),
+      // R2-31: one-year proceedings dating slips corrected from DBLP / the DOI.
+      ...(yearCorrections.length > 0 ? { year_corrections: yearCorrections } : {}),
       // R2-24: built without any LLM (API evidence only).
       ...(noLlm ? { lineage_llm: "off" } : {}),
     },
