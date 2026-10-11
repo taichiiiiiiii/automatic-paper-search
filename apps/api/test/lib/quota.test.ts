@@ -4,7 +4,7 @@
 // (src/durable/quota-object.ts) delegates to.
 
 import { describe, expect, it } from "vitest";
-import { QuotaLedger, type QuotaStorage } from "../../src/lib/quota.js";
+import { QuotaLedger, type QuotaStorage, type SweepableQuotaStorage } from "../../src/lib/quota.js";
 
 function fakeStorage(): QuotaStorage {
   const map = new Map<string, unknown>();
@@ -104,5 +104,48 @@ describe("QuotaLedger.refund", () => {
     await ledger.refund("1.2.3.4");
     const bucket = await storage.get<{ count: number; expiresAt: number }>("ip:1.2.3.4");
     expect(bucket?.count).toBe(1); // unchanged — the window had already rolled over
+  });
+});
+
+function sweepableStorage(): SweepableQuotaStorage & { keys(): string[] } {
+  const map = new Map<string, unknown>();
+  return {
+    async get<T>(key: string) {
+      return map.get(key) as T | undefined;
+    },
+    async put(key: string, value: unknown) {
+      map.set(key, value);
+    },
+    async delete(key: string) {
+      return map.delete(key);
+    },
+    async list<T>({ prefix }: { prefix: string }) {
+      return new Map([...map].filter(([key]) => key.startsWith(prefix)) as Array<[string, T]>);
+    },
+    keys: () => [...map.keys()].sort(),
+  };
+}
+
+describe("QuotaLedger.sweepExpired (R2-27: IP kept at most ~1 hour)", () => {
+  it("deletes expired per-IP buckets, keeps live ones and the global counter", async () => {
+    let now = 0;
+    const storage = sweepableStorage();
+    const ledger = new QuotaLedger(storage, () => now);
+    await ledger.consume("1.1.1.1");
+    now = 30 * 60_000;
+    await ledger.consume("2.2.2.2");
+    now = HOUR + 1;
+    const next = await QuotaLedger.sweepExpired(storage, now);
+    expect(storage.keys()).toEqual(["global", "ip:2.2.2.2"]);
+    expect(next).toBe(30 * 60_000 + HOUR);
+    expect(await QuotaLedger.sweepExpired(storage, next ?? 0)).toBeNull();
+    expect(storage.keys()).toEqual(["global"]);
+  });
+
+  it("deletes malformed buckets and returns null on an empty store", async () => {
+    const storage = sweepableStorage();
+    await storage.put("ip:9.9.9.9", { count: 1 });
+    expect(await QuotaLedger.sweepExpired(storage, 0)).toBeNull();
+    expect(storage.keys()).toEqual([]);
   });
 });

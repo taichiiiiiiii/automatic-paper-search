@@ -22,6 +22,19 @@ export interface QuotaStorage {
   put(key: string, value: unknown): Promise<void>;
 }
 
+// R2-27 (privacy): the per-IP bucket stores the raw client IP in its key,
+// and `expiresAt` alone only ends the rate-limit window — the entry itself
+// would stay in Durable Object storage forever. Storage that can also list
+// and delete lets `sweepExpired` remove expired buckets, so the site's
+// privacy note ("IP addresses are kept for at most about one hour") holds.
+export interface SweepableQuotaStorage extends QuotaStorage {
+  delete(key: string): Promise<unknown>;
+  list<T = unknown>(options: { prefix: string }): Promise<Map<string, T>>;
+}
+
+/** Key prefix of the per-IP buckets (the only entries holding an IP). */
+export const IP_KEY_PREFIX = "ip:";
+
 interface IpBucket {
   count: number;
   expiresAt: number;
@@ -58,7 +71,7 @@ export class QuotaLedger {
   // floored at 0; never re-extends an expired/rolled-over window.
   async refund(ip: string): Promise<void> {
     const nowMs = this.now();
-    const ipKey = `ip:${ip}`;
+    const ipKey = `${IP_KEY_PREFIX}${ip}`;
     const ipBucket = await this.storage.get<IpBucket>(ipKey);
     if (ipBucket && ipBucket.expiresAt > nowMs && ipBucket.count > 0) {
       await this.storage.put(ipKey, { ...ipBucket, count: ipBucket.count - 1 });
@@ -71,7 +84,7 @@ export class QuotaLedger {
   }
 
   private async chargeIp(ip: string, nowMs: number): Promise<boolean> {
-    const key = `ip:${ip}`;
+    const key = `${IP_KEY_PREFIX}${ip}`;
     const bucket = await this.storage.get<IpBucket>(key);
     const live = bucket && bucket.expiresAt > nowMs ? bucket : null;
     const count = live ? live.count : 0;
@@ -79,6 +92,26 @@ export class QuotaLedger {
     const expiresAt = live ? live.expiresAt : nowMs + 3_600_000;
     await this.storage.put(key, { count: count + 1, expiresAt });
     return true;
+  }
+
+  /**
+   * Deletes every per-IP bucket whose window has ended (R2-27). Returns the
+   * earliest `expiresAt` among the buckets still live, or null when none
+   * remain — the Durable Object schedules its next alarm from that value.
+   * Malformed entries (no numeric `expiresAt`) are deleted as well.
+   */
+  static async sweepExpired(storage: SweepableQuotaStorage, nowMs: number): Promise<number | null> {
+    const entries = await storage.list<IpBucket>({ prefix: IP_KEY_PREFIX });
+    let nextExpiry: number | null = null;
+    for (const [key, bucket] of entries) {
+      const expiresAt = bucket && typeof bucket.expiresAt === "number" ? bucket.expiresAt : null;
+      if (expiresAt === null || expiresAt <= nowMs) {
+        await storage.delete(key);
+      } else if (nextExpiry === null || expiresAt < nextExpiry) {
+        nextExpiry = expiresAt;
+      }
+    }
+    return nextExpiry;
   }
 
   private async chargeGlobal(nowMs: number): Promise<boolean> {
