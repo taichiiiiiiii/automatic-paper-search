@@ -518,7 +518,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "fd781d097443998d139f7fdb3985b11a3600de121d792e7b55bb0fe0b50c26c8"
+          "sha256": "a7be09215d7ca01d8c3925d9ddddc142a725129fb2cff06566874f4fad3bf94d"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -532,11 +532,11 @@
     {
       "src": "openalex:W2940744433",
       "dst": "openalex:W3015468748",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.8,
-      "confidence": 0.8,
-      "rationale": "「Longformer」(2020) は 「Generating Long Sequences with …」(2019) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We use two different model sizes, a small (12 layers, 512 hidden size) model as in Dai et al. (2019), and a large (30 layers, 512 hidden size) model as in Child et al. (2019).\"",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「Longformer」(2020) は 「Generating Long Sequences with …」(2019) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We use two different model sizes, a small (12 layers, 512 hidden size) model as in Dai et al. (2019), and a large (30 layers, 512 hidden size) model as in Child et al. (2019).\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -559,11 +559,11 @@
     {
       "src": "openalex:W2940744433",
       "dst": "openalex:W3091156754",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Rethinking Attention with Perfo…」(2020) は 「Generating Long Sequences with …」(2019) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \", 2018) or incorporate structural priors on attention such as sparsity (Child et al., 2019), pooling-based compression (Rae et al.\"",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Rethinking Attention with Perfo…」(2020) は 「Generating Long Sequences with …」(2019) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \", 2018) or incorporate structural priors on attention such as sparsity (Child et al., 2019), pooling-based compression (Rae et al.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -572,7 +572,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "46a58bffdc134d168c45cb9c24dc71dc8ddc4cada9615f2376af3a821ba9a810"
+          "sha256": "fcc62c9c545723442e49036d1dbca949175157d5abe37736d9e589f550ab54eb"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -590,7 +590,7 @@
       "relation": "baseline_only",
       "conf": 0.6,
       "confidence": 0.6,
-      "rationale": "「SMYRF」(2020) は 「Generating Long Sequences with …」(2019) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "rationale": "「SMYRF」(2020) は 「Generating Long Sequences with …」(2019) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Attention finds further uses in other domains like symbolic mathematics and music modeling as well [10, 11, 12].\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -720,12 +720,39 @@
     },
     {
       "src": "openalex:W2997517014",
-      "dst": "openalex:W3091156754",
-      "rel": "extends",
-      "relation": "extends",
+      "dst": "openalex:W3015468748",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
       "conf": 0.5,
       "confidence": 0.5,
-      "rationale": "「Rethinking Attention with Perfo…」(2020) は 「Efficient Content-Based Sparse …」(2021) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"(Roy et al., 2020) which applies k-means clustering to learn dynamic sparse attention regions, or (Kitaev et al.\"",
+      "rationale": "「Longformer: The Long-Document Transformer」(2020) は「Efficient Content-Based Sparse Attention with Routing Trans…」(2021) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "dd814d1f63383542d83b515c102c2d9f58735f3d1a60fc77f01ca1fd6d9fd32c"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2997517014",
+      "dst": "openalex:W3091156754",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Rethinking Attention with Perfo…」(2020) は 「Efficient Content-Based Sparse …」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"(Roy et al., 2020) which applies k-means clustering to learn dynamic sparse attention regions, or (Kitaev et al.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -734,10 +761,37 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "b5c4df5293c6ec6064cc4af8f090ff70864a84601661fb9cc0906b3dc2aba228"
+          "sha256": "e47e0065b472c2d68bd09476ee744a896c37465ee61e18d547f3e6c0c078524b"
         },
         "classification": {
           "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2997517014",
+      "dst": "openalex:W3092852584",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「SMYRF: Efficient Attention using Asymmetric Clustering」(2020) は「Efficient Content-Based Sparse Attention with Routing Trans…」(2021) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "39715932e63315732625c82f6dfef110ac1b26978168bd804763e2763b18900a"
+        },
+        "classification": {
+          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -858,9 +912,9 @@
       "dst": "openalex:W7154502343",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「VFA: Relieving Vector Operations in Flash Attention with Gl…」(2026) は「Efficient Content-Based Sparse Attention with Routing Trans…」(2021) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「VFA: Relieving Vector Operations in Flash Attention with Gl…」(2026) は「Efficient Content-Based Sparse Attention with Routing Trans…」(2021) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -868,11 +922,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "b04f617afa8c437d9d4387ddf5968ffc86ed70bdab0654d028e1187773b80159"
+          "kind": "citation-list",
+          "sha256": "80d3148b7a5ceb8078e99ce0b5b8183e76cda12a23d801212eb8a4dd629517ea"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -883,11 +937,11 @@
     {
       "src": "openalex:W3015468748",
       "dst": "openalex:W3091156754",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Rethinking Attention with Perfo…」(2020) は 「Longformer」(2020) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \", 2020), where locality sensitive hashing is used to group together tokens of similar embeddings), sliding windows (Beltagy et al., 2020), or truncated targeting (Chelba et al.\"",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Rethinking Attention with Perfo…」(2020) は 「Longformer」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \", 2020), where locality sensitive hashing is used to group together tokens of similar embeddings), sliding windows (Beltagy et al., 2020), or truncated targeting (Chelba et al.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -896,7 +950,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "ad975cc6370c90ec1fa31da0446511931f1359e2f9dc752cca1b9bdee053bcc1"
+          "sha256": "573a96d3a0f9acde536a41659cf3a3f15092a0a480ab340edbb1211378f53312"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -923,7 +977,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "ffcc2e9c3b9869690462a39725e967baab779eb1aeb628d44cb37416910c3dd8"
+          "sha256": "6eddc31d6f39806941f3173dc7b0e6b68292a3a0c69f26e972ce12f8adb85d87"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -937,11 +991,11 @@
     {
       "src": "openalex:W3015468748",
       "dst": "openalex:W4281758439",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「FlashAttention」(2022) は 「Longformer」(2020) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Longformer and BigBird do not support sequence lengths longer than 8092.\"",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「FlashAttention」(2022) は 「Longformer」(2020) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"For sparse attention, we compare against reference implementations of Block-Sparse Attention form OpenAI [12], Longformer[3], and BigBird Attention [96].\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -950,7 +1004,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "a8e70ca4cca259756d5d9364f42aa9b427c81fdad59dd15af6ffb8aae71d62c9"
+          "sha256": "307f55895378e88be1bb385f36c3a0fe7947d3b5f8890251978e0b5f862a27f0"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -1101,9 +1155,9 @@
       "dst": "openalex:W4226001818",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Self-attention Does Not Need $O(n^2)$ Memory」(2021) は「Rethinking Attention with Performers」(2020) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Self-attention Does Not Need $O(n^2)$ Memory」(2021) は「Rethinking Attention with Performers」(2020) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1111,11 +1165,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "bb7688db599dbab2f4105fe22b5194ed3f155da9459d3f32276de49cfd38a5e5"
+          "kind": "citation-list",
+          "sha256": "32c2345bf4d590509eb99e0dfb6f163264670ea74deb1bf68e7481e4837b157a"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -1139,7 +1193,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "4842b610492b54245400d9d03385e1365b0ab1b0ac297f62fa68f238efc2fefe"
+          "sha256": "edad8b7b80ed05a6d279387daba66fc38ab1cf1e52478216e96bd8581c515e14"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -1234,11 +1288,11 @@
     {
       "src": "openalex:W3092852584",
       "dst": "openalex:W4281758439",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「FlashAttention」(2022) は 「SMYRF」(2020) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Linformer Attention [88], Smyrf [20], and LongShortFormer (LSFormer) [98].\"",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「FlashAttention」(2022) は 「SMYRF」(2020) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"For approximate attention, we compare against reference implementations of Reformer [49], Local Attention [65], Linformer Attention [81], Smyrf [18], and LongShortFormer (LSFormer) [91].\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1247,7 +1301,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "89a5b34ad0e0eff7f16289f632b6891b11b34849183ed2079f6a0896d44f17b2"
+          "sha256": "78a32d6e724ae39af5dcfd2eeb2d17ab13b4d56c5bf1383cd89feadaaec1eeab"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -1263,9 +1317,9 @@
       "dst": "openalex:W4281758439",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「FlashAttention」(2022) は 「Self-attention Does Not Need $O…」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"The first major difference is that Rabe and Staats [66] focuses on the reducing the total memory footprint (maximum amount of GPU memory required) while FlashAttention focuses on reducing memory accesses (the number of memory reads/writes).\"",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「FlashAttention」(2022) は 「Self-attention Does Not Need $O…」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"This means that FlashAttention has smaller total memory requirement compared to Rabe and Staats [66].\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1274,7 +1328,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "a23fb695b0a76e4e6c3370558c3308d6146afbc8392da5d8b6380a41be70116d"
+          "sha256": "0277a02eb4d2f0d6556143c53990d0ef079a9580b1e866a762fd8a43eb705096"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -1369,11 +1423,11 @@
     {
       "src": "openalex:W4281758439",
       "dst": "openalex:W4388327470",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「FlashDecoding++」(2023) は 「FlashAttention」(2022) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"FlashAttention [18, 19] optimizes the self-attention computation process during the prefill phase through improved parallelism and workload distribution.\"",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「FlashDecoding++」(2023) は 「FlashAttention」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"FlashAttention [18, 19] optimizes the self-attention computation process during the prefill phase through improved parallelism and workload distribution.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1382,7 +1436,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "c171d10bc2b9cb0613eb4c32c41ba371c6b9708e95be09ec0b4bfc27d3a0e160"
+          "sha256": "1c8299af585a2b4d10b5f8b0c89ca682b111f3e69d2d73be76272bf2428e656b"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -1560,9 +1614,9 @@
       "dst": "openalex:W4388327470",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「FlashDecoding++」(2023) は 「FlashAttention-2」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「FlashDecoding++」(2023) は 「FlashAttention-2」(2023) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We compare the inference performance in both prefill phase and decode phase with the following LLM engine baselines: Hugging Face (HF) [35], vLLM [11], DeepSpeed [9], TensorRT-LLM [14], OpenPPL [12], and FlashAttention2/FlashDecoding [19, …\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1571,7 +1625,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "143a1dfe6cc08c205fa66e2d9b70631a1557e6380feeda804b4e539746d6ad8f"
+          "sha256": "e613296acd1f39744bae196b442e21b739e11c24c8be314c2c5a7c996f425b40"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -1598,7 +1652,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "c43eb011b8ec6c3c4aa2ff184a6cc94e727d285ca4d476ffa729351cd80ee4f2"
+          "sha256": "21ed09f0461bde9f930c5f16cc89d7204b1e90ba682a7a6587faec24dbc9511d"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -1652,7 +1706,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "3e4617a4cc1df7b28c5ed87e91376fd4943f65c34647a2fcbd2acad8920e0dd6"
+          "sha256": "962d493b8117904ce6c42cd356564da25c444eca036f988e97d4e82a3fab5d1b"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -1776,9 +1830,9 @@
       "dst": "openalex:W4405090274",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「FlashAttention on a Napkin: A Diagrammatic Approach to Deep…」(2024) は「A Case Study in CUDA Kernel Fusion: Implementing FlashAtten…」(2023) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「FlashAttention on a Napkin: A Diagrammatic Approach to Deep…」(2024) は「A Case Study in CUDA Kernel Fusion: Implementing FlashAtten…」(2023) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1786,11 +1840,38 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "f91bf5af826cda6f911bafbd9114cd1594254129565297970adcfb5a75bc959e"
+          "kind": "citation-list",
+          "sha256": "47b231ee496de60487918733a699fd33a0e2894215154d7789ed93cf14148448"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4400611982",
+      "dst": "openalex:W4405090274",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「FlashAttention on a Napkin: A Diagrammatic Approach to Deep…」(2024) は「FlashAttention-3: Fast and Accurate Attention with Asynchro…」(2024) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "4d656b108b3e25958e7d3234fde7f47a82564c4c1a96f6fcae04880f3bda6ee1"
+        },
+        "classification": {
+          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -1805,7 +1886,7 @@
       "relation": "baseline_only",
       "conf": 0.75,
       "confidence": 0.75,
-      "rationale": "「BLASST」(2025) は 「FlashAttention-3」(2024) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "rationale": "「BLASST」(2025) は 「FlashAttention-3」(2024) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Our kernels achieve up to 1.52 × speedup for prefill at 71.9% sparsity and 1.48 × speedup for decode at 73.2% sparsity over FlashAttention baselines (Shah et al., 2024; Zadouri et al., 2026), while maintaining numerical stability and suppo…\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1922,7 +2003,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "68bedeef2f66cf3191a130dbd3e8133430d5dd11a6b9cdb1e39a1a220efbd422"
+          "sha256": "ddb2eaf6e404e68d1b420777cd940f0a215e0a5db016b055e7fe96375a09fdcb"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -1980,10 +2061,10 @@
     ],
     "depth": 1,
     "since_year": 2018,
-    "generated_at": "2026-10-10T13:26:22.190000Z",
+    "generated_at": "2026-10-11T02:44:46.236000Z",
     "provenance_breakdown": {
       "s2_context_rule": 48,
-      "citation_heuristic": 3,
+      "api_citation": 6,
       "title_version": 3
     },
     "completeness": {
@@ -2001,6 +2082,7 @@
         "z_hi": 1
       },
       "pool_size": 137
-    }
+    },
+    "lineage_llm": "off"
   }
 }
