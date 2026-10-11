@@ -12,7 +12,10 @@ name: conference-watch
 # bot commit-push pattern when it changed materially (editions or check
 # status — not just the timestamps), and when a NEW pending edition
 # appears, opens or comments on ONE open issue labelled `conference-watch`
-# listing every pending edition with its approval command. Never publishes
+# listing every pending edition with its approval command (one
+# `conference/watch/approveCli.ts --edition <id> [--execute]` per edition,
+# R3-4 / design 52 §8.6; the arXiv conference-on-demand fallback only for
+# editions without an official listing adapter). Never publishes
 # anything: editions stay `pending_approval` / `auto_publish: false` until
 # a human approves (design 52 §8.1).
 
@@ -121,14 +124,19 @@ jobs:
           body="$RUNNER_TEMP/conference-watch-body.md"
           {
             printf '@%s — 学会の新しい回を検知しました（新規: %s）。**自動では公開しません**（`auto_publish: false`）。\n\n' "$OWNER" "$NEW_IDS"
-            printf '承認するときは、回ごとの下のコマンドを実行してください（arXiv 経由の一覧を conference-on-demand.yml で作り、promote の検査を通ったものだけが公開されます）。公式 proceedings のアダプタ（pmlr / acl-anthology / cvf-listing）で作る場合は design 52 §8.3 の手順で。\n\n'
+            printf '承認するときは、回ごとの下のコマンドを手元（リポジトリのルート）で実行してください。1 つのコマンドで、公式の一覧（`proceedings_adapter`）から収集し、表示文を作り、promote と同じ再生成（buildPages・identityLite・searchIndex・lineageQuality）まで行います。`--execute` を付けない実行は計画の表示だけです。**commit・push・公開はしません**: `git status` を確認し、ゲートを通して PR にしてください（design 52 §8.6）。\n\n'
             jq -r --arg new " $NEW_IDS " '
               .editions[] | select(.status == "pending_approval") |
               (" " + .edition_id + " ") as $needle |
               "### \(.display_name) (`\(.edition_id)`)\(if ($new | contains($needle)) then " 🆕" else "" end)\n" +
               "- 開催: \(.start_date // "?") / \(.location // "?")、OpenReview: `\(.openreview_group_id)`\n" +
               "- 公式の一覧: `\(.proceedings_adapter)` — \(.proceedings_hint // "")\n" +
-              "- 承認（arXiv 経由）:\n\n```sh\ngh workflow run conference-on-demand.yml --ref develop -f conference=\(.edition_id) -f venue=\(.venue_key | ascii_upcase) -f query='"'"'co:\"\(.display_name)\"'"'"' -f display='"'"'\(.display_name)'"'"' -f lede='"'"'\(.display_name) の論文一覧。'"'"'\n```\n"
+              (if .proceedings_adapter == "none" then
+                "- 公式の一覧が無い回です。代わりに arXiv 経由（網羅は一部）:\n\n```sh\ngh workflow run conference-on-demand.yml --ref develop -f conference=\(.edition_id) -f venue=\(.venue_key | ascii_upcase) -f query='"'"'co:\"\(.display_name)\"'"'"' -f display='"'"'\(.display_name)'"'"' -f lede='"'"'\(.display_name) の論文一覧。'"'"'\n```\n"
+              else
+                "- 承認（公式の一覧から作る）:\n\n```sh\npnpm exec tsx apps/pipeline/src/conference/watch/approveCli.ts --edition \(.edition_id)            # 計画だけ\npnpm exec tsx apps/pipeline/src/conference/watch/approveCli.ts --edition \(.edition_id) --execute  # 手元で作る\n```\n" +
+                (if .proceedings_adapter == "pmlr" then "  （PMLR は `--pmlr-volume <番号>` も付ける）\n" else "" end)
+              end)
             ' "$STATE"
             printf -- '---\n記録: `%s`（develop）。実行: %s\n' "$STATE" "$RUN_URL"
           } > "$body"
