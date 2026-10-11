@@ -37,7 +37,10 @@
   --color-ink-muted: oklch(42% 0.015 270);
   --color-ink-subtle: oklch(48% 0.012 270);
 
-  --color-accent: oklch(58% 0.18 30);
+  /* 54% (was 58%): text in --color-accent was 4.54:1 on --color-bg and
+     4.16:1 on --color-surface-2, under WCAG AA; now 5.4:1 / 4.9:1
+     (UX audit, design 53). */
+  --color-accent: oklch(54% 0.18 30);
   --color-accent-strong: oklch(45% 0.2 30);
   --color-oral: oklch(72% 0.16 75);
   --color-oral-bg: oklch(95% 0.07 80);

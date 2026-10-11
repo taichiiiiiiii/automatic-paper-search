@@ -61,7 +61,7 @@ export function SiteFooter() {
         {DATA_SOURCES.map((source, index) => (
           <span key={source.href}>
             {index > 0 ? " / " : null}
-            <a href={source.href} rel="noopener" className="text-accent-strong">
+            <a href={source.href} rel="noopener" className="inline-block py-1 text-accent-strong">
               {source.label}
             </a>
           </span>
