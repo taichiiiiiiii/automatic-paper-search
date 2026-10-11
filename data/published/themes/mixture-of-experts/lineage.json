@@ -1,6 +1,6 @@
 {
   "schema_version": "lineage-artifact-v1",
-  "root": "openalex:W4226079124",
+  "root": "openalex:W2581624817",
   "nodes": [
     {
       "id": "openalex:W1593114658",
@@ -246,38 +246,6 @@
         ]
       ],
       "seed_paper_id": "cb5da8d1701d91bef1e371b807b23ad5d06176e0"
-    },
-    {
-      "id": "openalex:W3014879845",
-      "title": "Conditional Channel Gated Networks for Task-Aware Continual Learning",
-      "year": 2020,
-      "venue": "IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings",
-      "venue_tier": "A+",
-      "authors": [
-        "Davide Abati",
-        "Jakub M. Tomczak",
-        "Tijmen Blankevoort",
-        "Simone Calderara",
-        "Rita Cucchiara"
-      ],
-      "kinds": [],
-      "citation_count": 178,
-      "github_stars": 0,
-      "tldr": "Convolutional Neural Networks experience catastrophic forgetting when optimized on a sequence of learning problems: as they meet the…",
-      "short_abstract": "Convolutional Neural Networks experience catastrophic forgetting when optimized on a sequence of learning problems: as they meet the objective of the current training examples, their performance on previous tasks drops drastically. In this work, we introduce a novel framework to tackle this problem with conditional computation. We equip each convolutional layer with task-specific gating modules, selecting which filters to apply on the given input. This way, we achieve two appealing properties. Firstly, the execution patterns of the gates allow to identify and protect important filters, ensuring no loss in the performance of the model for previously learned tasks. Secondly, by using a sparsity objective, we can promote the selection of a limited set of kernels, allowing to retain sufficient model capacity to digest new tasks. Existing solutions require, at test time, awareness of the task to which each example belongs to. This knowledge, however, may not be available in many practical…",
-      "arxiv_id": "2004.00070",
-      "doi": "10.1109/cvpr42600.2020.00399",
-      "aliases": [
-        [
-          "arxiv",
-          "2004.00070"
-        ],
-        [
-          "doi",
-          "10.1109/cvpr42600.2020.00399"
-        ]
-      ],
-      "is_focus": false
     },
     {
       "id": "openalex:W3119866685",
@@ -655,11 +623,11 @@
     {
       "src": "openalex:W1593114658",
       "dst": "openalex:W2581624817",
-      "rel": "contrasts",
-      "relation": "contrasts",
+      "rel": "extends",
+      "relation": "extends",
       "conf": 0.7,
       "confidence": 0.7,
-      "rationale": "「Outrageously Large Neural Netwo…」(2017) は 「Learning Factored Representatio…」(2013) と異なる手法を取ると述べている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"While Eigen et al. (2013) uses two stacked MoEs allowing for two sets of gating decisions, our convolutional application of the MoE allows for different gating decisions at each position in the text.\"",
+      "rationale": "「Outrageously Large Neural Netwo…」(2017) は 「Learning Factored Representatio…」(2013) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"While Eigen et al. (2013) uses two stacked MoEs allowing for two sets of gating decisions, our convolutional application of the MoE allows for different gating decisions at each position in the text.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -969,33 +937,6 @@
         },
         "classification": {
           "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W2242818861",
-      "dst": "openalex:W3014879845",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Conditional Channel Gated Networks for Task-Aware Continual…」(2020) は「Estimating or Propagating Gradients Through Stochastic Neur…」(2013) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-list",
-          "sha256": "585d88e5ce09b0d9545e30594639e7f0b2813b46c2f2e2867a5e07ed4858c126"
-        },
-        "classification": {
-          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -1590,33 +1531,6 @@
         },
         "classification": {
           "method": "api_citation",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3014879845",
-      "dst": "openalex:W4226079124",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「Mixture-of-Experts with Expert …」(2022) は 「Conditional Channel Gated Netwo…」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Conditional convolution layers [1] with task-speciﬁc gating has been used to combat catastrophic forgetting when a sequence of learning problems are optimized.\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "52f69cacf2a6a271ba56afbfa86f5cbbbe6b3c477799a51d2cd86e7e71286372"
-        },
-        "classification": {
-          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -2481,10 +2395,10 @@
     ],
     "depth": 1,
     "since_year": 2018,
-    "generated_at": "2026-10-11T07:19:49.781000Z",
+    "generated_at": "2026-10-11T10:37:39.251000Z",
     "provenance_breakdown": {
-      "s2_context_rule": 40,
-      "api_citation": 27
+      "s2_context_rule": 39,
+      "api_citation": 26
     },
     "completeness": {
       "complete": true,
