@@ -39,59 +39,64 @@ export function ThemeNewPapersSection({
   return (
     <section
       aria-labelledby="new-papers-heading"
-      className="mt-10 rounded-md border border-rule bg-surface p-4"
+      className="rounded-md border border-rule bg-surface"
       data-new-papers
     >
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 id="new-papers-heading" className="font-serif text-lg font-semibold text-ink">
-          新着
-          <span className="ml-2 text-sm font-normal text-ink-subtle">
-            {data.window.from} 〜 {data.window.to}
+      <details className="group p-4">
+        <summary className="flex cursor-pointer flex-wrap items-baseline justify-between gap-2">
+          <h2 id="new-papers-heading" className="font-serif text-lg font-semibold text-ink">
+            新着
+            <span className="ml-2 text-sm font-normal text-ink-subtle">
+              {data.items.length} 本・{data.window.from} 〜 {data.window.to}
+            </span>
+          </h2>
+          <span aria-hidden="true" className="text-xs text-ink-subtle group-open:hidden">
+            開く ▾
           </span>
-        </h2>
-        <a
-          href={themeFeedPath(slug)}
-          type="application/atom+xml"
-          className="text-sm text-accent underline"
-          data-feed-link
-        >
-          Atom フィード
-        </a>
-      </div>
-      <p className="mt-1 text-xs text-ink-subtle">
-        この系譜の論文を {data.minLineageCites} 本以上引用している新しい論文です（OpenAlex
-        の引用データ、テーマから外れる論文は自動で除外）。系譜の図には含めていません。OpenAlex
-        への登録は公開から数日〜数週間遅れることがあります。
-      </p>
-      {data.items.length === 0 ? (
-        <p className="mt-3 text-sm text-ink-muted">この期間の新着はありません。</p>
-      ) : (
-        <ol className="mt-3 space-y-3">
-          {data.items.map((it) => {
-            const cited = it.citesLineage.map((id) => nodeTitle(nodes, id));
-            const authors = it.authors.join(", ") + (it.authorsTruncated ? " ほか" : "");
-            return (
-              <li key={it.id} className="text-sm">
-                <a
-                  href={it.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-medium text-ink underline decoration-rule hover:text-accent"
-                >
-                  {it.title}
-                </a>
-                <div className="text-xs text-ink-subtle">
-                  {[it.publicationDate, it.venue, authors].filter(Boolean).join(" · ")}
-                </div>
-                <div className="text-xs text-ink-muted" title={cited.join("\n")}>
-                  系譜の {it.citesLineage.length} 本を引用: {cited.slice(0, 3).join("、")}
-                  {cited.length > 3 ? ` ほか ${cited.length - 3} 本` : ""}
-                </div>
-              </li>
-            );
-          })}
-        </ol>
-      )}
+        </summary>
+        <p className="mt-2 text-xs text-ink-subtle">
+          この系譜の論文を {data.minLineageCites} 本以上引用している新しい論文です（OpenAlex
+          の引用データ、テーマから外れる論文は自動で除外）。系譜の図には含めていません。OpenAlex
+          への登録は公開から数日〜数週間遅れることがあります。
+          <a
+            href={themeFeedPath(slug)}
+            type="application/atom+xml"
+            className="ml-1 text-accent-strong underline"
+            data-feed-link
+          >
+            Atom フィード
+          </a>
+        </p>
+        {data.items.length === 0 ? (
+          <p className="mt-3 text-sm text-ink-muted">この期間の新着はありません。</p>
+        ) : (
+          <ol className="mt-3 space-y-3">
+            {data.items.map((it) => {
+              const cited = it.citesLineage.map((id) => nodeTitle(nodes, id));
+              const authors = it.authors.join(", ") + (it.authorsTruncated ? " ほか" : "");
+              return (
+                <li key={it.id} className="text-sm">
+                  <a
+                    href={it.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium text-ink underline decoration-rule hover:text-accent"
+                  >
+                    {it.title}
+                  </a>
+                  <div className="text-xs text-ink-subtle">
+                    {[it.publicationDate, it.venue, authors].filter(Boolean).join(" · ")}
+                  </div>
+                  <div className="text-xs text-ink-muted" title={cited.join("\n")}>
+                    系譜の {it.citesLineage.length} 本を引用: {cited.slice(0, 3).join("、")}
+                    {cited.length > 3 ? ` ほか ${cited.length - 3} 本` : ""}
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
+        )}
+      </details>
     </section>
   );
 }
@@ -143,56 +148,66 @@ export function ThemeCodeLinksSection({
   return (
     <section
       aria-labelledby="code-links-heading"
-      className="mt-6 rounded-md border border-rule bg-surface p-4"
+      className="rounded-md border border-rule bg-surface"
       data-code-links
     >
-      <h2 id="code-links-heading" className="font-serif text-lg font-semibold text-ink">
-        コードとモデル
-      </h2>
-      <ul className="mt-2 space-y-2 text-sm">
-        {rows.map(({ node, link }) => (
-          <li key={node.id}>
-            <span className="text-ink">
-              {typeof node.title === "string" ? node.title : node.id}
+      <details className="group p-4">
+        <summary className="flex cursor-pointer flex-wrap items-baseline justify-between gap-2">
+          <h2 id="code-links-heading" className="font-serif text-lg font-semibold text-ink">
+            コードとモデル
+          </h2>
+          <span className="text-xs text-ink-subtle">
+            {rows.length} 本
+            <span aria-hidden="true" className="ml-2 group-open:hidden">
+              開く ▾
             </span>
-            <span className="ml-2 inline-flex flex-wrap gap-2 text-xs">
-              {link.code && (
-                <a
-                  href={link.code.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-accent underline"
-                >
-                  コード（GitHub{link.code.stars ? ` ★${compactCount(link.code.stars)}` : ""}）
-                </a>
-              )}
-              {link.hf && (
-                <a
-                  href={link.hf.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-accent underline"
-                >
-                  HF（モデル {compactCount(link.hf.models)}・データセット{" "}
-                  {compactCount(link.hf.datasets)}・Space {compactCount(link.hf.spaces)}）
-                </a>
-              )}
-            </span>
-          </li>
-        ))}
-      </ul>
-      <p className="mt-2 text-xs text-ink-subtle">
-        {usesHf ? (
-          <>
-            リポジトリと件数は{" "}
-            <a href="https://huggingface.co/papers" rel="noopener" className="underline">
-              Hugging Face Papers
-            </a>{" "}
-            に登録された値です（取得日の値。HF の自動要約は使っていません）。
-          </>
-        ) : null}
-        HF にリポジトリの登録がない論文は、PaperPilot が手作業で確認した対応表から表示します。
-      </p>
+          </span>
+        </summary>
+        <ul className="mt-2 space-y-2 text-sm">
+          {rows.map(({ node, link }) => (
+            <li key={node.id}>
+              <span className="text-ink">
+                {typeof node.title === "string" ? node.title : node.id}
+              </span>
+              <span className="ml-2 inline-flex flex-wrap gap-2 text-xs">
+                {link.code && (
+                  <a
+                    href={link.code.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-accent-strong underline"
+                  >
+                    コード（GitHub{link.code.stars ? ` ★${compactCount(link.code.stars)}` : ""}）
+                  </a>
+                )}
+                {link.hf && (
+                  <a
+                    href={link.hf.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-accent-strong underline"
+                  >
+                    HF（モデル {compactCount(link.hf.models)}・データセット{" "}
+                    {compactCount(link.hf.datasets)}・Space {compactCount(link.hf.spaces)}）
+                  </a>
+                )}
+              </span>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-2 text-xs text-ink-subtle">
+          {usesHf ? (
+            <>
+              リポジトリと件数は{" "}
+              <a href="https://huggingface.co/papers" rel="noopener" className="underline">
+                Hugging Face Papers
+              </a>{" "}
+              に登録された値です（取得日の値。HF の自動要約は使っていません）。
+            </>
+          ) : null}
+          HF にリポジトリの登録がない論文は、PaperPilot が手作業で確認した対応表から表示します。
+        </p>
+      </details>
     </section>
   );
 }

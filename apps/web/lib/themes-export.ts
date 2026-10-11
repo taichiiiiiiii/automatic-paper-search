@@ -68,6 +68,23 @@ function collectInlineCss(doc: Document): string {
   return parts.join("\n");
 }
 
+/** The drawing's own size: the `viewBox` width/height when present (the
+ * on-screen `width`/`height` attributes follow the viewer's zoom, which
+ * must not shrink or blow up an export), else the attributes. */
+export function svgNaturalSize(svgEl: SVGSVGElement): { width: number; height: number } {
+  const vb = (svgEl.getAttribute("viewBox") ?? "")
+    .trim()
+    .split(/[\s,]+/)
+    .map(Number);
+  if (vb.length === 4 && vb.every(Number.isFinite) && (vb[2] ?? 0) > 0 && (vb[3] ?? 0) > 0) {
+    return { width: vb[2] as number, height: vb[3] as number };
+  }
+  return {
+    width: Number.parseFloat(svgEl.getAttribute("width") ?? "") || 1,
+    height: Number.parseFloat(svgEl.getAttribute("height") ?? "") || 1,
+  };
+}
+
 /** Clones `svgEl`, inlines every same-origin stylesheet rule into a
  * `<style>` in `<defs>` so the serialized string renders identically
  * with no external CSS, and returns the serialized XML string. The
@@ -75,6 +92,10 @@ function collectInlineCss(doc: Document): string {
 export function buildSelfContainedSvgString(svgEl: SVGSVGElement): string {
   const doc = svgEl.ownerDocument;
   const clone = svgEl.cloneNode(true) as SVGSVGElement;
+  const natural = svgNaturalSize(svgEl);
+  clone.setAttribute("width", String(natural.width));
+  clone.setAttribute("height", String(natural.height));
+  clone.removeAttribute("data-zoom");
   const cssText = collectInlineCss(doc);
   let defs = clone.querySelector("defs");
   if (!defs) {
@@ -136,8 +157,7 @@ export async function exportPng(
   const doc = svgEl.ownerDocument;
   const win = doc.defaultView ?? window;
   const xml = buildSelfContainedSvgString(svgEl);
-  const width = Number.parseFloat(svgEl.getAttribute("width") ?? "") || 1;
-  const height = Number.parseFloat(svgEl.getAttribute("height") ?? "") || 1;
+  const { width, height } = svgNaturalSize(svgEl);
   const scale = pngExportScale(width, height);
   const canvasWidth = Math.round(width * scale);
   const canvasHeight = Math.round(height * scale);
