@@ -37,6 +37,7 @@ import type { FetchInit, HttpResponseLike } from "../../collect/http/requestWith
 import { CliUsageError, parseArgs as parseFlags } from "../../shared/cli/argparse.js";
 import { isMain } from "../../shared/cli/isMain.js";
 import { IncompleteBuildError } from "../fetch-state/completeness.js";
+import { LINEAGE_LLM_ENV, type LineageLlmMode, resolveLineageLlm } from "../shared/lineageLlm.js";
 import { buildProvider } from "../shared/providerFactory.js";
 import { type BuildThemeLineageDeps, buildThemeLineage, ZeroEdgeBuildError } from "./build.js";
 import {
@@ -83,6 +84,8 @@ export interface ThemeCliArgs {
   minClassifiedRate: number | null;
   /** R2-6: `--result-json` path for the machine-readable outcome. */
   resultJson: string | null;
+  /** R2-24: `--lineage-llm on|off`; `null` = `PAPERPILOT_LINEAGE_LLM`, else off. */
+  lineageLlm: "on" | "off" | null;
 }
 
 export class CliArgError extends Error {}
@@ -112,6 +115,7 @@ const THEME_CLI_SPEC = {
   "topic-min-support": { type: "int" as const, default: DEFAULT_TOPIC_SCOPE_OPTIONS.minSupport },
   "min-classified-rate": { type: "float" as const },
   "result-json": { type: "string" as const },
+  "lineage-llm": { type: "string" as const, choices: ["on", "off"] as const },
 };
 
 /**
@@ -148,8 +152,17 @@ export function parseArgs(argv: readonly string[]): ThemeCliArgs {
     topicEmbedding: !(parsed["no-topic-embedding"] as boolean),
     minClassifiedRate: (parsed["min-classified-rate"] as number | undefined) ?? null,
     resultJson: (parsed["result-json"] as string | undefined) ?? null,
+    lineageLlm: (parsed["lineage-llm"] as "on" | "off" | undefined) ?? null,
   };
 }
+
+/**
+ * R2-24 (design 41): theme generation uses no LLM unless asked
+ * (`--lineage-llm on` or `PAPERPILOT_LINEAGE_LLM=on`): relations come
+ * from Semantic Scholar citation contexts/intents, OpenAlex/S2 reference
+ * lists, title versions and the allowlist.
+ */
+export const THEME_LINEAGE_LLM_DEFAULT: LineageLlmMode = "off";
 
 /** Policy key holding the default `--min-classified-rate`. */
 export const POLICY_MIN_CLASSIFIED_RATE_KEY = "theme_min_evidence_classified_rate";
@@ -191,6 +204,8 @@ export interface ThemeRunResult {
   status: "ok" | "degraded_classification" | "zero_edges" | "incomplete" | "error";
   /** Degraded runs only: did any LLM provider report its daily quota exhausted? */
   daily_limit_hit: boolean;
+  /** R2-24: whether the run could use an LLM (`off` runs never hit an LLM quota). */
+  lineage_llm: "on" | "off";
   classified_rate: number | null;
   classified_edges: number | null;
   total_edges: number | null;
@@ -395,6 +410,19 @@ export async function runThemeCli(
     return 2;
   }
 
+  let lineageLlm: "on" | "off";
+  try {
+    lineageLlm = resolveLineageLlm(args.lineageLlm, process.env, THEME_LINEAGE_LLM_DEFAULT);
+  } catch (e) {
+    process.stderr.write(`error: ${(e as Error).message}\n`);
+    return 2;
+  }
+  if (lineageLlm === "off" && args.llmStrict !== "off") {
+    process.stderr.write(
+      `lineage-llm: off — --llm-strict ${args.llmStrict} ignored (API evidence only; set ${LINEAGE_LLM_ENV}=on or --lineage-llm on to use the LLM)\n`,
+    );
+  }
+
   let minClassifiedRate: number;
   try {
     minClassifiedRate = resolveMinClassifiedRate(
@@ -420,6 +448,7 @@ export async function runThemeCli(
       exit_code: exitCode,
       status,
       daily_limit_hit: degraded?.dailyLimitHit ?? false,
+      lineage_llm: lineageLlm,
       classified_rate: degraded?.rate.ratio ?? null,
       classified_edges: degraded?.rate.classified ?? null,
       total_edges: degraded?.rate.total ?? null,
@@ -457,6 +486,7 @@ export async function runThemeCli(
         topicEmbedding: args.topicEmbedding,
         minClassifiedRate,
         contextBatchSize: contextBatchSizeFromEnv(process.env.PAPERPILOT_CONTEXT_BATCH_SIZE),
+        lineageLlm,
       },
       deps,
     );

@@ -452,6 +452,10 @@ const PROTOCOL_PATTERNS: readonly RegExp[] = [
   // others ("We use fewer blocks … similar to MobileNetV3 [26] and LeViT").
   /\bbased\s+on\b[^.;]{0,100},\s*we\s+(\w+\s+)?(analy[sz]e|study|investigate|evaluate|compare|measure|examine|benchmark)\b/i,
   /\bwe\s+use\b[^.;]{0,100}\bsimilar\s+to\b/i,
+  // R2-24 (replaces a context-LLM downgrade, Hash Layers <- BASE Layers):
+  // taking another work's experimental setup or code base for the
+  // experiments ("we adopt the BASE Layer setup [10] and code base").
+  /\b(adopt\w*|use[sd]?|using|reus\w*|borrow\w*)\b[^.;]{0,60}\b(set-?ups?|code\s*-?bases?|experimental\s+settings?)\b/i,
 ];
 const FAIR_COMPARISON =
   /\b(for|to\s+make)\s+(a\s+)?fair(er)?\s+comparisons?\b|\bfair(ly)?\s+compar\w*/i;

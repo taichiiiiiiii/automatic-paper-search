@@ -53,6 +53,10 @@ export const CLASSIFICATION_METHODS = new Set([
   "foundational_allowlist",
   // R2-10 (design 41 D6): Semantic Scholar citation contexts, rule set v2.
   "s2_context_rule",
+  // R2-24 (design 41): no-LLM mode — a citation read from a reference list
+  // (OpenAlex referenced_works / Semantic Scholar references) whose kind no
+  // citing sentence states; always `baseline_only` (参照/背景).
+  "api_citation",
 ]);
 const NODE_ALIAS_NAMESPACES = new Set(["arxiv", "openreview", "acl_anthology", "cvf", "doi"]);
 const LEGACY_NODE_ALIAS_NAMESPACES = new Set(["semantic_scholar"]);

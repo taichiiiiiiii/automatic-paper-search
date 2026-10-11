@@ -583,3 +583,54 @@ describe("R2-6 evidence-classified gate (design 41 D3)", () => {
     expect(payload.edges[0].provenance.classification.model).toBe("gemini:gemini-2.5-flash");
   });
 });
+
+describe("R2-24 no-LLM mode (lineageLlm: off)", () => {
+  function noLlmDeps() {
+    const seed = s2Paper("seedn", { title: "Gate Theme Seed Paper", cites: 100 });
+    const parent = s2Paper("parentn", {
+      title: "An Earlier Gate Theme Parent Paper",
+      year: 2016,
+      cites: 60,
+      arxivId: "2016.00010",
+    });
+    const deps = depsFor(async (url) => {
+      if (url.includes("/references")) {
+        return jsonResp(200, { data: [{ citedPaper: parent, isInfluential: true, intents: [] }] });
+      }
+      if (url.includes("/citations")) return jsonResp(200, { data: [] });
+      return mkSearchResponse([seed]);
+    });
+    let built = 0;
+    deps.buildProvider = () => {
+      built += 1;
+      throw new Error("No LLM key found");
+    };
+    return { deps, built: () => built };
+  }
+  const opts = {
+    theme: "Gate Theme",
+    depth: 1,
+    seedsCount: 3,
+    width: 4,
+    sinceYear: null,
+    llmStrict: "all" as const,
+    lineageLlm: "off" as const,
+  };
+
+  it("never builds an LLM provider, whatever llmStrict says, and marks the artifact", async () => {
+    const { deps, built } = noLlmDeps();
+    const out = await buildThemeLineage(opts, deps);
+    expect(built()).toBe(0);
+    const payload = JSON.parse(readFileSync(out, "utf-8"));
+    expect(payload.meta.lineage_llm).toBe("off");
+  });
+
+  it("with no Semantic Scholar evidence the guesses stay unclassified, so the D3 gate still refuses", async () => {
+    // No `s2Citations` dep: the citation sentences were never read, so the
+    // no-LLM mode may not call the pair an api_citation.
+    const { deps } = noLlmDeps();
+    await expect(
+      buildThemeLineage({ ...opts, minClassifiedRate: 0.8 }, deps),
+    ).rejects.toBeInstanceOf(DegradedClassificationError);
+  });
+});

@@ -480,25 +480,44 @@ export function citingAbstractOf(child: PaperLike): string | null {
 }
 
 /**
+ * R2-24: what the S2 lookup of a pair found, for the no-LLM caller:
+ *  - `listed`: the citing paper's S2 reference list contains the cited one;
+ *  - `not_listed`: S2 has the citing paper's list, without this pair (the
+ *    citation comes from another list, e.g. OpenAlex);
+ *  - `no-id` / `citing-not-in-s2`: S2 has no record to read (permanent);
+ *  - `fetch-failed`: S2 could not be reached this run (transient).
+ */
+export type S2LookupOutcome =
+  | "listed"
+  | "not_listed"
+  | "no-id"
+  | "citing-not-in-s2"
+  | "fetch-failed";
+
+/**
  * Classify one pair from Semantic Scholar evidence. `parent` = cited
  * (older), `child` = citing (newer). Returns `null` when S2 has nothing to
  * say about the pair — the caller then uses its existing path.
  * `onLlm(usable)` is told about every context-LLM call (for a deferred
- * pair: when it is resolved).
+ * pair: when it is resolved). `outcome.lookup` (R2-24) receives what the
+ * S2 lookup found.
  */
 export async function deriveS2Relation(
   parent: PaperLike,
   child: PaperLike,
   ctx: S2RelationContext,
   onLlm?: (usable: boolean) => void,
+  outcome?: { lookup?: S2LookupOutcome },
 ): Promise<DerivedEdge | null> {
   const srcId = typeof parent.paperId === "string" ? parent.paperId : String(parent.id ?? "");
   const dstId = typeof child.paperId === "string" ? child.paperId : String(child.id ?? "");
   const lookup = await ctx.source.lookup(child, parent);
   if (lookup.kind === "no_s2_data") {
     ctx.stats.noS2Data += 1;
+    if (outcome) outcome.lookup = lookup.reason;
     return null;
   }
+  if (outcome) outcome.lookup = lookup.signals.found ? "listed" : "not_listed";
   const citingTitle = typeof child.title === "string" ? child.title : undefined;
   // R2-15: the full survey test (publication type, title, abstract) — a
   // review whose title has no survey word still gives only background.

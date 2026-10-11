@@ -332,6 +332,8 @@ describe("lineage-artifact-v1 classification methods (design 41 D6)", () => {
       true,
     );
     expect(validateArtifact("lineage-artifact-v1", themeArtifact("s2_context_rule")).ok).toBe(true);
+    // R2-24: no-LLM mode, citation confirmed by an API reference list.
+    expect(validateArtifact("lineage-artifact-v1", themeArtifact("api_citation")).ok).toBe(true);
     expect(validateArtifact("lineage-artifact-v1", themeArtifact("s2_magic")).ok).toBe(false);
   });
 });

@@ -30,6 +30,21 @@
  * working unchanged if LLM classification is replaced by API evidence
  * (S2 intents / contexts / `isInfluential`). With no edge at all the rate
  * is `null` and the gate passes (0 edges is the CLI's own exit 3).
+ *
+ * R2-24 (no-LLM mode, design 41): `api_citation` counts as CLASSIFIED.
+ * Such an edge claims only what the reference lists show — the citing
+ * paper cites the cited one — and is always `baseline_only` (参照/背景,
+ * the weakest relation the enum has). It is emitted only when Semantic
+ * Scholar was actually consulted for the citing paper (its reference list
+ * was read, or S2 has no record of the paper at all), so the claim and its
+ * evidence match. `citation_heuristic` stays unclassified: in no-LLM mode
+ * it remains only where the S2 fetch FAILED this run (an outage), and in
+ * LLM mode where the LLM was asked and gave nothing usable — exactly the
+ * degraded builds this gate exists to refuse. `ClassifiedRate.referenceOnly`
+ * reports how many classified edges are citation-only (no relation kind
+ * read from a sentence), so a mostly-`api_citation` graph is visible in
+ * the log; the `lineage_relation_share` quality check is what blocks a
+ * graph with too few lineage claims.
  */
 
 import type { LabelledUsage } from "../llm/fallback.js";
@@ -46,6 +61,10 @@ export const UNCLASSIFIED_METHODS: ReadonlySet<string> = new Set([
   "year_cite",
 ]);
 
+/** Classified methods that read only the citation itself, not its kind
+ * (R2-24): counted as classified, reported separately. */
+export const REFERENCE_ONLY_METHODS: ReadonlySet<string> = new Set(["api_citation"]);
+
 export interface ClassifiedRate {
   /** Edges whose relation is evidence-backed. */
   classified: number;
@@ -57,6 +76,9 @@ export interface ClassifiedRate {
   byMethod: Record<string, number>;
   /** `classified / total`, or `null` with no edges. */
   ratio: number | null;
+  /** R2-24: classified edges backed only by a reference list
+   * ({@link REFERENCE_ONLY_METHODS}); always `baseline_only`. */
+  referenceOnly: number;
 }
 
 /** Classify `provenanceBreakdown` per the rules in the module doc. */
@@ -65,6 +87,7 @@ export function evidenceClassifiedRate(
 ): ClassifiedRate {
   let classified = 0;
   let guessed = 0;
+  let referenceOnly = 0;
   const byMethod: Record<string, number> = {};
   for (const [method, rawCount] of Object.entries(provenanceBreakdown)) {
     const count = Number(rawCount) || 0;
@@ -72,11 +95,19 @@ export function evidenceClassifiedRate(
       guessed += count;
     } else {
       classified += count;
+      if (REFERENCE_ONLY_METHODS.has(method)) referenceOnly += count;
       byMethod[method] = (byMethod[method] ?? 0) + count;
     }
   }
   const total = classified + guessed;
-  return { classified, total, guessed, byMethod, ratio: total === 0 ? null : classified / total };
+  return {
+    classified,
+    total,
+    guessed,
+    byMethod,
+    ratio: total === 0 ? null : classified / total,
+    referenceOnly,
+  };
 }
 
 /** True when any LLM provider in the chain reported its daily quota exhausted. */
