@@ -82,6 +82,7 @@
 | R2-12 | `lineage-artifact-v2`（5 種類＋根拠欄）と web の表示 | R2-10 の後 |
 | R2-7 | 依頼フォームの公開と、本番での依頼→未監査公開の通し確認 | R2-5・R2-6 の後 |
 | R2-8 | 厳選テーマ（GNN から）の人手監査と「監査済み」公開 | R2-5 の後 |
+| R2-28 | 引用文の追加の出どころ（arXiv HTML）、Crossref の参考文献、DBLP の会場（[47](47-apis-and-oss.md) 推奨 1〜3） | 実装（2026-10-11、ブランチ。既定は off。下の実装メモ） |
 
 ## 実装メモ（2026-10-10）
 
@@ -287,3 +288,54 @@ R2-22 の後、手作業ラベルで正しい強い関係 31 本のうち残る�
 - 理由: R2-22 以降、強い関係は名指しと手がかりの語を含む引用文（または題名の版・基礎論文の一覧）がある場合だけ付く。正直に作ると大半は「参照（背景）」になり、割合は引用の多さで決まって質を表さなくなった（R2-23 の手元の作り直しで MoE 8.3%・FA 7.4%・GNN 2.3%、強い関係の正しさは 97%）。「総説の周りの背景だけの星形」を落とすという元の目的は、本数の下限で満たせる
 - 同時に `theme_min_generated_at` を 2026-10-11T02:14:52Z に進めた。R2-22〜R2-24 の前に作った版（誤った「発展」を含む）は、作り直すまで公開しない
 - ユーザーの判断: 2026-10-11（「根拠付きの強い関係が 3 本以上」案を承認）
+
+## 実装メモ（R2-28、arXiv HTML の引用文・Crossref の参考文献・DBLP の会場）
+
+[47](47-apis-and-oss.md) の推奨 1〜3 を、LLM なしの系譜生成に**選んで使える追加の根拠**として入れた。D5（強い関係は被引用論文を名指しし、手がかりの語を含む引用文が要る）と公開の基準は変えていない。LLM は使っていない。3 つとも**既定は off**（CI ではリポジトリ変数で `on` にする）で、1 実行あたりの上限がある。
+
+- **arXiv HTML の引用文**（`theme/arxivHtml.ts`・`theme/arxivHtmlSource.ts`、`s2Relations.ts::deriveS2Relation`）
+  - 対象は「S2 の組に使える引用文がない」組だけ: S2 が組を持つが文が 0 本（または使える文がない）、S2 の参考文献にない、S2 に引用元がない。S2 に届かなかった組（`fetch-failed`）は対象外（R2-24 の止める仕組みをそのまま残す）
+  - 引用元の arXiv ID: ノード自身の ID → S2 の問い合わせ ID（`ARXIV:…`）→ S2 の `externalIds`（引用元 1 本につき 1 回、`s2_references.json` の項目に `ax` として保存）
+  - `https://arxiv.org/html/<id>`（LaTeXML）を取得し、`<li id="bib.bibN">` の参考文献と被引用論文を arXiv ID → DOI → 題名（正規化した題名が項目に含まれる。3 語未満は第 1 著者の姓も要る）→ 題名の語の 85% 以上＋第 1 著者の姓（一意のときだけ）で対応付ける。本文の `<p class="ltx_p">` を文に分け（`et al.`・`Fig.`・頭文字では切らない）、`href="#bib.bibN"` を含む文を引用文とする。図・表・キャプション・脚注・見出し・参考文献は除く。上限は S2 と同じ 12 本 × 400 字
+  - **使い方は「強い関係を足すだけ」**: その文を R2-23 の規則にそのまま通し、手がかりの規則（`cue`）で、被引用論文を特定でき引用できる文による extends / contrasts になったときだけ、その辺を使う。それ以外は S2 だけの結果のまま（背景の辺は変わらず、辺の増減もない）。方式は `s2_context_rule` のままで、根拠は `evidence.source: arxiv_html`、理由欄は「（arXiv HTML（arXiv:2101.03961v3）の本文の引用文から規則で判定）。引用文: "…"」。web は出典を「arXiv HTML」、判定方法を「arXiv HTML の引用文」と表示し、本文へのリンクを付ける（`apps/web/lib/lineage/evidence.ts`・`EdgeEvidence.tsx`、how-it-works の説明と出典欄にも一文足した）
+  - 作法: robots.txt（`Allow: /html`、`Crawl-delay: 15`）に従い、1 本ずつ、要求の開始の間隔は 15 秒以上。`/e-print`・`/src` は使わない。1 実行の取得は `PAPERPILOT_ARXIV_HTML_MAX_FETCHES`（既定 40 本 = 10 分）まで。429・403・5xx が来たらその実行では arXiv への要求をやめる（再試行の繰り返しはしない）。User-Agent に連絡先（`PAPERPILOT_CONTACT_EMAIL`、なければ `PAPERPILOT_OPENALEX_EMAIL`）
+  - キャッシュ `data/state/lineage-cache/arxiv_html_contexts.json`（新規、regen-themes が promote）: 引用元の arXiv ID ごとに版（`v3`）、取得日、HTML の有無、**聞かれた組の bib 番号と引用文だけ**を持つ。HTML 自体は保存も再配布もしない。有効期限 180 日（HTML なしは 30 日）。版が変わると組を捨てる
+- **規則の追加 2 つ**（`classify/apiRelations.ts`。S2 の引用文にも効く）
+  - 被引用論文が主語で、文末の関係節で引用元が採り入れている文（「Lepikhin et al. (2020) adapts … which we also follow.」）を継承の手がかりにした。その 1 本だけを引き、語で名指ししている文に限る
+  - 比較の語の間に 4 語まで許した（「comparing the proposed ARMA layer with GNNs layers based on polynomial filters, namely … CayleyNets」の「based on」を継承と読んでいた）
+  - S2 の引用文（R2-23 で取り直した 97 本の参考文献 5,122 組）で規則だけを比べると、変わるのは 1 組だけ: DeiT ← timm の「for a direct comparison and … we use for each model the definition in the same GitHub [52] repository」が extends → baseline_only（正しい修正）
+- **Crossref の参考文献**（`theme/crossrefReferences.ts`、`bfs.ts` のノード間の辺）
+  - OpenAlex にも S2 にも参考文献がない引用元（S2 が論文を知らない、または参考文献 0 件。古いキャッシュは「聞いた組が 3 つ以上ですべてなし」で判定。`s2_references.json` に件数 `n` を保存）で DOI があるものだけ、Crossref の `reference[]` で同じグラフのノードを探す（DOI・arXiv ID・題名）。見つかった組は `api_citation`（参照/背景、「Crossref の参考文献リストで確認」）。引用文はないので強い関係にはならない
+  - 作法: `mailto` 付き（polite pool）なら同時 3・10 件/秒、なしなら同時 1・5 件/秒。429・403 でその実行は止める。1 実行 `PAPERPILOT_CROSSREF_MAX_REQUESTS`（既定 50）件まで。キャッシュ `crossref_references.json`（DOI ごとに参考文献を 1 件 200 字以内に縮めて保存、180 日）
+- **DBLP の会場**（`theme/dblpVenues.ts`、`build.ts`）
+  - 会場が arXiv・CoRR・空などのノードを、DBLP SPARQL（`sparql.dblp.org`、CC0）で引く。DOI（ノードの DOI と arXiv の DataCite DOI。DBLP は出版社の大文字小文字のまま持つので両方）で DBLP の題名を取り、題名の完全一致で全レコードを取る。CoRR 以外で、正規化した題名が同じ、年がノードの −1〜+3 年、著者の姓が 1 人以上一致するレコードだけを採り、最も早いもの（同年なら会議）にする。`venue_tier` も計算し直す（DBLP の略称 `NIPS`・`J. Mach. Learn. Res.` を表に足した）
+  - 10 ノードずつ 2 問い合わせ、1 秒以上の間隔、1 実行 `PAPERPILOT_DBLP_MAX_QUERIES`（既定 20）まで。キャッシュ `dblp_venues.json`（ノードごと、90 日）。検索 API（Anubis の画面が出る）は使わない
+- **workflow**: regen-themes.yml・theme-on-demand.yml の生成の段に `PAPERPILOT_ARXIV_HTML`・`PAPERPILOT_CROSSREF_REFERENCES`・`PAPERPILOT_DBLP_VENUES`（いずれも `vars.… || 'off'`）、`PAPERPILOT_ARXIV_HTML_MAX_FETCHES`（既定 40）、`PAPERPILOT_OPENALEX_EMAIL`（既存の秘密 `OPENALEX_EMAIL`）を足した。regen-themes は 3 つのキャッシュを package・promote する（空のファイルを置いた）
+- **評価**（作業用ディレクトリ、`data/published` は書き換えていない。arXiv の HTML はローカルに 35 本あり、足りない分を 15 秒間隔で取得: 合計 15 本、すべて 200 か 404。S2 は `externalIds` のための少数の問い合わせのみ）
+
+| ラベル（強い関係の適合率・再現率、LLM なし） | R2-24 | R2-28 |
+|---|---|---|
+| R2-22 の 58 本 | 22/22（1.00）、再現率 22/31 | 23/23（1.00）、23/31 |
+| R2-23 の 59 本 | 26/26（1.00）、26/32 | **27/27（1.00）、27/32** |
+| R2-23 の rule_cases 19 本 | 7/8（MAE の 1 本） | 同じ |
+| LLM あり（キャッシュの答え）の R2-23 の 59 本 | 25/25、25/32 | 26/26、26/32 |
+
+  - 増えた 1 本は **Switch ← GShard**（「… which we also follow」）。ラベルは successor（extends でも可）で、強い関係として正しい。ViT の基礎文献リストの辺 3 本（PVT・Segmenter・RevViT ← ViT）は関係は同じ extends のまま、引用文の裏付けが付いた（「we build upon the vision transformer ViT [19]」など）
+  - 新しいテスト `relationPrecisionR228.test.ts`（引用文を記録した 10 組、`relation-precision-r228.json`）と `r228EvidenceSources.test.ts`（解析・作法・キャッシュ・Crossref・DBLP の記録済みの応答・既定 off）
+
+| テーマ（公開中の辺を本番の LLM なしの経路で通し直し） | 強い関係 前 → 後 | arXiv HTML の対象の組 / 文献の対応 / 文あり / 強い関係 | 自動検査 |
+|---|---|---|---|
+| graph-neural-network（131 辺） | 4 → 4 | 合計 48 / 39 / 36 / 4（4 テーマ、取得 30 本・HTML なし 3） | 合格のまま |
+| mixture-of-experts（67 辺） | 6 → **7**（Switch ← GShard） | 〃 | 合格のまま |
+| vision-transformer（49 辺） | 13 → 13（基礎文献リストの 3 本が引用文の根拠に） | 〃 | 合格のまま |
+| flash-attention（57 辺） | 4 → 4 | 〃 | 合格のまま |
+
+  - 公開中の版との再現の食い違いは 0 本（HTML を使わない場合）。新しい強い関係はすべて手作業で正しい
+  - 4 テーマで arXiv の取得は 30 本（15 秒間隔で約 8 分）。1 テーマなら上限 40 本で 120 分の枠に十分収まる
+  - **DBLP**: 会場が arXiv などのノード 41 本のうち 24 本を直した（12 問い合わせ）。例: FlashAttention → NeurIPS、FlashAttention-2 → ICLR、Switch → J. Mach. Learn. Res.、PipeMoE → INFOCOM、ScheMoE → EuroSys、GraphSAGE → NIPS、DeepMoE → UAI。手で見て誤りはない。残る 17 本は DBLP に会議版がない（CoRR だけ）か題名が違う
+  - **Crossref**: S2 の参考文献がない引用元は 4 テーマで 7 本。DOI があり Crossref が参考文献を返したのは PipeMoE（41 件）・AdaMV-MoE（93 件）・ScheMoE（55 件）で、同じグラフの論文がそれぞれ 6・11・5 本載っていた。ただし 3 本とも OpenAlex に参考文献がある（62・131・30 件）ので、今の条件（OpenAlex も S2 もないとき）では**4 テーマで辺は増えない**。OpenAlex の参考文献にあっても辺になっていない組（ScheMoE ← GShard など 10 組）は、ノード間の辺の条件（起点・新しさ）で外れたもので、Crossref の有無とは別の課題
+- **残る課題**
+  - 有効にするかは利用者の判断（リポジトリ変数 `PAPERPILOT_ARXIV_HTML` など）。有効にしたら 1 テーマずつ作り直して、`arxiv html summary` の行（取得数・BLOCKED の有無・HTML から作った強い関係の数）を確かめる
+  - 取りこぼしの残り 5 本（LLM なし）: FlashDecoding++ ← FlashAttention（手がかりの文がない）、MMoE ← Eigen・MMoE ← Shazeer（KDD 版のみで arXiv HTML がない）、AdaMV-MoE ← MMoE・AdaMV-MoE ← Expert Choice（引用元の arXiv ID が解決できず HTML を引けない。47 では CVF の PDF の文も背景だけ）。LLM ありではこれに Shazeer ← Eigen（規則と LLM の食い違い）が加わる。MMoE 系は OpenAlex の GROBID XML（鍵と費用が要る、47 §2.2）でしか取れない
+  - 「As in Shazeer et al. (2018); Lepikhin et al. (2020), Switch Transformers simplifies …」のような「As in X, 我々の手法は」の型は手がかりにしていない（複数の文献を引くため）
+  - DBLP の会場は会議・論文誌の略称（`INFOCOM`・`EuroSys`）で表示される。`venue_tier` の表にない会場は preprint 扱いのまま
