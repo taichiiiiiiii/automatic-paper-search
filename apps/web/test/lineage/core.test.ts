@@ -1114,22 +1114,36 @@ describe("bounded JSON fetch", () => {
 });
 
 describe("R2-26: a node never shows another paper's abstract", () => {
-  it("drops the published Longformer node's foreign 'Murmurative Attention' abstract", () => {
+  it("drops a node's foreign abstract (the OpenAlex Longformer record carried 'Murmurative Attention')", () => {
+    // Synthetic copy of the published flash-attention artifact: regenerations
+    // already drop the bad abstract at generation time, so the published file
+    // can no longer be the fixture for the read-time guard.
     const path = join(layoutFor(REPO_ROOT).published, "themes", "flash-attention", "lineage.json");
-    const parsed = parseArtifact(JSON.parse(readFileSync(path, "utf8")), { kind: "theme" });
+    const raw = JSON.parse(readFileSync(path, "utf8")) as {
+      nodes: Array<{ id: string; title?: string; tldr?: string; short_abstract?: string }>;
+    };
+    const target = raw.nodes.find((n) => n.tldr);
+    expect(target).toBeTruthy();
+    if (!target) return;
+    target.title = "Longformer: The Long-Document Transformer";
+    // The text OpenAlex W3015468748 actually carried (same as core's licensing test).
+    target.tldr =
+      "The quadratic complexity of standard attention remains the dominant bottleneck for training and deploying large language models on long sequences. We introduce Murmurative Attention, a novel attention mechanism that replaces pairwise token-token interactions with token-to-slot interactions.";
+    target.short_abstract = target.tldr;
+    const parsed = parseArtifact(raw, { kind: "theme" });
     expect(parsed).not.toBeNull();
     const nodes = parsed?.nodes ?? [];
     const longformer = nodes.find((n) => String(n.title).startsWith("Longformer"));
     expect(longformer).toBeTruthy();
     expect(JSON.stringify(longformer)).not.toContain("Murmurative");
-    // Every other node keeps its excerpt.
-    const raw = JSON.parse(readFileSync(path, "utf8")) as {
-      nodes: Array<{ id: string; tldr?: string }>;
-    };
-    const kept = nodes.filter(
-      (n) => n.tldr && n.tldr === raw.nodes.find((r) => r.id === n.id)?.tldr,
-    );
-    expect(kept.length).toBe(raw.nodes.filter((r) => r.tldr).length - 1);
+    // Every other node keeps its excerpt: only the injected one is emptied.
+    const withText = (list: ReadonlyArray<object>) =>
+      list.filter((n) => {
+        const t = (n as { tldr?: unknown }).tldr;
+        return typeof t === "string" && t !== "";
+      }).length;
+    const baseline = parseArtifact(JSON.parse(readFileSync(path, "utf8")), { kind: "theme" });
+    expect(withText(nodes)).toBe(withText(baseline?.nodes ?? []) - 1);
   });
 
   it("leaves a consistent node untouched", () => {
