@@ -19,6 +19,8 @@ export const METHOD_LABEL_JA: Record<string, string> = {
   llm: "LLM",
   title_version: "題名の版",
   foundational_allowlist: "基礎文献リスト",
+  // R2-24: the citation itself, read from an API reference list.
+  api_citation: "参考文献リスト（引用の事実のみ）",
   citation_heuristic: "引用と年からの推測",
   year_cite: "引用と年からの推測",
 };

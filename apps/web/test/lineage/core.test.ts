@@ -127,6 +127,9 @@ describe("artifact parsing", () => {
       classification: { ...provenance.classification, method: "s2_context_rule" },
     };
     expect(parseArtifact(s2, { kind: "conference" })).not.toBeNull();
+    // R2-24: the no-LLM mode's reference-list edges.
+    s2.edges[0].provenance.classification.method = "api_citation";
+    expect(parseArtifact(s2, { kind: "conference" })).not.toBeNull();
     s2.edges[0].provenance.classification.method = "s2_magic";
     expect(parseArtifact(s2, { kind: "conference" })).toBeNull();
   });

@@ -25,10 +25,16 @@ import type { ThemeGraphNode } from "../shared/node.js";
 import { TitleIdentity } from "./dedup.js";
 import { demoteLowInformationEdge, isTrending, makeEdge, type ThemeEdge } from "./edges.js";
 import { toThemeNode } from "./node.js";
+import { classifyWithoutLlm } from "./noLlmRelation.js";
 import type { ThemePaper } from "./openalexWork.js";
 import { guardRelation } from "./relationGuard.js";
 import type { S2Expansion } from "./s2Expansion.js";
-import { deriveS2Relation, resolvePendingContext, type S2RelationContext } from "./s2Relations.js";
+import {
+  deriveS2Relation,
+  resolvePendingContext,
+  type S2LookupOutcome,
+  type S2RelationContext,
+} from "./s2Relations.js";
 import { filterOffTopicRefs } from "./seedFilters.js";
 import { prepareTopicGate, type TopicEmbedder, type TopicGateMeta } from "./topicEmbedding.js";
 import type { TopicScope } from "./topicScope.js";
@@ -67,6 +73,10 @@ export interface BFSResult {
    * heuristic, which this module then demotes to `citation_heuristic`. */
   llmCalls: number;
   llmUnusable: number;
+  /** R2-24 (no-LLM mode): pairs emitted as `api_citation`, and pairs left
+   * as `citation_heuristic` because S2 could not be reached this run. */
+  apiCitations: number;
+  s2Unreachable: number;
   /** R2-2b: candidates the topic gate kept out of the graph, and the
    * ones it let in only because >= `minSupport` on-topic nodes link to
    * them (deferred pass). Both 0 when no `topicScope` is given. */
@@ -112,6 +122,11 @@ export interface RunBfsOptions {
    * (almost) no references / no citing papers (`s2Expansion.ts`).
    * `null`/omitted = OpenAlex (`fetchRelated`) only. */
   s2Expansion?: S2Expansion | null;
+  /** R2-24 (design 41): no-LLM mode. Pairs no citing sentence classifies
+   * become `api_citation` baseline_only edges when the Semantic Scholar
+   * lookup answered (see {@link classifyPair}) instead of year/citation
+   * guesses. `false`/omitted = the LLM-mode / legacy behaviour. */
+  apiCitations?: boolean;
 }
 
 /** Counts LLM calls / unusable answers around a provider. */
@@ -119,10 +134,21 @@ interface LlmCounter {
   calls: number;
   unusable: number;
   classify?: (a: ClassifyPaperLike, b: ClassifyPaperLike) => Promise<RelationClassification | null>;
+  /** R2-24: no-LLM mode (`api_citation` edges) and its counters. */
+  apiCitations: boolean;
+  apiCitationEdges: number;
+  s2Unreachable: number;
 }
 
-function llmCounter(provider: LLMProvider | null): LlmCounter {
-  const counter: LlmCounter = { calls: 0, unusable: 0 };
+function llmCounter(provider: LLMProvider | null, apiCitations = false): LlmCounter {
+  const counter: LlmCounter = {
+    calls: 0,
+    unusable: 0,
+    // An LLM provider and the no-LLM mode never run together.
+    apiCitations: apiCitations && provider === null,
+    apiCitationEdges: 0,
+    s2Unreachable: 0,
+  };
   if (provider) {
     counter.classify = async (a, b) => {
       counter.calls += 1;
@@ -165,12 +191,22 @@ async function classifyPair(
       child,
     );
   }
+  const outcome: { lookup?: S2LookupOutcome } = {};
   if (s2 !== null) {
-    const fromS2 = await deriveS2Relation(parent, child, s2, (usable) => {
-      counter.calls += 1;
-      if (!usable) counter.unusable += 1;
-    });
+    const fromS2 = await deriveS2Relation(
+      parent,
+      child,
+      s2,
+      (usable) => {
+        counter.calls += 1;
+        if (!usable) counter.unusable += 1;
+      },
+      outcome,
+    );
     if (fromS2 !== null) return guardRelation(fromS2, parent, child);
+  }
+  if (counter.apiCitations) {
+    return classifyWithoutLlm(intentRecord, parent, child, counter, s2 === null ? null : outcome);
   }
   const cls = await deriveRelation(intentRecord as ClassifyPaperLike, {
     parent: parent as ClassifyPaperLike,
@@ -288,7 +324,7 @@ export async function runBfsAndDescendants(
   const s2 = options.s2Relations ?? null;
   const scope = options.topicScope ?? null;
   const currentYear = options.currentYear ?? new Date().getUTCFullYear();
-  const counter = llmCounter(provider);
+  const counter = llmCounter(provider, options.apiCitations ?? false);
   const expansion = options.s2Expansion ?? null;
   /** `fetchRelated`, with the R2-14 S2 fallback when configured. */
   const related = (
@@ -589,6 +625,8 @@ export async function runBfsAndDescendants(
     classifySucceeded,
     llmCalls: counter.calls,
     llmUnusable: counter.unusable,
+    apiCitations: counter.apiCitationEdges,
+    s2Unreachable: counter.s2Unreachable,
     topicRejected,
     topicAdmittedBySupport,
     provisional,
@@ -647,6 +685,11 @@ export interface AddCrossNodeEdgesOptions {
   strictMode: string;
   /** R2-10: see {@link RunBfsOptions.s2Relations}. */
   s2Relations?: S2RelationContext | null;
+  /** R2-24: see {@link RunBfsOptions.apiCitations}. */
+  apiCitations?: boolean;
+  /** R2-24: incremented with this pass's `api_citation` edges and pairs
+   * whose S2 lookup failed (no-LLM mode only). */
+  apiStats?: { apiCitations: number; s2Unreachable: number };
 }
 
 /** A graph node as the paper dict the classifiers take (`paperId` = id). */
@@ -676,8 +719,26 @@ export async function addCrossNodeEdges(
   deps: FetchRelatedDeps,
   completeness?: BuildCompletenessForExpansion | null,
 ): Promise<number> {
+  const counter = llmCounter(options.provider, options.apiCitations ?? false);
+  try {
+    return await crossNodePass(nodes, edges, options, counter, deps, completeness);
+  } finally {
+    if (options.apiStats) {
+      options.apiStats.apiCitations += counter.apiCitationEdges;
+      options.apiStats.s2Unreachable += counter.s2Unreachable;
+    }
+  }
+}
+
+async function crossNodePass(
+  nodes: ReadonlyMap<string, ThemeGraphNode>,
+  edges: ThemeEdge[],
+  options: AddCrossNodeEdgesOptions,
+  counter: LlmCounter,
+  deps: FetchRelatedDeps,
+  completeness?: BuildCompletenessForExpansion | null,
+): Promise<number> {
   const { provider, strictMode, cohortMinYear = null } = options;
-  const counter = llmCounter(provider);
   const seedIds = options.seedIds ?? new Set<string>();
   const existing = new Set(edges.map((e) => `${e.src}\u0000${e.dst}`));
   const nodeIds = new Set(nodes.keys());

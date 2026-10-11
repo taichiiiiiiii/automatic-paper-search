@@ -26,6 +26,7 @@ export const NEW_ENUMS: readonly string[] = [
   "foundational_allowlist",
   "llm",
   "s2_context_rule",
+  "api_citation",
 ];
 
 /** Legacy rationale-string -> new enum normalization map. */

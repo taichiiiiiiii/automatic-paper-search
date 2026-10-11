@@ -106,6 +106,7 @@ export const VALID_PROVENANCES: ReadonlySet<string> = new Set([
   "foundational_allowlist", // title matched lineage_foundational_allowlist.json
   "llm", // LLM provider returned a valid classification
   "s2_context_rule", // R2-10: Semantic Scholar citation context/intents/isInfluential, rule set v2
+  "api_citation", // R2-24: citation confirmed by an API reference list, kind unread -> baseline_only
 ]);
 export { VALID_PROVENANCES as _VALID_PROVENANCES };
 

@@ -346,3 +346,89 @@ describe("regen-pending state", () => {
     ).toBe(2);
   });
 });
+
+describe("R2-24: the theme CLI builds without an LLM by default", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.unstubAllEnvs();
+  });
+  const quiet = () => {
+    vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+    vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+  };
+  const deps = {} as BuildThemeLineageDeps;
+  async function seen(
+    argv: string[],
+    env?: string,
+  ): Promise<{ rc: number; opts: unknown; result: Record<string, unknown> }> {
+    quiet();
+    if (env === undefined) vi.stubEnv("PAPERPILOT_LINEAGE_LLM", "");
+    else vi.stubEnv("PAPERPILOT_LINEAGE_LLM", env);
+    const dir = tmp();
+    const outPath = join(dir, "out.json");
+    const resultPath = join(dir, "r.json");
+    let opts: unknown = null;
+    const rc = await runThemeCli([...argv, "--result-json", resultPath], {
+      deps,
+      policyPath: null,
+      buildFn: async (o) => {
+        opts = o;
+        writeFileSync(
+          outPath,
+          JSON.stringify({ nodes: [{ id: "a" }], edges: [{ src: "a", dst: "b" }] }),
+        );
+        return outPath;
+      },
+    });
+    return { rc, opts, result: JSON.parse(readFileSync(resultPath, "utf-8")) };
+  }
+
+  it("default: lineageLlm off even when the workflow passes --llm-strict ambiguous", async () => {
+    const r = await seen(["--theme", "Graph Nets", "--llm-strict", "ambiguous"]);
+    expect(r.rc).toBe(0);
+    expect(r.opts).toMatchObject({ lineageLlm: "off", llmStrict: "ambiguous" });
+    expect(r.result.lineage_llm).toBe("off");
+  });
+
+  it("PAPERPILOT_LINEAGE_LLM=on or --lineage-llm on restores the LLM path", async () => {
+    expect((await seen(["--theme", "Graph Nets"], "on")).opts).toMatchObject({ lineageLlm: "on" });
+    expect(
+      (await seen(["--theme", "Graph Nets", "--lineage-llm", "on"], "off")).opts,
+    ).toMatchObject({ lineageLlm: "on" });
+  });
+
+  it("a mistyped PAPERPILOT_LINEAGE_LLM is a usage error (exit 2), not a silent mode", async () => {
+    quiet();
+    vi.stubEnv("PAPERPILOT_LINEAGE_LLM", "of");
+    expect(
+      await runThemeCli(["--theme", "Graph Nets"], {
+        deps,
+        policyPath: null,
+        buildFn: async () => "x",
+      }),
+    ).toBe(2);
+  });
+
+  it("regen-pending never records a no-LLM run as quota-degraded", () => {
+    const s = recordResults(
+      emptyPending(),
+      [
+        {
+          theme: "GNN",
+          status: "degraded_classification",
+          daily_limit_hit: true,
+          lineage_llm: "off",
+        },
+        {
+          theme: "MoE",
+          status: "degraded_classification",
+          daily_limit_hit: true,
+          lineage_llm: "on",
+        },
+      ],
+      "2026-10-11T00:00:00Z",
+    );
+    expect(retryThemes(s)).toEqual(["MoE"]);
+    expect(s.themes.map((t) => t.theme)).toEqual(["MoE"]);
+  });
+});

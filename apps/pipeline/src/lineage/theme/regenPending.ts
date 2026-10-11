@@ -10,6 +10,8 @@
  *  - `ok` → the theme leaves the pending list;
  *  - `degraded_classification` with an LLM daily limit hit → pending with
  *    reason `llm_quota` (attempts incremented) — retried automatically;
+ *    never for a no-LLM run (`lineage_llm: "off"`, R2-24): its degradation
+ *    (an S2 outage) is not a quota that resets;
  *  - any other failure of a theme that is already pending → its reason is
  *    updated (and it stops being retried: the quota was not the cause);
  *  - other failures of non-pending themes are not recorded (the job
@@ -46,6 +48,8 @@ export interface RunResultLike {
   theme: string;
   status: string;
   daily_limit_hit?: boolean;
+  /** R2-24: `off` = built without an LLM (never quota-degraded). */
+  lineage_llm?: string;
   message?: string;
 }
 
@@ -111,7 +115,12 @@ export function recordResults(
       byTheme.delete(r.theme);
       continue;
     }
-    const quota = r.status === "degraded_classification" && r.daily_limit_hit === true;
+    // R2-24: a no-LLM run (`lineage_llm: "off"`) never waits for an LLM
+    // quota, whatever else the result says.
+    const quota =
+      r.status === "degraded_classification" &&
+      r.daily_limit_hit === true &&
+      r.lineage_llm !== "off";
     const message = (r.message ?? "").slice(0, 300);
     if (quota) {
       byTheme.set(r.theme, {

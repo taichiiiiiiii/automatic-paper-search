@@ -261,6 +261,16 @@ export interface BuildThemeLineageOptions {
    * 1 asks each pair inline (pre-R2-20 behaviour).
    */
   contextBatchSize?: number;
+  /**
+   * R2-24 (design 41): `"off"` = no LLM at all — `llmStrict` is treated
+   * as `"off"` (no provider is built, so no LLM key is needed), the
+   * context LLM never confirms/downgrades the rule claims, and pairs no
+   * citing sentence classifies become `api_citation` baseline_only edges
+   * when Semantic Scholar answered for them (`bfs.ts::classifyPair`).
+   * `"on"`/omitted = the LLM path as configured by `llmStrict` (library
+   * default, unchanged); the theme CLI defaults to `"off"`.
+   */
+  lineageLlm?: "on" | "off";
 }
 
 /** R2-20: default pairs per citation-context request. */
@@ -343,7 +353,8 @@ export async function buildThemeLineage(
     sinceYear,
     output = null,
     useOpenalexFallback = true,
-    llmStrict = "off",
+    llmStrict: requestedLlmStrict = "off",
+    lineageLlm = "on",
     primarySource = "s2",
     allowIncomplete = false,
     allowEdgeless = true,
@@ -353,6 +364,9 @@ export async function buildThemeLineage(
     contextBatchSize = DEFAULT_CONTEXT_BATCH_SIZE,
   } = options;
 
+  // R2-24: the no-LLM mode overrides any `llmStrict`.
+  const noLlm = lineageLlm === "off";
+  const llmStrict = noLlm ? "off" : requestedLlmStrict;
   const sanitised = sanitizeTheme(theme);
   const slug = themeSlug(sanitised);
   const wallClockNow = deps.wallClockNow ?? (() => new Date());
@@ -606,6 +620,7 @@ export async function buildThemeLineage(
       s2Relations,
       topicEmbedder: topicEmbedding ? (deps.topicEmbedder ?? null) : null,
       s2Expansion,
+      apiCitations: noLlm,
     },
     netDeps,
     completeness,
@@ -623,10 +638,11 @@ export async function buildThemeLineage(
     );
   }
 
+  const apiStats = { apiCitations: bfsResult.apiCitations, s2Unreachable: bfsResult.s2Unreachable };
   const crossAdded = await addCrossNodeEdges(
     nodes,
     edges,
-    { provider, strictMode: llmStrict, s2Relations },
+    { provider, strictMode: llmStrict, s2Relations, apiCitations: noLlm, apiStats },
     netDeps,
     completeness,
   );
@@ -656,6 +672,15 @@ export async function buildThemeLineage(
         `left to the abstract/heuristic path: cites_unspecified=${st.unspecified} no-s2-data=${st.noS2Data}`,
     );
     logger.info?.(contextLlmSummary(st));
+  }
+  if (noLlm) {
+    // R2-24: one line saying what the no-LLM mode did with the pairs no
+    // citing sentence classified (`s2_unreachable` pairs stay year/citation
+    // guesses, which the D3 gate counts as unclassified).
+    logger.info?.(
+      `lineage-llm: off (API evidence only) — api_citation=${apiStats.apiCitations}, ` +
+        `s2_unreachable=${apiStats.s2Unreachable}${s2Relations === null ? ", S2 relations disabled" : ""}`,
+    );
   }
 
   // R2-2d: provisional admissions (co-citation support, abstract-only
@@ -874,6 +899,8 @@ export async function buildThemeLineage(
       ...(canonicalSeedIds.length > 0 ? { canonical_seeds: canonicalSeedIds } : {}),
       // R2-22: records the identity guard dropped or flagged.
       ...(suspects.length > 0 ? { suspect_records: suspects } : {}),
+      // R2-24: built without any LLM (API evidence only).
+      ...(noLlm ? { lineage_llm: "off" } : {}),
     },
   };
 
@@ -926,7 +953,8 @@ export async function buildThemeLineage(
   const classifiedRate = evidenceClassifiedRate(provenanceBreakdown);
   logger.info(
     `evidence-classified rate: ${classifiedRate.ratio === null ? "n/a" : `${(classifiedRate.ratio * 100).toFixed(1)}%`} ` +
-      `(classified=${classifiedRate.classified}/${classifiedRate.total}, year/citation guesses=${classifiedRate.guessed})` +
+      `(classified=${classifiedRate.classified}/${classifiedRate.total}, ` +
+      `citation-only (api_citation)=${classifiedRate.referenceOnly}, year/citation guesses=${classifiedRate.guessed})` +
       (minClassifiedRate !== null
         ? `, threshold=${(minClassifiedRate * 100).toFixed(1)}%`
         : ", gate disabled"),

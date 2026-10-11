@@ -58,6 +58,7 @@ const METHODS = new Set([
   "title_version",
   "foundational_allowlist",
   "s2_context_rule",
+  "api_citation",
 ]);
 
 export type Relation =

@@ -49,6 +49,8 @@ export function readResults(dir: string): RunResultLike[] {
           theme: r.theme,
           status: r.status,
           daily_limit_hit: r.daily_limit_hit === true,
+          // R2-24: a no-LLM run is never quota-degraded.
+          ...(typeof r.lineage_llm === "string" ? { lineage_llm: r.lineage_llm } : {}),
           message: typeof r.message === "string" ? r.message : "",
         });
       }

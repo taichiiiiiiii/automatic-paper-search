@@ -17,7 +17,9 @@ import { isMain } from "../../shared/cli/isMain.js";
 import { type BuildLineageDeps, cacheDirFor } from "../conference/buildLineage.js";
 import { requireValidLineageArtifact } from "../contract/v1.js";
 import { BuildCompleteness } from "../fetch-state/completeness.js";
+import { type LineageLlmMode, resolveLineageLlm } from "../shared/lineageLlm.js";
 import { buildProvider } from "../shared/providerFactory.js";
+import { S2_REFERENCES_FILENAME, S2CitationSource } from "../theme/s2Citations.js";
 import {
   buildDeep,
   DeepSubjectIncompleteError,
@@ -142,6 +144,14 @@ export function defaultDeps(repoRoot: string = DEFAULT_REPO_ROOT): RunBuildDeepL
     logger: {
       warn: (msg) => process.stderr.write(`${msg}\n`),
     },
+    // R2-24: Semantic Scholar citation contexts for the no-LLM mode.
+    s2Citations: () =>
+      new S2CitationSource(join(cacheDirFor(repoRoot), S2_REFERENCES_FILENAME), {
+        fetchImpl,
+        sleep: (ms) => new Promise((r) => setTimeout(r, ms)),
+        apiKey: env.s2ApiKey,
+        logger: { warn: (msg) => process.stderr.write(`${msg}\n`) },
+      }),
     buildProvider: () =>
       buildProvider({
         env,
@@ -157,6 +167,16 @@ export function defaultDeps(repoRoot: string = DEFAULT_REPO_ROOT): RunBuildDeepL
 
 export interface RunBuildDeepLineageCliDeps extends BuildLineageDeps {
   buildProvider: () => { provider: LLMProvider; rateDelay: number };
+  /** R2-24: `null`/omitted = `PAPERPILOT_LINEAGE_LLM`, else "on". */
+  lineageLlm?: LineageLlmMode | null;
+  /** R2-24: Semantic Scholar citation contexts for the no-LLM mode
+   * (`s2_references.json` in the lineage cache); built only when used. */
+  s2Citations?: () => S2CitationSource | null;
+}
+
+/** R2-24: the builder's LLM mode (default "on" until evaluated, design 41). */
+function lineageLlmOf(deps: { lineageLlm?: LineageLlmMode | null }): LineageLlmMode {
+  return resolveLineageLlm(deps.lineageLlm ?? null, process.env, "on");
 }
 
 export async function runBuildDeepLineageCli(
@@ -171,6 +191,9 @@ export async function runBuildDeepLineageCli(
   // it eagerly) lets `buildDeep` invoke it at the right point, only once
   // the identity check has already succeeded.
   let result: Record<string, unknown>;
+  // R2-24: no provider (and no LLM key) in the no-LLM mode.
+  const lineageLlm = lineageLlmOf(deps);
+  const s2Citations = lineageLlm === "off" ? (deps.s2Citations?.() ?? null) : null;
   try {
     result = await buildDeep(
       args.arxivId,
@@ -183,10 +206,13 @@ export async function runBuildDeepLineageCli(
         tierOverride: args.tierOverride,
         completeness,
         buildProvider: deps.buildProvider,
+        lineageLlm,
+        s2Citations,
       },
       deps,
     );
   } catch (exc) {
+    s2Citations?.flush();
     if (exc instanceof DeepSubjectIncompleteError) {
       process.stderr.write(`${exc.message}\n`);
       return 4;
@@ -197,6 +223,7 @@ export async function runBuildDeepLineageCli(
     }
     throw exc;
   }
+  s2Citations?.flush();
   const meta = result.meta as Record<string, unknown>;
   meta.completeness = completeness.asMeta();
 

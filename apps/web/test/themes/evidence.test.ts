@@ -60,6 +60,8 @@ describe("methodLabelJa", () => {
     expect(methodLabelJa("foundational_allowlist")).toBe("基礎文献リスト");
     expect(methodLabelJa("citation_heuristic")).toBe("引用と年からの推測");
     expect(methodLabelJa("year_cite")).toBe("引用と年からの推測");
+    // R2-24: no-LLM mode, the citation read from a reference list.
+    expect(methodLabelJa("api_citation")).toBe("参考文献リスト（引用の事実のみ）");
   });
   it("never leaks an unknown raw key", () => {
     expect(methodLabelJa("mystery_rule")).toBe(METHOD_LABEL_FALLBACK);

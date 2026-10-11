@@ -200,6 +200,65 @@ export function demoteLowInformationEdge(
   };
 }
 
+// ---- R2-24: no-LLM mode, citation read from an API reference list ----
+
+/** Confidence of an `api_citation` edge: the citation itself is certain
+ * (it is in a reference list), its kind is not read — above the
+ * year/citation guess, below every relation read from a sentence. */
+export const API_CITATION_CONFIDENCE = 0.5;
+
+/** Which reference list holds the citation: Semantic Scholar's
+ * `/references` of the citing paper, or OpenAlex `referenced_works` /
+ * `cites:` (the BFS/cross-node lists). */
+export type CitationListSource = "semantic_scholar" | "openalex";
+
+function idOf(paper: PaperLike): string | null {
+  const id = paper.paperId ?? paper.id;
+  return typeof id === "string" ? id : null;
+}
+
+const CITATION_LIST_LABEL: Record<CitationListSource, string> = {
+  semantic_scholar: "Semantic Scholar",
+  openalex: "OpenAlex",
+};
+
+/**
+ * R2-24 (design 41, no-LLM mode): the edge for a pair whose citation an
+ * API reference list confirms but whose kind no citing sentence states
+ * (no S2 context with a cue, or none at all). It claims only what the
+ * list shows: `baseline_only` (参照/背景) with method `api_citation`, which
+ * the D3 gate counts as classified (`classificationGate.ts`). Replaces the
+ * year/citation guess (`year_cite` -> `citation_heuristic`) and the
+ * abstract-LLM prompt for such pairs; a strong relation is never derived
+ * from it.
+ */
+export function apiCitationEdge(
+  parent: PaperLike,
+  child: PaperLike,
+  source: CitationListSource,
+): DerivedEdge {
+  return {
+    relation: "baseline_only",
+    confidence: API_CITATION_CONFIDENCE,
+    rationale:
+      `「${trimTitle(child)}」(${yearOf(child)}) は「${trimTitle(parent)}」(${yearOf(parent)}) を引用している` +
+      `（${CITATION_LIST_LABEL[source]} の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。`,
+    provenance: "api_citation",
+    evidence: {
+      source,
+      kind: "citation-list",
+      sha256: canonicalJsonSha256({
+        src: idOf(parent),
+        dst: idOf(child),
+        source,
+        kind: "citation-list",
+        parent: fields(parent),
+        child: fields(child),
+      }),
+    },
+  };
+}
+
 export interface ThemeEdge {
   src: string;
   dst: string;

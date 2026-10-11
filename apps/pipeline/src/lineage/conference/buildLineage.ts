@@ -75,7 +75,15 @@ import {
 } from "../shared/fetchRelated.js";
 import { type ThemeGraphNode, toNode } from "../shared/node.js";
 import { filterEdgesByRationale, isDegenerateRationale } from "../shared/rationale.js";
+import {
+  classifyPairApiOnly,
+  type NoLlmCounters,
+  newNoLlmCounters,
+  noLlmProvenance,
+} from "../theme/noLlmRelation.js";
 import { s2PaperId, s2PaperShape } from "../theme/payloadShape.js";
+import type { S2CitationSource } from "../theme/s2Citations.js";
+import { newS2RelationStats, type S2RelationContext } from "../theme/s2Relations.js";
 
 export { S2TransientError };
 
@@ -483,6 +491,54 @@ function clusterSlug(label: string): string {
   return slug || UNCATEGORIZED_ID;
 }
 
+/** R2-24: what the no-LLM classifier needs (S2 contexts + counters). */
+interface NoLlmClassifier {
+  s2: S2RelationContext | null;
+  counters: NoLlmCounters;
+}
+
+/**
+ * R2-24 (design 41): classify one conference pair with no LLM — S2
+ * citation-context rules, the LLM-free rules, else `api_citation` (every
+ * pair here comes from the focus paper's S2 references / citations list).
+ * Same edge shape as {@link classifyCachedV2}'s heuristic branch.
+ */
+async function classifyNoLlmConference(
+  a: Record<string, unknown>,
+  b: Record<string, unknown>,
+  ids: { srcId: string; dstId: string; intentRecord: Record<string, unknown> },
+  noLlm: NoLlmClassifier,
+): Promise<ClassifiedEdge | null> {
+  const parent = { ...a, paperId: ids.srcId };
+  const child = { ...b, paperId: ids.dstId };
+  const derived = await classifyPairApiOnly(
+    parent,
+    child,
+    ids.intentRecord,
+    noLlm.s2,
+    noLlm.counters,
+    "semantic_scholar",
+  );
+  if (derived === null) return null;
+  return {
+    src: ids.srcId,
+    dst: ids.dstId,
+    relation: derived.relation,
+    confidence: derived.confidence,
+    rationale: derived.rationale,
+    provenance: noLlmProvenance(derived, {
+      producerName: PRODUCER_NAME,
+      producerVersion: PRODUCER_VERSION,
+      classificationSchemaVersion: CLASSIFICATION_SCHEMA_VERSION,
+      srcId: ids.srcId,
+      dstId: ids.dstId,
+      parent: a,
+      child: b,
+      intentRecord: ids.intentRecord,
+    }),
+  };
+}
+
 export interface ClusterEntry {
   id: string;
   label: string;
@@ -527,8 +583,14 @@ export interface BuildLineageOptions {
   venueOverride?: string | null;
   generatedAt?: string | null;
   completeness?: BuildCompleteness | null;
-  provider: LLMProvider;
+  /** R2-24: `null` = no-LLM mode (API evidence only, see
+   * `theme/noLlmRelation.ts`); `rateDelayMs` is then unused. */
+  provider: LLMProvider | null;
   rateDelayMs: number;
+  /** R2-24: Semantic Scholar citation contexts for the no-LLM mode
+   * (`s2_references.json` cache). `null`/omitted = no context lookup, so
+   * pairs keep the deterministic heuristic as before. */
+  s2Citations?: S2CitationSource | null;
 }
 
 /** TS port of `build()`. */
@@ -545,7 +607,34 @@ export async function build(
     completeness = null,
     provider,
     rateDelayMs,
+    s2Citations = null,
   } = options;
+  // R2-24: no-LLM mode — rule relations from S2 citation contexts, else
+  // `api_citation` (the citation is in the focus paper's S2 list).
+  const noLlm: NoLlmClassifier | null =
+    provider === null
+      ? {
+          s2:
+            s2Citations === null
+              ? null
+              : { source: s2Citations, provider: null, stats: newS2RelationStats() },
+          counters: newNoLlmCounters(),
+        }
+      : null;
+  const classify = (
+    a: Record<string, unknown>,
+    b: Record<string, unknown>,
+    ids: { srcId: string; dstId: string; intentRecord: Record<string, unknown> },
+  ): Promise<ClassifiedEdge | null> =>
+    noLlm !== null
+      ? classifyNoLlmConference(a, b, ids, noLlm)
+      : classifyCachedV2(provider as LLMProvider, a, b, {
+          ...ids,
+          classifications,
+          cachePath: classificationCachePath,
+          rateDelayMs,
+          sleep: deps.sleep,
+        });
   const { papersPath } = resolveConferencePaths(docsRoot, conference);
   const venueLabel = venueOverride || slugToVenueLabel(conference);
 
@@ -648,14 +737,10 @@ export async function build(
       const pid = parent.paperId as string;
       if (!nodes.has(pid)) nodes.set(pid, toNode(parent as never));
       if (parent._is_influential === false) continue;
-      const cls = await classifyCachedV2(provider, parent, focusPaper, {
+      const cls = await classify(parent, focusPaper, {
         srcId: pid,
         dstId: focusId,
-        classifications,
-        cachePath: classificationCachePath,
-        rateDelayMs,
         intentRecord: parent,
-        sleep: deps.sleep,
       });
       if (cls && cls.relation !== "unrelated") {
         edges.push({
@@ -675,14 +760,10 @@ export async function build(
       const cid = child.paperId as string;
       if (!nodes.has(cid)) nodes.set(cid, toNode(child as never));
       if (child._is_influential === false) continue;
-      const cls = await classifyCachedV2(provider, focusPaper, child, {
+      const cls = await classify(focusPaper, child, {
         srcId: focusId,
         dstId: cid,
-        classifications,
-        cachePath: classificationCachePath,
-        rateDelayMs,
         intentRecord: child,
-        sleep: deps.sleep,
       });
       if (cls && cls.relation !== "unrelated") {
         edges.push({
@@ -749,8 +830,16 @@ export async function build(
       kind: "conference",
       generator: PRODUCER_NAME,
       generated_at: generatedAt || isoZ(utcNowMs()),
+      // R2-24: built without any LLM (API evidence only).
+      ...(noLlm !== null ? { lineage_llm: "off" } : {}),
     },
   };
+  if (noLlm !== null) {
+    deps.logger?.warn(
+      `lineage-llm: off (API evidence only) — api_citation=${noLlm.counters.apiCitationEdges}, ` +
+        `s2_unreachable=${noLlm.counters.s2Unreachable}${noLlm.s2 === null ? ", no S2 context lookup" : ""}`,
+    );
+  }
   requireValidLineageArtifact(result, { kind: "conference", catalogIds: new Set(seeds) });
   return result;
 }

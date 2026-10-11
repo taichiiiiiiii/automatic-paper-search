@@ -55,6 +55,14 @@ import {
   fetchRelated as fetchRelatedShared,
 } from "../shared/fetchRelated.js";
 import { type ThemeGraphNode, toNode } from "../shared/node.js";
+import {
+  classifyPairApiOnly,
+  type NoLlmCounters,
+  newNoLlmCounters,
+  noLlmProvenance,
+} from "../theme/noLlmRelation.js";
+import type { S2CitationSource } from "../theme/s2Citations.js";
+import { newS2RelationStats, type S2RelationContext } from "../theme/s2Relations.js";
 
 const PRODUCER_NAME = "paperpilot.scripts.build_deep_lineage";
 const PRODUCER_VERSION = "p2-v1";
@@ -199,6 +207,53 @@ export async function classifyCachedLenient(
   return entry;
 }
 
+/**
+ * R2-24 (design 41): classify one deep-lineage pair with no LLM — S2
+ * citation-context rules, the LLM-free rules, else `api_citation` (every
+ * pair comes from an S2 references / citations list). `intentRecord` is
+ * the fetched related paper (it carries the S2 intents of the pair).
+ */
+export async function classifyDeepWithoutLlm(
+  a: Record<string, unknown>,
+  b: Record<string, unknown>,
+  intentRecord: Record<string, unknown>,
+  ctx: {
+    srcId: string;
+    dstId: string;
+    s2: S2RelationContext | null;
+    counters: NoLlmCounters;
+  },
+): Promise<ClassifiedDeepEdge | null> {
+  const parent = { ...a, paperId: ctx.srcId };
+  const child = { ...b, paperId: ctx.dstId };
+  const derived = await classifyPairApiOnly(
+    parent,
+    child,
+    intentRecord,
+    ctx.s2,
+    ctx.counters,
+    "semantic_scholar",
+  );
+  if (derived === null) return null;
+  return {
+    src: ctx.srcId,
+    dst: ctx.dstId,
+    relation: derived.relation,
+    confidence: derived.confidence,
+    rationale: derived.rationale,
+    provenance: noLlmProvenance(derived, {
+      producerName: PRODUCER_NAME,
+      producerVersion: PRODUCER_VERSION,
+      classificationSchemaVersion: CLASSIFICATION_SCHEMA_VERSION,
+      srcId: ctx.srcId,
+      dstId: ctx.dstId,
+      parent: a,
+      child: b,
+      intentRecord,
+    }),
+  };
+}
+
 /** Best-effort fallback JSON extraction (fenced code block / embedded object), mirroring
  * `utils/json_parser.py::parse_llm_response`'s later stages closely enough for this call site:
  * strip a markdown code fence, then try to locate the first `{...}` object. */
@@ -255,6 +310,12 @@ export interface BuildDeepOptions {
   provider?: LLMProvider;
   rateDelayMs?: number;
   generatedAtOverride?: string | null;
+  /** R2-24 (design 41): `"off"` = no LLM — no provider is built and every
+   * pair is classified from API evidence (`theme/noLlmRelation.ts`).
+   * Default `"on"`. */
+  lineageLlm?: "on" | "off";
+  /** R2-24: Semantic Scholar citation contexts for the no-LLM mode. */
+  s2Citations?: S2CitationSource | null;
 }
 
 /** Raised instead of publishing when the focus paper could not be resolved for a reason that does not prove absence (LIN-12). */
@@ -296,11 +357,19 @@ export async function buildDeep(
   const focusId = requireS2FocusIdentity(focus, arxivId);
   // LIN-24: provider construction happens HERE, only after the identity
   // check above has already succeeded — never before it.
-  const resolvedProvider = buildProvider ? buildProvider() : null;
+  // R2-24: never in the no-LLM mode.
+  const noLlm = options.lineageLlm === "off";
+  const resolvedProvider = !noLlm && buildProvider ? buildProvider() : null;
   const provider = resolvedProvider ? resolvedProvider.provider : (options.provider as LLMProvider);
   const rateDelayMs = resolvedProvider
     ? resolvedProvider.rateDelay * 1000
     : (options.rateDelayMs as number);
+  const s2Citations = options.s2Citations ?? null;
+  const noLlmS2: S2RelationContext | null =
+    noLlm && s2Citations !== null
+      ? { source: s2Citations, provider: null, stats: newS2RelationStats() }
+      : null;
+  const noLlmCounters = newNoLlmCounters();
   const aliases = [
     ["arxiv", arxivId],
     ["semantic_scholar", focusId],
@@ -348,14 +417,21 @@ export async function buildDeep(
         edgeSrc = s2Id;
         edgeDst = relId;
       }
-      const cls = await classifyCachedLenient(provider, a, b, {
-        srcId: edgeSrc,
-        dstId: edgeDst,
-        classifications,
-        cachePath: classificationsPath,
-        rateDelayMs,
-        sleep: deps.sleep,
-      });
+      const cls = noLlm
+        ? await classifyDeepWithoutLlm(a, b, rel, {
+            srcId: edgeSrc,
+            dstId: edgeDst,
+            s2: noLlmS2,
+            counters: noLlmCounters,
+          })
+        : await classifyCachedLenient(provider, a, b, {
+            srcId: edgeSrc,
+            dstId: edgeDst,
+            classifications,
+            cachePath: classificationsPath,
+            rateDelayMs,
+            sleep: deps.sleep,
+          });
       if (cls === null || cls.relation === "unrelated") continue;
       out.push([
         rel,
@@ -433,6 +509,8 @@ export async function buildDeep(
       aliases,
       depth,
       generated_at: generatedAtOverride ?? isoZ(utcNowMs()),
+      // R2-24: built without any LLM (API evidence only).
+      ...(noLlm ? { lineage_llm: "off" } : {}),
     },
   };
   requireValidLineageArtifact(result, {

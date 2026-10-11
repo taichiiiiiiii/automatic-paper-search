@@ -21,6 +21,7 @@ import {
   VALID_PROVENANCES,
 } from "../../../src/lineage/classify/classify.js";
 import { MIN_RATIONALE_LEN } from "../../../src/lineage/llm/base.js";
+import { apiCitationEdge } from "../../../src/lineage/theme/edges.js";
 import { ruleEdge } from "../../../src/lineage/theme/s2Relations.js";
 
 function rc(
@@ -135,6 +136,8 @@ describe("provenance", () => {
       "foundational_allowlist",
       "llm",
       "s2_context_rule",
+      // R2-24: no-LLM mode, citation confirmed by an API reference list.
+      "api_citation",
     ]);
     expect(VALID_PROVENANCES).toEqual(expected);
 
@@ -175,6 +178,8 @@ describe("provenance", () => {
         { title: "GAT", year: 2018 },
       )?.provenance ?? "",
     );
+    // R2-24: the no-LLM mode's reference-list edge (theme/edges.ts).
+    collected.add(apiCitationEdge({ title: "GCN" }, { title: "GAT" }, "openalex").provenance);
     expect(collected).toEqual(expected);
   });
 });
