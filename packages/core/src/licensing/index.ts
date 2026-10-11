@@ -18,12 +18,13 @@ export type CatalogSource = "arxiv" | "openreview" | "acl_anthology" | "cvf";
  * licence; when no CC0 arXiv version or Semantic Scholar TLDR was matched
  * the row shows title / authors / link only).
  */
-export type AbstractSource = "arxiv" | "openreview" | "acl_anthology" | "s2_tldr" | "none";
+export type AbstractSource = "arxiv" | "openreview" | "acl_anthology" | "pmlr" | "s2_tldr" | "none";
 
 export const ABSTRACT_SOURCES: readonly AbstractSource[] = [
   "arxiv",
   "openreview",
   "acl_anthology",
+  "pmlr",
   "s2_tldr",
   "none",
 ];
@@ -62,6 +63,11 @@ export const ABSTRACT_LICENSE: Readonly<Record<AbstractSource, LicenseInfo | nul
   openreview: LICENSES.cc0,
   // ACL Anthology (2016+): CC BY 4.0 — attribution required.
   acl_anthology: LICENSES.ccBy4,
+  // PMLR (R3-3): the publication agreement licenses each article to the
+  // public under CC BY 4.0 — attribution (authors, title, PMLR volume,
+  // link to the PMLR page) required. Rows keep their OpenReview identity,
+  // so this source is only known from the collector's `source_license.json`.
+  pmlr: LICENSES.ccBy4,
   // Semantic Scholar TLDR (machine-generated summary): ODC-BY 1.0.
   s2_tldr: LICENSES.odcBy,
   none: null,
@@ -80,6 +86,7 @@ export const ABSTRACT_SOURCE_LABEL: Readonly<Record<AbstractSource, string>> = {
   arxiv: "arXiv",
   openreview: "OpenReview",
   acl_anthology: "ACL Anthology",
+  pmlr: "PMLR",
   s2_tldr: "Semantic Scholar TLDR（機械生成の要約）",
   none: "",
 };
@@ -107,6 +114,31 @@ export function nativeAbstractSource(source: string): AbstractSource | null {
       // cvf (rights reserved, no licence) and anything unknown: fail closed.
       return null;
   }
+}
+
+/**
+ * Abstract source of a whole collection, from the proceedings collector's
+ * `source_license.json` `source` field (R3-3). The row URL cannot tell
+ * these apart from their identity source: PMLR rows are keyed by their
+ * OpenReview forum, yet their abstract text is PMLR's (CC BY 4.0), not
+ * OpenReview's (CC0). `null` = no licensed abstract source is known for
+ * that collector (CVF Open Access, NeurIPS proceedings, unknown).
+ */
+export function proceedingsAbstractSource(source: string): AbstractSource | null {
+  switch (source) {
+    case "pmlr":
+      return "pmlr";
+    case "acl_anthology":
+      return "acl_anthology";
+    default:
+      return null;
+  }
+}
+
+/** PMLR volume label ("PMLR v306") from a proceedings.mlr.press URL, or `null`. */
+export function pmlrVolumeFromUrl(url: string | null | undefined): string | null {
+  const m = /^https:\/\/proceedings\.mlr\.press\/(v\d+)\//.exec(url ?? "");
+  return m ? `PMLR ${m[1]}` : null;
 }
 
 /**

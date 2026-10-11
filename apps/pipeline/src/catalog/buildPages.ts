@@ -25,17 +25,20 @@
  */
 
 import { existsSync, mkdirSync, readdirSync, readFileSync, realpathSync, statSync } from "node:fs";
-import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
+import { basename, dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { IdentityError, identityFromUrl, normalizeAlias } from "@paperpilot/core/identity";
 import { pyJsonDumps, pyRstrip, pySplit, pyStrip } from "@paperpilot/core/pycompat";
 import { validateConferenceSlug } from "@paperpilot/core/slug";
 import { unneutralize } from "../collect/exporters/csvSafety.js";
 import { atomicWriteText } from "../collect/state/atomic.js";
+import { readSourceLicense } from "../conference/proceedings/sourceLicense.js";
 import { parseArgs as parseFlags } from "../shared/cli/argparse.js";
 import {
   ABSTRACT_REPLACEMENTS_FILENAME,
   type AbstractReplacement,
   applyAbstractPolicy,
+  type CollectionAbstractPolicy,
+  collectionAbstractPolicy,
   parseAbstractReplacements,
 } from "./abstractReplacements.js";
 import { SUMMARY_META_FILENAME } from "./buildSummary.js";
@@ -186,6 +189,12 @@ export interface CatalogPaper {
   abstract_source: string;
   /** R2-26: SPDX-style licence id of `abstract` (`""` when withheld). */
   abstract_license: string;
+  /**
+   * R3-3: the per-paper proceedings page the abstract was taken from, when
+   * it differs from `arxiv_url` (PMLR rows link OpenReview). Omitted
+   * otherwise. CC BY 4.0 attribution links it.
+   */
+  abstract_url?: string;
 }
 
 /**
@@ -200,18 +209,42 @@ export function loadAbstractReplacements(summaryCsv: string): Map<string, Abstra
 }
 
 /**
+ * R3-3: the abstract policy from the collector's `source_license.json`
+ * next to `summaryCsv`, or `null` when there is none (the row URL then
+ * decides, as before). The sidecar must name the same conference as its
+ * directory.
+ */
+export function loadCollectionAbstractPolicy(summaryCsv: string): CollectionAbstractPolicy | null {
+  const dir = dirname(summaryCsv);
+  const license = readSourceLicense(dir);
+  if (license !== null && license.conference !== basename(dir)) {
+    throw new Error(
+      `source_license.json in ${basename(dir)} is for conference ${license.conference}`,
+    );
+  }
+  return collectionAbstractPolicy(license);
+}
+
+/**
  * Load one catalog projection and its full-abstract detail records. Cells
  * come back without the spreadsheet formula guard, so the published text
  * is the upstream text.
  */
 export function loadSummaryWithDetails(
   summaryCsv: string,
-  options: { replacements?: ReadonlyMap<string, AbstractReplacement> } = {},
+  options: {
+    replacements?: ReadonlyMap<string, AbstractReplacement>;
+    collection?: CollectionAbstractPolicy | null;
+  } = {},
 ): {
   papers: CatalogPaper[];
   details: Map<string, string>;
 } {
   const replacements = options.replacements ?? loadAbstractReplacements(summaryCsv);
+  const collection =
+    options.collection !== undefined
+      ? options.collection
+      : loadCollectionAbstractPolicy(summaryCsv);
   const papers: CatalogPaper[] = [];
   const details = new Map<string, string>();
   const text = readFileSync(summaryCsv, "utf-8");
@@ -240,7 +273,15 @@ export function loadSummaryWithDetails(
       identity.source,
       pyStrip(row.abstract ?? ""),
       replacements.get(identity.paperId),
+      collection,
     );
+    // R3-3: credit the proceedings page the text came from (PMLR).
+    const landingUrl =
+      collection !== null &&
+      published.abstract_source === collection.abstract_source &&
+      Object.hasOwn(collection.landing_urls, identity.sourceId)
+        ? collection.landing_urls[identity.sourceId]
+        : undefined;
     const fullAbstract = published.abstract;
     const existingAbstract = details.get(identity.paperId);
     if (existingAbstract !== undefined && existingAbstract !== fullAbstract) {
@@ -268,6 +309,7 @@ export function loadSummaryWithDetails(
       source_id: identity.sourceId,
       abstract_source: published.abstract_source,
       abstract_license: published.abstract_license,
+      ...(landingUrl && landingUrl !== row.arxiv_url ? { abstract_url: landingUrl } : {}),
     });
   }
   return { papers, details };

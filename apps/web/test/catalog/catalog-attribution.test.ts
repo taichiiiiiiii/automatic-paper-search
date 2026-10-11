@@ -64,6 +64,36 @@ describe("catalogLinks", () => {
     ]);
   });
 
+  it("R3-3: links a PMLR abstract's PMLR page (https proceedings.mlr.press only)", () => {
+    const row = {
+      source: "openreview",
+      abstract_source: "pmlr",
+      arxiv_url: "https://openreview.net/forum?id=abc",
+      pdf_url: "https://raw.githubusercontent.com/mlresearch/v306/main/assets/lee26a/lee26a.pdf",
+    };
+    expect(
+      catalogLinks(
+        paper({ ...row, abstract_url: "https://proceedings.mlr.press/v306/lee26a.html" }),
+      ),
+    ).toEqual([
+      { label: "OpenReview", url: "https://openreview.net/forum?id=abc" },
+      { label: "PMLR", url: "https://proceedings.mlr.press/v306/lee26a.html" },
+      { label: "PDF", url: row.pdf_url },
+    ]);
+    expect(
+      catalogLinks(paper({ ...row, abstract_url: "javascript:alert(1)" })).map((l) => l.label),
+    ).toEqual(["OpenReview", "PDF"]);
+    expect(
+      catalogLinks(
+        paper({
+          ...row,
+          abstract_source: "openreview",
+          abstract_url: "https://proceedings.mlr.press/v306/x.html",
+        }),
+      ).map((l) => l.label),
+    ).toEqual(["OpenReview", "PDF"]);
+  });
+
   it("falls back by URL host for legacy rows without `source`", () => {
     expect(catalogLinks(paper({ arxiv_url: "https://arxiv.org/abs/2404.00001" }))[0]?.label).toBe(
       "arXiv",
@@ -111,6 +141,31 @@ describe("abstractAttribution", () => {
       licenseUrl: "https://creativecommons.org/licenses/by/4.0/",
       note: "（一覧では冒頭のみ表示）",
     });
+  });
+
+  it("R3-3: attributes PMLR abstracts per CC BY 4.0 (authors, title, PMLR volume)", () => {
+    const a = abstractAttribution(
+      paper({
+        source: "openreview",
+        abstract_source: "pmlr",
+        abstract_license: "CC-BY-4.0",
+        abstract_url: "https://proceedings.mlr.press/v306/lee26a.html",
+        title: "Good ML",
+      }),
+    );
+    expect(a).toMatchObject({
+      withheld: false,
+      kind: "要旨",
+      source: "出典: Lee et al., “Good ML”, PMLR v306",
+      licenseLabel: "CC BY 4.0",
+      licenseUrl: "https://creativecommons.org/licenses/by/4.0/",
+    });
+    // Never the OpenReview / CC0 label the row URL alone would suggest.
+    expect(JSON.stringify(a)).not.toMatch(/OpenReview|CC0/);
+    // Without a PMLR page the credit still names PMLR.
+    expect(
+      abstractAttribution(paper({ source: "openreview", abstract_source: "pmlr", title: "T" })),
+    ).toMatchObject({ source: "出典: Lee et al., “T”, PMLR" });
   });
 
   it("marks a Semantic Scholar TLDR as a machine summary under ODC-BY", () => {

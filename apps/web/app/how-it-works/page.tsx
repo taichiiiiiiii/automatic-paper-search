@@ -320,7 +320,9 @@ export default function HowItWorksPage() {
             <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener license">
               CC BY 4.0
             </a>
-            （著者・題名・ACL Anthology を表示。一覧では冒頭のみ）です。CVF Open
+            （著者・題名・ACL Anthology を表示。一覧では冒頭のみ）です。PMLR（ICML 2026
+            など）の要旨も CC BY 4.0 で、著者・題名・PMLR の巻を表示し、各論文の PMLR
+            のページへリンクしています。CVF Open
             Access（CVPR・ICCV）の要旨は転載が許諾されていないため掲載せず、同じ論文の arXiv
             版の要旨（CC0）か、なければ Semantic Scholar の自動要約（TLDR、ODC-BY
             1.0）を表示し、どちらもなければ題名・著者とリンクのみを表示します。
@@ -338,6 +340,14 @@ export default function HowItWorksPage() {
               OpenReview
             </a>
             （ICLR・ICML・NeurIPS）と arXiv の書誌情報（題名・著者・要旨）は CC0 です。
+            <a href="https://proceedings.mlr.press/" rel="noopener">
+              PMLR
+            </a>
+            （ICML 2026）の論文は{" "}
+            <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener">
+              CC BY 4.0
+            </a>{" "}
+            で、著作権は各著者にあります。
             <a href="https://aclanthology.org/" rel="noopener">
               ACL Anthology
             </a>
@@ -374,7 +384,7 @@ export default function HowItWorksPage() {
               arXiv
             </a>{" "}
             for use of its open access interoperability. 本サイトは arXiv・Semantic
-            Scholar・OpenAlex・OpenReview・ACL Anthology・CVF
+            Scholar・OpenAlex・OpenReview・PMLR・ACL Anthology・CVF
             の公式サービスではなく、各団体の推奨・承認を受けたものでもありません。
           </li>
           <li>

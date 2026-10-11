@@ -164,7 +164,7 @@
 | A3 | **公開 JSON（`lineage.json`、`papers.json`、`paper-details`）の `meta` に license、source、attribution を入れる** | ODC-BY §4.2（派生 DB の公開配布） | △（R2-27：schema が `additionalProperties: false` で追加フィールドを許さず、`papers.json` は配列なので見送り。notice は `NOTICE.md`・`data/README.md` に置いた。JSON 内に入れるのは schema の版上げのとき） |
 | A4 | **リポジトリに `DATA_LICENSE.md` か `NOTICE` を置く**（S2 = ODC-BY、OpenAlex・arXiv・OpenReview・DBLP = CC0、ACL = CC BY 4.0、CVF = 権利留保）。コード用の `LICENSE` も決める | ODC-BY §4.2(b)(d)、CC BY 4.0 | ✅（R2-27：`LICENSE`＝MIT、`NOTICE.md`、`data/README.md`） |
 | A5 | Kinney et al. 2023、Cohan et al. 2019（intents）を記載する | S2 規約 §4、データセットの README | ✅ |
-| A6 | **ACL Anthology の CC BY 4.0 帰属表示**（著者、題名、ライセンスのリンク、改変の有無） | CC BY 4.0 | △（R2-27：#credits・`NOTICE.md` にカタログ単位の表示。論文ごとの表示は未対応） |
+| A6 | **ACL Anthology の CC BY 4.0 帰属表示**（著者、題名、ライセンスのリンク、改変の有無） | CC BY 4.0 | ✅（R2-27：#credits・`NOTICE.md` にカタログ単位の表示。論文ごとの表示は R2-26（§9.1）で対応、PMLR も R3-3（§9.6）で同じ形にした） |
 | A7 | **フッターと #credits に OpenReview・CVF・ACL Anthology を追加**し、それぞれのライセンスや権利状態を書く | 出所の明示（48 条）、誠実な表示 | ✅（R2-27） |
 
 | A6 | **ACL Anthology の CC BY 4.0 帰属表示**（著者、題名、ライセンスのリンク、改変の有無） | CC BY 4.0 | ✅（R2-26、§9） |
@@ -273,6 +273,17 @@
 - flash-attention テーマの再生成（生成側の検査で Longformer の要旨が消える）。
 - `--s2-match` を使えば TLDR の取りこぼしが減る可能性があるが、鍵なしでは数時間かかる。
 
+### 9.6 PMLR の要旨の出典とライセンス（R3-3、2026-10-11）
+- **問題**：ICML 2026 は PMLR v306 から集めた（52 §8）。行の識別子と論文ページへのリンクは OpenReview の forum なので、R2-26 の方針（行の URL から出典を推定）は要旨を「OpenReview・CC0 1.0」と表示していた。実際の本文は PMLR の BibTeX のもので、ライセンスは **CC BY 4.0（帰属が必要）**。
+- **対策**：出典とライセンスは、収集器が `papers_<date>.csv` の隣に書く `source_license.json` から決める（あれば URL からの推定より優先）。
+  - `@paperpilot/core/licensing`：`AbstractSource` に `pmlr`（CC BY 4.0、表示名「PMLR」）を追加。`proceedingsAbstractSource()` が収集器の `source`（`pmlr` / `acl_anthology`）を要旨の出典に対応づける。
+  - `apps/pipeline/src/conference/proceedings/sourceLicense.ts::readSourceLicense`／`parseSourceLicense`（壊れたファイルは build を止める）、`catalog/abstractReplacements.ts::collectionAbstractPolicy`・`applyAbstractPolicy(…, collection)`、`catalog/buildPages.ts::loadCollectionAbstractPolicy`（ディレクトリ名と `conference` の一致も確認）。
+  - **fail closed**：`license: null`（権利留保）なら URL が OpenReview でも要旨を出さない（CVF と同じ差し替えの経路）。ライセンスがあるのに対応する出典が無い収集器（`neurips_proceedings` など）や、ライセンス ID が `licensing` と食い違う場合は build を止める。`abstracts: "omitted"`（CVF `--listing-only`）のファイルは無視。
+  - `papers.json` の PMLR の行に `abstract_url`（論文ごとの PMLR のページ、`landing_urls` から）を追加。行の URL と同じ場合や他の出典では付けない。
+- **表示（`apps/web/lib/catalog-attribution.ts`）**：「要旨の出典: 〈第一著者〉 et al., “〈題名〉”, PMLR v306 · CC BY 4.0（一覧では冒頭のみ表示）」。リンク列に「PMLR」（`https://proceedings.mlr.press/` の URL だけ）を OpenReview と PDF の間に出す。#credits と `NOTICE.md` に PMLR の行を追加。
+- ACL 2026 の `source_license.json`（`acl_anthology`、CC BY 4.0）は今までの推定と同じ結果で、論文ごとの帰属（著者・題名・ACL Anthology、§9.1）もそのまま。
+- 公開データは生成器で作り直した（`buildPagesCli` → `identityLiteCli --as-of` → `searchIndexCli` → `buildLineageQualityCli --as-of`、`as_of` はコミット済みの値）。ICML 2026 の 6,552 本が `pmlr`／`CC-BY-4.0`／`abstract_url` 付きになり、ほかの学会の `papers.json` は変わらない。要旨の本文も変わらない。
+
 ---
 
 ## 付録：未確認・不確実な点
@@ -293,6 +304,6 @@
 - サイト：フッターに「プライバシー」「削除依頼」と OpenReview・ACL Anthology・CVF Open Access。#credits にカタログのソース別ライセンス、コード MIT／データは各出典、非公開の窓口。新しい節 #privacy「プライバシーと削除依頼」。テーマ依頼フォームに「入力したテーマ名は公開されます」の注記。
 - **IP の保持（§6 の訂正）**：調べたところ、`QuotaLedger` の `ip:<IP>` は `expiresAt` で窓を閉じるだけで、**エントリ自体は Durable Object に残り続けていた**（「最大 1 時間」は事実でなかった）。`QuotaLedger.sweepExpired` と Durable Object の alarm を足し、窓が終わった `ip:` エントリを約 1 時間で削除するようにした（`apps/api/src/lib/quota.ts`、`src/durable/quota-object.ts`）。Worker のデプロイ後、最初のテーマ依頼で alarm が入り、それまでに溜まった古いエントリもその alarm で消える。
 - 公開 JSON への `license` フィールド（A3）は、schema が追加を許さないため見送り、notice はファイルで示した。
-- 残り：A6 の論文ごとの帰属、B3〜B7、C4（抑止リスト）、CVF の要旨（R2-26）、メールの窓口（独自ドメイン待ち）。
+- 残り：~~A6 の論文ごとの帰属~~（R2-26 で ACL、R3-3 で PMLR に対応）、B3〜B7、C4（抑止リスト）、CVF の要旨（R2-26）、メールの窓口（独自ドメイン待ち）。
 
 > 生の取得結果は手元の一時領域に置いたため、リポジトリには入れていない（2026-10-11）。

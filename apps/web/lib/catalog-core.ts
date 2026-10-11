@@ -39,6 +39,8 @@ export interface CatalogPaper {
   abstract_source?: string;
   /** R2-26: SPDX-style licence id of `abstract`. */
   abstract_license?: string;
+  /** R3-3: per-paper proceedings page of the abstract (PMLR). */
+  abstract_url?: string;
   [key: string]: unknown;
 }
 
