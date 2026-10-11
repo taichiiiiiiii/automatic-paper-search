@@ -173,11 +173,14 @@ describe("R2-23 new cues", () => {
     expect(mapped(sig(regnet, ctx, { citingTitle: title }))).toBe("baseline_only");
   });
 
-  it("'While Eigen et al. (2013) uses …, our …' is a targeted contrast", () => {
+  it("'While Eigen et al. (2013) uses …, our <application> of …' is a build-on (R2-31)", () => {
     const ctx = [
       "While Eigen et al. (2013) uses two stacked MoEs allowing for two sets of gating decisions, our convolutional application of the MoE allows for different gating decisions at each position in the text.",
     ];
-    expect(mapped(sig(eigen, ctx, { citingTitle: shazeer.title }))).toBe("contrasts");
+    // R2-23 read this as a targeted contrast; the R2-29 second review (and
+    // the R2-23 gold label) call it extends: a scope difference inside the
+    // approach the citing paper builds on.
+    expect(mapped(sig(eigen, ctx, { citingTitle: shazeer.title }))).toBe("extends");
   });
 });
 

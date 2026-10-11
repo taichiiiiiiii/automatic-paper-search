@@ -363,6 +363,12 @@ export class DblpVenueSource {
     return corrected;
   }
 
+  /** R2-31: the fresh cache entry of a node (venue / year / key), if any. */
+  entryFor(id: string): DblpVenueEntry | undefined {
+    const e = this.entries[id];
+    return e && this.fresh(e) ? e : undefined;
+  }
+
   flush(): number {
     if (this.cachePath === null || this.dirty.size === 0) return 0;
     if (!existsSync(dirname(this.cachePath))) return 0;
