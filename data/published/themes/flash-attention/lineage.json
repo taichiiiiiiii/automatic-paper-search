@@ -16,7 +16,7 @@
       ],
       "kinds": [],
       "citation_count": 461,
-      "github_stars": 1612,
+      "github_stars": 0,
       "tldr": "Transformers are powerful sequence models, but require time and memory that grows quadratically with the sequence length. In this paper we…",
       "short_abstract": "Transformers are powerful sequence models, but require time and memory that grows quadratically with the sequence length. In this paper we introduce sparse factorizations of the attention matrix which reduce this to $O(n \\sqrt{n})$. We also introduce a) a variation on architecture and initialization to train deeper networks, b) the recomputation of attention matrices to save memory, and c) fast attention kernels for training. We call networks with these changes Sparse Transformers, and show they can model sequences tens of thousands of timesteps long using hundreds of layers. We use the same architecture to model images, audio, and text from raw bytes, setting a new state of the art for density modeling of Enwik8, CIFAR-10, and ImageNet-64. We generate unconditional samples that demonstrate global coherence and great diversity, and show it is possible in principle to use self-attention to model sequences of length one million or more.",
       "arxiv_id": "1904.10509",
@@ -31,7 +31,6 @@
           "10.48550/arxiv.1904.10509"
         ]
       ],
-      "github_url": "https://github.com/openai/sparse_attention",
       "is_focus": false
     },
     {
@@ -111,7 +110,7 @@
       ],
       "kinds": [],
       "citation_count": 2,
-      "github_stars": 50,
+      "github_stars": 0,
       "tldr": "We propose a novel type of balanced clustering algorithm to approximate attention. Attention complexity is reduced from $O(N^2)$ to $O(N…",
       "short_abstract": "We propose a novel type of balanced clustering algorithm to approximate attention. Attention complexity is reduced from $O(N^2)$ to $O(N \\log N)$, where $N$ is the sequence length. Our algorithm, SMYRF, uses Locality Sensitive Hashing (LSH) in a novel way by defining new Asymmetric transformations and an adaptive scheme that produces balanced clusters. The biggest advantage of SMYRF is that it can be used as a drop-in replacement for dense attention layers without any retraining. On the contrary, prior fast attention methods impose constraints (e.g. queries and keys share the same vector representations) and require re-training from scratch. We apply our method to pre-trained state-of-the-art Natural Language Processing and Computer Vision models and we report significant memory and speed benefits. Notably, SMYRF-BERT outperforms (slightly) BERT on GLUE, while using $50\\%$ less memory. We also show that SMYRF can be used interchangeably with dense attention before and after training.…",
       "arxiv_id": "2010.05315",
@@ -126,7 +125,6 @@
           "10.48550/arxiv.2010.05315"
         ]
       ],
-      "github_url": "https://github.com/giannisdaras/smyrf",
       "is_focus": false
     },
     {
@@ -342,38 +340,6 @@
         ]
       ],
       "seed_paper_id": "dfd37084c0b08e49d04fa42ddb453482ebfa1b6f"
-    },
-    {
-      "id": "openalex:W4417006854",
-      "title": "DeepSeek-V3.2: Pushing the Frontier of Open Large Language Models",
-      "year": 2025,
-      "venue": "arXiv (Cornell University)",
-      "venue_tier": "preprint",
-      "authors": [
-        "DeepSeek-AI",
-        "Aixin Liu",
-        "Mei, Aoxue",
-        "Lin, Bangcai",
-        "Bing Xue"
-      ],
-      "kinds": [],
-      "citation_count": 8,
-      "github_stars": 0,
-      "tldr": "We introduce DeepSeek-V3.2, a model that harmonizes high computational efficiency with superior reasoning and agent performance. The key…",
-      "short_abstract": "We introduce DeepSeek-V3.2, a model that harmonizes high computational efficiency with superior reasoning and agent performance. The key technical breakthroughs of DeepSeek-V3.2 are as follows: (1) DeepSeek Sparse Attention (DSA): We introduce DSA, an efficient attention mechanism that substantially reduces computational complexity while preserving model performance in long-context scenarios. (2) Scalable Reinforcement Learning Framework: By implementing a robust reinforcement learning protocol and scaling post-training compute, DeepSeek-V3.2 performs comparably to GPT-5. Notably, our high-compute variant, DeepSeek-V3.2-Speciale, surpasses GPT-5 and exhibits reasoning proficiency on par with Gemini-3.0-Pro, achieving gold-medal performance in both the 2025 International Mathematical Olympiad (IMO) and the International Olympiad in Informatics (IOI). (3) Large-Scale Agentic Task Synthesis Pipeline: To integrate reasoning into tool-use scenarios, we developed a novel synthesis pipeline…",
-      "arxiv_id": "2512.02556",
-      "doi": "10.48550/arxiv.2512.02556",
-      "aliases": [
-        [
-          "arxiv",
-          "2512.02556"
-        ],
-        [
-          "doi",
-          "10.48550/arxiv.2512.02556"
-        ]
-      ],
-      "is_focus": false
     },
     {
       "id": "openalex:W4417447635",
@@ -1109,7 +1075,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-metadata",
-          "sha256": "9dead3e98425cd0f79820b1b408746ec97a9d65eefde2d4f61fb95fa11ed27bb"
+          "sha256": "4d80724e464691207df8a31c292e6b687b91518631518267bf07d802fe3a9f37"
         },
         "classification": {
           "method": "title_version",
@@ -1661,33 +1627,6 @@
       }
     },
     {
-      "src": "openalex:W4417006854",
-      "dst": "openalex:W7154502343",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「VFA」(2026) は 「DeepSeek-V3.2」(2025) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Similarly, DeepSeek Sparse Attention (DSA) introduces a “lightning indexer” that computes query-to-token index scores and retrieves top-k entries for each query token, followed by attention over the selected key-value set [14].\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "59446d4c9c34291ed347feb32fe6047c977bac6000154a57c557ce445a67b237"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
       "src": "openalex:W4417447635",
       "dst": "openalex:W7154502343",
       "rel": "baseline_only",
@@ -1761,9 +1700,9 @@
     ],
     "depth": 1,
     "since_year": 2018,
-    "generated_at": "2026-10-11T08:11:23.564000Z",
+    "generated_at": "2026-10-11T10:25:19.004000Z",
     "provenance_breakdown": {
-      "s2_context_rule": 39,
+      "s2_context_rule": 38,
       "api_citation": 5,
       "title_version": 3
     },
