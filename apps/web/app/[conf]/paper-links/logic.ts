@@ -17,11 +17,20 @@ const PAPER_ID_RE = /^[0-9a-f]{40}$/;
  * Safety contract CAT-18 (docs/migration/safety-contracts.md): the no-JS
  * fallback must reject an unbounded row count or rendered byte size
  * instead of silently publishing (or building) something pathological.
- * Same numbers as `build_pages.py`'s `NOJS_MAX_PAPERS` /
- * `NOJS_MAX_RENDERED_BYTES` -- the budget is a property of the *data*,
- * not of this renderer, so it must not drift between the two.
+ *
+ * R3-2 (design doc 52 §8): the fallback is split into pages of at most
+ * `NOJS_ROWS_PER_PAGE` rows -- page 1 stays at `/<conf>/paper-links/`,
+ * page n >= 2 is `/<conf>/paper-links/<n>/` -- so a conference above the
+ * old single-page ceiling of 6,000 rows (ICML 2026: 6,552; NeurIPS 2026:
+ * ~9,200) can still be published. `NOJS_MAX_RENDERED_BYTES` is now a
+ * PER-PAGE budget, and `NOJS_MAX_PAPERS` (= pages x rows) is the total
+ * ceiling that still refuses a run-away conference. The pipeline gate
+ * (`apps/pipeline/src/catalog/paperLinksGate.ts`) mirrors these numbers --
+ * the budget is a property of the *data*, so the two must not drift.
  */
-export const NOJS_MAX_PAPERS = 6_000;
+export const NOJS_ROWS_PER_PAGE = 3_000;
+export const NOJS_MAX_PAGES = 20;
+export const NOJS_MAX_PAPERS = NOJS_ROWS_PER_PAGE * NOJS_MAX_PAGES;
 export const NOJS_MAX_RENDERED_BYTES = 3 * 1024 * 1024;
 
 /** Fixed per-row markup this page emits around a row's title/href (the
@@ -121,12 +130,13 @@ function compareSortKeys(a: [string, string], b: [string, string]): number {
 }
 
 /**
- * Validates + sorts `papers` into the rows the no-JS fallback renders.
- * Throws on a malformed/duplicate `paper_id`, an unbounded row count, or
- * an unbounded estimated byte size (safety contract CAT-18), matching
+ * Validates + sorts `papers` into the rows the no-JS fallback renders
+ * (all pages, in order). Throws on a malformed/duplicate `paper_id` or an
+ * unbounded total row count (safety contract CAT-18), matching
  * `build_pages.py`'s fail-closed `IdentityError`/`ValueError` -- a build
  * must never silently publish (or produce) a corrupt or run-away
- * projection.
+ * projection. The per-page byte budget is enforced by
+ * {@link paginatePaperLinkRows}.
  */
 export function buildPaperLinkRows(papers: readonly PaperLinksSourcePaper[]): PaperLinkRow[] {
   if (papers.length > NOJS_MAX_PAPERS) {
@@ -146,16 +156,62 @@ export function buildPaperLinkRows(papers: readonly PaperLinksSourcePaper[]): Pa
     keyed.push({ paper, paperId, key: titleSortKey(paper, paperId) });
   }
   keyed.sort((a, b) => compareSortKeys(a.key, b.key));
-  const rows = keyed.map(({ paper, paperId }) => ({
+  return keyed.map(({ paper, paperId }) => ({
     paperId,
     title: paperTitle(paper),
     href: safeHttpUrl(paper.arxiv_url) ?? safeHttpUrl(paper.pdf_url),
   }));
-  const estimatedBytes = estimateRenderedBytes(rows);
-  if (estimatedBytes > NOJS_MAX_RENDERED_BYTES) {
-    throw new Error(
-      `no-JS projection exceeds rendered byte estimate: ${estimatedBytes} > ${NOJS_MAX_RENDERED_BYTES}`,
-    );
+}
+
+/** One page of the split no-JS fallback. */
+export interface PaperLinksPage {
+  /** 1-based page number. */
+  readonly page: number;
+  /** 1-based index of this page's first row in the whole list (0 when empty). */
+  readonly firstRow: number;
+  /** 1-based index of this page's last row (0 when empty). */
+  readonly lastRow: number;
+  readonly rows: readonly PaperLinkRow[];
+}
+
+/**
+ * Splits the sorted rows into pages of at most `NOJS_ROWS_PER_PAGE` rows.
+ * Always returns at least one page (an empty conference renders page 1
+ * with the empty-state copy). Throws when any page's estimated rendered
+ * size exceeds `NOJS_MAX_RENDERED_BYTES` (CAT-18, now per page).
+ */
+export function paginatePaperLinkRows(rows: readonly PaperLinkRow[]): PaperLinksPage[] {
+  const pages: PaperLinksPage[] = [];
+  for (let start = 0; start === 0 || start < rows.length; start += NOJS_ROWS_PER_PAGE) {
+    const chunk = rows.slice(start, start + NOJS_ROWS_PER_PAGE);
+    const page = pages.length + 1;
+    const estimatedBytes = estimateRenderedBytes(chunk);
+    if (estimatedBytes > NOJS_MAX_RENDERED_BYTES) {
+      throw new Error(
+        `no-JS projection page ${page} exceeds rendered byte estimate: ${estimatedBytes} > ${NOJS_MAX_RENDERED_BYTES}`,
+      );
+    }
+    pages.push({
+      page,
+      firstRow: chunk.length === 0 ? 0 : start + 1,
+      lastRow: start + chunk.length,
+      rows: chunk,
+    });
   }
-  return rows;
+  return pages;
+}
+
+/** Validate + sort + split in one step (what the routes render). */
+export function buildPaperLinkPages(papers: readonly PaperLinksSourcePaper[]): PaperLinksPage[] {
+  return paginatePaperLinkRows(buildPaperLinkRows(papers));
+}
+
+/** Number of no-JS pages a conference with `paperCount` rows gets. */
+export function paperLinksPageCount(paperCount: number): number {
+  return Math.max(1, Math.ceil(paperCount / NOJS_ROWS_PER_PAGE));
+}
+
+/** URL path of page `page` (page 1 keeps the pre-split URL). */
+export function paperLinksPagePath(conf: string, page: number): string {
+  return page <= 1 ? `/${conf}/paper-links/` : `/${conf}/paper-links/${page}/`;
 }

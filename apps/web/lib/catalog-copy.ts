@@ -107,6 +107,14 @@ export const CATALOG_COPY: Record<string, CatalogCopy> = {
     lede: "OpenReview の採択論文を全件収録し、Oral / Spotlight / Poster の採択区分つきで掲載しています。キーワード検索・トピックタグ・並び替えで気になる論文をすぐに見つけられます。",
     source: "OpenReview · Auto-tagged · MIT License",
   },
+  "icml-2026": {
+    display: "ICML 2026",
+    description:
+      "ICML 2026 採択論文のフィルタブル一覧。タイトル・著者・要旨での検索、トピックタグ、並び替えで絞り込めます。",
+    tagline: "International Conference on Machine Learning。",
+    lede: "PMLR（Proceedings of Machine Learning Research）Volume 306 の採択論文を全件収録した一覧です。キーワード検索・トピックタグ・並び替えで気になる論文をすぐに見つけられます。",
+    source: "PMLR Volume 306 (CC BY 4.0) · Auto-tagged · MIT License",
+  },
   "neurips-2025": {
     display: "NeurIPS 2025",
     description:

@@ -28,7 +28,29 @@ const OUT_DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "out");
 
 /** Route directories (relative to out/) whose index.html must ship no JS. */
 export function isNoJsRoute(relativeDir: string): boolean {
-  return /^[a-z0-9-]+\/paper-links$/.test(relativeDir);
+  // R3-2: page 1 is `<conf>/paper-links`, pages 2..n `<conf>/paper-links/<n>`.
+  return /^[a-z0-9-]+\/paper-links(?:\/[1-9][0-9]*)?$/.test(relativeDir);
+}
+
+/** Every no-JS route directory under `outDir` (page 1 and its numbered pages). */
+export async function listNoJsRoutes(outDir: string): Promise<string[]> {
+  const routes: string[] = [];
+  for (const conf of await readdir(outDir)) {
+    const rel = `${conf}/paper-links`;
+    if (!isNoJsRoute(rel)) continue;
+    let entries: string[];
+    try {
+      entries = await readdir(join(outDir, rel));
+    } catch {
+      continue;
+    }
+    routes.push(rel);
+    for (const entry of entries) {
+      const sub = `${rel}/${entry}`;
+      if (isNoJsRoute(sub)) routes.push(sub);
+    }
+  }
+  return routes;
 }
 
 const SCRIPT_RE = /<script\b[^>]*>[\s\S]*?<\/script>/gi;
@@ -42,11 +64,8 @@ export function stripScripts(html: string): string {
 }
 
 async function main(): Promise<void> {
-  const top = await readdir(OUT_DIR);
   let stripped = 0;
-  for (const conf of top) {
-    const rel = `${conf}/paper-links`;
-    if (!isNoJsRoute(rel)) continue;
+  for (const rel of await listNoJsRoutes(OUT_DIR)) {
     const file = join(OUT_DIR, rel, "index.html");
     try {
       if (!(await stat(file)).isFile()) continue;

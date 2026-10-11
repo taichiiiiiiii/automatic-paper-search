@@ -119,7 +119,8 @@
 
 - 前提が変わった: OpenReview の `/notes` は機械からの取得に 403（`ChallengeRequiredError`）を返す（52 §0）。ユーザー決定 D5=A により、**一覧は公式の proceedings（PMLR・ACL Anthology・CVF Open Access・NeurIPS proceedings）から作り、新しい回は OpenReview の `/groups` で検知する**。詳細は 52 §8
 - 済み: OpenReview の 403 を `source_blocked`（明示のエラー、件数 0 や縮小と判定しない）にした／PMLR アダプタ（ICML）・CVF の一覧だけのモード（要旨なし）・NeurIPS proceedings の突き合わせ・ACL の 2026 年 XML 形式への対応／各一覧に `source_license.json`（出所・ライセンス・帰属）／`/groups` による新しい回の検知（pending-edition を `pending_approval`・`auto_publish: false` で記録。公開はしない。設定 `data/config/conference-editions-v1.json`、CLI `conference/watch/groupsCli.ts`）
-- 一覧: **ACL 2026（2,296 本）を生成**（リポジトリ内の生成器のみで作成、未公開・未 push）。**ICML 2026（PMLR v306、6,552 本）は取得できたが、JS なしの一覧ページの上限 6,000 本で `buildPages` が止まる**。上限を上げるかページを分けるかは ☐ ユーザーの判断（NeurIPS 2026 も同じ）
+- 一覧: **ACL 2026（2,296 本）を生成**（リポジトリ内の生成器のみで作成、未公開・未 push）。**ICML 2026（PMLR v306、6,552 本）は取得できたが、JS なしの一覧ページの上限 6,000 本で `buildPages` が止まる**。→ R3-2 で解消（下）
+- **R3-2（2026-10-11）**: ユーザー決定「JS なしのページを分ける」。`/<conf>/paper-links/` を 1 ページ目のまま残し、2 ページ目以降を `/<conf>/paper-links/<n>/`（1 ページ 3,000 行、3 MiB は 1 ページごと、全体の上限 60,000 本）にした。これで **ICML 2026（6,552 本、3 ページ）をリポジトリに追加**（未 push）。NeurIPS 2026（約 9,200 本）もそのまま載せられる。詳細は 52 §8.5
 - 残り: 検知の定期実行（☐ cron の再開はユーザー判断）、pending-edition から承認 1 回で公開する流れ、画面への帰属表示（51 A3・A6）、ICLR・COLM・NeurIPS の一覧の情報源（52 D1・D2）
 
 ### R4 検索と使い勝手（R1〜R3 と並行）
