@@ -26,15 +26,30 @@ export function escapeRegExp(value: string): string {
 }
 
 /**
+ * One case-insensitive regex matching ANY of the query's whitespace-
+ * separated terms (longest first, so "transformer" wins over "trans"),
+ * or null for an empty query. Mirrors lib/catalog-sort.ts `searchTerms`:
+ * a multi-word search matches rows containing every term, so every term
+ * is what gets highlighted.
+ */
+export function termsRegExp(query: string, flags: string): RegExp | null {
+  const terms = [...new Set(query.split(/[\s\u3000]+/).filter((t) => t.length > 0))].sort(
+    (a, b) => b.length - a.length,
+  );
+  if (terms.length === 0) return null;
+  return new RegExp(terms.map(escapeRegExp).join("|"), flags);
+}
+
+/**
  * Splits `text` into segments, marking every case-insensitive occurrence
- * of `query`. An empty/falsy query yields the whole text as one
+ * of any of `query`'s terms (see `termsRegExp`). An empty/falsy query yields the whole text as one
  * unmarked segment. Matching happens on the raw text (never on an
  * already-escaped string), so a match can never land inside an HTML
  * entity the way it could when the original built markup first.
  */
 export function highlightSegments(text: string, query: string): TextSegment[] {
-  if (!query) return [{ text, mark: false }];
-  const re = new RegExp(escapeRegExp(query), "gi");
+  const re = query ? termsRegExp(query, "gi") : null;
+  if (!re) return [{ text, mark: false }];
   const segments: TextSegment[] = [];
   let last = 0;
   let match = re.exec(text);
@@ -68,8 +83,9 @@ export interface AbstractView {
  * window one character late.
  */
 export function buildAbstractView(abstract: string, rawQuery: string): AbstractView {
-  if (rawQuery) {
-    const i = abstract.search(new RegExp(escapeRegExp(rawQuery), "i"));
+  const re = rawQuery ? termsRegExp(rawQuery, "i") : null;
+  if (re) {
+    const i = abstract.search(re);
     if (i > SNIPPET_LEAD) {
       let start = i - SNIPPET_LEAD;
       const sp = abstract.lastIndexOf(" ", start);

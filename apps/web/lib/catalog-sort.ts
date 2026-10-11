@@ -11,16 +11,53 @@ export interface CatalogFilterState {
   search: string;
   type: AcceptanceType;
   activeTags: ReadonlySet<string>;
+  /** UX audit (design doc 53): keep only rows whose papers.json row
+   * carries an abstract preview (`abs=1`). Optional so existing callers
+   * keep the unfiltered behaviour. */
+  hasAbstract?: boolean;
+}
+
+/**
+ * Splits a search query into lowercase terms (ASCII and full-width
+ * whitespace both separate terms). A row matches when EVERY term occurs
+ * somewhere in its title/authors/abstract -- "video diffusion" finds
+ * "diffusion models for video", which the old single-substring match
+ * missed. A one-word query behaves exactly as before.
+ */
+export function searchTerms(search: string): string[] {
+  return search
+    .toLowerCase()
+    .split(/[\s\u3000]+/)
+    .filter((t) => t.length > 0);
+}
+
+// The lowercased title/authors/abstract string per row, built once per
+// row object (not once per keystroke): with 6-9k rows the old per-filter
+// rebuild dominated the cost of every debounced search.
+const HAYSTACKS = new WeakMap<CatalogPaper, string>();
+
+function haystack(p: CatalogPaper): string {
+  let hay = HAYSTACKS.get(p);
+  if (hay === undefined) {
+    hay = `${p.title} ${p.authors.join(" ")} ${p.abstract}`.toLowerCase();
+    HAYSTACKS.set(p, hay);
+  }
+  return hay;
+}
+
+export function paperHasAbstract(p: CatalogPaper): boolean {
+  return typeof p.abstract === "string" && p.abstract.trim().length > 0;
 }
 
 export function getFiltered<T extends CatalogPaper>(papers: T[], filters: CatalogFilterState): T[] {
-  const q = filters.search.toLowerCase().trim();
+  const terms = searchTerms(filters.search);
   return papers.filter((p) => {
     if (filters.type !== "all" && p.type !== filters.type) return false;
     if (filters.activeTags.size > 0 && !p.tags.some((t) => filters.activeTags.has(t))) return false;
-    if (q) {
-      const hay = `${p.title} ${p.authors.join(" ")} ${p.abstract}`.toLowerCase();
-      if (!hay.includes(q)) return false;
+    if (filters.hasAbstract && !paperHasAbstract(p)) return false;
+    if (terms.length > 0) {
+      const hay = haystack(p);
+      for (const term of terms) if (!hay.includes(term)) return false;
     }
     return true;
   });
@@ -75,5 +112,17 @@ export function newestAvailability(papers: readonly CatalogPaper[]): NewestAvail
 }
 
 export function hasActiveFilters(filters: CatalogFilterState): boolean {
-  return filters.search.trim() !== "" || filters.type !== "all" || filters.activeTags.size > 0;
+  return (
+    filters.search.trim() !== "" ||
+    filters.type !== "all" ||
+    filters.activeTags.size > 0 ||
+    Boolean(filters.hasAbstract)
+  );
+}
+
+/** True when the query contains Japanese (kana/kanji) characters. Every
+ * catalog's titles and abstracts are English, so such a query can only
+ * match author names -- the empty state uses this to say so. */
+export function hasJapaneseText(search: string): boolean {
+  return /[\u3040-\u30ff\u3400-\u9fff\uff66-\uff9f]/.test(search);
 }

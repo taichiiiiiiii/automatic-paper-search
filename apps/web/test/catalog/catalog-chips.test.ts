@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildTagChipGroups, buildTypeChips } from "../../lib/catalog-chips";
+import { buildTagChipGroups, buildTypeChips, typeChipsAreUseful } from "../../lib/catalog-chips";
 import type { CatalogPaper } from "../../lib/catalog-core";
 
 function paper(tags: string[], type: "Oral" | "Poster" = "Poster"): CatalogPaper {
@@ -39,7 +39,7 @@ describe("buildTypeChips", () => {
   it("always includes All, plus any type present in the loaded rows", () => {
     const chips = buildTypeChips([paper([], "Oral"), paper([], "Poster"), paper([], "Poster")]);
     expect(chips).toEqual([
-      { value: "all", label: "all", count: 3 },
+      { value: "all", label: "すべて", count: 3 },
       { value: "Oral", label: "Oral", count: 1 },
       { value: "Poster", label: "Poster", count: 2 },
     ]);
@@ -48,5 +48,22 @@ describe("buildTypeChips", () => {
   it("omits Oral when no loaded row is Oral", () => {
     const chips = buildTypeChips([paper([], "Poster")]);
     expect(chips.map((c) => c.value)).toEqual(["all", "Poster"]);
+  });
+});
+
+describe("typeChipsAreUseful", () => {
+  it("hides the chips when every row has the same type (ICML 2026: all Poster)", () => {
+    const chips = buildTypeChips([paper([], "Poster"), paper([], "Poster")]);
+    expect(typeChipsAreUseful(chips, "all")).toBe(false);
+  });
+
+  it("shows them when at least two types can be told apart", () => {
+    const chips = buildTypeChips([paper([], "Oral"), paper([], "Poster")]);
+    expect(typeChipsAreUseful(chips, "all")).toBe(true);
+  });
+
+  it("keeps them visible while a non-default type is active, so it can be cleared", () => {
+    const chips = buildTypeChips([paper([], "Poster")]);
+    expect(typeChipsAreUseful(chips, "Oral")).toBe(true);
   });
 });

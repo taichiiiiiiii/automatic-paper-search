@@ -30,7 +30,10 @@ export const ACCEPTANCE_TYPES = ["all", "Oral", "Poster"] as const;
 export type AcceptanceType = (typeof ACCEPTANCE_TYPES)[number];
 
 export const NEWEST_LABEL = "新着順";
-export const NEWEST_UNAVAILABLE_LABEL = "新着順（arXiv ID がない学会では使えません）";
+// Kept short: a <select> is as wide as its longest option, and the old
+// "新着順（arXiv ID がない学会では使えません）" pushed the toolbar 37px past
+// a 375px screen (design doc 53). The reason is in the select's title.
+export const NEWEST_UNAVAILABLE_LABEL = "新着順（arXiv ID なし）";
 
 export const CATALOG_LOAD_ERROR = "論文一覧を読み込めませんでした。";
 

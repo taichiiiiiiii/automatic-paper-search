@@ -4,7 +4,8 @@
  * a filtered view is shareable, survives reload, and the back button
  * restores it. Params are omitted when they equal their default so the
  * common URL stays clean: `q=<search> type=Oral|Poster tags=a,b,c
- * sort=newest|oral|title`.
+ * sort=newest|oral|title abs=1` (`abs=1`: only rows with an abstract,
+ * design doc 53).
  */
 import {
   ACCEPTANCE_TYPES,
@@ -18,10 +19,11 @@ export interface CatalogUrlState {
   type: AcceptanceType;
   sort: SortValue;
   activeTags: Set<string>;
+  hasAbstract: boolean;
 }
 
 export function defaultCatalogUrlState(): CatalogUrlState {
-  return { search: "", type: "all", sort: "default", activeTags: new Set() };
+  return { search: "", type: "all", sort: "default", activeTags: new Set(), hasAbstract: false };
 }
 
 /** Reads the filter/search/sort state out of a `location.search`-style
@@ -48,6 +50,7 @@ export function readCatalogUrlState(search: string): CatalogUrlState {
         .filter(Boolean),
     );
   }
+  if (params.get("abs") === "1") state.hasAbstract = true;
   return state;
 }
 
@@ -57,7 +60,10 @@ export function readCatalogUrlState(search: string): CatalogUrlState {
  * lib/catalog-core.ts `setPaperParam`) is left untouched. Returns the
  * full URL string, ready for `history.replaceState`.
  */
-export function buildCatalogUrl(currentUrl: string, state: CatalogUrlState): string {
+export function buildCatalogUrl(
+  currentUrl: string,
+  state: Omit<CatalogUrlState, "hasAbstract"> & { hasAbstract?: boolean },
+): string {
   const url = new URL(currentUrl);
   const params = url.searchParams;
   const q = state.search.trim();
@@ -69,5 +75,7 @@ export function buildCatalogUrl(currentUrl: string, state: CatalogUrlState): str
   else params.delete("tags");
   if (state.sort !== "default") params.set("sort", state.sort);
   else params.delete("sort");
+  if (state.hasAbstract) params.set("abs", "1");
+  else params.delete("abs");
   return url.toString();
 }

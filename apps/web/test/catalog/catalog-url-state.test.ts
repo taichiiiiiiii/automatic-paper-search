@@ -14,7 +14,14 @@ describe("readCatalogUrlState", () => {
       type: "Oral",
       sort: "title",
       activeTags: new Set(["3D", "LLM"]),
+      hasAbstract: false,
     });
+  });
+
+  it("reads abs=1 as the has-abstract filter and ignores any other value", () => {
+    expect(readCatalogUrlState("?abs=1").hasAbstract).toBe(true);
+    expect(readCatalogUrlState("?abs=0").hasAbstract).toBe(false);
+    expect(readCatalogUrlState("?abs=yes").hasAbstract).toBe(false);
   });
 
   it("falls back to defaults for an absent query string", () => {
@@ -23,6 +30,7 @@ describe("readCatalogUrlState", () => {
       type: "all",
       sort: "default",
       activeTags: new Set(),
+      hasAbstract: false,
     });
   });
 
@@ -32,6 +40,7 @@ describe("readCatalogUrlState", () => {
       type: "all",
       sort: "default",
       activeTags: new Set(),
+      hasAbstract: false,
     });
   });
 
@@ -68,5 +77,20 @@ describe("buildCatalogUrl", () => {
     expect(parsed.searchParams.has("type")).toBe(false);
     expect(parsed.searchParams.has("tags")).toBe(false);
     expect(parsed.searchParams.has("sort")).toBe(false);
+  });
+
+  it("writes abs=1 only while the has-abstract filter is on", () => {
+    const base = {
+      search: "",
+      type: "all" as const,
+      sort: "default" as const,
+      activeTags: new Set<string>(),
+    };
+    const on = new URL(
+      buildCatalogUrl("https://example.test/iclr-2025/", { ...base, hasAbstract: true }),
+    );
+    expect(on.searchParams.get("abs")).toBe("1");
+    const off = new URL(buildCatalogUrl(on.toString(), { ...base, hasAbstract: false }));
+    expect(off.searchParams.has("abs")).toBe(false);
   });
 });
