@@ -175,7 +175,7 @@ export function ThemeCodeLinksSection({
                     href={link.code.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-accent-strong underline"
+                    className="inline-flex min-h-6 items-center text-accent-strong underline"
                   >
                     コード（GitHub{link.code.stars ? ` ★${compactCount(link.code.stars)}` : ""}）
                   </a>
@@ -185,7 +185,7 @@ export function ThemeCodeLinksSection({
                     href={link.hf.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-accent-strong underline"
+                    className="inline-flex min-h-6 items-center text-accent-strong underline"
                   >
                     HF（モデル {compactCount(link.hf.models)}・データセット{" "}
                     {compactCount(link.hf.datasets)}・Space {compactCount(link.hf.spaces)}）

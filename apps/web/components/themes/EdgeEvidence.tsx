@@ -92,12 +92,14 @@ function PaperLinks({ node, id }: { node: LineageNode | undefined; id: string })
   const primary = paperLink(ref);
   const s2 = semanticScholarUrl(ref);
   return (
+    // min-h-6: 24px tap targets (WCAG 2.5.8 target-size; the two links
+    // sit 8px apart on one 16px text line otherwise).
     <span className="ml-1 inline-flex flex-wrap gap-2 text-xs">
       <a
         href={primary.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-accent-strong underline"
+        className="inline-flex min-h-6 items-center text-accent-strong underline"
       >
         {primary.label}
       </a>
@@ -106,7 +108,7 @@ function PaperLinks({ node, id }: { node: LineageNode | undefined; id: string })
           href={s2}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-accent-strong underline"
+          className="inline-flex min-h-6 items-center text-accent-strong underline"
         >
           Semantic Scholar
         </a>
