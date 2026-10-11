@@ -80,7 +80,7 @@ function parts(path: string): string[] {
 // docs/
 // ---------------------------------------------------------------------------
 
-const DOCS_STAY_DIRS = new Set(["design", "research", "migration", "policy"]);
+const DOCS_STAY_DIRS = new Set(["design", "research", "migration", "policy", "audit"]);
 const DOCS_EXCLUDED_CONF_DIRS = new Set([
   "assets",
   "how-it-works",
@@ -90,6 +90,7 @@ const DOCS_EXCLUDED_CONF_DIRS = new Set([
   "research",
   "migration",
   "policy",
+  "audit",
   "daily",
 ]);
 const HEAD_ASSETS = new Set(["favicon.svg", "favicon-32.png", "og-image.png"]);
