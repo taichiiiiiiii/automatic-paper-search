@@ -40,6 +40,8 @@ const VENUE_TIER_MAP: readonly [string, string][] = [
   ["iccv", "A+"],
   ["acl", "A+"],
   ["emnlp", "A+"],
+  // R2-28: DBLP's short venue names (`dblpVenues.ts`).
+  ["nips", "A+"],
   // Tier A
   ["north american chapter of the association for computational linguistics", "A"],
   ["aaai conference on artificial intelligence", "A"],
@@ -48,6 +50,7 @@ const VENUE_TIER_MAP: readonly [string, string][] = [
   ["knowledge discovery and data mining", "A"],
   ["trans. mach. learn. res.", "A"],
   ["journal of machine learning research", "A"],
+  ["j. mach. learn. res.", "A"],
   ["naacl", "A"],
   ["aaai", "A"],
   ["kdd", "A"],

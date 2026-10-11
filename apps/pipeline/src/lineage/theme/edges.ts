@@ -210,7 +210,7 @@ export const API_CITATION_CONFIDENCE = 0.5;
 /** Which reference list holds the citation: Semantic Scholar's
  * `/references` of the citing paper, or OpenAlex `referenced_works` /
  * `cites:` (the BFS/cross-node lists). */
-export type CitationListSource = "semantic_scholar" | "openalex";
+export type CitationListSource = "semantic_scholar" | "openalex" | "crossref";
 
 function idOf(paper: PaperLike): string | null {
   const id = paper.paperId ?? paper.id;
@@ -220,6 +220,8 @@ function idOf(paper: PaperLike): string | null {
 const CITATION_LIST_LABEL: Record<CitationListSource, string> = {
   semantic_scholar: "Semantic Scholar",
   openalex: "OpenAlex",
+  // R2-28: publisher-withheld lists restored from Crossref `reference[]`.
+  crossref: "Crossref",
 };
 
 /**

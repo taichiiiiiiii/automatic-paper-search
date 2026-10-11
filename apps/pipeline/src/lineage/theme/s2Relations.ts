@@ -83,7 +83,8 @@ import {
 } from "../llm/contextPrompt.js";
 import { completeJsonAttributed } from "../llm/fallback.js";
 import { isSurveyLike } from "../shared/surveyLike.js";
-import type { S2CitationSource } from "./s2Citations.js";
+import type { ArxivHtmlContextSource } from "./arxivHtmlSource.js";
+import { identifiersOf, type S2CitationSource } from "./s2Citations.js";
 
 type PaperLike = Record<string, unknown>;
 
@@ -181,6 +182,9 @@ export interface S2RelationContext {
   batchSize?: number;
   /** R2-20: deferred pairs (filled by `deriveS2Relation`). */
   pending?: PendingContextPair[];
+  /** R2-28: arXiv HTML citation contexts for pairs whose S2 contexts are
+   * empty or missing (`null`/omitted = off, the default). */
+  arxivHtml?: ArxivHtmlContextSource | null;
 }
 
 function yearOf(paper: PaperLike): string {
@@ -509,15 +513,116 @@ export async function deriveS2Relation(
   onLlm?: (usable: boolean) => void,
   outcome?: { lookup?: S2LookupOutcome },
 ): Promise<DerivedEdge | null> {
+  const seen: S2Seen = {};
+  const edge = await deriveFromS2(parent, child, ctx, onLlm, seen);
+  if (outcome && seen.lookup !== undefined) outcome.lookup = seen.lookup;
+  if (!ctx.arxivHtml) return edge;
+  // R2-28: arXiv HTML contexts only add a strong, cue-backed claim to a
+  // pair S2 had no usable sentence for; every other result stands.
+  if (edge !== null && STRONG_V1.has(edge.relation)) return edge;
+  if (seen.lookup === undefined || seen.lookup === "fetch-failed" || seen.lookup === "no-id") {
+    return edge;
+  }
+  const s2 = seen.signals ?? null;
+  if (s2 !== null && s2.found && s2.contexts.some(isUsableContext)) return edge;
+  return (await arxivHtmlStrongEdge(parent, child, ctx, s2)) ?? edge;
+}
+
+/** What the S2 lookup of a pair returned (for the R2-28 supplement). */
+interface S2Seen {
+  lookup?: S2LookupOutcome;
+  signals?: PairSignals;
+}
+
+/** Rationale source note of an arXiv HTML rule edge (R2-28). */
+export function arxivHtmlSourceNote(arxiv: string, version: string | null): string {
+  return `（arXiv HTML（arXiv:${arxiv}${version ?? ""}）の本文の引用文から規則で判定）。`;
+}
+
+/**
+ * R2-28: the rule edge from the citing paper's arXiv HTML contexts when
+ * they back a STRONG claim (cue rule on a quotable sentence that names
+ * the cited paper — the same D5 test as S2 contexts), else `null`.
+ */
+async function arxivHtmlStrongEdge(
+  parent: PaperLike,
+  child: PaperLike,
+  ctx: S2RelationContext,
+  s2: PairSignals | null,
+): Promise<DerivedEdge | null> {
+  const html = ctx.arxivHtml;
+  if (!html) return null;
+  const source = ctx.source as Partial<Pick<S2CitationSource, "arxivIdOf">>;
+  const arxiv =
+    typeof source.arxivIdOf === "function"
+      ? await source.arxivIdOf(child)
+      : identifiersOf(child).arxiv;
+  if (!arxiv) return null;
+  const res = await html.contexts(arxiv, parent);
+  if (res.kind !== "contexts") return null;
+  const citingTitle = typeof child.title === "string" ? child.title : undefined;
+  const signals: PairSignals = {
+    found: true,
+    intents: s2?.intents ?? [],
+    contexts: res.contexts,
+    isInfluential: s2?.isInfluential ?? null,
+    citingTitle,
+    citingSurvey: isSurveyLike(child),
+    cited: parent,
+    citingAbstract: null,
+  };
+  const r = classifyS2Pair(signals);
+  const mapped = v1RelationFor(r.relation, { contrast: r.contrast, targetsCited: r.singleTarget });
+  if (mapped === null || !STRONG_V1.has(mapped)) return null;
+  if (!r.cue || r.fromAbstract || !r.quotable || !r.evidence) return null;
+  html.stats.strongEdges += 1;
+  const srcId = typeof parent.paperId === "string" ? parent.paperId : String(parent.id ?? "");
+  const dstId = typeof child.paperId === "string" ? child.paperId : String(child.id ?? "");
+  return {
+    relation: mapped,
+    confidence: r.confidence,
+    rationale:
+      `${ruleSentence(r.relation, mapped, parent, child)}` +
+      `${arxivHtmlSourceNote(res.arxiv, res.version)}${quote(r.evidence).trimStart()}`,
+    provenance: "s2_context_rule",
+    evidence: {
+      source: "arxiv_html",
+      kind: "citation-context",
+      sha256: canonicalJsonSha256({
+        src: srcId,
+        dst: dstId,
+        arxiv_html: {
+          id: res.arxiv,
+          version: res.version,
+          bib: res.bib,
+          contexts: res.contexts,
+          intents: [...signals.intents],
+          is_influential: signals.isInfluential,
+        },
+        citing_title: citingTitle ?? null,
+      }),
+    },
+  };
+}
+
+/** The S2-only classification (R2-10 .. R2-24). */
+async function deriveFromS2(
+  parent: PaperLike,
+  child: PaperLike,
+  ctx: S2RelationContext,
+  onLlm: ((usable: boolean) => void) | undefined,
+  outcome: S2Seen,
+): Promise<DerivedEdge | null> {
   const srcId = typeof parent.paperId === "string" ? parent.paperId : String(parent.id ?? "");
   const dstId = typeof child.paperId === "string" ? child.paperId : String(child.id ?? "");
   const lookup = await ctx.source.lookup(child, parent);
   if (lookup.kind === "no_s2_data") {
     ctx.stats.noS2Data += 1;
-    if (outcome) outcome.lookup = lookup.reason;
+    outcome.lookup = lookup.reason;
     return null;
   }
-  if (outcome) outcome.lookup = lookup.signals.found ? "listed" : "not_listed";
+  outcome.lookup = lookup.signals.found ? "listed" : "not_listed";
+  outcome.signals = lookup.signals;
   const citingTitle = typeof child.title === "string" ? child.title : undefined;
   // R2-15: the full survey test (publication type, title, abstract) — a
   // review whose title has no survey word still gives only background.

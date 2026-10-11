@@ -22,8 +22,15 @@ import {
 import type { BuildCompletenessForExpansion } from "../shared/fetchRelated.js";
 import { type FetchRelatedDeps, fetchRelated } from "../shared/fetchRelated.js";
 import type { ThemeGraphNode } from "../shared/node.js";
+import { type CrossrefReferenceSource, listsPaper } from "./crossrefReferences.js";
 import { TitleIdentity } from "./dedup.js";
-import { demoteLowInformationEdge, isTrending, makeEdge, type ThemeEdge } from "./edges.js";
+import {
+  type CitationListSource,
+  demoteLowInformationEdge,
+  isTrending,
+  makeEdge,
+  type ThemeEdge,
+} from "./edges.js";
 import { toThemeNode } from "./node.js";
 import { classifyWithoutLlm } from "./noLlmRelation.js";
 import type { ThemePaper } from "./openalexWork.js";
@@ -183,6 +190,7 @@ async function classifyPair(
   counter: LlmCounter,
   llmStrict: string,
   s2: S2RelationContext | null = null,
+  listSource?: CitationListSource,
 ): Promise<DerivedEdge | null> {
   if (isVersionIncrement(parent as ClassifyPaperLike, child as ClassifyPaperLike)) {
     return guardRelation(
@@ -206,7 +214,14 @@ async function classifyPair(
     if (fromS2 !== null) return guardRelation(fromS2, parent, child);
   }
   if (counter.apiCitations) {
-    return classifyWithoutLlm(intentRecord, parent, child, counter, s2 === null ? null : outcome);
+    return classifyWithoutLlm(
+      intentRecord,
+      parent,
+      child,
+      counter,
+      s2 === null ? null : outcome,
+      listSource,
+    );
   }
   const cls = await deriveRelation(intentRecord as ClassifyPaperLike, {
     parent: parent as ClassifyPaperLike,
@@ -690,6 +705,9 @@ export interface AddCrossNodeEdgesOptions {
   /** R2-24: incremented with this pass's `api_citation` edges and pairs
    * whose S2 lookup failed (no-LLM mode only). */
   apiStats?: { apiCitations: number; s2Unreachable: number };
+  /** R2-28: Crossref reference lists for citing nodes that neither
+   * OpenAlex nor S2 has a list for (`null`/omitted = off). */
+  crossref?: CrossrefReferenceSource | null;
 }
 
 /** A graph node as the paper dict the classifiers take (`paperId` = id). */
@@ -758,7 +776,7 @@ async function crossNodePass(
     // checked against its S2 reference list, like an OpenAlex node with
     // no references — never through `fetchRelated`'s slow S2 path.
     if (options.s2Relations && !citingId.startsWith("openalex:")) {
-      added += await addS2ReferenceEdges(citingId, {
+      added += await addS2AndCrossrefEdges(citingId, {
         nodes,
         edges,
         existing,
@@ -767,6 +785,7 @@ async function crossNodePass(
         strictMode,
         provider,
         s2: options.s2Relations,
+        crossref: options.crossref ?? null,
       });
       continue;
     }
@@ -778,7 +797,7 @@ async function crossNodePass(
       continue;
     }
     if (refs.length === 0 && options.s2Relations) {
-      added += await addS2ReferenceEdges(citingId, {
+      added += await addS2AndCrossrefEdges(citingId, {
         nodes,
         edges,
         existing,
@@ -787,6 +806,7 @@ async function crossNodePass(
         strictMode,
         provider,
         s2: options.s2Relations,
+        crossref: options.crossref ?? null,
       });
       continue;
     }
@@ -872,6 +892,83 @@ async function addS2ReferenceEdges(
       }),
     );
     ctx.existing.add(edgeKey);
+    added += 1;
+  }
+  return added;
+}
+
+/** R2-13 S2 reference edges, then (R2-28) Crossref's list when neither
+ * OpenAlex nor S2 has one (publisher-withheld): it restores the citations
+ * (not their kind). */
+async function addS2AndCrossrefEdges(
+  citingId: string,
+  ctx: Parameters<typeof addS2ReferenceEdges>[1] & { crossref: CrossrefReferenceSource | null },
+): Promise<number> {
+  let added = await addS2ReferenceEdges(citingId, ctx);
+  const missing = ctx.s2.source.referenceListMissing?.(
+    nodeAsPaper(citingId, ctx.nodes.get(citingId)) as unknown as Record<string, unknown>,
+  );
+  if (ctx.crossref && missing) {
+    added += await addCrossrefReferenceEdges(citingId, { ...ctx, crossref: ctx.crossref });
+  }
+  return added;
+}
+
+/** R2-28: in-graph references of `citingId` from its Crossref reference
+ * list (OpenAlex and S2 have none). Returns edges added. */
+async function addCrossrefReferenceEdges(
+  citingId: string,
+  ctx: {
+    nodes: ReadonlyMap<string, ThemeGraphNode>;
+    edges: ThemeEdge[];
+    existing: Set<string>;
+    isAnchor: (id: string) => boolean;
+    counter: LlmCounter;
+    strictMode: string;
+    provider: LLMProvider | null;
+    s2: S2RelationContext;
+    crossref: CrossrefReferenceSource;
+  },
+): Promise<number> {
+  const citingNode = ctx.nodes.get(citingId);
+  const citing = nodeAsPaper(citingId, citingNode);
+  const doi = typeof citingNode?.doi === "string" ? citingNode.doi : null;
+  if (!doi) return 0;
+  const refs = await ctx.crossref.references(doi);
+  if (refs === null) return 0;
+  const citingYear = yearOf(citingNode);
+  let added = 0;
+  for (const [refId, refNode] of ctx.nodes) {
+    if (refId === citingId) continue;
+    const refYear = yearOf(refNode);
+    if (citingYear !== null && refYear !== null && refYear > citingYear) continue;
+    if (!(ctx.isAnchor(citingId) || ctx.isAnchor(refId))) continue;
+    const edgeKey = `${refId}\u0000${citingId}`;
+    if (ctx.existing.has(edgeKey) || ctx.existing.has(`${citingId}\u0000${refId}`)) continue;
+    const ref = nodeAsPaper(refId, refNode);
+    if (!listsPaper(refs, ref as unknown as Record<string, unknown>)) continue;
+    const cls = await classifyPair(
+      ref,
+      ref,
+      citing,
+      ctx.counter,
+      ctx.strictMode,
+      ctx.s2,
+      "crossref",
+    );
+    if (cls === null) continue;
+    ctx.edges.push(
+      makeEdge(cls, {
+        srcId: refId,
+        dstId: citingId,
+        parent: ref,
+        child: citing,
+        intentRecord: ref,
+        provider: ctx.provider,
+      }),
+    );
+    ctx.existing.add(edgeKey);
+    ctx.crossref.stats.pairsAdded += 1;
     added += 1;
   }
   return added;

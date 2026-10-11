@@ -89,6 +89,12 @@ export interface CitingEntry {
   s2: string | null;
   fetched_at: string;
   pairs: Record<string, StoredPair | null>;
+  /** R2-28: the citing paper's arXiv id per S2 `externalIds` (null = S2
+   * lists none); absent = not looked up yet. */
+  ax?: string | null;
+  /** R2-28: how many references S2 returned when the list was fetched
+   * (0 = the publisher withholds the list); absent in older entries. */
+  n?: number;
 }
 
 export interface S2ReferencesCacheFile {
@@ -307,7 +313,13 @@ export function serializeS2ReferencesCache(entries: Record<string, CitingEntry>)
         .sort()
         .map((p) => [p, e.pairs[p]]),
     );
-    const body = JSON.stringify({ s2: e.s2, fetched_at: e.fetched_at, pairs });
+    const body = JSON.stringify({
+      s2: e.s2,
+      fetched_at: e.fetched_at,
+      pairs,
+      ...(e.ax !== undefined ? { ax: e.ax } : {}),
+      ...(e.n !== undefined ? { n: e.n } : {}),
+    });
     return `    ${JSON.stringify(k)}: ${body}${idx < keys.length - 1 ? "," : ""}`;
   });
   return (
@@ -410,6 +422,55 @@ export class S2CitationSource {
     return { kind: "pair", signals: signalsOf(pair) };
   }
 
+  /**
+   * R2-28: the citing paper's arXiv id, for the arXiv HTML context source:
+   * its own identifiers, else the S2 lookup id (`ARXIV:…`), else S2
+   * `externalIds` of the looked-up record (one request per paper, stored
+   * as `ax` in the cache entry). `null` = none known / S2 unreachable.
+   * Only asks S2 for a paper whose references were already looked up.
+   */
+  async arxivIdOf(citing: PaperLike): Promise<string | null> {
+    const own = identifiersOf(citing).arxiv;
+    if (own) return own;
+    const ck = graphIdOf(citing);
+    if (ck === null) return null;
+    const entry = this.entries[ck];
+    if (!entry || entry.s2 === null) return null;
+    if (entry.s2.startsWith("ARXIV:")) return entry.s2.slice(6).replace(/v\d+$/, "");
+    if (entry.ax !== undefined) return entry.ax;
+    try {
+      const body = await this.getJson(
+        `${S2_GRAPH}/paper/${encodeURI(entry.s2)}?fields=externalIds`,
+      );
+      const ext = body?.externalIds as Record<string, unknown> | undefined;
+      const ax = typeof ext?.ArXiv === "string" ? ext.ArXiv.replace(/v\d+$/, "") : null;
+      entry.ax = ax;
+      this.dirty.add(ck);
+      return ax;
+    } catch (exc) {
+      if (!(exc instanceof TransientS2Error)) throw exc;
+      this.deps.logger?.warn(`s2 citations: arXiv id of ${ck}: ${exc.message}`);
+      return null;
+    }
+  }
+
+  /**
+   * R2-28: S2 has no usable reference list for `citing` — it does not know
+   * the paper, or the publisher withholds the list (S2 returned 0
+   * references; for entries cached before the count was stored: >= 3
+   * looked-up pairs, none listed). Cache only, no request.
+   */
+  referenceListMissing(citing: PaperLike): boolean {
+    const ck = graphIdOf(citing);
+    if (ck === null) return false;
+    const entry = this.entries[ck];
+    if (!entry || !this.fresh(entry)) return false;
+    if (entry.s2 === null) return true;
+    if (entry.n !== undefined) return entry.n === 0;
+    const pairs = Object.values(entry.pairs);
+    return pairs.length >= 3 && pairs.every((p) => p === null);
+  }
+
   /** The full S2 reference list of `citing` (fetched once per run and
    * shared with {@link lookup}). `null` = S2 has no such paper or could
    * not be reached this run. R2-14: BFS expansion fallback. */
@@ -487,6 +548,8 @@ export class S2CitationSource {
         entry = { s2: got.s2, fetched_at: isoZ(this.now()), pairs: {} };
         this.entries[ck] = entry;
       }
+      entry.n = refs.length;
+      this.dirty.add(ck);
     }
     const current = entry ?? this.entries[ck];
     if (refs === null || !current) {
@@ -632,10 +695,14 @@ export class S2CitationSource {
       const mine = this.entries[k] as CitingEntry;
       const theirs = onDisk[k];
       if (theirs && theirs.s2 === mine.s2 && this.fresh(theirs)) {
+        const ax = mine.ax !== undefined ? mine.ax : theirs.ax;
+        const n = mine.n !== undefined ? mine.n : theirs.n;
         onDisk[k] = {
           s2: mine.s2,
           fetched_at: theirs.fetched_at < mine.fetched_at ? theirs.fetched_at : mine.fetched_at,
           pairs: { ...theirs.pairs, ...mine.pairs },
+          ...(ax !== undefined ? { ax } : {}),
+          ...(n !== undefined ? { n } : {}),
         };
       } else {
         onDisk[k] = mine;
