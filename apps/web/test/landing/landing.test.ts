@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   conferenceHref,
   deriveLandingConferenceState,
+  landingMetaCopy,
   PLACEHOLDER_COUNTS,
   sortConferenceRows,
   UNKNOWN_COUNTS,
@@ -42,7 +43,7 @@ describe("deriveLandingConferenceState", () => {
         { name: "cvpr-2026", papers: 20 },
         { name: "iclr-2026", papers: 5 },
       ],
-      label: "学会から探す (3)",
+      label: "学会カタログ (3)",
     });
   });
 
@@ -59,7 +60,7 @@ describe("deriveLandingConferenceState", () => {
       n: "1",
       m: "20",
       list: [{ name: "cvpr-2026", papers: 20 }],
-      label: "学会から探す (1)",
+      label: "学会カタログ (1)",
     });
   });
 
@@ -68,7 +69,27 @@ describe("deriveLandingConferenceState", () => {
     // triggers on a non-array / zero-length response, never on a
     // non-empty array whose rows all fail the per-row filter.
     const state = deriveLandingConferenceState([{ name: "../bad", papers: -1 }]);
-    expect(state).toEqual({ kind: "loaded", n: "0", m: "0", list: [], label: "学会から探す (0)" });
+    expect(state).toEqual({ kind: "loaded", n: "0", m: "0", list: [], label: "学会カタログ (0)" });
+  });
+});
+
+describe("landingMetaCopy (UX audit, design 53: no hard-coded counts)", () => {
+  it("puts the build-time counts into the title and description", () => {
+    const state = deriveLandingConferenceState([
+      { name: "cvpr-2026", papers: 30000 },
+      { name: "iclr-2026", papers: 10851 },
+    ]);
+    const copy = landingMetaCopy(state);
+    expect(copy.title).toContain("2 学会・40,851 本");
+    expect(copy.description).toContain("2 学会・40,851 本");
+    expect(copy.title).not.toContain("28,000");
+  });
+
+  it("falls back to count-free copy when conferences.json was unreadable", () => {
+    const copy = landingMetaCopy({ kind: "unknown" });
+    expect(copy.title).not.toMatch(/\d/);
+    expect(copy.description).not.toMatch(/\d/);
+    expect(copy.title).toContain("PaperPilot");
   });
 });
 

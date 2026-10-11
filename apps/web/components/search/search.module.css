@@ -19,11 +19,12 @@
 
 .label {
   display: block;
-  font-family: var(--font-mono);
-  font-size: var(--text-tag);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--color-ink-subtle);
+  /* Was a 0.72rem uppercase mono label: too small for Japanese text
+     (UX audit, design 53). */
+  font-family: var(--font-ja);
+  font-size: var(--text-meta);
+  font-weight: 600;
+  color: var(--color-ink-muted);
   margin-bottom: 0.5rem;
 }
 
