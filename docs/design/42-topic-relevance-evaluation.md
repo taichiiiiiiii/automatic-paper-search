@@ -191,6 +191,67 @@ LLM の見積もり（題名 + 要旨の先頭 1000 字 ≈ 1 件 250 トーク�
 - optionalDependency なので、`pnpm install` をするすべての CI ジョブにも入る（取得するのは約 128 MB、展開後は約 380 MB）。重さが問題になったら、別パッケージに分けて生成ジョブだけで入れる。
 - 41 D7 の「方針の `theme_min_generated_at` を進める」は、マージして作り直すときに行う。進めると、今の未監査公開（GNN・MoE）は作り直すまで非公開になる。
 
+## R2-30: 弱い入り口の裏付け（weak-entry check）
+
+2026-10-11 の公開 4 テーマに、テーマ外のノードが残っていた（FA の DeepSeek-V3.2 など）。各ノードがどの経路で入ったかを調べ、規則を 1 つ足した。
+
+### 診断
+
+CI と同じ条件（depth 1・seeds 5・width 8・2018 年以降・OpenAlex 優先・LLM なし）で、`data/state/lineage-cache` の写しから 4 テーマを手元で作り直した。ノードと辺の数は公開版と一致した（FA 15/47、GNN 35/131、MoE 22/67、ViT 21/49）。BFS が記録する入り口（新設の `BFSResult.admissions`）で見ると、次のとおり。
+
+| テーマ | ノード | 入り口 | z | 理由 | 残った理由 |
+|---|---|---|---|---|---|
+| FA | DeepSeek-V3.2 (2025) | seed の参照 | 0.64 | 要旨の 1 か所「an efficient attention mechanism」が `_topic_terms` の「efficient attention」に一致 | seed (VFA) からの引用 1 本（DSA への言及）だけ |
+| ViT | radar 行動認識の軽量 hybrid ViT (Sci Rep 2023) | seed を引用 | 0.22 | 題名に「vision transformer」（subject 扱い） | ViT への `api_citation` 1 本だけ |
+| GNN | Deep hybrid: Multi-graph neural network …（高スペクトル画像） | seed を引用 | 0.41 | 題名に「graph neural network」 | `api_citation` 1 本だけ |
+| GNN | Identifying Resilient Communities in Road Networks (2025) | seed の参照 | 0.15 | 要旨の語一致 | `api_citation` 1 本だけ |
+| MoE | Conditional Channel Gated Networks (継続学習) | seed の参照 | 0.72 | 要旨の 1 か所「conditional computation」 | 2 本とも seed（Bengio 2013 を引用、Expert Choice から引用） |
+| MoE | Estimating or Propagating Gradients … (Bengio 2013) | canonical seed（サーベイの参考文献） | - | 題名に「Conditional Computation」 | seed は判定しない。条件付き計算の起点で MoE のゲートの源流なので残す（境界） |
+| MoE | Expert Gate | seed の参照 | 1.27 | 埋め込みだけで採用（z ≥ 1.0） | R2-4 の正解付けで on-topic。残す |
+
+共通点は 3 つある。z が 1.0 未満で、語一致だけで入ったこと（段階 2 の「語一致 AND z ≥ 0」の帯）。グラフとのつながりが、入ってきた seed との 1 本（または seed との数本）しかないこと。その辺に系譜の主張がないこと（`baseline_only`、多くは `api_citation`）。正解付きの集合で FP として残っている 6 件（GCN を使う NMT・文の符号化など）は、どれも多くの論文とつながっている。それとは別の型の誤りである。
+
+### 規則（`bfs.ts::confirmWeakAdmissions`、交差辺のあとに実行）
+
+- 対象（弱い入り口）は、seed でも support 採用でもなく、z が付いていて `z < zHi` のノード。z ≥ zHi で入ったノードは対象外。z が付かない語一致だけのフォールバックでは動かさない。
+- テーマが主題のノード（題名が `subject`、または要旨の 1 文目／2 回以上でテーマを述べる `abstractIsAboutTheme`。全文の要旨を採用時に判定して `aboutTheme` に記録する）: グラフ内のつながり先が 2 つ以上あれば残す。ただし、通りすがりの弱いノードは数えない。1 つの seed を 1 回引くだけの論文は、テーマの利用者であって系譜ではない。
+- テーマに通りすがりで触れるだけのノード: seed 以外の「裏付けのある」ノードとつながっていれば残す。裏付けのあるノードとは、z ≥ zHi のノード、自力で通った弱いノード、そこから伝わって裏付けを得た弱いノードのこと。seed とのつながりは数えない（R2-2d で support 採用に課した規則と同じ考え方）。主題のノードもこの裏付けで残れる。
+- どちらでも、引用文の手がかりがある系譜の辺（extends/successor/supersedes/contrasts で、`api_citation`・推測・許可リスト以外の方法）が 1 本あれば、それだけで残す。
+- 削った後は、もう一度確かめる（不動点まで）。ログには `topic gate: dropped weak-entry node <id> (single-link|uncorroborated, z=…)` と、残った各ノードの入り口を出す（`topic gate: node <id> entered=<経路>/<判定> z=… edges=[…]`）。止めるには `TopicScopeOptions.weakEntryCheck: false`。
+
+### 効果
+
+4 テーマを手元で作り直した結果:
+
+| テーマ | 前（ノード/辺） | 後 | 削ったノード |
+|---|---|---|---|
+| Flash Attention | 15 / 47 | 14 / 46 | DeepSeek-V3.2 |
+| Graph Neural Network | 35 / 131 | 33 / 129 | Deep hybrid（高スペクトル）、Road Networks の共同体検出 |
+| Mixture of Experts | 22 / 67 | 21 / 65 | Conditional Channel Gated Networks |
+| Vision Transformer | 21 / 49 | 20 / 48 | radar 行動認識の hybrid ViT |
+
+- 削った 5 件はどれもテーマ外で、テーマ内のノードは 1 件も削っていない。
+- focus と canonical seed（GCN・GAT・GraphSAGE、Switch・Sparsely-Gated MoE・Bengio 2013、MAE・Swin-Unet・DeiT）は変わらない。
+- 削れた辺はすべて `baseline_only` なので、系譜の関係の数は変わらない。
+- MoE の根は Expert Choice から Sparsely-Gated MoE に変わる。根は契約上「次数が最大の focus」で、Expert Choice が CCGN との辺を失ったため。
+- 途中の版では、ARMA graph filtering（GNN、z 0.03）を削っていた。CayleyNets は題名がテーマ語に一致しないが裏付けのあるノードで、そこから裏付けが伝わるようにして残した。
+
+正解付きの集合（`evalRelevanceCli.ts --embed` に足した行）では、グラフを候補群から近似した。つながりは `pool_neighbours` と `ref_of:`/`cites:`、関係の種類なし、幅の制限なし。
+
+| 行 | P | R | F1 | TP/FP/FN |
+|---|---|---|---|---|
+| 本番 段階 2（R2-17 後の今の値） | 0.91 | 0.76 | 0.83 | 59/6/19 |
+| 本番 + R2-30 | 0.91 | 0.74 | 0.82 | 58/6/20 |
+
+- 落ちた 1 件は Mobile V-MoEs（MoE、z 0.89、候補群の中で seed 1 本としかつながらない）。
+- 正解付きの集合の FP は、多くの論文とつながった応用論文なので、この規則の対象外。P は変わらない。
+- 公開済みのテーマでは 5 件のテーマ外を削り、取りこぼしは 0 件。正解付きの集合では、テーマ内を 1 件取りこぼす。この交換を受け入れた。
+
+### 残り
+
+- 多くの論文とつながった応用・周辺論文は、この規則では残る。たとえば GNN の「Graph Neural Networks in Network Neuroscience」「Convolutional 2D Knowledge Graph Embeddings」「PyTorch Geometric」、MoE の「Efficient Deweather MoE」。正解付きの集合の FP と同じ型で、段階 3（境界の帯だけを別の手段で判定する）の対象。
+- 反映には CI での作り直しが要る。作り直したら `theme_min_generated_at` を進める（41 の運用どおり）。
+
 ## 再実行
 
 ```sh

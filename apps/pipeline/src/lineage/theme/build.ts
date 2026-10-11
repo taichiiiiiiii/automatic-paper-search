@@ -43,6 +43,7 @@ import {
   addVersionFamilyEdges,
   applyDeferredS2Relations,
   confirmSupportAdmissions,
+  confirmWeakAdmissions,
   dropReversedEdges,
   runBfsAndDescendants,
 } from "./bfs.js";
@@ -767,6 +768,23 @@ export async function buildThemeLineage(
     }
   }
 
+  // R2-30: nodes admitted on a weak topic match need corroboration beyond
+  // the single citation that brought them in (known only after the
+  // cross-node pass).
+  if (topicScope.options.gate && topicScope.options.weakEntryCheck) {
+    const weak = confirmWeakAdmissions(nodes, edges, {
+      seedIds: new Set(seedIds),
+      admissions: bfsResult.admissions,
+      scope: topicScope,
+    });
+    edges = weak.edges;
+    for (const d of weak.dropped) {
+      logger.warn(
+        `topic gate: dropped weak-entry node ${d.id} (${d.rule}, z=${d.z === null ? "-" : d.z.toFixed(2)})`,
+      );
+    }
+  }
+
   // R2-28: preprint-venue nodes that DBLP has as a conference / journal
   // paper show that venue (opt-in).
   if (deps.dblpVenues != null) {
@@ -924,6 +942,24 @@ export async function buildThemeLineage(
     [...nodes.values()].sort((a, b) => codepointCompare(a.id, b.id)),
     orderedEdges,
   );
+
+  // R2-30: one line per kept non-focus node saying how it entered the
+  // graph and which edges hold it there (the audit's "why is this here").
+  for (const node of orderedNodes) {
+    if (node.is_focus === true) continue;
+    const a = bfsResult.admissions.get(node.id);
+    const incident = orderedEdges
+      .filter((e) => e.src === node.id || e.dst === node.id)
+      .map((e) => {
+        const m = (e.provenance as Record<string, Record<string, unknown>>).classification?.method;
+        return `${e.relation}/${String(m)}`;
+      });
+    logger.info?.(
+      `topic gate: node ${node.id} entered=${a ? `${a.path}/${a.why}` : "unknown"} ` +
+        `z=${a?.z == null ? "-" : a.z.toFixed(2)} edges=${incident.length} [${incident.join(",")}] ` +
+        JSON.stringify(String(node.title ?? "").slice(0, 80)),
+    );
+  }
 
   const sortedFocus = [...focusIdSet].sort(codepointCompare);
   const topicalRoot = pickRootSeed(sortedFocus, orderedEdges, {

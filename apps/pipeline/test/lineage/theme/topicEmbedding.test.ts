@@ -407,7 +407,20 @@ describe("meta.topic_gate in the artifact", () => {
       thresholds: { z_lo: 0, z_hi: 1 },
       pool_size: 3,
     });
-    expect(payload.nodes.map((n: { id: string }) => n.id).sort()).toEqual(["parentg", "seedg"]);
+    // R2-30: the parent is a weak entry (term match, z < zHi) whose only
+    // link is the seed, so the weak-entry check drops it; with the check
+    // off the gate's own verdict shows.
+    expect(payload.nodes.map((n: { id: string }) => n.id).sort()).toEqual(["seedg"]);
+    const unchecked = JSON.parse(
+      readFileSync(
+        await buildThemeLineage(
+          { ...BUILD_OPTS, topicScope: { weakEntryCheck: false } },
+          buildDeps(new FakeEmbedder()),
+        ),
+        "utf-8",
+      ),
+    );
+    expect(unchecked.nodes.map((n: { id: string }) => n.id).sort()).toEqual(["parentg", "seedg"]);
   });
 
   it("records the term-only fallback (inference failure, opt-out, no embedder)", async () => {

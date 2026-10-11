@@ -103,6 +103,36 @@ export interface BFSResult {
   /** R2-11: how the topic gate judged candidates (`meta.topic_gate`);
    * `null` when the gate is off / no scope. */
   topicGate: TopicGateMeta | null;
+  /** R2-30: how each non-seed node entered the graph (path, gate verdict,
+   * embedding z, anchor seed). Empty when no `topicScope` is given. Used
+   * by the post-cross-node weak-entry check and the admission log. */
+  admissions: Map<string, NodeAdmission>;
+}
+
+/** R2-30: how one node got past the topic gate. */
+export interface NodeAdmission {
+  /** `reference` = a reference of an expanded node (ancestor step),
+   * `citing` = a paper citing a seed (descendants pass), `support` =
+   * the deferred co-citation pass. */
+  path: "reference" | "citing" | "support";
+  /** The gate's verdict (`TopicScope.admits` / `admitsDescendant`). */
+  why: string;
+  /** Embedding z-score, `null` under the term-only rule. */
+  z: number | null;
+  /** The node it was first seen from. */
+  anchor: string;
+  /** Title about the theme, or an abstract about it
+   * (`TopicScope.abstractIsAboutTheme`), judged on the FULL abstract at
+   * admission time (graph nodes keep only a short abstract). Omitted =
+   * judge from the node. */
+  aboutTheme?: boolean;
+}
+
+/** R2-30: the paper itself is about the theme (title subject, or an
+ * abstract whose first sentence / two mentions name it), as opposed to
+ * mentioning it in passing. */
+function aboutTheme(scope: TopicScope, p: Paper | ThemeGraphNode): boolean {
+  return scope.role(p) === "subject" || scope.abstractIsAboutTheme(p);
 }
 
 export interface RunBfsOptions {
@@ -418,6 +448,7 @@ export async function runBfsAndDescendants(
   let classifySucceeded = 0;
   const pending = new Map<string, PendingCandidate>();
   const provisional = new Set<string>();
+  const admissions = new Map<string, NodeAdmission>();
 
   /** Fold a candidate that is another ID of a node already in (or pending
    * for) the graph into that node, and drop repeats within one list. */
@@ -463,13 +494,20 @@ export async function runBfsAndDescendants(
     pending.delete(cid);
     titles.register(cid, candidate);
     if (why === "topic" || why === "embedding") onTopic.add(cid);
+    admissions.set(cid, {
+      path: direction === "parent" ? "reference" : "citing",
+      why,
+      z: relevance?.z(cid) ?? null,
+      anchor: anchor.paperId,
+      aboutTheme: aboutTheme(scope, candidate),
+    });
     return true;
   };
 
   let descendantsRejected = 0;
   /** Descendants pass (R2-2d): a theme title admits; a theme mention
    * only in the abstract / as a tool admits provisionally. */
-  const gateDescendant = (candidate: Paper): boolean => {
+  const gateDescendant = (candidate: Paper, seed: Paper): boolean => {
     const cid = candidate.paperId;
     if (scope === null || nodes.has(cid)) return true;
     const why = scope.admitsDescendant(candidate, relevance?.z(cid));
@@ -481,6 +519,13 @@ export async function runBfsAndDescendants(
     titles.register(cid, candidate);
     if (why === "topic") onTopic.add(cid);
     else provisional.add(cid);
+    admissions.set(cid, {
+      path: "citing",
+      why,
+      z: relevance?.z(cid) ?? null,
+      anchor: seed.paperId,
+      aboutTheme: aboutTheme(scope, candidate),
+    });
     return true;
   };
 
@@ -545,7 +590,7 @@ export async function runBfsAndDescendants(
     allChildren = canonicalise(allChildren, sid);
     if (relevance !== null) await relevance.ensure(allChildren);
     if (scope !== null) {
-      allChildren = allChildren.filter((c) => c.paperId === sid || gateDescendant(c));
+      allChildren = allChildren.filter((c) => c.paperId === sid || gateDescendant(c, seed));
     }
     const influential = allChildren.filter((c) => c._is_influential !== false);
     const nonInfluential = allChildren.filter((c) => c._is_influential === false);
@@ -595,6 +640,12 @@ export async function runBfsAndDescendants(
       nodes.set(cid, toThemeNode(entry.paper, { trending: isTrending(entry.paper, currentYear) }));
       provisional.add(cid);
       topicAdmittedBySupport += 1;
+      admissions.set(cid, {
+        path: "support",
+        why: "support",
+        z: relevance?.z(cid) ?? null,
+        anchor: [...entry.links.keys()][0] ?? "",
+      });
       for (const { direction, anchor } of entry.links.values()) {
         const [parent, child] =
           direction === "parent" ? [entry.paper, anchor] : [anchor, entry.paper];
@@ -648,6 +699,7 @@ export async function runBfsAndDescendants(
     onTopicIds: onTopic,
     titleMerged,
     topicGate,
+    admissions,
   };
 }
 
@@ -691,6 +743,177 @@ export function confirmSupportAdmissions(
   const gone = new Set(dropped);
   for (const id of dropped) nodes.delete(id);
   return { edges: edges.filter((e) => !gone.has(e.src) && !gone.has(e.dst)), dropped };
+}
+
+/** R2-30: relations that state a lineage claim (policy `strong_relations`). */
+const WEAK_ENTRY_STRONG_RELATIONS: ReadonlySet<string> = new Set([
+  "extends",
+  "successor",
+  "supersedes",
+  "contrasts",
+]);
+/** R2-30: classification methods that carry no quoted cue: a reference-list
+ * hit, a year/citation guess, or the allowlist's canonical-paper default. */
+const WEAK_ENTRY_NON_CUE_METHODS: ReadonlySet<string> = new Set([
+  "api_citation",
+  "citation_heuristic",
+  "year_cite",
+  "foundational_allowlist",
+]);
+
+function edgeMethod(e: ThemeEdge): string {
+  const cls = (e.provenance as Record<string, unknown> | null)?.classification;
+  const m = cls && typeof cls === "object" ? (cls as Record<string, unknown>).method : null;
+  return typeof m === "string" ? m : "";
+}
+
+/** One node the weak-entry check turned away, and why. */
+export interface WeakEntryDrop {
+  id: string;
+  /** `single-link` = about the theme, but fewer than two in-graph links;
+   * `uncorroborated` = theme mentioned in passing, no corroborated
+   * non-seed neighbour. */
+  rule: "single-link" | "uncorroborated";
+  z: number | null;
+}
+
+/**
+ * R2-30 (design 42): corroboration for nodes the topic gate let in on a
+ * WEAK match, run after the cross-node pass (the only point at which a
+ * node's links beyond its entry seed are known; at CI depth 1 every node
+ * entered through a seed).
+ *
+ * A node is weak when the gate admitted it on a theme-term match with an
+ * embedding score below `zHi`: the term alone said "related". (Under the
+ * term-only fallback no z exists and the check does not run.) Such a node needs evidence beyond the one
+ * citation that brought it in, scaled to how much the paper itself is
+ * about the theme:
+ *  - about the theme (title `TopicScope.role === "subject"`, or an
+ *    abstract that names it in its first sentence / twice,
+ *    `abstractIsAboutTheme`): at least two distinct in-graph neighbours
+ *    that are not themselves passing-mention weak nodes, or the
+ *    corroboration below — one paper citing
+ *    one seed once (a radar activity-recognition model built on a ViT
+ *    block) is a user of the theme, not part of its lineage;
+ *  - theme mentioned only in passing: at least one corroborated NON-seed
+ *    neighbour — a node admitted with z >= zHi, a weak node that passes
+ *    on its own, or (transitively) another passing-mention node
+ *    corroborated this way. Seed links do not count: a general paper cited
+ *    by a seed for a side remark (DeepSeek-V3.2's sparse attention in a
+ *    FlashAttention paper) or citing two seeds (a continual-learning gate
+ *    citing two MoE papers) says nothing about the theme — the R2-2d rule
+ *    for support admissions, applied to them.
+ * Either way an edge that states a lineage claim backed by a quoted cue
+ * (extends/successor/supersedes/contrasts, not `api_citation`/heuristic/
+ * allowlist) is enough on its own. Seeds, support admissions (confirmed
+ * by {@link confirmSupportAdmissions}) and nodes admitted with
+ * z >= zHi are never checked. Iterates to a fixed point (a drop can take
+ * a neighbour's second link). Mutates `nodes`.
+ */
+export function confirmWeakAdmissions(
+  nodes: Map<string, ThemeGraphNode>,
+  edges: readonly ThemeEdge[],
+  options: {
+    seedIds: ReadonlySet<string>;
+    admissions: ReadonlyMap<string, NodeAdmission>;
+    scope: TopicScope;
+  },
+): { edges: ThemeEdge[]; dropped: WeakEntryDrop[] } {
+  const { seedIds, admissions, scope } = options;
+  const zHi = scope.options.zHi;
+  /** "title" = about the theme (title or abstract); "abstract" = mentions
+   * it only in passing. */
+  const weak = new Map<string, "title" | "abstract">();
+  for (const [id, node] of nodes) {
+    if (seedIds.has(id)) continue;
+    const a = admissions.get(id);
+    if (a === undefined || a.path === "support" || a.why === "support") continue;
+    // Only when the embedding gate scored the node: under the term-only
+    // fallback (`meta.topic_gate.method = "terms"`) z is unknown and the
+    // check stays off rather than treating every node as weak.
+    if (a.z === null || a.z >= zHi) continue;
+    weak.set(id, (a.aboutTheme ?? aboutTheme(scope, node)) ? "title" : "abstract");
+  }
+  /** Non-weak non-seed nodes: self-evidently on topic (z >= zHi), or
+   * nodes the gate did not record (kept only if their title is about
+   * the theme). Support admissions never lend (R2-2d). */
+  const strongLender = (id: string): boolean => {
+    if (seedIds.has(id) || weak.has(id)) return false;
+    const a = admissions.get(id);
+    if (a !== undefined) return a.why !== "support";
+    const node = nodes.get(id);
+    return node !== undefined && scope.role(node) === "subject";
+  };
+  let live = [...edges];
+  const dropped: WeakEntryDrop[] = [];
+  for (let changed = true; changed; ) {
+    changed = false;
+    const neighbours = new Map<string, Set<string>>();
+    const cue = new Set<string>();
+    for (const e of live) {
+      if (e.src === e.dst || !nodes.has(e.src) || !nodes.has(e.dst)) continue;
+      const isCue =
+        WEAK_ENTRY_STRONG_RELATIONS.has(e.relation) &&
+        !WEAK_ENTRY_NON_CUE_METHODS.has(edgeMethod(e));
+      for (const [self, other] of [
+        [e.src, e.dst],
+        [e.dst, e.src],
+      ] as const) {
+        if (!neighbours.has(self)) neighbours.set(self, new Set());
+        neighbours.get(self)!.add(other);
+        if (isCue) cue.add(self);
+      }
+    }
+    const nb = (id: string): string[] => [...(neighbours.get(id) ?? [])];
+    // Weak nodes that pass on their own: a quoted lineage cue, or (title
+    // about the theme) two or more in-graph links not counting
+    // abstract-only weak nodes (they vouch for nothing until vouched for,
+    // so weak nodes cannot hold each other up).
+    const passes = (id: string): boolean =>
+      cue.has(id) ||
+      (weak.get(id) === "title" && nb(id).filter((x) => weak.get(x) !== "abstract").length >= 2);
+    // Corroboration spreads from self-evidently on-topic NON-seed nodes
+    // through weak nodes that are themselves corroborated (CayleyNets,
+    // whose title the term list misses, still vouches for the ARMA graph
+    // filter it cites); never through seeds alone. It also satisfies a
+    // node about the theme: that kind is never held to more than a
+    // passing mention.
+    const lenders = new Set<string>();
+    for (const id of nodes.keys()) {
+      if (strongLender(id) || (weak.has(id) && passes(id))) lenders.add(id);
+    }
+    for (let grew = true; grew; ) {
+      grew = false;
+      for (const id of weak.keys()) {
+        if (lenders.has(id) || !nodes.has(id)) continue;
+        if (nb(id).some((x) => lenders.has(x))) {
+          lenders.add(id);
+          grew = true;
+        }
+      }
+    }
+    const gone = new Set<string>();
+    for (const [id, kind] of weak) {
+      if (!nodes.has(id) || passes(id)) continue;
+      if (nb(id).length === 0) continue; // edgeless nodes: pruneEdgelessNodes' job
+      if (lenders.has(id)) continue;
+      gone.add(id);
+      dropped.push({
+        id,
+        rule: kind === "title" ? "single-link" : "uncorroborated",
+        z: admissions.get(id)?.z ?? null,
+      });
+    }
+    if (gone.size > 0) {
+      changed = true;
+      for (const id of gone) {
+        nodes.delete(id);
+        weak.delete(id);
+      }
+      live = live.filter((e) => !gone.has(e.src) && !gone.has(e.dst));
+    }
+  }
+  return { edges: live, dropped };
 }
 
 export interface AddCrossNodeEdgesOptions {
