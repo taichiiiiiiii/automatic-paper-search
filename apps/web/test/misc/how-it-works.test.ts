@@ -92,6 +92,15 @@ function plainText(html: string): string {
   );
 }
 
+/** h3 subheads inside どう判定しているか (UX audit, design 53). */
+const HOW_SUBHEADS = [
+  "根拠の見方",
+  "本流（主経路）",
+  "論文の土台と発展",
+  "誤りの報告と書き出し",
+  "公開の基準",
+] as const;
+
 function headings(html: string): string[] {
   const cleaned = html.replace(SCRIPT_BLOCK_RE, "").replace(HTML_COMMENT_RE, "");
   const found: string[] = [];
@@ -167,8 +176,15 @@ describe("built /how-it-works/ page parity with docs/how-it-works/index.html", (
   it.skipIf(!existsSync(BUILT_PAGE))(
     "renders the same headings in the same order, plus 出典とライセンス and プライバシーと削除依頼 last",
     () => {
+      // UX audit (design 53): the long どう判定しているか section gained h3
+      // subheads after its first paragraph; h1/h2 still match the legacy page.
+      const legacyHeadings = headings(legacy);
+      const how = legacyHeadings.indexOf("どう判定しているか");
+      expect(how).toBeGreaterThan(-1);
       expect(headings(read(BUILT_PAGE))).toEqual([
-        ...headings(legacy),
+        ...legacyHeadings.slice(0, how + 1),
+        ...HOW_SUBHEADS,
+        ...legacyHeadings.slice(how + 1),
         "出典とライセンス",
         "プライバシーと削除依頼",
       ]);
@@ -215,6 +231,9 @@ describe("built /how-it-works/ page parity with docs/how-it-works/index.html", (
     expect(built).toContain("docs/migration/p5-runbook.md");
     // 01-39 and docs/research were removed (2026-10-10); never link to them.
     expect(built).not.toMatch(/docs\/design\/(0[1-9]|[12][0-9]|3[0-9])-|docs\/research/);
+    // Nor mention them in the copy (the see-also note cited 設計書 39 番
+    // long after it was deleted; UX audit, design 53).
+    expect(plainText(built)).not.toMatch(/設計書(0[1-9]|[12][0-9]|3[0-9])番/);
   });
 
   it.skipIf(!existsSync(BUILT_PAGE))(
