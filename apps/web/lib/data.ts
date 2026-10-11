@@ -45,14 +45,33 @@ function publicPath(path: string): string {
   return `${BASE_PATH}${path}`;
 }
 
-async function fetchJson(path: string): Promise<unknown> {
+async function fetchJson(path: string, onProgress?: (bytes: number) => void): Promise<unknown> {
   // no-cache: revalidate every time, as the original viewers did, so a
   // freshly promoted catalog is never hidden behind a stale browser copy.
   const res = await fetch(publicPath(path), { cache: "no-cache" });
   if (!res.ok) {
     throw new Error(`fetch ${path} failed: HTTP ${res.status}`);
   }
-  return res.json();
+  const reader = onProgress ? res.body?.getReader() : undefined;
+  if (!reader || !onProgress) return res.json();
+  // Design doc 53: a large catalog (icml-2026: 7 MB decoded) takes
+  // seconds on a phone, so the catalog reports how much has arrived.
+  const chunks: Uint8Array[] = [];
+  let received = 0;
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done || !value) break;
+    chunks.push(value);
+    received += value.byteLength;
+    onProgress(received);
+  }
+  const bytes = new Uint8Array(received);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return JSON.parse(new TextDecoder().decode(bytes));
 }
 
 function errorMessage(err: unknown): string {
@@ -127,7 +146,10 @@ export type Paper = z.infer<typeof PaperSchema>;
 const PapersSchema = z.array(PaperSchema);
 
 /** Fetches /<slug>/papers.json (that conference's accepted-paper list). */
-export async function fetchConferencePapers(slug: string): Promise<DataResult<Paper[]>> {
+export async function fetchConferencePapers(
+  slug: string,
+  options: { onProgress?: (bytes: number) => void } = {},
+): Promise<DataResult<Paper[]>> {
   if (!/^[a-z0-9][a-z0-9-]*$/.test(slug)) {
     return {
       status: "error",
@@ -135,7 +157,7 @@ export async function fetchConferencePapers(slug: string): Promise<DataResult<Pa
     };
   }
   try {
-    const raw = await fetchJson(`/${slug}/papers.json`);
+    const raw = await fetchJson(`/${slug}/papers.json`, options.onProgress);
     const parsed = PapersSchema.safeParse(raw);
     if (!parsed.success) {
       return { status: "error", error: `${slug}/papers.json: ${parsed.error.message}` };
