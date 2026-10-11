@@ -17,6 +17,9 @@ CVF Open Access and aclanthology.org return 404 for `/robots.txt`;
 | `acl_2026_anthology_excerpt.xml` | `https://raw.githubusercontent.com/acl-org/acl-anthology/master/data/xml/2026.acl.xml` | volumes `long` (2 papers), `short` (1), `demo` (1) |
 | `cvf_cvpr2026_listing_excerpt.html` | `https://openaccess.thecvf.com/CVPR2026?day=all` | first 3 `<dt class="ptitle">` entries |
 | `neurips_2024_listing_excerpt.html` | `https://papers.nips.cc/paper_files/paper/2024` | 2 main-track + 1 D&B entries |
+| `iclr_2025_proceedings_listing_excerpt.html` (R3-4) | `https://proceedings.iclr.cc/paper_files/paper/2025` (3,703 papers; robots.txt 404) | first 3 `<li data-track>` entries |
+| `ecva_papers_excerpt.html` (R3-4) | `https://www.ecva.net/papers.php` (robots.txt: Googlebot Allow only) | `ECCV 2024 Papers` section with 3 entries + `ECCV 2022 Papers` with 1; no 2026 section existed |
+| `neurips_2026_virtual_downloads_excerpt.csv` (R3-4) | `POST https://neurips.cc/Downloads/2026` (the page's own form: csv, posters; robots.txt does not disallow `/Downloads`) | header + 6 rows (3 posters, 1 session row, 1 row with unbalanced affiliation parentheses, 1 with `&amp;`); **abstract cells replaced** — the parser never reads them (design 52 D6 gates this source) |
 | `neurips_2025_listing_excerpt.html` | `https://papers.nips.cc/paper_files/paper/2025` | 3 entries (the live page had only the 64-paper Creative AI track) |
 
 Licences: PMLR articles are CC BY 4.0 (PMLR publication agreement); ACL

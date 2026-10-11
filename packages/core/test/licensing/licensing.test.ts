@@ -15,6 +15,9 @@ describe("licensing", () => {
     expect(nativeAbstractSource("openreview")).toBe("openreview");
     expect(nativeAbstractSource("acl_anthology")).toBe("acl_anthology");
     expect(nativeAbstractSource("cvf")).toBeNull();
+    // R3-4: official listings without a licence (proceedings / ECVA / virtual site).
+    expect(nativeAbstractSource("conference_site")).toBeNull();
+    expect(SOURCE_LABEL.conference_site).toBe("学会の公式サイト");
     expect(nativeAbstractSource("anything")).toBeNull();
     expect(ABSTRACT_LICENSE.acl_anthology?.id).toBe("CC-BY-4.0");
     expect(ABSTRACT_LICENSE.s2_tldr?.id).toBe("ODC-BY-1.0");
