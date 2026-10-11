@@ -128,8 +128,8 @@
       "id": "openalex:W2581624817",
       "title": "Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer",
       "year": 2017,
-      "venue": "arXiv (Cornell University)",
-      "venue_tier": "preprint",
+      "venue": "ICLR (Poster)",
+      "venue_tier": "A+",
       "authors": [
         "Noam Shazeer",
         "Azalia Mirhoseini",
@@ -218,7 +218,7 @@
       "id": "openalex:W2966327190",
       "title": "Deep Mixture of Experts via Shallow Embedding",
       "year": 2018,
-      "venue": "arXiv (Cornell University)",
+      "venue": "UAI",
       "venue_tier": "preprint",
       "authors": [
         "Xin Wang",
@@ -283,8 +283,8 @@
       "id": "openalex:W3119866685",
       "title": "Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity",
       "year": 2021,
-      "venue": "arXiv (Cornell University)",
-      "venue_tier": "preprint",
+      "venue": "J. Mach. Learn. Res.",
+      "venue_tier": "A",
       "authors": [
         "William Fedus",
         "Barret Zoph",
@@ -334,8 +334,8 @@
       "id": "openalex:W3147874613",
       "title": "BASE Layers: Simplifying Training of Large, Sparse Models",
       "year": 2021,
-      "venue": "arXiv (Cornell University)",
-      "venue_tier": "preprint",
+      "venue": "ICML",
+      "venue_tier": "A+",
       "authors": [
         "Mike Lewis",
         "Shruti Bhosale",
@@ -366,8 +366,8 @@
       "id": "openalex:W3170943566",
       "title": "Scaling Vision with Sparse Mixture of Experts",
       "year": 2021,
-      "venue": "arXiv (Cornell University)",
-      "venue_tier": "preprint",
+      "venue": "NeurIPS",
+      "venue_tier": "A+",
       "authors": [
         "Carlos Riquelme",
         "Joan Puigcerver",
@@ -398,8 +398,8 @@
       "id": "openalex:W3212449162",
       "title": "Hash Layers For Large Sparse Models",
       "year": 2021,
-      "venue": "arXiv (Cornell University)",
-      "venue_tier": "preprint",
+      "venue": "NeurIPS",
+      "venue_tier": "A+",
       "authors": [
         "Stephen Roller",
         "Sainbayar Sukhbaatar",
@@ -455,8 +455,8 @@
       "id": "openalex:W4200634402",
       "title": "GLaM: Efficient Scaling of Language Models with Mixture-of-Experts",
       "year": 2021,
-      "venue": "arXiv (Cornell University)",
-      "venue_tier": "preprint",
+      "venue": "ICML",
+      "venue_tier": "A+",
       "authors": [
         "Nan Du",
         "Yanping Huang",
@@ -487,8 +487,8 @@
       "id": "openalex:W4226079124",
       "title": "Mixture-of-Experts with Expert Choice Routing",
       "year": 2022,
-      "venue": "arXiv (Cornell University)",
-      "venue_tier": "preprint",
+      "venue": "NeurIPS",
+      "venue_tier": "A+",
       "authors": [
         "Yanqi Zhou",
         "Tao Lei",
@@ -520,7 +520,7 @@
       "id": "openalex:W4386260498",
       "title": "PipeMoE: Accelerating Mixture-of-Experts through Adaptive Pipelining",
       "year": 2023,
-      "venue": "arXiv",
+      "venue": "INFOCOM",
       "venue_tier": "preprint",
       "authors": [
         "Shaohuai Shi",
@@ -627,7 +627,7 @@
       "id": "openalex:W4394923534",
       "title": "ScheMoE: An Extensible Mixture-of-Experts Distributed Training System with Tasks Scheduling",
       "year": 2024,
-      "venue": "arXiv",
+      "venue": "EuroSys",
       "venue_tier": "preprint",
       "authors": [
         "Shaohuai Shi",
@@ -1843,23 +1843,23 @@
     {
       "src": "openalex:W3122317902",
       "dst": "openalex:W3119866685",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Switch Transformers: Scaling to Trillion Parameter Models w…」(2021) は「GShard: Scaling Giant Models with Conditional Computation a…」(2021) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Switch Transformers」(2021) は 「GShard」(2021) を土台にしている（arXiv HTML（arXiv:2101.03961v3）の本文の引用文から規則で判定）。引用文: \"Lepikhin et al. (2020) adapts a Mixture-of-Expert model and addresses expert overflow by passing its representation to the next layer without processing through a residual connection which we also follow.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
           "version": "p2t-v1"
         },
         "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-list",
-          "sha256": "90939d8aee07b06cb0e857a57178982843156b9870c9590fe0fb94e048149876"
+          "source": "arxiv_html",
+          "kind": "citation-context",
+          "sha256": "537680cc61d1c53127282ad3dd9e501c514a45afc0a20dfc81a331fe40c7fa24"
         },
         "classification": {
-          "method": "api_citation",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -2481,10 +2481,10 @@
     ],
     "depth": 1,
     "since_year": 2018,
-    "generated_at": "2026-10-11T02:33:47.692000Z",
+    "generated_at": "2026-10-11T07:19:49.781000Z",
     "provenance_breakdown": {
-      "s2_context_rule": 39,
-      "api_citation": 28
+      "s2_context_rule": 40,
+      "api_citation": 27
     },
     "completeness": {
       "complete": true,
@@ -2500,7 +2500,7 @@
         "z_lo": 0,
         "z_hi": 1
       },
-      "pool_size": 183
+      "pool_size": 182
     },
     "canonical_seeds": [
       "openalex:W2242818861",
