@@ -646,7 +646,9 @@ B 自身の 2 つの削除は `<mergeB>^1` の状態で戻ります。
 | `GH_DISPATCH_PAT`（fine-grained、対象 `automatic-paper-search` のみ、Actions: Read and write） | Worker `paperpilot-themes` の secret | 2027-01-07 失効。2026-12-24 に通知を予約済み（Hermes cron） | 新しい PAT を作り、`apps/api` で `pnpm exec wrangler secret put GH_DISPATCH_PAT`。`/api/health` の `pat_configured` が `true` を確認。古い PAT は GitHub で失効させる |
 | `CLOUDFLARE_API_TOKEN`（Account: Cloudflare Pages Edit、このアカウントのみ） | GitHub environment `cloudflare-pages-deploy` | 期限なし | Cloudflare で作り直し、`gh secret set CLOUDFLARE_API_TOKEN --env cloudflare-pages-deploy`。次の `pages` の deploy が緑を確認 |
 | `CLOUDFLARE_ACCOUNT_ID` | 同上 | なし | 変わらない |
-| `PAPERPILOT_GROQ_API_KEY` | リポジトリの secret | 提供元の設定による | `gh secret set` |
+| `PAPERPILOT_GROQ_API_KEY` | リポジトリの secret | 提供元の設定による。系譜は 2026-10-11 から LLM なしが既定（R2-24）なので、学会・深掘りの系譜でだけ使う | `gh secret set` |
+| `PAPERPILOT_OPENALEX_API_KEY`（無料キー、1 日 $1 分＝キーなしの 10 倍、00:00 UTC にリセット） | リポジトリの secret（2026-10-11 登録） | 期限なし（openalex.org の Settings → API key。「Rotate」で作り直すと旧キーは無効） | openalex.org で Copy → `pbpaste` で受けて `printf %s "$T" \| gh secret set PAPERPILOT_OPENALEX_API_KEY`。応答ヘッダの `x-ratelimit-limit-usd: 1` で効いていることを確かめる |
+| `PAPERPILOT_S2_API_KEY` | 未登録 | ― | 申請フォームが無料メール（gmail.com・icloud.com・outlook.jp）を受け付けないため保留。キーなしの共有枠で動く |
 
 - 失効すると: PAT はテーマ依頼の受付が `401`（Worker は 502 を返す）。Cloudflare のトークンは `pages` の deploy が失敗する（公開中のサイトはそのまま）。
 - 見張り: Hermes の cron「PaperPilot 本番の見張り」（`~/.hermes/scripts/paperpilot_watchdog.sh`）が観察期間中は毎朝、`/api/health`・主要ページ・旧サイトの転送・`pages`/`tests`/`data-audit`/`theme-on-demand` の最新の結果を確かめ、問題があるときだけ知らせる。
