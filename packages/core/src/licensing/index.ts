@@ -10,7 +10,7 @@
  */
 
 /** Native source of a catalog row (`identityFromUrl(...).source`). */
-export type CatalogSource = "arxiv" | "openreview" | "acl_anthology" | "cvf";
+export type CatalogSource = "arxiv" | "openreview" | "acl_anthology" | "cvf" | "conference_site";
 
 /**
  * Where the abstract text published for a catalog row comes from.
@@ -79,6 +79,9 @@ export const SOURCE_LABEL: Readonly<Record<CatalogSource, string>> = {
   openreview: "OpenReview",
   acl_anthology: "ACL Anthology",
   cvf: "CVF Open Access",
+  // R3-4: official conference listings without a shared id (NeurIPS / ICLR
+  // proceedings, ECVA, the virtual site). Titles / authors / links only.
+  conference_site: "学会の公式サイト",
 };
 
 /** Display name of where an abstract text comes from. */
@@ -111,7 +114,8 @@ export function nativeAbstractSource(source: string): AbstractSource | null {
     case "acl_anthology":
       return source;
     default:
-      // cvf (rights reserved, no licence) and anything unknown: fail closed.
+      // cvf / conference_site (rights reserved, no licence) and anything
+      // unknown: fail closed.
       return null;
   }
 }

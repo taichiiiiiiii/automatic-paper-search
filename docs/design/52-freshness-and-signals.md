@@ -294,6 +294,51 @@ ICML 2026 の掲載に必要だった判断（上限を上げるか、ページ�
 
 この上で ICML 2026（6,552 本、3 ページ）をリポジトリに入れた（§8.3）。表示用の文言は `apps/web/lib/catalog-copy.ts` に追加（出典は PMLR Volume 306、CC BY 4.0）。NeurIPS 2026（約 9,200 本）は 4 ページになる見込みで、そのまま載せられる。
 
+### 8.6 次に載せられる回と、承認 1 回のコマンド（R3-4、2026-10-11）
+
+#### 回ごとの調査（2026-10-11 JST、取得は各 1〜2 回）
+
+| 回 | 公式の一覧 | robots.txt・ライセンス | 結論 |
+|---|---|---|---|
+| **ICLR 2025**（pending） | `proceedings.iclr.cc/paper_files/paper/2025`（3,703 本、track は conference だけ）。2026 も 5,351 本ある | robots.txt は 404（制限なし）。ライセンスの記載なし → タイトル・著者・リンクだけ | **生成した**（下） |
+| ECCV 2026 | ECVA の `papers.php` は ECCV 2024 までで、2026 の節はまだ無い。virtual site（`eccv.ecva.net/virtual/2026/papers.html`、2,834 本）と `Downloads/2026`（書き出し）にはある | ECVA の robots.txt は Googlebot の Allow だけ（他は制限なし）。ECVA・Springer はライセンスを与えていない | ECVA に載ったら `ecva` アダプタで作れる。今は D6 次第 |
+| NeurIPS 2026 | `papers.nips.cc/paper_files/paper/2026` は 404。virtual site の `Downloads/2026`（9,244 件、うちポスター 9,094）にはある。`/static` の JSON は robots.txt で禁止（使わない） | 著者は NeurIPS に非独占の許諾をするだけ → 要旨は載せない。S2 の venue 検索は 92 本（約 1%）、OpenAlex は当日 429 で未確認 → 一覧の代わりにならない | papers.nips.cc に main track が出たら `neurips-proceedings` で作れる。今は D6 次第 |
+| EMNLP 2026 | `acl-anthology` の `data/xml/2026.emnlp.xml` は 404（開催は 2026-10-24） | — | Anthology に出たら `approveCli --edition emnlp-2026` |
+| CVPR 2027・ICLR 2027 | まだ | — | 待つ |
+| COLM 2025・2026 | OpenReview だけ（`/notes` は 403） | — | 公式の一覧が無い。arXiv 経由（conference-on-demand）だけ |
+| ICML 2026 | PMLR v306 | — | 公開済み（watch の記録には次の実行まで残る） |
+
+virtual site の `Downloads/<year>` は、ページのフォームを送ると CSV（`type, name, virtualsite_url, speakers/authors, abstract`）が返る公式の書き出しで、robots.txt でも禁止されていない（禁止は `/static`・`/search` など）。ただし D5=A は「virtual site を除く」と決めたので、**使うかどうかは新しい決定 D6** にした。NeurIPS 2026 の書き出しは 1 回だけ確認のために取得した（サーバー側で約 110 秒、16 MB）。OpenReview の forum ID は入っていない。
+
+#### やったこと
+
+| 項目 | 内容 | 場所 |
+|---|---|---|
+| 識別子 `conference_site` | 共通の ID が無い公式の一覧の行を、`<venue>-<year>-hash-<32hex>`（NeurIPS・ICLR の proceedings）、`<venue>-<year>-ecva-<n>`（ECVA）、`<venue>-<year>-poster-<n>`（virtual site）で表す。venue はホスト名から決め、パスからは取らない。系譜（lineage）の別名には入れていない（系譜は作らないので `blocked` のまま）。`identity-aliases-v1.schema.json` の enum に追加 | `packages/core/src/identity/index.ts`、`packages/core/src/licensing/index.ts`（表示名「学会の公式サイト」、要旨は fail-closed）、`schemas/identity-aliases-v1.schema.json` |
+| 収集器 `site` | `--kind proceedings --site neurips\|iclr`（年の一覧 1 回）、`--kind ecva`（`papers.php` 1 回、年の節が無ければ書かない）、`--kind virtual-export --site neurips\|icml\|iclr\|eccv`（**`--allow-virtual-site` が無いと使えない**。`--input <csv>` で人が落とした CSV も読める）。どれも要旨の列は読まず、1 件でも読めない行があれば何も書かない。`source_license.json` に `iclr_proceedings`・`neurips_proceedings`・`ecva_open_access`・`virtual_site_export` と根拠を書く。書き出しの所属の括弧が閉じていない行（9,110 行中 3 行）は所属だけを捨てて残す | `apps/pipeline/src/conference/site/{parsers,main,cli}.ts`、`proceedings/sourceLicense.ts`、`neurips/listing.ts`（解析を origin 引数つきに一般化） |
+| 承認 1 回のコマンド | `pnpm exec tsx apps/pipeline/src/conference/watch/approveCli.ts --edition <id>`（計画の表示だけ）／`--execute`（手元で実行）。回の `proceedings_adapter` から収集 → `scaffold`（表示名と lede を定型文で、LLM なし）→ `buildSummaryCli` → promote の再生成（`refreshCommandsFor("conference")` をそのまま使うので食い違わない。`--as-of` は公開中の `lineage-quality-v1.json` の値）。`pmlr` は `--pmlr-volume`、`none` は arXiv 経由の代替コマンドを示して止まる、`virtual-export` は D6 のゲート付き。**commit・push・公開はしない** | `apps/pipeline/src/conference/watch/{approve,approveCli}.ts` |
+| 設定 | アダプタに `iclr-proceedings`・`ecva` を追加。neurips・iclr・eccv の `proceedings_adapter`／`proceedings_hint` を更新（pending の記録も同じ値に） | `data/config/conference-editions-v1.json`、`watch/groups.ts`、`data/state/conference-watch/pending-editions-v1.json` |
+| Issue の本文 | `conference-watch.yml` の承認 Issue は、回ごとに `approveCli` の 2 行（計画・実行）を出す。公式の一覧が無い回（`none`）だけ arXiv 経由の `conference-on-demand.yml` を出す | `.github/workflows/conference-watch.yml`、契約テスト `test/workflows/r1-6-watchdog-workflows.test.ts` |
+| テスト | 実物の抜粋（ICLR 2025 の一覧、ECVA の `papers.php`、NeurIPS 2026 の書き出し〔要旨は削除〕）で解析・識別子・ゲート・フォーム送信を検証。approve の計画が promote の再生成表と一致すること | `test/conference/proceedings/conferenceSite.test.ts`、`test/conference/watch/approve.test.ts`、`packages/core/test/{identity,licensing}` |
+
+#### 実際に作った一覧
+
+| 回 | 手順 | 結果 |
+|---|---|---|
+| **ICLR 2025** | `approveCli.ts --edition iclr-2025 --execute`（取得 1 回）。`apps/web/lib/catalog-copy.ts` に表示文を追加 | **3,703 本**（タイトル・著者・proceedings のページと PDF へのリンク、要旨なし＝`abstract_source: none`）。全件 Poster（oral の区別は一覧に無い）。系譜なし（`blocked`）。JS なしの一覧は 2 ページ |
+
+#### 決めてほしいこと
+
+| # | 決定事項 | 選択肢（推奨を先頭） |
+|---|---|---|
+| D6 | virtual site の `Downloads/<year>` の書き出し（robots.txt で禁止されていない、公式の CSV）を使って、NeurIPS 2026・ECCV 2026 を先に載せるか | (a) 使わない。papers.nips.cc・ECVA に出るのを待つ（数週〜数か月）／(b) 人がブラウザで CSV を落とし、`--input` で渡す（自動の取得はしない）／(c) `approveCli --adapter virtual-export --allow-virtual-site` で 1 回だけ自動取得する。どれもタイトル・著者・リンクだけ。(b)(c) の ID は virtual site のポスター番号なので、あとで proceedings に切り替えると論文 ID が変わる |
+
+#### 残り
+
+- ICLR 2025 の要旨は、CVPR 2026 と同じく `resolveAbstractReplacementsCli`（arXiv CC0・S2 TLDR）で後から補える（S2 の呼び出しが約 3,700 回）。
+- ICLR 2026 は OpenReview から作った一覧が公開済み。proceedings との突き合わせは `neurips/cli.ts` と同じ方法で後で行える。
+- EMNLP 2026・ECCV 2026・NeurIPS 2026・CVPR 2027 は、公式の一覧が出たら Issue のコマンドで作る。
+
 ## 付録 A：出典（2026-10-11 に確認）
 
 - arXiv API Terms of Use：https://info.arxiv.org/help/api/tou.html （旧来の API は 3 秒に 1 回、同時接続 1）

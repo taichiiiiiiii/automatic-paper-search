@@ -49,6 +49,20 @@ export function parseNeuripsListing(
   html: string,
   year: number,
 ): { entries: NeuripsListingEntry[]; malformed: number } {
+  return parseProceedingsListing(html, year, NEURIPS_PROCEEDINGS_BASE);
+}
+
+/**
+ * Same parser for any site running the NeurIPS proceedings software
+ * (`papers.nips.cc`, `proceedings.iclr.cc`, R3-4): the listing markup and
+ * the `/paper_files/paper/<year>/hash/<hash>-Abstract-<Track>.html` URLs are
+ * identical; only the origin differs.
+ */
+export function parseProceedingsListing(
+  html: string,
+  year: number,
+  base: string,
+): { entries: NeuripsListingEntry[]; malformed: number } {
   const entries: NeuripsListingEntry[] = [];
   let malformed = 0;
   for (const m of html.matchAll(ITEM_RE)) {
@@ -74,7 +88,7 @@ export function parseNeuripsListing(
       authors,
       track: m[1] as string,
       hash: link[3] as string,
-      landingUrl: `${NEURIPS_PROCEEDINGS_BASE}${link[1]}`,
+      landingUrl: `${base}${link[1]}`,
     });
   }
   return { entries, malformed };

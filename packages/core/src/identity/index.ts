@@ -36,14 +36,51 @@
 
 import { createHash } from "node:crypto";
 
-export type SourceName = "arxiv" | "openreview" | "acl_anthology" | "cvf";
+export type SourceName = "arxiv" | "openreview" | "acl_anthology" | "cvf" | "conference_site";
 
 const SOURCES: ReadonlySet<string> = new Set<SourceName>([
   "arxiv",
   "openreview",
   "acl_anthology",
   "cvf",
+  "conference_site",
 ]);
+
+/**
+ * `conference_site` (R3-4, design 52 §8.6): official conference listings
+ * whose rows carry no OpenReview / CVF / Anthology id. The source id is
+ * `<venue>-<year>-<kind>-<native>`:
+ *
+ * - `hash-<32 hex>` — NeurIPS / ICLR proceedings (`papers.nips.cc`,
+ *   `proceedings.neurips.cc`, `proceedings.iclr.cc`) abstract pages
+ *   `/paper_files/paper/<year>/hash/<hash>-Abstract-<Track>.html`;
+ * - `ecva-<n>` — ECVA open access (`www.ecva.net`)
+ *   `/papers/eccv_<year>/papers_ECCV/html/<n>_ECCV_<year>_paper.php`;
+ * - `poster-<n>` — the conference's virtual site
+ *   `/virtual/<year>/poster/<n>` (neurips.cc, icml.cc, iclr.cc,
+ *   eccv.ecva.net).
+ *
+ * The venue comes from the host, never from the path, so one host cannot
+ * mint ids for another conference.
+ */
+const CONFERENCE_SITE_PROCEEDINGS_HOSTS: ReadonlyMap<string, string> = new Map([
+  ["papers.nips.cc", "neurips"],
+  ["proceedings.neurips.cc", "neurips"],
+  ["proceedings.iclr.cc", "iclr"],
+]);
+const CONFERENCE_SITE_ECVA_HOSTS: ReadonlyMap<string, string> = new Map([
+  ["www.ecva.net", "eccv"],
+  ["ecva.net", "eccv"],
+]);
+const CONFERENCE_SITE_VIRTUAL_HOSTS: ReadonlyMap<string, string> = new Map([
+  ["neurips.cc", "neurips"],
+  ["nips.cc", "neurips"],
+  ["icml.cc", "icml"],
+  ["iclr.cc", "iclr"],
+  ["eccv.ecva.net", "eccv"],
+]);
+const CONFERENCE_SITE_ID_RE =
+  /^(neurips|iclr|icml|eccv)-((?:19|20)[0-9]{2})-(hash-[0-9a-f]{32}|ecva-[1-9][0-9]{0,9}|poster-[1-9][0-9]{0,9})$/;
 
 const HOST_SOURCE: ReadonlyMap<string, SourceName> = new Map([
   ["arxiv.org", "arxiv"],
@@ -54,6 +91,11 @@ const HOST_SOURCE: ReadonlyMap<string, SourceName> = new Map([
   ["aclanthology.org", "acl_anthology"],
   ["www.aclanthology.org", "acl_anthology"],
   ["openaccess.thecvf.com", "cvf"],
+  ...[
+    ...CONFERENCE_SITE_PROCEEDINGS_HOSTS.keys(),
+    ...CONFERENCE_SITE_ECVA_HOSTS.keys(),
+    ...CONFERENCE_SITE_VIRTUAL_HOSTS.keys(),
+  ].map((host): [string, SourceName] => [host, "conference_site"]),
 ]);
 
 /** The one definition of the modern (post-2007) arXiv grammar. */
@@ -420,11 +462,82 @@ function normalizeCvfUrl(parts: SplitResult): string {
   return normalizePathId(filename.slice(0, -".html".length), "CVF");
 }
 
-const URL_NORMALIZERS: Record<SourceName, (parts: SplitResult) => string> = {
+function normalizeConferenceSiteId(value: string): string {
+  const candidate = value.trim();
+  if (!CONFERENCE_SITE_ID_RE.test(candidate)) {
+    throw new IdentityError(`invalid conference site ID: ${JSON.stringify(value)}`);
+  }
+  return candidate;
+}
+
+const YEAR_RE = /^(?:19|20)[0-9]{2}$/;
+const POSITIVE_INT_RE = /^[1-9][0-9]{0,9}$/;
+
+function normalizeConferenceSiteUrl(parts: SplitResult, host: string): string {
+  if (parts.query) {
+    throw new IdentityError("conference site identity URL must not contain a query");
+  }
+  const proceedingsVenue = CONFERENCE_SITE_PROCEEDINGS_HOSTS.get(host);
+  if (proceedingsVenue !== undefined) {
+    const segments = pathSegments(parts);
+    const m = /^([0-9a-f]{32})-Abstract-[A-Za-z_]+\.html$/.exec(segments[4] ?? "");
+    if (
+      segments.length !== 5 ||
+      segments[0] !== "paper_files" ||
+      segments[1] !== "paper" ||
+      !YEAR_RE.test(segments[2] ?? "") ||
+      segments[3] !== "hash" ||
+      !m
+    ) {
+      throw new IdentityError(
+        "proceedings path must be /paper_files/paper/<year>/hash/<hash>-Abstract-<Track>.html",
+      );
+    }
+    return normalizeConferenceSiteId(`${proceedingsVenue}-${segments[2]}-hash-${m[1]}`);
+  }
+  const ecvaVenue = CONFERENCE_SITE_ECVA_HOSTS.get(host);
+  if (ecvaVenue !== undefined) {
+    const segments = pathSegments(parts);
+    const dir = /^eccv_((?:19|20)[0-9]{2})$/.exec(segments[1] ?? "");
+    const file = /^([1-9][0-9]{0,9})_ECCV_((?:19|20)[0-9]{2})_paper\.php$/.exec(segments[4] ?? "");
+    if (
+      segments.length !== 5 ||
+      segments[0] !== "papers" ||
+      !dir ||
+      segments[2] !== "papers_ECCV" ||
+      segments[3] !== "html" ||
+      !file ||
+      file[2] !== dir[1]
+    ) {
+      throw new IdentityError(
+        "ECVA path must be /papers/eccv_<year>/papers_ECCV/html/<n>_ECCV_<year>_paper.php",
+      );
+    }
+    return normalizeConferenceSiteId(`${ecvaVenue}-${dir[1]}-ecva-${file[1]}`);
+  }
+  const virtualVenue = CONFERENCE_SITE_VIRTUAL_HOSTS.get(host);
+  if (virtualVenue !== undefined) {
+    const segments = pathSegments(parts, true);
+    if (
+      segments.length !== 4 ||
+      segments[0] !== "virtual" ||
+      !YEAR_RE.test(segments[1] ?? "") ||
+      segments[2] !== "poster" ||
+      !POSITIVE_INT_RE.test(segments[3] ?? "")
+    ) {
+      throw new IdentityError("virtual site path must be /virtual/<year>/poster/<n>");
+    }
+    return normalizeConferenceSiteId(`${virtualVenue}-${segments[1]}-poster-${segments[3]}`);
+  }
+  throw new IdentityError(`unknown conference site host: ${JSON.stringify(host)}`);
+}
+
+const URL_NORMALIZERS: Record<SourceName, (parts: SplitResult, host: string) => string> = {
   arxiv: normalizeArxivUrl,
   openreview: normalizeOpenreviewUrl,
   acl_anthology: normalizeAclUrl,
   cvf: normalizeCvfUrl,
+  conference_site: normalizeConferenceSiteUrl,
 };
 
 // ---------------------------------------------------------------------------
@@ -470,6 +583,7 @@ export function normalizeAlias(namespace: string, value: string): [string, strin
     openreview: normalizeOpenreviewId,
     acl_anthology: (item) => normalizePathId(item, "ACL Anthology"),
     cvf: (item) => normalizePathId(item, "CVF"),
+    conference_site: normalizeConferenceSiteId,
   };
   return [source, normalizers[source](value)];
 }
@@ -522,6 +636,6 @@ export function identityFromUrl(url: string): PaperIdentity {
   if (source === undefined) {
     throw new IdentityError(`unknown paper source host: ${JSON.stringify(host)}`);
   }
-  const sourceId = URL_NORMALIZERS[source](parts);
+  const sourceId = URL_NORMALIZERS[source](parts, host);
   return { source, sourceId, paperId: makePaperId(source, sourceId) };
 }

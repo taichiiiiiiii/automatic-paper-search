@@ -120,7 +120,23 @@ describe("conference-watch.yml (R1-6 / R3)", () => {
     expect(run).toContain("label=conference-watch");
     expect(run).toContain('gh issue list --label "$label" --state open --limit 1');
     expect(run).toContain('select(.status == "pending_approval")');
+    // R3-4: one approve -> build command per edition (official listing) …
+    expect(run).toContain(
+      "pnpm exec tsx apps/pipeline/src/conference/watch/approveCli.ts --edition \\(.edition_id) --execute",
+    );
+    // … and the arXiv on-demand fallback only where no official adapter exists.
+    expect(run).toContain('if .proceedings_adapter == "none" then');
     expect(run).toContain("gh workflow run conference-on-demand.yml --ref develop");
+  });
+
+  it("points at an approve CLI that exists and refuses to publish by itself", () => {
+    const root = getRepoRoot();
+    const cli = readFileSync(
+      join(root, "apps/pipeline/src/conference/watch/approveCli.ts"),
+      "utf-8",
+    );
+    expect(cli).toContain("export function runApproveCli");
+    expect(cli).not.toMatch(/git (commit|push)|release\/cli\.ts (promote|package)/);
   });
 
   it("never publishes: no promote, package, release or Pages job", () => {

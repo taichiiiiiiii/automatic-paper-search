@@ -30,7 +30,10 @@ export type ProceedingsSource =
   | "pmlr"
   | "acl_anthology"
   | "cvf_open_access"
-  | "neurips_proceedings";
+  | "neurips_proceedings"
+  | "iclr_proceedings"
+  | "ecva_open_access"
+  | "virtual_site_export";
 
 export interface SourceLicense {
   schema_version: typeof SOURCE_LICENSE_SCHEMA;
@@ -75,6 +78,9 @@ const PROCEEDINGS_SOURCES: readonly string[] = [
   "acl_anthology",
   "cvf_open_access",
   "neurips_proceedings",
+  "iclr_proceedings",
+  "ecva_open_access",
+  "virtual_site_export",
 ];
 
 /**

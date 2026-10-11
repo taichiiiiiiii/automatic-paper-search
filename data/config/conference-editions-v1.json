@@ -18,15 +18,15 @@
       "slug_template": "neurips-{year}",
       "group_id_template": "NeurIPS.cc/{year}/Conference",
       "proceedings_adapter": "neurips-proceedings",
-      "proceedings_hint": "papers.nips.cc lags months behind and carries no OpenReview ids: reconcile only; a catalog needs an identity source (design 52 D1/D2)."
+      "proceedings_hint": "papers.nips.cc /paper_files/paper/<year> listing, track 'conference' (titles/authors/links, no abstracts; conference_site ids). Main track appears months after the conference; until then only the virtual-site Downloads export (design 52 D6)."
     },
     {
       "venue_key": "iclr",
       "display_template": "ICLR {year}",
       "slug_template": "iclr-{year}",
       "group_id_template": "ICLR.cc/{year}/Conference",
-      "proceedings_adapter": "none",
-      "proceedings_hint": "ICLR has no proceedings outside OpenReview (/notes is 403 for scripts); needs design 52 D1 (virtual-site JSON permission) or D2."
+      "proceedings_adapter": "iclr-proceedings",
+      "proceedings_hint": "proceedings.iclr.cc /paper_files/paper/<year> listing (titles/authors/links, no abstracts; conference_site ids). 2025: 3,703 and 2026: 5,351 papers on 2026-10-11."
     },
     {
       "venue_key": "acl",
@@ -65,8 +65,8 @@
       "display_template": "ECCV {year}",
       "slug_template": "eccv-{year}",
       "group_id_template": "thecvf.com/ECCV/{year}/Conference",
-      "proceedings_adapter": "none",
-      "proceedings_hint": "ECVA papers.php (not CVF Open Access); no adapter yet."
+      "proceedings_adapter": "ecva",
+      "proceedings_hint": "ECVA papers.php section 'ECCV <year> Papers' (titles/authors/links, no abstracts; conference_site ids). ECCV 2026 not there yet on 2026-10-11; the virtual-site Downloads export has it (design 52 D6)."
     },
     {
       "venue_key": "colm",

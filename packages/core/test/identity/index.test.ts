@@ -67,6 +67,67 @@ describe("identityFromUrl golden vectors", () => {
     });
   }
 
+  describe("conference_site (R3-4, design 52 §8.6)", () => {
+    const ok: Array<[string, string]> = [
+      [
+        "https://proceedings.iclr.cc/paper_files/paper/2025/hash/000eba875068854d5ff003b1fa534cd6-Abstract-Conference.html",
+        "iclr-2025-hash-000eba875068854d5ff003b1fa534cd6",
+      ],
+      [
+        "https://papers.nips.cc/paper_files/paper/2024/hash/0001ca33ba34ce0351e4612b744b3936-Abstract-Datasets_and_Benchmarks_Track.html",
+        "neurips-2024-hash-0001ca33ba34ce0351e4612b744b3936",
+      ],
+      [
+        "https://www.ecva.net/papers/eccv_2024/papers_ECCV/html/4_ECCV_2024_paper.php",
+        "eccv-2024-ecva-4",
+      ],
+      ["https://neurips.cc/virtual/2026/poster/154295", "neurips-2026-poster-154295"],
+      ["https://eccv.ecva.net/virtual/2026/poster/5880/", "eccv-2026-poster-5880"],
+    ];
+    for (const [url, sourceId] of ok) {
+      it(`parses ${url}`, () => {
+        const id = identityFromUrl(url);
+        expect(id.source).toBe("conference_site");
+        expect(id.sourceId).toBe(sourceId);
+        expect(id.paperId).toBe(makePaperId("conference_site", sourceId));
+      });
+    }
+
+    it("pins the paper id payload (paperpilot:v1:conference_site:<id>)", () => {
+      expect(
+        makePaperId("conference_site", "iclr-2025-hash-000eba875068854d5ff003b1fa534cd6"),
+      ).toBe("27d978186a339de378a25ccae469eb16cdc703a2");
+    });
+
+    for (const bad of [
+      "https://proceedings.iclr.cc/paper_files/paper/2025/hash/000EBA875068854d5ff003b1fa534cd6-Abstract-Conference.html",
+      "https://proceedings.iclr.cc/paper_files/paper/2025/file/000eba875068854d5ff003b1fa534cd6-Paper-Conference.pdf",
+      "https://papers.nips.cc/paper_files/paper/2024/hash/0001ca33ba34ce0351e4612b744b3936-Abstract-Conference.html?x=1",
+      "https://www.ecva.net/papers/eccv_2024/papers_ECCV/html/4_ECCV_2022_paper.php",
+      "https://www.ecva.net/papers/eccv_2022/papers_ECCV/html/136620266.php",
+      "https://neurips.cc/virtual/2026/session/137650",
+      "https://neurips.cc/virtual/2026/poster/0",
+      "https://icml.cc/virtual/2026/poster/abc",
+    ]) {
+      it(`rejects ${bad}`, () => {
+        expect(() => identityFromUrl(bad)).toThrow(IdentityError);
+      });
+    }
+
+    it("validates declared ids and keeps the venue tied to the host", () => {
+      expect(normalizeAlias("conference_site", " eccv-2026-poster-5880 ")).toEqual([
+        "conference_site",
+        "eccv-2026-poster-5880",
+      ]);
+      expect(() => normalizeAlias("conference_site", "aaai-2026-poster-1")).toThrow(IdentityError);
+      expect(() => normalizeAlias("conference_site", "neurips-2026-154295")).toThrow(IdentityError);
+      // icml.cc can only mint icml ids.
+      expect(identityFromUrl("https://icml.cc/virtual/2026/poster/1").sourceId).toBe(
+        "icml-2026-poster-1",
+      );
+    });
+  });
+
   it("parses a legacy arXiv id (archive/number)", () => {
     const id = identityFromUrl("https://arxiv.org/abs/hep-th/9901001");
     expect(id.source).toBe("arxiv");

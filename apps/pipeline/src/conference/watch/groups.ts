@@ -29,6 +29,8 @@ export const ProceedingsAdapter = z.enum([
   "acl-anthology",
   "cvf-listing",
   "neurips-proceedings",
+  "iclr-proceedings",
+  "ecva",
   "none",
 ]);
 export type ProceedingsAdapter = z.infer<typeof ProceedingsAdapter>;

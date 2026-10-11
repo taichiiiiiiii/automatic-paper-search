@@ -123,6 +123,8 @@
 - 一覧: **ACL 2026（2,296 本）を生成**（リポジトリ内の生成器のみで作成、未公開・未 push）。**ICML 2026（PMLR v306、6,552 本）は取得できたが、JS なしの一覧ページの上限 6,000 本で `buildPages` が止まる**。→ R3-2 で解消（下）
 - **R3-2（2026-10-11）**: ユーザー決定「JS なしのページを分ける」。`/<conf>/paper-links/` を 1 ページ目のまま残し、2 ページ目以降を `/<conf>/paper-links/<n>/`（1 ページ 3,000 行、3 MiB は 1 ページごと、全体の上限 60,000 本）にした。これで **ICML 2026（6,552 本、3 ページ）をリポジトリに追加**（未 push）。NeurIPS 2026（約 9,200 本）もそのまま載せられる。詳細は 52 §8.5
 - 残り: 検知の定期実行（☐ cron の再開はユーザー判断）、pending-edition から承認 1 回で公開する流れ、画面への帰属表示（51 A3・A6）、ICLR・COLM・NeurIPS の一覧の情報源（52 D1・D2）
+- **R3-4（2026-10-11）**: 共通の ID が無い公式の一覧（NeurIPS・ICLR の proceedings、ECVA、学会の virtual site）用に、識別子の種類 `conference_site` を足した（要旨は載せない）。**承認 1 回のコマンド** `conference/watch/approveCli.ts --edition <id> [--execute]`（収集 → 表示文 → summary → promote と同じ再生成。commit・公開はしない）を作り、`conference-watch` の Issue の本文をこれに変えた。**ICLR 2025（proceedings.iclr.cc、3,703 本、タイトル・著者・リンクのみ）を生成**（未 push）。ECCV 2026（ECVA にまだ無い）・NeurIPS 2026（papers.nips.cc にまだ無い）・EMNLP 2026（Anthology にまだ無い）は公式の一覧の公開待ち。今すぐ作れる唯一の情報源は virtual site の Downloads の書き出しで、使うかは **52 D6（ユーザー判断）**。詳細は 52 §8.6
+- 残り（R3-4 後）: 52 D6 の判断、公式の一覧が出た回の承認（EMNLP 2026・ECCV 2026・NeurIPS 2026・CVPR 2027）、COLM（公式の一覧なし）
 
 ### R4 検索と使い勝手（R1〜R3 と並行）
 

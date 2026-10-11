@@ -99,6 +99,15 @@ export const CATALOG_COPY: Record<string, CatalogCopy> = {
     lede: "OpenReview の採択論文を全件収録し、Oral / Poster の採択区分つきで掲載しています。 タグ・採択形式・自由検索で絞り込めます。",
     source: "OpenReview · Auto-tagged · MIT License",
   },
+  "iclr-2025": {
+    display: "ICLR 2025",
+    description:
+      "ICLR 2025 採択論文のフィルタブル一覧。タイトル・著者での検索、トピックタグ、並び替えで絞り込めます。",
+    tagline:
+      "The 13th International Conference on Learning Representations (Singapore, April 24–28, 2025).",
+    lede: "ICLR Proceedings（proceedings.iclr.cc）の採択論文を全件収録した一覧です。タイトル・著者・リンクを掲載し、要旨は出典がライセンスを示していないため載せていません（リンク先で読めます）。",
+    source: "ICLR Proceedings · Auto-tagged · MIT License",
+  },
   "icml-2025": {
     display: "ICML 2025",
     description:
