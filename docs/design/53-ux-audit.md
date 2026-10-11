@@ -248,3 +248,36 @@ axe-core 4.13（`wcag2a` / `wcag2aa` / `wcag21a` / `wcag21aa` / `wcag22aa`）を
 - 追加: `test/catalog/catalog-search-ux.test.ts`（複数語検索、ハイフンと複数形、要旨ありの絞り込み、日本語の判定、語ごとの強調、件数表示の文言、タイトル順）、`catalog-load-progress.test.ts`（受信量の通知）、`catalog-components-ux.test.tsx`（CatalogFilters / CatalogHero / CatalogPaperCard の操作）、`catalog-app-ux.test.tsx`（学会の切り替え、種類ボタン、`abs=1`、日本語検索、並び替え、フィルタ解除、BibTeX / CSV / URL コピー、Esc とフォーカスの戻り、詳細の開閉と戻る、popstate、読み込み中の表示）、`paper-links-view.test.tsx`（JS なしの一覧の見出しとページ送り）。いずれも role と accessible name で要素を探す（E2E と同じ手がかり）。
 - 更新: `catalog-url-state.test.ts`（`hasAbstract` と `abs=1`）、`catalog-chips.test.ts`（「すべて」、`typeChipsAreUseful`、全タグ）、`catalog-sort.test.ts`（新着順が使えないときの表示）。
 - URL の既存パラメータ（`q` / `type` / `tags` / `sort` / `paper`）の意味は変えていない。`paper-links-parity` / `paper-links-pages` / `csp` は新しい build で通る。
+
+## 統合と E2E の結果（2026-10-12）
+
+4 本のブランチ（トップ・共通 / 系譜ページ / 学会の論文一覧 / E2E）を `roadmap/ux-integrate` に統合し、Playwright の E2E を新しい UI に合わせた。
+
+### 統合で直したもの
+
+| 見つけた問題 | 対応 |
+|---|---|
+| トップの検索候補で、`role="option"` の中に `<a>` があった（axe nested-interactive、20 件） | 候補はリンクにせず、クリックで結果を開く（Enter は従来どおり）。mousedown で入力欄のフォーカスを保つので、候補が先に閉じない |
+| 年×被引用の図が `role="img"` の中にフォーカスできる点を持っていた（nested-interactive） | 家系図と同じく、名前付きの `group` にした |
+| 根拠パネルの「Semantic Scholar」などのリンクと、コードとモデルのリンクが高さ 16px（WCAG 2.5.8 target-size） | 高さ 24px の当たり判定にした |
+| 仕組みページのクレジット欄のリンクが色だけで区別されていた（link-in-text-block、22 件。全体の `a` が下線を消すため） | 下線を付けた |
+
+単体テスト（web / core / pipeline workflows / api）、`pnpm -r typecheck`、biome は統合直後から通っていた。globals.css のリンク規則（`@layer base`）と CSS モジュール・Tailwind の重なりで崩れた箇所は、axe と画面の確認では見つからなかった。
+
+### E2E の更新
+
+- セレクターは `e2e/pages/index.ts` だけで直した（家系図は `group`、カードは「土台と発展を表示」のボタン、書き出しは `[data-export-menu]`、学会一覧の件数表示の新しい文言、JS なし一覧のページ送り「n ページ目」など）。
+- `test.fixme` はすべて外した（根拠パネルを閉じたときのフォーカスの戻り、全角英字の検索）。axe は許可リストをやめ、8 つの状態（トップ＋検索候補、系譜＋読み方・新着・コード・書き出し・根拠パネルを開いた状態、年×被引用、学会一覧＋詳細と切り替え、学会一覧の検索結果、仕組み、404、JS なし一覧）で serious / critical が 0 件であることを確かめる（WCAG 2.2 A/AA）。並びの入場アニメーションの途中を測らないよう、アニメーションの終了を待ってから測る。
+- 追加: 拡大・縮小・全体、読み方の初回表示と閉じた状態の記憶、キーボード操作の一覧（フォーカスの閉じ込めと戻り。スマホ幅は ? キー）、書き出しメニュー、並べ方、カードの選択バーと `?focus=`、学会の切り替え、要旨あり（`abs=1`）、フィルタ解除、詳細の Esc とフォーカスの戻り、URL コピー、ヘッダーの「学会」→ `#s0-confs`、フッターのサイト情報、404 のリンク、トップの検索候補をクリック・Enter で開く、系譜の棚の遅延読み込み（4 秒のフォールバック）。
+
+### 結果
+
+| | desktop-chromium | mobile-chromium |
+|---|---|---|
+| 成功 | 120 | 120 |
+| スキップ | 1 | 1 |
+| 失敗 | 0 | 0 |
+
+- スキップは neurips-2025 の「要旨あり」1 件（全行に要旨があり、ボタンが出ない）。成功数には、見張りの自己テスト 4 件（失敗を検出できることを `test.fail()` で確かめる）を含む。
+- 全体を 2 回続けて実行し、2 回とも同じ結果（不安定なテストなし）。1 回 約 3.9 分（1 worker、chromium）。
+- 単体テスト: web 103 ファイル 1,163 件、core 1,873 件、pipeline workflows 398 件、api 240 件、すべて成功。
