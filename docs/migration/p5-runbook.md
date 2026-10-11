@@ -643,7 +643,7 @@ B 自身の 2 つの削除は `<mergeB>^1` の状態で戻ります。
 
 | 秘密 | 置き場所 | 期限 | 更新のしかた |
 |---|---|---|---|
-| `GH_DISPATCH_PAT`（fine-grained、対象 `automatic-paper-search` のみ、Actions: Read and write） | Worker `paperpilot-themes` の secret | 2027-01-07 失効。2026-12-24 に通知を予約済み（Hermes cron） | 新しい PAT を作り、`apps/api` で `pnpm exec wrangler secret put GH_DISPATCH_PAT`。`/api/health` の `pat_configured` が `true` を確認。古い PAT は GitHub で失効させる |
+| `GH_DISPATCH_PAT`（fine-grained、対象 `automatic-paper-search` のみ、Actions: Read and write） | Worker `paperpilot-themes` の secret | 2027-01-07 失効。2026-12-24 に通知を予約済み（Hermes cron）。R1-6 の Worker の見張りをデプロイした後は、GitHub の応答ヘッダ `github-authentication-token-expiration` で毎日確かめ、14 日前と 3 日前に `watchdog` issue で知らせる | 新しい PAT を作り、`apps/api` で `pnpm exec wrangler secret put GH_DISPATCH_PAT`。`/api/health` の `pat_configured` が `true` を確認。古い PAT は GitHub で失効させる |
 | `CLOUDFLARE_API_TOKEN`（Account: Cloudflare Pages Edit、このアカウントのみ） | GitHub environment `cloudflare-pages-deploy` | 期限なし | Cloudflare で作り直し、`gh secret set CLOUDFLARE_API_TOKEN --env cloudflare-pages-deploy`。次の `pages` の deploy が緑を確認 |
 | `CLOUDFLARE_ACCOUNT_ID` | 同上 | なし | 変わらない |
 | `PAPERPILOT_GROQ_API_KEY` | リポジトリの secret | 提供元の設定による。系譜は 2026-10-11 から LLM なしが既定（R2-24）なので、学会・深掘りの系譜でだけ使う | `gh secret set` |
@@ -652,6 +652,31 @@ B 自身の 2 つの削除は `<mergeB>^1` の状態で戻ります。
 
 - 失効すると: PAT はテーマ依頼の受付が `401`（Worker は 502 を返す）。Cloudflare のトークンは `pages` の deploy が失敗する（公開中のサイトはそのまま）。
 - 見張り: Hermes の cron「PaperPilot 本番の見張り」（`~/.hermes/scripts/paperpilot_watchdog.sh`）が観察期間中は毎朝、`/api/health`・主要ページ・旧サイトの転送・`pages`/`tests`/`data-audit`/`theme-on-demand` の最新の結果を確かめ、問題があるときだけ知らせる。
+- 見張り（R1-6、デプロイ待ち）: 同じ確認を Worker `paperpilot-themes` の Cron Trigger に移した（次の節）。デプロイ後 1〜2 週間は Hermes の見張りと並べて動かす。
+
+## 運用: Worker の見張り（Cron Trigger、R1-6）
+
+設計と確かめる内容は design 50 §9。Worker の `scheduled`（`apps/api/src/watchdog/`）が毎日 00:30 UTC に動き、問題の集まりが変わったときだけ `.github/workflows/alert.yml` を dispatch して、ラベル `watchdog` の issue 1 つに書く（GitHub のメールで届く）。月曜は `conference-watch.yml`（R3 の新しい回の検知）も dispatch する。新しい秘密は要らない（既存の `GH_DISPATCH_PAT` と `GITHUB_TOKEN`）。
+
+### デプロイ（☐ 承認。merge の後の develop で）
+
+1. ☐ Cloudflare アカウントの Cron Trigger の数を確かめる（Free は**アカウントで 5 個**、他プロジェクトと共有）。ダッシュボードの Workers の各 Worker の「Settings → Triggers」、または他の Worker の `wrangler.*` の `triggers.crons` を数える。この Worker は 1 個だけ使う（`apps/api/wrangler.jsonc` の `"triggers": {"crons": ["30 0 * * *"]}`。`test/wrangler-config.test.ts` で 1 個に固定）。
+2. ☐ `alert.yml` と `conference-watch.yml` が develop にあることを確かめる（dispatch は `ref: develop` で、無いと 404 で失敗する）。
+3. オフライン確認: `cd apps/api && pnpm exec wrangler deploy --dry-run --outdir /tmp/pp-api-dry`（デプロイしない。bindings の表示に KV と DO が出る）。
+4. ☐ デプロイ: `cd apps/api && pnpm exec wrangler deploy`（Workers Builds 経由でも同じ設定が入る）。出力の末尾に `schedule: 30 0 * * *` が出ることを確かめる。DO の migration（`v1`）は変えていない。
+5. 動作の確認（どちらか）:
+   - 次の 00:30 UTC を待ち、`pnpm exec wrangler tail paperpilot-themes` か Workers Logs で `watchdog: N problem(s); decision=…` の行を見る。
+   - すぐ確かめたいとき: ダッシュボードの Worker →「Settings → Triggers → Cron Triggers」の実行履歴、または `wrangler dev --test-scheduled` をローカルで起動して `curl "http://localhost:8787/__scheduled?cron=30+0+*+*+*"`（ローカルは `DISPATCH_MODE` が live でも、KV はローカルの空の KV になるので `accepting` の問題が出る。dispatch させたくないときは `--var DISPATCH_MODE:dry-run` を付ける）。
+6. 通知の経路だけ確かめる: `gh workflow run alert.yml --ref develop -f status=problem -f summary='テスト通知（R1-6 の導入確認）'` → issue が 1 つでき、メールが届くこと。続けて `-f status=resolved -f summary='テスト終了'` で閉じる。
+7. 1〜2 週間 Hermes の見張りと並べ、通知の差が無ければ Hermes の cron を止める（スクリプトは残す）。
+
+### 運用
+
+- 状態: KV `CONFIG_KV` のキー `watchdog_state`（JSON）。`wrangler kv key get --binding CONFIG_KV watchdog_state --remote`（`apps/api` で）。消すと次の実行で「新しい問題」として通知し直し、テーマ数の基準も今の件数から取り直す。
+- 同じ問題は繰り返し通知しない（7 日ごとに再通知）。workflow の失敗は run ごとに新しい通知になる。テーマ数の減少は 1 回だけ知らせ、次の日から新しい件数を基準にする。
+- 止めたいとき: `wrangler.jsonc` の `triggers.crons` を `[]` にしてデプロイ（cron の削除）。急ぎなら GitHub で `alert.yml` を Disable workflow にする（Worker の dispatch は失敗し、Workers Logs に残るだけ）。
+- PAT が失効すると通知も止まる（dispatch が 401）。そのため失効日を 14 日前・3 日前に知らせる。失効後は Hermes の見張り（並行期間中）か、Workers Logs の `alert dispatch failed: 401` でしか分からない。
+- 新しい回の issue（ラベル `conference-watch`）: 新しい pending-edition が出たときだけ書く。自動では公開しない。承認は issue に書いたコマンド（arXiv 経由の `conference-on-demand.yml`）か、公式 proceedings のアダプタ（design 52 §8.3）で一覧を作る。
 
 ## 運用: 削除・訂正の依頼
 

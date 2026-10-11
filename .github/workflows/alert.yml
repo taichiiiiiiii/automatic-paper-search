@@ -1,0 +1,80 @@
+name: alert
+run-name: "alert: ${{ inputs.status }}"
+
+# R1-6 (design 50 P1-1): the notification end of the Cloudflare Worker
+# watchdog (apps/api/src/watchdog/scheduled.ts). The Worker's daily Cron
+# Trigger dispatches this workflow with the existing GH_DISPATCH_PAT
+# (Actions: write) only when the set of problems changes (plus a weekly
+# reminder while it persists, and once with status=resolved when healthy
+# again). This job then opens ONE open issue labelled `watchdog`, or
+# comments on it, with GITHUB_TOKEN (issues: write) — GitHub e-mails the
+# owner (the body @mentions them so it is a "participating" notification).
+# No checkout, no secrets: the inputs only ever reach the shell via env.
+
+on:
+  workflow_dispatch:
+    inputs:
+      status:
+        description: "problem = open/comment the watchdog issue; resolved = comment and close it"
+        required: true
+        default: problem
+        type: choice
+        options:
+          - problem
+          - resolved
+      summary:
+        description: "Markdown summary from the Worker watchdog"
+        required: true
+        type: string
+
+permissions: {}
+
+concurrency:
+  group: watchdog-alert
+  cancel-in-progress: false
+
+jobs:
+  issue:
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    steps:
+      - name: Open, comment on, or close the watchdog issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          OWNER: ${{ github.repository_owner }}
+          STATUS: ${{ inputs.status }}
+          SUMMARY: ${{ inputs.summary }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          label=watchdog
+          case "$STATUS" in
+            problem|resolved) ;;
+            *) echo "::error::unknown status"; exit 1 ;;
+          esac
+          body="$RUNNER_TEMP/watchdog-body.md"
+          {
+            printf '%s\n\n' "$SUMMARY"
+            printf -- '---\n@%s — PaperPilot の Cloudflare Worker の見張り（Cron Trigger、apps/api/src/watchdog）からの通知。実行: %s\n' "$OWNER" "$RUN_URL"
+          } > "$body"
+          num="$(gh issue list --label "$label" --state open --limit 1 --json number --jq '.[0].number // empty')"
+          if [ "$STATUS" = resolved ]; then
+            if [ -n "$num" ]; then
+              gh issue comment "$num" --body-file "$body"
+              gh issue close "$num" --reason completed
+            else
+              echo "no open watchdog issue; nothing to resolve"
+            fi
+            exit 0
+          fi
+          if [ -n "$num" ]; then
+            gh issue comment "$num" --body-file "$body"
+          else
+            gh label create "$label" --color B60205 \
+              --description "PaperPilot production watchdog (Worker cron)" --force
+            gh issue create --title "PaperPilot 本番の見張り: 問題あり" --label "$label" --body-file "$body"
+          fi

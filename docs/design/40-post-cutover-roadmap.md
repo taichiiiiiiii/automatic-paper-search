@@ -84,6 +84,7 @@
 | R1-3 | 各学会・テーマの snapshot date を画面に出す（鮮度の表示） | 全ページで日付が見える |
 | R1-4 | Durable Object を `migrations` から `exports` 形式に移す（Worker を旧版へ戻せる期間が終わってから。39 の注意） | 移行後も `/api/health`・上限カウンタが動く |
 | R1-5 | 期限の管理: PAT（2027-01-07 失効）の更新手順を手順書に書き、失効 2 週間前に知らせる仕組みを置く | 手順と通知がある |
+| R1-6 | 見張りを Cloudflare Worker の Cron Trigger に移す（design 50 P1-1・P1-4）。異常は `alert.yml` → `watchdog` issue（メール）、PAT の失効 14 日前の通知（R1-5 の通知部分）、週 1 回の新しい回の検知（`conference-watch.yml`、design 52 §8）。実装済み・☐ Worker のデプロイ待ち（design 50 §9、runbook「運用: Worker の見張り」） | デプロイ後、Hermes の見張りと 1〜2 週間並べて差が無い |
 
 ### R2 系譜を公開できる状態にする（11 月〜12 月、最優先の価値）
 

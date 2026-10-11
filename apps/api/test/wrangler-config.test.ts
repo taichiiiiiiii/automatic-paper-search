@@ -73,6 +73,17 @@ describe("apps/api/wrangler.jsonc (production, p5-plan.md §2 A6)", () => {
   it("has no D1 binding", () => {
     expect(production.d1_databases).toBeUndefined();
   });
+
+  it("has exactly ONE Cron Trigger (R1-6; Free plan: 5 per account), daily", () => {
+    const crons = (production.triggers as { crons?: string[] } | undefined)?.crons;
+    expect(crons).toEqual(["30 0 * * *"]);
+  });
+});
+
+describe("apps/api/wrangler.preview.jsonc has no Cron Trigger (R1-6)", () => {
+  it("never schedules the watchdog from the preview Worker", () => {
+    expect(preview.triggers).toBeUndefined();
+  });
 });
 
 describe("apps/api/wrangler.preview.jsonc (unchanged preview config, now its own file)", () => {
