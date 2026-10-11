@@ -13,22 +13,37 @@
 }
 
 .lede {
-  max-width: 34rem;
+  max-width: 36rem;
   margin: 0;
   font-family: var(--font-ja);
-  font-size: clamp(1.05rem, 0.95rem + 0.4vw, 1.35rem);
-  line-height: 1.65;
+  font-size: clamp(1.3rem, 1.05rem + 1vw, 1.85rem);
+  font-weight: 600;
+  line-height: 1.45;
   color: var(--color-ink);
   letter-spacing: 0.01em;
+  /* Break Japanese at phrase boundaries instead of mid-word. */
+  word-break: auto-phrase;
+  text-wrap: balance;
 }
+.sublede {
+  max-width: 40rem;
+  margin: 0.5rem 0 1.4rem;
+  font-family: var(--font-ja);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--color-ink-muted);
+}
+.sublede a {
+  color: var(--color-accent-strong);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+/* The h1 stays in one typeface: serif Latin next to bold Japanese sans
+   looked like two different headings. */
 .ledeEm {
-  font-family: var(--font-serif);
   font-style: normal;
-  font-weight: 500;
 }
 .ledeN {
-  font-family: var(--font-serif);
-  font-weight: 500;
   font-feature-settings: "tnum";
 }
 
@@ -103,103 +118,108 @@
   margin-bottom: 0.45rem;
 }
 
-/* Collapsible conference list. */
+/* Conference catalogs: an always-visible grid of tiles. */
 .confs {
   margin-top: clamp(2.5rem, 1.5rem + 3vw, 4rem);
   border-top: 1px solid var(--color-rule);
   padding-top: 1.4rem;
 }
-.confsToggle {
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  width: 100%;
-  padding: 0.5rem 0;
-  background: transparent;
-  border: 0;
-  cursor: pointer;
-  font-family: var(--font-mono);
-  font-size: var(--text-tag);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+.sectionHeading {
+  margin: 0;
+  font-family: var(--font-ja);
+  font-size: clamp(1.15rem, 1rem + 0.6vw, 1.45rem);
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--color-ink);
+}
+.sectionLede {
+  max-width: 44rem;
+  margin: 0.35rem 0 0;
+  font-family: var(--font-ja);
+  font-size: 0.9rem;
+  line-height: 1.7;
   color: var(--color-ink-muted);
-  text-align: left;
 }
-.confsToggle:hover {
+.sectionLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.5rem;
+  margin: 0.9rem 0 0;
+  font-family: var(--font-ja);
+  font-size: 0.9rem;
+}
+.sectionLinks a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 44px;
   color: var(--color-accent-strong);
-}
-.confsToggle:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 3px;
-  border-radius: 3px;
-}
-.confsCaret {
-  display: inline-block;
-  font-size: 0.85em;
-  color: var(--color-ink-subtle);
 }
 .confsList {
   list-style: none;
-  margin: 0.8rem 0 0;
+  margin: 0.9rem 0 0;
   padding: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  column-gap: clamp(1.25rem, 3vw, 2.5rem);
-  row-gap: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
 }
 @media (min-width: 640px) {
-  .confsList {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-@media (min-width: 1024px) {
   .confsList {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
+@media (min-width: 1024px) {
+  .confsList {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
 .conf {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.75rem;
-  padding: 0.65rem 0;
-  border-bottom: 1px solid var(--color-rule);
+  margin: 0;
 }
 .confLink {
-  font-family: var(--font-serif);
-  font-size: 1rem;
-  font-weight: 500;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-height: 44px;
+  height: 100%;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--color-rule);
+  border-radius: 0.5rem;
   color: var(--color-ink);
   text-decoration: none;
-  letter-spacing: -0.005em;
+  transition:
+    border-color var(--duration-fast) var(--ease),
+    background-color var(--duration-fast) var(--ease);
 }
 .confLink:hover {
-  color: var(--color-accent-strong);
+  border-color: var(--color-accent);
+  background: var(--color-surface-elevated);
+  color: var(--color-ink);
   text-decoration: none;
 }
 .confLink:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
-  border-radius: 2px;
+  border-radius: 0.5rem;
+}
+.confName {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: -0.005em;
 }
 .confCount {
-  font-family: var(--font-serif);
-  font-size: 0.95rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
   font-variant-numeric: tabular-nums;
   color: var(--color-ink-muted);
 }
 
-/* Audited-lineage shelf -- static truthful-closed state only. */
+/* Audited-lineage shelf (テーマ別の系譜). */
 .lineages {
-  margin-top: 1.5rem;
+  margin-top: clamp(2rem, 1.5rem + 2vw, 3rem);
   border-top: 1px solid var(--color-rule);
-  padding-top: 0.75rem;
-}
-.lineagesHeading {
-  margin: 0;
-  font-family: var(--font-serif);
-  font-size: clamp(1.35rem, 1.1rem + 1vw, 1.8rem);
-  font-weight: 500;
+  padding-top: 1.4rem;
 }
 .lineagesList {
   list-style: none;
@@ -216,6 +236,9 @@
 .lineageItem {
   display: flex;
   flex-direction: column;
+  /* Keep the publication badge at its own width (it stretched across the
+     whole card in a column flexbox). */
+  align-items: flex-start;
   gap: 0.3rem;
   padding: 0.9rem 1rem;
   border: 1px solid var(--color-rule);
@@ -252,16 +275,14 @@
   .s0 {
     padding-top: clamp(1.4rem, 1rem + 2vw, 2rem);
   }
-  .lede {
-    font-size: 1rem;
-  }
-  .confLink {
-    font-size: 0.92rem;
+  .confName {
+    font-size: 0.95rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .chip {
+  .chip,
+  .confLink {
     transition: none;
   }
 }
