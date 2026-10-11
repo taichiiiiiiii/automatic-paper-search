@@ -22,7 +22,13 @@
  * each function's docstring for its exact contract.
  */
 import { BASE_PATH } from "@paperpilot/core/site";
+import {
+  buildThemePositionIndex,
+  type PositionTheme,
+  type ThemePositionIndex,
+} from "./lineage/theme-position";
 import type { ThemeManifestEntry, ThemeQualityRollup } from "./themes-gallery";
+import { eligibleThemeManifest } from "./themes-gallery";
 import type { LineageArtifact, QualityManifest, QualityRow } from "./themes-quality";
 import {
   fetchJsonWithSha256,
@@ -196,4 +202,48 @@ export async function fetchThemeApiAccepting(apiBase: string | null | undefined)
   } catch {
     return false;
   }
+}
+
+/**
+ * Index of every published theme lineage by paper identifier, for the
+ * catalog's "系譜での位置" (design doc 48 P1-3). Same gate as the theme
+ * page: only manifest entries with a published quality row, and only
+ * artifacts that pass `fetchThemeArtifact` (hash + strict parse). Any
+ * failure leaves that theme out; a failed manifest/quality fetch gives an
+ * empty index (nothing shown), never an error on the catalog card.
+ * Memoised per page load (a few hundred KB for the 4 public themes).
+ */
+let positionIndexPromise: Promise<ThemePositionIndex> | null = null;
+
+export function loadThemePositionIndex(): Promise<ThemePositionIndex> {
+  if (!positionIndexPromise) {
+    positionIndexPromise = (async () => {
+      const [manifest, quality] = await Promise.all([
+        fetchThemesManifest(),
+        fetchLineageQualityManifest(),
+      ]);
+      if (manifest.status !== "ok" || !quality) return new Map();
+      const eligible = eligibleThemeManifest(manifest.data, quality);
+      const loaded = await Promise.all(
+        eligible.map(async (entry): Promise<PositionTheme | null> => {
+          const artifact = await fetchThemeArtifact(entry.slug, quality);
+          if (!artifact) return null;
+          const name =
+            entry.theme ||
+            (typeof artifact.meta.theme === "string" ? artifact.meta.theme : entry.slug);
+          return { slug: entry.slug, theme: name, tier: entry.publication_tier ?? null, artifact };
+        }),
+      );
+      return buildThemePositionIndex(loaded.filter((t): t is PositionTheme => t !== null));
+    })().catch(() => {
+      positionIndexPromise = null;
+      return new Map();
+    });
+  }
+  return positionIndexPromise;
+}
+
+/** Test hook: forget the memoised index. */
+export function resetThemePositionIndexForTests(): void {
+  positionIndexPromise = null;
 }

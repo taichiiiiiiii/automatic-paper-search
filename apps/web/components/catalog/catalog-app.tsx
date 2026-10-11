@@ -41,6 +41,7 @@ import {
 } from "../../lib/catalog-sort";
 import { buildCatalogUrl, readCatalogUrlState } from "../../lib/catalog-url-state";
 import { BASE_PATH } from "../../lib/config";
+import { loadThemePositionIndex } from "../../lib/data-themes";
 import {
   catalogPapersToBibtex,
   catalogPapersToCsv,
@@ -48,6 +49,7 @@ import {
   downloadText,
   exportFilename,
 } from "../../lib/export-formats";
+import { lookupThemePositions, type ThemePositionIndex } from "../../lib/lineage/theme-position";
 import { CatalogBackToTop } from "./catalog-back-to-top";
 import { CatalogFilters } from "./catalog-filters";
 import { CatalogHero } from "./catalog-hero";
@@ -108,6 +110,9 @@ export function CatalogApp({
 
   const [fullAbstracts, setFullAbstracts] = useState<Map<string, FullAbstractState>>(new Map());
   const [pilotLineage, setPilotLineage] = useState<Map<string, PilotLineageStatus>>(new Map());
+  // Design doc 48 P1-3: published theme lineages indexed by paper
+  // identifier, loaded once on the first card selection.
+  const [themePositionIndex, setThemePositionIndex] = useState<ThemePositionIndex | null>(null);
 
   // Mirrors of the latest render's state, read from callbacks that must
   // not re-subscribe on every state change (the popstate listener, the
@@ -405,6 +410,19 @@ export function CatalogApp({
       owner.abandon();
     };
   }, [selectedPaperId, conf]);
+
+  // --- "系譜での位置" (design doc 48 P1-3) ----------------------------------
+  const wantsThemePositions = selectedPaperId !== null;
+  useEffect(() => {
+    if (!wantsThemePositions || themePositionIndex) return;
+    let active = true;
+    loadThemePositionIndex().then((index) => {
+      if (active) setThemePositionIndex(index);
+    });
+    return () => {
+      active = false;
+    };
+  }, [wantsThemePositions, themePositionIndex]);
 
   // --- scroll/focus the selected card --------------------------------------
   useEffect(() => {
@@ -784,6 +802,11 @@ export function CatalogApp({
                     p.paper_id === selectedPaperId ? pilotLineage.get(p.paper_id) : undefined
                   }
                   pilotLineageHref={pilotLineageHref}
+                  themePositions={
+                    p.paper_id === selectedPaperId && themePositionIndex
+                      ? lookupThemePositions(themePositionIndex, p)
+                      : undefined
+                  }
                   revealIndex={resolveRevealIndex(revealBatch, i)}
                 />
               ))}

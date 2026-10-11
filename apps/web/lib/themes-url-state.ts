@@ -42,6 +42,28 @@ export interface TreeUrlState {
   node: string | null;
   /** `null` = param absent; `?main=off|only` (design doc 48 P0-1). */
   mainPath: MainPathMode | null;
+  /** Paper selected in the Prior / Derivative panel (`?focus=`, design
+   * doc 48 P0-5 / P1-3). Raw value; resolved like `node` by the caller.
+   * Also the scroll target when `?node=` is absent. */
+  focus: string | null;
+  /** Second paper of the two-paper path (`?to=`, design doc 48 P1-5). */
+  pathTo: string | null;
+  /** `?view=timeline` shows the year × citation view (design doc 48 P1-5). */
+  view: ThemeView | null;
+}
+
+/** Theme page main view: the family tree (default) or the year ×
+ * citation-count timeline. */
+export type ThemeView = "tree" | "timeline";
+export const DEFAULT_THEME_VIEW: ThemeView = "tree";
+
+/** Upper bound for a node id taken from the URL (ids are short; this
+ * only stops a pathological query from being carried around). */
+const MAX_NODE_PARAM = 300;
+
+function nodeParam(params: URLSearchParams, name: string): string | null {
+  const raw = params.get(name);
+  return typeof raw === "string" && raw.length > 0 && raw.length <= MAX_NODE_PARAM ? raw : null;
 }
 
 /** Main path (本流) display: emphasise it (default), show only it, or off. */
@@ -89,6 +111,9 @@ export function readTreeUrlState(search: string): TreeUrlState {
   const mainPath: MainPathMode | null =
     mainRaw === "off" || mainRaw === "only" || mainRaw === "highlight" ? mainRaw : null;
 
+  const viewRaw = params.get("view");
+  const view: ThemeView | null = viewRaw === "timeline" || viewRaw === "tree" ? viewRaw : null;
+
   return {
     xAxisMode,
     yearMin,
@@ -98,6 +123,9 @@ export function readTreeUrlState(search: string): TreeUrlState {
     hideOrphans,
     node,
     mainPath,
+    focus: nodeParam(params, "focus"),
+    pathTo: nodeParam(params, "to"),
+    view,
   };
 }
 
@@ -117,6 +145,11 @@ export interface TreeUrlWriteState {
   hideOrphans: boolean;
   /** Optional so older callers keep compiling; absent = default. */
   mainPath?: MainPathMode;
+  /** Selected paper / path target / view. A key that is absent leaves
+   * the URL param untouched; `null` removes it. */
+  focus?: string | null;
+  pathTo?: string | null;
+  view?: ThemeView;
 }
 
 /**
@@ -183,6 +216,19 @@ export function writeTreeUrlParams(params: URLSearchParams, s: TreeUrlWriteState
     params.set("main", s.mainPath);
   } else {
     params.delete("main");
+  }
+
+  if ("focus" in s) {
+    if (s.focus) params.set("focus", s.focus);
+    else params.delete("focus");
+  }
+  if ("pathTo" in s) {
+    if (s.pathTo) params.set("to", s.pathTo);
+    else params.delete("to");
+  }
+  if ("view" in s) {
+    if (s.view && s.view !== DEFAULT_THEME_VIEW) params.set("view", s.view);
+    else params.delete("view");
   }
 }
 

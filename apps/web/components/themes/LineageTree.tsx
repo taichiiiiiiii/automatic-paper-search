@@ -34,6 +34,7 @@ import {
 } from "../../lib/export-formats";
 import { abstractExcerptSourceLabel, paperLink } from "../../lib/lineage/evidence";
 import { computeMainPath } from "../../lib/lineage/main-path";
+import { priorDerivative, shortestLineagePath } from "../../lib/lineage/paper-neighbors";
 import { exportPng, exportSvg } from "../../lib/themes-export";
 import { formatStars, formatVenue } from "../../lib/themes-format";
 import type { LineageArtifact } from "../../lib/themes-quality";
@@ -64,10 +65,13 @@ import {
   type MainPathMode,
   readTreeUrlState,
   saveThemePrefs,
+  type ThemeView,
   writeTreeUrlParams,
 } from "../../lib/themes-url-state";
 import { EdgeEvidencePanel, EdgeRelationList, edgeKey, relationLabelJa } from "./EdgeEvidence";
 import styles from "./LineageTree.module.css";
+import { PaperNeighborsPanel } from "./PaperNeighborsPanel";
+import { ThemeTimeline } from "./ThemeTimeline";
 
 const X_AXIS_BUTTON: Record<XAxisMode, { icon: string; label: string; title: string }> = {
   rank: { icon: "📊", label: "順位", title: "年内の引用数ランキング (既定): 左ほど高被引用" },
@@ -138,6 +142,12 @@ const MAIN_PATH_BUTTON: Record<MainPathMode, { label: string; title: string }> =
 };
 const MAIN_PATH_MODES: readonly MainPathMode[] = ["highlight", "only", "off"];
 
+const VIEW_BUTTON: Record<ThemeView, { label: string; title: string }> = {
+  tree: { label: "🌳 家系図", title: "年ごとの家系図" },
+  timeline: { label: "📈 年×被引用", title: "横軸に年、縦軸に被引用数（対数）で並べる" },
+};
+const VIEWS: readonly ThemeView[] = ["tree", "timeline"];
+
 export function LineageTree({
   artifact,
   slug,
@@ -170,6 +180,46 @@ export function LineageTree({
   const mainPathKeys = useMemo(() => new Set(mainPath.edges.map(edgeKey)), [mainPath]);
   const mainPathNodeIds = useMemo(() => new Set(mainPath.nodeIds), [mainPath]);
   const showMainPath = mainPathMode !== "off" && mainPathKeys.size > 0;
+
+  // ---- View (family tree / year × citation) + selected paper -------------
+  // Design doc 48 P0-5 / P1-5: `?focus=` selects a paper for the Prior /
+  // Derivative panel, `?to=` the other end of the two-paper path, and
+  // `?view=timeline` switches to the year × citation view. Ids resolve
+  // like `?node=` (canonical / alias / graph id); unknown ids are ignored.
+  const [view, setView] = useState<ThemeView>(() => urlState.view ?? "tree");
+  const [selectedPaperId, setSelectedPaperId] = useState<string | null>(
+    () =>
+      (urlState.focus
+        ? resolveFocus({ nodes: artifact.nodes, root: artifact.root }, urlState.focus)?.id
+        : null) ?? null,
+  );
+  const [pathToId, setPathToId] = useState<string | null>(
+    () =>
+      (urlState.pathTo
+        ? resolveFocus({ nodes: artifact.nodes, root: artifact.root }, urlState.pathTo)?.id
+        : null) ?? null,
+  );
+  const neighbors = useMemo(
+    () =>
+      selectedPaperId ? priorDerivative(artifact.nodes, artifact.edges, selectedPaperId) : null,
+    [artifact.nodes, artifact.edges, selectedPaperId],
+  );
+  const lineagePath = useMemo(
+    () =>
+      selectedPaperId && pathToId && selectedPaperId !== pathToId
+        ? shortestLineagePath(artifact.nodes, artifact.edges, selectedPaperId, pathToId)
+        : null,
+    [artifact.nodes, artifact.edges, selectedPaperId, pathToId],
+  );
+  const pathKeys = useMemo(
+    () => new Set(lineagePath ? lineagePath.steps.map((st) => edgeKey(st.edge)) : []),
+    [lineagePath],
+  );
+  const pathNodeIds = useMemo(() => new Set(lineagePath?.nodeIds ?? []), [lineagePath]);
+  const selectPaper = useCallback((id: string | null) => {
+    setSelectedPaperId(id);
+    setPathToId((cur) => (cur !== null && cur === id ? null : cur));
+  }, []);
 
   // ---- Filters (search / year range / relation chips) -----------------
   const [searchQuery, setSearchQuery] = useState(() => urlState.searchQuery ?? "");
@@ -286,12 +336,26 @@ export function LineageTree({
         visibleRelations,
         hideOrphans,
         mainPath: mainPathMode,
+        focus: selectedPaperId,
+        pathTo: selectedPaperId ? pathToId : null,
+        view,
       });
       window.history.replaceState(null, "", url.toString());
     } catch {
       /* ignore -- URL/history access unexpectedly unavailable */
     }
-  }, [mode, yearRange, searchQuery, visibleRelations, hideOrphans, dataYearExtents, mainPathMode]);
+  }, [
+    mode,
+    yearRange,
+    searchQuery,
+    visibleRelations,
+    hideOrphans,
+    dataYearExtents,
+    mainPathMode,
+    selectedPaperId,
+    pathToId,
+    view,
+  ]);
 
   const toggleRelation = useCallback((r: Relation) => {
     setVisibleRelations((prev) => {
@@ -541,13 +605,19 @@ export function LineageTree({
   // (SCR-24): an unrecognised/mismatched ?node= value never falls back
   // to the root or "first node" -- resolveFocus itself returns `null`
   // in that case, and this effect then simply does nothing.
+  // `?focus=` (design doc 48 P1-3, the catalog's "系譜での位置" link) is
+  // also a scroll target when `?node=` is absent.
+  const permalinkRaw = urlState.node ?? urlState.focus;
   const permalinkFocus = useMemo(
-    () => resolveFocus({ nodes: artifact.nodes, root: artifact.root }, urlState.node),
-    [artifact.nodes, artifact.root, urlState.node],
+    () =>
+      permalinkRaw
+        ? resolveFocus({ nodes: artifact.nodes, root: artifact.root }, permalinkRaw)
+        : null,
+    [artifact.nodes, artifact.root, permalinkRaw],
   );
   const scrolledToPermalinkRef = useRef(false);
   useEffect(() => {
-    if (!urlState.node || !permalinkFocus || scrolledToPermalinkRef.current) return;
+    if (!permalinkRaw || !permalinkFocus || scrolledToPermalinkRef.current) return;
     const container = scrollRef.current;
     const pos = positionById.get(permalinkFocus.id);
     // The focus node might not be in `positionById` yet (hidden by the
@@ -561,8 +631,9 @@ export function LineageTree({
       top: Math.max(0, pos.y - container.clientHeight / 2 + NODE_H / 2),
       behavior: "auto",
     });
-  }, [urlState.node, permalinkFocus, positionById]);
+  }, [permalinkRaw, permalinkFocus, positionById]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `view` is not read in the body -- switching back from the timeline must re-run the paint so the minimap visibility is recomputed for the tree.
   useEffect(() => {
     const container = scrollRef.current;
     const canvas = minimapCanvasRef.current;
@@ -619,7 +690,7 @@ export function LineageTree({
       window.removeEventListener("resize", paint);
       if (raf) cancelAnimationFrame(raf);
     };
-  }, [positioned, totalW, totalH]);
+  }, [positioned, totalW, totalH, view]);
 
   function panToMinimapPoint(ev: { clientX: number; clientY: number }) {
     const canvas = minimapCanvasRef.current;
@@ -810,6 +881,29 @@ export function LineageTree({
       >
         {shareStatus}
       </p>
+
+      <fieldset
+        className="mt-2 flex flex-wrap items-center gap-1 border-0 p-0 text-xs"
+        data-view-toggle
+      >
+        <legend className="mr-1 inline text-ink-subtle">表示</legend>
+        {VIEWS.map((v) => (
+          <button
+            key={v}
+            type="button"
+            title={VIEW_BUTTON[v].title}
+            aria-pressed={view === v}
+            onClick={() => setView(v)}
+            className={`rounded-md border px-2 py-1 ${
+              view === v
+                ? "border-accent bg-accent/10 text-accent-strong"
+                : "border-rule text-ink-muted hover:border-rule-strong"
+            }`}
+          >
+            {VIEW_BUTTON[v].label}
+          </button>
+        ))}
+      </fieldset>
 
       {mainPathKeys.size > 0 && (
         <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-ink-muted">
@@ -1025,13 +1119,28 @@ export function LineageTree({
         </div>
       )}
 
-      <div className="relative mt-3">
+      {view === "timeline" && (
+        <ThemeTimeline
+          ref={svgRef}
+          nodes={nodesForLayout}
+          edges={visibleEdges}
+          selectedId={selectedPaperId}
+          onSelectPaper={selectPaper}
+          mainPathKeys={showMainPath ? mainPathKeys : null}
+          mainPathNodeIds={showMainPath ? mainPathNodeIds : null}
+          pathKeys={pathKeys}
+          pathNodeIds={pathNodeIds}
+          matchSet={matchSet}
+        />
+      )}
+
+      <div className={view === "tree" ? "relative mt-3" : "hidden"}>
         <div
           ref={scrollRef}
           className="max-h-[70vh] overflow-auto rounded-md border border-rule bg-surface"
         >
           <svg
-            ref={svgRef}
+            ref={view === "tree" ? svgRef : undefined}
             role="img"
             aria-label="テーマの時系列家系図（関係の線を選ぶと根拠を表示）"
             width={svgW}
@@ -1068,16 +1177,26 @@ export function LineageTree({
                 const key = edgeKey(e);
                 const strokeClass = RELATION_STROKE_CLASS[e.relation] ?? DEFAULT_STROKE_CLASS;
                 const onMain = showMainPath && mainPathKeys.has(key);
+                const onPath = pathKeys.has(key);
                 const baseWidth = Math.max(1, e.confidence * 2);
                 const strokeWidth =
-                  selectedEdgeKey === key ? (onMain ? 7 : 4) : onMain ? 5 : baseWidth;
+                  selectedEdgeKey === key
+                    ? onMain || onPath
+                      ? 7
+                      : 4
+                    : onPath
+                      ? 6
+                      : onMain
+                        ? 5
+                        : baseWidth;
                 const strokeOpacity =
-                  selectedEdgeKey === key || onMain ? 1 : showMainPath ? 0.3 : 0.7;
+                  selectedEdgeKey === key || onMain || onPath ? 1 : showMainPath ? 0.3 : 0.7;
                 return (
                   // biome-ignore lint/a11y/noStaticElementInteractions: mirrors hover/focus bubbling from the focusable hit-area <line> below (tabIndex + aria-label) to show the tooltip; no WAI-ARIA role Biome suggests (group/fieldset) applies to a non-form SVG grouping element.
                   <g
                     key={key}
                     data-main-path={onMain ? "1" : undefined}
+                    data-lineage-path={onPath ? "1" : undefined}
                     onMouseEnter={() => setHoveredEdgeKey(key)}
                     onMouseLeave={() =>
                       setHoveredEdgeKey((current) => (current === key ? null : current))
@@ -1146,7 +1265,11 @@ export function LineageTree({
               // `p.is_focus` (which marks the theme's own seed papers,
               // not an arbitrary shared-link target).
               const permalinkClass =
-                permalinkFocus && p.id === permalinkFocus.id ? "ring-2 ring-accent" : "";
+                (permalinkFocus && p.id === permalinkFocus.id) ||
+                p.id === selectedPaperId ||
+                pathNodeIds.has(p.id)
+                  ? "ring-2 ring-accent"
+                  : "";
               return (
                 // biome-ignore lint/a11y/noStaticElementInteractions: same rationale as the edge <g> above -- mirrors hover/focus bubbling from the focusable card <a> inside the foreignObject to show the popover.
                 <g
@@ -1350,8 +1473,23 @@ export function LineageTree({
       </div>
 
       <p className="mt-2 text-xs text-ink-subtle">
-        線をクリック（タップ、または Tab で選んで Enter）すると、関係の根拠と引用文を表示します。
+        {view === "tree"
+          ? "線をクリック（タップ、または Tab で選んで Enter）すると、関係の根拠と引用文を表示します。"
+          : "点を選ぶと、その論文の土台と発展を下に表示します。線の上に置くと関係が出ます。"}
       </p>
+
+      <PaperNeighborsPanel
+        nodes={artifact.nodes}
+        nodeById={nodeById}
+        selectedId={selectedPaperId}
+        onSelectPaper={selectPaper}
+        neighbors={neighbors}
+        pathToId={pathToId}
+        onPathTo={setPathToId}
+        path={lineagePath}
+        onShowEvidence={selectEdge}
+        mainPathNodeIds={mainPathNodeIds}
+      />
 
       {selectedEdge && (
         <EdgeEvidencePanel
