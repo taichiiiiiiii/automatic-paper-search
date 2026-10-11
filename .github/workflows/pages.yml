@@ -20,6 +20,10 @@ on:
       - "apps/pipeline/src/release/**"
       - ".github/workflows/pages*.yml"
       - ".github/actions/**"
+  # Manual re-release of the develop tip (e.g. after a bot push made with
+  # GITHUB_TOKEN, which never triggers this workflow). pages-release's admit
+  # job still refuses any ref other than develop.
+  workflow_dispatch:
 
 permissions: {}
 
