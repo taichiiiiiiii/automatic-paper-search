@@ -607,29 +607,6 @@
       "is_focus": false
     },
     {
-      "id": "openalex:W2964321699",
-      "title": "Advances In Deep Learning On Graphs (Gsp'18 Workshop)",
-      "year": 2016,
-      "venue": "Figshare",
-      "venue_tier": "preprint",
-      "authors": [
-        "Michaël Defferrard"
-      ],
-      "kinds": [],
-      "citation_count": 4973,
-      "github_stars": 0,
-      "tldr": "Lecture at the EPFL master course A Network Tour of Data Science (https://github.com/mdeff/ntds_2016).",
-      "short_abstract": "Lecture at the EPFL master course A Network Tour of Data Science (https://github.com/mdeff/ntds_2016).",
-      "doi": "10.5281/zenodo.1286817",
-      "aliases": [
-        [
-          "doi",
-          "10.5281/zenodo.1286817"
-        ]
-      ],
-      "is_focus": false
-    },
-    {
       "id": "openalex:W2972317931",
       "title": "GNNExplainer: Generating Explanations for Graph Neural Networks",
       "year": 2019,
@@ -985,9 +962,9 @@
       "dst": "openalex:W2116341502",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「The Graph Neural Network Model」(2008) は「A new model for learning in graph domains」(2006) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「The Graph Neural Network Model」(2008) は「A new model for learning in graph domains」(2006) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -995,11 +972,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "75aeca7dba13368a71ae4f32e0c58df9f2a0125499d93458ad39fc728d4bb812"
+          "kind": "citation-list",
+          "sha256": "854955de61b89b78bb6acee2bc4dd3c216f7f9b74c936d8d27f653a1fbc634ec"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -1012,9 +989,9 @@
       "dst": "openalex:W2519887557",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.88,
-      "confidence": 0.88,
-      "rationale": "GNNの先行研究としてGori et al. 2005・2009を参照し、背景情報を提供 引用文: \"the process of learning embeddings, thereby removing one step from the aforementioned pipeline. 4.2 NEURAL NETWORKS ON GRAPHS Neural networks that operate on graphs have previously been introduced in Gori et al. (2005); Scarselli et al. (2…\"",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Semi-Supervised Classification …」(2016) は 「A new model for learning in gra…」(2006) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"the process of learning embeddings, thereby removing one step from the aforementioned pipeline. 4.2 NEURAL NETWORKS ON GRAPHS Neural networks that operate on graphs have previously been introduced in Gori et al. (2005); Scarselli et al. (2…\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1022,14 +999,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "1e364d375c3c926ceee9d4429b5e5f47513290fec79d515b2986e4f5468ec7ce"
+          "kind": "citation-context",
+          "sha256": "98d00447e38f3ff7db8cf659543a50b1847663b45fac686a03a23fd8e49d2737"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -1158,7 +1135,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "115815e57bca162559260434df5c7c8c00c7514e26cfa8dea49cbff87268e302"
+          "sha256": "eee921ee8567aa52dcaf3c7bff9b56f17b91fa5d74a98258c1e9523e60f9d54a"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -1363,9 +1340,9 @@
       "dst": "openalex:W2788919350",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.88,
-      "confidence": 0.88,
-      "rationale": "The Graph Neural Network Modelを関連研究として言及している 引用文: \"…on generalizing neural networks to graphs: 1) given a single graph structure, infer signals in graph forms or infer labels of individual nodes (Scarselli et al. 2009; Bruna et al. 2013; Henaff, Bruna, and LeCun 2015; Li et al. 2015; Deffe…\"",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「An End-to-End Deep Learning Arc…」(2018) は 「The Graph Neural Network Model」(2008) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"…on generalizing neural networks to graphs: 1) given a single graph structure, infer signals in graph forms or infer labels of individual nodes (Scarselli et al. 2009; Bruna et al. 2013; Henaff, Bruna, and LeCun 2015; Li et al. 2015; Deffe…\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1373,14 +1350,41 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "392ed6629b92f3f42b05fe90493e727dcaf5549d5b8a0f7715c588ce93a075a4"
+          "kind": "citation-context",
+          "sha256": "3029456a2c91d7eea7bdf1647aeeca8c93647291507c16ddc2bb30d34db8c877"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2116341502",
+      "dst": "openalex:W2811124557",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Hierarchical graph representation learning with differentia…」(2018) は「The Graph Neural Network Model」(2008) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "63ed60e0e8a0ddd7cccaa1c8c032c198f772bc60df5863f430ddf2d36cfde0ce"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -1417,9 +1421,9 @@
       "dst": "openalex:W2912636151",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.8,
-      "confidence": 0.8,
-      "rationale": "Scarselli et al. 2009を参照し、背景情報として提示 引用文: \"Finally, similarly to GNNs operating in the node domain (Scarselli et al., 2009; Gallicchio & Micheli, 2010), each GCS layer computes the ﬁltered signal ¯ x i at vertex i as a combination of signals x ( t ) j in its 1-hop neighborhood, j ∈…\"",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Graph Neural Networks with Conv…」(2021) は 「The Graph Neural Network Model」(2008) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Finally, similarly to GNNs operating in the node domain (Scarselli et al., 2009; Gallicchio & Micheli, 2010), each GCS layer computes the ﬁltered signal ¯ x i at vertex i as a combination of signals x ( t ) j in its 1-hop neighborhood, j ∈…\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1427,14 +1431,41 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "9781bfdba7db47b7dc5e85f11ad455a67f4260b1036dc3771e327673af9da055"
+          "kind": "citation-context",
+          "sha256": "da5dcdbc998a189c6898488921972dd0a94f78a9e4f5f9a66d0cece408b2743b"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2116341502",
+      "dst": "openalex:W2963984147",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Diffusion-Convolutional Neural Networks」(2016) は「The Graph Neural Network Model」(2008) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "16d815560b287338371634f9fe54df09f33e04461ebfeffb7f14150071dc3f18"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -1743,7 +1774,7 @@
       "relation": "baseline_only",
       "conf": 0.8,
       "confidence": 0.8,
-      "rationale": "「A Comprehensive Survey on Graph…」(2020) は 「Structural Deep Network Embeddi…」(2016) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Concurrently, Structural Deep Network Embedding (SDNE) [60] uses a stacked autoencoder to preserve the node ﬁrst-order proximity and second-order proximity jointly.\"",
+      "rationale": "「A Comprehensive Survey on Graph…」(2020) は 「Structural Deep Network Embeddi…」(2016) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"DNGR [59] and SDNE [60] only consider node structural information which is about the connectivity between pairs of nodes.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1820,26 +1851,26 @@
     {
       "src": "openalex:W2406128552",
       "dst": "openalex:W2766453196",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.92,
-      "confidence": 0.92,
-      "rationale": "Graph Attention Networks は Graph Convolutional Networks の局所集約を注意機構で拡張し、隣接ノードへの重み付けを学習している。",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Graph Attention Networks」(2017) は「Learning Convolutional Neural Networks for Graphs」(2016) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
           "version": "p2t-v1"
         },
         "evidence": {
-          "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "84ed744ebb6b611c972879257137e90858a4bd867f069052075b2ea638b4d5cc"
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "c2f2a68dd1563b48a9979872cd82f2d75223d59737953126767bd8c1afe025a6"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v4",
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -1849,9 +1880,9 @@
       "dst": "openalex:W2788919350",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.87,
-      "confidence": 0.87,
-      "rationale": "Learning Convolutional Neural Networks for Graphsを関連研究として言及している 引用文: \"(Niepert, Ahmed, and Kutzkov 2016) used graph labeling methods, especially WL, to sort vertices in a preprocessing step, since the final WL colors define an ordering based on graph topology.\"",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「An End-to-End Deep Learning Arc…」(2018) は 「Learning Convolutional Neural N…」(2016) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Baselines and experimental setting We compare DGCNN with four other deep learning approaches: including three recent neural network approaches for graph classification (PSCN, DCNN, and ECC), and a deep graph kernel approach (DGK).\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1859,14 +1890,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "6258172ee9044cc4bb5d82282261dacb8353f3b69343110bf52125582e68a074"
+          "kind": "citation-context",
+          "sha256": "6fb593f0dbd3c3b7a722686d7b4bc2e16390be93862d12d67a7525f6575a6699"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -1930,36 +1961,9 @@
       "dst": "openalex:W2554952599",
       "rel": "extends",
       "relation": "extends",
-      "conf": 0.96,
-      "confidence": 0.96,
-      "rationale": "Variational Graph Auto‑EncodersはGCNをエンコーダとして採用し、Semi‑Supervised Classification …を拡張している。 引用文: \"For a featureless approach, we simply drop the dependence on X and replace X with the identity matrix in the GCN. Non-probabilistic graph auto-encoder (GAE) model For a non-probabilistic variant of the VGAE model, we calculate embeddings Z…\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "3109f8a46abb1019ad7418d9b90bbec3431da6fb3803cb4de8afcf3dab56b30f"
-        },
-        "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W2519887557",
-      "dst": "openalex:W2558460151",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.7,
-      "confidence": 0.7,
-      "rationale": "「Geometric Deep Learning on Grap…」(2017) は 「Semi-Supervised Classification …」(2016) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We followed verbatim the experimental settings presented in [44, 21].\"",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Variational Graph Auto-Encoders」(2016) は 「Semi-Supervised Classification …」(2016) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"For a featureless approach, we simply drop the dependence on X and replace X with the identity matrix in the GCN. Non-probabilistic graph auto-encoder (GAE) model For a non-probabilistic variant of the VGAE model, we calculate embeddings Z…\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1968,7 +1972,34 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "4237bb8c0b79411b319bef27c57eea73a80212b68343251835a703d259b297aa"
+          "sha256": "205af433b1d4c876ed249e3268fbaaa766404a3fd8e4d9025a5929c704dc57e7"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2519887557",
+      "dst": "openalex:W2558460151",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Geometric Deep Learning on Grap…」(2017) は 「Semi-Supervised Classification …」(2016) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Such a construction allows to formulate previously proposed Geodesic CNN (GCNN) [26] and Anisotropic CNN (ACNN) [7] on manifolds or GCN [21] and DCNN [3] on graphs as particular instances of our approach.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "ec5bfec8826fd3e8020bd3eefac2a7740c557caad17f93836e0def56210455f1"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -2011,9 +2042,9 @@
       "dst": "openalex:W2811124557",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.9,
-      "confidence": 0.9,
-      "rationale": "Semi-Supervised ClassificationのGCN手法と比較している 引用文: \"In our experiments, the GNN model used for DIFFPOOL is built on top of the GRAPHSAGE architecture, as we found this architecture to have superior performance compared to the standard GCN approach as introduced in [21].\"",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Hierarchical graph representati…」(2018) は 「Semi-Supervised Classification …」(2016) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"In our experiments, the GNN model used for DIFFPOOL is built on top of the GRAPHSAGE architecture, as we found this architecture to have superior performance compared to the standard GCN approach as introduced in [21].\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -2021,14 +2052,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "9b027596465798169a49e8d700b912f7f8caefa400e0c2df1264c5849a75023d"
+          "kind": "citation-context",
+          "sha256": "83e1c93a171c89fbe45ae06098e1f240565c23cffbeaf14b84d2004dfcbca2ca"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -2038,9 +2069,9 @@
       "dst": "openalex:W2911286998",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.95,
-      "confidence": 0.95,
-      "rationale": "Semi‑Supervised Classification …はGCNを提案し、Heterogeneous Graph Attention N…はGCNを背景として言及する。 引用文: \"[18] proposes a spectral approach, named Graph Convolutional Network, which designs a graph convolutional network via a localized first-order approximation of spectral graph convolutions.\"",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Heterogeneous Graph Attention N…」(2019) は 「Semi-Supervised Classification …」(2016) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"• GCN [18]: It is a semi-supervised graph convolutional network that designed for the homogeneous graphs.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -2048,14 +2079,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "d7ca7b7aca5f4e8e1f2c56cb3af105667cd5d9c7359e63eafd4c8bdbe5896419"
+          "kind": "citation-context",
+          "sha256": "a21819ea125adeacc6550d821498f11c37562b43ed9a26793b7dd5d47dce83fe"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -2067,7 +2098,7 @@
       "relation": "baseline_only",
       "conf": 0.6,
       "confidence": 0.6,
-      "rationale": "「Graph Convolutional Networks fo…」(2019) は 「Semi-Supervised Classification …」(2016) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"• PV-DM : a paragraph vector model proposed by (Le and Mikolov 2014), which considers the word order.\"",
+      "rationale": "「Graph Convolutional Networks fo…」(2019) は 「Semi-Supervised Classification …」(2016) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -2144,11 +2175,11 @@
     {
       "src": "openalex:W2519887557",
       "dst": "openalex:W2996847713",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.92,
-      "confidence": 0.92,
-      "rationale": "Semi-Supervised Classification with Graph Convolutional NetworksのGCNを基に、Spatial-Temporal Synchronous Graph Convolutional Networksで応用した。 引用文: \"GCN (Kipf and Welling 2017) simpliﬁes ChebNet to a more simple form and achieves state-of-the-art performance on various tasks.\"",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Spatial-Temporal Synchronous Gr…」(2020) は 「Semi-Supervised Classification …」(2016) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"GCN (Kipf and Welling 2017) simpliﬁes ChebNet to a more simple form and achieves state-of-the-art performance on various tasks.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -2156,14 +2187,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "f523ae0df9d2cee1863a830fcee8f99356f00b748b71379d24c6e2bf8fe89bb6"
+          "kind": "citation-context",
+          "sha256": "942231a323dd679f72ecbee6252d28fbcffaa3a77e592468c71f05b63cc2ad8d"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -2171,11 +2202,11 @@
     {
       "src": "openalex:W2519887557",
       "dst": "openalex:W2998496395",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.93,
-      "confidence": 0.93,
-      "rationale": "Semi-Supervised Classification with Graph Convolutional NetworksのGCNを用いて、Over-Smoothing問題の分析と対策を行った。 引用文: \"Finally, the MAD value given the target node pairs is calculated by averaging the non-zero values in ¯ D tgt : (4) Li, Han, and Wu (2018) perform a theoretical analysis on the graph convolution network (GCN), and conclude that performing s…\"",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Measuring and Relieving the Ove…」(2020) は 「Semi-Supervised Classification …」(2016) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"In the shallow GCN, our MADReg method can not effectively improve the model performance because the model has already been well trained and the over-smoothing issue is not serious.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -2183,14 +2214,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "f7dc983f53417e111227409c22d599d77b166f070ea9db3c5ca9e69a230163d5"
+          "kind": "citation-context",
+          "sha256": "a233737165841f95fb47ee399a467405c072f1c9e2e04aca7bcd0c5bf67435d3"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -2229,7 +2260,7 @@
       "relation": "baseline_only",
       "conf": 0.8,
       "confidence": 0.8,
-      "rationale": "「Graph Neural Networks in Networ…」(2022) は 「Semi-Supervised Classification …」(2016) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"To do so, [71] developed a GCN-based graph autoencoder adversarially regularized by a discriminator network that maps the brain graphs and the population template into a low-dimensional space.\"",
+      "rationale": "「Graph Neural Networks in Networ…」(2022) は 「Semi-Supervised Classification …」(2016) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Additionally, 53% of the GCN works are GAN-based frameworks trained with different loss functions (Tables 1 and 3).\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -2238,7 +2269,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "39e67ac4d53df0e516b0e3e4f4c0b918cda15a49b32c3cd905168773d03be84e"
+          "sha256": "44d1f0c0da52e4fa24fd13fb3421e6bca863839be509edc4a279c8f2a6ff716f"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -2337,7 +2368,7 @@
       "relation": "baseline_only",
       "conf": 0.6,
       "confidence": 0.6,
-      "rationale": "「Stochastic Training of Graph Co…」(2017) は 「Variational Graph Auto-Encoders」(2016) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "rationale": "「Stochastic Training of Graph Co…」(2017) は 「Variational Graph Auto-Encoders」(2016) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Generalization of GCN to other tasks can be found in Kipf & Welling (2016); Berg et al. (2017); Schlichtkrull et al. (2017) and Hamilton et al. (2017b).\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -2362,9 +2393,9 @@
       "dst": "openalex:W2918342466",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Fast Graph Representation Learning with PyTorch Geometric」(2019) は「Variational Graph Auto-Encoders」(2016) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Fast Graph Representation Learning with PyTorch Geometric」(2019) は「Variational Graph Auto-Encoders」(2016) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -2372,11 +2403,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "e6e03b676216c27b5242bc0484375237947cebd4f0ec10bfed8b9899ef02c221"
+          "kind": "citation-list",
+          "sha256": "cad17abacfdef7ceca8bde2f24c0d155bef0f25e9f0f558a9677d0100a8d76af"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -2443,9 +2474,9 @@
       "dst": "openalex:W2618170429",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.85,
-      "confidence": 0.85,
-      "rationale": "Geometric Deep Learning on Graphs and Manifolds Using Mixture Model CNNsのGaussian mixtureモデルを用いたCNNを参照し、CayleyNetsと比較した。 被引用論文を特定できる引用文はない。",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「CayleyNets」(2018) は 「Geometric Deep Learning on Grap…」(2017) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"This provides a valuable term of comparison with both the solutions presented in [6], [17] and [33] as same number of parameters is respectively required by our implementations.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -2453,14 +2484,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "fab86c5b0bed45545cf6bf2eb0a21817f82836b538ee15ed472e1c29e2099fbe"
+          "kind": "citation-context",
+          "sha256": "b527f74f8e9c525bb5ce974e85f843e104da429a45f6e529862dfb4b65114285"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -2468,11 +2499,11 @@
     {
       "src": "openalex:W2558460151",
       "dst": "openalex:W2766453196",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.92,
-      "confidence": 0.92,
-      "rationale": "MoNet（Monti et al. 2016）の枠組みを拡張し、GATを再構築する 引用文: \"Monti et al. (2016) presented mixture model CNNs (MoNet), a spatial approach which provides a uniﬁed generalization of CNN architectures to graphs.\"",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Graph Attention Networks」(2017) は 「Geometric Deep Learning on Grap…」(2017) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We also directly compare our model against GCNs (Kipf & Welling, 2017), as well as graph convolutional models utilising higher-order Chebyshev ﬁlters (Defferrard et al., 2016), and the MoNet model presented in Monti et al. (2016).\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -2480,14 +2511,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "51d20aea890edb32a52fe440b0e999af315a9acae0438fd52b04a7383c032666"
+          "kind": "citation-context",
+          "sha256": "38d9185b64c2c33f1243a34d58b4fcb5db90fbb5026339875c575e67cffda1df"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -2495,11 +2526,11 @@
     {
       "src": "openalex:W2558460151",
       "dst": "openalex:W2912636151",
-      "rel": "successor",
-      "relation": "successor",
-      "conf": 0.85,
-      "confidence": 0.85,
-      "rationale": "Graph Neural Networks with Convolutional ARMA Filters は Mixture Model CNN のグラフ畳み込みを拡張し、ARMA フィルタによる柔軟な周波数応答を導入している。",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Graph Neural Networks with Convolutional ARMA Filters」(2021) は「Geometric Deep Learning on Graphs and Manifolds Using Mixtu…」(2017) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -2507,14 +2538,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "ed4743b82b739db01acb2ee99d8cb9e7ea1826dda096cdea830049feff3314ce"
+          "kind": "citation-list",
+          "sha256": "d85d4f7aa6c213e563d0e6cb2d385706efe8aee901b451872863720cea47c92c"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v4",
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -2578,9 +2609,9 @@
       "dst": "openalex:W3019011053",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「SIGN: Scalable Inception Graph Neural Networks」(2020) は「Geometric deep learning on graphs and manifolds using mixtu…」(2016) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「SIGN: Scalable Inception Graph Neural Networks」(2020) は「Geometric deep learning on graphs and manifolds using mixtu…」(2016) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -2588,11 +2619,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "db00fbe51ef6f69de9725262dee6f18e9b1d5573be5995d1578e171ac3686b80"
+          "kind": "citation-list",
+          "sha256": "bb181d1f40a6f177e1284785942a8943a8d631873013a23e2817c7974a7ff658"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -2738,11 +2769,11 @@
     {
       "src": "openalex:W2618170429",
       "dst": "openalex:W2912636151",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.75,
-      "confidence": 0.75,
-      "rationale": "Graph Neural Networks with Convolutional ARMA Filters は、CayleyNets が提案したスペクトル領域の有理フィルタ概念を受け継ぎつつ、ARMA フィルタという新たな周波数応答を導入している",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Graph Neural Networks with Convolutional ARMA Filters」(2021) は「CayleyNets: Graph Convolutional Neural Networks With Comple…」(2018) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -2750,14 +2781,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "d9c93762bf821b393a6dc863c5e6e28a99c38c90f1d1fe185f39b888f4bc006a"
+          "kind": "citation-list",
+          "sha256": "7eb9411321a1f196a88ef24baf2ed62bdb00f69ca6e04b93c9e32e3ded2c4d82"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v4",
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -2778,7 +2809,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "60614bc576915d3e859d2824dc44b1a3e883016ba1303bdf32dc2aa19521cdbd"
+          "sha256": "11c58f818ce0ae4781c007cc3cda5c7537e7e0778e3b9a503bb4363a53d7fdad"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -2821,9 +2852,9 @@
       "dst": "openalex:W2766453196",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.95,
-      "confidence": 0.95,
-      "rationale": "GraphSAGE（Hamilton et al. 2017）の手法と比較し、性能を評価する 引用文: \"Inductive learning For the inductive learning task, we compare against the four different supervised GraphSAGE inductive methods presented in Hamilton et al. (2017).\"",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Graph Attention Networks」(2017) は 「Inductive Representation Learni…」(2017) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Inductive learning For the inductive learning task, we compare against the four different supervised GraphSAGE inductive methods presented in Hamilton et al. (2017).\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -2831,14 +2862,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "f738794734742b4979b46dcebe2a4b74d8536e9733d2a7bd6ec3215df9b13e22"
+          "kind": "citation-context",
+          "sha256": "be78b79ccbc70e66f712411c8a80dc36b84cbb20a61bb048437bd79abff8648d"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -2848,9 +2879,9 @@
       "dst": "openalex:W2790814121",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.95,
-      "confidence": 0.95,
-      "rationale": "Inductive Representation Learningの近傍サンプリングを利用している 引用文: \"There are V ∏L l=2D (l) such sums to compute on the first graph convolution layer, and overall cost is not larger than O(V D ∏L l=2D K), if we subsample the graph such that the max degree is D, following Hamilton et al. (2017a). The sparse…\"",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「Stochastic Training of Graph Co…」(2017) は 「Inductive Representation Learni…」(2017) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"There are V ∏L l=2D (l) such sums to compute on the first graph convolution layer, and overall cost is not larger than O(V D ∏L l=2D K), if we subsample the graph such that the max degree is D, following Hamilton et al. (2017a). The sparse…\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -2858,14 +2889,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "c0a961d361e7eebe6a9e501567088a88b94f34c064c81eb200228c7182e82bff"
+          "kind": "citation-context",
+          "sha256": "1736abf0505bc93b162f4c136034127234d7e604f43656072e2e7d129e9be061"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -2873,11 +2904,11 @@
     {
       "src": "openalex:W2624431344",
       "dst": "openalex:W2811124557",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.85,
-      "confidence": 0.85,
-      "rationale": "GraphSAGE実装をベースに利用している 引用文: \"We use the “mean” variant of GRAPHSAGE [16] and apply a DIFFPOOL layer after every two GRAPHSAGE layers in our architecture.\"",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Hierarchical graph representati…」(2018) は 「Inductive Representation Learni…」(2017) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We use the “mean” variant of GRAPHSAGE [16] and apply a DIFFPOOL layer after every two GRAPHSAGE layers in our architecture.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -2885,14 +2916,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "0c1a99992fa3687487076fa52e1fe1c29a1e007ba1bea9e66d87461d40a8ac20"
+          "kind": "citation-context",
+          "sha256": "d5cf669593b4cc3b2ff6bda6b924334dcb4f3f784119b9afcbe13afce67db08c"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -2931,7 +2962,7 @@
       "relation": "baseline_only",
       "conf": 0.6,
       "confidence": 0.6,
-      "rationale": "「Graph Convolutional Networks fo…」(2019) は 「Inductive Representation Learni…」(2017) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "rationale": "「Graph Convolutional Networks fo…」(2019) は 「Inductive Representation Learni…」(2017) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Possible solutions to the problem are introducing inductive (Hamilton, Ying, and Leskovec 2017) or fast GCN model (Chen, Ma, and Xiao 2018).\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -2956,9 +2987,9 @@
       "dst": "openalex:W2972317931",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「GNNExplainer」(2019) は 「Inductive Representation Learni…」(2017) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「GNNExplainer」(2019) は 「Inductive Representation Learni…」(2017) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"To address this challenge, Graph Neural Networks (GNNs) have emerged as state-of-the-art for machine learning on graphs, due to their ability to recursively incorporate information from neighboring nodes in the graph, naturally capturing b…\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -2985,7 +3016,7 @@
       "relation": "baseline_only",
       "conf": 0.8,
       "confidence": 0.8,
-      "rationale": "「Graph convolutional networks」(2019) は 「Inductive Representation Learni…」(2017) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"To allow the minibatch training, the authors also provide a variant by uniformly sampling a fixed size of the neighboring nodes for each node [61].\"",
+      "rationale": "「Graph convolutional networks」(2019) は 「Inductive Representation Learni…」(2017) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"propose an aggregation-based inductive representation learning model, named GraphSAGE [61].\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -2994,7 +3025,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "7f515c7f9384522fb6da8822a982bba11785fb4234d2fccb9fa9606248b56d5c"
+          "sha256": "60f2425860a231ff6184cd72b77f4321ccf35ab65886b2b70fb317d96ff4f375"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -3037,9 +3068,9 @@
       "dst": "openalex:W2998496395",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「Measuring and Relieving the Ove…」(2020) は 「Inductive Representation Learni…」(2017) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Measuring and Relieving the Ove…」(2020) は 「Inductive Representation Learni…」(2017) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"…GraphSAGE (Hamilton, Ying, and Leskovec 2017) Convolution GAT (Veliˇckovi´c et al. 2018) Attention ARMA (Bianchi et al. 2019) Convolution GraphSAGE (Hamilton, Ying, and Leskovec 2017) Convolution HighOrder (Morris et al. 2019) Attention G…\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -3048,7 +3079,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "d72e508bd87f98f73009738d2d69156052f7609435ee8292122c2ccbc5570060"
+          "sha256": "21fcb2561347275c35cbd5367ff97ca2fac78cf8fb5356607e3cb043336c46d3"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -3062,11 +3093,11 @@
     {
       "src": "openalex:W2624431344",
       "dst": "openalex:W3000120900",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.9,
-      "confidence": 0.9,
-      "rationale": "Inductive Representation Learning on Large GraphsのGraphSAGEを実装し、GraphLIMEで解釈モデルに組み込んだ。 引用文: \"Then, we trained a GraphSAGE clas-siﬁer and obtained the predictions on testing samples.\"",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「GraphLIME」(2022) は 「Inductive Representation Learni…」(2017) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Then, we trained a GraphSAGE clas-siﬁer and obtained the predictions on testing samples.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -3074,14 +3105,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "1c7bed4312a8f5bed1e2d040f8cd6cf84c2f40b7a264f62e446b012e57a0e0d3"
+          "kind": "citation-context",
+          "sha256": "fe8d3ba7eada10f4e8b86a173a3d12cfd1263e2f78bf218fe4863924ef2388e1"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -3091,9 +3122,9 @@
       "dst": "openalex:W3019011053",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「SIGN」(2020) は 「Inductive Representation Learni…」(2017) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「SIGN」(2020) は 「Inductive Representation Learni…」(2017) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"On OGBN-Products and Wikipedia, we compare against the scalable ClusterGCN [12], and GraphSAINT [65] methods as other approaches such as GCN [32] and GraphSAGE [22] are reported in [27] to have an intractable memory footprint.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -3102,7 +3133,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "14196caf443305d2d4b628df453f529aefc62b7ab4e35fdaa22cab217e3b2c31"
+          "sha256": "e5a85031040fed8bf1376e757122f9a3fd39dc5c4635f71d264600bb30b09c92"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -3120,7 +3151,7 @@
       "relation": "baseline_only",
       "conf": 0.8,
       "confidence": 0.8,
-      "rationale": "「Computing Graph Neural Networks」(2021) は 「Inductive Representation Learni…」(2017) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"For instance, after the initial GCN, GraphSAGE incorporated information of selfnode features from previous layers in the update function, and presented new aggregation methods, such as LSTM, which further improved upon the performance of t…\"",
+      "rationale": "「Computing Graph Neural Networks」(2021) は 「Inductive Representation Learni…」(2017) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"[96] and GraphSAGE [45] are examples of inductive GNNs.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -3129,7 +3160,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "174d3ea0a396fafd84a404c0f2aee1864fee79fafe71b698e2d107827c5f5f63"
+          "sha256": "5d370761f7f9c4906d07a3fc6ec2bae2ca0a06657cad30b5aa68a7e1f006417c"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -3282,7 +3313,7 @@
       "relation": "baseline_only",
       "conf": 0.6,
       "confidence": 0.6,
-      "rationale": "「Spatial-Temporal Synchronous Gr…」(2020) は 「Graph Attention Networks」(2017) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"GAT (Veličković et al. 2018) is a powerful GCN variant defined in the vertice domain, which uses attention layers to adjust the importance of neighbor nodes dynamically.\"",
+      "rationale": "「Spatial-Temporal Synchronous Gr…」(2020) は 「Graph Attention Networks」(2017) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"GAT (Veliˇckovi´c et al. 2018) is a powerful GCN variant deﬁned in the vertice domain, which uses attention layers to adjust the importance of neighbor nodes dynamically.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -3318,7 +3349,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "838722f8df2bbee77c8fce198ba2f790c1287c1d6737a33f70e1fff69a5291ac"
+          "sha256": "fc90ca2e3060bc467d9d82b513f03fdd654f773cd919e074a58c0590a5606790"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -3361,9 +3392,9 @@
       "dst": "openalex:W2811124557",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.8,
-      "confidence": 0.8,
-      "rationale": "SORTPOOLとSET2SETを利用している 引用文: \", using sort pooling [39] or the SET2SET method [15])? Q2 How does DIFFPOOL combined with GNNs compare to the state-of-the-art for graph classification task, including both\"",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Hierarchical graph representati…」(2018) は 「An End-to-End Deep Learning Arc…」(2018) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \", using sort pooling [39] or the SET2SET method [15])? Q2 How does DIFFPOOL combined with GNNs compare to the state-of-the-art for graph classification task, including both\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -3371,14 +3402,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "62deb0c725b5af4fe15ff5dff28ea0b0ea203043c453ac12b4a538f5aee3f172"
+          "kind": "citation-context",
+          "sha256": "cab2938f99b9c2d34a71fba103392b098caa5abb59fe93a82d6530d578445044"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -3388,9 +3419,9 @@
       "dst": "openalex:W2912636151",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.82,
-      "confidence": 0.82,
-      "rationale": "Zhang et al. 2018を背景として列挙 引用文: \", 2018); Deep Graph Convolutional Neural Networks (DGCNNs) (Zhang et al., 2018).\"",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Graph Neural Networks with Conv…」(2021) は 「An End-to-End Deep Learning Arc…」(2018) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \", 2018); Deep Graph Convolutional Neural Networks (DGCNNs) (Zhang et al., 2018).\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -3398,14 +3429,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "15964e1fd11ddee664aa26b875610d7eba578494ee37b5189e785fcc88ce5c5b"
+          "kind": "citation-context",
+          "sha256": "5c0d4f89c94196e33c1acc42ed1090549ec45b3bc58c2355dccc69debbe80078"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -3550,9 +3581,9 @@
       "dst": "openalex:W2918342466",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.88,
-      "confidence": 0.88,
-      "rationale": "Hierarchical graph representation learning with differentiable poolingのDiFFPoolを他のプーリング手法と比較し、Fast Graph Representation Learning with PyTorch Geometricで評価した。 引用文: \"We omit Jumping Knowledge when comparing global pooling operators, and hence report an additional Except for DiﬀPool (Ying et al., 2018), (global) pooling operators do not perform as beneﬁcally as expected to their respective (ﬂat) counter…\"",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Fast Graph Representation Learn…」(2019) は 「Hierarchical graph representati…」(2018) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We omit Jumping Knowledge when comparing global pooling operators, and hence report an additional Except for DiﬀPool (Ying et al., 2018), (global) pooling operators do not perform as beneﬁcally as expected to their respective (ﬂat) counter…\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -3560,14 +3591,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "13cf8de8c2b6dc0fe409f3c713d06cc9659fc98f3203a65dc403bb0a29167a78"
+          "kind": "citation-context",
+          "sha256": "26de72ce49cac58445bcfcf738936dc9912be1595c6b6fd2e1f1d924c67a3b45"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -3577,9 +3608,9 @@
       "dst": "openalex:W2972317931",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.85,
-      "confidence": 0.85,
-      "rationale": "GNNの多様なアーキテクチャを列挙し、背景として言及 引用文: \"To address this challenge, Graph Neural Networks (GNNs) have emerged as state-of-the-art for machine learning on graphs, due to their ability to recursively incorporate information from neighboring nodes in the graph, naturally capturing b…\"",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「GNNExplainer」(2019) は 「Hierarchical graph representati…」(2018) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"To address this challenge, Graph Neural Networks (GNNs) have emerged as state-of-the-art for machine learning on graphs, due to their ability to recursively incorporate information from neighboring nodes in the graph, naturally capturing b…\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -3587,14 +3618,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "a78a739f3edb3459239897ab9cf3c066192ed9bc1c2232a3075c6734d45081f5"
+          "kind": "citation-context",
+          "sha256": "4ba51730d78908ef79a6cb7df05f29c1254d8351da02f220a1d8aff3e4cb992e"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -3604,9 +3635,9 @@
       "dst": "openalex:W3019011053",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.92,
-      "confidence": 0.92,
-      "rationale": "Ying et al.（2018）の学習可能プーリング手法を採用している。 引用文: \"…Convolution-like operators (discussed in details in Section 2.3) performing local aggregation of features by means of message passing with the neighbor nodes, and possibly Pooling amounting to ﬁxed Dhillon et al. (2007) or learnable Ying …\"",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「SIGN」(2020) は 「Hierarchical graph representati…」(2018) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -3614,14 +3645,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "523e4e7b3249dc59a1851e1ce69b65c02c3996a71b5a9c4e5da110210001ac7f"
+          "kind": "citation-context",
+          "sha256": "e259aeedd796450f13ffabbcee57fd963ad9be05361876862d19897445c7ec9f"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -3658,24 +3689,24 @@
       "dst": "openalex:W2918342466",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.92,
-      "confidence": 0.92,
-      "rationale": "PyTorch Geometric は Graph Neural Networks with Convolutional ARMA Filters の手法を実装・比較するためのツールであり、手法の継承はなく単なるライブラリとして引用されている。",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Fast Graph Representation Learning with PyTorch Geometric」(2019) は「Graph Neural Networks with Convolutional ARMA Filters」(2021) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
           "version": "p2t-v1"
         },
         "evidence": {
-          "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "f2a0d7631a9b2072d04c94052e84d3c22fb149c21b5a8f053cba01aa88c33639"
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "e5d7fc77f7c8d3cab57d05d2cd106e6487d422267fabfa342bd0b820f8b3a068"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v4",
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -3685,9 +3716,9 @@
       "dst": "openalex:W2998496395",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.88,
-      "confidence": 0.88,
-      "rationale": "Graph Neural Networks with Convolutional ARMA Filtersは2021年の論文だが、Bは2019年のARMAを背景として列挙している。 引用文: \"However, in the previous graph-related studies (Veliˇckovi´c et al. 2018; Li et al. 2016; Bianchi et al. 2019), researchers mainly focus on designing novel GNN architectures but pay less attention to improve the established graph topology.\"",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Measuring and Relieving the Ove…」(2020) は 「Graph Neural Networks with Conv…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"2018) Attention ARMA (Bianchi et al. 2019) Convolution GraphSAGE (Hamilton, Ying, and Leskovec 2017) Convolution HighOrder (Morris et al.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -3695,14 +3726,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "5e4fe759c0472cf1b45edc16430ce39fa99a2c6106d11c4c5b7a494a75ad89f3"
+          "kind": "citation-context",
+          "sha256": "c631de92b56135cf99b53749f48939e6d21c0e738962e1a346e68bbcf20299d8"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -3712,9 +3743,9 @@
       "dst": "openalex:W3019011053",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.9,
-      "confidence": 0.9,
-      "rationale": "SIGNは2019年のARMAを背景として言及し、2021年の論文は参照していない。 引用文: \"On the smaller transductive datasets, we compare to the well established methods GCN Kipf and Welling (2017), GAT Velickovic et al. (2018), JK Xu et al. (2018), GIN Xu et al. (2019), ARMA Bianchi et al. (2019b), and the current state-of-th…\"",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「SIGN」(2020) は 「Graph Neural Networks with Conv…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -3722,14 +3753,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "671662307a3d1dabc537d2dad8e1231036ab4108a52d65420fa7d0c509f57501"
+          "kind": "citation-context",
+          "sha256": "a341410574daa72e336851084c0eb49247594eef40de33cd85b9624db94fe0e6"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -3739,21 +3770,21 @@
       "dst": "openalex:W4214598159",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Deep hybrid: Multi-graph neural network collaboration for h…」(2022) は「Graph Neural Networks with Convolutional ARMA Filters」(2021) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Deep hybrid: Multi-graph neural network collaboration for h…」(2022) は「Graph Neural Networks with Convolutional ARMA Filters」(2021) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
           "version": "p2t-v1"
         },
         "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "05ce4c253e98ba961ae8fff71c1c29805509ae8cfaabe9724356b1668312755e"
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "8c26101fc584a5a6f583a01fe3b088bf1aa800390371fcf2265361e885b8cbdd"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -3768,7 +3799,7 @@
       "relation": "baseline_only",
       "conf": 0.6,
       "confidence": 0.6,
-      "rationale": "「Measuring and Relieving the Ove…」(2020) は 「Fast Graph Representation Learn…」(2019) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "rationale": "「Measuring and Relieving the Ove…」(2020) は 「Fast Graph Representation Learn…」(2019) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"The implementation of the base-lines is partly based on Fey and Lenssen (2019) and Mae-hara (2019).\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -3872,11 +3903,11 @@
     {
       "src": "openalex:W2963984147",
       "dst": "openalex:W2558460151",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.93,
-      "confidence": 0.93,
-      "rationale": "Diffusion‑Convolutional Neural NetworksはDCNNとして例示され、Geometric Deep Learning on Grap…はそれを利用している。 引用文: \"Learning meth-ods (DCNN, GCNN and MoNet) were trained and tested ﬁfty times for showing their average behavior with different initializa-tions.\"",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Geometric Deep Learning on Grap…」(2017) は 「Diffusion-Convolutional Neural …」(2016) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Such a construction allows to formulate previously proposed Geodesic CNN (GCNN) [32] and Anisotropic CNN (ACNN) [7] on manifolds or GCN [26] and DCNN [2] on graphs as particular instances of our approach.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -3884,14 +3915,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "f4686c68953c61e36a75964b68ce438e44f5e505d952ef5026d68aefa60009ba"
+          "kind": "citation-context",
+          "sha256": "49daf01360ae6fe581411bdebc0f03002cc161c303e3390d20144747a2021551"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -3903,7 +3934,7 @@
       "relation": "baseline_only",
       "conf": 0.6,
       "confidence": 0.6,
-      "rationale": "「Graph Attention Networks」(2017) は 「Diffusion-Convolutional Neural …」(2016) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "rationale": "「Graph Attention Networks」(2017) は 「Diffusion-Convolutional Neural …」(2016) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"…degree (Duvenaud et al., 2015), using the powers of a transition matrix to deﬁne the neighborhood while learning weights for each input channel and neighborhood degree (Atwood & Towsley, 2016), or extracting and normalizing neighborhoods …\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -3926,11 +3957,11 @@
     {
       "src": "openalex:W2963984147",
       "dst": "openalex:W2788919350",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.95,
-      "confidence": 0.95,
-      "rationale": "Diffusion-Convolutional Neural Networksの拡散CNNを用いて多尺度特徴を抽出し、An End-to-End Deep Learning Architecture for Graph Classificationで採用した。 引用文: \"(Atwood and Towsley 2016) proposed DiffusionCNN, which propagates neighbors with different hops to the center using different weights.\"",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「An End-to-End Deep Learning Arc…」(2018) は 「Diffusion-Convolutional Neural …」(2015) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Baselines and experimental setting We compare DGCNN with four other deep learning approaches: including three recent neural network approaches for graph classification (PSCN, DCNN, and ECC), and a deep graph kernel approach (DGK).\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -3938,14 +3969,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "53434e293c6998c37f9edf77f3772ee0850b899e889d33cba40cda21d17c9cb9"
+          "kind": "citation-context",
+          "sha256": "2305c2274ca44cb6405d03f0ba7327ba1b5d67795eec830058343d9c3f36efc3"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -3955,9 +3986,9 @@
       "dst": "openalex:W2912636151",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「Graph Neural Networks with Conv…」(2021) は 「Diffusion-Convolutional Neural …」(2016) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Graph Neural Networks with Conv…」(2021) は 「Diffusion-Convolutional Neural …」(2016) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"6 the results obtained by state-of-the-art graph kernels and other neural networks for graph classiﬁ-cation: the Weisfeiler-Lehman kernel (WL) (Shervashidze et al., 2011); the Edge-Conditioned Convolution network (ECC) (Simonovsky & Komoda…\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -4036,9 +4067,9 @@
       "dst": "openalex:W2962946486",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Graph Convolutional Networks for Text Classification」(2019) は「Deeper Insights Into Graph Convolutional Networks for Semi-…」(2018) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Graph Convolutional Networks for Text Classification」(2019) は「Deeper Insights Into Graph Convolutional Networks for Semi-…」(2018) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -4046,11 +4077,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "705dc820775c55a46be3541b31b9bc6a4357f4845cf605f9dd8a26bf7ff89eae"
+          "kind": "citation-list",
+          "sha256": "07a09da6881cd8127a144d6c157ea59f04f4724ce04124c8e77fd61449b611fa"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -4063,9 +4094,9 @@
       "dst": "openalex:W2998496395",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Measuring and Relieving the Over-Smoothing Problem for Grap…」(2020) は「Deeper Insights Into Graph Convolutional Networks for Semi-…」(2018) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Measuring and Relieving the Over-Smoothing Problem for Grap…」(2020) は「Deeper Insights Into Graph Convolutional Networks for Semi-…」(2018) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -4073,389 +4104,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "fc6d8493e9040434c4185a4f54e2c23c5d02ab98d059fa737664c4aece10a85d"
+          "kind": "citation-list",
+          "sha256": "f5172af13e5817b65f6b084e26f5dd0646b9b7347302c0a2b90a4f5067ec2191"
         },
         "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W2964321699",
-      "dst": "openalex:W2519887557",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.95,
-      "confidence": 0.95,
-      "rationale": "Semi-Supervised Classification with Graph Convolutional Networks は GCN 手法を提案しているが、Advances In Deep Learning On Graphs は講義資料で手法提案ではなく背景紹介に留まるため、継承はなく単なる参照にとどまる",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "9964e1d51d456e9b164ee0719909325b267d983b2f72277cdf2836b1c36bd398"
-        },
-        "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v4",
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W2964321699",
-      "dst": "openalex:W2558460151",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Geometric Deep Learning on Graphs and Manifolds Using Mixtu…」(2017) は「Advances In Deep Learning On Graphs (Gsp'18 Workshop)」(2016) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "e6a106dcce434beb428c251abc02288b7a65f828ed8b544bac53374ef5baa5c5"
-        },
-        "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W2964321699",
-      "dst": "openalex:W2624431344",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.92,
-      "confidence": 0.92,
-      "rationale": "Inductive Representation Learning on Large Graphs の GraphSAGE は、従来のトランスダクティブ手法を置き換える新手法であり、Advances In Deep Learning On Graphs は講義資料で手法継承がなく、単なる背景として引用されるだけです",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "0e73a1d4a0ba2a76211a5cb4ff41d921317c3d7fb98b1d8699b2385081152e81"
-        },
-        "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v4",
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W2964321699",
-      "dst": "openalex:W2728059831",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Convolutional 2D Knowledge Graph Embeddings」(2018) は「Advances In Deep Learning On Graphs (Gsp'18 Workshop)」(2016) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "c58353025fa93f4c66a49dec50416ddabc236b169096b3886faf1d16b619e7c7"
-        },
-        "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W2964321699",
-      "dst": "openalex:W2766453196",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.92,
-      "confidence": 0.92,
-      "rationale": "Graph Attention Networks は masked self‑attentional layers を導入した手法で、Advances In Deep Learning On Graphs は講義資料であり手法継承がなく、単なる背景として引用される。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "86d83e2a4376bd521e207da81725426d5551582adce5916d5f84b5e9508d1443"
-        },
-        "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v4",
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W2964321699",
-      "dst": "openalex:W2788919350",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「An End-to-End Deep Learning Architecture for Graph Classifi…」(2018) は「Advances In Deep Learning On Graphs (Gsp'18 Workshop)」(2016) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "2f1274e0737b06d519eb6eeb8ffb1600c91cd1f43bb1d272c7fa4ccc559f149f"
-        },
-        "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W2964321699",
-      "dst": "openalex:W2911286998",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Heterogeneous Graph Attention Network」(2019) は「Advances In Deep Learning On Graphs (Gsp'18 Workshop)」(2016) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "6b73b3bcce0c38c03510aa4fec52ea96e54ebacea9feee31c1bd71cd628620ae"
-        },
-        "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W2964321699",
-      "dst": "openalex:W2918342466",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Fast Graph Representation Learning with PyTorch Geometric」(2019) は「Advances In Deep Learning On Graphs (Gsp'18 Workshop)」(2016) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "2ebefb1d0e773c176d581e2e737a4cdada05dfec769730f41ddf04cce3b46803"
-        },
-        "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W2964321699",
-      "dst": "openalex:W2962946486",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Graph Convolutional Networks for Text Classification」(2019) は「Advances In Deep Learning On Graphs (Gsp'18 Workshop)」(2016) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "7482534ab526131308ffdf4935f9506eaaf51da9254f0e7ae8724c718feb64f8"
-        },
-        "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W2964321699",
-      "dst": "openalex:W2964051675",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Deeper Insights Into Graph Convolutional Networks for Semi-…」(2018) は「Advances In Deep Learning On Graphs (Gsp'18 Workshop)」(2016) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "b62d1884a15a7572deaceebd274c950a59d948c2fef204fe14e7665396f372c2"
-        },
-        "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W2964321699",
-      "dst": "openalex:W2972317931",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.9,
-      "confidence": 0.9,
-      "rationale": "GNNExplainer は GNN の予測を説明する手法であり、Advances In Deep Learning On Graphs は手法提案ではなく講義資料であるため、継承はなく単なる背景として引用される。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "337cd4b136fdebdbc2c7c842e95ea9286d3c9428a1c6d3e5ca8d8c91eaa0f843"
-        },
-        "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v4",
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W2964321699",
-      "dst": "openalex:W2996847713",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Spatial-Temporal Synchronous Graph Convolutional Networks: …」(2020) は「Advances In Deep Learning On Graphs (Gsp'18 Workshop)」(2016) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "926121415516610f7943e3c58b13c9d6e4da906ac1f6dbf950fea3b72aefece2"
-        },
-        "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W2964321699",
-      "dst": "openalex:W2998496395",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Measuring and Relieving the Over-Smoothing Problem for Grap…」(2020) は「Advances In Deep Learning On Graphs (Gsp'18 Workshop)」(2016) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "c2c9a3acfd306cc104a84498d13bbb38046a12c4bcf8d754b4f2d7455976efed"
-        },
-        "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W2964321699",
-      "dst": "openalex:W3019011053",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「SIGN: Scalable Inception Graph Neural Networks」(2020) は「Advances In Deep Learning On Graphs (Gsp'18 Workshop)」(2016) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "8605a93d8db662e1b72f6d19771f2f014f12a93e2d07456228dd664d581416ee"
-        },
-        "classification": {
-          "method": "citation_heuristic",
+          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -4468,9 +4121,9 @@
       "dst": "openalex:W3000120900",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.92,
-      "confidence": 0.92,
-      "rationale": "GNNExplainerはサブグラフを探索し、GraphLIMEはそれと比較している。 引用文: \"In addition, we compared it with GNNexplainer [9] which utilizes mutual information to find a subgraph with associated features for interpreting GNN models, and SHAP framework [5] which calculating the SHAP values as a unified measure of f…\"",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「GraphLIME」(2022) は 「GNNExplainer」(2019) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"In addition, we compared it with GNNexplainer [9] which utilizes mutual information to find a subgraph with associated features for interpreting GNN models, and SHAP framework [5] which calculating the SHAP values as a unified measure of f…\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -4478,14 +4131,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "426dce9253062c6c349727ba78360ad6c84d887c36af7a88857c11a7866f5135"
+          "kind": "citation-context",
+          "sha256": "f73f7f13e858b02693a7a96454e42733638f2b266efccb9acb277058145ecc7e"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -4524,7 +4177,7 @@
       "relation": "baseline_only",
       "conf": 0.8,
       "confidence": 0.8,
-      "rationale": "「Explainability in Graph Neural …」(2022) は 「GNNExplainer」(2019) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"In addition, for methods like GNNExplainer [46] and GraphLime [61], the importance scores are continuous values, then the importance map mi can be obtained by normalization and thresholding or rank-\"",
+      "rationale": "「Explainability in Graph Neural …」(2022) は 「GNNExplainer」(2019) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"GNNExplainer [46] learns soft masks for edges and node features to explain the predictions via mask optimization.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -4533,7 +4186,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "4d26969894eed6007c3026525211fd924e5293028f99dbc3cb9f090dc7a6afde"
+          "sha256": "4408edab4c4efbe1eaeb1ccb5f7fbb1197d6eb2d226ec349d3056d43b33daa07"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -4560,7 +4213,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "5e9c83c15a1b042244e656e3d0ac3c051e81303fb1a118f336ff4e00883b33a6"
+          "sha256": "2b47f9f8b55337401995ec44bd0287401b187d7c82617080df1b6a359a8a1ac8"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -4587,7 +4240,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "0a463d8429d80bd885db0c0b9af959510fad2b4ce1ebd50b871a9fa2595d4d07"
+          "sha256": "cddd2d910cf14459f231c216d8503897196d8a2af1036a0d5e6e60688b02175f"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -4657,9 +4310,9 @@
       "dst": "openalex:W2998496395",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.95,
-      "confidence": 0.95,
-      "rationale": "Graph Neural Networksの過学習問題を指摘し、Zhou et al.（2018）の伝搬分類を参照している。 引用文: \"The GNN models and their propagation methods are listed in Table 1, in which the propagation taxonomy follows Zhou et al. (2018).\"",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Measuring and Relieving the Ove…」(2020) は 「Graph Neural Networks」(2018) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"The GNN models and their propagation methods are listed in Table 1, in which the propagation taxonomy follows Zhou et al. (2018).\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -4667,14 +4320,14 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "b6f3d8eb2bb8824f8fda05c120654797c4544459e06e18ecb8cb8c9da62c06f6"
+          "kind": "citation-context",
+          "sha256": "53e4a7a659d1bc320a03fe6b924b627c36f2fe4fa4fb38a609fa6f46a4489ae3"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-20b",
-          "prompt_version": "relation-prompt-v4-context",
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -4819,24 +4472,24 @@
       "dst": "openalex:W2912636151",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.92,
-      "confidence": 0.92,
-      "rationale": "Graph Neural Networks with Convolutional ARMA Filters は ARMA フィルタを用いた GNN 手法を提案しており、道路ネットワークのパスベース埋め込みによるレジリエントコミュニティ検出とは手法的に共通せず、単なる背景引用に留まる",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Graph Neural Networks with Convolutional ARMA Filters」(2021) は「Identifying Resilient Communities in Road Networks: A Path-…」(2025) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
           "version": "p2t-v1"
         },
         "evidence": {
-          "source": "semantic_scholar",
-          "kind": "relation-input",
-          "sha256": "905e972207703593c56b3c0a41bb4088af610ca3f2b4ba558b79f862f4c46b90"
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "6aaa5834ca9d4237e9b684b7f8f704e9612b7fac1e4cfdfaf7f728deb01a5b11"
         },
         "classification": {
-          "method": "llm",
-          "provider": "groq",
-          "model": "groq:openai/gpt-oss-120b",
-          "prompt_version": "relation-prompt-v4",
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
           "schema_version": "relation-classification-v1"
         }
       }
@@ -4861,11 +4514,10 @@
     ],
     "depth": 1,
     "since_year": 2018,
-    "generated_at": "2026-10-10T15:09:43.636000Z",
+    "generated_at": "2026-10-11T02:56:44.218000Z",
     "provenance_breakdown": {
-      "citation_heuristic": 16,
-      "llm": 35,
-      "s2_context_rule": 92
+      "api_citation": 13,
+      "s2_context_rule": 118
     },
     "completeness": {
       "complete": true,
@@ -4887,6 +4539,27 @@
       "openalex:W2519887557",
       "openalex:W2624431344",
       "openalex:W2766453196"
-    ]
+    ],
+    "suspect_records": [
+      {
+        "id": "openalex:W2964321699",
+        "title": "Advances In Deep Learning On Graphs (Gsp'18 Workshop)",
+        "reasons": [
+          "event_title",
+          "repository_record",
+          "citations>=500"
+        ],
+        "action": "dropped"
+      },
+      {
+        "id": "openalex:W4322614756",
+        "title": "Identifying Resilient Communities in Road Networks: A Path-Based Embedding Approach",
+        "reasons": [
+          "young_high_citations:1570@2025"
+        ],
+        "action": "flagged"
+      }
+    ],
+    "lineage_llm": "off"
   }
 }
