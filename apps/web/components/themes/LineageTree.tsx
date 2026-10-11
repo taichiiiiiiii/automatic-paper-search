@@ -24,7 +24,7 @@
  */
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { paperLink } from "../../lib/lineage/evidence";
+import { abstractExcerptSourceLabel, paperLink } from "../../lib/lineage/evidence";
 import { exportPng, exportSvg } from "../../lib/themes-export";
 import { formatStars, formatVenue } from "../../lib/themes-format";
 import type { LineageArtifact } from "../../lib/themes-quality";
@@ -1093,7 +1093,19 @@ export function LineageTree({
                         {formatVenue(p.venue, p.year) || "—"}
                       </div>
                       <h3 className="mt-1 font-medium text-ink">{p.title || p.id}</h3>
-                      {p.tldr && <p className="mt-1 text-ink-muted">{p.tldr}</p>}
+                      {p.tldr && (
+                        <>
+                          <p lang="en" className="mt-1 text-ink-muted">
+                            {p.tldr}
+                          </p>
+                          <p
+                            className="mt-0.5 text-[0.62rem] text-ink-subtle"
+                            data-abstract-excerpt
+                          >
+                            要旨の冒頭（{abstractExcerptSourceLabel(p.id)}経由。著作権は著者に帰属）
+                          </p>
+                        </>
+                      )}
                       {authors && <div className="mt-1 text-ink-subtle">{authors}</div>}
                       {metaParts.length > 0 && (
                         <div className="mt-1 text-ink-subtle">{metaParts.join("  ·  ")}</div>

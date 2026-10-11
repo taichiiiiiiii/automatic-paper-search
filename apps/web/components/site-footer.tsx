@@ -47,6 +47,18 @@ export function SiteFooter() {
           /{" "}
           <a href="https://openalex.org/" rel="noopener" className="text-accent">
             OpenAlex
+          </a>{" "}
+          /{" "}
+          <a href="https://openreview.net/" rel="noopener" className="text-accent">
+            OpenReview
+          </a>{" "}
+          /{" "}
+          <a href="https://aclanthology.org/" rel="noopener" className="text-accent">
+            ACL Anthology
+          </a>{" "}
+          /{" "}
+          <a href="https://openaccess.thecvf.com/" rel="noopener" className="text-accent">
+            CVF Open Access
           </a>
         </span>
       </nav>

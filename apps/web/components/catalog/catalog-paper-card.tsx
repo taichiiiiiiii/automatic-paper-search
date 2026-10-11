@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
+import { abstractAttribution, catalogLinks } from "../../lib/catalog-attribution";
 import type { CatalogPaper } from "../../lib/catalog-core";
 import type { PilotLineageStatus } from "../../lib/catalog-pilot-lineage";
 import {
@@ -93,6 +94,8 @@ export function CatalogPaperCard({
   const arxivUrl = typeof paper.arxiv_url === "string" ? paper.arxiv_url : "";
   const pdfUrl = typeof paper.pdf_url === "string" ? paper.pdf_url : "";
   const titleHref = safeHref(arxivUrl || pdfUrl);
+  const links = catalogLinks(paper);
+  const attribution = abstractAttribution(paper);
 
   const dataReveal = revealIndex === null ? undefined : Math.min(revealIndex, 8);
 
@@ -158,6 +161,28 @@ export function CatalogPaperCard({
               <Highlighted segments={dek.segments} />
             </p>
           )}
+          {dek && attribution && !attribution.withheld && (
+            <p
+              className="mt-1 text-xs text-ink-subtle"
+              data-abstract-source={paper.abstract_source}
+            >
+              {attribution.kind}の{attribution.source} ·{" "}
+              <a
+                href={safeHref(attribution.licenseUrl)}
+                target="_blank"
+                rel="noopener license"
+                className="underline hover:text-ink"
+              >
+                {attribution.licenseLabel}
+              </a>
+              {attribution.note}
+            </p>
+          )}
+          {attribution?.withheld && (
+            <p className="text-xs text-ink-subtle" data-abstract-source="none">
+              {attribution.text}
+            </p>
+          )}
           {dek?.needsToggle && (
             <button
               type="button"
@@ -179,11 +204,14 @@ export function CatalogPaperCard({
               全文要旨を読み込めませんでした。プレビューと原文リンクを表示しています。
             </p>
           )}
-          {isSelected && fullAbstract?.status === "ready" && fullAbstract.text === "" && (
-            <p role="status" className="mt-1 text-xs text-ink-subtle">
-              全文要旨は収録されていません。
-            </p>
-          )}
+          {isSelected &&
+            !attribution?.withheld &&
+            fullAbstract?.status === "ready" &&
+            fullAbstract.text === "" && (
+              <p role="status" className="mt-1 text-xs text-ink-subtle">
+                全文要旨は収録されていません。
+              </p>
+            )}
         </div>
 
         {paper.tags.length > 0 && (
@@ -206,28 +234,19 @@ export function CatalogPaperCard({
           </div>
         )}
 
-        {(arxivUrl || pdfUrl) && (
+        {links.length > 0 && (
           <div className="mt-2 flex gap-3 text-xs">
-            {arxivUrl && (
+            {links.map((link) => (
               <a
-                href={safeHref(arxivUrl)}
+                key={`${link.label}:${link.url}`}
+                href={safeHref(link.url)}
                 target="_blank"
                 rel="noopener"
                 className="text-accent hover:text-accent-strong"
               >
-                arXiv
+                {link.label}
               </a>
-            )}
-            {pdfUrl && (
-              <a
-                href={safeHref(pdfUrl)}
-                target="_blank"
-                rel="noopener"
-                className="text-accent hover:text-accent-strong"
-              >
-                PDF
-              </a>
-            )}
+            ))}
           </div>
         )}
 

@@ -1,13 +1,17 @@
 // R2 UX P0-2: pure helpers behind the theme evidence panel / relation list.
 import { describe, expect, it } from "vitest";
 import {
+  abstractExcerptSourceLabel,
   clipQuote,
+  endsMidSentence,
   MAX_QUOTE_CHARS,
   METHOD_LABEL_FALLBACK,
   methodLabelJa,
   paperLink,
   parseEdgeEvidence,
+  quoteAuthorCredit,
   semanticScholarUrl,
+  startsMidSentence,
 } from "../../lib/lineage/evidence";
 import { RELATION_LABEL_JA } from "../../lib/lineage/relations";
 
@@ -48,7 +52,53 @@ describe("parseEdgeEvidence", () => {
     expect(quote).not.toBeNull();
     expect((quote as string).length).toBeLessThanOrEqual(MAX_QUOTE_CHARS);
     expect(quote?.endsWith("…")).toBe(true);
-    expect(clipQuote("  a   b ")).toBe("a b");
+    expect(clipQuote("  A   b. ")).toBe("A b.");
+  });
+});
+
+describe("R2-26: quotation marks of omission and author credit (design 51 §3.3)", () => {
+  it("prefixes … when a quote starts mid-word / mid-sentence", () => {
+    expect(clipQuote("istance and angular distance are used as in [3].")).toBe(
+      "… istance and angular distance are used as in [3].",
+    );
+    expect(clipQuote(", which we follow [4].")).toBe("… , which we follow [4].");
+    expect(clipQuote("We build on X.")).toBe("We build on X.");
+    expect(clipQuote("[12] proposed the layer we use.")).toBe("[12] proposed the layer we use.");
+    expect(startsMidSentence("… already marked")).toBe(false);
+  });
+
+  it("appends … when a quote stops mid-sentence", () => {
+    expect(clipQuote("We follow the sparse attention of")).toBe(
+      "We follow the sparse attention of…",
+    );
+    expect(endsMidSentence("Ends here.")).toBe(false);
+    expect(endsMidSentence('He said "done."')).toBe(false);
+    expect(endsMidSentence("as shown in prior work [12].")).toBe(false);
+    expect(clipQuote("both ends cut")).toBe("… both ends cut…");
+  });
+
+  it("keeps a clipped mid-sentence quote within the length cap", () => {
+    const q = clipQuote("word ".repeat(200));
+    expect(q.startsWith("… ")).toBe(true);
+    expect(q.endsWith("…")).toBe(true);
+    expect(q.length).toBeLessThanOrEqual(MAX_QUOTE_CHARS);
+  });
+
+  it("credits the quoted paper's authors", () => {
+    expect(
+      quoteAuthorCredit({ id: "x", authors: ["Iz Beltagy", "Matthew E. Peters", "Arman Cohan"] }),
+    ).toBe("Beltagy et al.");
+    expect(quoteAuthorCredit({ id: "x", authors: ["Ashish Vaswani", "Noam Shazeer"] })).toBe(
+      "Vaswani & Shazeer",
+    );
+    expect(quoteAuthorCredit({ id: "x", authors: ["Ada Lovelace"] })).toBe("Lovelace");
+    expect(quoteAuthorCredit({ id: "x" })).toBe("");
+    expect(quoteAuthorCredit(undefined)).toBe("");
+  });
+
+  it("labels where a node's abstract excerpt was read from", () => {
+    expect(abstractExcerptSourceLabel("openalex:W1")).toContain("OpenAlex");
+    expect(abstractExcerptSourceLabel("s2:abc")).toBe("Semantic Scholar ");
   });
 });
 

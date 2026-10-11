@@ -35,6 +35,7 @@ import {
   resolveQualityCollection,
   resolveView,
   selectActiveEdges,
+  withoutForeignAbstract,
 } from "../../lib/lineage/core";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -1109,5 +1110,34 @@ describe("bounded JSON fetch", () => {
     });
     expect(result).toBeNull();
     expect(fetchSpy).not.toHaveBeenCalled();
+  });
+});
+
+describe("R2-26: a node never shows another paper's abstract", () => {
+  it("drops the published Longformer node's foreign 'Murmurative Attention' abstract", () => {
+    const path = join(layoutFor(REPO_ROOT).published, "themes", "flash-attention", "lineage.json");
+    const parsed = parseArtifact(JSON.parse(readFileSync(path, "utf8")), { kind: "theme" });
+    expect(parsed).not.toBeNull();
+    const nodes = parsed?.nodes ?? [];
+    const longformer = nodes.find((n) => String(n.title).startsWith("Longformer"));
+    expect(longformer).toBeTruthy();
+    expect(JSON.stringify(longformer)).not.toContain("Murmurative");
+    // Every other node keeps its excerpt.
+    const raw = JSON.parse(readFileSync(path, "utf8")) as {
+      nodes: Array<{ id: string; tldr?: string }>;
+    };
+    const kept = nodes.filter(
+      (n) => n.tldr && n.tldr === raw.nodes.find((r) => r.id === n.id)?.tldr,
+    );
+    expect(kept.length).toBe(raw.nodes.filter((r) => r.tldr).length - 1);
+  });
+
+  it("leaves a consistent node untouched", () => {
+    const node = {
+      id: "x",
+      title: "Longformer: The Long-Document Transformer",
+      tldr: "We introduce the Longformer.",
+    };
+    expect(withoutForeignAbstract(node)).toBe(node);
   });
 });
