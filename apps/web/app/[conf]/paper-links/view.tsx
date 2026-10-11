@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getCatalogCopy } from "../../../lib/catalog-copy";
 import { BASE_PATH } from "../../../lib/config";
 import { type PaperLinksPage, paperLinksPagePath } from "./logic";
 import styles from "./paper-links.module.css";
@@ -25,6 +26,9 @@ function Pager({
   pages: readonly PaperLinksPage[];
   total: number;
 }) {
+  const href = (page: number) => `${BASE_PATH}${paperLinksPagePath(conf, page)}`;
+  const prev = current.page > 1 ? current.page - 1 : null;
+  const next = current.page < pages.length ? current.page + 1 : null;
   return (
     <nav aria-label="ページ" className={styles.pager}>
       <p>
@@ -32,15 +36,33 @@ function Pager({
         {NUMBER.format(current.lastRow)} 本目（{current.page} / {pages.length} ページ、タイトル順）
       </p>
       <ol>
+        {/* Design doc 53: explicit 前へ / 次へ next to the numbers, and
+            every link is a >=44px tall tap target (paper-links.module.css). */}
+        {prev !== null && (
+          <li>
+            <a href={href(prev)} rel="prev">
+              ← 前へ
+            </a>
+          </li>
+        )}
         {pages.map((p) => (
           <li key={p.page}>
             {p.page === current.page ? (
               <span aria-current="page">{p.page}</span>
             ) : (
-              <a href={`${BASE_PATH}${paperLinksPagePath(conf, p.page)}`}>{p.page}</a>
+              <a href={href(p.page)} aria-label={`${p.page} ページ目`}>
+                {p.page}
+              </a>
             )}
           </li>
         ))}
+        {next !== null && (
+          <li>
+            <a href={href(next)} rel="next">
+              次へ →
+            </a>
+          </li>
+        )}
       </ol>
     </nav>
   );
@@ -65,22 +87,23 @@ export function PaperLinksView({
   }
   const rows = current.rows;
   const paged = pages.length > 1;
+  const display = getCatalogCopy(conf).display;
   return (
     <main id="main-content">
       <header className="border-b border-rule px-4 py-6 sm:px-6">
         <h1 className="text-2xl font-semibold text-ink">
-          {conf} <em className="font-normal italic">論文リンク一覧</em>
+          {display} <em className="font-normal italic">論文リンク一覧</em>
         </h1>
         <p className="mt-2 text-sm text-ink-muted">
-          JavaScript なしで利用できる簡易一覧です。検索と絞り込みは
-          <Link href={`/${conf}/`} className="text-accent hover:text-accent-strong">
-            通常版
+          JavaScript なしで利用できる簡易一覧です。検索・絞り込み・要旨の表示は
+          <Link href={`/${conf}/`} className="text-accent underline hover:text-accent-strong">
+            {display} の通常版
           </Link>
           で利用できます。
         </p>
       </header>
       <p id="paper-links-description" className="px-4 py-3 text-sm text-ink-muted sm:px-6">
-        論文タイトルから原論文を開けます。
+        論文タイトルのリンクから原論文（新しいタブ）を開けます。
       </p>
       {paged && <Pager conf={conf} current={current} pages={pages} total={total} />}
       <ul aria-describedby="paper-links-description" className={styles.list}>

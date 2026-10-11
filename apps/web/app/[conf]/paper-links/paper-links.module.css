@@ -21,6 +21,12 @@
   padding: 1rem 1.5rem;
 }
 
+@media (max-width: 640px) {
+  .list > li {
+    padding: 0.75rem 1rem;
+  }
+}
+
 .list h2 {
   margin: 0;
   font-size: 1rem;
@@ -30,6 +36,11 @@
 
 .list a {
   color: inherit;
+  /* Design doc 53: titles are the only affordance on this page, so they
+   * must read as links without hover (touch screens have none). */
+  text-decoration: underline;
+  text-decoration-color: var(--color-rule-strong);
+  text-underline-offset: 0.2em;
 }
 
 .list a:hover {
@@ -69,6 +80,18 @@
   padding: 0;
 }
 
+.pager a,
+.pager [aria-current="page"] {
+  display: inline-flex;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.75rem;
+  border: 1px solid var(--color-rule);
+  border-radius: 9999px;
+}
+
 .pager a {
   color: var(--color-accent);
 }
@@ -76,4 +99,5 @@
 .pager [aria-current="page"] {
   font-weight: 600;
   color: var(--color-ink);
+  border-color: var(--color-rule-strong);
 }
