@@ -22,6 +22,7 @@ import type { HttpResponseLike } from "../../src/collect/http/requestWithRetry.j
 import { createPaper, type Paper } from "../../src/collect/model/paper.js";
 import { PipelineRunner, type RunnerDeps } from "../../src/collect/runner.js";
 import { buildLlmProviderFromConfig } from "../../src/collect/runtime/llmProvider.js";
+import type { Source } from "../../src/collect/sources/source.js";
 import { ClaudeProvider } from "../../src/lineage/llm/claude.js";
 import { GeminiProvider } from "../../src/lineage/llm/gemini.js";
 import { GroqProvider } from "../../src/lineage/llm/groq.js";
@@ -47,6 +48,19 @@ function fakeArxivPapers(): Paper[] {
 
 let dir: string;
 let warnings: string[];
+
+/** The runner's first configured source, typed so `vi.spyOn(..., "fetch")` keeps its signature. */
+function firstSource(runner: PipelineRunner): Source {
+  const source = runner.sources[0]?.source;
+  if (!source) throw new Error("runner has no configured source");
+  return source;
+}
+
+function sourceNamed(byName: ReadonlyMap<string, Source>, name: string): Source {
+  const source = byName.get(name);
+  if (!source) throw new Error(`runner has no source named ${name}`);
+  return source;
+}
 
 beforeEach(() => {
   dir = mkdtempSync(join(tmpdir(), "runner-test-"));
@@ -125,7 +139,7 @@ it("test_runner_end_to_end_with_mocked_arxiv", async () => {
   const config = buildConfig();
   const runner = buildRunner(config);
   const papers = fakeArxivPapers();
-  vi.spyOn(runner.sources[0]?.source as never, "fetch").mockResolvedValue({
+  vi.spyOn(firstSource(runner), "fetch").mockResolvedValue({
     papers,
     truncatedKeywords: [],
     degradedKeywords: [],
@@ -150,7 +164,7 @@ it("test_runner_incremental_second_run_filters_seen", async () => {
   const papers = fakeArxivPapers();
 
   const runner1 = buildRunner(config);
-  vi.spyOn(runner1.sources[0]?.source as never, "fetch").mockResolvedValue({
+  vi.spyOn(firstSource(runner1), "fetch").mockResolvedValue({
     papers,
     truncatedKeywords: [],
     degradedKeywords: [],
@@ -162,7 +176,7 @@ it("test_runner_incremental_second_run_filters_seen", async () => {
   expect(new Set(Object.keys(seen))).toEqual(new Set([1, 2, 3].map((i) => `arxiv:2604.000${i}`)));
 
   const runner2 = buildRunner(config);
-  vi.spyOn(runner2.sources[0]?.source as never, "fetch").mockResolvedValue({
+  vi.spyOn(firstSource(runner2), "fetch").mockResolvedValue({
     papers,
     truncatedKeywords: [],
     degradedKeywords: [],
@@ -176,9 +190,7 @@ it("test_runner_incremental_second_run_filters_seen", async () => {
 it("test_runner_handles_source_failure", async () => {
   const config = buildConfig();
   const runner = buildRunner(config);
-  vi.spyOn(runner.sources[0]?.source as never, "fetch").mockRejectedValue(
-    new Error("network down"),
-  );
+  vi.spyOn(firstSource(runner), "fetch").mockRejectedValue(new Error("network down"));
 
   const result = await runner.run();
 
@@ -199,7 +211,7 @@ it("test_runner_records_exporter_failure_in_errors", async () => {
   const runner = buildRunner(config, {
     fetchImpl: async () => ({ status: 500, json: async () => ({}) }),
   });
-  vi.spyOn(runner.sources[0]?.source as never, "fetch").mockResolvedValue({
+  vi.spyOn(firstSource(runner), "fetch").mockResolvedValue({
     papers: fakeArxivPapers(),
     truncatedKeywords: [],
     degradedKeywords: [],
@@ -222,7 +234,7 @@ it("test_runner_reports_degraded_signal_in_errors_and_history", async () => {
       throw new Error("down");
     },
   });
-  vi.spyOn(runner.sources[0]?.source as never, "fetch").mockResolvedValue({
+  vi.spyOn(firstSource(runner), "fetch").mockResolvedValue({
     papers: fakeArxivPapers(),
     truncatedKeywords: [],
     degradedKeywords: [],
@@ -257,7 +269,7 @@ it("test_runner_keeps_a_healthy_run_free_of_signal_degradation", async () => {
   const runner = buildRunner(config, {
     fetchImpl: async () => ({ status: 200, json: async () => payload }),
   });
-  vi.spyOn(runner.sources[0]?.source as never, "fetch").mockResolvedValue({
+  vi.spyOn(firstSource(runner), "fetch").mockResolvedValue({
     papers: fakeArxivPapers(),
     truncatedKeywords: [],
     degradedKeywords: [],
@@ -282,7 +294,7 @@ it("test_runner_warns_and_records_a_truncated_delivery", async () => {
   const runner = buildRunner(config, {
     fetchImpl: async () => ({ status: 200, json: async () => ({}) }),
   });
-  vi.spyOn(runner.sources[0]?.source as never, "fetch").mockResolvedValue({
+  vi.spyOn(firstSource(runner), "fetch").mockResolvedValue({
     papers: fakeArxivPapers(),
     truncatedKeywords: [],
     degradedKeywords: [],
@@ -312,7 +324,7 @@ it("test_runner_does_not_report_a_full_notification_as_truncated", async () => {
   const runner = buildRunner(config, {
     fetchImpl: async () => ({ status: 200, json: async () => ({}) }),
   });
-  vi.spyOn(runner.sources[0]?.source as never, "fetch").mockResolvedValue({
+  vi.spyOn(firstSource(runner), "fetch").mockResolvedValue({
     papers: fakeArxivPapers(),
     truncatedKeywords: [],
     degradedKeywords: [],
@@ -330,7 +342,7 @@ it("test_runner_does_not_report_a_full_notification_as_truncated", async () => {
 it("test_runner_skips_seen_ids_when_all_exporters_fail", async () => {
   const config = buildConfig();
   const runner = buildRunner(config);
-  vi.spyOn(runner.sources[0]?.source as never, "fetch").mockResolvedValue({
+  vi.spyOn(firstSource(runner), "fetch").mockResolvedValue({
     papers: fakeArxivPapers(),
     truncatedKeywords: [],
     degradedKeywords: [],
@@ -351,7 +363,7 @@ it("test_runner_skips_seen_ids_when_all_exporters_fail", async () => {
   }
 
   const runner2 = buildRunner(buildConfig());
-  vi.spyOn(runner2.sources[0]?.source as never, "fetch").mockResolvedValue({
+  vi.spyOn(firstSource(runner2), "fetch").mockResolvedValue({
     papers: fakeArxivPapers(),
     truncatedKeywords: [],
     degradedKeywords: [],
@@ -363,7 +375,7 @@ it("test_runner_skips_seen_ids_when_all_exporters_fail", async () => {
 it("test_runner_marks_seen_when_at_least_one_exporter_succeeds", async () => {
   const config = buildConfig();
   const runner = buildRunner(config);
-  vi.spyOn(runner.sources[0]?.source as never, "fetch").mockResolvedValue({
+  vi.spyOn(firstSource(runner), "fetch").mockResolvedValue({
     papers: fakeArxivPapers(),
     truncatedKeywords: [],
     degradedKeywords: [],
@@ -385,7 +397,7 @@ it("test_runner_marks_seen_when_at_least_one_exporter_succeeds", async () => {
 it("test_runner_skips_seen_ids_when_failures_and_no_delivery", async () => {
   const config = buildConfig();
   const runner = buildRunner(config);
-  vi.spyOn(runner.sources[0]?.source as never, "fetch").mockResolvedValue({
+  vi.spyOn(firstSource(runner), "fetch").mockResolvedValue({
     papers: fakeArxivPapers(),
     truncatedKeywords: [],
     degradedKeywords: [],
@@ -413,7 +425,7 @@ it("test_runner_skips_seen_ids_when_failures_and_no_delivery", async () => {
 it("test_runner_marks_seen_when_every_exporter_no_ops", async () => {
   const config = buildConfig();
   const runner = buildRunner(config);
-  vi.spyOn(runner.sources[0]?.source as never, "fetch").mockResolvedValue({
+  vi.spyOn(firstSource(runner), "fetch").mockResolvedValue({
     papers: fakeArxivPapers(),
     truncatedKeywords: [],
     degradedKeywords: [],
@@ -431,7 +443,7 @@ it("test_runner_marks_seen_when_every_exporter_no_ops", async () => {
 it("test_runner_reports_an_incomplete_keyword_as_a_source_error", async () => {
   const config = buildConfig();
   const runner = buildRunner(config);
-  vi.spyOn(runner.sources[0]?.source as never, "fetch").mockResolvedValue({
+  vi.spyOn(firstSource(runner), "fetch").mockResolvedValue({
     papers: fakeArxivPapers(),
     truncatedKeywords: [],
     degradedKeywords: [["large language model", "1 malformed feed page(s), first: Malformed feed"]],
@@ -458,17 +470,17 @@ it("test_runner_names_the_source_of_every_incomplete_keyword", async () => {
   const byName = new Map(runner.sources.map((e) => [e.source.name, e.source]));
   expect(new Set(byName.keys())).toEqual(new Set(["arxiv", "s2", "openalex"]));
 
-  vi.spyOn(byName.get("arxiv") as never, "fetch").mockResolvedValue({
+  vi.spyOn(sourceNamed(byName, "arxiv"), "fetch").mockResolvedValue({
     papers: fakeArxivPapers(),
     truncatedKeywords: [],
     degradedKeywords: [],
   });
-  vi.spyOn(byName.get("s2") as never, "fetch").mockResolvedValue({
+  vi.spyOn(sourceNamed(byName, "s2"), "fetch").mockResolvedValue({
     papers: fakeArxivPapers(),
     truncatedKeywords: [],
     degradedKeywords: [["moe", "RuntimeError: s2 search failed for 'moe' (status=429)"]],
   });
-  vi.spyOn(byName.get("openalex") as never, "fetch").mockResolvedValue({
+  vi.spyOn(sourceNamed(byName, "openalex"), "fetch").mockResolvedValue({
     papers: fakeArxivPapers(),
     truncatedKeywords: [],
     degradedKeywords: [
@@ -492,7 +504,7 @@ it("test_runner_names_the_source_of_every_incomplete_keyword", async () => {
 it("test_runner_records_truncated_windows_in_the_result_and_history", async () => {
   const config = buildConfig();
   const runner = buildRunner(config);
-  vi.spyOn(runner.sources[0]?.source as never, "fetch").mockResolvedValue({
+  vi.spyOn(firstSource(runner), "fetch").mockResolvedValue({
     papers: fakeArxivPapers(),
     truncatedKeywords: ["retrieval augmented generation"],
     degradedKeywords: [],
@@ -510,7 +522,7 @@ it("test_runner_records_truncated_windows_in_the_result_and_history", async () =
 it("test_runner_does_not_report_incomplete_keywords_for_a_failed_source", async () => {
   const config = buildConfig();
   const runner = buildRunner(config);
-  vi.spyOn(runner.sources[0]?.source as never, "fetch").mockRejectedValue(
+  vi.spyOn(firstSource(runner), "fetch").mockRejectedValue(
     Object.assign(new Error("arxiv fetch failed for all 1 keyword(s)"), {}),
   );
 
@@ -527,7 +539,7 @@ it("test_runner_reports_a_quarantined_seen_ids_file_as_a_state_error", async () 
   const { writeFileSync } = await import("node:fs");
   writeFileSync(seenPath, '{"arxiv:2604.0001": "2026-01-01T00:00:00",');
   const runner = buildRunner(config);
-  vi.spyOn(runner.sources[0]?.source as never, "fetch").mockResolvedValue({
+  vi.spyOn(firstSource(runner), "fetch").mockResolvedValue({
     papers: fakeArxivPapers(),
     truncatedKeywords: [],
     degradedKeywords: [],
@@ -584,7 +596,7 @@ it("reports a seen_ids quarantine that happens DURING the merge (not just the ea
       return { status: 200, json: async () => ({}) };
     },
   });
-  vi.spyOn(runner.sources[0]?.source as never, "fetch").mockResolvedValue({
+  vi.spyOn(firstSource(runner), "fetch").mockResolvedValue({
     papers: fakeArxivPapers(),
     truncatedKeywords: [],
     degradedKeywords: [],
@@ -607,7 +619,7 @@ it("test_runner_stays_green_when_the_seen_ids_file_is_readable", async () => {
     `{"arxiv:9999.99999": "${NOW.toISOString().slice(0, 10)}"}`,
   );
   const runner = buildRunner(config);
-  vi.spyOn(runner.sources[0]?.source as never, "fetch").mockResolvedValue({
+  vi.spyOn(firstSource(runner), "fetch").mockResolvedValue({
     papers: fakeArxivPapers(),
     truncatedKeywords: [],
     degradedKeywords: [],
@@ -623,7 +635,7 @@ it("test_runner_uses_its_own_run_history_file_when_configured", async () => {
   const config = buildConfig();
   config.incremental = { ...config.incremental, run_history_file: historyPath };
   const runner = buildRunner(config);
-  vi.spyOn(runner.sources[0]?.source as never, "fetch").mockResolvedValue({
+  vi.spyOn(firstSource(runner), "fetch").mockResolvedValue({
     papers: fakeArxivPapers(),
     truncatedKeywords: [],
     degradedKeywords: [],
@@ -704,7 +716,7 @@ it("records a stage4: error when a recognized LLM provider has no API key (colle
   });
   expect(runner.llmProvider).toBeInstanceOf(GeminiProvider);
   expect(runner.llmProvider?.enabled).toBe(false); // no API key -> auto-disabled
-  vi.spyOn(runner.sources[0]?.source as never, "fetch").mockResolvedValue({
+  vi.spyOn(firstSource(runner), "fetch").mockResolvedValue({
     papers: fakeArxivPapers(),
     truncatedKeywords: [],
     degradedKeywords: [],
@@ -739,7 +751,7 @@ it("records a stage4: error when llm.enabled but no usable provider was built (c
   const config = buildConfig({ llm: { enabled: true, provider: "bogus-vendor" } });
   const runner = buildRunner(config);
   expect(runner.llmProvider).toBeNull();
-  vi.spyOn(runner.sources[0]?.source as never, "fetch").mockResolvedValue({
+  vi.spyOn(firstSource(runner), "fetch").mockResolvedValue({
     papers: fakeArxivPapers(),
     truncatedKeywords: [],
     degradedKeywords: [],
@@ -757,7 +769,7 @@ it("does NOT record a stage4: error when Stage 4 was simply never configured (no
   const config = buildConfig(); // no `llm` key at all
   const runner = buildRunner(config);
   expect(runner.llmProvider).toBeNull();
-  vi.spyOn(runner.sources[0]?.source as never, "fetch").mockResolvedValue({
+  vi.spyOn(firstSource(runner), "fetch").mockResolvedValue({
     papers: fakeArxivPapers(),
     truncatedKeywords: [],
     degradedKeywords: [],
@@ -772,7 +784,7 @@ it("records a stage3: error when embedding.enabled but no usable encoder was bui
   const config = buildConfig({ embedding: { enabled: true, backend: "bogus-backend" } });
   const runner = buildRunner(config);
   expect(runner.encoder).toBeNull();
-  vi.spyOn(runner.sources[0]?.source as never, "fetch").mockResolvedValue({
+  vi.spyOn(firstSource(runner), "fetch").mockResolvedValue({
     papers: fakeArxivPapers(),
     truncatedKeywords: [],
     degradedKeywords: [],
