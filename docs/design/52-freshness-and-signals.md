@@ -241,7 +241,7 @@ published ──(確定版の proceedings が出たら 1 回だけ照合し、�
 | ACL Anthology | **2026 年の XML から `<url>` 要素が無くなっていた**ため、今のアダプタは ACL 2026 を 0 本と解析していた（書かずに止まる側の失敗）。`<collection id>-<volume id>.<paper id>`（例 `2026.acl-long.1`）から ID を組み立てるようにした。古い形式（`<url>` あり）はそのまま | `conference/acl/anthology.ts` |
 | CVF | `--listing-only`：年の一覧 1 回だけで、題名・著者・リンクを取る。**要旨は取らない**（CVF はライセンスを与えていない。51 B5）。既定の動き（詳細ページと要旨）は、Python との一致テストのために残した | `conference/cvf/{listing,fetch,main}.ts` |
 | NeurIPS proceedings | `papers.nips.cc` の年の一覧（1 回）を解析し、公開中の一覧と題名で突き合わせる報告だけを出す。要旨は取らない（著者は NeurIPS にだけ許諾している）。一覧には OpenReview の ID が無く、新しい識別子の種類を足すと系譜のコードに手が入るので、**一覧の生成には使わない** | `conference/neurips/{listing,cli}.ts` |
-| 出所とライセンスの記録 | 各収集器が `papers_<date>.csv` の隣に `source_license.json` を書く（出典、ライセンス、帰属の文、要旨を載せたかとその根拠、PMLR は論文ごとの PMLR のページ）。画面への表示（51 A3・A6）はまだ | `conference/proceedings/sourceLicense.ts` |
+| 出所とライセンスの記録 | 各収集器が `papers_<date>.csv` の隣に `source_license.json` を書く（出典、ライセンス、帰属の文、要旨を載せたかとその根拠、PMLR は論文ごとの PMLR のページ）。R3-3 からカタログの build が読み、要旨の出典・ライセンス・PMLR のページを決める（51 §9.6） | `conference/proceedings/sourceLicense.ts` |
 | 新しい回の検知 | `/groups?id=venues` に会場の group が出たら、未公開の回を **pending-edition**（`phase: announced`、`status: pending_approval`、`auto_publish: false`）として記録する。新しい回だけ `/groups?id=<会場>` で開催日と場所を取る（1 回の実行で最大 11 回、1 秒間隔）。取得の失敗や 403 では記録を変えない（`last_check.status` に `source_blocked`／`error`）。公開済みになった回は記録から外す。**公開は一切しない** | `conference/watch/{groups,groupsCli}.ts`、`data/config/conference-editions-v1.json` |
 | テスト | 2026-10-11 に取得した実物の抜粋（403 の本文、`/groups`、PMLR v306、2026.acl.xml、CVPR 2026 の一覧、NeurIPS 2024/2025 の一覧）で検証 | `apps/pipeline/test/conference/{proceedings,watch,openreview}/`、`fixtures/proceedings/README.md` |
 
@@ -268,7 +268,7 @@ ICML 2026 の掲載に必要だった判断（上限を上げるか、ページ�
 
 ### 8.4 残り
 
-- 画面とデータへのライセンス・帰属の表示（51 A3・A6）。`source_license.json` はまだどこからも読まれていない。
+- ~~画面とデータへのライセンス・帰属の表示（51 A3・A6）~~：R3-3 で対応（`buildPages` が `source_license.json` を読む。ICML 2026 の要旨は「PMLR・CC BY 4.0」と著者・題名・PMLR v306・PMLR のページへのリンクで表示。51 §9.6）。JSON の `meta` への license（A3）は schema の版上げ待ちのまま。
 - PMLR と ACL の一覧には oral の区別が無い（全件 Poster）。必要なら arXiv のコメントで補う（ACL には `--oral-arxiv-query` がある）。
 - 新しい回の検知を定期実行にするか（cron）と、記録した pending-edition から「承認 1 回で公開」までの流れ（§4.2 の残り、R3 の完了条件）。
 - 既存の CVF 3 回分の要旨全文（51 §4）は手を付けていない。作り直すときは `--listing-only` を使う。
