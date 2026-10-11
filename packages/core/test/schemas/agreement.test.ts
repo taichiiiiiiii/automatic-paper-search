@@ -110,8 +110,10 @@ describe("ajv vs Python jsonschema agreement", () => {
     // deep-equal for non-scalar items (no fast hash path), which is
     // algorithmically O(n^2) here and takes several seconds -- a real
     // cost of this schema/data shape, not a bug, so it gets a longer
-    // per-test timeout instead of a smaller/sampled fixture.
-    const timeout = testCase.file.includes("identity-aliases-v1") ? 30_000 : 5_000;
+    // per-test timeout instead of a smaller/sampled fixture. 2026-10-11:
+    // ~38k tuples after ACL/ICML 2026 + ICLR 2025 (O(n^2) => ~1.8x); the
+    // promote/validate runner hit the old 30 s cap, so allow 120 s.
+    const timeout = testCase.file.includes("identity-aliases-v1") ? 120_000 : 5_000;
     it(
       `${testCase.file} against ${testCase.schema} (python ok=${testCase.ok})`,
       () => {
