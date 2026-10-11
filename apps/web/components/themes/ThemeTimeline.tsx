@@ -75,9 +75,10 @@ export const ThemeTimeline = forwardRef<
 
   return (
     <div className="mt-3 max-h-[70vh] overflow-auto rounded-md border border-rule bg-surface">
+      {/* biome-ignore lint/a11y/useSemanticElements: role="img" made every point inside presentational (axe nested-interactive: an img must not contain focusable buttons); an <svg> cannot be a <fieldset>, so it is a labelled group, like the family tree. */}
       <svg
         ref={ref}
-        role="img"
+        role="group"
         aria-label="年（横）と被引用数（縦、対数）で並べた論文の分布"
         width={layout.width}
         height={layout.height}
