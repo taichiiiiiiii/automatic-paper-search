@@ -1,15 +1,20 @@
 import { readFile } from "node:fs/promises";
 import { CatalogPage } from "./pages";
 import { expect, test } from "./support/fixtures";
-import { conferencePaperCount } from "./support/site";
+import { conferencePaperCount, conferences } from "./support/site";
 
 /** First page of results must be on screen within this budget (ms) from
  * the start of navigation; generous because CI runners are slow and the
  * biggest catalogs parse ~5-7 MB of JSON. */
 const FIRST_RESULTS_BUDGET_MS = Number(process.env.E2E_CATALOG_BUDGET_MS ?? 10_000);
 
-/** A big catalog (5k+ papers) and an ICLR one. */
+/** A big catalog (5k+ papers) and an ICLR one (some rows without abstract). */
 const CATALOGS = ["neurips-2025", "iclr-2025"] as const;
+
+/** Same key as lib/catalog-sort.ts titleSortKey: leading symbols/TeX ignored. */
+function titleSortKey(title: string): string {
+  return title.replace(/^(?:[^\p{L}\p{N}\\]|\\[a-zA-Z]+\{?)+/u, "");
+}
 
 for (const conf of CATALOGS) {
   test.describe(`catalog ${conf}`, () => {
@@ -29,20 +34,23 @@ for (const conf of CATALOGS) {
       const counts = await catalog.shownCount();
       expect(counts.matched).toBe(conferencePaperCount(conf));
       expect(counts.shown).toBeGreaterThan(0);
+      expect(counts.shown).toBeLessThanOrEqual(counts.matched);
       await expect(page).toHaveTitle(/PaperPilot/);
     });
 
-    test("English search narrows results and is kept in the URL", async () => {
+    test("English search narrows results (debounced) and is kept in the URL", async () => {
       await catalog.goto();
       await expect(catalog.results.first()).toBeVisible({ timeout: 20_000 });
-      await catalog.searchBox.fill("diffusion");
+      await catalog.searchBox.pressSequentially("diffusion", { delay: 20 });
       await expect.poll(() => catalog.searchParam("q")).toBe("diffusion");
+      await expect(catalog.resultSummary).toContainText("件が該当");
       await expect(catalog.resultSummary).toContainText("diffusion");
       const counts = await catalog.shownCount();
       expect(counts.matched).toBeGreaterThan(0);
       expect(counts.matched).toBeLessThan(conferencePaperCount(conf));
       // Highlighted match is visible on the first result.
       await expect(catalog.results.first()).toContainText(/diffusion/i);
+      await expect(catalog.results.first().locator("mark").first()).toBeVisible();
     });
 
     test("Japanese query: no crash, clean no-result state and recovery", async () => {
@@ -51,6 +59,7 @@ for (const conf of CATALOGS) {
       await catalog.searchBox.fill("拡散モデルによる画像生成");
       await expect.poll(() => catalog.searchParam("q")).toBe("拡散モデルによる画像生成");
       await expect(catalog.noResults).toBeVisible();
+      await expect(catalog.page.getByText(/英語のキーワード/)).toBeVisible();
       await expect(catalog.resultSummary).toContainText("0 件");
       await catalog.page.getByRole("button", { name: "フィルタを解除" }).click();
       await expect(catalog.results.first()).toBeVisible();
@@ -58,19 +67,16 @@ for (const conf of CATALOGS) {
       await expect(catalog.searchBox).toHaveValue("");
     });
 
-    // BUG (catalog search, JA input): the catalog filter lowercases but does
-    // not NFKC-normalise (lib/catalog-sort.ts getFiltered), so full-width
-    // Latin typed with a Japanese IME ("ｄｉｆｆｕｓｉｏｎ", "ＬＬＭ") matches
-    // nothing, while the landing cross-search (lib/search-core.ts
-    // normalizeText) does normalise. Expected: same hits as "diffusion".
-    test.fixme("full-width (IME) Latin query matches like half-width", async () => {
+    test("full-width (IME) Latin query matches like half-width", async () => {
       await catalog.goto();
       await expect(catalog.results.first()).toBeVisible({ timeout: 20_000 });
       await catalog.searchBox.fill("diffusion");
       await expect.poll(() => catalog.searchParam("q")).toBe("diffusion");
+      await expect(catalog.resultSummary).toContainText("件が該当");
       const half = (await catalog.shownCount()).matched;
       await catalog.searchBox.fill("ｄｉｆｆｕｓｉｏｎ");
       await expect.poll(() => catalog.searchParam("q")).toBe("ｄｉｆｆｕｓｉｏｎ");
+      await expect(catalog.resultSummary).toContainText("ｄｉｆｆｕｓｉｏｎ");
       await expect(catalog.noResults).toBeHidden();
       expect((await catalog.shownCount()).matched).toBe(half);
     });
@@ -92,11 +98,13 @@ for (const conf of CATALOGS) {
         await expect.poll(async () => (await catalog.shownCount()).matched).toBe(typed);
       }
 
-      const tagButtons = page.getByRole("group", { name: /トピックタグ/ }).getByRole("button");
-      const firstTag = tagButtons.first();
-      const tagName = (await firstTag.innerText()).trim().split(/\s+/)[0]!;
+      const firstTag = catalog.tagChips.first();
+      const tagName = (await firstTag.getAttribute("data-tag"))!;
       await firstTag.click();
-      await expect(firstTag).toHaveAttribute("aria-pressed", "true");
+      await expect(catalog.tagChips.filter({ hasText: tagName }).first()).toHaveAttribute(
+        "aria-pressed",
+        "true",
+      );
       await expect.poll(() => catalog.searchParam("tags")).toBe(tagName);
       const tagged = (await catalog.shownCount()).matched;
       expect(tagged).toBeGreaterThan(0);
@@ -107,7 +115,7 @@ for (const conf of CATALOGS) {
       const titles = await catalog.results
         .getByRole("heading", { level: 2 })
         .evaluateAll((hs) => hs.slice(0, 10).map((h) => (h.textContent ?? "").trim()));
-      const sorted = [...titles].sort((a, b) => a.localeCompare(b));
+      const sorted = [...titles].sort((a, b) => titleSortKey(a).localeCompare(titleSortKey(b)));
       expect(titles).toEqual(sorted);
 
       // State survives a reload.
@@ -118,6 +126,34 @@ for (const conf of CATALOGS) {
       }
       await expect(catalog.sortSelect).toHaveValue("title");
       expect((await catalog.shownCount()).matched).toBe(tagged);
+
+      // フィルタ解除 clears everything but the sort.
+      await catalog.clearFiltersButton.click();
+      await expect.poll(() => catalog.searchParam("tags")).toBeNull();
+      await expect
+        .poll(async () => (await catalog.shownCount()).matched)
+        .toBe(conferencePaperCount(conf));
+    });
+
+    test("要旨あり filter (abs=1) keeps only rows with an abstract", async ({ page }) => {
+      await catalog.goto();
+      await expect(catalog.results.first()).toBeVisible({ timeout: 20_000 });
+      const toggle = catalog.abstractToggle;
+      test.skip((await toggle.count()) === 0, "every row of this catalog has an abstract");
+      const expected = Number((await toggle.innerText()).replace(/[^\d]/g, ""));
+      expect(expected).toBeLessThan(conferencePaperCount(conf));
+      await toggle.click();
+      await expect(toggle).toHaveAttribute("aria-pressed", "true");
+      await expect.poll(() => catalog.searchParam("abs")).toBe("1");
+      await expect.poll(async () => (await catalog.shownCount()).matched).toBe(expected);
+      // No visible row says its abstract is missing.
+      await expect(catalog.results.locator("[data-abstract-source='none']")).toHaveCount(0);
+      await page.reload();
+      await expect(catalog.abstractToggle).toHaveAttribute("aria-pressed", "true", {
+        timeout: 20_000,
+      });
+      await catalog.abstractToggle.click();
+      await expect.poll(() => catalog.searchParam("abs")).toBeNull();
     });
 
     test("URL state is applied on load", async () => {
@@ -136,19 +172,33 @@ for (const conf of CATALOGS) {
       await expect(catalog.results.first()).toBeVisible();
     });
 
-    test("detail view opens and closes, with ?paper= and Back", async ({ page }) => {
+    test("detail view opens and closes, with ?paper=, Esc focus return and Back", async ({
+      page,
+    }) => {
       await catalog.goto();
       await expect(catalog.results.first()).toBeVisible({ timeout: 20_000 });
       const title = await catalog.firstResultTitle();
+      await expect(catalog.openDetailButton(0)).toHaveText("詳細を開く");
       await catalog.openDetailButton(0).click();
       await expect(catalog.selectedCard).toHaveCount(1);
       await expect(catalog.selectedCard).toContainText(title);
+      await expect(catalog.selectedCard).toContainText("選択中");
       await expect.poll(() => catalog.searchParam("paper")).toBeTruthy();
       await expect(catalog.closeDetailButton).toBeVisible();
+      await expect(catalog.closeDetailButton).toHaveText("詳細を閉じる");
 
       await catalog.closeDetailButton.click();
       await expect(catalog.selectedCard).toHaveCount(0);
       await expect.poll(() => catalog.searchParam("paper")).toBeNull();
+      // Focus goes back to the card's 詳細を開く.
+      await expect(catalog.openDetailButton(0)).toBeFocused();
+
+      // Esc closes too, also with focus return.
+      await catalog.openDetailButton(0).click();
+      await expect(catalog.selectedCard).toHaveCount(1);
+      await page.keyboard.press("Escape");
+      await expect(catalog.selectedCard).toHaveCount(0);
+      await expect(catalog.openDetailButton(0)).toBeFocused();
 
       // Opening pushes a history entry; Back closes the detail again.
       await catalog.openDetailButton(0).click();
@@ -165,7 +215,12 @@ for (const conf of CATALOGS) {
       await expect(catalog.selectedCard).toHaveCount(1, { timeout: 20_000 });
     });
 
-    test("BibTeX / CSV export the filtered results", async ({ page }) => {
+    test("BibTeX / CSV export the filtered results; URL copy", async ({
+      page,
+      context,
+      baseURL,
+    }) => {
+      await context.grantPermissions(["clipboard-read", "clipboard-write"], { origin: baseURL });
       await catalog.goto("q=diffusion");
       await expect(catalog.results.first()).toBeVisible({ timeout: 20_000 });
       const total = (await catalog.shownCount()).matched;
@@ -186,6 +241,27 @@ for (const conf of CATALOGS) {
       const csvText = await readFile(await csv.path(), "utf8");
       expect(csvText.length).toBeGreaterThan(0);
       expect(csvText.split("\n")[0]).toMatch(/title/i);
+
+      await catalog.copyUrlButton.click();
+      await expect(catalog.exportGroup.getByRole("status")).toContainText(/コピー/);
+      const copied = await page.evaluate(() => navigator.clipboard.readText());
+      expect(new URL(copied).searchParams.get("q")).toBe("diffusion");
+    });
+
+    test("conference switcher lists every catalog and navigates", async ({ page }) => {
+      await catalog.goto();
+      await expect(catalog.conferenceSwitcher).toBeVisible();
+      await expect(catalog.conferenceSwitcherNav).toBeHidden();
+      await catalog.conferenceSwitcher.locator("summary").click();
+      await expect(catalog.conferenceSwitcherNav).toBeVisible();
+      const nav = catalog.conferenceSwitcherNav;
+      await expect(nav.locator("[aria-current='page']")).toHaveCount(1);
+      const links = nav.getByRole("link");
+      await expect(links).toHaveCount(conferences().length - 1);
+      const href = (await links.first().getAttribute("href"))!;
+      await links.first().click();
+      await expect(page).toHaveURL(new RegExp(`${href.replace(/\//g, "\\/")}$`));
+      await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     });
   });
 }

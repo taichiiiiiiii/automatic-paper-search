@@ -35,7 +35,7 @@ test.describe("global nav and footer", () => {
       ["仕組み", "/how-it-works/"],
       ["探す", "/"],
     ] as const) {
-      await chrome.globalNav.getByRole("link", { name, exact: true }).click();
+      await chrome.globalNavLink(name).click();
       await expect(page).toHaveURL(new RegExp(`${path.replace(/\//g, "\\/")}(\\?.*)?$`));
       await expect(chrome.globalNav.getByRole("link", { name, exact: true })).toHaveAttribute(
         "aria-current",
@@ -43,6 +43,31 @@ test.describe("global nav and footer", () => {
       );
       await expect(page.getByRole("heading", { level: 1 })).toBeAttached();
     }
+  });
+
+  test("header 学会 link is current on a catalog and lands on the catalog section", async ({
+    page,
+  }) => {
+    await page.goto("/neurips-2025/");
+    const chrome = new SiteChrome(page);
+    await expect(chrome.globalNavLink("学会")).toHaveAttribute("aria-current", "page");
+    await chrome.globalNavLink("学会").click();
+    await expect(page).toHaveURL(/\/#s0-confs$/);
+    await expect(page.getByRole("region", { name: /^学会カタログ/ })).toBeInViewport();
+    await expect(chrome.globalNavLink("探す")).toHaveAttribute("aria-current", "page");
+  });
+
+  test("footer site-info nav links navigate", async ({ page }) => {
+    await page.goto("/");
+    const chrome = new SiteChrome(page);
+    await expect(chrome.footerNav).toBeVisible();
+    const first = chrome.footerNav.locator("a[href^='/']").first();
+    const href = (await first.getAttribute("href"))!;
+    await first.click();
+    await expect(page).toHaveURL(
+      new RegExp(`${href.replace(/[?#].*$/, "").replace(/\//g, "\\/")}`),
+    );
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   });
 
   test("skip link targets the main landmark", async ({ page }) => {

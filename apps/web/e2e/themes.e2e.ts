@@ -47,13 +47,32 @@ for (const t of themes) {
     test("tree renders with the theme's papers", async ({ page }) => {
       await theme.goto(t.slug);
       await expect(page).toHaveTitle(new RegExp(t.theme));
-      await expect(theme.heading).toBeVisible();
-      await expect(theme.nodeLinks.first()).toBeVisible();
-      const nodes = await theme.nodeLinks.count();
+      await expect(theme.heading).toContainText(`${t.theme} の系譜`);
+      await expect(theme.nodeCards.first()).toBeVisible();
+      const nodes = await theme.nodeCards.count();
       expect(nodes).toBeGreaterThan(0);
       expect(nodes).toBeLessThanOrEqual(t.paper_count);
       expect(await theme.edgeButtons.count()).toBeGreaterThan(0);
       await expect(theme.galleryLink(t.theme)).toBeVisible();
+      await expect(theme.galleryLink(t.theme)).toHaveAttribute("aria-current", "page");
+    });
+
+    test("selecting a card shows the selection bar and ?focus= without leaving the site", async ({
+      page,
+    }) => {
+      await theme.goto(t.slug);
+      const card = theme.nodeCards.first();
+      await card.click();
+      await expect(page).toHaveURL(/\/themes\/\?/);
+      await expect(card).toHaveAttribute("aria-pressed", "true");
+      await expect(theme.selectedPaperBar).toBeVisible();
+      await expect(theme.selectedPaperBar).toContainText(/土台 \d+ 本・発展 \d+ 本/);
+      await expect.poll(() => theme.searchParam("focus")).toBeTruthy();
+      await expect(theme.paperSelect).toHaveValue(theme.searchParam("focus")!);
+      // Clicking it again deselects.
+      await card.click();
+      await expect(theme.selectedPaperBar).toBeHidden();
+      await expect.poll(() => theme.searchParam("focus")).toBeNull();
     });
 
     test("evidence panel opens on an edge, has a report link, closes with Esc", async ({
@@ -89,18 +108,20 @@ for (const t of themes) {
       await expect(theme.evidencePanel).toBeHidden();
     });
 
-    // BUG (themes, a11y): closing the evidence panel (Esc or 閉じる) drops
-    // focus to <body> instead of returning it to the edge that opened it,
-    // so keyboard users lose their place in the tree. The panel moves
-    // focus to its heading on open (LineageTree.tsx selectEdge) but nothing
-    // restores it on close. Expected: focus back on the opening edge.
-    test.fixme("closing the evidence panel returns focus to the opening edge", async ({ page }) => {
+    test("closing the evidence panel returns focus to the opening edge", async ({ page }) => {
       await theme.goto(t.slug);
       const edge = theme.edgeButtons.first();
       await edge.focus();
       await page.keyboard.press("Enter");
       await expect(theme.evidenceHeading).toBeFocused();
       await page.keyboard.press("Escape");
+      await expect(theme.evidencePanel).toBeHidden();
+      await expect(edge).toBeFocused();
+
+      // Same for the close button.
+      await page.keyboard.press("Enter");
+      await expect(theme.evidenceHeading).toBeFocused();
+      await theme.evidenceCloseButton.click();
       await expect(theme.evidencePanel).toBeHidden();
       await expect(edge).toBeFocused();
     });
@@ -114,8 +135,8 @@ for (const t of themes) {
       await expect(theme.mainPathButton("本流だけ")).toHaveAttribute("aria-pressed", "true");
       await expect.poll(() => theme.searchParam("main")).toBe("only");
 
-      await theme.mainPathButton("切").click();
-      await expect(theme.mainPathButton("切")).toHaveAttribute("aria-pressed", "true");
+      await theme.mainPathButton("オフ").click();
+      await expect(theme.mainPathButton("オフ")).toHaveAttribute("aria-pressed", "true");
       await expect.poll(() => theme.searchParam("main")).toBe("off");
 
       await theme.mainPathButton("強調").click();
@@ -152,6 +173,65 @@ for (const t of themes) {
       await expect(theme.viewButton("年×被引用")).toHaveAttribute("aria-pressed", "true");
     });
 
+    test("並べ方 select changes the layout order", async () => {
+      await theme.goto(t.slug);
+      const options = await theme.orderSelect
+        .locator("option")
+        .evaluateAll((os) => os.map((o) => (o as HTMLOptionElement).value));
+      expect(options.length).toBeGreaterThan(1);
+      const initial = await theme.orderSelect.inputValue();
+      const other = options.find((o) => o !== initial)!;
+      await theme.orderSelect.selectOption(other);
+      await expect(theme.orderSelect).toHaveValue(other);
+      await expect(theme.nodeCards.first()).toBeVisible();
+    });
+
+    test("zoom buttons scale the tree and 全体 fits it", async () => {
+      await theme.goto(t.slug);
+      const z0 = await theme.zoom();
+      expect(z0).toBeGreaterThan(0);
+      await theme.zoomButton("拡大").click();
+      await expect.poll(() => theme.zoom()).toBeGreaterThan(z0);
+      const z1 = await theme.zoom();
+      await theme.zoomButton("縮小").click();
+      await expect.poll(() => theme.zoom()).toBeLessThan(z1);
+      await theme.zoomButton("縮小").click();
+      await theme.zoomButton("全体").click();
+      // "Fit" makes the SVG no wider than its scroll box.
+      await expect
+        .poll(() =>
+          theme.tree.evaluate((svg) => {
+            const box = svg.parentElement as HTMLElement;
+            return svg.getBoundingClientRect().width <= box.clientWidth + 1;
+          }),
+        )
+        .toBe(true);
+    });
+
+    test("reading guide opens on a first visit and stays closed once closed", async ({ page }) => {
+      // Fresh storage: no skipOnboarding for this page.
+      const fresh = await page.context().newPage();
+      const first = new ThemePage(fresh);
+      await first.goto(t.slug);
+      await expect(first.readingGuide).toHaveAttribute("open", "");
+      await expect(first.readingGuide.getByRole("heading", { name: "ことば" })).toBeVisible();
+      await first.readingGuide.locator("summary").click();
+      await expect(first.readingGuide).not.toHaveAttribute("open", "");
+      // The dismissal is stored from the (async) `toggle` event.
+      await expect
+        .poll(() => fresh.evaluate(() => localStorage.getItem("pp.theme.onboarded")))
+        .toBe("1");
+      await first.goto(t.slug);
+      await expect(first.readingGuide).not.toHaveAttribute("open", "");
+      await fresh.close();
+      // The page with the skip flag starts collapsed and can be opened.
+      await theme.goto(t.slug);
+      await expect(theme.readingGuide).not.toHaveAttribute("open", "");
+      await theme.readingGuide.locator("summary").click();
+      await expect(theme.readingGuide).toHaveAttribute("open", "");
+      await expect(page.locator("[data-reading-guide] h3").first()).toBeVisible();
+    });
+
     test("Prior/Derivative panel and the two-paper path (?focus= / ?to=)", async () => {
       await theme.goto(t.slug);
       await expect(theme.neighborsPanel).toBeVisible();
@@ -178,25 +258,32 @@ for (const t of themes) {
       await expect(theme.pathResult).toBeVisible();
     });
 
-    test("exports download non-empty BibTeX / CSV / SVG / PNG files", async ({ page }) => {
+    test("export menu downloads non-empty BibTeX / CSV / SVG / PNG files", async ({ page }) => {
       await theme.goto(t.slug);
-      const bib = await downloadBytes(page, () => theme.exportButton("BibTeX").click());
+      await expect(theme.exportButton("bibtex")).toBeHidden();
+      await theme.openExportMenu();
+
+      const bib = await downloadBytes(page, () => theme.exportButton("bibtex").click());
       expect(bib.name).toMatch(/\.bib$/);
       expect(bib.bytes.toString("utf8")).toMatch(/^@\w+\{/m);
 
-      const papers = await downloadBytes(page, () => theme.exportButton("CSV（論文）").click());
+      await theme.openExportMenu();
+      const papers = await downloadBytes(page, () => theme.exportButton("nodes-csv").click());
       expect(papers.name).toMatch(/\.csv$/);
       expect(papers.bytes.toString("utf8").trim().split("\n").length).toBeGreaterThan(1);
 
-      const rels = await downloadBytes(page, () => theme.exportButton("CSV（関係）").click());
+      await theme.openExportMenu();
+      const rels = await downloadBytes(page, () => theme.exportButton("edges-csv").click());
       expect(rels.name).toMatch(/\.csv$/);
       expect(rels.bytes.toString("utf8").trim().split("\n").length).toBeGreaterThan(1);
 
-      const svg = await downloadBytes(page, () => theme.exportButton("SVG").click());
+      await theme.openExportMenu();
+      const svg = await downloadBytes(page, () => theme.exportButton("画像（SVG）").click());
       expect(svg.name).toMatch(/\.svg$/);
       expect(svg.bytes.toString("utf8")).toContain("<svg");
 
-      const png = await downloadBytes(page, () => theme.exportButton("PNG").click());
+      await theme.openExportMenu();
+      const png = await downloadBytes(page, () => theme.exportButton("画像（PNG）").click());
       expect(png.name).toMatch(/\.png$/);
       expect(png.bytes.subarray(0, 8).toString("hex")).toBe("89504e470d0a1a0a");
       expect(png.bytes.length).toBeGreaterThan(1000);
@@ -205,6 +292,7 @@ for (const t of themes) {
     test("URL copy puts the current URL on the clipboard", async ({ page, context, baseURL }) => {
       await context.grantPermissions(["clipboard-read", "clipboard-write"], { origin: baseURL });
       await theme.goto(t.slug, "main=only");
+      await theme.openExportMenu();
       await theme.copyUrlButton.click();
       await expect(theme.shareStatus).toHaveText(/コピーしました/);
       const copied = await page.evaluate(() => navigator.clipboard.readText());
@@ -212,10 +300,42 @@ for (const t of themes) {
       expect(new URL(copied).searchParams.get("theme")).toBe(t.slug);
     });
 
-    test("new-papers section links a valid Atom feed", async ({ page, request }) => {
+    test("keyboard help dialog traps focus and returns it on close", async ({ page }) => {
+      test.skip(
+        (page.viewportSize()?.width ?? 0) < 640,
+        "the ⌨ button is hidden below sm; the ? key still opens the dialog",
+      );
+      await theme.goto(t.slug);
+      const opener = theme.keyboardHelpButton;
+      await opener.click();
+      const dialog = theme.keyboardHelpDialog;
+      await expect(dialog).toBeVisible();
+      await expect(dialog).toHaveAttribute("aria-modal", "true");
+      const close = dialog.getByRole("button", { name: "閉じる" });
+      await expect(close).toBeFocused();
+      // Tab / Shift+Tab stay inside the dialog.
+      await page.keyboard.press("Tab");
+      await expect(close).toBeFocused();
+      await page.keyboard.press("Shift+Tab");
+      await expect(close).toBeFocused();
+      await page.keyboard.press("Escape");
+      await expect(dialog).toBeHidden();
+      await expect(opener).toBeFocused();
+
+      // "?" opens it from the keyboard; the close button closes it.
+      await page.keyboard.press("?");
+      await expect(dialog).toBeVisible();
+      await close.click();
+      await expect(dialog).toBeHidden();
+    });
+
+    test("new-papers section (collapsed) links a valid Atom feed", async ({ page, request }) => {
       test.skip(!themeHasFeed(t.slug), "no feed.xml published for this theme");
       await theme.goto(t.slug);
       await expect(theme.newPapersSection).toBeVisible();
+      await expect(theme.feedLink).toBeHidden();
+      await theme.expand(theme.newPapersSection);
+      await expect(theme.feedLink).toBeVisible();
       const href = await theme.feedLink.getAttribute("href");
       expect(href).toBe(`/themes/${t.slug}/feed.xml`);
       const res = await request.get(href!);
@@ -243,6 +363,17 @@ for (const t of themes) {
       expect(parsed.title).toBeTruthy();
       expect(parsed.id).toBeTruthy();
       expect(Number.isNaN(Date.parse(parsed.updated ?? ""))).toBe(false);
+    });
+
+    test("コードとモデル section is collapsed and lists badges when opened", async () => {
+      await theme.goto(t.slug);
+      const section = theme.codeLinksSection;
+      test.skip((await section.count()) === 0, "no code links for this theme");
+      const list = section.locator("ul").first();
+      await expect(list).toBeHidden();
+      await theme.expand(section);
+      await expect(list).toBeVisible();
+      expect(await section.locator("a[href^='http']").count()).toBeGreaterThan(0);
     });
   });
 }

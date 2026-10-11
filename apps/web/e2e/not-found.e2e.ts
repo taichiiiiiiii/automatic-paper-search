@@ -15,9 +15,32 @@ test.describe("404 page", () => {
     await expect(page.getByRole("heading", { level: 1 })).toContainText("404");
     const chrome = new SiteChrome(page);
     await expect(chrome.globalNav).toBeVisible();
-    await chrome.globalNav.getByRole("link", { name: "PaperPilot" }).click();
+    await expect(chrome.footer).toBeVisible();
+    await chrome.brandLink.click();
     await expect(page).toHaveURL(/\/$/);
     await expect(page.getByRole("heading", { level: 1 })).toBeAttached();
+  });
+
+  test("the 404 body links to the top, the catalog list and the themes", async ({
+    page,
+    request,
+  }) => {
+    await page.goto("/no-such-page-e2e/");
+    const main = page.getByRole("main");
+    const expected: [RegExp, string][] = [
+      [/トップページ/, "/"],
+      [/学会カタログの一覧/, "/#s0-confs"],
+      [/テーマ別の系譜/, "/themes/"],
+    ];
+    for (const [name, href] of expected) {
+      const link = main.getByRole("link", { name });
+      await expect(link).toHaveAttribute("href", href);
+      const res = await request.get(href.replace(/#.*$/, ""));
+      expect(res.status(), href).toBe(200);
+    }
+    await main.getByRole("link", { name: /学会カタログの一覧/ }).click();
+    await expect(page).toHaveURL(/\/#s0-confs$/);
+    await expect(page.getByRole("region", { name: /^学会カタログ/ })).toBeInViewport();
   });
 
   test("the 404 page is not indexable", async ({ page }) => {
