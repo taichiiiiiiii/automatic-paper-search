@@ -231,7 +231,10 @@ export default function HowItWorksPage() {
           <strong>LLM</strong>{" "}
           が関係の種類を補助します。題名の版（「V2」など）や基礎文献リスト、引用と年からの推測で補う関係もあります。
           引用文に手がかりがないときは、新しい論文の要旨が相手の論文を名指しして「〜を基に」「〜と異なり」と述べている
-          1 文も根拠にします（出典は「新しい論文の要旨」と表示します）。
+          1 文も根拠にします（出典は「新しい論文の要旨」と表示します）。 Semantic Scholar
+          に引用文がない組では、新しい論文の arXiv の HTML
+          版の本文から引用文を取り、同じ規則で判定することがあります（出典は「arXiv
+          HTML」と表示します）。
         </p>
         <p className={styles.howBody}>
           家系図の線をクリック（タップ、またはキーボードで選んで Enter）すると、
@@ -331,6 +334,23 @@ export default function HowItWorksPage() {
               CVF Open Access
             </a>
             （CVPR・ICCV）の論文は、著作権が著者に留保されています（ライセンスの付与なし）。要旨の全文は順次、掲載をやめます。
+          </li>
+          <li>
+            Semantic Scholar に引用文がない組の引用文は、arXiv の HTML 版（
+            <a href="https://arxiv.org/html/" rel="noopener">
+              arxiv.org/html
+            </a>
+            ）の本文から 1 文だけ引用します（robots.txt の Crawl-delay を守って取得し、HTML
+            は保存・再配布しません。論文のライセンスは論文ごとに異なります）。出版社が参考文献を
+            Semantic Scholar に出していない論文は{" "}
+            <a href="https://www.crossref.org/" rel="noopener">
+              Crossref
+            </a>{" "}
+            の参考文献リストで引用の有無だけを補い、会議・論文誌の名前は{" "}
+            <a href="https://dblp.org/" rel="noopener">
+              dblp
+            </a>
+            （CC0）で補正することがあります。
           </li>
           <li>
             Thank you to{" "}

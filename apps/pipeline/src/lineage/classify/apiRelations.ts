@@ -129,7 +129,8 @@ const COMPARE_PATTERNS: readonly RegExp[] = [
   /\bsurpass(es|ed|ing)?\b/i,
   /\bsuperior\s+to\b/i,
   /\bbetter\s+than\b/i,
-  /\bcompar(e|ed|es|ing|ison)\s+(\w+\s+){0,2}(to|with|against)\b/i,
+  // R2-28: up to 4 words between ("comparing the proposed ARMA layer with").
+  /\bcompar(e|ed|es|ing|ison)\s+(\w+\s+){0,4}(to|with|against)\b/i,
   /\bbaselines?\b/i,
   /\bstate[\s-]of[\s-]the[\s-]art\b/i,
   /\bcompetitive\s+(with|to)\b/i,
@@ -495,6 +496,13 @@ const FIRST_PERSON_V3 = /(?<![\w-])(we|our|ours|this\s+(paper|work))(?![\w-])/i;
 const INSTANCE_OF_OURS =
   /\b(particular|special)\s+(instances?|cases?)\s+of\s+(our|the\s+proposed)\b/i;
 
+/** R2-28: the cited work is the subject and the citing authors adopt
+ * what it does in a closing relative clause ("Lepikhin et al. (2020) …
+ * addresses expert overflow by passing its representation to the next
+ * layer … which we also follow", Switch <- GShard). Counted only when the
+ * sentence cites that one work and names it in words. */
+const WHICH_WE_FOLLOW = /,?\s*which\s+we\s+(also\s+)?(follow|adopt)\s*[.;]?\s*$/i;
+
 /** R2-23: the citing paper proposing its own method as a baseline. */
 const OWN_BASELINE =
   /\b(?:we|this\s+(?:paper|work))\s+(?:propose|present|introduce|establish)s?\s+(?:an?\s+)?(?:[\w-]+\s+){0,2}baselines?\b/gi;
@@ -560,6 +568,16 @@ function classifySentence(
   const compare = anyMatch(COMPARE_PATTERNS, sentence.replace(OWN_BASELINE, " ")) && (fp || strong);
   const buildCues = [...ADAPT_PATTERNS, ...BUILD_PATTERNS];
   const scope = opts.source === "abstract" ? "phrase" : "clause";
+  if (
+    !compare &&
+    opts.source !== "abstract" &&
+    strong &&
+    WHICH_WE_FOLLOW.test(sentence) &&
+    citationTargetCount(sentence) <= 1 &&
+    namesCitedPaper(sentence, id)
+  ) {
+    return mk("builds_on", "phrase_build", 0.8);
+  }
   if (
     !compare &&
     fpBuild &&

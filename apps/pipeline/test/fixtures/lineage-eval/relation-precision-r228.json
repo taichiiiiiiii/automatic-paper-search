@@ -1,0 +1,594 @@
+{
+ "description": "R2-28: labelled pairs of relation-precision-r223.json (edges + rule_cases) whose Semantic Scholar contexts are empty or missing and whose citing paper's arXiv HTML (arxiv.org/html, LaTeXML) yielded citation sentences for the cited paper's bib entry. arxiv_html = the recorded contexts (fetched 2026-10-11 with a 15 s crawl delay; single sentences, <= 12 x 400 chars; the HTML itself is not stored). gold = the R2-23 labels. Replayed by relationPrecisionR228.test.ts through deriveS2Relation with an arXiv HTML source answering from this file.",
+ "items": [
+  {
+   "theme": "graph-neural-network",
+   "src": "openalex:W2406128552",
+   "dst": "openalex:W2766453196",
+   "cited": {
+    "title": "Learning Convolutional Neural Networks for Graphs",
+    "authors": [
+     "Mathias Niepert",
+     "Mohamed M. Ahmed",
+     "Konstantin Kutzkov"
+    ],
+    "year": 2016
+   },
+   "citing": {
+    "title": "Graph Attention Networks",
+    "authors": [
+     "Petar Veličković",
+     "Casanova, A",
+     "P Liò",
+     "Guillem Cucurull",
+     "A Romero"
+    ],
+    "year": 2017,
+    "abstract": "We present graph attention networks (GATs), novel neural network architectures that operate on graph-structured data, leveraging masked self-attentional layers to address the shortcomings of prior methods based on graph convolutions or their approximations. By stacking layers in which nodes are able to attend over their neighborhoods' features, we enable (implicitly) specifying different weights to different nodes in a neighborhood, without requiring any kind of costly matrix operation (such as inversion) or depending on knowing the graph structure upfront. In this way, we address several key challenges of spectral-based graph neural networks simultaneously, and make our model readily applicable to inductive as well as transductive problems. Our GAT models have achieved or matched state-of-the-art results across four established transductive and inductive graph benchmarks: the Cora, Citeseer and Pubmed citation network datasets, as well as a protein-protein interaction dataset (wherein test graphs remain unseen during training)."
+   },
+   "published": {
+    "relation": "extends",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4",
+    "confidence": 0.92,
+    "rationale": "Graph Attention Networks は Graph Convolutional Networks の局所集約を注意機構で拡張し、隣接ノードへの重み付けを学習している。"
+   },
+   "s2": {
+    "found": false,
+    "intents": [],
+    "contexts": [],
+    "isInfluential": null
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": false,
+    "relation": "baseline_only",
+    "quote_backed": false,
+    "quote": null,
+    "source": "r2-21-handcheck",
+    "note": "abstract-LLM extends; GAT cites PATCHY-SAN as related work only"
+   },
+   "set": "edges",
+   "arxiv_html": {
+    "id": "1710.10903",
+    "version": "v3",
+    "bib": "bib.bib30",
+    "contexts": [
+     "In some cases, this requires learning a specific weight matrix for each node degree (Duvenaud et al., 2015), using the powers of a transition matrix to define the neighborhood while learning weights for each input channel and neighborhood degree (Atwood & Towsley, 2016), or extracting and normalizing neighborhoods containing a fixed number of nodes (Niepert et al., 2016)."
+    ]
+   }
+  },
+  {
+   "theme": "graph-neural-network",
+   "src": "openalex:W2618170429",
+   "dst": "openalex:W2912636151",
+   "cited": {
+    "title": "CayleyNets: Graph Convolutional Neural Networks With Complex Rational Spectral Filters",
+    "authors": [
+     "Ron Levie",
+     "Federico Monti",
+     "Xavier Bresson",
+     "Michael M. Bronstein"
+    ],
+    "year": 2018
+   },
+   "citing": {
+    "title": "Graph Neural Networks with Convolutional ARMA Filters",
+    "authors": [
+     "Filippo Maria Bianchi",
+     "Daniele Grattarola",
+     "Lorenzo Livi",
+     "Cesare Alippi"
+    ],
+    "year": 2021,
+    "abstract": "Popular graph neural networks implement convolution operations on graphs based on polynomial spectral filters. In this paper, we propose a novel graph convolutional layer inspired by the auto-regressive moving average (ARMA) filter that, compared to polynomial ones, provides a more flexible frequency response, is more robust to noise, and better captures the global graph structure. We propose a graph neural network implementation of the ARMA filter with a recursive and distributed formulation, obtaining a convolutional layer that is efficient to train, localized in the node space, and can be transferred to new graphs at test time. We perform a spectral analysis to study the filtering effect of the proposed ARMA layer and report experiments on four downstream tasks: semi-supervised node classification, graph signal classification, graph classification, and graph regression. Results show that the proposed ARMA layer brings significant improvements over graph neural networks based on polynomial filters."
+   },
+   "published": {
+    "relation": "extends",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4",
+    "confidence": 0.75,
+    "rationale": "Graph Neural Networks with Convolutional ARMA Filters は、CayleyNets が提案したスペクトル領域の有理フィルタ概念を受け継ぎつつ、ARMA フィルタという新たな周波数応答を導入している"
+   },
+   "s2": {
+    "found": true,
+    "intents": [],
+    "contexts": [],
+    "isInfluential": false
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": null,
+    "relation": "extends",
+    "quote_backed": false,
+    "quote": null,
+    "source": "r2-21-handcheck",
+    "note": "undecided in the R2-21 hand check (no S2 context)"
+   },
+   "set": "edges",
+   "arxiv_html": {
+    "id": "1901.01343",
+    "version": "v7",
+    "bib": "bib.bib27",
+    "contexts": [
+     "Finally, we discuss the relationship between the proposed ARMA GNN and CayleyNets (Levie et al., 2019b), a GNN architecture that also approximates the effect of a rational filter.",
+     "We note that Eq. (17) and (18) slightly simplify the original formulation presented by Levie et al. (Levie et al., 2019b), but allow us to better understand what type of operation is actually performed by the CayleyNet.",
+     "Our experiments focus on comparing the proposed ARMA layer with GNNs layers based on polynomial filters, namely Chebyshev (Defferrard et al., 2016) and GCN (Kipf & Welling, 2016a), and CayleyNets (Levie et al., 2019b) that, like ARMA, are based on rational spectral filters."
+    ]
+   }
+  },
+  {
+   "theme": "mixture-of-experts",
+   "src": "openalex:W2242818861",
+   "dst": "openalex:W3014879845",
+   "cited": {
+    "title": "Estimating or Propagating Gradients Through Stochastic Neurons for Conditional Computation",
+    "authors": [
+     "Yoshua Bengio",
+     "Nicholas Léonard",
+     "Aaron C. Courville"
+    ],
+    "year": 2013
+   },
+   "citing": {
+    "title": "Conditional Channel Gated Networks for Task-Aware Continual Learning",
+    "authors": [
+     "Davide Abati",
+     "Jakub M. Tomczak",
+     "Tijmen Blankevoort",
+     "Simone Calderara",
+     "Rita Cucchiara"
+    ],
+    "year": 2020,
+    "abstract": "Convolutional Neural Networks experience catastrophic forgetting when optimized on a sequence of learning problems: as they meet the objective of the current training examples, their performance on previous tasks drops drastically. In this work, we introduce a novel framework to tackle this problem with conditional computation. We equip each convolutional layer with task-specific gating modules, selecting which filters to apply on the given input. This way, we achieve two appealing properties. Firstly, the execution patterns of the gates allow to identify and protect important filters, ensuring no loss in the performance of the model for previously learned tasks. Secondly, by using a sparsity objective, we can promote the selection of a limited set of kernels, allowing to retain sufficient model capacity to digest new tasks. Existing solutions require, at test time, awareness of the task to which each example belongs to. This knowledge, however, may not be available in many practical scenarios. Therefore, we additionally introduce a task classifier that predicts the task label of each example, to deal with settings in which a task oracle is not available. We validate our proposal on four continual learning datasets. Results show that our model consistently outperforms existing methods both in the presence and the absence of a task oracle. Notably, on Split SVHN and Imagenet-50 datasets, our model yields up to 23.98% and 17.42% improvement in accuracy w.r.t. competing methods."
+   },
+   "published": {
+    "relation": "extends",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4",
+    "confidence": 0.73,
+    "rationale": "Conditional Channel Gated Networks は確率的ニューロンによる条件計算の概念をタスク認識型継続学習に拡張し、チャネルゲーティングで動的に計算を制御している。"
+   },
+   "s2": {
+    "found": true,
+    "intents": [],
+    "contexts": [],
+    "isInfluential": false
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": false,
+    "relation": "baseline_only",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "条件付き計算の基礎を背景として引くだけと思われる。引用文がなく、ゲーティングの勾配推定法を継承した証拠はない（引用側ノード自体もテーマ外の候補）"
+   },
+   "set": "edges",
+   "arxiv_html": {
+    "id": "2004.00070",
+    "version": "v1",
+    "bib": "bib.bib4",
+    "contexts": [
+     "Therefore, we rely on the Gumbel-Softmax sampling [13, 20], and get a biased estimate of the gradient utilizing the straight-through estimator [4]."
+    ]
+   }
+  },
+  {
+   "theme": "mixture-of-experts",
+   "src": "openalex:W2966327190",
+   "dst": "openalex:W3215427016",
+   "cited": {
+    "title": "Deep Mixture of Experts via Shallow Embedding",
+    "authors": [
+     "Xin Wang",
+     "Fisher Yu",
+     "Lisa Dunlap",
+     "Yi-An Ma",
+     "Ruth Wang"
+    ],
+    "year": 2018
+   },
+   "citing": {
+    "title": "Speechmoe2: Mixture-of-Experts Model with Improved Routing",
+    "authors": [
+     "Zhao You",
+     "Shulin Feng",
+     "Dan Su",
+     "Dong Yu"
+    ],
+    "year": 2022,
+    "abstract": "Mixture-of-experts based acoustic models with dynamic routing mechanisms have proved promising results for speech recognition. The design principle of router architecture is important for the large model capacity and high computational efficiency. Our previous work SpeechMoE only uses local grapheme embedding to help routers to make route decisions. To further improve speech recognition performance against varying domains and accents, we propose a new router architecture which integrates additional global domain and accent embedding into router input to promote adaptability. Experimental results show that the proposed SpeechMoE2 can achieve lower character error rate (CER) with comparable parameters than SpeechMoE on both multi-domain and multi-accent task. Primarily, the proposed method provides up to 1.6% ∼ 4.8% relative CER improvement for the multi-domain task and 1.9% ∼ 17.7% relative CER improvement for the multi-accent task respectively. Besides, increasing the number of experts also achieves consistent performance improvement and keeps the computational cost constant."
+   },
+   "published": {
+    "relation": "extends",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4",
+    "confidence": 0.85,
+    "rationale": "SpeechMoE2 は DeepMoE の Mixture-of-Experts アーキテクチャに、グローバルなドメイン・アクセント埋め込みをルータ入力として組み込み、音声認識タスクへ拡張している。"
+   },
+   "s2": {
+    "found": true,
+    "intents": [],
+    "contexts": [],
+    "isInfluential": false
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": false,
+    "relation": "baseline_only",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "SpeechMoE2 は SpeechMoE（グラフ外）の後継で、DeepMoE（画像の浅い埋め込みによるゲーティング）を土台にした証拠はない。引用文なし・要旨だけの LLM 判定"
+   },
+   "set": "edges",
+   "arxiv_html": {
+    "id": "2111.11831",
+    "version": "v1",
+    "bib": "bib.bib5",
+    "contexts": [
+     "Recently, dynamic mixture-of-experts (MoE) based approaches have been investigated and applied in different tasks such as language modeling [1, 2] and image classification [3, 4, 5, 6]."
+    ]
+   }
+  },
+  {
+   "theme": "mixture-of-experts",
+   "src": "openalex:W3122317902",
+   "dst": "openalex:W3119866685",
+   "cited": {
+    "title": "GShard: Scaling Giant Models with Conditional Computation and Automatic Sharding",
+    "authors": [
+     "Dmitry Lepikhin",
+     "HyoukJoong Lee",
+     "Yuanzhong Xu",
+     "Dehao Chen",
+     "Orhan Fırat"
+    ],
+    "year": 2021
+   },
+   "citing": {
+    "title": "Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity",
+    "authors": [
+     "William Fedus",
+     "Barret Zoph",
+     "Noam Shazeer"
+    ],
+    "year": 2021,
+    "abstract": "In deep learning, models typically reuse the same parameters for all inputs. Mixture of Experts (MoE) defies this and instead selects different parameters for each incoming example. The result is a sparsely-activated model -- with outrageous numbers of parameters -- but a constant computational cost. However, despite several notable successes of MoE, widespread adoption has been hindered by complexity, communication costs and training instability -- we address these with the Switch Transformer. We simplify the MoE routing algorithm and design intuitive improved models with reduced communication and computational costs. Our proposed training techniques help wrangle the instabilities and we show large sparse models may be trained, for the first time, with lower precision (bfloat16) formats. We design models based off T5-Base and T5-Large to obtain up to 7x increases in pre-training speed with the same computational resources. These improvements extend into multilingual settings where we measure gains over the mT5-Base version across all 101 languages. Finally, we advance the current scale of language models by pre-training up to trillion parameter models on the \"Colossal Clean Crawled Corpus\" and achieve a 4x speedup over the T5-XXL model."
+   },
+   "published": {
+    "relation": "successor",
+    "method": "llm",
+    "prompt_version": "relation-prompt-v4",
+    "confidence": 0.85,
+    "rationale": "Switch Transformer は GShard の条件付き計算と MoE を簡素化したルーティングで拡張し、通信コストを削減した研究ラインの自然な発展である。"
+   },
+   "s2": {
+    "found": true,
+    "intents": [],
+    "contexts": [],
+    "isInfluential": false
+   },
+   "context_llm_answer": null,
+   "gold": {
+    "strong": true,
+    "relation": "successor",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "Switch は GShard／Shazeer の MoE を top-1 ルーティングに簡素化した同じ研究系列（Google）の次の段階。successor で妥当（extends でも可） / R2-23: S2 は対を持つが引用文が 0 件（版の違いもなし: S2 は arXiv 版と会議版を 1 件にまとめている）"
+   },
+   "set": "edges",
+   "arxiv_html": {
+    "id": "2101.03961",
+    "version": "v3",
+    "bib": "bib.bib30",
+    "contexts": [
+     "MoE models have had notable successes in machine translation (Shazeer et al., 2017; Shazeer et al., 2018; Lepikhin et al., 2020), however, widespread adoption is hindered by complexity, communication costs, and training instabilities.",
+     "To encourage a balanced load across experts we add an auxiliary loss (Shazeer et al., 2017; Shazeer et al., 2018; Lepikhin et al., 2020).",
+     "As in Shazeer et al. (2018); Lepikhin et al. (2020), Switch Transformers simplifies the original design in Shazeer et al. (2017) which had separate load-balancing and importance-weighting losses.",
+     "Model instability hinders the ability to train using efficient bfloat16 precision, and as a result, Lepikhin et al. (2020) trains with float32 precision throughout their MoE Transformer.",
+     "More recently, through advances in machine learning infrastructure, GShard (Lepikhin et al., 2020), which extended the XLA compiler, used the MoE Transformer to dramatically improve machine translation across 100 languages.",
+     "Shazeer et al. (2018); Lepikhin et al. (2020) designed MoE Transformers (Shazeer et al., 2017) by adding MoE layers into the dense feedfoward network (FFN) computations of the Transformer.",
+     "Lepikhin et al. (2020) adapts a Mixture-of-Expert model and addresses expert overflow by passing its representation to the next layer without processing through a residual connection which we also follow."
+    ]
+   }
+  },
+  {
+   "theme": "vision-transformer",
+   "src": "openalex:W3094502228",
+   "dst": "openalex:W3131500599",
+   "cited": {
+    "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+    "authors": [
+     "Alexey Dosovitskiy",
+     "Lucas Beyer",
+     "Alexander Kolesnikov",
+     "Dirk Weissenborn",
+     "Xiaohua Zhai"
+    ],
+    "year": 2020
+   },
+   "citing": {
+    "title": "Pyramid Vision Transformer: A Versatile Backbone for Dense Prediction without Convolutions",
+    "authors": [
+     "Wenhai Wang",
+     "Enze Xie",
+     "Xiang Li",
+     "Deng-Ping Fan",
+     "Kaitao Song"
+    ],
+    "year": 2021,
+    "abstract": "Although convolutional neural networks (CNNs) have achieved great success in computer vision, this work investigates a simpler, convolution-free backbone network use-fid for many dense prediction tasks. Unlike the recently-proposed Vision Transformer (ViT) that was designed for image classification specifically, we introduce the Pyramid Vision Transformer (PVT), which overcomes the difficulties of porting Transformer to various dense prediction tasks. PVT has several merits compared to current state of the arts. (1) Different from ViT that typically yields low-resolution outputs and incurs high computational and memory costs, PVT not only can be trained on dense partitions of an image to achieve high output resolution, which is important for dense prediction, but also uses a progressive shrinking pyramid to reduce the computations of large feature maps. (2) PVT inherits the advantages of both CNN and Transformer, making it a unified backbone for various vision tasks without convolutions, where it can be used as a direct replacement for CNN backbones. (3) We validate PVT through extensive experiments, showing that it boosts the performance of many downstream tasks, including object detection, instance and semantic segmentation. For example, with a comparable number of parameters, PVT+RetinaNet achieves 40.4 AP on the COCO dataset, surpassing ResNet50+RetinNet (36.3 AP) by 4.1 absolute AP (see Figure 2). We hope that PVT could, serre as an alternative and useful backbone for pixel-level predictions and facilitate future research."
+   },
+   "published": {
+    "relation": "extends",
+    "method": "foundational_allowlist",
+    "prompt_version": null,
+    "confidence": 0.65,
+    "rationale": "「Pyramid Vision Transformer: A Versatile Backbone for Dense …」(2021) は分野の基礎文献「An Image is Worth 16x16 Words: Transformers for Image Recog…」(2020)を引用しており、その系譜に連なるものとして拡張関係で残している（基礎文献リストに基づく規則）。"
+   },
+   "s2": null,
+   "context_llm_answer": null,
+   "gold": {
+    "strong": true,
+    "relation": "extends",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "PVT は ViT に階層（ピラミッド）構造を足した拡張。引用文はないが関係は定説どおり"
+   },
+   "set": "edges",
+   "arxiv_html": {
+    "id": "2102.12122",
+    "version": "v2",
+    "bib": "bib.bib13",
+    "contexts": [
+     "Recently, Dosovitskiy et al. [13] introduced the Vision Transformer (ViT) for image classification.",
+     "Recently, Vision Transformer (ViT) [13] employs a pure Transformer [64] model for image classification by treating an image as a sequence of patches.",
+     "The most related work to our model is ViT [13].",
+     "For image classification, we follow ViT [13] and DeiT [63] to append a learnable classification token to the input of the last stage, and then employ a fully connected (FC) layer to conduct classification on top of the token.",
+     "Meanwhile, under similar or lower complexity, PVT models archive performances comparable to the recently proposed Transformer-based models, such as ViT [13] and DeiT [63] (PVT-Large: 18.3 vs. ViT(DeiT)-Base/16: 18.3).",
+     "With increasing input scale, the growth rate of the GFLOPs of our PVT is greater than ResNet [22], but lower than ViT [13], as shown in Figure 6."
+    ]
+   }
+  },
+  {
+   "theme": "vision-transformer",
+   "src": "openalex:W3094502228",
+   "dst": "openalex:W3161838454",
+   "cited": {
+    "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+    "authors": [
+     "Alexey Dosovitskiy",
+     "Lucas Beyer",
+     "Alexander Kolesnikov",
+     "Dirk Weissenborn",
+     "Xiaohua Zhai"
+    ],
+    "year": 2020
+   },
+   "citing": {
+    "title": "Segmenter: Transformer for Semantic Segmentation",
+    "authors": [
+     "Robin Strudel",
+     "Ricardo Alexandrino Garcia",
+     "Ivan Laptev",
+     "Cordelia Schmid"
+    ],
+    "year": 2021,
+    "abstract": "Image segmentation is often ambiguous at the level of individual image patches and requires contextual information to reach label consensus. In this paper we introduce Segmenter, a transformer model for semantic segmentation. In contrast to convolution-based methods, our approach allows to model global context already at the first layer and throughout the network. We build on the recent Vision Transformer (ViT) and extend it to semantic segmentation. To do so, we rely on the output embeddings corresponding to image patches and obtain class labels from these embed-dings with a point-wise linear decoder or a mask trans-former decoder. We leverage models pre-trained for image classification and show that we can fine-tune them on moderate sized datasets available for semantic segmentation. The linear decoder allows to obtain excellent results already, but the performance can be further improved by a mask transformer generating class masks. We conduct an extensive ablation study to show the impact of the different parameters, in particular the performance is better for large models and small patch sizes. Segmenter attains excellent results for semantic segmentation. It outperforms the state of the art on both ADE20K and Pascal Context datasets and is competitive on Cityscapes."
+   },
+   "published": {
+    "relation": "extends",
+    "method": "foundational_allowlist",
+    "prompt_version": null,
+    "confidence": 0.65,
+    "rationale": "「Segmenter: Transformer for Semantic Segmentation」(2021) は分野の基礎文献「An Image is Worth 16x16 Words: Transformers for Image Recog…」(2021)を引用しており、その系譜に連なるものとして拡張関係で残している（基礎文献リストに基づく規則）。"
+   },
+   "s2": null,
+   "context_llm_answer": null,
+   "gold": {
+    "strong": true,
+    "relation": "extends",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "Segmenter は ViT を分割に拡張。引用文はないが関係は定説どおり"
+   },
+   "set": "edges",
+   "arxiv_html": {
+    "id": "2105.05633",
+    "version": "v3",
+    "bib": "bib.bib19",
+    "contexts": [
+     "Following the recent work on Vision Transformers (ViT) [19, 49], we split the image into patches and treat linear patch embeddings as input tokens for the transformer encoder.",
+     "In summary, our work provides the following four contributions: (i) We propose a novel approach to semantic segmentation based on the Vision Transformer (ViT) [19] that does not use convolutions, captures contextual information by design and outperforms FCN based approaches. (ii) We present a family of models with varying levels of resolution which allows to trade-off between precision and run-tim",
+     "Recently, the Vision Transformer (ViT) [19] introduced a convolution-free transformer architecture for image classification where input images are processed as sequences of patch tokens.",
+     "For the encoder, we build upon the vision transformer ViT [19] and consider ”Tiny”, ”Small”, ”Base” and ”Large” models described in Table 1.",
+     "The original ViT models [19] have been trained with random cropping only, whereas the training procedure proposed by [47] uses a combination of dropout [46] and stochastic depth [30] as regularization and Mixup [62] and RandAugment [15] as data augmentations.",
+     "We fine-tuned ViT-B/16 on ADE20K with models from [19] and [47] and observe a significant difference, namely a mIoU of 45.69% and 48.06% respectively.",
+     "Following [19], we bilinearly interpolate the pre-trained position embeddings according to their original position in the image to match the fine-tuning sequence length.",
+     "In contrast, transformers are usually composed of layer normalization [3] combined with dropout as a regularizer during training [17, 19]."
+    ]
+   }
+  },
+  {
+   "theme": "vision-transformer",
+   "src": "openalex:W3094502228",
+   "dst": "openalex:W4226028923",
+   "cited": {
+    "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+    "authors": [
+     "Alexey Dosovitskiy",
+     "Lucas Beyer",
+     "Alexander Kolesnikov",
+     "Dirk Weissenborn",
+     "Xiaohua Zhai"
+    ],
+    "year": 2020
+   },
+   "citing": {
+    "title": "When Shift Operation Meets Vision Transformer: An Extremely Simple Alternative to Attention Mechanism",
+    "authors": [
+     "Guangting Wang",
+     "Yucheng Zhao",
+     "Chuanxin Tang",
+     "Chong Luo",
+     "Wenjun Zeng"
+    ],
+    "year": 2022,
+    "abstract": "Attention mechanism has been widely believed as the key to success of vision transformers (ViTs), since it provides a flexible and powerful way to model spatial relationships. However, is the attention mechanism truly an indispensable part of ViT? Can it be replaced by some other alternatives? To demystify the role of attention mechanism, we simplify it into an extremely simple case: ZERO FLOP and ZERO parameter. Concretely, we revisit the shift operation. It does not contain any parameter or arithmetic calculation. The only operation is to exchange a small portion of the channels between neighboring features. Based on this simple operation, we construct a new backbone network, namely ShiftViT, where the attention layers in ViT are substituted by shift operations. Surprisingly, ShiftViT works quite well in several mainstream tasks, e.g., classification, detection, and segmentation. The performance is on par with or even better than the strong baseline Swin Transformer. These results suggest that the attention mechanism might not be the vital factor that makes ViT successful. It can be even replaced by a zero-parameter operation. We should pay more attentions to the remaining parts of ViT in the future work. Code is available at github.com/microsoft/SPACH."
+   },
+   "published": {
+    "relation": "extends",
+    "method": "foundational_allowlist",
+    "prompt_version": null,
+    "confidence": 0.65,
+    "rationale": "「When Shift Operation Meets Vision Transformer: An Extremely…」(2022) は分野の基礎文献「An Image is Worth 16x16 Words: Transformers for Image Recog…」(2020)を引用しており、その系譜に連なるものとして拡張関係で残している（基礎文献リストに基づく規則）。"
+   },
+   "s2": null,
+   "context_llm_answer": null,
+   "gold": {
+    "strong": true,
+    "relation": "extends",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "ShiftViT は ViT（と Swin）の注意を shift 演算に置き換える変種。extends で妥当"
+   },
+   "set": "edges",
+   "arxiv_html": {
+    "id": "2201.10801",
+    "version": "v1",
+    "bib": "bib.bib5",
+    "contexts": [
+     "The advantage of ViT was first demonstrated in image classification task (Dosovitskiy et al. 2020), where the ViT backbone outperforms its CNN counterparts by a remarkable margin.",
+     "ViT (Dosovitskiy et al. 2020) is the pioneering work that leverages a pure transformer architecture for visual recognition tasks."
+    ]
+   }
+  },
+  {
+   "theme": "vision-transformer",
+   "src": "openalex:W3094502228",
+   "dst": "openalex:W4312349930",
+   "cited": {
+    "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+    "authors": [
+     "Alexey Dosovitskiy",
+     "Lucas Beyer",
+     "Alexander Kolesnikov",
+     "Dirk Weissenborn",
+     "Xiaohua Zhai"
+    ],
+    "year": 2020
+   },
+   "citing": {
+    "title": "Swin Transformer V2: Scaling Up Capacity and Resolution",
+    "authors": [
+     "Ze Liu",
+     "Han Hu",
+     "Yutong Lin",
+     "Zhuliang Yao",
+     "Zhenda Xie"
+    ],
+    "year": 2022,
+    "abstract": "We present techniques for scaling Swin Transformer [35] up to 3 billion parameters and making it capable of training with images of up to 1,536x1,536 resolution. By scaling up capacity and resolution, Swin Transformer sets new records on four representative vision benchmarks: 84.0% top-1 accuracy on ImageNet- V2 image classification, 63.1 / 54.4 box / mask mAP on COCO object detection, 59.9 mIoU on ADE20K semantic segmentation, and 86.8% top-1 accuracy on Kinetics-400 video action classification. We tackle issues of training instability, and study how to effectively transfer models pre-trained at low resolutions to higher resolution ones. To this aim, several novel technologies are proposed: 1) a residual post normalization technique and a scaled cosine attention approach to improve the stability of large vision models; 2) a log-spaced continuous position bias technique to effectively transfer models pre-trained at low-resolution images and windows to their higher-resolution counterparts. In addition, we share our crucial implementation details that lead to significant savings of GPU memory consumption and thus make it feasi-ble to train large vision models with regular GPUs. Using these techniques and self-supervised pre-training, we suc-cessfully train a strong 3 billion Swin Transformer model and effectively transfer it to various vision tasks involving high-resolution images or windows, achieving the state-of-the-art accuracy on a variety of benchmarks. Code is avail-able at https://github.com/microsoft/Swin-Transformer."
+   },
+   "published": {
+    "relation": "extends",
+    "method": "foundational_allowlist",
+    "prompt_version": null,
+    "confidence": 0.65,
+    "rationale": "「Swin Transformer V2: Scaling Up Capacity and Resolution」(2022) は分野の基礎文献「An Image is Worth 16x16 Words: Transformers for Image Recog…」(2020)を引用しており、その系譜に連なるものとして拡張関係で残している（基礎文献リストに基づく規則）。"
+   },
+   "s2": null,
+   "context_llm_answer": null,
+   "gold": {
+    "strong": true,
+    "relation": "extends",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "Swin V2 は直接には Swin の後継だが、ViT 系の拡張でもある。extends で許容"
+   },
+   "set": "edges",
+   "arxiv_html": {
+    "id": "2111.09883",
+    "version": "v2",
+    "bib": "bib.bib22",
+    "contexts": [
+     "The current common practice is to perform a bi-cubic interpolation of the position bias maps [22, 46].",
+     "Last year, Transformers started taking over one representative visual benchmark after another, including ImageNet-1K image-level classification benchmarks [22], COCO region-level object detection benchmark [46], ADE20K pixel-level semantic segmentation benchmark [83, 46], Kinetics-400 video action classification benchmark [2], etc. Since these works, numerous vision Transformer variants have been",
+     "Global vision Transformers, such as ViT [22], compute attention globally, with the equivalent attention window size linearly proportional to the increased input image resolution.",
+     "To handle the variable window sizes between pre-training and fine-tuning, bi-cubic interpolation was the previous common practice [22, 46].",
+     "The original Swin Transformer inherits the common practice in the language Transformers [52] and vanilla ViT [22] to utilize a pre-normalization configuration without extensive study, as shown in the figure 1."
+    ]
+   }
+  },
+  {
+   "theme": "vision-transformer",
+   "src": "openalex:W3094502228",
+   "dst": "openalex:W4312777001",
+   "cited": {
+    "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+    "authors": [
+     "Alexey Dosovitskiy",
+     "Lucas Beyer",
+     "Alexander Kolesnikov",
+     "Dirk Weissenborn",
+     "Xiaohua Zhai"
+    ],
+    "year": 2020
+   },
+   "citing": {
+    "title": "Reversible Vision Transformers",
+    "authors": [
+     "Karttikeya Mangalam",
+     "Haoqi Fan",
+     "Yanghao Li",
+     "Chao-Yuan Wu",
+     "Bo Xiong"
+    ],
+    "year": 2022,
+    "abstract": "We present Reversible Vision Transformers, a memory efficient architecture design for visual recognition. By decoupling the GPU memory footprint from the depth of the model, Reversible Vision Transformers enable memory efficient scaling of transformer architectures. We adapt two popular models, namely Vision Transformer and Multiscale Vision Transformers, to reversible variants and benchmark extensively across both model sizes and tasks of image classification, object detection and video classification. Reversible Vision Transformers achieve a reduced memory footprint of up to 15.5× at identical model complexity, parameters and accuracy, demonstrating the promise of reversible vision transformers as an efficient backbone for resource limited training regimes. Finally, we find that the additional computational burden of recomputing activations is more than overcome for deeper models, where throughput can increase up to 3.9 × over their non-reversible counterparts. Code and models are available at https://github.com/facebookresearch/mvit."
+   },
+   "published": {
+    "relation": "extends",
+    "method": "foundational_allowlist",
+    "prompt_version": null,
+    "confidence": 0.65,
+    "rationale": "「Reversible Vision Transformers」(2022) は分野の基礎文献「An Image is Worth 16x16 Words: Transformers for Image Recog…」(2020)を引用しており、その系譜に連なるものとして拡張関係で残している（基礎文献リストに基づく規則）。"
+   },
+   "s2": null,
+   "context_llm_answer": null,
+   "gold": {
+    "strong": true,
+    "relation": "extends",
+    "quote_backed": false,
+    "quote": null,
+    "source": "audit-draft-r2-8",
+    "note": "Reversible ViT は ViT を可逆構造に拡張"
+   },
+   "set": "edges",
+   "arxiv_html": {
+    "id": "2302.04869",
+    "version": "v1",
+    "bib": "bib.bib15",
+    "contexts": [
+     "In this work, we reconfigure the residual paths in Vision Transformers (ViT) [15] and Multiscale Vision Transformers (MViT) [18] to overcome this issue.",
+     "are a popular network structure that were first proposed for natural language applications [68] and now are widely used in all areas of deep learning such as Reinforcement Learning [7], Speech [41], Music [32], multi-modal learning [35] and recently, in traditional vision tasks [15] as well.",
+     "Since their introduction, Vision Transformers have experienced enthusiastic adoption and have been applied to several visual recognition tasks [15, 63, 64] using priors such as multi-scale feature hierarchies [18, 24, 49, 69, 76] and local structure modelling [49, 14, 9].",
+     "In this work, we use Vision Transformers [15] and Multiscale Vision Transformers [18] as our base models and propose their reversible transformer version that decouple the memory requirement from depth of the model.",
+     "While this constraint is an obstruction for other vision architectures such as ResNets [27] that require a change of feature dimensions, it is easily satisfied in the Vision Transformer architecture [15] which maintains a constant feature dimension throughout the layers.",
+     "Fig. shows the reversible transformation T adapted to the Vision Transformer architecture [15].",
+     "Following ViT [15], we use the Multi-head attention and the MLP sublocks as functions F and G respectively.",
+     "We follow training recipes [17] for both ViT [15] and MViT [18] models with certain crucial adaptions (§6).",
+     "Figure 1 plots the GPU Memory footprint for both Rev-ViT and Rev-MViT family of models as well as for several other prior networks such as MViT [18], ViT [15], ResNets and RegNetY [58].",
+     "All models closely follow the original ViT architectures [15] in matched performance, parameters, FLOPs and much lower memory footprint (Table 1)."
+    ]
+   }
+  }
+ ]
+}

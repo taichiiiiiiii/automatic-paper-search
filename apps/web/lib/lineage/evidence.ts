@@ -42,6 +42,37 @@ export const QUOTE_SOURCE_LABEL = "Semantic Scholar";
  * abstract (`要旨: "…"`) rather than a Semantic Scholar citation context. */
 export const ABSTRACT_SOURCE_LABEL = "新しい論文の要旨";
 
+/** R2-28: source label of a sentence quoted from the citing paper's arXiv
+ * HTML rendering (pairs Semantic Scholar has no citation sentence for). */
+export const ARXIV_HTML_SOURCE_LABEL = "arXiv HTML";
+
+/** R2-28: method label of a rule edge whose sentence came from arXiv HTML. */
+export const ARXIV_HTML_METHOD_LABEL = "arXiv HTML の引用文";
+
+// The pipeline notes the source as `（arXiv HTML（arXiv:2101.03961v3）の本文…`.
+const ARXIV_HTML_NOTE_RE = /arXiv HTML（arXiv:([0-9a-z./-]+?)(v\d+)?）/i;
+
+/** The arXiv id (and version) the quote of an arXiv-HTML rule edge comes
+ * from, or null for any other rationale. */
+export function arxivHtmlSourceOf(
+  rationale: string | null | undefined,
+): { id: string; version: string | null } | null {
+  const m = typeof rationale === "string" ? ARXIV_HTML_NOTE_RE.exec(rationale) : null;
+  return m ? { id: m[1] as string, version: m[2] ?? null } : null;
+}
+
+/** Method label for an edge: arXiv-HTML rule edges are not labelled as
+ * Semantic Scholar sentences. */
+export function edgeMethodLabelJa(
+  method: string | null | undefined,
+  rationale?: string | null,
+): string {
+  if (method === "s2_context_rule" && arxivHtmlSourceOf(rationale) !== null) {
+    return ARXIV_HTML_METHOD_LABEL;
+  }
+  return methodLabelJa(method);
+}
+
 // The pipeline writes the quote as `引用文: "…"` (ASCII or curly quotes)
 // at the end of the rationale (apps/pipeline lineage/theme s2Relations),
 // or `要旨: "…"` when the sentence is from the citing paper's abstract.
@@ -55,7 +86,7 @@ export interface EdgeEvidence {
   quote: string | null;
   /** Where the quote comes from: a citation context or the citing
    * paper's abstract (absent when there is no quote). */
-  quoteSource?: "citation-context" | "abstract";
+  quoteSource?: "citation-context" | "abstract" | "arxiv-html";
 }
 
 export function clipQuote(text: string, max: number = MAX_QUOTE_CHARS): string {
@@ -74,7 +105,12 @@ export function parseEdgeEvidence(rationale: string | null | undefined): EdgeEvi
   return {
     summary: summary || text,
     quote,
-    quoteSource: m[1] === "要旨" ? "abstract" : "citation-context",
+    quoteSource:
+      m[1] === "要旨"
+        ? "abstract"
+        : arxivHtmlSourceOf(text) !== null
+          ? "arxiv-html"
+          : "citation-context",
   };
 }
 

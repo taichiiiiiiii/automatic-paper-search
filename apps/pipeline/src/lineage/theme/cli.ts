@@ -39,12 +39,15 @@ import { isMain } from "../../shared/cli/isMain.js";
 import { IncompleteBuildError } from "../fetch-state/completeness.js";
 import { LINEAGE_LLM_ENV, type LineageLlmMode, resolveLineageLlm } from "../shared/lineageLlm.js";
 import { buildProvider } from "../shared/providerFactory.js";
+import { ARXIV_HTML_FILENAME, DEFAULT_MAX_FETCHES, type FetchTextLike } from "./arxivHtmlSource.js";
 import { type BuildThemeLineageDeps, buildThemeLineage, ZeroEdgeBuildError } from "./build.js";
 import {
   DEFAULT_MIN_CLASSIFIED_RATE,
   DegradedClassificationError,
   EXIT_DEGRADED_CLASSIFICATION,
 } from "./classificationGate.js";
+import { CROSSREF_DEFAULT_MAX_REQUESTS, CROSSREF_FILENAME } from "./crossrefReferences.js";
+import { DBLP_DEFAULT_MAX_QUERIES, DBLP_FILENAME } from "./dblpVenues.js";
 import { S2_REFERENCES_FILENAME } from "./s2Citations.js";
 import { sanitizeTheme } from "./slug.js";
 import { CachedTopicEmbedder, createTransformersEmbedder } from "./topicEmbedding.js";
@@ -265,6 +268,102 @@ export function envFilePath(repoRoot: string, mode: LayoutMode = LAYOUT_MODE): s
   return join(layoutFor(repoRoot, mode).config, ".env");
 }
 
+/** R2-28 env switches: `on` enables, unset / `off` disables; anything
+ * else disables with a warning (these sources only ADD evidence). */
+export const ARXIV_HTML_ENV = "PAPERPILOT_ARXIV_HTML";
+export const ARXIV_HTML_MAX_ENV = "PAPERPILOT_ARXIV_HTML_MAX_FETCHES";
+export const CROSSREF_ENV = "PAPERPILOT_CROSSREF_REFERENCES";
+export const CROSSREF_MAX_ENV = "PAPERPILOT_CROSSREF_MAX_REQUESTS";
+export const DBLP_ENV = "PAPERPILOT_DBLP_VENUES";
+export const DBLP_MAX_ENV = "PAPERPILOT_DBLP_MAX_QUERIES";
+
+function switchOn(
+  env: Readonly<Record<string, string | undefined>>,
+  name: string,
+  warn: (msg: string) => void,
+): boolean {
+  const v = (env[name] ?? "").trim().toLowerCase();
+  if (v === "" || v === "off") return false;
+  if (v === "on") return true;
+  warn(`warning: ${name}=${JSON.stringify(env[name])} is not on/off; treated as off`);
+  return false;
+}
+
+function positiveInt(
+  env: Readonly<Record<string, string | undefined>>,
+  name: string,
+  fallback: number,
+): number {
+  const n = Number.parseInt(env[name] ?? "", 10);
+  return Number.isInteger(n) && n > 0 ? n : fallback;
+}
+
+/** Plain-text GET with the timeout covering the body read (arXiv HTML). */
+export const fetchTextImpl: FetchTextLike = async (url, init) => {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), init.timeoutMs);
+  let resp: Response;
+  try {
+    resp = await fetch(url, {
+      method: init.method,
+      headers: init.headers,
+      redirect: "follow",
+      signal: controller.signal,
+    });
+  } catch (e) {
+    clearTimeout(timer);
+    throw e;
+  }
+  return {
+    status: resp.status,
+    headers: resp.headers,
+    text: async () => {
+      try {
+        return await resp.text();
+      } finally {
+        clearTimeout(timer);
+      }
+    },
+  };
+};
+
+/**
+ * R2-28: the opt-in evidence sources of {@link BuildThemeLineageDeps}
+ * (arXiv HTML contexts, Crossref reference lists, DBLP venues) from the
+ * environment. All default to off; each is bounded per run.
+ */
+export function optInEvidenceDeps(
+  env: Readonly<Record<string, string | undefined>>,
+  cacheDir: string,
+  contact: string | null,
+  warn: (msg: string) => void = (m) => process.stderr.write(`${m}\n`),
+): Pick<BuildThemeLineageDeps, "arxivHtml" | "crossref" | "dblpVenues"> {
+  return {
+    arxivHtml: switchOn(env, ARXIV_HTML_ENV, warn)
+      ? {
+          cachePath: join(cacheDir, ARXIV_HTML_FILENAME),
+          fetchText: fetchTextImpl,
+          maxFetches: positiveInt(env, ARXIV_HTML_MAX_ENV, DEFAULT_MAX_FETCHES),
+          contact,
+        }
+      : null,
+    crossref: switchOn(env, CROSSREF_ENV, warn)
+      ? {
+          cachePath: join(cacheDir, CROSSREF_FILENAME),
+          mailto: contact,
+          maxRequests: positiveInt(env, CROSSREF_MAX_ENV, CROSSREF_DEFAULT_MAX_REQUESTS),
+        }
+      : null,
+    dblpVenues: switchOn(env, DBLP_ENV, warn)
+      ? {
+          cachePath: join(cacheDir, DBLP_FILENAME),
+          maxQueries: positiveInt(env, DBLP_MAX_ENV, DBLP_DEFAULT_MAX_QUERIES),
+          contact,
+        }
+      : null,
+  };
+}
+
 /** Exported for tests (the M6 fetch-timeout-covers-body-read fix lives in
  * the `fetchImpl` this builds); production callers rely on the
  * `runThemeCli` default. */
@@ -334,6 +433,12 @@ export function defaultDeps(repoRoot: string = DEFAULT_REPO_ROOT): BuildThemeLin
             cachePath: join(lineageCacheDir(layout), S2_REFERENCES_FILENAME),
             apiKey: env.s2ApiKey,
           },
+    // R2-28: arXiv HTML contexts / Crossref lists / DBLP venues (opt-in).
+    ...optInEvidenceDeps(
+      process.env,
+      lineageCacheDir(layout),
+      (process.env.PAPERPILOT_CONTACT_EMAIL ?? "").trim() || env.openalexEmail || null,
+    ),
     // R2-11: vectors and model files live under the (git-ignored) lineage
     // cache; CI keeps both in the Actions cache (regen-themes.yml,
     // theme-on-demand.yml).

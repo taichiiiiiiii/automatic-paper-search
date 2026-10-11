@@ -74,6 +74,21 @@ describe("regen-themes.yml (R2-6)", () => {
     ).toContain(S2);
   });
 
+  it("packages and promotes the R2-28 evidence caches; the sources are opt-in (default off)", () => {
+    for (const f of ["arxiv_html_contexts.json", "crossref_references.json", "dblp_venues.json"]) {
+      const path = `data/state/lineage-cache/${f}`;
+      expect(step(gen, "Package exact themes candidate").run as string).toContain(path);
+      expect(
+        step(job(doc, "promote"), "Validate and promote from the latest develop tip").run as string,
+      ).toContain(path);
+    }
+    const env = step(gen, "Regenerate requested themes").env as Record<string, string>;
+    expect(env.PAPERPILOT_ARXIV_HTML).toMatch(/\|\| 'off' \}\}$/);
+    expect(env.PAPERPILOT_CROSSREF_REFERENCES).toMatch(/\|\| 'off' \}\}$/);
+    expect(env.PAPERPILOT_DBLP_VENUES).toMatch(/\|\| 'off' \}\}$/);
+    expect(env.PAPERPILOT_ARXIV_HTML_MAX_FETCHES).toMatch(/\|\| '40' \}\}$/);
+  });
+
   it("releases only when a theme regenerated", () => {
     expect(job(doc, "release").if).toContain("needs.generate.outputs.succeeded != '0'");
   });

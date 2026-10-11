@@ -129,6 +129,16 @@ jobs:
           # R2-19: OpenAlex free key ($1/day vs $0.10/day keyless shared by
           # every Actions run on the egress IP); optional, keyless still works.
           PAPERPILOT_OPENALEX_API_KEY: ${{ secrets.PAPERPILOT_OPENALEX_API_KEY }}
+          # R2-28 (design 41): opt-in evidence sources, off unless the repo
+          # variables say `on`. arXiv HTML citation contexts (robots.txt
+          # Crawl-delay 15 s; <= PAPERPILOT_ARXIV_HTML_MAX_FETCHES pages per
+          # theme, default 40 = 10 min), Crossref reference lists (polite
+          # pool via the contact mail, <= 3 in flight), DBLP SPARQL venues.
+          PAPERPILOT_ARXIV_HTML: ${{ vars.PAPERPILOT_ARXIV_HTML || 'off' }}
+          PAPERPILOT_ARXIV_HTML_MAX_FETCHES: ${{ vars.PAPERPILOT_ARXIV_HTML_MAX_FETCHES || '40' }}
+          PAPERPILOT_CROSSREF_REFERENCES: ${{ vars.PAPERPILOT_CROSSREF_REFERENCES || 'off' }}
+          PAPERPILOT_DBLP_VENUES: ${{ vars.PAPERPILOT_DBLP_VENUES || 'off' }}
+          PAPERPILOT_OPENALEX_EMAIL: ${{ secrets.OPENALEX_EMAIL }}
           THEME_INPUT: ${{ inputs.theme }}
         run: |
           set -euo pipefail

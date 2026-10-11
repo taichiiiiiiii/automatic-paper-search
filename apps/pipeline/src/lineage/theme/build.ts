@@ -37,6 +37,7 @@ import {
 } from "../fetch-state/completeness.js";
 import { FallbackProvider, type LabelledUsage, usageOf } from "../llm/fallback.js";
 import { fetchRelated } from "../shared/fetchRelated.js";
+import { ArxivHtmlContextSource, type FetchTextLike } from "./arxivHtmlSource.js";
 import {
   addCrossNodeEdges,
   addVersionFamilyEdges,
@@ -52,6 +53,8 @@ import {
   wrapProviderWithThemeCache,
 } from "./cachedClassifyProvider.js";
 import { DegradedClassificationError, evidenceClassifiedRate } from "./classificationGate.js";
+import { CrossrefReferenceSource } from "./crossrefReferences.js";
+import { DblpVenueSource } from "./dblpVenues.js";
 import { dedupNodesByStrongAlias, remapEdgeEndpoints } from "./dedup.js";
 import {
   CANONICAL_SEED_REFERENCE_LIMIT,
@@ -330,6 +333,34 @@ export interface BuildThemeLineageDeps {
   /** R2-11: embedder for the topic gate (`topicEmbedding.ts`); omitted =
    * term-only rule (library callers and tests). */
   topicEmbedder?: TopicEmbedder | null;
+  /**
+   * R2-28: arXiv HTML citation contexts for pairs whose S2 contexts are
+   * empty / missing (`arxivHtmlSource.ts`; needs `s2Citations`). Omitted /
+   * null = off (the CLI enables it with `PAPERPILOT_ARXIV_HTML=on`).
+   */
+  arxivHtml?: {
+    cachePath: string | null;
+    fetchText: FetchTextLike;
+    maxFetches?: number;
+    crawlDelayMs?: number;
+    contact?: string | null;
+  } | null;
+  /** R2-28: Crossref reference lists for publisher-withheld S2 lists
+   * (`crossrefReferences.ts`; needs `s2Citations`). Null/omitted = off. */
+  crossref?: {
+    cachePath: string | null;
+    mailto: string | null;
+    maxRequests?: number;
+    fetchImpl?: FetchLike;
+  } | null;
+  /** R2-28: DBLP SPARQL venue correction of preprint-venue nodes
+   * (`dblpVenues.ts`). Null/omitted = off. */
+  dblpVenues?: {
+    cachePath: string | null;
+    maxQueries?: number;
+    contact?: string | null;
+    fetchImpl?: FetchLike;
+  } | null;
 }
 
 function fullLogger(partial?: BuildThemeLineageDeps["logger"]): FullLogger {
@@ -512,6 +543,32 @@ export async function buildThemeLineage(
           minIntervalMs: deps.s2Citations.minIntervalMs ?? null,
           logger,
         });
+  // R2-28: arXiv HTML contexts where S2 has none (opt-in).
+  const arxivHtml =
+    s2Source === null || deps.arxivHtml == null
+      ? null
+      : new ArxivHtmlContextSource(deps.arxivHtml.cachePath, {
+          fetchText: deps.arxivHtml.fetchText,
+          sleep: deps.sleep,
+          now: wallClockNow,
+          monotonicNow: deps.monotonicNow,
+          contact: deps.arxivHtml.contact ?? null,
+          maxFetches: deps.arxivHtml.maxFetches,
+          crawlDelayMs: deps.arxivHtml.crawlDelayMs,
+          logger,
+        });
+  const crossref =
+    s2Source === null || deps.crossref == null
+      ? null
+      : new CrossrefReferenceSource(deps.crossref.cachePath, {
+          fetchImpl: deps.crossref.fetchImpl ?? deps.fetchImpl,
+          sleep: deps.sleep,
+          mailto: deps.crossref.mailto,
+          now: wallClockNow,
+          monotonicNow: deps.monotonicNow,
+          maxRequests: deps.crossref.maxRequests,
+          logger,
+        });
   const s2Relations: S2RelationContext | null =
     s2Source === null
       ? null
@@ -521,6 +578,7 @@ export async function buildThemeLineage(
           stats: newS2RelationStats(),
           contextProvider: contextProvider ?? provider,
           batchSize: contextBatchSize,
+          arxivHtml,
         };
   // R2-14: the same S2 reference lists fill in expansion where OpenAlex
   // has (almost) no references / citing papers.
@@ -642,7 +700,7 @@ export async function buildThemeLineage(
   const crossAdded = await addCrossNodeEdges(
     nodes,
     edges,
-    { provider, strictMode: llmStrict, s2Relations, apiCitations: noLlm, apiStats },
+    { provider, strictMode: llmStrict, s2Relations, apiCitations: noLlm, apiStats, crossref },
     netDeps,
     completeness,
   );
@@ -673,6 +731,14 @@ export async function buildThemeLineage(
     );
     logger.info?.(contextLlmSummary(st));
   }
+  if (arxivHtml !== null) {
+    arxivHtml.flush();
+    logger.info?.(arxivHtml.summary());
+  }
+  if (crossref !== null) {
+    crossref.flush();
+    logger.info?.(crossref.summary());
+  }
   if (noLlm) {
     // R2-24: one line saying what the no-LLM mode did with the pairs no
     // citing sentence classified (`s2_unreachable` pairs stay year/citation
@@ -699,6 +765,23 @@ export async function buildThemeLineage(
         `topic gate: dropped ${confirmed.dropped.length}/${bfsResult.provisional.size} provisional node(s) with < ${topicScope.options.minSupport} on-topic non-seed links after the cross-node pass`,
       );
     }
+  }
+
+  // R2-28: preprint-venue nodes that DBLP has as a conference / journal
+  // paper show that venue (opt-in).
+  if (deps.dblpVenues != null) {
+    const dblp = new DblpVenueSource(deps.dblpVenues.cachePath, {
+      fetchImpl: deps.dblpVenues.fetchImpl ?? deps.fetchImpl,
+      sleep: deps.sleep,
+      now: wallClockNow,
+      monotonicNow: deps.monotonicNow,
+      contact: deps.dblpVenues.contact ?? null,
+      maxQueries: deps.dblpVenues.maxQueries,
+      logger,
+    });
+    await dblp.correctVenues(nodes);
+    dblp.flush();
+    logger.info?.(dblp.summary());
   }
 
   await enrichGithubStars(nodes, {
