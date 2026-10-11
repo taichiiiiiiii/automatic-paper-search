@@ -33,7 +33,16 @@
 
 import { IdentityError } from "@paperpilot/core/identity";
 
-export const NOJS_MAX_PAPERS = 6_000;
+/**
+ * R3-2 (design doc 52 §8): the web route splits the fallback into pages of
+ * at most `NOJS_ROWS_PER_PAGE` rows (`/<conf>/paper-links/` = page 1,
+ * `/<conf>/paper-links/<n>/` = page n), so `NOJS_MAX_RENDERED_BYTES` is a
+ * per-page budget and `NOJS_MAX_PAPERS` (pages x rows) the total ceiling.
+ * Same numbers as apps/web's `paper-links/logic.ts`.
+ */
+export const NOJS_ROWS_PER_PAGE = 3_000;
+export const NOJS_MAX_PAGES = 20;
+export const NOJS_MAX_PAPERS = NOJS_ROWS_PER_PAGE * NOJS_MAX_PAGES;
 export const NOJS_MAX_RENDERED_BYTES = 3 * 1024 * 1024;
 
 /** Mirrors apps/web's logic.ts estimate — see the module doc comment. */
@@ -56,7 +65,11 @@ function utf8ByteLength(text: string): number {
 /**
  * Validate that `papers` could still produce a legal no-JS fallback:
  * no duplicate/malformed `paper_id`, row count within `NOJS_MAX_PAPERS`,
- * and an estimated rendered size within `NOJS_MAX_RENDERED_BYTES`. Throws
+ * and an estimated rendered size within `NOJS_MAX_RENDERED_BYTES` for
+ * every page. The web route pages the rows in title order; this gate does
+ * not re-implement that sort and instead bounds the worst case -- the
+ * `NOJS_ROWS_PER_PAGE` largest rows on one page -- so whatever order the
+ * web uses, no page can exceed the budget if this passes. Throws
  * {@link IdentityError} for an identity problem (matching Python's
  * `IdentityError` for a bad/duplicate `paper_id`) or `Error` for the two
  * size ceilings (matching Python's `ValueError`). Never mutates or
@@ -67,7 +80,7 @@ export function assertPaperLinksGate(papers: ReadonlyArray<PaperLinksSourcePaper
     throw new Error(`no-JS projection exceeds row limit: ${papers.length} > ${NOJS_MAX_PAPERS}`);
   }
   const seen = new Set<string>();
-  let estimatedBytes = PAGE_SHELL_BYTES;
+  const rowBytes: number[] = [];
   papers.forEach((paper, ordinal) => {
     const paperId = paper.paper_id;
     if (typeof paperId !== "string" || !PAPER_ID_RE.test(paperId)) {
@@ -82,11 +95,14 @@ export function assertPaperLinksGate(papers: ReadonlyArray<PaperLinksSourcePaper
     const href =
       (typeof paper.arxiv_url === "string" ? paper.arxiv_url : "") ||
       (typeof paper.pdf_url === "string" ? paper.pdf_url : "");
-    estimatedBytes += ROW_OVERHEAD_BYTES + utf8ByteLength(title) + utf8ByteLength(href);
+    rowBytes.push(ROW_OVERHEAD_BYTES + utf8ByteLength(title) + utf8ByteLength(href));
   });
+  rowBytes.sort((a, b) => b - a);
+  let estimatedBytes = PAGE_SHELL_BYTES;
+  for (const bytes of rowBytes.slice(0, NOJS_ROWS_PER_PAGE)) estimatedBytes += bytes;
   if (estimatedBytes > NOJS_MAX_RENDERED_BYTES) {
     throw new Error(
-      `no-JS projection exceeds rendered byte limit: ${estimatedBytes} > ${NOJS_MAX_RENDERED_BYTES}`,
+      `no-JS projection page exceeds rendered byte limit: ${estimatedBytes} > ${NOJS_MAX_RENDERED_BYTES}`,
     );
   }
 }

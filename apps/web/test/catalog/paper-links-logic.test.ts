@@ -1,9 +1,14 @@
 import { describe, expect, it } from "vitest";
 import {
+  buildPaperLinkPages,
   buildPaperLinkRows,
   estimateRenderedBytes,
   NOJS_MAX_PAPERS,
   NOJS_MAX_RENDERED_BYTES,
+  NOJS_ROWS_PER_PAGE,
+  paginatePaperLinkRows,
+  paperLinksPageCount,
+  paperLinksPagePath,
   safeHttpUrl,
 } from "../../app/[conf]/paper-links/logic";
 
@@ -167,11 +172,65 @@ describe("buildPaperLinkRows", () => {
     expect(() => buildPaperLinkRows(papers)).toThrow(/row limit/);
   });
 
-  it("rejects an estimated rendered size over NOJS_MAX_RENDERED_BYTES", () => {
+  it("rejects a page whose estimated rendered size is over NOJS_MAX_RENDERED_BYTES", () => {
     const hugeTitle = "x".repeat(NOJS_MAX_RENDERED_BYTES);
-    expect(() => buildPaperLinkRows([{ paper_id: ID_A, title: hugeTitle }])).toThrow(
-      /rendered byte estimate/,
+    expect(() => buildPaperLinkPages([{ paper_id: ID_A, title: hugeTitle }])).toThrow(
+      /page 1 exceeds rendered byte estimate/,
     );
+  });
+});
+
+function manyPapers(count: number) {
+  return Array.from({ length: count }, (_, i) => ({
+    paper_id: i.toString(16).padStart(40, "0"),
+    title: `Paper ${String(i).padStart(6, "0")}`,
+    arxiv_url: `https://example.test/${i}`,
+  }));
+}
+
+// R3-2: the no-JS fallback is split into pages of NOJS_ROWS_PER_PAGE rows.
+describe("paginatePaperLinkRows", () => {
+  it("keeps a conference that fits one page on a single page", () => {
+    const pages = buildPaperLinkPages(manyPapers(NOJS_ROWS_PER_PAGE));
+    expect(pages).toHaveLength(1);
+    expect(pages[0]?.firstRow).toBe(1);
+    expect(pages[0]?.lastRow).toBe(NOJS_ROWS_PER_PAGE);
+  });
+
+  it("returns one empty page for an empty conference", () => {
+    expect(paginatePaperLinkRows([])).toEqual([{ page: 1, firstRow: 0, lastRow: 0, rows: [] }]);
+  });
+
+  it("splits ICML 2026's 6,552 rows into 3 pages, in sorted order, losing none", () => {
+    const papers = manyPapers(6_552);
+    const rows = buildPaperLinkRows(papers);
+    const pages = paginatePaperLinkRows(rows);
+    expect(pages.map((p) => p.rows.length)).toEqual([3_000, 3_000, 552]);
+    expect(pages.map((p) => [p.page, p.firstRow, p.lastRow])).toEqual([
+      [1, 1, 3_000],
+      [2, 3_001, 6_000],
+      [3, 6_001, 6_552],
+    ]);
+    expect(pages.flatMap((p) => p.rows)).toEqual(rows);
+    expect(paperLinksPageCount(papers.length)).toBe(3);
+  });
+
+  it("accepts up to NOJS_MAX_PAPERS rows in total", () => {
+    expect(NOJS_MAX_PAPERS).toBe(60_000);
+    expect(() => buildPaperLinkRows(manyPapers(9_200))).not.toThrow();
+  });
+});
+
+describe("paperLinksPagePath / paperLinksPageCount", () => {
+  it("keeps page 1 at the pre-split URL", () => {
+    expect(paperLinksPagePath("icml-2026", 1)).toBe("/icml-2026/paper-links/");
+    expect(paperLinksPagePath("icml-2026", 3)).toBe("/icml-2026/paper-links/3/");
+  });
+
+  it("counts at least one page", () => {
+    expect(paperLinksPageCount(0)).toBe(1);
+    expect(paperLinksPageCount(NOJS_ROWS_PER_PAGE)).toBe(1);
+    expect(paperLinksPageCount(NOJS_ROWS_PER_PAGE + 1)).toBe(2);
   });
 });
 
