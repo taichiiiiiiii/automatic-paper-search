@@ -19,6 +19,13 @@ import localFont from "next/font/local";
  * docs/assets/style.css used (e.g. `var(--font-sans-loaded), -apple-system, ...`).
  * Apply `.variable` on a shared ancestor (see app/layout.tsx) so every
  * page can use `--font-serif` / `--font-sans` / `--font-mono`.
+ *
+ * `preload: false` (UX audit, design 53): with preload on, every page
+ * started with 12 `<link rel="preload">` woff2 downloads (~640 KB,
+ * italic and latin-ext included) whether or not the page used them. The
+ * browser now fetches only the faces the rendered text needs; `display:
+ * swap` plus next/font's metric-adjusted fallback keep the first paint
+ * and layout the same.
  */
 
 export const serif = localFont({
@@ -46,6 +53,7 @@ export const serif = localFont({
   ],
   variable: "--font-serif-loaded",
   display: "swap",
+  preload: false,
 });
 
 export const sans = localFont({
@@ -73,6 +81,7 @@ export const sans = localFont({
   ],
   variable: "--font-sans-loaded",
   display: "swap",
+  preload: false,
 });
 
 export const mono = localFont({
@@ -100,6 +109,7 @@ export const mono = localFont({
   ],
   variable: "--font-mono-loaded",
   display: "swap",
+  preload: false,
 });
 
 /** Apply on a shared ancestor (app/layout.tsx's <html>) so every page's
