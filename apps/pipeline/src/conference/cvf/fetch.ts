@@ -10,10 +10,11 @@ import {
   type RequestWithRetryDeps,
   requestWithRetry,
 } from "../../collect/http/requestWithRetry.js";
+import { venueTier } from "../../collect/signals/venue.js";
 import type { ConferenceRow } from "../shared/csvColumns.js";
 import { mapConcurrent, SerializedRateLimiter } from "./concurrency.js";
 import { parseDetail } from "./detail.js";
-import { detailPaths } from "./listing.js";
+import { detailPaths, parseListingEntries } from "./listing.js";
 
 export const CVF_BASE = "https://openaccess.thecvf.com";
 
@@ -129,4 +130,45 @@ export async function collect(
     logger.warn(`cvf: ${failed}/${paths.length} detail pages failed to fetch/parse (dropped)`);
   }
   return { rows: [...rows.values()], complete: listingOk && failed === 0 };
+}
+
+/**
+ * Listing-only collection (D5=A, design 51 B5): ONE request for the year
+ * listing, rows with title / authors / landing + PDF links and an empty
+ * abstract. `complete` is false when the listing could not be read or any
+ * entry failed to parse, so a layout change never publishes a thinner
+ * catalog.
+ */
+export async function collectListingOnly(
+  cvfId: string,
+  venue: string,
+  deps: CvfFetchDeps,
+  options: { timeoutMs?: number; logger?: CvfLogger } = {},
+): Promise<{ rows: ConferenceRow[]; complete: boolean; malformed: number }> {
+  const logger: CvfLogger = options.logger ?? console;
+  const resp = (await requestWithRetry(
+    { method: "GET", url: `${CVF_BASE}/${cvfId}?day=all`, timeoutMs: options.timeoutMs ?? 60000 },
+    deps,
+  )) as CvfResponse | null;
+  if (resp === null || resp.status !== 200) {
+    logger.warn(`cvf: listing fetch failed for ${cvfId} (status=${resp?.status ?? "None"})`);
+    return { rows: [], complete: false, malformed: 0 };
+  }
+  const { entries, malformed } = parseListingEntries(await resp.text(), cvfId);
+  if (malformed > 0) logger.warn(`cvf: ${malformed} listing entries did not parse`);
+  const tier = venueTier(venue);
+  const rows: ConferenceRow[] = entries.map((e) => ({
+    title: e.title,
+    authors: e.authors.join("; "),
+    venue: venue.toUpperCase(),
+    venue_tier: tier,
+    citation_count: 0,
+    github_stars: 0,
+    arxiv_id: "",
+    abstract: "",
+    url: `${CVF_BASE}${e.path}`,
+    pdf_url: e.pdfPath ? `${CVF_BASE}${e.pdfPath}` : "",
+    comment: "",
+  }));
+  return { rows, complete: malformed === 0 && rows.length > 0, malformed };
 }

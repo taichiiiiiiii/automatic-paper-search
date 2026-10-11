@@ -1,0 +1,56 @@
+@Proceedings{ICML2026,
+  title =     {Proceedings of the 43rd International Conference on Machine Learning},
+  booktitle = {Proceedings of the 43rd International Conference on Machine Learning},
+  editor =    {Tong Zhang and Miroslav Dudik and Martin Jaggi and Alekh Agarwal and Sharon Li and Dale Schuurmans and Jerry Zhu and Felix Berkenkamp and Hanze Dong and Alberto Bietti},
+  publisher = {PMLR},
+  series =    {Proceedings of Machine Learning Research},
+  volume =    306
+}
+
+@InProceedings{pmlr-v306-abas26a,
+  title = 	 {{TUR}-{DPO}: Topology- and Uncertainty-Aware Direct Preference Optimization},
+  author =       {Abas, Abdulhady and Daneshfar, Fatemeh and Mirjalili, Seyedali and Oussalah, Mourad},
+  booktitle = 	 {Proceedings of the 43rd International Conference on Machine Learning},
+  pages = 	 {1--21},
+  year = 	 {2026},
+  editor = 	 {Zhang, Tong and Dudik, Miroslav and Jaggi, Martin and Agarwal, Alekh and Li, Sharon and Schuurmans, Dale and Zhu, Jerry and Berkenkamp, Felix and Dong, Hanze and Bietti, Alberto},
+  volume = 	 {306},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {06--11 Jul},
+  publisher =    {PMLR},
+  pdf = 	 {https://raw.githubusercontent.com/mlresearch/v306/main/assets/abas26a/abas26a.pdf},
+  url = 	 {https://proceedings.mlr.press/v306/abas26a.html},
+  abstract = 	 {Aligning large language models (LLMs) with human preferences is commonly done via reinforcement learning from human feedback (RLHF) with Proximal Policy Optimization (PPO) or, more simply, via Direct Preference Optimization (DPO). While DPO is stable and RL-free, it treats preferences as flat winner vs. loser signals and is sensitive to noisy or brittle preferences arising from fragile chains of thought. We propose TUR-DPO, a topology- and uncertainty-aware variant of DPO that rewards how answers are derived, not only what they say, by eliciting lightweight reasoning topologies and combining semantic faithfulness, utility, and topology quality into a calibrated uncertainty signal. A small learnable reward is factorized over these signals and incorporated into an uncertainty-weighted DPO objective that remains RL-free and relies only on a fixed or moving reference policy. Empirically, across open 7–8B models and benchmarks spanning mathematical reasoning, factual question answering, summarization, and helpful/harmless dialogue, TUR-DPO improves judge win-rates, faithfulness, and calibration relative to DPO while preserving training simplicity and avoiding online rollouts. We further observe consistent gains in multimodal and long-context settings, and show that TUR-DPO matches or exceeds PPO on reasoning-centric tasks while maintaining operational simplicity.}
+}
+
+@InProceedings{pmlr-v306-abbadi26a,
+  title = 	 {What Preferences Can—and Cannot—Predict in Multi-Agent Online Learning},
+  author =       {Abbadi, Omar and Laraki, Rida and Mertikopoulos, Panayotis},
+  booktitle = 	 {Proceedings of the 43rd International Conference on Machine Learning},
+  pages = 	 {22--68},
+  year = 	 {2026},
+  editor = 	 {Zhang, Tong and Dudik, Miroslav and Jaggi, Martin and Agarwal, Alekh and Li, Sharon and Schuurmans, Dale and Zhu, Jerry and Berkenkamp, Felix and Dong, Hanze and Bietti, Alberto},
+  volume = 	 {306},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {06--11 Jul},
+  publisher =    {PMLR},
+  pdf = 	 {https://raw.githubusercontent.com/mlresearch/v306/main/assets/abbadi26a/abbadi26a.pdf},
+  url = 	 {https://proceedings.mlr.press/v306/abbadi26a.html},
+  abstract = 	 {We examine the interplay between ordinal, preference-based solution concepts in games and the long-run behavior of game dynamics, asking in particular to what extent the combinatorial data of a game—its <em>preference graph</em>—determine the outcomes of no-regret learning dynamics—such as <em>follow-the-regularized-leader</em> (FTRL). In one direction, we show that the skeleton of every <em>dynamically stable</em> set (i.e. the set of pure profiles it contains) must also be <em>preferentially stable</em>, that is, it must be closed under profitable deviations. We then ask the converse question: <em>when do preferences determine the long-run behavior of the players’ learning dynamics?</em> We begin by showing that preferences characterize asymptotic stability in the case of <em>subgames</em>—i.e. subsets of pure profiles obtained by restricting players’ action sets. Beyond this case however, the equivalence between dynamic and preferential stability collapses: concretely, we construct a three-player game with a preferentially stable set whose span is dynamically <em>unstable</em>, showing in this way that preferences <em>do not suffice</em> as a criterion of dynamic stability. We then bridge this gap via the notion of <em>resilience under aggregate deviations</em>, an easy-to-check payoff-based condition that guarantees asymptotic stability of arbitrary spans of pure strategies.}
+}
+
+@InProceedings{pmlr-v306-abbasi26a,
+  title = 	 {Zero Sum {SVD}: Balancing Loss Sensitivity for Low Rank {LLM} Compression},
+  author =       {Abbasi, Ali and Thrash, Chayne and Qin, Haoran and Sharma, Shansita and Seifi, Sepehr and Kolouri, Soheil},
+  booktitle = 	 {Proceedings of the 43rd International Conference on Machine Learning},
+  pages = 	 {84--100},
+  year = 	 {2026},
+  editor = 	 {Zhang, Tong and Dudik, Miroslav and Jaggi, Martin and Agarwal, Alekh and Li, Sharon and Schuurmans, Dale and Zhu, Jerry and Berkenkamp, Felix and Dong, Hanze and Bietti, Alberto},
+  volume = 	 {306},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {06--11 Jul},
+  publisher =    {PMLR},
+  pdf = 	 {https://raw.githubusercontent.com/mlresearch/v306/main/assets/abbasi26a/abbasi26a.pdf},
+  url = 	 {https://proceedings.mlr.press/v306/abbasi26a.html},
+  abstract = 	 {Advances in large language models have driven strong performance across many tasks, but their memory and compute costs still hinder deployment. SVD-based compression reduces storage and can speed up inference via low-rank factors, yet performance depends on how rank is allocated under a global compression ratio. Prior methods often use homogeneous ranks for similarly sized matrices, despite large differences in loss sensitivity, or rely on expensive iterative pre-truncation optimization to determine per matrix ranks. We propose <b>Zero Sum SVD</b> (<b>ZS-SVD</b>), a post-training method that performs <em>global</em> singular component selection using activation whitening and first-order calibration loss estimates in whitened coordinates. <b>ZS-SVD</b> prunes components across the whole model with a <b>zero sum</b> rule that keeps the cumulative predicted loss change near zero, automatically yielding heterogeneous ranks without solving a rank allocation optimization. Motivated by evidence that gradients near pretrained solutions exhibit low rank structure, we also introduce an optional lightweight correction that applies a <b>single</b> projected gradient update after truncation, followed by re-truncation. Extensive experiments across multiple LLM architectures show consistent gains across diverse benchmarks and compression ratios. Code is available at https://github.com/mint-vu/Zero-Sum-SVD}
+}

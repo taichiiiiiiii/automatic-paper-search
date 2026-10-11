@@ -20,6 +20,7 @@
 import { pySplit } from "@paperpilot/core/pycompat";
 import { XMLParser, XMLValidator } from "fast-xml-parser";
 import { venueTier } from "../../collect/signals/venue.js";
+import { writeSourceLicense } from "../proceedings/sourceLicense.js";
 import {
   type ArxivFetchDeps,
   type ConferenceRow,
@@ -34,6 +35,11 @@ import {
 
 const XML_BASE = "https://raw.githubusercontent.com/acl-org/acl-anthology/master/data/xml";
 const ANTHOLOGY_URL = "https://aclanthology.org/";
+/** ACL materials from 2016 on are CC BY 4.0 (Anthology footer; design 51 §2). */
+export const ACL_LICENSE = "CC-BY-4.0";
+export const ACL_LICENSE_URL = "https://creativecommons.org/licenses/by/4.0/";
+/** Collection years before this are CC BY-NC-SA 3.0, which this catalog does not use. */
+const ACL_CC_BY_FROM_YEAR = 2016;
 
 /**
  * Main-conference proceedings only. ACL/NAACL split the main track into
@@ -305,6 +311,21 @@ export function presentVolumeIds(xmlText: string): string[] {
   return poFindAll(root, "volume").map((v) => poAttr(v, "id") ?? "");
 }
 
+const COLLECTION_ID_RE = /^\d{4}\.[a-z0-9]+$/;
+const VOLUME_ID_RE = /^[a-z0-9]+$/;
+const PAPER_NUM_RE = /^\d{1,5}$/;
+
+/** `2026.acl` + `long` + `1` -> `2026.acl-long.1`; `""` when any part is missing or odd. */
+function derivedStub(
+  collectionId: string | null,
+  volumeId: string,
+  paperId: string | null,
+): string {
+  if (!collectionId || !COLLECTION_ID_RE.test(collectionId)) return "";
+  if (!VOLUME_ID_RE.test(volumeId) || !paperId || !PAPER_NUM_RE.test(paperId)) return "";
+  return `${collectionId}-${volumeId}.${paperId}`;
+}
+
 /**
  * Parse main-track papers (title, authors, abstract, url) from Anthology
  * XML — TS port of `parse_papers`. Skips volume front-matter (no authors)
@@ -322,13 +343,20 @@ export function parsePapers(
   if (root === null) return [];
 
   const papers = new Map<string, ConferenceRow>();
+  const collectionNode = poFindAll(root, "collection")[0];
+  const collectionId = collectionNode ? poAttr(collectionNode, "id") : null;
   for (const volumeNode of poFindAll(root, "volume")) {
     const volumeId = poAttr(volumeNode, "id") ?? "";
     if (!volumes.has(volumeId)) continue;
     const volumeChildren = ownChildren(volumeNode, "volume");
     for (const paperNode of childrenNamed(volumeChildren, "paper")) {
       const paperChildren = ownChildren(paperNode, "paper");
-      const stub = directText(paperChildren, "url");
+      // Older Anthology XML carries the id stub in `<url>`; since 2026 the
+      // element is gone and the stub is `<collection id>-<volume id>.<paper id>`
+      // (e.g. `2026.acl-long.1`), the same id the Anthology page uses.
+      const stub =
+        directText(paperChildren, "url") ||
+        derivedStub(collectionId, volumeId, poAttr(paperNode, "id"));
       const title = directText(paperChildren, "title");
       const authorNodes = childrenNamed(paperChildren, "author");
       const authors = authorNodes.map(authorName).filter((a) => a.length > 0);
@@ -523,6 +551,26 @@ export async function runCollectAclMain(
     { outputRoot: deps.outputRoot, clearOral: clearOral && overlayIsKnown },
     { now: deps.now },
   );
+  const year = Number(/^(\d{4})\./.exec(xmlId)?.[1] ?? Number.NaN);
+  const ccBy = Number.isInteger(year) && year >= ACL_CC_BY_FROM_YEAR;
+  writeSourceLicense(deps.outputRoot, {
+    schema_version: "conference-source-license-v1",
+    conference,
+    source: "acl_anthology",
+    collection: `ACL Anthology ${xmlId} (main-track volumes)`,
+    collection_url: `${XML_BASE}/${xmlId}.xml`,
+    license: ccBy ? ACL_LICENSE : null,
+    license_url: ccBy ? ACL_LICENSE_URL : null,
+    attribution:
+      "Title, authors and abstract: © the authors / ACL, from the ACL Anthology " +
+      `(${ANTHOLOGY_URL}), licensed ${ccBy ? "CC BY 4.0" : "per the Anthology's terms for that year"}. ` +
+      "Inline markup and whitespace normalised; each row links its Anthology page.",
+    abstracts: "included",
+    abstract_basis: ccBy
+      ? "ACL materials published in or after 2016 are CC BY 4.0 (aclanthology.org footer / FAQ copyright)."
+      : "pre-2016 collection: CC BY-NC-SA 3.0 — review before publishing.",
+    paper_count: rows.length,
+  });
   print(
     `✅ ${rows.length} accepted ${venue.toUpperCase()} papers (${orals.length} oral via arXiv) -> ${csvPath}`,
   );

@@ -5,7 +5,8 @@ export {
   CVF_BASE,
   type CvfFetchDeps,
   collect,
+  collectListingOnly,
   fetchListing,
 } from "./fetch.js";
-export { detailPaths } from "./listing.js";
+export { type CvfListingEntry, detailPaths, parseListingEntries } from "./listing.js";
 export { type CvfMainDeps, runCvfMain } from "./main.js";

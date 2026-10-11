@@ -1,0 +1,80 @@
+{
+  "schema_version": "conference-editions-v1",
+  "auto_publish": false,
+  "years_back": 1,
+  "years_ahead": 1,
+  "venues": [
+    {
+      "venue_key": "icml",
+      "display_template": "ICML {year}",
+      "slug_template": "icml-{year}",
+      "group_id_template": "ICML.cc/{year}/Conference",
+      "proceedings_adapter": "pmlr",
+      "proceedings_hint": "PMLR volume listed on https://proceedings.mlr.press/ (ICML 2026 = v306), usually around the conference (July)."
+    },
+    {
+      "venue_key": "neurips",
+      "display_template": "NeurIPS {year}",
+      "slug_template": "neurips-{year}",
+      "group_id_template": "NeurIPS.cc/{year}/Conference",
+      "proceedings_adapter": "neurips-proceedings",
+      "proceedings_hint": "papers.nips.cc lags months behind and carries no OpenReview ids: reconcile only; a catalog needs an identity source (design 52 D1/D2)."
+    },
+    {
+      "venue_key": "iclr",
+      "display_template": "ICLR {year}",
+      "slug_template": "iclr-{year}",
+      "group_id_template": "ICLR.cc/{year}/Conference",
+      "proceedings_adapter": "none",
+      "proceedings_hint": "ICLR has no proceedings outside OpenReview (/notes is 403 for scripts); needs design 52 D1 (virtual-site JSON permission) or D2."
+    },
+    {
+      "venue_key": "acl",
+      "display_template": "ACL {year}",
+      "slug_template": "acl-{year}",
+      "group_id_template": "aclweb.org/ACL/{year}/Conference",
+      "proceedings_adapter": "acl-anthology",
+      "proceedings_hint": "ACL Anthology XML <year>.acl.xml on GitHub (acl-org/acl-anthology data/xml), CC BY 4.0."
+    },
+    {
+      "venue_key": "emnlp",
+      "display_template": "EMNLP {year}",
+      "slug_template": "emnlp-{year}",
+      "group_id_template": "EMNLP/{year}/Conference",
+      "proceedings_adapter": "acl-anthology",
+      "proceedings_hint": "ACL Anthology XML <year>.emnlp.xml, CC BY 4.0."
+    },
+    {
+      "venue_key": "cvpr",
+      "display_template": "CVPR {year}",
+      "slug_template": "cvpr-{year}",
+      "group_id_template": "thecvf.com/CVPR/{year}/Conference",
+      "proceedings_adapter": "cvf-listing",
+      "proceedings_hint": "CVF Open Access /CVPR<year> listing (titles/authors/links only, no abstracts)."
+    },
+    {
+      "venue_key": "iccv",
+      "display_template": "ICCV {year}",
+      "slug_template": "iccv-{year}",
+      "group_id_template": "thecvf.com/ICCV/{year}/Conference",
+      "proceedings_adapter": "cvf-listing",
+      "proceedings_hint": "CVF Open Access /ICCV<year> listing (titles/authors/links only, no abstracts)."
+    },
+    {
+      "venue_key": "eccv",
+      "display_template": "ECCV {year}",
+      "slug_template": "eccv-{year}",
+      "group_id_template": "thecvf.com/ECCV/{year}/Conference",
+      "proceedings_adapter": "none",
+      "proceedings_hint": "ECVA papers.php (not CVF Open Access); no adapter yet."
+    },
+    {
+      "venue_key": "colm",
+      "display_template": "COLM {year}",
+      "slug_template": "colm-{year}",
+      "group_id_template": "colmweb.org/COLM/{year}/Conference",
+      "proceedings_adapter": "none",
+      "proceedings_hint": "COLM publishes on OpenReview only; needs design 52 D1/D2."
+    }
+  ]
+}

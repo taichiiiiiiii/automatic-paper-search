@@ -21,6 +21,9 @@ export const ErrorCode = z.enum([
   "CONF_EDITION_OUT_OF_RANGE",
   "CONF_SOURCE_UNAVAILABLE",
   "CONF_SOURCE_RATE_LIMITED",
+  // OpenReview answered 403 (ChallengeRequiredError: the source refuses
+  // automated clients). Never an empty/shrunk catalog — design 52 §4.1.
+  "CONF_SOURCE_BLOCKED",
   "CONF_SOURCE_TIMEOUT",
   "CONF_SOURCE_HTTP_ERROR",
   "CONF_SOURCE_PARSE_ERROR",
