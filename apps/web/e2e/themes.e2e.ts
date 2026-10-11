@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import type { Download, Page } from "@playwright/test";
 import { ThemePage } from "./pages";
 import { expect, test } from "./support/fixtures";
-import { publishedThemes, themeHasFeed } from "./support/site";
+import { publishedThemes, themeHasCodeLinks, themeHasFeed } from "./support/site";
 
 const ISSUES_NEW = "https://github.com/taichiiiiiiii/automatic-paper-search/issues/new";
 
@@ -301,13 +301,16 @@ for (const t of themes) {
     });
 
     test("keyboard help dialog traps focus and returns it on close", async ({ page }) => {
-      test.skip(
-        (page.viewportSize()?.width ?? 0) < 640,
-        "the ⌨ button is hidden below sm; the ? key still opens the dialog",
-      );
       await theme.goto(t.slug);
-      const opener = theme.keyboardHelpButton;
-      await opener.click();
+      // The ⌨ button is shown from `sm` up; the "?" key works everywhere.
+      const buttonShown = await theme.keyboardHelpButton.isVisible();
+      const opener = buttonShown ? theme.keyboardHelpButton : theme.nodeCards.first();
+      if (buttonShown) {
+        await opener.click();
+      } else {
+        await opener.focus();
+        await page.keyboard.press("?");
+      }
       const dialog = theme.keyboardHelpDialog;
       await expect(dialog).toBeVisible();
       await expect(dialog).toHaveAttribute("aria-modal", "true");
@@ -327,6 +330,7 @@ for (const t of themes) {
       await expect(dialog).toBeVisible();
       await close.click();
       await expect(dialog).toBeHidden();
+      await expect(opener).toBeFocused();
     });
 
     test("new-papers section (collapsed) links a valid Atom feed", async ({ page, request }) => {
@@ -366,9 +370,10 @@ for (const t of themes) {
     });
 
     test("コードとモデル section is collapsed and lists badges when opened", async () => {
+      test.skip(!themeHasCodeLinks(t.slug), "no code links for this theme");
       await theme.goto(t.slug);
       const section = theme.codeLinksSection;
-      test.skip((await section.count()) === 0, "no code links for this theme");
+      await expect(section).toBeVisible();
       const list = section.locator("ul").first();
       await expect(list).toBeHidden();
       await theme.expand(section);

@@ -2,7 +2,7 @@ import AxeBuilder from "@axe-core/playwright";
 import type { Page } from "@playwright/test";
 import { CatalogPage, LandingPage, PaperLinksPage, ThemePage } from "./pages";
 import { expect, test } from "./support/fixtures";
-import { publishedThemes } from "./support/site";
+import { publishedThemes, themeHasCodeLinks, themeHasFeed } from "./support/site";
 
 /**
  * axe-core audit of every page family. Any serious/critical violation of a
@@ -60,9 +60,9 @@ const PAGES: Record<string, (page: Page) => Promise<void>> = {
     await expect(theme.nodeCards.first()).toBeVisible();
     // Open everything that is collapsed by default, and the evidence panel.
     await expect(theme.readingGuide).toHaveAttribute("open", "");
-    for (const section of [theme.newPapersSection, theme.codeLinksSection]) {
-      if ((await section.count()) > 0) await theme.expand(section);
-    }
+    const slug = publishedThemes()[0]!.slug;
+    if (themeHasFeed(slug)) await theme.expand(theme.newPapersSection);
+    if (themeHasCodeLinks(slug)) await theme.expand(theme.codeLinksSection);
     await theme.openExportMenu();
     await theme.edgeButtons.first().focus();
     await page.keyboard.press("Enter");

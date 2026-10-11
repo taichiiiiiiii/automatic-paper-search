@@ -74,3 +74,12 @@ export function paperLinksPages(conf: string): number[] {
 export function themeHasFeed(slug: string): boolean {
   return existsSync(join(OUT_DIR, "themes", slug, "feed.xml"));
 }
+
+/** Whether the theme ships a code-links.json with at least one paper, i.e.
+ * the page renders the "コードとモデル" section (it loads after the tree). */
+export function themeHasCodeLinks(slug: string): boolean {
+  const file = join(OUT_DIR, "themes", slug, "code-links.json");
+  if (!existsSync(file)) return false;
+  const data = JSON.parse(readFileSync(file, "utf8")) as { nodes?: Record<string, unknown> };
+  return Object.keys(data.nodes ?? {}).length > 0;
+}
