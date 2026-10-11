@@ -82,6 +82,16 @@
     border-color var(--duration-fast) var(--ease),
     color var(--duration-fast) var(--ease);
 }
+/* The pill stays ~30px tall, but its hit area reaches 44px (UX audit,
+   design 53); the 0.45rem row gap keeps neighbouring areas apart. */
+.chip {
+  position: relative;
+}
+.chip::after {
+  content: "";
+  position: absolute;
+  inset: -7px 0;
+}
 .chip:hover {
   background: var(--color-surface-elevated);
   border-color: var(--color-accent);

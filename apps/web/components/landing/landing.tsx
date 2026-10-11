@@ -60,6 +60,9 @@ type LineageShelfState =
   | { kind: "failed" }
   | { kind: "open"; rows: QualityRow[] };
 
+/** Latest moment the lineage shelf's manifest is fetched (see below). */
+const SHELF_FETCH_FALLBACK_MS = 4000;
+
 const EXAMPLE_CHIPS = ["diffusion", "3d gaussian", "reasoning"] as const;
 
 export interface LandingProps {
@@ -111,24 +114,67 @@ export function Landing({ initialConferences }: LandingProps = {}) {
   }, [loadedAtBuild]);
 
   useEffect(() => {
-    if (typeof window !== "undefined" && window.matchMedia?.("(pointer: fine)").matches) {
+    if (typeof window === "undefined") return;
+    // Arriving at a section link (the header's 学会 -> /#s0-confs): show that
+    // section instead of focusing the search box, whose focus() scrolled
+    // the page back to the top (UX audit, design 53).
+    const hash = window.location.hash.slice(1);
+    const target = hash ? document.getElementById(decodeURIComponent(hash)) : null;
+    if (target) {
+      target.scrollIntoView?.({ block: "start" });
+      return;
+    }
+    if (window.matchMedia?.("(pointer: fine)").matches) {
       searchAreaRef.current?.focusInput();
     }
   }, []);
 
+  // The shelf sits below the fold at every width, so its manifest
+  // (~126 KB) is fetched once the section comes within 600px of the
+  // viewport, or after 4 s at the latest, so it never competes with the
+  // first paint and the search index (UX audit, design 53). The timer
+  // also covers contexts where IntersectionObserver never reports (a
+  // background tab renders no frames); without IntersectionObserver it is
+  // fetched right away. Eligibility is still checked here at runtime
+  // against the live manifest (SCR-11), unchanged.
+  const lineagesRef = useRef<HTMLElement>(null);
   useEffect(() => {
     let cancelled = false;
-    fetchLineageQualityManifest().then((result) => {
-      if (cancelled) return;
-      if (result.status === "error") {
-        setLineageShelf({ kind: "failed" });
-        return;
-      }
-      const rows = selectLineageShelfRows(result.data);
-      setLineageShelf(rows.length > 0 ? { kind: "open", rows } : { kind: "closed" });
-    });
+    let observer: IntersectionObserver | null = null;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let started = false;
+    function load() {
+      if (started) return;
+      started = true;
+      observer?.disconnect();
+      clearTimeout(timer);
+      fetchLineageQualityManifest().then((result) => {
+        if (cancelled) return;
+        if (result.status === "error") {
+          setLineageShelf({ kind: "failed" });
+          return;
+        }
+        const rows = selectLineageShelfRows(result.data);
+        setLineageShelf(rows.length > 0 ? { kind: "open", rows } : { kind: "closed" });
+      });
+    }
+    const target = lineagesRef.current;
+    if (typeof IntersectionObserver === "undefined" || target === null) {
+      load();
+    } else {
+      observer = new IntersectionObserver(
+        (entries) => {
+          if (entries.some((entry) => entry.isIntersecting)) load();
+        },
+        { rootMargin: "600px 0px" },
+      );
+      observer.observe(target);
+      timer = setTimeout(load, SHELF_FETCH_FALLBACK_MS);
+    }
     return () => {
       cancelled = true;
+      observer?.disconnect();
+      clearTimeout(timer);
     };
   }, []);
 
@@ -173,11 +219,8 @@ export function Landing({ initialConferences }: LandingProps = {}) {
       <details className={styles.nextSteps}>
         <summary>検索した後は？</summary>
         <ol>
-          <li>検索結果のタイトルを選び、学会カタログで論文の詳細を確認します。</li>
-          <li>家系図は、その論文の詳細から、公開済みの場合だけ開けます。</li>
-          <li>
-            テーマ別の系譜は、自動検査に合格したものを公開しています。人がまだ確認していないものは「未監査」と表示します。
-          </li>
+          <li>結果のタイトルを選ぶと、学会カタログでその論文の詳細が開きます。</li>
+          <li>公開中の系譜に入っている論文なら、詳細から系譜へ移れます。</li>
         </ol>
       </details>
 
@@ -209,7 +252,12 @@ export function Landing({ initialConferences }: LandingProps = {}) {
       {/* Audited-lineage shelf (SCR-11): fail-closed on any fetch/parse
           failure or on a resolved-but-empty manifest -- see this file's
           header comment. */}
-      <section className={styles.lineages} id="s0-lineages" aria-labelledby="s0-lineages-heading">
+      <section
+        ref={lineagesRef}
+        className={styles.lineages}
+        id="s0-lineages"
+        aria-labelledby="s0-lineages-heading"
+      >
         <h2 className={styles.sectionHeading} id="s0-lineages-heading">
           テーマ別の系譜
         </h2>
