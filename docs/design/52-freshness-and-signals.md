@@ -325,7 +325,23 @@ virtual site の `Downloads/<year>` は、ページのフォームを送ると C
 
 | 回 | 手順 | 結果 |
 |---|---|---|
-| **ICLR 2025** | `approveCli.ts --edition iclr-2025 --execute`（取得 1 回）。`apps/web/lib/catalog-copy.ts` に表示文を追加 | **3,703 本**（タイトル・著者・proceedings のページと PDF へのリンク、要旨なし＝`abstract_source: none`）。全件 Poster（oral の区別は一覧に無い）。系譜なし（`blocked`）。JS なしの一覧は 2 ページ |
+| **ICLR 2025** | `approveCli.ts --edition iclr-2025 --execute`（取得 1 回）。`apps/web/lib/catalog-copy.ts` に表示文を追加 | **3,703 本**（タイトル・著者・proceedings のページと PDF へのリンク、要旨なし＝`abstract_source: none`。R3-5 で arXiv 版／TLDR の要旨を 3,042 本に補った（下））。全件 Poster（oral の区別は一覧に無い）。系譜なし（`blocked`）。JS なしの一覧は 2 ページ |
+
+#### R3-5：ICLR 2025 の要旨と OpenReview ID（2026-10-11）
+
+| 項目 | 内容 | 結果 |
+|---|---|---|
+| 要旨 | R2-26 の `resolveAbstractReplacementsCli.ts` をそのまま使う（`conference_site` の行もライセンスの無い出典なので対象になる）。arXiv のタイトル検索（20 件ずつ、3.1 秒に 1 回、429 は後退して再試行）→ S2 の venue 一覧（`International Conference on Learning Representations` を ICLR の既定にした。2025 は 1,777 件しか無い）→ S2 の arXiv ID・TLDR → `--s2-match`（1 件ずつ） | **3,703 本中 arXiv の要旨（CC0）2,945 本（79.5%）、S2 TLDR（ODC-BY）97 本（2.6%）、なし 661 本（17.9%）**。なしのうち 605 本は S2 が知っているが TLDR も arXiv 版も無い。`data/inputs/iclr-2025/abstract_replacements.json` |
+| 表示のラベル | `buildPages` の既存の方針のまま（`abstract_source: arxiv`／`s2_tldr`、`abstract_license` は CC0-1.0／ODC-BY-1.0、arXiv 版へのリンクつき）。proceedings の要旨は読まず、転載もしない。`catalog-copy.ts` の説明文を「arXiv 版か TLDR がある論文だけ要旨を載せる」に変更 | |
+| タイトルの照合 | proceedings のタイトルは LaTeX のまま（`$\gamma-$MoD`、`$\ell_p$`、`\textit{…}`）なので、`titleScore` が LaTeX の書式命令・`$`・`^`・`_`・波括弧を無視し、ギリシャ文字を名前に直したキー（`compactTitleKey`、8 文字以上）が同じなら同一と見なすようにした（著者 50% 以上は従来どおり必須） | |
+| arXiv の 429 | 1 回目の実行の途中で arXiv が 429 を返し続けた（1 バッチで約 6 分の後退でも回復せず）。**連続 2 バッチ失敗したら arXiv の呼び出しを止め、S2 の段も次回に回す**ようにした（S2 だけ進めると arXiv 版がある行が TLDR で確定してしまうため）。30 分空けて 1 回だけ確認（200）してから再開した | `ARXIV_MAX_CONSECUTIVE_FAILURES` |
+| `--s2-match` の再開 | 以前は 1 件ずつの照合の結果を記録してから arXiv 版・TLDR を取っていたので、途中で止めると当たった行が二度と処理されなかった。20 件ずつ「照合 → arXiv 版 → TLDR → 記録」にした。S2 は鍵なしだと 429 が続き、残り 76 件は未照合（再実行で続きから） | |
+| OpenReview ID | OpenReview の `/notes` は 403、`/groups?id=ICLR.cc/2025/Conference` は会議の設定だけ（論文ごとの forum ID は無い。`Submission<n>` のグループも取れない）、S2 の `externalIds` に OpenReview は無い（DBLP の key はある）。**DBLP の SPARQL（メタデータは CC0）**で目次ページ `db/conf/iclr/iclr2025` の 3,705 件を取ると、3,704 件の `primaryDocumentPage` が `openreview.net/forum?id=…`。新しい `linkExternalIdsCli.ts` がタイトル（LaTeX を無視）＋著者 50% 以上で突き合わせ、改題された論文は「同じ人数で著者が完全に一致する記録が回の中に 1 つだけ、タイトルの語が 25% 以上重なる」ときだけ結ぶ。同じ記録を 2 行が取り合ったらどちらも結ばない | **3,703 本中 3,701 本（99.95%）に DBLP key と OpenReview forum ID**（タイトル一致 3,696、著者一致 5）。残り 2 本は「Adaption／Adaptation」の綴り違いと、著者名の姓名の順が逆の行。`data/inputs/iclr-2025/external_ids.json`（入力側だけ、公開しない）。リクエストは SPARQL 2 回 |
+| S2 との対応 | `external_ids.json` があると、S2 の venue 一覧の行と DBLP key でも対応させる（タイトルが違っても語の半分が重なり著者が合えば） | |
+
+使い方（ICLR 2025 の再実行）: `pnpm exec tsx apps/pipeline/src/catalog/linkExternalIdsCli.ts --conference iclr-2025` → `pnpm exec tsx apps/pipeline/src/catalog/resolveAbstractReplacementsCli.ts --conference iclr-2025 [--s2-match]` → promote と同じ再生成（`buildPagesCli` → `identityLiteCli --as-of` → `searchIndexCli` → `buildLineageQualityCli --as-of`）。どちらも途中から再開できる。
+
+まだやっていないこと: OpenReview の forum ID は `external_ids.json` に記録しただけで、論文 ID（`conference_site` の hash）は変えていない。ID を OpenReview に寄せる（または別名として `identity-aliases` に足す）のは、系譜・識別子側の別の作業。`approveCli` は今のところ要旨の補完と ID の対応を自動では走らせない（手で上の 2 行を実行する）。
 
 #### 決めてほしいこと
 
@@ -335,7 +351,7 @@ virtual site の `Downloads/<year>` は、ページのフォームを送ると C
 
 #### 残り
 
-- ICLR 2025 の要旨は、CVPR 2026 と同じく `resolveAbstractReplacementsCli`（arXiv CC0・S2 TLDR）で後から補える（S2 の呼び出しが約 3,700 回）。
+- ~~ICLR 2025 の要旨は `resolveAbstractReplacementsCli` で後から補える~~ → R3-5 で実施（上）。S2 の鍵があれば `--s2-match` の残り 76 件を照合できる。
 - ICLR 2026 は OpenReview から作った一覧が公開済み。proceedings との突き合わせは `neurips/cli.ts` と同じ方法で後で行える。
 - EMNLP 2026・ECCV 2026・NeurIPS 2026・CVPR 2027 は、公式の一覧が出たら Issue のコマンドで作る。
 
