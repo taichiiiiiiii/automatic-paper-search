@@ -229,3 +229,29 @@ Cloudflare Notifications: Pages の「Deployment failed」→ メール（P1-5�
 - GitHub の 2026-10-01 からの保持期間の変更で、`gh run list` を使う既存の運用（見張りのスクリプト・スキルの手順）が 90 日より古い run を前提にしていないか
 
 > 生の取得結果は手元の一時領域に置いたため、リポジトリには入れていない（2026-10-11）。
+
+---
+
+## 9. 実装の記録（R1-6: P1-1・P1-4、2026-10-11。デプロイ待ち）
+
+P1-1（見張りを Worker の Cron Trigger へ）と P1-4（予定実行を Worker から起こす）を、R3 の新しい回の検知（design 52 §8）の定期実行と一緒に実装した。**Worker はまだデプロイしていない**（手順は runbook「運用: Worker の見張り（R1-6）」）。
+
+| 項目 | 内容 | 場所 |
+|---|---|---|
+| Cron Trigger | **1 個だけ**: `30 0 * * *`（毎日 00:30 UTC＝09:30 JST）。アカウントで 5 個までなので、週 1 回の処理も同じ cron の中で曜日で分ける | `apps/api/wrangler.jsonc` の `triggers.crons`、`src/index.ts` の `scheduled` |
+| 確かめる内容 | ① サイトの `/`・`/themes/`・`/how-it-works/` と旧サイトの転送ページが 200（リダイレクトは追わない）② `/api/health` 相当（`pat_configured`・`accepting`・`dispatch_mode=live`）③ `lineage-quality-v1.json` の公開中テーマ数（kind=theme・ready・audited/unaudited）が 0 件、または KV に記録した前回の件数より減った ④ develop の `pages`・`tests`・`data-audit`・`regen-themes`・`theme-on-demand`・`regen-retry`・`conference-watch` の最新の実行が失敗（success/skipped/neutral 以外。実行中は見ない。まだ develop に無い workflow の 404 は無視）⑤ GitHub API の応答ヘッダ `github-authentication-token-expiration` で PAT の残りが 14 日未満（3 日未満で別の通知）。401/403 は「PAT の失効・権限不足」⑥ `regen-pending.json` に 5 回以上失敗したテーマ（旧スクリプトと同じ） | `apps/api/src/watchdog/checks.ts` |
+| `/api/health` の確かめ方 | Worker から自分の workers.dev の URL を取りに行くのは確実でない（Worker 同士の fetch の制限）ので、同じハンドラをプロセス内で呼ぶ。KV の値と PAT の有無は分かるが、**外からの到達性は見ていない**（サイトのページの確認と、Hermes の見張りを並べて動かす期間で補う） | 同上 |
+| 通知 | 問題の集まり（各問題の `key` を並べたもの）が前回の通知と変わったときだけ `alert.yml` を dispatch（入力 `status=problem`・`summary`）。同じ問題が続くときは 7 日ごとに再通知。全部直ったら `status=resolved` で 1 回。`alert.yml` は `GITHUB_TOKEN`（issues: write）で、ラベル `watchdog` の開いている issue 1 つにコメントする（無ければ作る。resolved ならコメントして閉じる）。本文で持ち主を @mention するので GitHub のメールが届く | `apps/api/src/watchdog/scheduled.ts`、`.github/workflows/alert.yml` |
+| 重複の抑止 | KV（`CONFIG_KV`）のキー `watchdog_state` に、通知した問題の集まり・通知日時・公開テーマ数の基準・最後の実行日時を JSON で 1 つ保存（1 日 1 回の書き込み。Free の 1,000 回/日に十分収まる）。dispatch に失敗したら状態を進めない（次の日に同じ通知を再送）。workflow の失敗は run ID を key に含むので、新しい失敗の run は新しい通知になる | 同上 |
+| テーマ数の基準 | 減ったことを 1 回知らせたら、次の日からは新しい件数を基準にする（`theme_min_generated_at` を進めて意図的に隠すこともあるため）。0 件はいつでも問題 | 同上 |
+| 週 1 回の新しい回の検知（P1-4・R3） | 月曜（UTC）の実行で `conference-watch.yml` を dispatch。GitHub の `schedule:` は使わない（§2.2 の遅れと 60 日で止まる規則） | 同上 |
+| `conference-watch.yml` | `groupsCli.ts --write` を実行（exit 3 の `source_blocked` は警告だけ。それ以外の失敗は commit の後で run を失敗にする）→ 中身が変わったとき（`editions` から `last_seen_at` を除いたものと `last_check.status`。時刻だけの変化では commit しない）だけ `release/cli.ts commit-push` で develop に commit → **新しい** pending-edition が出たときだけ、ラベル `conference-watch` の issue 1 つに一覧と承認用のコマンド（arXiv 経由の `conference-on-demand.yml` の dispatch）を書く。**公開は一切しない** | `.github/workflows/conference-watch.yml` |
+| 安全側の作り | `scheduled` は例外を外に出さない（ネットワークの失敗も問題として報告）。`DISPATCH_MODE` が `live` でない Worker（preview・`wrangler dev`）は確かめるだけで dispatch しない。preview の設定には cron を置かない（テストで固定）。PAT はログ・本文に出さない | `scheduled.ts`、`test/wrangler-config.test.ts` |
+| テスト | Worker: fetch を差し替えた単体テスト 25 件（ヘッダの解析、14 日／3 日、テーマ数の減少、run の失敗、401 を 1 回だけ、重複の抑止・再通知・解消、月曜だけ dispatch、dry-run は dispatch しない、全部の fetch が失敗しても落ちない）。workflow: 契約テスト（dispatch だけ・develop だけ・最小の権限・入力は env 経由・issue は 1 つ・公開しない・Worker が名前を指す workflow が実在する） | `apps/api/test/watchdog/scheduled.test.ts`、`apps/pipeline/test/workflows/r1-6-watchdog-workflows.test.ts` |
+
+残り:
+
+- Worker のデプロイ（☐ 承認）と、Cloudflare アカウントで使っている Cron Trigger の数の確認（§8）。
+- デプロイ後 1〜2 週間は Hermes の見張り（`~/.hermes/scripts/paperpilot_watchdog.sh`）と並べて動かし、通知の差を比べてから Hermes 側を止める（§6）。
+- 承認を「1 回の操作で公開」まで縮める仕組み（公式 proceedings のアダプタを dispatch で動かす workflow、design 52 §8.4）はまだ無い。今の issue は arXiv 経由のコマンドと、design 52 §8.3 の手順への案内まで。
+- Analytics Engine への記録（P2-3）は入れていない。
