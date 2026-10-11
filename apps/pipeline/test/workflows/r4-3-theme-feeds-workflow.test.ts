@@ -15,6 +15,18 @@ const steps = job.steps as YamlDoc[];
 const find = (pred: (s: YamlDoc) => boolean) => steps.findIndex(pred);
 
 describe("theme-feeds.yml (R4-3)", () => {
+  it("releases the pushed commit itself (a GITHUB_TOKEN push does not trigger pages.yml)", () => {
+    const release = jobsOf(doc).find(([id]) => id === "release")?.[1] as YamlDoc | undefined;
+    expect(release).toBeDefined();
+    expect(release!.uses).toBe("./.github/workflows/pages-release.yml");
+    expect(release!.secrets).toBe("inherit");
+    expect(release!.needs).toBe("feeds");
+    expect(release!.if).toBe("needs.feeds.outputs.changed == 'true'");
+    expect(release!.with.source_sha).toBe("${{ needs.feeds.outputs.source_sha }}");
+    expect(release!.with.release_kind).toBe("normal");
+    expect(job.outputs.changed).toBe("${{ steps.commit.outputs.changed }}");
+  });
+
   it("is dispatch-only and runs on develop", () => {
     expect(Object.keys(doc.on)).toEqual(["workflow_dispatch"]);
     expect(job.if).toBe("github.ref == 'refs/heads/develop'");
