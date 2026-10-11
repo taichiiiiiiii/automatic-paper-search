@@ -36,6 +36,7 @@ import { abstractExcerptSourceLabel, paperLink } from "../../lib/lineage/evidenc
 import { computeMainPath } from "../../lib/lineage/main-path";
 import { priorDerivative, shortestLineagePath } from "../../lib/lineage/paper-neighbors";
 import { exportPng, exportSvg } from "../../lib/themes-export";
+import type { ThemeCodeLinks } from "../../lib/themes-feed";
 import { formatStars, formatVenue } from "../../lib/themes-format";
 import type { LineageArtifact } from "../../lib/themes-quality";
 import { resolveFocus } from "../../lib/themes-quality";
@@ -71,6 +72,7 @@ import {
 import { EdgeEvidencePanel, EdgeRelationList, edgeKey, relationLabelJa } from "./EdgeEvidence";
 import styles from "./LineageTree.module.css";
 import { PaperNeighborsPanel } from "./PaperNeighborsPanel";
+import { CodeBadges } from "./ThemeFeedSections";
 import { ThemeTimeline } from "./ThemeTimeline";
 
 const X_AXIS_BUTTON: Record<XAxisMode, { icon: string; label: string; title: string }> = {
@@ -152,10 +154,13 @@ export function LineageTree({
   artifact,
   slug,
   themeName,
+  codeLinks,
 }: {
   artifact: LineageArtifact;
   slug?: string | null;
   themeName?: string | null;
+  /** R4-3: "コード" / "HF" badges per node id (optional side file). */
+  codeLinks?: ThemeCodeLinks | null;
 }) {
   // ---- URL state (?xaxis=&ymin=&ymax=&q=&rels=&orphan=&node=) ----------
   // M8a port of docs/assets/theme.js's readUrlState(): read once per
@@ -1321,6 +1326,7 @@ export function LineageTree({
                             本流
                           </span>
                         )}
+                        <CodeBadges link={codeLinks?.[p.id]} />
                         {isTrending && (
                           <span
                             role="img"

@@ -153,6 +153,21 @@
 | P1-4 | **似た論文**（I9） | M | 中 | カタログ内の近傍 k=10 を事前に計算して静的に出す。46 の関連度（bge-small）と同じ部品を使う |
 | P1-5 | **2 本をつなぐ経路**（I5）と年 × 被引用の表示（I7）（R4-2 で済み） | S | 中 | クライアント側だけで作れる。P0-1 のあとに入れる |
 
+#### P1-1・P1-2 の実装状況（2026-10-11、R4-3、ブランチ `roadmap/r4-3-feed-badges`、未マージ）
+
+| # | 状況 | 実装メモ |
+|---|---|---|
+| P1-1 新着フィード | 実装済み・**データは未生成** | `apps/pipeline/src/lineage/theme/feed/`（`newPapers.ts`・`atom.ts`・`themeFeedsCli.ts`）。系譜のノード（`openalex:` の id と別名）を `filter=cites:W1\|W2\|…,from_publication_date,to_publication_date`（100 本ずつの OR、カーソルで 1 ページ 200 件、1 ページ＝1 credit）で引き、`referenced_works` に系譜の論文が **2 本以上**ある論文だけを残す。種類は article・preprint・review・book-chapter・dissertation・report のみ、系譜の論文自身と題名の重複は除く。続いてトピックゲート（41 D7 と同じ `TopicScope.admitsDescendant`。z は「系譜のノード＋取得した全論文」で標準化、クエリは系譜の種の重心＋テーマ語。埋め込みが使えないときは語の規則）でテーマ外を落とす。出力は `data/published/themes/<slug>/new-papers.json`（新しい schema `theme-new-papers-v1`、書く前に検証）と `feed.xml`（Atom 1.0。同じ入力からは同じバイト列）。1 ページでも失敗したら書かない（前のファイルを残し、終了コード 4）。`--max-pages`（テーマごと、既定 5）と `--max-credits`（実行全体、既定 40）で OpenAlex の credit を抑え、鍵（`PAPERPILOT_OPENALEX_API_KEY`）と予算の遮断は `openalexGate.ts` をそのまま使う。既定の窓は 30 日（OpenAlex への登録は数日〜数週間遅れるため、週 1 回の実行でも重ねて取る）。サイト: テーマページの家系図の下に「新着」欄（日付・会場・著者、「系譜の n 本を引用: …」、Atom フィードへのリンク）。`copy-data.ts` は `themes/<slug>/feed.xml` の形だけを JSON 以外で例外的にコピーする（`/themes/<slug>/feed.xml` で配信。`_redirects`・CSP には影響しない）。新着は系譜の辺にはしない |
+| P1-1 定期実行 | 用意だけ | `.github/workflows/theme-feeds.yml`（`workflow_dispatch` のみ。`schedule:` は置かない）。Worker の cron（R1-6）からの起動はあとで親の作業として配線する。commit するのは新しい側のファイル（`new-papers.json`・`feed.xml`・`code-links.json`・`data/state/hf-papers/papers.json`）だけで、監査の sha256 に縛られた `lineage.json` には触れない |
+| P1-2 コード・HF | 実装済み・4 テーマ生成済み | `hfPapers.ts`。系譜のノードの arXiv ID（新形式のみ）ごとに HF Papers の `/api/papers/{id}` を引き（鍵なし、`api` 枠 500 回/5 分。0.3 秒間隔、1 回の実行で 200 回まで）、件数（▲・モデル・データセット・Space）と GitHub リポジトリだけを `data/state/hf-papers/papers.json` にキャッシュ（7 日。404 は「HF に無い」として記録、ほかの失敗は記録しない）。**`ai_summary`・`ai_keywords`・要約文は読み込まない**。リポジトリは `githubRepoAddedBy: "user"`（人が登録したもの）だけを採る。自動の対応づけ（`auto`）は古い論文で無関係なミラーを指していた（Switch Transformer → `pwc-1/Paper-10`、★1）。HF にリポジトリが無ければ `data/config/paper_repos.json`（手作業の対応表）を使う。件数がすべて 0 の HF ページにはバッジを付けない。出力は `themes/<slug>/code-links.json`（schema `theme-code-links-v1`）。サイト: ノードのカードに「コード ★n」「HF」の印（カード自体がリンクなので印は文字だけ）、家系図の下に「コードとモデル」欄（GitHub と HF のページへのリンク、帰属表示）。仕組みページの「出典とライセンス」に HF Papers の行を追加 |
+
+実測（2026-10-11 JST）:
+
+- HF: 4 テーマの arXiv ID 51 本を 51 回で取得。HF に載っているのは 33 本（404 は 18 本）。バッジ: FlashAttention 7、GNN 7、MoE 9、ViT 7 本に「HF」。**「コード」は ViT の 1 本だけ**（`paper_repos.json` の `google-research/vision_transformer`）。系譜の論文は古く、HF の `githubRepo` は Daily Papers に投稿された新しい論文にしか付いていないため。
+- OpenAlex: FlashAttention の系譜 14 本で、2026-09-11 以降を 1 回（1 credit）問い合わせて 3 件。どれも系譜の論文を 1 本しか引用しておらず、2 本以上の条件で 0 件だった（登録の遅れが大きい）。4 テーマ分の生成は、鍵なしの共有予算（$0.10/日、同じ回線の別の作業と共有）がその日のうちに尽きていたため**実行できなかった**（`openalex budget: remaining=0`）。鍵のある CI（`theme-feeds.yml`）か、翌日（00:00 UTC にリセット）に `themeFeedsCli.ts --what new-papers --days 90` で作る。必要な credit はテーマごとに 1〜数ページ。
+
+残り: 新着の初回生成（上記）と cron の配線（40 §5、ユーザー判断）。カタログ（学会一覧）の arXiv ID へのバッジ（52 §6 P1 の arXiv ID 付与が先）。HF の `githubRepo` が無い古い論文のコードは、系譜の生成時に GitHub で調べた結果（`lineage-cache/github_stars.json`、git に入れていない）を対応表に移せば増やせる。
+
 ### P2（入口を広げる。運用の負担が増えるので R1・R2 が安定してから）
 
 | # | 提案 | 工数 | 効果 | 中身・完了条件 |

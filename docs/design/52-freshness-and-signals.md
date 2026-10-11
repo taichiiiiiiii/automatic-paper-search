@@ -355,6 +355,15 @@ virtual site の `Downloads/<year>` は、ページのフォームを送ると C
 - ICLR 2026 は OpenReview から作った一覧が公開済み。proceedings との突き合わせは `neurips/cli.ts` と同じ方法で後で行える。
 - EMNLP 2026・ECCV 2026・NeurIPS 2026・CVPR 2027 は、公式の一覧が出たら Issue のコマンドで作る。
 
+### 8.7 テーマの新着と HF のバッジ（R4-3、2026-10-11）
+
+- 系譜の論文を 2 本以上引用する新しい論文を OpenAlex の `cites:` の OR 検索で拾い、トピックゲートを通したものをテーマの「新着」と Atom フィードにした（48 §4 の P1-1）。§3.1 では OpenAlex を「新着の検知には不要」としたが、ここでは**引用関係**（arXiv や HF には無い）が要るので OpenAlex を使う。登録の遅れのため、窓は 30 日を既定にした。
+- HF Papers の `/api/papers/{arxiv_id}` を系譜のノードに使い、「コード」「HF」のバッジにした（48 §4 の P1-2）。§3.3 の確認に加えて分かったこと:
+  - `githubRepo` は古い論文では `githubRepoAddedBy: "auto"` の自動の対応づけで、無関係なミラーを指すことがある（Switch Transformer → `pwc-1/Paper-10`）。**`"user"` のものだけを使う**。
+  - 系譜に入る古い論文の大半は `githubRepo` が空（FlashAttention・ViT・FlashAttention-2 も空）。件数（`numTotalModels` など）は付いている。
+  - 規約: HF の利用規約（2022-09-15 発効）に API の自動利用を禁じる条項はなく、robots.txt は全体を許可している。上限は Hub の rate-limits のページ（`api` 枠 500 回/5 分、応答ヘッダー `ratelimit-policy` で確認）。投稿者・HF のコンテンツ（要約・AI 要約）は転載せず、数値とリンクだけを使い、画面に出典を書く。
+- 費用: OpenAlex はテーマごとに 1〜数 credit（1 ページ＝1 credit）、HF は系譜の arXiv ID の数だけ（7 日のキャッシュ）。
+
 ## 付録 A：出典（2026-10-11 に確認）
 
 - arXiv API Terms of Use：https://info.arxiv.org/help/api/tou.html （旧来の API は 3 秒に 1 回、同時接続 1）

@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paperpilot.local/schemas/theme-code-links-v1.schema.json",
+  "title": "PaperPilot theme code / Hugging Face links v1 (R4-3, design 48 P1-2)",
+  "description": "Per lineage node (keyed by node id): the code repository and Hugging Face Papers counters for the 'コード' / 'HF' badges. Only numbers and URLs are kept; Hugging Face's LLM-generated fields (ai_summary, ai_keywords) and summaries are never stored.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "kind", "slug", "generated_at", "sources", "nodes"],
+  "properties": {
+    "schema_version": {"const": "theme-code-links-v1"},
+    "kind": {"const": "theme-code-links"},
+    "slug": {"type": "string", "pattern": "^[a-z0-9](?:[a-z0-9-]{0,78}[a-z0-9])?$"},
+    "generated_at": {"type": "string", "format": "date-time", "pattern": "Z$"},
+    "sources": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"enum": ["huggingface-papers", "paper_repos"]}
+    },
+    "nodes": {
+      "type": "object",
+      "maxProperties": 500,
+      "propertyNames": {"pattern": "^[a-z0-9_]+:[A-Za-z0-9._/-]+$"},
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["arxiv_id", "code", "hf"],
+        "properties": {
+          "arxiv_id": {"type": "string", "pattern": "^[0-9]{4}\\.[0-9]{4,5}$"},
+          "code": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["url", "stars", "source"],
+                "properties": {
+                  "url": {"type": "string", "pattern": "^https://github\\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"},
+                  "stars": {"type": ["integer", "null"], "minimum": 0},
+                  "source": {"enum": ["huggingface-papers", "paper_repos"]}
+                }
+              },
+              {"type": "null"}
+            ]
+          },
+          "hf": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["url", "upvotes", "models", "datasets", "spaces"],
+                "properties": {
+                  "url": {"type": "string", "pattern": "^https://huggingface\\.co/papers/[0-9]{4}\\.[0-9]{4,5}$"},
+                  "upvotes": {"type": "integer", "minimum": 0},
+                  "models": {"type": "integer", "minimum": 0},
+                  "datasets": {"type": "integer", "minimum": 0},
+                  "spaces": {"type": "integer", "minimum": 0}
+                }
+              },
+              {"type": "null"}
+            ]
+          }
+        }
+      }
+    }
+  }
+}
