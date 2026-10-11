@@ -229,4 +229,4 @@ automatic-paper-search/
 
 ## ライセンス
 
-MIT
+コードは MIT（[`LICENSE`](LICENSE)）。`data/` のデータは MIT の対象ではなく、各出典のライセンスに従います（[`NOTICE.md`](NOTICE.md)、[`data/README.md`](data/README.md)）。削除・訂正の依頼と脆弱性の報告は非公開の窓口へ（[`SECURITY.md`](SECURITY.md)）。

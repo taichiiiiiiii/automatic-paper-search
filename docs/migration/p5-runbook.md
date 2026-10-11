@@ -653,6 +653,12 @@ B 自身の 2 つの削除は `<mergeB>^1` の状態で戻ります。
 - 失効すると: PAT はテーマ依頼の受付が `401`（Worker は 502 を返す）。Cloudflare のトークンは `pages` の deploy が失敗する（公開中のサイトはそのまま）。
 - 見張り: Hermes の cron「PaperPilot 本番の見張り」（`~/.hermes/scripts/paperpilot_watchdog.sh`）が観察期間中は毎朝、`/api/health`・主要ページ・旧サイトの転送・`pages`/`tests`/`data-audit`/`theme-on-demand` の最新の結果を確かめ、問題があるときだけ知らせる。
 
+## 運用: 削除・訂正の依頼
+
+- 窓口は GitHub の非公開の報告（[Report a vulnerability](https://github.com/taichiiiiiiii/automatic-paper-search/security/advisories/new)、リポジトリ設定で有効化済み）。公開の Issue は誤りの報告用（design 51 D2＝A、2026-10-11）。
+- 手順（受付 → 3 営業日以内に一時非表示 → 判断 → 記録）と記録表は [`docs/policy/takedown.md`](../policy/takedown.md)。窓口の説明は [`SECURITY.md`](../../SECURITY.md)、データのライセンスは [`NOTICE.md`](../../NOTICE.md)。
+- 独自ドメインを用意したら、メールの窓口（Cloudflare Email Routing）を足し、`SECURITY.md`・サイトの「仕組み」#privacy・フッターのリンクを更新する。
+
 ## 実施記録
 
 | 日時（JST） | 段階 | 結果 |
