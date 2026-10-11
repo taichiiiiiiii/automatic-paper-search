@@ -61,6 +61,15 @@ describe("getFiltered multi-word search", () => {
     expect(getFiltered(ROWS, { ...NO_FILTER, search: "generation" })).toHaveLength(1);
   });
 
+  it("NFKC-normalises full-width Latin typed with a Japanese IME", () => {
+    const ids = (q: string) =>
+      getFiltered(ROWS, { ...NO_FILTER, search: q }).map((p) => p.paper_id[0]);
+    expect(ids("ｄｉｆｆｕｓｉｏｎ")).toEqual(["a", "b"]);
+    expect(ids("ＶＩＤＥＯ\u3000ｇｅｎｅｒａｔｉｏｎ")).toEqual(["a"]);
+    const segments = highlightSegments("Diffusion Models", "ｄｉｆｆｕｓｉｏｎ");
+    expect(segments.filter((s) => s.mark).map((s) => s.text)).toEqual(["Diffusion"]);
+  });
+
   it("folds hyphens and simple plurals in the query", () => {
     const ids = (q: string) =>
       getFiltered(ROWS, { ...NO_FILTER, search: q }).map((p) => p.paper_id[0]);

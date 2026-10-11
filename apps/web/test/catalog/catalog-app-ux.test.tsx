@@ -120,6 +120,19 @@ describe("CatalogApp UX audit (design doc 53)", () => {
     expect(screen.getByText(/タイトルと要旨は英語です/)).toBeTruthy();
   });
 
+  it("finds papers from full-width Latin typed with a Japanese IME", async () => {
+    await renderLoaded();
+    vi.useFakeTimers();
+    fireEvent.change(document.getElementById("search") as HTMLInputElement, {
+      target: { value: "ｄｉｆｆｕｓｉｏｎ" },
+    });
+    await act(async () => {
+      vi.advanceTimersByTime(300);
+    });
+    vi.useRealTimers();
+    expect(await screen.findByText("1 件が該当（全 3 件）")).toBeTruthy();
+  });
+
   it("matches multi-word queries in any order", async () => {
     await renderLoaded();
     vi.useFakeTimers();

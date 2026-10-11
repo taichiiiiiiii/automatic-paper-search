@@ -34,7 +34,12 @@ export function searchTerms(search: string): string[] {
  * whitespace to one space, applied to both the query and the row text:
  * "self-supervised" and "self supervised" then find each other. */
 export function normalizeSearchText(text: string): string {
-  return text.toLowerCase().replace(/[\s\u3000\-\u2010-\u2015/]+/g, " ");
+  // NFKC first: a Japanese IME types full-width Latin ("ｄｉｆｆｕｓｉｏｎ")
+  // and full-width spaces; the landing search already folds them.
+  return text
+    .normalize("NFKC")
+    .toLowerCase()
+    .replace(/[\s\u3000\-\u2010-\u2015/]+/g, " ");
 }
 
 /** A query term written in the plural ("transformers", "diffusions")

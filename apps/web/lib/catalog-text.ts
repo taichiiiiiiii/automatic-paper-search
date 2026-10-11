@@ -34,6 +34,8 @@ export function escapeRegExp(value: string): string {
  * is what gets highlighted.
  */
 export function termsRegExp(query: string, flags: string): RegExp | null {
+  // `searchTerms` NFKC-normalises, so a full-width query highlights the
+  // ASCII text it matched.
   const terms = [...new Set(searchTerms(query).flatMap(termVariants))].sort(
     (a, b) => b.length - a.length,
   );
