@@ -339,3 +339,9 @@ R2-22 の後、手作業ラベルで正しい強い関係 31 本のうち残る�
   - 取りこぼしの残り 5 本（LLM なし）: FlashDecoding++ ← FlashAttention（手がかりの文がない）、MMoE ← Eigen・MMoE ← Shazeer（KDD 版のみで arXiv HTML がない）、AdaMV-MoE ← MMoE・AdaMV-MoE ← Expert Choice（引用元の arXiv ID が解決できず HTML を引けない。47 では CVF の PDF の文も背景だけ）。LLM ありではこれに Shazeer ← Eigen（規則と LLM の食い違い）が加わる。MMoE 系は OpenAlex の GROBID XML（鍵と費用が要る、47 §2.2）でしか取れない
   - 「As in Shazeer et al. (2018); Lepikhin et al. (2020), Switch Transformers simplifies …」のような「As in X, 我々の手法は」の型は手がかりにしていない（複数の文献を引くため）
   - DBLP の会場は会議・論文誌の略称（`INFOCOM`・`EuroSys`）で表示される。`venue_tier` の表にない会場は preprint 扱いのまま
+
+### R2-26 要旨の出典・ライセンスと別論文の要旨（2026-10-11）
+
+- 詳細は design 51 §9。系譜に関わる点だけ記す
+- 題名と要旨の整合検査（R2-17）を `@paperpilot/core/abstract-sanity` に移し、「造語の題名に触れず別の固有名を導入する要旨」を別論文の要旨と判定する規則を足した。flash-attention の Longformer（OpenAlex W3015468748 の要旨が別論文「Murmurative Attention」）が該当。生成側（OpenAlex の要旨、`citingAbstractOf`）と表示側（公開済み成果物の読み込み時）で外す。r222/r223 の固定データは arXiv の要旨に差し替え、適合率テストは不変
+- 根拠パネルの引用文は、途中から始まる・途中で終わる抜粋に「…」を付け、出典の行に引用元の著者名（et al.）を入れた

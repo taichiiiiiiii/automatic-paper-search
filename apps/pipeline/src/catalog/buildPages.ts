@@ -32,6 +32,12 @@ import { validateConferenceSlug } from "@paperpilot/core/slug";
 import { unneutralize } from "../collect/exporters/csvSafety.js";
 import { atomicWriteText } from "../collect/state/atomic.js";
 import { parseArgs as parseFlags } from "../shared/cli/argparse.js";
+import {
+  ABSTRACT_REPLACEMENTS_FILENAME,
+  type AbstractReplacement,
+  applyAbstractPolicy,
+  parseAbstractReplacements,
+} from "./abstractReplacements.js";
 import { SUMMARY_META_FILENAME } from "./buildSummary.js";
 import { dictReader } from "./csv.js";
 import { assertPaperLinksGate } from "./paperLinksGate.js";
@@ -176,6 +182,21 @@ export interface CatalogPaper {
   paper_id: string;
   source: string;
   source_id: string;
+  /** R2-26: where `abstract` comes from (`none` = withheld, no licence). */
+  abstract_source: string;
+  /** R2-26: SPDX-style licence id of `abstract` (`""` when withheld). */
+  abstract_license: string;
+}
+
+/**
+ * R2-26: the cached licence-safe replacements next to `summaryCsv`
+ * (`abstract_replacements.json`), or an empty map when there is none —
+ * rows that need one then publish no abstract.
+ */
+export function loadAbstractReplacements(summaryCsv: string): Map<string, AbstractReplacement> {
+  const path = join(dirname(summaryCsv), ABSTRACT_REPLACEMENTS_FILENAME);
+  if (!existsSync(path)) return new Map();
+  return parseAbstractReplacements(JSON.parse(readFileSync(path, "utf-8")));
 }
 
 /**
@@ -183,10 +204,14 @@ export interface CatalogPaper {
  * come back without the spreadsheet formula guard, so the published text
  * is the upstream text.
  */
-export function loadSummaryWithDetails(summaryCsv: string): {
+export function loadSummaryWithDetails(
+  summaryCsv: string,
+  options: { replacements?: ReadonlyMap<string, AbstractReplacement> } = {},
+): {
   papers: CatalogPaper[];
   details: Map<string, string>;
 } {
+  const replacements = options.replacements ?? loadAbstractReplacements(summaryCsv);
   const papers: CatalogPaper[] = [];
   const details = new Map<string, string>();
   const text = readFileSync(summaryCsv, "utf-8");
@@ -209,7 +234,14 @@ export function loadSummaryWithDetails(summaryCsv: string): {
       }
     }
 
-    const fullAbstract = pyStrip(row.abstract ?? "");
+    // R2-26 (design 51 §4, D1=A): only licensed abstract text is published;
+    // a CVF abstract is replaced by its arXiv version / S2 TLDR or withheld.
+    const published = applyAbstractPolicy(
+      identity.source,
+      pyStrip(row.abstract ?? ""),
+      replacements.get(identity.paperId),
+    );
+    const fullAbstract = published.abstract;
     const existingAbstract = details.get(identity.paperId);
     if (existingAbstract !== undefined && existingAbstract !== fullAbstract) {
       throw new IdentityError(`conflicting abstracts for paper_id ${identity.paperId}`);
@@ -227,13 +259,15 @@ export function loadSummaryWithDetails(summaryCsv: string): {
       arxiv_url: row.arxiv_url ?? "",
       pdf_url: row.pdf_url ?? "",
       abstract: abstractPreview(fullAbstract),
-      arxiv_id: row.arxiv_id ?? "",
+      arxiv_id: row.arxiv_id || published.arxiv_id || "",
       citation_count: maybeInt(row.citation_count),
       venue_tier: maybeInt(row.venue_tier),
       github_stars: maybeInt(row.github_stars),
       paper_id: identity.paperId,
       source: identity.source,
       source_id: identity.sourceId,
+      abstract_source: published.abstract_source,
+      abstract_license: published.abstract_license,
     });
   }
   return { papers, details };
@@ -331,6 +365,9 @@ function collapsedContentIds(
     const newRow = newRows.get(paperId);
     if (newRow === undefined) continue;
     const hadContent = !fieldIsEmpty(publishedRow[field]);
+    // R2-26: an abstract withheld by licence policy is intentional, not a
+    // scrape that came back empty.
+    if (field === "abstract" && newRow.abstract_source === "none") continue;
     if (hadContent && fieldIsEmpty(newRow[field])) {
       collapsed.push(paperId);
     }

@@ -51,6 +51,7 @@
  * rationale says so instead of quoting an unrelated sentence.
  */
 
+import { abstractContradictsTitle } from "@paperpilot/core/abstract-sanity";
 import type { CompletionOptions, LLMProvider } from "../../collect/llm/provider.js";
 import {
   type ApiRelation,
@@ -476,9 +477,15 @@ async function askContext(
  * a graph node), or `null`.
  */
 export function citingAbstractOf(child: PaperLike): string | null {
+  const title = typeof child.title === "string" ? child.title : "";
   for (const k of ["abstract", "short_abstract"] as const) {
     const v = child[k];
-    if (typeof v === "string" && v.trim().length >= 40) return v;
+    if (typeof v !== "string" || v.trim().length < 40) continue;
+    // R2-26: another document's abstract (OpenAlex W3015468748 Longformer
+    // carries a "Murmurative Attention" abstract) is no evidence for this
+    // paper's own claims.
+    if (abstractContradictsTitle(title, v)) return null;
+    return v;
   }
   return null;
 }

@@ -307,7 +307,23 @@ export default function HowItWorksPage() {
           <li>
             根拠として表示する引用文は論文本文からの短い引用です。1 文・約 300
             字までにとどめ、引用符で囲み、出典「Semantic
-            Scholar」と論文へのリンクを添えて表示します。本文や PDF の再配布はしません。
+            Scholar」と著者名・論文へのリンクを添えて表示します。文の途中から始まる・途中で終わる抜粋には「…」を付けます。本文や
+            PDF の再配布はしません。
+          </li>
+          <li>
+            学会カタログの要旨は、出典ごとのライセンスに従って表示し、各要旨に出典とライセンスを添えています。arXiv
+            と OpenReview の要旨は{" "}
+            <a href="https://creativecommons.org/publicdomain/zero/1.0/" rel="noopener license">
+              CC0 1.0
+            </a>
+            、ACL Anthology の要旨は{" "}
+            <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener license">
+              CC BY 4.0
+            </a>
+            （著者・題名・ACL Anthology を表示。一覧では冒頭のみ）です。CVF Open
+            Access（CVPR・ICCV）の要旨は転載が許諾されていないため掲載せず、同じ論文の arXiv
+            版の要旨（CC0）か、なければ Semantic Scholar の自動要約（TLDR、ODC-BY
+            1.0）を表示し、どちらもなければ題名・著者とリンクのみを表示します。
           </li>
           <li>
             論文の書誌情報の一部は{" "}

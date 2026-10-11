@@ -10,6 +10,7 @@ import { describe, expect, it } from "vitest";
 import type { ThemeGraphNode } from "../../../src/lineage/shared/node.js";
 import { enrichGithubStars, ownerMatchesAuthors } from "../../../src/lineage/theme/github.js";
 import { abstractContradictsTitle } from "../../../src/lineage/theme/openalexWork.js";
+import { citingAbstractOf } from "../../../src/lineage/theme/s2Relations.js";
 import { TopicScope } from "../../../src/lineage/theme/topicScope.js";
 
 describe("application titles use the theme as a tool (ERROR_PATTERNS 11)", () => {
@@ -135,6 +136,34 @@ describe("abstract / title sanity (ERROR_PATTERNS 13)", () => {
       ),
     ).toBe(false);
     expect(abstractContradictsTitle("Short Title", "Unrelated text entirely.")).toBe(false);
+  });
+
+  // R2-26: OpenAlex W3015468748 (Longformer) carries a 2025 abstract of
+  // another paper; it is published in the flash-attention lineage and was
+  // in the R2-22/R2-23 eval fixtures.
+  const LONGFORMER = "Longformer: The Long-Document Transformer";
+  const MURMURATIVE =
+    "The quadratic complexity of standard attention (O(N²)) remains the dominant bottleneck for training and deploying large language models on long sequences. We introduce Murmurative Attention, a novel attention mechanism that replaces pairwise token-token interactions with token-to-slot interactions over a fixed-size learnable memory pool of M slots.";
+  const LONGFORMER_ARXIV =
+    "Transformer-based models are unable to process long sequences due to their self-attention operation, which scales quadratically with the sequence length. To address this limitation, we introduce the Longformer with an attention mechanism that scales linearly with sequence length, making it easy to process documents of thousands of tokens or longer.";
+
+  it("flags an abstract introducing a foreign named method under a coined-name title", () => {
+    expect(abstractContradictsTitle(LONGFORMER, MURMURATIVE)).toBe(true);
+    expect(abstractContradictsTitle(LONGFORMER, LONGFORMER_ARXIV)).toBe(false);
+    // A renamed method whose abstract still covers the subtitle is kept.
+    expect(
+      abstractContradictsTitle(
+        "OmniFlow: Any-to-Any Generation with Multi-Modal Rectified Flows",
+        "We introduce OminiFlow, a novel generative model designed for any-to-any generation tasks such as text-to-image, text-to-audio, and audio-to-image synthesis. OmniFlow advances the rectified flow formulation used in text-to-image models to handle the joint distribution of multiple modalities.",
+      ),
+    ).toBe(false);
+  });
+
+  it("drops the foreign abstract as relation evidence (citingAbstractOf)", () => {
+    expect(citingAbstractOf({ title: LONGFORMER, abstract: MURMURATIVE })).toBeNull();
+    expect(citingAbstractOf({ title: LONGFORMER, abstract: LONGFORMER_ARXIV })).toBe(
+      LONGFORMER_ARXIV,
+    );
   });
 });
 

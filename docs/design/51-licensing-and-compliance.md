@@ -166,9 +166,12 @@
 | A5 | Kinney et al. 2023、Cohan et al. 2019（intents）を記載する | S2 規約 §4、データセットの README | ✅ |
 | A6 | **ACL Anthology の CC BY 4.0 帰属表示**（著者、題名、ライセンスのリンク、改変の有無） | CC BY 4.0 | △（R2-27：#credits・`NOTICE.md` にカタログ単位の表示。論文ごとの表示は未対応） |
 | A7 | **フッターと #credits に OpenReview・CVF・ACL Anthology を追加**し、それぞれのライセンスや権利状態を書く | 出所の明示（48 条）、誠実な表示 | ✅（R2-27） |
+
+| A6 | **ACL Anthology の CC BY 4.0 帰属表示**（著者、題名、ライセンスのリンク、改変の有無） | CC BY 4.0 | ✅（R2-26、§9） |
+| A7 | **フッターと #credits に OpenReview・CVF・ACL Anthology を追加**し、それぞれのライセンスや権利状態を書く | 出所の明示（48 条）、誠実な表示 | ✅（R2-26、§9） |
 | A8 | OpenAlex への謝辞（CC0、任意） | — | ✅ |
 | A9 | arXiv：公認でないことの表明と謝辞 | arXiv ToU | ✅ |
-| A10 | S2 TLDR を出す場合は「Semantic Scholar の自動要約（TLDR）」と明示する | 誤認防止、ODC-BY | △（ノードに表示はあるがラベル要確認） |
+| A10 | S2 TLDR を出す場合は「Semantic Scholar の自動要約（TLDR）」と明示する | 誤認防止、ODC-BY | ✅（カタログは R2-26 で表示。系譜ノードの `tldr` は実際には要旨の冒頭で、ポップアップに「要旨の冒頭（OpenAlex / Semantic Scholar 経由）」と表示） |
 | A11 | MT を使う場合は「機械翻訳（DeepL）」と原文の併記 | 誤認防止 | —（未採用） |
 | A12 | CORE を使う場合はトップページに「powered by CORE」 | CORE acknowledge | —（使わない推奨） |
 
@@ -177,11 +180,11 @@
 |---|---|---|
 | B1 | 引用文は 1 文・300 字以下で、引用符を付ける | ✅ |
 | B2 | 引用文の出典に論文名とリンクを付ける | ✅ |
-| B3 | **引用文の出典に著者名を加える**（48 条 2 項） | ❌ |
-| B4 | **途中から始まる・途中で終わる抜粋に「…」を付ける** | △（末尾は「…」あり、先頭なし） |
-| B5 | **CVF の要旨全文をやめる**（arXiv 版の要旨、S2 TLDR、または短い抜粋＋リンクに替える）。リポジトリからも除く | ❌ |
-| B6 | **リンクのラベルを実際のソースに合わせる**（CVF、ACL、OpenReview を「arXiv」と表示しない） | ❌ |
-| B7 | **別論文の要旨が付く誤り**（Longformer など）の検出と修正（タイトルと要旨の整合チェック） | ❌ |
+| B3 | **引用文の出典に著者名を加える**（48 条 2 項） | ✅（R2-26） |
+| B4 | **途中から始まる・途中で終わる抜粋に「…」を付ける** | ✅（R2-26） |
+| B5 | **CVF の要旨全文をやめる**（arXiv 版の要旨、S2 TLDR、または短い抜粋＋リンクに替える）。リポジトリからも除く | △（R2-26：公開 JSON からは除いた。`data/inputs/<cvf>/` の収集 CSV と git 履歴には残る → §9 の残課題） |
+| B6 | **リンクのラベルを実際のソースに合わせる**（CVF、ACL、OpenReview を「arXiv」と表示しない） | ✅（R2-26） |
+| B7 | **別論文の要旨が付く誤り**（Longformer など）の検出と修正（タイトルと要旨の整合チェック） | ✅（R2-26。公開済みの flash-attention は表示側で除去、次の再生成で生成側でも除去） |
 | B8 | PDF やソースを再配信しない（リンクのみ） | ✅ |
 | B9 | 公開リポジトリの `data/state/lineage-cache`（S2 の生応答 49 MB）を公開しておく必要があるか再検討する | ✅ 決定 D3＝A：公開のまま、ODC-BY の notice を `NOTICE.md`・`data/README.md` に置く（R2-27） |
 
@@ -215,11 +218,60 @@
 
 ## 8. ユーザー（運営者）が決めること
 
-1. **CVF の要旨の扱い**：(a) arXiv 版の要旨に差し替え＋なければ TLDR（推奨）／(b) 先頭 1〜2 文＋リンク／(c) 現状のまま（非推奨）。あわせて、公開リポジトリの履歴に残った CVF の要旨全文をどうするか（履歴の書き換えは重いので、今後のファイルから除外する程度でよいか）。
+1. **CVF の要旨の扱い**：(a) arXiv 版の要旨に差し替え＋なければ TLDR（推奨）／(b) 先頭 1〜2 文＋リンク／(c) 現状のまま（非推奨）。→ **ユーザー決定 D1=A（2026-10-11）、R2-26 で実装（§9）**。あわせて、公開リポジトリの履歴に残った CVF の要旨全文をどうするか（履歴の書き換えは重いので、今後のファイルから除外する程度でよいか）。
 2. **非公開の連絡窓口**：独自ドメイン＋Email Routing（design 40 §5 と連動）／Google フォーム／運営者用の連絡用メール。
 3. `data/state/lineage-cache`（S2 の生応答）を公開リポジトリに置き続けるか。
 4. コードとデータのライセンス（例：コードは MIT、PaperPilot が生成した派生データは ODC-BY を継承、ソース別の注記付き）。
 5. プライバシーポリシーの公開場所（`/policy` か「仕組み」の節）と、運営者名の表示レベル。
+
+---
+
+## 9. 実施内容（R2-26、ユーザー決定 D1=A、2026-10-11）
+
+### 9.1 学会カタログの要旨（B5・A6・B6・A10）
+- **方針（`@paperpilot/core/licensing`、`apps/pipeline/src/catalog/abstractReplacements.ts::applyAbstractPolicy`）**：要旨を公開するのは、ライセンスのある出典だけ。arXiv・OpenReview は CC0 1.0、ACL Anthology は CC BY 4.0 でそのまま。CVF（と未知の出典）は、次の順に差し替える。
+  1. 同じ論文の arXiv 版の要旨（CC0）。題名がほぼ一致（正規化して一致、または語の Jaccard ≥ 0.9）**かつ**著者の姓が短い方の一覧の 50% 以上で一致した場合だけ採用。S2 が arXiv 版と結び付けている場合（`externalIds.ArXiv`）は改題を許して題名 0.5 以上・著者 50% 以上。
+  2. Semantic Scholar TLDR（ODC-BY 1.0、「機械生成の要約」と表示）。
+  3. なし（題名・著者・リンクのみ）。
+- 差し替えの結果は会議ごとに `data/inputs/<conf>/abstract_replacements.json`（`abstract-replacements-v1`、arXiv の要旨〔CC0〕・TLDR〔ODC-BY〕・照合の根拠を保存）に置き、`buildPages` が読む。**ファイルがない・行がない場合は要旨を出さない（fail closed）**。CVF の要旨は `papers.json` にも `paper-details-v1` にも入らない。
+- `papers.json` の各行に `abstract_source`（`arxiv`/`openreview`/`acl_anthology`/`s2_tldr`/`none`）と `abstract_license`（`CC0-1.0`/`CC-BY-4.0`/`ODC-BY-1.0`/空）を追加。arXiv 版に差し替えた行は `arxiv_id` も埋める。方針で外した要旨は縮小ゲート（`abstract` が空になった行の拒否）の対象外。
+- **表示（`apps/web/lib/catalog-attribution.ts`）**：各要旨の下に「要旨の出典: arXiv · CC0 1.0（同じ論文の arXiv 版の要旨）」のように出典とライセンスのリンクを出す。ACL は「出典: 〈第一著者〉 et al., “〈題名〉”, ACL Anthology · CC BY 4.0（一覧では冒頭のみ表示）」。TLDR は「要約の出典: Semantic Scholar TLDR（機械生成の要約）· ODC-BY 1.0（著者による要旨ではありません）」。要旨を出さない行には理由を表示。
+- **リンクのラベル**：論文ページへのリンクを出典名（CVF Open Access / ACL Anthology / OpenReview / arXiv）で表示し、arXiv 版が見つかった行には別に「arXiv」リンクを出す（B6）。
+- フッターに OpenReview・ACL Anthology・CVF Open Access を追加し、「仕組み」#credits にカタログの要旨の出典とライセンスの段落を追加（A7）。
+
+### 9.2 差し替えの取得（resolver）と所要時間
+- コマンド（リポジトリのルート、Node 22。メモリを抑えるため pnpm を介さず node から直接起動し、**1 会議ずつ**実行）：
+  `node --max-old-space-size=256 --import tsx apps/pipeline/src/catalog/resolveAbstractReplacementsCli.ts --conference <conf>`
+  続けて `pnpm exec tsx apps/pipeline/src/catalog/buildPagesCli.ts`（全会議の再ビルド。`papers.json`・`paper-details-v1`・`conferences.json` を生成）。
+- 手順：(1) arXiv API の題名検索を 20 題名ずつ OR でまとめる（`ti:"…" OR ti:"…"`、3.1 秒に 1 回、429 で間隔を最大 5 倍に広げ Retry-After を守る）。(2) S2 bulk search（venue＋year、1,000 件/回）で S2 の記録と照合し、`externalIds.ArXiv` があれば arXiv の `id_list`（100 件/回）で要旨を取り、なければ `POST /paper/batch`（500 件/回）で TLDR。(3) 任意の `--s2-match`（1 題名 1 回、鍵なしで約 1 回/秒。数千件で数時間）。
+- **再開可能**：各バッチの後にキャッシュを保存。arXiv 検索で一致しなかった行は `kind: none, checked: ["arxiv_title"]`、S2 の段も済めば `"s2"` を記録し、再実行では済んだ段を飛ばす。HTTP エラーのバッチは未検索のまま残り、次の実行で再試行。`--retry-none` で `none` をやり直す。
+- 所要時間の見積もり：9,640 本 ÷ 20 ≈ 482 回の arXiv 要求。間隔 3.1 秒なら約 25〜30 分。2026-10-11 の実行では他の利用と重なり 429 で間隔が広がり、1 会議 2,700 本で 1 時間前後かかった。S2 の段は会議あたり数回〜十数回の要求で 1〜2 分。
+- 結果（2026-10-11）：9,640 本のうち **arXiv 版の要旨 7,297 本（75.7%）、S2 TLDR 10 本、要旨なし 2,333 本**。
+  | 会議 | 行数 | arXiv | TLDR | なし |
+  |---|---|---|---|---|
+  | CVPR 2025 | 2,871 | 2,271（うち S2 経由の改題 23） | 2 | 598 |
+  | ICCV 2025 | 2,701 | 2,112 | 8 | 581 |
+  | CVPR 2026 | 4,068 | 2,914 | 0 | 1,154（S2 の venue 検索は CVPR 2026 を 0 件しか返さなかった） |
+  - 公開した CVF 行の本文は、全行がキャッシュの arXiv 要旨・TLDR と一致し、`none` の行は本文が空であることを確認した。照合の題名が完全一致しない 14 本（CVPR 2025）は目で確認し、すべて同じ論文（略称の有無・小さな改題）だった。
+  - 公開データは生成器で作り直した：上の resolver を 3 会議で順に実行 → `buildPagesCli.ts`（全会議）。`searchIndexCli.ts --check` は「current」。arXiv/OpenReview/ACL の行は `abstract_source`/`abstract_license` が増えただけで本文は不変。
+
+### 9.3 系譜ノードの別論文の要旨（B7）
+- **根本原因**：結合の誤りではなく、上流のデータ。OpenAlex の W3015468748（Longformer、arXiv 2004.05150）の `abstract_inverted_index` 自体に、2025 年の別論文「Murmurative Attention」の要旨が入っている（API で確認）。生成器はそれを `short_abstract`/`tldr` にそのまま使っていた。R2-17 の題名・要旨の整合検査は「題名の後の版の名前」と「5 語以上の題名で重なりなし」だけで、この例を見逃していた。
+- **対策**：検査を `@paperpilot/core/abstract-sanity` に移し、規則を 1 つ追加した。題名が「〈造語 1 語〉: 副題」で、200 字以上の要旨がその造語に一度も触れず、「We introduce/propose/present 〈別の固有名〉」を含み、副題の特徴語の半分未満しか現れない場合は別論文の要旨と判定する。カタログの 28,310 本で誤検出 1 本、公開中の 4 テーマでは Longformer だけが該当。
+  - 生成側：`openalexWork.ts`（OpenAlex の要旨を捨て、S2 の要旨があればそれを使う）と `citingAbstractOf`（関係の根拠に使わない）。
+  - 表示側：`apps/web/lib/lineage/core.ts::withoutForeignAbstract` が、公開済みの成果物を読むときに該当ノードの `tldr`/`short_abstract` を外す（flash-attention の再生成までの措置。`data/published` は手で直していない）。
+  - 評価用の固定データ `relation-precision-r222.json`/`r223.json` の Longformer の `citing.abstract` を arXiv の要旨（CC0）に差し替え。R2-22/R2-23 の適合率テストの結果は変わらない。
+- 系譜ノードのポップアップには「要旨の冒頭（OpenAlex / Semantic Scholar 経由。著作権は著者に帰属）」と表示（`tldr` は S2 TLDR ではなく要旨の冒頭 140 字）。
+
+### 9.4 引用文の表示（B3・B4）
+- `clipQuote`：抜粋が小文字・句読点で始まる（語や文の途中から始まる）場合は先頭に「… 」、文末（. ! ? と閉じ括弧・引用符、末尾の [n].）で終わらない場合や 300 字で切った場合は末尾に「…」を付ける。記号を足しても 300 字を超えない。
+- 出典の行に引用元（新しい論文）の著者名を入れた：「出典: Semantic Scholar（引用文脈、Beltagy et al.「Longformer: …」より 1 文を引用）」。著者 1 人なら姓、2 人なら「A & B」、3 人以上は「A et al.」。
+
+### 9.5 残課題
+- `data/inputs/{cvpr-2025,cvpr-2026,iccv-2025}/` の収集 CSV（`papers_*.csv`、`summary.csv`）と git 履歴には CVF の要旨全文が残る。タグ分類（`buildSummary` が題名＋要旨から付ける）がこれを使うため、今回は残した。除くなら、CVF の収集器が要旨を保存しない形にし、タグは題名＋差し替え後の要旨から付け直す（タグが変わる）。履歴の書き換えは §8-1 の判断待ち。
+- CVF の会議を収集し直したら resolver を再実行する（新しい行は実行するまで要旨なし）。CI のワークフローには組み込んでいない（CVF の収集は手動のため）。
+- flash-attention テーマの再生成（生成側の検査で Longformer の要旨が消える）。
+- `--s2-match` を使えば TLDR の取りこぼしが減る可能性があるが、鍵なしでは数時間かかる。
 
 ---
 
@@ -231,7 +283,7 @@
 - 47 条の 5 の政令基準を個人が満たすか。著者名の Web 公開が個人情報保護法 27 条の第三者提供に当たるか。Workers Logs に IP が含まれるか。
 - 文化庁の引用解説ページ（旧 URL）は 404 だった。条文は e-Gov で確認した。
 
-## 9. 実施記録
+## 10. 実施記録
 
 ### R2-27 法的表示・削除依頼・プライバシー（2026-10-11）
 

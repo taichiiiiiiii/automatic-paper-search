@@ -22,6 +22,7 @@ import {
   paperLink,
   parseEdgeEvidence,
   QUOTE_SOURCE_LABEL,
+  quoteAuthorCredit,
   semanticScholarUrl,
 } from "../../lib/lineage/evidence";
 import { RELATION_LABEL_JA } from "../../lib/lineage/relations";
@@ -73,6 +74,10 @@ function EvidenceBody({
   const src = nodeById.get(edge.src);
   const dst = nodeById.get(edge.dst);
   const method = edge.provenance?.classification?.method;
+  // R2-26: the quoted sentence is the citing (newer) paper's text; name its
+  // authors next to its title (Japanese copyright act art. 48(2)).
+  const credit = quoteAuthorCredit(dst);
+  const creditPrefix = credit ? `${credit}「` : "「";
   return (
     <>
       <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-2 gap-y-1 text-xs">
@@ -105,8 +110,12 @@ function EvidenceBody({
             “{quote}”
           </blockquote>
           {quoteSource === "abstract" ? (
-            <figcaption className="mt-1 text-xs text-ink-subtle" data-quote-source="abstract">
-              出典: {ABSTRACT_SOURCE_LABEL}（
+            <figcaption
+              className="mt-1 text-xs text-ink-subtle"
+              data-quote-source="abstract"
+              data-quote-credit={credit}
+            >
+              出典: {ABSTRACT_SOURCE_LABEL}（{creditPrefix}
               <a
                 href={dst ? paperLink(dst).url : "https://www.semanticscholar.org/"}
                 target="_blank"
@@ -115,7 +124,7 @@ function EvidenceBody({
               >
                 {titleOf(dst, edge.dst)}
               </a>
-              の要旨より 1 文を引用）
+              」の要旨より 1 文を引用）
             </figcaption>
           ) : quoteSource === "arxiv-html" ? (
             <figcaption className="mt-1 text-xs text-ink-subtle" data-quote-source="arxiv-html">
@@ -131,8 +140,8 @@ function EvidenceBody({
               の本文より 1 文を引用）
             </figcaption>
           ) : (
-            <figcaption className="mt-1 text-xs text-ink-subtle">
-              出典: {QUOTE_SOURCE_LABEL}（引用文脈、
+            <figcaption className="mt-1 text-xs text-ink-subtle" data-quote-credit={credit}>
+              出典: {QUOTE_SOURCE_LABEL}（引用文脈、{creditPrefix}
               <a
                 href={dst ? semanticScholarUrl(dst) : "https://www.semanticscholar.org/"}
                 target="_blank"
@@ -141,7 +150,7 @@ function EvidenceBody({
               >
                 {titleOf(dst, edge.dst)}
               </a>
-              より 1 文を引用）
+              」より 1 文を引用）
             </figcaption>
           )}
         </figure>

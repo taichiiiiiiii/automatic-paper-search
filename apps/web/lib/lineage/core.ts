@@ -24,6 +24,8 @@
  * knew the first.
  */
 
+import { abstractContradictsTitle } from "@paperpilot/core/abstract-sanity";
+
 export const ARTIFACT_VERSION = "lineage-artifact-v1" as const;
 export const MANIFEST_VERSION = "deep-manifest-v1" as const;
 export const QUALITY_VERSION = "lineage-quality-v1" as const;
@@ -345,6 +347,27 @@ export function validNodeDisplay(node: Record<string, unknown>): boolean {
 
 export type ArtifactKind = "conference" | "theme" | "deep";
 
+/**
+ * R2-26: drop a node's abstract excerpt (`tldr` / `short_abstract`) when it
+ * evidently belongs to another paper (OpenAlex W3015468748 "Longformer"
+ * carries a 2025 "Murmurative Attention" abstract in the published
+ * flash-attention lineage). Showing it would attribute another work's
+ * text to this paper; the pipeline applies the same check at generation
+ * time, this guards artifacts published before it.
+ */
+export function withoutForeignAbstract(node: Record<string, unknown>): Record<string, unknown> {
+  const title = typeof node.title === "string" ? node.title : "";
+  const text =
+    typeof node.short_abstract === "string" && node.short_abstract
+      ? node.short_abstract
+      : typeof node.tldr === "string"
+        ? node.tldr
+        : "";
+  if (!title || !text || !abstractContradictsTitle(title, text)) return node;
+  const { tldr: _tldr, short_abstract: _short, ...rest } = node;
+  return { ...rest, tldr: "" };
+}
+
 export function parseArtifact(
   data: unknown,
   { kind = "conference" }: { kind?: ArtifactKind } = {},
@@ -405,7 +428,7 @@ export function parseArtifact(
         aliasKeys.add(key);
       }
     }
-    nodes.push({ ...rawNode } as LineageNode);
+    nodes.push(withoutForeignAbstract({ ...rawNode }) as LineageNode);
   }
   const sortedNodeIds = [...ids].sort(compareText);
   if (nodes.some((node, index) => node.id !== sortedNodeIds[index])) return null;

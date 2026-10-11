@@ -33,6 +33,12 @@ export interface CatalogPaper {
   arxiv_id?: string;
   arxiv_url?: string;
   pdf_url?: string;
+  /** Native source (`arxiv` / `openreview` / `acl_anthology` / `cvf`). */
+  source?: string;
+  /** R2-26: where `abstract` comes from (`none` = withheld). */
+  abstract_source?: string;
+  /** R2-26: SPDX-style licence id of `abstract`. */
+  abstract_license?: string;
   [key: string]: unknown;
 }
 

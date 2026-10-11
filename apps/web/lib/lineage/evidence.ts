@@ -10,6 +10,8 @@
  * DOM-free so it is unit-tested directly (test/themes/evidence.test.ts).
  */
 
+import { authorCredit } from "@paperpilot/core/licensing";
+
 /** Japanese label per `provenance.classification.method`. Unknown
  * methods fall back to a neutral label instead of leaking the raw key. */
 export const METHOD_LABEL_JA: Record<string, string> = {
@@ -89,10 +91,50 @@ export interface EdgeEvidence {
   quoteSource?: "citation-context" | "abstract" | "arxiv-html";
 }
 
+const ELLIPSIS = "…";
+
+/**
+ * True when an excerpt evidently starts inside a sentence (or a word):
+ * its first letter is lower-case, or it opens with punctuation that
+ * continues a sentence (",", ";", ")"…). S2 citation contexts are cut by
+ * character windows, e.g. "istance and angular distance …".
+ */
+export function startsMidSentence(text: string): boolean {
+  const t = text.trimStart();
+  if (!t || t.startsWith(ELLIPSIS) || t.startsWith("...")) return false;
+  if (/^[,;:.)\]}]/u.test(t)) return true;
+  const first = /\p{L}/u.exec(t.slice(0, 1));
+  return (
+    first !== null && first[0] === first[0].toLowerCase() && first[0] !== first[0].toUpperCase()
+  );
+}
+
+/** True when an excerpt does not end at a sentence end (. ! ? or a closing quote/bracket after one). */
+export function endsMidSentence(text: string): boolean {
+  const t = text.trimEnd();
+  if (!t || t.endsWith(ELLIPSIS) || t.endsWith("...")) return false;
+  return !/[.!?。](?:["'”’)\]]*|\s*\[[^\]]*\])$/u.test(t);
+}
+
+/**
+ * Normalise whitespace, clip to `max` characters, and mark every cut
+ * with "…" — at the end when clipped or when the excerpt stops
+ * mid-sentence, at the start when it begins mid-sentence / mid-word
+ * (design 51 §3.3, Japanese copyright act art. 32: an abridged quotation
+ * must show the omission).
+ */
 export function clipQuote(text: string, max: number = MAX_QUOTE_CHARS): string {
-  const t = text.replace(/\s+/g, " ").trim();
-  if (t.length <= max) return t;
-  return `${t.slice(0, max - 1).trimEnd()}…`;
+  let t = text.replace(/\s+/g, " ").trim();
+  if (!t) return t;
+  const lead = startsMidSentence(t);
+  const budget = max - (lead ? 2 : 0);
+  let clipped = false;
+  if (t.length > budget) {
+    t = t.slice(0, budget - 1).trimEnd();
+    clipped = true;
+  }
+  const tail = clipped || endsMidSentence(t);
+  return `${lead ? `${ELLIPSIS} ` : ""}${t}${tail && !t.endsWith(ELLIPSIS) ? ELLIPSIS : ""}`;
 }
 
 export function parseEdgeEvidence(rationale: string | null | undefined): EdgeEvidence {
@@ -120,6 +162,7 @@ const DOI_RE = /^10\.\d{4,9}\/[A-Za-z0-9._;()/:-]+$/;
 export interface PaperRef {
   id: string;
   title?: string;
+  authors?: unknown;
   arxiv_id?: string;
   doi?: string;
   [key: string]: unknown;
@@ -145,4 +188,27 @@ export function semanticScholarUrl(node: PaperRef): string {
   }
   const q = typeof node.title === "string" && node.title ? node.title : node.id;
   return `https://www.semanticscholar.org/search?q=${encodeURIComponent(q)}`;
+}
+
+/**
+ * Short author credit of a lineage node for a quotation's source line
+ * ("Beltagy et al."), or "" when the node lists no authors — design 51
+ * §3.3 / Japanese copyright act art. 48(2): name the author of a quoted
+ * work when the work names one.
+ */
+export function quoteAuthorCredit(node: PaperRef | undefined): string {
+  const authors = Array.isArray(node?.authors)
+    ? (node.authors as unknown[]).filter((a): a is string => typeof a === "string")
+    : [];
+  return authorCredit(authors);
+}
+
+/**
+ * Where a theme node's abstract excerpt was read from, for its label: the
+ * generator decodes OpenAlex's abstract for `openalex:` nodes (falling
+ * back to Semantic Scholar's when OpenAlex has none) and uses Semantic
+ * Scholar's for the others.
+ */
+export function abstractExcerptSourceLabel(nodeId: string): string {
+  return nodeId.startsWith("openalex:") ? "OpenAlex / Semantic Scholar " : "Semantic Scholar ";
 }

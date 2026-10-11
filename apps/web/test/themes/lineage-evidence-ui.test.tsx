@@ -37,7 +37,14 @@ const ARTIFACT: LineageArtifact = {
   root: null,
   nodes: [
     { id: "p1", is_focus: true, title: "Outrageously Large Neural Networks", year: 2017 },
-    { id: "p2", is_focus: false, title: "Switch Transformers", year: 2021, arxiv_id: "2101.03961" },
+    {
+      id: "p2",
+      is_focus: false,
+      title: "Switch Transformers",
+      year: 2021,
+      arxiv_id: "2101.03961",
+      authors: ["William Fedus", "Barret Zoph", "Noam Shazeer"],
+    },
     { id: "p3", is_focus: false, title: "GLaM", year: 2022 },
   ],
   edges: [
@@ -111,6 +118,8 @@ describe("LineageTree evidence UX (R2 UX P0-1 / P0-2)", () => {
     const quote = panel.querySelector("blockquote");
     expect(quote?.textContent).toContain(QUOTE);
     expect(panel.textContent).toContain("出典: Semantic Scholar");
+    // R2-26: the source line names the quoted paper's authors (art. 48(2)).
+    expect(panel.textContent).toContain("Fedus et al.「Switch Transformers」より 1 文を引用");
     expect(panel.textContent).toContain("Semantic Scholar の引用文");
     expect(panel.textContent).toContain("確信度");
     expect(panel.textContent).toContain("0.60");
