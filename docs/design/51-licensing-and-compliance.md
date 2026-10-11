@@ -161,11 +161,11 @@
 |---|---|---|---|
 | A1 | Web サイトに「Semantic Scholar」と帰属表示する | S2 規約 §4 | ✅（フッター＋#credits） |
 | A2 | S2 由来データの ODC-BY 1.0 notice をサイトに出す（「Contains information from Semantic Scholar … ODC-BY」＋リンク） | ODC-BY §4.3 | ✅（#credits に相当文あり） |
-| A3 | **公開 JSON（`lineage.json`、`papers.json`、`paper-details`）の `meta` に license、source、attribution を入れる** | ODC-BY §4.2（派生 DB の公開配布） | ❌ |
-| A4 | **リポジトリに `DATA_LICENSE.md` か `NOTICE` を置く**（S2 = ODC-BY、OpenAlex・arXiv・OpenReview・DBLP = CC0、ACL = CC BY 4.0、CVF = 権利留保）。コード用の `LICENSE` も決める | ODC-BY §4.2(b)(d)、CC BY 4.0 | ❌ |
+| A3 | **公開 JSON（`lineage.json`、`papers.json`、`paper-details`）の `meta` に license、source、attribution を入れる** | ODC-BY §4.2（派生 DB の公開配布） | △（R2-27：schema が `additionalProperties: false` で追加フィールドを許さず、`papers.json` は配列なので見送り。notice は `NOTICE.md`・`data/README.md` に置いた。JSON 内に入れるのは schema の版上げのとき） |
+| A4 | **リポジトリに `DATA_LICENSE.md` か `NOTICE` を置く**（S2 = ODC-BY、OpenAlex・arXiv・OpenReview・DBLP = CC0、ACL = CC BY 4.0、CVF = 権利留保）。コード用の `LICENSE` も決める | ODC-BY §4.2(b)(d)、CC BY 4.0 | ✅（R2-27：`LICENSE`＝MIT、`NOTICE.md`、`data/README.md`） |
 | A5 | Kinney et al. 2023、Cohan et al. 2019（intents）を記載する | S2 規約 §4、データセットの README | ✅ |
-| A6 | **ACL Anthology の CC BY 4.0 帰属表示**（著者、題名、ライセンスのリンク、改変の有無） | CC BY 4.0 | ❌ |
-| A7 | **フッターと #credits に OpenReview・CVF・ACL Anthology を追加**し、それぞれのライセンスや権利状態を書く | 出所の明示（48 条）、誠実な表示 | ❌ |
+| A6 | **ACL Anthology の CC BY 4.0 帰属表示**（著者、題名、ライセンスのリンク、改変の有無） | CC BY 4.0 | △（R2-27：#credits・`NOTICE.md` にカタログ単位の表示。論文ごとの表示は未対応） |
+| A7 | **フッターと #credits に OpenReview・CVF・ACL Anthology を追加**し、それぞれのライセンスや権利状態を書く | 出所の明示（48 条）、誠実な表示 | ✅（R2-27） |
 | A8 | OpenAlex への謝辞（CC0、任意） | — | ✅ |
 | A9 | arXiv：公認でないことの表明と謝辞 | arXiv ToU | ✅ |
 | A10 | S2 TLDR を出す場合は「Semantic Scholar の自動要約（TLDR）」と明示する | 誤認防止、ODC-BY | △（ノードに表示はあるがラベル要確認） |
@@ -183,23 +183,23 @@
 | B6 | **リンクのラベルを実際のソースに合わせる**（CVF、ACL、OpenReview を「arXiv」と表示しない） | ❌ |
 | B7 | **別論文の要旨が付く誤り**（Longformer など）の検出と修正（タイトルと要旨の整合チェック） | ❌ |
 | B8 | PDF やソースを再配信しない（リンクのみ） | ✅ |
-| B9 | 公開リポジトリの `data/state/lineage-cache`（S2 の生応答 49 MB）を公開しておく必要があるか再検討する | 要決定 |
+| B9 | 公開リポジトリの `data/state/lineage-cache`（S2 の生応答 49 MB）を公開しておく必要があるか再検討する | ✅ 決定 D3＝A：公開のまま、ODC-BY の notice を `NOTICE.md`・`data/README.md` に置く（R2-27） |
 
 ### C. 削除依頼・問い合わせ
 | # | 項目 | 現状 |
 |---|---|---|
-| C1 | 削除依頼の窓口 | △（GitHub Issue のみ） |
-| C2 | **非公開の窓口（メールかフォーム）** | ❌ |
-| C3 | **手順の明文化**（一時非表示の目安、記録） | ❌ |
-| C4 | 抑止リスト（suppressions）の仕組み | ❌ |
+| C1 | 削除依頼の窓口 | ✅（R2-27：非公開の報告＋誤りの報告用の Issue。フッター「削除依頼」、#privacy、#credits） |
+| C2 | **非公開の窓口（メールかフォーム）** | △（D2＝A：GitHub の非公開の脆弱性報告 `security/advisories/new`。GitHub アカウントが必要。独自ドメインができたらメールへ） |
+| C3 | **手順の明文化**（一時非表示の目安、記録） | ✅（R2-27：`docs/policy/takedown.md`、`SECURITY.md`、runbook「運用: 削除・訂正の依頼」。一時非表示は受付から 3 営業日以内） |
+| C4 | 抑止リスト（suppressions）の仕組み | ❌（当面は takedown.md の手作業） |
 
 ### D. プライバシー・免責
 | # | 項目 | 現状 |
 |---|---|---|
-| D1 | **プライバシーポリシーのページ**（著者名の利用目的、IP の 1 時間保持、Cloudflare のログ、Cookie と解析なし、localStorage、問い合わせ先、訂正・利用停止の受付） | ❌ |
-| D2 | **テーマ依頼フォームに「入力は公開されます」と注記** | ❌ |
+| D1 | **プライバシーポリシーのページ**（著者名の利用目的、IP の 1 時間保持、Cloudflare のログ、Cookie と解析なし、localStorage、問い合わせ先、訂正・利用停止の受付） | ✅（R2-27：「仕組み」の #privacy 節「プライバシーと削除依頼」、フッターにリンク） |
+| D2 | **テーマ依頼フォームに「入力は公開されます」と注記** | ✅（R2-27） |
 | D3 | 免責（自動生成で誤りを含む、正確性を保証しない、各提供元の公式サービスではない） | △（未監査バナー、非公認の表明はある。総合的な免責文はない） |
-| D4 | 運営者の表示（個人・非営利であること、連絡先） | △（GitHub リンクのみ） |
+| D4 | 運営者の表示（個人・非営利であること、連絡先） | △（R2-27：#privacy に「個人が運営する非営利のサイト」と非公開の窓口。運営者名は `LICENSE` のみ） |
 
 ### E. 運用（規約の順守）
 | # | 項目 | 現状 |
@@ -230,5 +230,17 @@
 - CC BY 4.0 の本文（帰属要件の正確な文言）は、今回は一般的な知識による記載で、原文は取得していない。
 - 47 条の 5 の政令基準を個人が満たすか。著者名の Web 公開が個人情報保護法 27 条の第三者提供に当たるか。Workers Logs に IP が含まれるか。
 - 文化庁の引用解説ページ（旧 URL）は 404 だった。条文は e-Gov で確認した。
+
+## 9. 実施記録
+
+### R2-27 法的表示・削除依頼・プライバシー（2026-10-11）
+
+ユーザー決定：**D2＝A**（非公開の窓口は当面 GitHub の非公開の脆弱性報告。リポジトリで有効化済み。独自ドメインができたらメールへ）、**D3＝A**（`data/state` の S2 キャッシュは公開のまま、ODC-BY の notice を付ける）、**D4＝A**（コードは MIT、データは「各出典のライセンスに従う」、サイトにプライバシーの節）。
+
+- 追加：`LICENSE`（MIT、Taichi Nakamura、2026）、`NOTICE.md`（ソース別のライセンスと帰属、S2 の ODC-BY notice と Kinney et al. 2023 / Cohan et al. 2019）、`data/README.md`、`SECURITY.md`、`docs/policy/takedown.md`（受付 → 3 営業日以内に一時非表示 → 判断 → 記録）。runbook に「運用: 削除・訂正の依頼」。
+- サイト：フッターに「プライバシー」「削除依頼」と OpenReview・ACL Anthology・CVF Open Access。#credits にカタログのソース別ライセンス、コード MIT／データは各出典、非公開の窓口。新しい節 #privacy「プライバシーと削除依頼」。テーマ依頼フォームに「入力したテーマ名は公開されます」の注記。
+- **IP の保持（§6 の訂正）**：調べたところ、`QuotaLedger` の `ip:<IP>` は `expiresAt` で窓を閉じるだけで、**エントリ自体は Durable Object に残り続けていた**（「最大 1 時間」は事実でなかった）。`QuotaLedger.sweepExpired` と Durable Object の alarm を足し、窓が終わった `ip:` エントリを約 1 時間で削除するようにした（`apps/api/src/lib/quota.ts`、`src/durable/quota-object.ts`）。Worker のデプロイ後、最初のテーマ依頼で alarm が入り、それまでに溜まった古いエントリもその alarm で消える。
+- 公開 JSON への `license` フィールド（A3）は、schema が追加を許さないため見送り、notice はファイルで示した。
+- 残り：A6 の論文ごとの帰属、B3〜B7、C4（抑止リスト）、CVF の要旨（R2-26）、メールの窓口（独自ドメイン待ち）。
 
 > 生の取得結果は手元の一時領域に置いたため、リポジトリには入れていない（2026-10-11）。

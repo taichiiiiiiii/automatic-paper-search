@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { buildMetadata } from "../../lib/metadata";
+import {
+  ISSUES_URL,
+  NOTICE_URL,
+  PRIVATE_REPORT_URL,
+  TAKEDOWN_POLICY_URL,
+} from "../../lib/site-links";
 import styles from "./how-it-works.module.css";
 
 /**
@@ -308,19 +314,97 @@ export default function HowItWorksPage() {
             （CC0）を利用しています。OpenAlex に感謝します。
           </li>
           <li>
+            学会カタログの要旨は、各学会の公開データから取得しています。
+            <a href="https://openreview.net/" rel="noopener">
+              OpenReview
+            </a>
+            （ICLR・ICML・NeurIPS）と arXiv の書誌情報（題名・著者・要旨）は CC0 です。
+            <a href="https://aclanthology.org/" rel="noopener">
+              ACL Anthology
+            </a>
+            （ACL・EMNLP）の論文は{" "}
+            <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener">
+              CC BY 4.0
+            </a>{" "}
+            で、著作権は各著者にあります。
+            <a href="https://openaccess.thecvf.com/" rel="noopener">
+              CVF Open Access
+            </a>
+            （CVPR・ICCV）の論文は、著作権が著者に留保されています（ライセンスの付与なし）。要旨の全文は順次、掲載をやめます。
+          </li>
+          <li>
             Thank you to{" "}
             <a href="https://arxiv.org/" rel="noopener">
               arXiv
             </a>{" "}
             for use of its open access interoperability. 本サイトは arXiv・Semantic
-            Scholar・OpenAlex の公式サービスではなく、各団体の推奨・承認を受けたものでもありません。
+            Scholar・OpenAlex・OpenReview・ACL Anthology・CVF
+            の公式サービスではなく、各団体の推奨・承認を受けたものでもありません。
           </li>
           <li>
-            引用文の削除依頼・誤りの報告・お問い合わせは{" "}
-            <a href="https://github.com/taichiiiiiiii/automatic-paper-search/issues" rel="noopener">
+            本サイトのプログラムは MIT ライセンスです。データは MIT
+            の対象ではなく、それぞれの出典のライセンスに従います（
+            <a href={NOTICE_URL} rel="noopener">
+              NOTICE.md
+            </a>
+            ）。
+          </li>
+          <li>
+            要旨・引用文の削除や訂正を希望する権利者・ご本人は、
+            <a href={PRIVATE_REPORT_URL} rel="noopener">
+              非公開の窓口
+            </a>
+            からご連絡ください（下の「プライバシーと削除依頼」）。系譜の誤りなど、公開してよい報告は{" "}
+            <a href={ISSUES_URL} rel="noopener">
               GitHub の Issue
             </a>{" "}
             で受け付けています。
+          </li>
+        </ul>
+      </section>
+
+      <section id="privacy" className={styles.credits} aria-labelledby="privacy-heading">
+        <div className={`${styles.sectionHead} ${styles.sectionHeadBare}`}>
+          <h2 className={styles.sectionHeadTitle} id="privacy-heading">
+            プライバシーと削除依頼
+          </h2>
+        </div>
+        <ul className={styles.creditsList}>
+          <li>本サイトは個人が運営する非営利のサイトです。扱う情報と目的は次のとおりです。</li>
+          <li>
+            テーマの依頼：入力したテーマ名は、生成の処理に渡され、結果とともに GitHub
+            の公開リポジトリに残ります。誰でも見られるので、個人名などの個人情報は入力しないでください。
+          </li>
+          <li>
+            IP アドレス：テーマ依頼の回数制限（乱用の防止）のため、依頼を送った IP アドレスを
+            API（Cloudflare Workers）に保存し、約 1 時間で削除します。
+          </li>
+          <li>
+            アクセスの記録：サイトと API は Cloudflare（米国）で動いています。Cloudflare
+            は配信と障害の調査のため、IP アドレスなどを含むアクセスの記録を処理します。API
+            のログは最大 7 日で消えます。
+          </li>
+          <li>
+            Cookie
+            と解析：Cookie、アクセス解析、広告のタグは使っていません。表示の設定（系譜の表示方法など）だけを、お使いのブラウザの
+            localStorage に保存します。この設定はサーバーに送りません。
+          </li>
+          <li>
+            著者名：論文の検索と系譜の表示のため、公開されている書誌データ（arXiv・OpenReview・ACL
+            Anthology・CVF・Semantic
+            Scholar・OpenAlex）にある著者名を載せています。所属やメールアドレスは載せていません。
+          </li>
+          <li>
+            削除・訂正の依頼：権利者・ご本人は、
+            <a href={PRIVATE_REPORT_URL} rel="noopener">
+              非公開の窓口（GitHub の「Report a vulnerability」）
+            </a>
+            からご連絡ください。内容は運営者だけが読めます。受付から 3
+            営業日以内を目安に、該当の表示をいったん止め、確認のうえ対応します（
+            <a href={TAKEDOWN_POLICY_URL} rel="noopener">
+              手順
+            </a>
+            ）。いまは GitHub のアカウントが必要です。メールの窓口は準備中です。
           </li>
         </ul>
       </section>

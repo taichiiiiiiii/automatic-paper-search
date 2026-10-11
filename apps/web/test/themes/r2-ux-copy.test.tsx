@@ -20,6 +20,7 @@ import {
   THEME_INPUT_JAPANESE_MESSAGE,
   THEME_QUEUED_MESSAGE,
   THEME_REQUEST_HINT,
+  THEME_REQUEST_PUBLIC_NOTICE,
   themeInputProblem,
 } from "../../lib/themes-request";
 import { THEME_INPUT_PATTERN } from "../../lib/themes-slug";
@@ -176,6 +177,35 @@ describe("SiteFooter attribution (R2 compliance)", () => {
     // next/link drops the trailing slash under jsdom; the static export
     // (trailingSlash: true) emits /how-it-works/#credits.
     expect(href("出典とライセンス")).toMatch(/^\/how-it-works\/?#credits$/);
+    expect(href("OpenReview")).toBe("https://openreview.net/");
+    expect(href("ACL Anthology")).toBe("https://aclanthology.org/");
+    expect(href("CVF Open Access")).toBe("https://openaccess.thecvf.com/");
+  });
+
+  it("links the privacy section and the private removal route (R2-27)", () => {
+    render(<SiteFooter />);
+    const href = (name: string) => screen.getByRole("link", { name }).getAttribute("href");
+    expect(href("プライバシー")).toMatch(/^\/how-it-works\/?#privacy$/);
+    expect(href("削除依頼")).toBe(
+      "https://github.com/taichiiiiiiii/automatic-paper-search/security/advisories/new",
+    );
+  });
+});
+
+describe("theme request public-input notice (R2-27, design 51 D2)", () => {
+  it("tells the user the theme text becomes public, next to the input", () => {
+    render(<ThemeRequestForm onReady={() => {}} />);
+    const notice = screen.getByText(THEME_REQUEST_PUBLIC_NOTICE, { exact: false });
+    expect(notice.id).toBe("theme-request-public-notice");
+    const input = screen.getByLabelText(/テーマを自分で生成/);
+    expect(input.getAttribute("aria-describedby")?.split(" ")).toContain(
+      "theme-request-public-notice",
+    );
+    expect(THEME_REQUEST_PUBLIC_NOTICE).toContain("公開されます");
+    expect(THEME_REQUEST_PUBLIC_NOTICE).toContain("個人情報");
+    expect(THEME_REQUEST_PUBLIC_NOTICE).not.toMatch(INTERNAL_TERMS_RE);
+    const privacy = screen.getByRole("link", { name: "プライバシー" }).getAttribute("href");
+    expect(privacy).toMatch(/^\/how-it-works\/?#privacy$/);
   });
 });
 

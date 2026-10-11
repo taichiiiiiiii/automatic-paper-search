@@ -56,6 +56,11 @@ export const POLL_TIMEOUT_MS = POLL_TIMEOUT_MINUTES * 60 * 1_000;
 /** Copy shared by the request form (hint, success, timeout). */
 export const THEME_REQUEST_HINT =
   "英語で 2〜80 文字（英数字・スペース・ハイフン「-」・アンダースコア「_」）。完了まで通常 5〜15 分かかります。";
+/** Shown next to the request form (R2-27, design 51 D2): the theme text is
+ * passed to the generation job of a public repository and the result is
+ * committed there, so anyone can read it. */
+export const THEME_REQUEST_PUBLIC_NOTICE =
+  "入力したテーマ名は公開されます（GitHub の公開リポジトリに残ります）。個人名などの個人情報は入力しないでください。";
 export const THEME_INPUT_INVALID_MESSAGE =
   "テーマ名は英語で、2〜80 文字の英数字・スペース・ハイフン「-」・アンダースコア「_」で入力してください（例: Vision Transformer）。";
 export const THEME_INPUT_JAPANESE_MESSAGE =
