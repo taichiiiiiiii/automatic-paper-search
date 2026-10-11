@@ -91,3 +91,11 @@ export function formatStars(n: number | null | undefined): string {
   if (n >= 1000) return `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}k`;
   return n.toString();
 }
+
+/** `meta.generated_at` (ISO timestamp) → `YYYY-MM-DD`, the data date shown
+ * next to the theme heading (roadmap R1-3). `null` when absent/invalid. */
+export function dataDateOf(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const m = /^(\d{4}-\d{2}-\d{2})(?:$|T)/.exec(value);
+  return m ? (m[1] as string) : null;
+}

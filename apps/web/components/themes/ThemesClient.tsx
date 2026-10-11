@@ -21,6 +21,7 @@ import {
   fetchThemeQualityRollup,
   fetchThemesManifest,
 } from "../../lib/data-themes";
+import { dataDateOf } from "../../lib/themes-format";
 import type { ThemeManifestEntry, ThemeQualityRollup } from "../../lib/themes-gallery";
 import { eligibleThemeManifest, pickDefaultSlug, safeDisplayCount } from "../../lib/themes-gallery";
 import type { LineageArtifact } from "../../lib/themes-quality";
@@ -231,6 +232,7 @@ export function ThemesClient() {
   const entry = manifest.find((e) => e.slug === currentSlug);
   const yearRange = entry?.year_range ? `${entry.year_range[0]}–${entry.year_range[1]}` : "—";
   const count = safeDisplayCount(entry?.paper_count ?? artifact.nodes.length);
+  const dataDate = dataDateOf(artifact.meta.generated_at);
   const keywords = Array.isArray(artifact.meta.keywords)
     ? (artifact.meta.keywords as unknown[])
     : [];
@@ -316,12 +318,26 @@ export function ThemesClient() {
         <span className="rounded-full bg-surface-2 px-2 py-1">
           🔗 {safeDisplayCount(artifact.edges.length)} 関係
         </span>
+        <span
+          className="rounded-full bg-surface-2 px-2 py-1"
+          data-data-date={dataDate ?? ""}
+          title="この系譜を生成した日（引用数などはこの日の値）"
+        >
+          🗓 データの日付 {dataDate ?? "不明"}
+        </span>
         {keywords.length > 0 && (
           <span className="rounded-full bg-surface-2 px-2 py-1" title={keywords.join(", ")}>
             🔍 キーワード {keywords.length} 件
           </span>
         )}
       </div>
+
+      <p className="mt-2 text-xs text-ink-subtle" data-node-selection>
+        論文は、テーマの代表的な論文から引用をたどって集め、テーマから外れるものは除いています。
+        <a href="/how-it-works/" className="ml-1 text-accent underline">
+          仕組み
+        </a>
+      </p>
 
       {artifact.nodes.length === 0 ? (
         <p className="mt-8 text-sm text-ink-muted">
@@ -332,7 +348,12 @@ export function ThemesClient() {
         // LineageTree's filter/export/onboarding/minimap state always
         // starts fresh for the newly-selected theme instead of carrying
         // over the previous theme's search query / year range / etc.
-        <LineageTree key={currentSlug} artifact={artifact} slug={currentSlug} />
+        <LineageTree
+          key={currentSlug}
+          artifact={artifact}
+          slug={currentSlug}
+          themeName={entry?.theme || entryTheme(manifest, currentSlug)}
+        />
       )}
 
       <footer className="mt-10 text-xs text-ink-subtle">

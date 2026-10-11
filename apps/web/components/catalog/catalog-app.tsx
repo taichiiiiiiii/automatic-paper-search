@@ -41,6 +41,13 @@ import {
 } from "../../lib/catalog-sort";
 import { buildCatalogUrl, readCatalogUrlState } from "../../lib/catalog-url-state";
 import { BASE_PATH } from "../../lib/config";
+import {
+  catalogPapersToBibtex,
+  catalogPapersToCsv,
+  copyText,
+  downloadText,
+  exportFilename,
+} from "../../lib/export-formats";
 import { CatalogBackToTop } from "./catalog-back-to-top";
 import { CatalogFilters } from "./catalog-filters";
 import { CatalogHero } from "./catalog-hero";
@@ -539,6 +546,27 @@ export function CatalogApp({
     setRevealBatch(null);
   }
 
+  // --- BibTeX / CSV / share URL (design doc 48 P0-3) ------------------------
+  // Exports the whole current filter result (not just the rows revealed
+  // so far), in the current sort order.
+  const [shareStatus, setShareStatus] = useState("");
+  function exportFiltered(kind: "bib" | "csv") {
+    const rows = getSorted(getFiltered(papers, { search, type, activeTags }), sort);
+    if (kind === "bib") {
+      downloadText(
+        exportFilename(`${conf}-papers`, "bib"),
+        catalogPapersToBibtex(rows, { slug: conf, display: copy.display }),
+        "application/x-bibtex",
+      );
+    } else {
+      downloadText(exportFilename(`${conf}-papers`, "csv"), catalogPapersToCsv(rows), "text/csv");
+    }
+  }
+  async function copyShareUrl() {
+    const ok = await copyText(window.location.href);
+    setShareStatus(ok ? "URL をコピーしました" : "コピーできませんでした");
+  }
+
   function focusSearchInput() {
     document.getElementById("search")?.focus();
   }
@@ -626,7 +654,39 @@ export function CatalogApp({
             </>
           )}
         </p>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          {loadStatus === "ok" && filteredLen > 0 && (
+            <fieldset className="flex items-center gap-1 border-0 p-0" data-catalog-export>
+              <legend className="sr-only">絞り込み結果の書き出しと共有</legend>
+              <button
+                type="button"
+                onClick={() => exportFiltered("bib")}
+                title={`絞り込み結果 ${filteredLen} 件を BibTeX で書き出す`}
+                className="rounded-full border border-rule px-3 py-1 text-xs text-ink-muted hover:border-rule-strong hover:text-ink"
+              >
+                BibTeX
+              </button>
+              <button
+                type="button"
+                onClick={() => exportFiltered("csv")}
+                title={`絞り込み結果 ${filteredLen} 件を CSV で書き出す`}
+                className="rounded-full border border-rule px-3 py-1 text-xs text-ink-muted hover:border-rule-strong hover:text-ink"
+              >
+                CSV
+              </button>
+              <button
+                type="button"
+                onClick={copyShareUrl}
+                title="今の絞り込みの URL をコピーする"
+                className="rounded-full border border-rule px-3 py-1 text-xs text-ink-muted hover:border-rule-strong hover:text-ink"
+              >
+                URLをコピー
+              </button>
+              <span role="status" aria-live="polite" className="text-xs text-ink-subtle">
+                {shareStatus}
+              </span>
+            </fieldset>
+          )}
           {loadStatus === "ok" && activeFilters && (
             <button
               type="button"

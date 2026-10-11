@@ -21,7 +21,42 @@ describe("readTreeUrlState", () => {
       visibleRelations: null,
       hideOrphans: null,
       node: null,
+      mainPath: null,
     });
+  });
+
+  it("accepts ?main=only|off|highlight and ignores anything else (design 48 P0-1)", () => {
+    expect(readTreeUrlState("?main=only").mainPath).toBe("only");
+    expect(readTreeUrlState("?main=off").mainPath).toBe("off");
+    expect(readTreeUrlState("?main=highlight").mainPath).toBe("highlight");
+    expect(readTreeUrlState("?main=bogus").mainPath).toBeNull();
+  });
+
+  it("writes ?main= only when it differs from the default (highlight)", () => {
+    const base = {
+      xAxisMode: "rank" as const,
+      yearRange: null,
+      dataYearExtents: null,
+      searchQuery: "",
+      visibleRelations: new Set([
+        "supersedes",
+        "successor",
+        "extends",
+        "ablation",
+        "baseline_only",
+        "contrasts",
+      ] as const),
+      hideOrphans: true,
+    };
+    const p1 = new URLSearchParams("main=only");
+    writeTreeUrlParams(p1, { ...base, mainPath: "highlight" });
+    expect(p1.has("main")).toBe(false);
+    const p2 = new URLSearchParams();
+    writeTreeUrlParams(p2, { ...base, mainPath: "only" });
+    expect(p2.get("main")).toBe("only");
+    const p3 = new URLSearchParams();
+    writeTreeUrlParams(p3, { ...base, mainPath: "off" });
+    expect(readTreeUrlState(`?${p3}`).mainPath).toBe("off");
   });
 
   it("accepts a known xaxis mode", () => {

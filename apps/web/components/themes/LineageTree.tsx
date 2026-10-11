@@ -24,7 +24,16 @@
  */
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  copyText,
+  downloadText,
+  exportFilename,
+  themeEdgesToCsv,
+  themeNodesToBibtex,
+  themeNodesToCsv,
+} from "../../lib/export-formats";
 import { abstractExcerptSourceLabel, paperLink } from "../../lib/lineage/evidence";
+import { computeMainPath } from "../../lib/lineage/main-path";
 import { exportPng, exportSvg } from "../../lib/themes-export";
 import { formatStars, formatVenue } from "../../lib/themes-format";
 import type { LineageArtifact } from "../../lib/themes-quality";
@@ -50,7 +59,9 @@ import {
   type XAxisMode,
 } from "../../lib/themes-tree";
 import {
+  DEFAULT_MAIN_PATH_MODE,
   loadThemePrefs,
+  type MainPathMode,
   readTreeUrlState,
   saveThemePrefs,
   writeTreeUrlParams,
@@ -120,12 +131,21 @@ function modeAccentClass(
 const ONBOARDING_KEY = "pp.theme.onboarded";
 const POPOVER_HOVER_DELAY_MS = 700;
 
+const MAIN_PATH_BUTTON: Record<MainPathMode, { label: string; title: string }> = {
+  highlight: { label: "強調", title: "本流（主経路）の線を太くして、ほかの線を薄くする" },
+  only: { label: "本流だけ", title: "本流（主経路）の線だけを表示する" },
+  off: { label: "切", title: "本流を強調しない" },
+};
+const MAIN_PATH_MODES: readonly MainPathMode[] = ["highlight", "only", "off"];
+
 export function LineageTree({
   artifact,
   slug,
+  themeName,
 }: {
   artifact: LineageArtifact;
   slug?: string | null;
+  themeName?: string | null;
 }) {
   // ---- URL state (?xaxis=&ymin=&ymax=&q=&rels=&orphan=&node=) ----------
   // M8a port of docs/assets/theme.js's readUrlState(): read once per
@@ -138,6 +158,18 @@ export function LineageTree({
   const urlState = useMemo(() => readTreeUrlState(searchParams.toString()), [searchParams]);
 
   const [mode, setMode] = useState<XAxisMode>(() => urlState.xAxisMode ?? DEFAULT_X_AXIS_MODE);
+  const [mainPathMode, setMainPathMode] = useState<MainPathMode>(
+    () => urlState.mainPath ?? DEFAULT_MAIN_PATH_MODE,
+  );
+  // Main path (design doc 48 P0-1): computed once from ALL edges so the
+  // relation chips never reshuffle it.
+  const mainPath = useMemo(
+    () => computeMainPath(artifact.nodes, artifact.edges),
+    [artifact.nodes, artifact.edges],
+  );
+  const mainPathKeys = useMemo(() => new Set(mainPath.edges.map(edgeKey)), [mainPath]);
+  const mainPathNodeIds = useMemo(() => new Set(mainPath.nodeIds), [mainPath]);
+  const showMainPath = mainPathMode !== "off" && mainPathKeys.size > 0;
 
   // ---- Filters (search / year range / relation chips) -----------------
   const [searchQuery, setSearchQuery] = useState(() => urlState.searchQuery ?? "");
@@ -253,12 +285,13 @@ export function LineageTree({
         searchQuery,
         visibleRelations,
         hideOrphans,
+        mainPath: mainPathMode,
       });
       window.history.replaceState(null, "", url.toString());
     } catch {
       /* ignore -- URL/history access unexpectedly unavailable */
     }
-  }, [mode, yearRange, searchQuery, visibleRelations, hideOrphans, dataYearExtents]);
+  }, [mode, yearRange, searchQuery, visibleRelations, hideOrphans, dataYearExtents, mainPathMode]);
 
   const toggleRelation = useCallback((r: Relation) => {
     setVisibleRelations((prev) => {
@@ -432,9 +465,21 @@ export function LineageTree({
   }, [positioned]);
 
   const visibleEdges = useMemo(
-    () => artifact.edges.filter((e) => visibleRelations.has(e.relation as Relation)),
-    [artifact.edges, visibleRelations],
+    () =>
+      artifact.edges.filter(
+        (e) =>
+          visibleRelations.has(e.relation as Relation) &&
+          (mainPathMode !== "only" || mainPathKeys.has(edgeKey(e))),
+      ),
+    [artifact.edges, visibleRelations, mainPathMode, mainPathKeys],
   );
+  // Main-path edges are drawn last so they sit on top of the others.
+  const drawnEdges = useMemo(() => {
+    if (!showMainPath) return visibleEdges;
+    const rest = visibleEdges.filter((e) => !mainPathKeys.has(edgeKey(e)));
+    const main = visibleEdges.filter((e) => mainPathKeys.has(edgeKey(e)));
+    return [...rest, ...main];
+  }, [visibleEdges, showMainPath, mainPathKeys]);
 
   const matchSet = useMemo(() => {
     if (!activeSearch && !isYearFiltered) return null;
@@ -617,6 +662,45 @@ export function LineageTree({
     }
   }
 
+  // ---- BibTeX / CSV / share URL (design doc 48 P0-3) ----------------------
+  // Exports what is on screen: the laid-out nodes (orphans dropped when
+  // hidden) narrowed by the search/year filter, and the visible edges
+  // between them.
+  const [shareStatus, setShareStatus] = useState<string>("");
+  function exportedNodes() {
+    return nodesForLayout.filter((n) => !matchSet || matchSet.has(n.id));
+  }
+  function handleExportBibtex() {
+    downloadText(
+      exportFilename(`${slug || "theme"}-papers`, "bib"),
+      themeNodesToBibtex(exportedNodes()),
+      "application/x-bibtex",
+    );
+  }
+  function handleExportNodesCsv() {
+    downloadText(
+      exportFilename(`${slug || "theme"}-papers`, "csv"),
+      themeNodesToCsv(exportedNodes(), mainPathNodeIds),
+      "text/csv",
+    );
+  }
+  function handleExportEdgesCsv() {
+    const ids = new Set(exportedNodes().map((n) => n.id));
+    const edges = visibleEdges.filter((e) => ids.has(e.src) && ids.has(e.dst));
+    downloadText(
+      exportFilename(`${slug || "theme"}-relations`, "csv"),
+      themeEdgesToCsv(edges, nodeById, (e) => mainPathKeys.has(edgeKey(e))),
+      "text/csv",
+    );
+  }
+  async function handleCopyUrl() {
+    const ok = await copyText(window.location.href);
+    setShareStatus(
+      ok ? "URL をコピーしました" : "コピーできませんでした。アドレス欄の URL を使ってください",
+    );
+  }
+
+  const feedbackTheme = slug ? { name: themeName || slug, slug } : null;
   const svgW = Math.max(totalW, 320);
   const svgH = Math.max(totalH, 200);
 
@@ -680,9 +764,87 @@ export function LineageTree({
             >
               📥 PNG
             </button>
+            <button
+              type="button"
+              title="表示中の論文を BibTeX で書き出す"
+              onClick={handleExportBibtex}
+              data-export="bibtex"
+              className="rounded-md border border-rule px-2 py-1 text-xs text-ink-muted hover:border-rule-strong"
+            >
+              📥 BibTeX
+            </button>
+            <button
+              type="button"
+              title="表示中の論文を CSV で書き出す"
+              onClick={handleExportNodesCsv}
+              data-export="nodes-csv"
+              className="rounded-md border border-rule px-2 py-1 text-xs text-ink-muted hover:border-rule-strong"
+            >
+              📥 CSV（論文）
+            </button>
+            <button
+              type="button"
+              title="表示中の関係と根拠を CSV で書き出す"
+              onClick={handleExportEdgesCsv}
+              data-export="edges-csv"
+              className="rounded-md border border-rule px-2 py-1 text-xs text-ink-muted hover:border-rule-strong"
+            >
+              📥 CSV（関係）
+            </button>
+            <button
+              type="button"
+              title="今の表示（絞り込みを含む）の URL をコピーする"
+              onClick={handleCopyUrl}
+              data-share-url
+              className="rounded-md border border-rule px-2 py-1 text-xs text-ink-muted hover:border-rule-strong"
+            >
+              🔗 URLをコピー
+            </button>
           </fieldset>
         </div>
       </div>
+      <p
+        role="status"
+        aria-live="polite"
+        className="mt-1 min-h-4 text-right text-xs text-ink-subtle"
+      >
+        {shareStatus}
+      </p>
+
+      {mainPathKeys.size > 0 && (
+        <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-ink-muted">
+          <fieldset
+            className="flex flex-wrap items-center gap-1 border-0 p-0"
+            data-main-path-toggle
+          >
+            <legend className="mr-1 inline text-ink-subtle">
+              🧭 本流（{mainPathKeys.size} 本の線）
+            </legend>
+            {MAIN_PATH_MODES.map((m) => (
+              <button
+                key={m}
+                type="button"
+                title={MAIN_PATH_BUTTON[m].title}
+                aria-pressed={mainPathMode === m}
+                onClick={() => setMainPathMode(m)}
+                className={`rounded-md border px-2 py-1 ${
+                  mainPathMode === m
+                    ? "border-accent bg-accent/10 text-accent-strong"
+                    : "border-rule text-ink-muted hover:border-rule-strong"
+                }`}
+              >
+                {MAIN_PATH_BUTTON[m].label}
+              </button>
+            ))}
+          </fieldset>
+          <span className="text-ink-subtle">
+            引用の流れがいちばん多く通る経路です（強い関係を重く数えます）。
+            <a href="/how-it-works/#main-path" className="ml-1 text-accent underline">
+              計算のしかた
+            </a>
+          </span>
+        </div>
+      )}
 
       <div
         id="theme-filters-panel"
@@ -893,7 +1055,7 @@ export function LineageTree({
               </text>
             ))}
 
-            {visibleEdges
+            {drawnEdges
               .filter((e) => positionById.has(e.src) && positionById.has(e.dst))
               .map((e) => {
                 const src = positionById.get(e.src);
@@ -905,10 +1067,17 @@ export function LineageTree({
                 const y2 = dst.y;
                 const key = edgeKey(e);
                 const strokeClass = RELATION_STROKE_CLASS[e.relation] ?? DEFAULT_STROKE_CLASS;
+                const onMain = showMainPath && mainPathKeys.has(key);
+                const baseWidth = Math.max(1, e.confidence * 2);
+                const strokeWidth =
+                  selectedEdgeKey === key ? (onMain ? 7 : 4) : onMain ? 5 : baseWidth;
+                const strokeOpacity =
+                  selectedEdgeKey === key || onMain ? 1 : showMainPath ? 0.3 : 0.7;
                 return (
                   // biome-ignore lint/a11y/noStaticElementInteractions: mirrors hover/focus bubbling from the focusable hit-area <line> below (tabIndex + aria-label) to show the tooltip; no WAI-ARIA role Biome suggests (group/fieldset) applies to a non-form SVG grouping element.
                   <g
                     key={key}
+                    data-main-path={onMain ? "1" : undefined}
                     onMouseEnter={() => setHoveredEdgeKey(key)}
                     onMouseLeave={() =>
                       setHoveredEdgeKey((current) => (current === key ? null : current))
@@ -924,8 +1093,9 @@ export function LineageTree({
                       x2={x2}
                       y2={y2}
                       className={strokeClass}
-                      strokeWidth={selectedEdgeKey === key ? 4 : Math.max(1, e.confidence * 2)}
-                      strokeOpacity={selectedEdgeKey === key ? 1 : 0.7}
+                      strokeWidth={strokeWidth}
+                      strokeOpacity={strokeOpacity}
+                      strokeLinecap="round"
                     />
                     {/* biome-ignore lint/a11y/useSemanticElements: an SVG <line> hit area cannot be an HTML <button>; role="button" + tabIndex + Enter/Space handling give it button semantics inside the graph. */}
                     <line
@@ -937,7 +1107,7 @@ export function LineageTree({
                       tabIndex={0}
                       role="button"
                       aria-pressed={selectedEdgeKey === key}
-                      aria-label={`${relationLabelJa(e.relation)}: ${e.rationale}（Enter で根拠を表示）`}
+                      aria-label={`${onMain ? "本流・" : ""}${relationLabelJa(e.relation)}: ${e.rationale}（Enter で根拠を表示）`}
                       onClick={() => selectEdge(key)}
                       onKeyDown={(ev) => {
                         if (ev.key === "Enter" || ev.key === " ") {
@@ -1016,6 +1186,16 @@ export function LineageTree({
                             className={`${styles.badge} ${styles.badgeHub}`}
                           >
                             HUB
+                          </span>
+                        )}
+                        {showMainPath && mainPathNodeIds.has(p.id) && (
+                          <span
+                            role="img"
+                            aria-label="本流（主経路）上の論文"
+                            title="本流（主経路）上の論文"
+                            className={`${styles.badge} ${styles.badgeMain}`}
+                          >
+                            本流
                           </span>
                         )}
                         {isTrending && (
@@ -1179,6 +1359,8 @@ export function LineageTree({
           edge={selectedEdge}
           nodeById={nodeById}
           onClose={() => setSelectedEdgeKey(null)}
+          theme={feedbackTheme}
+          onMainPath={mainPathKeys.has(edgeKey(selectedEdge))}
         />
       )}
 
@@ -1187,6 +1369,8 @@ export function LineageTree({
         nodeById={nodeById}
         selectedKey={selectedEdgeKey}
         onSelect={selectEdge}
+        theme={feedbackTheme}
+        mainPathKeys={showMainPath ? mainPathKeys : undefined}
       />
 
       {kbdHelpOpen && (
