@@ -87,15 +87,26 @@ export function CatalogApp({
   generated,
   copy,
   conferences = [],
+  expectedTotal = null,
 }: {
   conf: string;
   generated: string;
   copy: CatalogCopy;
+  /** Row count from conferences.json (build time), shown in the hero
+   * before papers.json has arrived. */
+  expectedTotal?: number | null;
   /** Every published catalog (for the hero's conference switcher). */
   conferences?: readonly CatalogConferenceLink[];
 }) {
   const [loadStatus, setLoadStatus] = useState<"loading" | "ok" | "error">("loading");
   const [loadError, setLoadError] = useState("");
+  const [loadedBytes, setLoadedBytes] = useState(0);
+  // False in the prerendered HTML and until hydration. With JavaScript
+  // disabled the page would otherwise show "読み込み中…" forever under the
+  // <noscript> notice (design doc 53); the loading row only appears once
+  // the script that will actually load the list is running.
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => setHydrated(true), []);
   const [retryNonce, setRetryNonce] = useState(0);
   const [retrying, setRetrying] = useState(false);
   const hasAttemptedRef = useRef(false);
@@ -149,6 +160,10 @@ export function CatalogApp({
   });
 
   const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  // Design doc 53: after closing a directly-opened detail (no in-page
+  // history entry to go back to), focus returns to that card's
+  // "詳細を開く" button instead of being dropped on <body>.
+  const focusSelectButtonRef = useRef<string | null>(null);
   const focusSelectedHeadingRef = useRef(false);
   // Ported from app.js's popstate handler's `else if (historyRestore)`
   // branch (app.js:1999-2006): set only when Back/Forward returns to the
@@ -181,7 +196,15 @@ export function CatalogApp({
       if (hasAttemptedRef.current) setRetrying(true);
       else setLoadStatus("loading");
       hasAttemptedRef.current = true;
-      const result = await fetchCatalogPapers(conf);
+      setLoadedBytes(0);
+      let lastReport = 0;
+      const result = await fetchCatalogPapers(conf, (bytes) => {
+        // Throttled to ~every 256 KB so progress does not re-render the
+        // page per network chunk.
+        if (bytes - lastReport < 262_144 || cancelled) return;
+        lastReport = bytes;
+        setLoadedBytes(bytes);
+      });
       if (cancelled) return;
       setRetrying(false);
       if (result.status === "error") {
@@ -583,6 +606,7 @@ export function CatalogApp({
       return;
     }
     window.history.replaceState(null, "", setPaperParam(window.location.href, null));
+    focusSelectButtonRef.current = selectedPaperId;
     setSelectedPaperId(null);
     setSelectedOrigin(null);
     setSelectionMessage("");
@@ -590,6 +614,32 @@ export function CatalogApp({
     // (docs/assets/app.js's `closeSelectedPaper` calls `renderList()`).
     setRevealBatch(null);
   }
+
+  // Focus return after a direct-origin close (see focusSelectButtonRef).
+  useEffect(() => {
+    if (selectedPaperId) return;
+    const id = focusSelectButtonRef.current;
+    if (!id) return;
+    focusSelectButtonRef.current = null;
+    document.querySelector<HTMLElement>(`[data-select-paper="${id}"]`)?.focus();
+  }, [selectedPaperId]);
+
+  // Esc closes the open detail (design doc 53). Ignored while typing in a
+  // field (Esc already clears a search box) or during IME composition.
+  const closeRef = useRef(closeSelectedPaper);
+  closeRef.current = closeSelectedPaper;
+  useEffect(() => {
+    if (!selectedPaperId) return;
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key !== "Escape" || event.isComposing || event.defaultPrevented) return;
+      const target = event.target as HTMLElement | null;
+      if (target?.closest("input, textarea, select, [contenteditable='true']")) return;
+      event.preventDefault();
+      closeRef.current();
+    }
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [selectedPaperId]);
 
   // --- BibTeX / CSV / share URL (design doc 48 P0-3) ------------------------
   // Exports the whole current filter result (not just the rows revealed
@@ -647,7 +697,7 @@ export function CatalogApp({
   }, [papers]);
   const tagGroups = useMemo(() => buildTagChipGroups(papers, activeTags), [papers, activeTags]);
   const typeChips = useMemo(() => buildTypeChips(papers), [papers]);
-  const tagsExpanded = tagsManuallyExpanded || tagGroups.tailActiveByDefault;
+  const tagsExpanded = tagsManuallyExpanded;
   const activeFilters = hasActiveFilters({ search, type, activeTags, hasAbstract });
   // The "要旨あり" toggle only makes sense when some rows lack one
   // (iclr-2025: 82% have an abstract; icml-2026: all do).
@@ -675,7 +725,7 @@ export function CatalogApp({
       <CatalogHero
         copy={copy}
         generated={generated}
-        total={loadStatus === "ok" ? total : null}
+        total={loadStatus === "ok" ? total : expectedTotal}
         oralCount={loadStatus === "ok" ? stats.oral : null}
         tagCount={loadStatus === "ok" ? stats.tagCount : null}
         abstractCount={loadStatus === "ok" ? stats.withAbstract : null}
@@ -693,7 +743,7 @@ export function CatalogApp({
           tagHead={tagGroups.head}
           tagTail={tagGroups.tail}
           tagTailExpanded={tagsExpanded}
-          onExpandTags={() => setTagsManuallyExpanded(true)}
+          onToggleTagTail={() => setTagsManuallyExpanded((prev) => !prev)}
           activeTags={activeTags}
           onToggleTag={toggleTag}
           abstractToggle={
@@ -706,13 +756,13 @@ export function CatalogApp({
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-rule px-4 py-3 sm:px-6">
         <p aria-live="polite" aria-atomic="true" className="text-sm text-ink-muted">
-          {loadStatus === "loading" && "読み込み中…"}
+          {loadStatus === "loading" && hydrated && "読み込み中…"}
           {loadStatus === "error" && `${CATALOG_LOAD_ERROR}再試行できます。`}
           {loadStatus === "ok" && (
             <>
-              {search.trim() && (
+              {deferredSearch.trim() && (
                 <span aria-hidden="true" className="mr-1 font-serif italic text-ink">
-                  «{search.trim()}»
+                  «{deferredSearch.trim()}»
                 </span>
               )}
               {resultSummary({ matched: filteredLen, shown, total })}
@@ -797,10 +847,17 @@ export function CatalogApp({
         </div>
       </div>
 
-      {loadStatus === "loading" && (
+      {loadStatus === "loading" && hydrated && (
         <ul className="list-none p-0">
           <li className="px-4 py-10 text-center text-sm text-ink-subtle sm:px-6">
-            論文一覧を読み込み中…
+            {expectedTotal
+              ? `${formatCount(expectedTotal)} 本の論文一覧を読み込み中…`
+              : "論文一覧を読み込み中…"}
+            {loadedBytes > 0 && (
+              <span className="ml-1 font-mono" data-load-progress>
+                {(loadedBytes / 1_048_576).toFixed(1)} MB
+              </span>
+            )}
           </li>
         </ul>
       )}
@@ -835,17 +892,17 @@ export function CatalogApp({
           {filteredLen === 0 ? (
             <li className="flex flex-col items-start gap-2 px-4 py-10 text-sm text-ink-muted sm:px-6">
               <p className="text-ink">
-                {search.trim()
-                  ? `「${search.trim()}」に一致する論文はありません。`
+                {deferredSearch.trim()
+                  ? `「${deferredSearch.trim()}」に一致する論文はありません。`
                   : "条件に一致する論文はありません。"}
               </p>
-              {hasJapaneseText(search) && (
+              {hasJapaneseText(deferredSearch) && (
                 <p>
                   タイトルと要旨は英語です。英語のキーワード（例: diffusion,
                   retrieval）で検索してください。
                 </p>
               )}
-              {search.trim() && /\s/.test(search.trim()) && (
+              {deferredSearch.trim() && /\s/.test(deferredSearch.trim()) && (
                 <p>
                   複数の語はすべて含む論文だけが表示されます。語を減らすと見つかることがあります。
                 </p>

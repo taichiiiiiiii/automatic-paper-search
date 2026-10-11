@@ -3,6 +3,7 @@
 import { useId, useState } from "react";
 import type { CatalogCopy } from "../../lib/catalog-copy";
 import { BASE_PATH } from "../../lib/config";
+import styles from "./catalog.module.css";
 
 /**
  * Hero banner (breadcrumb, title, stats, collapsible details), ported
@@ -64,7 +65,7 @@ export function CatalogHero({
         {/* A conference without any Oral row (ICML 2026, every published
             row is a Poster) used to read "0 Oral" -- looks like missing
             data. Hidden once loaded and zero (design doc 53). */}
-        {oralCount !== 0 && (
+        {oralCount !== null && oralCount > 0 && (
           <>
             <span aria-hidden="true">·</span>
             <span className="font-mono text-base text-oral-ink">{stat(oralCount)}</span> Oral
@@ -79,8 +80,14 @@ export function CatalogHero({
             <span className="font-mono text-base text-ink">{stat(abstractCount)}</span>
           </>
         )}
-        <span aria-hidden="true">·</span>
-        <span className="font-mono text-base text-ink">{stat(tagCount)}</span> タグ
+        {/* Shown once known: before papers.json loads (and always with
+            JavaScript off) a "— タグ" placeholder read as missing data. */}
+        {tagCount !== null && (
+          <>
+            <span aria-hidden="true">·</span>
+            <span className="font-mono text-base text-ink">{stat(tagCount)}</span> タグ
+          </>
+        )}
         <span aria-hidden="true">·</span>
         <span title="一覧を取得した日（スナップショット）。この日より後の変更は入っていません">
           データの日付
@@ -115,7 +122,7 @@ export function CatalogHero({
                   ) : (
                     <a
                       href={`${BASE_PATH}/${c.slug}/`}
-                      className="inline-block rounded-full border border-rule px-3 py-1 text-xs text-ink-muted hover:border-rule-strong hover:text-ink"
+                      className={`inline-block rounded-full border border-rule px-3 py-1 text-xs hover:border-rule-strong ${styles.mutedLink}`}
                     >
                       {c.display}
                     </a>

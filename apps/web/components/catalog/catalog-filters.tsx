@@ -21,7 +21,7 @@ export function CatalogFilters({
   tagHead,
   tagTail,
   tagTailExpanded,
-  onExpandTags,
+  onToggleTagTail,
   activeTags,
   onToggleTag,
   abstractToggle = null,
@@ -34,7 +34,7 @@ export function CatalogFilters({
   tagHead: TagChip[];
   tagTail: TagChip[];
   tagTailExpanded: boolean;
-  onExpandTags: () => void;
+  onToggleTagTail: () => void;
   activeTags: ReadonlySet<string>;
   onToggleTag: (tag: string) => void;
   /** "要旨あり" toggle (design doc 53); null hides it (every row has an
@@ -42,6 +42,7 @@ export function CatalogFilters({
   abstractToggle?: { active: boolean; count: number; onToggle: () => void } | null;
 }) {
   const tailId = useId();
+  const hiddenTailCount = tagTail.filter((chip) => !activeTags.has(chip.tag)).length;
   const chipClass = (active: boolean) =>
     `inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-colors ${
       active
@@ -126,31 +127,38 @@ export function CatalogFilters({
           </button>
         ))}
         {tagTail.length > 0 && (
-          <span id={tailId} className={tagTailExpanded ? "contents" : "hidden"}>
-            {tagTail.map((chip) => (
-              <button
-                key={chip.tag}
-                type="button"
-                data-tag={chip.tag}
-                aria-pressed={activeTags.has(chip.tag)}
-                onClick={() => onToggleTag(chip.tag)}
-                className={chipClass(activeTags.has(chip.tag))}
-              >
-                {chip.tag}
-                <span className="font-mono text-xs text-ink-subtle">{formatCount(chip.count)}</span>
-              </button>
-            ))}
+          // Collapsed, the tail still shows every ACTIVE tag (a filter
+          // restored from the URL is never invisibly on); expanded, every
+          // tag. One toggle opens and closes it (design doc 53).
+          <span id={tailId} className="contents">
+            {tagTail
+              .filter((chip) => tagTailExpanded || activeTags.has(chip.tag))
+              .map((chip) => (
+                <button
+                  key={chip.tag}
+                  type="button"
+                  data-tag={chip.tag}
+                  aria-pressed={activeTags.has(chip.tag)}
+                  onClick={() => onToggleTag(chip.tag)}
+                  className={chipClass(activeTags.has(chip.tag))}
+                >
+                  {chip.tag}
+                  <span className="font-mono text-xs text-ink-subtle">
+                    {formatCount(chip.count)}
+                  </span>
+                </button>
+              ))}
           </span>
         )}
-        {tagTail.length > 0 && !tagTailExpanded && (
+        {tagTail.length > 0 && (tagTailExpanded || hiddenTailCount > 0) && (
           <button
             type="button"
-            aria-expanded={false}
+            aria-expanded={tagTailExpanded}
             aria-controls={tailId}
-            onClick={onExpandTags}
+            onClick={onToggleTagTail}
             className={chipClass(false)}
           >
-            +{tagTail.length} タグ
+            {tagTailExpanded ? "タグをたたむ" : `+${hiddenTailCount} タグ`}
           </button>
         )}
       </fieldset>
