@@ -670,14 +670,14 @@ export function LineageTree({
   // The SVG keeps its viewBox and only its rendered width/height change,
   // so every position inside stays in layout units (no inline style; CSP).
   // On a phone the cards start at MOBILE_ZOOM so more than one card fits.
-  const [zoom, setZoom] = useState(1);
+  // Read on the first render, like the reading guide above (this tree only
+  // renders on the client, after the artifact fetch): setting it in an
+  // effect painted one frame at 100% first (a layout shift on phones), and
+  // a zoom click in that frame was overridden.
+  const [zoom, setZoom] = useState(() =>
+    typeof window !== "undefined" && window.innerWidth < 640 ? MOBILE_ZOOM : 1,
+  );
   const zoomRef = useRef(zoom);
-  useEffect(() => {
-    if (typeof window !== "undefined" && window.innerWidth < 640) {
-      zoomRef.current = MOBILE_ZOOM;
-      setZoom(MOBILE_ZOOM);
-    }
-  }, []);
   const changeZoom = useCallback((next: number) => {
     const container = scrollRef.current;
     const prev = zoomRef.current;

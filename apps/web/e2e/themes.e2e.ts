@@ -196,6 +196,10 @@ for (const t of themes) {
       await theme.goto(t.slug);
       const z0 = await theme.zoom();
       expect(z0).toBeGreaterThan(0);
+      // Phones start zoomed out from the tree's very first paint (no
+      // 100% frame that a later effect shrinks).
+      const narrow = await theme.tree.evaluate(() => window.innerWidth < 640);
+      if (narrow) expect(z0).toBeLessThan(1);
       await theme.zoomButton("拡大").click();
       await expect.poll(() => theme.zoom()).toBeGreaterThan(z0);
       const z1 = await theme.zoom();
