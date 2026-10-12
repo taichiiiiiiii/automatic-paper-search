@@ -19,12 +19,23 @@
  * with no path pattern is not a valid Cloudflare Pages `_headers` rule
  * (https://developers.cloudflare.com/pages/configuration/headers/) and
  * is silently ignored by the platform, not merely unoptimized.
+ *
+ * The second rule makes Next's content-hashed build output
+ * (`/_next/static/*`: JS chunks, CSS, fonts) cacheable for a year.
+ * Without it Cloudflare Pages serves them with `max-age=0,
+ * must-revalidate`, so every page view revalidates every chunk
+ * (Lighthouse "uses-long-cache-ttl"; measured 2026-10-12). Only hashed
+ * paths get this: HTML, data JSON and /assets/* keep the default.
  */
 import { createHash } from "node:crypto";
 import { readdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildCspContent } from "../lib/config";
+
+const PAGES_HEADERS =
+  "/*\n  Content-Security-Policy: frame-ancestors 'self'\n" +
+  "/_next/static/*\n  Cache-Control: public, max-age=31536000, immutable\n";
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const OUT_DIR = join(SCRIPT_DIR, "..", "out");
@@ -113,11 +124,7 @@ async function main(): Promise<void> {
     await writeFile(file, updated, "utf8");
     console.log(`csp-hash: ${relative(OUT_DIR, file)} -> ${hashes.length} inline script hash(es)`);
   }
-  await writeFile(
-    join(OUT_DIR, "_headers"),
-    "/*\n  Content-Security-Policy: frame-ancestors 'self'\n",
-    "utf8",
-  );
+  await writeFile(join(OUT_DIR, "_headers"), PAGES_HEADERS, "utf8");
   console.log(`csp-hash: wrote ${join(OUT_DIR, "_headers")}`);
 }
 

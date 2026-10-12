@@ -60,11 +60,16 @@
 
   /* Fonts: the Latin stacks resolve to next/font/local-loaded
      variable-font CSS variables (set on <html> by app/fonts.ts), falling
-     back to the same system fonts docs/assets/style.css uses. --font-ja
+     back to the same system fonts docs/assets/style.css uses (latin face,
+     then the latin-ext face + its metric-adjusted fallback; see the
+     unicode-range note in app/fonts.ts). --font-ja
      stays system-only, as today -- no Japanese web font is bundled. */
-  --font-serif: var(--font-serif-loaded), "Source Serif Pro", Georgia, serif;
-  --font-sans: var(--font-sans-loaded), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-mono: var(--font-mono-loaded), "SF Mono", Menlo, monospace;
+  --font-serif:
+    var(--font-serif-loaded), var(--font-serif-ext-loaded), "Source Serif Pro", Georgia, serif;
+  --font-sans:
+    var(--font-sans-loaded), var(--font-sans-ext-loaded), -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  --font-mono: var(--font-mono-loaded), var(--font-mono-ext-loaded), "SF Mono", Menlo, monospace;
   --font-ja: "Hiragino Sans", "Yu Gothic UI", "Noto Sans CJK JP", sans-serif;
 
   --text-tag: 0.72rem;
@@ -212,6 +217,15 @@ body {
   h1,
   h2 {
     word-break: auto-phrase;
+  }
+  /* The site footer follows <main> (app/layout.tsx). Catalog and theme
+     pages fill <main> from JSON after the first paint, so the footer was
+     first painted inside the viewport and then pushed out of it -- the
+     largest layout shift on those pages (CLS 0.33 desktop / 0.47 mobile
+     on /icml-2026/, Lighthouse 2026-10-12). Starting <main> at a full
+     viewport keeps the footer below the fold until the content is in. */
+  #main-content {
+    min-height: 100svh;
   }
 }
 
