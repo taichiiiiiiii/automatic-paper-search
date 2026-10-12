@@ -27,8 +27,8 @@ export function TopicsGallery({ topics, onSelect }: TopicsGalleryProps) {
   return (
     <div className="flex flex-col gap-8">
       <p className="text-sm text-ink-muted">
-        {topics.clusters.length} サブフィールド · Oral 採択 {topics.totalPapers} 本を primary tag
-        でグループ化。カードをクリックすると家系図に切り替わります。
+        {topics.clusters.length} サブフィールド · 焦点の論文 {topics.totalPapers}{" "}
+        本を主なタグでグループ化。カードをクリックすると家系図に切り替わります。
       </p>
       {topics.clusters.map((cluster) => (
         <section
