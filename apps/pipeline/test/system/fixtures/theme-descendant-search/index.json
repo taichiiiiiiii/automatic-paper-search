@@ -1,0 +1,87 @@
+[
+ {
+  "method": "GET",
+  "urlPattern": "^https://api\\.semanticscholar\\.org/graph/v1/paper/search/bulk\\?",
+  "status": 200,
+  "json": {
+   "total": 2,
+   "data": [
+    {
+     "paperId": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "title": "FlashAttention-R: A Ranked Descendant Test Kernel",
+     "year": 2024,
+     "venue": "arXiv",
+     "citationCount": 99999,
+     "abstract": "We extend FlashAttention, the IO-aware exact attention algorithm, with a new tiling schedule. Our kernel keeps exact attention and cuts memory traffic further.",
+     "authors": [
+      {
+       "authorId": "1",
+       "name": "Test Author"
+      }
+     ],
+     "externalIds": {}
+    },
+    {
+     "paperId": "ffffffffffffffffffffffffffffffffffffffff",
+     "title": "Stable Video Diffusion: Scaling Latent Video Diffusion Models",
+     "year": 2023,
+     "venue": "arXiv",
+     "citationCount": 3000,
+     "abstract": "We present a latent video diffusion model for text-to-video and image-to-video generation.",
+     "authors": [
+      {
+       "authorId": "2",
+       "name": "Other Author"
+      }
+     ],
+     "externalIds": {}
+    }
+   ]
+  }
+ },
+ {
+  "method": "GET",
+  "urlPattern": "^https://api\\.semanticscholar\\.org/graph/v1/paper/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee/references\\?",
+  "status": 200,
+  "json": {
+   "offset": 0,
+   "data": [
+    {
+     "contexts": [
+      "We build on FlashAttention [3] and extend its tiling to a new schedule."
+     ],
+     "intents": [
+      "methodology"
+     ],
+     "isInfluential": true,
+     "citedPaper": {
+      "paperId": "dddddddddddddddddddddddddddddddddddddddd",
+      "title": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness",
+      "year": 2022,
+      "externalIds": {
+       "ArXiv": "2205.14135"
+      },
+      "abstract": null,
+      "venue": "NeurIPS",
+      "citationCount": 2000,
+      "authors": [
+       {
+        "authorId": "3",
+        "name": "Tri Dao"
+       }
+      ]
+     }
+    }
+   ]
+  }
+ },
+ {
+  "method": "GET",
+  "urlPattern": "^https://api\\.semanticscholar\\.org/graph/v1/paper/ffffffffffffffffffffffffffffffffffffffff/references\\?",
+  "status": 200,
+  "json": {
+   "offset": 0,
+   "data": []
+  }
+ }
+]

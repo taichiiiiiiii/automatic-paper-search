@@ -85,6 +85,7 @@
 | R2-8 | 厳選テーマ（GNN から）の人手監査と「監査済み」公開 | 済み（2026-10-11。4 テーマを Taichi Nakamura が監査し、本番で「監査済み」。シートは `docs/audit/`。作り直すと監査は無効） |
 | R2-28 | 引用文の追加の出どころ（arXiv HTML）、Crossref の参考文献、DBLP の会場（[47](47-apis-and-oss.md) 推奨 1〜3） | 実装（2026-10-11、ブランチ。既定は off。下の実装メモ） |
 | R2-31 | 第二審査（R2-29）の指摘: Shazeer ← Eigen の contrasts → extends、混ざった OpenAlex 記録（引用の年の逆転）と会議論文の年のずれ | 実装（2026-10-11、ブランチ `roadmap/r2-31-contrast-cue`。下の実装メモ） |
+| R2-35 | 依頼テーマ（Low-Rank Adaptation）の品質: QLoRA の欠落と、埋め込みだけで入った古い別分野の論文 | 実装（2026-10-12、ブランチ `roadmap/r2-35-theme-topic-quality`。下の実装メモ） |
 
 ## 実装メモ（2026-10-10）
 
@@ -379,3 +380,43 @@ R2-29 の監査の下書き（第二審査）が挙げた生成側の誤り 2 �
 - 詳細は design 51 §9。系譜に関わる点だけ記す
 - 題名と要旨の整合検査（R2-17）を `@paperpilot/core/abstract-sanity` に移し、「造語の題名に触れず別の固有名を導入する要旨」を別論文の要旨と判定する規則を足した。flash-attention の Longformer（OpenAlex W3015468748 の要旨が別論文「Murmurative Attention」）が該当。生成側（OpenAlex の要旨、`citingAbstractOf`）と表示側（公開済み成果物の読み込み時）で外す。r222/r223 の固定データは arXiv の要旨に差し替え、適合率テストは不変
 - 根拠パネルの引用文は、途中から始まる・途中で終わる抜粋に「…」を付け、出典の行に引用元の著者名（et al.）を入れた
+
+## 実装メモ（R2-35、依頼テーマの略称・テーマより前の別分野の論文・被引用の多い後継の取りこぼし）
+
+依頼で作った「Low-Rank Adaptation」（69 ノード、未監査）の 2 つの誤りを直した。LLM は使っていない。監査済みの 4 テーマの成果物は変わらない（下の試算）。
+
+- **原因 1: QLoRA が入らない**
+  - OpenAlex の LoRA（W3168867926 = arXiv 2106.09685、Hu ら）は 1 つの記録で、題名は Zenodo の別記録と混ざって壊れている（R2-34 で S2 の題名に差し替え済み）。ICLR 版などの別 ID は無い（題名検索で確認）ので、別名として合わせる記録は無い。OpenAlex の被引用数は 2,510（S2 は 24,206）
+  - QLoRA の OpenAlex の記録は arXiv 版（W4378509449）・NeurIPS 版（W7133233472）とも `referenced_works` が 0。DoRA・LoRA+ も 0。だから `cites:W3168867926` は QLoRA を決して返さない（返すのは参考文献を持つ雑誌・会議の記録だけ）
+  - S2 の `/citations` は新しい順で、`offset + limit < 10000` の上限がある。LoRA の 1 ページ目は 2026 年の論文 1,000 本だけで、2023 年の QLoRA には届かない
+  - さらにテーマの語は「low rank adaptation」と頭字語「LRA」だけで、「LoRA」は語ではなかった。QLoRA は種（DoRA・LoRA+）の参考文献としては候補に上がっていたが、題名・要旨に語が無く z = 0.57 < zHi で門に落ちていた。VeRA・AdaLoRA・rsLoRA・HydraLoRA も埋め込みだけで入っていた
+  - 種の選び方（`meta.seeds`/`canonical_seeds`）: サーベイの参考文献から正準の手法論文を最大 5 本（`canonicalSlots = ceil(seeds/2)`）、残りを検索の候補から。初回（depth 1・seeds 5・width 8）は 13 ノードで疎（15 未満）だったため `--auto-expand` が depth 2・seeds 10・width 12 で作り直し、それが公開された（`meta.depth = 2`・種 10 本）
+- **原因 2: 2013〜16 年の話者適応などが入る**
+  - depth 2 で、埋め込みだけで入った「Low-rank plus diagonal adaptation」（2016、z 2.2）の参考文献が展開され、音声認識の話者適応の論文 6 本が埋め込み（z ≥ 1.0、語の一致なし）で入った。互いに引き合う塊になって `confirmWeakAdmissions` の対象外（z ≥ zHi）
+  - Adafactor（2018）・「To Tune or Not to Tune?」（2019）も埋め込みだけ。GaLore・Flora・rsLoRA が背景として引くだけ
+- **直したこと**
+  - **種が定義する略称を語にする**（`topicScope.ts::deriveThemeAcronyms`・`TopicScope.withDerivedTerms`、`build.ts`）: 種の題名・要旨で「<テーマ名> (X)」「<テーマ名>, or X」の X が、テーマ名（と別名）の内容語の頭文字を順に表し、2 本以上の種が同じものを定義していれば、テーマの語に足す。埋め込みの問い合わせ文は変えない。4 文字以上で大文字小文字が混ざる略称は、前に文字が付いた名前（QLoRA・PRILoRA・OLoRA）にも一致する（右側は従来どおり語の境界。LoRaWAN・Lora は一致しない）。LoRA のテーマで「LoRA」が足される。GNN・MoE・ViT は既に語なので何も足されない。ログ `topic terms: derived acronym(s) from the seeds: …`
+  - **埋め込みだけのノードは展開しない**（`bfs.ts`、`TopicScopeOptions.expandEmbeddingOnly`、既定 false）: 題名・要旨にテーマの語が無いノードの参考文献は別分野の近所なので、depth 2 以降で広げない（支持で入ったノードと同じ扱い）。CI の depth 1 では影響なし
+  - **種より前の、埋め込みだけのノードには引用文の裏付けを求める**（`bfs.ts::confirmPreSeedEmbeddingAdmissions`、`preSeedYears`、既定 1）: 埋め込みだけで入り、最も早い種の年より 2 年以上前のノードは、語のある（または対象外の）ノードとの辺で、引用文の手がかりのある強い関係（extends/successor/supersedes/contrasts、`api_citation`・推測・基礎論文の一覧は除く）が無ければ、相互参照の後で落とす。背景としての引用は何本あっても数えない（doc 42 で共引用の支持を切ったのと同じ理由: 隣の分野の古典は多くのテーマ内の論文に背景として引かれる）。候補どうしの辺も数えない。ログ `topic gate: dropped pre-seed embedding-only node …`
+  - **被引用の多い後継を探す**（`s2Expansion.ts::rankedCiters`・`s2Citations.ts::searchByCitations`、既定 off、`PAPERPILOT_S2_DESCENDANT_SEARCH=on`、候補数 `PAPERPILOT_S2_DESCENDANT_CANDIDATES` 既定 16）: 1 テーマに 1 回、S2 の bulk 検索（テーマ名・別名・略称の OR、被引用数の降順、最も早い種の年以降）の上位を OpenAlex の ID に寄せ、各候補の S2 参考文献（キャッシュあり、関係分類と共用）でその種を引いているものだけを、その種を引く論文の候補に足す。その後は今までどおり要旨・門・幅で絞る。検索や参考文献が取れないときは展開の失敗として記録（終了コード 4、公開中のファイルは残る）。ワークフローは `vars.PAPERPILOT_S2_DESCENDANT_SEARCH || 'off'`
+  - 種を引く論文の並びは OpenAlex と S2 の被引用数の大きい方で（`bfs.ts::bestCitationCount`。OpenAlex は arXiv だけの論文を少なく数える。QLoRA 500 対 5,951）
+- **試算**（基準 = develop 0e2326b。同じ日に記録した HTTP の答えを両方に再生（`test/system/support/fixtureFetch.ts` の記録と再生）。埋め込みあり・LLM なし・`--primary-source openalex`。4 テーマは depth 1・seeds 5・width 8、基準の再生は公開中の成果物とノード・辺の数まで一致）
+
+| テーマ | 基準 | 変更後 | 増えた | 減った |
+|---|---|---|---|---|
+| flash-attention | 14 ノード / 46 辺 | 同じ（`generated_at` 以外バイト一致） | なし | なし |
+| graph-neural-network | 34 / 141 | 同じ（バイト一致） | なし | なし（M-NMF・ConvE は語の一致で入っているので残る） |
+| mixture-of-experts | 21 / 65 | 同じ（バイト一致） | なし | なし |
+| vision-transformer | 20 / 48 | 同じ（バイト一致） | なし | なし |
+| low-rank-adaptation 初回（1/5/8） | 13 / 18 | 13 / 25（まだ疎 → 作り直し） | QLoRA、C-LoRA | LMF（2013、音声の低ランク分解）、LRPD（2016） |
+| low-rank-adaptation 作り直し（2/10/12、公開される方） | 85 / 338 | 79 / 345（検索 on: 82 / 361） | QLoRA（辺 29 本、LoRA → QLoRA を含む）、PEFT の 7 本（Scaling Down to Scale Up、MeZO、SLoRA、SPT ほか）、ラマン分光の応用 1 本。検索 on でさらに SPoT・LoSparse・SliceFine | 話者適応 8 本（2013〜16）、Adafactor、To Tune or Not to Tune?、アダプタ系 4 本（Bapna 2019、Unsupervised Domain Adaptation with Adapter、Hierarchical Domain Adaptation、LLaMA-Adapter。埋め込みだけのノードを広げなくなったため）、LoRA-SB（幅の競合） |
+
+  - 監査済み 4 テーマで埋め込みだけで入ったノード（FA の Routing Transformer・Rabe & Staats など 4 本、GNN 2 本、MoE 3 本、ViT 2 本）は、どれも最も早い種の年の 1 年前以降なので新しい規則の対象外
+  - 検索 on の LoRA: 上位 16 本のうち種を引くのは 13 組。OpenVLA・Stable Video Diffusion・AnimateDiff などの応用は門で落ちる（LoRa 無線の論文も検索には出るが同じく落ちる）。この回は QLoRA が略称だけで既に入っていたので、検索の上乗せは 3 本
+- **公開中の LoRA を作り直した**（テーマの CLI そのもの、依頼と同じ引数 `--depth 1 --seeds 5 --width 8 --since-year 2018 --llm-strict ambiguous --primary-source openalex --auto-expand`、LLM なし、検索は既定の off。HTTP は同じ日の記録を再生し、無いものだけ取りに行った）: 69 ノード / 261 辺 → **74 / 327**。QLoRA が入り、話者適応 8 本・Adafactor・To Tune or Not to Tune? が消えた。初回 13 ノードで作り直しになるのは前と同じ。その後 `generateThemesManifestCli`・`computeThemeQualityCli`・`buildLineageQualityCli --as-of 2026-10-12T09:36:46Z`。区分は変わらない（監査済み 4・未監査 1）
+- **残る課題**
+  - 「Accelerating Ill-Conditioned Low-Rank Matrix Estimation via Scaled Gradient Descent」（2020）は Riemannian Preconditioned LoRA の引用文で extends（手がかりあり）なので残る。「Low-Rank Matrix Recovery With Scaled Subgradient Methods」（2021）は最も早い種と同じ年なので対象外。年の窓を 0 にすると FA の 2021 年のノード（監査でテーマ内）が落ちるので広げていない
+  - LoRA → QLoRA は baseline_only（S2 の引用文に手がかりの文が無い）
+  - 応用の題名（「…via Low-Rank Adaptation」で別の課題）は従来の規則のまま
+  - 検索 on は利用者の判断（リポジトリ変数）。on にしたら 1 テーマずつ作り直し、`ranked descendant search: candidates=…, verified seed citers=…` の行を見る
+- テスト: `topicGateR235.test.ts`（新規: 略称の導出・一致、種より前の埋め込みだけのノード、depth 2 で展開しないこと、検索の候補の確かめ・失敗の記録・キャッシュ）、システムテスト `themeDescendantSearch.system.test.ts`（実 CLI で検索 on: 引く候補だけが後継として入る、検索が 503 なら終了コード 4 で公開中のファイルはバイト一致。合成の記録 `fixtures/theme-descendant-search`）、`r228EvidenceSources`・`r2-6-regen-reliability` に既定 off の確認を追加

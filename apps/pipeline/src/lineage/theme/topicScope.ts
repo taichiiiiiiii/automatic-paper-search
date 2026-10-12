@@ -76,6 +76,17 @@ export interface TopicScopeOptions {
    * (term match with z < zHi) must be corroborated by more than the one
    * citation that brought it in (`bfs.ts::confirmWeakAdmissions`). */
   weakEntryCheck: boolean;
+  /** R2-35: a node admitted on the embedding alone (no theme term in its
+   * title or abstract) is not expanded further at depth >= 2: like a
+   * support admission, it cannot open a new neighbourhood (the 2013-16
+   * speaker-adaptation cluster of the LoRA theme came in through the
+   * references of one such node). `true` restores the old behaviour. */
+  expandEmbeddingOnly: boolean;
+  /** R2-35: a node admitted on the embedding alone whose year is more than
+   * this many years before the earliest seed must be held by a quoted
+   * lineage cue from a lexically anchored node after the cross-node pass
+   * (`bfs.ts::confirmPreSeedEmbeddingAdmissions`). `null` = off. */
+  preSeedYears: number | null;
 }
 
 /** R2-17: an embedding score this far above `zHi` still admits a paper
@@ -93,6 +104,8 @@ export const DEFAULT_TOPIC_SCOPE_OPTIONS: Readonly<TopicScopeOptions> = Object.f
   abstractOnlySeedWeight: 0.5,
   requireAbstractSubject: true,
   weakEntryCheck: true,
+  expandEmbeddingOnly: false,
+  preSeedYears: 1,
 });
 
 /** How a paper relates to the theme, judged from its title first. */
@@ -233,7 +246,12 @@ function escapeRegExp(s: string): string {
  * {@link normalizeTopicText}). Acronyms: case-sensitive; may follow a
  * lower-case letter (closing a CamelCase name) but not start a longer
  * word. */
-export function termRegex(term: string): RegExp {
+export function termRegex(term: string, options: { anyPrefix?: boolean } = {}): RegExp {
+  if (isAcronymTerm(term) && options.anyPrefix) {
+    // R2-35: a derived mixed-case acronym of 4+ letters ("LoRA") also
+    // closes upper-case-prefixed variant names ("QLoRA", "PRILoRA").
+    return new RegExp(`(?<![\\p{N}])${escapeRegExp(term)}(?![\\p{L}\\p{N}])`, "u");
+  }
   if (isAcronymTerm(term)) {
     return new RegExp(`(?<![\\p{Lu}\\p{N}])${escapeRegExp(term)}(?![\\p{L}\\p{N}])`, "u");
   }
@@ -267,6 +285,81 @@ export function looksLikeDataset(paper: TopicPaperLike): boolean {
   return DATASET_ABSTRACT_RE.test(bodyText(paper));
 }
 
+/** R2-35: a derived acronym may close any variant name ("QLoRA") when it
+ * is this long and mixed-case — distinctive enough not to hit unrelated
+ * words. Shorter or all-caps acronyms keep the {@link termRegex} rule. */
+const ANY_PREFIX_MIN_LEN = 4;
+
+function anyPrefixAcronym(term: string): boolean {
+  const bare = term.replace(/s$/, "");
+  return bare.length >= ANY_PREFIX_MIN_LEN && /\p{Ll}/u.test(bare) && /\p{Lu}/u.test(bare);
+}
+
+/** Content words of a phrase for initialism checks ("mixture of experts"
+ * -> mixture, experts). */
+function contentWords(phrase: string): string[] {
+  return normalizeTopicText(phrase)
+    .trim()
+    .split(" ")
+    .filter((w) => w && !STOP_FOR_INITIALISM.has(w) && !LOWER_IN_INITIALISM.has(w));
+}
+
+/** The acronym's capitals spell the phrase's content-word initials, in
+ * order ("LoRA" ~ Low-Rank Adaptation; "MoE" ~ Mixture of Experts). */
+export function acronymFitsPhrase(acronym: string, phrase: string): boolean {
+  const caps = (acronym.match(/\p{Lu}/gu) ?? []).map((c) => c.toLowerCase());
+  // "Low-Rank" counts as two words (low, rank), so LoRA spells L-R-A.
+  const words = contentWords(phrase);
+  if (caps.length < 2 || words.length < 2) return false;
+  return caps.length === words.length && caps.every((c, i) => words[i]!.startsWith(c));
+}
+
+/**
+ * R2-35: acronyms the theme's own seed papers define for the theme
+ * phrase — "Low-Rank Adaptation (LoRA)", "Low-Rank Adaptation, or LoRA" —
+ * when at least `minPapers` distinct papers define the same one and its
+ * capitals spell the phrase's initials. The theme name a user types is
+ * often the long form while the field writes the acronym (QLoRA, VeRA,
+ * AdaLoRA never spell out "low-rank adaptation"), so without it the term
+ * rule misses most of the theme. Plural forms ("GNNs") are reduced to the
+ * singular. Deterministic (sorted).
+ */
+export function deriveThemeAcronyms(
+  phrases: readonly string[],
+  papers: readonly TopicPaperLike[],
+  minPapers = 2,
+): string[] {
+  const counts = new Map<string, number>();
+  for (const paper of papers) {
+    const text = `${str(paper.title)}. ${bodyText(paper)}`.normalize("NFKC");
+    const found = new Set<string>();
+    for (const phrase of phrases) {
+      const words = phrase
+        .trim()
+        .split(/[^\p{L}\p{N}]+/u)
+        .filter(Boolean);
+      if (words.length < 2) continue;
+      const body = words.map(escapeRegExp).join("[^\\p{L}\\p{N}]+");
+      const re = new RegExp(
+        `(?<![\\p{L}\\p{N}])${body}s?\\s*(?:\\(\\s*|,\\s*or\\s+|,\\s*)([\\p{L}][\\p{L}\\p{N}]{1,9})(?![\\p{L}\\p{N}])`,
+        "giu",
+      );
+      for (const m of text.matchAll(re)) {
+        let acr = m[1]!;
+        if (/[^s]s$/.test(acr) && (acr.match(/\p{Lu}/gu) ?? []).length >= 2) acr = acr.slice(0, -1);
+        if (!/^\p{Lu}/u.test(acr) || acr.length < 3) continue;
+        if (!acronymFitsPhrase(acr, phrase)) continue;
+        found.add(acr);
+      }
+    }
+    for (const acr of found) counts.set(acr, (counts.get(acr) ?? 0) + 1);
+  }
+  return [...counts]
+    .filter(([, n]) => n >= minPapers)
+    .map(([a]) => a)
+    .sort(codepointCompare);
+}
+
 export class TopicScope {
   readonly theme: string;
   readonly terms: readonly string[];
@@ -274,6 +367,11 @@ export class TopicScope {
    * the text of the embedding query (`topicEmbedding.ts`). */
   readonly queryTerms: readonly string[];
   readonly options: Readonly<TopicScopeOptions>;
+  /** R2-35: acronyms derived from the seeds ({@link withDerivedTerms});
+   * they count as theme terms but never enter the embedding query. */
+  readonly derivedTerms: readonly string[];
+  private readonly aliases: readonly string[];
+  private readonly extraTerms: readonly string[];
   private readonly regexes: readonly RegExp[];
 
   constructor(
@@ -281,12 +379,45 @@ export class TopicScope {
     aliases: readonly string[],
     options: Partial<TopicScopeOptions> = {},
     extraTerms: readonly string[] = [],
+    derivedTerms: readonly string[] = [],
   ) {
     this.theme = theme;
-    this.terms = themeTerms(theme, aliases, extraTerms);
+    this.aliases = [...aliases];
+    this.extraTerms = [...extraTerms];
+    const base = themeTerms(theme, aliases, extraTerms);
+    const baseSet = new Set(base);
+    this.derivedTerms = [...new Set(derivedTerms)]
+      .filter((t) => !baseSet.has(t))
+      .sort(codepointCompare);
+    const derivedForms = new Set<string>();
+    for (const t of this.derivedTerms) addAcronym(derivedForms, t);
+    this.terms = [...new Set([...base, ...derivedForms])].sort();
     this.queryTerms = [...new Set([theme, ...aliases, ...extraTerms])];
-    this.regexes = this.terms.map(termRegex);
+    this.regexes = this.terms.map((t) =>
+      termRegex(t, { anyPrefix: derivedForms.has(t) && !baseSet.has(t) && anyPrefixAcronym(t) }),
+    );
     this.options = { ...DEFAULT_TOPIC_SCOPE_OPTIONS, ...stripUndefined(options) };
+  }
+
+  /** The phrases an acronym may abbreviate: the theme and its aliases. */
+  get definingPhrases(): readonly string[] {
+    return [this.theme, ...this.aliases];
+  }
+
+  /** R2-35: acronyms the seeds define for the theme
+   * ({@link deriveThemeAcronyms}) that are not theme terms already. */
+  deriveAcronyms(papers: readonly TopicPaperLike[], minPapers = 2): string[] {
+    const have = new Set(this.terms);
+    return deriveThemeAcronyms(this.definingPhrases, papers, minPapers).filter((a) => !have.has(a));
+  }
+
+  /** This scope plus `derived` acronyms as theme terms (matching only;
+   * the embedding query text is unchanged). */
+  withDerivedTerms(derived: readonly string[]): TopicScope {
+    return new TopicScope(this.theme, this.aliases, this.options, this.extraTerms, [
+      ...this.derivedTerms,
+      ...derived,
+    ]);
   }
 
   /** Scope for a theme with its `theme_aliases.json` aliases and

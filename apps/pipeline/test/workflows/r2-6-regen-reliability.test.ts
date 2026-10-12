@@ -86,6 +86,7 @@ describe("regen-themes.yml (R2-6)", () => {
     expect(env.PAPERPILOT_ARXIV_HTML).toMatch(/\|\| 'off' \}\}$/);
     expect(env.PAPERPILOT_CROSSREF_REFERENCES).toMatch(/\|\| 'off' \}\}$/);
     expect(env.PAPERPILOT_DBLP_VENUES).toMatch(/\|\| 'off' \}\}$/);
+    expect(env.PAPERPILOT_S2_DESCENDANT_SEARCH).toMatch(/\|\| 'off' \}\}$/);
     expect(env.PAPERPILOT_ARXIV_HTML_MAX_FETCHES).toMatch(/\|\| '40' \}\}$/);
   });
 

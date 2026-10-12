@@ -56,14 +56,23 @@ function citationCountOf(p: Record<string, unknown>): number {
   return Number(p.citationCount) || 0;
 }
 
-function sortByCitationDesc<T extends Record<string, unknown>>(items: T[]): T[] {
+/** R2-35: the larger of OpenAlex's count and S2's (`_s2_citation_count`,
+ * set by `s2Expansion.ts::mergeMapped` when S2's is larger). */
+function bestCitationCount(p: Record<string, unknown>): number {
+  return Math.max(citationCountOf(p), Number(p._s2_citation_count) || 0);
+}
+
+function sortByCitationDesc<T extends Record<string, unknown>>(
+  items: T[],
+  countOf: (p: Record<string, unknown>) => number = citationCountOf,
+): T[] {
   // Stable sort (both V8's Array#sort and Python's list.sort are stable),
   // so ties preserve their original relative order — same as Python's
   // `list.sort(key=..., reverse=True)`.
   return items
     .map((item, i) => ({ item, i }))
     .sort((a, b) => {
-      const diff = citationCountOf(b.item) - citationCountOf(a.item);
+      const diff = countOf(b.item) - countOf(a.item);
       return diff !== 0 ? diff : a.i - b.i;
     })
     .map(({ item }) => item);
@@ -575,7 +584,13 @@ export async function runBfsAndDescendants(
       }
       if (!visited.has(pid)) {
         visited.add(pid);
-        frontier.push([parent, currentDepth + 1]);
+        // R2-35: a node admitted on the embedding alone is not expanded
+        // (depth >= 2 only): nothing in its text names the theme, so its
+        // references are another field's neighbourhood.
+        const embeddingOnly = admissions.get(pid)?.why === "embedding";
+        if (scope === null || scope.options.expandEmbeddingOnly || !embeddingOnly) {
+          frontier.push([parent, currentDepth + 1]);
+        }
       }
     }
   }
@@ -594,9 +609,12 @@ export async function runBfsAndDescendants(
     }
     const influential = allChildren.filter((c) => c._is_influential !== false);
     const nonInfluential = allChildren.filter((c) => c._is_influential === false);
+    // R2-35: rank citing papers by the larger of OpenAlex's and Semantic
+    // Scholar's count — OpenAlex undercounts arXiv-only works (QLoRA: 500
+    // vs ~6,000), which pushed the most-cited descendants below the cut.
     const children = [
-      ...sortByCitationDesc(influential),
-      ...sortByCitationDesc(nonInfluential),
+      ...sortByCitationDesc(influential, bestCitationCount),
+      ...sortByCitationDesc(nonInfluential, bestCitationCount),
     ].slice(0, descWidth);
 
     for (const child of children) {
@@ -914,6 +932,80 @@ export function confirmWeakAdmissions(
     }
   }
   return { edges: live, dropped };
+}
+
+/** One node {@link confirmPreSeedEmbeddingAdmissions} turned away. */
+export interface PreSeedDrop {
+  id: string;
+  year: number;
+  z: number | null;
+}
+
+/**
+ * R2-35 (design 41): papers from well before the theme that never name it.
+ * A node the gate admitted on the embedding alone (`why === "embedding"`:
+ * z >= zHi, no theme term — derived acronyms included — in its title or
+ * abstract) whose year is more than `scope.options.preSeedYears` before
+ * the earliest seed is kept only when an edge to a lexically anchored node
+ * (a seed, a term match, anything that is not itself such a candidate)
+ * states a lineage claim backed by a quoted cue
+ * (extends/successor/supersedes/contrasts, not `api_citation`/heuristic/
+ * allowlist). Background citations do not count, however many: a classic
+ * of a neighbouring field (an optimizer, 2013-16 speaker adaptation of
+ * DNN acoustic models in a LoRA theme) is cited as background by many
+ * on-topic papers — the reason co-citation support is off (doc 42) — and
+ * the embedding rates it close because it shares the theme's vocabulary
+ * ("low-rank", "adaptation"). Candidates never vouch for each other.
+ * Run after the cross-node pass. Mutates `nodes`.
+ */
+export function confirmPreSeedEmbeddingAdmissions(
+  nodes: Map<string, ThemeGraphNode>,
+  edges: readonly ThemeEdge[],
+  options: {
+    seedIds: ReadonlySet<string>;
+    admissions: ReadonlyMap<string, NodeAdmission>;
+    scope: TopicScope;
+  },
+): { edges: ThemeEdge[]; dropped: PreSeedDrop[] } {
+  const { seedIds, admissions, scope } = options;
+  const gap = scope.options.preSeedYears;
+  if (gap === null || !Number.isFinite(gap)) return { edges: [...edges], dropped: [] };
+  const seedYears = [...seedIds]
+    .map((id) => yearOf(nodes.get(id)))
+    .filter((y): y is number => y !== null);
+  if (seedYears.length === 0) return { edges: [...edges], dropped: [] };
+  const cutoff = Math.min(...seedYears) - gap;
+  const candidates = new Map<string, number>();
+  for (const [id, node] of nodes) {
+    if (seedIds.has(id)) continue;
+    const a = admissions.get(id);
+    if (a === undefined || a.why !== "embedding") continue;
+    const year = yearOf(node);
+    if (year === null || year >= cutoff) continue;
+    if (scope.isOnTopic(node)) continue; // a term the admission-time text lacked
+    candidates.set(id, year);
+  }
+  if (candidates.size === 0) return { edges: [...edges], dropped: [] };
+  const held = new Set<string>();
+  for (const e of edges) {
+    if (!WEAK_ENTRY_STRONG_RELATIONS.has(e.relation)) continue;
+    if (WEAK_ENTRY_NON_CUE_METHODS.has(edgeMethod(e))) continue;
+    for (const [self, other] of [
+      [e.src, e.dst],
+      [e.dst, e.src],
+    ] as const) {
+      if (candidates.has(self) && nodes.has(other) && !candidates.has(other)) held.add(self);
+    }
+  }
+  const dropped: PreSeedDrop[] = [];
+  for (const [id, year] of candidates) {
+    if (held.has(id)) continue;
+    nodes.delete(id);
+    dropped.push({ id, year, z: admissions.get(id)?.z ?? null });
+  }
+  if (dropped.length === 0) return { edges: [...edges], dropped };
+  const gone = new Set(dropped.map((d) => d.id));
+  return { edges: edges.filter((e) => !gone.has(e.src) && !gone.has(e.dst)), dropped };
 }
 
 export interface AddCrossNodeEdgesOptions {

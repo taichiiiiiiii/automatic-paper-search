@@ -49,6 +49,7 @@ import {
 import { CROSSREF_DEFAULT_MAX_REQUESTS, CROSSREF_FILENAME } from "./crossrefReferences.js";
 import { DBLP_DEFAULT_MAX_QUERIES, DBLP_FILENAME } from "./dblpVenues.js";
 import { S2_REFERENCES_FILENAME } from "./s2Citations.js";
+import { DEFAULT_DESCENDANT_CANDIDATES } from "./s2Expansion.js";
 import { sanitizeTheme } from "./slug.js";
 import { CachedTopicEmbedder, createTransformersEmbedder } from "./topicEmbedding.js";
 import { DEFAULT_TOPIC_SCOPE_OPTIONS } from "./topicScope.js";
@@ -276,6 +277,9 @@ export const CROSSREF_ENV = "PAPERPILOT_CROSSREF_REFERENCES";
 export const CROSSREF_MAX_ENV = "PAPERPILOT_CROSSREF_MAX_REQUESTS";
 export const DBLP_ENV = "PAPERPILOT_DBLP_VENUES";
 export const DBLP_MAX_ENV = "PAPERPILOT_DBLP_MAX_QUERIES";
+/** R2-35: ranked descendant search (S2 bulk search + reference check). */
+export const S2_DESCENDANT_SEARCH_ENV = "PAPERPILOT_S2_DESCENDANT_SEARCH";
+export const S2_DESCENDANT_CANDIDATES_ENV = "PAPERPILOT_S2_DESCENDANT_CANDIDATES";
 
 function switchOn(
   env: Readonly<Record<string, string | undefined>>,
@@ -340,8 +344,13 @@ export function optInEvidenceDeps(
   cacheDir: string,
   contact: string | null,
   warn: (msg: string) => void = (m) => process.stderr.write(`${m}\n`),
-): Pick<BuildThemeLineageDeps, "arxivHtml" | "crossref" | "dblpVenues"> {
+): Pick<BuildThemeLineageDeps, "arxivHtml" | "crossref" | "dblpVenues" | "s2DescendantSearch"> {
   return {
+    s2DescendantSearch: switchOn(env, S2_DESCENDANT_SEARCH_ENV, warn)
+      ? {
+          candidates: positiveInt(env, S2_DESCENDANT_CANDIDATES_ENV, DEFAULT_DESCENDANT_CANDIDATES),
+        }
+      : null,
     arxivHtml: switchOn(env, ARXIV_HTML_ENV, warn)
       ? {
           cachePath: join(cacheDir, ARXIV_HTML_FILENAME),

@@ -44,6 +44,7 @@
  * not recover the list.
  */
 
+import { createHash } from "node:crypto";
 import { titlesDisagreeStrongly } from "@paperpilot/core/abstract-sanity";
 import type { FetchLike } from "../../collect/http/requestWithRetry.js";
 import { requestWithRetry } from "../../collect/http/requestWithRetry.js";
@@ -86,7 +87,14 @@ export interface S2ExpansionOptions {
   cacheDir?: string | null;
   minOpenalexReferences?: number;
   logger?: { warn: (msg: string) => void };
+  /** R2-35: ranked descendant search (see {@link S2Expansion.rankedCiters});
+   * `null`/omitted = off. `candidates` = most-cited search hits verified
+   * per build (default {@link DEFAULT_DESCENDANT_CANDIDATES}). */
+  descendantSearch?: { candidates?: number } | null;
 }
+
+/** R2-35: search hits whose reference lists are checked per build. */
+export const DEFAULT_DESCENDANT_CANDIDATES = 16;
 
 export interface S2ExpansionStats {
   /** Expansions (one node, one direction) answered by OpenAlex alone. */
@@ -105,6 +113,10 @@ export interface S2ExpansionStats {
   /** OpenAlex id-mapping requests that failed (S2 ids kept, nothing cached). */
   mappingFailed: number;
   cacheHits: number;
+  /** R2-35: ranked descendant search — search hits checked, and
+   * seed -> hit citations S2 confirmed (counted once per pair). */
+  descendantCandidates: number;
+  descendantCiters: number;
 }
 
 function str(v: unknown): string | null {
@@ -289,6 +301,19 @@ export function mergeMapped(oa: ThemePaper, s2: ThemePaper): ThemePaper {
   };
 }
 
+/** Same work under two ids (an arXiv / DOI identity in common). */
+function sameWork(a: ThemePaper, b: ThemePaper): boolean {
+  const ax = (p: ThemePaper): string | null =>
+    typeof p.externalIds?.ArXiv === "string" && p.externalIds.ArXiv
+      ? p.externalIds.ArXiv.replace(/v\d+$/, "").toLowerCase()
+      : null;
+  const doi = (p: ThemePaper): string | null =>
+    typeof p.externalIds?.DOI === "string" && p.externalIds.DOI
+      ? p.externalIds.DOI.toLowerCase()
+      : null;
+  return (ax(a) !== null && ax(a) === ax(b)) || (doi(a) !== null && doi(a) === doi(b));
+}
+
 function isUsableCached(list: unknown): list is ThemePaper[] {
   return (
     Array.isArray(list) &&
@@ -346,6 +371,8 @@ export class S2Expansion {
     keptS2Ids: 0,
     mappingFailed: 0,
     cacheHits: 0,
+    descendantCandidates: 0,
+    descendantCiters: 0,
   };
   private readonly opts: S2ExpansionOptions;
   /** (id, kind) pairs already counted: the topic-gate prefetch and the
@@ -358,12 +385,40 @@ export class S2Expansion {
     this.minOpenalexReferences = options.minOpenalexReferences ?? DEFAULT_MIN_OPENALEX_REFERENCES;
   }
 
+  /** R2-35: the ranked descendant search query (set once the seeds and
+   * the theme's derived terms are known); `null` = no search. */
+  private descendantQuery: { query: string; yearFrom: number | null } | null = null;
+  private descendantPoolMemo: Promise<ThemePaper[] | null> | null = null;
+  private readonly descendantPairs = new Set<string>();
+  private descendantFailureRecorded = false;
+
+  setDescendantQuery(query: string | null, yearFrom: number | null): void {
+    this.descendantQuery = query && this.opts.descendantSearch ? { query, yearFrom } : null;
+    this.descendantPoolMemo = null;
+  }
+
   /**
    * Candidates for `paper` in direction `kind`: `primary` (the OpenAlex
    * `fetchRelated` call, given a scratch ledger) first, S2 when OpenAlex
    * is short (see module doc). Never throws for an S2 problem.
    */
   async expand(
+    paper: ThemePaper,
+    kind: ExpansionKind,
+    limit: number,
+    primary: (ledger: BuildCompletenessForExpansion) => Promise<ThemePaper[]>,
+    completeness?: BuildCompletenessForExpansion | null,
+  ): Promise<ThemePaper[]> {
+    const got = await this.expandPrimary(paper, kind, limit, primary, completeness);
+    if (kind !== "citations" || this.descendantQuery === null) return got;
+    const have = new Set(got.map((p) => p.paperId));
+    const ranked = (await this.rankedCiters(paper, completeness)).filter(
+      (p) => !have.has(p.paperId),
+    );
+    return ranked.length === 0 ? got : [...got, ...ranked];
+  }
+
+  private async expandPrimary(
     paper: ThemePaper,
     kind: ExpansionKind,
     limit: number,
@@ -424,6 +479,127 @@ export class S2Expansion {
       );
     }
     return [...got, ...extra];
+  }
+
+  /**
+   * R2-35: verified citing papers of `seed` among the theme's most-cited
+   * papers. OpenAlex's `cites:` filter only sees citing works that carry
+   * `referenced_works`, which arXiv-only and NeurIPS records lack (QLoRA:
+   * 0 in both its arXiv and NeurIPS records), and S2's `/citations` lists
+   * the newest citers first and stops at 10,000 — so neither ever returns
+   * the most-cited direct descendants of a heavily cited seed (LoRA:
+   * ~24k citers). One S2 bulk search per build (the theme phrase and its
+   * acronyms, citation count descending, from the earliest seed year)
+   * gives `candidates` hits, mapped to OpenAlex ids; each hit's S2
+   * reference list (cached, shared with relation classification) decides
+   * whether it cites `seed`. Hits then go through the BFS unchanged
+   * (abstract filter, topic gate, width cut). An unreachable search or
+   * reference list is recorded as a failed expansion (the build is
+   * incomplete, not "nothing there").
+   */
+  async rankedCiters(
+    seed: ThemePaper,
+    completeness?: BuildCompletenessForExpansion | null,
+  ): Promise<ThemePaper[]> {
+    if (this.descendantQuery === null) return [];
+    const pool = await this.descendantPool();
+    const fail = (why: string): void => {
+      if (!completeness) return;
+      completeness.expansionFailed(`s2 descendant search: ${why}`);
+      if (!this.descendantFailureRecorded) {
+        this.descendantFailureRecorded = true;
+        this.opts.logger?.warn(`s2 descendant search: ${why}; expansion recorded as failed`);
+      }
+    };
+    if (pool === null) {
+      fail("Semantic Scholar unreachable");
+      return [];
+    }
+    const out: ThemePaper[] = [];
+    let unreachable = 0;
+    for (const cand of pool) {
+      if (cand.paperId === seed.paperId || sameWork(cand, seed)) continue;
+      const look = await this.opts.source.lookup(
+        cand as unknown as Record<string, unknown>,
+        seed as unknown as Record<string, unknown>,
+      );
+      if (look.kind === "no_s2_data") {
+        if (look.reason === "fetch-failed") unreachable += 1;
+        continue;
+      }
+      if (!look.signals.found) continue;
+      const key = `${seed.paperId}\u0000${cand.paperId}`;
+      if (!this.descendantPairs.has(key)) {
+        this.descendantPairs.add(key);
+        this.stats.descendantCiters += 1;
+      }
+      out.push({
+        ...cand,
+        _intents: [...look.signals.intents],
+        _is_influential: look.signals.isInfluential,
+        _contexts: [],
+      });
+    }
+    if (unreachable > 0) fail(`${unreachable} reference list(s) unreachable for ${seed.paperId}`);
+    return out;
+  }
+
+  /** The verified-later candidate pool of {@link rankedCiters} (memoised
+   * per build, cached on disk when the OpenAlex mapping answered). */
+  private descendantPool(): Promise<ThemePaper[] | null> {
+    if (this.descendantPoolMemo === null) this.descendantPoolMemo = this.loadDescendantPool();
+    return this.descendantPoolMemo;
+  }
+
+  private async loadDescendantPool(): Promise<ThemePaper[] | null> {
+    const q = this.descendantQuery;
+    if (q === null) return [];
+    const k = this.opts.descendantSearch?.candidates ?? DEFAULT_DESCENDANT_CANDIDATES;
+    const hash = createHash("sha256")
+      .update(`${q.query}\u0000${q.yearFrom ?? ""}\u0000${k}`)
+      .digest("hex")
+      .slice(0, 16);
+    const cachePath = this.cachePath(hash, "citations", "s2descsearch");
+    if (cachePath !== null) {
+      const cached = readVersionedCache(cachePath, S2_EXPANSION_CACHE_VERSION);
+      if (isUsableCached(cached)) {
+        this.stats.cacheHits += 1;
+        this.stats.descendantCandidates = cached.length;
+        return cached;
+      }
+    }
+    const hits = await this.opts.source.searchByCitations(q.query, {
+      yearFrom: q.yearFrom,
+      limit: k,
+    });
+    if (hits === null) return null;
+    const s2Papers: ThemePaper[] = [];
+    const seen = new Set<string>();
+    for (const hit of hits) {
+      const p = s2EdgeToPaper({}, hit);
+      if (p === null || seen.has(p.paperId)) continue;
+      seen.add(p.paperId);
+      s2Papers.push(p);
+    }
+    let mapped: Map<string, ThemePaper> | null = new Map();
+    if (this.opts.openalex && s2Papers.length > 0) {
+      mapped = await mapS2PapersToOpenalex(s2Papers, this.opts.openalex);
+      if (mapped === null) this.stats.mappingFailed += 1;
+    }
+    const out: ThemePaper[] = [];
+    const outIds = new Set<string>();
+    for (const p of s2Papers) {
+      const oa = mapped?.get(p.paperId);
+      const candidate = oa ? mergeMapped(oa, p) : p;
+      if (outIds.has(candidate.paperId)) continue;
+      outIds.add(candidate.paperId);
+      out.push(candidate);
+    }
+    this.stats.descendantCandidates = out.length;
+    if (cachePath !== null && mapped !== null) {
+      writeVersionedCache(cachePath, S2_EXPANSION_CACHE_VERSION, out);
+    }
+    return out;
   }
 
   /** S2 candidates for `paper` (mapped to OpenAlex ids where possible),
@@ -504,7 +680,10 @@ export class S2Expansion {
       `expansion sources: openalex=${s.openalex} s2=${s.s2} (neither=${s.neither}, ` +
       `s2 unreachable=${s.s2Unreachable}; ` +
       `s2 candidates=${s.s2Candidates}, mapped to openalex ids=${s.mappedToOpenalex}, ` +
-      `kept s2 ids=${s.keptS2Ids}, id-mapping failures=${s.mappingFailed}, cache hits=${s.cacheHits})`
+      `kept s2 ids=${s.keptS2Ids}, id-mapping failures=${s.mappingFailed}, cache hits=${s.cacheHits})` +
+      (this.descendantQuery !== null
+        ? `; ranked descendant search: candidates=${s.descendantCandidates}, verified seed citers=${s.descendantCiters}`
+        : "")
     );
   }
 }

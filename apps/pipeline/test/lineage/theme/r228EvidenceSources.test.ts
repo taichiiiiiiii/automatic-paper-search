@@ -568,7 +568,12 @@ describe("opt-in switches (CI defaults off)", () => {
   it("all three sources are off unless set to on; bounds are configurable", () => {
     const warns: string[] = [];
     const off = optInEvidenceDeps({}, "/tmp/c", null, (m) => warns.push(m));
-    expect(off).toEqual({ arxivHtml: null, crossref: null, dblpVenues: null });
+    expect(off).toEqual({
+      arxivHtml: null,
+      crossref: null,
+      dblpVenues: null,
+      s2DescendantSearch: null,
+    });
     const on = optInEvidenceDeps(
       {
         PAPERPILOT_ARXIV_HTML: "on",
@@ -585,5 +590,19 @@ describe("opt-in switches (CI defaults off)", () => {
     expect(on.crossref?.mailto).toBe("ops@example.org");
     expect(on.dblpVenues).toBeNull();
     expect(warns.join("\n")).toMatch(/PAPERPILOT_DBLP_VENUES/);
+  });
+
+  it("R2-35: the ranked descendant search is off unless set to on", () => {
+    const on = optInEvidenceDeps(
+      { PAPERPILOT_S2_DESCENDANT_SEARCH: "on", PAPERPILOT_S2_DESCENDANT_CANDIDATES: "24" },
+      "/tmp/c",
+      null,
+      () => {},
+    );
+    expect(on.s2DescendantSearch).toEqual({ candidates: 24 });
+    expect(
+      optInEvidenceDeps({ PAPERPILOT_S2_DESCENDANT_SEARCH: "on" }, "/tmp/c", null, () => {})
+        .s2DescendantSearch,
+    ).toEqual({ candidates: 16 });
   });
 });
