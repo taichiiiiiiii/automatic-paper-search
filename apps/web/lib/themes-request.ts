@@ -208,6 +208,14 @@ export const WORKER_STATUS_MESSAGE_JA: Record<number, string> = {
  * generic 503 text when the server reports `status: "paused"`. */
 export const PAUSED_MESSAGE_JA = "現在受付を一時停止しています";
 
+/** Japanese copy for the Worker's two rate limits (apps/api
+ * src/routes/themes.ts): the Worker's English message used to be shown
+ * verbatim on this Japanese page. */
+export const RATE_LIMITED_IP_MESSAGE_JA =
+  "依頼が多すぎます。同じ接続からの依頼は 1 時間に 5 件までです。しばらく待ってから再度お試しください。";
+export const RATE_LIMITED_GLOBAL_MESSAGE_JA =
+  "本日の生成依頼の上限（全体で 100 件）に達しました。明日もう一度お試しください。";
+
 export function localizedFailureMessage(status: number, workerMessage: string | null): string {
   if (typeof workerMessage === "string" && JAPANESE_CHAR_RE.test(workerMessage)) {
     return workerMessage;
@@ -303,13 +311,25 @@ export function interpretThemesPostResponse(httpStatus: number, body: unknown): 
   if (data?.status === "paused") {
     return { kind: "paused", message: PAUSED_MESSAGE_JA };
   }
-  // "invalid" and "rate_limited" already carry a Worker-authored message
-  // meant to be shown verbatim -- unchanged by the Japanese status map.
-  if (data?.status === "invalid" || data?.status === "rate_limited") {
-    const message = workerMessage || `HTTP ${httpStatus}`;
-    return data.status === "invalid"
-      ? { kind: "invalid", message }
-      : { kind: "rate_limited", message };
+  // "invalid" / "rate_limited": an already-Japanese Worker message is
+  // shown as-is; the Worker's English messages map to fixed Japanese copy
+  // (found by the request-flow integration test: the page used to show
+  // "more than 5 new themes/hour from this IP" verbatim).
+  if (data?.status === "invalid") {
+    const message =
+      workerMessage && JAPANESE_CHAR_RE.test(workerMessage)
+        ? workerMessage
+        : THEME_INPUT_INVALID_MESSAGE;
+    return { kind: "invalid", message };
+  }
+  if (data?.status === "rate_limited") {
+    const message =
+      workerMessage && JAPANESE_CHAR_RE.test(workerMessage)
+        ? workerMessage
+        : workerMessage && /daily/i.test(workerMessage)
+          ? RATE_LIMITED_GLOBAL_MESSAGE_JA
+          : RATE_LIMITED_IP_MESSAGE_JA;
+    return { kind: "rate_limited", message };
   }
   // Every other failure (origin/content-type/body-size/manifest/dispatch
   // gates, all status "error") maps its HTTP status to localised text.
