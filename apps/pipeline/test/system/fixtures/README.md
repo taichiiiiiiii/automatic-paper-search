@@ -54,3 +54,18 @@ batch answers for the 4 rows it resolved by S2 TLDR. The other 3 rows stay
 title-only. `expected.json` holds the expected abstract source and OpenReview
 id per title. Abstract texts are arXiv (CC0) and S2 TLDR (ODC-BY) — the same
 licences the published catalog already carries.
+
+## conference-edition-icml-2025
+
+`lineage/conference/editionLineageCli.ts --conference icml-2025 --seeds 3
+--parents 3 --children 3 --now 2026-10-12T15:00:00Z` (R2-32, LLM-free conference
+lineage), recorded live on 2026-10-12 with an empty lineage cache: 15 Semantic
+Scholar requests (1 venue bulk search, 3 seed citation lists, 11 reference
+lists: 3 seeds + 8 citing papers), no 429. Trimmed for size: the venue
+search keeps its top 60 hits without abstracts; every reference / citation list
+keeps the 25 entries the builder ranks first (influential, then citation count)
+plus every entry naming a node of the recorded graph; abstracts are cut to 300
+characters and author lists to 5 names. Bodies are gzip'd. The replayed build is
+17 nodes / 31 edges (2 quoted `extends`), which the conference gate blocks on
+`lineage_relation_count` (2 < 3) — the system test uses that, and a relaxed
+policy, to prove the conference row is gated exactly like a theme.
