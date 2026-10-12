@@ -16,6 +16,7 @@
  */
 import { CLAMP_MIN, SNIPPET_LEAD } from "./catalog-constants";
 import { searchTerms, termVariants } from "./catalog-sort";
+import { upgradeKnownHttps } from "./https-upgrade";
 
 export interface TextSegment {
   text: string;
@@ -144,5 +145,5 @@ export function buildAbstractDek(
  * defense-in-depth, not a known vector.
  */
 export function safeHref(url: string | null | undefined): string {
-  return url && /^https?:\/\//i.test(url) ? url : "#";
+  return url && /^https?:\/\//i.test(url) ? upgradeKnownHttps(url) : "#";
 }

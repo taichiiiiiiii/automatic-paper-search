@@ -90,14 +90,22 @@ describe("buildPaperLinkRows", () => {
         pdf_url: "http://arxiv.org/pdf/1",
       },
     ]);
-    expect(row?.href).toBe("http://arxiv.org/abs/1");
+    // Known scholarly hosts are upgraded to https (lib/https-upgrade.ts).
+    expect(row?.href).toBe("https://arxiv.org/abs/1");
+  });
+
+  it("keeps http links to hosts not known to serve https unchanged", () => {
+    const [row] = buildPaperLinkRows([
+      { paper_id: ID_A, title: "A", arxiv_url: "http://example.org/paper/1" },
+    ]);
+    expect(row?.href).toBe("http://example.org/paper/1");
   });
 
   it("falls back to pdf_url when arxiv_url is unsafe/missing", () => {
     const [row] = buildPaperLinkRows([
       { paper_id: ID_A, title: "A", pdf_url: "http://arxiv.org/pdf/1" },
     ]);
-    expect(row?.href).toBe("http://arxiv.org/pdf/1");
+    expect(row?.href).toBe("https://arxiv.org/pdf/1");
   });
 
   it("is href=null when neither link is a safe http(s) URL", () => {

@@ -193,9 +193,24 @@ describe("CSP contract over built out/", () => {
   it("out/_headers is a valid Cloudflare Pages rule, not a bare directive line", async () => {
     const content = await readFile(join(OUT_DIR, "_headers"), "utf8");
     expect(content).toBe(
-      "/*\n  Content-Security-Policy: frame-ancestors 'self'\n" +
-        "/_next/static/*\n  Cache-Control: public, max-age=31536000, immutable\n",
+      [
+        "/*",
+        "  Content-Security-Policy: frame-ancestors 'self'",
+        "  Strict-Transport-Security: max-age=31536000; includeSubDomains",
+        "  X-Content-Type-Options: nosniff",
+        "  Referrer-Policy: strict-origin-when-cross-origin",
+        "  Permissions-Policy: camera=(), microphone=(), geolocation=()",
+        "/_next/static/*",
+        "  Cache-Control: public, max-age=31536000, immutable",
+        "",
+      ].join("\n"),
     );
+    // Every non-indented line is a path pattern (Pages ignores bare
+    // header lines), and every header line belongs to one.
+    for (const line of content.split("\n").filter(Boolean)) {
+      if (!line.startsWith(" ")) expect(line, "rule path").toMatch(/^\/\S*$/);
+      else expect(line, "header line").toMatch(/^ {2}[A-Za-z-]+: \S/);
+    }
   });
 
   // LOW finding: HTML5 requires <meta charset> within the first 1024

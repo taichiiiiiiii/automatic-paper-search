@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import type { Download, Page } from "@playwright/test";
 import { ThemePage } from "./pages";
-import { expect, test } from "./support/fixtures";
+import { expect, PROD, test } from "./support/fixtures";
 import { publishedThemes, themeHasCodeLinks, themeHasFeed } from "./support/site";
 
 const ISSUES_NEW = "https://github.com/taichiiiiiiii/automatic-paper-search/issues/new";
@@ -24,11 +24,14 @@ async function readDownload(download: Download): Promise<Buffer> {
 
 const themes = publishedThemes();
 
-test("at least one theme is published", () => {
+/** Production smoke covers one theme (the first published) end to end. */
+const prodTag = (slug: string) => (slug === themes[0]?.slug ? PROD : {});
+
+test("at least one theme is published", PROD, () => {
   expect(themes.length).toBeGreaterThan(0);
 });
 
-test("/themes/ without a theme shows the gallery and a default tree", async ({ page }) => {
+test("/themes/ without a theme shows the gallery and a default tree", PROD, async ({ page }) => {
   const theme = new ThemePage(page);
   await theme.skipOnboarding();
   await page.goto("/themes/");
@@ -44,7 +47,7 @@ for (const t of themes) {
       await theme.skipOnboarding();
     });
 
-    test("tree renders with the theme's papers", async ({ page }) => {
+    test("tree renders with the theme's papers", prodTag(t.slug), async ({ page }) => {
       await theme.goto(t.slug);
       await expect(page).toHaveTitle(new RegExp(t.theme));
       await expect(theme.heading).toContainText(`${t.theme} の系譜`);
@@ -75,38 +78,40 @@ for (const t of themes) {
       await expect.poll(() => theme.searchParam("focus")).toBeNull();
     });
 
-    test("evidence panel opens on an edge, has a report link, closes with Esc", async ({
-      page,
-    }) => {
-      await theme.goto(t.slug);
-      const edge = theme.edgeButtons.first();
-      await edge.focus();
-      await page.keyboard.press("Enter");
-      await expect(theme.evidencePanel).toBeVisible();
-      await expect(edge).toHaveAttribute("aria-pressed", "true");
-      await expect(theme.evidenceHeading).toBeFocused();
+    test(
+      "evidence panel opens on an edge, has a report link, closes with Esc",
+      prodTag(t.slug),
+      async ({ page }) => {
+        await theme.goto(t.slug);
+        const edge = theme.edgeButtons.first();
+        await edge.focus();
+        await page.keyboard.press("Enter");
+        await expect(theme.evidencePanel).toBeVisible();
+        await expect(edge).toHaveAttribute("aria-pressed", "true");
+        await expect(theme.evidenceHeading).toBeFocused();
 
-      const href = await theme.reportErrorLink.getAttribute("href");
-      expect(href).toBeTruthy();
-      const url = new URL(href!);
-      expect(`${url.origin}${url.pathname}`).toBe(ISSUES_NEW);
-      expect(url.searchParams.get("template")).toBe("lineage-feedback.yml");
-      expect(url.searchParams.get("labels")).toBe("lineage-feedback");
-      expect(url.searchParams.get("title")).toContain(t.theme);
-      expect(url.searchParams.get("theme")).toContain(t.slug);
-      expect(url.searchParams.get("page") ?? "").toContain(`theme=${t.slug}`);
+        const href = await theme.reportErrorLink.getAttribute("href");
+        expect(href).toBeTruthy();
+        const url = new URL(href!);
+        expect(`${url.origin}${url.pathname}`).toBe(ISSUES_NEW);
+        expect(url.searchParams.get("template")).toBe("lineage-feedback.yml");
+        expect(url.searchParams.get("labels")).toBe("lineage-feedback");
+        expect(url.searchParams.get("title")).toContain(t.theme);
+        expect(url.searchParams.get("theme")).toContain(t.slug);
+        expect(url.searchParams.get("page") ?? "").toContain(`theme=${t.slug}`);
 
-      await page.keyboard.press("Escape");
-      await expect(theme.evidencePanel).toBeHidden();
-      await expect(edge).toHaveAttribute("aria-pressed", "false");
+        await page.keyboard.press("Escape");
+        await expect(theme.evidencePanel).toBeHidden();
+        await expect(edge).toHaveAttribute("aria-pressed", "false");
 
-      // The close button works too.
-      await edge.focus();
-      await page.keyboard.press("Enter");
-      await expect(theme.evidencePanel).toBeVisible();
-      await theme.evidenceCloseButton.click();
-      await expect(theme.evidencePanel).toBeHidden();
-    });
+        // The close button works too.
+        await edge.focus();
+        await page.keyboard.press("Enter");
+        await expect(theme.evidencePanel).toBeVisible();
+        await theme.evidenceCloseButton.click();
+        await expect(theme.evidencePanel).toBeHidden();
+      },
+    );
 
     test("closing the evidence panel returns focus to the opening edge", async ({ page }) => {
       await theme.goto(t.slug);
@@ -333,41 +338,45 @@ for (const t of themes) {
       await expect(opener).toBeFocused();
     });
 
-    test("new-papers section (collapsed) links a valid Atom feed", async ({ page, request }) => {
-      test.skip(!themeHasFeed(t.slug), "no feed.xml published for this theme");
-      await theme.goto(t.slug);
-      await expect(theme.newPapersSection).toBeVisible();
-      await expect(theme.feedLink).toBeHidden();
-      await theme.expand(theme.newPapersSection);
-      await expect(theme.feedLink).toBeVisible();
-      const href = await theme.feedLink.getAttribute("href");
-      expect(href).toBe(`/themes/${t.slug}/feed.xml`);
-      const res = await request.get(href!);
-      expect(res.status()).toBe(200);
-      expect(res.headers()["content-type"]).toMatch(/xml/);
-      const xml = await res.text();
-      const parsed = await page.evaluate((text) => {
-        const doc = new DOMParser().parseFromString(text, "application/xml");
-        const root = doc.documentElement;
-        const atom = "http://www.w3.org/2005/Atom";
-        const child = (name: string) => root.getElementsByTagNameNS(atom, name)[0]?.textContent;
-        return {
-          error: doc.getElementsByTagName("parsererror").length > 0,
-          root: root.localName,
-          ns: root.namespaceURI,
-          title: child("title"),
-          id: child("id"),
-          updated: child("updated"),
-          entries: root.getElementsByTagNameNS(atom, "entry").length,
-        };
-      }, xml);
-      expect(parsed.error).toBe(false);
-      expect(parsed.root).toBe("feed");
-      expect(parsed.ns).toBe("http://www.w3.org/2005/Atom");
-      expect(parsed.title).toBeTruthy();
-      expect(parsed.id).toBeTruthy();
-      expect(Number.isNaN(Date.parse(parsed.updated ?? ""))).toBe(false);
-    });
+    test(
+      "new-papers section (collapsed) links a valid Atom feed",
+      prodTag(t.slug),
+      async ({ page, request }) => {
+        test.skip(!themeHasFeed(t.slug), "no feed.xml published for this theme");
+        await theme.goto(t.slug);
+        await expect(theme.newPapersSection).toBeVisible();
+        await expect(theme.feedLink).toBeHidden();
+        await theme.expand(theme.newPapersSection);
+        await expect(theme.feedLink).toBeVisible();
+        const href = await theme.feedLink.getAttribute("href");
+        expect(href).toBe(`/themes/${t.slug}/feed.xml`);
+        const res = await request.get(href!);
+        expect(res.status()).toBe(200);
+        expect(res.headers()["content-type"]).toMatch(/xml/);
+        const xml = await res.text();
+        const parsed = await page.evaluate((text) => {
+          const doc = new DOMParser().parseFromString(text, "application/xml");
+          const root = doc.documentElement;
+          const atom = "http://www.w3.org/2005/Atom";
+          const child = (name: string) => root.getElementsByTagNameNS(atom, name)[0]?.textContent;
+          return {
+            error: doc.getElementsByTagName("parsererror").length > 0,
+            root: root.localName,
+            ns: root.namespaceURI,
+            title: child("title"),
+            id: child("id"),
+            updated: child("updated"),
+            entries: root.getElementsByTagNameNS(atom, "entry").length,
+          };
+        }, xml);
+        expect(parsed.error).toBe(false);
+        expect(parsed.root).toBe("feed");
+        expect(parsed.ns).toBe("http://www.w3.org/2005/Atom");
+        expect(parsed.title).toBeTruthy();
+        expect(parsed.id).toBeTruthy();
+        expect(Number.isNaN(Date.parse(parsed.updated ?? ""))).toBe(false);
+      },
+    );
 
     test("コードとモデル section is collapsed and lists badges when opened", async () => {
       test.skip(!themeHasCodeLinks(t.slug), "no code links for this theme");

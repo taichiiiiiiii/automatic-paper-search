@@ -1,0 +1,155 @@
+name: prod-e2e
+
+# Post-release browser smoke: runs the read-only Playwright `@prod` subset
+# (apps/web/e2e, `pnpm e2e:prod`) in Chromium (desktop 1280px + mobile
+# 375px) against the LIVE production site after every workflow that can
+# publish to Cloudflare Pages finishes successfully on develop. The HTTP
+# smoke inside pages-release.yml proves the right bytes are deployed; this
+# proves the pages actually work in a browser (no console/CSP errors,
+# catalogs search, themes render, headers/sitemap/robots/redirects sane).
+#
+# Observe-only by design:
+# - it never deploys, rolls back or blocks anything (no Cloudflare
+#   secrets, contents: read only, not a required check);
+# - the suite never writes: non-GET requests to the theme-request Worker
+#   are aborted in remote mode (e2e/support/fixtures.ts);
+# - a failure dispatches alert.yml (channel prod-e2e), which opens or
+#   comments on ONE open `prod-e2e` issue and @mentions the owner; the
+#   next green run dispatches `resolved`, which closes it.
+#
+# The slower `@prod-crawl` broken-link crawler runs weekly (schedule) or on
+# demand (workflow_dispatch crawl=true), never after each release.
+#
+# workflow_run only fires for this file on the default branch (develop).
+
+on:
+  workflow_run:
+    # Every workflow that calls pages-release.yml, plus pages-rollback
+    # (pinned by apps/pipeline/test/workflows/prod-e2e-workflow.test.ts).
+    workflows:
+      - pages
+      - pages-rollback
+      - regen-themes
+      - theme-feeds
+      - theme-on-demand
+      - conference-on-demand
+      - collect-weekly
+    types: [completed]
+    branches: [develop]
+  schedule:
+    - cron: "40 3 * * 1"
+  workflow_dispatch:
+    inputs:
+      crawl:
+        description: "Also run the @prod-crawl broken-link crawler"
+        required: false
+        default: false
+        type: boolean
+
+permissions: {}
+
+concurrency:
+  group: prod-e2e
+  cancel-in-progress: true
+
+env:
+  # Must equal packages/core/src/site/config.ts's PUBLIC_ORIGIN (pinned by
+  # the contract test, like pages-release.yml's copy).
+  PUBLIC_ORIGIN: "https://paperpilot.pages.dev"
+
+jobs:
+  smoke:
+    if: >-
+      github.ref == 'refs/heads/develop' &&
+      (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+
+      - name: Playwright version
+        id: playwright
+        working-directory: apps/web
+        run: echo "version=$(pnpm exec playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright browsers
+        id: browser-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}-${{ steps.playwright.outputs.version }}
+
+      - name: Install Chromium
+        if: steps.browser-cache.outputs.cache-hit != 'true'
+        working-directory: apps/web
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Install Chromium system dependencies
+        if: steps.browser-cache.outputs.cache-hit == 'true'
+        working-directory: apps/web
+        run: pnpm exec playwright install-deps chromium
+
+      - name: Browser smoke (@prod) against production
+        if: github.event_name != 'schedule'
+        env:
+          CI: "true"
+          E2E_BASE_URL: ${{ env.PUBLIC_ORIGIN }}
+        run: pnpm --filter @paperpilot/web e2e:prod
+
+      - name: Broken-link crawl (@prod-crawl) against production
+        if: github.event_name == 'schedule' || inputs.crawl == true
+        env:
+          CI: "true"
+          E2E_BASE_URL: ${{ env.PUBLIC_ORIGIN }}
+        run: pnpm --filter @paperpilot/web e2e:crawl
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: prod-e2e-report
+          path: |
+            apps/web/playwright-report
+            apps/web/test-results
+          retention-days: 14
+
+  notify:
+    needs: smoke
+    if: >-
+      always() && github.ref == 'refs/heads/develop' &&
+      (needs.smoke.result == 'failure' || needs.smoke.result == 'success')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+      issues: read
+    steps:
+      - name: Alert on failure, resolve on recovery (alert.yml, channel prod-e2e)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RESULT: ${{ needs.smoke.result }}
+          TRIGGER: ${{ github.event.workflow_run.name || github.event_name }}
+          TRIGGER_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          if [ "$RESULT" = failure ]; then
+            summary="$(printf '本番 %s のブラウザ検査（Playwright @prod / @prod-crawl）が失敗しました。\n\n- きっかけ: %s（%s）\n- 結果とレポート: %s\n\n自動のロールバックはしません。レポート（artifact prod-e2e-report）を見て、必要なら pages-rollback.yml を手で実行してください。' \
+              "$PUBLIC_ORIGIN" "$TRIGGER" "$TRIGGER_SHA" "$RUN_URL")"
+            gh workflow run alert.yml --ref develop -f status=problem -f channel=prod-e2e -f summary="$summary"
+            exit 0
+          fi
+          open="$(gh issue list --label prod-e2e --state open --limit 1 --json number --jq '.[0].number // empty')"
+          if [ -n "$open" ]; then
+            summary="$(printf '本番のブラウザ検査が再び通りました（きっかけ: %s、%s）。%s' "$TRIGGER" "$TRIGGER_SHA" "$RUN_URL")"
+            gh workflow run alert.yml --ref develop -f status=resolved -f channel=prod-e2e -f summary="$summary"
+          fi

@@ -290,6 +290,20 @@ async function readDeepManifestSha256ByConference(outDir: string): Promise<Map<s
   return result;
 }
 
+/**
+ * `out/robots.txt`: allow everything and point crawlers at the sitemap.
+ * Without this file Cloudflare serves its own managed robots.txt for
+ * *.pages.dev (content-signal comments only: no `User-agent` group and no
+ * `Sitemap:` line), so search engines never learned where the sitemap is.
+ * If Cloudflare's content-signal block is enabled it is prepended to this
+ * file, which keeps both valid.
+ */
+export function renderRobotsTxt(): string {
+  return ["User-agent: *", "Allow: /", "", `Sitemap: ${canonicalUrl("/sitemap.xml")}`, ""].join(
+    "\n",
+  );
+}
+
 async function main(): Promise<void> {
   await assertOutDir(OUT_DIR);
   const deepManifestSha256ByConference = await readDeepManifestSha256ByConference(OUT_DIR);
@@ -304,6 +318,9 @@ async function main(): Promise<void> {
   const target = join(OUT_DIR, "sitemap.xml");
   await writeFile(target, renderSitemap(urls), "utf8");
   console.log(`sitemap: wrote ${target} (${urls.length} URL(s))`);
+  const robots = join(OUT_DIR, "robots.txt");
+  await writeFile(robots, renderRobotsTxt(), "utf8");
+  console.log(`sitemap: wrote ${robots}`);
 }
 
 /**

@@ -11,7 +11,7 @@
  * (see docs/design/39-typescript-cloudflare-migration.md §4.4). Only
  * script-src varies, carrying that page's inline-script hashes.
  *
- * Also writes out/_headers with a `frame-ancestors 'self'`
+ * Also writes out/_headers (see HEADERS_FILE) with a `frame-ancestors 'self'`
  * Content-Security-Policy header scoped to every path (`/*`)
  * (frame-ancestors has no effect in a meta CSP, so it must ship as an
  * HTTP header instead; it is kept out of the meta tag's own directives
@@ -33,12 +33,35 @@ import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildCspContent } from "../lib/config";
 
-const PAGES_HEADERS =
-  "/*\n  Content-Security-Policy: frame-ancestors 'self'\n" +
-  "/_next/static/*\n  Cache-Control: public, max-age=31536000, immutable\n";
-
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const OUT_DIR = join(SCRIPT_DIR, "..", "out");
+
+/**
+ * `out/_headers` (Cloudflare Pages). Besides the frame-ancestors CSP:
+ * - HSTS (1 year, subdomains = the per-deployment preview hosts; no
+ *   preload) -- Pages sends none by default;
+ * - nosniff / Referrer-Policy are Pages defaults today, pinned here so a
+ *   platform default change cannot silently drop them;
+ * - a Permissions-Policy denying powerful features the site never uses;
+ * - `/_next/static/*` is content-hashed, so it is cached for a year as
+ *   immutable (Pages' default `max-age=0, must-revalidate` made every
+ *   visit revalidate every chunk). HTML and JSON keep the revalidating
+ *   default: they change in place on every release.
+ * Each rule starts with a path pattern: a bare header line with no pattern
+ * is silently ignored by Pages. Must stay a byte-exact match of
+ * test/csp.test.ts.
+ */
+const HEADERS_FILE = [
+  "/*",
+  "  Content-Security-Policy: frame-ancestors 'self'",
+  "  Strict-Transport-Security: max-age=31536000; includeSubDomains",
+  "  X-Content-Type-Options: nosniff",
+  "  Referrer-Policy: strict-origin-when-cross-origin",
+  "  Permissions-Policy: camera=(), microphone=(), geolocation=()",
+  "/_next/static/*",
+  "  Cache-Control: public, max-age=31536000, immutable",
+  "",
+].join("\n");
 
 const SCRIPT_TAG_RE = /<script\b([^>]*)>([\s\S]*?)<\/script>/g;
 const META_CSP_RE = /<meta\s+http-equiv="Content-Security-Policy"[^>]*>/i;
@@ -124,7 +147,7 @@ async function main(): Promise<void> {
     await writeFile(file, updated, "utf8");
     console.log(`csp-hash: ${relative(OUT_DIR, file)} -> ${hashes.length} inline script hash(es)`);
   }
-  await writeFile(join(OUT_DIR, "_headers"), PAGES_HEADERS, "utf8");
+  await writeFile(join(OUT_DIR, "_headers"), HEADERS_FILE, "utf8");
   console.log(`csp-hash: wrote ${join(OUT_DIR, "_headers")}`);
 }
 

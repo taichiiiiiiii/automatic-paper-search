@@ -8,6 +8,13 @@ import { defineConfig, devices } from "@playwright/test";
  * fails on console errors, CSP violations, uncaught page errors and failed
  * same-origin requests (e2e/support/fixtures.ts).
  *
+ * Remote mode: `E2E_BASE_URL=https://paperpilot.pages.dev pnpm e2e:prod`
+ * skips the local server and runs the read-only `@prod` subset against the
+ * deployed site; test data (themes, catalogs, paper-links pages) is then
+ * read from that site's JSON, not from apps/web/out (e2e/support/site.ts).
+ * `pnpm e2e:crawl` runs the slower `@prod-crawl` broken-link crawler.
+ * Non-GET requests to the theme-request Worker are blocked in remote mode.
+ *
  * One worker by default: the catalog pages parse multi-MB JSON and the
  * suite shares small CI runners / a busy dev machine. Override with
  * `--workers` or E2E_WORKERS.
