@@ -1703,7 +1703,14 @@ export function LineageTree({
                           {extra}
                         </span>
                         {typeof p.citation_count === "number" && p.citation_count > 0 && (
-                          <span className="mt-1 block text-ink-subtle">
+                          <span
+                            className="mt-1 block text-ink-subtle"
+                            title={
+                              p.citation_count_source === "semantic_scholar"
+                                ? `被引用 ${p.citation_count.toLocaleString()}（Semantic Scholar）`
+                                : undefined
+                            }
+                          >
                             📖 {p.citation_count.toLocaleString()}
                           </span>
                         )}
@@ -1725,7 +1732,11 @@ export function LineageTree({
                   const py = Math.max(0, Math.min(p._y, totalH - popH));
                   const metaParts = [
                     typeof p.citation_count === "number" && p.citation_count > 0
-                      ? `📖 ${p.citation_count.toLocaleString()}`
+                      ? `📖 ${p.citation_count.toLocaleString()}${
+                          p.citation_count_source === "semantic_scholar"
+                            ? "（Semantic Scholar）"
+                            : ""
+                        }`
                       : null,
                     formatStars(typeof p.github_stars === "number" ? p.github_stars : null)
                       ? `⭐${formatStars(p.github_stars as number)}`

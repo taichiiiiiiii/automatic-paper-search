@@ -48,6 +48,7 @@ import {
 } from "./classificationGate.js";
 import { CROSSREF_DEFAULT_MAX_REQUESTS, CROSSREF_FILENAME } from "./crossrefReferences.js";
 import { DBLP_DEFAULT_MAX_QUERIES, DBLP_FILENAME } from "./dblpVenues.js";
+import { S2_COUNT_FILENAME } from "./s2CitationCounts.js";
 import { S2_REFERENCES_FILENAME } from "./s2Citations.js";
 import { DEFAULT_DESCENDANT_CANDIDATES } from "./s2Expansion.js";
 import { sanitizeTheme } from "./slug.js";
@@ -439,6 +440,12 @@ export function defaultDeps(repoRoot: string = DEFAULT_REPO_ROOT): BuildThemeLin
     githubToken: env.githubToken,
     classificationCachePath: classificationsCache(layout),
     githubApiDeps: { fetchImpl },
+    // R2-36: publish max(OpenAlex, Semantic Scholar) citation counts.
+    // PAPERPILOT_S2_CITATION_COUNTS=off keeps OpenAlex counts only.
+    s2CitationCounts:
+      (process.env.PAPERPILOT_S2_CITATION_COUNTS ?? "").toLowerCase() === "off"
+        ? null
+        : { cachePath: join(lineageCacheDir(layout), S2_COUNT_FILENAME) },
     // R2-10 (design 41 D6): Semantic Scholar citation contexts first.
     // PAPERPILOT_S2_RELATIONS=off restores the pre-R2-10 path.
     s2Citations:

@@ -20,6 +20,7 @@
           "year": {"type": ["integer", "null"]},
           "authors": {"type": ["array", "null"], "items": {"type": "string"}},
           "citation_count": {"type": ["integer", "null"], "minimum": 0},
+          "citation_count_source": {"enum": ["openalex", "semantic_scholar"]},
           "github_stars": {"type": ["integer", "null"], "minimum": 0},
           "seed_paper_id": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
           "aliases": {"$ref": "#/$defs/nodeAliases"}

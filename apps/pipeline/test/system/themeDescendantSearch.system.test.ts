@@ -31,7 +31,7 @@ const FA_SEED = "openalex:W4281758439";
 const HIT = "e".repeat(40);
 const NOT_CITING = "f".repeat(40);
 const ON = { PAPERPILOT_S2_DESCENDANT_SEARCH: "on" };
-const FIXTURES = ["theme-descendant-search", "theme-http"];
+const FIXTURES = ["theme-descendant-search", "theme-s2-counts", "theme-http"];
 
 interface Lineage {
   nodes: { id: string; title: string }[];

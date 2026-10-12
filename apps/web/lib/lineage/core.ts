@@ -92,6 +92,8 @@ export interface LineageNode {
   year?: number | null;
   authors?: string[] | null;
   citation_count?: number | null;
+  /** R2-36: where `citation_count` came from; absent = OpenAlex. */
+  citation_count_source?: "openalex" | "semantic_scholar";
   github_stars?: number | null;
   seed_paper_id?: string;
   aliases?: [string, string][];
@@ -342,6 +344,12 @@ export function validNodeDisplay(node: Record<string, unknown>): boolean {
   )
     return false;
   if (!optionalCount(node.citation_count) || !optionalCount(node.github_stars)) return false;
+  if (
+    has("citation_count_source") &&
+    node.citation_count_source !== "openalex" &&
+    node.citation_count_source !== "semantic_scholar"
+  )
+    return false;
   return !has("citationCount");
 }
 

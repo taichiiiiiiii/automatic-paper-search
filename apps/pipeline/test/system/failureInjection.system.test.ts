@@ -73,7 +73,7 @@ describe("failure injection: theme lineage build", () => {
           "lineage/theme/cli.ts",
           [...THEME_ARGS, "--result-json", result],
           {
-            fixtures: ["theme-http"],
+            fixtures: ["theme-s2-counts", "theme-http"],
             faults: [{ match: host, ...fault }],
           },
         );
@@ -105,10 +105,10 @@ describe("failure injection: theme lineage build", () => {
     const bad = createSandbox({ copyData: [THEME_DIR] });
     try {
       const good = await runCli(ok, "lineage/theme/cli.ts", THEME_ARGS, {
-        fixtures: ["theme-http"],
+        fixtures: ["theme-s2-counts", "theme-http"],
       });
       const degraded = await runCli(bad, "lineage/theme/cli.ts", THEME_ARGS, {
-        fixtures: ["theme-http"],
+        fixtures: ["theme-s2-counts", "theme-http"],
         faults: [{ match: "api.github.com", kind: "status", status: 503 }],
       });
       expect(good.code, describeRun(good)).toBe(0);
