@@ -413,6 +413,7 @@ R2-29 の監査の下書き（第二審査）が挙げた生成側の誤り 2 �
 
   - 監査済み 4 テーマで埋め込みだけで入ったノード（FA の Routing Transformer・Rabe & Staats など 4 本、GNN 2 本、MoE 3 本、ViT 2 本）は、どれも最も早い種の年の 1 年前以降なので新しい規則の対象外
   - 検索 on の LoRA: 上位 16 本のうち種を引くのは 13 組。OpenVLA・Stable Video Diffusion・AnimateDiff などの応用は門で落ちる（LoRa 無線の論文も検索には出るが同じく落ちる）。この回は QLoRA が略称だけで既に入っていたので、検索の上乗せは 3 本
+- **公開中の LoRA を作り直した**（テーマの CLI そのもの、依頼と同じ引数 `--depth 1 --seeds 5 --width 8 --since-year 2018 --llm-strict ambiguous --primary-source openalex --auto-expand`、LLM なし、検索は既定の off。HTTP は同じ日の記録を再生し、無いものだけ取りに行った）: 69 ノード / 261 辺 → **74 / 327**。QLoRA が入り、話者適応 8 本・Adafactor・To Tune or Not to Tune? が消えた。初回 13 ノードで作り直しになるのは前と同じ。その後 `generateThemesManifestCli`・`computeThemeQualityCli`・`buildLineageQualityCli --as-of 2026-10-12T09:36:46Z`。区分は変わらない（監査済み 4・未監査 1）
 - **残る課題**
   - 「Accelerating Ill-Conditioned Low-Rank Matrix Estimation via Scaled Gradient Descent」（2020）は Riemannian Preconditioned LoRA の引用文で extends（手がかりあり）なので残る。「Low-Rank Matrix Recovery With Scaled Subgradient Methods」（2021）は最も早い種と同じ年なので対象外。年の窓を 0 にすると FA の 2021 年のノード（監査でテーマ内）が落ちるので広げていない
   - LoRA → QLoRA は baseline_only（S2 の引用文に手がかりの文が無い）
