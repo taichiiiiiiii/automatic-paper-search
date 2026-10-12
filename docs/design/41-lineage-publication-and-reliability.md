@@ -86,6 +86,7 @@
 | R2-28 | 引用文の追加の出どころ（arXiv HTML）、Crossref の参考文献、DBLP の会場（[47](47-apis-and-oss.md) 推奨 1〜3） | 実装（2026-10-11、ブランチ。既定は off。下の実装メモ） |
 | R2-31 | 第二審査（R2-29）の指摘: Shazeer ← Eigen の contrasts → extends、混ざった OpenAlex 記録（引用の年の逆転）と会議論文の年のずれ | 実装（2026-10-11、ブランチ `roadmap/r2-31-contrast-cue`。下の実装メモ） |
 | R2-35 | 依頼テーマ（Low-Rank Adaptation）の品質: QLoRA の欠落と、埋め込みだけで入った古い別分野の論文 | 実装（2026-10-12、ブランチ `roadmap/r2-35-theme-topic-quality`。下の実装メモ） |
+| R2-32 | 会議の系譜を LLM なしで作り、テーマと同じ根拠・検査で公開する（13 会議・14 deep がすべて blocked だった） | 実装（2026-10-12、ブランチ `roadmap/r2-32-conference-lineage-nollm`。ICML 2025 を未監査で公開できる状態。下の実装メモ） |
 | R2-37 | 作り直しで公開中のテーマが非公開になる事故（2026-10-12、LoRA）の再発防止: 自動の作り直しの条件、regen と依頼の引数の一致、公開中より悪い版で置き換えない検査 | 実装（2026-10-12、ブランチ `roadmap/r2-37-regen-guard`。下の実装メモ） |
 
 ## 実装メモ（2026-10-10）
@@ -435,3 +436,53 @@ R2-29 の監査の下書き（第二審査）が挙げた生成側の誤り 2 �
 - **テスト**: `publishGuard.test.ts`（区分の判定が方針の値を読むこと、監査の結びつき、置き換えの可否の表）、`cli.publishGuard.test.ts`（事故の再現: depth 1 の blocked な作り直しが exit 6 でファイルがバイト一致、`--match-published` の引数、初回が blocked なときの作り直し、LIN-18、縮小と再監査の許可）、ワークフローの約束 `r2-37-regen-guard.test.ts`（依頼と regen の引数の一致、入力は env 経由、exit 6 の扱いと `verdict`）、システムテスト `regenGuard.system.test.ts`（実 CLI と記録した HTTP: 発展系の関係が基準に届かない作り直しは exit 6 で `data/published` がバイト一致、`--match-published` で広げた作り直しが取れなくても同じ、縮小と再監査）。ほかのシステムテストは監査済みの FA を作り直すので `--allow-reaudit` を付けた（`support/scenarios.ts`）
 - 凍結した FA の成果物・監査・方針を `test/lineage/theme/fixtures/publish-guard/` に置いた（公開中のデータを直接読まない）
 
+## 実装メモ（R2-32、会議の系譜を LLM なしで作り直す）
+
+### 調査（2026-10-12 時点の品質表）
+
+会議の系譜 13 件・deep 14 件はすべて blocked だった。`golden_fixture` が `unknown` なのは監査が無いだけで、未監査として公開するのを妨げない。止めていたのは次の自動検査。
+
+| 対象 | 状態 | 落ちていた検査 | 原因 |
+|---|---|---|---|
+| aaai-2026, acl-2025, cvpr-2025, cvpr-2026, emnlp-2025, iccv-2025, icml-2025, neurips-2025 | 空の置き物（`{root:null,nodes:[],edges:[],meta:{source:"none"}}`） | `artifact_contract_v1`（`schema_version`・`clusters` なし）、`root_focus_resolve`（root も focus もなし）。そもそも `availability=unavailable` | 系譜を作っていない。web の probe を 404 にしないための置き物 |
+| acl-2026, iclr-2025, icml-2026 | ファイルなし | `artifact_present` | 同上 |
+| iclr-2026 | 旧 Python の LLM 版（`build_lineage.py`、158 ノード / 63 辺） | 契約 476 件（`schema_version`・辺の `relation`/`confidence`/`provenance` なし）、`catalog_seed_ids`（焦点に `seed_paper_id` なし 12 件）、`edge_semantics_complete` 63 件、`orphan_node_count` | 契約 v1 より前の形式。作り直すしかない |
+| eccv-2024 | 旧 OpenAlex 版（`build_conference_lineage.py`、82 ノード / 73 辺はすべて `successor`） | 契約、`catalog_seed_ids`、`edge_semantics_complete`、`root_focus_resolve`（root null） | 同上。辺は引用を `successor` と読み替えただけ（根拠なし） |
+| deep 14 件（iclr-2026） | 旧 LLM 版 | 契約、`deep_manifest_contract`（manifest が旧形式の裸の配列）、`deep_manifest_identity`、`catalog_seed_ids`、`edge_semantics_complete` | ICLR 2026 の目録は OpenReview のみで arXiv id が 0 件なので、arXiv で結ぶ deep の身元検査は作り直しても通らない |
+
+既存の生成器:
+- `conference/buildLineage.ts`（collect-weekly が使用）: Oral 論文だけを arXiv id → S2 で解決する。ICLR/ICML/NeurIPS 2025–26 の目録は OpenReview のみ（arXiv id 0 件）なので焦点が 0 件になり、空のグラフしか作れない。既定は LLM あり。テーマの公開検査（分類率・関係数など）も R2-37 の置き換え防止も無い
+- `conference/buildConferenceLineage.ts`: OpenAlex のみ、辺は引用＝`successor` の推定（根拠なし）。どのワークフローからも呼ばれていない
+- `deep/buildDeepLineage.ts` と `generateDeepManifest.ts`: 論文 1 本の深い系譜（LLM）。どのワークフローからも呼ばれていない
+- `conference-on-demand.yml` は目録だけ、`regen-retry.yml` はテーマだけを扱う
+
+目録の身元の網羅（系譜の種に使えるか）: ICLR 2026 と ICML 2025 はどちらも arXiv id 0 件・OpenReview id 100%。S2 の会場検索（`venue=ICML&year=2025`）は 2,689 件を被引用数順に返し、上位 1,000 件の 92%（917 件）が目録の題名と完全一致した。ICML 2025 は開催から 1 年以上たち被引用もあるので、こちらを 1 件目に選んだ。
+
+### 決めたこと（会議の系譜とは何か）
+
+- **会議の系譜 =「その回で最も影響の大きかった採択論文が、どこから来て何を生んだか」**。分野別の小さな系譜（クラスタ）は焦点のタグで `clusters` に分けるだけにして、別の成果物にはしない
+- **種**: その回の目録の論文を S2 の被引用数で並べた上位 12 本（`--seeds`）。S2 の会場検索 1 回で順位を取り、目録の行と arXiv id、なければ正規化した題名の完全一致で結ぶ（題名が目録側・検索側のどちらかで重複したら結ばない）。サーベイは種にしない。順位は `data/state/lineage-cache/conference_seeds.json` に 30 日保存し（上位 300 件）、その間の作り直しは同じ種になる
+- **祖先・子孫**: 種ごとに S2 の参考文献（影響ありの印 → 被引用数の順に 6 本）と引用している論文（被引用数の順に 6 本）。その後、今回読んだ参考文献リスト（種と子孫）でグラフ内の引用をすべて辺にする（cross-node）。辺の無い論文と種は落とす
+- **関係の根拠はテーマと同じ**（`theme/noLlmRelation.ts::classifyPairApiOnly`）: 題名の版 → S2 の引用文の規則（任意で arXiv HTML の引用文）→ LLM なしの規則 → `api_citation`。LLM は使わない（切り替えも置かない）。強い関係には引用文の手がかりが要る（D5）
+- **身元**: ノードの id は S2 の paperId。焦点は目録の `paper_id` を `seed_paper_id` に持ち、目録の OpenReview id と S2 の arXiv / DOI を別名に持つ（他のノードと重なる別名は付けない）
+- **公開の検査はテーマと同じ**: 会議の行にもテーマの自動検査（`evidence_classified_rate`・`edge_density`・`node_count`・`review_share`・`lineage_relation_count`）を同じ基準値で掛け、`generator_current` は新しい方針キー `conference_min_generated_at`（2026-10-12T14:00:00Z）で判定する（`conferenceGateFromPolicy`）。旧生成器の成果物は契約を通っても公開されない。監査が無ければ「未監査」で公開
+- **書き込み前の検査もテーマと同じ**: 会場検索の失敗は終了コード 4（公開中のファイルはそのまま）、展開の失敗による縮小も 4、分類率が基準未満は 5、R2-37 の置き換え防止（公開中の会議の系譜を blocked になる版や半分未満のノードの版で置き換えない）は 6（`--allow-shrink` で縮小だけ許す）。`publishGuard.ts` は対象（theme / conference と目録 id）を受け取るようにした
+- **抄録**: 公開するのは目録の抄録のうち CC0 / CC-BY のもの（焦点だけ）。S2 の抄録は判定（サーベイの判定など）に読むが書き出さない
+- **ワークフロー**: 作り直しは手動の `conference-lineage-regen.yml`（入力 `conferences` 必須、`allow_shrink`）。`collect-weekly.yml` の系譜の手順も同じ CLI・同じ既定値で呼ぶ（引数を渡さない＝一致をワークフローの約束テストで確認）。週次は **すでに新しい生成器の系譜を持つ会議だけ**を作り直し、新しい会議は手動の作り直しで始める。どちらも LLM のキーを読まない
+
+### 結果（ICML 2025、ローカル、S2 キーなし）
+
+- 138 ノード / 367 辺（`baseline_only` 349・`extends` 17・`contrasts` 1）、焦点 12（すべて目録の行に結びつき OpenReview の別名あり）、根拠は `s2_context_rule` 364・`api_citation` 3（分類率 100%）、レビューの割合 0.072、cross-node で 239 辺
+- 品質表では **未監査**（自動検査はすべて通過、`golden_fixture` は unknown）。他の行の区分は変わらない（監査済み 4・未監査はテーマ 1 ＋ ICML 2025）
+- S2 への要求は 103 回（429 が 7 回、待って再試行）、約 3 分。順位を保存した後の作り直しも 114 回（参考文献・引用のリストは毎回取り直す）で、**辺は 1 本も変わらず**、違いは被引用数の数件の増減だけだった
+- **残る問題（監査の前に直すべきもの）**: `extends` 17 本のうち「X を土台に拡張した」と読めるのは Hi Robot → MemER、π0 → Hi Robot など数本で、多くは「ベンチマーク／枠組み X を使う（we adopt X）」という利用の文だった。これはテーマと同じ規則（`s2_context_rule` の adopt / follow の扱い）の問題で、テーマにも同じ偏りがある（上の R2-22・R2-23 のメモ）。また 1937 年のノードや、2024 年の論文が 2025 年の種を `extends` する年の逆転（改訂された preprint）が 1 本ある。未監査で出すことはできるが、監査（D5）では誤りになる辺が多い見込み。規則の直しはテーマと一緒に行う（別の項目）
+- ICLR 2026 は S2 の会場の付け方が未確認（この作業では要求していない）。最初の手動の作り直しで `edition ranking: … matched=` の行を見る
+
+### deep の系譜（14 件）について
+
+**廃止を推奨する**。理由: (1) どのワークフローも作っていない（生成器は LLM 版のみ）、(2) ICLR 2026 の目録に arXiv id が無いので、arXiv で結ぶ manifest の身元検査は作り直しても通らない、(3) 会議の系譜の焦点 1 本の周辺がほぼ同じ情報を持つ。進め方: `data/published/iclr-2026/deep-*.json` と `deep-manifest.json`、web の `/[conf]/deep/` と関連テスト、品質表の deep の行を 1 つの変更で消す（web の経路を消すので利用者の確認を取ってから）。残すなら、`editionLineageCli --seeds 1` 相当の 1 本版として作り直し、manifest を OpenReview id でも結べるように直す必要がある。
+
+### 確認
+
+- テスト: `test/lineage/conference/editionLineage.test.ts`（目録との結び付け、順位の保存、会議の検査、会議の置き換え防止）、ワークフローの約束 `r2-32-conference-lineage-workflows.test.ts`（手動のみ、LLM の鍵なし、collect-weekly との引数・env の一致、終了コード 6、キャッシュの昇格）、システムテスト `conferenceEdition.system.test.ts`（記録した S2 の応答で ICML 2025 を 3 種で作る: 決定的、会議の行に同じ検査、基準を満たせば未監査、置き換え防止で exit 6 とバイト一致、S2 の 503 で exit 4）
+- 作り直しの実行（利用者の確認の後）: `gh workflow run conference-lineage-regen.yml --ref develop -f conferences=icml-2025`（ほかの会議は 1 件ずつ、要約の `edition ranking` と区分を見てから）
