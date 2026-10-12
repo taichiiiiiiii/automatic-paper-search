@@ -12,13 +12,15 @@
  */
 
 import { mkdirSync, readdirSync, readFileSync, statSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { codepointCompare, pyJsonDumps } from "@paperpilot/core";
 import { firstUnusable } from "../../collect/signals/payload.js";
 import { atomicWriteText } from "../../collect/state/atomic.js";
 
 const MANIFEST_NAME = "themes-manifest.json";
 const LINEAGE_NAME = "lineage.json";
+const NEW_PAPERS_NAME = "new-papers.json";
+const CODE_LINKS_NAME = "code-links.json";
 
 /** Same character class enforced by `theme.js`'s `SLUG_RE` — keep in
  * sync with `themeSlug()`'s output shape. */
@@ -46,6 +48,12 @@ export interface ManifestEntry {
   generated_at: string;
   paper_count: number;
   year_range: [number, number] | null;
+  /** `true` only when `<slug>/new-papers.json` exists at generation time.
+   * Omitted (not `false`) otherwise so older manifests stay byte-identical
+   * and the web treats a missing flag as "absent" (no request, no 404). */
+  has_new_papers?: true;
+  /** Same for `<slug>/code-links.json`. */
+  has_code_links?: true;
 }
 
 /** `false` if the `edges` block is not one we can judge: an empty list
@@ -152,7 +160,26 @@ export function entryFromFile(
   const yearRange: [number, number] | null =
     years.length > 0 ? [Math.min(...years), Math.max(...years)] : null;
 
-  return { slug, theme, generated_at: generatedAt, paper_count: paperCount, year_range: yearRange };
+  const entry: ManifestEntry = {
+    slug,
+    theme,
+    generated_at: generatedAt,
+    paper_count: paperCount,
+    year_range: yearRange,
+  };
+  // Optional side files (themeFeedsCli) sit next to lineage.json.
+  const dir = dirname(path);
+  if (isRegularFile(join(dir, NEW_PAPERS_NAME))) entry.has_new_papers = true;
+  if (isRegularFile(join(dir, CODE_LINKS_NAME))) entry.has_code_links = true;
+  return entry;
+}
+
+function isRegularFile(path: string): boolean {
+  try {
+    return statSync(path).isFile();
+  } catch {
+    return false;
+  }
 }
 
 /** Scan `themesDir/<slug>/lineage.json` files and return sorted entries.

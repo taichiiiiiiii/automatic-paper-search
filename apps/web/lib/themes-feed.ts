@@ -182,3 +182,16 @@ export function compactCount(n: number): string {
   if (n >= 1000) return `${(n / 1000).toFixed(n >= 10000 ? 0 : 1).replace(/\.0$/, "")}k`;
   return String(n);
 }
+
+/** Which optional side files a manifest entry declares. Only a literal
+ * `true` counts: missing / malformed flags mean "absent", so the page never
+ * requests a file that is not there (a caught 404 still logs a console
+ * error in browsers). */
+export function sideFilesFromManifest(
+  entry: { has_new_papers?: unknown; has_code_links?: unknown } | null | undefined,
+): { newPapers: boolean; codeLinks: boolean } {
+  return {
+    newPapers: entry?.has_new_papers === true,
+    codeLinks: entry?.has_code_links === true,
+  };
+}

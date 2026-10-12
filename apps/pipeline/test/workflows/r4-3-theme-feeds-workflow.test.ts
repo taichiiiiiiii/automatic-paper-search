@@ -57,3 +57,57 @@ describe("theme-feeds.yml (R4-3)", () => {
     }
   });
 });
+
+describe("side files for newly created themes (R4-4)", () => {
+  const onDemand = readWorkflow("theme-on-demand.yml");
+  const gen = (jobsOf(onDemand).find(([id]) => id === "generate")![1] as YamlDoc)
+    .steps as YamlDoc[];
+
+  it("theme-on-demand builds the new slug's side files after the lineage, before packaging, best effort", () => {
+    const lineage = gen.findIndex((s) => s.name === "Generate theme lineage");
+    const feeds = gen.findIndex(
+      (s) => typeof s.run === "string" && s.run.includes("themeFeedsCli.ts"),
+    );
+    const pack = gen.findIndex((s) => s.name === "Package exact theme candidate");
+    expect(feeds).toBeGreaterThan(lineage);
+    expect(feeds).toBeLessThan(pack);
+    const step = gen[feeds]!;
+    expect(step.run).toContain('--theme "$slug"');
+    expect(step.run).toContain("--max-credits 10");
+    // a feed failure must not fail the publication
+    expect(step.run).toMatch(/exit 0\s*$/);
+    expect(step["continue-on-error"] === true || /\|\| rc=\$\?/.test(step.run)).toBe(true);
+    expect(step.env.PAPERPILOT_OPENALEX_API_KEY).toBe("${{ secrets.PAPERPILOT_OPENALEX_API_KEY }}");
+  });
+
+  it("regen-themes builds missing side files before the manifest refresh, never failing the run", () => {
+    const regen = readWorkflow("regen-themes.yml");
+    const st = (
+      jobsOf(regen).find(([, j]) =>
+        ((j as YamlDoc).steps as YamlDoc[] | undefined)?.some(
+          (s) => s.name === "Refresh candidate projections",
+        ),
+      )![1] as YamlDoc
+    ).steps as YamlDoc[];
+    const feeds = st.findIndex(
+      (s) => typeof s.run === "string" && s.run.includes("themeFeedsCli.ts"),
+    );
+    const refresh = st.findIndex((s) => s.name === "Refresh candidate projections");
+    expect(feeds).toBeGreaterThanOrEqual(0);
+    expect(feeds).toBeLessThan(refresh);
+    expect(st[feeds]!.run).toContain("--max-credits 10");
+    expect(st[feeds]!.run).toMatch(/exit 0\s*$/);
+  });
+
+  it("theme-feeds regenerates and commits the manifest so new side files get flagged", () => {
+    const refresh = find((s) => s.name === "Refresh themes manifest side-file flags");
+    const cli = find((s) => typeof s.run === "string" && s.run.includes("themeFeedsCli.ts"));
+    const commit = find((s) => s.name === "Commit feeds to develop");
+    expect(refresh).toBeGreaterThan(cli);
+    expect(refresh).toBeLessThan(commit);
+    expect(steps[refresh]!.run).toContain("generateThemesManifestCli.ts");
+    expect(steps[commit]!.run).toContain("themes-manifest.json");
+    // lineage.json stays out of the commit set
+    expect(steps[commit]!.run).not.toContain("lineage.json");
+  });
+});

@@ -87,6 +87,17 @@ jobs:
             *) echo "::error::themeFeedsCli exited $rc"; exit "$rc" ;;
           esac
 
+      - name: Refresh themes manifest side-file flags
+        # The web only requests new-papers.json / code-links.json for themes
+        # the manifest flags (has_new_papers / has_code_links); a theme that
+        # just gained its first side file must be flagged or the page would
+        # keep hiding it. Manifest generation is a pure scan; lineage.json is
+        # not touched.
+        run: |
+          set -euo pipefail
+          pnpm exec tsx apps/pipeline/src/lineage/theme/generateThemesManifestCli.ts \
+            --themes-dir data/published/themes
+
       - name: Commit feeds to develop
         id: commit
         env:
@@ -98,7 +109,8 @@ jobs:
           set -euo pipefail
           shopt -s nullglob
           files=(data/published/themes/*/new-papers.json data/published/themes/*/feed.xml \
-            data/published/themes/*/code-links.json data/state/hf-papers/papers.json)
+            data/published/themes/*/code-links.json data/published/themes/themes-manifest.json \
+            data/state/hf-papers/papers.json)
           if [ "${#files[@]}" -eq 0 ] || [ -z "$(git status --porcelain -- "${files[@]}")" ]; then
             echo "no change"
             echo "changed=false" >> "$GITHUB_OUTPUT"

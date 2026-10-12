@@ -196,6 +196,29 @@ jobs:
             echo "::error::all theme regenerations failed (state is still promoted; the verdict job fails this run)"
           fi
 
+      - name: Build missing side files (new papers, code links)
+        # Best effort. A theme created from a new name has no side files
+        # yet (the weekly theme-feeds run only refreshes them); build the
+        # missing ones now, small budget per theme. Never fails the run, and
+        # lineage.json (audit-bound sha256) is not touched. The manifest
+        # refresh below then flags the new files for the web.
+        env:
+          PAPERPILOT_OPENALEX_API_KEY: ${{ secrets.PAPERPILOT_OPENALEX_API_KEY }}
+        run: |
+          shopt -s nullglob
+          for lineage in data/published/themes/*/lineage.json; do
+            dir="${lineage%/lineage.json}"
+            slug="${dir##*/}"
+            [ -f "$dir/new-papers.json" ] && [ -f "$dir/code-links.json" ] && continue
+            rc=0
+            pnpm exec tsx apps/pipeline/src/lineage/theme/feed/themeFeedsCli.ts \
+              --theme "$slug" --max-credits 10 || rc=$?
+            if [ "$rc" -ne 0 ]; then
+              echo "::warning::themeFeedsCli exited $rc for $slug; continuing without (some) side files"
+            fi
+          done
+          exit 0
+
       - name: Refresh candidate projections
         run: |
           set -euo pipefail

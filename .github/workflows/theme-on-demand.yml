@@ -168,6 +168,27 @@ jobs:
           echo "candidate_name=theme-candidate-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_OUTPUT"
           echo "primary_path=$primary_path" >> "$GITHUB_OUTPUT"
 
+      - name: Build side files (new papers, code links)
+        # Best effort: a brand-new theme otherwise ships with only
+        # lineage.json and the web page has no 新着 / コード sections (the
+        # manifest flags them absent). A failure here must NOT fail the
+        # publication: the step never exits non-zero and lineage.json (whose
+        # sha256 the audit binds) is never touched -- only new-papers.json /
+        # feed.xml / code-links.json are written next to it, in the same
+        # theme directory that the packaging step below ships.
+        env:
+          PAPERPILOT_OPENALEX_API_KEY: ${{ secrets.PAPERPILOT_OPENALEX_API_KEY }}
+          PRIMARY_PATH: ${{ steps.candidate.outputs.primary_path }}
+        run: |
+          slug="${PRIMARY_PATH##*/}"
+          rc=0
+          pnpm exec tsx apps/pipeline/src/lineage/theme/feed/themeFeedsCli.ts \
+            --theme "$slug" --max-credits 10 || rc=$?
+          if [ "$rc" -ne 0 ]; then
+            echo "::warning::themeFeedsCli exited $rc for $slug; publishing without (some) side files"
+          fi
+          exit 0
+
       - name: Package exact theme candidate
         env:
           PRIMARY_PATH: ${{ steps.candidate.outputs.primary_path }}

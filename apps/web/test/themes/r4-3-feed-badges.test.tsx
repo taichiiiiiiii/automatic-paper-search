@@ -17,6 +17,7 @@ import {
   parseThemeCodeLinks,
   parseThemeNewPapers,
   safeItemUrl,
+  sideFilesFromManifest,
 } from "../../lib/themes-feed";
 import type { LineageArtifact } from "../../lib/themes-quality";
 
@@ -218,5 +219,27 @@ describe("コードとモデル", () => {
     expect(card?.querySelector('[data-badge="code"]')?.textContent).toBe("コード ★15k");
     expect(card?.querySelector('[data-badge="hf"]')?.textContent).toBe("HF");
     expect(container.querySelector('[data-node-id="openalex:W2"] [data-badge]')).toBeNull();
+  });
+});
+
+describe("sideFilesFromManifest (no request for a file that is not there)", () => {
+  it("treats missing flags / missing entry as absent", () => {
+    expect(sideFilesFromManifest(undefined)).toEqual({ newPapers: false, codeLinks: false });
+    expect(sideFilesFromManifest(null)).toEqual({ newPapers: false, codeLinks: false });
+    expect(sideFilesFromManifest({})).toEqual({ newPapers: false, codeLinks: false });
+  });
+  it("only a literal true counts", () => {
+    expect(sideFilesFromManifest({ has_new_papers: "true", has_code_links: 1 })).toEqual({
+      newPapers: false,
+      codeLinks: false,
+    });
+    expect(sideFilesFromManifest({ has_new_papers: true, has_code_links: false })).toEqual({
+      newPapers: true,
+      codeLinks: false,
+    });
+    expect(sideFilesFromManifest({ has_new_papers: true, has_code_links: true })).toEqual({
+      newPapers: true,
+      codeLinks: true,
+    });
   });
 });
