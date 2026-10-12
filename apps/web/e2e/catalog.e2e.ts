@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { CatalogPage } from "./pages";
+import { prepareClipboard, readClipboard } from "./support/clipboard";
 import { expect, test } from "./support/fixtures";
 import { conferencePaperCount, conferences } from "./support/site";
 
@@ -219,8 +220,9 @@ for (const conf of CATALOGS) {
       page,
       context,
       baseURL,
+      browserName,
     }) => {
-      await context.grantPermissions(["clipboard-read", "clipboard-write"], { origin: baseURL });
+      await prepareClipboard(context, browserName, baseURL);
       await catalog.goto("q=diffusion");
       await expect(catalog.results.first()).toBeVisible({ timeout: 20_000 });
       const total = (await catalog.shownCount()).matched;
@@ -244,7 +246,7 @@ for (const conf of CATALOGS) {
 
       await catalog.copyUrlButton.click();
       await expect(catalog.exportGroup.getByRole("status")).toContainText(/コピー/);
-      const copied = await page.evaluate(() => navigator.clipboard.readText());
+      const copied = await readClipboard(page);
       expect(new URL(copied).searchParams.get("q")).toBe("diffusion");
     });
 

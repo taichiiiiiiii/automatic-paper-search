@@ -28,6 +28,20 @@ test.describe("page-health guard", () => {
     ).toBeUndefined();
   });
 
+  test("detects a CSP violation (inline style attribute)", async ({ page, pageProblems }) => {
+    // Covers the narrow WebKit <select> exemption in support/fixtures.ts:
+    // an inline style on any other element must still be reported.
+    test.fail();
+    await page.goto("/how-it-works/");
+    await page.evaluate(() => {
+      const d = document.createElement("div");
+      d.setAttribute("style", "color: red");
+      d.textContent = "e2e";
+      document.body.append(d);
+    });
+    await expect.poll(() => pageProblems.some((p) => p.kind === "csp")).toBe(true);
+  });
+
   test("detects an uncaught page error", async ({ page }) => {
     test.fail();
     await page.goto("/how-it-works/");
