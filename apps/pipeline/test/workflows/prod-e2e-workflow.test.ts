@@ -87,7 +87,9 @@ describe("prod-e2e.yml is observe-only", () => {
     const pkg = JSON.parse(readFileSync(join(getRepoRoot(), "apps/web/package.json"), "utf-8")) as {
       scripts: Record<string, string>;
     };
-    expect(pkg.scripts["e2e:prod"]).toBe("playwright test --grep @prod --grep-invert @prod-crawl");
+    expect(pkg.scripts["e2e:prod"]).toBe(
+      "playwright test --grep @prod --grep-invert @prod-crawl --project desktop-chromium --project mobile-chromium",
+    );
     expect(pkg.scripts["e2e:crawl"]).toContain("--grep @prod-crawl");
   });
 });

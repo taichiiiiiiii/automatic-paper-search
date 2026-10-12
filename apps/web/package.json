@@ -15,7 +15,7 @@
     "test": "vitest run",
     "e2e": "playwright test",
     "e2e:request-flow": "playwright test -c playwright.request-flow.config.ts",
-    "e2e:prod": "playwright test --grep @prod --grep-invert @prod-crawl",
+    "e2e:prod": "playwright test --grep @prod --grep-invert @prod-crawl --project desktop-chromium --project mobile-chromium",
     "e2e:crawl": "playwright test --grep @prod-crawl --project desktop-chromium",
     "e2e:install": "playwright install chromium webkit firefox",
     "typecheck": "tsc -p tsconfig.json"
