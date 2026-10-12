@@ -63,14 +63,13 @@ describe("H3: generation steps carry the exact LLM/S2 secrets the live workflows
       jobNamed(readWorkflow("collect-weekly.yml"), "generate"),
       "Regenerate eligible conference lineages",
     );
-    // The repo registers PAPERPILOT_GROQ_API_KEY (the name theme/regen use);
-    // GROQ_API_KEY stays as a fallback for the pre-P5 name.
-    expect(step.env?.PAPERPILOT_GROQ_API_KEY).toBe(
+    // R2-32: the conference builder is LLM-free; it never reads an LLM key.
+    expect(step.env?.PAPERPILOT_GROQ_API_KEY).toBeUndefined();
+    expect(step.env?.PAPERPILOT_GEMINI_API_KEY).toBeUndefined();
+    expect(step.env?.PAPERPILOT_S2_API_KEY).toBe(
       // biome-ignore lint/suspicious/noTemplateCurlyInString: literal GitHub Actions expression (YAML env value), not a JS template literal.
-      "${{ secrets.PAPERPILOT_GROQ_API_KEY || secrets.GROQ_API_KEY }}",
+      "${{ secrets.PAPERPILOT_S2_API_KEY || secrets.S2_API_KEY }}",
     );
-    // biome-ignore lint/suspicious/noTemplateCurlyInString: literal GitHub Actions expression (YAML env value), not a JS template literal.
-    expect(step.env?.PAPERPILOT_GEMINI_API_KEY).toBe("${{ secrets.GEMINI_API_KEY }}");
   });
 
   it("collect-weekly.yml's generate/\"Run PaperPilot collector\" step reads the S2 key under the theme workflows' name", () => {
@@ -100,22 +99,15 @@ describe("H3: generation steps carry the exact LLM/S2 secrets the live workflows
     }
   });
 
-  it("collect-weekly.yml's lineage step restores the no-LLM-key retain-and-exit-0 guard", () => {
+  it("collect-weekly.yml's lineage step runs the LLM-free edition builder (R2-32)", () => {
     const step = stepNamed(
       jobNamed(readWorkflow("collect-weekly.yml"), "generate"),
       "Regenerate eligible conference lineages",
     );
     const run: string = step.run;
-    // R2-24: the guard applies only when the conference builder uses an
-    // LLM (PAPERPILOT_LINEAGE_LLM != off).
-    expect(run).toContain(
-      // biome-ignore lint/suspicious/noTemplateCurlyInString: literal bash `${VAR:-}` expansion from the workflow's run: script, not a JS template literal.
-      'if [ "${PAPERPILOT_LINEAGE_LLM:-on}" != "off" ] && [ -z "${PAPERPILOT_GROQ_API_KEY:-}" ] && [ -z "${PAPERPILOT_GEMINI_API_KEY:-}" ]',
-    );
-    expect(run).toContain("no lineage LLM key configured; retaining published lineages");
-    expect(run).toMatch(
-      /no lineage LLM key configured; retaining published lineages"\s*\n\s*exit 0/,
-    );
+    expect(run).toContain("apps/pipeline/src/lineage/conference/editionLineageCli.ts");
+    expect(run).not.toContain("buildLineageCli.ts");
+    expect(run).not.toContain("no lineage LLM key configured");
   });
 });
 
@@ -136,7 +128,6 @@ describe("R2-19: every step that runs an OpenAlex-calling CLI carries the OpenAl
     ["regen-themes.yml", "generate", "Regenerate requested themes"],
     ["theme-on-demand.yml", "generate", "Generate theme lineage"],
     ["collect-weekly.yml", "generate", "Run PaperPilot collector"],
-    ["collect-weekly.yml", "generate", "Regenerate eligible conference lineages"],
   ])("%s %s/%j passes PAPERPILOT_OPENALEX_API_KEY", (file, jobId, stepName) => {
     const step = stepNamed(jobNamed(readWorkflow(file), jobId), stepName);
     expect(step.env?.PAPERPILOT_OPENALEX_API_KEY).toBe(KEY_EXPR);
@@ -158,7 +149,8 @@ describe("R2-19: every step that runs an OpenAlex-calling CLI carries the OpenAl
         }
       }
     }
-    expect(found).toBeGreaterThanOrEqual(5);
+    // R2-32: the conference lineage builder no longer calls OpenAlex.
+    expect(found).toBeGreaterThanOrEqual(4);
     expect(missing).toEqual([]);
   });
 });
@@ -175,14 +167,12 @@ describe("R2-24: theme generation runs without an LLM by default", () => {
     });
   }
 
-  it("collect-weekly.yml: conference lineages keep the LLM by default, switchable to off", () => {
+  it("collect-weekly.yml: conference lineages are built without an LLM (R2-32, no switch)", () => {
     const step = stepNamed(
       jobNamed(readWorkflow("collect-weekly.yml"), "generate"),
       "Regenerate eligible conference lineages",
     );
-    expect(step.env?.PAPERPILOT_LINEAGE_LLM).toBe(
-      // biome-ignore lint/suspicious/noTemplateCurlyInString: literal GitHub Actions expression (YAML env value), not a JS template literal.
-      "${{ vars.PAPERPILOT_CONFERENCE_LINEAGE_LLM || 'on' }}",
-    );
+    expect(step.env?.PAPERPILOT_LINEAGE_LLM).toBeUndefined();
+    expect(JSON.stringify(step.env ?? {})).not.toContain("PAPERPILOT_CONFERENCE_LINEAGE_LLM");
   });
 });

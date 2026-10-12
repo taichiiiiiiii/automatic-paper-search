@@ -946,10 +946,27 @@ describe("the real published quality manifest stays fail-closed", () => {
   // Counts are lower bounds, not exact: conference-on-demand and the theme
   // workflows add rows, and promote reruns this suite on the promoted tree.
   // The invariant is that every row stays fail closed until audited.
-  it("all conference artifacts (at least the original 10) remain fail closed until their audits pass", () => {
+  // Design doc 41 R2-32: a conference lineage is published (as unaudited)
+  // only when it passes every automatic check, including the theme gate the
+  // builder applies to conference rows; eligibility matches the written tier.
+  it("conference artifacts (at least the original 10) are published only through the automatic gate", () => {
     const rows = publicQuality?.collections.filter((row) => row.kind === "conference") ?? [];
     expect(rows.length).toBeGreaterThanOrEqual(10);
-    expect(rows.every((row) => !qualityRowIsEligible(row))).toBe(true);
+    for (const row of rows) {
+      const tier = qualityRowPublishedTier(row);
+      expect(tier ?? "blocked").toBe(row.publication_tier);
+      if (tier === null) continue;
+      const names = row.audit.checks.map((c) => c.name);
+      for (const gate of [
+        "evidence_classified_rate",
+        "lineage_relation_count",
+        "node_count",
+        "generator_current",
+      ]) {
+        expect(names, `${row.collection_id} lacks ${gate}`).toContain(gate);
+      }
+      if (tier === "audited") expect(row.audit.fixture_sha256).toMatch(/^[0-9a-f]{64}$/);
+    }
   });
 
   it("all 14 legacy deep artifacts are explicit and remain fail closed", () => {

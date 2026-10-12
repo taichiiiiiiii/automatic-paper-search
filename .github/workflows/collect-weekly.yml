@@ -102,25 +102,20 @@ jobs:
           echo "rebuilt $rebuilt conference-local projection(s)"
 
       - name: Regenerate eligible conference lineages
-        # PAPERPILOT_GROQ_API_KEY / PAPERPILOT_GEMINI_API_KEY (H3 of the
-        # P5 tier-A review): without either, buildProvider() throws "No
-        # LLM key found" and every conference with an Oral paper fails,
-        # so the catalog refresh never promotes. Same secret names as the
-        # live collect-weekly.yml step this one replaces; the no-key
-        # retain-and-exit-0 guard below is restored from that same step.
-        #
-        # R2-24 (design 41): repo variable PAPERPILOT_CONFERENCE_LINEAGE_LLM=off
-        # builds the conference lineages without an LLM (S2 citation
-        # contexts + reference lists; the S2 key paces those lookups); the
-        # LLM-key guard below then does not apply. Default `on` (unchanged).
+        # R2-32 (design 41): conference lineages are built WITHOUT an LLM by
+        # editionLineageCli.ts (S2 venue ranking + reference/citing lists +
+        # the theme no-LLM evidence rules), with the SAME CLI and defaults
+        # as conference-lineage-regen.yml (parameter parity). Only
+        # conferences that already carry an edition lineage are refreshed
+        # here; a new conference gets its first one from a
+        # conference-lineage-regen.yml dispatch. The CLI never writes an
+        # incomplete (4), under-evidenced (5) or regressing (6, R2-37
+        # publish guard) build, so the published file is kept on failure.
         env:
-          PAPERPILOT_LINEAGE_LLM: ${{ vars.PAPERPILOT_CONFERENCE_LINEAGE_LLM || 'on' }}
           PAPERPILOT_S2_API_KEY: ${{ secrets.PAPERPILOT_S2_API_KEY || secrets.S2_API_KEY }}
-          PAPERPILOT_GROQ_API_KEY: ${{ secrets.PAPERPILOT_GROQ_API_KEY || secrets.GROQ_API_KEY }}
-          PAPERPILOT_GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          # R2-19: OpenAlex free key ($1/day vs $0.10/day keyless shared by
-          # every Actions run on the egress IP); optional, keyless still works.
-          PAPERPILOT_OPENALEX_API_KEY: ${{ secrets.PAPERPILOT_OPENALEX_API_KEY }}
+          PAPERPILOT_ARXIV_HTML: ${{ vars.PAPERPILOT_ARXIV_HTML || 'off' }}
+          PAPERPILOT_ARXIV_HTML_MAX_FETCHES: ${{ vars.PAPERPILOT_ARXIV_HTML_MAX_FETCHES || '40' }}
+          PAPERPILOT_OPENALEX_EMAIL: ${{ secrets.OPENALEX_EMAIL }}
         run: |
           set -euo pipefail
           attempted=0
@@ -128,63 +123,39 @@ jobs:
           retained=0
           skipped=0
           {
-            echo "### Conference lineage regeneration"
+            echo "### Conference lineage regeneration (LLM-free)"
             echo "| Conference | Result | Published candidate |"
             echo "|---|---|---|"
           } >> "$GITHUB_STEP_SUMMARY"
-
-          if [ "${PAPERPILOT_LINEAGE_LLM:-on}" != "off" ] && [ -z "${PAPERPILOT_GROQ_API_KEY:-}" ] && [ -z "${PAPERPILOT_GEMINI_API_KEY:-}" ]; then
-            echo "| all | no LLM key | previous lineages retained |" >> "$GITHUB_STEP_SUMMARY"
-            echo "::notice::no lineage LLM key configured; retaining published lineages"
-            exit 0
-          fi
 
           shopt -s nullglob
           for papers in data/published/*/papers.json; do
             conf="$(basename "$(dirname "$papers")")"
             lineage="data/published/$conf/lineage.json"
-            oral_count="$(jq '[.[] | select(.type == "Oral")] | length' "$papers")"
-            if [ "$oral_count" -eq 0 ]; then
+            generator="$(jq -r '.meta.generator // empty' "$lineage" 2>/dev/null || true)"
+            if [ "$generator" != "paperpilot.lineage.conference.edition" ]; then
               skipped=$((skipped + 1))
-              echo "| $conf | no Oral papers | unchanged |" >> "$GITHUB_STEP_SUMMARY"
+              echo "| $conf | no edition lineage yet (dispatch conference-lineage-regen.yml) | unchanged |" >> "$GITHUB_STEP_SUMMARY"
               continue
             fi
-
             attempted=$((attempted + 1))
-            backup="$(mktemp "$RUNNER_TEMP/$conf-lineage.XXXXXX")"
-            if [ -f "$lineage" ]; then
-              cp -p "$lineage" "$backup"
-            else
-              : > "$backup"
-            fi
-
-            if pnpm exec tsx apps/pipeline/src/lineage/conference/buildLineageCli.ts \
-                 --conference "$conf" && \
-               jq -e '(.nodes|type=="array" and length>0) and (.edges|type=="array" and length>0)' "$lineage" > /dev/null
-            then
+            rc=0
+            pnpm exec tsx apps/pipeline/src/lineage/conference/editionLineageCli.ts \
+              --conference "$conf" || rc=$?
+            if [ "$rc" -eq 0 ]; then
               updated=$((updated + 1))
               echo "| $conf | generated | updated |" >> "$GITHUB_STEP_SUMMARY"
             else
               retained=$((retained + 1))
-              if [ -s "$backup" ]; then
-                cp -p "$backup" "$lineage"
-              else
-                rm -f "$lineage"
-              fi
-              echo "::warning::lineage failed for $conf; previous artifact retained"
-              echo "| $conf | failed | previous retained |" >> "$GITHUB_STEP_SUMMARY"
+              echo "::warning::edition lineage exited $rc for $conf; previous artifact retained"
+              echo "| $conf | exit $rc | previous retained |" >> "$GITHUB_STEP_SUMMARY"
             fi
-            rm -f "$backup"
           done
 
           {
             echo
             echo "Attempted: $attempted; updated: $updated; retained: $retained; skipped: $skipped"
           } >> "$GITHUB_STEP_SUMMARY"
-          if [ "$attempted" -gt 0 ] && [ "$updated" -eq 0 ]; then
-            echo "::error::all attempted lineage regenerations failed"
-            exit 1
-          fi
 
       - name: Package changed generated files
         run: |
@@ -194,6 +165,9 @@ jobs:
             data/state/seen_ids.json
             data/state/run_history.jsonl
             data/state/lineage-cache/classifications.json
+            data/state/lineage-cache/s2_references.json
+            data/state/lineage-cache/arxiv_html_contexts.json
+            data/state/lineage-cache/conference_seeds.json
           )
           shopt -s nullglob
           for papers in data/published/*/papers.json; do
@@ -282,6 +256,9 @@ jobs:
             data/state/seen_ids.json
             data/state/run_history.jsonl
             data/state/lineage-cache/classifications.json
+            data/state/lineage-cache/s2_references.json
+            data/state/lineage-cache/arxiv_html_contexts.json
+            data/state/lineage-cache/conference_seeds.json
           )
           if [ -d "$CANDIDATE_DIR/data/published" ]; then
             while IFS= read -r -d '' papers; do

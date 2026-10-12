@@ -17,6 +17,8 @@ export const EXPECTED_WORKFLOW_FILES = [
   "alert.yml",
   "collect-daily-watch.yml",
   "collect-weekly.yml",
+  // R2-32: dispatch-only LLM-free conference lineage regeneration.
+  "conference-lineage-regen.yml",
   "conference-on-demand.yml",
   "conference-watch.yml",
   "data-audit.yml",
