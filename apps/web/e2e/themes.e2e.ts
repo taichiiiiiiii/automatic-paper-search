@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import type { Download, Page } from "@playwright/test";
+import { FIT_ZOOM_FLOOR_NARROW, FIT_ZOOM_FLOOR_WIDE } from "../lib/themes-tree";
 import { ThemePage } from "./pages";
 import { prepareClipboard, readClipboard } from "./support/clipboard";
 import { expect, PROD, test } from "./support/fixtures";
@@ -216,6 +217,81 @@ for (const t of themes) {
           }),
         )
         .toBe(true);
+      // R4-5: crowded years wrap, so 全体 never shrinks the cards below a
+      // readable floor (LoRA: 30 papers in 2024 used to fit at ~4% / 14%).
+      const floor = narrow ? FIT_ZOOM_FLOOR_NARROW : FIT_ZOOM_FLOOR_WIDE;
+      expect(await theme.zoom()).toBeGreaterThanOrEqual(floor);
+    });
+
+    test("crowded years wrap row-major inside one year band", async ({ page }) => {
+      await theme.goto(t.slug);
+      const perLine = await theme.perLine();
+      expect(perLine).toBeGreaterThan(0);
+      const bands = await theme.yearBands.evaluateAll((gs) =>
+        gs.map((g) => ({
+          label: g.getAttribute("data-year-band") ?? "",
+          lines: Number(g.getAttribute("data-lines")),
+        })),
+      );
+      expect(bands.length).toBeGreaterThan(0);
+      // Cards in DOM (= Tab) order, grouped by consecutive year: within a
+      // year, lines go top to bottom and cards left to right (row-major),
+      // never more than perLine per line, and the line count matches the band.
+      const cards = await theme.cardLayout();
+      const years = await page.evaluate(
+        (ids) =>
+          ids.map((id) => {
+            const g = document.querySelector(`g[data-node-id="${CSS.escape(id)}"]`);
+            const label = g?.querySelector("button")?.getAttribute("aria-label") ?? "";
+            return /（(\d{4}|年不明)）/.exec(label)?.[1] ?? "";
+          }),
+        cards.map((c) => c.id),
+      );
+      let i = 0;
+      for (const band of bands) {
+        const inBand: typeof cards = [];
+        while (
+          i < cards.length &&
+          (years[i] === band.label || (band.label === "Unknown" && years[i] === "年不明"))
+        ) {
+          inBand.push(cards[i]!);
+          i++;
+        }
+        expect(inBand.length, `year ${band.label}`).toBeGreaterThan(0);
+        const lineYs = [...new Set(inBand.map((c) => c.y))];
+        expect(lineYs.length, `year ${band.label}`).toBe(band.lines);
+        for (let k = 1; k < inBand.length; k++) {
+          const prev = inBand[k - 1]!;
+          const cur = inBand[k]!;
+          expect(cur.y > prev.y || (cur.y === prev.y && cur.x > prev.x)).toBe(true);
+        }
+        for (const y of lineYs) {
+          expect(inBand.filter((c) => c.y === y).length).toBeLessThanOrEqual(perLine);
+        }
+      }
+      expect(i).toBe(cards.length);
+    });
+
+    test("?node= scrolls a card on a wrapped line into view", async () => {
+      await theme.goto(t.slug);
+      const cards = await theme.cardLayout();
+      // The last card in DOM order sits on the last line of the last year.
+      const target = cards[cards.length - 1]!;
+      await theme.goto(t.slug, `node=${encodeURIComponent(target.id)}`);
+      const card = theme.cardGroup(target.id).locator("button");
+      await expect(card).toHaveClass(/ring-2/);
+      await expect
+        .poll(() =>
+          card.evaluate((el) => {
+            const box = el.closest("svg")?.parentElement as HTMLElement;
+            const a = el.getBoundingClientRect();
+            const b = box.getBoundingClientRect();
+            const cx = (a.left + a.right) / 2;
+            const cy = (a.top + a.bottom) / 2;
+            return cx >= b.left && cx <= b.right && cy >= b.top && cy <= b.bottom;
+          }),
+        )
+        .toBe(true);
     });
 
     test("reading guide opens on a first visit and stays closed once closed", async ({ page }) => {
@@ -291,6 +367,13 @@ for (const t of themes) {
       const svg = await downloadBytes(page, () => theme.exportButton("画像（SVG）").click());
       expect(svg.name).toMatch(/\.svg$/);
       expect(svg.bytes.toString("utf8")).toContain("<svg");
+      // The export is the on-screen (wrapped) layout at its natural size,
+      // with the year bands.
+      const svgText = svg.bytes.toString("utf8");
+      const viewBox = await theme.tree.getAttribute("viewBox");
+      expect(svgText).toContain(`viewBox="${viewBox}"`);
+      expect(svgText).toContain(`width="${viewBox!.split(" ")[2]}"`);
+      expect(svgText).toContain("data-year-band");
 
       await theme.openExportMenu();
       const png = await downloadBytes(page, () => theme.exportButton("画像（PNG）").click());

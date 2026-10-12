@@ -24,7 +24,7 @@
  */
 import { useSearchParams } from "next/navigation";
 import type React from "react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
   copyText,
   downloadText,
@@ -54,12 +54,16 @@ import {
   layoutChronological,
   matchesSearch,
   matchesYear,
+  maxCardsPerLine,
   NODE_H,
   NODE_W,
+  PADDING,
   type Relation,
+  ROW_GAP,
   sparseLineageNotice,
   X_AXIS_MODES,
   type XAxisMode,
+  YEAR_LABEL_W,
 } from "../../lib/themes-tree";
 import {
   DEFAULT_MAIN_PATH_MODE,
@@ -588,14 +592,42 @@ export function LineageTree({
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [kbdHelpOpen, selectedEdgeKey, closeEvidence, openKbdHelp]);
 
+  // ---- Wrapping crowded years (R4-5) ---------------------------------------
+  // A year with more papers than fit the tree box at a readable zoom wraps
+  // onto several lines inside its year band, so 全体 never has to shrink
+  // the cards below ~0.35 (phone) / ~0.6 (desktop). The cap comes from the
+  // box width: the frame around the scroll area (no scrollbar, so the cap
+  // cannot oscillate with the tree's own height). Measured before paint;
+  // `null` until then (the first render uses the window width as a guess).
+  const treeBoxRef = useRef<HTMLDivElement>(null);
+  const [treeBoxWidth, setTreeBoxWidth] = useState<number | null>(null);
+  useLayoutEffect(() => {
+    const box = treeBoxRef.current;
+    if (!box) return;
+    const measure = () => {
+      const w = box.clientWidth;
+      // Hidden (timeline view): keep the last width.
+      if (w > 0) setTreeBoxWidth((cur) => (cur === w ? cur : w));
+    };
+    measure();
+    if (typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(measure);
+    ro.observe(box);
+    return () => ro.disconnect();
+  }, []);
+  const maxPerLine = maxCardsPerLine(
+    treeBoxWidth ?? (typeof window !== "undefined" ? window.innerWidth - 34 : 0),
+  );
+
   // ---- Layout + per-mode visual hooks -----------------------------------
   // Both take nodesForLayout (orphans already dropped when hidden) --
   // otherwise the layout would reserve an empty row for any year that
   // contained only orphans (docs/assets/theme.js's render() comment).
-  const { positioned, yearLabels, totalW, totalH } = useMemo(
-    () => layoutChronological(nodesForLayout, artifact.edges, mode),
-    [nodesForLayout, artifact.edges, mode],
+  const { positioned, yearLabels, totalW, totalH, perLine } = useMemo(
+    () => layoutChronological(nodesForLayout, artifact.edges, mode, { maxPerLine }),
+    [nodesForLayout, artifact.edges, mode, maxPerLine],
   );
+  const hasWrappedYears = yearLabels.some((yl) => yl.lines > 1);
   const modeData = useMemo(
     () => computeModeData(nodesForLayout, artifact.edges, mode),
     [nodesForLayout, artifact.edges, mode],
@@ -709,18 +741,29 @@ export function LineageTree({
     const target = steps[0];
     if (target !== undefined) changeZoom(target);
   }
+  // The rail is drawn in screen pixels (positions = layout y * zoom), so its
+  // year labels stay legible at any zoom. A wrapped year's label sticks to
+  // the top of the view while its band is on screen.
   const yearRailRef = useRef<SVGGElement>(null);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `yearLabels` is not read in the body -- a re-layout re-renders the rail labels, whose sticky offsets must then be recomputed.
   useEffect(() => {
     const container = scrollRef.current;
     const rail = yearRailRef.current;
     if (!container || !rail) return;
     const update = () => {
-      rail.setAttribute("transform", `translate(0 ${-container.scrollTop}) scale(${zoom})`);
+      const top = container.scrollTop;
+      rail.setAttribute("transform", `translate(0 ${-top})`);
+      for (const el of Array.from(rail.querySelectorAll<SVGGElement>("[data-rail-label]"))) {
+        const min = Number(el.dataset.min);
+        const max = Number(el.dataset.max);
+        const y = Math.max(min, Math.min(max, top + 16));
+        el.setAttribute("transform", `translate(0 ${y})`);
+      }
     };
     update();
     container.addEventListener("scroll", update, { passive: true });
     return () => container.removeEventListener("scroll", update);
-  }, [zoom]);
+  }, [zoom, yearLabels]);
 
   // Mouse drag-to-pan on the tree background (touch scrolls natively).
   const panRef = useRef<{ x: number; y: number; left: number; top: number } | null>(null);
@@ -775,6 +818,8 @@ export function LineageTree({
   const scrolledToPermalinkRef = useRef(false);
   useEffect(() => {
     if (!permalinkRaw || !permalinkFocus || scrolledToPermalinkRef.current) return;
+    // Wait for the measured wrap (positions move when the cap changes).
+    if (treeBoxWidth === null) return;
     const container = scrollRef.current;
     const pos = positionById.get(permalinkFocus.id);
     // The focus node might not be in `positionById` yet (hidden by the
@@ -789,7 +834,7 @@ export function LineageTree({
       top: Math.max(0, (pos.y + NODE_H / 2) * z - container.clientHeight / 2),
       behavior: "auto",
     });
-  }, [permalinkRaw, permalinkFocus, positionById]);
+  }, [permalinkRaw, permalinkFocus, positionById, treeBoxWidth]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: `view` / `zoom` are not read in the body (zoom via zoomRef) -- switching back from the timeline or zooming must re-run the paint so the minimap is recomputed.
   useEffect(() => {
@@ -940,6 +985,9 @@ export function LineageTree({
   const btnOff = "border-rule text-ink-muted hover:border-rule-strong";
   const btnOn = "border-accent bg-accent/10 text-accent-strong";
   const zoomPct = Math.round(zoom * 100);
+  const railW = Math.round(
+    Math.min(Math.max(46 * zoom, 40), (YEAR_LABEL_W + PADDING / 2 - 4) * zoom),
+  );
 
   return (
     <div className="mt-4">
@@ -1285,19 +1333,22 @@ export function LineageTree({
           家系図を飛ばして一覧へ
         </a>
         <div className="mb-1 flex items-center justify-end gap-1 text-ink-muted" data-zoom-controls>
-          <span className="mr-auto text-xs text-ink-subtle">ドラッグ・スワイプで移動</span>
+          <span className="mr-auto min-w-0 flex-1 text-xs text-ink-subtle" data-wrap-note>
+            ドラッグ・スワイプで移動
+            {hasWrappedYears && `。論文の多い年は ${perLine} 本ずつ折り返し`}
+          </span>
           <button
             type="button"
             onClick={() => zoomStep(-1)}
             disabled={zoom <= (ZOOM_STEPS[0] ?? ZOOM_MIN) + 1e-6}
             aria-label="縮小"
             title="縮小"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-rule bg-surface text-base text-ink disabled:opacity-40"
+            className="shrink-0 whitespace-nowrap inline-flex h-9 w-9 items-center justify-center rounded-md border border-rule bg-surface text-base text-ink disabled:opacity-40"
           >
             −
           </button>
           <span
-            className="w-10 text-center font-mono text-[0.68rem] text-ink-subtle"
+            className="shrink-0 whitespace-nowrap w-10 text-center font-mono text-[0.68rem] text-ink-subtle"
             aria-live="polite"
           >
             {zoomPct}%
@@ -1308,7 +1359,7 @@ export function LineageTree({
             disabled={zoom >= ZOOM_MAX - 1e-6}
             aria-label="拡大"
             title="拡大"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-rule bg-surface text-base text-ink disabled:opacity-40"
+            className="shrink-0 whitespace-nowrap inline-flex h-9 w-9 items-center justify-center rounded-md border border-rule bg-surface text-base text-ink disabled:opacity-40"
           >
             ＋
           </button>
@@ -1316,12 +1367,12 @@ export function LineageTree({
             type="button"
             onClick={zoomToFit}
             title="横幅に合わせて全体を表示"
-            className="inline-flex h-9 items-center justify-center rounded-md border border-rule bg-surface px-2 text-xs text-ink-muted"
+            className="shrink-0 whitespace-nowrap inline-flex h-9 items-center justify-center rounded-md border border-rule bg-surface px-2 text-xs text-ink-muted"
           >
             全体
           </button>
         </div>
-        <div className="relative">
+        <div className="relative" ref={treeBoxRef}>
           {/* Year labels pinned to the left edge: the in-graph labels scroll
             away when the tree is panned sideways (mobile). Moved with an SVG
             `transform` attribute, never an inline style (CSP). */}
@@ -1331,23 +1382,58 @@ export function LineageTree({
             data-year-rail
           >
             <g ref={yearRailRef}>
-              <rect x={0} y={0} width={46} height={svgH} className="fill-surface opacity-90" />
-              {yearLabels.map((yl) => (
-                <text
-                  key={yl.label}
-                  x={8}
-                  y={yl.y}
-                  className={
-                    yl.importance === "decade-major"
-                      ? "fill-ink text-xs font-semibold"
-                      : yl.importance === "decade"
-                        ? "fill-ink-muted text-xs font-medium"
-                        : "fill-ink-subtle text-xs"
-                  }
-                >
-                  {yl.label}
-                </text>
-              ))}
+              {/* Opaque, and never wider than the gutter left of the cards
+                  (the in-graph labels below it are drawn at a different size). */}
+              <rect
+                x={0}
+                y={0}
+                width={railW}
+                height={Math.round(svgH * zoom)}
+                className="fill-surface"
+              />
+              {yearLabels.map((yl) => {
+                const wrapped = yl.lines > 1;
+                const min = yl.y * zoom;
+                const max = wrapped ? Math.max(min, yl.bottom * zoom - 20) : min;
+                return (
+                  <g key={yl.label}>
+                    {wrapped && (
+                      <line
+                        x1={3}
+                        x2={3}
+                        y1={yl.top * zoom}
+                        y2={yl.bottom * zoom}
+                        className={styles.yearBracket}
+                      />
+                    )}
+                    <g
+                      data-rail-label
+                      data-min={min}
+                      data-max={max}
+                      transform={`translate(0 ${min})`}
+                    >
+                      <text
+                        x={8}
+                        y={0}
+                        className={
+                          yl.importance === "decade-major"
+                            ? "fill-ink text-xs font-semibold"
+                            : yl.importance === "decade"
+                              ? "fill-ink-muted text-xs font-medium"
+                              : "fill-ink-subtle text-xs"
+                        }
+                      >
+                        {yl.label}
+                      </text>
+                      {wrapped && (
+                        <text x={8} y={13} className="fill-ink-subtle text-[0.62rem]">
+                          {yl.count} 本
+                        </text>
+                      )}
+                    </g>
+                  </g>
+                );
+              })}
             </g>
           </svg>
           {/* Mouse drag-to-pan on the scroll area; keyboard and touch users scroll it natively. */}
@@ -1368,22 +1454,50 @@ export function LineageTree({
               height={Math.round(svgH * zoom)}
               viewBox={`0 0 ${svgW} ${svgH}`}
               data-zoom={zoom}
+              data-per-line={perLine}
             >
-              {yearLabels.map((yl) => (
-                <text
-                  key={yl.label}
-                  x={12}
-                  y={yl.y}
-                  className={
-                    yl.importance === "decade-major"
-                      ? "fill-ink text-xs font-semibold"
-                      : yl.importance === "decade"
-                        ? "fill-ink-muted text-xs font-medium"
-                        : "fill-ink-subtle text-xs"
-                  }
-                >
-                  {yl.label}
-                </text>
+              {/* Year bands: every other year is shaded, and a wrapped year
+                  gets a bracket + paper count under its label, so its lines
+                  read as one year (also in the SVG/PNG export). */}
+              {yearLabels.map((yl, i) => (
+                <g key={yl.label} data-year-band={yl.label} data-lines={yl.lines}>
+                  {i % 2 === 1 && (
+                    <rect
+                      x={0}
+                      y={yl.top - ROW_GAP / 2}
+                      width={svgW}
+                      height={yl.bottom - yl.top + ROW_GAP}
+                      className={styles.yearBand}
+                    />
+                  )}
+                  <text
+                    x={12}
+                    y={yl.y}
+                    className={
+                      yl.importance === "decade-major"
+                        ? "fill-ink text-xs font-semibold"
+                        : yl.importance === "decade"
+                          ? "fill-ink-muted text-xs font-medium"
+                          : "fill-ink-subtle text-xs"
+                    }
+                  >
+                    {yl.label}
+                  </text>
+                  {yl.lines > 1 && (
+                    <>
+                      <text x={12} y={yl.y + 15} className="fill-ink-subtle text-[0.62rem]">
+                        {yl.count} 本
+                      </text>
+                      <line
+                        x1={7}
+                        x2={7}
+                        y1={yl.top}
+                        y2={yl.bottom}
+                        className={styles.yearBracket}
+                      />
+                    </>
+                  )}
+                </g>
               ))}
 
               {drawnEdges

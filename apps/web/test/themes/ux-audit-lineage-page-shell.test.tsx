@@ -295,8 +295,15 @@ describe("keyboard help dialog", () => {
   });
 });
 
+/** A rail year label's y (screen px), from its `translate(0 y)`. */
+function labelY(rail: Element, year: string): number {
+  const t = [...rail.querySelectorAll("text")].find((x) => x.textContent === year);
+  const g = t?.closest("[data-rail-label]");
+  return Number(/translate\(0 ([\d.]+)\)/.exec(g?.getAttribute("transform") ?? "")?.[1]);
+}
+
 describe("year rail", () => {
-  it("pins the year labels to the left edge and scales them with the zoom", () => {
+  it("pins the year labels to the left edge and moves them with the zoom (text stays legible)", () => {
     render(<LineageTree artifact={ARTIFACT} slug="gnn" themeName="GNN" />);
     const rail = document.querySelector("[data-year-rail]") as SVGSVGElement;
     expect(rail.getAttribute("aria-hidden")).toBe("true");
@@ -304,8 +311,101 @@ describe("year rail", () => {
       expect.arrayContaining(["2018", "2020"]),
     );
     const g = rail.querySelector("g") as SVGGElement;
-    expect(g.getAttribute("transform")).toBe("translate(0 0) scale(1)");
+    expect(g.getAttribute("transform")).toBe("translate(0 0)");
+    // Label positions are layout y * zoom (screen px); the text is not scaled.
+    const y2020 = labelY(rail, "2020");
+    expect(y2020).toBeGreaterThan(labelY(rail, "2018"));
     fireEvent.click(screen.getByRole("button", { name: "縮小" }));
-    expect(g.getAttribute("transform")).toBe("translate(0 0) scale(0.8)");
+    expect(labelY(rail, "2020")).toBeCloseTo(y2020 * 0.8, 5);
+    expect(g.getAttribute("transform")).toBe("translate(0 0)");
+  });
+});
+
+describe("crowded years wrap (R4-5)", () => {
+  const crowded: LineageArtifact = {
+    ...ARTIFACT,
+    nodes: [
+      { id: "root", is_focus: true, title: "Root", year: 2020, citation_count: 500 },
+      ...Array.from({ length: 7 }, (_, i) => ({
+        id: `p${i}`,
+        is_focus: false,
+        title: `Paper ${i}`,
+        year: 2021,
+        citation_count: 100 - i,
+      })),
+    ],
+    edges: Array.from({ length: 7 }, (_, i) => edge("root", `p${i}`, "extends")),
+  };
+  let restore: (() => void) | null = null;
+  beforeEach(() => {
+    // A 375px phone: the tree box is 341px wide (jsdom has no layout).
+    const desc = Object.getOwnPropertyDescriptor(HTMLElement.prototype, "clientWidth");
+    Object.defineProperty(HTMLElement.prototype, "clientWidth", {
+      configurable: true,
+      get: () => 341,
+    });
+    restore = () => {
+      if (desc) Object.defineProperty(HTMLElement.prototype, "clientWidth", desc);
+    };
+  });
+  afterEach(() => restore?.());
+
+  it("wraps a 7-paper year into lines of 2 inside one band, row-major, labelled with the count", () => {
+    render(<LineageTree artifact={crowded} slug="gnn" themeName="GNN" />);
+    const tree = screen.getByRole("group", { name: /時系列家系図/ });
+    expect(tree.getAttribute("data-per-line")).toBe("2");
+    const band = tree.querySelector('[data-year-band="2021"]') as SVGGElement;
+    expect(band.getAttribute("data-lines")).toBe("4");
+    expect(band.textContent).toContain("7 本");
+    expect(tree.querySelector('[data-year-band="2020"]')?.getAttribute("data-lines")).toBe("1");
+    // Cards in DOM (= Tab) order: rank order, row-major (y, then x).
+    const cards = [...tree.querySelectorAll("g[data-node-id]")]
+      .filter((g) => g.getAttribute("data-node-id")?.startsWith("p"))
+      .map((g) => {
+        const fo = g.querySelector("foreignObject") as Element;
+        return {
+          id: g.getAttribute("data-node-id"),
+          x: Number(fo.getAttribute("x")),
+          y: Number(fo.getAttribute("y")),
+        };
+      });
+    expect(cards.map((c) => c.id)).toEqual(["p0", "p1", "p2", "p3", "p4", "p5", "p6"]);
+    expect(new Set(cards.map((c) => c.y)).size).toBe(4);
+    expect(cards[0]!.y).toBe(cards[1]!.y);
+    expect(cards[2]!.y).toBeGreaterThan(cards[1]!.y);
+    expect(cards[2]!.x).toBe(cards[0]!.x);
+    // The rail shows the count and a bracket for the wrapped year.
+    const rail = document.querySelector("[data-year-rail]") as SVGSVGElement;
+    expect(rail.textContent).toContain("7 本");
+    expect(rail.querySelectorAll("line")).toHaveLength(1);
+    expect(screen.getByText(/論文の多い年は 2 本ずつ折り返し/)).toBeTruthy();
+    // Edges still connect the wrapped cards (one per relation).
+    expect(tree.querySelectorAll("line[role='button']")).toHaveLength(7);
+  });
+
+  it("全体 fits the wrapped width at a readable zoom", () => {
+    render(<LineageTree artifact={crowded} slug="gnn" themeName="GNN" />);
+    fireEvent.click(screen.getByRole("button", { name: "全体" }));
+    const tree = screen.getByRole("group", { name: /時系列家系図/ });
+    expect(Number(tree.getAttribute("data-zoom"))).toBeGreaterThanOrEqual(0.35);
+  });
+
+  it("the wrapped year's rail label sticks to the top while its band is scrolled", () => {
+    render(<LineageTree artifact={crowded} slug="gnn" themeName="GNN" />);
+    const rail = document.querySelector("[data-year-rail]") as SVGSVGElement;
+    const scroller = screen.getByRole("group", { name: /時系列家系図/ })
+      .parentElement as HTMLElement;
+    const start = labelY(rail, "2021");
+    act(() => {
+      scroller.scrollTop = start + 200;
+      scroller.dispatchEvent(new Event("scroll"));
+    });
+    expect(labelY(rail, "2021")).toBeCloseTo(start + 216, 5);
+    // A one-line year does not move.
+    act(() => {
+      scroller.scrollTop = 0;
+      scroller.dispatchEvent(new Event("scroll"));
+    });
+    expect(labelY(rail, "2021")).toBeCloseTo(start, 5);
   });
 });
