@@ -543,6 +543,17 @@ export function cueTargetsCited(
 }
 
 /**
+ * R2-38: whether `span` (a part of `sentence`, e.g. the few words after a
+ * cue) refers to the cited paper: by name, by its inferred reference
+ * marker, or — in a sentence citing one work only — by any citation.
+ */
+export function spanMentionsCited(span: string, sentence: string, id: CitedIdentity): boolean {
+  if (id.aliases.some((a) => mentions(span, a)) || namesVersionFamily(span, id)) return true;
+  if (id.marker !== null) return numericMarkers(span).includes(id.marker);
+  return citationTargetCount(sentence) === 1 && citationTargetCount(span) >= 1;
+}
+
+/**
  * R2-23: names under which the CITING paper refers to itself — its title
  * stem ("Swin Transformer", "ViViT", "SwinIR"). A sentence whose subject is
  * the citing method's own name is first-person in effect ("These merits

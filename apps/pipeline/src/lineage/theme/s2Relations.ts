@@ -305,7 +305,12 @@ export function needsContextLlm(r: S2RuleResult, signals: PairSignals): boolean 
 
 /** Rules whose cue is explicitly NOT a method-building one (protocol /
  * ablation sentences; `classifySentence` checks them first). */
-const NEGATIVE_CUE_RULES: ReadonlySet<string> = new Set(["phrase_protocol", "phrase_ablation"]);
+const NEGATIVE_CUE_RULES: ReadonlySet<string> = new Set([
+  "phrase_protocol",
+  "phrase_ablation",
+  // R2-38: usage of a benchmark / tool / protocol (never builds_on).
+  "phrase_usage",
+]);
 
 /**
  * R2-20: a reason to keep the rule result without asking the LLM, for a
