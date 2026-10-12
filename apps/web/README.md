@@ -21,13 +21,15 @@ Next.js app (static export) served from Cloudflare Pages (see
 
 ## End-to-end tests (Playwright)
 
-`e2e/` drives the **built** site (`out/`) in Chromium, in two projects:
-`desktop-chromium` (1280x800) and `mobile-chromium` (Pixel 5 at 375px).
+`e2e/` drives the **built** site (`out/`) in three engines, five projects:
+`desktop-chromium` (1280x800), `mobile-chromium` (Pixel 5 at 375px),
+`desktop-webkit` (Safari, 1280x800), `mobile-webkit` (iPhone 13) and
+`desktop-firefox` (1280x800).
 
 ```sh
 pnpm --filter @paperpilot/web build          # e2e reads apps/web/out
-pnpm --filter @paperpilot/web e2e:install    # once: playwright install chromium
-pnpm --filter @paperpilot/web e2e            # whole suite, both projects
+pnpm --filter @paperpilot/web e2e:install    # once: playwright install chromium webkit firefox
+pnpm --filter @paperpilot/web e2e            # whole suite, all projects
 pnpm --filter @paperpilot/web e2e themes --project desktop-chromium   # one file / project
 pnpm --filter @paperpilot/web exec playwright show-report             # HTML report
 ```
@@ -40,8 +42,17 @@ pnpm --filter @paperpilot/web exec playwright show-report             # HTML rep
   `E2E_BASE_URL` to test an already-running server (e.g. a preview deploy).
 - **Page health guard** (`e2e/support/fixtures.ts`): every test fails on a
   console error, a CSP violation, an uncaught page error, or a failed
-  same-origin request (HTTP >= 400 or network error; `ERR_ABORTED` from
-  cancelled Next prefetches is ignored). Import `test`/`expect` from
+  same-origin request (HTTP >= 400 or network error; aborted requests from
+  cancelled Next prefetches are ignored: Chromium `ERR_ABORTED`, Firefox
+  `NS_BINDING_ABORTED`, WebKit `cancelled`). In WebKit only, the CSP
+  violation every native `<select>` raises from its user-agent shadow tree
+  (a WebKit engine bug, also seen on a bare `<select>` page) is ignored;
+  any other inline style is still caught (`guard.e2e.ts`), and the
+  Chromium projects run the same code without that exemption. Next's
+  "Failed to fetch RSC payload … TypeError: Load failed / NetworkError"
+  (a prefetch cancelled because the test navigated away; Next falls back to
+  a normal navigation) is ignored too: a really missing payload still fails
+  as an HTTP 404. Import `test`/`expect` from
   `./support/fixtures`, never from `@playwright/test`. A test that expects
   an error opts out narrowly with `test.use({ allowedProblems: /regex/ })`.
   `guard.e2e.ts` proves the guard catches each kind.
@@ -74,10 +85,30 @@ pnpm --filter @paperpilot/web exec playwright show-report             # HTML rep
   on landing (search open), a theme (guide, feeds, export menu and evidence
   panel open), the timeline view, two catalog states, how-it-works, 404 and
   paper-links.
+- **Engine differences**: WebKit/Firefox cannot be granted clipboard
+  permissions, so the URL-copy tests stub `navigator.clipboard` there
+  (`e2e/support/clipboard.ts`; Chromium uses the real clipboard). On macOS
+  27 the bundled Firefox cannot start from a terminal without Full Disk
+  Access ("Could not find profile folder", microsoft/playwright#42768); set
+  `E2E_FIREFOX_EXECUTABLE` to a wrapper that execs it with
+  `-app <copy of application.ini with another Name/Vendor>` as the first
+  argument.
+- **Visual regression** (`e2e/visual.e2e.ts`, Chromium desktop + mobile):
+  landing, a theme's tree and timeline, the smallest catalog,
+  how-it-works and 404, with dates/counts/data lists masked and animations
+  off. Baselines are per platform
+  (`e2e/__screenshots__/<platform>/<project>/`); only `linux/` is
+  committed and the tests skip on a platform without baselines. To
+  (re)generate them, run the `e2e` workflow by hand with
+  `update-snapshots: true`, download the `visual-baselines-linux` artifact
+  into `e2e/__screenshots__/linux/` and commit. A theme regeneration that
+  changes the tree needs this too. Locally, `--update-snapshots` writes
+  `darwin/` baselines (gitignored) for your own checks.
 - **Bugs** found by the suite are fixed in the app; no `test.fixme` is left.
   A new known bug may be parked as `test.fixme` with a `BUG:` comment
   (expected vs actual) only until it is fixed.
 - **CI**: `.github/workflows/e2e.yml` (push/PR to develop touching
-  `apps/web`, `packages/core` or `data/published`) builds the site, caches
-  the Chromium download, runs the suite with one retry, and uploads the
+  `apps/web`, `packages/core` or `data/published`) runs one job per engine
+  (chromium / webkit / firefox, `fail-fast: false`): it builds the site,
+  caches that browser download, runs the engine's projects with one retry, and uploads the
   HTML report and traces on failure. Workers default to 1 (`E2E_WORKERS`).
