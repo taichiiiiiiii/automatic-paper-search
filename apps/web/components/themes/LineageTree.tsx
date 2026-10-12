@@ -108,6 +108,9 @@ const X_AXIS_OPTION: Record<XAxisMode, { label: string; title: string }> = {
 /** Zoom steps for the family tree (1 = cards at their natural size). */
 const ZOOM_STEPS: readonly number[] = [0.35, 0.5, 0.65, 0.8, 1, 1.25];
 const ZOOM_MIN = 0.1;
+/** 全体 may go below ZOOM_MIN: a year with ~30 papers is ~6,000px wide, so a
+ * 375px phone needs ~0.06 to fit it (LoRA theme, 2026-10-12). */
+const ZOOM_FIT_MIN = 0.02;
 const ZOOM_MAX = 1.25;
 const MOBILE_ZOOM = 0.65;
 
@@ -678,10 +681,10 @@ export function LineageTree({
     typeof window !== "undefined" && window.innerWidth < 640 ? MOBILE_ZOOM : 1,
   );
   const zoomRef = useRef(zoom);
-  const changeZoom = useCallback((next: number) => {
+  const changeZoom = useCallback((next: number, min: number = ZOOM_MIN) => {
     const container = scrollRef.current;
     const prev = zoomRef.current;
-    const z = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, next));
+    const z = Math.min(ZOOM_MAX, Math.max(min, next));
     if (z === prev) return;
     zoomRef.current = z;
     setZoom(z);
@@ -742,7 +745,7 @@ export function LineageTree({
   function zoomToFit() {
     const container = scrollRef.current;
     if (!container) return;
-    changeZoom(Math.min(1, (container.clientWidth - 8) / Math.max(totalW, 1)));
+    changeZoom(Math.min(1, (container.clientWidth - 8) / Math.max(totalW, 1)), ZOOM_FIT_MIN);
   }
 
   useEffect(() => {
