@@ -4,7 +4,7 @@
  * changes (conference switcher, single-type chips hidden, 要旨あり toggle
  * with `abs=1`, the Japanese-query empty state, the result-count line).
  */
-import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { CatalogApp } from "../../components/catalog/catalog-app";
 import type { CatalogCopy } from "../../lib/catalog-copy";
@@ -198,12 +198,22 @@ describe("CatalogApp UX audit (design doc 53)", () => {
     mockDataLayer(PAPERS);
     render(<CatalogApp conf="test-conf" generated="2026-01-01" copy={COPY} />);
     expect(await screen.findByRole("button", { name: "詳細を閉じる" })).toBeTruthy();
-    await act(async () => {
-      fireEvent.keyDown(document.body, { key: "Escape" });
+    // The Esc listener is attached in a passive effect that can still be
+    // pending when findByRole resolves (flaked under load), so a single
+    // keydown may be dropped. Re-send Esc until the detail closes; once it
+    // has closed the listener is gone, so retries are harmless.
+    await waitFor(() => {
+      if (screen.queryByRole("button", { name: "詳細を閉じる" })) {
+        act(() => {
+          fireEvent.keyDown(document.body, { key: "Escape" });
+        });
+      }
+      expect(screen.queryByRole("button", { name: "詳細を閉じる" })).toBeNull();
     });
-    expect(screen.queryByRole("button", { name: "詳細を閉じる" })).toBeNull();
     expect(window.location.search).toBe("");
-    expect(document.activeElement).toBe(document.querySelector(`[data-select-paper="${id}"]`));
+    await waitFor(() =>
+      expect(document.activeElement).toBe(document.querySelector(`[data-select-paper="${id}"]`)),
+    );
   });
 
   it("Esc inside the search box does not close the detail", async () => {

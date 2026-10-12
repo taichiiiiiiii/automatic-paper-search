@@ -14,7 +14,7 @@
 //   catalog LOW -- the no-JS fallback link used to point at the
 //          pre-port `paper-links.html` filename instead of the ported
 //          `/<conf>/paper-links/` route.
-import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { CatalogApp } from "../../components/catalog/catalog-app";
 import type { CatalogCopy } from "../../lib/catalog-copy";
@@ -113,8 +113,10 @@ describe("CatalogApp Back navigation restore (M8b)", () => {
     expect(scrollToSpy).toHaveBeenCalledWith(
       expect.objectContaining({ top: 777, behavior: "auto" }),
     );
-    expect(document.activeElement).toBe(
-      document.querySelector(`[data-select-paper="${PAPER_A.paper_id}"]`),
+    await waitFor(() =>
+      expect(document.activeElement).toBe(
+        document.querySelector(`[data-select-paper="${PAPER_A.paper_id}"]`),
+      ),
     );
   });
 
@@ -165,7 +167,7 @@ describe("CatalogApp Back navigation restore (M8b)", () => {
     expect(scrollToSpy).toHaveBeenCalledWith(
       expect.objectContaining({ top: 123, behavior: "auto" }),
     );
-    expect(document.activeElement).toBe(document.getElementById("search"));
+    await waitFor(() => expect(document.activeElement).toBe(document.getElementById("search")));
   });
 });
 
@@ -221,8 +223,10 @@ describe("CatalogApp null -> null popstate restore (P2 review LOW-3)", () => {
     expect(scrollToSpy).toHaveBeenCalledWith(
       expect.objectContaining({ top: 999, behavior: "auto" }),
     );
-    expect(document.activeElement).toBe(
-      document.querySelector(`[data-select-paper="${PAPER_A.paper_id}"]`),
+    await waitFor(() =>
+      expect(document.activeElement).toBe(
+        document.querySelector(`[data-select-paper="${PAPER_A.paper_id}"]`),
+      ),
     );
   });
 });

@@ -617,12 +617,29 @@ export function CatalogApp({
   }
 
   // Focus return after a direct-origin close (see focusSelectButtonRef).
+  // The card list can re-render (reorder / reveal batch / deferred search)
+  // in the same commit, so the button may not be in the DOM yet: retry for
+  // a few frames instead of silently dropping focus.
   useEffect(() => {
     if (selectedPaperId) return;
     const id = focusSelectButtonRef.current;
     if (!id) return;
-    focusSelectButtonRef.current = null;
-    document.querySelector<HTMLElement>(`[data-select-paper="${id}"]`)?.focus();
+    const selector = `[data-select-paper="${id}"]`;
+    let raf = 0;
+    let tries = 0;
+    const attempt = () => {
+      const el = document.querySelector<HTMLElement>(selector);
+      if (el) {
+        el.focus();
+        focusSelectButtonRef.current = null;
+      } else if (++tries < 30) {
+        raf = requestAnimationFrame(attempt);
+      } else {
+        focusSelectButtonRef.current = null;
+      }
+    };
+    attempt();
+    return () => cancelAnimationFrame(raf);
   }, [selectedPaperId]);
 
   // Esc closes the open detail (design doc 53). Ignored while typing in a
