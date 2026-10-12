@@ -56,11 +56,16 @@ export async function setKv(key: string, value: string): Promise<void> {
   if (!res.ok()) throw new Error(`set KV ${key} -> ${res.status()}`);
 }
 
+// Random per module load: Playwright restarts the worker process after a
+// failed test, which resets module state; a plain counter would then reuse
+// an address whose quota earlier tests already spent and fail every later
+// test with 429.
+const ipPrefix = `10.${Math.floor(Math.random() * 250)}.${Math.floor(Math.random() * 250)}`;
 let ipCounter = 0;
 /** Gives the next requests a fresh per-IP quota bucket. */
 export async function freshClientIp(): Promise<string> {
   ipCounter += 1;
-  const ip = `198.51.100.${ipCounter}`;
+  const ip = `${ipPrefix}.${ipCounter}`;
   await setKv("test_client_ip", ip);
   return ip;
 }
