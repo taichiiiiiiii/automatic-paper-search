@@ -328,6 +328,42 @@ describe("S2Expansion.expand (references)", () => {
     expect(ledger.expansionsFailed).toBe(1);
     expect(exp.stats.neither).toBe(1);
   });
+
+  it("records an S2 outage as a failed expansion when OpenAlex is short (not as 'nothing there')", async () => {
+    // System-test finding: with S2 down, a theme whose OpenAlex records
+    // carry no references (FlashAttention) lost every ancestor, the build
+    // looked complete, and a 5-node graph replaced the published 14-node one.
+    const h = harness({ s2Refs: () => resp(503, {}) });
+    const ledger = new BuildCompleteness();
+    const exp = expansionFor(h, { cache: false });
+    const got = await exp.expand(
+      FA,
+      "references",
+      32,
+      (l) => fetchRelated(FA.paperId, "references", 32, netDeps(h), l),
+      ledger,
+    );
+    expect(got).toEqual([]);
+    expect(h.source.lastListFailed).toBe(true);
+    expect(ledger.expansionsAttempted).toBe(1);
+    expect(ledger.expansionsFailed).toBe(1);
+    expect(ledger.complete).toBe(false);
+    expect(exp.stats).toMatchObject({ neither: 1, s2Unreachable: 1 });
+    expect(exp.summary()).toContain("s2 unreachable=1");
+
+    // S2 answering "no such paper" stays a complete, empty expansion.
+    const h404 = harness({ s2Refs: () => resp(404, {}) });
+    const ledger404 = new BuildCompleteness();
+    await expansionFor(h404, { cache: false }).expand(
+      { ...FA, title: "" },
+      "references",
+      32,
+      (l) => fetchRelated(FA.paperId, "references", 32, netDeps(h404), l),
+      ledger404,
+    );
+    expect(h404.source.lastListFailed).toBe(false);
+    expect(ledger404.expansionsFailed).toBe(0);
+  });
 });
 
 describe("S2Expansion.expand (citations)", () => {

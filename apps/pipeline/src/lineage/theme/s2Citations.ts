@@ -475,18 +475,29 @@ export class S2CitationSource {
    * shared with {@link lookup}). `null` = S2 has no such paper or could
    * not be reached this run. R2-14: BFS expansion fallback. */
   async referenceList(citing: PaperLike): Promise<RawRef[] | null> {
+    this.lastListFailed = false;
     const ck = graphIdOf(citing);
     if (ck === null) return null;
     let entry = this.entries[ck];
     if (entry && !this.fresh(entry)) entry = undefined;
     const loaded = await this.refsFor(ck, citing, entry);
+    this.lastListFailed = loaded === "failed";
     return typeof loaded === "string" ? null : loaded.refs;
   }
+
+  /**
+   * Whether the last {@link referenceList} / {@link citationList} returned
+   * `null` because S2 could not be reached (as opposed to "S2 has no such
+   * paper"). Callers that use the list to SUPPLEMENT another source must
+   * report the first as an incomplete fetch, not as an empty answer.
+   */
+  lastListFailed = false;
 
   /** One page (up to 1000) of S2's citing papers of `cited`, or `null`
    * when S2 has no such paper / could not be reached. Not cached here:
    * the expansion layer caches what it keeps. R2-14. */
   async citationList(cited: PaperLike): Promise<RawRef[] | null> {
+    this.lastListFailed = false;
     const ck = graphIdOf(cited);
     if (ck === null) return null;
     const entry = this.entries[ck];
@@ -516,6 +527,7 @@ export class S2CitationSource {
     } catch (exc) {
       if (!(exc instanceof TransientS2Error)) throw exc;
       this.stats.citationListsFailed += 1;
+      this.lastListFailed = true;
       this.deps.logger?.warn(`s2 citations: ${exc.message}`);
       return null;
     }
