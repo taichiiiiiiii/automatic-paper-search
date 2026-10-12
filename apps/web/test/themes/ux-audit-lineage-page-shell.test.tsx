@@ -157,6 +157,24 @@ describe("ThemesClient page shell", () => {
     expect(links[0]?.getAttribute("aria-current")).toBe("page");
   });
 
+  it("keeps the theme in document.title when the static <title> is re-committed later", async () => {
+    mockData();
+    render(<ThemesClient />);
+    await screen.findByRole("heading", { level: 1 });
+    await flush();
+    const themed = document.title;
+    expect(themed).toMatch(/^.+ — テーマ別の系譜 \| PaperPilot$/);
+    // What Next's late metadata commit does after hydration.
+    let el = document.head.querySelector("title");
+    if (!el) {
+      el = document.createElement("title");
+      document.head.append(el);
+    }
+    el.textContent = "テーマ別の系譜 | PaperPilot";
+    await flush();
+    expect(document.title).toBe(themed);
+  });
+
   it("opens the closed 新着 / コードとモデル disclosures from their summaries", async () => {
     mockData();
     render(<ThemesClient />);
