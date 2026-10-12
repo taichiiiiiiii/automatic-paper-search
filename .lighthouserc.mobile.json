@@ -1,0 +1,85 @@
+{
+  "_comment": "Lighthouse CI GATE, mobile: Lighthouse's default mobile emulation (Moto G Power, simulated slow 4G, 4x CPU slowdown). Desktop and the shared notes: .lighthouserc.json. Tighten budgets as fixes ship; loosen one only with a measured reason in the PR.",
+  "ci": {
+    "collect": {
+      "staticDistDir": "./apps/web/out",
+      "url": [
+        "http://localhost/",
+        "http://localhost/themes/",
+        "http://localhost/icml-2026/",
+        "http://localhost/icml-2026/paper-links/"
+      ],
+      "numberOfRuns": 3,
+      "settings": {
+        "_disable_comment": "PWA / HTTPS-only audits do not apply to this static site served by the local lhci server.",
+        "skipAudits": [
+          "uses-http2",
+          "redirects-http",
+          "is-on-https",
+          "service-worker",
+          "installable-manifest",
+          "splash-screen",
+          "themed-omnibox",
+          "apple-touch-icon",
+          "maskable-icon",
+          "offline-start-url"
+        ]
+      }
+    },
+    "assert": {
+      "_budget_comment": "Measured 2026-10-12 with lhci 0.15 on the built site (3 runs, min-max): / perf 0.94-0.99, LCP 1.9-2.8 s, TBT 38-55 ms, CLS 0.004; /themes/ perf 0.85-0.86, LCP 4.0-4.1 s, TBT 76-113 ms, CLS 0; /icml-2026/ perf 0.86-0.97, LCP 2.1-3.3 s, TBT 175-201 ms, CLS 0.031 (was 0.56 before the 2026-10-12 fixes); /icml-2026/paper-links/ perf 0.87, LCP 3.2 s, 0 scripts, SEO 0.60 (noindex by design). Budgets: perf = measured minus ~0.15 (CI runners are slower and mobile simulation multiplies their CPU time by 4); LCP measured +30-60% (landing 4 s, themes 5.5 s, catalog/paper-links 4.5 s); TBT <= 600 ms; CLS <= 0.1; a11y and best-practices >= 0.95; SEO >= 0.95 except paper-links 0.6; JS and font bytes as in .lighthouserc.json. Lighthouse's default aggregation applies (the best of the 3 runs per URL).",
+      "assertMatrix": [
+        {
+          "matchingUrlPattern": ".*",
+          "assertions": {
+            "categories:accessibility": ["error", { "minScore": 0.95 }],
+            "categories:best-practices": ["error", { "minScore": 0.95 }],
+            "cumulative-layout-shift": ["error", { "maxNumericValue": 0.1 }],
+            "total-blocking-time": ["error", { "maxNumericValue": 600 }],
+            "resource-summary:font:size": ["error", { "maxNumericValue": 330000 }]
+          }
+        },
+        {
+          "matchingUrlPattern": "^http://[^/]+/$",
+          "assertions": {
+            "categories:performance": ["error", { "minScore": 0.8 }],
+            "categories:seo": ["error", { "minScore": 0.95 }],
+            "largest-contentful-paint": ["error", { "maxNumericValue": 4000 }],
+            "resource-summary:script:size": ["error", { "maxNumericValue": 165000 }],
+            "resource-summary:font:size": ["error", { "maxNumericValue": 180000 }]
+          }
+        },
+        {
+          "matchingUrlPattern": "/themes/$",
+          "assertions": {
+            "categories:performance": ["error", { "minScore": 0.7 }],
+            "categories:seo": ["error", { "minScore": 0.95 }],
+            "largest-contentful-paint": ["error", { "maxNumericValue": 5500 }],
+            "resource-summary:script:size": ["error", { "maxNumericValue": 220000 }]
+          }
+        },
+        {
+          "matchingUrlPattern": "^http://[^/]+/[a-z0-9-]+-[0-9]{4}/$",
+          "assertions": {
+            "categories:performance": ["error", { "minScore": 0.7 }],
+            "categories:seo": ["error", { "minScore": 0.95 }],
+            "largest-contentful-paint": ["error", { "maxNumericValue": 4500 }],
+            "resource-summary:script:size": ["error", { "maxNumericValue": 220000 }]
+          }
+        },
+        {
+          "matchingUrlPattern": "/paper-links/$",
+          "assertions": {
+            "categories:performance": ["error", { "minScore": 0.75 }],
+            "categories:seo": ["error", { "minScore": 0.6 }],
+            "largest-contentful-paint": ["error", { "maxNumericValue": 4500 }],
+            "resource-summary:script:count": ["error", { "maxNumericValue": 0 }]
+          }
+        }
+      ]
+    },
+    "upload": {
+      "target": "temporary-public-storage"
+    }
+  }
+}
