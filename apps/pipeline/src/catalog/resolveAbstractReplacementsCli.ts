@@ -184,6 +184,17 @@ export function arxivRecordsFromFeed(body: string): ArxivRecord[] | null {
   return out;
 }
 
+/** `JSON.parse`, or `null` for a body that is not JSON (a truncated or
+ * HTML error page answered with 200): treated like a failed request —
+ * left for a re-run — instead of crashing the run. */
+export function parseJsonBody(body: string): unknown {
+  try {
+    return JSON.parse(body) as unknown;
+  } catch {
+    return null;
+  }
+}
+
 /** arXiv `search_query` for a batch of titles (phrase search on `ti:`). */
 export function arxivTitleQuery(titles: readonly string[]): string {
   return titles
@@ -433,17 +444,19 @@ export async function resolveAbstractReplacements(opts: ResolveOptions): Promise
       });
       if (token) params.set("token", token);
       const resp = await opts.client.request("s2", `${S2_API}/paper/search/bulk?${params}`);
-      if (resp.status !== 200) {
-        opts.log(`  S2 bulk: HTTP ${resp.status}; S2 step left for a re-run`);
+      const page = resp.status === 200 ? parseJsonBody(resp.body) : null;
+      if (page === null || typeof page !== "object" || Array.isArray(page)) {
+        opts.log(
+          `  S2 bulk: ${resp.status === 200 ? "unusable body" : `HTTP ${resp.status}`}; S2 step left for a re-run`,
+        );
         ok = false;
         break;
       }
-      const page = JSON.parse(resp.body) as { data?: unknown[]; token?: string | null };
-      for (const raw of page.data ?? []) {
+      for (const raw of (page as { data?: unknown[] }).data ?? []) {
         const r = s2RecordFrom(raw);
         if (r) records.push(r);
       }
-      token = page.token ?? null;
+      token = (page as { token?: string | null }).token ?? null;
     } while (token);
     if (ok) {
       s2Listed = true;
@@ -488,11 +501,14 @@ export async function resolveAbstractReplacements(opts: ResolveOptions): Promise
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ids }),
       });
-      if (resp.status !== 200) {
-        opts.log(`  S2 batch tldr: HTTP ${resp.status}; left for a re-run`);
+      const parsed = resp.status === 200 ? parseJsonBody(resp.body) : null;
+      if (!Array.isArray(parsed)) {
+        opts.log(
+          `  S2 batch tldr: ${resp.status === 200 ? "unusable body" : `HTTP ${resp.status}`}; left for a re-run`,
+        );
         continue;
       }
-      const data = JSON.parse(resp.body) as Array<{ tldr?: { text?: unknown } | null } | null>;
+      const data = parsed as Array<{ tldr?: { text?: unknown } | null } | null>;
       batch.forEach((row, k) => {
         done.add(row.paper_id);
         const text = data[k]?.tldr?.text;
@@ -532,8 +548,9 @@ export async function resolveAbstractReplacements(opts: ResolveOptions): Promise
         });
         const resp = await opts.client.request("s2", `${S2_API}/paper/search/match?${params}`);
         if (resp.status !== 200 && resp.status !== 404) continue;
-        const data =
-          resp.status === 200 ? ((JSON.parse(resp.body) as { data?: unknown[] }).data ?? []) : [];
+        const body = resp.status === 200 ? parseJsonBody(resp.body) : {};
+        if (body === null || typeof body !== "object") continue;
+        const data = (body as { data?: unknown[] }).data ?? [];
         const rec = s2RecordFrom(data[0]);
         const hit = rec ? pairWithS2([row], [rec]).get(row.paper_id) : undefined;
         if (hit) s2Pairs.set(row.paper_id, hit);
