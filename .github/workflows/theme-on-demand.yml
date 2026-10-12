@@ -138,6 +138,10 @@ jobs:
           PAPERPILOT_ARXIV_HTML_MAX_FETCHES: ${{ vars.PAPERPILOT_ARXIV_HTML_MAX_FETCHES || '40' }}
           PAPERPILOT_CROSSREF_REFERENCES: ${{ vars.PAPERPILOT_CROSSREF_REFERENCES || 'off' }}
           PAPERPILOT_DBLP_VENUES: ${{ vars.PAPERPILOT_DBLP_VENUES || 'off' }}
+          # R2-35: ranked descendant search (one S2 bulk search per theme +
+          # <= 16 reference lists): finds the most-cited citing papers that
+          # OpenAlex `cites:` and S2 `/citations` (newest 10k) never list.
+          PAPERPILOT_S2_DESCENDANT_SEARCH: ${{ vars.PAPERPILOT_S2_DESCENDANT_SEARCH || 'off' }}
           PAPERPILOT_OPENALEX_EMAIL: ${{ secrets.OPENALEX_EMAIL }}
           THEME_INPUT: ${{ inputs.theme }}
         run: |
