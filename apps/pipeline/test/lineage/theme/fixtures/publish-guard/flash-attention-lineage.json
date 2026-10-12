@@ -1,0 +1,1727 @@
+{
+  "schema_version": "lineage-artifact-v1",
+  "root": "openalex:W4281758439",
+  "nodes": [
+    {
+      "id": "openalex:W2940744433",
+      "title": "Generating Long Sequences with Sparse Transformers",
+      "year": 2019,
+      "venue": "arXiv (Cornell University)",
+      "venue_tier": "preprint",
+      "authors": [
+        "Rewon Child",
+        "Scott Gray",
+        "Alec Radford",
+        "Ilya Sutskever"
+      ],
+      "kinds": [],
+      "citation_count": 461,
+      "github_stars": 0,
+      "tldr": "Transformers are powerful sequence models, but require time and memory that grows quadratically with the sequence length. In this paper we…",
+      "short_abstract": "Transformers are powerful sequence models, but require time and memory that grows quadratically with the sequence length. In this paper we introduce sparse factorizations of the attention matrix which reduce this to $O(n \\sqrt{n})$. We also introduce a) a variation on architecture and initialization to train deeper networks, b) the recomputation of attention matrices to save memory, and c) fast attention kernels for training. We call networks with these changes Sparse Transformers, and show they can model sequences tens of thousands of timesteps long using hundreds of layers. We use the same architecture to model images, audio, and text from raw bytes, setting a new state of the art for density modeling of Enwik8, CIFAR-10, and ImageNet-64. We generate unconditional samples that demonstrate global coherence and great diversity, and show it is possible in principle to use self-attention to model sequences of length one million or more.",
+      "arxiv_id": "1904.10509",
+      "doi": "10.48550/arxiv.1904.10509",
+      "aliases": [
+        [
+          "arxiv",
+          "1904.10509"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.1904.10509"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W2997517014",
+      "title": "Efficient Content-Based Sparse Attention with Routing Transformers",
+      "year": 2021,
+      "venue": "Transactions of the Association for Computational Linguistics",
+      "venue_tier": "preprint",
+      "authors": [
+        "Aurko Roy",
+        "Mohammad Saffar",
+        "Ashish Vaswani",
+        "David Grangier"
+      ],
+      "kinds": [],
+      "citation_count": 513,
+      "github_stars": 0,
+      "tldr": "Self-attention has recently been adopted for a wide range of sequence modeling problems. Despite its effectiveness, self-attention suffers…",
+      "short_abstract": "Self-attention has recently been adopted for a wide range of sequence modeling problems. Despite its effectiveness, self-attention suffers from quadratic computation and memory requirements with respect to sequence length. Successful approaches to reduce this complexity focused on attending to local sliding windows or a small set of locations independent of content. Our work proposes to learn dynamic sparse attention patterns that avoid allocating computation and memory to attend to content unrelated to the query of interest. This work builds upon two lines of research: It combines the modeling flexibility of prior work on content-based sparse attention with the efficiency gains from approaches based on local, temporal sparse attention. Our model, the Routing Transformer, endows self-attention with a sparse routing module based on online k-means while reducing the overall complexity of attention to O( n 1.5 d) from O( n 2 d) for sequence length n and hidden dimension d. We show that…",
+      "arxiv_id": "2003.05997",
+      "doi": "10.1162/tacl_a_00353",
+      "aliases": [
+        [
+          "arxiv",
+          "2003.05997"
+        ],
+        [
+          "doi",
+          "10.1162/tacl_a_00353"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W3091156754",
+      "title": "Rethinking Attention with Performers",
+      "year": 2020,
+      "venue": "ICLR",
+      "venue_tier": "A+",
+      "authors": [
+        "Krzysztof Choromański",
+        "Valerii Likhosherstov",
+        "David Dohan",
+        "Xingyou Song",
+        "Andreea Gane"
+      ],
+      "kinds": [],
+      "citation_count": 114,
+      "github_stars": 0,
+      "tldr": "We introduce Performers, Transformer architectures which can estimate regular (softmax) full-rank-attention Transformers with provable…",
+      "short_abstract": "We introduce Performers, Transformer architectures which can estimate regular (softmax) full-rank-attention Transformers with provable accuracy, but using only linear (as opposed to quadratic) space and time complexity, without relying on any priors such as sparsity or low-rankness. To approximate softmax attention-kernels, Performers use a novel Fast Attention Via positive Orthogonal Random features approach (FAVOR+), which may be of independent interest for scalable kernel methods. FAVOR+ can be also used to efficiently model kernelizable attention mechanisms beyond softmax. This representational power is crucial to accurately compare softmax with other kernels for the first time on large-scale tasks, beyond the reach of regular Transformers, and investigate optimal attention-kernels. Performers are linear architectures fully compatible with regular Transformers and with strong theoretical guarantees: unbiased or nearly-unbiased estimation of the attention matrix, uniform…",
+      "arxiv_id": "2009.14794",
+      "doi": "10.48550/arxiv.2009.14794",
+      "aliases": [
+        [
+          "arxiv",
+          "2009.14794"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2009.14794"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W3092852584",
+      "title": "SMYRF: Efficient Attention using Asymmetric Clustering",
+      "year": 2020,
+      "venue": "arXiv (Cornell University)",
+      "venue_tier": "preprint",
+      "authors": [
+        "Giannis Daras",
+        "Nikita Kitaev",
+        "Augustus Odena",
+        "Alexandros G. Dimakis"
+      ],
+      "kinds": [],
+      "citation_count": 2,
+      "github_stars": 0,
+      "tldr": "We propose a novel type of balanced clustering algorithm to approximate attention. Attention complexity is reduced from $O(N^2)$ to $O(N…",
+      "short_abstract": "We propose a novel type of balanced clustering algorithm to approximate attention. Attention complexity is reduced from $O(N^2)$ to $O(N \\log N)$, where $N$ is the sequence length. Our algorithm, SMYRF, uses Locality Sensitive Hashing (LSH) in a novel way by defining new Asymmetric transformations and an adaptive scheme that produces balanced clusters. The biggest advantage of SMYRF is that it can be used as a drop-in replacement for dense attention layers without any retraining. On the contrary, prior fast attention methods impose constraints (e.g. queries and keys share the same vector representations) and require re-training from scratch. We apply our method to pre-trained state-of-the-art Natural Language Processing and Computer Vision models and we report significant memory and speed benefits. Notably, SMYRF-BERT outperforms (slightly) BERT on GLUE, while using $50\\%$ less memory. We also show that SMYRF can be used interchangeably with dense attention before and after training.…",
+      "arxiv_id": "2010.05315",
+      "doi": "10.48550/arxiv.2010.05315",
+      "aliases": [
+        [
+          "arxiv",
+          "2010.05315"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2010.05315"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4226001818",
+      "title": "Self-attention Does Not Need $O(n^2)$ Memory",
+      "year": 2021,
+      "venue": "arXiv (Cornell University)",
+      "venue_tier": "preprint",
+      "authors": [
+        "Markus N. Rabe",
+        "Charles Staats"
+      ],
+      "kinds": [],
+      "citation_count": 17,
+      "github_stars": 0,
+      "tldr": "We present a very simple algorithm for attention that requires $O(1)$ memory with respect to sequence length and an extension to…",
+      "short_abstract": "We present a very simple algorithm for attention that requires $O(1)$ memory with respect to sequence length and an extension to self-attention that requires $O(\\log n)$ memory. This is in contrast with the frequently stated belief that self-attention requires $O(n^2)$ memory. While the time complexity is still $O(n^2)$, device memory rather than compute capability is often the limiting factor on modern accelerators. Thus, reducing the memory requirements of attention allows processing of longer sequences than might otherwise be feasible. We provide a practical implementation for accelerators that requires $O(\\sqrt{n})$ memory, is numerically stable, and is within a few percent of the runtime of the standard implementation of attention. We also demonstrate how to differentiate the function while remaining memory-efficient. For sequence length 16384, the memory overhead of self-attention is reduced by 59X for inference and by 32X for differentiation.",
+      "arxiv_id": "2112.05682",
+      "doi": "10.48550/arxiv.2112.05682",
+      "aliases": [
+        [
+          "arxiv",
+          "2112.05682"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2112.05682"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4281758439",
+      "title": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness",
+      "year": 2022,
+      "venue": "NeurIPS",
+      "venue_tier": "A+",
+      "authors": [
+        "Dao, Tri",
+        "Daniel Y. Fu",
+        "Stefano Ermon",
+        "Atri Rudra",
+        "Christopher Ré"
+      ],
+      "kinds": [],
+      "citation_count": 454,
+      "github_stars": 0,
+      "tldr": "",
+      "arxiv_id": "2205.14135",
+      "doi": "10.48550/arxiv.2205.14135",
+      "is_focus": true,
+      "aliases": [
+        [
+          "arxiv",
+          "2205.14135"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2205.14135"
+        ]
+      ],
+      "seed_paper_id": "256457b8ca6c95c8f70427fc8e7ba423a466defb"
+    },
+    {
+      "id": "openalex:W4384648639",
+      "title": "FlashAttention-2: Faster Attention with Better Parallelism and Work Partitioning",
+      "year": 2023,
+      "venue": "ICLR",
+      "venue_tier": "A+",
+      "authors": [
+        "Tri Dao"
+      ],
+      "kinds": [],
+      "citation_count": 143,
+      "github_stars": 0,
+      "tldr": "Scaling Transformers to longer sequence lengths has been a major problem in the last several years, promising to improve performance in…",
+      "short_abstract": "Scaling Transformers to longer sequence lengths has been a major problem in the last several years, promising to improve performance in language modeling and high-resolution image understanding, as well as to unlock new applications in code, audio, and video generation. The attention layer is the main bottleneck in scaling to longer sequences, as its runtime and memory increase quadratically in the sequence length. FlashAttention exploits the asymmetric GPU memory hierarchy to bring significant memory saving (linear instead of quadratic) and runtime speedup (2-4$\\times$ compared to optimized baselines), with no approximation. However, FlashAttention is still not nearly as fast as optimized matrix-multiply (GEMM) operations, reaching only 25-40\\% of the theoretical maximum FLOPs/s. We observe that the inefficiency is due to suboptimal work partitioning between different thread blocks and warps on the GPU, causing either low-occupancy or unnecessary shared memory reads/writes. We…",
+      "arxiv_id": "2307.08691",
+      "doi": "10.48550/arxiv.2307.08691",
+      "is_focus": true,
+      "aliases": [
+        [
+          "arxiv",
+          "2307.08691"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2307.08691"
+        ]
+      ],
+      "seed_paper_id": "add0a17fc98c4511ac65397a3e43a2a5a03376b5"
+    },
+    {
+      "id": "openalex:W4388327470",
+      "title": "FlashDecoding++: Faster Large Language Model Inference on GPUs",
+      "year": 2023,
+      "venue": "arXiv (Cornell University)",
+      "venue_tier": "preprint",
+      "authors": [
+        "Ke Hong",
+        "Guohao Dai",
+        "Jiaming Xu",
+        "Qiuli Mao",
+        "Xiuhong Li"
+      ],
+      "kinds": [],
+      "citation_count": 14,
+      "github_stars": 0,
+      "tldr": "As the Large Language Model (LLM) becomes increasingly important in various domains. However, the following challenges still remain…",
+      "short_abstract": "As the Large Language Model (LLM) becomes increasingly important in various domains. However, the following challenges still remain unsolved in accelerating LLM inference: (1) Synchronized partial softmax update. The softmax operation requires a synchronized update operation among each partial softmax result, leading to ~20% overheads for the attention computation in LLMs. (2) Under-utilized computation of flat GEMM. The shape of matrices performing GEMM in LLM inference is flat, leading to under-utilized computation and >50% performance loss after padding zeros in previous designs. (3) Performance loss due to static dataflow. Kernel performance in LLM depends on varied input data features, hardware configurations, etc. A single and static dataflow may lead to a 50.25% performance loss for GEMMs of different shapes in LLM inference. We present FlashDecoding++, a fast LLM inference engine supporting mainstream LLMs and hardware back-ends. To tackle the above challenges,…",
+      "arxiv_id": "2311.01282",
+      "doi": "10.48550/arxiv.2311.01282",
+      "aliases": [
+        [
+          "arxiv",
+          "2311.01282"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2311.01282"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4390042124",
+      "title": "A Case Study in CUDA Kernel Fusion: Implementing FlashAttention-2 on NVIDIA Hopper Architecture using the CUTLASS Library",
+      "year": 2023,
+      "venue": "arXiv (Cornell University)",
+      "venue_tier": "preprint",
+      "authors": [
+        "Ganesh Bikshandi",
+        "Shah, Jay"
+      ],
+      "kinds": [],
+      "citation_count": 1,
+      "github_stars": 0,
+      "tldr": "We provide an optimized implementation of the forward pass of FlashAttention-2, a popular memory-aware scaled dot-product attention…",
+      "short_abstract": "We provide an optimized implementation of the forward pass of FlashAttention-2, a popular memory-aware scaled dot-product attention algorithm, as a custom fused CUDA kernel targeting NVIDIA Hopper architecture and written using the open-source CUTLASS library. In doing so, we explain the challenges and techniques involved in fusing online-softmax with back-to-back GEMM kernels, utilizing the Hopper-specific Tensor Memory Accelerator (TMA) and Warpgroup Matrix-Multiply-Accumulate (WGMMA) instructions, defining and transforming CUTLASS Layouts and Tensors, overlapping copy and GEMM operations, and choosing optimal tile sizes for the Q, K and V attention matrices while balancing the register pressure and shared memory utilization. In head-to-head benchmarks on a single H100 PCIe GPU for some common choices of hyperparameters, we observe 20-50% higher FLOPs/s over a version of FlashAttention-2 optimized for last-generation NVIDIA Ampere architecture.",
+      "arxiv_id": "2312.11918",
+      "doi": "10.48550/arxiv.2312.11918",
+      "aliases": [
+        [
+          "arxiv",
+          "2312.11918"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2312.11918"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4400611982",
+      "title": "FlashAttention-3: Fast and Accurate Attention with Asynchrony and Low-precision",
+      "year": 2024,
+      "venue": "NeurIPS",
+      "venue_tier": "A+",
+      "authors": [
+        "Shah, Jay",
+        "Ganesh Bikshandi",
+        "Zhang, Ying",
+        "Vijay Thakkar",
+        "Pradeep Ramani"
+      ],
+      "kinds": [],
+      "citation_count": 16,
+      "github_stars": 0,
+      "tldr": "Attention, as a core layer of the ubiquitous Transformer architecture, is the bottleneck for large language models and long-context…",
+      "short_abstract": "Attention, as a core layer of the ubiquitous Transformer architecture, is the bottleneck for large language models and long-context applications. FlashAttention elaborated an approach to speed up attention on GPUs through minimizing memory reads/writes. However, it has yet to take advantage of new capabilities present in recent hardware, with FlashAttention-2 achieving only 35% utilization on the H100 GPU. We develop three main techniques to speed up attention on Hopper GPUs: exploiting asynchrony of the Tensor Cores and TMA to (1) overlap overall computation and data movement via warp-specialization and (2) interleave block-wise matmul and softmax operations, and (3) block quantization and incoherent processing that leverages hardware support for FP8 low-precision. We demonstrate that our method, FlashAttention-3, achieves speedup on H100 GPUs by 1.5-2.0$\\times$ with FP16 reaching up to 740 TFLOPs/s (75% utilization), and with FP8 reaching close to 1.2 PFLOPs/s. We validate that FP8…",
+      "arxiv_id": "2407.08608",
+      "doi": "10.48550/arxiv.2407.08608",
+      "is_focus": true,
+      "aliases": [
+        [
+          "arxiv",
+          "2407.08608"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2407.08608"
+        ]
+      ],
+      "seed_paper_id": "d316270e9ecf7f73add37e0a3cee8569edcbb1e2"
+    },
+    {
+      "id": "openalex:W4405090274",
+      "title": "FlashAttention on a Napkin: A Diagrammatic Approach to Deep Learning IO-Awareness",
+      "year": 2024,
+      "venue": "Trans. Mach. Learn. Res.",
+      "venue_tier": "A",
+      "authors": [
+        "Vincent Abbott",
+        "Gioele Zardini"
+      ],
+      "kinds": [],
+      "citation_count": 2,
+      "github_stars": 0,
+      "tldr": "Optimizing deep learning algorithms currently requires slow, manual derivation, potentially leaving much performance untapped. Methods…",
+      "short_abstract": "Optimizing deep learning algorithms currently requires slow, manual derivation, potentially leaving much performance untapped. Methods like FlashAttention have achieved a x6 performance improvement over native PyTorch by avoiding unnecessary data transfers, but required three iterations over three years to be developed. Automated compiled methods have consistently lagged behind. This paper extends Neural Circuit Diagrams for deep learning models to consider resource usage and the distribution of tasks across a GPU hierarchy. We show how diagrams can use simple relabellings to derive high-level streaming and tiling optimization strategies along with performance models. We show how this high-level performance model allows the effects of quantization and multi-level GPU hierarchies to be readily considered. We develop a methodology for representing intermediate-level pseudocode with diagrams, allowing hardware-aware algorithms to be derived step-by-step. Finally, we show how our…",
+      "arxiv_id": "2412.03317",
+      "doi": "10.48550/arxiv.2412.03317",
+      "is_focus": true,
+      "aliases": [
+        [
+          "arxiv",
+          "2412.03317"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2412.03317"
+        ]
+      ],
+      "seed_paper_id": "dfd37084c0b08e49d04fa42ddb453482ebfa1b6f"
+    },
+    {
+      "id": "openalex:W4417447635",
+      "title": "BLASST: Dynamic BLocked Attention Sparsity via Softmax Thresholding",
+      "year": 2025,
+      "venue": "arXiv (Cornell University)",
+      "venue_tier": "preprint",
+      "authors": [
+        "Jiayi Yuan",
+        "Cameron Shinn",
+        "Kai Xü",
+        "Jingze Cui",
+        "George Klimiashvili"
+      ],
+      "kinds": [],
+      "citation_count": 0,
+      "github_stars": 0,
+      "tldr": "The growing demand for long-context inference capabilities in Large Language Models (LLMs) has intensified the computational and memory…",
+      "short_abstract": "The growing demand for long-context inference capabilities in Large Language Models (LLMs) has intensified the computational and memory bottlenecks inherent to the self-attention mechanism. To address this challenge, we introduce BLASST, a drop-in, dynamic sparse attention mechanism that accelerates inference by using only a fixed scalar threshold to skip attention blocks. Our method targets practical inference deployment by removing the barriers to adoption present in existing works. As such, BLASST eliminates training requirements, avoids expensive pre-computation passes, accelerates both prefill and decode across all major attention variants (MHA, GQA, MQA, and MLA), provides optimized support for modern hardware, and easily integrates into existing frameworks. This is achieved by reusing online softmax statistics to identify negligible attention scores, skipping softmax, value block loads, and the subsequent matrix multiplication. We demonstrate the BLASST algorithm by delivering…",
+      "arxiv_id": "2512.12087",
+      "doi": "10.48550/arxiv.2512.12087",
+      "aliases": [
+        [
+          "arxiv",
+          "2512.12087"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2512.12087"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W7154502343",
+      "title": "VFA: Relieving Vector Operations in Flash Attention with Global Maximum Pre-computation",
+      "year": 2026,
+      "venue": "arXiv (Cornell University)",
+      "venue_tier": "preprint",
+      "authors": [
+        "Yupeng Sun",
+        "Yanzhao Li",
+        "Zhiqiang Zou",
+        "Bai Du",
+        "Zhiyuan Zhang"
+      ],
+      "kinds": [],
+      "citation_count": 0,
+      "github_stars": 0,
+      "tldr": "FlashAttention-style online softmax enables exact attention computation with linear memory by streaming score tiles through on-chip memory…",
+      "short_abstract": "FlashAttention-style online softmax enables exact attention computation with linear memory by streaming score tiles through on-chip memory and maintaining a running maximum and normalizer. However, as attention kernels approach peak tensor-core/cube-core throughput on modern accelerators, non-matmul components of online softmax -- especially per-tile rowmax and rowsum reductions and rescale chains -- can become vector or SIMD limited and dominate latency. This paper revisits FlashAttention and proposes Vector Relieved Flash Attention (VFA), a hardware-friendly method that reduces rowmax-driven updates of the running maximum while retaining the online-softmax structure. VFA initializes the running maximum via a cheap approximation from key-block representations, reorders key-block traversal to prioritize high-impact sink and local blocks, and freezes the maximum for remaining blocks to avoid repeated reductions and rescaling. We further integrate VFA with block-sparse skipping methods…",
+      "arxiv_id": "2604.12798",
+      "doi": "10.48550/arxiv.2604.12798",
+      "is_focus": true,
+      "aliases": [
+        [
+          "arxiv",
+          "2604.12798"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2604.12798"
+        ]
+      ],
+      "seed_paper_id": "74e08074cd84c4880085fe3d3d43326bde66a191"
+    },
+    {
+      "id": "openalex:W7220440728",
+      "title": "Efficient FlashAttention on Blackwell via Fixed-Shift Softmax and Persistent Scheduling",
+      "year": 2026,
+      "venue": "arXiv (Cornell University)",
+      "venue_tier": "preprint",
+      "authors": [
+        "Олександр Сташук",
+        "Hongtao Yu",
+        "Jay Shah"
+      ],
+      "kinds": [],
+      "citation_count": 0,
+      "github_stars": 0,
+      "tldr": "On Blackwell, normalization and operand movement can limit attention kernels whose matrix multiplications are already deeply pipelined. We…",
+      "short_abstract": "On Blackwell, normalization and operand movement can limit attention kernels whose matrix multiplications are already deeply pipelined. We implement an FA4-style pipeline in Triton TLX with fixed-shift dense softmax and a saved inverse denominator for backward. The fixed shift removes recurrent accumulator corrections; the saved reciprocal moves row normalization from the quadratic backward loop into linear preprocessing. The guarded causal path uses a first-block anchor with selective recovery, and fully masked diagonal contractions are skipped. A packed BF16 exponential approximation and pipelined dQ publication reduce per-element work and on-chip movement. On B200 at 1,000 W, using prepared launches and the original FA4 timer, TLX improves geometric-mean throughput by 7.3 percent across the 24 cases in FA4's BF16 variable-batch grid through 32,768 tokens at head dimension 128. Dense forward and backward improve by 13.0 and 10.4 percent, respectively. Causal backward improves by…",
+      "arxiv_id": "2610.02229",
+      "doi": "10.48550/arxiv.2610.02229",
+      "aliases": [
+        [
+          "arxiv",
+          "2610.02229"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2610.02229"
+        ]
+      ],
+      "is_focus": false
+    }
+  ],
+  "edges": [
+    {
+      "src": "openalex:W2940744433",
+      "dst": "openalex:W2997517014",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Efficient Content-Based Sparse …」(2021) は 「Generating Long Sequences with …」(2019) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We compare our model to a scaled-up ImageTransformer model with local attention (Parmar et al., 2018) and the SparseTransformer model of (Child et al., 2019).\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "a7be09215d7ca01d8c3925d9ddddc142a725129fb2cff06566874f4fad3bf94d"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2940744433",
+      "dst": "openalex:W3091156754",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Rethinking Attention with Perfo…」(2020) は 「Generating Long Sequences with …」(2019) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \", 2018) or incorporate structural priors on attention such as sparsity (Child et al., 2019), pooling-based compression (Rae et al.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "fcc62c9c545723442e49036d1dbca949175157d5abe37736d9e589f550ab54eb"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2940744433",
+      "dst": "openalex:W3092852584",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「SMYRF」(2020) は 「Generating Long Sequences with …」(2019) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Attention finds further uses in other domains like symbolic mathematics and music modeling as well [10, 11, 12].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "5bf90aab9f055ed26b9f80a19d08aa736aa46eebb098d341d9635d1b8dda1b05"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2940744433",
+      "dst": "openalex:W4226001818",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Self-attention Does Not Need $O…」(2021) は 「Generating Long Sequences with …」(2019) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"…and architectures with more favorable complexity classes (Kitaev et al., 2020; Roy et al., 2021; Zaheer et al., 2020; Choromanski et al., 2020; Wang et al., 2020; Ren et al., 2021; Child et al., 2019; Tay et al., 2021; Wang et al., 2020; …\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "bd92464df0e704cee3037ac1e66bd3dccb56eb8f67c951a664ba30ebed89f57a"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2940744433",
+      "dst": "openalex:W4281758439",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「FlashAttention」(2022) は 「Generating Long Sequences with …」(2019) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "6fa18b8a2d35fabaa6b011d3e1bb524c62fb30508c4fedbe7b6ea3cb0bdbfdc5"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2940744433",
+      "dst": "openalex:W4400611982",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「FlashAttention-3」(2024) は 「Generating Long Sequences with …」(2019) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "5f1dfd7a2ea3f7b7396a7839be2be7889b541205121634d3bd7021f86047f1ab"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2940744433",
+      "dst": "openalex:W4417447635",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「BLASST」(2025) は 「Generating Long Sequences with …」(2019) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Static pattern methods like Sparse Transformer (Child et al., 2019), LongFormer (Beltagy et al., 2020), and BigBird (Zaheer et al., 2020) reduce complexity through local or block-based attention.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "ab8d404a05d39533a6166c8cd94e6b108dfbebd5437dd12b1bce3a5fb592b6b2"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2997517014",
+      "dst": "openalex:W3091156754",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Rethinking Attention with Perfo…」(2020) は 「Efficient Content-Based Sparse …」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"(Roy et al., 2020) which applies k-means clustering to learn dynamic sparse attention regions, or (Kitaev et al.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "e47e0065b472c2d68bd09476ee744a896c37465ee61e18d547f3e6c0c078524b"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2997517014",
+      "dst": "openalex:W3092852584",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「SMYRF: Efficient Attention using Asymmetric Clustering」(2020) は「Efficient Content-Based Sparse Attention with Routing Trans…」(2021) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "39715932e63315732625c82f6dfef110ac1b26978168bd804763e2763b18900a"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2997517014",
+      "dst": "openalex:W4226001818",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Self-attention Does Not Need $O…」(2021) は 「Efficient Content-Based Sparse …」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"In many works the quadratic time and space complexity of self-attention has been used as the motivation for the investigation of variants of the original attention mechanism and architectures with more favorable complexity classes (Kitaev …\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "66d86057db4f5ad92ee0cc4d2a4d0ffc5e7aec84cf3398c3802b2d3a7e25febe"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2997517014",
+      "dst": "openalex:W4281758439",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「FlashAttention」(2022) は 「Efficient Content-Based Sparse …」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"These methods range from sparse-approximation [49, 71] to low-rank approximation [11, 48, 81], and their combinations [3, 8, 89].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "ee205c33701eb8f9b3c9c5fa6d228ee72ddc7f1b871f86a02136b55021fffdd9"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2997517014",
+      "dst": "openalex:W4384648639",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「FlashAttention-2」(2023) は 「Efficient Content-Based Sparse …」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "a83576a91e4b55e092590d4b9ccff02e0a4ec7da198a0a0a66d8901754015333"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2997517014",
+      "dst": "openalex:W4400611982",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「FlashAttention-3」(2024) は 「Efficient Content-Based Sparse …」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We repeat the benchmarks 10 times and take the average timing.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "def1878d03fd59e7ee05804df55e28506aa39be99296a8e127bc13241e0935fc"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2997517014",
+      "dst": "openalex:W7154502343",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「VFA: Relieving Vector Operations in Flash Attention with Gl…」(2026) は「Efficient Content-Based Sparse Attention with Routing Trans…」(2021) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "80d3148b7a5ceb8078e99ce0b5b8183e76cda12a23d801212eb8a4dd629517ea"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3091156754",
+      "dst": "openalex:W4226001818",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Self-attention Does Not Need $O(n^2)$ Memory」(2021) は「Rethinking Attention with Performers」(2020) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "32c2345bf4d590509eb99e0dfb6f163264670ea74deb1bf68e7481e4837b157a"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3091156754",
+      "dst": "openalex:W4281758439",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「FlashAttention」(2022) は 「Rethinking Attention with Perfo…」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We run all methods with mixed-precision training, except for Performer (not stable with mixed precision) and Local Attention (implementation does not support FP16).\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "edad8b7b80ed05a6d279387daba66fc38ab1cf1e52478216e96bd8581c515e14"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3091156754",
+      "dst": "openalex:W4384648639",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「FlashAttention-2」(2023) は 「Rethinking Attention with Perfo…」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "f1a2aa17832d10d67454e6a657a23a13e06f17eb80200a602f82631808631bec"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3091156754",
+      "dst": "openalex:W4400611982",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「FlashAttention-3」(2024) は 「Rethinking Attention with Perfo…」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "7ee6d8f8a71431fed5e5484aefd213d55fe1146288fd12e21a5df661add49383"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3091156754",
+      "dst": "openalex:W7154502343",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「VFA」(2026) は 「Rethinking Attention with Perfo…」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "e4b59a186f7d380f7abc5e2428d45cf608eb3a728aeb9d2ba771c76a417a4195"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3092852584",
+      "dst": "openalex:W4281758439",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「FlashAttention」(2022) は 「SMYRF」(2020) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"For approximate attention, we compare against reference implementations of Reformer [49], Local Attention [65], Linformer Attention [81], Smyrf [18], and LongShortFormer (LSFormer) [91].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "78a32d6e724ae39af5dcfd2eeb2d17ab13b4d56c5bf1383cd89feadaaec1eeab"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4226001818",
+      "dst": "openalex:W4281758439",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「FlashAttention」(2022) は 「Self-attention Does Not Need $O…」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"This means that FlashAttention has smaller total memory requirement compared to Rabe and Staats [66].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "0277a02eb4d2f0d6556143c53990d0ef079a9580b1e866a762fd8a43eb705096"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4226001818",
+      "dst": "openalex:W4384648639",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「FlashAttention-2」(2023) は 「Self-attention Does Not Need $O…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "54dcc62f0b7a293f0403218d5394e2a32bda788f16daa4d79a8fd025a5081a6e"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4226001818",
+      "dst": "openalex:W7220440728",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Efficient FlashAttention on Bla…」(2026) は 「Self-attention Does Not Need $O…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Chunked attention with checkpointed recomputation also avoids materializing the quadratic score matrix during differentiation [9].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "1c0e647ca55a595ecc7b8e124d1e5d3f18ba75843f78b5595475ad1de40e9511"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4281758439",
+      "dst": "openalex:W4384648639",
+      "rel": "supersedes",
+      "relation": "supersedes",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「FlashAttention-2: Faster Attention with Better Parallelism …」(2023) は「FlashAttention: Fast and Memory-Efficient Exact Attention w…」(2022) のバージョンアップ版にあたり、命名パターンから置き換え (supersedes) と推定される。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-metadata",
+          "sha256": "4d80724e464691207df8a31c292e6b687b91518631518267bf07d802fe3a9f37"
+        },
+        "classification": {
+          "method": "title_version",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4281758439",
+      "dst": "openalex:W4388327470",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「FlashDecoding++」(2023) は 「FlashAttention」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"FlashAttention [18, 19] optimizes the self-attention computation process during the prefill phase through improved parallelism and workload distribution.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "1c8299af585a2b4d10b5f8b0c89ca682b111f3e69d2d73be76272bf2428e656b"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4281758439",
+      "dst": "openalex:W4390042124",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「A Case Study in CUDA Kernel Fus…」(2023) は 「FlashAttention」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"It is perhaps surprising then that to our knowledge, the first published attempt to write attention as a fused kernel was only presented in 2022 in the form of the FlashAttention algorithm by Dao et al. [4], which they present as a “memory…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "9d8e0c26354fcd759167db8c1ad7408976995d3be02abe136432bb07645e7f78"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4281758439",
+      "dst": "openalex:W4400611982",
+      "rel": "supersedes",
+      "relation": "supersedes",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「FlashAttention-3: Fast and Accurate Attention with Asynchro…」(2024) は「FlashAttention: Fast and Memory-Efficient Exact Attention w…」(2022) のバージョンアップ版にあたり、命名パターンから置き換え (supersedes) と推定される。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-metadata",
+          "sha256": "e115eef7b6de4b4299603884b997624ea51461ee885f26f6b24069e494170a8c"
+        },
+        "classification": {
+          "method": "title_version",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4281758439",
+      "dst": "openalex:W4405090274",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「FlashAttention on a Napkin」(2024) は 「FlashAttention」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"FlashAttention (Dao et al., 2022; Dao, 2023; Shah et al., 2024) is an IO-aware approach to attention that overcomes the memory wall.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "c522ff4246ec987007e06d9b7f86b95462afee2206921c5ae21ab44276623cee"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4281758439",
+      "dst": "openalex:W4417447635",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「BLASST」(2025) は 「FlashAttention」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"While these approaches cleverly determine which attention scores to skip, their added complexity hinders practical use.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "7f7ae1ad23d24cc89e5bbbeef402f6e86bf210d1241b653eb40ca27122f9e381"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4281758439",
+      "dst": "openalex:W7154502343",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「VFA」(2026) は 「FlashAttention」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"L G ] 14 A p r 2026 approximating exp2 with low-latency linear instructions and conditionally eliding the output rescale on ˜ O when it is numerically safe, thereby shrinking the non-matmul critical path [7].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "eec6e705efa91feebf4087c0865f2e3e6606065c793f8a7ce5cc1f253563a4d4"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4281758439",
+      "dst": "openalex:W7220440728",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Efficient FlashAttention on Bla…」(2026) は 「FlashAttention」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"FlashAttention [1] reduced attention’s high-bandwidth memory traffic by tiling attention and avoiding materialization of the score and probability matrices in HBM.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "a84d2fafb2d67e60250ed6827484da972cd710d26627e5102b9315819f54ad0d"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4384648639",
+      "dst": "openalex:W4388327470",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「FlashDecoding++」(2023) は 「FlashAttention-2」(2023) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We compare the inference performance in both prefill phase and decode phase with the following LLM engine baselines: Hugging Face (HF) [35], vLLM [11], DeepSpeed [9], TensorRT-LLM [14], OpenPPL [12], and FlashAttention2/FlashDecoding [19, …\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "e613296acd1f39744bae196b442e21b739e11c24c8be314c2c5a7c996f425b40"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4384648639",
+      "dst": "openalex:W4390042124",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「A Case Study in CUDA Kernel Fus…」(2023) は 「FlashAttention-2」(2023) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Subsequently, Dao reworked the algorithm in [5], as well as recoding it from the ground up using NVIDIA’s open-source CUTLASS library for high-performance linear algebra [9, 10].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "21ed09f0461bde9f930c5f16cc89d7204b1e90ba682a7a6587faec24dbc9511d"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4384648639",
+      "dst": "openalex:W4400611982",
+      "rel": "supersedes",
+      "relation": "supersedes",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「FlashAttention-3: Fast and Accurate Attention with Asynchro…」(2024) は「FlashAttention-2: Faster Attention with Better Parallelism …」(2023) のバージョンアップ版にあたり、命名パターンから置き換え (supersedes) と推定される。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-metadata",
+          "sha256": "3699c7c8fb2b0aef54497ca5a9f6d9d341c3827b8c6aaaeaa1b2aa1cb82c02e5"
+        },
+        "classification": {
+          "method": "title_version",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4384648639",
+      "dst": "openalex:W4405090274",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「FlashAttention on a Napkin」(2024) は 「FlashAttention-2」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We can then replace SoftMax with unscaled SoftMax, which is done in FlashAttention-2.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "962d493b8117904ce6c42cd356564da25c444eca036f988e97d4e82a3fab5d1b"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4384648639",
+      "dst": "openalex:W7154502343",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「VFA」(2026) は 「FlashAttention-2」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"FlashAttention-2 improves performance via better parallelism and work partitioning, increasing occupancy and reducing shared-memory communication [6].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "ee404f9785c3dc6c1483d54e9426693786e6f71805a775be9c6a8b76c55f3fc9"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4384648639",
+      "dst": "openalex:W7220440728",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Efficient FlashAttention on Bla…」(2026) は 「FlashAttention-2」(2023) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We follow the FlashAttention algorithms in using e P for unnormalized shifted exponentials, m for the row shift, ℓ for their row sum, and L for log-sum-exp [2, 3, 4].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "99bf6afd32f085c01e28ac019efa9a683b3d9e0fdbdac1c25cbe43be07bbd10c"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4388327470",
+      "dst": "openalex:W7154502343",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「VFA」(2026) は 「FlashDecoding++」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"FlashDecoding++ [10] is designed as a decode-time LLM inference engine, where the main optimizations include asynchronized softmax with a unified maximum, flat-GEMM optimization, and heuristic dataflow selection to better utilize GPU resou…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "d30df15dfceef677f443d8c07f75e7414d3927f2f1ac6e0127f505a9bb7884af"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4388327470",
+      "dst": "openalex:W7220440728",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Efficient FlashAttention on Bla…」(2026) は 「FlashDecoding++」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"FlashDecoding++ uses a precomputed “unified max value” to avoid synchronized rescaling of partial softmax results during decoding [16].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "f2292ca7e0781203f924c4b0e5292ef879512dfe98c6bf9bbdac5fcaa9a6124c"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4390042124",
+      "dst": "openalex:W4405090274",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「FlashAttention on a Napkin: A Diagrammatic Approach to Deep…」(2024) は「A Case Study in CUDA Kernel Fusion: Implementing FlashAtten…」(2023) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "47b231ee496de60487918733a699fd33a0e2894215154d7789ed93cf14148448"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4400611982",
+      "dst": "openalex:W4405090274",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「FlashAttention on a Napkin: A Diagrammatic Approach to Deep…」(2024) は「FlashAttention-3: Fast and Accurate Attention with Asynchro…」(2024) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "4d656b108b3e25958e7d3234fde7f47a82564c4c1a96f6fcae04880f3bda6ee1"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4400611982",
+      "dst": "openalex:W4417447635",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「BLASST」(2025) は 「FlashAttention-3」(2024) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Our kernels achieve up to 1.52 × speedup for prefill at 71.9% sparsity and 1.48 × speedup for decode at 73.2% sparsity over FlashAttention baselines (Shah et al., 2024; Zadouri et al., 2026), while maintaining numerical stability and suppo…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "07c35d9ee0dbf9982e035a3b295661f85f5795a8bc030f9ee09fd0114d79329c"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4400611982",
+      "dst": "openalex:W7154502343",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「VFA」(2026) は 「FlashAttention-3」(2024) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"FlashAttention-3 exploits hardware features such as asynchronous data movement and low-precision pathways (e.g., FP8) to further improve pipeline efficiency on modern GPUs [21].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "3fb99a6d5fac9752bb3e4c6120d8e6c886cbc0ca969c4c8f39799ef16d7a14de"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4400611982",
+      "dst": "openalex:W7220440728",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Efficient FlashAttention on Bla…」(2026) は 「FlashAttention-3」(2024) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Later FlashAttention kernels sought to keep arithmetic units busy within each tile: FlashAttention-2 improved work partitioning [2], FlashAttention-3 overlapped matrix multiplication and softmax on Hopper [3], and FlashAttention-4 develope…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "16b513b7f4d042ec9d3c4525b35a49cee1d6490b532baea4edbd9dd965884c3b"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4417447635",
+      "dst": "openalex:W7154502343",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.65,
+      "confidence": 0.65,
+      "rationale": "「VFA」(2026) は 「BLASST」(2025) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"…in the prioritized regions, which aligns with the accuracy gains observed in our ablation study. for j = 1 to T c 1 do 9: end for 12: for j ∈ ⟨ 1 , i, 2 , 3 , . . . , T c ⟩ with j ̸ = i in the tail do 14: Algorithm 2 extends VFA by incorp…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "ddb2eaf6e404e68d1b420777cd940f0a215e0a5db016b055e7fe96375a09fdcb"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7154502343",
+      "dst": "openalex:W7220440728",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Efficient FlashAttention on Bla…」(2026) は 「VFA」(2026) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"VFA reaches a fixed shift through a different update schedule: it initializes the maximum from key summaries, updates it on a subset of blocks, and then freezes it [17].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "af9879c519dfe28c49be50be3ee1828282380b8a25e7b09514fead92b4da7ddd"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    }
+  ],
+  "clusters": [],
+  "meta": {
+    "kind": "theme",
+    "generator": "paperpilot.scripts.build_theme_lineage",
+    "source": "build_theme_lineage.py",
+    "theme": "Flash Attention",
+    "slug": "flash-attention",
+    "keywords": [
+      "Flash Attention"
+    ],
+    "seeds": [
+      "openalex:W4281758439",
+      "openalex:W4384648639",
+      "openalex:W4400611982",
+      "openalex:W4405090274",
+      "openalex:W7154502343"
+    ],
+    "depth": 1,
+    "since_year": 2018,
+    "generated_at": "2026-10-11T10:25:19.004000Z",
+    "provenance_breakdown": {
+      "s2_context_rule": 38,
+      "api_citation": 5,
+      "title_version": 3
+    },
+    "completeness": {
+      "complete": true,
+      "expansions_attempted": 10,
+      "expansions_failed": 0,
+      "supplement_failures": []
+    },
+    "topic_gate": {
+      "method": "embedding+terms",
+      "model": "Xenova/bge-small-en-v1.5",
+      "revision": "ea104dacec62c0de699686887e3f920caeb4f3e3",
+      "thresholds": {
+        "z_lo": 0,
+        "z_hi": 1
+      },
+      "pool_size": 137
+    },
+    "lineage_llm": "off"
+  }
+}

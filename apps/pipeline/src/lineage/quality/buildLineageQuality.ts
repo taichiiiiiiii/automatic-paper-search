@@ -721,6 +721,9 @@ export function collectionRow(options: {
   expectedSeedPaperId?: string | null;
   strongRelations?: readonly string[];
   themeGate?: ThemeGate | null;
+  /** R2-37: evaluate these bytes instead of reading `relativePath` (a
+   * candidate build that is not written yet — `theme/publishGuard.ts`). */
+  payload?: Buffer | null;
 }): CollectionRow {
   const {
     docsRoot,
@@ -741,7 +744,7 @@ export function collectionRow(options: {
   } = options;
   const path = join(docsRoot, relativePath);
   const asOf = parseTime(asOfText);
-  const payload = readFileBytesOrNull(path);
+  const payload = options.payload ?? readFileBytesOrNull(path);
   if (payload === null) {
     return {
       collection_id: collectionId ?? `${kind}:${slug}`,
@@ -1130,9 +1133,7 @@ export function buildManifest(options: {
 }): QualityManifest {
   const { docsRoot, asOf, fixtures, policy } = options;
   parseTime(asOf); // validates, matching the Python call's side-effect-only use
-  const strongRelations = Array.isArray(policy.strong_relations)
-    ? policy.strong_relations.filter((r): r is string => typeof r === "string")
-    : DEFAULT_STRONG_RELATIONS;
+  const strongRelations = strongRelationsFromPolicy(policy);
   const themeGate = themeGateFromPolicy(policy);
   const fixtureMap = new Map<string, GoldenFixture>();
   if (Array.isArray(fixtures.collections)) {
@@ -1286,6 +1287,13 @@ function nonNegative(value: unknown, fallback: number, max = Number.POSITIVE_INF
   return typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= max
     ? value
     : fallback;
+}
+
+/** Strong relations as `buildManifest` reads them from the policy. */
+export function strongRelationsFromPolicy(policy: QualityPolicy): readonly string[] {
+  return Array.isArray(policy.strong_relations)
+    ? policy.strong_relations.filter((r): r is string => typeof r === "string")
+    : DEFAULT_STRONG_RELATIONS;
 }
 
 export function themeGateFromPolicy(policy: QualityPolicy): ThemeGate | null {
