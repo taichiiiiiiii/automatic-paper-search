@@ -1,0 +1,230 @@
+name: conference-lineage-regen
+
+# R2-32 (design 41): operator-only regeneration of conference ("edition")
+# lineages, built WITHOUT an LLM by apps/pipeline/src/lineage/conference/
+# editionLineageCli.ts — seeds are the edition's most-cited catalog papers
+# (one Semantic Scholar venue search), ancestors/descendants come from S2
+# reference / citing-paper lists, and every relation is classified by the
+# theme pipeline's no-LLM evidence rules (S2 citation contexts, optional
+# arXiv HTML contexts, api_citation). The CLI never writes a lineage that is
+# incomplete (exit 4), under-evidenced (exit 5) or that would hide / shrink a
+# published conference lineage (exit 6, R2-37 publish guard; allow_shrink
+# accepts a smaller graph). Same CLI and defaults as collect-weekly.yml's
+# lineage step (parameter parity; workflow contract test r2-32-*).
+#
+# Dispatch-only:
+#   gh workflow run conference-lineage-regen.yml --ref develop -f conferences=icml-2025
+
+on:
+  workflow_dispatch:
+    inputs:
+      conferences:
+        description: 'Comma-separated conference slugs to (re)build (e.g. icml-2025)'
+        required: true
+        type: string
+      allow_shrink:
+        description: 'R2-37: accept rebuilds with fewer than half the published nodes'
+        required: false
+        default: false
+        type: boolean
+
+permissions: {}
+
+# Shares the theme regeneration lock: both write the lineage caches
+# (s2_references.json, arxiv_html_contexts.json) and the quality table.
+concurrency:
+  group: regen-themes
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: read
+    outputs:
+      as_of: ${{ steps.candidate.outputs.as_of }}
+      base_sha: ${{ steps.candidate.outputs.base_sha }}
+      candidate_name: ${{ steps.candidate.outputs.candidate_name }}
+      succeeded: ${{ steps.regen.outputs.succeeded }}
+      refused: ${{ steps.regen.outputs.refused }}
+    steps:
+      - name: Checkout develop
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: develop
+          persist-credentials: false
+
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+
+      - name: Regenerate requested conference lineages
+        id: regen
+        env:
+          PAPERPILOT_S2_API_KEY: ${{ secrets.PAPERPILOT_S2_API_KEY || secrets.S2_API_KEY }}
+          PAPERPILOT_ARXIV_HTML: ${{ vars.PAPERPILOT_ARXIV_HTML || 'off' }}
+          PAPERPILOT_ARXIV_HTML_MAX_FETCHES: ${{ vars.PAPERPILOT_ARXIV_HTML_MAX_FETCHES || '40' }}
+          PAPERPILOT_OPENALEX_EMAIL: ${{ secrets.OPENALEX_EMAIL }}
+          CONFERENCES_INPUT: ${{ inputs.conferences }}
+          ALLOW_SHRINK: ${{ inputs.allow_shrink }}
+          SLUG_RE: '^[a-z0-9][a-z0-9-]*-[0-9]{4}$'
+        run: |
+          set -euo pipefail
+          if [[ "$CONFERENCES_INPUT" == *$'\n'* || "$CONFERENCES_INPUT" == *$'\r'* ]]; then
+            echo "::error::conferences must not contain newline/CR characters"
+            exit 1
+          fi
+          IFS=',' read -ra CONFS <<< "$CONFERENCES_INPUT"
+          guard_flags=()
+          [ "$ALLOW_SHRINK" = "true" ] && guard_flags+=(--allow-shrink)
+          attempted=0
+          succeeded=0
+          refused=0
+          {
+            echo "### Conference lineage regeneration (LLM-free)"
+            echo "| Conference | Exit | Result |"
+            echo "|---|---|---|"
+          } >> "$GITHUB_STEP_SUMMARY"
+          for raw in "${CONFS[@]}"; do
+            conf="${raw//[[:space:]]/}"
+            [ -n "$conf" ] || continue
+            attempted=$((attempted + 1))
+            if ! [[ "$conf" =~ $SLUG_RE ]] || [ ! -f "data/published/$conf/papers.json" ]; then
+              echo "::warning::unknown conference skipped: ${conf:0:80}"
+              echo "| ${conf:0:80} | - | unknown conference |" >> "$GITHUB_STEP_SUMMARY"
+              continue
+            fi
+            echo "::group::edition lineage $conf"
+            rc=0
+            pnpm exec tsx apps/pipeline/src/lineage/conference/editionLineageCli.ts \
+              --conference "$conf" ${guard_flags[@]+"${guard_flags[@]}"} || rc=$?
+            echo "::endgroup::"
+            case "$rc" in
+              0) succeeded=$((succeeded + 1)); result="written" ;;
+              4) result="incomplete fetch; published kept" ;;
+              5) result="evidence-classified rate under the gate; published kept" ;;
+              6) refused=$((refused + 1)); result="publish guard refused (would hide/shrink); published kept" ;;
+              *) result="failed; published kept" ;;
+            esac
+            echo "| $conf | $rc | $result |" >> "$GITHUB_STEP_SUMMARY"
+          done
+          {
+            echo "attempted=$attempted"
+            echo "succeeded=$succeeded"
+            echo "refused=$refused"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Freeze candidate metadata
+        id: candidate
+        run: |
+          set -euo pipefail
+          echo "as_of=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
+          echo "base_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "candidate_name=conference-lineage-candidate-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_OUTPUT"
+
+      - name: Package exact conference lineage candidate
+        env:
+          PAPERPILOT_PACKAGE_INCLUDE_UNCHANGED: "1"
+        run: |
+          set -euo pipefail
+          includes=(
+            data/state/lineage-cache/s2_references.json
+            data/state/lineage-cache/arxiv_html_contexts.json
+            data/state/lineage-cache/conference_seeds.json
+          )
+          shopt -s nullglob
+          for lineage in data/published/*/lineage.json; do
+            includes+=("$lineage")
+          done
+          pnpm exec tsx apps/pipeline/src/release/cli.ts package "$RUNNER_TEMP/candidate" "${includes[@]}"
+
+      - name: Upload generated candidate
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: ${{ steps.candidate.outputs.candidate_name }}
+          path: ${{ runner.temp }}/candidate
+          if-no-files-found: error
+          retention-days: 14
+
+  promote:
+    needs: generate
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    outputs:
+      source_sha: ${{ steps.promote.outputs.source_sha }}
+      changed: ${{ steps.promote.outputs.changed }}
+    steps:
+      - name: Checkout develop
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: develop
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+
+      - name: Download generated candidate
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: ${{ needs.generate.outputs.candidate_name }}
+          path: ${{ runner.temp }}/candidate
+
+      - name: Validate and promote from the latest develop tip
+        id: promote
+        env:
+          PROMOTE_AS_OF: ${{ needs.generate.outputs.as_of }}
+          PROMOTE_BASE_SHA: ${{ needs.generate.outputs.base_sha }}
+          CANDIDATE_DIR: ${{ runner.temp }}/candidate
+        run: |
+          set -euo pipefail
+          allowed=(
+            data/state/lineage-cache/s2_references.json
+            data/state/lineage-cache/arxiv_html_contexts.json
+            data/state/lineage-cache/conference_seeds.json
+          )
+          while IFS= read -r -d '' lineage; do
+            allowed+=("${lineage#"$CANDIDATE_DIR/"}")
+          done < <(find "$CANDIDATE_DIR/data/published" -mindepth 2 -maxdepth 2 \
+            -name lineage.json -type f -print0)
+          msg="data(conf): LLM-free conference lineage regeneration"
+          pnpm exec tsx apps/pipeline/src/release/cli.ts promote conference \
+            "$CANDIDATE_DIR" "$msg" "${allowed[@]}"
+
+  release:
+    needs: [generate, promote]
+    if: needs.promote.outputs.changed == 'true' && needs.generate.outputs.succeeded != '0'
+    permissions:
+      contents: read
+      deployments: write
+    uses: ./.github/workflows/pages-release.yml
+    secrets: inherit
+    with:
+      source_sha: ${{ needs.promote.outputs.source_sha }}
+      release_kind: normal
+      request_id: conference-lineage-${{ github.run_id }}-${{ github.run_attempt }}
+
+  verdict:
+    needs: [generate, promote]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+    steps:
+      - name: Fail when no conference lineage was written
+        env:
+          GENERATE_RESULT: ${{ needs.generate.result }}
+          PROMOTE_RESULT: ${{ needs.promote.result }}
+          SUCCEEDED: ${{ needs.generate.outputs.succeeded }}
+          REFUSED: ${{ needs.generate.outputs.refused }}
+        run: |
+          set -euo pipefail
+          if [ "$GENERATE_RESULT" != success ] || [ "$PROMOTE_RESULT" != success ]; then
+            echo "::error::generate=$GENERATE_RESULT promote=$PROMOTE_RESULT"
+            exit 1
+          fi
+          if [ "${SUCCEEDED:-0}" = 0 ]; then
+            echo "::error::no conference lineage was written (refused by the publish guard: ${REFUSED:-0}); published lineages kept"
+            exit 1
+          fi
