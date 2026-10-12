@@ -59,6 +59,9 @@ export const S2_NOT_FOUND_TTL_DAYS = 14;
 export const S2_REFERENCE_FIELDS =
   "contexts,intents,isInfluential,externalIds,title,year,abstract,venue,citationCount,authors";
 const S2_GRAPH = "https://api.semanticscholar.org/graph/v1";
+/** R2-35: fields of a ranked (bulk) search hit. */
+export const S2_SEARCH_FIELDS =
+  "paperId,externalIds,title,year,abstract,venue,citationCount,authors";
 const PAGE_LIMIT = 1000;
 const MAX_PAGES = 10;
 /** Citing papers are fetched for expansion only: one page is plenty. */
@@ -139,6 +142,8 @@ export interface S2CitationStats {
   /** R2-23: stored pairs refetched because the old 4-context cap may have
    * cut them short. */
   contextRefreshes: number;
+  /** R2-35: ranked bulk searches answered ({@link S2CitationSource.searchByCitations}). */
+  rankedSearches: number;
 }
 
 type PaperLike = Record<string, unknown>;
@@ -352,6 +357,7 @@ export class S2CitationSource {
     pairsMissing: 0,
     citationListsFetched: 0,
     citationListsFailed: 0,
+    rankedSearches: 0,
     contextRefreshes: 0,
   };
 
@@ -529,6 +535,44 @@ export class S2CitationSource {
       this.stats.citationListsFailed += 1;
       this.lastListFailed = true;
       this.deps.logger?.warn(`s2 citations: ${exc.message}`);
+      return null;
+    }
+  }
+
+  /**
+   * R2-35: the most-cited papers matching `query` (S2 bulk search syntax,
+   * e.g. `"low rank adaptation" | LoRA`), published in `yearFrom` or
+   * later, citation count descending — up to `limit`. S2's `/citations`
+   * lists the NEWEST citing papers first and stops at 10,000, so for a
+   * seed with tens of thousands of citers the most-cited descendants
+   * (QLoRA for LoRA) are never on it; this ranked search is how they are
+   * found (callers verify the citation through {@link lookup}). `null` =
+   * S2 could not be reached ({@link lastListFailed} set); `[]` = nothing.
+   */
+  async searchByCitations(
+    query: string,
+    opts: { yearFrom?: number | null; limit: number },
+  ): Promise<S2EdgePaper[] | null> {
+    this.lastListFailed = false;
+    const year =
+      typeof opts.yearFrom === "number" && Number.isInteger(opts.yearFrom)
+        ? `&year=${opts.yearFrom}-`
+        : "";
+    const url =
+      `${S2_GRAPH}/paper/search/bulk?query=${encodeURIComponent(query)}` +
+      `&sort=citationCount:desc&fields=${S2_SEARCH_FIELDS}${year}`;
+    try {
+      const body = await this.getJson(url);
+      const data = body === null ? [] : body.data;
+      if (!Array.isArray(data)) return [];
+      this.stats.rankedSearches += 1;
+      return data
+        .filter((p): p is S2EdgePaper => p !== null && typeof p === "object")
+        .slice(0, Math.max(0, opts.limit));
+    } catch (exc) {
+      if (!(exc instanceof TransientS2Error)) throw exc;
+      this.lastListFailed = true;
+      this.deps.logger?.warn(`s2 citations: ranked search: ${exc.message}`);
       return null;
     }
   }

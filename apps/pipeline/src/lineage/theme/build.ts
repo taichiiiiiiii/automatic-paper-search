@@ -42,6 +42,7 @@ import {
   addCrossNodeEdges,
   addVersionFamilyEdges,
   applyDeferredS2Relations,
+  confirmPreSeedEmbeddingAdmissions,
   confirmSupportAdmissions,
   confirmWeakAdmissions,
   dropReversedEdges,
@@ -183,6 +184,22 @@ export function logClassifySummary(
  * `meta.seeds` lists only focus ids, so nothing else references a pruned
  * node; edges are not touched.
  */
+/** R2-35: S2 bulk-search query for the ranked descendant search: the
+ * theme phrase and its aliases as quoted phrases (punctuation spaced out)
+ * plus the derived acronyms, OR-ed. */
+export function descendantSearchQuery(scope: TopicScope): string {
+  const parts: string[] = [];
+  for (const phrase of scope.definingPhrases) {
+    const clean = phrase
+      .normalize("NFKC")
+      .replace(/[^\p{L}\p{N}]+/gu, " ")
+      .trim();
+    if (clean) parts.push(clean.includes(" ") ? `"${clean}"` : clean);
+  }
+  parts.push(...scope.derivedTerms);
+  return [...new Set(parts)].join(" | ");
+}
+
 export function pruneEdgelessNodes<T extends { id: string; is_focus?: boolean }>(
   nodes: readonly T[],
   edges: readonly { src: string; dst: string }[],
@@ -360,6 +377,11 @@ export interface BuildThemeLineageDeps {
     maxRequests?: number;
     fetchImpl?: FetchLike;
   } | null;
+  /** R2-35: ranked descendant search — the theme's most-cited papers from
+   * one S2 bulk search, kept as citing papers of each seed they cite
+   * (`s2Expansion.ts::rankedCiters`; needs `s2Citations`). Null/omitted =
+   * off (the CLI enables it with `PAPERPILOT_S2_DESCENDANT_SEARCH=on`). */
+  s2DescendantSearch?: { candidates?: number } | null;
   /** R2-28: DBLP SPARQL venue correction of preprint-venue nodes
    * (`dblpVenues.ts`). Null/omitted = off. */
   dblpVenues?: {
@@ -473,7 +495,7 @@ export async function buildThemeLineage(
   };
 
   const keywords = [sanitised];
-  const topicScope = TopicScope.forTheme(sanitised, topicScopeOptions);
+  let topicScope = TopicScope.forTheme(sanitised, topicScopeOptions);
 
   const completeness: DiscoverSeedsCompleteness & BuildCompleteness =
     new BuildCompleteness() as unknown as DiscoverSeedsCompleteness & BuildCompleteness;
@@ -597,6 +619,7 @@ export async function buildThemeLineage(
           openalex: netDeps,
           cacheDir: deps.cacheDir,
           logger,
+          descendantSearch: deps.s2DescendantSearch ?? null,
         });
 
   // R2-17 (ERROR_PATTERNS 10): seeds = canonical method papers cited by
@@ -665,6 +688,24 @@ export async function buildThemeLineage(
   );
   const [resolvedSeeds, seedByGraphId] = resolveAndDedupSeeds(pickedSeeds, aliasIndex);
   seeds = resolvedSeeds;
+
+  // R2-35: acronyms the seeds define for the theme phrase ("Low-Rank
+  // Adaptation (LoRA)") count as theme terms from here on (gate, roles,
+  // weak-entry checks); the embedding query text is unchanged.
+  const derivedAcronyms = topicScope.deriveAcronyms(seeds);
+  if (derivedAcronyms.length > 0) {
+    topicScope = topicScope.withDerivedTerms(derivedAcronyms);
+    logger.warn(`topic terms: derived acronym(s) from the seeds: ${derivedAcronyms.join(", ")}`);
+  }
+  if (s2Expansion !== null && deps.s2DescendantSearch) {
+    const query = descendantSearchQuery(topicScope);
+    const seedYears = seeds
+      .map((p) => p.year)
+      .filter((y): y is number => typeof y === "number" && Number.isInteger(y));
+    const yearFrom = seedYears.length > 0 ? Math.min(...seedYears) : null;
+    s2Expansion.setDescendantQuery(query, yearFrom);
+    logger.info?.(`s2 descendant search: query=${JSON.stringify(query)} from=${yearFrom ?? "-"}`);
+  }
 
   const maxSeedCite = seeds.reduce((max, s) => Math.max(max, Number(s.citationCount) || 0), 0);
 
@@ -787,6 +828,22 @@ export async function buildThemeLineage(
     for (const d of weak.dropped) {
       logger.warn(
         `topic gate: dropped weak-entry node ${d.id} (${d.rule}, z=${d.z === null ? "-" : d.z.toFixed(2)})`,
+      );
+    }
+  }
+
+  // R2-35: embedding-only admissions from well before the earliest seed
+  // need a quoted lineage cue from an anchored node.
+  if (topicScope.options.gate && topicScope.options.preSeedYears !== null) {
+    const pre = confirmPreSeedEmbeddingAdmissions(nodes, edges, {
+      seedIds: new Set(seedIds),
+      admissions: bfsResult.admissions,
+      scope: topicScope,
+    });
+    edges = pre.edges;
+    for (const d of pre.dropped) {
+      logger.warn(
+        `topic gate: dropped pre-seed embedding-only node ${d.id} (${d.year}, z=${d.z === null ? "-" : d.z.toFixed(2)}; no quoted lineage cue)`,
       );
     }
   }
