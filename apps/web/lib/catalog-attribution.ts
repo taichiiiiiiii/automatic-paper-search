@@ -55,10 +55,23 @@ export function catalogLinks(paper: CatalogPaper): CatalogLink[] {
   if (source !== "arxiv" && ARXIV_ID_RE.test(arxivId)) {
     links.push({ label: "arXiv", url: `https://arxiv.org/abs/${arxivId}` });
   }
+  const orUrl = openreviewForumUrl(paper);
+  if (orUrl && orUrl !== pageUrl) links.push({ label: SOURCE_LABEL.openreview, url: orUrl });
   const pmlrUrl = pmlrPageUrl(paper);
   if (pmlrUrl && pmlrUrl !== pageUrl) links.push({ label: "PMLR", url: pmlrUrl });
   if (pdfUrl) links.push({ label: "PDF", url: pdfUrl });
   return links;
+}
+
+const OPENREVIEW_FORUM_ID_RE = /^[A-Za-z0-9_-]{1,256}$/;
+
+/**
+ * R3-6: forum URL of a row linked to OpenReview without being keyed by it
+ * (`openreview_id`, e.g. ICLR 2025 via DBLP), or "".
+ */
+function openreviewForumUrl(paper: CatalogPaper): string {
+  const id = typeof paper.openreview_id === "string" ? paper.openreview_id : "";
+  return OPENREVIEW_FORUM_ID_RE.test(id) ? `https://openreview.net/forum?id=${id}` : "";
 }
 
 /** The row's PMLR page (`abstract_url` of a PMLR abstract), or "". */

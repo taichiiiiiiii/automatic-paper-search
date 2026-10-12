@@ -41,6 +41,8 @@ export interface CatalogPaper {
   abstract_license?: string;
   /** R3-3: per-paper proceedings page of the abstract (PMLR). */
   abstract_url?: string;
+  /** R3-6: OpenReview forum id of a row keyed by another source (ICLR 2025). */
+  openreview_id?: string;
   [key: string]: unknown;
 }
 

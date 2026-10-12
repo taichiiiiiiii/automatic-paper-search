@@ -30,6 +30,7 @@ import { atomicWriteText } from "../collect/state/atomic.js";
 import { parseArgs } from "../shared/cli/argparse.js";
 import { isMain } from "../shared/cli/isMain.js";
 import {
+  AUTHOR_OVERLAP_MIN,
   authorOverlap,
   judgeArxivMatch,
   type MatchCandidate,
@@ -37,13 +38,13 @@ import {
   titleScore,
 } from "./abstractReplacements.js";
 import { loadSummaryWithDetails } from "./buildPages.js";
+import { EXTERNAL_IDS_FILENAME, EXTERNAL_IDS_SCHEMA } from "./externalIds.js";
 import { PacedClient } from "./resolveAbstractReplacementsCli.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const DEFAULT_REPO_ROOT = resolve(HERE, "..", "..", "..", "..");
 
-export const EXTERNAL_IDS_SCHEMA = "conference-external-ids-v1";
-export const EXTERNAL_IDS_FILENAME = "external_ids.json";
+export { EXTERNAL_IDS_FILENAME, EXTERNAL_IDS_SCHEMA };
 export const DBLP_SPARQL = "https://sparql.dblp.org/sparql";
 const DBLP_PAGE = 2000;
 
@@ -68,9 +69,16 @@ export interface ExternalIdLink {
   /**
    * `title`: (near-)identical title + >= 50 % authors. `authors`: a retitled
    * paper — the only record of the edition with exactly the same (>= 2)
-   * authors and some title overlap.
+   * authors and some title overlap. `title-unique`: an identical title that
+   * only one record of the edition and only one unlinked row carry, with the
+   * same number of authors and >= 1 shared surname (author names written in
+   * another order / glued, e.g. `HuXiaowan`).
    */
-  match: { via: "title" | "authors"; title_score: number; author_overlap: number };
+  match: {
+    via: "title" | "authors" | "title-unique";
+    title_score: number;
+    author_overlap: number;
+  };
 }
 
 /** Title overlap still required for an `authors` link (token Jaccard). */
@@ -83,6 +91,37 @@ export interface ExternalIdsFile {
   source: { dblp_toc: string; endpoint: string; license: "CC0-1.0" };
   counts: { rows: number; dblp_records: number; linked: number; openreview: number };
   papers: ExternalIdLink[];
+}
+
+function editDistance(a: string, b: string): number {
+  let prev = Array.from({ length: b.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= a.length; i++) {
+    const cur = [i];
+    for (let j = 1; j <= b.length; j++) {
+      cur[j] = Math.min(
+        (prev[j] as number) + 1,
+        (cur[j - 1] as number) + 1,
+        (prev[j - 1] as number) + (a[i - 1] === b[j - 1] ? 0 : 1),
+      );
+    }
+    prev = cur;
+  }
+  return prev[b.length] as number;
+}
+
+/**
+ * Titles that differ by one misspelt word only (`Adaption` / `Adaptation`):
+ * same word count (>= 4), exactly one differing word, both >= 7 letters and
+ * within edit distance 2. Callers still require >= 50 % author overlap.
+ */
+export function isSingleWordTypo(a: string, b: string): boolean {
+  const ta = normalizeTitle(a).split(" ").filter(Boolean);
+  const tb = normalizeTitle(b).split(" ").filter(Boolean);
+  if (ta.length !== tb.length || ta.length < 4) return false;
+  const diff = ta.map((t, i) => [t, tb[i] as string] as const).filter(([x, y]) => x !== y);
+  if (diff.length !== 1) return false;
+  const [x, y] = diff[0] as readonly [string, string];
+  return x.length >= 7 && y.length >= 7 && editDistance(x, y) <= 2;
 }
 
 /** SPARQL for one page of a DBLP table-of-contents listing. */
@@ -152,7 +191,14 @@ export function linkRowsToDblp(
     const exact = byTitle.get(normalizeTitle(row.title)) ?? [];
     const pool = exact.length > 0 ? exact : records;
     for (const rec of pool) {
-      const j = judgeArxivMatch(row, rec, "arxiv_title_search");
+      let j = judgeArxivMatch(row, rec, "arxiv_title_search");
+      if (
+        !j.ok &&
+        j.author_overlap >= AUTHOR_OVERLAP_MIN &&
+        isSingleWordTypo(row.title, rec.title)
+      ) {
+        j = { ...j, ok: true };
+      }
       if (!j.ok) continue;
       if (
         !best ||
@@ -189,6 +235,33 @@ export function linkRowsToDblp(
         dblp_key: rec.dblp_key,
         ...(rec.openreview_id ? { openreview_id: rec.openreview_id } : {}),
         match: { via: "authors", title_score: Math.round(ts * 1000) / 1000, author_overlap: 1 },
+      },
+    ]);
+  }
+  // Identical title, unique on both sides, same author count, >= 1 shared
+  // surname: authors written in another order or glued ("HuXiaowan").
+  const stillUnlinked = new Set([...claims.values()].flat().map((l) => l.paper_id));
+  const free = rows.filter((r) => !stillUnlinked.has(r.paper_id));
+  for (const row of free) {
+    const sameTitle = records.filter((r) => titleScore(row.title, r.title) === 1);
+    if (sameTitle.length !== 1) continue;
+    const rec = sameTitle[0] as DblpRecord;
+    if (claims.has(rec.dblp_key)) continue;
+    if (free.filter((r) => titleScore(r.title, rec.title) === 1).length !== 1) continue;
+    if (row.authors.length !== rec.authors.length) continue;
+    const ao = authorOverlap(row.authors, rec.authors);
+    if (ao <= 0) continue;
+    claims.set(rec.dblp_key, [
+      {
+        paper_id: row.paper_id,
+        title: row.title,
+        dblp_key: rec.dblp_key,
+        ...(rec.openreview_id ? { openreview_id: rec.openreview_id } : {}),
+        match: {
+          via: "title-unique",
+          title_score: 1,
+          author_overlap: Math.round(ao * 1000) / 1000,
+        },
       },
     ]);
   }
