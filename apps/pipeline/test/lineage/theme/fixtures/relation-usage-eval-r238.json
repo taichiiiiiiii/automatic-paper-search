@@ -1,0 +1,2578 @@
+{
+ "schema_version": "relation-usage-eval-r238-v1",
+ "description": "R2-38 evaluation set: every strong edge (extends / supersedes / contrasts) of the published ICML 2025 conference lineage and the 5 published theme lineages (flash-attention, graph-neural-network, low-rank-adaptation, mixture-of-experts, vision-transformer) as of develop dde7aae, plus the strong edges an offline replay of the base rules produced. Signals are the Semantic Scholar citation contexts / intents / isInfluential from data/state/lineage-cache/s2_references.json (or the arXiv HTML contexts from arxiv_html_contexts.json when the published evidence came from arXiv HTML). Labels are hand labels at the paper level: genuine = the citing paper builds on / extends the cited method; usage = the cited work is only used as a benchmark, dataset, task, metric, framework, tool, protocol or stock component; other = the sentences are not about a build-on (comparison, misattributed sentence); genuine_contrast = a correct contrasts. Audited themes take the verdicts of data/config/lineage-audit-fixtures-v1.json (all 'correct'). citing_abstract: theme nodes' published short_abstract; for ICML 2025 only the abstract sentence quoted in the published rationale (S2 abstracts are not republished).",
+ "labelled_at": "2026-10-12",
+ "labeller": "R2-38 subagent (hand labels; borderline=true marks judgement calls)",
+ "items": [
+  {
+   "collection": "flash-attention",
+   "src": "openalex:W4281758439",
+   "dst": "openalex:W4384648639",
+   "cited": {
+    "title": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness",
+    "year": 2022,
+    "authors": [
+     "Dao, Tri",
+     "Daniel Y. Fu",
+     "Stefano Ermon",
+     "Atri Rudra",
+     "Christopher Ré"
+    ]
+   },
+   "citing": {
+    "title": "FlashAttention-2: Faster Attention with Better Parallelism and Work Partitioning",
+    "year": 2023
+   },
+   "citing_abstract": "Scaling Transformers to longer sequence lengths has been a major problem in the last several years, promising to improve performance in language modeling and high-resolution image understanding, as well as to unlock new applications in code, audio, and video generation. The attention layer is the main bottleneck in scaling to longer sequences, as its runtime and memory increase quadratically in the sequence length. FlashAttention exploits the asymmetric GPU memory hierarchy to bring significant memory saving (linear instead of quadratic) and runtime speedup (2-4$\\times$ compared to optimized baselines), with no approximation. However, FlashAttention is still not nearly as fast as optimized matrix-multiply (GEMM) operations, reaching only 25-40\\% of the theoretical maximum FLOPs/s. We observe that the inefficiency is due to suboptimal work partitioning between different thread blocks and warps on the GPU, causing either low-occupancy or unnecessary shared memory reads/writes. We…",
+   "method": "title_version",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "supersedes",
+   "s2": {
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "is_influential": true,
+    "contexts": [
+     "In the case of long sequences (which usually means small batch sizes or small number of heads), to make better use of the multiprocessors on the GPU, we now additionally parallelize over the sequence length dimension.",
+     "FlashAttention [5] exploits the asymmetric GPU memory hierarchy to bring significant memory saving (linear instead of quadratic) and runtime speedup (2-4× compared to optimized baselines), with no approximation.",
+     "To speed up attention on hardware accelerators such as GPU, [5] proposes an algorithm to reduce the memory reads/writes while maintaining the same output (without approximation).",
+     "[5] proposed to reorder the attention computation and leverages classical techniques (tiling, recomputation) to significantly speed it up and reduce memory usage from quadratic to linear in sequence length."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "supersedes",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": "supersedes:correct",
+   "note": "Audited supersedes (lineage-audit-fixtures-v1: correct)."
+  },
+  {
+   "collection": "flash-attention",
+   "src": "openalex:W4281758439",
+   "dst": "openalex:W4400611982",
+   "cited": {
+    "title": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness",
+    "year": 2022,
+    "authors": [
+     "Dao, Tri",
+     "Daniel Y. Fu",
+     "Stefano Ermon",
+     "Atri Rudra",
+     "Christopher Ré"
+    ]
+   },
+   "citing": {
+    "title": "FlashAttention-3: Fast and Accurate Attention with Asynchrony and Low-precision",
+    "year": 2024
+   },
+   "citing_abstract": "Attention, as a core layer of the ubiquitous Transformer architecture, is the bottleneck for large language models and long-context applications. FlashAttention elaborated an approach to speed up attention on GPUs through minimizing memory reads/writes. However, it has yet to take advantage of new capabilities present in recent hardware, with FlashAttention-2 achieving only 35% utilization on the H100 GPU. We develop three main techniques to speed up attention on Hopper GPUs: exploiting asynchrony of the Tensor Cores and TMA to (1) overlap overall computation and data movement via warp-specialization and (2) interleave block-wise matmul and softmax operations, and (3) block quantization and incoherent processing that leverages hardware support for FP8 low-precision. We demonstrate that our method, FlashAttention-3, achieves speedup on H100 GPUs by 1.5-2.0$\\times$ with FP16 reaching up to 740 TFLOPs/s (75% utilization), and with FP8 reaching close to 1.2 PFLOPs/s. We validate that FP8…",
+   "method": "title_version",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "supersedes",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": [
+     "In [16], Dao et al. introduced F LASH A TTENTION , a novel tiling strategy for parallelizing attention that eliminates intermediate reads/writes to slow global memory through fusing all of the attention operations into a single GPU kernel.",
+     "This has generated signiﬁcant interest in making attention faster in the long-context regime, including by approximation [13, 27, 55] and software optimization ([16, 29, 45]), or even alternative architectures [22, 42, 54].",
+     "In this work, we build on the work of Dao et al. [16] on developing exact-attention algorithms that integrate knowledge of the GPU’s execution model and hardware characteristics into their high-level design."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "supersedes",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": "supersedes:correct",
+   "note": "Audited supersedes (lineage-audit-fixtures-v1: correct)."
+  },
+  {
+   "collection": "flash-attention",
+   "src": "openalex:W4384648639",
+   "dst": "openalex:W4400611982",
+   "cited": {
+    "title": "FlashAttention-2: Faster Attention with Better Parallelism and Work Partitioning",
+    "year": 2023,
+    "authors": [
+     "Tri Dao"
+    ]
+   },
+   "citing": {
+    "title": "FlashAttention-3: Fast and Accurate Attention with Asynchrony and Low-precision",
+    "year": 2024
+   },
+   "citing_abstract": "Attention, as a core layer of the ubiquitous Transformer architecture, is the bottleneck for large language models and long-context applications. FlashAttention elaborated an approach to speed up attention on GPUs through minimizing memory reads/writes. However, it has yet to take advantage of new capabilities present in recent hardware, with FlashAttention-2 achieving only 35% utilization on the H100 GPU. We develop three main techniques to speed up attention on Hopper GPUs: exploiting asynchrony of the Tensor Cores and TMA to (1) overlap overall computation and data movement via warp-specialization and (2) interleave block-wise matmul and softmax operations, and (3) block quantization and incoherent processing that leverages hardware support for FP8 low-precision. We demonstrate that our method, FlashAttention-3, achieves speedup on H100 GPUs by 1.5-2.0$\\times$ with FP16 reaching up to 740 TFLOPs/s (75% utilization), and with FP8 reaching close to 1.2 PFLOPs/s. We validate that FP8…",
+   "method": "title_version",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "supersedes",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": [
+     "Dao [14] restructured the algorithm as F LASH A TTENTION -2 to also parallelize over the sequence length dimension and perform the inner loop of the forward pass over blocks of the key and value matrices, thus improving the occupancy and distribution of work on the GPU."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "supersedes",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": "supersedes:correct",
+   "note": "Audited supersedes (lineage-audit-fixtures-v1: correct)."
+  },
+  {
+   "collection": "flash-attention",
+   "src": "openalex:W4384648639",
+   "dst": "openalex:W7220440728",
+   "cited": {
+    "title": "FlashAttention-2: Faster Attention with Better Parallelism and Work Partitioning",
+    "year": 2023,
+    "authors": [
+     "Tri Dao"
+    ]
+   },
+   "citing": {
+    "title": "Efficient FlashAttention on Blackwell via Fixed-Shift Softmax and Persistent Scheduling",
+    "year": 2026
+   },
+   "citing_abstract": "On Blackwell, normalization and operand movement can limit attention kernels whose matrix multiplications are already deeply pipelined. We implement an FA4-style pipeline in Triton TLX with fixed-shift dense softmax and a saved inverse denominator for backward. The fixed shift removes recurrent accumulator corrections; the saved reciprocal moves row normalization from the quadratic backward loop into linear preprocessing. The guarded causal path uses a first-block anchor with selective recovery, and fully masked diagonal contractions are skipped. A packed BF16 exponential approximation and pipelined dQ publication reduce per-element work and on-chip movement. On B200 at 1,000 W, using prepared launches and the original FA4 timer, TLX improves geometric-mean throughput by 7.3 percent across the 24 cases in FA4's BF16 variable-batch grid through 32,768 tokens at head dimension 128. Dense forward and backward improve by 13.0 and 10.4 percent, respectively. Causal backward improves by…",
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Skipping fully masked blocks is standard in causal attention [2].",
+     "FlashAttention kernels avoid materializing score and probability matrices in HBM through tiling [1, 2, 3, 4].",
+     "Later FlashAttention kernels sought to keep arithmetic units busy within each tile: FlashAttention-2 improved work partitioning [2], FlashAttention-3 overlapped matrix multiplication and softmax on Hopper [3], and FlashAttention-4 developed an asynchronous Blackwell pipeline [4].",
+     "We follow the FlashAttention algorithms in using e P for unnormalized shifted exponentials, m for the row shift, ℓ for their row sum, and L for log-sum-exp [2, 3, 4]."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": "extends:correct",
+   "note": "Audited extends (lineage-audit-fixtures-v1: correct)."
+  },
+  {
+   "collection": "graph-neural-network",
+   "src": "openalex:W2519887557",
+   "dst": "openalex:W2554952599",
+   "cited": {
+    "title": "Semi-Supervised Classification with Graph Convolutional Networks",
+    "year": 2016,
+    "authors": [
+     "Thomas Kipf",
+     "Max Welling"
+    ]
+   },
+   "citing": {
+    "title": "Variational Graph Auto-Encoders",
+    "year": 2016
+   },
+   "citing_abstract": "We introduce the variational graph auto-encoder (VGAE), a framework for unsupervised learning on graph-structured data based on the variational auto-encoder (VAE). This model makes use of latent variables and is capable of learning interpretable latent representations for undirected graphs. We demonstrate this model using a graph convolutional network (GCN) encoder and a simple inner product decoder. Our model achieves competitive results on a link prediction task in citation networks. In contrast to most existing models for unsupervised learning on graph-structured data and link prediction, our model can naturally incorporate node features, which significantly improves predictive performance on a number of benchmark datasets.",
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [
+     "methodology"
+    ],
+    "is_influential": true,
+    "contexts": [
+     "We demonstrate this model using a graph convolutional network (GCN) [4] encoder and a simple inner product decoder.",
+     "We further introduce stochastic latent variables zi, summarized in an N × F matrix Z. Node features are summarized in an N ×D matrix X.\nInference model We take a simple inference model parameterized by a two-layer GCN: q(Z |X,A) = ∏N\ni=1 q(zi |X,A) , with q(zi |X,A) = N (zi |µi,diag(σ2i )) .",
+     "(1)\nHere, µ = GCNµ(X,A) is the matrix of mean vectors µi; similarly logσ = GCNσ(X,A).",
+     "For a featureless approach, we simply drop the dependence on X and replace X with the identity matrix in the GCN.\nNon-probabilistic graph auto-encoder (GAE) model For a non-probabilistic variant of the VGAE model, we calculate embeddings Z and the reconstructed adjacency matrix Â as follows:\nÂ = σ ( ZZ> ) , with Z = GCN(X,A) .",
+     "The two-layer GCN is defined as GCN(X,A) = ÃReLU ( ÃXW0 ) W1, with weight matrices Wi. GCNµ(X,A) and GCNσ(X,A) share first-layer parameters W0."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": "extends:correct",
+   "note": "Audited extends (lineage-audit-fixtures-v1: correct)."
+  },
+  {
+   "collection": "graph-neural-network",
+   "src": "openalex:W2519887557",
+   "dst": "openalex:W2558460151",
+   "cited": {
+    "title": "Semi-Supervised Classification with Graph Convolutional Networks",
+    "year": 2016,
+    "authors": [
+     "Thomas Kipf",
+     "Max Welling"
+    ]
+   },
+   "citing": {
+    "title": "Geometric Deep Learning on Graphs and Manifolds Using Mixture Model CNNs",
+    "year": 2017
+   },
+   "citing_abstract": "Deep learning has achieved a remarkable performance breakthrough in several fields, most notably in speech recognition, natural language processing, and computer vision. In particular, convolutional neural network (CNN) architectures currently produce state-of-the-art performance on a variety of image analysis tasks such as object detection and recognition. Most of deep learning research has so far focused on dealing with 1D, 2D, or 3D Euclidean-structured data such as acoustic signals, images, or videos. Recently, there has been an increasing interest in geometric deep learning, attempting to generalize deep learning methods to non-Euclidean structured data such as graphs and manifolds, with a variety of applications from the domains of network analysis, computational social science, or computer graphics. In this paper, we propose a unified framework allowing to generalize CNN architectures to non-Euclidean domains (graphs and manifolds) and learn local, stationary, and…",
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [
+     "result",
+     "background",
+     "methodology"
+    ],
+    "is_influential": true,
+    "contexts": [
+     "Kipf and Welling [21] further simplified this approach using simple filters operating on 1-hop neighborhoods of the graph.",
+     "Kipf and Welling [26] further simpliﬁed this approach using simple ﬁlters operating on 1-hop neighborhoods of the graph.",
+     "We followed verbatim the experimental settings presented in [44, 21].",
+     "Such a construction allows to formulate previously proposed Geodesic CNN (GCNN) [26] and Anisotropic CNN (ACNN) [7] on manifolds or GCN [21] and DCNN [3] on graphs as particular instances of our approach.",
+     "We compared our approach to all the methods compared in [21].",
+     "Kipf and Welling [21] considered the construction of [13] with r = 2, which, under the additional assumption of λn ≈ 2, and α = α0 = −α1 yields single-parametric filters of the form gα(f) = α(I + D −1/2WD−1/2)f .",
+     "The L2-regularization weights for MoNet were γ = 10−2 and 5×10−2 for Cora and PubMed, respectively; for DCNN and GCN we used the values suggested by the authors in [3] and [21].",
+     "Kipf and Welling [26] considered the construction of [15] with r = 2 , which, under the additional assumption of λ n ≈ 2 , and α = α 0 = − α 1 yields single-parametric ﬁlters of the form g α ( f ) = α ( I + D − 1 / 2 WD − 1 / 2 ) f .",
+     "GCN [21] Vertex degree deg(x), deg(y) ( 1− |1− 1 u1 | )( 1− |1− 1 u2 | )"
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": "extends:correct",
+   "note": "Audited extends (lineage-audit-fixtures-v1: correct)."
+  },
+  {
+   "collection": "graph-neural-network",
+   "src": "openalex:W2624431344",
+   "dst": "openalex:W2811124557",
+   "cited": {
+    "title": "Inductive Representation Learning on Large Graphs",
+    "year": 2017,
+    "authors": [
+     "Hamilton, William L.",
+     "Rex Ying",
+     "Jure Leskovec"
+    ]
+   },
+   "citing": {
+    "title": "Hierarchical graph representation learning with differentiable pooling",
+    "year": 2018
+   },
+   "citing_abstract": "Recently, graph neural networks (GNNs) have revolutionized the field of graph representation learning through effectively learned node embeddings, and achieved state-of-the-art results in tasks such as node classification and link prediction. However, current GNN methods are inherently flat and do not learn hierarchical representations of graphs---a limitation that is especially problematic for the task of graph classification, where the goal is to predict the label associated with an entire graph. Here we propose DiffPool, a differentiable graph pooling module that can generate hierarchical representations of graphs and can be combined with various graph neural network architectures in an end-to-end fashion. DiffPool learns a differentiable soft cluster assignment for nodes at each layer of a deep GNN, mapping nodes to a set of clusters, which then form the coarsened input for the next GNN layer. Our experimental results show that combining existing GNN methods with DiffPool yields…",
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [
+     "background",
+     "methodology"
+    ],
+    "is_influential": true,
+    "contexts": [
+     "For the GRAPHSAGE and SET2SET baselines, we use the base implementation and hyperparameter sweeps as in our DIFFPOOL approach.",
+     "We use the “mean” variant of GRAPHSAGE [16] and apply a DIFFPOOL layer after every two GRAPHSAGE layers in our architecture.",
+     "These results provide positive answers to our motivating questions Q1 and Q2: We observe that our DIFFPOOL approach obtains the highest average performance among all pooling approaches for GNNs, improves upon the base GRAPHSAGE architecture by an average of 6.27%, and achieves stateof-the-art results on 4 out of 5 benchmarks.",
+     "In recent years there has been a surge of interest in developing graph neural networks (GNNs)—general deep learning architectures that can operate over graph structured data, such as social network data [16, 21, 36] or graph-based representations of molecules [7, 11, 15].",
+     "network (GNN) models have been proposed in recent years, including methods inspired by convolutional neural networks [5, 8, 11, 16, 21, 24, 29, 36], recurrent neural networks [25], recursive neural networks [1, 30] and loopy belief propagation [7].",
+     "DIFFPOOL can be applied to other GNN architectures besides GRAPHSAGE to capture hierarchical structure in the graph data.",
+     "Concretely, we found that GRAPHSAGE with DIFFPOOL was 12× faster than the GRAPHSAGE model with SET2SET pooling, while still achieving significantly higher accuracy on all benchmarks.",
+     ", for node classification [16] or link prediction [32], and the whole model can be trained in an endto-end fashion.",
+     "The embedding matrix and the assignment matrix are computed by two separate GRAPHSAGE models respectively.",
+     "In our experiments, the GNN model used for DIFFPOOL is built on top of the GRAPHSAGE architecture, as we found this architecture to have superior performance compared to the standard GCN approach as introduced in [22].",
+     "• GRAPHSAGE with global mean-pooling [16].",
+     "The general approach with GNNs is to view the underlying graph as a computation graph and learn neural network primitives that generate individual node embeddings by passing, transforming, and aggregating node feature information across the graph [15, 16]."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": "extends:correct",
+   "note": "Audited extends (lineage-audit-fixtures-v1: correct)."
+  },
+  {
+   "collection": "graph-neural-network",
+   "src": "openalex:W2963984147",
+   "dst": "openalex:W2558460151",
+   "cited": {
+    "title": "Diffusion-Convolutional Neural Networks",
+    "year": 2016,
+    "authors": [
+     "James R. Atwood",
+     "Don Towsley"
+    ]
+   },
+   "citing": {
+    "title": "Geometric Deep Learning on Graphs and Manifolds Using Mixture Model CNNs",
+    "year": 2017
+   },
+   "citing_abstract": "Deep learning has achieved a remarkable performance breakthrough in several fields, most notably in speech recognition, natural language processing, and computer vision. In particular, convolutional neural network (CNN) architectures currently produce state-of-the-art performance on a variety of image analysis tasks such as object detection and recognition. Most of deep learning research has so far focused on dealing with 1D, 2D, or 3D Euclidean-structured data such as acoustic signals, images, or videos. Recently, there has been an increasing interest in geometric deep learning, attempting to generalize deep learning methods to non-Euclidean structured data such as graphs and manifolds, with a variety of applications from the domains of network analysis, computational social science, or computer graphics. In this paper, we propose a unified framework allowing to generalize CNN architectures to non-Euclidean domains (graphs and manifolds) and learn local, stationary, and…",
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [
+     "background",
+     "methodology"
+    ],
+    "is_influential": true,
+    "contexts": [
+     "Such a construction allows to formulate previously proposed Geodesic CNN (GCNN) [32] and Anisotropic CNN (ACNN) [7] on manifolds or GCN [26] and DCNN [2] on graphs as particular instances of our approach.",
+     "Learning meth-ods (DCNN, GCNN and MoNet) were trained and tested ﬁfty times for showing their average behavior with different initializa-tions.",
+     "Table 3 shows that other deep learning methods (including the classical CNN on Euclidean domains, DCN and DCNN on graphs, and GCNN and ACNN on manifolds) can be obtained as particular settings of our framework with appropriate deﬁnition of u and w ( u ) .",
+     "The L 2 -regularization weights for MoNet were γ = 10 − 2 and 5 × 10 − 2 for Cora and PubMed, respectively; for DCNN and GCN we used the values suggested by the authors in [2] and [26].",
+     "DCNN [3] Transition probability in r hops p(x, y), .",
+     "A different spatial-domain method was proposed by Atwood and Towsley [2], who considered a diffusion (random walk) process on the graph.",
+     "Such a construction allows to formulate previously proposed Geodesic CNN (GCNN) [26] and Anisotropic CNN (ACNN) [7] on manifolds or GCN [21] and DCNN [3] on graphs as particular instances of our approach.",
+     "Our approach follows the general philosophy of spatial-domain methods such as [26, 7, 3], formulating convolution-like operations as template matching with local intrinsic ‘patches’ on graphs or manifolds.",
+     "Similar methods were proposed in [3] and [15].",
+     "DCNN, GCN and MoNet were trained in the same way in order to give a fair comparison (see training details in Table 3).",
+     "ManiReg [4] 59.5% 70.7% SemiEmb [58] 59.0% 71.1% LP [63] 68.0% 63.0% DeepWalk [36] 67.2% 65.3% Planetoid [60] 75.7% 77.2% DCNN [2] 76.80 ± 0.60% 73.00 ± 0.52% GCN [26] 81.59 ± 0.42% 78.72 ± 0.25% MoNet 81.69 ± 0.48% 78.81 ± 0.44% in all the poses were used for training (800 shapes in total); the remaining 20 subjects were used for testing.",
+     "A different spatial-domain method was proposed by Atwood and Towsley [3], who considered a diffusion (random walk) process on the graph."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": "extends:correct",
+   "note": "Audited extends (lineage-audit-fixtures-v1: correct)."
+  },
+  {
+   "collection": "low-rank-adaptation",
+   "src": "openalex:W3168867926",
+   "dst": "openalex:W4382334310",
+   "cited": {
+    "title": "LoRA: Low-Rank Adaptation of Large Language Models",
+    "year": 2021,
+    "authors": [
+     "J. Edward Hu",
+     "Yelong Shen",
+     "Phillip Wallis",
+     "Zeyuan Allen-Zhu",
+     "Yuanzhi Li"
+    ]
+   },
+   "citing": {
+    "title": "Composing Parameter-Efficient Modules with Arithmetic Operations",
+    "year": 2023
+   },
+   "citing_abstract": "As an efficient alternative to conventional full finetuning, parameter-efficient finetuning (PEFT) is becoming the prevailing method to adapt pretrained language models. In PEFT, a lightweight module is learned on each dataset while the underlying pretrained language model remains unchanged, resulting in multiple compact modules representing diverse skills when applied to various domains and tasks. In this paper, we propose to compose these parameter-efficient modules through linear arithmetic operations in the weight space, thereby integrating different module capabilities. Specifically, we first define addition and negation operators for the module, and then further compose these two basic operators to perform flexible arithmetic. Our approach requires \\emph{no additional training} and enables highly flexible module composition. We apply different arithmetic operations to compose the parameter-efficient modules for (1) distribution generalization, (2) multi-tasking, (3) unlearning,…",
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "is_influential": true,
+    "contexts": [
+     "This bottleneck projection architecture is widely adopted in later work (Pfeiffer et al., 2021; Karimi Mahabadi et al., 2021; Hu et al., 2022), and He et al. (2022) show that many PEFT methods could be viewed as a form of adapter.",
+     "In this study, we focus on LoRA (Hu et al., 2022) and (IA)(3) (Liu et al.",
+     "In this paper, we focus on two recent state-of-the-art PEFT methods, LoRA (Hu et al., 2022) and (IA) 3 (Liu et al., 2022), which we describe below.",
+     "…following random Gaussian distribution, and B is initialized to all zeros to recover the pretrained model at the beginning, as suggested by Hu et al. (2022). θ lora = { A , B } forms the parameter-efficient module in LoRA, which we aim to compose with other LoRA modules trained…",
+     "While LoRA could be applied for any weight matrices, Hu et al. (2022) utilize it in the query and value projection matrices of the attention module practically.",
+     "In this paper, we focus on two recent state-of-the-art PEFT methods, LoRA (Hu et al., 2022) and (IA)(3) (Liu et al.",
+     "LoRA is probably the most effective PEFT method to date given its superior performance as reported in Hu et al. (2022).",
+     "This bottleneck projection architecture is widely adopted in later work (Pfeiffer et al., 2021; Karimi Mahabadi et al., 2021; Hu et al., 2022), and He et al.",
+     "In this study, we focus on LoRA (Hu et al., 2022) and (IA) 3 (Liu et al., 2022) as our PEM architectures, two state-of-the-art PEFT methods."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "note": "Composes LoRA modules (θ_lora … 'which we aim to compose'); the rule's quote is not a build cue."
+  },
+  {
+   "collection": "low-rank-adaptation",
+   "src": "openalex:W3168867926",
+   "dst": "openalex:W4386566659",
+   "cited": {
+    "title": "LoRA: Low-Rank Adaptation of Large Language Models",
+    "year": 2021,
+    "authors": [
+     "J. Edward Hu",
+     "Yelong Shen",
+     "Phillip Wallis",
+     "Zeyuan Allen-Zhu",
+     "Yuanzhi Li"
+    ]
+   },
+   "citing": {
+    "title": "DyLoRA: Parameter-Efficient Tuning of Pre-trained Models using Dynamic Search-Free Low-Rank Adaptation",
+    "year": 2023
+   },
+   "citing_abstract": "With the ever-growing size of pretrained models (PMs), fine-tuning them has become more expensive and resource-hungry.As a remedy, low-rank adapters (LoRA) keep the main pretrained weights of the model frozen and just introduce some learnable truncated SVD modules (so-called LoRA blocks) to the model.While LoRA blocks are parameter-efficient, they suffer from two major problems: first, the size of these blocks is fixed and cannot be modified after training (for example, if we need to change the rank of LoRA blocks, then we need to retrain them from scratch); second, optimizing their rank requires an exhaustive search and effort.In this work, we introduce a dynamic low-rank adaptation (DyLoRA) technique to address these two problems together.Our Dy-LoRA method trains LoRA blocks for a range of ranks instead of a single rank by sorting the representation learned by the adapter module at different ranks during training.We evaluate our solution on different natural language understanding…",
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "contrasts",
+   "s2": {
+    "intents": [
+     "result",
+     "methodology",
+     "background"
+    ],
+    "is_influential": true,
+    "contexts": [
+     "It is evident in the LoRA paper (Hu et al., 2021a) that the performance of models varies a lot with different ranks (e.g. check Tables 15, and 18 in the LoRA paper), and does not indicate any clear trend.",
+     "• LoRA: As a baseline to DyLoRA, we employed the original LoRA model with their tuned hyperparameters (Hu et al., 2021a).",
+     "As can be seen from several experiments in LoRA (Hu et al., 2021a) paper, the performance of different ranks does not indicate any clear trend.",
+     "To be fair with the original LoRA method, we try to keep the setting of our experiments similar to the LoRA paper (Hu et al., 2021a).",
+     "• LoRA : As a baseline to DyLoRA, we employed the original LoRA model with their tuned hyperparameters (Hu et al., 2021a",
+     "…low-rank adaptation techniques in the literature, such as Adapter (Houlsby et al., 2019b), Compacter (Karimi Mahabadi et al., 2021), and LoRA (Hu et al., 2021b); they all suffer from two major common problems: ﬁrst, it is not clear how to select the size of their rank (while their…",
+     "There are also different types of PET techniques in the literature such as low-rank adapters (Wang et al., 2020; Karimi Mahabadi et al., 2021; Houlsby et al., 2019b; Hu et al., 2021b), and prompt-based techniques (Lester et al., 2021).",
+     "Without losing generality, we focus on LoRA(Hu et al., 2021a) and train LoRA blocks for a range of ranks instead of a single rank by sorting out the representation learned at different ranks during training.",
+     "According to LoRA (Hu et al., 2021a), a proper choice of the scalar can improve the results.",
+     "Without loss of generality, we focus on LoRA(Hu et al., 2021a) and train LoRA blocks for a range of ranks instead of a single rank by sorting out the representation learned at different ranks during training.",
+     "We count all the trainable parameters including classiﬁer, unlike LoRA paper (Hu et al., 2021a) which they count only LoRA speciﬁc parameters. a result, most of the experiments have been conducted in a favorable manner for LoRA.",
+     "There are several low-rank adapters in the literature such as LoRA (Hu et al., 2021b), Adapter (Houlsby et al., 2019b), Compacter (Karimi Mahabadi et al., 2021), and Parallel Adapter (PA) (He et al., 2021)."
+    ]
+   },
+   "label": "other",
+   "usage_kind": null,
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": true,
+   "audited_verdict": null,
+   "note": "The contrast sentence is about parameter counting ('unlike LoRA paper … which they count only LoRA specific parameters'), not about the method; DyLoRA itself trains LoRA blocks for a range of ranks."
+  },
+  {
+   "collection": "low-rank-adaptation",
+   "src": "openalex:W3168867926",
+   "dst": "openalex:W4388748451",
+   "cited": {
+    "title": "LoRA: Low-Rank Adaptation of Large Language Models",
+    "year": 2021,
+    "authors": [
+     "J. Edward Hu",
+     "Yelong Shen",
+     "Phillip Wallis",
+     "Zeyuan Allen-Zhu",
+     "Yuanzhi Li"
+    ]
+   },
+   "citing": {
+    "title": "SiRA: Sparse Mixture of Low Rank Adaptation",
+    "year": 2023
+   },
+   "citing_abstract": "Parameter Efficient Tuning has been an prominent approach to adapt the Large Language Model to downstream tasks. Most previous works considers adding the dense trainable parameters, where all parameters are used to adapt certain task. We found this less effective empirically using the example of LoRA that introducing more trainable parameters does not help. Motivated by this we investigate the importance of leveraging \"sparse\" computation and propose SiRA: sparse mixture of low rank adaption. SiRA leverages the Sparse Mixture of Expert(SMoE) to boost the performance of LoRA. Specifically it enforces the top $k$ experts routing with a capacity limit restricting the maximum number of tokens each expert can process. We propose a novel and simple expert dropout on top of gating network to reduce the over-fitting issue. Through extensive experiments, we verify SiRA performs better than LoRA and other mixture of expert approaches across different single tasks and multitask settings.",
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "is_influential": true,
+    "contexts": [
+     "…as Adapters (Houlsby et al., 2019), Prefix Tuning (Li and Liang, 2021; Liu et al., 2021), Prompt Tuning (Lester et al., 2021), P-tuning (Liu et al., 2023), attention-injection (Zhang et al., 2023), LoRA (Hu et al., 2021; Dettmers et al., 2023), and combinations of PET methods (Mao et al., 2021).",
+     "We conducted extensive experiments to verify the performance of SiRA, which achieves better performance than LoRA (Hu et al., 2021) and its MoE variants Adamix (Wang et al., 2022), MoLoRA (Zadouri et al., 2023) across wide range of single task and multitask benchmarks.",
+     "We follow the default configurations in (Hu et al., 2021) to inject LoRA weights on the attention projections and set the intrinsic rank as 4 .",
+     "LoRA (Hu et al., 2021) is a widely adopted PET method which achieves high performance leveraging low-rank matrices.",
+     "MoE for PET methods Along the intersection of PET and MoE, Adamix (Wang et al., 2022) and MoLoRA (Zadouri et al., 2023) are most similar to our work.",
+     "One question for user of LoRA or other PET approach is how much trainable parameter should be used.",
+     "To increase the capacity of LoRA (Hu et al., 2021) using Mixture of Experts (MoE) without adding too much computational cost, we propose Sparse Mixture of Experts of Low Rank Adaptation (SiRA), which leverages multiple lightweight LoRA adaptors as experts while enforcing sparsity when using the…",
+     "Baselines and Experiment Configs We specifically compare our model with the standard LoRA (Hu et al., 2021), Adamix (Wang et al., 2022) and MoLoRA (Zadouri et al., 2023).",
+     "To this end, we investigate leveraging “sparse” computation for PET in this paper and propose SiRA , the Sparse Mixture of Low Rank Adaptation.",
+     "To this end parameter efficient tuning (PET) (Hu et al., 2021; Li and Liang, 2021; Lester et al., 2021; Houlsby et al., 2019; Zhang et al., 2023; Zaken et al., 2021; Chen et al., 2022), which introduces task specific weights to the frozen foundation model for gradient descent, avoids catastrophic forgetting (Luo et al., 2023) of fine-tuning and offers better quality and lower cost than in-context ",
+     "To this end parameter efficient tuning (PET) (Hu et al., 2021; Li and Liang, 2021; Lester et al., 2021; Houlsby et al., 2019; Zhang et al., 2023; Zaken et al., 2021; Chen et al., 2022), which introduces task specific weights to the frozen foundation model for gradient descent, avoids catastrophic…",
+     "Parameter Efficient Tuning (PET) Parameter Efficient Tuning has a variety of flavors such as Adapters (Houlsby et al., 2019), Prefix Tuning (Li and Liang, 2021; Liu et al., 2021), Prompt Tuning (Lester et al., 2021), P-tuning (Liu et al., 2023), attention-injection (Zhang et al., 2023), LoRA (Hu et al., 2021; Dettmers et al., 2023), and combinations of PET methods (Mao et al., 2021)."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "note": "SiRA is a sparse mixture of LoRA adaptors ('To increase the capacity of LoRA … we propose SiRA'); the published quote is a configuration sentence ('We follow the default configurations in (Hu et al., 2021)')."
+  },
+  {
+   "collection": "low-rank-adaptation",
+   "src": "openalex:W3168867926",
+   "dst": "openalex:W4388926458",
+   "cited": {
+    "title": "LoRA: Low-Rank Adaptation of Large Language Models",
+    "year": 2021,
+    "authors": [
+     "J. Edward Hu",
+     "Yelong Shen",
+     "Phillip Wallis",
+     "Zeyuan Allen-Zhu",
+     "Yuanzhi Li"
+    ]
+   },
+   "citing": {
+    "title": "MultiLoRA: Democratizing LoRA for Better Multi-Task Learning",
+    "year": 2023
+   },
+   "citing_abstract": "LoRA achieves remarkable resource efficiency and comparable performance when adapting LLMs for specific tasks. Since ChatGPT demonstrated superior performance on various tasks, there has been a growing desire to adapt one model for all tasks. However, the explicit low-rank of LoRA limits the adaptation performance in complex multi-task scenarios. LoRA is dominated by a small number of top singular vectors while fine-tuning decomposes into a set of less important unitary transforms. In this paper, we propose MultiLoRA for better multi-task adaptation by reducing the dominance of top singular vectors observed in LoRA. MultiLoRA scales LoRA modules horizontally and change parameter initialization of adaptation matrices to reduce parameter dependency, thus yields more balanced unitary subspaces. We unprecedentedly construct specialized training data by mixing datasets of instruction follow, natural language understanding, world knowledge, to cover semantically and syntactically different…",
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "is_influential": true,
+    "contexts": [
+     "Analysis on weight update matrices suggest that LoRA work by enhancing existing feature transforms in original model weight[6].",
+     "As for subspace similarity of singular vectors, we follow [6] to use ϕ (∆ W ′ , ∆ W, i, j ) in Equation 5, the Frobenius norm of cosine similarity between top-i and top-j singular vectors of two weight update matrices. where U i = U [: , : i ] and U ′ j = U ′ [: , : j ] are stacked top-i and top-j…",
+     "Various PEFT methods, such as adapter[7], p-tuning[8], IA 3 [9] and LoRA[6], have been suggested.",
+     "PEFT methods reduce VRAM usage of cached optimizer states[6] by only optimizing a fraction of model parameters while keeping the rest frozen.",
+     "However, these dedicated modules add unaffordable overhead to transformer inference, which hinders their industrial application[6, 14].",
+     "AdaLoRA[23] adds importance-aware pruning mechanisms to further improve resource efficiency.",
+     "Recent works in PEFT focus on resource efficiency[7, 9, 6, 23].",
+     "To ensure consistency in evaluation, we follow QLoRA[28] and MeZO[29] to verbalize samples of MMLU and SuperGLUE, respectively.",
+     "The more layers that are adapted by LoRA, the better down-stream task performances will be[28, 6].",
+     "LoRA[6] fits incremental weights by decomposing them into low-rank matrices.",
+     "While these methods have shown effectiveness, the additional weights cannot be seamlessly integrated into the base model, resulting in inevitable inference latency that is impractical for LLM serving[6, 14].",
+     "PEFT can be classified into two categories: 1) reparameterization-based methods[21, 22] that retrain a portion of the parameters and 2) addition-based methods that train additional parameters[6, 23, 7]."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "note": "MultiLoRA modifies LoRA for multi-task learning; the quoted sentence itself is a metric usage ('we follow [6] to use ϕ … Frobenius norm')."
+  },
+  {
+   "collection": "low-rank-adaptation",
+   "src": "openalex:W3168867926",
+   "dst": "openalex:W4389524340",
+   "cited": {
+    "title": "LoRA: Low-Rank Adaptation of Large Language Models",
+    "year": 2021,
+    "authors": [
+     "J. Edward Hu",
+     "Yelong Shen",
+     "Phillip Wallis",
+     "Zeyuan Allen-Zhu",
+     "Yuanzhi Li"
+    ]
+   },
+   "citing": {
+    "title": "Sparse Low-rank Adaptation of Pre-trained Language Models",
+    "year": 2023
+   },
+   "citing_abstract": "Fine-tuning pre-trained large language models in a parameter-efficient manner is widely studied for its effectiveness and efficiency.The popular method of low-rank adaptation (LoRA) offers a notable approach, hypothesizing that the adaptation process is intrinsically low-dimensional.Although LoRA has demonstrated commendable performance, it is implemented with a fixed and unalterable intrinsic rank that might not always be the ideal choice.Recognizing the need for more flexible adaptation, we extend the methodology of LoRA to an innovative approach we call sparse low-rank adaptation (SoRA) that enables dynamic adjustments to the intrinsic rank during the adaptation process.We achieve this through the incorporation of a gate unit optimized with proximal gradient method in the training stage, controlling the cardinality of rank under the sparsity of the gate.In the subsequent inference stage, we eliminate the parameter blocks corresponding to the zeroed-out ranks, to reduce each SoRA…",
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "baseline_only",
+   "s2": {
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "is_influential": true,
+    "contexts": [
+     "Our baselines comprise full-parameter fine-tuning and other well-recognized parameter-efficient methods, including Adapter (Houlsby (Hu et al., 2021) and AdaLoRA (Zhang et al., 2023).",
+     "Among these methods, low-rank adaptation (L O RA (Hu et al., 2021)) is considered one of the most efficient methods at present.",
+     "…trainable parameters into the model (Houlsby et al., 2019; Li and Liang, 2021), or specify a small number of parameters (Zaken et al., 2021; Liu et al., 2021; Su et al., 2023) to be trainable or reparame-terize the adaptation process into a more efficient form (Hu et al., 2021; Qin et al., 2021).",
+     "In this paper, we focus more on LoRA (Hu et al., 2021), which uses low-rank matrices to approximate the change of weights."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "note": "SoRA makes LoRA's rank adaptive/sparse ('we focus more on LoRA')."
+  },
+  {
+   "collection": "low-rank-adaptation",
+   "src": "openalex:W3168867926",
+   "dst": "openalex:W4415797461",
+   "cited": {
+    "title": "LoRA: Low-Rank Adaptation of Large Language Models",
+    "year": 2021,
+    "authors": [
+     "J. Edward Hu",
+     "Yelong Shen",
+     "Phillip Wallis",
+     "Zeyuan Allen-Zhu",
+     "Yuanzhi Li"
+    ]
+   },
+   "citing": {
+    "title": "LoRA-GA: Low-Rank Adaptation with Gradient Approximation",
+    "year": 2024
+   },
+   "citing_abstract": "Fine-tuning large-scale pretrained models is prohibitively expensive in terms of computational and memory costs. LoRA, as one of the most popular Parameter-Efficient Fine-Tuning (PEFT) methods, offers a cost-effective alternative by fine-tuning an auxiliary low-rank model that has significantly fewer parameters. Although LoRA reduces the computational and memory requirements significantly at each iteration, extensive empirical evidence indicates that it converges at a considerably slower rate compared to full fine-tuning, ultimately leading to increased overall compute and often worse test performance. In our paper, we perform an in-depth investigation of the initialization method of LoRA and show that careful initialization (without any change of the architecture and the training algorithm) can significantly enhance both efficiency and performance. In particular, we introduce a novel initialization method, LoRA-GA (Low Rank Adaptation with Gradient Approximation), which aligns the…",
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Answer: [Yes] Justification: We report standard deviations of our evaluation results like footnotes in Table 1, 2 4, 9, 10 and 11.",
+     "This observation leads us to question whether the slow convergence of vanilla LoRA might be attributed to the default random initialization of adapter weights (LoRA initializes A using Kaiming initialization [11] and sets B to zero [4]).",
+     "Structure of LoRA Based on the hypothesis that the updates of fine-tuning are low-rank [13], LoRA [4] proposes to use the product of two low-rank matrices to represent the incremental part of the original matrix W .",
+     "Due to computational constraints, we limited these extended experiments to three methods: LoRA[4], LoRA+[36], and LoRA-GA .",
+     "Initialization of LoRA Under LoRA’s default initialization scheme [4, 39], matrix A is initialized using Kaiming uniform [11], while matrix B is initialized with all zeros.",
+     "To address these challenges, methods of Parameter-Efficient Fine-Tuning (PEFT) (see e.g., [3]), such as Low-Rank Adaptation (LoRA) [4], have emerged and gained significant attention.",
+     "Vanilla LoRA [4]: Fine-tuning the model by inserting a low-rank matrix product BA into linear layers."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "note": "LoRA-GA changes LoRA's initialisation; the published quote ('these extended experiments') is not a build cue."
+  },
+  {
+   "collection": "low-rank-adaptation",
+   "src": "openalex:W4297950310",
+   "dst": "openalex:W4384263459",
+   "cited": {
+    "title": "Exploring Low Rank Training of Deep Neural Networks",
+    "year": 2022,
+    "authors": [
+     "Siddhartha Rao Kamalakara",
+     "Acyr Locatelli",
+     "Bharat Venkitesh",
+     "Jimmy Lei Ba",
+     "Yarin Gal"
+    ]
+   },
+   "citing": {
+    "title": "ReLoRA: High-Rank Training Through Low-Rank Updates",
+    "year": 2023
+   },
+   "citing_abstract": "Despite the dominance and effectiveness of scaling, resulting in large networks with hundreds of billions of parameters, the necessity to train overparameterized models remains poorly understood, while training costs grow exponentially. In this paper, we explore parameter-efficient training techniques as an approach to training large neural networks. We introduce a novel method called ReLoRA, which utilizes low-rank updates to train high-rank networks. We apply ReLoRA to training transformer language models with up to 1.3B parameters and demonstrate comparable performance to regular neural network training. ReLoRA saves up to 5.5Gb of RAM per GPU and improves training speed by 9-40% depending on the model size and hardware setup. Our findings show the potential of parameter-efficient techniques for large-scale pre-training.",
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "contrasts",
+   "s2": {
+    "intents": [
+     "methodology"
+    ],
+    "is_influential": false,
+    "contexts": [
+     "Enhancing computational efficiency Unlike other low-rank training techniques [Schotthöfer et al., 2022, Sui et al., 2023, Kamalakara et al., 2022], ReLoRA follows the LoRA approach by maintaining the frozen weights of the original network and adding new trainable parameters."
+    ]
+   },
+   "label": "genuine_contrast",
+   "usage_kind": null,
+   "gold_relation": "contrasts",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "note": "'Unlike other low-rank training techniques [… Kamalakara et al., 2022], ReLoRA follows the LoRA approach …'."
+  },
+  {
+   "collection": "low-rank-adaptation",
+   "src": "openalex:W4330338093",
+   "dst": "openalex:W4386560155",
+   "cited": {
+    "title": "AdaLoRA: Adaptive Budget Allocation for Parameter-Efficient Fine-Tuning",
+    "year": 2023,
+    "authors": [
+     "Qingru Zhang",
+     "Minshuo Chen",
+     "Alexander Bukharin",
+     "Karampatziakis, Nikos",
+     "Pengcheng He"
+    ]
+   },
+   "citing": {
+    "title": "Delta-LoRA: Fine-Tuning High-Rank Parameters with the Delta of Low-Rank Matrices",
+    "year": 2023
+   },
+   "citing_abstract": "In this paper, we present Delta-LoRA, which is a novel parameter-efficient approach to fine-tune large language models (LLMs). In contrast to LoRA and other low-rank adaptation methods such as AdaLoRA, Delta-LoRA not only updates the low-rank matrices $\\bA$ and $\\bB$, but also propagate the learning to the pre-trained weights $\\bW$ via updates utilizing the delta of the product of two low-rank matrices ($\\bA^{(t+1)}\\bB^{(t+1)} - \\bA^{(t)}\\bB^{(t)}$). Such a strategy effectively addresses the limitation that the incremental update of low-rank matrices is inadequate for learning representations capable for downstream tasks. Moreover, as the update of $\\bW$ does not need to compute the gradients of $\\bW$ and store their momentums, Delta-LoRA shares comparable memory requirements and computational costs with LoRA. Extensive experiments show that Delta-LoRA significantly outperforms existing low-rank adaptation methods. We further support these results with comprehensive analyses that…",
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "contrasts",
+   "s2": {
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "is_influential": true,
+    "contexts": [
+     "AdaLoRA (Zhang et al., 2022) emphasizes the disparate importance attributed to distinct weight parameters.",
+     "To this end, a series of methods have been proposed (Valipour et al., 2023; Zhang et al., 2022; Li & Liang, 2021; Liu et al., 2022a; Lv et al., 2023; Dettmers et al., 2023; Liu et al., 2022b; Zaken et al., 2021; Pfeiffer et al., 2021; Guo et al., 2021; Houlsby et al., 2019; Wang et al., 2022) to…",
+     "While LoRA and its successors (Zhang et al., 2022; Valipour et al., 2023) have indeed exhibited superior performance in comparison to alternative approaches within the realm of Parameter Efficient Fine-Tuning (PEFT), a substantial performance gap persists when compared to the full fine-tuning, Note…",
+     "AdaLoRA (Zhang et al., 2022) focuses on the challenge of determining the optimal rank for incremental updates."
+    ]
+   },
+   "label": "genuine_contrast",
+   "usage_kind": null,
+   "gold_relation": "contrasts",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "note": "Abstract: 'In contrast to LoRA and … AdaLoRA, Delta-LoRA not only updates the low-rank matrices …'."
+  },
+  {
+   "collection": "low-rank-adaptation",
+   "src": "openalex:W4330338093",
+   "dst": "openalex:W4389524340",
+   "cited": {
+    "title": "AdaLoRA: Adaptive Budget Allocation for Parameter-Efficient Fine-Tuning",
+    "year": 2023,
+    "authors": [
+     "Qingru Zhang",
+     "Minshuo Chen",
+     "Alexander Bukharin",
+     "Karampatziakis, Nikos",
+     "Pengcheng He"
+    ]
+   },
+   "citing": {
+    "title": "Sparse Low-rank Adaptation of Pre-trained Language Models",
+    "year": 2023
+   },
+   "citing_abstract": "Fine-tuning pre-trained large language models in a parameter-efficient manner is widely studied for its effectiveness and efficiency.The popular method of low-rank adaptation (LoRA) offers a notable approach, hypothesizing that the adaptation process is intrinsically low-dimensional.Although LoRA has demonstrated commendable performance, it is implemented with a fixed and unalterable intrinsic rank that might not always be the ideal choice.Recognizing the need for more flexible adaptation, we extend the methodology of LoRA to an innovative approach we call sparse low-rank adaptation (SoRA) that enables dynamic adjustments to the intrinsic rank during the adaptation process.We achieve this through the incorporation of a gate unit optimized with proximal gradient method in the training stage, controlling the cardinality of rank under the sparsity of the gate.In the subsequent inference stage, we eliminate the parameter blocks corresponding to the zeroed-out ranks, to reduce each SoRA…",
+   "method": "s2_context_rule",
+   "evidence_source": "arxiv_html",
+   "published_relation": "contrasts",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": []
+   },
+   "arxiv_html_contexts": [
+    "Some existing work has attempted to explore this direction Valipour et al. (2022); Zhang et al. (2023), but they are largely heuristic or introduce additional costs.",
+    "For example, AdaLoRA Zhang et al. (2023) introduces an additional regularizer to ensure that the lower and upper projection matrices strictly adhere to the definition of singular value decomposition (SVD), with each matrix being orthogonal.",
+    "Zhang et al. precede along this SVD-based track with their methodology named AdaLoRA (Zhang et al., 2023).",
+    "Inspired alike by SVD decomposition, our approach SoRA differs from the preceding work AdaLoRA (Zhang et al., 2023) in the following sense.",
+    "Our baselines comprise full-parameter fine-tuning and other well-recognized parameter-efficient methods, including Adapter Houlsby et al. (2019), BitFit Zaken et al. (2021), LoRA Hu et al. (2021) and AdaLoRA Zhang et al. (2023).",
+    "It should be noted that the performance may fluctuate when parameter-efficient fine-tuning is applied to various positions within the model, as evidenced by previous research Zaken et al. (2021); Hu et al. (2022); Zhang et al. (2023)."
+   ],
+   "label": "genuine_contrast",
+   "usage_kind": null,
+   "gold_relation": "contrasts",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "note": "'our approach SoRA differs from the preceding work AdaLoRA'."
+  },
+  {
+   "collection": "low-rank-adaptation",
+   "src": "openalex:W4361229539",
+   "dst": "openalex:W4388482541",
+   "cited": {
+    "title": "LLaMA-Adapter: Efficient Fine-tuning of Language Models with Zero-init Attention",
+    "year": 2023,
+    "authors": [
+     "Renrui Zhang",
+     "Jiaming Han",
+     "Liu, Chris",
+     "Peng Gao",
+     "Aojun Zhou"
+    ]
+   },
+   "citing": {
+    "title": "Octavius: Mitigating Task Interference in MLLMs via LoRA-MoE",
+    "year": 2023
+   },
+   "citing_abstract": "Recent studies have demonstrated Large Language Models (LLMs) can extend their zero-shot generalization capabilities to multimodal learning through instruction tuning. As more modalities and downstream tasks are introduced, negative conflicts and interference may have a worse impact on performance. While this phenomenon has been overlooked in previous work, we propose a novel and extensible framework, called Octavius, for comprehensive studies and experimentation on multimodal learning with Multimodal Large Language Models (MLLMs). Specifically, we combine the well-known Mixture-of-Experts (MoE) and one of the representative PEFT techniques, i.e., LoRA, designing a novel LLM-based decoder, called LoRA-MoE, for multimodal learning. To the best of our knowledge, we are one of the pioneering efforts to introduce MoE into MLLMs to address this problem. The experimental results (about 20% improvement) have shown the effectiveness and versatility of our design in various 2D and 3D…",
+   "method": "s2_context_rule",
+   "evidence_source": "arxiv_html",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": []
+   },
+   "arxiv_html_contexts": [
+    "uning (PEFT) techniques (e.g., LoRA (Hu et al., 2021) and Adapter (Houlsby et al., 2019)) where only small trainable components are injected in the model and updated during fine-tuning, recent MLLMs (Zhang et al., 2023; Yin et al., 2023; Ye et al., 2023) can efficiently learn to solve downstream tasks with a small scale of annotated data, while preserve the language proficiency and generalizabilit",
+    "Alayrac et al. (2022); Li et al. (2023b); Liu et al. (2023); Zhang et al. (2023); Yin et al. (2023); Chen et al. (2023); Peng et al. (2023) introduce image modality in LLMs for comprehending 2D visual content.",
+    "Given the target modal features z^img or z^pcl , we construct image-text conversation pairs in an instruction-following format based on previous works (Zhang et al., 2023; Yin et al., 2023; Peng et al., 2023), as shown in Figure 4.",
+    "Benefit from the pioneer vision-language model (Radford et al., 2021) that bridges the gap between the image and language modality, Li et al. (2023a); Liu et al. (2023); Chen et al. (2023); Zhang et al. (2023); Yin et al. (2023) achieve impressive results."
+   ],
+   "label": "usage",
+   "usage_kind": "protocol",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "note": "'image-text conversation pairs in an instruction-following format based on previous works (Zhang et al., 2023; …)': a data format."
+  },
+  {
+   "collection": "low-rank-adaptation",
+   "src": "openalex:W4378509449",
+   "dst": "openalex:W4412930153",
+   "cited": {
+    "title": "QLoRA: Efficient Finetuning of Quantized LLMs",
+    "year": 2023,
+    "authors": [
+     "Tim Dettmers",
+     "Artidoro Pagnoni",
+     "Ari Holtzman",
+     "Luke Zettlemoyer"
+    ]
+   },
+   "citing": {
+    "title": "Accurate and Efficient Fine-Tuning of Quantized Large Language Models Through Optimal Balance in Adaptation",
+    "year": 2025
+   },
+   "citing_abstract": "Abstract Large Language Models (LLMs) have demonstrated impressive performance across various domains. However, the enormous number of model parameters makes fine-tuning challenging, significantly limiting their application and deployment. Existing solutions combine parameter quantization with Low-Rank Adaptation (LoRA), reducing memory usage but causing performance degradation. Additionally, converting fine-tuned models to low-precision representations further degrades performance. In this paper, we identify an imbalance in fine-tuning quantized LLMs with LoRA: overly complex adapter inputs and outputs versus low effective trainability of the adapter, leading to underfitting during fine-tuning. Thus, we propose Quantized LLMs fine-tuning with Balanced Low-Rank Adaptation (Q-BLoRA), which simplifies the adapter’s inputs and outputs while increasing the adapter’s rank to alleviate underfitting during fine-tuning. For low-precision deployment, we propose Quantization-Aware fine-tuning…",
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Typically, QLoRA (Dettmers et al., 2024) proposes an efficient fine-tuning method that utilizes 4-bit NormalFloat representations for pre-trained parameters, followed by LoRA-based fine-tuning, significantly reducing memory usage but yielding a suboptimal model.",
+     "Table 1 compares our Q-BLoRA and QA-BLoRA with SOTA LoRA-based quantization methods, including QLoRA (Dettmers et al., 2024), QA-LoRA (Xu et al., 2023b), and IR-QLoRA (Qin et al., 2024).",
+     "Recent studies have further advanced LoRA (Hayou et al., 2024; Jiang et al., 2024; Zi et al., 2023; Zhang et al., 2023b; Biderman et al., 2024; Tian et al., 2024) and attempted to combine it with model compression techniques (Zhang et al., 2023a; Dettmers et al., 2024; Mao et al., 2024).",
+     "A notable advantage of LoRA (Hu et al., 2021) and QLoRA (Dettmers et al., 2024) is that the low-rank adaptation (cid:6) W has the same dimensions as the pre-trained model W or ˜ W .",
+     "To address this challenge, existing solutions combine parameter quantization with Low-Rank Adaptation (LoRA) fine-tuning (Dettmers et al., 2024; Xu et al., 2023b; Qin et al., 2024), leveraging the strengths of both techniques to significantly reduce memory overhead.",
+     "A widely adopted quantization method is block-wise quantization (Frantar et al., 2023; Dettmers et al., 2024), which divides the parameter matrix W into smaller blocks and quantizes each block independently.",
+     "For example, in the MMLU test, fine-tuning LLaMA-13B with such approaches leads to an accuracy drop of up to 1.3% compared to full fine-tuning (Dettmers et al., 2024).",
+     "Specifically, QLoRA (Dettmers et al., 2024) inherits the deployment advantages of LoRA by enabling lossless adapter integration.",
+     "After fine-tuning, the adapter parameters can be merged with the pre-trained parameters for inference as Quantization can build upon LoRA by using low bit-width representations for pre-trained parameters, further reducing the memory required for fine-tuning (Dettmers et al., 2024).",
+     "We follow the official code and configuration of QLoRA (Dettmers et al., 2024), IR-QLoRA (Qin et al., 2024), QA-LoRA (Xu et al., 2023b), PEQA (Kim et al., 2024), and GPTQ (Achiam et al., 2023)."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": true,
+   "audited_verdict": null,
+   "note": "Q-BLoRA improves on QLoRA-style quantised LoRA fine-tuning; the published quote is a code/config usage ('We follow the official code and configuration of QLoRA, …')."
+  },
+  {
+   "collection": "low-rank-adaptation",
+   "src": "openalex:W4391988255",
+   "dst": "openalex:W4415797461",
+   "cited": {
+    "title": "LoRA+: Efficient Low Rank Adaptation of Large Models",
+    "year": 2024,
+    "authors": [
+     "Soufiane Hayou",
+     "Ghosh, Nikhil",
+     "Bin Yu"
+    ]
+   },
+   "citing": {
+    "title": "LoRA-GA: Low-Rank Adaptation with Gradient Approximation",
+    "year": 2024
+   },
+   "citing_abstract": "Fine-tuning large-scale pretrained models is prohibitively expensive in terms of computational and memory costs. LoRA, as one of the most popular Parameter-Efficient Fine-Tuning (PEFT) methods, offers a cost-effective alternative by fine-tuning an auxiliary low-rank model that has significantly fewer parameters. Although LoRA reduces the computational and memory requirements significantly at each iteration, extensive empirical evidence indicates that it converges at a considerably slower rate compared to full fine-tuning, ultimately leading to increased overall compute and often worse test performance. In our paper, we perform an in-depth investigation of the initialization method of LoRA and show that careful initialization (without any change of the architecture and the training algorithm) can significantly enhance both efficiency and performance. In particular, we introduce a novel initialization method, LoRA-GA (Low Rank Adaptation with Gradient Approximation), which aligns the…",
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Due to computational constraints, we limited these extended experiments to three methods: LoRA[4], LoRA+[36], and LoRA-GA .",
+     "This aligns with findings from LoRA+[36], where larger learning rates for B proved beneficial, potentially explaining ArB2r’s superior performance.",
+     "LoRA+ [36] proposes using different learning rates for the two matrices in LoRA to improve convergence. rsLoRA [37] introduces a new scaling factor to make the scale of the output invariant to rank.",
+     "- LoRA+ [36] updates the two matrices in LoRA with different learning rates."
+    ]
+   },
+   "label": "other",
+   "usage_kind": null,
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "note": "LoRA+ is a compared method ('we limited these extended experiments to three methods: LoRA, LoRA+, and LoRA-GA')."
+  },
+  {
+   "collection": "mixture-of-experts",
+   "src": "openalex:W1593114658",
+   "dst": "openalex:W2581624817",
+   "cited": {
+    "title": "Learning Factored Representations in a Deep Mixture of Experts",
+    "year": 2013,
+    "authors": [
+     "David Eigen",
+     "Marc’Aurelio Ranzato",
+     "Ilya Sutskever"
+    ]
+   },
+   "citing": {
+    "title": "Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer",
+    "year": 2017
+   },
+   "citing_abstract": "The capacity of a neural network to absorb information is limited by its number of parameters. Conditional computation, where parts of the network are active on a per-example basis, has been proposed in theory as a way of dramatically increasing model capacity without a proportional increase in computation. In practice, however, there are significant algorithmic and performance challenges. In this work, we address these challenges and finally realize the promise of conditional computation, achieving greater than 1000x improvements in model capacity with only minor losses in computational efficiency on modern GPU clusters. We introduce a Sparsely-Gated Mixture-of-Experts layer (MoE), consisting of up to thousands of feed-forward sub-networks. A trainable gating network determines a sparse combination of these experts to use for each example. We apply the MoE to the tasks of language modeling and machine translation, where model capacity is critical for absorbing the vast quantities of…",
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "is_influential": true,
+    "contexts": [
+     "Eigen et al. (2013) introduce the idea of using multiple MoEs with their own gating networks as parts of a deep model.",
+     "While Eigen et al. (2013) uses two stacked MoEs allowing for two sets of gating decisions, our convolutional application of the MoE allows for different gating decisions at each position in the text.",
+     "Eigen et al. (2013) describe the same phenomenon, and use a hard constraint at the beginning of training to avoid this local minimum.",
+     "…forms of conditional computation have been proposed as a way to increase model capacity without a proportional increase in computational costs (Davis & Arel, 2013; Bengio et al., 2013; Eigen et al., 2013; Ludovic Denoyer, 2014; Cho & Bengio, 2014; Bengio et al., 2015; Almahairi et al., 2015)."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": "extends:correct",
+   "note": "Audited extends (lineage-audit-fixtures-v1: correct)."
+  },
+  {
+   "collection": "mixture-of-experts",
+   "src": "openalex:W2581624817",
+   "dst": "openalex:W3170943566",
+   "cited": {
+    "title": "Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer",
+    "year": 2017,
+    "authors": [
+     "Noam Shazeer",
+     "Azalia Mirhoseini",
+     "Krzysztof Maziarz",
+     "Andy Davis",
+     "Quoc Viet Le"
+    ]
+   },
+   "citing": {
+    "title": "Scaling Vision with Sparse Mixture of Experts",
+    "year": 2021
+   },
+   "citing_abstract": "Sparsely-gated Mixture of Experts networks (MoEs) have demonstrated excellent scalability in Natural Language Processing. In Computer Vision, however, almost all performant networks are \"dense\", that is, every input is processed by every parameter. We present a Vision MoE (V-MoE), a sparse version of the Vision Transformer, that is scalable and competitive with the largest dense networks. When applied to image recognition, V-MoE matches the performance of state-of-the-art networks, while requiring as little as half of the compute at inference time. Further, we propose an extension to the routing algorithm that can prioritize subsets of each input across the entire batch, leading to adaptive per-image compute. This allows V-MoE to trade-off performance and compute smoothly at test-time. Finally, we demonstrate the potential of V-MoE to scale vision models, and train a 15B parameter model that attains 90.35% on ImageNet.",
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [
+     "result",
+     "methodology",
+     "background"
+    ],
+    "is_influential": true,
+    "contexts": [
+     "The difference between previous formulations [54] is that we apply TOPk after the softmax over experts weights [39], instead of before.",
+     "This is essentially the same approach as followed by [54, 39, 22].",
+     "Our approach is inspired by [54] who proposed a top-k gating in LSTMs, with auxiliary losses ensuring the expert balance [26].",
+     "Given the TOP-i position, the default—or vanilla—routing, as used in [54, 39, 22], assigns tokens to experts as follows.",
+     "In NLP, sparse Mixture of Experts (MoEs) are gaining popularity [54, 39, 22], enabling training and inference with fewer resources while unlocking trillion parameter models.",
+     "In our case, we use slight variants of two of the auxiliary losses proposed in [54], as described in Appendix A.",
+     "Concurrent works in NLP fix k = 1 [22] or k = 2 [54, 39].",
+     "We follow the setting of [54], who present for deep learning a mixture of experts layer with E experts as MoE(x) = ∑i=1 g(x)i ei(x) where x ∈ R is the input to the layer, ei ∶ R ↦ R is",
+     "An input can select either all experts [21] or only a sparse mixture thereof as in recent massive language models [54, 39, 22].",
+     "Although large-scale sparse MoEs have led to strong performance [22, 39, 54], little is known and understood about how the internals of those complex models work."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": "extends:correct",
+   "note": "Audited extends (lineage-audit-fixtures-v1: correct)."
+  },
+  {
+   "collection": "mixture-of-experts",
+   "src": "openalex:W2581624817",
+   "dst": "openalex:W4226079124",
+   "cited": {
+    "title": "Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer",
+    "year": 2017,
+    "authors": [
+     "Noam Shazeer",
+     "Azalia Mirhoseini",
+     "Krzysztof Maziarz",
+     "Andy Davis",
+     "Quoc Viet Le"
+    ]
+   },
+   "citing": {
+    "title": "Mixture-of-Experts with Expert Choice Routing",
+    "year": 2022
+   },
+   "citing_abstract": "Sparsely-activated Mixture-of-experts (MoE) models allow the number of parameters to greatly increase while keeping the amount of computation for a given token or a given sample unchanged. However, a poor expert routing strategy (e.g. one resulting in load imbalance) can cause certain experts to be under-trained, leading to an expert being under or over-specialized. Prior work allocates a fixed number of experts to each token using a top-k function regardless of the relative importance of different tokens. To address this, we propose a heterogeneous mixture-of-experts employing an expert choice method. Instead of letting tokens select the top-k experts, we have experts selecting the top-k tokens. As a result, each token can be routed to a variable number of experts and each expert can have a fixed bucket size. We systematically study pre-training speedups using the same computational resources of the Switch Transformer top-1 and GShard top-2 gating of prior work and find that our…",
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [
+     "background",
+     "methodology"
+    ],
+    "is_influential": true,
+    "contexts": [
+     "This distribution denotes the preference over experts of each incoming token, which is computed similarly in a conventional gating network [10, 21, 31].",
+     "Mixture of Experts: Sparsely-gated MoE [31] is the ﬁrst model to demonstrate massive improvements in model capacity, training time, or model quality with gating.",
+     "At the high level, we adopt the idea of sparsely activated Mixture-of-Experts (MoE) [31].",
+     "Conventional MoE models employ token-choice routing which independently selects the top-k experts for each token [10, 21, 31].",
+     "Sparsely gated mixture-of-experts [31] (MoE) provides an effective way to scale model capacity given a ﬁxed computational cost, and has recently played an important role in increasing the training efﬁciency of large-scale language models [10, 21]."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": "extends:correct",
+   "note": "Audited extends (lineage-audit-fixtures-v1: correct)."
+  },
+  {
+   "collection": "mixture-of-experts",
+   "src": "openalex:W3119866685",
+   "dst": "openalex:W4226079124",
+   "cited": {
+    "title": "Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity",
+    "year": 2021,
+    "authors": [
+     "William Fedus",
+     "Barret Zoph",
+     "Noam Shazeer"
+    ]
+   },
+   "citing": {
+    "title": "Mixture-of-Experts with Expert Choice Routing",
+    "year": 2022
+   },
+   "citing_abstract": "Sparsely-activated Mixture-of-experts (MoE) models allow the number of parameters to greatly increase while keeping the amount of computation for a given token or a given sample unchanged. However, a poor expert routing strategy (e.g. one resulting in load imbalance) can cause certain experts to be under-trained, leading to an expert being under or over-specialized. Prior work allocates a fixed number of experts to each token using a top-k function regardless of the relative importance of different tokens. To address this, we propose a heterogeneous mixture-of-experts employing an expert choice method. Instead of letting tokens select the top-k experts, we have experts selecting the top-k tokens. As a result, each token can be routed to a variable number of experts and each expert can have a fixed bucket size. We systematically study pre-training speedups using the same computational resources of the Switch Transformer top-1 and GShard top-2 gating of prior work and find that our…",
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "contrasts",
+   "s2": {
+    "intents": [
+     "background",
+     "methodology"
+    ],
+    "is_influential": true,
+    "contexts": [
+     "This distribution denotes the preference over experts of each incoming token, which is computed similarly in a conventional gating network [10, 21, 31].",
+     "• We show our method provides over 2 × faster training convergence in a 8B/64E (8 billion activated parameters, 64 experts) model, compared to the top-1 and top-2 gating counterparts in Switch Transformer [10] and GShard [21].",
+     "Conventional MoE models employ token-choice routing which independently selects the top-k experts for each token [10, 21, 31].",
+     "Switch Transformer [10] simpliﬁes the gating by selecting only the top expert per token using a softmax over the hidden state and demonstrates better scaling than previous work.",
+     "Unlike most related works, we do not impose any auxiliary loss for load balance, such as described in Switch Transformer [10] and GShard [21].",
+     "We use a Transformer architecture and replace the feed-forward component of every other Transformer layer with a MoE layer, following recent practice [10, 21].",
+     "Similar to Switch Transformer [10] and GShard [21], we apply mixture of experts and the gating function in the dense feed-forward (FFN) layer, as it is the most computationally expensive part in a Transformer-based network.",
+     "Sparsely gated mixture-of-experts [31] (MoE) provides an effective way to scale model capacity given a ﬁxed computational cost, and has recently played an important role in increasing the training efﬁciency of large-scale language models [10, 21].",
+     "For instance, Switch Transformer [10] has only one activated expert while GShard [21] uses two experts per token."
+    ]
+   },
+   "label": "genuine_contrast",
+   "usage_kind": null,
+   "gold_relation": "contrasts",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": "contrasts:correct",
+   "note": "Audited contrasts (lineage-audit-fixtures-v1: correct)."
+  },
+  {
+   "collection": "mixture-of-experts",
+   "src": "openalex:W3122317902",
+   "dst": "openalex:W3119866685",
+   "cited": {
+    "title": "GShard: Scaling Giant Models with Conditional Computation and Automatic Sharding",
+    "year": 2021,
+    "authors": [
+     "Dmitry Lepikhin",
+     "HyoukJoong Lee",
+     "Yuanzhong Xu",
+     "Dehao Chen",
+     "Orhan Fırat"
+    ]
+   },
+   "citing": {
+    "title": "Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity",
+    "year": 2021
+   },
+   "citing_abstract": "In deep learning, models typically reuse the same parameters for all inputs. Mixture of Experts (MoE) defies this and instead selects different parameters for each incoming example. The result is a sparsely-activated model -- with outrageous numbers of parameters -- but a constant computational cost. However, despite several notable successes of MoE, widespread adoption has been hindered by complexity, communication costs and training instability -- we address these with the Switch Transformer. We simplify the MoE routing algorithm and design intuitive improved models with reduced communication and computational costs. Our proposed training techniques help wrangle the instabilities and we show large sparse models may be trained, for the first time, with lower precision (bfloat16) formats. We design models based off T5-Base and T5-Large to obtain up to 7x increases in pre-training speed with the same computational resources. These improvements extend into multilingual settings where…",
+   "method": "s2_context_rule",
+   "evidence_source": "arxiv_html",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": []
+   },
+   "arxiv_html_contexts": [
+    "MoE models have had notable successes in machine translation (Shazeer et al., 2017; Shazeer et al., 2018; Lepikhin et al., 2020), however, widespread adoption is hindered by complexity, communication costs, and training instabilities.",
+    "To encourage a balanced load across experts we add an auxiliary loss (Shazeer et al., 2017; Shazeer et al., 2018; Lepikhin et al., 2020).",
+    "As in Shazeer et al. (2018); Lepikhin et al. (2020), Switch Transformers simplifies the original design in Shazeer et al. (2017) which had separate load-balancing and importance-weighting losses.",
+    "Model instability hinders the ability to train using efficient bfloat16 precision, and as a result, Lepikhin et al. (2020) trains with float32 precision throughout their MoE Transformer.",
+    "More recently, through advances in machine learning infrastructure, GShard (Lepikhin et al., 2020), which extended the XLA compiler, used the MoE Transformer to dramatically improve machine translation across 100 languages.",
+    "Shazeer et al. (2018); Lepikhin et al. (2020) designed MoE Transformers (Shazeer et al., 2017) by adding MoE layers into the dense feedfoward network (FFN) computations of the Transformer.",
+    "Lepikhin et al. (2020) adapts a Mixture-of-Expert model and addresses expert overflow by passing its representation to the next layer without processing through a residual connection which we also follow."
+   ],
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": "extends:correct",
+   "note": "Audited extends (lineage-audit-fixtures-v1: correct)."
+  },
+  {
+   "collection": "mixture-of-experts",
+   "src": "openalex:W3122317902",
+   "dst": "openalex:W3170943566",
+   "cited": {
+    "title": "GShard: Scaling Giant Models with Conditional Computation and Automatic Sharding",
+    "year": 2021,
+    "authors": [
+     "Dmitry Lepikhin",
+     "HyoukJoong Lee",
+     "Yuanzhong Xu",
+     "Dehao Chen",
+     "Orhan Fırat"
+    ]
+   },
+   "citing": {
+    "title": "Scaling Vision with Sparse Mixture of Experts",
+    "year": 2021
+   },
+   "citing_abstract": "Sparsely-gated Mixture of Experts networks (MoEs) have demonstrated excellent scalability in Natural Language Processing. In Computer Vision, however, almost all performant networks are \"dense\", that is, every input is processed by every parameter. We present a Vision MoE (V-MoE), a sparse version of the Vision Transformer, that is scalable and competitive with the largest dense networks. When applied to image recognition, V-MoE matches the performance of state-of-the-art networks, while requiring as little as half of the compute at inference time. Further, we propose an extension to the routing algorithm that can prioritize subsets of each input across the entire batch, leading to adaptive per-image compute. This allows V-MoE to trade-off performance and compute smoothly at test-time. Finally, we demonstrate the potential of V-MoE to scale vision models, and train a 15B parameter model that attains 90.35% on ImageNet.",
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [
+     "result",
+     "methodology",
+     "background"
+    ],
+    "is_influential": true,
+    "contexts": [
+     "Following [39], we place the MoEs on every other layer (we refer to these as V-MoE Every-2).",
+     "This follows a similar design pattern as the M4 machine translation model [39].",
+     "The difference between previous formulations [54] is that we apply TOPk after the softmax over experts weights [39], instead of before.",
+     "This is essentially the same approach as followed by [54, 39, 22].",
+     "Given the TOP-i position, the default—or vanilla—routing, as used in [54, 39, 22], assigns tokens to experts as follows.",
+     "In NLP, sparse Mixture of Experts (MoEs) are gaining popularity [54, 39, 22], enabling training and inference with fewer resources while unlocking trillion parameter models.",
+     "Concurrent works in NLP fix k = 1 [22] or k = 2 [54, 39].",
+     "[39] further scaled up this approach for transformers, showing strong gains for neural machine translation.",
+     "An input can select either all experts [21] or only a sparse mixture thereof as in recent massive language models [54, 39, 22].",
+     "Although large-scale sparse MoEs have led to strong performance [22, 39, 54], little is known and understood about how the internals of those complex models work."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": "extends:correct",
+   "note": "Audited extends (lineage-audit-fixtures-v1: correct)."
+  },
+  {
+   "collection": "mixture-of-experts",
+   "src": "openalex:W3122317902",
+   "dst": "openalex:W4226079124",
+   "cited": {
+    "title": "GShard: Scaling Giant Models with Conditional Computation and Automatic Sharding",
+    "year": 2021,
+    "authors": [
+     "Dmitry Lepikhin",
+     "HyoukJoong Lee",
+     "Yuanzhong Xu",
+     "Dehao Chen",
+     "Orhan Fırat"
+    ]
+   },
+   "citing": {
+    "title": "Mixture-of-Experts with Expert Choice Routing",
+    "year": 2022
+   },
+   "citing_abstract": "Sparsely-activated Mixture-of-experts (MoE) models allow the number of parameters to greatly increase while keeping the amount of computation for a given token or a given sample unchanged. However, a poor expert routing strategy (e.g. one resulting in load imbalance) can cause certain experts to be under-trained, leading to an expert being under or over-specialized. Prior work allocates a fixed number of experts to each token using a top-k function regardless of the relative importance of different tokens. To address this, we propose a heterogeneous mixture-of-experts employing an expert choice method. Instead of letting tokens select the top-k experts, we have experts selecting the top-k tokens. As a result, each token can be routed to a variable number of experts and each expert can have a fixed bucket size. We systematically study pre-training speedups using the same computational resources of the Switch Transformer top-1 and GShard top-2 gating of prior work and find that our…",
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "contrasts",
+   "s2": {
+    "intents": [
+     "background",
+     "methodology"
+    ],
+    "is_influential": true,
+    "contexts": [
+     "This distribution denotes the preference over experts of each incoming token, which is computed similarly in a conventional gating network [10, 21, 31].",
+     "• We show our method provides over 2 × faster training convergence in a 8B/64E (8 billion activated parameters, 64 experts) model, compared to the top-1 and top-2 gating counterparts in Switch Transformer [10] and GShard [21].",
+     "Conventional MoE models employ token-choice routing which independently selects the top-k experts for each token [10, 21, 31].",
+     "Unlike most related works, we do not impose any auxiliary loss for load balance, such as described in Switch Transformer [10] and GShard [21].",
+     "We use a Transformer architecture and replace the feed-forward component of every other Transformer layer with a MoE layer, following recent practice [10, 21].",
+     "Recent works have successfully scaled models to billions of parameters via various forms of model parallelism [2, 21, 26, 27, 33].",
+     "Similar to Switch Transformer [10] and GShard [21], we apply mixture of experts and the gating function in the dense feed-forward (FFN) layer, as it is the most computationally expensive part in a Transformer-based network.",
+     "Sparsely gated mixture-of-experts [31] (MoE) provides an effective way to scale model capacity given a ﬁxed computational cost, and has recently played an important role in increasing the training efﬁciency of large-scale language models [10, 21].",
+     "However, training efﬁciency, which is deﬁned as the total amount of computation used to achieve superior model quality than the state of the art system [21], should receive greater attention as we increase our efforts towards green AI [29].",
+     "For instance, Switch Transformer [10] has only one activated expert while GShard [21] uses two experts per token."
+    ]
+   },
+   "label": "genuine_contrast",
+   "usage_kind": null,
+   "gold_relation": "contrasts",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": "contrasts:correct",
+   "note": "Audited contrasts (lineage-audit-fixtures-v1: correct)."
+  },
+  {
+   "collection": "vision-transformer",
+   "src": "openalex:W3094502228",
+   "dst": "openalex:W3127751679",
+   "cited": {
+    "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+    "year": 2020,
+    "authors": [
+     "Alexey Dosovitskiy",
+     "Lucas Beyer",
+     "Alexander Kolesnikov",
+     "Dirk Weissenborn",
+     "Xiaohua Zhai"
+    ]
+   },
+   "citing": {
+    "title": "TransUNet: Transformers Make Strong Encoders for Medical Image Segmentation",
+    "year": 2021
+   },
+   "citing_abstract": "Medical image segmentation is an essential prerequisite for developing healthcare systems, especially for disease diagnosis and treatment planning. On various medical image segmentation tasks, the u-shaped architecture, also known as U-Net, has become the de-facto standard and achieved tremendous success. However, due to the intrinsic locality of convolution operations, U-Net generally demonstrates limitations in explicitly modeling long-range dependency. Transformers, designed for sequence-to-sequence prediction, have emerged as alternative architectures with innate global self-attention mechanisms, but can result in limited localization abilities due to insufficient low-level details. In this paper, we propose TransUNet, which merits both Transformers and U-Net, as a strong alternative for medical image segmentation. On one hand, the Transformer encodes tokenized image patches from a convolution neural network (CNN) feature map as the input sequence for extracting global contexts.…",
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [
+     "background",
+     "methodology"
+    ],
+    "is_influential": true,
+    "contexts": [
+     "Following [4], we first perform tokenization by re-",
+     "For pure Transformer-based encoder, we simply adopt ViT [4] with 12 Transformer layers.",
+     "More recently, attempts have also matched or even exceeded stateof-the-art performances for various image recognition tasks [4, 19].",
+     "To demonstrate the effectiveness of our CUP decoder, we use ViT [4] as the encoder, and compare results using naive upsampling (“None”) and CUP as the decoder, respectively; To demonstrate the effectiveness of our hybrid encoder design, we use CUP as the decoder, and compare results using ViT and R50ViT as the encoder, respectively.",
+     "As [4] indicated, increasing the effective sequence length shows robust improvements.",
+     "Recently, Vision Transformer (ViT) [4] achieved state-of-the-art on ImageNet classification by directly applying Transformers with global self-attention to full-sized images.",
+     "Following the setting in ViT [4], we use 16×16 as the default patch size throughout this paper."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": "extends:correct",
+   "note": "Audited extends (lineage-audit-fixtures-v1: correct)."
+  },
+  {
+   "collection": "vision-transformer",
+   "src": "openalex:W3094502228",
+   "dst": "openalex:W3131500599",
+   "cited": {
+    "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+    "year": 2020,
+    "authors": [
+     "Alexey Dosovitskiy",
+     "Lucas Beyer",
+     "Alexander Kolesnikov",
+     "Dirk Weissenborn",
+     "Xiaohua Zhai"
+    ]
+   },
+   "citing": {
+    "title": "Pyramid Vision Transformer: A Versatile Backbone for Dense Prediction without Convolutions",
+    "year": 2021
+   },
+   "citing_abstract": "Although convolutional neural networks (CNNs) have achieved great success in computer vision, this work investigates a simpler, convolution-free backbone network use-fid for many dense prediction tasks. Unlike the recently-proposed Vision Transformer (ViT) that was designed for image classification specifically, we introduce the Pyramid Vision Transformer (PVT), which overcomes the difficulties of porting Transformer to various dense prediction tasks. PVT has several merits compared to current state of the arts. (1) Different from ViT that typically yields low-resolution outputs and incurs high computational and memory costs, PVT not only can be trained on dense partitions of an image to achieve high output resolution, which is important for dense prediction, but also uses a progressive shrinking pyramid to reduce the computations of large feature maps. (2) PVT inherits the advantages of both CNN and Transformer, making it a unified backbone for various vision tasks without…",
+   "method": "s2_context_rule",
+   "evidence_source": "arxiv_html",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": []
+   },
+   "arxiv_html_contexts": [
+    "Recently, Dosovitskiy et al. [13] introduced the Vision Transformer (ViT) for image classification.",
+    "Recently, Vision Transformer (ViT) [13] employs a pure Transformer [64] model for image classification by treating an image as a sequence of patches.",
+    "The most related work to our model is ViT [13].",
+    "For image classification, we follow ViT [13] and DeiT [63] to append a learnable classification token to the input of the last stage, and then employ a fully connected (FC) layer to conduct classification on top of the token.",
+    "Meanwhile, under similar or lower complexity, PVT models archive performances comparable to the recently proposed Transformer-based models, such as ViT [13] and DeiT [63] (PVT-Large: 18.3 vs. ViT(DeiT)-Base/16: 18.3).",
+    "With increasing input scale, the growth rate of the GFLOPs of our PVT is greater than ResNet [22], but lower than ViT [13], as shown in Figure 6."
+   ],
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": "extends:correct",
+   "note": "Audited extends (lineage-audit-fixtures-v1: correct)."
+  },
+  {
+   "collection": "vision-transformer",
+   "src": "openalex:W3094502228",
+   "dst": "openalex:W3138516171",
+   "cited": {
+    "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+    "year": 2020,
+    "authors": [
+     "Alexey Dosovitskiy",
+     "Lucas Beyer",
+     "Alexander Kolesnikov",
+     "Dirk Weissenborn",
+     "Xiaohua Zhai"
+    ]
+   },
+   "citing": {
+    "title": "Swin Transformer: Hierarchical Vision Transformer using Shifted Windows",
+    "year": 2021
+   },
+   "citing_abstract": "This paper presents a new vision Transformer, called Swin Transformer, that capably serves as a general-purpose backbone for computer vision. Challenges in adapting Transformer from language to vision arise from differences between the two domains, such as large variations in the scale of visual entities and the high resolution of pixels in images compared to words in text. To address these differences, we propose a hierarchical Transformer whose representation is computed with Shifted windows. The shifted windowing scheme brings greater efficiency by limiting self-attention computation to non-overlapping local windows while also allowing for cross-window connection. This hierarchical architecture has the flexibility to model at various scales and has linear computational complexity with respect to image size. These qualities of Swin Transformer make it compatible with a broad range of vision tasks, including image classification (87.3 top-1 accuracy on ImageNet-1K) and dense…",
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "contrasts",
+   "s2": {
+    "intents": [
+     "background",
+     "methodology"
+    ],
+    "is_influential": true,
+    "contexts": [
+     "Transformer based vision backbones Most related to our work is the Vision Transformer (ViT) [19] and its follow-ups [57, 66, 15, 25, 60].",
+     "The standard Transformer architecture [58] and its adaptation for image classification [19] both conduct global selfattention, where the relationships between a token and all other tokens are computed.",
+     "Its tremendous success in the language domain has led researchers to investigate its adaptation to computer vision, where it has recently demonstrated promising results on certain tasks, specifically image classification [19] and joint vision-language modeling [43].",
+     "(b) In contrast, previous vision Transformers [19] produce feature maps of a single low resolution and have quadratic computation complexity to input image size due to computation of selfattention globally.",
+     "In existing Transformer-based models [58, 19], tokens are all of a fixed scale, a property unsuitable for these vision applications.",
+     "These merits make Swin Transformer suitable as a general-purpose backbone for various vision tasks, in contrast to previous Transformer based architectures [19] which produce feature maps of a single resolution and have quadratic complexity.",
+     "Further adding absolute position embedding to the input as in [19] drops performance slightly, thus it is not adopted in our implementation.",
+     "It outperforms the ViT / DeiT [19, 57] and ResNe(X)t models [27, 64] significantly with similar latency on the three tasks.",
+     "The learnt relative position bias in pre-training can be also used to initialize a model for fine-tuning with a different window size through bi-cubic interpolation [19, 57]."
+    ]
+   },
+   "label": "genuine_contrast",
+   "usage_kind": null,
+   "gold_relation": "contrasts",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": "contrasts:correct",
+   "note": "Audited contrasts (lineage-audit-fixtures-v1: correct)."
+  },
+  {
+   "collection": "vision-transformer",
+   "src": "openalex:W3094502228",
+   "dst": "openalex:W3145450063",
+   "cited": {
+    "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+    "year": 2020,
+    "authors": [
+     "Alexey Dosovitskiy",
+     "Lucas Beyer",
+     "Alexander Kolesnikov",
+     "Dirk Weissenborn",
+     "Xiaohua Zhai"
+    ]
+   },
+   "citing": {
+    "title": "An Empirical Study of Training Self-Supervised Vision Transformers",
+    "year": 2021
+   },
+   "citing_abstract": "This paper does not describe a novel method. Instead, it studies a straightforward, incremental, yet must-know baseline given the recent progress in computer vision: self-supervised learning for Vision Transformers (ViT). While the training recipes for standard convolutional networks have been highly mature and robust, the recipes for ViT are yet to be built, especially in the self-supervised scenarios where training becomes more challenging. In this work, we go back to basics and investigate the effects of several fundamental components for training self-supervised ViT. We observe that instability is a major issue that degrades accuracy, and it can be hidden by apparently good results. We reveal that these results are indeed partial failure, and they can be improved when training is made more stable. We benchmark ViT results in MoCo v3 and several other self-supervised frameworks, with ablations in various aspects. We discuss the currently positive evidence as well as challenges and…",
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [
+     "methodology",
+     "background",
+     "result"
+    ],
+    "is_influential": true,
+    "contexts": [
+     "On one hand, this comparison shows the potential of ViT, especially considering that it achieves these results using relatively “fewer inductive biases” [15].",
+     "prior works [8, 15] that train self-supervised Transformers with masked auto-encoding, we study the frameworks that are based on Siamese networks, including MoCo [19] and others [9, 17, 7].",
+     "This investigation is a straightforward extension given the recent progress on Vision Transformers (ViT) [15].",
+     "There have been continuous efforts on generalizing Transformers to computer vision [43, 5, 38, 48, 6, 15].",
+     "ViT-BN is our modified ViT that has BatchNorm, and “/7” denotes a patch size of 7×7 (otherwise following [15]).",
+     "ViT-B, -L, -H are the standard ones in [15].",
+     "The row in gray [15] is pre-trained in JFT-300M and end-to-end finetuned in ImageNet.",
+     "Both iGPT [8] and masked patch prediction in [15] belong to the masked auto-encoding paradigm.",
+     "Moreover, as a promising signal, our bigger self-supervised ViT can achieve better accuracy, unlike the ImageNetsupervised ViT in [15] whose accuracy degrades if getting bigger.",
+     "Furthermore, we explore scaling up the ViT models, including the non-trivial ViT-Large and ViT-Huge [15] — the latter has 40× more computation than ResNet-50 [20]."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": "extends:correct",
+   "note": "Audited extends (lineage-audit-fixtures-v1: correct)."
+  },
+  {
+   "collection": "vision-transformer",
+   "src": "openalex:W3094502228",
+   "dst": "openalex:W3147387781",
+   "cited": {
+    "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+    "year": 2020,
+    "authors": [
+     "Alexey Dosovitskiy",
+     "Lucas Beyer",
+     "Alexander Kolesnikov",
+     "Dirk Weissenborn",
+     "Xiaohua Zhai"
+    ]
+   },
+   "citing": {
+    "title": "ViViT: A Video Vision Transformer",
+    "year": 2021
+   },
+   "citing_abstract": "We present pure-transformer based models for video classification, drawing upon the recent success of such models in image classification. Our model extracts spatiotemporal tokens from the input video, which are then encoded by a series of transformer layers. In order to handle the long sequences of tokens encountered in video, we propose several, efficient variants of our model which factorise the spatial- and temporal-dimensions of the input. Although transformer-based models are known to only be effective when large training datasets are available, we show how we can effectively regularise the model during training and leverage pretrained image models to be able to train on comparatively small datasets. We conduct thorough ablation studies, and achieve state-of-the-art results on multiple video classification benchmarks including Kinetics 400 and 600, Epic Kitchens, Something-Something v2 and Moments in Time, outperforming prior methods based on deep 3D convolutional networks.",
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [
+     "background",
+     "methodology"
+    ],
+    "is_influential": true,
+    "contexts": [
+     "…followed the original transformer architecture of [68], and noticed that its main beneﬁts were observed at large scale – as transformers lack some of the inductive biases of convolutions (such as translational equivariance), they seem to require more data [18] or stronger regularisation [64].",
+     "As the transformer [68], which forms the basis of ViT [18], is a ﬂexible architecture that can operate on any sequence of input tokens z ∈ R N × d , we describe strategies for tokenising videos next.",
+     "[18] closely followed the original transformer architecture of [68], and noticed that its main beneﬁts were observed at large scale – as transformers lack some of the inductive biases of convolutions (such as translational equivariance), they seem to require more data [18] or stronger…",
+     "Con-cretely, if n h · n w non-overlapping image patches are extracted from each frame, as in [18], then a total of n t · n h · n w tokens will be forwarded through the transformer encoder.",
+     "Vision Transformer (ViT) [18] adapts the transformer architecture of [68] to process 2D images with minimal changes.",
+     "2, a straightforward method of tokenising the input video is to uniformly sample n t frames from the input video clip, embed each 2D frame independently using the same method as ViT [18], and concatenate all these tokens together.",
+     "Embed to tokens FactorisedSelf-Attention We propose a pure-transformer architecture for video classiﬁcation, inspired by the recent success of such models for images [18].",
+     "However, it is only very recently with the Vision Transformer (ViT) [18], that a pure-transformer based architecture has outperformed its convolutional counterparts in image classiﬁcation.",
+     "[18] showed with their ViT architecture that pure-transformer networks, similar to those employed in NLP, can achieve state-of-the-art results for image classiﬁcation too.",
+     "We start by summarising the recently proposed Vision Transformer [18] in Sec."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": "extends:correct",
+   "note": "Audited extends (lineage-audit-fixtures-v1: correct)."
+  },
+  {
+   "collection": "vision-transformer",
+   "src": "openalex:W3094502228",
+   "dst": "openalex:W3161838454",
+   "cited": {
+    "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+    "year": 2020,
+    "authors": [
+     "Alexey Dosovitskiy",
+     "Lucas Beyer",
+     "Alexander Kolesnikov",
+     "Dirk Weissenborn",
+     "Xiaohua Zhai"
+    ]
+   },
+   "citing": {
+    "title": "Segmenter: Transformer for Semantic Segmentation",
+    "year": 2021
+   },
+   "citing_abstract": "Image segmentation is often ambiguous at the level of individual image patches and requires contextual information to reach label consensus. In this paper we introduce Segmenter, a transformer model for semantic segmentation. In contrast to convolution-based methods, our approach allows to model global context already at the first layer and throughout the network. We build on the recent Vision Transformer (ViT) and extend it to semantic segmentation. To do so, we rely on the output embeddings corresponding to image patches and obtain class labels from these embed-dings with a point-wise linear decoder or a mask trans-former decoder. We leverage models pre-trained for image classification and show that we can fine-tune them on moderate sized datasets available for semantic segmentation. The linear decoder allows to obtain excellent results already, but the performance can be further improved by a mask transformer generating class masks. We conduct an extensive ablation study to show…",
+   "method": "s2_context_rule",
+   "evidence_source": "arxiv_html",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": []
+   },
+   "arxiv_html_contexts": [
+    "Following the recent work on Vision Transformers (ViT) [19, 49], we split the image into patches and treat linear patch embeddings as input tokens for the transformer encoder.",
+    "In summary, our work provides the following four contributions: (i) We propose a novel approach to semantic segmentation based on the Vision Transformer (ViT) [19] that does not use convolutions, captures contextual information by design and outperforms FCN based approaches. (ii) We present a family of models with varying levels of resolution which allows to trade-off between precision and run-tim",
+    "Recently, the Vision Transformer (ViT) [19] introduced a convolution-free transformer architecture for image classification where input images are processed as sequences of patch tokens.",
+    "For the encoder, we build upon the vision transformer ViT [19] and consider ”Tiny”, ”Small”, ”Base” and ”Large” models described in Table 1.",
+    "The original ViT models [19] have been trained with random cropping only, whereas the training procedure proposed by [47] uses a combination of dropout [46] and stochastic depth [30] as regularization and Mixup [62] and RandAugment [15] as data augmentations.",
+    "We fine-tuned ViT-B/16 on ADE20K with models from [19] and [47] and observe a significant difference, namely a mIoU of 45.69% and 48.06% respectively.",
+    "Following [19], we bilinearly interpolate the pre-trained position embeddings according to their original position in the image to match the fine-tuning sequence length.",
+    "In contrast, transformers are usually composed of layer normalization [3] combined with dropout as a regularizer during training [17, 19]."
+   ],
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": "extends:correct",
+   "note": "Audited extends (lineage-audit-fixtures-v1: correct)."
+  },
+  {
+   "collection": "vision-transformer",
+   "src": "openalex:W3094502228",
+   "dst": "openalex:W4226028923",
+   "cited": {
+    "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+    "year": 2020,
+    "authors": [
+     "Alexey Dosovitskiy",
+     "Lucas Beyer",
+     "Alexander Kolesnikov",
+     "Dirk Weissenborn",
+     "Xiaohua Zhai"
+    ]
+   },
+   "citing": {
+    "title": "When Shift Operation Meets Vision Transformer: An Extremely Simple Alternative to Attention Mechanism",
+    "year": 2022
+   },
+   "citing_abstract": "Attention mechanism has been widely believed as the key to success of vision transformers (ViTs), since it provides a flexible and powerful way to model spatial relationships. However, is the attention mechanism truly an indispensable part of ViT? Can it be replaced by some other alternatives? To demystify the role of attention mechanism, we simplify it into an extremely simple case: ZERO FLOP and ZERO parameter. Concretely, we revisit the shift operation. It does not contain any parameter or arithmetic calculation. The only operation is to exchange a small portion of the channels between neighboring features. Based on this simple operation, we construct a new backbone network, namely ShiftViT, where the attention layers in ViT are substituted by shift operations. Surprisingly, ShiftViT works quite well in several mainstream tasks, e.g., classification, detection, and segmentation. The performance is on par with or even better than the strong baseline Swin Transformer. These results…",
+   "method": "foundational_allowlist",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": []
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": "extends:correct",
+   "note": "Audited extends (lineage-audit-fixtures-v1: correct)."
+  },
+  {
+   "collection": "vision-transformer",
+   "src": "openalex:W3094502228",
+   "dst": "openalex:W4312349930",
+   "cited": {
+    "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+    "year": 2020,
+    "authors": [
+     "Alexey Dosovitskiy",
+     "Lucas Beyer",
+     "Alexander Kolesnikov",
+     "Dirk Weissenborn",
+     "Xiaohua Zhai"
+    ]
+   },
+   "citing": {
+    "title": "Swin Transformer V2: Scaling Up Capacity and Resolution",
+    "year": 2022
+   },
+   "citing_abstract": "We present techniques for scaling Swin Transformer [35] up to 3 billion parameters and making it capable of training with images of up to 1,536x1,536 resolution. By scaling up capacity and resolution, Swin Transformer sets new records on four representative vision benchmarks: 84.0% top-1 accuracy on ImageNet- V2 image classification, 63.1 / 54.4 box / mask mAP on COCO object detection, 59.9 mIoU on ADE20K semantic segmentation, and 86.8% top-1 accuracy on Kinetics-400 video action classification. We tackle issues of training instability, and study how to effectively transfer models pre-trained at low resolutions to higher resolution ones. To this aim, several novel technologies are proposed: 1) a residual post normalization technique and a scaled cosine attention approach to improve the stability of large vision models; 2) a log-spaced continuous position bias technique to effectively transfer models pre-trained at low-resolution images and windows to their higher-resolution…",
+   "method": "foundational_allowlist",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": []
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": "extends:correct",
+   "note": "Audited extends (lineage-audit-fixtures-v1: correct)."
+  },
+  {
+   "collection": "vision-transformer",
+   "src": "openalex:W3094502228",
+   "dst": "openalex:W4312777001",
+   "cited": {
+    "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+    "year": 2020,
+    "authors": [
+     "Alexey Dosovitskiy",
+     "Lucas Beyer",
+     "Alexander Kolesnikov",
+     "Dirk Weissenborn",
+     "Xiaohua Zhai"
+    ]
+   },
+   "citing": {
+    "title": "Reversible Vision Transformers",
+    "year": 2022
+   },
+   "citing_abstract": "We present Reversible Vision Transformers, a memory efficient architecture design for visual recognition. By decoupling the GPU memory footprint from the depth of the model, Reversible Vision Transformers enable memory efficient scaling of transformer architectures. We adapt two popular models, namely Vision Transformer and Multiscale Vision Transformers, to reversible variants and benchmark extensively across both model sizes and tasks of image classification, object detection and video classification. Reversible Vision Transformers achieve a reduced memory footprint of up to 15.5× at identical model complexity, parameters and accuracy, demonstrating the promise of reversible vision transformers as an efficient backbone for resource limited training regimes. Finally, we find that the additional computational burden of recomputing activations is more than overcome for deeper models, where throughput can increase up to 3.9 × over their non-reversible counterparts. Code and models are…",
+   "method": "s2_context_rule",
+   "evidence_source": "arxiv_html",
+   "published_relation": "extends",
+   "s2": {
+    "intents": null,
+    "is_influential": null,
+    "contexts": null
+   },
+   "arxiv_html_contexts": [
+    "In this work, we reconfigure the residual paths in Vision Transformers (ViT) [15] and Multiscale Vision Transformers (MViT) [18] to overcome this issue.",
+    "are a popular network structure that were first proposed for natural language applications [68] and now are widely used in all areas of deep learning such as Reinforcement Learning [7], Speech [41], Music [32], multi-modal learning [35] and recently, in traditional vision tasks [15] as well.",
+    "Since their introduction, Vision Transformers have experienced enthusiastic adoption and have been applied to several visual recognition tasks [15, 63, 64] using priors such as multi-scale feature hierarchies [18, 24, 49, 69, 76] and local structure modelling [49, 14, 9].",
+    "In this work, we use Vision Transformers [15] and Multiscale Vision Transformers [18] as our base models and propose their reversible transformer version that decouple the memory requirement from depth of the model.",
+    "While this constraint is an obstruction for other vision architectures such as ResNets [27] that require a change of feature dimensions, it is easily satisfied in the Vision Transformer architecture [15] which maintains a constant feature dimension throughout the layers.",
+    "Fig. shows the reversible transformation T adapted to the Vision Transformer architecture [15].",
+    "Following ViT [15], we use the Multi-head attention and the MLP sublocks as functions F and G respectively.",
+    "We follow training recipes [17] for both ViT [15] and MViT [18] models with certain crucial adaptions (§6).",
+    "Figure 1 plots the GPU Memory footprint for both Rev-ViT and Rev-MViT family of models as well as for several other prior networks such as MViT [18], ViT [15], ResNets and RegNetY [58].",
+    "All models closely follow the original ViT architectures [15] in matched performance, parameters, FLOPs and much lower memory footprint (Table 1)."
+   ],
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": "extends:correct",
+   "note": "Audited extends (lineage-audit-fixtures-v1: correct)."
+  },
+  {
+   "collection": "vision-transformer",
+   "src": "openalex:W3138516171",
+   "dst": "openalex:W3207918547",
+   "cited": {
+    "title": "Swin Transformer: Hierarchical Vision Transformer using Shifted Windows",
+    "year": 2021,
+    "authors": [
+     "Ze Liu",
+     "Yutong Lin",
+     "Yue Cao",
+     "Han Hu",
+     "Yixuan Wei"
+    ]
+   },
+   "citing": {
+    "title": "SwinIR: Image Restoration Using Swin Transformer",
+    "year": 2021
+   },
+   "citing_abstract": "Image restoration is a long-standing low-level vision problem that aims to restore high-quality images from low-quality images (e.g., downscaled, noisy and compressed images). While state-of-the-art image restoration methods are based on convolutional neural networks, few attempts have been made with Transformers which show impressive performance on high-level vision tasks. In this paper, we propose a strong baseline model SwinIR for image restoration based on the Swin Transformer. SwinIR consists of three parts: shallow feature extraction, deep feature extraction and high-quality image reconstruction. In particular, the deep feature extraction module is composed of several residual Swin Transformer blocks (RSTB), each of which has several Swin Transformer layers together with a residual connection. We conduct experiments on three representative tasks: image super-resolution (including classical, lightweight and real-world image super-resolution), image denoising (including grayscale…",
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "is_influential": true,
+    "contexts": [
+     "We show the effects of channel number, RSTB number and STL number in a RSTB on model performance in Figs.",
+     "A concurrent work [82] proposed a U-shaped architecture based on the Swin Transformer [56].",
+     "As an alternative to CNN, Transformer [76] designs a self-attention mechanism to capture global interactions between contexts and has shown promising performance in several vision problems [6, 74, 19, 56].",
+     "Swin Transformer layer (STL) [56] is based on the standard multi-head selfattention of the original Transformer layer [76].",
+     "Recently, Swin Transformer [56] has shown great promise as it integrates the advantages of both CNN and Transformer.",
+     "Therefore, regular and shifted window partitioning are used alternately to enable cross-window connections [56], where shifted window partitioning means shifting the feature by (⌊M2 ⌋, ⌊ M 2 ⌋) pixels before partitioning.",
+     "Impact of channel number, RSTB number and STL number.",
+     "For classical image SR, real-world image SR, image denoising and JPEG compression artifact reduction, the RSTB number, STL number, window size, channel number and attention head number are generally set to 6, 6, 8, 180 and 6, respectively.",
+     "When used in vision problems such as image classification [66, 19, 84, 56, 45, 55, 75], object detection [6, 53, 74, 56], segmentation [84, 99, 56, 4] and crowd counting [47, 69], it learns to attend to important image regions by exploring the global interactions between different regions."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": "extends:correct",
+   "note": "Audited extends (lineage-audit-fixtures-v1: correct)."
+  },
+  {
+   "collection": "vision-transformer",
+   "src": "openalex:W3138516171",
+   "dst": "openalex:W4312349930",
+   "cited": {
+    "title": "Swin Transformer: Hierarchical Vision Transformer using Shifted Windows",
+    "year": 2021,
+    "authors": [
+     "Ze Liu",
+     "Yutong Lin",
+     "Yue Cao",
+     "Han Hu",
+     "Yixuan Wei"
+    ]
+   },
+   "citing": {
+    "title": "Swin Transformer V2: Scaling Up Capacity and Resolution",
+    "year": 2022
+   },
+   "citing_abstract": "We present techniques for scaling Swin Transformer [35] up to 3 billion parameters and making it capable of training with images of up to 1,536x1,536 resolution. By scaling up capacity and resolution, Swin Transformer sets new records on four representative vision benchmarks: 84.0% top-1 accuracy on ImageNet- V2 image classification, 63.1 / 54.4 box / mask mAP on COCO object detection, 59.9 mIoU on ADE20K semantic segmentation, and 86.8% top-1 accuracy on Kinetics-400 video action classification. We tackle issues of training instability, and study how to effectively transfer models pre-trained at low resolutions to higher resolution ones. To this aim, several novel technologies are proposed: 1) a residual post normalization technique and a scaled cosine attention approach to improve the stability of large vision models; 2) a log-spaced continuous position bias technique to effectively transfer models pre-trained at low-resolution images and windows to their higher-resolution…",
+   "method": "title_version",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "supersedes",
+   "s2": {
+    "intents": null,
+    "is_influential": null,
+    "contexts": null
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "supersedes",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": "supersedes:correct",
+   "note": "Audited supersedes (lineage-audit-fixtures-v1: correct)."
+  },
+  {
+   "collection": "vision-transformer",
+   "src": "openalex:W3138516171",
+   "dst": "openalex:W4312560592",
+   "cited": {
+    "title": "Swin Transformer: Hierarchical Vision Transformer using Shifted Windows",
+    "year": 2021,
+    "authors": [
+     "Ze Liu",
+     "Yutong Lin",
+     "Yue Cao",
+     "Han Hu",
+     "Yixuan Wei"
+    ]
+   },
+   "citing": {
+    "title": "Video Swin Transformer",
+    "year": 2022
+   },
+   "citing_abstract": "The vision community is witnessing a modeling shift from CNNs to Transformers, where pure Transformer architectures have attained top accuracy on the major video recognition benchmarks. These video models are all built on Transformer layers that globally connect patches across the spatial and temporal dimensions. In this paper, we instead advocate an inductive bias of locality in video Transformers, which leads to a better speed-accuracy trade-off compared to previous approaches which compute self-attention globally even with spatial-temporal factorization. The locality of the proposed video architecture is realized by adapting the Swin Transformer designed for the image domain, while continuing to leverage the power of pre-trained image models. Our approach achieves state-of-the-art accuracy on a broad range of video recognition benchmarks, including on action recognition (84.9 top-l accuracy on Kinetics-400 and 85.9 top-l accuracy on Kinetics-600 with ~20× less pre-training data…",
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [
+     "methodology",
+     "background"
+    ],
+    "is_influential": true,
+    "contexts": [
+     "As our architecture is adapted from Swin Transformer [28], our model can be initialized by its strong pre-trained model on a large-scale dataset.",
+     "Similar to image recognition [28], this 3D shifted window design introduces connections between neighboring non-overlapping 3D windows in the previous layer.",
+     "We implement this approach through a spatiotemporal adaptation of Swin Transformer [28], which was recently introduced as a general-purpose vision backbone for image understanding.",
+     "Swin Transformer [28] further introduces the inductive biases of locality, hierarchy and translation invariance, which enable it to serve as a general-purpose backbone for various image recognition tasks.",
+     "Thus, we follow [28] by introducing 3D relative position bias B ∈ R (2)×M(2)×M(2) for each head as Attention(Q,K, V ) = SoftMax(QK / √ d+B)V, (2) where Q,K, V ∈ RPM2×d are the query, key and value matrices; d is the dimension of query and key features, and PM(2) is the number of tokens in a 3D window.",
+     "This allows us to strictly follow the hierarchical architecture of the original Swin Transformer [28], which consists of four stages and performs 2× spatial downsampling in the patch merging layer of each stage.",
+     "Though the number of windows is increased, the efficient batch computation in [28] for the shifted configuration can be followed, such that the final number of windows for computation is still 8.",
+     "However, a modeling shift is currently underway on backbone architectures for image classification, from Convolutional Neural Networks (CNNs) to Transformers [8, 34, 28].",
+     "in [28] for the shifted configuration can be followed, such that the final number of windows for computation is still 8.",
+     "Following [28], we introduce four different versions of Video Swin Transformer."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": "extends:correct",
+   "note": "Audited extends (lineage-audit-fixtures-v1: correct)."
+  },
+  {
+   "collection": "vision-transformer",
+   "src": "openalex:W3138516171",
+   "dst": "openalex:W4321232185",
+   "cited": {
+    "title": "Swin Transformer: Hierarchical Vision Transformer using Shifted Windows",
+    "year": 2021,
+    "authors": [
+     "Ze Liu",
+     "Yutong Lin",
+     "Yue Cao",
+     "Han Hu",
+     "Yixuan Wei"
+    ]
+   },
+   "citing": {
+    "title": "Swin-Unet: Unet-Like Pure Transformer for Medical Image Segmentation",
+    "year": 2023
+   },
+   "citing_abstract": "In the past few years, convolutional neural networks (CNNs) have achieved milestones in medical image analysis. Especially, the deep neural networks based on U-shaped architecture and skip-connections have been widely applied in a variety of medical image tasks. However, although CNN has achieved excellent performance, it cannot learn global and long-range semantic information interaction well due to the locality of the convolution operation. In this paper, we propose Swin-Unet, which is an Unet-like pure Transformer for medical image segmentation. The tokenized image patches are fed into the Transformer-based U-shaped Encoder-Decoder architecture with skip-connections for local-global semantic feature learning. Specifically, we use hierarchical Swin Transformer with shifted windows as the encoder to extract context features. And a symmetric Swin Transformer-based decoder with patch expanding layer is designed to perform the up-sampling operation to restore the spatial resolution of…",
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [
+     "background",
+     "methodology"
+    ],
+    "is_influential": true,
+    "contexts": [
+     "It is worth mentioning that an eﬃcient and eﬀective hierarchical vision Transformer, called Swin Transformer, is proposed as a vision backbone in [19].",
+     "Motivated by the Swin Transformer’s [19] success, we propose Swin-Unet to leverage the power of Transformer for 2D medical image segmentation in this work.",
+     "In this work, we directly use the training weight of Swin transformer [19] on ImageNet to initialize the network encoder and decoder, which may be a suboptimal scheme.",
+     "Eﬀect of model scale: Similar to [19], we discuss the eﬀect of network deep-ening on model performance.",
+     "Take Swin Transformer as vision backbone, the authors of [19] achieved state-of-the-art performance on Image classiﬁcation, object detection and semantic segmentation.",
+     "Encoder, bottleneck and decoder are all built based on Swin Trans-former block [19].",
+     "In [19], a hierarchical Swin Transformer is developed.",
+     "Recently, several excellent works have been done baed on ViT [25,26,19].",
+     "Diﬀerent from the conventional multi-head self attention (MSA) module, swin transformer block [19] is constructed based on shifted windows.",
+     "The basic unit of Swin-Unet is Swin Transformer block [19]."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": "extends:correct",
+   "note": "Audited extends (lineage-audit-fixtures-v1: correct)."
+  },
+  {
+   "collection": "icml-2025",
+   "src": "204e3073870fae3d05bcbc2f6a8e263d9b72e776",
+   "dst": "3a862efc1eac2ac9c1aa6ba04266032d210f7f49",
+   "cited": {
+    "title": "Attention is All you Need",
+    "year": 2017,
+    "authors": [
+     "Ashish Vaswani",
+     "Noam Shazeer",
+     "N. Parmar",
+     "J. Uszkoreit",
+     "Llion Jones"
+    ]
+   },
+   "citing": {
+    "title": "Latent Thinking Optimization: Your Latent Reasoning Language Model Secretly Encodes Reward Signals in its Latent Thoughts",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "The output sequences of the Transformer are aggregated with mean pooling over the dimension T (number of thinking steps), followed by a two-layer MLP with ReLU as activation function to produce logits for binary However, a challenge is that each latent thought h t ∈ R L × d is a matrix rather than a vector, and this requires an aggregation over the dimension L before it can be processed by the Tra",
+     "5B due to its lightweight architecture with only 2 layers of Transformer encoder.",
+     "Specifically, we adopt a 2-layer Transformer (Vaswani et al., 2017) with Sinusoidal positional encoding to encode the sequence of latent thoughts."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "component",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "note": "Uses a 2-layer Transformer encoder as a probe component; LTO does not build on the Transformer paper's contribution."
+  },
+  {
+   "collection": "icml-2025",
+   "src": "4b7ad761c08a7ffb191577b3d4fd4ff2d66a8a38",
+   "dst": "a99dee9602e21a71526b9681d8dba37c55b66941",
+   "cited": {
+    "title": "V-IRL: Grounding Virtual Intelligence in Real Life",
+    "year": 2024,
+    "authors": [
+     "Jihan Yang",
+     "Runyu Ding",
+     "Ellis Brown",
+     "Xiaojuan Qi",
+     "Sai-Ning Xie"
+    ]
+   },
+   "citing": {
+    "title": "SFT Memorizes, RL Generalizes: A Comparative Study of Foundation Model Post-training",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Second, we adopt V-IRL (Yang et al., 2024a), a real-world navigation task that focuses on the model’s spatial reasoning capabilities .",
+     "(Yang et al., 2024a), highlighting the generalization capability of RL.",
+     "The second task, V-IRL (Yang et al., 2024a), is chosen to examine the model’s reasoning capabilities in an open-world visual navigation domain (Section 4.2).",
+     "…range of challenging tasks, such as solving advanced college exam questions (Lu et al., 2023; Yue et al., 2024a;b) and spatial understanding tasks (Yang et al., 2024a;b), they also exhibit limitations in visual perception (Zhai et al., 2024a;b; Tong et al., 2024c;d; Rahmanzadehgervi et al., 2024).",
+     "For V-IRL , we train the model on routes collected in New York City and evaluate it on the original V-IRL VLN mini benchmark (Yang et al., 2024a) Notably, unlike the previous state-of-the-art approach re-ported in V-IRL , which relies on a two stage VLM-LLM collaboration technique and tailored…",
+     "We conduct visual distribution shift experiments (Section 5.2) via training the model on New York City regions and evaluating the out-of-domain performance on the worldwide navigation routes from the benchmark released by Yang et al. (2024a)."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "benchmark",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [
+    "contrasts"
+   ],
+   "borderline": false,
+   "audited_verdict": null,
+   "note": "V-IRL is adopted as an evaluation task/benchmark ('a real-world navigation task'). A merged context also contrasts SFT/RL training with 'the previous state-of-the-art approach reported in V-IRL' — contrasts is acceptable."
+  },
+  {
+   "collection": "icml-2025",
+   "src": "4dcfa64ae74b93cd0cc98f816e1b24c16b9731e2",
+   "dst": "67cb62f62a2158ba0eeb68eb22f262a2089cdf7a",
+   "cited": {
+    "title": "TabICL: A Tabular Foundation Model for In-Context Learning on Large Data",
+    "year": 2025,
+    "authors": [
+     "Jingang Qu",
+     "David Holzmüller",
+     "G. Varoquaux",
+     "Marine Le Morvan"
+    ]
+   },
+   "citing": {
+    "title": "Is One Layer Enough? Understanding Inference Dynamics in Tabular Foundation Models",
+    "year": 2026
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Specifically, we leverage the open-source nanoTabPFN (Pf-efferle et al., 2025) codebase providing an architecture similar to TabPFN(v2) and pre-train three models using the TabICL prior codebase: (1) the original implementation containing six layers without any modification ( nano-TabPFN 6 l ), (2) a single-layer transformer ( nanoTabPFN 1 l ) and (3) a single-layer transformer where we repeat the",
+     "TabICL ’s prediction module operates directly on already processed embeddings from the column embedder and row-wise interaction module, and LimiX-2M uses an RBF-kernel preprocessing step.",
+     "Following K¨uken et al. (2025), we continue pre-training our final decoder individually for each layer on synthetic datasets generated by TabICL priors (details are provided in Appendix A.6).",
+     "In addition, all models, except TabPFN(v1) and TabICL , form clearly visible blocks of sequences of layers in which representation remains highly similar, suggesting small incremental updates to the embedding space.",
+     "We adapted the experiments as follows: we include all TFMs that support regression, namely LimiX-2M , LimiX-16M , TabPFN(v2) , and TabPFN(2.5) ; we use negative RMSE as the primary performance metric and additionally report Spearman’s rank correlation, which is invariant to calibration; the separation gap experiment is extended to regression by treating it as a classification problem (discretizing",
+     "TabICL (Qu et al., 2024) (v1) and TabPFN(v2) on out-of-distribution tasks to assess how well the model generalizes on data that is not described by its prior.",
+     "Unlike most LLMs, prominent TFMs (e.g., TabICL , TabPFN ) are encoder-only, smaller in size, do not perform auto-regressive inference, use attention between features, and are row-invariant, operating over sets of examples rather than sequences.",
+     "Interestingly, two models showed a distinct pattern: TabICL and LimiX-2M exhibit more robustness to skipping early layers compared to other models, as evidenced in Figure 7.",
+     "Our results suggest that the compression stage of TabICL and the encoding used in LimiX-2M yield a richer embedding of raw data.",
+     "For Tabular Logit Lens, we use the open-source priors from TabICL , which may be suboptimal for models that employ more expressive prior designs.",
+     "In the experiments we study two state-of-the-art open-source tabular ICL models, TabPFN(v1) (Hollmann et al., 2023) and TabICL (Qu et al., 2024) as well as four open-weight models, TabPFN(v2) (Hollmann et al., 2025), TabPFN(2.5) (Grinsztajn et al., 2025), LimiX-2M and LimiX-16M (LimiXTeam, 2025).",
+     "For pretraining the models (e.g., nanoTabPFN and nanoTabPFN looped ), as well as for pretraining the individual decoders used in the Tabular Logit Lens, we rely on the TabICL implementation to generate training priors."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "protocol",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "note": "An analysis study that evaluates TabICL and uses its prior code; the cue is about the citing paper's own experiments ('We adapted the experiments …')."
+  },
+  {
+   "collection": "icml-2025",
+   "src": "52be71605c60d326381a4ddfa1fb476912709504",
+   "dst": "4b2d48d9eafe007379481f076810177eebc4c429",
+   "cited": {
+    "title": "PaperBench: Evaluating AI's Ability to Replicate AI Research",
+    "year": 2025,
+    "authors": [
+     "Giulio Starace",
+     "Oliver Jaffe",
+     "Dane Sherburn",
+     "James Aung",
+     "Jun Shern Chan"
+    ]
+   },
+   "citing": {
+    "title": "ProfBench: Multi-Domain Rubrics requiring Professional Knowledge to Answer and Judge",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Agreement with Human Annotations To evaluate LLM-Judges, we use Macro-F1 based on the ground-truth human-labeled criterion-fulfillment and the model-predicted criterion-fulfillment (both binary) as used by HealthBench (Arora et al., 2025) and PaperBench (Starace et al., 2025).",
+     "Our design principle directly aligns with subcategories in prior benchmarks that focus on professional tasks, such as conversation theme-wise analysis in HealthBench (Arora et al., 2025) and machine-learning problem domains in PaperBench (Starace et al., 2025).",
+     "This means ProfBench-Judge only costs $0.70 vs. $1320 for PaperBench JudgeEval (Starace et al., 2025).",
+     "Following PaperBench (Starace et al., 2025), we do not provide the original task prompt to the LLM-judge, as the criteria are designed to be used independently of the prompt, and further providing the prompt might confuse the LLM-Judge.",
+     "Specifically, Starace et al. (2025) demonstrate that this can be done for specialized domains requiring professional knowledge - health in evaluating patient-physician conversations while Arora et al. (2025) shows its usefulness for machine learning in reproducing ICML papers.",
+     "Recent works (Starace et al., 2025; Arora et al., 2025) show that humans are often tasked with coming up with these criteria while LLM-judges are used to determine if a response fulfills the criteria (given both cost and efficacy considerations).",
+     "In the short term, we recommend researchers to utilize ProfBench along other benchmarks (Arora et al., 2025; Starace et al., 2025; Guha et al., 2023; Zhou et al., 2025) where appropriate for their research goals.",
+     "Inspired by HealthBench (Arora et al., 2025) and PaperBench (Starace et al., 2025), we calculate the criteria-fulfillment rate of each response, weighted by their criterion importance (1 for additional, 2 for minor, 3 for major and 4 for critical).",
+     "For the first factor, we focused on domains that have not been previously worked on by earlier works (Arora et al., 2025; Starace et al., 2025; Guha et al., 2023; Zhou et al., 2025) in order to show fresh capabilities in new settings, which we believe to be more helpful to the community."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "metric",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": true,
+   "audited_verdict": null,
+   "note": "Macro-F1 / rubric fulfilment computed 'as used by' PaperBench; judging protocol followed. ProfBench is a new benchmark, not a descendant method."
+  },
+  {
+   "collection": "icml-2025",
+   "src": "69afd10d387423a03617d461c3f47a5f3033cc54",
+   "dst": "ef682caa44110c17ac939ec31c3f9f7ea61314f6",
+   "cited": {
+    "title": "Hi Robot: Open-Ended Instruction Following with Hierarchical Vision-Language-Action Models",
+    "year": 2025,
+    "authors": [
+     "L. Shi",
+     "Brian Ichter",
+     "M. Equi",
+     "Liyiming Ke",
+     "Karl Pertsch"
+    ]
+   },
+   "citing": {
+    "title": "MemER: Scaling Up Memory for Robot Control via Experience Retrieval",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Our throughput also depends on the VLM backbone and on scheduling (e.g., π h at 1 Hz, π l at 2 Hz), which can limit very high-frequency control and reduce reactivity to rapid environmental changes.",
+     "Consequently, even with a significantly stronger base VLM such as GPT-5 or Gemini Robotics–ER 1.5, the model lacks the capacity to interpret robot-specific perceptual cues and identify meaningful keyframes, resulting in less accurate subtask predictions and necessitating additional fine-tuning.",
+     "How does our high-level policy, finetuned from an open-source VLM, compare to proprietary off-the-shelf VLMs?",
+     "Other works directly prompt API-Based VLMs with video context to decide where the robot should navigate (Chiang et al., 2024; Sharma et al., 2023; Chen et al., 2024).",
+     "We use a finetuned VLM as the high-level policy to both nominate candidate keyframes and predict subtasks for the low-level policy during closed-loop control, as shown in Figure 2.",
+     "Our method builds on the common hierarchical VLA paradigm, as in Shi et al. (2025), and extends it with the ability to tackle long-horizon tasks that require memory.",
+     "Q2: How does our high-level policy, finetuned from an open-source VLM, compare to proprietary off-the-shelf VLMs?",
+     "Departing from existing VLM work for VQA, Hu et al. (2025a) uses non-uniform frame sampling through a lightweight scoring model; in contrast, we achieve non-uniform sampling without additional models.",
+     "We take advantage of the fact that these open-source VLMs are finetuned on large amounts of video understanding data.",
+     "We choose to adopt a hierarchical apporach because open source VLMs like Qwen2.",
+     "…baselines: 1) No history: a memory-less high-level policy that only views the current frame (i.e. current robot foundation models), similar to (Shi et al., 2025) 2) Short History: a policy that views only the recent N frames ( N = 8 for our setup) 3) Long History: a policy that naively…",
+     "We found that existing API-Based VLMs are not sufficient to reason about robot affordances for our long-horizon manipulation tasks, so we resort to finetuning open-weight models."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "note": "'Our method builds on the common hierarchical VLA paradigm, as in Shi et al. (2025), and extends it …'"
+  },
+  {
+   "collection": "icml-2025",
+   "src": "6fbb3ed823526ac050b610d353ea91a8515f7e69",
+   "dst": "5ab955677b415272a2a63578d4f29f832b00d20f",
+   "cited": {
+    "title": "EmbodiedBench: Comprehensive Benchmarking Multi-modal Large Language Models for Vision-Driven Embodied Agents",
+    "year": 2025,
+    "authors": [
+     "Rui Yang",
+     "Hanyang Chen",
+     "Junyu Zhang",
+     "Mark Zhao",
+     "Cheng Qian"
+    ]
+   },
+   "citing": {
+    "title": "Reinforced Reasoning for Embodied Planning",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "This output structure is inspired by the Embench[54] prompting format, where the model is encouraged to first observe the image, then reflect and reason, and finally produce a coherent multi-step action plan.",
+     "To address this gap, we adopt Embench [54], a benchmark designed for evaluating multimodal agents in dynamic, interactive environments.",
+     "In this work, we address this limitation by evaluating our model in interactive environments[54] bridging the gap between static planning capabilities and dynamic embodied execution.",
+     "Empirical analyses in Figure1 reveal that even state-of-the-art VLMs, which excel in image captioning or visual question answering, struggle to maintain coherent and efficient decision sequences in dynamic environments[54].",
+     "Recognizing the discrepancy between simplistic text-based simulations and the complexities of real-world physics, we conduct evaluations within Embench[54], an interactive embodied benchmark that faithfully captures environmental dynamics and agent-environment feedback loops."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "benchmark",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "note": "'we adopt Embench [54], a benchmark designed for evaluating multimodal agents'."
+  },
+  {
+   "collection": "icml-2025",
+   "src": "7e7e59d2e247d99954081080ddd5aae93d10b9e0",
+   "dst": "69afd10d387423a03617d461c3f47a5f3033cc54",
+   "cited": {
+    "title": "π0: A Vision-Language-Action Flow Model for General Robot Control",
+    "year": 2024,
+    "authors": [
+     "Kevin Black",
+     "Noah Brown",
+     "Danny Driess",
+     "A. Esmail",
+     "M. Equi"
+    ]
+   },
+   "citing": {
+    "title": "Hi Robot: Open-Ended Instruction Following with Hierarchical Vision-Language-Action Models",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "To train the low-level policy p lo ( A t | I 1 t , ..., I nt , ˆ ℓ t , q t ) , we use D labeled ∪ D demo using a flow-matching objective, following Black et al. (2024).",
+     "A particularly powerful approach for handling such complex semantics is provided by vision-language-action (VLA) models (Black et al., 2024; Brohan et al., 2023a; Kim et al., 2024; Wen et al., 2024), which use vision-language model (VLM) pre-training to initialize the policy p ( A t | o t ) .",
+     "We build on the π 0 VLA (Black et al., 2024), which additionally handles multiple images and continuous state observations q t , and modifies the VLM to output continuous action chunk distributions via flow-matching, but the high-level principles are similar.",
+     "Flat VLA : This comparison directly uses the same π 0 low-level policy as in Hi Robot, but without any high level or synthetic data, representing a state-of-the-art approach for instruction following (Black et al., 2024).",
+     "The low-level policy is the π 0 VLA (Black et al., 2024), which is trained by finetuning PaliGemma-3B with an additional flow matching “action expert” to produce continuous actions, while the high-level policy is fine-tuned on the image-language tuples described in Section 4.3 to predict commands.",
+     "…meth-ods fine-tune VLMs to output robotic controls based on input images and language commands (Brohan et al., 2023a; Wen et al., 2024; Kim et al., 2024; Black et al., 2024; Liu et al., 2024c; Li et al., 2024; O’Neill et al., 2024; Zawal-ski et al., 2024; Zheng et al., 2025; Pertsch et al., 2025) .",
+     "This low-level policy is itself a vision-language model finetuned for producing robotic actions, also known as a vision-language-action (VLA) model (Black et al., 2024; Brohan et al., 2023a; Kim et al., 2024; Wen et al., 2024)."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "note": "'We build on the π0 VLA (Black et al., 2024)'; the low-level policy is π0."
+  },
+  {
+   "collection": "icml-2025",
+   "src": "8292083dd8f6ae898ea0ee54a6b97997d1a51c9d",
+   "dst": "a99dee9602e21a71526b9681d8dba37c55b66941",
+   "cited": {
+    "title": "Scaling LLM Test-Time Compute Optimally can be More Effective than Scaling Model Parameters",
+    "year": 2024,
+    "authors": [
+     "C. Snell",
+     "Jaehoon Lee",
+     "Kelvin Xu",
+     "Aviral Kumar"
+    ]
+   },
+   "citing": {
+    "title": "SFT Memorizes, RL Generalizes: A Comparative Study of Foundation Model Post-training",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Subsequent work (Zelikman et al., 2022; Feng et al., 2023; Tian et al., 2024; Chen et al., 2024a; Snell et al., 2024) has demonstrated that fine-tuning verifiers during inference improves model accuracy, effectively utilizing test-time computation.",
+     "We adopt a multi-step RL framework similar to Zhai et al. (2024a), by instantiating RL after running SFT on the backbone model (Dubey et al., 2024), using the sequential revision formulation (Snell et al., 2024).",
+     "Recent research has increasingly focused on scaling up inference-time computation to improve model performance (Wei et al., 2022b; Yao et al., 2024; Snell et al., 2024; Jaech et al., 2024).",
+     "An illustration of the sequential revision is provided in Figure 2 (also see Figure 5 of Snell et al. (2024)), and an example of the state-action transition is shown in Figure 3.",
+     "For modeling the state-action transition, we adopt the sequential revision formulation (Snell et al., 2024).",
+     "We use VER : V n → R × V k to denote a verifier, which evaluates the outcome of v out and generates an outcome-based reward function (Cobbe et al., 2021; Hosseini et al., 2024; Snell et al., 2024; Setlur et al., 2024) r along with textual information v ver .",
+     "We estimate the FLOPs for training X following the similar manner of (Snell et al., 2024; Hoffmann et al., 2023), where Note that the used on-policy RL algorithm PPO (Schulman et al., 2017) contains iterative stages of replay buffer collection and optimization, hence requiring additional inference…"
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "protocol",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": true,
+   "audited_verdict": null,
+   "note": "Adopts the sequential-revision formulation as the experimental setup of a comparative study."
+  },
+  {
+   "collection": "icml-2025",
+   "src": "99832586d55f540f603637e458a292406a0ed75d",
+   "dst": "3d3a2827c355e76dd55524d5062a1a63141f1c00",
+   "cited": {
+    "title": "ReAct: Synergizing Reasoning and Acting in Language Models",
+    "year": 2022,
+    "authors": [
+     "Shunyu Yao",
+     "Jeffrey Zhao",
+     "Dian Yu",
+     "Nan Du",
+     "Izhak Shafran"
+    ]
+   },
+   "citing": {
+    "title": "REMem: Reasoning with Episodic Memory in Language Agent",
+    "year": 2026
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": [
+     "We adopt a ReAct-style agent (Yao et al., 2023a; Gu et al., 2024) equipped with three categories of carefully curated tools to access the hybrid graph: 1) retrieval tools, 2) graph exploration tools, and 3) the flow control tool."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": true,
+   "audited_verdict": null,
+   "note": "'We adopt a ReAct-style agent … equipped with … tools': REMem's agent loop is ReAct's paradigm."
+  },
+  {
+   "collection": "icml-2025",
+   "src": "99832586d55f540f603637e458a292406a0ed75d",
+   "dst": "6935b713ca7e42dfa2ec93b0adacc16b291edc1d",
+   "cited": {
+    "title": "ReAct: Synergizing Reasoning and Acting in Language Models",
+    "year": 2022,
+    "authors": [
+     "Shunyu Yao",
+     "Jeffrey Zhao",
+     "Dian Yu",
+     "Nan Du",
+     "Izhak Shafran"
+    ]
+   },
+   "citing": {
+    "title": "MCP-Universe: Benchmarking Large Language Models with Real-World Model Context Protocol Servers",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": [
+     "For the agent, we adopt the most popular framework, ReAct [29].",
+     "Key agent design patterns have emerged, such as ReAct [29], Reflection [30], and Plan-and-Solve [31]."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "framework",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "note": "A benchmark paper: 'For the agent, we adopt the most popular framework, ReAct'."
+  },
+  {
+   "collection": "icml-2025",
+   "src": "a0a79dad89857a96f8f71b14238e5237cbfc4787",
+   "dst": "4b2d48d9eafe007379481f076810177eebc4c429",
+   "cited": {
+    "title": "Judging LLM-as-a-judge with MT-Bench and Chatbot Arena",
+    "year": 2023,
+    "authors": [
+     "Lian-Min Zheng",
+     "Wei-Lin Chiang",
+     "Ying Sheng",
+     "Si-Yuan Zhuang",
+     "Zhanghao Wu"
+    ]
+   },
+   "citing": {
+    "title": "ProfBench: Multi-Domain Rubrics requiring Professional Knowledge to Answer and Judge",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Based on such annotations, we find inter-annotator agreement to be Fleiss’ κ = 0.912, suggesting excellent agreement among annotators."
+    ]
+   },
+   "label": "other",
+   "usage_kind": null,
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "note": "The only sentence ('Based on such annotations, we find inter-annotator agreement …') is not about MT-Bench."
+  },
+  {
+   "collection": "icml-2025",
+   "src": "a99dee9602e21a71526b9681d8dba37c55b66941",
+   "dst": "6e212b711e334ae4df26bbd57dc8eab925f98474",
+   "cited": {
+    "title": "SFT Memorizes, RL Generalizes: A Comparative Study of Foundation Model Post-training",
+    "year": 2025,
+    "authors": [
+     "Tian-Zhe Chu",
+     "Yuexiang Zhai",
+     "Jihan Yang",
+     "Shengbang Tong",
+     "Sai-Ning Xie"
+    ]
+   },
+   "citing": {
+    "title": "MALT: Improving Reasoning with Multi-Agent LLM Training",
+    "year": 2024
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "This allows us to not only bootstrap reasoning based on positive traces but also learn generalizable knowledge about useful reasoning trajectories (Chu et al., 2025).",
+     "However, our results indicate that this could degrade performance sometimes, and preference learning methods such as DPO (see Appendix A.4.2 for a theoretical analysis) exhibit better performance at learning generalizable knowledge around reasoning steps (Chu et al., 2025)."
+    ]
+   },
+   "label": "other",
+   "usage_kind": null,
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "note": "'based on positive traces' is not about the cited paper; MALT (2024) cites it as background (year inverted)."
+  },
+  {
+   "collection": "icml-2025",
+   "src": "ae22db103c2954a56787a6c91373ea161841f250",
+   "dst": "3a862efc1eac2ac9c1aa6ba04266032d210f7f49",
+   "cited": {
+    "title": "Layer by Layer: Uncovering Hidden Representations in Language Models",
+    "year": 2025,
+    "authors": [
+     "Oscar Skean",
+     "Md Rifat Arefin",
+     "Dan Zhao",
+     "Niket Patel",
+     "Jalal Naghiyev"
+    ]
+   },
+   "citing": {
+    "title": "Latent Thinking Optimization: Your Latent Reasoning Language Model Secretly Encodes Reward Signals in its Latent Thoughts",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "While we can vary α to get different formulations of matrix entropy, we follow the approach of Skean et al. (2025) and choose α → 1 , which is equivalent to the standard von Neumann entropy.",
+     "• Entropy (Skean et al., 2025) quantifies how much information content the latent representations carry.",
+     "C.1 E NTROPY Entropy (Skean et al., 2025) quantifies how much information content the latent representations carry."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "metric",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "note": "Follows Skean et al.'s matrix-entropy measure and sets α → 1: a metric, not a method built on."
+  },
+  {
+   "collection": "icml-2025",
+   "src": "b79b3a401119bc610b6e2db738aeee531b40aaf0",
+   "dst": "3d3a2827c355e76dd55524d5062a1a63141f1c00",
+   "cited": {
+    "title": "From RAG to Memory: Non-Parametric Continual Learning for Large Language Models",
+    "year": 2025,
+    "authors": [
+     "Bernal Jiménez Gutiérrez",
+     "Yiheng Shu",
+     "Weijian Qi",
+     "Si-Zhe Zhou",
+     "Yu Su"
+    ]
+   },
+   "citing": {
+    "title": "REMem: Reasoning with Episodic Memory in Language Agent",
+    "year": 2026
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "2) Structure-augmented memory approaches, including Mem0 (Chhikara et al., 2025), Graphiti (Rasmussen et al., 2025), and HippoRAG 2 (Guti´errez et al., 2025), where the first two methods are originally evaluated on episodic memory tasks.",
+     "We adopt the F1 calculation from HippoRAG 2 (Guti´errez et al., 2025), BLEU-1 implementation from HuggingFace Evaluate (HuggingFace, 2025).",
+     "…more advanced non-parametric systems, which use large language models (LLMs) to construct summaries or semantic graphs (Gutierrez et al., 2024; Guti´errez et al., 2025; Edge et al., 2024), improve over RAG but still prioritize structured world knowledge over lived, interaction-specific…",
+     "To further enhance connectivity, we add synonymy edges between gist nodes whose embedding similarity exceeds a threshold, following the HippoRAG 2 approach (Guti´errez et al., 2025)."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "metric",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": true,
+   "audited_verdict": null,
+   "note": "Published quote: 'We adopt the F1 calculation from HippoRAG 2'. Another context adopts HippoRAG 2's synonymy edges (a component)."
+  },
+  {
+   "collection": "icml-2025",
+   "src": "b79b3a401119bc610b6e2db738aeee531b40aaf0",
+   "dst": "aae1d8e184c306b90cb51b205b8cb7ef718ebcdf",
+   "cited": {
+    "title": "From RAG to Memory: Non-Parametric Continual Learning for Large Language Models",
+    "year": 2025,
+    "authors": [
+     "Bernal Jiménez Gutiérrez",
+     "Yiheng Shu",
+     "Weijian Qi",
+     "Si-Zhe Zhou",
+     "Yu Su"
+    ]
+   },
+   "citing": {
+    "title": "PropRAG: Guiding Retrieval with Beam Search over Proposition Paths",
+    "year": 2025
+   },
+   "citing_abstract": "While structured RAG methods attempt to address this using knowledge graphs built from triples, we argue that the inherent context loss of triples (context collapse) limits the fidelity of the knowledge representation.",
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "contrasts",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "PropRAG underscores the value of explicit, algorithmic modeling of reasoning processes over high-fidelity, pre-structured knowledge, offering a promising direction for developing LLMs with more robust and associative non-parametric memory.",
+     "We quantify this trade-off through a runtime comparison on the MuSiQue dataset using our hardware (NVIDIA RTX 4090).",
+     "PropRAG’s primary limitations include the computational overhead of beam search, which, while LLM-free online, is more intensive than simpler retrieval methods.",
+     "We utilize the complex multi-hop query presented in Figure 3 as a running example to illustrate the methodology.",
+     "By shifting from context-poor triples to richer propositions, PropRAG creates a high-fidelity knowledge representation."
+    ]
+   },
+   "label": "genuine_contrast",
+   "usage_kind": null,
+   "gold_relation": "contrasts",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "note": "Abstract contrasts PropRAG's propositions with triple-based structured RAG (HippoRAG 2)."
+  },
+  {
+   "collection": "icml-2025",
+   "src": "d766bffc357127e0dc86dd69561d5aeb520d6f4c",
+   "dst": "6b9cdba25a6930d82958d2404350f12c1550ddc4",
+   "cited": {
+    "title": "Training language models to follow instructions with human feedback",
+    "year": 2022,
+    "authors": [
+     "Long Ouyang",
+     "Jeff Wu",
+     "Xu Jiang",
+     "Diogo Almeida",
+     "Carroll L. Wainwright"
+    ]
+   },
+   "citing": {
+    "title": "rStar-Math: Small LLMs Can Master Math Reasoning with Self-Evolved Deep Thinking",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "5-Math [Yang et al., 2024], we adopt the pairwise ranking loss [Ouyang et al., 2022] to optimize the ORM.",
+     "Thus the training method constructs preference pairs for each step based on Q-values and uses a pairwise ranking loss [Ouyang et al., 2022] to optimize PPM’s score prediction for each reasoning step, achieving reliable labeling.",
+     "The ORM is trained using a pairwise ranking loss [Ouyang et al., 2022], while the PQM follows [Chen et al., 2024, Zhang et al., 2024a] to use Q-values as reward labels and optimize with MSE loss.",
+     "Following [Ouyang et al., 2022], we define our loss function using the standard Bradley-Terry model with a pairwise ranking loss: when i is not final answer step , (5) Here, r θ ( x, y i ) denotes the output of the PPM, where x is the problem and y is the trajectory from the first step to the i th…"
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "component",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "note": "'we adopt the pairwise ranking loss [Ouyang et al., 2022] to optimize the ORM': a loss reused, not InstructGPT built on."
+  },
+  {
+   "collection": "icml-2025",
+   "src": "f6fbb6809374ca57205bd2cf1421d4f4fa04f975",
+   "dst": "3a862efc1eac2ac9c1aa6ba04266032d210f7f49",
+   "cited": {
+    "title": "Linguistic Knowledge and Transferability of Contextual Representations",
+    "year": 2019,
+    "authors": [
+     "Nelson F. Liu",
+     "Matt Gardner",
+     "Yonatan Belinkov",
+     "Matthew E. Peters",
+     "Noah A. Smith"
+    ]
+   },
+   "citing": {
+    "title": "Latent Thinking Optimization: Your Latent Reasoning Language Model Secretly Encodes Reward Signals in its Latent Thoughts",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": [
+     "…should be discriminative enough for a model to identify their correctness directly from the latent thoughts. pothesis, we follow the widely-used probing technique (Liu et al., 2019; Hewitt & Manning, 2019), and train a lightweight sequence classifier to predict the correctness of latent thoughts."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "protocol",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "note": "'we follow the widely-used probing technique (Liu et al., 2019; …)': an analysis tool."
+  },
+  {
+   "collection": "icml-2025",
+   "src": "ffea1f0412dfa8149535dbfc3ca0e94e629afad7",
+   "dst": "970bad474e5907e26b5301e4653d891ed75c6c12",
+   "cited": {
+    "title": "KernelBench: Can LLMs Write Efficient GPU Kernels?",
+    "year": 2025,
+    "authors": [
+     "Anne Ouyang",
+     "Simon Guo",
+     "Simran Arora",
+     "Alex L. Zhang",
+     "William Hu"
+    ]
+   },
+   "citing": {
+    "title": "TritonRL: Training LLMs to Think and Code Triton Without Cheating",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "We use an LLM labeler to create difficulty labels for each data point in KernelBook based on the difficulty levels defined in KernelBench (Ouyang et al., 2025), which categorizes tasks into three levels based on the complexity of kernel implementation, and we denote the subset of training data with…",
+     "This has spurred significant interest in leveraging Large Language Models (LLMs), for automated kernel generation, especially for CUDA and Triton (Shao et al., 2024; Ouyang et al., 2025; Li et al., 2025a; NVIDIA Developer Blog, 2025).",
+     "Instead, we note that KernelBench (Ouyang et al., 2025) has three complexity levels.",
+     "…have been attempts introducing inference frameworks that utilize general-purpose models, such as OpenAI models and DeepSeek, for generating kernels (Ouyang et al., 2025; Lange et al., 2025; Li et al., 2025a; NVIDIA Developer Blog, 2025; Muhamed et al., 2023), they often struggle with even basic…",
+     "To support curriculum in RL training, we further label tasks into three difficulty levels using Qwen3-235B-Instruct (Team, 2025), following the task definitions in Ouyang et al. (2025), yielding 11k <task query, level> pairs.",
+     "While these general-purpose models excel at a variety of programming tasks, they often struggle with custom kernel generation, achieving low success rates on specialized gpu programming tasks (Ouyang et al., 2025), highlighting the need for domain-specific models tailored to kernel synthesis."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "benchmark",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "note": "Difficulty labels 'based on the difficulty levels defined in KernelBench'."
+  }
+ ]
+}
