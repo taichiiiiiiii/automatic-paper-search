@@ -48,11 +48,10 @@ pnpm --filter @paperpilot/web exec playwright show-report             # HTML rep
   violation every native `<select>` raises from its user-agent shadow tree
   (a WebKit engine bug, also seen on a bare `<select>` page) is ignored;
   any other inline style is still caught (`guard.e2e.ts`), and the
-  Chromium projects run the same code without that exemption. Next's
-  "Failed to fetch RSC payload … TypeError: Load failed / NetworkError"
-  (a prefetch cancelled because the test navigated away; Next falls back to
-  a normal navigation) is ignored too: a really missing payload still fails
-  as an HTTP 404. Import `test`/`expect` from
+  Chromium projects run the same code without that exemption. WebKit also
+  reports a Next prefetch cancelled by the test's next `page.goto` as an
+  error, so tests that navigate right after a page load wait for
+  `networkidle` first. Import `test`/`expect` from
   `./support/fixtures`, never from `@playwright/test`. A test that expects
   an error opts out narrowly with `test.use({ allowedProblems: /regex/ })`.
   `guard.e2e.ts` proves the guard catches each kind.
@@ -94,7 +93,7 @@ pnpm --filter @paperpilot/web exec playwright show-report             # HTML rep
   `-app <copy of application.ini with another Name/Vendor>` as the first
   argument.
 - **Visual regression** (`e2e/visual.e2e.ts`, Chromium desktop + mobile):
-  landing, a theme's tree and timeline, the smallest catalog,
+  landing, a theme's tree and timeline, the `eccv-2024` catalog,
   how-it-works and 404, with dates/counts/data lists masked and animations
   off. Baselines are per platform
   (`e2e/__screenshots__/<platform>/<project>/`); only `linux/` is

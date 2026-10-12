@@ -59,14 +59,6 @@ const ABORTED = /ERR_ABORTED|NS_BINDING_ABORTED|^(Load request )?cancelled$/i;
  * (guard.e2e.ts). */
 const WEBKIT_SELECT_UA_STYLE = /^\S+ style-src-attr blocked=inline target=(SELECT|#document)$/;
 
-/** Next logs this when an in-flight RSC fetch (link prefetch / soft
- * navigation) dies because the test navigates away mid-request; WebKit and
- * Firefox surface the cancelled fetch as a network TypeError, Chromium as a
- * silent abort. Next then falls back to a normal navigation. A payload
- * that is really missing still fails the test as an `http: 404`. */
-const RSC_FETCH_CANCELLED =
-  /^Failed to fetch RSC payload for .*Falling back to browser navigation\. TypeError: (Load failed|NetworkError when attempting to fetch resource\.)/;
-
 function attach(
   page: Page,
   origin: string,
@@ -88,7 +80,6 @@ function attach(
       if (!tagged && /Content Security Policy/i.test(text)) return;
       if (tagged && WEBKIT_SELECT_UA_STYLE.test(text)) return;
     }
-    if (RSC_FETCH_CANCELLED.test(text)) return;
     const loc = tagged ? undefined : msg.location()?.url;
     const kind = tagged || /Content Security Policy/i.test(text) ? "csp" : "console";
     problems.push({ kind, text: loc ? `${text} (${loc})` : text, page: where() });

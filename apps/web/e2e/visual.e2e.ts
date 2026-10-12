@@ -21,6 +21,8 @@ import { CatalogPage, LandingPage, ThemePage } from "./pages";
 import { expect, test } from "./support/fixtures";
 import { conferences, publishedThemes } from "./support/site";
 
+const VISUAL_CATALOG = "eccv-2024";
+
 /** Skips the test unless a baseline exists for this platform/project (or
  * snapshots are being written). Call before navigating. */
 function requireBaselines(testInfo: TestInfo, browserName: string, ...names: string[]): void {
@@ -91,8 +93,10 @@ test.describe("visual", () => {
 
   test("conference catalog (first viewport)", async ({ page, browserName }, testInfo) => {
     requireBaselines(testInfo, browserName, "catalog.png");
-    // The smallest catalog: the cheapest to load; its rows are masked anyway.
-    const conf = [...conferences()].sort((a, b) => a.papers - b.papers)[0]!.name;
+    // A fixed, small, already-closed edition (cheap to load, stable
+    // counts); its rows are masked anyway.
+    const conf = VISUAL_CATALOG;
+    test.skip(!conferences().some((c) => c.name === conf), `${conf} is not in this build`);
     const catalog = new CatalogPage(page, conf);
     await catalog.goto();
     await expect(catalog.results.first()).toBeVisible({ timeout: 20_000 });

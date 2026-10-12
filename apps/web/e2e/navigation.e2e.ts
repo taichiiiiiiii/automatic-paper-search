@@ -81,6 +81,11 @@ test.describe("global nav and footer", () => {
   test("trailing-slash and legacy .html URLs redirect", async ({ page }) => {
     await page.goto("/how-it-works");
     await expect(page).toHaveURL(/\/how-it-works\/$/);
+    // Let Next's viewport prefetches of the nav links finish first: WebKit
+    // reports a fetch cancelled by the next page.goto as an error ("Fetch
+    // API cannot load … due to access control checks" / "Failed to fetch
+    // RSC payload … Load failed"), which the page guard would count.
+    await page.waitForLoadState("networkidle");
     await page.goto("/index.html");
     await expect(page).toHaveURL(/\/$/);
   });
