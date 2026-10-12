@@ -140,18 +140,22 @@ describe("edition lineage (R2-32)", () => {
     ]) {
       expect(names).toContain(n);
     }
-    // The recorded 3-seed slice quotes only 2 lineage relations.
+    // The recorded 3-seed slice quotes fewer than 3 lineage relations. Since
+    // R2-38 its former `extends` are usage citations ("we adopt V-IRL …, a
+    // real-world navigation task", "we adopt the sequential revision
+    // formulation (Snell et al., 2024)"), so the relaxed policy below drops
+    // the minimum to 0 to reach the unaudited tier.
     const failed = row.audit.checks.filter((c) => c.status === "failed").map((c) => c.name);
     expect(failed).toEqual(["lineage_relation_count"]);
     expect(row.publication_tier).toBe("blocked");
 
-    const relaxed = sandbox({ theme_min_lineage_edges: 2 });
+    const relaxed = sandbox({ theme_min_lineage_edges: 0 });
     expect((await runCli(relaxed, CLI, ARGS, { fixtures: FIXTURES })).code).toBe(0);
     expect((await qualityRow(relaxed)).publication_tier).toBe("unaudited");
   });
 
   it("refuses to replace a published conference lineage with a blocked rebuild (exit 6)", async () => {
-    const sb = sandbox({ theme_min_lineage_edges: 2 });
+    const sb = sandbox({ theme_min_lineage_edges: 0 });
     expect((await runCli(sb, CLI, ARGS, { fixtures: FIXTURES })).code).toBe(0);
     sb.git("add", "-A");
     sb.git("commit", "-qm", "test: published unaudited conference lineage");

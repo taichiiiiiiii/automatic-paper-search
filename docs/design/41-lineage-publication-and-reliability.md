@@ -88,6 +88,7 @@
 | R2-35 | 依頼テーマ（Low-Rank Adaptation）の品質: QLoRA の欠落と、埋め込みだけで入った古い別分野の論文 | 実装（2026-10-12、ブランチ `roadmap/r2-35-theme-topic-quality`。下の実装メモ） |
 | R2-32 | 会議の系譜を LLM なしで作り、テーマと同じ根拠・検査で公開する（13 会議・14 deep がすべて blocked だった） | 実装（2026-10-12、ブランチ `roadmap/r2-32-conference-lineage-nollm`。ICML 2025 を未監査で公開できる状態。下の実装メモ） |
 | R2-37 | 作り直しで公開中のテーマが非公開になる事故（2026-10-12、LoRA）の再発防止: 自動の作り直しの条件、regen と依頼の引数の一致、公開中より悪い版で置き換えない検査 | 実装（2026-10-12、ブランチ `roadmap/r2-37-regen-guard`。下の実装メモ） |
+| R2-38 | `extends` の適合率: ベンチマーク・データセット・枠組み・道具・評価手順を「使う」引用文（we adopt / use / follow X）を継承と読まない | 実装（2026-10-12、ブランチ `roadmap/r2-38-extends-rule`。公開ファイルは作り直していない。下の実装メモ） |
 
 ## 実装メモ（2026-10-10）
 
@@ -486,3 +487,58 @@ R2-29 の監査の下書き（第二審査）が挙げた生成側の誤り 2 �
 
 - テスト: `test/lineage/conference/editionLineage.test.ts`（目録との結び付け、順位の保存、会議の検査、会議の置き換え防止）、ワークフローの約束 `r2-32-conference-lineage-workflows.test.ts`（手動のみ、LLM の鍵なし、collect-weekly との引数・env の一致、終了コード 6、キャッシュの昇格）、システムテスト `conferenceEdition.system.test.ts`（記録した S2 の応答で ICML 2025 を 3 種で作る: 決定的、会議の行に同じ検査、基準を満たせば未監査、置き換え防止で exit 6 とバイト一致、S2 の 503 で exit 4）
 - 作り直しの実行（利用者の確認の後）: `gh workflow run conference-lineage-regen.yml --ref develop -f conferences=icml-2025`（ほかの会議は 1 件ずつ、要約の `edition ranking` と区分を見てから）
+
+## 実装メモ（R2-38、「使う」引用を `extends` にしない）
+
+ICML 2025 の会議の系譜（R2-32）の `extends` 17 本のうち、継承と言えるのは 3 本（Hi Robot → MemER、π0 → Hi Robot、ReAct → REMem）だけで、残りは「ベンチマーク X を使う（we adopt Embench [54], a benchmark …）」「X の F1 の計算を使う」「一番使われている枠組み ReAct を使う」「広く使われるプロービングの手法に従う」などの利用の文だった。原因は v3 規則の build の手がかりに `we adopt / use / employ / follow`・`based on` が入っていて、その目的語を見ていなかったこと。D5（強い関係には被引用論文を名指しする手がかりの文が要る）と公開の基準は変えていない。LLM・API の新しい呼び出しはない（すべてキャッシュから）。
+
+### 規則（`classify/apiRelations.ts`、新しい規則 id `phrase_usage` → `uses_resource` → baseline_only）
+
+build の手がかりが被引用論文に当たった文を、次のときは「利用」に下げる。
+- **強い手がかり**（extend / build on / extension of / variant・version of / modified / adapted・derived from / inspired by / motivated by / generalize / improve upon / 「our … の particular instance」）は継承として残す。ただしその手がかりの目的語（直後の数語）や受け身の主語が資源・手順の名詞のときは下げる（「inspired by the Embench [54] prompting format」「these extended experiments」「the separation gap experiment is extended to …」）
+- **弱い手がかり**（adopt / use / employ / follow / based on / borrow / reuse / leverage）は、次のどれかで下げる
+  - 目的語・主語が資源・手順の名詞: benchmark・dataset・task・environment・metric・F1・BLEU・score・calculation・evaluation・protocol・setup・configuration・hyperparameters・experiments・annotations・labels・difficulty levels・toolkit・library・codebase・code・implementation・prompt・template・format・judge・rubric・splits・checkpoints・weights・probing など
+  - 同格で資源として紹介される（「X [54], a benchmark designed for …」「V-IRL (…), a real-world navigation task」）
+  - 「Following / Inspired by / Based on X, we calculate / compute / measure / evaluate / report / find …」（計測の手順）
+  - 目的語が既製の道具（widely-used / standard / most popular / official / default / open-source、「a 2-layer Transformer」、framework）や学習の部品（loss / objective / optimizer / regularizer）
+  - 「follow X … and choose / set …」（設定値の踏襲）
+  - 被引用論文の題名がベンチマーク・データセット・道具（Bench・benchmark・dataset・suite・toolkit・library・gym・arena など）、引用元の論文の題名が評価の研究（Benchmarking・…Bench・comparative study・evaluating・understanding・「Is … enough」）、または S2 の意図が分かっていて methodology を含まない
+- 弱い `based on` は、直後の数語に被引用論文の名前・番号が無ければその文の手がかりにしない（「bootstrap reasoning based on positive traces … (Chu et al., 2025)」）
+- `phrase_usage` は否定の手がかり（`phrase_protocol`・`phrase_ablation` と同じ）として扱い、引用文の LLM には回さない
+
+### 評価用の手作業ラベル（`test/lineage/theme/fixtures/relation-usage-eval-r238.json`、`relationUsageR238.test.ts`）
+
+公開中の 6 件（ICML 2025 と 5 テーマ）の強い関係すべてと、規則を通し直して強くなった辺、計 58 本。S2 の引用文・意図・isInfluential（arXiv HTML 由来の辺はその引用文）と、手作業ラベル（genuine / usage（種類つき）/ other / genuine_contrast、判断の分かれるものは borderline）を入れた。監査済み 4 テーマの 28 本は監査の判定（すべて correct）をそのまま使った。ICML の S2 の要旨は公開しない方針なので、要旨は公開中の理由欄に引かれた 1 文だけ。ラベルは論文単位（引用元が被引用論文の方法を土台にしているか）。
+
+| 対象（規則で判定する辺） | 公開中の `extends`（適合率、再現率） | R2-38（適合率、再現率） | `contrasts` 公開中 → R2-38 |
+|---|---|---|---|
+| ICML 2025 | 3/17 = 0.18、3/3 | **3/3 = 1.00、3/3** | 1/1 → 1/1（V-IRL ← SFT が extends から contrasts に。許容と判定） |
+| 監査済み 4 テーマ（FA・GNN・MoE・ViT） | 19/19 = 1.00、19/19 | 19/19 = 1.00、19/19（変化なし） | 3/3 → 3/3 |
+| Low-Rank Adaptation（未監査） | 5/7 = 0.71、5/6 | 2/2 = 1.00、2/6 | 3/4 → 3/4 |
+| 全体 | 27/43 = 0.63、27/28 | **24/24 = 1.00、24/28** | 7/8 → 7/8 |
+
+- 失った正しい `extends` 4 本はすべて LoRA（SiRA・LoRA-GA・Composing ← LoRA、Q-BLoRA ← QLoRA）。どれも論文としては LoRA の発展だが、規則が引いていた文は「LoRA の既定の設定に従う」「公式のコードと設定に従う」「these extended experiments」などで、継承の手がかりの文ではない（D5 では根拠の誤り）。継承を述べる文（「To increase the capacity of LoRA … we propose SiRA」）には手がかりの語が無い
+- 残る判断の分かれ目: REMem ← ReAct（「we adopt a ReAct-style agent」、genuine と判定）、REMem ← HippoRAG 2（F1 の計算に加え、同義の辺を HippoRAG 2 に倣って足す。usage と判定）、ProfBench ← PaperBench（ルーブリックの評価を倣う。usage と判定）
+
+### 影響（オフラインの試算。公開ファイルは書き換えていない）
+
+公開中の各辺を今のキャッシュ（`s2_references.json`・`arxiv_html_contexts.json`、ICML は会議の参考文献キャッシュの S2 要旨）で通し直し、品質表と同じ自動検査（テーマは `themeGateFromPolicy`、会議は `conferenceGateFromPolicy`）に掛けた。
+
+| 対象 | 強い関係 公開中 → 現行規則の通し直し → R2-38 | 公開の検査（強い関係 3 本以上ほか） | 監査 |
+|---|---|---|---|
+| flash-attention | 4 → 4 → 4 | 通過 | 影響なし（辺・理由欄とも同一。R2-35 の記録で作り直した成果物もバイト一致） |
+| graph-neural-network | 4 → 4 → 4 | 通過 | 同上 |
+| mixture-of-experts | 7 → 7 → 7 | 通過 | 同上 |
+| vision-transformer | 13 → 13 → 13 | 通過 | 同上 |
+| low-rank-adaptation | 11 → 11 → 6（extends 7 → 2、contrasts 4 のまま） | 通過 | 未監査 |
+| icml-2025 | 18 → 17 → 4（extends 17 → 3、V-IRL ← SFT が contrasts に） | 通過（4 本） | 未監査 |
+
+- ICML の通し直しでは PropRAG ← HippoRAG 2 の contrasts が消えるが、これは要旨の取り方の差（公開時は S2 の要旨、キャッシュに無い）で R2-38 とは関係がない。本番で作り直せば残る見込みで、その場合 ICML は強い関係 5 本
+- LoRA の通し直しでは公開中と 2 本ずれる（Composing の要旨・SoRA の要旨。公開時と節点の要旨が違うため）。R2-38 の差は上の 7 本
+- 会議の生成器は関係で節点を落とさない（null の辺だけ落とす）ので、ICML の節点・辺の数は変わらない。テーマは強い関係で弱い入り口の節点を残す（R2-30・R2-35）ので LoRA の作り直しでは節点が減る可能性がある（R2-35 の記録は depth 2 の分が足りず、完全な作り直しの試算はできなかった）
+- 監査済み 4 テーマは作り直しても監査は無効にならない（出力が変わらない）。作り直しが要るのは ICML 2025（`conference-lineage-regen.yml`）と LoRA（`regen-themes.yml`）の 2 件で、どちらも未監査
+
+### 確認
+
+- テスト: `relationUsageR238.test.ts`（評価用ラベルで ICML と全体の適合率 0.9 以上、監査済みの 28 本が変わらない、usage の 13 本が extends にならない、`usageReason` を評価用の実際の文で確認）、既存の R2-22〜R2-28 の評価テストはそのまま通る。システムテスト `conferenceEdition.system.test.ts` の記録（ICML 2025 の 3 種）は、強い関係 2 本がどちらも利用の文（「we adopt V-IRL …, a real-world navigation task」など）だったので、未監査に届くことを確かめる緩い方針の最小本数を 2 → 0 にした（厳しい方針で `lineage_relation_count` だけが落ちることは同じ）
+- 試算の道具（作業用、リポジトリ外）: 公開中の辺の通し直し・キャッシュ全体の比較・R2-35 の記録での作り直し

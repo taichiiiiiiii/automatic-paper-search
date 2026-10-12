@@ -67,6 +67,8 @@ describe("classifyS2Pair", () => {
         "phrase_contrast",
         "phrase_protocol",
         "phrase_resource",
+        // R2-38: a build cue whose object is a benchmark / tool / protocol.
+        "phrase_usage",
         "table_row",
         // R2-23: cues read from the citing paper's own abstract.
         "abstract_build",
