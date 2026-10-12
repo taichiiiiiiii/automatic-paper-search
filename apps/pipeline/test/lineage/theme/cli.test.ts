@@ -24,6 +24,7 @@ import {
   parseArgs,
   runThemeCli,
 } from "../../../src/lineage/theme/cli.js";
+import { GUARD_POLICY, grown, serialize } from "./publishGuardFixtures.js";
 
 function jsonResp(status: number, body: unknown): HttpResponseLike {
   return { status, json: async () => body };
@@ -249,13 +250,9 @@ describe("runThemeCli", () => {
       const outPath = join(docsRoot, "out.json");
       const buildFn = async (): Promise<string> => {
         calls += 1;
-        writeFileSync(
-          outPath,
-          JSON.stringify({
-            nodes: Array.from({ length: 40 }, (_, i) => ({ id: `n${i}` })),
-            edges: Array.from({ length: 50 }, (_, i) => ({ src: `n${i}`, dst: `n${i + 1}` })),
-          }),
-        );
+        // R2-37: "dense enough" also means publishable — a valid 17-node
+        // artifact that passes the publication gate.
+        writeFileSync(outPath, serialize(grown(3)));
         return outPath;
       };
       const deps = depsFor(async () => jsonResp(200, { data: [] }));
@@ -273,7 +270,7 @@ describe("runThemeCli", () => {
           "--output",
           outPath,
         ],
-        { deps, buildFn },
+        { deps, buildFn, policyPath: GUARD_POLICY },
       );
       expect(rc).toBe(0);
       expect(calls).toBe(1);

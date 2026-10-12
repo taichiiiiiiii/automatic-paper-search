@@ -86,6 +86,7 @@
 | R2-28 | 引用文の追加の出どころ（arXiv HTML）、Crossref の参考文献、DBLP の会場（[47](47-apis-and-oss.md) 推奨 1〜3） | 実装（2026-10-11、ブランチ。既定は off。下の実装メモ） |
 | R2-31 | 第二審査（R2-29）の指摘: Shazeer ← Eigen の contrasts → extends、混ざった OpenAlex 記録（引用の年の逆転）と会議論文の年のずれ | 実装（2026-10-11、ブランチ `roadmap/r2-31-contrast-cue`。下の実装メモ） |
 | R2-35 | 依頼テーマ（Low-Rank Adaptation）の品質: QLoRA の欠落と、埋め込みだけで入った古い別分野の論文 | 実装（2026-10-12、ブランチ `roadmap/r2-35-theme-topic-quality`。下の実装メモ） |
+| R2-37 | 作り直しで公開中のテーマが非公開になる事故（2026-10-12、LoRA）の再発防止: 自動の作り直しの条件、regen と依頼の引数の一致、公開中より悪い版で置き換えない検査 | 実装（2026-10-12、ブランチ `roadmap/r2-37-regen-guard`。下の実装メモ） |
 
 ## 実装メモ（2026-10-10）
 
@@ -420,3 +421,17 @@ R2-29 の監査の下書き（第二審査）が挙げた生成側の誤り 2 �
   - 応用の題名（「…via Low-Rank Adaptation」で別の課題）は従来の規則のまま
   - 検索 on は利用者の判断（リポジトリ変数）。on にしたら 1 テーマずつ作り直し、`ranked descendant search: candidates=…, verified seed citers=…` の行を見る
 - テスト: `topicGateR235.test.ts`（新規: 略称の導出・一致、種より前の埋め込みだけのノード、depth 2 で展開しないこと、検索の候補の確かめ・失敗の記録・キャッシュ）、システムテスト `themeDescendantSearch.system.test.ts`（実 CLI で検索 on: 引く候補だけが後継として入る、検索が 503 なら終了コード 4 で公開中のファイルはバイト一致。合成の記録 `fixtures/theme-descendant-search`）、`r228EvidenceSources`・`r2-6-regen-reliability` に既定 off の確認を追加
+
+## 実装メモ（R2-37、作り直しで公開中のテーマを隠さない）
+
+- **事故**（2026-10-12）: 依頼で作った Low-Rank Adaptation（未監査で公開、74 ノード / 327 辺）は、初回（depth 1・seeds 5・width 8）が 13 ノードで疎だったので `--auto-expand` が depth 2・seeds 10・width 12 で作り直したものだった。その後 `regen-themes.yml`（run 38243384558）が `--auto-expand` なしの depth 1 で作り直し、21 ノード / 39 辺・発展系の関係 2 本（`lineage_relation_count` 2 < 3）になった。生成は完全で分類率も基準を超えていたので、書き込み前の検査（完全性の exit 4、分類率の exit 5）はどれも止めず、リリースで公開中のテーマが blocked の版に置き換わって消えた。R2-35 の後は depth 1 でも 21 ノード（15 以上）になるので、ノード数だけを見る従来の `--auto-expand` でも作り直さなかった
+- **直したこと**
+  - **公開の検査を使い回す**（`theme/publishGuard.ts`）: 成果物の区分を、リリースが品質表を作るのと同じ `buildLineageQuality.collectionRow`（方針 `lineage-quality-policy-v1.json`）で出す。数値を二重に持たない。`collectionRow` は書き込む前のバイト列を `payload` で受け取れるようにした
+  - **自動の作り直しの条件**（`cli.ts`）: `--auto-expand`（依頼）は、初回が疎（15 ノード / 5 辺 未満）なときに加えて、**初回が公開の検査で blocked になるとき**（発展系の関係・分類率・ノード数・辺の数・サーベイの割合など、方針の基準のどれか）にも 1 回だけ作り直す。作り直しが blocked で初回が公開できる版なら初回を残す（LIN-18）
+  - **regen と依頼の引数を揃える**: `regen-themes.yml` は依頼と同じ `--depth 1 --seeds 5 --width 8 --since-year 2018 --llm-strict ambiguous --primary-source openalex` に `--match-published` を付ける。公開中の `meta.depth` が指定より深い（＝依頼で作り直された）テーマは最初から作り直しの引数（depth 2・seeds 10・width 12）で作る。depth 1 の結果が blocked なら 1 回だけ広げて作り直す。疎であることだけでは広げない（監査済みの FA は 14 ノードで、疎を理由に広げると別のグラフになる）。監査済みの 4 テーマは公開中の版が depth 1 で、検査を全部通っている（R2-35 の再生で depth 1 の作り直しが公開中とノード・辺の数まで一致）ので、`--match-published` で作り直しても広がらない
+  - **公開中より悪い版で置き換えない**（`regressionRefusal`、書き込みの直前に `build.ts` の `publishGuard`）: 公開中（監査済み・未監査）のテーマを、(1) 品質表で blocked になる版、(2) 公開中の半分未満のノードの版（`--allow-shrink`、ワークフローの入力 `allow_shrink=true` で許す）で置き換えようとしたら、書き込まずに終了コード 6（`EXIT_REGRESSION_REFUSED`）。公開中のファイルはバイト一致のまま。`::error::` の行に公開中の区分・大きさと、新しい版で落ちた検査を出す。blocked のテーマ（サイトに出ていない）と新しいテーマは守る対象外
+  - **監査済みのテーマの作り直し**: 監査は成果物の sha256 に結びついているので、作り直した版は品質表で `golden_fixture` が failed になり、**未監査ではなく blocked（非公開）になる**（`publicationTier`）。これも (1) として止め、利用者が再監査するつもりで作り直すときだけ `--allow-reaudit`（入力 `allow_reaudit=true`）で通す。この挙動（監査が古くなったら非公開）は今回変えていない。古い監査を「未監査」として公開し続けるかは利用者の判断
+  - **ワークフロー**: `regen-themes.yml` は終了コード 6 を「refused」として数え、ジョブの要約にテーマと理由を書き、ほかのテーマを昇格した後で `verdict` を失敗にする。`theme-on-demand.yml` は従来どおり `--auto-expand`（6 なら昇格しない）
+- **テスト**: `publishGuard.test.ts`（区分の判定が方針の値を読むこと、監査の結びつき、置き換えの可否の表）、`cli.publishGuard.test.ts`（事故の再現: depth 1 の blocked な作り直しが exit 6 でファイルがバイト一致、`--match-published` の引数、初回が blocked なときの作り直し、LIN-18、縮小と再監査の許可）、ワークフローの約束 `r2-37-regen-guard.test.ts`（依頼と regen の引数の一致、入力は env 経由、exit 6 の扱いと `verdict`）、システムテスト `regenGuard.system.test.ts`（実 CLI と記録した HTTP: 発展系の関係が基準に届かない作り直しは exit 6 で `data/published` がバイト一致、`--match-published` で広げた作り直しが取れなくても同じ、縮小と再監査）。ほかのシステムテストは監査済みの FA を作り直すので `--allow-reaudit` を付けた（`support/scenarios.ts`）
+- 凍結した FA の成果物・監査・方針を `test/lineage/theme/fixtures/publish-guard/` に置いた（公開中のデータを直接読まない）
+

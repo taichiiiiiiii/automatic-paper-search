@@ -225,7 +225,15 @@ for (const conf of CATALOGS) {
         await prepareClipboard(context, browserName, baseURL);
         await catalog.goto("q=diffusion");
         await expect(catalog.results.first()).toBeVisible({ timeout: 20_000 });
+        // The ?q= filter is applied after the first (unfiltered) render: the
+        // search state is restored from the URL in an effect and filtered
+        // as a deferred update. Read the count only once the summary shows
+        // the filtered result, or `total` is the whole catalog (CI Firefox,
+        // 44028f7: expected 3,703 = every ICLR 2025 paper, exported 373).
+        await expect(catalog.resultSummary).toContainText("件が該当", { timeout: 20_000 });
+        await expect(catalog.resultSummary).toContainText("diffusion");
         const total = (await catalog.shownCount()).matched;
+        expect(total).toBeLessThan(conferencePaperCount(conf));
 
         const [bib] = await Promise.all([
           page.waitForEvent("download"),

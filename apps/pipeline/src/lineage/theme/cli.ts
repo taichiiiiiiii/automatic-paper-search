@@ -18,12 +18,23 @@
  * rate, the evidence mix, every LLM provider's usage and whether a daily
  * quota was hit. `--result-json <path>` records the outcome of every run for the
  * regen workflow's pending-retry state (`regenPending.ts`).
+ *
+ * R2-37: exit 6 (`EXIT_REGRESSION_REFUSED`, `publishGuard.ts`) when the
+ * build would replace a published (audited/unaudited) theme with one the
+ * release's quality table would mark `blocked`, or with under half of its
+ * nodes (`--allow-shrink` accepts that; `--allow-reaudit` accepts an
+ * audited theme going blocked until re-audited). Nothing is written.
+ * `--auto-expand` (on-demand) rebuilds larger when the first pass is sparse
+ * OR would not pass the publication gate; `--match-published` (regen)
+ * rebuilds at the published build's parameters and expands only on a gate
+ * failure.
  */
 
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
+  auditFixtures,
   classificationsCache,
   LAYOUT_MODE,
   type LayoutMode,
@@ -34,6 +45,7 @@ import {
 import { loadEnv } from "../../collect/config/env.js";
 import { installOpenAlexGate } from "../../collect/http/openalexGate.js";
 import type { FetchInit, HttpResponseLike } from "../../collect/http/requestWithRetry.js";
+import { atomicWriteText } from "../../collect/state/atomic.js";
 import { CliUsageError, parseArgs as parseFlags } from "../../shared/cli/argparse.js";
 import { isMain } from "../../shared/cli/isMain.js";
 import { IncompleteBuildError } from "../fetch-state/completeness.js";
@@ -48,10 +60,18 @@ import {
 } from "./classificationGate.js";
 import { CROSSREF_DEFAULT_MAX_REQUESTS, CROSSREF_FILENAME } from "./crossrefReferences.js";
 import { DBLP_DEFAULT_MAX_QUERIES, DBLP_FILENAME } from "./dblpVenues.js";
+import {
+  EXIT_REGRESSION_REFUSED,
+  evaluateTheme,
+  loadGuardContext,
+  publishedTheme,
+  RegressionRefusedError,
+  regressionRefusal,
+} from "./publishGuard.js";
 import { S2_COUNT_FILENAME } from "./s2CitationCounts.js";
 import { S2_REFERENCES_FILENAME } from "./s2Citations.js";
 import { DEFAULT_DESCENDANT_CANDIDATES } from "./s2Expansion.js";
-import { sanitizeTheme } from "./slug.js";
+import { sanitizeTheme, themeLineagePath, themeSlug } from "./slug.js";
 import { CachedTopicEmbedder, createTransformersEmbedder } from "./topicEmbedding.js";
 import { DEFAULT_TOPIC_SCOPE_OPTIONS } from "./topicScope.js";
 
@@ -91,6 +111,15 @@ export interface ThemeCliArgs {
   resultJson: string | null;
   /** R2-24: `--lineage-llm on|off`; `null` = `PAPERPILOT_LINEAGE_LLM`, else off. */
   lineageLlm: "on" | "off" | null;
+  /** R2-37: `--match-published` — rebuild with the published build's
+   * parameters (auto-expanded when its `meta.depth` is above `--depth`) and
+   * retry expanded when the result would be blocked. regen-themes.yml. */
+  matchPublished: boolean;
+  /** R2-37: `--allow-shrink` — accept a rebuild under half the published nodes. */
+  allowShrink: boolean;
+  /** R2-37: `--allow-reaudit` — accept that a rebuilt audited theme is
+   * blocked (hidden) until its new bytes are re-audited. */
+  allowReaudit: boolean;
 }
 
 export class CliArgError extends Error {}
@@ -121,6 +150,9 @@ const THEME_CLI_SPEC = {
   "min-classified-rate": { type: "float" as const },
   "result-json": { type: "string" as const },
   "lineage-llm": { type: "string" as const, choices: ["on", "off"] as const },
+  "match-published": { type: "boolean" as const },
+  "allow-shrink": { type: "boolean" as const },
+  "allow-reaudit": { type: "boolean" as const },
 };
 
 /**
@@ -158,6 +190,9 @@ export function parseArgs(argv: readonly string[]): ThemeCliArgs {
     minClassifiedRate: (parsed["min-classified-rate"] as number | undefined) ?? null,
     resultJson: (parsed["result-json"] as string | undefined) ?? null,
     lineageLlm: (parsed["lineage-llm"] as "on" | "off" | undefined) ?? null,
+    matchPublished: parsed["match-published"] as boolean,
+    allowShrink: parsed["allow-shrink"] as boolean,
+    allowReaudit: parsed["allow-reaudit"] as boolean,
   };
 }
 
@@ -206,7 +241,13 @@ export interface ThemeRunResult {
   schema_version: "theme-run-result-v1";
   theme: string;
   exit_code: number;
-  status: "ok" | "degraded_classification" | "zero_edges" | "incomplete" | "error";
+  status:
+    | "ok"
+    | "degraded_classification"
+    | "zero_edges"
+    | "incomplete"
+    | "regression_refused"
+    | "error";
   /** Degraded runs only: did any LLM provider report its daily quota exhausted? */
   daily_limit_hit: boolean;
   /** R2-24: whether the run could use an LLM (`off` runs never hit an LLM quota). */
@@ -503,8 +544,21 @@ export interface RunThemeCliOptions {
    * returns/throws without driving the full pipeline through fake
    * network fixtures). Defaults to the real `buildThemeLineage`. */
   buildFn?: typeof buildThemeLineage;
-  /** Policy file holding the default `--min-classified-rate`; `null` = built-in default. Defaults to the repo's `lineage-quality-policy-v1.json`. */
+  /** Policy file holding the default `--min-classified-rate` and the
+   * publication gate (R2-37 guard / auto-expand trigger); `null` = built-in
+   * defaults. Defaults to the repo's `lineage-quality-policy-v1.json`. */
   policyPath?: string | null;
+  /** R2-37: golden fixtures for the published theme's tier; `null` = none.
+   * Defaults to the repo's `lineage-audit-fixtures-v1.json`. */
+  fixturesPath?: string | null;
+}
+
+function readBytesOrNull(path: string): Buffer | null {
+  try {
+    return readFileSync(path);
+  } catch {
+    return null;
+  }
 }
 
 /** Run the theme-lineage CLI; returns the process exit code. Never
@@ -550,14 +604,13 @@ export async function runThemeCli(
     );
   }
 
+  const policyPath =
+    options.policyPath === undefined
+      ? qualityPolicy(layoutFor(DEFAULT_REPO_ROOT))
+      : options.policyPath;
   let minClassifiedRate: number;
   try {
-    minClassifiedRate = resolveMinClassifiedRate(
-      args.minClassifiedRate,
-      options.policyPath === undefined
-        ? qualityPolicy(layoutFor(DEFAULT_REPO_ROOT))
-        : options.policyPath,
-    );
+    minClassifiedRate = resolveMinClassifiedRate(args.minClassifiedRate, policyPath);
   } catch (e) {
     process.stderr.write(`error: ${(e as Error).message}\n`);
     return 2;
@@ -594,6 +647,59 @@ export async function runThemeCli(
   const deps = options.deps ?? defaultDeps();
   const build = options.buildFn ?? buildThemeLineage;
 
+  // R2-37: what is published for this theme now, and the guard that keeps
+  // a rebuild from replacing it with a blocked or much smaller graph.
+  const slug = themeSlug(sanitizeTheme(args.theme));
+  let targetPath: string;
+  try {
+    targetPath = args.output ?? themeLineagePath(deps.docsRoot, slug);
+  } catch (e) {
+    process.stderr.write(`error: ${(e as Error).message}\n`);
+    return 2;
+  }
+  const guardCtx = loadGuardContext({
+    policyPath,
+    fixturesPath:
+      options.fixturesPath === undefined
+        ? auditFixtures(layoutFor(DEFAULT_REPO_ROOT))
+        : options.fixturesPath,
+    minClassifiedRate,
+    now: deps.wallClockNow,
+  });
+  const published = publishedTheme(readBytesOrNull(targetPath), slug, guardCtx);
+  if (published !== null) {
+    process.stderr.write(
+      `publish guard: published ${slug} is ${published.tier} (${published.nodeCount} nodes / ${published.edgeCount} edges, depth ${published.depth ?? "?"}, ${published.seedCount} seeds)\n`,
+    );
+  }
+  const publishGuard = (text: string): string | null =>
+    regressionRefusal(
+      published,
+      evaluateTheme(Buffer.from(text, "utf-8"), slug, guardCtx, { withAudit: true }),
+      { allowShrink: args.allowShrink, allowReaudit: args.allowReaudit },
+    );
+  const refusedExit = (exc: RegressionRefusedError): number => {
+    process.stdout.write(`::error::theme ${JSON.stringify(args.theme)}: ${exc.message}\n`);
+    return result(EXIT_REGRESSION_REFUSED, "regression_refused", exc.message);
+  };
+  /** Exit for the LAST attempt's failure (published file untouched). */
+  const failureExit = (exc: unknown): number => {
+    if (exc instanceof DegradedClassificationError) return degradedExit(exc);
+    if (exc instanceof RegressionRefusedError) return refusedExit(exc);
+    if (exc instanceof ZeroEdgeBuildError) {
+      process.stderr.write(`0 edges produced; published artifact left untouched: ${exc.message}\n`);
+      return result(3, "zero_edges", exc.message);
+    }
+    if (exc instanceof IncompleteBuildError) {
+      process.stderr.write(
+        `incomplete build; published artifact left untouched: ${(exc as Error).message}\n`,
+      );
+      return result(4, "incomplete", (exc as Error).message);
+    }
+    process.stderr.write(`error: ${(exc as Error).message}\n`);
+    return result(2, "error", (exc as Error).message);
+  };
+
   const attempt = (depth: number, seedsCount: number, width: number): Promise<string> =>
     build(
       {
@@ -614,102 +720,110 @@ export async function runThemeCli(
         minClassifiedRate,
         contextBatchSize: contextBatchSizeFromEnv(process.env.PAPERPILOT_CONTEXT_BATCH_SIZE),
         lineageLlm,
+        publishGuard,
       },
       deps,
     );
 
-  let usedZeroEdgeRetry = false;
-  let outPath: string;
+  // R2-37 parameter parity: a theme published from an auto-expanded build
+  // (meta.depth above the requested depth) is rebuilt at the expanded
+  // parameters directly, as it was created.
+  let [depth, seedsCount, width] = [args.depth, args.seedsCount, args.width];
+  let expanded = false;
+  if (
+    args.matchPublished &&
+    published !== null &&
+    published.depth !== null &&
+    published.depth > args.depth
+  ) {
+    [depth, seedsCount, width] = expandParams(args.depth, args.seedsCount, args.width);
+    expanded = true;
+    process.stderr.write(
+      `match-published: published build has depth ${published.depth}; building with --depth ${depth} --seeds ${seedsCount} --width ${width}\n`,
+    );
+  }
+  const mayExpand = (args.autoExpand || args.matchPublished) && !expanded;
+
+  /** Why the written first pass should be rebuilt larger (null = keep it). */
+  const expandReason = (bytes: Buffer): string | null => {
+    const v = evaluateTheme(bytes, slug, guardCtx);
+    if (args.autoExpand && (v.nodeCount < SPARSE_NODES || v.edgeCount < SPARSE_EDGES)) {
+      return `first pass ${v.nodeCount} nodes / ${v.edgeCount} edges below (${SPARSE_NODES} / ${SPARSE_EDGES})`;
+    }
+    if (v.tier === "blocked") {
+      return `first pass (${v.nodeCount} nodes / ${v.edgeCount} edges) would be blocked by the publication gate (${v.failed.join("; ")})`;
+    }
+    return null;
+  };
+
+  let outPath: string | null = null;
+  let retryReason: string | null = null;
   try {
-    outPath = await attempt(args.depth, args.seedsCount, args.width);
+    outPath = await attempt(depth, seedsCount, width);
   } catch (exc) {
-    if (exc instanceof DegradedClassificationError) {
-      // No auto-expand retry: a bigger graph needs MORE classifications
-      // from the evidence source that just failed.
-      return degradedExit(exc);
+    if (exc instanceof DegradedClassificationError || !mayExpand) {
+      // No auto-expand retry on a degraded build: a bigger graph needs
+      // MORE classifications from the evidence source that just failed.
+      return failureExit(exc);
     }
     if (exc instanceof ZeroEdgeBuildError) {
-      if (!args.autoExpand) {
-        process.stderr.write(
-          `0 edges produced; published artifact left untouched: ${exc.message}\n`,
-        );
-        return result(3, "zero_edges", exc.message);
-      }
-      usedZeroEdgeRetry = true;
-      const [d2, s2, w2] = expandParams(args.depth, args.seedsCount, args.width);
-      process.stderr.write(
-        `auto-expand: first pass produced 0 edges; retrying with --depth ${d2} --seeds ${s2} --width ${w2}\n`,
-      );
-      try {
-        outPath = await attempt(d2, s2, w2);
-      } catch (exc2) {
-        if (exc2 instanceof DegradedClassificationError) return degradedExit(exc2);
-        if (exc2 instanceof ZeroEdgeBuildError) {
-          process.stderr.write(
-            `auto-expand retry also produced 0 edges; published artifact left untouched: ${(exc2 as Error).message}\n`,
-          );
-          return result(3, "zero_edges", (exc2 as Error).message);
-        }
-        if (exc2 instanceof IncompleteBuildError) {
-          process.stderr.write(
-            `incomplete build; published artifact left untouched: ${(exc2 as Error).message}\n`,
-          );
-          return result(4, "incomplete", (exc2 as Error).message);
-        }
-        process.stderr.write(`error: ${(exc2 as Error).message}\n`);
-        return result(2, "error", (exc2 as Error).message);
-      }
-    } else if (exc instanceof IncompleteBuildError) {
-      process.stderr.write(
-        `incomplete build; published artifact left untouched: ${(exc as Error).message}\n`,
-      );
-      return result(4, "incomplete", (exc as Error).message);
+      retryReason = "first pass produced 0 edges";
+    } else if (exc instanceof RegressionRefusedError) {
+      retryReason = `first pass refused by the publish guard (${exc.message})`;
     } else {
-      process.stderr.write(`error: ${(exc as Error).message}\n`);
-      return result(2, "error", (exc as Error).message);
+      return failureExit(exc);
     }
   }
 
-  // Auto-expand: detect a sparse (but non-zero-edge) lineage and rebuild
-  // with larger BFS parameters. Skipped when the ZeroEdgeBuildError
-  // branch above already spent the one retry --auto-expand grants.
-  if (args.autoExpand && !usedZeroEdgeRetry) {
-    let initial: { nodes?: unknown[]; edges?: unknown[] };
+  // The first pass is on disk: rebuild larger when it is sparse or would
+  // not be published.
+  let initialBytes: Buffer | null = null;
+  if (outPath !== null && mayExpand) {
+    initialBytes = readBytesOrNull(outPath);
+    retryReason = expandReason(initialBytes ?? Buffer.from("{}"));
+  }
+
+  if (retryReason !== null) {
+    const [d2, s2, w2] = expandParams(args.depth, args.seedsCount, args.width);
+    process.stderr.write(
+      `auto-expand: ${retryReason}; retrying with --depth ${d2} --seeds ${s2} --width ${w2}\n`,
+    );
     try {
-      initial = JSON.parse(readFileSync(outPath, "utf-8"));
-    } catch {
-      initial = { nodes: [], edges: [] };
-    }
-    const nNodes = (initial.nodes ?? []).length;
-    const nEdges = (initial.edges ?? []).length;
-    if (nNodes < SPARSE_NODES || nEdges < SPARSE_EDGES) {
-      const [d2, s2, w2] = expandParams(args.depth, args.seedsCount, args.width);
-      process.stderr.write(
-        `auto-expand: first pass ${nNodes} nodes / ${nEdges} edges below (${SPARSE_NODES} / ${SPARSE_EDGES}); retrying with --depth ${d2} --seeds ${s2} --width ${w2}\n`,
-      );
-      try {
-        outPath = await attempt(d2, s2, w2);
-      } catch (exc) {
-        if (exc instanceof DegradedClassificationError) {
+      const retryPath = await attempt(d2, s2, w2);
+      outPath = retryPath;
+      // LIN-18: never trade a publishable first pass for a blocked retry.
+      if (initialBytes !== null) {
+        const before = evaluateTheme(initialBytes, slug, guardCtx);
+        const after = evaluateTheme(
+          readBytesOrNull(retryPath) ?? Buffer.from("{}"),
+          slug,
+          guardCtx,
+        );
+        if (after.tier === "blocked" && before.tier !== "blocked") {
+          atomicWriteText(retryPath, initialBytes.toString("utf-8"));
           process.stderr.write(
-            `auto-expand retry was classification-degraded; keeping the initial lineage: ${exc.message}\n`,
-          );
-        } else if (exc instanceof ZeroEdgeBuildError) {
-          process.stderr.write(
-            `auto-expand retry produced 0 edges; keeping the initial lineage: ${(exc as Error).message}\n`,
-          );
-        } else if (exc instanceof IncompleteBuildError) {
-          process.stderr.write(
-            `auto-expand retry hit an incomplete fetch; keeping the initial lineage: ${(exc as Error).message}\n`,
-          );
-        } else {
-          process.stderr.write(
-            `auto-expand retry failed; keeping initial lineage: ${(exc as Error).message}\n`,
+            `auto-expand retry would be blocked (${after.failed.join("; ")}); keeping the initial lineage\n`,
           );
         }
       }
+    } catch (exc) {
+      if (outPath === null) return failureExit(exc);
+      const why =
+        exc instanceof DegradedClassificationError
+          ? "was classification-degraded"
+          : exc instanceof ZeroEdgeBuildError
+            ? "produced 0 edges"
+            : exc instanceof IncompleteBuildError
+              ? "hit an incomplete fetch"
+              : exc instanceof RegressionRefusedError
+                ? "was refused by the publish guard"
+                : "failed";
+      process.stderr.write(
+        `auto-expand retry ${why}; keeping the initial lineage: ${(exc as Error).message}\n`,
+      );
     }
   }
+  if (outPath === null) return result(2, "error", "no build written");
 
   let payload: { edges?: unknown[] };
   try {

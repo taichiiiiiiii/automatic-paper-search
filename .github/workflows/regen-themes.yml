@@ -19,6 +19,19 @@ name: regen-themes
 # classification cache — is promoted even when every theme failed, so
 # regen-retry.yml can re-dispatch them the next day; the `verdict` job
 # then still fails the run.
+#
+# R2-37 (2026-10-12 incident: a plain depth-1 rebuild replaced the
+# auto-expanded, published Low-Rank Adaptation theme with a blocked one):
+# every theme is rebuilt with the generation parameters of
+# theme-on-demand.yml plus --match-published (a theme whose published
+# meta.depth shows it was auto-expanded is rebuilt expanded; a depth-1
+# rebuild that would fail the publication gate is retried expanded). The
+# CLI refuses (exit 6, published files kept) to replace a published theme
+# with a build the quality table would block, or with under half its nodes
+# (allow_shrink=true accepts that), or an audited theme whose audit the
+# rebuild invalidates (allow_reaudit=true accepts that it goes dark until
+# re-audited). Refusals are listed in the job summary and fail `verdict`
+# after the other themes are promoted.
 
 on:
   workflow_dispatch:
@@ -28,6 +41,16 @@ on:
         required: false
         default: ""
         type: string
+      allow_shrink:
+        description: 'R2-37: accept rebuilds with fewer than half the published nodes'
+        required: false
+        default: false
+        type: boolean
+      allow_reaudit:
+        description: 'R2-37: accept that rebuilt audited themes are hidden until re-audited'
+        required: false
+        default: false
+        type: boolean
 
 permissions: {}
 
@@ -50,6 +73,7 @@ jobs:
       attempted: ${{ steps.regen.outputs.attempted }}
       succeeded: ${{ steps.regen.outputs.succeeded }}
       degraded: ${{ steps.regen.outputs.degraded }}
+      refused: ${{ steps.regen.outputs.refused }}
     steps:
       - name: Checkout develop
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -116,6 +140,8 @@ jobs:
           PAPERPILOT_S2_DESCENDANT_SEARCH: ${{ vars.PAPERPILOT_S2_DESCENDANT_SEARCH || 'off' }}
           PAPERPILOT_OPENALEX_EMAIL: ${{ secrets.OPENALEX_EMAIL }}
           THEMES_INPUT: ${{ inputs.themes }}
+          ALLOW_SHRINK: ${{ inputs.allow_shrink }}
+          ALLOW_REAUDIT: ${{ inputs.allow_reaudit }}
           THEME_RE: '^[A-Za-z0-9 _-]{2,80}$'
           PENDING_FILE: data/state/lineage-cache/regen-pending.json
         run: |
@@ -140,11 +166,17 @@ jobs:
             exit 1
           fi
 
+          # R2-37 overrides of the publish guard (both default off).
+          guard_flags=()
+          [ "$ALLOW_SHRINK" = "true" ] && guard_flags+=(--allow-shrink)
+          [ "$ALLOW_REAUDIT" = "true" ] && guard_flags+=(--allow-reaudit)
+
           results_dir="$RUNNER_TEMP/regen-results"
           mkdir -p "$results_dir"
           failed=0
           attempted=0
           degraded=()
+          refused=()
           for raw_theme in "${THEMES[@]}"; do
             theme="$(printf '%s' "$raw_theme" | sed -E 's/^[[:space:]]+|[[:space:]]+$//g')"
             if ! [[ "$theme" =~ $THEME_RE ]]; then
@@ -156,11 +188,15 @@ jobs:
             attempted=$((attempted + 1))
             echo "::group::regen $theme"
             rc=0
+            # Same parameters as theme-on-demand.yml; --match-published
+            # instead of --auto-expand (R2-37 parity, see the header).
             pnpm exec tsx apps/pipeline/src/lineage/theme/cli.ts \
                 --theme "$theme" \
                 --depth 1 --seeds 5 --width 8 --since-year 2018 \
                 --llm-strict ambiguous \
                 --primary-source openalex \
+                --match-published \
+                "${guard_flags[@]}" \
                 --result-json "$results_dir/$attempted.json" || rc=$?
             echo "::endgroup::"
             if [ "$rc" -eq 0 ]; then
@@ -170,6 +206,9 @@ jobs:
               if [ "$rc" -eq 5 ]; then
                 degraded+=("$theme")
                 echo "::warning::regen degraded (evidence-classified rate below threshold) for $theme; previous build retained"
+              elif [ "$rc" -eq 6 ]; then
+                refused+=("$theme")
+                echo "::error::regen refused for $theme: the rebuild would hide or shrink the published theme; published files kept (see the ::error:: line above)"
               else
                 echo "::warning::regen failed (exit $rc) for $theme; previous build retained"
               fi
@@ -181,7 +220,11 @@ jobs:
             echo "### Theme regeneration"
             echo "- Attempted: $attempted"
             echo "- Succeeded: $succeeded"
-            echo "- Failed: $failed (degraded classification: ${#degraded[@]})"
+            echo "- Failed: $failed (degraded classification: ${#degraded[@]}, refused by the publish guard: ${#refused[@]})"
+            for t in "${refused[@]}"; do
+              msg="$(jq -r --arg t "$t" 'select(.theme == $t) | .message' "$results_dir"/*.json 2>/dev/null | head -n 1)"
+              echo "  - refused: $t — ${msg:0:400}"
+            done
             echo ""
           } >> "$GITHUB_STEP_SUMMARY"
           # Pending-retry state is recorded (and promoted below) even when
@@ -195,6 +238,7 @@ jobs:
             echo "attempted=$attempted"
             echo "succeeded=$succeeded"
             echo "degraded=${#degraded[@]}"
+            echo "refused=${#refused[@]}"
           } >> "$GITHUB_OUTPUT"
           if [ "$succeeded" -eq 0 ]; then
             echo "::error::all theme regenerations failed (state is still promoted; the verdict job fails this run)"
@@ -343,6 +387,7 @@ jobs:
           PROMOTE_RESULT: ${{ needs.promote.result }}
           SUCCEEDED: ${{ needs.generate.outputs.succeeded }}
           DEGRADED: ${{ needs.generate.outputs.degraded }}
+          REFUSED: ${{ needs.generate.outputs.refused }}
         run: |
           set -euo pipefail
           if [ "$GENERATE_RESULT" != success ] || [ "$PROMOTE_RESULT" != success ]; then
@@ -350,7 +395,13 @@ jobs:
             exit 1
           fi
           if [ "${SUCCEEDED:-0}" = 0 ]; then
-            echo "::error::all theme regenerations failed (degraded classification: ${DEGRADED:-0}); previous builds retained"
+            echo "::error::all theme regenerations failed (degraded classification: ${DEGRADED:-0}, refused: ${REFUSED:-0}); previous builds retained"
+            exit 1
+          fi
+          # R2-37: a refused rebuild is a regression the operator must see,
+          # even when the other themes were promoted.
+          if [ "${REFUSED:-0}" != 0 ]; then
+            echo "::error::${REFUSED} theme rebuild(s) refused by the publish guard (would hide or shrink a published theme); published files kept, see the generate job summary"
             exit 1
           fi
           echo "regenerated ${SUCCEEDED} theme(s)"

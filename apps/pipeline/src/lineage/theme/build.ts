@@ -84,6 +84,7 @@ import {
 } from "./identity.js";
 import { suspectMergedRecords } from "./nodeIdentityGuard.js";
 import type { ThemePaper } from "./openalexWork.js";
+import { RegressionRefusedError } from "./publishGuard.js";
 import {
   chronologyInversions,
   correctProceedingsYears,
@@ -299,6 +300,14 @@ export interface BuildThemeLineageOptions {
    * default, unchanged); the theme CLI defaults to `"off"`.
    */
   lineageLlm?: "on" | "off";
+  /**
+   * R2-37: last check before the write. Receives the exact bytes about to
+   * be written; a non-null answer aborts with `RegressionRefusedError`
+   * (nothing written). The theme CLI uses it to refuse replacing a
+   * published theme with a blocked or much smaller build
+   * (`publishGuard.ts`). Omitted = no check (library callers).
+   */
+  publishGuard?: ((text: string, outPath: string) => string | null) | null;
 }
 
 /** R2-20: default pairs per citation-context request. */
@@ -1199,7 +1208,10 @@ export async function buildThemeLineage(
   // above, and read again below by `expansionGateBlocks`); only the bytes
   // written to disk need the float marker (p4-followups #24).
   const payloadForJson = { ...payload, edges: orderedEdges.map(edgeForJson) };
-  atomicWriteText(outPath, `${pyJsonDumps(payloadForJson, { ensureAscii: false, indent: 2 })}\n`);
+  const text = `${pyJsonDumps(payloadForJson, { ensureAscii: false, indent: 2 })}\n`;
+  const refusal = options.publishGuard?.(text, outPath) ?? null;
+  if (refusal !== null) throw new RegressionRefusedError(refusal);
+  atomicWriteText(outPath, text);
   logger.warn(
     `wrote ${outPath} (nodes=${orderedNodes.length} edges=${orderedEdges.length} root=${rootId})`,
   );

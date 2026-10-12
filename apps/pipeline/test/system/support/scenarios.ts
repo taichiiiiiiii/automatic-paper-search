@@ -19,6 +19,12 @@ export const THEME_ARGS = [
   "--primary-source",
   "openalex",
   "--no-topic-embedding",
+  // R2-37: the published flash-attention theme is audited, and a rebuild
+  // invalidates its audit (the quality table would hide it until
+  // re-audited); the publish guard refuses that unless the operator says so
+  // (regen-themes.yml `allow_reaudit=true`). regenGuard.system.test.ts
+  // covers the refusal itself.
+  "--allow-reaudit",
 ];
 export const THEME_DIR = "data/published/themes/flash-attention";
 

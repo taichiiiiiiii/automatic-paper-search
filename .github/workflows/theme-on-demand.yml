@@ -146,6 +146,11 @@ jobs:
           THEME_INPUT: ${{ inputs.theme }}
         run: |
           set -euo pipefail
+          # R2-37: --auto-expand rebuilds at depth 2 / 10 seeds / width 12
+          # when the depth-1 pass is sparse (< 15 nodes / 5 edges) OR would
+          # fail the publication gate (lineage-quality-policy-v1.json via
+          # the release's own checks). Exit 6 = the publish guard refused to
+          # replace an already published theme; nothing is promoted.
           pnpm exec tsx apps/pipeline/src/lineage/theme/cli.ts \
             --theme "$THEME_INPUT" \
             --depth 1 --seeds 5 --width 8 --since-year 2018 \
