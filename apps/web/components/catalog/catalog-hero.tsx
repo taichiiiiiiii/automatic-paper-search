@@ -50,7 +50,7 @@ export function CatalogHero({
           type="button"
           aria-expanded={open}
           aria-controls={detailsId}
-          aria-label="この学会の説明を開閉"
+          aria-label="詳細: この学会の説明を開閉"
           title="学会の説明を開閉"
           onClick={() => setOpen((prev) => !prev)}
           className="ml-auto rounded-full border border-rule px-3 py-1 text-xs text-ink-muted hover:border-rule-strong hover:text-ink"
@@ -63,6 +63,17 @@ export function CatalogHero({
       </h1>
       <p className="mt-2 flex flex-wrap items-baseline gap-x-2 gap-y-1 text-sm text-ink-muted">
         <span className="font-mono text-base text-ink">{stat(total)}</span> 論文
+        {/* The date is known at build time; it comes right after the total so
+            the counts that only appear once papers.json has loaded (Oral,
+            要旨あり, タグ) are appended at the end instead of pushing it
+            sideways (layout shift, Lighthouse 2026-10-12). */}
+        <span aria-hidden="true">·</span>
+        <span title="一覧を取得した日（スナップショット）。この日より後の変更は入っていません">
+          データの日付
+        </span>{" "}
+        <span className="font-mono text-base text-ink" data-data-date={generated || ""}>
+          {generated || "—"}
+        </span>
         {/* A conference without any Oral row (ICML 2026, every published
             row is a Poster) used to read "0 Oral" -- looks like missing
             data. Hidden once loaded and zero (design doc 53). */}
@@ -89,13 +100,6 @@ export function CatalogHero({
             <span className="font-mono text-base text-ink">{stat(tagCount)}</span> タグ
           </>
         )}
-        <span aria-hidden="true">·</span>
-        <span title="一覧を取得した日（スナップショット）。この日より後の変更は入っていません">
-          データの日付
-        </span>{" "}
-        <span className="font-mono text-base text-ink" data-data-date={generated || ""}>
-          {generated || "—"}
-        </span>
       </p>
       {copy.tagline && <p className="mt-2 text-sm text-ink-muted">{copy.tagline}</p>}
       <div id={detailsId} hidden={!open} className="mt-3">
