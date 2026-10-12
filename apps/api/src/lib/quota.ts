@@ -99,9 +99,15 @@ export class QuotaLedger {
    * earliest `expiresAt` among the buckets still live, or null when none
    * remain — the Durable Object schedules its next alarm from that value.
    * Malformed entries (no numeric `expiresAt`) are deleted as well.
+   * `prefix` also lets the alarm sweep the in-flight dedup claims
+   * (`inflight:<slug>`, src/lib/inflight.ts), which carry the same field.
    */
-  static async sweepExpired(storage: SweepableQuotaStorage, nowMs: number): Promise<number | null> {
-    const entries = await storage.list<IpBucket>({ prefix: IP_KEY_PREFIX });
+  static async sweepExpired(
+    storage: SweepableQuotaStorage,
+    nowMs: number,
+    prefix: string = IP_KEY_PREFIX,
+  ): Promise<number | null> {
+    const entries = await storage.list<IpBucket>({ prefix });
     let nextExpiry: number | null = null;
     for (const [key, bucket] of entries) {
       const expiresAt = bucket && typeof bucket.expiresAt === "number" ? bucket.expiresAt : null;

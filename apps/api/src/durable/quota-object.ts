@@ -9,6 +9,7 @@
 // production_quota_backend() below carries the stub-fetch wiring, tested
 // only via its request/response shape where feasible.
 
+import { INFLIGHT_KEY_PREFIX, type InflightBackend, InflightLedger } from "../lib/inflight.js";
 import { type QuotaBackend, QuotaLedger, type SweepableQuotaStorage } from "../lib/quota.js";
 
 // Grace added after a bucket's expiry before the sweep alarm fires, so the
@@ -29,6 +30,7 @@ function storageAdapter(storage: DurableObjectStorage): SweepableQuotaStorage {
 
 export class QuotaCounter {
   private readonly ledger: QuotaLedger;
+  private readonly inflight: InflightLedger;
   private readonly storage: DurableObjectStorage;
   private readonly sweepable: SweepableQuotaStorage;
 
@@ -36,6 +38,7 @@ export class QuotaCounter {
     this.storage = state.storage;
     this.sweepable = storageAdapter(state.storage);
     this.ledger = new QuotaLedger(this.sweepable);
+    this.inflight = new InflightLedger(this.sweepable);
   }
 
   // R2-27: every consume() may write a new `ip:<addr>` bucket that expires
@@ -49,8 +52,11 @@ export class QuotaCounter {
   }
 
   async alarm(): Promise<void> {
-    const next = await QuotaLedger.sweepExpired(this.sweepable, Date.now());
-    if (next !== null) await this.storage.setAlarm(next + SWEEP_GRACE_MS);
+    const now = Date.now();
+    const nextIp = await QuotaLedger.sweepExpired(this.sweepable, now);
+    const nextInflight = await QuotaLedger.sweepExpired(this.sweepable, now, INFLIGHT_KEY_PREFIX);
+    const pending = [nextIp, nextInflight].filter((n): n is number => n !== null);
+    if (pending.length > 0) await this.storage.setAlarm(Math.min(...pending) + SWEEP_GRACE_MS);
   }
 
   async fetch(request: Request): Promise<Response> {
@@ -62,6 +68,20 @@ export class QuotaCounter {
       return new Response(JSON.stringify(result), {
         headers: { "content-type": "application/json" },
       });
+    }
+    const slug = url.searchParams.get("slug") ?? "";
+    const requestId = url.searchParams.get("request_id") ?? "";
+    if (url.pathname === "/inflight/peek") {
+      return Response.json({ request_id: await this.inflight.peek(slug) });
+    }
+    if (url.pathname === "/inflight/claim") {
+      const result = await this.inflight.claim(slug, requestId);
+      await this.ensureSweepAlarm();
+      return Response.json(result);
+    }
+    if (url.pathname === "/inflight/release") {
+      await this.inflight.release(slug, requestId);
+      return Response.json({ ok: true });
     }
     if (url.pathname === "/refund") {
       await this.ledger.refund(ip);
@@ -87,6 +107,28 @@ export function productionQuotaBackend(namespace: DurableObjectNamespace): Quota
     },
     async refund(ip: string) {
       await stub.fetch(`https://quota.internal/refund?ip=${encodeURIComponent(ip)}`);
+    },
+  };
+}
+
+export function productionInflightBackend(namespace: DurableObjectNamespace): InflightBackend {
+  const stub = namespace.get(namespace.idFromName(INSTANCE_NAME));
+  const call = (op: string, slug: string, requestId = "") =>
+    stub.fetch(
+      `https://quota.internal/inflight/${op}?slug=${encodeURIComponent(slug)}&request_id=${encodeURIComponent(requestId)}`,
+    );
+  return {
+    async peek(slug: string) {
+      const body = (await (await call("peek", slug)).json()) as { request_id: string | null };
+      return body.request_id;
+    },
+    async claim(slug: string, requestId: string) {
+      return (await (await call("claim", slug, requestId)).json()) as Awaited<
+        ReturnType<InflightBackend["claim"]>
+      >;
+    },
+    async release(slug: string, requestId: string) {
+      await call("release", slug, requestId);
     },
   };
 }

@@ -12,6 +12,7 @@
 // exactly as worker/themes-post.test.mjs did against worker/themes-post.js.
 
 import { Hono } from "hono";
+import type { InflightBackend } from "./lib/inflight.js";
 import { themePreflight } from "./lib/preflight.js";
 import type { QuotaBackend } from "./lib/quota.js";
 import { createHealthHandler } from "./routes/health.js";
@@ -21,6 +22,7 @@ import type { Env } from "./types.js";
 export interface AppDeps {
   fetch: typeof fetch;
   quota: (env: Env) => QuotaBackend;
+  inflight?: (env: Env) => InflightBackend;
   now?: () => number;
   randomUUID?: () => string;
   log?: (message: string) => void;

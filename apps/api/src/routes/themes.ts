@@ -11,8 +11,9 @@
 //   origin allowlist (KV) → accept-stop flag (KV) → content-type (415) →
 //   body size (413/400) → JSON parse (400) → input validation (400) →
 //   manifest dedup (503/exists) → dispatch-mode sanity (503, no charge) →
-//   cf-connecting-ip (400) → quota (429/503) → request-id (500) →
-//   dispatch (502) → response (200 queued | dry_run)
+//   cf-connecting-ip (400) → in-flight peek (200 queued, deduplicated) →
+//   quota (429/503) → request-id (500) → in-flight claim →
+//   dispatch (502, claim released) → response (200 queued | dry_run)
 //
 // NOTE: manifest dedup runs before the dispatch-mode check (unlike the
 // order first drafted for this port) so a request for an already-existing
@@ -27,6 +28,7 @@ import { contentTypeAllowed, readBoundedBody } from "../lib/bounded-body.js";
 import type { DispatchResult } from "../lib/dispatch.js";
 import { dispatchWorkflow } from "../lib/dispatch.js";
 import { checkDispatchMode } from "../lib/dispatch-mode.js";
+import type { InflightBackend } from "../lib/inflight.js";
 import { isAccepting, resolveOrigin } from "../lib/kv-flags.js";
 import { alreadyGenerated } from "../lib/manifest.js";
 import type { ConsumeResult, QuotaBackend } from "../lib/quota.js";
@@ -41,6 +43,9 @@ export { MAX_BODY_BYTES };
 export interface ThemesPostDeps {
   fetch: typeof fetch;
   quota: (env: Env) => QuotaBackend;
+  // Optional in-flight dedup (src/lib/inflight.ts). Absent = every new
+  // slug dispatches (the unit tests' default); production wires the DO.
+  inflight?: (env: Env) => InflightBackend;
   now?: () => number;
   randomUUID?: () => string;
   log?: (message: string) => void;
@@ -72,6 +77,36 @@ export function createThemesPostHandler(deps: ThemesPostDeps): ThemesPostHandler
     } catch (error) {
       log(`quota refund failed: ${error instanceof Error ? error.message : String(error)}`);
     }
+  }
+
+  function inflightFor(env: Env): InflightBackend | null {
+    if (!deps.inflight) return null;
+    try {
+      return deps.inflight(env);
+    } catch (error) {
+      log(
+        `in-flight backend unavailable: ${error instanceof Error ? error.message : String(error)}`,
+      );
+      return null;
+    }
+  }
+
+  // Dedup is an optimisation on top of the quota (which still fails
+  // closed), so an in-flight backend error degrades to "no dedup".
+  async function safeInflight<T>(op: () => Promise<T>, fallback: T, what: string): Promise<T> {
+    try {
+      return await op();
+    } catch (error) {
+      log(`in-flight ${what} failed: ${error instanceof Error ? error.message : String(error)}`);
+      return fallback;
+    }
+  }
+
+  function deduplicated(slug: string, requestId: string, origin: string): Response {
+    return json(
+      { ok: true, status: "queued", slug, request_id: requestId, deduplicated: true },
+      { origin },
+    );
   }
 
   return async function handlePost(request: Request, env: Env): Promise<Response> {
@@ -190,6 +225,14 @@ export function createThemesPostHandler(deps: ThemesPostDeps): ThemesPostHandler
       );
     }
 
+    // In-flight dedup, before any charge: a run for this slug was already
+    // dispatched in the last INFLIGHT_TTL_MS — follow it, don't dispatch.
+    const inflight = inflightFor(env);
+    if (inflight) {
+      const running = await safeInflight(() => inflight.peek(slug), null, "peek");
+      if (running) return deduplicated(slug, running, origin);
+    }
+
     // §5: exact quota via Durable Object, replacing the KV best-effort
     // counters. A backend throw (DO unreachable) fails closed exactly like
     // the old KV-throw path: 503 JSON with CORS headers, no dispatch.
@@ -232,6 +275,20 @@ export function createThemesPostHandler(deps: ThemesPostDeps): ThemesPostHandler
       );
     }
 
+    if (inflight) {
+      const claim = await safeInflight(
+        () => inflight.claim(slug, requestId),
+        { claimed: true } as const,
+        "claim",
+      );
+      // Lost a race with a concurrent request for the same slug.
+      if (!claim.claimed) return deduplicated(slug, claim.requestId, origin);
+    }
+    const releaseClaim = async () => {
+      if (inflight)
+        await safeInflight(() => inflight.release(slug, requestId), undefined, "release");
+    };
+
     // L-1: dispatchWorkflow can throw in addition to resolving non-ok;
     // both must produce the same generic 502 and never leak the GitHub
     // error body (API-17).
@@ -240,6 +297,7 @@ export function createThemesPostHandler(deps: ThemesPostDeps): ThemesPostHandler
       dispatch = await dispatchWorkflow(raw, requestId, env, fetchImpl, mode, log);
     } catch (error) {
       log(`workflow dispatch threw: ${error instanceof Error ? error.message : String(error)}`);
+      await releaseClaim();
       await safeRefund(env, ip);
       return json(
         {
@@ -251,6 +309,7 @@ export function createThemesPostHandler(deps: ThemesPostDeps): ThemesPostHandler
       );
     }
     if (!dispatch.ok) {
+      await releaseClaim();
       await safeRefund(env, ip);
       return json(
         {
