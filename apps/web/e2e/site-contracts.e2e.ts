@@ -129,7 +129,11 @@ test.describe("mixed content", () => {
     const theme = publishedThemes()[0]!;
     for (const path of [...HTML_PAGES, `/themes/?theme=${theme.slug}`]) {
       await page.goto(path);
-      await page.waitForLoadState("load");
+      // networkidle, not load: the theme pages fetch their side files
+      // (new-papers.json, code-links.json) after load, and WebKit reports
+      // such a fetch cancelled by the next goto as a page error. Waiting
+      // also lets the listener above see every late subresource request.
+      await page.waitForLoadState("networkidle");
       const attrs = await page
         .locator("script[src], link[href], img[src], iframe[src], source[src], video[src]")
         .evaluateAll((els) =>
