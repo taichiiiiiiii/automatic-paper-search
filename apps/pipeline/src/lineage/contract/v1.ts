@@ -278,6 +278,20 @@ function nodeDisplayIssues(node: Record<string, unknown>, path: string): Contrac
       );
     }
   }
+  // R2-36: optional provenance of `citation_count`.
+  if (
+    "citation_count_source" in node &&
+    node.citation_count_source !== "openalex" &&
+    node.citation_count_source !== "semantic_scholar"
+  ) {
+    issues.push(
+      issue(
+        "node_citation_count_source",
+        `${path}.citation_count_source`,
+        "openalex or semantic_scholar required",
+      ),
+    );
+  }
   if ("citationCount" in node) {
     issues.push(
       issue(

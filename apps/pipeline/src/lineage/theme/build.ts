@@ -90,6 +90,7 @@ import {
   type DblpYearEntry,
   mergeSuspects,
 } from "./recordChronology.js";
+import { applyS2CitationCounts } from "./s2CitationCounts.js";
 import { S2CitationSource } from "./s2Citations.js";
 import { S2Expansion } from "./s2Expansion.js";
 import { contextLlmSummary, newS2RelationStats, type S2RelationContext } from "./s2Relations.js";
@@ -388,6 +389,14 @@ export interface BuildThemeLineageDeps {
     cachePath: string | null;
     maxQueries?: number;
     contact?: string | null;
+    fetchImpl?: FetchLike;
+  } | null;
+  /** R2-36: publish max(OpenAlex, Semantic Scholar) `citation_count`
+   * (`s2CitationCounts.ts`; one cached `/paper/batch` per 250 nodes).
+   * Null/omitted = OpenAlex counts only. */
+  s2CitationCounts?: {
+    cachePath: string | null;
+    apiKey?: string | null;
     fetchImpl?: FetchLike;
   } | null;
 }
@@ -888,6 +897,20 @@ export async function buildThemeLineage(
     now: wallClockNow,
     logger,
   });
+
+  // R2-36: OpenAlex records can be corrupted or split (LoRA 2,510 vs S2
+  // 24,206), so a node publishes the larger of the two counts. Before the
+  // alias dedup, which keeps the higher-count record of a duplicate pair.
+  if (deps.s2CitationCounts) {
+    await applyS2CitationCounts(nodes, {
+      cachePath: deps.s2CitationCounts.cachePath,
+      apiKey: deps.s2CitationCounts.apiKey ?? deps.s2Citations?.apiKey ?? null,
+      fetchImpl: deps.s2CitationCounts.fetchImpl ?? deps.fetchImpl,
+      sleep: deps.sleep,
+      now: wallClockNow,
+      logger,
+    });
+  }
 
   const [dedupedNodes, nodeRemap, dedupedSeedByGraphId] = dedupNodesByStrongAlias(
     nodes,

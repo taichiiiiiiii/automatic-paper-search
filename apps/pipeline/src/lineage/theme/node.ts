@@ -14,6 +14,7 @@ import type { ThemeGraphNode } from "../shared/node.js";
 import { toNode } from "../shared/node.js";
 import { type AliasablePaper, declaredAliasValues } from "./identity.js";
 import type { ThemePaper } from "./openalexWork.js";
+import { applyS2Count } from "./s2CitationCounts.js";
 
 /** `_to_theme_node`: serialize a graph node while preserving its
  * normalized strong aliases. */
@@ -22,6 +23,9 @@ export function toThemeNode(
   options: { focus?: boolean; trending?: boolean } = {},
 ): ThemeGraphNode {
   const node = toNode(paper, options);
+  // R2-36: S2's count (carried by `mergeMapped` when it is the larger one)
+  // is published when it beats OpenAlex's, and the source recorded.
+  applyS2Count(node, Number(paper._s2_citation_count) || 0);
   const aliases = declaredAliasValues(paper);
   if (aliases.length > 0) {
     node.aliases = aliases.map(([ns, id]) => [ns, id]);

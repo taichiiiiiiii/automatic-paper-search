@@ -256,7 +256,8 @@ jobs:
             data/state/lineage-cache/s2_references.json \
             data/state/lineage-cache/arxiv_html_contexts.json \
             data/state/lineage-cache/crossref_references.json \
-            data/state/lineage-cache/dblp_venues.json
+            data/state/lineage-cache/dblp_venues.json \
+            data/state/lineage-cache/s2_citation_counts.json
 
       - name: Upload generated candidate
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
@@ -306,7 +307,8 @@ jobs:
             data/state/lineage-cache/s2_references.json \
             data/state/lineage-cache/arxiv_html_contexts.json \
             data/state/lineage-cache/crossref_references.json \
-            data/state/lineage-cache/dblp_venues.json
+            data/state/lineage-cache/dblp_venues.json \
+            data/state/lineage-cache/s2_citation_counts.json
 
   release:
     needs: [generate, promote]

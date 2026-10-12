@@ -48,7 +48,7 @@ interface Edge {
 }
 interface Lineage {
   root: string;
-  nodes: { id: string }[];
+  nodes: { id: string; citation_count?: number; citation_count_source?: string }[];
   edges: Edge[];
   meta: Record<string, unknown> & { provenance_breakdown: Record<string, number> };
 }
@@ -87,7 +87,7 @@ describe("theme lineage: build (LLM off) -> package -> promote -> validate", () 
       sb,
       "lineage/theme/cli.ts",
       [...THEME_ARGS, "--result-json", sb.path("..", "result.json")],
-      { fixtures: ["theme-http"] },
+      { fixtures: ["theme-s2-counts", "theme-http"] },
     );
   });
   afterAll(() => sb?.cleanup());
@@ -137,6 +137,26 @@ describe("theme lineage: build (LLM off) -> package -> promote -> validate", () 
       expect(e.provenance.evidence.source).toBe("semantic_scholar");
       expect(e.provenance.evidence.sha256 ?? "").toMatch(/^[0-9a-f]{64}$/);
     }
+  });
+
+  it("publishes the larger of OpenAlex's and Semantic Scholar's citation count (R2-36)", () => {
+    const lin = JSON.parse(readFileSync(sb.path(LINEAGE), "utf8")) as Lineage;
+    const old = JSON.parse(oldLineage) as Lineage;
+    const byId = new Map(lin.nodes.map((n) => [n.id, n]));
+    const oldById = new Map(old.nodes.map((n) => [n.id, n]));
+    // FlashAttention: S2 6,543 > OpenAlex 454 -> S2's count, source recorded.
+    const fa = byId.get("openalex:W4281758439");
+    expect(fa?.citation_count).toBe(6543);
+    expect(fa?.citation_count_source).toBe("semantic_scholar");
+    expect((oldById.get("openalex:W4281758439")?.citation_count ?? 0) < 6543).toBe(true);
+    // FlashAttention-2: S2 12 < OpenAlex -> OpenAlex's count, no source field.
+    const fa2 = byId.get("openalex:W4384648639");
+    expect(fa2?.citation_count).toBe(oldById.get("openalex:W4384648639")?.citation_count);
+    expect(fa2?.citation_count).toBeGreaterThan(12);
+    expect(fa2).not.toHaveProperty("citation_count_source");
+    // The only S2 count request is one keyless batch POST.
+    const batches = build.requests.filter((r) => r.url.includes("/paper/batch"));
+    expect(batches.map((r) => r.method)).toEqual(["POST"]);
   });
 
   it("promotes into origin with refreshed, hash-bound quality data", async () => {
@@ -217,7 +237,7 @@ describe("theme lineage: LLM on, Groq answers 429 (daily quota)", () => {
       "lineage/theme/cli.ts",
       [...THEME_ARGS, "--lineage-llm", "on", "--llm-strict", "ambiguous"],
       {
-        fixtures: ["theme-http"],
+        fixtures: ["theme-s2-counts", "theme-http"],
         env: { GROQ_API_KEY: "gsk_system_test_not_a_key" },
         faults: [
           {

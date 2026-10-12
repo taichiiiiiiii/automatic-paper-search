@@ -74,6 +74,19 @@ describe("validateLineageArtifact", () => {
     ).toEqual([]);
   });
 
+  it("accepts only openalex / semantic_scholar as citation_count_source (R2-36)", () => {
+    const withSource = (value: unknown): ContractIssue[] => {
+      const theme = artifact();
+      (theme.meta as Record<string, unknown>).kind = "theme";
+      (theme.nodes as Record<string, unknown>[])[1]!.citation_count_source = value;
+      return validateLineageArtifact(theme, { kind: "theme" });
+    };
+    expect(withSource("semantic_scholar")).toEqual([]);
+    expect(withSource("openalex")).toEqual([]);
+    expect(withSource("crossref").map((i) => i.code)).toContain("node_citation_count_source");
+    expect(withSource(null).map((i) => i.code)).toContain("node_citation_count_source");
+  });
+
   it("passes a valid theme artifact and an empty theme artifact", () => {
     const theme = artifact();
     (theme.meta as Record<string, unknown>).kind = "theme";
