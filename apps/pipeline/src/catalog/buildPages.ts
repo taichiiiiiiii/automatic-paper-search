@@ -43,6 +43,7 @@ import {
 } from "./abstractReplacements.js";
 import { SUMMARY_META_FILENAME } from "./buildSummary.js";
 import { dictReader } from "./csv.js";
+import { loadOpenreviewIds } from "./externalIds.js";
 import { assertPaperLinksGate } from "./paperLinksGate.js";
 
 export interface CatalogRoots {
@@ -195,6 +196,13 @@ export interface CatalogPaper {
    * otherwise. CC BY 4.0 attribution links it.
    */
   abstract_url?: string;
+  /**
+   * R3-6: OpenReview forum id of a row whose native source is another site
+   * (ICLR 2025 `conference_site`, linked via DBLP). Becomes an
+   * `openreview` identity alias and an "OpenReview" link. Omitted for rows
+   * that are natively OpenReview.
+   */
+  openreview_id?: string;
 }
 
 /**
@@ -245,6 +253,7 @@ export function loadSummaryWithDetails(
     options.collection !== undefined
       ? options.collection
       : loadCollectionAbstractPolicy(summaryCsv);
+  const openreviewIds = loadOpenreviewIds(summaryCsv);
   const papers: CatalogPaper[] = [];
   const details = new Map<string, string>();
   const text = readFileSync(summaryCsv, "utf-8");
@@ -310,6 +319,9 @@ export function loadSummaryWithDetails(
       abstract_source: published.abstract_source,
       abstract_license: published.abstract_license,
       ...(landingUrl && landingUrl !== row.arxiv_url ? { abstract_url: landingUrl } : {}),
+      ...(identity.source !== "openreview" && openreviewIds.has(identity.paperId)
+        ? { openreview_id: openreviewIds.get(identity.paperId) }
+        : {}),
     });
   }
   return { papers, details };

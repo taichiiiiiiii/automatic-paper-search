@@ -252,6 +252,19 @@ export function projectCatalogs(
           const [namespace, normalizedId] = normalizeAlias("arxiv", arxivId);
           recordAlias(namespace, normalizedId, identity.paperId);
         }
+        // R3-6: an OpenReview forum id linked to a row of another source
+        // (ICLR 2025 conference_site rows, via DBLP) joins it to other
+        // OpenReview-keyed catalogs. The paper id stays the native one.
+        if (row.openreview_id !== undefined && row.openreview_id !== null) {
+          if (typeof row.openreview_id !== "string") {
+            throw new IdentityError("openreview_id must be a string");
+          }
+          const [namespace, normalizedId] = normalizeAlias("openreview", row.openreview_id);
+          if (identity.source === "openreview" && normalizedId !== identity.sourceId) {
+            throw new IdentityError("openreview_id does not match the native OpenReview source");
+          }
+          recordAlias(namespace, normalizedId, identity.paperId);
+        }
 
         enrichedRows.push({
           ...row,

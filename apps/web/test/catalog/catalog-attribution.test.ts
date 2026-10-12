@@ -50,6 +50,37 @@ describe("catalogLinks", () => {
     ).toEqual([{ label: "arXiv", url: "https://arxiv.org/abs/2404.00001" }]);
   });
 
+  it("R3-6: adds an OpenReview link for a row linked by openreview_id, not twice for native rows", () => {
+    const linked = catalogLinks(
+      paper({
+        source: "conference_site",
+        arxiv_url: "https://proceedings.iclr.cc/x.html",
+        pdf_url: "https://proceedings.iclr.cc/x.pdf",
+        openreview_id: "AbC_123",
+      }),
+    );
+    expect(linked).toEqual([
+      { label: "学会の公式サイト", url: "https://proceedings.iclr.cc/x.html" },
+      { label: "OpenReview", url: "https://openreview.net/forum?id=AbC_123" },
+      { label: "PDF", url: "https://proceedings.iclr.cc/x.pdf" },
+    ]);
+    expect(
+      catalogLinks(
+        paper({
+          source: "openreview",
+          arxiv_url: "https://openreview.net/forum?id=AbC_123",
+          openreview_id: "AbC_123",
+        }),
+      ),
+    ).toHaveLength(1);
+    // an unsafe id is ignored
+    expect(
+      catalogLinks(paper({ source: "conference_site", openreview_id: "x&y=1" })).map(
+        (l) => l.label,
+      ),
+    ).toEqual([]);
+  });
+
   it("adds a separate arXiv link for a matched arXiv version", () => {
     const links = catalogLinks(
       paper({

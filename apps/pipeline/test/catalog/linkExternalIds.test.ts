@@ -9,6 +9,7 @@ import { writeDictCsv } from "../../src/catalog/csv.js";
 import {
   type DblpRecord,
   dblpTocQuery,
+  isSingleWordTypo,
   linkExternalIds,
   linkRowsToDblp,
   parseDblpSparql,
@@ -154,6 +155,70 @@ describe("linkRowsToDblp", () => {
       records,
     );
     expect(links).toEqual([]);
+  });
+
+  it("links a one-word spelling difference and an identical unique title with reordered authors", () => {
+    const recs = [
+      rec(
+        "conf/iclr/Y25",
+        "Federated Residual Low-Rank Adaptation of Large Language Models",
+        ["Yunlu Yan", "Wangmeng Zuo", "Rick Siow Mong Goh", "Yong Liu"],
+        "orY",
+      ),
+      rec(
+        "conf/iclr/L25",
+        "Interpretable Joint Denoising and Enhancement",
+        ["Huaqiu Li", "Xiaowan Hu", "Haoqian Wang"],
+        "orL",
+      ),
+      rec("conf/iclr/Z25", "Another Paper Entirely", ["Zed Zhang", "Amy Wu"], "orZ"),
+    ];
+    const rows = [
+      {
+        paper_id: pid(7),
+        title: "Federated Residual Low-Rank Adaption of Large Language Models",
+        authors: ["Yunlu Yan", "Wangmeng Zuo", "Rick Siow Mong Mong", "Yong Liu"],
+      },
+      {
+        paper_id: pid(8),
+        title: "Interpretable Joint Denoising and Enhancement",
+        authors: ["Li Huaqiu", "HuXiaowan", "Haoqian Wang"],
+      },
+      // Same title as a record but nobody in common: stays unlinked.
+      { paper_id: pid(10), title: "Another Paper Entirely", authors: ["Q R", "S T"] },
+    ];
+    const links = linkRowsToDblp(rows, recs);
+    expect(links.map((l) => [l.paper_id, l.openreview_id, l.match.via])).toEqual([
+      [pid(7), "orY", "title"],
+      [pid(8), "orL", "title-unique"],
+    ]);
+    // A typo link still needs the authors.
+    expect(
+      linkRowsToDblp([{ ...(rows[0] as object), authors: ["Nobody Else"] } as never], recs),
+    ).toEqual([]);
+    // A second row with the same title makes the title-unique link ambiguous.
+    expect(
+      linkRowsToDblp(
+        [rows[1] as never, { ...(rows[1] as object), paper_id: pid(11) } as never],
+        recs,
+      ),
+    ).toEqual([]);
+  });
+
+  it("isSingleWordTypo is narrow", () => {
+    expect(
+      isSingleWordTypo("Low-Rank Adaption of Large Models", "Low-Rank Adaptation of Large Models"),
+    ).toBe(true);
+    expect(
+      isSingleWordTypo("Low-Rank Adaption of Large Models", "Low-Rank Adaption of Large Model"),
+    ).toBe(false); // short word
+    expect(isSingleWordTypo("Fast Training of Large Models", "Fast Training of Small Models")).toBe(
+      false,
+    );
+    expect(isSingleWordTypo("A Short Title", "A Short Titel")).toBe(false); // < 4 words / short word
+    expect(
+      isSingleWordTypo("Efficient Learning Methods Today", "Efficient Learning Methods Today"),
+    ).toBe(false);
   });
 
   it("parses an external_ids file and rejects a malformed one", () => {
