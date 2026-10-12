@@ -35,10 +35,14 @@ describe("alert.yml (R1-6)", () => {
   const doc = readWorkflow("alert.yml");
   const issue = job(doc, "issue");
 
-  it("is workflow_dispatch only with status (problem|resolved) and summary inputs", () => {
+  it("is workflow_dispatch only with status (problem|resolved), summary and an optional channel", () => {
     expect(Object.keys(doc.on)).toEqual(["workflow_dispatch"]);
     const inputs = doc.on.workflow_dispatch.inputs;
-    expect(Object.keys(inputs).sort()).toEqual(["status", "summary"]);
+    expect(Object.keys(inputs).sort()).toEqual(["channel", "status", "summary"]);
+    // The Worker sends only status+summary: channel must default to watchdog.
+    expect(inputs.channel.required).toBe(false);
+    expect(inputs.channel.default).toBe("watchdog");
+    expect(inputs.channel.options).toEqual(["watchdog", "prod-e2e"]);
     expect(inputs.status.type).toBe("choice");
     expect(inputs.status.options).toEqual(["problem", "resolved"]);
     expect(inputs.summary.required).toBe(true);
@@ -60,14 +64,14 @@ describe("alert.yml (R1-6)", () => {
     const s = issue.steps[0];
     expect(s.env.STATUS).toBe("${{ inputs.status }}");
     expect(s.env.SUMMARY).toBe("${{ inputs.summary }}");
+    expect(s.env.CHANNEL).toBe("${{ inputs.channel || 'watchdog' }}");
     expect(s.env.GH_TOKEN).toBe("${{ github.token }}");
     const run = s.run as string;
     expect(run).toContain("label=watchdog");
     expect(run).toContain('gh issue list --label "$label" --state open --limit 1');
     expect(run).toContain('gh issue comment "$num" --body-file "$body"');
-    expect(run).toContain(
-      'gh issue create --title "PaperPilot 本番の見張り: 問題あり" --label "$label"',
-    );
+    expect(run).toContain('title="PaperPilot 本番の見張り: 問題あり"');
+    expect(run).toContain('gh issue create --title "$title" --label "$label"');
     expect(run).toContain('gh issue close "$num"');
     // the body @mentions the owner so GitHub sends a participating (e-mail) notification
     expect(s.env.OWNER).toBe("${{ github.repository_owner }}");
