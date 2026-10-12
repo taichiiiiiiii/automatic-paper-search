@@ -73,3 +73,26 @@ jobs:
         # Proves the exact tree the test step just built (and the release
         # pipeline will also build) still produces a valid bundle.
         run: pnpm exec tsx apps/pipeline/src/release/cli.ts validate bundle apps/web/out
+
+  system:
+    # End-to-end system tests (apps/pipeline/test/system): the REAL pipeline
+    # CLIs (theme build -> package -> promote, approveCli -> abstract
+    # resolver -> refresh chain, theme feeds, failure injection) run in a
+    # throw-away repo copy against recorded API fixtures. No network: an
+    # unrecorded request fails the test. Its own job so a slow or failing
+    # system run never hides the unit suite's result (and vice versa).
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+
+      - name: System tests
+        run: pnpm --filter @paperpilot/pipeline test:system
