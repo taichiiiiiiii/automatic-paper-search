@@ -254,9 +254,17 @@ export interface PositionedNode extends LineageNode {
 
 export interface YearLabel {
   label: string;
+  /** Baseline of the label: the vertical centre of the band's first line. */
   y: number;
   isUnknown: boolean;
   importance: "regular" | "decade" | "decade-major";
+  /** Year band extents in layout units: top of the first line of cards to
+   * the bottom of the last one. */
+  top: number;
+  bottom: number;
+  /** Papers in this year and the number of lines they wrap into. */
+  count: number;
+  lines: number;
 }
 
 export interface LayoutResult {
@@ -264,17 +272,62 @@ export interface LayoutResult {
   yearLabels: YearLabel[];
   totalW: number;
   totalH: number;
+  /** Cards per line actually used (the longest line). */
+  perLine: number;
 }
 
-/** Y axis = year (rank-based: every unique year occupies one row of
- * equal height, regardless of calendar gaps). X axis = `mode`. Edges
- * run parent (older, top) -> child (newer, bottom). Left-aligned rows
- * so sparse early years don't drift to the middle of a wide canvas. */
+/** Vertical gap between wrapped lines of the same year (smaller than
+ * ROW_GAP, so one year's lines read as one band). */
+export const LINE_GAP = 36;
+
+export interface LayoutOptions {
+  /** Wrap a year's cards onto several lines once it has more than this
+   * many (row-major, ordering kept). Default: never wrap. */
+  maxPerLine?: number;
+}
+
+/** Fit-to-width zoom the wrap aims for: phones (< 640px) and wider screens. */
+export const WRAP_TARGET_ZOOM_NARROW = 0.42;
+export const WRAP_TARGET_ZOOM_WIDE = 0.62;
+/** Floors the 全体 (fit) zoom stays above for any theme once wrapped
+ * (asserted by e2e for every published theme; targets minus scrollbar slack). */
+export const FIT_ZOOM_FLOOR_NARROW = 0.35;
+export const FIT_ZOOM_FLOOR_WIDE = 0.6;
+
+/** Width (layout units) of a tree whose longest line has `perLine` cards. */
+export function treeWidthFor(perLine: number): number {
+  return YEAR_LABEL_W + perLine * (NODE_W + SIBLING_GAP) + PADDING;
+}
+
+/** Cards per line for a tree shown in a box `boxWidth` px wide: as many as
+ * fit while the fit-to-width zoom (`(boxWidth - 8) / totalW`, see the
+ * 全体 button) stays at or above the target zoom for that width. At least
+ * 1; `Infinity` (no wrapping) when the width is unknown (0 / not finite). */
+export function maxCardsPerLine(boxWidth: number): number {
+  if (!Number.isFinite(boxWidth) || boxWidth <= 0) return Number.POSITIVE_INFINITY;
+  const target = boxWidth < 640 ? WRAP_TARGET_ZOOM_NARROW : WRAP_TARGET_ZOOM_WIDE;
+  const usable = (boxWidth - 8) / target - YEAR_LABEL_W - PADDING;
+  return Math.max(1, Math.floor(usable / (NODE_W + SIBLING_GAP)));
+}
+
+/** Y axis = year (rank-based: every unique year occupies one band,
+ * regardless of calendar gaps). X axis = `mode`. Edges run parent
+ * (older, top) -> child (newer, bottom). Left-aligned rows so sparse
+ * early years don't drift to the middle of a wide canvas. A year with
+ * more than `maxPerLine` papers wraps row-major onto several lines inside
+ * its band (R4-5: LoRA has 30 papers in 2024, ~8,800px in one line); the
+ * left-to-right order, and genealogy mode's parent-x heuristic (computed
+ * on the unwrapped slot), are the same as without wrapping. */
 export function layoutChronological(
   nodes: LineageNode[],
   edges: LineageEdge[],
   mode: XAxisMode = DEFAULT_X_AXIS_MODE,
+  options: LayoutOptions = {},
 ): LayoutResult {
+  const maxPerLine =
+    options.maxPerLine !== undefined && options.maxPerLine >= 1
+      ? Math.floor(options.maxPerLine)
+      : Number.POSITIVE_INFINITY;
   const effectiveMode: XAxisMode = X_AXIS_MODES.includes(mode) ? mode : DEFAULT_X_AXIS_MODE;
 
   const byYear = new Map<YearBucket, LineageNode[]>();
@@ -307,16 +360,18 @@ export function layoutChronological(
   }
 
   const maxRow = Math.max(0, ...[...byYear.values()].map((v) => v.length));
-  const rowSpanW = maxRow * (NODE_W + SIBLING_GAP);
-  const totalW = YEAR_LABEL_W + rowSpanW + PADDING;
-  const totalH = PADDING + years.length * (NODE_H + ROW_GAP) + PADDING;
+  const perLine = Math.min(maxRow, maxPerLine);
+  const totalW = treeWidthFor(perLine);
 
   const positioned: PositionedNode[] = [];
   const yearLabels: YearLabel[] = [];
 
-  years.forEach((year, rowIdx) => {
+  const xStart = YEAR_LABEL_W + PADDING / 2;
+  const step = NODE_W + SIBLING_GAP;
+  let bandTop = PADDING;
+  for (const year of years) {
     const row = byYear.get(year);
-    if (!row) return;
+    if (!row) continue;
     if (effectiveMode === "genealogy") {
       row.sort((a, b) => {
         const sa = scoreForMode(a, effectiveMode, ctx);
@@ -325,8 +380,8 @@ export function layoutChronological(
         return (b.citation_count ?? 0) - (a.citation_count ?? 0);
       });
     }
-    const xStart = YEAR_LABEL_W + PADDING / 2;
-    const y = PADDING + rowIdx * (NODE_H + ROW_GAP);
+    const lines = Math.max(1, Math.ceil(row.length / perLine));
+    const bandBottom = bandTop + lines * NODE_H + (lines - 1) * LINE_GAP;
     let importance: YearLabel["importance"] = "regular";
     if (year !== UNKNOWN_YEAR) {
       if (year % 10 === 0) importance = "decade-major";
@@ -334,18 +389,29 @@ export function layoutChronological(
     }
     yearLabels.push({
       label: year === UNKNOWN_YEAR ? "Unknown" : String(year),
-      y: y + NODE_H / 2,
+      y: bandTop + NODE_H / 2,
       isUnknown: year === UNKNOWN_YEAR,
       importance,
+      top: bandTop,
+      bottom: bandBottom,
+      count: row.length,
+      lines,
     });
     row.forEach((n, i) => {
-      const x = xStart + i * (NODE_W + SIBLING_GAP);
-      positioned.push({ ...n, _x: x, _y: y });
-      ctx.placedX.set(n.id, x);
+      const line = Math.floor(i / perLine);
+      const col = i - line * perLine;
+      const x = xStart + col * step;
+      positioned.push({ ...n, _x: x, _y: bandTop + line * (NODE_H + LINE_GAP) });
+      // Genealogy mode places children under their parents' *slot* in the
+      // unwrapped order, so wrapping never changes the ordering.
+      ctx.placedX.set(n.id, xStart + i * step);
     });
-  });
+    bandTop = bandBottom + ROW_GAP;
+  }
+  // Same as before wrapping existed: PADDING + one (band + ROW_GAP) per year + PADDING.
+  const totalH = bandTop + PADDING;
 
-  return { positioned, yearLabels, totalW, totalH };
+  return { positioned, yearLabels, totalW, totalH, perLine };
 }
 
 /** Nodes whose (in+out) degree clears the 90th percentile -- tagged as

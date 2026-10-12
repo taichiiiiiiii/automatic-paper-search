@@ -177,6 +177,31 @@ export class ThemePage {
   async zoom(): Promise<number> {
     return Number(await this.tree.getAttribute("data-zoom"));
   }
+  /** Cards per line of the family tree (crowded years wrap, R4-5). */
+  async perLine(): Promise<number> {
+    return Number(await this.tree.getAttribute("data-per-line"));
+  }
+  /** One year band per year in the tree (data-year-band = the year label). */
+  get yearBands(): Locator {
+    return this.tree.locator("[data-year-band]");
+  }
+  /** Card layout in DOM (= Tab) order: id, year band and layout x/y. */
+  async cardLayout(): Promise<Array<{ id: string; x: number; y: number }>> {
+    return this.tree.locator("g[data-node-id]").evaluateAll((gs) =>
+      gs.map((g) => {
+        const fo = g.querySelector("foreignObject");
+        return {
+          id: g.getAttribute("data-node-id") ?? "",
+          x: Number(fo?.getAttribute("x")),
+          y: Number(fo?.getAttribute("y")),
+        };
+      }),
+    );
+  }
+  /** A paper card's group in the tree, by node id. */
+  cardGroup(id: string): Locator {
+    return this.tree.locator(`g[data-node-id="${id.replace(/["\\]/g, "\\$&")}"]`);
+  }
   get keyboardHelpButton(): Locator {
     return this.page.getByRole("button", { name: "キーボード操作の一覧" });
   }
