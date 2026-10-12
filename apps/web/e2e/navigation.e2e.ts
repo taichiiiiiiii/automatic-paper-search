@@ -1,12 +1,12 @@
 import { SiteChrome } from "./pages";
-import { expect, test } from "./support/fixtures";
+import { expect, PROD, test } from "./support/fixtures";
 
 /** Pages whose header/footer links are checked (one per page family). */
 const PAGES = ["/", "/themes/", "/how-it-works/", "/neurips-2025/", "/neurips-2025/paper-links/"];
 
 test.describe("global nav and footer", () => {
   for (const path of PAGES) {
-    test(`links on ${path} resolve (no 404)`, async ({ page, request }) => {
+    test(`links on ${path} resolve (no 404)`, PROD, async ({ page, request }) => {
       await page.goto(path);
       const chrome = new SiteChrome(page);
       await expect(chrome.globalNav).toBeVisible();
@@ -27,7 +27,7 @@ test.describe("global nav and footer", () => {
     });
   }
 
-  test("global nav links navigate and mark the current page", async ({ page }) => {
+  test("global nav links navigate and mark the current page", PROD, async ({ page }) => {
     await page.goto("/");
     const chrome = new SiteChrome(page);
     for (const [name, path] of [
@@ -78,7 +78,7 @@ test.describe("global nav and footer", () => {
     await expect(page.locator("#main-content")).toHaveCount(1);
   });
 
-  test("trailing-slash and legacy .html URLs redirect", async ({ page }) => {
+  test("trailing-slash and legacy .html URLs redirect", PROD, async ({ page }) => {
     await page.goto("/how-it-works");
     await expect(page).toHaveURL(/\/how-it-works\/$/);
     await page.goto("/index.html");

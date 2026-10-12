@@ -19,11 +19,21 @@
  *
  * With `javaScriptEnabled: false`, Chromium cancels script loads with the
  * error text "csp"; those are expected and ignored in that mode only.
+ *
+ * Remote mode (E2E_BASE_URL, e.g. production): the suite must stay
+ * read-only. Every non-GET/HEAD request to the theme-request Worker
+ * (API_ORIGIN) is aborted before it leaves the browser and reported as a
+ * `blocked-write` problem, so no test can ever submit the theme request
+ * form against production, even by accident.
  */
 import { test as base, type ConsoleMessage, expect, type Page } from "@playwright/test";
+import { IS_REMOTE } from "./site";
+
+/** The theme-request Worker (packages/core API_BASE). */
+export const API_ORIGIN = "https://paperpilot-themes.puuptdbkh082.workers.dev";
 
 export interface PageProblem {
-  kind: "console" | "csp" | "pageerror" | "requestfailed" | "http";
+  kind: "console" | "csp" | "pageerror" | "requestfailed" | "http" | "blocked-write";
   text: string;
   page: string;
 }
@@ -84,6 +94,21 @@ export const test = base.extend<Fixtures & { _pageGuard: undefined }>({
           console.error(`${tag} ${e.violatedDirective} blocked=${e.blockedURI || "inline"}`);
         });
       }, CSP_TAG);
+      if (IS_REMOTE) {
+        await context.route(`${API_ORIGIN}/**`, async (route) => {
+          const req = route.request();
+          if (req.method() === "GET" || req.method() === "HEAD" || req.method() === "OPTIONS") {
+            await route.continue();
+            return;
+          }
+          pageProblems.push({
+            kind: "blocked-write",
+            text: `${req.method()} ${req.url()} (read-only remote run)`,
+            page: req.frame()?.url() ?? "",
+          });
+          await route.abort("blockedbyclient");
+        });
+      }
       for (const p of context.pages()) attach(p, origin, pageProblems, js);
       context.on("page", (p) => attach(p, origin, pageProblems, js));
       await use(undefined);
@@ -106,5 +131,10 @@ export const test = base.extend<Fixtures & { _pageGuard: undefined }>({
     { auto: true },
   ],
 });
+
+/** Tag for the fast, read-only subset run against production after every
+ * release (`--grep @prod`, see playwright.config.ts / prod-e2e.yml). Only
+ * tag tests that never write anything (no form submits, no API POSTs). */
+export const PROD = { tag: "@prod" } as const;
 
 export { expect };

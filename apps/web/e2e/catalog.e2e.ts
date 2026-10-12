@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { CatalogPage } from "./pages";
-import { expect, test } from "./support/fixtures";
+import { expect, PROD, test } from "./support/fixtures";
 import { conferencePaperCount, conferences } from "./support/site";
 
 /** First page of results must be on screen within this budget (ms) from
@@ -23,7 +23,7 @@ for (const conf of CATALOGS) {
       catalog = new CatalogPage(page, conf);
     });
 
-    test("first results render within the budget", async ({ page }) => {
+    test("first results render within the budget", PROD, async ({ page }) => {
       const t0 = Date.now();
       await catalog.goto();
       await expect(catalog.results.first()).toBeVisible({ timeout: FIRST_RESULTS_BUDGET_MS });
@@ -38,7 +38,7 @@ for (const conf of CATALOGS) {
       await expect(page).toHaveTitle(/PaperPilot/);
     });
 
-    test("English search narrows results (debounced) and is kept in the URL", async () => {
+    test("English search narrows results (debounced) and is kept in the URL", PROD, async () => {
       await catalog.goto();
       await expect(catalog.results.first()).toBeVisible({ timeout: 20_000 });
       await catalog.searchBox.pressSequentially("diffusion", { delay: 20 });
@@ -172,81 +172,83 @@ for (const conf of CATALOGS) {
       await expect(catalog.results.first()).toBeVisible();
     });
 
-    test("detail view opens and closes, with ?paper=, Esc focus return and Back", async ({
-      page,
-    }) => {
-      await catalog.goto();
-      await expect(catalog.results.first()).toBeVisible({ timeout: 20_000 });
-      const title = await catalog.firstResultTitle();
-      await expect(catalog.openDetailButton(0)).toHaveText("詳細を開く");
-      await catalog.openDetailButton(0).click();
-      await expect(catalog.selectedCard).toHaveCount(1);
-      await expect(catalog.selectedCard).toContainText(title);
-      await expect(catalog.selectedCard).toContainText("選択中");
-      await expect.poll(() => catalog.searchParam("paper")).toBeTruthy();
-      await expect(catalog.closeDetailButton).toBeVisible();
-      await expect(catalog.closeDetailButton).toHaveText("詳細を閉じる");
+    test(
+      "detail view opens and closes, with ?paper=, Esc focus return and Back",
+      PROD,
+      async ({ page }) => {
+        await catalog.goto();
+        await expect(catalog.results.first()).toBeVisible({ timeout: 20_000 });
+        const title = await catalog.firstResultTitle();
+        await expect(catalog.openDetailButton(0)).toHaveText("詳細を開く");
+        await catalog.openDetailButton(0).click();
+        await expect(catalog.selectedCard).toHaveCount(1);
+        await expect(catalog.selectedCard).toContainText(title);
+        await expect(catalog.selectedCard).toContainText("選択中");
+        await expect.poll(() => catalog.searchParam("paper")).toBeTruthy();
+        await expect(catalog.closeDetailButton).toBeVisible();
+        await expect(catalog.closeDetailButton).toHaveText("詳細を閉じる");
 
-      await catalog.closeDetailButton.click();
-      await expect(catalog.selectedCard).toHaveCount(0);
-      await expect.poll(() => catalog.searchParam("paper")).toBeNull();
-      // Focus goes back to the card's 詳細を開く.
-      await expect(catalog.openDetailButton(0)).toBeFocused();
+        await catalog.closeDetailButton.click();
+        await expect(catalog.selectedCard).toHaveCount(0);
+        await expect.poll(() => catalog.searchParam("paper")).toBeNull();
+        // Focus goes back to the card's 詳細を開く.
+        await expect(catalog.openDetailButton(0)).toBeFocused();
 
-      // Esc closes too, also with focus return.
-      await catalog.openDetailButton(0).click();
-      await expect(catalog.selectedCard).toHaveCount(1);
-      await page.keyboard.press("Escape");
-      await expect(catalog.selectedCard).toHaveCount(0);
-      await expect(catalog.openDetailButton(0)).toBeFocused();
+        // Esc closes too, also with focus return.
+        await catalog.openDetailButton(0).click();
+        await expect(catalog.selectedCard).toHaveCount(1);
+        await page.keyboard.press("Escape");
+        await expect(catalog.selectedCard).toHaveCount(0);
+        await expect(catalog.openDetailButton(0)).toBeFocused();
 
-      // Opening pushes a history entry; Back closes the detail again.
-      await catalog.openDetailButton(0).click();
-      await expect(catalog.selectedCard).toHaveCount(1);
-      const paperId = catalog.searchParam("paper");
-      await page.goBack();
-      await expect(catalog.selectedCard).toHaveCount(0);
-      await page.goForward();
-      await expect.poll(() => catalog.searchParam("paper")).toBe(paperId);
-      await expect(catalog.selectedCard).toHaveCount(1);
+        // Opening pushes a history entry; Back closes the detail again.
+        await catalog.openDetailButton(0).click();
+        await expect(catalog.selectedCard).toHaveCount(1);
+        const paperId = catalog.searchParam("paper");
+        await page.goBack();
+        await expect(catalog.selectedCard).toHaveCount(0);
+        await page.goForward();
+        await expect.poll(() => catalog.searchParam("paper")).toBe(paperId);
+        await expect(catalog.selectedCard).toHaveCount(1);
 
-      // A deep link opens the same paper.
-      await catalog.goto(`paper=${encodeURIComponent(paperId!)}`);
-      await expect(catalog.selectedCard).toHaveCount(1, { timeout: 20_000 });
-    });
+        // A deep link opens the same paper.
+        await catalog.goto(`paper=${encodeURIComponent(paperId!)}`);
+        await expect(catalog.selectedCard).toHaveCount(1, { timeout: 20_000 });
+      },
+    );
 
-    test("BibTeX / CSV export the filtered results; URL copy", async ({
-      page,
-      context,
-      baseURL,
-    }) => {
-      await context.grantPermissions(["clipboard-read", "clipboard-write"], { origin: baseURL });
-      await catalog.goto("q=diffusion");
-      await expect(catalog.results.first()).toBeVisible({ timeout: 20_000 });
-      const total = (await catalog.shownCount()).matched;
+    test(
+      "BibTeX / CSV export the filtered results; URL copy",
+      PROD,
+      async ({ page, context, baseURL }) => {
+        await context.grantPermissions(["clipboard-read", "clipboard-write"], { origin: baseURL });
+        await catalog.goto("q=diffusion");
+        await expect(catalog.results.first()).toBeVisible({ timeout: 20_000 });
+        const total = (await catalog.shownCount()).matched;
 
-      const [bib] = await Promise.all([
-        page.waitForEvent("download"),
-        catalog.exportButton("BibTeX").click(),
-      ]);
-      expect(bib.suggestedFilename()).toMatch(/\.bib$/);
-      const bibText = await readFile(await bib.path(), "utf8");
-      expect(bibText.match(/^@\w+\{/gm)?.length).toBe(total);
+        const [bib] = await Promise.all([
+          page.waitForEvent("download"),
+          catalog.exportButton("BibTeX").click(),
+        ]);
+        expect(bib.suggestedFilename()).toMatch(/\.bib$/);
+        const bibText = await readFile(await bib.path(), "utf8");
+        expect(bibText.match(/^@\w+\{/gm)?.length).toBe(total);
 
-      const [csv] = await Promise.all([
-        page.waitForEvent("download"),
-        catalog.exportButton("CSV").click(),
-      ]);
-      expect(csv.suggestedFilename()).toMatch(/\.csv$/);
-      const csvText = await readFile(await csv.path(), "utf8");
-      expect(csvText.length).toBeGreaterThan(0);
-      expect(csvText.split("\n")[0]).toMatch(/title/i);
+        const [csv] = await Promise.all([
+          page.waitForEvent("download"),
+          catalog.exportButton("CSV").click(),
+        ]);
+        expect(csv.suggestedFilename()).toMatch(/\.csv$/);
+        const csvText = await readFile(await csv.path(), "utf8");
+        expect(csvText.length).toBeGreaterThan(0);
+        expect(csvText.split("\n")[0]).toMatch(/title/i);
 
-      await catalog.copyUrlButton.click();
-      await expect(catalog.exportGroup.getByRole("status")).toContainText(/コピー/);
-      const copied = await page.evaluate(() => navigator.clipboard.readText());
-      expect(new URL(copied).searchParams.get("q")).toBe("diffusion");
-    });
+        await catalog.copyUrlButton.click();
+        await expect(catalog.exportGroup.getByRole("status")).toContainText(/コピー/);
+        const copied = await page.evaluate(() => navigator.clipboard.readText());
+        expect(new URL(copied).searchParams.get("q")).toBe("diffusion");
+      },
+    );
 
     test("conference switcher lists every catalog and navigates", async ({ page }) => {
       await catalog.goto();

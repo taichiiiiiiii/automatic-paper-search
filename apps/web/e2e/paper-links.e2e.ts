@@ -1,5 +1,5 @@
 import { CatalogPage, PaperLinksPage } from "./pages";
-import { expect, test } from "./support/fixtures";
+import { expect, PROD, test } from "./support/fixtures";
 import { paperLinksPages } from "./support/site";
 
 /** A catalog whose no-JS list is split over several pages. */
@@ -8,7 +8,7 @@ const CONF = "neurips-2025";
 test.describe("no-JavaScript paper links", () => {
   test.use({ javaScriptEnabled: false });
 
-  test("every paper-links page renders titles with outbound links", async ({ page }) => {
+  test("every paper-links page renders titles with outbound links", PROD, async ({ page }) => {
     const pages = paperLinksPages(CONF);
     const links = new PaperLinksPage(page);
     for (const n of pages) {
@@ -27,7 +27,7 @@ test.describe("no-JavaScript paper links", () => {
     }
   });
 
-  test("pager links navigate between pages without JavaScript", async ({ page }) => {
+  test("pager links navigate between pages without JavaScript", PROD, async ({ page }) => {
     const pages = paperLinksPages(CONF);
     test.skip(pages.length < 2, "single-page list");
     const links = new PaperLinksPage(page);
@@ -41,7 +41,7 @@ test.describe("no-JavaScript paper links", () => {
     await expect(page).toHaveURL(new RegExp(`/${CONF}/$`));
   });
 
-  test("the catalog points no-JS readers at the paper-links list", async ({ page }) => {
+  test("the catalog points no-JS readers at the paper-links list", PROD, async ({ page }) => {
     const catalog = new CatalogPage(page, CONF);
     await catalog.goto();
     const fallback = page.getByRole("link", { name: /JavaScript なしの論文リンク一覧/ }).first();

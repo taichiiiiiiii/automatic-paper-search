@@ -14,6 +14,8 @@
     "legacy-redirects": "tsx scripts/legacy-redirects.ts",
     "test": "vitest run",
     "e2e": "playwright test",
+    "e2e:prod": "playwright test --grep @prod --grep-invert @prod-crawl",
+    "e2e:crawl": "playwright test --grep @prod-crawl --project desktop-chromium",
     "e2e:install": "playwright install chromium",
     "typecheck": "tsc -p tsconfig.json"
   },

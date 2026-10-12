@@ -54,6 +54,31 @@ pnpm --filter @paperpilot/web exec playwright show-report             # HTML rep
 - **Data** comes from the build (`e2e/support/site.ts` reads
   `themes-manifest.json`, `lineage-quality-v1.json`, `conferences.json`), so
   newly published themes are covered automatically.
+- **Production / remote runs** (`E2E_BASE_URL=https://…`): no local server
+  and no build needed; `e2e/support/site.ts` then reads the same JSON from
+  the remote site, so the run checks what is actually deployed. The
+  read-only subset is tagged `@prod` (landing, nav, one theme incl. the
+  evidence panel and `feed.xml`, the neurips-2025/iclr-2025 catalogs incl.
+  search/detail/export, no-JS paper-links, 404, axe on 3 pages, and
+  `site-contracts.e2e.ts`: security/cache headers, mixed content,
+  sitemap.xml/robots.txt, canonical/OG tags, legacy redirects). Non-GET
+  requests to the theme-request Worker are aborted in remote mode, so a
+  production run can never submit the request form.
+
+  ```sh
+  E2E_BASE_URL=https://paperpilot.pages.dev pnpm --filter @paperpilot/web e2e:prod
+  E2E_BASE_URL=https://paperpilot.pages.dev pnpm --filter @paperpilot/web e2e:crawl
+  ```
+
+  `e2e:crawl` (`crawl.e2e.ts`, `@prod-crawl`, desktop only, minutes) crawls
+  same-origin links from `/` to depth 2 (cap `E2E_CRAWL_MAX_PAGES`=300),
+  samples three catalogs' paper-links pages, fails on any 4xx/5xx, and
+  HEAD-checks a few arXiv/OpenReview/DOI/ACL/CVF links one at a time
+  (only 404/410 fail; 429, 5xx and bot walls are annotations). Locally it is
+  opt-in (`E2E_CRAWL=1`). CI: `.github/workflows/prod-e2e.yml` runs `@prod`
+  after every Pages-publishing workflow on develop and the crawler weekly;
+  a failure opens/updates one `prod-e2e` issue via `alert.yml` and never
+  blocks or rolls back a release.
 - **Coverage**: landing (catalog section, lazy theme shelf incl. the 4 s
   fallback, in-page `#s0-confs`/`#s0-lineages` links, cross-search listbox
   and choosing a result by click and Enter), header/footer links on each

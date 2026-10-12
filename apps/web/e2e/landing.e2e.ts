@@ -1,9 +1,9 @@
 import { LandingPage } from "./pages";
-import { expect, test } from "./support/fixtures";
+import { expect, PROD, test } from "./support/fixtures";
 import { conferences, publishedThemes } from "./support/site";
 
 test.describe("landing", () => {
-  test("loads with search, conference catalog and published lineages", async ({ page }) => {
+  test("loads with search, conference catalog and published lineages", PROD, async ({ page }) => {
     const landing = new LandingPage(page);
     await landing.goto();
     await expect(page).toHaveTitle(/PaperPilot/);
@@ -28,7 +28,7 @@ test.describe("landing", () => {
     await expect(landing.themeLinks).toHaveCount(publishedThemes().length, { timeout: 15_000 });
   });
 
-  test("theme links open the theme lineage", async ({ page }) => {
+  test("theme links open the theme lineage", PROD, async ({ page }) => {
     const landing = new LandingPage(page);
     await landing.goto();
     await landing.revealThemeShelf();
@@ -43,7 +43,7 @@ test.describe("landing", () => {
     await expect(page.getByRole("heading", { level: 1 })).toContainText("の系譜");
   });
 
-  test("conference catalog links resolve and navigate", async ({ page, request }) => {
+  test("conference catalog links resolve and navigate", PROD, async ({ page, request }) => {
     const landing = new LandingPage(page);
     await landing.goto();
     const confs = conferences().map((c) => c.name);
@@ -74,7 +74,7 @@ test.describe("landing", () => {
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   });
 
-  test("cross-search lists matching papers in the listbox", async ({ page }) => {
+  test("cross-search lists matching papers in the listbox", PROD, async ({ page }) => {
     const landing = new LandingPage(page);
     await landing.goto();
     await landing.searchBox.fill("diffusion");
