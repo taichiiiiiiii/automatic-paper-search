@@ -32,6 +32,7 @@ import type { PublicationTier } from "../contract/v1.js";
 import {
   type CollectionRow,
   collectionRow,
+  conferenceGateFromPolicy,
   type GoldenFixture,
   type QualityPolicy,
   strongRelationsFromPolicy,
@@ -129,8 +130,21 @@ function golden(r: CollectionRow): ThemeVerdict["golden"] {
   return r.audit.checks.find((c) => c.name === "golden_fixture")?.status ?? "unknown";
 }
 
-function fixtureFor(slug: string, ctx: GuardContext): GoldenFixture | null {
-  return ctx.fixtures.find((f) => f.collection_id === `theme:${slug}`) ?? null;
+/**
+ * R2-32: which collection a guard evaluates. Themes by default; a
+ * conference lineage (`<slug>/lineage.json`) is judged with the catalog ids
+ * of its edition and the conference gate, exactly as the release does.
+ */
+export interface GuardTarget {
+  kind: "theme" | "conference";
+  /** Conference only: catalog `paper_id`s of the edition. */
+  catalogIds?: ReadonlySet<string> | null;
+}
+
+const THEME_TARGET: GuardTarget = { kind: "theme" };
+
+function fixtureFor(slug: string, ctx: GuardContext, target: GuardTarget): GoldenFixture | null {
+  return ctx.fixtures.find((f) => f.collection_id === `${target.kind}:${slug}`) ?? null;
 }
 
 function row(
@@ -138,21 +152,25 @@ function row(
   slug: string,
   ctx: GuardContext,
   fixture: GoldenFixture | null,
+  target: GuardTarget = THEME_TARGET,
 ): CollectionRow {
+  const conference = target.kind === "conference";
   return collectionRow({
     docsRoot: "",
-    kind: "theme",
+    kind: target.kind,
     slug,
     label: slug,
-    relativePath: `themes/${slug}/lineage.json`,
+    relativePath: conference ? `${slug}/lineage.json` : `themes/${slug}/lineage.json`,
     snapshotDate: null,
     generatedHint: null,
     fixture,
     asOfText: `${ctx.now().toISOString().slice(0, 19)}Z`,
-    maxAgeDays: Number(ctx.policy.theme_max_age_days),
-    catalogIds: null,
+    maxAgeDays: Number(
+      conference ? ctx.policy.conference_max_age_days : ctx.policy.theme_max_age_days,
+    ),
+    catalogIds: conference ? (target.catalogIds ?? new Set<string>()) : null,
     strongRelations: strongRelationsFromPolicy(ctx.policy),
-    themeGate: themeGateFromPolicy(ctx.policy),
+    themeGate: conference ? conferenceGateFromPolicy(ctx.policy) : themeGateFromPolicy(ctx.policy),
     payload: bytes,
   });
 }
@@ -168,9 +186,10 @@ export function evaluateTheme(
   bytes: Buffer,
   slug: string,
   ctx: GuardContext,
-  options: { withAudit?: boolean } = {},
+  options: { withAudit?: boolean; target?: GuardTarget } = {},
 ): ThemeVerdict {
-  const r = row(bytes, slug, ctx, options.withAudit ? fixtureFor(slug, ctx) : null);
+  const target = options.target ?? THEME_TARGET;
+  const r = row(bytes, slug, ctx, options.withAudit ? fixtureFor(slug, ctx, target) : null, target);
   return {
     tier: r.publication_tier,
     nodeCount: r.node_count,
@@ -185,9 +204,10 @@ export function publishedTheme(
   bytes: Buffer | null,
   slug: string,
   ctx: GuardContext,
+  target: GuardTarget = THEME_TARGET,
 ): PublishedTheme | null {
   if (bytes === null) return null;
-  const r = row(bytes, slug, ctx, fixtureFor(slug, ctx));
+  const r = row(bytes, slug, ctx, fixtureFor(slug, ctx, target), target);
   let depth: number | null = null;
   let seedCount = 0;
   try {
@@ -216,10 +236,10 @@ export function publishedTheme(
 export function regressionRefusal(
   published: PublishedTheme | null,
   candidate: ThemeVerdict,
-  options: { allowShrink: boolean; allowReaudit?: boolean },
+  options: { allowShrink: boolean; allowReaudit?: boolean; noun?: string },
 ): string | null {
   if (published === null || published.tier === "blocked") return null;
-  const was = `published ${published.tier} theme (${published.nodeCount} nodes / ${published.edgeCount} edges)`;
+  const was = `published ${published.tier} ${options.noun ?? "theme"} (${published.nodeCount} nodes / ${published.edgeCount} edges)`;
   const staleAuditOnly =
     candidate.tier === "blocked" && candidate.failed.length === 0 && candidate.golden === "failed";
   if (staleAuditOnly && !options.allowReaudit) {

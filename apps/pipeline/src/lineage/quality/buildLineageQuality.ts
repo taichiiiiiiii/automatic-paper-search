@@ -547,7 +547,9 @@ function artifactChecks(
     ),
   );
 
-  if (kind === "theme" && themeGate !== null) {
+  // R2-32: conference rows get the same automatic gate as themes
+  // (`conferenceGateFromPolicy`); deep rows do not (design 41 R2-32).
+  if ((kind === "theme" || kind === "conference") && themeGate !== null) {
     checks.push(...themeGateChecks(data, generatedAt, themeGate));
   }
 
@@ -1114,6 +1116,11 @@ export interface QualityPolicy {
   theme_min_lineage_edges?: number;
   /** Minimum node count (`node_count`, R2-17; default 8). */
   theme_min_nodes?: number;
+  /**
+   * R2-32: conference lineages built before this instant (the pre-TS /
+   * LLM conference builders) stay blocked (`generator_current`).
+   */
+  conference_min_generated_at?: string;
   [key: string]: unknown;
 }
 
@@ -1135,6 +1142,7 @@ export function buildManifest(options: {
   parseTime(asOf); // validates, matching the Python call's side-effect-only use
   const strongRelations = strongRelationsFromPolicy(policy);
   const themeGate = themeGateFromPolicy(policy);
+  const conferenceGate = conferenceGateFromPolicy(policy);
   const fixtureMap = new Map<string, GoldenFixture>();
   if (Array.isArray(fixtures.collections)) {
     for (const row of fixtures.collections) {
@@ -1177,6 +1185,7 @@ export function buildManifest(options: {
         maxAgeDays: Number(policy.conference_max_age_days),
         catalogIds: conferenceCatalogIds,
         strongRelations,
+        themeGate: conferenceGate,
       }),
     );
     collections.push(
@@ -1315,6 +1324,27 @@ export function themeGateFromPolicy(policy: QualityPolicy): ThemeGate | null {
         : null,
     minLineageEdges: nonNegative(policy.theme_min_lineage_edges, DEFAULT_THEME_MIN_LINEAGE_EDGES),
   };
+}
+
+/**
+ * R2-32 (design 41): the automatic gate of a conference row — the theme
+ * gate's thresholds (evidence-classified rate, edge/node counts, review
+ * share, lineage relations), with `generator_current` bound to
+ * `conference_min_generated_at`. Always on: a conference artifact needs
+ * the same evidence as a theme to be published, even as `unaudited`.
+ */
+export function conferenceGateFromPolicy(policy: QualityPolicy): ThemeGate {
+  const theme = themeGateFromPolicy(policy) ?? {
+    minClassifiedRate: DEFAULT_MIN_CLASSIFIED_RATE,
+    minGeneratedAt: null,
+    minEdges: DEFAULT_THEME_MIN_EDGES,
+    minNodes: DEFAULT_THEME_MIN_NODES,
+    maxReviewShare: DEFAULT_THEME_MAX_REVIEW_SHARE,
+    minLineageShare: null,
+    minLineageEdges: DEFAULT_THEME_MIN_LINEAGE_EDGES,
+  };
+  const at = policy.conference_min_generated_at;
+  return { ...theme, minGeneratedAt: typeof at === "string" ? at : null };
 }
 
 const round3 = (x: number): number => Math.round(x * 1000) / 1000;
