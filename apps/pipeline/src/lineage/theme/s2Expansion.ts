@@ -94,6 +94,9 @@ export interface S2ExpansionStats {
   s2: number;
   /** Expansions where OpenAlex was short and S2 had nothing either. */
   neither: number;
+  /** Of those, expansions where S2 could not be reached (recorded as a
+   * failed expansion: the build is incomplete, not "nothing there"). */
+  s2Unreachable: number;
   /** S2-supplied candidates: total, mapped to an OpenAlex id, kept as S2 ids. */
   s2Candidates: number;
   mappedToOpenalex: number;
@@ -306,6 +309,7 @@ export class S2Expansion {
     openalex: 0,
     s2: 0,
     neither: 0,
+    s2Unreachable: 0,
     s2Candidates: 0,
     mappedToOpenalex: 0,
     keptS2Ids: 0,
@@ -367,6 +371,18 @@ export class S2Expansion {
     if (extra.length === 0) {
       scratch.forward(completeness, false);
       count(got.length > 0 ? "openalex" : "neither");
+      if (fromS2 === null && this.opts.source.lastListFailed && scratch.failed === 0) {
+        // OpenAlex was short and the S2 supplement could not be reached:
+        // the candidates S2 would have added are unknown, not absent. Record
+        // it so the completeness gate refuses to replace a published graph
+        // with the smaller one an S2 outage produces.
+        if (first) this.stats.s2Unreachable += 1;
+        completeness?.expansionFailed(`s2 ${kind} unreachable for ${paper.paperId}`);
+        this.opts.logger?.warn(
+          `s2 expansion: Semantic Scholar unreachable for ${paper.paperId} ${kind} ` +
+            `(OpenAlex had ${got.length}); expansion recorded as failed`,
+        );
+      }
       return got;
     }
     scratch.forward(completeness, true);
@@ -454,7 +470,8 @@ export class S2Expansion {
   summary(): string {
     const s = this.stats;
     return (
-      `expansion sources: openalex=${s.openalex} s2=${s.s2} (neither=${s.neither}; ` +
+      `expansion sources: openalex=${s.openalex} s2=${s.s2} (neither=${s.neither}, ` +
+      `s2 unreachable=${s.s2Unreachable}; ` +
       `s2 candidates=${s.s2Candidates}, mapped to openalex ids=${s.mappedToOpenalex}, ` +
       `kept s2 ids=${s.keptS2Ids}, id-mapping failures=${s.mappingFailed}, cache hits=${s.cacheHits})`
     );

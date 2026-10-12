@@ -44,9 +44,13 @@ export const DEFAULT_MAX_PAGES = 5;
 export const DEFAULT_MAX_ITEMS = 50;
 export const MAX_AUTHORS = 5;
 /** OpenAlex Work types that can be a "new paper" (paratext, errata,
- * editorials, peer reviews, datasets, … are dropped). */
+ * editorials, peer reviews, datasets, … are dropped). OpenAlex types
+ * proceedings papers `conference-paper` (29 % of a recorded 2026 citing
+ * page, e.g. NeurIPS/ICLR papers): without it every conference paper was
+ * silently counted as `excluded_type`. */
 export const ALLOWED_WORK_TYPES: ReadonlySet<string> = new Set([
   "article",
+  "conference-paper",
   "preprint",
   "review",
   "book-chapter",

@@ -56,6 +56,19 @@ describe("proceedings sites (papers.nips.cc / proceedings.iclr.cc)", () => {
     );
   });
 
+  it("counts a body cut off mid-transfer as malformed (no partial catalog)", () => {
+    // System-test finding: half of the listing parsed into fewer papers
+    // with malformed=0, and approveCli published a partial catalog.
+    const set = new Set(["conference"]);
+    const lastItem = ICLR_2025.lastIndexOf("<li ");
+    const midItem = ICLR_2025.slice(0, lastItem + 80);
+    expect(parseProceedingsSiteListing(midItem, "iclr", 2025, set).malformed).toBe(1);
+    const betweenItems = ICLR_2025.slice(0, ICLR_2025.lastIndexOf("</ul>"));
+    const r = parseProceedingsSiteListing(betweenItems, "iclr", 2025, set);
+    expect(r.entries).toHaveLength(3);
+    expect(r.malformed).toBe(1);
+  });
+
   it("filters NeurIPS tracks and counts the rest as skipped", () => {
     const r = parseProceedingsSiteListing(NIPS_2024, "neurips", 2024, new Set(["conference"]));
     expect(r.entries).toHaveLength(2);

@@ -266,6 +266,19 @@ describe("selectCandidates", () => {
     expect(stats).toEqual({ fetched: 7, in_lineage: 1, excluded_type: 2, below_min_cites: 1 });
   });
 
+  it("keeps OpenAlex `conference-paper` works (proceedings papers are new papers too)", () => {
+    const proceedings = work(107, "Graph Neural Networks at NeurIPS", "graph nodes", [1, 2], {
+      type: "conference-paper",
+    });
+    const { candidates, stats } = selectCandidates([proceedings, PARATEXT], lineage(), {
+      minLineageCites: 2,
+      from: "2026-09-12",
+      to: "2026-10-11",
+    });
+    expect(candidates.map((c) => c.paper.paperId)).toEqual(["openalex:W107"]);
+    expect(stats.excluded_type).toBe(1);
+  });
+
   it("recorded OpenAlex page: every work cites a single lineage node, so none is kept", () => {
     const recorded = JSON.parse(
       readFileSync(join(FIXTURES, "openalex-cites-flash-attention.json"), "utf8"),
