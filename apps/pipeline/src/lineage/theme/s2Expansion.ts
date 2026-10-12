@@ -44,6 +44,7 @@
  * not recover the list.
  */
 
+import { titlesDisagreeStrongly } from "@paperpilot/core/abstract-sanity";
 import type { FetchLike } from "../../collect/http/requestWithRetry.js";
 import { requestWithRetry } from "../../collect/http/requestWithRetry.js";
 import type { BuildCompletenessForExpansion } from "../shared/fetchRelated.js";
@@ -240,10 +241,40 @@ export async function mapS2PapersToOpenalex(
 }
 
 /** The OpenAlex record of an S2 paper, with S2 filling its gaps and
- * S2's edge signals (intents, isInfluential) kept. */
-function mergeMapped(oa: ThemePaper, s2: ThemePaper): ThemePaper {
+ * S2's edge signals (intents, isInfluential) kept.
+ *
+ * R2-34: OpenAlex occasionally merges/misattributes a Work's title —
+ * `openalex:W3168867926` (arXiv 2106.09685, the original LoRA paper by
+ * Hu et al.) carries OpenAlex's corrupted "LoRA Fine-Tuning of a 3B
+ * Code LLM for Algorithmic Efficiency". When both sides resolve to
+ * the SAME arXiv id (an identity anchor independent of either side's
+ * own id/merge logic) but their titles plainly describe different
+ * subjects ({@link titlesDisagreeStrongly} — checking against the
+ * abstract alone does not catch this: the real LoRA abstract legitimately
+ * mentions "LoRA", so word-overlap-with-abstract finds no contradiction
+ * in EITHER title), S2's title is the trustworthy one and OpenAlex's
+ * own Work record is the one that drifted — prefer S2's title and
+ * record the override under `_title_override` so the swap stays
+ * auditable, never silent. */
+export function mergeMapped(oa: ThemePaper, s2: ThemePaper): ThemePaper {
+  const sharedArxivId =
+    typeof oa.externalIds.ArXiv === "string" &&
+    oa.externalIds.ArXiv.length > 0 &&
+    oa.externalIds.ArXiv === s2.externalIds.ArXiv;
+  const titleOverride =
+    sharedArxivId &&
+    typeof oa.title === "string" &&
+    typeof s2.title === "string" &&
+    oa.title !== s2.title &&
+    titlesDisagreeStrongly(oa.title, s2.title);
   return {
     ...oa,
+    ...(titleOverride
+      ? {
+          title: s2.title,
+          _title_override: { from: oa.title, to: s2.title, source: "semantic_scholar" },
+        }
+      : {}),
     year: oa.year ?? s2.year,
     venue: oa.venue || s2.venue,
     abstract: oa.abstract || s2.abstract,

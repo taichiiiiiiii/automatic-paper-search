@@ -121,6 +121,28 @@ export async function fetchLineageQualityManifest(): Promise<QualityManifest | n
 }
 
 /**
+ * R2-34: classifies why a requested `?theme=slug` isn't in the
+ * eligible gallery -- "unknown" (no quality row at all: never
+ * generated, or the slug is simply wrong) vs "blocked" (a row exists
+ * -- the pipeline generated and promoted an artifact for it -- but
+ * its `publication_tier` is `blocked`, so it fails the same strict
+ * gate `eligibleThemeManifest`/`qualityRowIsEligible` apply). A real
+ * on-demand run (38221581049, "Low-Rank Adaptation") hit the latter:
+ * the theme existed, generated_at/as_of included, with every
+ * structural/evidence check passed, but a spurious `timestamp_not_future`
+ * failure blocked it -- the UI's blanket 「存在しません」 copy for
+ * this case was misleading (it reads as "never requested"), so the
+ * caller renders a different, honest message for each reason.
+ */
+export function themeFallbackReason(
+  quality: QualityManifest | null,
+  slug: string,
+): "unknown" | "blocked" {
+  const row = resolveQualityCollection(quality, { kind: "theme", slug });
+  return row && !qualityRowIsEligible(row) ? "blocked" : "unknown";
+}
+
+/**
  * P2T quality gate (SCR-31/32): fetches and returns the parsed theme
  * artifact ONLY when `slug`'s quality row is ready+passed, the fetched
  * bytes hash to the audited `input_sha256`, and the payload strict-

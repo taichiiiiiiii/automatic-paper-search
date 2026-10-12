@@ -718,3 +718,89 @@ describe("golden_fixture node metadata verdicts (design doc 41 D5)", () => {
     expect(golden.evidence).toContain("node-metadata-invalid:focus");
   });
 });
+
+/**
+ * R2-34: a real on-demand run (38221581049, "Low-Rank Adaptation") was
+ * generated and promoted successfully but ended up `blocked` because
+ * `timestamp_not_future` failed: the generator's `generated_at` kept
+ * milliseconds (`...07.224000Z`, `pyIsoformat`), while the promote-time
+ * `as_of` the workflow passes is always whole-second
+ * (`.github/workflows/theme-on-demand.yml`'s `date -u
+ * +%Y-%m-%dT%H:%M:%SZ`, same shape as `release/promote.ts`'s own
+ * fallback) -- generation finishing mid-second and the `date` call
+ * landing a moment later in the SAME second produced a textual
+ * generated_at > as_of even though generation strictly preceded the
+ * as_of capture. The comparison now floors both sides to whole
+ * seconds before comparing.
+ */
+describe("collectionRow (R2-34): timestamp_not_future sub-second as_of race", () => {
+  it("passes when generated_at has milliseconds later than as_of's truncated second (the real bug)", () => {
+    const docsRoot = tmpDocsDir();
+    const art = artifact();
+    (art.meta as Record<string, unknown>).generated_at = "2026-10-12T08:16:07.224000Z";
+    const text = JSON.stringify(art);
+    writeFileSync(join(docsRoot, "lineage.json"), text);
+    const row = collectionRow({
+      docsRoot,
+      kind: "theme",
+      slug: "low-rank-adaptation",
+      label: "Low-Rank Adaptation",
+      relativePath: "lineage.json",
+      snapshotDate: null,
+      generatedHint: null,
+      fixture: null,
+      // Same second as generated_at, but whole-second (no sub-second
+      // part) -- exactly what the workflow's `date` call produced.
+      asOfText: "2026-10-12T08:16:07Z",
+      maxAgeDays: 365,
+      catalogIds: null,
+    });
+    const check = row.audit.checks.find((c) => c.name === "timestamp_not_future")!;
+    expect(check.status).toBe("passed");
+    expect(row.publication_tier).toBe("unaudited");
+  });
+
+  it("still fails when generated_at is a whole second or more after as_of (genuinely future-dated)", () => {
+    const docsRoot = tmpDocsDir();
+    const art = artifact();
+    (art.meta as Record<string, unknown>).generated_at = "2026-10-12T08:16:08.001000Z";
+    const text = JSON.stringify(art);
+    writeFileSync(join(docsRoot, "lineage.json"), text);
+    const row = collectionRow({
+      docsRoot,
+      kind: "theme",
+      slug: "low-rank-adaptation",
+      label: "Low-Rank Adaptation",
+      relativePath: "lineage.json",
+      snapshotDate: null,
+      generatedHint: null,
+      fixture: null,
+      asOfText: "2026-10-12T08:16:07Z",
+      maxAgeDays: 365,
+      catalogIds: null,
+    });
+    const check = row.audit.checks.find((c) => c.name === "timestamp_not_future")!;
+    expect(check.status).toBe("failed");
+    expect(row.publication_tier).toBe("blocked");
+  });
+
+  it("golden_fixture=unknown alone never blocks a theme whose other checks pass (unaudited, not blocked)", () => {
+    const docsRoot = tmpDocsDir();
+    writeArtifact(docsRoot, "lineage.json");
+    const row = collectionRow({
+      docsRoot,
+      kind: "theme",
+      slug: "t",
+      label: "T",
+      relativePath: "lineage.json",
+      snapshotDate: null,
+      generatedHint: null,
+      fixture: null, // no human fixture yet for this new theme
+      asOfText: "2026-09-01T00:00:00Z",
+      maxAgeDays: 365,
+      catalogIds: null,
+    });
+    expect(row.audit.checks.find((c) => c.name === "golden_fixture")?.status).toBe("unknown");
+    expect(row.publication_tier).toBe("unaudited");
+  });
+});

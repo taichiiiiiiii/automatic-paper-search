@@ -27,7 +27,7 @@ import { discoverSeedsOpenalexPrimary } from "../../../src/lineage/theme/discove
 import { discoverSeedsViaOpenalex } from "../../../src/lineage/theme/openalexFetch.js";
 import type { ThemePaper } from "../../../src/lineage/theme/openalexWork.js";
 import { S2CitationSource } from "../../../src/lineage/theme/s2Citations.js";
-import { S2Expansion, s2EdgeToPaper } from "../../../src/lineage/theme/s2Expansion.js";
+import { mergeMapped, S2Expansion, s2EdgeToPaper } from "../../../src/lineage/theme/s2Expansion.js";
 import { TopicScope } from "../../../src/lineage/theme/topicScope.js";
 
 function resp(
@@ -520,5 +520,96 @@ describe("OpenAlex seed search", () => {
     expect(failures).toHaveLength(1);
     expect(failures[0]).toContain("openalex seed search");
     expect(existsSync(cacheDir)).toBe(true);
+  });
+});
+
+/**
+ * R2-34: `mergeMapped` prefers S2's title over OpenAlex's when
+ * OpenAlex's title contradicts the abstract this node will actually
+ * carry but S2's title does not — the real bug on
+ * `openalex:W3168867926` (arXiv 2106.09685, the LoRA paper): OpenAlex
+ * carries a corrupted title ("LoRA Fine-Tuning of a 3B Code LLM for
+ * Algorithmic Efficiency") while its own abstract is plainly the real
+ * LoRA abstract, and S2's title for the same arXiv id is the real one.
+ */
+describe("mergeMapped (R2-34): prefers S2's title over a corrupted OpenAlex title", () => {
+  const LORA_ABSTRACT =
+    "We propose Low-Rank Adaptation, or LoRA, which freezes the pre-trained model " +
+    "weights and injects trainable rank decomposition matrices into each layer of " +
+    "the Transformer architecture, greatly reducing the number of trainable " +
+    "parameters for downstream tasks.";
+
+  function paper(overrides: Partial<ThemePaper>): ThemePaper {
+    return {
+      paperId: "openalex:W3168867926",
+      title: "LoRA Fine-Tuning of a 3B Code LLM for Algorithmic Efficiency",
+      year: 2021,
+      venue: "arXiv",
+      citationCount: 0,
+      abstract: "",
+      authors: [{ name: "J. Edward Hu" }],
+      externalIds: { OpenAlex: "W3168867926", ArXiv: "2106.09685" },
+      ...overrides,
+    };
+  }
+
+  it("swaps to S2's title and records the override when OpenAlex's title contradicts its own abstract", () => {
+    const oa = paper({ abstract: LORA_ABSTRACT, citationCount: 0 });
+    const s2 = paper({
+      paperId: "s2:abc",
+      title: "LoRA: Low-Rank Adaptation of Large Language Models",
+      abstract: LORA_ABSTRACT,
+      citationCount: 2510,
+      externalIds: { ArXiv: "2106.09685" },
+    });
+    const merged = mergeMapped(oa, s2);
+    expect(merged.title).toBe("LoRA: Low-Rank Adaptation of Large Language Models");
+    expect(merged._title_override).toEqual({
+      from: "LoRA Fine-Tuning of a 3B Code LLM for Algorithmic Efficiency",
+      to: "LoRA: Low-Rank Adaptation of Large Language Models",
+      source: "semantic_scholar",
+    });
+    // The existing R2-17 rule still carries the larger S2 citation count.
+    expect(merged._s2_citation_count).toBe(2510);
+  });
+
+  it("keeps OpenAlex's title when it actually matches the abstract (no false override)", () => {
+    const oa = paper({
+      title: "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness",
+      abstract: "We propose FlashAttention, an IO-aware exact attention algorithm.",
+    });
+    const s2 = paper({
+      paperId: "s2:def",
+      title: "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness",
+      abstract: "We propose FlashAttention, an IO-aware exact attention algorithm.",
+    });
+    const merged = mergeMapped(oa, s2);
+    expect(merged.title).toBe(oa.title);
+    expect(merged._title_override).toBeUndefined();
+  });
+
+  it("does not override without a shared arXiv id (titles could legitimately be for different papers)", () => {
+    const oa = paper({ externalIds: { OpenAlex: "W3168867926", ArXiv: "2106.09685" } });
+    const s2 = paper({
+      paperId: "s2:ghi",
+      title: "LoRA: Low-Rank Adaptation of Large Language Models",
+      externalIds: { OpenAlex: "W3168867926" }, // no ArXiv id on the S2 side
+    });
+    const merged = mergeMapped(oa, s2);
+    expect(merged.title).toBe(oa.title);
+    expect(merged._title_override).toBeUndefined();
+  });
+
+  it("does not override when the titles are merely paraphrased (not a strong disagreement)", () => {
+    const oa = paper({
+      title: "LoRA: Low-Rank Adaptation of Large Language Models",
+    });
+    const s2 = paper({
+      paperId: "s2:jkl",
+      title: "Low-Rank Adaptation (LoRA) of Large Language Models",
+    });
+    const merged = mergeMapped(oa, s2);
+    expect(merged.title).toBe(oa.title);
+    expect(merged._title_override).toBeUndefined();
   });
 });

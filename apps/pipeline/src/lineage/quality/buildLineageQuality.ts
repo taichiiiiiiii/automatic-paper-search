@@ -515,7 +515,24 @@ function artifactChecks(
   const timestampFailures: string[] = [];
   if (generatedAt) {
     try {
-      if (parseTime(generatedAt).getTime() > asOf.getTime()) timestampFailures.push(generatedAt);
+      // R2-34: `as_of` (both the policy default and every promote-time
+      // `PROMOTE_AS_OF`, see `release/promote.ts` and
+      // `.github/workflows/theme-on-demand.yml`'s `date -u
+      // +%Y-%m-%dT%H:%M:%SZ`) is always whole-second precision, while a
+      // theme/conference/deep artifact's `generated_at` keeps
+      // sub-second precision when the generator's wall clock had any
+      // (`pyIsoformat`). A real on-demand run (38221581049, "Low-Rank
+      // Adaptation") finished generation mid-second (`...07.224Z`) and
+      // the freeze step's `date` call landed in the *same* second
+      // (`...07Z`, floored, not ceiled) a moment later: textually
+      // generated_at > as_of even though generation strictly preceded
+      // the as_of capture. Comparing at second precision (floor both
+      // sides) removes that sub-second race without weakening the
+      // check: a genuinely future-dated artifact (a whole second or
+      // more after as_of) still fails.
+      const generatedAtSec = Math.floor(parseTime(generatedAt).getTime() / 1000);
+      const asOfSec = Math.floor(asOf.getTime() / 1000);
+      if (generatedAtSec > asOfSec) timestampFailures.push(generatedAt);
     } catch {
       timestampFailures.push(generatedAt);
     }

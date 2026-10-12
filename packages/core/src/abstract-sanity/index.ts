@@ -106,6 +106,44 @@ export function abstractContradictsTitle(title: string, abstract: string): boole
   return !words.some((w) => lower.includes(w.slice(0, 5)));
 }
 
+/**
+ * True when `titleA` and `titleB` plainly describe DIFFERENT subjects
+ * — low Jaccard overlap of their significant words (>= 4 letters, not
+ * a generic ML stopword) — even though they may share one keyword
+ * (R2-34: OpenAlex's own identity-merge bug on `openalex:W3168867926`
+ * gave the real LoRA paper (arXiv 2106.09685) the title "LoRA
+ * Fine-Tuning of a 3B Code LLM for Algorithmic Efficiency", which
+ * still shares the word "LoRA" with the real title "LoRA: Low-Rank
+ * Adaptation of Large Language Models" — {@link abstractContradictsTitle}
+ * alone does not catch this: the abstract legitimately mentions "LoRA",
+ * so word-overlap-with-abstract finds no contradiction. Comparing the
+ * two CANDIDATE titles directly does: only 1 of their 11 combined
+ * significant words is shared).
+ *
+ * Used to decide whether an independently-identified title (arXiv
+ * metadata, or Semantic Scholar keyed by the same arXiv/DOI id) should
+ * override a Work's own title field — the two titles are for the
+ * same identity (same arXiv id), so a strong disagreement here means
+ * one of the title FIELDS is wrong, not that the papers differ.
+ */
+export function titlesDisagreeStrongly(titleA: string, titleB: string): boolean {
+  const wordsOf = (t: string): Set<string> =>
+    new Set(
+      t
+        .normalize("NFKC")
+        .toLowerCase()
+        .split(/[^\p{L}\p{N}]+/u)
+        .filter((w) => w.length >= 4 && !SANITY_STOPWORDS.has(w) && /\p{L}/u.test(w)),
+    );
+  const a = wordsOf(titleA);
+  const b = wordsOf(titleB);
+  if (a.size < 2 || b.size < 2) return false;
+  let intersection = 0;
+  for (const w of a) if (b.has(w)) intersection += 1;
+  const union = a.size + b.size - intersection;
+  return intersection / union < 0.3;
+}
+
 const INTRO_RE =
   /\b(?:[Ww]e|[Tt]his (?:paper|work))\s+(?:introduce|propose|present)s?\s+(?:[a-z]+\s+){0,4}?[A-Z]/u;
 

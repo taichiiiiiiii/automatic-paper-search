@@ -20,6 +20,7 @@ import {
   fetchThemeArtifact,
   fetchThemeQualityRollup,
   fetchThemesManifest,
+  themeFallbackReason,
 } from "../../lib/data-themes";
 import {
   fetchThemeCodeLinks,
@@ -65,7 +66,11 @@ type ViewState =
       qualityRollup: ThemeQualityRollup;
       currentSlug: string;
       artifact: LineageArtifact;
-      slugFallback: { requested: string; fallbackTheme: string } | null;
+      slugFallback: {
+        requested: string;
+        fallbackTheme: string;
+        reason: "unknown" | "blocked";
+      } | null;
     };
 
 function entryTheme(manifest: ThemeManifestEntry[], slug: string): string {
@@ -197,7 +202,11 @@ export function ThemesClient() {
         artifact,
         slugFallback:
           requested && !known.has(requested)
-            ? { requested, fallbackTheme: entryTheme(eligible, currentSlug) }
+            ? {
+                requested,
+                fallbackTheme: entryTheme(eligible, currentSlug),
+                reason: themeFallbackReason(lineageQuality, requested),
+              }
             : null,
       });
     })();
@@ -383,17 +392,29 @@ export function ThemesClient() {
         >
           <span aria-hidden="true">⚠️</span>
           <span className="flex-1">
-            テーマ "{slugFallback.requested}" は存在しません。代わりに "{slugFallback.fallbackTheme}
-            " を表示しています。
+            {slugFallback.reason === "blocked" ? (
+              <>
+                テーマ "{slugFallback.requested}"
+                は生成されましたが、自動検査に合格しなかったため非公開です。代わりに "
+                {slugFallback.fallbackTheme}" を表示しています。
+              </>
+            ) : (
+              <>
+                テーマ "{slugFallback.requested}" は存在しません。代わりに "
+                {slugFallback.fallbackTheme}" を表示しています。
+              </>
+            )}
           </span>
-          <a
-            href={`https://github.com/taichiiiiiiii/automatic-paper-search/issues/new?labels=theme-request&title=${encodeURIComponent(`[theme request] ${slugFallback.requested}`)}`}
-            target="_blank"
-            rel="noopener"
-            className="whitespace-nowrap text-accent-strong underline"
-          >
-            ✨ Issue でリクエスト
-          </a>
+          {slugFallback.reason !== "blocked" && (
+            <a
+              href={`https://github.com/taichiiiiiiii/automatic-paper-search/issues/new?labels=theme-request&title=${encodeURIComponent(`[theme request] ${slugFallback.requested}`)}`}
+              target="_blank"
+              rel="noopener"
+              className="whitespace-nowrap text-accent-strong underline"
+            >
+              ✨ Issue でリクエスト
+            </a>
+          )}
           <button
             type="button"
             aria-label="閉じる"
