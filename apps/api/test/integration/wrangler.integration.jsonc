@@ -1,0 +1,42 @@
+{
+  // LOCAL-ONLY config for the request-flow integration test
+  // (`wrangler dev --local -c test/integration/wrangler.integration.jsonc`,
+  // started by apps/web/playwright.request-flow.config.ts). Never deploy
+  // this: it has its own Worker name, a fake KV id (local storage only),
+  // a test entry point that routes GitHub calls to a mock server, and a
+  // fake PAT. apps/api/test/wrangler-config.test.ts pins those facts.
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "paperpilot-api-integration-local",
+  "main": "worker-entry.ts",
+  "compatibility_date": "2026-04-21",
+  "compatibility_flags": ["nodejs_compat"],
+  "vars": {
+    "GH_OWNER": "taichiiiiiiii",
+    "GH_REPO": "automatic-paper-search",
+    "GH_WORKFLOW_FILE": "theme-on-demand.yml",
+    "GH_REF": "develop",
+    "DISPATCH_MODE": "live",
+    "GH_DISPATCH_PAT": "integration-test-fake-pat",
+    "MOCK_GITHUB_ORIGIN": "http://127.0.0.1:4290"
+  },
+  "kv_namespaces": [
+    {
+      "binding": "CONFIG_KV",
+      "id": "00000000000000000000000000000000"
+    }
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "QUOTA",
+        "class_name": "QuotaCounter"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["QuotaCounter"]
+    }
+  ]
+}

@@ -103,3 +103,31 @@ describe("apps/api/wrangler.preview.jsonc (unchanged preview config, now its own
     expect(preview.d1_databases).toBeUndefined();
   });
 });
+
+describe("apps/api/test/integration/wrangler.integration.jsonc (local-only test Worker)", () => {
+  const integration = readJsonc("./integration/wrangler.integration.jsonc");
+
+  it("is a different Worker on the test-only entry, never production", () => {
+    expect(integration.name).not.toBe(production.name);
+    expect(integration.name).not.toBe(preview.name);
+    expect(integration.main).toBe("worker-entry.ts");
+    expect(integration.triggers).toBeUndefined();
+  });
+
+  it("uses a fake KV id and a fake PAT, and sends GitHub calls to the local mock", () => {
+    const id = kvId(integration, "CONFIG_KV");
+    expect(id).toMatch(/^0+$/);
+    expect(id).not.toBe(PRODUCTION_KV_ID);
+    const vars = integration.vars as Record<string, string>;
+    expect(vars.GH_DISPATCH_PAT).toBe("integration-test-fake-pat");
+    expect(vars.MOCK_GITHUB_ORIGIN).toMatch(/^http:\/\/127\.0\.0\.1:\d+$/);
+  });
+
+  it("is not referenced by the production or preview config", () => {
+    for (const file of ["../wrangler.jsonc", "../wrangler.preview.jsonc"]) {
+      const text = readFileSync(new URL(file, `file://${here}`), "utf8");
+      expect(text).not.toContain("worker-entry");
+      expect(text).not.toContain("integration");
+    }
+  });
+});

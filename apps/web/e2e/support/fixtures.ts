@@ -10,8 +10,9 @@
  *   any page script runs),
  * - an uncaught page error,
  * - a failed same-origin request (network failure or HTTP status >= 400).
- *   `net::ERR_ABORTED` is ignored: Next cancels in-flight RSC prefetches
- *   when a navigation starts, which is normal.
+ *   Aborted requests are ignored (Chromium `net::ERR_ABORTED`, Firefox
+ *   `NS_BINDING_ABORTED`, WebKit "cancelled"): Next cancels in-flight RSC
+ *   prefetches when a navigation starts, which is normal.
  *
  * A test that expects a problem (e.g. the 404 page) opts out narrowly
  * with `test.use({ allowedProblems: /regex/ })` (one RegExp, use `|` for
@@ -19,11 +20,21 @@
  *
  * With `javaScriptEnabled: false`, Chromium cancels script loads with the
  * error text "csp"; those are expected and ignored in that mode only.
+ *
+ * Remote mode (E2E_BASE_URL, e.g. production): the suite must stay
+ * read-only. Every non-GET/HEAD request to the theme-request Worker
+ * (API_ORIGIN) is aborted before it leaves the browser and reported as a
+ * `blocked-write` problem, so no test can ever submit the theme request
+ * form against production, even by accident.
  */
 import { test as base, type ConsoleMessage, expect, type Page } from "@playwright/test";
+import { IS_REMOTE } from "./site";
+
+/** The theme-request Worker (packages/core API_BASE). */
+export const API_ORIGIN = "https://paperpilot-themes.puuptdbkh082.workers.dev";
 
 export interface PageProblem {
-  kind: "console" | "csp" | "pageerror" | "requestfailed" | "http";
+  kind: "console" | "csp" | "pageerror" | "requestfailed" | "http" | "blocked-write";
   text: string;
   page: string;
 }
@@ -38,14 +49,49 @@ interface Fixtures {
 
 const CSP_TAG = "[e2e-csp-violation]";
 
-function attach(page: Page, origin: string, problems: PageProblem[], jsEnabled: boolean): void {
+/** A request cancelled by the page (e.g. Next aborting an RSC prefetch when
+ * a navigation starts), in each engine's wording: Chromium
+ * `net::ERR_ABORTED`, Firefox `NS_BINDING_ABORTED`, WebKit
+ * "Load request cancelled" / "cancelled". */
+const ABORTED = /ERR_ABORTED|NS_BINDING_ABORTED|^(Load request )?cancelled$/i;
+
+/** WebKit engine bug, not an app problem: every native `<select>` applies
+ * an inline style inside its user-agent shadow tree, which WebKit checks
+ * against the PAGE's CSP (`style-src 'self'`) and reports as a
+ * `style-src-attr` violation (plus a "Refused to apply a stylesheet"
+ * console error). Reproduced with a bare `<select><option>a</option>
+ * </select>` page; Chromium and Firefox do not report it. The event
+ * targets the SELECT, or the document when React builds the select
+ * off-DOM during a client-side render. Only these exact reports are
+ * ignored, and only in WebKit: the Chromium projects run the same app code
+ * and still catch any real inline style (style props included), and an
+ * inline style on a connected element is still caught here
+ * (guard.e2e.ts). */
+const WEBKIT_SELECT_UA_STYLE = /^\S+ style-src-attr blocked=inline target=(SELECT|#document)$/;
+
+function attach(
+  page: Page,
+  origin: string,
+  problems: PageProblem[],
+  jsEnabled: boolean,
+  browserName: string,
+): void {
   const where = () => page.url();
+  const webkit = browserName === "webkit";
   page.on("console", (msg: ConsoleMessage) => {
     if (msg.type() !== "error") return;
     const text = msg.text();
-    const loc = msg.location()?.url;
-    const kind =
-      text.includes(CSP_TAG) || /Content Security Policy/i.test(text) ? "csp" : "console";
+    const tagged = text.includes(CSP_TAG);
+    if (webkit) {
+      // WebKit's native CSP console line carries no element, so it cannot
+      // be told apart from the <select> noise above; the tagged
+      // `securitypolicyviolation` report (which fires for every violation)
+      // stands in for it there.
+      if (!tagged && /Content Security Policy/i.test(text)) return;
+      if (tagged && WEBKIT_SELECT_UA_STYLE.test(text)) return;
+    }
+    const loc = tagged ? undefined : msg.location()?.url;
+    const kind = tagged || /Content Security Policy/i.test(text) ? "csp" : "console";
     problems.push({ kind, text: loc ? `${text} (${loc})` : text, page: where() });
   });
   page.on("pageerror", (err) => {
@@ -53,7 +99,7 @@ function attach(page: Page, origin: string, problems: PageProblem[], jsEnabled: 
   });
   page.on("requestfailed", (req) => {
     const failure = req.failure()?.errorText ?? "unknown";
-    if (failure.includes("ERR_ABORTED")) return;
+    if (ABORTED.test(failure)) return;
     if (!jsEnabled && failure === "csp" && req.resourceType() === "script") return;
     if (!req.url().startsWith(origin)) return;
     problems.push({ kind: "requestfailed", text: `${failure} ${req.url()}`, page: where() });
@@ -72,7 +118,7 @@ export const test = base.extend<Fixtures & { _pageGuard: undefined }>({
   },
   _pageGuard: [
     async (
-      { context, baseURL, allowedProblems, pageProblems, javaScriptEnabled },
+      { context, baseURL, allowedProblems, pageProblems, javaScriptEnabled, browserName },
       use,
       testInfo,
     ) => {
@@ -81,11 +127,30 @@ export const test = base.extend<Fixtures & { _pageGuard: undefined }>({
       // Runs before any page script (and is unaffected by the page CSP).
       await context.addInitScript((tag: string) => {
         document.addEventListener("securitypolicyviolation", (e) => {
-          console.error(`${tag} ${e.violatedDirective} blocked=${e.blockedURI || "inline"}`);
+          const t = e.target as Element | null;
+          const target = t && "nodeName" in t ? t.nodeName : "document";
+          console.error(
+            `${tag} ${e.violatedDirective} blocked=${e.blockedURI || "inline"} target=${target}`,
+          );
         });
       }, CSP_TAG);
-      for (const p of context.pages()) attach(p, origin, pageProblems, js);
-      context.on("page", (p) => attach(p, origin, pageProblems, js));
+      if (IS_REMOTE) {
+        await context.route(`${API_ORIGIN}/**`, async (route) => {
+          const req = route.request();
+          if (req.method() === "GET" || req.method() === "HEAD" || req.method() === "OPTIONS") {
+            await route.continue();
+            return;
+          }
+          pageProblems.push({
+            kind: "blocked-write",
+            text: `${req.method()} ${req.url()} (read-only remote run)`,
+            page: req.frame()?.url() ?? "",
+          });
+          await route.abort("blockedbyclient");
+        });
+      }
+      for (const p of context.pages()) attach(p, origin, pageProblems, js, browserName);
+      context.on("page", (p) => attach(p, origin, pageProblems, js, browserName));
       await use(undefined);
       const unexpected = pageProblems.filter((p) => !allowedProblems.test(`${p.kind}: ${p.text}`));
       if (pageProblems.length > 0) {
@@ -106,5 +171,10 @@ export const test = base.extend<Fixtures & { _pageGuard: undefined }>({
     { auto: true },
   ],
 });
+
+/** Tag for the fast, read-only subset run against production after every
+ * release (`--grep @prod`, see playwright.config.ts / prod-e2e.yml). Only
+ * tag tests that never write anything (no form submits, no API POSTs). */
+export const PROD = { tag: "@prod" } as const;
 
 export { expect };

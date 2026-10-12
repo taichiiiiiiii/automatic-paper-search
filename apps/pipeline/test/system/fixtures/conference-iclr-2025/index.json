@@ -1,0 +1,69 @@
+[
+ {
+  "url": "https://proceedings.iclr.cc/paper_files/paper/2025",
+  "status": 200,
+  "headers": {
+   "content-type": "text/html; charset=utf-8"
+  },
+  "bodyFile": "bodies/proceedings-listing.html"
+ },
+ {
+  "urlPattern": "^https://sparql\\.dblp\\.org/sparql\\?query=.*OFFSET\\+0$",
+  "status": 200,
+  "headers": {
+   "content-type": "application/sparql-results+json"
+  },
+  "bodyFile": "bodies/dblp-sparql.json"
+ },
+ {
+  "urlPattern": "^https://export\\.arxiv\\.org/api/query\\?search_query=ti%3A",
+  "status": 200,
+  "headers": {
+   "content-type": "application/atom+xml"
+  },
+  "bodyFile": "bodies/arxiv-title-search.xml"
+ },
+ {
+  "urlPattern": "^https://api\\.semanticscholar\\.org/graph/v1/paper/search/bulk\\?venue=International\\+Conference\\+on\\+Learning\\+Representations&year=2025&",
+  "status": 200,
+  "bodyFile": "bodies/s2-bulk.json"
+ },
+ {
+  "method": "POST",
+  "url": "https://api.semanticscholar.org/graph/v1/paper/batch?fields=tldr",
+  "status": 200,
+  "batch": {
+   "field": "ids",
+   "byId": {
+    "85063eab229389d9d98346c291e1435200669e9f": {
+     "paperId": "85063eab229389d9d98346c291e1435200669e9f",
+     "tldr": {
+      "model": "tldr@v2.0.0",
+      "text": "A new continual meta-learning (CML) framework to realize continual slow-and fast adaptation of latent dynamics (CoSFan) and develops novel strategies to automatically detect when a shift of data distribution occurs, with which to identify its underlying dynamics and its relation with previously-seen dynamics."
+     }
+    },
+    "d7c0143730c3b59766697182433188570c547b60": {
+     "paperId": "d7c0143730c3b59766697182433188570c547b60",
+     "tldr": {
+      "model": "tldr@v2.0.0",
+      "text": "A new framework for a principled theoretical and empirical analysis of transformers via Markov chains is introduced and the existence of global minima (bigram) and bad local minima (unigram) contingent upon the specific data characteristics and the transformer architecture is shown."
+     }
+    },
+    "eed59584c8f47432264711c90163a05f4708ba7f": {
+     "paperId": "eed59584c8f47432264711c90163a05f4708ba7f",
+     "tldr": {
+      "model": "tldr@v2.0.0",
+      "text": "The theoretical and empirical results reveal an intrinsic efficiency-robustness trade-off: the faster an algorithm converges, the more vulnerable it becomes to utility poisoning attacks."
+     }
+    },
+    "deb296598033286b843572a3b54dc9ac9f601c51": {
+     "paperId": "deb296598033286b843572a3b54dc9ac9f601c51",
+     "tldr": {
+      "model": "tldr@v2.0.0",
+      "text": "Proximal Mapping Loss (PML), a density regression method that divides the predicted density map into multiple point-neighbor cases through nearest neighbor, and then dynamically constructs a learning target for each sub-case via proximal mapping, leading to more robust and accurate training."
+     }
+    }
+   }
+  }
+ }
+]

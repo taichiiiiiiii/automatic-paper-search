@@ -43,6 +43,8 @@ const ITEM_RE = /<li class="[a-z_]+" data-track="([a-z_]+)">([\s\S]*?)<\/li>/g;
 const LINK_RE =
   /<a title="paper title" href="(\/paper_files\/paper\/(\d{4})\/hash\/([0-9a-f]{32})-Abstract-[A-Za-z_]+\.html)">([\s\S]*?)<\/a>/;
 const AUTHORS_RE = /<span class="paper-authors">([\s\S]*?)<\/span>/;
+/** Every list-item opening, closed or not (truncation check). */
+const ITEM_OPEN_RE = /<li class="[a-z_]+" data-track="[a-z_]+">/g;
 
 /** Parse a year listing. Entries without a title link are counted as malformed. */
 export function parseNeuripsListing(
@@ -65,6 +67,19 @@ export function parseProceedingsListing(
 ): { entries: NeuripsListingEntry[]; malformed: number } {
   const entries: NeuripsListingEntry[] = [];
   let malformed = 0;
+  // A body cut off mid-transfer still parses — into fewer papers, with
+  // nothing malformed — and would publish a partial catalog. Count an item
+  // that opens but never closes, and a list with no closing `</ul>` after
+  // its last item, as malformed so the caller writes nothing.
+  let lastItemEnd = -1;
+  let closed = 0;
+  for (const m of html.matchAll(ITEM_RE)) {
+    closed += 1;
+    lastItemEnd = (m.index ?? 0) + m[0].length;
+  }
+  const opened = [...html.matchAll(ITEM_OPEN_RE)].length;
+  if (opened > closed) malformed += opened - closed;
+  else if (closed > 0 && !html.slice(lastItemEnd).includes("</ul>")) malformed += 1;
   for (const m of html.matchAll(ITEM_RE)) {
     const body = m[2] ?? "";
     const link = LINK_RE.exec(body);

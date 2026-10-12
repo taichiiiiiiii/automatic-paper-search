@@ -1,14 +1,15 @@
 {
-  "_comment": "Lighthouse CI config. staticDistDir tells lhci to spin up a local server pointing at the static export (apps/web/out), so URLs below resolve against http://localhost:<random-port>/. Assertions are calibrated against the spring 2026 baseline measured locally — bump them up over time as fixes ship, don't loosen.",
-
+  "_comment": "Lighthouse CI GATE, desktop (mobile: .lighthouserc.mobile.json; workflow: .github/workflows/lighthouse.yml). staticDistDir makes lhci serve apps/web/out itself (gzip on, no _headers); URLs resolve against http://localhost:<random-port>/. Keep the staticDistDir literal and the four legacy URL literals (/, /iclr-2026/, /iclr-2026/lineage/, /themes/) exactly once each: apps/pipeline's dataMove rollback (release/dataMove/lighthouseEdit.ts) rewrites them. Tighten budgets as fixes ship; loosen one only with a measured reason in the PR.",
   "ci": {
     "collect": {
       "staticDistDir": "./apps/web/out",
       "url": [
         "http://localhost/",
+        "http://localhost/themes/",
         "http://localhost/iclr-2026/",
         "http://localhost/iclr-2026/lineage/",
-        "http://localhost/themes/"
+        "http://localhost/icml-2026/",
+        "http://localhost/icml-2026/paper-links/"
       ],
       "numberOfRuns": 3,
       "settings": {
@@ -35,24 +36,67 @@
         ]
       }
     },
-
     "assert": {
-      "assertions": {
-        "categories:performance": ["warn", { "minScore": 0.85 }],
-        "categories:accessibility": ["warn", { "minScore": 0.9 }],
-        "categories:best-practices": ["warn", { "minScore": 0.9 }],
-        "categories:seo": ["warn", { "minScore": 0.9 }],
-
-        "largest-contentful-paint": ["warn", { "maxNumericValue": 2500 }],
-        "cumulative-layout-shift": ["warn", { "maxNumericValue": 0.1 }],
-        "total-blocking-time": ["warn", { "maxNumericValue": 200 }],
-        "first-contentful-paint": ["warn", { "maxNumericValue": 1500 }],
-
-        "uses-text-compression": "off",
-        "render-blocking-resources": "off"
-      }
+      "_budget_comment": "Measured 2026-10-12 with lhci 0.15 on the built site (3 runs, min-max): / perf 1.00, LCP 0.57-0.64 s, TBT 0, CLS 0.024, JS 138 KB, fonts 148 KB; /themes/ perf 0.99, LCP 0.86-0.89 s, CLS 0.004, JS 181 KB, fonts 233 KB; /iclr-2026/ perf 0.91, LCP 1.94-1.97 s, CLS 0.010, fonts 298 KB; /icml-2026/ perf 1.00, LCP 0.48-0.65 s, CLS 0.010; /iclr-2026/lineage/ perf 1.00, SEO 0.63; /icml-2026/paper-links/ perf 1.00, 0 scripts, SEO 0.60. Budgets: perf = measured minus 0.1-0.15 (catalogs: 0.8); LCP <= 2.5 s (catalogs 3 s); TBT <= 300 ms; CLS <= 0.1 everywhere (was 0.14-0.33 before the 2026-10-12 fixes); a11y and best-practices >= 0.95 (measured 1.00); SEO >= 0.95, except /lineage/ and /paper-links/ which are noindex BY DESIGN (is-crawlable fails -> 0.6); JS +20% (landing 165 KB, others 220 KB); fonts <= 330 KB, landing <= 180 KB (was 284 KB before the unicode-range fix); paper-links must stay script-free. Lighthouse's default aggregation applies (the best of the 3 runs per URL), so one noisy run does not fail the gate; a real regression shows in every run.",
+      "assertMatrix": [
+        {
+          "matchingUrlPattern": ".*",
+          "assertions": {
+            "categories:accessibility": ["error", { "minScore": 0.95 }],
+            "categories:best-practices": ["error", { "minScore": 0.95 }],
+            "cumulative-layout-shift": ["error", { "maxNumericValue": 0.1 }],
+            "total-blocking-time": ["error", { "maxNumericValue": 300 }],
+            "resource-summary:font:size": ["error", { "maxNumericValue": 330000 }]
+          }
+        },
+        {
+          "matchingUrlPattern": "^http://[^/]+/$",
+          "assertions": {
+            "categories:performance": ["error", { "minScore": 0.9 }],
+            "categories:seo": ["error", { "minScore": 0.95 }],
+            "largest-contentful-paint": ["error", { "maxNumericValue": 2500 }],
+            "resource-summary:script:size": ["error", { "maxNumericValue": 165000 }],
+            "resource-summary:font:size": ["error", { "maxNumericValue": 180000 }]
+          }
+        },
+        {
+          "matchingUrlPattern": "/themes/$",
+          "assertions": {
+            "categories:performance": ["error", { "minScore": 0.9 }],
+            "categories:seo": ["error", { "minScore": 0.95 }],
+            "largest-contentful-paint": ["error", { "maxNumericValue": 2500 }],
+            "resource-summary:script:size": ["error", { "maxNumericValue": 220000 }]
+          }
+        },
+        {
+          "matchingUrlPattern": "^http://[^/]+/[a-z0-9-]+-[0-9]{4}/$",
+          "assertions": {
+            "categories:performance": ["error", { "minScore": 0.8 }],
+            "categories:seo": ["error", { "minScore": 0.95 }],
+            "largest-contentful-paint": ["error", { "maxNumericValue": 3000 }],
+            "resource-summary:script:size": ["error", { "maxNumericValue": 220000 }]
+          }
+        },
+        {
+          "matchingUrlPattern": "/lineage/$",
+          "assertions": {
+            "categories:performance": ["error", { "minScore": 0.85 }],
+            "categories:seo": ["error", { "minScore": 0.6 }],
+            "largest-contentful-paint": ["error", { "maxNumericValue": 2500 }],
+            "resource-summary:script:size": ["error", { "maxNumericValue": 200000 }]
+          }
+        },
+        {
+          "matchingUrlPattern": "/paper-links/$",
+          "assertions": {
+            "categories:performance": ["error", { "minScore": 0.85 }],
+            "categories:seo": ["error", { "minScore": 0.6 }],
+            "largest-contentful-paint": ["error", { "maxNumericValue": 2500 }],
+            "resource-summary:script:count": ["error", { "maxNumericValue": 0 }]
+          }
+        }
+      ]
     },
-
     "upload": {
       "target": "temporary-public-storage"
     }

@@ -1,5 +1,5 @@
 name: alert
-run-name: "alert: ${{ inputs.status }}"
+run-name: "alert: ${{ inputs.channel || 'watchdog' }} ${{ inputs.status }}"
 
 # R1-6 (design 50 P1-1): the notification end of the Cloudflare Worker
 # watchdog (apps/api/src/watchdog/scheduled.ts). The Worker's daily Cron
@@ -10,6 +10,11 @@ run-name: "alert: ${{ inputs.status }}"
 # comments on it, with GITHUB_TOKEN (issues: write) — GitHub e-mails the
 # owner (the body @mentions them so it is a "participating" notification).
 # No checkout, no secrets: the inputs only ever reach the shell via env.
+#
+# `channel` picks the issue: `watchdog` (default; the Worker never sends
+# it) or `prod-e2e` (prod-e2e.yml, the post-release browser smoke). Each
+# channel has its own label and its own single open issue, so a Worker
+# "resolved" never closes a still-failing browser smoke issue or vice versa.
 
 on:
   workflow_dispatch:
@@ -26,6 +31,14 @@ on:
         description: "Markdown summary from the Worker watchdog"
         required: true
         type: string
+      channel:
+        description: "watchdog = Worker cron (default); prod-e2e = post-release browser smoke"
+        required: false
+        default: watchdog
+        type: choice
+        options:
+          - watchdog
+          - prod-e2e
 
 permissions: {}
 
@@ -48,18 +61,33 @@ jobs:
           OWNER: ${{ github.repository_owner }}
           STATUS: ${{ inputs.status }}
           SUMMARY: ${{ inputs.summary }}
+          CHANNEL: ${{ inputs.channel || 'watchdog' }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           set -euo pipefail
-          label=watchdog
           case "$STATUS" in
             problem|resolved) ;;
             *) echo "::error::unknown status"; exit 1 ;;
           esac
+          case "$CHANNEL" in
+            watchdog)
+              label=watchdog
+              title="PaperPilot 本番の見張り: 問題あり"
+              source="PaperPilot の Cloudflare Worker の見張り（Cron Trigger、apps/api/src/watchdog）からの通知"
+              description="PaperPilot production watchdog (Worker cron)"
+              ;;
+            prod-e2e)
+              label=prod-e2e
+              title="PaperPilot 本番のブラウザ検査: 失敗"
+              source="リリース後のブラウザ検査（prod-e2e.yml、Playwright @prod）からの通知"
+              description="PaperPilot post-release browser smoke (prod-e2e.yml)"
+              ;;
+            *) echo "::error::unknown channel"; exit 1 ;;
+          esac
           body="$RUNNER_TEMP/watchdog-body.md"
           {
             printf '%s\n\n' "$SUMMARY"
-            printf -- '---\n@%s — PaperPilot の Cloudflare Worker の見張り（Cron Trigger、apps/api/src/watchdog）からの通知。実行: %s\n' "$OWNER" "$RUN_URL"
+            printf -- '---\n@%s — %s。実行: %s\n' "$OWNER" "$source" "$RUN_URL"
           } > "$body"
           num="$(gh issue list --label "$label" --state open --limit 1 --json number --jq '.[0].number // empty')"
           if [ "$STATUS" = resolved ]; then
@@ -67,14 +95,13 @@ jobs:
               gh issue comment "$num" --body-file "$body"
               gh issue close "$num" --reason completed
             else
-              echo "no open watchdog issue; nothing to resolve"
+              echo "no open $label issue; nothing to resolve"
             fi
             exit 0
           fi
           if [ -n "$num" ]; then
             gh issue comment "$num" --body-file "$body"
           else
-            gh label create "$label" --color B60205 \
-              --description "PaperPilot production watchdog (Worker cron)" --force
-            gh issue create --title "PaperPilot 本番の見張り: 問題あり" --label "$label" --body-file "$body"
+            gh label create "$label" --color B60205 --description "$description" --force
+            gh issue create --title "$title" --label "$label" --body-file "$body"
           fi

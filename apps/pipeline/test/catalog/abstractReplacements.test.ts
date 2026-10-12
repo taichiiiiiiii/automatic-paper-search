@@ -633,4 +633,39 @@ describe("resolver (offline, mocked HTTP)", () => {
     expect(calls).toEqual(Array(12).fill("arxiv"));
     expect(res.counts).toEqual({ arxiv: 0, s2_tldr: 0, none: 0 });
   });
+
+  it("an S2 bulk page that is not JSON leaves the S2 step for a re-run instead of crashing", async () => {
+    // System-test finding: a 200 with a truncated body threw an uncaught
+    // SyntaxError out of the run (exit 1, stack trace) after arXiv's work.
+    const tmp = mkdtempSync(join(tmpdir(), "abs-s2-malformed-"));
+    writeSummary(join(tmp, "cvpr-2025"), [cvfRow()]);
+    const logs: string[] = [];
+    const fetchFn = (async (url: string | URL | Request) =>
+      String(url).startsWith("https://export.arxiv.org")
+        ? new Response(
+            '<?xml version="1.0" encoding="UTF-8"?><feed xmlns="http://www.w3.org/2005/Atom" xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/"><opensearch:totalResults>0</opensearch:totalResults><opensearch:startIndex>0</opensearch:startIndex><opensearch:itemsPerPage>100</opensearch:itemsPerPage></feed>',
+            { status: 200 },
+          )
+        : new Response('{"data": [ {"broken": ', { status: 200 })) as typeof fetch;
+    const res = await resolveAbstractReplacements({
+      conference: "cvpr-2025",
+      inputsRoot: tmp,
+      s2Venue: "Computer Vision and Pattern Recognition",
+      year: 2025,
+      retryNone: false,
+      s2Match: false,
+      limit: null,
+      client: new PacedClient(fetchFn, async () => {}),
+      log: (m) => logs.push(m),
+      now: () => new Date("2026-10-11T00:00:00Z"),
+    });
+    expect(
+      logs.some((l) => l.includes("S2 bulk: unusable body; S2 step left for a re-run")),
+      logs.join("\n"),
+    ).toBe(true);
+    // arXiv's verdict is kept; the S2 step is not marked as done for the row.
+    expect(res.counts).toEqual({ arxiv: 0, s2_tldr: 0, none: 1 });
+    const cached = parseAbstractReplacements(JSON.parse(readFileSync(res.path, "utf-8")));
+    expect(cached.get(CVF_PAPER_ID)?.checked).toEqual(["arxiv_title"]);
+  });
 });

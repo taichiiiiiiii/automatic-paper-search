@@ -39,6 +39,11 @@ apps/web/out/
 # Playwright e2e output (apps/web/e2e)
 apps/web/test-results/
 apps/web/playwright-report/
+# Visual regression baselines: only the Linux ones (generated on the CI
+# runner by e2e.yml's update-snapshots dispatch) are committed; local
+# macOS/Windows baselines are for the developer's own checks.
+apps/web/e2e/__screenshots__/darwin/
+apps/web/e2e/__screenshots__/win32/
 apps/web/blob-report/
 *.tsbuildinfo
 .vitest/

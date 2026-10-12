@@ -10,6 +10,7 @@
  * order, as `docs/<conf>/paper-links.html` -- see
  * `test/catalog/paper-links-parity.test.ts`.
  */
+import { upgradeKnownHttps } from "../../../lib/https-upgrade";
 
 const PAPER_ID_RE = /^[0-9a-f]{40}$/;
 
@@ -105,6 +106,10 @@ export function safeHttpUrl(value: unknown): string | null {
   return candidate;
 }
 
+function httpsHref(href: string | null): string | null {
+  return href === null ? null : upgradeKnownHttps(href);
+}
+
 function paperTitle(paper: PaperLinksSourcePaper): string {
   return typeof paper.title === "string" && paper.title.length > 0 ? paper.title : "Untitled paper";
 }
@@ -159,7 +164,7 @@ export function buildPaperLinkRows(papers: readonly PaperLinksSourcePaper[]): Pa
   return keyed.map(({ paper, paperId }) => ({
     paperId,
     title: paperTitle(paper),
-    href: safeHttpUrl(paper.arxiv_url) ?? safeHttpUrl(paper.pdf_url),
+    href: httpsHref(safeHttpUrl(paper.arxiv_url) ?? safeHttpUrl(paper.pdf_url)),
   }));
 }
 

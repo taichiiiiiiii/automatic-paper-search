@@ -678,6 +678,13 @@ B 自身の 2 つの削除は `<mergeB>^1` の状態で戻ります。
 - PAT が失効すると通知も止まる（dispatch が 401）。そのため失効日を 14 日前・3 日前に知らせる。失効後は Hermes の見張り（並行期間中）か、Workers Logs の `alert dispatch failed: 401` でしか分からない。
 - 新しい回の issue（ラベル `conference-watch`）: 新しい pending-edition が出たときだけ書く。自動では公開しない。承認は issue に書いたコマンド（arXiv 経由の `conference-on-demand.yml`）か、公式 proceedings のアダプタ（design 52 §8.3）で一覧を作る。
 
+## 運用: リリース後のブラウザ検査（prod-e2e.yml）
+
+- `pages` / `pages-rollback` / `regen-themes` / `theme-feeds` / `theme-on-demand` / `conference-on-demand` / `collect-weekly` が develop で成功するたびに、`.github/workflows/prod-e2e.yml` が本番（`PUBLIC_ORIGIN`）に Playwright の `@prod`（読み取りだけ。Chromium のデスクトップ 1280px とモバイル 375px）を流す。毎週月曜 03:40 UTC は `@prod-crawl`（同じオリジンのリンクを深さ 2・最大 300 ページ、外部リンクは少数を HEAD）だけを流す。
+- 失敗すると `alert.yml` を `channel=prod-e2e` で dispatch し、ラベル `prod-e2e` の issue 1 つに書く（Worker の `watchdog` issue とは別）。次に通ったときに `resolved` で閉じる。自動のロールバックやリリースの停止はしない。レポートは artifact `prod-e2e-report`（14 日）。戻すかどうかは人が決め、戻すなら `pages-rollback.yml` を手で実行する。
+- 手元から: `E2E_BASE_URL=https://paperpilot.pages.dev pnpm --filter @paperpilot/web e2e:prod`（ビルド不要）。リモートで動かすときはテーマ依頼の Worker への GET 以外の要求を止めるので、本番に依頼が送られることはない。
+- workflow_run は既定のブランチ（develop）にある workflow ファイルでしか動かない。merge するまでは `gh workflow run prod-e2e.yml --ref <branch>` でも smoke は develop 以外では `if:` で止まる。
+
 ## 運用: 削除・訂正の依頼
 
 - 窓口は GitHub の非公開の報告（[Report a vulnerability](https://github.com/taichiiiiiiii/automatic-paper-search/security/advisories/new)、リポジトリ設定で有効化済み）。公開の Issue は誤りの報告用（design 51 D2＝A、2026-10-11）。

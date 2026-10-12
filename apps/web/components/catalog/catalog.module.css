@@ -121,3 +121,13 @@
   bottom: 1rem;
   z-index: 20;
 }
+
+/* Space for the paper list before hydration (catalog-app.tsx): the list
+   arrives from papers.json after the first paint; without this the
+   catalog's source footer is painted near the top and pushed down later
+   (layout shift). No-JS visitors never get the list, so no reserve. */
+@media (scripting: enabled) {
+  .listReserve {
+    min-height: 100svh;
+  }
+}

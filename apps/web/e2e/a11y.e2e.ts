@@ -1,7 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import type { Page } from "@playwright/test";
 import { CatalogPage, LandingPage, PaperLinksPage, ThemePage } from "./pages";
-import { expect, test } from "./support/fixtures";
+import { expect, PROD, test } from "./support/fixtures";
 import { publishedThemes, themeHasCodeLinks, themeHasFeed } from "./support/site";
 
 /**
@@ -41,6 +41,9 @@ async function blockingViolations(page: Page, label: string): Promise<string[]> 
   }
   return out;
 }
+
+/** Page families also audited in the production smoke (@prod). */
+const PROD_A11Y = new Set(["landing", "theme", "catalog-search"]);
 
 const PAGES: Record<string, (page: Page) => Promise<void>> = {
   landing: async (page) => {
@@ -108,10 +111,14 @@ test.describe("accessibility (axe)", () => {
       /^(http: 404 .*\/no-such-page-e2e\/$|console: Failed to load resource: .*404.*no-such-page-e2e)/,
   });
   for (const [label, open] of Object.entries(PAGES)) {
-    test(`${label}: no serious/critical violations`, async ({ page }) => {
-      await open(page);
-      const found = await blockingViolations(page, label);
-      expect(found, `serious/critical axe violations on ${label}`).toEqual([]);
-    });
+    test(
+      `${label}: no serious/critical violations`,
+      PROD_A11Y.has(label) ? PROD : {},
+      async ({ page }) => {
+        await open(page);
+        const found = await blockingViolations(page, label);
+        expect(found, `serious/critical axe violations on ${label}`).toEqual([]);
+      },
+    );
   }
 });

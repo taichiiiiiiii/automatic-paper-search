@@ -210,8 +210,19 @@ export function ThemesClient() {
     if (state.phase !== "ready") return;
     const theme =
       typeof state.artifact.meta.theme === "string" ? state.artifact.meta.theme : "Theme";
-    document.title = `${theme} — テーマ別の系譜 | PaperPilot`;
+    const want = `${theme} — テーマ別の系譜 | PaperPilot`;
+    const apply = () => {
+      if (document.title !== want) document.title = want;
+    };
+    apply();
+    // Next re-commits the page's static <title> (metadata) after hydration.
+    // When the lineage loads first -- warm cache, slow main thread -- that
+    // late commit overwrote the theme title with the generic one (seen in
+    // WebKit E2E), so keep re-applying it while this theme is shown.
+    const observer = new MutationObserver(apply);
+    observer.observe(document.head, { subtree: true, childList: true, characterData: true });
     return () => {
+      observer.disconnect();
       document.title = "テーマ別の系譜 | PaperPilot";
     };
   }, [state]);

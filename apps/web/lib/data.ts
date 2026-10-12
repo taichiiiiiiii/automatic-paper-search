@@ -23,11 +23,13 @@
  *     from client-fetched code like this file.
  *   - `papers.json` / `conferences.json` have no schema at all (same
  *     design doc section). `ConferenceSummarySchema` / `PaperSchema`
- *     below are light, permissive (`.passthrough()`) zod shapes covering
+ *     below are light, permissive (`looseObject`) zod shapes covering
  *     only the fields this app reads today; they are deliberately not a
  *     claim of the full/true shape.
  */
-import { BASE_PATH, z } from "@paperpilot/core/site";
+// zod/mini, not the classic `z` namespace: same checks, but tree-shakable
+// (the classic API was ~92 KB of first-load JS on every page).
+import { BASE_PATH, zm as z } from "@paperpilot/core/site";
 
 // R2 UX P3-13: zod v4 probes `new Function("")` to decide whether its
 // JIT fast path is available; under this site's CSP (no 'unsafe-eval')
@@ -82,15 +84,13 @@ function errorMessage(err: unknown): string {
 // conferences.json
 // ---------------------------------------------------------------------
 
-export const ConferenceSummarySchema = z
-  .object({
-    name: z.string(),
-    papers: z.number(),
-    types: z.record(z.string(), z.number()),
-    top_tags: z.array(z.tuple([z.string(), z.number()])),
-    generated: z.string().nullable(),
-  })
-  .passthrough();
+export const ConferenceSummarySchema = z.looseObject({
+  name: z.string(),
+  papers: z.number(),
+  types: z.record(z.string(), z.number()),
+  top_tags: z.array(z.tuple([z.string(), z.number()])),
+  generated: z.nullable(z.string()),
+});
 export type ConferenceSummary = z.infer<typeof ConferenceSummarySchema>;
 
 /** Fetches /conferences.json (the catalog index: one summary row per
@@ -124,23 +124,21 @@ export async function fetchConferences(): Promise<DataResult<ConferenceSummary[]
 // <conf>/papers.json
 // ---------------------------------------------------------------------
 
-export const PaperSchema = z
-  .object({
-    title: z.string(),
-    type: z.string(),
-    tags: z.array(z.string()),
-    venue: z.string(),
-    authors: z.array(z.string()),
-    abstract: z.string(),
-    arxiv_id: z.string(),
-    // build_pages.py's _maybe_int() returns int | None for any CSV cell
-    // that is missing or unparseable -- a null here is a real value
-    // this app must render (e.g. "citation count unknown"), not a
-    // reason to fail the whole conference's catalog.
-    citation_count: z.number().nullable(),
-    venue_tier: z.number().nullable(),
-  })
-  .passthrough();
+export const PaperSchema = z.looseObject({
+  title: z.string(),
+  type: z.string(),
+  tags: z.array(z.string()),
+  venue: z.string(),
+  authors: z.array(z.string()),
+  abstract: z.string(),
+  arxiv_id: z.string(),
+  // build_pages.py's _maybe_int() returns int | None for any CSV cell
+  // that is missing or unparseable -- a null here is a real value
+  // this app must render (e.g. "citation count unknown"), not a
+  // reason to fail the whole conference's catalog.
+  citation_count: z.nullable(z.number()),
+  venue_tier: z.nullable(z.number()),
+});
 export type Paper = z.infer<typeof PaperSchema>;
 
 const PapersSchema = z.array(PaperSchema);
@@ -174,12 +172,12 @@ export async function fetchConferencePapers(
 
 /** [title, conferenceSlug, indexInThatConference, authors, tags, year|null, type] */
 export const SearchIndexEntrySchema = z.tuple([
-  z.string().min(1),
-  z.string().regex(/^[a-z0-9][a-z0-9-]*$/),
-  z.number().int().min(0),
+  z.string().check(z.minLength(1)),
+  z.string().check(z.regex(/^[a-z0-9][a-z0-9-]*$/)),
+  z.int().check(z.minimum(0)),
   z.array(z.string()),
   z.array(z.string()),
-  z.union([z.number().int().min(1900).max(2200), z.null()]),
+  z.union([z.int().check(z.minimum(1900), z.maximum(2200)), z.null()]),
   z.enum(["Oral", "Poster"]),
 ]);
 export type SearchIndexEntry = z.infer<typeof SearchIndexEntrySchema>;
