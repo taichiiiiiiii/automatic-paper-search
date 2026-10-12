@@ -134,6 +134,17 @@ export interface EdgeMetrics {
   year_reversals: number;
 }
 
+/** True when the edge records verifiable citation evidence and no LLM classifier. */
+export function hasCitationEvidence(e: Record<string, unknown>): boolean {
+  const prov = e.provenance;
+  if (!isMapping(prov)) return false;
+  const ev = prov.evidence;
+  if (!isMapping(ev) || typeof ev.source !== "string" || ev.source === "") return false;
+  const cls = prov.classification;
+  if (isMapping(cls) && cls.provider !== null && cls.provider !== undefined) return false;
+  return true;
+}
+
 /** Compute the four edge-level metrics for a lineage (#209). */
 export function edgeMetrics(data: Record<string, unknown>): EdgeMetrics {
   const edges = Array.isArray(data.edges) ? data.edges : [];
@@ -171,7 +182,12 @@ export function edgeMetrics(data: Record<string, unknown>): EdgeMetrics {
     const len = codePointLength(stripped);
     if (len > 0 && len < MIN_RATIONALE_LEN) shortRationaleCount += 1;
     const dst = e.dst;
-    if (typeof dst === "string") incoming.set(dst, (incoming.get(dst) ?? 0) + 1);
+    // #209 guards against LLM-fabricated hub edges. An edge carrying quoted
+    // citation evidence (LLM-free builders, R2-24/R2-32) is a real citation,
+    // so heavily cited seeds are expected hubs, not sinks.
+    if (typeof dst === "string" && !hasCitationEvidence(e)) {
+      incoming.set(dst, (incoming.get(dst) ?? 0) + 1);
+    }
     const src = e.src;
     const srcNode = typeof src === "string" ? nodesById.get(src) : undefined;
     const dstNode = typeof dst === "string" ? nodesById.get(dst) : undefined;
