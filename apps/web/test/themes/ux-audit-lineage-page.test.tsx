@@ -183,6 +183,17 @@ describe("tree interaction", () => {
     expect(screen.queryByTestId("edge-evidence-panel")).toBeNull();
     expect(document.activeElement).toBe(line);
   });
+
+  it("returns focus to a mouse-clicked edge that the browser did not focus (Safari)", () => {
+    localStorage.setItem("pp.theme.onboarded", "1");
+    render(<LineageTree artifact={ARTIFACT} slug="t" themeName="Test" />);
+    const line = document.querySelector('line[role="button"]') as SVGLineElement;
+    (document.activeElement as HTMLElement | null)?.blur();
+    fireEvent.click(line);
+    const panel = screen.getByTestId("edge-evidence-panel");
+    fireEvent.click(within(panel).getByRole("button", { name: "根拠パネルを閉じる" }));
+    expect(document.activeElement).toBe(line);
+  });
 });
 
 describe("secondary sections", () => {

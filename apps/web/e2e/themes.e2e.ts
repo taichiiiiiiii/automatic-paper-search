@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import type { Download, Page } from "@playwright/test";
 import { ThemePage } from "./pages";
+import { prepareClipboard, readClipboard } from "./support/clipboard";
 import { expect, PROD, test } from "./support/fixtures";
 import { publishedThemes, themeHasCodeLinks, themeHasFeed } from "./support/site";
 
@@ -294,13 +295,18 @@ for (const t of themes) {
       expect(png.bytes.length).toBeGreaterThan(1000);
     });
 
-    test("URL copy puts the current URL on the clipboard", async ({ page, context, baseURL }) => {
-      await context.grantPermissions(["clipboard-read", "clipboard-write"], { origin: baseURL });
+    test("URL copy puts the current URL on the clipboard", async ({
+      page,
+      context,
+      baseURL,
+      browserName,
+    }) => {
+      await prepareClipboard(context, browserName, baseURL);
       await theme.goto(t.slug, "main=only");
       await theme.openExportMenu();
       await theme.copyUrlButton.click();
       await expect(theme.shareStatus).toHaveText(/コピーしました/);
-      const copied = await page.evaluate(() => navigator.clipboard.readText());
+      const copied = await readClipboard(page);
       expect(copied).toBe(page.url());
       expect(new URL(copied).searchParams.get("theme")).toBe(t.slug);
     });

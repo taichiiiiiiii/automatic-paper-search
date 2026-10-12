@@ -69,7 +69,7 @@ function NeighborList({
   side: "prior" | "derivative";
   nodeById: ReadonlyMap<string, LineageNode>;
   onSelectPaper: (id: string) => void;
-  onShowEvidence: (key: string) => void;
+  onShowEvidence: (key: string, opener?: Element) => void;
   mainPathNodeIds: ReadonlySet<string>;
 }) {
   const [showAll, setShowAll] = useState(false);
@@ -130,7 +130,7 @@ function NeighborList({
                 <div className="mt-0.5 flex flex-wrap gap-2">
                   <button
                     type="button"
-                    onClick={() => onShowEvidence(edgeKey(item.edge))}
+                    onClick={(ev) => onShowEvidence(edgeKey(item.edge), ev.currentTarget)}
                     data-neighbor-evidence
                     className="-my-1 py-1 text-accent-strong underline"
                   >
@@ -172,7 +172,7 @@ function PathView({
   path: LineagePath<LineageEdge>;
   nodeById: ReadonlyMap<string, LineageNode>;
   onSelectPaper: (id: string) => void;
-  onShowEvidence: (key: string) => void;
+  onShowEvidence: (key: string, opener?: Element) => void;
 }) {
   return (
     <div data-lineage-path-result>
@@ -195,7 +195,7 @@ function PathView({
                   </span>
                   <button
                     type="button"
-                    onClick={() => onShowEvidence(edgeKey(step.edge))}
+                    onClick={(ev) => onShowEvidence(edgeKey(step.edge), ev.currentTarget)}
                     className="text-accent-strong underline"
                   >
                     根拠
@@ -238,7 +238,7 @@ export function PaperNeighborsPanel({
   pathToId: string | null;
   onPathTo: (id: string | null) => void;
   path: LineagePath<LineageEdge> | null;
-  onShowEvidence: (key: string) => void;
+  onShowEvidence: (key: string, opener?: Element) => void;
   mainPathNodeIds: ReadonlySet<string>;
 }) {
   const options = useMemo(() => sortedPaperOptions(nodes), [nodes]);

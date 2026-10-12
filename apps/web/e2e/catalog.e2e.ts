@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { CatalogPage } from "./pages";
+import { prepareClipboard, readClipboard } from "./support/clipboard";
 import { expect, PROD, test } from "./support/fixtures";
 import { conferencePaperCount, conferences } from "./support/site";
 
@@ -220,8 +221,8 @@ for (const conf of CATALOGS) {
     test(
       "BibTeX / CSV export the filtered results; URL copy",
       PROD,
-      async ({ page, context, baseURL }) => {
-        await context.grantPermissions(["clipboard-read", "clipboard-write"], { origin: baseURL });
+      async ({ page, context, baseURL, browserName }) => {
+        await prepareClipboard(context, browserName, baseURL);
         await catalog.goto("q=diffusion");
         await expect(catalog.results.first()).toBeVisible({ timeout: 20_000 });
         const total = (await catalog.shownCount()).matched;
@@ -245,7 +246,7 @@ for (const conf of CATALOGS) {
 
         await catalog.copyUrlButton.click();
         await expect(catalog.exportGroup.getByRole("status")).toContainText(/コピー/);
-        const copied = await page.evaluate(() => navigator.clipboard.readText());
+        const copied = await readClipboard(page);
         expect(new URL(copied).searchParams.get("q")).toBe("diffusion");
       },
     );

@@ -287,7 +287,7 @@ export function EdgeRelationList({
   edges: readonly LineageEdge[];
   nodeById: ReadonlyMap<string, LineageNode>;
   selectedKey: string | null;
-  onSelect: (key: string) => void;
+  onSelect: (key: string, opener?: Element) => void;
   theme?: FeedbackTheme | null;
   mainPathKeys?: ReadonlySet<string>;
 }) {
@@ -343,7 +343,7 @@ export function EdgeRelationList({
                   <button
                     type="button"
                     aria-pressed={selectedKey === key}
-                    onClick={() => onSelect(key)}
+                    onClick={(ev) => onSelect(key, ev.currentTarget)}
                     className="-my-1 py-1 text-accent-strong underline"
                   >
                     根拠を表示
