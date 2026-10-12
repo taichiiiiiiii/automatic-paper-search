@@ -17,6 +17,10 @@ export interface ThemeManifestEntry {
   generated_at?: string | null;
   paper_count?: number;
   year_range?: [number, number];
+  /** Generator-set: `new-papers.json` / `code-links.json` exist for this
+   * theme. Missing = absent (the page must not request them). */
+  has_new_papers?: boolean;
+  has_code_links?: boolean;
   /** Set by `eligibleThemeManifest` from the quality row (design doc 41
    * D1); never read from the raw themes-manifest.json. */
   publication_tier?: PublishedTier;

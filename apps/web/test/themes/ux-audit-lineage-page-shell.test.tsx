@@ -89,11 +89,22 @@ const ARTIFACT: LineageArtifact = {
   meta: { generated_at: "2026-10-11T00:00:00Z", keywords: ["graph neural network", "GNN"] },
 };
 
-function mockData() {
+function mockData(
+  flags: { has_new_papers?: boolean; has_code_links?: boolean } | null = {
+    has_new_papers: true,
+    has_code_links: true,
+  },
+) {
   vi.spyOn(dataThemes, "fetchThemesManifest").mockResolvedValue({
     status: "ok",
     data: [
-      { slug: "gnn", theme: "Graph Neural Network", paper_count: 2, year_range: [2018, 2020] },
+      {
+        slug: "gnn",
+        theme: "Graph Neural Network",
+        paper_count: 2,
+        year_range: [2018, 2020],
+        ...flags,
+      },
       { slug: "moe", theme: "Mixture of Experts", paper_count: 2, year_range: [2018, 2020] },
     ],
   });
@@ -193,6 +204,26 @@ describe("ThemesClient page shell", () => {
     expect(code.querySelector("details")?.open).toBe(false);
     // The node card carries the コード badge.
     expect(document.querySelector('[data-node-id="a"] [data-badge="code"]')).toBeTruthy();
+  });
+
+  it("requests no side file and hides both sections when the manifest does not flag them", async () => {
+    mockData(null);
+    render(<ThemesClient />);
+    await screen.findByRole("heading", { level: 1 });
+    await flush();
+    expect(themesFeed.fetchThemeNewPapers).not.toHaveBeenCalled();
+    expect(themesFeed.fetchThemeCodeLinks).not.toHaveBeenCalled();
+    expect(screen.queryByRole("region", { name: /新着/ })).toBeNull();
+    expect(screen.queryByRole("region", { name: "コードとモデル" })).toBeNull();
+  });
+
+  it("requests only the side file the manifest flags", async () => {
+    mockData({ has_new_papers: true });
+    render(<ThemesClient />);
+    await screen.findByRole("heading", { level: 1 });
+    await flush();
+    expect(themesFeed.fetchThemeNewPapers).toHaveBeenCalledWith("gnn");
+    expect(themesFeed.fetchThemeCodeLinks).not.toHaveBeenCalled();
   });
 
   it("the request button toggles the about panel (aria-expanded)", async () => {

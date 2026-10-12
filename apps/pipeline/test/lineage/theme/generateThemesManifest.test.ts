@@ -373,3 +373,40 @@ describe("writeManifest", () => {
     expect(readFileSync(previous, "utf-8")).toBe(before);
   });
 });
+
+describe("side-file flags (has_new_papers / has_code_links)", () => {
+  it("omits the flags entirely when no side file exists", () => {
+    writeThemeJson(themesDir, "low-rank-adaptation");
+    const [entry] = generateManifest(themesDir);
+    expect(entry).toBeDefined();
+    expect("has_new_papers" in entry!).toBe(false);
+    expect("has_code_links" in entry!).toBe(false);
+  });
+
+  it("flags exactly the side files present next to lineage.json", () => {
+    writeThemeJson(themesDir, "both");
+    writeThemeJson(themesDir, "only-new");
+    writeThemeJson(themesDir, "only-code");
+    writeFileSync(join(themesDir, "both", "new-papers.json"), "{}");
+    writeFileSync(join(themesDir, "both", "code-links.json"), "{}");
+    writeFileSync(join(themesDir, "only-new", "new-papers.json"), "{}");
+    writeFileSync(join(themesDir, "only-code", "code-links.json"), "{}");
+    // feed.xml alone must not set a flag
+    writeFileSync(join(themesDir, "only-code", "feed.xml"), "<feed/>");
+    const bySlug = Object.fromEntries(generateManifest(themesDir).map((e) => [e.slug, e]));
+    expect(bySlug.both).toMatchObject({ has_new_papers: true, has_code_links: true });
+    expect(bySlug["only-new"]).toMatchObject({ has_new_papers: true });
+    expect("has_code_links" in bySlug["only-new"]!).toBe(false);
+    expect(bySlug["only-code"]).toMatchObject({ has_code_links: true });
+    expect("has_new_papers" in bySlug["only-code"]!).toBe(false);
+  });
+
+  it("ignores a side-file directory of the same name and never reads lineage.json bytes differently", () => {
+    writeThemeJson(themesDir, "dir-trap");
+    mkdirSync(join(themesDir, "dir-trap", "new-papers.json"));
+    const before = readFileSync(join(themesDir, "dir-trap", "lineage.json"), "utf-8");
+    const [entry] = generateManifest(themesDir);
+    expect("has_new_papers" in entry!).toBe(false);
+    expect(readFileSync(join(themesDir, "dir-trap", "lineage.json"), "utf-8")).toBe(before);
+  });
+});

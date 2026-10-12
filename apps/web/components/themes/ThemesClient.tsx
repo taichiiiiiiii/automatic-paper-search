@@ -25,6 +25,7 @@ import {
 import {
   fetchThemeCodeLinks,
   fetchThemeNewPapers,
+  sideFilesFromManifest,
   type ThemeCodeLinks,
   type ThemeNewPapers,
 } from "../../lib/themes-feed";
@@ -140,21 +141,26 @@ export function ThemesClient() {
     codeLinks: ThemeCodeLinks | null;
   } | null>(null);
   const readySlug = state.phase === "ready" ? state.currentSlug : null;
+  // Only the manifest decides which side files exist: requesting a file that
+  // is not there logs a console 404 even when the fetch error is caught.
+  const readyEntry =
+    state.phase === "ready" ? state.manifest.find((e) => e.slug === state.currentSlug) : undefined;
+  const { newPapers: wantNewPapers, codeLinks: wantCodeLinks } = sideFilesFromManifest(readyEntry);
 
   useEffect(() => {
     if (!readySlug) return;
     let cancelled = false;
     (async () => {
       const [newPapers, codeLinks] = await Promise.all([
-        fetchThemeNewPapers(readySlug),
-        fetchThemeCodeLinks(readySlug),
+        wantNewPapers ? fetchThemeNewPapers(readySlug) : null,
+        wantCodeLinks ? fetchThemeCodeLinks(readySlug) : null,
       ]);
       if (!cancelled) setExtras({ slug: readySlug, newPapers, codeLinks });
     })();
     return () => {
       cancelled = true;
     };
-  }, [readySlug]);
+  }, [readySlug, wantNewPapers, wantCodeLinks]);
 
   useEffect(() => {
     let cancelled = false;
