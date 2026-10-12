@@ -41,6 +41,15 @@ describe("e2e.yml (cross-browser)", () => {
     expect([...seen].sort()).toEqual([...configProjects].sort());
   });
 
+  it("runs the request-flow suite once, in the chromium job only", () => {
+    const steps = e2e.steps as YamlDoc[];
+    const rf = steps.filter((s) => String(s.run ?? "").includes("e2e:request-flow"));
+    expect(rf).toHaveLength(1);
+    // The suite resolves the Worker host via Chromium's --host-resolver-rules;
+    // the webkit/firefox jobs never install Chromium.
+    expect(rf[0]!.if).toBe("${{ !cancelled() && matrix.browser == 'chromium' }}");
+  });
+
   it("the suite jobs skip on an update-snapshots dispatch, the baseline job runs only then", () => {
     expect(doc.on.workflow_dispatch.inputs["update-snapshots"].type).toBe("boolean");
     expect(doc.on.workflow_dispatch.inputs["update-snapshots"].default).toBe(false);

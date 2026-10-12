@@ -12,6 +12,8 @@ name: e2e
 #               incl. the visual regression tests (e2e/visual.e2e.ts)
 #   webkit   -> desktop-webkit (Safari 1280x800) + mobile-webkit (iPhone 13)
 #   firefox  -> desktop-firefox (1280x800)
+# The chromium job also runs the request-flow integration suite
+# (apps/web/e2e-integration: built form -> local Worker -> mock GitHub).
 #
 # Visual baselines are per platform and only the Linux ones are committed
 # (apps/web/e2e/__screenshots__/linux/). To (re)generate them, dispatch this
@@ -124,9 +126,11 @@ jobs:
       # Theme request flow end to end: the built form -> the real Worker
       # app under `wrangler dev --local` (test-only entry, local KV/DO, no
       # Cloudflare account, no deploy) -> a mock GitHub that records every
-      # workflow_dispatch (apps/web/e2e-integration, README).
+      # workflow_dispatch (apps/web/e2e-integration, README). Chromium job
+      # only: the suite pins the Worker host via Chromium's
+      # --host-resolver-rules, and it tests the Worker, not the engine.
       - name: Run request-flow integration suite
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && matrix.browser == 'chromium' }}
         env:
           CI: "true"
         run: pnpm --filter @paperpilot/web e2e:request-flow
