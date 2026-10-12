@@ -577,6 +577,38 @@ export class S2CitationSource {
     }
   }
 
+  /**
+   * R2-32: the most-cited papers S2 lists for one conference edition
+   * (`/paper/search/bulk?venue=…&year=…`, citation count descending, one
+   * page of up to 1000) — how a conference lineage ranks the catalog papers
+   * of the edition. `null` = S2 could not be reached ({@link lastListFailed}
+   * set); `[]` = S2 lists nothing for that venue/year.
+   */
+  async searchVenue(
+    venue: string,
+    year: number,
+    opts: { limit: number },
+  ): Promise<S2EdgePaper[] | null> {
+    this.lastListFailed = false;
+    const url =
+      `${S2_GRAPH}/paper/search/bulk?venue=${encodeURIComponent(venue)}&year=${year}` +
+      `&sort=citationCount:desc&fields=${S2_SEARCH_FIELDS}`;
+    try {
+      const body = await this.getJson(url);
+      const data = body === null ? [] : body.data;
+      if (!Array.isArray(data)) return [];
+      this.stats.rankedSearches += 1;
+      return data
+        .filter((p): p is S2EdgePaper => p !== null && typeof p === "object")
+        .slice(0, Math.max(0, opts.limit));
+    } catch (exc) {
+      if (!(exc instanceof TransientS2Error)) throw exc;
+      this.lastListFailed = true;
+      this.deps.logger?.warn(`s2 citations: venue search: ${exc.message}`);
+      return null;
+    }
+  }
+
   /** The reference list of `citing` from this run's memo or S2, keeping
    * the cache entry in step. `entry` is the fresh cache entry (if any). */
   private async refsFor(
