@@ -2,6 +2,7 @@ import { readFile, stat } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
+import { upgradeKnownHttps } from "../../lib/https-upgrade";
 
 /**
  * Parity check for the `/[conf]/paper-links/` port (design doc §8 P2,
@@ -102,6 +103,13 @@ function extractPaperRows(html: string): PaperRow[] {
   return rows;
 }
 
+/** The one intended divergence from the frozen legacy pages: http links to
+ * scholarly hosts are now served as https (lib/https-upgrade.ts; the arXiv
+ * API returns http://arxiv.org ids, e.g. aaai-2026 / eccv-2024). */
+function legacyRowNormalized(row: PaperRow): PaperRow {
+  return row.href === null ? row : { ...row, href: upgradeKnownHttps(row.href) };
+}
+
 function rowKey(row: PaperRow): string {
   return JSON.stringify([row.title, row.href]);
 }
@@ -131,7 +139,7 @@ describe.each(CONFERENCES)("paper-links parity: %s", (conf) => {
 
     const legacyHtml = await readFile(legacyPath, "utf8");
     const builtHtml = await readFile(builtPath, "utf8");
-    const legacyRows = extractPaperRows(legacyHtml);
+    const legacyRows = extractPaperRows(legacyHtml).map(legacyRowNormalized);
     const builtRows = extractPaperRows(builtHtml);
 
     // Pins the row count against the source data, not just "both sides'

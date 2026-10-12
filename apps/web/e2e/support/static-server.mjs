@@ -130,7 +130,9 @@ const server = createServer((req, res) => {
   for (const rule of headerRules) {
     if (rule.re.test(pathname)) for (const [k, v] of rule.headers) headers[k] = v;
   }
-  headers["Cache-Control"] = "no-store";
+  // Pages' own default is a revalidating Cache-Control; locally never
+  // cache unless a `_headers` rule says otherwise (immutable assets).
+  headers["Cache-Control"] ??= "no-store";
 
   for (const rule of redirectRules) {
     const m = rule.re.exec(pathname);

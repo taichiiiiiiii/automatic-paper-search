@@ -10,6 +10,7 @@ import {
   hasNoindexMeta,
   isLineageGatedRoute,
   isPublicIndexPage,
+  renderRobotsTxt,
   renderSitemap,
   sitemapUrls,
   sitePathFromIndexPage,
@@ -70,6 +71,19 @@ function walkIndexPages(dir: string, base: string): string[] {
   }
   return found;
 }
+
+describe("renderRobotsTxt", () => {
+  it("allows all crawlers and points at the canonical sitemap", () => {
+    expect(renderRobotsTxt()).toBe(
+      `User-agent: *\nAllow: /\n\nSitemap: ${PUBLIC_ORIGIN}/sitemap.xml\n`,
+    );
+  });
+
+  it("is written next to the built sitemap", () => {
+    if (!existsSync(BUILT_SITEMAP)) return;
+    expect(readFileSync(join(OUT_DIR, "robots.txt"), "utf8")).toBe(renderRobotsTxt());
+  });
+});
 
 describe("isPublicIndexPage", () => {
   it("accepts a built directory index at any depth", () => {
