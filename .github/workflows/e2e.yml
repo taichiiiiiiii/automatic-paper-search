@@ -16,6 +16,7 @@ on:
     branches: [develop]
     paths:
       - "apps/web/**"
+      - "apps/api/**"
       - "packages/core/**"
       - "data/published/**"
       - "pnpm-lock.yaml"
@@ -24,6 +25,7 @@ on:
     branches: [develop]
     paths:
       - "apps/web/**"
+      - "apps/api/**"
       - "packages/core/**"
       - "data/published/**"
       - "pnpm-lock.yaml"
@@ -80,6 +82,16 @@ jobs:
         env:
           CI: "true"
         run: pnpm --filter @paperpilot/web e2e
+
+      # Theme request flow end to end: the built form -> the real Worker
+      # app under `wrangler dev --local` (test-only entry, local KV/DO, no
+      # Cloudflare account, no deploy) -> a mock GitHub that records every
+      # workflow_dispatch (apps/web/e2e-integration, README).
+      - name: Run request-flow integration suite
+        if: ${{ !cancelled() }}
+        env:
+          CI: "true"
+        run: pnpm --filter @paperpilot/web e2e:request-flow
 
       - name: Upload Playwright report
         if: failure()

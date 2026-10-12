@@ -504,16 +504,19 @@ export function LineageTree({
     kbdOpenerRef.current = null;
     if (opener?.isConnected) opener.focus({ preventScroll: true });
   }, [kbdHelpOpen]);
-  const [guideOpen, setGuideOpen] = useState(false);
-  useEffect(() => {
-    let dismissed = false;
+  // Read synchronously on the first render (this tree only renders on the
+  // client, after the artifact fetch -- never during hydration), so a
+  // first visit paints the guide open right away. Opening it in an effect
+  // pushed the whole tree ~180px down after its first paint (CLS 0.04-0.1
+  // on every first visit; Lighthouse 2026-10-12).
+  const [guideOpen, setGuideOpen] = useState(() => {
+    if (typeof window === "undefined") return false;
     try {
-      dismissed = localStorage.getItem(ONBOARDING_KEY) === "1";
+      return localStorage.getItem(ONBOARDING_KEY) !== "1";
     } catch {
-      dismissed = false;
+      return true;
     }
-    if (!dismissed) setGuideOpen(true);
-  }, []);
+  });
   const onGuideToggle = useCallback((open: boolean) => {
     setGuideOpen(open);
     if (open) return;

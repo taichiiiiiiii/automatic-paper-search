@@ -14,10 +14,10 @@
  *     the SERVER's slug, never the raw free-text input.
  *   - SCR-34: 403/413/415/502/503 map to localised Japanese text that
  *     never leaks the Worker's raw English message; §4.2-7's "paused"
- *     gets the design doc's fixed copy. "invalid"/"rate_limited" are
- *     shown verbatim (React escapes them -- no innerHTML sink exists
- *     in this port, unlike the original which had to call escapeHtml
- *     itself).
+ *     gets the design doc's fixed copy. "invalid"/"rate_limited" map
+ *     the Worker's English text to fixed Japanese copy (an
+ *     already-Japanese message is kept; React escapes it -- no
+ *     innerHTML sink exists in this port).
  *   - SCR-35: a `queued` response without a usable slug/request_id
  *     never starts (fake) progress.
  *   - SCR-37/38: status polling only ever happens with a validated
@@ -338,7 +338,7 @@ export function ThemeRequestForm({ onReady }: { onReady: (slug: string) => void 
           });
           return;
         case "rate_limited":
-          setStatus({ kind: "err", node: outcome.message });
+          setStatus({ kind: "err", node: `⏳ ${outcome.message}` });
           return;
         case "invalid":
           setStatus({ kind: "err", node: `❌ ${outcome.message}` });

@@ -192,7 +192,10 @@ describe("CSP contract over built out/", () => {
   // edit cannot drift back to that invalid shape.
   it("out/_headers is a valid Cloudflare Pages rule, not a bare directive line", async () => {
     const content = await readFile(join(OUT_DIR, "_headers"), "utf8");
-    expect(content).toBe("/*\n  Content-Security-Policy: frame-ancestors 'self'\n");
+    expect(content).toBe(
+      "/*\n  Content-Security-Policy: frame-ancestors 'self'\n" +
+        "/_next/static/*\n  Cache-Control: public, max-age=31536000, immutable\n",
+    );
   });
 
   // LOW finding: HTML5 requires <meta charset> within the first 1024

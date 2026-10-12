@@ -5,6 +5,7 @@
  * read; see its own doc comment for why).
  */
 
+import { zm } from "@paperpilot/core/site";
 import { RESERVED_CATALOG_SLUGS } from "./catalog-constants";
 import { type ConferenceSummary, ConferenceSummarySchema } from "./data";
 
@@ -28,6 +29,6 @@ export function isCatalogSlug(slug: string): boolean {
  * partial) catalog routes.
  */
 export function selectCatalogConferences(raw: unknown): ConferenceSummary[] {
-  const parsed = ConferenceSummarySchema.array().parse(raw);
+  const parsed = zm.array(ConferenceSummarySchema).parse(raw);
   return parsed.filter((row) => isCatalogSlug(row.name));
 }

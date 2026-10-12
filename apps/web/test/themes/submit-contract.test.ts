@@ -13,6 +13,9 @@ import {
   interpretThemesPostResponse,
   issueUrlFor,
   localizedFailureMessage,
+  RATE_LIMITED_GLOBAL_MESSAGE_JA,
+  RATE_LIMITED_IP_MESSAGE_JA,
+  THEME_INPUT_INVALID_MESSAGE,
 } from "../../lib/themes-request";
 
 describe('interpretThemesPostResponse(): "exists" branch', () => {
@@ -106,23 +109,43 @@ describe("interpretThemesPostResponse(): Worker-failure status -> Japanese messa
     expect(outcome).toEqual({ kind: "error", message: jaMessage, showIssueLink: true });
   });
 
-  it('"rate_limited" is shown verbatim, unchanged by the status mapping, with no Issue link', () => {
-    const msg = "more than 5 new themes/hour from this IP";
-    const outcome = interpretThemesPostResponse(429, {
-      ok: false,
-      status: "rate_limited",
-      message: msg,
+  it('"rate_limited" maps the Worker\'s English messages to Japanese copy, with no Issue link', () => {
+    expect(
+      interpretThemesPostResponse(429, {
+        ok: false,
+        status: "rate_limited",
+        message: "more than 5 new themes/hour from this IP",
+      }),
+    ).toEqual({ kind: "rate_limited", message: RATE_LIMITED_IP_MESSAGE_JA });
+    expect(
+      interpretThemesPostResponse(429, {
+        ok: false,
+        status: "rate_limited",
+        message: "daily generation cap (100) reached; please try again tomorrow",
+      }),
+    ).toEqual({ kind: "rate_limited", message: RATE_LIMITED_GLOBAL_MESSAGE_JA });
+    expect(interpretThemesPostResponse(429, { ok: false, status: "rate_limited" })).toEqual({
+      kind: "rate_limited",
+      message: RATE_LIMITED_IP_MESSAGE_JA,
     });
-    expect(outcome).toEqual({ kind: "rate_limited", message: msg });
   });
 
-  it('"invalid" is shown verbatim (React escapes it on render; no innerHTML sink exists in this port)', () => {
+  it('"rate_limited" / "invalid" keep an already-Japanese Worker message', () => {
+    expect(
+      interpretThemesPostResponse(429, { ok: false, status: "rate_limited", message: "混雑中" }),
+    ).toEqual({ kind: "rate_limited", message: "混雑中" });
+    expect(
+      interpretThemesPostResponse(400, { ok: false, status: "invalid", message: "形式エラー" }),
+    ).toEqual({ kind: "invalid", message: "形式エラー" });
+  });
+
+  it('"invalid" never shows the Worker\'s English (or attacker-shaped) text', () => {
     const outcome = interpretThemesPostResponse(400, {
       ok: false,
       status: "invalid",
       message: "<img onerror=x>",
     });
-    expect(outcome).toEqual({ kind: "invalid", message: "<img onerror=x>" });
+    expect(outcome).toEqual({ kind: "invalid", message: THEME_INPUT_INVALID_MESSAGE });
   });
 
   it("§4.2-7 \"paused\" maps to the design doc's fixed Japanese copy, never the Worker's English message", () => {

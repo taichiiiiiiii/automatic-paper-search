@@ -8,7 +8,7 @@
 // weekly conference-watch dispatch in src/watchdog/scheduled.ts.
 
 import { createApp } from "./app.js";
-import { productionQuotaBackend } from "./durable/quota-object.js";
+import { productionInflightBackend, productionQuotaBackend } from "./durable/quota-object.js";
 import type { Env } from "./types.js";
 import { runScheduled, type WatchdogKv } from "./watchdog/scheduled.js";
 
@@ -26,6 +26,12 @@ const app = createApp({
       throw new TypeError("QUOTA Durable Object binding is required in production");
     }
     return productionQuotaBackend(env.QUOTA);
+  },
+  inflight: (env: Env) => {
+    if (!env.QUOTA) {
+      throw new TypeError("QUOTA Durable Object binding is required in production");
+    }
+    return productionInflightBackend(env.QUOTA);
   },
 });
 

@@ -848,9 +848,19 @@ export function CatalogApp({
         </div>
       </div>
 
+      {loadStatus === "loading" && !hydrated && (
+        // Prerendered HTML: reserve the list's space only when scripting
+        // is on (CSS `scripting` media query), so the no-JS page has no gap.
+        <div aria-hidden="true" className={styles.listReserve} />
+      )}
+
       {loadStatus === "loading" && hydrated && (
+        // min-h-svh: the list replaces this placeholder, so it holds the
+        // space the list will take; otherwise the catalog's own source
+        // footer below it was painted near the top and then pushed down
+        // (most of the page's CLS, Lighthouse 2026-10-12).
         <ul className="list-none p-0">
-          <li className="px-4 py-10 text-center text-sm text-ink-subtle sm:px-6">
+          <li className="min-h-svh px-4 py-10 text-center text-sm text-ink-subtle sm:px-6">
             {expectedTotal
               ? `${formatCount(expectedTotal)} 本の論文一覧を読み込み中…`
               : "論文一覧を読み込み中…"}

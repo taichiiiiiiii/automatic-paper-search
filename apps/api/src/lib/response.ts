@@ -26,6 +26,8 @@ export interface JsonBody {
   slug?: string;
   request_id?: string;
   message?: string;
+  // true when a run for this slug was already in flight (src/lib/inflight.ts)
+  deduplicated?: boolean;
 }
 
 export interface JsonInit {

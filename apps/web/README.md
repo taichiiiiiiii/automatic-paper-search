@@ -78,6 +78,52 @@ pnpm --filter @paperpilot/web exec playwright show-report             # HTML rep
   A new known bug may be parked as `test.fixme` with a `BUG:` comment
   (expected vs actual) only until it is fixed.
 - **CI**: `.github/workflows/e2e.yml` (push/PR to develop touching
-  `apps/web`, `packages/core` or `data/published`) builds the site, caches
-  the Chromium download, runs the suite with one retry, and uploads the
-  HTML report and traces on failure. Workers default to 1 (`E2E_WORKERS`).
+  `apps/web`, `apps/api`, `packages/core` or `data/published`) builds the
+  site, caches the Chromium download, runs the suite with one retry, then
+  the request-flow suite below, and uploads the HTML report and traces on
+  failure. Workers default to 1 (`E2E_WORKERS`).
+
+## Request-flow integration test (form → Worker → GitHub)
+
+`e2e-integration/` drives the theme request form of the **built** site
+against the real Worker app and a mock GitHub:
+
+```sh
+pnpm --filter @paperpilot/web build
+pnpm --filter @paperpilot/web e2e:request-flow   # ~1 min incl. wrangler start
+```
+
+- `playwright.request-flow.config.ts` starts four servers: the site
+  (`:4180`, the allowed origin), the same build on a foreign origin
+  (`:4181`), the mock GitHub (`e2e-integration/support/mock-github.mjs`,
+  `:4290`) and `wrangler dev --local` (`:8787`, HTTPS) with the test-only
+  entry `apps/api/test/integration/worker-entry.ts` + its
+  `wrangler.integration.jsonc` (real Hono app, real SQLite Durable Object
+  quota and in-flight dedup, local KV; outbound `api.github.com` /
+  `raw.githubusercontent.com` go to the mock, anything else throws). Local
+  only: no Cloudflare login, nothing is deployed.
+- The page keeps its production `API_BASE` (so the per-page CSP
+  `connect-src` and the Worker's CORS answers are the real ones); Chromium
+  resolves that host to the local wrangler via `--host-resolver-rules`.
+- Covered: a valid request (progress panel; exactly one
+  `theme-on-demand.yml` dispatch with `{theme, request_id}`, ref and PAT
+  header), invalid inputs (never sent), server-side gates when the page is
+  bypassed (400/413/415), an existing theme (`exists`, no dispatch), double
+  submit, re-request of an in-flight theme (follows the first run),
+  per-IP rate limit (Japanese message), GitHub 5xx / 401 (generic error +
+  Issue link; the retry dispatches), unreadable manifest (503), the accept
+  switch, and a foreign origin (form closed, CORS refusal, no dispatch).
+- The dispatch inputs themselves are pinned against the workflows'
+  `workflow_dispatch.inputs` by `apps/api/test/workflow-dispatch-contract.test.ts`
+  (Worker) and `apps/pipeline/test/workflows/gh-dispatch-commands-contract.test.ts`
+  (`gh workflow run … -f` commands the repo prints).
+
+## Lighthouse gate
+
+`.github/workflows/lighthouse.yml` runs Lighthouse CI on PRs and pushes to
+develop with `.lighthouserc.json` (desktop) and `.lighthouserc.mobile.json`
+(mobile): landing, a theme, the `icml-2026` catalog and its paper-links
+page, 3 runs each, median. Assertions are errors; the measured baseline
+behind every budget is in each config's `_comment`. Run locally with
+`npx @lhci/cli@0.15 autorun --config=.lighthouserc.json` after a build
+(set `CHROME_PATH` to a Chromium, e.g. Playwright's).

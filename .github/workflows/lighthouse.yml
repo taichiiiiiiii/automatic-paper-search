@@ -1,25 +1,49 @@
 name: lighthouse
 
 # Lighthouse CI against the built apps/web/out (docs/migration/p5-plan.md
-# §4.1), warn-only measurement — not a merge gate.
+# §4.1). A GATE since 2026-10-12: two lhci runs -- desktop
+# (.lighthouserc.json) and mobile (.lighthouserc.mobile.json), 3 runs per
+# URL, median run -- over the landing page, a theme page, a conference
+# catalog and its no-JS paper-links page. Assertions `error` on clear
+# regressions (CLS > 0.1, accessibility < 0.95, best-practices / SEO drops,
+# performance below the measured baseline minus a margin, JS / font bytes
+# over budget); the measured numbers behind each budget are in the
+# configs' `_comment`s. Runs on pull requests AND on pushes to develop, so
+# a regression merged without a PR run still turns the develop commit red.
 
 on:
+  push:
+    branches: [develop]
+    paths:
+      - "apps/web/**"
+      - "packages/core/**"
+      - "pnpm-lock.yaml"
+      - ".lighthouserc.json"
+      - ".lighthouserc.mobile.json"
+      - ".github/workflows/lighthouse.yml"
   pull_request:
     paths:
       - "apps/web/**"
       - "packages/core/**"
+      - "pnpm-lock.yaml"
       - ".lighthouserc.json"
+      - ".lighthouserc.mobile.json"
       - ".github/workflows/lighthouse.yml"
   workflow_dispatch:
   schedule:
+    # Weekly, so growth of the published data (catalog size) is measured too.
     - cron: "0 2 * * 1"
+
+concurrency:
+  group: lighthouse-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions: {}
 
 jobs:
   lighthouse:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     permissions:
       contents: read
       pull-requests: write
@@ -35,11 +59,24 @@ jobs:
       - name: Build web
         run: pnpm --filter @paperpilot/web build
 
-      - name: Run Lighthouse CI
+      - name: Lighthouse CI (desktop)
         uses: treosh/lighthouse-ci-action@3e7e23fb74242897f95c0ba9cabad3d0227b9b18 # v12
         with:
           configPath: "./.lighthouserc.json"
           uploadArtifacts: true
+          artifactName: lighthouse-results-desktop
+          temporaryPublicStorage: true
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+
+      - name: Lighthouse CI (mobile)
+        # Also runs when the desktop gate failed, so one red run reports both.
+        if: ${{ !cancelled() }}
+        uses: treosh/lighthouse-ci-action@3e7e23fb74242897f95c0ba9cabad3d0227b9b18 # v12
+        with:
+          configPath: "./.lighthouserc.mobile.json"
+          uploadArtifacts: true
+          artifactName: lighthouse-results-mobile
           temporaryPublicStorage: true
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}

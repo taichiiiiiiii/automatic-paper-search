@@ -166,7 +166,7 @@ describe("CatalogHero", () => {
 
   it("'詳細' toggles the lede with aria-expanded", () => {
     render(<CatalogHero copy={COPY} generated="" total={1} oralCount={0} tagCount={0} />);
-    const toggle = screen.getByRole("button", { name: "この学会の説明を開閉" });
+    const toggle = screen.getByRole("button", { name: "詳細: この学会の説明を開閉" });
     const lede = screen.getByText("the lede").parentElement as HTMLElement;
     expect(lede.hidden).toBe(true);
     fireEvent.click(toggle);
