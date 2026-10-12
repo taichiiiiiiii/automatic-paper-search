@@ -231,6 +231,19 @@ describe("keyboard help dialog", () => {
     expect(screen.queryByRole("dialog", { name: /キーボードショートカット/ })).toBeNull();
     expect(document.activeElement).toBe(opener);
   });
+
+  it("returns focus to the toolbar button after a mouse click that did not focus it (Safari)", () => {
+    // Safari / macOS Firefox do not focus a button on click: activeElement
+    // stays <body> while the dialog opens.
+    render(<LineageTree artifact={ARTIFACT} slug="gnn" themeName="GNN" />);
+    const opener = screen.getByRole("button", { name: "キーボード操作の一覧" });
+    (document.activeElement as HTMLElement | null)?.blur();
+    fireEvent.click(opener);
+    const dialog = screen.getByRole("dialog", { name: /キーボードショートカット/ });
+    fireEvent.keyDown(dialog, { key: "Escape" });
+    expect(screen.queryByRole("dialog", { name: /キーボードショートカット/ })).toBeNull();
+    expect(document.activeElement).toBe(opener);
+  });
 });
 
 describe("year rail", () => {

@@ -457,10 +457,13 @@ export function LineageTree({
   const focusPanelOnOpenRef = useRef(false);
   // Focus returns to whatever opened the panel (an edge, a 根拠 button)
   // when it closes, so keyboard / screen-reader users keep their place.
+  // Click handlers pass the clicked element explicitly: Safari and Firefox
+  // on macOS do not focus a button on mouse click, so
+  // `document.activeElement` is <body> there and focus would be lost.
   const evidenceOpenerRef = useRef<HTMLElement | null>(null);
-  const selectEdge = useCallback((key: string) => {
+  const selectEdge = useCallback((key: string, opener?: Element | null) => {
     focusPanelOnOpenRef.current = true;
-    const active = typeof document !== "undefined" ? document.activeElement : null;
+    const active = opener ?? (typeof document !== "undefined" ? document.activeElement : null);
     if (active instanceof HTMLElement || active instanceof SVGElement) {
       evidenceOpenerRef.current = active as HTMLElement;
     }
@@ -493,10 +496,19 @@ export function LineageTree({
   const [kbdHelpOpen, setKbdHelpOpen] = useState(false);
   const kbdCloseRef = useRef<HTMLButtonElement>(null);
   const kbdOpenerRef = useRef<HTMLElement | null>(null);
+  // `opener` is the clicked ⌨ button (see selectEdge: a mouse click does
+  // not focus a button in Safari / macOS Firefox); the "?" key path falls
+  // back to the focused element.
+  const openKbdHelp = useCallback((opener?: Element | null) => {
+    const active = opener ?? document.activeElement;
+    kbdOpenerRef.current =
+      active instanceof HTMLElement || active instanceof SVGElement
+        ? (active as HTMLElement)
+        : null;
+    setKbdHelpOpen(true);
+  }, []);
   useEffect(() => {
     if (kbdHelpOpen) {
-      const active = document.activeElement;
-      kbdOpenerRef.current = active instanceof HTMLElement ? active : null;
       kbdCloseRef.current?.focus();
       return;
     }
@@ -562,13 +574,13 @@ export function LineageTree({
         return;
       }
       if (e.key === "?") {
-        setKbdHelpOpen(true);
+        openKbdHelp();
         e.preventDefault();
       }
     }
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, [kbdHelpOpen, selectedEdgeKey, closeEvidence]);
+  }, [kbdHelpOpen, selectedEdgeKey, closeEvidence, openKbdHelp]);
 
   // ---- Layout + per-mode visual hooks -----------------------------------
   // Both take nodesForLayout (orphans already dropped when hidden) --
@@ -1072,7 +1084,7 @@ export function LineageTree({
           </span>
           <button
             type="button"
-            onClick={() => setKbdHelpOpen(true)}
+            onClick={(ev) => openKbdHelp(ev.currentTarget)}
             title="キーボード操作の一覧（? キー）"
             aria-label="キーボード操作の一覧"
             className={`hidden min-h-9 items-center rounded-md border px-2.5 py-1 text-xs sm:inline-flex ${btnOff}`}
@@ -1435,7 +1447,7 @@ export function LineageTree({
                         role="button"
                         aria-pressed={selectedEdgeKey === key}
                         aria-label={`${onMain ? "本流・" : ""}${relationLabelJa(e.relation)}: ${e.rationale}（Enter で根拠を表示）`}
-                        onClick={() => selectEdge(key)}
+                        onClick={(ev) => selectEdge(key, ev.currentTarget)}
                         onKeyDown={(ev) => {
                           if (ev.key === "Enter" || ev.key === " ") {
                             ev.preventDefault();
