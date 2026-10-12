@@ -144,6 +144,9 @@ export function nodeFetch(): FetchLike {
   return async (url: string, init: FetchInit): Promise<HttpResponseLike> => {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), init.timeoutMs);
+    // A caller that never reads the body (404, 403, 5xx) never clears the
+    // timer; unref so it cannot keep the process alive for timeoutMs.
+    timer.unref?.();
     let resp: Response;
     try {
       resp = await fetch(url, {
