@@ -54,6 +54,17 @@ function resolvePublishedFixturePath(repoRoot: string, legacyRelPath: string): s
   );
 }
 
+/** True for a lineage written by the R2-32 LLM-free conference edition builder. */
+function isEditionLineage(data: unknown): boolean {
+  if (typeof data !== "object" || data === null) return false;
+  const meta = (data as { meta?: unknown }).meta;
+  return (
+    typeof meta === "object" &&
+    meta !== null &&
+    (meta as { generator?: unknown }).generator === "paperpilot.lineage.conference.edition"
+  );
+}
+
 interface SampleError {
   path: string;
   message: string;
@@ -120,6 +131,22 @@ describe("ajv vs Python jsonschema agreement", () => {
         const absolutePath = resolvePublishedFixturePath(getRepoRoot(), testCase.file);
         const data = JSON.parse(readFileSync(absolutePath, "utf8"));
         const result = validateArtifact(testCase.schema, data);
+
+        // The frozen Python verdicts for conference lineages were recorded
+        // against the old placeholder/LLM files (mostly invalid). R2-32
+        // regenerates them one edition at a time with the LLM-free edition
+        // builder, which must produce a VALID artifact; the frozen `ok=false`
+        // no longer describes that file, so require validity instead.
+        if (testCase.schema === "lineage-artifact-v1" && isEditionLineage(data)) {
+          if (!result.ok) {
+            const detail = result.errors
+              ?.slice(0, 5)
+              .map((e) => `${e.instancePath || "/"} ${e.message ?? ""}`)
+              .join("; ");
+            throw new Error(`${testCase.file}: edition lineage is invalid (${detail})`);
+          }
+          return;
+        }
 
         if (result.ok !== testCase.ok) {
           const ajvDetail = result.errors
