@@ -89,6 +89,7 @@
 | R2-32 | 会議の系譜を LLM なしで作り、テーマと同じ根拠・検査で公開する（13 会議・14 deep がすべて blocked だった） | 済み（2026-10-12 merge。ICML 2025 を未監査で公開: 138 論文・367 関係。他の会議は 1 つずつ作る） |
 | R2-37 | 作り直しで公開中のテーマが非公開になる事故（2026-10-12、LoRA）の再発防止: 自動の作り直しの条件、regen と依頼の引数の一致、公開中より悪い版で置き換えない検査 | 済み（2026-10-12 merge。publish guard・`--match-published`） |
 | R2-38 | `extends` の適合率: ベンチマーク・データセット・枠組み・道具・評価手順を「使う」引用文（we adopt / use / follow X）を継承と読まない | 済み（2026-10-12 merge。extends 適合率 0.63→1.00、監査済み 4 テーマは不変） |
+| R2-39 | `extends` の手がかりの係り先: 複数の引用を含む文で別の論文に掛かる手がかり、自分の節・表への言及、第三者が主語の extend、公開モデル・学習データ・テンプレート・設定の利用、論文でない記録（"Open Source"）の節点 | 実装（2026-10-14、ブランチ `roadmap/r2-39-cue-target`。NeurIPS 2025 の extends 適合率 0.27→1.00、監査済み 4 テーマは不変。下の実装メモ） |
 
 ## 実装メモ（2026-10-10）
 
@@ -544,3 +545,52 @@ build の手がかりが被引用論文に当たった文を、次のときは�
 
 - テスト: `relationUsageR238.test.ts`（評価用ラベルで ICML と全体の適合率 0.9 以上、監査済みの 28 本が変わらない、usage の 13 本が extends にならない、`usageReason` を評価用の実際の文で確認）、既存の R2-22〜R2-28 の評価テストはそのまま通る。システムテスト `conferenceEdition.system.test.ts` の記録（ICML 2025 の 3 種）は、強い関係 2 本がどちらも利用の文（「we adopt V-IRL …, a real-world navigation task」など）だったので、未監査に届くことを確かめる緩い方針の最小本数を 2 → 0 にした（厳しい方針で `lineage_relation_count` だけが落ちることは同じ）
 - 試算の道具（作業用、リポジトリ外）: 公開中の辺の通し直し・キャッシュ全体の比較・R2-35 の記録での作り直し
+
+## 実装メモ（R2-39、手がかりの係り先と「使う」引用の追加）
+
+公開した NeurIPS 2025 の会議の系譜（136 論文・590 関係）の `extends` 44 本を手で判定すると、継承と言えるのは 12 本だけだった。誤りの多くは R2-38 の「使う」ではなく、手がかりの係り先の取り違え: 複数の論文を引く文で手がかりが別の論文に掛かる（「We adopt enhancements of GRPO [16] proposed by DAPO [4]」を DeepSeekMath に、「We adopt the zero residual-block initialization [13], which adaLN-zero [35] also follows」を DiT に）、自分の節への言及（「building on the observations … discussed in Section 3」を引用している 3 本すべてに）、第三者が主語（「Flow Matching methods [28, 1, 30] extend this framework」）、拡張の行き先（「can readily extend to … PPO [37]」）。D5 と公開の基準は変えていない。LLM・API の新しい呼び出しはない。
+
+### 規則
+
+- **係り先（`citedTarget.ts::cueGovernor`）**: 手がかりの目的語（手がかりの後ろ、括弧の外の「,」「;」「.」や which / while などまで、最大 12 語）で最初に出る引用（番号・著者年・被引用論文の名前）が被引用論文のものなら係る。別の論文が先なら係らない。「proposed by / introduced in / released by X」があれば X が持ち主。節・図・表・式・付録・アルゴリズムの番号や、引用のない this / these / the former は自分（self）。能動の extend / build on などの主語の節に引用があり we / our が無ければ第三者。extend・generalization の後の「to X」は行き先。目的語が 12 語以上で引用が無ければ遠すぎる。手がかり自体が被引用論文を含む（「Following [39], we …」）なら係る。どれでもなければ従来の節単位の判定。「such as / e.g. / including」の列挙は列挙全体に係る（Reformer ← SMYRF の unlike を保つ）
+- **引用の無い文**: これまで手がかりは無条件に被引用論文に係るとしていたが、被引用論文の名前が手がかりの範囲にある時だけにした（「Building upon this, we introduce VRPO」「Based on the setup in Section 4.3」「based on GURU」）
+- **別名**: 分野の語だけの題名の前半（「Reinforcement Learning: A Survey」）や先頭語の flow / diffusion / reinforcement / generative は論文の名前にしない
+- **「使う」の追加（`apiRelations.ts::usageReason`、`phrase_usage`）**: 名詞に analyses・practices・recipes・training data などを追加。弱い手がかりで、公開モデル（「Qwen-14B model」「-Instruct」「models released by」「publicly released」）、役割（「as the RL algorithm / testbed / baseline」）、値の指定（「= 0.28」「10% probability」「t ∈ [30, 40]」）は利用。「Following / Inspired by / Based on / Building on X, …」の主節の先頭が資源・設定（prompt template、all experiments、the standard GRPO framework）なら強い手がかりでも利用。引用符の中（「“<think>…</answer>” template」）は 1 語に数える
+- **論文でない記録（`shared/bogusRecord.ts`、会議の系譜の生成器）**: 題名が 1〜2 語の普通の単語だけで、年・著者 2 人以上・会場のどれかが無いか会場が辞書・定義集（"Definitions"・Qeios など）の記録は節点にしない。S2 が DAPO（「An Open-Source LLM RL System」）への参照を Qeios の定義項目 "Open Source" に結び付け、DAPO の引用文が載った辺が 2 本できていた。"Deep learning"（Nature）や年・著者の無い "The Claude 3 Model Family" は残す
+
+### 評価（`test/lineage/theme/fixtures/relation-cue-target-eval-r239.json`、`relationCueTargetR239.test.ts`）
+
+NeurIPS 2025 の extends 44 本に手でラベルを付けた（genuine 12・usage 15・misattributed 8・self_ref 6・third_party 1・other（論文でない節点）2。判断が分かれるものは borderline）。genuine には継承を述べる文の一部（`genuine_evidence`）を付け、引用文がそれでない extends は正解に数えない厳しい採点もした。R2-38 の 58 本と合わせて採点する。
+
+| 対象 | 公開中の `extends`（適合率、再現率） | R2-39（適合率、再現率） |
+|---|---|---|
+| NeurIPS 2025 | 12/44 = 0.27、12/12 | **11/11 = 1.00、11/12**（厳しい採点も 11/11。論文でない節点の 2 本は生成器が落とす） |
+| ICML 2025 | 3/17 = 0.18 | 3/3 = 1.00（R2-38 と同じ） |
+| 監査済み 4 テーマ | 19/19 | 19/19（変化なし） |
+| Low-Rank Adaptation | 5/7 | 2/2（R2-38 と同じ） |
+| 合計（R2-38 + R2-39） | 39/87 = 0.45、39/40 | **35/35 = 1.00、35/40** |
+
+- 失った genuine 1 本: Open-Reasoner-Zero ← DeepSeek-R1。継承を述べる文は「This two-stage approach follows DeepSeek-R1 [2]」だけで主語が一人称でない。公開中の根拠の文（「We adopt the PPO [4] …, diverging from the GRPO used in DeepSeek-R1-Zero [2]」）は PPO に掛かる誤り
+- MiMo ← DeepSeekMath は残り、根拠の文が見出しの「… with Extended Generation Budget …」から「We employ a modified version of GRPO …」に変わる
+- 判断の分かれ目（borderline）: 「we adopt GRPO as the RL algorithm」「We adopt the PPO as the core RL algorithm」を利用とした（R2-38 の「the most popular framework, ReAct」と同じ扱い）。「Inspired by the derivation of VP-SDE」（CPS ← Score SDE）、「architecture follows DiT, except the modifications」（Transition Models ← DiT）、「self-rollout … following (Yang et al., 2026)」（WorldPlay ← LongLive）は継承とした
+
+### 影響（オフラインの試算。公開ファイルは書き換えていない）
+
+公開中の各辺を今のキャッシュ（`s2_references.json`・`arxiv_html_contexts.json`、会議は参考文献キャッシュの S2 要旨）で develop の規則と R2-39 の規則で通し直した。キャッシュの全ペア（S2 1,669 組・arXiv HTML 134 組）も両方の規則で比べた。
+
+| 対象 | 強い関係 公開中 → develop の規則 → R2-39 | 公開の検査 | 監査 |
+|---|---|---|---|
+| flash-attention / graph-neural-network / mixture-of-experts / vision-transformer | 4 / 4 / 7 / 13 → 同じ → 同じ | 通過 | 影響なし（全辺の関係・理由欄が develop の規則の通し直しと同一。キャッシュの全ペアでもこの 4 テーマの関係・引用文は 1 つも変わらない） |
+| low-rank-adaptation | 5 → 6 → 7（VeRA ← LoRA が contrasts: 「Unlike Hu et al. (2022), who used …, we introduce …」） | 通過 | 未監査 |
+| icml-2025 | 5 → 4 → 5（Igniting VLMs ← Hi Robot が contrasts: 「Unlike pipeline designs … (e.g., … Hi Robot (64) …), we adopt …」） | 通過 | 未監査 |
+| neurips-2025 | 48 → 47 → 15（extends 13・contrasts 2）。論文でない節点の辺を除くと 14 | 通過 | 未監査 |
+
+- NeurIPS の 14 本のうち Video-R1 ← DeepSeek-R1（要旨の「Inspired by DeepSeek-R1's success …」）は通し直しで要旨が入った時だけ出る。本番で作り直すと 13〜14 本の見込み。どれも強い関係 3 本以上を保つ
+- 「論文でない記録」は NeurIPS の "Open Source" だけに当たる（公開中の 15 件の系譜、678 節点）。作り直すとその枠には参考文献の次の順位の論文が入る（オフラインでは参考文献の一覧がキャッシュに無いので試算できない）
+- 監査済みのテーマの R2-35 の記録（作り直しの再生）は作業用ディレクトリの整理で消えていたので、作り直しのバイト一致は確かめていない。上の全辺の一致とキャッシュ全ペアの比較で、作り直しの入力（関係）が変わらないことを確かめた
+- 作り直しが要るのは NeurIPS 2025（`conference-lineage-regen.yml`）。ICML 2025 と LoRA は contrasts が 1 本増えるだけなので急がない
+
+### 確認
+
+- テスト: `relationCueTargetR239.test.ts`（NeurIPS の 44 本: 適合率 0.9 以上（厳しい採点も）、誤った係り先・自分への言及・第三者の 15 本が extends にならない、usage は gold か許容の範囲、MiMo の根拠の文、`cueGovernor`・`usageReason`・別名・`isBogusPaperRecord` を実際の文で確認）。R2-22〜R2-38 の評価テストはそのまま通る（R2-23 の Reformer ← SMYRF の unlike は列挙の扱いで保つ）
+- 試算の道具（作業用、リポジトリ外）: 公開中の辺の通し直し、キャッシュ全ペアの比較、評価セットの採点

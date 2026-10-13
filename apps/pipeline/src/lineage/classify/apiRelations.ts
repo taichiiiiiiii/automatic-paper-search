@@ -653,6 +653,13 @@ const USAGE_NOUN = new RegExp(
       "tokeni[sz]ers?",
       "probing",
       "probes?",
+      // R2-39: what an analysis / training recipe takes over ("Our analyses
+      // are based on …", "inspired by analogous practices in …", "we reuse
+      // their training data").
+      "analys[ie]s",
+      "practices?",
+      "recipes?",
+      "(?:training|evaluation|test|pre-?training|fine-?tuning|rl)\\s+data",
     ].join("|") +
     ")\\b",
   "i",
@@ -671,7 +678,7 @@ const USAGE_ACTION =
 
 /** The adopted object is a standard tool or a sized stock component. */
 const STOCK_OBJECT =
-  /\b(?:widely[\s-]used|standard|commonly[\s-]used|most\s+popular|popular|off[\s-]the[\s-]shelf|official|default|open[\s-]source|publicly\s+available|well[\s-]known)\b|\b(?:a|an)\s+(?:\d+|one|two|three|four|five|six|single)[\s-]layers?\b|\bframeworks?\b/i;
+  /\b(?:widely[\s-]used|standard|commonly[\s-]used|most\s+popular|popular|off[\s-]the[\s-]shelf|official|default|open[\s-]source|publicly\s+(?:available|released)|well[\s-]known)\b|\b(?:a|an)\s+(?:\d+|one|two|three|four|five|six|single)[\s-]layers?\b|\bframeworks?\b/i;
 
 /** A training component taken over for one's own model ("we adopt the
  * pairwise ranking loss [Ouyang et al., 2022] to optimize the ORM"): a
@@ -679,6 +686,54 @@ const STOCK_OBJECT =
  * build on X's objective" stays a build-on. */
 const COMPONENT_OBJECT =
   /\b(?:loss(?:es)?|loss\s+functions?|objectives?|regulari[sz]ers?|optimi[sz]ers?)\b/i;
+
+/** R2-39: the adopted object is a released model / checkpoint ("based on
+ * the DeepSeek R1-Distill Qwen-14B model", "RLVR-trained models released by
+ * …", "LLaDA-8B-Instruct"). Weak cues only. */
+const RELEASED_MODEL =
+  /\b\d+(?:\.\d+)?\s?[BM]\b|-(?:Instruct|Base|Chat|Distill)\b|\b(?:released|pre-?trained|open-?sourced?|distilled|[\w-]*-?trained)\s+(?:[\w-]+\s+){0,2}(?:models?|checkpoints?|weights|LLMs?)\b|\bmodels?\s+(?:released|trained|provided)\s+by\b/;
+
+/** R2-39: the adopted work is given a stock role ("We adopt GRPO [Shao et
+ * al., 2024] as the RL algorithm", "We employ LLaDA-8B-Instruct [30] … as
+ * our primary experimental testbed and baseline"). Weak cues only. */
+const ROLE_AS =
+  /^[^.;]{0,100}?\bas\s+(?:the|our|an?)\s+(?:[\w-]+\s+){0,3}(?:algorithms?|optimi[sz]ers?|testbeds?|baselines?|base\s+models?|reward\s+models?|judges?|teachers?|evaluators?|verifiers?|starting\s+points?)\b/i;
+
+/** R2-39: a concrete value set while following another work ("Following
+ * DAPO [19], we adopt a clip-higher strategy with ε = 0.28", "we drop the
+ * class condition with 10% probability, following [18]", "a randomly
+ * chosen late timestep t ∈ [30, 40]"). Weak cues only. */
+const SETTING_VALUE = /[=≈]\s*[-−]?\d|\b\d+(?:\.\d+)?\s*%|∈\s*[[(]/;
+
+/** R2-39: a sentence opening "Following / Inspired by / Based on / Building
+ * on X, …" whose main clause takes over a resource or a standard setup
+ * ("Inspired by DeepSeek-R1-Zero [2], we design our prompt template",
+ * "Inspired by DAPO …, in all experiments of this work, we omit the KL
+ * term", "Building on … GRPO [7] …, we adhere to the standard GRPO
+ * framework"). */
+const MAIN_CLAUSE_OPENER =
+  /(?:^|[:;)]\s+|\.\s+(?=[A-Z]))\s*(?:following|inspired\s+by|based\s+on|motivated\s+by|buil(?:t|ding)\s+(?:up)?on)\b/i;
+const MAIN_CLAUSE_STOCK = /\b(?:standard|official|default|vanilla|original)\b/i;
+
+/** The first ~12 words after the first comma outside brackets. */
+function mainClauseHead(text: string): string | null {
+  let depth = 0;
+  for (let i = 0; i < text.length && i < 260; i++) {
+    const ch = text[i];
+    if (ch === "(" || ch === "[") depth += 1;
+    else if ((ch === ")" || ch === "]") && depth > 0) depth -= 1;
+    else if (ch === "," && depth === 0) {
+      return text
+        .slice(i + 1)
+        .split(/[.;]\s/)[0]!
+        .trim()
+        .split(/\s+/)
+        .slice(0, 12)
+        .join(" ");
+    }
+  }
+  return null;
+}
 
 /** Following a setup and then fixing a value ("we follow the approach of
  * Skean et al. (2025) and choose α → 1"). */
@@ -702,7 +757,11 @@ export function isEvaluationTitle(title: string | null | undefined): boolean {
 /** The few words after a cue match (its object), cut at the clause end or
  * a relative / purpose clause. */
 function objectWindow(text: string, end: number): string {
-  const tail = text.slice(end, end + 90);
+  // R2-39: a quoted literal ("the “ <think> … </answer> ” template") is one word.
+  const tail = text
+    .slice(end, end + 160)
+    .replace(/[“"][^”"]{0,80}[”"]/g, "QUOTED")
+    .slice(0, 90);
   const stop = tail.search(/[,;:.]|\b(?:who|which|that|where|while|whereas|because|since|but)\b/i);
   return (stop >= 0 ? tail.slice(0, stop) : tail).trim().split(/\s+/).slice(0, 9).join(" ");
 }
@@ -726,6 +785,8 @@ interface CueSpan {
   cue: string;
   object: string;
   subject: string;
+  /** R2-39: the rest of the clause after the cue. */
+  rest: string;
 }
 
 function cueObjects(text: string, cues: readonly RegExp[]): CueSpan[] {
@@ -738,6 +799,7 @@ function cueObjects(text: string, cues: readonly RegExp[]): CueSpan[] {
         cue: m[0],
         object: objectWindow(text, at + m[0].length),
         subject: subjectWindow(text, at),
+        rest: text.slice(at + m[0].length, at + m[0].length + 160),
       });
     }
   }
@@ -773,6 +835,13 @@ export function usageReason(
   const text = sentence.replace(/\bet\s+al\./g, "et al");
   if (USAGE_ACTION.test(text)) return "measurement";
   if (APPOSITIVE_RESOURCE.test(text)) return "resource_apposition";
+  const opener = MAIN_CLAUSE_OPENER.exec(text);
+  if (opener !== null) {
+    const head = mainClauseHead(text.slice(opener.index + opener[0].length));
+    if (head !== null && (USAGE_NOUN.test(head) || MAIN_CLAUSE_STOCK.test(head))) {
+      return "main_clause_usage";
+    }
+  }
   const strong = cueObjects(text, STRONG_BUILD_CUES);
   if (hasStrong) {
     // A strong cue keeps the build-on unless every strong cue's own object
@@ -783,9 +852,19 @@ export function usageReason(
   }
   const weak = cueObjects(text, WEAK_BUILD_CUES);
   if (weak.some(resourceCue)) return "resource_object";
+  if (
+    weak.some(
+      (c) =>
+        RELEASED_MODEL.test(c.object) ||
+        (!/^we\b|\bwe$/i.test(c.subject) && RELEASED_MODEL.test(c.subject)),
+    )
+  )
+    return "released_model";
   if (weak.some((c) => STOCK_OBJECT.test(c.object))) return "stock_tool";
   if (weak.some((c) => COMPONENT_OBJECT.test(c.object))) return "component";
+  if (weak.some((c) => ROLE_AS.test(c.rest))) return "stock_role";
   if (FOLLOW_AND_SET.test(text)) return "setting";
+  if (weak.length > 0 && SETTING_VALUE.test(text)) return "setting_value";
   if (facts.citedResource) return "cited_resource";
   if (facts.citingEvaluation) return "citing_evaluation";
   if (facts.intentsWithoutMethod) return "intent_not_methodology";
