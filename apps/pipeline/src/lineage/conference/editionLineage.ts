@@ -45,6 +45,7 @@ import {
   requireValidLineageArtifact,
 } from "../contract/v1.js";
 import type { BuildCompleteness } from "../fetch-state/completeness.js";
+import { isBogusPaperRecord } from "../shared/bogusRecord.js";
 import { type ThemeGraphNode, toNode } from "../shared/node.js";
 import { isSurveyLike } from "../shared/surveyLike.js";
 import type { ArxivHtmlContextSource } from "../theme/arxivHtmlSource.js";
@@ -340,6 +341,10 @@ function paperOf(p: S2EdgePaper | RankedHit | null | undefined): PaperLike | nul
     };
   }
   const e = p as S2EdgePaper;
+  // R2-39: a reference S2 resolved to a non-paper record ("Open Source", a
+  // Qeios definition entry standing in for DAPO) is no node: its edges would
+  // carry another paper's citation sentences.
+  if (isBogusPaperRecord(e as unknown as Record<string, unknown>)) return null;
   return {
     paperId: id,
     title: str(e.title) ?? "",
