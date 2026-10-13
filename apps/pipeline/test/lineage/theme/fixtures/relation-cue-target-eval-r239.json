@@ -1,0 +1,2020 @@
+{
+ "schema_version": "relation-cue-target-eval-r239-v1",
+ "description": "R2-39 evaluation set: every `extends` edge of the published NeurIPS 2025 conference lineage (LLM-free edition builder, generated 2026-10-13T15:31:25Z, 136 nodes / 590 edges). Signals as in the R2-38 set (S2 contexts / intents / isInfluential from data/state/lineage-cache/s2_references.json; arXiv HTML contexts from arxiv_html_contexts.json when the published evidence came from arXiv HTML). citing_abstract: only the abstract sentence quoted in the published rationale (S2 abstracts are not republished), null otherwise. Labels (hand, paper level, judged against the context sentences): genuine = the citing paper builds on the cited method and a context sentence says so (genuine_evidence lists substrings of such sentences; a strict extends must quote one); usage = the cited work is only used (released model / checkpoint, training data, template, setting, stock algorithm, training component); misattributed = the cue governs another work of the sentence, or none; self_ref = the build-on target is the citing paper itself (Section / Table / own dataset / 'this'); third_party = another work is the subject of the cue; other = bogus cited node.",
+ "labelled_at": "2026-10-14",
+ "labeller": "R2-39 subagent (hand labels; borderline=true marks judgement calls)",
+ "items": [
+  {
+   "collection": "neurips-2025",
+   "src": "0d11a9674b68216b92e08cf7617a93fbd3fb91f4",
+   "dst": "0df1f308b8df13194d76fb95aa86d18d6aeffbdc",
+   "cited": {
+    "title": "Large Language Diffusion Models",
+    "year": 2025,
+    "authors": [
+     "Shen Nie",
+     "Fengqi Zhu",
+     "Zebin You",
+     "Xiaolu Zhang",
+     "Jingyang Ou"
+    ],
+    "venue": "NeurIPS 2025"
+   },
+   "citing": {
+    "title": "MMaDA: Multimodal Large Diffusion Language Models",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Semi-Autoregressive Sampling for Text Generation For text generation, we adopt the semi-autoregressive denoising strategy introduced in LLaDA [22], which integrates autoregressive decoding with diffusion-based denoising.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "For text tokenization, we utilize the tokenizer from LLaDA [22], which serves as the backbone for our MMaDA model.",
+     "LLaDA [22] employs Monte Carlo sampling over numerous mask ratios (e.g., 128 samples), incurring high computational costs for on-policy RL. d1 [28] fixes the mask ratio and randomizes question masking, which reduces noise diversity and ignores the multi-step denoising nature of diffusion.",
+     "Language Semi-AR Remask [22] Vision Scheduler - DDPM [23] DDPM [23]/Cosine [24] Cosine Remask [24] Post-Training Emu3 [25], Janus [13, 14] DreamLLM [16] Transfusion [21], Show-o [20] MMaDA (Ours) architectures by training a single transformer with next-token prediction, unifying discrete and…",
+     "Semi-Autoregressive Sampling for Text Generation For text generation, we adopt the semi-autoregressive denoising strategy introduced in LLaDA [22], which integrates autoregressive decoding with diffusion-based denoising.",
+     "Implementation Details We initialize MMaDA with LLaDA-8B-Instruct’s pretrained weights [22] and an image tokenizer with Show-o’s pretrained ones."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": [
+    "semi-autoregressive denoising strategy introduced in LLaDA",
+    "tokenizer from LLaDA",
+    "initialize MMaDA with LLaDA"
+   ],
+   "note": "MMaDA initialises from LLaDA-8B, uses its tokenizer as backbone and adopts its semi-AR denoising strategy."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "0d11a9674b68216b92e08cf7617a93fbd3fb91f4",
+   "dst": "8e3b1f5d8b6c165f64137cc1f7dea89cf6f622bd",
+   "cited": {
+    "title": "Large Language Diffusion Models",
+    "year": 2025,
+    "authors": [
+     "Shen Nie",
+     "Fengqi Zhu",
+     "Zebin You",
+     "Xiaolu Zhang",
+     "Jingyang Ou"
+    ],
+    "venue": "NeurIPS 2025"
+   },
+   "citing": {
+    "title": "d1: Scaling Reasoning in Diffusion Large Language Models via Reinforcement Learning",
+    "year": 2025
+   },
+   "citing_abstract": "Specifically, we develop and extend techniques to improve reasoning in pretrained dLLMs: (a) we utilize a masked SFT technique to distill knowledge and instill self-improvement behavior directly from existing datasets, and (b) we introduce",
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Specifically, we develop and extend techniques to improve reasoning in pretrained dLLMs: (a) we utilize a masked SFT technique to distill knowledge and instill self-improvement behavior directly from existing datasets, and (b) we introduce…",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "In this work, we apply d1 on top of LLaDA [30], whose forward process sets α t = 1 − t and the resulting NELBO is where | x t | is the sequence length of x , and x k is the k -th token.",
+     "While various forms of noise schedules can be used [36, 39], Nie et al. [30, LLaDA] uses the linear schedule: α t = 1 − t .",
+     "Among them, open masked dLLMs such as LLaDA [30] have demonstrated performance comparable to similarly sized AR models, and closed-source dLLMs such as Mercury [20] further demonstrate excellent inference efficiency.",
+     "In a parallel line of work, discrete diffusion large language models (dLLMs) [30, 15, 29, 48] have emerged as promising non-autoregressive alternatives for language modeling.",
+     "We note that LLaDA [30, Algorithm 3] uses a Monte Carlo type of approximation to estimate the log-probabilities, where they use a MC sample size is 128 .",
+     "Recent works explored chain-of-thought reasoning [47, 46], block-based generation [4], and large-scale competitive performance in LLaDA [30] and Dream [48].",
+     "This is referred to as the semi-autoregressive decoding strategy [30].",
+     "Recently, LLaDA [30] and Dream [48] demonstrated that large diffusion language models can achieve performance comparable to similarly-sized autoregressive alternatives, but have not yet been enhanced through reinforcement learning.",
+     "Models We employ LLaDA-8B-Instruct [30], a state-of-the-art open-sourced dLLM that has not undergone post-training, as our primary experimental testbed and baseline.",
+     "Algorithm 2 Supervised Finetuning of LLaDA [30] Require: underlying unmasking predictor f θ , data distribution p data , learning rate η 1: repeat 2: Sample ( p 0 , r 0 ) ∼ p data , t ∼ U (0 , 1) ▷ p 0 is the prompt and r 0 is the response 3: Construct a partially masked response r t ∼ q t | 0 ( r…"
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "released_model",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": true,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "d1 is a post-training recipe applied to the released LLaDA-8B-Instruct ('we employ LLaDA-8B-Instruct as our primary experimental testbed and baseline'). Published evidence was an abstract sentence that names only the family 'dLLMs' (alias read from a multi-work marker group)."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "19df654b0d0f634a451564346a09af8bd348dac0",
+   "dst": "4665878d8f54aa7024ef50afb958270803524531",
+   "cited": {
+    "title": "Mean Flows for One-step Generative Modeling",
+    "year": 2025,
+    "authors": [
+     "Zhengyang Geng",
+     "Mingyang Deng",
+     "Xingjian Bai",
+     "J. Kolter",
+     "Kai-Ming He"
+    ],
+    "venue": "NeurIPS 2025"
+   },
+   "citing": {
+    "title": "MP1: MeanFlow Tames Policy Learning in 1-step for Robotic Manipulation",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "We present the first adaptation of the MeanFlow (Geng et al. 2025) paradigm to robot learning, termed MP1.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "After passing through the MeanFlow, the model computes regression loss ( L cfg ) between the mean velocity generated from the initial noise and the target velocity.",
+     "In this paper, we address the limitations of existing Diffusion-based and Flow-based approaches by introducing MeanFlow into robot learning.",
+     "While the MeanFlow objective L cfg excels at learning the temporal dynamics required to produce accurate output trajectories, it provides only an indirect signal for learning the complex mapping from high-dimensional conditional inputs c to actions.",
+     "Unlike standard Flow Matching (FM), which learns an instantaneous velocity field v ( z t , t ) and requires solving an ODE for sampling, MeanFlow learns the average velocity field u ( z t , r, t ) over an interval [ r, t ] .",
+     "Our contributions are as follows: • We introduce MP1, the first MeanFlow-based robot-learning framework.",
+     "In contrast, the recently introduced Mean-Flow (Geng et al. 2025) paradigm from image generation avoids any explicit consistency loss by learning a mean velocity field.",
+     "For example, MeanFlow can reduce inference latency to around 6.8 ms, far better than the 10–20 steps required by diffusion strategies.",
+     "We present the first adaptation of the MeanFlow (Geng et al. 2025) paradigm to robot learning, termed MP1.",
+     "These inputs are processed through a visual encoder and a state encoder, respectively, and then serve as conditional inputs to the UNet-integrated MeanFlow.",
+     "To achieve single-step generation, we model the policy as a conditional MeanFlow.",
+     "Instead, MeanFlow leverages the “MeanFlow Identity,” a local differential equation derived by differentiating the integral definition to t : where the total derivative u ( z t , r, t ) expands to v ( z t , t ) ∂ z u + ∂ t u ."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": [
+    "adaptation of the MeanFlow"
+   ],
+   "note": "'We present the first adaptation of the MeanFlow paradigm to robot learning'."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "1b2355c3c674b26a977768a91a164384ad51bbb1",
+   "dst": "16c38a5b7d7d8487c9e03e7231330445eb64e5b1",
+   "cited": {
+    "title": "ImageReward: Learning and Evaluating Human Preferences for Text-to-Image Generation",
+    "year": 2023,
+    "authors": [
+     "Jiazheng Xu",
+     "Xiao Liu",
+     "Yuchen Wu",
+     "Yuxuan Tong",
+     "Qinkai Li"
+    ],
+    "venue": "Neural Information Processing Systems"
+   },
+   "citing": {
+    "title": "Flow-GRPO: Training Flow Matching Models via Online RL",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Following ImageReward [32], we back-propagate gradients to a randomly chosen late timestep t ∈ [30 , 40] during denoising.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "…to align pretrained T2I models with human preferences follow five main directions: (1) direct fine-tuning with differentiable rewards [30, 31, 32, 33]; (2) Reward Weighted Regression (RWR) [34, 35, 36, 37]; (3) Direct Preference Optimization (DPO) and variants [38, 39, 14, 40, 41, 42, 43,…",
+     "To detect reward hacking beyond task-specific accuracy, we evaluate four automatic image quality metrics: Aesthetic Score [59], DeQA [60], ImageReward [32], and UnifiedReward [61] (see Appendix B.1 for details).",
+     "ReFL [32] directly fine-tunes diffusion models by viewing reward model scores as human preference losses and back-propagating gradients to a randomly-picked late timestep t .",
+     "Following ImageReward [32], we back-propagate gradients to a randomly chosen late timestep t ∈ [30 , 40] during denoising."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "setting",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": true,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "'Following ImageReward [32], we back-propagate gradients to a randomly chosen late timestep' is a training setting (ReFL recipe); Flow-GRPO does not build on ImageReward (it is a reward / metric there)."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "1eab09d29fa9e7ff08e8c82166b9faf4463e84d5",
+   "dst": "26ac2f0592556d46a5edae634d941f3f9155b2a0",
+   "cited": {
+    "title": "The Illusion of Thinking: Understanding the Strengths and Limitations of Reasoning Models via the Lens of Problem Complexity",
+    "year": 2025,
+    "authors": [
+     "P. Shojaee",
+     "Iman Mirzadeh",
+     "Keivan Alizadeh-Vahid",
+     "Maxwell Horton",
+     "Samy Bengio"
+    ],
+    "venue": "NeurIPS 2025"
+   },
+   "citing": {
+    "title": "Formalizing Learning from Language Feedback with Provable Guarantees",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "To achieve principled learning based on hypothesis elimination, our practical implementation of Algorithm 1 relies on LLMs to approximate three main steps in the theoretical version: (1) maintaining feedback-consistent hypothesis set; (2) …",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "In our later experiments in Section 5, we will take thinking tokens as a natural form of hypothesis for LLMs.",
+     "To achieve principled learning based on hypothesis elimination, our practical implementation of Algorithm 1 relies on LLMs to approximate three main steps in the theoretical version: (1) maintaining feedback-consistent hypothesis set; (2) minimax exploitation step; (3) UCB-inspired exploration step.",
+     "Empirically, when an optimal action is stated explicitly, LLMs often trust it and act without inferring the full reward structure.",
+     "With LLMs’ abilities to understand and respond in natural language (Touvron et al., 2023), language feedback can drastically increase learning efficiency and may be cheaper to obtain than carefully engineered reward signals (Krishna et al., 2023).",
+     "While using LLMs for general problem solving has been studied for a long time (Xie et al., 2022a; Guo et al., 2024; Akyürek et al., 2023b), relatively fewer prior works studied LLMs for sequential decision-making.",
+     "One directly deploys LLMs as agents, incorporating feed-back into subsequent prompts or an external memory buffer (Yao et al., 2023; Brooks et al., 2023; Shinn et al., 2023; Wang et al., 2024; Krishnamurthy et al., 2024; Nie et al., 2024; Xi et al., 2023).",
+     "However, these assumptions may not hold for all LLMs (Shojaee et al., 2025), and further investigation is needed to validate them.",
+     "More recent work targets exploration more explicitly, such as directly learning exploration strategies through supervised fine-tuning (Nie et al., 2024), preference-based learning (Tajwar et al., 2025), or reinforcement learning (Schmied et al., 2025), or prompting LLMs to mimic a perfect Bayesian learner (Arumugam and Griffiths, 2025).",
+     "Further research is needed to verify whether current LLMs possess these properties.",
+     "This is due to empirical observations that LLMs have a preference to produce the best plan and action first, followed by less likely plans and actions (Dracheva and Phillips, 2024).",
+     "The latter often rely on CoT-style design and LLMs’ inner capabilities to balance exploration and exploitation, which as we will show in experiments can be insufficient even for simple language-based tasks.",
+     "We show HELiX can be used as an inference-time strategy for LLMs to perform exploration and exploitation, sampling multiple hypotheses and self-verifying as opposed to using a single chain-of-thought (CoT) context."
+    ]
+   },
+   "label": "misattributed",
+   "usage_kind": null,
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "'principled learning based on hypothesis elimination' — the cue governs the citing paper's own algorithm; the sentence cites nothing."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "244054a4254a2147e43a3dad9c124b9b7eb4a04a",
+   "dst": "19df654b0d0f634a451564346a09af8bd348dac0",
+   "cited": {
+    "title": "Flow Straight and Fast: Learning to Generate and Transfer Data with Rectified Flow",
+    "year": 2022,
+    "authors": [
+     "Xing-Chao Liu",
+     "Chengyue Gong",
+     "Qiang Liu"
+    ],
+    "venue": "International Conference on Learning Representations"
+   },
+   "citing": {
+    "title": "Mean Flows for One-step Generative Modeling",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Flow Matching methods [28, 1, 30] extend this framework by modeling the velocity fields that define flow paths between distributions.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Flow Matching [28, 1, 30] provides an intuitive and conceptually simple framework for constructing flow paths that transport one distribution to another.",
+     "Flow Matching methods [28, 1, 30] extend this framework by modeling the velocity fields that define flow paths between distributions.",
+     "It is worth noting that even when the conditional flows are designed to be straight (“rectified\") [28, 30], the marginal velocity field (Eq.",
+     "Flow Matching [28, 30, 1] is a family of generative models that learn to match the flows, represented by velocity fields, between two probabilistic distributions."
+    ]
+   },
+   "label": "third_party",
+   "usage_kind": null,
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "'Flow Matching methods [28, 1, 30] extend this framework' — the cited methods extend something; not a claim of the citing paper."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "244054a4254a2147e43a3dad9c124b9b7eb4a04a",
+   "dst": "9315d9d3c83b0164411950fe09377218c762a22a",
+   "cited": {
+    "title": "Flow Straight and Fast: Learning to Generate and Transfer Data with Rectified Flow",
+    "year": 2022,
+    "authors": [
+     "Xing-Chao Liu",
+     "Chengyue Gong",
+     "Qiang Liu"
+    ],
+    "venue": "International Conference on Learning Representations"
+   },
+   "citing": {
+    "title": "One-step Latent-free Image Generation with Pixel Mean Flows",
+    "year": 2026
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Our pMF is built on top of Flow Matching (Lipman et al., 2023; Liu et al., 2023; Albergo & Vanden-Eijnden, 2023), MeanFlow (Geng et al., 2025a;b), and JiT (Li & He, 2025).",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": [
+     "Diffusion models (Sohl-Dickstein et al., 2015; Ho et al., 2020; Song et al., 2021a) and Flow Matching (Lipman et al., 2023; Liu et al., 2023; Al-bergo & Vanden-Eijnden, 2023) have become cornerstones of modern generative modeling.",
+     "Our pMF is built on top of Flow Matching (Lipman et al., 2023; Liu et al., 2023; Albergo & Vanden-Eijnden, 2023), MeanFlow (Geng et al., 2025a;b), and JiT (Li & He, 2025)."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": [
+    "built on top of Flow Matching"
+   ],
+   "note": "'Our pMF is built on top of Flow Matching (Lipman; Liu; Albergo), MeanFlow, and JiT' — Liu et al. 2023 = rectified flow."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "2affa73c5527e5e0cc8ffa378744f1f9c65dbf1e",
+   "dst": "20309e3e9934742961623b1acf459bf247954016",
+   "cited": {
+    "title": "Coefficients-Preserving Sampling for Reinforcement Learning with Flow Matching",
+    "year": 2025,
+    "authors": [
+     "Feng Wang",
+     "Zihao Yu"
+    ],
+    "venue": "arXiv.org"
+   },
+   "citing": {
+    "title": "MixGRPO: Unlocking Flow-based GRPO Efficiency with Mixed ODE-SDE",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "While a common practice involves the use of Stochastic Differential Equations (SDEs), we adopt Coefficients-Preserving Sampling (CPS) [40] as a more refined alternative to maintain the integrity of the probability path.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "To address these issues, we utilize CPS [40], which reformulates the transition process by drawing inspiration from DDIM [35] framework.",
+     "The update rule for CPS [40] is defined as: The core advantage of CPS [40] lies in its strategic construction of coefficients for x t i and v t i , which preserves the linear interpolation structure of Flow Matching while introducing controlled stochasticity via σ t i .",
+     "As demonstrated in Table 15, the integration of CPS [40] leads to superior performance across all reward metrics, with qualitative comparisons in Figure 10 further illustrating its enhanced visual fidelity.",
+     "Recently, Coefficients-Preserving Sampling (CPS) [40] was proposed as a more principled alternative to standard SDE sampling.",
+     "While a common practice involves the use of Stochastic Differential Equations (SDEs), we adopt Coefficients-Preserving Sampling (CPS) [40] as a more refined alternative to maintain the integrity of the probability path.",
+     "Both the original SDE sampling and CPS [40] sampling were trained for 300 steps and evaluated on the HPDv2 dataset [44].",
+     "By effectively eliminating sampling artifacts inherent in SDE-based meth-ods, CPS [40] yields cleaner images that provide more reliable feedback for MixGRPO."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [
+    "baseline_only"
+   ],
+   "borderline": true,
+   "audited_verdict": null,
+   "genuine_evidence": [
+    "we adopt Coefficients-Preserving Sampling",
+    "we utilize CPS"
+   ],
+   "note": "MixGRPO adopts the CPS sampler as a method component of its own sampling ('as a more refined alternative')."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "2eed1fad9bbf887d4395de40f20144c4fafefd7f",
+   "dst": "ab60ca888dfe60bc7a50f47bd483737523943682",
+   "cited": {
+    "title": "DeepSeek-R1 incentivizes reasoning in LLMs through reinforcement learning",
+    "year": 2025,
+    "authors": [
+     "DeepSeek-AI",
+     "Daya Guo",
+     "De-Jian Yang",
+     "Hao-Wei Zhang",
+     "Jun-Mei Song"
+    ],
+    "venue": "Nature"
+   },
+   "citing": {
+    "title": "Thought Anchors: Which LLM Reasoning Steps Matter?",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Our analyses are based on the DeepSeek R1-Distill Qwen-14B model (48 layers) [8].",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "State-of-the-art performance on complex tasks comes from “thinking models” like DeepSeek-R1 [8], OpenAI’s o1 [26], and Claude 3.7 [1] are explicitly optimized for this with RLVR[36].",
+     "Our analyses are based on the DeepSeek R1-Distill Qwen-14B model (48 layers) [8]."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "released_model",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "'Our analyses are based on the DeepSeek R1-Distill Qwen-14B model' — a released model analysed."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "35b142ea69598e6241f0011312128031df55895c",
+   "dst": "10feab31bb9e71a0f1094fb00c0554abfb992c4d",
+   "cited": {
+    "title": "DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models",
+    "year": 2024,
+    "authors": [
+     "Zhihong Shao",
+     "Peiyi Wang",
+     "Qi-Hao Zhu",
+     "Runxin Xu",
+     "Jun-Mei Song"
+    ],
+    "venue": "arXiv.org"
+   },
+   "citing": {
+    "title": "ProRL: Prolonged Reinforcement Learning Expands Reasoning Boundaries in Large Language Models",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "We adopt enhancements of GRPO [16] proposed by DAPO [4], decoupling clipping hyperparameters with ϵ low = 0 .",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "We adopt enhancements of GRPO [16] proposed by DAPO [4], decoupling clipping hyperparameters with ϵ low = 0 .",
+     "We begin with a brief overview of the GRPO [16] algorithm.",
+     "We adopt Group Relative Policy Optimization (GRPO) [16] as the core RL algorithm.",
+     "Both approaches have popularized RL algorithms like GRPO [16], Mirror Descent[46], RLOO [47] and other variants."
+    ]
+   },
+   "label": "misattributed",
+   "usage_kind": null,
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": true,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "'We adopt enhancements of GRPO [16] proposed by DAPO [4]' — the adopted thing is DAPO's; GRPO is otherwise used as the RL algorithm ('We adopt GRPO [16] as the core RL algorithm', usage)."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "35b142ea69598e6241f0011312128031df55895c",
+   "dst": "143e18bfd7c356592e7c1439738a3525d3e16279",
+   "cited": {
+    "title": "DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models",
+    "year": 2024,
+    "authors": [
+     "Zhihong Shao",
+     "Peiyi Wang",
+     "Qi-Hao Zhu",
+     "Runxin Xu",
+     "Jun-Mei Song"
+    ],
+    "venue": "arXiv.org"
+   },
+   "citing": {
+    "title": "Does Reinforcement Learning Really Incentivize Reasoning Capacity in LLMs Beyond the Base Model?",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "We adopt RLVR-trained models released by SimpleRLZoo (Zeng et al., 2025), which train zero-RL models using GRPO on GSM8K and the MATH training set, with correctness reward only, excluding any format-based reward.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Recently, Reinforcement Learning with Verifiable Rewards (RLVR) has gained significant traction as a method to improve the reasoning capabilities of LLMs in domains such as mathematics and programming (Lambert et al., 2024; Shao et al., 2024).",
+     "We adopt RLVR-trained models released by SimpleRLZoo (Zeng et al., 2025), which train zero-RL models using GRPO on GSM8K and the MATH training set, with correctness reward only, excluding any format-based reward.",
+     "Different RL algorithms yield slightly different ∆ SE values ( i . e ., ranging from GRPO’s 43.9 to RLOO’s best 42.6 on the in-domain test set).",
+     "5-7B GRPO-step150 GRPO-step300 GRPO-step450 Figure 1: (Left) The effect of RLVR on LLM’s reasoning ability.",
+     "We re-implement popular RL algorithms using the VeRL framework (Sheng et al., 2024) for fair comparison, including PPO (Schulman et al., 2017), GRPO (Shao et al., 2024), Reinforce++ (Hu, 2025), RLOO (Ahmadian et al., 2024), ReMax (Li et al., 2023), and DAPO (Yu et al., 2025).",
+     "Although different RL algorithms ( e . g ., PPO, GRPO, Reinforce++) show slight variations in performance, it does not make essential difference.",
+     "GRPO (Shao et al., 2024) estimate the advantage with a normalized reward within a group of responses to the same question: A i = [ r i − mean( r )] / std( r ) , where r = { r 1 , . . . , r G } denotes the set of rewards for a group of G sampled responses."
+    ]
+   },
+   "label": "misattributed",
+   "usage_kind": null,
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "'We adopt RLVR-trained models released by SimpleRLZoo' — cue governs SimpleRLZoo, and it is a released-model usage."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "35b142ea69598e6241f0011312128031df55895c",
+   "dst": "8327bd346d109e62ed0730bc5e2e11efdbd43e64",
+   "cited": {
+    "title": "DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models",
+    "year": 2024,
+    "authors": [
+     "Zhihong Shao",
+     "Peiyi Wang",
+     "Qi-Hao Zhu",
+     "Runxin Xu",
+     "Jun-Mei Song"
+    ],
+    "venue": "arXiv.org"
+   },
+   "citing": {
+    "title": "Scaling RL to Long Videos",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Building on the advancements of the GRPO [7] algo-rithm and prior explorations of multi-modal reasoning training [2, 25], we adhere to the standard GRPO framework to train our model.",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": [
+     "257 283 279 Reuse MR-SP × 𝟐.𝟏 × 𝟏.𝟗 MR-SP (Stage 1 only) MR-SP (Stage 1 & 2) As illustrated in Figure 2, answering high-level questions often hinges on a model’s ability to integrate clues distributed across time, infer hidden goals or strategies, track entities spatially, and comprehend the…",
+     "However, multi-modal reinforcement learning introduces additional challenges, as it requires extensive sampling from long, mixed-token sequences [10], particularly in complex group optimization tasks [7].",
+     "Building on the advancements of the GRPO [7] algo-rithm and prior explorations of multi-modal reasoning training [2, 25], we adhere to the standard GRPO framework to train our model."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "stock_algorithm",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [
+    "extends"
+   ],
+   "borderline": true,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "'Building on the advancements of the GRPO [7] algorithm …, we adhere to the standard GRPO framework to train our model' — standard GRPO as the training algorithm."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "35b142ea69598e6241f0011312128031df55895c",
+   "dst": "97e0a3548a6f0818262b4f86e4180f256e2f0128",
+   "cited": {
+    "title": "DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models",
+    "year": 2024,
+    "authors": [
+     "Zhihong Shao",
+     "Peiyi Wang",
+     "Qi-Hao Zhu",
+     "Runxin Xu",
+     "Jun-Mei Song"
+    ],
+    "venue": "arXiv.org"
+   },
+   "citing": {
+    "title": "MiMo: Unlocking the Reasoning Potential of Language Model - From Pretraining to Posttraining",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "On-Policy RL with Extended Generation Budget Our prior empirical investigations indicated that a vanilla implementation of GRPO was markedly prone to premature performance saturation.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "We evaluate MiMo-7B-Base on a series of benchmarks, encompassing natural language understanding and reasoning, scientific question answering, reading comprehension, mathematics reasoning, coding, Chinese understanding, and long-context comprehension capabilities: Language understanding and reasoning : BBH (Suzgun et al., 2023), MMLU Hendrycks et al. (2021a), MMLU-Redux (Gema et al., 2024), MMLU-Pr",
+     "On-Policy RL with Extended Generation Budget Our prior empirical investigations indicated that a vanilla implementation of GRPO was markedly prone to premature performance saturation.",
+     "This approach is expected to enhance specialized skills without compromising general language abilities (Zhu et al., 2024).",
+     "…and long-context comprehension capabilities: Language understanding and reasoning : BBH (Suzgun et al., 2023), MMLU Hendrycks et al. (2021a), MMLU-Redux (Gema et al., 2024), MMLU-Pro (Wang et al., 2024), ARC (Clark et al., 2018), HellaSwag (Zellers et al., 2019), PIQA (Bisk et al., 2020).",
+     "We employ a modified version of Group Relative Policy Optimization (GRPO) (Shao et al., 2024) with recently proposed improvement from the research community (Hu et al., 2025; Yu et al., 2025).",
+     "We comprehensively evaluate reasoning models across a diverse range of benchmarks: Language understanding and reasoning : MMLU-Pro (Wang et al., 2024).",
+     "𝑖,𝑗 is the advantage, which is computed by the rewards { 𝑟 1 , 𝑟 2 , ..., 𝑟 𝐺 } of responses in the same group: Upon the original GRPO algorithm, we incorporate several enhancements from recent research: • Removal of KL Loss (He et al., 2025; Hu et al., 2025): simply removing the KL loss effectively unleashes the full potential of the policy model without compromising training stability."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [
+    "baseline_only"
+   ],
+   "borderline": true,
+   "audited_verdict": null,
+   "genuine_evidence": [
+    "modified version of Group Relative Policy Optimization",
+    "Upon the original GRPO algorithm"
+   ],
+   "note": "MiMo uses 'a modified version of GRPO' with incorporated enhancements; the published evidence ('On-Policy RL with Extended Generation Budget …', a section heading) was wrong."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "35b142ea69598e6241f0011312128031df55895c",
+   "dst": "c6f896aa698b2d65160372bce057ea5f081904de",
+   "cited": {
+    "title": "DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models",
+    "year": 2024,
+    "authors": [
+     "Zhihong Shao",
+     "Peiyi Wang",
+     "Qi-Hao Zhu",
+     "Runxin Xu",
+     "Jun-Mei Song"
+    ],
+    "venue": "arXiv.org"
+   },
+   "citing": {
+    "title": "LLaDA 1.5: Variance-Reduced Preference Optimization for Large Language Diffusion Models",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Building upon this, we introduce Variance-Reduced Preference Optimization (VRPO), a method integrating principled techniques to reduce the variance of the preference score estimator: (1) increasing the sampling budget for ELBOs, (2) alloca…",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "This empirical trend supports our theoretical insight in Theorem 1 to control the errors by V ˆ s θ .",
+     "Intuitively, the proof (see Appendix F.2.2) utilizes the 1 -Lipschitz continuity of log σ ( · ) and the unbiasedness of ˆ s θ , which ensures that the variability in ˆ s θ leads to controlled changes in the loss and keep it close to the true objective.",
+     "Tightness analysis of these upper bounds is provided in Appendix F.2.3.",
+     "Building upon this, we introduce Variance-Reduced Preference Optimization (VRPO), a method integrating principled techniques to reduce the variance of the preference score estimator: (1) increasing the sampling budget for ELBOs, (2) allocating the sampling budget across distinct diffusion timesteps…",
+     "Motivated by the success of aligning ARMs with human preferences (Schulman et al., 2017; Ziegler et al., 2019; Ouyang et al., 2022; Rafailov et al., 2023; Shao et al., 2024; Guo et al., 2025), recent work has begun to explore MDM alignment.",
+     "In the toy example shown in Figure 2 (b), we plot how the variance of a random variable X influences the bias and variance of log σ ( X ) ."
+    ]
+   },
+   "label": "self_ref",
+   "usage_kind": null,
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "'Building upon this, we introduce VRPO' — 'this' is the paper's own analysis; the sentence cites nothing."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "35b142ea69598e6241f0011312128031df55895c",
+   "dst": "cc2038510f2027fa504961e5268cf778487a67cc",
+   "cited": {
+    "title": "DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models",
+    "year": 2024,
+    "authors": [
+     "Zhihong Shao",
+     "Peiyi Wang",
+     "Qi-Hao Zhu",
+     "Runxin Xu",
+     "Jun-Mei Song"
+    ],
+    "venue": "arXiv.org"
+   },
+   "citing": {
+    "title": "SpaceR: Reinforcing MLLMs in Video Spatial Reasoning",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Second , we extend the GRPO [28] paradigm to enhance spatial reasoning by designing task-specific verifiable rewards for various QA formats (e.g., multiple choice, numerical).",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": [
+     "In particular, the Group Relative Policy Optimization (GRPO) [28] algorithm, applied in DeepSeek-R1, has revealed the strong potential of Reinforcement Learning with Verifiable Reward (RLVR) framework in equipping MLLMs with advanced reasoning capacity.",
+     "Second , we extend the GRPO [28] paradigm to enhance spatial reasoning by designing task-specific verifiable rewards for various QA formats (e.g., multiple choice, numerical)."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": [
+    "we extend the GRPO"
+   ],
+   "note": "'we extend the GRPO [28] paradigm … by designing task-specific verifiable rewards'."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "35b142ea69598e6241f0011312128031df55895c",
+   "dst": "cf92906ac18467b2bce3cf1cbd77bc4ed1201352",
+   "cited": {
+    "title": "DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models",
+    "year": 2024,
+    "authors": [
+     "Zhihong Shao",
+     "Peiyi Wang",
+     "Qi-Hao Zhu",
+     "Runxin Xu",
+     "Jun-Mei Song"
+    ],
+    "venue": "arXiv.org"
+   },
+   "citing": {
+    "title": "SwS: Self-aware Weakness-driven Problem Synthesis in Reinforcement Learning for LLM Reasoning",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "We adopt GRPO [Shao et al., 2024] as the RL algorithm, and full implementation details are in Appendix C.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Algorithms such as Proximal Policy Optimization (PPO)[Schulman et al., 2017] and Generalized Reinforcement Preference Optimization (GRPO)[Shao et al., 2024] have demonstrated strong generalization and effectiveness in these applications.",
+     "We adopt GRPO [Shao et al., 2024] as the RL algorithm, and full implementation details are in Appendix C.",
+     "…pairs [Huang et al., 2024, Tang et al., 2024, Yu et al., 2023, Zhao et al., 2025b, Liang et al., 2024, Luo et al., 2023, Liu et al., 2025a, Wang et al., 2024, Li et al., 2024b, Tan et al., 2024, Pei et al., 2025] or augmenting responses to existing questions [Toshniwal et al., 2024, Tong…",
+     "These cases do not provide effective training signals in GRPO [Shao et al., 2024, Yu et al., 2025b], and are thus excluded from the later augmented RL training stage.",
+     "When all responses yield identical accuracy—either all correct or all incorrect—the advantages uniformly degrade to zero, leading to gradient vanishing for policy updates and resulting in training inefficiency [Shao et al., 2024, Yu et al., 2025b].",
+     "We conduct our experiments using the verl [Sheng et al., 2024] framework and adopt GRPO [Shao et al., 2024] as the optimization algorithm.",
+     "When using group-level RL algorithms such as GPRO [Shao et al., 2024], the advantage of each response is calculated based on its comparison with other responses in the same group."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "stock_algorithm",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "'We adopt GRPO [Shao et al., 2024] as the RL algorithm' — a data-synthesis paper trains with GRPO."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "633e2fbfc0b21e959a244100937c5853afca4853",
+   "dst": "16c38a5b7d7d8487c9e03e7231330445eb64e5b1",
+   "cited": {
+    "title": "Score-Based Generative Modeling through Stochastic Differential Equations",
+    "year": 2020,
+    "authors": [
+     "Yang Song",
+     "Jascha Narain Sohl-Dickstein",
+     "Diederik P. Kingma",
+     "Abhishek Kumar",
+     "S. Ermon"
+    ],
+    "venue": "International Conference on Learning Representations"
+   },
+   "citing": {
+    "title": "Flow-GRPO: Training Flow Matching Models via Online RL",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Inspired by the derivation from SDE to its probability flow ODE in SGMs [23], we aim to construct a forward SDE with specific drift and diffusion coefficients so that its marginal distribution matches that of Eq.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "The relationship between forward and reverse-time SDEs has been established in [75, 23].",
+     "Inspired by the derivation from SDE to its probability flow ODE in SGMs [23], we aim to construct a forward SDE with specific drift and diffusion coefficients so that its marginal distribution matches that of Eq.",
+     "Following [23, 28, 29], we construct a reverse-time SDE formulation that preserves the marginal distribution: where d w denotes Wiener process increments and σ t control the level of stachasticity during generation.",
+     "Diffusion models [21, 22, 23] add Gaussian noise to data and train a neural network to reverse the process."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [
+    "baseline_only"
+   ],
+   "borderline": true,
+   "audited_verdict": null,
+   "genuine_evidence": [
+    "Inspired by the derivation from SDE to its probability flow ODE"
+   ],
+   "note": "Flow-GRPO's ODE-to-SDE conversion follows the score-SDE derivation."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "633e2fbfc0b21e959a244100937c5853afca4853",
+   "dst": "2affa73c5527e5e0cc8ffa378744f1f9c65dbf1e",
+   "cited": {
+    "title": "Score-Based Generative Modeling through Stochastic Differential Equations",
+    "year": 2020,
+    "authors": [
+     "Yang Song",
+     "Jascha Narain Sohl-Dickstein",
+     "Diederik P. Kingma",
+     "Abhishek Kumar",
+     "S. Ermon"
+    ],
+    "venue": "International Conference on Learning Representations"
+   },
+   "citing": {
+    "title": "Coefficients-Preserving Sampling for Reinforcement Learning with Flow Matching",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Inspired by the derivation of VP-SDE ( Song et al. (2021b)), which uses Taylor expansion for formula derivation, we can also get an approximate SDE from Flow-CPWS.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Song et al. (2021b) claimed that the ancestral sampler of DDPM is essentially a discretization of the reverse-time SDE.",
+     "For the VP-SDE backward process, please refer to Appendix E of Song et al. (2021b), which also uses Taylor expansion and omits high-order terms in the derivation.",
+     "In the VP-SDE, the forward process is, where the approximate equality holds when ∆ t ≪ 1 .",
+     "Inspired by the derivation of VP-SDE ( Song et al. (2021b)), which uses Taylor expansion for formula derivation, we can also get an approximate SDE from Flow-CPWS.",
+     "Conversely, if a pre-trained DDPM is given, we can also say that the reverse process of the VP-SDE is a continuous approximation of DDPM ancestral sampling.",
+     "A VP-SDE IS AN A PPROXIMATION OF DDPM Similar to Theorem 1, VP-SDE (Song et al. (2021b)) can also be seen as a first-order Taylor approximation of DDPM.",
+     "For instance, first-order methods like the Euler solver (Song et al. (2021b)) offer speed at the cost of accuracy, while second-order methods like Heun’s method (Karras et al. (2022)) provide a better balance."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [
+    "baseline_only"
+   ],
+   "borderline": true,
+   "audited_verdict": null,
+   "genuine_evidence": [
+    "Inspired by the derivation of VP-SDE"
+   ],
+   "note": "CPS derives its approximate SDE the way VP-SDE was derived (borderline: an analysis technique)."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "668075792a7ab40457d92e09da28d35c879271c3",
+   "dst": "d6a29be03a0497602e89311ec38e5141335647c5",
+   "cited": {
+    "title": "Kimi k1.5: Scaling Reinforcement Learning with LLMs",
+    "year": 2025,
+    "authors": [
+     "Kimi Team",
+     "Angang Du",
+     "Bofei Gao",
+     "Bowei Xing",
+     "Changjiu Jiang"
+    ],
+    "venue": "arXiv.org"
+   },
+   "citing": {
+    "title": "Beyond the 80/20 Rule: High-Entropy Minority Tokens Drive Effective Reinforcement Learning for LLM Reasoning",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "In this section, building on the observations of entropy patterns in CoTs discussed in Section 3, we further investigate how these patterns evolve throughout RLVR training.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Building on o1, models such as DeepSeek R1 (DeepSeek-AI et al., 2025), QwQ (Team, 2025), Kimi k1.",
+     "DeepSeek R1 stands out for showing that strong reasoning can emerge through outcome-based optimization using the online RL algorithm GRPO (Shao et al., 2024).",
+     "Reinforcement learning with verifiable rewards (RLVR) has become one of the most widely used approaches for training reasoning models (Yang et al., 2025; DeepSeek-AI et al., 2025; Yu et al., 2025; Yue et al., 2025b).",
+     "In this section, building on the observations of entropy patterns in CoTs discussed in Section 3, we further investigate how these patterns evolve throughout RLVR training.",
+     "Recently, RL with verifiable rewards (RLVR)(Lambert et al., 2025) has emerged as a promising approach for enhancing reasoning in LLMs, particularly in domains like mathematics and programming(Shao et al., 2024; DeepSeek-AI et al., 2025; Yang et al., 2025; Lambert et al., 2025).",
+     "A pivotal technique driving these improvements is Reinforcement Learning with Verifiable Rewards (RLVR) (Lambert et al., 2025; DeepSeek-AI et al., 2025; Yang et al., 2025), where models optimize outputs through RL objectives tied to automated correctness verification.",
+     "The reasoning capabilities of Large Language Models (LLMs) have advanced substantially in domains like mathematics and programming, propelled by test-time scaling methodologies employed in Ope-nAI o1 (OpenAI, 2024), Claude 3.7 (Anthropic, 2025), DeepSeek R1 (DeepSeek-AI et al., 2025), Kimi K1."
+    ]
+   },
+   "label": "self_ref",
+   "usage_kind": null,
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "'building on the observations … discussed in Section 3' — self reference, fanned out to 3 cited papers."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "736973165f98105fec3729b7db414ae4d80fcbeb",
+   "dst": "2cc9d6d644ef0169a767c5cc76a7eeec77333ff1",
+   "cited": {
+    "title": "Scalable Diffusion Models with Transformers",
+    "year": 2022,
+    "authors": [
+     "William S. Peebles",
+     "Saining Xie"
+    ],
+    "venue": "IEEE International Conference on Computer Vision"
+   },
+   "citing": {
+    "title": "Improved Mean Flows: On the Challenges of Fastforward Generative Models",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "We adopt the zero residual-block initialization [13], which adaLN-zero [35] also follows.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "In-context conditioning was explored in DiT [35] but was found inferior to adaLN-zero in their setting.",
+     "In its complete notation, the network u θ is: Typically, the conditioning is handled by adaLN-zero [35], which sums all condition embeddings.",
+     "When using in-context conditioning, our model removes the standard adaLN-zero [35] that is parameter-heavy.",
+     "We adopt the zero residual-block initialization [13], which adaLN-zero [35] also follows.",
+     "Thus far, our ablations have been using adaLN-zero [35] for conditioning.",
+     "The initialization of adaLN-zero [35] was based on the same principle.",
+     "All these learnable tokens are concatenated along the sequence axis, jointly with the tokens from images (in the latent space, same as DiT [35])."
+    ]
+   },
+   "label": "misattributed",
+   "usage_kind": null,
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "'We adopt the zero residual-block initialization [13], which adaLN-zero [35] also follows' — the cue governs [13]."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "736973165f98105fec3729b7db414ae4d80fcbeb",
+   "dst": "b03d05fc0957c958f916c5afb93d851626686627",
+   "cited": {
+    "title": "Scalable Diffusion Models with Transformers",
+    "year": 2022,
+    "authors": [
+     "William S. Peebles",
+     "Saining Xie"
+    ],
+    "venue": "IEEE International Conference on Computer Vision"
+   },
+   "citing": {
+    "title": "Transition Models: Rethinking the Generative Learning Objective",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "We conduct a series of experiments to explore architectural modifications based on DiT [52] for effective state transition learning in Tab.",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": [
+     "Model architecture follows DiT [52], except the modifications in Sec.",
+     "Diffusion models have emerged as the dominant paradigm in visual content generation, producing state-of-the-art re-sults across various domains [9, 20, 35, 52, 54, 83].",
+     "We conduct a series of experiments to explore architectural modifications based on DiT [52] for effective state transition learning in Tab."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [
+    "baseline_only"
+   ],
+   "borderline": true,
+   "audited_verdict": null,
+   "genuine_evidence": [
+    "architectural modifications based on DiT",
+    "Model architecture follows DiT"
+   ],
+   "note": "Transition Models modify the DiT architecture ('architecture follows DiT, except the modifications')."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "736973165f98105fec3729b7db414ae4d80fcbeb",
+   "dst": "cc8ccb398b7d2768cd667ca77eb80fc39c48677b",
+   "cited": {
+    "title": "Scalable Diffusion Models with Transformers",
+    "year": 2022,
+    "authors": [
+     "William S. Peebles",
+     "Saining Xie"
+    ],
+    "venue": "IEEE International Conference on Computer Vision"
+   },
+   "citing": {
+    "title": "AlphaFlow: Understanding and Improving MeanFlow Models",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "The detailed implementation of DiT-B/2 is provided in Table 3, where we adopt the DiT-B/2-non-cfg setting.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "By training vanilla DiT-(Peebles & Xie, 2023) models from scratch with α -Flow on class-conditional ImageNet-1K 256 2 , we obtain consistently stronger performance across both small-and large-scale settings compared with MeanFlow, for both one-step and few-step generation.",
+     "This section contains an ablation study on α -Flow, specifically for α ∈ (0 , 1) . for We use a DiT-B/2-non-cfg model (see Table 3) that is pre-trained on flow matching 200k iterations and then fine-tuned on α -Flow for another 200k iterations.",
+     "Consequently, we adopt ODE sampling for all DiT-B/2 architectures and consistency sampling for all DiT-XL/2 architectures, with additional ablation studies on DiT-XL/2 presented in Figure 4.",
+     "Our largest DiT-XL/2+ model establishes new state-of-the-art results among all from-scratch trained models with the vanilla DiT backbone and training pipeline, achieving FID scores of 2 .",
+     "The detailed implementation of DiT-B/2 is provided in Table 3, where we adopt the DiT-B/2-non-cfg setting."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "setting",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "'we adopt the DiT-B/2-non-cfg setting' — a configuration."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "91b32fc0a23f0af53229fceaae9cce43a0406d2e",
+   "dst": "8e3b1f5d8b6c165f64137cc1f7dea89cf6f622bd",
+   "cited": {
+    "title": "Structured Denoising Diffusion Models in Discrete State-Spaces",
+    "year": 2021,
+    "authors": [
+     "Jacob Austin",
+     "Daniel D. Johnson",
+     "Jonathan Ho",
+     "Daniel Tarlow",
+     "Rianne van den Berg"
+    ],
+    "venue": "Neural Information Processing Systems"
+   },
+   "citing": {
+    "title": "d1: Scaling Reasoning in Diffusion Large Language Models via Reinforcement Learning",
+    "year": 2025
+   },
+   "citing_abstract": "Specifically, we develop and extend techniques to improve reasoning in pretrained dLLMs: (a) we utilize a masked SFT technique to distill knowledge and instill self-improvement behavior directly from existing datasets, and (b) we introduce",
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Specifically, we develop and extend techniques to improve reasoning in pretrained dLLMs: (a) we utilize a masked SFT technique to distill knowledge and instill self-improvement behavior directly from existing datasets, and (b) we introduce…",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Diffusion models, successful in visual domains [40, 19], faced challenges in language due to text’s discrete nature, initially tackled by modeling continuous diffusion on textual latents [5, 16].",
+     "Masked diffusion has been established as a specific instance of discrete diffusion [5, 36, 39, 32, 29], with recent efforts scaling these models significantly.",
+     "Initial approaches attempted to learn continuous diffusion models over textual latents [5, 16], but faced challenges with scalability and discretization.",
+     "Masked dLLMs [5, 36, 39, 32, 26], involve a forward process that gradually corrupts a sequence of tokens x 0 by the mask token.",
+     "Masked diffusion emerged as an effective discrete variant [5, 36, 39, 32, 29], scaled notably in DiffuLLaMA [15], which initialized with pretrained LLaMA weights."
+    ]
+   },
+   "label": "misattributed",
+   "usage_kind": null,
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "The d1 abstract sentence ('we develop and extend techniques … in pretrained dLLMs') names the family 'dLLMs', which the alias reader took from the multi-work group 'Masked dLLMs [5, 36, 39, 32, 26]'."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "9da8ea6466d7142703d8771d8dcea44e19304abb",
+   "dst": "d981ce332586e6a29f595cbdfa9347cf425e5cd0",
+   "cited": {
+    "title": "The Llama 3 Herd of Models",
+    "year": 2024,
+    "authors": [
+     "Aaron Grattafiori",
+     "Abhimanyu Dubey",
+     "Abhinav Jauhri",
+     "Abhinav Pandey",
+     "Abhishek Kadian"
+    ],
+    "venue": "arXiv"
+   },
+   "citing": {
+    "title": "Open-Reasoner-Zero: An Open Source Approach to Scaling Up Reinforcement Learning on the Base Model",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "For the 32B variant, we introduce an additional \"annealing\" training stage inspired by analogous practices in large language model pre-training [26].",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": [
+     "For the 32B variant, we introduce an additional \"annealing\" training stage inspired by analogous practices in large language model pre-training [26]."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "setting",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": true,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "'an additional annealing training stage inspired by analogous practices in LLM pre-training [26]' — a training practice."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "aded8047f58818025568efe091c0578a354d67cf",
+   "dst": "10feab31bb9e71a0f1094fb00c0554abfb992c4d",
+   "cited": {
+    "title": "Open Source",
+    "year": 2019,
+    "authors": [
+     "M. Watson"
+    ],
+    "venue": "Definitions"
+   },
+   "citing": {
+    "title": "ProRL: Prolonged Reinforcement Learning Expands Reasoning Boundaries in Large Language Models",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "We adopt enhancements of GRPO [16] proposed by DAPO [4], decoupling clipping hyperparameters with ϵ low = 0 .",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Various reinforcement learning techniques [5, 4] have been studied to enhance training stability for sustained optimization periods.",
+     "We adopt enhancements of GRPO [16] proposed by DAPO [4], decoupling clipping hyperparameters with ϵ low = 0 .",
+     "Recent works [4, 7, 5, 18] have argued for the removal of the KL penalty, citing that models naturally diverge during training on chain-of-thought reasoning tasks.",
+     "To address entropy collapse, we adopt several components from the DAPO algorithm [4], which are specifically designed to maintain exploration and output diversity.",
+     "The application of various enhancements proposed by DAPO [4], along with the inclusion of KL divergence loss, helped the model avoid entropy collapse."
+    ]
+   },
+   "label": "other",
+   "usage_kind": "bogus_node",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "Cited node 'Open Source' (Qeios 'Definitions' record) is a mis-resolved reference; the sentence is about DAPO/GRPO."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "aded8047f58818025568efe091c0578a354d67cf",
+   "dst": "d981ce332586e6a29f595cbdfa9347cf425e5cd0",
+   "cited": {
+    "title": "Open Source",
+    "year": 2019,
+    "authors": [
+     "M. Watson"
+    ],
+    "venue": "Definitions"
+   },
+   "citing": {
+    "title": "Open-Reasoner-Zero: An Open Source Approach to Scaling Up Reinforcement Learning on the Base Model",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Our proposed Open-Reasoner-Zero, built on the same Qwen2.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Under Reasoner-Zero paradigm, Figure 1: Evaluation performance of Open-Reasoner-Zero-{7B, 32B} on benchmarks (averaged on 16 responses) during training.",
+     "Commonly, Table 1: Comparison of Open-Reasoner-Zero-32B with DeepSeek-R1-Zero-Qwen-32B DAPO-Qwen-32B on reasoning-related benchmarks.",
+     "• Inversely, any informal proof provided in the core of the paper should be complemented by formal proofs provided in appendix or supplemental material.",
+     "We present Open-Reasoner-Zero (ORZ), the first comprehensive open-source implementation of large-scale reasoning-oriented RL training.",
+     "In this section, we present comprehensive experimental results and analysis of our Open-Reasoner-Zero models.",
+     "5-32B base, as DeepSeek-R1-Zero-Qwen-32B, Open-Reasoner-Zero-32B achieves superior performance on AIME2024, MATH500, and GPQA Diamond benchmarks—requiring only a tenth of the training steps.",
+     "Our proposed Open-Reasoner-Zero, built on the same Qwen2.",
+     "{{prompt}}Assistant:<think> Table 7: Template for Open-Reasoner-Zero. prompt will be replaced with the specific reasoning question during generation.",
+     "In this work, we introduce Open-Reasoner-Zero (ORZ), the first open-source implementation of large-scale reasoning-oriented RL training on large language models (LLMs) with our empirical best practices, designed to be robust, scalable and simple-to-follow."
+    ]
+   },
+   "label": "other",
+   "usage_kind": "bogus_node",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "Cited node 'Open Source' is a mis-resolved reference; the sentence is truncated ('built on the same Qwen2.')."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "af68f10ab5078bfc519caae377c90ee6d9c504e9",
+   "dst": "9315d9d3c83b0164411950fe09377218c762a22a",
+   "cited": {
+    "title": "Flow Matching for Generative Modeling",
+    "year": 2022,
+    "authors": [
+     "Y. Lipman",
+     "Ricky T. Q. Chen",
+     "Heli Ben-Hamu",
+     "Maximilian Nickel",
+     "Matt Le"
+    ],
+    "venue": "International Conference on Learning Representations"
+   },
+   "citing": {
+    "title": "One-step Latent-free Image Generation with Pixel Mean Flows",
+    "year": 2026
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Our pMF is built on top of Flow Matching (Lipman et al., 2023; Liu et al., 2023; Albergo & Vanden-Eijnden, 2023), MeanFlow (Geng et al., 2025a;b), and JiT (Li & He, 2025).",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "At t = 0 , there is: FM optimizes a network v θ , parameterized by θ , by minimizing a loss function in the v -space (namely, “ v -loss”): It is shown (Lipman et al., 2023) that the underlying target of v θ is the marginal velocity v ( z t , t ) ≜ E [ v | z t , t ] .",
+     "Our pMF is built on top of Flow Matching (Lipman et al., 2023; Liu et al., 2023; Albergo & Vanden-Eijnden, 2023), MeanFlow (Geng et al., 2025a;b), and JiT (Li & He, 2025).",
+     "Here, the compared methods are: DiT (Peebles & Xie, 2023), SiT (Ma et al., 2024), MeanFlow (MF) (Geng et al., 2025a), improved MF (iMF) (Geng et al., 2025b), and JiT (Li & He, 2025). pred. space conversion loss space DiT Flow Matching.",
+     "We study alternative designs that restrict time sampling to specific cases: (i) only r = t , which amounts to Flow Matching; (ii) only r = 0 , which conceptually analogize the CM (Song et al., 2023) regime; and (iii) a combination of both.",
+     "Diffusion models (Sohl-Dickstein et al., 2015; Ho et al., 2020; Song et al., 2021a) and Flow Matching (Lipman et al., 2023; Liu et al., 2023; Al-bergo & Vanden-Eijnden, 2023) have become cornerstones of modern generative modeling.",
+     "Flow Matching (FM) learns a velocity field v that maps a prior distribution p prior to the data distribution p data .",
+     "Diffusion and Flow Matching.",
+     "Flow Matching with x -prediction."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": [
+    "built on top of Flow Matching"
+   ],
+   "note": "'Our pMF is built on top of Flow Matching (Lipman et al., 2023; …)'."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "af9f365ed86614c800f082bd8eb14be76072ad16",
+   "dst": "19df654b0d0f634a451564346a09af8bd348dac0",
+   "cited": {
+    "title": "Classifier-Free Diffusion Guidance",
+    "year": 2022,
+    "authors": [
+     "Jonathan Ho",
+     "Tim Salimans"
+    ],
+    "venue": "arXiv.org"
+   },
+   "citing": {
+    "title": "Mean Flows for One-step Generative Modeling",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "(17) to class-unconditional inputs, we drop the class condition with 10% probability, following [18].",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "(17) to class-unconditional inputs, we drop the class condition with 10% probability, following [18].",
+     "Our method naturally supports classifier-free guidance (CFG) [18].",
+     "We further show that our framework can naturally incorporate classifier-free guidance (CFG) [18] into the target field, incurring no additional cost at sampling time when guidance is used.",
+     "In the original CFG [18], it is a standard practice to mix class-conditional and class-unconditional predictions, approached by random dropping."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "setting",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": true,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "'we drop the class condition with 10% probability, following [18]' — a training setting (CFG dropout)."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "bf76cb3bd7a54c60138f9523ffb462a486c4807b",
+   "dst": "2bdccbeffa0bae760f416a72ebe7a3951e230659",
+   "cited": {
+    "title": "DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning",
+    "year": 2025,
+    "authors": [
+     "DeepSeek-AI"
+    ],
+    "venue": "arXiv.org"
+   },
+   "citing": {
+    "title": "Revisiting Reinforcement Learning for LLM Reasoning from A Cross-Domain Perspective",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "We perform a controlled experiment on how RL reasoning transfers across domains based on G URU and find out that domains and task difficulty affect transferability and mixed-domain training matches or exceeds single-domain performance.",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": [
+     "Recent frontier reasoning models trained with reinforcement learning (RL), such as OpenAI-o1 [Ope-nAI, 2024] and DeepSeek-R1 [Guo et al., 2025], demonstrate impressive performance across diverse reasoning tasks.",
+     "We perform a controlled experiment on how RL reasoning transfers across domains based on G URU and find out that domains and task difficulty affect transferability and mixed-domain training matches or exceeds single-domain performance."
+    ]
+   },
+   "label": "self_ref",
+   "usage_kind": null,
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "'based on GURU' — GURU is the citing paper's own dataset."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "bf76cb3bd7a54c60138f9523ffb462a486c4807b",
+   "dst": "d981ce332586e6a29f595cbdfa9347cf425e5cd0",
+   "cited": {
+    "title": "DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning",
+    "year": 2025,
+    "authors": [
+     "DeepSeek-AI"
+    ],
+    "venue": "arXiv.org"
+   },
+   "citing": {
+    "title": "Open-Reasoner-Zero: An Open Source Approach to Scaling Up Reinforcement Learning on the Base Model",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "We adopt the PPO [4] as the core RL algorithm, diverging from the GRPO used in DeepSeek-R1-Zero [2].",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Scaling RL on Reasoning-Enhanced Models Another important line of work [2, 8, 19, 20] endeavors to scale up RL training on reasoning-enhanced Models.",
+     "Recent breakthroughs, particularly OpenAI’s o1 [1] and DeepSeek’s R1-Zero [2], have demonstrated remarkable training time scaling: as the training computation scales up, both the model’s benchmark performance and response length consistently and steadily increase without any sign of saturation.",
+     "We adopt the PPO [4] as the core RL algorithm, diverging from the GRPO used in DeepSeek-R1-Zero [2].",
+     "DeepSeek-R1-Zero-Qwen-32B results are from [2].",
+     "This two-stage approach follows DeepSeek-R1 [2].",
+     "Inspired by DeepSeek-R1-Zero [2], we design our prompt template to elicit the model to utilize inference computation, gradually mastering the reasoning ability, as shown in the Appendix.",
+     "Scaling RL on Base Models for Reasoning The approach that applies RL directly to base models to master complex reasoning skills, referred to as Reasoner-Zero training, has gain far-reaching attention [2].",
+     "We achieve stable training without relying on any KL-based regularization techniques ( e.g. , KL shaped rewards and loss), different from the de facto RLHF community [6] and Reasoner model [7, 2]."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [
+    "baseline_only"
+   ],
+   "borderline": true,
+   "audited_verdict": null,
+   "genuine_evidence": [
+    "This two-stage approach follows DeepSeek-R1"
+   ],
+   "note": "ORZ reproduces R1-Zero-style RL; but the published evidence ('We adopt the PPO [4] …, diverging from the GRPO used in DeepSeek-R1-Zero [2]') is a contrast that governs PPO."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "d2d84d56f730f81d276a02b48d5d44db5bde0b4a",
+   "dst": "d6a29be03a0497602e89311ec38e5141335647c5",
+   "cited": {
+    "title": "Qwen3 Technical Report",
+    "year": 2025,
+    "authors": [
+     "An Yang",
+     "An-Feng Li",
+     "Baosong Yang",
+     "Beichen Zhang",
+     "Binyuan Hui"
+    ],
+    "venue": "arXiv"
+   },
+   "citing": {
+    "title": "Beyond the 80/20 Rule: High-Entropy Minority Tokens Drive Effective Reinforcement Learning for LLM Reasoning",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "In this section, building on the observations of entropy patterns in CoTs discussed in Section 3, we further investigate how these patterns evolve throughout RLVR training.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "…reason why supervised fine-tuning (SFT) memorizes but RL generalizes, (ii) how prior knowledge and readability requirements shape the different entropy patterns seen in LLM CoTs compared to traditional RL trajectories, and (iii) the advantage of clip-higher over entropy bonus for RLVR. (§6)",
+     "Generalization ability to other domains As outlined in Section 5.2, we used the DAPO-Math-17K dataset, which primarily consists of mathematical data, for our RLVR experiments.",
+     "In this section, building on the observations of entropy patterns in CoTs discussed in Section 3, we further investigate how these patterns evolve throughout RLVR training.",
+     "…minority tokens as a potential reason why supervised fine-tuning (SFT) memorizes but RL generalizes, (ii) how prior knowledge and readability requirements shape the different entropy patterns seen in LLM CoTs compared to traditional RL trajectories, and (iii) the advantage of clip-higher over…",
+     "A pivotal technique driving these improvements is Reinforcement Learning with Verifiable Rewards (RLVR) (Lambert et al., 2025; DeepSeek-AI et al., 2025; Yang et al., 2025), where models optimize outputs through RL objectives tied to automated correctness verification.",
+     "Furthermore, \"overall entropy\" refers to the average entropy over all tokens. not degrade reasoning performance and can even lead to improvements across six benchmarks.",
+     "The reasoning capabilities of Large Language Models (LLMs) have advanced substantially in domains like mathematics and programming, propelled by test-time scaling methodologies employed in Ope-nAI o1 (OpenAI, 2024), Claude 3.7 (Anthropic, 2025), DeepSeek R1 (DeepSeek-AI et al., 2025), Kimi K1."
+    ]
+   },
+   "label": "self_ref",
+   "usage_kind": null,
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "'building on the observations … discussed in Section 3' — self reference."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "d981ce332586e6a29f595cbdfa9347cf425e5cd0",
+   "dst": "c854193bab740e43da93f1a260ae6dac10f0bdda",
+   "cited": {
+    "title": "Open-Reasoner-Zero: An Open Source Approach to Scaling Up Reinforcement Learning on the Base Model",
+    "year": 2025,
+    "authors": [
+     "Jingcheng Hu",
+     "Yin-Min Zhang",
+     "Qi Han",
+     "Da-Xin Jiang",
+     "Xiang-Yu Zhang"
+    ],
+    "venue": "NeurIPS 2025"
+   },
+   "citing": {
+    "title": "RLPR: Extrapolating RLVR to General Domains without Verifiers",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "To ensure a fair evaluation, we use the publicly released model from (Hu et al., 2025b).",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "To ensure a fair evaluation, we use the publicly released model from (Hu et al., 2025b).",
+     "…contrast to the pretraining of LLMs that can learn foundational capabilities from general domain data, most RLVR methods are confined to mathematics (Hu et al., 2025b; Liu et al., 2025b; Zeng et al., 2025; Yu et al., 2025) and code generation (Luo et al., 2025a; He et al., 2025; Cui et al., 2025a).",
+     "The most widely adopted verifiers are handcrafted rules (Hu et al., 2025b; Liu et al., 2025b; Zeng et al., 2025).",
+     "Large-scale Reinforcement Learning with Verifiable Rewards (RLVR) has emerged as a promising paradigm to advance the reasoning capabilities of Large Language Models (LLMs) (Jaech et al., 2024; DeepSeek-AI et al., 2025; Hu et al., 2025b; Luo et al., 2025a)."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "released_model",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "'we use the publicly released model from (Hu et al., 2025b)'."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "dce6f9d4017b1785979e7520fd0834ef8cf02f4b",
+   "dst": "8e3b1f5d8b6c165f64137cc1f7dea89cf6f622bd",
+   "cited": {
+    "title": "Proximal Policy Optimization Algorithms",
+    "year": 2017,
+    "authors": [
+     "John D. Schulman",
+     "Filip Wolski",
+     "Prafulla Dhariwal",
+     "A. Radford",
+     "Oleg Klimov"
+    ],
+    "venue": "arXiv.org"
+   },
+   "citing": {
+    "title": "d1: Scaling Reasoning in Diffusion Large Language Models via Reinforcement Learning",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Using the log-probability estimators proposed in Section 3.1, we extend GRPO to masked dLLMs. Note that our estimation technique is broadly applicable and can readily extend to other policy gradient methods such as PPO [37] or REINFORCE [4…",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Using the log-probability estimators proposed in Section 3.1, we extend GRPO to masked dLLMs. Note that our estimation technique is broadly applicable and can readily extend to other policy gradient methods such as PPO [37] or REINFORCE [44].",
+     "While Proximal Policy Optimization (PPO) [37] has been the predominant approach in online RL, it requires jointly training a state value function V to estimate advantages, leading to increased computational demands.",
+     "Adapting RL algorithms to masked dLLMs poses unique challenges because existing successful approaches for AR models, such as PPO [37] and GRPO [38], rely on estimating and optimizing policy distributions through computing log-probabilities of generated sequences, which cannot be directly applied to…"
+    ]
+   },
+   "label": "misattributed",
+   "usage_kind": null,
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "'we extend GRPO to masked dLLMs … can readily extend to other policy gradient methods such as PPO [37]' — applicability to PPO, the extension is of GRPO."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "dce6f9d4017b1785979e7520fd0834ef8cf02f4b",
+   "dst": "c6f896aa698b2d65160372bce057ea5f081904de",
+   "cited": {
+    "title": "Proximal Policy Optimization Algorithms",
+    "year": 2017,
+    "authors": [
+     "John D. Schulman",
+     "Filip Wolski",
+     "Prafulla Dhariwal",
+     "A. Radford",
+     "Oleg Klimov"
+    ],
+    "venue": "arXiv.org"
+   },
+   "citing": {
+    "title": "LLaDA 1.5: Variance-Reduced Preference Optimization for Large Language Diffusion Models",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "We further discuss on potential generalization of our variance reduction techniques to other alignment algorithms such as PPO and GRPO (Schulman et al., 2017; Shao et al., 2024).",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "We further discuss on potential generalization of our variance reduction techniques to other alignment algorithms such as PPO and GRPO (Schulman et al., 2017; Shao et al., 2024).",
+     "Motivated by the success of aligning ARMs with human preferences (Schulman et al., 2017; Ziegler et al., 2019; Ouyang et al., 2022; Rafailov et al., 2023; Shao et al., 2024; Guo et al., 2025), recent work has begun to explore MDM alignment.",
+     "Finally, although we theoretically discuss generalizing VRPO to other alignment algorithms such as PPO and GRPO, our empirical validation in this study is limited to DPO.",
+     "For example, PPO (Schulman et al., 2017) and GRPO (Shao et al., 2024) optimize variants of the objective (see Eq.",
+     "(6) in Schulman et al. ( − | For both equations, when applied to MDMs, our variance reduction techniques can be directly used to reduce the variance in ELBO-based estimation for likelihood terms π ( y | x ) or likelihood-ratio terms π 1 ( y | x ) π 2 ( y x ) without introducing bias."
+    ]
+   },
+   "label": "misattributed",
+   "usage_kind": null,
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "'potential generalization of our variance reduction techniques to other alignment algorithms such as PPO and GRPO' — applicability, not a build-on."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "dce6f9d4017b1785979e7520fd0834ef8cf02f4b",
+   "dst": "d981ce332586e6a29f595cbdfa9347cf425e5cd0",
+   "cited": {
+    "title": "Proximal Policy Optimization Algorithms",
+    "year": 2017,
+    "authors": [
+     "John D. Schulman",
+     "Filip Wolski",
+     "Prafulla Dhariwal",
+     "A. Radford",
+     "Oleg Klimov"
+    ],
+    "venue": "arXiv.org"
+   },
+   "citing": {
+    "title": "Open-Reasoner-Zero: An Open Source Approach to Scaling Up Reinforcement Learning on the Base Model",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "We adopt the PPO [4] as the core RL algorithm, diverging from the GRPO used in DeepSeek-R1-Zero [2].",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": [
+     "We adopt the PPO [4] as the core RL algorithm, diverging from the GRPO used in DeepSeek-R1-Zero [2].",
+     "Concretely, we begin by reviewing essential background on Generalized Advantage Estimation (GAE) [3] and Proximal Policy Optimization (PPO) [4] algorithms."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "stock_algorithm",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [
+    "extends"
+   ],
+   "borderline": true,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "'We adopt the PPO [4] as the core RL algorithm' — vanilla PPO as the training algorithm."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "dd4cfde3e135f799a9a71b4f57e13a29de89f7e3",
+   "dst": "143e18bfd7c356592e7c1439738a3525d3e16279",
+   "cited": {
+    "title": "DAPO: An Open-Source LLM Reinforcement Learning System at Scale",
+    "year": 2025,
+    "authors": [
+     "Qiying Yu",
+     "Zheng Zhang",
+     "Ruofei Zhu",
+     "Yufeng Yuan",
+     "Xiaochen Zuo"
+    ],
+    "venue": "NeurIPS 2025"
+   },
+   "citing": {
+    "title": "Does Reinforcement Learning Really Incentivize Reasoning Capacity in LLMs Beyond the Base Model?",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Based on the setup in Section 4.3, we investigate the effect of the training steps on the asymptotic performance of the model.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "This raises the natural question: Do all reasoning paths generated by RL-trained models already exist within the output distribution of their base models?",
+     "Based on the setup in Section 4.3, we investigate the effect of the training steps on the asymptotic performance of the model.",
+     "For evaluation of the base model, a common practice is to include few-shot examples in the prompt to guide both the output formatting and the reasoning process (Grattafiori et al., 2024; Yang et al., 2024; Liu et al., 2024)."
+    ]
+   },
+   "label": "self_ref",
+   "usage_kind": null,
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "'Based on the setup in Section 4.3' — self reference."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "dd4cfde3e135f799a9a71b4f57e13a29de89f7e3",
+   "dst": "5ad7afba4a827a367f1ccbb7bbb06523e54c2c1a",
+   "cited": {
+    "title": "DAPO: An Open-Source LLM Reinforcement Learning System at Scale",
+    "year": 2025,
+    "authors": [
+     "Qiying Yu",
+     "Zheng Zhang",
+     "Ruofei Zhu",
+     "Yufeng Yuan",
+     "Xiaochen Zuo"
+    ],
+    "venue": "NeurIPS 2025"
+   },
+   "citing": {
+    "title": "PaddleOCR-VL-1.6: Expanding the Frontier of Document Parsing with Under-Optimized Region Refinement and Progressive Post-Training",
+    "year": 2026
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Following DAPO [19], we adopt a clip-higher strategy with 𝜀 high = 0.28.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Following DAPO [19], we adopt a clip-higher strategy with 𝜀 high = 0.28.",
+     "We also use the dynamic sampling strategy from DAPO to ignore groups whose within-group reward variance is zero, ensuring that GRPO updates are computed only from samples with meaningful relative reward differences."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "component",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [
+    "extends"
+   ],
+   "borderline": true,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "'Following DAPO [19], we adopt a clip-higher strategy with ε = 0.28' — RL training tricks for an OCR model."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "dd4cfde3e135f799a9a71b4f57e13a29de89f7e3",
+   "dst": "6aa55900c2bcf1860938520bdf1952f462ed37a1",
+   "cited": {
+    "title": "DAPO: An Open-Source LLM Reinforcement Learning System at Scale",
+    "year": 2025,
+    "authors": [
+     "Qiying Yu",
+     "Zheng Zhang",
+     "Ruofei Zhu",
+     "Yufeng Yuan",
+     "Xiaochen Zuo"
+    ],
+    "venue": "NeurIPS 2025"
+   },
+   "citing": {
+    "title": "Reinforcement Learning with Verifiable Rewards Implicitly Incentivizes Correct Reasoning in Base LLMs",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "For training and evaluation of DAPO (Yu et al., 2025), we reuse their training data ( https:// huggingface.co/datasets/BytedTsinghua-SIA/DAPO-Math-17k ) and processed version of AIME 2024 ( https://huggingface.co/datasets/BytedTsinghua-SIA…",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "While this hypothesis has gained significant support (Zhu et al., 2025; Zhang et al., 2025; Wang et al., 2025a; Chen et al., 2025a), conflicting observations have also been reported.",
+     "To further demystify RLVR, we reproduce and analyze the training recipe of DAPO (Yu et al., 2025), which has been demonstrated to present extended reasoning capability boundaries in Section 3.",
+     "Our run did not fully reproduce the Pass @1 accuracy above 50% as reported by Yu et al. (2025), while we reached a comparable performance of around 44% Pass @1 , in line with a third-party reproduction (Chen et al., 2025a).",
+     "For training and evaluation of DAPO (Yu et al., 2025), we reuse their training data ( https:// huggingface.co/datasets/BytedTsinghua-SIA/DAPO-Math-17k ) and processed version of AIME 2024 ( https://huggingface.co/datasets/BytedTsinghua-SIA/ AIME-2024 ).",
+     "…research interest in the RLVR paradigm (Luo et al., 2025b; Liu et al., 2025b; Hu et al., 2025; Cui et al., 2025; Xie et al., 2025; Zeng et al., 2025; Yu et al., 2025; Luo et al., 2025a; Chen et al., 2025a; He et al., 2025; Wen et al., 2025; Cao et al., 2025; Liu et al., 2025a; Chen et al., 2025b).",
+     "This interest is focused on understanding, reproducing, and extending DeepSeek’s approach, as evidenced by a multitude of recent studies (Liu et al., 2025b; Hu et al., 2025; Zeng et al., 2025; Yu et al., 2025; He et al., 2025; Wen et al., 2025; Chen et al., 2025b).",
+     "We begin by revisiting the Pass@K experiments conducted on the open-source model, DAPO-Qwen-32B (Yu et al., 2025), which successfully reproduced R1-Zero (Guo et al., 2025) using the base LLM, Qwen2.",
+     "…optimization formulations or objective functions, such as policy-gradient approaches (Sutton et al., 1999; Schulman et al., 2017), new likelihood-based optimization objectives (Chen et al., 2025a; Zhu et al., 2025), and preference optimization frameworks (Rafailov et al., 2023; Su et al., 2025).",
+     "By reproducing GRPO-style training using the open-source DAPO recipe (Yu et al., 2025) and performing extensive verifications, we find that RLVR begins to incentivize correct reasoning from the early stages of training, and this capability generalizes well to unseen test questions.",
+     "Some studies agree with this viewpoint (Wang et al., 2025b; Zhu et al., 2025; Zhang et al., 2025; Wang et al., 2025a; Chen et al., 2025a), while others report contradictory findings (Liu et al., 2025a; Chen et al., 2025b; Shojaee et al., 2025), as discussed in the introduction."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "dataset",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "'we reuse their training data (DAPO-Math-17k)'."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "dd4cfde3e135f799a9a71b4f57e13a29de89f7e3",
+   "dst": "cf92906ac18467b2bce3cf1cbd77bc4ed1201352",
+   "cited": {
+    "title": "DAPO: An Open-Source LLM Reinforcement Learning System at Scale",
+    "year": 2025,
+    "authors": [
+     "Qiying Yu",
+     "Zheng Zhang",
+     "Ruofei Zhu",
+     "Yufeng Yuan",
+     "Xiaochen Zuo"
+    ],
+    "venue": "NeurIPS 2025"
+   },
+   "citing": {
+    "title": "SwS: Self-aware Weakness-driven Problem Synthesis in Reinforcement Learning for LLM Reasoning",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "The optimization objective is defined as follows: (2) Inspired by DAPO Yu et al. [2025b], in all experiments of this work, we omit the KL term during optimization, while incorporating the clip-higher , token-level loss and dynamic sampling…",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "The success of RLVR for eliciting models’ reasoning capabilities heavily depends on a well-curated problem set with proper difficulty levels Yu et al. [2025b], Liu et al. [2025b], Xiong et al. [2025], where each problem is paired with an precise and verifiable reference answer [Hu et al., 2025, Luo…",
+     "Yu et al. [2025b] found that the KL constraint may limit exploration under RLVR, while Liu et al. [2025b] proposed removing variance normalization in GRPO to prevent length bias.",
+     "The initial training set, consisting of the DAPO and Light-R1 subsets for the Qwen2.",
+     "Since the training data for the 32B and 14B models (a combination of DAPO [Yu et al., 2025b] and LightR1 [Wen et al., 2025] subsets) lack human-annotated category information, we leverage the LLaMA-3.",
+     "The optimization objective is defined as follows: (2) Inspired by DAPO Yu et al. [2025b], in all experiments of this work, we omit the KL term during optimization, while incorporating the clip-higher , token-level loss and dynamic sampling strategies to enhance the training efficiency of RLVR.",
+     "Recent efforts in scaling up RLVR optimization have focused on enhancing exploration [Yu et al., 2025b, Yuan et al., 2025, Liu et al., 2025b, Yeo et al., 2025] and adapting RL to the Long-CoT conditions [Jaech et al., 2024, Guo et al., 2025, Li et al., 2025c].",
+     "Although performance declines on AIME, we attribute this to the initial training data from DAPO and LightR1 already being specifically tailored to that benchmark.",
+     "As the 14B and 32B models show early saturation on MATH-12k, we instead use a combined dataset of 17.5k samples from the DAPO [Yu et al., 2025b] English set and the LightR1 [Wen et al., 2025] Stage-2 set.",
+     "When all responses yield identical accuracy—either all correct or all incorrect—the advantages uniformly degrade to zero, leading to gradient vanishing for policy updates and resulting in training inefficiency [Shao et al., 2024, Yu et al., 2025b].",
+     "We do not apply a KL penalty, as recent studies have shown it may hinder exploration and potentially cause training collapse [Yuan et al., 2025, Liu et al., 2025b, Yu et al., 2025b].",
+     "…mathematical questions can partially elicit a model’s reasoning ability [Zeng et al., 2025], the composition of RL training data is critical for enhancing the model’s reasoning capabilities [Luo et al., 2025, Yu et al., 2025b, Li et al., 2025a, Hu et al., 2025, He et al., 2025, Shen et al., 2025].",
+     "…capabilities heavily depends on a well-curated problem set with proper difficulty levels Yu et al. [2025b], Liu et al. [2025b], Xiong et al. [2025], where each problem is paired with an precise and verifiable reference answer [Hu et al., 2025, Luo et al., 2025, Yu et al., 2025b, Guo et al., 2025]."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "setting",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [
+    "extends"
+   ],
+   "borderline": true,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "'Inspired by DAPO, in all experiments of this work, we omit the KL term … clip-higher, token-level loss and dynamic sampling' — DAPO's training recipe in a data-synthesis paper."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "dd4cfde3e135f799a9a71b4f57e13a29de89f7e3",
+   "dst": "d6a29be03a0497602e89311ec38e5141335647c5",
+   "cited": {
+    "title": "DAPO: An Open-Source LLM Reinforcement Learning System at Scale",
+    "year": 2025,
+    "authors": [
+     "Qiying Yu",
+     "Zheng Zhang",
+     "Ruofei Zhu",
+     "Yufeng Yuan",
+     "Xiaochen Zuo"
+    ],
+    "venue": "NeurIPS 2025"
+   },
+   "citing": {
+    "title": "Beyond the 80/20 Rule: High-Entropy Minority Tokens Drive Effective Reinforcement Learning for LLM Reasoning",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "In this section, building on the observations of entropy patterns in CoTs discussed in Section 3, we further investigate how these patterns evolve throughout RLVR training.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Only a small set of tokens that are inherently uncertain in the pretraining corpus allows for exploration, and thus exhibits high entropy.",
+     "Proximal Policy Optimization (PPO) PPO (Schulman et al., 2017) is a widely adopted policy gradient algorithm in RLVR.",
+     "In this section, building on the observations of entropy patterns in CoTs discussed in Section 3, we further investigate how these patterns evolve throughout RLVR training.",
+     "…π θ old using the following clipped surrogate to maximize the objective: Here, D is a dataset of queries q and corresponding ground-truth answers a , B is a batch sampled from D , ϵ ∈ R is a hyperparameter typically set to 0.2, and ˆ A t is the estimated advantage computed using a value network.",
+     "Surprisingly, discarding the bottom 80% low-entropy tokens does 50), bottom 80% means only using the 80% of the tokens with lowest entropy, and 100% means using all tokens (i.e., vanilla DAPO).",
+     "In RL, entropy bonus is commonly added to the training loss to encourage exploration by increasing the entropy of actions—a well-established practice in traditional tasks (Schulman et al., 2017; Williams, 1992; Mnih et al., 2016), and recently applied to LLM reasoning (Sheng et al., 2024; Hu et…",
+     "A pivotal technique driving these improvements is Reinforcement Learning with Verifiable Rewards (RLVR) (Lambert et al., 2025; DeepSeek-AI et al., 2025; Yang et al., 2025), where models optimize outputs through RL objectives tied to automated correctness verification.",
+     "It can be seen that lowering T high significantly degrades performance compared to lowering T low .",
+     "…tokens as a potential reason why supervised fine-tuning (SFT) memorizes but RL generalizes, (ii) how prior knowledge and readability requirements shape the different entropy patterns seen in LLM CoTs compared to traditional RL trajectories, and (iii) the advantage of clip-higher over…"
+    ]
+   },
+   "label": "self_ref",
+   "usage_kind": null,
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "Published evidence is the 'Section 3' self reference. (The paper does modify DAPO, but no context sentence states it: 'vanilla DAPO' only.)"
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "de23d38bc2604dcf334dcc46aff217eb6bcd1fe1",
+   "dst": "6e9bcd4976a28ec58e7f9e5e51a38c35548a1343",
+   "cited": {
+    "title": "Understanding R1-Zero-Like Training: A Critical Perspective",
+    "year": 2025,
+    "authors": [
+     "Zi-Chen Liu",
+     "Chang-Yu Chen",
+     "Wen J. Li",
+     "Penghui Qi",
+     "Tianyu Pang"
+    ],
+    "venue": "arXiv.org"
+   },
+   "citing": {
+    "title": "No Prompt Left Behind: Exploiting Zero-Variance Prompts in LLM Reinforcement Learning via Entropy-Guided Advantage Shaping",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Our work builds on this line of research by leveraging entropy as a mechanism to extract meaningful signals from zero-variance prompts, addressing this limitation directly.",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": [
+     "Our work builds on this line of research by leveraging entropy as a mechanism to extract meaningful signals from zero-variance prompts, addressing this limitation directly."
+    ]
+   },
+   "label": "misattributed",
+   "usage_kind": null,
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": true,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "'Our work builds on this line of research' — anaphoric, the sentence cites nothing."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "de23d38bc2604dcf334dcc46aff217eb6bcd1fe1",
+   "dst": "72d702e7e290c5a3223c42342e54f1b3e5dbf526",
+   "cited": {
+    "title": "Understanding R1-Zero-Like Training: A Critical Perspective",
+    "year": 2025,
+    "authors": [
+     "Zi-Chen Liu",
+     "Chang-Yu Chen",
+     "Wen J. Li",
+     "Penghui Qi",
+     "Tianyu Pang"
+    ],
+    "venue": "arXiv.org"
+   },
+   "citing": {
+    "title": "Advantage Weighted Matching: Aligning RL with Pretraining in Diffusion Models",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "arxiv_html",
+   "published_relation": "extends",
+   "published_evidence": "each prompt c , we sample a group \\x_i\\_i=1^G__old(|c) , compute rewards r_i=r(x_i,c) and advantages A_i (e.g., through group-relative mean A_i=r_i-mean(r_i)std(r_i) , where std(r_i) can be computed either globally across the batch or loca…",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": []
+   },
+   "arxiv_html_contexts": [
+    "each prompt c , we sample a group \\x_i\\_i=1^G__old(|c) , compute rewards r_i=r(x_i,c) and advantages A_i (e.g., through group-relative mean A_i=r_i-mean(r_i)std(r_i) , where std(r_i) can be computed either globally across the batch or locally within each group; we adopt the former to avoid introducing additional bias in advantage normalization, as discussed in recent analyses (Liu et al., 2025c))."
+   ],
+   "label": "usage",
+   "usage_kind": "setting",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "arXiv HTML: std computed globally, 'we adopt the former … as discussed in recent analyses (Liu et al., 2025c)' — a normalisation setting."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "de23d38bc2604dcf334dcc46aff217eb6bcd1fe1",
+   "dst": "c854193bab740e43da93f1a260ae6dac10f0bdda",
+   "cited": {
+    "title": "Understanding R1-Zero-Like Training: A Critical Perspective",
+    "year": 2025,
+    "authors": [
+     "Zi-Chen Liu",
+     "Chang-Yu Chen",
+     "Wen J. Li",
+     "Penghui Qi",
+     "Tianyu Pang"
+    ],
+    "venue": "arXiv.org"
+   },
+   "citing": {
+    "title": "RLPR: Extrapolating RLVR to General Domains without Verifiers",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "For reliable answer extraction, we adopt the “ < think >< /think >< answer >< /answer > ” template of R1 (Liu et al., 2025b) during training and use the striped content inside answer tags as the generated answer.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "…contrast to the pretraining of LLMs that can learn foundational capabilities from general domain data, most RLVR methods are confined to mathematics (Hu et al., 2025b; Liu et al., 2025b; Zeng et al., 2025; Yu et al., 2025) and code generation (Luo et al., 2025a; He et al., 2025; Cui et al., 2025a).",
+     "(4) Oat-Zero (Liu et al., 2025b) proposes to remove the standard deviation and token-level normalization in GRPO.",
+     "Though we removed the mathematical category from the original WebInstrut dataset during training, we find the performance on multiple mathematical benchmarks is significantly improved and the score on Minerva surpasses Oat-Zero and SimpleRL-Zoo.",
+     "The most widely adopted verifiers are handcrafted rules (Hu et al., 2025b; Liu et al., 2025b; Zeng et al., 2025).",
+     "For reliable answer extraction, we adopt the “ < think >< /think >< answer >< /answer > ” template of R1 (Liu et al., 2025b) during training and use the striped content inside answer tags as the generated answer."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "template",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "'we adopt the <think>…<answer> template of R1 (Liu et al., 2025b)' — a prompt template."
+  },
+  {
+   "collection": "neurips-2025",
+   "src": "f8e06a310fc99df5b76268fc38abb31f6de5a6f6",
+   "dst": "ad7e6b9b1318585671f600c73c263f62a091603c",
+   "cited": {
+    "title": "LongLive: Real-time Interactive Long Video Generation",
+    "year": 2025,
+    "authors": [
+     "Shuai Yang",
+     "Wei Huang",
+     "Ruihang Chu",
+     "Yicheng Xiao",
+     "Yuyang Zhao"
+    ],
+    "venue": "arXiv.org"
+   },
+   "citing": {
+    "title": "WorldPlay: Towards Long-Term Geometric Consistency for Real-Time Interactive World Modeling",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "arxiv_html",
+   "published_relation": "extends",
+   "published_evidence": "Additionally, for the past chunks x_0:j-1 , we attempt to self-rollout historical chunks as context following (Yang et al., 2026).",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": []
+   },
+   "arxiv_html_contexts": [
+    "Recent methods (Huang et al., 2025c; Yang et al., 2026; Liu et al., 2026b; Cui et al., 2026b) address these challenges by distilling a powerful bidirectional teacher diffusion model into a fast, few-step autoregressive student.",
+    "Additionally, for the past chunks x_0:j-1 , we attempt to self-rollout historical chunks as context following (Yang et al., 2026)."
+   ],
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [
+    "baseline_only"
+   ],
+   "borderline": true,
+   "audited_verdict": null,
+   "genuine_evidence": [
+    "self-rollout historical chunks as context following"
+   ],
+   "note": "arXiv HTML: WorldPlay self-rolls-out history chunks following LongLive (a technique adopted; borderline like 'Following [39], we place the MoEs …')."
+  }
+ ]
+}
