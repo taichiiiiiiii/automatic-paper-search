@@ -120,6 +120,14 @@ const GENERIC_WORDS: ReadonlySet<string> = new Set(
     "detection",
     "classification",
     "recognition",
+    // R2-39: field words ("Reinforcement Learning: A Survey" is not named by
+    // "rule-based reinforcement learning"; "Flow Straight and Fast" not by
+    // "Flow Matching").
+    "reinforcement",
+    "flow",
+    "flows",
+    "diffusion",
+    "generative",
   ].map((w) => w.toLowerCase()),
 );
 
@@ -245,7 +253,13 @@ export function citedAliases(cited: ClassifyPaperLike): string[] {
   const title = str((cited as Record<string, unknown>).title);
   const out = new Set<string>();
   const stem = titleStem(title);
-  const names = stem ? [stem] : [];
+  // R2-39: a stem made of field words only names a field, not a paper.
+  const fieldOnly =
+    stem
+      ?.toLowerCase()
+      .split(/[\s-]+/)
+      .every((w) => GENERIC_WORDS.has(w)) ?? false;
+  const names = stem && !fieldOnly ? [stem] : [];
   for (const name of names) {
     out.add(name.toLowerCase());
     // "PVT v2" is also written "PVTv2"; "FlashAttention-2" as "FlashAttention 2".
@@ -514,7 +528,9 @@ export function cueTargetsCited(
   scope: "clause" | "phrase" = "clause",
 ): boolean {
   if (exempt.some((p) => p.test(sentence))) return true;
-  if (sentenceTarget(sentence, id) === "unmarked") return true;
+  // R2-39: a sentence without any citation ("Building upon this, we
+  // introduce VRPO", "Based on the setup in Section 4.3, …") ties a cue to
+  // the cited paper only through its name inside the cue's span (below).
   const byName = (span: string) =>
     id.aliases.some((a) => mentions(span, a)) || namesVersionFamily(span, id);
   const namedInWords = byName(sentence);
@@ -522,6 +538,12 @@ export function cueTargetsCited(
   for (const p of cues) {
     const re = new RegExp(p.source, p.flags.includes("g") ? p.flags : `${p.flags}g`);
     for (const m of sentence.matchAll(re)) {
+      // R2-39: what the cue governs — the first citation (or self
+      // reference) in its object, the owner named by "proposed by / introduced
+      // in", a third-party subject — decides when it can be read.
+      const gov = cueGovernor(sentence, m.index ?? 0, m[0], id);
+      if (gov === "cited") return true;
+      if (gov !== "none") continue;
       const tail = sentence.slice(m.index ?? 0);
       const stop = tail.search(scope === "phrase" ? /[.;,](?:\s|$)/ : /[.;](?:\s|$)/);
       const span = (stop >= 0 ? tail.slice(0, stop) : tail).slice(0, 300);
@@ -540,6 +562,214 @@ export function cueTargetsCited(
     }
   }
   return false;
+}
+
+/**
+ * R2-39: what a cue governs, read from its own words:
+ *  - `cited`: the first citation of the cue's object (from the cue to the
+ *    clause end, outside brackets: "," / ";" / ":" / "." or a relative
+ *    "which / who / while …") is the cited paper's (name, marker, author-year
+ *    group) — or the owner a "proposed by / introduced in / released by"
+ *    phrase names is ("the semi-autoregressive denoising strategy
+ *    introduced in LLaDA [22]");
+ *  - `other`: another work comes first ("We adopt the zero residual-block
+ *    initialization [13], which adaLN-zero [35] also follows"), owns the
+ *    object ("enhancements of GRPO [16] proposed by DAPO [4]", "models
+ *    released by SimpleRLZoo (Zeng et al., 2025)"), is the subject of an
+ *    active build verb ("Flow Matching methods [28, 1, 30] extend this
+ *    framework"), or the cited paper is only the destination of an
+ *    extension ("can readily extend to other policy gradient methods such
+ *    as PPO [37]");
+ *  - `self`: the object is the citing paper itself — a section / figure /
+ *    table / equation / appendix / algorithm reference ("building on the
+ *    observations … discussed in Section 3"), or an anaphor without any
+ *    citation ("Building upon this", "this line of research");
+ *  - `distant`: the object is a long phrase (12 words or more) without any
+ *    citation — whatever the clause cites later is not what the cue is
+ *    about ("On-Policy RL with Extended Generation Budget Our prior … a
+ *    vanilla implementation of GRPO …");
+ *  - `none`: the object is short and carries none of these; the caller
+ *    falls back to the clause-level test ("builds on the common
+ *    hierarchical VLA paradigm, as in Shi et al. (2025)").
+ */
+export type CueGovernor = "cited" | "other" | "self" | "distant" | "none";
+
+/** Periods of abbreviations ("et al.", "e.g.", "Sec.") blanked so they do
+ * not end a clause; same length, so offsets stay valid. */
+function maskAbbrev(s: string): string {
+  return s.replace(
+    /\b(?:et\s+al|e\.g|i\.e|cf|vs|Sec|Secs|Fig|Figs|Tab|Eq|Eqs|Eqn|Alg|Thm|App|resp|approx|No)\./gi,
+    (m) => `${m.slice(0, -1)} `,
+  );
+}
+
+/** The object span of a cue ending at `from`: up to the clause end outside
+ * brackets, or a relative / contrastive connective. */
+function objectSpanEnd(masked: string, from: number): { end: number; capped: boolean } {
+  const max = Math.min(masked.length, from + 220);
+  let depth = 0;
+  let words = 0;
+  for (let i = from; i < max; i++) {
+    const ch = masked[i] as string;
+    if (ch === "(" || ch === "[") depth += 1;
+    else if ((ch === ")" || ch === "]") && depth > 0) depth -= 1;
+    else if (depth === 0) {
+      if (ch === ";" || ch === ":" || ch === ",") return { end: i, capped: false };
+      if (ch === "." && /^(?:\s|$)/.test(masked.slice(i + 1, i + 2))) {
+        return { end: i, capped: false };
+      }
+      // A noun phrase, not the rest of the sentence: at most 12 words
+      // outside brackets ("… with Extended Generation Budget Our prior …
+      // indicated that a vanilla implementation of GRPO …" is not about GRPO).
+      if (/\s/.test(ch) && i > from && /\S/.test(masked[i - 1] as string)) {
+        words += 1;
+        if (words >= 12) return { end: i, capped: true };
+      }
+      if (
+        /\s/.test(ch) &&
+        /^\s(?:which|who|whose|where|while|whereas|because|since|but|although|though)\b/i.test(
+          masked.slice(i, i + 12),
+        )
+      )
+        return { end: i, capped: false };
+    }
+  }
+  return { end: max, capped: max < masked.length };
+}
+
+const SELF_REF_RE =
+  /(?:\b(?:[Ss]ections?|[Ss]ecs?|[Ff]ig(?:ure)?s?|[Tt]ab(?:le)?s?|[Ee]q(?:uation)?s?|[Ee]qn|[Aa]ppendi(?:x|ces)|[Aa]pp|[Aa]lg(?:orithm)?s?|[Tt]heorems?|[Tt]hm|[Ll]emmas?|[Pp]ropositions?|[Dd]efinitions?)\b|§)\s*[(~]?\s*(?:\d|[A-Z](?:\.\d|\b))/;
+const ANAPHOR_RE = /^\s*(?:the\s+former|the\s+latter|this|these|those|that)\b/i;
+const OWNER_RE =
+  /\b(?:proposed|introduced|developed|presented|released|described|suggested|designed|devised|open-?sourced|provided|trained)\s+(?:by|in|from)\s/gi;
+const DESTINATION_CUE_RE = /\b(?:extend\w*|extension|generali[sz]\w*)\b/i;
+const ACTIVE_BUILD_RE =
+  /\b(?:extend|extends|extended|build|builds|built|generali[sz]e|generali[sz]es|generali[sz]ed|modif(?:y|ies|ied)|improves?|improved|adapts?|adapted|subsumes?|subsumed)\b/i;
+const FIRST_PERSON_RE = /(?<![\w-])(?:we|our|ours|us)(?![\w-])/i;
+const YEAR_RE = /\b(?:1[89]|20)\d{2}[a-z]?\b/;
+const ENUMERATION_RE =
+  /\b(?:such\s+as|e\.?g\b|including|like|for\s+(?:example|instance)|namely)\b/i;
+
+interface GovEvent {
+  at: number;
+  kind: CueGovernor;
+  /** The "to" of "extend … to X": what follows is a destination. */
+  destination?: boolean;
+}
+
+interface CiteUnit {
+  at: number;
+  cited: boolean | null;
+}
+
+/** Citation units of `text` (positions relative to it): numeric bracket
+ * groups, author-year groups, "Name et al." mentions, and the cited
+ * paper's names. `cited` = whether the unit is the cited paper's (`null` =
+ * cannot tell). */
+function citationUnits(
+  text: string,
+  sentence: string,
+  id: CitedIdentity,
+  withNames = true,
+): CiteUnit[] {
+  const out: CiteUnit[] = [];
+  const surnameRe =
+    id.surname && id.surname.length >= 2
+      ? new RegExp(`(?<![\\p{L}])${escapeRe(id.surname)}(?![\\p{L}])`, "iu")
+      : null;
+  const single = citationTargetCount(sentence) === 1;
+  for (const m of text.matchAll(/[[(]([^\][()]{1,160})[\])]/g)) {
+    const inner = m[1] as string;
+    const nums = numericMarkers(`[${inner}]`);
+    if (nums.length > 0) {
+      out.push({
+        at: m.index ?? 0,
+        cited: id.marker !== null ? nums.includes(id.marker) : single ? true : null,
+      });
+    } else if (YEAR_RE.test(inner) && /\p{Lu}[\p{L}'’-]+/u.test(inner)) {
+      out.push({
+        at: m.index ?? 0,
+        cited: surnameRe !== null ? surnameRe.test(inner) : single ? true : null,
+      });
+    }
+  }
+  for (const m of text.matchAll(/(?<![\p{L}])(\p{Lu}[\p{L}'’-]+)\s+et\s+al\b/gu)) {
+    out.push({
+      at: m.index ?? 0,
+      cited: surnameRe !== null ? surnameRe.test(m[1] as string) : null,
+    });
+  }
+  for (const a of withNames ? id.aliases : []) {
+    if (/ et al$/.test(a)) continue;
+    const re = new RegExp(`(?<![\\p{L}\\p{N}])${escapeRe(foldText(a))}(?![\\p{L}])`, "iu");
+    const m = re.exec(text);
+    if (m) out.push({ at: m.index, cited: true });
+  }
+  return out.sort((x, y) => x.at - y.at);
+}
+
+export function cueGovernor(
+  sentence: string,
+  cueAt: number,
+  cueText: string,
+  id: CitedIdentity,
+): CueGovernor {
+  const folded = foldText(sentence);
+  // Offsets come from `sentence`; fold only when that keeps them valid.
+  const text = folded.length === sentence.length ? folded : sentence;
+  const masked = maskAbbrev(text);
+  const at = Math.min(cueAt, text.length);
+  const from = at + cueText.length;
+  // A cue that carries the cited paper itself ("Following [39], we …",
+  // "Following ImageReward [32], we …") governs it.
+  if (citationUnits(text.slice(at, from), sentence, id).some((u) => u.cited === true)) {
+    return "cited";
+  }
+  // Third-party subject of an active build verb: the clause before the cue
+  // cites a work and has no first-person word.
+  const verb = ACTIVE_BUILD_RE.exec(cueText);
+  if (verb !== null && !/^(?:building|extending|built|extended)\b/i.test(cueText.trim())) {
+    const head = masked.slice(0, at);
+    const start = Math.max(head.lastIndexOf(". "), head.lastIndexOf(";"), head.lastIndexOf(":"));
+    const subject = head.slice(start + 1);
+    if (
+      !FIRST_PERSON_RE.test(subject) &&
+      !FIRST_PERSON_RE.test(cueText) &&
+      citationUnits(subject, sentence, id, false).length > 0
+    ) {
+      return "other";
+    }
+  }
+  const { end, capped } = objectSpanEnd(masked, from);
+  const object = text.slice(from, end);
+  const units = citationUnits(object, sentence, id);
+  // The owner a "proposed by / introduced in" phrase names owns the object.
+  for (const m of masked.slice(from, end).matchAll(OWNER_RE)) {
+    const after = (m.index ?? 0) + m[0].length;
+    const owner = units.find((u) => u.at >= after - 1 && u.at <= after + 60);
+    if (owner && owner.cited !== null) return owner.cited ? "cited" : "other";
+  }
+  const events: GovEvent[] = units
+    .filter((u) => u.cited !== null)
+    .map((u) => ({ at: u.at, kind: u.cited ? "cited" : "other" }));
+  const self = SELF_REF_RE.exec(masked.slice(from, end));
+  if (self) events.push({ at: self.index, kind: "self" });
+  if (units.length === 0 && ANAPHOR_RE.test(object)) events.push({ at: 0, kind: "self" });
+  if (DESTINATION_CUE_RE.test(cueText)) {
+    const to = /\bto\s/i.exec(object);
+    if (to) events.push({ at: to.index, kind: "other", destination: true });
+  }
+  if (events.length === 0) return capped ? "distant" : "none";
+  events.sort((x, y) => x.at - y.at);
+  const first = events[0] as GovEvent;
+  // An enumeration ("unlike … mechanisms such as Sinkhorn [20], Reformer [18]
+  // and Routing Transformer [19]") puts every listed work under the cue:
+  // the clause-level test decides.
+  const list = ENUMERATION_RE.exec(object);
+  if (list !== null && list.index <= first.at && first.kind === "other" && !first.destination) {
+    return "none";
+  }
+  return first.kind;
 }
 
 /**
