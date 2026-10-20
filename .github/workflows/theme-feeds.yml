@@ -79,7 +79,7 @@ jobs:
           fi
           rc=0
           pnpm exec tsx apps/pipeline/src/lineage/theme/feed/themeFeedsCli.ts \
-            --days "${DAYS:-30}" --max-credits 40 || rc=$?
+            --days "${DAYS:-30}" --max-pages 12 --max-credits 80 || rc=$?
           echo "rc=$rc" >> "$GITHUB_OUTPUT"
           case "$rc" in
             0) ;;
