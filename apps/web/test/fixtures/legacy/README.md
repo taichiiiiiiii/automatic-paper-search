@@ -19,7 +19,7 @@ added in. No content was edited by hand.
 | `sitemap.xml` | `docs/sitemap.xml` | `apps/web/test/misc/sitemap.test.ts` |
 | `eccv-2024/paper-links.html` | `docs/eccv-2024/paper-links.html` | `apps/web/test/catalog/paper-links-parity.test.ts` |
 | `aaai-2026/paper-links.html` | `docs/aaai-2026/paper-links.html` | `apps/web/test/catalog/paper-links-parity.test.ts` |
-| `assets/utils.js`, `assets/lineage.js`, `assets/deep.js` | `legacy/gh-pages-site/assets/*` (= old `docs/assets/*`) | `apps/web/test/lineage/graph/oracle.ts` |
+| `assets/utils.js`, `assets/lineage.js` | `legacy/gh-pages-site/assets/*` (= old `docs/assets/*`) | `apps/web/test/lineage/graph/oracle.ts` |
 
 The parity test originally also covered `cvpr-2026` (2.1 MB of HTML);
 it was swapped for `aaai-2026` (316 KB) because both conferences

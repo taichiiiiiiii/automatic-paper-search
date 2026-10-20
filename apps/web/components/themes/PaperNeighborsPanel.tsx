@@ -21,6 +21,7 @@ import { useMemo, useState } from "react";
 import { paperLink } from "../../lib/lineage/evidence";
 import type { LineagePath, NeighborItem, PriorDerivative } from "../../lib/lineage/paper-neighbors";
 import type { LineageEdge, LineageNode } from "../../lib/themes-quality";
+import { useRelationAudited } from "../lineage/relation-audit";
 import { edgeKey, relationLabelJa } from "./EdgeEvidence";
 
 const LIST_LIMIT = 12;
@@ -72,6 +73,7 @@ function NeighborList({
   onShowEvidence: (key: string, opener?: Element) => void;
   mainPathNodeIds: ReadonlySet<string>;
 }) {
+  const audited = useRelationAudited();
   const [showAll, setShowAll] = useState(false);
   const shown = showAll ? items : items.slice(0, LIST_LIMIT);
   return (
@@ -108,7 +110,7 @@ function NeighborList({
                         : "bg-accent/10 text-accent-strong"
                     }`}
                   >
-                    {relationLabelJa(item.edge.relation)}
+                    {relationLabelJa(item.edge.relation, audited)}
                     {item.kind === "strong-indirect" && `・${item.hops} 段`}
                   </span>
                   <span className="text-ink-subtle">{yearOf(nodeById, item.id)}</span>
@@ -174,6 +176,7 @@ function PathView({
   onSelectPaper: (id: string) => void;
   onShowEvidence: (key: string, opener?: Element) => void;
 }) {
+  const audited = useRelationAudited();
   return (
     <div data-lineage-path-result>
       <p className="text-xs text-ink-muted">
@@ -190,8 +193,8 @@ function PathView({
                   <span aria-hidden="true">{step.direction === "forward" ? "↓" : "↑"}</span>
                   <span>
                     {step.direction === "forward"
-                      ? `次の論文がこの論文を基にした（${relationLabelJa(step.edge.relation)}）`
-                      : `この論文が次の論文を基にした（${relationLabelJa(step.edge.relation)}）`}
+                      ? `次の論文がこの論文を基にした: ${relationLabelJa(step.edge.relation, audited)}`
+                      : `この論文が次の論文を基にした: ${relationLabelJa(step.edge.relation, audited)}`}
                   </span>
                   <button
                     type="button"

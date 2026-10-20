@@ -1,5 +1,5 @@
 /**
- * R2-24 (design 41): the conference and deep builders with no LLM — no
+ * R2-24 (design 41): the conference builder with no LLM — no
  * provider is built; relations come from Semantic Scholar citation
  * contexts (rules), the LLM-free rules and `api_citation`.
  */
@@ -8,7 +8,6 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { type BuildLineageDeps, build } from "../../src/lineage/conference/buildLineage.js";
-import { buildDeep } from "../../src/lineage/deep/buildDeepLineage.js";
 import {
   LINEAGE_LLM_ENV,
   LineageLlmModeError,
@@ -175,37 +174,6 @@ describe("conference build() with provider null (no-LLM mode)", () => {
     for (const e of result.edges as Record<string, unknown>[]) {
       expect(STRONG.has(e.relation as string)).toBe(false);
     }
-  });
-});
-
-describe("buildDeep() with lineageLlm off", () => {
-  it("never builds the provider and classifies from API evidence", async () => {
-    let built = 0;
-    const result = await buildDeep(
-      "2602.18473",
-      {
-        seedPaperId: PAPER_ID_ONE,
-        depth: 1,
-        topParents: 5,
-        topChildren: 5,
-        venueOverride: "ICLR 2026",
-        tierOverride: "A+",
-        lineageLlm: "off",
-        s2Citations: s2Source(),
-        buildProvider: () => {
-          built += 1;
-          throw new Error("No LLM key found");
-        },
-        generatedAtOverride: "2026-10-11T00:00:00Z",
-      },
-      makeDeps(responses("2602.18473", "Deep Focus Paper")),
-    );
-    expect(built).toBe(0);
-    expect(methodsOf(result.edges as Record<string, unknown>[])).toEqual({
-      "S2PARENT->S2FOCUS": "extends/s2_context_rule",
-      "S2FOCUS->S2CHILD": "baseline_only/api_citation",
-    });
-    expect((result.meta as Record<string, unknown>).lineage_llm).toBe("off");
   });
 });
 

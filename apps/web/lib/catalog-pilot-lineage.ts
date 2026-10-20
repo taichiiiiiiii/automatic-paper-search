@@ -5,7 +5,7 @@
  * `abandonPilotLineageLookup`) -- SCR-19.
  *
  * `/lineage-pilot-index-v1.json` is a small, site-wide (not
- * per-conference) index of papers that have an audited deep-lineage
+ * per-conference) index of papers that have an audited pilot-lineage
  * artifact. When the selected paper is in it (for THIS conference --
  * paper_id alone is not enough, since a graph-local id namespace could
  * collide across conferences), the card offers a link to that audited

@@ -41,7 +41,7 @@ describe("redirect.js mapPath / mapUrl", () => {
 
   const PATH_CASES: ReadonlyArray<[string, string]> = [
     ["/automatic-paper-search/iclr-2026/lineage.html", "/iclr-2026/lineage/"],
-    ["/automatic-paper-search/iclr-2026/deep.html", "/iclr-2026/deep/"],
+    ["/automatic-paper-search/iclr-2026/deep.html", "/iclr-2026/lineage/"],
     ["/automatic-paper-search/iclr-2026/paper-links.html", "/iclr-2026/paper-links/"],
     ["/automatic-paper-search/iclr-2026/index.html", "/iclr-2026/"],
     ["/automatic-paper-search/themes/index.html", "/themes/"],
@@ -85,7 +85,7 @@ describe("redirect.js mapPath / mapUrl", () => {
   it("preserves a #hash fragment verbatim", async () => {
     const mod = await loadRedirectModule();
     const url = mod.mapUrl("/automatic-paper-search/iclr-2026/deep.html", "", "#section-2");
-    expect(url).toBe(`${mod.NEW_ORIGIN}/iclr-2026/deep/#section-2`);
+    expect(url).toBe(`${mod.NEW_ORIGIN}/iclr-2026/lineage/#section-2`);
   });
 
   it("preserves both query and hash together, in order", async () => {

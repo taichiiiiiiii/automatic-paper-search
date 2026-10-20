@@ -11,6 +11,7 @@
 import { forwardRef, useMemo } from "react";
 import { layoutYearCitationTimeline } from "../../lib/lineage/theme-timeline";
 import type { LineageEdge, LineageNode } from "../../lib/themes-quality";
+import { useRelationAudited } from "../lineage/relation-audit";
 import { edgeKey, relationLabelJa } from "./EdgeEvidence";
 
 const RELATION_STROKE_CLASS: Record<string, string> = {
@@ -55,6 +56,7 @@ export const ThemeTimeline = forwardRef<
   },
   ref,
 ) {
+  const audited = useRelationAudited();
   const layout = useMemo(() => layoutYearCitationTimeline(nodes, { minWidth: 640 }), [nodes]);
   const pointById = useMemo(() => new Map(layout.points.map((p) => [p.id, p])), [layout]);
   const nodeById = useMemo(() => new Map(nodes.map((n) => [n.id, n])), [nodes]);
@@ -165,7 +167,7 @@ export const ThemeTimeline = forwardRef<
               strokeLinecap="round"
               data-timeline-path={onPath ? "1" : undefined}
             >
-              <title>{`${relationLabelJa(e.relation)}: ${e.rationale}`}</title>
+              <title>{`${relationLabelJa(e.relation, audited)}: ${e.rationale}`}</title>
             </line>
           );
         })}

@@ -8,6 +8,7 @@ import {
   PUBLICATION_TIER_LABEL,
   PublicationNotice,
 } from "../../../components/lineage/publication-badge";
+import { RelationAuditProvider } from "../../../components/lineage/relation-audit";
 import { fetchLineageArtifactBytes, fetchLineageQualityManifest } from "../../../lib/data-lineage";
 import { conferenceDisplayName } from "../../../lib/lineage/conference-name";
 import {
@@ -53,7 +54,7 @@ type GateState =
 
 // Shared loading copy with app/lineage/page.tsx's Focus View (same
 // "verifying the index matches the audit" wait state) -- pinned by
-// test/lineage/routes.test.ts across all gated lineage/deep routes, so
+// test/lineage/routes.test.ts across all gated lineage routes, so
 // the pre-hydration static HTML says the same thing everywhere while
 // the client-side quality-manifest fetch is still in flight.
 const LOADING_HEADING = "研究系譜を検証しています";
@@ -179,7 +180,9 @@ export default function ConferenceLineagePage() {
       {state.phase === "ready" && (
         <article>
           {focusMount ? (
-            <LineageGraph artifact={state.artifact} initialFocusId={focusId} />
+            <RelationAuditProvider value={state.tier === "audited"}>
+              <LineageGraph artifact={state.artifact} initialFocusId={focusId} />
+            </RelationAuditProvider>
           ) : (
             <p role="alert" className="mb-4 text-sm text-accent-strong">
               {state.tier === "audited"

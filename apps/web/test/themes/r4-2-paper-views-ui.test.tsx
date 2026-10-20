@@ -102,9 +102,9 @@ describe("Prior / Derivative panel (P0-5)", () => {
       "reference",
       "reference",
     ]);
-    expect(items[0]?.textContent).toContain("置換");
+    expect(items[0]?.textContent).toContain("置換（候補）");
     expect(items[0]?.textContent).toContain("Beta");
-    expect(items[1]?.textContent).toContain("拡張・2 段");
+    expect(items[1]?.textContent).toContain("拡張（候補）・2 段");
     expect(items[1]?.textContent).toContain("経由: Beta");
     expect(items[2]?.textContent).toContain("参照（背景）");
     expect(within(side("derivative")).getByText("Phi")).toBeTruthy();
@@ -226,7 +226,7 @@ describe("系譜での位置 on the catalog card (P1-3)", () => {
     expect(section.textContent).toContain("系譜での位置");
     const a = section.querySelector("a[data-theme-position-link]") as HTMLAnchorElement;
     expect(a.getAttribute("href")).toBe("/themes/?theme=graph-neural-network&focus=openalex%3AW1");
-    expect(section.textContent).toContain("発展 7 本（拡張 2・参照（背景） 5）");
+    expect(section.textContent).toContain("発展 7 本（拡張（候補） 2・参照（背景） 5）");
     expect(section.textContent).toContain("土台 1 本");
     expect(section.textContent).toContain("本流");
     expect(section.textContent).toContain("未監査");

@@ -1,5 +1,5 @@
 /**
- * Build the fail-closed conference/theme/deep lineage quality read model —
+ * Build the fail-closed conference/theme lineage quality read model —
  * every row carries a `publication_tier` (design doc 41 D1: audited /
  * unaudited / blocked) and golden fixtures cover strong-claim edges (D5).
  * TS port of `paperpilot/scripts/build_lineage_quality.py` (LIN-48 .. LIN-52
@@ -20,7 +20,6 @@ import {
   type LineageArtifactKind,
   type PublicationTier,
   publicationTier,
-  validateDeepManifest,
   validateLineageArtifact,
 } from "../contract/v1.js";
 import { isSurveyLike } from "../shared/surveyLike.js";
@@ -481,10 +480,7 @@ function artifactChecks(
         return;
       }
       seedValues.push(seed);
-      if (
-        (kind === "conference" || kind === "deep") &&
-        (catalogIds === null || !catalogIds.has(seed))
-      ) {
+      if (kind === "conference" && (catalogIds === null || !catalogIds.has(seed))) {
         membershipFailures.push(String(id));
       }
     }
@@ -519,7 +515,7 @@ function artifactChecks(
       // `PROMOTE_AS_OF`, see `release/promote.ts` and
       // `.github/workflows/theme-on-demand.yml`'s `date -u
       // +%Y-%m-%dT%H:%M:%SZ`) is always whole-second precision, while a
-      // theme/conference/deep artifact's `generated_at` keeps
+      // theme/conference artifact's `generated_at` keeps
       // sub-second precision when the generator's wall clock had any
       // (`pyIsoformat`). A real on-demand run (38221581049, "Low-Rank
       // Adaptation") finished generation mid-second (`...07.224Z`) and
@@ -548,7 +544,7 @@ function artifactChecks(
   );
 
   // R2-32: conference rows get the same automatic gate as themes
-  // (`conferenceGateFromPolicy`); deep rows do not (design 41 R2-32).
+  // (`conferenceGateFromPolicy`).
   if ((kind === "theme" || kind === "conference") && themeGate !== null) {
     checks.push(...themeGateChecks(data, generatedAt, themeGate));
   }
@@ -870,233 +866,9 @@ export function collectionRow(options: {
   };
 }
 
-interface DeepManifestEntry {
-  paper_id?: unknown;
-  arxiv_id?: unknown;
-  aliases?: unknown;
-  title?: unknown;
-  filename?: unknown;
-  [key: string]: unknown;
-}
-
-/** Compare one trusted manifest entry with its artifact without inference. */
-function deepIdentityFailures(options: {
-  data: unknown;
-  entry: DeepManifestEntry | null;
-  filename: string;
-  artifactPresent: boolean;
-  catalogArxivByPaper: ReadonlyMap<string, string>;
-  catalogIdentityFailures: readonly string[];
-}): string[] {
-  const { data, entry, filename, artifactPresent, catalogArxivByPaper, catalogIdentityFailures } =
-    options;
-  if (entry === null) return ["manifest-entry-missing"];
-  const failures: string[] = [...catalogIdentityFailures];
-  if (catalogArxivByPaper.get(entry.paper_id as string) !== entry.arxiv_id) {
-    failures.push("catalog-paper-arxiv-pair");
-  }
-  if (!artifactPresent) return ["artifact-missing"];
-  if (!isMapping(data)) return ["artifact-unreadable"];
-  const meta = data.meta;
-  const focus = canonicalFocusNode(data);
-  const aliases = entry.aliases;
-  let semanticAlias: unknown = null;
-  if (Array.isArray(aliases)) {
-    const semanticValues = aliases
-      .filter(
-        (a): a is [string, string] =>
-          Array.isArray(a) && a.length === 2 && a[0] === "semantic_scholar",
-      )
-      .map((a) => a[1]);
-    if (semanticValues.length === 1) semanticAlias = semanticValues[0];
-  }
-  const expected: Record<string, unknown> = {
-    paper_id: entry.paper_id,
-    arxiv_id: entry.arxiv_id,
-    aliases,
-    root: semanticAlias,
-    title: entry.title,
-    filename: entry.filename,
-  };
-  const observed: Record<string, unknown> = {
-    paper_id: isMapping(meta) ? meta.seed_paper_id : null,
-    arxiv_id: isMapping(meta) ? meta.arxiv_id : null,
-    aliases: isMapping(meta) ? meta.aliases : null,
-    root: data.root,
-    title: focus ? focus.title : null,
-    filename,
-  };
-  for (const field of Object.keys(expected)) {
-    if (!deepEqual(observed[field], expected[field])) failures.push(field);
-  }
-  if (focus === null || focus.seed_paper_id !== entry.paper_id) failures.push("root_focus_seed");
-  if (focus === null || !deepEqual(focus.aliases, aliases)) failures.push("root_focus_aliases");
-  return sortedUnique(failures);
-}
-
-function deepEqual(a: unknown, b: unknown): boolean {
-  if (a === b) return true;
-  if (Array.isArray(a) && Array.isArray(b)) {
-    return a.length === b.length && a.every((v, i) => deepEqual(v, b[i]));
-  }
-  if (isMapping(a) && isMapping(b)) {
-    const ak = Object.keys(a);
-    const bk = Object.keys(b);
-    return ak.length === bk.length && ak.every((k) => deepEqual(a[k], b[k]));
-  }
-  return false;
-}
-
-/** Collect every deep artifact/reference and audit exact manifest identity. */
-function deepCollectionRows(options: {
-  docsRoot: string;
-  conference: string;
-  catalogIds: ReadonlySet<string>;
-  catalogArxivByPaper: ReadonlyMap<string, string>;
-  catalogIdentityFailures: readonly string[];
-  fixtureMap: ReadonlyMap<string, GoldenFixture>;
-  asOf: string;
-  maxAgeDays: number;
-  strongRelations?: readonly string[];
-}): CollectionRow[] {
-  const {
-    docsRoot,
-    conference,
-    catalogIds,
-    catalogArxivByPaper,
-    catalogIdentityFailures,
-    fixtureMap,
-    asOf,
-    maxAgeDays,
-    strongRelations = DEFAULT_STRONG_RELATIONS,
-  } = options;
-  const conferenceDir = join(docsRoot, conference);
-  const manifestRelative = `${conference}/deep-manifest.json`;
-  const manifestPath = join(docsRoot, manifestRelative);
-  let manifestSha256: string | null = null;
-  let manifest: unknown = null;
-  const manifestIssues: string[] = [];
-  const manifestPayload = readFileBytesOrNull(manifestPath);
-  if (manifestPayload === null) {
-    manifestIssues.push("OSError");
-  } else {
-    manifestSha256 = hashBytes(manifestPayload);
-    try {
-      manifest = JSON.parse(manifestPayload.toString("utf8"));
-    } catch {
-      manifestIssues.push("JSONDecodeError");
-    }
-  }
-  if (manifestIssues.length === 0) {
-    for (const issue of validateDeepManifest(manifest, { catalogIds })) {
-      manifestIssues.push(`${issue.code}:${issue.path}`);
-    }
-    if (isMapping(manifest) && manifest.conference !== conference) {
-      manifestIssues.push("manifest_conference_mismatch");
-    }
-  }
-
-  const trustedEntries = new Map<string, DeepManifestEntry>();
-  if (manifestIssues.length === 0 && isMapping(manifest) && Array.isArray(manifest.entries)) {
-    for (const entry of manifest.entries as DeepManifestEntry[]) {
-      trustedEntries.set(entry.filename as string, entry);
-    }
-  }
-
-  let dirEntries: string[] = [];
-  try {
-    dirEntries = readdirSync(conferenceDir);
-  } catch {
-    dirEntries = [];
-  }
-  const filenames = new Set<string>();
-  for (const name of dirEntries) {
-    if (name.startsWith(".")) continue;
-    if (name === "deep-manifest.json") continue;
-    if (/^deep-.*\.json$/.test(name)) filenames.add(name);
-  }
-  for (const name of trustedEntries.keys()) filenames.add(name);
-
-  const rows: CollectionRow[] = [];
-  for (const filename of Array.from(filenames).sort(codepointCompare)) {
-    const entry = trustedEntries.get(filename) ?? null;
-    const paperId = entry ? entry.paper_id : null;
-    const collectionId = isPaperId(paperId)
-      ? `deep:${conference}:${paperId}`
-      : `deep:${conference}:file:${filename}`;
-    const relativePath = `${conference}/${filename}`;
-    const artifactPath = join(docsRoot, relativePath);
-    const artifactBytes = readFileBytesOrNull(artifactPath);
-    const artifactPresent = artifactBytes !== null;
-    let artifactData: unknown = null;
-    if (artifactBytes !== null) {
-      try {
-        artifactData = JSON.parse(artifactBytes.toString("utf8"));
-      } catch {
-        artifactData = null;
-      }
-    }
-    const row = collectionRow({
-      docsRoot,
-      kind: "deep",
-      slug: conference,
-      label: `${labelFromSlug(conference)} deep: ${entry ? String(entry.title) : filename}`,
-      relativePath,
-      snapshotDate: null,
-      generatedHint: null,
-      fixture: fixtureMap.get(collectionId) ?? null,
-      asOfText: asOf,
-      maxAgeDays,
-      catalogIds,
-      collectionId,
-      expectedSeedPaperId: isPaperId(paperId) ? paperId : null,
-      strongRelations,
-    });
-    const identityFailures =
-      manifestIssues.length > 0
-        ? ["manifest-invalid", ...manifestIssues]
-        : deepIdentityFailures({
-            data: artifactData,
-            entry,
-            filename,
-            artifactPresent,
-            catalogArxivByPaper,
-            catalogIdentityFailures,
-          });
-    const checks = [
-      ...row.audit.checks,
-      check(
-        "deep_manifest_contract",
-        manifestIssues.length > 0 ? "failed" : "passed",
-        manifestIssues.length,
-        0,
-        manifestIssues,
-      ),
-      check(
-        "deep_manifest_identity",
-        identityFailures.length > 0 ? "failed" : "passed",
-        identityFailures.length,
-        0,
-        identityFailures,
-      ),
-    ].sort((a, b) => codepointCompare(a.name, b.name));
-    row.audit.checks = checks;
-    if (checks.some((c) => c.status === "failed")) row.audit_status = "failed";
-    row.publication_tier = publicationTier(row.availability, checks);
-    row.conference = conference;
-    row.paper_id = isPaperId(paperId) ? paperId : null;
-    row.arxiv_id = entry ? (entry.arxiv_id ?? null) : null;
-    row.manifest_path = manifestRelative;
-    row.manifest_input_sha256 = manifestSha256;
-    rows.push(row);
-  }
-  return rows;
-}
-
 export interface QualityPolicy {
   conference_max_age_days: number;
   theme_max_age_days: number;
-  deep_max_age_days?: number;
   /** Relations whose every edge needs a human `edge_labels` row (D5). */
   strong_relations?: string[];
   /** Minimum share of evidence-classified theme edges (design 41 D3). */
@@ -1158,18 +930,12 @@ export function buildManifest(options: {
   for (const conference of conferences) {
     const slug = conference.name as string;
     let conferenceCatalogIds: Set<string>;
-    let catalogArxivByPaper: Map<string, string>;
-    let catalogIdentityFailures: string[];
     try {
       const catalog = JSON.parse(readFileSync(join(docsRoot, slug, "papers.json"), "utf8"));
       const identity = catalogIdentity(catalog);
       conferenceCatalogIds = identity.catalogIds;
-      catalogArxivByPaper = identity.arxivByPaper;
-      catalogIdentityFailures = identity.failures;
     } catch {
       conferenceCatalogIds = new Set();
-      catalogArxivByPaper = new Map();
-      catalogIdentityFailures = ["catalog-unavailable"];
     }
     collections.push(
       collectionRow({
@@ -1186,19 +952,6 @@ export function buildManifest(options: {
         catalogIds: conferenceCatalogIds,
         strongRelations,
         themeGate: conferenceGate,
-      }),
-    );
-    collections.push(
-      ...deepCollectionRows({
-        docsRoot,
-        conference: slug,
-        catalogIds: conferenceCatalogIds,
-        catalogArxivByPaper,
-        catalogIdentityFailures,
-        fixtureMap,
-        asOf,
-        maxAgeDays: Number(policy.deep_max_age_days ?? policy.conference_max_age_days),
-        strongRelations,
       }),
     );
   }

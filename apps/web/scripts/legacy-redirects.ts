@@ -100,7 +100,9 @@ export async function readFrozenPaths(file: string): Promise<string[]> {
 export function mapLegacyPath(path: string): string {
   const fileMatch = /^\/([^/]+)\/(lineage|deep|paper-links)\.html$/.exec(path);
   if (fileMatch) {
-    return `/${fileMatch[1]}/${fileMatch[2]}/`;
+    // deep lineages were retired (D-R2-41): deep.html lands on the lineage page.
+    const page = fileMatch[2] === "deep" ? "lineage" : fileMatch[2];
+    return `/${fileMatch[1]}/${page}/`;
   }
   const indexMatch = /^\/([^/]+)\/index\.html$/.exec(path);
   if (indexMatch) {

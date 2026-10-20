@@ -12,6 +12,7 @@
  */
 import { ALL_RELATIONS } from "../../lib/themes-tree";
 import { RELATION_DOT_CLASS } from "../lineage/graph/relation-colors";
+import { useRelationAudited } from "../lineage/relation-audit";
 import { relationLabelJa } from "./EdgeEvidence";
 import styles from "./LineageTree.module.css";
 
@@ -36,6 +37,7 @@ export function ReadingGuide({
   mainPathCount: number;
   hasCodeLinks: boolean;
 }) {
+  const audited = useRelationAudited();
   return (
     <details
       className="mt-3 rounded-md border border-rule bg-surface px-3 py-2 text-xs text-ink-muted"
@@ -93,7 +95,7 @@ export function ReadingGuide({
                   className={`inline-block h-1 w-5 shrink-0 translate-y-[-2px] rounded-full ${RELATION_DOT_CLASS[r]}`}
                 />
                 <span>
-                  <span className="font-semibold text-ink">{relationLabelJa(r)}</span>：
+                  <span className="font-semibold text-ink">{relationLabelJa(r, audited)}</span>：
                   {RELATION_MEANING_JA[r]}
                 </span>
               </li>

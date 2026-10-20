@@ -1,7 +1,7 @@
 /**
  * Shared "not ready yet" / "verifying" status section, ported from the
  * `#lineage-audit-status` block in docs/iclr-2026/lineage.html /
- * docs/iclr-2026/deep.html / docs/lineage/index.html. Every lineage
+ * docs/iclr-2026/lineage.html / docs/lineage/index.html. Every lineage
  * route renders exactly this (with page-specific copy) until its
  * quality-manifest gate passes -- see lib/lineage/core.ts
  * `qualityRowIsEligible` and safety-contracts.md SCR-25/SCR-27: no

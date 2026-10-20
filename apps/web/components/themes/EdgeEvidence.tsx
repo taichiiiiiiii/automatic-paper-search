@@ -27,8 +27,15 @@ import {
   semanticScholarUrl,
 } from "../../lib/lineage/evidence";
 import { lineageFeedbackIssueUrl } from "../../lib/lineage/feedback";
-import { RELATION_LABEL_JA } from "../../lib/lineage/relations";
+import {
+  AUDITED_RELATION_NOTE,
+  CANDIDATE_EVIDENCE_HEADING,
+  CANDIDATE_NOTE,
+  isCandidateRelation,
+  relationLabelFor,
+} from "../../lib/lineage/relations";
 import type { LineageEdge, LineageNode } from "../../lib/themes-quality";
+import { useRelationAudited } from "../lineage/relation-audit";
 
 /** Theme identity for the "誤りを報告" link (design doc 48 P0-2). */
 export interface FeedbackTheme {
@@ -75,8 +82,10 @@ export function ReportEdgeLink({
   );
 }
 
-export function relationLabelJa(relation: string): string {
-  return (RELATION_LABEL_JA as Record<string, string>)[relation] ?? "関係";
+/** Relation label; a strong relation reads "拡張（候補）" unless `audited`
+ * (D-R2-40). Defaults to the candidate wording. */
+export function relationLabelJa(relation: string, audited = false): string {
+  return relationLabelFor(relation, audited);
 }
 
 export function edgeKey(e: LineageEdge): string {
@@ -134,32 +143,11 @@ function EvidenceBody({
   const creditPrefix = credit ? `${credit}「` : "「";
   return (
     <>
-      <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-2 gap-y-1 text-xs">
-        <dt className="text-ink-subtle">古い論文</dt>
-        <dd className="min-w-0 break-words text-ink">
-          {titleOf(src, edge.src)}
-          {typeof src?.year === "number" ? ` (${src.year})` : ""}
-          <PaperLinks node={src} id={edge.src} />
-        </dd>
-        <dt className="text-ink-subtle">新しい論文</dt>
-        <dd className="min-w-0 break-words text-ink">
-          {titleOf(dst, edge.dst)}
-          {typeof dst?.year === "number" ? ` (${dst.year})` : ""}
-          <PaperLinks node={dst} id={edge.dst} />
-        </dd>
-        <dt className="text-ink-subtle">判定方法</dt>
-        <dd className="text-ink-muted" data-evidence-method={method ?? ""}>
-          {edgeMethodLabelJa(method, edge.rationale)}
-        </dd>
-        <dt className="text-ink-subtle">確信度</dt>
-        <dd className="font-mono text-ink-muted">{edge.confidence.toFixed(2)}</dd>
-      </dl>
-      <p className="mt-2 break-words text-sm text-ink-muted">{summary}</p>
       {quote && (
         <figure className="mt-2">
           <blockquote
             lang="en"
-            className="break-words border-l-4 border-rule-strong bg-surface-2 px-3 py-2 text-sm italic text-ink"
+            className="break-words border-l-4 border-accent bg-surface-2 px-3 py-2 text-base font-medium italic text-ink"
           >
             “{quote}”
           </blockquote>
@@ -209,6 +197,27 @@ function EvidenceBody({
           )}
         </figure>
       )}
+      <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-2 gap-y-1 text-xs">
+        <dt className="text-ink-subtle">古い論文</dt>
+        <dd className="min-w-0 break-words text-ink">
+          {titleOf(src, edge.src)}
+          {typeof src?.year === "number" ? ` (${src.year})` : ""}
+          <PaperLinks node={src} id={edge.src} />
+        </dd>
+        <dt className="text-ink-subtle">新しい論文</dt>
+        <dd className="min-w-0 break-words text-ink">
+          {titleOf(dst, edge.dst)}
+          {typeof dst?.year === "number" ? ` (${dst.year})` : ""}
+          <PaperLinks node={dst} id={edge.dst} />
+        </dd>
+        <dt className="text-ink-subtle">判定方法</dt>
+        <dd className="text-ink-muted" data-evidence-method={method ?? ""}>
+          {edgeMethodLabelJa(method, edge.rationale)}
+        </dd>
+        <dt className="text-ink-subtle">確信度</dt>
+        <dd className="font-mono text-ink-muted">{edge.confidence.toFixed(2)}</dd>
+      </dl>
+      <p className="mt-2 break-words text-sm text-ink-muted">{summary}</p>
     </>
   );
 }
@@ -225,6 +234,8 @@ export const EdgeEvidencePanel = forwardRef<
     onMainPath?: boolean;
   }
 >(function EdgeEvidencePanel({ edge, nodeById, onClose, theme, onMainPath }, ref) {
+  const audited = useRelationAudited();
+  const candidate = isCandidateRelation(edge.relation, audited);
   return (
     // On a phone the panel is a bottom sheet over the tree (the reader
     // keeps the graph in view and closes it with ✕ / Esc); from `sm` up it
@@ -248,7 +259,9 @@ export const EdgeEvidencePanel = forwardRef<
           tabIndex={-1}
           className="font-serif text-base font-semibold text-ink"
         >
-          関係の根拠: {relationLabelJa(edge.relation)}
+          {candidate
+            ? `${CANDIDATE_EVIDENCE_HEADING}: ${relationLabelFor(edge.relation, true)}`
+            : `関係の根拠: ${relationLabelFor(edge.relation, true)}`}
         </h2>
         <button
           type="button"
@@ -259,6 +272,12 @@ export const EdgeEvidencePanel = forwardRef<
           閉じる ✕
         </button>
       </div>
+      <p
+        className="mt-1 text-xs text-ink-subtle"
+        data-relation-note={candidate ? "candidate" : "audited"}
+      >
+        {candidate ? CANDIDATE_NOTE : AUDITED_RELATION_NOTE}
+      </p>
       {onMainPath && (
         <p className="mt-1 text-xs text-ink-subtle" data-main-path-edge>
           この関係は本流（主経路）に入っています。
@@ -291,6 +310,7 @@ export function EdgeRelationList({
   theme?: FeedbackTheme | null;
   mainPathKeys?: ReadonlySet<string>;
 }) {
+  const audited = useRelationAudited();
   const yearOf = (id: string) => {
     const y = nodeById.get(id)?.year;
     return typeof y === "number" ? y : Number.POSITIVE_INFINITY;
@@ -317,7 +337,7 @@ export function EdgeRelationList({
                     {titleOf(nodeById.get(e.src), e.src)}
                   </span>
                   <span className="rounded bg-surface-2 px-1.5 py-0.5 text-xs font-semibold text-ink">
-                    → {relationLabelJa(e.relation)} →
+                    → {relationLabelFor(e.relation, audited)} →
                   </span>
                   <span className="min-w-0 break-words font-medium text-ink">
                     {titleOf(nodeById.get(e.dst), e.dst)}

@@ -11,7 +11,6 @@ import {
   isPaperId,
   makeProvenance,
   requireValidLineageArtifact,
-  validateDeepManifest,
   validateLineageArtifact,
   validateLineageQualityManifest,
 } from "../../../src/lineage/contract/v1.js";
@@ -351,66 +350,6 @@ describe("misc contract helpers", () => {
   });
 });
 
-describe("validateDeepManifest", () => {
-  function entry(overrides: Record<string, unknown> = {}): Record<string, unknown> {
-    return {
-      paper_id: PAPER_ID,
-      aliases: [
-        ["arxiv", "2601.00001"],
-        ["semantic_scholar", "abc"],
-      ],
-      arxiv_id: "2601.00001",
-      title: "A paper",
-      filename: "deep-2601.00001.json",
-      ...overrides,
-    };
-  }
-
-  function manifest(entries: Record<string, unknown>[] = [entry()]): Record<string, unknown> {
-    return {
-      schema_version: "deep-manifest-v1",
-      conference: "iclr-2026",
-      generated_at: "2026-08-30T00:00:00Z",
-      entries,
-    };
-  }
-
-  it("passes a valid manifest", () => {
-    expect(validateDeepManifest(manifest())).toEqual([]);
-  });
-
-  it("rejects a malformed arxiv_id and a filename that does not match it", () => {
-    expect(codes(validateDeepManifest(manifest([entry({ arxiv_id: "not-an-id" })])))).toContain(
-      "manifest_arxiv",
-    );
-    expect(
-      codes(validateDeepManifest(manifest([entry({ filename: "deep-wrong.json" })]))),
-    ).toContain("manifest_filename");
-  });
-
-  it("rejects duplicate paper_id, filename and alias across entries", () => {
-    const e1 = entry();
-    const e2 = entry({ arxiv_id: "2601.00001", filename: "deep-2601.00001.json" });
-    const issues = codes(validateDeepManifest(manifest([e1, e2])));
-    expect(issues).toContain("manifest_paper_duplicate");
-    expect(issues).toContain("manifest_filename_duplicate");
-    expect(issues).toContain("manifest_alias_duplicate");
-  });
-
-  it("requires exactly arxiv + semantic_scholar alias kinds", () => {
-    expect(
-      codes(validateDeepManifest(manifest([entry({ aliases: [["arxiv", "2601.00001"]] })]))),
-    ).toContain("manifest_alias_kinds");
-  });
-
-  it("enforces catalog membership when catalogIds is provided", () => {
-    expect(codes(validateDeepManifest(manifest(), { catalogIds: new Set() }))).toContain(
-      "manifest_catalog_membership",
-    );
-    expect(validateDeepManifest(manifest(), { catalogIds: new Set([PAPER_ID]) })).toEqual([]);
-  });
-});
-
 describe("validateLineageQualityManifest", () => {
   function auditBlock(overrides: Record<string, unknown> = {}): Record<string, unknown> {
     return {
@@ -564,23 +503,13 @@ describe("validateLineageQualityManifest", () => {
     );
   });
 
-  it("validates deep row identity (collection_id/manifest_path/filename shape)", () => {
+  it("rejects a retired deep row kind (D-R2-41)", () => {
     const deepRow = row({
       collection_id: `deep:iclr-2026:${PAPER_ID}`,
       kind: "deep",
       slug: "iclr-2026",
-      path: `iclr-2026/deep-${"2601.00001"}.json`,
-      conference: "iclr-2026",
-      paper_id: PAPER_ID,
-      arxiv_id: "2601.00001",
-      manifest_path: "iclr-2026/deep-manifest.json",
-      manifest_input_sha256: null,
+      path: "iclr-2026/deep-2601.00001.json",
     });
-    expect(validateLineageQualityManifest(manifest([deepRow]))).toEqual([]);
-
-    const badDeep = { ...deepRow, path: "iclr-2026/not-deep-shaped.json" };
-    expect(codes(validateLineageQualityManifest(manifest([badDeep])))).toContain(
-      "quality_deep_identity",
-    );
+    expect(codes(validateLineageQualityManifest(manifest([deepRow])))).toContain("quality_kind");
   });
 });

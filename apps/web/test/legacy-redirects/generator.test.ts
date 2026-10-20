@@ -119,7 +119,7 @@ describe("generateLegacyRedirectSite", () => {
       ["index.html", `${PUBLIC_ORIGIN}/`],
       ["iclr-2026/index.html", `${PUBLIC_ORIGIN}/iclr-2026/`],
       ["iclr-2026/lineage.html", `${PUBLIC_ORIGIN}/iclr-2026/lineage/`],
-      ["iclr-2026/deep.html", `${PUBLIC_ORIGIN}/iclr-2026/deep/`],
+      ["iclr-2026/deep.html", `${PUBLIC_ORIGIN}/iclr-2026/lineage/`],
       ["iclr-2026/paper-links.html", `${PUBLIC_ORIGIN}/iclr-2026/paper-links/`],
       ["themes/index.html", `${PUBLIC_ORIGIN}/themes/`],
       ["how-it-works/index.html", `${PUBLIC_ORIGIN}/how-it-works/`],

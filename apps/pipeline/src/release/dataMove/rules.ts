@@ -102,14 +102,8 @@ const TOP_LEVEL_PUBLISHED_FILES = new Set([
   "search-index-v2.json",
   "lineage-pilot-index-v1.json",
 ]);
-const LEGACY_CONF_BASENAMES = new Set([
-  "index.html",
-  "paper-links.html",
-  "lineage.html",
-  "deep.html",
-]);
+const LEGACY_CONF_BASENAMES = new Set(["index.html", "paper-links.html", "lineage.html"]);
 const PUBLISHED_CONF_BASENAMES = new Set(["papers.json", "lineage.json"]);
-const DEEP_JSON_RE = /^deep-.*\.json$/;
 
 function classifyDocs(p: readonly string[], full: string): RuleEntry | undefined {
   const rel = relLayout("p5");
@@ -178,7 +172,7 @@ function classifyDocs(p: readonly string[], full: string): RuleEntry | undefined
     if (LEGACY_CONF_BASENAMES.has(basename)) {
       return { path: full, class: "move", dest: `${rel.legacySite}/${conf}/${basename}` };
     }
-    if (PUBLISHED_CONF_BASENAMES.has(basename) || DEEP_JSON_RE.test(basename)) {
+    if (PUBLISHED_CONF_BASENAMES.has(basename)) {
       return { path: full, class: "move", dest: `${rel.published}/${conf}/${basename}` };
     }
   }

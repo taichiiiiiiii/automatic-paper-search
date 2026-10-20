@@ -98,7 +98,7 @@ PaperPilot の設計原則（Open/Closed、Fail-Safe、秘密の分離、冪等�
 ### L. テーマ家系図と分類キャッシュ（家系図を触る変更のときだけ）
 
 - [ ] seed のフィルタの順序（話題の一致 → 基盤論文の除外 → denylist。`lineage/theme/seedFilters.ts`）を変えていないか
-- [ ] `data/config/lineage_denylist.json` を変えたら、会議版・deep 版の builder も追従しているか
+- [ ] `data/config/lineage_denylist.json` を変えたら、会議版の builder も追従しているか
 - [ ] `lineage/llm/base.ts` の `TEMPLATE_RATIONALES` がテンプレ文の唯一の元になっているか（`lineage/classify/classify.ts`・`purge.ts` で文字列を重複させない）
 - [ ] テンプレ的な根拠を LLM の結果として受け取らない仕組みを回避していないか
 - [ ] `CLASSIFY_SYSTEM_PROMPT` の長さの上限（`test/lineage/llm/base.test.ts` が 1200 文字で固定）を意識しているか

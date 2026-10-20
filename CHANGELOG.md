@@ -6,6 +6,10 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Removed — deep の系譜を廃止（D-R2-41）
+
+- ICLR 2026 の deep の系譜 14 件（`deep-*.json`、`deep-manifest.json`）、`/[conf]/deep/` のページ、deep 用の builder・manifest 生成器・表示コード・テストを消した。品質表（`lineage-quality-v1.json`）から deep の行を除き、スキーマの `kind` は `conference` / `theme` だけにした。旧 URL（`/<conf>/deep/`、`/<conf>/deep.html`）は会議の系譜 `/<conf>/lineage/` へ 301 で転送する。
+
 ### Changed — TypeScript への全面移行と「1 プロジェクト = 1 フォルダ」（P5、ブランチ `p5/consolidate`）
 
 - **データを `data/` に集めた（commit B、`dataMove apply`）。** `docs/` の公開 JSON は `data/published/`、`paperpilot/data/` の実行状態は `data/state/`、設定データは `data/config/`、`paperpilot/output/` の収集結果は `data/inputs/` に移した。`packages/core/src/layout` の `LAYOUT_MODE` を `"p5"` にした。workflow は `.github/workflows-p5/` から `.github/workflows/` に移した。

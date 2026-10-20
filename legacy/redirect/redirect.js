@@ -52,7 +52,8 @@
     var path = stripPrefix(pathname);
     var m = path.match(/^\/([^/]+)\/(lineage|deep|paper-links)\.html$/);
     if (m) {
-      return "/" + m[1] + "/" + m[2] + "/";
+      // deep lineages were retired (D-R2-41): deep.html lands on the lineage page.
+      return "/" + m[1] + "/" + (m[2] === "deep" ? "lineage" : m[2]) + "/";
     }
     m = path.match(/^\/([^/]+)\/index\.html$/);
     if (m) {

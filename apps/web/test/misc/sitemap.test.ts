@@ -216,9 +216,9 @@ describe("renderSitemap", () => {
 });
 
 describe("isLineageGatedRoute", () => {
-  it("matches a conference lineage or deep route, and the shared themes route", () => {
+  it("matches a conference lineage route, and the shared themes route", () => {
     expect(isLineageGatedRoute("/iclr-2026/lineage/")).toBe(true);
-    expect(isLineageGatedRoute("/iclr-2026/deep/")).toBe(true);
+    expect(isLineageGatedRoute("/iclr-2026/deep/")).toBe(false); // retired route
     expect(isLineageGatedRoute("/themes/")).toBe(true);
   });
 
@@ -235,7 +235,7 @@ describe("isLineageGatedRoute", () => {
  * `test_malformed_quality_manifest_excludes_every_lineage_route` and
  * `test_sitemap_lists_only_ready_and_passed_lineage_routes` from
  * paperpilot/tests/test_build_sitemap.py (adapted to this generator's
- * `/<conf>/lineage/` / `/<conf>/deep/` / `/themes/` route shapes
+ * `/<conf>/lineage/` / `/themes/` route shapes
  * instead of `.html` file paths).
  *
  * MEDIUM-2: `eligibleLineageRoutes` used to check only `availability`/
@@ -304,22 +304,6 @@ describe("eligibleLineageRoutes", () => {
     });
   }
 
-  function deepRow(overrides: Record<string, unknown> = {}): Record<string, unknown> {
-    return qualityRow({
-      collection_id: `deep:iclr-2026:${PAPER_ID}`,
-      kind: "deep",
-      conference: "iclr-2026",
-      slug: "iclr-2026",
-      paper_id: PAPER_ID,
-      arxiv_id: "2602.18473",
-      path: "iclr-2026/deep-2602.18473.json",
-      manifest_path: "iclr-2026/deep-manifest.json",
-      manifest_input_sha256: "c".repeat(64),
-      input_sha256: "d".repeat(64),
-      ...overrides,
-    });
-  }
-
   function qualityManifest(rows: unknown[]): string {
     return JSON.stringify({
       schema_version: "lineage-quality-v1",
@@ -346,17 +330,14 @@ describe("eligibleLineageRoutes", () => {
     // rows' routes.
     const raw = qualityManifest([
       qualityRow(),
-      { ...deepRow(), audit_status: "not-a-real-status" },
+      { ...themeRow(), audit_status: "not-a-real-status" },
     ]);
     expect(eligibleLineageRoutes(raw)).toEqual(new Set());
   });
 
   it("includes only ready+passed rows with a fully-consistent, passed audit contract, mapped to their route", () => {
-    const raw = qualityManifest([qualityRow(), deepRow(), themeRow()]);
-    const deepManifestSha256ByConference = new Map([["iclr-2026", "c".repeat(64)]]);
-    expect(eligibleLineageRoutes(raw, deepManifestSha256ByConference)).toEqual(
-      new Set(["/iclr-2026/lineage/", "/iclr-2026/deep/", "/themes/"]),
-    );
+    const raw = qualityManifest([qualityRow(), themeRow()]);
+    expect(eligibleLineageRoutes(raw)).toEqual(new Set(["/iclr-2026/lineage/", "/themes/"]));
   });
 
   it("excludes a conference row whose audit_status is passed but the audit contract itself is inconsistent", () => {
@@ -385,16 +366,6 @@ describe("eligibleLineageRoutes", () => {
     expect(eligibleLineageRoutes(qualityManifest([inconsistent]))).toEqual(new Set());
   });
 
-  it("excludes a deep route when no deep-manifest hash is supplied for its conference (else excluded)", () => {
-    expect(eligibleLineageRoutes(qualityManifest([deepRow()]))).toEqual(new Set());
-  });
-
-  it("excludes a deep route when the supplied deep-manifest hash does not match the row's manifest_input_sha256", () => {
-    const raw = qualityManifest([deepRow()]);
-    const wrongHash = new Map([["iclr-2026", "0".repeat(64)]]);
-    expect(eligibleLineageRoutes(raw, wrongHash)).toEqual(new Set());
-  });
-
   it("matches today's real docs/lineage-quality-v1.json shape: every row fails audit, so nothing is eligible", () => {
     // audit_status is "unknown"/"failed" for every row in the real
     // manifest today (never "ready" + "passed") -- same real-data check
@@ -413,17 +384,16 @@ describe("eligibleLineageRoutes", () => {
 });
 
 describe("sitemapUrls gated on the lineage quality manifest", () => {
-  it("drops a lineage/deep/themes page by default (fail closed, no eligible set passed)", () => {
+  it("drops a lineage/themes page by default (fail closed, no eligible set passed)", () => {
     const urls = sitemapUrls([
       page("index.html"),
       page("iclr-2026/lineage/index.html"),
-      page("iclr-2026/deep/index.html"),
       page("themes/index.html"),
     ]);
     expect(urls).toEqual([canonicalUrl("/")]);
   });
 
-  it("keeps a lineage/deep/themes page once its exact route is eligible", () => {
+  it("keeps a lineage/themes page once its exact route is eligible", () => {
     const eligible = new Set(["/iclr-2026/lineage/"]);
     const urls = sitemapUrls(
       [page("index.html"), page("iclr-2026/lineage/index.html"), page("themes/index.html")],
@@ -472,11 +442,10 @@ describe("built out/sitemap.xml", () => {
           if (!published) continue;
           if (row.kind === "conference" && row.slug) eligible.add(`/${row.slug}/lineage/`);
           else if (row.kind === "theme") eligible.add("/themes/");
-          else if (row.kind === "deep" && row.conference) eligible.add(`/${row.conference}/deep/`);
         }
       }
       const isLineageRoute = (path: string): boolean =>
-        path === "/themes/" || /^\/[a-z0-9-]+\/(?:lineage|deep)\/$/.test(path);
+        path === "/themes/" || /^\/[a-z0-9-]+\/lineage\/$/.test(path);
 
       const expected = walkIndexPages(OUT_DIR, OUT_DIR)
         .filter(

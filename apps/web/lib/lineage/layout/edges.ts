@@ -15,15 +15,6 @@
  * lib/lineage/layout/view-model.ts's `buildGraph`, so an edge lands on
  * the card's actual rendered bottom instead of the static slot once
  * fonts have settled -- see that file for the DOM side.
- *
- * `buildEdgePath`/`computeSvgSize` take optional `nodeW`/`padding`
- * overrides (defaulting to this module's own NODE_W/PADDING) so
- * lib/lineage/layout/deep-view-model.ts can reuse the exact same
- * bezier/canvas-size math with deep.js's own 240×180 card dimensions
- * instead of duplicating it -- deep.js's `drawSvg` edge loop and this
- * file's are otherwise identical. Every existing call site keeps
- * calling these with no override, so the lineage viewer's own geometry
- * is unaffected.
  */
 import type { LineageEdge } from "../core";
 import { NODE_H, NODE_W, PADDING } from "./constants";

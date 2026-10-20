@@ -14,9 +14,7 @@
  * ["pp.lineage.prefs"]`), so switching between "関係リスト" and
  * "グラフ" keeps one filter instead of two independent ones (this used
  * to be a known parity gap -- see docs/migration/p2-parity-gaps.md's
- * history). `app/[conf]/deep/page.tsx` has no graph view to share
- * with, so it keeps its own local state and passes that instead.
- *
+ * history). *
  * Scope note: this also ports the LIST view only. The Topics / Tree /
  * Timeline SVG graph layouts (`docs/assets/lineage.js` `render()`,
  * ~700 lines of force-directed / generational layout math) live in
@@ -28,7 +26,13 @@
 import { useMemo } from "react";
 import type { LineageArtifact, LineageNode, Relation } from "../../lib/lineage/core";
 import { selectActiveEdges } from "../../lib/lineage/core";
-import { ALL_RELATIONS, RELATION_LABEL_JA } from "../../lib/lineage/relations";
+import {
+  ALL_RELATIONS,
+  AUDITED_RELATION_NOTE,
+  CANDIDATE_NOTE,
+  relationLabelFor,
+} from "../../lib/lineage/relations";
+import { useRelationAudited } from "./relation-audit";
 
 // Literal (not computed) Tailwind classes per relation, carrying the
 // same colors as docs/assets/style.css's `--rel-*` tokens (ported to
@@ -76,6 +80,7 @@ export function RelationList({
   visibleRelations,
   onToggleRelation,
 }: RelationListProps) {
+  const audited = useRelationAudited();
   const nodeById = useMemo(
     () => new Map(artifact.nodes.map((node) => [node.id, node])),
     [artifact.nodes],
@@ -120,7 +125,7 @@ export function RelationList({
                 aria-hidden="true"
                 className={`inline-block h-2 w-2 rounded-full ${RELATION_DOT_CLASS[relation]}`}
               />
-              {RELATION_LABEL_JA[relation]}
+              {relationLabelFor(relation, audited)}
             </button>
           );
         })}
@@ -130,6 +135,12 @@ export function RelationList({
         <h2 id="relation-list-heading" className="font-serif text-lg font-semibold text-ink">
           論文間の関係
         </h2>
+        <p
+          className="text-xs text-ink-subtle"
+          data-relation-note={audited ? "audited" : "candidate"}
+        >
+          {audited ? AUDITED_RELATION_NOTE : CANDIDATE_NOTE}
+        </p>
         {activeEdges.length === 0 ? (
           <p className="text-sm text-ink-subtle">現在の条件で表示できる関係はありません。</p>
         ) : (
@@ -147,7 +158,7 @@ export function RelationList({
                     <span
                       className={`rounded px-1.5 py-0.5 text-xs font-semibold ${RELATION_BADGE_CLASS[edge.relation]}`}
                     >
-                      {RELATION_LABEL_JA[edge.relation]}
+                      {relationLabelFor(edge.relation, audited)}
                     </span>
                     <span className="font-medium text-ink">{nodeTitle(dst)}</span>
                     <span className="font-mono text-xs text-ink-subtle">

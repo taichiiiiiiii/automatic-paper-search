@@ -167,9 +167,9 @@ describe("ajv vs Python jsonschema agreement", () => {
 });
 
 describe("validateArtifact basics", () => {
-  it("exposes all 25 repo schemas by name", () => {
+  it("exposes all 24 repo schemas by name", () => {
     const names = listSchemaNames();
-    expect(names.length).toBe(25);
+    expect(names.length).toBe(24);
     expect(names).toContain("lineage-artifact-v1");
     expect(names).toContain("search-index-v2");
   });

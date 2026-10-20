@@ -5,7 +5,7 @@
  * when the paper is in no published theme.
  */
 import { BASE_PATH } from "../../lib/config";
-import { RELATION_LABEL_JA } from "../../lib/lineage/relations";
+import { relationLabelFor } from "../../lib/lineage/relations";
 import { type ThemePosition, themeFocusPath } from "../../lib/lineage/theme-position";
 import styles from "./catalog.module.css";
 
@@ -17,9 +17,7 @@ function breakdown(counts: Record<string, number>): string {
     const ib = ORDER.indexOf(b);
     return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib) || (a < b ? -1 : 1);
   });
-  return keys
-    .map((k) => `${(RELATION_LABEL_JA as Record<string, string>)[k] ?? "関係"} ${counts[k]}`)
-    .join("・");
+  return keys.map((k) => `${relationLabelFor(k, false)} ${counts[k]}`).join("・");
 }
 
 export function ThemePositionSection({ positions }: { positions: readonly ThemePosition[] }) {

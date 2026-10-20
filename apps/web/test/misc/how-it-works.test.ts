@@ -95,6 +95,7 @@ function plainText(html: string): string {
 /** h3 subheads inside どう判定しているか (UX audit, design 53). */
 const HOW_SUBHEADS = [
   "根拠の見方",
+  "強い関係は「候補」です",
   "本流（主経路）",
   "論文の土台と発展",
   "誤りの報告と書き出し",

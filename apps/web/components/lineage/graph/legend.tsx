@@ -10,9 +10,13 @@
 import type { Relation } from "../../../lib/lineage/core";
 import {
   ALL_RELATIONS,
+  CANDIDATE_NOTE,
+  CANDIDATE_SUFFIX,
+  isCandidateRelation,
   RELATION_LABEL_EN,
   RELATION_LABEL_JA,
 } from "../../../lib/lineage/relations";
+import { useRelationAudited } from "../relation-audit";
 import { RELATION_DOT_CLASS } from "./relation-colors";
 
 const RELATION_JA_PAREN: Record<Relation, string> = {
@@ -25,6 +29,7 @@ const RELATION_JA_PAREN: Record<Relation, string> = {
 };
 
 export function Legend() {
+  const audited = useRelationAudited();
   return (
     <details className="rounded-md border border-rule p-3 text-xs" open>
       <summary className="cursor-pointer font-medium text-ink-muted">
@@ -37,11 +42,13 @@ export function Legend() {
               aria-hidden="true"
               className={`inline-block h-2 w-2 rounded-full ${RELATION_DOT_CLASS[relation]}`}
             />
-            {RELATION_LABEL_EN[relation]}（
-            {RELATION_JA_PAREN[relation] ?? RELATION_LABEL_JA[relation]}）
+            {isCandidateRelation(relation, audited)
+              ? `${RELATION_LABEL_EN[relation]}：${RELATION_JA_PAREN[relation] ?? RELATION_LABEL_JA[relation]}${CANDIDATE_SUFFIX}`
+              : `${RELATION_LABEL_EN[relation]}（${RELATION_JA_PAREN[relation] ?? RELATION_LABEL_JA[relation]}）`}
           </span>
         ))}
       </div>
+      {!audited && <p className="mt-2 text-ink-subtle">{CANDIDATE_NOTE}</p>}
     </details>
   );
 }
