@@ -18,6 +18,7 @@ import {
   S2_KEYLESS_INTERVAL_MS,
   S2_REFERENCES_SCHEMA,
   S2CitationSource,
+  s2MaxAttempts,
 } from "../../../src/lineage/theme/s2Citations.js";
 
 interface Call {
@@ -369,5 +370,14 @@ describe("R2-23: pairs stored under the old 4-context cap", () => {
     const r = await h.source.lookup(CITING, CITED);
     expect(r).toMatchObject({ kind: "pair", signals: { found: true, contexts: four.c } });
     expect(h.source.stats.contextRefreshes).toBe(0);
+  });
+});
+
+describe("s2MaxAttempts", () => {
+  it("defaults to 6 and accepts 1..20 from PAPERPILOT_S2_MAX_ATTEMPTS", () => {
+    expect(s2MaxAttempts({})).toBe(6);
+    expect(s2MaxAttempts({ PAPERPILOT_S2_MAX_ATTEMPTS: "10" })).toBe(10);
+    expect(s2MaxAttempts({ PAPERPILOT_S2_MAX_ATTEMPTS: "0" })).toBe(6);
+    expect(s2MaxAttempts({ PAPERPILOT_S2_MAX_ATTEMPTS: "x" })).toBe(6);
   });
 });

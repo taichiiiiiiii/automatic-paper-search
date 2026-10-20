@@ -63,6 +63,8 @@ jobs:
         env:
           PAPERPILOT_S2_API_KEY: ${{ secrets.PAPERPILOT_S2_API_KEY || secrets.S2_API_KEY }}
           PAPERPILOT_ARXIV_HTML: ${{ vars.PAPERPILOT_ARXIV_HTML || 'off' }}
+          # The keyless S2 pool 429s in bursts from shared runners; wait them out.
+          PAPERPILOT_S2_MAX_ATTEMPTS: "10"
           PAPERPILOT_ARXIV_HTML_MAX_FETCHES: ${{ vars.PAPERPILOT_ARXIV_HTML_MAX_FETCHES || '40' }}
           PAPERPILOT_OPENALEX_EMAIL: ${{ secrets.OPENALEX_EMAIL }}
           CONFERENCES_INPUT: ${{ inputs.conferences }}

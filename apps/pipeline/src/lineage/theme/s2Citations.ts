@@ -73,7 +73,14 @@ const LEGACY_MAX_CONTEXTS = 4;
 const MAX_CONTEXT_CHARS = 400;
 export const S2_KEYLESS_INTERVAL_MS = 1100;
 export const S2_KEYED_INTERVAL_MS = 1000;
-const MAX_ATTEMPTS = 6;
+const DEFAULT_MAX_ATTEMPTS = 6;
+/** Attempts per S2 request. CI jobs that can afford to wait out the shared
+ * keyless pool's 429 bursts raise it (`PAPERPILOT_S2_MAX_ATTEMPTS`, 1..20). */
+export function s2MaxAttempts(env: Record<string, string | undefined> = process.env): number {
+  const n = Number.parseInt(env.PAPERPILOT_S2_MAX_ATTEMPTS ?? "", 10);
+  return Number.isInteger(n) && n >= 1 && n <= 20 ? n : DEFAULT_MAX_ATTEMPTS;
+}
+const MAX_ATTEMPTS = s2MaxAttempts();
 const BACKOFF_BASE_MS = 2000;
 const BACKOFF_MAX_MS = 60_000;
 const DAY_MS = 24 * 60 * 60 * 1000;
