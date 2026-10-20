@@ -1,6 +1,6 @@
 # 40. 移行後の拡張設計（P6）— 拡張の手順・認証・無料枠・独自ドメイン
 
-状態: 設計案 第4版（2026-10-21、レビュー1回目 HIGH 1・MEDIUM 11・LOW 7、2回目 HIGH 1・MEDIUM 10・LOW 10、3回目 MEDIUM 5・LOW 5 を反映）。実装は P5 切替（Tier C まで）の後。[39](39-typescript-cloudflare-migration.md) の P6 行を具体化する。個別機能（ログイン、マイリスト、通知、AI）は、着手時に各 1 本の設計書を足す。ここは**共通の土台と順序**だけを決める。
+状態: 設計案 第6版（2026-10-21、レビュー1回目 HIGH 1・MEDIUM 11・LOW 7、2回目 HIGH 1・MEDIUM 10・LOW 10、3回目 MEDIUM 5・LOW 5、4回目 MEDIUM 1・LOW 5、5回目 MEDIUM 2・LOW 3 を反映）。実装は P5 切替（Tier C まで）の後。[39](39-typescript-cloudflare-migration.md) の P6 行を具体化する。個別機能（ログイン、マイリスト、通知、AI）は、着手時に各 1 本の設計書を足す。ここは**共通の土台と順序**だけを決める。
 
 数値は 2026-10 時点の公式ドキュメントの記憶に基づく。**(verify)** は P6 着手前に公式ページで確認する。
 
@@ -29,11 +29,13 @@
 | ルートの種類 | 順序 |
 |---|---|
 | 状態を変える JSON（POST／PUT／DELETE） | origin → 機能別スイッチ → レート制限 → content-type → body サイズ → セッション |
-| ログイン開始（未ログインでも通る。state／PKCE を発行する） | origin → 機能別スイッチ → レート制限（IP ごと・識別子ごと） → state／PKCE の発行 |
-| 読み取りの GET | 機能別スイッチ → セッション ＋ `Sec-Fetch-Site: same-origin` |
-| OAuth コールバック（GitHub からのクロスサイトの GET。Origin も body も無い） | 機能別スイッチ → **レート制限（state／PKCE の検証より前）** → state／PKCE の検証 → クエリの無い URL へ 302 |
+| ログイン開始（**POST**、JSON で body は空か最小。未ログインでも通る。state／PKCE を発行する） | origin → 機能別スイッチ → レート制限（**IP ごと**） → content-type → body サイズ → state／PKCE の発行 |
+| 読み取りの GET | 機能別スイッチ → セッション ＋ `Sec-Fetch-Site: same-origin` → **利用者ごとのレート制限**（Rate Limiting binding、セッション確認の後） |
+| OAuth コールバック（GitHub からのクロスサイトの GET。Origin も body も無い） | 機能別スイッチ → **レート制限（IP ごと。state／PKCE の検証より前）** → state／PKCE の検証 → クエリの無い URL へ 302 |
 
 - **この表の対象はログイン系の新しいルート。** `POST /api/themes`（セッションを要求しない）と `GET /api/health`（origin 検査をしない運用者向けの契約）は、今の順序のまま。
+- レート制限の「識別子ごと」は、A 案（GitHub の OAuth のみ）ではログイン開始の時点で識別子が存在せず、コールバックでも GitHub の subject が分かるのは検証と token 交換の後なので、**IP ごとのみ**にする。識別子ごとは A' を採る場合の要件（§3.5）。
+- state／PKCE の verifier の置き場所（`__Host-` Cookie か D1 か）は P6-1 の設計書で決める。D1 に置くなら、コールバックで検証の前に D1 を読むことになり、§5 の行数の見積もりも変わる。
 - §5 の案 3（読み取り専用ルートでは受付停止の検査を省く）を採るなら、読み取りの GET の行の機能別スイッチを外す。
 - ローカル開発で `next dev` と `wrangler dev` をポート違いで動かすと `Sec-Fetch-Site: same-site` になり、GET の判定で 403 になる。ローカルでも同一オリジンになる構成（`wrangler dev` ＋ static assets など）で確認する。
 
@@ -45,7 +47,7 @@
 - Worker は Workers Builds が develop への push で自動デプロイする。この経路にはテストも、マイグレーションも、no-skip-gate も無い。
 - **「必須の status check」は関門にならない。** promoter（テーマ投稿の CAS promotion、collect 系の反映）は `git push origin HEAD:develop` で PR を通さず直接 push する（`apps/pipeline/src/release/promote.ts`、`commitAndPush.ts`）。必須チェックを付けるとこの push が拒否される（bypass を許せば通るが、何も守れない）。また Workers Builds は GitHub のチェック結果を見ない。ts-ci は P5 の commit B で `tests.yml` に吸収されて無くなる。さらに `tests.yml` は skip を警告にするだけで失敗にしない。
 - P6-0 で次のどれかを選んで置く（推奨は 1）。
-  1. **Workers Builds の build command にテストを入れる**。前提は、P5 の W3 で root directory を `apps/api` にした場合（`/` のまま残す代替案では `cd ../..` がリポジトリの外に出るので、コマンドを変える）。リポジトリ全体の install から始め、既存のリハーサル（`rehearse.ts`、CI で通っている形）と同じ reporter 指定でレポートを各パッケージに出す:
+  1. **Workers Builds の build command にテストを入れる**。前提は、P5 の W3 で root directory を `apps/api` にした場合（`/` のまま残す代替案では `cd ../..` がリポジトリの外に出るので、コマンドを変える）。リポジトリ全体の install から始め、既存のリハーサル（`apps/pipeline/src/release/dataMove/rehearse.ts`、CI で通っている形）と同じ reporter 指定でレポートを各パッケージに出す:
      `cd ../.. && corepack enable && pnpm install --frozen-lockfile && pnpm -r --filter @paperpilot/api --filter @paperpilot/core typecheck && pnpm --filter @paperpilot/api --filter @paperpilot/core test --reporter=default --reporter=json --outputFile.json=.vitest-release-report.json && pnpm exec tsx apps/pipeline/src/release/cli.ts no-skip-gate apps/api/.vitest-release-report.json packages/core/.vitest-release-report.json`
      `no-skip-gate` は JSON レポートが無い、またはテスト数 0 だと失敗する（`.vitest-release-report.json` は `.gitignore` 済み）。wrangler の esbuild は型エラーを見ないので typecheck を入れる。Workers Builds は build command の前に root directory で依存を自動で入れるため、lockfile の無い `apps/api` で `workspace:*` の解決に失敗しないか、`corepack enable` が書き込み権限で失敗しないかを確かめる (verify)。no-skip-gate を実際に走らせているのは今は `ts-ci.yml` のリハーサルだけで、`pages-release.yml` は P5 後に取り込む。あわせて: (1) build watch paths に `apps/api/**`、`packages/core/**`、`pnpm-lock.yaml`、`pnpm-workspace.yaml`、ルートの `package.json` を入れる（root directory 基準かリポジトリ基準かを確かめる (verify)）ことで、データの promotion のたびに再デプロイしない。(2) `NODE_VERSION` を固定する（p5-plan R1）。(3) **非本番ブランチのビルドを止める**: 既定では feat ブランチもビルドされ、本番の binding が付いた version が上がり得る（p5-plan R16）。テストが緑になっただけで本番に紐付いた version が上がらないようにする。
   2. Worker のデプロイを、保護された GitHub environment のジョブ（テスト → `wrangler deploy`）に移す。Worker のデプロイ用トークンを GitHub に置くことになり、39 の判断待ち 11 の既定案（Worker は Workers Builds で配り、GitHub には Pages 公開用のトークンだけを置く）の**再決定が要る**。
@@ -97,12 +99,12 @@
 - **保管するもの**: OAuth の subject（GitHub の数値 ID）、ログイン名、マイリスト、通知設定。メールは持たない（A 案の既定）。
 - **IP**: 生の IP を DO・D1・URL のクエリに残さない。鍵の無いハッシュや、同じ場所に置いた salt では、IPv4（2^32 通り）が総当たりで戻せるので仮名化にならない。**Worker の secret を鍵にした HMAC** で保存し、鍵から日付ごとの派生鍵を作る（保存しない）。日が変わると 1 時間の窓がリセットされる（境界をまたいで 2 倍送れる）ことは許容する。可能なら、IP をどこにも保存しない Workers の Rate Limiting binding (verify) を、粗い IP 制限に使う（§5.1）。期限切れの掃除は、DO が持てる alarm が 1 つだけなので、`expires_at` にインデックスを張った SQL テーブルを定期的に掃除する方式にする。現在の `QuotaCounter` は期限切れバケットを消さず、IP も `ip:<生の IP>` で持つため、P6-0 で直す（§8、§5）。
 - **削除**: 「アカウント削除」で、user・session・account・verification・saved_papers・notification_prefs を全部消す。D1 の Time Travel が過去の状態を一定期間保持する (verify)ため、即時の消去ではないことをプライバシー表記に書く。Workers のログの保持期間も同様に書く。
-- **ログ**: `wrangler.jsonc` は `observability.enabled: true`。OAuth のコールバック URL には `?code=&state=` が必ず付く（GitHub は `form_post` に対応しない）ので、クエリで受けること自体は避けられない。code は使い捨てで寿命が短く、state（と PKCE）に結び付くので許容する。そのうえで次を P6-0 の手順に入れる。(1) 手元の wrangler の config-schema に `observability.logs.invocation_logs` があり、`observability.enabled: true` のままではコールバック URL（`?code=&state=`）がログに残る可能性が高い。`invocation_logs: false` を明示する（またはログに残らないことを確かめる (verify)）。**302 は代わりにならない**: 302 で消えるのはブラウザの履歴と Referer だけで、`?code=&state=` 付きで届いたリクエストの URL はログに残る。したがって、`invocation_logs: false` と 302（関門表）の**両方**を行う。(2) ログはアプリ側の許可リスト方式のラッパー（既存の `deps.log`）経由にし、Better Auth の logger を抑える。(3) access／refresh token はそもそも保存せず、URL にも置かない。この契約は grep テストだけでは守れないので、ログ設定の確認を手順に含める。
+- **ログ**: `wrangler.jsonc` と `wrangler.preview.jsonc` は、どちらも `observability.enabled: true`（§3.3 (a) ではログインの確認をプレビューの Worker で行うため、プレビューのログにも `?code=&state=` が残る）。OAuth のコールバック URL には `?code=&state=` が必ず付く（GitHub は `form_post` に対応しない）ので、クエリで受けること自体は避けられない。code は使い捨てで寿命が短く、state（と PKCE）に結び付くので許容する。そのうえで次を P6-0 の手順に入れる。(1) 手元の wrangler の config-schema に `observability.logs.invocation_logs` があり、`observability.enabled: true` のままではコールバック URL（`?code=&state=`）がログに残る可能性が高い。`invocation_logs: false` を明示する（またはログに残らないことを確かめる (verify)）。**302 は代わりにならない**: 302 で消えるのはブラウザの履歴と Referer だけで、`?code=&state=` 付きで届いたリクエストの URL はログに残る。したがって、`invocation_logs: false` と 302（関門表）の**両方**を、**両方の wrangler 設定**で行い、`wrangler-config.test.ts` で両方を assert する。(2) ログはアプリ側の許可リスト方式のラッパー（既存の `deps.log`）経由にし、Better Auth の logger を抑える。(3) access／refresh token はそもそも保存せず、URL にも置かない。この契約は grep テストだけでは守れないので、ログ設定の確認を手順に含める。
 - 公開ページにプライバシー表記（保管するもの、IP の扱い、削除の挙動）を足してからログインを有効にする。
 
 ### 3.5 認証まわりのレート制限と障害時
 
-- ログイン開始とコールバックに、IP ごと・識別子ごとの上限を付ける。応答は、アカウントの有無が分からない形にする。
+- ログイン開始とコールバックに、IP ごとの上限を付ける（A 案。識別子ごとの上限と、アカウントの有無が分からない応答は、A' を採る場合の要件）。
 - D1 が落ちた時は、**ログインとマイリストだけを閉じる（fail closed）**。静的な閲覧とテーマ投稿は止めない。画面には「ログインは一時的に使えません」と表示する。KV が落ちると今のコードではテーマ投稿も 403、DO が落ちると 503 になる（`routes/themes.ts`）。これらは全 API に共通の障害で、§5.1 の導線で扱う。
 - A' を採る場合は、トークンを使い捨てにし、リンクスキャナに先読みされても消費されない確認画面（ボタンを押して初めて消費）を挟む。
 
@@ -148,14 +150,14 @@
 
 推奨は 1 と 2 の併用。
 
-**操作数の見積もり**: 1 人が 1 日にマイリストを 20 回読み書きし、1 回あたり Workers 1・KV 1（対策後）とすると、Workers の 10 万／日は約 5,000 人日で尽きる。KV 対策が無い場合は、約 2,500 人日で KV が先に尽きる。D1 は行数で数える: 保存件数 N=100 なら 1 回で約 100 行、1 日 20 回で約 2,000 行となり、500 万行の枠は約 2,500 人日で尽きる。**Workers より先に D1 の枠が尽きる**ので、P6-0 で次を決める: マイリストの件数に上限を付ける、`saved_papers(user_id, …)` にインデックスを必ず張る、Better Auth の `cookieCache` でセッションの読み取りを減らす。個人〜小規模利用なら十分。
+**操作数の見積もり**: 1 人が 1 日にマイリストを 20 回読み書きし、1 回あたり Workers 1・KV 1（対策後）とすると、Workers の 10 万／日は約 5,000 人日で尽きる。KV 対策が無い場合は、約 2,500 人日で KV が先に尽きる。D1 は行数で数える: 保存件数 N=100 なら 1 回で約 100 行、1 日 20 回で約 2,000 行となり、500 万行の枠は約 2,500 人日で尽きる。**Workers より先に D1 の枠が尽きる**。DO も同じ水準で、状態を変える要求のすべてに DO の制限器を前置すると、許可 1 回で書き込み 2 行となり、1 人 1 日 20 回なら最大 40 行で、DO の書き込み 10 万行／日は約 2,500 人日で尽きる（テーマ投稿と共有なので、尽きるとテーマ投稿が 503 になる）。そのため制限は Rate Limiting binding を第一にする（§5.1）。読み取りの GET も、ログインした 1 人が繰り返すだけで D1 の枠を使い切れる（N=100 なら約 5 万回）ので、利用者ごとの制限を置く（§2 の関門表）。このため、P6-0 で次を決める: マイリストの件数に上限を付ける、`saved_papers(user_id, …)` にインデックスを必ず張る、Better Auth の `cookieCache` でセッションの読み取りを減らす。個人〜小規模利用なら十分。
 
 **止める閾値**: 「日次 5 万リクエスト」という数字は KV 対策をしていない時の上限から来ている。KV 対策の後は、DO の書き込み行数と D1 の行数を見積もり直してから閾値を決める。使用量の通知を無料プランで受けられるか (verify) も確かめる。受けられない場合は自前で数えることになり、数える処理自体が DO・KV の枠を食うので、その設計も書く。
 
 ### 5.1 枠切れ・攻撃への備え
 
 - **外から枠を使い切れる**: `GET /api/health` には origin 検査もレート制限も無く、1 回で KV を 2 回読む。`OPTIONS /api/*` も 1 回読む。認証の無いアクセスを約 5 万回送れば KV の 1 日分が尽き、テーマ投稿を含む全 API が 403 になる。ログイン開始を DO の制限器で守っても、DO の枠は同じように使い切れる。
-- **対策**（P6-0）: (1) 独自ドメインを使うなら、zone の WAF レート制限ルールで Worker より前に止める（無料プランで使えるか (verify)）。(2) IP ごとの粗い制限には、KV も DO も使わない Workers の Rate Limiting binding (verify) を使う。(3) health の KV 読み取りはキャッシュするか、制限をかける。(4) 制限器は名前空間ごとに DO を分け、1 日の上限も分ける。
+- **対策**（P6-0）: (1) 独自ドメインを使うなら、zone の WAF レート制限ルールで Worker より前に止める（無料プランで使えるか (verify)）。(2) IP ごとの粗い制限には、KV も DO も使わない Workers の Rate Limiting binding (verify) を使う。(3) health は 39 §7.4-1 が `accepting:false` の反映確認に使うので、KV を毎回読むまま（fresh-read）にし、守りは Rate Limiting binding で行う。(4) 制限器は名前空間ごとに DO を分け、1 日の上限も分ける。ただしこれは**アプリ側の上限を分けるだけ**で、プラットフォームの枠（アカウント全体で共有、§5 冒頭）は増えない。ログイン系の制限は、DO を使わない Rate Limiting binding（IP ごと）を第一の手段にし、DO は正確に数える必要がある所だけに使う。
 - **枠が切れた時に、テーマ投稿の利用者が Issue へ逃げられるようにする**: 今の画面（`ThemeRequestForm.tsx`、`themes-request.ts`）の挙動は、別オリジンの今と同一オリジンの P6 で違う。
   - **別オリジンの今**: KV の枠切れで preflight が CORS ヘッダー無しの 403 になると `fetch` が reject し、既存の catch が「サーバに届きませんでした」＋ GitHub Issue のリンクを出す。導線はある。
   - **同一オリジンの P6（独自ドメインが前提）**: 403 は JSON で返り、「このページ以外からの依頼は受け付けていません」と出て、Issue への導線が無い（Issue リンクを出すのは 502／503 の時だけ）。さらに、応答が JSON でない経路（Cloudflare の日次上限エラーの画面、route を fail-open にして Pages の 404 HTML に落ちた場合）は、`resp.json()` が失敗して「サーバから不正な応答 (HTTP n)」と出るだけで、これも Issue リンクが無い。
