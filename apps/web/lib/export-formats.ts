@@ -8,7 +8,7 @@
  * prefixed with `'` (CSV injection guard).
  */
 import { edgeMethodLabelJa, paperLink } from "./lineage/evidence";
-import { RELATION_LABEL_JA } from "./lineage/relations";
+import { relationLabelFor } from "./lineage/relations";
 
 // ---- CSV -------------------------------------------------------------------
 
@@ -214,6 +214,8 @@ export function themeEdgesToCsv<E extends ExportEdge>(
   edges: readonly E[],
   nodeById: ReadonlyMap<string, ExportNode>,
   isMainPath: (e: E) => boolean = () => false,
+  /** Audited collection: plain labels; otherwise strong ones are 候補 (D-R2-40). */
+  audited = false,
 ): string {
   return toCsv(
     THEME_EDGE_CSV_HEADER,
@@ -223,7 +225,7 @@ export function themeEdgesToCsv<E extends ExportEdge>(
       e.dst,
       nodeById.get(e.dst)?.title ?? "",
       e.relation,
-      (RELATION_LABEL_JA as Record<string, string>)[e.relation] ?? "",
+      relationLabelFor(e.relation, audited, ""),
       Number.isFinite(e.confidence) ? e.confidence.toFixed(2) : "",
       edgeMethodLabelJa(e.provenance?.classification?.method ?? null, e.rationale),
       e.rationale,

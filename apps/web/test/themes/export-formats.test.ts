@@ -128,7 +128,7 @@ describe("theme / catalog CSV", () => {
     const [header, row] = edgeCsv.replace("\uFEFF", "").split("\r\n");
     expect(header).toBe(THEME_EDGE_CSV_HEADER.join(","));
     expect(row).toContain("a,Old,b,");
-    expect(row).toContain("extends,拡張,0.80,");
+    expect(row).toContain("extends,拡張（候補）,0.80,");
     expect(row).toContain(",'=evil(),yes");
   });
 

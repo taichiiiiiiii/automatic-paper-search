@@ -126,7 +126,7 @@ describe("error report link (P0-2)", () => {
     const q = new URL(report?.href ?? "").searchParams;
     expect(q.get("older")).toBe("a — Alpha (2018)");
     expect(q.get("newer")).toBe("b — Beta (2019)");
-    expect(q.get("relation")).toBe("拡張（extends）");
+    expect(q.get("relation")).toBe("拡張（extends、規則で推定した候補）");
     expect(q.get("page")).toContain("/themes/?theme=t&node=b");
     expect(panel.textContent).toContain("本流（主経路）に入っています");
   });

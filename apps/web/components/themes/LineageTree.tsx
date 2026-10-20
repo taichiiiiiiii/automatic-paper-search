@@ -969,7 +969,7 @@ export function LineageTree({
     const edges = visibleEdges.filter((e) => ids.has(e.src) && ids.has(e.dst));
     downloadText(
       exportFilename(`${slug || "theme"}-relations`, "csv"),
-      themeEdgesToCsv(edges, nodeById, (e) => mainPathKeys.has(edgeKey(e))),
+      themeEdgesToCsv(edges, nodeById, (e) => mainPathKeys.has(edgeKey(e)), audited),
       "text/csv",
     );
   }

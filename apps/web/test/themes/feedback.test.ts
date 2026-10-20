@@ -37,8 +37,14 @@ const args = {
 };
 
 describe("lineage feedback issue link (design 48 P0-2)", () => {
+  it("labels a rule-inferred strong relation as a candidate when unaudited (D-R2-40)", () => {
+    const q = new URL(lineageFeedbackIssueUrl({ ...args, audited: false })).searchParams;
+    expect(q.get("title")).toContain("→ 置換（候補） →");
+    expect(q.get("relation")).toBe("置換（supersedes、規則で推定した候補）");
+  });
+
   it("opens the issue form with every field prefilled", () => {
-    const url = new URL(lineageFeedbackIssueUrl(args));
+    const url = new URL(lineageFeedbackIssueUrl({ ...args, audited: true }));
     expect(`${url.origin}${url.pathname}`).toBe(
       "https://github.com/taichiiiiiiii/automatic-paper-search/issues/new",
     );

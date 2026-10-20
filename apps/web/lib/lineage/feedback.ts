@@ -10,7 +10,7 @@
 
 import { ISSUES_URL } from "../site-links";
 import { edgeMethodLabelJa } from "./evidence";
-import { RELATION_LABEL_JA } from "./relations";
+import { relationLabelFor } from "./relations";
 
 export const LINEAGE_FEEDBACK_TEMPLATE = "lineage-feedback.yml";
 export const LINEAGE_FEEDBACK_LABEL = "lineage-feedback";
@@ -60,9 +60,14 @@ export function lineageFeedbackIssueUrl(args: {
   newer: FeedbackPaper;
   /** Absolute URL of the page (theme + `node=` of the newer paper). */
   pageUrl?: string | null;
+  /** Audited collection (plain labels); otherwise strong ones are 候補. */
+  audited?: boolean;
 }): string {
   const { theme, edge, older, newer } = args;
-  const relJa = (RELATION_LABEL_JA as Record<string, string>)[edge.relation] ?? edge.relation;
+  const audited = args.audited ?? false;
+  const relJa = relationLabelFor(edge.relation, audited, edge.relation);
+  const plainJa = relationLabelFor(edge.relation, true, edge.relation);
+  const candidate = relJa !== plainJa;
   const method = edgeMethodLabelJa(edge.provenance?.classification?.method ?? null, edge.rationale);
   const confidence = Number.isFinite(edge.confidence) ? edge.confidence.toFixed(2) : "—";
   const params = new URLSearchParams();
@@ -76,7 +81,10 @@ export function lineageFeedbackIssueUrl(args: {
     ),
   );
   params.set("theme", clip(`${theme.name} (${theme.slug})`, MAX_FIELD));
-  params.set("relation", `${relJa}（${edge.relation}）`);
+  params.set(
+    "relation",
+    `${plainJa}（${edge.relation}${candidate ? "、規則で推定した候補" : ""}）`,
+  );
   params.set("older", paperLine(older));
   params.set("newer", paperLine(newer));
   params.set("method", clip(`${method}・確信度 ${confidence}`, MAX_FIELD));

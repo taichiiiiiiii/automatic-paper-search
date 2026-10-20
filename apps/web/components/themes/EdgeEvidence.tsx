@@ -61,12 +61,14 @@ export function ReportEdgeLink({
 }) {
   const src = nodeById.get(edge.src);
   const dst = nodeById.get(edge.dst);
+  const audited = useRelationAudited();
   const href = lineageFeedbackIssueUrl({
     theme,
     edge,
     older: { id: edge.src, title: src?.title, year: src?.year },
     newer: { id: edge.dst, title: dst?.title, year: dst?.year },
     pageUrl: themePageUrl(theme.slug, edge.dst),
+    audited,
   });
   return (
     <a
