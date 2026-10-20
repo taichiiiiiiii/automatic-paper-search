@@ -594,3 +594,12 @@ NeurIPS 2025 の extends 44 本に手でラベルを付けた（genuine 12・usa
 
 - テスト: `relationCueTargetR239.test.ts`（NeurIPS の 44 本: 適合率 0.9 以上（厳しい採点も）、誤った係り先・自分への言及・第三者の 15 本が extends にならない、usage は gold か許容の範囲、MiMo の根拠の文、`cueGovernor`・`usageReason`・別名・`isBogusPaperRecord` を実際の文で確認）。R2-22〜R2-38 の評価テストはそのまま通る（R2-23 の Reformer ← SMYRF の unlike は列挙の扱いで保つ）
 - 試算の道具（作業用、リポジトリ外）: 公開中の辺の通し直し、キャッシュ全ペアの比較、評価セットの採点
+
+## 決めたこと（2026-10-20、ユーザー「どんどん進めて下さい」= 推奨案で承認）
+
+| # | 判断 | 決定 | 理由 |
+|---|---|---|---|
+| D-R2-40 | 規則で決める強い関係（拡張・対比・置き換え）の扱い | ★A: 判定は強い言い回し（build on / build upon / extend / variant of / adaptation of / unlike / in contrast to / replace など）が引用先に係るときだけにする。弱い言い回し（adopt / use / follow / based on / inspired by）は「引用のみ」。画面では強い関係を「引用文から推定した候補」として引用文と一緒に見せ、断定しない | R2-38・R2-39 の規則追加後も、新しい分野（CVPR 2025）で拡張の正しさが約 4 割。分野ごとの言い回しを足し続けても終わらないため、適合率を優先し、表示も控えめにする |
+| D-R2-41 | deep の系譜（ICLR 2026 の 14 件） | 廃止する。ファイル、manifest、`/[conf]/deep/` のページとテストを削除 | 作る仕組みが LLM 版しかなく、OpenReview の ID だけの一覧では公開の検査を通らない。会議の系譜で同じ内容が見られる |
+
+保留（ユーザーの確認待ち）: 監査済みテーマを作り直したときに「未監査」へ戻して公開を続けるか（公開範囲が変わるため）、sprintf-js の Dependabot 通知を tolerable_risk で閉じるか（外部操作）。
