@@ -113,7 +113,9 @@ describe("R2-37 publish guard: a regen whose build would be blocked keeps the pu
     expect(run.stdout).toContain(
       `::error::theme "Flash Attention": refusing to replace the published unaudited theme (${pubShape}) ` +
         "with a build the publication gate would block (14 nodes / 36 edges; " +
-        "failed: lineage_relation_count failed (observed 4, expected 5))",
+        // R2-40: 3 (the recorded rebuild's weak-cue “We follow the FlashAttention
+        // algorithms” extends is usage now; was 4).
+        "failed: lineage_relation_count failed (observed 3, expected 5))",
     );
     expect(run.stderr).not.toMatch(/^wrote /m);
     expect(snapshot(sb, "data/published")).toEqual(before);

@@ -90,6 +90,7 @@
 | R2-37 | 作り直しで公開中のテーマが非公開になる事故（2026-10-12、LoRA）の再発防止: 自動の作り直しの条件、regen と依頼の引数の一致、公開中より悪い版で置き換えない検査 | 済み（2026-10-12 merge。publish guard・`--match-published`） |
 | R2-38 | `extends` の適合率: ベンチマーク・データセット・枠組み・道具・評価手順を「使う」引用文（we adopt / use / follow X）を継承と読まない | 済み（2026-10-12 merge。extends 適合率 0.63→1.00、監査済み 4 テーマは不変） |
 | R2-39 | `extends` の手がかりの係り先: 複数の引用を含む文で別の論文に掛かる手がかり、自分の節・表への言及、第三者が主語の extend、公開モデル・学習データ・テンプレート・設定の利用、論文でない記録（"Open Source"）の節点 | 実装（2026-10-14、ブランチ `roadmap/r2-39-cue-target`。NeurIPS 2025 の extends 適合率 0.27→1.00、監査済み 4 テーマは不変。下の実装メモ） |
+| R2-40 | 規則で決める強い関係は強い言い回しだけから（D-R2-40）: adopt / use / follow / based on / inspired by などの弱い言い回しでは `extends` にしない | 実装（2026-10-20、ブランチ `roadmap/r2-40-strict-cues`。CVPR 2025 の extends 適合率 0.28→1.00、ICLR 2025 0.17→1.00。公開ファイルは作り直していない。下の実装メモ） |
 
 ## 実装メモ（2026-10-10）
 
@@ -603,3 +604,65 @@ NeurIPS 2025 の extends 44 本に手でラベルを付けた（genuine 12・usa
 | D-R2-41 | deep の系譜（ICLR 2026 の 14 件） | 廃止する。ファイル、manifest、`/[conf]/deep/` のページとテストを削除 | 作る仕組みが LLM 版しかなく、OpenReview の ID だけの一覧では公開の検査を通らない。会議の系譜で同じ内容が見られる |
 
 保留（ユーザーの確認待ち）: 監査済みテーマを作り直したときに「未監査」へ戻して公開を続けるか（公開範囲が変わるため）、sprintf-js の Dependabot 通知を tolerable_risk で閉じるか（外部操作）。
+
+## 実装メモ（R2-40、強い言い回しだけで強い関係を決める）
+
+D-R2-40（ユーザー承認、2026-10-20）の実装。LLM・API の新しい呼び出しはない。D5 と公開の基準（強い関係 3 本以上など）は変えていない。画面の「引用文から推定した候補」の表示は別の作業（web 側）で行う。
+
+### 規則（`classify/apiRelations.ts`・`classify/citedTarget.ts`）
+
+- **強い言い回し**（`STRONG_BUILD_CUES`）: build on / build upon / built on top of、extend X、extension / variant / version / adaptation / modification / instantiation / application of X、adapted / derived from X、generalize / subsume X、improve upon X、「our … の particular instance」、「our modified X」（`ownVariantOf`）。これが被引用論文に係るときだけ `builds_on`（→ `extends`）にする。これまでの build の判定（R2-23 の一人称・係り先）を狭めるだけで、広げない（両方を満たす時だけ）
+- **弱い言い回し**（`WEAK_BUILD_CUES`）: adopt / use / employ / leverage / utilize / borrow / reuse / modify / adapt、follow(ing)、based on、inspired by、motivated by。被引用論文に係っても `uses_resource`（規則 `phrase_usage`、baseline_only）。同じ文に対比・比較の手がかりがあればそちらを優先する
+- 強い言い回しの上に R2-38・R2-39 の判定を残す: 目的語が資源・手順（「built on top of the X library」「these extended experiments」）、計測（「…, we calculate」）、同格の資源、主節の資源・既定の設定、係り先（別の論文・自分の節・第三者）。次を加えた
+  - 強い言い回しの目的語が公開モデル（「builds upon a pre-trained LLM model [53]」）、他の研究の知見（「We build on recent studies (A; B) which identify …」）、モデルの大きさの版（「the ViT-large version of DepthAnythingV2 [38]」）なら利用
+  - 被引用論文の題名がデータセット・ベンチマーク（「ImageNet: A large-scale hierarchical image database」）なら強い言い回しでも利用（これまでは弱い言い回しのみ）
+  - 係り先（`cueGovernor`）: 「extend X with / using / via Y」の Y は道具（被引用論文が with より前に無ければ係らない。「We extend the patch-level pathway with MM-DiT blocks [9]」）、同格の版は前の論文のもの（「LightningDiT (Yao et al., 2025), a variant of DiT」）、関係節の主語が別の論文（「Point3R [95] and StreamVGGT [106], which extend CUT3R and VGGT [87]」）、別の論文を説明する分詞（「GenEx [33], a … model built upon stable video diffusion [5]」）は第三者
+  - 名詞だけの「generalization」（能力の意味）と「modification of + 動名詞」は手がかりにしない
+  - 「While X …, we / our …」の対比は、被引用論文が while の節にある時だけ対比にする（「While a common practice involves SDEs, we adopt CPS [40]」は CPS との対比ではない）
+- **消した規則（強い言い回しだけの判定で不要になったもの）**: R2-28 の「…, which we also follow」、R2-38 の弱い言い回し専用の判定（既製の道具・学習の部品・論文の種類のうち評価研究・S2 の意図）、R2-39 の弱い言い回し専用の判定（公開モデル・役割の as・値の指定・follow and set）、弱い based on の係り先の判定。`usageReason` は強い言い回しの文だけを受け取る
+
+### 評価（`test/lineage/theme/fixtures/relation-strict-eval-r240.json`、`relationStrictR240.test.ts`）
+
+公開中の CVPR 2025（2026-10-13T17:25:07Z）と ICLR 2025（2026-10-13T16:50:32Z）の、規則で決めた強い関係すべて（extends 32 + 18、contrasts 2 + 4。CVPR の title_version の supersedes 1 本は対象外）に論文単位の手作業ラベルを付けた。CVPR の extends: genuine 9・usage 20・misattributed 3、ICLR の extends: genuine 3・usage 13・other 2（知見・系統の例）、contrasts: genuine_contrast 5・other 1（「Unlike existing benchmarks (A; B; C)」、contrasts も許容）。genuine には継承を述べる文の一部（`genuine_evidence`）を付けた。R2-38・R2-39 の評価セットと合わせて採点した（「develop の規則」= R2-39 の規則、いずれも公開時と同じ入力）。
+
+| 対象 | extends 公開中（適合率、再現率） | develop の規則 | R2-40 | contrasts develop → R2-40（適合率、再現率） |
+|---|---|---|---|---|
+| CVPR 2025 | 9/32 = 0.28、9/9 | 9/32 = 0.28、9/9 | **6/6 = 1.00、6/9** | 2/2、2/2 → 2/2、2/2 |
+| ICLR 2025 | 3/18 = 0.17、3/3 | 3/18 = 0.17、3/3 | **1/1 = 1.00、1/3** | 4/4、3/3 → 4/4、3/3 |
+| NeurIPS 2025 | 12/42 = 0.29、12/12 | 11/11 = 1.00、11/12 | 5/5 = 1.00、5/12 | （ラベルなし） |
+| ICML 2025 | 3/17 = 0.18、3/3 | 3/3 = 1.00、3/3 | 2/2 = 1.00、2/3 | 1/1、0/1 → 1/1、0/1 |
+| 監査済み 4 テーマ | 19/19 | 19/19 | 8/8 = 1.00、8/19 | 3/3、3/3 → 3/3、3/3 |
+| Low-Rank Adaptation | 5/7 = 0.71、5/6 | 2/2 = 1.00、2/6 | 1/1 = 1.00、1/6 | 3/4、3/3 → 3/4、3/3 |
+| 合計 | 51/135 = 0.38、51/52 | 47/85 = 0.55、47/52 | **23/23 = 1.00、23/52** | 13/14 = 0.93、11/12 → 13/14 = 0.93、11/12 |
+
+- 引用文が継承を述べる文かも確かめる厳しい採点でも全対象で 1.00
+- contrasts の誤り 1 本は LoRA ← DyLoRA（「unlike LoRA paper … which they count only LoRA specific parameters」、数え方の違い）で、R2-38 から変わらない。ICML の 0/1 は PropRAG ← HippoRAG 2（要旨の取り方の差、R2-38 のメモ）
+- 失った genuine（再現率の低下）は、継承が弱い言い回しでしか書かれていない辺: CVPR の MoVieS ← VGGT（「MoVieS is built on … VGGT」は主語が手法名で一人称でない）、STream3R ← DUSt3R（「We reformulate DUSt3R」）、MonSter++ ← IGEV（「follows IGEV」）、ICLR の TC-Light ← IC-Light（「we adapt IC-Light into a … video diffusion model」）、LoopFormer ← Saunshi et al.（「we follow the overall approach of …」）。NeurIPS の LLaDA → MMaDA（「we adopt the … strategy introduced in LLaDA」）など、テーマの V-MoE ← GShard（「Following [39], we place the MoEs …」）なども同じ。D-R2-40 は適合率を優先する判断なので、これらは引用のみになる
+- R2-23 の規則の例（rule cases）にあった既知の誤り（MAE ←「Following [15], we adopt an extra BatchNorm layer」）も弱い言い回しなので消えた
+
+### 影響（オフラインの試算。公開ファイルは書き換えていない）
+
+公開中の各辺を今のキャッシュ（`s2_references.json`・`arxiv_html_contexts.json`、会議は参考文献キャッシュの S2 要旨）で develop の規則と R2-40 の規則で通し直し、品質表と同じ自動検査に掛けた。R2-40 で新しく強くなった辺は 1 本もない（強い関係は develop の規則の部分集合）。
+
+| 対象 | 強い関係 公開中 → develop の規則 → R2-40 | 公開の検査（3 本以上ほか） | 監査 |
+|---|---|---|---|
+| flash-attention | 4 → 4 → 3（supersedes 3 のみ） | 通過（ちょうど 3 本） | 監査済みの強い関係 4 本のうち弱い言い回しは 1 本（Blackwell 版 ← FA-2「We follow the FlashAttention algorithms」） |
+| graph-neural-network | 4 → 4 → 4 | 通過 | 弱い言い回し 0 本 |
+| mixture-of-experts | 7 → 7 → 3（extends 1、contrasts 2） | 通過 | 7 本のうち 4 本（V-MoE ← Shazeer「inspired by」、Expert Choice ← Shazeer「we adopt the idea」、Switch ← GShard「which we also follow」、V-MoE ← GShard「Following [39]」） |
+| vision-transformer | 13 → 13 → 7（extends 5、contrasts 1、supersedes 1） | 通過 | 13 本のうち 6 本（TransUNet・PVT・ViViT・RevViT ← ViT、SwinIR・Swin-Unet ← Swin。following / follow / inspired by / based on / motivated by） |
+| low-rank-adaptation | 5 → 7 → 6（extends 1、contrasts 5） | 通過 | 未監査（MultiLoRA ← LoRA「we follow [6] to use …」が落ちる） |
+| icml-2025 | 5 → 5 → 4（extends 2、contrasts 2） | 通過 | 未監査（REMem ← ReAct が落ちる） |
+| neurips-2025 | 14 → 14 → 7（extends 5、contrasts 2） | 通過 | 未監査 |
+| iclr-2025 | 22 → 22 → 4（extends 1、contrasts 3） | 通過 | 未監査 |
+| cvpr-2025 | 35 → 35 → 9（extends 6、contrasts 2、supersedes 1） | 通過 | 未監査 |
+
+- 監査済み 4 テーマは作り直さない（監査が入力の sha256 に結び付いているため）。作り直すと、合計 28 本の監査済みの強い関係のうち 11 本（FA 1・MoE 4・ViT 6）が引用のみになる。どれも監査では「正しい」だったが、根拠の文は弱い言い回し。ViT と MoE は 3 本以上を保ち、FA はちょうど 3 本（supersedes だけ）
+- 会議の生成器は関係で節点を落とさないので、会議の節点・辺の数は変わらない。LoRA は強い関係が弱い入り口の節点を残すため（R2-30・R2-35）、作り直しで節点が減る可能性がある（publish guard が半分未満を拒否する）
+- 作り直しの対象（未監査、1 件ずつ、各回の後に `python3 scripts/strong_edges.py https://paperpilot.pages.dev/<id>/lineage.json` で強い関係の引用文を読む）: `gh workflow run conference-lineage-regen.yml --ref develop -f conferences=cvpr-2025` → `iclr-2025` → `neurips-2025` → `icml-2025`、テーマは `gh workflow run regen-themes.yml --ref develop -f themes="Low-Rank Adaptation"`
+
+### 確認
+
+- テスト: `relationStrictR240.test.ts`（56 本のラベル、各対象の extends 適合率 0.9 以上（厳しい採点も）と最低の正解数、contrasts 適合率、弱い言い回しの実際の文 16 本が `builds_on` にならない、強い言い回しの文 7 本は `builds_on`、`cueGovernor` の第三者・道具・同格、`usageReason` の公開モデル・知見・大きさの版、ImageNet、while の対比）。R2-22〜R2-39 の評価テストは、弱い言い回しで決まっていた辺の期待を「引用のみ」に直し（一覧で固定）、強い言い回しに置き換えた文で同じ経路（arXiv HTML の帰属、要旨の build）を確かめる形にした。システムテスト `regenGuard.system.test.ts` の記録（FA の作り直し）は強い関係が 4 → 3 本になり、拒否の理由の数字だけ直した
+- 通したもの: pipeline の単体テスト（266 ファイル）、システムテスト（`failureInjection.system.test.ts` の Hugging Face 4 件は develop でも同じく失敗する。2026-10-19 の `code-links.json` 更新でキャッシュが新しく、HF への問い合わせが起きないため。R2-40 とは無関係）、core、typecheck、biome、`auditLineageQualityCli.ts`（FAIL なし）
+- 試算の道具（作業用、リポジトリ外）: 評価セットの採点、公開中の辺の通し直し（develop / R2-40）
+

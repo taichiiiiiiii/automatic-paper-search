@@ -86,7 +86,7 @@ describe("R2-28 arXiv HTML contexts on the labelled set", () => {
     }
   });
 
-  it("every strong claim from HTML is labelled correct; precision kept, recall +1 (Switch <- GShard)", async () => {
+  it("every strong claim from HTML is labelled correct; precision kept (R2-40: Segmenter only)", async () => {
     const fromHtml: string[] = [];
     let strongBefore = 0;
     let strongAfter = 0;
@@ -107,15 +107,14 @@ describe("R2-28 arXiv HTML contexts on the labelled set", () => {
         expect(it.gold.strong, key(it)).toBe(true);
       }
     }
+    // R2-40: the HTML sentences of PVT (“we follow ViT [13] and DeiT”),
+    // RevViT (“Following ViT [15]”) and Switch <- GShard (“…, which we also
+    // follow”) are weak cues; the two ViT pairs stay allowlist edges and
+    // Switch <- GShard gets no strong claim. Segmenter's strong cue remains.
     expect(fromHtml.map((k) => k.split(" <- ")[1]?.slice(0, 20)).sort()).toEqual([
-      "Pyramid Vision Trans",
-      "Reversible Vision Tr",
       "Segmenter: Transform",
-      "Switch Transformers:",
     ]);
-    // Switch <- GShard is new; the three ViT pairs were allowlist edges
-    // and are now backed by a quoted sentence.
-    expect(strongAfter - strongBefore).toBe(1);
+    expect(strongAfter - strongBefore).toBe(0);
   });
 
   it("a comparison sentence naming the cited paper is not a build cue (ARMA <- CayleyNets)", async () => {

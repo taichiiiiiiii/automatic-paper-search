@@ -145,7 +145,9 @@ describe("R2-22 strong-claim precision on the labelled set", () => {
     // rule's "While Eigen et al. …, our convolutional application of the
     // MoE …" is now a build-on, which the cached context-LLM answer
     // (builds_on) confirms instead of vetoing.
-    expect(p.predicted).toBe(22);
+    // R2-40: 15 — the weak-cue build-ons (follow / adopt / inspired by /
+    // motivated by / based on) are usage now (`R240_WEAK` below).
+    expect(p.predicted).toBe(15);
     for (const r of rows.filter((x) => STRONG.has(x.predicted))) {
       const ok =
         r.it.gold.quote_backed ||
@@ -156,10 +158,19 @@ describe("R2-22 strong-claim precision on the labelled set", () => {
         R223_BACKED.has(`${r.it.src}->${r.it.dst}`);
       expect(ok, `${r.it.src}->${r.it.dst} (${r.method})`).toBe(true);
     }
-    // Every quote-backed correct claim survives (recall on what D5 allows).
+    // Every quote-backed correct claim survives (recall on what D5 allows),
+    // except those whose quote has only a weak cue (R2-40, design 41).
+    const R240_WEAK = new Set([
+      "openalex:W4384648639->openalex:W7220440728", // "We follow the FlashAttention algorithms …"
+      "openalex:W2581624817->openalex:W4226079124", // "we adopt the idea of sparsely activated MoE [31]"
+      "openalex:W3122317902->openalex:W3170943566", // "Following [39], we place the MoEs …"
+      "openalex:W3094502228->openalex:W3127751679", // "Following [4], we first perform tokenization …"
+      "openalex:W3138516171->openalex:W4321232185", // "Motivated by the Swin Transformer's [19] success …"
+    ]);
     for (const it of items.filter((i) => i.gold.strong === true && i.gold.quote_backed)) {
       const row = rows.find((r) => r.it === it);
-      expect(STRONG.has(row?.predicted ?? ""), `${it.src}->${it.dst}`).toBe(true);
+      const key = `${it.src}->${it.dst}`;
+      expect(STRONG.has(row?.predicted ?? ""), key).toBe(!R240_WEAK.has(key));
     }
   });
 

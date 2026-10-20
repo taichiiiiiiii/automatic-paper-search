@@ -1,0 +1,2566 @@
+{
+ "schema_version": "relation-strict-eval-r240-v1",
+ "description": "R2-40 evaluation set: every strong edge decided by the S2/arXiv-HTML context rules (32+18 extends, 2+4 contrasts) of the published CVPR 2025 (generated 2026-10-13T17:25:07Z) and ICLR 2025 (2026-10-13T16:50:32Z) conference lineages (LLM-free edition builder). The CVPR title_version supersedes edge is not rule-decided and is left out. Signals as in the R2-38/R2-39 sets (S2 contexts / intents / isInfluential from data/state/lineage-cache/s2_references.json; arXiv HTML contexts from arxiv_html_contexts.json when the published evidence came from arXiv HTML; citing_abstract only when the published rationale quotes an abstract sentence). Labels (hand, paper level, judged against all context sentences): genuine = the citing paper builds on / extends the cited method (genuine_evidence lists substrings of context sentences that state it; a strict extends must quote one); usage = the cited work is only used (released model / encoder, stock component, loss or head, metric, dataset, tool, setting, definition, setup); misattributed = the cue governs another work (usage_kind third_party: another work is the subject) or the sentence is about another paper; other = a build/contrast statement about a finding, a model family or a class of works rather than the cited paper; genuine_contrast = a correct contrasts. borderline=true marks judgement calls.",
+ "labelled_at": "2026-10-20",
+ "labeller": "R2-40 subagent (hand labels)",
+ "items": [
+  {
+   "collection": "cvpr-2025",
+   "src": "1206b05eae5a06ba662ae79fb291b50e359c4f42",
+   "dst": "970029c890a6be496a0e2145de456252bdf609bf",
+   "cited": {
+    "title": "Stable Video Diffusion: Scaling Latent Video Diffusion Models to Large Datasets",
+    "year": 2023,
+    "authors": [
+     "A. Blattmann",
+     "Tim Dockhorn",
+     "S. Kulal",
+     "Daniel Mendelevitch",
+     "Maciej Kilian"
+    ],
+    "venue": "arXiv.org"
+   },
+   "citing": {
+    "title": "Matrix-3D: Omnidirectional Explorable 3D World Generation",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "For evaluation, we crop perspective videos from ground-truth panoramas and assess the model’s generation performance; (3) GenEx [33], a panoramic video generation model built upon stable video diffusion [5].",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": [
+     "Recent works [63, 38, 13, 45, 48, 40] have explored the use of video diffusion models [50, 22, 5] for 3D world generation.",
+     "For evaluation, we crop perspective videos from ground-truth panoramas and assess the model’s generation performance; (3) GenEx [33], a panoramic video generation model built upon stable video diffusion [5]."
+    ]
+   },
+   "label": "misattributed",
+   "usage_kind": "third_party",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "\"GenEx [33], a panoramic video generation model built upon stable video diffusion [5]\": GenEx builds on SVD, not Matrix-3D (an evaluation baseline description)."
+  },
+  {
+   "collection": "cvpr-2025",
+   "src": "2091dcd7c80bc27ba7d1fdc0087748bb1e293e2f",
+   "dst": "298bbeccef082d74057864e8f8ec6ed13896380b",
+   "cited": {
+    "title": "Depth Anything V2",
+    "year": 2024,
+    "authors": [
+     "Lihe Yang",
+     "Bing-Yi Kang",
+     "Zi-Long Huang",
+     "Zhen Zhao",
+     "Xiao-Gang Xu"
+    ],
+    "venue": "Neural Information Processing Systems"
+   },
+   "citing": {
+    "title": "MonSter++: Unified Stereo Matching, Multi-View Stereo, and Real-Time Stereo With Monodepth Priors",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "For the monocular branch, we use the ViT-large version of DepthAnythingV2 [38] and freeze its parameters to prevent training of stereo-matching tasks from affecting its generalization and accuracy.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "FoundationStereo [76] employs a side-tuning feature back-bone to adapt monocular priors from DepthAnythingV2 [38] to stereo inputs, thereby enhancing its generalization capability.",
+     "For the monocular branch, we use the ViT-large version of DepthAnythingV2 [38] and freeze its parameters to prevent training of stereo-matching tasks from affecting its generalization and accuracy.",
+     "Efﬁciency: We use the ViT-large version of DepthAny-thingV2 [38] as the monocular branch, which introduces time and memory overheads.",
+     "Our best empirical conﬁguration uses pretrained DepthAnythingV2 [38] as the monocular depth branch, which uses DINOv2 [58] as the encoder and DPT [77] as the decoder.",
+     "Recent monocular depth estimation methods [38], [55], [56], [57], built upon powerful image backbones [58], scale up both model and dataset sizes by leveraging a mix of real and synthetic data, achieving strong generalization across diverse scenes."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "released_model",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "Frozen DepthAnythingV2 ViT-L used as the monocular branch."
+  },
+  {
+   "collection": "cvpr-2025",
+   "src": "268d347e8a55b5eb82fb5e7d2f800e33c75ab18a",
+   "dst": "4d969386c65de5c892f6477314a62cda523772ad",
+   "cited": {
+    "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+    "year": 2020,
+    "authors": [
+     "A. Dosovitskiy",
+     "Lucas Beyer",
+     "Alexander Kolesnikov",
+     "Dirk Weissenborn",
+     "Xiaohua Zhai"
+    ],
+    "venue": "International Conference on Learning Representations"
+   },
+   "citing": {
+    "title": "Continuous 3D Perception Model with Persistent State",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "We use a ViT-Large model [18] for the image encoder Encoder i , initialized with DUSt3R encoder pretrained weights, and ViT-Base for the decoders.",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": [
+     "We use a ViT-Large model [18] for the image encoder Encoder i , initialized with DUSt3R encoder pretrained weights, and ViT-Base for the decoders.",
+     "For each current image, I t , it is ﬁrst encoded into token representation by a ViT encoder [18]: We represent the state also as a set of tokens."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "stock_component",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "ViT-Large as the image encoder."
+  },
+  {
+   "collection": "cvpr-2025",
+   "src": "2cc1d857e86d5152ba7fe6a8355c2a0150cc280a",
+   "dst": "6c05107871e8d8f94d7a68d224954d0ac7b7568f",
+   "cited": {
+    "title": "3D Gaussian Splatting for Real-Time Radiance Field Rendering",
+    "year": 2023,
+    "authors": [
+     "Bernhard Kerbl",
+     "Georgios Kopanas",
+     "Thomas Leimkuehler",
+     "G. Drettakis"
+    ],
+    "venue": "ACM Transactions on Graphics"
+   },
+   "citing": {
+    "title": "HY-World 2.0: A Multi-Modal World Model for Reconstructing, Generating, and Simulating 3D Worlds",
+    "year": 2026
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "contrasts",
+   "published_evidence": "Unlike standard 3DGS learning for reconstruction [33], we incorporate tailored enhancements to strengthen 3DGS training on generated views, effectively bridging the gap between 3D reconstruction and generative world modeling.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Unlike standard 3DGS learning for reconstruction [33], we incorporate tailored enhancements to strengthen 3DGS training on generated views, effectively bridging the gap between 3D reconstruction and generative world modeling.",
+     "During the 3DGS training on generated data, we observe a dilemma regarding the adaptive densification mechanism [33].",
+     "Given the panorama I pan , expanded point cloud ˜P , and and a set of T ex generated novel keyframes along with their corresponding camera parameters { V i , C i } T ex i =1 , we optimize a 3DGS model [33] to serve as the final scene representation.",
+     "Following [33], to ensure the covariance matrix remains positive semi-definite during optimization, Σ k is decomposed into a scaling matrix S k and a rotation matrix R k , formulated as Furthermore, we empirically observe that the generated scenes exhibit negligible view-dependent effects."
+    ]
+   },
+   "label": "genuine_contrast",
+   "usage_kind": null,
+   "gold_relation": "contrasts",
+   "also_acceptable": [
+    "extends"
+   ],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "\"Unlike standard 3DGS learning for reconstruction [33], we incorporate tailored enhancements\": contrast with 3DGS training (the paper also uses 3DGS as its representation)."
+  },
+  {
+   "collection": "cvpr-2025",
+   "src": "2cc1d857e86d5152ba7fe6a8355c2a0150cc280a",
+   "dst": "ad7e6b9b1318585671f600c73c263f62a091603c",
+   "cited": {
+    "title": "3D Gaussian Splatting for Real-Time Radiance Field Rendering",
+    "year": 2023,
+    "authors": [
+     "Bernhard Kerbl",
+     "Georgios Kopanas",
+     "Thomas Leimkuehler",
+     "G. Drettakis"
+    ],
+    "venue": "ACM Transactions on Graphics"
+   },
+   "citing": {
+    "title": "WorldPlay: Towards Long-Term Geometric Consistency for Real-Time Interactive World Modeling",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "To mitigate the monotonous motion common in original videos, we adopt 3D Gaussian Splatting [25] for 3D reconstruction on curated videos.",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": [
+     "To mitigate the monotonous motion common in original videos, we adopt 3D Gaussian Splatting [25] for 3D reconstruction on curated videos."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "tool",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "3DGS used to reconstruct curated training videos (data curation)."
+  },
+  {
+   "collection": "cvpr-2025",
+   "src": "41a66997ce0a366bba3becf7c3f37c9aebb13fbd",
+   "dst": "3c3245547a4f24eabb3aae6d90c2744a7a0cde41",
+   "cited": {
+    "title": "Scaling Rectified Flow Transformers for High-Resolution Image Synthesis",
+    "year": 2024,
+    "authors": [
+     "Patrick Esser",
+     "S. Kulal",
+     "A. Blattmann",
+     "Rahim Entezari",
+     "Jonas Muller"
+    ],
+    "venue": "International Conference on Machine Learning"
+   },
+   "citing": {
+    "title": "PixelDiT: Pixel Diffusion Transformers for Image Generation",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "We extend the patch-level pathway with multi-modal DiT (MM-DiT) blocks [9] that fuse text and image semantics while leaving the pixel-level pathway unchanged.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Second, the autoencoder introduces a lossy reconstruction that can remove high-frequency details and cap sample fidelity for image generation and editing tasks even when the diffusion model is strong [9, 26, 30, 47], as shown in Figure 1b.",
+     "5 , and the shifting strategy [9] with shift value α",
+     "Throughout diffusion training, we use logit-normal sampling [9], EMA with decay 0 .",
+     "We use Gemma-2 [39] as the text encoder and incorporate the MM-DiT conditioning de-sign [9] on the patch-level pathway.",
+     "We extend the patch-level pathway with multi-modal DiT (MM-DiT) blocks [9] that fuse text and image semantics while leaving the pixel-level pathway unchanged."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "component",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": true,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "\"We extend the patch-level pathway with MM-DiT blocks [9]\": the extended object is the own pathway; MM-DiT blocks are a borrowed component."
+  },
+  {
+   "collection": "cvpr-2025",
+   "src": "4356b46e5dd1a4ebd579b1cd6eb3eeedddd5a65c",
+   "dst": "04c6fb917cc79fbed7a0cc7c856520a513330923",
+   "cited": {
+    "title": "VGGT: Visual Geometry Grounded Transformer",
+    "year": 2025,
+    "authors": [
+     "Jianyuan Wang",
+     "Minghao Chen",
+     "Nikita Karaev",
+     "Andrea Vedaldi",
+     "Christian Rupprecht"
+    ],
+    "venue": "CVPR 2025"
+   },
+   "citing": {
+    "title": "MoVieS: Motion-Aware 4D Dynamic View Synthesis in One Second",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Depth and Splatter Head Different from previous feed-forward 3DGS reconstruction methods [5, 9, 92] that use a single head to predict all splatter pixel attributes, we adopt a decoupled design to better leverage geometric priors from the p…",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "The pretrained backbone, VGGT [69], requires all 3D scenes to be normalized to a unit scale on average, which in turn necessitates depth maps and camera extrinsics to be defined in a consistent metric space.",
+     "Recent advances have made great strides in individual 3D tasks, such as monocular depth estimation [2, 6, 23, 53, 84], 3D scene reconstruction [56, 65, 69, 74, 91], novel view synthesis [12, 24, 43, 45, 76] and point tracking [10, 15, 22, 71, 77].",
+     "After tokenizing input images, camera parameters, and timestamps, we apply the geometrically pretrained attention blocks [66] from VGGT [69] to enable interactions among image tokens across video frames.",
+     "As shown in Figure 1, MoVieS is built upon a large-scale pretrained transformer backbone [47, 69], which encodes each video frame independently and aggregates their information via attentions [66].",
+     "Depth and Splatter Head Different from previous feed-forward 3DGS reconstruction methods [5, 9, 92] that use a single head to predict all splatter pixel attributes, we adopt a decoupled design to better leverage geometric priors from the pretrained VGGT [69].",
+     "VGGT Initialization Although MoVieS is initialized by a pretrained model, i.e., VGGT [69], it is not an essential component of the proposed method.",
+     "We also omit confidence-aware weighting [69, 74] for simplicity and more stable training.",
+     "Normalization Similar to VGGT [69], we normalize the 3D scene scale by the average Euclidean distance from each 3D point to the origin of the canonical world coordinate sys-tem.",
+     "Implementation MoVieS is built on a geometrically pre-trained transformer, VGGT [69], via full fine-tuning.",
+     "VGGT [69] unifies these advances with a strong image encoder [47] and task-specific heads."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": true,
+   "audited_verdict": null,
+   "genuine_evidence": [
+    "MoVieS is built on a geometrically pre-trained transformer, VGGT",
+    "MoVieS is built upon a large-scale pretrained transformer backbone"
+   ],
+   "note": "MoVieS fine-tunes VGGT and extends it to dynamic 4D view synthesis; the published sentence (\"we adopt a decoupled design to better leverage geometric priors from the pretrained VGGT\") is not the build-on statement."
+  },
+  {
+   "collection": "cvpr-2025",
+   "src": "4356b46e5dd1a4ebd579b1cd6eb3eeedddd5a65c",
+   "dst": "15ccf77ecd201c5ef5bc8761b42cd3329d37c84c",
+   "cited": {
+    "title": "VGGT: Visual Geometry Grounded Transformer",
+    "year": 2025,
+    "authors": [
+     "Jianyuan Wang",
+     "Minghao Chen",
+     "Nikita Karaev",
+     "Andrea Vedaldi",
+     "Christian Rupprecht"
+    ],
+    "venue": "CVPR 2025"
+   },
+   "citing": {
+    "title": "TTT3R: 3D Reconstruction as Test-Time Training",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "We also evaluate against Point3R [95] and StreamVGGT [106], which extend CUT3R and VGGT [87], respectively, to longer sequences by fine-tuning with explicit pointmap memory or KV-cache–based state representations.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "We also compare with AETHER [78] and VGGT [87], which could predict all pointmaps simultaneously, without the need for post-processing, leading to state-of-the-art 3D point and camera pose reconstruction.",
+     "The camera pose T t and the camera intrinsic C t , can either be solved from pixel-aligned 3D pointmaps using the PnP [41] and Weiszfeld [56] algorithms, or regressed from image tokens X t through the MLP or trunk attention layers [86, 87].",
+     "We also evaluate against Point3R [95] and StreamVGGT [106], which extend CUT3R and VGGT [87], respectively, to longer sequences by fine-tuning with explicit pointmap memory or KV-cache–based state representations.",
+     "As Figure 2 shows, recent feed-forward methods (e.g., VGGT [87], Point3R [95]) suffer from high memory consumption.",
+     "However, similar to full attention in VGGT [87], the computation and GPU memory usage in StreamVGGT grow redundantly.",
+     "Building on the sequence modeling [76], recent advances [87, 91, 101] successfully map sequences of images into pixel-aligned pointmaps [11, 12].",
+     "Concurrently, methods like VGGT-SLAM [49] and VGGT-Long [24] seek improved robustness by integrating learned front-ends [51, 87, 91].",
+     "For full attention–based methods, such as Fast3R [96] and VGGT [87], all frames interact through global all-to-all self-attention, which can be interpreted as progressive state concatenation with growing state length: where state ] is a list of key-value pairs.",
+     "To address this issue, Fast3R [96] and VGGT [87] propose to use a large feedforward transformer with global attention that handles multiview inputs and predicts per-view pointmaps simultaneously, without the need for post-processing, leading to state-of-the-art 3D point and camera pose…"
+    ]
+   },
+   "label": "misattributed",
+   "usage_kind": "third_party",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "\"Point3R [95] and StreamVGGT [106], which extend CUT3R and VGGT [87]\": third-party extensions; TTT3R builds on CUT3R."
+  },
+  {
+   "collection": "cvpr-2025",
+   "src": "4356b46e5dd1a4ebd579b1cd6eb3eeedddd5a65c",
+   "dst": "55d422f3c22ae068c9f473d07e387907f019568e",
+   "cited": {
+    "title": "VGGT: Visual Geometry Grounded Transformer",
+    "year": 2025,
+    "authors": [
+     "Jianyuan Wang",
+     "Minghao Chen",
+     "Nikita Karaev",
+     "Andrea Vedaldi",
+     "Christian Rupprecht"
+    ],
+    "venue": "CVPR 2025"
+   },
+   "citing": {
+    "title": "SpatialStack: Layered Geometry-Language Fusion for 3D VLM Spatial Reasoning",
+    "year": 2026
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "…impact of injecting geometric features from different layers into VLMs. Specifically, following VG-LLM [60], we extract geometric features from a single layer of the geometry encoder (VGGT [46]), project them through a projector, and add …",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "We employ the Visual Geometry Grounded Transformer (VGGT) [46] as our geometry encoder.",
+     "In parallel, rapid advancements in end-to-end multi-view geometry transformers, including DUST3R [48], CUT3R [47], and VGGT [46], have provided a more unified and powerful alternative to map un-calibrated images to 3D point maps.",
+     "To enable both fine-grained and global spatial reasoning, our architecture integrates multi-level geometric cues extracted from VGGT [46] into the VLM.",
+     "Models such as DUST3R series [23, 48] and CUT3R [47] can infer dense, consistent point maps from unposed multi-view images, while VGGT [46] introduced a unified transformer to predict diverse 3D attributes from video.",
+     "…impact of injecting geometric features from different layers into VLMs. Specifically, following VG-LLM [60], we extract geometric features from a single layer of the geometry encoder (VGGT [46]), project them through a projector, and add them to the last-layer features of the vision encoder."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "released_model",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "VGGT employed as the geometry encoder of a VLM."
+  },
+  {
+   "collection": "cvpr-2025",
+   "src": "4356b46e5dd1a4ebd579b1cd6eb3eeedddd5a65c",
+   "dst": "59cd3a2ef2325f6817f1a8a4bdae60e5b2e63e9f",
+   "cited": {
+    "title": "VGGT: Visual Geometry Grounded Transformer",
+    "year": 2025,
+    "authors": [
+     "Jianyuan Wang",
+     "Minghao Chen",
+     "Nikita Karaev",
+     "Andrea Vedaldi",
+     "Christian Rupprecht"
+    ],
+    "venue": "CVPR 2025"
+   },
+   "citing": {
+    "title": "Scal3R: Scalable Test-Time Training for Large-Scale 3D Reconstruction",
+    "year": 2026
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Building upon VGGT [78]’s strong visual geometry reasoning capability, we address the loss of global information inherent in chunk-wise processing [17] by introducing a neural global context representation for sequence-level information ag…",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Given a large set of input RGB images I as defined in Section 3.1, directly applying VGGT [78] is infeasible due to the quadratic complexity of the attention [75] operation.",
+     "Subsequent studies [8, 69, 78, 89, 99] extend these ideas to multi-view settings.",
+     "By contrast, the field has recently witnessed substantial advances in feed-forward models [8, 34, 78, 80, 81, 89] that directly regress scene geometry from multi-view RGB images.",
+     "Among these, VGGT [78] stands out by adopting a unified Transformer [75] architecture to estimate camera parameters, depth maps, and point clouds in a single pass, yielding high reconstruction accuracy with low computation cost and scaling capability.",
+     "We begin by introducing the preliminary concepts, including VGGT [78] and Test-Time Training (TTT) [67].",
+     "To address the challenge of thousands of input images in VGGT [78], we embed an efficient context aggregation mechanism based on Test-Time Training to capture global contextual cues across entire sequences, while preserving VGGT’s strong geometric reasoning capabilities.",
+     "Among them, VGGT [78] achieves state-of-the-art performance, but its quadratic attention limits scalability to very long sequences.",
+     "This coupling yields substantially better local accuracy and consistency while preserving the scalability and efficiency of VGGT [78], enabling large-scale training on diverse datasets.",
+     "Building upon VGGT [78]’s strong visual geometry reasoning capability, we address the loss of global information inherent in chunk-wise processing [17] by introducing a neural global context representation for sequence-level information aggregation.",
+     "VGGT-Long [17], an alternative approach to improve VGGT [78], instead adopts a divide-and-conquer strategy that divides the whole sequence into overlapping chunks, reconstructs each with VGGT, and aligns adjacent chunks into a unified reconstruction."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": [
+    "Building upon VGGT"
+   ],
+   "note": "Scal3R adds test-time-training global context to VGGT."
+  },
+  {
+   "collection": "cvpr-2025",
+   "src": "4356b46e5dd1a4ebd579b1cd6eb3eeedddd5a65c",
+   "dst": "95e1ccdeac8692dd9aad70bf41001549886c769f",
+   "cited": {
+    "title": "VGGT: Visual Geometry Grounded Transformer",
+    "year": 2025,
+    "authors": [
+     "Jianyuan Wang",
+     "Minghao Chen",
+     "Nikita Karaev",
+     "Andrea Vedaldi",
+     "Christian Rupprecht"
+    ],
+    "venue": "CVPR 2025"
+   },
+   "citing": {
+    "title": "LingBot-Map: Geometric Context Transformer for Streaming 3D Reconstruction",
+    "year": 2026
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Building on the architecture of recent feed-forward 3D models [75], we design a streaming variant where each frame is encoded by a ViT backbone and processed through alternating layers of frame-wise attention and Geometric Context Attentio…",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "In recent years, 3D foundation models have advanced rapidly, with methods such as VGGT [75] and Depth Anything 3 [38] directly predicting camera poses, depth maps, and dense point maps from multiple images in a single feed-forward pass.",
+     "…numerous subsequent works have advanced feed-forward reconstruction across various dimensions, including improving reconstruction accuracy [38, 75, 82, 99], enhancing computational efficiency [40, 89], handling dynamic scenes [7, 14, 25, 41, 64, 74, 85, 97], enabling novel view synthesis [9,…",
+     "Building on the architecture of recent feed-forward 3D models [75], we design a streaming variant where each frame is encoded by a ViT backbone and processed through alternating layers of frame-wise attention and Geometric Context Attention (GCA), before task-specific heads predict the camera pose…",
+     "Offline methods such as DUSt3R [80] and VGGT [75] resolve this by normalizing with respect to the global point cloud, but this requires access to all frames and is therefore incompatible with causal streaming inference.",
+     "…using a composite loss function consisting of depth, absolute pose, and relative pose terms: The depth loss ( L depth ) and absolute pose loss ( L abs-pose ) follow the definitions in VGGT [75]: Here, Σ Di represents the predicted uncertainty map, and ⊙ denotes element-wise multiplication.",
+     "Following VGGT [75], the register tokens act as shared scratch tokens that participate in attention but are not decoded by the prediction heads.",
+     "To support more than two views and improve reconstruction quality, VGGT [75] uses an advanced transformer architecture that includes cross-view attention layers, achieving state-of-the-art performance on standard benchmarks.",
+     "We initialize the ViT backbone from DINOv2-Large [48] with a patch size of 14 pixels, followed by 24 alternating blocks of frame attention and cross-frame attention, following the architecture of VGGT [75].",
+     "We include VGGT [75], DA3 [38], Fast3R [89], FastVGGT [60], and π 3 [82].",
+     "Unlike VGGT [75], we supervise the network using camera-to-world transformations rather than world-to-camera ones."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": [
+    "Building on the architecture of recent feed-forward 3D models [75]",
+    "following the architecture of VGGT"
+   ],
+   "note": "Streaming variant of the VGGT architecture."
+  },
+  {
+   "collection": "cvpr-2025",
+   "src": "4356b46e5dd1a4ebd579b1cd6eb3eeedddd5a65c",
+   "dst": "c8c45dde737138fa2302b21495ae77aceb00e35e",
+   "cited": {
+    "title": "VGGT: Visual Geometry Grounded Transformer",
+    "year": 2025,
+    "authors": [
+     "Jianyuan Wang",
+     "Minghao Chen",
+     "Nikita Karaev",
+     "Andrea Vedaldi",
+     "Christian Rupprecht"
+    ],
+    "venue": "CVPR 2025"
+   },
+   "citing": {
+    "title": "Streaming 4D Visual Geometry Transformer",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Building on the success of VGGT [50], we propose a token-cached causal architecture consisting of three key components: image encoder, spatio-temporal decoder, and multi-task heads, as illustrated in Figure 3.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "The final form of the depth loss is: where ⊙ denotes the element-wise product, and ∇ represents the gradient.",
+     "Table 3 shows that our method not only matches the overall best performers but also outperforms the current state-of-the-art streaming model on all datasets, showing its superiority for online depth estimation.",
+     "This offline paradigm not only precludes incremental reconstruction but also diverges from the causal nature of human perception, thereby limiting its practicality in streaming applications.",
+     "Equipped with FlashAttention-2 [7], our model supports fast inference for the current frame compared to VGGT, as shown in Figure 2.",
+     "…interaction approaches like Fast3R [62] and VGGT [50], all frames attend to each other through all-to-all self-attention which achieves the highest accuracy at the cost of O ( N 2 ) memory: Although global interaction approaches have achieved impressive reconstruction accuracy, their reliance on…",
+     "By replacing global self-attention with causal temporal attention and introducing a Cached Token Memory mechanism, StreamVGGT achieves incremental scene updates while preserving long-term spatial consistency.",
+     "This heavy memory footprint and non-causal processing preclude streaming 4D reconstruction and undermine real-time applications demanding instantaneous, frame-by-frame scene understanding.",
+     "Building on the success of VGGT [50], we propose a token-cached causal architecture consisting of three key components: image encoder, spatio-temporal decoder, and multi-task heads, as illustrated in Figure 3.",
+     "To address this, we introduce a knowledge distillation strategy, where a teacher model uses global attention to guide the causal student model.",
+     "VGGT [50] scales this philosophy to a 1.2B parameter visual geometry grounded transformer that jointly predicts camera intrinsics/extrinsics, dense depth, point maps, and 2D tracking features."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": [
+    "Building on the success of VGGT"
+   ],
+   "note": "StreamVGGT: causal, token-cached VGGT."
+  },
+  {
+   "collection": "cvpr-2025",
+   "src": "47f7ec3d0a5e6e83b6768ece35206a94dc81919c",
+   "dst": "4e413bf865ec893338000817a15d36f6f136ec8f",
+   "cited": {
+    "title": "Taming Transformers for High-Resolution Image Synthesis",
+    "year": 2020,
+    "authors": [
+     "Patrick Esser",
+     "Robin Rombach",
+     "Björn Ommer"
+    ],
+    "venue": "Computer Vision and Pattern Recognition"
+   },
+   "citing": {
+    "title": "Reconstruction vs. Generation: Taming Optimization Dilemma in Latent Diffusion Models",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Inspired by GAN Loss [7], we employ an adaptive weighting mechanism.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "As illustrated in Figure 3, our architecture and training process mainly follows LDM [34], employing a VQ-GAN [7] model architecture with a continuous latent space, constrained by KL loss.",
+     "Speciﬁcally, we utilize the VQGAN [7] network structure, omitting quantization and applying KL Loss to regulate the continuous latent space.",
+     "Inspired by GAN Loss [7], we employ an adaptive weighting mechanism.",
+     "Building on this, VQGAN [7] enhanced reconstruction quality by integrating a GAN loss, becoming a key component in autoregressive (AR) model generation [2]."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "component",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": true,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "\"Inspired by GAN Loss [7], we employ an adaptive weighting mechanism\"; the VQGAN network structure is the stock tokenizer backbone; the contribution (VF loss) does not build on VQGAN."
+  },
+  {
+   "collection": "cvpr-2025",
+   "src": "4e413bf865ec893338000817a15d36f6f136ec8f",
+   "dst": "eb2705902ab73312e59396244cb7c2c0f908aebd",
+   "cited": {
+    "title": "Reconstruction vs. Generation: Taming Optimization Dilemma in Latent Diffusion Models",
+    "year": 2025,
+    "authors": [
+     "Jing-Feng Yao",
+     "Bin Yang",
+     "Xing-Gang Wang"
+    ],
+    "venue": "CVPR 2025"
+   },
+   "citing": {
+    "title": "VideoREPA: Learning Physics for Video Generation through Relational Alignment with Foundation Models",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Inspired by VA-VAE [56], to prevent the alignment of unnecessary noise, we incorporate a margin m (typically ranging from 0 to 0.1) into the TRD loss (Equation (5)).",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Though REPA and related methods [23, 57, 56, 41] build bridge between foundation and generation models, they become expired when aiming at bridging VFMs and VDMs: 1) Shift in Focus (Spatial vs. Spatio-Temporal): Existing REPA techniques predominantly focus on aligning spatial features within static…",
+     "Inspired by VA-VAE [56], to prevent the alignment of unnecessary noise, we incorporate a margin m (typically ranging from 0 to 0.1) into the TRD loss (Equation (5)).",
+     "Subsequent works, such as VA-VAE [56] which improved VAE features, achieved 21 × speedups, and REPA-E [23] which proposed end-to-end training, reached up to 45 × acceleration for DiT.",
+     "2) Mismatch in Application Context (From-Scratch Acceleration vs. Finetuning for Knowledge Transfer): Existing REPA approaches have primarily been validated and utilized for accelerating the training of models from scratch [56, 57], optimizing convergence speed.",
+     "Unlike prior REPA work focused on spatial alignment for image generative model acceleration [57, 56], VideoREPA represents, to our knowledge, the first representation alignment method developed for finetuning VDMs to inject specific knowledge (physics contained in spatial-temporal dynamics) ,…"
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "component",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "\"Inspired by VA-VAE [56] ... we incorporate a margin m into the TRD loss\": a loss detail; VideoREPA builds on REPA."
+  },
+  {
+   "collection": "cvpr-2025",
+   "src": "4f997c404e97087194d2df538deb82b2c5428c1e",
+   "dst": "4d969386c65de5c892f6477314a62cda523772ad",
+   "cited": {
+    "title": "Grounding Image Matching in 3D with MASt3R",
+    "year": 2024,
+    "authors": [
+     "Vincent Leroy",
+     "Yohann Cabon",
+     "Jérôme Revaud"
+    ],
+    "venue": "European Conference on Computer Vision"
+   },
+   "citing": {
+    "title": "Continuous 3D Perception Model with Persistent State",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Following MASt3R [40], we apply a conﬁdence-aware regression loss to the pointmaps: where ˆ s and s are scale normalization factors for ˆ X and X , respectively.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Our primary set of baselines are DUSt3R [86], MASt3R [40], Spann3R [81], and MonST3R [98], where the latter two are concurrent works.",
+     "Under per-sequence scale alignment, our method consistently outperforms DUSt3R [86] and MASt3R [40] Table 2.",
+     "Following MASt3R [40], we apply a conﬁdence-aware regression loss to the pointmaps: where ˆ s and s are scale normalization factors for ˆ X and X , respectively.",
+     "Similar to MASt3R [40], when the groundtruth pointmaps are metric, we set ˆ s := s to enable the model to learn metric-scale pointmaps."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "component",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "\"Following MASt3R [40], we apply a confidence-aware regression loss\"."
+  },
+  {
+   "collection": "cvpr-2025",
+   "src": "594c9854f65486cc0f84805dd6ae24a1114f188e",
+   "dst": "4356b46e5dd1a4ebd579b1cd6eb3eeedddd5a65c",
+   "cited": {
+    "title": "LVSM: A Large View Synthesis Model with Minimal 3D Inductive Bias",
+    "year": 2024,
+    "authors": [
+     "Haian Jin",
+     "Hanwen Jiang",
+     "Hao Tan",
+     "Kai Zhang",
+     "Sai Bi"
+    ],
+    "venue": "International Conference on Learning Representations"
+   },
+   "citing": {
+    "title": "VGGT: Visual Geometry Grounded Transformer",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Instead of relying on an explicit 3D representation, we follow LVSM [36] and modify VGGT to directly output the target image.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Further details on training and evaluation can be found in [36].",
+     "Following recent works in 3D deep learning [36, 87, 90], we design a simple architecture with minimal 3D inductive biases, letting the model learn from ample quantities of 3D-annotated data.",
+     "Instead of relying on an explicit 3D representation, we follow LVSM [36] and modify VGGT to directly output the target image.",
+     "Feed-forward Novel View Synthesis is progressing rapidly [4, 31, 34, 36, 70, 84, 95, 104]."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "setup",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": true,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "\"we follow LVSM [36] and modify VGGT to directly output the target image\" for a novel-view-synthesis experiment."
+  },
+  {
+   "collection": "cvpr-2025",
+   "src": "5bcba424f2d550a8321fa50a43bebe8751e2d2a5",
+   "dst": "95e1ccdeac8692dd9aad70bf41001549886c769f",
+   "cited": {
+    "title": "$\\pi^3$: Permutation-Equivariant Visual Geometry Learning",
+    "year": 2025,
+    "authors": [
+     "Yifan Wang",
+     "Jian-Jun Zhou",
+     "Haoyi Zhu",
+     "Wen-Zheng Chang",
+     "Yang Zhou"
+    ],
+    "venue": "arXiv"
+   },
+   "citing": {
+    "title": "LingBot-Map: Geometric Context Transformer for Streaming 3D Reconstruction",
+    "year": 2026
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Inspired by π 3 [82], we incorporate a relative pose loss over all frame pairs within the sliding window: where L rot ( i, j ) and L trans ( i, j ) denote the geodesic rotation error and ℓ 1 translation error of the relative pose between f…",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": [
+     "Inspired by π 3 [82], we incorporate a relative pose loss over all frame pairs within the sliding window: where L rot ( i, j ) and L trans ( i, j ) denote the geodesic rotation error and ℓ 1 translation error of the relative pose between frames i and j , respectively.",
+     "…numerous subsequent works have advanced feed-forward reconstruction across various dimensions, including improving reconstruction accuracy [38, 75, 82, 99], enhancing computational efficiency [40, 89], handling dynamic scenes [7, 14, 25, 41, 64, 74, 85, 97], enabling novel view synthesis [9, 19,…",
+     "We include VGGT [75], DA3 [38], Fast3R [89], FastVGGT [60], and π 3 [82]."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "component",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "\"Inspired by π3 [82], we incorporate a relative pose loss\"."
+  },
+  {
+   "collection": "cvpr-2025",
+   "src": "5f82a81766cb78395a55b8fc697c2421a20f4a9e",
+   "dst": "82f14745d83ac621541b044f4c2965144fcb954f",
+   "cited": {
+    "title": "DUSt3R: Geometric 3D Vision Made Easy",
+    "year": 2023,
+    "authors": [
+     "Shuzhe Wang",
+     "Vincent Leroy",
+     "Yohann Cabon",
+     "Boris Chidlovskii",
+     "Jérôme Revaud"
+    ],
+    "venue": "Computer Vision and Pattern Recognition"
+   },
+   "citing": {
+    "title": "STream3R: Scalable Sequential 3D Reconstruction with Causal Transformer",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Following DUSt3R [10], we apply a confidence-aware regression loss to the pointmaps: Input Images MonST3R Fast3R Ours CUT3R Figure 3: Qualitative results on in-the-wild Images.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "DUSt3R [10] and follow-ups like MASt3R [11] recast stereo 3D reconstruction as dense pointmap regression, jointly estimating depth, pose, and intrinsics from image pairs.",
+     "We reformulate DUSt3R [10] to accept a stream of images as input.",
+     "Table 4 reports results for Online (Onl) and Optimization (Optim) categories, with DUSt3R [10] included in the latter (aligning all frames to the first frame without global alignment).",
+     "…traditional visual-geometry methods like SfM [1] and Multi-view Stereo [8, 9] tackle this problem by solving a series of sub-problems through handcrafted designs, a recent trend led by DUSt3R [10] has demonstrated a promising new way of directly regressing point clouds using powerful transformers.",
+     "Over per-sequence scale alignment, our method surpasses optimization-based baselines DUSt3R-GA [10] and MASt3R-GA [11] (static-scene assumption) and even MonST3R-GA [49] (dynamic-scene, optical flow [89] dependent).",
+     "Pointmap-based representations [10, 11, 46, 47, 48, 49, 50] have recently emerged as a unifying format for dense 3D geometry prediction, aligning well with the output structure of neural networks.",
+     "Following DUSt3R [10], we apply a confidence-aware regression loss to the pointmaps: Input Images MonST3R Fast3R Ours CUT3R Figure 3: Qualitative results on in-the-wild Images.",
+     "We also benchmark scene-level 3D reconstruction on the 7-scenes [90] dataset and use accuracy (Acc), completion (Comp), and normal consistency (NC) metrics, following the convention of existing methods [15, 17, 10].",
+     "We compare our methods against a set of baselines that are designed to take a pair of views as input: DUSt3R [10], MASt3R [11], and MonST3R [49].",
+     "We provide two version of ST REAM 3R, where ST REAM 3R α is inspired and fine-tuned from DUSt3R [10] pre-trained weights, and ST REAM 3R β is initialized from the flagship VGG-T [13] model."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": [
+    "We reformulate DUSt3R [10] to accept a stream of images",
+    "fine-tuned from DUSt3R"
+   ],
+   "note": "STream3R reformulates DUSt3R for streaming input; the published sentence (confidence-aware loss) is a component."
+  },
+  {
+   "collection": "cvpr-2025",
+   "src": "62d564bc589cf6c37139144d0d6984d4aff1cc4a",
+   "dst": "82f14745d83ac621541b044f4c2965144fcb954f",
+   "cited": {
+    "title": "Fast3R: Towards 3D Reconstruction of 1000+ Images in One Forward Pass",
+    "year": 2025,
+    "authors": [
+     "Jianing Yang",
+     "Alexander Sax",
+     "Kevin J. Liang",
+     "Mikael Henaff",
+     "Hao Tang"
+    ],
+    "venue": "CVPR 2025"
+   },
+   "citing": {
+    "title": "STream3R: Scalable Sequential 3D Reconstruction with Causal Transformer",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "contrasts",
+   "published_evidence": "Unlike existing work [12], we did not impose positional embedding for other frames for simplicity.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Unlike existing work [12], we did not impose positional embedding for other frames for simplicity.",
+     "Besides, we include the comparison against concurrent methods Spann3R [15], CUT3R [17], SLAM3R [55], and Fast3R [12] that are specifically designed for handling a varying number of input images.",
+     "Unlike existing approaches [13, 12] that address this issue by adopting costly bi-directional attention over the entire input sequence or using fixed-size memory buffers [15, 17], ST REAM 3R instead caches the features from the past frames as context and sequentially processes the incoming frame by…",
+     "Following existing works [12, 17, 13 where this redundant prediction has been demonstrated to simplify training [67, 12] and facilitates training on 3D datasets with partial annotations, e.g., single-view depth datasets [68].",
+     "This paradigm, along with its follow-up works including MASt3R [11], Fast3R [12], and VGG-T [13], enables the reconstruction of 3D geometry from a number of input images–ranging from a single image to hundreds–offering a more unified solution to 3D reconstruction.",
+     "Inspired by the existing learning-based online 3D reconstruction meth-ods [61, 62, 63], recently Spann3R [15] introduces a memory-based extension to DUSt3R, while Fast3R [12] and VGG-T [13] replace asymmetric decoders with Transformer-based attention stacks to directly enable multi-view fusion.",
+     "The main difference lies in the decoder side: rather than performing bi-directional attention over the whole sequence [12] or interacting with a learnable state as in RNN [17], we draw inspiration from the LLMs [20, 24, 65] and perform causal attention efficiently with previous observations.",
+     "ST REAM 3R also outperforms full-attention Fast3R [12], streaming approaches Spann3R [15], and the flagship model VGG-T on Sintel."
+    ]
+   },
+   "label": "genuine_contrast",
+   "usage_kind": null,
+   "gold_relation": "contrasts",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "STream3R contrasts its causal caching with Fast3R's bi-directional attention; the published sentence is a minor positional-embedding difference with Fast3R [12] alone."
+  },
+  {
+   "collection": "cvpr-2025",
+   "src": "66c10bf1f11bc1b2d92204d8f8391d087f6de1c4",
+   "dst": "6c05107871e8d8f94d7a68d224954d0ac7b7568f",
+   "cited": {
+    "title": "RoFormer: Enhanced Transformer with Rotary Position Embedding",
+    "year": 2021,
+    "authors": [
+     "Jian-Lin Su",
+     "Murtadha H. M. Ahmed",
+     "Yu Lu",
+     "Shengfeng Pan",
+     "Wen Bo"
+    ],
+    "venue": "Neurocomputing"
+   },
+   "citing": {
+    "title": "HY-World 2.0: A Multi-Modal World Model for Reconstructing, Generating, and Simulating 3D Worlds",
+    "year": 2026
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "11, we modify the Rotary Positional Embedding (RoPE) [59] to accommodate this integration.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "11, we modify the Rotary Positional Embedding (RoPE) [59] to accommodate this integration.",
+     "WorldMirror 1.0 adopts the standard RoPE [59] to inject 2D spatial awareness into multi-head self-attention."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "component",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "\"we modify the Rotary Positional Embedding (RoPE) [59]\": a position-encoding component."
+  },
+  {
+   "collection": "cvpr-2025",
+   "src": "697e176d66a17c0b24613b8513ab951dc4112c34",
+   "dst": "298bbeccef082d74057864e8f8ec6ed13896380b",
+   "cited": {
+    "title": "Iterative Geometry Encoding Volume for Stereo Matching",
+    "year": 2023,
+    "authors": [
+     "Gangwei Xu",
+     "Xian-Qi Wang",
+     "Xiao-Hua Ding",
+     "Xin Yang"
+    ],
+    "venue": "Computer Vision and Pattern Recognition"
+   },
+   "citing": {
+    "title": "MonSter++: Unified Stereo Matching, Multi-View Stereo, and Real-Time Stereo With Monodepth Priors",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Stereo matching only requires cost computation along horizontal directions between two views, we adopt the Geometry Encoding Volume following IGEV [6] in our stereo model, as described in Section III-A1.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "We use the AdamW [81] optimizer and clip gradients to the range [-1, 1] following baseline [6].",
+     "With the rapid advancement of deep learning and large-scale datasets, learning-based methods [1], [2], [4], [5], [6], [7], [8], [9], [10], [11], [12], [13], [14], [15], [16], [17], [18], [19] have dominated multi-view depth estimation and the corresponding leaderboards [20], [21], [22], [23], [24],…",
+     "Recently, a novel class of methods based on iterative optimization [4], [5], [6], [30], [31], [63] has achieved SOTA performance in both accuracy and efﬁciency.",
+     "Obtaining accurate metric depth from multi-view data such as rectiﬁed stereo matching [1], [2], [3], [4], [5], [6], [7] and unrectiﬁed multi-view stereo [8], [9], [10], [11], [12], [13] has been widely adopted in practice.",
+     "SceneFlow[22]: AsshowninTableII,weachieveanewstate-of-the-art performance with an EPE metric of 0.37 on Scene Flow, surpassing our baseline [6] by 21.28% and outperforming the SOTA method [5] by 15.91%.",
+     "ThestereomatchingbranchfollowsIGEV[6]toobtaintheinitial stereodisparity,withmodiﬁcationsonlytothefeatureextraction component,asshowninFig.5.",
+     "Iterative optimization-based methods [4], [6], [30], [31] initially construct an all-pairs correlation volume, then index a local cost to extract motion features, which guide the recurrent units (ConvGRUs) [32] to iteratively reﬁne the depth map.",
+     "Compared with baseline [6], we achieve an improvement of 64.56% on the Bad 4.0 (Noc) metric.",
+     "IGEV [6] proposes a Geometry Encoding Volume that encodes geometry and context information for a more robust matching cost.",
+     "Stereo matching only requires cost computation along horizontal directions between two views, we adopt the Geometry Encoding Volume following IGEV [6] in our stereo model, as described in Section III-A1."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": true,
+   "audited_verdict": null,
+   "genuine_evidence": [
+    "stereomatchingbranchfollowsIGEV"
+   ],
+   "note": "MonSter++'s stereo branch follows IGEV (\"our baseline [6]\") with modified feature extraction; only weak cues state it."
+  },
+  {
+   "collection": "cvpr-2025",
+   "src": "736973165f98105fec3729b7db414ae4d80fcbeb",
+   "dst": "bbc8295decc782f69f94a0aa95423d7f54a93e3d",
+   "cited": {
+    "title": "Scalable Diffusion Models with Transformers",
+    "year": 2022,
+    "authors": [
+     "William S. Peebles",
+     "Saining Xie"
+    ],
+    "venue": "IEEE International Conference on Computer Vision"
+   },
+   "citing": {
+    "title": "Diffusion Transformers with Representation Autoencoders",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "We use LightningDiT (Yao et al., 2025), a variant of DiT (Peebles & Xie, 2023), as our model backbone.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "We compare the convergence behavior of DiT DH -XL with previous state-of-the-art diffusion models (Peebles & Xie, 2023; Ma et al., 2024; Yu et al., 2025; Gao et al., 2023; Yao et al., 2025) in terms of FID without guidance.",
+     "For all experiments on 256 × 256 images, the encoder produces 256 tokens, matching the token count of most prior DiT-based models trained with SD-VAE latents (Peebles & Xie, 2023; Yu et al., 2025; Ma et al., 2024).",
+     "…in this space rather than in raw pixels, models such as Latent Diffusion Models (LDM) (Rombach et al., 2022) and Diffusion Transformers (DiT) (Peebles & Xie, 2023; Ma et al., 2024) achieve higher visual fidelity and efficiency, powering the most capable image and video generators of today.",
+     "To ensure fair comparison, we re-evaluate several recent methods with accessible checkpoints, such as SiT (Peebles & Xie, 2023), REPA (Yu et al., 2025), REPA-E (Leng et al., 2025) using class-balanced sampling and update their reported scores accordingly.",
+     "We use LightningDiT (Yao et al., 2025), a variant of DiT (Peebles & Xie, 2023), as our model backbone.",
+     "Diffusion models (Ho et al., 2020; Nichol & Dhariwal, 2021; Rombach et al., 2022; Ma et al., 2024; Peebles & Xie, 2023) instead learn to iteratively denoise noisy signals, offering superior sample quality and scalability, though at the cost of many sampling steps.",
+     "Another commonly adopted sampling strategy is to uniformly sample class labels 50K times and generate images accordingly (Peebles & Xie, 2023; Ma et al., 2024; Yu et al., 2025)."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "stock_component",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "\"We use LightningDiT (Yao et al., 2025), a variant of DiT\" as the backbone: the variant is a third work, DiT a stock backbone."
+  },
+  {
+   "collection": "cvpr-2025",
+   "src": "7d564b3d41711be530c5d36d710ce328fb345e79",
+   "dst": "eb6ca77d28285c95ac370052deda4a53f65e05e6",
+   "cited": {
+    "title": "Gen3C: 3D-Informed World-Consistent Video Generation with Precise Camera Control",
+    "year": 2025,
+    "authors": [
+     "Xuanchi Ren",
+     "Tianchang Shen",
+     "Jia-Hui Huang",
+     "Huan Ling",
+     "Yifan Lu"
+    ],
+    "venue": "CVPR 2025"
+   },
+   "citing": {
+    "title": "Lyra: Generative 3D Scene Reconstruction via Video Diffusion Model Self-Distillation",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Concretely, we build upon GEN3C (Ren et al., 2025), a recent camera-controlled video diffusion model, and use it as a teacher within a self-distillation framework for 3D reconstruction.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "This section provides additional information on the GEN3C (Ren et al., 2025) video diffusion model backbone introduced in Sec.",
+     "…to use a spatio-temporal cache, e.g., using point clouds or optical flow, to condition the camera-controlled video generation (Wu et al., 2025c; Ren et al., 2025; Wang et al., 2025d; Cao et al., 2025; YU et al., 2025; Jin et al., 2025; Xing et al., 2025; Yan et al., 2025; Li et al., 2025b; Gu…",
+     "Concretely, we build upon GEN3C (Ren et al., 2025), a recent camera-controlled video diffusion model, and use it as a teacher within a self-distillation framework for 3D reconstruction.",
+     "Due to this, we build our approach on GEN3C (Ren et al., 2025), a recent camera-conditioned video diffusion model.",
+     "In this paper, we adopt the pre-trained GEN3C (Ren et al., 2025; Cosmos, 2025) model.",
+     "Our model builds upon GEN3C (Ren et al., 2025) that uses forward warped images as camera control conditioning.",
+     "For diverse supervision, we curate a large-scale set of diverse text prompts with large language models (OpenAI, 2025; Bai et al., 2023), generate images I with an image diffusion model (Black Forest Labs, 2024), and expand into multi-view sequences using GEN3C (Ren et al., 2025).",
+     "Since BTimer is purely regression-based, we integrate it with our GEN3C (Ren et al., 2025) video diffusion backbone.",
+     "Encouragingly, recent work (Wang et al., 2024e; Ren et al., 2025) has shown that video models can be adapted for explicit camera control using relatively small-scale posed datasets."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": [
+    "we build upon GEN3C",
+    "we build our approach on GEN3C",
+    "Our model builds upon GEN3C"
+   ],
+   "note": "Lyra self-distils GEN3C."
+  },
+  {
+   "collection": "cvpr-2025",
+   "src": "8e33914d6051dd031a5e096962b9398fc1d16067",
+   "dst": "970029c890a6be496a0e2145de456252bdf609bf",
+   "cited": {
+    "title": "Vision Transformers for Dense Prediction",
+    "year": 2021,
+    "authors": [
+     "René Ranftl",
+     "Alexey Bochkovskiy",
+     "V. Koltun"
+    ],
+    "venue": "IEEE International Conference on Computer Vision"
+   },
+   "citing": {
+    "title": "Matrix-3D: Omnidirectional Explorable 3D World Generation",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "For Gaussian attribute prediction, we adopt the DPT head [37].",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": [
+     "For Gaussian attribute prediction, we adopt the DPT head [37].",
+     "For the large panoramic 3D reconstruction model, our network largely follows the architecture of Wonderland [30], with the key modification of adopting a DPT head [37] to predict 3D GS attributes and sphere projection for 3D GS mean prediction."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "component",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "\"we adopt the DPT head [37]\"."
+  },
+  {
+   "collection": "cvpr-2025",
+   "src": "8f9ceb5ffad8e7a066dfc9d9aaa5153b714740ee",
+   "dst": "12d4e00d470d50701dceae24eacf616608c22ecd",
+   "cited": {
+    "title": "OpenVLA: An Open-Source Vision-Language-Action Model",
+    "year": 2024,
+    "authors": [
+     "Moo Jin Kim",
+     "Karl Pertsch",
+     "Siddharth Karamcheti",
+     "Ted Xiao",
+     "A. Balakrishna"
+    ],
+    "venue": "Conference on Robot Learning"
+   },
+   "citing": {
+    "title": "MolmoAct: Action Reasoning Models that can Reason in Space",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "We follow prior work [6], [15] in formulating action prediction as a vision–language sequence modeling task.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "OpenVLA [6] we first provide ambiguous instructions such as \"pick up (the) bowl,\" prompting M OLMO A CT -7B-D to predict an initial trajectory towards one of the bowls.",
+     "We follow prior works ( [6]) and evaluate on four task suites – LIBERO-Spatial, LIBERO-Object, LIBERO-Goal, and LIBERO-Long – each with 500 demonstrations across 10 tasks.",
+     "TraceVLA [16] 84.6% 85.2% 75.1% 54.1% 74.8% Octo-Base [54] 78.9% 85.7% 84.6% 51.1% 75.1% OpenVLA [6] 84.7% 88.4% 79.2% 53.7% 76.5% SpatialVLA [28] 88.2% 89.9% 78.6% 55.5% 78.1% CoT-VLA [26] 87.5% 91.6% 87.6% 69.0% 83.9% NORA-AC [55] 85.6% 89.4% 80.0% 63.0% 79.5% WorldVLA [56] 87.6% 96.2% 83.4%…",
+     "Following ( [6]), we trained on a modified dataset that filtered out no-op actions and unsuccessful demonstrations.",
+     "We follow prior work [6], [15] in formulating action prediction as a vision–language sequence modeling task."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "setup",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "\"We follow prior work [6], [15] in formulating action prediction as a vision-language sequence modeling task\"."
+  },
+  {
+   "collection": "cvpr-2025",
+   "src": "8f9ceb5ffad8e7a066dfc9d9aaa5153b714740ee",
+   "dst": "2d7f3a99e916fc80ff890d109699f9682253e66d",
+   "cited": {
+    "title": "OpenVLA: An Open-Source Vision-Language-Action Model",
+    "year": 2024,
+    "authors": [
+     "Moo Jin Kim",
+     "Karl Pertsch",
+     "Siddharth Karamcheti",
+     "Ted Xiao",
+     "A. Balakrishna"
+    ],
+    "venue": "Conference on Robot Learning"
+   },
+   "citing": {
+    "title": "CoT-VLA: Visual Chain-of-Thought Reasoning for Vision-Language-Action Models",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Following [26], we map each continuous action dimension into 256 discrete bins, with bin widths determined by uniformly dividing the interval between the 1st and 99th percentiles of the training data’s action distribution.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Following [26], we evaluate on four tasks designed in [26] to evaluate visual robustness (varying distractors), motion generalization (novel object positions), semantic generalization (unseen language instruction), and language grounding (instruction following).",
+     "Recent advances in robot learning have demonstrated impressive progress in training policies that can act across diverse tasks and environments [1, 4, 10, 12, 15, 26, 33, 39, 40, 43, 48, 53, 57, 60, 64, 70, 72].",
+     "Most relevant to our work are recent approaches that fine-tune pretrained VLMs on robot demonstration data for direct action prediction [10, 26, 43].",
+     "Following [26], we map each continuous action dimension into 256 discrete bins, with bin widths determined by uniformly dividing the interval between the 1st and 99th percentiles of the training data’s action distribution.",
+     "One promising direction is vision-language-action (VLA) models, which leverage the rich understanding capabilities of pretrained vision-language models (VLMs) to map natural language instructions and visual observations to robot actions [10, 26, 43].",
+     "Unlike prior works [10, 26, 43], we employ full attention for processing and predicting action tokens, enabling all action tokens to interact with each other.",
+     "Following the pre-processing pipeline established in Open-VLA [26], we select and process datasets with third-person camera views and single-arm end-effector control (7-DoF).",
+     "We follow the same preprocessed pipeline as in [26]: (1) removing pause intervals from trajectories, (2) standardizing image resolution to 256×256 pixels, and (3) applying a 180-degree rotation to all images.",
+     "Some approaches incorporate VLMs [3, 44, 58] into end-to-end trainable policies by using them as pretrained backbone for better visuo-language representation [10, 26, 38, 43, 53]."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "setting",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "\"Following [26], we map each continuous action dimension into 256 discrete bins\"; CoT-VLA builds on VILA-U."
+  },
+  {
+   "collection": "cvpr-2025",
+   "src": "9058f7aef22152e871c9e725073ec2bfdd5316e1",
+   "dst": "c8c45dde737138fa2302b21495ae77aceb00e35e",
+   "cited": {
+    "title": "Point3R: Streaming 3D Reconstruction with Explicit Spatial Pointer Memory",
+    "year": 2025,
+    "authors": [
+     "Yuqi Wu",
+     "Wenzhao Zheng",
+     "Jie Zhou",
+     "Ji-Wen Lu"
+    ],
+    "venue": "Neural Information Processing Systems"
+   },
+   "citing": {
+    "title": "Streaming 4D Visual Geometry Transformer",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Following Point3R [59], we process input images with variable aspect ratios while resizing the maximum edge length to 518 pixels.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Following Point3R [59], we process input images with variable aspect ratios while resizing the maximum edge length to 518 pixels.",
+     "Real-time streaming 4D reconstruction grows to be indispensable for autonomous driving, robotics, and AR/VR, where systems update scene geometry and camera pose on every frame with low latency [49, 53, 59].",
+     "Memory-augmented methods [49, 53, 59] maintain a memory pool to eliminate the need for post-processing.",
+     "Point3R [59] couples an explicit geometry-aligned spatial pointer memory with 3D hierarchical RoPE and an adaptive fusion mechanism, delivering low-drift online pose, depth, and point-map updates in real time."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "setting",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "\"Following Point3R [59], we ... resize the maximum edge length to 518 pixels\"."
+  },
+  {
+   "collection": "cvpr-2025",
+   "src": "a5036f31f0e629dc661f120b8c3b1f374d479ab8",
+   "dst": "c0caf3a0f22f18d492265a4eb83424bc5794c534",
+   "cited": {
+    "title": "Visual Instruction Tuning",
+    "year": 2023,
+    "authors": [
+     "Haotian Liu",
+     "Chunyuan Li",
+     "Qingyang Wu",
+     "Yong Jae Lee"
+    ],
+    "venue": "Neural Information Processing Systems"
+   },
+   "citing": {
+    "title": "InstructVLA: Vision-Language-Action Instruction Tuning from Understanding to Manipulation",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "We extend visual instruction tuning (Liu et al., 2023) with a simple and efficient approach to train InstructVLA.",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": [
+     "We extend visual instruction tuning (Liu et al., 2023) with a simple and efficient approach to train InstructVLA."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": true,
+   "audited_verdict": null,
+   "genuine_evidence": [
+    "We extend visual instruction tuning"
+   ],
+   "note": "InstructVLA extends the visual instruction tuning recipe to VLA training."
+  },
+  {
+   "collection": "cvpr-2025",
+   "src": "bdc42352b968f52386fb09d1b43db9d8816fe083",
+   "dst": "94cb7880f208d15b5c7daf82b8fa8425c2cfebe2",
+   "cited": {
+    "title": "Depth Anything 3: Recovering the Visual Space from Any Views",
+    "year": 2025,
+    "authors": [
+     "Haotong Lin",
+     "Si-Lei Chen",
+     "J. Liew",
+     "Donny Y. Chen",
+     "Zhenyu Li"
+    ],
+    "venue": "arXiv.org"
+   },
+   "citing": {
+    "title": "Lyra 2.0: Explorable Generative 3D Worlds",
+    "year": 2026
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "We adopt Depth Anything v3 (DAv3) [58], a feed-forward 3D foundation model that predicts per-pixel 3DGS attributes from input images.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "5.2 with Depth Anything V3 [58], a state-of-the-art 3D reconstruction model that converts videos into 3DGS.",
+     "For each frame 𝐼 𝑖 with estimated depth 𝐷 𝑖 [58] and camera intrinsic and extrinsic ( T 𝑖 , K 𝑖 ) , our 3D cache maintains two components: (i) the full-resolution depth map 𝐷 𝑖 and camera parameters; (ii) a downsampled point cloud P 𝑖 ∈ R ( 𝐻/𝑑 ) × ( 𝑊/𝑑 ) × 3 , obtained by subsampling…",
+     "We estimate camera poses using ViPE [35] and predict per-frame depth with Depth Anything V3 [58].",
+     "A prominent line of work [9, 58, 69, 80, 95, 134] reconstructs 3D Gaussians [43] from one or multiple input views in a fully feed-forward manner.",
+     "We adopt Depth Anything v3 (DAv3) [58], a feed-forward 3D foundation model that predicts per-pixel 3DGS attributes from input images."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "released_model",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "\"We adopt Depth Anything v3 (DAv3) [58], a feed-forward 3D foundation model\" as a tool."
+  },
+  {
+   "collection": "cvpr-2025",
+   "src": "c71dd23cc8671d321d799dd3b1792581bf5a56e5",
+   "dst": "298bbeccef082d74057864e8f8ec6ed13896380b",
+   "cited": {
+    "title": "Practical Stereo Matching via Cascaded Recurrent Network with Adaptive Correlation",
+    "year": 2022,
+    "authors": [
+     "Jiankun Li",
+     "Peisen Wang",
+     "Peng-Fei Xiong",
+     "Tao Cai",
+     "Zi-Ping Yan"
+    ],
+    "venue": "Computer Vision and Pattern Recognition"
+   },
+   "citing": {
+    "title": "MonSter++: Unified Stereo Matching, Multi-View Stereo, and Real-Time Stereo With Monodepth Priors",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "For the monocular branch, we use the ViT-large version of DepthAnythingV2 [38] and freeze its parameters to prevent training of stereo-matching tasks from affecting its generalization and accuracy.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "For the monocular branch, we use the ViT-large version of DepthAnythingV2 [38] and freeze its parameters to prevent training of stereo-matching tasks from affecting its generalization and accuracy.",
+     "In the ﬁrst training stage, we follow SOTA methods [5], [30], [75], [76] to create the Basic Training Set (BTS) from various public datasets for pretraining, including Scene Flow [22], FSD [76], CREStereo [30], Tartan Air [82], Sintel Stereo [83], FallingThings [84], and InStereo2k [85].",
+     "Recently, a novel class of methods based on iterative optimization [4], [5], [6], [30], [31], [63] has achieved SOTA performance in both accuracy and efﬁciency.",
+     "This cascaded search and multi-scale depth fusion strategy enables us to fully exploit monocular priors while achieving both high efﬁciency and strong robustness.",
+     "To further reduce computational overhead at higher resolutions ( 1 / 8 and 1 / 4 ), we construct local cost volumes instead of full ones.",
+     "WhileMonSter++performscostaggregationanditerativere-ﬁnement solely at the 1 / 4 resolution level, our real-time model adopts a fully coarse-to-ﬁne framework, progressively operating at 1 / 16 , 1 / 8 , and 1 / 4 resolutions as shown in Fig.",
+     "This poses challenges in ill-posed regions with limited matching cues, e.g., occlusions, textureless areas, repetitive/thin structures, and distant objects with low pixel representation.",
+     "On KITTI 2015, MonSter++ surpasses CREStereo [30] and Selective-IGEV [5] by 18.93% and 11.61% on the D1-all metric of all regions, respectively.",
+     "CREStereo [30] proposes a cascaded recurrent network to update the disparity ﬁeld in a coarse-to-ﬁne manner."
+    ]
+   },
+   "label": "misattributed",
+   "usage_kind": "other_work",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "The published sentence is about DepthAnythingV2 [38], not CREStereo [30]."
+  },
+  {
+   "collection": "cvpr-2025",
+   "src": "d2c733e34d48784a37d717fe43d9e93277a8c53e",
+   "dst": "0dbae45e9ce81e885cf31342f80dbbeb29f07d65",
+   "cited": {
+    "title": "ImageNet: A large-scale hierarchical image database",
+    "year": 2009,
+    "authors": [
+     "Jia Deng",
+     "Wei Dong",
+     "R. Socher",
+     "Li-Jia Li",
+     "K. Li"
+    ],
+    "venue": "2009 IEEE Conference on Computer Vision and Pattern Recognition"
+   },
+   "citing": {
+    "title": "Fast-FoundationStereo: Real-Time Zero-Shot Stereo Matching",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "This approach was chosen because it is ag-nostic to architecture and allows to build upon the well-established feature backbones studied on ImageNet [10, 69].",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": [
+     "Table 3 shows an ablation study on no distillation (feature backbone weights pretrained only on ImageNet [10]) and different distillation losses.",
+     "This approach was chosen because it is ag-nostic to architecture and allows to build upon the well-established feature backbones studied on ImageNet [10, 69]."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "dataset",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "\"build upon the well-established feature backbones studied on ImageNet [10, 69]\": a dataset paper."
+  },
+  {
+   "collection": "cvpr-2025",
+   "src": "eae2e0fa72e898c289365c0af16daf57a7a6cf40",
+   "dst": "f972ba41fc9a67dd19b9a6114cb45960f4d28512",
+   "cited": {
+    "title": "Image quality assessment: from error visibility to structural similarity",
+    "year": 2004,
+    "authors": [
+     "Zhou Wang",
+     "A. Bovik",
+     "H. Sheikh",
+     "Eero P. Simoncelli"
+    ],
+    "venue": "IEEE Transactions on Image Processing"
+   },
+   "citing": {
+    "title": "HVI: A New Color Space for Low-light Image Enhancement",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "For the paired datasets, we adopt the Peak Signal-to-Noise Ratio (PSNR) and Structural Similarity (SSIM) [61] as the distortion metrics.",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": [
+     "For the paired datasets, we adopt the Peak Signal-to-Noise Ratio (PSNR) and Structural Similarity (SSIM) [61] as the distortion metrics."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "metric",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "SSIM as a distortion metric."
+  },
+  {
+   "collection": "cvpr-2025",
+   "src": "f2de9c75141114ed4fd7c26d5698375c3fa003af",
+   "dst": "0dbae45e9ce81e885cf31342f80dbbeb29f07d65",
+   "cited": {
+    "title": "FoundationStereo: Zero-Shot Stereo Matching",
+    "year": 2025,
+    "authors": [
+     "Bo-Wen Wen",
+     "Matthew Trepte",
+     "J. Aribido",
+     "J. Kautz",
+     "O. Gallo"
+    ],
+    "venue": "CVPR 2025"
+   },
+   "citing": {
+    "title": "Fast-FoundationStereo: Real-Time Zero-Shot Stereo Matching",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Unlike existing real-time methods which sacrifice the rich architectural capacity and typically designed and trained from scratch, our work builds upon the powerful yet computationally intensive Foundation-Stereo [68].",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Specifically, inputs are feed forward to the complete teacher model [68] end-to-end with multiple refinement iterations, and accumulate gradients for the refinement module.",
+     "…leading zero-shot networks leverage rich priors from computationally intensive foundation models such as DepthAnythingV2 [78] or DINO models [47, 60]; and they employ computationally intensive architectures, such as the Disparity Transformer [68], to perform self-attention for long-range context.",
+     "We reuse the disparity attention layers as in [68] while varying the feed-forward layer dimensions, number of heads, and number of layers.",
+     "3) is based on FoundationStereo [68], which consists of three key steps: feature extraction, cost filtering, and disparity refinement.",
+     "Given a pair of left and right images I l , I r ∈ R H × W × 3 , the feature backbone extracts multi-level pyramid features f compute such features, FoundationStereo [68] combines DepthAnything V2 [78] with a side-tuning CNN.",
+     "Founda-tionStereo [68] establishes a strong baseline by adapting DepthAnythingV2 with side-tuning, while StereoAny-where [2] demonstrates robustness where stereo or mono cues fail independently, and MonSter [7] marries monocular depth with stereo matching to unleash complementary strengths.",
+     "…(1) 3D conv layer with varying channel dimensions; (2) 3D deconv layer that doubles the spatial dimensions of the cost volume, (3) APC layer [68] that performs separate spatial and disparity convolution with different respective kernel sizes; (4) residually connected 3D conv layers, similar…",
+     "Unlike existing real-time methods which sacrifice the rich architectural capacity and typically designed and trained from scratch, our work builds upon the powerful yet computationally intensive Foundation-Stereo [68].",
+     "On the one hand, the rise of foundation models in computer vision has pushed stereo research toward strong zero-shot generalization [2, 7, 66, 68].",
+     "To effectively scale the learning process with the abundant training data, FoundationStereo [68] uses a dual branch architecture to perform cost filtering."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": [
+    "our work builds upon the powerful yet computationally intensive Foundation-Stereo"
+   ],
+   "note": "Fast-FoundationStereo distils FoundationStereo."
+  },
+  {
+   "collection": "cvpr-2025",
+   "src": "f2de9c75141114ed4fd7c26d5698375c3fa003af",
+   "dst": "0e90207e6f0b58815e7b50a87f721f364d8905ac",
+   "cited": {
+    "title": "FoundationStereo: Zero-Shot Stereo Matching",
+    "year": 2025,
+    "authors": [
+     "Bo-Wen Wen",
+     "Matthew Trepte",
+     "J. Aribido",
+     "J. Kautz",
+     "O. Gallo"
+    ],
+    "venue": "CVPR 2025"
+   },
+   "citing": {
+    "title": "Masked Depth Modeling for Spatial Perception",
+    "year": 2026
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Because the real captures do not have missing-free depth maps, we follow FoundationStereo [33] to compute the stereo disparity of the left-right IR pairs to obtain the pseudo depth labels.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "The FSD dataset [33] is used for training.",
+     "We follow the evaluation protocol of the three trained models on ETH3D [24], Middlebury [23], Booster [20], Hammer [11] and FoundationStereo dataset [33] and report the EPE (end-point-error ) and BP-1.",
+     "We also use our MDM-pretrained LingBot-Depth model as a strong monocular depth prior in FoundationStereo [33].",
+     "Because the real captures do not have missing-free depth maps, we follow FoundationStereo [33] to compute the stereo disparity of the left-right IR pairs to obtain the pseudo depth labels.",
+     "While the trade-offs of each paradigm have been extensively discussed [13, 29, 33], the requirements for effective perception came down to three critical criteria: (1) absolute metric scale, (2) pixel-aligned dense geometry, and (3) real-time acquisition without computationally expensive…",
+     "Moreover, it serves as a stronger monocular depth prior for FoundationStereo [33] compared to DepthAnythingV2 [35].",
+     "The stereo pairs enable pseudo-depth supervision through a custom stereo matching network adapted from FoundationStereo [33] and trained on synthetic data."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "tool",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "\"we follow FoundationStereo [33] to compute the stereo disparity ... to obtain the pseudo depth labels\" (label generation)."
+  },
+  {
+   "collection": "iclr-2025",
+   "src": "0e584f3839c070c53ace35b182b9bc852bac3861",
+   "dst": "c4f9742b268902a3a1d0da9e85037ec75932a0dd",
+   "cited": {
+    "title": "Diffusion-Based Planning for Autonomous Driving with Flexible Guidance",
+    "year": 2025,
+    "authors": [
+     "Yinan Zheng",
+     "Ruiming Liang",
+     "Kexin Zheng",
+     "Jinliang Zheng",
+     "Li-Yuan Mao"
+    ],
+    "venue": "ICLR 2025"
+   },
+   "citing": {
+    "title": "Flow Matching-Based Autonomous Driving Planning with Advanced Interactive Behavior Modeling",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "…preservation while maintaining model efficiency, we employ separate MLP-Mixer architectures [48] to encode both agent and lane features, following [57]: where MLP seq and MLP feat are two separate MLPs operating on sequence and feature di…",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Diffusion Planner [57] attempts to improve interactive behavior modeling by jointly generating both the ego planning and predictions for neighboring vehicles without requiring prior knowledge.",
+     "Finally, to enable multi-modal behavior generation in complex driving scenarios, we adopt flow matching loss [37], which offers simpler implementation and faster convergence compared to diffusion-based approaches [57].",
+     "Prevalent methods [57, 9, 36] use a single token to represent the whole trajectory, which maintains kinematic consistency [28] but suffers from inefficient scene context fusion due to over-compression.",
+     "While recent work has adopted transformer-based architectures [9] and generative models [57, 35] to improve scalability and performance, vanilla transformer implementations often fail to effectively capture intricate interdependencies among heterogeneous information [14, 54].",
+     "These methods have emerged as the dominant choice in both academia [24, 57] and industry [1, 27], with the expectation that they can achieve reasonable planning through increased data volume and model parameters [5].",
+     "These challenges are what vanilla transformer attention [9, 8, 57] fails to accomplish effectively.",
+     "Recent work has demonstrated generative models’ strong expressiveness for autonomous driving tasks [57, 30, 58].",
+     "…preservation while maintaining model efficiency, we employ separate MLP-Mixer architectures [48] to encode both agent and lane features, following [57]: where MLP seq and MLP feat are two separate MLPs operating on sequence and feature dimensions respectively, and F is the information of…",
+     "…feature fusion is performed in a unified space, we first process heterogeneous features through separate adaptive LayerNorm (adaLN) modules [43], projecting them into a shared latent space where both timestep conditions and navigation information are injected via modulation mechanisms [57].",
+     "In complex scenarios, extensive redundant information can obscure critical traffic participant information during fusion [57], primarily because these architectures lack specialized designs for interaction modeling."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "component",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": true,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "\"we employ separate MLP-Mixer architectures [48] to encode both agent and lane features, following [57]\": an encoder design; Flow Planner contrasts flow matching with diffusion."
+  },
+  {
+   "collection": "iclr-2025",
+   "src": "104b0bb1da562d53cbda87aec79ef6a2827d191a",
+   "dst": "5d9a7165fcbc756d514d08aad2eff1775afdbaaf",
+   "cited": {
+    "title": "Llama 2: Open Foundation and Fine-Tuned Chat Models",
+    "year": 2023,
+    "authors": [
+     "Hugo Touvron",
+     "Louis Martin",
+     "Kevin R. Stone",
+     "Peter Albert",
+     "Amjad Almahairi"
+    ],
+    "venue": "arXiv.org"
+   },
+   "citing": {
+    "title": "TokenFlow: Unified Image Tokenizer for Multimodal Understanding and Generation",
+    "year": 2024
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "arxiv_html",
+   "published_relation": "extends",
+   "published_evidence": "Our visual generation architecture builds upon a pre-trained LLM model [53].",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": []
+   },
+   "arxiv_html_contexts": [
+    "Our visual generation architecture builds upon a pre-trained LLM model [53].",
+    "The model is initialized with Llama-2-7b [53], and being trained for 2 epochs."
+   ],
+   "label": "usage",
+   "usage_kind": "released_model",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "\"Our visual generation architecture builds upon a pre-trained LLM model [53]\" (initialised with Llama-2-7b)."
+  },
+  {
+   "collection": "iclr-2025",
+   "src": "10bd38673951f5d7729568284093cbd80482ab16",
+   "dst": "086d2eaa24a06f9c496db6e0e662cdef59aa91e7",
+   "cited": {
+    "title": "Vision Transformers Need Registers",
+    "year": 2023,
+    "authors": [
+     "Timothée Darcet",
+     "Maxime Oquab",
+     "Julien Mairal",
+     "P. Bojanowski"
+    ],
+    "venue": "International Conference on Learning Representations"
+   },
+   "citing": {
+    "title": "Catching the Details: Self-Distilled RoI Predictors for Fine-Grained MLLM Perception",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "We build on recent studies (Darcet et al., 2023; Kang et al., 2025a) which identify ”sink tokens”—visual tokens that attract high attention despite being semantically irrelevant to the grounded object.",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": [
+     "As identified in recent studies (Darcet et al., 2023; Kang et al., 2025a), sink tokens can be identified by the high L2-norm of their corresponding feature vectors H v .",
+     "We build on recent studies (Darcet et al., 2023; Kang et al., 2025a) which identify ”sink tokens”—visual tokens that attract high attention despite being semantically irrelevant to the grounded object.",
+     "In multimodal pre-training, several works (Oquab et al., 2023; Cai et al., 2024; Dong et al., 2023; Kim et al., 2025) leverage self-distillation to improve cross-modal alignment and representation learning, where it is commonly employed to enhance feature extraction."
+    ]
+   },
+   "label": "other",
+   "usage_kind": "finding",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": true,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "\"We build on recent studies (Darcet et al., 2023; Kang et al., 2025a) which identify sink tokens\": builds on an observation of two works, not on the register method."
+  },
+  {
+   "collection": "iclr-2025",
+   "src": "10bd38673951f5d7729568284093cbd80482ab16",
+   "dst": "b36c56a7584e5aeb2541e5937ca414b794333626",
+   "cited": {
+    "title": "Vision Transformers Need Registers",
+    "year": 2023,
+    "authors": [
+     "Timothée Darcet",
+     "Maxime Oquab",
+     "Julien Mairal",
+     "P. Bojanowski"
+    ],
+    "venue": "International Conference on Learning Representations"
+   },
+   "citing": {
+    "title": "To Sink or Not to Sink: Visual Information Pathways in Large Vision-Language Models",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Following Darcet et al. (2024), we identify ˆ I l vit with the sink characteristic function ϕ as a feature norm in Eq.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Propagation of ViT sink tokens into LLM. ViT sinks, as studied in Darcet et al. (2024), exhibit high vector norms.",
+     "Large Vision Language Models (LVLMs) (Liu et al., 2023c; Zhang et al., 2023; Bai et al., 2023; Awadalla et al., 2023; Chen et al., 2023b; Abdin et al., 2024), which integrate the visual capabilities of vision transformers ( e.g. , ViTs) with the generative capabilities of large language models (LLMs), have demonstrated impressive performance across a broad spectrum of multimodal tasks, spanning vi",
+     "…et al. (2025) shows that masking visual sinks leads to little effect and redistributing attention to other tokens actually leads to improvement; Darcet et al. (2024) prepend register tokens to absorb high-norm tokens in ViT and achieve better unsupervised object discovery with the…",
+     "Darcet et al. (2024) add registers in the beginning of the token sequence to absorb the information stored in sinks in ViT and result in clearer map for object discovery.",
+     "Attention sinks have been observed in well-trained LLMs and ViTs (Sun et al., 2024; Darcet et al., 2024), where certain tokens from low semantic meaning regions, such as image background or the language punctuation, are allocated with high attention weights.",
+     "It suggests that the LLM implicitly inherits ViT’s internal saliency signals, revealing a strong inductive link between visual and language components in LVLMs. Hidden dimension breakdown of propagated ViT sink in LLM.",
+     "The sink characteristic function ϕ can be: (1) feature norms of the token (Darcet et al., 2024) 2) average attention weights on the token : , where h denotes the head of interest, and (3) sink dimension value (Sun et al., 2024) of the token : , where D sink is the pre-defined dimensions ( e.g. , D…",
+     "Notably, MHA in ViTs is non-causal, allowing full token interaction, while MHA in LLMs is causal, restricting attention to past tokens only.",
+     "Following Darcet et al. (2024), we identify ˆ I l vit with the sink characteristic function ϕ as a feature norm in Eq.",
+     "This pattern has been consistently observed in ViTs (Darcet et al., 2024; Jiang et al., 2025) and LLMs (Sun et al., 2024; Gu et al., 2024), and naturally extends to LVLMs due to their hybrid architecture.",
+     "One notable emergent behavior in these models is the phenomenon of attention sinks (Xiao et al., 2023b; Kang et al., 2025; Sun et al., 2024; Darcet et al., 2024), where the model disproportionately assigns high attention on a small subset of tokens; often irrespective of the input.",
+     "Sun et al. (2024); Kang et al. (2025); Darcet et al. (2024); Cancedda (2024); Gu et al. (2024); Yu et al. (2024); Zhang et al. (2024); Ge et al. (2023); Xiao et al. (2023a); Barbero et al. (2025) observed that sink tokens are common in transformer-based models including ViTs and LLMs."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "measurement",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "\"Following Darcet et al. (2024), we identify ... as a feature norm\"."
+  },
+  {
+   "collection": "iclr-2025",
+   "src": "26209149197d50ec8e41e1feae0184e79390e020",
+   "dst": "bef08987fa5878f87bca07ae337013f6f425511c",
+   "cited": {
+    "title": "Scaling In-the-Wild Training for Diffusion-based Illumination Harmonization and Editing by Imposing Consistent Light Transport",
+    "year": 2025,
+    "authors": [
+     "Lvmin Zhang",
+     "Anyi Rao",
+     "Maneesh Agrawala"
+    ],
+    "venue": "ICLR 2025"
+   },
+   "citing": {
+    "title": "Lumen: Consistent Video Relighting and Harmonious Background Replacement with Video Generative Models",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "HDR-based Lighting Simulation: Inspired by the image degradation proposed in IC-Light [56], we design a strategy of video lighting simulation to prepare relighted video (degraded) from the original in-the-wild video.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "IC-Light [56] introduces a light transport consistency loss and trains on a comprehensive dataset of rendered and augmented real-world images.",
+     "HDR-based Lighting Simulation: Inspired by the image degradation proposed in IC-Light [56], we design a strategy of video lighting simulation to prepare relighted video (degraded) from the original in-the-wild video.",
+     "[23, 9, 28, 41, 56].",
+     "For the realistic domain, inspired by the random degradation strategy in IC-Light [56], we prepare artificial paired videos by extracting the video normals [5] and simulating various lighting with random HDR maps.",
+     "IC-Light [56] is a representative method for diffusion-based end-to-end image relighting.",
+     "Inspired by the recent success of large-scale generative models [43, 40, 31], it has been explored to unify the relighting task with end-to-end diffusion-based generation [56, 60, 17]."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "data_recipe",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "\"Inspired by the image degradation proposed in IC-Light [56], we design a strategy of video lighting simulation\" (training-data preparation)."
+  },
+  {
+   "collection": "iclr-2025",
+   "src": "26209149197d50ec8e41e1feae0184e79390e020",
+   "dst": "d7946168d6970649fe139647ba748c89c21a5adf",
+   "cited": {
+    "title": "Scaling In-the-Wild Training for Diffusion-based Illumination Harmonization and Editing by Imposing Consistent Light Transport",
+    "year": 2025,
+    "authors": [
+     "Lvmin Zhang",
+     "Anyi Rao",
+     "Maneesh Agrawala"
+    ],
+    "venue": "ICLR 2025"
+   },
+   "citing": {
+    "title": "TC-Light: Temporally Coherent Generative Rendering for Realistic World Transfer",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Considering outstand ability in physical plausibility and intrinsic property preservation, we adapt IC-Light [57] into a zero-shot video diffusion model.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "IC-Light [57], the current state of the art, learns illumination mixture and decomposition from a large quantity of data.",
+     "Most existing generative relighting techniques [57, 34, 22, 46, 28, 54] are tailored for static images.",
+     "For instance, the current version of IC-Light [57] still struggles to relight hard shadows or make large modifications to [32] subset, where the text prompt is \"This video showcases a modern interior space, which is dimly lit\".",
+     "Considering outstand ability in physical plausibility and intrinsic property preservation, we adapt IC-Light [57] into a zero-shot video diffusion model.",
+     "To obtain edit prompts, we use some prompts from [57] and generate others using COSMOS [1].",
+     "In our decayed multiaxis denoising strategy, the initial γ τ is set to 0.2 and decays exponentially to 0.002 [57] and VidToMe [33] as highlighted by the red squares. until the final sampling step.",
+     "The compared methods were IC-Light* [57], VidToMe [33], Slicedit [10], Cosmos-Transfer1 [3], Ours-light , and Ours-full .",
+     "This discrepancy likely arises from the training data of the video model Cosmos-Transfer1 [3] and the foundational image model IC-Light [57], which are biased towards realistic scenes.",
+     "Following IC-Light [57], we apply T = 25 sampling steps and a classifier-free guidance scale of 2.0.",
+     "We utilize the SOTA image relighting model IC-Light [57] as the baseline, and inflate it to a video model in a zero-shot manner with incorporation of our proposed decayed multi-axis denoising ."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": [
+    "we adapt IC-Light [57] into a zero-shot video diffusion model",
+    "inflate it to a video model"
+   ],
+   "note": "TC-Light inflates IC-Light into a video relighting model."
+  },
+  {
+   "collection": "iclr-2025",
+   "src": "5312fec64ae16cd2a32bdc8c1fa6605bf77333ed",
+   "dst": "4918d8815f77d64cf9dbd12bccd53a2f0aa798e7",
+   "cited": {
+    "title": "BLOCK DIFFUSION: INTERPOLATING BETWEEN AU-TOREGRESSIVE AND DIFFUSION LANGUAGE MODELS",
+    "year": 2025,
+    "authors": [
+     "Marianne Arriola",
+     "Aaron Gokaslan",
+     "Justin T. Chiu",
+     "Zhi-Han Yang",
+     "Zhi-Hong Qi"
+    ],
+    "venue": "ICLR 2025"
+   },
+   "citing": {
+    "title": "Diffusion LLMs Can Do Faster-Than-AR Inference via Discrete Diffusion Forcing",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "We applied block-wise monotonically increasing mask ratios, with a maximum threshold of 0.7 and a minimum threshold of 0.3, inspired by Block Diffusion (Arriola et al., 2025).",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "While prior works attempt to mitigate these issues, for instance, by introducing block-wise sequential generation to enable KV cache (Arriola et al., 2025) or implementing approximate KV cache (Wu et al., 2025; Liu et al., 2025), they fail to simultaneously achieve both precise KV cache and…",
+     "We applied block-wise monotonically increasing mask ratios, with a maximum threshold of 0.7 and a minimum threshold of 0.3, inspired by Block Diffusion (Arriola et al., 2025).",
+     "Approaches to bridge the gap include designing KV cache strategies (Arriola et al., 2025; Liu et al., 2025; Ma et al., 2025) and improving parallel sampling algorithms (Wu et al., 2025; Wei et al., 2025; Hu et al., 2025).",
+     "This naturally gives rise to an AR-diffusion hybrid modeling paradigm, but naive teacher-forcing training, as employed in block diffusion (Arriola et al., 2025), cannot lead to the second capability.",
+     "For instance, Block Diffusion (Arriola et al., 2025) turns dLLMs into a block-wise sequential generation paradigm to enjoy KV cache."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "setting_value",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "Mask ratio schedule \"inspired by Block Diffusion\"."
+  },
+  {
+   "collection": "iclr-2025",
+   "src": "5c308e16788bb80d9a6292c05448d319928f0be5",
+   "dst": "d58b4a9c7f26bf5fc106ba282badedfbc64d4658",
+   "cited": {
+    "title": "See What You Are Told: Visual Attention Sink in Large Multimodal Models",
+    "year": 2025,
+    "authors": [
+     "Seil Kang",
+     "Jinyeong Kim",
+     "Junhyeok Kim",
+     "S. Hwang"
+    ],
+    "venue": "ICLR 2025"
+   },
+   "citing": {
+    "title": "Probing Cross-modal Information Hubs in Audio-Visual LLMs",
+    "year": 2026
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "For sink tokens, we adopt the definition from LVLMs (Kang et al., 2025; Luo et al., 2026), where sinks are characterized by abnormally large activations in predefined sink dimensions, with one crucial modification.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "This hypothesis fundamentally contrasts with the object-centric view, as sink tokens are known to emerge from non-object, background positions in LVLMs.",
+     "First, we demonstrate that attention sink tokens-known to receive disproportionately high attention weights in LLMs and LVLMs-serve as the primary repositories for storing cross-modal information.",
+     "Prior studies have characterized sink tokens using diverse criteria, including attention aggregation patterns and activation-based signatures (Darcet et al., 2024; Kang et al., 2025; Sun et al., 2024b).",
+     "Prior studies investigating factual association in text-only LLMs and Large Vision-Language Models (LVLMs) typically compare the efficacy of patching immediately after the Self-Attention (SA) mechanism versus after the MLP layers (Meng et al., 2022).",
+     "Extensive research has investigated the internal mechanisms of LLMs and LVLMs. Specifically, causal tracing has been utilized to track information transfer (Basu et al., 2024; Kiciman et al., 2024; Meng et al., 2022; Li et al., 2026).",
+     "Sink tokens are tokens that receive disproportionately high attention, exhibit abnormally large activations in specific hidden dimensions (so-called sink dimensions D sink ) (Kang et al., 2025), and have high feature norms.",
+     "For sink tokens, we adopt the definition from LVLMs (Kang et al., 2025; Luo et al., 2026), where sinks are characterized by abnormally large activations in predefined sink dimensions, with one crucial modification.",
+     "Drawing upon recent findings in LVLMs on information storage, we formulate two competing hypotheses: object-centric localization and sink-centric localization Object-centric localization.",
+     "Motivated by the finding that visual sink tokens aggregate information from the visual tokens attending to them in LVLMs (Darcet et al., 2024; Luo et al., 2026), we analyze the incoming attention to sink tokens.",
+     "S ELECTION OF SINK DIMENSION (Kang et al., 2025) reported that, even after multimodal fine-tuning, the dimensions exhibiting massive activations remain largely consistent with those of the base LLM. Specifically, visual sink tokens in VLMs exhibit massive activation along the same dimensions as the BOS token in the base LLM.",
+     "Following (Kang et al., 2025), we identify sink tokens at each layer based on their activations in predefined sink dimensions.",
+     "While recent works have leveraged various techniques to probe internal mechanisms, such as causal tracing (Meng et al., 2022; Kici-man et al., 2024; Basu et al., 2024; Li et al., 2026), circuit discovery (Wang et al., 2023; Nanda et al., 2023; He et al., 2025), and sparse autoencoders (Huben et al., 2024; Shi et al., 2025; Pach et al., 2025; Lim et al., 2025) in LLMs and LVLMs, the inner workings "
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "definition",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "\"we adopt the definition from LVLMs (Kang et al., 2025; Luo et al., 2026)\"."
+  },
+  {
+   "collection": "iclr-2025",
+   "src": "6f870f7f02a8c59c3e23f407f3ef00dd1dcf8fc4",
+   "dst": "ee9c8e3cfa1bd365fe02afc688d9f94ad670e8da",
+   "cited": {
+    "title": "Learning Transferable Visual Models From Natural Language Supervision",
+    "year": 2021,
+    "authors": [
+     "A. Radford",
+     "Jong Wook Kim",
+     "Chris Hallacy",
+     "A. Ramesh",
+     "Gabriel Goh"
+    ],
+    "venue": "International Conference on Machine Learning"
+   },
+   "citing": {
+    "title": "Efficient Multi-modal Large Language Models via Progressive Consistency Distillation",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Specifically, we adopt CLIP ViT-L/14 [49] as our vision encoder, utilizing its officially pretrained projector, and Vicuna-v1.",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": [
+     "Existing MLLMs typically employ a pre-trained vision encoder ( e.g. , CLIP [49] and SigLIP [73, 55]) to extract visual features, which are then projected into the LLM’s input space via a visual projector ( e.g. , MLP and Q-former [32]), enabling the model to process both visual embeddings and user…",
+     "Specifically, we adopt CLIP ViT-L/14 [49] as our vision encoder, utilizing its officially pretrained projector, and Vicuna-v1."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "released_model",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "CLIP ViT-L/14 as the vision encoder."
+  },
+  {
+   "collection": "iclr-2025",
+   "src": "736973165f98105fec3729b7db414ae4d80fcbeb",
+   "dst": "0e584f3839c070c53ace35b182b9bc852bac3861",
+   "cited": {
+    "title": "Scalable Diffusion Models with Transformers",
+    "year": 2022,
+    "authors": [
+     "William S. Peebles",
+     "Saining Xie"
+    ],
+    "venue": "IEEE International Conference on Computer Vision"
+   },
+   "citing": {
+    "title": "Diffusion-Based Planning for Autonomous Driving with Flexible Guidance",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Specifically, we propose a new network architecture built upon the diffusion transformer (Peebles & Xie, 2023).",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Q n is then added to the diffusion timestep condition Q t and applied through an adaptive layer norm block (Peebles & Xie, 2023) to guide trajectory generation across all tokens.",
+     "Specifically, we propose a new network architecture built upon the diffusion transformer (Peebles & Xie, 2023).",
+     "Diffusion Planner is a model based on the DiT architecture (Peebles & Xie, 2023), with a core design focusing on the fusion mechanism between noised future vehicle trajectories x and conditional information C ."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": [
+    "network architecture built upon the diffusion transformer",
+    "based on the DiT architecture"
+   ],
+   "note": "Diffusion Planner's network is a DiT variant."
+  },
+  {
+   "collection": "iclr-2025",
+   "src": "736973165f98105fec3729b7db414ae4d80fcbeb",
+   "dst": "568481d0c72baec8aa44a8c26b12f7a02c12a36d",
+   "cited": {
+    "title": "Scalable Diffusion Models with Transformers",
+    "year": 2022,
+    "authors": [
+     "William S. Peebles",
+     "Saining Xie"
+    ],
+    "venue": "IEEE International Conference on Computer Vision"
+   },
+   "citing": {
+    "title": "On Expressive Power of Looped Transformers: Theoretical Analysis and Enhancement via Timestep Encoding",
+    "year": 2024
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "This method is inspired by adaptive instance normalization (Peebles & Xie, 2023).",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": [
+     "This method is inspired by adaptive instance normalization (Peebles & Xie, 2023)."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "component",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "\"This method is inspired by adaptive instance normalization (Peebles & Xie, 2023)\"."
+  },
+  {
+   "collection": "iclr-2025",
+   "src": "736973165f98105fec3729b7db414ae4d80fcbeb",
+   "dst": "ec2982331d588edc49210f8c98872a6425eb5b1d",
+   "cited": {
+    "title": "Scalable Diffusion Models with Transformers",
+    "year": 2022,
+    "authors": [
+     "William S. Peebles",
+     "Saining Xie"
+    ],
+    "venue": "IEEE International Conference on Computer Vision"
+   },
+   "citing": {
+    "title": "LoopFormer: Elastic-Depth Looped Transformers for Latent Reasoning via Shortcut Modulation",
+    "year": 2026
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Our modulation mechanism is inspired by Diffusion Transformers (DiT) Peebles & Xie (2023) and shortcut/one-step diffusion Frans et al. (2024), which condition blocks on a timestep via adaptive normalization (adaLN), regressing scale/shift …",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": [
+     "Our modulation mechanism is inspired by Diffusion Transformers (DiT) Peebles & Xie (2023) and shortcut/one-step diffusion Frans et al. (2024), which condition blocks on a timestep via adaptive normalization (adaLN), regressing scale/shift and gates from a time embedding."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "component",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "\"Our modulation mechanism is inspired by Diffusion Transformers (DiT)\" (adaLN)."
+  },
+  {
+   "collection": "iclr-2025",
+   "src": "7a064df1aeada7e69e5173f7d4c8606f4470365b",
+   "dst": "ec2982331d588edc49210f8c98872a6425eb5b1d",
+   "cited": {
+    "title": "ALBERT: A Lite BERT for Self-supervised Learning of Language Representations",
+    "year": 2019,
+    "authors": [
+     "Zhenzhong Lan",
+     "Mingda Chen",
+     "Sebastian Goodman",
+     "Kevin Gimpel",
+     "Piyush Sharma"
+    ],
+    "venue": "International Conference on Learning Representations"
+   },
+   "citing": {
+    "title": "LoopFormer: Elastic-Depth Looped Transformers for Latent Reasoning via Shortcut Modulation",
+    "year": 2026
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "For the design of our architecture, we follow the overall approach of looped models such as ALBERT and recent looped decoders Lan et al. (2019); Saunshi et al. (2025), and focus our novelty on trajectory conditioning .",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": [
+     "ALBERT further showed that extensive cross-layer weight-tying yields substantial parameter savings during pretraining, without compromising downstream performance Lan et al. (2019).",
+     "…with parameter sharing, often called looped or recurrent Transformers, have emerged as an efficient and capable alternative to deep non–shared stacks across vision and natural language Dehghani et al. (2018); Lan et al. (2019); Jaegle et al. (2021); Dutta et al. (2021); Geiping et al. (2025).",
+     "For the design of our architecture, we follow the overall approach of looped models such as ALBERT and recent looped decoders Lan et al. (2019); Saunshi et al. (2025), and focus our novelty on trajectory conditioning ."
+    ]
+   },
+   "label": "other",
+   "usage_kind": "family",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": true,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "\"we follow the overall approach of looped models such as ALBERT and recent looped decoders\": ALBERT is a remote example of the family; the direct ancestor is Saunshi et al. (2025)."
+  },
+  {
+   "collection": "iclr-2025",
+   "src": "7c597874535c1537d7ddff3b3723015b4dc79d30",
+   "dst": "0d11a9674b68216b92e08cf7617a93fbd3fb91f4",
+   "cited": {
+    "title": "MaskGIT: Masked Generative Image Transformer",
+    "year": 2022,
+    "authors": [
+     "Huiwen Chang",
+     "Han Zhang",
+     "Lu Jiang",
+     "Ce Liu",
+     "W. Freeman"
+    ],
+    "venue": "Computer Vision and Pattern Recognition"
+   },
+   "citing": {
+    "title": "Large Language Diffusion Models",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "However, inspired by the annealing tricks of sampling in LLMs [4, 30], we adopt a low-confidence remasking strategy, where of predicted tokens with the lowest confidence are remarked based on the predictions, same as the approach of Chang …",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": [
+     "However, inspired by the annealing tricks of sampling in LLMs [4, 30], we adopt a low-confidence remasking strategy, where of predicted tokens with the lowest confidence are remarked based on the predictions, same as the approach of Chang et al. [23].",
+     "Nie et al. [27] introduced the scaling laws for MDMs in language modeling and explored how MDMs can be leveraged for language tasks such as question answering at the GPT-2 scale."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "component",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "Low-confidence remasking \"same as the approach of Chang et al. [23]\" (MaskGIT)."
+  },
+  {
+   "collection": "iclr-2025",
+   "src": "9202a9a196321e7864373e69c3ed5364eb80f9cf",
+   "dst": "d459d071fc497fb5c16c96c49f95a0076c73f549",
+   "cited": {
+    "title": "Do LLMs Recognize Your Preferences? Evaluating Personalized Preference Following in LLMs",
+    "year": 2025,
+    "authors": [
+     "Siyan Zhao",
+     "Mingyi Hong",
+     "Yang Liu",
+     "Devamanyu Hazarika",
+     "Kaixiang Lin"
+    ],
+    "venue": "ICLR 2025"
+   },
+   "citing": {
+    "title": "How Does Personalized Memory Shape LLM Behavior? Benchmarking Rational Preference Utilization in Personalized Assistants",
+    "year": 2026
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "contrasts",
+   "published_evidence": "Unlike existing benchmarks (Zhao et al., 2025; Li et al., 2025b; Tan et al., 2025b), we emphasize that the evaluation of r should not be based solely on its consistency with m , but rather on its consistency with the user’s true intent i q…",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "In addition, we incorporate part of the P REF E-VAL (Zhao et al., 2025) data into the Dominant category to demonstrate the compatibility of RPE VAL .",
+     "This fundamental cognitive mechanism underlies the increasing appeal of personalized assistants (PAs) (Zhang et al., 2024a; Zhao et al., 2025) powered by large language models (LLMs) (OpenAI, 2023).",
+     "In Table 1, we compare RPE VAL with existing benchmarks (Zhao et al., 2025; Tan et al., 2025a; Li et al., 2025b; Wu et al., 2025).",
+     "For example, PrefEval (Zhao et al., 2025) evaluates whether LLMs can proactively leverage user preferences in long texts, while Im-plicitConv (Li et al., 2025b) tests assistants’ capability for implicit personalized reasoning.",
+     "Unlike existing benchmarks (Zhao et al., 2025; Li et al., 2025b; Tan et al., 2025b), we emphasize that the evaluation of r should not be based solely on its consistency with m , but rather on its consistency with the user’s true intent i query .",
+     "…to directly consume lengthy interaction histories but inevitably introduce irrelevant content and suffer from the “lost-in-the-middle” effect (Zhao et al., 2025); (2) parametric memory (Li et al., 2025a; Zhang et al., 2025; He et al., 2025), which encodes user preferences into model…",
+     "…windows to directly consume lengthy interaction histories but inevitably introduce irrelevant content and suffer from the “lost-in-the-middle” effect (Zhao et al., 2025); (2) parametric memory (Li et al., 2025a; Zhang et al., 2025; He et al., 2025), which encodes user preferences into model…",
+     "• Under-Personalization ( UPB , △ ) (Zhao et al., 2025; Zhang et al., 2024b): The PA ignores relevant preferences even when the user’s intent requires personalization.",
+     "In this section, we conduct a systematic evaluation of mainstream LLMs using RPE-VAL , covering small-scale open-source model ( Qwen2.",
+     "In Figure 7, we present the basic statistics of RPE-VAL .",
+     "• We introduce RP-R EASONER , validated on RPE-VAL and a large-scale commercial PAs, highlighting the significant potential of pragmatic reasoning to mitigate irrational personalization."
+    ]
+   },
+   "label": "other",
+   "usage_kind": "group_contrast",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [
+    "contrasts"
+   ],
+   "borderline": true,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "\"Unlike existing benchmarks (Zhao et al., 2025; Li et al., 2025b; Tan et al., 2025b)\": a contrast with a class of benchmarks."
+  },
+  {
+   "collection": "iclr-2025",
+   "src": "b36c56a7584e5aeb2541e5937ca414b794333626",
+   "dst": "d58b4a9c7f26bf5fc106ba282badedfbc64d4658",
+   "cited": {
+    "title": "To Sink or Not to Sink: Visual Information Pathways in Large Vision-Language Models",
+    "year": 2025,
+    "authors": [
+     "Jia-Yun Luo",
+     "Wan-Cyuan Fan",
+     "Lyuyang Wang",
+     "Xiangteng He",
+     "Tanzila Rahman"
+    ],
+    "venue": "arXiv.org"
+   },
+   "citing": {
+    "title": "Probing Cross-modal Information Hubs in Audio-Visual LLMs",
+    "year": 2026
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "For sink tokens, we adopt the definition from LVLMs (Kang et al., 2025; Luo et al., 2026), where sinks are characterized by abnormally large activations in predefined sink dimensions, with one crucial modification.",
+   "s2": {
+    "intents": [],
+    "is_influential": false,
+    "contexts": [
+     "Motivated by the finding that visual sink tokens aggregate information from the visual tokens attending to them in LVLMs (Darcet et al., 2024; Luo et al., 2026), we analyze the incoming attention to sink tokens.",
+     "In contrast, (Darcet et al., 2024; Luo et al., 2026) demonstrate that attention sink aggregate high-level global visual information in LVLMs.",
+     "For sink tokens, we adopt the definition from LVLMs (Kang et al., 2025; Luo et al., 2026), where sinks are characterized by abnormally large activations in predefined sink dimensions, with one crucial modification."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "definition",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "Same sink-token definition sentence as item 8."
+  },
+  {
+   "collection": "iclr-2025",
+   "src": "b39e8ff1babf6b5276c0af68ab766c46487e1df7",
+   "dst": "ec2982331d588edc49210f8c98872a6425eb5b1d",
+   "cited": {
+    "title": "Reasoning with Latent Thoughts: On the Power of Looped Transformers",
+    "year": 2025,
+    "authors": [
+     "Nikunj Saunshi",
+     "Nishanth Dikkala",
+     "Zhiyuan Li",
+     "Sanjiv Kumar",
+     "Sashank J. Reddi"
+    ],
+    "venue": "ICLR 2025"
+   },
+   "citing": {
+    "title": "LoopFormer: Elastic-Depth Looped Transformers for Latent Reasoning via Shortcut Modulation",
+    "year": 2026
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "Following Tay et al. (2022); Saunshi et al. (2025), we compare a 24-layer, ∼ 1B-parameter non-looped Transformer with FLOP-matched looped variants.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Following Tay et al. (2022); Saunshi et al. (2025), we compare a 24-layer, ∼ 1B-parameter non-looped Transformer with FLOP-matched looped variants.",
+     "Following Saunshi et al. (2025), we write ( k ⊗ L ) for a looped model with k blocks repeated L times (approximate cost kL FLOPs), and ( kL ⊗ 1) for a non-looped Transformer of comparable depth.",
+     "The initial hidden states are therefore A range of looping mechanisms for looped Transformers has been studied in prior work Takase & Kiyono (2021); Saunshi et al. (2025); Bae et al. (2025; 2024), including cycle, middle-cycle, and relaxed-cycle variants.",
+     "For the design of our architecture, we follow the overall approach of looped models such as ALBERT and recent looped decoders Lan et al. (2019); Saunshi et al. (2025), and focus our novelty on trajectory conditioning .",
+     "Table 1 highlights three trends: – Consistent with Mohtashami et al. (2023); Saunshi et al. (2025), looped models trail non-looped baselines on perplexity, reflecting the role of parameters in memorization.",
+     "Moreover, studies indicate that such abilities scale gracefully with effective computational depth and number of loops, yielding improved results on reasoning benchmarks Xu & Sato (2024); Saunshi et al. (2025); Geiping et al. (2025)."
+    ]
+   },
+   "label": "genuine",
+   "usage_kind": null,
+   "gold_relation": "extends",
+   "also_acceptable": [],
+   "borderline": true,
+   "audited_verdict": null,
+   "genuine_evidence": [
+    "recent looped decoders Lan et al. (2019); Saunshi et al. (2025)"
+   ],
+   "note": "LoopFormer follows the looped-decoder approach of Saunshi et al.; the published sentence is the FLOP-matched comparison setup."
+  },
+  {
+   "collection": "iclr-2025",
+   "src": "c672ec79f55cef8f7a32cd8dddfa981b893f1567",
+   "dst": "12ae8b48f39105a9ea5c62abd56fc64506fdbbe2",
+   "cited": {
+    "title": "V*: Guided Visual Search as a Core Mechanism in Multimodal LLMs",
+    "year": 2023,
+    "authors": [
+     "Peng-Hao Wu",
+     "Sai-Ning Xie"
+    ],
+    "venue": "Computer Vision and Pattern Recognition"
+   },
+   "citing": {
+    "title": "FOCUS: Internal MLLM Representations for Efficient Fine-Grained Visual Question Answering",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "contrasts",
+   "published_evidence": "…SEAL [38] ✗ ✗ ✓ DC 2 [37] ✓ ✗ ✓ ZoomEye [31] ✓ ✗ ✓ ViCrop [42] ✓ ✓ ✗ To tackle limitation (1), FOCUS leverages the internal representations of MLLMs, specifically their key-value (KV) caches [27], to localize question-relevant image regio…",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "However, popular visual cropping techniques like SEAL [38], DC 2 [37], ZoomEye [31], and ViCrop [42] suffer from one or more of the following limitations: (1) reliance on task-specific fine-tuning of MLLMs for fine-grained VQA, (2) use of inefficient, exhaustive search algorithms, and (3)…",
+     "…SEAL [38] ✗ ✗ ✓ DC 2 [37] ✓ ✗ ✓ ZoomEye [31] ✓ ✗ ✓ ViCrop [42] ✓ ✓ ✗ To tackle limitation (1), FOCUS leverages the internal representations of MLLMs, specifically their key-value (KV) caches [27], to localize question-relevant image regions in a training-free manner—unlike the SEAL [38] technique.",
+     "We evaluate FOCUS on the fine-grained VQA datasets V*Bench [38], HRBench-4K [37], HRBench-8K [37] and MME-RealWorld-Lite [43].",
+     "Compatible w/ efficient attention SEAL [38] ✗ ✗ ✓ DC 2 [37] ✓ ✗ ✓ ZoomEye [31] ✓ ✗ ✓ ViCrop [42] ✓ ✓ ✗ To tackle limitation (1), FOCUS leverages the internal representations of MLLMs, specifically their key-value (KV) caches [27], to localize question-relevant image regions in a training-free…",
+     "Visual cropping for fine-grained VQA In this emerging area of research, different visual cropping methods [31, 37, 38, 42] have been proposed to improve MLLM performance on fine-grained VQA tasks (see Tab.",
+     "As a consequence, global-view MLLMs perform poorly on Visual Question Answering (VQA) tasks involving small-scale visual details [38].",
+     "SEAL [38] employs a dual-MLLM setup: one MLLM for visual search and another one for the actual VQA task.",
+     "An orthogonal research direction to address the limitations of MLLMs in capturing fine details in high-resolution images are visual cropping approaches [31, 37, 38, 42], which seek to pass only relevant image regions to the MLLM.",
+     "Following prior work [31, 37, 38], we evaluate FOCUS on several fine-grained VQA benchmarks: V*Bench [38], HRBench [37], and MME-RealWorld-Lite [43].",
+     "In fine-grained VQA datasets [37, 38, 43], questions typically involve one or more specific objects in the image, which we refer to as the target object(s)."
+    ]
+   },
+   "label": "genuine_contrast",
+   "usage_kind": null,
+   "gold_relation": "contrasts",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "\"... in a training-free manner—unlike the SEAL [38] technique\" (SEAL = V*)."
+  },
+  {
+   "collection": "iclr-2025",
+   "src": "ce806f8d32f6fb1eaa821248a1bc4fa2cd949fbb",
+   "dst": "d01c56cdbc83356f5cc2afab4d70bd936577d0b2",
+   "cited": {
+    "title": "Discrete Diffusion Modeling by Estimating the Ratios of the Data Distribution",
+    "year": 2023,
+    "authors": [
+     "Aaron Lou",
+     "Chenlin Meng",
+     "S. Ermon"
+    ],
+    "venue": "International Conference on Machine Learning"
+   },
+   "citing": {
+    "title": "Coevolutionary Continuous Discrete Diffusion: Make Your Diffusion Language Model a Latent Reasoner",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "We develop our transformer architectures MDiT, MMDiT, and MoEDiT (detailed in Appendix C.1) based on (Lou et al., 2023) with the same configurations when plausible, which augments DiT (Peebles & Xie, 2023) with rotary embeddings (Su et al.…",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "…families of DLMs: continuous diffusion models (CDMs) based on SDE or PF–ODE (Gong et al., 2022; Li et al., 2022; Sahoo et al., 2025), and discrete diffusion models (DDMs) based on the continuous-time Markov chain (CTMC) (Austin et al., 2021; Lou et al., 2023; Sahoo et al., 2024; Shi et al., 2024).",
+     "We pretrain our models on the widely used One Billion Words Dataset (LM1B) (Chelba et al., 2013) and OpenWebText (OWT) (Gokaslan & Cohen, 2019) dataset, following most settings in prior work (von R¨utte et al., 2025; Shi et al., 2024; Lou et al., 2023; Sahoo et al., 2024).",
+     "We develop our transformer architectures MDiT, MMDiT, and MoEDiT (detailed in Appendix C.1) based on (Lou et al., 2023) with the same configurations when plausible, which augments DiT (Peebles & Xie, 2023) with rotary embeddings (Su et al., 2024).",
+     "Early foundational work includes D3PM (Austin et al., 2021) and SEDD (Lou et al., 2023), which introduced discrete transition processes and score matching losses."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "architecture_config",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "\"We develop our transformer architectures ... based on (Lou et al., 2023) with the same configurations\"."
+  },
+  {
+   "collection": "iclr-2025",
+   "src": "ecf92ad74a290da285d2761de6714835ebaec6d0",
+   "dst": "12ae8b48f39105a9ea5c62abd56fc64506fdbbe2",
+   "cited": {
+    "title": "MLLMs Know Where to Look: Training-free Perception of Small Visual Details with Multimodal LLMs",
+    "year": 2025,
+    "authors": [
+     "Jiarui Zhang",
+     "Mahyar Khayatkhoei",
+     "Prateek Chhikara",
+     "Filip Ilievski"
+    ],
+    "venue": "ICLR 2025"
+   },
+   "citing": {
+    "title": "FOCUS: Internal MLLM Representations for Efficient Fine-Grained Visual Question Answering",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "contrasts",
+   "published_evidence": "To overcome limitation (3), FOCUS utilizes the cached value features readily available during inference, making it natively compatible with efficient attention implementations [10]—unlike ViCrop [42] that depends on full attention weights.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "However, popular visual cropping techniques like SEAL [38], DC 2 [37], ZoomEye [31], and ViCrop [42] suffer from one or more of the following limitations: (1) reliance on task-specific fine-tuning of MLLMs for fine-grained VQA, (2) use of inefficient, exhaustive search algorithms, and (3)…",
+     "Compatible w/ efficient attention SEAL [38] ✗ ✗ ✓ DC 2 [37] ✓ ✗ ✓ ZoomEye [31] ✓ ✗ ✓ ViCrop [42] ✓ ✓ ✗ To tackle limitation (1), FOCUS leverages the internal representations of MLLMs, specifically their key-value (KV) caches [27], to localize question-relevant image regions in a training-free…",
+     "Visual cropping for fine-grained VQA In this emerging area of research, different visual cropping methods [31, 37, 38, 42] have been proposed to improve MLLM performance on fine-grained VQA tasks (see Tab.",
+     "ViCrop [42] is an efficient, training-free visual cropping method that avoids hierarchical search by directly computing a question-guided heatmap to localize the target object.",
+     "An orthogonal research direction to address the limitations of MLLMs in capturing fine details in high-resolution images are visual cropping approaches [31, 37, 38, 42], which seek to pass only relevant image regions to the MLLM.",
+     "However, standard MLLM architectures are not well suited to perceive and reason about small visual details in high-resolution images [37, 42] as they typically downscale their inputs, leading to a loss of information.",
+     "To overcome limitation (3), FOCUS utilizes the cached value features readily available during inference, making it natively compatible with efficient attention implementations [10]—unlike ViCrop [42] that depends on full attention weights.",
+     "We present the full results of ZoomEye [31], ViCrop [42], DC 2 [37], SEAL [38], and our method FOCUS on V*Bench, HRBench-4K, and HRBench-8K in Tab.",
+     "While this regime is effective in many scenarios, it tends to fail on fine-grained VQA tasks [37, 42].",
+     "Discrepancy between reported and reproduced performance For the baseline methods, i.e., SEAL [38], ViCrop [42], and ZoomEye [31], we use the official implementations provided in their respective repositories."
+    ]
+   },
+   "label": "genuine_contrast",
+   "usage_kind": null,
+   "gold_relation": "contrasts",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "\"unlike ViCrop [42] that depends on full attention weights\"."
+  },
+  {
+   "collection": "iclr-2025",
+   "src": "f7fda04c653b44b043735cb4a3c108c84131e067",
+   "dst": "ae0b95f1f711b43e9cec14669939f8477bb33cd1",
+   "cited": {
+    "title": "HAMSTER: Hierarchical Action Models For Open-World Robot Manipulation",
+    "year": 2025,
+    "authors": [
+     "Yi Li",
+     "Yuquan Deng",
+     "Jesse Zhang",
+     "Joel Jang",
+     "Marius Memmel"
+    ],
+    "venue": "ICLR 2025"
+   },
+   "citing": {
+    "title": "PEEK: Guiding and Minimal Image Representations for Zero-Shot Generalization of Robot Manipulation Policies",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "contrasts",
+   "published_evidence": "While prior works predict paths either at the start of a rollout [7] or at every timestep [24], our hybrid approach strikes a balance between inference speed and responsiveness.",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "• HAMSTER [7]: Fine-tunes a 13B parameter VLM to predict 2D gripper paths for a 3D policy to condition on.",
+     "Prior works label their dataset using calibrated 3D cameras (in simulation and the real world) or human annotations [7], [8], limiting the scalability of data annotation.",
+     "Like prior work [7], [8], we first incorporate readily available pixel point prediction and visual question answering (VQA) data into D VLM to maintain the VLM’s general world knowledge and object reasoning capabilities.",
+     "More relevant is HAMSTER [7], which trains a VLM to predict future 2D gripper paths that a lower-level 3D policy conditions on.",
+     "Adding RoboPoint slightly improves these metrics and preserves semantic reasoning ability [7].",
+     "…1 University of Washington, 2 NVIDIA, 3 University of Southern California, 4 Our key idea is to offload high-level reasoning to vision-language models (VLMs), which can excel at semantic and visual generalization [7], [8], leaving the policy to determine how low-level behavior should be executed.",
+     "Although any pre-trained text and image input VLM can be used to predict these path and mask points, prior work has found that even the best closed-source models struggle with predicting robot gripper paths without fine-tuning [7], [8], let alone masking points.",
+     "While prior works predict paths either at the start of a rollout [7] or at every timestep [24], our hybrid approach strikes a balance between inference speed and responsiveness."
+    ]
+   },
+   "label": "genuine_contrast",
+   "usage_kind": null,
+   "gold_relation": "contrasts",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "\"While prior works predict paths either at the start of a rollout [7] ..., our hybrid approach\": a scope contrast with HAMSTER."
+  },
+  {
+   "collection": "iclr-2025",
+   "src": "f8e79ac0ea341056ef20f2616628b3e964764cfd",
+   "dst": "ecf92ad74a290da285d2761de6714835ebaec6d0",
+   "cited": {
+    "title": "You Only Look Once: Unified, Real-Time Object Detection",
+    "year": 2015,
+    "authors": [
+     "J. Redmon",
+     "S. Divvala",
+     "Ross B. Girshick",
+     "Ali Farhadi"
+    ],
+    "venue": "Computer Vision and Pattern Recognition"
+   },
+   "citing": {
+    "title": "MLLMs Know Where to Look: Training-free Perception of Small Visual Details with Multimodal LLMs",
+    "year": 2025
+   },
+   "citing_abstract": null,
+   "method": "s2_context_rule",
+   "evidence_source": "semantic_scholar",
+   "published_relation": "extends",
+   "published_evidence": "To convert the importance map (from each of the methods described above) to a bounding box, we use sliding windows of different sizes inspired by object detection literature Redmon et al. (2016).",
+   "s2": {
+    "intents": [],
+    "is_influential": true,
+    "contexts": [
+     "Specifically, we utilized SAM (Kirillov et al., 2023), YOLO (Redmon et al., 2016), and CLIP (Radford et al., 2021) to find the most relevant part of an image to a given question (details of these external ViCrop methods are provided in Appendix F).",
+     "In this section, we present three automatic question-guided localization methods based on popular off-the-shelf vision-based models, namely CLIP Radford et al. (2021), YOLO Redmon et al. (2016), and SAM Kirillov et al. (2023).",
+     "Dedicated visual localization methods, such as YOLO (Redmon et al., 2016), SAM (Kirillov et al., 2023), and GLIP (Li et al., 2022b), rely heavily on dense spatial annotations for identifying salient image regions.",
+     "To convert the importance map (from each of the methods described above) to a bounding box, we use sliding windows of different sizes inspired by object detection literature Redmon et al. (2016)."
+    ]
+   },
+   "label": "usage",
+   "usage_kind": "component",
+   "gold_relation": "baseline_only",
+   "also_acceptable": [],
+   "borderline": false,
+   "audited_verdict": null,
+   "genuine_evidence": null,
+   "note": "Sliding windows \"inspired by object detection literature Redmon et al. (2016)\"."
+  }
+ ]
+}

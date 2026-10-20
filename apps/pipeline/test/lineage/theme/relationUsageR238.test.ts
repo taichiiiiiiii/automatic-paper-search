@@ -4,7 +4,10 @@
  * and the 5 theme lineages (`fixtures/relation-usage-eval-r238.json`).
  * A citation that only USES a benchmark / dataset / task / metric /
  * framework / tool / protocol is not a build-on; the rule set must say so
- * (rule `phrase_usage`, baseline_only) without losing an audited extends.
+ * (rule `phrase_usage`, baseline_only). Since R2-40 only strong cues build
+ * on, so the audited extends stated with a weak cue (follow / adopt /
+ * inspired by …) are listed explicitly (their published files are not
+ * regenerated).
  */
 
 import { readFileSync } from "node:fs";
@@ -124,16 +127,39 @@ describe("R2-38 usage vs extends evaluation set", () => {
       items.filter((i) => i.collection === "icml-2025"),
     );
     expect(icml.precision).toBeGreaterThanOrEqual(0.9);
-    expect(icml.tp).toBe(3); // Hi Robot -> MemER, π0 -> Hi Robot, ReAct -> REMem
+    // Hi Robot -> MemER, π0 -> Hi Robot. R2-40: ReAct -> REMem (“we adopt a
+    // ReAct-style agent”) is a weak cue and no longer extends.
+    expect(icml.tp).toBe(2);
   });
 
-  it("keeps every audited strong edge", () => {
+  it("R2-40: changes an audited strong edge only where its sentence has a weak cue", () => {
     const audited = items.filter((i) => i.audited_verdict !== null);
     expect(audited.length).toBe(28);
+    const changed = audited
+      .filter((i) => predict(i) !== i.published_relation)
+      .map(
+        (i) => `${i.collection}: ${i.cited.title.slice(0, 24)} -> ${i.citing.title.slice(0, 24)}`,
+      )
+      .sort();
+    // follow / inspired by / adopt / based on / motivated by: the published
+    // files are not regenerated (design 41 R2-40); a future rebuild drops these.
+    expect(changed).toEqual(
+      [
+        "flash-attention: FlashAttention-2: Faster -> Efficient FlashAttention",
+        "mixture-of-experts: GShard: Scaling Giant Mo -> Scaling Vision with Spar",
+        "mixture-of-experts: GShard: Scaling Giant Mo -> Switch Transformers: Sca",
+        "mixture-of-experts: Outrageously Large Neura -> Mixture-of-Experts with ",
+        "mixture-of-experts: Outrageously Large Neura -> Scaling Vision with Spar",
+        "vision-transformer: An Image is Worth 16x16  -> Pyramid Vision Transform",
+        "vision-transformer: An Image is Worth 16x16  -> Reversible Vision Transf",
+        "vision-transformer: An Image is Worth 16x16  -> TransUNet: Transformers ",
+        "vision-transformer: An Image is Worth 16x16  -> ViViT: A Video Vision Tr",
+        "vision-transformer: Swin Transformer: Hierar -> Swin-Unet: Unet-Like Pur",
+        "vision-transformer: Swin Transformer: Hierar -> SwinIR: Image Restoratio",
+      ].sort(),
+    );
     for (const i of audited) {
-      expect(predict(i), `${i.collection}: ${i.citing.title} <- ${i.cited.title}`).toBe(
-        i.published_relation,
-      );
+      if (predict(i) !== i.published_relation) expect(predict(i)).toBe("baseline_only");
     }
   });
 
@@ -149,104 +175,35 @@ describe("R2-38 usage vs extends evaluation set", () => {
   });
 });
 
-describe("usageReason (R2-38) on real sentences of the evaluation set", () => {
-  const none = { citedResource: false, citingEvaluation: false, intentsWithoutMethod: false };
-  it.each([
-    [
-      "Second, we adopt V-IRL (Yang et al., 2024a), a real-world navigation task that focuses on the model’s spatial reasoning capabilities .",
-      "resource_apposition",
-    ],
-    [
-      "To address this gap, we adopt Embench [54], a benchmark designed for evaluating multimodal agents in dynamic, interactive environments.",
-      "resource_apposition",
-    ],
-    [
-      "We adopt the F1 calculation from HippoRAG 2 (Guti´errez et al., 2025), BLEU-1 implementation from HuggingFace Evaluate (HuggingFace, 2025).",
-      "resource_object",
-    ],
-    ["For the agent, we adopt the most popular framework, ReAct [29].", "stock_tool"],
-    [
-      "…should be discriminative enough for a model to identify their correctness directly from the latent thoughts. pothesis, we follow the widely-used probing technique (Liu et al., 2019; Hewitt & Manning, 2019), and train a lightweight sequence classifier to predict the correctness of latent thoughts.",
-      "resource_object",
-    ],
-    [
-      "Specifically, we adopt a 2-layer Transformer (Vaswani et al., 2017) with Sinusoidal positional encoding to encode the sequence of latent thoughts.",
-      "stock_tool",
-    ],
-    [
-      "5-Math [Yang et al., 2024], we adopt the pairwise ranking loss [Ouyang et al., 2022] to optimize the ORM.",
-      "component",
-    ],
-    [
-      "Based on such annotations, we find inter-annotator agreement to be Fleiss’ κ = 0.912, suggesting excellent agreement among annotators.",
-      "measurement",
-    ],
-    [
-      "While we can vary α to get different formulations of matrix entropy, we follow the approach of Skean et al. (2025) and choose α → 1 , which is equivalent to the standard von Neumann entropy.",
-      "setting",
-    ],
-    [
-      "We follow the official code and configuration of QLoRA (Dettmers et al., 2024), IR-QLoRA (Qin et al., 2024), QA-LoRA (Xu et al., 2023b), PEQA (Kim et al., 2024), and GPTQ (Achiam et al., 2023).",
-      "resource_object",
-    ],
-    [
-      "Given the target modal features z^img or z^pcl , we construct image-text conversation pairs in an instruction-following format based on previous works (Zhang et al., 2023; Yin et al., 2023; Peng et al., 2023), as shown in Figure 4.",
-      "resource_object",
-    ],
-  ])("demotes a weak adoption cue: %s", (sentence, reason) => {
-    expect(usageReason(sentence, false, none)).toBe(reason);
-  });
-
+describe("usageReason (R2-38) on real sentences with a strong cue", () => {
+  const none = { citedResource: false };
   it("demotes a strong cue whose own object / subject is a resource", () => {
     expect(
       usageReason(
-        "This output structure is inspired by the Embench[54] prompting format, where the model is encouraged to first observe the image, then reflect and reason, and finally produce a coherent multi-step action plan.",
-        true,
+        "Due to computational constraints, we limited these extended experiments to three methods: LoRA[4], LoRA+[36], and LoRA-GA .",
         none,
       ),
     ).toBe("resource_object");
     expect(
       usageReason(
-        "Due to computational constraints, we limited these extended experiments to three methods: LoRA[4], LoRA+[36], and LoRA-GA .",
-        true,
+        "Based on such annotations, we find inter-annotator agreement to be Fleiss’ κ = 0.912, suggesting excellent agreement among annotators.",
         none,
       ),
-    ).toBe("resource_object");
+    ).toBe("measurement");
   });
 
-  it("uses the paper types and S2 intents only for weak cues", () => {
-    const s = "To address the problem, we adopt X [3] in our pipeline.";
-    expect(usageReason(s, false, { ...none, citedResource: true })).toBe("cited_resource");
-    expect(usageReason(s, false, { ...none, citingEvaluation: true })).toBe("citing_evaluation");
-    expect(usageReason(s, false, { ...none, intentsWithoutMethod: true })).toBe(
-      "intent_not_methodology",
-    );
-    expect(
-      usageReason(s, true, {
-        citedResource: true,
-        citingEvaluation: true,
-        intentsWithoutMethod: true,
-      }),
-    ).toBeNull();
-    expect(usageReason(s, false, none)).toBeNull();
+  it("R2-40: uses the cited paper's type also for a strong cue", () => {
+    const s = "To address the problem, we build on X [3] in our pipeline.";
+    expect(usageReason(s, { citedResource: true })).toBe("cited_resource");
+    expect(usageReason(s, none)).toBeNull();
   });
 
   it.each([
     "Our method builds on the common hierarchical VLA paradigm, as in Shi et al. (2025), and extends it with the ability to tackle long-horizon tasks that require memory.",
     "As our architecture is adapted from Swin Transformer [28], our model can be initialized by its strong pre-trained model on a large-scale dataset.",
-    "Our approach is inspired by [54] who proposed a top-k gating in LSTMs, with auxiliary losses ensuring the expert balance [26].",
     "For the encoder, we build upon the vision transformer ViT [19] and consider ”Tiny”, ”Small”, ”Base” and ”Large” models described in Table 1.",
-  ])("keeps a strong methodological cue: %s", (sentence) => {
-    expect(usageReason(sentence, true, none)).toBeNull();
-  });
-
-  it.each([
     "We use the “mean” variant of GRAPHSAGE [16] and apply a DIFFPOOL layer after every two GRAPHSAGE layers in our architecture.",
-    "Following [39], we place the MoEs on every other layer (we refer to these as V-MoE Every-2).",
-    "For image classification, we follow ViT [13] and DeiT [63] to append a learnable classification token to the input of the last stage, and then employ a fully connected (FC) layer to conduct classification on top of the token.",
-    "We follow the FlashAttention algorithms in using e P for unnormalized shifted exponentials, m for the row shift, ℓ for their row sum, and L for log-sum-exp [2, 3, 4].",
-    "We adopt a ReAct-style agent (Yao et al., 2023a; Gu et al., 2024) equipped with three categories of carefully curated tools to access the hybrid graph: 1) retrieval tools, 2) graph exploration tools, and 3) the flow control tool.",
-  ])("keeps a weak cue that adopts a method: %s", (sentence) => {
-    expect(usageReason(sentence, false, none)).toBeNull();
+  ])("keeps a strong methodological cue: %s", (sentence) => {
+    expect(usageReason(sentence, none)).toBeNull();
   });
 });

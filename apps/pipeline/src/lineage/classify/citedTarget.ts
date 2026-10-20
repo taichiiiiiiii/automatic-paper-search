@@ -646,6 +646,11 @@ const DESTINATION_CUE_RE = /\b(?:extend\w*|extension|generali[sz]\w*)\b/i;
 const ACTIVE_BUILD_RE =
   /\b(?:extend|extends|extended|build|builds|built|generali[sz]e|generali[sz]es|generali[sz]ed|modif(?:y|ies|ied)|improves?|improved|adapts?|adapted|subsumes?|subsumed)\b/i;
 const FIRST_PERSON_RE = /(?<![\w-])(?:we|our|ours|us)(?![\w-])/i;
+/** R2-40: noun cues (“a variant of X”) and the apposition right before
+ * them: “<work> (<citation>), a [few words] ” (group 1 = the citation). */
+const VARIANT_NOUN_RE =
+  /^(?:variant|version|adaptation|modification|instantiation|extension)\s+of\b/i;
+const APPOSITION_HEAD_RE = /([[(][^\][()]{1,160}[\])])\s*,\s*(?:a|an)\s+(?:[\w-]+\s+){0,3}$/;
 const YEAR_RE = /\b(?:1[89]|20)\d{2}[a-z]?\b/;
 const ENUMERATION_RE =
   /\b(?:such\s+as|e\.?g\b|including|like|for\s+(?:example|instance)|namely)\b/i;
@@ -728,16 +733,53 @@ export function cueGovernor(
   // Third-party subject of an active build verb: the clause before the cue
   // cites a work and has no first-person word.
   const verb = ACTIVE_BUILD_RE.exec(cueText);
+  const head = masked.slice(0, at);
+  const clauseStart = Math.max(
+    head.lastIndexOf(". "),
+    head.lastIndexOf(";"),
+    head.lastIndexOf(":"),
+  );
   if (verb !== null && !/^(?:building|extending|built|extended)\b/i.test(cueText.trim())) {
-    const head = masked.slice(0, at);
-    const start = Math.max(head.lastIndexOf(". "), head.lastIndexOf(";"), head.lastIndexOf(":"));
-    const subject = head.slice(start + 1);
+    const subject = head.slice(clauseStart + 1);
     if (
       !FIRST_PERSON_RE.test(subject) &&
       !FIRST_PERSON_RE.test(cueText) &&
       citationUnits(subject, sentence, id, false).length > 0
     ) {
       return "other";
+    }
+    // R2-40: a relative clause about other works (“Point3R [95] and
+    // StreamVGGT [106], which extend CUT3R and VGGT [87]”): the antecedent
+    // after the last first-person word cites only other works.
+    if (/\b(?:which|who|that)\s+(?:also\s+|further\s+)?$/i.test(head)) {
+      const fps = [...head.matchAll(new RegExp(FIRST_PERSON_RE.source, "gi"))];
+      const last = fps.length > 0 ? (fps[fps.length - 1]?.index ?? 0) : clauseStart + 1;
+      const units = citationUnits(head.slice(Math.max(last, clauseStart + 1)), sentence, id, false);
+      if (units.length > 0 && units.every((u) => u.cited === false)) return "other";
+    }
+  }
+  // R2-40: a passive participle that describes another work (“GenEx [33],
+  // a panoramic video generation model built upon stable video diffusion
+  // [5]”): the clause before it cites only other works, no first person.
+  if (/^(?:built|extended|derived|adapted)\b/i.test(cueText.trim())) {
+    const before = head.slice(clauseStart + 1);
+    const units = citationUnits(before, sentence, id, false);
+    if (
+      !FIRST_PERSON_RE.test(before) &&
+      units.length > 0 &&
+      units.every((u) => u.cited === false)
+    ) {
+      return "other";
+    }
+  }
+  // R2-40: a variant named in an apposition belongs to the work before it
+  // (“We use LightningDiT (Yao et al., 2025), a variant of DiT (Peebles &
+  // Xie, 2023), as our model backbone” is about LightningDiT).
+  if (VARIANT_NOUN_RE.test(cueText)) {
+    const app = APPOSITION_HEAD_RE.exec(text.slice(0, at));
+    if (app !== null) {
+      const own = citationUnits(app[1] as string, sentence, id);
+      if (own.length > 0 && own.every((u) => u.cited === false)) return "other";
     }
   }
   const { end, capped } = objectSpanEnd(masked, from);
@@ -758,6 +800,12 @@ export function cueGovernor(
   if (DESTINATION_CUE_RE.test(cueText)) {
     const to = /\bto\s/i.exec(object);
     if (to) events.push({ at: to.index, kind: "other", destination: true });
+    // R2-40: “We extend the patch-level pathway with MM-DiT blocks [9]” —
+    // what follows “with / using / via” is the instrument; the extended
+    // thing is the citing paper's own, unless the cited paper came first
+    // (“We extend visual instruction tuning (Liu et al., 2023) with …”).
+    const by = /\b(?:with|using|via)\s/i.exec(object);
+    if (by) events.push({ at: by.index, kind: "other", destination: true });
   }
   if (events.length === 0) return capped ? "distant" : "none";
   events.sort((x, y) => x.at - y.at);

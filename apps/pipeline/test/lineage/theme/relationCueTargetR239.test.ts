@@ -138,7 +138,8 @@ describe("R2-39 NeurIPS 2025 extends evaluation set", () => {
   it("reaches extends precision >= 0.9 on NeurIPS 2025, also with the evidence sentence checked", () => {
     const s = score(r239);
     expect(s.precision).toBeGreaterThanOrEqual(0.9);
-    expect(s.tp).toBeGreaterThanOrEqual(10);
+    // R2-40: only strong cues build on (MP1, MiMo, SpaceR, pMF x2 remain).
+    expect(s.tp).toBeGreaterThanOrEqual(5);
     const strict = score(r239, true);
     expect(strict.precision).toBeGreaterThanOrEqual(0.9);
   });
@@ -267,71 +268,23 @@ describe("cueGovernor (R2-39) on real NeurIPS 2025 sentences", () => {
   });
 });
 
-describe("usageReason (R2-39) on real NeurIPS 2025 sentences", () => {
-  const none = { citedResource: false, citingEvaluation: false, intentsWithoutMethod: false };
-  it.each([
-    [
-      "Our analyses are based on the DeepSeek R1-Distill Qwen-14B model (48 layers) [8].",
-      "resource_object",
-    ],
-    [
-      "To ensure a fair evaluation, we use the publicly released model from (Hu et al., 2025b).",
-      "released_model",
-    ],
-    [
-      "For training and evaluation of DAPO (Yu et al., 2025), we reuse their training data ( https:// huggingface.co/datasets/BytedTsinghua-SIA/DAPO-Math-17k ) and processed version of AIME 2024 ( https://huggingface.co/datasets/BytedTsinghua-SIA/ AIME-2024 ).",
-      "resource_object",
-    ],
-    [
-      "For reliable answer extraction, we adopt the “ < think >< /think >< answer >< /answer > ” template of R1 (Liu et al., 2025b) during training and use the striped content inside answer tags as the generated answer.",
-      "resource_object",
-    ],
-    [
-      "The detailed implementation of DiT-B/2 is provided in Table 3, where we adopt the DiT-B/2-non-cfg setting.",
-      "resource_object",
-    ],
-    [
-      "We adopt GRPO [Shao et al., 2024] as the RL algorithm, and full implementation details are in Appendix C.",
-      "stock_role",
-    ],
-    [
-      "We adopt the PPO [4] as the core RL algorithm, diverging from the GRPO used in DeepSeek-R1-Zero [2].",
-      "stock_role",
-    ],
-    ["Following DAPO [19], we adopt a clip-higher strategy with 𝜀 high = 0.28.", "setting_value"],
-    [
-      "(17) to class-unconditional inputs, we drop the class condition with 10% probability, following [18].",
-      "setting_value",
-    ],
-    [
-      "Inspired by DeepSeek-R1-Zero [2], we design our prompt template to elicit the model to utilize inference computation, gradually mastering the reasoning ability, as shown in the Appendix.",
-      "main_clause_usage",
-    ],
-    [
-      "Building on the advancements of the GRPO [7] algo-rithm and prior explorations of multi-modal reasoning training [2, 25], we adhere to the standard GRPO framework to train our model.",
-      "main_clause_usage",
-    ],
-  ])("demotes: %s", (sentence, reason) => {
-    expect(usageReason(sentence, false, none)).toBe(reason);
+describe("usageReason (R2-39) on real NeurIPS 2025 sentences with a strong cue", () => {
+  const none = { citedResource: false };
+  it("demotes a strong cue whose main clause takes over a standard setup", () => {
+    expect(
+      usageReason(
+        "Building on the advancements of the GRPO [7] algo-rithm and prior explorations of multi-modal reasoning training [2, 25], we adhere to the standard GRPO framework to train our model.",
+        none,
+      ),
+    ).toBe("main_clause_usage");
   });
-
-  it.each([
-    'For the 32B variant, we introduce an additional "annealing" training stage inspired by analogous practices in large language model pre-training [26].',
-    "The optimization objective is defined as follows: (2) Inspired by DAPO Yu et al. [2025b], in all experiments of this work, we omit the KL term during optimization, while incorporating the clip-higher , token-level loss and dynamic sampling strategies to enhance the training efficiency of RLVR.",
-  ])(
-    "demotes a strong cue whose object / main clause is a practice or the experiments: %s",
-    (s) => {
-      expect(usageReason(s, true, none)).not.toBeNull();
-    },
-  );
 
   it.each([
     "We present the first adaptation of the MeanFlow (Geng et al. 2025) paradigm to robot learning, termed MP1.",
     "Second , we extend the GRPO [28] paradigm to enhance spatial reasoning by designing task-specific verifiable rewards for various QA formats (e.g., multiple choice, numerical).",
-    "While a common practice involves the use of Stochastic Differential Equations (SDEs), we adopt Coefficients-Preserving Sampling (CPS) [40] as a more refined alternative to maintain the integrity of the probability path.",
-    "Semi-Autoregressive Sampling for Text Generation For text generation, we adopt the semi-autoregressive denoising strategy introduced in LLaDA [22], which integrates autoregressive decoding with diffusion-based denoising.",
+    "We employ a modified version of Group Relative Policy Optimization (GRPO) (Shao et al., 2024) with recently proposed improvement from the research community (Hu et al., 2025; Yu et al., 2025).",
   ])("keeps a genuine build-on: %s", (s) => {
-    expect(usageReason(s, /extend|adaptation/.test(s), none)).toBeNull();
+    expect(usageReason(s, none)).toBeNull();
   });
 });
 

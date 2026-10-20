@@ -87,11 +87,13 @@ describe("R2-23 marker inference and cue attribution", () => {
     expect(commonMarker(["only one [3] context."])).toBeNull();
   });
 
-  it("V-MoE <- Shazeer: 'inspired by [54] who …' is a build claim on the cited marker", () => {
+  it("V-MoE <- Shazeer: 'inspired by [54] who …' is attributed to the cited marker", () => {
     const r = classifyApiRelationV3(
       sig(shazeer, VMOE, { citingTitle: "Scaling Vision with Sparse Mixture of Experts" }),
     );
-    expect(r.relation).toBe("builds_on");
+    // R2-40: “inspired by” is a weak cue — usage of the cited paper, not a build-on.
+    expect(r.relation).toBe("uses_resource");
+    expect(r.rule).toBe("phrase_usage");
     expect(r.evidence).toContain("inspired by [54]");
   });
 
@@ -197,16 +199,22 @@ describe("R2-23 abstract evidence", () => {
     expect(abstractSentences(null)).toEqual([]);
   });
 
-  it("SwinIR <- Swin: a build cue naming the cited paper in the citing abstract", () => {
+  it("SwinIR <- Swin: a weak 'based on' in the citing abstract is no build claim (R2-40)", () => {
     const s = sig(swin, swinirCtx, {
       citingTitle: "SwinIR: Image Restoration Using Swin Transformer",
       citingAbstract: swinirAbstract,
     });
     const r = classifyS2Pair(s);
-    expect(r.rule).toBe("abstract_build");
-    expect(r.fromAbstract).toBe(true);
-    expect(r.evidence).toContain("based on the Swin Transformer");
-    expect(mapped(s)).toBe("extends");
+    expect(r.rule).not.toBe("abstract_build");
+    expect(r.fromAbstract).toBe(false);
+    expect(mapped(s)).toBe("baseline_only");
+    // A strong cue in the same abstract sentence still counts.
+    const strongAbs = swinirAbstract.replace(
+      "based on the Swin Transformer",
+      "built upon the Swin Transformer",
+    );
+    expect(strongAbs).not.toBe(swinirAbstract);
+    expect(classifyS2Pair({ ...s, citingAbstract: strongAbs }).rule).toBe("abstract_build");
     // Without the abstract the contexts carry no build claim.
     expect(mapped({ ...s, citingAbstract: null })).toBe("baseline_only");
   });

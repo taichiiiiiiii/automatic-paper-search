@@ -130,11 +130,12 @@ describe("R2-23 strong-claim recall on the refreshed labelled set", () => {
     }
   });
 
-  it("published edges: precision stays 1.0, recall 26/32 (R2-22 rules on the same signals: 23/32)", async () => {
+  it("published edges: precision stays 1.0, recall 18/32 (R2-40 strong cues only; was 26/32)", async () => {
     const p = await run(fx.edges);
     expect(p.falsePositives).toEqual([]);
     // R2-31: 25 -> 26 (Shazeer <- Eigen, rule and cached LLM now agree).
-    expect(p.correct).toBe(26);
+    // R2-40: 26 -> 18, the weak-cue build-ons listed below.
+    expect(p.correct).toBe(18);
     expect(p.goldStrong).toBe(32);
     // Every strong claim is backed by a quote, the titles or the allowlist.
     for (const r of p.rows.filter((x) => x.strong)) {
@@ -155,6 +156,16 @@ describe("R2-23 strong-claim recall on the refreshed labelled set", () => {
         "openalex:W2809290718->openalex:W4390873360", // AdaMV-MoE <- MMoE (elided references)
         "openalex:W3122317902->openalex:W3119866685", // Switch <- GShard (no contexts)
         "openalex:W4226079124->openalex:W4390873360", // AdaMV-MoE <- Expert Choice
+        // R2-40: only weak cues (follow / adopt / use / inspired by /
+        // motivated by / based on) state these build-ons.
+        "openalex:W4384648639->openalex:W7220440728", // Blackwell FA <- FA-2 ("We follow")
+        "openalex:W2581624817->openalex:W3170943566", // V-MoE <- Shazeer ("inspired by [54]")
+        "openalex:W2581624817->openalex:W4226079124", // Expert Choice <- Shazeer ("we adopt the idea")
+        "openalex:W3122317902->openalex:W3170943566", // V-MoE <- GShard ("Following [39]")
+        "openalex:W3094502228->openalex:W3127751679", // TransUNet <- ViT ("we use ViT [4] as the encoder")
+        "openalex:W3094502228->openalex:W3147387781", // ViViT <- ViT ("inspired by")
+        "openalex:W3138516171->openalex:W3207918547", // SwinIR <- Swin ("based on")
+        "openalex:W3138516171->openalex:W4321232185", // Swin-Unet <- Swin ("Motivated by")
       ].sort(),
     );
   });
@@ -164,16 +175,19 @@ describe("R2-23 strong-claim recall on the refreshed labelled set", () => {
     expect(p.predicted).toBe(0);
   });
 
-  it("rule cases: 7/7 hand-judged positives, one known false positive", async () => {
+  it("rule cases: 5/7 hand-judged positives, no false positive (R2-40)", async () => {
     const p = await run(fx.rule_cases);
-    expect(p.misses).toEqual([]);
-    expect(p.correct).toBe(7);
-    // "Following [15], we adopt an extra BatchNorm layer" (MAE): an
-    // implementation detail the build cue cannot tell from a design
-    // adoption ("Following [39], we place the MoEs on every other layer").
-    expect(p.falsePositives).toHaveLength(1);
-    expect(p.falsePositives[0]).toBe(
-      "s2:fc1b1c9364c58ec406f494dd944b609a6a038ba6->openalex:W4226002507",
+    // R2-40: the two weak-cue positives (“We follow the FlashAttention
+    // algorithms”, “frameworks that are based on Siamese networks,
+    // including MoCo”) are usage now; the known false positive (MAE,
+    // “Following [15], we adopt an extra BatchNorm layer”) is gone with them.
+    expect(p.misses.sort()).toEqual(
+      [
+        "s2:aeb3bfed03fccc84103ade3f7dcdda8353819ebb->openalex:W7220440728",
+        "s2:add2f205338d70e10ce5e686df4a690e2851bdfc->openalex:W3145450063",
+      ].sort(),
     );
+    expect(p.correct).toBe(5);
+    expect(p.falsePositives).toEqual([]);
   });
 });
