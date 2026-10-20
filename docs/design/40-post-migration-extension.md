@@ -17,10 +17,10 @@
 | 足すもの | 置き場所 | 規約 |
 |---|---|---|
 | 新しい API ルート | `apps/api/src/routes/<name>.ts` に、Hono に依存しないハンドラ生成関数 `createXHandler(deps)` を書く。`app.ts` で生成して登録する（`themes.ts` と同じ形） | **共通ミドルウェアは今は無い。** `lib/kv-flags.ts`・`lib/bounded-body.ts` の関数を、**ルートの種類ごとの関門**の順で呼ぶ（下表）。共通化する場合は P6-0 の成果物とし、既存の順序契約テスト（API-01 など）を壊さない。secret を応答・ログに出さない。別オリジンの間は、1 回の投稿が preflight と POST の 2 リクエスト（KV 3 回）になる。独自ドメインで同一オリジンにすれば preflight は無くなる。Worker の route は `/api/*` に限る（`/*` にすると静的ページまで Workers の枠を消費する） |
-| 入力検証 | Worker で動く検証。`apps/api/src/lib/validate-input.ts` の形（手書き）を基本にする | 共有形式は JSON Schema が正本（次行）。ajv は `node:fs` で schema を読み、実行時に `new Function` で検証関数を作る。Workers はそれを禁じている (verify) ため、Worker では使えない。選択肢は 3 つ: 手書き、`@paperpilot/core` 経由の zod を使う（zod は既に core の依存で、`@paperpilot/core/site` が `z` を再エクスポートし、apps/api はそれを import 済み。apps は zod を個別に宣言しない方針）、JSON Schema からビルド時に zod または ajv standalone の検証コードを生成する（`json-schema-to-zod` が core の devDependency にある。正本を 1 つに保てる）。どれにするかは判断待ち 6。手書きにする場合は、schema と一致することを確かめるテストを必須にする |
+| 入力検証 | Worker で動く検証。`apps/api/src/lib/validate-input.ts` の形（手書き）を基本にする | 共有形式は JSON Schema が正本（次行）。ajv は `node:fs` で schema を読み、実行時に `new Function` で検証関数を作る。Workers はそれを禁じている (verify) ため、Worker では使えない。選択肢は 3 つ: 手書き、`@paperpilot/core` 経由の zod を使う（zod は既に core の依存で、`@paperpilot/core/site` が `z` を再エクスポートする。apps/api は zod を宣言せず、core/site 経由で使える（今は未使用）。pipeline は `zod` を直接宣言している）、JSON Schema からビルド時に zod または ajv standalone の検証コードを生成する（`json-schema-to-zod` が core の devDependency にある。正本を 1 つに保てる）。どれにするかは判断待ち 6。手書きにする場合は、schema と一致することを確かめるテストを必須にする |
 | 新しい共有形式 | リポジトリ直下 `schemas/<name>-vN.schema.json` を追加し、`packages/core/src/schemas` の validator で検証 | 形式のバージョンはファイル名（`-v1`、`-v2`）で持つ。`$id` で相互参照する |
 | 新しい画面 | `apps/web/app/<route>/` | データはブラウザ側 fetch（ビルドに埋め込まない）。インラインスクリプトを増やさない（CSP 契約テスト） |
-| 新しい収集・生成 | `apps/pipeline/src/<area>/` と workflow | 出力先は `@paperpilot/core/layout` のヘルパー。`noPathLiterals` が禁止するのは今 `docs` / `paperpilot/data` / `paperpilot/output` だけで、P5 で p5 レイアウトに切り替わった後の `data/published`・`data/state`・`data/inputs`・`data/config`・`legacy/` は検出しない。**P5 の commit B か P6-0 で、禁止パターンにこれらと `data/config`・`apps/web/static/assets` を足す**（足さないと P6 の新規コードの直書きが素通りする）。新しい出力先は `packages/core/src/layout/index.ts`（検査の対象外）にヘルパーを足してから使う |
+| 新しい収集・生成 | `apps/pipeline/src/<area>/` と workflow | 出力先は `@paperpilot/core/layout` のヘルパー。`noPathLiterals` が禁止するのは今 `docs` / `paperpilot/data` / `paperpilot/output` だけで、P5 で p5 レイアウトに切り替わった後の `data/published`・`data/state`・`data/inputs`・`data/config`・`legacy/` は検出しない。**P5 の commit B か P6-0 で、禁止パターンにこれらと `apps/web/static/assets` を足す**（足さないと P6 の新規コードの直書きが素通りする）。新しい出力先は `packages/core/src/layout/index.ts`（検査の対象外）にヘルパーを足してから使う |
 | 新しい永続データ | D1 のマイグレーション（`apps/api/migrations/NNNN_*.sql`。作成ツールは P6-0 で Drizzle か手書き SQL かを決める。39 は Drizzle 前提） | §2.1 の手順に従う |
 | 新しい secret・変数 | 非機密は `wrangler.jsonc`、機密は Cloudflare の secret | 同時に更新するもの: 本番とプレビューの 2 つの wrangler 設定、`apps/api/src/types.ts` の `Env`、`wrangler-config.test.ts`。値はコミットしない。P6 で新しく要る secret: IP の HMAC 鍵（§3.4）、OAuth の client secret（環境ごと、§3.3）、Better Auth のセッション署名鍵。**投入は環境ごとに設定ファイルを明示する**: プレビュー用は `-c apps/api/wrangler.preview.jsonc`、本番は `-c apps/api/wrangler.jsonc` |
 
@@ -28,28 +28,33 @@
 
 | ルートの種類 | 順序 |
 |---|---|
-| 状態を変える JSON（POST／PUT／DELETE） | origin → 機能別スイッチ → content-type → body サイズ → セッション |
+| 状態を変える JSON（POST／PUT／DELETE） | origin → 機能別スイッチ → レート制限 → content-type → body サイズ → セッション |
+| ログイン開始（未ログインでも通る。state／PKCE を発行する） | origin → 機能別スイッチ → レート制限（IP ごと・識別子ごと） → state／PKCE の発行 |
 | 読み取りの GET | 機能別スイッチ → セッション ＋ `Sec-Fetch-Site: same-origin` |
-| OAuth コールバック（GitHub からのクロスサイトの GET。Origin も body も無い） | 機能別スイッチ → state／PKCE の検証 → クエリの無い URL へ 302 |
+| OAuth コールバック（GitHub からのクロスサイトの GET。Origin も body も無い） | 機能別スイッチ → **レート制限（state／PKCE の検証より前）** → state／PKCE の検証 → クエリの無い URL へ 302 |
+
+- **この表の対象はログイン系の新しいルート。** `POST /api/themes`（セッションを要求しない）と `GET /api/health`（origin 検査をしない運用者向けの契約）は、今の順序のまま。
+- §5 の案 3（読み取り専用ルートでは受付停止の検査を省く）を採るなら、読み取りの GET の行の機能別スイッチを外す。
+- ローカル開発で `next dev` と `wrangler dev` をポート違いで動かすと `Sec-Fetch-Site: same-site` になり、GET の判定で 403 になる。ローカルでも同一オリジンになる構成（`wrangler dev` ＋ static assets など）で確認する。
 
 完了条件（どの機能でも）: テストはモック（外部 API を叩かない）、`no-skip-gate` 緑、レビューで重大・中程度 0。動作確認は、ログインを含まない機能ではプレビュー、ログインを含む機能では §3.3 で決めた確認環境で行う。
 
 ### 2.1 D1 マイグレーションの適用
 
 - 現状 `apps/api/test/wrangler-config.test.ts` は、本番・プレビューとも「D1 binding が無い」ことを assert している。P6-0 で、D1 を入れる設定とこのテストを**同時に**更新する。
-- Worker は Workers Builds が develop への push で自動デプロイする。この経路にはテストも、マイグレーションも、no-skip-gate（`pages-release.yml` にしか無い）も無い。
+- Worker は Workers Builds が develop への push で自動デプロイする。この経路にはテストも、マイグレーションも、no-skip-gate も無い。
 - **「必須の status check」は関門にならない。** promoter（テーマ投稿の CAS promotion、collect 系の反映）は `git push origin HEAD:develop` で PR を通さず直接 push する（`apps/pipeline/src/release/promote.ts`、`commitAndPush.ts`）。必須チェックを付けるとこの push が拒否される（bypass を許せば通るが、何も守れない）。また Workers Builds は GitHub のチェック結果を見ない。ts-ci は P5 の commit B で `tests.yml` に吸収されて無くなる。さらに `tests.yml` は skip を警告にするだけで失敗にしない。
 - P6-0 で次のどれかを選んで置く（推奨は 1）。
-  1. **Workers Builds の build command にテストを入れる**。Workers Builds の root directory は P5 の W3 で `apps/api` になるため、リポジトリ全体の install から始める。実行できる形（`.reports/` はリポジトリ直下の ignore 対象）:
-     `cd ../.. && corepack enable && pnpm install --frozen-lockfile && pnpm -r --filter @paperpilot/api --filter @paperpilot/core typecheck && (cd apps/api && pnpm exec vitest run --reporter=default --reporter=json --outputFile=../../.reports/api.json) && (cd packages/core && pnpm exec vitest run --reporter=default --reporter=json --outputFile=../../.reports/core.json) && pnpm exec tsx apps/pipeline/src/release/cli.ts no-skip-gate .reports/api.json .reports/core.json`
-     `no-skip-gate` は JSON レポートが無い、またはテスト数 0 だと失敗するので、`vitest run` が素のままではだめで、reporter の指定が要る。wrangler の esbuild は型エラーを見ないので typecheck を入れる。あわせて: (1) build watch paths に `apps/api/**`、`packages/core/**`、`pnpm-lock.yaml`、`pnpm-workspace.yaml`、ルートの `package.json` を入れる（root directory 基準かリポジトリ基準かを確かめる (verify)）ことで、データの promotion のたびに再デプロイしない。(2) `NODE_VERSION` を固定する（p5-plan R1）。(3) **非本番ブランチのビルドを止める**: 既定では feat ブランチもビルドされ、本番の binding が付いた version が上がり得る（p5-plan R16）。テストが緑になっただけで本番に紐付いた version が上がらないようにする。
-  2. Worker のデプロイを、保護された GitHub environment のジョブ（テスト → `wrangler deploy`）に移す。トークンの置き場所は 39 の判断待ち 11 に従う。
+  1. **Workers Builds の build command にテストを入れる**。前提は、P5 の W3 で root directory を `apps/api` にした場合（`/` のまま残す代替案では `cd ../..` がリポジトリの外に出るので、コマンドを変える）。リポジトリ全体の install から始め、既存のリハーサル（`rehearse.ts`、CI で通っている形）と同じ reporter 指定でレポートを各パッケージに出す:
+     `cd ../.. && corepack enable && pnpm install --frozen-lockfile && pnpm -r --filter @paperpilot/api --filter @paperpilot/core typecheck && pnpm --filter @paperpilot/api --filter @paperpilot/core test --reporter=default --reporter=json --outputFile.json=.vitest-release-report.json && pnpm exec tsx apps/pipeline/src/release/cli.ts no-skip-gate apps/api/.vitest-release-report.json packages/core/.vitest-release-report.json`
+     `no-skip-gate` は JSON レポートが無い、またはテスト数 0 だと失敗する（`.vitest-release-report.json` は `.gitignore` 済み）。wrangler の esbuild は型エラーを見ないので typecheck を入れる。Workers Builds は build command の前に root directory で依存を自動で入れるため、lockfile の無い `apps/api` で `workspace:*` の解決に失敗しないか、`corepack enable` が書き込み権限で失敗しないかを確かめる (verify)。no-skip-gate を実際に走らせているのは今は `ts-ci.yml` のリハーサルだけで、`pages-release.yml` は P5 後に取り込む。あわせて: (1) build watch paths に `apps/api/**`、`packages/core/**`、`pnpm-lock.yaml`、`pnpm-workspace.yaml`、ルートの `package.json` を入れる（root directory 基準かリポジトリ基準かを確かめる (verify)）ことで、データの promotion のたびに再デプロイしない。(2) `NODE_VERSION` を固定する（p5-plan R1）。(3) **非本番ブランチのビルドを止める**: 既定では feat ブランチもビルドされ、本番の binding が付いた version が上がり得る（p5-plan R16）。テストが緑になっただけで本番に紐付いた version が上がらないようにする。
+  2. Worker のデプロイを、保護された GitHub environment のジョブ（テスト → `wrangler deploy`）に移す。Worker のデプロイ用トークンを GitHub に置くことになり、39 の判断待ち 11 の既定案（Worker は Workers Builds で配り、GitHub には Pages 公開用のトークンだけを置く）の**再決定が要る**。
   3. 必須チェックを使う場合は、ruleset で promoter だけを bypass にする、または PR 限定にする、と明記する。
   どれでも、`tests.yml`（P5 後）で skip を失敗にする変更を P6-0 の作業に含める。
-- 空の DB に全マイグレーションを順に当てるテストを置く。ただし apps/api のテストは miniflare を使わない方針（`quota-object.ts` のコメント）なので、`node:sqlite` か `@cloudflare/vitest-pool-workers` のどちらで行うかを P6-0 で決める。D1 の SQL の制約（マイグレーション内で `BEGIN` を使えない等 (verify)）も確かめる。
+- 空の DB に全マイグレーションを順に当てるテストを置く。ただし apps/api のテストは miniflare を使わない方針（`lib/quota.ts` 冒頭のコメントとそのテスト）なので、`node:sqlite` か `@cloudflare/vitest-pool-workers` のどちらで行うかを P6-0 で決める。D1 の SQL の制約（マイグレーション内で `BEGIN` を使えない等 (verify)）も確かめる。
 - 適用はユーザーの手元の wrangler から行う（39 §10-6、判断待ち 11）。**順序の強制**: マージすると Workers Builds が自動でデプロイするため、次のどちらかを守る。(a) マイグレーションはマージ前に当て、PR に「適用済み」のチェック項目を入れる。(b) 新しいルートは KV のフラグ（§5 の止めるスイッチ）で閉じた状態でデプロイし、マイグレーションを当ててからフラグを開ける。どちらでも、スキーマが足りない時は fail closed（§3.5）になることをテストで固定する。旧 Worker と新 Worker が並走しても動くよう、追加のみ（expand）を先に、削除（contract）は次のリリース以降にする。
-- プレビューの KV id は placeholder のままで、D1 と同時に実 id を入れる。ところが `wrangler.preview.jsonc` 末尾のコメント（KV の作成と `GH_DISPATCH_PAT` の `wrangler secret put`）は、本番の設定（`-c apps/api/wrangler.jsonc`）を指している。そのまま倣うと、プレビュー用の secret が本番 `paperpilot-themes` に入るか、本番の secret を上書きする。KV のコメントの `--preview` も「本番設定の binding の `preview_id`（`wrangler dev` 用）」を作るフラグで、プレビュー Worker の `id` にはならない。**P6-0 で、両方のコメントを `-c apps/api/wrangler.preview.jsonc` に直し、`--preview` を外す**。`wrangler-config.test.ts` に、プレビュー設定のファイルに `-c apps/api/wrangler.jsonc` と `--preview` の文字列が無いことの assert を足す。
-- プレビューと本番で DB を分ける。プレビューの KV id は現在 placeholder なので、D1 と同時に実 id を入れる。
+- プレビューの KV id は placeholder のままで、D1 と同時に実 id を入れる。ところが `wrangler.preview.jsonc` のコメント（中ほどの `kv_namespaces` 直前の KV 作成と、末尾の `GH_DISPATCH_PAT` の `wrangler secret put`）は、本番の設定（`-c apps/api/wrangler.jsonc`）を指している。そのまま倣うと、プレビュー用の secret が本番 `paperpilot-themes` に入るか、本番の secret を上書きする。KV のコメントの `--preview` も「本番設定の binding の `preview_id`（`wrangler dev` 用）」を作るフラグで、プレビュー Worker の `id` にはならない。**P6-0 で、両方のコメントを `-c apps/api/wrangler.preview.jsonc` に直し、`--preview` を外す**。`wrangler-config.test.ts` に、プレビュー設定のファイルに `-c apps/api/wrangler.jsonc` と `--preview` の文字列が無いことの assert を足す。
+- プレビューと本番で DB も分ける。
 
 ## 3. 認証とマイリスト
 
@@ -92,7 +97,7 @@
 - **保管するもの**: OAuth の subject（GitHub の数値 ID）、ログイン名、マイリスト、通知設定。メールは持たない（A 案の既定）。
 - **IP**: 生の IP を DO・D1・URL のクエリに残さない。鍵の無いハッシュや、同じ場所に置いた salt では、IPv4（2^32 通り）が総当たりで戻せるので仮名化にならない。**Worker の secret を鍵にした HMAC** で保存し、鍵から日付ごとの派生鍵を作る（保存しない）。日が変わると 1 時間の窓がリセットされる（境界をまたいで 2 倍送れる）ことは許容する。可能なら、IP をどこにも保存しない Workers の Rate Limiting binding (verify) を、粗い IP 制限に使う（§5.1）。期限切れの掃除は、DO が持てる alarm が 1 つだけなので、`expires_at` にインデックスを張った SQL テーブルを定期的に掃除する方式にする。現在の `QuotaCounter` は期限切れバケットを消さず、IP も `ip:<生の IP>` で持つため、P6-0 で直す（§8、§5）。
 - **削除**: 「アカウント削除」で、user・session・account・verification・saved_papers・notification_prefs を全部消す。D1 の Time Travel が過去の状態を一定期間保持する (verify)ため、即時の消去ではないことをプライバシー表記に書く。Workers のログの保持期間も同様に書く。
-- **ログ**: `wrangler.jsonc` は `observability.enabled: true`。OAuth のコールバック URL には `?code=&state=` が必ず付く（GitHub は `form_post` に対応しない）ので、クエリで受けること自体は避けられない。code は使い捨てで寿命が短く、state（と PKCE）に結び付くので許容する。そのうえで次を P6-0 の手順に入れる。(1) 手元の wrangler の config-schema に `observability.logs.invocation_logs` があり、`observability.enabled: true` のままではコールバック URL（`?code=&state=`）がログに残る可能性が高い。`invocation_logs: false` を明示する、またはコールバックの直後にクエリの無い URL へ 302 する。どちらにするかを P6-0 で確かめる (verify)。(2) ログはアプリ側の許可リスト方式のラッパー（既存の `deps.log`）経由にし、Better Auth の logger を抑える。(3) access／refresh token はそもそも保存せず、URL にも置かない。この契約は grep テストだけでは守れないので、ログ設定の確認を手順に含める。
+- **ログ**: `wrangler.jsonc` は `observability.enabled: true`。OAuth のコールバック URL には `?code=&state=` が必ず付く（GitHub は `form_post` に対応しない）ので、クエリで受けること自体は避けられない。code は使い捨てで寿命が短く、state（と PKCE）に結び付くので許容する。そのうえで次を P6-0 の手順に入れる。(1) 手元の wrangler の config-schema に `observability.logs.invocation_logs` があり、`observability.enabled: true` のままではコールバック URL（`?code=&state=`）がログに残る可能性が高い。`invocation_logs: false` を明示する（またはログに残らないことを確かめる (verify)）。**302 は代わりにならない**: 302 で消えるのはブラウザの履歴と Referer だけで、`?code=&state=` 付きで届いたリクエストの URL はログに残る。したがって、`invocation_logs: false` と 302（関門表）の**両方**を行う。(2) ログはアプリ側の許可リスト方式のラッパー（既存の `deps.log`）経由にし、Better Auth の logger を抑える。(3) access／refresh token はそもそも保存せず、URL にも置かない。この契約は grep テストだけでは守れないので、ログ設定の確認を手順に含める。
 - 公開ページにプライバシー表記（保管するもの、IP の扱い、削除の挙動）を足してからログインを有効にする。
 
 ### 3.5 認証まわりのレート制限と障害時
@@ -163,7 +168,7 @@ Workers の無料枠には、スクリプトの圧縮後サイズ（3MB とす�
 
 **止めるスイッチ**: デプロイ時に決まる `DISPATCH_MODE` ではなく、実行時に読む KV の `accepting`（39 §4.2-7）と同じ形のスイッチを、ログイン系にも置く。
 
-## 6. 独自ドメイン（判断待ち 3 の整理）
+## 6. 独自ドメイン（39 の判断待ち 3、本書 §9-1 の整理）
 
 | | 使わない（`*.pages.dev` ＋ `*.workers.dev`） | 使う |
 |---|---|---|
@@ -208,6 +213,7 @@ legacy/         gh-pages-site（転送ページ。Tier C の後に整理）
    - プレビュー用の OAuth アプリと専用 D1（§3.3）。
    - 使用量の通知手段（§5）。
    - 共通ミドルウェア化するか否かの決定（§2）。
+   - observability・ログ設定の確認（§3.4）。
    - `tests.yml` で skip を失敗にする変更、`noPathLiterals` の p5 パターン追加（§2）、プレビュー設定のコメントと assert の修正（§2.1）。
    - ログインの確認環境の決定（§3.3）、枠切れ時の Issue 導線と health の保護（§5.1）。
    - 39 §4.2-7・§7.4-1 の KV 読み取りの記述の更新（§5）。
