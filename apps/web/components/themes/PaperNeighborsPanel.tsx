@@ -193,8 +193,8 @@ function PathView({
                   <span aria-hidden="true">{step.direction === "forward" ? "↓" : "↑"}</span>
                   <span>
                     {step.direction === "forward"
-                      ? `次の論文がこの論文を基にした（${relationLabelJa(step.edge.relation, audited)}）`
-                      : `この論文が次の論文を基にした（${relationLabelJa(step.edge.relation, audited)}）`}
+                      ? `次の論文がこの論文を基にした: ${relationLabelJa(step.edge.relation, audited)}`
+                      : `この論文が次の論文を基にした: ${relationLabelJa(step.edge.relation, audited)}`}
                   </span>
                   <button
                     type="button"
