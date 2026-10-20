@@ -27,16 +27,14 @@ const SLUG_RE = /^[a-z0-9][a-z0-9-]*$/;
  * Lists every top-level `docs/<slug>/` directory (a conference) that
  * also contains `<fileName>`, sorted. Used so `generateStaticParams`
  * only emits routes for conferences that actually have the artifact
- * this route reads (e.g. `lineage.json` for `/[conf]/lineage/`,
- * `deep-manifest.json` for `/[conf]/deep/`) -- matching which
- * conferences ship a `lineage.html`/`deep.html` today.
+ * this route reads (e.g. `lineage.json` for `/[conf]/lineage/`).
  */
 export async function listConferenceSlugsWithFile(fileName: string): Promise<string[]> {
   // P2 review LOW: this used to swallow a `readdir(DOCS_DIR)` failure
   // (missing/unreadable `docs/`, e.g. a misconfigured checkout or a
   // future repo layout change) into an empty array -- which
   // `generateStaticParams` would then read as "zero conferences have
-  // this file", silently building NO lineage/deep routes for the
+  // this file", silently building NO lineage routes for the
   // entire site instead of failing the build loudly. `docs/` not
   // existing is a build-environment error, not "no conference is
   // eligible yet" (that latter case is each per-conference `stat`

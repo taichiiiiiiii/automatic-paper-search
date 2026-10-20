@@ -1,5 +1,5 @@
 /**
- * Shared fail-closed reader for lineage-artifact-v1, deep-manifest-v1 and
+ * Shared fail-closed reader for lineage-artifact-v1 and
  * lineage-quality-v1 -- a faithful TypeScript port of
  * docs/assets/lineage-core.js (see safety-contracts.md SCR-21..SCR-30).
  *
@@ -27,12 +27,10 @@
 import { abstractContradictsTitle } from "@paperpilot/core/abstract-sanity";
 
 export const ARTIFACT_VERSION = "lineage-artifact-v1" as const;
-export const MANIFEST_VERSION = "deep-manifest-v1" as const;
 export const QUALITY_VERSION = "lineage-quality-v1" as const;
 
 const PAPER_ID_RE = /^[0-9a-f]{40}$/;
 const SHA256_RE = /^[0-9a-f]{64}$/;
-const ARXIV_RE = /^\d{4}\.\d{4,5}(v\d+)?$/;
 const SLUG_RE = /^[a-z0-9][a-z0-9-]*$/;
 const TIMESTAMP_RE =
   /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/;
@@ -118,21 +116,6 @@ export interface LineageArtifact {
   meta: Record<string, unknown>;
 }
 
-export interface DeepManifestEntry {
-  paper_id: string;
-  aliases: [string, string][];
-  arxiv_id: string;
-  title: string;
-  filename: string;
-}
-
-export interface DeepManifest {
-  schema_version: typeof MANIFEST_VERSION;
-  conference: string;
-  generated_at: string;
-  entries: DeepManifestEntry[];
-}
-
 export interface QualityCheck {
   name: string;
   status: "unknown" | "passed" | "failed";
@@ -156,7 +139,7 @@ export type PublishedTier = Exclude<PublicationTier, "blocked">;
 
 export interface QualityRow {
   collection_id: string;
-  kind: "conference" | "theme" | "deep";
+  kind: "conference" | "theme";
   slug: string;
   label: string;
   path: string;
@@ -173,12 +156,6 @@ export interface QualityRow {
   artifact_schema_version: string | null;
   input_sha256: string | null;
   audit: QualityAudit;
-  // deep-only fields
-  conference?: string;
-  paper_id?: string | null;
-  arxiv_id?: string | null;
-  manifest_path?: string;
-  manifest_input_sha256?: string | null;
 }
 
 export interface QualityManifest {
@@ -353,7 +330,7 @@ export function validNodeDisplay(node: Record<string, unknown>): boolean {
   return !has("citationCount");
 }
 
-export type ArtifactKind = "conference" | "theme" | "deep";
+export type ArtifactKind = "conference" | "theme";
 
 /**
  * R2-26: drop a node's abstract excerpt (`tldr` / `short_abstract`) when it
@@ -400,7 +377,7 @@ export function parseArtifact(
   )
     return null;
 
-  const requireSeed = kind === "conference" || kind === "deep" || kind === "theme";
+  const requireSeed = kind === "conference" || kind === "theme";
   const ids = new Set<string>();
   const seedIds = new Set<string>();
   const aliasKeys = new Set<string>();
@@ -519,72 +496,6 @@ export function parseArtifact(
   };
 }
 
-export function parseDeepManifest(data: unknown): DeepManifest | null {
-  if (
-    !exactKeys(data, ["schema_version", "conference", "generated_at", "entries"]) ||
-    !record(data) ||
-    data.schema_version !== MANIFEST_VERSION ||
-    typeof data.conference !== "string" ||
-    !SLUG_RE.test(data.conference) ||
-    !validTimestamp(data.generated_at) ||
-    !Array.isArray(data.entries)
-  )
-    return null;
-  const paperIds = new Set<string>();
-  const aliasKeys = new Set<string>();
-  const filenames = new Set<string>();
-  const entries: DeepManifestEntry[] = [];
-  for (const entry of data.entries) {
-    if (
-      !exactKeys(entry, ["paper_id", "aliases", "arxiv_id", "title", "filename"]) ||
-      !record(entry) ||
-      typeof entry.paper_id !== "string" ||
-      !PAPER_ID_RE.test(entry.paper_id) ||
-      typeof entry.arxiv_id !== "string" ||
-      !ARXIV_RE.test(entry.arxiv_id) ||
-      !nonempty(entry.title) ||
-      entry.filename !== `deep-${entry.arxiv_id}.json` ||
-      !Array.isArray(entry.aliases) ||
-      entry.aliases.length !== 2 ||
-      paperIds.has(entry.paper_id) ||
-      filenames.has(entry.filename as string)
-    )
-      return null;
-    const aliasMap = new Map<string, string>();
-    for (const alias of entry.aliases) {
-      if (
-        !Array.isArray(alias) ||
-        alias.length !== 2 ||
-        !["arxiv", "semantic_scholar"].includes(alias[0]) ||
-        !nonempty(alias[1]) ||
-        aliasMap.has(alias[0])
-      )
-        return null;
-      const key = `${alias[0]}\u0000${alias[1]}`;
-      if (aliasKeys.has(key)) return null;
-      aliasKeys.add(key);
-      aliasMap.set(alias[0], alias[1]);
-    }
-    if (aliasMap.get("arxiv") !== entry.arxiv_id || !nonempty(aliasMap.get("semantic_scholar")))
-      return null;
-    paperIds.add(entry.paper_id);
-    filenames.add(entry.filename as string);
-    entries.push({
-      paper_id: entry.paper_id,
-      aliases: (entry.aliases as [string, string][]).map((alias) => [...alias] as [string, string]),
-      arxiv_id: entry.arxiv_id,
-      title: entry.title as string,
-      filename: entry.filename as string,
-    });
-  }
-  return {
-    schema_version: MANIFEST_VERSION,
-    conference: data.conference,
-    generated_at: data.generated_at,
-    entries,
-  };
-}
-
 const QUALITY_ROW_KEYS = [
   "collection_id",
   "kind",
@@ -602,16 +513,8 @@ const QUALITY_ROW_KEYS = [
   "input_sha256",
   "audit",
 ];
-const QUALITY_DEEP_KEYS = [
-  "conference",
-  "paper_id",
-  "arxiv_id",
-  "manifest_path",
-  "manifest_input_sha256",
-];
 const QUALITY_AUDIT_KEYS = ["fixture_sha256", "evaluated_at", "actor", "checks"];
 const QUALITY_CHECK_KEYS = ["name", "status", "observed", "expected", "evidence"];
-const DEEP_FILENAME_RE = /^deep-[A-Za-z0-9._-]+\.json$/;
 
 function validQualityAudit(audit: unknown): audit is QualityAudit {
   if (
@@ -722,14 +625,11 @@ export function parseQualityManifest(data: unknown): QualityManifest | null {
       !record(row) ||
       !exactKeys(
         row,
-        (row.kind === "deep"
-          ? QUALITY_ROW_KEYS.concat(QUALITY_DEEP_KEYS)
-          : QUALITY_ROW_KEYS
-        ).concat("publication_tier" in row ? ["publication_tier"] : []),
+        QUALITY_ROW_KEYS.concat("publication_tier" in row ? ["publication_tier"] : []),
       ) ||
       ("publication_tier" in row && !PUBLICATION_TIERS.includes(String(row.publication_tier))) ||
       !nonempty(row.collection_id) ||
-      !["conference", "theme", "deep"].includes(String(row.kind)) ||
+      !["conference", "theme"].includes(String(row.kind)) ||
       typeof row.slug !== "string" ||
       !SLUG_RE.test(row.slug) ||
       !nonempty(row.label) ||
@@ -763,32 +663,7 @@ export function parseQualityManifest(data: unknown): QualityManifest | null {
       )
         return null;
     } else {
-      if (
-        typedRow.conference !== typedRow.slug ||
-        !SLUG_RE.test(String(typedRow.conference)) ||
-        !typedRow.collection_id.startsWith(`deep:${typedRow.conference}:`) ||
-        typedRow.collection_id.length <= `deep:${typedRow.conference}:`.length ||
-        (typedRow.paper_id !== null && !PAPER_ID_RE.test(String(typedRow.paper_id))) ||
-        (typedRow.arxiv_id !== null && !ARXIV_RE.test(String(typedRow.arxiv_id))) ||
-        typedRow.manifest_path !== `${typedRow.conference}/deep-manifest.json` ||
-        (typedRow.manifest_input_sha256 !== null &&
-          (typeof typedRow.manifest_input_sha256 !== "string" ||
-            !SHA256_RE.test(typedRow.manifest_input_sha256))) ||
-        !typedRow.path.startsWith(`${typedRow.conference}/`) ||
-        !DEEP_FILENAME_RE.test(typedRow.path.slice(`${typedRow.conference}/`.length))
-      )
-        return null;
-      if (
-        typedRow.availability === "ready" &&
-        typedRow.audit_status === "passed" &&
-        (!PAPER_ID_RE.test(String(typedRow.paper_id)) ||
-          !ARXIV_RE.test(String(typedRow.arxiv_id)) ||
-          typeof typedRow.input_sha256 !== "string" ||
-          !SHA256_RE.test(typedRow.input_sha256) ||
-          typeof typedRow.manifest_input_sha256 !== "string" ||
-          !SHA256_RE.test(typedRow.manifest_input_sha256))
-      )
-        return null;
+      return null;
     }
     if (!validQualityAudit(typedRow.audit) || !auditStatusIsConsistent(typedRow)) return null;
     // A written tier that disagrees with the row's own checks means the
@@ -820,8 +695,7 @@ export function parseQualityManifest(data: unknown): QualityManifest | null {
 
 export type QualitySelector =
   | { kind: "conference"; slug: string; path: string }
-  | { kind: "theme"; slug: string }
-  | { kind: "deep"; conference: string; paperId: string | null; path: string };
+  | { kind: "theme"; slug: string };
 
 function uniqueMatch<T>(matches: T[]): T | null {
   return matches.length === 1 ? (matches[0] as T) : null;
@@ -840,14 +714,6 @@ export function resolveQualityCollection(
     if (selector.kind === "theme") {
       return row.slug === selector.slug && row.path === `themes/${selector.slug}/lineage.json`;
     }
-    if (selector.kind === "deep") {
-      return (
-        row.conference === selector.conference &&
-        row.slug === selector.conference &&
-        row.paper_id === selector.paperId &&
-        row.path === selector.path
-      );
-    }
     return false;
   });
   return uniqueMatch(matches);
@@ -855,15 +721,12 @@ export function resolveQualityCollection(
 
 /**
  * The tier a page may publish this row under, or `null` (blocked /
- * malformed / deep manifest hash mismatch). `audited` keeps the original
+ * malformed). `audited` keeps the original
  * ready+passed contract unchanged; `unaudited` (design doc 41 D1) is a
  * ready row whose every automatic check passed and whose only
  * non-passed check is an `unknown` golden fixture.
  */
-export function qualityRowPublishedTier(
-  row: QualityRow | null,
-  { manifestSha256 = null }: { manifestSha256?: string | null } = {},
-): PublishedTier | null {
+export function qualityRowPublishedTier(row: QualityRow | null): PublishedTier | null {
   if (row?.availability !== "ready" || !validQualityAudit(row.audit)) return null;
   const derived = derivedPublicationTier(row);
   if (row.publication_tier !== undefined && row.publication_tier !== derived) return null;
@@ -873,37 +736,19 @@ export function qualityRowPublishedTier(
   } else if (derived === "unaudited" && rowHasUnauditedContract(row)) {
     tier = "unaudited";
   }
-  if (tier === null) return null;
-  if (
-    row.kind === "deep" &&
-    !(
-      typeof row.manifest_input_sha256 === "string" &&
-      SHA256_RE.test(row.manifest_input_sha256) &&
-      row.manifest_input_sha256 === manifestSha256 &&
-      PAPER_ID_RE.test(String(row.paper_id)) &&
-      ARXIV_RE.test(String(row.arxiv_id))
-    )
-  )
-    return null;
   return tier;
 }
 
 /** Publication gate: true for `audited` and `unaudited` rows (design doc
  * 41 D1), never for `blocked`. Use `qualityRowPublishedTier` to know
  * which badge to show. */
-export function qualityRowIsEligible(
-  row: QualityRow | null,
-  options: { manifestSha256?: string | null } = {},
-): boolean {
-  return qualityRowPublishedTier(row, options) !== null;
+export function qualityRowIsEligible(row: QualityRow | null): boolean {
+  return qualityRowPublishedTier(row) !== null;
 }
 
 /** Strict pre-41 gate: ready + passed + human golden fixture. */
-export function qualityRowIsAudited(
-  row: QualityRow | null,
-  options: { manifestSha256?: string | null } = {},
-): boolean {
-  return qualityRowPublishedTier(row, options) === "audited";
+export function qualityRowIsAudited(row: QualityRow | null): boolean {
+  return qualityRowPublishedTier(row) === "audited";
 }
 
 /** Sort key: audited before unaudited (stable otherwise). */
@@ -913,13 +758,10 @@ export function publishedTierRank(tier: PublishedTier | null): number {
 
 export function qualityRowIsPublishable(
   row: QualityRow | null,
-  {
-    artifactSha256 = null,
-    manifestSha256 = null,
-  }: { artifactSha256?: string | null; manifestSha256?: string | null } = {},
+  { artifactSha256 = null }: { artifactSha256?: string | null } = {},
 ): boolean {
   return (
-    qualityRowIsEligible(row, { manifestSha256 }) &&
+    qualityRowIsEligible(row) &&
     typeof row?.input_sha256 === "string" &&
     SHA256_RE.test(row.input_sha256) &&
     row.input_sha256 === artifactSha256
@@ -1068,62 +910,6 @@ export function resolveLineageFocusGate(
     return { mount: false, focusId: null, notFound: true };
   }
   return { mount: true, focusId: focusNode?.id ?? data?.root ?? null, notFound: false };
-}
-
-export function resolveManifestEntry(
-  manifest: DeepManifest | null,
-  { paper = null, arxiv = null }: { paper?: string | null; arxiv?: string | null } = {},
-): DeepManifestEntry | null {
-  if (!manifest || !Array.isArray(manifest.entries)) return null;
-  if (nonempty(paper)) {
-    return uniqueMatch(manifest.entries.filter((entry) => entry.paper_id === paper));
-  }
-  if (nonempty(arxiv)) {
-    return uniqueMatch(
-      manifest.entries.filter((entry) =>
-        entry.aliases.some((alias) => alias[0] === "arxiv" && alias[1] === arxiv),
-      ),
-    );
-  }
-  return manifest.entries[0] || null;
-}
-
-/** P2 review: deep-linking a specific paper on `/[conf]/deep/` via
- * `?paper=`/`?arxiv=`. `resolveManifestEntry` above already has the
- * right fail-closed shape for this on its own -- it only falls back to
- * `entries[0]` when BOTH params are empty (no explicit request); an
- * explicit `paper`/`arxiv` that matches nothing returns `null`, never
- * `entries[0]` (SCR-28). This wraps that in the one extra decision the
- * page needs: `entries` here must already be filtered down to this
- * conference's ELIGIBLE rows (never the raw, unaudited manifest, same
- * as docs/assets/deep.js `init`'s own pre-filtered `state.manifest`),
- * and the page must not show the picker/graph UI at all when an
- * explicit request fails to resolve -- it must look the same as "no
- * row eligible yet", not quietly swap in a different paper. */
-export interface DeepFocusGate {
-  /** Whether the ready picker/graph UI may be shown at all. */
-  mount: boolean;
-  /** The entry to select when `mount` is true. */
-  entry: DeepManifestEntry | null;
-}
-
-export function resolveDeepFocusGate(
-  eligibleEntries: readonly DeepManifestEntry[],
-  request: { paper?: string | null; arxiv?: string | null } = {},
-): DeepFocusGate {
-  if (eligibleEntries.length === 0) return { mount: false, entry: null };
-  const explicit = nonempty(request.paper) || nonempty(request.arxiv);
-  const entry = resolveManifestEntry(
-    {
-      schema_version: MANIFEST_VERSION,
-      conference: "",
-      generated_at: "",
-      entries: [...eligibleEntries],
-    },
-    request,
-  );
-  if (explicit && !entry) return { mount: false, entry: null };
-  return { mount: true, entry };
 }
 
 export function resolveView({

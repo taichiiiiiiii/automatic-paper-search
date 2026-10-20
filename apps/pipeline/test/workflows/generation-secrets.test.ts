@@ -114,13 +114,12 @@ describe("H3: generation steps carry the exact LLM/S2 secrets the live workflows
 describe("R2-19: every step that runs an OpenAlex-calling CLI carries the OpenAlex key", () => {
   // biome-ignore lint/suspicious/noTemplateCurlyInString: literal GitHub Actions expression (YAML env value), not a JS template literal.
   const KEY_EXPR = "${{ secrets.PAPERPILOT_OPENALEX_API_KEY }}";
-  /** Entry points whose runs call api.openalex.org (theme/conference/deep
+  /** Entry points whose runs call api.openalex.org (theme/conference
    * lineage builders and the collector's OpenAlex source). */
   const OPENALEX_CLIS = [
     "apps/pipeline/src/lineage/theme/cli.ts",
     "apps/pipeline/src/lineage/conference/buildLineageCli.ts",
     "apps/pipeline/src/lineage/conference/buildConferenceLineageCli.ts",
-    "apps/pipeline/src/lineage/deep/buildDeepLineageCli.ts",
     "apps/pipeline/src/collect/cli.ts",
   ];
 

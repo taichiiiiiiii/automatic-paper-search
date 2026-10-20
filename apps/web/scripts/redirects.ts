@@ -3,7 +3,7 @@
  * Postbuild step: writes `apps/web/out/_redirects` (Cloudflare Pages).
  *
  * Why this exists (design doc §4.2-3): the current GitHub Pages site serves
- * `docs/<conf>/lineage.html`, `deep.html` and `paper-links.html` as real
+ * `docs/<conf>/lineage.html`, `deep.html` (now sent to the lineage page) and `paper-links.html` as real
  * files, while Next's static export writes those routes as
  * `<conf>/lineage/index.html` etc. With no `lineage.html` file in the output,
  * Pages cannot resolve the old URL on its own, so every external link and
@@ -42,11 +42,23 @@ export const DYNAMIC_RULE_LIMIT = 100;
  */
 export const LEGACY_HTML_RULES: readonly RedirectRule[] = [
   { from: "/:conf/lineage.html", to: "/:conf/lineage/", status: 301 },
-  { from: "/:conf/deep.html", to: "/:conf/deep/", status: 301 },
+  { from: "/:conf/deep.html", to: "/:conf/lineage/", status: 301 },
   { from: "/:conf/paper-links.html", to: "/:conf/paper-links/", status: 301 },
   { from: "/:conf/index.html", to: "/:conf/", status: 301 },
   { from: "/index.html", to: "/", status: 301 },
 ];
+
+/**
+ * D-R2-41: the `/<conf>/deep/` route was retired; the same lineage is on
+ * the conference lineage page. Both URL shapes (with and without the
+ * trailing slash) go there. Counted as dynamic rules.
+ */
+export const RETIRED_DEEP_RULES: readonly RedirectRule[] = [
+  { from: "/:conf/deep/", to: "/:conf/lineage/", status: 301 },
+  { from: "/:conf/deep", to: "/:conf/lineage/", status: 301 },
+];
+
+export const ALL_RULES: readonly RedirectRule[] = [...LEGACY_HTML_RULES, ...RETIRED_DEEP_RULES];
 
 /** A `:placeholder` rule is billed against the smaller (dynamic) quota. */
 export function isDynamicRule(rule: RedirectRule): boolean {
@@ -67,7 +79,7 @@ export function renderRule(rule: RedirectRule): string {
  * records the rule counts against the free-plan budget, then one rule per
  * line, terminated by a newline.
  */
-export function renderRedirects(rules: readonly RedirectRule[] = LEGACY_HTML_RULES): string {
+export function renderRedirects(rules: readonly RedirectRule[] = ALL_RULES): string {
   const dynamic = dynamicRuleCount(rules);
   const staticCount = rules.length - dynamic;
   const header = [
@@ -94,8 +106,8 @@ async function assertOutDir(outDir: string): Promise<void> {
 async function main(): Promise<void> {
   await assertOutDir(OUT_DIR);
   const target = join(OUT_DIR, "_redirects");
-  const dynamic = dynamicRuleCount(LEGACY_HTML_RULES);
-  const summary = `${LEGACY_HTML_RULES.length} rule(s), ${dynamic} dynamic`;
+  const dynamic = dynamicRuleCount(ALL_RULES);
+  const summary = `${ALL_RULES.length} rule(s), ${dynamic} dynamic`;
   await writeFile(target, renderRedirects(), "utf8");
   console.log(`redirects: wrote ${target} (${summary} of ${DYNAMIC_RULE_LIMIT} allowed)`);
 }

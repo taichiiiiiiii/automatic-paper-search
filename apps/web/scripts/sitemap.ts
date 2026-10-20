@@ -19,8 +19,6 @@
  * never hand-edited. No `priority` / `changefreq` elements (search engines
  * ignore both) -- same decision as the current Python generator.
  */
-import { createHash } from "node:crypto";
-import type { Dirent } from "node:fs";
 import { readdir, readFile, stat, writeFile } from "node:fs/promises";
 import { dirname, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -49,7 +47,7 @@ const HEADER_COMMENT = [
   "     The 404 fallback, Next internal underscore routes, and any page whose own",
   "     robots meta says noindex are excluded (that is how the generated paper-links",
   "     no-JS duplicates stay out). Theme query variants share the theme page and are",
-  "     never listed separately. A conference lineage, deep, or themes route is",
+  "     never listed separately. A conference lineage or themes route is",
   "     listed only once lineage-quality-v1.json publishes its collection (audited,",
   "     or unaudited: every automatic check passed; design doc 41 D1; safety",
   "     contracts CAT-39, ported from build_sitemap.py's",
@@ -78,17 +76,8 @@ const HEADER_COMMENT = [
  * same fail-closed contract `parseQualityManifest` already enforces for
  * every other caller) -- sitemap discovery is a publication boundary,
  * so this never falls back to a partial read.
- *
- * A `kind: "deep"` row additionally requires its `manifest_input_sha256`
- * to match the conference's actual `deep-manifest.json` hash
- * (SCR-27/28, the same binding the deep viewer itself enforces) --
- * `deepManifestSha256ByConference` supplies that hash per conference;
- * a conference missing from it is excluded ("else excluded").
  */
-export function eligibleLineageRoutes(
-  manifestRaw: string | null,
-  deepManifestSha256ByConference: ReadonlyMap<string, string> = new Map(),
-): Set<string> {
+export function eligibleLineageRoutes(manifestRaw: string | null): Set<string> {
   const routes = new Set<string>();
   if (manifestRaw === null) return routes;
   let payload: unknown;
@@ -104,9 +93,6 @@ export function eligibleLineageRoutes(
       if (qualityRowIsEligible(row)) routes.add(`/${row.slug}/lineage/`);
     } else if (row.kind === "theme") {
       if (qualityRowIsEligible(row)) routes.add("/themes/");
-    } else if (row.kind === "deep" && typeof row.conference === "string") {
-      const manifestSha256 = deepManifestSha256ByConference.get(row.conference) ?? null;
-      if (qualityRowIsEligible(row, { manifestSha256 })) routes.add(`/${row.conference}/deep/`);
     }
   }
   return routes;
@@ -114,13 +100,12 @@ export function eligibleLineageRoutes(
 
 const SLUG_RE = "[a-z0-9][a-z0-9-]*";
 const LINEAGE_ROUTE_RE = new RegExp(`^/${SLUG_RE}/lineage/$`);
-const DEEP_ROUTE_RE = new RegExp(`^/${SLUG_RE}/deep/$`);
 
 /** Whether `path` is one this postbuild step must gate on the lineage
  * quality manifest before listing (CAT-39), independent of whether the
  * page itself happens to be noindex. */
 export function isLineageGatedRoute(path: string): boolean {
-  return path === "/themes/" || LINEAGE_ROUTE_RE.test(path) || DEEP_ROUTE_RE.test(path);
+  return path === "/themes/" || LINEAGE_ROUTE_RE.test(path);
 }
 
 /** Characters that must not appear raw in XML text or attribute values. */
@@ -184,7 +169,7 @@ export function hasNoindexMeta(html: string): boolean {
  *
  * `eligibleLineageRoutesSet` defaults to empty -- the same fail-closed
  * default as `eligibleLineageRoutes(null)` -- so a caller that forgets
- * to pass it gets "exclude every lineage/deep/themes route" rather than
+ * to pass it gets "exclude every lineage/themes route" rather than
  * "list them unconditionally".
  */
 export function sitemapUrls(
@@ -261,36 +246,6 @@ async function readLineageQualityManifest(outDir: string): Promise<string | null
 }
 
 /**
- * SHA-256-hashes every `<conference>/deep-manifest.json` published
- * under `outDir`, for `eligibleLineageRoutes`'s deep-row manifest-hash
- * check (SCR-27/28) -- same raw-bytes-SHA-256-hex algorithm as
- * `fetchJsonWithSha256` in lib/lineage/core.ts. A conference directory
- * with no `deep-manifest.json` (or that fails to read) is simply absent
- * from the returned map, which `eligibleLineageRoutes` already treats
- * as "exclude its deep route".
- */
-async function readDeepManifestSha256ByConference(outDir: string): Promise<Map<string, string>> {
-  const result = new Map<string, string>();
-  let entries: Dirent[];
-  try {
-    entries = await readdir(outDir, { withFileTypes: true });
-  } catch {
-    return result;
-  }
-  for (const entry of entries) {
-    if (!entry.isDirectory()) continue;
-    try {
-      const bytes = await readFile(join(outDir, entry.name, "deep-manifest.json"));
-      result.set(entry.name, createHash("sha256").update(bytes).digest("hex"));
-    } catch {
-      // No deep-manifest.json for this conference -- its deep route just
-      // stays excluded, not a build error.
-    }
-  }
-  return result;
-}
-
-/**
  * `out/robots.txt`: allow everything and point crawlers at the sitemap.
  * Without this file Cloudflare serves its own managed robots.txt for
  * *.pages.dev (content-signal comments only: no `User-agent` group and no
@@ -306,11 +261,7 @@ export function renderRobotsTxt(): string {
 
 async function main(): Promise<void> {
   await assertOutDir(OUT_DIR);
-  const deepManifestSha256ByConference = await readDeepManifestSha256ByConference(OUT_DIR);
-  const eligible = eligibleLineageRoutes(
-    await readLineageQualityManifest(OUT_DIR),
-    deepManifestSha256ByConference,
-  );
+  const eligible = eligibleLineageRoutes(await readLineageQualityManifest(OUT_DIR));
   const urls = sitemapUrls(await collectPages(OUT_DIR), eligible);
   if (urls.length === 0) {
     throw new Error(`no public index.html pages under ${OUT_DIR}; run next build first`);

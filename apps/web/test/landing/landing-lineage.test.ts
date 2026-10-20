@@ -126,25 +126,6 @@ describe("selectLineageShelfRows", () => {
     expect(selectLineageShelfRows(quality)).toEqual([]);
   });
 
-  it("hides a deep row even when it is independently eligible", () => {
-    const deepRow = qualityRow({
-      collection_id: `deep:test-2026:${"1".repeat(40)}`,
-      kind: "deep",
-      slug: "test-2026",
-      conference: "test-2026",
-      paper_id: "1".repeat(40),
-      arxiv_id: "2602.18473",
-      label: "Deep",
-      path: "test-2026/deep-2602.18473.json",
-      manifest_path: "test-2026/deep-manifest.json",
-      manifest_input_sha256: "c".repeat(64),
-      input_sha256: "d".repeat(64),
-    });
-    const quality = parse([qualityRow(), deepRow, themeRow()]);
-    const rows = selectLineageShelfRows(quality);
-    expect(rows.map((row) => row.kind).sort()).toEqual(["conference", "theme"]);
-  });
-
   it("lists audited rows before unaudited ones (design doc 41 D1)", () => {
     const unauditedAudit = {
       fixture_sha256: null,

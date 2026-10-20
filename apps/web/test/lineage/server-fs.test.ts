@@ -3,7 +3,7 @@
  * LOW: a failed top-level `readdir(docs/)` (missing/unreadable
  * `docs/`, a build-environment error) used to be swallowed into an
  * empty array, which `generateStaticParams` (app/[conf]/lineage/
- * layout.tsx, app/[conf]/deep/layout.tsx) would read as "zero
+ * layout.tsx) would read as "zero
  * conferences are eligible" and silently build NO routes for the
  * entire site, instead of failing the build loudly. The per-conference
  * `stat` (missing file for ONE conference) must stay non-fatal --

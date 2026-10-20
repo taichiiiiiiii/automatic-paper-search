@@ -3,10 +3,12 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import {
+  ALL_RULES,
   DYNAMIC_RULE_LIMIT,
   dynamicRuleCount,
   isDynamicRule,
   LEGACY_HTML_RULES,
+  RETIRED_DEEP_RULES,
   renderRedirects,
   renderRule,
 } from "../../scripts/redirects";
@@ -21,11 +23,20 @@ const BUILT_REDIRECTS = join(TEST_DIR, "..", "..", "out", "_redirects");
  */
 const EXPECTED_MAPPING: Readonly<Record<string, string>> = {
   "/:conf/lineage.html": "/:conf/lineage/",
-  "/:conf/deep.html": "/:conf/deep/",
+  "/:conf/deep.html": "/:conf/lineage/",
   "/:conf/paper-links.html": "/:conf/paper-links/",
   "/:conf/index.html": "/:conf/",
   "/index.html": "/",
 };
+
+describe("retired deep route redirects (D-R2-41)", () => {
+  it("sends /<conf>/deep/ and /<conf>/deep to the conference lineage page, 301", () => {
+    expect(RETIRED_DEEP_RULES.map((r) => [r.from, r.to, r.status])).toEqual([
+      ["/:conf/deep/", "/:conf/lineage/", 301],
+      ["/:conf/deep", "/:conf/lineage/", 301],
+    ]);
+  });
+});
 
 describe("legacy .html redirect rules", () => {
   it("maps exactly the required .html paths, all 301", () => {
@@ -69,7 +80,8 @@ describe("legacy .html redirect rules", () => {
     expect(DYNAMIC_RULE_LIMIT).toBe(100);
     // 4 placeholder rules + 1 static rule, far below the 100 dynamic ceiling.
     expect(dynamicRuleCount(LEGACY_HTML_RULES)).toBe(4);
-    expect(dynamicRuleCount(LEGACY_HTML_RULES)).toBeLessThan(DYNAMIC_RULE_LIMIT);
+    expect(dynamicRuleCount(ALL_RULES)).toBe(6);
+    expect(dynamicRuleCount(ALL_RULES)).toBeLessThan(DYNAMIC_RULE_LIMIT);
   });
 });
 
@@ -80,14 +92,14 @@ describe("redirects rendering", () => {
 
   it("reports the budget it is charged against in the header", () => {
     const rendered = renderRedirects();
-    expect(rendered).toContain("# Rules: 1 static, 4 dynamic of 100 allowed.");
+    expect(rendered).toContain("# Rules: 1 static, 6 dynamic of 100 allowed.");
   });
 
   it("is a comment header plus exactly the rule lines, newline-terminated", () => {
     const lines = renderRedirects().split("\n");
     expect(lines.at(-1)).toBe(""); // file ends with a newline
     const body = lines.filter((line) => line !== "" && !line.startsWith("#"));
-    expect(body).toEqual(LEGACY_HTML_RULES.map(renderRule));
+    expect(body).toEqual(ALL_RULES.map(renderRule));
     for (const line of lines) {
       if (line === "" || line.startsWith("#")) {
         continue;
@@ -98,7 +110,9 @@ describe("redirects rendering", () => {
 
   it("classifies only placeholder rules as dynamic", () => {
     expect(isDynamicRule({ from: "/index.html", to: "/", status: 301 })).toBe(false);
-    expect(isDynamicRule({ from: "/:conf/deep.html", to: "/:conf/deep/", status: 301 })).toBe(true);
+    expect(isDynamicRule({ from: "/:conf/deep.html", to: "/:conf/lineage/", status: 301 })).toBe(
+      true,
+    );
   });
 });
 

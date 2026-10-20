@@ -68,7 +68,7 @@ automatic-paper-search/
 │           ├── collect/      # Stage 0〜4（stages/）、sources/、signals/、exporters/、llm/、state/、runner.ts、cli.ts
 │           ├── conference/   # 学会収集器 acl/・arxiv/・cvf/・openreview/、scaffold/、watch/、shared/
 │           ├── catalog/      # buildSummary（summary.csv）、buildPages（papers.json・conferences.json）
-│           ├── lineage/      # conference/・deep/・theme/・classify/・llm/・quality/・contract/・unarxive/
+│           ├── lineage/      # conference/・theme/・classify/・llm/・quality/・contract/・unarxive/
 │           ├── release/      # cli.ts（promote・package・commit-push・validate・marker・cf-*・gh-record・no-skip-gate）
 │           │                 # derived/（searchIndex・identityLite）、dataMove/、cloudflare/、github/、git/
 │           ├── parity/       # 比較ツール（compare-trees）
@@ -263,9 +263,7 @@ data/inputs/<conf>/papers_YYYY-MM-DD.csv
   └─ catalog/buildPagesCli.ts        → data/published/<conf>/papers.json、conferences.json、要旨シャード
        ├─ release/derived/searchIndexCli.ts           → data/published/search-index-v2.json（+ search-paper-ids-v1/）
        ├─ lineage/conference/buildLineageCli.ts       → data/published/<conf>/lineage.json（S2 + LLM）
-       ├─ lineage/conference/buildConferenceLineageCli.ts → 同上（OpenAlex のみ、LLM 不要の無料版）
-       └─ lineage/deep/buildDeepLineageCli.ts         → data/published/<conf>/deep-*.json
-            └─ lineage/deep/generateDeepManifestCli.ts → deep-manifest.json
+       └─ lineage/conference/buildConferenceLineageCli.ts → 同上（OpenAlex のみ、LLM 不要の無料版）
 
 [テーマ文字列] → lineage/theme/cli.ts → data/published/themes/<slug>/lineage.json
                   lineage/theme/generateThemesManifestCli.ts → themes-manifest.json
@@ -289,7 +287,7 @@ data/inputs/<conf>/papers_YYYY-MM-DD.csv
 
 ## フロントエンド（`apps/web`）
 
-- Next.js の静的書き出し（`output: export`）。ページ: `/`（検索トップ）、`/[conf]/`（学会カタログ）、`/[conf]/lineage/`、`/[conf]/deep/`、`/[conf]/paper-links/`、`/lineage/`（一論文の Focus View）、`/themes/`、`/how-it-works/`。
+- Next.js の静的書き出し（`output: export`）。ページ: `/`（検索トップ）、`/[conf]/`（学会カタログ）、`/[conf]/lineage/`、`/[conf]/paper-links/`、`/lineage/`（一論文の Focus View）、`/themes/`、`/how-it-works/`。
 - `prebuild` が `scripts/copy-data.ts` で `data/published` を `public/` に写す。`postbuild` が `strip-nojs` → `csp-hash`（ページごとのハッシュ CSP）→ `redirects`（`out/_redirects`、旧 `.html` URL の 301）→ `sitemap`（`out/sitemap.xml`）を順に実行する。
 - `out/_headers` は `frame-ancestors 'self'` だけ。script の CSP はページの meta に入る。インラインスクリプトを足すときはハッシュが付くことをテストで確かめる。
 - 公開 origin・API の URL（`API_BASE`）・パスの接頭辞は `packages/core/src/site/config.ts` の 1 か所だけで決める。

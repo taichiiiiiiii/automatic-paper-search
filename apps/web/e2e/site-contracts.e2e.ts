@@ -223,7 +223,8 @@ test.describe("redirects", () => {
     ["/index.html", "/"],
     ["/neurips-2025/index.html?q=diffusion", "/neurips-2025/?q=diffusion"],
     ["/neurips-2025/lineage.html", "/neurips-2025/lineage/"],
-    ["/neurips-2025/deep.html", "/neurips-2025/deep/"],
+    ["/neurips-2025/deep.html", "/neurips-2025/lineage/"],
+    ["/iclr-2026/deep/", "/iclr-2026/lineage/"],
     ["/neurips-2025/paper-links.html", "/neurips-2025/paper-links/"],
   ];
 

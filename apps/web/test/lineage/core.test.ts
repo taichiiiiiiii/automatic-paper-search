@@ -15,23 +15,19 @@ import { fileURLToPath } from "node:url";
 import { layoutFor } from "@paperpilot/core/layout";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
-  type DeepManifestEntry,
   fetchJsonWithSha256,
   type LineageArtifact,
   MAX_JSON_BYTES,
   type Provenance,
   parseArtifact,
-  parseDeepManifest,
   parseQualityManifest,
   publishedTierRank,
   qualityRowIsAudited,
   qualityRowIsEligible,
   qualityRowIsPublishable,
   qualityRowPublishedTier,
-  resolveDeepFocusGate,
   resolveFocus,
   resolveLineageFocusGate,
-  resolveManifestEntry,
   resolveQualityCollection,
   resolveView,
   selectActiveEdges,
@@ -306,122 +302,6 @@ describe("resolveLineageFocusGate (P2 review M7)", () => {
   });
 });
 
-describe("deep manifest", () => {
-  const manifest = {
-    schema_version: "deep-manifest-v1",
-    conference: "test-2026",
-    generated_at: "2026-08-30T00:00:00Z",
-    entries: [
-      {
-        paper_id: paperId,
-        aliases: [
-          ["arxiv", "2602.18473"],
-          ["semantic_scholar", "root"],
-        ],
-        arxiv_id: "2602.18473",
-        title: "Root",
-        filename: "deep-2602.18473.json",
-      },
-    ],
-  };
-
-  it("accepts the strict manifest wrapper", () => {
-    expect(parseDeepManifest(manifest)).not.toBeNull();
-  });
-
-  it("rejects a legacy bare-array manifest", () => {
-    expect(parseDeepManifest(manifest.entries)).toBeNull();
-  });
-
-  it("rejects extra keys on the wrapper", () => {
-    const extra = structuredClone(manifest) as Record<string, unknown>;
-    extra.extra = true;
-    expect(parseDeepManifest(extra)).toBeNull();
-  });
-
-  it("rejects extra keys on an entry", () => {
-    const extra = structuredClone(manifest);
-    (extra.entries[0] as Record<string, unknown>).extra = true;
-    expect(parseDeepManifest(extra)).toBeNull();
-  });
-
-  it("requires a strict slug for conference", () => {
-    const bad = structuredClone(manifest);
-    bad.conference = "../test";
-    expect(parseDeepManifest(bad)).toBeNull();
-  });
-
-  it("requires a timezone on generated_at", () => {
-    const bad = structuredClone(manifest);
-    bad.generated_at = "2026-08-30";
-    expect(parseDeepManifest(bad)).toBeNull();
-  });
-
-  it("resolves an audited filename by canonical paper id, and only via an exact arxiv alias", () => {
-    const parsed = parseDeepManifest(manifest);
-    expect(resolveManifestEntry(parsed, { paper: paperId })?.filename).toBe("deep-2602.18473.json");
-    expect(resolveManifestEntry(parsed, { arxiv: "2602.18473" })?.paper_id).toBe(paperId);
-    expect(resolveManifestEntry(parsed, { arxiv: "2401.00001" })).toBeNull();
-  });
-});
-
-describe("resolveDeepFocusGate (deep-page `?paper=`/`?arxiv=`)", () => {
-  const entryA: DeepManifestEntry = {
-    paper_id: paperId,
-    aliases: [["arxiv", "2602.18473"]],
-    arxiv_id: "2602.18473",
-    title: "A",
-    filename: "deep-a.json",
-  };
-  const entryB: DeepManifestEntry = {
-    paper_id: otherPaperId,
-    aliases: [["arxiv", "2602.99999"]],
-    arxiv_id: "2602.99999",
-    title: "B",
-    filename: "deep-b.json",
-  };
-
-  it("with no explicit request, defaults to the first eligible entry", () => {
-    expect(resolveDeepFocusGate([entryA, entryB], {})).toEqual({ mount: true, entry: entryA });
-  });
-
-  it("an explicit ?paper= selects the matching eligible entry, even if it is not first", () => {
-    expect(resolveDeepFocusGate([entryA, entryB], { paper: otherPaperId })).toEqual({
-      mount: true,
-      entry: entryB,
-    });
-  });
-
-  it("an explicit ?arxiv= selects the matching eligible entry", () => {
-    expect(resolveDeepFocusGate([entryA, entryB], { arxiv: "2602.99999" })).toEqual({
-      mount: true,
-      entry: entryB,
-    });
-  });
-
-  // The SCR-28 case this gate exists for: an explicit request that
-  // does not match ANY eligible entry must fail closed, never silently
-  // swap in the first eligible entry instead.
-  it("an explicit ?paper= that matches nothing fails closed -- does not fall back to the first entry", () => {
-    expect(resolveDeepFocusGate([entryA, entryB], { paper: "9".repeat(40) })).toEqual({
-      mount: false,
-      entry: null,
-    });
-  });
-
-  it("an explicit ?arxiv= that matches nothing fails closed", () => {
-    expect(resolveDeepFocusGate([entryA, entryB], { arxiv: "0000.00000" })).toEqual({
-      mount: false,
-      entry: null,
-    });
-  });
-
-  it("no eligible entries at all never mounts, request or not", () => {
-    expect(resolveDeepFocusGate([], { paper: paperId })).toEqual({ mount: false, entry: null });
-    expect(resolveDeepFocusGate([], {})).toEqual({ mount: false, entry: null });
-  });
-});
-
 describe("view and edge selection", () => {
   const mobile = () => ({ matches: true });
   it("URL view overrides saved and responsive state", () => {
@@ -505,20 +385,6 @@ describe("quality gate", () => {
       ...overrides,
     });
   }
-  function deepRow(overrides: Record<string, unknown> = {}) {
-    return qualityRow({
-      collection_id: `deep:test-2026:${paperId}`,
-      kind: "deep",
-      conference: "test-2026",
-      paper_id: paperId,
-      arxiv_id: "2602.18473",
-      path: "test-2026/deep-2602.18473.json",
-      manifest_path: "test-2026/deep-manifest.json",
-      manifest_input_sha256: "c".repeat(64),
-      input_sha256: "d".repeat(64),
-      ...overrides,
-    });
-  }
   function qualityManifest(rows: unknown[], overrides: Record<string, unknown> = {}) {
     return {
       schema_version: "lineage-quality-v1",
@@ -529,13 +395,13 @@ describe("quality gate", () => {
     };
   }
 
-  it("accepts the closed schema for conference, deep, and theme rows", () => {
-    const quality = parseQualityManifest(qualityManifest([qualityRow(), deepRow(), themeRow()]));
+  it("accepts the closed schema for conference and theme rows", () => {
+    const quality = parseQualityManifest(qualityManifest([qualityRow(), themeRow()]));
     expect(quality).not.toBeNull();
   });
 
   it("conference row requires ready, passed, and exact artifact hash", () => {
-    const quality = parseQualityManifest(qualityManifest([qualityRow(), deepRow(), themeRow()]));
+    const quality = parseQualityManifest(qualityManifest([qualityRow(), themeRow()]));
     const conferenceQuality = resolveQualityCollection(quality, {
       kind: "conference",
       slug: "test-2026",
@@ -549,24 +415,8 @@ describe("quality gate", () => {
     );
   });
 
-  it("deep row requires exact artifact and manifest hashes", () => {
-    const quality = parseQualityManifest(qualityManifest([qualityRow(), deepRow(), themeRow()]));
-    const deepQuality = resolveQualityCollection(quality, {
-      kind: "deep",
-      conference: "test-2026",
-      paperId,
-      path: "test-2026/deep-2602.18473.json",
-    });
-    expect(
-      qualityRowIsPublishable(deepQuality, {
-        artifactSha256: "d".repeat(64),
-        manifestSha256: "c".repeat(64),
-      }),
-    ).toBe(true);
-  });
-
   it("theme row resolves uniquely and is eligible when ready+passed", () => {
-    const quality = parseQualityManifest(qualityManifest([qualityRow(), deepRow(), themeRow()]));
+    const quality = parseQualityManifest(qualityManifest([qualityRow(), themeRow()]));
     const themeQuality = resolveQualityCollection(quality, { kind: "theme", slug: "test-theme" });
     expect(themeQuality?.collection_id).toBe("theme:test-theme");
     expect(qualityRowIsEligible(themeQuality)).toBe(true);
@@ -665,14 +515,6 @@ describe("quality gate", () => {
     ).toBeNull();
   });
 
-  it("an unaudited deep row still requires the exact manifest hash", () => {
-    const row = deepRow({ audit_status: "unknown", audit: unauditedChecks() });
-    expect(qualityRowPublishedTier(row as never, { manifestSha256: "c".repeat(64) })).toBe(
-      "unaudited",
-    );
-    expect(qualityRowIsEligible(row as never, { manifestSha256: "0".repeat(64) })).toBe(false);
-  });
-
   it.each([
     [
       "malformed quality manifest fails closed",
@@ -687,8 +529,14 @@ describe("quality gate", () => {
     ["row rejects extra keys", qualityManifest([qualityRow({ extra: true })])],
     ["non-deep row rejects deep-only fields", qualityManifest([qualityRow({ paper_id: paperId })])],
     [
-      "deep row requires every deep-only field",
-      qualityManifest([qualityRow(), deepRow({ manifest_path: undefined })]),
+      "a retired deep row is rejected (D-R2-41)",
+      qualityManifest([
+        qualityRow({
+          collection_id: "deep:test-2026:file:x",
+          kind: "deep",
+          path: "test-2026/deep-x.json",
+        }),
+      ]),
     ],
     [
       "collection_id prefix must match the kind",
@@ -706,29 +554,8 @@ describe("quality gate", () => {
     ["freshness is a closed enum", qualityManifest([qualityRow({ freshness: "unknown" })])],
     ["collections must be sorted by collection_id", qualityManifest([themeRow(), qualityRow()])],
     ["collections must be unique by collection_id", qualityManifest([qualityRow(), qualityRow()])],
-    [
-      "ready+passed deep row requires manifest hash",
-      qualityManifest([deepRow({ audit_status: "passed", manifest_input_sha256: null })]),
-    ],
   ])("%s", (_label, manifest) => {
     expect(parseQualityManifest(manifest)).toBeNull();
-  });
-
-  it("an unresolved deep row stays explicit without identity", () => {
-    const quality = parseQualityManifest(
-      qualityManifest([
-        qualityRow(),
-        deepRow({
-          collection_id: "deep:test-2026:file:deep-2602.18473.json",
-          paper_id: null,
-          arxiv_id: null,
-          manifest_input_sha256: null,
-          availability: "failed",
-          audit_status: "unknown",
-        }),
-      ]),
-    );
-    expect(quality).not.toBeNull();
   });
 
   describe("quality audit rejections", () => {
@@ -969,10 +796,11 @@ describe("the real published quality manifest stays fail-closed", () => {
     }
   });
 
-  it("all 14 legacy deep artifacts are explicit and remain fail closed", () => {
-    const rows = publicQuality?.collections.filter((row) => row.kind === "deep") ?? [];
-    expect(rows).toHaveLength(14);
-    expect(rows.every((row) => !qualityRowIsEligible(row))).toBe(true);
+  it("no deep rows remain in the public quality table (D-R2-41)", () => {
+    const kinds = (
+      JSON.parse(readFileSync(publicQualityPath, "utf8")).collections as { kind: string }[]
+    ).map((r) => r.kind);
+    expect(kinds).not.toContain("deep");
   });
 
   // Design doc 41 D1: themes that pass every automatic check are published
@@ -995,7 +823,7 @@ describe("bounded JSON fetch", () => {
     vi.unstubAllGlobals();
   });
 
-  it("the existing two-argument conference/deep fetch contract remains compatible", async () => {
+  it("the existing two-argument conference fetch contract remains compatible", async () => {
     const compatibleBytes = new TextEncoder().encode('{"ok":true}');
     vi.stubGlobal(
       "fetch",

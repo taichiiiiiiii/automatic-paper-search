@@ -1,6 +1,6 @@
 /**
  * Shape checks against the built static export (same pattern as
- * test/csp.test.ts): every lineage/deep route must exist at its
+ * test/csp.test.ts): every lineage route must exist at its
  * extensionless, trailing-slash path, and its initial (pre-hydration)
  * HTML must not expose any interactive control before the client-side
  * quality-manifest gate has run -- the React analogue of
@@ -58,10 +58,9 @@ describe("conference lineage route (/[conf]/lineage/)", () => {
   });
 });
 
-describe("conference deep route (/[conf]/deep/)", () => {
-  it("builds for iclr-2026 (the only conference with a deep-manifest.json)", async () => {
-    const html = await readRoute("iclr-2026/deep");
-    assertNoControlsExposed(html, "iclr-2026/deep");
+describe("retired deep route (/[conf]/deep/)", () => {
+  it("is no longer built (D-R2-41; served as a 301 to the lineage page)", async () => {
+    await expect(readRoute("iclr-2026/deep")).rejects.toThrow();
   });
 });
 

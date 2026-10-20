@@ -144,11 +144,8 @@ export function buildFixtureRepo(): FixtureRepo {
   write(repo, "docs/cvpr-2026/index.html", "<html>cvpr</html>\n");
   write(repo, "docs/cvpr-2026/paper-links.html", "<html>links</html>\n");
   write(repo, "docs/cvpr-2026/lineage.html", "<html>lineage</html>\n");
-  write(repo, "docs/cvpr-2026/deep.html", "<html>deep</html>\n");
   write(repo, "docs/cvpr-2026/papers.json", '{"papers":[]}\n');
   write(repo, "docs/cvpr-2026/lineage.json", '{"nodes":[]}\n');
-  write(repo, "docs/iclr-2026/deep-123.json", "{}\n");
-  write(repo, "docs/iclr-2026/deep-manifest.json", "{}\n");
 
   // paperpilot/data — stay, bulk move, individual moves.
   write(repo, "paperpilot/data/.gitkeep", "");

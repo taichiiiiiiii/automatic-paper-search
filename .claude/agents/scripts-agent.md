@@ -19,7 +19,7 @@ You implement the fix you are given, nothing more.
 
 - Collect pipeline (Stage 0–4): `apps/pipeline/src/collect/`. Conference collectors: `apps/pipeline/src/conference/`.
 - Catalog: `apps/pipeline/src/catalog/` (`buildSummary`, `buildPages`). Derived indexes: `apps/pipeline/src/release/derived/`.
-- Lineage: `apps/pipeline/src/lineage/` (`conference/`, `deep/`, `theme/`, `classify/`, `quality/`, `llm/`).
+- Lineage: `apps/pipeline/src/lineage/` (`conference/`, `theme/`, `classify/`, `quality/`, `llm/`).
 - Release tools: `apps/pipeline/src/release/` (`cli.ts`, `promote.ts`, `promoteHooks.ts`, `packageCandidate.ts`, `validateRelease.ts`).
 - Data paths come only from `packages/core/src/layout` (`layoutFor()` / `relLayout()`); never write a path literal such as `data/published` in code.
 

@@ -1,10 +1,6 @@
 // @vitest-environment jsdom
 //
-// P2 review: the deep-lineage graph must use deep.js's own
-// `supersedes`/`successor` arrow-marker lightness (50%/64%), not the
-// conference lineage viewer's (lineage.js's 55%/72%) -- the two assets'
-// `drawSvg` ship genuinely different `markers` arrays for just those
-// two relations (components/lineage/graph/graph-canvas.tsx's header).
+// Conference lineage graph arrow markers (lineage.js colours).
 import { cleanup, render } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { GraphCanvas } from "../../../components/lineage/graph/graph-canvas";
@@ -71,53 +67,11 @@ function markerFill(container: HTMLElement, markerId: string): string | null {
   return marker?.getAttribute("fill") ?? null;
 }
 
-describe("GraphCanvas marker lightness (deep variant)", () => {
+describe("GraphCanvas default marker lightness", () => {
   it("uses lineage.js's lightness (55%/72%) by default", () => {
     const { container } = render(
       <GraphCanvas graph={makeGraph("supersedes")} onSelect={() => {}} registerCard={() => {}} />,
     );
     expect(markerFill(container, "arrow-supersedes")).toBe("oklch(55% 0.14 75)");
-  });
-
-  it('uses deep.js\'s own lightness (50%/64%) when cardVariant="deep"', () => {
-    const { container } = render(
-      <GraphCanvas
-        graph={makeGraph("supersedes")}
-        onSelect={() => {}}
-        registerCard={() => {}}
-        cardVariant="deep"
-      />,
-    );
-    expect(markerFill(container, "arrow-supersedes")).toBe("oklch(50% 0.14 75)");
-  });
-
-  it("successor marker also differs between variants", () => {
-    const defaultRender = render(
-      <GraphCanvas graph={makeGraph("successor")} onSelect={() => {}} registerCard={() => {}} />,
-    );
-    expect(markerFill(defaultRender.container, "arrow-successor")).toBe("oklch(72% 0.13 80)");
-    defaultRender.unmount();
-
-    const deepRender = render(
-      <GraphCanvas
-        graph={makeGraph("successor")}
-        onSelect={() => {}}
-        registerCard={() => {}}
-        cardVariant="deep"
-      />,
-    );
-    expect(markerFill(deepRender.container, "arrow-successor")).toBe("oklch(64% 0.13 80)");
-  });
-
-  it("other relations' marker colors are unaffected by cardVariant", () => {
-    const { container } = render(
-      <GraphCanvas
-        graph={makeGraph("extends")}
-        onSelect={() => {}}
-        registerCard={() => {}}
-        cardVariant="deep"
-      />,
-    );
-    expect(markerFill(container, "arrow-extends")).toBe("oklch(62% 0.14 145)");
   });
 });

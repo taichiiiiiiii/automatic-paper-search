@@ -1,9 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import {
-  fetchDeepManifestFile,
-  fetchLineageQualityManifest,
-  fetchPilotIndex,
-} from "../../lib/data-lineage";
+import { fetchLineageQualityManifest, fetchPilotIndex } from "../../lib/data-lineage";
 
 function mockFetchOnce(
   body: unknown,
@@ -52,30 +48,6 @@ describe("fetchLineageQualityManifest", () => {
     mockFetchOnce({ schema_version: "lineage-quality-v1", collections: [] });
     const result = await fetchLineageQualityManifest();
     expect(result.status).toBe("error");
-  });
-});
-
-describe("fetchDeepManifestFile", () => {
-  const validManifest = {
-    schema_version: "deep-manifest-v1",
-    conference: "iclr-2026",
-    generated_at: "2026-08-30T00:00:00Z",
-    entries: [],
-  };
-
-  it("fetches /<conf>/deep-manifest.json", async () => {
-    mockFetchOnce(validManifest);
-    const result = await fetchDeepManifestFile("iclr-2026");
-    expect(fetch).toHaveBeenCalledWith("/iclr-2026/deep-manifest.json", { cache: "no-cache" });
-    expect(result).toEqual({ status: "ok", data: validManifest });
-  });
-
-  it("rejects an unsafe slug without fetching", async () => {
-    const fetchSpy = vi.fn();
-    vi.stubGlobal("fetch", fetchSpy);
-    const result = await fetchDeepManifestFile("../../etc/passwd");
-    expect(result.status).toBe("error");
-    expect(fetchSpy).not.toHaveBeenCalled();
   });
 });
 

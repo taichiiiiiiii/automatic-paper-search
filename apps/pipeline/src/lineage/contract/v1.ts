@@ -1,6 +1,6 @@
 /**
  * Shared fail-closed contracts for public lineage artifacts (lineage-artifact-v1,
- * deep-manifest-v1, lineage-quality-v1).
+ * lineage-quality-v1).
  *
  * TS port of `paperpilot/scripts/_lineage_contract.py` (LIN-45, LIN-46, LIN-50,
  * LIN-51 of docs/migration/safety-contracts.md). Deliberately dependency-free
@@ -16,24 +16,19 @@
 
 import { createHash } from "node:crypto";
 import { codepointCompare, pyJsonDumps } from "@paperpilot/core";
-import { ARXIV_MODERN_PATTERN, IdentityError, normalizeAlias } from "@paperpilot/core/identity";
+import { IdentityError, normalizeAlias } from "@paperpilot/core/identity";
 
 export const LINEAGE_ARTIFACT_VERSION = "lineage-artifact-v1";
-export const DEEP_MANIFEST_VERSION = "deep-manifest-v1";
 export const LINEAGE_QUALITY_VERSION = "lineage-quality-v1";
 
-export type LineageArtifactKind = "conference" | "theme" | "deep";
+export type LineageArtifactKind = "conference" | "theme";
 
 const PAPER_ID_RE = /^[0-9a-f]{40}$/;
 const SHA256_RE = /^[0-9a-f]{64}$/;
-// Deep artifacts are keyed by modern IDs only (their filenames embed the ID);
-// legacy `archive/NNNNNNN` IDs would need a path-safe encoding.
-export const ARXIV_ID_RE = new RegExp(`^${ARXIV_MODERN_PATTERN}(?:v\\d+)?$`);
 const CONFERENCE_SLUG_RE = /^[a-z0-9][a-z0-9-]*$/;
 const QUALITY_TIMESTAMP_RE =
   /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(?:Z|([+-])(\d{2}):(\d{2}))$/;
 const QUALITY_DATE_RE = /^(\d{4})-(\d{2})-(\d{2})$/;
-const DEEP_ARTIFACT_FILENAME_RE = /^deep-[A-Za-z0-9._-]+\.json$/;
 
 export const RELATIONS = new Set([
   "supersedes",
@@ -534,11 +529,7 @@ export function validateLineageArtifact(
         );
       } else {
         focusSeeds.push(seed);
-        if (
-          (kind === "conference" || kind === "deep") &&
-          catalogIds !== null &&
-          !catalogIds.has(seed)
-        ) {
+        if (kind === "conference" && catalogIds !== null && !catalogIds.has(seed)) {
           issues.push(issue("catalog_seed_membership", `$.nodes[${index}].seed_paper_id`, seed));
         }
       }
@@ -581,11 +572,11 @@ export function validateLineageArtifact(
         }
       } else if (
         LEGACY_NODE_ALIAS_NAMESPACES.has(namespace) &&
-        (kind === "conference" || kind === "deep") &&
+        kind === "conference" &&
         nonempty(sourceId) &&
         sourceId === sourceId.trim()
       ) {
-        // Existing deep/conference artifacts expose the S2 graph ID as an
+        // Existing conference artifacts expose the S2 graph ID as an
         // alias. Keep it shape-valid for migration compatibility, but
         // consumers must never treat it as a canonical URL alias.
         normalized = [namespace, sourceId];
@@ -803,157 +794,6 @@ export function catalogPaperIds(rows: unknown): Set<string> {
   return out;
 }
 
-/** Validate deep-manifest-v1 identity and filename uniqueness. */
-export function validateDeepManifest(
-  data: unknown,
-  options: { catalogIds?: ReadonlySet<string> | null } = {},
-): ContractIssue[] {
-  const { catalogIds = null } = options;
-  if (!isMapping(data)) {
-    return [issue("manifest_shape", "$", "object required")];
-  }
-  const issues: ContractIssue[] = [];
-  if (!hasExactKeys(data, new Set(["schema_version", "conference", "generated_at", "entries"]))) {
-    issues.push(
-      issue(
-        "manifest_fields",
-        "$",
-        "only schema_version/conference/generated_at/entries are allowed",
-      ),
-    );
-  }
-  if (data.schema_version !== DEEP_MANIFEST_VERSION) {
-    issues.push(
-      issue("manifest_schema_version", "$.schema_version", `expected ${DEEP_MANIFEST_VERSION}`),
-    );
-  }
-  const conference = data.conference;
-  if (typeof conference !== "string" || !CONFERENCE_SLUG_RE.test(conference)) {
-    issues.push(issue("manifest_conference", "$.conference", "valid slug required"));
-  }
-  if (!isTimezoneDatetime(data.generated_at)) {
-    issues.push(issue("manifest_generated_at", "$.generated_at", "timezone datetime required"));
-  }
-  const entries = data.entries;
-  if (!Array.isArray(entries)) {
-    issues.push(issue("manifest_entries", "$.entries", "array required"));
-    return dedupSortIssuesSimple(issues);
-  }
-
-  const paperIds: string[] = [];
-  const aliasesSeen = new Map<string, number>();
-  const filenames: string[] = [];
-  entries.forEach((entry, index) => {
-    const path = `$.entries[${index}]`;
-    if (!isMapping(entry)) {
-      issues.push(issue("manifest_entry", path, "object required"));
-      return;
-    }
-    if (!hasExactKeys(entry, new Set(["paper_id", "aliases", "arxiv_id", "title", "filename"]))) {
-      issues.push(
-        issue(
-          "manifest_entry_fields",
-          path,
-          "closed paper_id/aliases/arxiv_id/title/filename object required",
-        ),
-      );
-    }
-    const paperId = entry.paper_id;
-    if (!isPaperId(paperId)) {
-      issues.push(issue("manifest_paper_id", `${path}.paper_id`, "invalid"));
-    } else {
-      paperIds.push(paperId);
-      if (catalogIds !== null && !catalogIds.has(paperId)) {
-        issues.push(issue("manifest_catalog_membership", `${path}.paper_id`, paperId));
-      }
-    }
-    const arxivId = entry.arxiv_id;
-    if (typeof arxivId !== "string" || !ARXIV_ID_RE.test(arxivId)) {
-      issues.push(issue("manifest_arxiv", `${path}.arxiv_id`, "invalid"));
-    }
-    const filename = entry.filename;
-    const expectedFilename = typeof arxivId === "string" ? `deep-${arxivId}.json` : null;
-    if (filename !== expectedFilename) {
-      issues.push(issue("manifest_filename", `${path}.filename`, "must match arxiv_id"));
-    } else if (typeof filename === "string") {
-      filenames.push(filename);
-    }
-    const aliases = entry.aliases;
-    const expectedKinds = new Set(["arxiv", "semantic_scholar"]);
-    const aliasMap = new Map<string, string>();
-    if (!Array.isArray(aliases)) {
-      issues.push(issue("manifest_aliases", `${path}.aliases`, "array required"));
-    } else {
-      aliases.forEach((alias, aliasIndex) => {
-        if (
-          !(
-            Array.isArray(alias) &&
-            alias.length === 2 &&
-            expectedKinds.has(alias[0]) &&
-            nonempty(alias[1])
-          )
-        ) {
-          issues.push(
-            issue(
-              "manifest_alias",
-              `${path}.aliases[${aliasIndex}]`,
-              "[known namespace, nonempty value] required",
-            ),
-          );
-          return;
-        }
-        const [kind, value] = alias as [string, string];
-        if (aliasMap.has(kind)) {
-          issues.push(issue("manifest_alias_kind_duplicate", `${path}.aliases`, kind));
-        }
-        aliasMap.set(kind, value);
-        const key = `${kind}\u0000${value}`;
-        aliasesSeen.set(key, (aliasesSeen.get(key) ?? 0) + 1);
-      });
-      if (
-        aliasMap.size !== expectedKinds.size ||
-        !Array.from(expectedKinds).every((k) => aliasMap.has(k))
-      ) {
-        issues.push(
-          issue("manifest_alias_kinds", `${path}.aliases`, "arxiv and semantic_scholar required"),
-        );
-      }
-      if (typeof arxivId === "string" && aliasMap.get("arxiv") !== arxivId) {
-        issues.push(issue("manifest_arxiv_alias", `${path}.aliases`, "arxiv mismatch"));
-      }
-    }
-    if (!nonempty(entry.title)) {
-      issues.push(issue("manifest_title", `${path}.title`, "nonempty required"));
-    }
-  });
-
-  const paperIdCounts = new Map<string, number>();
-  for (const id of paperIds) paperIdCounts.set(id, (paperIdCounts.get(id) ?? 0) + 1);
-  for (const id of Array.from(paperIdCounts.entries())
-    .filter(([, c]) => c > 1)
-    .map(([k]) => k)
-    .sort(codepointCompare)) {
-    issues.push(issue("manifest_paper_duplicate", "$.entries", id));
-  }
-  const filenameCounts = new Map<string, number>();
-  for (const f of filenames) filenameCounts.set(f, (filenameCounts.get(f) ?? 0) + 1);
-  for (const f of Array.from(filenameCounts.entries())
-    .filter(([, c]) => c > 1)
-    .map(([k]) => k)
-    .sort(codepointCompare)) {
-    issues.push(issue("manifest_filename_duplicate", "$.entries", f));
-  }
-  for (const [key, count] of Array.from(aliasesSeen.entries()).sort((a, b) =>
-    codepointCompare(a[0], b[0]),
-  )) {
-    if (count > 1) {
-      const [kind, value] = key.split("\u0000");
-      issues.push(issue("manifest_alias_duplicate", "$.entries", `${kind}:${value}`));
-    }
-  }
-  return dedupSortIssues(issues);
-}
-
 function dedupSortIssuesSimple(issues: readonly ContractIssue[]): ContractIssue[] {
   // Python's early-return path does `sorted(issues)` (no set()) because the
   // caller only ever appends one issue before returning; preserved 1:1.
@@ -1017,13 +857,6 @@ const QUALITY_ROW_KEYS = new Set([
 ]);
 /** Optional so manifests written before design doc 41 still validate. */
 const QUALITY_OPTIONAL_ROW_KEYS = new Set(["publication_tier"]);
-const QUALITY_DEEP_KEYS = new Set([
-  "conference",
-  "paper_id",
-  "arxiv_id",
-  "manifest_path",
-  "manifest_input_sha256",
-]);
 const QUALITY_AUDIT_KEYS = new Set(["fixture_sha256", "evaluated_at", "actor", "checks"]);
 const QUALITY_CHECK_KEYS = new Set(["name", "status", "observed", "expected", "evidence"]);
 
@@ -1073,8 +906,7 @@ export function validateLineageQualityManifest(data: unknown): ContractIssue[] {
       return;
     }
     const kind = row.kind;
-    const expectedKeys =
-      kind === "deep" ? new Set([...QUALITY_ROW_KEYS, ...QUALITY_DEEP_KEYS]) : QUALITY_ROW_KEYS;
+    const expectedKeys = QUALITY_ROW_KEYS;
     const rowWithoutOptional = Object.fromEntries(
       Object.entries(row).filter(([key]) => !QUALITY_OPTIONAL_ROW_KEYS.has(key)),
     );
@@ -1088,7 +920,7 @@ export function validateLineageQualityManifest(data: unknown): ContractIssue[] {
     if (!nonempty(collectionId)) {
       issues.push(issue("quality_collection_id", `${path}.collection_id`, "nonempty required"));
     }
-    if (kind !== "conference" && kind !== "theme" && kind !== "deep") {
+    if (kind !== "conference" && kind !== "theme") {
       issues.push(issue("quality_kind", `${path}.kind`, "closed kind required"));
     }
     if (typeof slug !== "string" || !CONFERENCE_SLUG_RE.test(slug)) {
@@ -1172,42 +1004,6 @@ export function validateLineageQualityManifest(data: unknown): ContractIssue[] {
     } else if (kind === "theme" && typeof slug === "string") {
       if (collectionId !== `theme:${slug}` || artifactPath !== `themes/${slug}/lineage.json`) {
         issues.push(issue("quality_theme_identity", path, "kind/slug/path mismatch"));
-      }
-    } else if (kind === "deep" && typeof slug === "string") {
-      const conference = row.conference;
-      const paperId = row.paper_id;
-      const arxivId = row.arxiv_id;
-      const manifestSha256 = row.manifest_input_sha256;
-      const deepValid =
-        conference === slug &&
-        typeof conference === "string" &&
-        CONFERENCE_SLUG_RE.test(conference) &&
-        typeof collectionId === "string" &&
-        collectionId.startsWith(`deep:${conference}:`) &&
-        collectionId.length > `deep:${conference}:`.length &&
-        (paperId === null || paperId === undefined || isPaperId(paperId)) &&
-        (arxivId === null ||
-          arxivId === undefined ||
-          (typeof arxivId === "string" && ARXIV_ID_RE.test(arxivId))) &&
-        row.manifest_path === `${conference}/deep-manifest.json` &&
-        (manifestSha256 === null || manifestSha256 === undefined || isSha256(manifestSha256)) &&
-        typeof artifactPath === "string" &&
-        artifactPath.startsWith(`${conference}/`) &&
-        DEEP_ARTIFACT_FILENAME_RE.test(artifactPath.slice(conference.length + 1));
-      if (!deepValid) {
-        issues.push(issue("quality_deep_identity", path, "deep identity/path mismatch"));
-      }
-      if (
-        row.availability === "ready" &&
-        row.audit_status === "passed" &&
-        (!isPaperId(paperId) ||
-          !(typeof arxivId === "string" && ARXIV_ID_RE.test(arxivId)) ||
-          !isSha256(inputSha256) ||
-          !isSha256(manifestSha256))
-      ) {
-        issues.push(
-          issue("quality_deep_passed_fields", path, "passed deep identity and hashes required"),
-        );
       }
     }
 
