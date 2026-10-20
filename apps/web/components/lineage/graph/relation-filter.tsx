@@ -10,7 +10,8 @@
  * rather than sharing one global filter like the original).
  */
 import type { Relation } from "../../../lib/lineage/core";
-import { ALL_RELATIONS, RELATION_LABEL_JA } from "../../../lib/lineage/relations";
+import { ALL_RELATIONS, relationLabelFor } from "../../../lib/lineage/relations";
+import { useRelationAudited } from "../relation-audit";
 import { RELATION_DOT_CLASS } from "./relation-colors";
 
 export interface RelationFilterProps {
@@ -19,6 +20,7 @@ export interface RelationFilterProps {
 }
 
 export function RelationFilter({ visible, onToggle }: RelationFilterProps) {
+  const audited = useRelationAudited();
   return (
     <fieldset className="flex flex-wrap gap-2 border-0 p-0">
       <legend className="sr-only">Relation filter</legend>
@@ -40,7 +42,7 @@ export function RelationFilter({ visible, onToggle }: RelationFilterProps) {
               aria-hidden="true"
               className={`inline-block h-2 w-2 rounded-full ${RELATION_DOT_CLASS[relation]}`}
             />
-            {RELATION_LABEL_JA[relation]}
+            {relationLabelFor(relation, audited)}
           </button>
         );
       })}

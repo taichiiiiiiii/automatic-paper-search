@@ -35,6 +35,7 @@ import { eligibleThemeManifest, pickDefaultSlug, safeDisplayCount } from "../../
 import type { LineageArtifact } from "../../lib/themes-quality";
 import { SLUG_RE } from "../../lib/themes-slug";
 import { PublicationNotice } from "../lineage/publication-badge";
+import { RelationAuditProvider } from "../lineage/relation-audit";
 import { LineageTree } from "./LineageTree";
 import { ThemeCodeLinksSection, ThemeNewPapersSection } from "./ThemeFeedSections";
 import { ThemeGallery } from "./ThemeGallery";
@@ -449,13 +450,15 @@ export function ThemesClient() {
         // LineageTree's filter/export/onboarding/minimap state always
         // starts fresh for the newly-selected theme instead of carrying
         // over the previous theme's search query / year range / etc.
-        <LineageTree
-          key={currentSlug}
-          artifact={artifact}
-          slug={currentSlug}
-          themeName={themeName}
-          codeLinks={shownExtras?.codeLinks ?? null}
-        />
+        <RelationAuditProvider value={entry?.publication_tier === "audited"}>
+          <LineageTree
+            key={currentSlug}
+            artifact={artifact}
+            slug={currentSlug}
+            themeName={themeName}
+            codeLinks={shownExtras?.codeLinks ?? null}
+          />
+        </RelationAuditProvider>
       )}
 
       {/* Secondary material folds into disclosures under the graph. */}

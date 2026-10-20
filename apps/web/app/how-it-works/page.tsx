@@ -264,6 +264,17 @@ export default function HowItWorksPage() {
           <strong>判定の根拠・判定方法・確信度と、根拠になった引用文そのもの</strong>
           を表示します。グラフの下の「関係の一覧」でも同じ内容を確認できます。
         </p>
+        <h3 className={styles.howSubhead}>強い関係は「候補」です</h3>
+        <p className={styles.howBody} id="relation-candidates">
+          拡張・対比・置き換えなどの強い関係は、
+          <strong>引用文の言い回しから規則で推定した候補</strong>
+          です。「build
+          on」「extend」「unlike」など、引用先に向けた強い手がかりがあるときだけ判定し、「adopt」「use」「follow」など弱い言い回しは参照（背景）にとどめます。
+          画面では「拡張（候補）」のように表し、根拠の欄では
+          <strong>引用文を先に</strong>
+          示します。規則の誤りはゼロにできないため、引用文で確かめてください。人が確認した系譜（「監査済み」）の関係だけは、
+          「候補」を付けず、<strong>「人が確認済み」</strong>と表示します。
+        </p>
         <h3 className={styles.howSubhead}>本流（主経路）</h3>
         <p className={styles.howBody} id="main-path">
           テーマの家系図では、<strong>本流（主経路）</strong>

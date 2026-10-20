@@ -156,6 +156,7 @@ describe("仕組み page", () => {
     const h3s = screen.getAllByRole("heading", { level: 3 }).map((h) => h.textContent);
     expect(h3s).toEqual([
       "根拠の見方",
+      "強い関係は「候補」です",
       "本流（主経路）",
       "論文の土台と発展",
       "誤りの報告と書き出し",

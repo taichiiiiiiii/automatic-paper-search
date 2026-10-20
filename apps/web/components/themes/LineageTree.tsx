@@ -74,6 +74,7 @@ import {
   type ThemeView,
   writeTreeUrlParams,
 } from "../../lib/themes-url-state";
+import { useRelationAudited } from "../lineage/relation-audit";
 import { EdgeEvidencePanel, EdgeRelationList, edgeKey, relationLabelJa } from "./EdgeEvidence";
 import styles from "./LineageTree.module.css";
 import { PaperNeighborsPanel } from "./PaperNeighborsPanel";
@@ -105,7 +106,8 @@ const X_AXIS_OPTION: Record<XAxisMode, { label: string; title: string }> = {
   },
   novelty: {
     label: "新しさの種類",
-    title: "左端の色: 赤 = 置き換え・対立（破壊的）、緑 = 拡張・後継（漸進的）",
+    title:
+      "左端の色: 赤 = 置き換え・対立（破壊的）、緑 = 拡張・後継（漸進的）（監査済みでない系譜では、規則で推定した候補）",
   },
 };
 
@@ -199,6 +201,7 @@ export function LineageTree({
   /** R4-3: "コード" / "HF" badges per node id (optional side file). */
   codeLinks?: ThemeCodeLinks | null;
 }) {
+  const audited = useRelationAudited();
   // ---- URL state (?xaxis=&ymin=&ymax=&q=&rels=&orphan=&node=) ----------
   // M8a port of docs/assets/theme.js's readUrlState(): read once per
   // mount (this component remounts on theme switch -- see the `key=
@@ -446,7 +449,7 @@ export function LineageTree({
       kind: "relations",
       label: `🔗 関係: ${
         ALL_RELATIONS.filter((r) => visibleRelations.has(r))
-          .map(relationLabelJa)
+          .map((r) => relationLabelJa(r, audited))
           .join("・") || "なし"
       }`,
     });
@@ -1219,7 +1222,7 @@ export function LineageTree({
                 onClick={() => toggleRelation(r)}
                 className={`${btnBase} ${on ? "border-accent text-accent-strong" : btnOff}`}
               >
-                {relationLabelJa(r)} <span className="ml-1 text-ink-subtle">{count}</span>
+                {relationLabelJa(r, audited)} <span className="ml-1 text-ink-subtle">{count}</span>
               </button>
             );
           })}
@@ -1566,7 +1569,7 @@ export function LineageTree({
                         tabIndex={0}
                         role="button"
                         aria-pressed={selectedEdgeKey === key}
-                        aria-label={`${onMain ? "本流・" : ""}${relationLabelJa(e.relation)}: ${e.rationale}（Enter で根拠を表示）`}
+                        aria-label={`${onMain ? "本流・" : ""}${relationLabelJa(e.relation, audited)}: ${e.rationale}（Enter で根拠を表示）`}
                         onClick={(ev) => selectEdge(key, ev.currentTarget)}
                         onKeyDown={(ev) => {
                           if (ev.key === "Enter" || ev.key === " ") {
@@ -1801,7 +1804,9 @@ export function LineageTree({
                         role="tooltip"
                         className={`${styles.tooltipPanel} ${styles.tooltipVisible} rounded-md border border-rule bg-surface-elevated p-2 text-xs`}
                       >
-                        <div className="font-medium text-ink">{relationLabelJa(e.relation)}</div>
+                        <div className="font-medium text-ink">
+                          {relationLabelJa(e.relation, audited)}
+                        </div>
                         <div className="mt-1 line-clamp-3 text-ink-muted">{e.rationale}</div>
                         <div className="mt-1 text-ink-subtle">
                           確信度 {e.confidence.toFixed(2)} ・ クリックで根拠を表示

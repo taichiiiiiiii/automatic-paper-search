@@ -31,29 +31,13 @@
  * lineage.js's `markers` array), not CSS custom properties -- `fill`/
  * `stroke` are plain presentation attributes here, so this is not an
  * inline `style=` attribute and is unaffected by the CSP.
- *
- * `nodeWidth`/`cardVariant` (both optional, defaulting to the
- * conference lineage viewer's own `NODE_W`/unset variant) let
- * components/lineage/graph/deep-lineage-app.tsx reuse this same canvas
- * for deep.js's 240px-wide `.node-card--deep` cards instead of
- * duplicating the marker-defs/edge-drawing SVG shell -- the `graph`
- * prop's own `GraphModel` shape (lib/lineage/layout/deep-view-model.ts's
- * `buildDeepGraphModel` output) already matches what this component
- * expects, so only the two card-sizing/content knobs need threading
- * through. Every existing caller omits both, so the conference viewer
- * is unaffected.
- *
- * `cardVariant === "deep"` also swaps the `supersedes`/`successor`
- * arrow-marker lightness to deep.js's own values (50%/64%, vs.
- * lineage.js's 55%/72% for the conference viewer's own tree/timeline)
- * -- the two assets' `drawSvg` ship genuinely different `markers`
- * arrays for those two relations; every other relation's color/shape is
- * identical between them.
  */
 import { forwardRef, useState } from "react";
 import { NODE_W } from "../../../lib/lineage/layout/constants";
 import type { GraphModel } from "../../../lib/lineage/layout/view-model";
-import { NodeCard, type NodeCardProps } from "./node-card";
+import { relationLabelFor } from "../../../lib/lineage/relations";
+import { useRelationAudited } from "../relation-audit";
+import { NodeCard } from "./node-card";
 import { relationStrokeClass } from "./relation-colors";
 
 type MarkerShape = "filled" | "hollow" | "dot" | "cross";
@@ -61,17 +45,6 @@ type MarkerShape = "filled" | "hollow" | "dot" | "cross";
 const MARKERS: readonly [string, string, MarkerShape][] = [
   ["supersedes", "oklch(55% 0.14 75)", "filled"],
   ["successor", "oklch(72% 0.13 80)", "filled"],
-  ["extends", "oklch(62% 0.14 145)", "filled"],
-  ["ablation", "oklch(60% 0.13 240)", "hollow"],
-  ["baseline", "oklch(60% 0.02 270)", "dot"],
-  ["contrasts", "oklch(58% 0.20 25)", "cross"],
-];
-
-// docs/assets/deep.js `drawSvg`'s own `markers` array differs from
-// lineage.js's only in these two entries' lightness.
-const DEEP_MARKERS: readonly [string, string, MarkerShape][] = [
-  ["supersedes", "oklch(50% 0.14 75)", "filled"],
-  ["successor", "oklch(64% 0.13 80)", "filled"],
   ["extends", "oklch(62% 0.14 145)", "filled"],
   ["ablation", "oklch(60% 0.13 240)", "hollow"],
   ["baseline", "oklch(60% 0.02 270)", "dot"],
@@ -90,22 +63,16 @@ export interface GraphCanvasProps {
   graph: GraphModel;
   onSelect: (id: string) => void;
   registerCard: (id: string, el: HTMLButtonElement | null) => void;
-  /** Card width in SVG units. Defaults to the conference lineage
-   * viewer's `NODE_W` (220). Pass deep.js's `DEEP_NODE_W` (240) for the
-   * deep viewer. */
-  nodeWidth?: number;
-  /** Forwarded to `NodeCard`'s `variant` prop. */
-  cardVariant?: NodeCardProps["variant"];
 }
 
 export const GraphCanvas = forwardRef<SVGSVGElement, GraphCanvasProps>(function GraphCanvas(
-  { graph, onSelect, registerCard, nodeWidth = NODE_W, cardVariant },
+  { graph, onSelect, registerCard },
   ref,
 ) {
+  const audited = useRelationAudited();
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [hoveredEdgeKey, setHoveredEdgeKey] = useState<string | null>(null);
   const { positioned, edges, svgSize } = graph;
-  const markers = cardVariant === "deep" ? DEEP_MARKERS : MARKERS;
 
   if (positioned.length === 0) {
     return (
@@ -131,7 +98,7 @@ export const GraphCanvas = forwardRef<SVGSVGElement, GraphCanvasProps>(function 
     >
       <title>論文の系譜グラフ</title>
       <defs>
-        {markers.map(([key, color, kind]) => (
+        {MARKERS.map(([key, color, kind]) => (
           <marker
             key={key}
             id={`arrow-${key}`}
@@ -163,7 +130,7 @@ export const GraphCanvas = forwardRef<SVGSVGElement, GraphCanvasProps>(function 
           const opacity = dimmed ? baseOpacity * 0.25 : connected ? 1 : baseOpacity;
           const strokeWidth = connected ? baseWidth + 0.6 : baseWidth;
           const key = edgeKey(edge);
-          const tooltipLabel = `${label ?? edge.relation}: ${edge.rationale}${
+          const tooltipLabel = `${label ? relationLabelFor(edge.relation, audited) : edge.relation}: ${edge.rationale}${
             typeof edge.confidence === "number" ? ` (confidence ${edge.confidence.toFixed(2)})` : ""
           }`;
           return (
@@ -227,12 +194,11 @@ export const GraphCanvas = forwardRef<SVGSVGElement, GraphCanvasProps>(function 
           <NodeCard
             key={node.id}
             node={node}
-            width={nodeWidth}
+            width={NODE_W}
             height={node._h}
             isFocus={node.id === graph.focusId}
             onSelect={onSelect}
             onHoverChange={(id, hovered) => setHoveredId(hovered ? id : null)}
-            variant={cardVariant}
             ref={(el) => registerCard(node.id, el)}
           />
         ))}
@@ -252,7 +218,7 @@ export const GraphCanvas = forwardRef<SVGSVGElement, GraphCanvasProps>(function 
                 className="pointer-events-none rounded-md bg-ink px-3 py-2 text-xs text-paper shadow-lg"
               >
                 <div className="text-[0.65rem] tracking-wide text-paper/70 uppercase">
-                  {label ?? markerClass}
+                  {label ? relationLabelFor(edge.relation, audited) : markerClass}
                 </div>
                 <p className="mt-1 line-clamp-3 leading-snug">{edge.rationale}</p>
                 {typeof edge.confidence === "number" && (
