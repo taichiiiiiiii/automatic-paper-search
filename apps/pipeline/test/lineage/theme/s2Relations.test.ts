@@ -564,8 +564,30 @@ describe("R2-23 abstract evidence and LLM hints", () => {
       "Image restoration is a long-standing low-level vision problem. In this paper, we propose a strong baseline model SwinIR for image restoration based on the Swin Transformer. SwinIR consists of three parts.",
   };
 
-  it("a build cue in the citing abstract makes an extends edge, quoted as 要旨, without asking the LLM", async () => {
+  // R2-40: a strong cue (“built upon”); SwinIR's real “based on” is weak.
+  const SWINIR_STRONG = {
+    ...SWINIR,
+    abstract: SWINIR.abstract.replace("based on the Swin", "built upon the Swin"),
+  };
+
+  it("a strong build cue in the citing abstract makes an extends edge, quoted as 要旨, without asking the LLM", async () => {
     const llm = fakeProvider(ANSWER({ relation: "background", refers_to_cited: false }));
+    const weak = await deriveS2Relation(
+      SWIN,
+      SWINIR,
+      ctx(
+        sourceWith([
+          ref(
+            [
+              "Recently, Swin Transformer [56] has shown great promise as it integrates the advantages of both CNN and Transformer.",
+            ],
+            { title: SWIN.title, influential: true, intents: ["methodology"] },
+          ),
+        ]),
+        null,
+      ),
+    );
+    expect(weak?.relation).not.toBe("extends");
     const c = ctx(
       sourceWith([
         ref(
@@ -581,7 +603,7 @@ describe("R2-23 abstract evidence and LLM hints", () => {
       ]),
       llm,
     );
-    const e = await deriveS2Relation(SWIN, SWINIR, c);
+    const e = await deriveS2Relation(SWIN, SWINIR_STRONG, c);
     expect(e).toMatchObject({ relation: "extends", provenance: "s2_context_rule" });
     expect(e?.rationale).toContain("引用元の論文の要旨から規則で判定");
     expect(e?.rationale).toContain(

@@ -148,17 +148,27 @@ describe("rule set v3: R2-22 negative cues and target checks", () => {
         "We follow the FlashAttention algorithms in using e P for unnormalized shifted exponentials, m for the row shift, and L for log-sum-exp [2, 3, 4].",
       ]),
     );
-    expect(r).toMatchObject({ relation: "builds_on", rule: "phrase_build" });
+    // R2-40: the cue is attributed to FlashAttention-2, but “follow” is weak (usage).
+    expect(r).toMatchObject({ relation: "uses_resource", rule: "phrase_usage" });
+    expect(r.evidence).toContain("We follow the FlashAttention algorithms");
+    const strong = classifyApiRelationV3(
+      sig(fa2, [
+        "Skipping fully masked blocks is standard in causal attention [2].",
+        "Later FlashAttention kernels sought to keep arithmetic units busy within each tile: FlashAttention-2 improved work partitioning [2], FlashAttention-3 overlapped matrix multiplication and softmax on Hopper [3].",
+        "We build on the FlashAttention algorithms in using e P for unnormalized shifted exponentials, m for the row shift, and L for log-sum-exp [2, 3, 4].",
+      ]),
+    );
+    expect(strong).toMatchObject({ relation: "builds_on", rule: "phrase_build" });
   });
 
-  it("'Following [39], we place the MoEs on every other layer' is builds_on (V-MoE <- GShard)", () => {
+  it("'Following [39], we place the MoEs on every other layer' is usage since R2-40 (V-MoE <- GShard)", () => {
     const r = classifyApiRelationV3(
       sig(gshard, [
         "Following [39], we place the MoEs on every other layer (we refer to these as V-MoE Every-2).",
         "This follows a similar design pattern as the M4 machine translation model [39].",
       ]),
     );
-    expect(r).toMatchObject({ relation: "builds_on", rule: "phrase_build" });
+    expect(r).toMatchObject({ relation: "uses_resource", rule: "phrase_usage" });
     // …but "Following [1], we report top-1 accuracy" is a protocol.
     const p = classifyApiRelationV3(
       sig(gshard, ["Following [39], we report the top-1 accuracy on the validation set."]),
@@ -166,13 +176,19 @@ describe("rule set v3: R2-22 negative cues and target checks", () => {
     expect(p.relation).not.toBe("builds_on");
   });
 
-  it("'Motivated by the Swin Transformer's [19] success, we propose Swin-Unet' is builds_on", () => {
+  it("'Motivated by the Swin Transformer's [19] success, we propose Swin-Unet' is usage since R2-40", () => {
     const r = classifyApiRelationV3(
       sig(swin, [
         "Motivated by the Swin Transformer’s [19] success, we propose Swin-Unet to leverage the power of Transformer for 2D medical image segmentation in this work.",
       ]),
     );
-    expect(r).toMatchObject({ relation: "builds_on", rule: "phrase_build" });
+    expect(r).toMatchObject({ relation: "uses_resource", rule: "phrase_usage" });
+    const strong = classifyApiRelationV3(
+      sig(swin, [
+        "Building on the Swin Transformer’s [19] success, we propose Swin-Unet to leverage the power of Transformer for 2D medical image segmentation in this work.",
+      ]),
+    );
+    expect(strong).toMatchObject({ relation: "builds_on", rule: "phrase_build" });
   });
 });
 

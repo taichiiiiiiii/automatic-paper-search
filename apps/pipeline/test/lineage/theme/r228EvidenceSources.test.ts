@@ -243,8 +243,15 @@ describe("deriveS2Relation + arXiv HTML (pairs S2 has no sentence for)", () => {
   }
   const s2 = (signals: unknown) => ({ lookup: async () => ({ kind: "pair", signals }) });
 
+  // R2-40: “…, which we also follow” (a weak cue) no longer builds on; the
+  // strong-claim plumbing is exercised with a strong cue on the same citation.
+  const STRONG_PAGE = PAGE.replace(
+    "Lepikhin et&nbsp;al. <cite",
+    "Our router builds on Lepikhin et&nbsp;al. <cite",
+  ).replace(" adapts a Mixture-of-Expert model", ", which adapts a Mixture-of-Expert model");
+
   it("adds a quote-backed strong claim with arXiv HTML attribution (Switch <- GShard)", async () => {
-    const html = htmlSource();
+    const html = htmlSource(STRONG_PAGE);
     const ctx = {
       source: s2({ found: true, intents: [], contexts: [], isInfluential: false }),
       provider: null,
@@ -261,9 +268,13 @@ describe("deriveS2Relation + arXiv HTML (pairs S2 has no sentence for)", () => {
       "（arXiv HTML（arXiv:2101.03961v3）の本文の引用文から規則で判定）",
     );
     expect(edge?.rationale).toMatch(
-      /引用文: "Lepikhin et al\. \(2020\) adapts .*which we also follow\."$/,
+      /引用文: "Our router builds on Lepikhin et al\. \(2020\), which adapts .*"$/,
     );
     expect(html.stats.strongEdges).toBe(1);
+    // The original weak “which we also follow” sentence makes no strong claim.
+    expect(
+      await deriveS2Relation(GSHARD, SWITCH, { ...ctx, arxivHtml: htmlSource() } as never),
+    ).toBeNull();
   });
 
   it("is not asked when S2 has a usable sentence, or S2 was unreachable", async () => {

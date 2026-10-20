@@ -120,22 +120,24 @@ async function score(items: Item[], llm: boolean) {
 const SHAZEER_EIGEN = "openalex:W1593114658->openalex:W2581624817";
 
 describe("R2-24: strong claims without any LLM (labelled sets)", () => {
-  it("R2-22 set: precision 1.0 in both modes; 22/31 either way (R2-31; LLM was 21/31)", async () => {
+  // R2-40 (strong cues only): 22 -> 15 and 26 -> 18; the weak-cue build-ons
+  // are usage in both modes (the context LLM may only confirm / downgrade).
+  it("R2-22 set: precision 1.0 in both modes; 15/31 either way (R2-40; was 22/31)", async () => {
     const items = fixture("r222").edges as Item[];
     const withLlm = await score(items, true);
     const noLlm = await score(items, false);
     expect(withLlm.falsePositives).toEqual([]);
     expect(noLlm.falsePositives).toEqual([]);
-    expect([withLlm.correct, noLlm.correct, noLlm.goldStrong]).toEqual([22, 22, 31]);
+    expect([withLlm.correct, noLlm.correct, noLlm.goldStrong]).toEqual([15, 15, 31]);
   });
 
-  it("R2-23 set: precision 1.0 in both modes; 26/32 either way (R2-31; LLM was 25/32)", async () => {
+  it("R2-23 set: precision 1.0 in both modes; 18/32 either way (R2-40; was 26/32)", async () => {
     const items = fixture("r223").edges as Item[];
     const withLlm = await score(items, true);
     const noLlm = await score(items, false);
     expect(withLlm.falsePositives).toEqual([]);
     expect(noLlm.falsePositives).toEqual([]);
-    expect([withLlm.correct, noLlm.correct, noLlm.goldStrong]).toEqual([26, 26, 32]);
+    expect([withLlm.correct, noLlm.correct, noLlm.goldStrong]).toEqual([18, 18, 32]);
     // R2-31: the one R2-24 difference (Shazeer <- Eigen, the rule's named
     // "While Eigen et al. …, our …" contrast vs the cached LLM's extends)
     // is gone — the rule now reads the scope contrast as a build-on, the
@@ -148,11 +150,11 @@ describe("R2-24: strong claims without any LLM (labelled sets)", () => {
     expect(noLlm.exactKind).toBe(withLlm.exactKind);
   });
 
-  it("R2-23 rule cases: identical in both modes (7/7, the known MAE false positive)", async () => {
+  it("R2-23 rule cases: identical in both modes (5/7 since R2-40, no false positive)", async () => {
     const items = fixture("r223").rule_cases as Item[];
     const withLlm = await score(items, true);
     const noLlm = await score(items, false);
-    expect([noLlm.correct, noLlm.goldStrong, noLlm.falsePositives.length]).toEqual([7, 7, 1]);
+    expect([noLlm.correct, noLlm.goldStrong, noLlm.falsePositives.length]).toEqual([5, 7, 0]);
     expect(noLlm.rows.map((r) => r.e.relation)).toEqual(withLlm.rows.map((r) => r.e.relation));
   });
 

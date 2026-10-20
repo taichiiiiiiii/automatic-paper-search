@@ -503,6 +503,16 @@ const OWN_APPLICATION =
 /** R2-31: a replacement cue keeps a scope contrast a contrast. */
 const REPLACE_CUE = /\binstead\s+of\b|\brather\s+than\b|\breplac(e|es|ed|ing)\b/i;
 
+/** R2-40: the concessive “While X …, we / our …” contrast is about X only
+ * when the cited paper is inside the while-clause (“While a common practice
+ * involves SDEs, we adopt CPS [40]” does not contrast CPS). */
+function whileClauseCites(sentence: string, id: CitedIdentity): boolean {
+  const m = WHILE_OUR.exec(sentence);
+  if (m === null) return false;
+  const clause = sentence.slice(0, sentence.length - (m[1] ?? "").length);
+  return spanMentionsCited(clause, sentence, id);
+}
+
 /** R2-31: a "While X …, our <own application> of …" sentence: the only
  * contrast cue is the concessive while/whereas (no unlike / in contrast /
  * differ from / as opposed to, no replacement), and the first-person main
@@ -524,47 +534,29 @@ const FIRST_PERSON_V3 = /(?<![\w-])(we|our|ours|this\s+(paper|work))(?![\w-])/i;
 const INSTANCE_OF_OURS =
   /\b(particular|special)\s+(instances?|cases?)\s+of\s+(our|the\s+proposed)\b/i;
 
-/** R2-28: the cited work is the subject and the citing authors adopt
- * what it does in a closing relative clause ("Lepikhin et al. (2020) …
- * addresses expert overflow by passing its representation to the next
- * layer … which we also follow", Switch <- GShard). Counted only when the
- * sentence cites that one work and names it in words. */
-const WHICH_WE_FOLLOW = /,?\s*which\s+we\s+(also\s+)?(follow|adopt)\s*[.;]?\s*$/i;
-
 /** R2-23: the citing paper proposing its own method as a baseline. */
 const OWN_BASELINE =
   /\b(?:we|this\s+(?:paper|work))\s+(?:propose|present|introduce|establish)s?\s+(?:an?\s+)?(?:[\w-]+\s+){0,2}baselines?\b/gi;
 
-// ---------------------------------------------------------------- R2-38 usage cues
+// ---------------------------------------------------------------- R2-40 strong cues only
 
-// R2-38: an adoption verb ("we adopt / use / employ / follow X", "based on
-// X", "following X, we …") states that the citing paper USES the cited
-// work; it is a build-on only when what is used is the cited METHOD. On
-// the ICML 2025 lineage most rule `extends` were usage of a benchmark,
-// task, metric, agent framework, analysis technique or configuration
-// ("we adopt V-IRL, a real-world navigation task", "we adopt the F1
-// calculation from HippoRAG 2", "For the agent, we adopt the most popular
-// framework, ReAct"). A build sentence is therefore demoted to
-// `uses_resource` (rule `phrase_usage`, baseline_only) when
-//  - the object of a build cue (the few words after it) is a resource /
-//    protocol noun (benchmark, dataset, task, metric, F1, codebase,
-//    library, configuration, prompt format …), or the cited work is
-//    introduced as one in an apposition ("Embench [54], a benchmark …"),
-//    or the main clause after "Following / Inspired by / Based on X," is a
-//    measurement (we calculate / compute / measure / evaluate / find …);
-//  - and, when the sentence has only a WEAK adoption cue (adopt / use /
-//    employ / follow / based on / borrow / reuse — no extend / build on /
-//    variant of / modified / adapted from / inspired by / generalise),
-//    also when the adopted object is a standard tool ("the widely-used
-//    probing technique", "the official code", "a 2-layer Transformer") or
-//    a training component ("the pairwise ranking loss"),
-//    the cited paper is itself a benchmark / dataset / toolkit paper by
-//    its title, the citing paper is a benchmark / evaluation study by its
-//    title, or S2's intents for the pair are known and lack
-//    `methodology`.
-// A weak "based on" must also govern the cited paper: it has to be named
-// within a few words after the cue ("bootstrap reasoning based on positive
-// traces … (Chu et al., 2025)" is not about Chu et al.).
+// R2-40 (design 41 D-R2-40): a rule-based build-on (`extends`) needs a
+// STRONG cue that governs the cited paper — build on / upon, built on top
+// of, extend X, extension / variant / version / adaptation / modification /
+// instantiation / application of X, adapted / derived from X, generalise /
+// subsume X, improve upon X, “X as a particular instance of ours”, “our
+// modified X”. A weak adoption cue (adopt / use / employ / leverage /
+// utilise / borrow / reuse, follow(ing), based on, inspired by, motivated
+// by) never yields builds_on any more: on CVPR 2025 / ICLR 2025 (and before
+// that ICML / NeurIPS 2025) most weak-cue `extends` were usage of an
+// encoder, a head, a loss, a setting or a released model, and patching
+// field by field did not converge (R2-38, R2-39). Such a sentence becomes
+// `uses_resource` (rule `phrase_usage`, baseline_only).
+// On top of a strong cue, R2-38's usage objects and R2-39's cue-target
+// attribution still apply (`usageReason`, `citedTarget.ts::cueGovernor`):
+// “built on top of the X library”, “these extended experiments”, “builds
+// upon a pre-trained LLM model [53]”, “build on recent studies (A; B)”,
+// “build upon … backbones studied on ImageNet” (a dataset paper) are usage.
 
 /** Strong (methodological) build cues: they keep builds_on unless their
  * own object is a resource. */
@@ -573,23 +565,27 @@ const STRONG_BUILD_CUES: readonly RegExp[] = [
   /\bbuil(?:d|ds|t|ding)\s+on\s+top\s+of\b/i,
   /\bextend(?:s|ed|ing)?\b/i,
   /\bextension\s+of\b/i,
-  /\bgenerali[sz](?:e|es|ed|ing|ation)\b/i,
+  // R2-40: the bare noun “generalization” is a capability, not a cue.
+  /\bgenerali[sz](?:e|es|ed|ing)\b/i,
+  /\bgenerali[sz]ation\s+of\b/i,
   /\bsubsume[sd]?\b/i,
   /\bimprov(?:e|es|ed|ing)\s+(?:up)?on\b/i,
-  /\bmodif(?:y|ies|ied|ying|ication)\b/i,
-  /\b(?:variant|version|adaptation|instantiation|application)\s+of\b/i,
+  // R2-40: not before a gerund (“with the key modification of adopting a
+  // DPT head [37]”).
+  /\b(?:variant|version|adaptation|modification|instantiation|application)\s+of\b(?!\s+\w+ing\b)/i,
   /\b(?:adapted|derived)\s+from\b/i,
   /\badapt(?:s|ing)?\s+from\b/i,
-  /\binspired\s+by\b/i,
-  /\bmotivated\s+by\b/i,
   /\b(?:particular|special)\s+(?:instances?|cases?)\s+of\s+(?:our|the\s+proposed)\b/i,
 ];
 
-/** Weak adoption cues (whose object decides build-on vs usage). */
+/** Weak adoption cues: they make a sentence about the cited paper usage
+ * (`phrase_usage`), never a build-on. */
 const WEAK_BUILD_CUES: readonly RegExp[] = [
-  /\b(?:we|our\s+\w+)\s+(?:also\s+)?(?:adopt|adopts|borrow|borrows|reuse|reuses|use|uses|employ|employs|leverage|leverages|utili[sz]e|utili[sz]es)\b/i,
+  /\b(?:we|our\s+\w+)\s+(?:also\s+)?(?:adopt|adopts|borrow|borrows|reuse|reuses|use|uses|employ|employs|leverage|leverages|utili[sz]e|utili[sz]es|modify|modifies|adapt|adapts)\b/i,
   /\bfollow(?:s|ed|ing)?\b/i,
   /\bbased\s+on\b/i,
+  /\binspired\s+by\b/i,
+  /\bmotivated\s+by\b/i,
 ];
 
 /** Nouns of things a paper uses rather than builds on: evaluation assets,
@@ -676,34 +672,21 @@ const APPOSITIVE_RESOURCE =
 const USAGE_ACTION =
   /^\s*(?:following|inspired\s+by|based\s+on|motivated\s+by|similar(?:ly)?\s+to|as\s+in)\b[^.;]{0,160}?,\s*we\s+(?:also\s+|first\s+|then\s+)?(?:calculate|compute|measure|evaluate|report|label|annotate|score|test|find|quantify|assess|estimate|benchmark)\b/i;
 
-/** The adopted object is a standard tool or a sized stock component. */
-const STOCK_OBJECT =
-  /\b(?:widely[\s-]used|standard|commonly[\s-]used|most\s+popular|popular|off[\s-]the[\s-]shelf|official|default|open[\s-]source|publicly\s+(?:available|released)|well[\s-]known)\b|\b(?:a|an)\s+(?:\d+|one|two|three|four|five|six|single)[\s-]layers?\b|\bframeworks?\b/i;
-
-/** A training component taken over for one's own model ("we adopt the
- * pairwise ranking loss [Ouyang et al., 2022] to optimize the ORM"): a
- * technique reused, not the cited method built on. Weak cues only — "we
- * build on X's objective" stays a build-on. */
-const COMPONENT_OBJECT =
-  /\b(?:loss(?:es)?|loss\s+functions?|objectives?|regulari[sz]ers?|optimi[sz]ers?)\b/i;
-
-/** R2-39: the adopted object is a released model / checkpoint ("based on
- * the DeepSeek R1-Distill Qwen-14B model", "RLVR-trained models released by
- * …", "LLaDA-8B-Instruct"). Weak cues only. */
+/** R2-39: the object is a released model / checkpoint ("based on the
+ * DeepSeek R1-Distill Qwen-14B model", "RLVR-trained models released by
+ * …", "LLaDA-8B-Instruct"); R2-40: also of a strong cue ("Our visual
+ * generation architecture builds upon a pre-trained LLM model [53]"). */
 const RELEASED_MODEL =
   /\b\d+(?:\.\d+)?\s?[BM]\b|-(?:Instruct|Base|Chat|Distill)\b|\b(?:released|pre-?trained|open-?sourced?|distilled|[\w-]*-?trained)\s+(?:[\w-]+\s+){0,2}(?:models?|checkpoints?|weights|LLMs?)\b|\bmodels?\s+(?:released|trained|provided)\s+by\b/;
 
-/** R2-39: the adopted work is given a stock role ("We adopt GRPO [Shao et
- * al., 2024] as the RL algorithm", "We employ LLaDA-8B-Instruct [30] … as
- * our primary experimental testbed and baseline"). Weak cues only. */
-const ROLE_AS =
-  /^[^.;]{0,100}?\bas\s+(?:the|our|an?)\s+(?:[\w-]+\s+){0,3}(?:algorithms?|optimi[sz]ers?|testbeds?|baselines?|base\s+models?|reward\s+models?|judges?|teachers?|evaluators?|verifiers?|starting\s+points?)\b/i;
+/** R2-40: what a strong cue builds on is a finding of other studies, not
+ * a method ("We build on recent studies (Darcet et al., 2023; Kang et al.,
+ * 2025a) which identify sink tokens"). */
+const FINDING_NOUN = /\b(?:studies|findings|observations)\b/i;
 
-/** R2-39: a concrete value set while following another work ("Following
- * DAPO [19], we adopt a clip-higher strategy with ε = 0.28", "we drop the
- * class condition with 10% probability, following [18]", "a randomly
- * chosen late timestep t ∈ [30, 40]"). Weak cues only. */
-const SETTING_VALUE = /[=≈]\s*[-−]?\d|\b\d+(?:\.\d+)?\s*%|∈\s*[[(]/;
+/** R2-40: “the ViT-large version of X”, “the 7B variant of X”. */
+const SIZE_VERSION =
+  /\b(?:large|base|small|tiny|huge|giant|mini|[\w-]+-(?:[LBSHG]|large|base|small|huge))\s+(?:version|variant)\s+of\b|\b\d+(?:\.\d+)?\s?[BM]\s+(?:version|variant)\s+of\b/i;
 
 /** R2-39: a sentence opening "Following / Inspired by / Based on / Building
  * on X, …" whose main clause takes over a resource or a standard setup
@@ -735,23 +718,11 @@ function mainClauseHead(text: string): string | null {
   return null;
 }
 
-/** Following a setup and then fixing a value ("we follow the approach of
- * Skean et al. (2025) and choose α → 1"). */
-const FOLLOW_AND_SET = /\bfollow\w*\b[^.;]{0,100}\band\s+(?:choose|set|fix|use)\b/i;
-
 /** R2-38: the cited paper is a benchmark / dataset / toolkit by its title. */
 const RESOURCE_TITLE =
   /\b(?:benchmarks?|benchmarking|datasets?|data\s?sets?|databases?|corpus|suite|toolkit|toolbox|library|gym|arena|leaderboard|testbed|simulator)\b|\b[A-Z][\w-]*Bench\b|\bBench\b/;
-/** R2-38: the citing paper is a benchmark / evaluation study by its title. */
-const EVALUATION_TITLE =
-  /\b(?:benchmarks?|benchmarking|comparative\s+study|evaluating|understanding|datasets?)\b|\b[A-Z][\w-]*Bench\b|\bis\s+(?:\w+\s+){1,3}enough\b/i;
-
 export function isResourceTitle(title: string | null | undefined): boolean {
   return typeof title === "string" && RESOURCE_TITLE.test(title);
-}
-
-export function isEvaluationTitle(title: string | null | undefined): boolean {
-  return typeof title === "string" && EVALUATION_TITLE.test(title);
 }
 
 /** The few words after a cue match (its object), cut at the clause end or
@@ -814,24 +785,19 @@ function resourceCue(c: CueSpan): boolean {
   );
 }
 
-/** Pair-level facts for the R2-38 usage test. */
+/** Pair-level facts for the usage test. */
 interface UsageFacts {
+  /** R2-38: the cited paper is a benchmark / dataset / toolkit by its
+   * title (R2-40: also under a strong cue — “build upon the well-established
+   * feature backbones studied on ImageNet [10, 69]”). */
   citedResource: boolean;
-  citingEvaluation: boolean;
-  /** S2 intents are known for the pair and lack `methodology`. */
-  intentsWithoutMethod: boolean;
 }
 
 /**
- * R2-38: why a build sentence states usage, not inheritance (`null` = it
- * is a build-on). `hasStrong`: a strong build cue that governs the cited
- * paper (or `ownVariantOf`).
+ * R2-38 / R2-40: why a sentence with a strong build cue on the cited paper
+ * states usage, not inheritance (`null` = it is a build-on).
  */
-export function usageReason(
-  sentence: string,
-  hasStrong: boolean,
-  facts: UsageFacts,
-): string | null {
+export function usageReason(sentence: string, facts: UsageFacts): string | null {
   const text = sentence.replace(/\bet\s+al\./g, "et al");
   if (USAGE_ACTION.test(text)) return "measurement";
   if (APPOSITIVE_RESOURCE.test(text)) return "resource_apposition";
@@ -842,32 +808,20 @@ export function usageReason(
       return "main_clause_usage";
     }
   }
+  // Every strong cue's own object (or passive subject) is a resource
+  // (“inspired by the Embench [54] prompting format”, “built on top of the X
+  // library”, “these extended experiments”), a released model or a finding.
+  // R2-40: a size version of a released model (“we use the ViT-large
+  // version of DepthAnythingV2 [38]”).
+  if (SIZE_VERSION.test(text)) return "released_model";
   const strong = cueObjects(text, STRONG_BUILD_CUES);
-  if (hasStrong) {
-    // A strong cue keeps the build-on unless every strong cue's own object
-    // is a resource ("inspired by the Embench [54] prompting format",
-    // "built on top of the X library", "these extended experiments").
-    if (strong.length > 0 && strong.every(resourceCue)) return "resource_object";
-    return null;
+  if (strong.length > 0) {
+    if (strong.every(resourceCue)) return "resource_object";
+    if (strong.every((c) => resourceCue(c) || RELEASED_MODEL.test(c.object)))
+      return "released_model";
+    if (strong.every((c) => resourceCue(c) || FINDING_NOUN.test(c.object))) return "finding";
   }
-  const weak = cueObjects(text, WEAK_BUILD_CUES);
-  if (weak.some(resourceCue)) return "resource_object";
-  if (
-    weak.some(
-      (c) =>
-        RELEASED_MODEL.test(c.object) ||
-        (!/^we\b|\bwe$/i.test(c.subject) && RELEASED_MODEL.test(c.subject)),
-    )
-  )
-    return "released_model";
-  if (weak.some((c) => STOCK_OBJECT.test(c.object))) return "stock_tool";
-  if (weak.some((c) => COMPONENT_OBJECT.test(c.object))) return "component";
-  if (weak.some((c) => ROLE_AS.test(c.rest))) return "stock_role";
-  if (FOLLOW_AND_SET.test(text)) return "setting";
-  if (weak.length > 0 && SETTING_VALUE.test(text)) return "setting_value";
   if (facts.citedResource) return "cited_resource";
-  if (facts.citingEvaluation) return "citing_evaluation";
-  if (facts.intentsWithoutMethod) return "intent_not_methodology";
   return null;
 }
 
@@ -884,23 +838,9 @@ interface SentenceOpts {
   usage?: UsageFacts;
 }
 
-const NO_USAGE_FACTS: UsageFacts = {
-  citedResource: false,
-  citingEvaluation: false,
-  intentsWithoutMethod: false,
-};
+const NO_USAGE_FACTS: UsageFacts = { citedResource: false };
 
 const CONTEXT_OPTS: SentenceOpts = { self: [], source: "context" };
-
-/** R2-38: a weak "based on" whose object (the next few words) does not
- * name the cited paper does not make the sentence about it. */
-function basedOnElsewhere(sentence: string, id: CitedIdentity): boolean {
-  const text = sentence.replace(/\bet\s+al\./g, "et al");
-  const m = /\bbased\s+on\b/i.exec(text);
-  if (m === null) return false;
-  const after = text.slice((m.index ?? 0) + m[0].length, (m.index ?? 0) + m[0].length + 70);
-  return !spanMentionsCited(after, sentence, id);
-}
 
 function classifySentence(
   raw: string,
@@ -948,50 +888,40 @@ function classifySentence(
   // Transformer" offers the citing method as a baseline for others; that
   // "baseline" is not a comparison with the cited paper.
   const compare = anyMatch(COMPARE_PATTERNS, sentence.replace(OWN_BASELINE, " ")) && (fp || strong);
-  const buildCues = [...ADAPT_PATTERNS, ...BUILD_PATTERNS];
   const scope = opts.source === "abstract" ? "phrase" : "clause";
+  // A build-on is possible only for a first-person sentence that singles
+  // the cited paper out (R2-22: not through a marker shared with other
+  // works, “[8, 15]”).
+  const buildable =
+    !compare && fpBuild && target !== "pair" && !namedOnlyInMarkerGroup(sentence, id);
+  // R2-40: only a strong cue that governs the cited paper (R2-23 / R2-39:
+  // its name or marker is what the cue's object cites, not another work's,
+  // not a section of the citing paper, not a third-party subject) builds on.
+  // The strong cue narrows the R2-23 build test (a build cue governing the
+  // cited paper), it never widens it: “over a version of FlashAttention-2
+  // optimized for …” or “the 3rd version of BFCL” stay what they were.
+  const buildCues = [...ADAPT_PATTERNS, ...BUILD_PATTERNS];
   if (
-    !compare &&
-    opts.source !== "abstract" &&
-    strong &&
-    WHICH_WE_FOLLOW.test(sentence) &&
-    citationTargetCount(sentence) <= 1 &&
-    namesCitedPaper(sentence, id)
-  ) {
-    return mk("builds_on", "phrase_build", 0.8);
-  }
-  if (
-    !compare &&
-    fpBuild &&
-    target !== "pair" &&
-    // R2-22: a marker shared with other works ("[8, 15]") does not single
-    // the cited paper out as what is built on.
-    !namedOnlyInMarkerGroup(sentence, id) &&
+    buildable &&
     (ownVariantOf(sentence, id) ||
-      (anyMatch(buildCues, sentence) &&
-        // R2-23: the build cue must govern the cited paper (its name or
-        // marker inside the cue's clause), not another work of the sentence.
-        cueTargetsCited(sentence, id, buildCues, [INSTANCE_OF_OURS], scope)))
+      (cueTargetsCited(sentence, id, buildCues, [INSTANCE_OF_OURS], scope) &&
+        cueTargetsCited(sentence, id, STRONG_BUILD_CUES, [INSTANCE_OF_OURS], scope)))
   ) {
-    // R2-38: an adoption of a benchmark / tool / protocol is usage.
-    const strongCue =
-      ownVariantOf(sentence, id) ||
-      cueTargetsCited(sentence, id, STRONG_BUILD_CUES, [INSTANCE_OF_OURS], scope);
-    const onlyBasedOn =
-      !strongCue &&
-      !anyMatch(BUILD_PATTERNS, sentence) &&
-      anyMatch(ADAPT_PATTERNS, sentence) &&
-      ADAPT_PATTERNS.filter((p) => p.test(sentence)).every((p) => p.source.includes("based"));
-    if (onlyBasedOn && basedOnElsewhere(sentence, id)) {
-      // The "based on" is about something else; no build cue on the cited paper.
-    } else {
-      const usage = usageReason(sentence, strongCue, opts.usage ?? NO_USAGE_FACTS);
-      if (usage !== null) return mk("uses_resource", "phrase_usage", 0.7);
-      return opts.source === "abstract"
-        ? mk("builds_on", "abstract_build", 0.75)
-        : mk("builds_on", "phrase_build", 0.8);
+    // R2-38: building on a benchmark / tool / protocol / released model is usage.
+    if (usageReason(sentence, opts.usage ?? NO_USAGE_FACTS) !== null) {
+      return opts.source === "abstract" ? null : mk("uses_resource", "phrase_usage", 0.7);
     }
+    return opts.source === "abstract"
+      ? mk("builds_on", "abstract_build", 0.75)
+      : mk("builds_on", "phrase_build", 0.8);
   }
+  // R2-40: a weak adoption cue (adopt / use / follow / based on / inspired
+  // by …) on the cited paper is usage — unless the sentence also contrasts
+  // or compares (below).
+  const weakUsage =
+    buildable &&
+    opts.source !== "abstract" &&
+    cueTargetsCited(sentence, id, [...WEAK_BUILD_CUES, ...buildCues], [], scope);
   if (anyMatch(RESOURCE_CLAUSE, sentence)) return mk("uses_resource", "phrase_resource", 0.7);
   if (fp && anyMatch(CONTRAST_PATTERNS_V3, sentence)) {
     // R2-23: a targeted contrast also needs the cue to govern the cited
@@ -1000,7 +930,8 @@ function classifySentence(
     const targeted =
       strong &&
       !namedOnlyInMarkerGroup(sentence, id) &&
-      cueTargetsCited(sentence, id, CONTRAST_PATTERNS_V3, [], scope);
+      (cueTargetsCited(sentence, id, CONTRAST_PATTERNS, [], scope) ||
+        whileClauseCites(sentence, id));
     if (opts.source === "abstract") {
       return targeted ? mk("compares_with", "abstract_contrast", 0.7, true) : null;
     }
@@ -1008,6 +939,7 @@ function classifySentence(
     return targeted && isScopeBuild(sentence) ? { ...cand, scopeBuild: true } : cand;
   }
   if (compare) return mk("compares_with", "phrase_compare", 0.75);
+  if (weakUsage) return mk("uses_resource", "phrase_usage", 0.7);
   if (strong && TABLE_ROW.test(sentence)) return mk("compares_with", "table_row", 0.65);
   return null;
 }
@@ -1073,8 +1005,6 @@ export function classifyApiRelationV3(s: PairSignals): ApiClassification {
     source: "context",
     usage: {
       citedResource: isResourceTitle(typeof s.cited?.title === "string" ? s.cited.title : null),
-      citingEvaluation: isEvaluationTitle(s.citingTitle),
-      intentsWithoutMethod: intents.size > 0 && !intents.has("methodology"),
     },
   };
   let best: SentenceCandidate | null = null;
