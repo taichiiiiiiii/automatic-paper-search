@@ -666,3 +666,7 @@ D-R2-40（ユーザー承認、2026-10-20）の実装。LLM・API の新しい�
 - 通したもの: pipeline の単体テスト（266 ファイル）、システムテスト（`failureInjection.system.test.ts` の Hugging Face 4 件は develop でも同じく失敗する。2026-10-19 の `code-links.json` 更新でキャッシュが新しく、HF への問い合わせが起きないため。R2-40 とは無関係）、core、typecheck、biome、`auditLineageQualityCli.ts`（FAIL なし）
 - 試算の道具（作業用、リポジトリ外）: 評価セットの採点、公開中の辺の通し直し（develop / R2-40）
 
+
+### R2-40 の反映（2026-10-21）
+
+新しい判定で作り直し、すべて未監査で公開中: CVPR 2025（143 論文・強い関係 10）、ICLR 2025（130・5）、NeurIPS 2025（135・9）、ICML 2025（138・5）、Low-Rank Adaptation（91・6）。NeurIPS 2025 はキーなし S2 の 429 で 3 回続けて取得が欠け（exit 4、公開版は保持）、会議の作り直しだけ S2 の再試行を 10 回に増やして（`PAPERPILOT_S2_MAX_ATTEMPTS`）通した。監査済みの 4 テーマは作り直していない。
