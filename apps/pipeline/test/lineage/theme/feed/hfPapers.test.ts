@@ -17,6 +17,7 @@ import {
   emptyHfCache,
   entryFromHfPayload,
   type HfCache,
+  isFresh,
   parseHfCache,
   refreshHfCache,
   serializeHfCache,
@@ -309,5 +310,19 @@ describe("themeFeedsCli (temporary repo, faked network)", () => {
   it("rejects bad arguments", () => {
     expect(() => parseThemeFeedsArgs(["--theme", "../x"])).toThrow(/slug/);
     expect(() => parseThemeFeedsArgs(["--days", "0"])).toThrow(/days/);
+  });
+});
+
+describe("isFresh (cache fetched after --now)", () => {
+  const day = 86_400_000;
+  const now = Date.parse("2026-10-12T00:00:00Z");
+  const entry = (iso: string) => ({ fetched_at: iso }) as unknown as Parameters<typeof isFresh>[0];
+  it("a future-dated entry is never fresh", () => {
+    expect(isFresh(entry("2026-10-19T00:00:00Z"), now, 7)).toBe(false);
+    expect(isFresh(entry("2026-10-19T00:00:00Z"), now, 0)).toBe(false);
+  });
+  it("a recent past entry within the TTL is fresh", () => {
+    expect(isFresh(entry(new Date(now - day).toISOString()), now, 7)).toBe(true);
+    expect(isFresh(entry(new Date(now - day).toISOString()), now, 0)).toBe(false);
   });
 });

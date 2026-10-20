@@ -189,7 +189,10 @@ export async function fetchHfPaper(
 export function isFresh(entry: HfPaperEntry | undefined, nowMs: number, ttlDays: number): boolean {
   if (!entry) return false;
   const t = Date.parse(entry.fetched_at);
-  return Number.isFinite(t) && nowMs - t < ttlDays * 86_400_000;
+  // An entry fetched after `now` (a replay with a fixed --now over a newer
+  // cache) has a negative age; it is not fresh, or TTL 0 would never refetch.
+  const age = nowMs - t;
+  return Number.isFinite(t) && age >= 0 && age < ttlDays * 86_400_000;
 }
 
 export interface RefreshStats {
