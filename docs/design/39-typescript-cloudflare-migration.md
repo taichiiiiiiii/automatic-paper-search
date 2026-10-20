@@ -265,7 +265,7 @@ CLAUDE.md の絶対ルール・TDD 手順・カバレッジ目標は Python を�
 | **P4c 学会の収集器** | OpenReview / CVF / ACL / arXiv の収集器、conference_watch | 一致 |
 | **P4d 家系図** | 会議・テーマ・deep の家系図生成、LLM provider、分類キャッシュ、品質監査、unarXive（判断待ち 2） | 一致（LLM はキャッシュ／モック） |
 | **P5 切替** | §7.4 の手順書に従う。`data/` への移動と workflow・promoter・paths の切替を 1 commit で。Node 版 6 段リリースで Cloudflare Pages を本番に。GitHub Pages を転送ページに。Python 一式と Python を前提にした周辺（§9.3）を削除。CLAUDE.md・README・設計書を書き直す | 本番 URL で全ページ・API が動く。旧 URL から転送（クエリと # を保つ）。`git ls-files '*.py'` が 0 件（判断待ち 8 で `.codex/` を残す場合は `.codex/` を除いて 0 件） |
-| **P6 拡張** | ログイン（Better Auth ＋ D1）、マイリスト、通知、AI 機能（要約・意味検索） | 機能ごとに別途設計 |
+| **P6 拡張** | ログイン（Better Auth ＋ D1）、マイリスト、通知、AI 機能（要約・意味検索） | 共通の土台と順序は [40](40-post-migration-extension.md)。機能ごとに別途設計 |
 
 作業量の目安: Python は製品コード約 4.1 万行（うち論文スライド 1.4 万行）、テスト約 6.3 万行。フロントの JS は約 1.3 万行。複数セッションにまたがる。各フェーズの終わりにレビュー（opus）→ 修正 → 検証（haiku）を回し、重大・中程度 0 で次へ進む。
 

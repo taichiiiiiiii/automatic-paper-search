@@ -26,6 +26,8 @@ PaperPilot — AI/ML 論文自動収集・品質フィルタリングシステ�
 
 > ## 🚧 移行計画: [39-typescript-cloudflare-migration.md](39-typescript-cloudflare-migration.md)（2026-10-04、計画段階）
 >
+> 移行後の拡張（P6: 拡張の手順・ログイン・無料枠・独自ドメイン）: [40-post-migration-extension.md](40-post-migration-extension.md)（2026-10-21、設計案）
+>
 > TypeScript 全面移行と Cloudflare Pages 化の設計とロードマップ。ユーザーの GO 前で、まだ実装していません。
 
 > ## 📖 まずこちらを読む: [38-unified-current-design.md](38-unified-current-design.md)（2026-09-20）
