@@ -1,6 +1,6 @@
 # 39. TypeScript 全面移行と Cloudflare Pages 化 — 設計とロードマップ
 
-- 状態: **計画（第 6 版、レビュー第 1〜5 回の指摘を反映。重大・中程度 0）**。コードはまだ書かない（CLAUDE.md フェーズ 1.5）
+- 状態: **実装中（計画は第 6 版で確定、レビュー第 1〜5 回の指摘を反映。重大・中程度 0）**。P1〜P5 の A 区分まで `feat/ts-migration` に実装済み。現在の進捗は下の「進捗」の表を見る。P5 の切替と、その後の拡張（[40](40-post-migration-extension.md)、系譜ビューアの作り込みは [41](41-lineage-viewer-and-on-demand.md)）は未実施
 - 作成: 2026-10-04
 - 作業ブランチ: `feat/ts-migration`。`develop` への push は Worker と Pages を自動デプロイするため、移行作業は必ずこのブランチで行う
 - 無料枠の数値は **2026-10-04 に Cloudflare の現行ドキュメントで確認済み**（§1.1）

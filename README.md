@@ -1,5 +1,7 @@
 # PaperPilot
 
+> **移行中の注記（2026-10-22）:** このリポジトリは TypeScript + Cloudflare Pages へ移行中です（`feat/ts-migration`、計画は [`docs/design/39-typescript-cloudflare-migration.md`](docs/design/39-typescript-cloudflare-migration.md)）。以下の説明は現行の Python 版のもので、P5 の切替までは有効です。切替の際に書き直します。TS 版の構成は `apps/web`・`apps/api`・`apps/pipeline`・`packages/core`、拡張の設計は [`docs/design/40-post-migration-extension.md`](docs/design/40-post-migration-extension.md) と [`41`](docs/design/41-lineage-viewer-and-on-demand.md)。
+
 AI/ML 論文を arXiv / Semantic Scholar / OpenAlex から自動収集し、品質シグナルで絞り込んだ上で **系譜（家系図）として可視化** するパイプライン。補助出力として CSV / JSON / Slack / Email にも配信できます。
 
 **主要な出力:** GitHub Pages 上の10学会・28,300件の横断検索と学会別カタログ。サイト上のフォームから新規テーマ投稿 → CF Worker (`worker/index.ts`) が validate + dedup + rate-limit してから `theme-on-demand.yml` を直接 dispatch して生成します。
