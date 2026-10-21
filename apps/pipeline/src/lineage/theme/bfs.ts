@@ -193,6 +193,43 @@ export async function runBfsAndDescendants(
   return { nodes, edges, seedIds, classifyAttempted, classifySucceeded };
 }
 
+/** Parallel fetches are limited to OpenAlex ids: `fetchRelated`'s 3.5 s pacing
+ * only guards the Semantic Scholar path, which must stay sequential. */
+const CROSS_NODE_PREFETCH_CONCURRENCY = 4;
+
+interface PrefetchResult {
+  refs?: Paper[];
+  error?: unknown;
+}
+
+/** Fetch references for every `openalex:` id with bounded concurrency.
+ * Results (or the thrown error) are replayed by the caller in node order, so
+ * edge order and warning order match the fully sequential walk. */
+async function prefetchOpenalexRefs(
+  ids: readonly string[],
+  deps: FetchRelatedDeps,
+  completeness?: BuildCompletenessForExpansion | null,
+): Promise<Map<string, PrefetchResult>> {
+  const targets = ids.filter((id) => id.startsWith("openalex:"));
+  const results = new Map<string, PrefetchResult>();
+  let next = 0;
+  const worker = async (): Promise<void> => {
+    while (next < targets.length) {
+      const id = targets[next++]!;
+      try {
+        results.set(id, {
+          refs: await fetchRelated(id, "references", CROSS_NODE_LIMIT, deps, completeness),
+        });
+      } catch (error) {
+        results.set(id, { error });
+      }
+    }
+  };
+  const poolSize = Math.min(CROSS_NODE_PREFETCH_CONCURRENCY, targets.length);
+  await Promise.all(Array.from({ length: poolSize }, worker));
+  return results;
+}
+
 export interface AddCrossNodeEdgesOptions {
   seedIds?: ReadonlySet<string>;
   cohortMinYear?: number | null;
@@ -222,10 +259,17 @@ export async function addCrossNodeEdges(
     return typeof year === "number" && Number.isInteger(year) && year >= cohortMinYear;
   };
 
-  for (const citingId of [...nodeIds]) {
+  const order = [...nodeIds];
+  const prefetched = await prefetchOpenalexRefs(order, deps, completeness);
+
+  for (const citingId of order) {
     let refs: Paper[];
     try {
-      refs = await fetchRelated(citingId, "references", CROSS_NODE_LIMIT, deps, completeness);
+      const early = prefetched.get(citingId);
+      if (early?.error !== undefined) throw early.error;
+      refs =
+        early?.refs ??
+        (await fetchRelated(citingId, "references", CROSS_NODE_LIMIT, deps, completeness));
     } catch (exc) {
       deps.logger?.warn(`cross-node: fetch_related failed for ${citingId}: ${String(exc)}`);
       continue;
