@@ -1,6 +1,6 @@
 {
   "schema_version": "lineage-quality-v1",
-  "as_of": "2026-10-20T18:55:44Z",
+  "as_of": "2026-10-22T16:43:06Z",
   "audit_version": "audit-v1",
   "collections": [
     {
@@ -9,30 +9,27 @@
       "slug": "aaai-2026",
       "label": "AAAI 2026",
       "path": "aaai-2026/lineage.json",
-      "availability": "unavailable",
-      "audit_status": "unknown",
+      "availability": "ready",
+      "audit_status": "failed",
       "publication_tier": "blocked",
-      "freshness": "stale",
-      "generated_at": null,
+      "freshness": "fresh",
+      "generated_at": "2026-10-22T16:43:06Z",
       "snapshot_date": "2026-06-28",
-      "node_count": 0,
-      "edge_count": 0,
-      "artifact_schema_version": null,
-      "input_sha256": "2f930c4181da378c2bdd669279247a00dc10dec5d05b53d7751e908d42243f16",
+      "node_count": 106,
+      "edge_count": 208,
+      "artifact_schema_version": "lineage-artifact-v1",
+      "input_sha256": "0c2e1adea0620e3ea2d62d8d85e322c92b5a6751c57db6cdfa55bca921982da2",
       "audit": {
         "fixture_sha256": null,
-        "evaluated_at": "2026-10-20T18:55:44Z",
+        "evaluated_at": "2026-10-22T16:43:06Z",
         "actor": "ci:audit-v1",
         "checks": [
           {
             "name": "artifact_contract_v1",
-            "status": "failed",
-            "observed": 2,
+            "status": "passed",
+            "observed": 0,
             "expected": 0,
-            "evidence": [
-              "artifact_schema_version:$.schema_version",
-              "clusters_shape:$.clusters"
-            ]
+            "evidence": []
           },
           {
             "name": "artifact_shape",
@@ -57,13 +54,10 @@
           },
           {
             "name": "edge_density",
-            "status": "failed",
-            "observed": 0,
+            "status": "passed",
+            "observed": 208,
             "expected": 3,
-            "evidence": [
-              "edges:0<3",
-              "nodes:0"
-            ]
+            "evidence": []
           },
           {
             "name": "edge_endpoints_resolve",
@@ -81,21 +75,17 @@
           },
           {
             "name": "evidence_classified_rate",
-            "status": "failed",
-            "observed": null,
+            "status": "passed",
+            "observed": 1,
             "expected": 0.8,
-            "evidence": [
-              "provenance-breakdown-missing"
-            ]
+            "evidence": []
           },
           {
             "name": "generator_current",
-            "status": "failed",
-            "observed": null,
+            "status": "passed",
+            "observed": "2026-10-22T16:43:06Z",
             "expected": "2026-10-12T14:00:00Z",
-            "evidence": [
-              "generated-before:2026-10-12T14:00:00Z"
-            ]
+            "evidence": []
           },
           {
             "name": "golden_fixture",
@@ -107,20 +97,18 @@
           {
             "name": "lineage_relation_count",
             "status": "failed",
-            "observed": 0,
+            "observed": 2,
             "expected": 3,
             "evidence": [
-              "lineage:0<3"
+              "lineage:2<3"
             ]
           },
           {
             "name": "node_count",
-            "status": "failed",
-            "observed": 0,
+            "status": "passed",
+            "observed": 106,
             "expected": 8,
-            "evidence": [
-              "nodes:0<8"
-            ]
+            "evidence": []
           },
           {
             "name": "node_ids_unique",
@@ -138,22 +126,17 @@
           },
           {
             "name": "review_share",
-            "status": "failed",
-            "observed": 0,
+            "status": "passed",
+            "observed": 0.009,
             "expected": 0.4,
-            "evidence": [
-              "reviews:0/0"
-            ]
+            "evidence": []
           },
           {
             "name": "root_focus_resolve",
-            "status": "failed",
-            "observed": 2,
+            "status": "passed",
+            "observed": 0,
             "expected": 0,
-            "evidence": [
-              "root:None",
-              "focus:none"
-            ]
+            "evidence": []
           },
           {
             "name": "timestamp_not_future",
@@ -183,7 +166,7 @@
       "input_sha256": "d6e9c93719d5672a2a854623b8c644174b536be902ff848fa902f7836228e44e",
       "audit": {
         "fixture_sha256": null,
-        "evaluated_at": "2026-10-20T18:55:44Z",
+        "evaluated_at": "2026-10-22T16:43:06Z",
         "actor": "ci:audit-v1",
         "checks": [
           {
@@ -345,7 +328,7 @@
       "input_sha256": null,
       "audit": {
         "fixture_sha256": null,
-        "evaluated_at": "2026-10-20T18:55:44Z",
+        "evaluated_at": "2026-10-22T16:43:06Z",
         "actor": "ci:audit-v1",
         "checks": [
           {
@@ -376,7 +359,7 @@
       "input_sha256": "4f223995f87d340e804c1dd9a6bde1c67766e43bd2da129a5afd3613fa17ce8c",
       "audit": {
         "fixture_sha256": null,
-        "evaluated_at": "2026-10-20T18:55:44Z",
+        "evaluated_at": "2026-10-22T16:43:06Z",
         "actor": "ci:audit-v1",
         "checks": [
           {
@@ -519,7 +502,7 @@
       "input_sha256": "8dfa9d6aafc04685186e7f880a40845839d87143b3cd0b11314163a3c33080bf",
       "audit": {
         "fixture_sha256": null,
-        "evaluated_at": "2026-10-20T18:55:44Z",
+        "evaluated_at": "2026-10-22T16:43:06Z",
         "actor": "ci:audit-v1",
         "checks": [
           {
@@ -681,7 +664,7 @@
       "input_sha256": "b4139c7077788d640fbcb8b65d3f954b4a6b66b8cd681eb617c58f0c5b89576d",
       "audit": {
         "fixture_sha256": null,
-        "evaluated_at": "2026-10-20T18:55:44Z",
+        "evaluated_at": "2026-10-22T16:43:06Z",
         "actor": "ci:audit-v1",
         "checks": [
           {
@@ -888,7 +871,7 @@
       "input_sha256": "7d08f4029e4d8cf77253f42bd5f1a38302493dd9f4797e7c75febe53e53941a3",
       "audit": {
         "fixture_sha256": null,
-        "evaluated_at": "2026-10-20T18:55:44Z",
+        "evaluated_at": "2026-10-22T16:43:06Z",
         "actor": "ci:audit-v1",
         "checks": [
           {
@@ -1050,7 +1033,7 @@
       "input_sha256": "f534181276ab20e3245a0a70537d6d6db85ab58d604c10e74b0d22f0fdb001e1",
       "audit": {
         "fixture_sha256": null,
-        "evaluated_at": "2026-10-20T18:55:44Z",
+        "evaluated_at": "2026-10-22T16:43:06Z",
         "actor": "ci:audit-v1",
         "checks": [
           {
@@ -1212,7 +1195,7 @@
       "input_sha256": "292a373cfba84cfcdc957f8fd54701d784654e36434217d3f68c2aa5dad01ca3",
       "audit": {
         "fixture_sha256": null,
-        "evaluated_at": "2026-10-20T18:55:44Z",
+        "evaluated_at": "2026-10-22T16:43:06Z",
         "actor": "ci:audit-v1",
         "checks": [
           {
@@ -1355,7 +1338,7 @@
       "input_sha256": "7046a9cf27dfdfc0e57c7ff5d2eae94bd691ba632c302a9adc1af386adacb8f5",
       "audit": {
         "fixture_sha256": null,
-        "evaluated_at": "2026-10-20T18:55:44Z",
+        "evaluated_at": "2026-10-22T16:43:06Z",
         "actor": "ci:audit-v1",
         "checks": [
           {
@@ -1580,7 +1563,7 @@
       "input_sha256": "37fd3c4d57a01767d57d5e2b9a10128e20bc7c1a1bd1ecc4be71bbc2da547070",
       "audit": {
         "fixture_sha256": null,
-        "evaluated_at": "2026-10-20T18:55:44Z",
+        "evaluated_at": "2026-10-22T16:43:06Z",
         "actor": "ci:audit-v1",
         "checks": [
           {
@@ -1723,7 +1706,7 @@
       "input_sha256": null,
       "audit": {
         "fixture_sha256": null,
-        "evaluated_at": "2026-10-20T18:55:44Z",
+        "evaluated_at": "2026-10-22T16:43:06Z",
         "actor": "ci:audit-v1",
         "checks": [
           {
@@ -1754,7 +1737,7 @@
       "input_sha256": "41d77bd90ebf77e1e76d6a5b3da121055307af2f9b200c5ffccd0c53db76b95a",
       "audit": {
         "fixture_sha256": null,
-        "evaluated_at": "2026-10-20T18:55:44Z",
+        "evaluated_at": "2026-10-22T16:43:06Z",
         "actor": "ci:audit-v1",
         "checks": [
           {
@@ -1897,7 +1880,7 @@
       "input_sha256": "e9c5dc3e6cac258cde4a6777dbe103ead065eeaf3187fbec09b0d48427c43499",
       "audit": {
         "fixture_sha256": "53c9171c8a5dafc1f925fcb08294f5725158a47fba8df8e4d7bb36ccf5c8c4b6",
-        "evaluated_at": "2026-10-20T18:55:44Z",
+        "evaluated_at": "2026-10-22T16:43:06Z",
         "actor": "ci:audit-v1",
         "checks": [
           {
@@ -2040,7 +2023,7 @@
       "input_sha256": "c1e076ad5eb1cc62c1e4653968a856618932fa52d3780f351786d8c462d0fa53",
       "audit": {
         "fixture_sha256": "ba9179c9ffba7725d8ee93e43bf2234a4b665e71c075c5e7413911e41f013fe2",
-        "evaluated_at": "2026-10-20T18:55:44Z",
+        "evaluated_at": "2026-10-22T16:43:06Z",
         "actor": "ci:audit-v1",
         "checks": [
           {
@@ -2183,7 +2166,7 @@
       "input_sha256": "7188d51244f9760bf591e48045154184a2e640c733516790346bd4e5db0d5969",
       "audit": {
         "fixture_sha256": null,
-        "evaluated_at": "2026-10-20T18:55:44Z",
+        "evaluated_at": "2026-10-22T16:43:06Z",
         "actor": "ci:audit-v1",
         "checks": [
           {
@@ -2326,7 +2309,7 @@
       "input_sha256": "1ac5ccd635265dc89c05318674530978bde6262b1f0988f9c13e9b861bc2ab9f",
       "audit": {
         "fixture_sha256": "9340f8eed0ea510a4cd15a45a95528dfc9c219b6a915082b553c1aec5900227a",
-        "evaluated_at": "2026-10-20T18:55:44Z",
+        "evaluated_at": "2026-10-22T16:43:06Z",
         "actor": "ci:audit-v1",
         "checks": [
           {
@@ -2469,7 +2452,7 @@
       "input_sha256": "2c30b8e84e7999f41de7e75d6c226ef5da488b50a39add529f2f6dcf76547f79",
       "audit": {
         "fixture_sha256": "631a189261d25b3d996846ec1ff0f78d8c46e58cff7b5f7b02127140bbd4b61e",
-        "evaluated_at": "2026-10-20T18:55:44Z",
+        "evaluated_at": "2026-10-22T16:43:06Z",
         "actor": "ci:audit-v1",
         "checks": [
           {
