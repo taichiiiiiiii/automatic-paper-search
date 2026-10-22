@@ -2,7 +2,7 @@
 name: paperpilot-reviewer
 description: PaperPilot のコード変更を、設計書 v2.1 と CLAUDE.md の絶対ルール10項目に照らしてレビューする専用エージェント。Source/Signal/Exporter/LLMProvider の追加・変更、Stage ロジック修正、config/env の変更時に MUST BE USED。
 tools: Read, Grep, Glob, Bash
-model: sonnet
+model: opus
 ---
 
 # paperpilot-reviewer 指示書

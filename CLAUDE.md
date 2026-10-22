@@ -183,6 +183,7 @@ automatic-paper-search/
 
 - 実装・レビューは Claude Code の `/code-review` を使う。bounded implementationは`/code-review medium`、security / provenance / schema / migration / publication-riskは`/code-review high`を使い、`ultra`は通常使わない
 - `AGENTS.md` / `PAPERPILOT_PROFILE.md` に記載の Codex CLI + Qwen Flash/MAX routing は別ツールの運用。Claude Code はそれらのroute・workerを起動しない。製品runtimeのOllama/Qwen等のLLM provider設定と、リポジトリ作業agentのmodel routingも混同しない
+- `Agent` ツールでサブエージェントを起動するときは `model` を毎回明示する。実装=sonnet、レビュー=opus（実装とは別のエージェント）、アドバイザー=fable、読むだけの調査=sonnet、機械的な確認=haiku（ユーザー指示 2026-10-22。詳細は `.claude/agents/agent-orchestration.md` と `~/.claude/CLAUDE.md`）
 - 独立した調査・レビューは `Agent` ツールでサブエージェント（`Explore` / `general-purpose` / `Plan`）に並列委譲できる。共有生成物・manifest・asset version・lockfileの更新はownerが直列化する
 - workflow dispatch、通知、Pages / Worker / PyPI公開、secret/settings変更、`develop`へのpush/mergeはユーザーの明示承認後だけ行う
 
