@@ -1,7 +1,7 @@
 [
  {
   "method": "POST",
-  "urlPattern": "/graph/v1/paper/batch\\?fields=citationCount$",
+  "urlPattern": "/graph/v1/paper/batch\\?fields=citationCount(?:,|%2C)title(?:,|%2C)authors\\.name$",
   "status": 200,
   "headers": {"content-type": "application/json"},
   "batch": {
