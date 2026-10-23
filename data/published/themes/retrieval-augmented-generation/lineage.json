@@ -16,7 +16,7 @@
         "Vladimir Karpukhin"
       ],
       "kinds": [],
-      "citation_count": 19934,
+      "citation_count": 19935,
       "github_stars": 0,
       "tldr": "Affordance-Compiled Intelligence develops Cognitive Impedance Matching Theory (CIMT), an observable-only and no-meta protected compiler…",
       "short_abstract": "Affordance-Compiled Intelligence develops Cognitive Impedance Matching Theory (CIMT), an observable-only and no-meta protected compiler theory for LLM-integrated systems. The paper studies how a fixed model-policy can exhibit different operational capability when the surrounding world is redesigned through observations, typed action handles, validators, repair paths, rollback modes, authority scopes, context summaries, and auditable receipts. CIMT treats system-level capability amplification as a world-side compilation problem rather than a model-weight improvement problem. It defines operational claims through explicit claim objects and evidence objects, using committed observable ledgers, target-evaluation channels, deterministic reducers, validity budget ledgers, evidence dependency graphs, artifact I/O manifests, conformance envelopes, and finite-sample or sequential certificates. Human reviewers, LLM judges, benchmarks, and external auditors are not treated as privileged…",
@@ -146,7 +146,7 @@
         "Rajib Kumar Rana"
       ],
       "kinds": [],
-      "citation_count": 399,
+      "citation_count": 334,
       "github_stars": 0,
       "tldr": "Abstract Retrieval Augment Generation (RAG) is a recent advancement in Open-Domain Question Answering (ODQA). RAG has only been trained…",
       "short_abstract": "Abstract Retrieval Augment Generation (RAG) is a recent advancement in Open-Domain Question Answering (ODQA). RAG has only been trained and explored with a Wikipedia-based external knowledge base and is not optimized for use in other specialized domains such as healthcare and news. In this paper, we evaluate the impact of joint training of the retriever and generator components of RAG for the task of domain adaptation in ODQA. We propose RAG-end2end, an extension to RAG that can adapt to a domain-specific knowledge base by updating all components of the external knowledge base during training. In addition, we introduce an auxiliary training signal to inject more domain-specific knowledge. This auxiliary signal forces RAG-end2end to reconstruct a given sentence by accessing the relevant information from the external knowledge base. Our novel contribution is that, unlike RAG, RAG-end2end does joint training of the retriever and generator for the end QA task and domain adaptation. We…",
@@ -162,7 +162,6 @@
           "10.1162/tacl_a_00530"
         ]
       ],
-      "citation_count_source": "semantic_scholar",
       "is_focus": false
     },
     {
@@ -212,8 +211,8 @@
         "Qian Liu"
       ],
       "kinds": [],
-      "citation_count": 935,
-      "github_stars": 0,
+      "citation_count": 18,
+      "github_stars": 669,
       "tldr": "Despite the remarkable ability of large language models (LMs) to comprehend and generate language, they have a tendency to hallucinate and…",
       "short_abstract": "Despite the remarkable ability of large language models (LMs) to comprehend and generate language, they have a tendency to hallucinate and create factually inaccurate output. Augmenting LMs by retrieving information from external knowledge resources is one promising solution. Most existing retrieval augmented LMs employ a retrieve-and-generate setup that only retrieves information once based on the input. This is limiting, however, in more general scenarios involving generation of long texts, where continually gathering information throughout generation is essential. In this work, we provide a generalized view of active retrieval augmented generation, methods that actively decide when and what to retrieve across the course of the generation. We propose Forward-Looking Active REtrieval augmented generation (FLARE), a generic method which iteratively uses a prediction of the upcoming sentence to anticipate future content, which is then utilized as a query to retrieve relevant documents…",
       "arxiv_id": "2305.06983",
@@ -228,7 +227,7 @@
           "10.48550/arxiv.2305.06983"
         ]
       ],
-      "citation_count_source": "semantic_scholar",
+      "github_url": "https://github.com/jzbjyb/FLARE",
       "is_focus": false
     },
     {
@@ -328,7 +327,7 @@
     },
     {
       "id": "openalex:W4387156782",
-      "title": "Design and Evaluation of a Retrieval-Augmented Generation Architecture for OWASP Security Data",
+      "title": "RAGAs: Automated Evaluation of Retrieval Augmented Generation",
       "year": 2023,
       "venue": "arXiv (Cornell University)",
       "venue_tier": "preprint",
@@ -341,8 +340,7 @@
       "kinds": [],
       "citation_count": 1233,
       "github_stars": 0,
-      "tldr": "Project Description This archive contains a research artifact for the design, implementation, and evaluation of a Retrieval-Augmented…",
-      "short_abstract": "Project Description This archive contains a research artifact for the design, implementation, and evaluation of a Retrieval-Augmented Generation (RAG) system in the domain of application security. The artifact provides a complete, self-contained snapshot of the system architecture, curated evaluation data, and automated benchmarking pipelines. RAG System Architecture The archive includes a fully implemented RAG pipeline designed to ground large language model outputs in authoritative security documentation. The system follows a modular architecture with clearly separated components for document ingestion, semantic retrieval, and answer generation. The knowledge base is derived from OWASP Cheat Sheet Series and related security guidance, enabling security-focused question answering with reduced risk of hallucinated responses. Ground Truth Dataset A ground truth dataset is included to support systematic evaluation. The dataset consists of security-relevant questions and corresponding…",
+      "tldr": "",
       "arxiv_id": "2309.15217",
       "doi": "10.48550/arxiv.2309.15217",
       "is_focus": true,
@@ -431,11 +429,11 @@
       "venue": "arXiv (Cornell University)",
       "venue_tier": "preprint",
       "authors": [
-        "Quanzhi Fu",
-        "Wang Ling-xiang",
-        "Wenjia Song",
-        "Gelei Deng",
-        "Yi Liu"
+        "Akari Asai",
+        "Zeqiu Wu",
+        "Yizhong Wang",
+        "Avirup Sil",
+        "Hannaneh Hajishirzi"
       ],
       "kinds": [],
       "citation_count": 2927,
@@ -443,17 +441,12 @@
       "tldr": "Despite their remarkable capabilities, large language models (LLMs) often produce responses containing factual inaccuracies due to their…",
       "short_abstract": "Despite their remarkable capabilities, large language models (LLMs) often produce responses containing factual inaccuracies due to their sole reliance on the parametric knowledge they encapsulate. Retrieval-Augmented Generation (RAG), an ad hoc approach that augments LMs with retrieval of relevant knowledge, decreases such issues. However, indiscriminately retrieving and incorporating a fixed number of retrieved passages, regardless of whether retrieval is necessary, or passages are relevant, diminishes LM versatility or can lead to unhelpful response generation. We introduce a new framework called Self-Reflective Retrieval-Augmented Generation (Self-RAG) that enhances an LM's quality and factuality through retrieval and self-reflection. Our framework trains a single arbitrary LM that adaptively retrieves passages on-demand, and generates and reflects on retrieved passages and its own generations using special tokens, called reflection tokens. Generating reflection tokens makes the…",
       "arxiv_id": "2310.11511",
-      "doi": "10.4230/lipics.esem.2026.1",
       "is_focus": true,
       "citation_count_source": "semantic_scholar",
       "aliases": [
         [
           "arxiv",
           "2310.11511"
-        ],
-        [
-          "doi",
-          "10.4230/lipics.esem.2026.1"
         ]
       ],
       "github_url": "https://github.com/AkariAsai/self-rag",
@@ -737,7 +730,7 @@
       ],
       "kinds": [],
       "citation_count": 312,
-      "github_stars": 702,
+      "github_stars": 0,
       "tldr": "All text-based language problems can be reduced to either generation or embedding. Current models only perform well at one or the other.…",
       "short_abstract": "All text-based language problems can be reduced to either generation or embedding. Current models only perform well at one or the other. We introduce generative representational instruction tuning (GRIT) whereby a large language model is trained to handle both generative and embedding tasks by distinguishing between them through instructions. Compared to other open models, our resulting GritLM 7B sets a new state of the art on the Massive Text Embedding Benchmark (MTEB) and outperforms all models up to its size on a range of generative tasks. By scaling up further, GritLM 8x7B outperforms all open generative language models that we tried while still being among the best embedding models. Notably, we find that GRIT matches training on only generative or embedding data, thus we can unify both at no performance loss. Among other benefits, the unification via GRIT speeds up Retrieval-Augmented Generation (RAG) by > 60% for long documents, by no longer requiring separate retrieval and…",
       "arxiv_id": "2402.09906",
@@ -753,7 +746,6 @@
           "10.48550/arxiv.2402.09906"
         ]
       ],
-      "github_url": "https://github.com/ContextualAI/gritlm",
       "is_focus": false
     },
     {
@@ -768,7 +760,7 @@
         "Faegheh Hasibi"
       ],
       "kinds": [],
-      "citation_count": 145,
+      "citation_count": 86,
       "github_stars": 0,
       "tldr": "Language Models (LMs) memorize a vast amount of factual knowledge, exhibiting strong performance across diverse tasks and domains.…",
       "short_abstract": "Language Models (LMs) memorize a vast amount of factual knowledge, exhibiting strong performance across diverse tasks and domains. However, it has been observed that the performance diminishes when dealing with less-popular or low-frequency concepts and entities, for example in domain specific applications. The two prominent approaches to enhance the performance of LMs on low-frequent topics are: Retrieval Augmented Generation (RAG) and fine-tuning (FT) over synthetic data. This paper explores and evaluates the impact of RAG and FT on customizing LMs in handling low-frequency entities on question answering tasks. We conduct extensive experiments on twelve LMs of varying size and type and different FT methods, data augmentation, and retrieval models. Our findings indicate that while FT boosts the performance across entities of varying popularity, RAG surpasses FT by a large margin particularly for least popular factual knowledge. Additionally, the success of both RAG and FT approaches…",
@@ -784,7 +776,6 @@
           "10.1145/3673791.3698415"
         ]
       ],
-      "citation_count_source": "semantic_scholar",
       "is_focus": false
     },
     {
@@ -802,7 +793,7 @@
       ],
       "kinds": [],
       "citation_count": 113,
-      "github_stars": 0,
+      "github_stars": 249,
       "tldr": "We explore how iterative revising a chain of thoughts with the help of information retrieval significantly improves large language models'…",
       "short_abstract": "We explore how iterative revising a chain of thoughts with the help of information retrieval significantly improves large language models' reasoning and generation ability in long-horizon generation tasks, while hugely mitigating hallucination. In particular, the proposed method -- *retrieval-augmented thoughts* (RAT) -- revises each thought step one by one with retrieved information relevant to the task query, the current and the past thought steps, after the initial zero-shot CoT is generated. Applying RAT to GPT-3.5, GPT-4, and CodeLLaMA-7b substantially improves their performances on various long-horizon generation tasks; on average of relatively increasing rating scores by 13.63% on code generation, 16.96% on mathematical reasoning, 19.2% on creative writing, and 42.78% on embodied task planning. The demo page can be found at https://craftjarvis.github.io/RAT",
       "arxiv_id": "2403.05313",
@@ -818,6 +809,7 @@
           "10.48550/arxiv.2403.05313"
         ]
       ],
+      "github_url": "https://github.com/CraftJarvis/RAT",
       "is_focus": false
     },
     {
@@ -901,7 +893,7 @@
         "Ruiyi Zhang"
       ],
       "kinds": [],
-      "citation_count": 373,
+      "citation_count": 169,
       "github_stars": 0,
       "tldr": "The `pre-train, prompt, predict' paradigm of large language models (LLMs) has achieved remarkable success in open-domain question…",
       "short_abstract": "The `pre-train, prompt, predict' paradigm of large language models (LLMs) has achieved remarkable success in open-domain question answering (OD-QA). However, few works explore this paradigm in multi-document question answering (MD-QA), a task demanding a thorough understanding of the logical associations among the contents and structures of documents. To fill this crucial gap, we propose a Knowledge Graph Prompting (KGP) method to formulate the right context in prompting LLMs for MD-QA, which consists of a graph construction module and a graph traversal module. For graph construction, we create a knowledge graph (KG) over multiple documents with nodes symbolizing passages or document structures (e.g., pages/tables), and edges denoting the semantic/lexical similarity between passages or document structural relations. For graph traversal, we design an LLM-based graph traversal agent that navigates across nodes and gathers supporting passages assisting LLMs in MD-QA. The constructed…",
@@ -917,7 +909,6 @@
           "10.1609/aaai.v38i17.29889"
         ]
       ],
-      "citation_count_source": "semantic_scholar",
       "is_focus": false
     },
     {
@@ -992,7 +983,7 @@
         "Jimmy Xiangji Huang"
       ],
       "kinds": [],
-      "citation_count": 206,
+      "citation_count": 85,
       "github_stars": 0,
       "tldr": "Retrieval-Augmented Generation (RAG) merges information retrieval (IR) techniques with deep learning advancements to address the static…",
       "short_abstract": "Retrieval-Augmented Generation (RAG) merges information retrieval (IR) techniques with deep learning advancements to address the static limitations of large language models (LLMs) by enabling the dynamic integration of up-to-date external information. This methodology, focusing primarily on the text domain, provides a cost-effective solution to the generation of plausible but possibly incorrect responses by LLMs, thereby enhancing the accuracy and reliability of their outputs through the use of real-world data. As RAG grows in complexity and incorporates multiple concepts that can influence its performance, this article organizes the RAG paradigm into four categories: pre-retrieval, retrieval, post-retrieval, and generation, offering a detailed perspective from the retrieval viewpoint. It outlines RAG’s mechanics and discusses the field’s progression through the analysis of significant studies. Additionally, the article introduces evaluation methods for RAG, addressing the challenges…",
@@ -1008,7 +999,6 @@
           "10.1145/3805774"
         ]
       ],
-      "citation_count_source": "semantic_scholar",
       "is_focus": false
     },
     {
@@ -1058,7 +1048,7 @@
         "Manasi Deshpande"
       ],
       "kinds": [],
-      "citation_count": 279,
+      "citation_count": 169,
       "github_stars": 0,
       "tldr": "In customer service technical support, swiftly and accurately retrieving relevant past issues is critical for efficiently resolving…",
       "short_abstract": "In customer service technical support, swiftly and accurately retrieving relevant past issues is critical for efficiently resolving customer inquiries. The conventional retrieval methods in retrieval-augmented generation (RAG) for large language models (LLMs) treat a large corpus of past issue tracking tickets as plain text, ignoring the crucial intra-issue structure and inter-issue relations, which limits performance. We introduce a novel customer service question-answering method that amalgamates RAG with a knowledge graph (KG). Our method constructs a KG from historical issues for use in retrieval, retaining the intra-issue structure and inter-issue relations. During the question-answering phase, our method parses consumer queries and retrieves related sub-graphs from the KG to generate answers. This integration of a KG not only improves retrieval accuracy by preserving customer service structure information but also enhances answering quality by mitigating the effects of text…",
@@ -1075,7 +1065,6 @@
           "10.1145/3626772.3661370"
         ]
       ],
-      "citation_count_source": "semantic_scholar",
       "seed_paper_id": "6b5b8fbbcca78e34fb96c704f83bd2a7f125878b"
     },
     {
@@ -1177,7 +1166,7 @@
         "Hamed Zamani"
       ],
       "kinds": [],
-      "citation_count": 160,
+      "citation_count": 52,
       "github_stars": 0,
       "tldr": "This paper studies retrieval-augmented approaches for personalizing large language models (LLMs), which potentially have a substantial…",
       "short_abstract": "This paper studies retrieval-augmented approaches for personalizing large language models (LLMs), which potentially have a substantial impact on various applications and domains. We propose the first attempt to optimize the retrieval models that deliver a limited number of personal documents to large language models for the purpose of personalized generation. We develop two optimization algorithms that solicit feedback from the downstream personalized generation tasks for retrieval optimization--one based on reinforcement learning whose reward function is defined using any arbitrary metric for personalized generation and another based on knowledge distillation from the downstream LLM to the retrieval model. This paper also introduces a pre- and post-generation retriever selection model that decides what retriever to choose for each LLM input. Extensive experiments on diverse tasks from the language model personalization (LaMP) benchmark reveal statistically significant improvements…",
@@ -1193,7 +1182,6 @@
           "10.1145/3626772.3657783"
         ]
       ],
-      "citation_count_source": "semantic_scholar",
       "is_focus": false
     },
     {
@@ -1238,7 +1226,7 @@
         "Michael Bendersky"
       ],
       "kinds": [],
-      "citation_count": 62,
+      "citation_count": 27,
       "github_stars": 0,
       "tldr": "This paper introduces Stochastic RAG--a novel approach for end-to-end optimization of retrieval-augmented generation (RAG) models that…",
       "short_abstract": "This paper introduces Stochastic RAG--a novel approach for end-to-end optimization of retrieval-augmented generation (RAG) models that relaxes the simplifying assumptions of marginalization and document independence, made in most prior work. Stochastic RAG casts the retrieval process in RAG as a stochastic sampling without replacement process. Through this formulation, we employ straight-through Gumbel-top-k that provides a differentiable approximation for sampling without replacement and enables effective end-to-end optimization for RAG. We conduct extensive experiments on seven diverse datasets on a wide range of tasks, from open-domain question answering to fact verification to slot-filling for relation extraction and to dialogue systems. By applying this optimization method to a recent and effective RAG model, we advance state-of-the-art results on six out of seven datasets.",
@@ -1254,7 +1242,6 @@
           "10.1145/3626772.3657923"
         ]
       ],
-      "citation_count_source": "semantic_scholar",
       "is_focus": false
     },
     {
@@ -1336,7 +1323,7 @@
         "Anuradha Mathrani"
       ],
       "kinds": [],
-      "citation_count": 75,
+      "citation_count": 66,
       "github_stars": 0,
       "tldr": "This study examines Retrieval-Augmented Generation (RAG) in large language models (LLMs) and their significant application for undertaking…",
       "short_abstract": "This study examines Retrieval-Augmented Generation (RAG) in large language models (LLMs) and their significant application for undertaking systematic literature reviews (SLRs). RAG-based LLMs can potentially automate tasks like data extraction, summarization, and trend identification. However, while LLMs are exceptionally proficient in generating human-like text and interpreting complex linguistic nuances, their dependence on static, pre-trained knowledge can result in inaccuracies and hallucinations. RAG mitigates these limitations by integrating LLMs’ generative capabilities with the precision of real-time information retrieval. We review in detail the three key processes of the RAG framework—retrieval, augmentation, and generation. We then discuss applications of RAG-based LLMs to SLR automation and highlight future research topics, including integration of domain-specific LLMs, multimodal data processing and generation, and utilization of multiple retrieval sources. We propose a…",
@@ -1347,7 +1334,6 @@
           "10.3390/app14199103"
         ]
       ],
-      "citation_count_source": "semantic_scholar",
       "is_focus": false
     },
     {
@@ -1585,7 +1571,7 @@
         "Fateme Nateghi Haredasht"
       ],
       "kinds": [],
-      "citation_count": 92,
+      "citation_count": 73,
       "github_stars": 0,
       "tldr": "Large language models (LLMs) with retrieval-augmented generation (RAG) have improved information extraction over previous methods, yet…",
       "short_abstract": "Large language models (LLMs) with retrieval-augmented generation (RAG) have improved information extraction over previous methods, yet their reliance on embeddings often leads to inefficient retrieval. We introduce CLinical Entity Augmented Retrieval (CLEAR), a RAG pipeline that retrieves information using entities. We compared CLEAR to embedding RAG and full-note approaches for extracting 18 variables using six LLMs across 20,000 clinical notes. Average F1 scores were 0.90, 0.86, and 0.79; inference times were 4.95, 17.41, and 20.08 s per note; average model queries were 1.68, 4.94, and 4.18 per note; and average input tokens were 1.1k, 3.8k, and 6.1k per note for CLEAR, embedding RAG, and full-note approaches, respectively. In conclusion, CLEAR utilizes clinical entities for information retrieval and achieves >70% reduction in token usage and inference time with improved performance compared to modern methods.",
@@ -1596,7 +1582,6 @@
           "10.1038/s41746-024-01377-1"
         ]
       ],
-      "citation_count_source": "semantic_scholar",
       "is_focus": false
     },
     {
@@ -1611,7 +1596,7 @@
         "Zeynep Destan"
       ],
       "kinds": [],
-      "citation_count": 38,
+      "citation_count": 31,
       "github_stars": 0,
       "tldr": "Advances in Natural Language Processing (NLP) have led to the emergence of complex structures such as Large Language Models (LLM). LLMs…",
       "short_abstract": "Advances in Natural Language Processing (NLP) have led to the emergence of complex structures such as Large Language Models (LLM). LLMs are highly successful in understanding the subtleties of language and processing context by being trained on large datasets. However, the difficulties encountered in Information Retrieval (IR) processes have created an awareness that these models are not sufficient on their own. Traditional IR methods have generally been insufficient in understanding the complexity of natural language in responding to specific queries and retrieving appropriate information from documents or databases. Since this process is based only on keywords, it cannot fully capture the semantic meaning of the language. For this reason, it has been necessary to go beyond traditional IR methods for more precise information creation based on context and meaning. As a result of these requirements, the Retrieval-Augmented Generation (RAG) architecture has come to the fore. RAG offers…",
@@ -1622,7 +1607,6 @@
           "10.1109/isas64331.2024.10845308"
         ]
       ],
-      "citation_count_source": "semantic_scholar",
       "is_focus": false
     },
     {
@@ -1637,7 +1621,7 @@
         "Xing Han"
       ],
       "kinds": [],
-      "citation_count": 39,
+      "citation_count": 27,
       "github_stars": 0,
       "tldr": "With the growing demand for offline PDF chatbots in automotive industrial production environments, optimizing the deployment of large…",
       "short_abstract": "With the growing demand for offline PDF chatbots in automotive industrial production environments, optimizing the deployment of large language models (LLMs) in local, low-performance settings has become increasingly important. This study focuses on enhancing Retrieval-Augmented Generation (RAG) techniques for processing complex automotive industry documents using locally deployed Ollama models.",
@@ -1648,7 +1632,6 @@
           "10.1145/3707292.3707358"
         ]
       ],
-      "citation_count_source": "semantic_scholar",
       "is_focus": false
     },
     {
@@ -1665,7 +1648,7 @@
         "Alireza Salemi"
       ],
       "kinds": [],
-      "citation_count": 56,
+      "citation_count": 42,
       "github_stars": 0,
       "tldr": "An evolving solution to address hallucination and enhance accuracy in large language models (LLMs) is Retrieval-Augmented Generation…",
       "short_abstract": "An evolving solution to address hallucination and enhance accuracy in large language models (LLMs) is Retrieval-Augmented Generation (RAG), which involves augmenting LLMs with information retrieved from an external knowledge source, such as the web. This paper profiles several RAG execution pipelines and demystifies the complex interplay between their retrieval and generation phases. We demonstrate that while exact retrieval schemes are expensive, they can reduce inference time compared to approximate retrieval variants because an exact retrieval model can send a smaller but more accurate list of documents to the generative model while maintaining the same end-to-end accuracy. This observation motivates the acceleration of the exact nearest neighbor search for RAG.",
@@ -1681,7 +1664,6 @@
           "10.1145/3669940.3707264"
         ]
       ],
-      "citation_count_source": "semantic_scholar",
       "is_focus": false
     },
     {
@@ -1698,7 +1680,7 @@
         "Manish Bhattarai"
       ],
       "kinds": [],
-      "citation_count": 34,
+      "citation_count": 24,
       "github_stars": 0,
       "tldr": "Large Language Models (LLMs) are pre-trained on large-scale corpora and excel in numerous general natural language processing (NLP) tasks,…",
       "short_abstract": "Large Language Models (LLMs) are pre-trained on large-scale corpora and excel in numerous general natural language processing (NLP) tasks, such as question answering (QA). Despite their advanced language capabilities, when it comes to domain-specific and knowledge-intensive tasks, LLMs suffer from hallucinations, knowledge cut-offs, and lack of knowledge attributions. Additionally, fine tuning LLMs' intrinsic knowledge to highly specific domains is an expensive and time consuming process. The retrieval-augmented generation (RAG) process has recently emerged as a method capable of optimization of LLM responses, by referencing them to a predetermined ontology. It was shown that using a Knowledge Graph (KG) ontology for RAG improves the QA accuracy, by taking into account relevant sub-graphs that preserve the information in a structured manner. In this paper, we introduce SMART-SLIC, a highly domain-specific LLM framework, that integrates RAG with KG and a vector store (VS) that store…",
@@ -1709,7 +1691,6 @@
           "10.1109/icmla61862.2024.00258"
         ]
       ],
-      "citation_count_source": "semantic_scholar",
       "is_focus": false
     },
     {
@@ -1778,7 +1759,7 @@
         "Chunyan Miao"
       ],
       "kinds": [],
-      "citation_count": 213,
+      "citation_count": 115,
       "github_stars": 0,
       "tldr": "Retrieval-augmented generation (RAG) is a well-suited technique for retrieving privacy-sensitive Electronic Health Records (EHR).It can…",
       "short_abstract": "Retrieval-augmented generation (RAG) is a well-suited technique for retrieving privacy-sensitive Electronic Health Records (EHR).It can serve as a key module of the healthcare copilot, helping reduce misdiagnosis for healthcare practitioners and patients.However, the diagnostic accuracy and specificity of existing heuristic-based RAG models used in the medical domain are inadequate, particularly for diseases with similar manifestations.This paper proposes MedRAG, a RAG model enhanced by knowledge graph (KG)-elicited reasoning for the medical domain that retrieves diagnosis and treatment recommendations based on manifestations.MedRAG systematically constructs a comprehensive four-tier hierarchical diagnostic KG encompassing critical diagnostic differences of various diseases.These differences are dynamically integrated with similar EHRs retrieved from an EHR database, and reasoned within a large language model.This process enables more accurate and specific decision support, while…",
@@ -1794,7 +1775,6 @@
           "10.1145/3696410.3714782"
         ]
       ],
-      "citation_count_source": "semantic_scholar",
       "is_focus": false
     },
     {
@@ -1837,7 +1817,7 @@
         "Daniel Großmann"
       ],
       "kinds": [],
-      "citation_count": 63,
+      "citation_count": 57,
       "github_stars": 0,
       "tldr": "Retrieval-Augmented Generation (RAG) systems have shown significant potential for domain-specific Question Answering (QA) tasks, although…",
       "short_abstract": "Retrieval-Augmented Generation (RAG) systems have shown significant potential for domain-specific Question Answering (QA) tasks, although persistent challenges in retrieval precision and context selection continue to hinder their effectiveness. This study introduces Document Graph RAG (GraphRAG), a novel framework that bolsters retrieval robustness and enhances answer generation by incorporating Knowledge Graphs (KGs) built upon a document’s intrinsic structure into the RAG pipeline. Through the application of the Design Science Research methodology, we systematically design, implement, and evaluate GraphRAG, leveraging graph-based document structuring and a keyword-based semantic linking mechanism to improve retrieval quality. The evaluation, conducted on well-established datasets including SQuAD, HotpotQA, and a newly developed manufacturing dataset, demonstrates consistent performance gains over a naive RAG baseline across both retrieval and generation metrics. The results…",
@@ -1848,7 +1828,6 @@
           "10.3390/electronics14112102"
         ]
       ],
-      "citation_count_source": "semantic_scholar",
       "is_focus": false
     },
     {
@@ -1864,7 +1843,7 @@
         "Zhen-Hua Ling"
       ],
       "kinds": [],
-      "citation_count": 342,
+      "citation_count": 175,
       "github_stars": 475,
       "tldr": "",
       "arxiv_id": "2401.15884",
@@ -1881,7 +1860,6 @@
         ]
       ],
       "github_url": "https://github.com/HuskyInSalt/CRAG",
-      "citation_count_source": "semantic_scholar",
       "seed_paper_id": "86659434b50c0b4cc98ea66fb3e5d57de368757e"
     },
     {
@@ -1898,7 +1876,7 @@
         "Tianming Liu"
       ],
       "kinds": [],
-      "citation_count": 59,
+      "citation_count": 8,
       "github_stars": 0,
       "tldr": "Large Language Models (LLMs), although powerful in general domains, often perform poorly on domain-specific tasks such as medical question…",
       "short_abstract": "Large Language Models (LLMs), although powerful in general domains, often perform poorly on domain-specific tasks such as medical question answering (QA). In addition, LLMs tend to function as \"black-boxes\", making it challenging to modify their behavior. To address the problem, our work employs a transparent process of retrieval augmented generation (RAG), aiming to improve LLM responses without the need for fine-tuning or retraining. Specifically, we propose a comprehensive retrieval strategy to extract medical facts from an external knowledge base, and then inject them into the LLM's query prompt. Focusing on medical QA, we evaluate the impact of different retrieval models and the number of facts on LLM performance using the MedQA-SMILE dataset. Notably, our retrieval-augmented Vicuna-7B model exhibited an accuracy improvement from 44.46% to 48.54%. This work underscores the potential of RAG to enhance LLM performance, offering a practical approach to mitigate the challenges posed…",
@@ -1914,7 +1892,6 @@
           "10.48550/arxiv.2309.16035"
         ]
       ],
-      "citation_count_source": "semantic_scholar",
       "is_focus": false
     },
     {
@@ -1958,7 +1935,7 @@
         "Chen Ling"
       ],
       "kinds": [],
-      "citation_count": 182,
+      "citation_count": 96,
       "github_stars": 0,
       "tldr": "Naive Retrieval-Augmented Generation (RAG) focuses on individual documents during retrieval and, as a result, falls short in handling…",
       "short_abstract": "Naive Retrieval-Augmented Generation (RAG) focuses on individual documents during retrieval and, as a result, falls short in handling networked documents which are very popular in many applications such as citation graphs, social media, and knowledge graphs.To overcome this limitation, we introduce Graph Retrieval-Augmented Generation (GRAG), which tackles the fundamental challenges in retrieving textual subgraphs and integrating the joint textual and topological information into Large Language Models (LLMs) to enhance its generation.To enable efficient textual subgraph retrieval, we propose a novel divide-and-conquer strategy that retrieves the optimal subgraph structure in linear time.To achieve graph context-aware generation, incorporate textual graphs into LLMs through two complementary views-the text view and the graph view-enabling LLMs to more effectively comprehend and utilize the graph context.Extensive experiments on graph reasoning benchmarks demonstrate that in scenarios…",
@@ -1975,7 +1952,6 @@
           "10.18653/v1/2025.findings-naacl.232"
         ]
       ],
-      "citation_count_source": "semantic_scholar",
       "seed_paper_id": "1dc25a41984c8adadb98ad3bad6eeed83e4472c8"
     },
     {
@@ -1992,7 +1968,7 @@
         "Jan Seidel"
       ],
       "kinds": [],
-      "citation_count": 295,
+      "citation_count": 259,
       "github_stars": 0,
       "tldr": "Large Language Models (LLMs) have demonstrated promising capabilities to solve complex tasks in critical sectors such as healthcare.…",
       "short_abstract": "Large Language Models (LLMs) have demonstrated promising capabilities to solve complex tasks in critical sectors such as healthcare. However, LLMs are limited by their training data which is often outdated, the tendency to generate inaccurate (\"hallucinated\") content and a lack of transparency in the content they generate. To address these limitations, retrieval augmented generation (RAG) grounds the responses of LLMs by exposing them to external knowledge sources. However, in the healthcare domain there is currently a lack of systematic understanding of which datasets, RAG methodologies and evaluation frameworks are available. This review aims to bridge this gap by assessing RAG-based approaches employed by LLMs in healthcare, focusing on the different steps of retrieval, augmentation and generation. Additionally, we identify the limitations, strengths and gaps in the existing literature. Our synthesis shows that 78.9% of studies used English datasets and 21.1% of the datasets are…",
@@ -2004,7 +1980,6 @@
           "10.1371/journal.pdig.0000877"
         ]
       ],
-      "citation_count_source": "semantic_scholar",
       "is_focus": false
     },
     {
@@ -2054,7 +2029,7 @@
         "Yu Liang"
       ],
       "kinds": [],
-      "citation_count": 23,
+      "citation_count": 14,
       "github_stars": 0,
       "tldr": "Large Language Models (LLMs) face an inherent challenge: their knowledge is confined to the data that they have been trained on.This…",
       "short_abstract": "Large Language Models (LLMs) face an inherent challenge: their knowledge is confined to the data that they have been trained on.This limitation, combined with the significant cost of retraining renders them incapable of providing up-to-date responses.To overcome these issues, Retrieval-Augmented Generation (RAG) complements the static training-derived knowledge of LLMs with an external knowledge repository.RAG consists of three stages: (i) indexing, which creates a database that facilitates similarity search on text embeddings, (ii) retrieval, which, given a user query, searches and retrieves relevant data from the database and (iii) generation, which uses the user query and the retrieved data to generate a response.The retrieval stage of RAG in particular becomes a significant performance bottleneck in inference pipelines.In this stage, (i) a given user query is mapped to an embedding vector and (ii) an Approximate Nearest Neighbor Search (ANNS) algorithm searches for the most…",
@@ -2065,7 +2040,6 @@
           "10.1145/3695053.3731116"
         ]
       ],
-      "citation_count_source": "semantic_scholar",
       "is_focus": false
     },
     {
@@ -2108,7 +2082,7 @@
         "Yanhao Wang"
       ],
       "kinds": [],
-      "citation_count": 18,
+      "citation_count": 12,
       "github_stars": 0,
       "tldr": "Multi-Hop Question Answering (MHQA), crucial for complex information retrieval, remains challenging for current Large Language Models…",
       "short_abstract": "Multi-Hop Question Answering (MHQA), crucial for complex information retrieval, remains challenging for current Large Language Models (LLMs) and Retrieval-Augmented Generation (RAG) systems, which often suffer from hallucination, reliance on incomplete knowledge, and opaque reasoning processes. Existing RAG methods, while beneficial, still struggle with the intricacies of multi-step inference and ensuring verifiable accuracy. This research introduces TreeQA, a novel framework designed to significantly enhance the reliability and interpretability of LLM-RAG systems in MHQA tasks. TreeQA addresses these limitations by decomposing complex multi-hop questions into a hierarchical logic tree of simpler, verifiable sub-questions, integrating evidence from both structured knowledge bases (e.g., Wikidata) and unstructured text (e.g., Wikipedia), and employing an iterative, evidence-based validation and self-correction mechanism at each reasoning step to dynamically rectify errors and prevent…",
@@ -2119,7 +2093,6 @@
           "10.1016/j.knosys.2025.114526"
         ]
       ],
-      "citation_count_source": "semantic_scholar",
       "is_focus": false
     },
     {
@@ -2236,7 +2209,7 @@
       ],
       "kinds": [],
       "citation_count": 407,
-      "github_stars": 558,
+      "github_stars": 0,
       "tldr": "Given a graph with textual attributes, we enable users to `chat with their graph': that is, to ask questions about the graph using a…",
       "short_abstract": "Given a graph with textual attributes, we enable users to `chat with their graph': that is, to ask questions about the graph using a conversational interface. In response to a user's questions, our method provides textual replies and highlights the relevant parts of the graph. While existing works integrate large language models (LLMs) and graph neural networks (GNNs) in various ways, they mostly focus on either conventional graph tasks (such as node, edge, and graph classification), or on answering simple graph queries on small or synthetic graphs. In contrast, we develop a flexible question-answering framework targeting real-world textual graphs, applicable to multiple applications including scene graph understanding, common sense reasoning, and knowledge graph reasoning. Toward this goal, we first develop a Graph Question Answering (GraphQA) benchmark with data collected from different tasks. Then, we propose our G-Retriever method, introducing the first retrieval-augmented…",
       "arxiv_id": "2402.07630",
@@ -2252,7 +2225,6 @@
           "10.52202/079017-4224"
         ]
       ],
-      "github_url": "https://github.com/XiaoxinHe/G-Retriever",
       "is_focus": false
     },
     {
@@ -2270,7 +2242,7 @@
       ],
       "kinds": [],
       "citation_count": 557,
-      "github_stars": 40283,
+      "github_stars": 40290,
       "tldr": "Retrieval-Augmented Generation (RAG) systems enhance large language models (LLMs) by integrating external knowledge sources, enabling more…",
       "short_abstract": "Retrieval-Augmented Generation (RAG) systems enhance large language models (LLMs) by integrating external knowledge sources, enabling more accurate and contextually relevant responses tailored to user needs.However, existing RAG systems have significant limitations, including reliance on flat data representations and inadequate contextual awareness, which can lead to fragmented answers that fail to capture complex interdependencies.To address these challenges, we propose Ligh-tRAG, a novel framework that incorporates graph structures into text indexing and retrieval processes.This innovative approach employs a dual-level retrieval system that enhances comprehensive information retrieval from both lowand high-level knowledge discovery.Additionally, the integration of graph structures with vector representations facilitates efficient retrieval of related entities and their relationships, significantly improving response times while maintaining contextual relevance.This capability is…",
       "arxiv_id": "2410.05779",
@@ -2329,7 +2301,7 @@
         "Jakub M. Tomczak"
       ],
       "kinds": [],
-      "citation_count": 50,
+      "citation_count": 38,
       "github_stars": 0,
       "tldr": "Abstract Large Language Models (LLMs) and Knowledge Graphs (KGs) offer a promising approach to robust and explainable Question Answering…",
       "short_abstract": "Abstract Large Language Models (LLMs) and Knowledge Graphs (KGs) offer a promising approach to robust and explainable Question Answering (QA). While LLMs excel at natural language understanding, they suffer from knowledge gaps and hallucinations. KGs provide structured knowledge but lack natural language interaction. Ideally, an AI system should be both robust to missing facts as well as easy to communicate with. This paper proposes such a system that integrates LLMs and KGs without requiring training, ensuring adaptability across different KGs with minimal human effort. The resulting approach can be classified as a specific form of a Retrieval Augmented Generation (RAG) with a KG, thus, it is dubbed Knowledge Graph-extended Retrieval Augmented Generation (KG-RAG). It includes a question decomposition module to enhance multi-hop information retrieval and answer explainability. Using In-Context Learning (ICL) and Chain-of-Thought (CoT) prompting, it generates explicit reasoning chains…",
@@ -2345,7 +2317,6 @@
           "10.1007/s10489-025-06885-5"
         ]
       ],
-      "citation_count_source": "semantic_scholar",
       "is_focus": false
     },
     {
@@ -2422,7 +2393,7 @@
         "Yinyi Wei"
       ],
       "kinds": [],
-      "citation_count": 7,
+      "citation_count": 4,
       "github_stars": 0,
       "tldr": "To improve project administration and ensure efficient claim management, it is essential to accurately document all claim-related…",
       "short_abstract": "To improve project administration and ensure efficient claim management, it is essential to accurately document all claim-related information. To improve claim recording efficiency, this study proposes an automatic claim report generation method: Tree-Mapped Retrieval-Augmented Generation (TM-RAG). TM-RAG maintains a timeline ontology that represents the workflow of claim events and establishes structured mappings between ontology nodes and corresponding entries in claim reports based on historical data. For new claim cases, TM-RAG can rapidly instantiate the ontology structure, construct a hierarchical time tree (a graph-based structure), and accurately extract information for claim report generation, leveraging mapped relationships. Experimental results show that TM-RAG with a locally deployed Qwen2.5-7B model achieves the best overall score (0.937), substantially improving EM over vector-based (+21–23 %) and graph-based methods (+15–17 %), while delivering on average + 33 %…",
@@ -2433,7 +2404,6 @@
           "10.1016/j.aei.2025.104092"
         ]
       ],
-      "citation_count_source": "semantic_scholar",
       "is_focus": false
     },
     {
@@ -2447,7 +2417,7 @@
         "Akhan Akbulut"
       ],
       "kinds": [],
-      "citation_count": 26,
+      "citation_count": 24,
       "github_stars": 0,
       "tldr": "The integration of Retrieval-Augmented Generation (RAG) with Large Language Models (LLMs) is rapidly transforming enterprise knowledge…",
       "short_abstract": "The integration of Retrieval-Augmented Generation (RAG) with Large Language Models (LLMs) is rapidly transforming enterprise knowledge management, yet a comprehensive understanding of their deployment in real-world workflows remains limited. This study presents a systematic literature review (SLR) analyzing 63 high-quality primary studies selected after rigorous screening to evaluate how these technologies address practical enterprise challenges. We formulated nine research questions targeting platforms, datasets, algorithms, and validation metrics to map the current landscape. Our findings reveal that enterprise adoption is largely in the experimental phase: 63.6% of implementations utilize GPT based models, and 80.5% rely on standard retrieval frameworks such as FAISS or Elasticsearch. Critically, this review identifies a significant ‘lab-to-market’ gap; while retrieval and classification sub-tasks frequently employ academic validation methods like k-fold cross-validation (93.6%),…",
@@ -2458,7 +2428,6 @@
           "10.3390/app16010368"
         ]
       ],
-      "citation_count_source": "semantic_scholar",
       "is_focus": false
     },
     {
@@ -2576,7 +2545,7 @@
         "Haytham M. Fayek"
       ],
       "kinds": [],
-      "citation_count": 3,
+      "citation_count": 2,
       "github_stars": 0,
       "tldr": "Knowledge Graph Retrieval-Augmented Generation (KG-RAG) extends the RAG paradigm by incorporating structured knowledge from knowledge…",
       "short_abstract": "Knowledge Graph Retrieval-Augmented Generation (KG-RAG) extends the RAG paradigm by incorporating structured knowledge from knowledge graphs, enabling Large Language Models (LLMs) to perform more precise and explainable reasoning. While KG-RAG improves factual accuracy in complex tasks, existing KG-RAG models are often severely overconfident, producing high-confidence predictions even when retrieved sub-graphs are incomplete or unreliable, which raises concerns for deployment in high-stakes domains. To address this issue, we propose Ca2KG, a Causality-aware Calibration framework for KG-RAG. Ca2KG integrates counterfactual prompting, which exposes retrieval-dependent uncertainties in knowledge quality and reasoning reliability, with a panel-based re-scoring mechanism that stabilises predictions across interventions. Extensive experiments on two complex QA datasets demonstrate that Ca2KG consistently improves calibration while maintaining or even enhancing predictive accuracy. The…",
@@ -2587,7 +2556,6 @@
           "10.1145/3774904.3792358"
         ]
       ],
-      "citation_count_source": "semantic_scholar",
       "is_focus": false
     }
   ],
@@ -2608,7 +2576,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "a87eee6dabc0c2dd1893f60423efd4b892faa92e9b10e00b0b130c397617c4fe"
+          "sha256": "d0419ec9b349f6b1299dcf71848badec7fbc89da1a831f4e32a061a735c9627c"
         },
         "classification": {
           "method": "api_citation",
@@ -2716,7 +2684,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "9436e46724cc4369475492f9882da3684c5f3da64a686e41564d13c401f60cc1"
+          "sha256": "9ae143fa32914d3b519d336a021319e2e21ab80566c6b5cb0765363d168e0ba7"
         },
         "classification": {
           "method": "api_citation",
@@ -2770,7 +2738,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "03897c62abc097503739046d656f227ae70c64dee66cb5da13b49e71a73d769f"
+          "sha256": "5cb46a5efd3614f16c8ac67d54249e38127a028aeccfdd9831badbdd762c2dbd"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -2797,7 +2765,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "33a0e2532236b3ee32c5732d2bdb4412c2e640c04b07fed3b2bd991ac37d9328"
+          "sha256": "dc3d0c7f27f3cd856e8747b5c0e498256da04315f7f2bc462165c1c0b7cdf34a"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -2932,7 +2900,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "0f2318fd966e0299829160da34078febe20d9d787c8baf23822d8a357a98a3e0"
+          "sha256": "b48e701191fc0684e4c6b69232206d24488e8cebaf5a8312aad03d08d2e2523e"
         },
         "classification": {
           "method": "api_citation",
@@ -3040,7 +3008,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "c71288a80b9e29a420d1b062135d9395ffcfa386c419115bf604b10d8ef359ba"
+          "sha256": "1ccb8f25a547f0d36fd36ec105ed7a918ccc4e155717364f8dd3ea813751a2ce"
         },
         "classification": {
           "method": "api_citation",
@@ -3202,7 +3170,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "3a01c03097c661bfc1b7e129fbca3906b522a5a173edab470760190a6341ba8c"
+          "sha256": "d7be782d910415d1852a11e48fd1bc2587d5cfa94ee3db61e6f521aba7ef5deb"
         },
         "classification": {
           "method": "api_citation",
@@ -3229,7 +3197,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "71d3cd2bfdea35b7e007020587709b9682db735ee9ab2a0a623145355786a668"
+          "sha256": "e148b88a99ff029898a6bcb00a554c86dabc7da4841c24f10c5beb76bf01a880"
         },
         "classification": {
           "method": "api_citation",
@@ -3283,7 +3251,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "8f88884fca59c9a0f02e1fc39af065dbb1d777816a00eb3936e93dd791faa3b7"
+          "sha256": "9339b424825a95cfbeb307fd726ffab368191d297d5b2bfc9fb95b0eec68b516"
         },
         "classification": {
           "method": "api_citation",
@@ -3310,7 +3278,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "92109296d631343db7e5d2c6662bb7cc9f1ac2f11ef5f492b95636099dadf3fa"
+          "sha256": "727e6ed7a16149e676a28d5a47b862fbfbe8101c79dcab033ef86ce9d14743f7"
         },
         "classification": {
           "method": "api_citation",
@@ -3526,7 +3494,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "2487991cee68a86a9a27935ed34f97764b4db557717caa4bdf867df3dfef0426"
+          "sha256": "84a5997b401a91d3237bcbad3d8d6dedd3bd2f24cef6edf5cdec14bc7434a840"
         },
         "classification": {
           "method": "api_citation",
@@ -3904,7 +3872,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "19ef760e92ec7dba2591925371fb1a1dc3257a86307d5434ccd44a3a3db09340"
+          "sha256": "bd6a229400f54702f81479f854f55744666daaf37417e22369b159aa7f714db0"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -3931,7 +3899,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "37ca4ca3c62bae32a71ee93b5b4b6e9fc4129486d9888ab5d18111728a57763e"
+          "sha256": "cafea8819f91fdf3ca612ca2ea8de8b47a034834ee778090d599aea80c6d94fe"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -4201,7 +4169,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "353da4831f9a4799ffdd52ad48f40714687f3d7a4e05e5ef7f482e4abf1a4f10"
+          "sha256": "486907bed6a17f88fbc053b61a5cdab33a840ebdcad414ca386db9d0aec1aa63"
         },
         "classification": {
           "method": "api_citation",
@@ -4417,7 +4385,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "1f60f31bc288fa615f32fe96d3718aa195bac1e0286e87392852ec6487d6085e"
+          "sha256": "65cd491058736ea0950908ee83a26c9ae556066778149c3df75f14ccf9d89842"
         },
         "classification": {
           "method": "api_citation",
@@ -4579,7 +4547,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "8f2a69821c813e1a17879532c65b7459cb82e93218d2c078346731ad7932c89d"
+          "sha256": "773de387e0a46cb0a220fd0472bbc2fa8cff33b7ede67e8d68b9120fbc614779"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -4687,7 +4655,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "038df3d66aad396dfeb1c9917d675aca1490be844405e76765e0af1b7e9ad50b"
+          "sha256": "0ead5733a67e968419f5141e12d692db3031e0e58f3b76dc8ca22835b72cc834"
         },
         "classification": {
           "method": "api_citation",
@@ -4714,7 +4682,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "9f87a2b20bd982a7fae2bc95ec598c4a6e0f9b63b475351cf7c1a1c7115be096"
+          "sha256": "b5831d8e04c1ce0debad62258ea4428830bd63552e58bb5785b99d927c5dbdec"
         },
         "classification": {
           "method": "api_citation",
@@ -4768,7 +4736,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "684009d66f37e71d24879e5daa91c7865687bdd98e249feede351f2eb05e1f38"
+          "sha256": "cdf32d77ee352f862aa3f435e46d9101db6165f0858efd946e6a55bcfeee38d2"
         },
         "classification": {
           "method": "api_citation",
@@ -4957,7 +4925,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "69e114b5843649331db469b3650885cebf09ff9afcdb019fe72538fdb5c80d35"
+          "sha256": "9cddb2e5ea4efbf8f44e752118b20aef256a4daa6dcc378cfa21907e66f2268e"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -5443,7 +5411,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "836417cbfd462200d3650d0d57138159021a0db64fc40492cc385d5633b97094"
+          "sha256": "3505533f623502fdea5329524ee8814c3571f4e74460ec40d2ab47a4150a6a31"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -5470,7 +5438,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "90e5fa5005663faf36fc73a460f619f8b33bd7a65a3182b8d75387d1ad9540fb"
+          "sha256": "9aaf9ee9ed2e6e3d1972b6a6611fe940caac7d2760da7d2c9ab15323bac682ee"
         },
         "classification": {
           "method": "api_citation",
@@ -5578,7 +5546,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "b8b8c182d8a8f01906a322e63ee95740599a86c4b717978ea5a3381fe77a777c"
+          "sha256": "89e4e45d86bfd1bc56fca1ddcb9ff34779d4929031cbc1fc030b6f8a40592e81"
         },
         "classification": {
           "method": "api_citation",
@@ -5659,7 +5627,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "d28bb871f1f3718c8bfaa660d91c4579c5e08b33bc9fb5102e47fdb52dfbdc32"
+          "sha256": "25d593c25d421bf14b82ce28ff98803ac534f24c5042e76053ea4acbef9b26c0"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -5740,7 +5708,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "776a701bdb4821f385e2b2312214d4eb4a415a6b67109fed0dda6972e232efb0"
+          "sha256": "0b492524fb8385ee6284ec8c7c8373aeff2034eb79535e611475645e8c6f9c54"
         },
         "classification": {
           "method": "api_citation",
@@ -6226,7 +6194,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "874d013eece11d6255b15a2e1c89e4c039c95903bae3f4b536632daffedf5492"
+          "sha256": "daa38c4a8901602af4d096addfbc3dd2a062f666b2d67797f84ef7c9c36e4b25"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -6415,7 +6383,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "3de26013abf10937ae1ceca6605372a0f3cb902e3f57f0ecf7e5cf85e5066148"
+          "sha256": "37524c984f6482ba929eed60c1e38fdbb0fcf449246c8133ce23bffbb1afc034"
         },
         "classification": {
           "method": "api_citation",
@@ -6766,7 +6734,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "2bcb46eb7f32d0e5696de06245e13d78a77f4cf3901fad7fc7285d2cfdc35f9d"
+          "sha256": "44e12a356da8b15bc8b1b03f70d09bee45aa570de63daa13a074ff0f73e01a56"
         },
         "classification": {
           "method": "api_citation",
@@ -6820,7 +6788,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "9f900b71f9456a87be63aa8201d477ac259f1d6143b6ebfb75b20d1d8815f7e3"
+          "sha256": "a172f0529547a77a5363600d8891812a86e33334ef4ac86f75759c7f7835313d"
         },
         "classification": {
           "method": "api_citation",
@@ -6928,7 +6896,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "1ac15c6e05a16cb6d6322e0802b73dc26b03adfe1be23c9cff7c93ae5252292c"
+          "sha256": "56af6dae8718c884675709d2d875e8699f2c27bd462174f0077b71506b0cbd79"
         },
         "classification": {
           "method": "api_citation",
@@ -6955,7 +6923,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "44522552018c836d21467eff51f00f8f8feeb068bd8d2f3fb027981a6484ec72"
+          "sha256": "5b1afd67ac74cb71ae32ac3b27b41a98457e5fe4b04842be950d70b5bd1c107d"
         },
         "classification": {
           "method": "api_citation",
@@ -7090,7 +7058,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "4e08fc4522e68b7e8dbd720e95a8fbdf8b56ca46211086bf89f36639b29d44f0"
+          "sha256": "ba1d0b5207e1c92c07943fabbbed5e0e83aba861e638d31a543a652b9ce961bf"
         },
         "classification": {
           "method": "api_citation",
@@ -7306,7 +7274,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "4d93d7f3d461437b9186c2ee57b359e7e1a99ced393479d29fa8739f336b69b9"
+          "sha256": "24f5c25a2780f51b50b8c4e10f202e013f3350532dbcb1c455340997d515a028"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -7630,7 +7598,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "afaac8d6cf11e4dfc4ed6977022d453d505bb92c4eaa00148d3163316b5b0eb5"
+          "sha256": "f9cdd8a9040721bf32e78547fe0f411b71d6dbce7eb0dd04645e40446c331178"
         },
         "classification": {
           "method": "api_citation",
@@ -7657,7 +7625,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "5978236aea19a448d8079a405b4fe9317e13bab6c6bf5e05d02a23de6e14499f"
+          "sha256": "57b93163802f253b0f41b81131d8a42526e3b8ab5afd3b5d6c15e034456eca7c"
         },
         "classification": {
           "method": "api_citation",
@@ -7684,7 +7652,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "a987131f1c053e3657928cf150bc33057183f7cfc965c5d2381fa65d7c1cf33e"
+          "sha256": "2dbde77a550ad40aa50f030d8408dfb036be26cb42badbdbb0d9c02118cba48e"
         },
         "classification": {
           "method": "api_citation",
@@ -7711,7 +7679,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "f457936a8b392e708ba4dd88efc5e621072828f38d332893feaf5363abe25221"
+          "sha256": "2972af88a3a966895d9f66594f3f4b9b6a11c4a42c1dc434a8f400b2aa12edd6"
         },
         "classification": {
           "method": "api_citation",
@@ -7738,7 +7706,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "ae3a05e570896a89ff243c8d0f9126f52915586319c0cb353299d3d8c8b5c0a0"
+          "sha256": "58862effde45f8c777afe5067e6a17fbef0cbe1ecdc76adde64e07d6f8af5350"
         },
         "classification": {
           "method": "api_citation",
@@ -7765,7 +7733,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "9bfc33c96bcc4546f1b276f792790b25513756028bfc186adbfa601b8e76c36a"
+          "sha256": "2b4286f9fe49a82babd5c81d5337bf49bafc71e22b89f798951bb790426d309e"
         },
         "classification": {
           "method": "api_citation",
@@ -7846,7 +7814,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "0715da577391e78a26390d4b63031ce1c9b854995e193de16fc0b2a2e3cc7df3"
+          "sha256": "374637f8633e86b0e4246d9990991cd70ba68a0ace45add9834206b620356b63"
         },
         "classification": {
           "method": "api_citation",
@@ -7954,7 +7922,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "c57efbe0c082c4174517aabdfc569912205c754a2f14b0b1193ff1845e763356"
+          "sha256": "f0d1ca9060f01837797b61176010b33f1fc20fcdf5e3c12198c3d00c3e30f48b"
         },
         "classification": {
           "method": "api_citation",
@@ -7981,7 +7949,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "38c6db06252c192736659437da275155a10ae98ebcbe3033e1d239f2f2279835"
+          "sha256": "d6cbaf0e8fdef99334b140cd2bd80e2f86258034b97561d817e81f699c4dec3a"
         },
         "classification": {
           "method": "api_citation",
@@ -8008,7 +7976,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "8a9d61c1706b6870197a8c0f21273147f017cc249e32a03d4dbc59a94afe9ff7"
+          "sha256": "50989778bcb9b542e32d139edc870ec7afd4f358bc17e67e3598f60109aaa1c4"
         },
         "classification": {
           "method": "api_citation",
@@ -8035,7 +8003,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "079f8326b7319224d06a6bcc09bfcce25ad76e0618e252e572aa91e14cb92f5a"
+          "sha256": "1e421956236c67dc3d03afaad21db2cc3c63c128e60a4768c3cfff305b2613a3"
         },
         "classification": {
           "method": "api_citation",
@@ -8170,7 +8138,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "02739212f499f7b8db818a7a2d71bc64076d562c136e1b42c6a6a4c6eed4927c"
+          "sha256": "72ae052a1595cbcce716c08a5131c3ac9fae55e28e6a419ad7ba479c78644cc4"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -9088,7 +9056,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "ec18db43cc222f043ed16d57caee4572e32aba78dd645164006b159118ffe2ee"
+          "sha256": "c9694b11318252e6d7138ca7091d628a0387eba1c5e7eef0d2c527952c06ee26"
         },
         "classification": {
           "method": "api_citation",
@@ -9115,7 +9083,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "0cc46c2c6ccfaeff4c8e6942bbb40c48979bd1a6c394f9c7d184baa85aae7a39"
+          "sha256": "1014fe6a7dd623ceb6095fc70a21f248c700972fbf5601e0817103f72b78a90a"
         },
         "classification": {
           "method": "api_citation",
@@ -9196,7 +9164,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "0c828aa3b0cf3cc6081b800b24aa2db325014fb4e682408a1d2a47da0f4f184c"
+          "sha256": "fe860c66cdc5d7aaeb3a0c9f6ef4dc68f5c5dbc3c6a986335878f2d8ea421d6c"
         },
         "classification": {
           "method": "api_citation",
@@ -9250,7 +9218,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "2407645740460e4e432c705e072e70685400c5d26f30120f8aa28e16a2d2d598"
+          "sha256": "46ce45b20a41de84be9e020a5de04229fa9f4e90a77cf70edb4f5c0ad216340e"
         },
         "classification": {
           "method": "api_citation",
@@ -9304,7 +9272,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "8e48b97cf9ece0d154d2d87bfaf269bbc51cb4cba7aa294c3b5befc53c9a0028"
+          "sha256": "0b8ea204d3a3b75ae7b2630c6bfa1c5dcf48f62abc1e4fb5fe55ecafb58035e1"
         },
         "classification": {
           "method": "api_citation",
@@ -9358,7 +9326,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "2c485a173240ed7e1d18f1d7b2175c59ae3d5d1c1b19f7de259ce2d56e5399a3"
+          "sha256": "e8425c776453e7927ac618b185cbd3859d2bb716fa2f117dc5fcf0a1ad7c4908"
         },
         "classification": {
           "method": "api_citation",
@@ -9439,7 +9407,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "ec0c9793bd71d29c606fcbcabe9aec07b51ddbfe6219ee31aead2cb24ede1e25"
+          "sha256": "a529a4e3554ac7217b7ec053c2004e666c67172da3c5d1233d004f59da8d091a"
         },
         "classification": {
           "method": "api_citation",
@@ -9628,7 +9596,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "a464963e884f28e0d7ac12aae61cfdae036a2a14e94e8eb51d442aaf8d6c77c0"
+          "sha256": "bb511f8afc8ca05b6786a11181cfb581ffed6c4f48cdc68bcf5a2ac49f185d27"
         },
         "classification": {
           "method": "api_citation",
@@ -9763,7 +9731,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "e5b45fafc25ccf6fffd1e1453471f899eb470e252a7553fe4b858fb54bed0c62"
+          "sha256": "2486e38c45ede77af63eaf22e23a194933f0bc1085d5108bf566d3cbedfe5bdd"
         },
         "classification": {
           "method": "api_citation",
@@ -9790,7 +9758,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "71252bee890d9425fcb4568dc4f95ab410b46b0a4114fb978e71cc4aaddbdec9"
+          "sha256": "efd29d018c63a61699be34f99cf54d58eb48b68f8a7d373eb7084966bcc9fe4c"
         },
         "classification": {
           "method": "api_citation",
@@ -9817,7 +9785,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "473075d5d2654cde14bfa75303b5783ad44d3dd7aeabeed1fe1be47fc674d0b9"
+          "sha256": "395ae48202b03200f86983369323fe1d2278cb108524e82cda9288bdbfc8829e"
         },
         "classification": {
           "method": "api_citation",
@@ -9898,7 +9866,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "b51c626fd806f12bc86e029f26752b3d4266acad836d8874c7e948a0ba0db1a4"
+          "sha256": "ba6dd08fc70b781b06e683ea8e9309d95a483eee90f3c71145a6f72afeab8fda"
         },
         "classification": {
           "method": "api_citation",
@@ -9979,7 +9947,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "869ed20e6ee595986d076db326dabb6da266bfffd9a35cde37ed7db8d8695607"
+          "sha256": "a14d9f6db383c86abf7dd1af7c97d2533840b3f3331d4affefed30d8a5013245"
         },
         "classification": {
           "method": "api_citation",
@@ -10006,7 +9974,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "f4c92bb7110821cbc9d1236382d4832ab9aa6596d08f38f604e5e740834a5c92"
+          "sha256": "a36725ad92f81137bdea76593d02f3831e40f71897176908684afe3b2406918a"
         },
         "classification": {
           "method": "api_citation",
@@ -10033,7 +10001,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "58ef4d04e1a2f301f34f5652830ccd157eadb77a1766fbc5dd657b4c3dc664ff"
+          "sha256": "59bdd02ada6530ffb8141303adbc877e2a6792f8cbb415bdc310ed91893d747f"
         },
         "classification": {
           "method": "api_citation",
@@ -10060,7 +10028,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "749107b58191285b8ea22b71ec23f9c5a2bb25cdb9bcc8b0313752af7d9ee548"
+          "sha256": "d53a7a3e209a5b056b4d2a59e67129bee394c2ee42654dbd582c36dab269848d"
         },
         "classification": {
           "method": "api_citation",
@@ -10087,7 +10055,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "2d9ca64f0da98c415f45338869aafe166ebe0dcad7a678b3e78c0b1719fd10d6"
+          "sha256": "71fc2c6ab2ea3f9a559b3837646f2cea685915e211f2fb689fb4e4a61cfc0d30"
         },
         "classification": {
           "method": "api_citation",
@@ -10114,7 +10082,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "04c8e86fa69d31e0ebb794a99370e104390fa36fdd617c24f613dfc34c404d5c"
+          "sha256": "623574604f74d5f143b8950d82cb3151b0e3a3824f5a12cfc59e62b8050674b3"
         },
         "classification": {
           "method": "api_citation",
@@ -10222,7 +10190,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "d067d3add8dda91195450042b8315075d6b5acea56dfada6486ecae617383762"
+          "sha256": "68f20f6ad7895dbd394da8a8b4a9fb1b9d6c7884fea59ae2c76850dbf3e81881"
         },
         "classification": {
           "method": "api_citation",
@@ -10249,7 +10217,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "35b5ecebe2b2498281a9f2dfeb8f36d018ecf7e95179797ae16994d955816bcb"
+          "sha256": "4eb84e0f7e176fd3d5fed802072c3d5576d73ef6c6a9e83f7db38e7dcab8ce9a"
         },
         "classification": {
           "method": "api_citation",
@@ -10276,7 +10244,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "3dec62b12253b90d65c364bdfa16ac381c0fa436a451618e4967a79a81c04759"
+          "sha256": "1c3e4e095b54029ec0ad1a6ff760847e81dfeb71e3be7b497ff6f886f56c31c0"
         },
         "classification": {
           "method": "api_citation",
@@ -10330,7 +10298,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "4f84a6412c1641857cc8e90a912a62a515167d504afa6fcf1a8dde4801149fa4"
+          "sha256": "853799b8c555779452485e8b0885bc20ab47e5f722dcd477bdf13be8e5e04d9a"
         },
         "classification": {
           "method": "api_citation",
@@ -10519,7 +10487,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "7497be50d425a8f3de1bb712f87bf7c5b7d2eb7d332dae60d98837bcc7da0005"
+          "sha256": "ac16a5931c22e9033aceaf6e7fef35a80403f42cf4b54a053723147562f7e4c8"
         },
         "classification": {
           "method": "api_citation",
@@ -10546,7 +10514,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "9e157845fc07600b1879ce3e3106a35f38c4de9a7b11d7a415e0d5a084f24f2e"
+          "sha256": "b9bac6cc01c2eb6d949e59b8665525ca9b401f12365a54f8169129cb44a48a39"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -10582,7 +10550,7 @@
     ],
     "depth": 2,
     "since_year": 2018,
-    "generated_at": "2026-10-23T07:11:48.651000Z",
+    "generated_at": "2026-10-23T11:43:19.520000Z",
     "provenance_breakdown": {
       "api_citation": 99,
       "s2_context_rule": 196
