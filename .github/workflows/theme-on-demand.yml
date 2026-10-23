@@ -26,7 +26,11 @@ permissions: {}
 jobs:
   generate:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # R2-43: a popular new field (Retrieval-Augmented Generation, 2026-10-23)
+    # needs ~14 min for the depth-1 pass + the auto-expand rebuild with the
+    # keyless Semantic Scholar pacing, so 15 min cancelled the run before
+    # anything was promoted. The side-file step below has its own cap.
+    timeout-minutes: 40
     permissions:
       contents: read
     outputs:
@@ -178,6 +182,9 @@ jobs:
           echo "primary_path=$primary_path" >> "$GITHUB_OUTPUT"
 
       - name: Build side files (new papers, code links)
+        # R2-43: best effort also in time — never let it cost the lineage.
+        timeout-minutes: 6
+        continue-on-error: true
         # Best effort: a brand-new theme otherwise ships with only
         # lineage.json and the web page has no 新着 / コード sections (the
         # manifest flags them absent). A failure here must NOT fail the
