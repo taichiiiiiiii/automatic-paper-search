@@ -149,13 +149,13 @@ describe("edition lineage (R2-32)", () => {
     expect(failed).toEqual(["lineage_relation_count"]);
     expect(row.publication_tier).toBe("blocked");
 
-    const relaxed = sandbox({ theme_min_lineage_edges: 0 });
+    const relaxed = sandbox({ theme_min_lineage_edges: 0, conference_min_lineage_edges: 0 });
     expect((await runCli(relaxed, CLI, ARGS, { fixtures: FIXTURES })).code).toBe(0);
     expect((await qualityRow(relaxed)).publication_tier).toBe("unaudited");
   });
 
   it("refuses to replace a published conference lineage with a blocked rebuild (exit 6)", async () => {
-    const sb = sandbox({ theme_min_lineage_edges: 0 });
+    const sb = sandbox({ theme_min_lineage_edges: 0, conference_min_lineage_edges: 0 });
     expect((await runCli(sb, CLI, ARGS, { fixtures: FIXTURES })).code).toBe(0);
     sb.git("add", "-A");
     sb.git("commit", "-qm", "test: published unaudited conference lineage");
