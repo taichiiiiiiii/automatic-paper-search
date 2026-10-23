@@ -21,6 +21,7 @@
  * the OpenAlex count.
  */
 
+import { titlesDisagreeStrongly } from "@paperpilot/core/abstract-sanity";
 import {
   type FetchLike,
   type RequestWithRetryOptions,
@@ -42,8 +43,16 @@ const KEYED_INTERVAL_MS = 1000;
 
 export type CitationCountSource = "openalex" | "semantic_scholar";
 
-/** `{ n: count | null (S2 has no such paper), at: ISO fetch time }`. */
-type CacheEntry = { n: number | null; at: string };
+/** `{ n: count | null (S2 has no such paper), at: ISO fetch time, t/a: S2's
+ * title and first authors (R2-44, identity check; absent in older entries) }`. */
+type CacheEntry = { n: number | null; at: string; t?: string; a?: string[] };
+
+/** What one `/paper/batch` answer gives for an id. */
+interface S2Answer {
+  n: number | null;
+  t?: string;
+  a?: string[];
+}
 
 export interface S2CitationCountDeps {
   fetchImpl: FetchLike;
@@ -82,6 +91,81 @@ export function mergeCitationCounts(
   return { count: oa, source: "openalex" };
 }
 
+const surname = (name: string): string =>
+  (name.trim().toLowerCase().split(/\s+/).pop() ?? "").replace(/[^\p{L}\p{N}]/gu, "");
+
+const TITLE_STOP = new Set([
+  "a",
+  "an",
+  "the",
+  "of",
+  "for",
+  "and",
+  "in",
+  "on",
+  "to",
+  "with",
+  "via",
+  "by",
+]);
+const titleWords = (t: string): Set<string> =>
+  new Set(
+    t
+      .toLowerCase()
+      .split(/[^\p{L}\p{N}]+/u)
+      .filter((w) => w.length > 0 && !TITLE_STOP.has(w)),
+  );
+
+/** Two titles of one arXiv id that share fewer than half of their words
+ * (the RAGAS paper under a \"Design and Evaluation of a RAG Architecture for
+ * OWASP\" title shares only the topic words). */
+function titlesDiverge(a: string, b: string): boolean {
+  const wa = titleWords(a);
+  const wb = titleWords(b);
+  if (wa.size < 3 || wb.size < 3) return false;
+  let shared = 0;
+  for (const w of wa) if (wb.has(w)) shared += 1;
+  return shared / (wa.size + wb.size - shared) < 0.5;
+}
+
+/**
+ * R2-44: repair a node whose OpenAlex record drifted from the paper its
+ * arXiv id names (2026-10-23, Retrieval-Augmented Generation: Self-RAG
+ * carried another paper's authors and DOI; the RAGAS paper carried another
+ * title). Authors with no surname in common with S2's are replaced by S2's
+ * (and the record's DOI, which belongs to the other work, is dropped);
+ * a title that plainly describes another subject is replaced too, together
+ * with the text taken from the wrong record. Returns what changed.
+ */
+export function correctNodeIdentity(
+  node: ThemeGraphNode,
+  s2: { t?: string; a?: string[] },
+): ("authors" | "title")[] {
+  const out: ("authors" | "title")[] = [];
+  const mine = new Set(node.authors.map(surname).filter((x) => x.length > 0));
+  const theirs = (s2.a ?? []).map(surname).filter((x) => x.length > 0);
+  if (mine.size > 0 && theirs.length > 0 && !theirs.some((x) => mine.has(x))) {
+    node.authors = (s2.a ?? []).slice(0, 5);
+    delete node.doi;
+    if (Array.isArray(node.aliases)) {
+      node.aliases = node.aliases.filter(([ns]) => ns !== "doi");
+    }
+    out.push("authors");
+  }
+  if (
+    typeof s2.t === "string" &&
+    s2.t.length > 0 &&
+    node.title !== s2.t &&
+    (titlesDisagreeStrongly(node.title, s2.t) || titlesDiverge(node.title, s2.t))
+  ) {
+    node.title = s2.t;
+    node.tldr = "";
+    delete node.short_abstract;
+    out.push("title");
+  }
+  return out;
+}
+
 /** Raise `node.citation_count` to `s2` when S2's count is larger. Returns
  * true when the node changed. */
 export function applyS2Count(node: ThemeGraphNode, s2: number | null | undefined): boolean {
@@ -101,7 +185,12 @@ function loadCache(path: string | null): Record<string, CacheEntry> {
     if (v === null || typeof v !== "object") continue;
     const e = v as Record<string, unknown>;
     const nOk = e.n === null || (typeof e.n === "number" && Number.isInteger(e.n) && e.n >= 0);
-    if (nOk && typeof e.at === "string") out[k] = { n: e.n as number | null, at: e.at };
+    if (nOk && typeof e.at === "string") {
+      const entry: CacheEntry = { n: e.n as number | null, at: e.at };
+      if (typeof e.t === "string") entry.t = e.t;
+      if (Array.isArray(e.a) && e.a.every((x) => typeof x === "string")) entry.a = e.a as string[];
+      out[k] = entry;
+    }
   }
   return out;
 }
@@ -109,6 +198,7 @@ function loadCache(path: string | null): Record<string, CacheEntry> {
 function isFresh(entry: CacheEntry, nowMs: number): boolean {
   const at = Date.parse(entry.at);
   if (!Number.isFinite(at)) return false;
+  if (entry.n !== null && entry.t === undefined) return false;
   const ttl = entry.n === null ? S2_COUNT_NOT_FOUND_TTL_DAYS : S2_COUNT_TTL_DAYS;
   return nowMs - at < ttl * DAY_MS;
 }
@@ -118,7 +208,7 @@ function isFresh(entry: CacheEntry, nowMs: number): boolean {
 async function fetchChunk(
   ids: readonly string[],
   deps: S2CitationCountDeps,
-): Promise<Map<string, number | null> | null> {
+): Promise<Map<string, S2Answer> | null> {
   const headers: Record<string, string> = { "User-Agent": "PaperPilot/0.1" };
   if (deps.apiKey) headers["x-api-key"] = deps.apiKey;
   const budget: Pick<RequestWithRetryOptions, "overallDeadlineMs" | "retry429"> = {
@@ -131,7 +221,7 @@ async function fetchChunk(
       {
         method: "POST",
         url: S2_BATCH_URL,
-        params: { fields: "citationCount" },
+        params: { fields: "citationCount,title,authors.name" },
         jsonBody: { ids },
         headers,
         timeoutMs: 30_000,
@@ -150,14 +240,27 @@ async function fetchChunk(
     return null;
   }
   if (!Array.isArray(body) || body.length !== ids.length) return null;
-  const out = new Map<string, number | null>();
+  const out = new Map<string, S2Answer>();
   for (let i = 0; i < ids.length; i++) {
     const item = body[i];
     if (item === null) {
-      out.set(ids[i]!, null);
+      out.set(ids[i]!, { n: null });
     } else if (typeof item === "object" && !Array.isArray(item)) {
-      const c = (item as Record<string, unknown>).citationCount;
-      if (typeof c === "number" && Number.isInteger(c) && c >= 0) out.set(ids[i]!, c);
+      const rec = item as Record<string, unknown>;
+      const c = rec.citationCount;
+      if (typeof c === "number" && Number.isInteger(c) && c >= 0) {
+        const answer: S2Answer = { n: c };
+        answer.t = typeof rec.title === "string" ? rec.title : "";
+        if (Array.isArray(rec.authors)) {
+          answer.a = rec.authors
+            .slice(0, 5)
+            .map((x) =>
+              x && typeof x === "object" ? String((x as { name?: unknown }).name ?? "") : "",
+            )
+            .filter((x) => x.length > 0);
+        }
+        out.set(ids[i]!, answer);
+      }
       // A paper S2 knows without a count: no answer, nothing cached.
     } else {
       return null;
@@ -171,6 +274,8 @@ export interface S2CountStats {
   fromCache: number;
   fetched: number;
   raised: number;
+  /** R2-44: nodes whose authors / title were replaced by S2's. */
+  corrected: number;
   failedChunks: number;
 }
 
@@ -181,7 +286,14 @@ export async function applyS2CitationCounts(
   opts: { cachePath: string | null } & S2CitationCountDeps,
 ): Promise<S2CountStats> {
   const list: ThemeGraphNode[] = nodes instanceof Map ? [...nodes.values()] : [...nodes];
-  const stats: S2CountStats = { eligible: 0, fromCache: 0, fetched: 0, raised: 0, failedChunks: 0 };
+  const stats: S2CountStats = {
+    eligible: 0,
+    fromCache: 0,
+    fetched: 0,
+    raised: 0,
+    corrected: 0,
+    failedChunks: 0,
+  };
   const byId = new Map<string, ThemeGraphNode[]>();
   for (const node of list) {
     const key = s2LookupId(node);
@@ -194,12 +306,16 @@ export async function applyS2CitationCounts(
   const now = opts.now ?? (() => new Date());
   const nowMs = now().getTime();
   const cache = loadCache(opts.cachePath);
-  const answers = new Map<string, number | null>();
+  const answers = new Map<string, S2Answer>();
   const missing: string[] = [];
   for (const key of [...byId.keys()].sort()) {
     const hit = cache[key];
     if (hit !== undefined && isFresh(hit, nowMs)) {
-      answers.set(key, hit.n);
+      answers.set(key, {
+        n: hit.n,
+        ...(hit.t !== undefined ? { t: hit.t } : {}),
+        ...(hit.a ? { a: hit.a } : {}),
+      });
       stats.fromCache += 1;
     } else {
       missing.push(key);
@@ -219,9 +335,14 @@ export async function applyS2CitationCounts(
       stats.failedChunks += 1;
       continue;
     }
-    for (const [key, n] of got) {
-      answers.set(key, n);
-      cache[key] = { n, at: stamp };
+    for (const [key, ans] of got) {
+      answers.set(key, ans);
+      cache[key] = {
+        n: ans.n,
+        at: stamp,
+        ...(ans.t !== undefined ? { t: ans.t } : {}),
+        ...(ans.a ? { a: ans.a } : {}),
+      };
       stats.fetched += 1;
     }
   }
@@ -236,8 +357,22 @@ export async function applyS2CitationCounts(
   }
 
   for (const [key, group] of byId) {
-    const n = answers.get(key);
-    for (const node of group) if (applyS2Count(node, n)) stats.raised += 1;
+    const ans = answers.get(key);
+    for (const node of group) {
+      if (applyS2Count(node, ans?.n)) stats.raised += 1;
+      // The arXiv id is an identity anchor independent of OpenAlex's own
+      // record: when S2 says the paper with this id has other authors / a
+      // plainly different title, the OpenAlex record has drifted.
+      if (ans !== undefined && key.startsWith("ARXIV:")) {
+        const fixed = correctNodeIdentity(node, ans);
+        if (fixed.length > 0) {
+          stats.corrected += 1;
+          opts.logger?.warn?.(
+            `s2 identity: ${node.id} corrected ${fixed.join("+")} from S2 (${key})`,
+          );
+        }
+      }
+    }
   }
   if (stats.failedChunks > 0) {
     opts.logger?.warn?.(
@@ -245,7 +380,7 @@ export async function applyS2CitationCounts(
     );
   }
   opts.logger?.info?.(
-    `s2 citation counts: eligible=${stats.eligible}, cached=${stats.fromCache}, fetched=${stats.fetched}, raised=${stats.raised}`,
+    `s2 citation counts: eligible=${stats.eligible}, cached=${stats.fromCache}, fetched=${stats.fetched}, raised=${stats.raised}, identity corrected=${stats.corrected}`,
   );
   return stats;
 }

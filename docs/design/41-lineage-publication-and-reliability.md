@@ -702,3 +702,15 @@ Retrieval-Augmented Generation を実際にフォームから依頼して確か�
 決定（ユーザー承認）: 強い関係が少ない分野も「関係の判定が少ない」と明記して未監査で公開する。実装: `theme_min_lineage_edges` = 0、会議は `conference_min_lineage_edges` = 3、ページの注記（`fewRelationsNote`）、上限・待ち時間・文言を 40/50 分に揃えた。
 
 未対応（次の作業）: 論文の選び方（応用事例の足切り）、OpenAlex の記録の誤り（著者・DOI・題名を S2 で直す）、名前から派生を推定する規則（LoRA で評価すると適合率が約 7 割で、強い関係には足りない）、失敗時の画面の説明。
+
+### R2-44 OpenAlex の記録の誤りを S2 で直す（2026-10-23）
+
+RAG の系譜で見つかった 2 種類の誤りを、論文ごとの Semantic Scholar の引用数の取得（`s2CitationCounts.ts`、250 件ずつ）と同じ呼び出しで直す。`fields` に `title,authors.name` を足し、arXiv id を持つ論文だけを対象にする（arXiv id は OpenAlex の記録とは独立した同一性の手がかり。DOI だけの論文は直さない）。
+
+| 誤り | 例 | 対応 |
+|---|---|---|
+| 著者が別の論文のもの | Self-RAG に Quanzhi Fu ほか、DOI は 2026 年の別論文 | S2 の著者と姓が 1 つも合わない → 著者を S2 のものにし、その記録の DOI（別の論文のもの）を外す |
+| 題名が別の論文のもの | RAGAS（arXiv 2309.15217）が「Design and Evaluation of a RAG Architecture for OWASP…」 | 既存の `titlesDisagreeStrongly` か、語の重なりが半分未満 → 題名を S2 のものにし、別の記録から来た要約も消す |
+
+キャッシュ（`s2_citation_counts.json`）の項目に `t`（題名）と `a`（著者）を足した。`t` のない古い項目は 1 度だけ取り直す。直した件数はログの `identity corrected=` に出る。
+未対応: 論文の選び方（被引用が少ない応用事例の足切り。評価用データが先に要る）、失敗した依頼の再入力（進行中の記録が 50 分残る）。

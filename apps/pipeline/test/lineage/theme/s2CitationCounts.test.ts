@@ -13,6 +13,7 @@ import type { ThemePaper } from "../../../src/lineage/theme/openalexWork.js";
 import {
   applyS2CitationCounts,
   applyS2Count,
+  correctNodeIdentity,
   mergeCitationCounts,
   S2_COUNT_CACHE_VERSION,
   s2LookupId,
@@ -218,5 +219,75 @@ describe("applyS2CitationCounts", () => {
     const n = node("a", 100);
     expect(applyS2Count(n, 50)).toBe(false);
     expect(n.citation_count).toBe(100);
+  });
+});
+
+describe("correctNodeIdentity (R2-44)", () => {
+  it("replaces authors that share no surname with S2's, and drops the foreign DOI", () => {
+    const n = node("a", 10, {
+      authors: ["Quanzhi Fu", "Wenjia Song"],
+      doi: "10.4230/lipics.esem.2026.1",
+      aliases: [
+        ["arxiv", "2310.11511"],
+        ["doi", "10.4230/lipics.esem.2026.1"],
+      ],
+      title: "Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection",
+    });
+    const fixed = correctNodeIdentity(n, {
+      t: "Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection",
+      a: ["Akari Asai", "Zeqiu Wu"],
+    });
+    expect(fixed).toEqual(["authors"]);
+    expect(n.authors).toEqual(["Akari Asai", "Zeqiu Wu"]);
+    expect(n.doi).toBeUndefined();
+    expect(n.aliases).toEqual([["arxiv", "2310.11511"]]);
+  });
+
+  it("replaces a title that describes another subject and the text from the wrong record", () => {
+    const n = node("b", 10, {
+      title:
+        "Design and Evaluation of a Retrieval-Augmented Generation Architecture for OWASP Training",
+      authors: ["Shahul Es", "Jithin James"],
+      tldr: "A security training chatbot.",
+    });
+    const fixed = correctNodeIdentity(n, {
+      t: "Ragas: Automated Evaluation of Retrieval Augmented Generation",
+      a: ["Shahul Es", "Jithin James"],
+    });
+    expect(fixed).toEqual(["title"]);
+    expect(n.title).toBe("Ragas: Automated Evaluation of Retrieval Augmented Generation");
+    expect(n.tldr).toBe("");
+  });
+
+  it("leaves a matching record alone (a shared surname is enough)", () => {
+    const n = node("c", 10, {
+      authors: ["Patrick Lewis", "Ethan Perez"],
+      title: "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+    });
+    expect(
+      correctNodeIdentity(n, {
+        t: "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+        a: ["Patrick Lewis", "Ethan Perez"],
+      }),
+    ).toEqual([]);
+  });
+
+  it("fixes the node during applyS2CitationCounts only for an ARXIV key", async () => {
+    const arx = node("x", 5, { arxiv_id: "2310.11511", authors: ["Quanzhi Fu"], doi: "10.1/x" });
+    const viaDoi = node("y", 5, { doi: "10.2/y", authors: ["Quanzhi Fu"] });
+    const fetchImpl = (async (_u: string, init?: FetchInit) => {
+      const ids = (JSON.parse(String(init?.body)) as { ids: string[] }).ids;
+      return {
+        status: 200,
+        headers: new Headers(),
+        json: async () =>
+          ids.map(() => ({ citationCount: 1, title: "T", authors: [{ name: "Akari Asai" }] })),
+        text: async () => "",
+      } as unknown as HttpResponseLike;
+    }) as never;
+    const stats = await applyS2CitationCounts([arx, viaDoi], { cachePath: null, fetchImpl });
+    expect(stats.corrected).toBe(1);
+    expect(arx.authors).toEqual(["Akari Asai"]);
+    expect(viaDoi.authors).toEqual(["Quanzhi Fu"]);
   });
 });
