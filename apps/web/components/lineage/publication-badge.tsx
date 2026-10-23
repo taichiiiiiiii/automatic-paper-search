@@ -34,8 +34,26 @@ export function PublicationBadge({ tier }: { tier: PublishedTier }) {
   );
 }
 
+/** R2-43: fewer lineage relations than this and the page says so. */
+export const FEW_RELATIONS_BELOW = 3;
+
+export function fewRelationsNote(count: number): string {
+  return `関係（拡張・置き換え・対比）として判定できたのは ${count} 件だけです。引用文から確かめられた関係が少ないため、論文は年と引用の流れで並べています。`;
+}
+
 /** Badge plus the one-line explanation, for a lineage page header. */
-export function PublicationNotice({ tier }: { tier: PublishedTier }) {
+export function PublicationNotice({
+  tier,
+  strongRelationCount,
+}: {
+  tier: PublishedTier;
+  /** Number of lineage (non-baseline) relations; omitted = not known. */
+  strongRelationCount?: number;
+}) {
+  const few =
+    tier === "unaudited" &&
+    typeof strongRelationCount === "number" &&
+    strongRelationCount < FEW_RELATIONS_BELOW;
   return (
     <p
       className="flex flex-wrap items-center gap-2 text-sm text-ink-muted"
@@ -43,6 +61,11 @@ export function PublicationNotice({ tier }: { tier: PublishedTier }) {
     >
       <PublicationBadge tier={tier} />
       <span>{PUBLICATION_TIER_NOTE[tier]}</span>
+      {few ? (
+        <span data-few-relations className="basis-full font-medium text-ink">
+          {fewRelationsNote(strongRelationCount)}
+        </span>
+      ) : null}
     </p>
   );
 }

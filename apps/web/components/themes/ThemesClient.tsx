@@ -359,7 +359,18 @@ export function ThemesClient() {
         </h1>
         {entry?.publication_tier && (
           <div className="mt-2">
-            <PublicationNotice tier={entry.publication_tier} />
+            <PublicationNotice
+              tier={entry.publication_tier}
+              strongRelationCount={
+                artifact.edges.filter(
+                  (e) =>
+                    e.relation === "extends" ||
+                    e.relation === "supersedes" ||
+                    e.relation === "contrasts" ||
+                    e.relation === "successor",
+                ).length
+              }
+            />
           </div>
         )}
         <p className="mt-2 text-sm text-ink-muted" data-theme-stats>

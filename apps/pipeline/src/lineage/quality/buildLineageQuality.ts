@@ -893,6 +893,13 @@ export interface QualityPolicy {
    * LLM conference builders) stay blocked (`generator_current`).
    */
   conference_min_generated_at?: string;
+  /**
+   * R2-43: minimum lineage relations of a conference row (default 3). Themes
+   * use `theme_min_lineage_edges`, which the owner set to 0 so that a field
+   * typed into the site is published (unaudited, with a notice) even when
+   * few strong relations were found.
+   */
+  conference_min_lineage_edges?: number;
   [key: string]: unknown;
 }
 
@@ -1097,7 +1104,14 @@ export function conferenceGateFromPolicy(policy: QualityPolicy): ThemeGate {
     minLineageEdges: DEFAULT_THEME_MIN_LINEAGE_EDGES,
   };
   const at = policy.conference_min_generated_at;
-  return { ...theme, minGeneratedAt: typeof at === "string" ? at : null };
+  return {
+    ...theme,
+    minGeneratedAt: typeof at === "string" ? at : null,
+    minLineageEdges: nonNegative(
+      policy.conference_min_lineage_edges,
+      DEFAULT_THEME_MIN_LINEAGE_EDGES,
+    ),
+  };
 }
 
 const round3 = (x: number): number => Math.round(x * 1000) / 1000;

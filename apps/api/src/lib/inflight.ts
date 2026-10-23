@@ -16,10 +16,11 @@
 
 export const INFLIGHT_KEY_PREFIX = "inflight:";
 
-// theme-on-demand.yml's generate job has timeout-minutes: 15; the promote
-// job follows. 20 minutes covers a normal run plus queueing; after that a
-// retry is allowed even if the run silently died.
-export const INFLIGHT_TTL_MS = 20 * 60 * 1000;
+// theme-on-demand.yml's generate job has timeout-minutes: 40 (R2-43: a
+// popular field took ~17 min to build, ~32 min end to end); the promote and
+// release jobs follow. 50 minutes covers a normal run plus queueing; after
+// that a retry is allowed even if the run silently died.
+export const INFLIGHT_TTL_MS = 50 * 60 * 1000;
 
 export interface InflightStorage {
   get<T = unknown>(key: string): Promise<T | undefined>;

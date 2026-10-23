@@ -6,6 +6,11 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Changed — 分野の依頼は、強い関係が少なくても未監査で公開する（R2-43、2026-10-23 ユーザー承認）
+
+- テーマの公開の下限 `theme_min_lineage_edges` を 3 → 0 に（会議は新設の `conference_min_lineage_edges` = 3 のまま）。強い関係が 3 件未満の未監査の系譜には、ページ上に「判定できたのは n 件だけ」と明記する。
+- 依頼の所要時間に合わせた: 生成ジョブの上限 15 → 40 分、Worker の進行中の記録 20 → 50 分、画面の待ち時間 15 → 50 分、文言「最大 50 分」。
+
 ### Fixed — 強い関係の誤り 3 型を狭めた（R2-42）
 
 - ICCV 2025・EMNLP 2025 の強い関係 13 本を手で読み、正しいのは 9 本。誤りの型を規則で狭めた: 「extended version of <データセット>」を新しい評価セットの紹介として使用扱い、「build upon high-quality, human-verified tasks from X」のように形容詞が続く対象の使用扱い、「Different from the above baselines, X …」を比較の列挙として対比にしない。公開中の強い関係 71 本を通し直し、変わったのはこの 3 本だけ（監査済みテーマは変化なし）。

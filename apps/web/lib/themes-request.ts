@@ -47,15 +47,15 @@ export const INTERNAL_TERMS_RE =
 // 5 s feels responsive while staying well under the GH API rate limit
 // even with several concurrent users.
 export const POLL_INTERVAL_MS = 5_000;
-// 15 min hard cap, matching the copy ("最大 15 分ほど") and the
-// generation job's own timeout; a run that times out earlier is caught
+// 50 min hard cap, matching the copy ("最大 50 分ほど") and the
+// generation job's own timeout (40 min) plus promote/release; a run that times out earlier is caught
 // by the periodic status check (failureFromRun "timed_out") first.
-export const POLL_TIMEOUT_MINUTES = 15;
+export const POLL_TIMEOUT_MINUTES = 50;
 export const POLL_TIMEOUT_MS = POLL_TIMEOUT_MINUTES * 60 * 1_000;
 
 /** Copy shared by the request form (hint, success, timeout). */
 export const THEME_REQUEST_HINT =
-  "英語で 2〜80 文字（英数字・スペース・ハイフン「-」・アンダースコア「_」）。完了まで通常 5〜15 分かかります。";
+  "英語で 2〜80 文字（英数字・スペース・ハイフン「-」・アンダースコア「_」）。完了まで通常 10〜40 分かかります。";
 /** Shown next to the request form (R2-27, design 51 D2): the theme text is
  * passed to the generation job of a public repository and the result is
  * committed there, so anyone can read it. */
@@ -66,7 +66,7 @@ export const THEME_INPUT_INVALID_MESSAGE =
 export const THEME_INPUT_JAPANESE_MESSAGE =
   "テーマ名は英語で入力してください（例: 「視覚トランスフォーマー」ではなく Vision Transformer）。";
 export const THEME_QUEUED_MESSAGE =
-  "🚀 受け付けました。最大 15 分ほどで「未監査（自動生成）」として公開されます。完了後にこのページを再読み込みしてください。";
+  "🚀 受け付けました。最大 50 分ほどで「未監査（自動生成）」として公開されます。完了後にこのページを再読み込みしてください。";
 export const POLL_TIMEOUT_FAILURE = {
   title: `生成がタイムアウトしました（${POLL_TIMEOUT_MINUTES} 分経過）`,
   message:

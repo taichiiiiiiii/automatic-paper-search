@@ -130,9 +130,9 @@ describe("theme request copy (R2 UX P2-10)", () => {
     );
     expect(THEME_REQUEST_HINT).toContain("_");
     expect(THEME_REQUEST_HINT).toContain("英語");
-    expect(THEME_REQUEST_HINT).toContain("15 分");
-    expect(POLL_TIMEOUT_MS).toBe(15 * 60 * 1000);
-    expect(POLL_TIMEOUT_FAILURE.title).toContain("15 分");
+    expect(THEME_REQUEST_HINT).toContain("40 分");
+    expect(POLL_TIMEOUT_MS).toBe(50 * 60 * 1000);
+    expect(POLL_TIMEOUT_FAILURE.title).toContain("50 分");
     expect(THEME_QUEUED_MESSAGE).toContain("未監査");
   });
 
