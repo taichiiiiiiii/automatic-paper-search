@@ -670,3 +670,18 @@ D-R2-40（ユーザー承認、2026-10-20）の実装。LLM・API の新しい�
 ### R2-40 の反映（2026-10-21）
 
 新しい判定で作り直し、すべて未監査で公開中: CVPR 2025（143 論文・強い関係 10）、ICLR 2025（130・5）、NeurIPS 2025（135・9）、ICML 2025（138・5）、Low-Rank Adaptation（91・6）。NeurIPS 2025 はキーなし S2 の 429 で 3 回続けて取得が欠け（exit 4、公開版は保持）、会議の作り直しだけ S2 の再試行を 10 回に増やして（`PAPERPILOT_S2_MAX_ATTEMPTS`）通した。監査済みの 4 テーマは作り直していない。
+
+
+### R2-42 強い関係の誤り 3 型（2026-10-23）
+
+ICCV 2025・EMNLP 2025 を公開した後、強い関係 13 本の引用文を手で読んだ。正しいのは 9 本（約 69%）。誤り 4 本の型と対応:
+
+| 型 | 例 | 対応 |
+|---|---|---|
+| 新しい評価セットを既存のデータセットの拡張として紹介する文 | PixelThink ← LISA（「ReasonSeg の extended version」） | `INTRODUCED_RESOURCE` → `phrase_usage` |
+| 形容詞が続く対象を comma で切って使用名詞を見落とす | When Users Change Their Mind ← WebArena（「high-quality, human-verified tasks from WebArena-Lite」） | `objectWindow` が形容詞の comma を越える |
+| 比較の列挙の中の対比 | Think Right ← AdaptThink（「Different from the above baselines」） | `BASELINE_LIST_CONTRAST` → `compares_with`（対比にしない） |
+| 手法名のある対象の引用（残り 1 本） | WebAgent-R1 ← WebRL（「an extension of GRPO (Qi et al.)」） | 未対応（名前から論文を引く表が要る。`relationR242.test.ts` に `it.fails` で記録） |
+
+- テスト: `relationR242.test.ts`（11 本。3 本は赤→緑、1 本は既知の漏れ）。`test/lineage` 全体（1,336 本）も通過。
+- 通し直し: 公開中の強い関係 71 本（会議 8、テーマ 5）を新旧の規則で比べた。変わったのは上の 3 本だけで、監査済みの 4 テーマは変化なし。

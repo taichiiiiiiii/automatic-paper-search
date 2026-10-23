@@ -6,6 +6,10 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Fixed — 強い関係の誤り 3 型を狭めた（R2-42）
+
+- ICCV 2025・EMNLP 2025 の強い関係 13 本を手で読み、正しいのは 9 本。誤りの型を規則で狭めた: 「extended version of <データセット>」を新しい評価セットの紹介として使用扱い、「build upon high-quality, human-verified tasks from X」のように形容詞が続く対象の使用扱い、「Different from the above baselines, X …」を比較の列挙として対比にしない。公開中の強い関係 71 本を通し直し、変わったのはこの 3 本だけ（監査済みテーマは変化なし）。
+
 ### Removed — deep の系譜を廃止（D-R2-41）
 
 - ICLR 2026 の deep の系譜 14 件（`deep-*.json`、`deep-manifest.json`）、`/[conf]/deep/` のページ、deep 用の builder・manifest 生成器・表示コード・テストを消した。品質表（`lineage-quality-v1.json`）から deep の行を除き、スキーマの `kind` は `conference` / `theme` だけにした。旧 URL（`/<conf>/deep/`、`/<conf>/deep.html`）は会議の系譜 `/<conf>/lineage/` へ 301 で転送する。

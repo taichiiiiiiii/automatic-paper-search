@@ -667,6 +667,16 @@ const USAGE_NOUN = new RegExp(
 const APPOSITIVE_RESOURCE =
   /[\])]\s*,\s*(?:a|an|the)\s+(?:[\w-]+\s+){0,4}(?:benchmarks?|datasets?|tasks?|environments?|suites?|testbeds?|simulators?|toolkits?|librar(?:y|ies)|metrics?|corpus)\b/i;
 
+/** R2-42: a sentence introducing a new evaluation resource as an extended
+ * version of an existing one (the “extended version of” cue is about data). */
+const INTRODUCED_RESOURCE =
+  /\bwe\s+(?:introduce|construct|curate|create|collect|present|release|propose)\s+[^,.;]{1,60},\s+an?\s+(?:extended|augmented|enriched|enhanced|new|revised)?\s*(?:version|variant|extension|split|subset)\s+of\b[^.]{0,120}\b(?:evaluation|benchmark|dataset|annotations?|split)\b|\b(?:evaluation|benchmark|dataset)\b[^.]{0,80}\bwe\s+(?:introduce|construct|curate|create|collect|present|release)\s+[^,.;]{1,60},\s+an?\s+(?:extended|augmented|enriched|enhanced|new|revised)?\s*(?:version|variant|extension|split|subset)\s+of\b/i;
+
+/** R2-42: “Different from the above baselines, X is …”: a contrast between
+ * baselines in a baseline list, not between the citing paper and X. */
+const BASELINE_LIST_CONTRAST =
+  /\b(?:different\s+from|unlike|in\s+contrast\s+to|compared\s+to)\s+(?:all\s+)?the\s+(?:above|other|previous|preceding|aforementioned|remaining)\s+(?:baselines?|methods?|approaches|models?)\b/i;
+
 /** "Following / Inspired by / Based on X, we calculate …": the adopted
  * thing is a measurement or analysis procedure. */
 const USAGE_ACTION =
@@ -733,8 +743,11 @@ function objectWindow(text: string, end: number): string {
     .slice(end, end + 160)
     .replace(/[“"][^”"]{0,80}[”"]/g, "QUOTED")
     .slice(0, 90);
-  const stop = tail.search(/[,;:.]|\b(?:who|which|that|where|while|whereas|because|since|but)\b/i);
-  return (stop >= 0 ? tail.slice(0, stop) : tail).trim().split(/\s+/).slice(0, 9).join(" ");
+  // R2-42: a comma between coordinate adjectives is not the clause end
+  // (“build upon high-quality, human-verified tasks from X”).
+  const flat = tail.replace(/^(\s*[\w-]+),(?=\s+[\w-]+(?:,\s+[\w-]+)?\s+[\w-]+)/, "$1");
+  const stop = flat.search(/[,;:.]|\b(?:who|which|that|where|while|whereas|because|since|but)\b/i);
+  return (stop >= 0 ? flat.slice(0, stop) : flat).trim().split(/\s+/).slice(0, 9).join(" ");
 }
 
 /** The few words before a cue match in its clause (the subject of a
@@ -801,6 +814,9 @@ export function usageReason(sentence: string, facts: UsageFacts): string | null 
   const text = sentence.replace(/\bet\s+al\./g, "et al");
   if (USAGE_ACTION.test(text)) return "measurement";
   if (APPOSITIVE_RESOURCE.test(text)) return "resource_apposition";
+  // R2-42: “we introduce X-DIFF, an extended version of ReasonSeg [2]” builds a
+  // new evaluation set on the cited paper's dataset, not on its method.
+  if (INTRODUCED_RESOURCE.test(text)) return "introduced_resource";
   const opener = MAIN_CLAUSE_OPENER.exec(text);
   if (opener !== null) {
     const head = mainClauseHead(text.slice(opener.index + opener[0].length));
@@ -923,6 +939,11 @@ function classifySentence(
     opts.source !== "abstract" &&
     cueTargetsCited(sentence, id, [...WEAK_BUILD_CUES, ...buildCues], [], scope);
   if (anyMatch(RESOURCE_CLAUSE, sentence)) return mk("uses_resource", "phrase_resource", 0.7);
+  // R2-42: a contrast among the listed baselines is a comparison, never a
+  // targeted contrast of the citing paper.
+  if (strong && BASELINE_LIST_CONTRAST.test(sentence)) {
+    return mk("compares_with", "phrase_compare", 0.7);
+  }
   if (fp && anyMatch(CONTRAST_PATTERNS_V3, sentence)) {
     // R2-23: a targeted contrast also needs the cue to govern the cited
     // paper, and not through a marker group shared with other works
