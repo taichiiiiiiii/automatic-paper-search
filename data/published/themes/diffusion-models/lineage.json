@@ -143,7 +143,7 @@
       ],
       "kinds": [],
       "citation_count": 970,
-      "github_stars": 155,
+      "github_stars": 0,
       "tldr": "Score-based diffusion models synthesize samples by reversing a stochastic process that diffuses data to noise, and are trained by…",
       "short_abstract": "Score-based diffusion models synthesize samples by reversing a stochastic process that diffuses data to noise, and are trained by minimizing a weighted combination of score matching losses. The log-likelihood of score-based diffusion models can be tractably computed through a connection to continuous normalizing flows, but log-likelihood is not directly optimized by the weighted combination of score matching losses. We show that for a specific weighting scheme, the objective upper bounds the negative log-likelihood, thus enabling approximate maximum likelihood training of score-based diffusion models. We empirically observe that maximum likelihood training consistently improves the likelihood of score-based diffusion models across multiple datasets, stochastic processes, and model architectures. Our best models achieve negative log-likelihoods of 2.83 and 3.76 bits/dim on CIFAR-10 and ImageNet 32x32 without any data augmentation, on a par with state-of-the-art autoregressive models…",
       "arxiv_id": "2101.09258",
@@ -159,7 +159,6 @@
           "10.48550/arxiv.2101.09258"
         ]
       ],
-      "github_url": "https://github.com/yang-song/score_flow",
       "is_focus": false
     },
     {
@@ -209,7 +208,7 @@
       ],
       "kinds": [],
       "citation_count": 1635,
-      "github_stars": 0,
+      "github_stars": 106,
       "tldr": "Diffusion-based generative models have demonstrated a capacity for perceptually impressive synthesis, but can they also be great…",
       "short_abstract": "Diffusion-based generative models have demonstrated a capacity for perceptually impressive synthesis, but can they also be great likelihood-based models? We answer this in the affirmative, and introduce a family of diffusion-based generative models that obtain state-of-the-art likelihoods on standard image density estimation benchmarks. Unlike other diffusion-based models, our method allows for efficient optimization of the noise schedule jointly with the rest of the model. We show that the variational lower bound (VLB) simplifies to a remarkably short expression in terms of the signal-to-noise ratio of the diffused data, thereby improving our theoretical understanding of this model class. Using this insight, we prove an equivalence between several models proposed in the literature. In addition, we show that the continuous-time VLB is invariant to the noise schedule, except for the signal-to-noise ratio at its endpoints. This enables us to learn a noise schedule that minimizes the…",
       "arxiv_id": "2107.00630",
@@ -225,6 +224,7 @@
           "10.48550/arxiv.2107.00630"
         ]
       ],
+      "github_url": "https://github.com/addtt/variational-diffusion-models",
       "is_focus": false
     },
     {
@@ -407,7 +407,7 @@
       ],
       "kinds": [],
       "citation_count": 2418,
-      "github_stars": 0,
+      "github_stars": 807,
       "tldr": "Denoising diffusion models represent a recent emerging topic in computer vision, demonstrating remarkable results in the area of…",
       "short_abstract": "Denoising diffusion models represent a recent emerging topic in computer vision, demonstrating remarkable results in the area of generative modeling. A diffusion model is a deep generative model that is based on two stages, a forward diffusion stage and a reverse diffusion stage. In the forward diffusion stage, the input data is gradually perturbed over several steps by adding Gaussian noise. In the reverse stage, a model is tasked at recovering the original input data by learning to gradually reverse the diffusion process, step by step. Diffusion models are widely appreciated for the quality and diversity of the generated samples, despite their known computational burdens, i.e., low speeds due to the high number of steps involved during sampling. In this survey, we provide a comprehensive review of articles on denoising diffusion models applied in vision, comprising both theoretical and practical contributions in the field. First, we identify and present three generic diffusion…",
       "arxiv_id": "2209.04747",
@@ -423,6 +423,7 @@
           "10.1109/tpami.2023.3261988"
         ]
       ],
+      "github_url": "https://github.com/ChaofanTao/Autoregressive-Models-in-Vision-Survey",
       "citation_count_source": "semantic_scholar",
       "is_focus": false
     },
@@ -541,7 +542,7 @@
       ],
       "kinds": [],
       "citation_count": 432,
-      "github_stars": 384,
+      "github_stars": 0,
       "tldr": "Diffusion models have achieved remarkable success in text-to-image generation, enabling the creation of high-quality images from text…",
       "short_abstract": "Diffusion models have achieved remarkable success in text-to-image generation, enabling the creation of high-quality images from text prompts or other modalities. However, existing methods for customizing these models are limited by handling multiple personalized subjects and the risk of overfitting. Moreover, their large number of parameters is inefficient for model storage. In this paper, we propose a novel approach to address these limitations in existing text-to-image diffusion models for personalization. Our method involves fine-tuning the singular values of the weight matrices, leading to a compact and efficient parameter space that reduces the risk of overfitting and language-drifting. We also propose a Cut-Mix-Unmix data-augmentation technique to enhance the quality of multi-subject image generation and a simple text-based image editing framework. Our proposed SVDiff method has a significantly smaller model size compared to existing methods (≈2,200 times fewer parameters…",
       "arxiv_id": "2303.11305",
@@ -556,7 +557,6 @@
           "10.1109/iccv51070.2023.00673"
         ]
       ],
-      "github_url": "https://github.com/mkshing/svdiff-pytorch",
       "citation_count_source": "semantic_scholar",
       "is_focus": false
     },
@@ -608,7 +608,7 @@
       ],
       "kinds": [],
       "citation_count": 498,
-      "github_stars": 0,
+      "github_stars": 529,
       "tldr": "Generative image modeling enables a wide range of applications but raises ethical concerns about responsible deployment. We introduce an…",
       "short_abstract": "Generative image modeling enables a wide range of applications but raises ethical concerns about responsible deployment. We introduce an active content tracing method combining image watermarking and Latent Diffusion Models. The goal is for all generated images to conceal an invisible watermark allowing for future detection and/or identification. The method quickly fine-tunes the latent decoder of the image generator, conditioned on a binary signature. A pre-trained watermark extractor recovers the hidden signature from any generated image and a statistical test then determines whether it comes from the generative model. We evaluate the invisibility and robustness of the watermarks on a variety of generation tasks, showing that the Stable Signature is robust to image modifications. For instance, it detects the origin of an image generated from a text prompt, then cropped to keep 10% of the content, with 90+% accuracy at a false positive rate below 10−6.",
       "arxiv_id": "2303.15435",
@@ -623,6 +623,7 @@
           "10.1109/iccv51070.2023.02053"
         ]
       ],
+      "github_url": "https://github.com/facebookresearch/stable_signature",
       "citation_count_source": "semantic_scholar",
       "is_focus": false
     },
@@ -704,7 +705,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "1d5ca6fd4518a50d3af4d4f8889063811860739500b42698e33c23c4b11e5fc6"
+          "sha256": "238dcdec6a888761e37a2f9f7c49c0176985bd255699e1f097944f5f49c92371"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -731,7 +732,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "dc88cbc3321bb361858be1e25ffb026e0cf35d5a265adb6b84c90661a2999916"
+          "sha256": "e40cc3b4001ca11b67d7d166f4b85678cfaaf064a66c2d35f01b89d3f2aa800e"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -758,7 +759,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "de7852861a524434a34b50a3caad2ebd9f3fd96076ee0c61de0afc8d4bf9808a"
+          "sha256": "e50c3e971634e64ee1d48a4a1c7a6e030cd342f0b019b9480f59fe1906ac8ab4"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -812,7 +813,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "c8b048433d4f1f42c3843f52b4c3cb9b96a7e3a0a1bfc59a09fa6fbb0affcdfa"
+          "sha256": "0e3827b21822678f3f1c9001ea5f886dc1a8ced36e729da7edb9901c9a0fd62c"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -866,7 +867,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "cd7fb937dfe22b15cff9994c8118b858b577a73d75445b0003ba673b836175a4"
+          "sha256": "fe12ff543144dc04fabd7c35392a866fd1f6f55884e45363dc3db3b634f928a7"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -1028,7 +1029,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "1e41c6d616eeea76d4a2ea3908e7fc9b3cfabd0282a32edddeead04be7c59853"
+          "sha256": "29ff70d62de597abaa6392842783d8be892012af0b5c1d733ede2f872f16ef5c"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -1082,7 +1083,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "7968b5e269f3f53e7c08506437da68872e56515db9adc1a65585fe3053dccb1b"
+          "sha256": "78189780407e80e6e012eca11f87a93ffa807fe96ed08abc6f01afc4850f2fc1"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -1109,7 +1110,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "0a2a25ac885e91618a00c3e6cfc73117d709cdcb4b9dd382abf5c6fd0d2c6269"
+          "sha256": "8cf68326c620f8c8c3a7eed5cb7ec6b6ed0b0eb50186cecaf423015ab6aed296"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -1379,7 +1380,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "245d6be87efbba078decea0e263cee9d93b891db49644de74474b8ee6e81b42f"
+          "sha256": "cf8f443877b81fef526a2fa8422933c4ee8f90a7182d4e9cbea5847e18b10b05"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -1406,7 +1407,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "c8fef5bc367757d8767b1d0f8d3cd5bb8ab53a3f5be9655e021e36c6cd8e170b"
+          "sha256": "4e524db0f1e7ad326f3da90a68205b69fab5d7e0b05b7a8890182e5dcc59462c"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -1433,7 +1434,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "431e822ebc05515cb00206fa865d120ed5ac65772c5ec50b238984aa3bde235a"
+          "sha256": "8a0b3598afb35e713598a53e33b3be70c2a668f3be668f9cf3e63a556f880e42"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -1487,7 +1488,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "f0456535abb73d193131b3d46c9b7e9781927e71a8acd997e4edc1ee7c53bce7"
+          "sha256": "573ab89da70b93769f29ed3f13fddfa131231b9f0647700534b5e6b08fa38937"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -1541,7 +1542,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "03e3490d82c364e47d9bf0d8ad93ab04b717623549544afe4980c8fe25c7573a"
+          "sha256": "7c7f730b81a917938f4bfbf2de1a0e1be4d1acd42a0301705a510798b12da063"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -1730,7 +1731,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "29b951018e46acef23e50fb09221198b873fa59891f5e8643dee69475c1566ff"
+          "sha256": "b148121c2dd3280374ccfe2cccbe1c9b136631d75a78eac69673fb2e31d75dd5"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -1838,7 +1839,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "2a19542c3d38b372db933ff2737dcae6094d35c64bcd3d8ef937d33cf8781617"
+          "sha256": "e0dded89d1c0b9da43b2761b4907422472042f7ba71da713196296aeb177d28f"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -1865,7 +1866,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "0bbc5c6cc0d3baa70e465e27368f7236c1abe43e56717616be639b990a66169e"
+          "sha256": "f2eda406dad4babd8765d8996b155f3449e00f610ae736526fb0f03f69b71f9f"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -1892,7 +1893,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "00368dbe2d9e9ac00e1f500cb5f711a7ffafa01d4bc850bac4a30abb4d30dea4"
+          "sha256": "e9874a3c0deec22cdf4a50b3b477fee1437e3879e103e48e8b4206300efd3fa5"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -2027,7 +2028,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "9f178f271b46c89a74799061d4440d1267fa284fefe19260b55b95adfc9d6067"
+          "sha256": "acac0520c5250f673eb8576cf8752441b35223c6d6186fd9a4f7eba264bd5553"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -2108,7 +2109,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "d1274190e7cc93e25c7a215bfbbc31708cd01176a744163966f75d92fc45d583"
+          "sha256": "21a8a8084279071826f66461288c9211e75add86fbb7a6eb108c0c3408a7eea3"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -2135,7 +2136,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "738503e7ebdf25ceaac4a505297854aecd695876312c3e2a14989f15d8307676"
+          "sha256": "ac59161d942b602f5e378506acf548521348b79eb70052a5473ca1a5e3294769"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -2351,7 +2352,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "5c586ecec159a9981da7e4b2872ddf967e9ff1ab83e8502b9575863a1c512472"
+          "sha256": "759da7279f6b1ff841a57be77b3e1ff9f5cd5ec8ff04435cf30e9a22e0e281c2"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -2378,7 +2379,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "855e73f147e9645c6ff91bac2c8937d6dc7764d89ea749a0cc2cb76718320c23"
+          "sha256": "2614972571c6aaa382b7e88fc803587ca6421a515685e54fb58f06642678eeb1"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -2621,7 +2622,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "a59c977f50c6c0809eb020dbd3c9fba7c2562eb5356ae44d5deae68ef0681c08"
+          "sha256": "e84a3b5e6cb8dab6a503ca4079aead95f034716a5b67fff06d1913ab0caad5ac"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -2783,7 +2784,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "7b8c9ea9f39ebe13e2e27866cb12ad1690cff568cedc655f3e5449313599876d"
+          "sha256": "8d00fddaafa8084386a048c867c1d4c106daa773a1d87d0c313f8f9d501f3ae9"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -3202,11 +3203,11 @@
     {
       "src": "openalex:W4312933868",
       "dst": "openalex:W4390872341",
-      "rel": "extends",
-      "relation": "extends",
-      "conf": 0.8,
-      "confidence": 0.8,
-      "rationale": "「SVDiff」(2023) は 「High-Resolution Image Synthesis…」(2022) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Our main experiments were conducted using StableDiffu-sion [51], which is a popular variant of latent diffusion models (LDMs) [51] that operates on a latent space of a pre-trained autoencoder to reduce the dimensionality of the data sample…\"",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「SVDiff」(2023) は 「High-Resolution Image Synthesis…」(2022) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"In particular, the field of text-guided image synthesis has seen significant growth with the introduction of diffusion models, achieving state-of-the-art results in large-scale text-to-image synthesis tasks [39, 47, 53, 51, 4].\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -3543,7 +3544,7 @@
     ],
     "depth": 1,
     "since_year": 2018,
-    "generated_at": "2026-10-24T17:25:16.782000Z",
+    "generated_at": "2026-10-24T17:46:54.207000Z",
     "provenance_breakdown": {
       "s2_context_rule": 95,
       "foundational_allowlist": 2,
