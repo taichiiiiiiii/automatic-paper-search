@@ -82,6 +82,7 @@ import {
   resolveAndDedupSeeds,
   resolveSeedPaperId,
 } from "./identity.js";
+import { pruneLowImpactLeaves } from "./lowImpact.js";
 import { suspectMergedRecords } from "./nodeIdentityGuard.js";
 import type { ThemePaper } from "./openalexWork.js";
 import { RegressionRefusedError } from "./publishGuard.js";
@@ -863,6 +864,24 @@ export async function buildThemeLineage(
       logger.warn(
         `topic gate: dropped pre-seed embedding-only node ${d.id} (${d.year}, z=${d.z === null ? "-" : d.z.toFixed(2)}; no quoted lineage cue)`,
       );
+    }
+  }
+
+  // R2-45: niche low-impact leaves (nobody in the graph cites them, < 30
+  // citations, at least a year old, no lineage relation) are not lineage.
+  {
+    const low = pruneLowImpactLeaves(nodes, edges, {
+      seedIds: new Set(seedIds),
+      currentYear: wallClockNow().getUTCFullYear(),
+    });
+    edges = low.edges;
+    if (low.dropped.length > 0) {
+      logger.info(
+        `low-impact leaves: dropped ${low.dropped.length} node(s) (< 30 citations, cited by no node of the graph, no lineage relation)`,
+      );
+      for (const d of low.dropped) {
+        logger.info(`low-impact leaf: dropped ${d.id} (${d.year}, ${d.citations} citations)`);
+      }
     }
   }
 
