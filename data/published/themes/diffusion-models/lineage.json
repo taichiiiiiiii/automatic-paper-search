@@ -1,0 +1,3575 @@
+{
+  "schema_version": "lineage-artifact-v1",
+  "root": "openalex:W3162926177",
+  "nodes": [
+    {
+      "id": "openalex:W3036167779",
+      "title": "Denoising Diffusion Probabilistic Models",
+      "year": 2020,
+      "venue": "NeurIPS",
+      "venue_tier": "A+",
+      "authors": [
+        "Jonathan Ho",
+        "Jain, Ajay",
+        "Pieter Abbeel"
+      ],
+      "kinds": [],
+      "citation_count": 36837,
+      "github_stars": 5347,
+      "tldr": "DiffuCpG 1. Introduction In this study, we used a generative AI diffusion model to address missing methylation data. We trained the model…",
+      "short_abstract": "DiffuCpG 1. Introduction In this study, we used a generative AI diffusion model to address missing methylation data. We trained the model with Whole-Genome Bisulfite Sequencing data from 26 acute myeloid leukemia samples and validated it with Reduced Representation Bisulfite Sequencing data from 93 myelodysplastic syndrome and 13 normal samples. Additional testing included data from the Illumina 450k methylation array and Single-Cell Reduced Representation Bisulfite Sequencing on HepG2 cells. Our model, DiffuCpG, outperformed previous methods by integrating a broader range of genomic features, utilizing both short- and long-range interactions without increasing input complexity. It demonstrated superior accuracy, scalability, and versatility across various tissues, diseases, and technologies, providing predictions in both binary and continuous methylation states. In this repository, we deposit the code used to build the diffusion models along with necessary example datasets to train…",
+      "arxiv_id": "2006.11239",
+      "doi": "10.48550/arxiv.2006.11239",
+      "is_focus": true,
+      "citation_count_source": "semantic_scholar",
+      "aliases": [
+        [
+          "arxiv",
+          "2006.11239"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2006.11239"
+        ]
+      ],
+      "github_url": "https://github.com/hojonathanho/diffusion",
+      "seed_paper_id": "e9589f044d851928638e055c0d01d5ca17044ce9"
+    },
+    {
+      "id": "openalex:W3092442149",
+      "title": "Denoising Diffusion Implicit Models",
+      "year": 2020,
+      "venue": "ICLR",
+      "venue_tier": "A+",
+      "authors": [
+        "Jiaming Song",
+        "Chenlin Meng",
+        "Stefano Ermon"
+      ],
+      "kinds": [],
+      "citation_count": 14099,
+      "github_stars": 1855,
+      "tldr": "Denoising diffusion probabilistic models (DDPMs) have achieved high quality image generation without adversarial training, yet they…",
+      "short_abstract": "Denoising diffusion probabilistic models (DDPMs) have achieved high quality image generation without adversarial training, yet they require simulating a Markov chain for many steps to produce a sample. To accelerate sampling, we present denoising diffusion implicit models (DDIMs), a more efficient class of iterative implicit probabilistic models with the same training procedure as DDPMs. In DDPMs, the generative process is defined as the reverse of a Markovian diffusion process. We construct a class of non-Markovian diffusion processes that lead to the same training objective, but whose reverse process can be much faster to sample from. We empirically demonstrate that DDIMs can produce high quality samples $10 \\times$ to $50 \\times$ faster in terms of wall-clock time compared to DDPMs, allow us to trade off computation for sample quality, and can perform semantically meaningful image interpolation directly in the latent space.",
+      "arxiv_id": "2010.02502",
+      "doi": "10.48550/arxiv.2010.02502",
+      "aliases": [
+        [
+          "arxiv",
+          "2010.02502"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2010.02502"
+        ]
+      ],
+      "github_url": "https://github.com/ermongroup/ddim",
+      "citation_count_source": "semantic_scholar",
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W3122887982",
+      "title": "Improved Denoising Diffusion Probabilistic Models",
+      "year": 2021,
+      "venue": "ICML",
+      "venue_tier": "A+",
+      "authors": [
+        "Alex Nichol",
+        "Prafulla Dhariwal"
+      ],
+      "kinds": [],
+      "citation_count": 6055,
+      "github_stars": 3854,
+      "tldr": "Denoising diffusion probabilistic models (DDPM) are a class of generative models which have recently been shown to produce excellent…",
+      "short_abstract": "Denoising diffusion probabilistic models (DDPM) are a class of generative models which have recently been shown to produce excellent samples. We show that with a few simple modifications, DDPMs can also achieve competitive log-likelihoods while maintaining high sample quality. Additionally, we find that learning variances of the reverse diffusion process allows sampling with an order of magnitude fewer forward passes with a negligible difference in sample quality, which is important for the practical deployment of these models. We additionally use precision and recall to compare how well DDPMs and GANs cover the target distribution. Finally, we show that the sample quality and likelihood of these models scale smoothly with model capacity and training compute, making them easily scalable. We release our code at https://github.com/openai/improved-diffusion",
+      "arxiv_id": "2102.09672",
+      "doi": "10.48550/arxiv.2102.09672",
+      "aliases": [
+        [
+          "arxiv",
+          "2102.09672"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2102.09672"
+        ]
+      ],
+      "github_url": "https://github.com/openai/improved-diffusion",
+      "citation_count_source": "semantic_scholar",
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W3162926177",
+      "title": "Diffusion Models Beat GANs on Image Synthesis",
+      "year": 2021,
+      "venue": "NeurIPS",
+      "venue_tier": "A+",
+      "authors": [
+        "Prafulla Dhariwal",
+        "Alex Nichol"
+      ],
+      "kinds": [],
+      "citation_count": 13478,
+      "github_stars": 0,
+      "tldr": "We show that diffusion models can achieve image sample quality superior to the current state-of-the-art generative models. We achieve this…",
+      "short_abstract": "We show that diffusion models can achieve image sample quality superior to the current state-of-the-art generative models. We achieve this on unconditional image synthesis by finding a better architecture through a series of ablations. For conditional image synthesis, we further improve sample quality with classifier guidance: a simple, compute-efficient method for trading off diversity for fidelity using gradients from a classifier. We achieve an FID of 2.97 on ImageNet 128$\\times$128, 4.59 on ImageNet 256$\\times$256, and 7.72 on ImageNet 512$\\times$512, and we match BigGAN-deep even with as few as 25 forward passes per sample, all while maintaining better coverage of the distribution. Finally, we find that classifier guidance combines well with upsampling diffusion models, further improving FID to 3.94 on ImageNet 256$\\times$256 and 3.85 on ImageNet 512$\\times$512. We release our code at https://github.com/openai/guided-diffusion",
+      "arxiv_id": "2105.05233",
+      "doi": "10.48550/arxiv.2105.05233",
+      "is_focus": true,
+      "aliases": [
+        [
+          "arxiv",
+          "2105.05233"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2105.05233"
+        ]
+      ],
+      "citation_count_source": "semantic_scholar",
+      "seed_paper_id": "1050ccdfc2b7c8c75caff1e4adfbc548ee9ae29b"
+    },
+    {
+      "id": "openalex:W3167749434",
+      "title": "Maximum Likelihood Training of Score-Based Diffusion Models",
+      "year": 2021,
+      "venue": "NeurIPS",
+      "venue_tier": "A+",
+      "authors": [
+        "Yang Sup Song",
+        "Conor Durkan",
+        "Iain Murray",
+        "Stefano Ermon"
+      ],
+      "kinds": [],
+      "citation_count": 970,
+      "github_stars": 155,
+      "tldr": "Score-based diffusion models synthesize samples by reversing a stochastic process that diffuses data to noise, and are trained by…",
+      "short_abstract": "Score-based diffusion models synthesize samples by reversing a stochastic process that diffuses data to noise, and are trained by minimizing a weighted combination of score matching losses. The log-likelihood of score-based diffusion models can be tractably computed through a connection to continuous normalizing flows, but log-likelihood is not directly optimized by the weighted combination of score matching losses. We show that for a specific weighting scheme, the objective upper bounds the negative log-likelihood, thus enabling approximate maximum likelihood training of score-based diffusion models. We empirically observe that maximum likelihood training consistently improves the likelihood of score-based diffusion models across multiple datasets, stochastic processes, and model architectures. Our best models achieve negative log-likelihoods of 2.83 and 3.76 bits/dim on CIFAR-10 and ImageNet 32x32 without any data augmentation, on a par with state-of-the-art autoregressive models…",
+      "arxiv_id": "2101.09258",
+      "doi": "10.48550/arxiv.2101.09258",
+      "citation_count_source": "semantic_scholar",
+      "aliases": [
+        [
+          "arxiv",
+          "2101.09258"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2101.09258"
+        ]
+      ],
+      "github_url": "https://github.com/yang-song/score_flow",
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W3175528029",
+      "title": "Cascaded Diffusion Models for High Fidelity Image Generation",
+      "year": 2021,
+      "venue": "J. Mach. Learn. Res.",
+      "venue_tier": "A",
+      "authors": [
+        "Jonathan Ho",
+        "Chitwan Saharia",
+        "William Chan",
+        "David J. Fleet",
+        "Mohammad Norouzi"
+      ],
+      "kinds": [],
+      "citation_count": 1732,
+      "github_stars": 0,
+      "tldr": "We show that cascaded diffusion models are capable of generating high fidelity images on the class-conditional ImageNet generation…",
+      "short_abstract": "We show that cascaded diffusion models are capable of generating high fidelity images on the class-conditional ImageNet generation benchmark, without any assistance from auxiliary image classifiers to boost sample quality. A cascaded diffusion model comprises a pipeline of multiple diffusion models that generate images of increasing resolution, beginning with a standard diffusion model at the lowest resolution, followed by one or more super-resolution diffusion models that successively upsample the image and add higher resolution details. We find that the sample quality of a cascading pipeline relies crucially on conditioning augmentation, our proposed method of data augmentation of the lower resolution conditioning inputs to the super-resolution models. Our experiments show that conditioning augmentation prevents compounding error during sampling in a cascaded model, helping us to train cascading pipelines achieving FID scores of 1.48 at 64x64, 3.52 at 128x128 and 4.88 at 256x256…",
+      "arxiv_id": "2106.15282",
+      "doi": "10.48550/arxiv.2106.15282",
+      "citation_count_source": "semantic_scholar",
+      "aliases": [
+        [
+          "arxiv",
+          "2106.15282"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2106.15282"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W3177150392",
+      "title": "Variational Diffusion Models",
+      "year": 2021,
+      "venue": "arXiv (Cornell University)",
+      "venue_tier": "preprint",
+      "authors": [
+        "Diederik P. Kingma",
+        "Tim Salimans",
+        "Ben Poole",
+        "Jonathan Ho"
+      ],
+      "kinds": [],
+      "citation_count": 1635,
+      "github_stars": 0,
+      "tldr": "Diffusion-based generative models have demonstrated a capacity for perceptually impressive synthesis, but can they also be great…",
+      "short_abstract": "Diffusion-based generative models have demonstrated a capacity for perceptually impressive synthesis, but can they also be great likelihood-based models? We answer this in the affirmative, and introduce a family of diffusion-based generative models that obtain state-of-the-art likelihoods on standard image density estimation benchmarks. Unlike other diffusion-based models, our method allows for efficient optimization of the noise schedule jointly with the rest of the model. We show that the variational lower bound (VLB) simplifies to a remarkably short expression in terms of the signal-to-noise ratio of the diffused data, thereby improving our theoretical understanding of this model class. Using this insight, we prove an equivalence between several models proposed in the literature. In addition, we show that the continuous-time VLB is invariant to the noise schedule, except for the signal-to-noise ratio at its endpoints. This enables us to learn a noise schedule that minimizes the…",
+      "arxiv_id": "2107.00630",
+      "doi": "10.48550/arxiv.2107.00630",
+      "citation_count_source": "semantic_scholar",
+      "aliases": [
+        [
+          "arxiv",
+          "2107.00630"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2107.00630"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4224035735",
+      "title": "Hierarchical Text-Conditional Image Generation with CLIP Latents",
+      "year": 2022,
+      "venue": "arXiv (Cornell University)",
+      "venue_tier": "preprint",
+      "authors": [
+        "Ramesh, Aditya",
+        "Prafulla Dhariwal",
+        "Alex Nichol",
+        "Casey Chu",
+        "Mark I-Cheng Chen"
+      ],
+      "kinds": [],
+      "citation_count": 9579,
+      "github_stars": 0,
+      "tldr": "Contrastive models like CLIP have been shown to learn robust representations of images that capture both semantics and style. To leverage…",
+      "short_abstract": "Contrastive models like CLIP have been shown to learn robust representations of images that capture both semantics and style. To leverage these representations for image generation, we propose a two-stage model: a prior that generates a CLIP image embedding given a text caption, and a decoder that generates an image conditioned on the image embedding. We show that explicitly generating image representations improves image diversity with minimal loss in photorealism and caption similarity. Our decoders conditioned on image representations can also produce variations of an image that preserve both its semantics and style, while varying the non-essential details absent from the image representation. Moreover, the joint embedding space of CLIP enables language-guided image manipulations in a zero-shot fashion. We use diffusion models for the decoder and experiment with both autoregressive and diffusion models for the prior, finding that the latter are computationally more efficient and…",
+      "arxiv_id": "2204.06125",
+      "doi": "10.48550/arxiv.2204.06125",
+      "is_focus": true,
+      "citation_count_source": "semantic_scholar",
+      "aliases": [
+        [
+          "arxiv",
+          "2204.06125"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2204.06125"
+        ]
+      ],
+      "seed_paper_id": "3bfc9db19de3a20ca1d4ebfa59a6a4489666484d"
+    },
+    {
+      "id": "openalex:W4226125322",
+      "title": "GLIDE: Towards Photorealistic Image Generation and Editing with Text-Guided Diffusion Models",
+      "year": 2021,
+      "venue": "ICML",
+      "venue_tier": "A+",
+      "authors": [
+        "Alex Nichol",
+        "Prafulla Dhariwal",
+        "Ramesh, Aditya",
+        "Pranav Shyam",
+        "Pamela Mishkin"
+      ],
+      "kinds": [],
+      "citation_count": 5101,
+      "github_stars": 0,
+      "tldr": "Diffusion models have recently been shown to generate high-quality synthetic images, especially when paired with a guidance technique to…",
+      "short_abstract": "Diffusion models have recently been shown to generate high-quality synthetic images, especially when paired with a guidance technique to trade off diversity for fidelity. We explore diffusion models for the problem of text-conditional image synthesis and compare two different guidance strategies: CLIP guidance and classifier-free guidance. We find that the latter is preferred by human evaluators for both photorealism and caption similarity, and often produces photorealistic samples. Samples from a 3.5 billion parameter text-conditional diffusion model using classifier-free guidance are favored by human evaluators to those from DALL-E, even when the latter uses expensive CLIP reranking. Additionally, we find that our models can be fine-tuned to perform image inpainting, enabling powerful text-driven image editing. We train a smaller model on a filtered dataset and release the code and weights at https://github.com/openai/glide-text2im.",
+      "arxiv_id": "2112.10741",
+      "doi": "10.48550/arxiv.2112.10741",
+      "citation_count_source": "semantic_scholar",
+      "aliases": [
+        [
+          "arxiv",
+          "2112.10741"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2112.10741"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4288099666",
+      "title": "Classifier-Free Diffusion Guidance",
+      "year": 2022,
+      "venue": "arXiv (Cornell University)",
+      "venue_tier": "preprint",
+      "authors": [
+        "Jonathan Ho",
+        "Tim Salimans"
+      ],
+      "kinds": [],
+      "citation_count": 7550,
+      "github_stars": 828,
+      "tldr": "Classifier guidance is a recently introduced method to trade off mode coverage and sample fidelity in conditional diffusion models post…",
+      "short_abstract": "Classifier guidance is a recently introduced method to trade off mode coverage and sample fidelity in conditional diffusion models post training, in the same spirit as low temperature sampling or truncation in other types of generative models. Classifier guidance combines the score estimate of a diffusion model with the gradient of an image classifier and thereby requires training an image classifier separate from the diffusion model. It also raises the question of whether guidance can be performed without a classifier. We show that guidance can be indeed performed by a pure generative model without such a classifier: in what we call classifier-free guidance, we jointly train a conditional and an unconditional diffusion model, and we combine the resulting conditional and unconditional score estimates to attain a trade-off between sample quality and diversity similar to that obtained using classifier guidance.",
+      "arxiv_id": "2207.12598",
+      "doi": "10.48550/arxiv.2207.12598",
+      "is_focus": true,
+      "citation_count_source": "semantic_scholar",
+      "aliases": [
+        [
+          "arxiv",
+          "2207.12598"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2207.12598"
+        ]
+      ],
+      "github_url": "https://github.com/TeaPearce/Conditional_Diffusion_MNIST",
+      "seed_paper_id": "cae828c170c1f7795dca9dae30dbe744ab4fcc0e"
+    },
+    {
+      "id": "openalex:W4312388283",
+      "title": "Vector Quantized Diffusion Model for Text-to-Image Synthesis",
+      "year": 2022,
+      "venue": "IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings",
+      "venue_tier": "A+",
+      "authors": [
+        "Shuyang Gu",
+        "Dong Chen",
+        "Jianmin Bao",
+        "Fang Wen",
+        "Bo Zhang"
+      ],
+      "kinds": [],
+      "citation_count": 1123,
+      "github_stars": 0,
+      "tldr": "We present the vector quantized diffusion (VQ-Diffusion) model for text-to-image generation. This method is based on a vector quantized…",
+      "short_abstract": "We present the vector quantized diffusion (VQ-Diffusion) model for text-to-image generation. This method is based on a vector quantized variational autoencoder (VQ-VAE) whose latent space is modeled by a conditional variant of the recently developed Denoising Diffusion Probabilistic Model (DDPM). We find that this latent-space method is well-suited for text-to-image generation tasks because it not only eliminates the unidirectional bias with existing methods but also allows us to incorporate a mask-and-replace diffusion strategy to avoid the accumulation of errors, which is a serious problem with existing methods. Our experiments show that the VQ-Diffusion produces significantly better text-to-image generation results when compared with conventional autoregressive (AR) models with similar numbers of parameters. Compared with previous GAN-based text-to-image methods, our VQ-Diffusion can handle more complex scenes and improve the synthesized image quality by a large margin. Finally,…",
+      "arxiv_id": "2111.14822",
+      "doi": "10.1109/cvpr52688.2022.01043",
+      "aliases": [
+        [
+          "arxiv",
+          "2111.14822"
+        ],
+        [
+          "doi",
+          "10.1109/cvpr52688.2022.01043"
+        ]
+      ],
+      "citation_count_source": "semantic_scholar",
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4312933868",
+      "title": "High-Resolution Image Synthesis with Latent Diffusion Models",
+      "year": 2022,
+      "venue": "IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings",
+      "venue_tier": "A+",
+      "authors": [
+        "Robin Rombach",
+        "Andreas Blattmann",
+        "Dominik Lorenz",
+        "Patrick Esser",
+        "Björn Ommer"
+      ],
+      "kinds": [],
+      "citation_count": 28440,
+      "github_stars": 14179,
+      "tldr": "By decomposing the image formation process into a sequential application of denoising autoencoders, diffusion models (DMs) achieve…",
+      "short_abstract": "By decomposing the image formation process into a sequential application of denoising autoencoders, diffusion models (DMs) achieve state-of-the-art synthesis results on image data and beyond. Additionally, their formulation allows for a guiding mechanism to control the image generation process without retraining. However, since these models typically operate directly in pixel space, optimization of powerful DMs often consumes hundreds of GPU days and inference is expensive due to sequential evaluations. To enable DM training on limited computational resources while retaining their quality and flexibility, we apply them in the latent space of powerful pretrained autoencoders. In contrast to previous work, training diffusion models on such a representation allows for the first time to reach a near-optimal point between complexity reduction and detail preservation, greatly boosting visual fidelity. By introducing cross-attention layers into the model architecture, we turn diffusion…",
+      "arxiv_id": "2112.10752",
+      "doi": "10.1109/cvpr52688.2022.01042",
+      "citation_count_source": "semantic_scholar",
+      "aliases": [
+        [
+          "arxiv",
+          "2112.10752"
+        ],
+        [
+          "doi",
+          "10.1109/cvpr52688.2022.01042"
+        ]
+      ],
+      "github_url": "https://github.com/CompVis/latent-diffusion",
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4360884927",
+      "title": "Diffusion Models in Vision: A Survey",
+      "year": 2023,
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+      "venue_tier": "preprint",
+      "authors": [
+        "Florinel-Alin Croitoru",
+        "Vlad Hondru",
+        "Radu Tudor Ionescu",
+        "Mubarak Shah"
+      ],
+      "kinds": [],
+      "citation_count": 2418,
+      "github_stars": 0,
+      "tldr": "Denoising diffusion models represent a recent emerging topic in computer vision, demonstrating remarkable results in the area of…",
+      "short_abstract": "Denoising diffusion models represent a recent emerging topic in computer vision, demonstrating remarkable results in the area of generative modeling. A diffusion model is a deep generative model that is based on two stages, a forward diffusion stage and a reverse diffusion stage. In the forward diffusion stage, the input data is gradually perturbed over several steps by adding Gaussian noise. In the reverse stage, a model is tasked at recovering the original input data by learning to gradually reverse the diffusion process, step by step. Diffusion models are widely appreciated for the quality and diversity of the generated samples, despite their known computational burdens, i.e., low speeds due to the high number of steps involved during sampling. In this survey, we provide a comprehensive review of articles on denoising diffusion models applied in vision, comprising both theoretical and practical contributions in the field. First, we identify and present three generic diffusion…",
+      "arxiv_id": "2209.04747",
+      "doi": "10.1109/tpami.2023.3261988",
+      "is_trending": true,
+      "aliases": [
+        [
+          "arxiv",
+          "2209.04747"
+        ],
+        [
+          "doi",
+          "10.1109/tpami.2023.3261988"
+        ]
+      ],
+      "citation_count_source": "semantic_scholar",
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4385800876",
+      "title": "Refusion: Enabling Large-Size Realistic Image Restoration with Latent-Space Diffusion Models",
+      "year": 2023,
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (CVPRW)",
+      "venue_tier": "A+",
+      "authors": [
+        "Ziwei Luo",
+        "Fredrik Gustafsson",
+        "Zheng Zhao",
+        "Jens Sjölund",
+        "Thomas B. Schön"
+      ],
+      "kinds": [],
+      "citation_count": 211,
+      "github_stars": 0,
+      "tldr": "This work aims to improve the applicability of diffusion models in realistic image restoration. Specifically, we enhance the diffusion…",
+      "short_abstract": "This work aims to improve the applicability of diffusion models in realistic image restoration. Specifically, we enhance the diffusion model in several aspects such as network architecture, noise level, denoising steps, training image size, and optimizer/scheduler. We show that tuning these hyperparameters allows us to achieve better performance on both distortion and perceptual scores. We also propose a U-Net based latent diffusion model which performs diffusion in a low-resolution latent space while preserving high-resolution information from the original input for the decoding process. Compared to the previous latent-diffusion model which trains a VAE-GAN to compress the image, our proposed U-Net compression strategy is significantly more stable and can recover highly accurate images without relying on adversarial optimization. Importantly, these modifications allow us to apply diffusion models to various image restoration tasks, including real-world shadow removal, HR…",
+      "arxiv_id": "2304.08291",
+      "doi": "10.1109/cvprw59228.2023.00169",
+      "aliases": [
+        [
+          "arxiv",
+          "2304.08291"
+        ],
+        [
+          "doi",
+          "10.1109/cvprw59228.2023.00169"
+        ]
+      ],
+      "citation_count_source": "semantic_scholar",
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4387195417",
+      "title": "Diffusion Models: A Comprehensive Survey of Methods and Applications",
+      "year": 2023,
+      "venue": "ACM Computing Surveys",
+      "venue_tier": "preprint",
+      "authors": [
+        "Ling Qiang Yang",
+        "Zhilong Zhang",
+        "Yang Song",
+        "Shenda Hong",
+        "Runsheng Xu"
+      ],
+      "kinds": [],
+      "citation_count": 2504,
+      "github_stars": 0,
+      "tldr": "Diffusion models have emerged as a powerful new family of deep generative models with record-breaking performance in many applications,…",
+      "short_abstract": "Diffusion models have emerged as a powerful new family of deep generative models with record-breaking performance in many applications, including image synthesis, video generation, and molecule design. In this survey, we provide an overview of the rapidly expanding body of work on diffusion models, categorizing the research into three key areas: efficient sampling, improved likelihood estimation, and handling data with special structures. We also discuss the potential for combining diffusion models with other generative models for enhanced results. We further review the wide-ranging applications of diffusion models in fields spanning from computer vision, natural language processing, temporal data modeling, to interdisciplinary applications in other scientific disciplines. This survey aims to provide a contextualized, in-depth look at the state of diffusion models, identifying the key areas of focus and pointing to potential areas for further exploration. Github:…",
+      "arxiv_id": "2209.00796",
+      "doi": "10.1145/3626235",
+      "is_trending": true,
+      "aliases": [
+        [
+          "arxiv",
+          "2209.00796"
+        ],
+        [
+          "doi",
+          "10.1145/3626235"
+        ]
+      ],
+      "citation_count_source": "semantic_scholar",
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4390872297",
+      "title": "Scalable Diffusion Models with Transformers",
+      "year": 2023,
+      "venue": "IEEE/CVF International Conference on Computer Vision (ICCV)",
+      "venue_tier": "A+",
+      "authors": [
+        "William Peebles",
+        "Saining Xie"
+      ],
+      "kinds": [],
+      "citation_count": 7861,
+      "github_stars": 8677,
+      "tldr": "We explore a new class of diffusion models based on the transformer architecture. We train latent diffusion models of images, replacing…",
+      "short_abstract": "We explore a new class of diffusion models based on the transformer architecture. We train latent diffusion models of images, replacing the commonly-used U-Net backbone with a transformer that operates on latent patches. We analyze the scalability of our Diffusion Transformers (DiTs) through the lens of forward pass complexity as measured by Gflops. We find that DiTs with higher Gflops—through increased transformer depth/width or increased number of input tokens—consistently have lower FID. In addition to possessing good scalability properties, our largest DiT-XL/2 models outperform all prior diffusion models on the class-conditional ImageNet 512×512 and 256×256 benchmarks, achieving a state-of-the-art FID of 2.27 on the latter.",
+      "arxiv_id": "2212.09748",
+      "doi": "10.1109/iccv51070.2023.00387",
+      "is_focus": true,
+      "is_trending": true,
+      "aliases": [
+        [
+          "arxiv",
+          "2212.09748"
+        ],
+        [
+          "doi",
+          "10.1109/iccv51070.2023.00387"
+        ]
+      ],
+      "github_url": "https://github.com/facebookresearch/DiT",
+      "citation_count_source": "semantic_scholar",
+      "seed_paper_id": "f494d71560019420367e66dbbe025608592cc972"
+    },
+    {
+      "id": "openalex:W4390872341",
+      "title": "SVDiff: Compact Parameter Space for Diffusion Fine-Tuning",
+      "year": 2023,
+      "venue": "IEEE/CVF International Conference on Computer Vision (ICCV)",
+      "venue_tier": "A+",
+      "authors": [
+        "Ligong Han",
+        "Yinxiao Li",
+        "Han Zhang",
+        "Peyman Milanfar",
+        "Dimitris Metaxas"
+      ],
+      "kinds": [],
+      "citation_count": 432,
+      "github_stars": 384,
+      "tldr": "Diffusion models have achieved remarkable success in text-to-image generation, enabling the creation of high-quality images from text…",
+      "short_abstract": "Diffusion models have achieved remarkable success in text-to-image generation, enabling the creation of high-quality images from text prompts or other modalities. However, existing methods for customizing these models are limited by handling multiple personalized subjects and the risk of overfitting. Moreover, their large number of parameters is inefficient for model storage. In this paper, we propose a novel approach to address these limitations in existing text-to-image diffusion models for personalization. Our method involves fine-tuning the singular values of the weight matrices, leading to a compact and efficient parameter space that reduces the risk of overfitting and language-drifting. We also propose a Cut-Mix-Unmix data-augmentation technique to enhance the quality of multi-subject image generation and a simple text-based image editing framework. Our proposed SVDiff method has a significantly smaller model size compared to existing methods (≈2,200 times fewer parameters…",
+      "arxiv_id": "2303.11305",
+      "doi": "10.1109/iccv51070.2023.00673",
+      "aliases": [
+        [
+          "arxiv",
+          "2303.11305"
+        ],
+        [
+          "doi",
+          "10.1109/iccv51070.2023.00673"
+        ]
+      ],
+      "github_url": "https://github.com/mkshing/svdiff-pytorch",
+      "citation_count_source": "semantic_scholar",
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4390872669",
+      "title": "Your Diffusion Model is Secretly a Zero-Shot Classifier",
+      "year": 2023,
+      "venue": "IEEE/CVF International Conference on Computer Vision (ICCV)",
+      "venue_tier": "A+",
+      "authors": [
+        "Alexander C. Li",
+        "Mihir Prabhudesai",
+        "Shivam Duggal",
+        "Ellis Vincent Brown",
+        "Deepak Pathak"
+      ],
+      "kinds": [],
+      "citation_count": 399,
+      "github_stars": 0,
+      "tldr": "The recent wave of large-scale text-to-image diffusion models has dramatically increased our text-based image generation abilities. These…",
+      "short_abstract": "The recent wave of large-scale text-to-image diffusion models has dramatically increased our text-based image generation abilities. These models can generate realistic images for a staggering variety of prompts and exhibit impressive compositional generalization abilities. Almost all use cases thus far have solely focused on sampling; however, diffusion models can also provide conditional density estimates, which are useful for tasks beyond image generation. In this paper, we show that the density estimates from large-scale text-to-image diffusion models like Stable Diffusion can be leveraged to perform zero-shot classification without any additional training. Our generative approach to classification, which we call Diffusion Classifier, attains strong results on a variety of benchmarks and outperforms alternative methods of extracting knowledge from diffusion models. Although a gap remains between generative and discriminative approaches on zero-shot recognition tasks, our…",
+      "arxiv_id": "2303.16203",
+      "doi": "10.1109/iccv51070.2023.00210",
+      "aliases": [
+        [
+          "arxiv",
+          "2303.16203"
+        ],
+        [
+          "doi",
+          "10.1109/iccv51070.2023.00210"
+        ]
+      ],
+      "citation_count_source": "semantic_scholar",
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4390872921",
+      "title": "The Stable Signature: Rooting Watermarks in Latent Diffusion Models",
+      "year": 2023,
+      "venue": "IEEE/CVF International Conference on Computer Vision (ICCV)",
+      "venue_tier": "A+",
+      "authors": [
+        "Pierre Fernandez",
+        "Guillaume Couairon",
+        "Hervé Jeǵou",
+        "Matthijs Douze",
+        "Teddy Furon"
+      ],
+      "kinds": [],
+      "citation_count": 498,
+      "github_stars": 0,
+      "tldr": "Generative image modeling enables a wide range of applications but raises ethical concerns about responsible deployment. We introduce an…",
+      "short_abstract": "Generative image modeling enables a wide range of applications but raises ethical concerns about responsible deployment. We introduce an active content tracing method combining image watermarking and Latent Diffusion Models. The goal is for all generated images to conceal an invisible watermark allowing for future detection and/or identification. The method quickly fine-tunes the latent decoder of the image generator, conditioned on a binary signature. A pre-trained watermark extractor recovers the hidden signature from any generated image and a statistical test then determines whether it comes from the generative model. We evaluate the invisibility and robustness of the watermarks on a variety of generation tasks, showing that the Stable Signature is robust to image modifications. For instance, it detects the origin of an image generated from a text prompt, then cropped to keep 10% of the content, with 90+% accuracy at a false positive rate below 10−6.",
+      "arxiv_id": "2303.15435",
+      "doi": "10.1109/iccv51070.2023.02053",
+      "aliases": [
+        [
+          "arxiv",
+          "2303.15435"
+        ],
+        [
+          "doi",
+          "10.1109/iccv51070.2023.02053"
+        ]
+      ],
+      "citation_count_source": "semantic_scholar",
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4390873054",
+      "title": "Adding Conditional Control to Text-to-Image Diffusion Models",
+      "year": 2023,
+      "venue": "IEEE/CVF International Conference on Computer Vision (ICCV)",
+      "venue_tier": "A+",
+      "authors": [
+        "Lvmin Zhang",
+        "Anyi Rao",
+        "Maneesh Agrawala"
+      ],
+      "kinds": [],
+      "citation_count": 8082,
+      "github_stars": 0,
+      "tldr": "We present ControlNet, a neural network architecture to add spatial conditioning controls to large, pretrained text-to-image diffusion…",
+      "short_abstract": "We present ControlNet, a neural network architecture to add spatial conditioning controls to large, pretrained text-to-image diffusion models. ControlNet locks the production-ready large diffusion models, and reuses their deep and robust encoding layers pretrained with billions of images as a strong backbone to learn a diverse set of conditional controls. The neural architecture is connected with \"zero convolutions\" (zero-initialized convolution layers) that progressively grow the parameters from zero and ensure that no harmful noise could affect the finetuning. We test various conditioning controls, e.g., edges, depth, segmentation, human pose, etc., with Stable Diffusion, using single or multiple conditions, with or without prompts. We show that the training of ControlNets is robust with small (1m) datasets. Extensive results show that ControlNet may facilitate wider applications to control image diffusion models.",
+      "doi": "10.1109/iccv51070.2023.00355",
+      "is_trending": true,
+      "aliases": [
+        [
+          "doi",
+          "10.1109/iccv51070.2023.00355"
+        ]
+      ],
+      "citation_count_source": "semantic_scholar",
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W7133244780",
+      "title": "Elucidating the Design Space of Diffusion-Based Generative Models",
+      "year": 2022,
+      "venue": "neural information processing systems",
+      "venue_tier": "A+",
+      "authors": [
+        "Tero Karras",
+        "Miika Aittala",
+        "Timo Aila",
+        "Samuli Laine"
+      ],
+      "kinds": [],
+      "citation_count": 4066,
+      "github_stars": 2003,
+      "tldr": "We argue that the theory and practice of diffusion-based generative models are currently unnecessarily convoluted and seek to remedy the…",
+      "short_abstract": "We argue that the theory and practice of diffusion-based generative models are currently unnecessarily convoluted and seek to remedy the situation by presenting a design space that clearly separates the concrete design choices. This lets us identify several changes to both the sampling and training processes, as well as preconditioning of the score networks. Together, our improvements yield new state-of-the-art FID of 1.79 for CIFAR-10 in a class-conditional setting and 1.97 in an unconditional setting, with much faster sampling (35 network evaluations per image) than prior designs. To further demonstrate their modular nature, we show that our design changes dramatically improve both the efficiency and quality obtainable with pre-trained score networks from previous work, including improving the FID of a previously trained ImageNet-64 model from 2.07 to near-SOTA 1.55, and after re-training with our proposed improvements to a new SOTA of 1.36.",
+      "arxiv_id": "2206.00364",
+      "doi": "10.52202/068431-1926",
+      "aliases": [
+        [
+          "arxiv",
+          "2206.00364"
+        ],
+        [
+          "doi",
+          "10.52202/068431-1926"
+        ]
+      ],
+      "github_url": "https://github.com/NVlabs/edm",
+      "citation_count_source": "semantic_scholar",
+      "is_focus": false
+    }
+  ],
+  "edges": [
+    {
+      "src": "openalex:W3036167779",
+      "dst": "openalex:W3092442149",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Denoising Diffusion Implicit Mo…」(2020) は 「Denoising Diffusion Probabilist…」(2020) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"…) achieves the best sample quality when dim( τ ) is small, and DDPM ( η = 1 and ˆ σ ) typically has worse sample quality compared to its less stochastic counterparts with the same dim( τ ) , except for the case for dim( τ ) = 1000 and ˆ σ…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "1d5ca6fd4518a50d3af4d4f8889063811860739500b42698e33c23c4b11e5fc6"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3036167779",
+      "dst": "openalex:W3162926177",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Diffusion Models Beat GANs on I…」(2021) は 「Denoising Diffusion Probabilist…」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"[31] observe that the simple mean-squared error objective, Lsimple, works better in practice than the actual variational lower bound Lvlb that can be derived from interpreting the denoising diffusion model as a VAE.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "dc88cbc3321bb361858be1e25ffb026e0cf35d5a265adb6b84c90661a2999916"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3036167779",
+      "dst": "openalex:W3177150392",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Variational Diffusion Models」(2021) は 「Denoising Diffusion Probabilist…」(2020) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Equation 14 allows for numerically stable implementation in 32-bit or lower-precision floating point, in contrast with previous implementations of discrete-time diffusion models (e.g. [Ho et al., 2020]), which had to resort to 64-bit float…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "de7852861a524434a34b50a3caad2ebd9f3fd96076ee0c61de0afc8d4bf9808a"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3036167779",
+      "dst": "openalex:W4224035735",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.65,
+      "confidence": 0.65,
+      "rationale": "「Hierarchical Text-Conditional Image Generation with CLIP La…」(2022) は分野の基礎文献「Denoising Diffusion Probabilistic Models」(2020)を引用しており、その系譜に連なるものとして拡張関係で残している（基礎文献リストに基づく規則）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-metadata",
+          "sha256": "59ff9a10e7b1dd008c6d7df2a944ba793e0f95989b9b67ea6ab9555585f44498"
+        },
+        "classification": {
+          "method": "foundational_allowlist",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3036167779",
+      "dst": "openalex:W4226125322",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「GLIDE」(2021) は 「Denoising Diffusion Probabilist…」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Lsimple := Et∼[1,T ],x0∼q(x0), ∼N (0,I)[|| − θ(xt, t)|| (2)] Ho et al. (2020) show how to derive μθ(xt) from θ(xt, t), and fix Σθ to a constant.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "c8b048433d4f1f42c3843f52b4c3cb9b96a7e3a0a1bfc59a09fa6fbb0affcdfa"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3036167779",
+      "dst": "openalex:W4288099666",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Classifier-Free Diffusion Guida…」(2022) は 「Denoising Diffusion Probabilist…」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We parameterize xθ in terms of -prediction [5]: xθ(zλ) = (zλ − σλ θ(zλ))/αλ, and we train on the objective E ,λ [ ‖ θ(zλ)− ‖(2)2 ] (5)\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "cefea66c069ce86cb5ac7cb2a2e0cf5d0d55f79006be28724c37e7e2c9c5963e"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3036167779",
+      "dst": "openalex:W4312388283",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Vector Quantized Diffusion Mode…」(2022) は 「Denoising Diffusion Probabilist…」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "cd7fb937dfe22b15cff9994c8118b858b577a73d75445b0003ba673b836175a4"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3036167779",
+      "dst": "openalex:W4312933868",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「High-Resolution Image Synthesis…」(2022) は 「Denoising Diffusion Probabilist…」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Although the reweighted variational objective [29] aims to address this by undersampling the initial denoising steps, DMs are still computationally demanding, since training and evaluating such a model requires repeated function evaluation…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "1a42441b3579e8aeffe59150273e6cebd9a040e68f95b03ed8040521a402bd89"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3036167779",
+      "dst": "openalex:W4360884927",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Diffusion Models in Vision」(2023) は 「Denoising Diffusion Probabilist…」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "96f49e1b2ccfa428029c5f641dc5633cd0e42050140627f0045e5f56572e27e8"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3036167779",
+      "dst": "openalex:W4385800876",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.65,
+      "confidence": 0.65,
+      "rationale": "「Refusion: Enabling Large-Size Realistic Image Restoration w…」(2023) は分野の基礎文献「Denoising Diffusion Probabilistic Models」(2020)を引用しており、その系譜に連なるものとして拡張関係で残している（基礎文献リストに基づく規則）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-metadata",
+          "sha256": "722fd55d33d09e87e3e1fdeb3749f73fbc4b84d151c50f6225776b59ec92c9d4"
+        },
+        "classification": {
+          "method": "foundational_allowlist",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3036167779",
+      "dst": "openalex:W4390872297",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Scalable Diffusion Models with …」(2023) は 「Denoising Diffusion Probabilist…」(2020) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Improvements to DDPMs over the past two years have largely been driven by improved sampling techniques [19, 55, 27], most notably classiﬁer-free guidance [21], reformulating diffusion models to predict noise instead of pixels [19] and usin…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "336ec929c7d97e718410b702cb4f1f2add531d9403e3721a0ff1d59006f84002"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3036167779",
+      "dst": "openalex:W4390872341",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「SVDiff」(2023) は 「Denoising Diffusion Probabilist…」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Recent years have witnessed the rapid advancement of diffusion-based text-to-image generative models [19, 53, 20, 47, 51], which have enabled the generation of high-quality images through simple text prompts.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "cd8c48f5a5137c7e4dc0226857ec73656383a4a50392327047ce949a42553294"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3036167779",
+      "dst": "openalex:W4390872669",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「Your Diffusion Model is Secretl…」(2023) は 「Denoising Diffusion Probabilist…」(2020) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Finally, [35] ﬁnd that removing w t improves sample quality metrics, and many follow-up works also choose to do so.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "1e41c6d616eeea76d4a2ea3908e7fc9b3cfabd0282a32edddeead04be7c59853"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3036167779",
+      "dst": "openalex:W4390872921",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「The Stable Signature」(2023) は 「Denoising Diffusion Probabilist…」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "bd55c021cbc05331370b9cabeab4e4b5d050ad0103958bdc759475b43e07f4db"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3036167779",
+      "dst": "openalex:W7133244780",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Elucidating the Design Space of…」(2022) は 「Denoising Diffusion Probabilist…」(2020) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Diffusion-based generative models [45] have emerged as a powerful new framework for neural image synthesis, in both unconditional [16, 36, 48] and conditional [17, 35, 36, 38, 39, 41, 42, 48] settings, even surpassing the quality of GANs […\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "7968b5e269f3f53e7c08506437da68872e56515db9adc1a65585fe3053dccb1b"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3092442149",
+      "dst": "openalex:W3162926177",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Diffusion Models Beat GANs on I…」(2021) は 「Denoising Diffusion Implicit Mo…」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Song et al. [57] propose DDIM, which formulates an alternative non-Markovian noising process that has the same forward marginals as DDPM, but allows producing different reverse samplers by changing the variance of the reverse noise.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "0a2a25ac885e91618a00c3e6cfc73117d709cdcb4b9dd382abf5c6fd0d2c6269"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3092442149",
+      "dst": "openalex:W3175528029",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Cascaded Diffusion Models for H…」(2021) は 「Denoising Diffusion Implicit Mo…」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "6093fd257c20cc1d8a4f05e0272a012f2bb1a9396faf16026da88cececcc91e2"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3092442149",
+      "dst": "openalex:W3177150392",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Variational Diffusion Models」(2021) は 「Denoising Diffusion Implicit Mo…」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"captures all the different objectives discussed by Song et al. [2021b], see Appendix K.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "6b8aae66f35d54740eb28584e165ec2360a96791d308e6de956950c09afff88a"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3092442149",
+      "dst": "openalex:W4224035735",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Hierarchical Text-Conditional Image Generation with CLIP La…」(2022) は「Denoising Diffusion Implicit Models」(2020) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "6294c33b41ab157e91ce9c54734a322ebb3d1cafd8a069b4271edc8ef3dc571a"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3092442149",
+      "dst": "openalex:W4226125322",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「GLIDE」(2021) は 「Denoising Diffusion Implicit Mo…」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "626d102aaff5e70f9b9789702f77e3affdc5a6b23b0b5752719f092676899106"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3092442149",
+      "dst": "openalex:W4312933868",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「High-Resolution Image Synthesis…」(2022) は 「Denoising Diffusion Implicit Mo…」(2020) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Evaluation of text-conditional image synthesis on the MS-COCO [50] dataset: Our model outperforms autoregressive [17, 64] and GAN-based [105] methods by a significant margin when using 250 DDIM [81] steps .\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "1b4488c7b40ce185b44b3b4be5e0af777d24adeaf0819baf908e5e5456c0adf3"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3092442149",
+      "dst": "openalex:W4385800876",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「Refusion」(2023) は 「Denoising Diffusion Implicit Mo…」(2020) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Several works propose to use longstep pretrained weights but generating images using fewer steps [5, 40, 56], which indeed improves the sample efficiency but however also at the cost of decreasing the image quality.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "4e7cb5250c43779f754186c84355611b462b5a8c2362d5cc723bd7bdf36f842b"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3092442149",
+      "dst": "openalex:W4390872341",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「SVDiff」(2023) は 「Denoising Diffusion Implicit Mo…」(2020) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"For ours, we use DDIM inversion [48] for all edits in (a,c,e) and the first edit in (d).\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "b19fbc8a1d01d19509a6b34343979473d1b70759cd66faa48ba6676779277c3f"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3092442149",
+      "dst": "openalex:W4390872669",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Your Diffusion Model is Secretl…」(2023) は 「Denoising Diffusion Implicit Mo…」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Next, we leverage the inverted DDIM latent and the corresponding prompt to attempt to reconstruct the original image (using a deterministic diffusion scheduler [70]).\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "93cf1b63501843d45a06715d53f49f58749505cdfe263d2afe05ce6037839a09"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3092442149",
+      "dst": "openalex:W4390872921",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「The Stable Signature」(2023) は 「Denoising Diffusion Implicit Mo…」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "76f3944ad624e31c4a30933ff72e7a6c35b97e179d68b62007ba4061900cd5fc"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3092442149",
+      "dst": "openalex:W7133244780",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Elucidating the Design Space of…」(2022) は 「Denoising Diffusion Implicit Mo…」(2020) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We argue that the best choice for these functions is σ ( t ) = t and s ( t ) = 1 , which is also the choice made in DDIM [46].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "245d6be87efbba078decea0e263cee9d93b891db49644de74474b8ee6e81b42f"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3122887982",
+      "dst": "openalex:W3162926177",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Diffusion Models Beat GANs on I…」(2021) は 「Improved Denoising Diffusion Pr…」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"However, some of these metrics do not fully capture diversity, and it has been shown that GANs capture less diversity than state-of-the-art likelihood-based models [57, 49, 48].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "c8fef5bc367757d8767b1d0f8d3cd5bb8ab53a3f5be9655e021e36c6cd8e170b"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3122887982",
+      "dst": "openalex:W3167749434",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Maximum Likelihood Training of …」(2021) は 「Improved Denoising Diffusion Pr…」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"[33] also observes that optimizing the ELBO for diffusion probabilistic models has large variance, and proposes to reduce it with importance sampling.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "431e822ebc05515cb00206fa865d120ed5ac65772c5ec50b238984aa3bde235a"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3122887982",
+      "dst": "openalex:W3175528029",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Cascaded Diffusion Models for H…」(2021) は 「Improved Denoising Diffusion Pr…」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"To set a strong baseline for class-conditional ImageNet generation at the 64×64 resolution, we reproduced and improved upon a 4000 timestep non-cascaded 64×64 class-conditional diffusion model from Improved DDPM [16].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "282061350aa45ed4b9c38abecca6122a562563c2b09a41e562e54ef177e217cc"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3122887982",
+      "dst": "openalex:W3177150392",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Variational Diffusion Models」(2021) は 「Improved Denoising Diffusion Pr…」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"This would have been state-of-the-art until recently, but is worse than recent diffusion models that specifically target FID scores [Nichol and Dhariwal, 2021, Song et al., 2021b, Ho et al., 2020].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "f0456535abb73d193131b3d46c9b7e9781927e71a8acd997e4edc1ee7c53bce7"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3122887982",
+      "dst": "openalex:W4224035735",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Hierarchical Text-Conditional Image Generation with CLIP La…」(2022) は「Improved Denoising Diffusion Probabilistic Models」(2021) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "78ac712dbb6271430d25190587121c0f568e3f80f029c01b2a03f10d34c81b94"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3122887982",
+      "dst": "openalex:W4226125322",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「GLIDE」(2021) は 「Improved Denoising Diffusion Pr…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"…x t ∼ q ( x t | x 0 ) by applying Gaussian noise (cid:15) to to x 0 , then train a model (cid:15) θ to predict the added noise using a standard mean-squared error loss: Diffusion models have also been successfully applied to image super-r…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "03e3490d82c364e47d9bf0d8ad93ab04b717623549544afe4980c8fe25c7573a"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3122887982",
+      "dst": "openalex:W4288099666",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「Classifier-Free Diffusion Guida…」(2022) は 「Improved Denoising Diffusion Pr…」(2021) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We use a p(λ) inspired by the cosine noise schedule of [10]: sampling λ is given by λ = −2 log tan(au+ b) for uniformly distributed u ∈ [0, 1], where b = arctan(e−λmax/2) and a = arctan(e−λmin/2)− b.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "3e63a6131a518cffdcbec27d4ba72000e500b9ae36f8635c29530b0acd016bc7"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3122887982",
+      "dst": "openalex:W4312388283",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Vector Quantized Diffusion Mode…」(2022) は 「Improved Denoising Diffusion Pr…」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "dd9ffd833e3b0c104020d8a9c18c2a30b273f65043dca13cf8ebac1612851cd9"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3122887982",
+      "dst": "openalex:W4385800876",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Refusion」(2023) は 「Improved Denoising Diffusion Pr…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "410bb082a946aa5f108a00085b96b1e5366e4acc418d02fb439b72e43fc61fd1"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3122887982",
+      "dst": "openalex:W4390872341",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「SVDiff」(2023) は 「Improved Denoising Diffusion Pr…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "22114f64c08c36b8226ac9743536f8f66fe2ccc1be70bdc652bb9ff6565213f0"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3122887982",
+      "dst": "openalex:W4390872921",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「The Stable Signature」(2023) は 「Improved Denoising Diffusion Pr…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "3f3f030d9e097e15d8e17b2687421a9a27969ae2c8a9b2ea0736c07293b49691"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3122887982",
+      "dst": "openalex:W4390873054",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Adding Conditional Control to T…」(2023) は 「Improved Denoising Diffusion Pr…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"[58] discussed how to scale the initial weight of convolution layers in a diffusion model to improve the training, and their implementation of “zero module” is an extreme case to scale weights to zero.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "3a552ed9e2a45c210c3303e8aa0f1ab56dad27b5bfaf9a78f30e91a0040f75f2"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3122887982",
+      "dst": "openalex:W7133244780",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Elucidating the Design Space of…」(2022) は 「Improved Denoising Diffusion Pr…」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Figure 4 shows that our stochastic sampler outperforms previous samplers [24, 36, 48] by a significant margin, especially at low step counts.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "29b951018e46acef23e50fb09221198b873fa59891f5e8643dee69475c1566ff"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3162926177",
+      "dst": "openalex:W3167749434",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Maximum Likelihood Training of …」(2021) は 「Diffusion Models Beat GANs on I…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "10868069d4dc15bd7e889d47b1649d8802062e918139d0eed03a58c4b9759a02"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3162926177",
+      "dst": "openalex:W3175528029",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Cascaded Diffusion Models for High Fidelity Image Generation」(2021) は「Diffusion Models Beat GANs on Image Synthesis」(2021) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "0197e85ae900234ae92eaa295bada54195edf6e0211723391dbaa004273fe482"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3162926177",
+      "dst": "openalex:W4224035735",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Hierarchical Text-Conditional Image Generation with CLIP La…」(2022) は「Diffusion Models Beat GANs on Image Synthesis」(2021) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "a2fa222d15c9627728dc10c1db929ddd83259e2d417c5a7ee3dab126a24186c7"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3162926177",
+      "dst": "openalex:W4226125322",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「GLIDE」(2021) は 「Diffusion Models Beat GANs on I…」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Within this line of research, diffusion models (Sohl-Dickstein et al., 2015; Song & Ermon, 2020b) have emerged as a promising family of generative models, achieving state-of-the-art sample quality on a number of image generation benchmarks…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "2a19542c3d38b372db933ff2737dcae6094d35c64bcd3d8ef937d33cf8781617"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3162926177",
+      "dst": "openalex:W4288099666",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Classifier-Free Diffusion Guida…」(2022) は 「Diffusion Models Beat GANs on I…」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"These results compare favorably to [3, 6] and are currently state-of-the-art for this data set as far as we are aware for models that use T ≈ 256 steps (the ADM result uses 250 steps, and the CDM result is a two-stage model with 4000 steps…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "0bbc5c6cc0d3baa70e465e27368f7236c1abe43e56717616be639b990a66169e"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3162926177",
+      "dst": "openalex:W4312388283",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Vector Quantized Diffusion Mode…」(2022) は 「Diffusion Models Beat GANs on I…」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We assess the performance of our model in terms of FID and compare with a variety of previously established models [3, 12, 15, 16, 39].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "00368dbe2d9e9ac00e1f500cb5f711a7ffafa01d4bc850bac4a30abb4d30dea4"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3162926177",
+      "dst": "openalex:W4312933868",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「High-Resolution Image Synthesis…」(2022) は 「Diffusion Models Beat GANs on I…」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Recently, Diffusion Probabilistic Models (DM) [79], have achieved state-of-the-art results in density estimation [44] as well as in sample quality [15].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "973857ccbc5692e0909d54e6b9bb0d310e7f6d9e97fc117c7229d0d33712b8dc"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3162926177",
+      "dst": "openalex:W4360884927",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Diffusion Models in Vision」(2023) は 「Diffusion Models Beat GANs on I…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "4d0e83a52e1007e7ea51225c6bb3a8a954c1a0275561a416baa68cdcde3010a1"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3162926177",
+      "dst": "openalex:W4385800876",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Refusion」(2023) は 「Diffusion Models Beat GANs on I…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "ccd5216088e3aa3db8603419295b0140b79afa0ead2e4c2e99c6f027d92f46c9"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3162926177",
+      "dst": "openalex:W4390872297",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「Scalable Diffusion Models with …」(2023) は 「Diffusion Models Beat GANs on I…」(2021) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We retain diffusion hyperparameters from ADM [9]; speciﬁcally, we use a t max = 1000 linear variance schedule ranging from 1 10 4 to 2 ⇥ 10 2 , ADM’s parameterization of the covariance ⌃ ✓ and their method for embedding input timesteps and…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "af61ee876c41a674a77fd6de18f37d15a929b6764b9b6d1af007bcd99a5a9207"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3162926177",
+      "dst": "openalex:W4390872669",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Your Diffusion Model is Secretl…」(2023) は 「Diffusion Models Beat GANs on I…」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"They have recently achieved state-of-the-art performance [20] on several text-based content creation and editing tasks [24, 66, 34, 65, 58].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "9f178f271b46c89a74799061d4440d1267fa284fefe19260b55b95adfc9d6067"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3162926177",
+      "dst": "openalex:W4390872921",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「The Stable Signature」(2023) は 「Diffusion Models Beat GANs on I…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "be5762382acab1e14ae76340eb582b7a611c18f285137d14f0e1e5adb43cf9b9"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3162926177",
+      "dst": "openalex:W4390873054",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Adding Conditional Control to T…」(2023) は 「Diffusion Models Beat GANs on I…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "5df118d0192787f174d41b3d83e04bf8f9e52f05cb3fcb6c915d57ef71233cf8"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3162926177",
+      "dst": "openalex:W7133244780",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Elucidating the Design Space of…」(2022) は 「Diffusion Models Beat GANs on I…」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Through sampler improvements alone, we are able to bring the ImageNet-64 model that originally achieved FID 2.07 [9] to 1.55 that is very close to the state-of-the-art; previously, FID 1.48 has been reported for cascaded diffusion [17], 1.…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "d1274190e7cc93e25c7a215bfbbc31708cd01176a744163966f75d92fc45d583"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3167749434",
+      "dst": "openalex:W3177150392",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Variational Diffusion Models」(2021) は 「Maximum Likelihood Training of …」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"This would have been state-of-the-art until recently, but is worse than recent diffusion models that specifically target FID scores [Nichol and Dhariwal, 2021, Song et al., 2021b, Ho et al., 2020].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "738503e7ebdf25ceaac4a505297854aecd695876312c3e2a14989f15d8307676"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3167749434",
+      "dst": "openalex:W4288099666",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Classifier-Free Diffusion Guida…」(2022) は 「Maximum Likelihood Training of …」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "f28b48511fbc362318aef6559486305ecdb1a4ef139d5618e92c6ce7d0a47792"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3175528029",
+      "dst": "openalex:W4224035735",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Hierarchical Text-Conditional I…」(2022) は 「Cascaded Diffusion Models for H…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "c3496dbca4c4a02f091185ed52ec456b7b3dadf84b7010c38194c9df23882a8c"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3175528029",
+      "dst": "openalex:W4226125322",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「GLIDE」(2021) は 「Cascaded Diffusion Models for H…」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Ho & Salimans (2021) achieved similar results without a separately trained classiﬁer through the use of classiﬁer-free guidance , a form of guidance that interpolates between predictions from a diffusion model with and without labels.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "1892d9eb275f0d156e6898cd8a85be1afa8efcc4aa0ecb903ac02d22298574b5"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3175528029",
+      "dst": "openalex:W4288099666",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Classifier-Free Diffusion Guida…」(2022) は 「Cascaded Diffusion Models for H…」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "4c8c9258e3640034028687aee52ea8cd23ffcedce8b34108019b2653c823f5fb"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3175528029",
+      "dst": "openalex:W4312388283",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Vector Quantized Diffusion Mode…」(2022) は 「Cascaded Diffusion Models for H…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "fe41b463aafe34c717bda960116efe82d325b30235b762770afe3a9b44817a88"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3175528029",
+      "dst": "openalex:W4312933868",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「High-Resolution Image Synthesis with Latent Diffusion Models」(2022) は「Cascaded Diffusion Models for High Fidelity Image Generation」(2021) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "3acf0d1f216121095f2d2f6310746fdd75e52d7acfd768d1ee26e14f92717ed5"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3175528029",
+      "dst": "openalex:W4390872341",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「SVDiff」(2023) は 「Cascaded Diffusion Models for H…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "1bca33ccf9ceeba1f53410ba72df53bda45f68a7757dcb227663cfc4c61e5fdc"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3175528029",
+      "dst": "openalex:W7133244780",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Elucidating the Design Space of…」(2022) は 「Cascaded Diffusion Models for H…」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"This model achieved a new state-of-the-art FID of 1.36 compared to the previous record of 1.48 [17].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "5c586ecec159a9981da7e4b2872ddf967e9ff1ab83e8502b9575863a1c512472"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3177150392",
+      "dst": "openalex:W4288099666",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Classifier-Free Diffusion Guida…」(2022) は 「Variational Diffusion Models」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"The reverse process mean comes from an estimate xθ(zλ) ≈ x plugged into q(zλ′ |zλ,x) [5, 8] (xθ also receives λ as input, but we suppress this to keep our notation clean).\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "855e73f147e9645c6ff91bac2c8937d6dc7764d89ea749a0cc2cb76718320c23"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3177150392",
+      "dst": "openalex:W4312933868",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「High-Resolution Image Synthesis…」(2022) は 「Variational Diffusion Models」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "ad72e7e765ff7054d76dfd14d81025c58d03ef9662269673453465c388ba935c"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3177150392",
+      "dst": "openalex:W4390873054",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Adding Conditional Control to T…」(2023) は 「Variational Diffusion Models」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "c2d1425782e277c09ff95bd7bdd7f359dfd000d5a407b6c9eaae02ae0e5a11b8"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4224035735",
+      "dst": "openalex:W4360884927",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Diffusion Models in Vision」(2023) は 「Hierarchical Text-Conditional I…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "586fc347d4efa0d9ef0ba3fd2456f1de52940d67b3ba84e569bb5390b75ad6ba"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4224035735",
+      "dst": "openalex:W4387195417",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Diffusion Models」(2023) は 「Hierarchical Text-Conditional I…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"DALLE-2 [216] employs a similar strategy by training a diffusion model on the CLIP image embedding space, followed by training a separate decoder to create images based on the CLIP image embeddings.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "691dd3f42527759aa6c22ae9a72b5352ab7dbe256ec8fa04d724b4a9e133d848"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4224035735",
+      "dst": "openalex:W4390872297",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Scalable Diffusion Models with …」(2023) は 「Hierarchical Text-Conditional I…」(2022) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Classiﬁer-free guidance is widely-known to yield sig-niﬁcantly improved samples over generic sampling techniques [21, 35, 46], and the trend holds for our DiT models.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "5acaf6bfc620506f5b6f74429289426a8a7e6c90249c3d66dfdb1f68a0b193f1"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4224035735",
+      "dst": "openalex:W4390872341",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「SVDiff」(2023) は 「Hierarchical Text-Conditional I…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "f39997ef41da9e220d57ecca4eba7d74c7d9822b9d38de3dd8590cc8dbe64c8a"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4224035735",
+      "dst": "openalex:W4390872669",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Your Diffusion Model is Secretl…」(2023) は 「Hierarchical Text-Conditional I…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "7d351aef877cb57d80823ea9ff3435cc5848c7ad822384b57bd78ea21054cb3d"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4224035735",
+      "dst": "openalex:W4390872921",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「The Stable Signature」(2023) は 「Hierarchical Text-Conditional I…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "ab21ec109e5681295f5101131fba2e09d192a571fe9acc305a3b495dfee25105"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4224035735",
+      "dst": "openalex:W4390873054",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Adding Conditional Control to T…」(2023) は 「Hierarchical Text-Conditional I…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "a59c977f50c6c0809eb020dbd3c9fba7c2562eb5356ae44d5deae68ef0681c08"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4224035735",
+      "dst": "openalex:W7133244780",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Elucidating the Design Space of…」(2022) は 「Hierarchical Text-Conditional I…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "1ed72c17e2cc385e9ca1b601e99b3e8e9bae8cdeafdeee203622adee4f0fae47"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4226125322",
+      "dst": "openalex:W4224035735",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「Hierarchical Text-Conditional I…」(2022) は 「GLIDE」(2021) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Specifically, we modify the architecture described in Nichol et al. (2021) by projecting and adding CLIP embeddings to the existing timestep embedding, and by projecting CLIP embeddings into four extra tokens of context that are concatenat…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "ace223108b7e2e8651a870e4fd21e1e3d291c21b654328b1d58efab8494a2b0f"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4226125322",
+      "dst": "openalex:W4390872341",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「SVDiff」(2023) は 「GLIDE」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "7ee4a6651ef65fe58cb37fc89d6be6c9a45f83a16177f0ae7d3a2b2ec2282175"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4226125322",
+      "dst": "openalex:W4390872669",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Your Diffusion Model is Secretl…」(2023) は 「GLIDE」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "0e25641558ea0ed0b39b0f895e01606e4bb6cc33bb08e7a4b194e08f9421a2f0"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4226125322",
+      "dst": "openalex:W4390872921",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「The Stable Signature: Rooting Watermarks in Latent Diffusio…」(2023) は「GLIDE: Towards Photorealistic Image Generation and Editing …」(2021) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "fa54ff421d2c27c5f31c9e7ea995dd7de2b376234b8f80572df4982883975903"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4226125322",
+      "dst": "openalex:W4390873054",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Adding Conditional Control to T…」(2023) は 「GLIDE」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Glide [57] is a text-guided diffusion model supporting image generation and editing.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "7b8c9ea9f39ebe13e2e27866cb12ad1690cff568cedc655f3e5449313599876d"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4226125322",
+      "dst": "openalex:W7133244780",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Elucidating the Design Space of…」(2022) は 「GLIDE」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "e213d892d046b1dfd9c5e8eea88ceca14021febfc3ea6d63877d073f17a775bf"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4288099666",
+      "dst": "openalex:W4224035735",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Hierarchical Text-Conditional I…」(2022) は 「Classifier-Free Diffusion Guida…」(2022) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Concurrently, diffusion models [46, 48, 25] have emerged as a promising generative modeling framework, pushing the state-of-the-art on image and video generation tasks [11, 26, 24].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "f2c735182e7da0b554d1e290f29f12976f687e686fd0d8ce545a9b4cc7a0deb7"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4288099666",
+      "dst": "openalex:W4312933868",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「High-Resolution Image Synthesis…」(2022) は 「Classifier-Free Diffusion Guida…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We note that applying classifier-free diffusion guidance [31] greatly boosts sample quality.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "9be1917a9dd2be9171b6a6370cce3cf688869a488e12f4028d3b8bc42857b020"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4288099666",
+      "dst": "openalex:W4360884927",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Diffusion Models in Vision」(2023) は 「Classifier-Free Diffusion Guida…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "4dccd999a1089f61f33a75d99fa70fab2275895edf872e70b088065138b366d5"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4288099666",
+      "dst": "openalex:W4390872297",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Scalable Diffusion Models with …」(2023) は 「Classifier-Free Diffusion Guida…」(2022) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Classifier-free guidance is widely-known to yield significantly improved samples over generic sampling techniques [21, 32, 43], and the trend holds for our DiT models.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "628fa890dc1d87aeeb10783e0e9c354cf28cc6cb2cd234ff07e79c7d35fb61ee"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4288099666",
+      "dst": "openalex:W4390872341",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「SVDiff」(2023) は 「Classifier-Free Diffusion Guida…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "946e625c6932cb0a67836331d1d4d0f8b0f330896f1df24bf617d02fa0718540"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4288099666",
+      "dst": "openalex:W4390872669",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Your Diffusion Model is Secretly a Zero-Shot Classifier」(2023) は「Classifier-Free Diffusion Guidance」(2022) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "fc695434102722e9a0044edc202e3e4e594fa4bfedd03dc891eb9fd808cb8e53"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4288099666",
+      "dst": "openalex:W4390873054",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Adding Conditional Control to T…」(2023) は 「Classifier-Free Diffusion Guida…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Stable Diffusion depends on a technique called Classifier-Free Guid-ance (CFG) [29] to generate high-quality images.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "fe40c75c690d5d146a9cb3d3df1b88d794a594a454c44f73b188af8cfc0600c7"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4288099666",
+      "dst": "openalex:W7133244780",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Elucidating the Design Space of…」(2022) は 「Classifier-Free Diffusion Guida…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "facef59b8d5f8598337f349927e7c550991a8446687924849290b5bef2f2c471"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4312388283",
+      "dst": "openalex:W4224035735",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Hierarchical Text-Conditional I…」(2022) は 「Vector Quantized Diffusion Mode…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "1b55988a6f967d247d7fa691d2d6474491d31dea63c9d77d4fa8a8c7f6829691"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4312388283",
+      "dst": "openalex:W4390872297",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Scalable Diffusion Models with …」(2023) は 「Vector Quantized Diffusion Mode…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "3742b3ec35b8c872584cc2c3e850c583f2913b7c137682e54a556c6757f31a48"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4312388283",
+      "dst": "openalex:W4390872341",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「SVDiff」(2023) は 「Vector Quantized Diffusion Mode…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "9aeef5a77a8f80eb4412cdb92934c4aed9ce089044ca7197280243a17df0cabb"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4312933868",
+      "dst": "openalex:W4224035735",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Hierarchical Text-Conditional I…」(2022) は 「High-Resolution Image Synthesis…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"[42] and train on random crops of images that are one-fourth the target size.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "8db9b39c37580597ebd233199b4d0f70e4d41421b3478eb5db6e4c63300e8e69"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4312933868",
+      "dst": "openalex:W4385800876",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Refusion」(2023) は 「High-Resolution Image Synthesis…」(2022) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"An important difference compared to latent-diffusion [53], which uses VAE-GAN as the compressing model, is that the proposed U-Net maintains multi-scale details flowing from the encoder to the decoder through skip-connections.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "859ee93fb37b2269874ff258f4f76eda52f172ad848374727eaf1f5b0cd56575"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4312933868",
+      "dst": "openalex:W4390872297",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Scalable Diffusion Models with …」(2023) は 「High-Resolution Image Synthesis…」(2022) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Diffusion [54, 19] and score-based generative models [22, 56] have been particularly successful as generative models of images [35, 46, 50, 48], in many cases outperforming generative adversarial networks (GANs) [12] which had previously b…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "fc43ae70e1370c9b76d84a168450da23752ea380015f2c55055d386f6ee3123f"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4312933868",
+      "dst": "openalex:W4390872341",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「SVDiff」(2023) は 「High-Resolution Image Synthesis…」(2022) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Our main experiments were conducted using StableDiffu-sion [51], which is a popular variant of latent diffusion models (LDMs) [51] that operates on a latent space of a pre-trained autoencoder to reduce the dimensionality of the data sample…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "d1d0f036bf887003f09ca2703c7a06487a66ccb9c481f6a9cf389a6661ec7a66"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4312933868",
+      "dst": "openalex:W4390872669",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Your Diffusion Model is Secretl…」(2023) は 「High-Resolution Image Synthesis…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Stable Diffusion [64], having been trained on this uniformly weighted objective, thus have worse log-likelihood estimation capabilities (and hence potentially worse at classiﬁcation) than if they had been trained on the weighted variationa…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "644670c82b527a8e06f45d9bb9eeaff282f6a3b7feba326fce9cb4d3aecdb2af"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4312933868",
+      "dst": "openalex:W4390872921",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「The Stable Signature」(2023) は 「High-Resolution Image Synthesis…」(2022) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Although the diffusionbased generative model has been trained on an internal dataset of licensed images, we use the KL auto-encoder from LDM [68] with compression factor f = 8.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "749d65c3b86e3bf7381f834994002a7396eeb1bb51697e46466b4aff1641be4e"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4312933868",
+      "dst": "openalex:W4390873054",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Adding Conditional Control to Text-to-Image Diffusion Models」(2023) は「High-Resolution Image Synthesis with Latent Diffusion Models」(2022) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "630c1453717780f9d7dca85b799eb0e8462432955a3cc99a614a63e289ef27a6"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4312933868",
+      "dst": "openalex:W7133244780",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Elucidating the Design Space of…」(2022) は 「High-Resolution Image Synthesis…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "e8d34975b8074b316cb2b6a45d95ae76bca575876d6ae9e8a4d3f6a03cfc8bea"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4390872297",
+      "dst": "openalex:W4385800876",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Refusion」(2023) は 「Scalable Diffusion Models with …」(2023) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"The recently proposed DiT [49] makes use of a transformer-based structure and simulates diffusion in a lower-resolution latent space, which sets a new state-of-the-art on the class-conditional ImageNet 512 × 512 generation in terms of FID.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "597678a7af3efd3f7e5a3542dd9bf273b0d460b35741871d2beef32d0d2bc3f8"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4390872297",
+      "dst": "openalex:W4390872341",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「SVDiff」(2023) は 「Scalable Diffusion Models with …」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "8f6ff64015f9100083e7be847e5d77a6b588ca6403edcd02b1fd39977bc0023b"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4390872297",
+      "dst": "openalex:W4390872669",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Your Diffusion Model is Secretl…」(2023) は 「Scalable Diffusion Models with …」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Diffusion Classiﬁer can be used to extract a zero-shot classiﬁer from a text-to-image model like Stable Diffusion [64], to extract a standard classiﬁer from a class-conditional diffusion model like DiT [57], and so on.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "322cb24a0f56b016e3165c3b3af29256464e0827002212e56e3403165b3dda2c"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4390872297",
+      "dst": "openalex:W4390872921",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「The Stable Signature」(2023) は 「Scalable Diffusion Models with …」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "096296d2d67f97d2f03eb9bbea33da03efcd45f7131aba6cd20088840809a1b5"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4390873054",
+      "dst": "openalex:W4390872341",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「SVDiff」(2023) は 「Adding Conditional Control to T…」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "5a0d4cae6070ad618fefa3f9907cfaf85c453ae547d55442320fc6e57a52b6dd"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4390873054",
+      "dst": "openalex:W4390872921",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「The Stable Signature」(2023) は 「Adding Conditional Control to T…」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "7c997bb3486b58cecfe92dd393089fecb9f95949b4790dc4de6f562d0bd4abff"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7133244780",
+      "dst": "openalex:W4390872297",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Scalable Diffusion Models with …」(2023) は 「Elucidating the Design Space of…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "4f8927d8ecc08dc14c62c8a4c9ef66c448ebfade9d82456f9f48ca1e88863120"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    }
+  ],
+  "clusters": [],
+  "meta": {
+    "kind": "theme",
+    "generator": "paperpilot.scripts.build_theme_lineage",
+    "source": "build_theme_lineage.py",
+    "theme": "Diffusion Models",
+    "slug": "diffusion-models",
+    "keywords": [
+      "Diffusion Models"
+    ],
+    "seeds": [
+      "openalex:W3036167779",
+      "openalex:W3162926177",
+      "openalex:W4224035735",
+      "openalex:W4390872297",
+      "openalex:W4288099666"
+    ],
+    "depth": 1,
+    "since_year": 2018,
+    "generated_at": "2026-10-24T17:25:16.782000Z",
+    "provenance_breakdown": {
+      "s2_context_rule": 95,
+      "foundational_allowlist": 2,
+      "api_citation": 8
+    },
+    "completeness": {
+      "complete": true,
+      "expansions_attempted": 14,
+      "expansions_failed": 0,
+      "supplement_failures": []
+    },
+    "topic_gate": {
+      "method": "embedding+terms",
+      "model": "Xenova/bge-small-en-v1.5",
+      "revision": "ea104dacec62c0de699686887e3f920caeb4f3e3",
+      "thresholds": {
+        "z_lo": 0,
+        "z_hi": 1
+      },
+      "pool_size": 135
+    },
+    "canonical_seeds": [
+      "openalex:W3036167779",
+      "openalex:W4224035735",
+      "openalex:W4288099666"
+    ],
+    "lineage_llm": "off"
+  }
+}
