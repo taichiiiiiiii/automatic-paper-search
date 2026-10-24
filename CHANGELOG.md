@@ -6,6 +6,10 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Fixed — 失敗した依頼を画面に出し、再依頼できる（R2-47）
+
+- `GET /api/themes/status` が休止状態で、失敗・中止した依頼は画面で「生成中」のままだった。GitHub の実行を依頼 ID で探して返すようにした（15 秒の記憶つき）。進行中の記録が失敗した実行を指しているときは、同じ分野の再送信が新しく配信される。
+
 ### Fixed — 実験の道具の説明を拡張にしない（R2-46）
 
 - 「Our main experiments were conducted using StableDiffusion, which is a popular variant of latent diffusion models」のように、実験に使った道具の説明に「variant of」が付く文を、拡張ではなく利用にした（first-person の extend / build がある文は除く）。サイトから入力した Diffusion Models の読み取りで見つかった。公開中の強い関係 72 本は変わらない。

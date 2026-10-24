@@ -33,7 +33,11 @@ export function createApp(deps: AppDeps) {
   const app = new Hono<{ Bindings: Env }>();
 
   const handlePost = createThemesPostHandler(deps);
-  const handleStatus = createThemeStatusHandler();
+  const handleStatus = createThemeStatusHandler({
+    fetch: deps.fetch,
+    now: deps.now,
+    log: deps.log,
+  });
   const handleHealth = createHealthHandler();
 
   app.post("/api/themes", (c) => handlePost(c.req.raw, c.env));

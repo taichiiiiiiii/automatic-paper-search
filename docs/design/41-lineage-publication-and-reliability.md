@@ -730,3 +730,13 @@ RAG の系譜で見つかった 2 種類の誤りを、論文ごとの Semantic 
 - 対応: `EXPERIMENT_TOOL`（「experiments were conducted using / we conduct experiments with / the model we experiment with / conduct our experiments based on」）に当たり、かつ first-person の extend / build の動詞がない文は `usageReason` = `experiment_tool`（`phrase_usage`）。
 - テスト: `relationR242.test.ts` に S2 の 8 件の引用文を全部入れた RED→GREEN の事例と、実験の文の中の「we extend」が拡張のまま残る事例を足した。`test/lineage` 1,346 本が通過。公開中の強い関係 72 本の通し直しで変わるものはなし。
 - 同じ読み取りで、強い関係 3 件のうち 2 件は「基礎文献リストに基づく規則」（`foundational_allowlist`）の拡張だった（引用しているだけ）。根拠の文は画面に「基礎文献を引用しており…拡張として残している」と出る。件数にも入るので、強い関係の数は「引用文から確かめた関係」より多く見える。扱いは未決定（既存の監査済みテーマが使っている規則のため、勝手に変えない）。
+
+### R2-47 失敗した依頼を画面に出し、再依頼できるようにする（2026-10-24）
+
+画面（`ThemeRequestForm`）は 6 回の確認ごとに Worker の `GET /api/themes/status` を呼んで失敗・中止の実行を表示する作りだったが、Worker 側の status は何も返さない休止状態（503）だった。そのため、失敗した依頼は画面にそのまま「生成中」と出続け（最後は 50 分の待ち時間切れ）、進行中の記録（50 分）が再入力を失敗した実行に誘導していた。
+
+- 実装（`apps/api/src/lib/run-status.ts`）: 配信に使う PAT（`actions:write` は読み取りを含む）で theme-on-demand の最近の 30 実行を読み、題名の末尾が依頼 ID の実行を公開用の形（status・conclusion・html_url・時刻・題名）に絞って返す。依頼 ID ごとに 15 秒だけ覚え（isolate ごと）、画面が数秒ごとに聞いても GitHub への呼び出しは 15 秒に 1 回。取れないときは従来どおり 503。
+- status 路（`GET /api/themes/status?request_id=…`）: 依頼 ID が正しい形でなければ 400、実行が見つかれば `{ok, status: "run", run}`、GitHub に聞けなければ 503。画面側は変更なし（`failureFromRun` が「生成に失敗しました / 生成が中止されました / 生成がタイムアウトしました」を出す）。
+- 再依頼: 進行中の記録がある分野を再送信したとき、その実行が終わっていて成功でなければ（failure・cancelled・timed_out）記録を解放して新しく配信する。実行中・成功・見つからない・GitHub に聞けない場合は従来どおり同じ実行を追う。
+- テスト: `test/routes/themes-run-status.test.ts`（実行の選択と公開用の形、15 秒の記憶、PAT なし・不正 ID・GitHub の失敗、status 路の 200/400/503、失敗した実行のあとの再送信が配信される／実行中・成功・未発見・取得失敗では追う）。API の 267 本が通過。
+- Worker のデプロイを伴う。

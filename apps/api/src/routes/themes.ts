@@ -32,8 +32,9 @@ import type { InflightBackend } from "../lib/inflight.js";
 import { isAccepting, resolveOrigin } from "../lib/kv-flags.js";
 import { alreadyGenerated } from "../lib/manifest.js";
 import type { ConsumeResult, QuotaBackend } from "../lib/quota.js";
-import { createRequestId } from "../lib/request-id.js";
+import { createRequestId, isRequestId } from "../lib/request-id.js";
 import { json, themeStatusUnavailable } from "../lib/response.js";
+import { lookupRun, runEndedBadly } from "../lib/run-status.js";
 import { themeSlug } from "../lib/slug.js";
 import { validatePostInput } from "../lib/validate-input.js";
 import type { Env } from "../types.js";
@@ -230,7 +231,20 @@ export function createThemesPostHandler(deps: ThemesPostDeps): ThemesPostHandler
     const inflight = inflightFor(env);
     if (inflight) {
       const running = await safeInflight(() => inflight.peek(slug), null, "peek");
-      if (running) return deduplicated(slug, running, origin);
+      if (running) {
+        // R2-47: a run that already ended without publishing (failed,
+        // cancelled, timed out) is not in flight any more: release its claim
+        // and dispatch again instead of sending the visitor back to it.
+        // Anything unclear (lookup failed, run not found, still running)
+        // keeps the old behaviour.
+        const looked = await lookupRun(running, env, { fetch: fetchImpl, now: deps.now, log });
+        if (looked.ok && runEndedBadly(looked.run)) {
+          log(`in-flight run ${running} ended ${looked.run?.conclusion}; releasing the claim`);
+          await safeInflight(() => inflight.release(slug, running), undefined, "release");
+        } else {
+          return deduplicated(slug, running, origin);
+        }
+      }
     }
 
     // §5: exact quota via Durable Object, replacing the KV best-effort
@@ -333,12 +347,21 @@ export function createThemesPostHandler(deps: ThemesPostDeps): ThemesPostHandler
   };
 }
 
-// API-19: status stays dormant — KV/DO counters cannot back a PAT-
-// authenticated GitHub run query safely, so this route still never does
-// upstream work. Origin is best-effort (never 403s this route — the
-// browser must keep polling the public manifest regardless of CORS
-// configuration drift).
-export function createThemeStatusHandler(): (request: Request, env: Env) => Promise<Response> {
+// R2-47: the status route reads the matching workflow run (src/lib/
+// run-status.ts) so the page can show a failed / cancelled run instead of
+// waiting for its own timeout. Without injected deps it stays the old
+// dormant 503. Origin is best-effort (never 403s this route — the browser
+// must keep polling the public manifest regardless of CORS configuration
+// drift).
+export interface ThemeStatusDeps {
+  fetch: typeof fetch;
+  now?: () => number;
+  log?: (message: string) => void;
+}
+
+export function createThemeStatusHandler(
+  deps?: ThemeStatusDeps,
+): (request: Request, env: Env) => Promise<Response> {
   return async function handleStatusGet(request: Request, env: Env): Promise<Response> {
     let origin: string | undefined;
     try {
@@ -347,6 +370,16 @@ export function createThemeStatusHandler(): (request: Request, env: Env) => Prom
     } catch {
       origin = undefined;
     }
-    return themeStatusUnavailable(origin);
+    if (!deps || typeof deps.fetch !== "function") return themeStatusUnavailable(origin);
+    const requestId = new URL(request.url).searchParams.get("request_id");
+    if (!isRequestId(requestId)) {
+      return json(
+        { ok: false, status: "invalid", message: "request_id is missing or malformed" },
+        { status: 400, origin },
+      );
+    }
+    const looked = await lookupRun(requestId, env, deps);
+    if (!looked.ok) return themeStatusUnavailable(origin);
+    return json({ ok: true, status: "run", run: looked.run }, { origin });
   };
 }

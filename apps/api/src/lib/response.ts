@@ -18,7 +18,8 @@ export type JsonStatus =
   | "rate_limited"
   | "invalid"
   | "error"
-  | "paused";
+  | "paused"
+  | "run";
 
 export interface JsonBody {
   ok: boolean;
@@ -28,6 +29,8 @@ export interface JsonBody {
   message?: string;
   // true when a run for this slug was already in flight (src/lib/inflight.ts)
   deduplicated?: boolean;
+  // R2-47: the matching workflow run of GET /api/themes/status (null = not found)
+  run?: unknown;
 }
 
 export interface JsonInit {

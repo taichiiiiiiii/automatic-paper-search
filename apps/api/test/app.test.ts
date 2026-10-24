@@ -67,13 +67,13 @@ describe("app routing", () => {
     expect(response.status).toBe(200);
   });
 
-  it("GET /api/themes/status stays dormant (503)", async () => {
+  it("GET /api/themes/status without a request_id is a 400 (R2-47)", async () => {
     const app = makeApp();
     const response = await app.fetch(
       new Request("https://worker.test/api/themes/status"),
       makeEnv(),
     );
-    expect(response.status).toBe(503);
+    expect(response.status).toBe(400);
   });
 
   it("GET /api/health responds 200 with the closed field set", async () => {
