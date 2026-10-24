@@ -3,37 +3,6 @@
   "root": "openalex:W3168867926",
   "nodes": [
     {
-      "id": "openalex:W3166140588",
-      "title": "Compacter: Efficient Low-Rank Hypercomplex Adapter Layers",
-      "year": 2021,
-      "venue": "NeurIPS",
-      "venue_tier": "A+",
-      "authors": [
-        "Rabeeh Karimi Mahabadi",
-        "James Henderson",
-        "Sebastian Ruder"
-      ],
-      "kinds": [],
-      "citation_count": 705,
-      "github_stars": 0,
-      "tldr": "Adapting large-scale pretrained language models to downstream tasks via fine-tuning is the standard method for achieving state-of-the-art…",
-      "short_abstract": "Adapting large-scale pretrained language models to downstream tasks via fine-tuning is the standard method for achieving state-of-the-art performance on NLP benchmarks. However, fine-tuning all weights of models with millions or billions of parameters is sample-inefficient, unstable in low-resource settings, and wasteful as it requires storing a separate copy of the model for each task. Recent work has developed parameter-efficient fine-tuning methods, but these approaches either still require a relatively large number of parameters or underperform standard fine-tuning. In this work, we propose Compacter, a method for fine-tuning large-scale language models with a better trade-off between task performance and the number of trainable parameters than prior work. Compacter accomplishes this by building on top of ideas from adapters, low-rank optimization, and parameterized hypercomplex multiplication layers. Specifically, Compacter inserts task-specific weight matrices into a pretrained…",
-      "arxiv_id": "2106.04647",
-      "doi": "10.48550/arxiv.2106.04647",
-      "aliases": [
-        [
-          "arxiv",
-          "2106.04647"
-        ],
-        [
-          "doi",
-          "10.48550/arxiv.2106.04647"
-        ]
-      ],
-      "citation_count_source": "semantic_scholar",
-      "is_focus": false
-    },
-    {
       "id": "openalex:W3168867926",
       "title": "LoRA: Low-Rank Adaptation of Large Language Models",
       "year": 2021,
@@ -47,8 +16,8 @@
         "Yuanzhi Li"
       ],
       "kinds": [],
-      "citation_count": 24522,
-      "github_stars": 13862,
+      "citation_count": 24778,
+      "github_stars": 13873,
       "tldr": "An important paradigm of natural language processing consists of large-scale pre-training on general domain data and adaptation to…",
       "short_abstract": "An important paradigm of natural language processing consists of large-scale pre-training on general domain data and adaptation to particular tasks or domains. As we pre-train larger models, full fine-tuning, which retrains all model parameters, becomes less feasible. Using GPT-3 175B as an example -- deploying independent instances of fine-tuned models, each with 175B parameters, is prohibitively expensive. We propose Low-Rank Adaptation, or LoRA, which freezes the pre-trained model weights and injects trainable rank decomposition matrices into each layer of the Transformer architecture, greatly reducing the number of trainable parameters for downstream tasks. Compared to GPT-3 175B fine-tuned with Adam, LoRA can reduce the number of trainable parameters by 10,000 times and the GPU memory requirement by 3 times. LoRA performs on-par or better than fine-tuning in model quality on RoBERTa, DeBERTa, GPT-2, and GPT-3, despite having fewer trainable parameters, a higher training…",
       "arxiv_id": "2106.09685",
@@ -116,7 +85,7 @@
       ],
       "kinds": [],
       "citation_count": 214,
-      "github_stars": 0,
+      "github_stars": 140,
       "tldr": "Standard fine-tuning of large pre-trained language models (PLMs) for downstream tasks requires updating hundreds of millions to billions…",
       "short_abstract": "Standard fine-tuning of large pre-trained language models (PLMs) for downstream tasks requires updating hundreds of millions to billions of parameters, and storing a large copy of the PLM weights for every task resulting in increased cost for storing, sharing and serving the models. To address this, parameter-efficient fine-tuning (PEFT) techniques were introduced where small trainable components are injected in the PLM and updated during fine-tuning. We propose AdaMix as a general PEFT method that tunes a mixture of adaptation modules -- given the underlying PEFT method of choice -- introduced in each Transformer layer while keeping most of the PLM weights frozen. For instance, AdaMix can leverage a mixture of adapters like Houlsby or a mixture of low rank decomposition matrices like LoRA to improve downstream task performance over the corresponding PEFT methods for fully supervised and few-shot NLU and NLG tasks. Further, we design AdaMix such that it matches the same computational…",
       "arxiv_id": "2210.17451",
@@ -132,6 +101,7 @@
           "10.48550/arxiv.2210.17451"
         ]
       ],
+      "github_url": "https://github.com/microsoft/AdaMix",
       "is_focus": false
     },
     {
@@ -148,8 +118,8 @@
         "Pengcheng He"
       ],
       "kinds": [],
-      "citation_count": 815,
-      "github_stars": 396,
+      "citation_count": 819,
+      "github_stars": 398,
       "tldr": "Fine-tuning large pre-trained language models on downstream tasks has become an important paradigm in NLP. However, common practice…",
       "short_abstract": "Fine-tuning large pre-trained language models on downstream tasks has become an important paradigm in NLP. However, common practice fine-tunes all of the parameters in a pre-trained model, which becomes prohibitive when a large number of downstream tasks are present. Therefore, many fine-tuning methods are proposed to learn incremental updates of pre-trained weights in a parameter efficient way, e.g., low-rank increments. These methods often evenly distribute the budget of incremental updates across all pre-trained weight matrices, and overlook the varying importance of different weight parameters. As a consequence, the fine-tuning performance is suboptimal. To bridge this gap, we propose AdaLoRA, which adaptively allocates the parameter budget among weight matrices according to their importance score. In particular, AdaLoRA parameterizes the incremental updates in the form of singular value decomposition. Such a novel approach allows us to effectively prune the singular values of…",
       "arxiv_id": "2303.10512",
@@ -181,7 +151,7 @@
         "Anna Rumshisky"
       ],
       "kinds": [],
-      "citation_count": 309,
+      "citation_count": 311,
       "github_stars": 0,
       "tldr": "This paper presents a systematic overview of parameter-efficient fine-tuning methods, covering over 50 papers published between early 2019…",
       "short_abstract": "This paper presents a systematic overview of parameter-efficient fine-tuning methods, covering over 50 papers published between early 2019 and mid-2024. These methods aim to address the challenges of fine-tuning large language models by training only a small subset of parameters. We provide a taxonomy that covers a broad range of methods and present a detailed method comparison with a specific focus on real-life efficiency in fine-tuning multibillion-scale language models. We also conduct an extensive head-to-head experimental comparison of 15 diverse PEFT methods, evaluating their performance and efficiency on models up to 11B parameters. Our findings reveal that methods previously shown to surpass a strong LoRA baseline face difficulties in resource-constrained settings, where hyperparameter optimization is limited and the network is fine-tuned only for a few epochs. Finally, we provide a set of practical recommendations for using PEFT methods and outline potential future research…",
@@ -215,7 +185,7 @@
       ],
       "kinds": [],
       "citation_count": 33,
-      "github_stars": 43,
+      "github_stars": 0,
       "tldr": "Recent research has shown that training low-rank neural networks can effectively reduce the total number of trainable parameters without…",
       "short_abstract": "Recent research has shown that training low-rank neural networks can effectively reduce the total number of trainable parameters without sacrificing predictive accuracy, resulting in end-to-end speedups. However, low-rank model training necessitates adjusting several additional factorization hyperparameters, such as the rank of the factorization at each layer. In this paper, we tackle this challenge by introducing Cuttlefish, an automated low-rank training approach that eliminates the need for tuning factorization hyperparameters. Cuttlefish leverages the observation that after a few epochs of full-rank training, the stable rank (i.e., an approximation of the true rank) of each layer stabilizes at a constant value. Cuttlefish switches from full-rank to low-rank training once the stable ranks of all layers have converged, setting the dimension of each factorization to its corresponding stable rank. Our results show that Cuttlefish generates models up to 5.6 times smaller than…",
       "arxiv_id": "2305.02538",
@@ -231,7 +201,6 @@
           "10.48550/arxiv.2305.02538"
         ]
       ],
-      "github_url": "https://github.com/hwang595/Cuttlefish",
       "is_focus": false
     },
     {
@@ -248,7 +217,7 @@
         "Zhiqiang Shen"
       ],
       "kinds": [],
-      "citation_count": 129,
+      "citation_count": 130,
       "github_stars": 0,
       "tldr": "We present Generalized LoRA (GLoRA), an advanced approach for universal parameter-efficient fine-tuning tasks. Enhancing Low-Rank…",
       "short_abstract": "We present Generalized LoRA (GLoRA), an advanced approach for universal parameter-efficient fine-tuning tasks. Enhancing Low-Rank Adaptation (LoRA), GLoRA employs a generalized prompt module to optimize pre-trained model weights and adjust intermediate activations, providing more flexibility and capability across diverse tasks and datasets. Moreover, GLoRA facilitates efficient parameter adaptation by employing a scalable, modular, layer-wise structure search that learns individual adapter of each layer. Originating from a unified mathematical formulation, GLoRA exhibits strong transfer learning, few-shot learning and domain generalization abilities, as it adapts to new tasks through not only weights but also additional dimensions like activations. Comprehensive experiments demonstrate that GLoRA outperforms all previous methods in natural, specialized, and structured vision benchmarks, achieving superior accuracy with fewer parameters and computations. The proposed method on LLaMA-1…",
@@ -280,7 +249,7 @@
         "Anna Rumshisky"
       ],
       "kinds": [],
-      "citation_count": 261,
+      "citation_count": 263,
       "github_stars": 0,
       "tldr": "Despite the dominance and effectiveness of scaling, resulting in large networks with hundreds of billions of parameters, the necessity to…",
       "short_abstract": "Despite the dominance and effectiveness of scaling, resulting in large networks with hundreds of billions of parameters, the necessity to train overparameterized models remains poorly understood, while training costs grow exponentially. In this paper, we explore parameter-efficient training techniques as an approach to training large neural networks. We introduce a novel method called ReLoRA, which utilizes low-rank updates to train high-rank networks. We apply ReLoRA to training transformer language models with up to 1.3B parameters and demonstrate comparable performance to regular neural network training. ReLoRA saves up to 5.5Gb of RAM per GPU and improves training speed by 9-40% depending on the model size and hardware setup. Our findings show the potential of parameter-efficient techniques for large-scale pre-training.",
@@ -300,6 +269,41 @@
       "is_focus": false
     },
     {
+      "id": "openalex:W4385292177",
+      "title": "LoraHub: Efficient Cross-Task Generalization via Dynamic LoRA Composition",
+      "year": 2023,
+      "venue": "arXiv (Cornell University)",
+      "venue_tier": "preprint",
+      "authors": [
+        "Chengsong Huang",
+        "Qian Liu",
+        "Lin, Bill Yuchen",
+        "Tianyu Pang",
+        "Du, Chao"
+      ],
+      "kinds": [],
+      "citation_count": 444,
+      "github_stars": 669,
+      "tldr": "Low-rank adaptations (LoRA) are often employed to fine-tune large language models (LLMs) for new tasks. This paper investigates LoRA…",
+      "short_abstract": "Low-rank adaptations (LoRA) are often employed to fine-tune large language models (LLMs) for new tasks. This paper investigates LoRA composability for cross-task generalization and introduces LoraHub, a simple framework devised for the purposive assembly of LoRA modules trained on diverse given tasks, with the objective of achieving adaptable performance on unseen tasks. With just a few examples from a new task, LoraHub can fluidly combine multiple LoRA modules, eliminating the need for human expertise and assumptions. Notably, the composition requires neither additional model parameters nor gradients. Empirical results on the Big-Bench Hard benchmark suggest that LoraHub, while not surpassing the performance of in-context learning, offers a notable performance-efficiency trade-off in few-shot scenarios by employing a significantly reduced number of tokens per example during inference. Notably, LoraHub establishes a better upper bound compared to in-context learning when paired with…",
+      "arxiv_id": "2307.13269",
+      "doi": "10.48550/arxiv.2307.13269",
+      "is_focus": true,
+      "citation_count_source": "semantic_scholar",
+      "aliases": [
+        [
+          "arxiv",
+          "2307.13269"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2307.13269"
+        ]
+      ],
+      "github_url": "https://github.com/sail-sg/lorahub",
+      "seed_paper_id": "f82d4283913fbb317f5d204f87393258d5a77546"
+    },
+    {
       "id": "openalex:W4385573520",
       "title": "SparseAdapter: An Easy Approach for Improving the Parameter-Efficiency of Adapters",
       "year": 2022,
@@ -314,7 +318,7 @@
       ],
       "kinds": [],
       "citation_count": 132,
-      "github_stars": 0,
+      "github_stars": 23,
       "tldr": "Adapter Tuning, which freezes the pretrained language models (PLMs) and only fine-tunes a few extra modules, has become an appealing…",
       "short_abstract": "Adapter Tuning, which freezes the pretrained language models (PLMs) and only fine-tunes a few extra modules, has become an appealing efficient alternative to the full model finetuning.Although computationally efficient, the recent adapters often increase parameters (e.g.bottleneck dimension) for matching the performance of full model fine-tuning, which we argue goes against their original intention.In this work, we re-examine the parameterefficiency of adapters through the lens of network pruning (we name such plug-in concept as SparseAdapter) and find that SparseAdapter can achieve comparable or better performance than standard adapters when the sparse ratio reaches up to 80%.Based on our findings, we introduce an easy but effective setting \"Large-Sparse\" to improve the model capacity of adapters under the same parameter budget.Experiments on five competitive adapters upon three advanced PLMs show that with proper sparse method (e.g.SNIP) and ratio (e.g.40%) SparseAdapter can…",
       "arxiv_id": "2210.04284",
@@ -330,6 +334,7 @@
           "10.18653/v1/2022.findings-emnlp.160"
         ]
       ],
+      "github_url": "https://github.com/Shwai-He/SparseAdapter",
       "is_focus": false
     },
     {
@@ -444,14 +449,12 @@
         "Ali Ghodsi"
       ],
       "kinds": [],
-      "citation_count": 335,
+      "citation_count": 337,
       "github_stars": 0,
       "tldr": "With the ever-growing size of pretrained models (PMs), fine-tuning them has become more expensive and resource-hungry.As a remedy,…",
       "short_abstract": "With the ever-growing size of pretrained models (PMs), fine-tuning them has become more expensive and resource-hungry.As a remedy, low-rank adapters (LoRA) keep the main pretrained weights of the model frozen and just introduce some learnable truncated SVD modules (so-called LoRA blocks) to the model.While LoRA blocks are parameter-efficient, they suffer from two major problems: first, the size of these blocks is fixed and cannot be modified after training (for example, if we need to change the rank of LoRA blocks, then we need to retrain them from scratch); second, optimizing their rank requires an exhaustive search and effort.In this work, we introduce a dynamic low-rank adaptation (DyLoRA) technique to address these two problems together.Our Dy-LoRA method trains LoRA blocks for a range of ranks instead of a single rank by sorting the representation learned by the adapter module at different ranks during training.We evaluate our solution on different natural language understanding…",
       "arxiv_id": "2210.07558",
       "doi": "10.18653/v1/2023.eacl-main.239",
-      "is_focus": true,
-      "citation_count_source": "semantic_scholar",
       "aliases": [
         [
           "arxiv",
@@ -462,7 +465,8 @@
           "10.18653/v1/2023.eacl-main.239"
         ]
       ],
-      "seed_paper_id": "76a3af24a2adba935b6e28e976e1dbcb8f980c02"
+      "citation_count_source": "semantic_scholar",
+      "is_focus": false
     },
     {
       "id": "openalex:W4386875266",
@@ -496,39 +500,6 @@
       "is_focus": false
     },
     {
-      "id": "openalex:W4387151368",
-      "title": "Navigating Text-To-Image Customization: From LyCORIS Fine-Tuning to Model Evaluation",
-      "year": 2023,
-      "venue": "ICLR",
-      "venue_tier": "A+",
-      "authors": [
-        "Yeh, Shih-Ying",
-        "Yu-Guan Hsieh",
-        "Zhidong Gao",
-        "Bernard B W Yang",
-        "Giyeong Oh"
-      ],
-      "kinds": [],
-      "citation_count": 161,
-      "github_stars": 0,
-      "tldr": "Text-to-image generative models have garnered immense attention for their ability to produce high-fidelity images from text prompts. Among…",
-      "short_abstract": "Text-to-image generative models have garnered immense attention for their ability to produce high-fidelity images from text prompts. Among these, Stable Diffusion distinguishes itself as a leading open-source model in this fast-growing field. However, the intricacies of fine-tuning these models pose multiple challenges from new methodology integration to systematic evaluation. Addressing these issues, this paper introduces LyCORIS (Lora beYond Conventional methods, Other Rank adaptation Implementations for Stable diffusion) [https://github.com/KohakuBlueleaf/LyCORIS], an open-source library that offers a wide selection of fine-tuning methodologies for Stable Diffusion. Furthermore, we present a thorough framework for the systematic assessment of varied fine-tuning techniques. This framework employs a diverse suite of metrics and delves into multiple facets of fine-tuning, including hyperparameter adjustments and the evaluation with different prompt types across various concept…",
-      "arxiv_id": "2309.14859",
-      "doi": "10.48550/arxiv.2309.14859",
-      "citation_count_source": "semantic_scholar",
-      "aliases": [
-        [
-          "arxiv",
-          "2309.14859"
-        ],
-        [
-          "doi",
-          "10.48550/arxiv.2309.14859"
-        ]
-      ],
-      "is_focus": false
-    },
-    {
       "id": "openalex:W4387156572",
       "title": "QA-LoRA: Quantization-Aware Low-Rank Adaptation of Large Language Models",
       "year": 2023,
@@ -542,7 +513,7 @@
         "Heng Chang"
       ],
       "kinds": [],
-      "citation_count": 227,
+      "citation_count": 229,
       "github_stars": 0,
       "tldr": "Recently years have witnessed a rapid development of large language models (LLMs). Despite the strong ability in many…",
       "short_abstract": "Recently years have witnessed a rapid development of large language models (LLMs). Despite the strong ability in many language-understanding tasks, the heavy computational burden largely restricts the application of LLMs especially when one needs to deploy them onto edge devices. In this paper, we propose a quantization-aware low-rank adaptation (QA-LoRA) algorithm. The motivation lies in the imbalanced degrees of freedom of quantization and adaptation, and the solution is to use group-wise operators which increase the degree of freedom of quantization meanwhile decreasing that of adaptation. QA-LoRA is easily implemented with a few lines of code, and it equips the original LoRA with two-fold abilities: (i) during fine-tuning, the LLM's weights are quantized (e.g., into INT4) to reduce time and memory usage; (ii) after fine-tuning, the LLM and auxiliary weights are naturally integrated into a quantized model without loss of accuracy. We apply QA-LoRA to the LLaMA and LLaMA2 model…",
@@ -609,7 +580,7 @@
         "Nikos Karampatziakis"
       ],
       "kinds": [],
-      "citation_count": 261,
+      "citation_count": 263,
       "github_stars": 0,
       "tldr": "Quantization is an indispensable technique for serving Large Language Models (LLMs) and has recently found its way into LoRA fine-tuning.…",
       "short_abstract": "Quantization is an indispensable technique for serving Large Language Models (LLMs) and has recently found its way into LoRA fine-tuning. In this work we focus on the scenario where quantization and LoRA fine-tuning are applied together on a pre-trained model. In such cases it is common to observe a consistent gap in the performance on downstream tasks between full fine-tuning and quantization plus LoRA fine-tuning approach. In response, we propose LoftQ (LoRA-Fine-Tuning-aware Quantization), a novel quantization framework that simultaneously quantizes an LLM and finds a proper low-rank initialization for LoRA fine-tuning. Such an initialization alleviates the discrepancy between the quantized and full-precision model and significantly improves generalization in downstream tasks. We evaluate our method on natural language understanding, question answering, summarization, and natural language generation tasks. Experiments show that our method is highly effective and outperforms…",
@@ -668,7 +639,7 @@
         "Yuki M. Asano"
       ],
       "kinds": [],
-      "citation_count": 395,
+      "citation_count": 398,
       "github_stars": 0,
       "tldr": "Low-rank adapation (LoRA) is a popular method that reduces the number of trainable parameters when finetuning large language models, but…",
       "short_abstract": "Low-rank adapation (LoRA) is a popular method that reduces the number of trainable parameters when finetuning large language models, but still faces acute storage challenges when scaling to even larger models or deploying numerous per-user or per-task adapted models. In this work, we present Vector-based Random Matrix Adaptation (VeRA), which significantly reduces the number of trainable parameters compared to LoRA, yet maintains the same performance. It achieves this by using a single pair of low-rank matrices shared across all layers and learning small scaling vectors instead. We demonstrate its effectiveness on the GLUE and E2E benchmarks, image classification tasks, and show its application in instruction-tuning of 7B and 13B language models.",
@@ -731,8 +702,8 @@
         "Lee, Nicholas"
       ],
       "kinds": [],
-      "citation_count": 239,
-      "github_stars": 1924,
+      "citation_count": 246,
+      "github_stars": 0,
       "tldr": "The \"pretrain-then-finetune\" paradigm is commonly adopted in the deployment of large language models. Low-Rank Adaptation (LoRA), a…",
       "short_abstract": "The \"pretrain-then-finetune\" paradigm is commonly adopted in the deployment of large language models. Low-Rank Adaptation (LoRA), a parameter-efficient fine-tuning method, is often employed to adapt a base model to a multitude of tasks, resulting in a substantial collection of LoRA adapters derived from one base model. We observe that this paradigm presents significant opportunities for batched inference during serving. To capitalize on these opportunities, we present S-LoRA, a system designed for the scalable serving of many LoRA adapters. S-LoRA stores all adapters in the main memory and fetches the adapters used by the currently running queries to the GPU memory. To efficiently use the GPU memory and reduce fragmentation, S-LoRA proposes Unified Paging. Unified Paging uses a unified memory pool to manage dynamic adapter weights with different ranks and KV cache tensors with varying sequence lengths. Additionally, S-LoRA employs a novel tensor parallelism strategy and highly…",
       "arxiv_id": "2311.03285",
@@ -748,7 +719,6 @@
           "10.48550/arxiv.2311.03285"
         ]
       ],
-      "github_url": "https://github.com/S-LoRA/S-LoRA",
       "is_focus": false
     },
     {
@@ -765,7 +735,7 @@
         "Matthew E. Peters"
       ],
       "kinds": [],
-      "citation_count": 272,
+      "citation_count": 275,
       "github_stars": 0,
       "tldr": "Since the release of TÜLU [Wang et al., 2023b], open resources for instruction tuning have developed quickly, from better base models to…",
       "short_abstract": "Since the release of TÜLU [Wang et al., 2023b], open resources for instruction tuning have developed quickly, from better base models to new finetuning techniques. We test and incorporate a number of these advances into TÜLU, resulting in TÜLU 2, a suite of improved TÜLU models for advancing the understanding and best practices of adapting pretrained language models to downstream tasks and user preferences. Concretely, we release: (1) TÜLU-V2-mix, an improved collection of high-quality instruction datasets; (2) TÜLU 2, LLAMA-2 models finetuned on the V2 mixture; (3) TÜLU 2+DPO, TÜLU 2 models trained with direct preference optimization (DPO), including the largest DPO-trained model to date (TÜLU 2+DPO 70B); (4) CODE TÜLU 2, CODE LLAMA models finetuned on our V2 mix that outperform CODE LLAMA and its instruction-tuned variant, CODE LLAMA-Instruct. Our evaluation from multiple perspectives shows that the TÜLU 2 suite achieves state-of-the-art performance among open models and matches or…",
@@ -797,7 +767,7 @@
         "Guannan Zhang"
       ],
       "kinds": [],
-      "citation_count": 39,
+      "citation_count": 40,
       "github_stars": 0,
       "tldr": "LoRA achieves remarkable resource efficiency and comparable performance when adapting LLMs for specific tasks. Since ChatGPT demonstrated…",
       "short_abstract": "LoRA achieves remarkable resource efficiency and comparable performance when adapting LLMs for specific tasks. Since ChatGPT demonstrated superior performance on various tasks, there has been a growing desire to adapt one model for all tasks. However, the explicit low-rank of LoRA limits the adaptation performance in complex multi-task scenarios. LoRA is dominated by a small number of top singular vectors while fine-tuning decomposes into a set of less important unitary transforms. In this paper, we propose MultiLoRA for better multi-task adaptation by reducing the dominance of top singular vectors observed in LoRA. MultiLoRA scales LoRA modules horizontally and change parameter initialization of adaptation matrices to reduce parameter dependency, thus yields more balanced unitary subspaces. We unprecedentedly construct specialized training data by mixing datasets of instruction follow, natural language understanding, world knowledge, to cover semantically and syntactically different…",
@@ -890,7 +860,7 @@
         "Damjan Kalajdzievski"
       ],
       "kinds": [],
-      "citation_count": 312,
+      "citation_count": 313,
       "github_stars": 0,
       "tldr": "As large language models (LLMs) have become increasingly compute and memory intensive, parameter-efficient fine-tuning (PEFT) methods are…",
       "short_abstract": "As large language models (LLMs) have become increasingly compute and memory intensive, parameter-efficient fine-tuning (PEFT) methods are now a common strategy to fine-tune LLMs. A popular PEFT method is Low-Rank Adapters (LoRA), which adds trainable low-rank \"adapters\" to selected layers. Each adapter consists of a low-rank matrix product, multiplicatively scaled by a rank-dependent factor. This scaling factor, which divides adapters by a factor of the rank, results in slowed learning and stunted performance for LoRA with higher-rank adapters. Consequently, the use of LoRA in practice has generally been limited to very low ranks. In this work, we study the impact of the scaling factor on the learning process and prove that LoRA adapters should be divided by a factor of the square root of the rank. Modifying LoRA with the appropriate scaling factor, which we call the rank-stabilized LoRA (rsLoRA) method, easily provides for a fine-tuning compute/performance trade-off, where larger…",
@@ -923,7 +893,7 @@
         "Bowen Zhou"
       ],
       "kinds": [],
-      "citation_count": 149,
+      "citation_count": 151,
       "github_stars": 0,
       "tldr": "Fine-tuning pre-trained large language models in a parameter-efficient manner is widely studied for its effectiveness and efficiency.The…",
       "short_abstract": "Fine-tuning pre-trained large language models in a parameter-efficient manner is widely studied for its effectiveness and efficiency.The popular method of low-rank adaptation (LoRA) offers a notable approach, hypothesizing that the adaptation process is intrinsically low-dimensional.Although LoRA has demonstrated commendable performance, it is implemented with a fixed and unalterable intrinsic rank that might not always be the ideal choice.Recognizing the need for more flexible adaptation, we extend the methodology of LoRA to an innovative approach we call sparse low-rank adaptation (SoRA) that enables dynamic adjustments to the intrinsic rank during the adaptation process.We achieve this through the incorporation of a gate unit optimized with proximal gradient method in the training stage, controlling the cardinality of rank under the sparsity of the gate.In the subsequent inference stage, we eliminate the parameter blocks corresponding to the zeroed-out ranks, to reduce each SoRA…",
@@ -988,7 +958,7 @@
         "Elad Hazan"
       ],
       "kinds": [],
-      "citation_count": 113,
+      "citation_count": 114,
       "github_stars": 0,
       "tldr": "Fine-tuning is the primary methodology for tailoring pre-trained large language models to specific tasks. As the model's scale and the…",
       "short_abstract": "Fine-tuning is the primary methodology for tailoring pre-trained large language models to specific tasks. As the model's scale and the diversity of tasks expand, parameter-efficient fine-tuning methods are of paramount importance. One of the most widely used family of methods is low-rank adaptation (LoRA) and its variants. LoRA encodes weight update as the product of two low-rank matrices. Despite its advantages, LoRA falls short of full-parameter fine-tuning in terms of generalization error for certain tasks. We introduce Chain of LoRA (COLA), an iterative optimization framework inspired by the Frank-Wolfe algorithm, to bridge the gap between LoRA and full parameter fine-tuning, without incurring additional computational costs or memory overheads. COLA employs a residual learning procedure where it merges learned LoRA modules into the pre-trained language model parameters and re-initilize optimization for new born LoRA modules. We provide theoretical convergence guarantees as well…",
@@ -1041,38 +1011,6 @@
       "is_focus": false
     },
     {
-      "id": "openalex:W4391021820",
-      "title": "Low-Rank Adaptation of Large Language Model Rescoring for Parameter-Efficient Speech Recognition",
-      "year": 2023,
-      "venue": "IEEE Automatic Speech Recognition and Understanding Workshop (ASRU)",
-      "venue_tier": "preprint",
-      "authors": [
-        "Yu Yu",
-        "Chao-Han Huck Yang",
-        "Jari Kolehmainen",
-        "Prashanth Gurunath Shivakumar",
-        "Yile Gu"
-      ],
-      "kinds": [],
-      "citation_count": 46,
-      "github_stars": 0,
-      "tldr": "We propose a neural language modeling system based on low-rank adaptation (LoRA) for speech recognition output rescoring. Although…",
-      "short_abstract": "We propose a neural language modeling system based on low-rank adaptation (LoRA) for speech recognition output rescoring. Although pretrained language models (LMs) like BERT have shown superior performance in second-pass rescoring, the high computational cost of scaling up the pretraining stage and adapting the pretrained models to specific domains limit their practical use in rescoring. Here we present a method based on low-rank decomposition to train a rescoring BERT model and adapt it to new domains using only a fraction (0.08%) of the pretrained parameters. These inserted matrices are optimized through a discriminative training objective along with a correlation-based regularization loss. The proposed low-rank adaptation RescoreBERT (LoRB) architecture is evaluated on LibriSpeech and internal datasets with decreased training times by factors between 5.4 and 3.6.",
-      "arxiv_id": "2309.15223",
-      "doi": "10.1109/asru57964.2023.10389632",
-      "aliases": [
-        [
-          "arxiv",
-          "2309.15223"
-        ],
-        [
-          "doi",
-          "10.1109/asru57964.2023.10389632"
-        ]
-      ],
-      "is_focus": false
-    },
-    {
       "id": "openalex:W4391591528",
       "title": "Flora: Low-Rank Adapters Are Secretly Gradient Compressors",
       "year": 2024,
@@ -1117,8 +1055,8 @@
         "Yu-Chiang Frank Wang"
       ],
       "kinds": [],
-      "citation_count": 1096,
-      "github_stars": 1002,
+      "citation_count": 1129,
+      "github_stars": 1004,
       "tldr": "Among the widely used parameter-efficient fine-tuning (PEFT) methods, LoRA and its variants have gained considerable popularity because of…",
       "short_abstract": "Among the widely used parameter-efficient fine-tuning (PEFT) methods, LoRA and its variants have gained considerable popularity because of avoiding additional inference costs. However, there still often exists an accuracy gap between these methods and full fine-tuning (FT). In this work, we first introduce a novel weight decomposition analysis to investigate the inherent differences between FT and LoRA. Aiming to resemble the learning capacity of FT from the findings, we propose Weight-Decomposed Low-Rank Adaptation (DoRA). DoRA decomposes the pre-trained weight into two components, magnitude and direction, for fine-tuning, specifically employing LoRA for directional updates to efficiently minimize the number of trainable parameters. By employing \\ours, we enhance both the learning capacity and training stability of LoRA while avoiding any additional inference overhead. \\ours~consistently outperforms LoRA on fine-tuning LLaMA, LLaVA, and VL-BART on various downstream tasks, such as…",
       "arxiv_id": "2402.09353",
@@ -1150,7 +1088,7 @@
         "Yu, Bin"
       ],
       "kinds": [],
-      "citation_count": 508,
+      "citation_count": 518,
       "github_stars": 0,
       "tldr": "In this paper, we show that Low Rank Adaptation (LoRA) as originally introduced in Hu et al. (2021) leads to suboptimal finetuning of…",
       "short_abstract": "In this paper, we show that Low Rank Adaptation (LoRA) as originally introduced in Hu et al. (2021) leads to suboptimal finetuning of models with large width (embedding dimension). This is due to the fact that adapter matrices A and B in LoRA are updated with the same learning rate. Using scaling arguments for large width networks, we demonstrate that using the same learning rate for A and B does not allow efficient feature learning. We then show that this suboptimality of LoRA can be corrected simply by setting different learning rates for the LoRA adapter matrices A and B with a well-chosen ratio. We call this proposed algorithm LoRA$+$. In our extensive experiments, LoRA$+$ improves performance (1-2 $\\%$ improvements) and finetuning speed (up to $\\sim$ 2X SpeedUp), at the same computational cost as LoRA.",
@@ -1185,7 +1123,7 @@
       ],
       "kinds": [],
       "citation_count": 106,
-      "github_stars": 0,
+      "github_stars": 40,
       "tldr": "Parameter-efficient fine-tuning optimizes large, pre-trained foundation models by updating a subset of parameters; in this class, Low-Rank…",
       "short_abstract": "Parameter-efficient fine-tuning optimizes large, pre-trained foundation models by updating a subset of parameters; in this class, Low-Rank Adaptation (LoRA) is particularly effective. Inspired by an effort to investigate the different roles of LoRA matrices during fine-tuning, this paper characterizes and leverages unexpected asymmetry in the importance of low-rank adapter matrices. Specifically, when updating the parameter matrices of a neural network by adding a product $BA$, we observe that the $B$ and $A$ matrices have distinct functions: $A$ extracts features from the input, while $B$ uses these features to create the desired output. Based on this observation, we demonstrate that fine-tuning $B$ is inherently more effective than fine-tuning $A$, and that a random untrained $A$ should perform nearly as well as a fine-tuned one. Using an information-theoretic lens, we also bound the generalization of low-rank adapters, showing that the parameter savings of exclusively training $B$…",
       "arxiv_id": "2402.16842",
@@ -1201,6 +1139,7 @@
           "10.48550/arxiv.2402.16842"
         ]
       ],
+      "github_url": "https://github.com/Jiacheng-Zhu-AIML/AsymmetryLoRA",
       "is_focus": false
     },
     {
@@ -1249,7 +1188,7 @@
         "Bolin Ding"
       ],
       "kinds": [],
-      "citation_count": 251,
+      "citation_count": 252,
       "github_stars": 0,
       "tldr": "Low-rank adaptation (LoRA) is one of the most popular task-specific parameter-efficient fine-tuning (PEFT) methods on pre-trained language…",
       "short_abstract": "Low-rank adaptation (LoRA) is one of the most popular task-specific parameter-efficient fine-tuning (PEFT) methods on pre-trained language models for its good performance and computational efficiency. LoRA injects a product of two trainable rank decomposition matrices over the top of each frozen pre-trained model module. However, when applied in the setting of privacy-preserving federated learning (FL), LoRA may become unstable due to the following facts: 1) the effects of data heterogeneity and multi-step local updates are non-negligible, 2) additive noise enforced on updating gradients to guarantee differential privacy (DP) can be amplified and 3) the final performance is susceptible to hyper-parameters. A key factor leading to these phenomena is the discordance between jointly optimizing the two low-rank matrices by local clients and separately aggregating them by the central server. Thus, this paper proposes an efficient and effective version of LoRA, Federated Freeze A LoRA…",
@@ -1268,38 +1207,6 @@
         ]
       ],
       "seed_paper_id": "69752650f439c6ed4148c2b11827f450cd87731e"
-    },
-    {
-      "id": "openalex:W4393152647",
-      "title": "MELO: Enhancing Model Editing with Neuron-Indexed Dynamic LoRA",
-      "year": 2024,
-      "venue": "Proceedings of the AAAI Conference on Artificial Intelligence",
-      "venue_tier": "A",
-      "authors": [
-        "Lang Yu",
-        "Qin Chen",
-        "Jie Zhou",
-        "Liang He"
-      ],
-      "kinds": [],
-      "citation_count": 124,
-      "github_stars": 0,
-      "tldr": "Large language models (LLMs) have shown great success in various Natural Language Processing (NLP) tasks, whist they still need updates…",
-      "short_abstract": "Large language models (LLMs) have shown great success in various Natural Language Processing (NLP) tasks, whist they still need updates after deployment to fix errors or keep pace with the changing knowledge in the world. Researchers formulate such problem as Model Editing and have developed various editors focusing on different axes of editing properties. However, current editors can hardly support all properties and rely on heavy computational resources. In this paper, we propose a plug-in Model Editing method based on neuron-indexed dynamic LoRA (MELO), which alters the behavior of language models by dynamically activating certain LoRA blocks according to the index built in an inner vector database. Our method satisfies various editing properties with high efficiency and can be easily integrated into multiple LLM backbones. Experimental results show that our proposed MELO achieves state-of-the-art editing performance on three sequential editing tasks (document classification,…",
-      "arxiv_id": "2312.11795",
-      "doi": "10.1609/aaai.v38i17.29916",
-      "aliases": [
-        [
-          "arxiv",
-          "2312.11795"
-        ],
-        [
-          "doi",
-          "10.1609/aaai.v38i17.29916"
-        ]
-      ],
-      "citation_count_source": "semantic_scholar",
-      "is_focus": false
     },
     {
       "id": "openalex:W4393248290",
@@ -1346,7 +1253,7 @@
         "Muhan Zhang"
       ],
       "kinds": [],
-      "citation_count": 389,
+      "citation_count": 395,
       "github_stars": 0,
       "tldr": "To parameter-efficiently fine-tune (PEFT) large language models (LLMs), the low-rank adaptation (LoRA) method approximates the model…",
       "short_abstract": "To parameter-efficiently fine-tune (PEFT) large language models (LLMs), the low-rank adaptation (LoRA) method approximates the model changes $ΔW \\in \\mathbb{R}^{m \\times n}$ through the product of two matrices $A \\in \\mathbb{R}^{m \\times r}$ and $B \\in \\mathbb{R}^{r \\times n}$, where $r \\ll \\min(m, n)$, $A$ is initialized with Gaussian noise, and $B$ with zeros. LoRA freezes the original model $W$ and updates the \"Noise & Zero\" adapter, which may lead to slow convergence. To overcome this limitation, we introduce Principal Singular values and Singular vectors Adaptation (PiSSA). PiSSA shares the same architecture as LoRA, but initializes the adaptor matrices $A$ and $B$ with the principal components of the original matrix $W$, and put the remaining components into a residual matrix $W^{res} \\in \\mathbb{R}^{m \\times n}$ which is frozen during fine-tuning. Compared to LoRA, PiSSA updates the principal components while freezing the \"residual\" parts, allowing faster convergence and…",
@@ -1412,7 +1319,7 @@
         "Philip Greengard"
       ],
       "kinds": [],
-      "citation_count": 450,
+      "citation_count": 460,
       "github_stars": 0,
       "tldr": "Low-Rank Adaptation (LoRA) is a widely-used parameter-efficient finetuning method for large language models. LoRA saves memory by training…",
       "short_abstract": "Low-Rank Adaptation (LoRA) is a widely-used parameter-efficient finetuning method for large language models. LoRA saves memory by training only low rank perturbations to selected weight matrices. In this work, we compare the performance of LoRA and full finetuning on two target domains, programming and mathematics. We consider both the instruction finetuning (approximately 100K prompt-response pairs) and continued pretraining (20B unstructured tokens) data regimes. Our results show that, in the standard low-rank settings, LoRA substantially underperforms full finetuning. Nevertheless, LoRA better maintains the base model's performance on tasks outside the target domain. We show that LoRA mitigates forgetting more than common regularization techniques such as weight decay and dropout; it also helps maintain more diverse generations. Finally, we show that full finetuning learns perturbations with a rank that is 10-100X greater than typical LoRA configurations, possibly explaining some…",
@@ -1442,7 +1349,7 @@
         "Markus J. Buehler"
       ],
       "kinds": [],
-      "citation_count": 75,
+      "citation_count": 77,
       "github_stars": 0,
       "tldr": "We report a mixture of expert strategy to create fine-tuned large language models using a deep layer-wise token-level approach based on…",
       "short_abstract": "We report a mixture of expert strategy to create fine-tuned large language models using a deep layer-wise token-level approach based on low-rank adaptation (LoRA). Starting with a set of pre-trained LoRA adapters, our gating strategy uses the hidden states to dynamically mix adapted layers, allowing the resulting X-LoRA model to draw upon different capabilities and create never-before-used deep layer-wise combinations to solve tasks. The design is inspired by the biological principles of universality and diversity, where neural network building blocks are reused in different hierarchical manifestations. Hence, the X-LoRA model can be easily implemented for any existing large language model without a need for modifications of the underlying structure. We develop a tailored X-LoRA model that offers scientific capabilities, including forward/inverse analysis tasks and enhanced reasoning capability, focused on biomaterial analysis, protein mechanics, and design. The impact of this work…",
@@ -1504,7 +1411,7 @@
         "Derong Xu"
       ],
       "kinds": [],
-      "citation_count": 195,
+      "citation_count": 199,
       "github_stars": 0,
       "tldr": "The recent surge in Large Language Models (LLMs) has garnered significant attention across numerous fields. Fine-tuning is often required…",
       "short_abstract": "The recent surge in Large Language Models (LLMs) has garnered significant attention across numerous fields. Fine-tuning is often required to fit general LLMs for a specific domain, like the web-based healthcare system. However, two problems arise during fine-tuning LLMs for medical applications. One is the task variety problem, which involves distinct tasks in real-world medical scenarios. The variety often leads to sub-optimal fine-tuning for data imbalance and seesaw problems. Besides, the large amount of parameters in LLMs leads to huge time and computation consumption by fine-tuning. To address these two problems, we propose a novel parameter efficient fine-tuning framework for multi-task medical applications, dubbed as MOELoRA. The designed framework aims to absorb both the benefits of mixture-of-expert (MOE) for multi-task learning and low-rank adaptation (LoRA) for parameter efficient fine-tuning. For unifying MOE and LoRA, we devise multiple experts as the trainable…",
@@ -1535,7 +1442,7 @@
         "Oleksii Kuchaiev"
       ],
       "kinds": [],
-      "citation_count": 89,
+      "citation_count": 90,
       "github_stars": 0,
       "tldr": "We introduce Tied-LoRA, a novel paradigm leveraging weight tying and selective training to enhance the parameter efficiency of Low-rank…",
       "short_abstract": "We introduce Tied-LoRA, a novel paradigm leveraging weight tying and selective training to enhance the parameter efficiency of Low-rank Adaptation (LoRA). Our exploration encompasses different plausible combinations of parameter training and freezing, coupled with weight tying, aimed at identifying the optimal trade-off between performance and the count of trainable parameters. Across 5 diverse tasks and two foundational language models with different parameter counts, our experiments provide comprehensive insights into the inherent trade-offs between efficiency and performance.Our findings reveal a specific Tied-LoRA configuration that distinguishes itself by showcasing comparable performance to LoRA across multiple tasks while utilizing only a fraction of the parameters employed by the standard LoRA method, particularly at elevated ranks. This underscores the efficacy of Tied-LoRA in achieving impressive results with significantly reduced model complexity.",
@@ -1700,7 +1607,7 @@
         "Jinwei Chen"
       ],
       "kinds": [],
-      "citation_count": 96,
+      "citation_count": 97,
       "github_stars": 0,
       "tldr": "Previous multitask dense prediction methods based on the Mixture of Experts (MoE) have received great performance but they neglect the…",
       "short_abstract": "Previous multitask dense prediction methods based on the Mixture of Experts (MoE) have received great performance but they neglect the importance of explicitly modeling the global relations among all tasks. In this paper, we present a novel decoder-focused method for multitask dense prediction, called Mixture-of-Low-Rank-Experts (MLoRE). To model the global task relationships, MLoRE adds a generic convolution path to the original MoE structure, where each task feature can go through this path for explicit parameter sharing. Furthermore, to control the parameters and computational cost brought by the increase in the number of experts, we take inspiration from LoRA and propose to leverage the low-rank format of a vanilla con-volution in the expert network. Since the low-rank experts have fewer parameters and can be dynamically parameter-ized into the generic convolution, the parameters and computational cost do not change much with the increase of experts. Benefiting from this design,…",
@@ -1753,34 +1660,6 @@
       "is_focus": false
     },
     {
-      "id": "openalex:W4402916137",
-      "title": "SuperLoRA: Parameter-Efficient Unified Adaptation for Large Vision Models",
-      "year": 2024,
-      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (CVPRW)",
-      "venue_tier": "A+",
-      "authors": [
-        "Xiangyu Chen",
-        "Jing Liu",
-        "Ye Wang",
-        "Pu Perry Wang",
-        "Matthew Brand"
-      ],
-      "kinds": [],
-      "citation_count": 10,
-      "github_stars": 0,
-      "tldr": "Low-rank adaptation (LoRA) and its variants are widely employed in fine-tuning large models, including large language models for natural…",
-      "short_abstract": "Low-rank adaptation (LoRA) and its variants are widely employed in fine-tuning large models, including large language models for natural language processing and diffusion models for computer vision. This paper proposes a generalized framework called SuperLoRA that unifies and extends different LoRA variants, which can be realized under different hyper-parameter settings. Introducing new options with grouping, folding, shuffling, projection, and tensor decomposition, SuperLoRA offers high flexibility and demonstrates superior performance, with up to 10-fold gain in parameter efficiency for transfer learning tasks.",
-      "doi": "10.1109/cvprw63382.2024.00804",
-      "aliases": [
-        [
-          "doi",
-          "10.1109/cvprw63382.2024.00804"
-        ]
-      ],
-      "citation_count_source": "semantic_scholar",
-      "is_focus": false
-    },
-    {
       "id": "openalex:W4403277434",
       "title": "Derivative-Free Optimization for Low-Rank Adaptation in Large Language Models",
       "year": 2024,
@@ -1825,7 +1704,7 @@
         "Yu Mi"
       ],
       "kinds": [],
-      "citation_count": 195,
+      "citation_count": 198,
       "github_stars": 0,
       "tldr": "Abstract Low-Rank Adaptation (LoRA), which updates the dense neural network layers with pluggable low-rank matrices, is one of the best…",
       "short_abstract": "Abstract Low-Rank Adaptation (LoRA), which updates the dense neural network layers with pluggable low-rank matrices, is one of the best performed parameter efficient fine-tuning paradigms. Furthermore, it has significant advantages in cross-task generalization and privacy-preserving. Hence, LoRA has gained much attention recently, and the number of related literature demonstrates exponential growth. It is necessary to conduct a comprehensive overview of the current progress on LoRA. This survey categorizes and reviews the progress from the perspectives of (1) downstream adaptation improving variants that improve LoRA’s performance on downstream tasks; (2) cross-task generalization methods that mix multiple LoRA plugins to achieve cross-task generalization; (3) efficiency-improving methods that boost the computation-efficiency of LoRA; (4) data privacy-preserving methods that use LoRA in federated learning; (5) application. Besides, this survey also discusses the future directions in…",
@@ -1883,7 +1762,7 @@
         "Ngai Wong"
       ],
       "kinds": [],
-      "citation_count": 66,
+      "citation_count": 67,
       "github_stars": 0,
       "tldr": "In this paper, we introduce a subspace-inspired Low-Rank Adaptation (LoRA) method, which is computationally efficient, easy to implement,…",
       "short_abstract": "In this paper, we introduce a subspace-inspired Low-Rank Adaptation (LoRA) method, which is computationally efficient, easy to implement, and readily applicable to large language, multimodal, and diffusion models. Initially, we equivalently decompose the weights of LoRA into two subspaces, and find that simply mixing them can enhance performance. To study such a phenomenon, we revisit it through a fine-grained subspace lens, showing that such modification is equivalent to employing a fixed mixer to fuse the subspaces. To be more flexible, we jointly learn the mixer with the original LoRA weights, and term the method Mixture-of-Subspaces LoRA (MoSLoRA). MoSLoRA consistently outperforms LoRA on tasks in different modalities, including commonsense reasoning, visual instruction tuning, and subject-driven text-to-image generation, demonstrating its effectiveness and robustness. Codes are available at https://github.com/wutaiqiang/MoSLoRA.",
@@ -1931,61 +1810,6 @@
       "is_focus": false
     },
     {
-      "id": "openalex:W4406658468",
-      "title": "Aggregating Low Rank Adapters in Federated Fine-Tuning",
-      "year": 2024,
-      "venue": "arXiv",
-      "venue_tier": "preprint",
-      "authors": [
-        "Evelyn Trautmann",
-        "Ian Hales",
-        "Martin F. Volk"
-      ],
-      "kinds": [],
-      "citation_count": 4,
-      "github_stars": 0,
-      "tldr": "Fine-tuning large language models requires high computational and memory resources, and is therefore associated with significant costs.…",
-      "short_abstract": "Fine-tuning large language models requires high computational and memory resources, and is therefore associated with significant costs. When training on federated datasets, an increased communication effort is also needed. For this reason, parameter-efficient methods (PEFT) are becoming increasingly important. In this context, very good results have already been achieved by fine-tuning with low-rank adaptation methods (LoRA). The application of LoRA methods in Federated Learning, and especially the aggregation of adaptation matrices, is a current research field. In this article, we propose a novel aggregation method and compare it with different existing aggregation methods of low rank adapters trained in a federated fine-tuning of large machine learning models and evaluate their performance with respect to selected GLUE benchmark datasets.",
-      "arxiv_id": "2501.06332",
-      "doi": "10.1109/flta63145.2024.10840125",
-      "aliases": [
-        [
-          "arxiv",
-          "2501.06332"
-        ],
-        [
-          "doi",
-          "10.1109/flta63145.2024.10840125"
-        ]
-      ],
-      "is_focus": false
-    },
-    {
-      "id": "openalex:W4406812141",
-      "title": "Activation-Guided Low-Rank Parameter Adaptation for Efficient Model Fine-Tuning",
-      "year": 2025,
-      "venue": "IEEE Access",
-      "venue_tier": "preprint",
-      "authors": [
-        "Qingchen Wang",
-        "Shengyu Shen"
-      ],
-      "kinds": [],
-      "citation_count": 5,
-      "github_stars": 0,
-      "tldr": "Fine-tuning large language models is computationally expensive, and while existing parameter-efficient methods like Low-Rank Adaptation…",
-      "short_abstract": "Fine-tuning large language models is computationally expensive, and while existing parameter-efficient methods like Low-Rank Adaptation (LoRA) reduce computational costs, they are limited by suboptimal initialization strategies. We introduce Activation-Guided LoRA (AG-LoRA), a novel approach that initializes LoRA modules using Singular Value Decomposition (SVD) guided by activation patterns. Our method employs pre-trained weights combined with activation-based weighting factors and implements a new global rank assignment strategy that accounts for activation outliers. Experimental evaluations on LLaMA and CLIP models show that AG-LoRA achieves superior performance while reducing GPU memory usage compared to existing methods. In tests with LLaMA 7B models, AG-LoRA reached 75.9% accuracy across various tasks, surpassing both LoRA and DoRA baselines. AG-LoRA demonstrates significant improvements in parameter-efficient fine-tuning of large language models, offering enhanced performance…",
-      "doi": "10.1109/access.2025.3533701",
-      "aliases": [
-        [
-          "doi",
-          "10.1109/access.2025.3533701"
-        ]
-      ],
-      "citation_count_source": "semantic_scholar",
-      "is_focus": false
-    },
-    {
       "id": "openalex:W4407759136",
       "title": "GoRA: Gradient-driven Adaptive Low Rank Adaptation",
       "year": 2025,
@@ -1999,7 +1823,7 @@
         "Luyang Zhou"
       ],
       "kinds": [],
-      "citation_count": 17,
+      "citation_count": 19,
       "github_stars": 0,
       "tldr": "Low-Rank Adaptation (LoRA) is a crucial method for efficiently fine-tuning large language models (LLMs), with its effectiveness influenced…",
       "short_abstract": "Low-Rank Adaptation (LoRA) is a crucial method for efficiently fine-tuning large language models (LLMs), with its effectiveness influenced by two key factors: rank selection and weight initialization. While numerous LoRA variants have been proposed to improve performance by addressing one of these aspects, they often compromise usability or computational efficiency. In this paper, we analyze and identify the core limitations of existing approaches and propose a novel framework--GoRA (Gradient-driven Adaptive Low Rank Adaptation)--that simultaneously adapts both the rank and initialization strategy within a unified framework. GoRA leverages gradient information during training to dynamically assign optimal ranks and initialize low-rank adapter weights in an adaptive manner. To our knowledge, GoRA is the first method that not only addresses the limitations of prior approaches--which often focus on either rank selection or initialization in isolation--but also unifies both aspects…",
@@ -2046,92 +1870,6 @@
       "is_focus": false
     },
     {
-      "id": "openalex:W4408326133",
-      "title": "Federated Low-Rank Adaptation for Large Language Model Fine-Tuning Over Wireless Networks",
-      "year": 2024,
-      "venue": "Globecom",
-      "venue_tier": "preprint",
-      "authors": [
-        "Zixin Wang",
-        "Yong Zhou",
-        "Yuanming Shi",
-        "Khaled B. Letaief"
-      ],
-      "kinds": [],
-      "citation_count": 8,
-      "github_stars": 0,
-      "tldr": "Low-rank adaptation (LoRA) is an emerging fine-tuning method for personalized large language models (LLMs) due to its capability of…",
-      "short_abstract": "Low-rank adaptation (LoRA) is an emerging fine-tuning method for personalized large language models (LLMs) due to its capability of achieving comparable learning performance to full fine-tuning by training a much smaller number of parameters. Federated fine-tuning (FedFT) combines LoRA with federated learning (FL) to enable collaborative fine-tuning of a global model with edge devices, leveraging distributed data while ensuring privacy. However, limited radio resources and computation capabilities of edge devices pose critical challenges on deploying FedFT over wireless networks. In this paper, we propose a split FedFT framework to separately deploy the computationally-intensive encoder of a pre-trained model at the edge server while reserving the embedding and the task modules at the edge devices, where the information exchanges between these modules are carried out over wireless networks. By exploiting the low-rank property of LoRA, the proposed FedFT framework reduces…",
-      "doi": "10.1109/globecom52923.2024.10901572",
-      "aliases": [
-        [
-          "doi",
-          "10.1109/globecom52923.2024.10901572"
-        ]
-      ],
-      "is_focus": false
-    },
-    {
-      "id": "openalex:W4409262181",
-      "title": "Weight Copy and Low-Rank Adaptation for Few-Shot Distillation of Vision Transformers",
-      "year": 2025,
-      "venue": "IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)",
-      "venue_tier": "preprint",
-      "authors": [
-        "Diana-Nicoleta Grigore",
-        "Mariana-Iuliana Georgescu",
-        "Jon Alvarez Justo",
-        "Tor Arne Johansen",
-        "Andreea-Iuliana Ionescu"
-      ],
-      "kinds": [],
-      "citation_count": 7,
-      "github_stars": 0,
-      "tldr": "Few-shot knowledge distillation recently emerged as a viable approach to harness the knowledge of large-scale pre-trained models, using…",
-      "short_abstract": "Few-shot knowledge distillation recently emerged as a viable approach to harness the knowledge of large-scale pre-trained models, using limited data and computational resources. In this paper, we propose a novel few-shot feature distillation approach for vision transformers. Our approach is based on two key steps. Leveraging the fact that vision transformers have a consistent depth-wise structure, we first copy the weights from intermittent layers of existing pre-trained vision transformers (teachers) into shallower architectures (students), where the intermittence factor controls the complexity of the student transformer with respect to its teacher. Next, we employ an enhanced version of Low-Rank Adaptation (LoRA) to distill knowledge into the student in a few-shot scenario, aiming to recover the information processing carried out by the skipped teacher layers. We present comprehensive experiments with supervised and self-supervised transformers as teachers, on six data sets from…",
-      "arxiv_id": "2404.09326",
-      "doi": "10.1109/wacv61041.2025.00716",
-      "aliases": [
-        [
-          "arxiv",
-          "2404.09326"
-        ],
-        [
-          "doi",
-          "10.1109/wacv61041.2025.00716"
-        ]
-      ],
-      "citation_count_source": "semantic_scholar",
-      "is_focus": false
-    },
-    {
-      "id": "openalex:W4411232654",
-      "title": "Speaker Adaptive Mixture of Weight-Decomposed LoRA Experts for On-Device End-to-End ASR",
-      "year": 2025,
-      "venue": "IEEE Transactions on Audio Speech and Language Processing",
-      "venue_tier": "preprint",
-      "authors": [
-        "Qiuming Zhao",
-        "Guangzhi Sun",
-        "Chao Zhang",
-        "Mingxing Xu",
-        "Thomas Fang Zheng"
-      ],
-      "kinds": [],
-      "citation_count": 5,
-      "github_stars": 0,
-      "tldr": "On-device speaker adaptation faces significant challenges in balancing recognition performance with computational efficiency. To address…",
-      "short_abstract": "On-device speaker adaptation faces significant challenges in balancing recognition performance with computational efficiency. To address these challenges, Mixture-of-Experts (MoE) is a promising approach, which enhances model representation power and expands model capacity through a dynamic gating mechanism, thereby better handling speaker variability. However, conventional MoE models are often very large, making them challenging to deploy on resource-constrained edge devices. In this paper, we propose a novel speaker adaptive mixture of weight-decomposed LoRA experts (SAMD) approach, which uses low-rank adaptation (LoRA) modules as experts to reduce the number of trainable parameters in MoE, and further decomposes the experts into magnitude and directional components to enhance both the learning capacity and training stability of the experts. Specifically, SAMD is applied to the quantised and personalised end-to-end automatic speech recognition models, which combines test-time…",
-      "doi": "10.1109/taslpro.2025.3579303",
-      "aliases": [
-        [
-          "doi",
-          "10.1109/taslpro.2025.3579303"
-        ]
-      ],
-      "is_focus": false
-    },
-    {
       "id": "openalex:W4411990406",
       "title": "KronA: Parameter-Efficient Tuning with Kronecker Adapter",
       "year": 2025,
@@ -2165,123 +1903,6 @@
       "is_focus": false
     },
     {
-      "id": "openalex:W4412403848",
-      "title": "Low Tensor-Rank Adaptation of Kolmogorov–Arnold Networks",
-      "year": 2025,
-      "venue": "IEEE Transactions on Signal Processing",
-      "venue_tier": "preprint",
-      "authors": [
-        "Yihang Gao",
-        "Michael K. Ng",
-        "Vincent Y. F. Tan"
-      ],
-      "kinds": [],
-      "citation_count": 2,
-      "github_stars": 0,
-      "tldr": "Kolmogorov–Arnold networks (KANs) have demonstrated their potential as an alternative to multi-layer perceptions (MLPs) in various…",
-      "short_abstract": "Kolmogorov–Arnold networks (KANs) have demonstrated their potential as an alternative to multi-layer perceptions (MLPs) in various domains, especially for science-related tasks. However, transfer learning of KANs remains a relatively unexplored area. In this paper, inspired by Tucker decomposition of tensors and evidence on the low tensor-rank structure in KAN parameter updates, we develop low tensor-rank adaptation (LoTRA) for fine-tuning KANs. We study the expressiveness of LoTRA based on Tucker decomposition approximations. Furthermore, we provide a theoretical analysis to select the learning rates for each LoTRA component to enable efficient training. Our analysis also shows that using identical learning rates across all components leads to inefficient training, highlighting the need for an adaptive learning rate strategy. Beyond theoretical insights, we explore the application of LoTRA for efficiently solving various partial differential equations (PDEs) by fine-tuning KANs.…",
-      "arxiv_id": "2502.06153",
-      "doi": "10.1109/tsp.2025.3588910",
-      "aliases": [
-        [
-          "arxiv",
-          "2502.06153"
-        ],
-        [
-          "doi",
-          "10.1109/tsp.2025.3588910"
-        ]
-      ],
-      "is_focus": false
-    },
-    {
-      "id": "openalex:W4412930153",
-      "title": "Accurate and Efficient Fine-Tuning of Quantized Large Language Models Through Optimal Balance in Adaptation",
-      "year": 2025,
-      "venue": "Transactions of the Association for Computational Linguistics",
-      "venue_tier": "preprint",
-      "authors": [
-        "Ao Shen",
-        "Zhiquan Lai",
-        "Qiang Wang",
-        "Xionglve Li",
-        "Lizhi Zhang"
-      ],
-      "kinds": [],
-      "citation_count": 3,
-      "github_stars": 0,
-      "tldr": "Abstract Large Language Models (LLMs) have demonstrated impressive performance across various domains. However, the enormous number of…",
-      "short_abstract": "Abstract Large Language Models (LLMs) have demonstrated impressive performance across various domains. However, the enormous number of model parameters makes fine-tuning challenging, significantly limiting their application and deployment. Existing solutions combine parameter quantization with Low-Rank Adaptation (LoRA), reducing memory usage but causing performance degradation. Additionally, converting fine-tuned models to low-precision representations further degrades performance. In this paper, we identify an imbalance in fine-tuning quantized LLMs with LoRA: overly complex adapter inputs and outputs versus low effective trainability of the adapter, leading to underfitting during fine-tuning. Thus, we propose Quantized LLMs fine-tuning with Balanced Low-Rank Adaptation (Q-BLoRA), which simplifies the adapter’s inputs and outputs while increasing the adapter’s rank to alleviate underfitting during fine-tuning. For low-precision deployment, we propose Quantization-Aware fine-tuning…",
-      "doi": "10.1162/tacl.a.23",
-      "aliases": [
-        [
-          "doi",
-          "10.1162/tacl.a.23"
-        ]
-      ],
-      "citation_count_source": "semantic_scholar",
-      "is_focus": false
-    },
-    {
-      "id": "openalex:W4413146569",
-      "title": "CL-LoRA: Continual Low-Rank Adaptation for Rehearsal-Free Class-Incremental Learning",
-      "year": 2025,
-      "venue": "IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings",
-      "venue_tier": "A+",
-      "authors": [
-        "Jiangpeng He",
-        "Zhihao Duan",
-        "Fengqing Maggie Zhu"
-      ],
-      "kinds": [],
-      "citation_count": 48,
-      "github_stars": 0,
-      "tldr": "Class-Incremental Learning (CIL) aims to learn new classes sequentially while retaining the knowledge of previously learned classes.…",
-      "short_abstract": "Class-Incremental Learning (CIL) aims to learn new classes sequentially while retaining the knowledge of previously learned classes. Recently, pre-trained models (PTMs) combined with parameter-efficient fine-tuning (PEFT) have shown remarkable performance in rehearsal-free CIL without requiring exemplars from previous tasks. However, existing adapter-based methods, which incorporate lightweight learnable modules into PTMs for CIL, create new adapters for each new task, leading to both parameter redundancy and failure to leverage shared knowledge across tasks. In this work, we propose ContinuaL Low-Rank Adaptation (CL-LoRA), which introduces a novel dual-adapter architecture combining task-shared adapters to learn cross-task knowledge and task-specific adapters to capture unique features of each new task. Specifically, the shared adapters utilize random orthogonal matrices and leverage knowledge distillation with gradient reassignment to preserve essential shared knowledge. In…",
-      "doi": "10.1109/cvpr52734.2025.02843",
-      "aliases": [
-        [
-          "doi",
-          "10.1109/cvpr52734.2025.02843"
-        ]
-      ],
-      "citation_count_source": "semantic_scholar",
-      "is_focus": false
-    },
-    {
-      "id": "openalex:W4414197283",
-      "title": "Distillation-Supervised Convolutional Low-Rank Adaptation for Efficient Image Super-Resolution",
-      "year": 2025,
-      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (CVPRW)",
-      "venue_tier": "A+",
-      "authors": [
-        "Xinning Chai",
-        "Yao Zhang",
-        "Yuxuan Zhang",
-        "Zhengxue Cheng",
-        "Yuwei Qin"
-      ],
-      "kinds": [],
-      "citation_count": 15,
-      "github_stars": 0,
-      "tldr": "Convolutional neural networks (CNNs) have been widely used in efficient image super-resolution. However, for CNNbased methods, performance…",
-      "short_abstract": "Convolutional neural networks (CNNs) have been widely used in efficient image super-resolution. However, for CNNbased methods, performance gains often require deeper networks and larger feature maps, which increase complexity and inference costs. Inspired by LoRA's [13] success in fine-tuning large language models, we explore its application to lightweight models and propose Distillation-Supervised Convolutional Low-Rank Adaptation (DSCLoRA), which improves model performance without increasing architectural complexity or inference costs. Specifically, we integrate ConvLoRA [3] into the efficient SR network SPAN [34] by replacing the SPAB module with the proposed SConvLB module and incorporating ConvLoRA layers into both the pixel shuffle block and its preceding convolutional layer. DSCLoRA leverages low-rank decomposition for parameter updates and employs a spatial feature affinity-based knowledge distillation strategy [12] to transfer second-order statistical information from…",
-      "arxiv_id": "2504.11271",
-      "doi": "10.1109/cvprw67362.2025.00132",
-      "aliases": [
-        [
-          "arxiv",
-          "2504.11271"
-        ],
-        [
-          "doi",
-          "10.1109/cvprw67362.2025.00132"
-        ]
-      ],
-      "citation_count_source": "semantic_scholar",
-      "is_focus": false
-    },
-    {
       "id": "openalex:W4415797461",
       "title": "LoRA-GA: Low-Rank Adaptation with Gradient Approximation",
       "year": 2024,
@@ -2293,7 +1914,7 @@
         "Jian Li"
       ],
       "kinds": [],
-      "citation_count": 196,
+      "citation_count": 202,
       "github_stars": 0,
       "tldr": "Fine-tuning large-scale pretrained models is prohibitively expensive in terms of computational and memory costs. LoRA, as one of the most…",
       "short_abstract": "Fine-tuning large-scale pretrained models is prohibitively expensive in terms of computational and memory costs. LoRA, as one of the most popular Parameter-Efficient Fine-Tuning (PEFT) methods, offers a cost-effective alternative by fine-tuning an auxiliary low-rank model that has significantly fewer parameters. Although LoRA reduces the computational and memory requirements significantly at each iteration, extensive empirical evidence indicates that it converges at a considerably slower rate compared to full fine-tuning, ultimately leading to increased overall compute and often worse test performance. In our paper, we perform an in-depth investigation of the initialization method of LoRA and show that careful initialization (without any change of the architecture and the training algorithm) can significantly enhance both efficiency and performance. In particular, we introduce a novel initialization method, LoRA-GA (Low Rank Adaptation with Gradient Approximation), which aligns the…",
@@ -2327,7 +1948,7 @@
         "Hongyi Wang"
       ],
       "kinds": [],
-      "citation_count": 236,
+      "citation_count": 238,
       "github_stars": 0,
       "tldr": "The rapid development of Large Language Models (LLMs) has been pivotal in advancing AI, with pre-trained LLMs being adaptable to diverse…",
       "short_abstract": "The rapid development of Large Language Models (LLMs) has been pivotal in advancing AI, with pre-trained LLMs being adaptable to diverse downstream tasks through fine-tuning. Federated learning (FL) further enhances fine-tuning in a privacy-aware manner by utilizing clients' local data through in-situ computation, eliminating the need for data movement. However, fine-tuning LLMs, given their massive scale of parameters, poses challenges for clients with constrained and heterogeneous resources in FL. Previous methods employed low-rank adaptation (LoRA) for efficient federated fine-tuning but utilized traditional FL aggregation strategies on LoRA adapters. These approaches led to mathematically inaccurate aggregation noise, reducing fine-tuning effectiveness and failing to address heterogeneous LoRAs. In this work, we first highlight the mathematical incorrectness of LoRA aggregation in existing federated fine-tuning methods. We introduce a new approach called FLORA that enables…",
@@ -2362,7 +1983,7 @@
       ],
       "kinds": [],
       "citation_count": 181,
-      "github_stars": 242,
+      "github_stars": 0,
       "tldr": "Adapting Large Language Models (LLMs) to new tasks through fine-tuning has been made more efficient by the introduction of…",
       "short_abstract": "Adapting Large Language Models (LLMs) to new tasks through fine-tuning has been made more efficient by the introduction of Parameter-Efficient Fine-Tuning (PEFT) techniques, such as LoRA. However, these methods often underperform compared to full fine-tuning, particularly in scenarios involving complex datasets. This issue becomes even more pronounced in complex domains, highlighting the need for improved PEFT approaches that can achieve better performance. Through a series of experiments, we have uncovered two critical insights that shed light on the training and parameter inefficiency of LoRA. Building on these insights, we have developed HydraLoRA, a LoRA framework with an asymmetric structure that eliminates the need for domain expertise. Our experiments demonstrate that HydraLoRA outperforms other PEFT approaches, even those that rely on domain knowledge during the training and inference phases.",
       "arxiv_id": "2404.19245",
@@ -2378,7 +1999,6 @@
           "10.52202/079017-0304"
         ]
       ],
-      "github_url": "https://github.com/Clin0212/HydraLoRA",
       "is_focus": false
     },
     {
@@ -2423,8 +2043,8 @@
         "Mohit Bansal"
       ],
       "kinds": [],
-      "citation_count": 347,
-      "github_stars": 0,
+      "citation_count": 349,
+      "github_stars": 242,
       "tldr": "Fine-tuning large pre-trained models on downstream tasks has been adopted in a variety of domains recently. However, it is costly to…",
       "short_abstract": "Fine-tuning large pre-trained models on downstream tasks has been adopted in a variety of domains recently. However, it is costly to update the entire parameter set of large pre-trained models. Although recently proposed parameter-efficient transfer learning (PETL) techniques allow updating a small subset of parameters (e.g. only using 2% of parameters) inside a pre-trained backbone network for a new task, they only reduce the training memory requirement by up to 30%. This is because the gradient computation for the trainable parameters still requires backpropagation through the large pre-trained backbone model. To address this, we propose Ladder Side-Tuning (LST), a new PETL technique that can reduce training memory requirements by more substantial amounts. Unlike existing parameter-efficient methods that insert additional parameters inside backbone networks, we train a ladder side network, a small and separate network that takes intermediate activations as input via shortcut…",
       "arxiv_id": "2206.06522",
@@ -2439,6 +2059,7 @@
           "10.52202/068431-0944"
         ]
       ],
+      "github_url": "https://github.com/ylsung/Ladder-Side-Tuning",
       "citation_count_source": "semantic_scholar",
       "is_focus": false
     },
@@ -2455,8 +2076,8 @@
         "Luke Zettlemoyer"
       ],
       "kinds": [],
-      "citation_count": 6033,
-      "github_stars": 0,
+      "citation_count": 6085,
+      "github_stars": 11051,
       "tldr": "We present QLoRA, an efficient finetuning approach that reduces memory usage enough to finetune a 65B parameter model on a single 48GB GPU…",
       "short_abstract": "We present QLoRA, an efficient finetuning approach that reduces memory usage enough to finetune a 65B parameter model on a single 48GB GPU while preserving full 16-bit finetuning task performance. QLoRA backpropagates gradients through a frozen, 4-bit quantized pretrained language model into Low Rank Adapters~(LoRA). Our best model family, which we name Guanaco, outperforms all previous openly released models on the Vicuna benchmark, reaching 99.3% of the performance level of ChatGPT while only requiring 24 hours of finetuning on a single GPU. QLoRA introduces a number of innovations to save memory without sacrificing performance: (a) 4-bit NormalFloat (NF4), a new data type that is information theoretically optimal for normally distributed weights (b) double quantization to reduce the average memory footprint by quantizing the quantization constants, and (c) paged optimziers to manage memory spikes. We use QLoRA to finetune more than 1,000 models, providing a detailed analysis of…",
       "arxiv_id": "2305.14314",
@@ -2473,6 +2094,7 @@
           "10.52202/075280-0441"
         ]
       ],
+      "github_url": "https://github.com/artidoro/qlora",
       "is_focus": false
     },
     {
@@ -2489,7 +2111,7 @@
         "Jason D. Lee"
       ],
       "kinds": [],
-      "citation_count": 506,
+      "citation_count": 510,
       "github_stars": 0,
       "tldr": "Fine-tuning language models (LMs) has yielded success on diverse downstream tasks, but as LMs grow in size, backpropagation requires a…",
       "short_abstract": "Fine-tuning language models (LMs) has yielded success on diverse downstream tasks, but as LMs grow in size, backpropagation requires a prohibitively large amount of memory. Zeroth-order (ZO) methods can in principle estimate gradients using only two forward passes but are theorized to be catastrophically slow for optimizing large models. In this work, we propose a memory-efficient zerothorder optimizer (MeZO), adapting the classical ZO-SGD method to operate in-place, thereby fine-tuning LMs with the same memory footprint as inference. For example, with a single A100 80GB GPU, MeZO can train a 30-billion parameter model, whereas fine-tuning with backpropagation can train only a 2.7B LM with the same budget. We conduct comprehensive experiments across model types (masked and autoregressive LMs), model scales (up to 66B), and downstream tasks (classification, multiple-choice, and generation). Our results demonstrate that (1) MeZO significantly outperforms in-context learning and linear…",
@@ -2522,7 +2144,7 @@
         "Kang Min Yoo"
       ],
       "kinds": [],
-      "citation_count": 160,
+      "citation_count": 161,
       "github_stars": 0,
       "tldr": "Large language models (LLMs) face the challenges in fine-tuning and deployment due to their high memory demands and computational costs.…",
       "short_abstract": "Large language models (LLMs) face the challenges in fine-tuning and deployment due to their high memory demands and computational costs. While parameter-efficient fine-tuning (PEFT) methods aim to reduce the memory usage of the optimizer state during fine-tuning, the inherent size of pre-trained LLM weights continues to be a pressing concern. Even though quantization techniques are widely proposed to ease memory demands and accelerate LLM inference, most of these techniques are geared towards the deployment phase. To bridge this gap, this paper presents Parameter-Efficient and Quantization-aware Adaptation (PEQA) - a simple yet effective method that combines the advantages of PEFT with quantized LLMs. By updating solely the quantization scales, PEQA can be directly applied to quantized LLMs, ensuring seamless task transitions. Parallel to existing PEFT methods, PEQA significantly reduces the memory overhead associated with the optimizer state. Furthermore, it leverages the advantages…",
@@ -2598,38 +2220,6 @@
       "is_focus": false
     },
     {
-      "id": "openalex:W7150881103",
-      "title": "Fine-tuning Large Language Models with Limited Data: A Survey and Practical Guide",
-      "year": 2026,
-      "venue": "Transactions of the Association for Computational Linguistics",
-      "venue_tier": "preprint",
-      "authors": [
-        "Marton Szep",
-        "Daniel Rueckert",
-        "Rüdiger von Eisenhart‐Rothe",
-        "Florian Hinterwimmer"
-      ],
-      "kinds": [],
-      "citation_count": 8,
-      "github_stars": 0,
-      "tldr": "Abstract Fine-tuning large language models (LLMs) with limited data poses a practical challenge in low-resource languages, specialized…",
-      "short_abstract": "Abstract Fine-tuning large language models (LLMs) with limited data poses a practical challenge in low-resource languages, specialized domains, and constrained deployment settings. While pre-trained LLMs provide strong foundations, effective adaptation under data scarcity requires focused and efficient fine-tuning techniques. This paper presents a structured and practical survey of recent methods for fine-tuning LLMs in data-scarce scenarios. We systematically review parameter-efficient fine-tuning techniques that lower training and deployment costs, domain and cross-lingual adaptation methods for both encoder and decoder models, and model specialization strategies. We further examine preference alignment approaches that guide model behavior using limited human or synthetic feedback, emphasizing sample and compute efficiency. Throughout, we highlight empirical trade-offs, selection criteria, and best practices for choosing suitable techniques based on task constraints, including…",
-      "arxiv_id": "2411.09539",
-      "doi": "10.1162/tacl.a.627",
-      "aliases": [
-        [
-          "arxiv",
-          "2411.09539"
-        ],
-        [
-          "doi",
-          "10.1162/tacl.a.627"
-        ]
-      ],
-      "citation_count_source": "semantic_scholar",
-      "is_focus": false
-    },
-    {
       "id": "openalex:W7155076743",
       "title": "DIRA: Deep High-Rank Adaptation of Pre-Trained Language Models",
       "year": 2026,
@@ -2654,34 +2244,6 @@
           "10.1109/icassp55912.2026.11463927"
         ]
       ],
-      "is_focus": false
-    },
-    {
-      "id": "openalex:W7160115998",
-      "title": "Efficient Fine-Tuning of Large Models Via Nested Low-Rank Adaptation",
-      "year": 2025,
-      "venue": "IEEE/CVF International Conference on Computer Vision (ICCV)",
-      "venue_tier": "A+",
-      "authors": [
-        "Lujun Li",
-        "Cheng Lin",
-        "Dezhi Li",
-        "You-Liang Huang",
-        "Wei Li"
-      ],
-      "kinds": [],
-      "citation_count": 7,
-      "github_stars": 0,
-      "tldr": "Low-Rank Adaptation (LoRA) has become a popular paradigm for fine-tuning large models, but it still necessitates a substantial number of…",
-      "short_abstract": "Low-Rank Adaptation (LoRA) has become a popular paradigm for fine-tuning large models, but it still necessitates a substantial number of training parameters. To address this issue, we first conduct comprehensive empirical studies on parameter-efficient LoRA structure. Then, we establish design guidelines that emphasize the use of serial structures, optimal placements, and nested LoRA. Based on these insights, we present NoRA, a nested parameter-efficient LoRA structure that revolutionizes the initialization and fine-tuning of projection matrices. Our NoRA's innovative approach involves freezing outer layer LoRA weights and employing a serial inner layer design, enabling precise task-specific adaptations while maintaining compact training parameters. In addition, we propose an activation-aware Singular Value Decomposition (AwSVD) that adjusts the weight matrices based on activation distributions for initialization of outer layer LoRA weights. This schema enhances decomposition…",
-      "doi": "10.1109/iccv51701.2025.02066",
-      "aliases": [
-        [
-          "doi",
-          "10.1109/iccv51701.2025.02066"
-        ]
-      ],
-      "citation_count_source": "semantic_scholar",
       "is_focus": false
     },
     {
@@ -2848,303 +2410,6 @@
   ],
   "edges": [
     {
-      "src": "openalex:W3166140588",
-      "dst": "openalex:W3168867926",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「LoRA: Low-Rank Adaptation of Large Language Models」(2021) は「Compacter: Efficient Low-Rank Hypercomplex Adapter Layers」(2021) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-list",
-          "sha256": "3bad9c3ed145320c08d2a9953966d734ee1e07a2d1ec19e3a389e811922eb656"
-        },
-        "classification": {
-          "method": "api_citation",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3166140588",
-      "dst": "openalex:W4384263459",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「ReLoRA」(2023) は 「Compacter」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"This explains the success of parameter-efficient fine-tuning methods [Lialin et al., 2023] and has also motivated the development of low-rank fine-tuning methods such as LoRA [Hu et al., 2022] and Compacter [mahabadi et al., 2021].\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "0649377d064e2f6c837ea55ba5eb14f5179b09924704763dc8f0a23d8071452e"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3166140588",
-      "dst": "openalex:W4386566659",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「DyLoRA」(2023) は 「Compacter」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Among PET techniques, low-rank adapters have received much attention because, in contrast to prompt-tuning techniques, low-rank adapters do not add to the sequence length, get trained faster, and perform better (Karimi Mahabadi et al., 202…\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "fe807324619ac16cdac5e62752a97a8534ee5bf70f8f498c4f637d0475f05d22"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3166140588",
-      "dst": "openalex:W4388963442",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「ComPEFT」(2023) は 「Compacter」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Parameter-efficient fine-tuning (PEFT) methods (Houlsby et al., 2019; Karimi Mahabadi et al., 2021; Lester et al., 2021) such as LoRA (Hu et al., 2021) and (IA) 3 (Liu et al., 2022), facilitate the efficient adaptation of language models b…\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "f37ab0aac22b6ba778ec6f4be4f7b0dcb0a3517a2e1d3389d3ff4dbc819c3a32"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3166140588",
-      "dst": "openalex:W4389524340",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Sparse Low-rank Adaptation of Pre-trained Language Models」(2023) は「Compacter: Efficient Low-Rank Hypercomplex Adapter Layers」(2021) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-list",
-          "sha256": "e21313632e50402e488e87810b6b8759b30149c5c18738c9451aab43a284294b"
-        },
-        "classification": {
-          "method": "api_citation",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3166140588",
-      "dst": "openalex:W4390529411",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「Astraios」(2024) は 「Compacter」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We notice that there are many more PEFT strategies (Karimi Mahabadi et al., 2021; Zaken et al., 2022; Wang et al., 2022b; Edalati et al., 2022) have been proposed recently.\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "bfeb11aa0f8e2dbf567370f82fb46f209e1260ec1c41a5a3e7147a41e60ee379"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3166140588",
-      "dst": "openalex:W4391871574",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「DoRA」(2024) は 「Compacter」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"The first category is referred to as Adapter-based methods, which involve introducing additional trainable modules into the original frozen backbone, such as (Houlsby et al., 2019; He et al., 2021; Karimi Mahabadi et al., 2021; mahabadi et…\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "fd329474224ecfd095a41615a6d72f676838ab97cbdcdbc3172255057ae40994"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3166140588",
-      "dst": "openalex:W4402667063",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「Multimodal Instruction Tuning w…」(2024) は 「Compacter」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Parameter-efficient fine-tuning (PEFT) Parameter-efficient fine-tuning (PEFT) (Lee et al., 2019; Hu et al., 2021; Li and Liang, 2021; Karimi Mahabadi et al., 2021; Guo et al., 2021; Zaken et al., 2022) strategies have become key in efficie…\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "3f34adb81ba67de2c4c18a45e1dca82f01e3f0445198247eedcd4d6abb878493"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3166140588",
-      "dst": "openalex:W4402916137",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「SuperLoRA: Parameter-Efficient Unified Adaptation for Large…」(2024) は「Compacter: Efficient Low-Rank Hypercomplex Adapter Layers」(2021) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "openalex",
-          "kind": "citation-list",
-          "sha256": "3b46fa0cdfd0732aa030ece33be0339e59e4752f66e6c2fba2424976943aaa5a"
-        },
-        "classification": {
-          "method": "api_citation",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3166140588",
-      "dst": "openalex:W7133196644",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.7,
-      "confidence": 0.7,
-      "rationale": "「LST」(2022) は 「Compacter」(2021) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"The training and evaluation process follows the setup used by Mahabadi et al. [40].\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "e06943550e6a7bd9017ba4c301a3ea7ad60860fe21b307d696214e0b9a195453"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3166140588",
-      "dst": "openalex:W7133233472",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「QLoRA」(2023) は 「Compacter」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "4effd74a9ad00aff99098940a9527f85ec6cd4382a19413e3d103974eff316f1"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
       "src": "openalex:W3168867926",
       "dst": "openalex:W4307934937",
       "rel": "baseline_only",
@@ -3242,6 +2507,33 @@
           "source": "semantic_scholar",
           "kind": "citation-context",
           "sha256": "1813390788bc68b9923ad8e3cd936474ea5322eba8affe9482e5ff2415fb21b2"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3168867926",
+      "dst": "openalex:W4385292177",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「LoraHub」(2023) は 「LoRA」(2021) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"LoRA is a parameter-efficient fine-tuning method (Hu et al., 2022), facilitates the adaptation of LLMs using lightweight modules, eliminating the need for fine-tuning the entire weights.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "89e96f6a6302f366aa7f01996d1384f0c2bd541487a355ca695b9d1edc752e70"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -3524,33 +2816,6 @@
     },
     {
       "src": "openalex:W3168867926",
-      "dst": "openalex:W4389524340",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.75,
-      "confidence": 0.75,
-      "rationale": "「Sparse Low-rank Adaptation of P…」(2023) は 「LoRA Fine-Tuning of a 3B Code L…」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "3a5260e94e00b08248b9fdd76931b721c8ec3806cd04d18809dd6bc2d5a49f1b"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3168867926",
       "dst": "openalex:W4390529411",
       "rel": "baseline_only",
       "relation": "baseline_only",
@@ -3647,33 +2912,6 @@
           "source": "semantic_scholar",
           "kind": "citation-context",
           "sha256": "82b1d0f26b4920179b95141aa9264f843fe47e6b00e73cf0ace2f54afb85cc9c"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3168867926",
-      "dst": "openalex:W4393152647",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.75,
-      "confidence": 0.75,
-      "rationale": "「MELO」(2024) は 「LoRA Fine-Tuning of a 3B Code L…」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "932a42680bddabf8c7664dffcf1ca602888704d1434d496df9b6e04118fcf072"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -3878,9 +3116,9 @@
       "dst": "openalex:W4402704566",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Multi-Task Dense Prediction via Mixture of Low-Rank Experts」(2024) は「LoRA Fine-Tuning of a 3B Code LLM for Algorithmic Efficiency」(2021) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Multi-Task Dense Prediction via…」(2024) は 「LoRA Fine-Tuning of a 3B Code L…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We take inspiration from LoRA [22] and adopt low-rank convolution which is a low-rank format of a vanilla convolution.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -3888,11 +3126,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "ba4064ae4da0c527490ae998648512adcad2effeeeb55a22bc0858ab51aa2b3c"
+          "kind": "citation-context",
+          "sha256": "78998973c200f192ae7384fd33408293a4fada89b5878a774c6b7d8c948ca35d"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -3944,33 +3182,6 @@
           "source": "semantic_scholar",
           "kind": "citation-context",
           "sha256": "95331f75bfb95938400a99710c8ad0686c3d0f8be89864fccf647c7277cc80bd"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3168867926",
-      "dst": "openalex:W4412930153",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「Accurate and Efficient Fine-Tun…」(2025) は 「LoRA Fine-Tuning of a 3B Code L…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Subsequently, LoRA (Hu et al., 2021) is applied for Parameter-Efficient Fine-Tuning (PEFT), introducing a small number of new learnable parameters while keeping most pre-trained parameters fixed, thereby reducing the memory needed for para…\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "f64eaa09ccdcc4ed6fd858b37ffc72eb4bc0f8b9f33e11dd57e5faa9510aa96a"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -4199,6 +3410,33 @@
     },
     {
       "src": "openalex:W4307934937",
+      "dst": "openalex:W4385292177",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「LoraHub」(2023) は 「AdaMix」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"This technique has proven instrumental in numerous domains, such as natural language processing and computer vision (Jacobs et al., 1991; Shazeer et al., 2017; Du et al., 2022; Zhang et al., 2022; Wang et al., 2022; crumb, 2023).\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "f08522864014011322fdee5317d6c2d85a538b4f004eca4054af72fa8dd69e03"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4307934937",
       "dst": "openalex:W4385573520",
       "rel": "baseline_only",
       "relation": "baseline_only",
@@ -4280,33 +3518,6 @@
     },
     {
       "src": "openalex:W4307934937",
-      "dst": "openalex:W4406658468",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Aggregating Low Rank Adapters in Federated Fine-Tuning」(2024) は「AdaMix: Mixture-of-Adaptations for Parameter-efficient Mode…」(2022) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-list",
-          "sha256": "f411d3584c739b94fa45ab1dbf21c7aa76c34a6485fcc0a430b2125bc1debe54"
-        },
-        "classification": {
-          "method": "api_citation",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4307934937",
       "dst": "openalex:W4415797461",
       "rel": "baseline_only",
       "relation": "baseline_only",
@@ -4325,33 +3536,6 @@
         },
         "classification": {
           "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4307934937",
-      "dst": "openalex:W7150881103",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Fine-tuning Large Language Models with Limited Data: A Surv…」(2026) は「AdaMix: Mixture-of-Adaptations for Parameter-efficient Mode…」(2022) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "c7dd796057cba199d284e29645f0e0bc41134c45ab87f2fba693a659f35a7fe8"
-        },
-        "classification": {
-          "method": "citation_heuristic",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -4402,7 +3586,34 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "5d76af5f4ebc30b1cfa9f29deef93a96eac0f1f6660cdfa54c3756fb05a3fe91"
+          "sha256": "e8e79012f1f82a1e5d48cc7003468c287616254839fd842c689bee980d882625"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4330338093",
+      "dst": "openalex:W4387389928",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「NOLA: Compressing LoRA using Linear Combination of Random B…」(2023) は「AdaLoRA: Adaptive Budget Allocation for Parameter-Efficient…」(2023) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "96ab7e8923683cf0fcab4fc1395854aa36f8d80343039296142f28112fee4687"
         },
         "classification": {
           "method": "api_citation",
@@ -4510,7 +3721,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "e4bb4364ce77356df6882dd6bfa2f0de77ac6b228ccf022ce017a921c359f336"
+          "sha256": "8aa954ef25985ac0a213b54307e96191683bb7e5b939707927c28754dc5cb76f"
         },
         "classification": {
           "method": "api_citation",
@@ -4577,33 +3788,6 @@
     },
     {
       "src": "openalex:W4330338093",
-      "dst": "openalex:W4389524340",
-      "rel": "contrasts",
-      "relation": "contrasts",
-      "conf": 0.7,
-      "confidence": 0.7,
-      "rationale": "「Sparse Low-rank Adaptation of P…」(2023) は 「AdaLoRA」(2023) と異なる手法を取ると述べている（arXiv HTML（arXiv:2311.11696v1）の本文の引用文から規則で判定）。引用文: \"Inspired alike by SVD decomposition, our approach SoRA differs from the preceding work AdaLoRA (Zhang et al., 2023) in the following sense.\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "arxiv_html",
-          "kind": "citation-context",
-          "sha256": "5649c8adefc2f11fbfcfd3f16d79cb69f5f9853feb6eefef7bea421a1b856915"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4330338093",
       "dst": "openalex:W4390529411",
       "rel": "baseline_only",
       "relation": "baseline_only",
@@ -4645,7 +3829,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "ca2f15163b6d2c24d419453a75b6da3695d4eef3927cc6d9f4d1baa88c0e6dc3"
+          "sha256": "d26ab30a760aae845b0a31a928ce00e33f639417c9f40d679b4d25c9ea433734"
         },
         "classification": {
           "method": "api_citation",
@@ -4672,7 +3856,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "79ec91d922730f087b485f4cde2c3e6a5e4a8f8afab5b3b2b9c730431a9d6fcb"
+          "sha256": "6ecd317ba92129e012ab77274bdaa79e0caf5055c5708327d110ebd9c19a5b0f"
         },
         "classification": {
           "method": "api_citation",
@@ -4703,33 +3887,6 @@
         },
         "classification": {
           "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4330338093",
-      "dst": "openalex:W4393152647",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「MELO: Enhancing Model Editing with Neuron-Indexed Dynamic L…」(2024) は「AdaLoRA: Adaptive Budget Allocation for Parameter-Efficient…」(2023) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-list",
-          "sha256": "9bcec138ab64b9d27e6d2cb4265aa848121986631f48528551c549ec17999ea7"
-        },
-        "classification": {
-          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -4780,10 +3937,37 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "9ebb564b490c0078a26fb89ce1866c67daed0df53298dba17cbb6e9169c30b01"
+          "sha256": "3114da5e300b0035032fed38ae1137f23a439cbcd8e16e7948a910820225c3b2"
         },
         "classification": {
           "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4330338093",
+      "dst": "openalex:W4401042872",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Tied-LoRA」(2024) は 「AdaLoRA」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"AdaLoRA (Zhang et al., 2023) introduces dynamic rank adjustment for the low-rank matrices during the fine-tuning process.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "86dc5cce5e1f667c9067601bfd271920033b705e278138ab1cb2083eb743c363"
+        },
+        "classification": {
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -4838,33 +4022,6 @@
         },
         "classification": {
           "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4330338093",
-      "dst": "openalex:W4411232654",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Speaker Adaptive Mixture of Weight-Decomposed LoRA Experts …」(2025) は「AdaLoRA: Adaptive Budget Allocation for Parameter-Efficient…」(2023) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "openalex",
-          "kind": "citation-list",
-          "sha256": "b083dd47bef77ec2f34dc3d8ad7717c5f71482499b3f5a58d38ba674b161b6c6"
-        },
-        "classification": {
-          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -5036,33 +4193,6 @@
     },
     {
       "src": "openalex:W4380715573",
-      "dst": "openalex:W4391021820",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「Low-Rank Adaptation of Large La…」(2023) は 「One-for-All」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "e6336616bf56431da79c4b016c3074fc8879d052d11631519a328d680072de24"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4380715573",
       "dst": "openalex:W4393027113",
       "rel": "baseline_only",
       "relation": "baseline_only",
@@ -5078,6 +4208,33 @@
           "source": "semantic_scholar",
           "kind": "citation-context",
           "sha256": "87c6cd565575af154c8f8f16b5e92a6b9fd3502bb4654716c4cd86928351fd68"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4380715573",
+      "dst": "openalex:W4401042872",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Tied-LoRA」(2024) は 「One-for-All」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Chavan et al. (2023) combined the adapter tuning with LoRA to derive a generalized framework that utilized both methods for increased flexibility and capability across a wide variety of tasks and datasets.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "dcd0c8a8c7c95cc240250ca5e8a0468fa2c789fe61100a2761a049405cde7238"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -5186,6 +4343,60 @@
           "source": "semantic_scholar",
           "kind": "citation-context",
           "sha256": "087a6085c04da23c7f0b9e44380a2c4a813bf60435ac437a2ce92b14933848c0"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4385292177",
+      "dst": "openalex:W4388963442",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「ComPEFT」(2023) は 「LoraHub」(2023) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"In addition, we show (1) that ComPEFT applied to LoRA and (IA) 3 is Pareto-optimal in terms of storage costs vs. performance compared to a wide range of existing, (2) the importance of the components of\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "781480a6f3c6e28fac1cd3ef77166ea7f9e48b8240298ca1041d31fe8567b77c"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4385573520",
+      "dst": "openalex:W4361230739",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.65,
+      "confidence": 0.65,
+      "rationale": "「Scaling Down to Scale Up」(2023) は 「SparseAdapter」(2022) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Adapters (Houlsby et al., 2019) 0.1 - 6 0.1 - 6 yes yes yes AdaMix (Wang et al., 2022) 0.1 - 0.2 0.1 - 0.2 yes no no SparseAdapter (He et al., 2022b) 2.0 2.0 yes no no BitFit (Ben-Zaken et al., 2021) 0.05 - 0.1 0.05 - 0.1 yes yes yes DiffP…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "7980064b47ca6f7dcfe695e5ec8a48d55491887a610dfacb8ad073a9a38fd317"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -5321,6 +4532,33 @@
           "source": "openalex",
           "kind": "citation-list",
           "sha256": "c7444b7a03d093c40fa54991bcbb3872254bbc5b9788f4e52707d65613d32340"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4385681736",
+      "dst": "openalex:W4385292177",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「LoraHub: Efficient Cross-Task Generalization via Dynamic Lo…」(2023) は「LoRA-FA: Efficient and Effective Low Rank Representation Fi…」(2023) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "5f7fa315720ef648b6a02293a9d83789d228cbf4ec6fdfed0679425af49fd0dd"
         },
         "classification": {
           "method": "api_citation",
@@ -5494,33 +4732,6 @@
       }
     },
     {
-      "src": "openalex:W4385848613",
-      "dst": "openalex:W4408326133",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Federated Low-Rank Adaptation for Large Language Model Fine…」(2024) は「SLoRA: Federated Parameter Efficient Fine-Tuning of Languag…」(2023) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "openalex",
-          "kind": "citation-list",
-          "sha256": "5dc7c584c69741d9d24777db3abbdc49d37605577418eeffd2e1c2202ad82161"
-        },
-        "classification": {
-          "method": "api_citation",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
       "src": "openalex:W4386355389",
       "dst": "openalex:W4394029298",
       "rel": "baseline_only",
@@ -5617,7 +4828,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "3570273f7238a37acb610b3cf7a98bb68bd9abc7375a17904962ea1cf49ffb64"
+          "sha256": "7462bf5d39f96f1dff583bb1a0f4ca2b46f6f37b6bbb089d8abb36a2fef673b5"
         },
         "classification": {
           "method": "api_citation",
@@ -5644,7 +4855,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "45d3f74e2737c60cbdfe89bf17a8fcca682a1b43834ecb836a097d84a21e2735"
+          "sha256": "35d7972113ce9fb50d6bc00012b96e16c2089291329ced342284e488aa06de8f"
         },
         "classification": {
           "method": "api_citation",
@@ -5672,60 +4883,6 @@
           "source": "semantic_scholar",
           "kind": "citation-context",
           "sha256": "d1b795f54498e4bde153b90e2711bcbab92e425bd4819b09c4b4091dd24b4fa4"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4386566659",
-      "dst": "openalex:W4391021820",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「Low-Rank Adaptation of Large La…」(2023) は 「DyLoRA」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"For example, [22] explores an automatic way to select the optimal rank value of LoRA matrices.\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "7758810139db64dea7a058b766d012674be7ada612fbe467931296c119bebab9"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4386566659",
-      "dst": "openalex:W4393152647",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.7,
-      "confidence": 0.7,
-      "rationale": "「MELO」(2024) は 「DyLoRA」(2023) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Inspired by the prior work of DyLoRA (Valipour et al. 2023), we explore to adapt dynamic LoRA to the sequential editing task, which can be well trained on partial ranks instead of the entire module.\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "f274579eb20099870904b30e4fe2fda381f73baea8e8821e9cd1495dda6a91f0"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -5846,114 +5003,6 @@
     },
     {
       "src": "openalex:W4386566659",
-      "dst": "openalex:W4406812141",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「Activation-Guided Low-Rank Para…」(2025) は 「DyLoRA」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"DyLoRA [6] allows the rank to change dynamically during training, adapting to the complexity of the task and potentially finding a more optimal trade-off between parameter count and model performance.\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "77370e73f86ee0cd0a151756e7ce36ff530a1df9182f2661de65d7d3658eb483"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4386566659",
-      "dst": "openalex:W4411232654",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Speaker Adaptive Mixture of Weight-Decomposed LoRA Experts …」(2025) は「DyLoRA: Parameter-Efficient Tuning of Pre-trained Models us…」(2023) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "openalex",
-          "kind": "citation-list",
-          "sha256": "54012becef0f97373e684afd86610fdb96c02d6a8d8970dc8acd37600cdbbf7c"
-        },
-        "classification": {
-          "method": "api_citation",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4386566659",
-      "dst": "openalex:W4412930153",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Accurate and Efficient Fine-Tuning of Quantized Large Langu…」(2025) は「DyLoRA: Parameter-Efficient Tuning of Pre-trained Models us…」(2023) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-list",
-          "sha256": "fb04137ea60259d67d0c52536db02e0d0adf9389891904d7b8dc26fb232ee83d"
-        },
-        "classification": {
-          "method": "api_citation",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4386566659",
-      "dst": "openalex:W4413146569",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「CL-LoRA」(2025) は 「DyLoRA」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "1f57133af2380f8d33177dc1c2f0a3399c7ae8d02b47468a5a2181a181f49c63"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4386566659",
       "dst": "openalex:W7161301840",
       "rel": "baseline_only",
       "relation": "baseline_only",
@@ -5968,7 +5017,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "59a878d8382daed7e9f52e5374f62b320d9803c5bd7865e5e4789f35e13027b9"
+          "sha256": "7874aa19cbbd7598939122bac01d1e2f41e8e32fdb85c03cc67cc62990c1972d"
         },
         "classification": {
           "method": "api_citation",
@@ -5995,7 +5044,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "8dfe319823239de7391178363e5decfb95aaf6a817c42711f5b4869f7fba687d"
+          "sha256": "c5daeeb3286f76f38aa1c8125f75ea441af6c46b2a01f8957c70cca8c4685b50"
         },
         "classification": {
           "method": "api_citation",
@@ -6022,7 +5071,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "69dcdf15229c6fc989ffc4dc99c1eb8ebc997b7ed008356f42db301d8fe901b7"
+          "sha256": "0d54828b9943af1a060a346f8c3d8ab0851c1362abd93f682fdc23170c27a4f6"
         },
         "classification": {
           "method": "api_citation",
@@ -6088,13 +5137,13 @@
       }
     },
     {
-      "src": "openalex:W4387151368",
-      "dst": "openalex:W4391871574",
+      "src": "openalex:W4387156572",
+      "dst": "openalex:W4387389928",
       "rel": "baseline_only",
       "relation": "baseline_only",
       "conf": 0.6,
       "confidence": 0.6,
-      "rationale": "「DoRA」(2024) は 「Navigating Text-To-Image Custom…」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"(Yeh et al., 2023) introduces a unified LoRA family framework for Stable diffusion.\"",
+      "rationale": "「NOLA」(2023) は 「QA-LoRA」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -6103,61 +5152,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "584c597ef505a9e8b6b42638d1cfd6d580e4a665eaeaf41198e9f2c9e577ac43"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4387151368",
-      "dst": "openalex:W4402916137",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「SuperLoRA: Parameter-Efficient Unified Adaptation for Large…」(2024) は「Navigating Text-To-Image Customization: From LyCORIS Fine-T…」(2023) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "openalex",
-          "kind": "citation-list",
-          "sha256": "fc38b806340debd10f50ae99b27e036f238e9a738c29d797b4ba5eefc12a5a3e"
-        },
-        "classification": {
-          "method": "api_citation",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4387151368",
-      "dst": "openalex:W4404782602",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.75,
-      "confidence": 0.75,
-      "rationale": "「Mixture-of-Subspaces in Low-Ran…」(2024) は 「Navigating Text-To-Image Custom…」(2023) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Besides LoRA (Hu et al., 2022), we also compare MoSLoRA with various base-lines, including: 1) LoKr (Yeh et al., 2023) which employs Kronecker products for matrix decomposition of AB ; 2) LoHa (Yeh et al., 2023) which decomposes the vanill…\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "9b7fce6736f7a42af640b71c977cd481016df62d0006f8375feac8aa21956e7f"
+          "sha256": "1c4d1b31ebce00d37ec6dd477339cbded5fa05243ef4b8ec50393b0fb9800380"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -6188,60 +5183,6 @@
         },
         "classification": {
           "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4387156572",
-      "dst": "openalex:W4409262181",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「Weight Copy and Low-Rank Adapta…」(2025) は 「QA-LoRA」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "ce36686804691f266a966de8c0bebb6858eabcf7a5ec6fa7bbb664578cd23624"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4387156572",
-      "dst": "openalex:W4412930153",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Accurate and Efficient Fine-Tuning of Quantized Large Langu…」(2025) は「QA-LoRA: Quantization-Aware Low-Rank Adaptation of Large La…」(2023) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-list",
-          "sha256": "bd0fd07dd2f93773217c4f820e4cdc6086df6dc183f13cc4a3f3f06a19797d38"
-        },
-        "classification": {
-          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -6385,33 +5326,6 @@
       }
     },
     {
-      "src": "openalex:W4387686975",
-      "dst": "openalex:W4411232654",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Speaker Adaptive Mixture of Weight-Decomposed LoRA Experts …」(2025) は「LoftQ: LoRA-Fine-Tuning-Aware Quantization for Large Langua…」(2023) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "openalex",
-          "kind": "citation-list",
-          "sha256": "53614797857ba6929a3e7c7b059c7f6db5ae802558eadef74e643a61e96f167f"
-        },
-        "classification": {
-          "method": "api_citation",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
       "src": "openalex:W4387702340",
       "dst": "openalex:W4403753254",
       "rel": "baseline_only",
@@ -6481,7 +5395,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "43fb54cc5f81b63f5dd0ccd8b82c0c120e54ee9368299ffad138f8dcffdae566"
+          "sha256": "85062e46dc24658bb679d8bd38a4cce18f7d825c78a0d31aabe6f102e8044754"
         },
         "classification": {
           "method": "api_citation",
@@ -6548,6 +5462,33 @@
     },
     {
       "src": "openalex:W4387800062",
+      "dst": "openalex:W4401042872",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Tied-LoRA」(2024) は 「VeRA」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Kopiczko et al. (2023) proposes the VeRA method the freezes randomly initialized projection matrices and introduces trainable scaling vectors that vary across layers.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "585334b79f27d6b5573e08def8271f68910796bf22384a73316064d91e0e636b"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4387800062",
       "dst": "openalex:W4404782602",
       "rel": "baseline_only",
       "relation": "baseline_only",
@@ -6563,33 +5504,6 @@
           "source": "semantic_scholar",
           "kind": "citation-context",
           "sha256": "c36b02edb4d1ea7895dc6c328f9021c70c6cbf463d64af576c8b4295c9e310df"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4387800062",
-      "dst": "openalex:W4406812141",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.75,
-      "confidence": 0.75,
-      "rationale": "「Activation-Guided Low-Rank Para…」(2025) は 「VeRA」(2023) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Vector-based Random Matrix Adaptation (VeRA) [27] utilizes shared low-rank matrix pairs and scaling vectors to reduce trainable parameters compared to standard LoRA.\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "8dd8ebc7447a18bfad57c086c28cc995610e7f78d8ef753b11e802697a713c95"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -6620,33 +5534,6 @@
         },
         "classification": {
           "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4387800062",
-      "dst": "openalex:W4411232654",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Speaker Adaptive Mixture of Weight-Decomposed LoRA Experts …」(2025) は「VeRA: Vector-based Random Matrix Adaptation」(2023) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "openalex",
-          "kind": "citation-list",
-          "sha256": "5cbc9ace8bbd16719d33cfb23e16b43cc08a53528a346deb6515dc4d3a944076"
-        },
-        "classification": {
-          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -6724,34 +5611,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "eebfcf123bb5c6b8ec2d667201e66c46f7f2308804ccc0e4149dcd551b86ded5"
-        },
-        "classification": {
-          "method": "api_citation",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4387994502",
-      "dst": "openalex:W4406812141",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Activation-Guided Low-Rank Parameter Adaptation for Efficie…」(2025) は「The Expressive Power of Low-Rank Adaptation」(2023) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "openalex",
-          "kind": "citation-list",
-          "sha256": "7aa4d9c1f5bc5c9eedec7b1d0ce0a921f617fe673dea9cd7859d1173495c7be7"
+          "sha256": "0e5522ae02a010bca9070e871d729d1bbc9b84fbdf2dc0c12751bf6f0c3ed267"
         },
         "classification": {
           "method": "api_citation",
@@ -6836,33 +5696,6 @@
         },
         "classification": {
           "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4388514131",
-      "dst": "openalex:W4406812141",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Activation-Guided Low-Rank Parameter Adaptation for Efficie…」(2025) は「S-LoRA: Serving Thousands of Concurrent LoRA Adapters」(2023) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-list",
-          "sha256": "87fe219a1b06f22a3e3aa13dc3bb1d9c0a505ab79b24baf706170db2806c63cd"
-        },
-        "classification": {
-          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -7115,33 +5948,6 @@
     },
     {
       "src": "openalex:W4389500716",
-      "dst": "openalex:W4411232654",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Speaker Adaptive Mixture of Weight-Decomposed LoRA Experts …」(2025) は「A Rank Stabilization Scaling Factor for Fine-Tuning with Lo…」(2023) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "openalex",
-          "kind": "citation-list",
-          "sha256": "45e4cf58299061505d7525b987512922ed261b583f2e7ff348d87cd58b70e71a"
-        },
-        "classification": {
-          "method": "api_citation",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4389500716",
       "dst": "openalex:W4415797461",
       "rel": "baseline_only",
       "relation": "baseline_only",
@@ -7196,114 +6002,6 @@
     },
     {
       "src": "openalex:W4389524340",
-      "dst": "openalex:W4406812141",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Activation-Guided Low-Rank Parameter Adaptation for Efficie…」(2025) は「Sparse Low-rank Adaptation of Pre-trained Language Models」(2023) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-list",
-          "sha256": "519b15fa27ecf49f3c4258fd35daabc142c7ddbdba139665570f25aa21d1e5e8"
-        },
-        "classification": {
-          "method": "api_citation",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4389524340",
-      "dst": "openalex:W4411232654",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Speaker Adaptive Mixture of Weight-Decomposed LoRA Experts …」(2025) は「Sparse Low-rank Adaptation of Pre-trained Language Models」(2023) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "openalex",
-          "kind": "citation-list",
-          "sha256": "7b417a305e4ed9a745a963a1b278c8e3d0181ceca57e24e881a4b5b6bb39cc95"
-        },
-        "classification": {
-          "method": "api_citation",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4389524340",
-      "dst": "openalex:W4414197283",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Distillation-Supervised Convolutional Low-Rank Adaptation f…」(2025) は「Sparse Low-rank Adaptation of Pre-trained Language Models」(2023) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-list",
-          "sha256": "ce7d1970ce4ec0400213ab416d2235bf1653f134fb9934cef1f72146e19e89f9"
-        },
-        "classification": {
-          "method": "api_citation",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4389524340",
-      "dst": "openalex:W7150881103",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Fine-tuning Large Language Models with Limited Data: A Surv…」(2026) は「Sparse Low-rank Adaptation of Pre-trained Language Models」(2023) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "ad3ff01ee2f4bdfe81a587de9104945ba89e5305dee806a66c1513d5b93e110d"
-        },
-        "classification": {
-          "method": "citation_heuristic",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4389524340",
       "dst": "openalex:W7155076743",
       "rel": "baseline_only",
       "relation": "baseline_only",
@@ -7318,7 +6016,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "cd09e40427a028e5b4550620789fdf60e7f3c22f32aad75b3c392e124f1a640c"
+          "sha256": "096e3dee2e051531747d65e119efb6c9791c09c039845e6e99925a0a1428e327"
         },
         "classification": {
           "method": "api_citation",
@@ -7345,7 +6043,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "849732571cafea6c4ad7c249b032a40149ae888832d22dbf05b3c4600288b278"
+          "sha256": "8c2ab384e04116b9d5489bc58f156b0c60cdce36dfca375a28d6ba2c6d805927"
         },
         "classification": {
           "method": "api_citation",
@@ -7372,7 +6070,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "65b4f19867988c64b938af89be9b5e8514697241c9a75711a9da875d2090249e"
+          "sha256": "65d940a98680659fcbe230e015a61f5a7bce6d74dc9567e8303794d64c5a67d5"
         },
         "classification": {
           "method": "api_citation",
@@ -7574,33 +6272,6 @@
     },
     {
       "src": "openalex:W4391591528",
-      "dst": "openalex:W4406658468",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Aggregating Low Rank Adapters in Federated Fine-Tuning」(2024) は「Flora: Low-Rank Adapters Are Secretly Gradient Compressors」(2024) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-list",
-          "sha256": "536bf5e6b3af53f2286a479f213aabf9afb2222c772b80252b1e58460cd59644"
-        },
-        "classification": {
-          "method": "api_citation",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4391591528",
       "dst": "openalex:W4407759136",
       "rel": "baseline_only",
       "relation": "baseline_only",
@@ -7736,33 +6407,6 @@
     },
     {
       "src": "openalex:W4391871574",
-      "dst": "openalex:W4406812141",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Activation-Guided Low-Rank Parameter Adaptation for Efficie…」(2025) は「DoRA: Weight-Decomposed Low-Rank Adaptation」(2024) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-list",
-          "sha256": "05d896eaa9e580ef9f658d67498dfcbedaa5fd789745cbaa6a4345ec5cf0d1e7"
-        },
-        "classification": {
-          "method": "api_citation",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4391871574",
       "dst": "openalex:W4407759136",
       "rel": "baseline_only",
       "relation": "baseline_only",
@@ -7777,7 +6421,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "56b955f4601d57caed83727b9066c7d589f92a787034ca2c80eb2a0007ae094f"
+          "sha256": "bd3102071b120ef1c795e31732d6716091e0c32efa6572afdebaeeb6e66019d8"
         },
         "classification": {
           "method": "api_citation",
@@ -7808,60 +6452,6 @@
         },
         "classification": {
           "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4391871574",
-      "dst": "openalex:W4409262181",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Weight Copy and Low-Rank Adaptation for Few-Shot Distillati…」(2025) は「DoRA: Weight-Decomposed Low-Rank Adaptation」(2024) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-list",
-          "sha256": "af6b92104231f1e69d774d409081319c1f1a4c6c7cbf192c36a99a7d50261a5d"
-        },
-        "classification": {
-          "method": "api_citation",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4391871574",
-      "dst": "openalex:W4411232654",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Speaker Adaptive Mixture of Weight-Decomposed LoRA Experts …」(2025) は「DoRA: Weight-Decomposed Low-Rank Adaptation」(2024) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "openalex",
-          "kind": "citation-list",
-          "sha256": "22817abe313e4b53773a6d7daf41c47f4435a1effa677c47d8d8a42f8a95f988"
-        },
-        "classification": {
-          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -7979,33 +6569,6 @@
     },
     {
       "src": "openalex:W4391988255",
-      "dst": "openalex:W4402916137",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「SuperLoRA: Parameter-Efficient Unified Adaptation for Large…」(2024) は「LoRA+: Efficient Low Rank Adaptation of Large Models」(2024) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "openalex",
-          "kind": "citation-list",
-          "sha256": "0af5173ad4084d52877d8640a1b096998ad7c1fd72b0c45fc0a3ce012a6c98b5"
-        },
-        "classification": {
-          "method": "api_citation",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4391988255",
       "dst": "openalex:W4404782602",
       "rel": "baseline_only",
       "relation": "baseline_only",
@@ -8033,33 +6596,6 @@
     },
     {
       "src": "openalex:W4391988255",
-      "dst": "openalex:W4406658468",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「Aggregating Low Rank Adapters i…」(2024) は 「LoRA+」(2024) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Also recent research [10] found out that the A matrix contributes less for smaller learning rates, i.e. in later iteration.\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "41b93014e317d52028e40d09addc0cada7e84903386ff9fcee0db17ed587ab01"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4391988255",
       "dst": "openalex:W4407759136",
       "rel": "baseline_only",
       "relation": "baseline_only",
@@ -8075,87 +6611,6 @@
           "source": "semantic_scholar",
           "kind": "citation-context",
           "sha256": "b23157ea601b9248dfdd00d0ee8c1a9a4798e7c47a0460cc274ce3dc65c9a319"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4391988255",
-      "dst": "openalex:W4411232654",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Speaker Adaptive Mixture of Weight-Decomposed LoRA Experts …」(2025) は「LoRA+: Efficient Low Rank Adaptation of Large Models」(2024) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "openalex",
-          "kind": "citation-list",
-          "sha256": "a21706a9a85a342c2bedc5fb99f904544232bc798b259f76ded3c1f300e6b289"
-        },
-        "classification": {
-          "method": "api_citation",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4391988255",
-      "dst": "openalex:W4412403848",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「Low Tensor-Rank Adaptation of K…」(2025) は 「LoRA+」(2024) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Then, the change in function values after one step of gradient descent satisﬁes where where v t := ∂ L t ∂ Ψ ft = Ψ t, ft ( x ) − y denotes the partial derivative of the loss with respect to the output of the ﬁne-tuned model.\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "a5cd0beda90920b570ad751a7ce069d279f931cc499e0d8cd7daf007583c4318"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4391988255",
-      "dst": "openalex:W4412930153",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「Accurate and Efficient Fine-Tun…」(2025) は 「LoRA+」(2024) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Recent studies have further advanced LoRA (Hayou et al., 2024; Jiang et al., 2024; Zi et al., 2023; Zhang et al., 2023b; Biderman et al., 2024; Tian et al., 2024) and attempted to combine it with model compression techniques (Zhang et al.,…\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "30589dd10f26abccd234551b797e4da20ac5a6fe62d42ba08fc7296a62d31219"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -8240,33 +6695,6 @@
         },
         "classification": {
           "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4392270483",
-      "dst": "openalex:W4402916137",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「SuperLoRA: Parameter-Efficient Unified Adaptation for Large…」(2024) は「Asymmetry in Low-Rank Adapters of Foundation Models」(2024) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "openalex",
-          "kind": "citation-list",
-          "sha256": "e909253cee14aaae0f9f415cd6b6e681bc83ef2386f22f476daae948ea9385d7"
-        },
-        "classification": {
-          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -8464,60 +6892,6 @@
       }
     },
     {
-      "src": "openalex:W4393027113",
-      "dst": "openalex:W4406658468",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Aggregating Low Rank Adapters in Federated Fine-Tuning」(2024) は「Improving LoRA in Privacy-preserving Federated Learning」(2024) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-list",
-          "sha256": "b1f705e156960a7c45a2a165ed988da2b57b38c035f106ae0b2b285a23da1814"
-        },
-        "classification": {
-          "method": "api_citation",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4393027113",
-      "dst": "openalex:W4408326133",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Federated Low-Rank Adaptation for Large Language Model Fine…」(2024) は「Improving LoRA in Privacy-preserving Federated Learning」(2024) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "openalex",
-          "kind": "citation-list",
-          "sha256": "9f302dc007468017f7c1ed3e78c8a9ff4ae58872bf77236374df455453834b00"
-        },
-        "classification": {
-          "method": "api_citation",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
       "src": "openalex:W4393248290",
       "dst": "openalex:W4415797461",
       "rel": "baseline_only",
@@ -8641,7 +7015,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "c8e8fbafc77db273ca46f71f07e0e2a31c0e6418fd7cbaf02cbfff37eea7c80d"
+          "sha256": "230d4a9eaaa8f78346046ea16ff205f3f457211a538cec84f8bac5e2225b9618"
         },
         "classification": {
           "method": "api_citation",
@@ -8696,33 +7070,6 @@
           "source": "openalex",
           "kind": "citation-list",
           "sha256": "5ae9602d07cb630468812410cf8380f400e7d56fecc5bb2b9e33e53279f6189c"
-        },
-        "classification": {
-          "method": "api_citation",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4394029298",
-      "dst": "openalex:W7160115998",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Efficient Fine-Tuning of Large Models Via Nested Low-Rank A…」(2025) は「PiSSA: Principal Singular Values and Singular Vectors Adapt…」(2024) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "openalex",
-          "kind": "citation-list",
-          "sha256": "02c4cb5b383dc2a315f107bbc34f6b4db5a1ba03e2dc3a400370516a0765e08c"
         },
         "classification": {
           "method": "api_citation",
@@ -8924,33 +7271,6 @@
     },
     {
       "src": "openalex:W4397028161",
-      "dst": "openalex:W4412930153",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「Accurate and Efficient Fine-Tun…」(2025) は 「LoRA Learns Less and Forgets Le…」(2024) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Recent studies have further advanced LoRA (Hayou et al., 2024; Jiang et al., 2024; Zi et al., 2023; Zhang et al., 2023b; Biderman et al., 2024; Tian et al., 2024) and attempted to combine it with model compression techniques (Zhang et al.,…\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "aebf855cdbd146df70fc6b595da19f7c127f949960fd78cdf94a40a68275623a"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4397028161",
       "dst": "openalex:W4415797461",
       "rel": "baseline_only",
       "relation": "baseline_only",
@@ -9127,7 +7447,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "e07be1e81c472a6952ba3fb796e18186774af18e6d7318f8043151a0ce67c5df"
+          "sha256": "1037e7d55c2120fcc8a6d16d1265388309e25a2716d77ccc653b6f6b672e6bcc"
         },
         "classification": {
           "method": "api_citation",
@@ -9235,7 +7555,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "195f469f7b7dc690559bc0558e5d5473accdba7d31c61e411c93872a9e3f7573"
+          "sha256": "02f1fefb1bd004fbce28b9cc7d69796ff63cced2f5c3f64cfda979fe4f1febbc"
         },
         "classification": {
           "method": "api_citation",
@@ -9293,33 +7613,6 @@
         },
         "classification": {
           "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4402619439",
-      "dst": "openalex:W4411232654",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Speaker Adaptive Mixture of Weight-Decomposed LoRA Experts …」(2025) は「LoRA-Pro: Are Low-Rank Adapters Properly Optimized?」(2024) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "openalex",
-          "kind": "citation-list",
-          "sha256": "07be3989bd1d0c410c00824ed9bd9fee436d92d236c422a280ddf02c1718e0e9"
-        },
-        "classification": {
-          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -9410,33 +7703,6 @@
     },
     {
       "src": "openalex:W4402684331",
-      "dst": "openalex:W4406812141",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「Activation-Guided Low-Rank Para…」(2025) は 「AdaLomo」(2024) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Optimization of LoRA has been actively researched, with adaptive methods like AdaLomo [23] enhancing performance in large language models.\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "51c63f86bf91a36e4010aa061422704e61298cb3a5218c03dcc080d483fa60ef"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4402684331",
       "dst": "openalex:W4407759136",
       "rel": "baseline_only",
       "relation": "baseline_only",
@@ -9451,7 +7717,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "5937916a6b993e65bdfda27eb8f8c63c23b4710f8bfdbfa7e01f794a015224f8"
+          "sha256": "26b270743ee742138bfe0c4cf62908531e4c5f6e160512948153b0b498463ed0"
         },
         "classification": {
           "method": "api_citation",
@@ -9586,7 +7852,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "bc862c1d2c9944b1809e53e2f37d69e88345e28df31cac4d02d879e41d1f1b55"
+          "sha256": "abc5e740b485f486fb0d26282f117e3138a53ecb3426dafa38d8f6cf50618f43"
         },
         "classification": {
           "method": "api_citation",
@@ -9613,7 +7879,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "8a0220eb000e84cfecbae63f26ef27f4779fad5c63f0f4aaa6437e06843a5696"
+          "sha256": "121091b4871d031f7d636fa84bcb5f6988067fb9d3e559d2c0c05719494010fc"
         },
         "classification": {
           "method": "api_citation",
@@ -9694,34 +7960,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "3eb114798cd7623ddd69be152cc3f7daf1f62bce9621a27a2b6bf85b3605a493"
-        },
-        "classification": {
-          "method": "api_citation",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4404782602",
-      "dst": "openalex:W7160115998",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Efficient Fine-Tuning of Large Models Via Nested Low-Rank A…」(2025) は「Mixture-of-Subspaces in Low-Rank Adaptation」(2024) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "openalex",
-          "kind": "citation-list",
-          "sha256": "f4bc400865207530c4bd3804fd9f2cea58865cb88a41b9b932a42b32e1d4c0b5"
+          "sha256": "7230b60d6487857fd8a6f01bbead8abe044b86a9bb3e28a1b2018b5e4cc15037"
         },
         "classification": {
           "method": "api_citation",
@@ -9748,7 +7987,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "8f5cbac682cc8db5253b3da6dfa8779c288b9346c8e73421a6e26a73b0f12259"
+          "sha256": "0c8a8f2e39f831b254aca4b8fe4994baa580d97d53a30522e5292a9268ef6c97"
         },
         "classification": {
           "method": "api_citation",
@@ -9802,7 +8041,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "50d02b5ce2b62cd662653fcf5f92d75d612ba41e74363fff75affa22130ca250"
+          "sha256": "29d4fc7d4e4790e2200b5e77778b53bc2e75a5072cdbf07928e06c2bcdf3d27a"
         },
         "classification": {
           "method": "api_citation",
@@ -9860,60 +8099,6 @@
         },
         "classification": {
           "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4411990406",
-      "dst": "openalex:W4402916137",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「SuperLoRA: Parameter-Efficient Unified Adaptation for Large…」(2024) は「KronA: Parameter-Efficient Tuning with Kronecker Adapter」(2025) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "openalex",
-          "kind": "citation-list",
-          "sha256": "8c0e21dd68a78d16b1e13de8a930d3bea1a394d4e3e40040d970f03378e0eba5"
-        },
-        "classification": {
-          "method": "api_citation",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4411990406",
-      "dst": "openalex:W4411232654",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Speaker Adaptive Mixture of Weight-Decomposed LoRA Experts …」(2025) は「KronA: Parameter-Efficient Tuning with Kronecker Adapter」(2025) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "openalex",
-          "kind": "citation-list",
-          "sha256": "1feee7c3a4135487db3198e208ce044d282464ef1c9217a51c95c4b36fedfb07"
-        },
-        "classification": {
-          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -10022,33 +8207,6 @@
         },
         "classification": {
           "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4415797461",
-      "dst": "openalex:W4411232654",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Speaker Adaptive Mixture of Weight-Decomposed LoRA Experts …」(2025) は「LoRA-GA: Low-Rank Adaptation with Gradient Approximation」(2024) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "openalex",
-          "kind": "citation-list",
-          "sha256": "ece376ec5b23083eef825f896210b6974615fbc96df49184a022db4034d482c2"
-        },
-        "classification": {
-          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -10220,33 +8378,6 @@
     },
     {
       "src": "openalex:W4415799070",
-      "dst": "openalex:W4412930153",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Accurate and Efficient Fine-Tuning of Quantized Large Langu…」(2025) は「HydraLoRA: An Asymmetric LoRA Architecture for Efficient Fi…」(2024) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-list",
-          "sha256": "304086d78e7274eeeefeb1f6ab432b4beb25e88255df02047ff49b48db528e66"
-        },
-        "classification": {
-          "method": "api_citation",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W4415799070",
       "dst": "openalex:W7196960061",
       "rel": "baseline_only",
       "relation": "baseline_only",
@@ -10301,6 +8432,33 @@
     },
     {
       "src": "openalex:W7133196644",
+      "dst": "openalex:W4361230739",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Scaling Down to Scale Up」(2023) は 「LST」(2022) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"LST demonstrated a three-fold RAM reduction in ﬁne-tuning T5-Base compared to full ﬁne-tuning and a two-fold RAM usage reduction compared to LoRa (Section 10.2) with a small degradation in accuracy and outperforms these methods when contro…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "3df903f683551a00e7cc577cb76a4615b554c77518cf6b1af13703545c798faf"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7133196644",
       "dst": "openalex:W4384263459",
       "rel": "baseline_only",
       "relation": "baseline_only",
@@ -10315,10 +8473,37 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "737e40be38e43f8f0532c993ac946e096750888e2febf907acc8b6ae82394fa6"
+          "sha256": "f29c3542a7b1b299cfaac2d9fcb2baa334b9f2fb7d2ffc1361a5d10dd9aa27d4"
         },
         "classification": {
           "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7133196644",
+      "dst": "openalex:W4387389928",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「NOLA」(2023) は 「LST」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Ladder tuning (Sung et al., 2022a) reduce memory footprint in training by avoiding back-propagation through the main backbone.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "6c58770308738942fa6e563ab4ad2a1ebdbfb9224b135d66f220808b3dc8b2ec"
+        },
+        "classification": {
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -10585,7 +8770,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "ed872defa17b6ba9b54a47d1223f3744ef32493a1d3cc126ddd15df0233cad4f"
+          "sha256": "47ef244550e3cdf078255b75faa6986d2adae7650b340daa3b1843a99bb4ce2a"
         },
         "classification": {
           "method": "api_citation",
@@ -10801,7 +8986,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "b7a12103602924cabad87b85ddd5538390f161e52a9e8edaff877403f4619372"
+          "sha256": "043743f06a45c14547c54e283f32e1d08b9fe5b1706a42afa7ee348f22a543b1"
         },
         "classification": {
           "method": "api_citation",
@@ -11003,6 +9188,33 @@
     },
     {
       "src": "openalex:W7133233472",
+      "dst": "openalex:W4401042872",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Tied-LoRA」(2024) は 「QLoRA」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Tangential to the efforts that aim to reduce train-able parameters, QLoRA (Dettmers et al., 2023), significantly reduces the memory usage of LoRA using a 4-bit or 8-bit quantized base language model during training.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "93d7d806d7be147b7c2e940460bd62872041edeaff6969b45ad3de3fbf8fa919"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7133233472",
       "dst": "openalex:W4404782602",
       "rel": "baseline_only",
       "relation": "baseline_only",
@@ -11017,91 +9229,10 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "ba116c09a9e90b89cae1286df06fb5e60dcd92d2bcd009d8f056755f5b6f8ddc"
+          "sha256": "36c4f2cc18416f3f385de9bea1002aa4d7d11dc73f13543388a87d8d25a6af2a"
         },
         "classification": {
           "method": "api_citation",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W7133233472",
-      "dst": "openalex:W4408326133",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Federated Low-Rank Adaptation for Large Language Model Fine…」(2024) は「QLoRA: Efficient Finetuning of Quantized LLMs」(2023) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "openalex",
-          "kind": "citation-list",
-          "sha256": "4cb85322caa2f02e1d23c86d5c18ef326061c1dda642ee3908b04abf29649ef5"
-        },
-        "classification": {
-          "method": "api_citation",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W7133233472",
-      "dst": "openalex:W4411232654",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Speaker Adaptive Mixture of Weight-Decomposed LoRA Experts …」(2025) は「QLoRA: Efficient Finetuning of Quantized LLMs」(2023) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "openalex",
-          "kind": "citation-list",
-          "sha256": "d47748f800531f51146064436c424530418f60af2378110dd8301b083c7c6211"
-        },
-        "classification": {
-          "method": "api_citation",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W7133233472",
-      "dst": "openalex:W4412930153",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.75,
-      "confidence": 0.75,
-      "rationale": "「Accurate and Efficient Fine-Tun…」(2025) は 「QLoRA」(2023) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"For example, in the MMLU test, fine-tuning LLaMA-13B with such approaches leads to an accuracy drop of up to 1.3% compared to full fine-tuning (Dettmers et al., 2024).\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "59e33fde692b453e2afe5995fd78edc3ff554b0b4f20ce78d29a11d41a3abcac"
-        },
-        "classification": {
-          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -11125,7 +9256,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "4502e6dd6055f9e463cef0670e63ef6a28579997b33845d49edd5d12f11734b1"
+          "sha256": "54c4c6ff31584413cd55093a1487eea60c4f024529c567c31cb848d141676109"
         },
         "classification": {
           "method": "api_citation",
@@ -11206,7 +9337,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "a9091602bcecc5ee262cc669a16a6feb3e3fe67318a85d2b3121bd2c67fbdcab"
+          "sha256": "cc2085398fbda5ee411e88d54db0b0a2e6dd211b0394f87c356f9c00e618de71"
         },
         "classification": {
           "method": "api_citation",
@@ -11233,7 +9364,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "5517dc270ab75d0c5851caf810e5e7adca542c3f82b2541965acdae1dccc42c9"
+          "sha256": "9edf74044b55755420d1c2723f1c5e5631f130e11026d3e9a5bb9797fdde0836"
         },
         "classification": {
           "method": "api_citation",
@@ -11395,7 +9526,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "9b9d65cf285678137feae9d786e264a74353836082d7ac63f72ccaa23e65cbd4"
+          "sha256": "785ca5fcb86b0873028a651785f30d9fe06baaf38eb52538c74ad1f57507993b"
         },
         "classification": {
           "method": "api_citation",
@@ -11449,37 +9580,10 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "1c07b47cf4729611ee5fe543dad34c3818e0ded8589bd5b4da9c56e09b828688"
+          "sha256": "5b991d3ac5626ab3f1ba2ce3541603a248bf424c315c31c6e4753563b03a0010"
         },
         "classification": {
           "method": "api_citation",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W7133241318",
-      "dst": "openalex:W4412930153",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.75,
-      "confidence": 0.75,
-      "rationale": "「Accurate and Efficient Fine-Tun…」(2025) は 「Memory-Efficient Fine-Tuning of…」(2023) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We also compare with PEQA (Kim et al., 2024), which does not use LoRA but fine-tunes the quantized scaling instead.\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "449c32dfca1c943641bff02e6f5a253989d9c64e329673bd26950db80a33da12"
-        },
-        "classification": {
-          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -11527,7 +9631,6 @@
     ],
     "seeds": [
       "openalex:W3168867926",
-      "openalex:W4386566659",
       "openalex:W4391871574",
       "openalex:W4389524340",
       "openalex:W4415798642",
@@ -11535,19 +9638,19 @@
       "openalex:W4391988255",
       "openalex:W4415797461",
       "openalex:W4404782602",
+      "openalex:W4385292177",
       "openalex:W4393027113"
     ],
     "depth": 2,
     "since_year": 2018,
-    "generated_at": "2026-10-20T14:01:03.563000Z",
+    "generated_at": "2026-10-24T04:19:08.960000Z",
     "provenance_breakdown": {
-      "api_citation": 83,
-      "s2_context_rule": 235,
-      "citation_heuristic": 3
+      "s2_context_rule": 219,
+      "api_citation": 48
     },
     "completeness": {
       "complete": true,
-      "expansions_attempted": 85,
+      "expansions_attempted": 72,
       "expansions_failed": 0,
       "supplement_failures": []
     },
@@ -11559,11 +9662,11 @@
         "z_lo": 0,
         "z_hi": 1
       },
-      "pool_size": 432
+      "pool_size": 384
     },
     "canonical_seeds": [
       "openalex:W3168867926",
-      "openalex:W4386566659",
+      "openalex:W4385292177",
       "openalex:W4387156572",
       "openalex:W4393027113",
       "openalex:W4415798642"
