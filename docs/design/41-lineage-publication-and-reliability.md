@@ -722,3 +722,11 @@ RAG の系譜で見つかった 2 種類の誤りを、論文ごとの Semantic 
 - 落とす条件（すべて）: 種でも焦点でもない／被引用 30 未満／1 年以上前の論文／グラフの誰からも引用されない／辺に強い関係（extends・supersedes・contrasts・successor）がない。
 - 公開中の系譜への試算（落ちる数）: RAG 14/84、LoRA 10/91、MoE 3/21（Speechmoe2 ほか応用事例）、FlashAttention・ViT・GNN は 0。監査済みの 4 テーマは作り直さないので変わらない。
 - 1 回だけにする理由: 末端を落とすと別の節点が末端になるが、規則を予測できる形に保つため、その分は次の作り直しに任せる。
+
+### R2-46 実験の道具の説明は拡張ではない（2026-10-24）
+
+サイトから入力した Diffusion Models（21 論文、強い関係 3）の読み取りで見つかった 4 つ目の型。SVDiff ← Latent Diffusion が「extends」だった。S2 の引用文 8 件を全部渡したときだけ、「Our main experiments were conducted using StableDiffusion [51], which is a popular variant of latent diffusion models」が、マーカー [51] が被引用論文に解決されて「variant of」の強い手がかりとして効いていた（1 件ずつ渡すと `context_no_cue`）。実験をどの道具で行ったかの説明なので、拡張ではなく利用。
+
+- 対応: `EXPERIMENT_TOOL`（「experiments were conducted using / we conduct experiments with / the model we experiment with / conduct our experiments based on」）に当たり、かつ first-person の extend / build の動詞がない文は `usageReason` = `experiment_tool`（`phrase_usage`）。
+- テスト: `relationR242.test.ts` に S2 の 8 件の引用文を全部入れた RED→GREEN の事例と、実験の文の中の「we extend」が拡張のまま残る事例を足した。`test/lineage` 1,346 本が通過。公開中の強い関係 72 本の通し直しで変わるものはなし。
+- 同じ読み取りで、強い関係 3 件のうち 2 件は「基礎文献リストに基づく規則」（`foundational_allowlist`）の拡張だった（引用しているだけ）。根拠の文は画面に「基礎文献を引用しており…拡張として残している」と出る。件数にも入るので、強い関係の数は「引用文から確かめた関係」より多く見える。扱いは未決定（既存の監査済みテーマが使っている規則のため、勝手に変えない）。

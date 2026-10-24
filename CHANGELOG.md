@@ -6,6 +6,10 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Fixed — 実験の道具の説明を拡張にしない（R2-46）
+
+- 「Our main experiments were conducted using StableDiffusion, which is a popular variant of latent diffusion models」のように、実験に使った道具の説明に「variant of」が付く文を、拡張ではなく利用にした（first-person の extend / build がある文は除く）。サイトから入力した Diffusion Models の読み取りで見つかった。公開中の強い関係 72 本は変わらない。
+
 ### Changed — 分野の依頼は、強い関係が少なくても未監査で公開する（R2-43、2026-10-23 ユーザー承認）
 
 - テーマの公開の下限 `theme_min_lineage_edges` を 3 → 0 に（会議は新設の `conference_min_lineage_edges` = 3 のまま）。強い関係が 3 件未満の未監査の系譜には、ページ上に「判定できたのは n 件だけ」と明記する。

@@ -672,6 +672,14 @@ const APPOSITIVE_RESOURCE =
 const INTRODUCED_RESOURCE =
   /\bwe\s+(?:introduce|construct|curate|create|collect|present|release|propose)\s+[^,.;]{1,60},\s+an?\s+(?:extended|augmented|enriched|enhanced|new|revised)?\s*(?:version|variant|extension|split|subset)\s+of\b[^.]{0,120}\b(?:evaluation|benchmark|dataset|annotations?|split)\b|\b(?:evaluation|benchmark|dataset)\b[^.]{0,80}\bwe\s+(?:introduce|construct|curate|create|collect|present|release)\s+[^,.;]{1,60},\s+an?\s+(?:extended|augmented|enriched|enhanced|new|revised)?\s*(?:version|variant|extension|split|subset)\s+of\b/i;
 
+/** R2-46: the sentence says what the experiments were run on / with. */
+const EXPERIMENT_TOOL =
+  /\b(?:experiments?|evaluations?|results?)\s+(?:were|are|was|is)\s+(?:all\s+)?(?:conducted|performed|carried\s+out|run|implemented)\s+(?:using|with|on|based\s+on)\b|\b(?:we|I)\s+(?:conduct|perform|run|carry\s+out)\s+(?:all\s+|our\s+(?:main\s+)?)?(?:experiments?|evaluations?)\s+(?:using|with|on|based\s+on)\b|\bthe\s+(?:model|backbone|network|architecture)\s+(?:we|that\s+we)\s+(?:ex-?periment|evaluate|use|employ)\s+with\b|\bconduct\s+(?:our\s+)?experiments?\s+based\s+on\b/i;
+
+/** A first-person extension/build verb (“we extend … with”) keeps a sentence a build-on. */
+const FIRST_PERSON_EXTEND =
+  /\b(?:we|our\s+(?:method|model|approach|work|framework))\s+(?:\w+\s+){0,2}(?:extend|extends|build|builds|generali[sz]e|generali[sz]es|improve|improves)\b/i;
+
 /** R2-42: “Different from the above baselines, X is …”: a contrast between
  * baselines in a baseline list, not between the citing paper and X. */
 const BASELINE_LIST_CONTRAST =
@@ -817,6 +825,10 @@ export function usageReason(sentence: string, facts: UsageFacts): string | null 
   // R2-42: “we introduce X-DIFF, an extended version of ReasonSeg [2]” builds a
   // new evaluation set on the cited paper's dataset, not on its method.
   if (INTRODUCED_RESOURCE.test(text)) return "introduced_resource";
+  // R2-46: “Our main experiments were conducted using StableDiffusion [51],
+  // which is a popular variant of latent diffusion models [51]”: the cited
+  // paper's model is the tool the experiments run on, described in passing.
+  if (EXPERIMENT_TOOL.test(text) && !FIRST_PERSON_EXTEND.test(text)) return "experiment_tool";
   const opener = MAIN_CLAUSE_OPENER.exec(text);
   if (opener !== null) {
     const head = mainClauseHead(text.slice(opener.index + opener[0].length));

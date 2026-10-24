@@ -27,6 +27,8 @@ interface Case {
   cited: { title: string; year: number; authors: string[] };
   citing: string;
   sentence: string;
+  /** All S2 contexts of the pair (some rules resolve the marker only with the full set). */
+  contexts?: string[];
   expect: "extends" | "contrasts" | "baseline_only";
   knownGap?: boolean;
 }
@@ -156,6 +158,40 @@ const CASES: Case[] = [
     expect: "baseline_only",
   },
   {
+    name: "SVDiff: Stable Diffusion, the model we experiment with, is a tool not a build-on",
+    cited: {
+      title: "High-Resolution Image Synthesis with Latent Diffusion Models",
+      year: 2022,
+      authors: ["Robin Rombach"],
+    },
+    citing: "SVDiff: Compact Parameter Space for Diffusion Fine-Tuning",
+    sentence:
+      "Our main experiments were conducted using StableDiffu-sion [51], which is a popular variant of latent diffusion models (LDMs) [51] that operates on a latent space of a pre-trained autoencoder to reduce the dimensionality of the data samples, allowing the diffusion model to utilize the…",
+    contexts: [
+      "We discovered that when training the StableDiffu-sion [51] model with multiple concepts simultaneously (randomly choosing one concept at each data sampling iteration), the model tends to mix their styles when rendering them in one image for difficult compositions or subjects of similar categories…",
+      "Recent years have witnessed the rapid advancement of diffusion-based text-to-image generative models [19, 53, 20, 47, 51], which have enabled the generation of high-quality images through simple text prompts.",
+      "Our main experiments were conducted using StableDiffu-sion [51], which is a popular variant of latent diffusion models (LDMs) [51] that operates on a latent space of a pre-trained autoencoder to reduce the dimensionality of the data samples, allowing the diffusion model to utilize the…",
+      "Diffusion models StableDiffusion [51], the model we ex-periment with, is a variant of latent diffusion models (LDMs) [51].",
+      "The original DreamBooth was implemented on Imagen [53] and we conduct our experiments based on its StableDiffusion [51] implementation [75, 69].",
+      "In particular, the field of text-guided image synthesis has seen significant growth with the introduction of diffusion models, achieving state-of-the-art results in large-scale text-to-image synthesis tasks [39, 47, 53, 51, 4].",
+      "In summary, our main contributions are: • We present a compact ( ≈ 2,200 × fewer parameters compared with vanilla DreamBooth [52], measured on StableDiffusion [51]) yet efficient parameter space for diffusion model fine-tuning based on singular-value decomposition of weight kernels.",
+      "1.7MB for StableDiffusion [51, 15, 69], full weight checkpoint consumes 3.66GB of storage).",
+    ],
+    expect: "baseline_only",
+  },
+  {
+    name: "a first-person extension inside an experiment sentence still builds on",
+    cited: {
+      title: "High-Resolution Image Synthesis with Latent Diffusion Models",
+      year: 2022,
+      authors: ["Robin Rombach"],
+    },
+    citing: "Some Method",
+    sentence:
+      "In our experiments we extend latent diffusion models (Rombach et al., 2022) with a learned noise schedule.",
+    expect: "extends",
+  },
+  {
     name: "WebAgent-R1: GRPO extension is attributed to WebRL (known gap)",
     cited: {
       title:
@@ -176,7 +212,7 @@ function predict(c: Case): string {
   const s: PairSignals = {
     found: true,
     intents: [],
-    contexts: [c.sentence],
+    contexts: c.contexts ?? [c.sentence],
     isInfluential: false,
     citingTitle: c.citing,
     citingSurvey: isSurveyLike(child),
