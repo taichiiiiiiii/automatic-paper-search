@@ -271,7 +271,7 @@ function writeResult(path: string | null, result: ThemeRunResult): void {
 
 /** `--auto-expand` thresholds: fewer than `SPARSE_NODES` nodes OR fewer
  * than `SPARSE_EDGES` edges triggers the retry. */
-export const SPARSE_NODES = 30;
+export const SPARSE_NODES = 15;
 export const SPARSE_EDGES = 5;
 
 /** Compute the larger BFS parameters used on the auto-expand retry.

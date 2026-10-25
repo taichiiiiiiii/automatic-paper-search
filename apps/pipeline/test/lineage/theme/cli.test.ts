@@ -250,9 +250,9 @@ describe("runThemeCli", () => {
       const outPath = join(docsRoot, "out.json");
       const buildFn = async (): Promise<string> => {
         calls += 1;
-        // R2-37: "dense enough" also means publishable — a valid 31-node
-        // artifact (SPARSE_NODES = 30, R2-48) that passes the publication gate.
-        writeFileSync(outPath, serialize(grown(17)));
+        // R2-37: "dense enough" also means publishable — a valid 17-node
+        // artifact that passes the publication gate.
+        writeFileSync(outPath, serialize(grown(3)));
         return outPath;
       };
       const deps = depsFor(async () => jsonResp(200, { data: [] }));

@@ -20,6 +20,14 @@ on:
         required: false
         default: ""
         type: string
+      expand:
+        description: >-
+          R2-49: build the expanded lineage directly (depth 2 / 10 seeds /
+          width 12). Set by this workflow's own `upgrade` job after a quick
+          depth-1 result was published; the Worker never sets it.
+        required: false
+        default: false
+        type: boolean
 
 permissions: {}
 
@@ -38,6 +46,7 @@ jobs:
       base_sha: ${{ steps.candidate.outputs.base_sha }}
       candidate_name: ${{ steps.candidate.outputs.candidate_name }}
       primary_path: ${{ steps.candidate.outputs.primary_path }}
+      upgrade: ${{ steps.candidate.outputs.upgrade }}
     steps:
       - name: Validate input early
         # Same shape as apps/api's THEME_INPUT_PATTERN
@@ -105,6 +114,7 @@ jobs:
             topic-embedding-vectors-ea104dacec62-
 
       - name: Generate theme lineage
+        if: inputs.expand != true
         # User input goes through env var only (never spliced into the
         # shell command line), so command-substitution-style attacks are
         # impossible here.
@@ -162,10 +172,35 @@ jobs:
             --primary-source openalex \
             --auto-expand
 
+      - name: Generate expanded theme lineage (upgrade run)
+        # R2-49: the quick depth-1 result is already published; build the
+        # expanded lineage directly. The publish guard (build.ts) still
+        # refuses anything worse than what is published.
+        if: inputs.expand == true
+        env:
+          PAPERPILOT_LINEAGE_LLM: ${{ vars.PAPERPILOT_LINEAGE_LLM || 'off' }}
+          PAPERPILOT_S2_API_KEY: ${{ secrets.PAPERPILOT_S2_API_KEY }}
+          PAPERPILOT_OPENALEX_API_KEY: ${{ secrets.PAPERPILOT_OPENALEX_API_KEY }}
+          PAPERPILOT_ARXIV_HTML: ${{ vars.PAPERPILOT_ARXIV_HTML || 'off' }}
+          PAPERPILOT_ARXIV_HTML_MAX_FETCHES: ${{ vars.PAPERPILOT_ARXIV_HTML_MAX_FETCHES || '40' }}
+          PAPERPILOT_CROSSREF_REFERENCES: ${{ vars.PAPERPILOT_CROSSREF_REFERENCES || 'off' }}
+          PAPERPILOT_DBLP_VENUES: ${{ vars.PAPERPILOT_DBLP_VENUES || 'off' }}
+          PAPERPILOT_S2_DESCENDANT_SEARCH: ${{ vars.PAPERPILOT_S2_DESCENDANT_SEARCH || 'off' }}
+          PAPERPILOT_OPENALEX_EMAIL: ${{ secrets.OPENALEX_EMAIL }}
+          THEME_INPUT: ${{ inputs.theme }}
+        run: |
+          set -euo pipefail
+          pnpm exec tsx apps/pipeline/src/lineage/theme/cli.ts \
+            --theme "$THEME_INPUT" \
+            --depth 2 --seeds 10 --width 12 --since-year 2018 \
+            --llm-strict ambiguous \
+            --primary-source openalex
+
       - name: Freeze candidate metadata
         id: candidate
         env:
           THEME_INPUT: ${{ inputs.theme }}
+          EXPAND: ${{ inputs.expand }}
           PRIMARY_PATH_RE: '^data/published/themes/[a-z0-9-]{1,64}$'
         run: |
           set -euo pipefail
@@ -176,6 +211,13 @@ jobs:
             exit 1
           }
           test -f "$primary_path/lineage.json"
+          # R2-49: a quick depth-1 result with fewer than 30 papers is
+          # published first and then upgraded by a second, expanded run.
+          upgrade=false
+          if [ "$EXPAND" != "true" ]; then
+            upgrade="$(node -e 'const d=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"));const depth=(d.meta||{}).depth;process.stdout.write(depth===1&&d.nodes.length<30?"true":"false")' "$primary_path/lineage.json")"
+          fi
+          echo "upgrade=$upgrade" >> "$GITHUB_OUTPUT"
           echo "as_of=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
           echo "base_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           echo "candidate_name=theme-candidate-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_OUTPUT"
@@ -279,3 +321,26 @@ jobs:
       source_sha: ${{ needs.promote.outputs.source_sha }}
       release_kind: normal
       request_id: ${{ inputs.request_id }}
+
+  # R2-49: the visitor gets the quick depth-1 result as soon as it is released
+  # (~10 min); a small result (< 30 papers, depth 1) is then rebuilt expanded
+  # by one more run of this workflow, and only replaces the published one
+  # when it passes the publish guard. A dispatch made with GITHUB_TOKEN does
+  # start a workflow_dispatch run; the upgrade run itself never chains again
+  # (`expand` is true there, so `upgrade` is false).
+  upgrade:
+    needs: [generate, release]
+    if: needs.release.result == 'success' && needs.generate.outputs.upgrade == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+    steps:
+      - name: Dispatch the expanded rebuild
+        env:
+          GH_TOKEN: ${{ github.token }}
+          THEME_INPUT: ${{ inputs.theme }}
+          GH_REPO_FULL: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          gh workflow run theme-on-demand.yml -R "$GH_REPO_FULL" --ref develop -f theme="$THEME_INPUT" -f expand=true

@@ -6,9 +6,9 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
-### Changed — 分野の自動拡張を 30 論文未満に、重複で作成全体を落とさない（R2-48）
+### Changed — 先に出して、あとで広げる／重複で作成全体を落とさない（R2-48、R2-49）
 
-- `--auto-expand` が深さ 2 で作り直す下限を 15 → 30 論文に（Diffusion Models は深さ 1 の 21 論文が深さ 2 で 56 論文）。
+- 深さ 1 で 30 論文未満の分野は、最初の結果を公開してから `expand=true` の実行（深さ 2・種 10・幅 12）で作り直す。同じ実行で作り直すと Diffusion Models が 47.6 分かかった。
 - 同じ論文が 2 つの ID で入って辺を持つとき、作成全体が `cannot remap endpoint-bound provenance` で失敗していた。統合で消える ID の辺だけを落として続ける。
 - 「we use X as our backbone, which is built on Y」を拡張にしない。
 

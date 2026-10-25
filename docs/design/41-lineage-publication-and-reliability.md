@@ -747,8 +747,17 @@ Diffusion Models は深さ 1（種 5・幅 8）で 21 論文のまま公開さ�
 
 | 変更 | 内容 |
 |---|---|
-| 自動拡張の下限 | `--auto-expand` が「疎」と見なす論文数を 15 → 30 未満（`SPARSE_NODES`）。深さ 1 の結果が 30 未満なら深さ 2 で作り直す。RAG の深さ 1（30 論文）は拡張しない。時間は 1 回分（約 5〜8 分）増える |
+| 自動拡張の下限 | 当初は `SPARSE_NODES` を 15 → 30 にしたが、実測（run 40159291498）で Diffusion Models が 47.6 分（S2 の 429 が 123 回）かかったため取りやめ、15 に戻した。代わりに R2-49（先に出して、あとで広げる）にした |
 | 重複で全体を落とさない | 同じ論文が 2 つの ID（S2 と OpenAlex）で入り、片方に辺があると `cannot remap endpoint-bound provenance` で作成全体が失敗した（Diffusion Models の深さ 2 で再現）。辺の根拠の hash は両端の ID に結び付くので付け替えられないため、統合で消える ID に付いた辺だけを落とし（`dropEdgesOfMergedNodes`、件数を警告に出す）、作成は続ける。今回は 1 ノード統合・5 辺を落として 56 論文・433 辺 |
 | 実験の道具 | 「we use X as our backbone, which is built on Y」（実験の土台の説明）も `experiment_tool` の利用扱い |
 
 深さ 2 の強い関係 7 件の読み取り: 5 件は基礎文献リスト（DDPM を引用）の規則、1 件は「conditional variant of DDIM をデコーダに使う」（Diffusion Autoencoders ← DDIM、妥当）、1 件は上の実験の道具（Multi-Concept Customization ← LDM、利用なので直した）。
+
+### R2-49 先に出して、あとで広げる（2026-10-25）
+
+R2-48 の最初の案（深さ 1 が 30 論文未満なら、同じ実行の中で深さ 2 に作り直す）は、実測で Diffusion Models が 47.6 分かかった（生成ジョブ 40 分の上限すれすれ）。訪問者は最初の結果を 12 分で見られるのに、拡張を待たされる形になるので、2 回に分ける。
+
+- 最初の実行（Worker が配信）: これまでどおり深さ 1（疎なら R2-37 の自動拡張）。昇格・公開まで終わると、その結果が深さ 1 で 30 論文未満なら、`upgrade` ジョブが同じワークフローを `expand=true` で配信し直す（`GITHUB_TOKEN` の `workflow_dispatch` は新しい実行を起こす。権限は `actions: write` のみ）。
+- 拡張の実行: 深さ 2・種 10・幅 12 を最初から作る（浅い 1 回目を重ねない）。公開の保護（`publishGuard`）は同じで、公開中より悪い版は置き換えない。`expand` が true の実行からはさらに配信しない（連鎖しない）。
+- 画面は最初の公開で完了と見なす。拡張版は、あとからデータが入れ替わる（再読み込みで見える）。
+- テスト: `test/workflows/r2-49-quick-then-upgrade.test.ts`（入力、2 つの生成の段の条件、`upgrade` の出力と条件・権限・配信内容）。ワークフロー関係 487 本通過。

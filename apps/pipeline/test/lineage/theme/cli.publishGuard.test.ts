@@ -187,18 +187,18 @@ describe("--match-published (regen-themes.yml parameter parity)", () => {
 });
 
 describe("--auto-expand trigger (theme-on-demand.yml)", () => {
-  it("expands a dense first pass that would fail the publication gate (not only < 30 nodes)", async () => {
-    const first = weak(grown(17)); // 31 nodes, 0 lineage relations: the RAG depth-1 shape
+  it("expands a dense first pass that would fail the publication gate (not only < 15 nodes)", async () => {
+    const first = weak(grown(7)); // 21 nodes, 0 lineage relations: the LoRA depth-1 shape
     const { calls, buildFn } = fakeBuild([first, serialize(grown(8))]);
     expect(await run(["--auto-expand"], buildFn)).toBe(0);
     expect(calls).toHaveLength(2);
     expect(stderr).toMatch(
-      /auto-expand: first pass \(31 nodes \/ \d+ edges\) would be blocked by the publication gate \(.*lineage_relation_count failed/,
+      /auto-expand: first pass \(21 nodes \/ \d+ edges\) would be blocked by the publication gate \(.*lineage_relation_count failed/,
     );
   });
 
   it("does not expand a dense first pass that passes the gate", async () => {
-    const { calls, buildFn } = fakeBuild([serialize(grown(17))]); // 31 nodes (SPARSE_NODES = 30)
+    const { calls, buildFn } = fakeBuild([serialize(grown(3))]);
     expect(await run(["--auto-expand"], buildFn)).toBe(0);
     expect(calls).toHaveLength(1);
   });
