@@ -6,6 +6,10 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Fixed — 疎な最初の結果を同じ実行の中で広げて 40 分で打ち切られる（R2-50）
+
+- on-demand の最初の実行に `--defer-sparse-expansion` を付け、疎でも公開できる結果は先に出す。広げるのは `upgrade` ジョブ（30 論文未満または 5 辺未満）。公開の下限を通らない結果だけは、これまでどおり実行内で広げる。
+
 ### Changed — 先に出して、あとで広げる／重複で作成全体を落とさない（R2-48、R2-49）
 
 - 深さ 1 で 30 論文未満の分野は、最初の結果を公開してから `expand=true` の実行（深さ 2・種 10・幅 12）で作り直す。同じ実行で作り直すと Diffusion Models が 47.6 分かかった。

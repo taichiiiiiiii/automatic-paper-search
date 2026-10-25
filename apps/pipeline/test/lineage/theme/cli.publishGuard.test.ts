@@ -203,6 +203,18 @@ describe("--auto-expand trigger (theme-on-demand.yml)", () => {
     expect(calls).toHaveLength(1);
   });
 
+  it("--defer-sparse-expansion keeps a sparse first pass that passes the gate (R2-50)", async () => {
+    const { calls, buildFn } = fakeBuild([serialize(grown(1))]); // 11 nodes: sparse, but publishable
+    expect(await run(["--auto-expand", "--defer-sparse-expansion"], buildFn)).toBe(0);
+    expect(calls).toHaveLength(1);
+  });
+
+  it("--defer-sparse-expansion still expands a first pass the gate would block", async () => {
+    const { calls, buildFn } = fakeBuild([weak(grown(7)), serialize(grown(7))]);
+    expect(await run(["--auto-expand", "--defer-sparse-expansion"], buildFn)).toBe(0);
+    expect(calls).toHaveLength(2);
+  });
+
   it("still expands a sparse first pass, but keeps it when the retry would be blocked (LIN-18)", async () => {
     const { calls, buildFn } = fakeBuild([faText(), weak(grown(10))]);
     expect(await run(["--auto-expand"], buildFn)).toBe(0);

@@ -28,7 +28,7 @@ describe("theme-on-demand.yml quick-then-upgrade (R2-49)", () => {
     const expanded = stepNamed("Generate expanded theme lineage");
     expect(quick.if).toBe("inputs.expand != true");
     expect(expanded.if).toBe("inputs.expand == true");
-    expect(quick.run).toContain("--auto-expand");
+    expect(quick.run).toContain("--auto-expand --defer-sparse-expansion");
     expect(expanded.run).toContain("--depth 2 --seeds 10 --width 12");
     expect(expanded.run).not.toContain("--auto-expand");
     for (const f of ["--allow-shrink", "--allow-reaudit", "--allow-incomplete"]) {
@@ -41,7 +41,7 @@ describe("theme-on-demand.yml quick-then-upgrade (R2-49)", () => {
     const freeze = stepNamed("Freeze candidate metadata");
     expect(freeze.env.EXPAND).toBe("${{ inputs.expand }}");
     expect(freeze.run).toContain('if [ "$EXPAND" != "true" ]');
-    expect(freeze.run).toContain("depth===1&&d.nodes.length<30");
+    expect(freeze.run).toContain("depth===1&&(d.nodes.length<30||d.edges.length<5)");
     expect(freeze.run).toContain('echo "upgrade=$upgrade" >> "$GITHUB_OUTPUT"');
   });
 

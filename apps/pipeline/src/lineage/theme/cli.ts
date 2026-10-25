@@ -97,6 +97,7 @@ export interface ThemeCliArgs {
   primarySource: "s2" | "openalex";
   allowIncomplete: boolean;
   autoExpand: boolean;
+  deferSparseExpansion: boolean;
   /** R2-2b: BFS admission gate on/off (`--no-topic-gate`). */
   topicGate: boolean;
   /** R2-2b: on-topic links needed to admit a candidate without a theme
@@ -144,6 +145,9 @@ const THEME_CLI_SPEC = {
   },
   "allow-incomplete": { type: "boolean" as const },
   "auto-expand": { type: "boolean" as const },
+  // R2-50: skip the in-run sparse trigger (the workflow's upgrade job rebuilds
+  // a sparse result expanded AFTER the quick one is published).
+  "defer-sparse-expansion": { type: "boolean" as const },
   "no-topic-gate": { type: "boolean" as const },
   "no-topic-embedding": { type: "boolean" as const },
   "topic-min-support": { type: "int" as const, default: DEFAULT_TOPIC_SCOPE_OPTIONS.minSupport },
@@ -184,6 +188,7 @@ export function parseArgs(argv: readonly string[]): ThemeCliArgs {
     primarySource: parsed["primary-source"] as "s2" | "openalex",
     allowIncomplete: parsed["allow-incomplete"] as boolean,
     autoExpand: parsed["auto-expand"] as boolean,
+    deferSparseExpansion: parsed["defer-sparse-expansion"] === true,
     topicGate: !(parsed["no-topic-gate"] as boolean),
     topicMinSupport: parsed["topic-min-support"] as number,
     topicEmbedding: !(parsed["no-topic-embedding"] as boolean),
@@ -747,7 +752,11 @@ export async function runThemeCli(
   /** Why the written first pass should be rebuilt larger (null = keep it). */
   const expandReason = (bytes: Buffer): string | null => {
     const v = evaluateTheme(bytes, slug, guardCtx);
-    if (args.autoExpand && (v.nodeCount < SPARSE_NODES || v.edgeCount < SPARSE_EDGES)) {
+    if (
+      args.autoExpand &&
+      !args.deferSparseExpansion &&
+      (v.nodeCount < SPARSE_NODES || v.edgeCount < SPARSE_EDGES)
+    ) {
       return `first pass ${v.nodeCount} nodes / ${v.edgeCount} edges below (${SPARSE_NODES} / ${SPARSE_EDGES})`;
     }
     if (v.tier === "blocked") {

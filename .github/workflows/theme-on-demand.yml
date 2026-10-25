@@ -170,7 +170,7 @@ jobs:
             --depth 1 --seeds 5 --width 8 --since-year 2018 \
             --llm-strict ambiguous \
             --primary-source openalex \
-            --auto-expand
+            --auto-expand --defer-sparse-expansion
 
       - name: Generate expanded theme lineage (upgrade run)
         # R2-49: the quick depth-1 result is already published; build the
@@ -215,7 +215,7 @@ jobs:
           # published first and then upgraded by a second, expanded run.
           upgrade=false
           if [ "$EXPAND" != "true" ]; then
-            upgrade="$(node -e 'const d=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"));const depth=(d.meta||{}).depth;process.stdout.write(depth===1&&d.nodes.length<30?"true":"false")' "$primary_path/lineage.json")"
+            upgrade="$(node -e 'const d=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"));const depth=(d.meta||{}).depth;process.stdout.write(depth===1&&(d.nodes.length<30||d.edges.length<5)?"true":"false")' "$primary_path/lineage.json")"
           fi
           echo "upgrade=$upgrade" >> "$GITHUB_OUTPUT"
           echo "as_of=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
