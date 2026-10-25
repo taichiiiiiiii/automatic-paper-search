@@ -24,7 +24,7 @@ import {
   readArxivHtmlCache,
 } from "../../../src/lineage/theme/arxivHtmlSource.js";
 import { addCrossNodeEdges } from "../../../src/lineage/theme/bfs.js";
-import { optInEvidenceDeps } from "../../../src/lineage/theme/cli.js";
+import { optInEvidenceDeps, S2_EXPANSION_RETRY } from "../../../src/lineage/theme/cli.js";
 import {
   CROSSREF_MAX_CONCURRENT,
   CrossrefReferenceSource,
@@ -584,7 +584,13 @@ describe("opt-in switches (CI defaults off)", () => {
       crossref: null,
       dblpVenues: null,
       s2DescendantSearch: null,
+      // R2-52: on by default (bounded); `PAPERPILOT_S2_EXPANSION_RETRY=off` disables.
+      s2ExpansionRetry: S2_EXPANSION_RETRY,
     });
+    expect(
+      optInEvidenceDeps({ PAPERPILOT_S2_EXPANSION_RETRY: "off" }, "/tmp/c", null, () => {})
+        .s2ExpansionRetry,
+    ).toBeNull();
     const on = optInEvidenceDeps(
       {
         PAPERPILOT_ARXIV_HTML: "on",

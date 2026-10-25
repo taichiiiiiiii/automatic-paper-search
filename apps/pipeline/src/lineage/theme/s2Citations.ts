@@ -499,6 +499,16 @@ export class S2CitationSource {
   }
 
   /**
+   * R2-52: forget that fetching `citing`'s reference list failed this run,
+   * so the next {@link referenceList} asks S2 again instead of replaying the
+   * memoised failure. A no-op when the list was fetched or never asked for.
+   */
+  forgetListFailure(citing: PaperLike): void {
+    const ck = graphIdOf(citing);
+    if (ck !== null && this.memo.get(ck) === null) this.memo.delete(ck);
+  }
+
+  /**
    * Whether the last {@link referenceList} / {@link citationList} returned
    * `null` because S2 could not be reached (as opposed to "S2 has no such
    * paper"). Callers that use the list to SUPPLEMENT another source must

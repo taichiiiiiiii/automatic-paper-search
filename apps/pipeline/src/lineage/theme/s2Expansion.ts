@@ -91,6 +91,17 @@ export interface S2ExpansionOptions {
    * `null`/omitted = off. `candidates` = most-cited search hits verified
    * per build (default {@link DEFAULT_DESCENDANT_CANDIDATES}). */
   descendantSearch?: { candidates?: number } | null;
+  /** R2-52: when Semantic Scholar cannot be reached for an expansion that
+   * OpenAlex left short, wait and ask again instead of recording the
+   * expansion as failed straight away (a keyless 429 storm is usually over
+   * within a minute or two). `delaysMs` = the waits before each retry,
+   * `budgetMs` = the most a whole build may spend waiting, so the
+   * workflow's job cap is never at risk. `null`/omitted = no retry. */
+  retry?: {
+    delaysMs: readonly number[];
+    budgetMs: number;
+    sleep?: (ms: number) => Promise<void>;
+  } | null;
 }
 
 /** R2-35: search hits whose reference lists are checked per build. */
@@ -380,6 +391,9 @@ export class S2Expansion {
   private readonly counted = new Set<string>();
   readonly minOpenalexReferences: number;
 
+  /** R2-52: milliseconds this build has already spent waiting to retry. */
+  private retryWaitedMs = 0;
+
   constructor(options: S2ExpansionOptions) {
     this.opts = options;
     this.minOpenalexReferences = options.minOpenalexReferences ?? DEFAULT_MIN_OPENALEX_REFERENCES;
@@ -451,7 +465,7 @@ export class S2Expansion {
       count("openalex");
       return got;
     }
-    const fromS2 = await this.related(paper, kind, limit);
+    const fromS2 = await this.relatedPatiently(paper, kind, limit);
     const have = new Set(got.map((p) => p.paperId));
     const extra = (fromS2 ?? []).filter((p) => !have.has(p.paperId));
     if (extra.length === 0) {
@@ -604,6 +618,45 @@ export class S2Expansion {
 
   /** S2 candidates for `paper` (mapped to OpenAlex ids where possible),
    * or `null` when S2 has nothing / could not be reached. */
+  /**
+   * R2-52: {@link related}, asking again after a pause when Semantic Scholar
+   * could not be reached (not when it answered "no such paper"). The waits
+   * come out of a per-build budget; once spent, a failure is recorded as
+   * before. Only an expansion that would otherwise be recorded as failed
+   * pays for this.
+   */
+  private async relatedPatiently(
+    paper: ThemePaper,
+    kind: ExpansionKind,
+    limit: number,
+  ): Promise<ThemePaper[] | null> {
+    let result = await this.related(paper, kind, limit);
+    const retry = this.opts.retry;
+    if (!retry) return result;
+    const sleep = retry.sleep ?? ((ms: number) => new Promise<void>((r) => setTimeout(r, ms)));
+    for (const delay of retry.delaysMs) {
+      if (result !== null || !this.opts.source.lastListFailed) break;
+      if (this.retryWaitedMs + delay > retry.budgetMs) break;
+      this.retryWaitedMs += delay;
+      this.opts.logger?.warn(
+        `s2 expansion: Semantic Scholar unreachable for ${paper.paperId} ${kind}; ` +
+          `retrying in ${Math.round(delay / 1000)}s (${Math.round(this.retryWaitedMs / 1000)}s of ` +
+          `${Math.round(retry.budgetMs / 1000)}s retry budget used)`,
+      );
+      await sleep(delay);
+      if (kind === "references") {
+        this.opts.source.forgetListFailure(paper as unknown as Record<string, unknown>);
+      }
+      result = await this.related(paper, kind, limit);
+      if (result !== null) {
+        this.opts.logger?.warn(
+          `s2 expansion: recovered ${paper.paperId} ${kind} on retry (${result.length} candidate(s))`,
+        );
+      }
+    }
+    return result;
+  }
+
   async related(
     paper: ThemePaper,
     kind: ExpansionKind,

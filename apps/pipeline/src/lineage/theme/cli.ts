@@ -386,13 +386,27 @@ export const fetchTextImpl: FetchTextLike = async (url, init) => {
  * (arXiv HTML contexts, Crossref reference lists, DBLP venues) from the
  * environment. All default to off; each is bounded per run.
  */
+const S2_EXPANSION_RETRY_ENV = "PAPERPILOT_S2_EXPANSION_RETRY";
+/** 45 s then 90 s per unanswered expansion, 8 min of waiting per build. */
+export const S2_EXPANSION_RETRY = {
+  delaysMs: [45_000, 90_000],
+  budgetMs: 8 * 60_000,
+} as const;
+
 export function optInEvidenceDeps(
   env: Readonly<Record<string, string | undefined>>,
   cacheDir: string,
   contact: string | null,
   warn: (msg: string) => void = (m) => process.stderr.write(`${m}\n`),
-): Pick<BuildThemeLineageDeps, "arxivHtml" | "crossref" | "dblpVenues" | "s2DescendantSearch"> {
+): Pick<
+  BuildThemeLineageDeps,
+  "arxivHtml" | "crossref" | "dblpVenues" | "s2DescendantSearch" | "s2ExpansionRetry"
+> {
   return {
+    // R2-52: on by default (the keyless S2 429 storms are what fail an
+    // expansion); `PAPERPILOT_S2_EXPANSION_RETRY=off` disables it.
+    s2ExpansionRetry:
+      env[S2_EXPANSION_RETRY_ENV]?.trim().toLowerCase() === "off" ? null : S2_EXPANSION_RETRY,
     s2DescendantSearch: switchOn(env, S2_DESCENDANT_SEARCH_ENV, warn)
       ? {
           candidates: positiveInt(env, S2_DESCENDANT_CANDIDATES_ENV, DEFAULT_DESCENDANT_CANDIDATES),

@@ -94,7 +94,7 @@ import {
 } from "./recordChronology.js";
 import { applyS2CitationCounts } from "./s2CitationCounts.js";
 import { S2CitationSource } from "./s2Citations.js";
-import { S2Expansion } from "./s2Expansion.js";
+import { S2Expansion, type S2ExpansionOptions } from "./s2Expansion.js";
 import { contextLlmSummary, newS2RelationStats, type S2RelationContext } from "./s2Relations.js";
 import { aliasesFor } from "./seedFilters.js";
 import { sanitizeTheme, themeLineagePath, themeSlug } from "./slug.js";
@@ -393,6 +393,8 @@ export interface BuildThemeLineageDeps {
    * (`s2Expansion.ts::rankedCiters`; needs `s2Citations`). Null/omitted =
    * off (the CLI enables it with `PAPERPILOT_S2_DESCENDANT_SEARCH=on`). */
   s2DescendantSearch?: { candidates?: number } | null;
+  /** R2-52: see `S2ExpansionOptions.retry`. */
+  s2ExpansionRetry?: S2ExpansionOptions["retry"];
   /** R2-28: DBLP SPARQL venue correction of preprint-venue nodes
    * (`dblpVenues.ts`). Null/omitted = off. */
   dblpVenues?: {
@@ -639,6 +641,9 @@ export async function buildThemeLineage(
           cacheDir: deps.cacheDir,
           logger,
           descendantSearch: deps.s2DescendantSearch ?? null,
+          // R2-52: ask S2 again for an expansion it could not answer (the
+          // CLI enables it; library callers and tests default to none).
+          retry: deps.s2ExpansionRetry ?? null,
         });
 
   // R2-17 (ERROR_PATTERNS 10): seeds = canonical method papers cited by

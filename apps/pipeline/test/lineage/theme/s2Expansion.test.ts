@@ -366,6 +366,80 @@ describe("S2Expansion.expand (references)", () => {
   });
 });
 
+describe("S2Expansion retry (R2-52)", () => {
+  const retryOpts = (sleeps: number[], budgetMs = 600_000) => ({
+    delaysMs: [45_000, 90_000],
+    budgetMs,
+    sleep: async (ms: number) => {
+      sleeps.push(ms);
+    },
+  });
+  const expandWith = async (
+    h: ReturnType<typeof harness>,
+    retry: ReturnType<typeof retryOpts> | null,
+  ) => {
+    const ledger = new BuildCompleteness();
+    const exp = new S2Expansion({ source: h.source, openalex: netDeps(h), cacheDir: null, retry });
+    const got = await exp.expand(
+      FA,
+      "references",
+      32,
+      (l) => fetchRelated(FA.paperId, "references", 32, netDeps(h), l),
+      ledger,
+    );
+    return { got, ledger, exp };
+  };
+
+  it("asks again after a pause and keeps the expansion complete when S2 recovers", async () => {
+    // S2 is down until the first pause has been taken (its own in-request
+    // retries cannot get through), then answers.
+    let up = false;
+    const h = harness({ s2Refs: () => (up ? resp(200, { data: FA_S2_REFS }) : resp(503, {})) });
+    const sleeps: number[] = [];
+    const retry = {
+      delaysMs: [45_000, 90_000],
+      budgetMs: 600_000,
+      sleep: async (ms: number) => {
+        sleeps.push(ms);
+        up = true;
+      },
+    };
+    const { got, ledger } = await expandWith(h, retry);
+    expect(got.length).toBeGreaterThan(0);
+    expect(sleeps).toEqual([45_000]);
+    expect(ledger.expansionsFailed).toBe(0);
+    expect(ledger.complete).toBe(true);
+  });
+
+  it("still records a failed expansion when S2 stays down, after using only its own delays", async () => {
+    const h = harness({ s2Refs: () => resp(503, {}) });
+    const sleeps: number[] = [];
+    const { got, ledger } = await expandWith(h, retryOpts(sleeps));
+    expect(got).toEqual([]);
+    expect(sleeps).toEqual([45_000, 90_000]);
+    expect(ledger.expansionsFailed).toBe(1);
+  });
+
+  it("stops waiting once the per-build budget is spent", async () => {
+    const h = harness({ s2Refs: () => resp(503, {}) });
+    const sleeps: number[] = [];
+    const { ledger } = await expandWith(h, retryOpts(sleeps, 50_000));
+    expect(sleeps).toEqual([45_000]);
+    expect(ledger.expansionsFailed).toBe(1);
+  });
+
+  it("never waits when S2 answered 'no such paper', or when retry is off", async () => {
+    const sleeps: number[] = [];
+    const h404 = harness({ s2Refs: () => resp(404, {}) });
+    const a = await expandWith(h404, retryOpts(sleeps));
+    expect(sleeps).toEqual([]);
+    expect(a.ledger.expansionsFailed).toBe(0);
+    const h503 = harness({ s2Refs: () => resp(503, {}) });
+    const b = await expandWith(h503, null);
+    expect(b.ledger.expansionsFailed).toBe(1);
+  });
+});
+
 describe("S2Expansion.expand (citations)", () => {
   it("falls back to S2 /citations when OpenAlex has no citing paper", async () => {
     const citing = (id: string, title: string, cites: number) => ({

@@ -6,6 +6,10 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Fixed — S2 に届かなかった展開を待ってから取り直す（R2-52）
+
+- 展開が S2 の 429 で失敗して作成全体が不完全になる件を、45 秒・90 秒待って 2 回まで取り直して減らす（待ちは 1 回の作成で 8 分まで）。`PAPERPILOT_S2_EXPANSION_RETRY=off` で止められる。
+
 ### Changed — 上流の取得結果を実行間で使い回す（R2-51）
 
 - on-demand の実行が、S2 などの生の取得キャッシュを復元・保存する（失敗した実行でも保存）。S2 のキーが取れないため、毎回 429 の待機で始まっていた。
