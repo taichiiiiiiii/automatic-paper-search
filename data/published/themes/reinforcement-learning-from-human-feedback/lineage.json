@@ -1,0 +1,1601 @@
+{
+  "schema_version": "lineage-artifact-v1",
+  "root": "openalex:W4386437475",
+  "nodes": [
+    {
+      "id": "openalex:W4223908421",
+      "title": "Training a Helpful and Harmless Assistant with Reinforcement Learning from Human Feedback",
+      "year": 2022,
+      "venue": "arXiv (Cornell University)",
+      "venue_tier": "preprint",
+      "authors": [
+        "Yuntao Bai",
+        "Jones, Andy",
+        "Kamal Ndousse",
+        "Amanda Askell",
+        "Chen, Anna"
+      ],
+      "kinds": [],
+      "citation_count": 4427,
+      "github_stars": 1858,
+      "tldr": "We apply preference modeling and reinforcement learning from human feedback (RLHF) to finetune language models to act as helpful and…",
+      "short_abstract": "We apply preference modeling and reinforcement learning from human feedback (RLHF) to finetune language models to act as helpful and harmless assistants. We find this alignment training improves performance on almost all NLP evaluations, and is fully compatible with training for specialized skills such as python coding and summarization. We explore an iterated online mode of training, where preference models and RL policies are updated on a weekly cadence with fresh human feedback data, efficiently improving our datasets and models. Finally, we investigate the robustness of RLHF training, and identify a roughly linear relation between the RL reward and the square root of the KL divergence between the policy and its initialization. Alongside our main results, we perform peripheral analyses on calibration, competing objectives, and the use of OOD detection, compare our models with human writers, and provide samples from our models using prompts appearing in recent related work.",
+      "arxiv_id": "2204.05862",
+      "doi": "10.48550/arxiv.2204.05862",
+      "citation_count_source": "semantic_scholar",
+      "aliases": [
+        [
+          "arxiv",
+          "2204.05862"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2204.05862"
+        ]
+      ],
+      "github_url": "https://github.com/anthropics/hh-rlhf",
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4307001524",
+      "title": "Scaling Laws for Reward Model Overoptimization",
+      "year": 2022,
+      "venue": "ICML",
+      "venue_tier": "A+",
+      "authors": [
+        "Leo Gao",
+        "John Schulman",
+        "Jacob K. Hilton"
+      ],
+      "kinds": [],
+      "citation_count": 1417,
+      "github_stars": 0,
+      "tldr": "In reinforcement learning from human feedback, it is common to optimize against a reward model trained to predict human preferences.…",
+      "short_abstract": "In reinforcement learning from human feedback, it is common to optimize against a reward model trained to predict human preferences. Because the reward model is an imperfect proxy, optimizing its value too much can hinder ground truth performance, in accordance with Goodhart's law. This effect has been frequently observed, but not carefully measured due to the expense of collecting human preference data. In this work, we use a synthetic setup in which a fixed \"gold-standard\" reward model plays the role of humans, providing labels used to train a proxy reward model. We study how the gold reward model score changes as we optimize against the proxy reward model using either reinforcement learning or best-of-$n$ sampling. We find that this relationship follows a different functional form depending on the method of optimization, and that in both cases its coefficients scale smoothly with the number of reward model parameters. We also study the effect on this relationship of the size of…",
+      "arxiv_id": "2210.10760",
+      "doi": "10.48550/arxiv.2210.10760",
+      "is_focus": true,
+      "citation_count_source": "semantic_scholar",
+      "aliases": [
+        [
+          "arxiv",
+          "2210.10760"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2210.10760"
+        ]
+      ],
+      "seed_paper_id": "7f913c233420203a644cf09b244c0b77f95fbd3a"
+    },
+    {
+      "id": "openalex:W4365211596",
+      "title": "RRHF: Rank Responses to Align Language Models with Human Feedback without tears",
+      "year": 2023,
+      "venue": "arXiv (Cornell University)",
+      "venue_tier": "preprint",
+      "authors": [
+        "Zheng Yuan",
+        "Hongyi Yuan",
+        "Chuanqi Tan",
+        "Wang, Wei",
+        "Songfang Huang"
+      ],
+      "kinds": [],
+      "citation_count": 572,
+      "github_stars": 0,
+      "tldr": "Reinforcement Learning from Human Feedback (RLHF) facilitates the alignment of large language models with human preferences, significantly…",
+      "short_abstract": "Reinforcement Learning from Human Feedback (RLHF) facilitates the alignment of large language models with human preferences, significantly enhancing the quality of interactions between humans and models. InstructGPT implements RLHF through several stages, including Supervised Fine-Tuning (SFT), reward model training, and Proximal Policy Optimization (PPO). However, PPO is sensitive to hyperparameters and requires multiple models in its standard implementation, making it hard to train and scale up to larger parameter counts. In contrast, we propose a novel learning paradigm called RRHF, which scores sampled responses from different sources via a logarithm of conditional probabilities and learns to align these probabilities with human preferences through ranking loss. RRHF can leverage sampled responses from various sources including the model responses from itself, other large language model responses, and human expert responses to learn to rank them. RRHF only needs 1 to 2 models…",
+      "arxiv_id": "2304.05302",
+      "doi": "10.48550/arxiv.2304.05302",
+      "citation_count_source": "semantic_scholar",
+      "aliases": [
+        [
+          "arxiv",
+          "2304.05302"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2304.05302"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4366196653",
+      "title": "RAFT: Reward rAnked FineTuning for Generative Foundation Model Alignment",
+      "year": 2023,
+      "venue": "Trans. Mach. Learn. Res.",
+      "venue_tier": "A",
+      "authors": [
+        "Hanze Dong",
+        "Wei Hao Xiong",
+        "Goyal, Deepanshu",
+        "Zhang, Yihan",
+        "Chow, Winnie"
+      ],
+      "kinds": [],
+      "citation_count": 812,
+      "github_stars": 0,
+      "tldr": "Generative foundation models are susceptible to implicit biases that can arise from extensive unsupervised training data. Such biases can…",
+      "short_abstract": "Generative foundation models are susceptible to implicit biases that can arise from extensive unsupervised training data. Such biases can produce suboptimal samples, skewed outcomes, and unfairness, with potentially serious consequences. Consequently, aligning these models with human ethics and preferences is an essential step toward ensuring their responsible and effective deployment in real-world applications. Prior research has primarily employed Reinforcement Learning from Human Feedback (RLHF) to address this problem, where generative models are fine-tuned with RL algorithms guided by a human-feedback-informed reward model. However, the inefficiencies and instabilities associated with RL algorithms frequently present substantial obstacles to the successful alignment, necessitating the development of a more robust and streamlined approach. To this end, we introduce a new framework, Reward rAnked FineTuning (RAFT), designed to align generative models effectively. Utilizing a…",
+      "arxiv_id": "2304.06767",
+      "doi": "10.48550/arxiv.2304.06767",
+      "citation_count_source": "semantic_scholar",
+      "aliases": [
+        [
+          "arxiv",
+          "2304.06767"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2304.06767"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4377121527",
+      "title": "SLiC-HF: Sequence Likelihood Calibration with Human Feedback",
+      "year": 2023,
+      "venue": "arXiv (Cornell University)",
+      "venue_tier": "preprint",
+      "authors": [
+        "Yao Zhao",
+        "Rishabh Joshi",
+        "Tianqi Liu",
+        "Misha Khalman",
+        "Saleh, Mohammad"
+      ],
+      "kinds": [],
+      "citation_count": 442,
+      "github_stars": 0,
+      "tldr": "Learning from human feedback has been shown to be effective at aligning language models with human preferences. Past work has often relied…",
+      "short_abstract": "Learning from human feedback has been shown to be effective at aligning language models with human preferences. Past work has often relied on Reinforcement Learning from Human Feedback (RLHF), which optimizes the language model using reward scores assigned from a reward model trained on human preference data. In this work we show how the recently introduced Sequence Likelihood Calibration (SLiC), can also be used to effectively learn from human preferences (SLiC-HF). Furthermore, we demonstrate this can be done with human feedback data collected for a different model, similar to off-policy, offline RL data. Automatic and human evaluation experiments on the TL;DR summarization task show that SLiC-HF significantly improves supervised fine-tuning baselines. Furthermore, SLiC-HF presents a competitive alternative to the PPO RLHF implementation used in past work while being much simpler to implement, easier to tune and more computationally efficient in practice.",
+      "arxiv_id": "2305.10425",
+      "doi": "10.48550/arxiv.2305.10425",
+      "citation_count_source": "semantic_scholar",
+      "aliases": [
+        [
+          "arxiv",
+          "2305.10425"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2305.10425"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4385436553",
+      "title": "Open Problems and Fundamental Limitations of Reinforcement Learning from Human Feedback",
+      "year": 2023,
+      "venue": "Trans. Mach. Learn. Res.",
+      "venue_tier": "A",
+      "authors": [
+        "Casper, Stephen",
+        "Xander Davies",
+        "Claudia Shi",
+        "Thomas Krendl Gilbert",
+        "Jérémy Scheurer"
+      ],
+      "kinds": [],
+      "citation_count": 101,
+      "github_stars": 0,
+      "tldr": "",
+      "arxiv_id": "2307.15217",
+      "doi": "10.48550/arxiv.2307.15217",
+      "is_focus": true,
+      "aliases": [
+        [
+          "arxiv",
+          "2307.15217"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2307.15217"
+        ]
+      ],
+      "seed_paper_id": "41f0ab5e93c50a2550bec29c32ca978a1fe5707c"
+    },
+    {
+      "id": "openalex:W4386437475",
+      "title": "RLAIF vs. RLHF: Scaling Reinforcement Learning from Human Feedback with AI Feedback",
+      "year": 2023,
+      "venue": "ICML",
+      "venue_tier": "A+",
+      "authors": [
+        "Lee, Harrison",
+        "Samrat Phatale",
+        "Mansoor, Hassan",
+        "Mesnard, Thomas",
+        "Ferret, Johan"
+      ],
+      "kinds": [],
+      "citation_count": 87,
+      "github_stars": 0,
+      "tldr": "Reinforcement learning from human feedback (RLHF) has proven effective in aligning large language models (LLMs) with human preferences,…",
+      "short_abstract": "Reinforcement learning from human feedback (RLHF) has proven effective in aligning large language models (LLMs) with human preferences, but gathering high-quality preference labels is expensive. RL from AI Feedback (RLAIF), introduced in Bai et al., offers a promising alternative that trains the reward model (RM) on preferences generated by an off-the-shelf LLM. Across the tasks of summarization, helpful dialogue generation, and harmless dialogue generation, we show that RLAIF achieves comparable performance to RLHF. Furthermore, we take a step towards \"self-improvement\" by demonstrating that RLAIF can outperform a supervised fine-tuned baseline even when the AI labeler is the same size as the policy, or even the exact same checkpoint as the initial policy. Finally, we introduce direct-RLAIF (d-RLAIF) - a technique that circumvents RM training by obtaining rewards directly from an off-the-shelf LLM during RL, which achieves superior performance to canonical RLAIF. Our results suggest…",
+      "arxiv_id": "2309.00267",
+      "doi": "10.48550/arxiv.2309.00267",
+      "is_focus": true,
+      "aliases": [
+        [
+          "arxiv",
+          "2309.00267"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2309.00267"
+        ]
+      ],
+      "seed_paper_id": "be4330b037709c69ca9a33107723e5d858a8e22d"
+    },
+    {
+      "id": "openalex:W4390035079",
+      "title": "Bridging the Gap: A Survey on Integrating (Human) Feedback for Natural Language Generation",
+      "year": 2023,
+      "venue": "Transactions of the Association for Computational Linguistics",
+      "venue_tier": "preprint",
+      "authors": [
+        "Patrick Fernandes",
+        "Aman Madaan",
+        "Emmy Liu",
+        "António Farinhas",
+        "Pedro Henrique Martins"
+      ],
+      "kinds": [],
+      "citation_count": 44,
+      "github_stars": 0,
+      "tldr": "Abstract Natural language generation has witnessed significant advancements due to the training of large language models on vast…",
+      "short_abstract": "Abstract Natural language generation has witnessed significant advancements due to the training of large language models on vast internet-scale datasets. Despite these advancements, there exists a critical challenge: These models can inadvertently generate content that is toxic, inaccurate, and unhelpful, and existing automatic evaluation metrics often fall short of identifying these shortcomings. As models become more capable, human feedback is an invaluable signal for evaluating and improving models. This survey aims to provide an overview of recent research that has leveraged human feedback to improve natural language generation. First, we introduce a taxonomy distilled from existing research to categorize and organize the varied forms of feedback. Next, we discuss how feedback can be described by its format and objective, and cover the two approaches proposed to use feedback (either for training or decoding): directly using feedback or training feedback models. We also discuss…",
+      "arxiv_id": "2305.00955",
+      "doi": "10.1162/tacl_a_00626",
+      "aliases": [
+        [
+          "arxiv",
+          "2305.00955"
+        ],
+        [
+          "doi",
+          "10.1162/tacl_a_00626"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4391609325",
+      "title": "Reinforcement Learning for Generative AI: State of the Art, Opportunities and Open Research Challenges",
+      "year": 2024,
+      "venue": "Journal of Artificial Intelligence Research",
+      "venue_tier": "preprint",
+      "authors": [
+        "Giorgio Franceschelli",
+        "Mirco Musolesi"
+      ],
+      "kinds": [],
+      "citation_count": 49,
+      "github_stars": 0,
+      "tldr": "Generative Artificial Intelligence (AI) is one of the most exciting developments in Computer Science of the last decade. At the same time,…",
+      "short_abstract": "Generative Artificial Intelligence (AI) is one of the most exciting developments in Computer Science of the last decade. At the same time, Reinforcement Learning (RL) has emerged as a very successful paradigm for a variety of machine learning tasks. In this survey, we discuss the state of the art, opportunities and open research questions in applying RL to generative AI. In particular, we will discuss three types of applications, namely, RL as an alternative way for generation without specified objectives; as a way for generating outputs while concurrently maximizing an objective function; and, finally, as a way of embedding desired characteristics, which cannot be easily captured by means of an objective function, into the generative process. We conclude the survey with an in-depth discussion of the opportunities and challenges in this fascinating emerging area.",
+      "arxiv_id": "2308.00031",
+      "doi": "10.1613/jair.1.15278",
+      "aliases": [
+        [
+          "arxiv",
+          "2308.00031"
+        ],
+        [
+          "doi",
+          "10.1613/jair.1.15278"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4392908117",
+      "title": "The Inadequacy of Reinforcement Learning From Human Feedback—Radicalizing Large Language Models via Semantic Vulnerabilities",
+      "year": 2024,
+      "venue": "IEEE Transactions on Cognitive and Developmental Systems",
+      "venue_tier": "preprint",
+      "authors": [
+        "Timothy R. McIntosh",
+        "Teo Sušnjak",
+        "Tong Liu",
+        "Paul Watters",
+        "Malka N. Halgamuge"
+      ],
+      "kinds": [],
+      "citation_count": 61,
+      "github_stars": 0,
+      "tldr": "This study is an empirical investigation into the semantic vulnerabilities of four popular pre-trained commercialLarge Language…",
+      "short_abstract": "This study is an empirical investigation into the semantic vulnerabilities of four popular pre-trained commercialLarge Language Models(LLMs) to ideological manipulation. Using tactics reminiscent of human semantic conditioning in psychology, we have induced and assessed ideological misalignments and their retention in four commercial pre-trained LLMs, in response to 30 controversial questions that spanned a broad ideological and social spectrum, encompassing both extreme left-wing and right-wing viewpoints. Such semantic vulnerabilities arise due to fundamental limitations in LLMs’ capability to comprehend detailed linguistic variations, making them susceptible to ideological manipulation through targeted semantic exploits. We observedReinforcement Learning from Human Feedback(RLHF) in effect in LLM initial answers, but highlighted the limitations of RLHF in two aspects: (1) its inability to fully mitigate the impact of ideological conditioning prompts, leading to partial alleviation…",
+      "doi": "10.1109/tcds.2024.3377445",
+      "aliases": [
+        [
+          "doi",
+          "10.1109/tcds.2024.3377445"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4393763811",
+      "title": "Survey on Large Language Model-Enhanced Reinforcement Learning: Concept, Taxonomy, and Methods",
+      "year": 2024,
+      "venue": "IEEE Transactions on Neural Networks and Learning Systems",
+      "venue_tier": "preprint",
+      "authors": [
+        "Yuji Cao",
+        "Huan Qi Zhao",
+        "Yuheng Cheng",
+        "Ting Shu",
+        "Yue Chen"
+      ],
+      "kinds": [],
+      "citation_count": 171,
+      "github_stars": 0,
+      "tldr": "With extensive pretrained knowledge and high-level general capabilities, large language models (LLMs) emerge as a promising avenue to…",
+      "short_abstract": "With extensive pretrained knowledge and high-level general capabilities, large language models (LLMs) emerge as a promising avenue to augment reinforcement learning (RL) in aspects, such as multitask learning, sample efficiency, and high-level task planning. In this survey, we provide a comprehensive review of the existing literature in LLM-enhanced RL and summarize its characteristics compared with conventional RL methods, aiming to clarify the research scope and directions for future studies. Utilizing the classical agent-environment interaction paradigm, we propose a structured taxonomy to systematically categorize LLMs' functionalities in RL, including four roles: information processor, reward designer, decision-maker, and generator. For each role, we summarize the methodologies, analyze the specific RL challenges that are mitigated and provide insights into future directions. Finally, the comparative analysis of each role, potential applications, prospective opportunities, and…",
+      "arxiv_id": "2404.00282",
+      "doi": "10.1109/tnnls.2024.3497992",
+      "aliases": [
+        [
+          "arxiv",
+          "2404.00282"
+        ],
+        [
+          "doi",
+          "10.1109/tnnls.2024.3497992"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4398859186",
+      "title": "SimPO: Simple Preference Optimization with a Reference-Free Reward",
+      "year": 2024,
+      "venue": "NeurIPS",
+      "venue_tier": "A+",
+      "authors": [
+        "Yu Meng",
+        "Mengzhou Xia",
+        "Danqi Chen"
+      ],
+      "kinds": [],
+      "citation_count": 1237,
+      "github_stars": 964,
+      "tldr": "Direct Preference Optimization (DPO) is a widely used offline preference optimization algorithm that reparameterizes reward functions in…",
+      "short_abstract": "Direct Preference Optimization (DPO) is a widely used offline preference optimization algorithm that reparameterizes reward functions in reinforcement learning from human feedback (RLHF) to enhance simplicity and training stability. In this work, we propose SimPO, a simpler yet more effective approach. The effectiveness of SimPO is attributed to a key design: using the average log probability of a sequence as the implicit reward. This reward formulation better aligns with model generation and eliminates the need for a reference model, making it more compute and memory efficient. Additionally, we introduce a target reward margin to the Bradley-Terry objective to encourage a larger margin between the winning and losing responses, further improving the algorithm's performance. We compare SimPO to DPO and its latest variants across various state-of-the-art training setups, including both base and instruction-tuned models such as Mistral, Llama 3, and Gemma 2. We evaluate on extensive…",
+      "arxiv_id": "2405.14734",
+      "doi": "10.48550/arxiv.2405.14734",
+      "is_focus": true,
+      "citation_count_source": "semantic_scholar",
+      "aliases": [
+        [
+          "arxiv",
+          "2405.14734"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2405.14734"
+        ]
+      ],
+      "github_url": "https://github.com/princeton-nlp/SimPO",
+      "seed_paper_id": "26141bc61b46c848766b55846c938fda7187e534"
+    },
+    {
+      "id": "openalex:W4402753770",
+      "title": "Using Human Feedback to Fine-tune Diffusion Models without Any Reward Model",
+      "year": 2024,
+      "venue": "IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings",
+      "venue_tier": "A+",
+      "authors": [
+        "Kai Yang",
+        "Jian Tao",
+        "Jiafei Lyu",
+        "Chunjiang Ge",
+        "Jiaxin Chen"
+      ],
+      "kinds": [],
+      "citation_count": 53,
+      "github_stars": 244,
+      "tldr": "Using reinforcement learning with human feedback (RLHF) has shown significant promise in fine-tuning diffusion models. Previous methods…",
+      "short_abstract": "Using reinforcement learning with human feedback (RLHF) has shown significant promise in fine-tuning diffusion models. Previous methods start by training a reward model that aligns with human preferences, then leverage RL techniques to fine-tune the underlying models. However, crafting an efficient reward model demands extensive datasets, optimal architecture, and manual hyperparameter tuning, making the process both time and cost-intensive. The direct preference optimization (DPO) method, effective in fine-tuning large language models, eliminates the necessity for a reward model. However, the extensive GPU memory requirement of the diffusion model's denoising process hinders the direct application of the DPO method. To address this issue, we introduce the Direct Preference for De-noising Diffusion Policy Optimization (D3PO) method to directly fine-tune diffusion models. The theoretical analysis demonstrates that although D3PO omits training a reward model, it effectively functions…",
+      "arxiv_id": "2311.13231",
+      "doi": "10.1109/cvpr52733.2024.00854",
+      "aliases": [
+        [
+          "arxiv",
+          "2311.13231"
+        ],
+        [
+          "doi",
+          "10.1109/cvpr52733.2024.00854"
+        ]
+      ],
+      "github_url": "https://github.com/yk7333/d3po",
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W7133208539",
+      "title": "Direct Preference Optimization: Your Language Model is Secretly a Reward Model",
+      "year": 2023,
+      "venue": "neural information processing systems",
+      "venue_tier": "A+",
+      "authors": [
+        "Rafael Rafailov",
+        "Archit Sharma",
+        "Eric Mitchell",
+        "Christopher D. Manning",
+        "Stefano Ermon"
+      ],
+      "kinds": [],
+      "citation_count": 11262,
+      "github_stars": 2920,
+      "tldr": "While large-scale unsupervised language models (LMs) learn broad world knowledge and some reasoning skills, achieving precise control of…",
+      "short_abstract": "While large-scale unsupervised language models (LMs) learn broad world knowledge and some reasoning skills, achieving precise control of their behavior is difficult due to the completely unsupervised nature of their training. Existing methods for gaining such steerability collect human labels of the relative quality of model generations and fine-tune the unsupervised LM to align with these preferences, often with reinforcement learning from human feedback (RLHF). However, RLHF is a complex and often unstable procedure, first fitting a reward model that reflects the human preferences, and then fine-tuning the large unsupervised LM using reinforcement learning to maximize this estimated reward without drifting too far from the original model. In this paper we introduce a new parameterization of the reward model in RLHF that enables extraction of the corresponding optimal policy in closed form, allowing us to solve the standard RLHF problem with only a simple classification loss. The…",
+      "arxiv_id": "2305.18290",
+      "doi": "10.52202/075280-2338",
+      "is_focus": true,
+      "is_trending": true,
+      "citation_count_source": "semantic_scholar",
+      "aliases": [
+        [
+          "arxiv",
+          "2305.18290"
+        ],
+        [
+          "doi",
+          "10.52202/075280-2338"
+        ]
+      ],
+      "github_url": "https://github.com/eric-mitchell/direct-preference-optimization",
+      "seed_paper_id": "d8e3f22d801ee1d061d1e9e90283857e0b057a98"
+    },
+    {
+      "id": "openalex:W7133211372",
+      "title": "Training Language Models to Follow Instructions with Human Feedback",
+      "year": 2022,
+      "venue": "neural information processing systems",
+      "venue_tier": "A+",
+      "authors": [
+        "Long Ouyang",
+        "Jeffrey Wu",
+        "Xu Jiang",
+        "Diogo Almeida",
+        "Carroll L. Wainwright"
+      ],
+      "kinds": [],
+      "citation_count": 25267,
+      "github_stars": 1258,
+      "tldr": "Making language models bigger does not inherently make them better at following a user's intent. For example, large language models can…",
+      "short_abstract": "Making language models bigger does not inherently make them better at following a user's intent. For example, large language models can generate outputs that are untruthful, toxic, or simply not helpful to the user. In other words, these models are not aligned with their users. In this paper, we show an avenue for aligning language models with user intent on a wide range of tasks by fine-tuning with human feedback. Starting with a set of labeler-written prompts and prompts submitted through the OpenAI API, we collect a dataset of labeler demonstrations of the desired model behavior, which we use to fine-tune GPT-3 using supervised learning. We then collect a dataset of rankings of model outputs, which we use to further fine-tune this supervised model using reinforcement learning from human feedback. We call the resulting models InstructGPT. In human evaluations on our prompt distribution, outputs from the 1.3B parameter InstructGPT model are preferred to outputs from the 175B GPT-3,…",
+      "arxiv_id": "2203.02155",
+      "doi": "10.52202/068431-2011",
+      "citation_count_source": "semantic_scholar",
+      "aliases": [
+        [
+          "arxiv",
+          "2203.02155"
+        ],
+        [
+          "doi",
+          "10.52202/068431-2011"
+        ]
+      ],
+      "github_url": "https://github.com/openai/following-instructions-human-feedback",
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W7133236450",
+      "title": "Self-Refine: Iterative Refinement with Self-Feedback",
+      "year": 2023,
+      "venue": "neural information processing systems",
+      "venue_tier": "A+",
+      "authors": [
+        "Aman Madaan",
+        "Niket Tandon",
+        "Prakhar Gupta",
+        "Skyler Hallinan",
+        "Luyu Gao"
+      ],
+      "kinds": [],
+      "citation_count": 5277,
+      "github_stars": 0,
+      "tldr": "Like humans, large language models (LLMs) do not always generate the best output on their first try. Motivated by how humans refine their…",
+      "short_abstract": "Like humans, large language models (LLMs) do not always generate the best output on their first try. Motivated by how humans refine their written text, we introduce Self-Refine, an approach for improving initial outputs from LLMs through iterative feedback and refinement. The main idea is to generate an initial output using an LLMs; then, the same LLMs provides feedback for its output and uses it to refine itself, iteratively. Self-Refine does not require any supervised training data, additional training, or reinforcement learning, and instead uses a single LLM as the generator, refiner, and feedback provider. We evaluate Self-Refine across 7 diverse tasks, ranging from dialog response generation to mathematical reasoning, using state-of-the-art (GPT-3.5, ChatGPT, and GPT-4) LLMs. Across all evaluated tasks, outputs generated with Self-Refine are preferred by humans and automatic metrics over those generated with the same LLM using conventional one-step generation, improving by ~20%…",
+      "arxiv_id": "2303.17651",
+      "doi": "10.52202/075280-2019",
+      "is_trending": true,
+      "citation_count_source": "semantic_scholar",
+      "aliases": [
+        [
+          "arxiv",
+          "2303.17651"
+        ],
+        [
+          "doi",
+          "10.52202/075280-2019"
+        ]
+      ],
+      "is_focus": false
+    }
+  ],
+  "edges": [
+    {
+      "src": "openalex:W4223908421",
+      "dst": "openalex:W4365211596",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「RRHF: Rank Responses to Align Language Models with Human Fe…」(2023) は「Training a Helpful and Harmless Assistant with Reinforcemen…」(2022) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "d9a61aa5ead729f4e44687a04b2d572c34cc7f6b483cf72c8741cb5d63b38ddc"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4223908421",
+      "dst": "openalex:W4366196653",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「RAFT」(2023) は 「Training a Helpful and Harmless…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "b2fa5e535a9af507756ea02de99dc0b124ae6ae1e25c71f3774ce6a076e7f9f8"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4223908421",
+      "dst": "openalex:W4377121527",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「SLiC-HF」(2023) は 「Training a Helpful and Harmless…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "a19440a5582b0d33c6efe6bff3803c009ef664b09521fd7ec1c8aba17750f543"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4223908421",
+      "dst": "openalex:W4386437475",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「RLAIF vs. RLHF」(2023) は 「Training a Helpful and Harmless…」(2022) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"For helpful and harmless dialogue generation, we use Anthropic’s Helpful and Harmless preference datasets 12 (Bai et al., 2022a).\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "d50fb748740d34a1a0048dacec31fa69390a25949fb598533e229b03041644f5"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4223908421",
+      "dst": "openalex:W4390035079",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Bridging the Gap」(2023) は 「Training a Helpful and Harmless…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "3809876d3f5676c6c8a51a6040822d83b3f060aa9a4c8f470e2cb09e3519c957"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4223908421",
+      "dst": "openalex:W4392908117",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「The Inadequacy of Reinforcement Learning From Human Feedbac…」(2024) は「Training a Helpful and Harmless Assistant with Reinforcemen…」(2022) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "cf7bab590ce59fdbdf4fbd41cf0db53f17ef95a896b5aa1aae29416a80c0b1d8"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4223908421",
+      "dst": "openalex:W4398859186",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「SimPO」(2024) は 「Training a Helpful and Harmless…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "b2e2184e45bc08c465ba82321749b9f3e12aa3f8d576007925851c313cf2e8a8"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4223908421",
+      "dst": "openalex:W4402753770",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Using Human Feedback to Fine-tu…」(2024) は 「Training a Helpful and Harmless…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "d76373096a1e02be6b123ee1906bafefa6ecab3865cafa8f30319c80c4b6c892"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4223908421",
+      "dst": "openalex:W7133208539",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「Direct Preference Optimization」(2023) は 「Training a Helpful and Harmless…」(2022) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"A policy must produce an engaging and helpful response y to a user’s query; we use the Anthropic Helpful and Harmless dialogue dataset [1], containing 170k dialogues between a human and an automated assistant.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "7165c51d88ea229cf4a0a2f64a291b1499b68ef05ddf91fa7695166e7c0ef7a6"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4307001524",
+      "dst": "openalex:W4365211596",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「RRHF」(2023) は 「Scaling Laws for Reward Model O…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"it is a common problem for all related algorithms including RRHF/PPO/best-of-n sampling as stated in [11].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "5c1e5f123e7d6d677fd85bf12ec8581c7456d24a813c12c7bf97daf086af6715"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4307001524",
+      "dst": "openalex:W4366196653",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「RAFT」(2023) は 「Scaling Laws for Reward Model O…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"You’ll also want to make sure the greenhouse is strong enough to support the weight of the plants.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "58912b512b55e285990fe211d8213f9ccece51fa2ae4fd741d04ef8ac5b340bb"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4307001524",
+      "dst": "openalex:W4390035079",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Bridging the Gap」(2023) は 「Scaling Laws for Reward Model O…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Gao et al. (2022) also used this approach to study the scaling properties of feedback models and the problem of \"overoptimization\" (see below).\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "55c0f2b7a86e8a5848106a1060a6b2f645a57b256c209571dd96ec4379243a09"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4307001524",
+      "dst": "openalex:W4393763811",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Survey on Large Language Model-…」(2024) は 「Scaling Laws for Reward Model O…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"First, in preference-based RL, when an RL agent optimizes against biased reward models generated by LLMs to predict human preferences, overoptimization, and overfitting may occur [121], impeding the learning of the true reward function.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "aefe8a8042f82a3bd7b2150beea80a9ff6526d5e3cc67192e3f965fd06c817af"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4307001524",
+      "dst": "openalex:W4398859186",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「SimPO」(2024) は 「Scaling Laws for Reward Model O…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "4975fc99e9042053948b00c7dcd8f43c25edabc9a7ba33e4d39067c62de0ea85"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4365211596",
+      "dst": "openalex:W4366196653",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「RAFT」(2023) は 「RRHF」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"In comparison, RRHF involves a diverse range of sources to generate data, and then finetune the model on the high-reward subset of these collected samples, while our primary focus lies in the online generated samples of the trained model i…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "6ed14fbe3630702559797b471214a06bc5c7ed52c681dc713e6d134b00bd9323"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4365211596",
+      "dst": "openalex:W4398859186",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「SimPO」(2024) は 「RRHF」(2023) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"In this work, we compare SimPO to a series of offline algorithms, including RRHF [86], SLiC-HF [91], DPO [61], IPO [6], CPO [83], KTO [29], ORPO [38], and R-DPO [60], and find that SimPO can outperform them in both efficiency and performan…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "4e9ead12a867598f63daa359599d9739b0882a1f4b24719edaec6b9561868815"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4366196653",
+      "dst": "openalex:W4386437475",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「RLAIF vs. RLHF」(2023) は 「RAFT」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Since the AI labeler is only used to generate preference examples once and is not called during RL for canonical RLAIF, using an even larger AI labeler is not necessarily prohibitively expensive.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "2f85059149dde3bdcaca661b9631661afa6b4b6b0c87a07085aa258b2d5c78f9"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4366196653",
+      "dst": "openalex:W4398859186",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「SimPO」(2024) は 「RAFT」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "2b614316b4fb6daf3b03f1850f700b0eb2005d242ec0caa1e9f9006310ecd641"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4377121527",
+      "dst": "openalex:W4398859186",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「SimPO」(2024) は 「SLiC-HF」(2023) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"In this work, we compare SimPO to a series of offline algorithms, including RRHF [86], SLiC-HF [91], DPO [61], IPO [6], CPO [83], KTO [29], ORPO [38], and R-DPO [60], and find that SimPO can outperform them in both efficiency and performan…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "51e28dcb2413b9afb30a55ae06678c272fd0d6ff09fbfc7b97a739143e7c6ac1"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4385436553",
+      "dst": "openalex:W4366196653",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「RAFT」(2023) は 「Open Problems and Fundamental L…」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "714f0f83321ab0845baf1cc821d1b8d0feaa4ffbe8df66f3cfd659bcd32f26b8"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4385436553",
+      "dst": "openalex:W4398859186",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「SimPO」(2024) は 「Open Problems and Fundamental L…」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Recently, [13] has highlighted challenges across the whole RLHF pipeline from preference data collection to model training.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "b9ec793dd1bd9b8883d1a665dd7a962a04097f9eb25559da8048926d72414b1b"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4385436553",
+      "dst": "openalex:W4402753770",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Using Human Feedback to Fine-tu…」(2024) は 「Open Problems and Fundamental L…」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "5273deede9ac448e810bb1934ade038850546d637c52f6e0ae39ad05e31af70f"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4386437475",
+      "dst": "openalex:W4391609325",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Reinforcement Learning for Gene…」(2024) は 「RLAIF vs. RLHF」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"RLAIF (Lee et al., 2023b) completely replaces human preferences with preferences from an off-the-shelf LLM for text summarization.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "52dec116eaaa4ca52bafcb43808b5e30d6682e44abca2fbef55f471578a9512c"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4386437475",
+      "dst": "openalex:W4392908117",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「The Inadequacy of Reinforcement Learning From Human Feedbac…」(2024) は「RLAIF vs. RLHF: Scaling Reinforcement Learning from Human F…」(2023) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "78bdbd2f86caea0c5cd036e04ad42bb5f42e9b9c19e53bbadbaa8f65933f7d09"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4386437475",
+      "dst": "openalex:W4402753770",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Using Human Feedback to Fine-tu…」(2024) は 「RLAIF vs. RLHF」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Some recent research utilizes Reinforcement Learning from AI Feedback (RLAIF) [32, 62] as an alternative to RLHF for model fine-tuning.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "9ccb80c9d6a0156ba0fc29b85d21b1dcfed0ec7eb09dd224a83cc5c5feaca6bc"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4391609325",
+      "dst": "openalex:W4392908117",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「The Inadequacy of Reinforcement Learning From Human Feedbac…」(2024) は「Reinforcement Learning for Generative AI: State of the Art,…」(2024) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "a61f03d5694949edbefad4ecbf8f389a9c8a3531037f813f15bacdf22b2a68a0"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7133208539",
+      "dst": "openalex:W4386437475",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「RLAIF vs. RLHF」(2023) は 「Direct Preference Optimization」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"To mitigate some stability and efﬁciency challenges of conducting RL, DPO (Rafailov et al., 2024) refor-mulates the training objective to rely on a classiﬁcation loss, while RaFT (Dong et al., 2023) employs the reward model for conducting …\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "01011d8e08884c09c6c97c285fac18a7417e0fa7d0af39647dfd55028a9fbb48"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7133208539",
+      "dst": "openalex:W4398859186",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「SimPO」(2024) は 「Direct Preference Optimization」(2023) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"In this work, we compare SimPO to a series of offline algorithms, including RRHF [86], SLiC-HF [91], DPO [61], IPO [6], CPO [83], KTO [29], ORPO [38], and R-DPO [60], and find that SimPO can outperform them in both efficiency and performan…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "92df6480309d802e156959af88848dd4f30c9347c6157ce2d6be9b0609dd7469"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7133208539",
+      "dst": "openalex:W4402753770",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Using Human Feedback to Fine-tu…」(2024) は 「Direct Preference Optimization」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"This method forgoes the training of a This CVPR paper is the Open Access version, provided by the Computer Vision Foundation.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "dd3d420f36d76ed621bb1501a161a9ffb2cbfb89198aa0217b3dadea74a26a81"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7133211372",
+      "dst": "openalex:W4223908421",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Training a Helpful and Harmless Assistant with Reinforcemen…」(2022) は「Training Language Models to Follow Instructions with Human …」(2022) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "c35ff02624da6772186d0522a82730a5bedbe2f2918191942b9e7d8dab87e982"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7133211372",
+      "dst": "openalex:W4365211596",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「RRHF」(2023) は 「Training Language Models to Fol…」(2022) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Ouyang et al. [22] and Ramamurthy et al. [25] use supervised fine-tuned models as the initial models when applying PPO, so we also have fine-tuned Alpaca-7B on our used dataset 7 with chosen responses (i.e. human-preferred responses) follo…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "929848c6d32bf586342d8db23a5f43d169c9ba1e7e88ab8bc318c8405ef5e2c4"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7133211372",
+      "dst": "openalex:W4366196653",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「RAFT」(2023) は 「Training Language Models to Fol…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"For instance, OpenAI [26] fine-tuned a smaller version of GPT-3 using RLHF and a reward function that emphasized certain human values.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "31b14064e3b1c78aa15d758aa3cfab3a0956dd64366086ed2740b85a99b7c031"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7133211372",
+      "dst": "openalex:W4377121527",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「SLiC-HF」(2023) は 「Training Language Models to Fol…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "a565d34463c897ddc4f477b4d3697cdbd396229bf07abd0b2c1bbb5fc061be3e"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7133211372",
+      "dst": "openalex:W4386437475",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「RLAIF vs. RLHF」(2023) は 「Training Language Models to Fol…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Reinforcement Learning from Human Feedback (RLHF) is an effective technique for aligning language models to human preferences (Stiennon et al., 2020; Ouyang et al., 2022).\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "b848925e4db8cff2ef967beda8808436b3257d99b7f16cb76e64e74517f111ce"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7133211372",
+      "dst": "openalex:W4392908117",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「The Inadequacy of Reinforcement Learning From Human Feedbac…」(2024) は「Training Language Models to Follow Instructions with Human …」(2022) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "52b604eedce08c7bb7f8af55999e5d5487f16efa3ec74d04f8f89ecebf521255"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7133211372",
+      "dst": "openalex:W4398859186",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「SimPO」(2024) は 「Training Language Models to Fol…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"While the classical RLHF approach [58, 65] has shown impressive results, it presents optimization challenges due to its multi-stage procedure, which involves training a reward model and then optimizing a policy model to maximize that rewar…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "826ee43c9f17e42f109b98a63067f5e177842a965915d71c6e83ecc19de72d55"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7133211372",
+      "dst": "openalex:W7133208539",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Direct Preference Optimization」(2023) は 「Training Language Models to Fol…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"In other words, selecting the model’s desired responses and behavior from its very wide knowledge and abilities is crucial to building AI systems that are safe, performant, and controllable [26].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "ccd7d7ac750799b66da15ca471a70d621d3286cdf90b4854ad01d9306864b87b"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7133236450",
+      "dst": "openalex:W4386437475",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「RLAIF vs. RLHF」(2023) は 「Self-Refine」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Since the AI labeler is only used to generate preference examples once and is not called during RL for canonical RLAIF, using an even larger AI labeler is not necessarily prohibitively expensive.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "d534283c84cdc4cf72fa5e8dfc5e7b417ef4d059acbd0c7aa9580d08045ef3ef"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    }
+  ],
+  "clusters": [],
+  "meta": {
+    "kind": "theme",
+    "generator": "paperpilot.scripts.build_theme_lineage",
+    "source": "build_theme_lineage.py",
+    "theme": "Reinforcement Learning from Human Feedback",
+    "slug": "reinforcement-learning-from-human-feedback",
+    "keywords": [
+      "Reinforcement Learning from Human Feedback"
+    ],
+    "seeds": [
+      "openalex:W7133208539",
+      "openalex:W4385436553",
+      "openalex:W4386437475",
+      "openalex:W4307001524",
+      "openalex:W4398859186"
+    ],
+    "depth": 1,
+    "since_year": 2018,
+    "generated_at": "2026-10-25T06:10:11.525000Z",
+    "provenance_breakdown": {
+      "api_citation": 6,
+      "s2_context_rule": 32
+    },
+    "completeness": {
+      "complete": false,
+      "expansions_attempted": 16,
+      "expansions_failed": 2,
+      "supplement_failures": []
+    },
+    "topic_gate": {
+      "method": "embedding+terms",
+      "model": "Xenova/bge-small-en-v1.5",
+      "revision": "ea104dacec62c0de699686887e3f920caeb4f3e3",
+      "thresholds": {
+        "z_lo": 0,
+        "z_hi": 1
+      },
+      "pool_size": 121
+    },
+    "canonical_seeds": [
+      "openalex:W4307001524",
+      "openalex:W4398859186",
+      "openalex:W7133208539"
+    ],
+    "lineage_llm": "off"
+  }
+}
