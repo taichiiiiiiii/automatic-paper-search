@@ -57,7 +57,7 @@ import {
 import { DegradedClassificationError, evidenceClassifiedRate } from "./classificationGate.js";
 import { CrossrefReferenceSource } from "./crossrefReferences.js";
 import { DblpVenueSource } from "./dblpVenues.js";
-import { dedupNodesByStrongAlias, remapEdgeEndpoints } from "./dedup.js";
+import { dedupNodesByStrongAlias, dropEdgesOfMergedNodes } from "./dedup.js";
 import {
   CANONICAL_SEED_REFERENCE_LIMIT,
   CANONICAL_SEED_SURVEY_SOURCES,
@@ -947,7 +947,16 @@ export async function buildThemeLineage(
   );
   nodes = dedupedNodes;
   if (nodeRemap.size > 0) {
-    edges = remapEdgeEndpoints(edges, nodeRemap);
+    // R2-48: a node merged away by a shared strong alias takes its edges
+    // with it (their evidence hash binds the removed id) instead of
+    // aborting the whole build.
+    const merged = dropEdgesOfMergedNodes(edges, nodeRemap);
+    edges = merged.edges;
+    if (merged.dropped.length > 0) {
+      logger.warn(
+        `strong-alias dedup: ${nodeRemap.size} duplicate node(s) merged; dropped ${merged.dropped.length} edge(s) bound to the removed ids`,
+      );
+    }
     seedIds = [...new Set(seedIds.map((sid) => nodeRemap.get(sid) ?? sid))].sort(codepointCompare);
   }
 

@@ -179,6 +179,29 @@ export interface DedupEdgeLike {
   [key: string]: unknown;
 }
 
+/**
+ * R2-48: the graceful form of {@link remapEdgeEndpoints}. A depth-2 build of
+ * Diffusion Models aborted the whole request ("cannot remap endpoint-bound
+ * provenance") because the same work had entered under two ids (e.g. an S2
+ * paper id and an OpenAlex id sharing a DOI) and one of them already had
+ * edges. The edge evidence hash binds both endpoint ids, so the edge cannot
+ * be re-pointed; but losing the whole lineage over it is the worse outcome.
+ * Edges that touch a node removed by the merge are dropped (the surviving
+ * node keeps its own edges), and the caller logs how many.
+ */
+export function dropEdgesOfMergedNodes<T extends DedupEdgeLike>(
+  edges: readonly T[],
+  remap: ReadonlyMap<string, string>,
+): { edges: T[]; dropped: T[] } {
+  if (remap.size === 0) return { edges: edges as T[], dropped: [] };
+  const kept: T[] = [];
+  const dropped: T[] = [];
+  for (const e of edges) {
+    (remap.has(e.src) || remap.has(e.dst) ? dropped : kept).push(e);
+  }
+  return { edges: kept, dropped };
+}
+
 /** Reject endpoint rewrites whose endpoint-bound evidence cannot be
  * rebuilt. An identity collapse is still safe when the removed node is
  * isolated (no edge endpoint changes); otherwise this throws rather

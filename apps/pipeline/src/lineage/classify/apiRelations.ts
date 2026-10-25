@@ -674,7 +674,7 @@ const INTRODUCED_RESOURCE =
 
 /** R2-46: the sentence says what the experiments were run on / with. */
 const EXPERIMENT_TOOL =
-  /\b(?:experiments?|evaluations?|results?)\s+(?:were|are|was|is)\s+(?:all\s+)?(?:conducted|performed|carried\s+out|run|implemented)\s+(?:using|with|on|based\s+on)\b|\b(?:we|I)\s+(?:conduct|perform|run|carry\s+out)\s+(?:all\s+|our\s+(?:main\s+)?)?(?:experiments?|evaluations?)\s+(?:using|with|on|based\s+on)\b|\bthe\s+(?:model|backbone|network|architecture)\s+(?:we|that\s+we)\s+(?:ex-?periment|evaluate|use|employ)\s+with\b|\bconduct\s+(?:our\s+)?experiments?\s+based\s+on\b/i;
+  /\b(?:experiments?|evaluations?|results?)\s+(?:were|are|was|is)\s+(?:all\s+)?(?:conducted|performed|carried\s+out|run|implemented)\s+(?:using|with|on|based\s+on)\b|\b(?:we|I)\s+(?:conduct|perform|run|carry\s+out)\s+(?:all\s+|our\s+(?:main\s+)?)?(?:experiments?|evaluations?)\s+(?:using|with|on|based\s+on)\b|\bthe\s+(?:model|backbone|network|architecture)\s+(?:we|that\s+we)\s+(?:ex-?periment|evaluate|use|employ)\s+with\b|\bconduct\s+(?:our\s+)?experiments?\s+based\s+on\b|\b(?:we|I)\s+(?:use|employ|adopt|utili[sz]e)\s+[^,.;]{1,60}\s+as\s+(?:our|the)\s+(?:backbone|base|baseline|base\s+model|backbone\s+model|model)\b/i;
 
 /** A first-person extension/build verb (“we extend … with”) keeps a sentence a build-on. */
 const FIRST_PERSON_EXTEND =

@@ -6,6 +6,12 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Changed — 分野の自動拡張を 30 論文未満に、重複で作成全体を落とさない（R2-48）
+
+- `--auto-expand` が深さ 2 で作り直す下限を 15 → 30 論文に（Diffusion Models は深さ 1 の 21 論文が深さ 2 で 56 論文）。
+- 同じ論文が 2 つの ID で入って辺を持つとき、作成全体が `cannot remap endpoint-bound provenance` で失敗していた。統合で消える ID の辺だけを落として続ける。
+- 「we use X as our backbone, which is built on Y」を拡張にしない。
+
 ### Fixed — 失敗した依頼を画面に出し、再依頼できる（R2-47）
 
 - `GET /api/themes/status` が休止状態で、失敗・中止した依頼は画面で「生成中」のままだった。GitHub の実行を依頼 ID で探して返すようにした（15 秒の記憶つき）。進行中の記録が失敗した実行を指しているときは、同じ分野の再送信が新しく配信される。

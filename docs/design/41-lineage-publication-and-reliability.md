@@ -740,3 +740,15 @@ RAG の系譜で見つかった 2 種類の誤りを、論文ごとの Semantic 
 - 再依頼: 進行中の記録がある分野を再送信したとき、その実行が終わっていて成功でなければ（failure・cancelled・timed_out）記録を解放して新しく配信する。実行中・成功・見つからない・GitHub に聞けない場合は従来どおり同じ実行を追う。
 - テスト: `test/routes/themes-run-status.test.ts`（実行の選択と公開用の形、15 秒の記憶、PAT なし・不正 ID・GitHub の失敗、status 路の 200/400/503、失敗した実行のあとの再送信が配信される／実行中・成功・未発見・取得失敗では追う）。API の 267 本が通過。
 - Worker のデプロイを伴う。
+
+### R2-48 深さ 1 で終わる分野を減らす・重複で全体を落とさない（2026-10-24）
+
+Diffusion Models は深さ 1（種 5・幅 8）で 21 論文のまま公開され、Score-based 系や Imagen・Palette・D3PM が入らなかった。手元で同じ分野を深さ 2（種 10・幅 12）で作ると 56 論文（+35。Imagen、Palette、D3PM、eDiff-I、T2I-Adapter、Imagic、Null-text Inversion、概念消去の系列など。応用の末端は低インパクト除去が落とした後の数）。
+
+| 変更 | 内容 |
+|---|---|
+| 自動拡張の下限 | `--auto-expand` が「疎」と見なす論文数を 15 → 30 未満（`SPARSE_NODES`）。深さ 1 の結果が 30 未満なら深さ 2 で作り直す。RAG の深さ 1（30 論文）は拡張しない。時間は 1 回分（約 5〜8 分）増える |
+| 重複で全体を落とさない | 同じ論文が 2 つの ID（S2 と OpenAlex）で入り、片方に辺があると `cannot remap endpoint-bound provenance` で作成全体が失敗した（Diffusion Models の深さ 2 で再現）。辺の根拠の hash は両端の ID に結び付くので付け替えられないため、統合で消える ID に付いた辺だけを落とし（`dropEdgesOfMergedNodes`、件数を警告に出す）、作成は続ける。今回は 1 ノード統合・5 辺を落として 56 論文・433 辺 |
+| 実験の道具 | 「we use X as our backbone, which is built on Y」（実験の土台の説明）も `experiment_tool` の利用扱い |
+
+深さ 2 の強い関係 7 件の読み取り: 5 件は基礎文献リスト（DDPM を引用）の規則、1 件は「conditional variant of DDIM をデコーダに使う」（Diffusion Autoencoders ← DDIM、妥当）、1 件は上の実験の道具（Multi-Concept Customization ← LDM、利用なので直した）。

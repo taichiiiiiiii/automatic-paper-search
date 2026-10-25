@@ -11,6 +11,7 @@ import type { ThemeGraphNode } from "../../../src/lineage/shared/node.js";
 import {
   dedupByTitleYear,
   dedupNodesByStrongAlias,
+  dropEdgesOfMergedNodes,
   normalizeDedupTitle,
   remapEdgeEndpoints,
 } from "../../../src/lineage/theme/dedup.js";
@@ -236,5 +237,23 @@ describe("dedupByTitleYear (#298)", () => {
     const [deduped, remap] = dedupByTitleYear(papers);
     expect(new Set(deduped.map((p) => p.paperId))).toEqual(new Set(["k1", "k2"]));
     expect(remap.size).toBe(0);
+  });
+});
+
+describe("dropEdgesOfMergedNodes (R2-48)", () => {
+  const e = (src: string, dst: string) => ({ src, dst, relation: "baseline_only" });
+
+  it("keeps the survivor's edges and drops those bound to a removed id", () => {
+    const edges = [e("a", "b"), e("a", "dup"), e("dup", "c"), e("b", "c")];
+    const r = dropEdgesOfMergedNodes(edges, new Map([["dup", "b"]]));
+    expect(r.edges).toEqual([e("a", "b"), e("b", "c")]);
+    expect(r.dropped).toEqual([e("a", "dup"), e("dup", "c")]);
+  });
+
+  it("is the identity when nothing was merged", () => {
+    const edges = [e("a", "b")];
+    const r = dropEdgesOfMergedNodes(edges, new Map());
+    expect(r.edges).toBe(edges);
+    expect(r.dropped).toEqual([]);
   });
 });

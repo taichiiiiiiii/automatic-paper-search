@@ -18,6 +18,7 @@ import { describe, expect, it } from "vitest";
 import {
   classifyS2Pair,
   type PairSignals,
+  usageReason,
   v1RelationFor,
 } from "../../../src/lineage/classify/apiRelations.js";
 import { isSurveyLike } from "../../../src/lineage/shared/surveyLike.js";
@@ -29,6 +30,9 @@ interface Case {
   sentence: string;
   /** All S2 contexts of the pair (some rules resolve the marker only with the full set). */
   contexts?: string[];
+  /** S2 pair signals, when the case depends on them. */
+  intents?: string[];
+  influential?: boolean;
   expect: "extends" | "contrasts" | "baseline_only";
   knownGap?: boolean;
 }
@@ -180,6 +184,23 @@ const CASES: Case[] = [
     expect: "baseline_only",
   },
   {
+    name: "Multi-Concept Customization: Stable Diffusion used as the backbone, built on LDM, is a tool",
+    cited: {
+      title: "High-Resolution Image Synthesis with Latent Diffusion Models",
+      year: 2022,
+      authors: ["Robin Rombach"],
+    },
+    citing: "Multi-Concept Customization of Text-to-Image Diffusion",
+    sentence:
+      "In our experiments, we use Stable Diffusion [1] as our backbone model, which is built on the Latent Diffusion Model (LDM) [57].",
+    contexts: [
+      "To improve controllability, these models can be conditioned on a class [9,62], image [27,43,73,86], or text prompt [45,67,87].",
+    ],
+    intents: ["result", "methodology", "background"],
+    influential: true,
+    expect: "baseline_only",
+  },
+  {
     name: "a first-person extension inside an experiment sentence still builds on",
     cited: {
       title: "High-Resolution Image Synthesis with Latent Diffusion Models",
@@ -211,9 +232,9 @@ function predict(c: Case): string {
   const child = { title: c.citing };
   const s: PairSignals = {
     found: true,
-    intents: [],
+    intents: c.intents ?? [],
     contexts: c.contexts ?? [c.sentence],
-    isInfluential: false,
+    isInfluential: c.influential ?? false,
     citingTitle: c.citing,
     citingSurvey: isSurveyLike(child),
     cited: { title: c.cited.title, year: c.cited.year, authors: c.cited.authors } as never,
@@ -233,4 +254,27 @@ describe("R2-42 ICCV/EMNLP 2025 strong-relation read", () => {
       expect(predict(c)).toBe(c.expect);
     });
   }
+});
+
+describe("usageReason: a backbone the experiments use is a tool (R2-46)", () => {
+  const facts = { citedResource: false };
+  it("flags 'we use X as our backbone, which is built on Y'", () => {
+    expect(
+      usageReason(
+        "In our experiments, we use Stable Diffusion [1] as our backbone model, which is built on the Latent Diffusion Model (LDM) [57].",
+        facts,
+      ),
+    ).not.toBeNull();
+  });
+  it("keeps 'we build on Y' and 'we extend Y' as build-ons", () => {
+    expect(
+      usageReason("We build on the Latent Diffusion Model (LDM) [57] and add a new loss.", facts),
+    ).toBeNull();
+    expect(
+      usageReason(
+        "In our experiments we extend latent diffusion models (Rombach et al., 2022) with a learned noise schedule.",
+        facts,
+      ),
+    ).toBeNull();
+  });
 });
