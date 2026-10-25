@@ -6,6 +6,10 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Changed — 上流の取得結果を実行間で使い回す（R2-51）
+
+- on-demand の実行が、S2 などの生の取得キャッシュを復元・保存する（失敗した実行でも保存）。S2 のキーが取れないため、毎回 429 の待機で始まっていた。
+
 ### Fixed — 疎な最初の結果を同じ実行の中で広げて 40 分で打ち切られる（R2-50）
 
 - on-demand の最初の実行に `--defer-sparse-expansion` を付け、疎でも公開できる結果は先に出す。広げるのは `upgrade` ジョブ（30 論文未満または 5 辺未満）。公開の下限を通らない結果だけは、これまでどおり実行内で広げる。

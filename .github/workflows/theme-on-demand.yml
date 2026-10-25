@@ -113,6 +113,32 @@ jobs:
           restore-keys: |
             topic-embedding-vectors-ea104dacec62-
 
+      # R2-51: without a Semantic Scholar key (AI2 stopped issuing keys to
+      # free-mail / third-party-app requests in 2024) every run starts with an
+      # empty S2 cache and spends most of its time in 429 back-off. The raw
+      # fetch caches (S2 references / citation counts / seed refs / expansions,
+      # arXiv HTML contexts, Crossref, DBLP, GitHub stars) are content-keyed
+      # upstream responses, so a hit is always valid; they are restored here
+      # and saved again at the end even when the run fails (an incomplete
+      # build still fetched a lot). classifications.json is NOT cached: it
+      # depends on the classifier rules, which change between commits.
+      - name: Restore upstream fetch cache
+        id: fetch-cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            data/state/lineage-cache/s2_references.json
+            data/state/lineage-cache/s2_citation_counts.json
+            data/state/lineage-cache/s2seedrefs_*.json
+            data/state/lineage-cache/s2expand_*.json
+            data/state/lineage-cache/arxiv_html_contexts.json
+            data/state/lineage-cache/crossref_references.json
+            data/state/lineage-cache/dblp_venues.json
+            data/state/lineage-cache/github_stars.json
+          key: upstream-fetch-cache-v1-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            upstream-fetch-cache-v1-
+
       - name: Generate theme lineage
         if: inputs.expand != true
         # User input goes through env var only (never spliced into the
@@ -262,6 +288,23 @@ jobs:
           path: ${{ runner.temp }}/candidate
           if-no-files-found: error
           retention-days: 14
+
+      # R2-51: save what this run fetched even when the build failed (an
+      # incomplete build still spent its 429 back-off getting these).
+      - name: Save upstream fetch cache
+        if: always()
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            data/state/lineage-cache/s2_references.json
+            data/state/lineage-cache/s2_citation_counts.json
+            data/state/lineage-cache/s2seedrefs_*.json
+            data/state/lineage-cache/s2expand_*.json
+            data/state/lineage-cache/arxiv_html_contexts.json
+            data/state/lineage-cache/crossref_references.json
+            data/state/lineage-cache/dblp_venues.json
+            data/state/lineage-cache/github_stars.json
+          key: upstream-fetch-cache-v1-${{ github.run_id }}-${{ github.run_attempt }}
 
   promote:
     needs: generate
