@@ -184,28 +184,27 @@ const CASES: Case[] = [
     expect: "baseline_only",
   },
   {
-    name: "MedCLIP: unlike previous works (Khosla; Zheng; Wang) is a contrast over a group, not SupCon",
+    name: 'IPO: "we build on the notations of DPO" is usage of notation, not an extension',
     cited: {
-      title: "Supervised Contrastive Learning",
-      year: 2020,
-      authors: ["Prannay Khosla", "Piotr Teterwak"],
+      title: "Direct Preference Optimization: Your Language Model is Secretly a Reward Model",
+      year: 2023,
+      authors: ["Rafael Rafailov", "Archit Sharma"],
     },
-    citing: "MedCLIP: Contrastive Learning from Unpaired Medical Images and Text",
-    sentence:
-      "Unlike previous works that treat all positive samples equally (Khosla et al., 2020; Zheng et al., 2021; Wang and Sun, 2022), here we propose to differentiate samples by their semantic similarity.",
+    citing: "A General Theoretical Paradigm to Understand Learning from Human Preferences",
+    sentence: "In the remaining, we build on the notations of DPO (Rafailov et al., 2023).",
     expect: "baseline_only",
   },
   {
-    name: "a lone author-year citation still carries the contrast",
+    name: "a first-person extension of the cited loss stays an extension (definition, not notation)",
     cited: {
       title: "Supervised Contrastive Learning",
       year: 2020,
       authors: ["Prannay Khosla", "Piotr Teterwak"],
     },
-    citing: "Some Follow-up",
+    citing: "PromptCAL: Contrastive Affinity Learning via Auxiliary Prompts",
     sentence:
-      "Unlike supervised contrastive learning (Khosla et al., 2020), our method needs no labels.",
-    expect: "contrasts",
+      "To simplify notations of PromptCAL, we extend the definition of the standard supervised contrastive loss [22] as follows.",
+    expect: "extends",
   },
   {
     name: "Multi-Concept Customization: Stable Diffusion used as the backbone, built on LDM, is a tool",

@@ -948,45 +948,6 @@ export function namedOnlyInMarkerGroup(sentence: string, id: CitedIdentity): boo
   return carrying > 0;
 }
 
-/**
- * R2-53: the author-year form of {@link namedOnlyInMarkerGroup}, for a
- * CONTRAST cue only (\"Unlike previous works that treat all positive samples
- * equally (Khosla et al., 2020; Zheng et al., 2021; Wang and Sun, 2022), here
- * we …\"): the cited paper is one work of a parenthetical group and is not
- * named, so the contrast is with the group, not with it. Build cues keep
- * their old behaviour (a build verb on a grouped citation is judged by the
- * other rules, and the labelled sets pin that).
- */
-export function namedOnlyInAuthorYearGroup(sentence: string, id: CitedIdentity): boolean {
-  if (id.marker !== null) return false;
-  // Author-name aliases (\"khosla et al\") are exactly what an author-year
-  // group spells out; only the paper's own names count as naming it.
-  const surname = id.surname?.toLowerCase() ?? null;
-  const named = id.aliases.some(
-    (a) => !(surname !== null && a.toLowerCase().includes(surname)) && mentions(sentence, a),
-  );
-  if (named || namesVersionFamily(sentence, id)) return false;
-  return authorYearGroupCarries(sentence, id);
-}
-
-/** R2-53: a parenthetical author-year group of two or more works whose
- * entry for the first author's surname is the cited paper's, with no
- * single-work mention of it elsewhere in the sentence. */
-function authorYearGroupCarries(sentence: string, id: CitedIdentity): boolean {
-  if (!id.surname || id.surname.length < 2) return false;
-  const surnameRe = new RegExp(`(?<![\\p{L}])${escapeRe(id.surname)}(?![\\p{L}])`, "iu");
-  let inGroup = false;
-  for (const m of sentence.matchAll(/\(([^()]{1,240})\)/g)) {
-    const inner = m[1] as string;
-    if (!YEAR_RE.test(inner) || !/\p{Lu}[\p{L}'’-]+/u.test(inner)) continue;
-    const entries = inner.split(/\s*;\s*/).filter((e) => YEAR_RE.test(e));
-    if (!surnameRe.test(inner)) continue;
-    if (entries.length < 2) return false;
-    inGroup = true;
-  }
-  return inGroup;
-}
-
 /** The sentence points at the cited paper unambiguously. */
 export function isStrongTarget(t: SentenceTarget): boolean {
   return t === "named" || t === "single";

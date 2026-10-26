@@ -6,9 +6,10 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
-### Fixed — 著者年の引用群に対する対比を強い関係にしない／拡張版の上限（R2-53、R2-54）
+### Fixed — 記法の流用を拡張にしない／拡張版の上限（R2-54、R2-55。R2-53 は取り消し）
 
-- 「Unlike previous works (A, 2020; B, 2021; C, 2022), …」が群の 1 本との対比になっていた型を、対比に限って直した。
+- 「we build on the notations of DPO」を拡張にしない（記法・用語の流用）。
+- R2-53（著者年の引用群に対する対比を強い関係にしない）は、正解付きの対比と一貫せず、手読みの誤りでもあったので取り消した。
 - 拡張版（`expand=true`）の `generate` の上限を 60 分に（最初の実行は 40 分のまま）。
 
 ### Fixed — S2 に届かなかった展開を待ってから取り直す（R2-52）

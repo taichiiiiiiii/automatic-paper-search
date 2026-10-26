@@ -40,7 +40,6 @@ import {
   isStrongTarget,
   isUsableContext,
   mentionsAny,
-  namedOnlyInAuthorYearGroup,
   namedOnlyInMarkerGroup,
   namesCitedPaper,
   ownVariantOf,
@@ -656,6 +655,9 @@ const USAGE_NOUN = new RegExp(
       "analys[ie]s",
       "practices?",
       "recipes?",
+      // R2-55: “we build on the notations of DPO”: shared notation, not the method.
+      "notations?",
+      "terminology",
       "(?:training|evaluation|test|pre-?training|fine-?tuning|rl)\\s+data",
     ].join("|") +
     ")\\b",
@@ -964,7 +966,6 @@ function classifySentence(
     const targeted =
       strong &&
       !namedOnlyInMarkerGroup(sentence, id) &&
-      !namedOnlyInAuthorYearGroup(sentence, id) &&
       (cueTargetsCited(sentence, id, CONTRAST_PATTERNS, [], scope) ||
         whileClauseCites(sentence, id));
     if (opts.source === "abstract") {
