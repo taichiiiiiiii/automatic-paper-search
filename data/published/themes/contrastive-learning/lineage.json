@@ -374,7 +374,7 @@
       "id": "openalex:W3036446966",
       "title": "GCC",
       "year": 2020,
-      "venue": "ACM SIGKDD International Conference on Knowledge Discovery & Data Mining (KDD)",
+      "venue": "ACM SIGKDD Conference on Knowledge Discovery and Data Mining (KDD)",
       "venue_tier": "A",
       "authors": [
         "Jiezhong Qiu",
@@ -567,7 +567,7 @@
       "id": "openalex:W3095746859",
       "title": "Graph Contrastive Learning with Adaptive Augmentation",
       "year": 2021,
-      "venue": "WWW",
+      "venue": "International World Wide Web Conference (WWW)",
       "venue_tier": "A",
       "authors": [
         "Yanqiao Zhu",
@@ -631,7 +631,7 @@
       "id": "openalex:W3106743555",
       "title": "Boosting Contrastive Self-Supervised Learning with False Negative Cancellation",
       "year": 2022,
-      "venue": "IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)",
+      "venue": "IEEE Winter Conference on Applications of Computer Vision",
       "venue_tier": "preprint",
       "authors": [
         "Tri Huynh",
@@ -1115,7 +1115,7 @@
       "id": "openalex:W4220909642",
       "title": "Improving Graph Collaborative Filtering with Neighborhood-enriched Contrastive Learning",
       "year": 2022,
-      "venue": "ACM Web Conference (WWW)",
+      "venue": "International World Wide Web Conference (WWW)",
       "venue_tier": "A",
       "authors": [
         "Zihan Lin",
@@ -1146,7 +1146,7 @@
       "id": "openalex:W4221023051",
       "title": "SimGRACE: A Simple Framework for Graph Contrastive Learning without Data Augmentation",
       "year": 2022,
-      "venue": "ACM Web Conference (WWW)",
+      "venue": "International World Wide Web Conference (WWW)",
       "venue_tier": "A",
       "authors": [
         "Jun Xia",
@@ -1407,7 +1407,7 @@
       "id": "openalex:W4321479942",
       "title": "Heterogeneous Graph Contrastive Learning for Recommendation",
       "year": 2023,
-      "venue": "WSDM",
+      "venue": "ACM International Conference on Web Search and Data Mining (WSDM)",
       "venue_tier": "preprint",
       "authors": [
         "Mengru Chen",
@@ -2714,9 +2714,9 @@
       "dst": "openalex:W4381786098",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「XSimGCL: Towards Extremely Simple Graph Contrastive Learnin…」(2023) は「Learning Representations by Maximizing Mutual Information A…」(2019) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「XSimGCL」(2023) は 「Learning Representations by Max…」(2019) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -2724,11 +2724,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "894c03d9f1726b02652bc28410c04f697c105026fb2803b3ea70c91017ba1866"
+          "kind": "citation-context",
+          "sha256": "263103d19783442d6d960f22cb8e00a4c04dfb99f0be69f837e38df06e15af0f"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -3605,9 +3605,9 @@
       "dst": "openalex:W4381786098",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「XSimGCL: Towards Extremely Simple Graph Contrastive Learnin…」(2023) は「A Simple Framework for Contrastive Learning of Visual Repre…」(2020) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「XSimGCL」(2023) は 「A Simple Framework for Contrast…」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"The discussion is within the scope of a single batch since the in-batch negative sampling is a widely used trick in CL [5].\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -3615,11 +3615,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "6ff07385ce1760c9049ce0a865334a2778f9a620f1db518324c790aa07528a16"
+          "kind": "citation-context",
+          "sha256": "1873705d50222c610c20697619011385b689ab298ff88bdbe9430b911d36b2f8"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -4332,11 +4332,11 @@
     {
       "src": "openalex:W3018378048",
       "dst": "openalex:W4385573131",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
+      "rel": "contrasts",
+      "relation": "contrasts",
       "conf": 0.7,
       "confidence": 0.7,
-      "rationale": "「MedCLIP」(2022) は 「Supervised Contrastive Learning」(2020) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Unlike previous works that treat all positive samples equally (Khosla et al., 2020; Zheng et al., 2021; Wang and Sun, 2022), here we propose to differentiate samples via their semantic similarities.\"",
+      "rationale": "「MedCLIP」(2022) は 「Supervised Contrastive Learning」(2020) と異なる手法を取ると述べている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Unlike previous works that treat all positive samples equally (Khosla et al., 2020; Zheng et al., 2021; Wang and Sun, 2022), here we propose to differentiate samples via their semantic similarities.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -4901,9 +4901,9 @@
       "dst": "openalex:W4381786098",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「XSimGCL: Towards Extremely Simple Graph Contrastive Learnin…」(2023) は「Understanding Contrastive Representation Learning through A…」(2020) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「XSimGCL」(2023) は 「Understanding Contrastive Repre…」(2020) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"To verify this claim, we conduct an experiment utilizing the logarithm of the average pairwise Gaussian potential, commonly referred to as the Radial Basis Function (RBF) kernel for measuring uniformity [31], which is deﬁned as follows: wh…\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -4911,11 +4911,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "00f30ee71dd552365554efb3b833398067ac0ed6ca7ca5e5c14ca891f55a676d"
+          "kind": "citation-context",
+          "sha256": "492962b233b5d2bc2d433220fd8303ffc46f87db50b075bfb0b0840d751d0762"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -6008,9 +6008,9 @@
       "dst": "openalex:W4381786098",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「XSimGCL: Towards Extremely Simple Graph Contrastive Learnin…」(2023) は「Momentum Contrast for Unsupervised Visual Representation Le…」(2020) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「XSimGCL」(2023) は 「Momentum Contrast for Unsupervi…」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -6018,11 +6018,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "773a519f43f348748b2656bd9d5de29ebddcaecb4073b7d6dd8b03ee74d2e38e"
+          "kind": "citation-context",
+          "sha256": "e1eb331df707e79f6eaa0b7265ad80607bb9222687803acf0ba4bb7c16ee08c2"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -6170,9 +6170,9 @@
       "dst": "openalex:W4381786098",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「XSimGCL: Towards Extremely Simple Graph Contrastive Learnin…」(2023) は「Self-supervised Learning: Generative or Contrastive」(2021) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「XSimGCL」(2023) は 「Self-supervised Learning」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -6180,11 +6180,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "58caf3cbdd37d98bf8b441ebcc6cfb122125fd93de594b0aaf81f911a240152f"
+          "kind": "citation-context",
+          "sha256": "e601c0fddccc11d51a429b9b5e605ac6d58363d89af5ea3ff20490df9feaba42"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -7223,9 +7223,9 @@
       "dst": "openalex:W4321479942",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Heterogeneous Graph Contrastive Learning for Recommendation」(2023) は「Graph Contrastive Learning with Augmentations」(2020) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Heterogeneous Graph Contrastive…」(2023) は 「Graph Contrastive Learning with…」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"By integrating contrastive learning with graph neural networks, Graph Contrastive Learning (GCL) has emerged as effective solution to enhance the robustness of learned representations in the absence of sufficient observed labels [38] over …\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -7233,11 +7233,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "1a77ae8933caca130880d1eadd0067a76f329ca8935be31ebded3241b802dacd"
+          "kind": "citation-context",
+          "sha256": "ac7ca33eee4f22b177bdec403d9a14989a5079aa9a536177ad2bd413101ab518"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -7250,9 +7250,9 @@
       "dst": "openalex:W4381786098",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「XSimGCL: Towards Extremely Simple Graph Contrastive Learnin…」(2023) は「Graph Contrastive Learning with Augmentations」(2020) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「XSimGCL」(2023) は 「Graph Contrastive Learning with…」(2020) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"In this section, we investigate the widely used dropout-based augmentations on graphs [12], [4].\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -7260,11 +7260,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "da44392601e257d42ce408070d0fca7093e94675e10682e9c0e8470b1c68e436"
+          "kind": "citation-context",
+          "sha256": "1ac86a1396837cc2aa1f3e3c1cdbed725e3a2d85906653e672f9b15805ede369"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -7790,9 +7790,9 @@
       "dst": "openalex:W4381786098",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「XSimGCL: Towards Extremely Simple Graph Contrastive Learnin…」(2023) は「SimCSE: Simple Contrastive Learning of Sentence Embeddings」(2021) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「XSimGCL」(2023) は 「SimCSE」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -7800,11 +7800,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "4e4f1b7bed2facf587508255a5b0190820ad005c479eab3579d080dae4e14ba0"
+          "kind": "citation-context",
+          "sha256": "f2583d89a3f94750d8d82277bb7f7b8dc2f3500c99464fce04567ecdeec32b21"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -8058,11 +8058,11 @@
     {
       "src": "openalex:W3204265989",
       "dst": "openalex:W4385573131",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
+      "rel": "contrasts",
+      "relation": "contrasts",
       "conf": 0.7,
       "confidence": 0.7,
-      "rationale": "「MedCLIP」(2022) は 「Weakly Supervised Contrastive L…」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Unlike previous works that treat all positive samples equally (Khosla et al., 2020; Zheng et al., 2021; Wang and Sun, 2022), here we propose to differentiate samples via their semantic similarities.\"",
+      "rationale": "「MedCLIP」(2022) は 「Weakly Supervised Contrastive L…」(2021) と異なる手法を取ると述べている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Unlike previous works that treat all positive samples equally (Khosla et al., 2020; Zheng et al., 2021; Wang and Sun, 2022), here we propose to differentiate samples via their semantic similarities.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -8168,9 +8168,9 @@
       "dst": "openalex:W4381786098",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「XSimGCL: Towards Extremely Simple Graph Contrastive Learnin…」(2023) は「Contrastive Learning for Representation Degeneration Proble…」(2022) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「XSimGCL」(2023) は 「Contrastive Learning for Repres…」(2022) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Qiu et al. proposed DuoRec [61] which adopts a model-level augmentation by conducting dropout on the encoder.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -8178,11 +8178,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "cc4188154340f84e0b53f13b50ccdd133e50c316f6ad2569d54b9b0e1393105e"
+          "kind": "citation-context",
+          "sha256": "08cc087a62f9aa10ecaaf3d1c26699a74b61ccf6298da8df17eb8c148235f66f"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -8195,9 +8195,9 @@
       "dst": "openalex:W4321479942",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Heterogeneous Graph Contrastive Learning for Recommendation」(2023) は「Contrastive Meta Learning with Behavior Multiplicity for Re…」(2022) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Heterogeneous Graph Contrastive…」(2023) は 「Contrastive Meta Learning with …」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -8205,11 +8205,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "0595ba4530434b72f126ac8bb3e2837de0ebb11509ea32fb6e8fe709b2ac3144"
+          "kind": "citation-context",
+          "sha256": "9436157c332f96d363a125dd4392134503696313f904b0349ff29e9db537c68f"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -8249,9 +8249,9 @@
       "dst": "openalex:W4321479942",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Heterogeneous Graph Contrastive Learning for Recommendation」(2023) は「Improving Graph Collaborative Filtering with Neighborhood-e…」(2022) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Heterogeneous Graph Contrastive Learning for Recommendation」(2023) は「Improving Graph Collaborative Filtering with Neighborhood-e…」(2022) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -8259,11 +8259,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "cc2e720515b846f7b420eab422b40e7145cfd15b2e737bb9f982cb719b21d6ea"
+          "kind": "citation-list",
+          "sha256": "8946bf4f6bcb5afef546c9e4479c91fbdc318e7745ac4d8bdef53f2c4c9d2b91"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -8276,9 +8276,9 @@
       "dst": "openalex:W4381786098",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「XSimGCL: Towards Extremely Simple Graph Contrastive Learnin…」(2023) は「Improving Graph Collaborative Filtering with Neighborhood-e…」(2022) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「XSimGCL」(2023) は 「Improving Graph Collaborative F…」(2022) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Besides, S 2 -DHCN [14] and ICL [18] adopt advanced augmentation strategies by re-organizing/clustering the sequential data for more effective self-supervised signals.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -8286,11 +8286,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "002120a44127dfc86a42ba53cd1b9264b3817b60bef06a481724b3950a76cf0d"
+          "kind": "citation-context",
+          "sha256": "521973b91919e43ef43ba43e580a68105df8d6af29f95b542c64a2c5f3dd4b18"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -8431,11 +8431,10 @@
     ],
     "depth": 2,
     "since_year": 2018,
-    "generated_at": "2026-10-26T12:28:31.926000Z",
+    "generated_at": "2026-10-26T15:57:56.615000Z",
     "provenance_breakdown": {
-      "s2_context_rule": 194,
-      "api_citation": 44,
-      "citation_heuristic": 12
+      "s2_context_rule": 205,
+      "api_citation": 45
     },
     "completeness": {
       "complete": true,
