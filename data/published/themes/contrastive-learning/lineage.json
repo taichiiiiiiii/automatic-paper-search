@@ -97,7 +97,7 @@
         "Geoffrey E. Hinton"
       ],
       "kinds": [],
-      "citation_count": 10663,
+      "citation_count": 10664,
       "github_stars": 2495,
       "tldr": "This paper presents SimCLR: a simple framework for contrastive learning of visual representations. We simplify recently proposed…",
       "short_abstract": "This paper presents SimCLR: a simple framework for contrastive learning of visual representations. We simplify recently proposed contrastive self-supervised learning algorithms without requiring specialized architectures or a memory bank. In order to understand what enables the contrastive prediction tasks to learn useful representations, we systematically study the major components of our framework. We show that (1) composition of data augmentations plays a critical role in defining effective predictive tasks, (2) introducing a learnable nonlinear transformation between the representation and the contrastive loss substantially improves the quality of the learned representations, and (3) contrastive learning benefits from larger batch sizes and more training steps compared to supervised learning. By combining these findings, we are able to considerably outperform previous methods for self-supervised and semi-supervised learning on ImageNet. A linear classifier trained on…",
@@ -130,7 +130,7 @@
         "Kaiming He"
       ],
       "kinds": [],
-      "citation_count": 2166,
+      "citation_count": 2167,
       "github_stars": 0,
       "tldr": "Contrastive unsupervised learning has recently shown encouraging progress, e.g., in Momentum Contrast (MoCo) and SimCLR. In this note, we…",
       "short_abstract": "Contrastive unsupervised learning has recently shown encouraging progress, e.g., in Momentum Contrast (MoCo) and SimCLR. In this note, we verify the effectiveness of two of SimCLR's design improvements by implementing them in the MoCo framework. With simple modifications to MoCo---namely, using an MLP projection head and more data augmentation---we establish stronger baselines that outperform SimCLR and do not require large training batches. We hope this will make state-of-the-art unsupervised learning research more accessible. Code will be made public.",
@@ -162,7 +162,7 @@
         "Yonglong Tian"
       ],
       "kinds": [],
-      "citation_count": 3567,
+      "citation_count": 3568,
       "github_stars": 3447,
       "tldr": "Contrastive learning applied to self-supervised representation learning has seen a resurgence in recent years, leading to state of the art…",
       "short_abstract": "Contrastive learning applied to self-supervised representation learning has seen a resurgence in recent years, leading to state of the art performance in the unsupervised training of deep image models. Modern batch contrastive approaches subsume or significantly outperform traditional contrastive losses such as triplet, max-margin and the N-pairs loss. In this work, we extend the self-supervised batch contrastive approach to the fully-supervised setting, allowing us to effectively leverage label information. Clusters of points belonging to the same class are pulled together in embedding space, while simultaneously pushing apart clusters of samples from different classes. We analyze two possible versions of the supervised contrastive (SupCon) loss, identifying the best-performing formulation of the loss. On ResNet-200, we achieve top-1 accuracy of 81.4% on the ImageNet dataset, which is 0.8% above the best number reported for this architecture. We show consistent outperformance over…",
@@ -196,7 +196,7 @@
       ],
       "kinds": [],
       "citation_count": 610,
-      "github_stars": 0,
+      "github_stars": 604,
       "tldr": "This paper presents Prototypical Contrastive Learning (PCL), an unsupervised representation learning method that addresses the fundamental…",
       "short_abstract": "This paper presents Prototypical Contrastive Learning (PCL), an unsupervised representation learning method that addresses the fundamental limitations of instance-wise contrastive learning. PCL not only learns low-level features for the task of instance discrimination, but more importantly, it implicitly encodes semantic structures of the data into the learned embedding space. Specifically, we introduce prototypes as latent variables to help find the maximum-likelihood estimation of the network parameters in an Expectation-Maximization framework. We iteratively perform E-step as finding the distribution of prototypes via clustering and M-step as optimizing the network via contrastive learning. We propose ProtoNCE loss, a generalized version of the InfoNCE loss for contrastive learning, which encourages representations to be closer to their assigned prototypes. PCL outperforms state-of-the-art instance-wise contrastive learning methods on multiple benchmarks with substantial…",
       "arxiv_id": "2005.04966",
@@ -211,6 +211,7 @@
           "10.48550/arxiv.2005.04966"
         ]
       ],
+      "github_url": "https://github.com/salesforce/PCL",
       "is_focus": false
     },
     {
@@ -285,7 +286,7 @@
         "Ross Girshick"
       ],
       "kinds": [],
-      "citation_count": 13321,
+      "citation_count": 13328,
       "github_stars": 150,
       "tldr": "We present Momentum Contrast (MoCo) for unsupervised visual representation learning. From a perspective on contrastive learning as…",
       "short_abstract": "We present Momentum Contrast (MoCo) for unsupervised visual representation learning. From a perspective on contrastive learning as dictionary look-up, we build a dynamic dictionary with a queue and a moving-averaged encoder. This enables building a large and consistent dictionary on-the-fly that facilitates contrastive unsupervised learning. MoCo provides competitive results under the common linear protocol on ImageNet classification. More importantly, the representations learned by MoCo transfer well to downstream tasks. MoCo can outperform its supervised pre-training counterpart in 7 detection/segmentation tasks on PASCAL VOC, COCO, and other datasets, sometimes surpassing it by large margins. This suggests that the gap between unsupervised and supervised representation learning has been largely closed in many vision tasks.",
@@ -608,7 +609,7 @@
         "Alan F. Smeaton"
       ],
       "kinds": [],
-      "citation_count": 860,
+      "citation_count": 861,
       "github_stars": 0,
       "tldr": "Contrastive Learning has recently received interest due to its success in self-supervised representation learning in the computer vision…",
       "short_abstract": "Contrastive Learning has recently received interest due to its success in self-supervised representation learning in the computer vision domain. However, the origins of Contrastive Learning date as far back as the 1990s and its development has spanned across many fields and domains including Metric Learning and natural language processing. In this paper, we provide a comprehensive literature review and we propose a general Contrastive Representation Learning framework that simplifies and unifies many different contrastive learning methods. We also provide a taxonomy for each of the components of contrastive learning in order to summarise it and distinguish it from other forms of machine learning. We then discuss the inductive biases which are present in any contrastive learning system and we analyse our framework under different views from various sub-fields of Machine Learning. Examples of how contrastive learning has been applied in computer vision, natural language processing,…",
@@ -697,7 +698,7 @@
         "Ender Konukoglu A"
       ],
       "kinds": [],
-      "citation_count": 603,
+      "citation_count": 604,
       "github_stars": 0,
       "tldr": "Current semantic segmentation methods focus only on mining \"local\" context, i.e., dependencies between pixels within individual images, by…",
       "short_abstract": "Current semantic segmentation methods focus only on mining \"local\" context, i.e., dependencies between pixels within individual images, by context-aggregation modules (e.g., dilated convolution, neural attention) or structure-aware optimization criteria (e.g., IoU-like loss). However, they ignore \"global\" context of the training data, i.e., rich semantic relations between pixels across different images. Inspired by recent advance in unsupervised contrastive representation learning, we propose a pixel-wise contrastive algorithm for semantic segmentation in the fully supervised setting. The core idea is to enforce pixel embeddings belonging to a same semantic class to be more similar than embeddings from different classes. It raises a pixel-wise metric learning paradigm for semantic segmentation, by explicitly exploring the structures of labeled pixels, which were rarely explored before. Our method can be effortlessly incorporated into existing segmentation frameworks without extra…",
@@ -708,6 +709,26 @@
           "10.1109/iccv48922.2021.00721"
         ]
       ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W3122838366",
+      "title": "Semantic Re-tuning with Contrastive Tension",
+      "year": 2021,
+      "venue": "KTH Publication Database DiVA (KTH Royal Institute of Technology)",
+      "venue_tier": "preprint",
+      "authors": [
+        "Fredrik Carlsson",
+        "Magnus Sahlgren",
+        "Evangelia Gogoulou",
+        "Amaru Cuba Gyllensten",
+        "Erik Ylipää Hellqvist"
+      ],
+      "kinds": [],
+      "citation_count": 102,
+      "github_stars": 0,
+      "tldr": "Extracting semantically useful natural language sentence representations frompre-trained deep neural networks such as Transformers remains…",
+      "short_abstract": "Extracting semantically useful natural language sentence representations frompre-trained deep neural networks such as Transformers remains a challenge. Wefirst demonstrate that pre-training objectives impose a significant task bias ontothe final layers of models, with a layer-wise survey of the Semantic Textual Similarity (STS) correlations for multiple common Transformer language models. Wethen propose a new self-supervised method called Contrastive Tension (CT) tocounter such biases. CT frames the training objective as a noise-contrastive taskbetween the final layer representations of two independent models, in turn makingthe final layer representations suitable for feature extraction. Results from multiple common unsupervised and supervised STS tasks indicate that CT outperformsprevious State Of The Art (SOTA), and when combining CT with supervised datawe improve upon previous SOTA results with large margins.",
       "is_focus": false
     },
     {
@@ -724,7 +745,7 @@
         "Chuan De Zhou"
       ],
       "kinds": [],
-      "citation_count": 494,
+      "citation_count": 495,
       "github_stars": 0,
       "tldr": "Anomaly detection on attributed networks attracts considerable research interests due to wide applications of attributed networks in…",
       "short_abstract": "Anomaly detection on attributed networks attracts considerable research interests due to wide applications of attributed networks in modeling a wide range of complex systems. Recently, the deep learning-based anomaly detection methods have shown promising results over shallow approaches, especially on networks with high-dimensional attributes and complex structures. However, existing approaches, which employ graph autoencoder as their backbone, do not fully exploit the rich information of the network, resulting in suboptimal performance. Furthermore, these methods do not directly target anomaly detection in their learning objective and fail to scale to large networks due to the full graph training mechanism. To overcome these limitations, in this article, we present a novel Contrastive self-supervised Learning framework for Anomaly detection on attributed networks (CoLA for abbreviation). Our framework fully exploits the local information from network data by sampling a novel type of…",
@@ -754,7 +775,7 @@
         "Danqi Chen"
       ],
       "kinds": [],
-      "citation_count": 2840,
+      "citation_count": 2845,
       "github_stars": 3656,
       "tldr": "This paper presents SimCSE, a simple contrastive learning framework that greatly advances the state-of-the-art sentence embeddings.We…",
       "short_abstract": "This paper presents SimCSE, a simple contrastive learning framework that greatly advances the state-of-the-art sentence embeddings.We first describe an unsupervised approach, which takes an input sentence and predicts itself in a contrastive objective, with only standard dropout used as noise.This simple method works surprisingly well, performing on par with previous supervised counterparts.We find that dropout acts as minimal data augmentation and removing it leads to a representation collapse.Then, we propose a supervised approach, which incorporates annotated pairs from natural language inference datasets into our contrastive learning framework, by using \"entailment\" pairs as positives and \"contradiction\" pairs as hard negatives.We evaluate SimCSE on standard semantic textual similarity (STS) tasks, and our unsupervised and supervised models using BERT base achieve an average of 76.3% and 81.6% Spearman's correlation respectively, a 4.2% and 2.2% improvement compared to previous…",
@@ -913,7 +934,7 @@
       ],
       "kinds": [],
       "citation_count": 69,
-      "github_stars": 0,
+      "github_stars": 58,
       "tldr": "Self-supervised Learning (SSL) including the mainstream contrastive learning has achieved great success in learning visual representations…",
       "short_abstract": "Self-supervised Learning (SSL) including the mainstream contrastive learning has achieved great success in learning visual representations without data annotations. However, most of methods mainly focus on the instance level information (\\ie, the different augmented images of the same instance should have the same feature or cluster into the same class), but there is a lack of attention on the relationships between different instances. In this paper, we introduced a novel SSL paradigm, which we term as relational self-supervised learning (ReSSL) framework that learns representations by modeling the relationship between different instances. Specifically, our proposed method employs sharpened distribution of pairwise similarities among different instances as \\textit{relation} metric, which is thus utilized to match the feature embeddings of different augmentations. Moreover, to boost the performance, we argue that weak augmentations matter to represent a more reliable relation, and…",
       "arxiv_id": "2107.09282",
@@ -928,6 +949,7 @@
           "10.48550/arxiv.2107.09282"
         ]
       ],
+      "github_url": "https://github.com/mingkai-zheng/ReSSL",
       "is_focus": false
     },
     {
@@ -975,7 +997,7 @@
         "Zi Helen Huang"
       ],
       "kinds": [],
-      "citation_count": 483,
+      "citation_count": 484,
       "github_stars": 0,
       "tldr": "Recent advancements of sequential deep learning models such as Transformer and BERT have significantly facilitated the sequential…",
       "short_abstract": "Recent advancements of sequential deep learning models such as Transformer and BERT have significantly facilitated the sequential recommendation. However, according to our study, the distribution of item embeddings generated by these models tends to degenerate into an anisotropic shape, which may result in high semantic similarities among embeddings. In this paper, both empirical and theoretical investigations of this representation degeneration problem are first provided, based on which a novel recommender model DuoRec is proposed to improve the item embeddings distribution. Specifically, in light of the uniformity property of contrastive learning, a contrastive regularization is designed for DuoRec to reshape the distribution of sequence representations. Given the convention that the recommendation task is performed by measuring the similarity between sequence representations and item embeddings in the same space via dot product, the regularization can be implicitly applied to the…",
@@ -1298,7 +1320,7 @@
       ],
       "kinds": [],
       "citation_count": 309,
-      "github_stars": 0,
+      "github_stars": 270,
       "tldr": "Vision-language representation learning largely benefits from image-text alignment through contrastive losses (e.g., InfoNCE loss). The…",
       "short_abstract": "Vision-language representation learning largely benefits from image-text alignment through contrastive losses (e.g., InfoNCE loss). The success of this alignment strategy is attributed to its capability in maximizing the mutual information (MI) between an image and its matched text. However, simply performing cross-modal alignment (CMA) ignores data potential within each modality, which may result in degraded representations. For instance, although CMA-based models are able to map image-text pairs close together in the embedding space, they fail to ensure that similar inputs from the same modality stay close by. This problem can get even worse when the pre-training data is noisy. In this paper, we propose triple contrastive learning (TCL) for vision-language pre-training by leveraging both cross-modal and intra-modal self-supervision. Besides CMA, TCL introduces an intra-modal contrastive objective to provide complementary benefits in representation learning. To take advantage of…",
       "arxiv_id": "2202.10401",
@@ -1313,6 +1335,7 @@
           "10.1109/cvpr52688.2022.01522"
         ]
       ],
+      "github_url": "https://github.com/uta-smile/TCL",
       "is_focus": false
     },
     {
@@ -1362,7 +1385,7 @@
       ],
       "kinds": [],
       "citation_count": 121,
-      "github_stars": 0,
+      "github_stars": 288,
       "tldr": "Recent self-supervised contrastive learning methods greatly benefit from the Siamese structure that aims at minimizing distances between…",
       "short_abstract": "Recent self-supervised contrastive learning methods greatly benefit from the Siamese structure that aims at minimizing distances between positive pairs. For high performance Siamese representation learning, one of the keys is to design good contrastive pairs. Most previous works simply apply random sampling to make different crops of the same image, which overlooks the semantic information that may degrade the quality of views. In this work, we propose ContrastiveCrop, which could effectively generate better crops for Siamese representation learning. Firstly, a semantic-aware object localization strategy is proposed within the training process in a fully unsupervised manner. This guides us to generate contrastive views which could avoid most false positives (i.e., object vs. background). Moreover, we empirically find that views with similar appearances are trivial for the Siamese model training. Thus, a center-suppressed sampling is further designed to enlarge the variance of crops.…",
       "arxiv_id": "2202.03278",
@@ -1377,6 +1400,7 @@
           "10.1109/cvpr52688.2022.01556"
         ]
       ],
+      "github_url": "https://github.com/xyupeng/ContrastiveCrop",
       "is_focus": false
     },
     {
@@ -1519,7 +1543,7 @@
         "Jimeng Sun"
       ],
       "kinds": [],
-      "citation_count": 787,
+      "citation_count": 788,
       "github_stars": 697,
       "tldr": "Existing vision-text contrastive learning like CLIP (Radford et al., 2021) aims to match the paired image and caption embeddings while…",
       "short_abstract": "Existing vision-text contrastive learning like CLIP (Radford et al., 2021) aims to match the paired image and caption embeddings while pushing others apart, which improves representation transferability and supports zero-shot prediction. However, medical image-text datasets are orders of magnitude below the general images and captions from the internet. Moreover, previous methods encounter many false negatives, i.e., images and reports from separate patients probably carry the same semantics but are wrongly treated as negatives. In this paper, we decouple images and texts for multimodal contrastive learning thus scaling the usable training data in a combinatorial magnitude with low cost. We also propose to replace the InfoNCE loss with semantic matching loss based on medical knowledge to eliminate false negatives in contrastive learning. We prove that MedCLIP is a simple yet effective framework: it outperforms state-of-the-art methods on zero-shot prediction, supervised…",
@@ -1772,9 +1796,9 @@
       "dst": "openalex:W3096655658",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Contrastive Representation Learning: A Framework and Review」(2020) は「A Theoretical Analysis of Contrastive Unsupervised Represen…」(2019) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Contrastive Representation Lear…」(2020) は 「A Theoretical Analysis of Contr…」(2019) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -1782,11 +1806,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "414f414219deec31d75a26fa95c4d8669ad25d00dc6d51bf2c930650b95a60d0"
+          "kind": "citation-context",
+          "sha256": "efdf02da8c5b08ab657f2a9d01205ae49c0666d65443ab7805c35bc634fd78c2"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -1919,6 +1943,33 @@
           "source": "semantic_scholar",
           "kind": "citation-list",
           "sha256": "ea9d41da2caac5d8a23e1d7c03d2ffab9f272873c96d6a44640a5ff47567fe87"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W2944828972",
+      "dst": "openalex:W2971155163",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Learning Representations by Maximizing Mutual Information A…」(2019) は「Data-Efficient Image Recognition with Contrastive Predictiv…」(2019) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "d37cedeedd3435a28244d952f7719e222944e3d2d64f0c1f639d3bf89efbad7f"
         },
         "classification": {
           "method": "api_citation",
@@ -2177,9 +2228,9 @@
       "dst": "openalex:W3096655658",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Contrastive Representation Learning: A Framework and Review」(2020) は「Data-Efficient Image Recognition with Contrastive Predictiv…」(2019) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Contrastive Representation Lear…」(2020) は 「Data-Efficient Image Recognitio…」(2019) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -2187,11 +2238,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "ef57a944dfadcd2116587ecb6121b5c29bb48cbcddd0236cbed7ace3609a6672"
+          "kind": "citation-context",
+          "sha256": "9f145a73a88c830c79e06f52bd877406aaca858983464516cb8cf39a02ae155e"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -2204,9 +2255,9 @@
       "dst": "openalex:W3106743555",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Boosting Contrastive Self-Supervised Learning with False Ne…」(2022) は「Data-Efficient Image Recognition with Contrastive Predictiv…」(2019) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Boosting Contrastive Self-Super…」(2022) は 「Data-Efficient Image Recognitio…」(2019) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -2214,11 +2265,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "22e0c9124888137f0e9d297bae59045bac242c547b6aa41fb6918b94065b8f5d"
+          "kind": "citation-context",
+          "sha256": "d979b0389cd2f3dcc0d153f2279ecefb3b61c6d3cf2f0fa22b305fa5a6025024"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -2231,9 +2282,9 @@
       "dst": "openalex:W3122412340",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Exploring Cross-Image Pixel Contrast for Semantic Segmentat…」(2021) は「Data-Efficient Image Recognition with Contrastive Predictiv…」(2020) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Exploring Cross-Image Pixel Contrast for Semantic Segmentat…」(2021) は「Data-Efficient Image Recognition with Contrastive Predictiv…」(2020) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -2241,11 +2292,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "3142c949950c2d5a5a781baea11acf01ef6810ade214b9075d9f0efd6fa47ac4"
+          "kind": "citation-list",
+          "sha256": "b296c1dc6bdcf27e5c705170faf3660132117497f7401c0f1649e9ee3fa6d98a"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -2354,33 +2405,6 @@
         },
         "classification": {
           "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W2971155163",
-      "dst": "openalex:W2944828972",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Data-Efficient Image Recognition with Contrastive Predictiv…」(2019) は「Learning Representations by Maximizing Mutual Information A…」(2019) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-list",
-          "sha256": "c1b6f32122620838d733d5a662dc7e3b61c93b38f512ce1b33a5ee944d59b2e2"
-        },
-        "classification": {
-          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -2582,9 +2606,9 @@
       "dst": "openalex:W3096655658",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Contrastive Representation Learning: A Framework and Review」(2020) は「Learning Representations by Maximizing Mutual Information A…」(2019) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Contrastive Representation Lear…」(2020) は 「Learning Representations by Max…」(2019) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -2592,11 +2616,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "9ed956b4530859e1d5ed06b0f526ec0e41ef5a4b764bf290d6935f7bfb183ed2"
+          "kind": "citation-context",
+          "sha256": "e35ce8b6a083916c44184a8c268ad0669ff80c29397d3cae2a7499cfd069da59"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -2609,9 +2633,9 @@
       "dst": "openalex:W3106743555",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Boosting Contrastive Self-Supervised Learning with False Ne…」(2022) は「Learning Representations by Maximizing Mutual Information A…」(2019) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Boosting Contrastive Self-Super…」(2022) は 「Learning Representations by Max…」(2019) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -2619,11 +2643,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "9fef909781f5aae849402921100f3645985a8af2b526ed8d107d3850b902e109"
+          "kind": "citation-context",
+          "sha256": "72040e7ac5376d684d9facdf8028b46be45335c2f6e82a708de30c73aca68cbe"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -2971,7 +2995,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "7ee9620d15ff4c23b66bba93752da8d9b0968f1c6c81944a851a4619d97bf887"
+          "sha256": "88f578f279690703bf82343a2167bf8a74f19cfd6981bbbad6fca97e21ad7e3d"
         },
         "classification": {
           "method": "api_citation",
@@ -3041,9 +3065,9 @@
       "dst": "openalex:W3106743555",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Boosting Contrastive Self-Supervised Learning with False Ne…」(2022) は「A Simple Framework for Contrastive Learning of Visual Repre…」(2020) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Boosting Contrastive Self-Super…」(2022) は 「A Simple Framework for Contrast…」(2020) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"In fact, selfsupervised visual representation learning has been closing the gap with, and in some cases even surpassing its supervised counterpart [9, 22, 11, 10].\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -3051,11 +3075,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "1aff402692616f812cf4876153c97b5f3b43772079332085b130cea6c94baa10"
+          "kind": "citation-context",
+          "sha256": "81c4ec268adc1a165068bd2f137a6eaa70b3e4c9670d349852eb53d9843962a4"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -3230,9 +3254,9 @@
       "dst": "openalex:W3175613352",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Contrastive Learning based Hybrid Networks for Long-Tailed …」(2021) は「A Simple Framework for Contrastive Learning of Visual Repre…」(2020) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Contrastive Learning based Hybr…」(2021) は 「A Simple Framework for Contrast…」(2020) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"The first contrastive learning we explore to learn features in imbalanced scenario is the recently proposed supervised contrastive (SC) learning [18], which is extended from the state-of-the-art unsupervised contrastive learning [5] by inc…\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -3240,11 +3264,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "17bc65857b10d1c614cdfe22c57456434400f1a7e2ab5cc9f2805963db18a189"
+          "kind": "citation-context",
+          "sha256": "b6c7589506721e79a27820e24e934e8a24831d779288fddec8b85518cecf591a"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -3473,9 +3497,9 @@
       "dst": "openalex:W4226142803",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「SimKGC: Simple Contrastive Knowledge Graph Completion with …」(2022) は「A Simple Framework for Contrastive Learning of Visual Repre…」(2020) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「SimKGC」(2022) は 「A Simple Framework for Contrast…」(2020) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"During training, we use InfoNCE loss with additive margin (Chen et al., 2020; Yang et al., 2019):\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -3483,11 +3507,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "ecdb3ea145e13094284d021f375de8713513cbfa112b79d31b3726e5594e7d4d"
+          "kind": "citation-context",
+          "sha256": "730a57f2a97d2b2f8b45cb97994052e80a950335a30b83e209a230d6e1fc4c1d"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -3538,7 +3562,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "4b1c44ce4c5363940cec2acecd2e08e03357761ad6cb3e27d02fbac47c4784df"
+          "sha256": "337a9e871a0c8cf47d33613cb52c3b9239cadc8acbe08749f753ad1b37fb4b45"
         },
         "classification": {
           "method": "api_citation",
@@ -3592,7 +3616,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-metadata",
-          "sha256": "9abb0819bfb9e1a9b492e11a8d8d3c792be20e412287580e96dd4acbb4068dac"
+          "sha256": "6ff07385ce1760c9049ce0a865334a2778f9a620f1db518324c790aa07528a16"
         },
         "classification": {
           "method": "citation_heuristic",
@@ -3797,9 +3821,9 @@
       "dst": "openalex:W3106743555",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Boosting Contrastive Self-Supervised Learning with False Ne…」(2022) は「Improved Baselines with Momentum Contrastive Learning」(2020) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Boosting Contrastive Self-Super…」(2022) は 「Improved Baselines with Momentu…」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -3807,11 +3831,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "705f6f1dd482d38be5d98f53b2b1b8b4eff1b6189e668344fa68aed859cc123c"
+          "kind": "citation-context",
+          "sha256": "fd5c5b8073e195c6791f2a8f6bce2b86903474fbfcd183b196ea70a5c912890e"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -3851,9 +3875,9 @@
       "dst": "openalex:W3122412340",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Exploring Cross-Image Pixel Contrast for Semantic Segmentat…」(2021) は「Improved Baselines with Momentum Contrastive Learning」(2020) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Exploring Cross-Image Pixel Con…」(2021) は 「Improved Baselines with Momentu…」(2020) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Recently, the most compelling methods for learning representations without labels have been unsupervised contrastive learning [55, 34, 73, 13, 12], which significantly outperformed other pretext task-based alternatives [43, 26, 18, 54].\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -3861,11 +3885,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "de011a8ae282cf1aef61939b910548b1e8eee96a6de590c99023dad1f01d7494"
+          "kind": "citation-context",
+          "sha256": "7badfb8f2c9566e3cf1ae2e10af00915cdb2d0cde79cfb19943a6810acb65feb"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -3997,7 +4021,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "d8e54d039bf6332e90a784078b2e359957a7271a70f1cd380112040deebc61b9"
+          "sha256": "5cf0b91a366ff945132fc7a52843b858a0a0faeccf97713b19875d09053e78f2"
         },
         "classification": {
           "method": "api_citation",
@@ -4051,7 +4075,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "25ac2e80aea07d428d542a00918f3cf55416389b3b8ba689de1b099c0ea0508b"
+          "sha256": "bb2e5c1bac17a340dec0ec3fd918a1b2122e652db468bfba316579640584df95"
         },
         "classification": {
           "method": "api_citation",
@@ -4175,9 +4199,9 @@
       "dst": "openalex:W3106743555",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Boosting Contrastive Self-Supervised Learning with False Ne…」(2022) は「Supervised Contrastive Learning」(2020) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Boosting Contrastive Self-Super…」(2022) は 「Supervised Contrastive Learning」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"[26] show that supervised contrastive learning (i.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -4185,11 +4209,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "b5aa7f32f8be1ba5f929003ea6e052f9af0f186160edd37f24637aa174843b95"
+          "kind": "citation-context",
+          "sha256": "e21fa20c16b02a78005ea976d714395c5b29a98d1da6a153e956ac4c38837fcf"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -4240,7 +4264,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "045d27bbf447517ddc474ca2a450d3fc2bfec5f7e0fc3b20b12e05c06878493b"
+          "sha256": "24f61036c9fd2e3bedd35d2cd9710392e6d5a42e40c867f69c6c8545de8b326d"
         },
         "classification": {
           "method": "api_citation",
@@ -4256,9 +4280,9 @@
       "dst": "openalex:W3175613352",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Contrastive Learning based Hybrid Networks for Long-Tailed …」(2021) は「Supervised Contrastive Learning」(2020) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Contrastive Learning based Hybr…」(2021) は 「Supervised Contrastive Learning」(2020) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"The first contrastive learning we explore to learn features in imbalanced scenario is the recently proposed supervised contrastive (SC) learning [18], which is extended from the state-of-the-art unsupervised contrastive learning [5] by inc…\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -4266,11 +4290,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "5e845d6ed261ea6dd29a5a40eef9364ff577acaf1673fe587c62d0180ca9b689"
+          "kind": "citation-context",
+          "sha256": "c4aa22877555fcf5812d4780e0ca3c99093aeb519b6bc99f36088d289633d491"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -4308,11 +4332,11 @@
     {
       "src": "openalex:W3018378048",
       "dst": "openalex:W4385573131",
-      "rel": "contrasts",
-      "relation": "contrasts",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
       "conf": 0.7,
       "confidence": 0.7,
-      "rationale": "「MedCLIP」(2022) は 「Supervised Contrastive Learning」(2020) と異なる手法を取ると述べている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Unlike previous works that treat all positive samples equally (Khosla et al., 2020; Zheng et al., 2021; Wang and Sun, 2022), here we propose to differentiate samples via their semantic similarities.\"",
+      "rationale": "「MedCLIP」(2022) は 「Supervised Contrastive Learning」(2020) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Unlike previous works that treat all positive samples equally (Khosla et al., 2020; Zheng et al., 2021; Wang and Sun, 2022), here we propose to differentiate samples via their semantic similarities.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -4445,9 +4469,9 @@
       "dst": "openalex:W3106743555",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Boosting Contrastive Self-Supervised Learning with False Ne…」(2022) は「Prototypical Contrastive Learning of Unsupervised Represent…」(2020) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Boosting Contrastive Self-Supervised Learning with False Ne…」(2022) は「Prototypical Contrastive Learning of Unsupervised Represent…」(2020) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -4455,11 +4479,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "9e21c6a7ca0936de10baf26da96efc30008ff4c0ef7715ed6e4bdd68299ab10c"
+          "kind": "citation-list",
+          "sha256": "db486cd3bb81da6a6ea9d01703f5eb655a9b2ddd59b4cc4acf76b7ff528fd6ef"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -5131,7 +5155,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "a26ae0ff5363c0c5b7dc02b2e31a24b6ab405bb3c77149e7fd95cd9c9a92fcaa"
+          "sha256": "acc18e6fdf9b0e88aab4563813bf67f5cc2e192e177aae21755e6cf07e51f0a4"
         },
         "classification": {
           "method": "api_citation",
@@ -5239,7 +5263,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "971744b9a8ae177cfe6404691d028994ccacaadd8c35cdc0fca41479cd01edae"
+          "sha256": "1b7e65d624f43dd8892dda436aa9de8d49ca1923003a851673382d723ae0f6b8"
         },
         "classification": {
           "method": "api_citation",
@@ -5320,7 +5344,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "5a673e09b430e7000ff11392a9a395b7a61388551d91f1c3de7bc4a255bdf8b1"
+          "sha256": "bdd6ac84c7543131b696c06bf3b8d631aad48fe3817a858da11cd48a303d9610"
         },
         "classification": {
           "method": "api_citation",
@@ -5525,9 +5549,9 @@
       "dst": "openalex:W3106743555",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Boosting Contrastive Self-Supervised Learning with False Ne…」(2022) は「Momentum Contrast for Unsupervised Visual Representation Le…」(2020) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Boosting Contrastive Self-Super…」(2022) は 「Momentum Contrast for Unsupervi…」(2020) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"As Table 8 reveals, our proposed method outperforms both MoCo v2, SwAV, and the supervised baseline.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -5535,11 +5559,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "6991f12c1e9ef1d3e53d3c201edafa8de35055df65a26d1c3b19469d176f8719"
+          "kind": "citation-context",
+          "sha256": "e28c1855c175bfc620db06cfd55af7265222f532b4121ce7010ff4b6c82118cf"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -5687,9 +5711,9 @@
       "dst": "openalex:W3175613352",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Contrastive Learning based Hybrid Networks for Long-Tailed …」(2021) は「Momentum Contrast for Unsupervised Visual Representation Le…」(2020) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Contrastive Learning based Hybr…」(2021) は 「Momentum Contrast for Unsupervi…」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -5697,11 +5721,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "5fb8ee461d91d080216a53de04abef162aee09f3b920974fd58e0ed48ddfac7c"
+          "kind": "citation-context",
+          "sha256": "6dd604ea9650088b27a48c683fd178770f0a748bfe1388cd61cda71b9654e123"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -5876,9 +5900,9 @@
       "dst": "openalex:W4226142803",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「SimKGC: Simple Contrastive Knowledge Graph Completion with …」(2022) は「Momentum Contrast for Unsupervised Visual Representation Le…」(2020) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「SimKGC」(2022) は 「Momentum Contrast for Unsupervi…」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Other methods like MoCo (He et al., 2020) can also provide more negatives.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -5886,11 +5910,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "cf3e8faf16a37861366f1896ad2a69167f11736ae23055cc3ce0b6b2a1a941d0"
+          "kind": "citation-context",
+          "sha256": "2f0ef92b4871f32cf2f30300917a7440ffdbe4a0148a9bf69492becb0b2653eb"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -5914,7 +5938,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "521116d0d4d5d4ad7eaf8c84cb693601a523925b123912cb3b9a49da1a730f56"
+          "sha256": "01703b41e9b82ae086438d6c60484f0c48727d1a4e5dd2d2fd29c5c51654b2d0"
         },
         "classification": {
           "method": "api_citation",
@@ -5941,7 +5965,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "18845224f0eb759ca1a3eb877be9588a7637efa422178fb761565b668671e37c"
+          "sha256": "f3fa2b5808c30377c9bb91329e3684746ec848261fdd800b87074d5700517f48"
         },
         "classification": {
           "method": "api_citation",
@@ -5995,7 +6019,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-metadata",
-          "sha256": "b8f6aab3fa56d4d9ebd6923e0bd16a1ab700deaca283d602fe341f948efbd020"
+          "sha256": "773a519f43f348748b2656bd9d5de29ebddcaecb4073b7d6dd8b03ee74d2e38e"
         },
         "classification": {
           "method": "citation_heuristic",
@@ -6022,7 +6046,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "4bf5acfc9a41e1139c37726497df79ee41a61714899b2ac735d4adc2b69dcc38"
+          "sha256": "4b7c78888996613bc8a08f48722f5c60ab72babb8a466a1682526c38033b47c1"
         },
         "classification": {
           "method": "api_citation",
@@ -6200,9 +6224,9 @@
       "dst": "openalex:W3106743555",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Boosting Contrastive Self-Supervised Learning with False Ne…」(2022) は「Unsupervised Learning of Visual Features by Contrasting Clu…」(2020) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Boosting Contrastive Self-Super…」(2022) は 「Unsupervised Learning of Visual…」(2020) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Among all approaches, our method is second only to SwAV [7], a clustering-based method, and is even better than BYOL [21], a recent stateof-the-art method that only uses positive samples.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -6210,11 +6234,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "c38738346e2b7f4370854caf3d615f296d9c3a86b1f33df8d967f42069876108"
+          "kind": "citation-context",
+          "sha256": "2c50e115238beabbac3b2a8ad32f0f08990cba228ec03d9494d692e5de821b13"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -6713,9 +6737,9 @@
       "dst": "openalex:W3106743555",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Boosting Contrastive Self-Supervised Learning with False Ne…」(2022) は「Debiased Contrastive Learning」(2020) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Boosting Contrastive Self-Super…」(2022) は 「Debiased Contrastive Learning」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -6723,11 +6747,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "cb8cf281a5d6938d2ca714dc835dad75b1cd6b4ec1b281cee6428e5c91300a8f"
+          "kind": "citation-context",
+          "sha256": "b5bd7e13cfee5cefbeb9733220f61c9a2767c1589f6a0773c1470b8caf6412db"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -6875,9 +6899,9 @@
       "dst": "openalex:W3106743555",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Boosting Contrastive Self-Supervised Learning with False Ne…」(2022) は「Hard Negative Mixing for Contrastive Learning」(2020) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Boosting Contrastive Self-Super…」(2022) は 「Hard Negative Mixing for Contra…」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -6885,11 +6909,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "ef2c5879b9205d18bac0c8abebfb54555abd816b80d071b10efe4b75ed38a4c2"
+          "kind": "citation-context",
+          "sha256": "7faffbd5cab9017692492423d0122a77154dd60f6aaeba6e4326db392b6c501a"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -6902,9 +6926,9 @@
       "dst": "openalex:W3122412340",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「Exploring Cross-Image Pixel Contrast for Semantic Segmentat…」(2021) は「Hard Negative Mixing for Contrastive Learning」(2020) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Exploring Cross-Image Pixel Contrast for Semantic Segmentat…」(2021) は「Hard Negative Mixing for Contrastive Learning」(2020) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -6912,11 +6936,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "8feafce690f88d63acb7540168801082bab801d50f2d460640e17fea0fa23f4b"
+          "kind": "citation-list",
+          "sha256": "f07c74f033fa7c18b45c9d851931b811532bb64db7b4dfef5152161c8ae5e7c1"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -7469,9 +7493,9 @@
       "dst": "openalex:W4226142803",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「SimKGC: Simple Contrastive Knowledge Graph Completion with …」(2022) は「Contrastive Representation Learning: A Framework and Review」(2020) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「SimKGC」(2022) は 「Contrastive Representation Lear…」(2020) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Contrastive Learning learns useful representations by contrasting between positives and negatives (Le-Khac et al., 2020).\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -7479,11 +7503,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "2034ae6bc4bdeef10c79955e031dec11b2beac8ff91661ef07a1d52436bdb58e"
+          "kind": "citation-context",
+          "sha256": "1d0c8ea23f6b615806e32348ca84f0389fe07d5156bf4a7353c8febaf282f53c"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -7523,9 +7547,9 @@
       "dst": "openalex:W4226142803",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「SimKGC: Simple Contrastive Knowledge Graph Completion with …」(2022) は「Boosting Contrastive Self-Supervised Learning with False Ne…」(2022) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「SimKGC」(2022) は 「Boosting Contrastive Self-Super…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Another direction is to explore effective ways to deal with false negatives (Huynh et al., 2020) resulting from the incompleteness of knowledge graphs.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -7533,11 +7557,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "b44fdae502d559f476ff129971552713ca2a140d6330670545729f959e2d117e"
+          "kind": "citation-context",
+          "sha256": "28718a3fddcb6eb37f386765d027c641df869077aa0e1439f602929138240a97"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -7627,6 +7651,33 @@
       }
     },
     {
+      "src": "openalex:W3122838366",
+      "dst": "openalex:W3156636935",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「SimCSE: Simple Contrastive Learning of Sentence Embeddings」(2021) は「Semantic Re-tuning with Contrastive Tension」(2021) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "e2de3027424b52caa33144000c0b46dd5abd0babfb36d317393cb4d2a21ac181"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
       "src": "openalex:W3156636935",
       "dst": "openalex:W3206127589",
       "rel": "baseline_only",
@@ -7669,7 +7720,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-list",
-          "sha256": "53f8631a90bffb02ecd39d510214f871d13a671bd7497fb0004ac936e621fb61"
+          "sha256": "3b6745a34ccae7c3225c14e929ac4c0580b786eea679debb5080c8c90a088e67"
         },
         "classification": {
           "method": "api_citation",
@@ -7685,9 +7736,9 @@
       "dst": "openalex:W4226142803",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.4,
-      "confidence": 0.4,
-      "rationale": "「SimKGC: Simple Contrastive Knowledge Graph Completion with …」(2022) は「SimCSE: Simple Contrastive Learning of Sentence Embeddings」(2021) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「SimKGC」(2022) は 「SimCSE」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"In the NLP community, by leveraging the supervision signals from natural language inference data (Gao et al., 2021), QA pairs (Ni et al., 2021), and parallel corpora (Wang et al., 2021b), these methods have surpassed non-contrastive method…\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -7695,11 +7746,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-metadata",
-          "sha256": "edf16428c781cdcfafceacfc26f28770be83de52161036b0cca546c69fc7e00d"
+          "kind": "citation-context",
+          "sha256": "1c660b455c382dc685163f1c5fb08b38075a49ab6d8408253ce829368c230cbe"
         },
         "classification": {
-          "method": "citation_heuristic",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -7750,7 +7801,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-metadata",
-          "sha256": "7a4359c7e3c1575143950cc43993e7322774fd6e58cc136b1d5af21cf8012548"
+          "sha256": "4e4f1b7bed2facf587508255a5b0190820ad005c479eab3579d080dae4e14ba0"
         },
         "classification": {
           "method": "citation_heuristic",
@@ -8007,11 +8058,11 @@
     {
       "src": "openalex:W3204265989",
       "dst": "openalex:W4385573131",
-      "rel": "contrasts",
-      "relation": "contrasts",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
       "conf": 0.7,
       "confidence": 0.7,
-      "rationale": "「MedCLIP」(2022) は 「Weakly Supervised Contrastive L…」(2021) と異なる手法を取ると述べている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Unlike previous works that treat all positive samples equally (Khosla et al., 2020; Zheng et al., 2021; Wang and Sun, 2022), here we propose to differentiate samples via their semantic similarities.\"",
+      "rationale": "「MedCLIP」(2022) は 「Weakly Supervised Contrastive L…」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Unlike previous works that treat all positive samples equally (Khosla et al., 2020; Zheng et al., 2021; Wang and Sun, 2022), here we propose to differentiate samples via their semantic similarities.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -8128,7 +8179,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-metadata",
-          "sha256": "57f1ce43e26301f6d9fb052e6c52f19399232cb6fb3a8b0090adf2acc04da361"
+          "sha256": "cc4188154340f84e0b53f13b50ccdd133e50c316f6ad2569d54b9b0e1393105e"
         },
         "classification": {
           "method": "citation_heuristic",
@@ -8344,7 +8395,7 @@
         "evidence": {
           "source": "openalex",
           "kind": "citation-list",
-          "sha256": "dd92c12238d17c55f6da3442c72d33ebddd470ab1d28a406435e9d0f2f282838"
+          "sha256": "50c13ed3338f9fa2d295290f7a82dd646d41d0b1fac89b4f5c5d6acd5c81d516"
         },
         "classification": {
           "method": "api_citation",
@@ -8380,11 +8431,11 @@
     ],
     "depth": 2,
     "since_year": 2018,
-    "generated_at": "2026-10-25T10:18:45.506000Z",
+    "generated_at": "2026-10-26T12:28:31.926000Z",
     "provenance_breakdown": {
-      "s2_context_rule": 173,
-      "api_citation": 40,
-      "citation_heuristic": 36
+      "s2_context_rule": 194,
+      "api_citation": 44,
+      "citation_heuristic": 12
     },
     "completeness": {
       "complete": true,
@@ -8414,7 +8465,7 @@
         "id": "openalex:W3034978746",
         "title": "A simple framework for contrastive learning of visual representations",
         "reasons": [
-          "chronology_inversion:6/6@4"
+          "chronology_inversion:8/8@4"
         ],
         "action": "dropped"
       }
