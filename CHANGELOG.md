@@ -6,6 +6,11 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Fixed — 著者年の引用群に対する対比を強い関係にしない／拡張版の上限（R2-53、R2-54）
+
+- 「Unlike previous works (A, 2020; B, 2021; C, 2022), …」が群の 1 本との対比になっていた型を、対比に限って直した。
+- 拡張版（`expand=true`）の `generate` の上限を 60 分に（最初の実行は 40 分のまま）。
+
 ### Fixed — S2 に届かなかった展開を待ってから取り直す（R2-52）
 
 - 展開が S2 の 429 で失敗して作成全体が不完全になる件を、45 秒・90 秒待って 2 回まで取り直して減らす（待ちは 1 回の作成で 8 分まで）。`PAPERPILOT_S2_EXPANSION_RETRY=off` で止められる。

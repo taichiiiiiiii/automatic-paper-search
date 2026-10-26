@@ -14,8 +14,15 @@ const generate = jobsOf(doc).find(([id]) => id === "generate")![1] as YamlDoc;
 const steps = generate.steps as YamlDoc[];
 
 describe("theme-on-demand.yml time budget (R2-43)", () => {
-  it("gives the generate job at least 40 minutes", () => {
-    expect(generate["timeout-minutes"]).toBeGreaterThanOrEqual(40);
+  it("gives the generate job at least 40 minutes (60 for the expanded upgrade run, R2-54)", () => {
+    // `${{ inputs.expand && 60 || 40 }}`: both arms are pinned, and the quick
+    // arm must stay below the Worker's 50 min in-flight dedup TTL.
+    const cap = String(generate["timeout-minutes"]);
+    expect(cap).toBe("${{ inputs.expand && 60 || 40 }}");
+    const [, expanded, quick] = /&&\s*(\d+)\s*\|\|\s*(\d+)/.exec(cap)!.map(Number);
+    expect(quick).toBeGreaterThanOrEqual(40);
+    expect(quick).toBeLessThan(50);
+    expect(expanded).toBeGreaterThan(quick!);
   });
 
   it("caps the side-file step and lets it fail without failing the job", () => {

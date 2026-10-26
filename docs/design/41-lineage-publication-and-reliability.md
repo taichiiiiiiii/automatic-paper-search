@@ -784,3 +784,11 @@ R2-51 の測定（RLHF の拡張版）で、キャッシュなしの 1 回目は
 - それでも届かなければ、従来どおり失敗した展開として記録する。完全性の判定、公開の保護、`--allow-incomplete` は変えない。
 - CLI では既定でオン、`PAPERPILOT_S2_EXPANSION_RETRY=off` で止められる。ライブラリ（`buildThemeLineage`）と単体テストの既定はなし。
 - テスト: `s2Expansion.test.ts`（回復する・届かないまま・待ちの合計の上限・「ない」と答えたら待たない・取り直しなし）、`r228EvidenceSources.test.ts`（既定と off）。lineage 1357、system 63 が通過。
+
+### R2-53 / R2-54 改善ループの 1 周目（Contrastive Learning、2026-10-25）
+
+測定: 初めての分野 Contrastive Learning を画面から依頼。最初の公開まで 19.4 分（14 論文）、拡張版が 49 分（生成 34 分）で 52 論文・249 辺・強い関係 7 に入れ替わった。展開の失敗は 0 で、取り直しは使われなかった（S2 の 429 は拡張版で 132 回）。強い関係 7 本を手で読むと、正しい 3、疑わしい 4 だった。
+
+- **R2-53（型: 著者年の引用群に対する対比）**: 「Unlike previous works that treat all positive samples equally (Khosla et al., 2020; Zheng et al., 2021; Wang and Sun, 2022), here we propose …」は、3 本の群との対比で、Supervised Contrastive Learning 単独との対比ではない（MedCLIP ← SupCon、← Weakly Supervised CL の 2 本）。数字の引用群にあった `namedOnlyInMarkerGroup`（R2-22）の著者年版 `namedOnlyInAuthorYearGroup` を作り、対比の手がかり（`targeted` の判定）にだけ使う。構築の手がかりにも使うと、NeurIPS の正解付き集合の extends 適合率（5 本以上）が 3 本に落ちたので、対比に限った。ICLR の既存の対比 1 本（Personalized Memory ← PrefEval。正解付き集合ではすでに baseline_only 相当）も同じ型で、明示の一覧で固定した。公開中の強い関係 92 本を新旧の規則で通し直した差分は、この 3 本だけ。lineage 1358 通過。
+- **R2-54（拡張版の上限）**: `generate` を `inputs.expand && 60 || 40` 分にした。拡張版は 34 分かかった。依頼を受ける最初の実行は 40 分のまま（Worker の進行中記録 50 分より短く保つ）。
+- 残る疑わしい 2 本（MoCo ← Improved Baselines / Semi-Supervised CL の「original … in [6]/[17]」の番号の対応）は、番号の推定に S2 の文脈が要る型で、次の周に回す。

@@ -219,9 +219,24 @@ describe("R2-40 precision on every collection", () => {
     }
   });
 
+  // R2-53: "Unlike existing benchmarks (Zhao et al., 2025; Li et al., 2025b;
+  // Tan et al., 2025b)" contrasts with a group of works, not with the cited
+  // paper; the labelled set already says baseline_only for it.
+  const DEMOTED_R253 = new Set([
+    "How Does Personalized Memory Shape LLM Behavior? Benchmarking Rational Preference Utilization in Personalized Assistants",
+  ]);
+
   it("CVPR / ICLR keep the contrasts the rules gave", () => {
-    for (const i of r240.filter((x) => x.published_relation === "contrasts")) {
+    for (const i of r240.filter(
+      (x) => x.published_relation === "contrasts" && !DEMOTED_R253.has(x.citing.title),
+    )) {
       expect(predict(i).relation, i.citing.title).toBe("contrasts");
+    }
+  });
+
+  it("R2-53: a contrast over an author-year group of works is no longer a targeted contrast", () => {
+    for (const i of r240.filter((x) => DEMOTED_R253.has(x.citing.title))) {
+      expect(predict(i).relation, i.citing.title).toBe("baseline_only");
     }
   });
 });

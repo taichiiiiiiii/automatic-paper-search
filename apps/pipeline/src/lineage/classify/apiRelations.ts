@@ -40,6 +40,7 @@ import {
   isStrongTarget,
   isUsableContext,
   mentionsAny,
+  namedOnlyInAuthorYearGroup,
   namedOnlyInMarkerGroup,
   namesCitedPaper,
   ownVariantOf,
@@ -963,6 +964,7 @@ function classifySentence(
     const targeted =
       strong &&
       !namedOnlyInMarkerGroup(sentence, id) &&
+      !namedOnlyInAuthorYearGroup(sentence, id) &&
       (cueTargetsCited(sentence, id, CONTRAST_PATTERNS, [], scope) ||
         whileClauseCites(sentence, id));
     if (opts.source === "abstract") {

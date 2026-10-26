@@ -184,6 +184,30 @@ const CASES: Case[] = [
     expect: "baseline_only",
   },
   {
+    name: "MedCLIP: unlike previous works (Khosla; Zheng; Wang) is a contrast over a group, not SupCon",
+    cited: {
+      title: "Supervised Contrastive Learning",
+      year: 2020,
+      authors: ["Prannay Khosla", "Piotr Teterwak"],
+    },
+    citing: "MedCLIP: Contrastive Learning from Unpaired Medical Images and Text",
+    sentence:
+      "Unlike previous works that treat all positive samples equally (Khosla et al., 2020; Zheng et al., 2021; Wang and Sun, 2022), here we propose to differentiate samples by their semantic similarity.",
+    expect: "baseline_only",
+  },
+  {
+    name: "a lone author-year citation still carries the contrast",
+    cited: {
+      title: "Supervised Contrastive Learning",
+      year: 2020,
+      authors: ["Prannay Khosla", "Piotr Teterwak"],
+    },
+    citing: "Some Follow-up",
+    sentence:
+      "Unlike supervised contrastive learning (Khosla et al., 2020), our method needs no labels.",
+    expect: "contrasts",
+  },
+  {
     name: "Multi-Concept Customization: Stable Diffusion used as the backbone, built on LDM, is a tool",
     cited: {
       title: "High-Resolution Image Synthesis with Latent Diffusion Models",

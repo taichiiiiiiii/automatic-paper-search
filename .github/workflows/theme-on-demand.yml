@@ -38,7 +38,11 @@ jobs:
     # needs ~14 min for the depth-1 pass + the auto-expand rebuild with the
     # keyless Semantic Scholar pacing, so 15 min cancelled the run before
     # anything was promoted. The side-file step below has its own cap.
-    timeout-minutes: 40
+    # R2-54: the expanded (upgrade) run builds depth 2 directly and measured
+    # 34 min of `generate` on Contrastive Learning (49 min per run in total
+    # with the release), so it gets 60; the quick run stays at 40 (the
+    # Worker's in-flight dedup TTL of 50 min must stay >= the quick cap).
+    timeout-minutes: ${{ inputs.expand && 60 || 40 }}
     permissions:
       contents: read
     outputs:
