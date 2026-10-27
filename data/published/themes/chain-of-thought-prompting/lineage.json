@@ -1,0 +1,2658 @@
+{
+  "schema_version": "lineage-artifact-v1",
+  "root": "openalex:W4221161695",
+  "nodes": [
+    {
+      "id": "openalex:W3203321135",
+      "title": "AI Chains: Transparent and Controllable Human-AI Interaction by Chaining Large Language Model Prompts",
+      "year": 2022,
+      "venue": "CHI Conference on Human Factors in Computing Systems",
+      "venue_tier": "preprint",
+      "authors": [
+        "Tongshuang Wu",
+        "Michael A. Terry",
+        "Carrie Jun Cai"
+      ],
+      "kinds": [],
+      "citation_count": 738,
+      "github_stars": 0,
+      "tldr": "Although large language models (LLMs) have demonstrated impressive potential on simple tasks, their breadth of scope, lack of…",
+      "short_abstract": "Although large language models (LLMs) have demonstrated impressive potential on simple tasks, their breadth of scope, lack of transparency, and insufficient controllability can make them less effective when assisting humans on more complex tasks. In response, we introduce the concept of Chaining LLM steps together, where the output of one step becomes the input for the next, thus aggregating the gains per step. We first define a set of LLM primitive operations useful for Chain construction, then present an interactive system where users can modify these Chains, along with their intermediate results, in a modular way. In a 20-person user study, we found that Chaining not only improved the quality of task outcomes, but also significantly enhanced system transparency, controllability, and sense of collaboration. Additionally, we saw that users developed new ways of interacting with LLMs through Chains: they leveraged sub-tasks to calibrate model expectations, compared and contrasted…",
+      "arxiv_id": "2110.01691",
+      "doi": "10.1145/3491102.3517582",
+      "citation_count_source": "semantic_scholar",
+      "aliases": [
+        [
+          "arxiv",
+          "2110.01691"
+        ],
+        [
+          "doi",
+          "10.1145/3491102.3517582"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4221161695",
+      "title": "Self-Consistency Improves Chain of Thought Reasoning in Language Models",
+      "year": 2022,
+      "venue": "ICLR",
+      "venue_tier": "A+",
+      "authors": [
+        "Xuezhi Wang",
+        "Wei, Jason",
+        "Dale Schuurmans",
+        "Quoc Viet Le",
+        "Ed H."
+      ],
+      "kinds": [],
+      "citation_count": 8083,
+      "github_stars": 0,
+      "tldr": "Chain-of-thought prompting combined with pre-trained large language models has achieved encouraging results on complex reasoning tasks. In…",
+      "short_abstract": "Chain-of-thought prompting combined with pre-trained large language models has achieved encouraging results on complex reasoning tasks. In this paper, we propose a new decoding strategy, self-consistency, to replace the naive greedy decoding used in chain-of-thought prompting. It first samples a diverse set of reasoning paths instead of only taking the greedy one, and then selects the most consistent answer by marginalizing out the sampled reasoning paths. Self-consistency leverages the intuition that a complex reasoning problem typically admits multiple different ways of thinking leading to its unique correct answer. Our extensive empirical evaluation shows that self-consistency boosts the performance of chain-of-thought prompting with a striking margin on a range of popular arithmetic and commonsense reasoning benchmarks, including GSM8K (+17.9%), SVAMP (+11.0%), AQuA (+12.2%), StrategyQA (+6.4%) and ARC-challenge (+3.9%).",
+      "arxiv_id": "2203.11171",
+      "doi": "10.48550/arxiv.2203.11171",
+      "is_focus": true,
+      "citation_count_source": "semantic_scholar",
+      "aliases": [
+        [
+          "arxiv",
+          "2203.11171"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2203.11171"
+        ]
+      ],
+      "seed_paper_id": "32d015b1dc00f7e46199f466d426fd9389f380f8"
+    },
+    {
+      "id": "openalex:W4281483047",
+      "title": "Least-to-Most Prompting Enables Complex Reasoning in Large Language Models",
+      "year": 2022,
+      "venue": "ICLR",
+      "venue_tier": "A+",
+      "authors": [
+        "Denny Zhou",
+        "Nathanael Schärli A",
+        "Le Hou",
+        "Wei, Jason",
+        "Scales, Nathan"
+      ],
+      "kinds": [],
+      "citation_count": 1989,
+      "github_stars": 0,
+      "tldr": "Chain-of-thought prompting has demonstrated remarkable performance on various natural language reasoning tasks. However, it tends to…",
+      "short_abstract": "Chain-of-thought prompting has demonstrated remarkable performance on various natural language reasoning tasks. However, it tends to perform poorly on tasks which requires solving problems harder than the exemplars shown in the prompts. To overcome this challenge of easy-to-hard generalization, we propose a novel prompting strategy, least-to-most prompting. The key idea in this strategy is to break down a complex problem into a series of simpler subproblems and then solve them in sequence. Solving each subproblem is facilitated by the answers to previously solved subproblems. Our experimental results on tasks related to symbolic manipulation, compositional generalization, and math reasoning reveal that least-to-most prompting is capable of generalizing to more difficult problems than those seen in the prompts. A notable finding is that when the GPT-3 code-davinci-002 model is used with least-to-most prompting, it can solve the compositional generalization benchmark SCAN in any split…",
+      "arxiv_id": "2205.10625",
+      "doi": "10.48550/arxiv.2205.10625",
+      "is_focus": true,
+      "citation_count_source": "semantic_scholar",
+      "aliases": [
+        [
+          "arxiv",
+          "2205.10625"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2205.10625"
+        ]
+      ],
+      "seed_paper_id": "74b2d2f8a1d8affeaebd53865043a8720e05dcf0"
+    },
+    {
+      "id": "openalex:W4306808908",
+      "title": "Challenging BIG-Bench Tasks and Whether Chain-of-Thought Can Solve Them",
+      "year": 2022,
+      "venue": "ACL (Findings)",
+      "venue_tier": "A+",
+      "authors": [
+        "Mirac Süzgün",
+        "Scales, Nathan",
+        "Nathanael Schärli A",
+        "Sebastian Gehrmann",
+        "Yi Tay"
+      ],
+      "kinds": [],
+      "citation_count": 2355,
+      "github_stars": 579,
+      "tldr": "BIG-Bench (Srivastava et al., 2022) is a diverse evaluation suite that focuses on tasks believed to be beyond the capabilities of current…",
+      "short_abstract": "BIG-Bench (Srivastava et al., 2022) is a diverse evaluation suite that focuses on tasks believed to be beyond the capabilities of current language models. Language models have already made good progress on this benchmark, with the best model in the BIG-Bench paper outperforming average reported human-rater results on 65% of the BIG-Bench tasks via few-shot prompting. But on what tasks do language models fall short of average human-rater performance, and are those tasks actually unsolvable by current language models? In this work, we focus on a suite of 23 challenging BIG-Bench tasks which we call BIG-Bench Hard (BBH). These are the task for which prior language model evaluations did not outperform the average human-rater. We find that applying chain-of-thought (CoT) prompting to BBH tasks enables PaLM to surpass the average human-rater performance on 10 of the 23 tasks, and Codex (code-davinci-002) to surpass the average human-rater performance on 17 of the 23 tasks. Since many tasks…",
+      "arxiv_id": "2210.09261",
+      "doi": "10.48550/arxiv.2210.09261",
+      "citation_count_source": "semantic_scholar",
+      "aliases": [
+        [
+          "arxiv",
+          "2210.09261"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2210.09261"
+        ]
+      ],
+      "github_url": "https://github.com/suzgunmirac/BIG-Bench-Hard",
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4310629099",
+      "title": "Distilling Reasoning Capabilities into Smaller Language Models",
+      "year": 2022,
+      "venue": "ACL (Findings)",
+      "venue_tier": "A+",
+      "authors": [
+        "Kumar Shridhar",
+        "Alessandro Stolfo",
+        "Mrinmaya Sachan"
+      ],
+      "kinds": [],
+      "citation_count": 50,
+      "github_stars": 0,
+      "tldr": "Step-by-step reasoning approaches like chain of thought (CoT) have proved to be very effective in inducing reasoning capabilities in large…",
+      "short_abstract": "Step-by-step reasoning approaches like chain of thought (CoT) have proved to be very effective in inducing reasoning capabilities in large language models. However, the success of the CoT approach is fundamentally tied to the model size, and billion parameter-scale models are often needed to get CoT to work. In this paper, we propose a knowledge distillation approach that leverages the step-by-step CoT reasoning capabilities of larger models and distills these abilities into smaller models. In this work, we propose an alternative reasoning scheme, Socratic CoT, that learns a decomposition of the original problem into a sequence of subproblems and uses it to guide the intermediate reasoning steps. We use Socratic CoT to train a combination of two small distilled models: a problem decomposer and a subproblem solver. In practice, given a new problem, the two distilled models work in sync to decompose and solve complex problems. On multiple reasoning datasets (GSM8K, StrategyQA, and…",
+      "arxiv_id": "2212.00193",
+      "doi": "10.3929/ethz-b-000653476",
+      "citation_count_source": "semantic_scholar",
+      "aliases": [
+        [
+          "arxiv",
+          "2212.00193"
+        ],
+        [
+          "doi",
+          "10.3929/ethz-b-000653476"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4312045629",
+      "title": "Teaching Small Language Models to Reason",
+      "year": 2022,
+      "venue": "ACL (2)",
+      "venue_tier": "A+",
+      "authors": [
+        "Lucie Charlotte Magister",
+        "Mallinson, Jonathan",
+        "Adamek, Jakub",
+        "Eric Malmi",
+        "Aliaksei Severyn"
+      ],
+      "kinds": [],
+      "citation_count": 474,
+      "github_stars": 0,
+      "tldr": "Chain of thought prompting successfully improves the reasoning capabilities of large language models, achieving state of the art results…",
+      "short_abstract": "Chain of thought prompting successfully improves the reasoning capabilities of large language models, achieving state of the art results on a range of datasets. However, these reasoning capabilities only appear to emerge in models with a size of over 100 billion parameters. In this paper, we explore the transfer of such reasoning capabilities to models with less than 100 billion parameters via knowledge distillation. Specifically, we finetune a student model on the chain of thought outputs generated by a larger teacher model. Our experiments show that the proposed method improves task performance across arithmetic, commonsense and symbolic reasoning datasets. For example, the accuracy of T5 XXL on GSM8K improves from 8.11% to 21.99% when finetuned on PaLM-540B generated chains of thought.",
+      "arxiv_id": "2212.08410",
+      "doi": "10.48550/arxiv.2212.08410",
+      "is_focus": true,
+      "citation_count_source": "semantic_scholar",
+      "aliases": [
+        [
+          "arxiv",
+          "2212.08410"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2212.08410"
+        ]
+      ],
+      "seed_paper_id": "24e2ac22b194e9d632733de9b30fda0a00cde126"
+    },
+    {
+      "id": "openalex:W4312090934",
+      "title": "Towards Understanding Chain-of-Thought Prompting: An Empirical Study of What Matters",
+      "year": 2022,
+      "venue": "ACL (1)",
+      "venue_tier": "A+",
+      "authors": [
+        "Boshi Wang",
+        "Sewon Min",
+        "Xiang Bo Deng",
+        "Jiaming Shen",
+        "You Wu"
+      ],
+      "kinds": [],
+      "citation_count": 421,
+      "github_stars": 0,
+      "tldr": "Chain-of-Thought (CoT) prompting can dramatically improve the multi-step reasoning abilities of large language models (LLMs). CoT…",
+      "short_abstract": "Chain-of-Thought (CoT) prompting can dramatically improve the multi-step reasoning abilities of large language models (LLMs). CoT explicitly encourages the LLM to generate intermediate rationales for solving a problem, by providing a series of reasoning steps in the demonstrations. Despite its success, there is still little understanding of what makes CoT prompting effective and which aspects of the demonstrated reasoning steps contribute to its performance. In this paper, we show that CoT reasoning is possible even with invalid demonstrations - prompting with invalid reasoning steps can achieve over 80-90% of the performance obtained using CoT under various metrics, while still generating coherent lines of reasoning during inference. Further experiments show that other aspects of the rationales, such as being relevant to the query and correctly ordering the reasoning steps, are much more important for effective CoT reasoning. Overall, these findings both deepen our understanding of…",
+      "arxiv_id": "2212.10001",
+      "doi": "10.48550/arxiv.2212.10001",
+      "citation_count_source": "semantic_scholar",
+      "aliases": [
+        [
+          "arxiv",
+          "2212.10001"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2212.10001"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4366565380",
+      "title": "Progressive-Hint Prompting Improves Reasoning in Large Language Models",
+      "year": 2023,
+      "venue": "arXiv (Cornell University)",
+      "venue_tier": "preprint",
+      "authors": [
+        "Chuanyang Zheng",
+        "Zhengying Liu",
+        "Enze Xie",
+        "Zhenguo Li",
+        "Yu Li"
+      ],
+      "kinds": [],
+      "citation_count": 160,
+      "github_stars": 0,
+      "tldr": "The performance of Large Language Models (LLMs) in reasoning tasks depends heavily on prompt design, with Chain-of-Thought (CoT) and…",
+      "short_abstract": "The performance of Large Language Models (LLMs) in reasoning tasks depends heavily on prompt design, with Chain-of-Thought (CoT) and self-consistency being critical methods that enhance this ability. However, these methods do not fully exploit the answers generated by the LLM to guide subsequent responses. This paper proposes a new prompting method, named Progressive-Hint Prompting (PHP), that enables automatic multiple interactions between users and LLMs by using previously generated answers as hints to progressively guide toward the correct answers. PHP is orthogonal to CoT and self-consistency, making it easy to combine with state-of-the-art techniques to further improve performance. We conducted extensive and comprehensive experiments on seven benchmarks. The results show that PHP significantly improves accuracy while remaining highly efficient. For instance, with text-davinci-003, we observed a 4.2% improvement on GSM8K with greedy decoding compared to Complex CoT, and a 46.17%…",
+      "arxiv_id": "2304.09797",
+      "doi": "10.48550/arxiv.2304.09797",
+      "citation_count_source": "semantic_scholar",
+      "aliases": [
+        [
+          "arxiv",
+          "2304.09797"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2304.09797"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4385327568",
+      "title": "Measuring Faithfulness in Chain-of-Thought Reasoning",
+      "year": 2023,
+      "venue": "arXiv (Cornell University)",
+      "venue_tier": "preprint",
+      "authors": [
+        "Tamera Lanham",
+        "Chen, Anna",
+        "Ansh Radhakrishnan",
+        "Benoit Steiner",
+        "Carson Denison"
+      ],
+      "kinds": [],
+      "citation_count": 661,
+      "github_stars": 0,
+      "tldr": "Large language models (LLMs) perform better when they produce step-by-step, \"Chain-of-Thought\" (CoT) reasoning before answering a…",
+      "short_abstract": "Large language models (LLMs) perform better when they produce step-by-step, \"Chain-of-Thought\" (CoT) reasoning before answering a question, but it is unclear if the stated reasoning is a faithful explanation of the model's actual reasoning (i.e., its process for answering the question). We investigate hypotheses for how CoT reasoning may be unfaithful, by examining how the model predictions change when we intervene on the CoT (e.g., by adding mistakes or paraphrasing it). Models show large variation across tasks in how strongly they condition on the CoT when predicting their answer, sometimes relying heavily on the CoT and other times primarily ignoring it. CoT's performance boost does not seem to come from CoT's added test-time compute alone or from information encoded via the particular phrasing of the CoT. As models become larger and more capable, they produce less faithful reasoning on most tasks we study. Overall, our results suggest that CoT can be faithful if the circumstances…",
+      "arxiv_id": "2307.13702",
+      "doi": "10.48550/arxiv.2307.13702",
+      "citation_count_source": "semantic_scholar",
+      "aliases": [
+        [
+          "arxiv",
+          "2307.13702"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2307.13702"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4385571219",
+      "title": "Large Language Models Are Reasoning Teachers",
+      "year": 2023,
+      "venue": "Annual Meeting of the Association for Computational Linguistics (ACL)",
+      "venue_tier": "A+",
+      "authors": [
+        "Namgyu Ho",
+        "Laura Schmid",
+        "Se-Young Yun"
+      ],
+      "kinds": [],
+      "citation_count": 600,
+      "github_stars": 345,
+      "tldr": "Recent works have shown that chain-of-thought (CoT) prompting can elicit language models to solve complex reasoning tasks,…",
+      "short_abstract": "Recent works have shown that chain-of-thought (CoT) prompting can elicit language models to solve complex reasoning tasks, step-by-step.However, prompt-based CoT methods are dependent on very large models such as GPT-3 175B which are prohibitive to deploy at scale.In this paper, we use these large models as reasoning teachers to enable complex reasoning in smaller models and reduce model size requirements by several orders of magnitude.We propose Fine-tune-CoT, a method that generates reasoning samples from very large teacher models to fine-tune smaller models.We evaluate our method on a wide range of public models and complex tasks.We find that Fine-tune-CoT enables substantial reasoning capability in small models, far outperforming prompt-based baselines and even the teacher model in many tasks.Additionally, we extend our method by leveraging the teacher model's ability to generate multiple distinct rationales for each original sample.Enriching the fine-tuning data with such…",
+      "arxiv_id": "2212.10071",
+      "doi": "10.18653/v1/2023.acl-long.830",
+      "citation_count_source": "semantic_scholar",
+      "aliases": [
+        [
+          "arxiv",
+          "2212.10071"
+        ],
+        [
+          "doi",
+          "10.18653/v1/2023.acl-long.830"
+        ]
+      ],
+      "github_url": "https://github.com/itsnamgyu/reasoning-teacher",
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4385571830",
+      "title": "On Second Thought, Let’s Not Think Step by Step! Bias and Toxicity in Zero-Shot Reasoning",
+      "year": 2023,
+      "venue": "Annual Meeting of the Association for Computational Linguistics (ACL)",
+      "venue_tier": "A+",
+      "authors": [
+        "Omar Shaikh",
+        "Hongxin Zhang",
+        "William Held",
+        "Michael S. Bernstein",
+        "Diyi Yang"
+      ],
+      "kinds": [],
+      "citation_count": 76,
+      "github_stars": 0,
+      "tldr": "Warning: This paper contains several toxic and offensive statements.Generating a Chain of Thought (CoT) has been shown to consistently…",
+      "short_abstract": "Warning: This paper contains several toxic and offensive statements.Generating a Chain of Thought (CoT) has been shown to consistently improve large language model (LLM) performance on a wide range of NLP tasks.However, prior work has mainly focused on logical reasoning tasks (e.g.arithmetic, commonsense QA); it remains unclear whether improvements hold for more diverse types of reasoning, especially in socially situated contexts.Concretely, we perform a controlled evaluation of zero-shot CoT across two socially sensitive domains: harmful questions and stereotype benchmarks.We find that zeroshot CoT reasoning in sensitive domains significantly increases a model's likelihood to produce harmful or undesirable output, with trends holding across different prompt formats and model variants.Furthermore, we show that harmful CoTs increase with model size, but decrease with improved instruction following.Our work suggests that zero-shot CoT should be used with caution on socially important…",
+      "arxiv_id": "2212.08061",
+      "doi": "10.18653/v1/2023.acl-long.244",
+      "aliases": [
+        [
+          "arxiv",
+          "2212.08061"
+        ],
+        [
+          "doi",
+          "10.18653/v1/2023.acl-long.244"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4385572867",
+      "title": "Iteratively Prompt Pre-trained Language Models for Chain of Thought",
+      "year": 2022,
+      "venue": "Conference on Empirical Methods in Natural Language Processing (EMNLP)",
+      "venue_tier": "A+",
+      "authors": [
+        "Boshi Wang",
+        "Xiang Bo Deng",
+        "Huan Sun"
+      ],
+      "kinds": [],
+      "citation_count": 75,
+      "github_stars": 0,
+      "tldr": "While Pre-trained Language Models (PLMs) internalize a great amount of world knowledge, they have been shown incapable of recalling these…",
+      "short_abstract": "While Pre-trained Language Models (PLMs) internalize a great amount of world knowledge, they have been shown incapable of recalling these knowledge to solve tasks requiring complex & multi-step reasoning.Similar to how humans develop a \"chain of thought\" for these tasks, how can we equip PLMs with such abilities?In this work, we explore an iterative prompting framework, a new prompting paradigm which progressively elicits relevant knowledge from PLMs for multi-step inference.We identify key limitations of existing prompting methods, namely they are either restricted to queries with a single identifiable relation/predicate, or being agnostic to input contexts, which makes it difficult to capture variabilities across different inference steps.We propose an iterative context-aware prompter, which addresses these limitations by learning to dynamically synthesize prompts conditioned on the current step's contexts.Experiments on three datasets involving multi-step reasoning show the…",
+      "arxiv_id": "2203.08383",
+      "doi": "10.18653/v1/2022.emnlp-main.174",
+      "aliases": [
+        [
+          "arxiv",
+          "2203.08383"
+        ],
+        [
+          "doi",
+          "10.18653/v1/2022.emnlp-main.174"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4393160302",
+      "title": "Graph of Thoughts: Solving Elaborate Problems with Large Language Models",
+      "year": 2024,
+      "venue": "Proceedings of the AAAI Conference on Artificial Intelligence",
+      "venue_tier": "A",
+      "authors": [
+        "Maciej Besta",
+        "Nils Blach",
+        "Ales Kubicek",
+        "Robert Gerstenberger",
+        "Michał Podstawski"
+      ],
+      "kinds": [],
+      "citation_count": 555,
+      "github_stars": 2847,
+      "tldr": "We introduce Graph of Thoughts (GoT): a framework that advances prompting capabilities in large language models (LLMs) beyond those…",
+      "short_abstract": "We introduce Graph of Thoughts (GoT): a framework that advances prompting capabilities in large language models (LLMs) beyond those offered by paradigms such as Chain-of-Thought or Tree of Thoughts (ToT). The key idea and primary advantage of GoT is the ability to model the information generated by an LLM as an arbitrary graph, where units of information (\"LLM thoughts\") are vertices, and edges correspond to dependencies between these vertices. This approach enables combining arbitrary LLM thoughts into synergistic outcomes, distilling the essence of whole networks of thoughts, or enhancing thoughts using feedback loops. We illustrate that GoT offers advantages over state of the art on different tasks, for example increasing the quality of sorting by 62% over ToT, while simultaneously reducing costs by >31%. We ensure that GoT is extensible with new thought transformations and thus can be used to spearhead new prompting schemes. This work brings the LLM reasoning closer to human…",
+      "arxiv_id": "2308.09687",
+      "doi": "10.1609/aaai.v38i16.29720",
+      "is_trending": true,
+      "aliases": [
+        [
+          "arxiv",
+          "2308.09687"
+        ],
+        [
+          "doi",
+          "10.1609/aaai.v38i16.29720"
+        ]
+      ],
+      "github_url": "https://github.com/spcl/graph-of-thoughts",
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4402671875",
+      "title": "Navigate through Enigmatic Labyrinth A Survey of Chain of Thought Reasoning: Advances, Frontiers and Future",
+      "year": 2024,
+      "venue": "Annual Meeting of the Association for Computational Linguistics (ACL)",
+      "venue_tier": "A+",
+      "authors": [
+        "Zheng Chu",
+        "Jingchang Chen",
+        "Qianglong Chen",
+        "Weijiang Yu",
+        "Tao He"
+      ],
+      "kinds": [],
+      "citation_count": 282,
+      "github_stars": 0,
+      "tldr": "Reasoning, a fundamental cognitive process integral to human intelligence, has garnered substantial interest within artificial…",
+      "short_abstract": "Reasoning, a fundamental cognitive process integral to human intelligence, has garnered substantial interest within artificial intelligence. Notably, recent studies have revealed that chain-of-thought prompting significantly enhances LLM's reasoning capabilities, which attracts widespread attention from both academics and industry. In this paper, we systematically investigate relevant research, summarizing advanced methods through a meticulous taxonomy that offers novel perspectives. Moreover, we delve into the current frontiers and delineate the challenges and future directions, thereby shedding light on future research. Furthermore, we engage in a discussion about open questions. We hope this paper serves as an introduction for beginners and fosters future research. Resources have been made publicly available at https://github.com/zchuz/CoT-Reasoning-Survey",
+      "arxiv_id": "2309.15402",
+      "doi": "10.18653/v1/2024.acl-long.65",
+      "citation_count_source": "semantic_scholar",
+      "aliases": [
+        [
+          "arxiv",
+          "2309.15402"
+        ],
+        [
+          "doi",
+          "10.18653/v1/2024.acl-long.65"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4402671980",
+      "title": "Active Prompting with Chain-of-Thought for Large Language Models",
+      "year": 2024,
+      "venue": "Annual Meeting of the Association for Computational Linguistics (ACL)",
+      "venue_tier": "A+",
+      "authors": [
+        "Shizhe Diao",
+        "Pengcheng Wang",
+        "Yong Lin",
+        "Rui Pan",
+        "Xiang Liu"
+      ],
+      "kinds": [],
+      "citation_count": 251,
+      "github_stars": 0,
+      "tldr": "The increasing scale of large language models (LLMs) brings emergent abilities to various complex tasks requiring reasoning, such as…",
+      "short_abstract": "The increasing scale of large language models (LLMs) brings emergent abilities to various complex tasks requiring reasoning, such as arithmetic and commonsense reasoning.It is known that the effective design of taskspecific prompts is critical for LLMs' ability to produce high-quality answers.In particular, an effective approach for complex questionand-answering tasks is example-based prompting with chain-of-thought (CoT) reasoning, which significantly improves the performance of LLMs.However, current CoT methods rely on a fixed set of human-annotated exemplars, which are not necessarily the most effective examples for different tasks.This paper proposes a new method, Active-Prompt, to adapt LLMs to different tasks with task-specific example prompts (annotated with human-designed CoT reasoning).For this purpose, we propose a solution to the key problem of determining which questions are the most important and helpful to annotate from a pool of task-specific queries.By borrowing ideas…",
+      "arxiv_id": "2302.12246",
+      "doi": "10.18653/v1/2024.acl-long.73",
+      "citation_count_source": "semantic_scholar",
+      "aliases": [
+        [
+          "arxiv",
+          "2302.12246"
+        ],
+        [
+          "doi",
+          "10.18653/v1/2024.acl-long.73"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4415795303",
+      "title": "SELF-DISCOVER: Large Language Models Self-Compose Reasoning Structures",
+      "year": 2024,
+      "venue": "neural information processing systems",
+      "venue_tier": "A+",
+      "authors": [
+        "Pei Zhou",
+        "Jay Pujara",
+        "Xiang Ren",
+        "Xinyun Chen",
+        "Heng-Tze Cheng"
+      ],
+      "kinds": [],
+      "citation_count": 159,
+      "github_stars": 0,
+      "tldr": "We introduce SELF-DISCOVER, a general framework for LLMs to self-discover the task-intrinsic reasoning structures to tackle complex…",
+      "short_abstract": "We introduce SELF-DISCOVER, a general framework for LLMs to self-discover the task-intrinsic reasoning structures to tackle complex reasoning problems that are challenging for typical prompting methods. Core to the framework is a self-discovery process where LLMs select multiple atomic reasoning modules such as critical thinking and step-by-step thinking, and compose them into an explicit reasoning structure for LLMs to follow during decoding. SELF-DISCOVER substantially improves GPT-4 and PaLM 2's performance on challenging reasoning benchmarks such as BigBench-Hard, grounded agent reasoning, and MATH, by as much as 32% compared to Chain of Thought (CoT). Furthermore, SELF-DISCOVER outperforms inference-intensive methods such as CoT-Self-Consistency by more than 20%, while requiring 10-40x fewer inference compute. Finally, we show that the self-discovered reasoning structures are universally applicable across model families: from PaLM 2-L to GPT-4, and from GPT-4 to Llama2, and…",
+      "arxiv_id": "2402.03620",
+      "doi": "10.52202/079017-4004",
+      "citation_count_source": "semantic_scholar",
+      "aliases": [
+        [
+          "arxiv",
+          "2402.03620"
+        ],
+        [
+          "doi",
+          "10.52202/079017-4004"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4415795314",
+      "title": "Instance-adaptive Zero-shot Chain-of-Thought Prompting",
+      "year": 2024,
+      "venue": "neural information processing systems",
+      "venue_tier": "A+",
+      "authors": [
+        "Xiaosong Yuan",
+        "Chen‐Yang Shen",
+        "Shaotian Yan",
+        "Xiaofeng Zhang",
+        "Liang Xie"
+      ],
+      "kinds": [],
+      "citation_count": 18,
+      "github_stars": 0,
+      "tldr": "Zero-shot Chain-of-Thought (CoT) prompting emerges as a simple and effective strategy for enhancing the performance of large language…",
+      "short_abstract": "Zero-shot Chain-of-Thought (CoT) prompting emerges as a simple and effective strategy for enhancing the performance of large language models (LLMs) in real-world reasoning tasks. Nonetheless, the efficacy of a singular, task-level prompt uniformly applied across the whole of instances is inherently limited since one prompt cannot be a good partner for all, a more appropriate approach should consider the interaction between the prompt and each instance meticulously. This work introduces an instance-adaptive prompting algorithm as an alternative zero-shot CoT reasoning scheme by adaptively differentiating good and bad prompts. Concretely, we first employ analysis on LLMs through the lens of information flow to detect the mechanism under zero-shot CoT reasoning, in which we discover that information flows from question to prompt and question to rationale jointly influence the reasoning results most. We notice that a better zero-shot CoT reasoning needs the prompt to obtain semantic…",
+      "arxiv_id": "2409.20441",
+      "doi": "10.52202/079017-3986",
+      "is_focus": true,
+      "aliases": [
+        [
+          "arxiv",
+          "2409.20441"
+        ],
+        [
+          "doi",
+          "10.52202/079017-3986"
+        ]
+      ],
+      "seed_paper_id": "d5464db220513c08b7300572b8f6e7cfd63bb1fb"
+    },
+    {
+      "id": "openalex:W7125271932",
+      "title": "Multi-Dimensional Evaluation of Auto-Generated Chain-of-Thought Traces in Reasoning Models",
+      "year": 2026,
+      "venue": "AI",
+      "venue_tier": "preprint",
+      "authors": [
+        "Luis F. Becerra-Monsalve",
+        "German Sanchez-Torres",
+        "John W Branch-Bedoya"
+      ],
+      "kinds": [],
+      "citation_count": 2,
+      "github_stars": 0,
+      "tldr": "Automatically generated chains-of-thought (gCoTs) have become common as large language models adopt deliberative behaviors. Prior work…",
+      "short_abstract": "Automatically generated chains-of-thought (gCoTs) have become common as large language models adopt deliberative behaviors. Prior work emphasizes fidelity to internal processes, leaving explanatory properties underexplored. Our central hypothesis is that these traces, produced by highly capable reasoning models, are not arbitrary by-products of decoding but exhibit stable and practically valuable textual properties beyond answer fidelity. We apply a multidimensional text-evaluation framework that quantifies four axes—structural coherence, logical–factual consistency, linguistic clarity, and coverage/informativeness—that are standard dimensions for assessing textual quality, and use it to evaluate five reasoning models on the GSM8K arithmetic word-problem benchmark (~1.3 k–1.4 k items) with reproducible, normalized metrics. Logical verification shows near-ceiling self-consistency, measured by the Aggregate Consistency Score (ACS ≈ 0.95–1.00), and high final-answer entailment, measured…",
+      "doi": "10.3390/ai7010035",
+      "aliases": [
+        [
+          "doi",
+          "10.3390/ai7010035"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W7133198832",
+      "title": "Towards Revealing the Mystery behind Chain of Thought: A Theoretical Perspective",
+      "year": 2023,
+      "venue": "neural information processing systems",
+      "venue_tier": "A+",
+      "authors": [
+        "Guhao Feng",
+        "Bohang Zhang",
+        "Yuntian Gu",
+        "Haotian Ye",
+        "Di He"
+      ],
+      "kinds": [],
+      "citation_count": 475,
+      "github_stars": 21,
+      "tldr": "Recent studies have discovered that Chain-of-Thought prompting (CoT) can dramatically improve the performance of Large Language Models…",
+      "short_abstract": "Recent studies have discovered that Chain-of-Thought prompting (CoT) can dramatically improve the performance of Large Language Models (LLMs), particularly when dealing with complex tasks involving mathematics or reasoning. Despite the enormous empirical success, the underlying mechanisms behind CoT and how it unlocks the potential of LLMs remain elusive. In this paper, we take a first step towards theoretically answering these questions. Specifically, we examine the expressivity of LLMs with CoT in solving fundamental mathematical and decision-making problems. By using circuit complexity theory, we first give impossibility results showing that bounded-depth Transformers are unable to directly produce correct answers for basic arithmetic/equation tasks unless the model size grows super-polynomially with respect to the input length. In contrast, we then prove by construction that autoregressive Transformers of constant size suffice to solve both tasks by generating CoT derivations…",
+      "arxiv_id": "2305.15408",
+      "doi": "10.52202/075280-3100",
+      "citation_count_source": "semantic_scholar",
+      "aliases": [
+        [
+          "arxiv",
+          "2305.15408"
+        ],
+        [
+          "doi",
+          "10.52202/075280-3100"
+        ]
+      ],
+      "github_url": "https://github.com/guyuntian/CoT_benchmark",
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W7133224126",
+      "title": "Chain-Of-Thought Prompting Elicits Reasoning in Large Language Models",
+      "year": 2022,
+      "venue": "neural information processing systems",
+      "venue_tier": "A+",
+      "authors": [
+        "Jason Wei",
+        "Xuezhi Wang",
+        "Dale Schuurmans",
+        "Maarten Bosma",
+        "Brian Ichter"
+      ],
+      "kinds": [],
+      "citation_count": 23259,
+      "github_stars": 2103,
+      "tldr": "We explore how generating a chain of thought -- a series of intermediate reasoning steps -- significantly improves the ability of large…",
+      "short_abstract": "We explore how generating a chain of thought -- a series of intermediate reasoning steps -- significantly improves the ability of large language models to perform complex reasoning. In particular, we show how such reasoning abilities emerge naturally in sufficiently large language models via a simple method called chain of thought prompting, where a few chain of thought demonstrations are provided as exemplars in prompting. Experiments on three large language models show that chain of thought prompting improves performance on a range of arithmetic, commonsense, and symbolic reasoning tasks. The empirical gains can be striking. For instance, prompting a 540B-parameter language model with just eight chain of thought exemplars achieves state of the art accuracy on the GSM8K benchmark of math word problems, surpassing even finetuned GPT-3 with a verifier.",
+      "arxiv_id": "2201.11903",
+      "doi": "10.52202/068431-1800",
+      "citation_count_source": "semantic_scholar",
+      "aliases": [
+        [
+          "arxiv",
+          "2201.11903"
+        ],
+        [
+          "doi",
+          "10.52202/068431-1800"
+        ]
+      ],
+      "github_url": "https://github.com/Timothyxxx/Chain-of-ThoughtsPapers",
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W7133228402",
+      "title": "Language Models Don't Always Say What They Think: Unfaithful Explanations in Chain-of-Thought Prompting",
+      "year": 2023,
+      "venue": "neural information processing systems",
+      "venue_tier": "A+",
+      "authors": [
+        "Miles Turpin",
+        "Julian Michael",
+        "Ethan Perez",
+        "Samuel R. Bowman"
+      ],
+      "kinds": [],
+      "citation_count": 248,
+      "github_stars": 0,
+      "tldr": "Large Language Models (LLMs) can achieve strong performance on many tasks by producing step-by-step reasoning before giving a final…",
+      "short_abstract": "Large Language Models (LLMs) can achieve strong performance on many tasks by producing step-by-step reasoning before giving a final output, often referred to as chain-of-thought reasoning (CoT). It is tempting to interpret these CoT explanations as the LLM's process for solving a task. This level of transparency into LLMs' predictions would yield significant safety benefits. However, we find that CoT explanations can systematically misrepresent the true reason for a model's prediction. We demonstrate that CoT explanations can be heavily influenced by adding biasing features to model inputs--e.g., by reordering the multiple-choice options in a few-shot prompt to make the answer always \"(A)\"--which models systematically fail to mention in their explanations. When we bias models toward incorrect answers, they frequently generate CoT explanations rationalizing those answers. This causes accuracy to drop by as much as 36% on a suite of 13 tasks from BIG-Bench Hard, when testing with…",
+      "arxiv_id": "2305.04388",
+      "doi": "10.52202/075280-3275",
+      "is_focus": true,
+      "aliases": [
+        [
+          "arxiv",
+          "2305.04388"
+        ],
+        [
+          "doi",
+          "10.52202/075280-3275"
+        ]
+      ],
+      "seed_paper_id": "97085cce183cc71dfd04580285de29e4f8012bf4"
+    },
+    {
+      "id": "openalex:W7133230326",
+      "title": "Deductive Verification of Chain-of-Thought Reasoning",
+      "year": 2023,
+      "venue": "neural information processing systems",
+      "venue_tier": "A+",
+      "authors": [
+        "Zhan Ling",
+        "Yunhao Fang",
+        "Xuanlin Li",
+        "Zhiao Huang",
+        "Mingu Lee"
+      ],
+      "kinds": [],
+      "citation_count": 238,
+      "github_stars": 0,
+      "tldr": "Large Language Models (LLMs) significantly benefit from Chain-of-Thought (CoT) prompting in performing various reasoning tasks. While CoT…",
+      "short_abstract": "Large Language Models (LLMs) significantly benefit from Chain-of-Thought (CoT) prompting in performing various reasoning tasks. While CoT allows models to produce more comprehensive reasoning processes, its emphasis on intermediate reasoning steps can inadvertently introduce hallucinations and accumulated errors, thereby limiting models' ability to solve complex reasoning tasks. Inspired by how humans engage in careful and meticulous deductive logical reasoning processes to solve tasks, we seek to enable language models to perform explicit and rigorous deductive reasoning, and also ensure the trustworthiness of their reasoning process through self-verification. However, directly verifying the validity of an entire deductive reasoning process is challenging, even with advanced models like ChatGPT. In light of this, we propose to decompose a reasoning verification process into a series of step-by-step subprocesses, each only receiving their necessary context and premises. To facilitate…",
+      "arxiv_id": "2306.03872",
+      "doi": "10.52202/075280-1580",
+      "citation_count_source": "semantic_scholar",
+      "aliases": [
+        [
+          "arxiv",
+          "2306.03872"
+        ],
+        [
+          "doi",
+          "10.52202/075280-1580"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W7214052412",
+      "title": "Evaluating Prompt Engineering Techniques for LLaMA-3: A Study of Zero-Shot, Few-Shot, and Chain-of-Thought Prompts Across Reasoning and Classification Tasks",
+      "year": 2026,
+      "venue": "Information",
+      "venue_tier": "preprint",
+      "authors": [
+        "Darren Astle Travasso",
+        "Aboozar Taherkhani"
+      ],
+      "kinds": [],
+      "citation_count": 0,
+      "github_stars": 0,
+      "tldr": "Prompt engineering has emerged as a practical and resource-efficient alternative to fine-tuning large language models (LLMs), particularly…",
+      "short_abstract": "Prompt engineering has emerged as a practical and resource-efficient alternative to fine-tuning large language models (LLMs), particularly as these methods have a lower computation cost than fine-tuning. In this paper, three widely adopted prompting techniques—Zero-Shot, Few-Shot, and Chain-of-Thought (CoT)—were assessed. While these prompting strategies are well established, practitioners still lack clear guidance on when each technique should be preferred, which types of tasks they fail to support reliably, and how performance trade-offs may affect the practical use of LLM-based systems. These techniques are tested across three benchmark tasks: sentiment classification (SST-2), multiple-choice questions (CommonsenseQA), and multi-step math problem solving (GSM8K) using Meta’s LLaMA-3 8B Instruct model. We provide a thorough performance comparison based on accuracy, F1 score, and solve rate. The solve rate is highlighted as a complementary metric for evaluating the usability of LLM…",
+      "doi": "10.3390/info17090920",
+      "aliases": [
+        [
+          "doi",
+          "10.3390/info17090920"
+        ]
+      ],
+      "is_focus": false
+    }
+  ],
+  "edges": [
+    {
+      "src": "openalex:W3203321135",
+      "dst": "openalex:W4281483047",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Least-to-Most Prompting Enables…」(2022) は 「AI Chains」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Wu et al. (2022) propose chaining large language model steps such that the output of one step becomes the input for the next and develop an interactive system for users to construct and modify chains.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "1867f159e13b287a6e14cbd074c11c450f52957721d895bfb24e63359827c5b7"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3203321135",
+      "dst": "openalex:W4393160302",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Graph of Thoughts: Solving Elaborate Problems with Large La…」(2024) は「AI Chains: Transparent and Controllable Human-AI Interactio…」(2022) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "65744191253867134beb1ae90e1c267eba596dde3c29ad5d185fb7e80ad1d4a3"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3203321135",
+      "dst": "openalex:W7133224126",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Chain-Of-Thought Prompting Elicits Reasoning in Large Langu…」(2022) は「AI Chains: Transparent and Controllable Human-AI Interactio…」(2022) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "98fd9c4fe5d1ce2917b3834543025eb57e1b2ed44fb08b2b9879dd03c0352e09"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4221161695",
+      "dst": "openalex:W4281483047",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Least-to-Most Prompting Enables…」(2022) は 「Self-Consistency Improves Chain…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Wang et al. (2022) further dramatically improve chain-of-thought prompting on many tasks by introducing a self-consistency decoding strategy to replace the commonly used greedy decoding.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "a976277ef4f2c0357e4ae5a128907d7ad7a5365f66006ce48a2cb37dba70f8ff"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4221161695",
+      "dst": "openalex:W4306808908",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Challenging BIG-Bench Tasks and Whether Chain-of-Thought Ca…」(2022) は「Self-Consistency Improves Chain of Thought Reasoning in Lan…」(2022) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "fe053e3bc1118d4a3dca88797fe00141571fe894f56221f0fdd4f859e53e870f"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4221161695",
+      "dst": "openalex:W4310629099",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Distilling Reasoning Capabiliti…」(2022) は 「Self-Consistency Improves Chain…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"In our work, we use only one solution from the LLM to distill information into the student model, and according to Wang et al. (2022), multiple subquestion-solution pairs can be sampled, and using majority voting, all pairs leading to the …\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "3fa1d28b038423848c8ee1f01c35e8130a405c6ab28978d903335e7624554eb5"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4221161695",
+      "dst": "openalex:W4312045629",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Teaching Small Language Models …」(2022) は 「Self-Consistency Improves Chain…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Wang et al. (2022) show that task accuracy can be further improved by using self-consistency in CoT prompting.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "edc1f2660a6d4cf589f8af343fe7f81f94f3f66acf3fa5d7656cbdf7f209359e"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4221161695",
+      "dst": "openalex:W4366565380",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Progressive-Hint Prompting Impr…」(2023) は 「Self-Consistency Improves Chain…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "e2bb56d4c926353358003e0dedde3257dd0dcb361add11d0980875b221a3e955"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4221161695",
+      "dst": "openalex:W4385571219",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Large Language Models Are Reasoning Teachers」(2023) は「Self-Consistency Improves Chain of Thought Reasoning in Lan…」(2022) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "7e9e36890b3c387df2a1f1263e6a5934646239a28b4840ad8bdaa8e2806c8ec9"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4221161695",
+      "dst": "openalex:W4385571830",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「On Second Thought, Let’s Not Th…」(2023) は 「Self-Consistency Improves Chain…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We focus on “Let’s think step by step” in this paper, though other prompting methods have also yielded performance increases: aggregating CoT reasoning paths through majority vote using self consistency (Wang et al., 2022), combining outpu…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "5b0a78d36f0d2890e6e12b3f32dcf2f9c815bac5c562960ce52f72ce9d7e562b"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4221161695",
+      "dst": "openalex:W4393160302",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Graph of Thoughts: Solving Elaborate Problems with Large La…」(2024) は「Self-Consistency Improves Chain of Thought Reasoning in Lan…」(2022) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "7e1aeca9e72f07e11420cf14ff881febb00bebf644b79353d184761d99bd4bba"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4221161695",
+      "dst": "openalex:W4402671875",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Navigate through Enigmatic Laby…」(2024) は 「Self-Consistency Improves Chain…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "b25b6353af3eec797de1bb6095f0ee706c04fb7f720b709e18b357c62f93bc96"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4221161695",
+      "dst": "openalex:W4402671980",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Active Prompting with Chain-of-…」(2024) は 「Self-Consistency Improves Chain…」(2022) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"In our experiments, the following four meth-ods serve as the main baselines: Chain-of-thought (CoT) (Wei et al., 2022b), Self-consistency (SC) (Wang et al., 2022), Auto-CoT (Zhang et al., 2022b), and Random-CoT.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "3e5a6c132bac723d76916f02f76ef7902863ae3eae414030f264910c8c8e852d"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4221161695",
+      "dst": "openalex:W4415795303",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「SELF-DISCOVER」(2024) は 「Self-Consistency Improves Chain…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "9cfc0bac4bad7586ad1815bdfac2a4c360fe7a8154ba6e0b335702188814e4b3"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4221161695",
+      "dst": "openalex:W4415795314",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Instance-adaptive Zero-shot Cha…」(2024) は 「Self-Consistency Improves Chain…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Building on the groundwork laid by CoT, Self-consistency [4] innovates through a margin decoding strategy that emphasizes the majority paths to derive the final answer, presenting a significant leap in CoT reasoning.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "52e1d6fe311c5bd1d6c2d9baf9eaf3e78e0422ee6c0b61cfcf0a7f0520c9f972"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4221161695",
+      "dst": "openalex:W7133230326",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Deductive Verification of Chain…」(2023) は 「Self-Consistency Improves Chain…」(2022) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"LLMs aligned with RLHF [32, 31, 48] have also been employed to compare different model generations.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "a5c6bbf6c01cdc5846e646a7158c58afc6d2767c83a2cb663c6becfbda4a760d"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4281483047",
+      "dst": "openalex:W4306808908",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Challenging BIG-Bench Tasks and Whether Chain-of-Thought Ca…」(2022) は「Least-to-Most Prompting Enables Complex Reasoning in Large …」(2022) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "13af349721239feb82e2ad15e186905ec6bc0a6db38b68e5e6cc20023d03ab6e"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4281483047",
+      "dst": "openalex:W4310629099",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Distilling Reasoning Capabiliti…」(2022) は 「Least-to-Most Prompting Enables…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Most similar to our work is the work by Zhou et al. (2022) which decomposes questions into sub-questions and asks the language model to solve each sub-question sequentially.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "8a193c9a850db22e848a7bc7931b3f32253b51ce5e5fa4e0154bcdb170384bef"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4281483047",
+      "dst": "openalex:W4366565380",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Progressive-Hint Prompting Impr…」(2023) は 「Least-to-Most Prompting Enables…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Least-to-Most prompting [9], which follows the same research direction, divides reasoning into problem breakdown parts and problem answer parts and describes the reasoning steps in more detail.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "7f47317f395ee4e35f05f63093bf279b18567f41f7f5aff0574d6855ce834741"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4281483047",
+      "dst": "openalex:W4385327568",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Measuring Faithfulness in Chain…」(2023) は 「Least-to-Most Prompting Enables…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Approaches include generating subquestions (Dua et al., 2022; Zhou et al., 2023), producing a tree of thoughts (Yao et al., 2023a), devising and executing a plan for answering the question (Wang et al., 2023), and having language models de…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "bdd88b05343f88fa6e8db6f4393e9078b9c0a8f710159145903d520eb9b982e9"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4281483047",
+      "dst": "openalex:W4385571830",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「On Second Thought, Let’s Not Th…」(2023) は 「Least-to-Most Prompting Enables…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \", 2022), or breaking down prompts into less → more complex questions (Zhou et al., 2022).\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "c03aab2dfb64f26dcc32aa2cced561b3433e65dac4bc3f6523a75172dd4baac6"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4281483047",
+      "dst": "openalex:W4402671980",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Active Prompting with Chain-of-…」(2024) は 「Least-to-Most Prompting Enables…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Recent prompting studies (Wei et al., 2022b; Wang et al., 2022; Zhou et al., 2022) found that elaborating the reasoning steps in the exemplars endows LLMs with good reasoning abilities, namely chain-of-thought (CoT) prompting.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "faf04398a396e21d2b28ea90624f06d5261e70e30d72fc926745283efc16c768"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4281483047",
+      "dst": "openalex:W4415795303",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「SELF-DISCOVER」(2024) は 「Least-to-Most Prompting Enables…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "578306ede624234d901f495b3d1b9393a9af2d613aaea3682a595db2271c8882"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4281483047",
+      "dst": "openalex:W4415795314",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Instance-adaptive Zero-shot Cha…」(2024) は 「Least-to-Most Prompting Enables…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Similarly, the Least-to-most [3] strategy decomposes a complex question into manageable subquestions, addressing them progressively to achieve a comprehensive solution.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "ecf30e2c8f108fe8614e23f1b61efdf0a3603975cdcabf6fc00cd506b90365de"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4281483047",
+      "dst": "openalex:W7133228402",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Language Models Don't Always Sa…」(2023) は 「Least-to-Most Prompting Enables…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \", 2022) has emerged as a promising approach for improving the reasoning abilities of large language models (LLMs) (Suzgun et al., 2022; Lewkowycz et al., 2022; Zelikman et al., 2022; Zhou et al., 2023).\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "40cca132e3fdf3ac4e5945f04916f40b8c7b57b3da68176b312ffc53369e1aec"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4281483047",
+      "dst": "openalex:W7133230326",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Deductive Verification of Chain…」(2023) は 「Least-to-Most Prompting Enables…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "23d9a27d19319e0bee0246b0e40b351451435a149a2d21f2219d13c4b3cfad6f"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4306808908",
+      "dst": "openalex:W4385571830",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「On Second Thought, Let’s Not Th…」(2023) は 「Challenging BIG-Bench Tasks and…」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"problem—a Chain of Thought (CoT)—as part of a model’s input, LLMs improve performance on a wide range of tasks, including question answering, mathematical problem solving, and commonsense reasoning (Wei et al., 2022b; Suzgun et al., 2022; …\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "cc99d9b1c107ea080d14d2360e55be7f202a93974951644c4e7bcb94f8a15db8"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4306808908",
+      "dst": "openalex:W4402671875",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Navigate through Enigmatic Laby…」(2024) は 「Challenging BIG-Bench Tasks and…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"In addition, the collaborative benchmark BigBench (Srivastava et al., 2022) and BigBench-Hard (Suzgun et al., 2023) also contain several symbolic reasoning datasets, such as state tracking and object counting.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "870d2cad18c457e35f9625eab01f5feb8385432cd723217c75a3b587b4ffa894"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4306808908",
+      "dst": "openalex:W4415795303",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「SELF-DISCOVER」(2024) は 「Challenging BIG-Bench Tasks and…」(2022) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We adopt the categorization from Suzgun et al. (2022).\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "cf347c79b05baa0a3e8dd6a6df7e068781dbc241246e79e9631fe1577a5fc66b"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4306808908",
+      "dst": "openalex:W7133198832",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Towards Revealing the Mystery b…」(2023) は 「Challenging BIG-Bench Tasks and…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Practically, this can be achieved by either adding special phrases such as “let’s think step by step” or by giving few-shot CoT demonstrations [29, 56, 51, 38, 63, 58].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "86bcd61934a08a5d5950af1a254a72b24cebab479dfe00d9f8c52519fa584c73"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4306808908",
+      "dst": "openalex:W7133228402",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Language Models Don't Always Say What They Think: Unfaithfu…」(2023) は「Challenging BIG-Bench Tasks and Whether Chain-of-Thought Ca…」(2022) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "82c5a9d9f6ddd2f823e409f5a08a02f62c7fe05dd9dda2d9e2237ffe6514ec50"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4310629099",
+      "dst": "openalex:W4312045629",
+      "rel": "contrasts",
+      "relation": "contrasts",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「Teaching Small Language Models …」(2022) は 「Distilling Reasoning Capabiliti…」(2022) と異なる手法を取ると述べている（arXiv HTML（arXiv:2212.08410v3）の本文の引用文から規則で判定）。引用文: \"In contrast to our work, Shridhar et al. (2022) focus on training two models, one for problem decomposition and one for solving.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "arxiv_html",
+          "kind": "citation-context",
+          "sha256": "4de803f6c33820612cb48cdb1c586de152610fc42ef6373667ffdd6f2fda4a05"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4312045629",
+      "dst": "openalex:W4385571219",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Large Language Models Are Reasoning Teachers」(2023) は「Teaching Small Language Models to Reason」(2023) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "8eb6673df68a311c4c19f6914bc2b125b35c191a922ddfb005c061743fa0aefb"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4312045629",
+      "dst": "openalex:W4402671875",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Navigate through Enigmatic Laby…」(2024) は 「Teaching Small Language Models …」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "dfe2c395252a02718dc2fe0d005655c17ff3bc5887fd86ab254eabaa2d67b83e"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4312090934",
+      "dst": "openalex:W4402671875",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Navigate through Enigmatic Laby…」(2024) は 「Towards Understanding Chain-of-…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "2d398c60d18d18dc249da7d1765d2a5618d23f98ce0f9fb7608249c9239bc186"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4312090934",
+      "dst": "openalex:W7125271932",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Multi-Dimensional Evaluation of…」(2026) は 「Towards Understanding Chain-of-…」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "e5e22c931fe4ecd16cc3b58cacb6539fd990b5917544bff45bbd06d7717f4e79"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4312090934",
+      "dst": "openalex:W7133228402",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Language Models Don't Always Say What They Think: Unfaithfu…」(2023) は「Towards Understanding Chain-of-Thought Prompting: An Empiri…」(2022) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "3032efcdefbdd698ca93a11a07d6a06e5c0d96943e820ec07ffc846d3abbbae6"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4366565380",
+      "dst": "openalex:W4415795314",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Instance-adaptive Zero-shot Cha…」(2024) は 「Progressive-Hint Prompting Impr…」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"In contrast, Progressive-Hint Prompting [28] facilitates dynamic interactions between users and LLMs, guiding the reasoning with hints to generate from previous answers.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "6bf393b13a28f514e0d889da645124139d10ed4dc394f27c7dda7e517a525c14"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4385327568",
+      "dst": "openalex:W4402671875",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Navigate through Enigmatic Laby…」(2024) は 「Measuring Faithfulness in Chain…」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "80229e2dafb9fa198754dcd119f875bd645039efc9008cc838f1440894aef0ce"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4385327568",
+      "dst": "openalex:W7133228402",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Language Models Don't Always Sa…」(2023) は 「Measuring Faithfulness in Chain…」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Lanham et al. (2023) propose a number of necessary but not sufﬁcient tests for faithfulness, for example, by testing the sensitivity of models to mistakes added to their CoT explanations.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "76b13f577baf72f3d3da801078787d2bb2934dfa1d71b9ff69720a79130fca6a"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4385571219",
+      "dst": "openalex:W4402671875",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Navigate through Enigmatic Laby…」(2024) は 「Large Language Models Are Reaso…」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Symbolic reasoning here refers specifically to the simulation of some simple operations, which are simple for humans yet challenging for LLMs.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "bfefb079bdd7e58fe840052ebfa488457eebe5a3876e0636ed247636610043df"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4385572867",
+      "dst": "openalex:W4281483047",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "引用文の裏付けがないため extends を baseline_only に補正（規則（intent_map）の判定は参考として残す）。 元の判定: 「Least-to-Most Prompting Enables Complex Reasoning in Large …」(2022) は「Iteratively Prompt Pre-trained Language Models for Cha",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-metadata",
+          "sha256": "0b46a19a0212c2e428dcd0ce644987022a64c796def7130fb0011e5cba69847f"
+        },
+        "classification": {
+          "method": "intent_map",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4385572867",
+      "dst": "openalex:W4402671875",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Navigate through Enigmatic Laby…」(2024) は 「Iteratively Prompt Pre-trained …」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"In multi-hop reasoning, iterative decomposition has become a common practice (Wang et al., 2022; Press et al., 2023; Trivedi et al., 2023).\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "b31b259fcb8978dd468cbee9d8a7d1d82959f7eaab61b7211b546d2d6aabef0c"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4393160302",
+      "dst": "openalex:W4415795303",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「SELF-DISCOVER」(2024) は 「Graph of Thoughts」(2024) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We further include Tree-of-Thought (Yao et al., 2023a) and Graph-of-Thought (Besta et al., 2023) (zero-shot versions) as baselines for comparison shown in Table 4.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "c70ecae11c29cdfa38e7553c4091fd03d742f05b34f5576eb1a21d14976fac53"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4402671875",
+      "dst": "openalex:W4415795314",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Instance-adaptive Zero-shot Cha…」(2024) は 「Navigate through Enigmatic Laby…」(2024) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "7c2723643dfc94e05b2fe10c853b7925ce6fc4f588c67c8dbe4a38ce3c0e7179"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4402671980",
+      "dst": "openalex:W4415795314",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Instance-adaptive Zero-shot Chain-of-Thought Prompting」(2024) は「Active Prompting with Chain-of-Thought for Large Language M…」(2024) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "284f0a55103f9499825d21657a2df29502c1799c44d4379e871b9d1c9463a8bb"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4402671980",
+      "dst": "openalex:W7125271932",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Multi-Dimensional Evaluation of…」(2026) は 「Active Prompting with Chain-of-…」(2024) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "c139ead25f2edeffb01083b7dc528191da2fdd754fc3684b6ecdd06fac727e06"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4415795303",
+      "dst": "openalex:W4415795314",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Instance-adaptive Zero-shot Cha…」(2024) は 「SELF-DISCOVER」(2024) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Self-discover [24] selects relevant atomic reasoning modules (e.g. breaking down problems, critical thinking) for a given task, then adapts and customizes those modules to fit the task.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "ddff55e607000b61793ab74fa994ba8c96f7f710b8dba0f6976790889b65bde9"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4415795314",
+      "dst": "openalex:W7125271932",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Multi-Dimensional Evaluation of Auto-Generated Chain-of-Tho…」(2026) は「Instance-adaptive Zero-shot Chain-of-Thought Prompting」(2024) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "294cf436542f2aa51c65c9eb56a08c0c55d9cf7ca7911db3df388130dc9ae2ab"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4415795314",
+      "dst": "openalex:W7214052412",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Evaluating Prompt Engineering Techniques for LLaMA-3: A Stu…」(2026) は「Instance-adaptive Zero-shot Chain-of-Thought Prompting」(2024) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "88bf17dca1f9b201ff1289e5ed4176bcdd9111e90e52af11c8059b4501107ddb"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7133198832",
+      "dst": "openalex:W4402671875",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Navigate through Enigmatic Laby…」(2024) は 「Towards Revealing the Mystery b…」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Although manual XoT demonstrates better performance, the annotation of rationales incurs a significant increase in cost and introduces dilemmas in demonstration selection.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "32ec9f8b1b7dca62ab849db899fa240a0a70f9d73b6939cb99d804a419daf08f"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7133198832",
+      "dst": "openalex:W4415795314",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Instance-adaptive Zero-shot Cha…」(2024) は 「Towards Revealing the Mystery b…」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "d4ccff7c8400396f6ae8d9aacbca45303ea16af1c52533313281c667a082da1d"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7133224126",
+      "dst": "openalex:W4221161695",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.65,
+      "confidence": 0.65,
+      "rationale": "「Self-Consistency Improves Chain…」(2022) は 「Chain-Of-Thought Prompting Elic…」(2022) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Self-Consistency Works for Non-Natural-Language Reasoning Paths and Zero-shot CoT We also tested the generality of the self-consistency concept to alternative forms of intermediate reasoning like equations (e.g., from “ There are 3 cars in…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "4969b69470d733cda5fb0c972a7848bad63f3f62735c6f84cf64c50bf6eb9097"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7133224126",
+      "dst": "openalex:W4281483047",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Least-to-Most Prompting Enables…」(2022) は 「Chain-Of-Thought Prompting Elic…」(2022) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"As an additional baseline, we also report results on chain-of-thought prompting using the original prompt described in Wei et al. (2022), which we refer to as “Chain-of-Thought (original prompt)”.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "3328b378945052eb0f91893981d79b83b568e9ddcbac3dc597ef2fae7229bc60"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7133224126",
+      "dst": "openalex:W4306808908",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Challenging BIG-Bench Tasks and…」(2022) は 「Chain-Of-Thought Prompting Elic…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"As an alternative to the standard prompting setup used in BIG-Bench, we explore whether chain-of-thought prompting (CoT; Wei et al., 2022b) achieves better performance on BBH.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "d1d6d08046624626435684f6ed7786fc04b06036cce107e06fa19f01080f8276"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7133224126",
+      "dst": "openalex:W4310629099",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Distilling Reasoning Capabiliti…」(2022) は 「Chain-Of-Thought Prompting Elic…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Also, due to computational budget, we used a single prompt to compare the CoT and S OCRATIC C O T and using more prompts (up to 8) might lead to a fairer comparison and better results (Wei et al., 2022b).\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "dc619a4b7cd7537e1182057b1867e4fd61e34e3052d8576805a5202eb2d37eb8"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7133224126",
+      "dst": "openalex:W4312045629",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Teaching Small Language Models …」(2022) は 「Chain-Of-Thought Prompting Elic…」(2022) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We select PaLM 540B based on the state-of-the-art results on the benchmarking datasets re-ported by Wei et al. (2022), and confirm the observed trends with GPT-3 175B.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "ee876f1f82291e38cc889e533f038a9a2af56e91431b719f7a45bec977557645"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7133224126",
+      "dst": "openalex:W4366565380",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Progressive-Hint Prompting Impr…」(2023) は 「Chain-Of-Thought Prompting Elic…」(2022) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Firstly, LLMs significantly outperform smaller models on multi-step reasoning tasks (Wei et al., 2022), whereas their performance gains on tasks like sentiment classification can be limited (Shin et al., 2020).\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "170cad3785d14192d773298b95eb34d307ff0ec212b5a8803066f33e38352837"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7133224126",
+      "dst": "openalex:W4385327568",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Measuring Faithfulness in Chain-of-Thought Reasoning」(2023) は「Chain-Of-Thought Prompting Elicits Reasoning in Large Langu…」(2022) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "f9b65c2690fbd1cb326ccf2492b69ca56339b839a591e2e13ca0705103f3ab2b"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7133224126",
+      "dst": "openalex:W4402671980",
+      "rel": "extends",
+      "relation": "extends",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Active Prompting with Chain-of-…」(2024) は 「Chain-Of-Thought Prompting Elic…」(2022) を土台にしている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"To explore this, we extended the length of the original CoT (Wei et al., 2022b) annotations to an average of 155 words, comparable to our average length of 160 words.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "c2a1563b6d7b1db83406ff356cc609a799c2e1dae60b5e2d277aca853e474c86"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7133224126",
+      "dst": "openalex:W4415795303",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「SELF-DISCOVER: Large Language Models Self-Compose Reasoning…」(2024) は「Chain-Of-Thought Prompting Elicits Reasoning in Large Langu…」(2022) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "2fa1b725e7a687962bb0f67f0a2fb85a595843ccbe2cb2d0a4db60e4365eb13e"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7133224126",
+      "dst": "openalex:W4415795314",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Instance-adaptive Zero-shot Cha…」(2024) は 「Chain-Of-Thought Prompting Elic…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"CoT reasoning [1] advances the reasoning abilities of LLMs by demonstrating a series of logical steps preceding the input demonstration.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "943652419f2802e341dd359d9f210a94e75a6c126c84c28f2b0c0be765e36161"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7133224126",
+      "dst": "openalex:W7133198832",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Towards Revealing the Mystery b…」(2023) は 「Chain-Of-Thought Prompting Elic…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Secondly, it has been empirically observed that scaling the model size significantly improves the CoT ability [56].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "9de57135316e1f6a79190f915051c001bdff794b05a0d0af644c359e17e76ad9"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7133224126",
+      "dst": "openalex:W7133228402",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Language Models Don't Always Sa…」(2023) は 「Chain-Of-Thought Prompting Elic…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Chain-of-thought prompting (CoT; Nye et al., 2021; Wei et al., 2022) has emerged as a promising approach for improving the reasoning abilities of large language models (LLMs) (Suzgun et al., 2022; Lewkowycz et al., 2022; Zelikman et al., 2…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "67b462d02a5b0a14ea3e339eedd7701aafde41b8081022eca976feb1fca475a9"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7133224126",
+      "dst": "openalex:W7133230326",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「Deductive Verification of Chain…」(2023) は 「Chain-Of-Thought Prompting Elic…」(2022) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"For symbol manipulation, we use Last Letter Concatenation [50], where the model is tasked with concatenate the last letters of all the words provided in the question.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "08ae925efe74a5b3a4867ceb6d1354da82a617dac7e8ef7c2614bae0837a265f"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7133224126",
+      "dst": "openalex:W7214052412",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Evaluating Prompt Engineering Techniques for LLaMA-3: A Stu…」(2026) は「Chain-Of-Thought Prompting Elicits Reasoning in Large Langu…」(2022) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "32053a6ce8d02967c6e203b7f5e0ff94eaeb3ce442aa28f2eeadc0f5ae4eef49"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7133228402",
+      "dst": "openalex:W4385571830",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「On Second Thought, Let’s Not Th…」(2023) は 「Language Models Don't Always Sa…」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Relatedly, Turpin et al. (2023) highlights how CoTs reflect biases more broadly, augmenting Big Bench tasks (Srivastava et al., 2022) with biasing features.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "957d13ad27dd5fce495053306d358b52018ad2836803187c95b167f07d04cc97"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7133230326",
+      "dst": "openalex:W4402671875",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Navigate through Enigmatic Laby…」(2024) は 「Deductive Verification of Chain…」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Ling et al. (2023) devises a deductive reasoning form named Natural Program, which guarantees that the conclusion is derived from the designated premises.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "053542f6fbfcbe61d874950ca2914ed689d3f762103d4833019feb83a51a9ec7"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W7133230326",
+      "dst": "openalex:W4415795314",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Instance-adaptive Zero-shot Chain-of-Thought Prompting」(2024) は「Deductive Verification of Chain-of-Thought Reasoning」(2023) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "76f85c2cdeb606cf53b99f3acb37eb5301412cc65cd695e9088dabd99a8f4400"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    }
+  ],
+  "clusters": [],
+  "meta": {
+    "kind": "theme",
+    "generator": "paperpilot.scripts.build_theme_lineage",
+    "source": "build_theme_lineage.py",
+    "theme": "Chain-of-Thought Prompting",
+    "slug": "chain-of-thought-prompting",
+    "keywords": [
+      "Chain-of-Thought Prompting"
+    ],
+    "seeds": [
+      "openalex:W4221161695",
+      "openalex:W4281483047",
+      "openalex:W7133228402",
+      "openalex:W4415795314",
+      "openalex:W4312045629"
+    ],
+    "depth": 1,
+    "since_year": 2018,
+    "generated_at": "2026-10-27T15:09:01.391000Z",
+    "provenance_breakdown": {
+      "s2_context_rule": 52,
+      "api_citation": 16,
+      "intent_map": 1
+    },
+    "completeness": {
+      "complete": true,
+      "expansions_attempted": 19,
+      "expansions_failed": 0,
+      "supplement_failures": []
+    },
+    "topic_gate": {
+      "method": "embedding+terms",
+      "model": "Xenova/bge-small-en-v1.5",
+      "revision": "ea104dacec62c0de699686887e3f920caeb4f3e3",
+      "thresholds": {
+        "z_lo": 0,
+        "z_hi": 1
+      },
+      "pool_size": 177
+    },
+    "canonical_seeds": [
+      "openalex:W4221161695",
+      "openalex:W4281483047",
+      "openalex:W4312045629"
+    ],
+    "lineage_llm": "off"
+  }
+}
