@@ -10,6 +10,10 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 - 引用のみの辺のうち、S2 が「影響大かつ方法論」と判定したものを、やや太く濃く描き、ツールチップ・根拠パネル・読み方ガイドで説明する。関係の種類・強い関係の数・公開の基準は変えない。
 
+### Docs — 公開前提の整備（#450）
+
+- README の系譜の説明を現状に合わせた。`CONTRIBUTING.md`、バグ報告・機能提案の Issue テンプレート、非公開の窓口への案内（`config.yml`）を追加した。
+
 ### Fixed — 数え方の対比を強い関係にしない（R2-56、#445）
 
 - 「we count all the trainable parameters, unlike LoRA …」のような、数え方・報告の約束事の対比を、手法の対比（contrasts）にしない。

@@ -300,7 +300,7 @@
 
 ユーザー決定：**D2＝A**（非公開の窓口は当面 GitHub の非公開の脆弱性報告。リポジトリで有効化済み。独自ドメインができたらメールへ）、**D3＝A**（`data/state` の S2 キャッシュは公開のまま、ODC-BY の notice を付ける）、**D4＝A**（コードは MIT、データは「各出典のライセンスに従う」、サイトにプライバシーの節）。
 
-- 追加：`LICENSE`（MIT、Taichi Nakamura、2026）、`NOTICE.md`（ソース別のライセンスと帰属、S2 の ODC-BY notice と Kinney et al. 2023 / Cohan et al. 2019）、`data/README.md`、`SECURITY.md`、`docs/policy/takedown.md`（受付 → 3 営業日以内に一時非表示 → 判断 → 記録）。runbook に「運用: 削除・訂正の依頼」。
+- 追加：`LICENSE`（MIT、maintainer、2026）、`NOTICE.md`（ソース別のライセンスと帰属、S2 の ODC-BY notice と Kinney et al. 2023 / Cohan et al. 2019）、`data/README.md`、`SECURITY.md`、`docs/policy/takedown.md`（受付 → 3 営業日以内に一時非表示 → 判断 → 記録）。runbook に「運用: 削除・訂正の依頼」。
 - サイト：フッターに「プライバシー」「削除依頼」と OpenReview・ACL Anthology・CVF Open Access。#credits にカタログのソース別ライセンス、コード MIT／データは各出典、非公開の窓口。新しい節 #privacy「プライバシーと削除依頼」。テーマ依頼フォームに「入力したテーマ名は公開されます」の注記。
 - **IP の保持（§6 の訂正）**：調べたところ、`QuotaLedger` の `ip:<IP>` は `expiresAt` で窓を閉じるだけで、**エントリ自体は Durable Object に残り続けていた**（「最大 1 時間」は事実でなかった）。`QuotaLedger.sweepExpired` と Durable Object の alarm を足し、窓が終わった `ip:` エントリを約 1 時間で削除するようにした（`apps/api/src/lib/quota.ts`、`src/durable/quota-object.ts`）。Worker のデプロイ後、最初のテーマ依頼で alarm が入り、それまでに溜まった古いエントリもその alarm で消える。
 - 公開 JSON への `license` フィールド（A3）は、schema が追加を許さないため見送り、notice はファイルで示した。

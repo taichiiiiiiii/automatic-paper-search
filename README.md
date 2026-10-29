@@ -3,7 +3,7 @@
 AI/ML 論文を arXiv / Semantic Scholar / OpenAlex から集め、品質シグナルで絞り込み、**系譜（家系図）として見せる**ツールです。補助出力として CSV / JSON / Slack にも配信できます。
 
 **主な出力:** 10 学会・28,300 本の横断検索と学会別カタログ（静的サイト）。サイトのフォームから新しいテーマを投稿すると、API（`apps/api`）が検査・重複確認・回数制限をしてから `theme-on-demand.yml` を起動し、テーマの家系図を作ります。
-論文の系譜は、品質監査・artifact hash・strict schema の条件をすべて満たしたものだけを表示します。今のデータには条件を満たす系譜がないため、系譜の画面は「準備中」で閉じています（fail closed）。
+分野（テーマ）の家系図は、サイトのフォームから依頼できます。自動の品質検査（artifact hash・strict schema・分類の割合など）を通ったものが、「未監査」の印つきで公開されます。人が確認した「監査済み」のものは別に示します。検査を通らない結果は公開しません（fail closed）。強い関係（拡張・対比）は、引用文の手がかりから規則で推定した候補で、判定できた件数が少ない分野には、その旨が表示されます。
 
 > **構成（2026-10-10）:** TypeScript（pnpm workspace）と Cloudflare Pages / Workers で動いています（2026-10-09 に切替）。今後の計画は [`docs/design/40-post-cutover-roadmap.md`](docs/design/40-post-cutover-roadmap.md)、系譜の公開方針は [`docs/design/41-lineage-publication-and-reliability.md`](docs/design/41-lineage-publication-and-reliability.md)、運用は [`docs/migration/p5-runbook.md`](docs/migration/p5-runbook.md) を見てください。
 
