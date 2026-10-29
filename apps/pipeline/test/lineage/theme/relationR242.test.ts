@@ -195,6 +195,31 @@ const CASES: Case[] = [
     expect: "baseline_only",
   },
   {
+    name: 'DyLoRA: "we count all trainable parameters, unlike LoRA which counts only" is a measurement convention',
+    cited: {
+      title: "LoRA: Low-Rank Adaptation of Large Language Models",
+      year: 2021,
+      authors: ["Edward J. Hu", "Yelong Shen"],
+    },
+    citing:
+      "DyLoRA: Parameter-Efficient Tuning of Pre-trained Models using Dynamic Search-Free Low-Rank Adaptation",
+    sentence:
+      "We count all the trainable parameters including classifier, unlike LoRA paper (Hu et al., 2021a) which they count only LoRA specific parameters.",
+    expect: "baseline_only",
+  },
+  {
+    name: "a real method contrast with the same cue stays a contrast (VeRA vs LoRA)",
+    cited: {
+      title: "LoRA: Low-Rank Adaptation of Large Language Models",
+      year: 2021,
+      authors: ["Edward J. Hu", "Yelong Shen"],
+    },
+    citing: "VeRA: Vector-based Random Matrix Adaptation",
+    sentence:
+      "Unlike Hu et al. (2022), who used an additional hyperparameter α to adjust gradients for the adapted layers, we introduce separate learning rates for the classification head.",
+    expect: "contrasts",
+  },
+  {
     name: "a first-person extension of the cited loss stays an extension (definition, not notation)",
     cited: {
       title: "Supervised Contrastive Learning",

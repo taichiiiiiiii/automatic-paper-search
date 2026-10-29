@@ -688,6 +688,12 @@ const FIRST_PERSON_EXTEND =
 const BASELINE_LIST_CONTRAST =
   /\b(?:different\s+from|unlike|in\s+contrast\s+to|compared\s+to)\s+(?:all\s+)?the\s+(?:above|other|previous|preceding|aforementioned|remaining)\s+(?:baselines?|methods?|approaches|models?)\b/i;
 
+/** R2-56: “We count all the trainable parameters …, unlike LoRA paper which
+ * count only LoRA specific parameters”: the contrast is about how a quantity
+ * is counted or reported (an evaluation convention), not about the method. */
+const MEASUREMENT_CONTRAST =
+  /\b(?:we|I)\s+(?:also\s+|all\s+)?(?:count|report|measure|compute|calculate)\b[^.;]{0,100}\b(?:parameters?|FLOPs?|memory|latency|throughput)\b/i;
+
 /** "Following / Inspired by / Based on X, we calculate …": the adopted
  * thing is a measurement or analysis procedure. */
 const USAGE_ACTION =
@@ -957,6 +963,10 @@ function classifySentence(
   // R2-42: a contrast among the listed baselines is a comparison, never a
   // targeted contrast of the citing paper.
   if (strong && BASELINE_LIST_CONTRAST.test(sentence)) {
+    return mk("compares_with", "phrase_compare", 0.7);
+  }
+  // R2-56: a contrast about how a quantity is counted is a comparison.
+  if (strong && MEASUREMENT_CONTRAST.test(sentence) && anyMatch(CONTRAST_PATTERNS_V3, sentence)) {
     return mk("compares_with", "phrase_compare", 0.7);
   }
   if (fp && anyMatch(CONTRAST_PATTERNS_V3, sentence)) {
