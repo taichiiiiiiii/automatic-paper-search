@@ -13,7 +13,7 @@ and is not endorsed by, any of the data providers listed below.
 ## 1. Code
 
 Everything except the data described in §2 is licensed under the MIT License
-(see [`LICENSE`](LICENSE)), Copyright (c) 2026 Taichi Nakamura.
+(see [`LICENSE`](LICENSE)), Copyright (c) 2026.
 
 ## 2. Data
 
