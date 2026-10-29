@@ -288,7 +288,7 @@ export function makeEdge(
   const { srcId, dstId } = options;
   const relation = classification.relation;
   const confidence = classification.confidence;
-  return {
+  const edge: ThemeEdge = {
     src: srcId,
     dst: dstId,
     rel: relation,
@@ -298,6 +298,12 @@ export function makeEdge(
     rationale: classification.rationale,
     provenance: classificationProvenance(classification, options),
   };
+  // #444: shown only on a plain citation edge (a strong relation already says
+  // more); display-only, so no count or check reads it.
+  if (classification.s2Signal && relation === "baseline_only") {
+    edge.s2_signal = classification.s2Signal;
+  }
+  return edge;
 }
 
 // ---- #68 trending badge ----

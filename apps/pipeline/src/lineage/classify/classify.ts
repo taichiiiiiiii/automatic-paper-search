@@ -40,6 +40,10 @@ export interface DerivedEdge {
    * `s2_context_rule` edge, or the citation-context prompt of an `llm`
    * edge. Edge provenance hashes it instead of the default input. */
   evidence?: { source: string; kind: string; sha256: string };
+  /** #444: Semantic Scholar judged this citation influential AND about the
+   * citing paper's methodology. Display-only: it never changes the relation,
+   * the strong-relation count or any publication check. */
+  s2Signal?: "influential_methodology";
   /** For `provenance: "llm"` answers to a prompt other than the abstract
    * prompt (e.g. `relation-prompt-v4-context`). */
   promptVersion?: string;

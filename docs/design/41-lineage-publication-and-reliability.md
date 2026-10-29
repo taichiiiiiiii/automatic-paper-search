@@ -804,3 +804,12 @@ R2-51 の測定（RLHF の拡張版）で、キャッシュなしの 1 回目は
 RAG の強い関係 0 は取得漏れではなかった。Self-RAG・REPLUG・CRAG の Lewis et al.（RAG）への引用文を S2 から取って現行の規則に通すと、文はどれも背景か比較（「RAG methods (Lewis et al. 2020; Guu et al. 2020) augment …」、「We evaluated the standard RAG」）で、build on / extend などの手がかりの語がある文が実際に無かった。S2 の「影響大・方法論」の印（CRAG ← RAG で `intent_methodology_influential`）は取れているが、辺のデータに残っていない（Issue #444 の前提）。
 
 LoRA → DyLoRA の対比「We count all the trainable parameters including classifier, unlike LoRA paper (Hu et al., 2021a) which they count only LoRA specific parameters.」は、パラメータの数え方（評価の約束事）の対比で、手法の対比ではない。`MEASUREMENT_CONTRAST`（「we count / report / measure / compute … parameters / FLOPs / memory / latency / throughput」を含む対比の文）を比較（`compares_with`）にした。対照に、手法の対比（VeRA ← LoRA「Unlike Hu et al. (2022), who used an additional hyperparameter α …」）は対比のまま（テストで固定）。公開中の強い関係 93 本の差分は DyLoRA ← LoRA の 1 本だけ（contrasts → baseline_only）。lineage 1361、system 63 が通過。
+
+### R2-57 S2 の「影響大かつ方法論」の印を表示に使う（Issue #444、オーナー判断: 選択肢 1、2026-10-29）
+
+Chain-of-Thought Prompting は主要な論文がそろっているのに、強い関係が 2 本（辺 222 本中）だった。S2 の引用文で調べると、Self-Consistency ← CoT のように S2 が「影響大・方法論」と判定していても、文は比較・背景だけで、手がかりの語（D5）が無いために引用のみになる。RAG の強い関係 0 も同じ原因（#445）。この判定の印を、表示だけに使う。
+
+- **データ**: `isInfluential === true` かつ意図に `methodology` を含む組に、辺の `s2_signal: "influential_methodology"` を付ける（`influentialMethodology`、`deriveS2Relation` の出口。`DerivedEdge.s2Signal`）。最後の関係が `baseline_only` の辺にだけ書き出す（`makeEdge`。強い関係には付けない）。辺のスキーマは追加の項目を許すので、`lineage-artifact` の検証は変わらない。
+- **画面**: 印のある辺は、線をやや太く（確信度に依らず 3）濃く（不透明度 0.95）描き、ツールチップ・根拠パネル（「S2 の印」の行）・矢印のラベルに「Semantic Scholar が影響の大きい方法論の引用と判定」と出す。読み方ガイドに「関係の種類や強い関係の数は変わりません」と説明する。
+- **変えないもの**: 関係の種類、強い関係の数、`lineage-quality` の判定、公開の基準、監査。印は追加の項目で、どの検査も読まない。
+- テスト: pipeline `s2Relations.test.ts`（印が付く条件・付かない場合・強い関係には付かない）、web `s2-influential-mark.test.tsx`。lineage 1364、system 63、web 1150 通過。公開済みの分野は、作り直すまで印が付かない。
