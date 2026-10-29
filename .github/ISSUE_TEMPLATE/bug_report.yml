@@ -1,0 +1,27 @@
+name: バグ報告
+description: サイト・API・データ生成の不具合を報告します（脆弱性や削除の依頼は SECURITY.md の非公開の窓口へ）
+title: "[バグ] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        脆弱性、削除・訂正の依頼、個人情報に関わる件は、公開の Issue ではなく Security → Report a vulnerability を使ってください。
+        秘密（キー・トークン）やメールアドレスは書かないでください。
+  - type: input
+    id: url
+    attributes:
+      label: 起きた場所
+      description: ページの URL、または実行した workflow の URL
+  - type: textarea
+    id: what
+    attributes:
+      label: 何が起きたか
+      description: 期待した動きと、実際の動き
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 再現の手順
+      description: 操作の順番、入力したテーマ名など
