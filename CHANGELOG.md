@@ -6,6 +6,10 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Fixed — 数え方の対比を強い関係にしない（R2-56、#445）
+
+- 「we count all the trainable parameters, unlike LoRA …」のような、数え方・報告の約束事の対比を、手法の対比（contrasts）にしない。
+
 ### Fixed — 記法の流用を拡張にしない／拡張版の上限（R2-54、R2-55。R2-53 は取り消し）
 
 - 「we build on the notations of DPO」を拡張にしない（記法・用語の流用）。
