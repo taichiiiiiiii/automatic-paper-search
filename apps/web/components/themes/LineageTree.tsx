@@ -36,6 +36,7 @@ import {
 import { abstractExcerptSourceLabel } from "../../lib/lineage/evidence";
 import { computeMainPath } from "../../lib/lineage/main-path";
 import { priorDerivative, shortestLineagePath } from "../../lib/lineage/paper-neighbors";
+import { isS2Influential, S2_INFLUENTIAL_LABEL_JA } from "../../lib/lineage/s2-signal";
 import { exportPng, exportSvg } from "../../lib/themes-export";
 import type { ThemeCodeLinks } from "../../lib/themes-feed";
 import { formatStars, formatVenue } from "../../lib/themes-format";
@@ -1517,7 +1518,9 @@ export function LineageTree({
                   const strokeClass = RELATION_STROKE_CLASS[e.relation] ?? DEFAULT_STROKE_CLASS;
                   const onMain = showMainPath && mainPathKeys.has(key);
                   const onPath = pathKeys.has(key);
-                  const baseWidth = Math.max(1, e.confidence * 2);
+                  const influential = isS2Influential(e);
+                  // #444: a plain citation S2 calls influential is drawn a little thicker.
+                  const baseWidth = influential ? 3 : Math.max(1, e.confidence * 2);
                   const strokeWidth =
                     selectedEdgeKey === key
                       ? onMain || onPath
@@ -1529,12 +1532,19 @@ export function LineageTree({
                           ? 5
                           : baseWidth;
                   const strokeOpacity =
-                    selectedEdgeKey === key || onMain || onPath ? 1 : showMainPath ? 0.45 : 0.75;
+                    selectedEdgeKey === key || onMain || onPath
+                      ? 1
+                      : showMainPath
+                        ? 0.45
+                        : influential
+                          ? 0.95
+                          : 0.75;
                   return (
                     // biome-ignore lint/a11y/noStaticElementInteractions: mirrors hover/focus bubbling from the focusable hit-area <line> below (tabIndex + aria-label) to show the tooltip; no WAI-ARIA role Biome suggests (group/fieldset) applies to a non-form SVG grouping element.
                     <g
                       key={key}
                       data-main-path={onMain ? "1" : undefined}
+                      data-s2-influential={influential ? "1" : undefined}
                       data-lineage-path={onPath ? "1" : undefined}
                       onPointerEnter={(ev) => {
                         if (ev.pointerType === "mouse") setHoveredEdgeKey(key);
@@ -1569,7 +1579,7 @@ export function LineageTree({
                         tabIndex={0}
                         role="button"
                         aria-pressed={selectedEdgeKey === key}
-                        aria-label={`${onMain ? "本流・" : ""}${relationLabelJa(e.relation, audited)}: ${e.rationale}（Enter で根拠を表示）`}
+                        aria-label={`${onMain ? "本流・" : ""}${relationLabelJa(e.relation, audited)}: ${e.rationale}${influential ? `（${S2_INFLUENTIAL_LABEL_JA}）` : ""}（Enter で根拠を表示）`}
                         onClick={(ev) => selectEdge(key, ev.currentTarget)}
                         onKeyDown={(ev) => {
                           if (ev.key === "Enter" || ev.key === " ") {
@@ -1808,6 +1818,9 @@ export function LineageTree({
                           {relationLabelJa(e.relation, audited)}
                         </div>
                         <div className="mt-1 line-clamp-3 text-ink-muted">{e.rationale}</div>
+                        {isS2Influential(e) && (
+                          <div className="mt-1 text-ink-subtle">{S2_INFLUENTIAL_LABEL_JA}</div>
+                        )}
                         <div className="mt-1 text-ink-subtle">
                           確信度 {e.confidence.toFixed(2)} ・ クリックで根拠を表示
                         </div>

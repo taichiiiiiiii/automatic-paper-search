@@ -34,6 +34,7 @@ import {
   isCandidateRelation,
   relationLabelFor,
 } from "../../lib/lineage/relations";
+import { isS2Influential, S2_INFLUENTIAL_LABEL_JA } from "../../lib/lineage/s2-signal";
 import type { LineageEdge, LineageNode } from "../../lib/themes-quality";
 import { useRelationAudited } from "../lineage/relation-audit";
 
@@ -218,6 +219,14 @@ function EvidenceBody({
         </dd>
         <dt className="text-ink-subtle">確信度</dt>
         <dd className="font-mono text-ink-muted">{edge.confidence.toFixed(2)}</dd>
+        {isS2Influential(edge) && (
+          <>
+            <dt className="text-ink-subtle">S2 の印</dt>
+            <dd className="text-ink-muted" data-evidence-s2-influential="1">
+              {S2_INFLUENTIAL_LABEL_JA}
+            </dd>
+          </>
+        )}
       </dl>
       <p className="mt-2 break-words text-sm text-ink-muted">{summary}</p>
     </>

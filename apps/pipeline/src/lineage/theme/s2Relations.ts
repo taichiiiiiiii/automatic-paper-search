@@ -528,16 +528,33 @@ export async function deriveS2Relation(
   const seen: S2Seen = {};
   const edge = await deriveFromS2(parent, child, ctx, onLlm, seen);
   if (outcome && seen.lookup !== undefined) outcome.lookup = seen.lookup;
-  if (!ctx.arxivHtml) return edge;
+  // #444: S2's own "influential + methodology" judgement rides on the edge as
+  // a display-only signal (no relation or count depends on it).
+  const signalled = (e: DerivedEdge | null): DerivedEdge | null =>
+    e !== null && influentialMethodology(seen.signals ?? null)
+      ? { ...e, s2Signal: "influential_methodology" }
+      : e;
+  if (!ctx.arxivHtml) return signalled(edge);
   // R2-28: arXiv HTML contexts only add a strong, cue-backed claim to a
   // pair S2 had no usable sentence for; every other result stands.
-  if (edge !== null && STRONG_V1.has(edge.relation)) return edge;
+  if (edge !== null && STRONG_V1.has(edge.relation)) return signalled(edge);
   if (seen.lookup === undefined || seen.lookup === "fetch-failed" || seen.lookup === "no-id") {
-    return edge;
+    return signalled(edge);
   }
   const s2 = seen.signals ?? null;
-  if (s2 !== null && s2.found && s2.contexts.some(isUsableContext)) return edge;
-  return (await arxivHtmlStrongEdge(parent, child, ctx, s2)) ?? edge;
+  if (s2 !== null && s2.found && s2.contexts.some(isUsableContext)) return signalled(edge);
+  return signalled((await arxivHtmlStrongEdge(parent, child, ctx, s2)) ?? edge);
+}
+
+/** #444: the pair is `isInfluential` in S2 and one of its intents is
+ * `methodology`. */
+export function influentialMethodology(signals: PairSignals | null): boolean {
+  return (
+    signals !== null &&
+    signals.found &&
+    signals.isInfluential === true &&
+    signals.intents.some((i) => i.toLowerCase() === "methodology")
+  );
 }
 
 /** What the S2 lookup of a pair returned (for the R2-28 supplement). */

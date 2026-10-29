@@ -6,6 +6,10 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Added — S2 が影響大と判定した引用の辺に印を付けて表示する（R2-57、#444）
+
+- 引用のみの辺のうち、S2 が「影響大かつ方法論」と判定したものを、やや太く濃く描き、ツールチップ・根拠パネル・読み方ガイドで説明する。関係の種類・強い関係の数・公開の基準は変えない。
+
 ### Docs — 公開前提の整備（#450）
 
 - README の系譜の説明を現状に合わせた。`CONTRIBUTING.md`、バグ報告・機能提案の Issue テンプレート、非公開の窓口への案内（`config.yml`）を追加した。

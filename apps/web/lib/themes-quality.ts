@@ -84,6 +84,9 @@ export interface LineageEdge {
   relation: string;
   confidence: number;
   rationale: string;
+  /** #444: Semantic Scholar judged this plain citation influential and about
+   * the citing paper's methodology (display only). */
+  s2_signal?: "influential_methodology";
   provenance: LineageProvenance;
 }
 

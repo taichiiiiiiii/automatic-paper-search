@@ -102,6 +102,10 @@ export function ReadingGuide({
             ))}
           </ul>
           <p className="mt-1">線が太いほど、判定の確信度が高い関係です。</p>
+          <p className="mt-1" data-s2-influential-legend>
+            「引用」の線でも、Semantic Scholar
+            が影響の大きい方法論の引用と判定したものは、やや太く濃く描きます（関係の種類や強い関係の数は変わりません）。
+          </p>
         </section>
         <section aria-labelledby="guide-badges">
           <h3 id="guide-badges" className="font-semibold text-ink">
