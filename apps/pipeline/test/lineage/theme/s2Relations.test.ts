@@ -106,6 +106,64 @@ const ANSWER = (o: Record<string, unknown>) =>
     ...o,
   });
 
+describe("#444 S2 influential + methodology signal (display only)", () => {
+  const llm = () => fakeProvider(ANSWER({}));
+  const BG = "Graph networks have become popular for relational data [3].";
+
+  it("marks a plain citation edge that S2 calls influential and methodology", async () => {
+    const c = ctx(
+      sourceWith([ref([BG], { intents: ["background", "methodology"], influential: true })]),
+      llm(),
+    );
+    const e = await deriveS2Relation(A, B, c);
+    expect(e).toMatchObject({ relation: "baseline_only", s2Signal: "influential_methodology" });
+    const edge = makeEdge(e!, {
+      srcId: "openalex:WA",
+      dstId: "openalex:WB",
+      parent: A,
+      child: B,
+      intentRecord: {},
+      provider: null,
+    });
+    expect(edge.s2_signal).toBe("influential_methodology");
+    expect(edge.relation).toBe("baseline_only");
+  });
+
+  it("does not mark influential-only, methodology-only or not-listed pairs", async () => {
+    for (const refs of [
+      [ref([BG], { intents: ["background"], influential: true })],
+      [ref([BG], { intents: ["methodology"], influential: false })],
+      [ref([BG], { intents: [], influential: false })],
+    ]) {
+      const e = await deriveS2Relation(A, B, ctx(sourceWith(refs), llm()));
+      expect(e?.s2Signal).toBeUndefined();
+    }
+  });
+
+  it("a strong relation carries no s2_signal on the serialized edge", async () => {
+    const c = ctx(
+      sourceWith([
+        ref(["We build on the graph convolution of [3] for our attention layer."], {
+          intents: ["methodology"],
+          influential: true,
+        }),
+      ]),
+      llm(),
+    );
+    const e = await deriveS2Relation(A, B, c);
+    expect(e?.relation).toBe("extends");
+    const edge = makeEdge(e!, {
+      srcId: "openalex:WA",
+      dstId: "openalex:WB",
+      parent: A,
+      child: B,
+      intentRecord: {},
+      provider: null,
+    });
+    expect(edge.s2_signal).toBeUndefined();
+  });
+});
+
 describe("deriveS2Relation routing", () => {
   it("background without a cue: rule result, no LLM call", async () => {
     const llm = fakeProvider(ANSWER({}));
