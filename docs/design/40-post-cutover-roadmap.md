@@ -4,7 +4,7 @@
 - 前提: 39 番（移行の設計、2026-10-10 に削除）の移行（P0〜P5）は 2026-10-09 に完了。手順と記録は [`p5-runbook.md`](../migration/p5-runbook.md)
 - この文書の役割: 切替後に何を、どの順で、どの条件で進めるかを決める。39 は移行の設計として残し、以後の計画はここで管理する
 
-## 1. 現状（2026-10-27、develop の公開データから集計）
+## 1. 現状（2026-10-29、develop の公開データから集計）
 
 ### 1.1 構成
 
@@ -26,7 +26,7 @@
 | 項目 | 値 |
 |---|---|
 | 学会カタログ | 10 学会、約 28,300 本。データの日付は **2026-06-28** |
-| テーマ | 10、合計 460 論文（公開 manifest。Chain-of-Thought Prompting を 2026-10-27 15:53 UTC に生成） |
+| テーマ | 10、合計 444 論文（公開 manifest。Low-Rank Adaptation を 2026-10-29 04:46 UTC、Chain-of-Thought Prompting を同日 06:07 UTC に再生成） |
 | 系譜の品質状態（`lineage-quality-v1.json`） | 会議 13（`ready` 10・`unavailable` 3）、テーマ 10（すべて `ready`、監査済み 4・未監査 6）。未監査も「未監査（自動生成）」と明示して表示する D1 の混合方針 |
 | 定期実行 | 無し。`collect-weekly`・`collect-daily-watch` の cron は 2026-06-04 に意図的に止めた（#245）。今の定期実行は `lighthouse`（週 1）だけ |
 | 秘密 | Worker: `GH_DISPATCH_PAT`（2027-01-07 失効）。GitHub: `PAPERPILOT_GROQ_API_KEY`、environment `cloudflare-pages-deploy` に Cloudflare の 2 つ。S2・OpenAlex・Gemini・Claude・Slack の鍵は未設定（コードは任意扱い） |
@@ -113,10 +113,11 @@
 
 - **R2-2c 1 件目（2026-10-10、run 37963889302）**: `Graph Neural Network` を新しい生成で作り直し、本番まで通った。11 ノード・17 edge で、テーマ外は 1 件（ResNet のサーベイ）だけになった。root は GNN のサーベイ。ただし **Groq が `401`（鍵が無効）** で、LLM の分類は 1 件も使えていない。edge はすべて `citation_heuristic`（0.4）。鍵（`PAPERPILOT_GROQ_API_KEY`、2026-05-09 登録）の作り直しが、残り 3 テーマの作り直しと人手監査の前提になる
 
-#### 現在の進捗（2026-10-27）
+#### 現在の進捗（2026-10-29）
 
 - `lineage-quality-v1.json` は会議 13 件（`ready` 10・`unavailable` 3）、テーマ 10 件（すべて `ready`、監査済み 4・未監査 6）。監査済みは Flash Attention・Graph Neural Network・Mixture of Experts・Vision Transformer。未監査は Low-Rank Adaptation・Diffusion Models・Contrastive Learning・RLHF・Retrieval-Augmented Generation・Chain-of-Thought Prompting。未監査の成果物は D1 に従い、未監査であることを明示して表示する。
-- R2-48〜52 で短い生成結果の段階公開、実行間キャッシュ、S2 取得失敗の遅延再試行を追加（詳細は [41](41-lineage-publication-and-reliability.md)）。新規5テーマは 2026-10-24〜25 に生成され、最初の短い結果の後に拡張された。10-26 に Contrastive Learning と RLHF を再生成し、10-27 に Chain-of-Thought Prompting を新規生成。公開 manifest は計 460 論文。
+- R2-48〜52 で短い生成結果の段階公開、実行間キャッシュ、S2 取得失敗の遅延再試行を追加（詳細は [41](41-lineage-publication-and-reliability.md)）。新規5テーマは 2026-10-24〜25 に生成され、最初の短い結果の後に拡張された。10-26 に Contrastive Learning と RLHF、10-27 に Chain-of-Thought Prompting、10-29 に Low-Rank Adaptation と Chain-of-Thought Prompting を再生成。公開 manifest は計 444 論文。
+- R2-56 は数え方の対比を強い関係にしない規則、R2-57 は S2 の influential+methodology 信号を引用のみの辺に表示する仕様を追加した（詳細とテストは [41](41-lineage-publication-and-reliability.md)）。関係種別や公開基準は変更していない。
 - R2-3 の初期パイロットは完了し4テーマを監査済み。残り6テーマは、監査 fixture を整備して監査するか、監査対象外とする理由を決める。R2-4 は実装・データ上は利用可能だが、本番のブラウザー確認は未実施。このメンテナンスでは LLM 鍵や外部 API の疎通を確認していない。
 
 ### R3 学会の自動更新（12 月〜2027 年 1 月）
