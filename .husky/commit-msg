@@ -1,0 +1,35 @@
+#!/bin/sh
+# commit-msg
+# Enforce issue-tracked commit format: "feat(scope): …" / "fix(scope): …" + "Refs #N".
+MSG_FILE="$1"
+MSG=$(cat "$MSG_FILE")
+
+# Allow merge / revert style commits to pass (they're infra, not feature work).
+case "$MSG" in
+  *merge*|*Revert*)
+    exit 0
+    ;;
+esac
+
+if ! echo "$MSG" | grep -qE '^(feat|fix)\([a-zA-Z0-9_-]+\):'; then
+  echo "ERROR: commit message must start with 'feat(scope): …' or 'fix(scope): …'." >&2
+  echo "  e.g. fix(theme): short relation edge on overlays Refs #443" >&2
+  exit 1
+fi
+
+if ! echo "$MSG" | grep -qE 'Refs #[0-9]+'; then
+  echo "ERROR: commit message must include 'Refs #N' (e.g. 'fix(theme): … Refs #443')." >&2
+  exit 1
+fi
+
+# Branch naming check (warning only): <kind>/<issue#>-<slug>
+BRANCH=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD 2>/dev/null)
+case "$BRANCH" in
+  fix/*|feat/*)
+    if ! echo "$BRANCH" | grep -qE '^/(fix|feat)/[0-9]+-'; then
+      echo "WARNING: branch name does not match '<kind>/<issue#>-<slug>' (e.g. fix/445-lora-rag-strong-edges)." >&2
+    fi
+    ;;
+esac
+
+exit 0

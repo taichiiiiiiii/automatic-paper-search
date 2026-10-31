@@ -1,0 +1,13 @@
+#!/bin/sh
+# pre-commit
+# QC gate: Biome lint/format + TypeScript typecheck.
+# Refuses the commit if either fails, so the CI gate is caught locally.
+set -e
+
+echo "==> [pre-commit] biome check"
+pnpm exec biome check . || { echo "Biome offenses found. Fix before committing."; exit 1; }
+
+echo "==> [pre-commit] typecheck"
+pnpm -r --if-present typecheck || { echo "Type errors found. Fix before committing."; exit 1; }
+
+echo "==> [pre-commit] OK"
