@@ -127,12 +127,10 @@ describe("ThemeRequestForm: per-run cancellation (M4)", () => {
     );
     vi.spyOn(dataThemes, "fetchThemesManifest").mockResolvedValue({ status: "ok", data: [] });
     const stages = ["generate", "check", "generate"];
-    const statusMock = vi
-      .spyOn(dataThemes, "fetchThemeRunStatus")
-      .mockImplementation(async () => ({
-        status: "in_progress",
-        stage: stages.shift() ?? "check",
-      }));
+    const statusMock = vi.spyOn(dataThemes, "fetchThemeRunStatus").mockImplementation(async () => ({
+      status: "in_progress",
+      stage: stages.shift() ?? "check",
+    }));
 
     render(<ThemeRequestForm onReady={vi.fn()} />);
     fireEvent.change(screen.getByLabelText(/テーマを自分で生成/), { target: { value: "Theme A" } });
