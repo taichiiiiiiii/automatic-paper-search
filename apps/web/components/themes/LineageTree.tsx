@@ -33,6 +33,7 @@ import {
   themeNodesToBibtex,
   themeNodesToCsv,
 } from "../../lib/export-formats";
+import { edgeLayer, edgeStyle } from "../../lib/lineage/edge-style";
 import { abstractExcerptSourceLabel } from "../../lib/lineage/evidence";
 import { computeMainPath } from "../../lib/lineage/main-path";
 import { priorDerivative, shortestLineagePath } from "../../lib/lineage/paper-neighbors";
@@ -652,11 +653,11 @@ export function LineageTree({
     [artifact.edges, visibleRelations, mainPathMode, mainPathKeys],
   );
   // Main-path edges are drawn last so they sit on top of the others.
+  // #459: plain citations are drawn first (bottom), strong relations above them.
   const drawnEdges = useMemo(() => {
-    if (!showMainPath) return visibleEdges;
-    const rest = visibleEdges.filter((e) => !mainPathKeys.has(edgeKey(e)));
-    const main = visibleEdges.filter((e) => mainPathKeys.has(edgeKey(e)));
-    return [...rest, ...main];
+    const layer = (e: (typeof visibleEdges)[number]) =>
+      edgeLayer(e.relation, showMainPath && mainPathKeys.has(edgeKey(e)));
+    return [...visibleEdges].sort((a, b) => layer(a) - layer(b));
   }, [visibleEdges, showMainPath, mainPathKeys]);
 
   const matchSet = useMemo(() => {
@@ -676,6 +677,8 @@ export function LineageTree({
 
   // ---- Card popover (delayed show, instant hide) ------------------------
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
+  // #459: the paper under the pointer, immediately (the popover above waits).
+  const [focusHoverId, setFocusHoverId] = useState<string | null>(null);
   const popoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const scheduleShowPopover = useCallback((id: string) => {
     if (popoverTimerRef.current) clearTimeout(popoverTimerRef.current);
@@ -1519,26 +1522,20 @@ export function LineageTree({
                   const onMain = showMainPath && mainPathKeys.has(key);
                   const onPath = pathKeys.has(key);
                   const influential = isS2Influential(e);
-                  // #444: a plain citation S2 calls influential is drawn a little thicker.
-                  const baseWidth = influential ? 3 : Math.max(1, e.confidence * 2);
-                  const strokeWidth =
-                    selectedEdgeKey === key
-                      ? onMain || onPath
-                        ? 7
-                        : 4
-                      : onPath
-                        ? 6
-                        : onMain
-                          ? 5
-                          : baseWidth;
-                  const strokeOpacity =
-                    selectedEdgeKey === key || onMain || onPath
-                      ? 1
-                      : showMainPath
-                        ? 0.45
-                        : influential
-                          ? 0.95
-                          : 0.75;
+                  // #459: layered, faint plain citations; the paper under the
+                  // pointer (or selected) brings its own edges forward.
+                  const { width: strokeWidth, opacity: strokeOpacity } = edgeStyle({
+                    relation: e.relation,
+                    confidence: e.confidence,
+                    influential,
+                    selected: selectedEdgeKey === key,
+                    onMain,
+                    onPath,
+                    showMainPath,
+                    focusId: focusHoverId ?? selectedPaperId,
+                    src: e.src,
+                    dst: e.dst,
+                  });
                   return (
                     // biome-ignore lint/a11y/noStaticElementInteractions: mirrors hover/focus bubbling from the focusable hit-area <line> below (tabIndex + aria-label) to show the tooltip; no WAI-ARIA role Biome suggests (group/fieldset) applies to a non-form SVG grouping element.
                     <g
@@ -1631,13 +1628,25 @@ export function LineageTree({
                     onPointerEnter={(ev) => {
                       // Touch taps fire enter events too; on a phone the
                       // popover would cover the tree, so mouse only.
-                      if (ev.pointerType === "mouse") scheduleShowPopover(p.id);
+                      if (ev.pointerType === "mouse") {
+                        setFocusHoverId(p.id);
+                        scheduleShowPopover(p.id);
+                      }
                     }}
-                    onPointerLeave={hidePopover}
+                    onPointerLeave={() => {
+                      setFocusHoverId(null);
+                      hidePopover();
+                    }}
                     onFocus={(ev) => {
-                      if (isKeyboardFocus(ev.target)) scheduleShowPopover(p.id);
+                      if (isKeyboardFocus(ev.target)) {
+                        setFocusHoverId(p.id);
+                        scheduleShowPopover(p.id);
+                      }
                     }}
-                    onBlur={hidePopover}
+                    onBlur={() => {
+                      setFocusHoverId(null);
+                      hidePopover();
+                    }}
                   >
                     <foreignObject
                       x={p._x}
@@ -1655,7 +1664,7 @@ export function LineageTree({
                         aria-label={`${p.title ?? p.id}（${typeof p.year === "number" ? p.year : "年不明"}）: 選ぶと土台と発展を表示`}
                         className={`flex h-full w-full flex-col justify-start overflow-hidden rounded-md border px-3 py-2 text-left text-xs ${
                           p.is_focus
-                            ? "border-accent bg-accent/5"
+                            ? `border-accent bg-surface-elevated ${styles.focusCard}`
                             : "border-rule bg-surface-elevated"
                         } ${accentClass ?? ""} ${filteredClass} ${shadowClass ?? ""} ${orphanClass} ${permalinkClass}`}
                       >
