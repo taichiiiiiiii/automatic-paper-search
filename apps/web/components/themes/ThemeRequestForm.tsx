@@ -49,10 +49,11 @@ import {
   PROGRESS_STEP_LABELS,
   PROGRESS_STEPS,
   type ProgressStep,
-  progressPercentFor,
+  progressPercentAt,
   QUALITY_FAILED_FAILURE,
   STATUS_CHECK_INTERVAL_POLLS,
   safeRunUrl,
+  stepForStage,
   THEME_QUEUED_MESSAGE,
   THEME_REQUEST_HINT,
   THEME_REQUEST_PUBLIC_NOTICE,
@@ -71,6 +72,8 @@ interface ProgressState {
   themeLabel: string;
   requestId: string | null;
   step: ProgressStep;
+  /** When the current step was entered (the bar moves with the time in it). */
+  stepSince: number;
   startedAt: number;
   networkWarning: boolean;
   failure: ProgressFailure | null;
@@ -142,7 +145,21 @@ export function ThemeRequestForm({ onReady }: { onReady: (slug: string) => void 
 
   const advanceStep = useCallback((token: number, step: ProgressStep) => {
     if (runTokenRef.current !== token) return;
-    setProgress((prev) => (prev && !prev.failure ? { ...prev, step } : prev));
+    setProgress((prev) =>
+      prev && !prev.failure && prev.step !== step ? { ...prev, step, stepSince: Date.now() } : prev,
+    );
+  }, []);
+
+  const advanceStepForward = useCallback((token: number, step: ProgressStep) => {
+    if (runTokenRef.current !== token) return;
+    setProgress((prev) =>
+      prev &&
+      !prev.failure &&
+      PROGRESS_STEPS.indexOf(step) > PROGRESS_STEPS.indexOf(prev.step) &&
+      prev.step !== "ready"
+        ? { ...prev, step, stepSince: Date.now() }
+        : prev,
+    );
   }, []);
 
   const pollForCompletion = useCallback(
@@ -189,6 +206,9 @@ export function ThemeRequestForm({ onReady }: { onReady: (slug: string) => void 
         if (pollIter % STATUS_CHECK_INTERVAL_POLLS === 0) {
           const run = await fetchThemeRunStatus(API_BASE, requestId);
           if (runTokenRef.current !== token) return;
+          // #457: the real stage of the run drives the bar (never backwards).
+          const real = stepForStage(run?.stage);
+          if (real !== null) advanceStepForward(token, real);
           const fail = failureFromRun(run);
           if (fail) {
             setFailure(token, { title: fail.title, message: fail.message, runUrl: fail.runUrl });
@@ -198,7 +218,7 @@ export function ThemeRequestForm({ onReady }: { onReady: (slug: string) => void 
         await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
       }
     },
-    [advanceStep, onReady, setFailure],
+    [advanceStep, advanceStepForward, onReady, setFailure],
   );
 
   const startProgress = useCallback(
@@ -211,14 +231,15 @@ export function ThemeRequestForm({ onReady }: { onReady: (slug: string) => void 
         themeLabel,
         requestId,
         step: "dispatch",
+        stepSince: Date.now(),
         startedAt: Date.now(),
         networkWarning: false,
         failure: null,
       });
       timeoutIdsRef.current = [
+        // The first status answer (about 10 s) moves the bar to the real stage;
+        // until then only the accepted -> waiting step is shown.
         setTimeout(() => advanceStep(token, "queue"), 5_000),
-        setTimeout(() => advanceStep(token, "generate"), 30_000),
-        setTimeout(() => advanceStep(token, "commit"), 180_000),
       ];
       void pollForCompletion(token, slug, requestId);
     },
@@ -401,7 +422,7 @@ export function ThemeRequestForm({ onReady }: { onReady: (slug: string) => void 
           </strong>
           {!progress.failure && (
             <span className="text-xs text-ink-subtle">
-              経過 {minutes}:{String(seconds).padStart(2, "0")}
+              経過 {minutes}:{String(seconds).padStart(2, "0")}・目安 15〜25 分
             </span>
           )}
         </div>
@@ -409,7 +430,7 @@ export function ThemeRequestForm({ onReady }: { onReady: (slug: string) => void 
           <>
             <progress
               className="mt-2 h-2 w-full"
-              value={progressPercentFor(progress.step)}
+              value={progressPercentAt(progress.step, Date.now() - progress.stepSince)}
               max={100}
               aria-label="生成の進捗"
             />

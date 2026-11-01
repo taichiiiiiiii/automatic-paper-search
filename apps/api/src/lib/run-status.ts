@@ -13,6 +13,7 @@
 import type { Env } from "../types.js";
 import { isRequestId } from "./request-id.js";
 import { type PublicRun, pickMatchingRun } from "./run-match.js";
+import { stageFromJobs } from "./run-stage.js";
 
 export const RUN_STATUS_TTL_MS = 15_000;
 const RUNS_PER_PAGE = 30;
@@ -67,7 +68,11 @@ export async function lookupRun(
       value = { ok: false };
     } else {
       const body = (await resp.json()) as { workflow_runs?: unknown };
-      value = { ok: true, run: pickMatchingRun(body.workflow_runs, requestId) };
+      const run = pickMatchingRun(body.workflow_runs, requestId);
+      if (run !== null && run.status !== "completed" && run.id !== null) {
+        run.stage = await lookupStage(run.id, env, pat, deps);
+      }
+      value = { ok: true, run };
     }
   } catch (error) {
     deps.log?.(
@@ -79,6 +84,35 @@ export async function lookupRun(
   if (cache.size >= MAX_CACHE_ENTRIES) cache.clear();
   cache.set(requestId, { at: now, value });
   return value;
+}
+
+/** #457: the coarse stage of a running run, read from its jobs. Best effort:
+ * null when GitHub cannot be asked (the page then shows a plain "checking"). */
+async function lookupStage(
+  runId: number,
+  env: Env,
+  pat: string,
+  deps: RunStatusDeps,
+): Promise<string | null> {
+  try {
+    const resp = await deps.fetch(
+      `https://api.github.com/repos/${env.GH_OWNER}/${env.GH_REPO}/actions/runs/${runId}/jobs?per_page=30`,
+      {
+        redirect: "manual",
+        headers: {
+          authorization: `Bearer ${pat}`,
+          accept: "application/vnd.github+json",
+          "x-github-api-version": "2022-11-28",
+          "user-agent": "paperpilot-theme-status",
+        },
+      },
+    );
+    if (!resp.ok) return null;
+    const body = (await resp.json()) as { jobs?: unknown };
+    return stageFromJobs(body.jobs);
+  } catch {
+    return null;
+  }
 }
 
 /** A run that ended without publishing: re-submitting may dispatch again. */

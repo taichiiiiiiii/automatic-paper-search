@@ -165,3 +165,32 @@ describe("safeRunUrl", () => {
     expect(safeRunUrl(validRunUrl)).toBe(validRunUrl);
   });
 });
+
+describe("real progress (#457)", () => {
+  it("maps the Worker's stage to a panel step", async () => {
+    const { stepForStage } = await import("../../lib/themes-request");
+    expect(stepForStage("queued")).toBe("queue");
+    expect(stepForStage("generate")).toBe("generate");
+    expect(stepForStage("check")).toBe("commit");
+    expect(stepForStage("publish")).toBe("publish");
+    expect(stepForStage("zzz")).toBeNull();
+    expect(stepForStage(undefined)).toBeNull();
+  });
+
+  it("the bar moves with time in a step but never reaches the next step", async () => {
+    const { progressPercentAt } = await import("../../lib/themes-request");
+    const steps = ["queue", "generate", "commit", "publish"] as const;
+    for (const s of steps) {
+      const early = progressPercentAt(s, 0);
+      const late = progressPercentAt(s, 60 * 60_000);
+      expect(late).toBeGreaterThan(early);
+      expect(late).toBeLessThan(100);
+    }
+    // a long wait in one step stays below the next step's start
+    expect(progressPercentAt("generate", 3_600_000)).toBeLessThan(progressPercentAt("commit", 0));
+    expect(progressPercentAt("commit", 3_600_000)).toBeLessThan(progressPercentAt("publish", 0));
+    expect(progressPercentAt("publish", 3_600_000)).toBeLessThan(100);
+    expect(progressPercentAt("ready", 0)).toBe(100);
+    expect(progressPercentAt("unknown", 5)).toBe(0);
+  });
+});

@@ -15,6 +15,8 @@ const NEW_ID = "theme-22222222-2222-4222-8222-222222222222";
 
 function run(conclusion: string | null, status = "completed", id = OLD_ID) {
   return {
+    id: 1,
+    stage: undefined as string | null | undefined,
     status,
     conclusion,
     html_url: "https://github.com/o/r/actions/runs/1",
@@ -42,13 +44,14 @@ function makeEnv(pat: string | undefined = "pat"): Env {
   };
 }
 
-function fakeGithub(runs: unknown[] | "fail") {
+function fakeGithub(runs: unknown[] | "fail", jobs: unknown[] = []) {
   const calls: { url: string; method: string }[] = [];
   const fetchImpl = (async (url: string, init?: RequestInit) => {
     calls.push({ url, method: init?.method ?? "GET" });
     if (url.startsWith("https://raw.githubusercontent.com")) return new Response("[]");
     if (url.includes("/dispatches")) return new Response(null, { status: 204 });
     if (runs === "fail") return new Response("nope", { status: 500 });
+    if (/\/actions\/runs\/\d+\/jobs/.test(url)) return new Response(JSON.stringify({ jobs }));
     return new Response(JSON.stringify({ workflow_runs: runs }), { status: 200 });
   }) as unknown as typeof fetch;
   return { fetchImpl, calls };
@@ -69,11 +72,41 @@ describe("lookupRun / runEndedBadly", () => {
           "created_at",
           "display_title",
           "html_url",
+          "id",
           "run_started_at",
           "status",
         ].sort(),
       );
     }
+  });
+
+  it("adds the stage of a running run from its jobs (#457)", async () => {
+    const running = { ...run(null, "in_progress"), id: 41177518651 };
+    const gh = fakeGithub(
+      [running],
+      [
+        { name: "generate", status: "completed", conclusion: "success" },
+        { name: "promote", status: "in_progress", conclusion: null },
+      ],
+    );
+    const got = await lookupRun(OLD_ID, makeEnv(), { fetch: gh.fetchImpl });
+    expect(got.ok && got.run?.stage).toBe("check");
+    expect(gh.calls.some((c) => c.url.includes("/actions/runs/41177518651/jobs"))).toBe(true);
+  });
+
+  it("does not ask for jobs of a finished run, and a jobs failure leaves the stage null (#457)", async () => {
+    const done = { ...run("failure"), id: 5 };
+    const gh = fakeGithub([done]);
+    await lookupRun(OLD_ID, makeEnv(), { fetch: gh.fetchImpl });
+    expect(gh.calls.some((c) => c.url.includes("/jobs"))).toBe(false);
+    clearRunStatusCache();
+    const running = { ...run(null, "in_progress"), id: 6 };
+    const failing = (async (url: string) =>
+      url.includes("/jobs")
+        ? new Response("x", { status: 500 })
+        : new Response(JSON.stringify({ workflow_runs: [running] }))) as unknown as typeof fetch;
+    const got = await lookupRun(OLD_ID, makeEnv(), { fetch: failing });
+    expect(got.ok && got.run?.stage).toBeNull();
   });
 
   it("caches per request id for the TTL (one GitHub call for repeated polls)", async () => {
