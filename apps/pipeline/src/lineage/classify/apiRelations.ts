@@ -688,6 +688,16 @@ const FIRST_PERSON_EXTEND =
 const BASELINE_LIST_CONTRAST =
   /\b(?:different\s+from|unlike|in\s+contrast\s+to|compared\s+to)\s+(?:all\s+)?the\s+(?:above|other|previous|preceding|aforementioned|remaining)\s+(?:baselines?|methods?|approaches|models?)\b/i;
 
+/** #455: “While baselines like A-Mem and MemoryOS exhibit performance
+ * fluctuations …, our framework maintains a stable advantage”: a contrast
+ * about measured results with a baseline list, not about the method. */
+const RESULT_CONTRAST = /\b(?:while|whereas)\s+(?:the\s+)?base-?lines?\b/i;
+
+/** #455: “we extended the length of the original CoT annotations”: the thing
+ * changed is a quantity of the setup, not the cited method. */
+const QUANTITY_CHANGE =
+  /\b(?:we|I)\s+(?:\w+\s+){0,2}extend(?:ed|s)?\s+the\s+(?:length|size|number|amount|range|depth|width)\s+of\b/i;
+
 /** R2-56: “We count all the trainable parameters …, unlike LoRA paper which
  * count only LoRA specific parameters”: the contrast is about how a quantity
  * is counted or reported (an evaluation convention), not about the method. */
@@ -938,6 +948,10 @@ function classifySentence(
   // cited paper), it never widens it: “over a version of FlashAttention-2
   // optimized for …” or “the 3rd version of BFCL” stay what they were.
   const buildCues = [...ADAPT_PATTERNS, ...BUILD_PATTERNS];
+  // #455: extending a quantity of the setup is not building on the cited method.
+  if (buildable && QUANTITY_CHANGE.test(sentence)) {
+    return opts.source === "abstract" ? null : mk("uses_resource", "phrase_usage", 0.7);
+  }
   if (
     buildable &&
     (ownVariantOf(sentence, id) ||
@@ -963,6 +977,10 @@ function classifySentence(
   // R2-42: a contrast among the listed baselines is a comparison, never a
   // targeted contrast of the citing paper.
   if (strong && BASELINE_LIST_CONTRAST.test(sentence)) {
+    return mk("compares_with", "phrase_compare", 0.7);
+  }
+  // #455: a contrast opened by “While baselines …” is about results.
+  if (strong && RESULT_CONTRAST.test(sentence) && anyMatch(CONTRAST_PATTERNS_V3, sentence)) {
     return mk("compares_with", "phrase_compare", 0.7);
   }
   // R2-56: a contrast about how a quantity is counted is a comparison.
