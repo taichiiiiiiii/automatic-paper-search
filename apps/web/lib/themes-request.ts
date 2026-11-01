@@ -19,7 +19,14 @@ import { SLUG_RE } from "./themes-slug";
 /** Step list mirrored from the HTML data-step values in the original
  * docs/themes/index.html — kept as a plain ordered array so
  * `progressPercentFor` stays a pure index lookup. */
-export const PROGRESS_STEPS = ["dispatch", "queue", "generate", "commit", "ready"] as const;
+export const PROGRESS_STEPS = [
+  "dispatch",
+  "queue",
+  "generate",
+  "commit",
+  "publish",
+  "ready",
+] as const;
 export type ProgressStep = (typeof PROGRESS_STEPS)[number];
 
 /** Single source of truth for the progress panel's step labels, keyed
@@ -36,6 +43,7 @@ export const PROGRESS_STEP_LABELS: Record<ProgressStep, string> = {
   queue: "⏳ 処理の順番待ち",
   generate: "🔍 論文収集と関係の判定",
   commit: "🧪 自動検査",
+  publish: "🚀 公開の準備",
   ready: "✅ 公開（未監査）→ 自動で表示します",
 };
 
@@ -55,7 +63,7 @@ export const POLL_TIMEOUT_MS = POLL_TIMEOUT_MINUTES * 60 * 1_000;
 
 /** Copy shared by the request form (hint, success, timeout). */
 export const THEME_REQUEST_HINT =
-  "英語で 2〜80 文字（英数字・スペース・ハイフン「-」・アンダースコア「_」）。完了まで通常 10〜40 分かかります。";
+  "英語で 2〜80 文字（英数字・スペース・ハイフン「-」・アンダースコア「_」）。完了まで通常 15〜25 分（初めての分野は最大 40 分）かかります。";
 /** Shown next to the request form (R2-27, design 51 D2): the theme text is
  * passed to the generation job of a public repository and the result is
  * committed there, so anyone can read it. */
@@ -66,7 +74,7 @@ export const THEME_INPUT_INVALID_MESSAGE =
 export const THEME_INPUT_JAPANESE_MESSAGE =
   "テーマ名は英語で入力してください（例: 「視覚トランスフォーマー」ではなく Vision Transformer）。";
 export const THEME_QUEUED_MESSAGE =
-  "🚀 受け付けました。最大 50 分ほどで「未監査（自動生成）」として公開されます。完了後にこのページを再読み込みしてください。";
+  "🚀 受け付けました。通常 15〜25 分で「未監査（自動生成）」として公開され、進み具合をこの画面に表示します。論文が少ない分野は、公開後に拡張版へ自動で入れ替わります。";
 export const POLL_TIMEOUT_FAILURE = {
   title: `生成がタイムアウトしました（${POLL_TIMEOUT_MINUTES} 分経過）`,
   message:
@@ -87,8 +95,8 @@ export function themeInputProblem(raw: string, pattern: RegExp): string | null {
 }
 // 4 failures x 5s ~= 20s of trouble before a soft "retrying" warning.
 export const POLL_FAILURE_THRESHOLD = 4;
-// 1 status check per 6 manifest polls ~= once every 30s.
-export const STATUS_CHECK_INTERVAL_POLLS = 6;
+// 1 status check per 2 manifest polls ~= once every 10s (the Worker caches 15 s).
+export const STATUS_CHECK_INTERVAL_POLLS = 2;
 
 export const REQUEST_ID_RE =
   /^theme-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}(?![\s\S])/;
@@ -99,6 +107,45 @@ export function progressPercentFor(step: string): number {
   const idx = PROGRESS_STEPS.indexOf(step as ProgressStep);
   if (idx < 0) return 0;
   return Math.min(100, (idx / (PROGRESS_STEPS.length - 1)) * 100);
+}
+
+/** #457: the stage the status route reports for a running run -> panel step. */
+export function stepForStage(stage: unknown): ProgressStep | null {
+  switch (stage) {
+    case "queued":
+      return "queue";
+    case "generate":
+      return "generate";
+    case "check":
+      return "commit";
+    case "publish":
+      return "publish";
+    default:
+      return null;
+  }
+}
+
+// Measured durations (design 41, scorecard): the percent range of each step
+// and how long the step usually takes. Inside a step the bar moves with the
+// time spent in it but never reaches the next step's start (it waits for the
+// real stage change instead of pretending).
+const STEP_SPAN: Record<ProgressStep, { from: number; to: number; typicalMs: number }> = {
+  dispatch: { from: 0, to: 3, typicalMs: 10_000 },
+  queue: { from: 3, to: 8, typicalMs: 60_000 },
+  generate: { from: 8, to: 60, typicalMs: 8 * 60_000 },
+  commit: { from: 60, to: 82, typicalMs: 6 * 60_000 },
+  publish: { from: 82, to: 98, typicalMs: 4 * 60_000 },
+  ready: { from: 100, to: 100, typicalMs: 1 },
+};
+
+/** Percent of the bar for a step entered `msInStep` ago (monotone, < the next step's start). */
+export function progressPercentAt(step: string, msInStep: number): number {
+  const span = STEP_SPAN[step as ProgressStep];
+  if (!span) return 0;
+  if (span.from === span.to) return span.from;
+  const t = Math.max(0, msInStep) / span.typicalMs;
+  const frac = 1 - Math.exp(-t); // saturates: waits for the real stage change
+  return Math.min(span.to - 0.5, span.from + (span.to - span.from) * frac);
 }
 
 /** Builds the status-poll URL, or `null` when polling must not happen:
@@ -115,6 +162,8 @@ export function statusUrlForRequest(
 }
 
 export interface GithubActionsRun {
+  /** #457: coarse stage of a running run: queued | generate | check | publish. */
+  stage?: string | null;
   status?: string;
   conclusion?: string;
   html_url?: string;

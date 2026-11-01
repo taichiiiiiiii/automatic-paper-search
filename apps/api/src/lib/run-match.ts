@@ -8,6 +8,7 @@
 import { isRequestId } from "./request-id.js";
 
 export interface RunFromApi {
+  id?: number;
   status: string;
   conclusion: string | null;
   html_url: string;
@@ -18,6 +19,10 @@ export interface RunFromApi {
 }
 
 export interface PublicRun {
+  /** #457: the run id, used to read its jobs (it is already part of html_url). */
+  id: number | null;
+  /** #457: coarse stage of a running run (see run-stage.ts); set by lookupRun. */
+  stage?: string | null;
   status: string;
   conclusion: string | null;
   html_url: string;
@@ -38,6 +43,7 @@ export function pickMatchingRun(runs: unknown, requestId: unknown): PublicRun | 
       // Project an explicit public shape — do not return the raw object,
       // which can carry head SHA / actor / repo / check-suite metadata.
       return {
+        id: typeof r.id === "number" ? r.id : null,
         status: typeof r.status === "string" ? r.status : "",
         conclusion: typeof r.conclusion === "string" ? r.conclusion : null,
         html_url: typeof r.html_url === "string" ? r.html_url : "",

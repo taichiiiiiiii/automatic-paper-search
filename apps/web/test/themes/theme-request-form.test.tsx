@@ -119,6 +119,47 @@ describe("ThemeRequestForm: double-submit guard (M5)", () => {
 });
 
 describe("ThemeRequestForm: per-run cancellation (M4)", () => {
+  it("moves the bar to the real stage the status route reports (#457), never backwards", async () => {
+    vi.useFakeTimers();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() => Promise.resolve(queuedResponse("theme-a", REQUEST_ID_A))),
+    );
+    vi.spyOn(dataThemes, "fetchThemesManifest").mockResolvedValue({ status: "ok", data: [] });
+    const stages = ["generate", "check", "generate"];
+    const statusMock = vi.spyOn(dataThemes, "fetchThemeRunStatus").mockImplementation(async () => ({
+      status: "in_progress",
+      stage: stages.shift() ?? "check",
+    }));
+
+    render(<ThemeRequestForm onReady={vi.fn()} />);
+    fireEvent.change(screen.getByLabelText(/テーマを自分で生成/), { target: { value: "Theme A" } });
+    fireEvent.click(screen.getByRole("button", { name: "生成する" }));
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    const current = () =>
+      document.querySelector("li.font-medium")?.getAttribute("data-step") ?? null;
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(POLL_INTERVAL_MS * 2 + 50);
+    });
+    expect(statusMock).toHaveBeenCalled();
+    expect(current()).toBe("generate");
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(POLL_INTERVAL_MS * 2);
+    });
+    expect(current()).toBe("commit");
+
+    // a late/stale "generate" answer must not move the bar back
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(POLL_INTERVAL_MS * 2);
+    });
+    expect(current()).toBe("commit");
+  });
+
   it("cancelling run A then starting run B: A reaching 'ready' never fires onReady for A, and never fails B", async () => {
     vi.useFakeTimers();
     const onReady = vi.fn();
