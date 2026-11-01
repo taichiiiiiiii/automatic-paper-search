@@ -7,7 +7,7 @@
 import { describe, expect, it } from "vitest";
 import type { Env } from "../../../src/collect/config/env.js";
 import { FallbackProvider } from "../../../src/lineage/llm/fallback.js";
-import { GroqProvider } from "../../../src/lineage/llm/groq.js";
+import type { GroqProvider } from "../../../src/lineage/llm/groq.js";
 import {
   buildProvider,
   DEFAULT_GROQ_CONTEXT_MODEL,
