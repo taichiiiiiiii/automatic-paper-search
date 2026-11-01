@@ -233,3 +233,12 @@
   stroke-width: 2;
   stroke-linecap: round;
 }
+
+/* #459: a seed paper's card keeps an OPAQUE background (lines must not show
+ * through the text) and takes the accent as a flat tint laid over it. */
+.focusCard {
+  background-image: linear-gradient(
+    color-mix(in oklch, var(--color-accent) 6%, transparent),
+    color-mix(in oklch, var(--color-accent) 6%, transparent)
+  );
+}
