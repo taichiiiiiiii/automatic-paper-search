@@ -93,19 +93,24 @@ function edgeButtons(): HTMLElement[] {
 }
 
 describe("LineageTree evidence UX (R2 UX P0-1 / P0-2)", () => {
-  it("draws baseline_only edges by default and announces the hidden contrasts edge", () => {
+  it("draws baseline_only and contrasts edges by default (#463) and announces hidden ones after a filter", () => {
     render(<LineageTree artifact={ARTIFACT} slug="mixture-of-experts" />);
-    // Both baseline_only edges are drawn; the contrasts edge is not.
+    // All three edges (two baseline_only, one contrasts) are drawn.
+    expect(edgeButtons()).toHaveLength(3);
+    expect(screen.queryByTestId("hidden-edges-notice")).toBeNull();
+    // Hiding contrasts through the filter shows the notice and the reset.
+    fireEvent.click(screen.getByRole("button", { name: "絞り込み" }));
+    fireEvent.click(screen.getByRole("button", { name: /^対立/ }));
     expect(edgeButtons()).toHaveLength(2);
     const notice = screen.getByTestId("hidden-edges-notice");
     expect(notice.textContent).toContain("1 件の関係を非表示中");
-    fireEvent.click(within(notice).getByRole("button", { name: "すべての関係を表示" }));
-    expect(edgeButtons()).toHaveLength(3);
-    expect(screen.queryByTestId("hidden-edges-notice")).toBeNull();
-    // The active-filter chip uses Japanese labels, never raw keys.
+    // While filtered, the active-filter chip uses Japanese labels, never raw keys.
     const status = screen.getByText(/🔗 関係:/);
     expect(status.textContent).toContain("参照（背景）");
     expect(status.textContent).not.toMatch(/baseline_only|contrasts|supersedes/);
+    fireEvent.click(within(notice).getByRole("button", { name: "すべての関係を表示" }));
+    expect(edgeButtons()).toHaveLength(3);
+    expect(screen.queryByTestId("hidden-edges-notice")).toBeNull();
   });
 
   it("opens a pinned evidence panel on click with the quote as a blockquote", () => {
@@ -144,9 +149,9 @@ describe("LineageTree evidence UX (R2 UX P0-1 / P0-2)", () => {
 
   it("lists the visible relations under the graph and opens evidence from the list", () => {
     render(<LineageTree artifact={ARTIFACT} slug="mixture-of-experts" />);
-    expect(screen.getByText("関係の一覧（2 件）")).toBeTruthy();
+    expect(screen.getByText("関係の一覧（3 件）")).toBeTruthy();
     const list = screen.getByTestId("edge-relation-list");
-    expect(list.querySelectorAll("li")).toHaveLength(2);
+    expect(list.querySelectorAll("li")).toHaveLength(3);
     expect(list.textContent).toContain("（引用文あり）");
     fireEvent.click(within(list).getAllByRole("button", { name: "根拠を表示" })[0] as HTMLElement);
     expect(screen.getByTestId("edge-evidence-panel")).toBeTruthy();

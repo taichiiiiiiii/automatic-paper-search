@@ -60,9 +60,12 @@ import {
   NODE_H,
   NODE_W,
   PADDING,
+  PHONE_BOX_WIDTH,
   type Relation,
   ROW_GAP,
   sparseLineageNotice,
+  treeWidthFor,
+  wideSpanNotice,
   X_AXIS_MODES,
   type XAxisMode,
   YEAR_LABEL_W,
@@ -533,14 +536,9 @@ export function LineageTree({
   // first visit paints the guide open right away. Opening it in an effect
   // pushed the whole tree ~180px down after its first paint (CLS 0.04-0.1
   // on every first visit; Lighthouse 2026-10-12).
-  const [guideOpen, setGuideOpen] = useState(() => {
-    if (typeof window === "undefined") return false;
-    try {
-      return localStorage.getItem(ONBOARDING_KEY) !== "1";
-    } catch {
-      return true;
-    }
-  });
+  // #463: closed by default — open, the guide pushed the tree ~850px below
+  // the fold on a first visit. The one-line hint above the tree points to it.
+  const [guideOpen, setGuideOpen] = useState(false);
   const onGuideToggle = useCallback((open: boolean) => {
     setGuideOpen(open);
     if (open) return;
@@ -673,6 +671,7 @@ export function LineageTree({
 
   const hiddenCount = hiddenEdgeCount(artifact.edges, visibleRelations);
   const sparse = isSparseLineage(artifact.nodes.length, artifact.edges.length);
+  const wideSpan = useMemo(() => wideSpanNotice(artifact.nodes), [artifact.nodes]);
   const nodeById = useMemo(() => new Map(artifact.nodes.map((n) => [n.id, n])), [artifact.nodes]);
 
   // ---- Card popover (delayed show, instant hide) ------------------------
@@ -716,9 +715,17 @@ export function LineageTree({
   // renders on the client, after the artifact fetch): setting it in an
   // effect painted one frame at 100% first (a layout shift on phones), and
   // a zoom click in that frame was overridden.
-  const [zoom, setZoom] = useState(() =>
-    typeof window !== "undefined" && window.innerWidth < 640 ? MOBILE_ZOOM : 1,
-  );
+  // #463: on a phone the tree is one card per line (maxCardsPerLine) and
+  // starts fitted to the width, computed here so the first paint — and the
+  // ?node= scroll that follows it — already use the final zoom.
+  const [zoom, setZoom] = useState(() => {
+    if (typeof window === "undefined") return 1;
+    const boxGuess = window.innerWidth - 34;
+    if (boxGuess < PHONE_BOX_WIDTH) {
+      return Math.max(ZOOM_FIT_MIN, Math.min(1, (boxGuess - 8) / treeWidthFor(1)));
+    }
+    return window.innerWidth < 640 ? MOBILE_ZOOM : 1;
+  });
   const zoomRef = useRef(zoom);
   const changeZoom = useCallback((next: number, min: number = ZOOM_MIN) => {
     const container = scrollRef.current;
@@ -1309,13 +1316,15 @@ export function LineageTree({
           {sparseLineageNotice(artifact.nodes.length, artifact.edges.length)}
         </p>
       )}
-
-      <ReadingGuide
-        open={guideOpen}
-        onToggle={onGuideToggle}
-        mainPathCount={mainPathKeys.size}
-        hasCodeLinks={Boolean(codeLinks && Object.keys(codeLinks).length > 0)}
-      />
+      {wideSpan && (
+        <p
+          role="status"
+          data-wide-span-notice
+          className="mt-2 rounded-md border border-rule bg-surface-2 px-3 py-2 text-xs text-ink-muted"
+        >
+          {wideSpan}
+        </p>
+      )}
 
       {view === "timeline" && (
         <ThemeTimeline
@@ -1341,8 +1350,20 @@ export function LineageTree({
         </a>
         <div className="mb-1 flex items-center justify-end gap-1 text-ink-muted" data-zoom-controls>
           <span className="mr-auto min-w-0 flex-1 text-xs text-ink-subtle" data-wrap-note>
-            ドラッグ・スワイプで移動
-            {hasWrappedYears && `。論文の多い年は ${perLine} 本ずつ折り返し`}
+            上が古い論文、下が新しい論文。線の色が関係の種類、太い線が本流。
+            <button
+              type="button"
+              className="ml-1 underline hover:text-accent"
+              onClick={() => {
+                onGuideToggle(true);
+                document.getElementById("theme-reading-guide")?.scrollIntoView({ block: "start" });
+              }}
+              data-open-guide
+            >
+              読み方
+            </button>
+            ・ドラッグで移動
+            {hasWrappedYears && `・論文の多い年は ${perLine} 本ずつ折り返し`}
           </span>
           <button
             type="button"
@@ -1888,6 +1909,14 @@ export function LineageTree({
           ? "カードを選ぶと土台と発展、線を選ぶと関係の根拠を表示します（キーボードは Tab で選んで Enter）。"
           : "点を選ぶと、その論文の土台と発展を下に表示します。線の上に置くと関係が出ます。"}
       </p>
+
+      {/* #463: the guide sits under the tree so the tree is the first thing seen. */}
+      <ReadingGuide
+        open={guideOpen}
+        onToggle={onGuideToggle}
+        mainPathCount={mainPathKeys.size}
+        hasCodeLinks={Boolean(codeLinks && Object.keys(codeLinks).length > 0)}
+      />
 
       {selectedEdge && (
         <EdgeEvidencePanel

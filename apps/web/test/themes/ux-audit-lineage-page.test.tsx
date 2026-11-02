@@ -104,9 +104,14 @@ describe("toolbar", () => {
 });
 
 describe("reading guide", () => {
-  it("is open on the first visit, defines the terms once and lists every relation colour", () => {
+  it("starts closed under the tree, opens from the hint, defines the terms once and lists every relation colour (#463)", () => {
     render(<LineageTree artifact={ARTIFACT} slug="t" themeName="Test" />);
     const guide = document.querySelector("[data-reading-guide]") as HTMLDetailsElement;
+    expect(guide.open).toBe(false);
+    // The guide sits after the tree frame, so the tree is seen first.
+    const frame = document.querySelector("[data-tree-frame]") as HTMLElement;
+    expect(frame.compareDocumentPosition(guide) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    fireEvent.click(document.querySelector("[data-open-guide]") as HTMLElement);
     expect(guide.open).toBe(true);
     for (const term of ["本流", "土台", "発展", "根拠"]) {
       expect(within(guide).getAllByText(term, { selector: "dt" })).toHaveLength(1);
@@ -117,8 +122,9 @@ describe("reading guide", () => {
     expect(legend.textContent).not.toMatch(/baseline_only|supersedes/);
   });
 
-  it("stays closed once the reader has closed it", () => {
+  it("remembers a close in storage and stays closed on the next visit", () => {
     const first = render(<LineageTree artifact={ARTIFACT} slug="t" themeName="Test" />);
+    fireEvent.click(document.querySelector("[data-open-guide]") as HTMLElement);
     const guide = document.querySelector("[data-reading-guide]") as HTMLDetailsElement;
     guide.open = false;
     fireEvent(guide, new Event("toggle"));

@@ -23,7 +23,7 @@ export const RELATION_MEANING_JA: Record<(typeof ALL_RELATIONS)[number], string>
   extends: "古い論文の手法を広げた・改良した",
   ablation: "古い論文の手法を分析・検証した",
   baseline_only: "背景・関連研究として引用した（強い関係ではない）",
-  contrasts: "古い論文と異なる立場・設計をとる（初期状態では非表示）",
+  contrasts: "古い論文と異なる立場・設計をとる",
 };
 
 export function ReadingGuide({
@@ -40,6 +40,7 @@ export function ReadingGuide({
   const audited = useRelationAudited();
   return (
     <details
+      id="theme-reading-guide"
       className="mt-3 rounded-md border border-rule bg-surface px-3 py-2 text-xs text-ink-muted"
       open={open}
       onToggle={(e) => {

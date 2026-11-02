@@ -294,11 +294,16 @@ for (const t of themes) {
         .toBe(true);
     });
 
-    test("reading guide opens on a first visit and stays closed once closed", async ({ page }) => {
+    test("reading guide starts closed, opens from the hint, and stays closed once closed", async ({
+      page,
+    }) => {
       // Fresh storage: no skipOnboarding for this page.
       const fresh = await page.context().newPage();
       const first = new ThemePage(fresh);
       await first.goto(t.slug);
+      // #463: closed on a first visit too; the hint above the tree opens it.
+      await expect(first.readingGuide).not.toHaveAttribute("open", "");
+      await first.openGuideHint.click();
       await expect(first.readingGuide).toHaveAttribute("open", "");
       await expect(first.readingGuide.getByRole("heading", { name: "ことば" })).toBeVisible();
       await first.readingGuide.locator("summary").click();

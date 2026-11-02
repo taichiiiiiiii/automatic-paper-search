@@ -102,9 +102,11 @@ describe("maxCardsPerLine", () => {
       if (n > 1) expect(fit, `w=${w}`).toBeGreaterThanOrEqual(floor);
       // ...and is not needlessly narrow: one more card would drop below the target.
       const fitMore = (w - 8) / treeWidthFor(n + 1);
-      expect(fitMore, `w=${w}`).toBeLessThan(w < 640 ? 0.42 : 0.62);
+      // #463: a phone box is one card per line whatever the target says.
+      if (w >= 480) expect(fitMore, `w=${w}`).toBeLessThan(w < 640 ? 0.42 : 0.62);
     }
-    expect(maxCardsPerLine(341)).toBe(2); // 375px phone
+    expect(maxCardsPerLine(341)).toBe(1); // 375px phone (#463: one per line, fitted)
+    expect(maxCardsPerLine(480)).toBe(3); // a small tablet wraps by the zoom target again
     expect(maxCardsPerLine(1230)).toBe(6); // 1280px desktop
     expect(NODE_W + SIBLING_GAP).toBe(288);
   });

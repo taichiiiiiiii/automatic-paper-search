@@ -167,6 +167,7 @@ describe("writeTreeUrlParams", () => {
       "successor",
       "extends",
       "ablation",
+      "contrasts",
       "baseline_only",
     ] as const),
     hideOrphans: true,
@@ -220,6 +221,7 @@ describe("writeTreeUrlParams", () => {
         "baseline_only",
         "ablation",
         "supersedes",
+        "contrasts",
         "successor",
         "extends",
       ]),
@@ -295,6 +297,7 @@ describe("loadThemePrefs / saveThemePrefs", () => {
       "successor",
       "extends",
       "ablation",
+      "contrasts",
       "baseline_only",
     ]);
   });

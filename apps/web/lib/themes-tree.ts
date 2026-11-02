@@ -42,13 +42,17 @@ export type Relation = (typeof ALL_RELATIONS)[number];
  * review P0-1): under design doc 41 D6 every Semantic Scholar
  * background/uses/compares citation maps to it, so hiding it hid most of
  * the quoted-sentence evidence (e.g. all 13 Mixture-of-Experts edges).
- * `contrasts` still starts hidden (rare, noisiest); the viewer shows a
- * "N 件の関係を非表示中" notice whenever a filter hides edges. */
+ * `contrasts` is ON since #463: it is one of the two strong relations the
+ * rules produce (R2-42 … R2-58 narrowed it to 0.93 precision), and on LoRA /
+ * State Space Models every strong relation is a contrast — hidden, the page
+ * said "3 件" while showing none. The viewer shows a "N 件の関係を非表示中"
+ * notice whenever a filter hides edges. */
 export const DEFAULT_RELATIONS: readonly Relation[] = [
   "supersedes",
   "successor",
   "extends",
   "ablation",
+  "contrasts",
   "baseline_only",
 ];
 
@@ -287,6 +291,8 @@ export interface LayoutOptions {
 }
 
 /** Fit-to-width zoom the wrap aims for: phones (< 640px) and wider screens. */
+/** #463: below this box width the tree is one card per line and fit to width. */
+export const PHONE_BOX_WIDTH = 480;
 export const WRAP_TARGET_ZOOM_NARROW = 0.42;
 export const WRAP_TARGET_ZOOM_WIDE = 0.62;
 /** Floors the 全体 (fit) zoom stays above for any theme once wrapped
@@ -305,6 +311,9 @@ export function treeWidthFor(perLine: number): number {
  * 1; `Infinity` (no wrapping) when the width is unknown (0 / not finite). */
 export function maxCardsPerLine(boxWidth: number): number {
   if (!Number.isFinite(boxWidth) || boxWidth <= 0) return Number.POSITIVE_INFINITY;
+  // #463: on a phone one card per line, so the tree fits the width at a
+  // readable zoom (two 260px cards at 0.65 overflowed a 390px screen).
+  if (boxWidth < PHONE_BOX_WIDTH) return 1;
   const target = boxWidth < 640 ? WRAP_TARGET_ZOOM_NARROW : WRAP_TARGET_ZOOM_WIDE;
   const usable = (boxWidth - 8) / target - YEAR_LABEL_W - PADDING;
   return Math.max(1, Math.floor(usable / (NODE_W + SIBLING_GAP)));
@@ -665,6 +674,21 @@ export function isSparseLineage(nodeCount: number, edgeCount: number): boolean {
  * regeneration (themes are rebuilt only on request / by an operator), so
  * the copy must not promise one (the old text claimed a weekly Sunday
  * rebuild). */
+/** #463: a theme whose papers span this many years or more is probably a
+ * broad / ambiguous name (State Space Models: 1982–2026, statistics and
+ * Mamba mixed). The page says so instead of presenting one family. */
+export const WIDE_SPAN_YEARS = 30;
+export function wideSpanNotice(nodes: ReadonlyArray<{ year?: unknown }>): string | null {
+  const years = nodes
+    .map((n) => n.year)
+    .filter((y): y is number => typeof y === "number" && Number.isFinite(y));
+  if (years.length < 10) return null;
+  const min = Math.min(...years);
+  const max = Math.max(...years);
+  if (max - min < WIDE_SPAN_YEARS) return null;
+  return `🔎 この系譜は ${min}–${max} の ${max - min} 年にわたります。テーマ名が広く、別の分野の論文（同じ語を使う古い研究など）が混ざっている可能性があります。年で絞り込むか、より具体的なテーマ名（手法名など）で依頼し直すと読みやすくなります。`;
+}
+
 export function sparseLineageNotice(nodeCount: number, edgeCount: number): string {
   return `🌱 このテーマは家系図がまだ薄いです（${nodeCount} 論文 / ${edgeCount} 関係）。論文が少ないうちは家系図が薄くなります。作り直しで密になることがあります。`;
 }

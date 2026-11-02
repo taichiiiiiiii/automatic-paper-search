@@ -519,7 +519,7 @@ export function ThemeRequestForm({ onReady }: { onReady: (slug: string) => void 
           maxLength={80}
           pattern="[A-Za-z0-9 _\-]+"
           lang="en"
-          placeholder="例: Vision Transformer / Graph Neural Network"
+          placeholder="例: Vision Transformer / Speculative Decoding / Mamba"
           aria-describedby="theme-request-hint theme-request-public-notice"
           aria-invalid={status.kind === "err" ? true : undefined}
           autoComplete="off"

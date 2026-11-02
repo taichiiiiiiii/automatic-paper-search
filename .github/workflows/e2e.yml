@@ -54,7 +54,10 @@ on:
 
 concurrency:
   group: e2e-${{ github.ref }}
-  cancel-in-progress: true
+  # #463: a push to develop must finish its run (merges arrive minutes apart and
+  # kept cancelling each other, so develop never had a completed e2e result);
+  # PR branches still cancel the superseded run.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions: {}
 

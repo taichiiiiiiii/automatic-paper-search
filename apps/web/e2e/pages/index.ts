@@ -211,6 +211,10 @@ export class ThemePage {
   get readingGuide(): Locator {
     return this.page.locator("[data-reading-guide]");
   }
+  /** #463: the one-line hint above the tree that opens the reading guide. */
+  get openGuideHint(): Locator {
+    return this.page.locator("[data-open-guide]");
+  }
 
   // ---- Prior / Derivative panel -----------------------------------------
   get neighborsPanel(): Locator {
