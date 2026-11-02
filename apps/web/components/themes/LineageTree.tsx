@@ -64,6 +64,7 @@ import {
   type Relation,
   ROW_GAP,
   sparseLineageNotice,
+  treeWidthFor,
   wideSpanNotice,
   X_AXIS_MODES,
   type XAxisMode,
@@ -620,7 +621,6 @@ export function LineageTree({
   const maxPerLine = maxCardsPerLine(
     treeBoxWidth ?? (typeof window !== "undefined" ? window.innerWidth - 34 : 0),
   );
-  const isPhoneBox = treeBoxWidth !== null && treeBoxWidth < PHONE_BOX_WIDTH;
 
   // ---- Layout + per-mode visual hooks -----------------------------------
   // Both take nodesForLayout (orphans already dropped when hidden) --
@@ -715,9 +715,17 @@ export function LineageTree({
   // renders on the client, after the artifact fetch): setting it in an
   // effect painted one frame at 100% first (a layout shift on phones), and
   // a zoom click in that frame was overridden.
-  const [zoom, setZoom] = useState(() =>
-    typeof window !== "undefined" && window.innerWidth < 640 ? MOBILE_ZOOM : 1,
-  );
+  // #463: on a phone the tree is one card per line (maxCardsPerLine) and
+  // starts fitted to the width, computed here so the first paint — and the
+  // ?node= scroll that follows it — already use the final zoom.
+  const [zoom, setZoom] = useState(() => {
+    if (typeof window === "undefined") return 1;
+    const boxGuess = window.innerWidth - 34;
+    if (boxGuess < PHONE_BOX_WIDTH) {
+      return Math.max(ZOOM_FIT_MIN, Math.min(1, (boxGuess - 8) / treeWidthFor(1)));
+    }
+    return window.innerWidth < 640 ? MOBILE_ZOOM : 1;
+  });
   const zoomRef = useRef(zoom);
   const changeZoom = useCallback((next: number, min: number = ZOOM_MIN) => {
     const container = scrollRef.current;
@@ -796,16 +804,6 @@ export function LineageTree({
     if (!container) return;
     changeZoom(Math.min(1, (container.clientWidth - 8) / Math.max(totalW, 1)), ZOOM_FIT_MIN);
   }
-  // #463: on a phone the tree (one card per line) starts fitted to the width,
-  // once, so no card is cut off at the right edge.
-  const phoneFitDoneRef = useRef(false);
-  useLayoutEffect(() => {
-    if (!isPhoneBox || phoneFitDoneRef.current || view !== "tree") return;
-    const container = scrollRef.current;
-    if (!container || container.clientWidth === 0) return;
-    phoneFitDoneRef.current = true;
-    changeZoom(Math.min(1, (container.clientWidth - 8) / Math.max(totalW, 1)), ZOOM_FIT_MIN);
-  }, [isPhoneBox, totalW, view, changeZoom]);
 
   useEffect(() => {
     function onUp() {
