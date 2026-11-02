@@ -91,7 +91,7 @@ describe("ThemeGallery labels (R2 UX P1-3 / P2-9)", () => {
         currentSlug="t"
       />,
     );
-    expect(container.textContent).toContain("根拠: 論文ごと");
+    expect(container.textContent).toContain("根拠: 引用文が中心");
     expect(container.textContent).not.toContain("高品質");
   });
 

@@ -488,7 +488,14 @@ export function LineageTree({
     setSelectedEdgeKey(null);
     const opener = evidenceOpenerRef.current;
     evidenceOpenerRef.current = null;
-    if (opener?.isConnected) opener.focus({ preventScroll: true });
+    if (opener?.isConnected) {
+      // #463: the panel sits below the tree, so closing it brings the reader
+      // back to the line they opened it from.
+      opener.focus({ preventScroll: true });
+      if (typeof opener.scrollIntoView === "function") {
+        opener.scrollIntoView({ block: "center", inline: "nearest" });
+      }
+    }
   }, []);
   const selectedEdge = useMemo(
     () =>
@@ -1363,7 +1370,7 @@ export function LineageTree({
               読み方
             </button>
             ・ドラッグで移動
-            {hasWrappedYears && `・論文の多い年は ${perLine} 本ずつ折り返し`}
+            {hasWrappedYears && perLine > 1 && `・論文の多い年は ${perLine} 本ずつ折り返し`}
           </span>
           <button
             type="button"

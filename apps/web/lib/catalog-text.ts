@@ -147,3 +147,85 @@ export function buildAbstractDek(
 export function safeHref(url: string | null | undefined): string {
   return url && /^https?:\/\//i.test(url) ? upgradeKnownHttps(url) : "#";
 }
+
+const SUPERSCRIPT: Record<string, string> = {
+  "0": "⁰",
+  "1": "¹",
+  "2": "²",
+  "3": "³",
+  "4": "⁴",
+  "5": "⁵",
+  "6": "⁶",
+  "7": "⁷",
+  "8": "⁸",
+  "9": "⁹",
+  "+": "⁺",
+  "-": "⁻",
+  n: "ⁿ",
+  i: "ⁱ",
+};
+const SUBSCRIPT: Record<string, string> = {
+  "0": "₀",
+  "1": "₁",
+  "2": "₂",
+  "3": "₃",
+  "4": "₄",
+  "5": "₅",
+  "6": "₆",
+  "7": "₇",
+  "8": "₈",
+  "9": "₉",
+};
+const GREEK: Record<string, string> = {
+  alpha: "α",
+  beta: "β",
+  gamma: "γ",
+  delta: "δ",
+  epsilon: "ε",
+  theta: "θ",
+  lambda: "λ",
+  mu: "μ",
+  pi: "π",
+  sigma: "σ",
+  tau: "τ",
+  phi: "φ",
+  psi: "ψ",
+  omega: "ω",
+  Delta: "Δ",
+  Sigma: "Σ",
+  Phi: "Φ",
+  Psi: "Ψ",
+  Omega: "Ω",
+  Pi: "Π",
+  Lambda: "Λ",
+  Theta: "Θ",
+  Gamma: "Γ",
+  infty: "∞",
+  times: "×",
+  ell: "ℓ",
+};
+
+/** #463: paper titles arrive with the LaTeX of the submission ("$\\Psi$-Sampler",
+ * "A$^2$LC", "D$^{3}$ToM"). Readers see the characters, not the markup:
+ * superscripts / subscripts become Unicode where one exists, Greek letters
+ * and a few symbols are translated, `\\mathcal{X}` / `\\text{x}` keep their
+ * contents, and the `$` delimiters go. Unknown commands keep their name. */
+export function tidyTitle(title: string): string {
+  if (!title.includes("$") && !title.includes("\\")) return title;
+  const script = (table: Record<string, string>, whole: string, body: string): string => {
+    const out = [...body].map((ch) => table[ch] ?? null);
+    return out.every((c) => c !== null) ? out.join("") : whole;
+  };
+  let t = title;
+  t = t.replace(/\^\{([^{}]*)\}/g, (m, b: string) => script(SUPERSCRIPT, m, b));
+  t = t.replace(/\^([0-9a-zA-Z+-])/g, (m, b: string) => script(SUPERSCRIPT, m, b));
+  t = t.replace(/_\{([^{}]*)\}/g, (m, b: string) => script(SUBSCRIPT, m, b));
+  t = t.replace(/_([0-9])/g, (m, b: string) => script(SUBSCRIPT, m, b));
+  t = t.replace(
+    /\\(?:mathcal|mathbf|mathrm|text|textit|textbf|mathit|operatorname)\{([^{}]*)\}/g,
+    "$1",
+  );
+  t = t.replace(/\\([A-Za-z]+)/g, (m, name: string) => GREEK[name] ?? name);
+  t = t.replace(/\$/g, "");
+  return t.replace(/\s{2,}/g, " ").trim();
+}

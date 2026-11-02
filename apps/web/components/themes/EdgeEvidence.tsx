@@ -280,7 +280,7 @@ export const EdgeEvidencePanel = forwardRef<
           aria-label="根拠パネルを閉じる"
           className="inline-flex min-h-9 shrink-0 items-center rounded-md border border-rule px-3 py-1 text-xs text-ink-muted hover:border-rule-strong"
         >
-          閉じる ✕
+          閉じて図へ戻る ✕
         </button>
       </div>
       <p
