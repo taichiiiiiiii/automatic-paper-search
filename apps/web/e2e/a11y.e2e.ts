@@ -62,6 +62,8 @@ const PAGES: Record<string, (page: Page) => Promise<void>> = {
     await theme.goto(publishedThemes()[0]!.slug);
     await expect(theme.nodeCards.first()).toBeVisible();
     // Open everything that is collapsed by default, and the evidence panel.
+    // #463: the reading guide starts closed; the hint above the tree opens it.
+    await theme.openGuideHint.click();
     await expect(theme.readingGuide).toHaveAttribute("open", "");
     const slug = publishedThemes()[0]!.slug;
     if (themeHasFeed(slug)) await theme.expand(theme.newPapersSection);
