@@ -63,7 +63,7 @@ export const POLL_TIMEOUT_MS = POLL_TIMEOUT_MINUTES * 60 * 1_000;
 
 /** Copy shared by the request form (hint, success, timeout). */
 export const THEME_REQUEST_HINT =
-  "英語で 2〜80 文字（英数字・スペース・ハイフン「-」・アンダースコア「_」）。完了まで通常 15〜25 分（初めての分野は最大 40 分）かかります。";
+  "英語で 2〜80 文字（英数字・スペース・ハイフン「-」・アンダースコア「_」）。手法名・モデル名など具体的な語が向いています（例: Mamba）。広い語（例: State Space Models）は別分野の論文が混ざることがあります。完了まで通常 15〜25 分（初めての分野は最大 40 分）かかります。";
 /** Shown next to the request form (R2-27, design 51 D2): the theme text is
  * passed to the generation job of a public repository and the result is
  * committed there, so anyone can read it. */

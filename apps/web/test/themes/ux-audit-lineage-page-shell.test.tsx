@@ -338,11 +338,11 @@ describe("crowded years wrap (R4-5)", () => {
   };
   let restore: (() => void) | null = null;
   beforeEach(() => {
-    // A 375px phone: the tree box is 341px wide (jsdom has no layout).
+    // A 480px box (small tablet; #463 made phones one card per line): three per line.
     const desc = Object.getOwnPropertyDescriptor(HTMLElement.prototype, "clientWidth");
     Object.defineProperty(HTMLElement.prototype, "clientWidth", {
       configurable: true,
-      get: () => 341,
+      get: () => 480,
     });
     restore = () => {
       if (desc) Object.defineProperty(HTMLElement.prototype, "clientWidth", desc);
@@ -350,12 +350,12 @@ describe("crowded years wrap (R4-5)", () => {
   });
   afterEach(() => restore?.());
 
-  it("wraps a 7-paper year into lines of 2 inside one band, row-major, labelled with the count", () => {
+  it("wraps a 7-paper year into lines of 3 inside one band, row-major, labelled with the count", () => {
     render(<LineageTree artifact={crowded} slug="gnn" themeName="GNN" />);
     const tree = screen.getByRole("group", { name: /時系列家系図/ });
-    expect(tree.getAttribute("data-per-line")).toBe("2");
+    expect(tree.getAttribute("data-per-line")).toBe("3");
     const band = tree.querySelector('[data-year-band="2021"]') as SVGGElement;
-    expect(band.getAttribute("data-lines")).toBe("4");
+    expect(band.getAttribute("data-lines")).toBe("3");
     expect(band.textContent).toContain("7 本");
     expect(tree.querySelector('[data-year-band="2020"]')?.getAttribute("data-lines")).toBe("1");
     // Cards in DOM (= Tab) order: rank order, row-major (y, then x).
@@ -370,15 +370,15 @@ describe("crowded years wrap (R4-5)", () => {
         };
       });
     expect(cards.map((c) => c.id)).toEqual(["p0", "p1", "p2", "p3", "p4", "p5", "p6"]);
-    expect(new Set(cards.map((c) => c.y)).size).toBe(4);
-    expect(cards[0]!.y).toBe(cards[1]!.y);
-    expect(cards[2]!.y).toBeGreaterThan(cards[1]!.y);
-    expect(cards[2]!.x).toBe(cards[0]!.x);
+    expect(new Set(cards.map((c) => c.y)).size).toBe(3);
+    expect(cards[0]!.y).toBe(cards[2]!.y);
+    expect(cards[3]!.y).toBeGreaterThan(cards[2]!.y);
+    expect(cards[3]!.x).toBe(cards[0]!.x);
     // The rail shows the count and a bracket for the wrapped year.
     const rail = document.querySelector("[data-year-rail]") as SVGSVGElement;
     expect(rail.textContent).toContain("7 本");
     expect(rail.querySelectorAll("line")).toHaveLength(1);
-    expect(screen.getByText(/論文の多い年は 2 本ずつ折り返し/)).toBeTruthy();
+    expect(screen.getByText(/論文の多い年は 3 本ずつ折り返し/)).toBeTruthy();
     // Edges still connect the wrapped cards (one per relation).
     expect(tree.querySelectorAll("line[role='button']")).toHaveLength(7);
   });

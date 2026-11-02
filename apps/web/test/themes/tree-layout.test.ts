@@ -247,10 +247,10 @@ describe("layoutChronological", () => {
 });
 
 describe("ALL_RELATIONS / DEFAULT_RELATIONS", () => {
-  it("DEFAULT_RELATIONS is a subset of ALL_RELATIONS and excludes contrasts", () => {
+  it("DEFAULT_RELATIONS is a subset of ALL_RELATIONS and shows both strong relations (#463)", () => {
     for (const r of DEFAULT_RELATIONS) expect(ALL_RELATIONS).toContain(r);
-    expect(DEFAULT_RELATIONS).not.toContain("contrasts");
-    expect(ALL_RELATIONS).toContain("contrasts");
+    expect(DEFAULT_RELATIONS).toContain("contrasts");
+    expect(DEFAULT_RELATIONS).toContain("extends");
   });
   it("shows baseline_only (S2 background citations) by default (R2 UX P0-1)", () => {
     expect(DEFAULT_RELATIONS).toContain("baseline_only");
@@ -260,7 +260,8 @@ describe("ALL_RELATIONS / DEFAULT_RELATIONS", () => {
 describe("hiddenEdgeCount", () => {
   it("counts edges whose relation is filtered out", () => {
     const es = [{ relation: "extends" }, { relation: "contrasts" }, { relation: "contrasts" }];
-    expect(hiddenEdgeCount(es, new Set(DEFAULT_RELATIONS))).toBe(2);
+    expect(hiddenEdgeCount(es, new Set(DEFAULT_RELATIONS))).toBe(0); // contrasts shown (#463)
+    expect(hiddenEdgeCount(es, new Set(["extends"]))).toBe(2);
     expect(hiddenEdgeCount(es, new Set(ALL_RELATIONS))).toBe(0);
     expect(hiddenEdgeCount([], new Set())).toBe(0);
   });
@@ -339,5 +340,20 @@ describe("sparseLineageNotice", () => {
     );
     // There is no weekly (Sunday) regeneration of themes.
     expect(text).not.toMatch(/毎週|日曜|熟成/);
+  });
+});
+
+describe("wideSpanNotice (#463)", () => {
+  it("warns only for a wide year span with enough papers", async () => {
+    const { wideSpanNotice } = await import("../../lib/themes-tree");
+    const many = (years: number[]) => years.map((year) => ({ year }));
+    expect(
+      wideSpanNotice(many([1982, 1990, 2000, 2010, 2020, 2021, 2022, 2023, 2024, 2026])),
+    ).toContain("1982–2026");
+    expect(
+      wideSpanNotice(many([2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026, 2026])),
+    ).toBeNull();
+    expect(wideSpanNotice(many([1982, 2026]))).toBeNull(); // too few papers to judge
+    expect(wideSpanNotice([{ year: null }])).toBeNull();
   });
 });
