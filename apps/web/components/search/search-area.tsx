@@ -15,6 +15,7 @@
  */
 import type { MouseEvent as ReactMouseEvent, Ref } from "react";
 import { useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { tidyTitle } from "../../lib/catalog-text";
 import { fetchSearchIdBlock, loadSearchIndex } from "../../lib/data-search";
 import {
   confLabel,
@@ -575,7 +576,7 @@ export function SearchArea({ handleRef }: { handleRef?: Ref<SearchAreaHandle> })
                 }}
               >
                 <span className={styles.optionBody}>
-                  <span className={styles.title}>{hit.row[0]}</span>
+                  <span className={styles.title}>{tidyTitle(hit.row[0])}</span>
                   <span className={styles.meta}>
                     {[
                       confLabel(hit.row[1]),
@@ -702,7 +703,7 @@ export function SearchArea({ handleRef }: { handleRef?: Ref<SearchAreaHandle> })
                   className={`${styles.resultsLink} s0-results__link`}
                   href={resultUrl(hit.row, hit.paperId)}
                 >
-                  <span className={styles.title}>{hit.row[0]}</span>
+                  <span className={styles.title}>{tidyTitle(hit.row[0])}</span>
                   <span className={styles.meta}>
                     {[
                       confLabel(hit.row[1]),

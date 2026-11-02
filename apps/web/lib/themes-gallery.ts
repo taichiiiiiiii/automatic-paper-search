@@ -62,8 +62,18 @@ export interface QualityTier {
 // under the 未監査 badge and read as an endorsement. Labels describe the
 // rationale style only, and the gallery shows them for audited themes only.
 export const QUALITY_TIERS: Record<QualityTierName, QualityTier> = {
-  high: { rank: 0, icon: "", label: "根拠: 論文ごと", desc: "論文ごとに書かれた根拠が中心" },
-  mixed: { rank: 1, icon: "", label: "根拠: 一部定型", desc: "論文ごとの根拠と定型文が半々" },
+  high: {
+    rank: 0,
+    icon: "",
+    label: "根拠: 引用文が中心",
+    desc: "関係の根拠の多くが、論文の引用文そのもの",
+  },
+  mixed: {
+    rank: 1,
+    icon: "",
+    label: "根拠: 引用文と定型文",
+    desc: "引用文による根拠と定型文が半々",
+  },
   generic: {
     rank: 2,
     icon: "",

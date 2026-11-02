@@ -9,6 +9,7 @@ import {
   highlightSegments,
   safeHref,
   type TextSegment,
+  tidyTitle,
 } from "../../lib/catalog-text";
 import type { ThemePosition } from "../../lib/lineage/theme-position";
 import styles from "./catalog.module.css";
@@ -134,7 +135,7 @@ export function CatalogPaperCard({
           {/* Titles are ink, not accent: 30 red headings per screen read
               as a wall of warnings (design doc 53). */}
           <a href={titleHref} target="_blank" rel="noopener" className={styles.titleLink}>
-            <Highlighted segments={highlightSegments(paper.title, q)} />
+            <Highlighted segments={highlightSegments(tidyTitle(paper.title), q)} />
           </a>
         </h2>
         {/* The selected (detail) card lists every author; the list view
