@@ -119,6 +119,8 @@ export interface PublishedTheme {
   slug: string;
   theme: string;
   paper_count: number;
+  generated_at?: string;
+  tier?: "audited" | "unaudited";
 }
 
 interface QualityRow {
@@ -133,17 +135,33 @@ interface QualityRow {
 export function publishedThemes(): PublishedTheme[] {
   const manifest = readJson<PublishedTheme[]>("themes/themes-manifest.json");
   const quality = readJson<{ collections: QualityRow[] }>("lineage-quality-v1.json");
-  const ok = new Set(
-    quality.collections
-      .filter(
-        (c) =>
-          c.kind === "theme" &&
-          c.availability === "ready" &&
-          (c.publication_tier === "audited" || c.publication_tier === "unaudited"),
-      )
-      .map((c) => c.slug),
-  );
-  return manifest.filter((t) => ok.has(t.slug));
+  const tier = new Map<string, "audited" | "unaudited">();
+  for (const c of quality.collections) {
+    if (c.kind !== "theme" || c.availability !== "ready") continue;
+    if (c.publication_tier === "audited" || c.publication_tier === "unaudited") {
+      tier.set(c.slug, c.publication_tier);
+    }
+  }
+  return manifest.filter((t) => tier.has(t.slug)).map((t) => ({ ...t, tier: tier.get(t.slug) }));
+}
+
+/** The themes that get the full per-theme interaction suite. Every published
+ * theme still gets the render smoke, but the ~15 interaction tests cost
+ * 30–50 s each on WebKit for a 400-edge tree, and with 12 themes the WebKit
+ * job overran its 40-minute budget on every run since 2026-10-29 (#466).
+ * Sample: every audited theme, the largest unaudited tree and the most
+ * recently generated unaudited theme (the one most likely to carry a new
+ * pipeline behaviour), deduplicated. */
+export function interactionThemes(all: PublishedTheme[] = publishedThemes()): PublishedTheme[] {
+  const audited = all.filter((t) => t.tier === "audited");
+  const unaudited = all.filter((t) => t.tier !== "audited");
+  const largest = [...unaudited].sort((a, b) => b.paper_count - a.paper_count)[0];
+  const newest = [...unaudited].sort((a, b) =>
+    (b.generated_at ?? "").localeCompare(a.generated_at ?? ""),
+  )[0];
+  const picked = new Map<string, PublishedTheme>();
+  for (const t of [...audited, largest, newest]) if (t) picked.set(t.slug, t);
+  return [...picked.values()];
 }
 
 export interface ConferenceSummary {
