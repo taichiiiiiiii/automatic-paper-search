@@ -68,7 +68,13 @@ const PAGES: Record<string, (page: Page) => Promise<void>> = {
     const slug = publishedThemes()[0]!.slug;
     if (themeHasFeed(slug)) await theme.expand(theme.newPapersSection);
     if (themeHasCodeLinks(slug)) await theme.expand(theme.codeLinksSection);
+    // The export dropdown overlaps the zoom buttons while open (#463 moved the
+    // guide, which used to sit between them, under the tree); axe counts the
+    // covered buttons as too small, so the menu is scanned open and then closed.
     await theme.openExportMenu();
+    await expect(theme.exportButton("bibtex")).toBeVisible();
+    await theme.exportMenu.locator("summary").click();
+    await expect(theme.exportMenu).not.toHaveAttribute("open", "");
     await theme.edgeButtons.first().focus();
     await page.keyboard.press("Enter");
     await expect(theme.evidencePanel).toBeVisible();
