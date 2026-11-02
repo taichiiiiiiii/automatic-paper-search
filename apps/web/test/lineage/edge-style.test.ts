@@ -65,3 +65,34 @@ describe("edgeStyle (#459)", () => {
     ).toBeLessThan(0.28);
   });
 });
+
+import { edgeAnchors } from "../../lib/lineage/edge-style";
+
+describe("edgeAnchors (#461)", () => {
+  const W = 100;
+  const H = 40;
+  it("runs bottom-centre to top-centre when the citing card is lower", () => {
+    const a = edgeAnchors({ x: 0, y: 0 }, { x: 200, y: 100 }, W, H);
+    expect(a).toEqual({ x1: 50, y1: 40, x2: 250, y2: 100, notDownward: false });
+  });
+  it("joins top to bottom when the citing card is above", () => {
+    const a = edgeAnchors({ x: 0, y: 100 }, { x: 200, y: 0 }, W, H);
+    expect(a).toEqual({ x1: 50, y1: 100, x2: 250, y2: 40, notDownward: true });
+  });
+  it("joins the facing sides on one line", () => {
+    expect(edgeAnchors({ x: 0, y: 0 }, { x: 200, y: 0 }, W, H)).toEqual({
+      x1: 100,
+      y1: 20,
+      x2: 200,
+      y2: 20,
+      notDownward: true,
+    });
+    expect(edgeAnchors({ x: 200, y: 0 }, { x: 0, y: 0 }, W, H)).toEqual({
+      x1: 200,
+      y1: 20,
+      x2: 100,
+      y2: 20,
+      notDownward: true,
+    });
+  });
+});

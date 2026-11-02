@@ -33,7 +33,7 @@ import {
   themeNodesToBibtex,
   themeNodesToCsv,
 } from "../../lib/export-formats";
-import { edgeLayer, edgeStyle } from "../../lib/lineage/edge-style";
+import { edgeAnchors, edgeLayer, edgeStyle } from "../../lib/lineage/edge-style";
 import { abstractExcerptSourceLabel } from "../../lib/lineage/evidence";
 import { computeMainPath } from "../../lib/lineage/main-path";
 import { priorDerivative, shortestLineagePath } from "../../lib/lineage/paper-neighbors";
@@ -1513,10 +1513,8 @@ export function LineageTree({
                   const src = positionById.get(e.src);
                   const dst = positionById.get(e.dst);
                   if (!src || !dst) return null;
-                  const x1 = src.x + NODE_W / 2;
-                  const y1 = src.y + NODE_H;
-                  const x2 = dst.x + NODE_W / 2;
-                  const y2 = dst.y;
+                  // #461: join the facing sides when the citing card is not lower.
+                  const { x1, y1, x2, y2, notDownward } = edgeAnchors(src, dst, NODE_W, NODE_H);
                   const key = edgeKey(e);
                   const strokeClass = RELATION_STROKE_CLASS[e.relation] ?? DEFAULT_STROKE_CLASS;
                   const onMain = showMainPath && mainPathKeys.has(key);
@@ -1542,6 +1540,7 @@ export function LineageTree({
                       key={key}
                       data-main-path={onMain ? "1" : undefined}
                       data-s2-influential={influential ? "1" : undefined}
+                      data-not-downward={notDownward ? "1" : undefined}
                       data-lineage-path={onPath ? "1" : undefined}
                       onPointerEnter={(ev) => {
                         if (ev.pointerType === "mouse") setHoveredEdgeKey(key);
@@ -1564,6 +1563,7 @@ export function LineageTree({
                         className={strokeClass}
                         strokeWidth={strokeWidth}
                         strokeOpacity={strokeOpacity}
+                        strokeDasharray={notDownward ? "5 4" : undefined}
                         strokeLinecap="round"
                       />
                       {/* biome-ignore lint/a11y/useSemanticElements: an SVG <line> hit area cannot be an HTML <button>; role="button" + tabIndex + Enter/Space handling give it button semantics inside the graph. */}

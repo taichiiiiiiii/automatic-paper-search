@@ -49,3 +49,43 @@ export function edgeStyle(i: EdgeStyleInput): EdgeStyle {
   if (plain) return { width: baseWidth, opacity: i.influential ? 0.55 : 0.28 };
   return { width: baseWidth, opacity: 0.9 };
 }
+
+export interface Box {
+  x: number;
+  y: number;
+}
+
+export interface EdgeAnchors {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  /** The citing paper is not on a lower line than the cited one (a year that
+   * disagrees with the citation, or two papers of one year). */
+  notDownward: boolean;
+}
+
+/**
+ * #461: where an edge leaves the cited paper's card (`src`) and meets the
+ * citing paper's card (`dst`). The usual case runs bottom-centre to top-centre.
+ * When the citing card is on the same line or above, joining bottom to top
+ * would run through the cards themselves, so the edge joins the facing sides
+ * instead (side to side on one line; top to bottom when the citing card is
+ * above).
+ */
+export function edgeAnchors(src: Box, dst: Box, w: number, h: number): EdgeAnchors {
+  if (dst.y > src.y) {
+    return { x1: src.x + w / 2, y1: src.y + h, x2: dst.x + w / 2, y2: dst.y, notDownward: false };
+  }
+  if (dst.y < src.y) {
+    return { x1: src.x + w / 2, y1: src.y, x2: dst.x + w / 2, y2: dst.y + h, notDownward: true };
+  }
+  const right = dst.x >= src.x;
+  return {
+    x1: right ? src.x + w : src.x,
+    y1: src.y + h / 2,
+    x2: right ? dst.x : dst.x + w,
+    y2: dst.y + h / 2,
+    notDownward: true,
+  };
+}
