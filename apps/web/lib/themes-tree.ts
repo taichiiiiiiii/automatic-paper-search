@@ -310,6 +310,94 @@ export function maxCardsPerLine(boxWidth: number): number {
   return Math.max(1, Math.floor(usable / (NODE_W + SIBLING_GAP)));
 }
 
+/** #461: only edges that carry a relation (extends / contrasts / supersedes …)
+ * decide the line order. The 200+ plain citations of a theme would chain a
+ * whole year into one column and double the tree's height; they are drawn
+ * faint (#459), so a stray upward one costs little. */
+function constrainsLayout(e: LineageEdge): boolean {
+  return e.relation !== "baseline_only";
+}
+
+/** #461: depth of each paper inside one year's row = how many same-year
+ * papers it (transitively) cites from this row. Edges run cited -> citing
+ * (`src` -> `dst`). Cycle-safe: the relaxation stops after `row.length` passes. */
+export function sameYearDepths(row: LineageNode[], edges: LineageEdge[]): Map<string, number> {
+  const ids = new Set(row.map((n) => n.id));
+  const inYear = edges.filter(
+    (e) => e.src !== e.dst && ids.has(e.src) && ids.has(e.dst) && constrainsLayout(e),
+  );
+  const depth = new Map<string, number>(row.map((n) => [n.id, 0]));
+  for (let pass = 0; pass < row.length; pass++) {
+    let changed = false;
+    for (const e of inYear) {
+      const d = (depth.get(e.src) ?? 0) + 1;
+      if (d > (depth.get(e.dst) ?? 0) && d < row.length) {
+        depth.set(e.dst, d);
+        changed = true;
+      }
+    }
+    if (!changed) break;
+  }
+  return depth;
+}
+
+/** Cuts a year's row into lines of at most `perLine` cards so that a paper
+ * sits on a later line than every same-year paper it cites (lines run
+ * downward). Papers are taken in depth order (stable, so the mode's order
+ * survives within a depth) and each takes the earliest line below its
+ * same-year parents that still has room; a year without same-year citations
+ * wraps exactly as before. */
+export function planYearLines(
+  row: LineageNode[],
+  edges: LineageEdge[],
+  perLine: number,
+): { ordered: LineageNode[]; lineOf: number[]; colOf: number[]; lines: number } {
+  const depth = sameYearDepths(row, edges);
+  const ids = new Set(row.map((n) => n.id));
+  const parents = new Map<string, string[]>();
+  for (const e of edges) {
+    if (e.src === e.dst || !ids.has(e.src) || !ids.has(e.dst) || !constrainsLayout(e)) continue;
+    const list = parents.get(e.dst);
+    if (list) list.push(e.src);
+    else parents.set(e.dst, [e.src]);
+  }
+  const byDepth = row
+    .map((n, i) => ({ n, i }))
+    .sort((a, b) => (depth.get(a.n.id) ?? 0) - (depth.get(b.n.id) ?? 0) || a.i - b.i)
+    .map(({ n }) => n);
+  const lineById = new Map<string, number>();
+  const used: number[] = [];
+  for (const n of byDepth) {
+    let line = 0;
+    for (const pid of parents.get(n.id) ?? []) {
+      const pl = lineById.get(pid);
+      // a parent not placed yet (a cycle) does not constrain
+      if (pl !== undefined) line = Math.max(line, pl + 1);
+    }
+    while ((used[line] ?? 0) >= perLine) line++;
+    used[line] = (used[line] ?? 0) + 1;
+    lineById.set(n.id, line);
+  }
+  // Left to right inside a line: the mode's order (the row's original order).
+  const order = new Map(row.map((n, i) => [n.id, i]));
+  const ordered = [...row].sort(
+    (a, b) =>
+      (lineById.get(a.id) ?? 0) - (lineById.get(b.id) ?? 0) ||
+      (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0),
+  );
+  const lineOf: number[] = [];
+  const colOf: number[] = [];
+  const seen: number[] = [];
+  for (const n of ordered) {
+    const l = lineById.get(n.id) ?? 0;
+    lineOf.push(l);
+    colOf.push(seen[l] ?? 0);
+    seen[l] = (seen[l] ?? 0) + 1;
+  }
+  const lines = used.length;
+  return { ordered, lineOf, colOf, lines };
+}
+
 /** Y axis = year (rank-based: every unique year occupies one band,
  * regardless of calendar gaps). X axis = `mode`. Edges run parent
  * (older, top) -> child (newer, bottom). Left-aligned rows so sparse
@@ -380,7 +468,12 @@ export function layoutChronological(
         return (b.citation_count ?? 0) - (a.citation_count ?? 0);
       });
     }
-    const lines = Math.max(1, Math.ceil(row.length / perLine));
+    // #461: inside a year, a paper that cites another paper of the same year
+    // sits on a later line, so every line runs downward. Lines break wherever
+    // the depth changes; the left-to-right order within a depth is the mode's.
+    const plan = planYearLines(row, edges, perLine);
+    row.splice(0, row.length, ...plan.ordered);
+    const lines = Math.max(1, plan.lines);
     const bandBottom = bandTop + lines * NODE_H + (lines - 1) * LINE_GAP;
     let importance: YearLabel["importance"] = "regular";
     if (year !== UNKNOWN_YEAR) {
@@ -398,8 +491,8 @@ export function layoutChronological(
       lines,
     });
     row.forEach((n, i) => {
-      const line = Math.floor(i / perLine);
-      const col = i - line * perLine;
+      const line = plan.lineOf[i] as number;
+      const col = plan.colOf[i] as number;
       const x = xStart + col * step;
       positioned.push({ ...n, _x: x, _y: bandTop + line * (NODE_H + LINE_GAP) });
       // Genealogy mode places children under their parents' *slot* in the

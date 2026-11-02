@@ -102,6 +102,10 @@ export function ReadingGuide({
             ))}
           </ul>
           <p className="mt-1">線が太いほど、判定の確信度が高い関係です。</p>
+          <p className="mt-1" data-not-downward-legend>
+            点線は、引用する側の論文が、引用される側と同じ段か上の段にあるものです（同じ年の論文どうし、または論文誌の年と
+            arXiv の年がずれている場合）。
+          </p>
           <p className="mt-1" data-s2-influential-legend>
             「引用」の線でも、Semantic Scholar
             が影響の大きい方法論の引用と判定したものは、やや太く濃く描きます（関係の種類や強い関係の数は変わりません）。
