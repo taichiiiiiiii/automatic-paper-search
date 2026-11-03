@@ -121,3 +121,15 @@ describe("blockFile / validateIdBlock", () => {
     ).toThrow(/block/);
   });
 });
+
+describe("Japanese zero-result guidance (#413)", () => {
+  it("detects a mostly-Japanese query and explains the English-only index", async () => {
+    const { emptyResultsMessage, isJapaneseQuery } = await import("../../lib/search-core");
+    expect(isJapaneseQuery("拡散モデル")).toBe(true);
+    expect(isJapaneseQuery("ＤＩＦＦＵＳＩＯＮ")).toBe(false);
+    expect(isJapaneseQuery("diffusion 拡散")).toBe(false); // half: literal English half may still match
+    expect(isJapaneseQuery("")).toBe(false);
+    expect(emptyResultsMessage("拡散モデル")).toContain("自動翻訳はありません");
+    expect(emptyResultsMessage("zzzz")).toContain("短いキーワード");
+  });
+});
