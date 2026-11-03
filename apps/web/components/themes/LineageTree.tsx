@@ -25,6 +25,7 @@
 import { useSearchParams } from "next/navigation";
 import type React from "react";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { tidyTitle } from "../../lib/catalog-text";
 import {
   copyText,
   downloadText,
@@ -34,7 +35,7 @@ import {
   themeNodesToCsv,
 } from "../../lib/export-formats";
 import { edgeAnchors, edgeLayer, edgeStyle } from "../../lib/lineage/edge-style";
-import { abstractExcerptSourceLabel } from "../../lib/lineage/evidence";
+import { abstractExcerptSourceLabel, tidyExcerpt } from "../../lib/lineage/evidence";
 import { computeMainPath } from "../../lib/lineage/main-path";
 import { priorDerivative, shortestLineagePath } from "../../lib/lineage/paper-neighbors";
 import { isS2Influential, S2_INFLUENTIAL_LABEL_JA } from "../../lib/lineage/s2-signal";
@@ -1746,7 +1747,9 @@ export function LineageTree({
                           {p.title || p.id}
                         </span>
                         {p.tldr && (
-                          <span className="mt-1 line-clamp-2 text-ink-muted">{p.tldr}</span>
+                          <span className="mt-1 line-clamp-2 text-ink-muted">
+                            {tidyExcerpt(p.tldr)}
+                          </span>
                         )}
                         <span className="mt-1 block truncate text-ink-subtle">
                           {authors}
@@ -1808,11 +1811,11 @@ export function LineageTree({
                         <div className="text-[0.68rem] text-ink-subtle">
                           {formatVenue(p.venue, p.year) || "—"}
                         </div>
-                        <h3 className="mt-1 font-medium text-ink">{p.title || p.id}</h3>
+                        <h3 className="mt-1 font-medium text-ink">{tidyTitle(p.title || p.id)}</h3>
                         {p.tldr && (
                           <>
                             <p lang="en" className="mt-1 text-ink-muted">
-                              {p.tldr}
+                              {tidyExcerpt(p.tldr)}
                             </p>
                             <p
                               className="mt-0.5 text-[0.62rem] text-ink-subtle"
