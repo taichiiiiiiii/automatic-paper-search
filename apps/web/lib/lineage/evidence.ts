@@ -218,5 +218,9 @@ export function abstractExcerptSourceLabel(nodeId: string): string {
  * "Summary:" label that older journal records carry, and the LaTeX markup
  * of a submission ("$\\Psi$"). */
 export function tidyExcerpt(text: string): string {
-  return tidyTitle(text.replace(/^\s*(?:abstract|summary)\s*[.:\-—]\s*/i, ""));
+  return tidyTitle(
+    text
+      .replace(/^\s*(?:ABSTRACT|SUMMARY)(?:\s*[.:\-—]\s*|\s+(?=[A-Z]))/, "")
+      .replace(/^\s*(?:abstract|summary)\s*[.:\-—]\s*/i, ""),
+  );
 }
