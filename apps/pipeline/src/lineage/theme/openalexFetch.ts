@@ -35,6 +35,7 @@ import {
   arxivIdFromWork,
   OPENALEX_PAPER_ID_PREFIX,
   openalexShortId,
+  subfieldOf,
   type ThemePaper,
   workToPaperDict,
 } from "./openalexWork.js";
@@ -352,6 +353,50 @@ export function attachEmptyIntentFields(paper: ThemePaper): ThemePaper {
   if (paper._is_influential === undefined) paper._is_influential = null;
   if (paper._contexts === undefined) paper._contexts = [];
   return paper;
+}
+
+/**
+ * R2-66 (#473): `primary_topic.subfield` for Works that reached the build
+ * without one (the never-expiring relation cache predates the field, and
+ * S2-sourced records never carry it). One `select=id,primary_topic`
+ * request per 50 ids; best effort — a failed chunk leaves its ids unknown
+ * (unknown is never excluded by the seed-scope rule).
+ */
+export async function fetchSubfieldsByIds(
+  shortIds: readonly string[],
+  deps: OpenAlexDeps,
+): Promise<Map<string, string>> {
+  const out = new Map<string, string>();
+  const cleaned = [...new Set(shortIds.map((s) => openalexShortId(s)).filter(Boolean))] as string[];
+  for (let i = 0; i < cleaned.length; i += OPENALEX_IDS_PER_BATCH) {
+    const chunk = cleaned.slice(i, i + OPENALEX_IDS_PER_BATCH);
+    const params = withEmail(
+      {
+        filter: `openalex:${chunk.join("|")}`,
+        "per-page": chunk.length,
+        select: "id,primary_topic",
+      },
+      deps,
+    );
+    let works: unknown;
+    try {
+      const resp = (await get(OPENALEX_WORKS_URL, params, deps)) as HttpResponseLike | null;
+      if (openalexOutcome(resp) !== "ok") throw new Error(`status=${resp ? resp.status : null}`);
+      const payload = (await (resp as HttpResponseLike).json()) as Record<string, unknown> | null;
+      works = payload?.results;
+    } catch (exc) {
+      deps.logger?.warn(`subfield lookup skipped for ${chunk.length} id(s): ${String(exc)}`);
+      continue;
+    }
+    if (!Array.isArray(works)) continue;
+    for (const w of works) {
+      if (!w || typeof w !== "object") continue;
+      const id = openalexShortId((w as Record<string, unknown>).id ?? "");
+      const sub = subfieldOf(w as Record<string, unknown>);
+      if (id && sub) out.set(id, sub);
+    }
+  }
+  return out;
 }
 
 /** OpenAlex BFS — return parent/child papers for a given Work. Mirrors
