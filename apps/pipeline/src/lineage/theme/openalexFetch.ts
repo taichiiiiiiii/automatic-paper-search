@@ -61,6 +61,8 @@ export const OPENALEX_WORK_SELECT = [
   "authorships",
   "primary_location",
   "locations",
+  // R2-66 (#473): the subfield the seed-scope rule compares.
+  "primary_topic",
 ].join(",");
 
 /** Thrown instead of returning data when an OpenAlex result MUST NOT be

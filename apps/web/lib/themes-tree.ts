@@ -689,6 +689,20 @@ export function wideSpanNotice(nodes: ReadonlyArray<{ year?: unknown }>): string
   return `🔎 この系譜は ${min}–${max} の ${max - min} 年にわたります。テーマ名が広く、別の分野の論文（同じ語を使う古い研究など）が混ざっている可能性があります。年で絞り込むか、より具体的なテーマ名（手法名など）で依頼し直すと読みやすくなります。`;
 }
 
+/** #473: the pipeline followed one sense of an ambiguous field name (the
+ * majority subfield of the keyword seeds) and set aside surveys / method
+ * papers from another sense. The page says which sense it shows. */
+export function seedScopeNotice(meta: Record<string, unknown> | undefined): string | null {
+  const scope = meta?.seed_scope;
+  if (!scope || typeof scope !== "object") return null;
+  const s = scope as Record<string, unknown>;
+  const excluded =
+    (Array.isArray(s.excluded_surveys) ? s.excluded_surveys.length : 0) +
+    (typeof s.excluded_canonical === "number" ? s.excluded_canonical : 0);
+  if (excluded === 0 || typeof s.subfield !== "string" || !s.subfield) return null;
+  return `🧭 このテーマ名は複数の分野で使われています。検索で多く見つかった分野「${s.subfield}」の系譜を表示し、別の分野の文献 ${excluded} 件は種（出発点）から外しました。別の分野を見たい場合は、より具体的なテーマ名で依頼してください。`;
+}
+
 export function sparseLineageNotice(nodeCount: number, edgeCount: number): string {
   return `🌱 このテーマは家系図がまだ薄いです（${nodeCount} 論文 / ${edgeCount} 関係）。論文が少ないうちは家系図が薄くなります。作り直しで密になることがあります。`;
 }

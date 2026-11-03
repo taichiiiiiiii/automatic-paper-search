@@ -64,6 +64,7 @@ import {
   PHONE_BOX_WIDTH,
   type Relation,
   ROW_GAP,
+  seedScopeNotice,
   sparseLineageNotice,
   treeWidthFor,
   wideSpanNotice,
@@ -680,6 +681,7 @@ export function LineageTree({
   const hiddenCount = hiddenEdgeCount(artifact.edges, visibleRelations);
   const sparse = isSparseLineage(artifact.nodes.length, artifact.edges.length);
   const wideSpan = useMemo(() => wideSpanNotice(artifact.nodes), [artifact.nodes]);
+  const seedScope = useMemo(() => seedScopeNotice(artifact.meta), [artifact.meta]);
   const nodeById = useMemo(() => new Map(artifact.nodes.map((n) => [n.id, n])), [artifact.nodes]);
 
   // ---- Card popover (delayed show, instant hide) ------------------------
@@ -1322,6 +1324,15 @@ export function LineageTree({
           className="mt-2 rounded-md border border-rule bg-surface-2 px-3 py-2 text-xs text-ink-muted"
         >
           {sparseLineageNotice(artifact.nodes.length, artifact.edges.length)}
+        </p>
+      )}
+      {seedScope && (
+        <p
+          role="status"
+          data-seed-scope-notice
+          className="mt-2 rounded-md border border-rule bg-surface-2 px-3 py-2 text-xs text-ink-muted"
+        >
+          {seedScope}
         </p>
       )}
       {wideSpan && (
