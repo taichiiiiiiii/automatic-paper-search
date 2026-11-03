@@ -37,5 +37,7 @@ describe("tidyExcerpt (#463)", () => {
     expect(tidyExcerpt("Abstract. An approach to smoothing")).toBe("An approach to smoothing");
     expect(tidyExcerpt("SUMMARY: We study $\\alpha$")).toBe("We study α");
     expect(tidyExcerpt("Abstractions matter")).toBe("Abstractions matter");
+    expect(tidyExcerpt("SUMMARY We develop a class")).toBe("We develop a class"); // all-caps label with no punctuation
+    expect(tidyExcerpt("Summary statistics are")).toBe("Summary statistics are");
   });
 });
