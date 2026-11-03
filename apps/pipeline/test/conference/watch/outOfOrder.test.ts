@@ -17,7 +17,13 @@ const EDITION: Edition = {
   adapter: "openreview-v2",
   sourceId: "ICLR.cc/2026/Conference",
   countGate: { minimumAbsolute: 1, previousEditionMinRatio: 0.5, previousEditionMaxRatio: 2.0 },
-  tracks: { acceptedOnly: true, includeWorkshops: false },
+  tracks: {
+    acceptedOnly: true,
+    acceptedDecisionLabels: ["accept", "reject"],
+    highlightedLabels: ["accept"],
+  },
+  stableMinSeparationHours: 12,
+  stableMaxSeparationHours: 72,
 };
 
 function obs(
