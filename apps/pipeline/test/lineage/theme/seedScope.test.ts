@@ -50,3 +50,43 @@ describe("workToPaperDict subfield", () => {
     expect("subfield" in (workToPaperDict(base) ?? {})).toBe(false);
   });
 });
+
+describe("fetchSubfieldsByIds (R2-66 backfill)", () => {
+  it("maps ids to subfields and leaves a failed chunk unknown", async () => {
+    const { fetchSubfieldsByIds } = await import("../../../src/lineage/theme/openalexFetch.js");
+    const calls: string[] = [];
+    const fetchImpl = async (url: string) => {
+      calls.push(url);
+      return {
+        status: 200,
+        ok: true,
+        headers: new Headers({ "content-type": "application/json" }),
+        json: async () => ({
+          results: [
+            {
+              id: "https://openalex.org/W1",
+              primary_topic: { subfield: { display_name: "Statistics and Probability" } },
+            },
+            { id: "https://openalex.org/W2", primary_topic: null },
+          ],
+        }),
+      };
+    };
+    const deps = {
+      fetchImpl,
+      sleep: async () => {},
+      now: () => 0,
+      logger: { warn() {}, info() {} },
+    };
+    const out = await fetchSubfieldsByIds(["W1", "W2", "openalex:W1"], deps as never);
+    expect(out.get("W1")).toBe("Statistics and Probability");
+    expect(out.has("W2")).toBe(false);
+    expect(calls).toHaveLength(1);
+    expect(calls[0]).toContain("select=id%2Cprimary_topic");
+    const dead = async () => {
+      throw new TypeError("fetch failed");
+    };
+    const none = await fetchSubfieldsByIds(["W3"], { ...deps, fetchImpl: dead } as never);
+    expect(none.size).toBe(0);
+  });
+});

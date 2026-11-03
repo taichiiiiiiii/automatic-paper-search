@@ -348,7 +348,7 @@ export function workToPaperDict(work: Record<string, unknown>): ThemePaper | nul
   };
 }
 
-function subfieldOf(work: Record<string, unknown>): string | null {
+export function subfieldOf(work: Record<string, unknown>): string | null {
   const topic = work.primary_topic;
   if (!topic || typeof topic !== "object") return null;
   const sub = (topic as Record<string, unknown>).subfield;

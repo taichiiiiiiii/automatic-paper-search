@@ -86,6 +86,7 @@ import {
 } from "./identity.js";
 import { pruneLowImpactLeaves } from "./lowImpact.js";
 import { suspectMergedRecords } from "./nodeIdentityGuard.js";
+import { fetchSubfieldsByIds } from "./openalexFetch.js";
 import type { ThemePaper } from "./openalexWork.js";
 import { RegressionRefusedError } from "./publishGuard.js";
 import {
@@ -668,11 +669,26 @@ export async function buildThemeLineage(
     }
   };
   // R2-66 (#473): surveys from the other sense of the field name must not
-  // seed the canonical step.
+  // seed the canonical step. Cached / S2-sourced records lack `subfield`,
+  // so it is looked up for the few papers the rule has to judge.
   const seedScope = seedScopeOf(seeds.filter((p) => !isSurvey(p)));
+  const backfillSubfields = async (papers: readonly ThemePaper[]): Promise<void> => {
+    if (seedScope.subfield === null) return;
+    const missing = papers.filter((p) => !p.subfield && p.paperId.startsWith("openalex:"));
+    if (missing.length === 0) return;
+    const found = await fetchSubfieldsByIds(
+      missing.map((p) => p.paperId.slice("openalex:".length)),
+      netDeps,
+    );
+    for (const p of missing) {
+      const sub = found.get(p.paperId.slice("openalex:".length));
+      if (sub) p.subfield = sub;
+    }
+  };
+  const surveyCandidates = seeds.filter((p) => isSurvey(p));
+  await backfillSubfields(surveyCandidates);
   const surveySources: ThemePaper[] = [];
-  for (const p of seeds) {
-    if (!isSurvey(p)) continue;
+  for (const p of surveyCandidates) {
     if (!inSeedScope(seedScope, p)) {
       seedScope.excludedSurveys.push(p.paperId);
       continue;
@@ -698,6 +714,15 @@ export async function buildThemeLineage(
     refLists.push(lists);
   }
   const seedIdsSoFar = new Set(seeds.map((p) => p.paperId));
+  // Look up the subfield of the candidates the scoped selection will judge
+  // (the leading ones by support / citations) before selecting.
+  await backfillSubfields(
+    rankCanonicalMethodSeeds(refLists, {
+      scope: topicScope,
+      limit: seedsCount * 3,
+      accept: (p) => p.paperId.startsWith("openalex:") && !seedIdsSoFar.has(p.paperId),
+    }),
+  );
   const canonical = rankCanonicalMethodSeeds(refLists, {
     scope: topicScope,
     limit: seedsCount,
