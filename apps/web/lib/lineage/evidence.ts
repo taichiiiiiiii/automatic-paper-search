@@ -1,3 +1,4 @@
+import { tidyTitle } from "../catalog-text";
 /**
  * Pure helpers that turn one lineage edge's `rationale` + `provenance`
  * into what the evidence panel and the relation list show (R2 UX
@@ -211,4 +212,11 @@ export function quoteAuthorCredit(node: PaperRef | undefined): string {
  */
 export function abstractExcerptSourceLabel(nodeId: string): string {
   return nodeId.startsWith("openalex:") ? "OpenAlex / Semantic Scholar " : "Semantic Scholar ";
+}
+
+/** #463: an abstract excerpt shown on a card: drops a leading "Abstract." /
+ * "Summary:" label that older journal records carry, and the LaTeX markup
+ * of a submission ("$\\Psi$"). */
+export function tidyExcerpt(text: string): string {
+  return tidyTitle(text.replace(/^\s*(?:abstract|summary)\s*[.:\-—]\s*/i, ""));
 }

@@ -127,10 +127,12 @@ export interface AbstractDek {
  * matching the first paint.
  */
 export function buildAbstractDek(
-  abstract: string,
+  rawAbstract: string,
   rawQuery: string,
   options: { isFull: boolean; isSelected: boolean },
 ): AbstractDek {
+  // #463: abstracts carry the submission's LaTeX too ("$\\Psi$-Sampler").
+  const abstract = tidyTitle(rawAbstract);
   const view: AbstractView = options.isFull
     ? { segments: highlightSegments(abstract, rawQuery), len: abstract.length, leadEllipsis: false }
     : buildAbstractView(abstract, rawQuery);

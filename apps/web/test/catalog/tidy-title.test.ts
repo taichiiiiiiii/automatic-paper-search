@@ -19,3 +19,23 @@ describe("tidyTitle (#463)", () => {
     expect(tidyTitle("$x^{ab}$")).toBe("x^{ab}"); // letters without a superscript form stay as written
   });
 });
+
+describe("abstract dek uses tidy text (#463)", () => {
+  it("shows Ψ, not $\\Psi$", async () => {
+    const { buildAbstractDek } = await import("../../lib/catalog-text");
+    const dek = buildAbstractDek("We introduce $\\Psi$-Sampler.", "", {
+      isFull: true,
+      isSelected: true,
+    });
+    expect(dek.segments.map((s) => s.text).join("")).toBe("We introduce Ψ-Sampler.");
+  });
+});
+
+describe("tidyExcerpt (#463)", () => {
+  it("drops a leading Abstract. label and LaTeX", async () => {
+    const { tidyExcerpt } = await import("../../lib/lineage/evidence");
+    expect(tidyExcerpt("Abstract. An approach to smoothing")).toBe("An approach to smoothing");
+    expect(tidyExcerpt("SUMMARY: We study $\\alpha$")).toBe("We study α");
+    expect(tidyExcerpt("Abstractions matter")).toBe("Abstractions matter");
+  });
+});

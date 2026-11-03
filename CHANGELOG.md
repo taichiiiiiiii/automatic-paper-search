@@ -6,6 +6,10 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Changed — 本番レビュー 3 周目（#463）
+
+- 要旨の本文と家系図カードの題名・要旨でも LaTeX を読める文字にし、要旨の先頭の「Abstract.」の札を外す。仕組みページの LLM の記述を訂正（#468）。
+
 ### Fixed — e2e WebKit が毎回 40 分で打ち切られていた（R2-64、#466）
 
 - テーマの操作テストを標本（監査済み + 最大 + 最新）に限る。描画の smoke は全テーマ。
