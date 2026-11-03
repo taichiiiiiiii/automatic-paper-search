@@ -167,6 +167,17 @@ export function reduceReadiness(
   if (sameObservation(previous.lastObservation, observation)) {
     return { state: previous, action: "no_op", reason: null };
   }
+  // #428 (CNF-29: time moving backwards is an exception): every branch
+  // below (failed / unavailable / anomaly / fingerprint change / ready)
+  // rewrites the state from this observation, so an older observation
+  // arriving late (a retried run, a replayed log) could undo a newer one.
+  // The check used to sit only on the qualifying path.
+  if (
+    previous.lastObservation !== null &&
+    observation.observedAt.getTime() < previous.lastObservation.observedAt.getTime()
+  ) {
+    throw new RangeError("observations must not move backwards in time");
+  }
 
   const updated: EditionState = { ...previous, lastObservation: observation };
 
