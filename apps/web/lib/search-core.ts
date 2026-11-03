@@ -320,3 +320,20 @@ export function urlHasDuplicateSearchState(params: URLSearchParams): boolean {
     (!/^\d+$/.test(rawPage) || !Number.isSafeInteger(parsedPage) || parsedPage < 1);
   return duplicate || invalidPage;
 }
+
+/** #413: true when the query is mostly Japanese script (kana / kanji).
+ * Catalog titles, authors and tags are English, so such a query finds
+ * nothing by literal match and the empty state must say why. */
+export function isJapaneseQuery(query: string): boolean {
+  const chars = Array.from(normalizeText(query)).filter((c) => /\S/u.test(c));
+  if (chars.length === 0) return false;
+  const ja = chars.filter((c) => /[\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]/u.test(c));
+  return ja.length * 2 >= chars.length;
+}
+
+export function emptyResultsMessage(query: string): string {
+  if (isJapaneseQuery(query)) {
+    return "0 件。論文のタイトル・著者・タグは英語で登録されており、日本語から英語への自動翻訳はありません。英語のキーワード（例: diffusion, attention）で検索してください。";
+  }
+  return "0 件。短いキーワードに変えるか、絞り込みをクリアしてください。タイトル・著者・タグから検索できます。";
+}
