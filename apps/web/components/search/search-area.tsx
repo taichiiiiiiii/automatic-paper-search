@@ -19,6 +19,7 @@ import { tidyTitle } from "../../lib/catalog-text";
 import { fetchSearchIdBlock, loadSearchIndex } from "../../lib/data-search";
 import {
   confLabel,
+  emptyResultsMessage,
   type Filters,
   filtersFromUrl,
   MIN_QUERY,
@@ -464,7 +465,7 @@ export function SearchArea({ handleRef }: { handleRef?: Ref<SearchAreaHandle> })
     fullResults?.kind === "empty"
       ? fullResults.invalid
         ? "指定された絞り込み条件が無効です。絞り込みをクリアしてください。"
-        : "0 件。短いキーワードに変えるか、絞り込みをクリアしてください。タイトル・著者・タグから検索できます。"
+        : emptyResultsMessage(fullResults.query)
       : fullResults?.kind === "results"
         ? (() => {
             const start = (fullResults.page - 1) * PAGE_SIZE + 1;
