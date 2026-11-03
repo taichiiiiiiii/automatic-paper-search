@@ -393,6 +393,12 @@ export function SearchArea({ handleRef }: { handleRef?: Ref<SearchAreaHandle> })
     // spaces never show up as a literal "+" in `?q=`.
     const trimmedQuery = value.trim();
     updateQueryUrl(trimmedQuery);
+    // #424: a keystroke makes every in-flight run stale at once, not only
+    // when the debounced run starts; otherwise a slow response for the
+    // previous text can repaint its suggestions during the debounce, and
+    // the old suggestions stay clickable under the new text.
+    runSerialRef.current += 1;
+    clearSuggestions();
     clearTimeout(inputTimerRef.current);
     inputTimerRef.current = setTimeout(() => {
       runQuery(trimmedQuery, null);
@@ -523,6 +529,11 @@ export function SearchArea({ handleRef }: { handleRef?: Ref<SearchAreaHandle> })
                 event.preventDefault();
                 move(-1);
               } else if (event.key === "Escape") {
+                // #424/#425: dismiss means the pending debounced run and
+                // any in-flight response must not reopen the list.
+                clearTimeout(inputTimerRef.current);
+                runSerialRef.current += 1;
+                setBusy(false);
                 clearSuggestions();
                 say("");
               }

@@ -214,3 +214,80 @@ describe("SearchArea: out-of-order responses", () => {
     expect(screen.getByText("Beta Quantum Networks")).toBeTruthy();
   });
 });
+
+describe("SearchArea: a keystroke or Escape makes the pending search stale (#424)", () => {
+  function rows() {
+    const out: Array<[string, string, number, string[], string[], number | null, string]> = [];
+    out.push(["Alpha Diffusion Models", "aaai-2026", 0, [], [], 2026, "Poster"]);
+    out.push(["Beta Quantum Networks", "aaai-2026", 1, [], [], 2026, "Poster"]);
+    return out;
+  }
+  function deferred() {
+    let resolve!: () => void;
+    const promise = new Promise<void>((res) => {
+      resolve = res;
+    });
+    return { promise, resolve };
+  }
+  function stubFetch(block: { promise: Promise<void> }) {
+    const fetchMock = vi.fn(async (url: string) => {
+      if (url.includes("search-index-v2.json")) return jsonResponse(rows());
+      if (url.includes("0000.json")) {
+        await block.promise;
+        return jsonResponse({
+          schema_version: "search-paper-ids-v1",
+          block: 0,
+          start: 0,
+          paper_ids: [hexId(0), hexId(1)],
+        });
+      }
+      throw new Error(`unexpected fetch: ${url}`);
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    return fetchMock;
+  }
+
+  // Mutation checked: removing the `runSerialRef.current += 1` in
+  // handleInputChange lets "Alpha Diffusion Models" appear after the
+  // block resolves, although the input already says "beta q".
+  it("does not render the previous text's suggestions while the new text is still debouncing", async () => {
+    const block = deferred();
+    const fetchMock = stubFetch(block);
+    render(<SearchArea />);
+    await typeQuery("alpha");
+    await waitFor(
+      () =>
+        expect(fetchMock).toHaveBeenCalledWith(
+          expect.stringContaining("0000.json"),
+          expect.anything(),
+        ),
+      WAIT,
+    );
+    await typeQuery("beta q"); // inside this keystroke's debounce
+    block.resolve();
+    await new Promise((r) => setTimeout(r, 50));
+    expect(screen.queryByText("Alpha Diffusion Models")).toBeNull();
+    await waitFor(() => expect(screen.getByText("Beta Quantum Networks")).toBeTruthy(), WAIT);
+  });
+
+  // Mutation checked: removing the serial bump / clearTimeout in the
+  // Escape handler lets the list reopen with "Alpha Diffusion Models".
+  it("Escape cancels the pending run so a late response cannot reopen the list", async () => {
+    const block = deferred();
+    const fetchMock = stubFetch(block);
+    render(<SearchArea />);
+    await typeQuery("alpha");
+    await waitFor(
+      () =>
+        expect(fetchMock).toHaveBeenCalledWith(
+          expect.stringContaining("0000.json"),
+          expect.anything(),
+        ),
+      WAIT,
+    );
+    fireEvent.keyDown(screen.getByLabelText(SEARCH_INPUT_LABEL), { key: "Escape" });
+    block.resolve();
+    await new Promise((r) => setTimeout(r, 300));
+    expect(screen.queryByText("Alpha Diffusion Models")).toBeNull();
+  });
+});
