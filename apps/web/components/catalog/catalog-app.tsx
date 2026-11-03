@@ -5,6 +5,7 @@ import { buildTagChipGroups, buildTypeChips, typeChipsAreUseful } from "../../li
 import {
   type AcceptanceType,
   CATALOG_LOAD_ERROR,
+  FIRST_PAINT_ROWS,
   PAGE_SIZE,
   type SortValue,
 } from "../../lib/catalog-constants";
@@ -127,6 +128,9 @@ export function CatalogApp({
   // batch, or a "show more" append batch -- null everywhere else (every
   // filter/search/sort/tag change and every popstate restore).
   const [revealBatch, setRevealBatch] = useState<RevealBatch | null>(null);
+  // #469: rows committed by the first paint of a fresh load (grows to the
+  // full page in the next task); null = no cap.
+  const [firstPaintCap, setFirstPaintCap] = useState<number | null>(null);
 
   const [selectedPaperId, setSelectedPaperId] = useState<string | null>(null);
   const [selectedOrigin, setSelectedOrigin] = useState<"in-page" | "direct" | null>(null);
@@ -265,6 +269,12 @@ export function CatalogApp({
         : null;
       const initialDisplay = pinSelected(initialSorted, initialSelectedPaper);
       setRevealBatch(initialRevealBatch(Math.min(PAGE_SIZE, initialDisplay.length)));
+      if (initialDisplay.length > FIRST_PAINT_ROWS) {
+        setFirstPaintCap(FIRST_PAINT_ROWS);
+        setTimeout(() => {
+          if (!cancelled) setFirstPaintCap(null);
+        }, 0);
+      }
     }
     load();
     return () => {
@@ -699,7 +709,11 @@ export function CatalogApp({
   const sorted = useMemo(() => getSorted(filtered, sort), [filtered, sort]);
   const selectedPaper = selectedPaperId ? (byId.get(selectedPaperId) ?? null) : null;
   const displayPapers = useMemo(() => pinSelected(sorted, selectedPaper), [sorted, selectedPaper]);
-  const shown = Math.min(visibleCount, displayPapers.length);
+  const shown = Math.min(
+    visibleCount,
+    displayPapers.length,
+    firstPaintCap ?? Number.POSITIVE_INFINITY,
+  );
   const total = papers.length;
   const filteredLen = sorted.length;
   const stats = useMemo(() => {

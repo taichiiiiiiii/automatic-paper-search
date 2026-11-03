@@ -6,6 +6,10 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Performance — 大きなカタログの初期表示（R2-65、#469）
+
+- 読み込み後の解析・検査・描画をタスクに分け、最初の描画を 12 行にした。手元の TBT は 59〜79ms → 13〜21ms。
+
 ### Fixed — e2e WebKit が毎回 40 分で打ち切られていた（R2-64、#466）
 
 - テーマの操作テストを標本（監査済み + 最大 + 最新）に限る。描画の smoke は全テーマ。
