@@ -6,6 +6,10 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Security — 依存の更新（#481）
+
+- next 15.5.28、zod 4.6.6、vitest 4.1.12、vite 7.3.7、undici 7.30.1（override）、fast-uri 3.1.9。Dependabot の 27 件（critical 1）に対応。
+
 ### Fixed — 検索の通信に上限（#429）
 
 - 検索索引の取得は 20 秒、ID ブロックは 10 秒で打ち切り、止まった通信でも「再試行」に戻るようにした。
