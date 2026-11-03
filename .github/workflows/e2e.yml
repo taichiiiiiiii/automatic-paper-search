@@ -65,7 +65,9 @@ jobs:
   e2e:
     if: ${{ !inputs.update-snapshots }}
     name: e2e (${{ matrix.browser }})
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest became 26.04 on 2026-11-03 and Playwright 1.64 has no
+    # WebKit build for it (MiniBrowser cannot load libicudata.so.74).
+    runs-on: ubuntu-24.04
     timeout-minutes: 40
     permissions:
       contents: read
@@ -150,7 +152,9 @@ jobs:
 
   update-snapshots:
     if: ${{ inputs.update-snapshots }}
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest became 26.04 on 2026-11-03 and Playwright 1.64 has no
+    # WebKit build for it (MiniBrowser cannot load libicudata.so.74).
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     permissions:
       contents: read
