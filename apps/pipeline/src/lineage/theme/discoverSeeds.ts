@@ -634,6 +634,57 @@ export async function discoverSeeds(
 
 /** Surveys whose reference lists are mined for canonical method seeds. */
 export const CANONICAL_SEED_SURVEY_SOURCES = 3;
+
+/** R2-66 (#473): fewest keyword seeds with a known subfield before the
+ * majority subfield is trusted to scope the canonical-seed step. */
+export const SEED_SCOPE_MIN_KNOWN = 3;
+
+export interface SeedScope {
+  /** Majority `subfield` of the keyword seeds; null = not enough known. */
+  subfield: string | null;
+  known: number;
+  total: number;
+  /** Survey-like search hits NOT used as canonical sources because their
+   * subfield differs (the entry point of the other sense of a field name). */
+  excludedSurveys: string[];
+  /** Canonical candidates skipped for the same reason. */
+  excludedCanonical: number;
+}
+
+/**
+ * R2-66 (#473): a field name with two senses ("State Space Models" in
+ * ML and in statistics / control) gets keyword seeds from the ML side
+ * (CS-field filter + since-year) but the canonical-seed step reads the
+ * reference lists of ANY survey-like search hit, skipping since-year on
+ * purpose (GCN 2016 for a 2018+ GNN lineage). One statistics survey then
+ * drags its whole field in (45% of nodes off-topic). The rule: the
+ * majority subfield of the keyword seeds scopes which surveys may act as
+ * canonical sources and which canonical candidates are taken; a paper
+ * with no subfield (older cache entries, S2-only records) is never
+ * excluded. Field-agnostic: it follows whatever sense the search found.
+ */
+export function seedScopeOf(seeds: readonly { subfield?: string }[]): SeedScope {
+  const counts = new Map<string, number>();
+  let known = 0;
+  for (const p of seeds) {
+    if (!p.subfield) continue;
+    known += 1;
+    counts.set(p.subfield, (counts.get(p.subfield) ?? 0) + 1);
+  }
+  let subfield: string | null = null;
+  if (known >= SEED_SCOPE_MIN_KNOWN) {
+    const sorted = [...counts.entries()].sort(
+      (a, b) => b[1] - a[1] || codepointCompare(a[0], b[0]),
+    );
+    subfield = sorted[0]?.[0] ?? null;
+  }
+  return { subfield, known, total: seeds.length, excludedSurveys: [], excludedCanonical: 0 };
+}
+
+/** True when `paper` may take part in the canonical-seed step under `scope`. */
+export function inSeedScope(scope: SeedScope, paper: { subfield?: string }): boolean {
+  return scope.subfield === null || !paper.subfield || paper.subfield === scope.subfield;
+}
 /** References read per survey (S2 lists, influential / most-cited first). */
 export const CANONICAL_SEED_REFERENCE_LIMIT = 200;
 

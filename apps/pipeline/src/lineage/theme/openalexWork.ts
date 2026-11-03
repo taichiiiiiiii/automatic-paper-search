@@ -267,6 +267,9 @@ export interface ThemePaper {
   seed_paper_id?: string;
   /** OpenAlex Work `type` ("review", "article", …), when given (R2-15). */
   publicationType?: string;
+  /** OpenAlex `primary_topic.subfield.display_name` ("Artificial
+   * Intelligence", "Statistics and Probability", …), when given (R2-66). */
+  subfield?: string;
   [extra: string]: unknown;
 }
 
@@ -341,7 +344,17 @@ export function workToPaperDict(work: Record<string, unknown>): ThemePaper | nul
     ...(typeof work.type === "string" && work.type.trim()
       ? { publicationType: work.type.trim() }
       : {}),
+    ...(subfieldOf(work) !== null ? { subfield: subfieldOf(work) as string } : {}),
   };
+}
+
+function subfieldOf(work: Record<string, unknown>): string | null {
+  const topic = work.primary_topic;
+  if (!topic || typeof topic !== "object") return null;
+  const sub = (topic as Record<string, unknown>).subfield;
+  if (!sub || typeof sub !== "object") return null;
+  const name = (sub as Record<string, unknown>).display_name;
+  return typeof name === "string" && name.trim() ? name.trim() : null;
 }
 
 // ---- R2-17 / R2-26: abstract / title sanity (ERROR_PATTERNS 13) ----

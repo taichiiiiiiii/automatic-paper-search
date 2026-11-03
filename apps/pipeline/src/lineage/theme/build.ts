@@ -63,8 +63,10 @@ import {
   CANONICAL_SEED_SURVEY_SOURCES,
   type DiscoverSeedsCompleteness,
   discoverSeeds,
+  inSeedScope,
   isSurvey,
   rankCanonicalMethodSeeds,
+  seedScopeOf,
   selectThemeSeeds,
 } from "./discoverSeeds.js";
 import type { ThemeEdge } from "./edges.js";
@@ -665,7 +667,18 @@ export async function buildThemeLineage(
       return false;
     }
   };
-  const surveySources = seeds.filter((p) => isSurvey(p)).slice(0, CANONICAL_SEED_SURVEY_SOURCES);
+  // R2-66 (#473): surveys from the other sense of the field name must not
+  // seed the canonical step.
+  const seedScope = seedScopeOf(seeds.filter((p) => !isSurvey(p)));
+  const surveySources: ThemePaper[] = [];
+  for (const p of seeds) {
+    if (!isSurvey(p)) continue;
+    if (!inSeedScope(seedScope, p)) {
+      seedScope.excludedSurveys.push(p.paperId);
+      continue;
+    }
+    if (surveySources.length < CANONICAL_SEED_SURVEY_SOURCES) surveySources.push(p);
+  }
   const refLists: ThemePaper[][] = [];
   for (const survey of surveySources) {
     const lists: ThemePaper[] = [];
@@ -690,9 +703,24 @@ export async function buildThemeLineage(
     limit: seedsCount,
     // BFS-expandable OpenAlex ids only (an S2-id seed would expand through
     // the slow S2 path), with a canonical identity.
-    accept: (p) =>
-      p.paperId.startsWith("openalex:") && !seedIdsSoFar.has(p.paperId) && resolvable(p),
+    accept: (p) => {
+      if (!p.paperId.startsWith("openalex:") || seedIdsSoFar.has(p.paperId) || !resolvable(p))
+        return false;
+      if (!inSeedScope(seedScope, p)) {
+        seedScope.excludedCanonical += 1;
+        return false;
+      }
+      return true;
+    },
   });
+  if (seedScope.subfield !== null) {
+    logger.warn(
+      `seed scope: majority subfield ${JSON.stringify(seedScope.subfield)} ` +
+        `(${seedScope.known}/${seedScope.total} keyword seeds known); ` +
+        `excluded ${seedScope.excludedSurveys.length} survey source(s) and ` +
+        `${seedScope.excludedCanonical} canonical candidate(s)`,
+    );
+  }
   const pickedSeeds = selectThemeSeeds(seeds, canonical, {
     topN: seedsCount,
     canonicalSlots: Math.ceil(seedsCount / 2),
@@ -1165,6 +1193,17 @@ export async function buildThemeLineage(
       // "Inductive Representation Learning on Large Graphs"), so the
       // seed-topic audit accepts them on this provenance instead.
       ...(canonicalSeedIds.length > 0 ? { canonical_seeds: canonicalSeedIds } : {}),
+      // R2-66 (#473): which sense of the field name the seeds follow; the
+      // page notes it when the other sense was excluded.
+      ...(seedScope.subfield !== null
+        ? {
+            seed_scope: {
+              subfield: seedScope.subfield,
+              excluded_surveys: seedScope.excludedSurveys,
+              excluded_canonical: seedScope.excludedCanonical,
+            },
+          }
+        : {}),
       // R2-22: records the identity guard dropped or flagged.
       ...(suspects.length > 0 ? { suspect_records: suspects } : {}),
       // R2-31: one-year proceedings dating slips corrected from DBLP / the DOI.
