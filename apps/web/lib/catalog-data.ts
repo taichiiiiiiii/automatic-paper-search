@@ -23,7 +23,7 @@ import {
   type PilotLineageIndex,
   parsePilotLineageIndex,
 } from "./catalog-pilot-lineage";
-import { fetchConferencePapers } from "./data";
+import { fetchConferencePapers, yieldToMain } from "./data";
 
 export type CatalogLoadResult =
   | { status: "ok"; papers: CatalogPaper[]; byId: Map<string, CatalogPaper> }
@@ -50,6 +50,7 @@ export async function fetchCatalogPapers(
   const result = await fetchConferencePapers(slug, { onProgress });
   if (result.status === "error") return { status: "error", error: result.error };
   try {
+    await yieldToMain(); // #469: see fetchConferencePapers
     const byId = validateCatalog(result.data);
     if (result.data.length === 0) throw new Error("papers catalog is empty");
     return { status: "ok", papers: result.data as unknown as CatalogPaper[], byId };

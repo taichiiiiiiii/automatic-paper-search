@@ -47,6 +47,11 @@ function publicPath(path: string): string {
   return `${BASE_PATH}${path}`;
 }
 
+/** Lets the browser run pending input / paint between two heavy steps. */
+export function yieldToMain(): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, 0));
+}
+
 async function fetchJson(path: string, onProgress?: (bytes: number) => void): Promise<unknown> {
   // no-cache: revalidate every time, as the original viewers did, so a
   // freshly promoted catalog is never hidden behind a stale browser copy.
@@ -156,6 +161,10 @@ export async function fetchConferencePapers(
   }
   try {
     const raw = await fetchJson(`/${slug}/papers.json`, options.onProgress);
+    // #469: the 7 MB catalog's parse and shape check each cost ~50 ms on a
+    // throttled phone; a macrotask boundary between them keeps either out of
+    // the long-task total (Lighthouse TBT) instead of one 150 ms task.
+    await yieldToMain();
     const parsed = PapersSchema.safeParse(raw);
     if (!parsed.success) {
       return { status: "error", error: `${slug}/papers.json: ${parsed.error.message}` };

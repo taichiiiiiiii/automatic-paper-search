@@ -7,6 +7,10 @@
 /** Progressive reveal: render the first PAGE_SIZE rows, then grow by
  * PAGE_SIZE per "show more" click (docs/assets/app.js `PAGE_SIZE`). */
 export const PAGE_SIZE = 30;
+/** #469: the first paint after a load commits this many rows; the rest of
+ * the first page follows in the next task, so the 30-row commit never forms
+ * one long task on a phone (the reveal animation hides the two steps). */
+export const FIRST_PAINT_ROWS = 12;
 
 /** Topic tags offered as chips. Was the top 18 (docs/assets/app.js
  * `buildTagChips`), which left ~40 tags reachable only from a card;
