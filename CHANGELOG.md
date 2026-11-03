@@ -6,6 +6,10 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Performance — 大きなカタログの初期表示（R2-65、#469）
+
+- 読み込み後の解析・検査・描画をタスクに分け、最初の描画を 12 行にした。手元の TBT は 59〜79ms → 13〜21ms。
+
 ### Changed — 本番レビュー 3 周目（#463）
 
 - 要旨の本文と家系図カードの題名・要旨でも LaTeX を読める文字にし、要旨の先頭の「Abstract.」の札を外す。仕組みページの LLM の記述を訂正（#468）。

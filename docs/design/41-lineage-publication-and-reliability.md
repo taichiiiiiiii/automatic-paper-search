@@ -874,3 +874,11 @@ Speculative Decoding（41 論文・227 辺）の実画面で、線が重なっ�
 ### R2-64 e2e WebKit の予算（Issue #466）
 
 WebKit の e2e は 2026-10-29 以降、毎回 40 分の上限で打ち切られていた（「次の push によるキャンセル」という説明は誤りだった）。`themes.e2e.ts` が公開中の全テーマに約 15 本の操作テストを回し、WebKit は 400 辺の木で 1 本 30〜50 秒かかる（desktop-webkit の themes だけで 32 分）。操作テストは標本（監査済み全件 + 最大の未監査 + 最新の未監査）に限り、描画の smoke は全テーマで維持する。上限は 40 分のまま。WebKit の赤は conclusion と所要時間で判断する。
+
+### R2-65 最大のカタログの TBT（Issue #469）
+
+Lighthouse（mobile）の total-blocking-time が `/icml-2026/`（6,552 本・7 MB）で予算 600ms の境界（609〜612ms）で 2 回落ちた。手元の計測（M4、Lighthouse 同設定、3 回）: 改修前 59〜79ms → 改修後 13〜21ms（約 75% 減）。CI の実行環境は約 8 倍遅いので、600ms → 150ms 前後の見込み。
+
+- 読み込み後の 1 つの長いタスク（JSON の解析 → zod の形の検査 → `validateCatalog` → 30 行の描画）を、`setTimeout(0)` のマクロタスク境界で分けた（`yieldToMain`）。
+- 最初の描画は 12 行（`FIRST_PAINT_ROWS`）で、残り 18 行は次のタスクで出す。既存の行の出現アニメーションで二段に見えない。
+- 予算（600ms）は変えない。`content-visibility: auto` は試したが長いタスクは減らなかった（JS 側が主）。
