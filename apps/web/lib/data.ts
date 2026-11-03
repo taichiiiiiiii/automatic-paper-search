@@ -52,10 +52,22 @@ export function yieldToMain(): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, 0));
 }
 
-async function fetchJson(path: string, onProgress?: (bytes: number) => void): Promise<unknown> {
+/** #429: a bounded signal for the search fetches (index 20 s, one id
+ * block 10 s); undefined where `AbortSignal.timeout` does not exist. */
+export const SEARCH_INDEX_TIMEOUT_MS = 20_000;
+export function searchFetchSignal(ms: number): AbortSignal | undefined {
+  const api = globalThis.AbortSignal as { timeout?: (ms: number) => AbortSignal } | undefined;
+  return typeof api?.timeout === "function" ? api.timeout(ms) : undefined;
+}
+
+async function fetchJson(
+  path: string,
+  onProgress?: (bytes: number) => void,
+  signal?: AbortSignal,
+): Promise<unknown> {
   // no-cache: revalidate every time, as the original viewers did, so a
   // freshly promoted catalog is never hidden behind a stale browser copy.
-  const res = await fetch(publicPath(path), { cache: "no-cache" });
+  const res = await fetch(publicPath(path), { cache: "no-cache", ...(signal ? { signal } : {}) });
   if (!res.ok) {
     throw new Error(`fetch ${path} failed: HTTP ${res.status}`);
   }
@@ -196,7 +208,12 @@ const SearchIndexSchema = z.array(SearchIndexEntrySchema);
 /** Fetches /search-index-v2.json (the cross-conference search index). */
 export async function fetchSearchIndex(): Promise<DataResult<SearchIndexEntry[]>> {
   try {
-    const raw = await fetchJson("/search-index-v2.json");
+    // #429: bounded so a stalled index download does not hang the search bar.
+    const raw = await fetchJson(
+      "/search-index-v2.json",
+      undefined,
+      searchFetchSignal(SEARCH_INDEX_TIMEOUT_MS),
+    );
     const parsed = SearchIndexSchema.safeParse(raw);
     if (!parsed.success) {
       return { status: "error", error: `search-index-v2.json: ${parsed.error.message}` };

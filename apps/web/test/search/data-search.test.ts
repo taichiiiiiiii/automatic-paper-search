@@ -52,7 +52,10 @@ describe("fetchSearchIdBlock", () => {
       status: "ok",
       data: { schema_version: "search-paper-ids-v1", block: 0, start: 0, paper_ids: paperIds },
     });
-    expect(fetch).toHaveBeenCalledWith("/search-paper-ids-v1/0000.json", { cache: "no-cache" });
+    expect(fetch).toHaveBeenCalledWith(
+      "/search-paper-ids-v1/0000.json",
+      expect.objectContaining({ cache: "no-cache", signal: expect.any(AbortSignal) }),
+    );
   });
 
   it("fails closed on an HTTP error", async () => {
@@ -70,5 +73,29 @@ describe("fetchSearchIdBlock", () => {
     });
     const result = await fetchSearchIdBlock(0, 257);
     expect(result.status).toBe("error");
+  });
+});
+
+describe("search fetch timeouts (#429)", () => {
+  it("passes a timeout signal to the id-block fetch and surfaces an abort as an error", async () => {
+    const { fetchSearchIdBlock, SEARCH_BLOCK_TIMEOUT_MS } = await import("../../lib/data-search");
+    const { searchFetchSignal } = await import("../../lib/data");
+    expect(searchFetchSignal(5)).toBeInstanceOf(AbortSignal);
+    let seen: RequestInit | undefined;
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (_url: string, init?: RequestInit) => {
+        seen = init;
+        throw new DOMException("The operation was aborted due to timeout", "TimeoutError");
+      }),
+    );
+    try {
+      const r = await fetchSearchIdBlock(0, 1);
+      expect(r.status).toBe("error");
+      expect(seen?.signal).toBeInstanceOf(AbortSignal);
+      expect(SEARCH_BLOCK_TIMEOUT_MS).toBeGreaterThan(0);
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
 });

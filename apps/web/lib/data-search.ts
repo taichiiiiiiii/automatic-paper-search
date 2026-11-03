@@ -14,7 +14,7 @@
  */
 import { BASE_PATH } from "@paperpilot/core/site";
 import type { DataResult } from "./data";
-import { fetchSearchIndex } from "./data";
+import { fetchSearchIndex, searchFetchSignal } from "./data";
 import {
   BLOCK_SIZE,
   blockFile,
@@ -30,6 +30,12 @@ function publicPath(path: string): string {
   }
   return `${BASE_PATH}${path}`;
 }
+
+/** #429: the search index (one file) and each id block are fetched
+ * without any other bound; a stalled connection left the search bar
+ * "busy" forever with no retry. A timed-out fetch rejects, which the
+ * callers already turn into the error + 再試行 state. */
+export const SEARCH_BLOCK_TIMEOUT_MS = 10_000;
 
 function errorMessage(err: unknown): string {
   return err instanceof Error ? err.message : String(err);
@@ -56,7 +62,10 @@ export async function fetchSearchIdBlock(
   totalRows: number,
 ): Promise<DataResult<IdBlock>> {
   try {
-    const res = await fetch(publicPath(`/${blockFile(block * BLOCK_SIZE)}`), { cache: "no-cache" });
+    const res = await fetch(publicPath(`/${blockFile(block * BLOCK_SIZE)}`), {
+      cache: "no-cache",
+      signal: searchFetchSignal(SEARCH_BLOCK_TIMEOUT_MS),
+    });
     if (!res.ok) {
       throw new Error(`search-paper-ids-v1/${block} fetch failed: HTTP ${res.status}`);
     }
