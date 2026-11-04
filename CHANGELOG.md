@@ -6,6 +6,10 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Added — 系統の切り替え（R2-67、#483）
+
+- 引用のつながりが別々の系統に分かれるテーマ（State Space Models: 深層 SSM 39 本 / 確率的 SSM 29 本）では、系譜の上で系統を切り替えて表示する。論文は消さず「すべて」も選べる。
+
 ### Security — 依存の更新（#481）
 
 - next 15.5.28、zod 4.6.6、vitest 4.1.12、vite 7.3.7、undici 7.30.1（override）、fast-uri 3.1.9。Dependabot の 27 件（critical 1）に対応。
