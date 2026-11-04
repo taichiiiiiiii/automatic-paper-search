@@ -6,6 +6,10 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Fixed — S2 の 429 が続く日の打ち切り（R2-69、#487）
+
+- S2 が 3 回続けて応答しなくなったら 10 分間は問い合わせを止め、待ち時間の積み重ねで拡張版が 60 分の上限に達するのを防ぐ。
+
 ### Changed — arXiv HTML の引用文を S2 に届かなかった組にも（R2-68、#485）
 
 - S2 が 429 で取れなかった組・S2 に記録がない組でも arXiv HTML の本文の引用文を読み、強い手がかりがあれば強い関係にする。

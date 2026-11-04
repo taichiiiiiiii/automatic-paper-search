@@ -81,6 +81,15 @@ export function s2MaxAttempts(env: Record<string, string | undefined> = process.
   return Number.isInteger(n) && n >= 1 && n <= 20 ? n : DEFAULT_MAX_ATTEMPTS;
 }
 const MAX_ATTEMPTS = s2MaxAttempts();
+
+/** R2-69: consecutive give-ups (every attempt 429/5xx) that open the
+ * breaker. Each give-up costs >= 2 min of backoff (2+4+8+16+32+60 s); on a
+ * throttled day the keyless pool gave up 17 times in one RAG upgrade and
+ * the job hit its 60-min cap. */
+export const S2_BREAKER_GIVE_UPS = 3;
+/** While open, requests fail at once (the pair is `fetch-failed`, which
+ * R2-68 hands to arXiv HTML); after this cool-down one request probes. */
+export const S2_BREAKER_COOLDOWN_MS = 10 * 60 * 1000;
 const BACKOFF_BASE_MS = 2000;
 const BACKOFF_MAX_MS = 60_000;
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -351,6 +360,11 @@ export class S2CitationSource {
   private readonly memo = new Map<string, RawRef[] | null>();
   private readonly interval: number;
   private lastRequestAt: number | null = null;
+  /** R2-69 circuit breaker state. */
+  private consecutiveGiveUps = 0;
+  private breakerOpenUntil: number | null = null;
+  /** R2-69: times the breaker opened / requests it refused this run. */
+  readonly breaker = { trips: 0, refused: 0 };
   readonly stats: S2CitationStats = {
     requests: 0,
     rateLimited: 0,
@@ -503,6 +517,16 @@ export class S2CitationSource {
    * so the next {@link referenceList} asks S2 again instead of replaying the
    * memoised failure. A no-op when the list was fetched or never asked for.
    */
+  /** R2-69: let the next request through as a probe even while the
+   * breaker cools down. The S2 expansion's patient retry (R2-52) calls this
+   * after its own 45-90 s pause, so a deliberate retry is never refused;
+   * one more give-up re-opens the breaker at once. */
+  probeBreaker(): void {
+    if (this.breakerOpenUntil === null) return;
+    this.breakerOpenUntil = null;
+    this.consecutiveGiveUps = S2_BREAKER_GIVE_UPS - 1;
+  }
+
   forgetListFailure(citing: PaperLike): void {
     const ck = graphIdOf(citing);
     if (ck !== null && this.memo.get(ck) === null) this.memo.delete(ck);
@@ -751,6 +775,16 @@ export class S2CitationSource {
     const headers: Record<string, string> = { "User-Agent": "PaperPilot/0.1 (theme lineage)" };
     if (this.deps.apiKey) headers["x-api-key"] = this.deps.apiKey;
     let lastStatus = "no response";
+    const clock = this.deps.monotonicNow ?? Date.now;
+    if (this.breakerOpenUntil !== null) {
+      if (clock() < this.breakerOpenUntil) {
+        this.breaker.refused += 1;
+        throw new TransientS2Error(`S2 breaker open (cooling down after repeated 429): ${url}`);
+      }
+      // Half-open: this request probes; one more give-up re-opens at once.
+      this.breakerOpenUntil = null;
+      this.consecutiveGiveUps = S2_BREAKER_GIVE_UPS - 1;
+    }
     for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
       if (attempt > 0) this.stats.retries += 1;
       await this.pace();
@@ -767,6 +801,7 @@ export class S2CitationSource {
         try {
           const body = await resp.json();
           if (body && typeof body === "object" && !Array.isArray(body)) {
+            this.consecutiveGiveUps = 0;
             return body as Record<string, unknown>;
           }
         } catch {
@@ -775,7 +810,10 @@ export class S2CitationSource {
         lastStatus = "malformed body";
         continue;
       }
-      if (resp.status === 404 || resp.status === 400) return null;
+      if (resp.status === 404 || resp.status === 400) {
+        this.consecutiveGiveUps = 0;
+        return null;
+      }
       if (resp.status === 429 || resp.status >= 500) {
         if (resp.status === 429) this.stats.rateLimited += 1;
         lastStatus = String(resp.status);
@@ -785,6 +823,15 @@ export class S2CitationSource {
         continue;
       }
       throw new TransientS2Error(`S2 answered ${resp.status} for ${url}`);
+    }
+    this.consecutiveGiveUps += 1;
+    if (this.consecutiveGiveUps >= S2_BREAKER_GIVE_UPS) {
+      this.breakerOpenUntil = clock() + S2_BREAKER_COOLDOWN_MS;
+      this.breaker.trips += 1;
+      this.deps.logger?.warn?.(
+        `s2 citations: breaker opened after ${this.consecutiveGiveUps} consecutive give-ups; ` +
+          `S2 requests fail fast for ${S2_BREAKER_COOLDOWN_MS / 60000} min`,
+      );
     }
     throw new TransientS2Error(`S2 gave up after ${MAX_ATTEMPTS} attempts (${lastStatus}): ${url}`);
   }
@@ -827,7 +874,8 @@ export class S2CitationSource {
       `pairs found=${s.pairsFound} missing=${s.pairsMissing}, context refreshes=${s.contextRefreshes}, ` +
       `citing fetched=${s.citingFetched} ` +
       `not-in-s2=${s.citingNotInS2} failed=${s.citingFailed}, requests=${s.requests} ` +
-      `429=${s.rateLimited} retries=${s.retries}, key=${this.deps.apiKey ? "yes" : "no"}`
+      `429=${s.rateLimited} retries=${s.retries}, breaker trips=${this.breaker.trips} refused=${this.breaker.refused}, ` +
+      `key=${this.deps.apiKey ? "yes" : "no"}`
     );
   }
 }
