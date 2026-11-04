@@ -644,6 +644,7 @@ export class S2Expansion {
           `${Math.round(retry.budgetMs / 1000)}s retry budget used)`,
       );
       await sleep(delay);
+      this.opts.source.probeBreaker?.();
       if (kind === "references") {
         this.opts.source.forgetListFailure(paper as unknown as Record<string, unknown>);
       }
