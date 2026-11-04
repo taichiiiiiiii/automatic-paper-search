@@ -6,6 +6,10 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Changed — arXiv HTML の引用文を S2 に届かなかった組にも（R2-68、#485）
+
+- S2 が 429 で取れなかった組・S2 に記録がない組でも arXiv HTML の本文の引用文を読み、強い手がかりがあれば強い関係にする。
+
 ### Added — 系統の切り替え（R2-67、#483）
 
 - 引用のつながりが別々の系統に分かれるテーマ（State Space Models: 深層 SSM 39 本 / 確率的 SSM 29 本）では、系譜の上で系統を切り替えて表示する。論文は消さず「すべて」も選べる。

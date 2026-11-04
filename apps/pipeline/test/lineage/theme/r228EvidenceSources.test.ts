@@ -277,7 +277,7 @@ describe("deriveS2Relation + arXiv HTML (pairs S2 has no sentence for)", () => {
     ).toBeNull();
   });
 
-  it("is not asked when S2 has a usable sentence, or S2 was unreachable", async () => {
+  it("is not asked when S2 has a usable sentence", async () => {
     let asked = 0;
     const html = {
       contexts: async () => {
@@ -297,14 +297,32 @@ describe("deriveS2Relation + arXiv HTML (pairs S2 has no sentence for)", () => {
       stats: newS2RelationStats(),
       arxivHtml: html,
     } as never);
-    await deriveS2Relation(GSHARD, SWITCH, {
-      source: { lookup: async () => ({ kind: "no_s2_data", reason: "fetch-failed" }) },
-      provider: null,
-      stats: newS2RelationStats(),
-      arxivHtml: html,
-    } as never);
     expect(asked).toBe(0);
   });
+
+  // R2-68: S2 unreachable (429) or without a record -> arXiv HTML is asked;
+  // only a quoted strong cue becomes an edge, anything else keeps the
+  // unclassified path (R2-24 outage guard).
+  for (const reason of ["fetch-failed", "no-id"] as const) {
+    it(`is asked when S2 gave no data (${reason}); a strong cue becomes an edge, no cue stays null`, async () => {
+      const unreachable = { lookup: async () => ({ kind: "no_s2_data", reason }) };
+      const edge = await deriveS2Relation(GSHARD, SWITCH, {
+        source: unreachable,
+        provider: null,
+        stats: newS2RelationStats(),
+        arxivHtml: htmlSource(STRONG_PAGE),
+      } as never);
+      expect(edge?.relation).toBe("extends");
+      expect(edge?.evidence?.source).toBe("arxiv_html");
+      const plain = await deriveS2Relation(GSHARD, SWITCH, {
+        source: unreachable,
+        provider: null,
+        stats: newS2RelationStats(),
+        arxivHtml: htmlSource(PAGE.replace(", which we also follow.", ".")),
+      } as never);
+      expect(plain).toBeNull();
+    });
+  }
 
   it("keeps the S2-only result when the HTML sentences carry no strong cue", async () => {
     const plain = PAGE.replace(", which we also follow.", ".");
