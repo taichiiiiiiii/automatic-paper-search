@@ -36,6 +36,7 @@ import type { LineageArtifact } from "../../lib/themes-quality";
 import { SLUG_RE } from "../../lib/themes-slug";
 import { PublicationNotice } from "../lineage/publication-badge";
 import { RelationAuditProvider } from "../lineage/relation-audit";
+import { LineageFamilies } from "./LineageFamilies";
 import { LineageTree } from "./LineageTree";
 import { ThemeCodeLinksSection, ThemeNewPapersSection } from "./ThemeFeedSections";
 import { ThemeGallery } from "./ThemeGallery";
@@ -462,13 +463,17 @@ export function ThemesClient() {
         // starts fresh for the newly-selected theme instead of carrying
         // over the previous theme's search query / year range / etc.
         <RelationAuditProvider value={entry?.publication_tier === "audited"}>
-          <LineageTree
-            key={currentSlug}
-            artifact={artifact}
-            slug={currentSlug}
-            themeName={themeName}
-            codeLinks={shownExtras?.codeLinks ?? null}
-          />
+          <LineageFamilies key={currentSlug} artifact={artifact}>
+            {(shown, familyKey) => (
+              <LineageTree
+                key={`${currentSlug}:${familyKey}`}
+                artifact={shown}
+                slug={currentSlug}
+                themeName={themeName}
+                codeLinks={shownExtras?.codeLinks ?? null}
+              />
+            )}
+          </LineageFamilies>
         </RelationAuditProvider>
       )}
 
