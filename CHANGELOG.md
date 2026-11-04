@@ -6,6 +6,10 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Changed — arXiv HTML の引用文を S2 に届かなかった組にも（R2-68、#485）
+
+- S2 が 429 で取れなかった組・S2 に記録がない組でも arXiv HTML の本文の引用文を読み、強い手がかりがあれば強い関係にする。
+
 ### Security — 依存の更新（#481）
 
 - next 15.5.28、zod 4.6.6、vitest 4.1.12、vite 7.3.7、undici 7.30.1（override）、fast-uri 3.1.9。Dependabot の 27 件（critical 1）に対応。

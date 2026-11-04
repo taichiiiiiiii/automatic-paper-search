@@ -538,9 +538,13 @@ export async function deriveS2Relation(
   // R2-28: arXiv HTML contexts only add a strong, cue-backed claim to a
   // pair S2 had no usable sentence for; every other result stands.
   if (edge !== null && STRONG_V1.has(edge.relation)) return signalled(edge);
-  if (seen.lookup === undefined || seen.lookup === "fetch-failed" || seen.lookup === "no-id") {
-    return signalled(edge);
-  }
+  // R2-68 (owner-approved 2026-11-04): a pair S2 could not reach this run
+  // (`fetch-failed`, the keyless 429) or has no S2 id (`no-id`) is exactly
+  // the pair S2 cannot speak to, so arXiv HTML is asked too. The R2-24
+  // outage guard stays: the HTML path returns an edge ONLY for a quoted
+  // strong cue; otherwise `edge` (null -> citation_heuristic, unclassified)
+  // stands and an S2 outage still blocks the build through the D3 gate.
+  if (seen.lookup === undefined) return signalled(edge);
   const s2 = seen.signals ?? null;
   if (s2 !== null && s2.found && s2.contexts.some(isUsableContext)) return signalled(edge);
   return signalled((await arxivHtmlStrongEdge(parent, child, ctx, s2)) ?? edge);
