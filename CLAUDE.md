@@ -389,15 +389,15 @@ pnpm exec tsx apps/pipeline/src/release/derived/searchIndexCli.ts  # 横断検�
 | `pages-release` | | | | | `workflow_call` のみ（reusable） |
 | `pages-rollback` | | | | ✅（`ROLLBACK` 確認） | |
 | `e2e` | ✅ `develop`（paths） | ✅ `develop`（paths） | | ✅ | Playwright 3 エンジン |
-| `lighthouse` | ✅ | ✅（paths） | ✅ `0 2 * * 1` | ✅ | |
+| `lighthouse` | ✅ `develop`（paths） | ✅（paths） | ✅ `0 2 * * 1` | ✅ | |
 | `prod-e2e` | | | ✅ `40 3 * * 1` | ✅ | `workflow_run`: 公開し得る 8 本（pages など）が `develop` で完了したあと本番に `@prod` を流す |
 | `regen-retry` | | | ✅ `17 9 * * *` | ✅ | `regen-pending.json` のテーマを `regen-themes` で作り直す |
-| `alert` / `conference-watch` | | | | ✅ のみ | Worker の Cron Trigger（`apps/api/wrangler.jsonc` の `30 0 * * *`）が dispatch。`conference-watch` は月曜だけ |
-| `theme-feeds` | | | | ✅ のみ | Worker の cron から起動する想定（有効化はユーザー判断） |
+| `conference-watch` / `theme-feeds` | | | | ✅ のみ | 月曜（UTC）に Worker の Cron Trigger（`apps/api/wrangler.jsonc` の `30 0 * * *`、`watchdog/scheduled.ts`）が dispatch（`theme-feeds` は `days=45`） |
+| `alert` | | | | ✅ のみ | Worker の cron が問題の集合が変わったときと週 1 回の催促で dispatch。`prod-e2e` も失敗・回復時に dispatch（channel `prod-e2e`） |
 | `collect-weekly` / `collect-daily-watch` / `regen-themes` / `theme-on-demand` / `conference-on-demand` / `conference-lineage-regen` | | | | ✅ のみ | |
 | `legacy-redirects` | | | | ✅（`REDIRECT` 確認） | 旧 GitHub Pages に転送サイトを出す |
 
-- **GitHub の `schedule` を持つのは `lighthouse`・`prod-e2e`・`regen-retry` の 3 本。** 定期の見張りと新しい回の検知は Worker の cron が dispatch する（GitHub の schedule は遅れ、60 日使わないと止まるため）。カタログは自動では更新されない。更新は dispatch で明示的に回す。
+- **GitHub の `schedule` を持つのは `lighthouse`・`prod-e2e`・`regen-retry` の 3 本。** 見張りの通知・新しい回の検知・テーマの新着フィードは Worker の cron が dispatch する（GitHub の schedule は遅れ、60 日使わないと止まるため）。カタログは自動では更新されない。更新は dispatch で明示的に回す。
 - `tests.yml`: tracked な `*.py` が 0 件か → Biome → typecheck → web build → test（skip は warning）→ `validate bundle`。
 - `data-audit.yml`: `data/published/themes/*/lineage.json`・`themes-manifest.json`・`data/published/*/lineage.json`・関連 builder/auditor の変更で 2 つの監査を走らせる。
 - `pages.yml`: `data/published/**`・`data/config/conference-copy/**`・`apps/web/**`・`packages/core/**`・`schemas/**`・lockfile・`apps/pipeline/src/release/**` などの push で、`source_sha: github.sha` を `pages-release.yml` に渡す。
