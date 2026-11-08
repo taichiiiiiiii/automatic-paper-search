@@ -85,7 +85,7 @@ automatic-paper-search/
 ├── legacy/redirect/   # 旧 GitHub Pages 用の転送サイト（legacy-redirects.yml が公開）
 ├── docs/              # design/（40〜45）、migration/（p5-runbook・safety-contracts）。配信はしない
 └── .github/
-    ├── workflows/     # Node の workflow 12 本（下の表）
+    ├── workflows/     # Node の workflow 19 本（下の表）
     └── actions/setup-pnpm/   # Node 22 + corepack + frozen install の共通 action
 ```
 
@@ -377,7 +377,7 @@ pnpm exec tsx apps/pipeline/src/release/derived/searchIndexCli.ts  # 横断検�
 
 ## CI / GitHub Actions
 
-`.github/workflows/` の Node workflow は 12 本。どれも `permissions: {}` を最上位に置き、ジョブに最小権限を付ける。action は commit SHA で固定し、`./.github/actions/setup-pnpm` で Node 22 と依存を入れる。dispatch 入力は `env:` 経由でだけシェルに渡し、全体一致の正規表現と改行の拒否で検査する。
+`.github/workflows/` の Node workflow は 19 本。どれも `permissions: {}` を最上位に置き、ジョブに最小権限を付ける。action は commit SHA で固定し、`./.github/actions/setup-pnpm` で Node 22 と依存を入れる。dispatch 入力は `env:` 経由でだけシェルに渡し、全体一致の正規表現と改行の拒否で検査する。
 
 🔴 **トリガ表** — 名前から推測せず `on:` 節を確かめること。
 
@@ -388,11 +388,16 @@ pnpm exec tsx apps/pipeline/src/release/derived/searchIndexCli.ts  # 横断検�
 | `pages` | ✅ `develop`（paths） | | | | `pages-release` を呼ぶ |
 | `pages-release` | | | | | `workflow_call` のみ（reusable） |
 | `pages-rollback` | | | | ✅（`ROLLBACK` 確認） | |
-| `lighthouse` | | ✅（paths） | ✅ `0 2 * * 1` | ✅ | |
-| `collect-weekly` / `collect-daily-watch` / `regen-themes` / `theme-on-demand` / `conference-on-demand` | | | | ✅ のみ | |
+| `e2e` | ✅ `develop`（paths） | ✅ `develop`（paths） | | ✅ | Playwright 3 エンジン |
+| `lighthouse` | ✅ | ✅（paths） | ✅ `0 2 * * 1` | ✅ | |
+| `prod-e2e` | | | ✅ `40 3 * * 1` | ✅ | `workflow_run`: 公開し得る 8 本（pages など）が `develop` で完了したあと本番に `@prod` を流す |
+| `regen-retry` | | | ✅ `17 9 * * *` | ✅ | `regen-pending.json` のテーマを `regen-themes` で作り直す |
+| `alert` / `conference-watch` | | | | ✅ のみ | Worker の Cron Trigger（`apps/api/wrangler.jsonc` の `30 0 * * *`）が dispatch。`conference-watch` は月曜だけ |
+| `theme-feeds` | | | | ✅ のみ | Worker の cron から起動する想定（有効化はユーザー判断） |
+| `collect-weekly` / `collect-daily-watch` / `regen-themes` / `theme-on-demand` / `conference-on-demand` / `conference-lineage-regen` | | | | ✅ のみ | |
 | `legacy-redirects` | | | | ✅（`REDIRECT` 確認） | 旧 GitHub Pages に転送サイトを出す |
 
-- **schedule を持つのは `lighthouse` だけ。** カタログは自動では更新されない。更新は dispatch で明示的に回す。
+- **GitHub の `schedule` を持つのは `lighthouse`・`prod-e2e`・`regen-retry` の 3 本。** 定期の見張りと新しい回の検知は Worker の cron が dispatch する（GitHub の schedule は遅れ、60 日使わないと止まるため）。カタログは自動では更新されない。更新は dispatch で明示的に回す。
 - `tests.yml`: tracked な `*.py` が 0 件か → Biome → typecheck → web build → test（skip は warning）→ `validate bundle`。
 - `data-audit.yml`: `data/published/themes/*/lineage.json`・`themes-manifest.json`・`data/published/*/lineage.json`・関連 builder/auditor の変更で 2 つの監査を走らせる。
 - `pages.yml`: `data/published/**`・`data/config/conference-copy/**`・`apps/web/**`・`packages/core/**`・`schemas/**`・lockfile・`apps/pipeline/src/release/**` などの push で、`source_sha: github.sha` を `pages-release.yml` に渡す。
