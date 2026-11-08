@@ -7,7 +7,7 @@ AI/ML 論文を arXiv / Semantic Scholar / OpenAlex から集め、品質シグ�
 
 > **構成（2026-10-10）:** TypeScript（pnpm workspace）と Cloudflare Pages / Workers で動いています（2026-10-09 に切替）。今後の計画は [`docs/design/40-post-cutover-roadmap.md`](docs/design/40-post-cutover-roadmap.md)、系譜の公開方針は [`docs/design/41-lineage-publication-and-reliability.md`](docs/design/41-lineage-publication-and-reliability.md)、運用は [`docs/migration/p5-runbook.md`](docs/migration/p5-runbook.md) を見てください。
 
-**運用の形**（GitHub Actions。定期で動くのは Lighthouse・本番 e2e・作り直しの再試行の 3 本と、Worker の cron が起動する見張り・新しい回の検知だけで、ほかは手動かフォームから起動）:
+**運用の形**（GitHub Actions。定期で動くのは Lighthouse・本番 e2e・作り直しの再試行の 3 本と、Worker の cron が起動する見張りの通知・新しい回の検知・テーマの新着フィードだけで、ほかは手動かフォームから起動）:
 - **週次深掘り**（`collect-weekly.yml`）— 収集 → スコア → summary.csv → papers.json → lineage.json の全工程
 - **毎日の著者ウォッチ**（`collect-daily-watch.yml`）— フォロー中の研究者の新作を Slack に通知する軽い経路（LLM なし）
 - **テーマ生成**（`theme-on-demand.yml`）— サイトのフォームから 1 テーマだけ作る
