@@ -12,7 +12,7 @@ import { isMain } from "../../shared/cli/isMain.js";
 import { CliUsageError, parseCliArgs } from "../shared/cliArgs.js";
 import { listingUrl, parseNeuripsListing, reconcileWithCatalog } from "./listing.js";
 
-const USER_AGENT = "PaperPilot/1.0 (+https://paperpilot.pages.dev; catalog reconciliation)";
+const USER_AGENT = "PaperPilot/1.0 (+https://papergraph.fyi; catalog reconciliation)";
 
 export interface NeuripsReconcileDeps {
   fetchText: (url: string) => Promise<{ status: number; text(): Promise<string> }>;

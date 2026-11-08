@@ -1,6 +1,6 @@
 # NOTICE
 
-PaperPilot (https://paperpilot.pages.dev, this repository) is a free,
+PaperPilot (https://papergraph.fyi, this repository) is a free,
 non-commercial site run by an individual. It is not an official service of,
 and is not endorsed by, any of the data providers listed below.
 

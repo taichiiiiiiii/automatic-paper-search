@@ -394,11 +394,9 @@ describe("Atom feed", () => {
     const parsed = new XMLParser({ ignoreAttributes: false }).parse(xml) as {
       feed: { id: string; link: Array<Record<string, string>>; entry: Record<string, unknown> };
     };
-    expect(parsed.feed.id).toBe(
-      "https://paperpilot.pages.dev/themes/graph-neural-network/feed.xml",
-    );
+    expect(parsed.feed.id).toBe("https://papergraph.fyi/themes/graph-neural-network/feed.xml");
     expect(parsed.feed.link[1]!["@_href"]).toBe(
-      "https://paperpilot.pages.dev/themes/?theme=graph-neural-network",
+      "https://papergraph.fyi/themes/?theme=graph-neural-network",
     );
     expect(parsed.feed.entry.title).toBe('Graph Neural Networks <&> "Quotes"');
     expect(xml).toContain("<title>Graph Neural Networks &lt;&amp;&gt; &quot;Quotes&quot;</title>");
