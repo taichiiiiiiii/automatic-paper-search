@@ -95,6 +95,10 @@ test.describe("landing", () => {
     await option.click();
     await expect(page).toHaveURL(/\/[a-z0-9-]+-\d{4}\/\?(.*&)?paper=/);
     await expect(page.locator("[data-close-paper]")).toBeVisible({ timeout: 20_000 });
+    // The open paper loads every theme lineage for "系譜での位置"; WebKit
+    // reports fetches cut off by the next goto as page errors, so let them
+    // finish first (same pattern as navigation.e2e.ts).
+    await page.waitForLoadState("networkidle");
 
     await landing.goto();
     await landing.searchBox.fill("diffusion");
