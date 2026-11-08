@@ -393,7 +393,7 @@ pnpm exec tsx apps/pipeline/src/release/derived/searchIndexCli.ts  # 横断検�
 | `prod-e2e` | | | ✅ `40 3 * * 1` | ✅ | `workflow_run`: 公開し得る 8 本（pages など）が `develop` で完了したあと本番に `@prod` を流す |
 | `regen-retry` | | | ✅ `17 9 * * *` | ✅ | `regen-pending.json` のテーマを `regen-themes` で作り直す |
 | `conference-watch` / `theme-feeds` | | | | ✅ のみ | 月曜（UTC）に Worker の Cron Trigger（`apps/api/wrangler.jsonc` の `30 0 * * *`、`watchdog/scheduled.ts`）が dispatch（`theme-feeds` は `days=45`） |
-| `alert` | | | | ✅ のみ | Worker の cron が問題の集合が変わったときと週 1 回の催促で dispatch。`prod-e2e` も失敗・回復時に dispatch（channel `prod-e2e`） |
+| `alert` | | | | ✅ のみ | Worker の cron が問題の集合が変わったとき（解消時は resolved）と、同じ問題が続く間は 7 日ごとに dispatch。`prod-e2e` も失敗・回復時に dispatch（channel `prod-e2e`） |
 | `collect-weekly` / `collect-daily-watch` / `regen-themes` / `theme-on-demand` / `conference-on-demand` / `conference-lineage-regen` | | | | ✅ のみ | |
 | `legacy-redirects` | | | | ✅（`REDIRECT` 確認） | 旧 GitHub Pages に転送サイトを出す |
 
