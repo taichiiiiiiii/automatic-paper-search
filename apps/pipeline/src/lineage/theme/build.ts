@@ -1229,6 +1229,9 @@ export async function buildThemeLineage(
             },
           }
         : {}),
+      // R2-70 (#498): preprint / renamed venue version folded by the
+      // explicit fallback rule (no shared stable ID); both IDs kept.
+      ...(bfsResult.versionMerges.length > 0 ? { version_merges: bfsResult.versionMerges } : {}),
       // R2-22: records the identity guard dropped or flagged.
       ...(suspects.length > 0 ? { suspect_records: suspects } : {}),
       // R2-31: one-year proceedings dating slips corrected from DBLP / the DOI.

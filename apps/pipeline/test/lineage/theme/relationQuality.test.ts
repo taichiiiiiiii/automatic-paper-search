@@ -242,6 +242,47 @@ describe("runBfsAndDescendants (R2-2d)", () => {
     expect(result.edges.map((e) => `${e.src}>${e.dst}`)).toEqual(["vitArxiv>cvt"]);
   });
 
+  it("R2-70: folds a renamed venue version into the preprint and records both IDs", async () => {
+    const team = [{ name: "Costas Mavromatis" }, { name: "George Karypis" }];
+    const seed = {
+      ...paper("rag", "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks", {
+        year: 2020,
+      }),
+    };
+    const pre = {
+      ...paper("gnnArxiv", "GNN-RAG: Graph Neural Retrieval for Large Language Model Reasoning", {
+        year: 2024,
+      }),
+      authors: team,
+      externalIds: { ArXiv: "2405.20139" },
+    };
+    const acl = {
+      ...paper(
+        "gnnAcl",
+        "GNN-RAG: Graph Neural Retrieval for Efficient Large Language Model Reasoning on Knowledge Graphs",
+        { year: 2025 },
+      ),
+      authors: team,
+      externalIds: { DOI: "10.18653/v1/2025.findings-acl.856" },
+    };
+    const result = await runBfsAndDescendants(
+      [seed, pre],
+      { ...OPTS, currentYear: 2026 },
+      bfsDeps({}, { rag: [acl] }),
+    );
+    expect(result.nodes.has("gnnAcl")).toBe(false);
+    expect(result.versionMerges).toEqual([
+      {
+        rule: "versioned-title-v1",
+        survivor: "gnnArxiv",
+        merged: "gnnAcl",
+        survivor_title: pre.title,
+        merged_title: acl.title,
+      },
+    ]);
+    expect(result.edges.map((e) => `${e.src}>${e.dst}`)).toEqual(["rag>gnnArxiv"]);
+  });
+
   it("support admissions are provisional and are dropped without non-seed support", async () => {
     const seedA = paper("seedA", "Graph Neural Networks for Molecules", { year: 2021 });
     const seedB = paper("seedB", "Scalable Graph Neural Network Training", { year: 2021 });

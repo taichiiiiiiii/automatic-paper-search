@@ -908,3 +908,7 @@ OpenAlex の小分野は論文単位では不正確（HiPPO・S4D・Mamba-2 が�
 ### R2-69 S2 の回路遮断（Issue #487）
 
 キーなしの S2 は混む日に 6 回とも 429 で諦める要求が続き（RAG の拡張で 17 件、1 件 122 秒以上）、拡張版が 60 分で打ち切られた。3 回続けて諦めたら 10 分間は要求を即座に失敗させる（`S2_BREAKER_GIVE_UPS`、`S2_BREAKER_COOLDOWN_MS`）。その組は `fetch-failed` として R2-68 の arXiv HTML に回り、手がかりがなければ未分類のまま（D3 の門は従来どおり）。冷却後は 1 件だけ試し、また諦めればすぐ遮断。拡張の意図的な再試行（R2-52）は `probeBreaker()` で遮断中も 1 件通す。要約行に `breaker trips= refused=` を出す。
+
+### R2-70 改題された学会版を preprint にまとめる代替規則（Issue #498）
+
+RAG で GNN-RAG の arXiv 版（2024、W4399253046）と ACL Findings 版（2025、W4412888160、題名に「Efficient … on Knowledge Graphs」が加わった）が別ノードになった。共通の安定 ID は S2・Crossref・OpenAlex・DBLP のどれにもない（#498）。題名だけで同一とみなすのは絶対ルール 17 で禁止なので、明示した代替規則 `versioned-title-v1` を `TitleIdentity` に足す。条件は全部: コロンより前の名前が正規化して一致（3 文字以上）、著者の姓の集合で小さい方（2 人以上）が大きい方に含まれる、年が両方わかり差が 1 以内、arXiv id を持つのが片方だけ、DOI が食い違わない。候補が 2 つ以上なら何もまとめない。まとめた組は `meta.version_merges`（規則名と両方の ID・題名）に残す。公開中の 12 テーマで数えると該当は GNN-RAG の 1 組だけ（目視で正）。条件を緩めると Vision Mamba の手法論文と同名のサーベイ（著者が別）が入るので、著者の包含は外さない。

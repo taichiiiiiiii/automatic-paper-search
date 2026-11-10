@@ -23,7 +23,7 @@ import type { BuildCompletenessForExpansion } from "../shared/fetchRelated.js";
 import { type FetchRelatedDeps, fetchRelated } from "../shared/fetchRelated.js";
 import type { ThemeGraphNode } from "../shared/node.js";
 import { type CrossrefReferenceSource, listsPaper } from "./crossrefReferences.js";
-import { TitleIdentity } from "./dedup.js";
+import { TitleIdentity, VERSIONED_TITLE_RULE } from "./dedup.js";
 import {
   type CitationListSource,
   demoteLowInformationEdge,
@@ -47,6 +47,15 @@ import { prepareTopicGate, type TopicEmbedder, type TopicGateMeta } from "./topi
 import type { TopicScope } from "./topicScope.js";
 
 type Paper = ThemePaper;
+
+/** One R2-70 fold: `merged` (the candidate's own ID) became `survivor`. */
+export interface VersionMerge {
+  rule: typeof VERSIONED_TITLE_RULE;
+  survivor: string;
+  merged: string;
+  survivor_title: string;
+  merged_title: string;
+}
 
 /** Cross-node lookup (#54) only checks for in-graph hits, so 100 refs
  * is more than enough to surface any cohort-internal citation. */
@@ -109,6 +118,9 @@ export interface BFSResult {
   /** R2-2d: candidates the BFS identified as another ID of a node already
    * in the graph (same title, preprint vs venue version) and folded into it. */
   titleMerged: number;
+  /** R2-70 (#498): candidates folded by the versioned-title fallback rule
+   * (no shared stable ID), with both IDs (`meta.version_merges`). */
+  versionMerges: VersionMerge[];
   /** R2-11: how the topic gate judged candidates (`meta.topic_gate`);
    * `null` when the gate is off / no scope. */
   topicGate: TopicGateMeta | null;
@@ -404,6 +416,7 @@ export async function runBfsAndDescendants(
   const frontier: [Paper, number][] = [];
   const titles = new TitleIdentity();
   let titleMerged = 0;
+  const versionMerges: VersionMerge[] = [];
   /** Admitted nodes that may lend support (on-topic seeds + nodes
    * admitted because they match the theme). */
   const onTopic = new Set<string>();
@@ -467,10 +480,24 @@ export async function runBfsAndDescendants(
     for (const p of list) {
       let paper = p;
       if (p.paperId && !nodes.has(p.paperId) && !pending.has(p.paperId)) {
-        const hit = titles.resolve(p);
+        const match = titles.resolveWithRule(p);
+        const hit = match?.id ?? null;
         if (hit !== null && (nodes.has(hit) || pending.has(hit))) {
           paper = { ...p, paperId: hit };
           titleMerged += 1;
+          if (
+            match!.rule === VERSIONED_TITLE_RULE &&
+            !versionMerges.some((m) => m.merged === p.paperId)
+          ) {
+            const survivorTitle = nodes.get(hit)?.title ?? pending.get(hit)?.paper.title ?? "";
+            versionMerges.push({
+              rule: VERSIONED_TITLE_RULE,
+              survivor: hit,
+              merged: p.paperId,
+              survivor_title: String(survivorTitle),
+              merged_title: p.title,
+            });
+          }
         }
       }
       if (!paper.paperId || paper.paperId === selfId || seen.has(paper.paperId)) continue;
@@ -697,7 +724,8 @@ export async function runBfsAndDescendants(
   }
   if (titleMerged > 0) {
     deps.logger?.warn(
-      `title identity: folded ${titleMerged} duplicate-ID candidate(s) into existing nodes`,
+      `title identity: folded ${titleMerged} duplicate-ID candidate(s) into existing nodes` +
+        (versionMerges.length > 0 ? ` (${versionMerges.length} by ${VERSIONED_TITLE_RULE})` : ""),
     );
   }
 
@@ -716,6 +744,7 @@ export async function runBfsAndDescendants(
     provisional,
     onTopicIds: onTopic,
     titleMerged,
+    versionMerges,
     topicGate,
     admissions,
   };

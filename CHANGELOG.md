@@ -6,6 +6,10 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Fixed — 改題された学会版が preprint と別の論文として出る（R2-70、#498）
+
+- 共通の ID がない preprint と学会版（例: GNN-RAG の arXiv 版と ACL Findings 版）を、名前・著者・年・arXiv id の有無がそろうときだけ 1 本にまとめ、まとめた組を系譜のメタデータに残す。
+
 ### Fixed — S2 の 429 が続く日の打ち切り（R2-69、#487）
 
 - S2 が 3 回続けて応答しなくなったら 10 分間は問い合わせを止め、待ち時間の積み重ねで拡張版が 60 分の上限に達するのを防ぐ。
