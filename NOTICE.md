@@ -67,6 +67,15 @@ Evidence sentences are short quotations from the citing papers (one sentence,
 up to about 300 characters, in quotation marks, with the source and a link).
 Full texts and PDFs are never redistributed.
 
+One cache file is **not** Semantic Scholar data:
+`data/state/lineage-cache/arxiv_html_contexts.json` holds the citing
+sentences PaperPilot read from arXiv's HTML rendering of a paper when
+Semantic Scholar had none for that pair (about 630 sentences, 1-2 per pair).
+Each sentence stays under its own paper's license (most arXiv papers use
+arXiv's non-exclusive distribution license; some are CC BY). It is kept as a
+short quotation for the same evidence purpose, is not covered by ODC-BY, and
+is removed on request (section 3).
+
 ## 3. Removal and correction requests
 
 Rights holders and authors can ask for an abstract, citation sentence or
