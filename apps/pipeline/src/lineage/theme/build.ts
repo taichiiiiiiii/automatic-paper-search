@@ -1189,6 +1189,13 @@ export async function buildThemeLineage(
   }
 
   const canonicalSeedIds = seedIds.filter((id) => canonicalIds.has(id)).sort(codepointCompare);
+  // R2-70: a fold into a candidate that was later dropped (provisional /
+  // pending) names no published node; report only survivors that ship,
+  // under their final (alias-deduplicated) ID.
+  const publishedIds = new Set(orderedNodes.map((n) => n.id));
+  const versionMerges = bfsResult.versionMerges
+    .map((m) => ({ ...m, survivor: nodeRemap.get(m.survivor) ?? m.survivor }))
+    .filter((m) => publishedIds.has(m.survivor));
   const payload = {
     schema_version: LINEAGE_ARTIFACT_VERSION,
     root: rootId,
@@ -1231,7 +1238,7 @@ export async function buildThemeLineage(
         : {}),
       // R2-70 (#498): preprint / renamed venue version folded by the
       // explicit fallback rule (no shared stable ID); both IDs kept.
-      ...(bfsResult.versionMerges.length > 0 ? { version_merges: bfsResult.versionMerges } : {}),
+      ...(versionMerges.length > 0 ? { version_merges: versionMerges } : {}),
       // R2-22: records the identity guard dropped or flagged.
       ...(suspects.length > 0 ? { suspect_records: suspects } : {}),
       // R2-31: one-year proceedings dating slips corrected from DBLP / the DOI.
