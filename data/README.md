@@ -11,7 +11,7 @@
 | `published/search-*`、`identity-aliases-v1.json`、`conferences.json` | 検索の索引、ID の対応表、学会一覧 | 上の各ソースから作った派生データ（各ソースのライセンスに従う） |
 | `published/themes/<slug>/new-papers.json`・`feed.xml` | テーマの「新着」（系譜の論文を 2 本以上引用する新しい論文）と Atom フィード（R4-3） | OpenAlex（CC0） |
 | `published/themes/<slug>/code-links.json`、`state/hf-papers/` | 「コード」「HF」のバッジ（リポジトリ・★・モデル等の件数）と、その取得キャッシュ（R4-3） | Hugging Face Papers の API（件数と URL のみ。HF の自動要約は保存しない）、`config/paper_repos.json` |
-| `state/lineage-cache/` | Semantic Scholar API の応答のキャッシュと分類のキャッシュ | Semantic Scholar（ODC-BY 1.0）。ただし `arxiv_html_contexts.json` は arXiv HTML 版から読んだ引用文で、各論文のライセンスに従う短い引用（NOTICE.md §2.2） |
+| `state/lineage-cache/` | Semantic Scholar API の応答のキャッシュと分類のキャッシュ | S2 のファイル（`citations_*`・`references_*`・`paper_*`・`search_*` ほか）は Semantic Scholar（ODC-BY 1.0）。それ以外（arXiv HTML の引用文、PaperPilot の分類、DBLP、Crossref、GitHub、内部状態）はファイルごとに NOTICE.md §2.3 |
 | `inputs/` | 収集した一覧（CSV・JSON・要約） | 取得元（arXiv・OpenReview・ACL Anthology・CVF など）に従う |
 | `config/` | PaperPilot の設定（別名、除外リストなど） | コードと同じ MIT |
 

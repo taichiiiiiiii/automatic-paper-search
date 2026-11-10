@@ -67,14 +67,27 @@ Evidence sentences are short quotations from the citing papers (one sentence,
 up to about 300 characters, in quotation marks, with the source and a link).
 Full texts and PDFs are never redistributed.
 
-One cache file is **not** Semantic Scholar data:
-`data/state/lineage-cache/arxiv_html_contexts.json` holds the citing
-sentences PaperPilot read from arXiv's HTML rendering of a paper when
-Semantic Scholar had none for that pair (about 630 sentences, 1-2 per pair).
-Each sentence stays under its own paper's license (most arXiv papers use
-arXiv's non-exclusive distribution license; some are CC BY). It is kept as a
-short quotation for the same evidence purpose, is not covered by ODC-BY, and
-is removed on request (section 3).
+### 2.3 Cache files that are not Semantic Scholar data
+
+Not every file under `data/state/lineage-cache/` is Semantic Scholar data.
+The S2 files are `citations_*`, `references_*`, `paper_*`, `search_*`,
+`s2_citation_counts.json`, `s2_references.json` and `conference_seeds.json`
+(ODC-BY 1.0, section 2.1). The others:
+
+- `arxiv_html_contexts.json`: citing sentences PaperPilot read from arXiv's
+  HTML rendering of a paper when Semantic Scholar had none for that pair
+  (about 630 sentences over about 350 paper pairs, usually one or two per
+  pair, each cut to at most 400 characters). Each sentence stays under its
+  own paper's license (most arXiv papers use arXiv's non-exclusive
+  distribution license, which licenses arXiv only; some are CC BY). They are
+  kept as short quotations for the evidence purpose above, are not covered
+  by ODC-BY, and will be removed on request (section 3).
+- `classifications.json`: relation labels and rationales produced by
+  PaperPilot itself (MIT, like the code).
+- `dblp_venues.json`: DBLP venue lookups (CC0 1.0).
+- `crossref_references.json`: Crossref reference lookups (metadata free to use).
+- `github_stars.json`: repository URLs and star counts from the GitHub API.
+- `regen-pending.json`: internal job state.
 
 ## 3. Removal and correction requests
 
