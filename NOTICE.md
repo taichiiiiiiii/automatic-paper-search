@@ -18,8 +18,9 @@ Everything except the data described in §2 is licensed under the MIT License
 ## 2. Data
 
 The files under `data/` (and the JSON the site serves from them) are **not**
-covered by the MIT License. Each record follows the license of the source it
-came from. The bibliographic records, abstracts and citation sentences remain
+covered by the MIT License (except PaperPilot's own outputs: `data/config/`
+and the files marked as such in section 2.3). Each record follows the license
+of the source it came from. The bibliographic records, abstracts and citation sentences remain
 the work of their authors and publishers; PaperPilot only selects, links and
 annotates them. See [`data/README.md`](data/README.md) for which directory
 holds what.
@@ -33,8 +34,8 @@ holds what.
 | [ACL Anthology](https://aclanthology.org/) (ACL / EMNLP catalogs) | titles, authors, abstracts, PDF links | Material from 2016 onward: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) ([ACL Anthology copyright FAQ](https://aclanthology.org/faq/copyright/)) | Required: author(s), title, "ACL Anthology", CC BY 4.0. Abstracts are shown as published; the catalog may shorten them (marked with "…") |
 | [PMLR](https://proceedings.mlr.press/) (ICML 2026 catalog, Volume 306) | titles, authors, abstracts, PDF links (rows link OpenReview and the PMLR page) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) under the [PMLR license agreement](https://proceedings.mlr.press/pmlr-license-agreement.html) | Required: author(s), title, PMLR volume, link to the PMLR page, CC BY 4.0 (shown with each abstract). Abstract whitespace and BibTeX braces normalised; the list view may shorten them (marked with "…") |
 | [CVF Open Access](https://openaccess.thecvf.com/) (CVPR / ICCV catalogs) | titles, authors, PDF links | No license granted: "Copyright and all rights therein are retained by authors or by other copyright holders." | Full CVF abstracts are being removed from the site and from new data files (roadmap item R2-26). Only titles, authors and links are meant to remain |
-| [Crossref](https://www.crossref.org/) | not called today (DOI matching is a possible future use) | Metadata is free to use; some abstracts may be copyrighted ([REST API docs](https://www.crossref.org/documentation/retrieve-metadata/rest-api/)) | Not required |
-| [DBLP](https://dblp.org/) | not called today (venue / author disambiguation is a possible future use) | [CC0 1.0](https://dblp.org/db/about/copyright.html) | Not required |
+| [Crossref](https://www.crossref.org/) | theme lineages: reference lists for papers Semantic Scholar has none for (`crossrefReferences.ts`; cached in `data/state/lineage-cache/crossref_references.json`) | Metadata is free to use; some abstracts may be copyrighted ([REST API docs](https://www.crossref.org/documentation/retrieve-metadata/rest-api/)) | Not required |
+| [DBLP](https://dblp.org/) | theme lineages: venue-year checks of proceedings papers (`dblpVenues.ts`; cached in `data/state/lineage-cache/dblp_venues.json`) | [CC0 1.0](https://dblp.org/db/about/copyright.html) | Not required |
 | [Hugging Face Papers](https://huggingface.co/papers) API (`/api/papers/{arxiv_id}`) | for theme lineage papers with an arXiv id: the linked GitHub repository and its star count, upvotes, and the counts of linked models / datasets / Spaces ("コード" / "HF" badges, `data/published/themes/<slug>/code-links.json`; answers cached in `data/state/hf-papers/`). Only numbers and URLs are kept; the AI-generated `ai_summary` / `ai_keywords` and the paper summaries are never stored or shown | [Hugging Face Terms of Service](https://huggingface.co/terms-of-service) (no key; `api` quota 500 requests / 5 min) | The site names Hugging Face Papers as the source next to the badges and links each paper's HF page |
 | [GitHub REST API](https://docs.github.com/rest) | repository star counts as a popularity signal | [GitHub Terms of Service](https://docs.github.com/site-policy/github-terms/github-terms-of-service) | — |
 | [BAAI/bge-small-en-v1.5](https://huggingface.co/BAAI/bge-small-en-v1.5) via [Xenova/bge-small-en-v1.5](https://huggingface.co/Xenova/bge-small-en-v1.5) | embedding model for the theme topic gate (downloaded at run time, not stored in this repository) | [MIT](https://huggingface.co/BAAI/bge-small-en-v1.5) | — |
@@ -56,7 +57,8 @@ Please cite:
 
 Derived data that PaperPilot publishes from Semantic Scholar data (the lineage
 JSON under `data/published/themes/`, `paper-details-v1/`, and the cached
-responses under `data/state/lineage-cache/`) is redistributed under the same
+Semantic Scholar responses under `data/state/lineage-cache/`, listed in
+section 2.3) is redistributed under the same
 ODC-BY 1.0 terms. The published JSON schemas (`schemas/*.schema.json`) do not
 allow extra metadata fields, so the license notice lives in this file and in
 `data/README.md` instead of inside each JSON document.
@@ -64,7 +66,8 @@ allow extra metadata fields, so the license notice lives in this file and in
 ### 2.2 Citation sentences and abstracts
 
 Evidence sentences are short quotations from the citing papers (one sentence,
-up to about 300 characters, in quotation marks, with the source and a link).
+up to about 300 characters for Semantic Scholar contexts and 400 for arXiv
+HTML sentences, in quotation marks, with the source and a link).
 Full texts and PDFs are never redistributed.
 
 ### 2.3 Cache files that are not Semantic Scholar data
@@ -82,8 +85,9 @@ The S2 files are `citations_*`, `references_*`, `paper_*`, `search_*`,
   distribution license, which licenses arXiv only; some are CC BY). They are
   kept as short quotations for the evidence purpose above, are not covered
   by ODC-BY, and will be removed on request (section 3).
-- `classifications.json`: relation labels and rationales produced by
-  PaperPilot itself (MIT, like the code).
+- `classifications.json`: relation labels and rationales PaperPilot
+  generated with LLMs (the model is recorded per entry) from the Semantic
+  Scholar evidence (MIT, like the code).
 - `dblp_venues.json`: DBLP venue lookups (CC0 1.0).
 - `crossref_references.json`: Crossref reference lookups (metadata free to use).
 - `github_stars.json`: repository URLs and star counts from the GitHub API.
