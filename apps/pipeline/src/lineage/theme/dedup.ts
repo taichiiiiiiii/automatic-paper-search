@@ -376,6 +376,25 @@ export const VERSIONED_TITLE_RULE = "versioned-title-v1";
 const VERSIONED_YEAR_WINDOW = 1;
 /** A shared name before the colon shorter than this is too generic. */
 const VERSIONED_PREFIX_MIN_CHARS = 3;
+/** Boilerplate names before a colon that do not name one work
+ * ("Position: …" is required for ICML position papers). */
+const GENERIC_PREFIXES: ReadonlySet<string> = new Set([
+  "position",
+  "survey",
+  "review",
+  "tutorial",
+  "editorial",
+  "erratum",
+  "correction",
+  "comment",
+  "reply",
+  "perspective",
+  "keynote",
+  "abstract",
+  "invited talk",
+  "short paper",
+  "extended abstract",
+]);
 /** One shared surname is a coincidence, not the same team. */
 const VERSIONED_MIN_AUTHORS = 2;
 
@@ -387,13 +406,35 @@ export function versionedTitlePrefix(title: unknown): string | null {
   const idx = title.indexOf(":");
   if (idx <= 0) return null;
   const prefix = normalizeDedupTitle(title.slice(0, idx));
-  return prefix.length >= VERSIONED_PREFIX_MIN_CHARS ? prefix : null;
+  if (prefix.length < VERSIONED_PREFIX_MIN_CHARS || GENERIC_PREFIXES.has(prefix)) return null;
+  return prefix;
 }
+
+/** Normalised word set of the title after the first colon. */
+export function subtitleTokens(title: unknown): Set<string> {
+  if (typeof title !== "string") return new Set();
+  const idx = title.indexOf(":");
+  if (idx <= 0) return new Set();
+  return new Set(
+    normalizeDedupTitle(title.slice(idx + 1))
+      .split(" ")
+      .filter(Boolean),
+  );
+}
+
+/** DOIs minted for arXiv preprints (DataCite); they always differ from the
+ * venue DOI, so they never count as a conflict. */
+const ARXIV_DOI_PREFIX = "10.48550/";
 
 /** Lowercased, accent-stripped last token of each author name. Accepts
  * the S2-shape `{name}` objects and plain strings. */
 export function authorSurnames(authors: unknown): Set<string> {
-  const out = new Set<string>();
+  return new Set(authorSurnameList(authors));
+}
+
+/** Surnames in author order (the first one is the first author). */
+function authorSurnameList(authors: unknown): string[] {
+  const out: string[] = [];
   if (!Array.isArray(authors)) return out;
   for (const a of authors) {
     const name =
@@ -410,7 +451,7 @@ export function authorSurnames(authors: unknown): Set<string> {
       .split(/\s+/)
       .filter(Boolean);
     const last = tokens[tokens.length - 1];
-    if (last) out.add(last);
+    if (last) out.push(last);
   }
   return out;
 }
@@ -430,6 +471,8 @@ interface VersionedEntry {
   id: string;
   year: unknown;
   surnames: Set<string>;
+  firstAuthor: string | null;
+  subtitle: Set<string>;
   arxiv: string | null;
   doi: string | null;
 }
@@ -444,30 +487,40 @@ export interface VersionedTitlePaper {
 }
 
 function versionedEntry(id: string, paper: VersionedTitlePaper): VersionedEntry {
+  const surnames = authorSurnameList(paper.authors);
   return {
     id,
     year: paper.year,
-    surnames: authorSurnames(paper.authors),
+    surnames: new Set(surnames),
+    firstAuthor: surnames[0] ?? null,
+    subtitle: subtitleTokens(paper.title),
     arxiv: arxivIdOf(paper),
     doi: normalizeDedupDoi(paper as DedupDoiLike),
   };
 }
 
 /** R2-70: `a` and `b` are the preprint and the renamed venue version of
- * one work — same name before the colon (checked by the caller), the
- * smaller author-surname set (>= 2) contained in the larger, both years
- * known and at most one apart, exactly one record carrying an arXiv id,
- * and no conflicting DOI. Two papers by the same team that share a
- * system name (method paper vs its survey) usually differ in authors,
- * and both usually have arXiv ids, so they stay apart. */
+ * one work. All of: same non-generic name before the colon (checked by
+ * the caller); every word after the colon in the shorter subtitle also
+ * in the longer one (a renamed version adds words, a sequel or survey
+ * changes them); the same first author and the smaller author-surname set
+ * (>= 2) contained in the larger; both years known and at most one
+ * apart; exactly one record carrying an arXiv id; and not two different
+ * non-arXiv DOIs (a journal extension has its own publisher DOI). */
 export function isVersionedPair(a: VersionedEntry, b: VersionedEntry): boolean {
   if (typeof a.year !== "number" || typeof b.year !== "number") return false;
   if (Math.abs(a.year - b.year) > VERSIONED_YEAR_WINDOW) return false;
+  const [shortSub, longSub] = a.subtitle.size <= b.subtitle.size ? [a, b] : [b, a];
+  if (shortSub.subtitle.size === 0) return false;
+  for (const t of shortSub.subtitle) if (!longSub.subtitle.has(t)) return false;
+  if (a.firstAuthor === null || a.firstAuthor !== b.firstAuthor) return false;
   const [small, large] = a.surnames.size <= b.surnames.size ? [a, b] : [b, a];
   if (small.surnames.size < VERSIONED_MIN_AUTHORS) return false;
   for (const s of small.surnames) if (!large.surnames.has(s)) return false;
   if ((a.arxiv === null) === (b.arxiv === null)) return false;
-  if (a.doi !== null && b.doi !== null && a.doi === b.doi) return false;
+  const venueDoi = (d: string | null) => (d !== null && !d.startsWith(ARXIV_DOI_PREFIX) ? d : null);
+  const [da, db] = [venueDoi(a.doi), venueDoi(b.doi)];
+  if (da !== null && db !== null && da !== db) return false;
   return true;
 }
 
@@ -502,9 +555,16 @@ export class TitleIdentity {
 
   /** The registered node that is the same work as `paper` (same
    * normalised title, years within the preprint window), other than
-   * `paper` itself; `null` when there is none. */
-  resolve(paper: { paperId?: unknown } & VersionedTitlePaper): string | null {
-    return this.resolveWithRule(paper)?.id ?? null;
+   * `paper` itself; `null` when there is none. Title rule only: the R2-70
+   * fallback is used only through {@link resolveWithRule}, by the BFS
+   * candidate fold, which records every such merge. */
+  resolve(paper: { paperId?: unknown; title?: unknown; year?: unknown }): string | null {
+    const key = titleIdentityKey(paper.title);
+    if (key === null) return null;
+    for (const e of this.byKey.get(key) ?? []) {
+      if (e.id !== paper.paperId && yearsCompatible(e.year, paper.year)) return e.id;
+    }
+    return null;
   }
 
   /** {@link resolve}, plus which rule matched: `"title"` (same
@@ -514,14 +574,8 @@ export class TitleIdentity {
   resolveWithRule(
     paper: { paperId?: unknown } & VersionedTitlePaper,
   ): { id: string; rule: "title" | typeof VERSIONED_TITLE_RULE } | null {
-    const key = titleIdentityKey(paper.title);
-    if (key !== null) {
-      for (const e of this.byKey.get(key) ?? []) {
-        if (e.id !== paper.paperId && yearsCompatible(e.year, paper.year)) {
-          return { id: e.id, rule: "title" };
-        }
-      }
-    }
+    const exact = this.resolve(paper);
+    if (exact !== null) return { id: exact, rule: "title" };
     const prefix = versionedTitlePrefix(paper.title);
     if (prefix === null) return null;
     const self = versionedEntry(String(paper.paperId ?? ""), paper);

@@ -9,6 +9,7 @@ import {
   authorSurnames,
   TitleIdentity,
   VERSIONED_TITLE_RULE,
+  type VersionedTitlePaper,
   versionedTitlePrefix,
 } from "../../../src/lineage/theme/dedup.js";
 
@@ -29,7 +30,7 @@ const venue = {
   externalIds: { OpenAlex: "W4412888160", DOI: "10.18653/v1/2025.findings-acl.856" },
 };
 
-function identityWith(...papers: { paperId: string }[]): TitleIdentity {
+function identityWith(...papers: ({ paperId: string } & VersionedTitlePaper)[]): TitleIdentity {
   const t = new TitleIdentity();
   for (const p of papers) t.register(p.paperId, p);
   return t;
@@ -48,7 +49,7 @@ describe("versioned-title fallback rule (R2-70)", () => {
       id: preprint.paperId,
       rule: VERSIONED_TITLE_RULE,
     });
-    expect(identityWith(venue).resolve(preprint)).toBe(venue.paperId);
+    expect(identityWith(venue).resolveWithRule(preprint)?.id).toBe(venue.paperId);
   });
 
   it("keeps a same-name survey by other authors apart (Vision Mamba)", () => {
@@ -67,26 +68,65 @@ describe("versioned-title fallback rule (R2-70)", () => {
       authors: [{ name: "Xiao Liu" }, { name: "Chenxu Zhang" }],
       externalIds: {},
     };
-    expect(identityWith(method).resolve(survey)).toBeNull();
+    expect(identityWith(method).resolveWithRule(survey)).toBeNull();
   });
 
   it("needs every condition: years, author containment, >= 2 authors, exactly one arXiv id", () => {
     const t = identityWith(preprint);
-    expect(t.resolve({ ...venue, year: 2026 })).toBeNull();
-    expect(t.resolve({ ...venue, year: null })).toBeNull();
-    expect(t.resolve({ ...venue, authors: [team[0], { name: "Someone Else" }] })).toBeNull();
+    expect(t.resolveWithRule({ ...venue, year: 2026 })).toBeNull();
+    expect(t.resolveWithRule({ ...venue, year: null })).toBeNull();
+    expect(
+      t.resolveWithRule({ ...venue, authors: [team[0], { name: "Someone Else" }] }),
+    ).toBeNull();
     // A superset of the team still qualifies (venue version adds an author).
-    expect(t.resolve({ ...venue, authors: [...team, { name: "New Coauthor" }] })).toBe(
+    expect(t.resolveWithRule({ ...venue, authors: [...team, { name: "New Coauthor" }] })?.id).toBe(
       preprint.paperId,
     );
     const solo = identityWith({ ...preprint, authors: [team[0]] });
-    expect(solo.resolve({ ...venue, authors: [team[0]] })).toBeNull();
-    expect(t.resolve({ ...venue, externalIds: { ArXiv: "2405.99999" } })).toBeNull();
+    expect(solo.resolveWithRule({ ...venue, authors: [team[0]] })).toBeNull();
+    expect(t.resolveWithRule({ ...venue, externalIds: { ArXiv: "2405.99999" } })).toBeNull();
+  });
+
+  it("rejects generic prefixes, changed subtitles, another first author and journal extensions", () => {
+    const pos = (id: string, title: string, year: number, ext: Record<string, string>) => ({
+      paperId: id,
+      title,
+      year,
+      authors: [{ name: "Jiliang Tang" }, { name: "Xiangyu Zhao" }],
+      externalIds: ext,
+    });
+    const a = pos("p1", "Position: Graph Foundation Models Are Already Here", 2024, {
+      ArXiv: "2402.02216",
+    });
+    const b = pos("p2", "Position: Graph Foundation Models Are Already Here and Scaling", 2025, {});
+    expect(versionedTitlePrefix(a.title)).toBeNull();
+    expect(identityWith(a).resolve(b)).toBeNull();
+    expect(identityWith(a).resolveWithRule(b)).toBeNull();
+    const t = identityWith(preprint);
+    // A sequel changes the subtitle words.
+    expect(
+      t.resolveWithRule({ ...venue, title: "GNN-RAG: Scaling Retrieval to Many Hops" }),
+    ).toBeNull();
+    // Same surnames, different first author.
+    expect(t.resolveWithRule({ ...venue, authors: [team[1], team[0]] })).toBeNull();
+    // Two different publisher DOIs: conference paper vs journal extension.
+    const conf = {
+      ...preprint,
+      externalIds: { ArXiv: "2405.20139", DOI: "10.18653/v1/2024.acl-long.1" },
+    };
+    const journal = { ...venue, externalIds: { DOI: "10.1162/tacl_a_00001" } };
+    expect(identityWith(conf).resolveWithRule(journal)).toBeNull();
+    // The arXiv DataCite DOI never conflicts with the venue DOI.
+    expect(t.resolveWithRule(venue)?.rule).toBe(VERSIONED_TITLE_RULE);
+  });
+
+  it("resolve() stays title-only; the fallback answers only through resolveWithRule", () => {
+    expect(identityWith(preprint).resolve(venue)).toBeNull();
   });
 
   it("merges nothing when two registered nodes qualify (ambiguous)", () => {
     const other = { ...preprint, paperId: "W1", externalIds: { ArXiv: "2405.11111" } };
-    expect(identityWith(preprint, other).resolve(venue)).toBeNull();
+    expect(identityWith(preprint, other).resolveWithRule(venue)).toBeNull();
   });
 
   it("still answers the exact-title rule first", () => {
