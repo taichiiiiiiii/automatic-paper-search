@@ -21,6 +21,11 @@ name: prod-e2e
 # demand (workflow_dispatch crawl=true), never after each release.
 #
 # workflow_run only fires for this file on the default branch (develop).
+#
+# A run started with GITHUB_TOKEN (theme-on-demand's expanded rebuild,
+# regen-retry's regen-themes) fires no workflow_run when it completes, so
+# theme-on-demand.yml and regen-themes.yml dispatch this workflow from
+# their own `prod-e2e` job after a bot-started release (#508).
 
 on:
   workflow_run:

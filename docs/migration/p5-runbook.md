@@ -683,6 +683,7 @@ B 自身の 2 つの削除は `<mergeB>^1` の状態で戻ります。
 - `pages` / `pages-rollback` / `regen-themes` / `theme-feeds` / `theme-on-demand` / `conference-on-demand` / `collect-weekly` が develop で成功するたびに、`.github/workflows/prod-e2e.yml` が本番（`PUBLIC_ORIGIN`）に Playwright の `@prod`（読み取りだけ。Chromium のデスクトップ 1280px とモバイル 375px）を流す。毎週月曜 03:40 UTC は `@prod-crawl`（同じオリジンのリンクを深さ 2・最大 300 ページ、外部リンクは少数を HEAD）だけを流す。
 - 失敗すると `alert.yml` を `channel=prod-e2e` で dispatch し、ラベル `prod-e2e` の issue 1 つに書く（Worker の `watchdog` issue とは別）。次に通ったときに `resolved` で閉じる。自動のロールバックやリリースの停止はしない。レポートは artifact `prod-e2e-report`（14 日）。戻すかどうかは人が決め、戻すなら `pages-rollback.yml` を手で実行する。
 - 手元から: `E2E_BASE_URL=https://paperpilot.pages.dev pnpm --filter @paperpilot/web e2e:prod`（ビルド不要）。リモートで動かすときはテーマ依頼の Worker への GET 以外の要求を止めるので、本番に依頼が送られることはない。
+- GITHUB_TOKEN で起動された run（`theme-on-demand` の upgrade ジョブが起こす拡張版、`regen-retry` が起こす `regen-themes`）は、完了しても workflow_run を起こさない。そのため `theme-on-demand.yml`・`regen-themes.yml` の `prod-e2e` ジョブが、bot が起動した run で release が成功したときだけ `prod-e2e.yml` を dispatch する（失敗しても公開の run は失敗にしない。#508）。
 - workflow_run は既定のブランチ（develop）にある workflow ファイルでしか動かない。merge するまでは `gh workflow run prod-e2e.yml --ref <branch>` でも smoke は develop 以外では `if:` で止まる。
 
 ## 運用: 削除・訂正の依頼

@@ -405,3 +405,28 @@ jobs:
             exit 1
           fi
           echo "regenerated ${SUCCEEDED} theme(s)"
+
+  # #508: a run started with GITHUB_TOKEN (regen-retry.yml dispatches
+  # this workflow with it) fires no `workflow_run` when it completes, so
+  # prod-e2e.yml would not follow this
+  # release. Dispatch it here instead (a workflow_dispatch made with
+  # GITHUB_TOKEN does start a run). Human/PAT-started runs already get
+  # prod-e2e through workflow_run, hence the triggering_actor check (it is
+  # the re-runner on a re-run, unlike github.actor). Observe-only:
+  # continue-on-error keeps a failed dispatch from failing the publishing
+  # run, whose conclusion the Worker's run-status and the watchdog read.
+  prod-e2e:
+    needs: release
+    if: needs.release.result == 'success' && github.triggering_actor == 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    continue-on-error: true
+    permissions:
+      actions: write
+    steps:
+      - name: Dispatch the production browser smoke
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh workflow run prod-e2e.yml -R "$GITHUB_REPOSITORY" --ref develop
