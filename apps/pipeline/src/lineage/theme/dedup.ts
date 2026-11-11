@@ -607,8 +607,10 @@ export interface TitleMergeResult<
  * artifact (eval only): collapse same-title works, keeping the focus node,
  * else the earliest year, else the smallest ID; remap edges onto the
  * survivor, drop self-loops and keep one edge per (src, dst) — the
- * survivor's own edge wins over a remapped one. The live build never
- * needs this because the BFS resolves duplicates before creating edges.
+ * survivor's own edge wins over a remapped one. The live build does not
+ * call this: the BFS folds duplicates with {@link TitleIdentity} before
+ * creating edges, both across lists and inside one fetched list (#506).
+ * Builds published before #506 can still hold same-list duplicates.
  */
 export function mergeDuplicateTitleNodes<
   N extends TitleMergeNode,
