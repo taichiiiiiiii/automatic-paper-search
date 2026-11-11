@@ -363,7 +363,7 @@ pnpm exec tsx apps/pipeline/src/release/derived/searchIndexCli.ts  # 横断検�
 - **スキーマは会議版と互換**（`root` / `nodes` / `edges` / `meta`）。`meta.theme` / `meta.slug` / `meta.keywords` / `meta.seeds` / `meta.depth` / `meta.since_year` / `meta.generated_at` を持つ。
 - **manifest は builder の中で作らない**（並列実行の競合を避ける）。`rel` が許可 enum 外のテーマは manifest から外す。
 - **OpenAlex が主:** workflow は `--primary-source openalex` で起動する（S2 の共有 IP 制限を避ける）。`--primary-source s2` は旧経路。`PAPERPILOT_OPENALEX_EMAIL` で polite pool。
-- **ノイズ除け 5 層:** S2 の `fieldsOfStudy`、OpenAlex の `concepts.id`（Computer Science / Mathematics / Linguistics）、seed の話題一致（2 語は両方、3 語以上は半分以上）、基盤論文の引用数フィルタ（seed 最大の 2 倍超で methodology でないもの）、実装系の denylist（`data/config/lineage_denylist.json`）。実装は `lineage/theme/seedFilters.ts` ほか。
+- **ノイズ除け 5 層:** S2 の `fieldsOfStudy`（Computer Science / Mathematics / Linguistics）、OpenAlex の `primary_topic.field.id:fields/17`（Computer Science。canonical seed 段では keyword seed の多数派 subfield 外の survey・候補を除く）、seed の話題一致（2 語は両方、3 語以上は半分以上）、基盤論文の引用数フィルタ（seed 最大の 2 倍超で methodology でないもの）、実装系の denylist（`data/config/lineage_denylist.json`）。実装は `lineage/theme/seedFilters.ts` ほか。
 - **別名:** seed が 0 件なら `data/config/theme_aliases.json` の代替語を順に試す。
 - **不完全ビルドのゲート:** 公開済みより node/edge が減る、公開済みの焦点論文・node・edge が消える場合は公開しない（再実行か `--allow-incomplete`）。焦点論文が 1 本も残らなければ subject failure（exit 4、`--allow-incomplete` でも通らない）。
 - **workflow は `--llm-strict ambiguous` で起動する**（CLI 自体の既定は `off`、`--primary-source` の既定は `s2`）。Groq 無料枠（TPM 12,000 / RPD 1,000 / TPD 100,000、2026-06-06 確認）では `all` は破綻する。内蔵の RPM 制限（既定 25）は日次上限を追わない。
