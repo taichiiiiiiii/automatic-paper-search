@@ -472,37 +472,68 @@ export async function runBfsAndDescendants(
   const provisional = new Set<string>();
   const admissions = new Map<string, NodeAdmission>();
 
+  const recordFold = (p: Paper, match: { id: string; rule: string }, survivorTitle: unknown) => {
+    titleMerged += 1;
+    if (match.rule === VERSIONED_TITLE_RULE && !versionMerges.some((m) => m.merged === p.paperId)) {
+      versionMerges.push({
+        rule: VERSIONED_TITLE_RULE,
+        survivor: match.id,
+        merged: p.paperId,
+        survivor_title: String(survivorTitle ?? ""),
+        merged_title: p.title,
+      });
+    }
+  };
+
+  /** `p` under the ID of the graph (or pending) node it is another record
+   * of, else `p` unchanged. */
+  const foldKnown = (p: Paper): Paper => {
+    if (!p.paperId || nodes.has(p.paperId) || pending.has(p.paperId)) return p;
+    const match = titles.resolveWithRule(p);
+    const hit = match?.id ?? null;
+    if (hit === null || !(nodes.has(hit) || pending.has(hit))) return p;
+    recordFold(p, match!, nodes.get(hit)?.title ?? pending.get(hit)?.paper.title);
+    return { ...p, paperId: hit };
+  };
+
   /** Fold a candidate that is another ID of a node already in (or pending
    * for) the graph into that node, and drop repeats within one list. */
   const canonicalise = (list: Paper[], selfId: string): Paper[] => {
     const out: Paper[] = [];
     const seen = new Set<string>();
     for (const p of list) {
-      let paper = p;
-      if (p.paperId && !nodes.has(p.paperId) && !pending.has(p.paperId)) {
-        const match = titles.resolveWithRule(p);
-        const hit = match?.id ?? null;
-        if (hit !== null && (nodes.has(hit) || pending.has(hit))) {
-          paper = { ...p, paperId: hit };
-          titleMerged += 1;
-          if (
-            match!.rule === VERSIONED_TITLE_RULE &&
-            !versionMerges.some((m) => m.merged === p.paperId)
-          ) {
-            const survivorTitle = nodes.get(hit)?.title ?? pending.get(hit)?.paper.title ?? "";
-            versionMerges.push({
-              rule: VERSIONED_TITLE_RULE,
-              survivor: hit,
-              merged: p.paperId,
-              survivor_title: String(survivorTitle),
-              merged_title: p.title,
-            });
-          }
-        }
-      }
+      const paper = foldKnown(p);
       if (!paper.paperId || paper.paperId === selfId || seen.has(paper.paperId)) continue;
       seen.add(paper.paperId);
       out.push(paper);
+    }
+    return out;
+  };
+
+  /** #506: run the gate over one canonicalised list, folding the
+   * duplicates `canonicalise` cannot see — two records of one work in the
+   * SAME fetched list, neither in the graph yet. A list-local index holds
+   * only the candidates this list's gate admitted, so the kept ID is
+   * always an admitted one, and a record the gate rejected (even one it
+   * parked in `pending`) never absorbs a later record: that one is gated
+   * under its own ID and relevance. Same rules as the cross-list fold
+   * (TitleIdentity: title, then the R2-70 versioned title). */
+  const admitList = (list: Paper[], keep: (p: Paper) => boolean): Paper[] => {
+    const local = new TitleIdentity();
+    const kept = new Map<string, Paper>();
+    const out: Paper[] = [];
+    for (const p of list) {
+      if (!nodes.has(p.paperId) && !pending.has(p.paperId)) {
+        const match = local.resolveWithRule(p);
+        if (match !== null) {
+          recordFold(p, match, kept.get(match.id)?.title);
+          continue;
+        }
+      }
+      if (!keep(p)) continue;
+      local.register(p.paperId, p);
+      kept.set(p.paperId, p);
+      out.push(p);
     }
     return out;
   };
@@ -575,7 +606,7 @@ export async function runBfsAndDescendants(
     allParents = filterOffTopicRefs(allParents, { maxSeedCite });
     allParents = canonicalise(allParents, current.paperId);
     if (relevance !== null) await relevance.ensure(allParents);
-    if (scope !== null) allParents = allParents.filter((p) => gate(p, current, "parent"));
+    allParents = admitList(allParents, (p) => gate(p, current, "parent"));
 
     const influential = allParents.filter((p) => p._is_influential !== false);
     const nonInfluential = allParents.filter((p) => p._is_influential === false);
@@ -631,9 +662,7 @@ export async function runBfsAndDescendants(
     allChildren = filterOffTopicRefs(allChildren, { maxSeedCite });
     allChildren = canonicalise(allChildren, sid);
     if (relevance !== null) await relevance.ensure(allChildren);
-    if (scope !== null) {
-      allChildren = allChildren.filter((c) => c.paperId === sid || gateDescendant(c, seed));
-    }
+    allChildren = admitList(allChildren, (c) => c.paperId === sid || gateDescendant(c, seed));
     const influential = allChildren.filter((c) => c._is_influential !== false);
     const nonInfluential = allChildren.filter((c) => c._is_influential === false);
     // R2-35: rank citing papers by the larger of OpenAlex's and Semantic
