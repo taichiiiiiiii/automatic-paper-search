@@ -390,7 +390,7 @@ pnpm exec tsx apps/pipeline/src/release/derived/searchIndexCli.ts  # 横断検�
 | `pages-rollback` | | | | ✅（`ROLLBACK` 確認） | |
 | `e2e` | ✅ `develop`（paths） | ✅ `develop`（paths） | | ✅ | Playwright 3 エンジン |
 | `lighthouse` | ✅ `develop`（paths） | ✅（paths） | ✅ `0 2 * * 1` | ✅ | |
-| `prod-e2e` | | | ✅ `40 3 * * 1` | ✅ | `workflow_run`: 公開し得る 8 本（pages など）が `develop` で完了したあと本番に `@prod` を流す |
+| `prod-e2e` | | | ✅ `40 3 * * 1` | ✅ | `workflow_run`: 公開し得る 8 本（pages など）が `develop` で完了したあと本番に `@prod` を流す。GITHUB_TOKEN で起動された run（拡張版・regen-retry 経由の regen-themes）は `workflow_run` を起こさないので、`theme-on-demand`・`regen-themes` の `prod-e2e` ジョブが release の後に dispatch する（#508） |
 | `regen-retry` | | | ✅ `17 9 * * *` | ✅ | `regen-pending.json` のテーマを `regen-themes` で作り直す |
 | `conference-watch` / `theme-feeds` | | | | ✅ のみ | 月曜（UTC）に Worker の Cron Trigger（`apps/api/wrangler.jsonc` の `30 0 * * *`、`watchdog/scheduled.ts`）が dispatch（`theme-feeds` は `days=45`） |
 | `alert` | | | | ✅ のみ | Worker の cron が問題の集合が変わったとき（解消時は resolved）と、同じ問題が続く間は 7 日ごとに dispatch。`prod-e2e` も失敗・回復時に dispatch（channel `prod-e2e`） |
