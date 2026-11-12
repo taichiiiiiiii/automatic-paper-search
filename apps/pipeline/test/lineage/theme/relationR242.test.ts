@@ -12,6 +12,11 @@
  * Known gap (not fixable without a name→paper alias table): an algorithm
  * named in the cue object whose citation marker is the cited paper
  * (“an extension of GRPO (Qi et al., 2025)”, cited = WebRL).
+ * #505 (Neural Radiance Fields theme, 4 of 23 strong relations wrong): a
+ * cue whose object names another work of the same family (“mip-NeRF”, plain
+ * “NeRF” read as an alias of NeRF-W / NeRF++), a variant of the citing
+ * paper's own model, and a backbone the citing paper chooses — pinned as
+ * known gaps until the rule change is decided.
  */
 
 import { describe, expect, it } from "vitest";
@@ -35,6 +40,9 @@ interface Case {
   influential?: boolean;
   expect: "extends" | "contrasts" | "baseline_only";
   knownGap?: boolean;
+  /** #505: `sentence` is a sentence of the citing paper's abstract (R2-23
+   * `abstract_build`), not an S2 context; `contexts` default to none. */
+  source?: "abstract";
 }
 
 const CASES: Case[] = [
@@ -274,6 +282,68 @@ const CASES: Case[] = [
     expect: "baseline_only",
     knownGap: true,
   },
+  // ---- #505: wrong in the published Neural Radiance Fields theme (known gaps,
+  // pinned before any rule change; the owner decides how to narrow the rules).
+  // Inputs: the quoted sentence of the published edge and the node titles /
+  // authors; the abstract cases are the minimal input (no S2 context, the
+  // abstract sentence only). Today all four come out `extends`.
+  {
+    name: "#505 Mip-NeRF 360: “an extension of mip-NeRF (a NeRF variant …)” is about mip-NeRF, not NeRF (known gap)",
+    cited: {
+      title: "NeRF: Representing Scenes as Neural Radiance Fields for View Synthesis",
+      year: 2020,
+      authors: ["Ben Mildenhall", "Pratul P. Srinivasan", "Matthew Tancik"],
+    },
+    citing: "Mip-NeRF 360: Unbounded Anti-Aliased Neural Radiance Fields",
+    // The hyphenated “mip-NeRF” and the appositive “a NeRF variant” each
+    // count as a mention of NeRF inside the cue's object.
+    sentence:
+      "We present an extension of mip-NeRF (a NeRF variant that addresses sampling and aliasing) that uses a non-linear scene parameterization, online distillation, and a novel distortion-based regularizer to overcome the chal-lenges presented by…",
+    source: "abstract",
+    expect: "baseline_only",
+    knownGap: true,
+  },
+  {
+    name: "#505 Mip-NeRF: “extends NeRF” is about NeRF, not NeRF in the Wild (known gap)",
+    cited: {
+      title: "NeRF in the Wild: Neural Radiance Fields for Unconstrained Photo Collections",
+      year: 2021,
+      authors: ["Ricardo Martin-Brualla", "Noha Radwan", "Mehdi S. M. Sajjadi"],
+    },
+    citing: "Mip-NeRF: A Multiscale Representation for Anti-Aliasing Neural Radiance Fields",
+    // “NeRF”, the first word of the stem “NeRF in the Wild”, is an alias of NeRF-W.
+    sentence:
+      'Our solution, which we call "mip-NeRF" (à la "mipmap"), extends NeRF to represent the scene at a continuously-valued scale.',
+    source: "abstract",
+    expect: "baseline_only",
+    knownGap: true,
+  },
+  {
+    name: "#505 Mip-NeRF 360: “a variant of our own model” uses NeRF-W's embedding as a part (known gap)",
+    cited: {
+      title: "NeRF in the Wild: Neural Radiance Fields for Unconstrained Photo Collections",
+      year: 2021,
+      authors: ["Ricardo Martin-Brualla", "Noha Radwan", "Mehdi S. M. Sajjadi"],
+    },
+    citing: "Mip-NeRF 360: Unbounded Anti-Aliased Neural Radiance Fields",
+    sentence:
+      "We also present a variant of our own model in which we use the latent appearance embedding (4 dimensions) presented in NeRF-W [6, 27] which ameliorates artifacts caused by inconsistent lighting conditions during scene capture (because our …",
+    expect: "baseline_only",
+    knownGap: true,
+  },
+  {
+    name: "#505 StyleNeRF: “we choose NeRF++ (…), a variant of NeRF, as the backbone” is a tool (known gap)",
+    cited: {
+      title: "NeRF++: Analyzing and Improving Neural Radiance Fields",
+      year: 2020,
+      authors: ["Zhang, Kai", "Gernot Riegler", "Noah Snavely"],
+    },
+    citing: "StyleNeRF: A Style-based 3D-Aware Generator for High-resolution Image Synthesis",
+    sentence:
+      "Synthesis Network Considering that our training images generally have unbounded background, we choose NeRF++ (Zhang et al., 2020), a variant of NeRF, as the StyleNeRF backbone.",
+    expect: "baseline_only",
+    knownGap: true,
+  },
 ];
 
 function predict(c: Case): string {
@@ -281,12 +351,12 @@ function predict(c: Case): string {
   const s: PairSignals = {
     found: true,
     intents: c.intents ?? [],
-    contexts: c.contexts ?? [c.sentence],
+    contexts: c.contexts ?? (c.source === "abstract" ? [] : [c.sentence]),
     isInfluential: c.influential ?? false,
     citingTitle: c.citing,
     citingSurvey: isSurveyLike(child),
     cited: { title: c.cited.title, year: c.cited.year, authors: c.cited.authors } as never,
-    citingAbstract: null,
+    citingAbstract: c.source === "abstract" ? c.sentence : null,
   };
   const r = classifyS2Pair(s);
   return (
