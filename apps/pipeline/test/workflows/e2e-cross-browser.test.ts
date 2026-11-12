@@ -3,7 +3,9 @@
  * engine (chromium / webkit / firefox) with fail-fast off, each engine's
  * job runs exactly that engine's Playwright projects (as defined in
  * apps/web/playwright.config.ts), and a manual `update-snapshots` dispatch
- * runs only the Linux visual-baseline job, which uploads the PNGs.
+ * runs only the Linux visual-baseline job, which uploads the PNGs. In CI
+ * the Playwright globalTimeout ends a slow suite (with a report) before the
+ * job bound cancels it (#517).
  */
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -67,5 +69,39 @@ describe("e2e.yml (cross-browser)", () => {
     const upload = steps.find((s) => String(s.uses ?? "").startsWith("actions/upload-artifact@"));
     expect(upload?.with.path).toBe("apps/web/e2e/__screenshots__/linux");
     expect(update.permissions).toEqual({ contents: "read" });
+  });
+
+  // #517: without a Playwright globalTimeout a slow run is killed by the job
+  // bound (GitHub cancels the job), so Playwright writes no report and the
+  // `if: failure()` upload never runs. The global bound must fire first:
+  //   globalTimeout + steps before the suite + report upload <= job bound.
+  // Measured on the successful e2e runs of 2026-11-03..11-12 (21 runs x 3
+  // engines): steps before "Run e2e suite" took at most 2.8 min (cache hit or
+  // miss; a 2026-10-12 apt stall of 18.8 min is #512's problem and leaves no
+  // room for any suite), the suite itself at most 27.6 min (webkit). The lower
+  // bound keeps a normal run from tripping the global bound.
+  describe("Playwright globalTimeout (#517)", () => {
+    const PRE_SUITE_BUDGET_MIN = 5; // measured max 2.8 min, rounded up
+    const REPORT_UPLOAD_BUDGET_MIN = 2; // upload-artifact of report + traces
+    const SLOWEST_SUCCESSFUL_SUITE_MIN = 27.6;
+    const m = configText.match(/globalTimeout:\s*CI\s*\?\s*([\d_]+)\s*\*\s*60_000\s*:\s*undefined/);
+
+    it("is set in CI only, in whole minutes", () => {
+      expect(m, "globalTimeout: CI ? <minutes> * 60_000 : undefined").not.toBeNull();
+    });
+
+    it("fires before the job's timeout-minutes, leaving room for setup and the report upload", () => {
+      const minutes = Number(m?.[1]?.replaceAll("_", ""));
+      const jobMinutes = Number(e2e["timeout-minutes"]);
+      expect(jobMinutes).toBeGreaterThan(0);
+      expect(minutes + PRE_SUITE_BUDGET_MIN + REPORT_UPLOAD_BUDGET_MIN).toBeLessThanOrEqual(
+        jobMinutes,
+      );
+    });
+
+    it("stays well above the slowest successful suite", () => {
+      const minutes = Number(m?.[1]?.replaceAll("_", ""));
+      expect(minutes).toBeGreaterThanOrEqual(SLOWEST_SUCCESSFUL_SUITE_MIN + 5);
+    });
   });
 });
