@@ -57,6 +57,48 @@ describe("e2e.yml (cross-browser)", () => {
     expect(update.if).toBe("${{ inputs.update-snapshots }}");
   });
 
+  // #512: the two Playwright install steps reach the runner's apt mirror
+  // (azure.archive.ubuntu.com), which has failed to resolve or stalled for
+  // tens of minutes (actions/runner-images#14823, #15040, #15297). Each
+  // attempt is bounded on its own (a step-level timeout alone would kill the
+  // step at the first hang, leaving no retry), the step bound covers every
+  // attempt plus the waits, and it stays below the job bound. The two steps
+  // are mutually exclusive (cache hit / miss), so each is compared alone.
+  describe.each([
+    ["Install browser", /pnpm exec playwright install --with-deps "\$BROWSER"/],
+    ["Install browser system dependencies", /pnpm exec playwright install-deps "\$BROWSER"/],
+  ])("%s (apt retry, #512)", (name, command) => {
+    const step = (e2e.steps as YamlDoc[]).find((s) => s.name === name) as YamlDoc;
+    const run = String(step?.run ?? "");
+
+    it("retries up to 3 times, each attempt bounded by timeout, and fails after the last", () => {
+      expect(step, name).toBeDefined();
+      expect(run).toMatch(/for i in 1 2 3; do/);
+      const attempt = run.match(
+        /timeout --kill-after=(\d+)s (\d+)m pnpm exec playwright [^\n]*&& exit 0/,
+      );
+      expect(attempt, run).not.toBeNull();
+      expect(run).toMatch(command);
+      // No wait after the last attempt; the loop ends with a hard failure.
+      expect(run).toMatch(/\[ "\$i" -lt 3 \] && sleep \$\(\(i \* 30\)\)/);
+      expect(run.trimEnd().endsWith("exit 1")).toBe(true);
+    });
+
+    it("has a step timeout above 3 attempts + waits and below the job timeout", () => {
+      const m = run.match(/timeout --kill-after=(\d+)s (\d+)m/);
+      expect(m).not.toBeNull();
+      const perAttemptMin = Number(m![2]) + Number(m![1]) / 60;
+      const waitsMin = (30 + 60) / 60;
+      const stepMin = Number(step["timeout-minutes"]);
+      expect(Number.isFinite(stepMin)).toBe(true);
+      expect(stepMin).toBeGreaterThan(3 * perAttemptMin + waitsMin);
+      expect(stepMin).toBeLessThan(Number(e2e["timeout-minutes"]));
+      // Inputs reach the shell only through env (no ${{ }} in run).
+      expect(run).not.toMatch(/\$\{\{/);
+      expect(step.env?.BROWSER).toBe("${{ matrix.browser }}");
+    });
+  });
+
   it("the baseline job regenerates the Chromium visual tests and uploads linux/", () => {
     const steps = update.steps as YamlDoc[];
     const run = steps.map((s) => String(s.run ?? "")).join("\n");
