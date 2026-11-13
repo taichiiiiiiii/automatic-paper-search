@@ -10,7 +10,7 @@ import { defineConfig, devices } from "@playwright/test";
  * same-origin requests (e2e/support/fixtures.ts). Pick engines with
  * `--project=desktop-chromium` etc.; CI runs one job per engine (e2e.yml).
  *
- * Remote mode: `E2E_BASE_URL=https://paperpilot.pages.dev pnpm e2e:prod`
+ * Remote mode: `E2E_BASE_URL=https://papergraph.fyi pnpm e2e:prod`
  * skips the local server and runs the read-only `@prod` subset against the
  * deployed site; test data (themes, catalogs, paper-links pages) is then
  * read from that site's JSON, not from apps/web/out (e2e/support/site.ts).

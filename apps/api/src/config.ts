@@ -16,12 +16,13 @@
 // placeholder and the KV origin_allowlist is updated to match (an ops
 // action, not a code change).
 
-import { PUBLIC_ORIGIN } from "@paperpilot/core/site";
+import { PAGES_DEV_ORIGIN, PUBLIC_ORIGIN } from "@paperpilot/core/site";
 
 // Origins that count as "production" for the dry-run self-refusal rule
 // (§4.5: "GH_REF=develop または本番 origin の時は dry-run を拒否する").
 export const PRODUCTION_ORIGINS: readonly string[] = [
   "https://taichiiiiiiii.github.io",
+  PAGES_DEV_ORIGIN,
   PUBLIC_ORIGIN,
 ];
 

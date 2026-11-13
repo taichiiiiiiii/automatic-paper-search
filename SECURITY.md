@@ -45,5 +45,5 @@ Ordinary data errors (a wrong relation, a broken link) can go to
 
 ## Supported versions
 
-Only the live site (https://paperpilot.pages.dev) and the `develop` branch are
+Only the live site (https://papergraph.fyi) and the `develop` branch are
 maintained.

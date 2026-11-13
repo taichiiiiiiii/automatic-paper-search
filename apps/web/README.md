@@ -76,8 +76,8 @@ pnpm --filter @paperpilot/web exec playwright show-report             # HTML rep
   production run can never submit the request form.
 
   ```sh
-  E2E_BASE_URL=https://paperpilot.pages.dev pnpm --filter @paperpilot/web e2e:prod
-  E2E_BASE_URL=https://paperpilot.pages.dev pnpm --filter @paperpilot/web e2e:crawl
+  E2E_BASE_URL=https://papergraph.fyi pnpm --filter @paperpilot/web e2e:prod
+  E2E_BASE_URL=https://papergraph.fyi pnpm --filter @paperpilot/web e2e:crawl
   ```
 
   `e2e:crawl` (`crawl.e2e.ts`, `@prod-crawl`, desktop only, minutes) crawls

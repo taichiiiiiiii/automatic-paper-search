@@ -2,7 +2,7 @@
  * HTTP-level contracts of the deployed site: security and cache headers,
  * mixed content, sitemap.xml / robots.txt, canonical + Open Graph tags and
  * legacy redirects. All read-only and tagged @prod, so the post-release
- * production smoke (E2E_BASE_URL=https://paperpilot.pages.dev) runs them;
+ * production smoke (E2E_BASE_URL=https://papergraph.fyi) runs them;
  * locally they check what the build's `_headers` / `_redirects` / postbuild
  * files would make Cloudflare Pages serve (e2e/support/static-server.mjs).
  */
