@@ -6,6 +6,10 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Fixed — 手がかりの語が同じ系統の別の名前にかかる強い関係（R2-71、#505）
+
+- 「mip-NeRF」「(a NeRF variant …)」「NeRF in the Wild の NeRF」「a variant of our own model」「we choose X as the backbone」を引用先への土台と読まないように規則を狭めた。公開中の辺の再生で変わるのは NeRF の誤り 4 件だけ（監査済みテーマは 0 件）。
+
 ### Fixed — 改題された学会版が preprint と別の論文として出る（R2-70、#498）
 
 - 共通の ID がない preprint と学会版（例: GNN-RAG の arXiv 版と ACL Findings 版）を、名前・著者・年・arXiv id の有無がそろうときだけ 1 本にまとめ、まとめた組を系譜のメタデータに残す。
