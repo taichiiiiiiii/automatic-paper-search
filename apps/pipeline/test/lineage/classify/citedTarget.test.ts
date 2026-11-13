@@ -67,6 +67,30 @@ describe("cited identity", () => {
     expect(citedAliases({ title: "Video Swin Transformer" })).not.toContain("video");
   });
 
+  it("#505: a stem whose second word is a function word names the family only as a group", () => {
+    const nerfW = {
+      title: "NeRF in the Wild: Neural Radiance Fields for Unconstrained Photo Collections",
+    };
+    const aliases = citedAliases(nerfW);
+    expect(aliases).toContain("nerf in the wild");
+    expect(aliases).not.toContain("nerf");
+    expect(aliases).toEqual(expect.arrayContaining(["nerf works", "nerf-based methods"]));
+    expect(
+      sentenceTarget("Our solution extends NeRF to represent the scene.", citedIdentity(nerfW, [])),
+    ).not.toBe("named");
+  });
+
+  it("#505: a name right after a hyphen (“mip-NeRF”) is not the cited paper", () => {
+    const nerf = {
+      title: "NeRF: Representing Scenes as Neural Radiance Fields for View Synthesis",
+    };
+    const id = citedIdentity(nerf, []);
+    expect(
+      sentenceTarget("We present an extension of mip-NeRF for unbounded scenes.", id),
+    ).not.toBe("named");
+    expect(sentenceTarget("NeRF-based pipelines extend NeRF to dynamic scenes.", id)).toBe("named");
+  });
+
   it("infers the cited marker from a bibliography line, an alias, or single citations", () => {
     expect(
       inferCitedMarker(
