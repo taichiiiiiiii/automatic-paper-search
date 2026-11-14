@@ -76,6 +76,13 @@ export async function resetWorld(): Promise<void> {
   await setKv("origin_allowlist", JSON.stringify([SITE_ORIGIN]));
   await setKv("accepting", "true");
   await freshClientIp();
+  await resetGlobalQuota();
+}
+
+/** #522: clears the site-wide hourly/daily buckets the whole run shares. */
+export async function resetGlobalQuota(): Promise<void> {
+  const res = await (await worker()).post(`${WORKER_DIRECT}/__test/quota/reset-global`);
+  if (!res.ok()) throw new Error(`reset global quota -> ${res.status()}`);
 }
 
 /** Unique theme names per call, so the in-flight dedup never links tests. */

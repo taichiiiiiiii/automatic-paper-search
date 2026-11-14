@@ -9,7 +9,7 @@
  *
  * Reads `$THEME_INPUT` from the ENVIRONMENT, never argv — p5-plan.md §2
  * A2's "free text (display, lede, theme) only from env, validated". The
- * workflow validates `THEME_INPUT` itself (`^[A-Za-z0-9 _-]{2,80}$`)
+ * workflow validates `THEME_INPUT` itself (`^[A-Za-z0-9][A-Za-z0-9 _-]{1,79}$`)
  * before this CLI ever runs; this CLI's own validation (via
  * `themeSlug()`, plus the `^[a-z0-9-]{1,64}$` shape check p5-plan.md §2
  * A2 asks for explicitly) is defense in depth, not the only gate.

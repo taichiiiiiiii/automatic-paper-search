@@ -23,7 +23,8 @@ export function validatePostInput(
       body: {
         ok: false,
         status: "invalid",
-        message: "theme must be 2-80 chars matching /^[A-Za-z0-9 _-]+$/",
+        message:
+          "theme must be 2-80 chars of A-Z a-z 0-9 space _ -, starting with a letter or digit",
       },
     };
   }

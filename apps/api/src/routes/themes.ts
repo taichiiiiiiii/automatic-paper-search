@@ -23,7 +23,13 @@
 // sits behind the dispatch-mode check, so "no charge on misconfiguration"
 // still holds.
 
-import { MAX_BODY_BYTES, REFUND_ON_DISPATCH_FAILURE } from "../config.js";
+import {
+  MAX_BODY_BYTES,
+  RATE_LIMIT_GLOBAL_PER_DAY,
+  RATE_LIMIT_GLOBAL_PER_HOUR,
+  RATE_LIMIT_PER_HOUR,
+  REFUND_ON_DISPATCH_FAILURE,
+} from "../config.js";
 import { contentTypeAllowed, readBoundedBody } from "../lib/bounded-body.js";
 import type { DispatchResult } from "../lib/dispatch.js";
 import { dispatchWorkflow } from "../lib/dispatch.js";
@@ -267,8 +273,10 @@ export function createThemesPostHandler(deps: ThemesPostDeps): ThemesPostHandler
     if (!consumeResult.allowed) {
       const message =
         consumeResult.limitedBy === "ip"
-          ? "more than 5 new themes/hour from this IP"
-          : "daily generation cap (100) reached; please try again tomorrow";
+          ? `more than ${RATE_LIMIT_PER_HOUR} new themes/hour from this IP`
+          : consumeResult.limitedBy === "global-hour"
+            ? `hourly generation cap (${RATE_LIMIT_GLOBAL_PER_HOUR}) reached; please try again within the hour`
+            : `daily generation cap (${RATE_LIMIT_GLOBAL_PER_DAY}) reached; please try again tomorrow`;
       return json({ ok: false, status: "rate_limited", message }, { status: 429, origin });
     }
 

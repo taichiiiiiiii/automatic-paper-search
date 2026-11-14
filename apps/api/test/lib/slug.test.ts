@@ -42,6 +42,12 @@ describe("THEME_INPUT_PATTERN", () => {
     expect(THEME_INPUT_PATTERN.test("foo`whoami`")).toBe(false);
     expect(THEME_INPUT_PATTERN.test("../../etc/passwd")).toBe(false);
   });
+  it("#522: rejects a leading space, hyphen or underscore (never a CLI option)", () => {
+    expect(THEME_INPUT_PATTERN.test("-x")).toBe(false);
+    expect(THEME_INPUT_PATTERN.test("--help")).toBe(false);
+    expect(THEME_INPUT_PATTERN.test("_ab")).toBe(false);
+    expect(THEME_INPUT_PATTERN.test("9 lives")).toBe(true);
+  });
   it("rejects too short / too long", () => {
     expect(THEME_INPUT_PATTERN.test("a")).toBe(false);
     expect(THEME_INPUT_PATTERN.test("a".repeat(81))).toBe(false);

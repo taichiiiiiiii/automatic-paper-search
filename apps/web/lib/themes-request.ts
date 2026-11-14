@@ -70,7 +70,7 @@ export const THEME_REQUEST_HINT =
 export const THEME_REQUEST_PUBLIC_NOTICE =
   "入力したテーマ名は公開されます（GitHub の公開リポジトリに残ります）。個人名などの個人情報は入力しないでください。";
 export const THEME_INPUT_INVALID_MESSAGE =
-  "テーマ名は英語で、2〜80 文字の英数字・スペース・ハイフン「-」・アンダースコア「_」で入力してください（例: Vision Transformer）。";
+  "テーマ名は英語で、2〜80 文字の英数字・スペース・ハイフン「-」・アンダースコア「_」で、英字か数字から始めて入力してください（例: Vision Transformer）。";
 export const THEME_INPUT_JAPANESE_MESSAGE =
   "テーマ名は英語で入力してください（例: 「視覚トランスフォーマー」ではなく Vision Transformer）。";
 export const THEME_QUEUED_MESSAGE =
@@ -262,8 +262,12 @@ export const PAUSED_MESSAGE_JA = "現在受付を一時停止しています";
  * verbatim on this Japanese page. */
 export const RATE_LIMITED_IP_MESSAGE_JA =
   "依頼が多すぎます。同じ接続からの依頼は 1 時間に 5 件までです。しばらく待ってから再度お試しください。";
+// The numbers mirror apps/api/src/config.ts RATE_LIMIT_GLOBAL_PER_DAY /
+// RATE_LIMIT_GLOBAL_PER_HOUR (#522); change both together.
 export const RATE_LIMITED_GLOBAL_MESSAGE_JA =
-  "本日の生成依頼の上限（全体で 100 件）に達しました。明日もう一度お試しください。";
+  "本日の生成依頼の上限（サイト全体で 1 日 40 件）に達しました。明日もう一度お試しください。";
+export const RATE_LIMITED_GLOBAL_HOUR_MESSAGE_JA =
+  "この 1 時間の生成依頼の上限（サイト全体で 10 件）に達しました。1 時間ほどおいてからお試しください。";
 
 export function localizedFailureMessage(status: number, workerMessage: string | null): string {
   if (typeof workerMessage === "string" && JAPANESE_CHAR_RE.test(workerMessage)) {
@@ -377,7 +381,9 @@ export function interpretThemesPostResponse(httpStatus: number, body: unknown): 
         ? workerMessage
         : workerMessage && /daily/i.test(workerMessage)
           ? RATE_LIMITED_GLOBAL_MESSAGE_JA
-          : RATE_LIMITED_IP_MESSAGE_JA;
+          : workerMessage && /hourly/i.test(workerMessage)
+            ? RATE_LIMITED_GLOBAL_HOUR_MESSAGE_JA
+            : RATE_LIMITED_IP_MESSAGE_JA;
     return { kind: "rate_limited", message };
   }
   // Every other failure (origin/content-type/body-size/manifest/dispatch

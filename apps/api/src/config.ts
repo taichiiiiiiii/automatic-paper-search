@@ -50,7 +50,11 @@ export const KV_KEY_NAMESPACE_TAG = "namespace_tag";
 // Per-IP / global quota caps (unchanged values from worker/response.js;
 // now enforced exactly via a Durable Object instead of best-effort KV).
 export const RATE_LIMIT_PER_HOUR = 5;
-export const RATE_LIMIT_GLOBAL_PER_DAY = 100;
+// #522: every accepted request starts one CI run (and possibly a second,
+// expanded one), so the global caps bound what a script rotating IPs can
+// cost: at most this many runs per UTC hour / day for the whole site.
+export const RATE_LIMIT_GLOBAL_PER_HOUR = 10;
+export const RATE_LIMIT_GLOBAL_PER_DAY = 40;
 
 // §5 "枠の返却" (refund on dispatch failure) is a decision-pending item.
 // Implemented behind this constant, with tests for both values, so flipping

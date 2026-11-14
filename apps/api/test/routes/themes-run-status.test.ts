@@ -237,3 +237,26 @@ describe("POST dedup after a dead run", () => {
     });
   }
 });
+
+describe("#522: unknown request ids cannot spend the PAT's GitHub quota", () => {
+  it("serves many random well-formed ids from one cached run list", async () => {
+    const gh = fakeGithub([run("success")]);
+    let now = 1_000;
+    for (let i = 0; i < 50; i++) {
+      const id = `theme-${String(i).padStart(8, "0")}-1111-4111-8111-111111111111`;
+      const got = await lookupRun(id, makeEnv(), { fetch: gh.fetchImpl, now: () => now });
+      expect(got).toEqual({ ok: true, run: null });
+      now += 100;
+    }
+    expect(gh.calls.length).toBe(1);
+  });
+
+  it("asks GitHub again once the cached list is older than the TTL", async () => {
+    const gh = fakeGithub([run("success")]);
+    let now = 0;
+    await lookupRun(OLD_ID, makeEnv(), { fetch: gh.fetchImpl, now: () => now });
+    now = 16_000;
+    await lookupRun(NEW_ID, makeEnv(), { fetch: gh.fetchImpl, now: () => now });
+    expect(gh.calls.length).toBe(2);
+  });
+});

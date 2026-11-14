@@ -622,6 +622,19 @@ describe("cf-connecting-ip and quota", () => {
     const response = await handlePost(postRequest(), makeEnv());
     expect(response.status).toBe(429);
     expect(fetchImpl.calls.length).toBe(1);
+    expect(((await response.json()) as { message: string }).message).toMatch(/^daily .*\(40\)/);
+  });
+
+  it("#522: hourly site cap -> 429 with an hourly (not daily) message, no dispatch", async () => {
+    const fetchImpl = makeFetch();
+    const quota = makeQuota({ consumeResult: { allowed: false, limitedBy: "global-hour" } });
+    const handlePost = handlerWith({ fetchImpl, quota });
+    const response = await handlePost(postRequest(), makeEnv());
+    expect(response.status).toBe(429);
+    expect(fetchImpl.calls.length).toBe(1);
+    const { message } = (await response.json()) as { message: string };
+    expect(message).toMatch(/hourly .*\(10\)/);
+    expect(message).not.toMatch(/daily/);
   });
 
   it("quota backend throw -> 503 JSON error with CORS headers, no dispatch", async () => {

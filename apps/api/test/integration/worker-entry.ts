@@ -22,12 +22,34 @@
 
 import { createApp } from "../../src/app.js";
 import {
+  QuotaCounter as ProductionQuotaCounter,
   productionInflightBackend,
   productionQuotaBackend,
 } from "../../src/durable/quota-object.js";
 import type { Env } from "../../src/types.js";
 
-export { QuotaCounter } from "../../src/durable/quota-object.js";
+/**
+ * Test seam 3 (#522): the site-wide hourly cap (10) is shared by every test
+ * in the run, so `/__test/quota/reset-global` clears the site-wide buckets
+ * between tests (per-IP buckets are isolated by `freshClientIp`). Only this
+ * test entry exports the subclass; production binds the plain class.
+ */
+export class QuotaCounter extends ProductionQuotaCounter {
+  private readonly testStorage: DurableObjectStorage;
+
+  constructor(state: DurableObjectState, env: unknown) {
+    super(state, env);
+    this.testStorage = state.storage;
+  }
+
+  override async fetch(request: Request): Promise<Response> {
+    if (new URL(request.url).pathname === "/__test/reset-global") {
+      await this.testStorage.delete(["global", "global-hour"]);
+      return new Response("ok");
+    }
+    return super.fetch(request);
+  }
+}
 
 interface IntegrationEnv extends Env {
   MOCK_GITHUB_ORIGIN: string;
@@ -79,6 +101,13 @@ export default {
         return json({ ok: true });
       }
       return json({ ok: false }, 400);
+    }
+
+    if (url.pathname === "/__test/quota/reset-global" && request.method === "POST") {
+      if (!env.QUOTA) return json({ ok: false }, 500);
+      const stub = env.QUOTA.get(env.QUOTA.idFromName("quota"));
+      await stub.fetch("https://quota.internal/__test/reset-global");
+      return json({ ok: true });
     }
 
     const ip = (await kv.get("test_client_ip")) ?? DEFAULT_CLIENT_IP;

@@ -12,7 +12,7 @@ import { SLUG_RE, THEME_INPUT_PATTERN, themeSlug } from "../../src/slug/index.js
 
 describe("theme regex patterns (exact sources)", () => {
   it("THEME_INPUT_PATTERN source and flags", () => {
-    expect(THEME_INPUT_PATTERN.source).toBe("^[A-Za-z0-9 _-]{2,80}$");
+    expect(THEME_INPUT_PATTERN.source).toBe("^[A-Za-z0-9][A-Za-z0-9 _-]{1,79}$");
     expect(THEME_INPUT_PATTERN.flags).toBe("");
   });
   it("SLUG_RE source and flags", () => {

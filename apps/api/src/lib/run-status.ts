@@ -27,32 +27,34 @@ export interface RunStatusDeps {
   log?: (message: string) => void;
 }
 
-interface CacheEntry {
+interface CacheEntry<T> {
   at: number;
-  value: RunLookup;
+  value: T;
 }
 
 // Per-isolate: an optimisation only, a cold isolate just asks GitHub.
-const cache = new Map<string, CacheEntry>();
+// #522: the workflow's run list is cached ONCE for the whole isolate, not per
+// request id, so random well-formed ids (which never match a run) cannot each
+// cost a GitHub call with the dispatch PAT: at most one list call per
+// RUN_STATUS_TTL_MS per isolate. The jobs call (stage) is made only for a
+// matched, still-running run, cached per run id.
+let runsCache: CacheEntry<{ ok: true; runs: unknown } | { ok: false }> | null = null;
+const stageCache = new Map<number, CacheEntry<string | null>>();
 
 export function clearRunStatusCache(): void {
-  cache.clear();
+  runsCache = null;
+  stageCache.clear();
 }
 
-export async function lookupRun(
-  requestId: unknown,
+async function recentRuns(
   env: Env,
+  pat: string,
   deps: RunStatusDeps,
-): Promise<RunLookup> {
-  if (!isRequestId(requestId)) return { ok: false };
-  const pat = env.GH_DISPATCH_PAT;
-  if (typeof pat !== "string" || pat.trim() === "") return { ok: false };
-  const now = (deps.now ?? Date.now)();
-  const hit = cache.get(requestId);
-  if (hit && now - hit.at < RUN_STATUS_TTL_MS) return hit.value;
-
+  now: number,
+): Promise<{ ok: true; runs: unknown } | { ok: false }> {
+  if (runsCache && now - runsCache.at < RUN_STATUS_TTL_MS) return runsCache.value;
   const url = `https://api.github.com/repos/${env.GH_OWNER}/${env.GH_REPO}/actions/workflows/${env.GH_WORKFLOW_FILE}/runs?event=workflow_dispatch&per_page=${RUNS_PER_PAGE}`;
-  let value: RunLookup;
+  let value: { ok: true; runs: unknown } | { ok: false };
   try {
     const resp = await deps.fetch(url, {
       redirect: "manual",
@@ -68,11 +70,7 @@ export async function lookupRun(
       value = { ok: false };
     } else {
       const body = (await resp.json()) as { workflow_runs?: unknown };
-      const run = pickMatchingRun(body.workflow_runs, requestId);
-      if (run !== null && run.status !== "completed" && run.id !== null) {
-        run.stage = await lookupStage(run.id, env, pat, deps);
-      }
-      value = { ok: true, run };
+      value = { ok: true, runs: body.workflow_runs };
     }
   } catch (error) {
     deps.log?.(
@@ -81,9 +79,33 @@ export async function lookupRun(
     value = { ok: false };
   }
   // Failures are cached too (briefly) so an outage is not hammered.
-  if (cache.size >= MAX_CACHE_ENTRIES) cache.clear();
-  cache.set(requestId, { at: now, value });
+  runsCache = { at: now, value };
   return value;
+}
+
+export async function lookupRun(
+  requestId: unknown,
+  env: Env,
+  deps: RunStatusDeps,
+): Promise<RunLookup> {
+  if (!isRequestId(requestId)) return { ok: false };
+  const pat = env.GH_DISPATCH_PAT;
+  if (typeof pat !== "string" || pat.trim() === "") return { ok: false };
+  const now = (deps.now ?? Date.now)();
+  const listed = await recentRuns(env, pat, deps, now);
+  if (!listed.ok) return { ok: false };
+  const run = pickMatchingRun(listed.runs, requestId);
+  if (run !== null && run.status !== "completed" && run.id !== null) {
+    const hit = stageCache.get(run.id);
+    if (hit && now - hit.at < RUN_STATUS_TTL_MS) {
+      run.stage = hit.value;
+    } else {
+      run.stage = await lookupStage(run.id, env, pat, deps);
+      if (stageCache.size >= MAX_CACHE_ENTRIES) stageCache.clear();
+      stageCache.set(run.id, { at: now, value: run.stage });
+    }
+  }
+  return { ok: true, run };
 }
 
 /** #457: the coarse stage of a running run, read from its jobs. Best effort:

@@ -26,7 +26,7 @@ describe("assertion 13: theme input regex equals @paperpilot/core/slug's THEME_I
   // in packages/core/src/slug/patterns.ts (safety-contracts.md API-08),
   // which apps/api and apps/web both re-export.
   it("core THEME_INPUT_PATTERN is still the expected shape (sanity)", () => {
-    expect(THEME_INPUT_PATTERN.source).toBe("^[A-Za-z0-9 _-]{2,80}$");
+    expect(THEME_INPUT_PATTERN.source).toBe("^[A-Za-z0-9][A-Za-z0-9 _-]{1,79}$");
   });
 
   for (const file of ["theme-on-demand.yml", "regen-themes.yml"]) {
