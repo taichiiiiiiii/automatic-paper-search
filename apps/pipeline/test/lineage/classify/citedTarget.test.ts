@@ -7,6 +7,7 @@ import { describe, expect, it } from "vitest";
 import {
   citedAliases,
   citedIdentity,
+  citingSelfNames,
   inferCitedMarker,
   isBibliographyLine,
   isUsableContext,
@@ -174,5 +175,29 @@ describe("short names and titleized rationales", () => {
     // Titles, model sizes and English articles are left alone.
     const t = "『A ConvNet for the 2020s』は ViT-B と Swin-B を比較する。";
     expect(titleizeRationale(t, a, b)).toBe(t);
+  });
+});
+
+// #505 review 4: the marker vote and the citing-paper self name use the
+// pre-#505 names on their own, not only through the pair guard.
+describe("#505: pre-#505 names for the marker and the self name", () => {
+  const nerfW = {
+    title: "NeRF in the Wild: Neural Radiance Fields for Unconstrained Photo Collections",
+    authors: ["Ricardo Martin-Brualla"],
+    year: 2021,
+  };
+
+  it("keeps the reference marker found through the first-word name", () => {
+    const id = citedIdentity(nerfW, [
+      "Unlike NeRF [12] and prior light fields [3], we model transient objects.",
+    ]);
+    expect(id.marker).toBe(12);
+  });
+
+  it("drops a citing self name that the pre-#505 names already cover", () => {
+    const id = citedIdentity(nerfW, []);
+    expect(
+      citingSelfNames("NeRF: Representing Scenes as Neural Radiance Fields for View Synthesis", id),
+    ).toEqual([]);
   });
 });

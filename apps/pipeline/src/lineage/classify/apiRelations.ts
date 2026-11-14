@@ -1057,13 +1057,16 @@ function candidateRank(c: SentenceCandidate): number {
 export function classifyApiRelationV3(s: PairSignals): ApiClassification {
   const now = classifyV3Rules(s);
   // #505: the narrowed names and cues may only take strong relations away.
-  // When today's answer is a strong relation the pre-#505 rules did not
-  // give, a narrowed sentence opened another path to it (the abstract
-  // fallback, the scope-build override): keep the pre-#505 answer.
+  // When today's answer is strong, return the pre-#505 answer: either the
+  // same strong relation (with its original rule and evidence) or, when a
+  // narrowed sentence opened another path (the abstract fallback, the
+  // scope-build override), the weaker pre-#505 one.
   const strongNow = v1Label(now);
   if (strongNow !== "extends" && strongNow !== "contrasts") return now;
-  const before = withPre505Rules(() => classifyV3Rules(s));
-  return v1Label(before) === strongNow ? now : before;
+  // A strong answer is always the pre-#505 one (label, rule and evidence),
+  // so the evidence-dependent steps downstream (quotable, namedInWords,
+  // abstract vs phrase build) behave exactly as before #505.
+  return withPre505Rules(() => classifyV3Rules(s));
 }
 
 function v1Label(r: ApiClassification): V1MappedRelation | null {
