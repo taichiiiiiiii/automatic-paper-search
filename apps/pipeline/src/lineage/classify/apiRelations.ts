@@ -1063,9 +1063,10 @@ export function classifyApiRelationV3(s: PairSignals): ApiClassification {
   // scope-build override), the weaker pre-#505 one.
   const strongNow = v1Label(now);
   if (strongNow !== "extends" && strongNow !== "contrasts") return now;
-  // A strong answer is always the pre-#505 one (label, rule and evidence),
-  // so the evidence-dependent steps downstream (quotable, namedInWords,
-  // abstract vs phrase build) behave exactly as before #505.
+  // A strong answer is always the pre-#505 one (label, rule and evidence).
+  // The checks downstream (quotable, namedInWords in classifyS2Pair) use the
+  // narrowed names, so they can only be stricter than before #505: they may
+  // drop or downgrade a strong edge, never add one.
   return withPre505Rules(() => classifyV3Rules(s));
 }
 
