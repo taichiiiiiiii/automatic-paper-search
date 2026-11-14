@@ -62,7 +62,7 @@ jobs:
         env:
           THEME_INPUT: ${{ inputs.theme }}
           REQUEST_ID: ${{ inputs.request_id }}
-          THEME_RE: '^[A-Za-z0-9 _-]{2,80}$'
+          THEME_RE: '^[A-Za-z0-9][A-Za-z0-9 _-]{1,79}$'
           REQUEST_ID_RE: '^[A-Za-z0-9._:-]{1,128}$'
         run: |
           set -euo pipefail

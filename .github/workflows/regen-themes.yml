@@ -142,7 +142,7 @@ jobs:
           THEMES_INPUT: ${{ inputs.themes }}
           ALLOW_SHRINK: ${{ inputs.allow_shrink }}
           ALLOW_REAUDIT: ${{ inputs.allow_reaudit }}
-          THEME_RE: '^[A-Za-z0-9 _-]{2,80}$'
+          THEME_RE: '^[A-Za-z0-9][A-Za-z0-9 _-]{1,79}$'
           PENDING_FILE: data/state/lineage-cache/regen-pending.json
         run: |
           set -euo pipefail

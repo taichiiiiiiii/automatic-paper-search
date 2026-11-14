@@ -6,6 +6,12 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Security — テーマ依頼 API の悪用で CI と GitHub の枠を使い切られないように（#522）
+
+- サイト全体の依頼の上限を 1 時間 10 件・1 日 40 件にした（これまでは 1 日 100 件だけ）。IPv6 は /64 単位で数え、末尾を変えても 1 時間 5 件の枠は増えない。
+- 状況の問い合わせ（`/api/themes/status`）は、run の一覧を 15 秒に 1 回だけ GitHub に聞き、知らない request_id ごとに PAT を使わない。
+- テーマ名の先頭は英数字に限る（`-x` のような値で無駄な run が起きない）。
+
 ### Fixed — 改題された学会版が preprint と別の論文として出る（R2-70、#498）
 
 - 共通の ID がない preprint と学会版（例: GNN-RAG の arXiv 版と ACL Findings 版）を、名前・著者・年・arXiv id の有無がそろうときだけ 1 本にまとめ、まとめた組を系譜のメタデータに残す。
