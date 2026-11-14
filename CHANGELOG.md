@@ -6,6 +6,13 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Fixed — 表示の細かい誤り（UI/UX 4 周目 第 1 弾、#521）
+
+- 題名に残っていた LaTeX（括弧の抜けた `\textDT`・`\mathbbR`、`\varepsilon`、`\not=`、`\"{o}` など）を読める文字にする。全学会で `$`・`\` を含む 350 本のうち、記号が残るのは 12 本（入れ子の括弧など）。
+- 要旨の出典行でも題名を整形し、詳細を開いているときは「（一覧では冒頭のみ表示）」を出さない。
+- 「この論文を含む監査済みの系譜はまだありません」に言い換え（サイト全体のことに読めないように）。
+- 仕組みページの arXiv HTML のリンク切れを直す。
+- 系譜のカードで「ECCV (1)」「arXiv (Cornell University)」の括弧書きを外し、トップの「NEURIPS」を「NeurIPS」に。HF のバッジはモデル・データセット・Space が 0 件なら出さない。
 ### Fixed — 手がかりの語が同じ系統の別の名前にかかる強い関係（R2-71、#505）
 
 - 「mip-NeRF」「(a NeRF variant …)」「NeRF in the Wild の NeRF」「a variant of our own model」「we choose X as the backbone」を引用先への土台と読まないように規則を狭めた。公開中の辺の再生で変わるのは NeRF の誤り 4 件だけ（監査済みテーマは 0 件）。
