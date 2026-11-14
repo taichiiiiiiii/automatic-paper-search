@@ -13,7 +13,7 @@
  * screen (the old hover tooltip was a fixed 260x110 box inside the SVG).
  * All text goes through React's escaping; no inline styles (CSP).
  */
-import { forwardRef } from "react";
+import { forwardRef, useState } from "react";
 import { BASE_PATH } from "../../lib/config";
 import {
   ABSTRACT_SOURCE_LABEL,
@@ -305,7 +305,18 @@ export const EdgeEvidencePanel = forwardRef<
   );
 });
 
-/** "関係の一覧": every currently visible edge, oldest paper first. */
+/** Above this many relations "関係の一覧" starts closed. */
+export const RELATION_LIST_OPEN_MAX = 30;
+
+/** "関係の一覧": every currently visible edge, oldest paper first.
+ *
+ * #515: the rows are rendered only while the list is open. A closed
+ * <details> used to carry every row anyway (an <li> with an evidence button
+ * and a prefilled report link per edge: 6,488 of 9,466 elements on the
+ * 588-relation NeRF theme), and WebKit spent ~3 s per action serialising
+ * that hidden subtree for a Playwright trace. The open state follows the
+ * user's toggles, and still re-opens / re-closes when a filter moves the
+ * count across RELATION_LIST_OPEN_MAX (what the old `open` prop did). */
 export function EdgeRelationList({
   edges,
   nodeById,
@@ -322,19 +333,28 @@ export function EdgeRelationList({
   mainPathKeys?: ReadonlySet<string>;
 }) {
   const audited = useRelationAudited();
+  const defaultOpen = edges.length <= RELATION_LIST_OPEN_MAX;
+  const [open, setOpen] = useState(defaultOpen);
+  // Adjust during render (no extra committed frame) when a filter moves the
+  // count across the threshold.
+  const [lastDefaultOpen, setLastDefaultOpen] = useState(defaultOpen);
+  if (lastDefaultOpen !== defaultOpen) {
+    setLastDefaultOpen(defaultOpen);
+    setOpen(defaultOpen);
+  }
   const yearOf = (id: string) => {
     const y = nodeById.get(id)?.year;
     return typeof y === "number" ? y : Number.POSITIVE_INFINITY;
   };
-  const sorted = [...edges].sort(
-    (a, b) => yearOf(a.dst) - yearOf(b.dst) || b.confidence - a.confidence,
-  );
+  const sorted = open
+    ? [...edges].sort((a, b) => yearOf(a.dst) - yearOf(b.dst) || b.confidence - a.confidence)
+    : [];
   return (
-    <details className="mt-6" open={edges.length <= 30}>
+    <details className="mt-6" open={open} onToggle={(ev) => setOpen(ev.currentTarget.open)}>
       <summary className="cursor-pointer font-serif text-lg font-semibold text-ink">
         関係の一覧（{edges.length} 件）
       </summary>
-      {sorted.length === 0 ? (
+      {!open ? null : sorted.length === 0 ? (
         <p className="mt-2 text-sm text-ink-subtle">現在の条件で表示できる関係はありません。</p>
       ) : (
         <ul className="mt-2 flex flex-col divide-y divide-rule" data-testid="edge-relation-list">
