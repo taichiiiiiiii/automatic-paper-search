@@ -41,3 +41,29 @@ describe("tidyExcerpt (#463)", () => {
     expect(tidyExcerpt("Summary statistics are")).toBe("Summary statistics are");
   });
 });
+
+describe("#521: commands whose braces the source data lost", () => {
+  it.each([
+    ["$\\mathbbR^2k$ is Theoretically Large", "ℝ²k is Theoretically Large"],
+    ["$\\textDT^\\text2$: Decision-Targeted Digital Twins", "DT²: Decision-Targeted Digital Twins"],
+    ["$\\textttFHAIM$: Fully Homomorphic AIM", "FHAIM: Fully Homomorphic AIM"],
+    ["$\\texttt{Multi}^2$: Hierarchical", "Multi²: Hierarchical"],
+    [
+      "Learning $\\underline\\textF$ramework for $\\underline\\textL$arge",
+      "Learning Framework for Large",
+    ],
+    ["Improved Distribution Estimation in $\\ell_∞$", "Improved Distribution Estimation in ℓ∞"],
+    ["Rate or Fate? RLV$^\\varepsilon$R", "Rate or Fate? RLVᵋR"],
+    ["Coverage $\\not =$ Exposure", "Coverage ≠ Exposure"],
+    ["Finite $L_p$ Moments", "Finite Lₚ Moments"],
+    ["360\\textdegree Panoramic Editing", "360° Panoramic Editing"],
+    ['Robust Generalized Schr\\"{o}dinger Bridge', "Robust Generalized Schrödinger Bridge"],
+    ["Bridging \\emph{De Novo} Peptide", "Bridging De Novo Peptide"],
+  ])("%s", (raw, want) => {
+    expect(tidyTitle(raw)).toBe(want);
+  });
+
+  it("does not turn snake_case words into subscripts", () => {
+    expect(tidyTitle("$x$ and x_max")).toBe("x and x_max");
+  });
+});

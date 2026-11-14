@@ -67,3 +67,11 @@ describe("dataDateOf (roadmap R1-3)", () => {
     expect(dataDateOf("yesterday")).toBeNull();
   });
 });
+
+describe("#521: shortVenue drops OpenAlex volume / host suffixes", () => {
+  it("removes '(1)' and '(Cornell University)'", () => {
+    expect(shortVenue("ECCV (1)")).toBe(shortVenue("ECCV"));
+    expect(shortVenue("arXiv (Cornell University)")).toBe(shortVenue("arXiv"));
+    expect(shortVenue("Proceedings (Volume Two)")).toBe("Proceedings (Volume Two)");
+  });
+});

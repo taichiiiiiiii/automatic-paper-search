@@ -117,7 +117,7 @@ export function CodeBadges({ link }: { link: CodeLink | undefined }) {
           コード{link.code.stars ? ` ★${compactCount(link.code.stars)}` : ""}
         </span>
       )}
-      {link.hf && (
+      {link.hf && link.hf.models + link.hf.datasets + link.hf.spaces > 0 && (
         <span
           role="img"
           aria-label={`Hugging Face: モデル ${link.hf.models} 件`}

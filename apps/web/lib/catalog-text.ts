@@ -165,6 +165,26 @@ const SUPERSCRIPT: Record<string, string> = {
   "-": "⁻",
   n: "ⁿ",
   i: "ⁱ",
+  A: "ᴬ",
+  B: "ᴮ",
+  D: "ᴰ",
+  E: "ᴱ",
+  G: "ᴳ",
+  H: "ᴴ",
+  I: "ᴵ",
+  J: "ᴶ",
+  K: "ᴷ",
+  L: "ᴸ",
+  M: "ᴹ",
+  N: "ᴺ",
+  O: "ᴼ",
+  P: "ᴾ",
+  R: "ᴿ",
+  T: "ᵀ",
+  U: "ᵁ",
+  W: "ᵂ",
+  ε: "ᵋ",
+  p: "ᵖ",
 };
 const SUBSCRIPT: Record<string, string> = {
   "0": "₀",
@@ -177,13 +197,44 @@ const SUBSCRIPT: Record<string, string> = {
   "7": "₇",
   "8": "₈",
   "9": "₉",
+  a: "ₐ",
+  e: "ₑ",
+  h: "ₕ",
+  i: "ᵢ",
+  j: "ⱼ",
+  k: "ₖ",
+  l: "ₗ",
+  m: "ₘ",
+  n: "ₙ",
+  o: "ₒ",
+  p: "ₚ",
+  r: "ᵣ",
+  s: "ₛ",
+  t: "ₜ",
+  u: "ᵤ",
+  v: "ᵥ",
+  x: "ₓ",
+  "∞": "∞",
 };
+const BLACKBOARD: Record<string, string> = {
+  R: "ℝ",
+  N: "ℕ",
+  Z: "ℤ",
+  C: "ℂ",
+  Q: "ℚ",
+};
+/** #521: font / text commands whose braces the source data lost
+ * ("\\textDT", "\\mathcalO", "\\underline\\textF"): the command name
+ * goes, the following text stays. Longest names first. */
+const FONT_COMMAND_RE =
+  /\\(?:operatorname|boldsymbol|underline|mathcal|mathbf|mathrm|mathit|mathsf|texttt|textit|textbf|textsf|textrm|text)(?=[A-Z0-9\\])/g;
 const GREEK: Record<string, string> = {
   alpha: "α",
   beta: "β",
   gamma: "γ",
   delta: "δ",
   epsilon: "ε",
+  varepsilon: "ε",
   theta: "θ",
   lambda: "λ",
   mu: "μ",
@@ -205,6 +256,27 @@ const GREEK: Record<string, string> = {
   infty: "∞",
   times: "×",
   ell: "ℓ",
+  textdegree: "°",
+  log: "log",
+  partial: "∂",
+  star: "*",
+  circ: "°",
+  nabla: "∇",
+  cdot: "·",
+  leq: "≤",
+  geq: "≥",
+  approx: "≈",
+  sim: "∼",
+};
+const UMLAUT: Record<string, string> = {
+  a: "ä",
+  o: "ö",
+  u: "ü",
+  A: "Ä",
+  O: "Ö",
+  U: "Ü",
+  e: "ë",
+  i: "ï",
 };
 
 /** #463: paper titles arrive with the LaTeX of the submission ("$\\Psi$-Sampler",
@@ -219,15 +291,33 @@ export function tidyTitle(title: string): string {
     return out.every((c) => c !== null) ? out.join("") : whole;
   };
   let t = title;
-  t = t.replace(/\^\{([^{}]*)\}/g, (m, b: string) => script(SUPERSCRIPT, m, b));
-  t = t.replace(/\^([0-9a-zA-Z+-])/g, (m, b: string) => script(SUPERSCRIPT, m, b));
-  t = t.replace(/_\{([^{}]*)\}/g, (m, b: string) => script(SUBSCRIPT, m, b));
-  t = t.replace(/_([0-9])/g, (m, b: string) => script(SUBSCRIPT, m, b));
+  // A doubled backslash before a command is an escaping slip in the source.
+  t = t.replace(/\\\\(?=[A-Za-z"{(])/g, "\\");
+  t = t.replace(/\\"\{?([AOUaoueiu])\}?/g, (m, c: string) => UMLAUT[c] ?? m);
+  t = t.replace(/\\\\\s/g, " ");
+  t = t.replace(/\\[()]/g, "");
+  t = t.replace(/\\([&_%#])/g, "$1");
+  t = t.replace(/\\not\s*=/g, "≠");
+  t = t.replace(/\\mathbb\{?([A-Z])\}?/g, (m, c: string) => BLACKBOARD[c] ?? c);
+  t = t.replace(/\\(textdegree|varepsilon)/g, (m, name: string) => GREEK[name] ?? m);
+  t = t.replace(FONT_COMMAND_RE, "");
+  t = t.replace(/\\sqrt\{([^{}]*)\}/g, "√($1)");
+  const scripts = (x: string): string =>
+    x
+      .replace(/\^\{([^{}]*)\}/g, (m, b: string) => script(SUPERSCRIPT, m, b))
+      .replace(/\^([0-9a-zA-Z+ε-])/g, (m, b: string) => script(SUPERSCRIPT, m, b))
+      .replace(/_\{([^{}]*)\}/g, (m, b: string) => script(SUBSCRIPT, m, b))
+      .replace(/_([0-9∞]|[a-z](?![A-Za-z]))/g, (m, b: string) => script(SUBSCRIPT, m, b));
+  t = scripts(t);
   t = t.replace(
-    /\\(?:mathcal|mathbf|mathrm|text|textit|textbf|mathit|operatorname)\{([^{}]*)\}/g,
+    /\\(?:mathcal|mathbf|mathrm|mathsf|text|textit|textbf|texttt|textsf|textrm|mathit|operatorname|underline|boldsymbol|emph|tilde|hat|bar)\{([^{}]*)\}/g,
     "$1",
   );
   t = t.replace(/\\([A-Za-z]+)/g, (m, name: string) => GREEK[name] ?? name);
+  // Second pass: scripts whose body was a command (`\\ell_{\\infty}`, `^\\circ`).
+  t = scripts(t);
+  t = t.replace(/\^(°|\*)/g, "$1");
+  t = t.replace(/(?<![\^_])\{([^{}]*)\}/g, "$1");
   t = t.replace(/\$/g, "");
   return t.replace(/\s{2,}/g, " ").trim();
 }
