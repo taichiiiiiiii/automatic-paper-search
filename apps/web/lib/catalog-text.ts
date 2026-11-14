@@ -260,7 +260,7 @@ const GREEK: Record<string, string> = {
   log: "log",
   partial: "∂",
   star: "*",
-  circ: "°",
+  circ: "∘",
   nabla: "∇",
   cdot: "·",
   leq: "≤",
@@ -298,7 +298,10 @@ export function tidyTitle(title: string): string {
   t = t.replace(/\\[()]/g, "");
   t = t.replace(/\\([&_%#])/g, "$1");
   t = t.replace(/\\not\s*=/g, "≠");
-  t = t.replace(/\\mathbb\{?([A-Z])\}?/g, (m, c: string) => BLACKBOARD[c] ?? c);
+  t = t.replace(/\\mathbb(?:\{([A-Z])\}|([A-Z]))/g, (m, a?: string, b?: string) => {
+    const c = a ?? b ?? "";
+    return BLACKBOARD[c] ?? c;
+  });
   t = t.replace(/\\(textdegree|varepsilon)/g, (m, name: string) => GREEK[name] ?? m);
   t = t.replace(FONT_COMMAND_RE, "");
   t = t.replace(/\\sqrt\{([^{}]*)\}/g, "√($1)");
@@ -316,7 +319,8 @@ export function tidyTitle(title: string): string {
   t = t.replace(/\\([A-Za-z]+)/g, (m, name: string) => GREEK[name] ?? name);
   // Second pass: scripts whose body was a command (`\\ell_{\\infty}`, `^\\circ`).
   t = scripts(t);
-  t = t.replace(/\^(°|\*)/g, "$1");
+  t = t.replace(/\^∘/g, "°");
+  t = t.replace(/\^\*/g, "*");
   t = t.replace(/(?<![\^_])\{([^{}]*)\}/g, "$1");
   t = t.replace(/\$/g, "");
   return t.replace(/\s{2,}/g, " ").trim();

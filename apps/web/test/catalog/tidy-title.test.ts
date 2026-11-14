@@ -67,3 +67,13 @@ describe("#521: commands whose braces the source data lost", () => {
     expect(tidyTitle("$x$ and x_max")).toBe("x and x_max");
   });
 });
+
+describe("#521 review: circ and mathbb", () => {
+  it("degree only after ^, composition otherwise; one-letter mathbb", () => {
+    expect(tidyTitle("Lifting to 360$^\\circ$ with Mechanisms")).toBe(
+      "Lifting to 360° with Mechanisms",
+    );
+    expect(tidyTitle("$f \\circ g$ composition")).toBe("f ∘ g composition");
+    expect(tidyTitle("Embedding in $\\mathbb{R}^n$")).toBe("Embedding in ℝⁿ");
+  });
+});
