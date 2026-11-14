@@ -1,7 +1,8 @@
 /**
  * #521 (UI/UX round 4, U1/U2): keyboard movement between lineage cards and
  * the order in which search matches are visited. Pure functions over the
- * laid-out card positions (top-left corners), so they are unit-testable
+ * laid-out card positions (top-left corners; every card has the same
+ * NODE_W x NODE_H, so corners order the same as centres), so they are unit-testable
  * without rendering the graph.
  */
 

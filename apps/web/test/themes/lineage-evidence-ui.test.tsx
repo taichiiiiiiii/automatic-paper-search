@@ -167,6 +167,10 @@ describe("LineageTree evidence UX (R2 UX P0-1 / P0-2)", () => {
         moved = true;
     }
     expect(moved).toBe(true);
+    // Non-arrow keys leave the focus where it is.
+    first.focus();
+    fireEvent.keyDown(first, { key: "Tab" });
+    expect(document.activeElement).toBe(first);
   });
 
   it("#521 U2: a search shows the match count and marks the current match", () => {

@@ -710,7 +710,7 @@ export function LineageTree({
   );
   useEffect(() => {
     if (!currentMatch) return;
-    cardElement(currentMatch)?.scrollIntoView?.({ block: "center", inline: "center" });
+    cardElement(currentMatch)?.scrollIntoView?.({ block: "nearest", inline: "center" });
   }, [currentMatch, cardElement]);
   const stepMatch = (delta: number) =>
     setMatchIndex((i) =>
@@ -1242,8 +1242,12 @@ export function LineageTree({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && searchMatches.length > 1) {
-                e.preventDefault();
+              if (e.key !== "Enter" || !currentMatch) return;
+              e.preventDefault();
+              // Ctrl/Cmd+Enter (or Enter with one match) jumps to the card.
+              if (e.ctrlKey || e.metaKey || searchMatches.length === 1) {
+                cardElement(currentMatch)?.focus();
+              } else {
                 stepMatch(e.shiftKey ? -1 : 1);
               }
             }}
@@ -1253,35 +1257,36 @@ export function LineageTree({
             className="min-h-9 rounded-md border border-rule px-2 py-1 text-sm"
           />
         </label>
-        {activeSearch && (
-          <span className="flex items-center gap-1 text-xs text-ink-muted" data-search-matches>
-            <span role="status">
-              {searchMatches.length > 0
+        <span className="flex items-center gap-1 text-xs text-ink-muted" data-search-matches>
+          {/* Always mounted so the first count is announced. */}
+          <span role="status" aria-live="polite">
+            {!activeSearch
+              ? ""
+              : searchMatches.length > 0
                 ? `${searchMatches.length} 件一致（${(matchIndex % searchMatches.length) + 1} 件目）`
                 : "一致なし"}
-            </span>
-            {searchMatches.length > 1 && (
-              <>
-                <button
-                  type="button"
-                  onClick={() => stepMatch(-1)}
-                  aria-label="前の一致"
-                  className="min-h-6 min-w-6 rounded border border-rule px-1"
-                >
-                  ↑
-                </button>
-                <button
-                  type="button"
-                  onClick={() => stepMatch(1)}
-                  aria-label="次の一致"
-                  className="min-h-6 min-w-6 rounded border border-rule px-1"
-                >
-                  ↓
-                </button>
-              </>
-            )}
           </span>
-        )}
+          {activeSearch && searchMatches.length > 1 && (
+            <>
+              <button
+                type="button"
+                onClick={() => stepMatch(-1)}
+                aria-label="前の一致"
+                className="min-h-6 min-w-6 rounded border border-rule px-1"
+              >
+                ↑
+              </button>
+              <button
+                type="button"
+                onClick={() => stepMatch(1)}
+                aria-label="次の一致"
+                className="min-h-6 min-w-6 rounded border border-rule px-1"
+              >
+                ↓
+              </button>
+            </>
+          )}
+        </span>
 
         {dataYearExtents && yearRange && (
           <fieldset className="flex items-center gap-1 border-0 p-0 text-xs text-ink-muted">
@@ -2028,7 +2033,7 @@ export function LineageTree({
 
       <p id="theme-after-tree" tabIndex={-1} className="mt-2 text-xs text-ink-subtle">
         {view === "tree"
-          ? "カードを選ぶと土台と発展、線を選ぶと関係の根拠を表示します（キーボードは Tab でカードへ、矢印キーでカード間を移動し Enter。選んだカードの線は続けて Tab で選べます）。"
+          ? "カードを選ぶと土台と発展、線を選ぶと関係の根拠を表示します（キーボードは Tab でカードへ、矢印キーでカード間を移動し Enter。選んだカードの線は Shift+Tab で選べ、全部の関係は図の下の「関係の一覧」から開けます）。"
           : "点を選ぶと、その論文の土台と発展を下に表示します。線の上に置くと関係が出ます。"}
       </p>
 
