@@ -6,6 +6,11 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Changed — 系譜の図をキーボードと検索で辿りやすく（UI/UX 4 周目 第 2 弾、#521）
+
+- Tab はまずカードに止まる（線が止まるのは選んだ論文の線だけ）。カードの間は矢印キーで移動する。NeRF では最初のカードまで Tab 589 回かかっていた。
+- 題名・著者で検索すると最初の一致へ画面が動き、「N 件一致（何件目）」と ↑↓・Enter で次の一致へ移れる。一致しないカードは透けない幕で薄くする。
+
 ### Fixed — 改題された学会版が preprint と別の論文として出る（R2-70、#498）
 
 - 共通の ID がない preprint と学会版（例: GNN-RAG の arXiv 版と ACL Findings 版）を、名前・著者・年・arXiv id の有無がそろうときだけ 1 本にまとめ、まとめた組を系譜のメタデータに残す。

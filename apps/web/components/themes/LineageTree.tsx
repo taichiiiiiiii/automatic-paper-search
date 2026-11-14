@@ -39,6 +39,11 @@ import { abstractExcerptSourceLabel, tidyExcerpt } from "../../lib/lineage/evide
 import { computeMainPath } from "../../lib/lineage/main-path";
 import { priorDerivative, shortestLineagePath } from "../../lib/lineage/paper-neighbors";
 import { isS2Influential, S2_INFLUENTIAL_LABEL_JA } from "../../lib/lineage/s2-signal";
+import {
+  cardDirectionForKey,
+  matchesInReadingOrder,
+  nextCardInDirection,
+} from "../../lib/themes-card-nav";
 import { exportPng, exportSvg } from "../../lib/themes-export";
 import type { ThemeCodeLinks } from "../../lib/themes-feed";
 import { formatStars, formatVenue } from "../../lib/themes-format";
@@ -678,6 +683,50 @@ export function LineageTree({
     );
   }, [nodesForLayout, activeSearch, isYearFiltered, yearRange]);
 
+  // #521 U2: a title / author search moves to its matches, in reading order.
+  const cardPoints = useMemo(
+    () => positioned.map((p) => ({ id: p.id, x: p._x, y: p._y })),
+    [positioned],
+  );
+  const searchMatches = useMemo(
+    () => (activeSearch && matchSet ? matchesInReadingOrder(cardPoints, matchSet) : []),
+    [activeSearch, matchSet, cardPoints],
+  );
+  const [matchIndex, setMatchIndex] = useState(0);
+  const [matchQuery, setMatchQuery] = useState(activeSearch);
+  if (matchQuery !== activeSearch) {
+    // Restart at the first match whenever the query changes.
+    setMatchQuery(activeSearch);
+    setMatchIndex(0);
+  }
+  const currentMatch =
+    searchMatches.length > 0 ? (searchMatches[matchIndex % searchMatches.length] ?? null) : null;
+  const cardElement = useCallback(
+    (id: string) =>
+      treeBoxRef.current?.querySelector<HTMLElement>(
+        `[data-node-card][data-node-id="${CSS.escape(id)}"]`,
+      ) ?? null,
+    [],
+  );
+  useEffect(() => {
+    if (!currentMatch) return;
+    cardElement(currentMatch)?.scrollIntoView?.({ block: "center", inline: "center" });
+  }, [currentMatch, cardElement]);
+  const stepMatch = (delta: number) =>
+    setMatchIndex((i) =>
+      searchMatches.length === 0 ? 0 : (i + delta + searchMatches.length) % searchMatches.length,
+    );
+
+  // #521 U1: arrow keys move the focus to the next card in that direction.
+  const onCardKeyDown = (ev: React.KeyboardEvent<HTMLButtonElement>, id: string) => {
+    if (ev.altKey || ev.ctrlKey || ev.metaKey || ev.shiftKey) return;
+    const dir = cardDirectionForKey(ev.key);
+    if (!dir) return;
+    ev.preventDefault();
+    const next = nextCardInDirection(cardPoints, id, dir);
+    if (next) cardElement(next)?.focus();
+  };
+
   const hiddenCount = hiddenEdgeCount(artifact.edges, visibleRelations);
   const sparse = isSparseLineage(artifact.nodes.length, artifact.edges.length);
   const wideSpan = useMemo(() => wideSpanNotice(artifact.nodes), [artifact.nodes]);
@@ -1192,12 +1241,47 @@ export function LineageTree({
             type="search"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && searchMatches.length > 1) {
+                e.preventDefault();
+                stepMatch(e.shiftKey ? -1 : 1);
+              }
+            }}
             placeholder="タイトル / 著者で検索"
             aria-label="タイトル・著者で論文を検索"
             autoComplete="off"
             className="min-h-9 rounded-md border border-rule px-2 py-1 text-sm"
           />
         </label>
+        {activeSearch && (
+          <span className="flex items-center gap-1 text-xs text-ink-muted" data-search-matches>
+            <span role="status">
+              {searchMatches.length > 0
+                ? `${searchMatches.length} 件一致（${(matchIndex % searchMatches.length) + 1} 件目）`
+                : "一致なし"}
+            </span>
+            {searchMatches.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => stepMatch(-1)}
+                  aria-label="前の一致"
+                  className="min-h-6 min-w-6 rounded border border-rule px-1"
+                >
+                  ↑
+                </button>
+                <button
+                  type="button"
+                  onClick={() => stepMatch(1)}
+                  aria-label="次の一致"
+                  className="min-h-6 min-w-6 rounded border border-rule px-1"
+                >
+                  ↓
+                </button>
+              </>
+            )}
+          </span>
+        )}
 
         {dataYearExtents && yearRange && (
           <fieldset className="flex items-center gap-1 border-0 p-0 text-xs text-ink-muted">
@@ -1613,7 +1697,16 @@ export function LineageTree({
                         x2={x2}
                         y2={y2}
                         className={styles.edgeHit}
-                        tabIndex={0}
+                        // #521 U1: only the selected paper's lines (and the
+                        // selected line) are tab stops, so the cards come
+                        // first; the rest stay clickable.
+                        tabIndex={
+                          selectedEdgeKey === key ||
+                          (selectedPaperId !== null &&
+                            (e.src === selectedPaperId || e.dst === selectedPaperId))
+                            ? 0
+                            : -1
+                        }
                         role="button"
                         aria-pressed={selectedEdgeKey === key}
                         aria-label={`${onMain ? "本流・" : ""}${relationLabelJa(e.relation, audited)}: ${e.rationale}${influential ? `（${S2_INFLUENTIAL_LABEL_JA}）` : ""}（Enter で根拠を表示）`}
@@ -1634,7 +1727,12 @@ export function LineageTree({
                 const extra =
                   (p.authors ?? []).length > 3 ? ` +${(p.authors ?? []).length - 3}` : "";
                 const accentClass = modeAccentClass(modeData, p.id);
-                const filteredClass = matchSet && !matchSet.has(p.id) ? "opacity-40" : "";
+                const filteredClass =
+                  matchSet && !matchSet.has(p.id)
+                    ? styles.filteredOut
+                    : p.id === currentMatch
+                      ? styles.searchCurrent
+                      : "";
                 // #83: hub -- degree above the 90th percentile across the
                 // theme. #68: trending -- citation velocity, sourced
                 // directly from the artifact's is_trending flag. Orphan --
@@ -1698,7 +1796,10 @@ export function LineageTree({
                       <button
                         type="button"
                         data-node-card
+                        data-node-id={p.id}
+                        data-search-current={p.id === currentMatch ? "1" : undefined}
                         aria-pressed={p.id === selectedPaperId}
+                        onKeyDown={(ev) => onCardKeyDown(ev, p.id)}
                         onClick={() => selectPaper(p.id === selectedPaperId ? null : p.id)}
                         title="選ぶと、この論文の土台と発展を下に表示"
                         aria-label={`${p.title ?? p.id}（${typeof p.year === "number" ? p.year : "年不明"}）: 選ぶと土台と発展を表示`}
@@ -1927,7 +2028,7 @@ export function LineageTree({
 
       <p id="theme-after-tree" tabIndex={-1} className="mt-2 text-xs text-ink-subtle">
         {view === "tree"
-          ? "カードを選ぶと土台と発展、線を選ぶと関係の根拠を表示します（キーボードは Tab で選んで Enter）。"
+          ? "カードを選ぶと土台と発展、線を選ぶと関係の根拠を表示します（キーボードは Tab でカードへ、矢印キーでカード間を移動し Enter。選んだカードの線は続けて Tab で選べます）。"
           : "点を選ぶと、その論文の土台と発展を下に表示します。線の上に置くと関係が出ます。"}
       </p>
 
@@ -2033,8 +2134,12 @@ export function LineageTree({
                   <td>このヘルプ表示</td>
                 </tr>
                 <tr>
+                  <td className="pr-2 font-mono text-ink">←↑↓→</td>
+                  <td>カード間を移動</td>
+                </tr>
+                <tr>
                   <td className="pr-2 font-mono text-ink">Enter</td>
-                  <td>選んだ線の根拠を表示</td>
+                  <td>カードを選ぶ・選んだ線の根拠を表示（検索欄では次の一致へ）</td>
                 </tr>
                 <tr>
                   <td className="pr-2 font-mono text-ink">Esc</td>
