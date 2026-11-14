@@ -51,9 +51,13 @@ export function sortConferenceRows<T extends ConferenceRow>(rows: readonly T[]):
   return [...rows].sort((a, b) => b.papers - a.papers || a.name.localeCompare(b.name));
 }
 
+/** Conference names whose usual spelling is not all capitals. */
+const VENUE_SPELLING: Record<string, string> = { neurips: "NeurIPS" };
+
 export function venueLabel(slug: string): string {
   const match = /^(.*)-(\d{4})$/.exec(slug);
-  return match ? `${(match[1] ?? "").toUpperCase()} ${match[2]}` : slug.toUpperCase();
+  const name = (s: string) => VENUE_SPELLING[s.toLowerCase()] ?? s.toUpperCase();
+  return match ? `${name(match[1] ?? "")} ${match[2]}` : name(slug);
 }
 
 /** Percent-encoded conference link (SCR-09): a hostile slug cannot add

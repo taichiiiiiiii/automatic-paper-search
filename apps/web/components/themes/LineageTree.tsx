@@ -46,7 +46,7 @@ import {
 } from "../../lib/themes-card-nav";
 import { exportPng, exportSvg } from "../../lib/themes-export";
 import type { ThemeCodeLinks } from "../../lib/themes-feed";
-import { formatStars, formatVenue } from "../../lib/themes-format";
+import { formatStars, formatVenue, shortVenue } from "../../lib/themes-format";
 import type { LineageArtifact } from "../../lib/themes-quality";
 import { resolveFocus } from "../../lib/themes-quality";
 import {
@@ -1816,7 +1816,7 @@ export function LineageTree({
                       >
                         <span className="flex items-center justify-between gap-1">
                           <span className="min-w-0 truncate text-[0.68rem] text-ink-subtle">
-                            {p.venue || "—"}
+                            {shortVenue(p.venue) || "—"}
                           </span>
                           {isHub && (
                             <span

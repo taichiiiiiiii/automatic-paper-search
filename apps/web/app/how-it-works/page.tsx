@@ -437,8 +437,8 @@ export default function HowItWorksPage() {
           </li>
           <li>
             Semantic Scholar に引用文がない組の引用文は、arXiv の HTML 版（
-            <a href="https://arxiv.org/html/" rel="noopener">
-              arxiv.org/html
+            <a href="https://info.arxiv.org/about/accessible_HTML.html" rel="noopener">
+              arXiv の HTML 版について
             </a>
             ）の本文から 1 文だけ引用します（robots.txt の Crawl-delay を守って取得し、HTML
             は保存・再配布しません。論文のライセンスは論文ごとに異なります）。出版社が参考文献を
