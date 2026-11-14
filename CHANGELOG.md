@@ -13,6 +13,9 @@ follows [Semantic Versioning](https://semver.org/) and the
 - 「この論文を含む監査済みの系譜はまだありません」に言い換え（サイト全体のことに読めないように）。
 - 仕組みページの arXiv HTML のリンク切れを直す。
 - 系譜のカードで「ECCV (1)」「arXiv (Cornell University)」の括弧書きを外し、トップの「NEURIPS」を「NeurIPS」に。HF のバッジはモデル・データセット・Space が 0 件なら出さない。
+### Fixed — 手がかりの語が同じ系統の別の名前にかかる強い関係（R2-71、#505）
+
+- 「mip-NeRF」「(a NeRF variant …)」「NeRF in the Wild の NeRF」「a variant of our own model」「we choose X as the backbone」を引用先への土台と読まないように規則を狭めた。公開中の辺の再生で変わるのは NeRF の誤り 4 件だけ（監査済みテーマは 0 件）。
 
 ### Fixed — 改題された学会版が preprint と別の論文として出る（R2-70、#498）
 

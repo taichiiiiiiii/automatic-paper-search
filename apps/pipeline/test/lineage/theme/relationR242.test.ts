@@ -15,8 +15,9 @@
  * #505 (Neural Radiance Fields theme, 4 of 23 strong relations wrong): a
  * cue whose object names another work of the same family (“mip-NeRF”, plain
  * “NeRF” read as an alias of NeRF-W / NeRF++), a variant of the citing
- * paper's own model, and a backbone the citing paper chooses — pinned as
- * known gaps until the rule change is decided.
+ * paper's own model, and a backbone the citing paper chooses (fixed by
+ * plans 1 + 2 of #505); the group contrast “previous NeRF works [34, 31,
+ * 27]” must stay a contrast.
  */
 
 import { describe, expect, it } from "vitest";
@@ -26,6 +27,7 @@ import {
   usageReason,
   v1RelationFor,
 } from "../../../src/lineage/classify/apiRelations.js";
+import { citedAliases, withPre505Rules } from "../../../src/lineage/classify/citedTarget.js";
 import { isSurveyLike } from "../../../src/lineage/shared/surveyLike.js";
 
 interface Case {
@@ -282,13 +284,13 @@ const CASES: Case[] = [
     expect: "baseline_only",
     knownGap: true,
   },
-  // ---- #505: wrong in the published Neural Radiance Fields theme (known gaps,
-  // pinned before any rule change; the owner decides how to narrow the rules).
+  // ---- #505: wrong in the published Neural Radiance Fields theme (pinned as
+  // known gaps by #514, fixed by the owner-approved plans 1 + 2).
   // Inputs: the quoted sentence of the published edge and the node titles /
   // authors; the abstract cases are the minimal input (no S2 context, the
-  // abstract sentence only). Today all four come out `extends`.
+  // abstract sentence only). Before the fix all four came out `extends`.
   {
-    name: "#505 Mip-NeRF 360: “an extension of mip-NeRF (a NeRF variant …)” is about mip-NeRF, not NeRF (known gap)",
+    name: "#505 Mip-NeRF 360: “an extension of mip-NeRF (a NeRF variant …)” is about mip-NeRF, not NeRF",
     cited: {
       title: "NeRF: Representing Scenes as Neural Radiance Fields for View Synthesis",
       year: 2020,
@@ -301,10 +303,9 @@ const CASES: Case[] = [
       "We present an extension of mip-NeRF (a NeRF variant that addresses sampling and aliasing) that uses a non-linear scene parameterization, online distillation, and a novel distortion-based regularizer to overcome the chal-lenges presented by…",
     source: "abstract",
     expect: "baseline_only",
-    knownGap: true,
   },
   {
-    name: "#505 Mip-NeRF: “extends NeRF” is about NeRF, not NeRF in the Wild (known gap)",
+    name: "#505 Mip-NeRF: “extends NeRF” is about NeRF, not NeRF in the Wild",
     cited: {
       title: "NeRF in the Wild: Neural Radiance Fields for Unconstrained Photo Collections",
       year: 2021,
@@ -316,10 +317,9 @@ const CASES: Case[] = [
       'Our solution, which we call "mip-NeRF" (à la "mipmap"), extends NeRF to represent the scene at a continuously-valued scale.',
     source: "abstract",
     expect: "baseline_only",
-    knownGap: true,
   },
   {
-    name: "#505 Mip-NeRF 360: “a variant of our own model” uses NeRF-W's embedding as a part (known gap)",
+    name: "#505 Mip-NeRF 360: “a variant of our own model” uses NeRF-W's embedding as a part",
     cited: {
       title: "NeRF in the Wild: Neural Radiance Fields for Unconstrained Photo Collections",
       year: 2021,
@@ -329,10 +329,9 @@ const CASES: Case[] = [
     sentence:
       "We also present a variant of our own model in which we use the latent appearance embedding (4 dimensions) presented in NeRF-W [6, 27] which ameliorates artifacts caused by inconsistent lighting conditions during scene capture (because our …",
     expect: "baseline_only",
-    knownGap: true,
   },
   {
-    name: "#505 StyleNeRF: “we choose NeRF++ (…), a variant of NeRF, as the backbone” is a tool (known gap)",
+    name: "#505 StyleNeRF: “we choose NeRF++ (…), a variant of NeRF, as the backbone” is a tool",
     cited: {
       title: "NeRF++: Analyzing and Improving Neural Radiance Fields",
       year: 2020,
@@ -342,7 +341,21 @@ const CASES: Case[] = [
     sentence:
       "Synthesis Network Considering that our training images generally have unbounded background, we choose NeRF++ (Zhang et al., 2020), a variant of NeRF, as the StyleNeRF backbone.",
     expect: "baseline_only",
-    knownGap: true,
+  },
+  {
+    // #505: right, and must survive the narrowing of the alias rules — a
+    // contrast with a group of prior works of the family the cited paper is
+    // one of (“previous NeRF works [34, 31, 27]”, NeRF-W = [27]).
+    name: "#505 MVSNeRF: “Unlike previous NeRF works [34, 31, 27] …” contrasts NeRF in the Wild",
+    cited: {
+      title: "NeRF in the Wild: Neural Radiance Fields for Unconstrained Photo Collections",
+      year: 2021,
+      authors: ["Ricardo Martin-Brualla", "Noha Radwan", "Mehdi S. M. Sajjadi"],
+    },
+    citing: "MVSNeRF: Fast Generalizable Radiance Field Reconstruction from Multi-View Stereo",
+    sentence:
+      "Unlike previous NeRF works [34, 31, 27] that mainly focus on per-scene training, we train our entire network across different scenes on the DTU dataset.",
+    expect: "contrasts",
   },
 ];
 
@@ -394,5 +407,123 @@ describe("usageReason: a backbone the experiments use is a tool (R2-46)", () => 
         facts,
       ),
     ).toBeNull();
+  });
+});
+
+describe("#505: narrowing the names never adds a strong relation", () => {
+  const nerfW = {
+    title: "NeRF in the Wild: Neural Radiance Fields for Unconstrained Photo Collections",
+    year: 2021,
+    authors: ["Ricardo Martin-Brualla", "Noha Radwan", "Mehdi S. M. Sajjadi"],
+  };
+  const rel = (citing: string, contexts: string[], cited = nerfW) =>
+    predict({
+      name: "",
+      cited,
+      citing,
+      sentence: contexts[0] as string,
+      contexts,
+      expect: "baseline_only",
+    });
+  it("keeps the marker inferred from the pre-#505 names (“NeRF [12]” still votes)", () => {
+    expect(
+      rel("Dynamic Appearance Fields: something", [
+        "NeRF [12] represents a scene as a radiance field.",
+        "We build on [27] and extend its appearance embedding to dynamic scenes.",
+        "Our appearance code follows [27].",
+      ]),
+    ).toBe("baseline_only");
+  });
+  it("still drops a citing self name that was a name of the cited paper", () => {
+    expect(rel("NeRF: something", ["Unlike NeRF-W [27], NeRF handles static scenes only."])).toBe(
+      "baseline_only",
+    );
+  });
+  const pair = (citing: string, contexts: string[], abstract: string | null = null) => {
+    const r = classifyS2Pair({
+      found: true,
+      intents: [],
+      contexts,
+      isInfluential: false,
+      citingTitle: citing,
+      citingSurvey: false,
+      cited: nerfW as never,
+      citingAbstract: abstract,
+    });
+    return (
+      v1RelationFor(r.relation, { contrast: r.contrast, targetsCited: r.singleTarget }) ??
+      "baseline_only"
+    );
+  };
+  it("a contrast lost to the narrowing does not reopen the abstract build (pair guard)", () => {
+    expect(
+      pair(
+        "Dynamic Appearance Fields: something",
+        ["Unlike NeRF, we model transient objects explicitly."],
+        "We build on NeRF in the Wild and extend it with a deformation field.",
+      ),
+    ).not.toBe("extends");
+  });
+  it("a contrast lost to the narrowing does not lift the scope-build override (pair guard)", () => {
+    expect(
+      pair("Dynamic Appearance Fields: something", [
+        "While NeRF-W [27] uses appearance embeddings, our application of the embeddings allows editing.",
+        "Unlike NeRF, we model transient objects explicitly.",
+      ]),
+    ).not.toBe("extends");
+  });
+  it("the citing paper's own name still counts after a hyphen (ablation guard)", () => {
+    expect(
+      pair("DFNet: x", [
+        "In the ablation, Full-DFNet, the proposed model, is built upon NeRF-W [27] without the transient head.",
+      ]),
+    ).toBe("baseline_only");
+  });
+  it("the pre-#505 mode gives the old alias list in the old order (marker ties)", () => {
+    // Recorded from origin/develop e31b23a5 (`citedAliases`, before #505).
+    expect(withPre505Rules(() => citedAliases(nerfW as never))).toEqual([
+      "nerf in the wild",
+      "nerf",
+      "martin-brualla et al",
+      "martin-brualla, radwan, and sajjadi",
+      "martin-brualla, radwan and sajjadi",
+      "martin-brualla, radwan, & sajjadi",
+    ]);
+  });
+  it("a tie in marker votes still goes to the old marker (no new extends / contrasts)", () => {
+    const first = "NeRF [12] and Martin-Brualla et al [27] are related.";
+    const last = "[12] represents scenes as radiance fields.";
+    const citing = "Dynamic Appearance Fields: x";
+    expect(pair(citing, [first, "We extend [27] with a deformation field.", last])).toBe(
+      "baseline_only",
+    );
+    expect(pair(citing, [first, "Unlike [27], we model transient objects explicitly.", last])).toBe(
+      "baseline_only",
+    );
+    expect(
+      pair(citing, [
+        "NeRF [12] and Martin-Brualla, Radwan and Sajjadi [27] are related.",
+        "We extend [27] with a deformation field.",
+        last,
+      ]),
+    ).toBe("baseline_only");
+  });
+  it("keeps “we choose to extend X … as the backbone” a build-on (first-person extend)", () => {
+    expect(
+      usageReason("We choose to extend NeRF-W [27] with a deformation field as the backbone.", {
+        citedResource: false,
+      }),
+    ).toBeNull();
+  });
+  it("“a variant of our baseline [27]” is not read as the citing paper's own model", () => {
+    expect(
+      rel("Dynamic Appearance Fields: something", [
+        "We also present a variant of our NeRF-W baseline [27] with a learned appearance code.",
+      ]),
+    ).toBe(
+      rel("Dynamic Appearance Fields: something", [
+        "We also present a variant of NeRF-W [27] with a learned appearance code.",
+      ]),
+    );
   });
 });
