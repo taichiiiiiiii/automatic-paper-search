@@ -121,7 +121,7 @@ describe("interpretThemesPostResponse(): Worker-failure status -> Japanese messa
       interpretThemesPostResponse(429, {
         ok: false,
         status: "rate_limited",
-        message: "daily generation cap (100) reached; please try again tomorrow",
+        message: "daily generation cap (40) reached; please try again tomorrow",
       }),
     ).toEqual({ kind: "rate_limited", message: RATE_LIMITED_GLOBAL_MESSAGE_JA });
     expect(interpretThemesPostResponse(429, { ok: false, status: "rate_limited" })).toEqual({

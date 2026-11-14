@@ -70,7 +70,7 @@ describe("QuotaLedger.consume", () => {
     for (let i = 0; i < RATE_LIMIT_GLOBAL_PER_HOUR; i++) {
       expect((await ledger.consume(`10.0.3.${i}`)).allowed).toBe(true);
     }
-    expect(await ledger.consume("10.0.3.99")).toEqual({ allowed: false, limitedBy: "global" });
+    expect(await ledger.consume("10.0.3.99")).toEqual({ allowed: false, limitedBy: "global-hour" });
     now = HOUR;
     expect((await ledger.consume("10.0.3.99")).allowed).toBe(true);
   });
@@ -99,16 +99,23 @@ describe("QuotaLedger.consume", () => {
     expect((await ledger.consume("10.0.1.200")).allowed).toBe(true);
   });
 
-  it("keeps the IP charge when the global cap subsequently rejects (preserves legacy KV semantics)", async () => {
+  it("#522: a request refused by a site-wide cap does not use up the IP's 5/hour", async () => {
     const storage = fakeStorage();
     const ledger = new QuotaLedger(storage, () => 0);
     for (let i = 0; i < RATE_LIMIT_GLOBAL_PER_HOUR; i++) await ledger.consume(`10.0.2.${i}`);
-    const before = await storage.get<{ count: number }>("ip:1.2.3.4");
-    expect(before).toBeUndefined();
     const result = await ledger.consume("1.2.3.4");
-    expect(result).toEqual({ allowed: false, limitedBy: "global" });
-    const after = await storage.get<{ count: number }>("ip:1.2.3.4");
-    expect(after?.count).toBe(1); // charged even though the request was ultimately rejected
+    expect(result).toEqual({ allowed: false, limitedBy: "global-hour" });
+    expect(await storage.get("ip:1.2.3.4")).toBeUndefined();
+  });
+
+  it("#522: reports the daily cap as 'global' and the hourly cap as 'global-hour'", async () => {
+    let now = 0;
+    const ledger = new QuotaLedger(fakeStorage(), () => now);
+    for (let i = 0; i < RATE_LIMIT_GLOBAL_PER_DAY; i++) {
+      now = Math.floor(i / RATE_LIMIT_GLOBAL_PER_HOUR) * HOUR;
+      await ledger.consume(`10.0.4.${i}`);
+    }
+    expect(await ledger.consume("10.0.4.250")).toEqual({ allowed: false, limitedBy: "global" });
   });
 });
 
@@ -197,5 +204,6 @@ describe("quotaClientKey (#522)", () => {
     expect(quotaClientKey("::ffff:192.0.2.1")).toBe("::ffff:192.0.2.1");
     expect(quotaClientKey("not-an-ip")).toBe("not-an-ip");
     expect(quotaClientKey("1:2:3")).toBe("1:2:3");
+    expect(quotaClientKey("1:2:3:4:5:6:7:8::")).toBe("1:2:3:4:5:6:7:8::");
   });
 });

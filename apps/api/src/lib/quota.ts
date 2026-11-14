@@ -70,7 +70,8 @@ export function quotaClientKey(ip: string): string {
   const head = halves[0] ? halves[0].split(":") : [];
   const tail = halves.length === 2 && halves[1] ? halves[1].split(":") : [];
   const missing = 8 - head.length - tail.length;
-  if (missing < 0 || (halves.length === 1 && missing !== 0)) return raw;
+  // "::" stands for at least one zero group; without it all 8 must be given.
+  if (halves.length === 2 ? missing < 1 : missing !== 0) return raw;
   const groups = [...head, ...Array(halves.length === 2 ? missing : 0).fill("0"), ...tail];
   if (groups.length !== 8 || !groups.every((g) => /^[0-9a-f]{1,4}$/.test(g))) return raw;
   return `${groups
@@ -79,7 +80,9 @@ export function quotaClientKey(ip: string): string {
     .join(":")}::/64`;
 }
 
-export type ConsumeResult = { allowed: true } | { allowed: false; limitedBy: "ip" | "global" };
+export type ConsumeResult =
+  | { allowed: true }
+  | { allowed: false; limitedBy: "ip" | "global" | "global-hour" };
 
 function utcHour(nowMs: number): string {
   return new Date(nowMs).toISOString().slice(0, 13);
@@ -97,10 +100,13 @@ export class QuotaLedger {
 
   async consume(ip: string): Promise<ConsumeResult> {
     const nowMs = this.now();
+    // #522: the site-wide caps are checked first (without charging), so a
+    // request refused by them does not also use up the visitor's 5/hour.
+    const globalFull = await this.globalFull(nowMs);
+    if (globalFull) return { allowed: false, limitedBy: globalFull };
     const ipCharge = await this.chargeIp(quotaClientKey(ip), nowMs);
     if (!ipCharge) return { allowed: false, limitedBy: "ip" };
-    const globalCharge = await this.chargeGlobal(nowMs);
-    if (!globalCharge) return { allowed: false, limitedBy: "global" };
+    await this.chargeGlobal(nowMs);
     return { allowed: true };
   }
 
@@ -162,18 +168,28 @@ export class QuotaLedger {
     return nextExpiry;
   }
 
-  private async chargeGlobal(nowMs: number): Promise<boolean> {
-    const today = utcDate(nowMs);
-    const hour = utcHour(nowMs);
+  private async globalCounts(nowMs: number): Promise<{ day: number; hour: number }> {
     const bucket = await this.storage.get<GlobalBucket>("global");
-    const count = bucket && bucket.date === today ? bucket.count : 0;
-    if (count >= RATE_LIMIT_GLOBAL_PER_DAY) return false;
     const hourBucket = await this.storage.get<GlobalHourBucket>("global-hour");
-    const hourCount = hourBucket && hourBucket.hour === hour ? hourBucket.count : 0;
-    if (hourCount >= RATE_LIMIT_GLOBAL_PER_HOUR) return false;
-    await this.storage.put("global", { count: count + 1, date: today });
-    await this.storage.put("global-hour", { count: hourCount + 1, hour });
-    return true;
+    return {
+      day: bucket && bucket.date === utcDate(nowMs) ? bucket.count : 0,
+      hour: hourBucket && hourBucket.hour === utcHour(nowMs) ? hourBucket.count : 0,
+    };
+  }
+
+  private async globalFull(nowMs: number): Promise<"global" | "global-hour" | null> {
+    const c = await this.globalCounts(nowMs);
+    if (c.day >= RATE_LIMIT_GLOBAL_PER_DAY) return "global";
+    if (c.hour >= RATE_LIMIT_GLOBAL_PER_HOUR) return "global-hour";
+    return null;
+  }
+
+  /** Charges both site-wide buckets (the caller checked {@link globalFull}
+   * first; the Durable Object runs one request at a time). */
+  private async chargeGlobal(nowMs: number): Promise<void> {
+    const c = await this.globalCounts(nowMs);
+    await this.storage.put("global", { count: c.day + 1, date: utcDate(nowMs) });
+    await this.storage.put("global-hour", { count: c.hour + 1, hour: utcHour(nowMs) });
   }
 }
 

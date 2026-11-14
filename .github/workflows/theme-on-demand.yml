@@ -71,7 +71,7 @@ jobs:
             exit 1
           fi
           [[ "$THEME_INPUT" =~ $THEME_RE ]] || {
-            echo "::error::theme must be 2-80 chars of [A-Za-z0-9 _-]"
+            echo "::error::theme must be 2-80 chars of [A-Za-z0-9 _-], starting with a letter or digit"
             exit 1
           }
           if [ -n "${REQUEST_ID:-}" ]; then
