@@ -145,22 +145,37 @@ export function publishedThemes(): PublishedTheme[] {
   return manifest.filter((t) => tier.has(t.slug)).map((t) => ({ ...t, tier: tier.get(t.slug) }));
 }
 
+/** Number of relations (edges) in a published theme's lineage.json. */
+export function themeEdgeCount(slug: string): number {
+  return readJson<{ edges?: unknown[] }>(`themes/${slug}/lineage.json`).edges?.length ?? 0;
+}
+
 /** The themes that get the full per-theme interaction suite. Every published
  * theme still gets the render smoke, but the ~15 interaction tests cost
  * 30–50 s each on WebKit for a 400-edge tree, and with 12 themes the WebKit
  * job overran its 40-minute budget on every run since 2026-10-29 (#466).
- * Sample: every audited theme, the largest unaudited tree and the most
- * recently generated unaudited theme (the one most likely to carry a new
- * pipeline behaviour), deduplicated. */
-export function interactionThemes(all: PublishedTheme[] = publishedThemes()): PublishedTheme[] {
+ * Sample: every audited theme, the largest unaudited tree (most papers), the
+ * unaudited theme with the most relations (#515: page cost grows with the
+ * edge count -- the 588-relation NeRF theme was only sampled by chance, as
+ * the newest), and the most recently generated unaudited theme (the one
+ * most likely to carry a new pipeline behaviour), deduplicated. Edge counts
+ * are read only for unaudited themes. */
+export function interactionThemes(
+  all: PublishedTheme[] = publishedThemes(),
+  edgeCount: (slug: string) => number = themeEdgeCount,
+): PublishedTheme[] {
   const audited = all.filter((t) => t.tier === "audited");
   const unaudited = all.filter((t) => t.tier !== "audited");
   const largest = [...unaudited].sort((a, b) => b.paper_count - a.paper_count)[0];
+  const edges = new Map(unaudited.map((t) => [t.slug, edgeCount(t.slug)]));
+  const mostEdges = [...unaudited].sort(
+    (a, b) => (edges.get(b.slug) ?? 0) - (edges.get(a.slug) ?? 0),
+  )[0];
   const newest = [...unaudited].sort((a, b) =>
     (b.generated_at ?? "").localeCompare(a.generated_at ?? ""),
   )[0];
   const picked = new Map<string, PublishedTheme>();
-  for (const t of [...audited, largest, newest]) if (t) picked.set(t.slug, t);
+  for (const t of [...audited, largest, mostEdges, newest]) if (t) picked.set(t.slug, t);
   return [...picked.values()];
 }
 
