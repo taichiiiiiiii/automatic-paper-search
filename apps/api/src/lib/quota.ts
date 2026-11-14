@@ -4,16 +4,13 @@
 // src/durable/quota-object.ts) or an in-memory fake in tests — no miniflare
 // / no network either way.
 //
-// Behaviour preserved from worker/response.js's KV version (isRateLimited /
-// isGloballyRateLimited): the per-IP bucket is checked-and-charged first;
-// only if it passes is the global bucket checked-and-charged. This means a
-// request that passes the per-IP check but then trips the global daily cap
-// still leaves the per-IP counter incremented — that was already true of
-// the KV version (two independent read-then-write calls) and is kept
-// intentionally rather than "fixed" as part of this port, since the design
-// doc does not ask for that semantic change; only the *exactness* of each
-// counter (no lost updates under concurrency) is new, courtesy of the
-// Durable Object's single-threaded execution model.
+// Order (#522): the site-wide caps (UTC hour and day) are checked first
+// without charging; only then is the per-IP bucket (IPv6 per /64)
+// checked-and-charged, and finally both site-wide buckets are charged. A
+// request refused by a site-wide cap therefore leaves the visitor's 5/hour
+// untouched (the pre-#522 KV port charged the IP first). Each counter is
+// exact under concurrency thanks to the Durable Object's single-threaded
+// execution model.
 
 import {
   RATE_LIMIT_GLOBAL_PER_DAY,
