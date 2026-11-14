@@ -15,7 +15,11 @@
 // counter (no lost updates under concurrency) is new, courtesy of the
 // Durable Object's single-threaded execution model.
 
-import { RATE_LIMIT_GLOBAL_PER_DAY, RATE_LIMIT_PER_HOUR } from "../config.js";
+import {
+  RATE_LIMIT_GLOBAL_PER_DAY,
+  RATE_LIMIT_GLOBAL_PER_HOUR,
+  RATE_LIMIT_PER_HOUR,
+} from "../config.js";
 
 export interface QuotaStorage {
   get<T = unknown>(key: string): Promise<T | undefined>;
@@ -45,7 +49,44 @@ interface GlobalBucket {
   date: string;
 }
 
-export type ConsumeResult = { allowed: true } | { allowed: false; limitedBy: "ip" | "global" };
+interface GlobalHourBucket {
+  count: number;
+  hour: string;
+}
+
+/**
+ * #522: the per-IP bucket key. One IPv6 subscriber usually holds a whole
+ * /64, so rotating the low 64 bits would otherwise give a fresh 5/hour
+ * bucket per address; IPv6 is counted per /64 (the first four hextets of
+ * the expanded address). IPv4 and anything unparseable stay as given.
+ */
+export function quotaClientKey(ip: string): string {
+  const raw = ip.trim().toLowerCase();
+  if (!raw.includes(":")) return raw;
+  const addr = raw.split("%")[0] ?? raw;
+  if (addr.includes(".")) return raw; // IPv4-mapped / embedded IPv4: keep as is
+  const halves = addr.split("::");
+  if (halves.length > 2) return raw;
+  const head = halves[0] ? halves[0].split(":") : [];
+  const tail = halves.length === 2 && halves[1] ? halves[1].split(":") : [];
+  const missing = 8 - head.length - tail.length;
+  // "::" stands for at least one zero group; without it all 8 must be given.
+  if (halves.length === 2 ? missing < 1 : missing !== 0) return raw;
+  const groups = [...head, ...Array(halves.length === 2 ? missing : 0).fill("0"), ...tail];
+  if (groups.length !== 8 || !groups.every((g) => /^[0-9a-f]{1,4}$/.test(g))) return raw;
+  return `${groups
+    .slice(0, 4)
+    .map((g) => g.replace(/^0+(?=.)/, ""))
+    .join(":")}::/64`;
+}
+
+export type ConsumeResult =
+  | { allowed: true }
+  | { allowed: false; limitedBy: "ip" | "global" | "global-hour" };
+
+function utcHour(nowMs: number): string {
+  return new Date(nowMs).toISOString().slice(0, 13);
+}
 
 function utcDate(nowMs: number): string {
   return new Date(nowMs).toISOString().slice(0, 10);
@@ -59,10 +100,13 @@ export class QuotaLedger {
 
   async consume(ip: string): Promise<ConsumeResult> {
     const nowMs = this.now();
-    const ipCharge = await this.chargeIp(ip, nowMs);
+    // #522: the site-wide caps are checked first (without charging), so a
+    // request refused by them does not also use up the visitor's 5/hour.
+    const globalFull = await this.globalFull(nowMs);
+    if (globalFull) return { allowed: false, limitedBy: globalFull };
+    const ipCharge = await this.chargeIp(quotaClientKey(ip), nowMs);
     if (!ipCharge) return { allowed: false, limitedBy: "ip" };
-    const globalCharge = await this.chargeGlobal(nowMs);
-    if (!globalCharge) return { allowed: false, limitedBy: "global" };
+    await this.chargeGlobal(nowMs);
     return { allowed: true };
   }
 
@@ -71,7 +115,7 @@ export class QuotaLedger {
   // floored at 0; never re-extends an expired/rolled-over window.
   async refund(ip: string): Promise<void> {
     const nowMs = this.now();
-    const ipKey = `${IP_KEY_PREFIX}${ip}`;
+    const ipKey = `${IP_KEY_PREFIX}${quotaClientKey(ip)}`;
     const ipBucket = await this.storage.get<IpBucket>(ipKey);
     if (ipBucket && ipBucket.expiresAt > nowMs && ipBucket.count > 0) {
       await this.storage.put(ipKey, { ...ipBucket, count: ipBucket.count - 1 });
@@ -80,6 +124,10 @@ export class QuotaLedger {
     const globalBucket = await this.storage.get<GlobalBucket>("global");
     if (globalBucket && globalBucket.date === today && globalBucket.count > 0) {
       await this.storage.put("global", { ...globalBucket, count: globalBucket.count - 1 });
+    }
+    const hourBucket = await this.storage.get<GlobalHourBucket>("global-hour");
+    if (hourBucket && hourBucket.hour === utcHour(nowMs) && hourBucket.count > 0) {
+      await this.storage.put("global-hour", { ...hourBucket, count: hourBucket.count - 1 });
     }
   }
 
@@ -120,13 +168,28 @@ export class QuotaLedger {
     return nextExpiry;
   }
 
-  private async chargeGlobal(nowMs: number): Promise<boolean> {
-    const today = utcDate(nowMs);
+  private async globalCounts(nowMs: number): Promise<{ day: number; hour: number }> {
     const bucket = await this.storage.get<GlobalBucket>("global");
-    const count = bucket && bucket.date === today ? bucket.count : 0;
-    if (count >= RATE_LIMIT_GLOBAL_PER_DAY) return false;
-    await this.storage.put("global", { count: count + 1, date: today });
-    return true;
+    const hourBucket = await this.storage.get<GlobalHourBucket>("global-hour");
+    return {
+      day: bucket && bucket.date === utcDate(nowMs) ? bucket.count : 0,
+      hour: hourBucket && hourBucket.hour === utcHour(nowMs) ? hourBucket.count : 0,
+    };
+  }
+
+  private async globalFull(nowMs: number): Promise<"global" | "global-hour" | null> {
+    const c = await this.globalCounts(nowMs);
+    if (c.day >= RATE_LIMIT_GLOBAL_PER_DAY) return "global";
+    if (c.hour >= RATE_LIMIT_GLOBAL_PER_HOUR) return "global-hour";
+    return null;
+  }
+
+  /** Charges both site-wide buckets (the caller checked {@link globalFull}
+   * first; the Durable Object runs one request at a time). */
+  private async chargeGlobal(nowMs: number): Promise<void> {
+    const c = await this.globalCounts(nowMs);
+    await this.storage.put("global", { count: c.day + 1, date: utcDate(nowMs) });
+    await this.storage.put("global-hour", { count: c.hour + 1, hour: utcHour(nowMs) });
   }
 }
 

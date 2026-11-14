@@ -21,8 +21,9 @@
  * (`--theme`, the request form, `POST /api/themes`): 2–80 chars of
  * ASCII letters, digits, space, `_` and `-`. Rejects shell
  * metacharacters, path separators and non-ASCII before anything else
- * runs. */
-export const THEME_INPUT_PATTERN: RegExp = /^[A-Za-z0-9 _-]{2,80}$/;
+ * runs. #522: the first character is a letter or digit, so a theme can
+ * never look like a CLI option (`-x`) to the pipeline. */
+export const THEME_INPUT_PATTERN: RegExp = /^[A-Za-z0-9][A-Za-z0-9 _-]{1,79}$/;
 
 /** Shape of a theme slug as produced by {@link themeSlug} (and of the
  * legacy Python `theme_slug()` / `worker/slug.js` output). Validates
