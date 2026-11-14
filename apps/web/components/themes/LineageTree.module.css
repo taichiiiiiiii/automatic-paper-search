@@ -242,3 +242,24 @@
     color-mix(in oklch, var(--color-accent) 6%, transparent)
   );
 }
+
+/* #521 U2: cards outside a search / year filter fade behind an opaque
+   veil instead of turning see-through (lines never show through text). */
+.filteredOut {
+  position: relative;
+}
+.filteredOut::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--color-surface-elevated, #fff);
+  opacity: 0.65;
+  pointer-events: none;
+}
+/* The match the search is currently on. */
+.searchCurrent {
+  box-shadow:
+    0 0 0 2px var(--color-surface-elevated, #fff),
+    0 0 0 5px var(--color-accent, currentColor);
+}

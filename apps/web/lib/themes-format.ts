@@ -64,7 +64,11 @@ const VENUE_ACRONYMS: ReadonlyArray<readonly [RegExp, string]> = [
  * Science, etc.) that are already short are not destroyed. */
 export function shortVenue(venue: string | null | undefined): string {
   if (!venue) return "";
-  const trimmed = String(venue).trim();
+  // #521: OpenAlex volume / host suffixes ("ECCV (1)", "arXiv (Cornell
+  // University)") are not part of the venue name.
+  const trimmed = String(venue)
+    .trim()
+    .replace(/\s*\((?:\d{1,3}|Cornell University)\)$/, "");
   if (!trimmed) return "";
   for (const [re, abbr] of VENUE_ACRONYMS) {
     if (re.test(trimmed)) return abbr;

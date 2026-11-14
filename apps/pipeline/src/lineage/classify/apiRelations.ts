@@ -44,9 +44,11 @@ import {
   namesCitedPaper,
   ownVariantOf,
   pickQuote,
+  pre505RulesActive,
   type SentenceTarget,
   sentenceTarget,
   spanMentionsCited,
+  withPre505Rules,
 } from "./citedTarget.js";
 
 export { citationTargetCount };
@@ -679,6 +681,11 @@ const INTRODUCED_RESOURCE =
 const EXPERIMENT_TOOL =
   /\b(?:experiments?|evaluations?|results?)\s+(?:were|are|was|is)\s+(?:all\s+)?(?:conducted|performed|carried\s+out|run|implemented)\s+(?:using|with|on|based\s+on)\b|\b(?:we|I)\s+(?:conduct|perform|run|carry\s+out)\s+(?:all\s+|our\s+(?:main\s+)?)?(?:experiments?|evaluations?)\s+(?:using|with|on|based\s+on)\b|\bthe\s+(?:model|backbone|network|architecture)\s+(?:we|that\s+we)\s+(?:ex-?periment|evaluate|use|employ)\s+with\b|\bconduct\s+(?:our\s+)?experiments?\s+based\s+on\b|\b(?:we|I)\s+(?:use|employ|adopt|utili[sz]e)\s+[^,.;]{1,60}\s+as\s+(?:our|the)\s+(?:backbone|base|baseline|base\s+model|backbone\s+model|model)\b/i;
 
+/** #505: a backbone the citing paper chooses (“we choose NeRF++ (…), a
+ * variant of NeRF, as the StyleNeRF backbone”) is a tool, like R2-46's. */
+const CHOSEN_BACKBONE =
+  /\b(?:we|I)\s+(?:choose|chose|select|selected|pick|picked)\s+[^.;]{1,80}?\s+as\s+(?:our|the)\s+(?:[\w-]+\s+){0,2}?(?:backbone|base\s+model|backbone\s+model|base\s+network|base\s+architecture)\b/i;
+
 /** A first-person extension/build verb (“we extend … with”) keeps a sentence a build-on. */
 const FIRST_PERSON_EXTEND =
   /\b(?:we|our\s+(?:method|model|approach|work|framework))\s+(?:\w+\s+){0,2}(?:extend|extends|build|builds|generali[sz]e|generali[sz]es|improve|improves)\b/i;
@@ -847,7 +854,11 @@ export function usageReason(sentence: string, facts: UsageFacts): string | null 
   // R2-46: “Our main experiments were conducted using StableDiffusion [51],
   // which is a popular variant of latent diffusion models [51]”: the cited
   // paper's model is the tool the experiments run on, described in passing.
-  if (EXPERIMENT_TOOL.test(text) && !FIRST_PERSON_EXTEND.test(text)) return "experiment_tool";
+  if (
+    (EXPERIMENT_TOOL.test(text) || (!pre505RulesActive() && CHOSEN_BACKBONE.test(text))) &&
+    !FIRST_PERSON_EXTEND.test(text)
+  )
+    return "experiment_tool";
   const opener = MAIN_CLAUSE_OPENER.exec(text);
   if (opener !== null) {
     const head = mainClauseHead(text.slice(opener.index + opener[0].length));
@@ -1044,6 +1055,29 @@ function candidateRank(c: SentenceCandidate): number {
  * from [10]", "subsample … following Hamilton et al.").
  */
 export function classifyApiRelationV3(s: PairSignals): ApiClassification {
+  const now = classifyV3Rules(s);
+  // #505: the narrowed names and cues may only take strong relations away.
+  // When today's answer is strong, return the pre-#505 answer: either the
+  // same strong relation (with its original rule and evidence) or, when a
+  // narrowed sentence opened another path (the abstract fallback, the
+  // scope-build override), the weaker pre-#505 one.
+  const strongNow = v1Label(now);
+  if (strongNow !== "extends" && strongNow !== "contrasts") return now;
+  // A strong answer is always the pre-#505 one (label, rule and evidence).
+  // The checks downstream (quotable, namedInWords in classifyS2Pair) use the
+  // narrowed names, so they can only be stricter than before #505: they may
+  // drop or downgrade a strong edge, never add one.
+  return withPre505Rules(() => classifyV3Rules(s));
+}
+
+function v1Label(r: ApiClassification): V1MappedRelation | null {
+  return v1RelationFor(r.relation, {
+    contrast: r.contrast,
+    targetsCited: r.target != null && isStrongTarget(r.target),
+  });
+}
+
+function classifyV3Rules(s: PairSignals): ApiClassification {
   const id = citedIdentity(s.cited, s.contexts);
   const quote = (): { evidence: string | null; target: SentenceTarget | null } => {
     const q = pickQuote(s.contexts, id);

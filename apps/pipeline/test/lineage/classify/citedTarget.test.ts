@@ -7,6 +7,7 @@ import { describe, expect, it } from "vitest";
 import {
   citedAliases,
   citedIdentity,
+  citingSelfNames,
   inferCitedMarker,
   isBibliographyLine,
   isUsableContext,
@@ -65,6 +66,30 @@ describe("cited identity", () => {
     );
     // Generic first words are not aliases.
     expect(citedAliases({ title: "Video Swin Transformer" })).not.toContain("video");
+  });
+
+  it("#505: a stem whose second word is a function word names the family only as a group", () => {
+    const nerfW = {
+      title: "NeRF in the Wild: Neural Radiance Fields for Unconstrained Photo Collections",
+    };
+    const aliases = citedAliases(nerfW);
+    expect(aliases).toContain("nerf in the wild");
+    expect(aliases).not.toContain("nerf");
+    expect(aliases).toEqual(expect.arrayContaining(["nerf works", "nerf-based methods"]));
+    expect(
+      sentenceTarget("Our solution extends NeRF to represent the scene.", citedIdentity(nerfW, [])),
+    ).not.toBe("named");
+  });
+
+  it("#505: a name right after a hyphen (“mip-NeRF”) is not the cited paper", () => {
+    const nerf = {
+      title: "NeRF: Representing Scenes as Neural Radiance Fields for View Synthesis",
+    };
+    const id = citedIdentity(nerf, []);
+    expect(
+      sentenceTarget("We present an extension of mip-NeRF for unbounded scenes.", id),
+    ).not.toBe("named");
+    expect(sentenceTarget("NeRF-based pipelines extend NeRF to dynamic scenes.", id)).toBe("named");
   });
 
   it("infers the cited marker from a bibliography line, an alias, or single citations", () => {
@@ -150,5 +175,29 @@ describe("short names and titleized rationales", () => {
     // Titles, model sizes and English articles are left alone.
     const t = "『A ConvNet for the 2020s』は ViT-B と Swin-B を比較する。";
     expect(titleizeRationale(t, a, b)).toBe(t);
+  });
+});
+
+// #505 review 4: the marker vote and the citing-paper self name use the
+// pre-#505 names on their own, not only through the pair guard.
+describe("#505: pre-#505 names for the marker and the self name", () => {
+  const nerfW = {
+    title: "NeRF in the Wild: Neural Radiance Fields for Unconstrained Photo Collections",
+    authors: ["Ricardo Martin-Brualla"],
+    year: 2021,
+  };
+
+  it("keeps the reference marker found through the first-word name", () => {
+    const id = citedIdentity(nerfW, [
+      "Unlike NeRF [12] and prior light fields [3], we model transient objects.",
+    ]);
+    expect(id.marker).toBe(12);
+  });
+
+  it("drops a citing self name that the pre-#505 names already cover", () => {
+    const id = citedIdentity(nerfW, []);
+    expect(
+      citingSelfNames("NeRF: Representing Scenes as Neural Radiance Fields for View Synthesis", id),
+    ).toEqual([]);
   });
 });

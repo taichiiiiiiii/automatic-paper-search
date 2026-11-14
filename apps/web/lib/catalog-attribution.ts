@@ -26,6 +26,7 @@ import {
   SOURCE_LABEL,
 } from "@paperpilot/core/licensing";
 import type { CatalogPaper } from "./catalog-core";
+import { tidyTitle } from "./catalog-text";
 
 const ARXIV_ID_RE = /^\d{4}\.\d{4,5}(v\d+)?$/;
 
@@ -120,7 +121,7 @@ export function abstractAttribution(
     return {
       ...base,
       kind: "要旨",
-      source: `出典: ${credit ? `${credit}, ` : ""}“${paper.title}”, ACL Anthology`,
+      source: `出典: ${credit ? `${credit}, ` : ""}“${tidyTitle(paper.title)}”, ACL Anthology`,
       note: "（一覧では冒頭のみ表示）",
     };
   }
@@ -130,7 +131,7 @@ export function abstractAttribution(
     return {
       ...base,
       kind: "要旨",
-      source: `出典: ${credit ? `${credit}, ` : ""}“${paper.title}”, ${volume}`,
+      source: `出典: ${credit ? `${credit}, ` : ""}“${tidyTitle(paper.title)}”, ${volume}`,
       note: "（一覧では冒頭のみ表示）",
     };
   }

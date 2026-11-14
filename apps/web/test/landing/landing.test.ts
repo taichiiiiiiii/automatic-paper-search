@@ -107,6 +107,7 @@ describe("venueLabel", () => {
   it("splits <slug>-<year> into '<SLUG> <year>'", () => {
     expect(venueLabel("cvpr-2026")).toBe("CVPR 2026");
     expect(venueLabel("eccv-2024")).toBe("ECCV 2024");
+    expect(venueLabel("neurips-2025")).toBe("NeurIPS 2025");
   });
 
   it("falls back to an uppercased slug with no year suffix", () => {

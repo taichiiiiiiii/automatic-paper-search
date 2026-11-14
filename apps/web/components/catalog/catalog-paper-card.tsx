@@ -213,7 +213,7 @@ export function CatalogPaperCard({
               >
                 {attribution.licenseLabel}
               </a>
-              {attribution.note}
+              {isSelected ? null : attribution.note}
             </p>
           )}
           {attribution?.withheld && (
@@ -295,7 +295,7 @@ export function CatalogPaperCard({
             ) : pilotLineage === "loading" ? (
               <p role="status">監査済み系譜の公開状況を確認しています…</p>
             ) : (
-              <p>監査済みの研究系譜はまだ公開されていません。</p>
+              <p>この論文を含む監査済みの系譜はまだありません。</p>
             )}
           </div>
         )}

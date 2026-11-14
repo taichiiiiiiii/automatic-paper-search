@@ -107,17 +107,37 @@ jobs:
 
       - name: Install browser
         if: steps.browser-cache.outputs.cache-hit != 'true'
+        timeout-minutes: 28
         working-directory: apps/web
         env:
           BROWSER: ${{ matrix.browser }}
-        run: pnpm exec playwright install --with-deps "$BROWSER"
+        # #512: apt mirror outages (actions/runner-images#14823, #15040,
+        # #15297). Bound each attempt so a hang still leaves a retry; 3 x
+        # (8 min + 30 s kill grace) + 30 s + 60 s waits < 28 < job's 40.
+        run: |
+          for i in 1 2 3; do
+            timeout --kill-after=30s 8m pnpm exec playwright install --with-deps "$BROWSER" && exit 0
+            echo "::warning::playwright install --with-deps attempt $i failed"
+            [ "$i" -lt 3 ] && sleep $((i * 30))
+          done
+          exit 1
 
       - name: Install browser system dependencies
         if: steps.browser-cache.outputs.cache-hit == 'true'
+        timeout-minutes: 28
         working-directory: apps/web
         env:
           BROWSER: ${{ matrix.browser }}
-        run: pnpm exec playwright install-deps "$BROWSER"
+        # #512: apt mirror outages (actions/runner-images#14823, #15040,
+        # #15297). Bound each attempt so a hang still leaves a retry; 3 x
+        # (8 min + 30 s kill grace) + 30 s + 60 s waits < 28 < job's 40.
+        run: |
+          for i in 1 2 3; do
+            timeout --kill-after=30s 8m pnpm exec playwright install-deps "$BROWSER" && exit 0
+            echo "::warning::playwright install-deps attempt $i failed"
+            [ "$i" -lt 3 ] && sleep $((i * 30))
+          done
+          exit 1
 
       - name: Run e2e suite
         working-directory: apps/web

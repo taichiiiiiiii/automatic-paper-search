@@ -33,6 +33,12 @@ export interface CitedIdentity {
   /** The cited paper's numeric reference marker in the citing paper,
    * when it could be inferred from the contexts (`null` otherwise). */
   marker: number | null;
+  /** #505: the pre-#505 names (standalone family word, matched after a
+   * hyphen too). Used only where a name that is NOT found would grant a
+   * relation (marker inference, dropping the citing paper's self name, the
+   * unnamed fallback of {@link cueTargetsCited}), so that narrowing the
+   * names can never add a strong relation. Defaults to `aliases`. */
+  looseAliases?: string[];
 }
 
 /** How a sentence refers to the cited paper. */
@@ -248,10 +254,95 @@ function escapeRe(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+/** #505: function words that, as the second word of a title stem, make the
+ * first word a family name (“NeRF in the Wild”, “BERT for …”). */
+const STEM_FUNCTION_WORDS: ReadonlySet<string> = new Set([
+  "a",
+  "an",
+  "the",
+  "in",
+  "of",
+  "for",
+  "on",
+  "with",
+  "to",
+  "from",
+  "at",
+  "by",
+  "and",
+  "as",
+  "via",
+  "into",
+  "under",
+  "without",
+  "beyond",
+  "towards",
+  "toward",
+]);
+
+/** Plural nouns that make “<family> <noun>” a group of the family's works. */
+const FAMILY_GROUP_NOUNS = [
+  "works",
+  "methods",
+  "approaches",
+  "models",
+  "variants",
+  "papers",
+  "studies",
+  "frameworks",
+  "techniques",
+];
+
+/** “nerf works”, “nerf-based methods”, …: a family name that refers to the
+ * cited paper only as one of a group of the family's works (#505). */
+function familyGroupAliases(family: string): string[] {
+  return FAMILY_GROUP_NOUNS.flatMap((n) => [`${family} ${n}`, `${family}-based ${n}`]);
+}
+
+/** #505: while set, every #505 narrowing is off (the rules as they were
+ * before #505). Only {@link withPre505Rules} sets it. */
+let pre505 = false;
+
+/**
+ * #505: run `fn` under the rules as they were before #505. The pair-level
+ * guard in `classifyApiRelationV3` compares both answers so that narrowing
+ * a sentence (a contrast that no longer targets the cited paper, a build-on
+ * that became usage) can never open another path to a strong relation (the
+ * abstract fallback, the scope-build override). Synchronous only.
+ */
+export function withPre505Rules<T>(fn: () => T): T {
+  const prev = pre505;
+  pre505 = true;
+  try {
+    return fn();
+  } finally {
+    pre505 = prev;
+  }
+}
+
+/** Whether {@link withPre505Rules} is running (for rules in other modules). */
+export function pre505RulesActive(): boolean {
+  return pre505;
+}
+
 /** Lower-cased names by which the citing paper may refer to the cited one. */
 export function citedAliases(cited: ClassifyPaperLike): string[] {
+  const sets = aliasSets(cited);
+  return pre505 ? sets.legacy : sets.strict;
+}
+
+/** The aliases ({@link citedAliases}) and the pre-#505 set (`legacy`: the
+ * standalone family word instead of its group phrases). */
+function aliasSets(cited: ClassifyPaperLike): { strict: string[]; legacy: string[] } {
   const title = str((cited as Record<string, unknown>).title);
-  const out = new Set<string>();
+  // Both lists keep the pre-#505 insertion order: marker votes are settled
+  // by it on ties (`inferCitedMarker`), so `legacy` must equal the old list.
+  const strict = new Set<string>();
+  const legacy = new Set<string>();
+  const add = (a: string) => {
+    strict.add(a);
+    legacy.add(a);
+  };
   const stem = titleStem(title);
   // R2-39: a stem made of field words only names a field, not a paper.
   const fieldOnly =
@@ -261,32 +352,47 @@ export function citedAliases(cited: ClassifyPaperLike): string[] {
       .every((w) => GENERIC_WORDS.has(w)) ?? false;
   const names = stem && !fieldOnly ? [stem] : [];
   for (const name of names) {
-    out.add(name.toLowerCase());
+    add(name.toLowerCase());
     // "PVT v2" is also written "PVTv2"; "FlashAttention-2" as "FlashAttention 2".
-    out.add(name.toLowerCase().replace(/\s+(v?\d)\b/g, "$1"));
+    add(name.toLowerCase().replace(/\s+(v?\d)\b/g, "$1"));
     const acr = acronym(name);
-    if (acr) out.add(acr.toLowerCase());
+    if (acr) add(acr.toLowerCase());
     // The first distinctive word of a multi-word stem ("Swin" of "Swin
     // Transformer", "Tokens-to-Token" of "Tokens-to-Token ViT").
     const words = name.split(/\s+/);
     if (words.length > 1) {
       const w = (words[0] as string).replace(/[^\p{L}\p{N}-]/gu, "");
-      if (w.length >= 3 && !GENERIC_WORDS.has(w.toLowerCase())) out.add(w.toLowerCase());
+      if (w.length >= 3 && !GENERIC_WORDS.has(w.toLowerCase())) {
+        // #505: when the second word is a function word (“NeRF in the
+        // Wild”), the first word is the family name (NeRF), not this
+        // paper's: it names the paper only as one of a group of the
+        // family's works (“previous NeRF works [34, 31, 27]”).
+        if (STEM_FUNCTION_WORDS.has((words[1] as string).toLowerCase())) {
+          for (const g of familyGroupAliases(w.toLowerCase())) strict.add(g);
+          legacy.add(w.toLowerCase());
+        } else {
+          add(w.toLowerCase());
+        }
+      }
     }
   }
   const surname = firstAuthorSurname(cited);
-  if (surname) out.add(`${surname.toLowerCase()} et al`);
-  if (surname) for (const a of authorListAliases(cited)) out.add(a.toLowerCase());
-  return [...out].filter((a) => a.length >= 3);
+  if (surname) add(`${surname.toLowerCase()} et al`);
+  if (surname) for (const x of authorListAliases(cited)) add(x.toLowerCase());
+  const keep = (xs: Set<string>) => [...xs].filter((x) => x.length >= 3);
+  return { strict: keep(strict), legacy: keep(legacy) };
 }
 
 /** The year written right after an author mention: "et al. (2017b)",
  * "Welling, 2016", "Leskovec 2017)". */
 const YEAR_AFTER = /^\.?\s*,?\s*\(?\s*((?:1[89]|20)\d{2})([a-z]?)\b/;
 
-function mentions(sentence: string, alias: string): boolean {
+function mentions(sentence: string, alias: string, afterHyphen = false): boolean {
   // Word-bounded, case-insensitive; "Swin" matches "Swin-B" but not "CSWin".
-  const re = new RegExp(`(?<![\\p{L}\\p{N}])${escapeRe(foldText(alias))}(?![\\p{L}])`, "giu");
+  // #505: nor after a hyphen — "mip-NeRF" names another work than NeRF
+  // (`afterHyphen` restores the pre-#505 match for the loose tests).
+  const before = afterHyphen || pre505 ? "\\p{L}\\p{N}" : "\\p{L}\\p{N}-";
+  const re = new RegExp(`(?<![${before}])${escapeRe(foldText(alias))}(?![\\p{L}])`, "giu");
   const text = foldText(sentence);
   const years = new Set<string>();
   let hit = false;
@@ -531,9 +637,18 @@ export function cueTargetsCited(
   // R2-39: a sentence without any citation ("Building upon this, we
   // introduce VRPO", "Based on the setup in Section 4.3, …") ties a cue to
   // the cited paper only through its name inside the cue's span (below).
-  const byName = (span: string) =>
-    id.aliases.some((a) => mentions(span, a)) || namesVersionFamily(span, id);
-  const namedInWords = byName(sentence);
+  // #505: a name inside an appositive bracket (“(a NeRF variant …)”) does
+  // not tie the cue to the cited paper.
+  const byName = (raw: string) => {
+    const span = maskAppositives(raw);
+    return id.aliases.some((a) => mentions(span, a)) || namesVersionFamily(span, id);
+  };
+  // #505: whether the sentence names the cited paper at all gates the
+  // unnamed fallbacks below; it keeps the pre-#505 names so that a hidden
+  // name never opens a fallback.
+  const namedInWords =
+    (id.looseAliases ?? id.aliases).some((a) => mentions(sentence, a, true)) ||
+    namesVersionFamily(sentence, id, true);
   const multi = citationTargetCount(sentence) > 1;
   for (const p of cues) {
     const re = new RegExp(p.source, p.flags.includes("g") ? p.flags : `${p.flags}g`);
@@ -650,6 +765,9 @@ const FIRST_PERSON_RE = /(?<![\w-])(?:we|our|ours|us)(?![\w-])/i;
  * them: “<work> (<citation>), a [few words] ” (group 1 = the citation). */
 const VARIANT_NOUN_RE =
   /^(?:variant|version|adaptation|modification|instantiation|extension)\s+of\b/i;
+/** #505: the citing paper's own model / method as a cue's object. */
+const OWN_OBJECT_RE =
+  /^\s*(?:the\s+)?our\s+(?:own\s+)?(?:[\w-]+\s+){0,2}?(?:models?|methods?|approach(?:es)?|frameworks?|networks?|architectures?|systems?|pipelines?|algorithms?)\b/i;
 const APPOSITION_HEAD_RE = /([[(][^\][()]{1,160}[\])])\s*,\s*(?:a|an)\s+(?:[\w-]+\s+){0,3}$/;
 const YEAR_RE = /\b(?:1[89]|20)\d{2}[a-z]?\b/;
 const ENUMERATION_RE =
@@ -665,6 +783,12 @@ interface GovEvent {
 interface CiteUnit {
   at: number;
   cited: boolean | null;
+}
+
+/** #505: blank out appositive brackets “(a …)” / “(an …)” (offsets kept). */
+function maskAppositives(text: string): string {
+  if (pre505) return text;
+  return text.replace(/\((?:a|an)\s[^()]*\)/gi, (m) => " ".repeat(m.length));
 }
 
 /** Citation units of `text` (positions relative to it): numeric bracket
@@ -704,10 +828,14 @@ function citationUnits(
       cited: surnameRe !== null ? surnameRe.test(m[1] as string) : null,
     });
   }
+  // #505: names inside an appositive bracket (“mip-NeRF (a NeRF variant
+  // …)”) describe the work before it; they are not what a cue governs.
+  const named = withNames ? maskAppositives(text) : text;
+  const before = pre505 ? "\\p{L}\\p{N}" : "\\p{L}\\p{N}-";
   for (const a of withNames ? id.aliases : []) {
     if (/ et al$/.test(a)) continue;
-    const re = new RegExp(`(?<![\\p{L}\\p{N}])${escapeRe(foldText(a))}(?![\\p{L}])`, "iu");
-    const m = re.exec(text);
+    const re = new RegExp(`(?<![${before}])${escapeRe(foldText(a))}(?![\\p{L}])`, "iu");
+    const m = re.exec(named);
     if (m) out.push({ at: m.index, cited: true });
   }
   return out.sort((x, y) => x.at - y.at);
@@ -784,6 +912,9 @@ export function cueGovernor(
   }
   const { end, capped } = objectSpanEnd(masked, from);
   const object = text.slice(from, end);
+  // #505: “a variant of our own model in which we use … NeRF-W [6, 27]” is
+  // a variant of the citing paper's model, not of the cited paper.
+  if (!pre505 && VARIANT_NOUN_RE.test(cueText) && OWN_OBJECT_RE.test(object)) return "self";
   const units = citationUnits(object, sentence, id);
   // The owner a "proposed by / introduced in" phrase names owns the object.
   for (const m of masked.slice(from, end).matchAll(OWNER_RE)) {
@@ -847,13 +978,15 @@ export function citingSelfNames(
   if (stem === null) return [];
   const low = stem.toLowerCase();
   if (low.length < 3 || GENERIC_WORDS.has(low) || GENERIC_NAMES.has(low)) return [];
-  if (cited.aliases.includes(low)) return [];
+  if ((cited.looseAliases ?? cited.aliases).includes(low)) return [];
   return [low];
 }
 
 /** Whether `sentence` mentions one of `names` (word-bounded, case-insensitive). */
 export function mentionsAny(sentence: string, names: readonly string[]): boolean {
-  return names.some((n) => mentions(sentence, n));
+  // #505: the hyphen rule is about the cited paper's names; the citing
+  // paper's own name still counts after a hyphen (“Full-DFNet”).
+  return names.some((n) => mentions(sentence, n, true));
 }
 
 /**
@@ -877,11 +1010,21 @@ export function citedIdentity(
   contexts: readonly string[],
 ): CitedIdentity {
   if (!cited) return { aliases: [], marker: null };
-  const aliases = citedAliases(cited);
-  const marker = inferCitedMarker(contexts, cited, aliases);
-  const names = contextMethodNames(contexts, cited, marker).filter((n) => !aliases.includes(n));
+  const sets = aliasSets(cited);
+  const legacy = sets.legacy;
+  const aliases = pre505 ? legacy : sets.strict;
+  // #505: the marker and the context names are inferred from the pre-#505
+  // names, so the narrowed aliases never move the marker to another work.
+  const marker = inferCitedMarker(contexts, cited, legacy);
+  const found = contextMethodNames(contexts, cited, marker);
+  const names = found.filter((n) => !legacy.includes(n));
   const surname = firstAuthorSurname(cited)?.toLowerCase() ?? null;
-  return { aliases: [...aliases, ...names], marker, surname };
+  return {
+    aliases: [...aliases, ...names],
+    marker,
+    surname,
+    looseAliases: [...legacy, ...names],
+  };
 }
 
 /** Surnames of the author-year citations of a sentence ("Bronstein et al.
@@ -920,11 +1063,12 @@ export function namesCitedPaper(sentence: string | null, id: CitedIdentity): boo
 
 /** The version family's name ("We follow the FlashAttention algorithms …
  * [2, 3, 4]" for FlashAttention-2 = [2]) singles the family out. */
-function namesVersionFamily(sentence: string, id: CitedIdentity): boolean {
-  const family = id.aliases
+function namesVersionFamily(sentence: string, id: CitedIdentity, loose = false): boolean {
+  const aliases = loose ? (id.looseAliases ?? id.aliases) : id.aliases;
+  const family = aliases
     .map((a) => a.replace(/[-\s]?(v\d+|\d+|\+\+)$/i, ""))
-    .filter((f, i) => f.length >= 4 && f !== id.aliases[i]);
-  return family.some((f) => mentions(sentence, f));
+    .filter((f, i) => f.length >= 4 && f !== aliases[i]);
+  return family.some((f) => mentions(sentence, f, loose));
 }
 
 /**

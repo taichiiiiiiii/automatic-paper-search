@@ -117,10 +117,10 @@ export function CodeBadges({ link }: { link: CodeLink | undefined }) {
           コード{link.code.stars ? ` ★${compactCount(link.code.stars)}` : ""}
         </span>
       )}
-      {link.hf && (
+      {link.hf && link.hf.models + link.hf.datasets + link.hf.spaces > 0 && (
         <span
           role="img"
-          aria-label={`Hugging Face: モデル ${link.hf.models} 件`}
+          aria-label={`Hugging Face: モデル ${link.hf.models} 件・データセット ${link.hf.datasets} 件・Space ${link.hf.spaces} 件`}
           title={`Hugging Face Papers: ▲${link.hf.upvotes}・モデル ${link.hf.models}・データセット ${link.hf.datasets}・Space ${link.hf.spaces}`}
           className="rounded bg-surface-2 px-1 text-[0.6rem] font-semibold text-ink-muted"
           data-badge="hf"

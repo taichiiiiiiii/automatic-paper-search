@@ -34,6 +34,12 @@ export default defineConfig({
   retries: CI ? 1 : 0,
   workers: Number(process.env.E2E_WORKERS ?? 1),
   timeout: 60_000,
+  // CI only (#517): end a run that is still going after 33 min ourselves, so
+  // Playwright writes its report and the job fails (the report upload runs)
+  // instead of being cancelled by e2e.yml's 40-min job bound with nothing to
+  // read. Slowest successful suite so far: 27.6 min (webkit); setup before
+  // the suite: at most 2.8 min. Pinned by e2e-cross-browser.test.ts.
+  globalTimeout: CI ? 33 * 60_000 : undefined,
   expect: {
     timeout: 10_000,
     // Visual regression (e2e/visual.e2e.ts, Chromium only). Baselines are

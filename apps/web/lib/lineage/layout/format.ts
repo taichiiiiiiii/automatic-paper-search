@@ -86,7 +86,10 @@ export function formatStars(n: unknown): string {
  * not destroyed. */
 export function shortVenue(venue: unknown): string {
   if (!venue) return "";
-  const trimmed = String(venue).trim();
+  // #521: same suffix cleanup as lib/themes-format.ts shortVenue.
+  const trimmed = String(venue)
+    .trim()
+    .replace(/\s*\((?:\d{1,3}|Cornell University)\)$/, "");
   if (!trimmed) return "";
   for (const [re, abbr] of VENUE_ACRONYMS) {
     if (re.test(trimmed)) return abbr;
