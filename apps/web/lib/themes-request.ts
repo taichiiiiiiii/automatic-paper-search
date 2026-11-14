@@ -262,6 +262,8 @@ export const PAUSED_MESSAGE_JA = "現在受付を一時停止しています";
  * verbatim on this Japanese page. */
 export const RATE_LIMITED_IP_MESSAGE_JA =
   "依頼が多すぎます。同じ接続からの依頼は 1 時間に 5 件までです。しばらく待ってから再度お試しください。";
+// The numbers mirror apps/api/src/config.ts RATE_LIMIT_GLOBAL_PER_DAY /
+// RATE_LIMIT_GLOBAL_PER_HOUR (#522); change both together.
 export const RATE_LIMITED_GLOBAL_MESSAGE_JA =
   "本日の生成依頼の上限（サイト全体で 1 日 40 件）に達しました。明日もう一度お試しください。";
 export const RATE_LIMITED_GLOBAL_HOUR_MESSAGE_JA =

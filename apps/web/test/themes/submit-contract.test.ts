@@ -13,6 +13,7 @@ import {
   interpretThemesPostResponse,
   issueUrlFor,
   localizedFailureMessage,
+  RATE_LIMITED_GLOBAL_HOUR_MESSAGE_JA,
   RATE_LIMITED_GLOBAL_MESSAGE_JA,
   RATE_LIMITED_IP_MESSAGE_JA,
   THEME_INPUT_INVALID_MESSAGE,
@@ -124,6 +125,14 @@ describe("interpretThemesPostResponse(): Worker-failure status -> Japanese messa
         message: "daily generation cap (40) reached; please try again tomorrow",
       }),
     ).toEqual({ kind: "rate_limited", message: RATE_LIMITED_GLOBAL_MESSAGE_JA });
+    // #522: the hourly site cap has its own copy (regex order: daily, hourly, IP).
+    expect(
+      interpretThemesPostResponse(429, {
+        ok: false,
+        status: "rate_limited",
+        message: "hourly generation cap (10) reached; please try again within the hour",
+      }),
+    ).toEqual({ kind: "rate_limited", message: RATE_LIMITED_GLOBAL_HOUR_MESSAGE_JA });
     expect(interpretThemesPostResponse(429, { ok: false, status: "rate_limited" })).toEqual({
       kind: "rate_limited",
       message: RATE_LIMITED_IP_MESSAGE_JA,
