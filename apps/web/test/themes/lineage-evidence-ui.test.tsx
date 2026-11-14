@@ -138,13 +138,56 @@ describe("LineageTree evidence UX (R2 UX P0-1 / P0-2)", () => {
   });
 
   it("is keyboard accessible: Enter on a focused edge opens it, Escape closes it", () => {
-    render(<LineageTree artifact={ARTIFACT} slug="mixture-of-experts" />);
+    const { container } = render(<LineageTree artifact={ARTIFACT} slug="mixture-of-experts" />);
+    // #521 U1: lines are not tab stops until their paper is selected.
     const line = edgeButtons()[0] as HTMLElement;
-    expect(line.getAttribute("tabindex")).toBe("0");
+    expect(line.getAttribute("tabindex")).toBe("-1");
+    const card = container.querySelector("[data-node-card]") as HTMLElement;
+    fireEvent.click(card);
+    expect(edgeButtons().some((l) => (l as HTMLElement).getAttribute("tabindex") === "0")).toBe(
+      true,
+    );
     fireEvent.keyDown(line, { key: "Enter" });
     expect(screen.getByTestId("edge-evidence-panel")).toBeTruthy();
     fireEvent.keyDown(document, { key: "Escape" });
     expect(screen.queryByTestId("edge-evidence-panel")).toBeNull();
+  });
+
+  it("#521 U1: arrow keys move the focus between cards", () => {
+    const { container } = render(<LineageTree artifact={ARTIFACT} slug="mixture-of-experts" />);
+    const cards = [...container.querySelectorAll<HTMLElement>("[data-node-card]")];
+    expect(cards.length).toBeGreaterThan(1);
+    const first = cards[0] as HTMLElement;
+    first.focus();
+    let moved = false;
+    for (const key of ["ArrowRight", "ArrowDown", "ArrowLeft", "ArrowUp"]) {
+      first.focus();
+      fireEvent.keyDown(first, { key });
+      if (document.activeElement !== first && cards.includes(document.activeElement as HTMLElement))
+        moved = true;
+    }
+    expect(moved).toBe(true);
+    // Non-arrow keys leave the focus where it is.
+    first.focus();
+    fireEvent.keyDown(first, { key: "Tab" });
+    expect(document.activeElement).toBe(first);
+  });
+
+  it("#521 U2: a search shows the match count and marks the current match", () => {
+    const { container } = render(<LineageTree artifact={ARTIFACT} slug="mixture-of-experts" />);
+    const input = screen.getByLabelText("タイトル・著者で論文を検索") as HTMLInputElement;
+    const firstTitle = (container.querySelector("[data-node-card]") as HTMLElement).getAttribute(
+      "aria-label",
+    ) as string;
+    const word = firstTitle.split(/[\s:（]/)[0] as string;
+    fireEvent.change(input, { target: { value: word } });
+    const status = container.querySelector("[data-search-matches] [role=status]") as HTMLElement;
+    expect(status.textContent).toMatch(/件一致（1 件目）/);
+    expect(container.querySelectorAll("[data-search-current]")).toHaveLength(1);
+    fireEvent.change(input, { target: { value: "zzzz-no-such-paper" } });
+    expect(
+      (container.querySelector("[data-search-matches] [role=status]") as HTMLElement).textContent,
+    ).toBe("一致なし");
   });
 
   it("lists the visible relations under the graph and opens evidence from the list", () => {
