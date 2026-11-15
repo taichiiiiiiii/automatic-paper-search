@@ -37,7 +37,11 @@ import {
 } from "../fetch-state/completeness.js";
 import { FallbackProvider, type LabelledUsage, usageOf } from "../llm/fallback.js";
 import { fetchRelated } from "../shared/fetchRelated.js";
-import { ArxivHtmlContextSource, type FetchTextLike } from "./arxivHtmlSource.js";
+import {
+  ArxivHtmlContextSource,
+  type FetchTextLike,
+  priorityArxivIdsFromLineage,
+} from "./arxivHtmlSource.js";
 import {
   addCrossNodeEdges,
   addVersionFamilyEdges,
@@ -608,6 +612,10 @@ export async function buildThemeLineage(
           contact: deps.arxivHtml.contact ?? null,
           maxFetches: deps.arxivHtml.maxFetches,
           crawlDelayMs: deps.arxivHtml.crawlDelayMs,
+          // #527: keep the budget for pages that backed a strong edge last time.
+          priorityIds: priorityArxivIdsFromLineage(
+            output !== null ? output : themeLineagePath(deps.docsRoot, slug),
+          ),
           logger,
         });
   const crossref =
