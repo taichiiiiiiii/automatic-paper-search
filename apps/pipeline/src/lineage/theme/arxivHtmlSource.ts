@@ -68,6 +68,13 @@ export interface ArxivHtmlDeps {
   contact?: string | null;
   crawlDelayMs?: number;
   maxFetches?: number;
+  /**
+   * #527: citing papers whose arXiv HTML backed a strong edge in the
+   * previously published lineage. Their fetches are reserved first: other
+   * papers may not use the last `n` of the budget while `n` of these are
+   * still unfetched (`n` is capped at half the budget), so a rebuild cannot lose them to first-come ordering.
+   */
+  priorityIds?: ReadonlySet<string>;
   logger?: { warn: (msg: string) => void };
 }
 
@@ -106,6 +113,32 @@ export interface ArxivHtmlStats {
 
 const ARXIV_NEW = /^\d{4}\.\d{4,5}$/;
 const ARXIV_OLD = /^[a-z-]+(\.[A-Z]{2})?\/\d{7}$/;
+
+/**
+ * #527: arXiv ids of the citing papers whose HTML produced a strong edge in
+ * a published lineage.json (the rationale carries `arXiv:<id>`; the
+ * provenance records `source: arxiv_html`). Unreadable file -> empty set.
+ */
+export function priorityArxivIdsFromLineage(path: string | null): Set<string> {
+  const out = new Set<string>();
+  if (path === null || !existsSync(path)) return out;
+  try {
+    const doc = JSON.parse(readFileSync(path, "utf8")) as { edges?: unknown };
+    if (!Array.isArray(doc.edges)) return out;
+    for (const e of doc.edges as Array<Record<string, unknown>>) {
+      if (e.relation === "baseline_only") continue;
+      const prov = e.provenance as { evidence?: { source?: unknown } } | null | undefined;
+      if (prov?.evidence?.source !== "arxiv_html") continue;
+      const m = /arXiv:(\d{4}\.\d{4,5}|[a-z-]+(?:\.[A-Z]{2})?\/\d{7})/.exec(
+        String(e.rationale ?? ""),
+      );
+      if (m?.[1]) out.add(m[1]);
+    }
+  } catch {
+    return out;
+  }
+  return out;
+}
 
 export function isArxivId(id: string | null | undefined): id is string {
   return typeof id === "string" && (ARXIV_NEW.test(id) || ARXIV_OLD.test(id));
@@ -254,6 +287,20 @@ export class ArxivHtmlContextSource {
     return { kind: "contexts", contexts: [...pair.c], arxiv: id, version: v, bib: pair.b };
   }
 
+  /** Priority papers still needing a fetch (not parsed this run, no fresh cached page). */
+  private unfetchedPriority(): number {
+    const ids = this.deps.priorityIds;
+    if (!ids || ids.size === 0) return 0;
+    let n = 0;
+    for (const id of ids) {
+      if (this.memo.has(id)) continue;
+      const entry = this.entries[id];
+      if (entry && this.fresh(entry)) continue;
+      n += 1;
+    }
+    return n;
+  }
+
   /** The parsed page (fetched at most once per run), `null` = no HTML. */
   private async page(
     id: string,
@@ -261,7 +308,12 @@ export class ArxivHtmlContextSource {
     if (this.memo.has(id)) return this.memo.get(id) ?? null;
     if (this.stats.blocked) return "blocked";
     const max = this.deps.maxFetches ?? DEFAULT_MAX_FETCHES;
-    if (this.stats.fetches >= max) {
+    // At most half the budget is reserved, so priority ids the new graph
+    // never reaches cannot starve every other paper.
+    const reserved = this.deps.priorityIds?.has(id)
+      ? 0
+      : Math.min(this.unfetchedPriority(), Math.floor(max / 2));
+    if (this.stats.fetches + reserved >= max) {
       this.stats.budgetSkips += 1;
       return "budget";
     }

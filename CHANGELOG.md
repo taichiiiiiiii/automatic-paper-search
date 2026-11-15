@@ -6,6 +6,15 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Changed — regen-themes が theme-on-demand と取得キャッシュを共有（#519）
+
+- 作り直し（regen-themes）も、S2・arXiv HTML などの取得キャッシュを theme-on-demand と同じ key・path で復元して保存する。git に入っている同名ファイルは復元の前に退避して直後に戻すので、作り直しの入力と develop に入る内容は変わらない。
+
+### Fixed — 作り直しで arXiv HTML の強い関係が取得枠の都合で消える（#527）
+
+- 公開中の系譜で arXiv HTML が強い関係を支えた論文の取得を、40 件の枠の中で先に確保する。ほかの論文は、その分を使えない。
+- 前回の作り直しで GRAF ← NeRF と Space-time Irradiance Fields ← NeRF が普通の引用に落ちた原因への対策（取れた引用文が develop に残らない点は別途）。
+
 ### Security — テーマ依頼 API の悪用で CI と GitHub の枠を使い切られないように（#522）
 
 - サイト全体の依頼の上限を 1 時間 10 件・1 日 40 件にした（これまでは 1 日 100 件だけ）。IPv6 は /64 単位で数え、末尾を変えても 1 時間 5 件の枠は増えない。サイト全体の上限で断った依頼は、その人の 1 時間 5 件の枠を使わない。

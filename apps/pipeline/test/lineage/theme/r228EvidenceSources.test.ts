@@ -3,7 +3,7 @@
  * venues (design 41 R2-28, research 47). Recorded / synthetic fixtures
  * only — no network.
  */
-import { mkdtempSync, readFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -21,6 +21,7 @@ import {
   ARXIV_CRAWL_DELAY_MS,
   ArxivHtmlContextSource,
   type FetchTextLike,
+  priorityArxivIdsFromLineage,
   readArxivHtmlCache,
 } from "../../../src/lineage/theme/arxivHtmlSource.js";
 import { addCrossNodeEdges } from "../../../src/lineage/theme/bfs.js";
@@ -141,6 +142,31 @@ describe("arXiv HTML parsing (LaTeXML)", () => {
   });
 });
 
+describe("#527 priorityArxivIdsFromLineage", () => {
+  it("collects arXiv ids of strong arxiv_html edges only", () => {
+    const dir = mkdtempSync(join(tmpdir(), "prio-"));
+    const p = join(dir, "lineage.json");
+    const edge = (relation: string, source: string, id: string) => ({
+      relation,
+      provenance: { evidence: { source } },
+      rationale: `「A」は「B」を土台にしている（arXiv HTML（arXiv:${id}v2）の本文）。`,
+    });
+    writeFileSync(
+      p,
+      JSON.stringify({
+        edges: [
+          edge("extends", "arxiv_html", "2007.02442"),
+          edge("baseline_only", "arxiv_html", "2011.12950"),
+          edge("extends", "s2", "2103.00001"),
+        ],
+      }),
+    );
+    expect([...priorityArxivIdsFromLineage(p)]).toEqual(["2007.02442"]);
+    expect(priorityArxivIdsFromLineage(join(dir, "missing.json")).size).toBe(0);
+    expect(priorityArxivIdsFromLineage(null).size).toBe(0);
+  });
+});
+
 describe("ArxivHtmlContextSource: politeness, budget and cache", () => {
   function source(path: string | null, pages: Record<string, number | string>, extra = {}) {
     const urls: string[] = [];
@@ -197,6 +223,27 @@ describe("ArxivHtmlContextSource: politeness, budget and cache", () => {
       reason: "budget",
     });
     expect(budget.urls).toHaveLength(1);
+    // #527: a reserved (priority) page is not lost to first-come ordering.
+    const reserved = source(
+      null,
+      { "2101.03961": PAGE, "2201.00001": PAGE, "1701.06538": PAGE },
+      { maxFetches: 2, priorityIds: new Set(["1701.06538"]) },
+    );
+    expect((await reserved.src.contexts("2101.03961", GSHARD)).kind).toBe("contexts");
+    expect(await reserved.src.contexts("2201.00001", GSHARD)).toEqual({
+      kind: "none",
+      reason: "budget",
+    });
+    expect((await reserved.src.contexts("1701.06538", GSHARD)).kind).toBe("contexts");
+    expect(reserved.urls).toEqual([
+      "https://arxiv.org/html/2101.03961",
+      "https://arxiv.org/html/1701.06538",
+    ]);
+    // The reservation is capped at half the budget: 1 slot of 2, however many
+    // priority ids are still unfetched.
+    const many = new Set(["2301.00001", "2301.00002", "2301.00003", "2301.00004"]);
+    const capped = source(null, { "2101.03961": PAGE }, { maxFetches: 2, priorityIds: many });
+    expect((await capped.src.contexts("2101.03961", GSHARD)).kind).toBe("contexts");
     const blocked = source(null, { "2101.03961": 429, "1701.06538": PAGE });
     expect(await blocked.src.contexts("2101.03961", GSHARD)).toEqual({
       kind: "none",

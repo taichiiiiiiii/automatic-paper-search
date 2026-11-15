@@ -27,6 +27,9 @@ jobs:
           # commit-push rebases HEAD onto origin/develop and pushes HEAD:develop;
           # pin develop so a dispatch from another branch cannot push its commits.
           ref: develop
+          # #522 S8: no push credential in .git/config while the external-API
+          # steps run; the commit step below supplies it for itself only.
+          persist-credentials: false
 
       - name: Setup pnpm
         uses: ./.github/actions/setup-pnpm
@@ -56,9 +59,20 @@ jobs:
           GIT_AUTHOR_EMAIL: "bot@paperpilot.dev"
           GIT_COMMITTER_NAME: "PaperPilot Bot"
           GIT_COMMITTER_EMAIL: "bot@paperpilot.dev"
+          PUSH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           msg="👀 Daily follow-watch $(date -u +%Y-%m-%d)"
+          # #522 S8: the push credential exists only in this step, as
+          # GIT_CONFIG_* env vars (nothing on disk, in argv or in a URL). It is
+          # github.token on purpose: a push with a personal token would trigger
+          # pages.yml and change the publication path.
+          auth="$(printf 'x-access-token:%s' "$PUSH_TOKEN" | base64 | tr -d '\n')"
+          echo "::add-mask::$auth"
+          export GIT_CONFIG_COUNT=1
+          export GIT_CONFIG_KEY_0="http.https://github.com/.extraheader"
+          export GIT_CONFIG_VALUE_0="AUTHORIZATION: basic $auth"
+          unset PUSH_TOKEN auth
           pnpm exec tsx apps/pipeline/src/release/cli.ts commit-push "$msg" \
             data/inputs/daily data/state/seen_ids.daily.json \
             data/state/run_history.daily.jsonl

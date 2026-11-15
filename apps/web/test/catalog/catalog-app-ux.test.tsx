@@ -240,6 +240,46 @@ describe("CatalogApp UX audit (design doc 53)", () => {
     expect(back).toHaveBeenCalled();
   });
 
+  // #521 U10: focus must never be dropped on <body> -- opening moves it to
+  // the opened card's heading, closing (button or Esc) returns it to that
+  // card's 詳細を開く. jsdom's click does not focus (like WebKit), so these
+  // also pin the explicit focus moves.
+  it("U10: 詳細を開く moves focus to the card heading; 詳細を閉じる returns it to 詳細を開く", async () => {
+    await renderLoaded();
+    const id = "c".repeat(40);
+    await act(async () => {
+      fireEvent.click(document.querySelector(`[data-select-paper="${id}"]`) as HTMLButtonElement);
+    });
+    await waitFor(() =>
+      expect(document.activeElement).toBe(document.getElementById(`paper-heading-${id}`)),
+    );
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "詳細を閉じる" }));
+    });
+    await waitFor(() => {
+      expect(screen.queryByRole("button", { name: "詳細を閉じる" })).toBeNull();
+      expect(document.activeElement).toBe(document.querySelector(`[data-select-paper="${id}"]`));
+    });
+  });
+
+  it("U10: Esc after 詳細を開く returns focus to 詳細を開く", async () => {
+    await renderLoaded();
+    const id = "c".repeat(40);
+    await act(async () => {
+      fireEvent.click(document.querySelector(`[data-select-paper="${id}"]`) as HTMLButtonElement);
+    });
+    await screen.findByRole("button", { name: "詳細を閉じる" });
+    await waitFor(() => {
+      if (screen.queryByRole("button", { name: "詳細を閉じる" })) {
+        act(() => {
+          fireEvent.keyDown(document.body, { key: "Escape" });
+        });
+      }
+      expect(screen.queryByRole("button", { name: "詳細を閉じる" })).toBeNull();
+      expect(document.activeElement).toBe(document.querySelector(`[data-select-paper="${id}"]`));
+    });
+  });
+
   it("Back/Forward (popstate) restores the filters from the URL", async () => {
     await renderLoaded();
     await act(async () => {

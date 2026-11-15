@@ -12,7 +12,7 @@
  * original docs/themes/index.html.
  */
 import { useSearchParams } from "next/navigation";
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { API_BASE, BASE_PATH } from "../../lib/config";
 import {
   fetchLineageQualityManifest,
@@ -135,6 +135,51 @@ export function ThemesClient() {
 
   const [state, setState] = useState<ViewState>({ phase: "loading" });
   const [aboutOpen, setAboutOpen] = useState(false);
+  // #521 U10: WebKit/Safari does not focus a clicked button, so without
+  // explicit moves the reader's focus fell on <body> after opening or
+  // closing the request panel. Opening focuses the panel (Tab then reaches
+  // the form); closing (toggle or Esc) returns focus to the toggle.
+  const aboutToggleRef = useRef<HTMLButtonElement>(null);
+  const aboutPanelRef = useRef<HTMLElement>(null);
+  const aboutFocusRef = useRef<"panel" | "toggle" | null>(null);
+  function toggleAbout() {
+    aboutFocusRef.current = aboutOpen ? "toggle" : "panel";
+    setAboutOpen(!aboutOpen);
+  }
+  // biome-ignore lint/correctness/useExhaustiveDependencies: aboutOpen is not read in the body -- the effect runs after each open/close commit, once the panel is (un)mounted.
+  useEffect(() => {
+    const target = aboutFocusRef.current;
+    if (!target) return;
+    aboutFocusRef.current = null;
+    if (target === "panel") aboutPanelRef.current?.focus({ preventScroll: true });
+    else aboutToggleRef.current?.focus({ preventScroll: true });
+  }, [aboutOpen]);
+  useEffect(() => {
+    if (!aboutOpen) return;
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key !== "Escape" || event.isComposing || event.defaultPrevented) return;
+      // Only while the reader is in the panel (or on its toggle): Esc in the
+      // lineage tree, its dialogs or the search box keeps its own meaning.
+      const target = event.target as Node | null;
+      const inPanel =
+        target instanceof Node &&
+        (aboutPanelRef.current?.contains(target) || aboutToggleRef.current?.contains(target));
+      if (!inPanel) return;
+      // Esc in a field that already holds text must not unmount the form
+      // and throw the reader's draft away.
+      if (
+        (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) &&
+        target.value !== ""
+      ) {
+        return;
+      }
+      event.preventDefault();
+      aboutFocusRef.current = "toggle";
+      setAboutOpen(false);
+    }
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [aboutOpen]);
   const [dismissedFallback, setDismissedFallback] = useState(false);
   // R4-3: optional side files of the shown theme (never block the page).
   const [extras, setExtras] = useState<{
@@ -348,7 +393,8 @@ export function ThemesClient() {
             type="button"
             aria-expanded={aboutOpen}
             aria-controls="hero-details"
-            onClick={() => setAboutOpen((v) => !v)}
+            ref={aboutToggleRef}
+            onClick={toggleAbout}
             className="inline-flex min-h-9 items-center rounded-md border border-accent px-3 py-1 text-xs font-medium text-accent-strong hover:bg-accent/10 sm:text-sm"
           >
             {aboutOpen ? "✕ 閉じる" : "＋ 新しいテーマを依頼"}
@@ -392,7 +438,13 @@ export function ThemesClient() {
           </a>
         </p>
         {aboutOpen && (
-          <div id="hero-details" className="mt-3 rounded-md border border-rule bg-surface p-4">
+          <section
+            id="hero-details"
+            ref={aboutPanelRef}
+            aria-label="新しいテーマの依頼"
+            tabIndex={-1}
+            className="mt-3 rounded-md border border-rule bg-surface p-4"
+          >
             <p className="text-sm text-ink-muted">
               系譜データは、構造・識別子・関係根拠を検査する自動検査に合格したものだけ公開します。
             </p>
@@ -400,7 +452,7 @@ export function ThemesClient() {
               人が内容を確認した系譜は「監査済み」、まだ確認していない系譜は「未監査（自動生成）」と表示します。依頼したテーマは、自動検査に合格するとまず未監査として公開されます。
             </p>
             <ThemeRequestGate />
-          </div>
+          </section>
         )}
       </header>
 
