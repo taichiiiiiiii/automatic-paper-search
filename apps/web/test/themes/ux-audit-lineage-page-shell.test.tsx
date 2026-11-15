@@ -7,7 +7,7 @@
 // secondary sections are closed disclosures that open from the UI, the
 // timeline dots have a larger tap area, and the keyboard help dialog
 // keeps focus inside and returns it on close.
-import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { LineageTree } from "../../components/themes/LineageTree";
 import { ThemesClient } from "../../components/themes/ThemesClient";
@@ -234,6 +234,91 @@ describe("ThemesClient page shell", () => {
     expect(btn.getAttribute("aria-expanded")).toBe("false");
     fireEvent.click(btn);
     expect(btn.getAttribute("aria-expanded")).toBe("true");
+    expect(document.getElementById("hero-details")).toBeTruthy();
+  });
+});
+
+// #521 U10: the request panel must not leave focus on <body> (WebKit/Safari
+// and jsdom do not focus a clicked button): opening moves focus into the
+// panel, closing with the toggle or Esc returns it to the toggle.
+describe("U10 request panel focus", () => {
+  async function openPanel() {
+    mockData();
+    render(<ThemesClient />);
+    await screen.findByRole("heading", { level: 1 });
+    const toggle = screen.getByRole("button", { name: /新しいテーマを依頼/ });
+    fireEvent.click(toggle);
+    return toggle;
+  }
+
+  it("opening moves focus into the panel", async () => {
+    await openPanel();
+    const panel = document.getElementById("hero-details") as HTMLElement;
+    await waitFor(() => {
+      expect(document.activeElement).not.toBe(document.body);
+      expect(panel.contains(document.activeElement)).toBe(true);
+    });
+  });
+
+  it("closing with the toggle returns focus to the toggle", async () => {
+    const toggle = await openPanel();
+    await waitFor(() => expect(document.activeElement).not.toBe(document.body));
+    (document.activeElement as HTMLElement).blur();
+    fireEvent.click(toggle);
+    await waitFor(() => {
+      expect(document.getElementById("hero-details")).toBeNull();
+      expect(document.activeElement).toBe(toggle);
+    });
+  });
+
+  it("Esc closes the panel and returns focus to the toggle", async () => {
+    const toggle = await openPanel();
+    await waitFor(() => {
+      if (document.getElementById("hero-details")) {
+        act(() => {
+          fireEvent.keyDown(document.activeElement ?? document.body, { key: "Escape" });
+        });
+      }
+      expect(document.getElementById("hero-details")).toBeNull();
+      expect(document.activeElement).toBe(toggle);
+    });
+    expect(toggle.getAttribute("aria-expanded")).toBe("false");
+  });
+
+  it("Esc outside the panel (e.g. in the lineage tree) leaves it open", async () => {
+    await openPanel();
+    await waitFor(() => expect(document.activeElement).not.toBe(document.body));
+    fireEvent.keyDown(document.body, { key: "Escape" });
+    expect(document.getElementById("hero-details")).toBeTruthy();
+  });
+
+  it("Esc in a field that holds text keeps the panel (and the draft)", async () => {
+    await openPanel();
+    const panel = await waitFor(() => {
+      const el = document.getElementById("hero-details");
+      expect(el).toBeTruthy();
+      return el as HTMLElement;
+    });
+    const input = document.createElement("input");
+    input.value = "Vision Transformer";
+    panel.appendChild(input);
+    fireEvent.keyDown(input, { key: "Escape" });
+    expect(document.getElementById("hero-details")).toBeTruthy();
+    input.value = "";
+    await waitFor(() => {
+      if (document.getElementById("hero-details")) {
+        act(() => {
+          fireEvent.keyDown(input, { key: "Escape" });
+        });
+      }
+      expect(document.getElementById("hero-details")).toBeNull();
+    });
+  });
+
+  it("Esc during IME composition does not close the panel", async () => {
+    await openPanel();
+    await waitFor(() => expect(document.activeElement).not.toBe(document.body));
+    fireEvent.keyDown(document.activeElement as HTMLElement, { key: "Escape", isComposing: true });
     expect(document.getElementById("hero-details")).toBeTruthy();
   });
 });

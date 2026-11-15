@@ -205,6 +205,16 @@ export class ThemePage {
   get keyboardHelpButton(): Locator {
     return this.page.getByRole("button", { name: "キーボード操作の一覧" });
   }
+  /** #521 U10: the header toggle that opens/closes the request panel. */
+  get requestToggle(): Locator {
+    return this.page.getByRole("button", { name: /^(＋ 新しいテーマを依頼|✕ 閉じる)$/ });
+  }
+  get requestPanel(): Locator {
+    return this.page.getByRole("region", { name: "新しいテーマの依頼" });
+  }
+  get requestThemeInput(): Locator {
+    return this.requestPanel.locator('input[name="theme"]');
+  }
   get keyboardHelpDialog(): Locator {
     return this.page.getByRole("dialog", { name: /キーボードショートカット/ });
   }

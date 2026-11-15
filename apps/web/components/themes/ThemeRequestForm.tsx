@@ -551,7 +551,10 @@ export function ThemeRequestForm({ onReady }: { onReady: (slug: string) => void 
         {THEME_REQUEST_PUBLIC_NOTICE}{" "}
         {/* Plain <a>, not next/link: a Link here schedules a prefetch timer on
             every re-render, which the M4 "no stale timer" contract forbids. */}
-        <a href={PRIVACY_PATH}>プライバシー</a>
+        {/* #521: underlined -- red-on-grey alone fails link-in-text-block. */}
+        <a href={PRIVACY_PATH} className="underline">
+          プライバシー
+        </a>
       </span>
       {status.kind === "pending" && (
         <p role="status" className="text-sm text-ink-subtle">
