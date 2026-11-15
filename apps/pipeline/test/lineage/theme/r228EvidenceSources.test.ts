@@ -226,24 +226,23 @@ describe("ArxivHtmlContextSource: politeness, budget and cache", () => {
     // #527: a reserved (priority) page is not lost to first-come ordering.
     const reserved = source(
       null,
-      { "2101.03961": PAGE, "1701.06538": PAGE },
-      { maxFetches: 1, priorityIds: new Set(["1701.06538"]) },
+      { "2101.03961": PAGE, "2201.00001": PAGE, "1701.06538": PAGE },
+      { maxFetches: 2, priorityIds: new Set(["1701.06538"]) },
     );
-    expect(await reserved.src.contexts("2101.03961", GSHARD)).toEqual({
+    expect((await reserved.src.contexts("2101.03961", GSHARD)).kind).toBe("contexts");
+    expect(await reserved.src.contexts("2201.00001", GSHARD)).toEqual({
       kind: "none",
       reason: "budget",
     });
     expect((await reserved.src.contexts("1701.06538", GSHARD)).kind).toBe("contexts");
-    expect(reserved.urls).toEqual(["https://arxiv.org/html/1701.06538"]);
-    // The reservation is capped at half the budget (4 priority ids, budget 2 -> 1 reserved).
-    const capped = source(
-      null,
-      { "2101.03961": PAGE, "1701.06538": PAGE },
-      {
-        maxFetches: 2,
-        priorityIds: new Set(["a.1", "b.2", "c.3", "d.4"].map((x) => `2001.0${x.length}${x[0]}`)),
-      },
-    );
+    expect(reserved.urls).toEqual([
+      "https://arxiv.org/html/2101.03961",
+      "https://arxiv.org/html/1701.06538",
+    ]);
+    // The reservation is capped at half the budget: 1 slot of 2, however many
+    // priority ids are still unfetched.
+    const many = new Set(["2301.00001", "2301.00002", "2301.00003", "2301.00004"]);
+    const capped = source(null, { "2101.03961": PAGE }, { maxFetches: 2, priorityIds: many });
     expect((await capped.src.contexts("2101.03961", GSHARD)).kind).toBe("contexts");
     const blocked = source(null, { "2101.03961": 429, "1701.06538": PAGE });
     expect(await blocked.src.contexts("2101.03961", GSHARD)).toEqual({
