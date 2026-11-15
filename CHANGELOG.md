@@ -6,6 +6,10 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Changed — regen-themes が theme-on-demand と取得キャッシュを共有（#519）
+
+- 作り直し（regen-themes）も、S2・arXiv HTML などの取得キャッシュを theme-on-demand と同じ key・path で復元して保存する。git に入っている同名ファイルは復元の前に退避して直後に戻すので、作り直しの入力と develop に入る内容は変わらない。
+
 ### Fixed — 作り直しで arXiv HTML の強い関係が取得枠の都合で消える（#527）
 
 - 公開中の系譜で arXiv HTML が強い関係を支えた論文の取得を、40 件の枠の中で先に確保する。ほかの論文は、その分を使えない。
