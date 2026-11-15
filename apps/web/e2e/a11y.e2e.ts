@@ -1,7 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import type { Page } from "@playwright/test";
 import { CatalogPage, LandingPage, PaperLinksPage, ThemePage } from "./pages";
-import { expect, PROD, test } from "./support/fixtures";
+import { API_ORIGIN, expect, PROD, test } from "./support/fixtures";
 import { publishedThemes, themeHasCodeLinks, themeHasFeed } from "./support/site";
 
 /**
@@ -78,6 +78,22 @@ const PAGES: Record<string, (page: Page) => Promise<void>> = {
     await theme.edgeButtons.first().focus();
     await page.keyboard.press("Enter");
     await expect(theme.evidencePanel).toBeVisible();
+  },
+  // #521 U10: the request panel open, with the form rendered.
+  "theme-request-panel": async (page) => {
+    await page.route(`${API_ORIGIN}/api/health`, (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        headers: { "access-control-allow-origin": "*" },
+        body: JSON.stringify({ accepting: true, dispatch_mode: "dry-run" }),
+      }),
+    );
+    const theme = new ThemePage(page);
+    await theme.skipOnboarding();
+    await theme.goto(publishedThemes()[0]!.slug);
+    await theme.requestToggle.click();
+    await expect(theme.requestThemeInput).toBeVisible();
   },
   "theme-timeline": async (page) => {
     const theme = new ThemePage(page);

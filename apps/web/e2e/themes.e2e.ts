@@ -3,8 +3,9 @@ import type { Download, Page } from "@playwright/test";
 import { FIT_ZOOM_FLOOR_NARROW, FIT_ZOOM_FLOOR_WIDE } from "../lib/themes-tree";
 import { ThemePage } from "./pages";
 import { prepareClipboard, readClipboard } from "./support/clipboard";
-import { expect, PROD, test } from "./support/fixtures";
+import { API_ORIGIN, expect, PROD, test } from "./support/fixtures";
 import {
+  IS_REMOTE,
   interactionThemes,
   publishedThemes,
   themeHasCodeLinks,
@@ -47,6 +48,40 @@ test("/themes/ without a theme shows the gallery and a default tree", PROD, asyn
   await page.goto("/themes/");
   await theme.waitForTree();
   await expect(theme.gallery.getByRole("link")).toHaveCount(themes.length);
+});
+
+// #521 U10: opening the request panel moves focus into it (not <body>,
+// which is where WebKit left it), Tab reaches the form, and closing with the
+// toggle or Esc returns focus to the toggle. /api/health is answered locally
+// so the form renders without calling the real Worker.
+test("request panel: focus moves in on open and back to the toggle on close", async ({ page }) => {
+  test.skip(IS_REMOTE, "mocks the Worker's /api/health");
+  await page.route(`${API_ORIGIN}/api/health`, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      headers: { "access-control-allow-origin": "*" },
+      body: JSON.stringify({ accepting: true, dispatch_mode: "dry-run" }),
+    }),
+  );
+  const theme = new ThemePage(page);
+  await theme.skipOnboarding();
+  await theme.goto(themes[0]!.slug);
+  const toggle = theme.requestToggle;
+  await toggle.click();
+  await expect(theme.requestPanel).toBeFocused();
+  await expect(theme.requestThemeInput).toBeVisible();
+  await page.keyboard.press("Tab");
+  await expect(theme.requestThemeInput).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(theme.requestPanel).toHaveCount(0);
+  await expect(toggle).toBeFocused();
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  await toggle.click();
+  await expect(theme.requestPanel).toBeFocused();
+  await toggle.click();
+  await expect(theme.requestPanel).toHaveCount(0);
+  await expect(toggle).toBeFocused();
 });
 
 for (const t of themes) {
