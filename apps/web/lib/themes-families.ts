@@ -159,3 +159,33 @@ export function familyLabel(f: LineageFamily): string {
       : "";
   return `系統 ${f.index}: 「${f.anchorTitle}」ほか ${f.size} 本${span ? `（${span}）` : ""}`;
 }
+
+/** Which of LineageTree's ambiguity notes fit the view (#521 U8). */
+export interface FamilyNotices {
+  /** seedScopeNotice: names the sense the keyword seeds followed. */
+  seedScope: boolean;
+  /** wideSpanNotice: "the years are wide, other fields may be mixed in". */
+  wideSpan: boolean;
+}
+
+/**
+ * #521 U8: the switcher's legend already says the theme name has several
+ * senses, so a chosen family must not repeat that (wide-span note) or name
+ * the other family's sense (seed-scope note, which describes where most
+ * seeds went). With families, family k keeps the seed-scope note only when
+ * it holds more than half of the graph's seeds; "すべて" (0) and themes
+ * without families keep both notes, as before.
+ */
+export function familyNotices(
+  families: readonly LineageFamily[] | null,
+  chosen: number,
+  seeds: readonly string[],
+): FamilyNotices {
+  const family = families && chosen > 0 ? families[chosen - 1] : undefined;
+  if (!family) return { seedScope: true, wideSpan: true };
+  const inGraph = new Set<string>();
+  for (const f of families ?? []) for (const s of seeds) if (f.nodeIds.has(s)) inGraph.add(s);
+  let here = 0;
+  for (const s of inGraph) if (family.nodeIds.has(s)) here += 1;
+  return { seedScope: here * 2 > inGraph.size, wideSpan: false };
+}

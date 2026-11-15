@@ -7,7 +7,13 @@
  * shows the whole graph as before.
  */
 import { type ReactNode, useMemo, useState } from "react";
-import { detectFamilies, familyLabel, initialFamily } from "../../lib/themes-families";
+import {
+  detectFamilies,
+  type FamilyNotices,
+  familyLabel,
+  familyNotices,
+  initialFamily,
+} from "../../lib/themes-families";
 import type { LineageArtifact } from "../../lib/themes-quality";
 
 export function familyArtifact(
@@ -28,21 +34,29 @@ export function LineageFamilies({
   children,
 }: {
   artifact: LineageArtifact;
-  children: (shown: LineageArtifact, familyKey: string) => ReactNode;
+  /** `notices`: which ambiguity notes fit the shown family (#521 U8). */
+  children: (shown: LineageArtifact, familyKey: string, notices: FamilyNotices) => ReactNode;
 }) {
-  const families = useMemo(() => {
-    const seeds = Array.isArray(artifact.meta?.seeds)
-      ? (artifact.meta.seeds as unknown[]).filter((s): s is string => typeof s === "string")
-      : [];
-    return detectFamilies(artifact.nodes, artifact.edges, seeds);
-  }, [artifact]);
+  const seeds = useMemo(
+    () =>
+      Array.isArray(artifact.meta?.seeds)
+        ? (artifact.meta.seeds as unknown[]).filter((s): s is string => typeof s === "string")
+        : [],
+    [artifact],
+  );
+  const families = useMemo(
+    () => detectFamilies(artifact.nodes, artifact.edges, seeds),
+    [artifact, seeds],
+  );
   const [chosen, setChosen] = useState<number>(() =>
     families && typeof window !== "undefined" ? initialFamily(families, window.location.search) : 1,
   );
   const ids = families && chosen > 0 ? (families[chosen - 1]?.nodeIds ?? null) : null;
   const shown = useMemo(() => familyArtifact(artifact, ids), [artifact, ids]);
 
-  if (!families) return <>{children(artifact, "all")}</>;
+  const notices = familyNotices(families, chosen, seeds);
+
+  if (!families) return <>{children(artifact, "all", notices)}</>;
 
   const choose = (n: number) => {
     setChosen(n);
@@ -93,7 +107,7 @@ export function LineageFamilies({
           </label>
         </div>
       </fieldset>
-      {children(shown, `fam-${chosen}`)}
+      {children(shown, `fam-${chosen}`, notices)}
     </>
   );
 }
