@@ -235,6 +235,16 @@ describe("ArxivHtmlContextSource: politeness, budget and cache", () => {
     });
     expect((await reserved.src.contexts("1701.06538", GSHARD)).kind).toBe("contexts");
     expect(reserved.urls).toEqual(["https://arxiv.org/html/1701.06538"]);
+    // The reservation is capped at half the budget (4 priority ids, budget 2 -> 1 reserved).
+    const capped = source(
+      null,
+      { "2101.03961": PAGE, "1701.06538": PAGE },
+      {
+        maxFetches: 2,
+        priorityIds: new Set(["a.1", "b.2", "c.3", "d.4"].map((x) => `2001.0${x.length}${x[0]}`)),
+      },
+    );
+    expect((await capped.src.contexts("2101.03961", GSHARD)).kind).toBe("contexts");
     const blocked = source(null, { "2101.03961": 429, "1701.06538": PAGE });
     expect(await blocked.src.contexts("2101.03961", GSHARD)).toEqual({
       kind: "none",

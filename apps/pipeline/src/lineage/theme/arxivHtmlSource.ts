@@ -72,7 +72,7 @@ export interface ArxivHtmlDeps {
    * #527: citing papers whose arXiv HTML backed a strong edge in the
    * previously published lineage. Their fetches are reserved first: other
    * papers may not use the last `n` of the budget while `n` of these are
-   * still unfetched, so a rebuild cannot lose them to first-come ordering.
+   * still unfetched (`n` is capped at half the budget), so a rebuild cannot lose them to first-come ordering.
    */
   priorityIds?: ReadonlySet<string>;
   logger?: { warn: (msg: string) => void };
@@ -308,7 +308,11 @@ export class ArxivHtmlContextSource {
     if (this.memo.has(id)) return this.memo.get(id) ?? null;
     if (this.stats.blocked) return "blocked";
     const max = this.deps.maxFetches ?? DEFAULT_MAX_FETCHES;
-    const reserved = this.deps.priorityIds?.has(id) ? 0 : this.unfetchedPriority();
+    // At most half the budget is reserved, so priority ids the new graph
+    // never reaches cannot starve every other paper.
+    const reserved = this.deps.priorityIds?.has(id)
+      ? 0
+      : Math.min(this.unfetchedPriority(), Math.floor(max / 2));
     if (this.stats.fetches + reserved >= max) {
       this.stats.budgetSkips += 1;
       return "budget";
