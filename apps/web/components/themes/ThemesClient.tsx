@@ -96,7 +96,7 @@ function redirectToTheme(slug: string): void {
  * an eligible lineage). Fail closed: while checking nothing is shown, and
  * a paused/unreachable Worker shows a short notice instead of the form.
  */
-function ThemeRequestGate() {
+function ThemeRequestGate({ initialTheme }: { initialTheme?: string }) {
   const [accepting, setAccepting] = useState<boolean | null>(null);
   useEffect(() => {
     let cancelled = false;
@@ -123,7 +123,7 @@ function ThemeRequestGate() {
         </p>
       }
     >
-      <ThemeRequestForm onReady={redirectToTheme} />
+      <ThemeRequestForm onReady={redirectToTheme} initialTheme={initialTheme} />
     </Suspense>
   );
 }
@@ -181,6 +181,20 @@ export function ThemesClient() {
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [aboutOpen]);
   const [dismissedFallback, setDismissedFallback] = useState(false);
+  // #521 U17: the fallback notice's 「このテーマを依頼」 opens the request
+  // panel with the requested slug's words filled in (never submitted).
+  const [requestPrefill, setRequestPrefill] = useState<string | null>(null);
+  function requestMissingTheme(slug: string) {
+    // Already open: keep the mounted form (a changed key would remount it
+    // and drop the reader's draft or a request still being followed).
+    if (aboutOpen) {
+      aboutPanelRef.current?.focus({ preventScroll: true });
+      return;
+    }
+    setRequestPrefill(slug.replace(/-/g, " "));
+    aboutFocusRef.current = "panel";
+    setAboutOpen(true);
+  }
   // R4-3: optional side files of the shown theme (never block the page).
   const [extras, setExtras] = useState<{
     slug: string;
@@ -376,6 +390,62 @@ export function ThemesClient() {
           h1 (it used to be only on a gallery card under a generic title),
           followed by the tier and a one-line summary; the theme picker
           comes next, then the graph. */}
+      {/* #521 U17: the notice comes before the h1 -- below it, readers took
+          the substitute theme for the result of their own request. Its
+          action opens this page's request panel; the GitHub Issue link is
+          only for degraded mode (no API_BASE). ?theme= is left as is. */}
+      {slugFallback && !dismissedFallback && (
+        <div
+          role="status"
+          data-theme-fallback
+          className="mb-4 flex flex-wrap items-center gap-2 rounded-md border border-rule bg-surface-2 px-3 py-2 text-sm"
+        >
+          <span aria-hidden="true">⚠️</span>
+          <span className="min-w-0 flex-1">
+            {slugFallback.reason === "blocked" ? (
+              <>
+                テーマ "{slugFallback.requested}"
+                は生成されましたが、自動検査に合格しなかったため非公開です。下の系譜は代わりに表示中の
+                "{slugFallback.fallbackTheme}" です。
+              </>
+            ) : (
+              <>
+                テーマ "{slugFallback.requested}"
+                は存在しません。下の系譜は依頼の結果ではなく、代わりに表示中の "
+                {slugFallback.fallbackTheme}" です。
+              </>
+            )}
+          </span>
+          {slugFallback.reason !== "blocked" &&
+            (API_BASE ? (
+              <button
+                type="button"
+                onClick={() => requestMissingTheme(slugFallback.requested)}
+                className="inline-flex min-h-9 items-center whitespace-nowrap rounded-md border border-accent px-3 py-1 text-xs font-medium text-accent-strong hover:bg-accent/10 sm:text-sm"
+              >
+                このテーマを依頼
+              </button>
+            ) : (
+              <a
+                href={`https://github.com/taichiiiiiiii/automatic-paper-search/issues/new?labels=theme-request&title=${encodeURIComponent(`[theme request] ${slugFallback.requested}`)}`}
+                target="_blank"
+                rel="noopener"
+                className="whitespace-nowrap text-accent-strong underline"
+              >
+                ✨ Issue でリクエスト
+              </a>
+            ))}
+          <button
+            type="button"
+            aria-label="閉じる"
+            onClick={() => setDismissedFallback(true)}
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center text-ink-subtle"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       <header className="mb-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <nav
@@ -451,51 +521,13 @@ export function ThemesClient() {
             <p className="mt-1 text-sm text-ink-subtle">
               人が内容を確認した系譜は「監査済み」、まだ確認していない系譜は「未監査（自動生成）」と表示します。依頼したテーマは、自動検査に合格するとまず未監査として公開されます。
             </p>
-            <ThemeRequestGate />
+            <ThemeRequestGate
+              key={requestPrefill ?? ""}
+              initialTheme={requestPrefill ?? undefined}
+            />
           </section>
         )}
       </header>
-
-      {slugFallback && !dismissedFallback && (
-        <div
-          role="status"
-          className="mb-4 flex items-center gap-2 rounded-md border border-rule bg-surface-2 px-3 py-2 text-sm"
-        >
-          <span aria-hidden="true">⚠️</span>
-          <span className="flex-1">
-            {slugFallback.reason === "blocked" ? (
-              <>
-                テーマ "{slugFallback.requested}"
-                は生成されましたが、自動検査に合格しなかったため非公開です。代わりに "
-                {slugFallback.fallbackTheme}" を表示しています。
-              </>
-            ) : (
-              <>
-                テーマ "{slugFallback.requested}" は存在しません。代わりに "
-                {slugFallback.fallbackTheme}" を表示しています。
-              </>
-            )}
-          </span>
-          {slugFallback.reason !== "blocked" && (
-            <a
-              href={`https://github.com/taichiiiiiiii/automatic-paper-search/issues/new?labels=theme-request&title=${encodeURIComponent(`[theme request] ${slugFallback.requested}`)}`}
-              target="_blank"
-              rel="noopener"
-              className="whitespace-nowrap text-accent-strong underline"
-            >
-              ✨ Issue でリクエスト
-            </a>
-          )}
-          <button
-            type="button"
-            aria-label="閉じる"
-            onClick={() => setDismissedFallback(true)}
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center text-ink-subtle"
-          >
-            ✕
-          </button>
-        </div>
-      )}
 
       <h2 className="text-xs font-semibold text-ink-subtle" id="theme-gallery-heading">
         テーマを切り替える（全 {manifest.length} 件）
