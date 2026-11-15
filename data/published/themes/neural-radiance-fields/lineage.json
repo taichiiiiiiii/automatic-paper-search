@@ -1667,7 +1667,7 @@
       ],
       "kinds": [],
       "citation_count": 793,
-      "github_stars": 0,
+      "github_stars": 1152,
       "tldr": "Volumetric neural rendering methods like NeRF [34] generate high-quality view synthesis results but are optimized per-scene leading to…",
       "short_abstract": "Volumetric neural rendering methods like NeRF [34] generate high-quality view synthesis results but are optimized per-scene leading to prohibitive reconstruction time. On the other hand, deep multi-view stereo methods can quickly reconstruct scene geometry via direct network inference. Point-NeRF combines the advantages of these two approaches by using neural 3D point clouds, with associated neural features, to model a radiance field. Point-NeRF can be rendered efficiently by aggregating neural point features near scene surfaces, in a ray marching-based rendering pipeline. Moreover, Point-NeRF can be initialized via direct inference of a pre-trained deep network to produce a neural point cloud; this point cloud can be finetuned to surpass the visual quality of NeRF with 30× faster training time. Point-NeRF can be combined with other 3D re-construction methods and handles the errors and outliers in such methods via a novel pruning and growing mechanism.",
       "arxiv_id": "2201.08845",
@@ -1682,6 +1682,7 @@
           "10.1109/cvpr52688.2022.00536"
         ]
       ],
+      "github_url": "https://github.com/Xharlie/pointnerf",
       "citation_count_source": "semantic_scholar",
       "is_focus": false
     },
@@ -1797,7 +1798,7 @@
       ],
       "kinds": [],
       "citation_count": 485,
-      "github_stars": 0,
+      "github_stars": 401,
       "tldr": "Neural radiance fields (NeRF) encode a scene into a neural representation that enables photo-realistic rendering of novel views. However,…",
       "short_abstract": "Neural radiance fields (NeRF) encode a scene into a neural representation that enables photo-realistic rendering of novel views. However, a successful reconstruction from RGB images requires a large number of input views taken under static conditions — typically up to a few hundred images for room-size scenes. Our method aims to synthesize novel views of whole rooms from an order of magnitude fewer images. To this end, we leverage dense depth priors in order to constrain the NeRF optimization. First, we take advantage of the sparse depth data that is freely available from the structure from motion (SfM) preprocessing step used to estimate camera poses. Second, we use depth completion to convert these sparse points into dense depth maps and uncertainty estimates, which are used to guide NeRF optimization. Our method enables data-efficient novel view synthesis on challenging indoor scenes, using as few as 18 images for an entire scene.",
       "arxiv_id": "2112.03288",
@@ -1812,6 +1813,7 @@
           "10.1109/cvpr52688.2022.01255"
         ]
       ],
+      "github_url": "https://github.com/barbararoessle/dense_depth_priors_nerf",
       "citation_count_source": "semantic_scholar",
       "is_focus": false
     },
@@ -1830,7 +1832,7 @@
       ],
       "kinds": [],
       "citation_count": 491,
-      "github_stars": 0,
+      "github_stars": 361,
       "tldr": "We propose a novel approach for 3D video synthesis that is able to represent multi-view video recordings of a dynamic real-world scene in…",
       "short_abstract": "We propose a novel approach for 3D video synthesis that is able to represent multi-view video recordings of a dynamic real-world scene in a compact, yet expressive representation that enables high-quality view synthesis and motion interpolation. Our approach takes the high quality and compactness of static neural radiance fields in a new direction: to a model-free, dynamic setting. At the core of our approach is a novel time-conditioned neural radiance field that represents scene dynamics using a set of compact latent codes. We are able to significantly boost the training speed and perceptual quality of the generated imagery by a novel hierarchical training scheme in combination with ray importance sampling. Our learned representation is highly compact and able to represent a 10 second 30 FPS multi-view video recording by 18 cameras with a model size of only 28MB. We demonstrate that our method can render high-fidelity wide-angle novel views at over 1K resolution, even for complex…",
       "arxiv_id": "2103.02597",
@@ -1849,6 +1851,7 @@
           "10.57702/ybfkwxpc"
         ]
       ],
+      "github_url": "https://github.com/facebookresearch/Neural_3D_Video",
       "is_focus": false
     },
     {
@@ -2256,7 +2259,7 @@
       ],
       "kinds": [],
       "citation_count": 573,
-      "github_stars": 0,
+      "github_stars": 501,
       "tldr": "Neural Radiance Fields (NeRFs) have demonstrated re-markable potential in capturing complex 3D scenes with high fidelity. However, one…",
       "short_abstract": "Neural Radiance Fields (NeRFs) have demonstrated re-markable potential in capturing complex 3D scenes with high fidelity. However, one persistent challenge that hin-ders the widespread adoption of NeRFs is the computational bottleneck due to the volumetric rendering. On the other hand, 3D Gaussian splatting (3DGS) has recently emerged as an alternative representation that leverages a 3D Gaussisan-based representation and adopts the ras-terization pipeline to render the images rather than volumetric rendering, achieving very fast rendering speed and promising image quality. However, a significant draw-back arises as 3DGS entails a substantial number of 3D Gaussians to maintain the high fidelity of the rendered images, which requires a large amount of memory and stor-age. To address this critical issue, we place a specific emphasis on two key objectives: reducing the number of Gaussian points without sacrificing performance and compressing the Gaussian attributes, such as…",
       "arxiv_id": "2311.13681",
@@ -2271,6 +2274,7 @@
           "10.1109/cvpr52733.2024.02052"
         ]
       ],
+      "github_url": "https://github.com/maincold2/Compact-3DGS",
       "citation_count_source": "semantic_scholar",
       "is_focus": false
     },
@@ -2289,7 +2293,7 @@
       ],
       "kinds": [],
       "citation_count": 190,
-      "github_stars": 0,
+      "github_stars": 509,
       "tldr": "Neural radiance fields (NeRFs) have gained popularity in the autonomous driving (AD) community. Recent meth-ods show NeRFs' potential for…",
       "short_abstract": "Neural radiance fields (NeRFs) have gained popularity in the autonomous driving (AD) community. Recent meth-ods show NeRFs' potential for closed-loop simulation, en-abling testing of AD systems, and as an advanced training data augmentation technique. However, existing meth-ods often require long training times, dense semantic su-pervision, or lack generalizability. This, in turn, hinders the application of NeRFs for AD at scale. In this paper, we propose NeuRAD, a robust novel view synthesis method tailored to dynamic AD data. Our method features simple network design, extensive sensor modeling for both cam-era and lidar - including rolling shutter, beam divergence and ray dropping - and is applicable to multiple datasets out of the box. We verify its performance on five popular AD datasets, achieving state-of-the-art performance across the board. To encourage further development, we openly release the NeuRAD source code.",
       "arxiv_id": "2311.15260",
@@ -2304,6 +2308,7 @@
           "10.1109/cvpr52733.2024.01411"
         ]
       ],
+      "github_url": "https://github.com/georghess/neurad-studio",
       "citation_count_source": "semantic_scholar",
       "is_focus": false
     }
@@ -19203,7 +19208,7 @@
     ],
     "depth": 2,
     "since_year": 2018,
-    "generated_at": "2026-11-14T16:02:20.647000Z",
+    "generated_at": "2026-11-15T09:22:51.421000Z",
     "provenance_breakdown": {
       "api_citation": 194,
       "s2_context_rule": 428
