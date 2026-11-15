@@ -107,6 +107,50 @@ jobs:
           restore-keys: |
             topic-embedding-vectors-ea104dacec62-
 
+      # #519: share theme-on-demand's upstream fetch cache (same path list and
+      # key family, so the entries are interchangeable). The cache can hold
+      # OLDER copies of files that are also tracked in git, so those are
+      # saved aside before the restore and put back right after it: the
+      # build, and what gets packaged, start from the checked-out files
+      # exactly as before; only untracked cache entries (s2seedrefs_* /
+      # s2expand_*) and files git does not track come from the cache.
+      - name: Save git-tracked cache files aside
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/tracked-cache"
+          git ls-files -z -- \
+            'data/state/lineage-cache/s2_references.json' \
+            'data/state/lineage-cache/s2_citation_counts.json' \
+            'data/state/lineage-cache/s2seedrefs_*.json' \
+            'data/state/lineage-cache/s2expand_*.json' \
+            'data/state/lineage-cache/arxiv_html_contexts.json' \
+            'data/state/lineage-cache/crossref_references.json' \
+            'data/state/lineage-cache/dblp_venues.json' \
+            'data/state/lineage-cache/github_stars.json' \
+            | xargs -0 -r cp --parents -t "$RUNNER_TEMP/tracked-cache"
+
+      - name: Restore upstream fetch cache
+        id: fetch-cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            data/state/lineage-cache/s2_references.json
+            data/state/lineage-cache/s2_citation_counts.json
+            data/state/lineage-cache/s2seedrefs_*.json
+            data/state/lineage-cache/s2expand_*.json
+            data/state/lineage-cache/arxiv_html_contexts.json
+            data/state/lineage-cache/crossref_references.json
+            data/state/lineage-cache/dblp_venues.json
+            data/state/lineage-cache/github_stars.json
+          key: upstream-fetch-cache-v1-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            upstream-fetch-cache-v1-
+
+      - name: Put git-tracked cache files back
+        run: |
+          set -euo pipefail
+          cp -a "$RUNNER_TEMP/tracked-cache/." .
+
       - name: Regenerate requested themes
         id: regen
         # PAPERPILOT_GROQ_API_KEY / PAPERPILOT_S2_API_KEY (H3 of the P5
@@ -310,6 +354,24 @@ jobs:
           path: ${{ runner.temp }}/candidate
           if-no-files-found: error
           retention-days: 14
+
+      # #519: same as theme-on-demand: save what this run fetched even when
+      # the build failed. The git-tracked files in it are the up-to-date
+      # checked-out versions plus this run's fetches.
+      - name: Save upstream fetch cache
+        if: always()
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            data/state/lineage-cache/s2_references.json
+            data/state/lineage-cache/s2_citation_counts.json
+            data/state/lineage-cache/s2seedrefs_*.json
+            data/state/lineage-cache/s2expand_*.json
+            data/state/lineage-cache/arxiv_html_contexts.json
+            data/state/lineage-cache/crossref_references.json
+            data/state/lineage-cache/dblp_venues.json
+            data/state/lineage-cache/github_stars.json
+          key: upstream-fetch-cache-v1-${{ github.run_id }}-${{ github.run_attempt }}
 
   promote:
     needs: generate
