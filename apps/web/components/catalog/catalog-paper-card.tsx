@@ -69,9 +69,12 @@ export function CatalogPaperCard({
   isSelected: boolean;
   searchQuery: string;
   activeTags: ReadonlySet<string>;
-  onAddTagFromCard: (tag: string) => void;
+  /** Omitted inside the search dialog (#521 U3): there is no list to
+   * filter, so tags are shown as plain labels. */
+  onAddTagFromCard?: (tag: string) => void;
   onSelect: (paperId: string) => void;
-  onClose: () => void;
+  /** Omitted inside the search dialog (#521 U3): no 詳細を閉じる there. */
+  onClose?: () => void;
   fullAbstract: FullAbstractState | undefined;
   pilotLineage: PilotLineageStatus | undefined;
   pilotLineageHref: string;
@@ -144,7 +147,7 @@ export function CatalogPaperCard({
           {(isSelected ? paper.authors.join(", ") : authorPreview) || "—"}
         </p>
 
-        {isSelected && (
+        {isSelected && onClose && (
           <div className="mt-2 flex items-center gap-3">
             <span className="text-xs font-medium text-accent-strong">選択中</span>
             <button
@@ -243,23 +246,33 @@ export function CatalogPaperCard({
 
         {paper.tags.length > 0 && (
           <div className="mt-2 flex flex-wrap gap-1.5">
-            {paper.tags.map((tag) => (
-              <button
-                key={tag}
-                type="button"
-                data-tag={tag}
-                title={`タグ「${tag}」で絞り込む`}
-                onClick={() => onAddTagFromCard(tag)}
-                // min-h-6: WCAG 2.5.8 target size (24px); was 22px.
-                className={`inline-flex min-h-6 items-center rounded-full border px-2 py-0.5 text-xs ${
-                  activeTags.has(tag)
-                    ? "border-accent bg-accent/10 text-accent-strong"
-                    : "border-rule text-ink-subtle hover:border-rule-strong"
-                }`}
-              >
-                {tag}
-              </button>
-            ))}
+            {paper.tags.map((tag) =>
+              !onAddTagFromCard ? (
+                <span
+                  key={tag}
+                  data-tag={tag}
+                  className="inline-flex min-h-6 items-center rounded-full border border-rule px-2 py-0.5 text-xs text-ink-subtle"
+                >
+                  {tag}
+                </span>
+              ) : (
+                <button
+                  key={tag}
+                  type="button"
+                  data-tag={tag}
+                  title={`タグ「${tag}」で絞り込む`}
+                  onClick={() => onAddTagFromCard(tag)}
+                  // min-h-6: WCAG 2.5.8 target size (24px); was 22px.
+                  className={`inline-flex min-h-6 items-center rounded-full border px-2 py-0.5 text-xs ${
+                    activeTags.has(tag)
+                      ? "border-accent bg-accent/10 text-accent-strong"
+                      : "border-rule text-ink-subtle hover:border-rule-strong"
+                  }`}
+                >
+                  {tag}
+                </button>
+              ),
+            )}
           </div>
         )}
 

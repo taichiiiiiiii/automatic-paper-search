@@ -206,12 +206,15 @@ export function LineageTree({
   slug,
   themeName,
   codeLinks,
+  notices,
 }: {
   artifact: LineageArtifact;
   slug?: string | null;
   themeName?: string | null;
   /** R4-3: "コード" / "HF" badges per node id (optional side file). */
   codeLinks?: ThemeCodeLinks | null;
+  /** #521 U8: ambiguity notes that fit the shown family (default: both). */
+  notices?: { seedScope: boolean; wideSpan: boolean };
 }) {
   const audited = useRelationAudited();
   // ---- URL state (?xaxis=&ymin=&ymax=&q=&rels=&orphan=&node=) ----------
@@ -729,8 +732,16 @@ export function LineageTree({
 
   const hiddenCount = hiddenEdgeCount(artifact.edges, visibleRelations);
   const sparse = isSparseLineage(artifact.nodes.length, artifact.edges.length);
-  const wideSpan = useMemo(() => wideSpanNotice(artifact.nodes), [artifact.nodes]);
-  const seedScope = useMemo(() => seedScopeNotice(artifact.meta), [artifact.meta]);
+  const showWideSpan = notices?.wideSpan ?? true;
+  const showSeedScope = notices?.seedScope ?? true;
+  const wideSpan = useMemo(
+    () => (showWideSpan ? wideSpanNotice(artifact.nodes) : null),
+    [artifact.nodes, showWideSpan],
+  );
+  const seedScope = useMemo(
+    () => (showSeedScope ? seedScopeNotice(artifact.meta) : null),
+    [artifact.meta, showSeedScope],
+  );
   const nodeById = useMemo(() => new Map(artifact.nodes.map((n) => [n.id, n])), [artifact.nodes]);
 
   // ---- Card popover (delayed show, instant hide) ------------------------

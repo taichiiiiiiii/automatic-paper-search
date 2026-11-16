@@ -14,6 +14,7 @@ import {
   type CatalogPaper,
   isPaperId,
   pinSelected,
+  readEmbedParam,
   readPaperParam,
   setPaperParam,
 } from "../../lib/catalog-core";
@@ -109,6 +110,19 @@ export function CatalogApp({
   // the script that will actually load the list is running.
   const [hydrated, setHydrated] = useState(false);
   useEffect(() => setHydrated(true), []);
+  // #521 U3: `embed=1` = this page is the cross-search detail dialog's
+  // iframe. Read after hydration (the prerendered HTML is the same either
+  // way); the <html> attribute hides the site header/footer (globals.css).
+  const [embedded, setEmbedded] = useState(false);
+  useEffect(() => {
+    if (!readEmbedParam(window.location.search)) return;
+    setEmbedded(true);
+    const root = document.documentElement;
+    root.dataset.embed = "1";
+    return () => {
+      delete root.dataset.embed;
+    };
+  }, []);
   const [retryNonce, setRetryNonce] = useState(0);
   const [retrying, setRetrying] = useState(false);
   const hasAttemptedRef = useRef(false);
@@ -656,8 +670,10 @@ export function CatalogApp({
   // field (Esc already clears a search box) or during IME composition.
   const closeRef = useRef(closeSelectedPaper);
   closeRef.current = closeSelectedPaper;
+  // Embedded (#521 U3): Esc belongs to the outer dialog, which closes
+  // itself; closing the detail here would show an unrelated list instead.
   useEffect(() => {
-    if (!selectedPaperId) return;
+    if (!selectedPaperId || embedded) return;
     function onKeyDown(event: KeyboardEvent) {
       if (event.key !== "Escape" || event.isComposing || event.defaultPrevented) return;
       const target = event.target as HTMLElement | null;
@@ -667,7 +683,7 @@ export function CatalogApp({
     }
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, [selectedPaperId]);
+  }, [selectedPaperId, embedded]);
 
   // --- BibTeX / CSV / share URL (design doc 48 P0-3) ------------------------
   // Exports the whole current filter result (not just the rows revealed
@@ -709,6 +725,10 @@ export function CatalogApp({
   const sorted = useMemo(() => getSorted(filtered, sort), [filtered, sort]);
   const selectedPaper = selectedPaperId ? (byId.get(selectedPaperId) ?? null) : null;
   const displayPapers = useMemo(() => pinSelected(sorted, selectedPaper), [sorted, selectedPaper]);
+  // #521 U3: inside the search dialog only the chosen paper is shown --
+  // no hero, filters, toolbar, other papers or close control to get lost
+  // in. Without a valid selection the normal list stays as a fallback.
+  const embedDetail = embedded && selectedPaper !== null;
   const shown = Math.min(
     visibleCount,
     displayPapers.length,
@@ -754,18 +774,22 @@ export function CatalogApp({
         </div>
       </noscript>
 
-      <CatalogHero
-        copy={copy}
-        generated={generated}
-        total={loadStatus === "ok" ? total : expectedTotal}
-        oralCount={loadStatus === "ok" ? stats.oral : null}
-        tagCount={loadStatus === "ok" ? stats.tagCount : null}
-        abstractCount={loadStatus === "ok" ? stats.withAbstract : null}
-        conf={conf}
-        conferences={conferences}
-      />
+      {embedDetail ? (
+        <h1 className="px-4 pt-4 text-sm font-medium text-ink-muted sm:px-6">{copy.display}</h1>
+      ) : (
+        <CatalogHero
+          copy={copy}
+          generated={generated}
+          total={loadStatus === "ok" ? total : expectedTotal}
+          oralCount={loadStatus === "ok" ? stats.oral : null}
+          tagCount={loadStatus === "ok" ? stats.tagCount : null}
+          abstractCount={loadStatus === "ok" ? stats.withAbstract : null}
+          conf={conf}
+          conferences={conferences}
+        />
+      )}
 
-      {loadStatus === "ok" && (
+      {loadStatus === "ok" && !embedDetail && (
         <CatalogFilters
           search={searchInputValue}
           onSearchChange={onSearchInput}
@@ -786,98 +810,100 @@ export function CatalogApp({
         />
       )}
 
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-rule px-4 py-3 sm:px-6">
-        <p aria-live="polite" aria-atomic="true" className="text-sm text-ink-muted">
-          {loadStatus === "loading" && hydrated && "読み込み中…"}
-          {loadStatus === "error" && `${CATALOG_LOAD_ERROR}再試行できます。`}
-          {loadStatus === "ok" && (
-            <>
-              {deferredSearch.trim() && (
-                <span aria-hidden="true" className="mr-1 font-serif italic text-ink">
-                  «{deferredSearch.trim()}»
+      {!embedDetail && (
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-rule px-4 py-3 sm:px-6">
+          <p aria-live="polite" aria-atomic="true" className="text-sm text-ink-muted">
+            {loadStatus === "loading" && hydrated && "読み込み中…"}
+            {loadStatus === "error" && `${CATALOG_LOAD_ERROR}再試行できます。`}
+            {loadStatus === "ok" && (
+              <>
+                {deferredSearch.trim() && (
+                  <span aria-hidden="true" className="mr-1 font-serif italic text-ink">
+                    «{deferredSearch.trim()}»
+                  </span>
+                )}
+                {resultSummary({ matched: filteredLen, shown, total })}
+                {selectionMessage && (
+                  <span className="ml-2 text-accent-strong">{selectionMessage}</span>
+                )}
+              </>
+            )}
+          </p>
+          <div className="flex flex-wrap items-center gap-3">
+            {loadStatus === "ok" && activeFilters && (
+              <button
+                type="button"
+                onClick={clearAllFilters}
+                className="rounded-full border border-rule px-3 py-1 text-xs text-ink-muted hover:border-rule-strong hover:text-ink"
+              >
+                フィルタ解除 <span aria-hidden="true">×</span>
+              </button>
+            )}
+            {loadStatus === "ok" && (
+              <div className="flex min-w-0 items-center gap-2 text-sm">
+                <label htmlFor="sort" className="whitespace-nowrap text-ink-muted">
+                  並び替え
+                </label>
+                <select
+                  id="sort"
+                  value={sort}
+                  onChange={(e) => onSortChange(e.target.value as SortValue)}
+                  title={
+                    newest.usable
+                      ? undefined
+                      : "この学会の論文には arXiv ID がないため、新着順は使えません"
+                  }
+                  className="min-w-0 max-w-full rounded-md border border-rule bg-surface-elevated px-2 py-1 text-ink"
+                >
+                  <option value="default">収録順</option>
+                  <option value="newest" disabled={!newest.usable}>
+                    {newest.label}
+                  </option>
+                  <option value="oral">Oral 優先</option>
+                  <option value="title">タイトル A→Z</option>
+                </select>
+              </div>
+            )}
+            {loadStatus === "ok" && filteredLen > 0 && (
+              <fieldset
+                className="flex min-w-0 flex-wrap items-center gap-1 border-0 p-0"
+                data-catalog-export
+              >
+                <legend className="sr-only">絞り込み結果の書き出しと共有</legend>
+                <button
+                  type="button"
+                  onClick={() => exportFiltered("bib")}
+                  title={`絞り込み結果 ${filteredLen} 件を BibTeX で書き出す`}
+                  aria-label={`絞り込み結果 ${filteredLen} 件を BibTeX で書き出す`}
+                  className="rounded-full border border-rule px-3 py-1 text-xs text-ink-muted hover:border-rule-strong hover:text-ink"
+                >
+                  BibTeX
+                </button>
+                <button
+                  type="button"
+                  onClick={() => exportFiltered("csv")}
+                  title={`絞り込み結果 ${filteredLen} 件を CSV で書き出す`}
+                  aria-label={`絞り込み結果 ${filteredLen} 件を CSV で書き出す`}
+                  className="rounded-full border border-rule px-3 py-1 text-xs text-ink-muted hover:border-rule-strong hover:text-ink"
+                >
+                  CSV
+                </button>
+                <button
+                  type="button"
+                  onClick={copyShareUrl}
+                  title="今の絞り込みの URL をコピーする"
+                  className="rounded-full border border-rule px-3 py-1 text-xs text-ink-muted hover:border-rule-strong hover:text-ink"
+                >
+                  URLをコピー
+                </button>
+                <span role="status" aria-live="polite" className="text-xs text-ink-subtle">
+                  {shareStatus}
                 </span>
-              )}
-              {resultSummary({ matched: filteredLen, shown, total })}
-              {selectionMessage && (
-                <span className="ml-2 text-accent-strong">{selectionMessage}</span>
-              )}
-            </>
-          )}
-        </p>
-        <div className="flex flex-wrap items-center gap-3">
-          {loadStatus === "ok" && activeFilters && (
-            <button
-              type="button"
-              onClick={clearAllFilters}
-              className="rounded-full border border-rule px-3 py-1 text-xs text-ink-muted hover:border-rule-strong hover:text-ink"
-            >
-              フィルタ解除 <span aria-hidden="true">×</span>
-            </button>
-          )}
-          {loadStatus === "ok" && (
-            <div className="flex min-w-0 items-center gap-2 text-sm">
-              <label htmlFor="sort" className="whitespace-nowrap text-ink-muted">
-                並び替え
-              </label>
-              <select
-                id="sort"
-                value={sort}
-                onChange={(e) => onSortChange(e.target.value as SortValue)}
-                title={
-                  newest.usable
-                    ? undefined
-                    : "この学会の論文には arXiv ID がないため、新着順は使えません"
-                }
-                className="min-w-0 max-w-full rounded-md border border-rule bg-surface-elevated px-2 py-1 text-ink"
-              >
-                <option value="default">収録順</option>
-                <option value="newest" disabled={!newest.usable}>
-                  {newest.label}
-                </option>
-                <option value="oral">Oral 優先</option>
-                <option value="title">タイトル A→Z</option>
-              </select>
-            </div>
-          )}
-          {loadStatus === "ok" && filteredLen > 0 && (
-            <fieldset
-              className="flex min-w-0 flex-wrap items-center gap-1 border-0 p-0"
-              data-catalog-export
-            >
-              <legend className="sr-only">絞り込み結果の書き出しと共有</legend>
-              <button
-                type="button"
-                onClick={() => exportFiltered("bib")}
-                title={`絞り込み結果 ${filteredLen} 件を BibTeX で書き出す`}
-                aria-label={`絞り込み結果 ${filteredLen} 件を BibTeX で書き出す`}
-                className="rounded-full border border-rule px-3 py-1 text-xs text-ink-muted hover:border-rule-strong hover:text-ink"
-              >
-                BibTeX
-              </button>
-              <button
-                type="button"
-                onClick={() => exportFiltered("csv")}
-                title={`絞り込み結果 ${filteredLen} 件を CSV で書き出す`}
-                aria-label={`絞り込み結果 ${filteredLen} 件を CSV で書き出す`}
-                className="rounded-full border border-rule px-3 py-1 text-xs text-ink-muted hover:border-rule-strong hover:text-ink"
-              >
-                CSV
-              </button>
-              <button
-                type="button"
-                onClick={copyShareUrl}
-                title="今の絞り込みの URL をコピーする"
-                className="rounded-full border border-rule px-3 py-1 text-xs text-ink-muted hover:border-rule-strong hover:text-ink"
-              >
-                URLをコピー
-              </button>
-              <span role="status" aria-live="polite" className="text-xs text-ink-subtle">
-                {shareStatus}
-              </span>
-            </fieldset>
-          )}
+              </fieldset>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {loadStatus === "loading" && !hydrated && (
         // Prerendered HTML: reserve the list's space only when scripting
@@ -931,7 +957,7 @@ export function CatalogApp({
 
       {loadStatus === "ok" && (
         <ul id="paper-list" className="list-none p-0">
-          {filteredLen === 0 ? (
+          {filteredLen === 0 && !embedDetail ? (
             <li className="flex flex-col items-start gap-2 px-4 py-10 text-sm text-ink-muted sm:px-6">
               <p className="text-ink">
                 {deferredSearch.trim()
@@ -964,30 +990,32 @@ export function CatalogApp({
             </li>
           ) : (
             <>
-              {displayPapers.slice(0, shown).map((p, i) => (
-                <CatalogPaperCard
-                  key={p.paper_id}
-                  paper={p}
-                  isSelected={p.paper_id === selectedPaperId}
-                  searchQuery={search}
-                  activeTags={activeTags}
-                  onAddTagFromCard={addTagFromCard}
-                  onSelect={selectPaper}
-                  onClose={closeSelectedPaper}
-                  fullAbstract={fullAbstracts.get(p.paper_id)}
-                  pilotLineage={
-                    p.paper_id === selectedPaperId ? pilotLineage.get(p.paper_id) : undefined
-                  }
-                  pilotLineageHref={pilotLineageHref}
-                  themePositions={
-                    p.paper_id === selectedPaperId && themePositionIndex
-                      ? lookupThemePositions(themePositionIndex, p)
-                      : undefined
-                  }
-                  revealIndex={resolveRevealIndex(revealBatch, i)}
-                />
-              ))}
-              {shown < displayPapers.length && (
+              {(embedDetail && selectedPaper ? [selectedPaper] : displayPapers.slice(0, shown)).map(
+                (p, i) => (
+                  <CatalogPaperCard
+                    key={p.paper_id}
+                    paper={p}
+                    isSelected={p.paper_id === selectedPaperId}
+                    searchQuery={search}
+                    activeTags={activeTags}
+                    onAddTagFromCard={embedDetail ? undefined : addTagFromCard}
+                    onSelect={selectPaper}
+                    onClose={embedDetail ? undefined : closeSelectedPaper}
+                    fullAbstract={fullAbstracts.get(p.paper_id)}
+                    pilotLineage={
+                      p.paper_id === selectedPaperId ? pilotLineage.get(p.paper_id) : undefined
+                    }
+                    pilotLineageHref={pilotLineageHref}
+                    themePositions={
+                      p.paper_id === selectedPaperId && themePositionIndex
+                        ? lookupThemePositions(themePositionIndex, p)
+                        : undefined
+                    }
+                    revealIndex={resolveRevealIndex(revealBatch, i)}
+                  />
+                ),
+              )}
+              {!embedDetail && shown < displayPapers.length && (
                 <li className="px-4 py-4 text-center sm:px-6">
                   <button
                     type="button"
@@ -1015,7 +1043,7 @@ export function CatalogApp({
         {copy.source && <span>Source: {copy.source}</span>}
       </footer>
 
-      <CatalogBackToTop onReturnFocus={focusSearchInput} />
+      {!embedDetail && <CatalogBackToTop onReturnFocus={focusSearchInput} />}
     </main>
   );
 }

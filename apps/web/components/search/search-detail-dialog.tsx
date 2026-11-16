@@ -11,7 +11,7 @@
  * the href with lib/search-detail.ts's `detailFrameUrl`.
  */
 import { useEffect, useRef, useState } from "react";
-import { detailFrameUrl } from "../../lib/search-detail";
+import { detailFrameUrl, embeddedFrameHref } from "../../lib/search-detail";
 import styles from "./search-detail-dialog.module.css";
 
 const LOADING_MESSAGE =
@@ -50,7 +50,7 @@ export function SearchDetailDialog() {
       triggerRef.current = anchor;
       setDirectHref(url.href);
       setStatus(LOADING_MESSAGE);
-      setFrameSrc(url.href);
+      setFrameSrc(embeddedFrameHref(url));
       dialog.showModal();
       // showModal() would otherwise focus the first focusable element in
       // tree order -- the "通常ページで開く" link, not the close button

@@ -94,6 +94,13 @@ export function readPaperParam(search: string): { raw: string | null; paperId: s
   return { raw, paperId: isPaperId(raw) ? raw : null };
 }
 
+/** #521 U3: true when the page is the search dialog's iframe copy
+ * (`embed=1`, set by lib/search-detail.ts `embeddedFrameHref`). Display
+ * only -- it never changes what is fetched. */
+export function readEmbedParam(search: string): boolean {
+  return new URLSearchParams(search).get("embed") === "1";
+}
+
 /** Moves the selected paper (if any) to the front, preserving the order
  * of everything else -- so the selected card is never scrolled away by
  * its own filter/sort position. */
