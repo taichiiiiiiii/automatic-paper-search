@@ -516,13 +516,14 @@ export function ThemesClient() {
         // over the previous theme's search query / year range / etc.
         <RelationAuditProvider value={entry?.publication_tier === "audited"}>
           <LineageFamilies key={currentSlug} artifact={artifact}>
-            {(shown, familyKey) => (
+            {(shown, familyKey, notices) => (
               <LineageTree
                 key={`${currentSlug}:${familyKey}`}
                 artifact={shown}
                 slug={currentSlug}
                 themeName={themeName}
                 codeLinks={shownExtras?.codeLinks ?? null}
+                notices={notices}
               />
             )}
           </LineageFamilies>
