@@ -48,6 +48,33 @@ describe("theme-feeds.yml (R4-3)", () => {
     );
   });
 
+  // #535: vision-transformer (processed last) hit the 12-page cap two weeks
+  // running (2,286 of 2,400 rows) with only 25 of 80 run pages left for it.
+  const cliRun = () =>
+    steps[find((s) => typeof s.run === "string" && s.run.includes("themeFeedsCli.ts"))]!
+      .run as string;
+  const flag = (name: string) => {
+    const m = cliRun().match(new RegExp(`--${name} (\\d+)`));
+    expect(m, `--${name} missing`).not.toBeNull();
+    return Number(m![1]);
+  };
+
+  it("gives each theme up to 20 pages (#535)", () => {
+    expect(flag("max-pages")).toBe(20);
+  });
+
+  it("gives the whole run 120 pages (#535)", () => {
+    expect(flag("max-credits")).toBe(120);
+  });
+
+  it("keeps the run cap far below the keyed OpenAlex budget (#535)", () => {
+    // $1/day keyed budget at $0.0001 per list page = 10,000 pages; stay at or
+    // under a quarter of it, and the run cap must cover at least one full theme.
+    const credits = flag("max-credits");
+    expect(credits).toBeLessThanOrEqual(2500);
+    expect(credits).toBeGreaterThanOrEqual(flag("max-pages"));
+  });
+
   it("commits only the side files", () => {
     const commit = steps[find((s) => s.name === "Commit feeds to develop")]!;
     expect(commit.run).toContain("release/cli.ts commit-push");
