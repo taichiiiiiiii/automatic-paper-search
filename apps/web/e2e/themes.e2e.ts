@@ -84,6 +84,36 @@ test("request panel: focus moves in on open and back to the toggle on close", as
   await expect(toggle).toBeFocused();
 });
 
+// #521 U17: an unknown ?theme= shows the notice ABOVE the h1 (it used to sit
+// under the substitute theme's title), and its button opens this page's
+// request panel with the slug's words filled in -- no GitHub Issues hop, no
+// request sent, ?theme= unchanged. /api/health is answered locally.
+test("unknown theme slug: notice above the h1 opens the request panel pre-filled", async ({
+  page,
+}) => {
+  test.skip(IS_REMOTE, "mocks the Worker's /api/health");
+  await page.route(`${API_ORIGIN}/api/health`, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      headers: { "access-control-allow-origin": "*" },
+      body: JSON.stringify({ accepting: true, dispatch_mode: "dry-run" }),
+    }),
+  );
+  const theme = new ThemePage(page);
+  await theme.skipOnboarding();
+  await theme.goto("no-such-theme-e2e");
+  await expect(theme.fallbackNotice).toContainText('"no-such-theme-e2e"');
+  const noticeBox = await theme.fallbackNotice.boundingBox();
+  const headingBox = await theme.heading.boundingBox();
+  expect(noticeBox && headingBox && noticeBox.y < headingBox.y).toBe(true);
+  await expect(theme.fallbackNotice.getByRole("link", { name: /Issue/ })).toHaveCount(0);
+  await theme.requestMissingThemeButton.click();
+  await expect(theme.requestPanel).toBeVisible();
+  await expect(theme.requestThemeInput).toHaveValue("no such theme e2e");
+  expect(new URL(page.url()).searchParams.get("theme")).toBe("no-such-theme-e2e");
+});
+
 for (const t of themes) {
   test.describe(`theme ${t.slug}`, () => {
     let theme: ThemePage;

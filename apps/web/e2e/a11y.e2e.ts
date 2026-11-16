@@ -129,6 +129,23 @@ const PAGES: Record<string, (page: Page) => Promise<void>> = {
     await page.goto("/how-it-works/");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   },
+  // #521 U17: the substitute-theme notice, then the request panel it opens.
+  "theme-missing": async (page) => {
+    await page.route(`${API_ORIGIN}/api/health`, (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        headers: { "access-control-allow-origin": "*" },
+        body: JSON.stringify({ accepting: true, dispatch_mode: "dry-run" }),
+      }),
+    );
+    const theme = new ThemePage(page);
+    await theme.skipOnboarding();
+    await theme.goto("no-such-theme-e2e");
+    await expect(theme.fallbackNotice).toBeVisible();
+    await theme.requestMissingThemeButton.click();
+    await expect(theme.requestThemeInput).toBeVisible();
+  },
   "404": async (page) => {
     await page.goto("/no-such-page-e2e/");
     await expect(page.getByRole("heading", { level: 1 })).toContainText("404");
