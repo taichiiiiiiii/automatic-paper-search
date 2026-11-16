@@ -8,8 +8,8 @@
  * panel. Plain SVG with attribute positioning only (no inline styles,
  * no chart library).
  */
-import { forwardRef, useMemo } from "react";
-import { layoutYearCitationTimeline } from "../../lib/lineage/theme-timeline";
+import { forwardRef, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { layoutYearCitationTimeline, timelineFitOptions } from "../../lib/lineage/theme-timeline";
 import type { LineageEdge, LineageNode } from "../../lib/themes-quality";
 import { useRelationAudited } from "../lineage/relation-audit";
 import { edgeKey, relationLabelJa } from "./EdgeEvidence";
@@ -57,7 +57,28 @@ export const ThemeTimeline = forwardRef<
   ref,
 ) {
   const audited = useRelationAudited();
-  const layout = useMemo(() => layoutYearCitationTimeline(nodes, { minWidth: 640 }), [nodes]);
+  // #521 U11: lay the chart out at the box width on a phone. Measured after
+  // mount (the static export renders the 640 px chart), before paint.
+  const boxRef = useRef<HTMLDivElement>(null);
+  const [boxWidth, setBoxWidth] = useState<number | null>(null);
+  useLayoutEffect(() => {
+    const box = boxRef.current;
+    if (!box) return;
+    const measure = () => {
+      const w = box.clientWidth;
+      if (w > 0) setBoxWidth((cur) => (cur === w ? cur : w));
+    };
+    measure();
+    if (typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(measure);
+    ro.observe(box);
+    return () => ro.disconnect();
+  }, []);
+  const fit = timelineFitOptions(boxWidth);
+  const layout = useMemo(
+    () => layoutYearCitationTimeline(nodes, { minWidth: fit.minWidth, minColW: fit.minColW }),
+    [nodes, fit.minWidth, fit.minColW],
+  );
   const pointById = useMemo(() => new Map(layout.points.map((p) => [p.id, p])), [layout]);
   const nodeById = useMemo(() => new Map(nodes.map((n) => [n.id, n])), [nodes]);
   const { plot } = layout;
@@ -76,7 +97,11 @@ export const ThemeTimeline = forwardRef<
   }, [edges, pointById, mainPathKeys, pathKeys]);
 
   return (
-    <div className="mt-3 max-h-[70vh] overflow-auto rounded-md border border-rule bg-surface">
+    <div
+      ref={boxRef}
+      className="mt-3 max-h-[70vh] overflow-auto rounded-md border border-rule bg-surface"
+      data-theme-timeline-box
+    >
       {/* biome-ignore lint/a11y/useSemanticElements: role="img" made every point inside presentational (axe nested-interactive: an img must not contain focusable buttons); an <svg> cannot be a <fieldset>, so it is a labelled group, like the family tree. */}
       <svg
         ref={ref}
