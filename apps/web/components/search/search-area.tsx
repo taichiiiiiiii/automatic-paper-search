@@ -520,6 +520,9 @@ export function SearchArea({ handleRef }: { handleRef?: Ref<SearchAreaHandle> })
             value={queryValue}
             onChange={(event) => handleInputChange(event.target.value)}
             onBlur={(event) => {
+              // A move to a filter keeps the list open (#521 U4): the filters
+              // now sit before the "すべての N 件を見る" link in tab order, and
+              // closing here would hide that link from keyboard users.
               if (!formRef.current?.contains(event.relatedTarget as Node)) clearSuggestions();
             }}
             onKeyDown={(event) => {
@@ -555,6 +558,75 @@ export function SearchArea({ handleRef }: { handleRef?: Ref<SearchAreaHandle> })
           >
             再試行
           </button>
+          {/* #521 U4: the filters sit inside the form and before the
+              suggestion list. The list is absolutely positioned in this
+              form, so anything after it (the filters used to be after the
+              form) was painted over while the top 20 were showing. */}
+          <fieldset className={styles.filters} id="s0-search-filters" hidden={filtersHidden}>
+            <legend className={styles.filtersLegend}>検索結果を絞り込む</legend>
+            <div className={styles.filtersControls}>
+              <label className={styles.filtersField} htmlFor="s0-filter-conference">
+                学会
+                <select
+                  className={styles.filtersSelect}
+                  id="s0-filter-conference"
+                  name="conference"
+                  value={filters.conference}
+                  onChange={(event) => handleFacetChange("conference", event.target.value)}
+                >
+                  <option value="">すべての学会</option>
+                  {(facetOptions?.conferences ?? []).map((slug) => (
+                    <option key={slug} value={slug}>
+                      {confLabel(slug)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className={styles.filtersField} htmlFor="s0-filter-year">
+                年
+                <select
+                  className={styles.filtersSelect}
+                  id="s0-filter-year"
+                  name="year"
+                  value={filters.year === null ? "" : String(filters.year)}
+                  onChange={(event) => handleFacetChange("year", event.target.value)}
+                >
+                  <option value="">すべての年</option>
+                  {(facetOptions?.years ?? []).map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className={styles.filtersField} htmlFor="s0-filter-type">
+                発表種別
+                <select
+                  className={styles.filtersSelect}
+                  id="s0-filter-type"
+                  name="type"
+                  value={filters.type}
+                  onChange={(event) => handleFacetChange("type", event.target.value)}
+                >
+                  <option value="">すべての発表種別</option>
+                  {(facetOptions?.types ?? []).map((type) => (
+                    <option key={type} value={type}>
+                      {type === "Oral" ? "口頭発表 (Oral)" : "ポスター (Poster)"}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <button
+                className={styles.filtersReset}
+                id="s0-filter-reset"
+                type="button"
+                disabled={resetDisabled}
+                onClick={() => applyFilters(EMPTY_FILTERS)}
+              >
+                絞り込みをクリア
+              </button>
+            </div>
+          </fieldset>
           {/* biome-ignore-start lint/a11y/noNoninteractiveElementToInteractiveRole: ul/li + listbox/option is the ARIA 1.2 combobox-with-listbox pattern (W3C APG), ported verbatim from docs/index.html's #s0-search-listbox. */}
           <ul
             className={styles.results}
@@ -622,72 +694,6 @@ export function SearchArea({ handleRef }: { handleRef?: Ref<SearchAreaHandle> })
           </a>
         </form>
       </search>
-
-      <fieldset className={styles.filters} id="s0-search-filters" hidden={filtersHidden}>
-        <legend className={styles.filtersLegend}>検索結果を絞り込む</legend>
-        <div className={styles.filtersControls}>
-          <label className={styles.filtersField} htmlFor="s0-filter-conference">
-            学会
-            <select
-              className={styles.filtersSelect}
-              id="s0-filter-conference"
-              name="conference"
-              value={filters.conference}
-              onChange={(event) => handleFacetChange("conference", event.target.value)}
-            >
-              <option value="">すべての学会</option>
-              {(facetOptions?.conferences ?? []).map((slug) => (
-                <option key={slug} value={slug}>
-                  {confLabel(slug)}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className={styles.filtersField} htmlFor="s0-filter-year">
-            年
-            <select
-              className={styles.filtersSelect}
-              id="s0-filter-year"
-              name="year"
-              value={filters.year === null ? "" : String(filters.year)}
-              onChange={(event) => handleFacetChange("year", event.target.value)}
-            >
-              <option value="">すべての年</option>
-              {(facetOptions?.years ?? []).map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className={styles.filtersField} htmlFor="s0-filter-type">
-            発表種別
-            <select
-              className={styles.filtersSelect}
-              id="s0-filter-type"
-              name="type"
-              value={filters.type}
-              onChange={(event) => handleFacetChange("type", event.target.value)}
-            >
-              <option value="">すべての発表種別</option>
-              {(facetOptions?.types ?? []).map((type) => (
-                <option key={type} value={type}>
-                  {type === "Oral" ? "口頭発表 (Oral)" : "ポスター (Poster)"}
-                </option>
-              ))}
-            </select>
-          </label>
-          <button
-            className={styles.filtersReset}
-            id="s0-filter-reset"
-            type="button"
-            disabled={resetDisabled}
-            onClick={() => applyFilters(EMPTY_FILTERS)}
-          >
-            絞り込みをクリア
-          </button>
-        </div>
-      </fieldset>
 
       <section
         className={styles.resultsSection}
