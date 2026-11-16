@@ -90,8 +90,15 @@ type FormStatus =
  * (a full `location.href` assignment, matching the original's
  * reload-on-ready behaviour, so every bit of page state re-derives
  * from the new `?theme=`). */
-export function ThemeRequestForm({ onReady }: { onReady: (slug: string) => void }) {
-  const [rawInput, setRawInput] = useState("");
+export function ThemeRequestForm({
+  onReady,
+  initialTheme = "",
+}: {
+  onReady: (slug: string) => void;
+  /** Pre-fills the input (#521 U17); validated only on submit, never sent by itself. */
+  initialTheme?: string;
+}) {
+  const [rawInput, setRawInput] = useState(initialTheme);
   const [status, setStatus] = useState<FormStatus>({ kind: "idle" });
   const [progress, setProgress] = useState<ProgressState | null>(null);
   // M4 fix: a single shared "cancelled" boolean let a brand-new run's

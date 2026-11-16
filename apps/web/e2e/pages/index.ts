@@ -215,6 +215,13 @@ export class ThemePage {
   get requestThemeInput(): Locator {
     return this.requestPanel.locator('input[name="theme"]');
   }
+  /** #521 U17: the notice shown when ?theme= names no published theme. */
+  get fallbackNotice(): Locator {
+    return this.page.getByRole("status").filter({ hasText: "代わりに表示中" });
+  }
+  get requestMissingThemeButton(): Locator {
+    return this.fallbackNotice.getByRole("button", { name: "このテーマを依頼" });
+  }
   get keyboardHelpDialog(): Locator {
     return this.page.getByRole("dialog", { name: /キーボードショートカット/ });
   }
