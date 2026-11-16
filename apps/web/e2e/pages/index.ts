@@ -106,6 +106,10 @@ export class LandingPage {
   get howItWorksLink(): Locator {
     return this.chrome.globalNavLink("仕組み");
   }
+  /** #521 U4: the facet fieldset next to the cross-search box. */
+  get searchFilters(): Locator {
+    return this.page.getByRole("group", { name: "検索結果を絞り込む" });
+  }
 }
 
 /** /themes/?theme=<slug> */
