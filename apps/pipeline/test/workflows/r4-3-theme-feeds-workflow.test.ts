@@ -68,8 +68,9 @@ describe("theme-feeds.yml (R4-3)", () => {
   });
 
   it("keeps the run cap far below the keyed OpenAlex budget (#535)", () => {
-    // $1/day keyed budget at $0.0001 per list page = 10,000 pages; stay at or
-    // under a quarter of it, and the run cap must cover at least one full theme.
+    // $1/day keyed budget at $0.0001 per list page = 10,000 pages. The key is
+    // shared with theme-on-demand / regen-themes (--max-credits 10 each), so
+    // this run stays at or under a quarter of it; it must also cover one full theme.
     const credits = flag("max-credits");
     expect(credits).toBeLessThanOrEqual(2500);
     expect(credits).toBeGreaterThanOrEqual(flag("max-pages"));
