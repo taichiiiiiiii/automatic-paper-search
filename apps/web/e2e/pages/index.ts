@@ -6,7 +6,7 @@
  * working. When a redesign renames something, update the matching getter
  * here -- specs should not need to change.
  */
-import { expect, type Locator, type Page } from "@playwright/test";
+import { expect, type FrameLocator, type Locator, type Page } from "@playwright/test";
 
 /** Header nav + footer, present on every page. */
 export class SiteChrome {
@@ -59,6 +59,30 @@ export class LandingPage {
   }
   get searchResults(): Locator {
     return this.page.getByRole("listbox", { name: "検索結果" });
+  }
+  /** The full results list (`/?q=<q>&page=1`), whose links open the
+   * detail dialog. */
+  async gotoFullResults(query: string): Promise<void> {
+    await this.page.goto(`/?q=${encodeURIComponent(query)}&page=1`);
+  }
+  get fullResultLinks(): Locator {
+    return this.page.getByRole("region", { name: /の検索結果$/ }).getByRole("link");
+  }
+  get detailDialog(): Locator {
+    return this.page.getByRole("dialog", { name: "論文詳細" });
+  }
+  get detailDialogClose(): Locator {
+    return this.detailDialog.getByRole("button", { name: "閉じて検索に戻る" });
+  }
+  get detailDialogDirectLink(): Locator {
+    return this.detailDialog.getByRole("link", { name: /通常ページで開く/ });
+  }
+  get detailFrameElement(): Locator {
+    return this.detailDialog.locator("iframe");
+  }
+  /** The catalog page inside the dialog (#521 U3: `embed=1`). */
+  get detailFrame(): FrameLocator {
+    return this.page.frameLocator('iframe[title="選択した論文の学会カタログ詳細"]');
   }
   get conferencesSection(): Locator {
     return this.page.getByRole("region", { name: /^学会カタログ/ });

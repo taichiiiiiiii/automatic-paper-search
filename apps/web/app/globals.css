@@ -239,3 +239,14 @@ input:focus-visible,
   outline-offset: 3px;
   border-radius: 2px;
 }
+
+/* #521 U3: a catalog page loaded inside the cross-search detail dialog
+   (`embed=1`, components/catalog/catalog-app.tsx sets the attribute)
+   shows no site header/footer or skip link: their links would navigate
+   the iframe away inside the dialog. Unlayered on purpose so it beats the
+   header's Tailwind `flex` utility. */
+:root[data-embed] body > header,
+:root[data-embed] body > footer,
+:root[data-embed] body > .skip-link {
+  display: none;
+}

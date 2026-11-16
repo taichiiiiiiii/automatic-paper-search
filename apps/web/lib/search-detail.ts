@@ -35,3 +35,16 @@ export function detailFrameUrl(anchorHref: string, locationHref: string): URL | 
   if (url.hash) return null;
   return url;
 }
+
+/**
+ * #521 U3: the iframe copy of a validated detail URL, marked `embed=1` so
+ * the catalog shows only that paper and none of its own navigation (its
+ * 「詳細を閉じる」 used to swap the dialog for an unrelated list). Display
+ * only: the catalog loads the same data either way. The 「通常ページで開く」
+ * link keeps the unmarked URL.
+ */
+export function embeddedFrameHref(url: URL): string {
+  const framed = new URL(url.href);
+  framed.searchParams.set("embed", "1");
+  return framed.href;
+}
