@@ -111,6 +111,55 @@ test.describe("landing", () => {
     await expect(page).toHaveURL(/\/[a-z0-9-]+-\d{4}\/\?(.*&)?paper=/);
   });
 
+  // #521 U3: the detail dialog embeds only the chosen paper (embed=1):
+  // no 詳細を閉じる / site navigation inside it to swap in an unrelated
+  // list, Esc inside closes the dialog, and on a phone it fills the screen.
+  for (const width of [412, 1280]) {
+    test(`search detail dialog shows only the chosen paper (${width}px)`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      const landing = new LandingPage(page);
+      await landing.gotoFullResults("diffusion");
+      await landing.fullResultLinks.first().click();
+      await expect(landing.detailDialog).toBeVisible();
+
+      const src = new URL((await landing.detailFrameElement.getAttribute("src")) ?? "", page.url());
+      expect(src.searchParams.get("embed")).toBe("1");
+      const direct = new URL(
+        (await landing.detailDialogDirectLink.getAttribute("href")) ?? "",
+        page.url(),
+      );
+      expect(direct.searchParams.has("embed")).toBe(false);
+      expect(direct.searchParams.get("paper")).toBe(src.searchParams.get("paper"));
+
+      const frame = landing.detailFrame;
+      await expect(frame.locator("[data-paper-id]")).toHaveCount(1, { timeout: 20_000 });
+      await expect(frame.getByRole("button", { name: "詳細を閉じる" })).toHaveCount(0);
+      await expect(frame.getByRole("navigation", { name: "グローバル" })).toHaveCount(0);
+      await expect(frame.getByRole("searchbox")).toHaveCount(0);
+
+      const box = await landing.detailDialog.boundingBox();
+      if (width < 480) {
+        expect(Math.abs((box?.width ?? 0) - width)).toBeLessThanOrEqual(1);
+      } else {
+        expect(box?.width ?? 0).toBeLessThan(width);
+        // Centred, not pinned to the top-left corner.
+        const left = box?.x ?? 0;
+        const right = width - left - (box?.width ?? 0);
+        expect(Math.abs(left - right)).toBeLessThanOrEqual(1);
+      }
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - window.innerWidth,
+      );
+      expect(overflow).toBeLessThanOrEqual(0);
+
+      // Esc pressed inside the embedded page closes the outer dialog.
+      // (The selected card's heading is focusable, tabIndex -1.)
+      await frame.locator("[data-paper-id] h2").first().focus();
+      await page.keyboard.press("Escape");
+      await expect(landing.detailDialog).toBeHidden();
+    });
+  }
+
   test("in-page links jump to the catalog and lineage sections", async ({ page }) => {
     const landing = new LandingPage(page);
     await landing.goto();

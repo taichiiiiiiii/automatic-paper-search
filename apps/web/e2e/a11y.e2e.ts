@@ -114,6 +114,17 @@ const PAGES: Record<string, (page: Page) => Promise<void>> = {
     await catalog.goto("q=diffusion");
     await expect(catalog.results.first()).toBeVisible({ timeout: 20_000 });
   },
+  // #521 U3: the cross-search detail dialog with its embedded catalog
+  // page (axe also audits the same-origin iframe).
+  "search-detail": async (page) => {
+    const landing = new LandingPage(page);
+    await landing.gotoFullResults("diffusion");
+    await landing.fullResultLinks.first().click();
+    await expect(landing.detailDialog).toBeVisible();
+    await expect(landing.detailFrame.locator("[data-paper-id]")).toHaveCount(1, {
+      timeout: 20_000,
+    });
+  },
   "how-it-works": async (page) => {
     await page.goto("/how-it-works/");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
