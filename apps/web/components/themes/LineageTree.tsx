@@ -51,6 +51,7 @@ import type { LineageArtifact } from "../../lib/themes-quality";
 import { resolveFocus } from "../../lib/themes-quality";
 import {
   ALL_RELATIONS,
+  cardHeightFor,
   computeHubSet,
   computeModeData,
   computeOrphanSet,
@@ -63,7 +64,6 @@ import {
   matchesSearch,
   matchesYear,
   maxCardsPerLine,
-  NODE_H,
   NODE_W,
   PADDING,
   PHONE_BOX_WIDTH,
@@ -635,17 +635,19 @@ export function LineageTree({
     ro.observe(box);
     return () => ro.disconnect();
   }, []);
-  const maxPerLine = maxCardsPerLine(
-    treeBoxWidth ?? (typeof window !== "undefined" ? window.innerWidth - 34 : 0),
-  );
+  const layoutBoxWidth =
+    treeBoxWidth ?? (typeof window !== "undefined" ? window.innerWidth - 34 : 0);
+  const maxPerLine = maxCardsPerLine(layoutBoxWidth);
+  // #521 U7: shorter cards on a phone, so a card is not ~50px of empty space.
+  const cardH = cardHeightFor(layoutBoxWidth);
 
   // ---- Layout + per-mode visual hooks -----------------------------------
   // Both take nodesForLayout (orphans already dropped when hidden) --
   // otherwise the layout would reserve an empty row for any year that
   // contained only orphans (docs/assets/theme.js's render() comment).
-  const { positioned, yearLabels, totalW, totalH, perLine } = useMemo(
-    () => layoutChronological(nodesForLayout, artifact.edges, mode, { maxPerLine }),
-    [nodesForLayout, artifact.edges, mode, maxPerLine],
+  const { positioned, yearLabels, totalW, totalH, perLine, nodeH } = useMemo(
+    () => layoutChronological(nodesForLayout, artifact.edges, mode, { maxPerLine, nodeH: cardH }),
+    [nodesForLayout, artifact.edges, mode, maxPerLine, cardH],
   );
   const hasWrappedYears = yearLabels.some((yl) => yl.lines > 1);
   const modeData = useMemo(
@@ -915,10 +917,10 @@ export function LineageTree({
     const z = zoomRef.current;
     container.scrollTo({
       left: Math.max(0, (pos.x + NODE_W / 2) * z - container.clientWidth / 2),
-      top: Math.max(0, (pos.y + NODE_H / 2) * z - container.clientHeight / 2),
+      top: Math.max(0, (pos.y + nodeH / 2) * z - container.clientHeight / 2),
       behavior: "auto",
     });
-  }, [permalinkRaw, permalinkFocus, positionById, treeBoxWidth]);
+  }, [permalinkRaw, permalinkFocus, positionById, treeBoxWidth, nodeH]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: `view` / `zoom` are not read in the body (zoom via zoomRef) -- switching back from the timeline or zooming must re-run the paint so the minimap is recomputed.
   useEffect(() => {
@@ -945,7 +947,7 @@ export function LineageTree({
       ctx!.fillStyle = "rgba(80, 60, 40, 0.55)";
       for (const n of positioned) {
         const x = ox + (n._x + NODE_W / 2) * s;
-        const y = oy + (n._y + NODE_H / 2) * s;
+        const y = oy + (n._y + nodeH / 2) * s;
         ctx!.fillRect(x - 1.5, y - 1.5, 3, 3);
       }
       const vx = ox + (container!.scrollLeft / z) * s;
@@ -1583,10 +1585,12 @@ export function LineageTree({
               })}
             </g>
           </svg>
-          {/* Mouse drag-to-pan on the scroll area; keyboard and touch users scroll it natively. */}
+          {/* Mouse drag-to-pan on the scroll area; keyboard and touch users scroll it natively.
+              #521 U7: only horizontal overscroll is contained (no back-swipe),
+              so a vertical swipe at the box's end scrolls the page on. */}
           <div
             ref={scrollRef}
-            className="max-h-[70vh] cursor-grab select-none overflow-auto overscroll-contain rounded-md border border-rule bg-surface active:cursor-grabbing"
+            className="max-h-[70vh] cursor-grab select-none overflow-auto overscroll-x-contain rounded-md border border-rule bg-surface active:cursor-grabbing"
             onPointerDown={onPanStart}
             onPointerMove={onPanMove}
             onPointerUp={onPanEnd}
@@ -1654,7 +1658,7 @@ export function LineageTree({
                   const dst = positionById.get(e.dst);
                   if (!src || !dst) return null;
                   // #461: join the facing sides when the citing card is not lower.
-                  const { x1, y1, x2, y2, notDownward } = edgeAnchors(src, dst, NODE_W, NODE_H);
+                  const { x1, y1, x2, y2, notDownward } = edgeAnchors(src, dst, NODE_W, nodeH);
                   const key = edgeKey(e);
                   const strokeClass = RELATION_STROKE_CLASS[e.relation] ?? DEFAULT_STROKE_CLASS;
                   const onMain = showMainPath && mainPathKeys.has(key);
@@ -1806,7 +1810,7 @@ export function LineageTree({
                       x={p._x}
                       y={p._y}
                       width={NODE_W}
-                      height={NODE_H}
+                      height={nodeH}
                       overflow="visible"
                     >
                       <button
@@ -1971,7 +1975,7 @@ export function LineageTree({
                   const dst = positionById.get(e.dst);
                   if (!src || !dst) return null;
                   const midX = (src.x + NODE_W / 2 + (dst.x + NODE_W / 2)) / 2;
-                  const midY = (src.y + NODE_H + dst.y) / 2;
+                  const midY = (src.y + nodeH + dst.y) / 2;
                   const ttW = 260;
                   const ttH = 110;
                   const ttX = Math.max(0, Math.min(midX - ttW / 2, totalW - ttW));
