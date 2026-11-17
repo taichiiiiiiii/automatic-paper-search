@@ -69,6 +69,11 @@ export function hiddenEdgeCount(
 
 export const NODE_W = 260;
 export const NODE_H = 200;
+/** #521 U7: card height on a phone (box narrower than PHONE_BOX_WIDTH, one
+ * card per line). Every text line of a card is clamped (venue row, two title
+ * lines, two tldr lines, authors, citations), so its content is at most
+ * 146 layout units; 200 left ~50px of empty card at the phone fit zoom. */
+export const NODE_H_COMPACT = 148;
 export const ROW_GAP = 80;
 export const SIBLING_GAP = 28;
 export const PADDING = 56;
@@ -278,6 +283,8 @@ export interface LayoutResult {
   totalH: number;
   /** Cards per line actually used (the longest line). */
   perLine: number;
+  /** Card height the layout used (NODE_H, or NODE_H_COMPACT on a phone). */
+  nodeH: number;
 }
 
 /** Vertical gap between wrapped lines of the same year (smaller than
@@ -288,6 +295,8 @@ export interface LayoutOptions {
   /** Wrap a year's cards onto several lines once it has more than this
    * many (row-major, ordering kept). Default: never wrap. */
   maxPerLine?: number;
+  /** Card height in layout units (default NODE_H; see cardHeightFor). */
+  nodeH?: number;
 }
 
 /** Fit-to-width zoom the wrap aims for: phones (< 640px) and wider screens. */
@@ -303,6 +312,14 @@ export const FIT_ZOOM_FLOOR_WIDE = 0.6;
 /** Width (layout units) of a tree whose longest line has `perLine` cards. */
 export function treeWidthFor(perLine: number): number {
   return YEAR_LABEL_W + perLine * (NODE_W + SIBLING_GAP) + PADDING;
+}
+
+/** #521 U7: card height for the tree box width -- compact on a phone (the
+ * one-card-per-line layout of maxCardsPerLine), NODE_H otherwise and while
+ * the width is unknown. */
+export function cardHeightFor(boxWidth: number): number {
+  if (!Number.isFinite(boxWidth) || boxWidth <= 0) return NODE_H;
+  return boxWidth < PHONE_BOX_WIDTH ? NODE_H_COMPACT : NODE_H;
 }
 
 /** Cards per line for a tree shown in a box `boxWidth` px wide: as many as
@@ -426,6 +443,10 @@ export function layoutChronological(
       ? Math.floor(options.maxPerLine)
       : Number.POSITIVE_INFINITY;
   const effectiveMode: XAxisMode = X_AXIS_MODES.includes(mode) ? mode : DEFAULT_X_AXIS_MODE;
+  const nodeH =
+    options.nodeH !== undefined && Number.isFinite(options.nodeH) && options.nodeH > 0
+      ? options.nodeH
+      : NODE_H;
 
   const byYear = new Map<YearBucket, LineageNode[]>();
   for (const n of nodes) {
@@ -483,7 +504,7 @@ export function layoutChronological(
     const plan = planYearLines(row, edges, perLine);
     row.splice(0, row.length, ...plan.ordered);
     const lines = Math.max(1, plan.lines);
-    const bandBottom = bandTop + lines * NODE_H + (lines - 1) * LINE_GAP;
+    const bandBottom = bandTop + lines * nodeH + (lines - 1) * LINE_GAP;
     let importance: YearLabel["importance"] = "regular";
     if (year !== UNKNOWN_YEAR) {
       if (year % 10 === 0) importance = "decade-major";
@@ -491,7 +512,7 @@ export function layoutChronological(
     }
     yearLabels.push({
       label: year === UNKNOWN_YEAR ? "Unknown" : String(year),
-      y: bandTop + NODE_H / 2,
+      y: bandTop + nodeH / 2,
       isUnknown: year === UNKNOWN_YEAR,
       importance,
       top: bandTop,
@@ -503,7 +524,7 @@ export function layoutChronological(
       const line = plan.lineOf[i] as number;
       const col = plan.colOf[i] as number;
       const x = xStart + col * step;
-      positioned.push({ ...n, _x: x, _y: bandTop + line * (NODE_H + LINE_GAP) });
+      positioned.push({ ...n, _x: x, _y: bandTop + line * (nodeH + LINE_GAP) });
       // Genealogy mode places children under their parents' *slot* in the
       // unwrapped order, so wrapping never changes the ordering.
       ctx.placedX.set(n.id, xStart + i * step);
@@ -513,7 +534,7 @@ export function layoutChronological(
   // Same as before wrapping existed: PADDING + one (band + ROW_GAP) per year + PADDING.
   const totalH = bandTop + PADDING;
 
-  return { positioned, yearLabels, totalW, totalH, perLine };
+  return { positioned, yearLabels, totalW, totalH, perLine, nodeH };
 }
 
 /** Nodes whose (in+out) degree clears the 90th percentile -- tagged as

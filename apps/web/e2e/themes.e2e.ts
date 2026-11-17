@@ -300,6 +300,100 @@ for (const t of themes) {
         expect(await theme.zoom()).toBeGreaterThanOrEqual(floor);
       });
 
+      test("phone: cards fit their content and a swipe on a card hands over to the page (#521 U7)", async ({
+        page,
+        browserName,
+        isMobile,
+      }) => {
+        // CDP touch input is Chromium only; the layout under test is the phone one.
+        test.skip(browserName !== "chromium" || !isMobile, "Chromium phone project only");
+        await theme.goto(t.slug);
+        await expect(theme.nodeCards.first()).toBeVisible();
+        // Card height vs its content (last line's bottom + bottom padding/border).
+        const gaps = await theme.nodeCards.evaluateAll((cards) =>
+          cards.slice(0, 20).map((c) => {
+            const r = c.getBoundingClientRect();
+            const last = (c.lastElementChild as HTMLElement).getBoundingClientRect();
+            const cs = getComputedStyle(c);
+            const scale = r.width / (c as HTMLElement).offsetWidth;
+            const pad = (parseFloat(cs.paddingBottom) + parseFloat(cs.borderBottomWidth)) * scale;
+            // Cards with every line (venue, title, tldr, authors, citations).
+            return { gap: r.height - (last.bottom - r.top + pad), full: c.children.length === 5 };
+          }),
+        );
+        expect(gaps.length).toBeGreaterThan(0);
+        for (const { gap, full } of gaps) {
+          expect(gap).toBeGreaterThanOrEqual(-1); // nothing clipped
+          if (full) expect(gap).toBeLessThanOrEqual(24);
+        }
+
+        const cdp = await page.context().newCDPSession(page);
+        async function swipe(x: number, y: number, dx: number, dy: number) {
+          await cdp.send("Input.dispatchTouchEvent", {
+            type: "touchStart",
+            touchPoints: [{ x, y }],
+          });
+          for (let i = 1; i <= 10; i++) {
+            await cdp.send("Input.dispatchTouchEvent", {
+              type: "touchMove",
+              touchPoints: [{ x: x + (dx * i) / 10, y: y + (dy * i) / 10 }],
+            });
+          }
+          await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+        }
+        // The tree's scroll box at its vertical end, a card under the finger.
+        const start = await theme.tree.evaluate((svg) => {
+          const box = svg.parentElement as HTMLElement;
+          box.scrollIntoView({ block: "start" });
+          window.scrollBy(0, -40);
+          box.scrollTop = box.scrollHeight;
+          const r = box.getBoundingClientRect();
+          const top = Math.max(r.top, 0);
+          const bottom = Math.min(r.bottom, window.innerHeight);
+          // The centre of a card that is fully inside the visible part of the box.
+          const card = [...box.querySelectorAll("[data-node-card]")]
+            .map((c) => c.getBoundingClientRect())
+            .find((c) => c.top >= top && c.bottom <= bottom && c.height > 0);
+          const x = card ? card.left + card.width / 2 : -1;
+          const y = card ? card.top + card.height / 2 : -1;
+          const el = card ? document.elementFromPoint(x, y) : null;
+          return {
+            x,
+            y,
+            onCard: !!el?.closest("[data-node-card]"),
+            scrollY: window.scrollY,
+            room: document.documentElement.scrollHeight - window.innerHeight - window.scrollY,
+          };
+        });
+        expect(start.onCard).toBe(true);
+        expect(start.room).toBeGreaterThan(50);
+        await swipe(start.x, start.y, 0, -240);
+        await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(start.scrollY);
+        // Horizontal pan inside the box still works once zoomed in.
+        await theme.zoomButton("拡大").click();
+        await theme.zoomButton("拡大").click();
+        const h = await theme.tree.evaluate((svg) => {
+          const box = svg.parentElement as HTMLElement;
+          box.scrollIntoView({ block: "center" });
+          box.scrollLeft = 0;
+          const r = box.getBoundingClientRect();
+          return {
+            x: r.left + r.width * 0.75,
+            y: r.top + r.height / 2,
+            room: box.scrollWidth - box.clientWidth,
+          };
+        });
+        expect(h.room).toBeGreaterThan(0);
+        await swipe(h.x, h.y, -150, 0);
+        await expect
+          .poll(() => theme.tree.evaluate((svg) => (svg.parentElement as HTMLElement).scrollLeft))
+          .toBeGreaterThan(0);
+        const overflow = await page.evaluate(
+          () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        );
+        expect(overflow).toBe(0);
+      });
+
       test("crowded years wrap row-major inside one year band", async ({ page }) => {
         await theme.goto(t.slug);
         const perLine = await theme.perLine();
