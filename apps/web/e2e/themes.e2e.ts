@@ -50,6 +50,65 @@ test("/themes/ without a theme shows the gallery and a default tree", PROD, asyn
   await expect(theme.gallery.getByRole("link")).toHaveCount(themes.length);
 });
 
+// #521 U9: on a desktop a large theme (NeRF: 1868px of tree in a 1208px
+// box at 1280px) starts fitted to the width from its first paint: the svg
+// is never at 100% on the way, nothing shifts, and the tree is not cut off.
+test("a wide theme starts fitted to the width on a desktop (#521 U9)", async ({ page }) => {
+  const slug = "neural-radiance-fields";
+  test.skip(!themes.some((t) => t.slug === slug), `${slug} is not published`);
+  test.skip((page.viewportSize()?.width ?? 0) < 640, "desktop widths only");
+  await page.addInitScript(() => {
+    const w = window as unknown as { __zooms: string[]; __cls: number };
+    w.__zooms = [];
+    w.__cls = 0;
+    new MutationObserver((records) => {
+      for (const r of records) {
+        if (r.type === "attributes" && r.oldValue !== null) w.__zooms.push(r.oldValue);
+        for (const n of Array.from(r.addedNodes)) {
+          if (!(n instanceof Element)) continue;
+          for (const svg of [n, ...Array.from(n.querySelectorAll("svg[data-zoom]"))]) {
+            const z = svg.getAttribute("data-zoom");
+            if (z !== null) w.__zooms.push(z);
+          }
+        }
+      }
+    }).observe(document, {
+      subtree: true,
+      childList: true,
+      attributes: true,
+      attributeFilter: ["data-zoom"],
+      attributeOldValue: true,
+    });
+    // Layout-shift entries exist in Chromium only.
+    if (!PerformanceObserver.supportedEntryTypes?.includes("layout-shift")) return;
+    new PerformanceObserver((list) => {
+      for (const e of list.getEntries() as unknown as Array<{
+        value: number;
+        hadRecentInput: boolean;
+      }>) {
+        if (!e.hadRecentInput) w.__cls += e.value;
+      }
+    }).observe({ type: "layout-shift", buffered: true });
+  });
+  const theme = new ThemePage(page);
+  await theme.skipOnboarding();
+  await theme.goto(slug);
+  await theme.waitForTree();
+  const fit = await theme.tree.evaluate((svg) => {
+    const box = svg.parentElement as HTMLElement;
+    return { svgW: svg.getBoundingClientRect().width, boxW: box.clientWidth };
+  });
+  expect(fit.svgW).toBeLessThanOrEqual(fit.boxW + 1);
+  const z = await theme.zoom();
+  expect(z).toBeLessThan(1);
+  expect(z).toBeGreaterThanOrEqual(FIT_ZOOM_FLOOR_WIDE);
+  const seen = await page.evaluate(() => (window as unknown as { __zooms: string[] }).__zooms);
+  expect(seen.length).toBeGreaterThan(0);
+  expect(seen.map(Number).filter((v) => v >= 1)).toEqual([]);
+  const cls = await page.evaluate(() => (window as unknown as { __cls: number }).__cls);
+  expect(cls).toBeLessThan(0.1);
+});
+
 // #521 U10: opening the request panel moves focus into it (not <body>,
 // which is where WebKit left it), Tab reaches the form, and closing with the
 // toggle or Esc returns focus to the toggle. /api/health is answered locally
