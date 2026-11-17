@@ -12,12 +12,12 @@ describe("buildHomeJsonLd", () => {
       "@context": "https://schema.org",
       "@type": "WebSite",
       name: "PaperPilot",
-      url: "https://paperpilot.pages.dev/",
+      url: "https://papergraph.fyi/",
       description: "AI/ML トップ会議の採択論文をタイトル・著者・タグから横断検索できるツール",
       inLanguage: "ja",
       potentialAction: {
         "@type": "SearchAction",
-        target: "https://paperpilot.pages.dev/?q={search_term_string}",
+        target: "https://papergraph.fyi/?q={search_term_string}",
         "query-input": "required name=search_term_string",
       },
     });

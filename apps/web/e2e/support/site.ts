@@ -34,7 +34,7 @@ export const IS_REMOTE = REMOTE_ORIGIN !== null;
  * a per-deployment URL is under test. Mirrors @paperpilot/core's
  * PUBLIC_ORIGIN (literal on purpose: a mismatch is caught by the canonical
  * checks themselves). */
-export const CANONICAL_ORIGIN = process.env.E2E_CANONICAL_ORIGIN ?? "https://paperpilot.pages.dev";
+export const CANONICAL_ORIGIN = process.env.E2E_CANONICAL_ORIGIN ?? "https://papergraph.fyi";
 
 const CACHE_TTL_MS = 15 * 60_000;
 

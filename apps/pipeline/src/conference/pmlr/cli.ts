@@ -12,7 +12,7 @@ import { CliUsageError } from "../shared/cliArgs.js";
 import { runPmlrMain } from "./main.js";
 
 const FETCH_TIMEOUT_MS = 120_000;
-export const USER_AGENT = "PaperPilot/1.0 (+https://paperpilot.pages.dev; catalog builder)";
+export const USER_AGENT = "PaperPilot/1.0 (+https://papergraph.fyi; catalog builder)";
 
 async function main(): Promise<void> {
   const outputRoot = process.env.PAPERPILOT_OUTPUT_ROOT;

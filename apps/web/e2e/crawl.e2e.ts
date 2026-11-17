@@ -16,7 +16,7 @@
  * only exist after client-side rendering are covered by the @prod UI tests
  * instead. Opt-in locally (E2E_CRAWL=1); always on with E2E_BASE_URL.
  *
- *   E2E_BASE_URL=https://paperpilot.pages.dev pnpm --filter @paperpilot/web \
+ *   E2E_BASE_URL=https://papergraph.fyi pnpm --filter @paperpilot/web \
  *     exec playwright test --grep @prod-crawl --project desktop-chromium
  */
 import type { APIRequestContext } from "@playwright/test";
