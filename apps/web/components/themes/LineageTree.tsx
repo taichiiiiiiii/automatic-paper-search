@@ -131,6 +131,11 @@ const ZOOM_MIN = 0.1;
 const ZOOM_FIT_MIN = 0.02;
 const ZOOM_MAX = 1.25;
 const MOBILE_ZOOM = 0.65;
+/** 全体's zoom: the tree's width fit into a box `boxWidth` px wide (8px of
+ * slack for the border), never above 100% nor below ZOOM_FIT_MIN. */
+function fitZoom(boxWidth: number, treeWidth: number): number {
+  return Math.max(ZOOM_FIT_MIN, Math.min(1, (boxWidth - 8) / Math.max(treeWidth, 1)));
+}
 
 // Tailwind's build-time scanner only picks up class names it can see as
 // complete literal strings in the source -- a template-interpolated
@@ -788,19 +793,31 @@ export function LineageTree({
   // #463: on a phone the tree is one card per line (maxCardsPerLine) and
   // starts fitted to the width, computed here so the first paint — and the
   // ?node= scroll that follows it — already use the final zoom.
+  // #521 U9: on a wider screen a tree wider than the box (NeRF: 1868px in a
+  // 1208px box) starts fitted to the width like 全体, never above 100% nor
+  // below 全体's floor. The first render guesses the box from the window;
+  // the layout effect below refines it with the measured scroll area before
+  // the first paint, once, and never after the user zoomed.
   const [zoom, setZoom] = useState(() => {
     if (typeof window === "undefined") return 1;
     const boxGuess = window.innerWidth - 34;
     if (boxGuess < PHONE_BOX_WIDTH) {
       return Math.max(ZOOM_FIT_MIN, Math.min(1, (boxGuess - 8) / treeWidthFor(1)));
     }
-    return window.innerWidth < 640 ? MOBILE_ZOOM : 1;
+    if (window.innerWidth < 640) return MOBILE_ZOOM;
+    return fitZoom(boxGuess, totalW);
   });
   const zoomRef = useRef(zoom);
+  const initialFitPendingRef = useRef(
+    typeof window !== "undefined" &&
+      window.innerWidth >= 640 &&
+      window.innerWidth - 34 >= PHONE_BOX_WIDTH,
+  );
   const changeZoom = useCallback((next: number, min: number = ZOOM_MIN) => {
     const container = scrollRef.current;
     const prev = zoomRef.current;
     const z = Math.min(ZOOM_MAX, Math.max(min, next));
+    initialFitPendingRef.current = false;
     if (z === prev) return;
     zoomRef.current = z;
     setZoom(z);
@@ -816,6 +833,22 @@ export function LineageTree({
   useEffect(() => {
     zoomRef.current = zoom;
   }, [zoom]);
+  // #521 U9: refine the initial fit with the measured scroll area (border and
+  // scrollbar included), before paint. No scroll re-centering: the view is
+  // still at its origin, and a ?node= scroll waits for this zoom. It relies
+  // on running after the first commit (treeBoxWidth is null until then):
+  // in the first commit the `[zoom]` sync effect above would reset zoomRef
+  // to the guess before the permalink effect reads it.
+  useLayoutEffect(() => {
+    if (!initialFitPendingRef.current || treeBoxWidth === null) return;
+    const container = scrollRef.current;
+    if (!container || container.clientWidth <= 0) return;
+    initialFitPendingRef.current = false;
+    const z = fitZoom(container.clientWidth, totalW);
+    if (z === zoomRef.current) return;
+    zoomRef.current = z;
+    setZoom(z);
+  }, [treeBoxWidth, totalW]);
   function zoomStep(dir: 1 | -1) {
     const cur = zoomRef.current;
     const steps =
@@ -872,7 +905,7 @@ export function LineageTree({
   function zoomToFit() {
     const container = scrollRef.current;
     if (!container) return;
-    changeZoom(Math.min(1, (container.clientWidth - 8) / Math.max(totalW, 1)), ZOOM_FIT_MIN);
+    changeZoom(fitZoom(container.clientWidth, totalW), ZOOM_FIT_MIN);
   }
 
   useEffect(() => {
@@ -911,14 +944,17 @@ export function LineageTree({
     // frame) -- leave the ref unset so a later render (e.g. the user
     // clearing the filter that hid it) can still complete the scroll.
     if (!container || !pos) return;
+    // #521 U9: wait until the rendered zoom is the settled initial fit
+    // (the svg would otherwise still have its pre-fit size).
+    if (zoom !== zoomRef.current) return;
     scrolledToPermalinkRef.current = true;
-    const z = zoomRef.current;
+    const z = zoom;
     container.scrollTo({
       left: Math.max(0, (pos.x + NODE_W / 2) * z - container.clientWidth / 2),
       top: Math.max(0, (pos.y + NODE_H / 2) * z - container.clientHeight / 2),
       behavior: "auto",
     });
-  }, [permalinkRaw, permalinkFocus, positionById, treeBoxWidth]);
+  }, [permalinkRaw, permalinkFocus, positionById, treeBoxWidth, zoom]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: `view` / `zoom` are not read in the body (zoom via zoomRef) -- switching back from the timeline or zooming must re-run the paint so the minimap is recomputed.
   useEffect(() => {
