@@ -184,3 +184,27 @@ describe("timelineFitOptions (#521 U11)", () => {
     expect(layout.width).toBe(56 + 24 + 12 * 40);
   });
 });
+
+describe("tap areas sit below every dot (#521 U11)", () => {
+  it("draws all invisible tap circles before the first dot", () => {
+    stubHover(true);
+    stubBoxWidth(378);
+    render(<LineageTree artifact={ARTIFACT} slug="t" themeName="Test" />);
+    const circles = [...document.querySelectorAll("[data-theme-timeline] circle")];
+    const lastTap = Math.max(
+      ...circles.map((c, i) => (c.getAttribute("role") === "button" ? -1 : i)),
+    );
+    const firstDot = circles.findIndex((c) => c.getAttribute("role") === "button");
+    expect(circles.filter((c) => c.getAttribute("role") !== "button")).toHaveLength(6);
+    expect(firstDot).toBeGreaterThan(lastTap);
+  });
+
+  it("selects the paper when its tap area is clicked", () => {
+    stubHover(true);
+    render(<LineageTree artifact={ARTIFACT} slug="t" themeName="Test" />);
+    const taps = document.querySelectorAll("[data-timeline-tap-areas] circle");
+    fireEvent.click(taps[0] as Element);
+    const pressed = document.querySelectorAll('[data-theme-timeline] [aria-pressed="true"]');
+    expect(pressed).toHaveLength(1);
+  });
+});

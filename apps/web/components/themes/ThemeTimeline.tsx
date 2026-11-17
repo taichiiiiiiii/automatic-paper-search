@@ -197,6 +197,28 @@ export const ThemeTimeline = forwardRef<
           );
         })}
 
+        {/* Invisible 28 px tap areas around the small dots (touch), all
+            drawn below every dot (#521 U11): drawn inside each point's group
+            they covered the dots drawn before them, so in a crowded year a
+            tap on a dot's centre picked a neighbour (measured: 20 of 71 NeRF
+            dots reachable). The focusable circles carry the keyboard
+            handling. */}
+        <g data-timeline-tap-areas>
+          {layout.points.map((p) =>
+            nodeById.has(p.id) ? (
+              // biome-ignore lint/a11y/noStaticElementInteractions: pointer-only enlargement of the dot drawn above it, which is the focusable control with Enter/Space handling.
+              <circle
+                key={p.id}
+                cx={p.x}
+                cy={p.y}
+                r={14}
+                className="cursor-pointer fill-transparent"
+                onClick={() => onSelectPaper(p.id)}
+              />
+            ) : null,
+          )}
+        </g>
+
         {layout.points.map((p) => {
           const n = nodeById.get(p.id);
           if (!n) return null;
@@ -210,16 +232,6 @@ export const ThemeTimeline = forwardRef<
           const label = selected || onPath;
           return (
             <g key={p.id} data-timeline-node={p.id} opacity={dim ? 0.3 : 1}>
-              {/* Invisible 28 px tap area around the small dot (touch). The
-                  focusable circle below carries the keyboard handling. */}
-              {/* biome-ignore lint/a11y/noStaticElementInteractions: pointer-only enlargement of the dot below, which is the focusable control with Enter/Space handling. */}
-              <circle
-                cx={p.x}
-                cy={p.y}
-                r={14}
-                className="cursor-pointer fill-transparent"
-                onClick={() => onSelectPaper(p.id)}
-              />
               {/* biome-ignore lint/a11y/useSemanticElements: an SVG <circle> cannot be an HTML <button>; role="button" + tabIndex + Enter/Space give it button semantics inside the chart. */}
               <circle
                 cx={p.x}
