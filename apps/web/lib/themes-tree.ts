@@ -314,10 +314,6 @@ export function treeWidthFor(perLine: number): number {
   return YEAR_LABEL_W + perLine * (NODE_W + SIBLING_GAP) + PADDING;
 }
 
-/** Cards per line for a tree shown in a box `boxWidth` px wide: as many as
- * fit while the fit-to-width zoom (`(boxWidth - 8) / totalW`, see the
- * 全体 button) stays at or above the target zoom for that width. At least
- * 1; `Infinity` (no wrapping) when the width is unknown (0 / not finite). */
 /** #521 U7: card height for the tree box width -- compact on a phone (the
  * one-card-per-line layout of maxCardsPerLine), NODE_H otherwise and while
  * the width is unknown. */
@@ -326,6 +322,10 @@ export function cardHeightFor(boxWidth: number): number {
   return boxWidth < PHONE_BOX_WIDTH ? NODE_H_COMPACT : NODE_H;
 }
 
+/** Cards per line for a tree shown in a box `boxWidth` px wide: as many as
+ * fit while the fit-to-width zoom (`(boxWidth - 8) / totalW`, see the
+ * 全体 button) stays at or above the target zoom for that width. At least
+ * 1; `Infinity` (no wrapping) when the width is unknown (0 / not finite). */
 export function maxCardsPerLine(boxWidth: number): number {
   if (!Number.isFinite(boxWidth) || boxWidth <= 0) return Number.POSITIVE_INFINITY;
   // #463: on a phone one card per line, so the tree fits the width at a
