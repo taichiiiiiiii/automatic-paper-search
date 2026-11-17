@@ -44,6 +44,29 @@ export interface TimelineLayout {
 export const TIMELINE_MARGIN = { left: 56, right: 24, top: 16, bottom: 36 } as const;
 export const TIMELINE_MIN_COL_W = 64;
 export const TIMELINE_HEIGHT = 420;
+/** Default chart width: the box is at least this wide on a desktop. */
+export const TIMELINE_DEFAULT_WIDTH = 640;
+/** Narrowest year column when the chart is fitted into a phone-sized box
+ * (#521 U11): 40 px still holds a 4-digit year tick. */
+export const TIMELINE_NARROW_MIN_COL_W = 40;
+
+/**
+ * Layout options for a box `available` px wide (#521 U11). A box at least
+ * as wide as the default chart (or not measured yet: `null`/0) keeps the
+ * old 640 px chart with 64 px columns, so the desktop view is unchanged.
+ * A narrower box (a phone) gets a chart of the box width with columns down
+ * to 40 px; only a span of years too long even for that still scrolls
+ * inside the box.
+ */
+export function timelineFitOptions(available: number | null): {
+  minWidth: number;
+  minColW: number;
+} {
+  if (!available || available <= 0 || available >= TIMELINE_DEFAULT_WIDTH) {
+    return { minWidth: TIMELINE_DEFAULT_WIDTH, minColW: TIMELINE_MIN_COL_W };
+  }
+  return { minWidth: Math.floor(available), minColW: TIMELINE_NARROW_MIN_COL_W };
+}
 
 function finiteYear(y: number | null | undefined): number | null {
   return typeof y === "number" && Number.isFinite(y) && y > 1800 && y < 2200 ? Math.trunc(y) : null;
@@ -61,7 +84,7 @@ export function formatCitationTick(v: number): string {
 
 export function layoutYearCitationTimeline(
   nodes: readonly TimelineNodeInput[],
-  opts: { minWidth?: number; height?: number } = {},
+  opts: { minWidth?: number; height?: number; minColW?: number } = {},
 ): TimelineLayout {
   const height = opts.height ?? TIMELINE_HEIGHT;
   const m = TIMELINE_MARGIN;
@@ -87,7 +110,8 @@ export function layoutYearCitationTimeline(
   const minYear = Math.min(...years);
   const maxYear = Math.max(...years);
   const span = maxYear - minYear + 1;
-  const width = Math.max(opts.minWidth ?? 320, m.left + m.right + span * TIMELINE_MIN_COL_W);
+  const minColW = opts.minColW ?? TIMELINE_MIN_COL_W;
+  const width = Math.max(opts.minWidth ?? 320, m.left + m.right + span * minColW);
   const plot = { left: m.left, top: m.top, right: width - m.right, bottom: height - m.bottom };
   const colW = (plot.right - plot.left) / span;
 
