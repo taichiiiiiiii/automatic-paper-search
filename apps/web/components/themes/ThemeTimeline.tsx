@@ -209,6 +209,7 @@ export const ThemeTimeline = forwardRef<
               // biome-ignore lint/a11y/noStaticElementInteractions: pointer-only enlargement of the dot drawn above it, which is the focusable control with Enter/Space handling.
               <circle
                 key={p.id}
+                data-timeline-tap={p.id}
                 cx={p.x}
                 cy={p.y}
                 r={14}
