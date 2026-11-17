@@ -110,6 +110,13 @@ export class LandingPage {
   get searchFilters(): Locator {
     return this.page.getByRole("group", { name: "検索結果を絞り込む" });
   }
+  /** #521 U18: the "すべての N 件を見る" link under the suggestion list. */
+  get searchMoreLink(): Locator {
+    return this.page.getByRole("link", { name: /^すべての [\d,]+ 件を見る$/ });
+  }
+  searchParam(name: string): string | null {
+    return new URL(this.page.url()).searchParams.get(name);
+  }
 }
 
 /** /themes/?theme=<slug> */
