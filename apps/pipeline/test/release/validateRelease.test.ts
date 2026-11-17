@@ -834,3 +834,270 @@ it("smokeRemote's default CSP header check follows the current LAYOUT_MODE", asy
     }),
   ).resolves.toBeDefined();
 });
+
+// ---- #540: CDN propagation lag on the production alias (run 43898231044) ----
+//
+// The production alias can serve the new marker from one edge and the old
+// deployment from the next request a second later. `--wait-marker` must
+// treat the marker wait plus every later check as ONE attempt and retry the
+// attempt within the same deadline, instead of failing the first time a
+// lagging edge answers after the marker matched once. Persistent mismatches
+// still fail (only later), and a call without `--wait-marker` still checks
+// exactly once.
+
+/** Per-path response sequences: each call takes the next entry; the last entry repeats. */
+function sequenceFetch(routes: Record<string, FakeRoute | FakeRoute[]>) {
+  const calls: Record<string, number> = {};
+  const fetchImpl = async (url: string, init?: { redirect?: "manual" | "follow" }) => {
+    const path = url.replace(/^https?:\/\/[^/]+/, "");
+    const entry = routes[path];
+    const n = calls[path] ?? 0;
+    calls[path] = n + 1;
+    const route = Array.isArray(entry) ? entry[Math.min(n, entry.length - 1)] : entry;
+    return fakeFetchFull(route === undefined ? {} : { [path]: route })(url, init);
+  };
+  return { fetchImpl, calls };
+}
+
+/** A clock that only advances when the code under test sleeps. */
+function sleepClock() {
+  const state = { t: 0, sleeps: 0 };
+  return {
+    state,
+    now: () => state.t,
+    sleep: async (ms: number) => {
+      state.sleeps += 1;
+      state.t += ms;
+      // Yield a macrotask so a loop that ignored the deadline would hit
+      // vitest's test timeout instead of spinning on microtasks forever.
+      await new Promise((resolve) => setImmediate(resolve));
+    },
+  };
+}
+
+const OLD_SHA = "b".repeat(40);
+const markerRoute = (sha: string): FakeRoute => ({
+  status: 200,
+  body: JSON.stringify({ source_sha: sha }),
+});
+
+function propagationBundle(): { dir: string; routes: Record<string, FakeRoute | FakeRoute[]> } {
+  const dir = mkdtempSync(join(tmpdir(), "paperpilot-smoke-propagation-"));
+  writeFileSync(join(dir, "index.html"), "<!doctype html><html>NEW</html>");
+  writeFileSync(join(dir, "404.html"), "<!doctype html><html>404</html>");
+  mkdirSync(join(dir, "iclr-2026"), { recursive: true });
+  writeFileSync(join(dir, "iclr-2026", "index.html"), "<!doctype html><html>conf</html>");
+  const routes: Record<string, FakeRoute | FakeRoute[]> = {
+    ...toFakeRoutes(validSmokeRoutes(SHA)),
+    "/": { status: 200, body: readFileSync(join(dir, "index.html")) },
+    "/404.html": { status: 200, body: readFileSync(join(dir, "404.html")) },
+    "/iclr-2026/": { status: 200, body: readFileSync(join(dir, "iclr-2026", "index.html")) },
+  };
+  return { dir, routes };
+}
+
+it("#540 (i) --wait-marker survives a marker that flips match -> stale -> match", async () => {
+  const { dir, routes } = propagationBundle();
+  try {
+    routes[`/${DEPLOYMENT_MARKER_FILENAME}`] = [
+      markerRoute(SHA),
+      markerRoute(OLD_SHA),
+      markerRoute(SHA),
+    ];
+    const clock = sleepClock();
+    const { fetchImpl } = sequenceFetch(routes);
+    await expect(
+      smokeRemote({
+        baseUrl: "https://paperpilot.pages.dev",
+        expectedSha: SHA,
+        fetchImpl,
+        waitMarkerSeconds: 300,
+        now: clock.now,
+        sleep: clock.sleep,
+        expectBytesDir: dir,
+        checkCspHeader: false,
+      }),
+    ).resolves.toBeDefined();
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+it("#540 (ii-a) --wait-marker survives index.html serving the old bytes once after the marker matched", async () => {
+  const { dir, routes } = propagationBundle();
+  try {
+    const fresh = routes["/"] as FakeRoute;
+    // 1st fetch = the root HTML check (fresh), 2nd = the --expect-bytes
+    // compare (a lagging edge serves the old page), then fresh again.
+    routes["/"] = [fresh, { status: 200, body: "<!doctype html><html>OLD</html>" }, fresh];
+    const clock = sleepClock();
+    const { fetchImpl } = sequenceFetch(routes);
+    await expect(
+      smokeRemote({
+        baseUrl: "https://paperpilot.pages.dev",
+        expectedSha: SHA,
+        fetchImpl,
+        waitMarkerSeconds: 300,
+        now: clock.now,
+        sleep: clock.sleep,
+        expectBytesDir: dir,
+        checkCspHeader: false,
+      }),
+    ).resolves.toBeDefined();
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+it("#540 (ii-b) --wait-marker survives conferences.json serving the old list once after the marker matched", async () => {
+  const { dir, routes } = propagationBundle();
+  try {
+    const fresh = routes["/conferences.json"] as FakeRoute;
+    // The old deployment's first conference is not in the new build output.
+    routes["/conferences.json"] = [
+      { status: 200, body: JSON.stringify([{ name: "old-conf-2025" }]) },
+      fresh,
+    ];
+    routes["/old-conf-2025/"] = { status: 200, body: "<!doctype html><html>old</html>" };
+    const clock = sleepClock();
+    const { fetchImpl } = sequenceFetch(routes);
+    await expect(
+      smokeRemote({
+        baseUrl: "https://paperpilot.pages.dev",
+        expectedSha: SHA,
+        fetchImpl,
+        waitMarkerSeconds: 300,
+        now: clock.now,
+        sleep: clock.sleep,
+        expectBytesDir: dir,
+        checkCspHeader: false,
+      }),
+    ).resolves.toBeDefined();
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+it("#540 (iii) --wait-marker still fails when the marker stays stale for the whole wait", async () => {
+  const { dir, routes } = propagationBundle();
+  try {
+    routes[`/${DEPLOYMENT_MARKER_FILENAME}`] = markerRoute(OLD_SHA);
+    const clock = sleepClock();
+    const { fetchImpl, calls } = sequenceFetch(routes);
+    await expect(
+      smokeRemote({
+        baseUrl: "https://paperpilot.pages.dev",
+        expectedSha: SHA,
+        fetchImpl,
+        waitMarkerSeconds: 300,
+        now: clock.now,
+        sleep: clock.sleep,
+        expectBytesDir: dir,
+        checkCspHeader: false,
+      }),
+    ).rejects.toThrow(/does not match requested source SHA/);
+    // It waited out the deadline (300 s), polling, and never ran later checks.
+    expect(clock.state.t).toBeGreaterThanOrEqual(300_000);
+    expect(calls[`/${DEPLOYMENT_MARKER_FILENAME}`]).toBeGreaterThan(2);
+    expect(calls["/conferences.json"] ?? 0).toBe(0);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+it("#540 (iv-a) --wait-marker still fails when --expect-bytes never matches within the wait", async () => {
+  const { dir, routes } = propagationBundle();
+  try {
+    routes["/"] = { status: 200, body: "<!doctype html><html>OLD</html>" };
+    const clock = sleepClock();
+    const { fetchImpl } = sequenceFetch(routes);
+    await expect(
+      smokeRemote({
+        baseUrl: "https://paperpilot.pages.dev",
+        expectedSha: SHA,
+        fetchImpl,
+        waitMarkerSeconds: 300,
+        now: clock.now,
+        sleep: clock.sleep,
+        expectBytesDir: dir,
+        checkCspHeader: false,
+      }),
+    ).rejects.toThrow(/deployed \/ does not byte-match local index\.html/);
+    // Bounded by the same deadline: no attempt starts after 300 s.
+    expect(clock.state.t).toBeLessThanOrEqual(300_000 + 2_000);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+it("#540 (iv-b) --wait-marker still fails when conferences.json stays empty within the wait", async () => {
+  const { dir, routes } = propagationBundle();
+  try {
+    routes["/conferences.json"] = { status: 200, body: "[]" };
+    const clock = sleepClock();
+    const { fetchImpl } = sequenceFetch(routes);
+    await expect(
+      smokeRemote({
+        baseUrl: "https://paperpilot.pages.dev",
+        expectedSha: SHA,
+        fetchImpl,
+        waitMarkerSeconds: 300,
+        now: clock.now,
+        sleep: clock.sleep,
+        expectBytesDir: dir,
+        checkCspHeader: false,
+      }),
+    ).rejects.toThrow(/deployed conferences\.json is empty/);
+    expect(clock.state.t).toBeLessThanOrEqual(300_000 + 2_000);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+it("#540 (v) without --wait-marker a stale answer still fails at once, checking each route a single time", async () => {
+  const { dir, routes } = propagationBundle();
+  try {
+    routes["/conferences.json"] = [
+      { status: 200, body: JSON.stringify([{ name: "old-conf-2025" }]) },
+      routes["/conferences.json"] as FakeRoute,
+    ];
+    routes["/old-conf-2025/"] = { status: 200, body: "<!doctype html><html>old</html>" };
+    const clock = sleepClock();
+    const { fetchImpl, calls } = sequenceFetch(routes);
+    await expect(
+      smokeRemote({
+        baseUrl: "https://paperpilot.pages.dev",
+        expectedSha: SHA,
+        fetchImpl,
+        now: clock.now,
+        sleep: clock.sleep,
+        expectBytesDir: dir,
+        checkCspHeader: false,
+      }),
+    ).rejects.toThrow(/cannot read local old-conf-2025\/index\.html/);
+    expect(calls[`/${DEPLOYMENT_MARKER_FILENAME}`]).toBe(1);
+    expect(calls["/conferences.json"]).toBe(1);
+    expect(clock.state.sleeps).toBe(0);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+it("#540 (v) without --wait-marker a marker that is stale on the only fetch fails without polling", async () => {
+  const routes: Record<string, FakeRoute | FakeRoute[]> = toFakeRoutes(validSmokeRoutes(SHA));
+  routes[`/${DEPLOYMENT_MARKER_FILENAME}`] = [markerRoute(OLD_SHA), markerRoute(SHA)];
+  const clock = sleepClock();
+  const { fetchImpl, calls } = sequenceFetch(routes);
+  await expect(
+    smokeRemote({
+      baseUrl: "https://paperpilot.pages.dev",
+      expectedSha: SHA,
+      fetchImpl,
+      now: clock.now,
+      sleep: clock.sleep,
+      checkCspHeader: false,
+    }),
+  ).rejects.toThrow(/does not match requested source SHA/);
+  expect(calls[`/${DEPLOYMENT_MARKER_FILENAME}`]).toBe(1);
+  expect(clock.state.sleeps).toBe(0);
+});
