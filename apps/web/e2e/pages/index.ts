@@ -169,6 +169,35 @@ export class ThemePage {
   get selectedPaperBar(): Locator {
     return this.page.locator("[data-selected-paper-bar]");
   }
+  /** The scroll box that holds the tree svg (max-h 70vh). */
+  get treeScrollBox(): Locator {
+    return this.tree.locator("xpath=..");
+  }
+  /**
+   * The first tree card with at least 60px visible in the viewport at the
+   * current scroll, and a point on its visible part (#521 U6: clicking there
+   * with the mouse avoids Playwright's scroll-into-view).
+   */
+  async firstCardVisibleInViewport(): Promise<{ id: string; x: number; y: number } | null> {
+    return this.page.evaluate(() => {
+      const ih = window.innerHeight;
+      const iw = window.innerWidth;
+      for (const el of document.querySelectorAll("[data-node-card]")) {
+        const r = el.getBoundingClientRect();
+        const top = Math.max(r.top, 0);
+        const bottom = Math.min(r.bottom, ih);
+        const id = el.closest("g[data-node-id]")?.getAttribute("data-node-id");
+        if (id && bottom - top >= 60 && r.left >= 0 && r.right <= iw && r.width > 0) {
+          const x = r.left + r.width / 2;
+          const y = (top + bottom) / 2;
+          // The point must really hit this card (not clipped by the tree box or covered).
+          const hit = document.elementFromPoint(x, y);
+          if (hit && el.contains(hit)) return { id, x, y };
+        }
+      }
+      return null;
+    });
+  }
   get evidencePanel(): Locator {
     return this.page.getByTestId("edge-evidence-panel");
   }
