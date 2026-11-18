@@ -132,6 +132,16 @@ const ZOOM_FIT_MIN = 0.02;
 const ZOOM_MAX = 1.25;
 const MOBILE_ZOOM = 0.65;
 
+/**
+ * #521 U6: the 選択中 bar. From `sm` up it is sticky to the viewport bottom so a
+ * card click always shows its result on screen (the 70vh tree box pushes the
+ * in-flow bar below the fold at 1280x800). It gets an opaque copy of the
+ * `bg-accent/5` tint there because it may sit over the tree. Below `sm` the bar
+ * is unchanged (in flow, translucent tint).
+ */
+export const SELECTED_PAPER_BAR_CLASS =
+  "mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-md border border-accent bg-accent/5 px-3 py-2 text-xs text-ink sm:sticky sm:bottom-2 sm:z-20 sm:bg-[color-mix(in_oklab,var(--color-accent)_5%,var(--color-bg))] sm:shadow-md";
+
 // Tailwind's build-time scanner only picks up class names it can see as
 // complete literal strings in the source -- a template-interpolated
 // `stroke-[var(${x})]` would silently fail to generate any CSS. Each
@@ -2023,12 +2033,13 @@ export function LineageTree({
         )}
       </div>
 
+      {/* #521 U6: on wide screens the tree box (70vh) plus the toolbar push this bar
+          below the fold, so a click showed no visible reaction. From `sm` up it is
+          sticky to the viewport bottom: it stays in flow when it is already on
+          screen and only pins while its flow position is below the fold. The page
+          never scrolls and nothing above it moves. Phones keep the in-flow bar. */}
       {selectedPaperId && neighbors && nodeById.get(selectedPaperId) && (
-        <p
-          role="status"
-          className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-md border border-accent bg-accent/5 px-3 py-2 text-xs text-ink"
-          data-selected-paper-bar
-        >
+        <p role="status" className={SELECTED_PAPER_BAR_CLASS} data-selected-paper-bar>
           <span className="text-ink-subtle">選択中:</span>
           <strong className="min-w-0 break-words font-medium">
             {String(nodeById.get(selectedPaperId)?.title || selectedPaperId)}
