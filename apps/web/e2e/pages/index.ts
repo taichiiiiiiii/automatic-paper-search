@@ -185,6 +185,10 @@ export class ThemePage {
   get nodeCards(): Locator {
     return this.tree.getByRole("button", { name: /土台と発展を表示/ });
   }
+  /** The tree card of node `id` (the button inside `g[data-node-id]`). */
+  nodeCardById(id: string): Locator {
+    return this.tree.locator(`g[data-node-id="${id}"] [data-node-card]`);
+  }
   get selectedPaperBar(): Locator {
     return this.page.locator("[data-selected-paper-bar]");
   }
@@ -216,6 +220,67 @@ export class ThemePage {
       }
       return null;
     });
+  }
+  /**
+   * A tree card that straddles the viewport BOTTOM edge (>= 30px of it visible
+   * inside the tree box), and a point on its visible part that really hits it
+   * (#545 follow-up: the bar used to cover 34px of exactly this card).
+   */
+  async cardStraddlingViewportBottom(): Promise<{ id: string; x: number; y: number } | null> {
+    return this.page.evaluate(() => {
+      const ih = window.innerHeight;
+      const box = document.querySelector("[data-node-card]")?.closest("div.overflow-auto");
+      if (!box) return null;
+      const br = box.getBoundingClientRect();
+      for (const el of box.querySelectorAll("[data-node-card]")) {
+        const r = el.getBoundingClientRect();
+        const left = Math.max(r.left, br.left);
+        const right = Math.min(r.right, br.right);
+        const top = Math.max(r.top, br.top, 0);
+        const bottom = Math.min(r.bottom, br.bottom, ih);
+        if (right - left < 40 || bottom - top < 30 || !(r.top < ih && r.bottom > ih)) continue;
+        const id = el.closest("g[data-node-id]")?.getAttribute("data-node-id");
+        const x = (left + right) / 2;
+        const y = (top + bottom) / 2;
+        if (id && document.elementFromPoint(x, y)?.closest("[data-node-card]") === el) {
+          return { id, x, y };
+        }
+      }
+      return null;
+    });
+  }
+  /** Page scrollY and the tree box's scroll offsets. */
+  async scrollState(): Promise<{ pageY: number; boxTop: number; boxLeft: number }> {
+    return this.page.evaluate(() => {
+      const box = document.querySelector("[data-node-card]")?.closest("div.overflow-auto");
+      return {
+        pageY: window.scrollY,
+        boxTop: box?.scrollTop ?? 0,
+        boxLeft: box?.scrollLeft ?? 0,
+      };
+    });
+  }
+  /**
+   * Vertical overlap (px) between the 選択中 bar and the part of card `id`
+   * that is visible (clipped by the tree box and the viewport).
+   */
+  async barOverlapWithCard(id: string): Promise<number> {
+    return this.page.evaluate((nodeId) => {
+      const ih = window.innerHeight;
+      const card = document.querySelector(
+        `g[data-node-id="${CSS.escape(nodeId)}"] [data-node-card]`,
+      );
+      const bar = document.querySelector("[data-selected-paper-bar]");
+      const box = card?.closest("div.overflow-auto");
+      if (!card || !bar || !box) return Number.NaN;
+      const r = card.getBoundingClientRect();
+      const b = bar.getBoundingClientRect();
+      const br = box.getBoundingClientRect();
+      const top = Math.max(r.top, br.top, 0);
+      const bottom = Math.min(r.bottom, br.bottom, ih);
+      if (Math.min(r.right, b.right) - Math.max(r.left, b.left) <= 0) return 0;
+      return Math.max(0, Math.min(bottom, b.bottom) - Math.max(top, b.top));
+    }, id);
   }
   get evidencePanel(): Locator {
     return this.page.getByTestId("edge-evidence-panel");

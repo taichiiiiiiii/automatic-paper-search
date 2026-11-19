@@ -251,6 +251,32 @@ for (const t of themes) {
         );
       });
 
+      // #545 follow-up: pinned to the viewport bottom, the bar covered 34px of
+      // the card straddling the bottom edge (the row people click right after
+      // opening the page), and the click re-centred the tree box. From sm up
+      // the bar now sits at the top of the tree box.
+      test("U6: at 1280x800 the bar does not cover a card cut by the viewport bottom, nothing scrolls", async ({
+        page,
+      }) => {
+        test.skip((page.viewportSize()?.width ?? 0) < 640, "wide screens only");
+        await page.setViewportSize({ width: 1280, height: 800 });
+        await theme.goto(t.slug);
+        await expect(theme.nodeCards.first()).toBeVisible();
+        let target = await theme.cardStraddlingViewportBottom();
+        for (let y = 40; !target && y <= 400; y += 40) {
+          await page.evaluate((top) => window.scrollTo(0, top), y);
+          target = await theme.cardStraddlingViewportBottom();
+        }
+        expect(target, "a card straddles the viewport bottom").toBeTruthy();
+        const before = await theme.scrollState();
+        await page.mouse.click(target!.x, target!.y);
+        await expect(theme.selectedPaperBar).toBeVisible();
+        await expect(theme.nodeCardById(target!.id)).toHaveAttribute("aria-pressed", "true");
+        await expect.poll(() => theme.searchParam("focus")).toBeTruthy();
+        expect(await theme.barOverlapWithCard(target!.id)).toBe(0);
+        expect(await theme.scrollState()).toEqual(before);
+      });
+
       test("U6: on phones the selection bar stays in the page flow below the tree", async ({
         page,
       }) => {
