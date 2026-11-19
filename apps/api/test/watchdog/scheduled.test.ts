@@ -43,6 +43,11 @@ function memKv(init: Record<string, string> = {}): WatchdogKv & { store: Record<
   };
 }
 
+const healthyQuota = {
+  idFromName: (name: string) => ({ name }),
+  get: () => ({ fetch: async () => Response.json({ request_id: null }) }),
+} as unknown as DurableObjectNamespace;
+
 function makeEnv(overrides: Partial<Env> = {}): Env {
   return {
     GH_OWNER: "o",
@@ -52,6 +57,8 @@ function makeEnv(overrides: Partial<Env> = {}): Env {
     DISPATCH_MODE: "live",
     GH_DISPATCH_PAT: PAT,
     CONFIG_KV: { get: async (k: string) => (k === "accepting" ? "true" : null) },
+    // #546: a healthy quota Durable Object (the probe is covered in quota-do.test.ts).
+    QUOTA: healthyQuota,
     ...overrides,
   };
 }
