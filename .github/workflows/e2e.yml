@@ -141,8 +141,7 @@ jobs:
             done
           }
           for i in 1 2 3; do
-            lim=7m; [ "$i" -eq 1 ] && lim=20s  # TEMP #548: force attempt 1 to time out
-            timeout --kill-after=30s "$lim" pnpm exec playwright install --with-deps "$BROWSER" && exit 0
+            timeout --kill-after=30s 7m pnpm exec playwright install --with-deps "$BROWSER" && exit 0
             echo "::warning::playwright install --with-deps attempt $i failed"
             [ "$i" -lt 3 ] && sleep $((i * 30)) && wait_for_apt 90
           done
@@ -178,8 +177,7 @@ jobs:
             done
           }
           for i in 1 2 3; do
-            lim=7m; [ "$i" -eq 1 ] && lim=20s  # TEMP #548: force attempt 1 to time out
-            timeout --kill-after=30s "$lim" pnpm exec playwright install-deps "$BROWSER" && exit 0
+            timeout --kill-after=30s 7m pnpm exec playwright install-deps "$BROWSER" && exit 0
             echo "::warning::playwright install-deps attempt $i failed"
             [ "$i" -lt 3 ] && sleep $((i * 30)) && wait_for_apt 90
           done
