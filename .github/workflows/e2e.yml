@@ -105,6 +105,12 @@ jobs:
           path: ~/.cache/ms-playwright
           key: playwright-${{ matrix.browser }}-${{ runner.os }}-${{ steps.playwright.outputs.version }}
 
+      # #548: a retry must wait for the dpkg lock that a killed attempt's
+      # apt-get still holds instead of failing at once ("Could not get lock
+      # /var/lib/dpkg/lock-frontend"). Both install paths below use it.
+      - name: Let apt wait for its lock
+        run: echo 'DPkg::Lock::Timeout "300";' | sudo tee /etc/apt/apt.conf.d/99-lock-timeout
+
       - name: Install browser
         if: steps.browser-cache.outputs.cache-hit != 'true'
         timeout-minutes: 28
@@ -112,13 +118,32 @@ jobs:
         env:
           BROWSER: ${{ matrix.browser }}
         # #512: apt mirror outages (actions/runner-images#14823, #15040,
-        # #15297). Bound each attempt so a hang still leaves a retry; 3 x
-        # (8 min + 30 s kill grace) + 30 s + 60 s waits < 28 < job's 40.
+        # #15297). Bound each attempt so a hang still leaves a retry.
+        # #548: `timeout` stops pnpm/playwright but not the root apt-get that
+        # playwright started through sudo; it keeps running and holds the dpkg
+        # lock. Before a retry, wait (at most 90 s) for it to finish instead of
+        # killing it (killing dpkg mid-configure breaks the package state); the
+        # dpkg lock timeout set above makes the retry wait for the rest. (The
+        # apt lists lock of `apt-get update` does not honour it: a leftover
+        # still updating after 90 s costs that attempt, not the step.)
+        # Budget: 3 x (7 min + 30 s kill grace) + (30 + 60) s backoff
+        #   + 2 x 90 s apt wait = 22.5 + 1.5 + 3 = 27 min < 28 < job's 40.
         run: |
+          wait_for_apt() {
+            waited=0
+            while pgrep -x apt-get >/dev/null || pgrep -x dpkg >/dev/null; do
+              if [ "$waited" -ge "$1" ]; then
+                echo "::warning::apt-get/dpkg still running after $1 s; retrying (apt waits for its lock)"
+                return 0
+              fi
+              sleep 10
+              waited=$((waited + 10))
+            done
+          }
           for i in 1 2 3; do
-            timeout --kill-after=30s 8m pnpm exec playwright install --with-deps "$BROWSER" && exit 0
+            timeout --kill-after=30s 7m pnpm exec playwright install --with-deps "$BROWSER" && exit 0
             echo "::warning::playwright install --with-deps attempt $i failed"
-            [ "$i" -lt 3 ] && sleep $((i * 30))
+            [ "$i" -lt 3 ] && sleep $((i * 30)) && wait_for_apt 90
           done
           exit 1
 
@@ -129,13 +154,32 @@ jobs:
         env:
           BROWSER: ${{ matrix.browser }}
         # #512: apt mirror outages (actions/runner-images#14823, #15040,
-        # #15297). Bound each attempt so a hang still leaves a retry; 3 x
-        # (8 min + 30 s kill grace) + 30 s + 60 s waits < 28 < job's 40.
+        # #15297). Bound each attempt so a hang still leaves a retry.
+        # #548: `timeout` stops pnpm/playwright but not the root apt-get that
+        # playwright started through sudo; it keeps running and holds the dpkg
+        # lock. Before a retry, wait (at most 90 s) for it to finish instead of
+        # killing it (killing dpkg mid-configure breaks the package state); the
+        # dpkg lock timeout set above makes the retry wait for the rest. (The
+        # apt lists lock of `apt-get update` does not honour it: a leftover
+        # still updating after 90 s costs that attempt, not the step.)
+        # Budget: 3 x (7 min + 30 s kill grace) + (30 + 60) s backoff
+        #   + 2 x 90 s apt wait = 22.5 + 1.5 + 3 = 27 min < 28 < job's 40.
         run: |
+          wait_for_apt() {
+            waited=0
+            while pgrep -x apt-get >/dev/null || pgrep -x dpkg >/dev/null; do
+              if [ "$waited" -ge "$1" ]; then
+                echo "::warning::apt-get/dpkg still running after $1 s; retrying (apt waits for its lock)"
+                return 0
+              fi
+              sleep 10
+              waited=$((waited + 10))
+            done
+          }
           for i in 1 2 3; do
-            timeout --kill-after=30s 8m pnpm exec playwright install-deps "$BROWSER" && exit 0
+            timeout --kill-after=30s 7m pnpm exec playwright install-deps "$BROWSER" && exit 0
             echo "::warning::playwright install-deps attempt $i failed"
-            [ "$i" -lt 3 ] && sleep $((i * 30))
+            [ "$i" -lt 3 ] && sleep $((i * 30)) && wait_for_apt 90
           done
           exit 1
 
