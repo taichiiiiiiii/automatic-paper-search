@@ -51,6 +51,7 @@ import type { LineageArtifact } from "../../lib/themes-quality";
 import { resolveFocus } from "../../lib/themes-quality";
 import {
   ALL_RELATIONS,
+  cardHeightFor,
   computeHubSet,
   computeModeData,
   computeOrphanSet,
@@ -63,7 +64,6 @@ import {
   matchesSearch,
   matchesYear,
   maxCardsPerLine,
-  NODE_H,
   NODE_W,
   PADDING,
   PHONE_BOX_WIDTH,
@@ -131,6 +131,11 @@ const ZOOM_MIN = 0.1;
 const ZOOM_FIT_MIN = 0.02;
 const ZOOM_MAX = 1.25;
 const MOBILE_ZOOM = 0.65;
+/** 全体's zoom: the tree's width fit into a box `boxWidth` px wide (8px of
+ * slack for the border), never above 100% nor below ZOOM_FIT_MIN. */
+function fitZoom(boxWidth: number, treeWidth: number): number {
+  return Math.max(ZOOM_FIT_MIN, Math.min(1, (boxWidth - 8) / Math.max(treeWidth, 1)));
+}
 
 /**
  * #521 U6: the 選択中 bar. From `sm` up it is sticky to the viewport bottom so a
@@ -622,6 +627,20 @@ export function LineageTree({
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [kbdHelpOpen, selectedEdgeKey, closeEvidence, openKbdHelp]);
 
+  // ---- Touch screens (#521 U11) ---------------------------------------------
+  // A touch screen cannot hover a line in the year × citation view, so its
+  // note says what a tap does. Read after mount (never during render) so
+  // the static export hydrates with the mouse text first.
+  const [noHover, setNoHover] = useState(false);
+  useEffect(() => {
+    if (typeof window.matchMedia !== "function") return;
+    const mq = window.matchMedia("(hover: none)");
+    const update = () => setNoHover(Boolean(mq.matches));
+    update();
+    mq.addEventListener?.("change", update);
+    return () => mq.removeEventListener?.("change", update);
+  }, []);
+
   // ---- Wrapping crowded years (R4-5) ---------------------------------------
   // A year with more papers than fit the tree box at a readable zoom wraps
   // onto several lines inside its year band, so 全体 never has to shrink
@@ -645,17 +664,19 @@ export function LineageTree({
     ro.observe(box);
     return () => ro.disconnect();
   }, []);
-  const maxPerLine = maxCardsPerLine(
-    treeBoxWidth ?? (typeof window !== "undefined" ? window.innerWidth - 34 : 0),
-  );
+  const layoutBoxWidth =
+    treeBoxWidth ?? (typeof window !== "undefined" ? window.innerWidth - 34 : 0);
+  const maxPerLine = maxCardsPerLine(layoutBoxWidth);
+  // #521 U7: shorter cards on a phone, so a card is not ~50px of empty space.
+  const cardH = cardHeightFor(layoutBoxWidth);
 
   // ---- Layout + per-mode visual hooks -----------------------------------
   // Both take nodesForLayout (orphans already dropped when hidden) --
   // otherwise the layout would reserve an empty row for any year that
   // contained only orphans (docs/assets/theme.js's render() comment).
-  const { positioned, yearLabels, totalW, totalH, perLine } = useMemo(
-    () => layoutChronological(nodesForLayout, artifact.edges, mode, { maxPerLine }),
-    [nodesForLayout, artifact.edges, mode, maxPerLine],
+  const { positioned, yearLabels, totalW, totalH, perLine, nodeH } = useMemo(
+    () => layoutChronological(nodesForLayout, artifact.edges, mode, { maxPerLine, nodeH: cardH }),
+    [nodesForLayout, artifact.edges, mode, maxPerLine, cardH],
   );
   const hasWrappedYears = yearLabels.some((yl) => yl.lines > 1);
   const modeData = useMemo(
@@ -798,19 +819,31 @@ export function LineageTree({
   // #463: on a phone the tree is one card per line (maxCardsPerLine) and
   // starts fitted to the width, computed here so the first paint — and the
   // ?node= scroll that follows it — already use the final zoom.
+  // #521 U9: on a wider screen a tree wider than the box (NeRF: 1868px in a
+  // 1208px box) starts fitted to the width like 全体, never above 100% nor
+  // below 全体's floor. The first render guesses the box from the window;
+  // the layout effect below refines it with the measured scroll area before
+  // the first paint, once, and never after the user zoomed.
   const [zoom, setZoom] = useState(() => {
     if (typeof window === "undefined") return 1;
     const boxGuess = window.innerWidth - 34;
     if (boxGuess < PHONE_BOX_WIDTH) {
       return Math.max(ZOOM_FIT_MIN, Math.min(1, (boxGuess - 8) / treeWidthFor(1)));
     }
-    return window.innerWidth < 640 ? MOBILE_ZOOM : 1;
+    if (window.innerWidth < 640) return MOBILE_ZOOM;
+    return fitZoom(boxGuess, totalW);
   });
   const zoomRef = useRef(zoom);
+  const initialFitPendingRef = useRef(
+    typeof window !== "undefined" &&
+      window.innerWidth >= 640 &&
+      window.innerWidth - 34 >= PHONE_BOX_WIDTH,
+  );
   const changeZoom = useCallback((next: number, min: number = ZOOM_MIN) => {
     const container = scrollRef.current;
     const prev = zoomRef.current;
     const z = Math.min(ZOOM_MAX, Math.max(min, next));
+    initialFitPendingRef.current = false;
     if (z === prev) return;
     zoomRef.current = z;
     setZoom(z);
@@ -826,6 +859,22 @@ export function LineageTree({
   useEffect(() => {
     zoomRef.current = zoom;
   }, [zoom]);
+  // #521 U9: refine the initial fit with the measured scroll area (border and
+  // scrollbar included), before paint. No scroll re-centering: the view is
+  // still at its origin, and a ?node= scroll waits for this zoom. It relies
+  // on running after the first commit (treeBoxWidth is null until then):
+  // in the first commit the `[zoom]` sync effect above would reset zoomRef
+  // to the guess before the permalink effect reads it.
+  useLayoutEffect(() => {
+    if (!initialFitPendingRef.current || treeBoxWidth === null) return;
+    const container = scrollRef.current;
+    if (!container || container.clientWidth <= 0) return;
+    initialFitPendingRef.current = false;
+    const z = fitZoom(container.clientWidth, totalW);
+    if (z === zoomRef.current) return;
+    zoomRef.current = z;
+    setZoom(z);
+  }, [treeBoxWidth, totalW]);
   function zoomStep(dir: 1 | -1) {
     const cur = zoomRef.current;
     const steps =
@@ -882,7 +931,7 @@ export function LineageTree({
   function zoomToFit() {
     const container = scrollRef.current;
     if (!container) return;
-    changeZoom(Math.min(1, (container.clientWidth - 8) / Math.max(totalW, 1)), ZOOM_FIT_MIN);
+    changeZoom(fitZoom(container.clientWidth, totalW), ZOOM_FIT_MIN);
   }
 
   useEffect(() => {
@@ -921,14 +970,17 @@ export function LineageTree({
     // frame) -- leave the ref unset so a later render (e.g. the user
     // clearing the filter that hid it) can still complete the scroll.
     if (!container || !pos) return;
+    // #521 U9: wait until the rendered zoom is the settled initial fit
+    // (the svg would otherwise still have its pre-fit size).
+    if (zoom !== zoomRef.current) return;
     scrolledToPermalinkRef.current = true;
-    const z = zoomRef.current;
+    const z = zoom;
     container.scrollTo({
       left: Math.max(0, (pos.x + NODE_W / 2) * z - container.clientWidth / 2),
-      top: Math.max(0, (pos.y + NODE_H / 2) * z - container.clientHeight / 2),
+      top: Math.max(0, (pos.y + nodeH / 2) * z - container.clientHeight / 2),
       behavior: "auto",
     });
-  }, [permalinkRaw, permalinkFocus, positionById, treeBoxWidth]);
+  }, [permalinkRaw, permalinkFocus, positionById, treeBoxWidth, zoom, nodeH]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: `view` / `zoom` are not read in the body (zoom via zoomRef) -- switching back from the timeline or zooming must re-run the paint so the minimap is recomputed.
   useEffect(() => {
@@ -955,7 +1007,7 @@ export function LineageTree({
       ctx!.fillStyle = "rgba(80, 60, 40, 0.55)";
       for (const n of positioned) {
         const x = ox + (n._x + NODE_W / 2) * s;
-        const y = oy + (n._y + NODE_H / 2) * s;
+        const y = oy + (n._y + nodeH / 2) * s;
         ctx!.fillRect(x - 1.5, y - 1.5, 3, 3);
       }
       const vx = ox + (container!.scrollLeft / z) * s;
@@ -1593,10 +1645,12 @@ export function LineageTree({
               })}
             </g>
           </svg>
-          {/* Mouse drag-to-pan on the scroll area; keyboard and touch users scroll it natively. */}
+          {/* Mouse drag-to-pan on the scroll area; keyboard and touch users scroll it natively.
+              #521 U7: only horizontal overscroll is contained (no back-swipe),
+              so a vertical swipe at the box's end scrolls the page on. */}
           <div
             ref={scrollRef}
-            className="max-h-[70vh] cursor-grab select-none overflow-auto overscroll-contain rounded-md border border-rule bg-surface active:cursor-grabbing"
+            className="max-h-[70vh] cursor-grab select-none overflow-auto overscroll-x-contain rounded-md border border-rule bg-surface active:cursor-grabbing"
             onPointerDown={onPanStart}
             onPointerMove={onPanMove}
             onPointerUp={onPanEnd}
@@ -1664,7 +1718,7 @@ export function LineageTree({
                   const dst = positionById.get(e.dst);
                   if (!src || !dst) return null;
                   // #461: join the facing sides when the citing card is not lower.
-                  const { x1, y1, x2, y2, notDownward } = edgeAnchors(src, dst, NODE_W, NODE_H);
+                  const { x1, y1, x2, y2, notDownward } = edgeAnchors(src, dst, NODE_W, nodeH);
                   const key = edgeKey(e);
                   const strokeClass = RELATION_STROKE_CLASS[e.relation] ?? DEFAULT_STROKE_CLASS;
                   const onMain = showMainPath && mainPathKeys.has(key);
@@ -1816,7 +1870,7 @@ export function LineageTree({
                       x={p._x}
                       y={p._y}
                       width={NODE_W}
-                      height={NODE_H}
+                      height={nodeH}
                       overflow="visible"
                     >
                       <button
@@ -1981,7 +2035,7 @@ export function LineageTree({
                   const dst = positionById.get(e.dst);
                   if (!src || !dst) return null;
                   const midX = (src.x + NODE_W / 2 + (dst.x + NODE_W / 2)) / 2;
-                  const midY = (src.y + NODE_H + dst.y) / 2;
+                  const midY = (src.y + nodeH + dst.y) / 2;
                   const ttW = 260;
                   const ttH = 110;
                   const ttX = Math.max(0, Math.min(midX - ttW / 2, totalW - ttW));
@@ -2056,7 +2110,9 @@ export function LineageTree({
       <p id="theme-after-tree" tabIndex={-1} className="mt-2 text-xs text-ink-subtle">
         {view === "tree"
           ? "カードを選ぶと土台と発展、線を選ぶと関係の根拠を表示します（キーボードは Tab でカードへ、矢印キーでカード間を移動し Enter。選んだカードの線は Shift+Tab で選べ、全部の関係は図の下の「関係の一覧」から開けます）。"
-          : "点を選ぶと、その論文の土台と発展を下に表示します。線の上に置くと関係が出ます。"}
+          : noHover
+            ? "点をタップすると、その論文の土台と発展を下に表示します。関係は図の下の「関係の一覧」から開けます。"
+            : "点を選ぶと、その論文の土台と発展を下に表示します。線の上に置くと関係が出ます。"}
       </p>
 
       {/* #463: the guide sits under the tree so the tree is the first thing seen. */}

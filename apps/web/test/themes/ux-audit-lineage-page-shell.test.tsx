@@ -339,10 +339,12 @@ describe("ThemeTimeline tap area", () => {
         matchSet={null}
       />,
     );
+    // The tap areas sit in their own group below every dot (#521 U11).
     const group = document.querySelector('[data-timeline-node="b"]') as SVGGElement;
-    const circles = group.querySelectorAll("circle");
-    expect(circles).toHaveLength(2);
-    const hit = circles[0] as SVGCircleElement;
+    expect(group.querySelectorAll("circle")).toHaveLength(1);
+    const hit = document.querySelector(
+      '[data-timeline-tap-areas] [data-timeline-tap="b"]',
+    ) as SVGCircleElement;
     expect(Number(hit.getAttribute("r"))).toBeGreaterThanOrEqual(14);
     expect(hit.getAttribute("role")).toBeNull();
     fireEvent.click(hit);
