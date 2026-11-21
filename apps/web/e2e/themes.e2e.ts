@@ -50,6 +50,65 @@ test("/themes/ without a theme shows the gallery and a default tree", PROD, asyn
   await expect(theme.gallery.getByRole("link")).toHaveCount(themes.length);
 });
 
+// #521 U9: on a desktop a large theme (NeRF: 1868px of tree in a 1208px
+// box at 1280px) starts fitted to the width from its first paint: the svg
+// is never at 100% on the way, nothing shifts, and the tree is not cut off.
+test("a wide theme starts fitted to the width on a desktop (#521 U9)", async ({ page }) => {
+  const slug = "neural-radiance-fields";
+  test.skip(!themes.some((t) => t.slug === slug), `${slug} is not published`);
+  test.skip((page.viewportSize()?.width ?? 0) < 640, "desktop widths only");
+  await page.addInitScript(() => {
+    const w = window as unknown as { __zooms: string[]; __cls: number };
+    w.__zooms = [];
+    w.__cls = 0;
+    new MutationObserver((records) => {
+      for (const r of records) {
+        if (r.type === "attributes" && r.oldValue !== null) w.__zooms.push(r.oldValue);
+        for (const n of Array.from(r.addedNodes)) {
+          if (!(n instanceof Element)) continue;
+          for (const svg of [n, ...Array.from(n.querySelectorAll("svg[data-zoom]"))]) {
+            const z = svg.getAttribute("data-zoom");
+            if (z !== null) w.__zooms.push(z);
+          }
+        }
+      }
+    }).observe(document, {
+      subtree: true,
+      childList: true,
+      attributes: true,
+      attributeFilter: ["data-zoom"],
+      attributeOldValue: true,
+    });
+    // Layout-shift entries exist in Chromium only.
+    if (!PerformanceObserver.supportedEntryTypes?.includes("layout-shift")) return;
+    new PerformanceObserver((list) => {
+      for (const e of list.getEntries() as unknown as Array<{
+        value: number;
+        hadRecentInput: boolean;
+      }>) {
+        if (!e.hadRecentInput) w.__cls += e.value;
+      }
+    }).observe({ type: "layout-shift", buffered: true });
+  });
+  const theme = new ThemePage(page);
+  await theme.skipOnboarding();
+  await theme.goto(slug);
+  await theme.waitForTree();
+  const fit = await theme.tree.evaluate((svg) => {
+    const box = svg.parentElement as HTMLElement;
+    return { svgW: svg.getBoundingClientRect().width, boxW: box.clientWidth };
+  });
+  expect(fit.svgW).toBeLessThanOrEqual(fit.boxW + 1);
+  const z = await theme.zoom();
+  expect(z).toBeLessThan(1);
+  expect(z).toBeGreaterThanOrEqual(FIT_ZOOM_FLOOR_WIDE);
+  const seen = await page.evaluate(() => (window as unknown as { __zooms: string[] }).__zooms);
+  expect(seen.length).toBeGreaterThan(0);
+  expect(seen.map(Number).filter((v) => v >= 1)).toEqual([]);
+  const cls = await page.evaluate(() => (window as unknown as { __cls: number }).__cls);
+  expect(cls).toBeLessThan(0.1);
+});
+
 // #521 U10: opening the request panel moves focus into it (not <body>,
 // which is where WebKit left it), Tab reaches the form, and closing with the
 // toggle or Esc returns focus to the toggle. /api/health is answered locally
@@ -155,6 +214,63 @@ for (const t of themes) {
         await card.click();
         await expect(theme.selectedPaperBar).toBeHidden();
         await expect.poll(() => theme.searchParam("focus")).toBeNull();
+      });
+
+      // #521 U6: at 1280x800 the bar sat below the fold (y≈1110-1170), so a
+      // click on a card visible at the initial scroll showed nothing on screen.
+      test("U6: on wide screens a card click shows the selection bar on screen without scrolling", async ({
+        page,
+      }) => {
+        const vp = page.viewportSize();
+        test.skip(!vp || vp.width < 640, "wide screens only (phones keep the in-flow bar)");
+        await theme.goto(t.slug);
+        await expect(theme.nodeCards.first()).toBeVisible();
+        const ih = vp!.height;
+        // A card with >= 60px visible at the current scroll; scroll once if none is.
+        let target = await theme.firstCardVisibleInViewport();
+        if (!target) {
+          await page.evaluate(() => window.scrollTo(0, 400));
+          target = await theme.firstCardVisibleInViewport();
+        }
+        expect(target, "a card is visible in the viewport").toBeTruthy();
+        const scrollBefore = await page.evaluate(() => window.scrollY);
+        // A mouse click on the visible part (locator.click would scroll it into view first).
+        await page.mouse.click(target!.x, target!.y);
+        await expect(theme.selectedPaperBar).toBeVisible();
+        await expect(theme.selectedPaperBar).toContainText(/土台 \d+ 本・発展 \d+ 本/);
+        const bar = await theme.selectedPaperBar.boundingBox();
+        expect(bar!.y).toBeGreaterThanOrEqual(0);
+        expect(bar!.y + bar!.height).toBeLessThanOrEqual(ih);
+        // The page did not scroll and the clicked card is still on screen.
+        expect(await page.evaluate(() => window.scrollY)).toBe(scrollBefore);
+        const card = await page
+          .locator(`g[data-node-id="${target!.id}"] [data-node-card]`)
+          .boundingBox();
+        expect(Math.min(card!.y + card!.height, ih) - Math.max(card!.y, 0)).toBeGreaterThanOrEqual(
+          40,
+        );
+      });
+
+      test("U6: on phones the selection bar stays in the page flow below the tree", async ({
+        page,
+      }) => {
+        const vp = page.viewportSize();
+        test.skip(!vp || vp.width >= 640, "phones only");
+        await theme.goto(t.slug);
+        const card = theme.nodeCards.first();
+        await card.click();
+        await expect(theme.selectedPaperBar).toBeVisible();
+        expect(await theme.selectedPaperBar.evaluate((el) => getComputedStyle(el).position)).toBe(
+          "static",
+        );
+        const tree = await theme.treeScrollBox.boundingBox();
+        const bar = await theme.selectedPaperBar.boundingBox();
+        expect(bar!.y).toBeGreaterThanOrEqual(tree!.y + tree!.height);
+        expect(
+          await page.evaluate(
+            () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+          ),
+        ).toBe(0);
       });
 
       test(
@@ -298,6 +414,100 @@ for (const t of themes) {
         // readable floor (LoRA: 30 papers in 2024 used to fit at ~4% / 14%).
         const floor = narrow ? FIT_ZOOM_FLOOR_NARROW : FIT_ZOOM_FLOOR_WIDE;
         expect(await theme.zoom()).toBeGreaterThanOrEqual(floor);
+      });
+
+      test("phone: cards fit their content and a swipe on a card hands over to the page (#521 U7)", async ({
+        page,
+        browserName,
+        isMobile,
+      }) => {
+        // CDP touch input is Chromium only; the layout under test is the phone one.
+        test.skip(browserName !== "chromium" || !isMobile, "Chromium phone project only");
+        await theme.goto(t.slug);
+        await expect(theme.nodeCards.first()).toBeVisible();
+        // Card height vs its content (last line's bottom + bottom padding/border).
+        const gaps = await theme.nodeCards.evaluateAll((cards) =>
+          cards.slice(0, 20).map((c) => {
+            const r = c.getBoundingClientRect();
+            const last = (c.lastElementChild as HTMLElement).getBoundingClientRect();
+            const cs = getComputedStyle(c);
+            const scale = r.width / (c as HTMLElement).offsetWidth;
+            const pad = (parseFloat(cs.paddingBottom) + parseFloat(cs.borderBottomWidth)) * scale;
+            // Cards with every line (venue, title, tldr, authors, citations).
+            return { gap: r.height - (last.bottom - r.top + pad), full: c.children.length === 5 };
+          }),
+        );
+        expect(gaps.length).toBeGreaterThan(0);
+        for (const { gap, full } of gaps) {
+          expect(gap).toBeGreaterThanOrEqual(-1); // nothing clipped
+          if (full) expect(gap).toBeLessThanOrEqual(24);
+        }
+
+        const cdp = await page.context().newCDPSession(page);
+        async function swipe(x: number, y: number, dx: number, dy: number) {
+          await cdp.send("Input.dispatchTouchEvent", {
+            type: "touchStart",
+            touchPoints: [{ x, y }],
+          });
+          for (let i = 1; i <= 10; i++) {
+            await cdp.send("Input.dispatchTouchEvent", {
+              type: "touchMove",
+              touchPoints: [{ x: x + (dx * i) / 10, y: y + (dy * i) / 10 }],
+            });
+          }
+          await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+        }
+        // The tree's scroll box at its vertical end, a card under the finger.
+        const start = await theme.tree.evaluate((svg) => {
+          const box = svg.parentElement as HTMLElement;
+          box.scrollIntoView({ block: "start" });
+          window.scrollBy(0, -40);
+          box.scrollTop = box.scrollHeight;
+          const r = box.getBoundingClientRect();
+          const top = Math.max(r.top, 0);
+          const bottom = Math.min(r.bottom, window.innerHeight);
+          // The centre of a card that is fully inside the visible part of the box.
+          const card = [...box.querySelectorAll("[data-node-card]")]
+            .map((c) => c.getBoundingClientRect())
+            .find((c) => c.top >= top && c.bottom <= bottom && c.height > 0);
+          const x = card ? card.left + card.width / 2 : -1;
+          const y = card ? card.top + card.height / 2 : -1;
+          const el = card ? document.elementFromPoint(x, y) : null;
+          return {
+            x,
+            y,
+            onCard: !!el?.closest("[data-node-card]"),
+            scrollY: window.scrollY,
+            room: document.documentElement.scrollHeight - window.innerHeight - window.scrollY,
+          };
+        });
+        expect(start.onCard).toBe(true);
+        expect(start.room).toBeGreaterThan(50);
+        await swipe(start.x, start.y, 0, -240);
+        await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(start.scrollY);
+        // Horizontal pan inside the box still works once zoomed in.
+        await theme.zoomButton("拡大").click();
+        await theme.zoomButton("拡大").click();
+        const h = await theme.tree.evaluate((svg) => {
+          const box = svg.parentElement as HTMLElement;
+          box.scrollIntoView({ block: "center" });
+          box.scrollLeft = 0;
+          const r = box.getBoundingClientRect();
+          return {
+            x: r.left + r.width * 0.75,
+            y: r.top + r.height / 2,
+            room: box.scrollWidth - box.clientWidth,
+          };
+        });
+        expect(h.room).toBeGreaterThan(0);
+        await swipe(h.x, h.y, -150, 0);
+        await expect
+          .poll(() => theme.tree.evaluate((svg) => (svg.parentElement as HTMLElement).scrollLeft))
+          .toBeGreaterThan(0);
+        const overflow = await page.evaluate(
+          () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        );
+        expect(overflow).toBe(0);
       });
 
       test("crowded years wrap row-major inside one year band", async ({ page }) => {

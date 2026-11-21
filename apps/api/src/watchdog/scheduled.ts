@@ -24,6 +24,7 @@ import {
   checkHealth,
   checkPages,
   checkPublishedThemes,
+  checkQuotaDurableObject,
   checkRegenPending,
   checkWorkflows,
   type FetchLike,
@@ -189,15 +190,17 @@ export async function runScheduled(
   }
   const state = parseState(rawState);
 
-  const [pages, health, themes, github, pending] = await Promise.all([
+  const [pages, health, quotaDo, themes, github, pending] = await Promise.all([
     checkPages(deps.fetch, site),
     checkHealth(env),
+    checkQuotaDurableObject(env),
     checkPublishedThemes(deps.fetch, site, state.published_themes),
     checkWorkflows(deps.fetch, env),
     checkRegenPending(deps.fetch, env),
   ]);
   const problems: Problem[] = [
     ...health,
+    ...quotaDo,
     ...pages,
     ...themes.problems,
     ...github.problems,

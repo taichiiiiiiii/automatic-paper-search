@@ -66,6 +66,29 @@ describe("e2e.yml (cross-browser)", () => {
   // step at the first hang, leaving no retry), the step bound covers every
   // attempt plus the waits, and it stays below the job bound. The two steps
   // are mutually exclusive (cache hit / miss), so each is compared alone.
+  // #548: `timeout` stops pnpm/playwright, but the root apt-get that
+  // playwright started through sudo survives it and keeps the dpkg lock, so
+  // the next attempts failed at once ("Could not get lock
+  // /var/lib/dpkg/lock-frontend ... (apt-get)"; job 135627535063). apt must
+  // wait for its lock, set once before either install step (both paths).
+  it("makes apt wait for its lock before either install step (#548)", () => {
+    const steps = e2e.steps as YamlDoc[];
+    const lockIdx = steps.findIndex((s) =>
+      /DPkg::Lock::Timeout "(\d+)";.*sudo tee \/etc\/apt\/apt\.conf\.d\//.test(String(s.run ?? "")),
+    );
+    expect(
+      lockIdx,
+      "a step writing DPkg::Lock::Timeout to /etc/apt/apt.conf.d/",
+    ).toBeGreaterThanOrEqual(0);
+    expect(steps[lockIdx]!.if).toBeUndefined();
+    const seconds = Number(String(steps[lockIdx]!.run).match(/DPkg::Lock::Timeout "(\d+)"/)![1]);
+    expect(seconds).toBeGreaterThanOrEqual(60);
+    for (const name of ["Install browser", "Install browser system dependencies"]) {
+      const idx = steps.findIndex((s) => s.name === name);
+      expect(idx, name).toBeGreaterThan(lockIdx);
+    }
+  });
+
   describe.each([
     ["Install browser", /pnpm exec playwright install --with-deps "\$BROWSER"/],
     ["Install browser system dependencies", /pnpm exec playwright install-deps "\$BROWSER"/],
@@ -86,11 +109,30 @@ describe("e2e.yml (cross-browser)", () => {
       expect(run.trimEnd().endsWith("exit 1")).toBe(true);
     });
 
+    // #548: before a retry, wait (bounded) for apt-get/dpkg left behind by
+    // the killed attempt instead of racing it for the lock.
+    it("waits, bounded, for leftover apt-get/dpkg before each retry (#548)", () => {
+      expect(run).toMatch(/pgrep -x apt-get/);
+      expect(run).toMatch(/pgrep -x dpkg/);
+      expect(run).toMatch(/sleep 10/);
+      // The wait is bounded: it gives up after $1 s, counting the 10 s polls.
+      expect(run).toMatch(/if \[ "\$waited" -ge "\$1" \]; then[\s\S]*?return 0/);
+      expect(run).toMatch(/waited=\$\(\(waited \+ 10\)\)/);
+      // Called only between attempts, after the backoff sleep.
+      expect(run).toMatch(/\[ "\$i" -lt 3 \] && sleep \$\(\(i \* 30\)\) && wait_for_apt (\d+)\n/);
+      // Never kills the leftover process (#548: killing dpkg mid-configure
+      // breaks the package state).
+      expect(run).not.toMatch(/(?<![-\w])(?:pkill|killall|kill)(?![-\w])/i);
+    });
+
     it("has a step timeout above 3 attempts + waits and below the job timeout", () => {
       const m = run.match(/timeout --kill-after=(\d+)s (\d+)m/);
       expect(m).not.toBeNull();
       const perAttemptMin = Number(m![2]) + Number(m![1]) / 60;
-      const waitsMin = (30 + 60) / 60;
+      // Backoff sleeps (30 + 60 s) plus two bounded apt waits (#548).
+      const aptWait = run.match(/wait_for_apt (\d+)\n/);
+      expect(aptWait, "wait_for_apt <seconds>").not.toBeNull();
+      const waitsMin = (30 + 60 + 2 * Number(aptWait![1])) / 60;
       const stepMin = Number(step["timeout-minutes"]);
       expect(Number.isFinite(stepMin)).toBe(true);
       expect(stepMin).toBeGreaterThan(3 * perAttemptMin + waitsMin);

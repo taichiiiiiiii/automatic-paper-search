@@ -8,6 +8,7 @@
 // (Japanese, like the old script, because it ends up in a GitHub issue
 // the owner reads).
 
+import { QUOTA_INSTANCE_NAME } from "../durable/quota-object.js";
 import { createHealthHandler } from "../routes/health.js";
 import type { Env } from "../types.js";
 
@@ -54,9 +55,9 @@ export const REGEN_PENDING_MAX_ATTEMPTS = 5;
 const TIMEOUT_MS = 15_000;
 const USER_AGENT = "paperpilot-watchdog";
 
-function signal(): AbortSignal | undefined {
+function signal(ms: number = TIMEOUT_MS): AbortSignal | undefined {
   return typeof AbortSignal !== "undefined" && "timeout" in AbortSignal
-    ? AbortSignal.timeout(TIMEOUT_MS)
+    ? AbortSignal.timeout(ms)
     : undefined;
 }
 
@@ -373,5 +374,77 @@ export async function checkRegenPending(
     return [
       { key: "regen-pending:error", message: `regen-pending.json を読めない（${errText(error)}）` },
     ];
+  }
+}
+
+// ---------------------------------------------------------------------------
+// #546: the quota Durable Object (QUOTA). A new theme request fails closed
+// (503, no dispatch) when `consume` cannot reach the DO, so a DO outage
+// silently stops the request flow. Probe it with the READ-ONLY
+// `/inflight/peek` route on the same named instance the request path uses.
+// Limit: this proves the DO answers a read; a failure that only hits the
+// write path (`/consume`) can still slip through. Runs once a day.
+// ---------------------------------------------------------------------------
+
+/** Never a real theme slug: themeSlug() only emits `[a-z0-9-]`. */
+export const QUOTA_DO_PROBE_SLUG = "__watchdog_probe__";
+/** One fixed key for every failure mode, so a flapping cause is one alert. */
+export const QUOTA_DO_PROBLEM_KEY = "quota-do:unreachable";
+
+export async function checkQuotaDurableObject(
+  env: Pick<Env, "QUOTA" | "DISPATCH_MODE">,
+  opts: { timeoutMs?: number } = {},
+): Promise<Problem[]> {
+  if (!env.QUOTA) {
+    // Production (index.ts) refuses requests without the binding; a
+    // preview / dry-run Worker may legitimately lack it.
+    if (env.DISPATCH_MODE !== "live") return [];
+    return [
+      {
+        key: "quota-do:binding",
+        message:
+          "Worker に QUOTA（枠を数える Durable Object）の binding が無い。新規のテーマ依頼はすべて 503 になる",
+      },
+    ];
+  }
+  const timeoutMs = opts.timeoutMs ?? TIMEOUT_MS;
+  const fail = (why: string): Problem[] => [
+    {
+      key: QUOTA_DO_PROBLEM_KEY,
+      message: `枠を数える Durable Object（QUOTA）に届かない（${why}）。新規のテーマ依頼は 503 で止まる`,
+    },
+  ];
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    const url = `https://quota.internal/inflight/peek?slug=${encodeURIComponent(QUOTA_DO_PROBE_SLUG)}`;
+    const probe = (async () => {
+      const stub = env.QUOTA!.get(env.QUOTA!.idFromName(QUOTA_INSTANCE_NAME));
+      return stub.fetch(url, { signal: signal(timeoutMs) });
+    })();
+    // A DO stub may ignore the abort signal: race it against our own timer.
+    const timeout = new Promise<never>((_, reject) => {
+      timer = setTimeout(() => reject(new Error(`${timeoutMs} ms で応答なし`)), timeoutMs);
+    });
+    probe.catch(() => undefined);
+    const resp = await Promise.race([probe, timeout]);
+    if (resp.status !== 200) {
+      await resp.arrayBuffer().catch(() => undefined);
+      return fail(`HTTP ${resp.status}`);
+    }
+    let body: unknown;
+    try {
+      body = await resp.json();
+    } catch {
+      return fail("応答が JSON でない");
+    }
+    const id = (body as { request_id?: unknown } | null)?.request_id;
+    if (body === null || typeof body !== "object" || !(id === null || typeof id === "string")) {
+      return fail("応答の形が想定と違う");
+    }
+    return [];
+  } catch (error) {
+    return fail(errText(error).slice(0, 200));
+  } finally {
+    if (timer !== undefined) clearTimeout(timer);
   }
 }
