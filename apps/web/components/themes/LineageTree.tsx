@@ -612,6 +612,20 @@ export function LineageTree({
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [kbdHelpOpen, selectedEdgeKey, closeEvidence, openKbdHelp]);
 
+  // ---- Touch screens (#521 U11) ---------------------------------------------
+  // A touch screen cannot hover a line in the year × citation view, so its
+  // note says what a tap does. Read after mount (never during render) so
+  // the static export hydrates with the mouse text first.
+  const [noHover, setNoHover] = useState(false);
+  useEffect(() => {
+    if (typeof window.matchMedia !== "function") return;
+    const mq = window.matchMedia("(hover: none)");
+    const update = () => setNoHover(Boolean(mq.matches));
+    update();
+    mq.addEventListener?.("change", update);
+    return () => mq.removeEventListener?.("change", update);
+  }, []);
+
   // ---- Wrapping crowded years (R4-5) ---------------------------------------
   // A year with more papers than fit the tree box at a readable zoom wraps
   // onto several lines inside its year band, so 全体 never has to shrink
@@ -2045,7 +2059,9 @@ export function LineageTree({
       <p id="theme-after-tree" tabIndex={-1} className="mt-2 text-xs text-ink-subtle">
         {view === "tree"
           ? "カードを選ぶと土台と発展、線を選ぶと関係の根拠を表示します（キーボードは Tab でカードへ、矢印キーでカード間を移動し Enter。選んだカードの線は Shift+Tab で選べ、全部の関係は図の下の「関係の一覧」から開けます）。"
-          : "点を選ぶと、その論文の土台と発展を下に表示します。線の上に置くと関係が出ます。"}
+          : noHover
+            ? "点をタップすると、その論文の土台と発展を下に表示します。関係は図の下の「関係の一覧」から開けます。"
+            : "点を選ぶと、その論文の土台と発展を下に表示します。線の上に置くと関係が出ます。"}
       </p>
 
       {/* #463: the guide sits under the tree so the tree is the first thing seen. */}
