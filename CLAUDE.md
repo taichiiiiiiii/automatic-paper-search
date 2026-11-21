@@ -456,6 +456,7 @@ Hono on Cloudflare Workers。本番設定は `apps/api/wrangler.jsonc`（Worker 
 - **origin 許可リスト:** KV `origin_allowlist`（JSON 配列）。プレビューや `<hash>.<project>.pages.dev` を入れない。
 - **空打ちモード:** `DISPATCH_MODE=dry-run` は本番の ref・origin を指していれば拒否する。本番は常に `live`。
 - **KV の操作（承認が要る）:** `wrangler kv key put --namespace-id=3e11d3e73dae42a8b94f06a9fa9de19f <key> <value> --remote`。wrangler 4 は既定でローカルに書く場合があるので `--remote` を付け、`wrangler kv key get --remote` で読み戻し、`/api/health` で確かめる。各段の値と記録は `docs/migration/p5-runbook.md`。
+- **見張り（Worker の cron、1 日 1 回 09:30 JST）は枠の Durable Object にも届くか確かめる**（#546、`watchdog/checks.ts` の `checkQuotaDurableObject`）。送るのは読むだけの `/inflight/peek` だけ。`/consume`（書き込み）だけの障害は見逃し得る。
 - D1 はまだ使っていない（P6 の項目）。
 
 ---

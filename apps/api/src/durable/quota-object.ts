@@ -96,7 +96,8 @@ export class QuotaCounter {
 // Single named instance — a per-IP+global quota needs exactly one ledger,
 // not one per caller, so every request routes to the same Durable Object
 // via idFromName rather than idFromRequest/newUniqueId.
-const INSTANCE_NAME = "quota";
+export const QUOTA_INSTANCE_NAME = "quota";
+const INSTANCE_NAME = QUOTA_INSTANCE_NAME;
 
 export function productionQuotaBackend(namespace: DurableObjectNamespace): QuotaBackend {
   const stub = namespace.get(namespace.idFromName(INSTANCE_NAME));
