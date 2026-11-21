@@ -216,6 +216,63 @@ for (const t of themes) {
         await expect.poll(() => theme.searchParam("focus")).toBeNull();
       });
 
+      // #521 U6: at 1280x800 the bar sat below the fold (y≈1110-1170), so a
+      // click on a card visible at the initial scroll showed nothing on screen.
+      test("U6: on wide screens a card click shows the selection bar on screen without scrolling", async ({
+        page,
+      }) => {
+        const vp = page.viewportSize();
+        test.skip(!vp || vp.width < 640, "wide screens only (phones keep the in-flow bar)");
+        await theme.goto(t.slug);
+        await expect(theme.nodeCards.first()).toBeVisible();
+        const ih = vp!.height;
+        // A card with >= 60px visible at the current scroll; scroll once if none is.
+        let target = await theme.firstCardVisibleInViewport();
+        if (!target) {
+          await page.evaluate(() => window.scrollTo(0, 400));
+          target = await theme.firstCardVisibleInViewport();
+        }
+        expect(target, "a card is visible in the viewport").toBeTruthy();
+        const scrollBefore = await page.evaluate(() => window.scrollY);
+        // A mouse click on the visible part (locator.click would scroll it into view first).
+        await page.mouse.click(target!.x, target!.y);
+        await expect(theme.selectedPaperBar).toBeVisible();
+        await expect(theme.selectedPaperBar).toContainText(/土台 \d+ 本・発展 \d+ 本/);
+        const bar = await theme.selectedPaperBar.boundingBox();
+        expect(bar!.y).toBeGreaterThanOrEqual(0);
+        expect(bar!.y + bar!.height).toBeLessThanOrEqual(ih);
+        // The page did not scroll and the clicked card is still on screen.
+        expect(await page.evaluate(() => window.scrollY)).toBe(scrollBefore);
+        const card = await page
+          .locator(`g[data-node-id="${target!.id}"] [data-node-card]`)
+          .boundingBox();
+        expect(Math.min(card!.y + card!.height, ih) - Math.max(card!.y, 0)).toBeGreaterThanOrEqual(
+          40,
+        );
+      });
+
+      test("U6: on phones the selection bar stays in the page flow below the tree", async ({
+        page,
+      }) => {
+        const vp = page.viewportSize();
+        test.skip(!vp || vp.width >= 640, "phones only");
+        await theme.goto(t.slug);
+        const card = theme.nodeCards.first();
+        await card.click();
+        await expect(theme.selectedPaperBar).toBeVisible();
+        expect(await theme.selectedPaperBar.evaluate((el) => getComputedStyle(el).position)).toBe(
+          "static",
+        );
+        const tree = await theme.treeScrollBox.boundingBox();
+        const bar = await theme.selectedPaperBar.boundingBox();
+        expect(bar!.y).toBeGreaterThanOrEqual(tree!.y + tree!.height);
+        expect(
+          await page.evaluate(
+            () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+          ),
+        ).toBe(0);
+      });
+
       test(
         "evidence panel opens on an edge, has a report link, closes with Esc",
         prodTag(t.slug),
