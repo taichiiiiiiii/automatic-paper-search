@@ -79,11 +79,19 @@
   cursor: pointer;
 }
 
-.results {
+/* #521 U18: the dropdown is the panel holding the list AND the
+   "すべての N 件を見る" link, so the list can never cover the link. */
+.suggestPanel {
   position: absolute;
   z-index: 20;
   left: 0;
   right: 0;
+  /* Fills the small gap between the list and the link, so the page
+     under the dropdown does not show through it. */
+  background: var(--color-bg);
+}
+
+.results {
   margin: 0.2rem 0 0;
   padding: 0;
   list-style: none;
@@ -151,8 +159,10 @@
 }
 
 @media (max-width: 720px) {
-  .results {
+  .suggestPanel {
     position: static;
+  }
+  .results {
     max-height: none;
     box-shadow: none;
   }

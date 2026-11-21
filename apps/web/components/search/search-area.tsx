@@ -627,71 +627,78 @@ export function SearchArea({ handleRef }: { handleRef?: Ref<SearchAreaHandle> })
               </button>
             </div>
           </fieldset>
-          {/* biome-ignore-start lint/a11y/noNoninteractiveElementToInteractiveRole: ul/li + listbox/option is the ARIA 1.2 combobox-with-listbox pattern (W3C APG), ported verbatim from docs/index.html's #s0-search-listbox. */}
-          <ul
-            className={styles.results}
-            id="s0-search-listbox"
-            role="listbox"
-            aria-label="検索結果"
-            tabIndex={-1}
-            hidden={!suggestions || suggestions.length === 0}
-          >
-            {(suggestions ?? []).map((hit, index) => (
-              // The option is not a link: an <a> inside role="option" is a
-              // nested interactive control (axe, design 53 integration).
-              // Mouse-down keeps focus on the combobox (so the blur handler
-              // does not close the list first); a click opens the result,
-              // like Enter on the active option.
-              // biome-ignore lint/a11y/useFocusableInteractive: this pattern keeps focus on the combobox <input> (aria-activedescendant), never on the option itself -- the option is deliberately not in the tab order, matching docs/assets/search.js.
-              // biome-ignore lint/a11y/useKeyWithClickEvents: keyboard users choose with ArrowUp/Down + Enter on the combobox input (aria-activedescendant), never on the option itself.
-              <li
-                key={`${hit.row[1]}-${hit.row[2]}`}
-                id={`site-search-opt-${index}`}
-                role="option"
-                aria-selected={index === activeIndex}
-                data-href={resultUrl(hit.row, hit.paperId)}
-                className={styles.option}
-                ref={(node) => {
-                  itemRefs.current[index] = node;
-                }}
-                onMouseDown={(event) => event.preventDefault()}
-                onClick={() => {
-                  window.location.href = resultUrl(hit.row, hit.paperId);
-                }}
-              >
-                <span className={styles.optionBody}>
-                  <span className={styles.title}>{tidyTitle(hit.row[0])}</span>
-                  <span className={styles.meta}>
-                    {[
-                      confLabel(hit.row[1]),
-                      hit.row[5] !== null ? String(hit.row[5]) : null,
-                      hit.row[6],
-                      hit.matchLabel,
-                    ]
-                      .filter((part): part is string => part !== null)
-                      .join(" · ")}
-                  </span>
-                  {hit.row[3].length > 0 && (
-                    <span className={styles.authors}>
-                      {hit.row[3].length > 3
-                        ? `${hit.row[3].slice(0, 3).join(", ")} ほか`
-                        : hit.row[3].join(", ")}
+          {/* #521 U18: the list and the "すべての N 件を見る" link share one
+              panel. From 721px up the PANEL is the absolute dropdown; the
+              list used to be absolute on its own and painted over the link
+              (its next in-flow sibling), so a click on the link opened the
+              first suggestion. */}
+          <div className={styles.suggestPanel}>
+            {/* biome-ignore-start lint/a11y/noNoninteractiveElementToInteractiveRole: ul/li + listbox/option is the ARIA 1.2 combobox-with-listbox pattern (W3C APG), ported verbatim from docs/index.html's #s0-search-listbox. */}
+            <ul
+              className={styles.results}
+              id="s0-search-listbox"
+              role="listbox"
+              aria-label="検索結果"
+              tabIndex={-1}
+              hidden={!suggestions || suggestions.length === 0}
+            >
+              {(suggestions ?? []).map((hit, index) => (
+                // The option is not a link: an <a> inside role="option" is a
+                // nested interactive control (axe, design 53 integration).
+                // Mouse-down keeps focus on the combobox (so the blur handler
+                // does not close the list first); a click opens the result,
+                // like Enter on the active option.
+                // biome-ignore lint/a11y/useFocusableInteractive: this pattern keeps focus on the combobox <input> (aria-activedescendant), never on the option itself -- the option is deliberately not in the tab order, matching docs/assets/search.js.
+                // biome-ignore lint/a11y/useKeyWithClickEvents: keyboard users choose with ArrowUp/Down + Enter on the combobox input (aria-activedescendant), never on the option itself.
+                <li
+                  key={`${hit.row[1]}-${hit.row[2]}`}
+                  id={`site-search-opt-${index}`}
+                  role="option"
+                  aria-selected={index === activeIndex}
+                  data-href={resultUrl(hit.row, hit.paperId)}
+                  className={styles.option}
+                  ref={(node) => {
+                    itemRefs.current[index] = node;
+                  }}
+                  onMouseDown={(event) => event.preventDefault()}
+                  onClick={() => {
+                    window.location.href = resultUrl(hit.row, hit.paperId);
+                  }}
+                >
+                  <span className={styles.optionBody}>
+                    <span className={styles.title}>{tidyTitle(hit.row[0])}</span>
+                    <span className={styles.meta}>
+                      {[
+                        confLabel(hit.row[1]),
+                        hit.row[5] !== null ? String(hit.row[5]) : null,
+                        hit.row[6],
+                        hit.matchLabel,
+                      ]
+                        .filter((part): part is string => part !== null)
+                        .join(" · ")}
                     </span>
-                  )}
-                </span>
-              </li>
-            ))}
-          </ul>
-          {/* biome-ignore-end lint/a11y/noNoninteractiveElementToInteractiveRole: end of the ARIA combobox-listbox range started above */}
-          <a
-            className={styles.more}
-            id="s0-search-more"
-            href={moreHref}
-            hidden={moreHidden}
-            onClick={handleMoreClick}
-          >
-            {moreLabel}
-          </a>
+                    {hit.row[3].length > 0 && (
+                      <span className={styles.authors}>
+                        {hit.row[3].length > 3
+                          ? `${hit.row[3].slice(0, 3).join(", ")} ほか`
+                          : hit.row[3].join(", ")}
+                      </span>
+                    )}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            {/* biome-ignore-end lint/a11y/noNoninteractiveElementToInteractiveRole: end of the ARIA combobox-listbox range started above */}
+            <a
+              className={styles.more}
+              id="s0-search-more"
+              href={moreHref}
+              hidden={moreHidden}
+              onClick={handleMoreClick}
+            >
+              {moreLabel}
+            </a>
+          </div>
         </form>
       </search>
 
