@@ -154,6 +154,18 @@ export class ThemePage {
   get timeline(): Locator {
     return this.page.locator("svg[data-theme-timeline]");
   }
+  /** The year x citation chart by its accessible name (#521 U11). */
+  get timelineChart(): Locator {
+    return this.page.getByRole("group", { name: /年（横）と被引用数/ });
+  }
+  /** The scrolling box around the timeline chart. */
+  get timelineBox(): Locator {
+    return this.page.locator("[data-theme-timeline-box]");
+  }
+  /** The how-to note under the tree / timeline (a plain paragraph, no role). */
+  get viewNote(): Locator {
+    return this.page.locator("#theme-after-tree");
+  }
   /** Paper points in the timeline view (SVG role=button, aria-pressed). */
   get timelinePoints(): Locator {
     return this.timeline.locator("[role='button']");
