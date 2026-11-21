@@ -600,8 +600,10 @@ async function checkCspHeader(
  * `smoke --wait-marker <seconds>`: polls the marker until it reports
  * `expectedSha`, instead of failing on the very first fetch (R13, alias
  * propagation lag). A mismatch or any fetch error is swallowed and
- * retried until `seconds` elapses (per the injectable `now`/`sleep`, never
- * real wall-clock time in a test); the final poll's actual failure is
+ * retried until `deadline` (an absolute `now()` value shared with the
+ * caller's whole smoke attempt loop, so a retried attempt never extends
+ * the `seconds` budget) passes, per the injectable `now`/`sleep`, never
+ * real wall-clock time in a test; the final poll's actual failure is
  * what gets thrown, not a generic timeout.
  */
 async function waitForMarker(
@@ -609,12 +611,12 @@ async function waitForMarker(
   baseUrl: string,
   expectedSha: string,
   waitSeconds: number,
+  deadline: number,
   pollIntervalMs: number,
   now: () => number,
   sleep: (ms: number) => Promise<void>,
   timeoutMs: number,
 ): Promise<void> {
-  const deadline = now() + waitSeconds * 1000;
   let lastError: unknown;
   for (;;) {
     try {
@@ -680,21 +682,51 @@ export async function smokeRemote(options: SmokeRemoteOptions): Promise<SmokeRem
     retries: options.retries ?? DEFAULT_SMOKE_RETRIES,
     sleep: options.sleep ?? defaultSmokeSleep,
   };
-  const get = (url: string, what: string): Promise<string> =>
-    fetchOrThrow(options.fetchImpl, url, what, config);
+  if (options.waitMarkerSeconds === undefined) {
+    return runSmokeChecks(options, baseUrl, config);
+  }
 
-  if (options.waitMarkerSeconds !== undefined) {
+  // `--wait-marker` (#540): the production alias is served by many CDN
+  // edges, and one can still answer with the previous deployment after
+  // another has already returned the new marker (run 43898231044 failed
+  // the re-fetched marker 4 s into a 300 s wait). So the marker wait AND
+  // every later check form ONE attempt, retried until the same deadline;
+  // the attempt's own failure is rethrown once the deadline has passed.
+  // Nothing is checked less: a passing attempt ran every check against
+  // the expected SHA, and a persistent mismatch still fails (only later).
+  const now = options.now ?? Date.now;
+  const pollIntervalMs = options.waitMarkerPollIntervalMs ?? 2000;
+  const waitSeconds = options.waitMarkerSeconds;
+  const deadline = now() + waitSeconds * 1000;
+  for (;;) {
     await waitForMarker(
       options.fetchImpl,
       baseUrl,
       options.expectedSha,
-      options.waitMarkerSeconds,
-      options.waitMarkerPollIntervalMs ?? 2000,
-      options.now ?? Date.now,
+      waitSeconds,
+      deadline,
+      pollIntervalMs,
+      now,
       config.sleep,
       config.timeoutMs,
     );
+    try {
+      return await runSmokeChecks(options, baseUrl, config);
+    } catch (exc) {
+      if (now() >= deadline) throw exc;
+    }
+    await config.sleep(pollIntervalMs);
   }
+}
+
+/** One full pass of the smoke checks (validations 7-11 plus the A4 extensions) against `baseUrl`. */
+async function runSmokeChecks(
+  options: SmokeRemoteOptions,
+  baseUrl: string,
+  config: RetryConfig,
+): Promise<SmokeRemoteResult> {
+  const get = (url: string, what: string): Promise<string> =>
+    fetchOrThrow(options.fetchImpl, url, what, config);
 
   const indexHtml = await get(`${baseUrl}/`, "index.html");
   if (!indexHtml.toLowerCase().includes("<!doctype html")) {
