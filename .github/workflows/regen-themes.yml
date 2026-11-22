@@ -198,6 +198,26 @@ jobs:
           fi
           if [ -n "$THEMES_INPUT" ]; then
             IFS=',' read -ra THEMES <<< "$THEMES_INPUT"
+            # slug-input-guard: begin
+            # #551: an entry naming a published slug ("neural-radiance-fields")
+            # is rebuilt under that theme's display name (meta.theme), or
+            # the slug would become the theme name. Only a value matching
+            # ^[a-z0-9-]+$ is used in the path; anything else is kept as is.
+            for i in "${!THEMES[@]}"; do
+              cand="$(printf '%s' "${THEMES[$i]}" | sed -E 's/^[[:space:]]+|[[:space:]]+$//g')"
+              [[ "$cand" =~ ^[a-z0-9-]+$ ]] || continue
+              f="data/published/themes/$cand/lineage.json"
+              [ -f "$f" ] || continue
+              name="$(jq -r '.meta.theme // empty' "$f" 2>/dev/null || true)"
+              # A multi-line name could inject a workflow command; keep the slug.
+              [[ "$name" == *$'\n'* || "$name" == *$'\r'* ]] && continue
+              # Swap only to a name the regen loop below would accept.
+              if [ -n "$name" ] && [ "$name" != "$cand" ] && [[ "$name" =~ $THEME_RE ]]; then
+                echo "::notice::themes entry '$cand' is a published slug; regenerating it as '${name:0:80}'"
+                THEMES[$i]="$name"
+              fi
+            done
+            # slug-input-guard: end
           else
             shopt -s nullglob
             THEMES=()
