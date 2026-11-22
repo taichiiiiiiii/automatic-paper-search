@@ -112,7 +112,7 @@
   - 形: `entries[<引用側のグラフ id>] = { s2: <S2 に問い合わせた id（ARXIV:… / DOI:… / S2 id）。null は S2 にない論文>, fetched_at, pairs: { <被引用側のグラフ id>: { i: intents, c: 引用文（最大 4 文×400 字）, f: isInfluential } | null（S2 の参考文献に無い） } }`
   - 生成で実際に聞いた組だけを残す（参考文献を全部残すと 1 本約 40 KB になるため）。90 日（S2 にない論文は 14 日）で期限切れ。ほかの組が必要になったら、その回に 1 度だけ取り直して足す
   - 読み方の例: `jq '.entries["openalex:W…"].pairs' data/state/lineage-cache/s2_references.json`
-  - 速さ: 鍵なし 1.1 秒に 1 回、鍵（`PAPERPILOT_S2_API_KEY`、`x-api-key`）あり 1 秒に 1 回。429 は `Retry-After` か 2〜60 秒の指数で待ち、6 回で諦める（その回は「S2 データなし」扱い、キャッシュしない）
+  - 速さ: 鍵なし 1.1 秒に 1 回、鍵（`PAPERPILOT_S2_API_KEY`、`x-api-key`）あり 1.25 秒に 1 回（#555。鍵の上限は全エンドポイント合計で 1 秒に 1 回なので余裕を持たせる）。429 は `Retry-After` か 2〜60 秒の指数で待ち、6 回で諦める（その回は「S2 データなし」扱い、キャッシュしない）
 - **見積もり**（R2-9 のキャッシュで今の 4 テーマの関係を置き換えた場合）: LLM が動けば分類率はどれも 100%。LLM が止まっても flash-attention 80%（4/5）、graph-neural-network 83%（29/35）、mixture-of-experts 92%（11/12）、vision-transformer 91%（99/109）で、D3 の 8 割を満たす。LLM の呼び出しは 1 テーマあたり 2〜31 回（引用文の prompt 1〜21、要旨の prompt 1〜10）
 
 ## 実装メモ（R2-16、関係の根拠の厳格化）
