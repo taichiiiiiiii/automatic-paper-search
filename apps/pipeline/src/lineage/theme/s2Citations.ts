@@ -72,7 +72,9 @@ const MAX_CONTEXTS = 12;
 const LEGACY_MAX_CONTEXTS = 4;
 const MAX_CONTEXT_CHARS = 400;
 export const S2_KEYLESS_INTERVAL_MS = 1100;
-export const S2_KEYED_INTERVAL_MS = 1000;
+// #555: the key allows 1 request/s across all endpoints; 1.0 s exactly trips
+// 429 whenever two requests land within a second, so keep a margin.
+export const S2_KEYED_INTERVAL_MS = 1250;
 const DEFAULT_MAX_ATTEMPTS = 6;
 /** Attempts per S2 request. CI jobs that can afford to wait out the shared
  * keyless pool's 429 bursts raise it (`PAPERPILOT_S2_MAX_ATTEMPTS`, 1..20). */

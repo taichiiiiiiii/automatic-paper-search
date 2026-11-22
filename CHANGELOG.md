@@ -6,6 +6,10 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Changed — S2 のキーあり間隔を 1.25 秒に（#555）
+
+- API キーの上限は 1 秒に 1 回（全エンドポイント合計）。間隔が 1.0 秒ちょうどだと揺らぎで 429 になるため、余裕を持たせる。
+
 ### Changed — regen-themes が theme-on-demand と取得キャッシュを共有（#519）
 
 - 作り直し（regen-themes）も、S2・arXiv HTML などの取得キャッシュを theme-on-demand と同じ key・path で復元して保存する。git に入っている同名ファイルは復元の前に退避して直後に戻すので、作り直しの入力と develop に入る内容は変わらない。
