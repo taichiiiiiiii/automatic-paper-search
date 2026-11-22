@@ -37,9 +37,9 @@ export const S2_COUNT_NOT_FOUND_TTL_DAYS = 7;
 const S2_BATCH_URL = "https://api.semanticscholar.org/graph/v1/paper/batch";
 const BATCH_MAX_IDS = 250;
 const DAY_MS = 24 * 60 * 60 * 1000;
-/** Politeness: <= 1 batch per second without a key (1.1 s), 1 s with one. */
+/** Politeness: <= 1 batch per second without a key (1.1 s); 1.25 s with one (#555: the key allows 1 request/s across ALL endpoints). */
 const KEYLESS_INTERVAL_MS = 1100;
-const KEYED_INTERVAL_MS = 1000;
+const KEYED_INTERVAL_MS = 1250;
 
 export type CitationCountSource = "openalex" | "semantic_scholar";
 
