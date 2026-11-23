@@ -1,7 +1,7 @@
 // #564: a keyed S2 answering 403 (invalid key or a temporary block) used
 // to be indistinguishable from any other failure in the logs, and the
 // classify summary blamed "Groq RPM/daily quota" even when no LLM ran.
-// 403 is now counted (`forbidden`, `403=<n>` in the summary, one
+// 403 is now counted (`forbidden=<n>` in the summary, one
 // `::warning::` line) while its handling stays as before: one request, no
 // retry, no breaker, the pair is `fetch-failed` (unreachable), never
 // "citing-not-in-s2" — the completeness gate depends on that.
@@ -50,12 +50,12 @@ function harness(statusFor: () => number) {
 }
 
 describe("S2 403 accounting (#564)", () => {
-  it("(a) counts every 403, puts 403=<n> in the summary and yields one ::warning:: line", async () => {
+  it("(a) counts every 403, puts forbidden=<n> in the summary and yields one ::warning:: line", async () => {
     const h = harness(() => 403);
     for (let i = 1; i <= 5; i++) await h.src.lookup(paper(i), CITED);
     expect(h.src.stats.forbidden).toBe(5);
     expect(h.src.stats.forbidden).toBe(h.requests);
-    expect(h.src.summary()).toContain("403=5");
+    expect(h.src.summary()).toContain("forbidden=5");
     const warning = h.src.forbiddenWarning();
     expect(warning).not.toBeNull();
     expect(warning).toMatch(/^::warning::/);
@@ -64,11 +64,11 @@ describe("S2 403 accounting (#564)", () => {
     expect(warning?.split("\n")).toHaveLength(1);
   });
 
-  it("(a') no 403 → forbidden=0, 403=0 in the summary and no warning", async () => {
+  it("(a') no 403 → forbidden=0 in the summary and no warning", async () => {
     const h = harness(() => 200);
     await h.src.lookup(paper(1), CITED);
     expect(h.src.stats.forbidden).toBe(0);
-    expect(h.src.summary()).toContain("403=0");
+    expect(h.src.summary()).toContain("forbidden=0");
     expect(h.src.forbiddenWarning()).toBeNull();
   });
 

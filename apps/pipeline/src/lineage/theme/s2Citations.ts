@@ -885,7 +885,7 @@ export class S2CitationSource {
       `pairs found=${s.pairsFound} missing=${s.pairsMissing}, context refreshes=${s.contextRefreshes}, ` +
       `citing fetched=${s.citingFetched} ` +
       `not-in-s2=${s.citingNotInS2} failed=${s.citingFailed}, requests=${s.requests} ` +
-      `429=${s.rateLimited} 403=${s.forbidden} retries=${s.retries}, breaker trips=${this.breaker.trips} refused=${this.breaker.refused}, ` +
+      `429=${s.rateLimited} forbidden=${s.forbidden} retries=${s.retries}, breaker trips=${this.breaker.trips} refused=${this.breaker.refused}, ` +
       `key=${this.deps.apiKey ? "yes" : "no"}`
     );
   }
