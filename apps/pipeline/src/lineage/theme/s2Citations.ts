@@ -162,6 +162,10 @@ export interface S2CitationStats {
   contextRefreshes: number;
   /** R2-35: ranked bulk searches answered ({@link S2CitationSource.searchByCitations}). */
   rankedSearches: number;
+  /** #564: 403 answers (invalid key or a temporary block). Counted only;
+   * handling is unchanged: no retry, no breaker, the request fails as
+   * unreachable (`TransientS2Error`), never as "no such paper". */
+  forbidden: number;
 }
 
 type PaperLike = Record<string, unknown>;
@@ -381,6 +385,7 @@ export class S2CitationSource {
     citationListsFetched: 0,
     citationListsFailed: 0,
     rankedSearches: 0,
+    forbidden: 0,
     contextRefreshes: 0,
   };
 
@@ -827,6 +832,7 @@ export class S2CitationSource {
         await this.deps.sleep(Math.min(Math.max(hint ?? 0, backoff), BACKOFF_MAX_MS * 2));
         continue;
       }
+      if (resp.status === 403) this.stats.forbidden += 1;
       throw new TransientS2Error(`S2 answered ${resp.status} for ${url}`);
     }
     this.consecutiveGiveUps += 1;
@@ -879,8 +885,22 @@ export class S2CitationSource {
       `pairs found=${s.pairsFound} missing=${s.pairsMissing}, context refreshes=${s.contextRefreshes}, ` +
       `citing fetched=${s.citingFetched} ` +
       `not-in-s2=${s.citingNotInS2} failed=${s.citingFailed}, requests=${s.requests} ` +
-      `429=${s.rateLimited} retries=${s.retries}, breaker trips=${this.breaker.trips} refused=${this.breaker.refused}, ` +
+      `429=${s.rateLimited} 403=${s.forbidden} retries=${s.retries}, breaker trips=${this.breaker.trips} refused=${this.breaker.refused}, ` +
       `key=${this.deps.apiKey ? "yes" : "no"}`
+    );
+  }
+
+  /** #564: one GitHub `::warning::` line when S2 answered 403 at least
+   * once (key invalid/revoked, or S2 blocking this runner for a while), so
+   * a build that fails the evidence gate shows its cause in one line.
+   * `null` when there was no 403. */
+  forbiddenWarning(): string | null {
+    const n = this.stats.forbidden;
+    if (n === 0) return null;
+    return (
+      `::warning::s2 citations: S2 answered 403 to ${n} of ${this.stats.requests} request(s) ` +
+      `(key=${this.deps.apiKey ? "yes" : "no"}) — the API key is invalid or S2 is blocking this runner for now; ` +
+      `those pairs count as unreachable (403: キーが無効か一時遮断)`
     );
   }
 }

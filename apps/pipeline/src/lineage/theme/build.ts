@@ -153,12 +153,15 @@ export interface LogClassifySummaryDeps {
   logger?: { info?: (msg: string) => void; warn: (msg: string) => void };
 }
 
-/** Emit the post-build LLM-failure-rate summary + the three distinct
- * degraded-data warnings (#45). */
+/** Emit the post-build classification-failure-rate summary + the three
+ * distinct degraded-data warnings (#45). `llmEnabled` picks the cause the
+ * high-failure warning names (#564): with no LLM provider a "failed"
+ * classification means no citation evidence could be fetched, so blaming
+ * an LLM quota would mislead. Omitted = enabled (the old wording). */
 export function logClassifySummary(
   classifyAttempted: number,
   classifySucceeded: number,
-  options: { hasExtraNodes: boolean; hasEdges: boolean },
+  options: { hasExtraNodes: boolean; hasEdges: boolean; llmEnabled?: boolean },
   deps: LogClassifySummaryDeps = {},
 ): void {
   const classifyFailed = classifyAttempted - classifySucceeded;
@@ -168,7 +171,10 @@ export function logClassifySummary(
   );
   if (classifyAttempted && failRate > 0.3) {
     deps.logger?.warn(
-      `high LLM failure rate (${(failRate * 100).toFixed(1)}%) — likely Groq RPM/daily quota; consider re-running after quota resets`,
+      options.llmEnabled === false
+        ? `high unclassified rate (${(failRate * 100).toFixed(1)}%) with the LLM disabled — citation evidence ` +
+            "could not be fetched for most pairs; see the s2 citations summary (403/429/failed) and re-run once the source recovers"
+        : `high LLM failure rate (${(failRate * 100).toFixed(1)}%) — likely Groq RPM/daily quota; consider re-running after quota resets`,
     );
   }
   if (classifyAttempted === 0 && options.hasExtraNodes) {
@@ -895,6 +901,8 @@ export async function buildThemeLineage(
     s2Source.flush();
     const st = s2Relations.stats;
     logger.info?.(s2Source.summary());
+    const forbidden = s2Source.forbiddenWarning();
+    if (forbidden !== null) logger.warn(forbidden);
     logger.info?.(
       `s2 relations summary: rule=${st.rule}, context-llm asked=${st.llmAsked} answered=${st.llmAnswered}, ` +
         `left to the abstract/heuristic path: cites_unspecified=${st.unspecified} no-s2-data=${st.noS2Data}`,
@@ -1108,7 +1116,11 @@ export async function buildThemeLineage(
   logClassifySummary(
     classifyAttempted,
     classifySucceeded,
-    { hasExtraNodes: nodes.size > seedIds.length, hasEdges: cleanedEdges.length > 0 },
+    {
+      hasExtraNodes: nodes.size > seedIds.length,
+      hasEdges: cleanedEdges.length > 0,
+      llmEnabled: provider !== null,
+    },
     { logger },
   );
   // No LLM calls happen after this point: report the provider's own
