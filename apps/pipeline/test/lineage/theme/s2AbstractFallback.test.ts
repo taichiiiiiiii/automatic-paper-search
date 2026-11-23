@@ -3,7 +3,7 @@
  * Gate only: stored as `_gate_abstract`, never as `abstract`, and never
  * published. No network: a stubbed `fetchImpl` answers `/paper/batch`.
  */
-import { mkdtempSync } from "node:fs";
+import { mkdtempSync, readdirSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -15,6 +15,7 @@ import type { ThemePaper } from "../../../src/lineage/theme/openalexWork.js";
 import {
   type AbstractFallbackPaper,
   hasGateText,
+  MAX_FAILED_CHUNKS,
   type S2AbstractStats,
   supplementAbstracts,
 } from "../../../src/lineage/theme/s2AbstractFallback.js";
@@ -120,6 +121,40 @@ describe("supplementAbstracts (#560)", () => {
     expect(p._gate_abstract).toBe("now");
   });
 
+  it("stops asking after MAX_FAILED_CHUNKS failed chunks in one run", async () => {
+    const failing = stub({}, 500);
+    const tried = new Set<string>();
+    const stats = fresh();
+    for (let i = 0; i < 6; i++) {
+      await supplementAbstracts(
+        [paper(`T${i}`, { ArXiv: `9.${i}` })],
+        { fetchImpl: failing.fetchImpl, apiKey: "k", sleep: async () => {} },
+        tried,
+        stats,
+      );
+    }
+    expect(stats.failedChunks).toBe(MAX_FAILED_CHUNKS);
+  });
+
+  it("goes through the shared pacer before every request", async () => {
+    const order: string[] = [];
+    const { fetchImpl } = stub({ "ARXIV:4.4": { title: "T", abstract: "x" } });
+    const wrapped = (async (u: string, i?: FetchInit) => {
+      order.push("fetch");
+      return (fetchImpl as unknown as (u: string, i?: FetchInit) => Promise<HttpResponseLike>)(
+        u,
+        i,
+      );
+    }) as never;
+    await supplementAbstracts(
+      [paper("T", { ArXiv: "4.4" })],
+      { fetchImpl: wrapped, apiKey: "k", pace: async () => void order.push("pace") },
+      new Set(),
+      fresh(),
+    );
+    expect(order).toEqual(["pace", "fetch"]);
+  });
+
   it("does not ask twice for the same id in one run", async () => {
     const a = paper("T", { ArXiv: "3.3" });
     const { fetchImpl, calls } = stub({ "ARXIV:3.3": { title: "T", abstract: null } });
@@ -193,7 +228,9 @@ describe("BFS uses the fallback for the abstract filter (#560)", () => {
   const noAbs = mk("prefix", "Prefix-Tuning: Optimizing Continuous Prompts", undefined, {
     ArXiv: "2101.00190",
   });
+  let cacheDirOf = "";
   const deps = (): FetchRelatedDeps => {
+    cacheDirOf = mkdtempSync(join(tmpdir(), "bfs-s2abs-"));
     const fetchImpl = async (
       url: string,
     ): Promise<{ status: number; json: () => Promise<unknown> }> => {
@@ -210,7 +247,7 @@ describe("BFS uses the fallback for the abstract filter (#560)", () => {
     };
     return {
       fetchImpl: fetchImpl as never,
-      cacheDir: mkdtempSync(join(tmpdir(), "bfs-s2abs-")),
+      cacheDir: cacheDirOf,
       sleep: async () => {},
       logger: { warn: () => {} },
     };
@@ -237,5 +274,9 @@ describe("BFS uses the fallback for the abstract filter (#560)", () => {
     const r = await runBfsAndDescendants([seed], { ...opts, abstractFallback }, deps());
     expect([...r.nodes.keys()].sort()).toEqual(["prefix", "seed"]);
     expect(JSON.stringify([...r.nodes.values()])).not.toContain("S2 ONLY TEXT");
+    // ...and no file the BFS wrote (fetch caches) holds the S2 text either.
+    for (const f of readdirSync(cacheDirOf)) {
+      expect(readFileSync(join(cacheDirOf, f), "utf-8")).not.toContain("S2 ONLY TEXT");
+    }
   });
 });

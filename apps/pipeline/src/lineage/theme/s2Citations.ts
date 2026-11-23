@@ -762,7 +762,10 @@ export class S2CitationSource {
     return pid && normTitle(first.title) === normTitle(title) ? pid : null;
   }
 
-  private async pace(): Promise<void> {
+  /** Waits until the next S2 request may go out (1 request/s key limit,
+   * `interval`). Public so other S2 callers (#560 abstract fallback) share
+   * this one pacer instead of racing it. */
+  async pace(): Promise<void> {
     const clock = this.deps.monotonicNow ?? Date.now;
     if (this.lastRequestAt !== null) {
       const wait = this.lastRequestAt + this.interval - clock();

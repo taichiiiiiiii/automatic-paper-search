@@ -814,6 +814,7 @@ export async function buildThemeLineage(
             {
               fetchImpl: deps.s2Citations?.fetchImpl ?? deps.fetchImpl,
               sleep: deps.sleep,
+              pace: () => s2Source.pace(),
               apiKey: s2AbstractKey,
               logger,
             },

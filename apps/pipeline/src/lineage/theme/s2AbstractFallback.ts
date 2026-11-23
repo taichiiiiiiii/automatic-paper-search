@@ -29,9 +29,15 @@ import { s2LookupId } from "./s2CitationCounts.js";
 const S2_BATCH_URL = "https://api.semanticscholar.org/graph/v1/paper/batch";
 const CHUNK = 250;
 
+/** After this many failed chunks in one run the fallback stops asking
+ * (a degraded S2 must not stall the BFS: each attempt can wait ~90 s). */
+export const MAX_FAILED_CHUNKS = 2;
+
 export interface S2AbstractDeps {
   fetchImpl: FetchLike;
   sleep?: (ms: number) => Promise<void>;
+  /** The shared S2 pacer (one request per interval across ALL S2 calls). */
+  pace?: () => Promise<void>;
   apiKey?: string | null;
   logger?: { warn?: (msg: string) => void; info?: (msg: string) => void };
 }
@@ -84,6 +90,7 @@ async function fetchChunk(
     retry429: { maxRetries: 4, maxWaitMs: 20_000, giveUpIfHintAboveMs: 60_000 },
   };
   try {
+    if (deps.pace) await deps.pace();
     const resp = await requestWithRetry(
       {
         method: "POST",
@@ -94,7 +101,11 @@ async function fetchChunk(
         timeoutMs: 30_000,
         ...budget,
       },
-      { fetchImpl: deps.fetchImpl, sleep: deps.sleep, logger: deps.logger as never },
+      {
+        fetchImpl: deps.fetchImpl,
+        sleep: deps.sleep,
+        logger: { warn: (m: string) => deps.logger?.warn?.(m) } as never,
+      },
     );
     if (resp === null || resp.status !== 200) return null;
     const body: unknown = await resp.json();
@@ -116,6 +127,7 @@ export async function supplementAbstracts(
   tried: Set<string>,
   stats: S2AbstractStats,
 ): Promise<void> {
+  if (stats.failedChunks >= MAX_FAILED_CHUNKS) return;
   const want = new Map<string, AbstractFallbackPaper[]>();
   for (const p of papers) {
     if (hasGateText(p)) continue;
@@ -127,6 +139,7 @@ export async function supplementAbstracts(
   }
   const ids = [...want.keys()].sort();
   for (let i = 0; i < ids.length; i += CHUNK) {
+    if (stats.failedChunks >= MAX_FAILED_CHUNKS) return;
     const chunk = ids.slice(i, i + CHUNK);
     for (const id of chunk) tried.add(id);
     stats.asked += chunk.length;
