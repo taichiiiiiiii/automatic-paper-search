@@ -1,0 +1,3212 @@
+{
+  "schema_version": "lineage-artifact-v1",
+  "root": "openalex:W3152956381",
+  "nodes": [
+    {
+      "id": "openalex:W3139080614",
+      "title": "GPT understands, too",
+      "year": 2023,
+      "venue": "AI Open",
+      "venue_tier": "preprint",
+      "authors": [
+        "Xiao Liu",
+        "Yanan Zheng",
+        "Zhengxiao Du",
+        "Ming Ding",
+        "Yujie Qian"
+      ],
+      "kinds": [],
+      "citation_count": 1645,
+      "github_stars": 940,
+      "tldr": "Prompting a pretrained language model with natural language patterns has been proved effective for natural language understanding (NLU).…",
+      "short_abstract": "Prompting a pretrained language model with natural language patterns has been proved effective for natural language understanding (NLU). However, our preliminary study reveals that manual discrete prompts often lead to unstable performance—e.g., changing a single word in the prompt might result in substantial performance drop. We propose a novel method P-Tuning that employs trainable continuous prompt embeddings in concatenation with discrete prompts. Empirically, P-Tuning not only stabilizes training by minimizing the gap between various discrete prompts, but also improves performance by a sizeable margin on a wide range of NLU tasks including LAMA and SuperGLUE. P-Tuning is generally effective for both frozen and tuned language models, under both the fully-supervised and few-shot settings.",
+      "arxiv_id": "2103.10385",
+      "doi": "10.1016/j.aiopen.2023.08.012",
+      "is_trending": true,
+      "aliases": [
+        [
+          "arxiv",
+          "2103.10385"
+        ],
+        [
+          "doi",
+          "10.1016/j.aiopen.2023.08.012"
+        ]
+      ],
+      "github_url": "https://github.com/THUDM/P-tuning",
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W3152956381",
+      "title": "The Power of Scale for Parameter-Efficient Prompt Tuning",
+      "year": 2021,
+      "venue": "Conference on Empirical Methods in Natural Language Processing (EMNLP)",
+      "venue_tier": "A+",
+      "authors": [
+        "Brian Lester",
+        "Rami Al‐Rfou",
+        "Noah Constant"
+      ],
+      "kinds": [],
+      "citation_count": 6954,
+      "github_stars": 169,
+      "tldr": "In this work, we explore “prompt tuning,” a simple yet effective mechanism for learning “soft prompts” to condition frozen language models…",
+      "short_abstract": "In this work, we explore “prompt tuning,” a simple yet effective mechanism for learning “soft prompts” to condition frozen language models to perform specific downstream tasks. Unlike the discrete text prompts used by GPT-3, soft prompts are learned through backpropagation and can be tuned to incorporate signals from any number of labeled examples. Our end-to-end learned approach outperforms GPT-3’s few-shot learning by a large margin. More remarkably, through ablations on model size using T5, we show that prompt tuning becomes more competitive with scale: as models exceed billions of parameters, our method “closes the gap” and matches the strong performance of model tuning (where all model weights are tuned). This finding is especially relevant because large models are costly to share and serve and the ability to reuse one frozen model for multiple downstream tasks can ease this burden. Our method can be seen as a simplification of the recently proposed “prefix tuning” of Li and…",
+      "arxiv_id": "2104.08691",
+      "doi": "10.18653/v1/2021.emnlp-main.243",
+      "is_focus": true,
+      "aliases": [
+        [
+          "arxiv",
+          "2104.08691"
+        ],
+        [
+          "doi",
+          "10.18653/v1/2021.emnlp-main.243"
+        ]
+      ],
+      "github_url": "https://github.com/mkshing/Prompt-Tuning",
+      "seed_paper_id": "dbfc54f99665c4571307a4847707d76c332f31f3"
+    },
+    {
+      "id": "openalex:W3166846774",
+      "title": "Learning How to Ask: Querying LMs with Mixtures of Soft Prompts",
+      "year": 2021,
+      "venue": "Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies (NAACL-HLT)",
+      "venue_tier": "A+",
+      "authors": [
+        "Guanghui Qin",
+        "Jason M. Eisner"
+      ],
+      "kinds": [],
+      "citation_count": 654,
+      "github_stars": 0,
+      "tldr": "Natural-language prompts have recently been used to coax pretrained language models into performing other AI tasks, using a…",
+      "short_abstract": "Natural-language prompts have recently been used to coax pretrained language models into performing other AI tasks, using a fill-in-the-blank paradigm (Petroni et al., 2019) or a few-shot extrapolation paradigm (Brown et al., 2020). For example, language models retain factual knowledge from their training corpora that can be extracted by asking them to “fill in the blank” in a sentential prompt. However, where does this prompt come from? We explore the idea of learning prompts by gradient descent—either fine-tuning prompts taken from previous work, or starting from random initialization. Our prompts consist of “soft words,” i.e., continuous vectors that are not necessarily word type embeddings from the language model. Furthermore, for each task, we optimize a mixture of prompts, learning which prompts are most effective and how to ensemble them. Across multiple English LMs and tasks, our approach hugely outperforms previous methods, showing that the implicit factual knowledge in…",
+      "arxiv_id": "2104.06599",
+      "doi": "10.18653/v1/2021.naacl-main.410",
+      "aliases": [
+        [
+          "arxiv",
+          "2104.06599"
+        ],
+        [
+          "doi",
+          "10.18653/v1/2021.naacl-main.410"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W3173777717",
+      "title": "Making Pre-trained Language Models Better Few-shot Learners",
+      "year": 2021,
+      "venue": "ACL/IJCNLP (1)",
+      "venue_tier": "A+",
+      "authors": [
+        "Tianyu Gao",
+        "Adam Fisch",
+        "Danqi Chen"
+      ],
+      "kinds": [],
+      "citation_count": 2583,
+      "github_stars": 0,
+      "tldr": "The recent GPT-3 model (Brown et al., 2020) achieves remarkable few-shot performance solely by leveraging a natural-language prompt and a…",
+      "short_abstract": "The recent GPT-3 model (Brown et al., 2020) achieves remarkable few-shot performance solely by leveraging a natural-language prompt and a few task demonstrations as input context. Inspired by their findings, we study few-shot learning in a more practical scenario, where we use smaller language models for which fine-tuning is computationally efficient. We present LM-BFF—better few-shot fine-tuning of language models—a suite of simple and complementary techniques for fine-tuning language models on a small number of annotated examples. Our approach includes (1) prompt-based fine-tuning together with a novel pipeline for automating prompt generation; and (2) a refined strategy for dynamically and selectively incorporating demonstrations into each context. Finally, we present a systematic evaluation for analyzing few-shot performance on a range of NLP tasks, including classification and regression. Our experiments demonstrate that our methods combine to dramatically outperform standard…",
+      "arxiv_id": "2012.15723",
+      "doi": "10.18653/v1/2021.acl-long.295",
+      "aliases": [
+        [
+          "arxiv",
+          "2012.15723"
+        ],
+        [
+          "doi",
+          "10.18653/v1/2021.acl-long.295"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W3174770825",
+      "title": "Prefix-Tuning: Optimizing Continuous Prompts for Generation",
+      "year": 2021,
+      "venue": "ACL/IJCNLP (1)",
+      "venue_tier": "A+",
+      "authors": [
+        "Xiang Lisa Li",
+        "Percy Liang"
+      ],
+      "kinds": [],
+      "citation_count": 6827,
+      "github_stars": 960,
+      "tldr": "Fine-tuning is the de facto way of leveraging large pretrained language models for downstream tasks. However, fine-tuning modifies all the…",
+      "short_abstract": "Fine-tuning is the de facto way of leveraging large pretrained language models for downstream tasks. However, fine-tuning modifies all the language model parameters and therefore necessitates storing a full copy for each task. In this paper, we propose prefix-tuning, a lightweight alternative to fine-tuning for natural language generation tasks, which keeps language model parameters frozen and instead optimizes a sequence of continuous task-specific vectors, which we call the prefix. Prefix-tuning draws inspiration from prompting for language models, allowing subsequent tokens to attend to this prefix as if it were “virtual tokens”. We apply prefix-tuning to GPT-2 for table-to-text generation and to BART for summarization. We show that by learning only 0.1% of the parameters, prefix-tuning obtains comparable performance in the full data setting, outperforms fine-tuning in low-data settings, and extrapolates better to examples with topics that are unseen during training.",
+      "arxiv_id": "2101.00190",
+      "doi": "10.18653/v1/2021.acl-long.353",
+      "aliases": [
+        [
+          "arxiv",
+          "2101.00190"
+        ],
+        [
+          "doi",
+          "10.18653/v1/2021.acl-long.353"
+        ]
+      ],
+      "github_url": "https://github.com/XiangLi1999/PrefixTuning",
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W3185341429",
+      "title": "Pre-train, Prompt, and Predict: A Systematic Survey of Prompting Methods in Natural Language Processing",
+      "year": 2023,
+      "venue": "ACM Computing Surveys",
+      "venue_tier": "preprint",
+      "authors": [
+        "Pengfei Liu",
+        "Weizhe Yuan",
+        "Jinlan Fu",
+        "Zhengbao Jiang",
+        "Hiroaki Hayashi"
+      ],
+      "kinds": [],
+      "citation_count": 8287,
+      "github_stars": 0,
+      "tldr": "This article surveys and organizes research works in a new paradigm in natural language processing, which we dub “prompt-based learning.”…",
+      "short_abstract": "This article surveys and organizes research works in a new paradigm in natural language processing, which we dub “prompt-based learning.” Unlike traditional supervised learning, which trains a model to take in an input x and predict an output y as P ( y|x ), prompt-based learning is based on language models that model the probability of text directly. To use these models to perform prediction tasks, the original input x is modified using a template into a textual string prompt x′ that has some unfilled slots, and then the language model is used to probabilistically fill the unfilled information to obtain a final string x̂ , from which the final output y can be derived. This framework is powerful and attractive for a number of reasons: It allows the language model to be pre-trained on massive amounts of raw text, and by defining a new prompting function the model is able to perform few-shot or even zero-shot learning, adapting to new scenarios with few or no labeled data. In this…",
+      "arxiv_id": "2107.13586",
+      "doi": "10.1145/3560815",
+      "is_trending": true,
+      "aliases": [
+        [
+          "arxiv",
+          "2107.13586"
+        ],
+        [
+          "doi",
+          "10.1145/3560815"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W3194836374",
+      "title": "KnowPrompt: Knowledge-aware Prompt-tuning with Synergistic Optimization for Relation Extraction",
+      "year": 2022,
+      "venue": "International World Wide Web Conference (WWW)",
+      "venue_tier": "A",
+      "authors": [
+        "Xiang Chen",
+        "Ningyu Zhang",
+        "Xin Yu Xie",
+        "Shumin Deng",
+        "Yunzhi Yao"
+      ],
+      "kinds": [],
+      "citation_count": 616,
+      "github_stars": 0,
+      "tldr": "Recently, prompt-tuning has achieved promising results for specific few-shot classification tasks. The core idea of prompt-tuning is to…",
+      "short_abstract": "Recently, prompt-tuning has achieved promising results for specific few-shot classification tasks. The core idea of prompt-tuning is to insert text pieces (i.e., templates) into the input and transform a classification task into a masked language modeling problem. However, for relation extraction, determining an appropriate prompt template requires domain expertise, and it is cumbersome and time-consuming to obtain a suitable label word. Furthermore, there exists abundant semantic and prior knowledge among the relation labels that cannot be ignored. To this end, we focus on incorporating knowledge among relation labels into prompt-tuning for relation extraction and propose a Knowledge-aware Prompt-tuning approach with synergistic optimization (KnowPrompt). Specifically, we inject latent knowledge contained in relation labels into prompt construction with learnable virtual type words and answer words. Then, we synergistically optimize their representation with structured constraints.…",
+      "arxiv_id": "2104.07650",
+      "doi": "10.1145/3485447.3511998",
+      "aliases": [
+        [
+          "arxiv",
+          "2104.07650"
+        ],
+        [
+          "doi",
+          "10.1145/3485447.3511998"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W3205270560",
+      "title": "P-Tuning v2: Prompt Tuning Can Be Comparable to Fine-tuning Universally Across Scales and Tasks",
+      "year": 2021,
+      "venue": "arXiv (Cornell University)",
+      "venue_tier": "preprint",
+      "authors": [
+        "Xiao Liu",
+        "Kaixuan Ji",
+        "Fu, Yicheng",
+        "Weng Lam Tam",
+        "Zhengxiao Du"
+      ],
+      "kinds": [],
+      "citation_count": 1172,
+      "github_stars": 0,
+      "tldr": "Prompt tuning, which only tunes continuous prompts with a frozen language model, substantially reduces per-task storage and memory usage…",
+      "short_abstract": "Prompt tuning, which only tunes continuous prompts with a frozen language model, substantially reduces per-task storage and memory usage at training. However, in the context of NLU, prior work reveals that prompt tuning does not perform well for normal-sized pretrained models. We also find that existing methods of prompt tuning cannot handle hard sequence labeling tasks, indicating a lack of universality. We present a novel empirical finding that properly optimized prompt tuning can be universally effective across a wide range of model scales and NLU tasks. It matches the performance of finetuning while having only 0.1%-3% tuned parameters. Our method P-Tuning v2 is an implementation of Deep Prompt Tuning \\cite{li2021prefix,qin2021learning} optimized and adapted for NLU. Given the universality and simplicity of P-Tuning v2, we believe it can serve as an alternative to finetuning and a strong baseline for future research.Our code and data are released at…",
+      "arxiv_id": "2110.07602",
+      "doi": "10.48550/arxiv.2110.07602",
+      "is_focus": true,
+      "aliases": [
+        [
+          "arxiv",
+          "2110.07602"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2110.07602"
+        ]
+      ],
+      "citation_count_source": "semantic_scholar",
+      "seed_paper_id": "fc2392465abe370333a66a6dd878dd32f6a304a8"
+    },
+    {
+      "id": "openalex:W4225747866",
+      "title": "Visual Prompt Tuning",
+      "year": 2022,
+      "venue": "Lecture notes in computer science",
+      "venue_tier": "preprint",
+      "authors": [
+        "Menglin Jia",
+        "Luming Tang",
+        "Bor-Chun Chen",
+        "Claire Cardie",
+        "Serge Belongie"
+      ],
+      "kinds": [],
+      "citation_count": 3682,
+      "github_stars": 1246,
+      "tldr": "",
+      "arxiv_id": "2203.12119",
+      "doi": "10.1007/978-3-031-19827-4_41",
+      "is_focus": true,
+      "aliases": [
+        [
+          "arxiv",
+          "2203.12119"
+        ],
+        [
+          "doi",
+          "10.1007/978-3-031-19827-4_41"
+        ]
+      ],
+      "github_url": "https://github.com/KMnP/vpt",
+      "seed_paper_id": "2318a2d22d720d9995785f0f7af7dfd2c2c94ee6"
+    },
+    {
+      "id": "openalex:W4309811444",
+      "title": "PTR: Prompt Tuning with Rules for Text Classification",
+      "year": 2022,
+      "venue": "AI Open",
+      "venue_tier": "preprint",
+      "authors": [
+        "Xu Han",
+        "Weilin Zhao",
+        "Ning Ding",
+        "Zhiyuan Liu",
+        "Maosong Sun"
+      ],
+      "kinds": [],
+      "citation_count": 656,
+      "github_stars": 0,
+      "tldr": "Recently, prompt tuning has been widely applied to stimulate the rich knowledge in pre-trained language models (PLMs) to serve NLP tasks.…",
+      "short_abstract": "Recently, prompt tuning has been widely applied to stimulate the rich knowledge in pre-trained language models (PLMs) to serve NLP tasks. Although prompt tuning has achieved promising results on some few-class classification tasks, such as sentiment classification and natural language inference, manually designing prompts is cumbersome. Meanwhile, generating prompts automatically is also difficult and time-consuming. Therefore, obtaining effective prompts for complex many-class classification tasks still remains a challenge. In this paper, we propose to encode the prior knowledge of a classification task into rules, then design sub-prompts according to the rules, and finally combine the sub-prompts to handle the task. We name this Prompt Tuning method with Rules “PTR”. Compared with existing prompt-based methods, PTR achieves a good trade-off between effectiveness and efficiency in building prompts. We conduct experiments on three many-class classification tasks, including relation…",
+      "arxiv_id": "2105.11259",
+      "doi": "10.1016/j.aiopen.2022.11.003",
+      "aliases": [
+        [
+          "arxiv",
+          "2105.11259"
+        ],
+        [
+          "doi",
+          "10.1016/j.aiopen.2022.11.003"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4312310776",
+      "title": "Conditional Prompt Learning for Vision-Language Models",
+      "year": 2022,
+      "venue": "IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings",
+      "venue_tier": "A+",
+      "authors": [
+        "Kaiyang Zhou",
+        "Jingkang Yang",
+        "Chen Change Loy",
+        "Ziwei Liu"
+      ],
+      "kinds": [],
+      "citation_count": 3390,
+      "github_stars": 0,
+      "tldr": "With the rise of powerful pre-trained vision-language models like CLIP, it becomes essential to investigate ways to adapt these models to…",
+      "short_abstract": "With the rise of powerful pre-trained vision-language models like CLIP, it becomes essential to investigate ways to adapt these models to downstream datasets. A recently proposed method named Context Optimization (CoOp) introduces the concept of prompt learning—a recent trend in NLP—to the vision domain for adapting pre-trained vision-language models. Specifically, CoOp turns context words in a prompt into a set of learnable vectors and, with only a few labeled images for learning, can achieve huge improvements over intensively-tuned manual prompts. In our study we identify a critical problem of CoOp: the learned context is not generalizable to wider unseen classes within the same dataset, suggesting that CoOp overfits base classes observed during training. To address the problem, we propose Conditional Context Optimization (CoCoOp), which extends CoOp by further learning a lightweight neural network to generate for each image an input-conditional token (vector). Compared to CoOp's…",
+      "arxiv_id": "2203.05557",
+      "doi": "10.1109/cvpr52688.2022.01631",
+      "aliases": [
+        [
+          "arxiv",
+          "2203.05557"
+        ],
+        [
+          "doi",
+          "10.1109/cvpr52688.2022.01631"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4379470115",
+      "title": "Consistency-guided Prompt Learning for Vision-Language Models",
+      "year": 2024,
+      "venue": "International Conference on Learning Representations",
+      "venue_tier": "A+",
+      "authors": [
+        "Shuvendu Roy",
+        "Ali Etemad"
+      ],
+      "kinds": [],
+      "citation_count": 137,
+      "github_stars": 86,
+      "tldr": "We propose Consistency-guided Prompt learning (CoPrompt), a new fine-tuning method for vision-language models. Our approach improves the…",
+      "short_abstract": "We propose Consistency-guided Prompt learning (CoPrompt), a new fine-tuning method for vision-language models. Our approach improves the generalization of large foundation models when fine-tuned on downstream tasks in a few-shot setting. The basic idea of CoPrompt is to enforce a consistency constraint in the prediction of the trainable and pre-trained models to prevent overfitting on the downstream task. Additionally, we introduce the following two components into our consistency constraint to further boost the performance: enforcing consistency on two perturbed inputs and combining two dominant paradigms of tuning, prompting and adapter. Enforcing consistency on perturbed input serves to further regularize the consistency constraint, thereby improving generalization. Moreover, the integration of adapters and prompts not only enhances performance on downstream tasks but also offers increased tuning flexibility in both input and output spaces. This facilitates more effective…",
+      "arxiv_id": "2306.01195",
+      "doi": "10.48550/arxiv.2306.01195",
+      "aliases": [
+        [
+          "arxiv",
+          "2306.01195"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2306.01195"
+        ]
+      ],
+      "github_url": "https://github.com/ShuvenduRoy/CoPrompt",
+      "citation_count_source": "semantic_scholar",
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4385573003",
+      "title": "RLPrompt: Optimizing Discrete Text Prompts with Reinforcement Learning",
+      "year": 2022,
+      "venue": "Conference on Empirical Methods in Natural Language Processing (EMNLP)",
+      "venue_tier": "A+",
+      "authors": [
+        "Mingkai Deng",
+        "Jianyu Wang",
+        "Cheng-Ping Hsieh",
+        "Yihan Wang",
+        "Han Wen Guo"
+      ],
+      "kinds": [],
+      "citation_count": 677,
+      "github_stars": 0,
+      "tldr": "Prompting has shown impressive success in enabling large pre-trained language models (LMs) to perform diverse NLP tasks, especially with…",
+      "short_abstract": "Prompting has shown impressive success in enabling large pre-trained language models (LMs) to perform diverse NLP tasks, especially with only few downstream data. Automatically finding the optimal prompt for each task, however, is challenging. Most existing work resorts to tuning *soft* prompts (e.g., embeddings) which fall short of interpretability, reusability across LMs, and applicability when gradients are not accessible. *Discrete* prompts, on the other hand, are difficult to optimize, and are often created by “enumeration (e.g., paraphrasing)-then-selection” heuristics that do not explore the prompt space systematically. This paper proposes RLPrompt, an efficient discrete prompt optimization approach with reinforcement learning (RL). RLPrompt formulates a parameter-efficient policy network that generates the optimized discrete prompt after training with reward. To harness the complex and stochastic reward signals from the large LM environment, we incorporate effective reward…",
+      "arxiv_id": "2205.12548",
+      "doi": "10.18653/v1/2022.emnlp-main.222",
+      "aliases": [
+        [
+          "arxiv",
+          "2205.12548"
+        ],
+        [
+          "doi",
+          "10.18653/v1/2022.emnlp-main.222"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4386065763",
+      "title": "Visual-Language Prompt Tuning with Knowledge-Guided Context Optimization",
+      "year": 2023,
+      "venue": "IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings",
+      "venue_tier": "A+",
+      "authors": [
+        "Hantao Yao",
+        "Rui Zhang",
+        "Changsheng Xu"
+      ],
+      "kinds": [],
+      "citation_count": 583,
+      "github_stars": 0,
+      "tldr": "Prompt tuning is an effective way to adapt the pretrained visual-language model (VLM) to the downstream task using task-related textual…",
+      "short_abstract": "Prompt tuning is an effective way to adapt the pretrained visual-language model (VLM) to the downstream task using task-related textual tokens. Representative CoOp-based work combines the learnable textual tokens with the class tokens to obtain specific textual knowledge. However, the specific textual knowledge is worse generalization to the unseen classes because it forgets the essential general textual knowledge having a strong generalization ability. To tackle this issue, we introduce a novel Knowledge-guided Context Optimization (KgCoOp) to enhance the generalization ability of the learnable prompt for unseen classes. The key insight of KgCoOp is that the forgetting about essential knowledge can be alleviated by reducing the discrepancy between the learnable prompt and the hand-crafted prompt. Especially, KgCoOp minimizes the discrepancy between the textual embeddings generated by learned prompts and the hand-crafted prompts. Finally, adding the KgCoOp upon the contrastive loss…",
+      "arxiv_id": "2303.13283",
+      "doi": "10.1109/cvpr52729.2023.00653",
+      "is_focus": true,
+      "aliases": [
+        [
+          "arxiv",
+          "2303.13283"
+        ],
+        [
+          "doi",
+          "10.1109/cvpr52729.2023.00653"
+        ]
+      ],
+      "seed_paper_id": "6a9a977bc418baa5a1f95a4003ff2fb318142df3"
+    },
+    {
+      "id": "openalex:W4386071547",
+      "title": "MaPLe: Multi-modal Prompt Learning",
+      "year": 2023,
+      "venue": "IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings",
+      "venue_tier": "A+",
+      "authors": [
+        "Muhammad Uzair Khattak",
+        "Hanoona Rasheed",
+        "Muhammad Maaz",
+        "Salman Khan",
+        "Fahad Shahbaz Khan"
+      ],
+      "kinds": [],
+      "citation_count": 1936,
+      "github_stars": 828,
+      "tldr": "Pre-trained vision-language (V-L) models such as CLIP have shown excellent generalization ability to downstream tasks. However, they are…",
+      "short_abstract": "Pre-trained vision-language (V-L) models such as CLIP have shown excellent generalization ability to downstream tasks. However, they are sensitive to the choice of input text prompts and require careful selection of prompt templates to perform well. Inspired by the Natural Language Processing (NLP) literature, recent CLIP adaptation approaches learn prompts as the textual inputs to fine-tune CLIP for downstream tasks. We note that using prompting to adapt representations in a single branch of CLIP (language or vision) is sub-optimal since it does not allow the flexibility to dynamically adjust both representation spaces on a downstream task. In this work, we propose Multi-modal Prompt Learning (MaPLe) for both vision and language branches to improve alignment between the vision and language representations. Our design promotes strong coupling between the vision-language prompts to ensure mutual synergy and discourages learning independent uni-modal solutions. Further, we learn…",
+      "arxiv_id": "2210.03117",
+      "doi": "10.1109/cvpr52729.2023.01832",
+      "is_trending": true,
+      "aliases": [
+        [
+          "arxiv",
+          "2210.03117"
+        ],
+        [
+          "doi",
+          "10.1109/cvpr52729.2023.01832"
+        ]
+      ],
+      "github_url": "https://github.com/muzairkhattak/multimodal-prompt-learning",
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4390872773",
+      "title": "Self-regulating Prompts: Foundational Model Adaptation without Forgetting",
+      "year": 2023,
+      "venue": "IEEE/CVF International Conference on Computer Vision (ICCV)",
+      "venue_tier": "A+",
+      "authors": [
+        "Muhammad Uzair Khattak",
+        "Syed Talal Wasim",
+        "Muzammal Naseer",
+        "Salman A. Khan",
+        "Ming–Hsuan Yang"
+      ],
+      "kinds": [],
+      "citation_count": 573,
+      "github_stars": 291,
+      "tldr": "Prompt learning has emerged as an efficient alternative for fine-tuning foundational models, such as CLIP, for various downstream tasks.…",
+      "short_abstract": "Prompt learning has emerged as an efficient alternative for fine-tuning foundational models, such as CLIP, for various downstream tasks. Conventionally trained using the task-specific objective, i.e., cross-entropy loss, prompts tend to overfit downstream data distributions and find it challenging to capture task-agnostic general features from the frozen CLIP. This leads to the loss of the model’s original generalization capability. To address this issue, our work introduces a self-regularization framework for prompting called PromptSRC (Prompting with Self-regulating Constraints). PromptSRC guides the prompts to optimize for both task-specific and task-agnostic general representations using a three-pronged approach by: (a) regulating prompted representations via mutual agreement maximization with the frozen model, (b) regulating with self-ensemble of prompts over the training trajectory to encode their complementary strengths, and (c) regulating with textual diversity to mitigate…",
+      "arxiv_id": "2307.06948",
+      "doi": "10.1109/iccv51070.2023.01394",
+      "aliases": [
+        [
+          "arxiv",
+          "2307.06948"
+        ],
+        [
+          "doi",
+          "10.1109/iccv51070.2023.01394"
+        ]
+      ],
+      "github_url": "https://github.com/muzairkhattak/PromptSRC",
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4390873714",
+      "title": "Prompt-aligned Gradient for Prompt Tuning",
+      "year": 2023,
+      "venue": "IEEE/CVF International Conference on Computer Vision (ICCV)",
+      "venue_tier": "A+",
+      "authors": [
+        "Beier Zhu",
+        "Yulei Niu",
+        "Yucheng Han",
+        "Yue Wu",
+        "Hanwang Zhang"
+      ],
+      "kinds": [],
+      "citation_count": 633,
+      "github_stars": 173,
+      "tldr": "Thanks to the large pre-trained vision-language models (VLMs) like CLIP [37], we can craft a zero-shot classifier by discrete prompt…",
+      "short_abstract": "Thanks to the large pre-trained vision-language models (VLMs) like CLIP [37], we can craft a zero-shot classifier by discrete prompt design, e.g., the confidence score of an image being \"[CLASS]\" can be obtained by using the VLM provided similarity between the image and the prompt sentence \"a photo of a [CLASS]\". Furthermore, prompting shows great potential for fast adaptation of VLMs to downstream tasks if we fine-tune the soft prompts with few samples. However, we find a common failure that improper fine-tuning or learning with extremely few-shot samples may even under-perform the zero-shot prediction. Existing methods still address this problem by using traditional anti-overfitting techniques such as early stopping and data augmentation, which lack a principled solution specific to prompting. In this paper, we present Prompt-aligned Gradient, dubbed ProGrad to prevent prompt tuning from forgetting the general knowledge learned from VLMs. In particular, ProGrad only updates the…",
+      "arxiv_id": "2205.14865",
+      "doi": "10.1109/iccv51070.2023.01435",
+      "is_focus": true,
+      "is_trending": true,
+      "aliases": [
+        [
+          "arxiv",
+          "2205.14865"
+        ],
+        [
+          "doi",
+          "10.1109/iccv51070.2023.01435"
+        ]
+      ],
+      "github_url": "https://github.com/BeierZhu/Prompt-align",
+      "seed_paper_id": "0f6e7c304b32d2ecb035c802e1d505a2ab9a7f23"
+    },
+    {
+      "id": "openalex:W4391451889",
+      "title": "CPT: Colorful Prompt Tuning for pre-trained vision-language models",
+      "year": 2024,
+      "venue": "AI Open",
+      "venue_tier": "preprint",
+      "authors": [
+        "Yuan Yao",
+        "Ao Zhang",
+        "Zhengyan Zhang",
+        "Zhiyuan Liu",
+        "Tat‐Seng Chua"
+      ],
+      "kinds": [],
+      "citation_count": 330,
+      "github_stars": 0,
+      "tldr": "Vision-Language Pre-training (VLP) models have shown promising capabilities in grounding natural language in image data, facilitating a…",
+      "short_abstract": "Vision-Language Pre-training (VLP) models have shown promising capabilities in grounding natural language in image data, facilitating a broad range of cross-modal tasks. However, we note that there exists a significant gap between the objective forms of model pre-training and fine-tuning, resulting in a need for large amounts of labeled data to stimulate the visual grounding capability of VLP models for downstream tasks. To address the challenge, we present Color-based Prompt Tuning (CPT), a novel paradigm for tuning VLP models, which reformulates visual grounding into a fill-in-the-blank problem with color-based co-referential markers in image and text, maximally mitigating the gap. In this way, CPT enables strong few-shot and even zero-shot visual grounding capabilities of VLP models. Comprehensive experimental results show that CPT achieves state-of-the-art performance on zero/few-shot visual grounding (e.g., 75.1 zero-shot accuracy in RefCOCO evaluation), outperforming fine-tuned…",
+      "arxiv_id": "2109.11797",
+      "doi": "10.1016/j.aiopen.2024.01.004",
+      "aliases": [
+        [
+          "arxiv",
+          "2109.11797"
+        ],
+        [
+          "doi",
+          "10.1016/j.aiopen.2024.01.004"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4393118303",
+      "title": "C-TPT: Calibrated Test-Time Prompt Tuning for Vision-Language Models via Text Feature Dispersion",
+      "year": 2024,
+      "venue": "International Conference on Learning Representations",
+      "venue_tier": "A+",
+      "authors": [
+        "Hee Suk Yoon",
+        "Eunseop Yoon",
+        "Joshua Tian Jin Tee",
+        "Mark Hasegawa‐Johnson",
+        "Yingzhen Li"
+      ],
+      "kinds": [],
+      "citation_count": 130,
+      "github_stars": 0,
+      "tldr": "In deep learning, test-time adaptation has gained attention as a method for model fine-tuning without the need for labeled data. A prime…",
+      "short_abstract": "In deep learning, test-time adaptation has gained attention as a method for model fine-tuning without the need for labeled data. A prime exemplification is the recently proposed test-time prompt tuning for large-scale vision-language models such as CLIP. Unfortunately, these prompts have been mainly developed to improve accuracy, overlooking the importance of calibration, which is a crucial aspect for quantifying prediction uncertainty. However, traditional calibration methods rely on substantial amounts of labeled data, making them impractical for test-time scenarios. To this end, this paper explores calibration during test-time prompt tuning by leveraging the inherent properties of CLIP. Through a series of observations, we find that the prompt choice significantly affects the calibration in CLIP, where the prompts leading to higher text feature dispersion result in better-calibrated predictions. Introducing the Average Text Feature Dispersion (ATFD), we establish its relationship…",
+      "arxiv_id": "2403.14119",
+      "doi": "10.48550/arxiv.2403.14119",
+      "aliases": [
+        [
+          "arxiv",
+          "2403.14119"
+        ],
+        [
+          "doi",
+          "10.48550/arxiv.2403.14119"
+        ]
+      ],
+      "citation_count_source": "semantic_scholar",
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4402727025",
+      "title": "DePT: Decoupled Prompt Tuning",
+      "year": 2024,
+      "venue": "IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings",
+      "venue_tier": "A+",
+      "authors": [
+        "Ji Zhang",
+        "Shihan Wu",
+        "Lianli Gao",
+        "Heng Tao Shen",
+        "Jingkuan Song"
+      ],
+      "kinds": [],
+      "citation_count": 144,
+      "github_stars": 106,
+      "tldr": "This work breaks through the Base-New Tradeoff (BNT) dilemma in prompt tuning, i.e., the better the tuned model generalizes to the base…",
+      "short_abstract": "This work breaks through the Base-New Tradeoff (BNT) dilemma in prompt tuning, i.e., the better the tuned model generalizes to the base (or target) task, the worse it generalizes to new tasks, and vice versa. Specifically, through an in-depth analysis of the learned features of the base and new tasks, we observe that the BNT stems from a channel bias issue - the vast majority of feature channels are occupied by base-specific knowledge, leading to the collapse of task-shared knowledge important to new tasks. To address this, we propose the Decoupled Prompt Tuning (DePT) framework, which decouples base-specific knowledge from feature channels into an isolated feature space during prompt tuning, so as to maximally preserve task-shared knowl-edge in the original feature space for achieving better zero-shot generalization on new tasks. Importantly, our DePT is orthogonal to existing prompt tuning approaches, and can enhance them with negligible additional computational cost. Extensive…",
+      "arxiv_id": "2309.07439",
+      "doi": "10.1109/cvpr52733.2024.01228",
+      "aliases": [
+        [
+          "arxiv",
+          "2309.07439"
+        ],
+        [
+          "doi",
+          "10.1109/cvpr52733.2024.01228"
+        ]
+      ],
+      "github_url": "https://github.com/Koorye/DePT",
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4402753597",
+      "title": "TCP: Textual-Based Class-Aware Prompt Tuning for Visual-Language Model",
+      "year": 2024,
+      "venue": "IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings",
+      "venue_tier": "A+",
+      "authors": [
+        "Hantao Yao",
+        "Rui Zhang",
+        "Changsheng Xu"
+      ],
+      "kinds": [],
+      "citation_count": 189,
+      "github_stars": 0,
+      "tldr": "Prompt tuning represents a valuable technique for adapting pre-trained visual-language models (VLM) to various downstream tasks. Recent…",
+      "short_abstract": "Prompt tuning represents a valuable technique for adapting pre-trained visual-language models (VLM) to various downstream tasks. Recent advancements in CoOp-based methods propose a set of learnable domain-shared or image-conditional textual tokens to facilitate the generation of task-specific textual classifiers. However, those textual tokens have a limited generalization ability regarding unseen domains, as they cannot dynamically adjust to the distribution of testing classes. To tackle this issue, we present a novel Textual-based Class-aware Prompt tuning(TCP) that explicitly incorporates prior knowledge about classes to en-hance their discriminability, The critical concept of TCP in-volves leveraging Textual Knowledge Embedding (TKE) to map the high generalizability of class-level textual knowledge into class-aware textual tokens. By seamlessly inte-grating these class-aware prompts into the Text Encoder, a dynamic class-aware classifier is generated to enhance dis-criminability…",
+      "arxiv_id": "2311.18231",
+      "doi": "10.1109/cvpr52733.2024.02212",
+      "aliases": [
+        [
+          "arxiv",
+          "2311.18231"
+        ],
+        [
+          "doi",
+          "10.1109/cvpr52733.2024.02212"
+        ]
+      ],
+      "is_focus": false
+    }
+  ],
+  "edges": [
+    {
+      "src": "openalex:W3139080614",
+      "dst": "openalex:W3205270560",
+      "rel": "contrasts",
+      "relation": "contrasts",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「P-Tuning v2」(2021) は 「GPT understands, too」(2023) と異なる手法を取ると述べている（arXiv HTML（arXiv:2110.07602v3）の本文の引用文から規則で判定）。引用文: \"In this work, all methods except for fine-tuning are conducted with frozen language model backbones, which accords with Lester et al. (2021)’s setting but differs from Liu et al. (2021)’s tuned setting.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "arxiv_html",
+          "kind": "citation-context",
+          "sha256": "6d4c0ca652b787c5aa97ec526eb945a625deaa57102ec5c9a0121d6860652e05"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3139080614",
+      "dst": "openalex:W4309811444",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「PTR」(2022) は 「GPT understands, too」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Moreover, human-picked prompts have achieved promising results on few-class classification tasks such as sentiment classification and natural language inference (Schick and Schütze, 2021; Liu et al., 2021).\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "a20aa3a56f7baa06f2d8eb8ce44244840b3eaccf9a385bfc11c2f0c56d5abf19"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3139080614",
+      "dst": "openalex:W4385573003",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「RLPrompt」(2022) は 「GPT understands, too」(2023) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Human evaluation results (Table 4) show similar conclusions, where our method is competitive with the costly training method DiRR by obtaining slightly lower content and style scores but higher fluency.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "08f984375b8c435a9cf1f741c46a282eb2ce255d85ae4163384092e18d3c8681"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      },
+      "s2_signal": "influential_methodology"
+    },
+    {
+      "src": "openalex:W3152956381",
+      "dst": "openalex:W3139080614",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「GPT understands, too」(2023) は 「The Power of Scale for Paramete…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Lester et al. (2021) showed that with large pretrained models, only tuning continuous prompts with a frozen language model achieves comparable performance to full-model tuning.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "897b4ab20176e87f72879a523b4d0cc43be7248a0dfffa0ac1f2a83bdf0bac25"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3152956381",
+      "dst": "openalex:W3185341429",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.8,
+      "confidence": 0.8,
+      "rationale": "「Pre-train, Prompt, and Predict」(2023) は 「The Power of Scale for Paramete…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "25489c974c0352370ecc7a19da9f8e332de76fbbbb16f4ada67c3ef42d9cfeb5"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3152956381",
+      "dst": "openalex:W3194836374",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「KnowPrompt: Knowledge-aware Prompt-tuning with Synergistic …」(2022) は「The Power of Scale for Parameter-Efficient Prompt Tuning」(2021) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "5486c9715ffb10083376ab284807132581f52c9d2880b5dc9db9438de6d4809e"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3152956381",
+      "dst": "openalex:W3205270560",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「P-Tuning v2」(2021) は 「The Power of Scale for Paramete…」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"While prompt tuning improves over prompting on many tasks (Liu et al., 2021b; Lester et al., 2021), it still underperforms finetuning when the model size is less than 10 billion parameters (Lester et al., 2021).\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "4ed41abba4fcbf5df824a90bbe67f607464e86880549208df2a3c9bca353544b"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      },
+      "s2_signal": "influential_methodology"
+    },
+    {
+      "src": "openalex:W3152956381",
+      "dst": "openalex:W4225747866",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Visual Prompt Tuning」(2022) は 「The Power of Scale for Paramete…」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"In NLP, prompt tuning could benefit from more sophisticated prompt initialization, as shown in [41].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "c853b0df3e7a9a583f402bd59598108ef7f6d4ffba96c6bbed10a72f48b009d7"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      },
+      "s2_signal": "influential_methodology"
+    },
+    {
+      "src": "openalex:W3152956381",
+      "dst": "openalex:W4309811444",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「PTR」(2022) は 「The Power of Scale for Paramete…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Recently, some continuous prompts have also been proposed (Li and Liang, 2021; Lester et al., 2021), which directly use a series of learnable continuous embeddings as prompt templates and get rid of the trouble of designing prompts.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "74e6affd5c2b5986c326489a4d0d9301a166c9ac7d9005e7850c2f8c731f79a9"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3152956381",
+      "dst": "openalex:W4312310776",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Conditional Prompt Learning for…」(2022) は 「The Power of Scale for Paramete…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"These models, also called foundation models [1], have received increasing attention from academia and industry in both the vision and NLP communities because they are so powerful in terms of their capabilities for diverse downstream tasks.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "58c48ae028bd53f303d2946c54e2efc974da66a1d330a341506dfa7835cec235"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      },
+      "s2_signal": "influential_methodology"
+    },
+    {
+      "src": "openalex:W3152956381",
+      "dst": "openalex:W4379470115",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Consistency-guided Prompt Learn…」(2024) は 「The Power of Scale for Paramete…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "7de710bedad5cf3427b8332f1b69b470984d6ceb0796002ad0e5231a0930cf7b"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3152956381",
+      "dst": "openalex:W4385573003",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「RLPrompt」(2022) は 「The Power of Scale for Paramete…」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"For Prompt Tuning (Lester et al., 2021), we replace the Manual Prompt tokens with five soft to-kens in the same positions for fair comparison, and optimize them using Adam optimizer with learning rate 1 × 10 − 2 and batch size 16 for 400 e…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "fe7cc919bbae2844b1fbc8784dac0f672f82ad675271e21eb74e9875ba446c62"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      },
+      "s2_signal": "influential_methodology"
+    },
+    {
+      "src": "openalex:W3152956381",
+      "dst": "openalex:W4386071547",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「MaPLe」(2023) は 「The Power of Scale for Paramete…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Inspired from Natural Language Processing (NLP), these approaches only explore prompt learning for the text encoder in CLIP (Fig.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "f4bef708770d2b558ff63cc2491f171eb1ff00579823ceb9c49c4cb8773890aa"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      },
+      "s2_signal": "influential_methodology"
+    },
+    {
+      "src": "openalex:W3152956381",
+      "dst": "openalex:W4390873714",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.4,
+      "confidence": 0.4,
+      "rationale": "「Prompt-aligned Gradient for Prompt Tuning」(2023) は「The Power of Scale for Parameter-Efficient Prompt Tuning」(2021) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-metadata",
+          "sha256": "f8ac342e22115f3de749c3bafc5b84bd7052010b3545d0cf9dc8be5f5f845c20"
+        },
+        "classification": {
+          "method": "citation_heuristic",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3152956381",
+      "dst": "openalex:W4391451889",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「CPT: Colorful Prompt Tuning for pre-trained vision-language…」(2024) は「The Power of Scale for Parameter-Efficient Prompt Tuning」(2021) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "33b5129bc6645c6620c058928bc896b8fb2225cfb0b82b12ab313623fd11727c"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3152956381",
+      "dst": "openalex:W4393118303",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「C-TPT」(2024) は 「The Power of Scale for Paramete…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Prompt Tuning for CLIP Instead of hand-crafted prompts (i.e., hard prompts), prompt tuning has been adopted in various domains (Lester et al., 2021; Jia et al., 2022; Yoon et al., 2023b;c; Koo et al., 2024), which treat prompts as trainabl…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "869fbd356f2ade5b28cbc035b950dae0cc33cfe8ed0d1602a71e1cfa6fbdad48"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3166846774",
+      "dst": "openalex:W3139080614",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「GPT understands, too」(2023) は 「Learning How to Ask」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Results show that P-Tuning can be effectively combined with existing discrete patterns and achieve further performance improvement. cusing on improving knowledge probing (Qin and Eisner, 2021; Zhong et al., 2021).\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "1532d632ec9da2c8d4d426a03a67abef3563354481ab455e2426f03e02e18b89"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3166846774",
+      "dst": "openalex:W3174770825",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Prefix-Tuning: Optimizing Continuous Prompts for Generation」(2021) は「Learning How to Ask: Querying LMs with Mixtures of Soft Pro…」(2021) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "05ec39af0bea2755cf4b0362549436c3e3eff05ab0787c95a61b969068abe870"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3166846774",
+      "dst": "openalex:W3205270560",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「P-Tuning v2」(2021) は 「Learning How to Ask」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"The most significant improvement originates from using deep prompt tuning, which is to apply continuous prompts for every layer of the pretrained model (Li and Liang, 2021; Qin and Eisner, 2021).\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "2ac215b3fadce8957652e57310c2137f61a3409cb3745ac658f45966c215bb22"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3166846774",
+      "dst": "openalex:W4385573003",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「RLPrompt」(2022) は 「Learning How to Ask」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Soft Prompt Tuning Replacing discrete prompts with continuous embeddings, several parallel works (Qin and Eisner, 2021; Li and Liang, 2021; Liu et al., 2021d) propose to optimize soft prompts with gradient-based tuning.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "c91c225c8cf27144f6c1e95b4f8f377df210f67e59ad3987e5c1c4a447da9794"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3166846774",
+      "dst": "openalex:W4391451889",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「CPT」(2024) は 「Learning How to Ask」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"The problem can potentially be addressed by ensembling templates as in Qin & Eisner (2021), which we leave for future work.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "2b3a89cd0a17bf85bdc07add5f7c56c61a47497a7818d9fac836aa63a938f99e"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3173777717",
+      "dst": "openalex:W3139080614",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「GPT understands, too」(2023) は 「Making Pre-trained Language Mod…」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"For fair comparison, we follow the setting of LM-BFF (Gao et al., 2020) to also conduct experiments on some of the GLUE tasks (Wang et al., 2018) with RoBERTa-Large model (Liu et al., 2019).\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "3d38b3a1379560b306dc2f7da2ae0574031191a4f296bd2d9efac23f6857c06a"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      },
+      "s2_signal": "influential_methodology"
+    },
+    {
+      "src": "openalex:W3173777717",
+      "dst": "openalex:W3194836374",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「KnowPrompt」(2022) は 「Making Pre-trained Language Mod…」(2021) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We conducted 8-, 16-, and 32-shot experiments following LM-BFF [15, 22] to measure the average perfor-\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "daf9f9c63729742e5bc1357aa05e2ded4a6d33e6bb891a4b16c0523f9155775e"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      },
+      "s2_signal": "influential_methodology"
+    },
+    {
+      "src": "openalex:W3173777717",
+      "dst": "openalex:W3205270560",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「P-Tuning v2」(2021) は 「Making Pre-trained Language Mod…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \", 2020), various prompting strategies including discrete natural language prompt (Shin et al., 2020; Gao et al., 2020), continuous prompts (Liu et al.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "9a9c30cb92c2fabf7d4a341d74942d38b5aaf7c89bef7e12cab8f22b39a0dc6e"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3173777717",
+      "dst": "openalex:W4309811444",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「PTR」(2022) は 「Making Pre-trained Language Mod…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Gao et al. (2020) take seq-to-seq models to generate prompt candidates, and then use each of them for prompt tuning and verify their effectiveness on development sets.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "7631eda2e08163b52d78bf5130af628cb5f931db2808083a2c8d7285c1790447"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3173777717",
+      "dst": "openalex:W4312310776",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Conditional Prompt Learning for…」(2022) は 「Making Pre-trained Language Mod…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"These models, also called foundation models [1], have received increasing attention from academia and industry in both the vision and NLP communities because they are so powerful in terms of their capabilities for diverse downstream tasks.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "ee19b504f6f55959936c0ac188005797999b2bdbc68a1fca62f1969f27201c16"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3173777717",
+      "dst": "openalex:W4385573003",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「RLPrompt」(2022) は 「Making Pre-trained Language Mod…」(2021) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Few-Shot Setting Following previous works (Gao et al., 2021; Min et al., 2021; Sun et al., 2022),\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "d7e4f898ca6b65c5f500e73c11e7ab07be0166ac0ae6ce81e8ff3960486e9cdf"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      },
+      "s2_signal": "influential_methodology"
+    },
+    {
+      "src": "openalex:W3173777717",
+      "dst": "openalex:W4390873714",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.4,
+      "confidence": 0.4,
+      "rationale": "「Prompt-aligned Gradient for Prompt Tuning」(2023) は「Making Pre-trained Language Models Better Few-shot Learners」(2021) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-metadata",
+          "sha256": "09a3cdbacc0c432abf78743b43f642bf64a68f85826630e1d68d947d0207f803"
+        },
+        "classification": {
+          "method": "citation_heuristic",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3173777717",
+      "dst": "openalex:W4391451889",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「CPT」(2024) は 「Making Pre-trained Language Mod…」(2021) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"To better approximate the few-shot scenario where only a few labeled instances are available, inspired by Gao et al. (2021), we use a few-shot validation set (consisting of 16 instances) for few-shot and zero-shot experiments, and use full…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "280aec29693bee8bdc9b797b9fad466c298044c9aa0b2b603615b69fc8c6130a"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3174770825",
+      "dst": "openalex:W3139080614",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「GPT understands, too」(2023) は「Prefix-Tuning: Optimizing Continuous Prompts for Generation」(2021) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "5d2eb923234074e07ef01731fd536bb4c3b4a03a8df1894d9acf8c7d0cc0e6bc"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3174770825",
+      "dst": "openalex:W3152956381",
+      "rel": "contrasts",
+      "relation": "contrasts",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「The Power of Scale for Paramete…」(2021) は 「Prefix-Tuning」(2021) と異なる手法を取ると述べている（arXiv HTML（arXiv:2104.08691v2）の本文の引用文から規則で判定）。引用文: \"While this is longer than the default 10-token prefix used by Li and Liang (2021), our method still uses fewer task-specific parameters, as we only tune the input layer, as opposed to overwriting activations in all network layers.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "arxiv_html",
+          "kind": "citation-context",
+          "sha256": "f6ab2366065ad47396f1a1ccd0f906315083c45471efb40bcf8fcd5e2f517305"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3174770825",
+      "dst": "openalex:W3194836374",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「KnowPrompt」(2022) は 「Prefix-Tuning」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "ae31ced91211c3cfda72c5a0adc59896edf69caf57fad8effd5c77430c6ffc9e"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3174770825",
+      "dst": "openalex:W3205270560",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「P-Tuning v2」(2021) は 「Prefix-Tuning」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Prefix-tuning (Li and Liang, 2021) was originally proposed for natural language generation (NLG) tasks, but we find it very effective for NLU as well.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "f49637ab9a545d3d8b4f93900ab3de8ee9afd1d427ca00585d579a1db1779c8d"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      },
+      "s2_signal": "influential_methodology"
+    },
+    {
+      "src": "openalex:W3174770825",
+      "dst": "openalex:W4225747866",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Visual Prompt Tuning」(2022) は 「Prefix-Tuning」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"This result demonstrates the distinctive strength of visual prompting: whereas in NLP, prompt tuning is only able to match full fine-tuning performance under certain circumstances [45].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "067b3e95a1998d9acfdc523e68de251d4a8193d787432d31437a755a166910f4"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      },
+      "s2_signal": "influential_methodology"
+    },
+    {
+      "src": "openalex:W3174770825",
+      "dst": "openalex:W4309811444",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「PTR」(2022) は 「Prefix-Tuning」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "ca38f5a87928d6d69900e2f221a31c08dd37f9bae389b79673d8d40fd0978024"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3174770825",
+      "dst": "openalex:W4312310776",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Conditional Prompt Learning for…」(2022) は 「Prefix-Tuning」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"These models, also called foundation models [1], have received increasing attention from academia and industry in both the vision and NLP communities because they are so powerful in terms of their capabilities for diverse downstream tasks.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "0c001af1ea32d4a2bd5067800c4fb6ca00b48eb79d2d7976b6850462d321430f"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      },
+      "s2_signal": "influential_methodology"
+    },
+    {
+      "src": "openalex:W3174770825",
+      "dst": "openalex:W4379470115",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Consistency-guided Prompt Learn…」(2024) は 「Prefix-Tuning」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "7a666716f4a48758f3babc26519c1bc5b6ce531115fd98b6a2bb5d14f41c6d74"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3174770825",
+      "dst": "openalex:W4385573003",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「RLPrompt」(2022) は 「Prefix-Tuning」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "8141a86cba4b1f4d9ab32d038922668a9cf86560c4e4075ccef914e874c26ccb"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      },
+      "s2_signal": "influential_methodology"
+    },
+    {
+      "src": "openalex:W3174770825",
+      "dst": "openalex:W4386071547",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「MaPLe」(2023) は 「Prefix-Tuning」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Inspired from Natural Language Processing (NLP), these approaches only explore prompt learning for the text encoder in CLIP (Fig.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "b8f5895ee658999fae503701a1a946bdc1aafa568644db70866fb8f1ee243654"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      },
+      "s2_signal": "influential_methodology"
+    },
+    {
+      "src": "openalex:W3174770825",
+      "dst": "openalex:W4391451889",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「CPT」(2024) は 「Prefix-Tuning」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "cffeec3527d5b833b4cbb3cdf28d76978d798a9e0d1c3578f991230764aa2a2a"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3185341429",
+      "dst": "openalex:W3194836374",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「KnowPrompt」(2022) は 「Pre-train, Prompt, and Predict」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"In a nutshell, prompt-tuning involves template engineering and verbalizer engineering, which aims to search for the best template and an answer space [35].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "d23334913e07d845ae1d2d64e67a99c0c1231189f92fdd024f7fef99d54796f2"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3185341429",
+      "dst": "openalex:W3205270560",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「P-Tuning v2: Prompt Tuning Can Be Comparable to Fine-tuning…」(2021) は「Pre-train, Prompt, and Predict: A Systematic Survey of Prom…」(2023) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "bfa9bd6ac4e8a23553528c9795f52fdf1ce2d2acbdf65f8a77888f6f2193556d"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3185341429",
+      "dst": "openalex:W4225747866",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Visual Prompt Tuning」(2022) は 「Pre-train, Prompt, and Predict」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"This result demonstrates the distinctive strength of visual prompting: whereas in NLP, prompt tuning is only able to match full fine-tuning performance under certain circumstances [45].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "e73416893137ac98ec6fa14b313bc0d8d85a5779fe62780dd1cea974af73f0d0"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      },
+      "s2_signal": "influential_methodology"
+    },
+    {
+      "src": "openalex:W3185341429",
+      "dst": "openalex:W4309811444",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「PTR: Prompt Tuning with Rules for Text Classification」(2022) は「Pre-train, Prompt, and Predict: A Systematic Survey of Prom…」(2023) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "4cd8d800616717098f892212597f1dc717e2d455265b4f1df5771e80ee5393f5"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3185341429",
+      "dst": "openalex:W4312310776",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Conditional Prompt Learning for…」(2022) は 「Pre-train, Prompt, and Predict」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "124548011a4e903fd2b97f30847c468d434b86c69d38489093d5f3ec92c4ebd4"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3185341429",
+      "dst": "openalex:W4386065763",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Visual-Language Prompt Tuning with Knowledge-Guided Context…」(2023) は「Pre-train, Prompt, and Predict: A Systematic Survey of Prom…」(2023) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "d8453b5ef5b95d441884e919ce250b720b20cf4f798fb7264389de546ee82a04"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3185341429",
+      "dst": "openalex:W4391451889",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「CPT」(2024) は 「Pre-train, Prompt, and Predict」(2023) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"In this work, inspired by recent progress in pre-trained language models in natural language processing (Brown et al., 2020; Schick & Sch¨utze, 2021a; Liu et al., 2021), we present Cross-modal Prompt Tuning (CPT, alternatively, Colorful Pr…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "543f8598614babb0e19eb64628dbe16536d1868755b76551d40c52f97242ede4"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3194836374",
+      "dst": "openalex:W3139080614",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「GPT understands, too」(2023) は「KnowPrompt: Knowledge-aware Prompt-tuning with Synergistic …」(2022) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "4e4d47b9c39398b003765dd3224f8000a62f94ad54f2e4870e05e8cf36d11385"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3194836374",
+      "dst": "openalex:W3205270560",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「P-Tuning v2: Prompt Tuning Can Be Comparable to Fine-tuning…」(2021) は「KnowPrompt: Knowledge-aware Prompt-tuning with Synergistic …」(2022) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "ac2831d174525ce061dcfb7a10efa00ddf2d72268945ec00cba63761a829002b"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3205270560",
+      "dst": "openalex:W4379470115",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Consistency-guided Prompt Learn…」(2024) は 「P-Tuning v2」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "8e954eb1c7db6846bed4392750572fa59f1446996213f37018fd7b9e1eaf38b6"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3205270560",
+      "dst": "openalex:W4385573003",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「RLPrompt」(2022) は 「P-Tuning v2」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Human evaluation results (Table 4) show similar conclusions, where our method is competitive with the costly training method DiRR by obtaining slightly lower content and style scores but higher fluency.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "60b3344593e41c1ac91162eec870b27d3acf9436b113362a4053c9aa7d59a81e"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      },
+      "s2_signal": "influential_methodology"
+    },
+    {
+      "src": "openalex:W3205270560",
+      "dst": "openalex:W4386071547",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「MaPLe」(2023) は 「P-Tuning v2」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Inspired from Natural Language Processing (NLP), these approaches only explore prompt learning for the text encoder in CLIP (Fig.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "4c2990be554de44f5fdb1691cdbf6e18f28c636533b6657d41e90e4a2aba5ccc"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      },
+      "s2_signal": "influential_methodology"
+    },
+    {
+      "src": "openalex:W4225747866",
+      "dst": "openalex:W4386065763",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Visual-Language Prompt Tuning with Knowledge-Guided Context…」(2023) は「Visual Prompt Tuning」(2022) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "36b643d79f106529b99ccf8a54602843a4e820380217a3b60c784b282e86f31d"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4225747866",
+      "dst": "openalex:W4386071547",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「MaPLe」(2023) は 「Visual Prompt Tuning」(2022) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Similar to [16] our design also uses deep ‘vision’ prompting.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "f7d876d64a0229ec1e1627b1ee20404c289f35c8de134bccc3ba98c284d31759"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      },
+      "s2_signal": "influential_methodology"
+    },
+    {
+      "src": "openalex:W4225747866",
+      "dst": "openalex:W4390872773",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Self-regulating Prompts」(2023) は 「Visual Prompt Tuning」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "735c51d60ad0e92666af0d121af4eb61f07834de6c3c9dc199744433f663c18a"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4225747866",
+      "dst": "openalex:W4391451889",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「CPT: Colorful Prompt Tuning for pre-trained vision-language…」(2024) は「Visual Prompt Tuning」(2022) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "c573e15c8e75636430e6d0089fc3ac797c2da8fdd8d36c264f9b170f3f670a3f"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4225747866",
+      "dst": "openalex:W4393118303",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「C-TPT」(2024) は 「Visual Prompt Tuning」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Prompt Tuning for CLIP Instead of hand-crafted prompts (i.e., hard prompts), prompt tuning has been adopted in various domains (Lester et al., 2021; Jia et al., 2022; Yoon et al., 2023b;c; Koo et al., 2024), which treat prompts as trainabl…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "5a43ff05c2585ec4f78a9205aff96e3dc6a2a7a7c943e2d2980af93ffb6b08f0"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4225747866",
+      "dst": "openalex:W4402727025",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「DePT」(2024) は 「Visual Prompt Tuning」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "d96ca35b1fed053758a259c4322dbf5697235679c9528437b1a4c585340e10b3"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4309811444",
+      "dst": "openalex:W3194836374",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「KnowPrompt」(2022) は 「PTR」(2022) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We conducted 8-, 16-, and 32-shot experiments following LM-BFF [15, 22] to measure the average performance across five different randomly sampled data based on every experiment using a fixed set of seeds Sseed.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "0b6a805d53169efed2a983d904a89caa7ab9b28079659e7aa005229e2f31d22b"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4309811444",
+      "dst": "openalex:W3205270560",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「P-Tuning v2」(2021) は 「PTR」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \", 2021), relation extraction (Han et al., 2021), entity typing (Ding et al.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "00aedeb7d448421079d0946ab525119bd04ea6bcf87f25337a7aac77df72f2e9"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4312310776",
+      "dst": "openalex:W4379470115",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Consistency-guided Prompt Learn…」(2024) は 「Conditional Prompt Learning for…」(2022) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Table 2 presents a detailed comparison of our method with CLIP [1], CoOp [2], CoCoOp [3], ProGrad [15], KgCoOp [18], and MaPLe [6].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "77e70cc3fabb6d5fd222f3e0f4c768cc4887a2a5e9a8a65a4183f13900d226e7"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      },
+      "s2_signal": "influential_methodology"
+    },
+    {
+      "src": "openalex:W4312310776",
+      "dst": "openalex:W4385573003",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「RLPrompt」(2022) は 「Conditional Prompt Learning for…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \", 2022), or from modalities such as image (Mokady et al., 2021; Zhou et al., 2022), structured data (Li and Liang, 2021; An et al.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "415a23648b655ed62c26469f12ee31ed2f645ca1a2f50a3c50157187d3b66e57"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4312310776",
+      "dst": "openalex:W4386065763",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Visual-Language Prompt Tuning with Knowledge-Guided Context…」(2023) は「Conditional Prompt Learning for Vision-Language Models」(2022) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "3a620b6ec42e673fd327786ea9ba882c2539212d80e80a8d47d41b66e8c39639"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4312310776",
+      "dst": "openalex:W4386071547",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「MaPLe: Multi-modal Prompt Learning」(2023) は「Conditional Prompt Learning for Vision-Language Models」(2022) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "4aedd8012d431158f5e21f7ddb4531730a077ecfa8e73e135d90a1372bb929bf"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4312310776",
+      "dst": "openalex:W4390872773",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Self-regulating Prompts」(2023) は 「Conditional Prompt Learning for…」(2022) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"In comparison to CoCoOp and ProDA, PromptSRC shows gains on the 10/11 datasets respectively.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "958fa0da6c83fc89e0f340bfdad511a529a0ae7bb446ce67b09a9b7cd6d631b8"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      },
+      "s2_signal": "influential_methodology"
+    },
+    {
+      "src": "openalex:W4312310776",
+      "dst": "openalex:W4390873714",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.4,
+      "confidence": 0.4,
+      "rationale": "「Prompt-aligned Gradient for Prompt Tuning」(2023) は「Conditional Prompt Learning for Vision-Language Models」(2022) を引用している（引用関係と年代のみからの推定で、関係の種類は未分類）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-metadata",
+          "sha256": "1685918d975e9c1ca8c1d36698ea483d72d4c33b7f5a84fbb804eccec058b45b"
+        },
+        "classification": {
+          "method": "citation_heuristic",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4312310776",
+      "dst": "openalex:W4391451889",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「CPT: Colorful Prompt Tuning for pre-trained vision-language…」(2024) は「Conditional Prompt Learning for Vision-Language Models」(2022) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "bac76213f44ba0f98e730ad015067bf3df1993a7d375fbba7cbe1b6216ddf563"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4312310776",
+      "dst": "openalex:W4393118303",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「C-TPT」(2024) は 「Conditional Prompt Learning for…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"However, CoCoOp (Zhou et al., 2022b) identifies that CoOp struggles with generalizing to out-of-distribution data and recommends conditioning the prompt on input images.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "1f7076f3ee471b8d3d912482b6eea91060016a8782facb49f904444b24589b48"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      },
+      "s2_signal": "influential_methodology"
+    },
+    {
+      "src": "openalex:W4312310776",
+      "dst": "openalex:W4402727025",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「DePT」(2024) は 「Conditional Prompt Learning for…」(2022) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We evaluate our DePT using a broad spectrum of baseline meth-ods, including the visual prompt tuning method VPT [21], textual prompt tuning methods CoOp [58], CoCoOp [57] and KgCoOp [49], and multi-model prompt tuning meth-ods MaPLe [25], …\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "fae85df2851615fa0c6c368e7801a5324b30e2610cd1ce846599f33496fb12b4"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      },
+      "s2_signal": "influential_methodology"
+    },
+    {
+      "src": "openalex:W4312310776",
+      "dst": "openalex:W4402753597",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「TCP: Textual-Based Class-Aware Prompt Tuning for Visual-Lan…」(2024) は「Conditional Prompt Learning for Vision-Language Models」(2022) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "9e3f7cbe7f91edca7520997931f4ecc4f010d950abb81fe18134b734cdc3244f"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4386065763",
+      "dst": "openalex:W4379470115",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Consistency-guided Prompt Learn…」(2024) は 「Visual-Language Prompt Tuning w…」(2023) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Table 2 presents a detailed comparison of our method with CLIP [1], CoOp [2], CoCoOp [3], ProGrad [15], KgCoOp [18], and MaPLe [6].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "3bc3cec381876173c0abd681b9fc1e1ac5ef344cf15b9bfa560f45045d4bbf05"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4386065763",
+      "dst": "openalex:W4393118303",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「C-TPT」(2024) は 「Visual-Language Prompt Tuning w…」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "c7115694f2bb619774127f06698d26b69920db7863975837fbc7c561990042b0"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4386065763",
+      "dst": "openalex:W4402727025",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「DePT: Decoupled Prompt Tuning」(2024) は「Visual-Language Prompt Tuning with Knowledge-Guided Context…」(2023) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "095468863e6deaaa60721b19928c23471091c0956c7d80304aa79a6c21b62334"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4386065763",
+      "dst": "openalex:W4402753597",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「TCP: Textual-Based Class-Aware Prompt Tuning for Visual-Lan…」(2024) は「Visual-Language Prompt Tuning with Knowledge-Guided Context…」(2023) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "c4f02ad177c2d98e2f0ae4a67a1ed4fc8ca896eb51d010af04374dac58e4998c"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4386071547",
+      "dst": "openalex:W4379470115",
+      "rel": "contrasts",
+      "relation": "contrasts",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「Consistency-guided Prompt Learn…」(2024) は 「MaPLe」(2023) と異なる手法を取ると述べている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"While previous works like MaPLe [6] have shown the best results with 9 prompt layers, we observe that adding prompts on all 12 layers of the encoder leads to the best accuracy.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "4e3fc50258a7bf4fc7f397daf32ca6f2b1858d678bb6457fa420703d66920020"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4386071547",
+      "dst": "openalex:W4390872773",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「Self-regulating Prompts」(2023) は 「MaPLe」(2023) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Unlike prior prompting approaches that improve generalization mainly from the model architecture perspective [58, 22], we motivate our work from the regularization perspective.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "a94516cbf5617460dfb64ce2e1ffb3f2e38bd0c5f3d62940c165d26f82034956"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      },
+      "s2_signal": "influential_methodology"
+    },
+    {
+      "src": "openalex:W4386071547",
+      "dst": "openalex:W4402727025",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「DePT」(2024) は 「MaPLe」(2023) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We evaluate DePT using a broad spectrum of baseline methods, including the single-modal prompt tuning methods CoOp [44], CoCoOp [43] and KgCoOp [37], and the multi-model prompt tuning method MaPLe [19].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "1a54172dd48f910332d48addd90e4eb58ae165cf2edac47c3ce04b699dc13023"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      },
+      "s2_signal": "influential_methodology"
+    },
+    {
+      "src": "openalex:W4386071547",
+      "dst": "openalex:W4402753597",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「TCP: Textual-Based Class-Aware Prompt Tuning for Visual-Lan…」(2024) は「MaPLe: Multi-modal Prompt Learning」(2023) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "b165a16c32e07f1a47a744e7e3d27d1c573fdaa0ec1e4dd4bb53ee1532bee3c4"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4390872773",
+      "dst": "openalex:W4379470115",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Consistency-guided Prompt Learn…」(2024) は 「Self-regulating Prompts」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"( 2 ) Our method incorporates the knowledge of a pre-trained LLM with consistency constraints on the text branch and data augmentations on the image branch to improve the generalization further.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "69df0db6cce974ce6aaf4a74cfdc9d7e4ee637158b277d9b07bb1f0511ec9639"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4390872773",
+      "dst": "openalex:W4402727025",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「DePT: Decoupled Prompt Tuning」(2024) は「Self-regulating Prompts: Foundational Model Adaptation with…」(2023) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "eb9bfbff15c107c0f2c7897d7ef8247ea578aba184862d5ed382ea0a6f91632e"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4390872773",
+      "dst": "openalex:W4402753597",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「TCP: Textual-Based Class-Aware Prompt Tuning for Visual-Lan…」(2024) は「Self-regulating Prompts: Foundational Model Adaptation with…」(2023) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "55141aac2850d6940ef25ad387e26277e8db3e34fe2d5448ef7729bbf6c2c7a1"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4390873714",
+      "dst": "openalex:W4379470115",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Consistency-guided Prompt Learn…」(2024) は 「Prompt-aligned Gradient for Pro…」(2023) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Table 2 presents a detailed comparison of our method with CLIP [1], CoOp [2], CoCoOp [3], ProGrad [15], KgCoOp [18], and MaPLe [6].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "5d09df79b7f9eb34533fde19ad26bca99957780cfc3a20b337da69633c8813ad"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4390873714",
+      "dst": "openalex:W4386065763",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Visual-Language Prompt Tuning with Knowledge-Guided Context…」(2023) は「Prompt-aligned Gradient for Prompt Tuning」(2023) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "1fbf195e16a6ea33025d89da7f135d6d89bc70eded44477586b6817d3081cd37"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4390873714",
+      "dst": "openalex:W4386071547",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「MaPLe: Multi-modal Prompt Learning」(2023) は「Prompt-aligned Gradient for Prompt Tuning」(2023) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "8ea90cd026abdbd2f5f09ad26660830f6e0d82ddb65c641e89c4bdf582e3d96b"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4390873714",
+      "dst": "openalex:W4390872773",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Self-regulating Prompts: Foundational Model Adaptation with…」(2023) は「Prompt-aligned Gradient for Prompt Tuning」(2023) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "a0ee048aaa58d187a8347470d49bb87288bc1d6986f16ec8d38bbdb1de149972"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4390873714",
+      "dst": "openalex:W4391451889",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「CPT: Colorful Prompt Tuning for pre-trained vision-language…」(2024) は「Prompt-aligned Gradient for Prompt Tuning」(2023) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "80a8175c0eefd34aa5fd148a99a0f903e66c410bccb21842ac3105a7993214e6"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4390873714",
+      "dst": "openalex:W4402727025",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「DePT」(2024) は 「Prompt-aligned Gradient for Pro…」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"ProGrad [59] mitigates the overfitting issue by regularizing each tuning step that is not to conflict with the general knowledge of the hand-crafted prompt.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "b6ab481a9cea6a48ef31213f9899800b8ce170a9fd909b2c741c918aa3b6cfb9"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      },
+      "s2_signal": "influential_methodology"
+    },
+    {
+      "src": "openalex:W4390873714",
+      "dst": "openalex:W4402753597",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「TCP: Textual-Based Class-Aware Prompt Tuning for Visual-Lan…」(2024) は「Prompt-aligned Gradient for Prompt Tuning」(2023) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "a9a8bda654e8e1baa1baf65465a8a9e1184e7b324ce9c6ed6231a60f24a13b63"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4391451889",
+      "dst": "openalex:W4386065763",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Visual-Language Prompt Tuning w…」(2023) は 「CPT」(2024) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "a36b240c20cf5aaaf99b93abb057719170ff6ea0be0d7ed7da6b790e19306916"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4391451889",
+      "dst": "openalex:W4386071547",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「MaPLe」(2023) は 「CPT」(2024) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "910f8b28f40dbc6444fcdc7a9c80b9f212d0e3543afd284a5130bf302e252b50"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4402727025",
+      "dst": "openalex:W4402753597",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「TCP: Textual-Based Class-Aware Prompt Tuning for Visual-Lan…」(2024) は「DePT: Decoupled Prompt Tuning」(2024) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "54078b558d60b68f434a57ffb11acb8450345ac512b92f59561b4c947c695577"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    }
+  ],
+  "clusters": [],
+  "meta": {
+    "kind": "theme",
+    "generator": "paperpilot.scripts.build_theme_lineage",
+    "source": "build_theme_lineage.py",
+    "theme": "Prompt Tuning",
+    "slug": "prompt-tuning",
+    "keywords": [
+      "Prompt Tuning"
+    ],
+    "seeds": [
+      "openalex:W3152956381",
+      "openalex:W4225747866",
+      "openalex:W3205270560",
+      "openalex:W4390873714",
+      "openalex:W4386065763"
+    ],
+    "depth": 1,
+    "since_year": 2018,
+    "generated_at": "2026-11-23T07:36:10.449000Z",
+    "provenance_breakdown": {
+      "s2_context_rule": 62,
+      "api_citation": 26,
+      "citation_heuristic": 3
+    },
+    "completeness": {
+      "complete": true,
+      "expansions_attempted": 16,
+      "expansions_failed": 0,
+      "supplement_failures": []
+    },
+    "topic_gate": {
+      "method": "embedding+terms",
+      "model": "Xenova/bge-small-en-v1.5",
+      "revision": "ea104dacec62c0de699686887e3f920caeb4f3e3",
+      "thresholds": {
+        "z_lo": 0,
+        "z_hi": 1
+      },
+      "pool_size": 160
+    },
+    "seed_scope": {
+      "subfield": "Artificial Intelligence",
+      "excluded_surveys": [],
+      "excluded_canonical": 0
+    },
+    "lineage_llm": "off"
+  }
+}
