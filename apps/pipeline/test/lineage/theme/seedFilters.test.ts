@@ -170,6 +170,73 @@ describe("filterOffTopicRefs (LIN-32)", () => {
     expect(kept.map((r) => r.paperId)).toEqual(["foundational"]);
   });
 
+  it("#557: the core papers of published themes survive the ceiling (title list), others do not", () => {
+    const core = [
+      "Mamba: Linear-Time Sequence Modeling with Selective State Spaces",
+      "Training Language Models to Follow Instructions with Human Feedback",
+      "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+      "Leveraging Passage Retrieval with Generative Models for Open Domain Question Answering",
+      "Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection",
+      "Fast Inference from Transformers via Speculative Decoding",
+      "Accelerating Large Language Model Decoding with Speculative Sampling",
+      "Accelerating LLM Decoding with Speculative Sampling",
+      "Medusa: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads",
+    ];
+    const refs = [
+      ...core.map((title, i) => ({ paperId: `core${i}`, citationCount: 100_000, title })),
+      { paperId: "other", citationCount: 100_000, title: "Attention Is All You Need" },
+      {
+        paperId: "similar",
+        citationCount: 100_000,
+        title: "Accelerating LLM Inference with Staged Speculative Decoding",
+      },
+    ];
+    const kept = filterOffTopicRefs(refs, { maxSeedCite: 1000 }).map((r) => r.paperId);
+    expect(kept).toEqual(core.map((_, i) => `core${i}`));
+  });
+
+  it("#557: Unicode hyphen variants of the exempt titles still match", () => {
+    const refs = [
+      {
+        paperId: "u1",
+        citationCount: 100_000,
+        title: "Retrieval\u2010Augmented Generation for Knowledge\u2010Intensive NLP Tasks",
+      },
+      {
+        paperId: "u2",
+        citationCount: 100_000,
+        title: "Mamba: Linear\u2011Time Sequence Modeling with Selective State Spaces",
+      },
+    ];
+    expect(filterOffTopicRefs(refs, { maxSeedCite: 1000 }).map((r) => r.paperId)).toEqual([
+      "u1",
+      "u2",
+    ]);
+  });
+
+  it("#557: the denylist still wins over the exemption", () => {
+    const refs = [
+      {
+        paperId: "a6cb366736791bcccc5c8639de5a8f9636bf87e8",
+        citationCount: 100_000,
+        title: "Mamba: Linear-Time Sequence Modeling with Selective State Spaces",
+      },
+    ];
+    expect(filterOffTopicRefs(refs, { maxSeedCite: 1000 })).toEqual([]);
+  });
+
+  it("#557: the exempt list is off when the file is unreadable", () => {
+    const refs = [
+      { paperId: "x", citationCount: 100_000, title: "Mamba: Linear-Time Sequence Modeling" },
+    ];
+    expect(
+      filterOffTopicRefs(refs, {
+        maxSeedCite: 1000,
+        ceilingExemptPath: "/nonexistent/exempt.json",
+      }),
+    ).toEqual([]);
+  });
+
   it("the denylist check is unconditional, even with a methodology intent", () => {
     const refs = [
       {

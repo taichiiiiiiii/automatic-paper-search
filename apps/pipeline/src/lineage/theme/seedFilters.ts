@@ -13,6 +13,7 @@
  */
 
 import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { getRepoRoot } from "@paperpilot/core";
 import {
   denylist as denylistPathFor,
@@ -179,14 +180,44 @@ export function filterDenylistedSeeds<T extends ThemeSeedLike>(
  * unless it carries a "methodology" S2 intent. */
 const OFF_TOPIC_CITE_MULTIPLIER = 2.0;
 
+const CEILING_EXEMPT_PATH = join(getRepoRoot(), "data", "config", "lineage_ceiling_exempt.json");
+let cachedCeilingExempt: { path: string; patterns: RegExp[] } | undefined;
+
+/** #557: compiled title patterns of core papers exempt from the ceiling. */
+export function loadCeilingExemptPatterns(path: string = CEILING_EXEMPT_PATH): RegExp[] {
+  if (cachedCeilingExempt?.path === path) return cachedCeilingExempt.patterns;
+  let patterns: RegExp[] = [];
+  try {
+    const data = JSON.parse(readFileSync(path, "utf-8")) as { title_patterns?: unknown };
+    if (Array.isArray(data.title_patterns)) {
+      patterns = data.title_patterns
+        .filter((p): p is string => typeof p === "string" && p.trim().length > 0)
+        .flatMap((p) => {
+          try {
+            return [new RegExp(p, "i")];
+          } catch {
+            return [];
+          }
+        });
+    }
+  } catch {
+    patterns = [];
+  }
+  cachedCeilingExempt = { path, patterns };
+  return patterns;
+}
+
 /** Drop BFS reference candidates (parents or children) whose
  * citationCount is wildly above the theme's max-cited seed AND that
- * lack a methodology intent. The denylist check is unconditional. */
+ * lack a methodology intent. The denylist check is unconditional.
+ * #557: a paper whose title matches `lineage_ceiling_exempt.json` is kept
+ * even above the ceiling (only the ceiling is skipped). */
 export function filterOffTopicRefs<T extends ThemeSeedLike>(
   refs: readonly T[],
-  options: { maxSeedCite: number; denylistPath?: string },
+  options: { maxSeedCite: number; denylistPath?: string; ceilingExemptPath?: string },
 ): T[] {
   const { maxSeedCite, denylistPath } = options;
+  const exempt = loadCeilingExemptPatterns(options.ceilingExemptPath);
   const ceiling = maxSeedCite > 0 ? maxSeedCite * OFF_TOPIC_CITE_MULTIPLIER : null;
   const kept: T[] = [];
   for (const p of refs) {
@@ -201,7 +232,12 @@ export function filterOffTopicRefs<T extends ThemeSeedLike>(
         .filter((i): i is string => typeof i === "string")
         .map((i) => i.toLowerCase()),
     );
-    if (intents.has("methodology")) kept.push(p);
+    if (intents.has("methodology")) {
+      kept.push(p);
+      continue;
+    }
+    const title = typeof p.title === "string" ? p.title.trim() : "";
+    if (title && exempt.some((re) => re.test(title))) kept.push(p);
   }
   return kept;
 }
