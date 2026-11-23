@@ -35,6 +35,7 @@ import { toThemeNode } from "./node.js";
 import { classifyWithoutLlm } from "./noLlmRelation.js";
 import type { ThemePaper } from "./openalexWork.js";
 import { guardRelation } from "./relationGuard.js";
+import { hasGateText } from "./s2AbstractFallback.js";
 import type { S2Expansion } from "./s2Expansion.js";
 import {
   deriveS2Relation,
@@ -185,6 +186,10 @@ export interface RunBfsOptions {
    * lookup answered (see {@link classifyPair}) instead of year/citation
    * guesses. `false`/omitted = the LLM-mode / legacy behaviour. */
   apiCitations?: boolean;
+  /** #560: fills `_gate_abstract` (Semantic Scholar) on candidates that
+   * have no abstract; used only by the admission filters / topic gate.
+   * `null`/omitted = such candidates are dropped as before. */
+  abstractFallback?: ((papers: Paper[]) => Promise<void>) | null;
 }
 
 /** Counts LLM calls / unusable answers around a provider. */
@@ -393,7 +398,7 @@ export async function runBfsAndDescendants(
   const counter = llmCounter(provider, options.apiCitations ?? false);
   const expansion = options.s2Expansion ?? null;
   /** `fetchRelated`, with the R2-14 S2 fallback when configured. */
-  const related = (
+  const relatedRaw = (
     paper: Paper,
     kind: "references" | "citations",
     limit: number,
@@ -408,6 +413,18 @@ export async function runBfsAndDescendants(
           (l) => fetchRelated(paper.paperId, kind, limit, deps, l),
           ledger,
         );
+  const abstractFallback = options.abstractFallback ?? null;
+  /** `relatedRaw`, then the #560 abstract fallback for candidates without one. */
+  const related = async (
+    paper: Paper,
+    kind: "references" | "citations",
+    limit: number,
+    ledger: BuildCompletenessForExpansion | null | undefined,
+  ): Promise<Paper[]> => {
+    const got = await relatedRaw(paper, kind, limit, ledger);
+    if (abstractFallback !== null) await abstractFallback(got.filter((p) => !hasGateText(p)));
+    return got;
+  };
 
   const nodes = new Map<string, ThemeGraphNode>();
   const edges: ThemeEdge[] = [];
@@ -446,7 +463,7 @@ export async function runBfsAndDescendants(
           try {
             // No completeness ledger here: the BFS call below records it.
             const got = await related(seed, kind, limit, null);
-            pool.push(...got.filter((p) => p.abstract));
+            pool.push(...got.filter((p) => hasGateText(p)));
           } catch {
             // The BFS fetch below retries and records the failure.
           }
@@ -602,7 +619,7 @@ export async function runBfsAndDescendants(
     if (currentDepth >= depth) continue;
 
     let allParents = await related(current, "references", width * 4, completeness);
-    allParents = allParents.filter((p) => p.abstract);
+    allParents = allParents.filter((p) => hasGateText(p));
     allParents = filterOffTopicRefs(allParents, { maxSeedCite });
     allParents = canonicalise(allParents, current.paperId);
     if (relevance !== null) await relevance.ensure(allParents);
@@ -658,7 +675,7 @@ export async function runBfsAndDescendants(
   for (const seed of seeds) {
     const sid = seed.paperId;
     let allChildren = await related(seed, "citations", descWidth * 4, completeness);
-    allChildren = allChildren.filter((c) => c.abstract);
+    allChildren = allChildren.filter((c) => hasGateText(c));
     allChildren = filterOffTopicRefs(allChildren, { maxSeedCite });
     allChildren = canonicalise(allChildren, sid);
     if (relevance !== null) await relevance.ensure(allChildren);

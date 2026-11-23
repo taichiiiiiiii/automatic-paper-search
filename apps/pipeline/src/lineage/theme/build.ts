@@ -99,6 +99,7 @@ import {
   type DblpYearEntry,
   mergeSuspects,
 } from "./recordChronology.js";
+import { type S2AbstractStats, supplementAbstracts } from "./s2AbstractFallback.js";
 import { applyS2CitationCounts } from "./s2CitationCounts.js";
 import { S2CitationSource } from "./s2Citations.js";
 import { S2Expansion, type S2ExpansionOptions } from "./s2Expansion.js";
@@ -794,6 +795,35 @@ export async function buildThemeLineage(
 
   const maxSeedCite = seeds.reduce((max, s) => Math.max(max, Number(s.citationCount) || 0), 0);
 
+  // #560: S2 abstracts for candidates OpenAlex has none for -- gate only,
+  // keyed runs only (keyless S2 would just burn the 429 budget).
+  const s2AbstractKey = deps.s2Citations?.apiKey ?? null;
+  const abstractStats: S2AbstractStats = {
+    asked: 0,
+    filled: 0,
+    titleMismatch: 0,
+    notFound: 0,
+    failedChunks: 0,
+  };
+  const abstractTried = new Set<string>();
+  const abstractFallback =
+    s2Source !== null && s2AbstractKey
+      ? async (papers: ThemePaper[]): Promise<void> => {
+          await supplementAbstracts(
+            papers,
+            {
+              fetchImpl: deps.s2Citations?.fetchImpl ?? deps.fetchImpl,
+              sleep: deps.sleep,
+              pace: () => s2Source.pace(),
+              apiKey: s2AbstractKey,
+              logger,
+            },
+            abstractTried,
+            abstractStats,
+          );
+        }
+      : null;
+
   const bfsResult = await runBfsAndDescendants(
     seeds,
     // Python's `_run_bfs_and_descendants` stamps `datetime.now(timezone.utc).year`
@@ -812,11 +842,18 @@ export async function buildThemeLineage(
       topicEmbedder: topicEmbedding ? (deps.topicEmbedder ?? null) : null,
       s2Expansion,
       apiCitations: noLlm,
+      abstractFallback,
     },
     netDeps,
     completeness,
   );
   if (s2Expansion !== null) logger.info?.(s2Expansion.summary());
+  if (abstractFallback !== null) {
+    logger.info?.(
+      `s2 abstract fallback (gate only): asked=${abstractStats.asked} filled=${abstractStats.filled} ` +
+        `title-mismatch=${abstractStats.titleMismatch} not-found=${abstractStats.notFound} failed-chunks=${abstractStats.failedChunks}`,
+    );
+  }
   let nodes = bfsResult.nodes;
   let edges: ThemeEdge[] = bfsResult.edges;
   let seedIds = bfsResult.seedIds;

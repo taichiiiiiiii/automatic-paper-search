@@ -65,9 +65,19 @@ export interface TopicGateMeta {
 
 /** Paper text that is embedded: title + the first 1500 characters of the
  * abstract (same as the doc 42 evaluation). */
-export function paperEmbeddingText(p: { title?: unknown; abstract?: unknown }): string {
+export function paperEmbeddingText(p: {
+  title?: unknown;
+  abstract?: unknown;
+  _gate_abstract?: unknown;
+}): string {
   const title = typeof p.title === "string" ? p.title : "";
-  const abstract = typeof p.abstract === "string" ? p.abstract : "";
+  // #560: the Semantic Scholar fallback abstract stands in for a missing one.
+  const abstract =
+    typeof p.abstract === "string" && p.abstract
+      ? p.abstract
+      : typeof p._gate_abstract === "string"
+        ? p._gate_abstract
+        : "";
   return `${title}. ${abstract.slice(0, 1500)}`;
 }
 
