@@ -1,0 +1,13 @@
+{
+  "_doc": "#557: title patterns of papers that are THE core papers of a published theme. They are exempt from the BFS off-topic citation ceiling (seed max cites x 2, seedFilters.ts filterOffTopicRefs): when OpenAlex's citation counts rise, these would otherwise fall out of a rebuild (Mamba did on 2026-11-22). Only the ceiling is skipped; the denylist, the topic gate and every other filter still apply, and no edge is forced (unlike lineage_foundational_allowlist.json). Add a pattern only for a paper that is central to a published theme.",
+  "title_patterns": [
+    "^Training\\s+Language\\s+Models\\s+to\\s+Follow\\s+Instructions\\s+with\\s+Human\\s+Feedback",
+    "^Retrieval-Augmented\\s+Generation\\s+for\\s+Knowledge-Intensive\\s+NLP\\s+Tasks",
+    "^Leveraging\\s+Passage\\s+Retrieval\\s+with\\s+Generative\\s+Models",
+    "^Self-RAG:\\s+Learning\\s+to\\s+Retrieve",
+    "^Fast\\s+Inference\\s+from\\s+Transformers\\s+via\\s+Speculative\\s+Decoding",
+    "^Accelerating\\s+(Large\\s+Language\\s+Model|LLM)\\s+Decoding\\s+with\\s+Speculative\\s+Sampling",
+    "^Medusa:\\s+Simple\\s+LLM\\s+Inference\\s+Acceleration",
+    "^Mamba:\\s+Linear-Time\\s+Sequence\\s+Modeling"
+  ]
+}

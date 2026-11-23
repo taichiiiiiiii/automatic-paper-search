@@ -6,6 +6,10 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Fixed — 分野の中心論文が引用数の上限で作り直し時に落ちる（#557）
+
+- BFS の「引用数の上限（seed 最大×2）」から、公開中テーマの中心論文 8 件（InstructGPT、RAG 原論文、FiD、Self-RAG、Speculative Decoding の 3 本、Mamba）を外す。題名の一覧は `data/config/lineage_ceiling_exempt.json`。上限だけを外し、denylist・話題の判定・ほかの絞り込みは今まで通り。基礎文献リストと違い、辺は強制しない。
+
 ### Changed — S2 のキーあり間隔を 1.25 秒に（#555）
 
 - API キーの上限は 1 秒に 1 回（全エンドポイント合計）。間隔が 1.0 秒ちょうどだと揺らぎで 429 になるため、余裕を持たせる。
