@@ -14,8 +14,10 @@
  * normalised title (no request).
  *
  * Network: <= 1 request per `minIntervalMs` (1.1 s without a key — the
- * shared pool 429s often — 1.0 s with `PAPERPILOT_S2_API_KEY`, sent as
- * `x-api-key`; S2's free keys start at 1 req/s). 429 and 5xx are retried
+ * shared pool 429s often — 1.25 s with `PAPERPILOT_S2_API_KEY`, sent as
+ * `x-api-key`; the key allows 1 request/s across ALL endpoints, #555). The
+ * other S2 stages of a theme build (expansion, abstract fallback, the
+ * `/paper/batch` citation counts since #562) share this pacer via `pace()`. 429 and 5xx are retried
  * with the server's `Retry-After` or exponential backoff (2 s .. 60 s, 6
  * attempts); a pair whose citing paper could not be fetched counts as
  * "no S2 data" for this run and is never cached.

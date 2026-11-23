@@ -19,6 +19,15 @@
  * request and publishes the same bytes; "S2 does not know it" is cached too
  * (shorter), and a node answered by neither cache nor network just keeps
  * the OpenAlex count.
+ *
+ * #562: with a shared S2 pacer (`pace`, the theme build passes
+ * `S2CitationSource.pace()`), every request — requestWithRetry's own
+ * retries included — waits for the one-request-per-interval slot shared
+ * with the other S2 stages, instead of this module's own interval. With
+ * `retry` set (the theme CLI sets {@link S2_COUNT_RETRY}), a chunk that
+ * still failed is fetched once more after one wait, all retry-phase waiting
+ * bounded by `retry.budgetMs`. Library default: no pacer = own interval, no
+ * retry (never sleeps beyond the old behaviour).
  */
 
 import { titlesDisagreeStrongly } from "@paperpilot/core/abstract-sanity";
@@ -41,6 +50,19 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 const KEYLESS_INTERVAL_MS = 1100;
 const KEYED_INTERVAL_MS = 1250;
 
+/** #562: wait 30 s once, then refetch each failed chunk once; all waiting in
+ * the retry phase (that wait, the module interval and requestWithRetry's
+ * backoffs) is capped at 60 s per build. The shared pacer's own slot waits
+ * (~1.1-1.25 s per request, at most ~3 requests per retried chunk) are
+ * pacing, not retry waiting, and are not charged to the budget. */
+export const S2_COUNT_RETRY = { waitMs: 30_000, budgetMs: 60_000 } as const;
+export interface S2CountRetryOptions {
+  waitMs: number;
+  budgetMs: number;
+}
+/** A retried chunk needs at least this much budget left to be attempted. */
+const RETRY_MIN_REMAINING_MS = 5_000;
+
 export type CitationCountSource = "openalex" | "semantic_scholar";
 
 /** `{ n: count | null (S2 has no such paper), at: ISO fetch time, t/a: S2's
@@ -60,7 +82,17 @@ export interface S2CitationCountDeps {
   now?: () => Date;
   apiKey?: string | null;
   logger?: { warn?: (msg: string) => void; info?: (msg: string) => void };
+  /** #562: the shared S2 pacer; awaited before every request. */
+  pace?: () => Promise<void>;
+  /** #562: refetch a failed chunk once after `waitMs`; null/omitted = no retry. */
+  retry?: S2CountRetryOptions | null;
 }
+
+/** requestWithRetry budget of the first pass. */
+const FIRST_PASS_BUDGET: Pick<RequestWithRetryOptions, "overallDeadlineMs" | "retry429"> = {
+  overallDeadlineMs: 90_000,
+  retry429: { maxRetries: 4, maxWaitMs: 20_000, giveUpIfHintAboveMs: 60_000 },
+};
 
 /** The S2 batch id of a node: `ARXIV:<id>` (version stripped) else
  * `DOI:<doi>`; `null` when the node carries neither. */
@@ -208,13 +240,10 @@ function isFresh(entry: CacheEntry, nowMs: number): boolean {
 async function fetchChunk(
   ids: readonly string[],
   deps: S2CitationCountDeps,
+  budget: Pick<RequestWithRetryOptions, "overallDeadlineMs" | "retry429"> = FIRST_PASS_BUDGET,
 ): Promise<Map<string, S2Answer> | null> {
   const headers: Record<string, string> = { "User-Agent": "PaperPilot/0.1" };
   if (deps.apiKey) headers["x-api-key"] = deps.apiKey;
-  const budget: Pick<RequestWithRetryOptions, "overallDeadlineMs" | "retry429"> = {
-    overallDeadlineMs: 90_000,
-    retry429: { maxRetries: 4, maxWaitMs: 20_000, giveUpIfHintAboveMs: 60_000 },
-  };
   let resp: Awaited<ReturnType<typeof requestWithRetry>>;
   try {
     resp = await requestWithRetry(
@@ -227,7 +256,12 @@ async function fetchChunk(
         timeoutMs: 30_000,
         ...budget,
       },
-      { fetchImpl: deps.fetchImpl, sleep: deps.sleep, logger: deps.logger as never },
+      {
+        fetchImpl: deps.fetchImpl,
+        sleep: deps.sleep,
+        // A logger without `warn` must not turn a 429 into a thrown TypeError.
+        logger: { warn: (m: string) => deps.logger?.warn?.(m) },
+      },
     );
   } catch {
     return null;
@@ -277,6 +311,10 @@ export interface S2CountStats {
   /** R2-44: nodes whose authors / title were replaced by S2's. */
   corrected: number;
   failedChunks: number;
+  /** #562: chunks fetched a second time after the retry wait. */
+  retried: number;
+  /** #562: retried chunks that answered. */
+  recovered: number;
 }
 
 /** Raise the `citation_count` of every node whose Semantic Scholar count is
@@ -293,6 +331,8 @@ export async function applyS2CitationCounts(
     raised: 0,
     corrected: 0,
     failedChunks: 0,
+    retried: 0,
+    recovered: 0,
   };
   const byId = new Map<string, ThemeGraphNode[]>();
   for (const node of list) {
@@ -324,17 +364,19 @@ export async function applyS2CitationCounts(
 
   const sleep = opts.sleep ?? ((ms: number) => new Promise<void>((r) => setTimeout(r, ms)));
   const interval = opts.apiKey ? KEYED_INTERVAL_MS : KEYLESS_INTERVAL_MS;
+  const pace = opts.pace;
+  // With a shared pacer every request (requestWithRetry's retries included)
+  // waits for its slot; the module's own interval then only applies without one.
+  const fetchImpl: FetchLike = pace
+    ? async (url, init) => {
+        await pace();
+        return opts.fetchImpl(url, init);
+      }
+    : opts.fetchImpl;
   const stamp = now()
     .toISOString()
     .replace(/\.\d{3}Z$/, "Z");
-  for (let i = 0; i < missing.length; i += BATCH_MAX_IDS) {
-    if (i > 0) await sleep(interval);
-    const chunk = missing.slice(i, i + BATCH_MAX_IDS);
-    const got = await fetchChunk(chunk, opts);
-    if (got === null) {
-      stats.failedChunks += 1;
-      continue;
-    }
+  const record = (got: Map<string, S2Answer>): void => {
     for (const [key, ans] of got) {
       answers.set(key, ans);
       cache[key] = {
@@ -345,7 +387,56 @@ export async function applyS2CitationCounts(
       };
       stats.fetched += 1;
     }
+  };
+  const failed: string[][] = [];
+  for (let i = 0; i < missing.length; i += BATCH_MAX_IDS) {
+    if (i > 0 && !pace) await sleep(interval);
+    const chunk = missing.slice(i, i + BATCH_MAX_IDS);
+    const got = await fetchChunk(chunk, { ...opts, fetchImpl, sleep });
+    if (got === null) failed.push(chunk);
+    else record(got);
   }
+  const retry = opts.retry;
+  if (failed.length > 0 && retry && retry.budgetMs > 0) {
+    // Every wait of the retry phase (the pre-retry wait, the module interval,
+    // requestWithRetry's backoffs) is charged to one budget and clamped to it.
+    let remaining = retry.budgetMs;
+    const retrySleep = async (ms: number): Promise<void> => {
+      const w = Math.max(0, Math.min(ms, remaining));
+      remaining -= w;
+      if (w > 0) await sleep(w);
+    };
+    await retrySleep(retry.waitMs);
+    const stillFailed: string[][] = [];
+    for (let j = 0; j < failed.length; j++) {
+      const chunk = failed[j]!;
+      if (remaining < RETRY_MIN_REMAINING_MS) {
+        stillFailed.push(...failed.slice(j));
+        break;
+      }
+      if (j > 0 && !pace) await retrySleep(interval);
+      stats.retried += 1;
+      const got = await fetchChunk(
+        chunk,
+        { ...opts, fetchImpl, sleep: retrySleep },
+        {
+          overallDeadlineMs: 30_000,
+          retry429: {
+            maxRetries: 1,
+            maxWaitMs: RETRY_MIN_REMAINING_MS,
+            giveUpIfHintAboveMs: RETRY_MIN_REMAINING_MS,
+          },
+        },
+      );
+      if (got === null) stillFailed.push(chunk);
+      else {
+        stats.recovered += 1;
+        record(got);
+      }
+    }
+    failed.splice(0, failed.length, ...stillFailed);
+  }
+  stats.failedChunks = failed.length;
   if (stats.fetched > 0 && opts.cachePath !== null) {
     const sorted: Record<string, CacheEntry> = {};
     for (const key of Object.keys(cache).sort()) sorted[key] = cache[key]!;
@@ -380,7 +471,7 @@ export async function applyS2CitationCounts(
     );
   }
   opts.logger?.info?.(
-    `s2 citation counts: eligible=${stats.eligible}, cached=${stats.fromCache}, fetched=${stats.fetched}, raised=${stats.raised}, identity corrected=${stats.corrected}`,
+    `s2 citation counts: eligible=${stats.eligible}, cached=${stats.fromCache}, fetched=${stats.fetched}, raised=${stats.raised}, identity corrected=${stats.corrected}, retried=${stats.retried} recovered=${stats.recovered}`,
   );
   return stats;
 }

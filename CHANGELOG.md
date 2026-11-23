@@ -6,6 +6,12 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Fixed — 引用数の一括取得を共有 S2 pacer に乗せ、失敗した塊を 1 回取り直す（#562）
+
+- `/paper/batch` の引用数取得（R2-36・R2-44）だけが独自の間隔で S2 を呼んでいた。テーマ生成では他の S2 段と同じ pacer（`S2CitationSource.pace()`）を、再試行を含む要求 1 回ごとに通す。S2 の関係取得を切ったとき（`PAPERPILOT_S2_RELATIONS=off`）は従来の独自間隔。
+- 429 などで失敗した塊は、30 秒待ってから 1 回だけ取り直す（取り直しの待ちは 1 ビルド 60 秒以下）。テーマ CLI で既定オン、`PAPERPILOT_S2_COUNT_RETRY=off` で無効。ログに `retried=<n> recovered=<m>`。取り直しても取れない塊はこれまで通り OpenAlex の値のままで、キャッシュにも入らない。
+- `warn` のない logger を渡すと 429 で TypeError になり、塊が黙って失敗していた点も直した。
+
 ### Changed — 要旨のない候補を S2 の要旨で補い、話題の判定にだけ使う（#560）
 
 - OpenAlex に要旨がない候補（Prefix-Tuning、CoOp ほか）は、BFS の「要旨なしは除く」で落ちていた。S2 のキーがあるときだけ、S2 の `/paper/batch` で要旨を取り、題名が一致したものを `_gate_abstract` に入れて話題の判定（入場の絞り込み・話題の範囲・埋め込み）に使う。サイトの要旨・TLDR・キャッシュ・公開ファイルには出ない。取れない・429 のときは今まで通り落とす。
