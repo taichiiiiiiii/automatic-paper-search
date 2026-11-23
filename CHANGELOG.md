@@ -6,6 +6,10 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Changed — 要旨のない候補を S2 の要旨で補い、話題の判定にだけ使う（#560）
+
+- OpenAlex に要旨がない候補（Prefix-Tuning、CoOp ほか）は、BFS の「要旨なしは除く」で落ちていた。S2 のキーがあるときだけ、S2 の `/paper/batch` で要旨を取り、題名が一致したものを `_gate_abstract` に入れて話題の判定（入場の絞り込み・話題の範囲・埋め込み）に使う。サイトの要旨・TLDR・キャッシュ・公開ファイルには出ない。取れない・429 のときは今まで通り落とす。
+
 ### Fixed — 分野の中心論文が引用数の上限で作り直し時に落ちる（#557）
 
 - BFS の「引用数の上限（seed 最大×2）」から、公開中テーマの中心論文 8 件（InstructGPT、RAG 原論文、FiD、Self-RAG、Speculative Decoding の 3 本、Mamba）を外す。題名の一覧は `data/config/lineage_ceiling_exempt.json`。上限だけを外し、denylist・話題の判定・ほかの絞り込みは今まで通り。基礎文献リストと違い、辺は強制しない。

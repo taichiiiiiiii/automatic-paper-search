@@ -122,6 +122,8 @@ export type TopicRole =
 export interface TopicPaperLike {
   title?: unknown;
   abstract?: unknown;
+  /** #560: Semantic Scholar abstract, for the gate only (never published). */
+  _gate_abstract?: unknown;
   short_abstract?: unknown;
   tldr?: unknown;
 }
@@ -160,7 +162,12 @@ function str(value: unknown): string {
 }
 
 function bodyText(paper: TopicPaperLike): string {
-  return [str(paper.abstract), str(paper.short_abstract), str(paper.tldr)].join(" ");
+  return [
+    str(paper.abstract),
+    str(paper._gate_abstract),
+    str(paper.short_abstract),
+    str(paper.tldr),
+  ].join(" ");
 }
 
 function addPhrase(out: Set<string>, phrase: string): void {
