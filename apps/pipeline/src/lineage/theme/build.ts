@@ -100,7 +100,7 @@ import {
   mergeSuspects,
 } from "./recordChronology.js";
 import { type S2AbstractStats, supplementAbstracts } from "./s2AbstractFallback.js";
-import { applyS2CitationCounts } from "./s2CitationCounts.js";
+import { applyS2CitationCounts, type S2CountRetryOptions } from "./s2CitationCounts.js";
 import { S2CitationSource } from "./s2Citations.js";
 import { S2Expansion, type S2ExpansionOptions } from "./s2Expansion.js";
 import { contextLlmSummary, newS2RelationStats, type S2RelationContext } from "./s2Relations.js";
@@ -418,6 +418,9 @@ export interface BuildThemeLineageDeps {
     cachePath: string | null;
     apiKey?: string | null;
     fetchImpl?: FetchLike;
+    /** #562: refetch a failed `/paper/batch` chunk once (the CLI passes
+     * `S2_COUNT_RETRY`); null/omitted = no retry. */
+    retry?: S2CountRetryOptions | null;
   } | null;
 }
 
@@ -1040,6 +1043,11 @@ export async function buildThemeLineage(
       sleep: deps.sleep,
       now: wallClockNow,
       logger,
+      // #562: share the S2 pacer with the other S2 stages (one request per
+      // interval across all endpoints); without S2 relations the module keeps
+      // its own interval.
+      ...(s2Source !== null ? { pace: () => s2Source.pace() } : {}),
+      retry: deps.s2CitationCounts.retry ?? null,
     });
   }
 
