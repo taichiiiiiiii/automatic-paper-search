@@ -10,6 +10,11 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 - S2 の要約行に `forbidden=<n>`（403 の数）を足し、1 回以上あれば `::warning::` の 1 行（キーが無効か一時遮断）を出す。403 の扱い（再試行しない・ブレーカーに数えない・unreachable として失敗に数える）は変えない。
 - 分類失敗率 30% 超の警告は、LLM 無効のときは「根拠を取得できなかった（S2 の要約を見る）」と出し、Groq に触れない。LLM 有効のときは従来どおり。公開基準・exit コードは変えない。
+### Fixed — 引用数の一括取得を共有 S2 pacer に乗せ、失敗した塊を 1 回取り直す（#562）
+
+- `/paper/batch` の引用数取得（R2-36・R2-44）だけが独自の間隔で S2 を呼んでいた。テーマ生成では他の S2 段と同じ pacer（`S2CitationSource.pace()`）を、再試行を含む要求 1 回ごとに通す。S2 の関係取得を切ったとき（`PAPERPILOT_S2_RELATIONS=off`）は従来の独自間隔。
+- 429 などで失敗した塊は、30 秒待ってから 1 回だけ取り直す（取り直しの待ちは 1 ビルド 60 秒以下）。テーマ CLI で既定オン、`PAPERPILOT_S2_COUNT_RETRY=off` で無効。ログに `retried=<n> recovered=<m>`。取り直しても取れない塊はこれまで通り OpenAlex の値のままで、キャッシュにも入らない。
+- `warn` のない logger を渡すと 429 で TypeError になり、塊が黙って失敗していた点も直した。
 
 ### Changed — 要旨のない候補を S2 の要旨で補い、話題の判定にだけ使う（#560）
 
