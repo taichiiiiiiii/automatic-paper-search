@@ -116,10 +116,38 @@ async function fetchChunk(
   }
 }
 
+/** What S2 answered for one lookup id (title kept for the title check). */
+interface RememberedAbstract {
+  title: unknown;
+  abstract: string;
+}
+
+/**
+ * #566: the S2 answers of one run, keyed by the run's `tried` set so the
+ * memo lives exactly as long as `tried` (one build) without a new argument.
+ * The BFS reads a seed's neighbours twice (topic-gate pool, then the BFS
+ * proper) and the second read re-parses the fetch cache into NEW objects:
+ * without the memo those ids are already "tried", so the second copy never
+ * got the text and the paper was dropped. In memory only -- never written.
+ */
+const memoByRun = new WeakMap<Set<string>, Map<string, RememberedAbstract>>();
+
+function memoFor(tried: Set<string>): Map<string, RememberedAbstract> {
+  let memo = memoByRun.get(tried);
+  if (memo === undefined) {
+    memo = new Map();
+    memoByRun.set(tried, memo);
+  }
+  return memo;
+}
+
 /**
  * Fills `_gate_abstract` on the papers that have no abstract and an S2
  * lookup id. Mutates the papers; never throws. Papers already tried in this
- * run (kept in `tried`) are not asked again.
+ * run (kept in `tried`) are not asked again; when S2 answered them, the
+ * remembered text is attached to the new copy (same title check), even
+ * after the run stopped asking (MAX_FAILED_CHUNKS). Re-attaching is not
+ * counted in `stats` (stats describe requests and answers).
  */
 export async function supplementAbstracts(
   papers: readonly AbstractFallbackPaper[],
@@ -127,6 +155,15 @@ export async function supplementAbstracts(
   tried: Set<string>,
   stats: S2AbstractStats,
 ): Promise<void> {
+  const memo = memoFor(tried);
+  for (const p of papers) {
+    if (hasGateText(p)) continue;
+    const id = lookupIdOf(p);
+    const known = id === null ? undefined : memo.get(id);
+    if (known !== undefined && normTitle(known.title) === normTitle(p.title)) {
+      p._gate_abstract = known.abstract;
+    }
+  }
   if (stats.failedChunks >= MAX_FAILED_CHUNKS) return;
   const want = new Map<string, AbstractFallbackPaper[]>();
   for (const p of papers) {
@@ -161,6 +198,7 @@ export async function supplementAbstracts(
         stats.notFound += 1;
         return;
       }
+      memo.set(id, { title: a.title, abstract });
       for (const p of want.get(id) ?? []) {
         if (normTitle(a.title) !== normTitle(p.title)) {
           stats.titleMismatch += 1;
