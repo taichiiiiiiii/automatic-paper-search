@@ -14,6 +14,7 @@ import {
   lookupIdsOf,
   maybeTruncated,
   readS2ReferencesCache,
+  S2_KEYED_INTERVAL_MS,
   S2_KEYED_MAX_ATTEMPTS,
   S2_KEYLESS_INTERVAL_MS,
   S2_REFERENCES_SCHEMA,
