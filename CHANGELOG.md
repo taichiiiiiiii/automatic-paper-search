@@ -6,6 +6,10 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Fixed — S2 の 403 を区別して記録し、LLM 無効なのに Groq の上限と出る警告を直す（#564）
+
+- S2 の要約行に `forbidden=<n>`（403 の数）を足し、1 回以上あれば `::warning::` の 1 行（キーが無効か一時遮断）を出す。403 の扱い（再試行しない・ブレーカーに数えない・unreachable として失敗に数える）は変えない。
+- 分類失敗率 30% 超の警告は、LLM 無効のときは「根拠を取得できなかった（S2 の要約を見る）」と出し、Groq に触れない。LLM 有効のときは従来どおり。公開基準・exit コードは変えない。
 ### Fixed — 引用数の一括取得を共有 S2 pacer に乗せ、失敗した塊を 1 回取り直す（#562）
 
 - `/paper/batch` の引用数取得（R2-36・R2-44）だけが独自の間隔で S2 を呼んでいた。テーマ生成では他の S2 段と同じ pacer（`S2CitationSource.pace()`）を、再試行を含む要求 1 回ごとに通す。S2 の関係取得を切ったとき（`PAPERPILOT_S2_RELATIONS=off`）は従来の独自間隔。

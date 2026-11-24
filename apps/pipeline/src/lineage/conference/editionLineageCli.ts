@@ -227,12 +227,17 @@ export async function runEditionCli(
   } catch (exc) {
     s2.flush();
     arxivHtml?.flush();
+    // #564: a 403 storm that aborts the build still names its cause.
+    const forbiddenOnAbort = s2.forbiddenWarning();
+    if (forbiddenOnAbort !== null) warn(forbiddenOnAbort);
     process.stderr.write(`error: ${(exc as Error).message}\n`);
     return completeness.subjectComplete ? 3 : 4;
   }
   s2.flush();
   arxivHtml?.flush();
   warn(s2.summary());
+  const forbidden = s2.forbiddenWarning();
+  if (forbidden !== null) warn(forbidden);
   if (arxivHtml !== null) warn(arxivHtml.summary());
 
   const lineagePath = join(docsRoot, args.conference, "lineage.json");
