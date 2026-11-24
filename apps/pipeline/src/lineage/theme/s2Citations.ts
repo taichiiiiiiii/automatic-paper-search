@@ -85,6 +85,12 @@ export function s2MaxAttempts(env: Record<string, string | undefined> = process.
   return Number.isInteger(n) && n >= 1 && n <= 20 ? n : DEFAULT_MAX_ATTEMPTS;
 }
 const MAX_ATTEMPTS = s2MaxAttempts();
+/** #570: with a key, 429 is S2 shedding load, not our pace. A probe on the
+ * CI runner (20 requests per spacing, run 45421474119) showed 65 % / 40 % /
+ * 55 % 429 at 1.25 / 2.5 / 5 s spacing: widening the gap does not help, so
+ * waiting 2→60 s between tries only burns time. Keyed requests retry after
+ * the shared pacer's gap alone, with more attempts to compensate. */
+export const S2_KEYED_MAX_ATTEMPTS = 12;
 
 /** R2-69: consecutive give-ups (every attempt 429/5xx) that open the
  * breaker. Each give-up costs >= 2 min of backoff (2+4+8+16+32+60 s); on a
@@ -797,7 +803,10 @@ export class S2CitationSource {
       this.breakerOpenUntil = null;
       this.consecutiveGiveUps = S2_BREAKER_GIVE_UPS - 1;
     }
-    for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+    const keyed = Boolean(this.deps.apiKey);
+    const maxAttempts =
+      keyed && !process.env.PAPERPILOT_S2_MAX_ATTEMPTS ? S2_KEYED_MAX_ATTEMPTS : MAX_ATTEMPTS;
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
       if (attempt > 0) this.stats.retries += 1;
       await this.pace();
       this.stats.requests += 1;
@@ -830,8 +839,13 @@ export class S2CitationSource {
         if (resp.status === 429) this.stats.rateLimited += 1;
         lastStatus = String(resp.status);
         const hint = resp.status === 429 ? rateLimitHintMs(resp.headers) : null;
-        const backoff = Math.min(BACKOFF_BASE_MS * 2 ** attempt, BACKOFF_MAX_MS);
-        await this.deps.sleep(Math.min(Math.max(hint ?? 0, backoff), BACKOFF_MAX_MS * 2));
+        // Keyed 429: the pacer's gap is the whole wait (a server hint still wins).
+        const backoff =
+          keyed && resp.status === 429
+            ? 0
+            : Math.min(BACKOFF_BASE_MS * 2 ** attempt, BACKOFF_MAX_MS);
+        const wait = Math.min(Math.max(hint ?? 0, backoff), BACKOFF_MAX_MS * 2);
+        if (wait > 0) await this.deps.sleep(wait);
         continue;
       }
       if (resp.status === 403) this.stats.forbidden += 1;

@@ -15,6 +15,7 @@ import {
   maybeTruncated,
   readS2ReferencesCache,
   S2_KEYED_INTERVAL_MS,
+  S2_KEYED_MAX_ATTEMPTS,
   S2_KEYLESS_INTERVAL_MS,
   S2_REFERENCES_SCHEMA,
   S2CitationSource,
@@ -231,6 +232,43 @@ describe("S2CitationSource.lookup", () => {
     expect(h.calls).toHaveLength(6);
     h.source.flush();
     expect(existsSync(cachePath)).toBe(false);
+  });
+});
+
+describe("keyed 429 retry (#570)", () => {
+  it("retries a keyed 429 after the pacer gap alone (no exponential backoff) and keeps trying past 6 attempts", async () => {
+    const h = harness((_u, n) => (n <= 8 ? resp(429, null) : resp(200, { data: [GCN_REF] })), {
+      apiKey: "k",
+    });
+    const r = await h.source.lookup(CITING, CITED);
+    expect(r).toMatchObject({ kind: "pair", signals: { found: true } });
+    expect(h.calls).toHaveLength(9);
+    expect(h.sleeps.filter((ms) => ms >= 2000)).toEqual([]);
+  });
+
+  it("a keyed 429 still honours a Retry-After hint, and gives up after S2_KEYED_MAX_ATTEMPTS", async () => {
+    const hinted = harness(
+      (_u, n) =>
+        n === 1 ? resp(429, null, { "Retry-After": "7" }) : resp(200, { data: [GCN_REF] }),
+      {
+        apiKey: "k",
+      },
+    );
+    await hinted.source.lookup(CITING, CITED);
+    expect(hinted.sleeps[0]).toBe(7000);
+    const dead = harness(() => resp(429, null), { apiKey: "k" });
+    expect(await dead.source.lookup(CITING, CITED)).toEqual({
+      kind: "no_s2_data",
+      reason: "fetch-failed",
+    });
+    expect(dead.calls).toHaveLength(S2_KEYED_MAX_ATTEMPTS);
+  });
+
+  it("a keyed 5xx keeps the exponential backoff", async () => {
+    const h = harness(() => resp(503, null), { apiKey: "k" });
+    await h.source.lookup(CITING, CITED);
+    const backoffs = h.sleeps.filter((ms) => ms >= 2000);
+    expect(backoffs.slice(0, 3)).toEqual([2000, 4000, 8000]);
   });
 });
 
