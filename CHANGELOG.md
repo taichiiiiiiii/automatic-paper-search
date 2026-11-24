@@ -6,6 +6,11 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Fixed — OpenAlex の非推奨の形と、もう返らない項目の読みを整理（#558）
+
+- 会議の家系図（`buildConferenceLineage.ts` の `resolveOral`）の題名検索を、非推奨の `filter=title.search:<題名>` から `search.title=<題名>` パラメタに替えた（料金は同じ。題名のカンマが OR の区切りとして読まれなくなる）。失敗時のメッセージは `search.title='…'` を出す（Python 版から凍結した期待エラー文 `subject_failure.expected.json` もこの 1 行だけ替えた）。
+- 収集の OpenAlex 取得元（`collect/sources/openalex.ts`）から、API で削除済みの `host_venue` を読む後方互換の分岐を消した。venue は `primary_location.source.display_name` だけから入る。Python 版とのパリティ用フィクスチャは変えずに一致する。
+
 ### Changed — 要旨のない候補を S2 の要旨で補い、話題の判定にだけ使う（#560）
 
 - OpenAlex に要旨がない候補（Prefix-Tuning、CoOp ほか）は、BFS の「要旨なしは除く」で落ちていた。S2 のキーがあるときだけ、S2 の `/paper/batch` で要旨を取り、題名が一致したものを `_gate_abstract` に入れて話題の判定（入場の絞り込み・話題の範囲・埋め込み）に使う。サイトの要旨・TLDR・キャッシュ・公開ファイルには出ない。取れない・429 のときは今まで通り落とす。
