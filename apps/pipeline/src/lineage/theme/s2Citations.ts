@@ -85,15 +85,24 @@ export function s2MaxAttempts(env: Record<string, string | undefined> = process.
   return Number.isInteger(n) && n >= 1 && n <= 20 ? n : DEFAULT_MAX_ATTEMPTS;
 }
 const MAX_ATTEMPTS = s2MaxAttempts();
+const ATTEMPTS_OVERRIDDEN = Number.isInteger(
+  Number.parseInt(process.env.PAPERPILOT_S2_MAX_ATTEMPTS ?? "", 10),
+);
 /** #570: with a key, 429 is S2 shedding load, not our pace. A probe on the
  * CI runner (20 requests per spacing, run 45421474119) showed 65 % / 40 % /
  * 55 % 429 at 1.25 / 2.5 / 5 s spacing: widening the gap does not help, so
  * waiting 2→60 s between tries only burns time. Keyed requests retry after
  * the shared pacer's gap alone, with more attempts to compensate. */
 export const S2_KEYED_MAX_ATTEMPTS = 12;
+/** S2's terms require exponential backoff for keyed use (docs/design/44,
+ * 51 E1), so a keyed 429 still backs off exponentially, but from 1 s and
+ * capped at 4 s instead of 2→60 s. The 12 attempts count 429s only; other
+ * failures (5xx, network) keep the old 6-attempt budget and 2→60 s waits. */
+export const S2_KEYED_429_BACKOFF_BASE_MS = 1000;
+export const S2_KEYED_429_BACKOFF_MAX_MS = 4000;
 
 /** R2-69: consecutive give-ups (every attempt 429/5xx) that open the
- * breaker. Each give-up costs >= 2 min of backoff (2+4+8+16+32+60 s); on a
+ * breaker. Each keyless give-up costs >= 2 min of backoff (2+4+8+16+32+60 s; keyed 429s: ~15-40 s, #570); on a
  * throttled day the keyless pool gave up 17 times in one RAG upgrade and
  * the job hit its 60-min cap. */
 export const S2_BREAKER_GIVE_UPS = 3;
@@ -804,10 +813,13 @@ export class S2CitationSource {
       this.consecutiveGiveUps = S2_BREAKER_GIVE_UPS - 1;
     }
     const keyed = Boolean(this.deps.apiKey);
-    const maxAttempts =
-      keyed && !process.env.PAPERPILOT_S2_MAX_ATTEMPTS ? S2_KEYED_MAX_ATTEMPTS : MAX_ATTEMPTS;
-    for (let attempt = 0; attempt < maxAttempts; attempt++) {
-      if (attempt > 0) this.stats.retries += 1;
+    const max429 = keyed && !ATTEMPTS_OVERRIDDEN ? S2_KEYED_MAX_ATTEMPTS : MAX_ATTEMPTS;
+    let n429 = 0;
+    let nOther = 0;
+    let made = 0;
+    while (n429 < max429 && nOther < MAX_ATTEMPTS && (keyed || n429 + nOther < MAX_ATTEMPTS)) {
+      if (made > 0) this.stats.retries += 1;
+      made += 1;
       await this.pace();
       this.stats.requests += 1;
       let resp: HttpResponseLike;
@@ -815,7 +827,8 @@ export class S2CitationSource {
         resp = await this.deps.fetchImpl(url, { method: "GET", headers, timeoutMs: 30_000 });
       } catch (exc) {
         lastStatus = `network error ${String(exc)}`;
-        await this.deps.sleep(Math.min(BACKOFF_BASE_MS * 2 ** attempt, BACKOFF_MAX_MS));
+        await this.deps.sleep(Math.min(BACKOFF_BASE_MS * 2 ** nOther, BACKOFF_MAX_MS));
+        nOther += 1;
         continue;
       }
       if (resp.status === 200) {
@@ -829,6 +842,7 @@ export class S2CitationSource {
           // malformed body: retry
         }
         lastStatus = "malformed body";
+        nOther += 1;
         continue;
       }
       if (resp.status === 404 || resp.status === 400) {
@@ -839,13 +853,19 @@ export class S2CitationSource {
         if (resp.status === 429) this.stats.rateLimited += 1;
         lastStatus = String(resp.status);
         const hint = resp.status === 429 ? rateLimitHintMs(resp.headers) : null;
-        // Keyed 429: the pacer's gap is the whole wait (a server hint still wins).
-        const backoff =
-          keyed && resp.status === 429
-            ? 0
-            : Math.min(BACKOFF_BASE_MS * 2 ** attempt, BACKOFF_MAX_MS);
-        const wait = Math.min(Math.max(hint ?? 0, backoff), BACKOFF_MAX_MS * 2);
-        if (wait > 0) await this.deps.sleep(wait);
+        let backoff: number;
+        if (keyed && resp.status === 429) {
+          backoff = Math.min(S2_KEYED_429_BACKOFF_BASE_MS * 2 ** n429, S2_KEYED_429_BACKOFF_MAX_MS);
+          n429 += 1;
+        } else {
+          backoff = Math.min(
+            BACKOFF_BASE_MS * 2 ** (resp.status === 429 ? n429 : nOther),
+            BACKOFF_MAX_MS,
+          );
+          if (resp.status === 429) n429 += 1;
+          else nOther += 1;
+        }
+        await this.deps.sleep(Math.min(Math.max(hint ?? 0, backoff), BACKOFF_MAX_MS * 2));
         continue;
       }
       if (resp.status === 403) this.stats.forbidden += 1;
@@ -860,7 +880,7 @@ export class S2CitationSource {
           `S2 requests fail fast for ${S2_BREAKER_COOLDOWN_MS / 60000} min`,
       );
     }
-    throw new TransientS2Error(`S2 gave up after ${MAX_ATTEMPTS} attempts (${lastStatus}): ${url}`);
+    throw new TransientS2Error(`S2 gave up after ${made} attempts (${lastStatus}): ${url}`);
   }
 
   /** Merge this run's entries into the file on disk (another theme's run
