@@ -13,6 +13,7 @@ follows [Semantic Versioning](https://semver.org/) and the
 ### Changed — S2 キー付きの 429 の待ちを短くした（#570）
 
 - CI で 20 要求ずつ間隔を変えて測ったところ、429 の割合は間隔によらず 40〜65%（1.25 s: 65%、2.5 s: 40%、5 s: 55%）。S2 側の絞りで、待ちを延ばしても減らない。キー付きの 429 は、S2 の規約（指数バックオフ）を守ったまま、待ちを 1→2→4→8 s（上限 8 s）に短縮し、429 は最大 12 回まで再試行（Retry-After は優先）。5xx・ネットワークエラーは従来どおり（6 回、2→60 s）。キーなしは変更なし。
+- 続き: 被引用数（`s2CitationCounts`）と要旨補完（`s2AbstractFallback`）の `/paper/batch` も、キー付きの 429 を同じ 1→2→4→8 s の指数で待つ（従来は requestWithRetry の 2→4→8→16 s。再試行回数・Retry-After の扱い・全体の期限 90 s／取り直し 30 s は不変）。要旨補完の再試行も共有の S2 pacer を通す。requestWithRetry に任意の `retry429.initialBackoffMs`・`maxBackoffMs`・`label`（WARNING 行に `[s2-citation-counts]` などを出す）を足した。既定値は変えない。
 
 ### Fixed — S2 で補った要旨が 2 回目の一覧で付かず、要旨のない中心論文が落ちる（#566）
 

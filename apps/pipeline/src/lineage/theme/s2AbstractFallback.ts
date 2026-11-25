@@ -24,7 +24,7 @@ import {
   type RequestWithRetryOptions,
   requestWithRetry,
 } from "../../collect/http/requestWithRetry.js";
-import { s2LookupId } from "./s2CitationCounts.js";
+import { s2BatchRetry429, s2LookupId } from "./s2CitationCounts.js";
 
 const S2_BATCH_URL = "https://api.semanticscholar.org/graph/v1/paper/batch";
 const CHUNK = 250;
@@ -87,10 +87,21 @@ async function fetchChunk(
   if (deps.apiKey) headers["x-api-key"] = deps.apiKey;
   const budget: Pick<RequestWithRetryOptions, "overallDeadlineMs" | "retry429"> = {
     overallDeadlineMs: 90_000,
-    retry429: { maxRetries: 4, maxWaitMs: 20_000, giveUpIfHintAboveMs: 60_000 },
+    retry429: s2BatchRetry429(
+      { maxRetries: 4, maxWaitMs: 20_000, giveUpIfHintAboveMs: 60_000 },
+      deps.apiKey,
+    ),
   };
+  // #570: every attempt (requestWithRetry's retries included) waits for the
+  // shared S2 pacer, so a short keyed backoff cannot break the key's 1 RPS.
+  const pace = deps.pace;
+  const fetchImpl: FetchLike = pace
+    ? async (url, init) => {
+        await pace();
+        return deps.fetchImpl(url, init);
+      }
+    : deps.fetchImpl;
   try {
-    if (deps.pace) await deps.pace();
     const resp = await requestWithRetry(
       {
         method: "POST",
@@ -100,9 +111,10 @@ async function fetchChunk(
         headers,
         timeoutMs: 30_000,
         ...budget,
+        label: "s2-abstract-fallback",
       },
       {
-        fetchImpl: deps.fetchImpl,
+        fetchImpl,
         sleep: deps.sleep,
         logger: { warn: (m: string) => deps.logger?.warn?.(m) } as never,
       },

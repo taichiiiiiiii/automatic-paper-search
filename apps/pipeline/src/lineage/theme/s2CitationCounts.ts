@@ -34,9 +34,11 @@ import { titlesDisagreeStrongly } from "@paperpilot/core/abstract-sanity";
 import {
   type FetchLike,
   type RequestWithRetryOptions,
+  type Retry429Options,
   requestWithRetry,
 } from "../../collect/http/requestWithRetry.js";
 import type { ThemeGraphNode } from "../shared/node.js";
+import { S2_KEYED_429_BACKOFF_BASE_MS, S2_KEYED_429_BACKOFF_MAX_MS } from "./s2Citations.js";
 import { readVersionedCache, writeVersionedCache } from "./versionedCache.js";
 
 export const S2_COUNT_CACHE_VERSION = "s2-citation-counts-cache-v1";
@@ -93,6 +95,25 @@ const FIRST_PASS_BUDGET: Pick<RequestWithRetryOptions, "overallDeadlineMs" | "re
   overallDeadlineMs: 90_000,
   retry429: { maxRetries: 4, maxWaitMs: 20_000, giveUpIfHintAboveMs: 60_000 },
 };
+
+/**
+ * #570: with a key, a 429 backs off exponentially from 1 s capped at 8 s
+ * (the `s2Citations.ts` constants, #571) instead of requestWithRetry's
+ * 2 s doubling; a server hint is still used as is (capped by `maxWaitMs`).
+ * Retry counts, hint caps and deadlines stay as given, so the worst-case
+ * wait does not grow. Without a key the budget is returned unchanged.
+ */
+export function s2BatchRetry429(
+  retry429: Retry429Options,
+  apiKey: string | null | undefined,
+): Retry429Options {
+  if (!apiKey) return retry429;
+  return {
+    ...retry429,
+    initialBackoffMs: S2_KEYED_429_BACKOFF_BASE_MS,
+    maxBackoffMs: S2_KEYED_429_BACKOFF_MAX_MS,
+  };
+}
 
 /** The S2 batch id of a node: `ARXIV:<id>` (version stripped) else
  * `DOI:<doi>`; `null` when the node carries neither. */
@@ -255,6 +276,8 @@ async function fetchChunk(
         headers,
         timeoutMs: 30_000,
         ...budget,
+        ...(budget.retry429 ? { retry429: s2BatchRetry429(budget.retry429, deps.apiKey) } : {}),
+        label: "s2-citation-counts",
       },
       {
         fetchImpl: deps.fetchImpl,
