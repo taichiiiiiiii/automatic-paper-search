@@ -48,8 +48,12 @@ function makeRepo(): { repoRoot: string; docsDir: string } {
   return { repoRoot, docsDir };
 }
 
+/** Canned-response key: `search.title:<title>` for a title search (#558), else the filter. */
 function filterParam(url: string): string {
-  return new URL(url).searchParams.get("filter") ?? "";
+  const params = new URL(url).searchParams;
+  const title = params.get("search.title");
+  if (title !== null) return `search.title:${title}`;
+  return params.get("filter") ?? "";
 }
 
 describe("runBuildConferenceLineageCli", () => {
@@ -144,7 +148,7 @@ describe("runBuildConferenceLineageCli", () => {
     const deps: OpenAlexDeps = {
       fetchImpl: async (url): Promise<HttpResponseLike> => {
         const filt = filterParam(url);
-        if (filt.startsWith("title.search:")) {
+        if (filt.startsWith("search.title:")) {
           return {
             status: 200,
             json: async () => ({

@@ -6,6 +6,10 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Fixed — OpenAlex の非推奨の形と、もう返らない項目の読みを整理（#558）
+
+- 会議の家系図（`buildConferenceLineage.ts` の `resolveOral`）の題名検索を、非推奨の `filter=title.search:<題名>` から `search.title=<題名>` パラメタに替えた（料金は同じ。題名のカンマが OR の区切りとして読まれなくなる）。失敗時のメッセージは `search.title='…'` を出す（Python 版から凍結した期待エラー文 `subject_failure.expected.json` もこの 1 行だけ替えた）。
+- 収集の OpenAlex 取得元（`collect/sources/openalex.ts`）から、API で削除済みの `host_venue` を読む後方互換の分岐を消した。venue は `primary_location.source.display_name` だけから入る。Python 版とのパリティ用フィクスチャは変えずに一致する。
 ### Changed — 不完全な作り直しの拒否理由に「OpenAlex の統合で ID が変わっただけ」を別に数えて出す（#504）
 
 - 取得が不完全な作り直しが、公開済みの中心論文・ノードの欠けで拒否されたとき（exit 4）、欠けたノードのうち新しい結果のノードと DOI か arXiv id が一致するものを「統合らしい（old -> new、最初の 3 組）」として数え、統合先に読み替えると戻る辺の数も添える。id は一致するが題名が大きく違う組は「id 一致・題名不一致」として別に数える。題名だけの一致は数えない。数えるだけで、拒否の判定・exit コード・`--allow-incomplete` は変えない。

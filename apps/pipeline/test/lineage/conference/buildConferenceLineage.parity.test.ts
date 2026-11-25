@@ -29,12 +29,16 @@ function readExpected(name: string): Record<string, unknown> {
   return JSON.parse(readFileSync(join(FIXTURES, `${name}.expected.json`), "utf8"));
 }
 
+/** Canned-response key: `search.title:<title>` for a title search (#558), else the filter. */
 function filterParam(url: string): string {
-  return new URL(url).searchParams.get("filter") ?? "";
+  const params = new URL(url).searchParams;
+  const title = params.get("search.title");
+  if (title !== null) return `search.title:${title}`;
+  return params.get("filter") ?? "";
 }
 
 const HAPPY_RESPONSES: Record<string, { status: number; body: unknown }> = {
-  "title.search:Oral Paper One": {
+  "search.title:Oral Paper One": {
     status: 200,
     body: {
       results: [

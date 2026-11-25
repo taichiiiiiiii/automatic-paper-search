@@ -276,6 +276,14 @@ interface OpenAlexResponse {
   json(): Promise<unknown>;
 }
 
+/** What a query asked for, for failure messages: the `search.title` value
+ * when the query is a title search (#558), otherwise the `filter` value. */
+function queryLabel(params: Record<string, string | number | boolean | undefined>): string {
+  const title = params["search.title"];
+  if (title !== undefined) return `search.title=${pyRepr(String(title))}`;
+  return `filter=${pyRepr(String(params.filter))}`;
+}
+
 /**
  * One OpenAlex query. Throws {@link IncompleteFetchError} instead of
  * collapsing a failure into `null`/empty — see the Python original's doc
@@ -293,27 +301,23 @@ async function get(
   )) as OpenAlexResponse | null;
   if (resp === null || resp.status !== 200) {
     throw new IncompleteFetchError(
-      `openalex query failed (status=${pyStr(resp ? resp.status : null)}, filter=${pyRepr(String(params.filter))})`,
+      `openalex query failed (status=${pyStr(resp ? resp.status : null)}, ${queryLabel(params)})`,
     );
   }
   let data: unknown;
   try {
     data = await resp.json();
   } catch {
-    throw new IncompleteFetchError(
-      `openalex returned a malformed body (filter=${pyRepr(String(params.filter))})`,
-    );
+    throw new IncompleteFetchError(`openalex returned a malformed body (${queryLabel(params)})`);
   }
   if (!isMapping(data)) {
-    throw new IncompleteFetchError(
-      `openalex returned a non-object body (filter=${pyRepr(String(params.filter))})`,
-    );
+    throw new IncompleteFetchError(`openalex returned a non-object body (${queryLabel(params)})`);
   }
   const results = data.results;
   if (!Array.isArray(results)) {
     const keys = Object.keys(data).sort().slice(0, 5);
     throw new IncompleteFetchError(
-      `openalex returned no results array (filter=${pyRepr(String(params.filter))}, keys=${JSON.stringify(keys)})`,
+      `openalex returned no results array (${queryLabel(params)}, keys=${JSON.stringify(keys)})`,
     );
   }
   const bad = firstUnusable(results, usableWork);
@@ -321,7 +325,7 @@ async function get(
     const [index, item] = bad;
     throw new IncompleteFetchError(
       `openalex returned a result with no usable OpenAlex id at index ${index} ` +
-        `(filter=${pyRepr(String(params.filter))}, type=${typeof item})`,
+        `(${queryLabel(params)}, type=${typeof item})`,
     );
   }
   return data;
@@ -337,7 +341,9 @@ export async function resolveOral(
   if (aliases.size === 0) return null;
   const data = await get(
     {
-      filter: `title.search:${title}`,
+      // `search.title` replaces the deprecated `<field>.search` filter form
+      // (#558); same price, and a comma in the title is no longer an OR.
+      "search.title": title,
       "per-page": RESOLVE_PAGE_SIZE,
       select:
         "id,title,publication_year,authorships,primary_location,locations,ids,doi,referenced_works,cited_by_count",
