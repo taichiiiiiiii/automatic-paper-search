@@ -14,8 +14,10 @@
  * normalised title (no request).
  *
  * Network: <= 1 request per `minIntervalMs` (1.1 s without a key — the
- * shared pool 429s often — 1.0 s with `PAPERPILOT_S2_API_KEY`, sent as
- * `x-api-key`; S2's free keys start at 1 req/s). 429 and 5xx are retried
+ * shared pool 429s often — 1.25 s with `PAPERPILOT_S2_API_KEY`, sent as
+ * `x-api-key`; the key allows 1 request/s across ALL endpoints, #555). The
+ * other S2 stages of a theme build (expansion, abstract fallback, the
+ * `/paper/batch` citation counts since #562) share this pacer via `pace()`. 429 and 5xx are retried
  * with the server's `Retry-After` or exponential backoff (2 s .. 60 s, 6
  * attempts); a pair whose citing paper could not be fetched counts as
  * "no S2 data" for this run and is never cached.
@@ -83,9 +85,25 @@ export function s2MaxAttempts(env: Record<string, string | undefined> = process.
   return Number.isInteger(n) && n >= 1 && n <= 20 ? n : DEFAULT_MAX_ATTEMPTS;
 }
 const MAX_ATTEMPTS = s2MaxAttempts();
+const ATTEMPTS_OVERRIDDEN = (() => {
+  const n = Number.parseInt(process.env.PAPERPILOT_S2_MAX_ATTEMPTS ?? "", 10);
+  return Number.isInteger(n) && n >= 1 && n <= 20;
+})();
+/** #570: with a key, 429 is S2 shedding load, not our pace. A probe on the
+ * CI runner (20 requests per spacing, run 45421474119) showed 65 % / 40 % /
+ * 55 % 429 at 1.25 / 2.5 / 5 s spacing: widening the gap does not help, so
+ * waiting 2→60 s between tries only burns time. Keyed requests retry after
+ * the shared pacer's gap alone, with more attempts to compensate. */
+export const S2_KEYED_MAX_ATTEMPTS = 12;
+/** S2's terms require exponential backoff for keyed use (docs/design/44,
+ * 51 E1), so a keyed 429 still backs off exponentially, but from 1 s and
+ * capped at 8 s instead of 2→60 s. The 12 attempts count 429s only; other
+ * failures (5xx, network) keep the old 6-attempt budget and 2→60 s waits. */
+export const S2_KEYED_429_BACKOFF_BASE_MS = 1000;
+export const S2_KEYED_429_BACKOFF_MAX_MS = 8000;
 
 /** R2-69: consecutive give-ups (every attempt 429/5xx) that open the
- * breaker. Each give-up costs >= 2 min of backoff (2+4+8+16+32+60 s); on a
+ * breaker. Each keyless give-up costs >= 2 min of backoff (2+4+8+16+32+60 s; keyed 429s: ~1 min, #570); on a
  * throttled day the keyless pool gave up 17 times in one RAG upgrade and
  * the job hit its 60-min cap. */
 export const S2_BREAKER_GIVE_UPS = 3;
@@ -162,6 +180,10 @@ export interface S2CitationStats {
   contextRefreshes: number;
   /** R2-35: ranked bulk searches answered ({@link S2CitationSource.searchByCitations}). */
   rankedSearches: number;
+  /** #564: 403 answers (invalid key or a temporary block). Counted only;
+   * handling is unchanged: no retry, no breaker, the request fails as
+   * unreachable (`TransientS2Error`), never as "no such paper". */
+  forbidden: number;
 }
 
 type PaperLike = Record<string, unknown>;
@@ -381,6 +403,7 @@ export class S2CitationSource {
     citationListsFetched: 0,
     citationListsFailed: 0,
     rankedSearches: 0,
+    forbidden: 0,
     contextRefreshes: 0,
   };
 
@@ -790,8 +813,14 @@ export class S2CitationSource {
       this.breakerOpenUntil = null;
       this.consecutiveGiveUps = S2_BREAKER_GIVE_UPS - 1;
     }
-    for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
-      if (attempt > 0) this.stats.retries += 1;
+    const keyed = Boolean(this.deps.apiKey);
+    const max429 = keyed && !ATTEMPTS_OVERRIDDEN ? S2_KEYED_MAX_ATTEMPTS : MAX_ATTEMPTS;
+    let n429 = 0;
+    let nOther = 0;
+    let made = 0;
+    while (n429 < max429 && nOther < MAX_ATTEMPTS && (keyed || n429 + nOther < MAX_ATTEMPTS)) {
+      if (made > 0) this.stats.retries += 1;
+      made += 1;
       await this.pace();
       this.stats.requests += 1;
       let resp: HttpResponseLike;
@@ -799,7 +828,10 @@ export class S2CitationSource {
         resp = await this.deps.fetchImpl(url, { method: "GET", headers, timeoutMs: 30_000 });
       } catch (exc) {
         lastStatus = `network error ${String(exc)}`;
-        await this.deps.sleep(Math.min(BACKOFF_BASE_MS * 2 ** attempt, BACKOFF_MAX_MS));
+        await this.deps.sleep(
+          Math.min(BACKOFF_BASE_MS * 2 ** (keyed ? nOther : made - 1), BACKOFF_MAX_MS),
+        );
+        nOther += 1;
         continue;
       }
       if (resp.status === 200) {
@@ -813,6 +845,7 @@ export class S2CitationSource {
           // malformed body: retry
         }
         lastStatus = "malformed body";
+        nOther += 1;
         continue;
       }
       if (resp.status === 404 || resp.status === 400) {
@@ -823,10 +856,19 @@ export class S2CitationSource {
         if (resp.status === 429) this.stats.rateLimited += 1;
         lastStatus = String(resp.status);
         const hint = resp.status === 429 ? rateLimitHintMs(resp.headers) : null;
-        const backoff = Math.min(BACKOFF_BASE_MS * 2 ** attempt, BACKOFF_MAX_MS);
+        let backoff: number;
+        if (keyed && resp.status === 429) {
+          backoff = Math.min(S2_KEYED_429_BACKOFF_BASE_MS * 2 ** n429, S2_KEYED_429_BACKOFF_MAX_MS);
+          n429 += 1;
+        } else {
+          backoff = Math.min(BACKOFF_BASE_MS * 2 ** (keyed ? nOther : made - 1), BACKOFF_MAX_MS);
+          if (resp.status === 429) n429 += 1;
+          else nOther += 1;
+        }
         await this.deps.sleep(Math.min(Math.max(hint ?? 0, backoff), BACKOFF_MAX_MS * 2));
         continue;
       }
+      if (resp.status === 403) this.stats.forbidden += 1;
       throw new TransientS2Error(`S2 answered ${resp.status} for ${url}`);
     }
     this.consecutiveGiveUps += 1;
@@ -838,7 +880,7 @@ export class S2CitationSource {
           `S2 requests fail fast for ${S2_BREAKER_COOLDOWN_MS / 60000} min`,
       );
     }
-    throw new TransientS2Error(`S2 gave up after ${MAX_ATTEMPTS} attempts (${lastStatus}): ${url}`);
+    throw new TransientS2Error(`S2 gave up after ${made} attempts (${lastStatus}): ${url}`);
   }
 
   /** Merge this run's entries into the file on disk (another theme's run
@@ -879,8 +921,22 @@ export class S2CitationSource {
       `pairs found=${s.pairsFound} missing=${s.pairsMissing}, context refreshes=${s.contextRefreshes}, ` +
       `citing fetched=${s.citingFetched} ` +
       `not-in-s2=${s.citingNotInS2} failed=${s.citingFailed}, requests=${s.requests} ` +
-      `429=${s.rateLimited} retries=${s.retries}, breaker trips=${this.breaker.trips} refused=${this.breaker.refused}, ` +
+      `429=${s.rateLimited} forbidden=${s.forbidden} retries=${s.retries}, breaker trips=${this.breaker.trips} refused=${this.breaker.refused}, ` +
       `key=${this.deps.apiKey ? "yes" : "no"}`
+    );
+  }
+
+  /** #564: one GitHub `::warning::` line when S2 answered 403 at least
+   * once (key invalid/revoked, or S2 blocking this runner for a while), so
+   * a build that fails the evidence gate shows its cause in one line.
+   * `null` when there was no 403. */
+  forbiddenWarning(): string | null {
+    const n = this.stats.forbidden;
+    if (n === 0) return null;
+    return (
+      `::warning::s2 citations: S2 answered 403 to ${n} of ${this.stats.requests} request(s) ` +
+      `(key=${this.deps.apiKey ? "yes" : "no"}) — the API key is invalid or S2 is blocking this runner for now; ` +
+      `those pairs count as unreachable (403: キーが無効か一時遮断)`
     );
   }
 }

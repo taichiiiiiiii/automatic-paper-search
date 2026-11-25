@@ -68,7 +68,7 @@ import {
   RegressionRefusedError,
   regressionRefusal,
 } from "./publishGuard.js";
-import { S2_COUNT_FILENAME } from "./s2CitationCounts.js";
+import { S2_COUNT_FILENAME, S2_COUNT_RETRY, type S2CountRetryOptions } from "./s2CitationCounts.js";
 import { S2_REFERENCES_FILENAME } from "./s2Citations.js";
 import { DEFAULT_DESCENDANT_CANDIDATES } from "./s2Expansion.js";
 import { sanitizeTheme, themeLineagePath, themeSlug } from "./slug.js";
@@ -381,6 +381,14 @@ export const fetchTextImpl: FetchTextLike = async (url, init) => {
   };
 };
 
+const S2_COUNT_RETRY_ENV = "PAPERPILOT_S2_COUNT_RETRY";
+/** #562: the `/paper/batch` count retry, on unless `PAPERPILOT_S2_COUNT_RETRY=off`. */
+export function s2CountRetryFromEnv(
+  env: Readonly<Record<string, string | undefined>>,
+): S2CountRetryOptions | null {
+  return env[S2_COUNT_RETRY_ENV]?.trim().toLowerCase() === "off" ? null : S2_COUNT_RETRY;
+}
+
 /**
  * R2-28: the opt-in evidence sources of {@link BuildThemeLineageDeps}
  * (arXiv HTML contexts, Crossref reference lists, DBLP venues) from the
@@ -505,7 +513,12 @@ export function defaultDeps(repoRoot: string = DEFAULT_REPO_ROOT): BuildThemeLin
     s2CitationCounts:
       (process.env.PAPERPILOT_S2_CITATION_COUNTS ?? "").toLowerCase() === "off"
         ? null
-        : { cachePath: join(lineageCacheDir(layout), S2_COUNT_FILENAME) },
+        : {
+            cachePath: join(lineageCacheDir(layout), S2_COUNT_FILENAME),
+            // #562: refetch a failed chunk once after 30 s (<= 60 s per build);
+            // PAPERPILOT_S2_COUNT_RETRY=off disables it.
+            retry: s2CountRetryFromEnv(process.env),
+          },
     // R2-10 (design 41 D6): Semantic Scholar citation contexts first.
     // PAPERPILOT_S2_RELATIONS=off restores the pre-R2-10 path.
     s2Citations:
