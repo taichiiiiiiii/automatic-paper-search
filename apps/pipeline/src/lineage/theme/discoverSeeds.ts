@@ -28,6 +28,7 @@ import { isSurveyLike, type SurveyPaperLike } from "../shared/surveyLike.js";
 import {
   type BuildCompletenessLike,
   discoverSeedsViaOpenalex,
+  logTitle,
   type OpenAlexDeps,
 } from "./openalexFetch.js";
 import { extractDoi, openalexShortId, type ThemePaper, workToPaperDict } from "./openalexWork.js";
@@ -226,6 +227,9 @@ export function rankAndTruncate<
     /** R2-2b: per-paper multiplier on the velocity score (topic role,
      * `TopicScope.seedWeight`). Omitted -> 1 for every paper. */
     weight?: (paper: T) => number;
+    /** #573: one header plus one line per ranked candidate (velocity,
+     * weight, score, kept or not). Logging only. */
+    log?: (msg: string) => void;
   },
 ): T[] {
   let candidates = [...papers];
@@ -239,13 +243,44 @@ export function rankAndTruncate<
   }
   const currentYear = options.currentYear ?? new Date().getFullYear();
   const weight = options.weight ?? (() => 1);
-  const scored = candidates.map((p, i) => ({
-    p,
-    i,
-    score: computeSeedScore(p, currentYear) * weight(p),
-  }));
+  const scored = candidates.map((p, i) => {
+    const velocity = computeSeedScore(p, currentYear);
+    const w = weight(p);
+    return { p, i, velocity, w, score: velocity * w };
+  });
   scored.sort((a, b) => (b.score !== a.score ? b.score - a.score : a.i - b.i));
-  return scored.slice(0, options.topN).map((s) => s.p);
+  const kept = scored.slice(0, options.topN);
+  if (options.log) logSeedRank(options.log, scored, kept.length, options, currentYear);
+  return kept.map((s) => s.p);
+}
+
+/** #573: the velocity ranking as the log sees it (at most candidates + 1
+ * lines). With the on-demand pool (`rankLimit` = seeds x 4) every
+ * candidate is usually kept, so a seed swap shows in the search lines
+ * and the final-seed line rather than in `selected=`. */
+function logSeedRank(
+  log: (msg: string) => void,
+  scored: readonly {
+    p: { paperId?: unknown; title?: unknown };
+    velocity: number;
+    w: number;
+    score: number;
+  }[],
+  keptCount: number,
+  options: { topN: number; sinceYear: number | null },
+  currentYear: number,
+): void {
+  log(
+    `seed rank: ${scored.length} candidate(s), keep top ${options.topN} ` +
+      `(since=${options.sinceYear ?? "-"}, year=${currentYear})`,
+  );
+  scored.forEach((s, r) => {
+    log(
+      `seed rank: #${r + 1} ${String(s.p.paperId ?? "?")} velocity=${s.velocity.toFixed(2)} ` +
+        `weight=${s.w.toFixed(2)} score=${s.score.toFixed(2)} selected=${r < keptCount ? "yes" : "no"} ` +
+        `title=${JSON.stringify(logTitle(s.p.title))}`,
+    );
+  });
 }
 
 // ---- _apply_seed_filters ----
@@ -265,6 +300,8 @@ export function applySeedFilters<T extends ThemeSeedLike & { year?: unknown }>(
     topN: number;
     sinceYear: number | null;
     topicScope?: TopicScope | null;
+    /** #573: passed on to `rankAndTruncate`. */
+    log?: (msg: string) => void;
   },
 ): T[] {
   let candidates = [...byId.values()];
@@ -280,7 +317,14 @@ export function applySeedFilters<T extends ThemeSeedLike & { year?: unknown }>(
     topN: options.topN,
     sinceYear: options.sinceYear,
     weight: scope ? (p) => scope.seedWeight(p) : undefined,
+    log: options.log,
   });
+}
+
+/** #573: `deps.logger.info` as a `log` callback, or undefined when the
+ * logger has no `info` (warn-only loggers get no extra lines). */
+function infoLog(deps: OpenAlexDeps): ((msg: string) => void) | undefined {
+  return deps.logger?.info ? (msg) => deps.logger?.info?.(msg) : undefined;
 }
 
 // ---- _openalex_search_per_keyword / _discover_seeds_openalex_primary ----
@@ -416,6 +460,7 @@ export async function discoverSeedsOpenalexPrimary(
     topN: options.rankLimit ?? options.topN,
     sinceYear: options.sinceYear,
     topicScope: options.topicScope,
+    log: infoLog(deps),
   });
 }
 
@@ -618,12 +663,24 @@ export async function discoverSeeds(
     }
   }
 
-  const primary = applySeedFilters(byId, { theme, topN, sinceYear, topicScope });
+  const primary = applySeedFilters(byId, {
+    theme,
+    topN,
+    sinceYear,
+    topicScope,
+    log: infoLog(deps),
+  });
   if (!useOpenalexFallback || primary.length >= topN) return primary;
 
   const augmented = await topUpViaOpenalex(byId, { keywords, topN, sinceYear }, deps, completeness);
   if (augmented.size === byId.size) return primary;
-  const merged = applySeedFilters(augmented, { theme, topN, sinceYear, topicScope });
+  const merged = applySeedFilters(augmented, {
+    theme,
+    topN,
+    sinceYear,
+    topicScope,
+    log: infoLog(deps),
+  });
   deps.logger?.warn(
     `OpenAlex fallback added ${merged.length - primary.length} new seeds (final=${merged.length})`,
   );
