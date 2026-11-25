@@ -91,38 +91,6 @@
       "is_focus": false
     },
     {
-      "id": "openalex:W3132736064",
-      "title": "Calibrate Before Use: Improving Few-Shot Performance of Language Models",
-      "year": 2021,
-      "venue": "arXiv",
-      "venue_tier": "preprint",
-      "authors": [
-        "Tony Z. Zhao",
-        "Eric Wallace",
-        "Shi Feng",
-        "Dan Klein",
-        "Sameer Singh"
-      ],
-      "kinds": [],
-      "citation_count": 2317,
-      "github_stars": 0,
-      "tldr": "GPT-3 can perform numerous tasks when provided a natural language prompt that contains a few training examples. We show that this type of…",
-      "short_abstract": "GPT-3 can perform numerous tasks when provided a natural language prompt that contains a few training examples. We show that this type of few-shot learning can be unstable: the choice of prompt format, training examples, and even the order of the training examples can cause accuracy to vary from near chance to near state-of-the-art. We demonstrate that this instability arises from the bias of language models towards predicting certain answers, e.g., those that are placed near the end of the prompt or are common in the pre-training data. To mitigate this, we first estimate the model's bias towards each answer by asking for its prediction when given the training prompt and a content-free test input such as \"N/A\". We then fit calibration parameters that cause the prediction for this input to be uniform across answers. On a diverse set of tasks, this contextual calibration procedure substantially improves GPT-3 and GPT-2's average accuracy (up to 30.0% absolute) and reduces variance…",
-      "arxiv_id": "2102.09690",
-      "doi": "10.48550/arxiv.2102.09690",
-      "aliases": [
-        [
-          "arxiv",
-          "2102.09690"
-        ],
-        [
-          "doi",
-          "10.48550/arxiv.2102.09690"
-        ]
-      ],
-      "is_focus": false
-    },
-    {
       "id": "openalex:W3135934234",
       "title": "How many data points is a prompt worth?",
       "year": 2021,
@@ -1007,6 +975,32 @@
       "is_focus": false
     },
     {
+      "id": "openalex:W4285247752",
+      "title": "P-Tuning: Prompt Tuning Can Be Comparable to Fine-tuning Across Scales and Tasks",
+      "year": 2022,
+      "venue": "Proceedings of the conference - Association for Computational Linguistics. Meeting",
+      "venue_tier": "preprint",
+      "authors": [
+        "Xiao Liu",
+        "Kaixuan Ji",
+        "Yicheng Fu",
+        "Weng Tam",
+        "Zhengxiao Du"
+      ],
+      "kinds": [],
+      "citation_count": 1491,
+      "github_stars": 0,
+      "tldr": "",
+      "doi": "10.18653/v1/2022.acl-short.8",
+      "aliases": [
+        [
+          "doi",
+          "10.18653/v1/2022.acl-short.8"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
       "id": "openalex:W4302305810",
       "title": "PLOT: Prompt Learning with Optimal Transport for Vision-Language Models",
       "year": 2023,
@@ -1493,7 +1487,7 @@
       ],
       "kinds": [],
       "citation_count": 99,
-      "github_stars": 0,
+      "github_stars": 101,
       "tldr": "Prompt tuning (PT), where a small amount of trainable soft (continuous) prompt vectors is affixed to the input of language models (LM),…",
       "short_abstract": "Prompt tuning (PT), where a small amount of trainable soft (continuous) prompt vectors is affixed to the input of language models (LM), has shown promising results across various tasks and models for parameter-efficient fine-tuning (PEFT). PT stands out from other PEFT approaches because it maintains competitive performance with fewer trainable parameters and does not drastically scale up its parameters as the model size expands. However, PT introduces additional soft prompt tokens, leading to longer input sequences, which significantly impacts training and inference time and memory usage due to the Transformer's quadratic complexity. Particularly concerning for Large Language Models (LLMs) that face heavy daily querying. To address this issue, we propose Decomposed Prompt Tuning (DePT), which decomposes the soft prompt into a shorter soft prompt and a pair of low-rank matrices that are then optimised with two different learning rates. This allows DePT to achieve better performance…",
       "arxiv_id": "2309.05173",
@@ -1508,6 +1502,7 @@
           "10.48550/arxiv.2309.05173"
         ]
       ],
+      "github_url": "https://github.com/ShiZhengyan/DePT",
       "is_focus": false
     },
     {
@@ -1899,33 +1894,94 @@
       "is_focus": false
     },
     {
-      "id": "openalex:W4415798681",
-      "title": "Historical Test-time Prompt Tuning for Vision Foundation Models",
+      "id": "openalex:W4403866653",
+      "title": "Attention Prompting on Image for Large Vision-Language Models",
       "year": 2024,
-      "venue": "neural information processing systems",
-      "venue_tier": "A+",
+      "venue": "Lecture notes in computer science",
+      "venue_tier": "preprint",
       "authors": [
-        "Jingyi Zhang",
-        "Jiaxing Huang",
-        "Xiaoqin Zhang",
-        "Ling Shao",
-        "Shijian Lu"
+        "Runpeng Yu",
+        "Weihao Yu",
+        "Xinchao Wang"
       ],
       "kinds": [],
-      "citation_count": 42,
-      "github_stars": 0,
-      "tldr": "Test-time prompt tuning, which learns prompts online with unlabelled test samples during the inference stage, has demonstrated great…",
-      "short_abstract": "Test-time prompt tuning, which learns prompts online with unlabelled test samples during the inference stage, has demonstrated great potential by learning effective prompts on-the-fly without requiring any task-specific annotations. However, its performance often degrades clearly along the tuning process when the prompts are continuously updated with the test data flow, and the degradation becomes more severe when the domain of test samples changes continuously. We propose HisTPT, a Historical Test-time Prompt Tuning technique that memorizes the useful knowledge of the learnt test samples and enables robust test-time prompt tuning with the memorized knowledge. HisTPT introduces three types of knowledge banks, namely, local knowledge bank, hard-sample knowledge bank, and global knowledge bank, each of which works with different mechanisms for effective knowledge memorization and test-time prompt optimization. In addition, HisTPT features an adaptive knowledge retrieval mechanism that…",
-      "arxiv_id": "2410.20346",
-      "doi": "10.52202/079017-0410",
+      "citation_count": 82,
+      "github_stars": 113,
+      "tldr": "",
+      "arxiv_id": "2409.17143",
+      "doi": "10.1007/978-3-031-73404-5_15",
       "aliases": [
         [
           "arxiv",
-          "2410.20346"
+          "2409.17143"
         ],
         [
           "doi",
-          "10.52202/079017-0410"
+          "10.1007/978-3-031-73404-5_15"
+        ]
+      ],
+      "github_url": "https://github.com/yu-rp/apiprompting",
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4413144647",
+      "title": "Skip Tuning: Pre-trained Vision-Language Models are Effective and Efficient Adapters Themselves",
+      "year": 2025,
+      "venue": "IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings",
+      "venue_tier": "A+",
+      "authors": [
+        "Shihan Wu",
+        "Ji Zhang",
+        "Pengpeng Zeng",
+        "Lianli Gao",
+        "Jingkuan Song"
+      ],
+      "kinds": [],
+      "citation_count": 26,
+      "github_stars": 0,
+      "tldr": "Prompt tuning (PT) has long been recognized as an effective and efficient paradigm for transferring large pre-trained vision-language…",
+      "short_abstract": "Prompt tuning (PT) has long been recognized as an effective and efficient paradigm for transferring large pre-trained vision-language models (VLMs) to downstream tasks by learning a tiny set of context vectors. Nevertheless, in this work, we reveal that freezing the parameters of VLMs during learning the context vectors neither facilitates the transferability of pre-trained knowledge nor improves the memory and time efficiency significantly. Upon further investigation, we find that reducing both the length and width of the feature-gradient propagation flows of the full fine-tuning (FT) baseline is key to achieving effective and efficient knowledge transfer. Motivated by this, we propose Skip Tuning, a novel paradigm for adapting VLMs to downstream tasks. Unlike existing PT or adapter-based methods, Skip Tuning applies Layer-wise Skipping (LSkip) and Classwise Skipping (CSkip) upon the FT baseline without introducing extra context vectors or adapter modules. Extensive experiments…",
+      "arxiv_id": "2412.11509",
+      "doi": "10.1109/cvpr52734.2025.01372",
+      "aliases": [
+        [
+          "arxiv",
+          "2412.11509"
+        ],
+        [
+          "doi",
+          "10.1109/cvpr52734.2025.01372"
+        ]
+      ],
+      "is_focus": false
+    },
+    {
+      "id": "openalex:W4416522845",
+      "title": "A Closer Look at Conditional Prompt Tuning for Vision-Language Models",
+      "year": 2026,
+      "venue": "International Journal of Computer Vision",
+      "venue_tier": "preprint",
+      "authors": [
+        "Ji Zhang",
+        "Shihan Wu",
+        "Lianli Gao",
+        "Jingkuan Song",
+        "Nicu Sebe"
+      ],
+      "kinds": [],
+      "citation_count": 26,
+      "github_stars": 0,
+      "tldr": "",
+      "arxiv_id": "2506.23856",
+      "doi": "10.1007/s11263-026-02759-6",
+      "aliases": [
+        [
+          "arxiv",
+          "2506.23856"
+        ],
+        [
+          "doi",
+          "10.1007/s11263-026-02759-6"
         ]
       ],
       "is_focus": false
@@ -2535,358 +2591,6 @@
           "source": "semantic_scholar",
           "kind": "citation-context",
           "sha256": "74e2eda4a3d4c9b1014905519b7e634f80dfc0f5ff7dccfc1c594a99aa7789d4"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3132736064",
-      "dst": "openalex:W3122241445",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「What Makes Good In-Context Exam…」(2022) は 「Calibrate Before Use」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"(Zhao et al., 2021) proposes to improve the model by contextual calibration.\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "296d4ed0f57c0d218c3574186305a2031721e79c7e45c6ede534448d5a5bc6ab"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3132736064",
-      "dst": "openalex:W3139080614",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「GPT understands, too」(2023) は 「Calibrate Before Use」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "679a234cb3191db73154a465c8e3e4863c0fa2dee108b0cf45384b8f4e3b30a6"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3132736064",
-      "dst": "openalex:W3156470785",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.7,
-      "confidence": 0.7,
-      "rationale": "「Fantastically Ordered Prompts a…」(2022) は 「Calibrate Before Use」(2021) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Similar to previous work (Gao et al., 2020; Zhao et al., 2021), we use eleven text classiﬁcation datasets ranging from sentiment classiﬁcation to textual entailment.\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "140414b116b3258542aab9702ac65e8966bd4b9fefc0ded1625a193915571ac4"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3132736064",
-      "dst": "openalex:W3173617765",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.75,
-      "confidence": 0.75,
-      "rationale": "「Cutting Down on Prompts and Par…」(2022) は 「Calibrate Before Use」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"The prompt is important: different prompts can cause accuracy to vary from near chance to near state-of-the-art [21].\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "b9ae48b96b5bcc9c6be45342b85d98476677d79a4019be8c6f5066abdde6850e"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      },
-      "s2_signal": "influential_methodology"
-    },
-    {
-      "src": "openalex:W3132736064",
-      "dst": "openalex:W3188542058",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.75,
-      "confidence": 0.75,
-      "rationale": "「Knowledgeable Prompt-tuning」(2022) は 「Calibrate Before Use」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Compared to the contextual calibration (Zhao et al., 2021) and PMIDC (Holtzman et al.\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "34321d6fe57e31daa0955cbb59eb78eed40e7d843ebdb64d1896460512f2bbe5"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3132736064",
-      "dst": "openalex:W3192405822",
-      "rel": "contrasts",
-      "relation": "contrasts",
-      "conf": 0.7,
-      "confidence": 0.7,
-      "rationale": "「Noisy Channel Language Model Pr…」(2022) は 「Calibrate Before Use」(2021) と異なる手法を取ると述べている（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We hypothesize two reasons: (1) Channel models are more stable (i.e., achieve low variance and high worst-case accuracy), unlike direct models that are highly unstable with small k (Zhao et al., 2021; Perez et al., 2021; Lu et al., 2021).\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "7f33ee24aebf3e08a4bc4251ba8694c80fc6c3311af6c09401697c0788cfa64e"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3132736064",
-      "dst": "openalex:W3194836374",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「KnowPrompt: Knowledge-aware Prompt-tuning with Synergistic …」(2022) は「Calibrate Before Use: Improving Few-Shot Performance of Lan…」(2021) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "openalex",
-          "kind": "citation-list",
-          "sha256": "2907f9adfd087dbf147fb84b74e900c77883a0fc9a676d2aae0f994c2cf83fa7"
-        },
-        "classification": {
-          "method": "api_citation",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3132736064",
-      "dst": "openalex:W3196642073",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.75,
-      "confidence": 0.75,
-      "rationale": "「Differentiable Prompt Makes Pre…」(2022) は 「Calibrate Before Use」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Recent studies [28, 51] have reported that the manual prompt format can be sub-optimal, which would result in the accuracy varying from random guess performance to near the state-of-the-art.\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "aeb92439eb2f4526475302765f1f34ca8097bc92d92d12642fb9e234c78d7dc9"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3132736064",
-      "dst": "openalex:W3205068155",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Multitask Prompted Training Enables Zero-Shot Task Generali…」(2022) は「Calibrate Before Use: Improving Few-Shot Performance of Lan…」(2021) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "openalex",
-          "kind": "citation-list",
-          "sha256": "19adbb05e9217ceaa46709195e235a9d7829d6975dce44089fe0a4368137588d"
-        },
-        "classification": {
-          "method": "api_citation",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3132736064",
-      "dst": "openalex:W3210129272",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「OpenPrompt」(2022) は 「Calibrate Before Use」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Moreover, the performance of a prompt-learning pipeline varies greatly with the choice of templates and verbalizers (Zhao et al., 2021), creating more barriers for implementations.\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "cc9dc65376a0a65f3fa1d42889f9766156e39f394084e4dc45a105d63bc9ff09"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3132736064",
-      "dst": "openalex:W4385573003",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「RLPrompt」(2022) は 「Calibrate Before Use」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"In-Context Discrete Prompt Enumeration Because discrete prompts are difficult to optimize and susceptible to small design variations (Zhao et al., 2021; Webson and Pavlick, 2021; Lu et al., 2021), a number of existing works seek to locate …\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "4a7b7441344fbc57863d1cf46ccd279fda0e05f1aa0208eacb4cb8f4c97dbbef"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3132736064",
-      "dst": "openalex:W4391451889",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「CPT」(2024) は 「Calibrate Before Use」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"There are increasing efforts to address the problem in the community (Ross et al., 2021; Zhao et al., 2021).\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "6d277924f6df91e6af9dfea838bd317ee598e39358ef28c4374043c4c22ebe77"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3132736064",
-      "dst": "openalex:W7133228659",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「Enhancing CLIP with CLIP」(2023) は 「Calibrate Before Use」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"While discrete prompts are manually crafted natural language descriptions of classes that guide the model, they may not yield optimal results [47].\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "7fa5a7e326d9bd6ce8a909ce056c82d0929e56c65872164178a674bf80ff480a"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -4125,6 +3829,34 @@
     },
     {
       "src": "openalex:W3152956381",
+      "dst": "openalex:W4285247752",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「P-Tuning」(2022) は 「The Power of Scale for Paramete…」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"In our experiments (Cf. Section 4.2 and Table 3), we show that Lester et al. (2021); Liu et al. (2021) perform poorly on typical sequence tagging tasks compared to fine-tuning.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "7d10e5054d693bfeaa4debfaa41b7d5208eaf7470dc1abe346168088217cd473"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      },
+      "s2_signal": "influential_methodology"
+    },
+    {
+      "src": "openalex:W3152956381",
       "dst": "openalex:W4309811444",
       "rel": "baseline_only",
       "relation": "baseline_only",
@@ -5214,6 +4946,34 @@
     },
     {
       "src": "openalex:W3166846774",
+      "dst": "openalex:W4285247752",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「P-Tuning」(2022) は 「Learning How to Ask」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"To address these challenges, P-tuning v2 employs the idea of deep prompt tuning (Li and Liang, 2021; Qin and Eisner, 2021).\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "a1b6db89d0b124e915080f7aed77994b04b66525f9b70260f9a76d06a45fe500"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      },
+      "s2_signal": "influential_methodology"
+    },
+    {
+      "src": "openalex:W3166846774",
       "dst": "openalex:W4385262478",
       "rel": "baseline_only",
       "relation": "baseline_only",
@@ -5526,33 +5286,6 @@
           "source": "semantic_scholar",
           "kind": "citation-context",
           "sha256": "41f7fdf72b79b68c9ce75f0d949a2197491aa865565c544482b920131b4d7f97"
-        },
-        "classification": {
-          "method": "s2_context_rule",
-          "provider": null,
-          "model": null,
-          "prompt_version": null,
-          "schema_version": "relation-classification-v1"
-        }
-      }
-    },
-    {
-      "src": "openalex:W3173777717",
-      "dst": "openalex:W3132736064",
-      "rel": "baseline_only",
-      "relation": "baseline_only",
-      "conf": 0.75,
-      "confidence": 0.75,
-      "rationale": "「Calibrate Before Use」(2021) は 「Making Pre-trained Language Mod…」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Nevertheless, if these disadvantages are acceptable or avoidable, finetuning can improve accuracy over in-context learning in some cases (Schick & Schütze, 2021b; Gao et al., 2021).\"",
-      "provenance": {
-        "producer": {
-          "name": "paperpilot.scripts.build_theme_lineage",
-          "version": "p2t-v1"
-        },
-        "evidence": {
-          "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "3966a0460b4c15a246b06ad254b1ee6da4b3274f99e38b129510c4acc7ac951d"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -5949,6 +5682,33 @@
     },
     {
       "src": "openalex:W3173777717",
+      "dst": "openalex:W4285247752",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「P-Tuning」(2022) は 「Making Pre-trained Language Mod…」(2021) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"However, discrete prompting (Shin et al., 2020; Gao et al., 2020) can lead to suboptimal performance in many cases compared to fine-tuning.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "182af443d3fa851d484481191558a12f117627fe9ff1255e556d370e5fe67113"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3173777717",
       "dst": "openalex:W4309811444",
       "rel": "baseline_only",
       "relation": "baseline_only",
@@ -6208,6 +5968,33 @@
           "source": "semantic_scholar",
           "kind": "citation-context",
           "sha256": "ddc1ac01106ead21dcf5a9096f843f5e22eeecd7f14d7cfac22e53bf0166b36f"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3173777717",
+      "dst": "openalex:W4403866653",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Attention Prompting on Image fo…」(2024) は 「Making Pre-trained Language Mod…」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "b70861deca4ff1c2b1b78f1e13b75e2ec41767ff05daf8c171339c794cf7ed35"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -6736,6 +6523,34 @@
     },
     {
       "src": "openalex:W3174770825",
+      "dst": "openalex:W4285247752",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「P-Tuning」(2022) は 「Prefix-Tuning」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"In both prefix-tuning (Li and Liang, 2021) and P-tuning (Liu et al., 2021), authors discover the repa-rameterization to be useful in improving training speed, robustness and performance.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "c0b6b0904e04e137e98a5ece7ed43c8465a6610a5caae763cd5c5aacd68799ec"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      },
+      "s2_signal": "influential_methodology"
+    },
+    {
+      "src": "openalex:W3174770825",
       "dst": "openalex:W4302305810",
       "rel": "baseline_only",
       "relation": "baseline_only",
@@ -7186,6 +7001,33 @@
           "source": "semantic_scholar",
           "kind": "citation-context",
           "sha256": "236d9e2bbcd2d65288b4c66738ff34427b1c161eca18ca5a5976158365610ef9"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3174770825",
+      "dst": "openalex:W4416522845",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「A Closer Look at Conditional Pr…」(2026) は 「Prefix-Tuning」(2021) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"…our main contributions of this work are threefold: • For the first time, we reveal that the key to mitigating the Base-New Tradeoff (BNT) problem in conditional prompt tuning lies in learning dynamic prompts conditioned on textual class i…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "fe59fed69760f273b6b3500d80f35539846dfbe7160da007e1273bf770b92593"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -7903,12 +7745,12 @@
     },
     {
       "src": "openalex:W3185341429",
-      "dst": "openalex:W4415798681",
+      "dst": "openalex:W4403866653",
       "rel": "baseline_only",
       "relation": "baseline_only",
       "conf": 0.6,
       "confidence": 0.6,
-      "rationale": "「Historical Test-time Prompt Tun…」(2024) は 「Pre-train, Prompt, and Predict」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "rationale": "「Attention Prompting on Image fo…」(2024) は 「Pre-train, Prompt, and Predict」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -7917,7 +7759,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "9628575b205e18ae1af7d36f2925164e57b00cd9928749ff8173f3dce83f959f"
+          "sha256": "e278b18755f652ae8bf887f266bba6e21c00dbae81976790ad2d6ea3ef12b4be"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -8119,6 +7961,33 @@
     },
     {
       "src": "openalex:W3192405822",
+      "dst": "openalex:W4285247752",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「P-Tuning」(2022) は 「Noisy Channel Language Model Pr…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"3.1 Lack of Universality Lester et al. (2021); Liu et al. (2021) have been proved quite effective in many NLP applications (Wang et al., 2021a,b; Chen et al., 2021; Zheng et al., 2021; Min et al., 2021), but still fall short at replacing f…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "d2e32eb8d06f640841befc40a8497b7ea3252e74e704a558bed5e541ec7a28b4"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3192405822",
       "dst": "openalex:W7133183334",
       "rel": "baseline_only",
       "relation": "baseline_only",
@@ -8243,6 +8112,33 @@
           "source": "openalex",
           "kind": "citation-list",
           "sha256": "2c60d94448d3ed5ebffe53a24d96c06be239588d107b7ac5f92f71a77286f213"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3194836374",
+      "dst": "openalex:W4285247752",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「P-Tuning: Prompt Tuning Can Be Comparable to Fine-tuning Ac…」(2022) は「KnowPrompt: Knowledge-aware Prompt-tuning with Synergistic …」(2022) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "d31cf8b7dfb545dfda338cc5749dccb0f5b4cbd386fa91c3fb051b2b06ab1d24"
         },
         "classification": {
           "method": "api_citation",
@@ -9213,12 +9109,12 @@
     },
     {
       "src": "openalex:W3198377975",
-      "dst": "openalex:W4415798681",
+      "dst": "openalex:W4403866653",
       "rel": "baseline_only",
       "relation": "baseline_only",
       "conf": 0.6,
       "confidence": 0.6,
-      "rationale": "「Historical Test-time Prompt Tun…」(2024) は 「Learning to Prompt for Vision-L…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"To circumvent this limitation, prompt learning [4], which aims to adapt VFMs to fit downstream tasks by optimizing prompts as learnable vectors with few-shot task training samples, has been extensively explored recently.\"",
+      "rationale": "「Attention Prompting on Image fo…」(2024) は 「Learning to Prompt for Vision-L…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -9227,10 +9123,64 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "5b9a1ecbd62dc926df008539d46439459f037939b1505750c8021d4f0948886b"
+          "sha256": "09c19ac353b430026a414b771f48118a2adf3de3213c6da5cf7d91ed582e34f6"
         },
         "classification": {
           "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3198377975",
+      "dst": "openalex:W4413144647",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Skip Tuning」(2025) は 「Learning to Prompt for Vision-L…」(2022) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"To comprehensively evaluate the progress established by PT, we perform a comparison between the representative PT method CoOp [42] with the full FT baseline in terms of i) the number of learnable parameters, ii) memory usage, iii) time cos…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "7bca330ac9ca62cfdcc255b73c37eec871fde27530ba032cc87f38634d38e4a1"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W3198377975",
+      "dst": "openalex:W4416522845",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「A Closer Look at Conditional Prompt Tuning for Vision-Langu…」(2026) は「Learning to Prompt for Vision-Language Models」(2022) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "5c4fc3500c8b2f7d5f1aedb5f67332f0bb538af0482e42e6076421b0c135783a"
+        },
+        "classification": {
+          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -9373,6 +9323,33 @@
         }
       },
       "s2_signal": "influential_methodology"
+    },
+    {
+      "src": "openalex:W3198571508",
+      "dst": "openalex:W4285247752",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「P-Tuning」(2022) は 「PPT」(2022) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"used for further boost performance by providing a better initialization (Gu et al., 2021).\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "22cb0b91a49b5ae89a0e09e32677d9bcf427465c119f5319fac8c0890333cdf5"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
     },
     {
       "src": "openalex:W3198571508",
@@ -10714,6 +10691,60 @@
     },
     {
       "src": "openalex:W4225747866",
+      "dst": "openalex:W4403866653",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Attention Prompting on Image fo…」(2024) は 「Visual Prompt Tuning」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "ff60e97106240fd2ff4fe1c27e7be59d44b3507c63a9c61c8247502f1442941d"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4225747866",
+      "dst": "openalex:W4416522845",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「A Closer Look at Conditional Pr…」(2026) は 「Visual Prompt Tuning」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"…our main contributions of this work are threefold: • For the first time, we reveal that the key to mitigating the Base-New Tradeoff (BNT) problem in conditional prompt tuning lies in learning dynamic prompts conditioned on textual class i…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "d518f6fa79ccf84209a73f35a9207ec06735702f3b92df1f63fc781abac79ebf"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4225747866",
       "dst": "openalex:W7133183334",
       "rel": "baseline_only",
       "relation": "baseline_only",
@@ -10958,12 +10989,12 @@
     },
     {
       "src": "openalex:W4229453513",
-      "dst": "openalex:W4415798681",
+      "dst": "openalex:W4416522845",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「Historical Test-time Prompt Tun…」(2024) は 「Prompt Distribution Learning」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「A Closer Look at Conditional Prompt Tuning for Vision-Langu…」(2026) は「Prompt Distribution Learning」(2022) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -10971,11 +11002,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "98af84d05bafe2472c32d5154c5dfa11f1c22848f8f174b692a9cc6bb7a6a916"
+          "kind": "citation-list",
+          "sha256": "16fae8f8e286c42985e46e79d9d8ef914ef0a719240bbfb7aaa3eb35bd2c3ffd"
         },
         "classification": {
-          "method": "s2_context_rule",
+          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -11255,6 +11286,87 @@
       }
     },
     {
+      "src": "openalex:W4285247752",
+      "dst": "openalex:W3139080614",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「GPT understands, too」(2023) は「P-Tuning: Prompt Tuning Can Be Comparable to Fine-tuning Ac…」(2022) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "084eb61c85b12790add883ff25cb550986638c7edd128cc69c451a6729eea888"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4285247752",
+      "dst": "openalex:W4323568442",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「Multitask Prompt Tuning Enables Parameter-Efficient Transfe…」(2023) は「P-Tuning: Prompt Tuning Can Be Comparable to Fine-tuning Ac…」(2022) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "7b2ba2608470eec7c99d8bc60d4278e3756518dbe73d6f0c5c4b77b75e94a667"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4285247752",
+      "dst": "openalex:W4388109999",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「When Do Prompting and Prefix-Tuning Work? A Theory of Capab…」(2024) は「P-Tuning: Prompt Tuning Can Be Comparable to Fine-tuning Ac…」(2022) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "openalex",
+          "kind": "citation-list",
+          "sha256": "4c9d5dda05de22a5720984c1978e54eaaa0739e20ec21252ca0e5eda6a47c6e8"
+        },
+        "classification": {
+          "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
       "src": "openalex:W4302305810",
       "dst": "openalex:W4390872773",
       "rel": "baseline_only",
@@ -11364,12 +11476,12 @@
     },
     {
       "src": "openalex:W4302305810",
-      "dst": "openalex:W4415798681",
+      "dst": "openalex:W4416522845",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.6,
-      "confidence": 0.6,
-      "rationale": "「Historical Test-time Prompt Tun…」(2024) は 「PLOT」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「A Closer Look at Conditional Prompt Tuning for Vision-Langu…」(2026) は「PLOT: Prompt Learning with Optimal Transport for Vision-Lan…」(2023) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -11377,11 +11489,11 @@
         },
         "evidence": {
           "source": "semantic_scholar",
-          "kind": "citation-context",
-          "sha256": "bc1b0b150d65b8c828f2abf6cb44e6d595c7e1c9502d4f3f7c1b0bb77c8908bd"
+          "kind": "citation-list",
+          "sha256": "1c81c570bd5efb85afc6eb5db9b3cf88faf0b089b1972343953aa907c3872b80"
         },
         "classification": {
-          "method": "s2_context_rule",
+          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -11409,6 +11521,33 @@
         },
         "classification": {
           "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4304701485",
+      "dst": "openalex:W4416522845",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「A Closer Look at Conditional Prompt Tuning for Vision-Langu…」(2026) は「Learning to Decompose Visual Features with Latent Textual P…」(2023) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "4b838340b6fc6343f0841b1c3688720c082a6ae962cc976d40dff964d4f0ea29"
+        },
+        "classification": {
+          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -11786,6 +11925,33 @@
           "source": "semantic_scholar",
           "kind": "citation-context",
           "sha256": "36fe5ef99efc840a7ef72040e1dd2a8179c0f4f8ab1a41afde6ebb9b0afbd81e"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4312238419",
+      "dst": "openalex:W4403866653",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Attention Prompting on Image fo…」(2024) は 「Learning to Prompt for Continua…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "c5824eab5c7b772b923c3c39b0c006263ca006436522b7d1d984305e90125fda"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -12344,12 +12510,12 @@
     },
     {
       "src": "openalex:W4312310776",
-      "dst": "openalex:W4415798681",
+      "dst": "openalex:W4403866653",
       "rel": "baseline_only",
       "relation": "baseline_only",
       "conf": 0.6,
       "confidence": 0.6,
-      "rationale": "「Historical Test-time Prompt Tun…」(2024) は 「Conditional Prompt Learning for…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"To this end, prompt learning [4, 9] Note that the test data is presented in a continuous flow, where the text tokens are continuously updated with the test data flow.\"",
+      "rationale": "「Attention Prompting on Image fo…」(2024) は 「Conditional Prompt Learning for…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -12358,7 +12524,61 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "7641395fc0948214b0c85846dcfa4afcc442d3a5b424f2e855d0ecde212d3fbf"
+          "sha256": "76941787466d867754de014b08dbb368c8ce064458dc25bd1f5612af510f6ce3"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4312310776",
+      "dst": "openalex:W4413144647",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Skip Tuning」(2025) は 「Conditional Prompt Learning for…」(2022) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "afdc16e2bcde78fc3866e4b8f29fd17cbe32911a4689f2e7a690c9c4d78fe833"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4312310776",
+      "dst": "openalex:W4416522845",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「A Closer Look at Conditional Pr…」(2026) は 「Conditional Prompt Learning for…」(2022) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We apply our CaPT to a broad spectrum of baseline approaches, including CoOp [7], CoCoOp [6], KgCoOp [8], ProGrad [9], DAPT [10] and DePT [1].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "50fc288405b75b2cd1d216fbf127cd5ea6a61c78694aa35aef64ff3a8ae6f432"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -12505,25 +12725,25 @@
       }
     },
     {
-      "src": "openalex:W4382999123",
-      "dst": "openalex:W4415798681",
+      "src": "openalex:W4379470115",
+      "dst": "openalex:W4413144647",
       "rel": "baseline_only",
       "relation": "baseline_only",
-      "conf": 0.5,
-      "confidence": 0.5,
-      "rationale": "「Historical Test-time Prompt Tuning for Vision Foundation Mo…」(2024) は「Dual Modality Prompt Tuning for Vision-Language Pre-Trained…」(2023) を引用している（OpenAlex の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Skip Tuning」(2025) は 「Consistency-guided Prompt Learn…」(2024) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
           "version": "p2t-v1"
         },
         "evidence": {
-          "source": "openalex",
-          "kind": "citation-list",
-          "sha256": "2cce391af2c9193a25de97618bce9720932c7998e3248a1a0bb8c387dd89b5f9"
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "5cb8c9732b967e6a52ce80d4ddfbe003490a846dfec6afffa25d5352f8d2d35b"
         },
         "classification": {
-          "method": "api_citation",
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -12668,12 +12888,12 @@
     },
     {
       "src": "openalex:W4386065763",
-      "dst": "openalex:W4415798681",
+      "dst": "openalex:W4413144647",
       "rel": "baseline_only",
       "relation": "baseline_only",
       "conf": 0.6,
       "confidence": 0.6,
-      "rationale": "「Historical Test-time Prompt Tun…」(2024) は 「Visual-Language Prompt Tuning w…」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "rationale": "「Skip Tuning」(2025) は 「Visual-Language Prompt Tuning w…」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -12682,10 +12902,37 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "1aa729cb597bb766a59f470894875b4c7f9a40d46cbf8e302da45aa27756856a"
+          "sha256": "2711cf92b4dcbbde66d8fbd81c59396b8d247932d115cd6facdd325b8d136f7f"
         },
         "classification": {
           "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4386065763",
+      "dst": "openalex:W4416522845",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.5,
+      "confidence": 0.5,
+      "rationale": "「A Closer Look at Conditional Prompt Tuning for Vision-Langu…」(2026) は「Visual-Language Prompt Tuning with Knowledge-Guided Context…」(2023) を引用している（Semantic Scholar の参考文献リストで確認。関係の種類を述べる引用文はないため参照/背景として扱う）。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-list",
+          "sha256": "6511c409f287862d12f7fdbee2a986de906979b62d5116842a38b6fb21fea356"
+        },
+        "classification": {
+          "method": "api_citation",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -12886,12 +13133,12 @@
     },
     {
       "src": "openalex:W4386071547",
-      "dst": "openalex:W4415798681",
+      "dst": "openalex:W4413144647",
       "rel": "baseline_only",
       "relation": "baseline_only",
       "conf": 0.6,
       "confidence": 0.6,
-      "rationale": "「Historical Test-time Prompt Tun…」(2024) は 「MaPLe」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "rationale": "「Skip Tuning」(2025) は 「MaPLe」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"By adding train-able prompts into both the image and text branches of CLIP, MaPLe[17], PromptSRC[18], and CoPrompt[27] demonstrate remarkable performance on both base and new tasks.\"",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -12900,7 +13147,34 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "44c04bc5a26d911ed002aa58da03c327afe09e1d0d3d12a84975f8a1cc4eeaa7"
+          "sha256": "40895108193c36987074998ae161cad99a84dc33e12ef8f9f6530cad22c04a0a"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4386071547",
+      "dst": "openalex:W4416522845",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「A Closer Look at Conditional Pr…」(2026) は 「MaPLe」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"By incorporating trainable prompts into both the language and text branches of CLIP, multi-model PT approaches like MaPLe[5] and PromptSRC[44] demonstrate remarkable performance not only on base tasks but also on new tasks.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "a4d4ce85f081de687955205177f413fb298f957dffd750c2f134ddc5b4e84ed0"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -12928,6 +13202,33 @@
           "source": "semantic_scholar",
           "kind": "citation-context",
           "sha256": "980a4e79cbc1aeb0365d3c8054172be6b026ea94e487903ca696cd61f395090b"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4386075814",
+      "dst": "openalex:W4416522845",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「A Closer Look at Conditional Pr…」(2026) は 「Diversity-Aware Meta Visual Pro…」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"…our main contributions of this work are threefold: • For the first time, we reveal that the key to mitigating the Base-New Tradeoff (BNT) problem in conditional prompt tuning lies in learning dynamic prompts conditioned on textual class i…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "76e0b3cc480228d18c14fa32655b54fd2c934752f54d287f6d6d0f40dfd43101"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -13265,6 +13566,60 @@
       }
     },
     {
+      "src": "openalex:W4386790226",
+      "dst": "openalex:W4413144647",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「Skip Tuning」(2025) は 「CLIP-Adapter」(2023) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"To further demonstrate the advantages of Skip Tuning, we also compare it with the representative adapter-based methods LoRA [15] and CLIP-adapter [10].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "6bc2d5240284ba0ad7aef519394425004c47b8a7d0f1d1a19a209c002da1f987"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4386790226",
+      "dst": "openalex:W4416522845",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「A Closer Look at Conditional Pr…」(2026) は 「CLIP-Adapter」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "c4175c6306001675e240bf9d3630af67656cc1a4936627cbf40cb52f36495888"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
       "src": "openalex:W4390872773",
       "dst": "openalex:W4379470115",
       "rel": "baseline_only",
@@ -13338,6 +13693,60 @@
         },
         "classification": {
           "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4390872773",
+      "dst": "openalex:W4413144647",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Skip Tuning」(2025) は 「Self-regulating Prompts」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "eedd74aacdc90f372c01226e22ce6f492d5f72777baf8d051fbc269d8345cb79"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4390872773",
+      "dst": "openalex:W4416522845",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「A Closer Look at Conditional Pr…」(2026) は 「Self-regulating Prompts」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "84d80f2b69286d2c69953ccc6315bd910defd25a7c77a40e76f3dfd0d9738664"
+        },
+        "classification": {
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -13538,12 +13947,12 @@
     },
     {
       "src": "openalex:W4390873714",
-      "dst": "openalex:W4415798681",
+      "dst": "openalex:W4413144647",
       "rel": "baseline_only",
       "relation": "baseline_only",
       "conf": 0.6,
       "confidence": 0.6,
-      "rationale": "「Historical Test-time Prompt Tun…」(2024) は 「Prompt-aligned Gradient for Pro…」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "rationale": "「Skip Tuning」(2025) は 「Prompt-aligned Gradient for Pro…」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -13552,7 +13961,34 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "1edfc0f5b21d1f0573642d1a79e7ebe1774de5197c1843cd77579f5c66dfda1b"
+          "sha256": "4122bb05734f6ad4491823dea326ab6fd7096ec34f3eca0ce1f6af57d526a29c"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4390873714",
+      "dst": "openalex:W4416522845",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「A Closer Look at Conditional Pr…」(2026) は 「Prompt-aligned Gradient for Pro…」(2023) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"…our main contributions of this work are threefold: • For the first time, we reveal that the key to mitigating the Base-New Tradeoff (BNT) problem in conditional prompt tuning lies in learning dynamic prompts conditioned on textual class i…\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "bfbc3d0d8e1a9290ef25826091b79405d0a926af57578eb51324375fc352143b"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -13583,6 +14019,33 @@
         },
         "classification": {
           "method": "api_citation",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4390874497",
+      "dst": "openalex:W4416522845",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「A Closer Look at Conditional Pr…」(2026) は 「Distribution-Aware Prompt Tunin…」(2023) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"For a fair comparison, the results of the competitors are sourced from their respective published papers, except for the results of DAPT [10] and Bayes [4], which are reproduced by us.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "6b54f62f9ccbdc095e449e741376a90567d702103b7ed860b6f21d3210c1ac8c"
+        },
+        "classification": {
+          "method": "s2_context_rule",
           "provider": null,
           "model": null,
           "prompt_version": null,
@@ -13808,12 +14271,12 @@
     },
     {
       "src": "openalex:W4394593151",
-      "dst": "openalex:W4415798681",
+      "dst": "openalex:W4403866653",
       "rel": "baseline_only",
       "relation": "baseline_only",
       "conf": 0.6,
       "confidence": 0.6,
-      "rationale": "「Historical Test-time Prompt Tun…」(2024) は 「Multitask Vision-Language Promp…」(2024) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "rationale": "「Attention Prompting on Image fo…」(2024) は 「Multitask Vision-Language Promp…」(2024) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
       "provenance": {
         "producer": {
           "name": "paperpilot.scripts.build_theme_lineage",
@@ -13822,7 +14285,7 @@
         "evidence": {
           "source": "semantic_scholar",
           "kind": "citation-context",
-          "sha256": "9af3e5091bb1bf398b8eb92e8b631f661a6a04298205c03da459812b64945c97"
+          "sha256": "0c4ee65cc48ed59c12403ea7e56467846dea2ed47e086df7459ab9c88fc9512f"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -13904,6 +14367,114 @@
           "source": "semantic_scholar",
           "kind": "citation-context",
           "sha256": "fad1fc3a85385467ebd58f0e293e5899034eb6a8158e061b69b876e995d2cc5d"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4402727025",
+      "dst": "openalex:W4413144647",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.7,
+      "confidence": 0.7,
+      "rationale": "「Skip Tuning」(2025) は 「DePT」(2024) のデータ・コード等を利用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"Our implementation of Skip Tuning is based on the open-source Github repository of DePT [39] 2 .\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "b67cf15dd293b03dd09ada273b00a353ecc6f9a377b9a26333026adb2ade4633"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4402727025",
+      "dst": "openalex:W4416522845",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.75,
+      "confidence": 0.75,
+      "rationale": "「A Closer Look at Conditional Pr…」(2026) は 「DePT」(2024) と比較している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"We evaluate the flexibility and effectiveness of CaPT using a broad spectrum of baselines, including CoOp [7], KgCoOp [8], ProGrad [9], DaPT [10] and DePT [1]—our recently proposed state-of-the-art unconditional PT approach.\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "8b4d19f94772c87d867345c5bc39b281e81a762fe78dba40fadcd82476b95435"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4402753597",
+      "dst": "openalex:W4413144647",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「Skip Tuning」(2025) は 「TCP」(2024) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。引用文: \"A series of schemes are devised to tackle this problem, e.g. CoCoOp[41], KgCoOp[32], ProGrad[44], TCP [33], and DePT[39].\"",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "bf83710a450b2148d3309c93cd12133b98e0563a1da5acc23ac6a31e65c1e473"
+        },
+        "classification": {
+          "method": "s2_context_rule",
+          "provider": null,
+          "model": null,
+          "prompt_version": null,
+          "schema_version": "relation-classification-v1"
+        }
+      }
+    },
+    {
+      "src": "openalex:W4413144647",
+      "dst": "openalex:W4416522845",
+      "rel": "baseline_only",
+      "relation": "baseline_only",
+      "conf": 0.6,
+      "confidence": 0.6,
+      "rationale": "「A Closer Look at Conditional Pr…」(2026) は 「Skip Tuning」(2025) を背景・関連研究として引用している（Semantic Scholar の引用文・引用の意図から規則で判定）。被引用論文を特定できる引用文はない。",
+      "provenance": {
+        "producer": {
+          "name": "paperpilot.scripts.build_theme_lineage",
+          "version": "p2t-v1"
+        },
+        "evidence": {
+          "source": "semantic_scholar",
+          "kind": "citation-context",
+          "sha256": "da8d093b577fb8e35181ed0024607a3a8c897f4c6983076b526a9c2847c50965"
         },
         "classification": {
           "method": "s2_context_rule",
@@ -14048,10 +14619,10 @@
     ],
     "depth": 2,
     "since_year": 2018,
-    "generated_at": "2026-11-25T16:39:38.457000Z",
+    "generated_at": "2026-11-25T17:00:19.896000Z",
     "provenance_breakdown": {
-      "s2_context_rule": 321,
-      "api_citation": 119
+      "s2_context_rule": 334,
+      "api_citation": 125
     },
     "completeness": {
       "complete": true,
@@ -14067,7 +14638,7 @@
         "z_lo": 0,
         "z_hi": 1
       },
-      "pool_size": 417
+      "pool_size": 433
     },
     "seed_scope": {
       "subfield": "Artificial Intelligence",
