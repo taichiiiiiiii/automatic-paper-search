@@ -6,6 +6,10 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Changed — 公開の checkout を全履歴の取得に（#570）
+
+- CI で測ると、runner の浅い（depth 1）checkout が 21〜30 秒、全履歴が 5〜6 秒だった（同じ job で 3 回ずつ交互に）。pages-release の validate・build・deploy・smoke・record と、theme-on-demand の生成 job の checkout を `fetch-depth: 0` にした。検査・ref・権限は変えていない。見込みは公開 1 回あたり最大 約 100 秒の短縮。
+
 ### Added — seed 候補の一覧と順位を generate ログに出す（#573）
 
 - OpenAlex の seed 検索 1 回ごとに見出し（キーワード・per-page・返った件数）と候補ごとの行（順位・id・年・引用数・relevance・題名 80 字）、速度スコアの並べ替え 1 回ごとに候補ごとの行（速度・重み・スコア・選ばれたか）、最終の seed を 1 行（`seeds: final …`）、いずれも info に出す。作り直しで seed が入れ替わる理由（#560 の検索窓の端の揺れ）を次のログで確かめるため。選び方・取得パラメータ・公開内容は変えない。

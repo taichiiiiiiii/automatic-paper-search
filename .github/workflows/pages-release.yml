@@ -108,6 +108,8 @@ jobs:
         with:
           ref: ${{ inputs.source_sha }}
           persist-credentials: false
+          # #570: a depth-1 fetch took 21-30 s on the runner, a full one 5-6 s (probe).
+          fetch-depth: 0
 
       - name: Verify exact checkout
         env:
@@ -188,6 +190,8 @@ jobs:
         with:
           ref: ${{ inputs.source_sha }}
           persist-credentials: false
+          # #570: a depth-1 fetch took 21-30 s on the runner, a full one 5-6 s (probe).
+          fetch-depth: 0
 
       - name: Setup pnpm
         uses: ./.github/actions/setup-pnpm
@@ -310,6 +314,8 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
+          # #570: a depth-1 fetch took 21-30 s on the runner, a full one 5-6 s (probe).
+          fetch-depth: 0
 
       - name: Setup pnpm
         uses: ./.github/actions/setup-pnpm
@@ -376,6 +382,8 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
+          # #570: a depth-1 fetch took 21-30 s on the runner, a full one 5-6 s (probe).
+          fetch-depth: 0
 
       - name: Setup pnpm
         uses: ./.github/actions/setup-pnpm
@@ -418,6 +426,8 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
+          # #570: a depth-1 fetch took 21-30 s on the runner, a full one 5-6 s (probe).
+          fetch-depth: 0
 
       - name: Setup pnpm
         uses: ./.github/actions/setup-pnpm

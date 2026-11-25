@@ -90,6 +90,8 @@ jobs:
         with:
           ref: develop
           persist-credentials: false
+          # #570: a depth-1 fetch took 21-30 s on the runner, a full one 5-6 s.
+          fetch-depth: 0
 
       - name: Setup pnpm
         uses: ./.github/actions/setup-pnpm
