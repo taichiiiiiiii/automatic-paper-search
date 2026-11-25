@@ -6,6 +6,9 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Added — seed 候補の一覧と順位を generate ログに出す（#573）
+
+- OpenAlex の seed 検索 1 回ごとに見出し（キーワード・per-page・返った件数）と候補ごとの行（順位・id・年・引用数・relevance・題名 80 字）、速度スコアの並べ替え 1 回ごとに候補ごとの行（速度・重み・スコア・選ばれたか）、最終の seed を 1 行（`seeds: final …`）、いずれも info に出す。作り直しで seed が入れ替わる理由（#560 の検索窓の端の揺れ）を次のログで確かめるため。選び方・取得パラメータ・公開内容は変えない。
 ### Fixed — OpenAlex の非推奨の形と、もう返らない項目の読みを整理（#558）
 
 - 会議の家系図（`buildConferenceLineage.ts` の `resolveOral`）の題名検索を、非推奨の `filter=title.search:<題名>` から `search.title=<題名>` パラメタに替えた（料金は同じ。題名のカンマが OR の区切りとして読まれなくなる）。失敗時のメッセージは `search.title='…'` を出す（Python 版から凍結した期待エラー文 `subject_failure.expected.json` もこの 1 行だけ替えた）。
