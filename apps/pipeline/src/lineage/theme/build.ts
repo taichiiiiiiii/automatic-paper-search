@@ -783,6 +783,11 @@ export async function buildThemeLineage(
   );
   const [resolvedSeeds, seedByGraphId] = resolveAndDedupSeeds(pickedSeeds, aliasIndex);
   seeds = resolvedSeeds;
+  // #573: the seeds the BFS starts from, after alias merge, selection and
+  // identity dedup — compare this line across rebuilds to see a seed swap.
+  logger.info(
+    `seeds: final ${seeds.length}/${seedsCount}: ${seeds.map((p) => p.paperId).join(", ")}`,
+  );
 
   // R2-35: acronyms the seeds define for the theme phrase ("Low-Rank
   // Adaptation (LoRA)") count as theme terms from here on (gate, roles,

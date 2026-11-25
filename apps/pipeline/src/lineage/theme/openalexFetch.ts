@@ -82,7 +82,9 @@ export interface OpenAlexDeps {
   fetchImpl: FetchLike;
   sleep?: (ms: number) => Promise<void>;
   now?: () => number;
-  logger?: { warn: (msg: string) => void };
+  /** `info` is optional: #573 writes the seed-search candidates there;
+   * a logger without it (warn-only) gets no extra lines. */
+  logger?: { warn: (msg: string) => void; info?: (msg: string) => void };
   email?: string | null;
 }
 
@@ -208,7 +210,40 @@ export async function discoverSeedsViaOpenalex(
     );
     return [];
   }
+  logSeedSearch(query, pageSize, results as Record<string, unknown>[], deps);
   return results as Record<string, unknown>[];
+}
+
+/** Cut a title for a log line (#573). */
+export function logTitle(title: unknown, max = 80): string {
+  const t = typeof title === "string" ? title.replace(/\s+/g, " ").trim() : "";
+  return t.length <= max ? t : `${t.slice(0, max - 1)}…`;
+}
+
+/** #573: the seed-search page as OpenAlex ranked it (relevance, no sort
+ * override) — one header plus one line per work, at most `pageSize` + 1
+ * lines. Ids are short (`W…`), so no URL, e-mail or key reaches the log.
+ * Logging only: nothing here affects the returned works. */
+function logSeedSearch(
+  query: string,
+  pageSize: number,
+  results: readonly Record<string, unknown>[],
+  deps: OpenAlexDeps,
+): void {
+  if (!deps.logger?.info) return;
+  const log = (msg: string) => deps.logger?.info?.(msg);
+  log(
+    `seed search: query=${JSON.stringify(query)} per-page=${pageSize} returned=${results.length}`,
+  );
+  results.slice(0, pageSize).forEach((w, i) => {
+    const year = typeof w.publication_year === "number" ? w.publication_year : null;
+    const cites = typeof w.cited_by_count === "number" ? w.cited_by_count : null;
+    const rel = typeof w.relevance_score === "number" ? w.relevance_score : null;
+    log(
+      `seed search: #${i + 1} ${openalexShortId(w.id) ?? "?"} year=${year} cites=${cites} ` +
+        `relevance=${rel} title=${JSON.stringify(logTitle(w.title ?? w.display_name))}`,
+    );
+  });
 }
 
 function typeOf(value: unknown): string {
