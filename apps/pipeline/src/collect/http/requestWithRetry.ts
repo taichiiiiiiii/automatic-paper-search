@@ -8,7 +8,11 @@
  *                exponential backoff (2s, 4s, 8s, ... cap 30s); max 3
  *                retries. Callers with a strict rate-limited quota (Groq)
  *                tune the count / per-wait cap / give-up threshold via
- *                `opts.retry429`.
+ *                `opts.retry429`. Keyed Semantic Scholar callers (#570)
+ *                pass `initialBackoffMs`/`maxBackoffMs` (1 s doubling, cap
+ *                8 s): S2 still requires exponential backoff, but a keyed
+ *                429 is S2 shedding load, so long waits only burn time.
+ *                A server hint is used as is (capped by `maxWaitMs`).
  *   - HTTP 5xx : fixed 3s wait, max 2 retries
  *   - Timeout  : retry once
  *   - Other    : return the response without retry (caller handles)
@@ -63,6 +67,11 @@ export interface RequestWithRetryOptions {
   overallDeadlineMs?: number;
   /** 429-specific retry tuning (defaults keep the historical policy). */
   retry429?: Retry429Options;
+  /**
+   * Caller name shown in every `http:` warning (`http: ${tag}[label] …`), so a
+   * job log tells which path is waiting. Never put a secret in it.
+   */
+  label?: string;
 }
 
 export interface Retry429Options {
@@ -70,6 +79,10 @@ export interface Retry429Options {
   maxRetries?: number;
   /** Cap for a single 429 wait (server hint or backoff), ms. Default 30_000. */
   maxWaitMs?: number;
+  /** First exponential backoff wait (no server hint), ms. Default 2_000. */
+  initialBackoffMs?: number;
+  /** Cap of the exponential backoff alone (a server hint is capped by `maxWaitMs` only), ms. Default 30_000. */
+  maxBackoffMs?: number;
   /**
    * When the server's hint exceeds this, stop retrying and return the 429
    * immediately (e.g. a daily quota that resets in hours — waiting the
@@ -233,12 +246,17 @@ export async function requestWithRetry(
 
   const fullUrl = buildUrl(opts.url, opts.params);
   const safeUrl = safeUrlForLog(opts.url);
+  const tag = opts.label ? `[${opts.label.replace(/[^\w.:-]/g, "_")}] ` : "";
   const start = now();
 
   let attempts429 = 0;
   let attempts5xx = 0;
   let attemptsTimeout = 0;
-  let backoff429 = BACKOFF_429_INITIAL_MS;
+  const maxBackoff429 = opts.retry429?.maxBackoffMs ?? BACKOFF_429_MAX_MS;
+  let backoff429 = Math.min(
+    opts.retry429?.initialBackoffMs ?? BACKOFF_429_INITIAL_MS,
+    maxBackoff429,
+  );
   const maxRetries429 = opts.retry429?.maxRetries ?? MAX_RETRIES_429;
   const maxWait429 = opts.retry429?.maxWaitMs ?? BACKOFF_429_MAX_MS;
   const giveUpAbove = opts.retry429?.giveUpIfHintAboveMs ?? Number.POSITIVE_INFINITY;
@@ -254,7 +272,7 @@ export async function requestWithRetry(
     const remaining = overallDeadlineMs - (now() - start);
     if (remaining <= 0) {
       logger.warn(
-        `http: overall deadline ${(overallDeadlineMs / 1000).toFixed(1)}s exceeded: ${safeUrl}`,
+        `http: ${tag}overall deadline ${(overallDeadlineMs / 1000).toFixed(1)}s exceeded: ${safeUrl}`,
       );
       return null;
     }
@@ -270,24 +288,24 @@ export async function requestWithRetry(
     } catch (e) {
       if (isTimeoutError(e)) {
         if (attemptsTimeout >= MAX_RETRIES_TIMEOUT) {
-          logger.warn(`http: timeout after ${attemptsTimeout} retries: ${safeUrl}`);
+          logger.warn(`http: ${tag}timeout after ${attemptsTimeout} retries: ${safeUrl}`);
           return null;
         }
         attemptsTimeout += 1;
-        logger.warn(`http: timeout, retry ${attemptsTimeout}: ${safeUrl}`);
+        logger.warn(`http: ${tag}timeout, retry ${attemptsTimeout}: ${safeUrl}`);
         continue;
       }
       // Only the exception's class name is safe to log — its message may
       // itself embed the raw URL (e.g. urllib3-style "Max retries exceeded
       // with url: ..."), which would re-leak what safeUrl was built to hide.
       const name = e instanceof Error ? e.name : "Error";
-      logger.warn(`http: request failed: ${safeUrl} (${name})`);
+      logger.warn(`http: ${tag}request failed: ${safeUrl} (${name})`);
       return null;
     }
 
     if (resp.status === 429) {
       if (attempts429 >= maxRetries429) {
-        logger.warn(`http: 429 after ${attempts429} retries: ${safeUrl}`);
+        logger.warn(`http: ${tag}429 after ${attempts429} retries: ${safeUrl}`);
         return resp;
       }
       const giveUpOnBody = opts.retry429?.giveUpOnBody;
@@ -300,14 +318,14 @@ export async function requestWithRetry(
         }
         resp = { status: resp.status, headers: resp.headers, json: async () => parsed };
         if (giveUpOnBody(parsed)) {
-          logger.warn(`http: 429 body says not to retry: ${safeUrl}`);
+          logger.warn(`http: ${tag}429 body says not to retry: ${safeUrl}`);
           return resp;
         }
       }
       const hint = rateLimitHintMs(resp.headers);
       if (hint !== null && hint > giveUpAbove) {
         logger.warn(
-          `http: 429 with retry hint ${(hint / 1000).toFixed(1)}s > ${(giveUpAbove / 1000).toFixed(0)}s, not retrying: ${safeUrl}`,
+          `http: ${tag}429 with retry hint ${(hint / 1000).toFixed(1)}s > ${(giveUpAbove / 1000).toFixed(0)}s, not retrying: ${safeUrl}`,
         );
         return resp;
       }
@@ -317,23 +335,23 @@ export async function requestWithRetry(
         Math.min(wanted, maxWait429, overallDeadlineMs - (now() - start)),
       );
       logger.warn(
-        `http: 429 throttled, sleeping ${(sleepFor / 1000).toFixed(1)}s (retry ${attempts429 + 1}${hint !== null ? ", server hint" : ""}): ${safeUrl}`,
+        `http: ${tag}429 throttled, sleeping ${(sleepFor / 1000).toFixed(1)}s (retry ${attempts429 + 1}${hint !== null ? ", server hint" : ""}): ${safeUrl}`,
       );
       deps.onRetry?.({ status: 429, attempt: attempts429 + 1, waitMs: sleepFor, hintMs: hint });
       await sleep(sleepFor);
       attempts429 += 1;
-      backoff429 = Math.min(backoff429 * 2, BACKOFF_429_MAX_MS);
+      backoff429 = Math.min(backoff429 * 2, maxBackoff429);
       continue;
     }
 
     if (resp.status >= 500 && resp.status < 600) {
       if (attempts5xx >= MAX_RETRIES_5XX) {
-        logger.warn(`http: ${resp.status} after ${attempts5xx} retries: ${safeUrl}`);
+        logger.warn(`http: ${tag}${resp.status} after ${attempts5xx} retries: ${safeUrl}`);
         return resp;
       }
       const sleepFor = Math.max(0, Math.min(BACKOFF_5XX_MS, overallDeadlineMs - (now() - start)));
       logger.warn(
-        `http: ${resp.status}, sleeping ${(sleepFor / 1000).toFixed(1)}s (retry ${attempts5xx + 1}): ${safeUrl}`,
+        `http: ${tag}${resp.status}, sleeping ${(sleepFor / 1000).toFixed(1)}s (retry ${attempts5xx + 1}): ${safeUrl}`,
       );
       deps.onRetry?.({
         status: resp.status,

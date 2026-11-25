@@ -229,24 +229,17 @@ export class OpenAlexSource implements Source {
       }
     }
 
-    // OpenAlex deprecated `host_venue` in 2023 in favor of
-    // `primary_location.source.display_name`. Try the new field first.
+    // OpenAlex removed `host_venue` (deprecated in 2023, #558);
+    // `primary_location.source.display_name` is the only venue source.
     const primary = orElse(pyGet(work, "primary_location"), {});
     const primarySource =
       typeof primary === "object" && !Array.isArray(primary)
         ? orElse(pyGet(primary, "source"), {})
         : {};
-    let venue =
+    const venue =
       typeof primarySource === "object" && !Array.isArray(primarySource)
         ? (pyGet(primarySource, "display_name") as string | undefined)
         : undefined;
-    if (!truthy(venue)) {
-      const hostVenue = orElse(pyGet(work, "host_venue"), {});
-      venue =
-        typeof hostVenue === "object" && !Array.isArray(hostVenue)
-          ? (pyGet(hostVenue, "display_name") as string | undefined)
-          : undefined;
-    }
 
     const openAccess = orElse(pyGet(work, "open_access"), {});
     const pdfUrl =

@@ -33,6 +33,7 @@
  */
 
 import { readFileSync } from "node:fs";
+import { titlesDisagreeStrongly } from "@paperpilot/core/abstract-sanity";
 
 /** Base for "this answer is missing data because a request failed".
  *
@@ -287,6 +288,171 @@ function dropped(kind: string, missing: ReadonlySet<string>): string {
   return `${missing.size} published ${kind} missing from the result (${shown}${more})`;
 }
 
+function normDoi(raw: unknown): string | null {
+  if (typeof raw !== "string") return null;
+  const v = raw
+    .trim()
+    .toLowerCase()
+    .replace(/^(?:https?:\/\/)?(?:dx\.)?doi\.org\//, "")
+    .replace(/^doi:\s*/, "");
+  return v.startsWith("10.") ? v : null;
+}
+
+function normArxiv(raw: unknown): string | null {
+  if (typeof raw !== "string") return null;
+  const v = raw
+    .trim()
+    .toLowerCase()
+    .replace(/^(?:https?:\/\/)?(?:export\.)?arxiv\.org\/(?:abs|pdf)\//, "")
+    .replace(/^arxiv:/, "")
+    .replace(/\.pdf$/, "")
+    .replace(/v\d+$/, "");
+  return v.length > 0 ? v : null;
+}
+
+/** Stable identity keys of a node: its DOI and arXiv id, from the
+ * `doi` / `arxiv_id` fields and the `[kind, value]` `aliases` pairs.
+ * Titles are deliberately not keys (absolute rule 17). */
+function stableKeys(n: unknown): Set<string> {
+  const out = new Set<string>();
+  if (n === null || typeof n !== "object") return out;
+  const r = n as Record<string, unknown>;
+  const doi = normDoi(r.doi);
+  if (doi) out.add(`doi:${doi}`);
+  const ax = normArxiv(r.arxiv_id);
+  if (ax) out.add(`arxiv:${ax}`);
+  if (Array.isArray(r.aliases)) {
+    for (const a of r.aliases) {
+      if (!Array.isArray(a) || a.length < 2) continue;
+      if (a[0] === "doi") {
+        const d = normDoi(a[1]);
+        if (d) out.add(`doi:${d}`);
+      } else if (a[0] === "arxiv") {
+        const x = normArxiv(a[1]);
+        if (x) out.add(`arxiv:${x}`);
+      }
+    }
+  }
+  return out;
+}
+
+function nodeId(n: unknown): string | null {
+  return n !== null &&
+    typeof n === "object" &&
+    typeof (n as Record<string, unknown>).id === "string"
+    ? ((n as Record<string, unknown>).id as string)
+    : null;
+}
+
+function nodeTitle(n: unknown): string {
+  const t = n !== null && typeof n === "object" ? (n as Record<string, unknown>).title : undefined;
+  return typeof t === "string" ? t : "";
+}
+
+export interface MergedIdMatches {
+  /** `[published id, new id]` pairs sharing a DOI/arXiv id with
+   * compatible titles — OpenAlex most likely merged the Work. */
+  likelyMerges: [string, string][];
+  /** `[published id, new id]` pairs sharing a DOI/arXiv id whose titles
+   * disagree strongly (a conference→journal retitle, or a preprint
+   * merged into a different paper) — reported, never assumed the same. */
+  titleMismatches: [string, string][];
+}
+
+/** #504: for each `missing` published id, find a new node (under a
+ * different id) that shares a DOI or arXiv id with it. Counting only —
+ * the gate never remaps ids on this basis, so no title guard is needed
+ * for safety; titles only split the report into likely merges and
+ * suspicious id matches. Pairs are sorted by the published id. */
+export function mergedIdMatches(
+  publishedNodes: readonly unknown[],
+  newNodes: readonly unknown[],
+  missing: ReadonlySet<string>,
+): MergedIdMatches {
+  const byKey = new Map<string, unknown[]>();
+  for (const n of newNodes) {
+    const id = nodeId(n);
+    if (id === null || missing.has(id)) continue;
+    for (const k of stableKeys(n)) {
+      const list = byKey.get(k);
+      if (list) list.push(n);
+      else byKey.set(k, [n]);
+    }
+  }
+  const likelyMerges: [string, string][] = [];
+  const titleMismatches: [string, string][] = [];
+  const olds = publishedNodes
+    .filter((n) => {
+      const id = nodeId(n);
+      return id !== null && missing.has(id);
+    })
+    .sort((a, b) => ((nodeId(a) as string) < (nodeId(b) as string) ? -1 : 1));
+  const seen = new Set<string>();
+  for (const old of olds) {
+    const oldId = nodeId(old) as string;
+    if (seen.has(oldId)) continue;
+    seen.add(oldId);
+    const candidates: unknown[] = [];
+    for (const k of [...stableKeys(old)].sort()) {
+      for (const c of byKey.get(k) ?? []) if (!candidates.includes(c)) candidates.push(c);
+    }
+    if (candidates.length === 0) continue;
+    const agreeing = candidates.find((c) => !titlesDisagreeStrongly(nodeTitle(old), nodeTitle(c)));
+    if (agreeing !== undefined) likelyMerges.push([oldId, nodeId(agreeing) as string]);
+    else titleMismatches.push([oldId, nodeId(candidates[0]) as string]);
+  }
+  return { likelyMerges, titleMismatches };
+}
+
+function pairList(pairs: readonly [string, string][]): string {
+  const shown = pairs
+    .slice(0, 3)
+    .map(([a, b]) => `${a} -> ${b}`)
+    .join(", ");
+  return `${shown}${pairs.length > 3 ? ", ..." : ""}`;
+}
+
+/** The #504 breakdown appended to a focus/node refusal; "" when no
+ * missing node shares a stable id with a new one. */
+function mergedIdBreakdown(
+  publishedNodes: readonly unknown[],
+  publishedEdges: readonly unknown[],
+  newNodes: readonly unknown[],
+  newEdges: readonly unknown[],
+  missing: ReadonlySet<string>,
+): string {
+  const { likelyMerges, titleMismatches } = mergedIdMatches(publishedNodes, newNodes, missing);
+  const parts: string[] = [];
+  if (likelyMerges.length > 0) {
+    parts.push(
+      `${likelyMerges.length} of them share a DOI/arXiv id with a new node ` +
+        `(likely an OpenAlex merge: ${pairList(likelyMerges)})`,
+    );
+    const rename = new Map(likelyMerges);
+    const missingEdges = setDifference(edgeKeys(publishedEdges), edgeKeys(newEdges));
+    const nextEdges = edgeKeys(newEdges);
+    let reappear = 0;
+    for (const key of missingEdges) {
+      const [src, dst] = key.split("\u0000") as [string, string];
+      const moved = `${rename.get(src) ?? src}\u0000${rename.get(dst) ?? dst}`;
+      if (moved !== key && nextEdges.has(moved)) reappear += 1;
+    }
+    if (missingEdges.size > 0) {
+      parts.push(
+        `${reappear} of ${missingEdges.size} missing published edge(s) reappear ` +
+          "when those ids are rewritten",
+      );
+    }
+  }
+  if (titleMismatches.length > 0) {
+    parts.push(
+      `${titleMismatches.length} share a DOI/arXiv id but the titles disagree ` +
+        `(${pairList(titleMismatches)})`,
+    );
+  }
+  return parts.length > 0 ? `; ${parts.join("; ")}` : "";
+}
+
 export interface ExpansionGateInput {
   newNodeCount: number;
   newEdgeCount: number;
@@ -343,8 +509,14 @@ export function expansionGateBlocks(
     ];
     for (const [kind, missing] of checks) {
       if (missing.size > 0) {
+        // #504: name the missing papers that only changed id (counted,
+        // never remapped — the refusal itself is unchanged).
+        const merged =
+          kind === "edge(s)"
+            ? ""
+            : mergedIdBreakdown(graph[0], graph[1], newNodes, newEdges, missing);
         return (
-          `${lost} and ${dropped(kind, missing)}. Refusing to replace ` +
+          `${lost} and ${dropped(kind, missing)}${merged}. Refusing to replace ` +
           "published content on a known-incomplete fetch; re-run when the " +
           "upstream recovers, or pass --allow-incomplete."
         );

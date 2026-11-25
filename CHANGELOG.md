@@ -9,10 +9,18 @@ follows [Semantic Versioning](https://semver.org/) and the
 ### Added — seed 候補の一覧と順位を generate ログに出す（#573）
 
 - OpenAlex の seed 検索 1 回ごとに見出し（キーワード・per-page・返った件数）と候補ごとの行（順位・id・年・引用数・relevance・題名 80 字）、速度スコアの並べ替え 1 回ごとに候補ごとの行（速度・重み・スコア・選ばれたか）、最終の seed を 1 行（`seeds: final …`）、いずれも info に出す。作り直しで seed が入れ替わる理由（#560 の検索窓の端の揺れ）を次のログで確かめるため。選び方・取得パラメータ・公開内容は変えない。
+### Fixed — OpenAlex の非推奨の形と、もう返らない項目の読みを整理（#558）
+
+- 会議の家系図（`buildConferenceLineage.ts` の `resolveOral`）の題名検索を、非推奨の `filter=title.search:<題名>` から `search.title=<題名>` パラメタに替えた（料金は同じ。題名のカンマが OR の区切りとして読まれなくなる）。失敗時のメッセージは `search.title='…'` を出す（Python 版から凍結した期待エラー文 `subject_failure.expected.json` もこの 1 行だけ替えた）。
+- 収集の OpenAlex 取得元（`collect/sources/openalex.ts`）から、API で削除済みの `host_venue` を読む後方互換の分岐を消した。venue は `primary_location.source.display_name` だけから入る。Python 版とのパリティ用フィクスチャは変えずに一致する。
+### Changed — 不完全な作り直しの拒否理由に「OpenAlex の統合で ID が変わっただけ」を別に数えて出す（#504）
+
+- 取得が不完全な作り直しが、公開済みの中心論文・ノードの欠けで拒否されたとき（exit 4）、欠けたノードのうち新しい結果のノードと DOI か arXiv id が一致するものを「統合らしい（old -> new、最初の 3 組）」として数え、統合先に読み替えると戻る辺の数も添える。id は一致するが題名が大きく違う組は「id 一致・題名不一致」として別に数える。題名だけの一致は数えない。数えるだけで、拒否の判定・exit コード・`--allow-incomplete` は変えない。
 
 ### Changed — S2 キー付きの 429 の待ちを短くした（#570）
 
 - CI で 20 要求ずつ間隔を変えて測ったところ、429 の割合は間隔によらず 40〜65%（1.25 s: 65%、2.5 s: 40%、5 s: 55%）。S2 側の絞りで、待ちを延ばしても減らない。キー付きの 429 は、S2 の規約（指数バックオフ）を守ったまま、待ちを 1→2→4→8 s（上限 8 s）に短縮し、429 は最大 12 回まで再試行（Retry-After は優先）。5xx・ネットワークエラーは従来どおり（6 回、2→60 s）。キーなしは変更なし。
+- 続き: 被引用数（`s2CitationCounts`）と要旨補完（`s2AbstractFallback`）の `/paper/batch` も、キー付きの 429 を同じ 1→2→4→8 s の指数で待つ（従来は requestWithRetry の 2→4→8→16 s。再試行回数・Retry-After の扱い・全体の期限 90 s／取り直し 30 s は不変）。要旨補完の再試行も共有の S2 pacer を通す。requestWithRetry に任意の `retry429.initialBackoffMs`・`maxBackoffMs`・`label`（WARNING 行に `[s2-citation-counts]` などを出す）を足した。既定値は変えない。
 
 ### Fixed — S2 で補った要旨が 2 回目の一覧で付かず、要旨のない中心論文が落ちる（#566）
 

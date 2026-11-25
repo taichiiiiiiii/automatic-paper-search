@@ -51,7 +51,7 @@ function work(overrides: Record<string, unknown> = {}): Record<string, unknown> 
       author: { display_name: a, id: `https://openalex.org/A${i}` },
       institutions: [{ display_name: "Test University" }],
     })),
-    host_venue: venue ? { display_name: venue } : {},
+    primary_location: venue ? { source: { display_name: venue } } : {},
     open_access: pdf ? { oa_url: pdf } : {},
   };
 }
@@ -543,18 +543,11 @@ describe("OpenAlexSource.toPaper — field mapping edge cases", () => {
     expect(p?.doi).toBe("10.1/abc");
   });
 
-  it("prefers primary_location.source over host_venue", () => {
-    const w = work({ pub_date: TODAY, venue: "LEGACY_VENUE" });
+  it("uses primary_location.source for the venue", () => {
+    const w = work({ pub_date: TODAY });
     (w as Record<string, unknown>)["primary_location"] = { source: { display_name: "Nature" } };
     const p = src(vi.fn()).toPaper(w, "kw", daysAgo(7));
     expect(p?.venue).toBe("Nature");
-  });
-
-  it("falls back to host_venue when primary_location is missing", () => {
-    const w = work({ pub_date: TODAY, venue: "ICLR" });
-    (w as Record<string, unknown>)["primary_location"] = null;
-    const p = src(vi.fn()).toPaper(w, "kw", daysAgo(7));
-    expect(p?.venue).toBe("ICLR");
   });
 
   it("flattens and dedups affiliations across authorships", () => {
@@ -580,7 +573,7 @@ describe("OpenAlexSource.toPaper — field mapping edge cases", () => {
     expect(p?.affiliations).toEqual([]);
   });
 
-  it("venue is null when both primary_location and host_venue are missing", () => {
+  it("venue is null when primary_location is missing", () => {
     const w = work({ pub_date: TODAY, venue: null });
     (w as Record<string, unknown>)["primary_location"] = null;
     const p = src(vi.fn()).toPaper(w, "kw", daysAgo(7));
